@@ -59,10 +59,10 @@
             </intent-filter>
         </service>
 
-        <!-- Ask Google Play services to fetch the on-device OCR model at install time. -->
+        <!-- Ask Google Play services to fetch the on-device OCR and QR/barcode models at install time. -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="ocr" />
+            android:value="ocr,barcode" />
 
         <!-- Persists the in-app language choice on Android 7-12 (Android 13+ does it natively). -->
         <service

@@ -168,4 +168,14 @@
         <item quantity="one">पछिल्लो %2$d दिनमा %1$d पटक पर्‍यो</item>
         <item quantity="other">पछिल्लो %2$d दिनमा %1$d पटक पर्‍यो</item>
     </plurals>
+    <string name="open_in_browser">ब्राउजर</string>
+    <string name="sheet_loading">नतिजा सिट खुल्दै छ…</string>
+    <string name="sheet_not_ready">यो सिट अझै प्रकाशित भएको छैन। केही मिनेटपछि फेरि प्रयास गर्नुहोस्।</string>
+    <string name="sheet_failed">सिट खुल्न सकेन। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="sheet_source">%1$s ले प्रकाशित गरेजस्तै। जुम गर्न दुई औंलाले फैलाउनुहोस्।</string>
+    <string name="qr_link_title">यो कोड वेब लिंक हो, टिकट नम्बर होइन</string>
+    <string name="qr_link_body">यो वेबसाइटमा भरोसा छ भने मात्र खोल्नुहोस्। LottoDost ले कहिल्यै पैसा, बैंक वा UPI विवरण माग्दैन, र पुरस्कार दिलाउने नाममा कसैले तपाईंसँग पैसा लिन मिल्दैन।</string>
+    <string name="qr_open">लिंक खोल्नुहोस्</string>
+    <string name="qr_keep_scanning">स्क्यान जारी राख्नुहोस्</string>
+    <string name="qr_no_ticket">कोड भेटियो, तर यसमा टिकट नम्बर छैन। क्यामेरा छापिएको नम्बरतिर राख्नुहोस्।</string>
 </resources>

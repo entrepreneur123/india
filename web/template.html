@@ -170,6 +170,9 @@ function parseTicket(raw) {
   if (c !== s) { const q = tryParse(c); if (q) return q; if (q === false) return null; }
   return /^\d{4,6}$/.test(c) ? { prefix: null, digits: c, fmt: "DIGITS" } : null;
 }
+// Lottery Sambad serves today's sheet only from fetchtoday.php and older ones only from the archive URL.
+const sambadUrl = (url, date) => date === istToday() ? url.replace("lotteryoldresultsdown.php", "fetchtoday.php")
+  : url.replace("fetchtoday.php", "lotteryoldresultsdown.php");
 const display = tk => tk.prefix ? tk.prefix + " " + tk.digits : tk.digits;
 function compatible(tk, d) {
   if (d.format === "D5") return tk.fmt === "D5" || (tk.fmt === "DIGITS" && tk.digits.length <= 5);
@@ -261,7 +264,7 @@ function card(d) {
   }
   const links = el("div", "row");
   if (official) { const a = el("a", null, t("open_official_pdf")); a.href = official.url; a.target = "_blank"; a.rel = "noopener"; links.append(a); }
-  if (sheet) { const a = el("a", null, t("open_sheet")); a.href = sheet.url; a.target = "_blank"; a.rel = "noopener"; links.append(a); }
+  if (sheet) { const a = el("a", null, t("open_sheet")); a.href = sambadUrl(sheet.url, d.date); a.target = "_blank"; a.rel = "noopener"; links.append(a); }
   if (links.childElementCount) c.append(links);
   return c;
 }

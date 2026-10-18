@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Unbundled ML Kit: the OCR model comes from Google Play services, keeping our APK small.
     implementation(libs.mlkit.text.recognition)
+    implementation(libs.mlkit.barcode.scanning)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     coreLibraryDesugaring(libs.desugar.jdk.libs)

@@ -170,4 +170,14 @@
     <string name="claim_docs_body">• Original ticket, signed on the back\n• Self declaration (part of the form)\n• Affidavit\n• PAN card and one ID proof\n• 3 passport photos, not older than 3 months\n• A cancelled cheque of your bank account\nThe form is handed in personally at Kohima or at the camps in Kolkata, Mumbai, Ludhiana and Gangtok.</string>
     <string name="widget_title">LottoDost · %1$s</string>
     <string name="widget_desc">Today\'s 1st prizes</string>
+    <string name="open_in_browser">Browser</string>
+    <string name="sheet_loading">Loading the result sheet…</string>
+    <string name="sheet_not_ready">This sheet is not published yet. Try again in a few minutes.</string>
+    <string name="sheet_failed">Could not load the sheet. Check your internet and try again.</string>
+    <string name="sheet_source">Shown as published by %1$s. Pinch to zoom.</string>
+    <string name="qr_link_title">This code is a web link, not a ticket number</string>
+    <string name="qr_link_body">Open it only if you trust this website. LottoDost never asks for money, bank or UPI details, and no one can charge you to release a prize.</string>
+    <string name="qr_open">Open link</string>
+    <string name="qr_keep_scanning">Keep scanning</string>
+    <string name="qr_no_ticket">Code found, but it has no ticket number. Point the camera at the printed number.</string>
 </resources>

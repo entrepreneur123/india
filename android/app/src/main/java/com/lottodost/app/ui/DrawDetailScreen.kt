@@ -101,7 +101,7 @@ private fun TierBlock(tier: Tier, q: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
+fun DrawDetailScreen(draw: Draw, onBack: () -> Unit, onOpenSheet: (Draw, Boolean) -> Unit = { _, _ -> }) {
     val ctx = LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
     val q = query.filter { it in '0'..'9' }
@@ -190,17 +190,17 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
             }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    draw.sheetUrl?.let {
+                        Button(onClick = { onOpenSheet(draw, false) }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.open_sheet))
+                        }
+                    }
                     draw.officialPdf?.let { url ->
-                        OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(onClick = { onOpenSheet(draw, true) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.open_official_pdf))
                         }
                         TextButton(onClick = { downloadPdf(ctx, url, "${draw.id}.pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.save_pdf))
-                        }
-                    }
-                    draw.sheetUrl?.let { url ->
-                        OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(R.string.open_sheet))
                         }
                     }
                     Text(stringResource(if (draw.state == "Nagaland") R.string.claim_info else R.string.claim_other_state),

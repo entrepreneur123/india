@@ -168,4 +168,14 @@
         <item quantity="one">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
         <item quantity="other">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
     </plurals>
+    <string name="open_in_browser">ਬ੍ਰਾਊਜ਼ਰ</string>
+    <string name="sheet_loading">ਨਤੀਜਾ ਸ਼ੀਟ ਖੁੱਲ੍ਹ ਰਹੀ ਹੈ…</string>
+    <string name="sheet_not_ready">ਇਹ ਸ਼ੀਟ ਹਾਲੇ ਨਹੀਂ ਆਈ। ਕੁਝ ਮਿੰਟਾਂ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="sheet_failed">ਸ਼ੀਟ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕੀ। ਇੰਟਰਨੈੱਟ ਚੈੱਕ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="sheet_source">%1$s ਨੇ ਜਿਵੇਂ ਛਾਪੀ, ਉਵੇਂ ਹੀ। ਜ਼ੂਮ ਕਰਨ ਲਈ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਫੈਲਾਓ।</string>
+    <string name="qr_link_title">ਇਹ ਕੋਡ ਵੈੱਬ ਲਿੰਕ ਹੈ, ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ</string>
+    <string name="qr_link_body">ਇਸ ਵੈੱਬਸਾਈਟ ’ਤੇ ਭਰੋਸਾ ਹੋਵੇ ਤਾਂ ਹੀ ਖੋਲ੍ਹੋ। LottoDost ਕਦੇ ਪੈਸੇ, ਬੈਂਕ ਜਾਂ UPI ਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮੰਗਦਾ, ਅਤੇ ਇਨਾਮ ਦਿਵਾਉਣ ਦੇ ਨਾਂ ’ਤੇ ਕੋਈ ਤੁਹਾਡੇ ਤੋਂ ਪੈਸੇ ਨਹੀਂ ਲੈ ਸਕਦਾ।</string>
+    <string name="qr_open">ਲਿੰਕ ਖੋਲ੍ਹੋ</string>
+    <string name="qr_keep_scanning">ਸਕੈਨ ਜਾਰੀ ਰੱਖੋ</string>
+    <string name="qr_no_ticket">ਕੋਡ ਮਿਲਿਆ, ਪਰ ਇਸ ਵਿੱਚ ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ ਹੈ। ਕੈਮਰਾ ਛਪੇ ਨੰਬਰ ਵੱਲ ਕਰੋ।</string>
 </resources>
