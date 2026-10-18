@@ -1,5 +1,7 @@
 # LottoDost (가칭): 인도 Dear 로또 결과 앱
 
+> 같은 저장소의 [`chat/`](chat/)에는 별도 프로젝트인 **Yaari 랜덤채팅 앱 프로토타입**이 있습니다(로또 앱과 코드·빌드 완전 분리).
+
 인도 Google Play용 **로또 결과·당첨 확인 앱**입니다. 판매 기능은 없습니다.
 
 - Nagaland State Lottery(1 PM · 8 PM · Dear Laxmi), Sikkim 6 PM, 범퍼·월간 추첨을 한 화면에 보여줍니다.
