@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -59,6 +60,11 @@ def access_token(account: dict) -> str:
         return json.load(r)["access_token"]
 
 
+def ping() -> dict:
+    """Credential check: the app ignores this type, so no phone shows anything."""
+    return {"message": {"topic": TOPIC, "data": {"type": "ping"}, "android": {"priority": "normal", "ttl": "60s"}}}
+
+
 def message(ids: list[str]) -> dict:
     # High priority wakes the phone from Doze; the app always shows a notification for it, which
     # Android requires to keep high priority. TTL: a result older than an hour is not news.
@@ -66,12 +72,17 @@ def message(ids: list[str]) -> dict:
                         "android": {"priority": "high", "ttl": "3600s"}}}
 
 
-def send(account: dict, ids: list[str]) -> None:
+def send(account: dict, ids: list[str] | None) -> str:
+    """Sends a result message (or a ping when ids is None); returns FCM's message name."""
     url = f"https://fcm.googleapis.com/v1/projects/{account['project_id']}/messages:send"
-    req = urllib.request.Request(url, data=json.dumps(message(ids)).encode(), headers={
+    body = ping() if ids is None else message(ids)
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={
         "Authorization": "Bearer " + access_token(account), "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        r.read()
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r).get("name", "")
+    except urllib.error.HTTPError as e:  # FCM explains the problem in the body (API disabled, bad key...)
+        raise RuntimeError(f"HTTP {e.code}: {e.read()[:300].decode('utf-8', 'replace')}") from None
 
 
 def new_ids(today_feed: dict, announced: set[str], today: dt.date) -> list[str]:
@@ -113,20 +124,24 @@ def main(argv: list[str] | None = None) -> int:
     ids = new_ids(feed, announced, today)
     if not ids:
         return 0
+    raw = os.environ.get("FCM_SERVICE_ACCOUNT", "")
     if first_run:
-        print(f"push: first run, recording {len(ids)} existing results without sending")
+        print(f"push: first run, recording {len(ids)} existing results without announcing them")
+        if raw and not a.dry_run:
+            try:
+                print("push: credentials OK, test message", send(json.loads(raw), None))
+            except Exception as e:  # noqa: BLE001
+                print(f"::warning::push credential check failed: {e}")
     elif a.dry_run:
         print("push (dry run):", json.dumps(message(ids)))
     else:
-        raw = os.environ.get("FCM_SERVICE_ACCOUNT", "")
         if not raw:
             print("push: FCM_SERVICE_ACCOUNT not set; skipping")
             return 0
         if a.wait_url and not wait_live(a.wait_url, ids):
             print(f"::warning::push: {a.wait_url} did not show {ids} in time; sending anyway")
         try:
-            send(json.loads(raw), ids)
-            print("push: sent", ids)
+            print("push: sent", ids, send(json.loads(raw), ids))
         except Exception as e:  # noqa: BLE001 - a failed push must not fail publishing
             print(f"::warning::push failed: {e}")
             return 0  # not recorded: the next run retries

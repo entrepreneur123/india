@@ -19,6 +19,10 @@ def test_new_ids_only_recent_with_numbers_and_unannounced():
     assert got == ["2026-10-17_NL8PM", "2026-10-18_SK6PM"]  # PDF-only and 2-day-old results are not news
 
 
+def test_ping_is_ignored_type():
+    assert push.ping()["message"]["data"] == {"type": "ping"}
+
+
 def test_message_is_data_only_high_priority():
     m = push.message(["a", "b"])["message"]
     assert "notification" not in m  # the app writes the text in the reader's language
@@ -53,9 +57,11 @@ def _write(tmp_path, feed):
 def test_first_run_records_without_sending(tmp_path, monkeypatch):
     today = dt.datetime.now(push.IST).date().isoformat()
     _write(tmp_path, _feed(today + "_NL1PM"))
-    monkeypatch.setattr(push, "send", lambda *a: pytest.fail("must not send on first run"))
+    sent = []
+    monkeypatch.setattr(push, "send", lambda acct, ids: sent.append(ids) or "projects/p/messages/1")
     monkeypatch.setenv("FCM_SERVICE_ACCOUNT", "{}")
     assert push.main(["--out", str(tmp_path)]) == 0
+    assert sent == [None]  # only the credential ping, no result announcement
     assert json.loads((tmp_path / "push-state.json").read_text())["ids"] == [today + "_NL1PM"]
 
 
@@ -68,7 +74,7 @@ def test_sends_new_result_once_and_keeps_failed_ones(tmp_path, monkeypatch):
     monkeypatch.setattr(push, "send", lambda acct, ids: (_ for _ in ()).throw(OSError("down")))
     push.main(["--out", str(tmp_path)])
     assert json.loads((tmp_path / "push-state.json").read_text())["ids"] == [today + "_NL1PM"]  # retried next run
-    monkeypatch.setattr(push, "send", lambda acct, ids: sent.append(ids))
+    monkeypatch.setattr(push, "send", lambda acct, ids: sent.append(ids) or "name")
     push.main(["--out", str(tmp_path)])
     push.main(["--out", str(tmp_path)])
     assert sent == [[today + "_SK6PM"]]
