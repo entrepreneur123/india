@@ -1,0 +1,82 @@
+# Collects Dear lottery results and publishes static JSON to the `data` branch, which the app
+# reads from raw.githubusercontent.com (CDN). Times are UTC; IST = UTC+5:30.
+#   1 PM IST draw -> 07:35-08:55 UTC   6 PM IST -> 12:35-13:55 UTC   8 PM IST -> 14:35-15:55 UTC
+# The official gazette appears ~20:30 IST (15:00 UTC); a 03:00 UTC run re-checks yesterday.
+name: results
+
+on:
+  schedule:
+    - cron: "35-55/5 7 * * *"
+    - cron: "*/5 8 * * *"
+    - cron: "35-55/5 12 * * *"
+    - cron: "*/5 13 * * *"
+    - cron: "35-55/5 14 * * *"
+    - cron: "*/5 15 * * *"
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      official:
+        description: "Also OCR the official gazette"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: results
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out data branch
+        run: |
+          if git ls-remote --exit-code --heads origin data >/dev/null; then
+            git fetch --depth 1 origin data
+            git worktree add public origin/data
+            git -C public checkout -B data
+          else
+            git worktree add --orphan -b data public
+          fi
+
+      - name: Decide whether to OCR the gazette
+        id: mode
+        run: |
+          hour=$(date -u +%H)
+          if [ "${{ inputs.official }}" = "true" ] || [ "$hour" = "15" ] || [ "$hour" = "03" ]; then
+            echo "official=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "official=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install tools
+        run: |
+          pkgs="poppler-utils"
+          if [ "${{ steps.mode.outputs.official }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
+          sudo apt-get update -qq && sudo apt-get install -y -qq $pkgs
+          pip install -q pillow pytest
+
+      - name: Unit tests
+        working-directory: pipeline
+        run: python -m pytest -q tests
+
+      - name: Fetch and build JSON
+        working-directory: pipeline
+        run: |
+          args="--out ../public"
+          if [ "${{ steps.mode.outputs.official }}" != "true" ]; then args="$args --no-official"; fi
+          python -m lottery_pipeline.build $args
+
+      - name: Publish
+        working-directory: public
+        run: |
+          git add -A
+          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          git -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
+            commit -q -m "results $(date -u +%FT%TZ)"
+          git push origin data

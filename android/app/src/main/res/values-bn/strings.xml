@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Machine-assisted translation: have a native speaker review before release. -->
+<resources>
+    <string name="tab_results">রেজাল্ট</string>
+    <string name="tab_check">টিকিট মেলান</string>
+    <string name="tab_tickets">আমার টিকিট</string>
+    <string name="tab_more">আরও</string>
+
+    <string name="disclaimer_title">জরুরি তথ্য</string>
+    <string name="disclaimer_body">LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড সরকার, সিকিম সরকার বা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না এবং কখনও টাকা চাই না। রেজাল্ট সর্বজনীন উৎস থেকে নেওয়া হয় — পুরস্কার দাবির আগে সবসময় সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনা বৈধ নয়। শুধুমাত্র প্রাপ্তবয়স্কদের (18+) জন্য।</string>
+    <string name="disclaimer_ok">বুঝেছি</string>
+
+    <string name="results_subtitle">ডিয়ার লটারি রেজাল্ট · 1 PM · 6 PM · 8 PM</string>
+    <string name="offline_banner">ইন্টারনেট নেই। সেভ করা রেজাল্ট দেখানো হচ্ছে।</string>
+    <string name="today">আজ</string>
+    <string name="source_note">উৎস: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট। এটি সরকারি অ্যাপ নয়।</string>
+    <string name="state_lottery">%1$s রাজ্য লটারি</string>
+    <string name="verified">যাচাই করা</string>
+    <string name="verified_long">সরকারি রেজাল্টের সঙ্গে মিলে গেছে।</string>
+    <string name="first_prize">প্রথম পুরস্কার</string>
+    <string name="tap_full_result">সব পুরস্কার দেখতে ট্যাপ করুন</string>
+    <string name="pdf_only">সরকারি রেজাল্ট PDF হিসেবে পাওয়া যাচ্ছে।</string>
+    <string name="open_official_pdf">সরকারি রেজাল্ট (PDF) খুলুন</string>
+    <string name="draw_in">ড্র %1$d ঘণ্টা %2$d মিনিট পরে</string>
+    <string name="result_coming">রেজাল্ট শীঘ্রই আসছে…</string>
+    <string name="no_result">কোনো রেজাল্ট নেই</string>
+
+    <string name="notif_channel">রেজাল্ট ও টিকিট অ্যালার্ট</string>
+    <string name="notif_result_title">%1$s-এর রেজাল্ট বেরিয়েছে</string>
+    <string name="notif_result_body">প্রথম পুরস্কার: %1$s। আপনার টিকিট মেলাতে ট্যাপ করুন।</string>
+    <string name="notif_ticket_won">আপনার টিকিট %1$s জিতেছে %2$s! সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="notif_ticket_lost">আপনার টিকিট %1$s এবার জেতেনি।</string>
+
+    <string name="tier_1">প্রথম পুরস্কার</string>
+    <string name="tier_cons">সান্ত্বনা পুরস্কার</string>
+    <string name="tier_2">দ্বিতীয় পুরস্কার</string>
+    <string name="tier_3">তৃতীয় পুরস্কার</string>
+    <string name="tier_4">চতুর্থ পুরস্কার</string>
+    <string name="tier_5">পঞ্চম পুরস্কার</string>
+
+    <string name="back">পিছনে</string>
+    <string name="share">শেয়ার</string>
+    <string name="share_footer">LottoDost অ্যাপে মেলানো হয়েছে। সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="draw_meta">%1$s · ড্র নং %2$s · টিকিট ₹%3$d</string>
+    <string name="ocr_caution">এই নম্বরগুলি সরকারি স্ক্যান করা PDF থেকে স্বয়ংক্রিয়ভাবে পড়া হয়েছে। দাবি করার আগে সরকারি PDF-এ অবশ্যই মিলিয়ে নিন।</string>
+    <string name="find_in_result">এই রেজাল্টে আমার নম্বর খুঁজুন</string>
+    <string name="claim_title">কীভাবে পুরস্কার দাবি করবেন</string>
+    <string name="claim_info">নাগাল্যান্ড লটারিতে ₹10,000-এর বেশি পুরস্কার ড্রয়ের 30 দিনের মধ্যে নাগাল্যান্ড স্টেট লটারি অধিদপ্তর, কোহিমা বা তার নোডাল অফিসে আসল টিকিট ও 3টি সত্যায়িত পাসপোর্ট ছবি সহ দাবি করতে হয় (সরকারি রেজাল্টে যেমন ছাপা আছে)। ছোট পুরস্কারের জন্য আপনার টিকিট বিক্রেতাকে জিজ্ঞাসা করুন। বড় পুরস্কারে কর কাটা হয়।</string>
+
+    <string name="claim_small">₹10,000 পর্যন্ত পুরস্কার: যেখান থেকে টিকিট কিনেছেন সেই বিক্রেতা বা স্টকিস্টকে জিজ্ঞাসা করুন। আগে সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+
+    <string name="check_title">আপনার টিকিট মেলান</string>
+    <string name="check_hint">পুরো নম্বর (যেমন 39C 06366) বা শেষ 4–5টি সংখ্যা লিখুন, অথবা টিকিট স্ক্যান করুন।</string>
+    <string name="ticket_number">টিকিট নম্বর</string>
+    <string name="ticket_invalid">এভাবে লিখুন: 39C 06366, 06366 বা 6366</string>
+    <string name="scan_confirm">ছবি থেকে পড়া হয়েছে — আপনার টিকিটের সঙ্গে মিলিয়ে তারপর "মেলান" চাপুন।</string>
+    <string name="scan_none">টিকিট নম্বর পড়া গেল না। ভালো আলোয় আবার চেষ্টা করুন বা নম্বর লিখুন।</string>
+    <string name="check_button">মেলান</string>
+    <string name="scan_button">টিকিট স্ক্যান</string>
+    <string name="only_date">শুধু %1$s (সব দেখতে ট্যাপ করুন)</string>
+    <string name="no_win_title">%1$s: কোনো পুরস্কার নেই</string>
+    <plurals name="no_win_body">
+        <item quantity="one">গত 7 দিনের %1$dটি রেজাল্টের সঙ্গে মেলানো হয়েছে।</item>
+        <item quantity="other">গত 7 দিনের %1$dটি রেজাল্টের সঙ্গে মেলানো হয়েছে।</item>
+    </plurals>
+    <string name="need_5_digits">প্রথম, সান্ত্বনা ও দ্বিতীয় পুরস্কার মেলাতে পুরো 5টি সংখ্যা (সিরিয়াল ও অক্ষর সহ) লিখুন।</string>
+    <string name="you_won">অভিনন্দন! আপনি জিতেছেন</string>
+    <string name="maybe_first">প্রথম পুরস্কারের মতো একই সংখ্যা!</string>
+    <string name="also_matches">এটিও মিলেছে: %1$s</string>
+    <string name="save_title">রেজাল্ট বেরোলে অ্যালার্ট পেতে এই টিকিট সেভ করুন</string>
+    <string name="save_button">%1$s-এর জন্য সেভ করুন</string>
+    <string name="saved_ok">সেভ হয়েছে। আমরা নিজে থেকেই মিলিয়ে দেখব।</string>
+
+    <string name="scan_aim">টিকিট নম্বরটি বাক্সের ভিতরে রাখুন</string>
+    <string name="scan_need_camera">স্ক্যান করতে ক্যামেরার অনুমতি দরকার। আপনি ছবিও বেছে নিতে পারেন।</string>
+    <string name="cancel">বাতিল</string>
+    <string name="pick_photo">ছবি বাছুন</string>
+
+    <string name="tickets_title">আমার টিকিট</string>
+    <string name="tickets_hint">রেজাল্ট প্রকাশ হলে সেভ করা টিকিট নিজে থেকেই মেলানো হয়।</string>
+    <string name="tickets_empty">এখনও কোনো টিকিট সেভ করা নেই। টিকিট মেলান এবং "সেভ" চাপুন।</string>
+    <string name="ticket_waiting">রেজাল্টের অপেক্ষা</string>
+    <string name="ticket_won">জিতেছে: %1$s · %2$s</string>
+    <string name="ticket_no_prize">কোনো পুরস্কার নেই</string>
+    <string name="remove">সরান</string>
+
+    <string name="language">ভাষা</string>
+    <string name="sources_title">রেজাল্টের উৎস</string>
+    <string name="sources_body">প্রতিটি ড্রয়ের কয়েক মিনিট পরে লটারি সংবাদের রেজাল্ট শিট থেকে দ্রুত রেজাল্ট আসে। সরকারি গেজেট প্রকাশিত হলে আমরা দুটো মিলিয়ে দেখি এবং মিলে গেলে "যাচাই করা" চিহ্ন দিই।</string>
+    <string name="privacy_title">গোপনীয়তা</string>
+    <string name="privacy_body">কোনো অ্যাকাউন্ট লাগে না। সেভ করা টিকিট আপনার ফোনেই থাকে। টিকিটের ছবি আপনার ফোনেই পড়া হয় এবং এই অ্যাপ কখনও তা আপলোড করে না।</string>
+</resources>

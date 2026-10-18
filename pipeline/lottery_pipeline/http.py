@@ -1,0 +1,27 @@
+from __future__ import annotations
+
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+UA = "Mozilla/5.0 (Linux; Android 14) DearResultBot/0.1 (+results mirror; contact via GitHub)"
+
+
+def get_bytes(url: str, data: dict | None = None, retries: int = 3, timeout: int = 40) -> bytes | None:
+    """GET (or POST form when `data` is given). Returns None on HTTP 404."""
+    body = urllib.parse.urlencode(data).encode() if data is not None else None
+    last: Exception | None = None
+    for attempt in range(retries):
+        req = urllib.request.Request(url, data=body, headers={"User-Agent": UA})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return None
+            last = e
+        except (urllib.error.URLError, TimeoutError) as e:
+            last = e
+        time.sleep(2 ** attempt)
+    raise RuntimeError(f"GET {url} failed: {last}")
