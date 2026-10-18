@@ -1,7 +1,11 @@
-# Collects Dear lottery results and publishes static JSON to the `data` branch, which the app
-# reads from raw.githubusercontent.com (CDN). Times are UTC; IST = UTC+5:30.
+# Collects Dear lottery results and publishes static JSON (schema v2) to the `data` branch.
+# The app reads it from GitHub Pages first (enable: Settings > Pages > Deploy from branch `data`, / root),
+# then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages (see the last step).
+#
+# Times are UTC; IST = UTC+5:30.
 #   1 PM IST draw -> 07:35-08:55 UTC   6 PM IST -> 12:35-13:55 UTC   8 PM IST -> 14:35-15:55 UTC
-# The official gazette appears ~20:30 IST (15:00 UTC); a 03:00 UTC run re-checks yesterday.
+# The official gazette appears ~20:30 IST (15:00 UTC); a 03:00 UTC run re-checks yesterday ("deep").
+# GitHub may start scheduled runs several minutes late; see docs/OPERATIONS.md.
 name: results
 
 on:
@@ -15,8 +19,12 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
-      official:
-        description: "Also OCR the official gazette"
+      backfill_days:
+        description: "Days of history to (re)fetch (Sambad keeps ~30)"
+        type: number
+        default: 1
+      ocr:
+        description: "OCR the official gazette to verify"
         type: boolean
         default: true
 
@@ -30,7 +38,10 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      # Secrets cannot be tested in `if:` directly; expose whether one is set.
+      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -44,20 +55,23 @@ jobs:
             git worktree add --orphan -b data public
           fi
 
-      - name: Decide whether to OCR the gazette
+      - name: Decide run mode
         id: mode
         run: |
           hour=$(date -u +%H)
-          if [ "${{ inputs.official }}" = "true" ] || [ "$hour" = "15" ] || [ "$hour" = "03" ]; then
-            echo "official=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "official=false" >> "$GITHUB_OUTPUT"
+          deep=false; ocr=false; backfill=1
+          if [ "$hour" = "15" ] || [ "$hour" = "03" ]; then deep=true; ocr=true; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            deep=true; ocr="${{ inputs.ocr }}"; backfill="${{ inputs.backfill_days }}"
           fi
+          echo "deep=$deep" >> "$GITHUB_OUTPUT"
+          echo "ocr=$ocr" >> "$GITHUB_OUTPUT"
+          echo "backfill=$backfill" >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
           pkgs="poppler-utils"
-          if [ "${{ steps.mode.outputs.official }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
+          if [ "${{ steps.mode.outputs.ocr }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
           sudo apt-get update -qq && sudo apt-get install -y -qq $pkgs
           pip install -q pillow pytest
 
@@ -68,15 +82,34 @@ jobs:
       - name: Fetch and build JSON
         working-directory: pipeline
         run: |
-          args="--out ../public"
-          if [ "${{ steps.mode.outputs.official }}" != "true" ]; then args="$args --no-official"; fi
+          args="--out ../public --backfill-days ${{ steps.mode.outputs.backfill }}"
+          if [ "${{ steps.mode.outputs.deep }}" = "true" ]; then args="$args --deep"; fi
+          if [ "${{ steps.mode.outputs.ocr }}" != "true" ]; then args="$args --no-ocr"; fi
           python -m lottery_pipeline.build $args
 
-      - name: Publish
+      - name: Static site files
+        run: |
+          touch public/.nojekyll                      # serve files as-is on GitHub Pages
+          cp docs/privacy.html public/privacy.html    # privacy policy URL used by the app and Play listing
+          cp docs/_headers public/_headers            # cache rules for Cloudflare Pages (ignored by GitHub)
+
+      - name: Publish to data branch
+        id: publish
         working-directory: public
         run: |
           git add -A
-          if git diff --cached --quiet; then echo "no changes"; exit 0; fi
+          if git diff --cached --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           git -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
             commit -q -m "results $(date -u +%FT%TZ)"
           git push origin data
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # Optional production CDN. Create a Cloudflare Pages project, then add repository secrets
+      # CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and variable CF_PAGES_PROJECT; put its custom
+      # domain first in pipeline/app_config.json "mirrors".
+      - name: Deploy to Cloudflare Pages
+        if: steps.publish.outputs.changed == 'true' && env.HAS_CF == 'true' && vars.CF_PAGES_PROJECT != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4.147.0 pages deploy public --project-name "${{ vars.CF_PAGES_PROJECT }}" --branch main --commit-dirty=true

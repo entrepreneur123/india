@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Machine-assisted translation: have a native speaker review before release. -->
+<!-- Hindi. Machine-assisted translation: have a native speaker review before release. -->
 <resources>
     <string name="tab_results">रिज़ल्ट</string>
     <string name="tab_check">टिकट जाँचें</string>
     <string name="tab_tickets">मेरे टिकट</string>
-    <string name="tab_more">और</string>
+    <string name="tab_info">जानकारी</string>
 
     <string name="disclaimer_title">ज़रूरी जानकारी</string>
-    <string name="disclaimer_body">LottoDost एक स्वतंत्र ऐप है। इसका नागालैंड सरकार, सिक्किम सरकार या किसी भी लॉटरी विभाग से कोई संबंध नहीं है। हम टिकट नहीं बेचते और कभी पैसे नहीं माँगते। रिज़ल्ट सार्वजनिक स्रोतों से लिए जाते हैं — इनाम का दावा करने से पहले हमेशा आधिकारिक रिज़ल्ट से मिलान करें। हर राज्य में लॉटरी टिकट खरीदना अनुमत नहीं है। केवल वयस्कों (18+) के लिए।</string>
+    <string name="disclaimer_body">LottoDost एक स्वतंत्र ऐप है। इसका नागालैंड सरकार, सिक्किम सरकार, पंजाब सरकार या किसी भी लॉटरी विभाग से कोई संबंध नहीं है। हम टिकट नहीं बेचते और कभी पैसे नहीं माँगते। रिज़ल्ट सार्वजनिक स्रोतों से लिए जाते हैं — इनाम का दावा करने से पहले हमेशा आधिकारिक रिज़ल्ट से मिलान करें। हर राज्य में लॉटरी टिकट खरीदना अनुमत नहीं है। केवल वयस्कों (18+) के लिए।</string>
     <string name="disclaimer_ok">मैं समझ गया/गई</string>
+    <string name="safety_title">सावधान रहें</string>
+    <string name="safety_body">कोई भी ऐप, एजेंट या WhatsApp ग्रुप लॉटरी नंबर पहले से नहीं बता सकता और न ही फ़िक्स कर सकता है। LottoDost कभी टिकट नहीं बेचता और कभी पैसे, बैंक या UPI जानकारी नहीं माँगता। “पक्का नंबर” वाले हर ऑफ़र को धोखा समझें।</string>
 
     <string name="results_subtitle">डियर लॉटरी रिज़ल्ट · 1 PM · 6 PM · 8 PM</string>
     <string name="offline_banner">इंटरनेट नहीं है। सेव किए गए रिज़ल्ट दिखा रहे हैं।</string>
+    <string name="checking">नए रिज़ल्ट देख रहे हैं…</string>
+    <string name="updated_just_now">अभी अपडेट हुआ</string>
+    <string name="updated_min_ago">%1$d मिनट पहले अपडेट हुआ</string>
+    <string name="update_required">यह वर्ज़न बहुत पुराना है और रिज़ल्ट सही नहीं दिखा सकता। कृपया अपडेट करें।</string>
+    <string name="update_available">ऐप का नया वर्ज़न उपलब्ध है।</string>
+    <string name="update_button">अपडेट करें</string>
+    <string name="open">खोलें</string>
+    <string name="ok">ठीक है</string>
+    <string name="upcoming_special">आने वाला ड्रॉ: %1$s, %2$s को</string>
     <string name="today">आज</string>
+    <string name="more_dates">और तारीख़ें</string>
+    <string name="no_draw_day">इस दिन कोई ड्रॉ नहीं हुआ।</string>
     <string name="source_note">स्रोत: lotterysambad.com और nagalandlotteries.com का आधिकारिक गज़ट। यह आधिकारिक ऐप नहीं है।</string>
     <string name="state_lottery">%1$s राज्य लॉटरी</string>
+    <string name="tag_morning">मॉर्निंग</string>
+    <string name="tag_day">डे</string>
+    <string name="tag_night">नाइट</string>
     <string name="verified">सत्यापित</string>
-    <string name="verified_long">आधिकारिक सरकारी रिज़ल्ट से मिलान हो गया है।</string>
+    <string name="verified_long">पहले और दूसरे इनाम के नंबर आधिकारिक सरकारी रिज़ल्ट से मेल खाते हैं।</string>
     <string name="first_prize">पहला इनाम</string>
     <string name="tap_full_result">सभी इनाम देखने के लिए टैप करें</string>
     <string name="pdf_only">आधिकारिक रिज़ल्ट PDF के रूप में उपलब्ध है।</string>
     <string name="open_official_pdf">आधिकारिक रिज़ल्ट (PDF) खोलें</string>
+    <string name="open_sheet">रिज़ल्ट शीट खोलें (लॉटरी संवाद)</string>
+    <string name="sheet_only">रिज़ल्ट शीट के रूप में उपलब्ध है।</string>
+    <string name="special_tag">विशेष ड्रॉ</string>
     <string name="draw_in">ड्रॉ %1$d घंटे %2$d मिनट में</string>
+    <string name="live">लाइव</string>
+    <string name="watch_live">लाइव ड्रॉ देखें</string>
     <string name="result_coming">रिज़ल्ट जल्द आ रहा है…</string>
+    <string name="result_delayed">सामान्य से ज़्यादा समय लग रहा है। शीट आमतौर पर ड्रॉ के 7–10 मिनट बाद आती है — हम जाँचते रहेंगे।</string>
     <string name="no_result">कोई रिज़ल्ट उपलब्ध नहीं</string>
 
     <string name="notif_channel">रिज़ल्ट और टिकट अलर्ट</string>
@@ -37,35 +59,41 @@
     <string name="tier_3">तीसरा इनाम</string>
     <string name="tier_4">चौथा इनाम</string>
     <string name="tier_5">पाँचवाँ इनाम</string>
+    <string name="tier_n">%1$dवाँ इनाम</string>
+    <string name="match_last4">आख़िरी 4 अंक मिलने चाहिए</string>
+    <string name="match_last5">आख़िरी 5 अंक मिलने चाहिए</string>
+    <string name="match_cons">पहले इनाम के 5 अंक, लेकिन दूसरा सीरियल या अक्षर</string>
 
     <string name="back">वापस</string>
-    <string name="share">शेयर करें</string>
+    <string name="share_text">टेक्स्ट में शेयर करें</string>
+    <string name="share_whatsapp">रिज़ल्ट फ़ोटो शेयर करें (WhatsApp)</string>
     <string name="share_footer">LottoDost ऐप से जाँचा गया। आधिकारिक रिज़ल्ट से मिलान करें।</string>
     <string name="draw_meta">%1$s · ड्रॉ नं. %2$s · टिकट ₹%3$d</string>
+    <string name="draw_meta_special">%1$s · टिकट ₹%2$d</string>
     <string name="ocr_caution">ये नंबर आधिकारिक स्कैन PDF से अपने-आप पढ़े गए हैं। दावा करने से पहले आधिकारिक PDF में ज़रूर जाँचें।</string>
     <string name="find_in_result">इस रिज़ल्ट में अपना नंबर खोजें</string>
     <string name="claim_title">इनाम का दावा कैसे करें</string>
     <string name="claim_info">नागालैंड लॉटरी में ₹10,000 से ज़्यादा के इनाम का दावा ड्रॉ के 30 दिनों के भीतर नागालैंड राज्य लॉटरी निदेशालय, कोहिमा या उसके नोडल कार्यालयों में मूल टिकट और 3 सत्यापित पासपोर्ट फ़ोटो के साथ करना होता है (जैसा आधिकारिक रिज़ल्ट में छपा है)। छोटे इनाम के लिए अपने टिकट विक्रेता से पूछें। बड़े इनाम पर टैक्स काटा जाता है।</string>
-
     <string name="claim_small">₹10,000 तक के इनाम: जहाँ से टिकट खरीदा, उस विक्रेता या स्टॉकिस्ट से पूछें। पहले आधिकारिक रिज़ल्ट से मिलान करें।</string>
+    <string name="claim_other_state">सिक्किम और पंजाब के ड्रॉ के लिए अपने टिकट और आधिकारिक रिज़ल्ट पर छपे दावे के निर्देश मानें। पहले अपने विक्रेता से पूछें।</string>
 
     <string name="check_title">अपना टिकट जाँचें</string>
-    <string name="check_hint">पूरा नंबर (जैसे 39C 06366) या आख़िरी 4–5 अंक लिखें, या टिकट स्कैन करें।</string>
+    <string name="check_hint">पूरा नंबर (जैसे 39C 06366, बंपर A 801021) या आख़िरी 4–6 अंक लिखें, या टिकट स्कैन करें।</string>
     <string name="ticket_number">टिकट नंबर</string>
-    <string name="ticket_invalid">ऐसे लिखें: 39C 06366, 06366 या 6366</string>
-    <string name="scan_confirm">फ़ोटो से पढ़ा गया — अपने टिकट से मिलाएँ, फिर "जाँचें" दबाएँ।</string>
+    <string name="ticket_invalid">ऐसे लिखें: 39C 06366, A 801021, 06366 या 6366</string>
+    <string name="scan_confirm">फ़ोटो से पढ़ा गया — अपने टिकट से मिलाएँ, फिर “जाँचें” दबाएँ।</string>
     <string name="scan_none">टिकट नंबर नहीं पढ़ा जा सका। अच्छी रोशनी में फिर कोशिश करें या नंबर लिखें।</string>
     <string name="check_button">जाँचें</string>
     <string name="scan_button">टिकट स्कैन करें</string>
     <string name="only_date">केवल %1$s (सभी दिखाने के लिए टैप करें)</string>
     <string name="no_win_title">%1$s: कोई इनाम नहीं</string>
     <plurals name="no_win_body">
-        <item quantity="one">पिछले 7 दिनों के %1$d रिज़ल्ट से जाँचा गया।</item>
-        <item quantity="other">पिछले 7 दिनों के %1$d रिज़ल्ट से जाँचा गया।</item>
+        <item quantity="one">%1$d रिज़ल्ट से जाँचा गया।</item>
+        <item quantity="other">%1$d रिज़ल्ट से जाँचा गया।</item>
     </plurals>
-    <string name="need_5_digits">पहला, सांत्वना और दूसरा इनाम जाँचने के लिए पूरे 5 अंक (सीरियल और अक्षर के साथ) लिखें।</string>
+    <string name="need_full_number">पहला, सांत्वना और दूसरा इनाम भी जाँचने के लिए पूरा टिकट नंबर (सीरियल और अक्षर के साथ) लिखें।</string>
     <string name="you_won">बधाई हो! आप जीते</string>
-    <string name="maybe_first">पहले इनाम जैसे ही अंक!</string>
+    <string name="maybe_first">बड़े इनाम जैसे ही अंक!</string>
     <string name="also_matches">यह भी मिला: %1$s</string>
     <string name="save_title">रिज़ल्ट आने पर अलर्ट पाने के लिए यह टिकट सेव करें</string>
     <string name="save_button">%1$s के लिए सेव करें</string>
@@ -78,15 +106,30 @@
 
     <string name="tickets_title">मेरे टिकट</string>
     <string name="tickets_hint">रिज़ल्ट आने पर सेव किए गए टिकट अपने-आप जाँचे जाते हैं।</string>
-    <string name="tickets_empty">अभी कोई टिकट सेव नहीं है। टिकट जाँचें और "सेव" दबाएँ।</string>
+    <string name="tickets_empty">अभी कोई टिकट सेव नहीं है। टिकट जाँचें और “सेव” दबाएँ।</string>
     <string name="ticket_waiting">रिज़ल्ट का इंतज़ार</string>
     <string name="ticket_won">जीता: %1$s · %2$s</string>
     <string name="ticket_no_prize">कोई इनाम नहीं</string>
     <string name="remove">हटाएँ</string>
 
+    <string name="info_title">लॉटरी गाइड</string>
+    <string name="info_schedule">आज के ड्रॉ</string>
+    <string name="info_slot_meta">%1$s · ₹%2$d · टिकट जैसे %3$s</string>
+    <string name="info_schedule_note">रिज़ल्ट आमतौर पर हर ड्रॉ के 7–10 मिनट बाद आता है। कुछ छुट्टियों पर ड्रॉ नहीं होता (जैसे 2 अक्टूबर 2026)।</string>
+    <string name="info_week_names">दिन के हिसाब से गेम के नाम</string>
+    <string name="info_laxmi_legend">L = डियर लक्ष्मी (4 अंकों का गेम, 8 PM)</string>
+    <string name="info_prizes">इनाम तालिका</string>
+    <string name="info_prizes_pending">पहला रिज़ल्ट लोड होने के बाद दिखेगा।</string>
+    <string name="info_ticket_title">अपना टिकट कैसे पढ़ें</string>
+    <string name="info_ticket_body">39 = सीरियल (34–99) · C = सीरीज़ अक्षर (A B C D E G H J K L — F और I कभी नहीं) · 06366 = नंबर।\n• पहला इनाम: पूरा नंबर मिलना चाहिए।\n• सांत्वना इनाम: पहले इनाम के 5 अंक, कोई दूसरा सीरियल या अक्षर।\n• दूसरा इनाम: आख़िरी 5 अंक।\n• तीसरा, चौथा और पाँचवाँ इनाम: आख़िरी 4 अंक।\nडियर लक्ष्मी टिकट (10–29 + 4 अंक) 4 अंकों पर जीतते हैं। बंपर टिकट (जैसे A 801021) की अपनी इनाम तालिका होती है — रिज़ल्ट देखें।</string>
+    <string name="info_upcoming">आने वाले विशेष ड्रॉ</string>
+    <string name="official_results">आधिकारिक रिज़ल्ट (नागालैंड)</string>
+    <string name="settings">सेटिंग</string>
     <string name="language">भाषा</string>
+    <string name="notify_results">रिज़ल्ट आने पर सूचना दें</string>
     <string name="sources_title">रिज़ल्ट के स्रोत</string>
-    <string name="sources_body">तेज़ रिज़ल्ट हर ड्रॉ के कुछ मिनट बाद लॉटरी संवाद रिज़ल्ट शीट से आते हैं। सरकारी गज़ट आने पर हम दोनों का मिलान करते हैं और मेल खाने वाले रिज़ल्ट को "सत्यापित" दिखाते हैं।</string>
+    <string name="sources_body">तेज़ रिज़ल्ट हर ड्रॉ के कुछ मिनट बाद लॉटरी संवाद रिज़ल्ट शीट से आते हैं। सरकारी गज़ट आने पर हम मिलान करते हैं और पहले व दूसरे इनाम के नंबर मेल खाने पर रिज़ल्ट को “सत्यापित” दिखाते हैं।</string>
     <string name="privacy_title">गोपनीयता</string>
-    <string name="privacy_body">कोई अकाउंट ज़रूरी नहीं। सेव किए गए टिकट आपके फ़ोन में ही रहते हैं। टिकट की फ़ोटो आपके फ़ोन पर ही पढ़ी जाती है और यह ऐप उसे कभी अपलोड नहीं करता।</string>
+    <string name="privacy_body">कोई अकाउंट ज़रूरी नहीं। सेव किए गए टिकट आपके फ़ोन में ही रहते हैं। टिकट की फ़ोटो आपके फ़ोन पर ही पढ़ी जाती है और यह ऐप उसे कभी अपलोड नहीं करता। फ़ोन पर टेक्स्ट पढ़ने वाले टूल के लिए Google Play सेवाएँ बुनियादी डायग्नोस्टिक जानकारी ले सकती हैं।</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
 </resources>

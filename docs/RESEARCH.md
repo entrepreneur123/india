@@ -1,16 +1,20 @@
 # 리서치 · 벤치마킹 · 정책 정리 (2026-10-18 기준)
 
+> 2차 보완 작업의 실측, 버그, 법률 내용은 [REVIEW.md](REVIEW.md)에 있습니다.
+
 > 원칙: **직접 원본으로 확인한 사실**만 "확인됨"으로 적었습니다. 확인 못 한 항목은 `미확인`으로 표시했습니다.
 
 ## 1. 추첨 사실관계 (원본 PDF를 직접 받아 확인)
 
-출처: nagalandlotteries.com 공식 관보(`old_results/MN|EN|DG{DDMMYY}.PDF`, 2026-10-11 ~ 10-17)와
-lotterysambad.com 오늘 결과 PDF(`MN|DN181026.PDF`).
+출처는 다음 세 가지입니다.
+- nagalandlotteries.com 공식 관보: `old_results/MN|EN|DG{DDMMYY}.PDF`, 2026-10-11 ~ 10-18
+- lotterysambad.com 결과지: `fetchtoday.php`는 당일, `lotteryoldresultsdown.php`는 과거분이며 2026-09-18 ~ 10-18의 102개 결과지를 확인
+- 범퍼·월간 결과지: GH190926, MT031026
 
 | 시간 (IST) | 발행 주체 | 형식 | 티켓가 | 요일별 이름 (월→일) |
 |---|---|---|---|---|
 | 1:00 PM | **Nagaland** | `34–99` + 문자 + 5자리 (예: `39C 06366`) | ₹7 | Rise, Shine, Spark, Star, Victory, Vision, Wish |
-| 6:00 PM | **Sikkim** (Nagaland 아님) | 같음 | ₹7 | 예: 일요일 = Empire (다른 요일 이름은 `미확인`, 앱은 피드에서 이름을 받음) |
+| 6:00 PM | **Sikkim** (Nagaland 아님) | 같음 | ₹7 | Legend, Prestige, Regal, Supreme, Crown, Elite, Empire (Sambad 35일치로 확인) |
 | 8:00 PM | **Nagaland** | 같음 | ₹7 | Clover, Destiny, Dream, Fame, Horizon, Lucky, Magic |
 | 8:00 PM | **Nagaland "Dear Laxmi"** (2026-09-14 신규) | `10–29` + 4자리 | ₹12 | Gold, Silver, Diamond, Pearl, Platinum, Iron, Bronze |
 
@@ -34,11 +38,19 @@ lotterysambad.com 오늘 결과 PDF(`MN|DN181026.PDF`).
 
 **수령 규정 (관보 NOTE 원문)**: ₹10,000 초과 당첨은 추첨일로부터 **30일 이내**에 청구해야 합니다. 원본 티켓과 공증된 여권사진 3장을 갖고 Kohima의 Directorate나 각 주의 Nodal Office로 갑니다.
 
+### 특별 추첨 (결과지 이미지로 확인)
+
+| 추첨 | 주 | 티켓 | 형식 | 상금 |
+|---|---|---|---|---|
+| Dear Ganesh Chaturthi Bumper 2026 (2026-09-19 6 PM) | Sikkim | ₹500 | A 801021 | 1등 ₹3 Cr ×1, 2등 ₹10 L ×2, 3등 ₹5 L ×2, 4~6등 ₹9,000/5,000/3,000 (끝 4자리 ×10), 7등 ₹1,000 (끝 4자리 ×500) |
+| Punjab State Dear 200 Monthly (2026-10-03 6 PM) | Punjab | ₹200 | B 831461 | 1등 ₹1.5 Cr ×1, 2등 ₹10 L ×2, 3등 ₹5 L ×2, 4등 ₹9,000 (끝 **5**자리 ×10), 5~8등 ₹8,000/6,000/4,000/2,000 (끝 4자리 ×2/2/5/5), 9등 ₹300 (끝 4자리 ×500) |
+
 > `미확인`: 한 티켓이 여러 등수에 동시에 해당할 때 중복 수령이 되는지는 확인하지 못했습니다. 그래서 앱은 **최고 등수를 크게 보여주고** 나머지는 "also matches"로만 표시합니다.
 
 ### 결과가 올라오는 시점 (실측)
 
-- **lotterysambad.com**: 추첨 후 약 7~10분 뒤 올라옵니다. PDF에 **텍스트 레이어가 있어 OCR 없이 정확히 파싱**됩니다. 당일 파일만 받을 수 있습니다.
+- **lotterysambad.com**: 추첨 후 약 7~10분 뒤 올라옵니다. PDF에 **텍스트 레이어가 있어 OCR 없이 정확히 파싱**됩니다.
+  - 당일분은 `fetchtoday.php`, 과거분은 `lotteryoldresultsdown.php`로 받습니다. 약 1개월치가 남아 있습니다.
 - **nagalandlotteries.com (공식)**: 하루치가 **20:28 IST 전후에 한꺼번에** 올라옵니다(Last-Modified 헤더로 확인). **스캔 이미지 PDF**입니다.
   - Tesseract로 읽어 보니 굵은 밑줄 숫자를 실제로 잘못 읽었습니다: `7587→2587`, `7536→2536`, `1247→124Z7`.
   - 그래서 공식 관보의 OCR 결과는 **검증용으로만** 씁니다. 여러 번의 OCR 결과가 전부 일치할 때만 채택합니다.

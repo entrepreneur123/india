@@ -1,0 +1,47 @@
+{
+  "_comment": "Bumper / monthly draws. Prize table is copied by hand from the result sheet image (prizes are printed as images, not text). Counts must match the sheet exactly or the draw is not published. Add an entry before (or right after) each special draw; until then the app shows the sheet link only.",
+  "draws": [
+    {
+      "id": "SK_GANESH_BUMPER_2026",
+      "fileCode": "GH190926",
+      "date": "2026-09-19",
+      "time": "18:00",
+      "state": "Sikkim",
+      "name": "DEAR GANESH CHATURTHI BUMPER 2026 LOTTERY",
+      "format": "B6",
+      "price": 500,
+      "checkedFrom": "lotterysambad.com GH190926.PDF sheet image, 2026-10-18",
+      "tiers": [
+        {"rank": "1", "prize": 30000000, "match": "EXACT", "count": 1},
+        {"rank": "2", "prize": 1000000, "match": "EXACT", "count": 2},
+        {"rank": "3", "prize": 500000, "match": "EXACT", "count": 2},
+        {"rank": "4", "prize": 9000, "match": "LAST4", "count": 10},
+        {"rank": "5", "prize": 5000, "match": "LAST4", "count": 10},
+        {"rank": "6", "prize": 3000, "match": "LAST4", "count": 10},
+        {"rank": "7", "prize": 1000, "match": "LAST4", "count": 500}
+      ]
+    },
+    {
+      "id": "PB_DEAR200_MONTHLY_2026_10",
+      "fileCode": "MT031026",
+      "date": "2026-10-03",
+      "time": "18:00",
+      "state": "Punjab",
+      "name": "PUNJAB STATE DEAR 200 MONTHLY LOTTERY",
+      "format": "B6",
+      "price": 200,
+      "checkedFrom": "lotterysambad.com MT031026.PDF sheet image, 2026-10-18",
+      "tiers": [
+        {"rank": "1", "prize": 15000000, "match": "EXACT", "count": 1},
+        {"rank": "2", "prize": 1000000, "match": "EXACT", "count": 2},
+        {"rank": "3", "prize": 500000, "match": "EXACT", "count": 2},
+        {"rank": "4", "prize": 9000, "match": "LAST5", "count": 10},
+        {"rank": "5", "prize": 8000, "match": "LAST4", "count": 2},
+        {"rank": "6", "prize": 6000, "match": "LAST4", "count": 2},
+        {"rank": "7", "prize": 4000, "match": "LAST4", "count": 5},
+        {"rank": "8", "prize": 2000, "match": "LAST4", "count": 5},
+        {"rank": "9", "prize": 300, "match": "LAST4", "count": 500}
+      ]
+    }
+  ]
+}

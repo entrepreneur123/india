@@ -12,11 +12,21 @@ import kotlinx.serialization.json.Json
 data class SavedTicket(
     val number: String,      // as Ticket.display()
     val date: String,        // draw date yyyy-MM-dd
-    val slot: String,        // NL1PM, SK6PM, NL8PM, NLLAXMI
+    val slot: String,        // NL1PM, SK6PM, NL8PM, NLLAXMI or SPECIAL
     val addedAt: Long,
     val notified: Boolean = false,
 ) {
     val key: String get() = "${date}_${slot}_$number"
+
+    /** Published draws this ticket belongs to (special draws are matched by date: there may be several). */
+    fun findDraws(draws: Collection<Draw>): List<Draw> = draws.filter {
+        it.date == date && it.hasNumbers && (if (slot == SPECIAL) it.special else it.slot == slot)
+    }
+
+    companion object {
+        /** Bumper/monthly ticket: the draw id is only known once the result is published. */
+        const val SPECIAL = "SPECIAL"
+    }
 }
 
 class TicketStore private constructor(context: Context) {

@@ -87,9 +87,68 @@ class MatcherTest {
     }
 
     @Test fun invalidInputs() {
-        listOf("", "123", "123456", "33A 12345", "40F 12345", "40I 12345", "ABCDE").forEach {
+        listOf("", "123", "1234567", "33A 12345", "40F 12345", "40I 12345", "ABCDE", "A 12345").forEach {
             assertNull(it, TicketParser.parseManual(it))
         }
+    }
+
+    // Real Dear Ganesh Chaturthi Bumper 2026 (Sikkim, 19-09-2026, lotterysambad GH190926).
+    private val ganesh = Draw(
+        id = "2026-09-19_SK_GANESH_BUMPER_2026", slot = "SK_GANESH_BUMPER_2026", date = "2026-09-19", time = "18:00",
+        state = "Sikkim", name = "DEAR GANESH CHATURTHI BUMPER 2026 LOTTERY", format = "B6", price = 500, special = true,
+        tiers = listOf(
+            Tier("1", 3_00_00_000, "EXACT", listOf("A 801021")),
+            Tier("2", 10_00_000, "EXACT", listOf("A 981936", "B 900028")),
+            Tier("3", 5_00_000, "EXACT", listOf("A 875696", "A 928252")),
+            Tier("4", 9_000, "LAST4", listOf("0199", "0424")),
+            Tier("7", 1_000, "LAST4", listOf("0019", "0033")),
+        ),
+    )
+    // Real Punjab State Dear 200 Monthly (03-10-2026, MT031026): 4th prize on the last 5 digits.
+    private val punjab = Draw(
+        id = "2026-10-03_PB", slot = "PB_DEAR200_MONTHLY_2026_10", date = "2026-10-03", time = "18:00",
+        state = "Punjab", name = "PUNJAB STATE DEAR 200 MONTHLY LOTTERY", format = "B6", price = 200, special = true,
+        tiers = listOf(
+            Tier("1", 1_50_00_000, "EXACT", listOf("B 831461")),
+            Tier("4", 9_000, "LAST5", listOf("16110", "17006")),
+            Tier("5", 8_000, "LAST4", listOf("5713", "8337")),
+        ),
+    )
+
+    @Test fun bumperExactAndLowerTiers() {
+        assertEquals("1", best("A 801021", ganesh)!!.tier.rank)
+        assertEquals("1", best("a801021", ganesh)!!.tier.rank)
+        assertNull(best("B 801021", ganesh))                 // same digits, other series: no consolation here
+        assertEquals("2", best("B 900028", ganesh)!!.tier.rank)
+        assertEquals("4", best("C 120199", ganesh)!!.tier.rank)
+        assertEquals("7", best("0033", ganesh)!!.tier.rank)
+    }
+
+    @Test fun bumperSixDigitsOnlyAsksForSeries() {
+        val w = best("801021", ganesh)!!
+        assertEquals("1", w.tier.rank)
+        assertTrue(w.needsFullNumber)
+    }
+
+    @Test fun bumperTicketIsNotCheckedAgainstWeeklyDraws() {
+        assertNull(Matcher.check(TicketParser.parseManual("A 801021")!!, wish))
+        assertNull(Matcher.check(TicketParser.parseManual("74D 70698")!!, ganesh))
+    }
+
+    @Test fun monthlyLast5Tier() {
+        assertEquals("4", best("A 516110", punjab)!!.tier.rank)
+        assertEquals("5", best("Z 105713", punjab)!!.tier.rank)
+    }
+
+    @Test fun checkAllPutsWinsFirst() {
+        val checks = Matcher.checkAll(TicketParser.parseManual("1873")!!, listOf(laxmi, wish, ganesh))
+        assertEquals("NL1PM", checks.first().draw.slot)
+        assertEquals(3, checks.size)
+    }
+
+    @Test fun ocrReadsBumperTicketOnlyOnBumperTickets() {
+        assertEquals("A 801021", TicketParser.fromOcr("DEAR GANESH CHATURTHI BUMPER\nA 8O1021").tickets.first().display())
+        assertTrue(TicketParser.fromOcr("SOME TEXT A 801021").tickets.isEmpty())
     }
 
     @Test fun ocrExtractsTicketAndDate() {
@@ -123,11 +182,14 @@ class MatcherTest {
     @Test fun nativeDigitsAreAccepted() {
         assertEquals("74D 70698", TicketParser.parseManual("৭৪D ৭০৬৯৮")!!.display())
         assertEquals("1873", TicketParser.parseManual("१८७३")!!.display())
+        assertEquals("A 801021", TicketParser.parseManual("A ৮০১০২১")!!.display())
     }
 
     @Test fun rupeesUseIndianGrouping() {
         assertEquals("₹1,00,00,000", formatRupees(1_00_00_000))
         assertEquals("₹10,000", formatRupees(10_000))
         assertEquals("₹120", formatRupees(120))
+        assertEquals("8:00 PM", com.lottodost.app.ui.formatTime("20:00"))
+        assertEquals("garbage", com.lottodost.app.ui.formatTime("garbage"))   // external data never crashes the UI
     }
 }

@@ -44,18 +44,22 @@ fun TicketsScreen(
         }
         if (tickets.isEmpty()) item { Text(stringResource(R.string.tickets_empty), modifier = Modifier.padding(top = 24.dp)) }
         items(tickets, key = { it.key }) { t ->
-            val draw = draws.firstOrNull { it.date == t.date && it.slot == t.slot && it.hasNumbers }
-            val best = draw?.let { d -> TicketParser.parseManual(t.number)?.let { Matcher.check(it, d)?.best } }
-            val won = best != null
+            val ticket = TicketParser.parseManual(t.number)
+            val checks = if (ticket == null) emptyList() else t.findDraws(draws).mapNotNull { Matcher.check(ticket, it) }
+            val bestCheck = checks.maxByOrNull { it.best?.tier?.prize ?: -1L }
+            val best = bestCheck?.best
+            val draw = bestCheck?.draw ?: t.findDraws(draws).firstOrNull()
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = if (won) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant),
+                    containerColor = if (best != null) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth().then(if (draw != null) Modifier.clickable { onOpenDraw(draw) } else Modifier),
             ) {
                 Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(t.number, fontFamily = FontFamily.Monospace, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Text("${DrawSchedule.slot(t.slot)?.label ?: t.slot} · ${formatDate(t.date)}", style = MaterialTheme.typography.bodySmall)
+                        val label = if (t.slot == SavedTicket.SPECIAL) stringResource(R.string.special_tag)
+                        else DrawSchedule.slot(t.slot)?.label ?: t.slot
+                        Text("$label · ${formatDate(t.date)}", style = MaterialTheme.typography.bodySmall)
                         Text(
                             when {
                                 draw == null -> stringResource(R.string.ticket_waiting)

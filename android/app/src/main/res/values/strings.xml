@@ -5,25 +5,47 @@
     <string name="tab_results">Results</string>
     <string name="tab_check">Check</string>
     <string name="tab_tickets">My tickets</string>
-    <string name="tab_more">More</string>
+    <string name="tab_info">Guide</string>
 
     <string name="disclaimer_title">Important</string>
-    <string name="disclaimer_body">LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.</string>
+    <string name="disclaimer_body">LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.</string>
     <string name="disclaimer_ok">I understand</string>
+    <string name="safety_title">Stay safe</string>
+    <string name="safety_body">No app, agent or WhatsApp group can predict or fix lottery numbers. LottoDost never sells tickets and never asks for money, bank or UPI details. Treat any \"guaranteed number\" offer as fraud.</string>
 
     <string name="results_subtitle">Dear lottery results · 1 PM · 6 PM · 8 PM</string>
     <string name="offline_banner">No internet. Showing saved results.</string>
+    <string name="checking">Checking for new results…</string>
+    <string name="updated_just_now">Updated just now</string>
+    <string name="updated_min_ago">Updated %1$d min ago</string>
+    <string name="update_required">This version is too old to show results correctly. Please update.</string>
+    <string name="update_available">A new version of the app is available.</string>
+    <string name="update_button">Update</string>
+    <string name="open">Open</string>
+    <string name="ok">OK</string>
+    <string name="upcoming_special">Coming up: %1$s on %2$s</string>
     <string name="today">Today</string>
+    <string name="more_dates">More dates</string>
+    <string name="no_draw_day">No draw was held on this day.</string>
     <string name="source_note">Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.</string>
     <string name="state_lottery">%1$s State Lottery</string>
+    <string name="tag_morning">Morning</string>
+    <string name="tag_day">Day</string>
+    <string name="tag_night">Night</string>
     <string name="verified">Verified</string>
-    <string name="verified_long">Matched with the official government result.</string>
+    <string name="verified_long">1st and 2nd prize numbers match the official government result.</string>
     <string name="first_prize">1st Prize</string>
     <string name="tap_full_result">Tap to see all prizes</string>
     <string name="pdf_only">The official result is available as a PDF.</string>
     <string name="open_official_pdf">Open official result (PDF)</string>
+    <string name="open_sheet">Open result sheet (Lottery Sambad)</string>
+    <string name="sheet_only">The result is available as a sheet.</string>
+    <string name="special_tag">Special draw</string>
     <string name="draw_in">Draw in %1$d h %2$d min</string>
+    <string name="live">LIVE</string>
+    <string name="watch_live">Watch live draw</string>
     <string name="result_coming">Result coming soon…</string>
+    <string name="result_delayed">Taking longer than usual. The sheet normally appears 7–10 minutes after the draw — we keep checking.</string>
     <string name="no_result">No result available</string>
 
     <string name="notif_channel">Results and ticket alerts</string>
@@ -38,22 +60,28 @@
     <string name="tier_3">3rd Prize</string>
     <string name="tier_4">4th Prize</string>
     <string name="tier_5">5th Prize</string>
+    <string name="tier_n">%1$dth Prize</string>
+    <string name="match_last4">Match the last 4 digits</string>
+    <string name="match_last5">Match the last 5 digits</string>
+    <string name="match_cons">Same 5 digits as the 1st Prize, other serial or letter</string>
 
     <string name="back">Back</string>
-    <string name="share">Share</string>
+    <string name="share_text">Share as text</string>
+    <string name="share_whatsapp">Share result image (WhatsApp)</string>
     <string name="share_footer">Checked with the LottoDost app. Verify with the official result.</string>
     <string name="draw_meta">%1$s · Draw No. %2$s · Ticket ₹%3$d</string>
+    <string name="draw_meta_special">%1$s · Ticket ₹%2$d</string>
     <string name="ocr_caution">These numbers were read automatically from the official scanned PDF. Please confirm on the official PDF before claiming.</string>
     <string name="find_in_result">Find my number in this result</string>
     <string name="claim_title">How to claim a prize</string>
     <string name="claim_info">Nagaland prizes above ₹10,000 must be claimed within 30 days of the draw at the Directorate of Nagaland State Lotteries, Kohima, or its nodal offices, with the original ticket and 3 attested passport photos (as printed on the official result). Ask your ticket seller about smaller prizes. Tax is deducted on large prizes.</string>
-
     <string name="claim_small">Prizes up to ₹10,000: ask the seller or stockist where you bought the ticket. Verify with the official result first.</string>
+    <string name="claim_other_state">For Sikkim and Punjab draws, follow the claim instructions printed on your ticket and on the official result. Ask your seller first.</string>
 
     <string name="check_title">Check your ticket</string>
-    <string name="check_hint">Type the full number (e.g. 39C 06366) or the last 4–5 digits, or scan the ticket.</string>
+    <string name="check_hint">Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket.</string>
     <string name="ticket_number">Ticket number</string>
-    <string name="ticket_invalid">Enter like 39C 06366, 06366 or 6366</string>
+    <string name="ticket_invalid">Enter like 39C 06366, A 801021, 06366 or 6366</string>
     <string name="scan_confirm">Read from photo — please check it matches your ticket, then tap Check.</string>
     <string name="scan_none">Could not read a ticket number. Try again in good light, or type it.</string>
     <string name="check_button">Check</string>
@@ -61,12 +89,12 @@
     <string name="only_date">Only %1$s (tap to show all)</string>
     <string name="no_win_title">%1$s: no prize</string>
     <plurals name="no_win_body">
-        <item quantity="one">Checked against %1$d result from the last 7 days.</item>
-        <item quantity="other">Checked against %1$d results from the last 7 days.</item>
+        <item quantity="one">Checked against %1$d result.</item>
+        <item quantity="other">Checked against %1$d results.</item>
     </plurals>
-    <string name="need_5_digits">Enter all 5 digits (with serial and letter) to check the 1st, Consolation and 2nd prizes too.</string>
+    <string name="need_full_number">Enter the full ticket number (with serial and letter) to check the 1st, Consolation and 2nd prizes too.</string>
     <string name="you_won">Congratulations! You won</string>
-    <string name="maybe_first">Same digits as the 1st Prize!</string>
+    <string name="maybe_first">Same digits as a top prize!</string>
     <string name="also_matches">Also matches: %1$s</string>
     <string name="save_title">Save this ticket to get an alert when the result is out</string>
     <string name="save_button">Save for %1$s</string>
@@ -85,9 +113,24 @@
     <string name="ticket_no_prize">No prize</string>
     <string name="remove">Remove</string>
 
+    <string name="info_title">Lottery guide</string>
+    <string name="info_schedule">Today\'s draws</string>
+    <string name="info_slot_meta">%1$s · ₹%2$d · ticket like %3$s</string>
+    <string name="info_schedule_note">Results usually appear 7–10 minutes after each draw. There is no draw on some holidays (for example 2 October 2026).</string>
+    <string name="info_week_names">Game names by day</string>
+    <string name="info_laxmi_legend">L = Dear Laxmi (4-digit game, 8 PM)</string>
+    <string name="info_prizes">Prize table</string>
+    <string name="info_prizes_pending">Shown after the first result is loaded.</string>
+    <string name="info_ticket_title">How to read your ticket</string>
+    <string name="info_ticket_body">39 = serial (34–99) · C = series letter (A B C D E G H J K L — never F or I) · 06366 = number.\n• 1st Prize: the whole number must match.\n• Consolation: same 5 digits as the 1st Prize, any other serial or letter.\n• 2nd Prize: last 5 digits.\n• 3rd, 4th and 5th Prizes: last 4 digits.\nDear Laxmi tickets (10–29 + 4 digits) win on the 4 digits. Bumper tickets (e.g. A 801021) have their own prize table — see the result.</string>
+    <string name="info_upcoming">Upcoming special draws</string>
+    <string name="official_results">Official results (Nagaland)</string>
+    <string name="settings">Settings</string>
     <string name="language">Language</string>
+    <string name="notify_results">Notify me when results are out</string>
     <string name="sources_title">Result sources</string>
-    <string name="sources_body">Fast results come from the Lottery Sambad result sheet minutes after each draw. When the government gazette is published, we compare both and mark matching results as Verified.</string>
+    <string name="sources_body">Fast results come from the Lottery Sambad result sheet minutes after each draw. When the government gazette is published, we compare them and mark a result Verified when its 1st and 2nd prize numbers match.</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_body">No account needed. Saved tickets stay on your phone. Ticket photos are read on your phone and are never uploaded by this app.</string>
+    <string name="privacy_body">No account needed. Saved tickets stay on your phone. Ticket photos are read on your phone and are never uploaded by this app. Google Play services may collect basic diagnostics for the on-device text reader.</string>
+    <string name="privacy_policy">Privacy policy</string>
 </resources>

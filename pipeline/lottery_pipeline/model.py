@@ -1,25 +1,32 @@
 """Result data model, prize schemes and structural validation.
 
 Every number published to the app must pass `validate()`. Prize amounts and
-tier sizes below were transcribed from the official gazettes
-(nagalandlotteries.com/old_results/*171026.PDF, 17 Oct 2026) and the Sikkim
-6 PM sheet on lotterysambad.com (18 Oct 2026). If a scheme changes, the
-structural checks fail loudly instead of silently publishing wrong data.
+tier sizes were transcribed from the official gazettes
+(nagalandlotteries.com/old_results/*171026.PDF) and lotterysambad.com sheets,
+and checked against 35 days of real sheets (Sep-Oct 2026). If a scheme
+changes, the structural checks fail loudly instead of publishing wrong data.
 """
 from __future__ import annotations
 
+import json
+import os
 import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 
 # Match rules understood by the Android app (keep in sync with Matcher.kt).
-FULL = "FULL"          # serial + series letter + 5 digits, exact
-CONS = "CONS"          # same 5 digits as 1st prize, any other serial/series
-LAST5 = "LAST5"        # last 5 digits, all serials/series
-LAST4 = "LAST4"        # last 4 digits, all serials/series
+FULL = "FULL"      # Dear 5-digit: serial + series letter + 5 digits, exact
+CONS = "CONS"      # same 5 digits as 1st prize, any other serial/series
+EXACT = "EXACT"    # whole ticket number, e.g. bumper "A 801021"
+LAST5 = "LAST5"    # last 5 digits, all serials/series
+LAST4 = "LAST4"    # last 4 digits, all serials/series
+MATCHES = {FULL, CONS, EXACT, LAST5, LAST4}
 
 # Series letters printed on Dear 5-digit tickets (F and I are never used).
 D5_LETTERS = "ABCDEGHJKL"
 FIRST_PRIZE_RE = re.compile(r"^(\d{2})\s*([%s])\s*(\d{5})$" % D5_LETTERS)
+# Ticket formats: D5 "39C 06366", D4 "12 3456" (Dear Laxmi), B6 "A 801021" (bumpers/monthly).
+EXACT_RE = {"B6": re.compile(r"^[A-Z]{1,2} \d{6}$")}
+DIGITS = {"D5": 5, "D4": 4, "B6": 6}
 
 
 @dataclass(frozen=True)
@@ -28,13 +35,16 @@ class TierSpec:
     prize: int          # rupees, for the winner (seller commission excluded)
     match: str
     count: int          # how many winning numbers are drawn for this tier
-    digits: int
+
+    @property
+    def digits(self) -> int:
+        return {LAST4: 4, LAST5: 5, CONS: 5}.get(self.match, 0)
 
 
 @dataclass(frozen=True)
 class Scheme:
     id: str
-    ticket_format: str  # "D5" = 34A 12345, "D4" = 12 3456
+    ticket_format: str  # D5 | D4 | B6
     price: int
     tiers: tuple[TierSpec, ...]
 
@@ -44,12 +54,12 @@ DEAR_D5 = Scheme(
     ticket_format="D5",
     price=7,
     tiers=(
-        TierSpec("1", 1_00_00_000, FULL, 1, 5),
-        TierSpec("CONS", 1_000, CONS, 1, 5),
-        TierSpec("2", 10_000, LAST5, 10, 5),
-        TierSpec("3", 500, LAST4, 10, 4),
-        TierSpec("4", 250, LAST4, 10, 4),
-        TierSpec("5", 120, LAST4, 100, 4),
+        TierSpec("1", 1_00_00_000, FULL, 1),
+        TierSpec("CONS", 1_000, CONS, 1),
+        TierSpec("2", 10_000, LAST5, 10),
+        TierSpec("3", 500, LAST4, 10),
+        TierSpec("4", 250, LAST4, 10),
+        TierSpec("5", 120, LAST4, 100),
     ),
 )
 
@@ -58,11 +68,11 @@ DEAR_LAXMI_D4 = Scheme(
     ticket_format="D4",
     price=12,
     tiers=(
-        TierSpec("1", 10_000, LAST4, 1, 4),
-        TierSpec("2", 5_000, LAST4, 1, 4),
-        TierSpec("3", 1_000, LAST4, 5, 4),
-        TierSpec("4", 500, LAST4, 5, 4),
-        TierSpec("5", 100, LAST4, 360, 4),
+        TierSpec("1", 10_000, LAST4, 1),
+        TierSpec("2", 5_000, LAST4, 1),
+        TierSpec("3", 1_000, LAST4, 5),
+        TierSpec("4", 500, LAST4, 5),
+        TierSpec("5", 100, LAST4, 360),
     ),
 )
 
@@ -70,14 +80,20 @@ DEAR_LAXMI_D4 = Scheme(
 @dataclass(frozen=True)
 class Slot:
     id: str
-    file_code: str      # prefix used by both result websites, e.g. MN171026.PDF
+    file_code: str      # weekly: 2-letter prefix (MN171026.PDF); special: full stem (GH190926)
     state: str
     time: str           # draw time, IST, HH:MM
     scheme: Scheme
     label: str
+    date: str | None = None    # specials only: the single draw date
+    name: str | None = None    # specials only: printed name
+
+    @property
+    def special(self) -> bool:
+        return self.date is not None
 
 
-SLOTS: dict[str, Slot] = {
+WEEKLY: dict[str, Slot] = {
     s.id: s
     for s in (
         Slot("NL1PM", "MN", "Nagaland", "13:00", DEAR_D5, "Dear 1 PM"),
@@ -86,6 +102,31 @@ SLOTS: dict[str, Slot] = {
         Slot("NLLAXMI", "DG", "Nagaland", "20:00", DEAR_LAXMI_D4, "Dear Laxmi 8 PM"),
     )
 }
+
+SPECIALS_FILE = os.path.join(os.path.dirname(__file__), "..", "specials.json")
+
+
+def _load_specials(path: str = SPECIALS_FILE) -> dict[str, Slot]:
+    """Bumper/monthly draws. Each has its own prize table, entered by hand from the sheet."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            raw = json.load(f)
+    except FileNotFoundError:
+        return {}
+    out = {}
+    for e in raw["draws"]:
+        tiers = tuple(TierSpec(t["rank"], int(t["prize"]), t["match"], int(t["count"])) for t in e["tiers"])
+        for t in tiers:
+            if t.match not in MATCHES:
+                raise ValueError(f"{e['id']}: unknown match {t.match}")
+        scheme = Scheme(e["id"], e["format"], int(e["price"]), tiers)
+        out[e["id"]] = Slot(e["id"], e["fileCode"], e["state"], e["time"], scheme,
+                            e["name"].title(), date=e["date"], name=e["name"])
+    return out
+
+
+SPECIALS = _load_specials()
+SLOTS: dict[str, Slot] = {**WEEKLY, **SPECIALS}
 
 
 class ValidationError(ValueError):
@@ -129,6 +170,7 @@ class Draw:
             "drawNo": self.draw_no,
             "format": slot.scheme.ticket_format,
             "price": slot.scheme.price,
+            "special": slot.special,
             "verified": self.verified,
             "tiers": [asdict(t) for t in self.tiers],
             "sources": self.sources,
@@ -152,7 +194,7 @@ def build_tiers(scheme: Scheme, raw: dict[str, list[str]]) -> list[Tier]:
     tiers = []
     for spec in scheme.tiers:
         nums = list(raw.get(spec.rank, []))
-        if spec.match != FULL:
+        if spec.match not in (FULL, EXACT):
             nums = sorted(nums)
         tiers.append(Tier(spec.rank, spec.prize, spec.match, nums))
     return tiers
@@ -165,6 +207,9 @@ def validate(draw: Draw) -> None:
         raise ValidationError(f"unknown slot {draw.slot}")
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", draw.date):
         raise ValidationError(f"bad date {draw.date}")
+    if slot.special and draw.date != slot.date:
+        raise ValidationError(f"{slot.id} is drawn on {slot.date}, not {draw.date}")
+    fmt = slot.scheme.ticket_format
     specs = slot.scheme.tiers
     if [t.rank for t in draw.tiers] != [s.rank for s in specs]:
         raise ValidationError("tier ranks do not match scheme")
@@ -177,11 +222,14 @@ def validate(draw: Draw) -> None:
                 m = FIRST_PRIZE_RE.match(n)
                 if not m or not 34 <= int(m.group(1)) <= 99:
                     raise ValidationError(f"bad 1st prize number {n!r}")
+            elif spec.match == EXACT:
+                if fmt not in EXACT_RE or not EXACT_RE[fmt].match(n):
+                    raise ValidationError(f"tier {spec.rank}: bad ticket number {n!r}")
             elif not re.fullmatch(r"\d{%d}" % spec.digits, n):
                 raise ValidationError(f"tier {spec.rank}: bad number {n!r}")
-        if spec.match != FULL and len(set(tier.numbers)) != len(tier.numbers):
+        if len(set(tier.numbers)) != len(tier.numbers):
             raise ValidationError(f"tier {spec.rank}: duplicate numbers")
-    if slot.scheme.ticket_format == "D5":
+    if fmt == "D5":
         first = draw.tiers[0].numbers[0]
         cons = draw.tiers[1].numbers[0]
         if first[-5:] != cons:

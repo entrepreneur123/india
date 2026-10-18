@@ -97,13 +97,44 @@ def _ocr_variants(jpg: str, workdir: str) -> list[str]:
     return texts
 
 
-def fetch(slot_id: str, date: dt.date) -> tuple[Draw | None, str | None]:
-    """Returns (draw or None, pdf_url or None). Draw is None when OCR has no consensus."""
+_TOKEN_RE = re.compile(r"(?<![0-9A-Z])\d{4,5}(?![0-9])")
+
+
+def ocr_tokens(texts: list[str]) -> tuple[set[str], set[str]]:
+    """(number tokens, 1st-prize style tickets) seen in any OCR pass."""
+    nums, tickets = set(), set()
+    for t in texts:
+        nums.update(_TOKEN_RE.findall(t))
+        tickets.update(f"{m.group(1)}{m.group(2)} {m.group(3)}" for m in _FIRST_D5_RE.finditer(t))
+    return nums, tickets
+
+
+def verify(draw: Draw, texts: list[str]) -> dict:
+    """Cross-check fast-source numbers against noisy OCR of the gazette.
+
+    OCR misses digits but practically never invents the exact number we look for, so a number
+    found in the OCR text is confirmed; a missing one is merely unconfirmed. "top" is True when the
+    1st prize ticket and every 2nd-prize number are confirmed: the high-value prizes.
+    """
+    nums, tickets = ocr_tokens(texts)
+    first = draw.tiers[0].numbers[0]
+    first_ok = first in tickets
+    second = next((t for t in draw.tiers if t.rank == "2"), None)
+    second_ok = second is not None and all(n in nums for n in second.numbers)
+    lower = [n for t in draw.tiers[2:] for n in t.numbers]
+    found = [n for n in lower if n in nums]
+    return {"top": first_ok and second_ok, "firstPrize": first_ok,
+            "ratio": round(len(found) / len(lower), 3) if lower else 1.0,
+            "unconfirmed": sorted(set(lower) - set(found))[:20]}
+
+
+def fetch(slot_id: str, date: dt.date) -> tuple[Draw | None, str | None, list[str]]:
+    """Returns (draw or None, pdf_url or None, OCR texts). Draw is None when OCR has no consensus."""
     slot = SLOTS[slot_id]
     url = PDF_URL.format(code=slot.file_code, ddmmyy=date.strftime("%d%m%y"))
     pdf = get_bytes(url)
     if pdf is None or not pdf.startswith(b"%PDF"):
-        return None, None
+        return None, None, []
     with tempfile.TemporaryDirectory() as wd:
         pdf_path = os.path.join(wd, "r.pdf")
         with open(pdf_path, "wb") as f:
@@ -111,7 +142,7 @@ def fetch(slot_id: str, date: dt.date) -> tuple[Draw | None, str | None]:
         subprocess.run(["pdfimages", "-j", pdf_path, os.path.join(wd, "img")], check=True)
         jpgs = sorted(glob.glob(os.path.join(wd, "img-*.jpg")))
         if not jpgs:
-            return None, url
+            return None, url, []
         texts = _ocr_variants(jpgs[0], wd)
 
     head = texts[0]
@@ -132,5 +163,5 @@ def fetch(slot_id: str, date: dt.date) -> tuple[Draw | None, str | None]:
     if len(valid) == len(reads) and len({r.numbers_key() for r in valid}) == 1:
         draw = valid[0]
         draw.sources.append({"kind": "official", "url": url, "ocr": True})
-        return draw, url
-    return None, url
+        return draw, url, texts
+    return None, url, texts

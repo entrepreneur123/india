@@ -26,6 +26,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Result images shared to WhatsApp etc. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.share"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_paths" />
+        </provider>
+
         <!-- Ask Google Play services to fetch the on-device OCR model at install time. -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"

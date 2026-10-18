@@ -1,10 +1,13 @@
 """Fetch, cross-check and publish result JSON.
 
-  python -m lottery_pipeline.build --out ../public
+  python -m lottery_pipeline.build --out ../public [--backfill-days 30] [--deep]
 
-Output (static files, served from any CDN):
-  v1/latest.json            draws of the last 7 days, newest first
-  v1/days/YYYY-MM-DD.json   one file per day (archive)
+Output (static files, served from any CDN), schema 2:
+  v2/today.json             today's and yesterday's draws: small, polled around draw times
+  v2/latest.json            the last 7 days, newest first (first launch / weekly view)
+  v2/days/YYYY-MM-DD.json   one file per day (history; immutable once complete)
+  v2/index.json             dates with results, dates without a draw, upcoming special draws
+  v2/config.json            remote config (mirrors, min app version, live-draw link, notice)
 
 Publishing rules (wrong numbers are worse than late numbers):
   * Numbers come from the text-based Sambad PDF whenever it exists.
@@ -12,8 +15,9 @@ Publishing rules (wrong numbers are worse than late numbers):
     Disagreement keeps the Sambad numbers, verified=false, and prints a
     ::warning:: so the GitHub Actions run is flagged for a human.
   * A draw only the gazette carries (Dear Laxmi) is published from OCR only
-    when every OCR pass agrees, with ocr=true; otherwise as status PDF_ONLY
-    (no numbers, the app links the official PDF).
+    when every OCR pass agrees, with ocr=true; otherwise as status PDF_ONLY.
+  * Bumper/monthly draws are parsed only with a prize table in specials.json;
+    without one they are published as PDF_ONLY with a link to the sheet.
 """
 from __future__ import annotations
 
@@ -24,26 +28,45 @@ import os
 import sys
 
 from . import official, sambad
-from .model import SLOTS, Draw, ValidationError
+from .model import SLOTS, SPECIALS, WEEKLY, Draw, ValidationError
 
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
-SCHEMA = 1
+SCHEMA = 2
 LATEST_DAYS = 7
+CONFIG_TEMPLATE = os.path.join(os.path.dirname(__file__), "..", "app_config.json")
+
+
+def _v2(out: str, *parts: str) -> str:
+    return os.path.join(out, "v2", *parts)
 
 
 def _day_path(out: str, date: dt.date) -> str:
-    return os.path.join(out, "v1", "days", f"{date.isoformat()}.json")
+    return _v2(out, "days", f"{date.isoformat()}.json")
+
+
+def _read_json(path: str, default):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
 
 
 def load_day(out: str, date: dt.date) -> dict[str, dict]:
-    try:
-        with open(_day_path(out, date), encoding="utf-8") as f:
-            return {d["id"]: d for d in json.load(f)["draws"]}
-    except FileNotFoundError:
-        return {}
+    return {d["id"]: d for d in _read_json(_day_path(out, date), {"draws": []})["draws"]}
 
 
 def _write_json(path: str, obj: dict) -> None:
+    """Atomic write that skips files whose content (ignoring generatedAt) did not change.
+
+    Keeps the data branch quiet: a commit (and a GitHub Pages build, soft-limited to
+    10/hour) only happens when results actually change, and generatedAt means
+    "data last changed", which clients use to reject stale mirror copies.
+    """
+    old = _read_json(path, None)
+    if old is not None and {k: v for k, v in old.items() if k != "generatedAt"} == \
+            {k: v for k, v in obj.items() if k != "generatedAt"}:
+        return
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -56,7 +79,7 @@ def _official_pdf(entry: dict) -> str | None:
 
 
 def merge(existing: dict | None, fast: Draw | None, gazette: Draw | None,
-          gazette_url: str | None, warn) -> dict | None:
+          gazette_url: str | None, warn, gazette_texts: list[str] | None = None) -> dict | None:
     """Combine what we already published with this run's reads. Pure function."""
     base: dict | None = existing
     if fast is not None:
@@ -64,10 +87,14 @@ def merge(existing: dict | None, fast: Draw | None, gazette: Draw | None,
             if Draw.from_json(base).numbers_key() != fast.numbers_key():
                 warn(f"{fast.id}: Sambad file changed since last publish; using new file")
         prev_sources = [s for s in (base or {}).get("sources", []) if s["kind"] == "official"]
+        was_verified = bool((existing or {}).get("verified")) and (existing or {}).get("status") == "OK" \
+            and Draw.from_json(existing).numbers_key() == fast.numbers_key()
+        prev_check = (existing or {}).get("officialCheck")
         base = fast.to_json() | {"status": "OK", "ocr": False}
         base["sources"] += prev_sources
-        base["verified"] = bool((existing or {}).get("verified")) and \
-            Draw.from_json(existing).numbers_key() == fast.numbers_key()
+        base["verified"] = was_verified
+        if was_verified and prev_check:
+            base["officialCheck"] = prev_check
 
     if gazette_url is not None:
         if base is None:
@@ -79,68 +106,158 @@ def merge(existing: dict | None, fast: Draw | None, gazette: Draw | None,
             base["verified"] = same
             if not same:
                 warn(f"{base['id']}: official gazette OCR disagrees with Sambad; kept Sambad, needs review")
+        # No full OCR consensus (the usual case): confirm the fast numbers against the OCR text instead.
+        if gazette is None and not base.get("verified") and gazette_texts and base.get("status") == "OK" \
+                and not base.get("ocr") and base.get("format") == "D5":
+            check = official.verify(Draw.from_json(base), gazette_texts)
+            base["verified"] = check["top"]
+            base["officialCheck"] = check
+            if not check["firstPrize"] or check["ratio"] < 0.9:
+                warn(f"{base['id']}: gazette OCR confirms only {check['ratio']:.0%} of numbers "
+                     f"(1st prize {'ok' if check['firstPrize'] else 'NOT found'}); please compare by eye")
         if not any(s["kind"] == "official" for s in base["sources"]):
             base["sources"].append({"kind": "official", "url": gazette_url, "ocr": gazette is not None})
     return base
 
 
-def pdf_only(slot_id: str, date: dt.date, url: str) -> dict:
-    slot = SLOTS[slot_id]
+def pdf_only(slot_id: str, date: dt.date, url: str, kind: str = "official",
+             name: str | None = None, special: bool = False) -> dict:
+    slot = SLOTS.get(slot_id)
     return {"id": f"{date.isoformat()}_{slot_id}", "slot": slot_id, "date": date.isoformat(),
-            "time": slot.time, "state": slot.state, "name": slot.label.upper(), "drawNo": None,
-            "format": slot.scheme.ticket_format, "price": slot.scheme.price, "verified": False,
+            "time": slot.time if slot else "18:00", "state": slot.state if slot else "",
+            "name": name or (slot.label.upper() if slot else slot_id), "drawNo": None,
+            "format": slot.scheme.ticket_format if slot else "B6",
+            "price": slot.scheme.price if slot else 0, "special": special, "verified": False,
             "status": "PDF_ONLY", "ocr": False, "tiers": [],
-            "sources": [{"kind": "official", "url": url, "ocr": False}]}
+            "sources": [{"kind": kind, "url": url, "ocr": False}]}
 
 
-def run(out: str, today: dt.date, backfill_days: int, use_official: bool) -> int:
+def _is_complete(entry: dict | None) -> bool:
+    return entry is not None and entry.get("status") == "OK" and not entry.get("ocr")
+
+
+def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: bool,
+        now_ist: dt.datetime | None = None, ocr: bool = True) -> int:
     warnings: list[str] = []
+    now_ist = now_ist or dt.datetime.now(IST)
+
+    def not_drawn_yet(date: dt.date, hhmm: str) -> bool:
+        """No sheet can exist until a few minutes after the draw: don't hit the sources early."""
+        h, m = map(int, hhmm.split(":"))
+        return now_ist < dt.datetime.combine(date, dt.time(h, m), IST) + dt.timedelta(minutes=5)
 
     def warn(msg: str) -> None:
         warnings.append(msg)
         print(f"::warning::{msg}")
 
+    index = _read_json(_v2(out, "index.json"), {})
+    no_draw: set[str] = set(index.get("noDraw", []))
+    upcoming = index.get("upcoming", [])
+
+    # Special (bumper/monthly) draws we can see: today's listing, plus the catalog on deep runs.
+    specials_seen: dict[tuple[str, str], dict] = {}
+    try:
+        for stem, title in sambad.listed_today():
+            if stem[:2] not in {s.file_code for s in WEEKLY.values()}:
+                specials_seen[(stem, today.isoformat())] = {"stem": stem, "name": title.upper(),
+                                                            "date": today.isoformat()}
+        if deep:
+            for e in sambad.special_catalog():
+                specials_seen[(e["stem"], e["date"])] = e
+            upcoming = sambad.upcoming_specials(today)
+    except RuntimeError as e:
+        warn(f"Sambad listing unavailable: {e}")
+
     dates = [today - dt.timedelta(days=i) for i in range(backfill_days + 1)]
     for date in dates:
         day = load_day(out, date)
-        codes = official.list_codes(date) if use_official else []
-        for slot_id, slot in SLOTS.items():
+        codes = None
+        if use_official:
+            try:
+                codes = official.list_codes(date)
+            except RuntimeError as e:
+                warn(f"official listing for {date} unavailable: {e}")
+        for slot_id, slot in WEEKLY.items():
             key = f"{date.isoformat()}_{slot_id}"
             existing = day.get(key)
             fast = None
-            if date == today and slot.scheme.ticket_format == "D5":
+            if slot.scheme.ticket_format == "D5" and not _is_complete(existing) \
+                    and not not_drawn_yet(date, slot.time):
                 try:
-                    fast = sambad.fetch(slot_id, date)
+                    fast = sambad.fetch(slot_id, date, today)
                 except ValidationError as e:
                     warn(f"{key}: Sambad file rejected: {e}")
-            gazette, gazette_url = None, None
+                except RuntimeError as e:
+                    warn(f"{key}: Sambad unavailable: {e}")
+            gazette, gazette_url, gazette_texts = None, None, []
             already_checked = existing is not None and _official_pdf(existing) is not None
-            if use_official and slot.file_code in codes and not already_checked:
-                try:
-                    gazette, gazette_url = official.fetch(slot_id, date)
-                except (ValidationError, RuntimeError) as e:
-                    warn(f"{key}: official fetch failed: {e}")
+            if codes and slot.file_code in codes and not already_checked:
+                if ocr:
+                    try:
+                        gazette, gazette_url, gazette_texts = official.fetch(slot_id, date)
+                    except (ValidationError, RuntimeError) as e:
+                        warn(f"{key}: official fetch failed: {e}")
+                else:  # listed on the official calendar: link it without downloading
+                    gazette_url = official.PDF_URL.format(code=slot.file_code, ddmmyy=date.strftime("%d%m%y"))
             if existing is None and fast is None and gazette is None and gazette_url:
                 day[key] = pdf_only(slot_id, date, gazette_url)
                 continue
-            merged = merge(existing, fast, gazette, gazette_url, warn)
+            merged = merge(existing, fast, gazette, gazette_url, warn, gazette_texts)
             if merged is not None:
                 day[key] = merged
+
+        for (stem, d), sp in specials_seen.items():
+            if d != date.isoformat():
+                continue
+            slot = next((s for s in SPECIALS.values() if s.file_code == stem), None)
+            key = f"{d}_{slot.id if slot else stem}"
+            if _is_complete(day.get(key)):
+                continue
+            draw = None
+            if slot is not None:
+                try:
+                    draw = sambad.fetch(slot.id, date, today)
+                except (ValidationError, RuntimeError) as e:
+                    warn(f"{key}: special sheet rejected: {e}")
+            if draw is not None:
+                day[key] = draw.to_json() | {"status": "OK", "ocr": False}
+            else:
+                if slot is None:
+                    warn(f"{stem} ({sp['name']}) has no prize table in specials.json; published as sheet link only")
+                day[key] = pdf_only(slot.id if slot else stem, date, sambad.OLD_URL.format(stem=stem),
+                                    kind="lotterysambad", name=sp["name"], special=True)
+
+        if date < today and codes == [] and not day:
+            no_draw.add(date.isoformat())   # e.g. 02-10-2026: no draw on the official calendar
         if day:
+            no_draw.discard(date.isoformat())
             order = {s: i for i, s in enumerate(SLOTS)}
-            draws = sorted(day.values(), key=lambda d: order[d["slot"]])
+            draws = sorted(day.values(), key=lambda x: (x["time"], order.get(x["slot"], 99)))
             _write_json(_day_path(out, date), {"schema": SCHEMA, "date": date.isoformat(), "draws": draws})
 
-    latest = []
-    for i in range(LATEST_DAYS):
-        d = load_day(out, today - dt.timedelta(days=i))
-        latest += sorted(d.values(), key=lambda x: x["time"], reverse=True)
-    _write_json(os.path.join(out, "v1", "latest.json"), {
-        "schema": SCHEMA,
-        "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "draws": latest,
-    })
-    print(f"published {len(latest)} draws, {len(warnings)} warnings")
+    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+
+    def window(days: int) -> list[dict]:
+        out_draws = []
+        for i in range(days):
+            d = load_day(out, today - dt.timedelta(days=i))
+            out_draws += sorted(d.values(), key=lambda x: x["time"], reverse=True)
+        return out_draws
+
+    _write_json(_v2(out, "today.json"), {"schema": SCHEMA, "generatedAt": now,
+                                          "date": today.isoformat(), "draws": window(2)})
+    _write_json(_v2(out, "latest.json"), {"schema": SCHEMA, "generatedAt": now,
+                                           "date": today.isoformat(), "draws": window(LATEST_DAYS)})
+    days_dir = _v2(out, "days")
+    dates_with_data = sorted((f[:-5] for f in os.listdir(days_dir) if f.endswith(".json")), reverse=True) \
+        if os.path.isdir(days_dir) else []
+    _write_json(_v2(out, "index.json"), {"schema": SCHEMA, "generatedAt": now, "dates": dates_with_data,
+                                          "noDraw": sorted(no_draw, reverse=True), "upcoming": upcoming})
+    config = _read_json(CONFIG_TEMPLATE, {})
+    config = {k: v for k, v in config.items() if not k.startswith("_")}
+    _write_json(_v2(out, "config.json"), {"schema": SCHEMA, "generatedAt": now, **config})
+    print(f"published {len(window(LATEST_DAYS))} draws in 7 days, {len(dates_with_data)} days archived, "
+          f"{len(warnings)} warnings")
     return 0
 
 
@@ -150,9 +267,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--date", help="IST date yyyy-mm-dd (default: today in IST)")
     p.add_argument("--backfill-days", type=int, default=1)
     p.add_argument("--no-official", action="store_true")
+    p.add_argument("--no-ocr", action="store_true", help="link official PDFs without OCR verification")
+    p.add_argument("--deep", action="store_true", help="also refresh special-draw catalog and upcoming list")
     a = p.parse_args(argv)
     today = dt.date.fromisoformat(a.date) if a.date else dt.datetime.now(IST).date()
-    return run(a.out, today, a.backfill_days, not a.no_official)
+    now_ist = dt.datetime.now(IST)
+    if a.date:  # replaying a past day: treat every draw of that day as done
+        now_ist = dt.datetime.combine(today, dt.time(23, 59), IST)
+    return run(a.out, today, a.backfill_days, not a.no_official, a.deep, now_ist, ocr=not a.no_ocr)
 
 
 if __name__ == "__main__":

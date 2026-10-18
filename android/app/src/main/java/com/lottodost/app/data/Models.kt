@@ -2,13 +2,44 @@ package com.lottodost.app.data
 
 import kotlinx.serialization.Serializable
 
-/** Mirrors pipeline/lottery_pipeline/build.py output (schema 1). Unknown keys are ignored. */
+/** Mirrors pipeline/lottery_pipeline/build.py output (schema 2). Unknown keys are ignored. */
 @Serializable
 data class ResultFeed(
     val schema: Int,
     val generatedAt: String,
+    val date: String? = null,
     val draws: List<Draw>,
 )
+
+@Serializable
+data class DayFeed(val schema: Int, val date: String, val draws: List<Draw>)
+
+@Serializable
+data class IndexFeed(
+    val schema: Int,
+    val generatedAt: String,
+    val dates: List<String> = emptyList(),
+    val noDraw: List<String> = emptyList(),
+    val upcoming: List<Upcoming> = emptyList(),
+)
+
+@Serializable
+data class Upcoming(val name: String, val date: String)
+
+@Serializable
+data class RemoteConfig(
+    val schema: Int = 2,
+    val generatedAt: String = "",
+    val minVersionCode: Int = 0,
+    val latestVersionCode: Int = 0,
+    val mirrors: List<String> = emptyList(),
+    val liveDrawUrl: String? = null,
+    val officialResultsUrl: String? = null,
+    val announcement: Announcement? = null,
+)
+
+@Serializable
+data class Announcement(val text: String, val url: String? = null)
 
 @Serializable
 data class Draw(
@@ -19,8 +50,9 @@ data class Draw(
     val state: String,
     val name: String,
     val drawNo: Int? = null,
-    val format: String,        // "D5" (34A 12345) or "D4" (4-digit Laxmi)
+    val format: String,        // "D5" (34A 12345), "D4" (Laxmi), "B6" (bumper A 123456)
     val price: Int,
+    val special: Boolean = false,
     val verified: Boolean = false,
     val status: String = "OK", // "OK" or "PDF_ONLY" (numbers not machine-readable yet)
     val ocr: Boolean = false,  // numbers were OCR'd from the official scan: show caution
@@ -29,14 +61,15 @@ data class Draw(
 ) {
     val hasNumbers: Boolean get() = status == "OK" && tiers.isNotEmpty()
     val officialPdf: String? get() = sources.firstOrNull { it.kind == "official" }?.url
+    val sheetUrl: String? get() = sources.firstOrNull { it.kind == "lotterysambad" }?.url
     val firstPrize: String? get() = tiers.firstOrNull()?.numbers?.firstOrNull()
 }
 
 @Serializable
 data class Tier(
-    val rank: String,          // "1", "CONS", "2".."5"
+    val rank: String,          // "1", "CONS", "2".."9"
     val prize: Long,           // rupees for the winner
-    val match: String,         // FULL | CONS | LAST5 | LAST4
+    val match: String,         // FULL | CONS | EXACT | LAST5 | LAST4
     val numbers: List<String>,
 )
 

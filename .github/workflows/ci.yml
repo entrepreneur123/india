@@ -13,6 +13,8 @@ jobs:
       - run: pip install -q pytest
       - working-directory: pipeline
         run: python -m pytest -q tests
+      - name: Load model runs
+        run: pip install -q numpy && python loadsim/simulate.py
 
   android:
     runs-on: ubuntu-24.04
@@ -23,6 +25,9 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
+      - name: Translations complete, placeholders intact
+        working-directory: android
+        run: python3 tools/check_translations.py
       - name: Unit + screenshot tests, lint, release build
         working-directory: android
         run: ./gradlew --no-daemon testDebugUnitTest -Proborazzi.test.record=true lintRelease assembleRelease

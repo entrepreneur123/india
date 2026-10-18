@@ -3,28 +3,35 @@ package com.lottodost.app.domain
 import java.util.Locale
 
 /**
- * A ticket number as printed. Dear 5-digit tickets look like "39C 06366":
- * serial 34-99, series letter (A B C D E G H J K L; F and I are not used), 5 digits.
- * Users may also type only the digits (4 or 5), which still checks the lower tiers.
+ * A ticket number as printed.
+ *  - D5 (Dear weekly):           "39C 06366"  serial 34-99, series A B C D E G H J K L (no F, I), 5 digits
+ *  - D4 (Dear Laxmi):            "12 3456"    serial, 4 digits
+ *  - B6 (bumper / monthly):      "A 801021"   series letter(s), 6 digits
+ *  - digits only (4-6):          "06366"      checks every tier that does not need the prefix
+ *
+ * All formatting uses Locale.ROOT: a Bengali/Hindi default locale would otherwise print
+ * native digits ("৭৪D") and silently break comparisons with the feed.
  */
-// All formatting uses Locale.ROOT: a Bengali/Hindi default locale would otherwise print
-// native digits ("৭৪D") and silently break comparisons with the feed.
 data class Ticket(
-    val serial: Int?,
-    val series: Char?,
+    val prefix: String?,   // "39C", "12", "A" or null
     val digits: String,
 ) {
+    enum class Format { D5, D4, B6, DIGITS }
+
     init {
-        require((digits.length == 4 || digits.length == 5) && digits.all(Char::isDigit))
+        require(digits.length in 4..6 && digits.all { it in '0'..'9' })
     }
 
-    val isFull: Boolean get() = serial != null && series != null && digits.length == 5
+    val format: Format
+        get() = when {
+            prefix == null -> Format.DIGITS
+            digits.length == 5 && prefix.length == 3 -> Format.D5
+            digits.length == 4 && prefix.length == 2 && prefix.all { it in '0'..'9' } -> Format.D4
+            digits.length == 6 && prefix.all { it in 'A'..'Z' } -> Format.B6
+            else -> Format.DIGITS
+        }
 
-    fun display(): String = when {
-        isFull -> "%02d%c %s".format(Locale.ROOT, serial, series, digits)
-        serial != null -> "%02d %s".format(Locale.ROOT, serial, digits)
-        else -> digits
-    }
+    fun display(): String = if (prefix == null) digits else "$prefix $digits"
 
     companion object {
         const val SERIES_LETTERS = "ABCDEGHJKL"
@@ -32,52 +39,65 @@ data class Ticket(
 }
 
 object TicketParser {
-    private val FULL = Regex("""^(\d{2})\s*([A-Z])\s*(\d{5})$""")
-    private val SERIAL_D4 = Regex("""^(\d{2})\s+(\d{4})$""")
-    private val DIGITS = Regex("""^\d{4,5}$""")
+    private val D5 = Regex("""^(\d{2})\s*([A-Z])\s*(\d{5})$""")
+    private val D4 = Regex("""^(\d{2})\s+(\d{4})$""")
+    private val B6 = Regex("""^([A-Z]{1,2})\s*(\d{6})$""")
+    private val DIGITS = Regex("""^\d{4,6}$""")
 
     /** Parses what the user typed. Returns null when it is not a checkable number. */
     fun parseManual(raw: String): Ticket? {
         // Devanagari/Bengali keyboards type native digits (०-९, ০-৯): normalise to ASCII.
-        val ascii = raw.map { c -> if (c.isDigit() && c !in '0'..'9') '0' + Character.getNumericValue(c) else c }.joinToString("")
-        val s = ascii.trim().uppercase().replace(Regex("""[-_./]"""), " ").replace(Regex("""\s+"""), " ")
-        FULL.matchEntire(s)?.let { m ->
+        val ascii = raw.map { c -> if (c.isDigit() && c !in '0'..'9') '0' + Character.getNumericValue(c) else c }
+            .joinToString("")
+        val s = ascii.trim().uppercase(Locale.ROOT).replace(Regex("""[-_./,]"""), " ").replace(Regex("""\s+"""), " ")
+        D5.matchEntire(s)?.let { m ->
             val serial = m.groupValues[1].toInt()
             val series = m.groupValues[2][0]
             if (serial !in 34..99 || series !in Ticket.SERIES_LETTERS) return null
-            return Ticket(serial, series, m.groupValues[3])
+            return Ticket(m.groupValues[1] + series, m.groupValues[3])
         }
-        SERIAL_D4.matchEntire(s)?.let { m -> return Ticket(m.groupValues[1].toInt(), null, m.groupValues[2]) }
+        D4.matchEntire(s)?.let { m -> return Ticket(m.groupValues[1], m.groupValues[2]) }
+        B6.matchEntire(s)?.let { m -> return Ticket(m.groupValues[1], m.groupValues[2]) }
         val compact = s.replace(" ", "")
-        FULL.matchEntire(compact)?.let { return parseManual(compact) }
-        if (DIGITS.matches(compact)) return Ticket(null, null, compact)
+        if (compact != s && (D5.matches(compact) || B6.matches(compact))) return parseManual(compact)
+        if (DIGITS.matches(compact)) return Ticket(null, compact)
         return null
     }
 
     // OCR confusions, applied only where the ticket layout requires a digit.
     private val toDigit = mapOf('O' to '0', 'Q' to '0', 'D' to '0', 'I' to '1', 'L' to '1', '|' to '1',
         'S' to '5', 'Z' to '2', 'B' to '8', 'G' to '6', 'T' to '7')
-    // ...and where it requires a series letter. Kept minimal: every mapping here is a guess the
-    // user confirms on screen before anything is checked.
+    // ...and where it requires a series letter. Every mapping here is a guess the user
+    // confirms on screen before anything is checked.
     private val toLetter = mapOf('8' to 'B', '6' to 'G', '0' to 'D', '4' to 'A')
 
-    private val OCR_FULL = Regex("""(?<![0-9A-Z])([0-9OIlSZBGT|]{2})\s?([A-Z0-9])\s?([0-9OIlSZBGTDQ|]{5})(?![0-9])""")
+    private val OCR_D5 = Regex("""(?<![0-9A-Z])([0-9OIlSZBGT|]{2})\s?([A-Z0-9])\s?([0-9OIlSZBGTDQ|]{5})(?![0-9])""")
+    private val OCR_B6 = Regex("""(?<![0-9A-Z])([A-Z])\s?([0-9OIlSZBGTDQ|]{6})(?![0-9])""")
     private val OCR_DATE = Regex("""(?<!\d)(\d{1,2})[./-](\d{1,2})[./-](\d{2}|\d{4})(?!\d)""")
 
     data class OcrResult(val tickets: List<Ticket>, val date: String?, val words: Set<String>)
 
+    private fun digitsOf(s: String) = s.map { toDigit[it] ?: it }.joinToString("")
+
     /** Extracts candidate tickets (most likely first), a draw date (yyyy-MM-dd) and words. */
     fun fromOcr(text: String): OcrResult {
-        val upper = text.uppercase()
+        val upper = text.uppercase(Locale.ROOT)
         val tickets = LinkedHashSet<Ticket>()
-        for (m in OCR_FULL.findAll(upper)) {
-            val serial = m.groupValues[1].map { toDigit[it] ?: it }.joinToString("")
+        for (m in OCR_D5.findAll(upper)) {
+            val serial = digitsOf(m.groupValues[1])
             val seriesRaw = m.groupValues[2][0]
             val series = if (seriesRaw.isLetter()) seriesRaw else toLetter[seriesRaw] ?: continue
-            val digits = m.groupValues[3].map { toDigit[it] ?: it }.joinToString("")
-            if (!serial.all(Char::isDigit) || !digits.all(Char::isDigit)) continue
+            val digits = digitsOf(m.groupValues[3])
+            if (!serial.all { it in '0'..'9' } || !digits.all { it in '0'..'9' }) continue
             if (serial.toInt() !in 34..99 || series !in Ticket.SERIES_LETTERS) continue
-            tickets += Ticket(serial.toInt(), series, digits)
+            tickets += Ticket(serial + series, digits)
+        }
+        // Bumper tickets ("A 801021") look like any letter+number, so only trust them on bumper tickets.
+        if ("BUMPER" in upper || "MONTHLY" in upper) {
+            for (m in OCR_B6.findAll(upper)) {
+                val digits = digitsOf(m.groupValues[2])
+                if (digits.all { it in '0'..'9' }) tickets += Ticket(m.groupValues[1], digits)
+            }
         }
         val date = OCR_DATE.findAll(upper).mapNotNull { m ->
             val d = m.groupValues[1].toInt()

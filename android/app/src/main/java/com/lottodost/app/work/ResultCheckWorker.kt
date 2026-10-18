@@ -22,6 +22,7 @@ import androidx.work.WorkerParameters
 import com.lottodost.app.MainActivity
 import com.lottodost.app.R
 import com.lottodost.app.data.Draw
+import com.lottodost.app.data.Prefs
 import com.lottodost.app.data.ResultRepository
 import com.lottodost.app.data.TicketStore
 import com.lottodost.app.domain.DrawSchedule
@@ -40,17 +41,17 @@ class ResultCheckWorker(ctx: Context, params: WorkerParameters) : CoroutineWorke
 
     override suspend fun doWork(): Result {
         val repo = ResultRepository.get(applicationContext)
-        repo.refresh()
-        val feed = repo.state.value.feed
-        if (feed != null) {
-            notifyNewDraws(feed.draws)
-            notifySavedTickets(feed.draws)
+        repo.refresh(ResultRepository.Mode.FULL, force = true)
+        val draws = repo.state.value.drawList
+        if (draws.isNotEmpty()) {
+            if (Prefs.notificationsEnabled(applicationContext)) notifyNewDraws(draws)
+            notifySavedTickets(draws)
         }
         val now = ZonedDateTime.now(DrawSchedule.IST)
         val waitingFor = DrawSchedule.recentlyDrawnSlot(now)
-        val arrived = waitingFor == null || feed?.draws?.any {
+        val arrived = waitingFor == null || draws.any {
             it.slot == waitingFor && it.date == now.toLocalDate().toString() && it.status == "OK"
-        } == true
+        }
         if (!arrived && runAttemptCount < MAX_RETRIES) return Result.retry()
         schedule(applicationContext, ExistingWorkPolicy.APPEND_OR_REPLACE)
         return Result.success()
@@ -59,7 +60,9 @@ class ResultCheckWorker(ctx: Context, params: WorkerParameters) : CoroutineWorke
     private fun notifyNewDraws(draws: List<Draw>) {
         val prefs = applicationContext.getSharedPreferences("notified", Context.MODE_PRIVATE)
         val seen = prefs.getStringSet("draws", null)
-        val ready = draws.filter { it.hasNumbers }
+        // Only today's and yesterday's results are news; history loaded by the user is not.
+        val yesterday = ZonedDateTime.now(DrawSchedule.IST).toLocalDate().minusDays(1).toString()
+        val ready = draws.filter { it.hasNumbers && it.date >= yesterday }
         if (seen == null) { // first run after install: don't flood with old results
             prefs.edit().putStringSet("draws", ready.map { it.id }.toSet()).apply()
             return
@@ -78,9 +81,13 @@ class ResultCheckWorker(ctx: Context, params: WorkerParameters) : CoroutineWorke
         val store = TicketStore.get(applicationContext)
         val done = mutableSetOf<String>()
         for (t in store.tickets.value.filter { !it.notified }) {
-            val draw = draws.firstOrNull { it.date == t.date && it.slot == t.slot && it.hasNumbers } ?: continue
+            val candidates = t.findDraws(draws)
+            if (candidates.isEmpty()) continue
             val ticket = TicketParser.parseManual(t.number) ?: continue
-            val best = Matcher.check(ticket, draw)?.best
+            val checks = candidates.mapNotNull { Matcher.check(ticket, it) }
+            val bestCheck = checks.maxByOrNull { it.best?.tier?.prize ?: -1L }
+            val draw = bestCheck?.draw ?: candidates.first()
+            val best = bestCheck?.best
             val body = if (best != null)
                 applicationContext.getString(R.string.notif_ticket_won, t.number, formatRupees(best.tier.prize))
             else applicationContext.getString(R.string.notif_ticket_lost, t.number)

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Punjabi (Gurmukhi). Machine-assisted translation: have a native speaker review before release. -->
+<resources>
+    <string name="tab_results">ਨਤੀਜੇ</string>
+    <string name="tab_check">ਟਿਕਟ ਜਾਂਚੋ</string>
+    <string name="tab_tickets">ਮੇਰੀਆਂ ਟਿਕਟਾਂ</string>
+    <string name="tab_info">ਜਾਣਕਾਰੀ</string>
+
+    <string name="disclaimer_title">ਜ਼ਰੂਰੀ ਜਾਣਕਾਰੀ</string>
+    <string name="disclaimer_body">LottoDost ਇੱਕ ਸੁਤੰਤਰ ਐਪ ਹੈ। ਇਸਦਾ ਨਾਗਾਲੈਂਡ ਸਰਕਾਰ, ਸਿੱਕਮ ਸਰਕਾਰ, ਪੰਜਾਬ ਸਰਕਾਰ ਜਾਂ ਕਿਸੇ ਵੀ ਲਾਟਰੀ ਵਿਭਾਗ ਨਾਲ ਕੋਈ ਸਬੰਧ ਨਹੀਂ ਹੈ। ਅਸੀਂ ਟਿਕਟਾਂ ਨਹੀਂ ਵੇਚਦੇ ਅਤੇ ਕਦੇ ਪੈਸੇ ਨਹੀਂ ਮੰਗਦੇ। ਨਤੀਜੇ ਜਨਤਕ ਸਰੋਤਾਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ — ਇਨਾਮ ਦਾ ਦਾਅਵਾ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਹਮੇਸ਼ਾਂ ਅਧਿਕਾਰਤ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾਓ। ਹਰ ਰਾਜ ਵਿੱਚ ਲਾਟਰੀ ਟਿਕਟ ਖਰੀਦਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਸਿਰਫ਼ ਬਾਲਗਾਂ (18+) ਲਈ।</string>
+    <string name="disclaimer_ok">ਮੈਂ ਸਮਝ ਗਿਆ/ਗਈ</string>
+    <string name="safety_title">ਸਾਵਧਾਨ ਰਹੋ</string>
+    <string name="safety_body">ਕੋਈ ਵੀ ਐਪ, ਏਜੰਟ ਜਾਂ WhatsApp ਗਰੁੱਪ ਲਾਟਰੀ ਨੰਬਰ ਪਹਿਲਾਂ ਨਹੀਂ ਦੱਸ ਸਕਦਾ ਅਤੇ ਨਾ ਹੀ ਫਿਕਸ ਕਰ ਸਕਦਾ ਹੈ। LottoDost ਕਦੇ ਟਿਕਟ ਨਹੀਂ ਵੇਚਦਾ ਅਤੇ ਕਦੇ ਪੈਸੇ, ਬੈਂਕ ਜਾਂ UPI ਵੇਰਵੇ ਨਹੀਂ ਮੰਗਦਾ। “ਪੱਕਾ ਨੰਬਰ” ਵਾਲੀ ਹਰ ਪੇਸ਼ਕਸ਼ ਨੂੰ ਧੋਖਾ ਸਮਝੋ।</string>
+
+    <string name="results_subtitle">ਡੀਅਰ ਲਾਟਰੀ ਨਤੀਜੇ · 1 PM · 6 PM · 8 PM</string>
+    <string name="offline_banner">ਇੰਟਰਨੈੱਟ ਨਹੀਂ ਹੈ। ਸੇਵ ਕੀਤੇ ਨਤੀਜੇ ਦਿਖਾ ਰਹੇ ਹਾਂ।</string>
+    <string name="checking">ਨਵੇਂ ਨਤੀਜੇ ਦੇਖ ਰਹੇ ਹਾਂ…</string>
+    <string name="updated_just_now">ਹੁਣੇ ਅੱਪਡੇਟ ਹੋਇਆ</string>
+    <string name="updated_min_ago">%1$d ਮਿੰਟ ਪਹਿਲਾਂ ਅੱਪਡੇਟ ਹੋਇਆ</string>
+    <string name="update_required">ਇਹ ਵਰਜ਼ਨ ਬਹੁਤ ਪੁਰਾਣਾ ਹੈ ਅਤੇ ਨਤੀਜੇ ਸਹੀ ਨਹੀਂ ਦਿਖਾ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਅੱਪਡੇਟ ਕਰੋ।</string>
+    <string name="update_available">ਐਪ ਦਾ ਨਵਾਂ ਵਰਜ਼ਨ ਉਪਲਬਧ ਹੈ।</string>
+    <string name="update_button">ਅੱਪਡੇਟ ਕਰੋ</string>
+    <string name="open">ਖੋਲ੍ਹੋ</string>
+    <string name="ok">ਠੀਕ ਹੈ</string>
+    <string name="upcoming_special">ਆਉਣ ਵਾਲਾ: %1$s, %2$s ਨੂੰ</string>
+    <string name="today">ਅੱਜ</string>
+    <string name="more_dates">ਹੋਰ ਤਾਰੀਖਾਂ</string>
+    <string name="no_draw_day">ਇਸ ਦਿਨ ਕੋਈ ਡਰਾਅ ਨਹੀਂ ਹੋਇਆ।</string>
+    <string name="source_note">ਸਰੋਤ: lotterysambad.com ਅਤੇ nagalandlotteries.com ਦਾ ਅਧਿਕਾਰਤ ਗਜ਼ਟ। ਇਹ ਅਧਿਕਾਰਤ ਐਪ ਨਹੀਂ ਹੈ।</string>
+    <string name="state_lottery">%1$s ਰਾਜ ਲਾਟਰੀ</string>
+    <string name="tag_morning">ਮਾਰਨਿੰਗ</string>
+    <string name="tag_day">ਡੇ</string>
+    <string name="tag_night">ਨਾਈਟ</string>
+    <string name="verified">ਪ੍ਰਮਾਣਿਤ</string>
+    <string name="verified_long">ਪਹਿਲੇ ਅਤੇ ਦੂਜੇ ਇਨਾਮ ਦੇ ਨੰਬਰ ਅਧਿਕਾਰਤ ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਮਿਲਦੇ ਹਨ।</string>
+    <string name="first_prize">ਪਹਿਲਾ ਇਨਾਮ</string>
+    <string name="tap_full_result">ਸਾਰੇ ਇਨਾਮ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ</string>
+    <string name="pdf_only">ਅਧਿਕਾਰਤ ਨਤੀਜਾ PDF ਵਜੋਂ ਉਪਲਬਧ ਹੈ।</string>
+    <string name="open_official_pdf">ਅਧਿਕਾਰਤ ਨਤੀਜਾ (PDF) ਖੋਲ੍ਹੋ</string>
+    <string name="open_sheet">ਨਤੀਜਾ ਸ਼ੀਟ ਖੋਲ੍ਹੋ (ਲਾਟਰੀ ਸੰਬਾਦ)</string>
+    <string name="sheet_only">ਨਤੀਜਾ ਸ਼ੀਟ ਵਜੋਂ ਉਪਲਬਧ ਹੈ।</string>
+    <string name="special_tag">ਖ਼ਾਸ ਡਰਾਅ</string>
+    <string name="draw_in">ਡਰਾਅ %1$d ਘੰਟੇ %2$d ਮਿੰਟ ਵਿੱਚ</string>
+    <string name="live">ਲਾਈਵ</string>
+    <string name="watch_live">ਲਾਈਵ ਡਰਾਅ ਦੇਖੋ</string>
+    <string name="result_coming">ਨਤੀਜਾ ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ…</string>
+    <string name="result_delayed">ਆਮ ਨਾਲੋਂ ਵੱਧ ਸਮਾਂ ਲੱਗ ਰਿਹਾ ਹੈ। ਸ਼ੀਟ ਆਮ ਤੌਰ ’ਤੇ ਡਰਾਅ ਤੋਂ 7–10 ਮਿੰਟ ਬਾਅਦ ਆਉਂਦੀ ਹੈ — ਅਸੀਂ ਜਾਂਚਦੇ ਰਹਾਂਗੇ।</string>
+    <string name="no_result">ਕੋਈ ਨਤੀਜਾ ਉਪਲਬਧ ਨਹੀਂ</string>
+
+    <string name="notif_channel">ਨਤੀਜੇ ਅਤੇ ਟਿਕਟ ਅਲਰਟ</string>
+    <string name="notif_result_title">%1$s ਦਾ ਨਤੀਜਾ ਆ ਗਿਆ</string>
+    <string name="notif_result_body">ਪਹਿਲਾ ਇਨਾਮ: %1$s। ਆਪਣੀ ਟਿਕਟ ਜਾਂਚਣ ਲਈ ਟੈਪ ਕਰੋ।</string>
+    <string name="notif_ticket_won">ਤੁਹਾਡੀ ਟਿਕਟ %1$s ਨੇ %2$s ਜਿੱਤੇ! ਅਧਿਕਾਰਤ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾਓ।</string>
+    <string name="notif_ticket_lost">ਤੁਹਾਡੀ ਟਿਕਟ %1$s ਇਸ ਵਾਰ ਨਹੀਂ ਜਿੱਤੀ।</string>
+
+    <string name="tier_1">ਪਹਿਲਾ ਇਨਾਮ</string>
+    <string name="tier_cons">ਤਸੱਲੀ ਇਨਾਮ</string>
+    <string name="tier_2">ਦੂਜਾ ਇਨਾਮ</string>
+    <string name="tier_3">ਤੀਜਾ ਇਨਾਮ</string>
+    <string name="tier_4">ਚੌਥਾ ਇਨਾਮ</string>
+    <string name="tier_5">ਪੰਜਵਾਂ ਇਨਾਮ</string>
+    <string name="tier_n">%1$dਵਾਂ ਇਨਾਮ</string>
+    <string name="match_last4">ਆਖ਼ਰੀ 4 ਅੰਕ ਮਿਲਣੇ ਚਾਹੀਦੇ ਹਨ</string>
+    <string name="match_last5">ਆਖ਼ਰੀ 5 ਅੰਕ ਮਿਲਣੇ ਚਾਹੀਦੇ ਹਨ</string>
+    <string name="match_cons">ਪਹਿਲੇ ਇਨਾਮ ਵਾਲੇ 5 ਅੰਕ, ਪਰ ਹੋਰ ਸੀਰੀਅਲ ਜਾਂ ਅੱਖਰ</string>
+
+    <string name="back">ਵਾਪਸ</string>
+    <string name="share_text">ਟੈਕਸਟ ਵਜੋਂ ਸਾਂਝਾ ਕਰੋ</string>
+    <string name="share_whatsapp">ਨਤੀਜੇ ਦੀ ਤਸਵੀਰ ਸਾਂਝੀ ਕਰੋ (WhatsApp)</string>
+    <string name="share_footer">LottoDost ਐਪ ਨਾਲ ਜਾਂਚਿਆ ਗਿਆ। ਅਧਿਕਾਰਤ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾਓ।</string>
+    <string name="draw_meta">%1$s · ਡਰਾਅ ਨੰ. %2$s · ਟਿਕਟ ₹%3$d</string>
+    <string name="draw_meta_special">%1$s · ਟਿਕਟ ₹%2$d</string>
+    <string name="ocr_caution">ਇਹ ਨੰਬਰ ਅਧਿਕਾਰਤ ਸਕੈਨ PDF ਤੋਂ ਆਪਣੇ-ਆਪ ਪੜ੍ਹੇ ਗਏ ਹਨ। ਦਾਅਵਾ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਅਧਿਕਾਰਤ PDF ਵਿੱਚ ਜ਼ਰੂਰ ਜਾਂਚੋ।</string>
+    <string name="find_in_result">ਇਸ ਨਤੀਜੇ ਵਿੱਚ ਮੇਰਾ ਨੰਬਰ ਲੱਭੋ</string>
+    <string name="claim_title">ਇਨਾਮ ਦਾ ਦਾਅਵਾ ਕਿਵੇਂ ਕਰੀਏ</string>
+    <string name="claim_info">ਨਾਗਾਲੈਂਡ ਲਾਟਰੀ ਵਿੱਚ ₹10,000 ਤੋਂ ਵੱਧ ਦੇ ਇਨਾਮ ਦਾ ਦਾਅਵਾ ਡਰਾਅ ਦੇ 30 ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਨਾਗਾਲੈਂਡ ਰਾਜ ਲਾਟਰੀ ਡਾਇਰੈਕਟੋਰੇਟ, ਕੋਹਿਮਾ ਜਾਂ ਇਸਦੇ ਨੋਡਲ ਦਫ਼ਤਰਾਂ ਵਿੱਚ ਅਸਲ ਟਿਕਟ ਅਤੇ 3 ਤਸਦੀਕਸ਼ੁਦਾ ਪਾਸਪੋਰਟ ਫੋਟੋਆਂ ਨਾਲ ਕਰਨਾ ਹੁੰਦਾ ਹੈ (ਜਿਵੇਂ ਅਧਿਕਾਰਤ ਨਤੀਜੇ ਵਿੱਚ ਛਪਿਆ ਹੈ)। ਛੋਟੇ ਇਨਾਮਾਂ ਲਈ ਆਪਣੇ ਟਿਕਟ ਵਿਕਰੇਤਾ ਨੂੰ ਪੁੱਛੋ। ਵੱਡੇ ਇਨਾਮਾਂ ’ਤੇ ਟੈਕਸ ਕੱਟਿਆ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="claim_small">₹10,000 ਤੱਕ ਦੇ ਇਨਾਮ: ਜਿੱਥੋਂ ਟਿਕਟ ਖਰੀਦੀ, ਉਸ ਵਿਕਰੇਤਾ ਜਾਂ ਸਟਾਕਿਸਟ ਨੂੰ ਪੁੱਛੋ। ਪਹਿਲਾਂ ਅਧਿਕਾਰਤ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾਓ।</string>
+    <string name="claim_other_state">ਸਿੱਕਮ ਅਤੇ ਪੰਜਾਬ ਦੇ ਡਰਾਅ ਲਈ ਆਪਣੀ ਟਿਕਟ ਅਤੇ ਅਧਿਕਾਰਤ ਨਤੀਜੇ ’ਤੇ ਛਪੀਆਂ ਦਾਅਵੇ ਦੀਆਂ ਹਦਾਇਤਾਂ ਮੰਨੋ। ਪਹਿਲਾਂ ਆਪਣੇ ਵਿਕਰੇਤਾ ਨੂੰ ਪੁੱਛੋ।</string>
+
+    <string name="check_title">ਆਪਣੀ ਟਿਕਟ ਜਾਂਚੋ</string>
+    <string name="check_hint">ਪੂਰਾ ਨੰਬਰ (ਜਿਵੇਂ 39C 06366, ਬੰਪਰ A 801021) ਜਾਂ ਆਖ਼ਰੀ 4–6 ਅੰਕ ਲਿਖੋ, ਜਾਂ ਟਿਕਟ ਸਕੈਨ ਕਰੋ।</string>
+    <string name="ticket_number">ਟਿਕਟ ਨੰਬਰ</string>
+    <string name="ticket_invalid">ਇਸ ਤਰ੍ਹਾਂ ਲਿਖੋ: 39C 06366, A 801021, 06366 ਜਾਂ 6366</string>
+    <string name="scan_confirm">ਫੋਟੋ ਤੋਂ ਪੜ੍ਹਿਆ ਗਿਆ — ਆਪਣੀ ਟਿਕਟ ਨਾਲ ਮਿਲਾ ਕੇ “ਜਾਂਚੋ” ਦਬਾਓ।</string>
+    <string name="scan_none">ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ ਪੜ੍ਹਿਆ ਜਾ ਸਕਿਆ। ਚੰਗੀ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਨੰਬਰ ਲਿਖੋ।</string>
+    <string name="check_button">ਜਾਂਚੋ</string>
+    <string name="scan_button">ਟਿਕਟ ਸਕੈਨ ਕਰੋ</string>
+    <string name="only_date">ਸਿਰਫ਼ %1$s (ਸਭ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ)</string>
+    <string name="no_win_title">%1$s: ਕੋਈ ਇਨਾਮ ਨਹੀਂ</string>
+    <plurals name="no_win_body">
+        <item quantity="one">%1$d ਨਤੀਜੇ ਨਾਲ ਜਾਂਚਿਆ ਗਿਆ।</item>
+        <item quantity="other">%1$d ਨਤੀਜਿਆਂ ਨਾਲ ਜਾਂਚਿਆ ਗਿਆ।</item>
+    </plurals>
+    <string name="need_full_number">ਪਹਿਲਾ, ਤਸੱਲੀ ਅਤੇ ਦੂਜਾ ਇਨਾਮ ਵੀ ਜਾਂਚਣ ਲਈ ਪੂਰਾ ਟਿਕਟ ਨੰਬਰ (ਸੀਰੀਅਲ ਅਤੇ ਅੱਖਰ ਸਮੇਤ) ਲਿਖੋ।</string>
+    <string name="you_won">ਵਧਾਈਆਂ! ਤੁਸੀਂ ਜਿੱਤੇ</string>
+    <string name="maybe_first">ਵੱਡੇ ਇਨਾਮ ਵਾਲੇ ਹੀ ਅੰਕ!</string>
+    <string name="also_matches">ਇਹ ਵੀ ਮਿਲਿਆ: %1$s</string>
+    <string name="save_title">ਨਤੀਜਾ ਆਉਣ ’ਤੇ ਅਲਰਟ ਲਈ ਇਹ ਟਿਕਟ ਸੇਵ ਕਰੋ</string>
+    <string name="save_button">%1$s ਲਈ ਸੇਵ ਕਰੋ</string>
+    <string name="saved_ok">ਸੇਵ ਹੋ ਗਈ। ਅਸੀਂ ਇਸਨੂੰ ਆਪਣੇ-ਆਪ ਜਾਂਚਾਂਗੇ।</string>
+
+    <string name="scan_aim">ਟਿਕਟ ਨੰਬਰ ਨੂੰ ਡੱਬੇ ਦੇ ਅੰਦਰ ਰੱਖੋ</string>
+    <string name="scan_need_camera">ਸਕੈਨ ਲਈ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਤੁਸੀਂ ਫੋਟੋ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ।</string>
+    <string name="cancel">ਰੱਦ ਕਰੋ</string>
+    <string name="pick_photo">ਫੋਟੋ ਚੁਣੋ</string>
+
+    <string name="tickets_title">ਮੇਰੀਆਂ ਟਿਕਟਾਂ</string>
+    <string name="tickets_hint">ਨਤੀਜਾ ਆਉਣ ’ਤੇ ਸੇਵ ਕੀਤੀਆਂ ਟਿਕਟਾਂ ਆਪਣੇ-ਆਪ ਜਾਂਚੀਆਂ ਜਾਂਦੀਆਂ ਹਨ।</string>
+    <string name="tickets_empty">ਅਜੇ ਕੋਈ ਟਿਕਟ ਸੇਵ ਨਹੀਂ ਹੈ। ਟਿਕਟ ਜਾਂਚੋ ਅਤੇ “ਸੇਵ” ਦਬਾਓ।</string>
+    <string name="ticket_waiting">ਨਤੀਜੇ ਦੀ ਉਡੀਕ</string>
+    <string name="ticket_won">ਜਿੱਤਿਆ: %1$s · %2$s</string>
+    <string name="ticket_no_prize">ਕੋਈ ਇਨਾਮ ਨਹੀਂ</string>
+    <string name="remove">ਹਟਾਓ</string>
+
+    <string name="info_title">ਲਾਟਰੀ ਗਾਈਡ</string>
+    <string name="info_schedule">ਅੱਜ ਦੇ ਡਰਾਅ</string>
+    <string name="info_slot_meta">%1$s · ₹%2$d · ਟਿਕਟ ਜਿਵੇਂ %3$s</string>
+    <string name="info_schedule_note">ਨਤੀਜਾ ਆਮ ਤੌਰ ’ਤੇ ਹਰ ਡਰਾਅ ਤੋਂ 7–10 ਮਿੰਟ ਬਾਅਦ ਆਉਂਦਾ ਹੈ। ਕੁਝ ਛੁੱਟੀਆਂ ’ਤੇ ਡਰਾਅ ਨਹੀਂ ਹੁੰਦਾ (ਜਿਵੇਂ 2 ਅਕਤੂਬਰ 2026)।</string>
+    <string name="info_week_names">ਦਿਨ ਅਨੁਸਾਰ ਗੇਮ ਦੇ ਨਾਮ</string>
+    <string name="info_laxmi_legend">L = ਡੀਅਰ ਲਕਸ਼ਮੀ (4 ਅੰਕਾਂ ਦੀ ਗੇਮ, 8 PM)</string>
+    <string name="info_prizes">ਇਨਾਮ ਸੂਚੀ</string>
+    <string name="info_prizes_pending">ਪਹਿਲਾ ਨਤੀਜਾ ਲੋਡ ਹੋਣ ਤੋਂ ਬਾਅਦ ਦਿਖੇਗਾ।</string>
+    <string name="info_ticket_title">ਆਪਣੀ ਟਿਕਟ ਕਿਵੇਂ ਪੜ੍ਹੀਏ</string>
+    <string name="info_ticket_body">39 = ਸੀਰੀਅਲ (34–99) · C = ਸੀਰੀਜ਼ ਅੱਖਰ (A B C D E G H J K L — F ਅਤੇ I ਕਦੇ ਨਹੀਂ) · 06366 = ਨੰਬਰ।\n• ਪਹਿਲਾ ਇਨਾਮ: ਪੂਰਾ ਨੰਬਰ ਮਿਲਣਾ ਚਾਹੀਦਾ ਹੈ।\n• ਤਸੱਲੀ ਇਨਾਮ: ਪਹਿਲੇ ਇਨਾਮ ਵਾਲੇ 5 ਅੰਕ, ਕੋਈ ਹੋਰ ਸੀਰੀਅਲ ਜਾਂ ਅੱਖਰ।\n• ਦੂਜਾ ਇਨਾਮ: ਆਖ਼ਰੀ 5 ਅੰਕ।\n• ਤੀਜਾ, ਚੌਥਾ ਅਤੇ ਪੰਜਵਾਂ ਇਨਾਮ: ਆਖ਼ਰੀ 4 ਅੰਕ।\nਡੀਅਰ ਲਕਸ਼ਮੀ ਟਿਕਟਾਂ (10–29 + 4 ਅੰਕ) 4 ਅੰਕਾਂ ’ਤੇ ਜਿੱਤਦੀਆਂ ਹਨ। ਬੰਪਰ ਟਿਕਟਾਂ (ਜਿਵੇਂ A 801021) ਦੀ ਆਪਣੀ ਇਨਾਮ ਸੂਚੀ ਹੁੰਦੀ ਹੈ — ਨਤੀਜਾ ਦੇਖੋ।</string>
+    <string name="info_upcoming">ਆਉਣ ਵਾਲੇ ਖ਼ਾਸ ਡਰਾਅ</string>
+    <string name="official_results">ਅਧਿਕਾਰਤ ਨਤੀਜੇ (ਨਾਗਾਲੈਂਡ)</string>
+    <string name="settings">ਸੈਟਿੰਗਾਂ</string>
+    <string name="language">ਭਾਸ਼ਾ</string>
+    <string name="notify_results">ਨਤੀਜੇ ਆਉਣ ’ਤੇ ਮੈਨੂੰ ਸੂਚਿਤ ਕਰੋ</string>
+    <string name="sources_title">ਨਤੀਜਿਆਂ ਦੇ ਸਰੋਤ</string>
+    <string name="sources_body">ਤੇਜ਼ ਨਤੀਜੇ ਹਰ ਡਰਾਅ ਤੋਂ ਕੁਝ ਮਿੰਟ ਬਾਅਦ ਲਾਟਰੀ ਸੰਬਾਦ ਦੀ ਨਤੀਜਾ ਸ਼ੀਟ ਤੋਂ ਆਉਂਦੇ ਹਨ। ਸਰਕਾਰੀ ਗਜ਼ਟ ਆਉਣ ’ਤੇ ਅਸੀਂ ਮਿਲਾਉਂਦੇ ਹਾਂ ਅਤੇ ਪਹਿਲੇ ਤੇ ਦੂਜੇ ਇਨਾਮ ਦੇ ਨੰਬਰ ਮਿਲਣ ’ਤੇ ਨਤੀਜੇ ਨੂੰ “ਪ੍ਰਮਾਣਿਤ” ਦਿਖਾਉਂਦੇ ਹਾਂ।</string>
+    <string name="privacy_title">ਪਰਦੇਦਾਰੀ</string>
+    <string name="privacy_body">ਕੋਈ ਖਾਤਾ ਲੋੜੀਂਦਾ ਨਹੀਂ। ਸੇਵ ਕੀਤੀਆਂ ਟਿਕਟਾਂ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਹੀ ਰਹਿੰਦੀਆਂ ਹਨ। ਟਿਕਟ ਦੀ ਫੋਟੋ ਤੁਹਾਡੇ ਫ਼ੋਨ ’ਤੇ ਹੀ ਪੜ੍ਹੀ ਜਾਂਦੀ ਹੈ ਅਤੇ ਇਹ ਐਪ ਇਸਨੂੰ ਕਦੇ ਅੱਪਲੋਡ ਨਹੀਂ ਕਰਦੀ। ਫ਼ੋਨ ’ਤੇ ਲਿਖਤ ਪੜ੍ਹਨ ਵਾਲੇ ਟੂਲ ਲਈ Google Play ਸੇਵਾਵਾਂ ਮੁੱਢਲੀ ਡਾਇਗਨੌਸਟਿਕ ਜਾਣਕਾਰੀ ਲੈ ਸਕਦੀਆਂ ਹਨ।</string>
+    <string name="privacy_policy">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</string>
+</resources>

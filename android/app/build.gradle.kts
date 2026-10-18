@@ -17,11 +17,15 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        // Static result JSON produced by /pipeline. Tried in order; the first is fastest.
+        // Static result JSON produced by /pipeline (v2 feeds), tried in this order until one works.
+        // Order follows reachability measured from Indian ISPs on 18-10-2026 (Globalping):
+        // github.io and jsDelivr 100 %, raw.githubusercontent.com ~50 % (TCP timeouts on Jio/Airtel/ACT).
+        // config.json can replace this list remotely (e.g. a Cloudflare custom domain).
         buildConfigField(
-            "String[]", "RESULT_URLS",
-            "{\"https://raw.githubusercontent.com/entrepreneur123/india/data/v1/latest.json\"," +
-                "\"https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v1/latest.json\"}"
+            "String[]", "RESULT_MIRRORS",
+            "{\"https://entrepreneur123.github.io/india/v2/\"," +
+                "\"https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v2/\"," +
+                "\"https://raw.githubusercontent.com/entrepreneur123/india/data/v2/\"}"
         )
     }
 
@@ -35,7 +39,7 @@ android {
 
     // Only ship the UI languages we translate (drops dozens of library locales from the APK).
     androidResources {
-        localeFilters += listOf("en", "hi", "bn")
+        localeFilters += listOf("en", "hi", "bn", "ne", "pa", "mr")
         generateLocaleConfig = true
     }
 
