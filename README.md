@@ -47,7 +47,7 @@ nagalandlotteries.com 공식 스캔 PDF (~20:30 IST)          ─┤ pipeline/ (
 
 ```bash
 # 파이프라인 (poppler-utils 필요, OCR 검증에는 tesseract-ocr + pillow)
-cd pipeline && python -m pytest -q tests                      # 125 tests (실제 결과지 102개 포함)
+cd pipeline && python -m pytest -q tests                      # 126 tests (실제 결과지 102개 포함)
 python -m lottery_pipeline.build --out ../public --backfill-days 30 --deep
 
 # 부하 모델 / 인도 접속 측정

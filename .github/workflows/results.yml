@@ -1,21 +1,27 @@
 # Collects Dear lottery results and publishes static JSON (schema v2) to the `data` branch.
 # The app reads it from GitHub Pages first (enable: Settings > Pages > Deploy from branch `data`, / root),
-# then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages (see the last step).
+# then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages (see publish()).
 #
+# GitHub starts scheduled runs late or skips them (measured 18-10-2026: "every 5 min" produced runs
+# at 15:09, 15:12 and 15:37 UTC). So each draw gets ONE run that starts before the draw and polls the
+# source every 60 s itself until the sheet is published, plus a backup run 30 min later.
 # Times are UTC; IST = UTC+5:30.
-#   1 PM IST draw -> 07:35-08:55 UTC   6 PM IST -> 12:35-13:55 UTC   8 PM IST -> 14:35-15:55 UTC
-# The official gazette appears ~20:30 IST (15:00 UTC); a 03:00 UTC run re-checks yesterday ("deep").
-# GitHub may start scheduled runs several minutes late; see docs/OPERATIONS.md.
+#   07:20  1 PM IST window   12:20  6 PM IST window   14:20  8 PM IST window   (+ :50 backups)
+#   15:10 / 15:40 / 16:10  official gazette (~20:30 IST): OCR check, Dear Laxmi, specials catalog
+#   03:00  daily re-check of yesterday
 name: results
 
 on:
   schedule:
-    - cron: "35-55/5 7 * * *"
-    - cron: "*/5 8 * * *"
-    - cron: "35-55/5 12 * * *"
-    - cron: "*/5 13 * * *"
-    - cron: "35-55/5 14 * * *"
-    - cron: "*/5 15 * * *"
+    - cron: "20 7 * * *"
+    - cron: "50 7 * * *"
+    - cron: "20 12 * * *"
+    - cron: "50 12 * * *"
+    - cron: "20 14 * * *"
+    - cron: "50 14 * * *"
+    - cron: "10 15 * * *"
+    - cron: "40 15 * * *"
+    - cron: "10 16 * * *"
     - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
@@ -38,10 +44,13 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 120
     env:
-      # Secrets cannot be tested in `if:` directly; expose whether one is set.
-      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+      # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
+      HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,15 +67,19 @@ jobs:
       - name: Decide run mode
         id: mode
         run: |
-          hour=$(date -u +%H)
-          deep=false; ocr=false; backfill=1
-          if [ "$hour" = "15" ] || [ "$hour" = "03" ]; then deep=true; ocr=true; fi
+          # require: slots this run waits for; watch: minutes to keep polling.
+          require=""; watch=0; deep=false; ocr=false; backfill=1
+          case "${{ github.event.schedule }}" in
+            "20 7 * * *"|"50 7 * * *")   require=NL1PM; watch=75 ;;
+            "20 12 * * *"|"50 12 * * *") require=SK6PM; watch=75 ;;
+            "20 14 * * *"|"50 14 * * *") require=NL8PM; watch=75 ;;
+            "10 15 * * *"|"40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
+            "0 3 * * *") deep=true; ocr=true; backfill=2 ;;
+          esac
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             deep=true; ocr="${{ inputs.ocr }}"; backfill="${{ inputs.backfill_days }}"
           fi
-          echo "deep=$deep" >> "$GITHUB_OUTPUT"
-          echo "ocr=$ocr" >> "$GITHUB_OUTPUT"
-          echo "backfill=$backfill" >> "$GITHUB_OUTPUT"
+          { echo "require=$require"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
@@ -79,37 +92,36 @@ jobs:
         working-directory: pipeline
         run: python -m pytest -q tests
 
-      - name: Fetch and build JSON
+      - name: Fetch, build and publish (polls until the result is out)
         working-directory: pipeline
         run: |
+          publish() {
+            rm -rf ../public/v1                          # schema v1 was never shipped in an app
+            touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
+            cp ../docs/privacy.html ../public/privacy.html
+            cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
+            git -C ../public add -A
+            if git -C ../public diff --cached --quiet; then return 0; fi
+            git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
+              commit -q -m "results $(date -u +%FT%TZ)"
+            git -C ../public push -q origin data
+            if [ "$HAS_CF" = "true" ]; then
+              npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" \
+                --branch main --commit-dirty=true || echo "::warning::Cloudflare deploy failed"
+            fi
+          }
           args="--out ../public --backfill-days ${{ steps.mode.outputs.backfill }}"
           if [ "${{ steps.mode.outputs.deep }}" = "true" ]; then args="$args --deep"; fi
           if [ "${{ steps.mode.outputs.ocr }}" != "true" ]; then args="$args --no-ocr"; fi
-          python -m lottery_pipeline.build $args
-
-      - name: Static site files
-        run: |
-          touch public/.nojekyll                      # serve files as-is on GitHub Pages
-          cp docs/privacy.html public/privacy.html    # privacy policy URL used by the app and Play listing
-          cp docs/_headers public/_headers            # cache rules for Cloudflare Pages (ignored by GitHub)
-
-      - name: Publish to data branch
-        id: publish
-        working-directory: public
-        run: |
-          git add -A
-          if git diff --cached --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0; fi
-          git -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
-            commit -q -m "results $(date -u +%FT%TZ)"
-          git push origin data
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-
-      # Optional production CDN. Create a Cloudflare Pages project, then add repository secrets
-      # CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and variable CF_PAGES_PROJECT; put its custom
-      # domain first in pipeline/app_config.json "mirrors".
-      - name: Deploy to Cloudflare Pages
-        if: steps.publish.outputs.changed == 'true' && env.HAS_CF == 'true' && vars.CF_PAGES_PROJECT != ''
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@4.147.0 pages deploy public --project-name "${{ vars.CF_PAGES_PROJECT }}" --branch main --commit-dirty=true
+          require="${{ steps.mode.outputs.require }}"
+          if [ -n "$require" ]; then args="$args --require $require"; fi
+          end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
+          while :; do
+            set +e; python -m lottery_pipeline.build $args; code=$?; set -e
+            if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then exit "$code"; fi
+            publish
+            [ "$code" -eq 0 ] && break
+            if [ "$(date +%s)" -ge "$end" ]; then echo "::warning::still waiting for $require; giving up this run"; break; fi
+            sleep 60
+            args="${args/ --deep/}"   # catalog refresh only on the first pass (be gentle to the sources)
+          done

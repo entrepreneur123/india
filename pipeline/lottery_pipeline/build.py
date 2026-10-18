@@ -261,6 +261,12 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
     return 0
 
 
+def missing_slots(out: str, today: dt.date, required: list[str]) -> list[str]:
+    """Required weekly slots that do not yet have numbers for today (used by the watch loop)."""
+    day = load_day(out, today)
+    return [s for s in required if day.get(f"{today.isoformat()}_{s}", {}).get("status") != "OK"]
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--out", required=True)
@@ -269,12 +275,18 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--no-official", action="store_true")
     p.add_argument("--no-ocr", action="store_true", help="link official PDFs without OCR verification")
     p.add_argument("--deep", action="store_true", help="also refresh special-draw catalog and upcoming list")
+    p.add_argument("--require", default="", help="comma-separated slots; exit 3 while any has no result today")
     a = p.parse_args(argv)
     today = dt.date.fromisoformat(a.date) if a.date else dt.datetime.now(IST).date()
     now_ist = dt.datetime.now(IST)
     if a.date:  # replaying a past day: treat every draw of that day as done
         now_ist = dt.datetime.combine(today, dt.time(23, 59), IST)
-    return run(a.out, today, a.backfill_days, not a.no_official, a.deep, now_ist, ocr=not a.no_ocr)
+    run(a.out, today, a.backfill_days, not a.no_official, a.deep, now_ist, ocr=not a.no_ocr)
+    missing = missing_slots(a.out, today, [s for s in a.require.split(",") if s])
+    if missing:
+        print(f"waiting for: {', '.join(missing)}")
+        return 3
+    return 0
 
 
 if __name__ == "__main__":

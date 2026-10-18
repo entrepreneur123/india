@@ -241,3 +241,17 @@ def test_merge_marks_verified_from_ocr_text():
     out = build.merge(base, None, None, "official-url", print,
                       [(FIX / "official_MN171026_ocr_psm4.txt").read_text()])
     assert out["verified"] is True and out["officialCheck"]["top"] is True
+
+
+def test_require_exit_code_drives_the_watch_loop(tmp_path, monkeypatch):
+    def fake_fetch(slot_id, date, today=None):
+        if slot_id != "NL1PM":
+            return None
+        d = sambad.parse((FIX / "sambad_MN181026.txt").read_text(), slot_id, date)
+        d.sources.append({"kind": "lotterysambad", "url": "x"})
+        return d
+    monkeypatch.setattr(sambad, "fetch", fake_fetch)
+    monkeypatch.setattr(sambad, "listed_today", lambda: [])
+    args = ["--out", str(tmp_path), "--date", "2026-10-18", "--backfill-days", "0", "--no-official"]
+    assert build.main(args + ["--require", "NL1PM"]) == 0
+    assert build.main(args + ["--require", "NL1PM,NL8PM"]) == 3
