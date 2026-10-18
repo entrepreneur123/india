@@ -19,7 +19,11 @@ object ShareImage {
     private const val W = 1080
     private const val PAD = 48f
 
-    fun render(draw: Draw, title: (rank: String) -> String, footer: String, dateTime: String): Bitmap {
+    fun render(
+        draw: Draw, title: (rank: String) -> String, footer: String, dateTime: String,
+        stateLabel: String = draw.state,
+        drawNoLabel: (String) -> String = { "Draw No. $it" },
+    ): Bitmap {
         val name = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 46f; typeface = Typeface.DEFAULT_BOLD }
         val sub = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; textSize = 34f }
         val head = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.rgb(0x41, 0x00, 0x01); textSize = 36f; typeface = Typeface.DEFAULT_BOLD }
@@ -46,8 +50,8 @@ object ShareImage {
         c.drawColor(Color.rgb(0xFF, 0xF8, 0xF4))
         c.drawRect(0f, 0f, W.toFloat(), headerH, Paint().apply { color = Color.rgb(0xB3, 0x26, 0x1E) })
         c.drawText(ellipsize(draw.name, name, W - 2 * PAD), PAD, 90f, name)
-        c.drawText("$dateTime · ${draw.state}", PAD, 150f, sub)
-        draw.drawNo?.let { c.drawText("Draw No. $it", PAD, 200f, sub) }
+        c.drawText("$dateTime · $stateLabel", PAD, 150f, sub)
+        draw.drawNo?.let { c.drawText(drawNoLabel(it.toString()), PAD, 200f, sub) }
 
         var y = headerH + 60f
         c.drawText(title(draw.tiers.first().rank) + " · " + formatRupees(draw.tiers.first().prize), PAD, y, head)

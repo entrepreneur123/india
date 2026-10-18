@@ -5,6 +5,7 @@
 - Nagaland State Lottery(1 PM · 8 PM · Dear Laxmi), Sikkim 6 PM, 범퍼·월간 추첨을 한 화면에 보여줍니다.
 - 티켓 번호를 입력하거나 **카메라·사진으로 스캔**하면 당첨 여부를 바로 알려줍니다.
 - 지원 언어: English · हिन्दी · বাংলা · नेपाली · ਪੰਜਾਬੀ · मराठी
+  - 직역 대신 실제 구매자들이 쓰는 말로 현지화했습니다(예: "इनाम लगा", "লটারি লেগেছে", "ਇਨਾਮ ਨਿਕਲਿਆ", "बक्षीस लागले").
 
 | 오늘 결과 | 라이브 추첨 | 당첨 확인 | 범퍼 당첨 | 가이드 | 언어 선택 |
 |---|---|---|---|---|---|
@@ -42,6 +43,8 @@ nagalandlotteries.com 공식 스캔 PDF (~20:30 IST)          ─┤ pipeline/ (
 | [docs/PLAY_LAUNCH.md](docs/PLAY_LAUNCH.md) | 스토어 제목·설명(글자 수 검증), Data safety, 콘솔 체크리스트, 수익화 주의 |
 | [docs/OPERATIONS.md](docs/OPERATIONS.md) | 처음 설정, 범퍼 당일 절차, 호스팅 이전 |
 | [docs/privacy.html](docs/privacy.html) | 개인정보처리방침 (Pages로 배포됨) |
+| [web/](web/) | 결과 웹페이지 (Pages 루트 `index.html`). 문구는 앱 번역을 그대로 사용 |
+| [dist/](dist/) | 미리보기 APK (디버그 키 서명, 테스트용) |
 
 ## 실행
 

@@ -60,7 +60,7 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, modifier: Modi
                     Text(formatTime(s.drawTime.toString()), fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 10.dp))
                     Column(Modifier.weight(1f)) {
                         Text(s.gameName(dow), fontWeight = FontWeight.SemiBold)
-                        Text(stringResource(R.string.info_slot_meta, s.state, s.price, if (s.format == "D4") "12 3456" else "39C 06366"),
+                        Text(stringResource(R.string.info_slot_meta, stateName(s.state), s.price, if (s.format == "D4") "12 3456" else "39C 06366"),
                             style = MaterialTheme.typography.bodySmall)
                     }
                 }

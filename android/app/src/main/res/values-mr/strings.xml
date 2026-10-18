@@ -1,57 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Marathi. Machine-assisted translation: have a native speaker review before release. -->
+<!-- Marathi. Localized, not translated word-for-word: the words Maharashtra lottery buyers use
+     (निकाल, सोडत, तिकीट, बक्षीस लागले). Legal/claim text stays precise. Native review still recommended. -->
 <resources>
     <string name="tab_results">निकाल</string>
     <string name="tab_check">तिकीट तपासा</string>
     <string name="tab_tickets">माझी तिकिटे</string>
-    <string name="tab_info">माहिती</string>
+    <string name="tab_info">गाइड</string>
 
-    <string name="disclaimer_title">महत्त्वाची माहिती</string>
-    <string name="disclaimer_body">LottoDost हे एक स्वतंत्र ॲप आहे. याचा नागालँड सरकार, सिक्कीम सरकार, पंजाब सरकार किंवा कोणत्याही लॉटरी विभागाशी काहीही संबंध नाही. आम्ही तिकिटे विकत नाही आणि कधीही पैसे मागत नाही. निकाल सार्वजनिक स्रोतांमधून घेतले जातात — बक्षिसाचा दावा करण्यापूर्वी नेहमी अधिकृत निकालाशी जुळवा. प्रत्येक राज्यात लॉटरी तिकीट खरेदीला परवानगी नाही. फक्त प्रौढांसाठी (18+).</string>
-    <string name="disclaimer_ok">मला समजले</string>
-    <string name="safety_title">सावध राहा</string>
-    <string name="safety_body">कोणतेही ॲप, एजंट किंवा WhatsApp ग्रुप लॉटरी नंबर आधी सांगू शकत नाही किंवा फिक्स करू शकत नाही. LottoDost कधीही तिकिटे विकत नाही आणि कधीही पैसे, बँक किंवा UPI तपशील मागत नाही. “खात्रीचा नंबर” अशा प्रत्येक ऑफरला फसवणूक समजा.</string>
+    <string name="disclaimer_title">महत्त्वाचे</string>
+    <string name="disclaimer_body">LottoDost हे एक स्वतंत्र ॲप आहे. नागालँड, सिक्कीम किंवा पंजाब सरकार आणि कोणत्याही लॉटरी विभागाशी याचा काहीही संबंध नाही. आम्ही तिकिटे विकत नाही आणि कधीही पैसे मागत नाही. निकाल सार्वजनिक स्रोतांमधून घेतले जातात, म्हणून बक्षीस घेण्यापूर्वी सरकारी निकालाशी नक्की जुळवून पाहा. प्रत्येक राज्यात लॉटरी तिकीट खरेदी करण्याची परवानगी नाही. फक्त 18 वर्षे किंवा त्याहून अधिक वयाच्या व्यक्तींसाठी.</string>
+    <string name="disclaimer_ok">ठीक आहे, समजले</string>
+    <string name="safety_title">फसवणुकीपासून सावध</string>
+    <string name="safety_body">कोणतेही ॲप, एजंट किंवा WhatsApp ग्रुप लॉटरीचा नंबर आधीच सांगू शकत नाही किंवा फिक्सही करू शकत नाही. LottoDost तिकिटे विकत नाही आणि कधीही पैसे, बँक किंवा UPI तपशील मागत नाही. “पक्का नंबर” किंवा “फिक्स नंबर” देणारी प्रत्येक ऑफर म्हणजे फसवणूक.</string>
 
     <string name="results_subtitle">डियर लॉटरी निकाल · 1 PM · 6 PM · 8 PM</string>
-    <string name="offline_banner">इंटरनेट नाही. सेव्ह केलेले निकाल दाखवत आहोत.</string>
-    <string name="checking">नवीन निकाल तपासत आहोत…</string>
+    <string name="offline_banner">इंटरनेट नाही. आधी सेव्ह केलेले निकाल दाखवत आहोत.</string>
+    <string name="checking">नवीन निकाल पाहत आहोत…</string>
     <string name="updated_just_now">आत्ताच अपडेट झाले</string>
     <string name="updated_min_ago">%1$d मिनिटांपूर्वी अपडेट झाले</string>
-    <string name="update_required">ही आवृत्ती खूप जुनी आहे आणि निकाल योग्यरीत्या दाखवू शकत नाही. कृपया अपडेट करा.</string>
-    <string name="update_available">ॲपची नवीन आवृत्ती उपलब्ध आहे.</string>
+    <string name="update_required">ॲपची ही आवृत्ती जुनी झाली आहे, यात निकाल नीट दिसणार नाहीत. कृपया ॲप अपडेट करा.</string>
+    <string name="update_available">ॲपची नवीन आवृत्ती आली आहे.</string>
     <string name="update_button">अपडेट करा</string>
     <string name="open">उघडा</string>
     <string name="ok">ठीक आहे</string>
-    <string name="upcoming_special">लवकरच: %1$s, %2$s रोजी</string>
+    <string name="upcoming_special">पुढची सोडत: %1$s · %2$s</string>
     <string name="today">आज</string>
     <string name="more_dates">आणखी तारखा</string>
-    <string name="no_draw_day">या दिवशी कोणतीही सोडत झाली नाही.</string>
-    <string name="source_note">स्रोत: lotterysambad.com आणि nagalandlotteries.com वरील अधिकृत राजपत्र. हे अधिकृत ॲप नाही.</string>
+    <string name="no_draw_day">या दिवशी सोडत झाली नाही.</string>
+    <string name="source_note">स्रोत: lotterysambad.com आणि nagalandlotteries.com वरील सरकारी राजपत्र. हे सरकारी ॲप नाही.</string>
     <string name="state_lottery">%1$s राज्य लॉटरी</string>
+    <string name="state_nagaland">नागालँड</string>
+    <string name="state_sikkim">सिक्कीम</string>
+    <string name="state_punjab">पंजाब</string>
     <string name="tag_morning">मॉर्निंग</string>
     <string name="tag_day">डे</string>
     <string name="tag_night">नाइट</string>
     <string name="verified">पडताळलेले</string>
-    <string name="verified_long">पहिल्या आणि दुसऱ्या बक्षिसाचे नंबर अधिकृत सरकारी निकालाशी जुळतात.</string>
+    <string name="verified_long">पहिल्या आणि दुसऱ्या बक्षिसाचे नंबर सरकारी निकालाशी जुळले आहेत.</string>
     <string name="first_prize">पहिले बक्षीस</string>
-    <string name="tap_full_result">सर्व बक्षिसे पाहण्यासाठी टॅप करा</string>
-    <string name="pdf_only">अधिकृत निकाल PDF स्वरूपात उपलब्ध आहे.</string>
-    <string name="open_official_pdf">अधिकृत निकाल (PDF) उघडा</string>
-    <string name="open_sheet">निकाल पत्रक उघडा (लॉटरी संवाद)</string>
-    <string name="sheet_only">निकाल पत्रकाच्या स्वरूपात उपलब्ध आहे.</string>
+    <string name="tap_full_result">सगळी बक्षिसे पाहण्यासाठी टॅप करा</string>
+    <string name="pdf_only">सरकारी निकाल PDF मध्ये उपलब्ध आहे.</string>
+    <string name="open_official_pdf">सरकारी निकाल (PDF) उघडा</string>
+    <string name="open_sheet">निकाल शीट उघडा (Lottery Sambad)</string>
+    <string name="sheet_only">निकाल शीटमध्ये उपलब्ध आहे.</string>
     <string name="special_tag">विशेष सोडत</string>
-    <string name="draw_in">सोडत %1$d तास %2$d मिनिटांत</string>
+    <string name="draw_in">सोडतीला %1$d तास %2$d मिनिटे बाकी</string>
     <string name="live">लाइव्ह</string>
     <string name="watch_live">लाइव्ह सोडत पाहा</string>
-    <string name="result_coming">निकाल लवकरच येत आहे…</string>
-    <string name="result_delayed">नेहमीपेक्षा जास्त वेळ लागत आहे. पत्रक साधारणपणे सोडतीनंतर 7–10 मिनिटांनी येते — आम्ही तपासत राहू.</string>
-    <string name="no_result">कोणताही निकाल उपलब्ध नाही</string>
+    <string name="result_coming">निकाल आता येईलच…</string>
+    <string name="result_delayed">निकाल यायला उशीर होत आहे. साधारणपणे सोडतीनंतर 7–10 मिनिटांत शीट येते — आम्ही सतत तपासत आहोत.</string>
+    <string name="no_result">अजून निकाल नाही</string>
 
-    <string name="notif_channel">निकाल आणि तिकीट सूचना</string>
+    <string name="notif_channel">निकाल आणि तिकीट अलर्ट</string>
     <string name="notif_result_title">%1$s चा निकाल आला</string>
     <string name="notif_result_body">पहिले बक्षीस: %1$s. तुमचे तिकीट तपासण्यासाठी टॅप करा.</string>
-    <string name="notif_ticket_won">तुमच्या तिकीट %1$s ला %2$s मिळाले! अधिकृत निकालाशी जुळवा.</string>
-    <string name="notif_ticket_lost">तुमचे तिकीट %1$s या वेळी जिंकले नाही.</string>
+    <string name="notif_ticket_won">तुमच्या %1$s तिकिटाला %2$s चे बक्षीस लागले! सरकारी निकालाशी नक्की जुळवून पाहा.</string>
+    <string name="notif_ticket_lost">तुमच्या %1$s तिकिटाला या वेळी बक्षीस लागले नाही.</string>
 
     <string name="tier_1">पहिले बक्षीस</string>
     <string name="tier_cons">उत्तेजनार्थ बक्षीस</string>
@@ -60,76 +64,77 @@
     <string name="tier_4">चौथे बक्षीस</string>
     <string name="tier_5">पाचवे बक्षीस</string>
     <string name="tier_n">%1$dवे बक्षीस</string>
-    <string name="match_last4">शेवटचे 4 अंक जुळले पाहिजेत</string>
-    <string name="match_last5">शेवटचे 5 अंक जुळले पाहिजेत</string>
-    <string name="match_cons">पहिल्या बक्षिसाचेच 5 अंक, पण दुसरा सिरियल किंवा अक्षर</string>
+    <string name="match_last4">शेवटचे 4 अंक जुळल्यास</string>
+    <string name="match_last5">शेवटचे 5 अंक जुळल्यास</string>
+    <string name="match_cons">पहिल्या बक्षिसाचेच 5 अंक, पण सिरियल किंवा अक्षर वेगळे</string>
 
     <string name="back">मागे</string>
-    <string name="share_text">मजकूर म्हणून शेअर करा</string>
+    <string name="share_text">मजकूर शेअर करा</string>
     <string name="share_whatsapp">निकालाचा फोटो शेअर करा (WhatsApp)</string>
-    <string name="share_footer">LottoDost ॲपने तपासले. अधिकृत निकालाशी जुळवा.</string>
+    <string name="share_footer">LottoDost ॲपने तपासले. सरकारी निकालाशी जुळवून पाहा.</string>
     <string name="draw_meta">%1$s · सोडत क्र. %2$s · तिकीट ₹%3$d</string>
+    <string name="draw_no">सोडत क्र. %1$s</string>
     <string name="draw_meta_special">%1$s · तिकीट ₹%2$d</string>
-    <string name="ocr_caution">हे नंबर अधिकृत स्कॅन केलेल्या PDF मधून आपोआप वाचले आहेत. दावा करण्यापूर्वी अधिकृत PDF मध्ये नक्की तपासा.</string>
+    <string name="ocr_caution">हे नंबर सरकारी स्कॅन केलेल्या PDF मधून आपोआप वाचले आहेत. बक्षीस घेण्यापूर्वी PDF मध्ये एकदा स्वतः पाहा.</string>
     <string name="find_in_result">या निकालात माझा नंबर शोधा</string>
-    <string name="claim_title">बक्षिसाचा दावा कसा करावा</string>
-    <string name="claim_info">नागालँड लॉटरीतील ₹10,000 पेक्षा जास्त बक्षिसाचा दावा सोडतीपासून 30 दिवसांच्या आत नागालँड राज्य लॉटरी संचालनालय, कोहिमा किंवा त्यांच्या नोडल कार्यालयात मूळ तिकीट आणि 3 साक्षांकित पासपोर्ट फोटोंसह करावा लागतो (अधिकृत निकालात छापल्याप्रमाणे). लहान बक्षिसांसाठी तुमच्या तिकीट विक्रेत्याला विचारा. मोठ्या बक्षिसांवर कर कापला जातो.</string>
-    <string name="claim_small">₹10,000 पर्यंतची बक्षिसे: ज्याच्याकडून तिकीट घेतले त्या विक्रेत्याला किंवा स्टॉकिस्टला विचारा. आधी अधिकृत निकालाशी जुळवा.</string>
-    <string name="claim_other_state">सिक्कीम आणि पंजाबच्या सोडतींसाठी तुमच्या तिकिटावर आणि अधिकृत निकालावर छापलेल्या दाव्याच्या सूचना पाळा. आधी तुमच्या विक्रेत्याला विचारा.</string>
+    <string name="claim_title">बक्षीस कसे मिळवायचे</string>
+    <string name="claim_info">नागालँड लॉटरीत ₹10,000 पेक्षा जास्त बक्षिसाचा दावा सोडतीनंतर 30 दिवसांच्या आत करावा लागतो: मूळ तिकीट आणि 3 साक्षांकित पासपोर्ट आकाराचे फोटो कोहिमा येथील नागालँड राज्य लॉटरी संचालनालयात किंवा त्याच्या नोडल कार्यालयात जमा करा (सरकारी निकालावर छापल्याप्रमाणे). लहान बक्षिसांसाठी तुमच्या तिकीट विक्रेत्याला विचारा. मोठ्या बक्षिसावर कर कापला जातो.</string>
+    <string name="claim_small">₹10,000 पर्यंतचे बक्षीस: ज्या दुकानातून किंवा स्टॉकिस्टकडून तिकीट घेतले, त्यांनाच विचारा. आधी सरकारी निकालाशी जुळवून पाहा.</string>
+    <string name="claim_other_state">सिक्कीम आणि पंजाबच्या सोडतींसाठी बक्षीस घेण्याची पद्धत तिकिटावर आणि सरकारी निकालावर छापलेली असते. आधी तुमच्या विक्रेत्याला विचारा.</string>
 
     <string name="check_title">तुमचे तिकीट तपासा</string>
-    <string name="check_hint">पूर्ण नंबर (उदा. 39C 06366, बंपर A 801021) किंवा शेवटचे 4–6 अंक लिहा, किंवा तिकीट स्कॅन करा.</string>
+    <string name="check_hint">पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट स्कॅन करा.</string>
     <string name="ticket_number">तिकीट नंबर</string>
     <string name="ticket_invalid">असे लिहा: 39C 06366, A 801021, 06366 किंवा 6366</string>
-    <string name="scan_confirm">फोटोतून वाचले — तुमच्या तिकिटाशी जुळवा, मग “तपासा” दाबा.</string>
-    <string name="scan_none">तिकीट नंबर वाचता आला नाही. चांगल्या प्रकाशात पुन्हा प्रयत्न करा किंवा नंबर लिहा.</string>
+    <string name="scan_confirm">फोटोतून नंबर वाचला — तुमच्या तिकिटाशी जुळवा आणि “तपासा” दाबा.</string>
+    <string name="scan_none">तिकीट नंबर वाचता आला नाही. चांगल्या उजेडात पुन्हा प्रयत्न करा किंवा नंबर स्वतः लिहा.</string>
     <string name="check_button">तपासा</string>
     <string name="scan_button">तिकीट स्कॅन करा</string>
-    <string name="only_date">फक्त %1$s (सर्व पाहण्यासाठी टॅप करा)</string>
-    <string name="no_win_title">%1$s: बक्षीस नाही</string>
+    <string name="only_date">फक्त %1$s (सगळे पाहण्यासाठी टॅप करा)</string>
+    <string name="no_win_title">%1$s: बक्षीस लागले नाही</string>
     <plurals name="no_win_body">
-        <item quantity="one">%1$d निकालाशी तपासले.</item>
-        <item quantity="other">%1$d निकालांशी तपासले.</item>
+        <item quantity="one">%1$d निकालाशी जुळवले.</item>
+        <item quantity="other">%1$d निकालांशी जुळवले.</item>
     </plurals>
     <string name="need_full_number">पहिले, उत्तेजनार्थ आणि दुसरे बक्षीसही तपासण्यासाठी पूर्ण तिकीट नंबर (सिरियल आणि अक्षरासह) लिहा.</string>
-    <string name="you_won">अभिनंदन! तुम्ही जिंकलात</string>
-    <string name="maybe_first">मोठ्या बक्षिसासारखेच अंक!</string>
-    <string name="also_matches">हेही जुळले: %1$s</string>
-    <string name="save_title">निकाल आल्यावर सूचना मिळवण्यासाठी हे तिकीट सेव्ह करा</string>
+    <string name="you_won">अभिनंदन! तुम्हाला बक्षीस लागले</string>
+    <string name="maybe_first">मोठ्या बक्षिसाचे अंक जुळत आहेत!</string>
+    <string name="also_matches">यांच्याशीही जुळले: %1$s</string>
+    <string name="save_title">निकाल येताच अलर्ट मिळवण्यासाठी हे तिकीट सेव्ह करा</string>
     <string name="save_button">%1$s साठी सेव्ह करा</string>
-    <string name="saved_ok">सेव्ह झाले. आम्ही ते आपोआप तपासू.</string>
+    <string name="saved_ok">सेव्ह झाले. निकाल आल्यावर आम्ही आपोआप तपासू.</string>
 
-    <string name="scan_aim">तिकीट नंबर चौकटीत धरा</string>
-    <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेरा परवानगी हवी. तुम्ही फोटोही निवडू शकता.</string>
+    <string name="scan_aim">तिकीट नंबर चौकटीच्या आत ठेवा</string>
+    <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेऱ्याची परवानगी हवी. हवे तर गॅलरीतून फोटोही निवडू शकता.</string>
     <string name="cancel">रद्द करा</string>
     <string name="pick_photo">फोटो निवडा</string>
 
     <string name="tickets_title">माझी तिकिटे</string>
-    <string name="tickets_hint">निकाल प्रसिद्ध झाल्यावर सेव्ह केलेली तिकिटे आपोआप तपासली जातात.</string>
-    <string name="tickets_empty">अजून कोणतेही तिकीट सेव्ह केलेले नाही. तिकीट तपासा आणि “सेव्ह” दाबा.</string>
-    <string name="ticket_waiting">निकालाची प्रतीक्षा</string>
-    <string name="ticket_won">जिंकले: %1$s · %2$s</string>
-    <string name="ticket_no_prize">बक्षीस नाही</string>
-    <string name="remove">काढा</string>
+    <string name="tickets_hint">सेव्ह केलेली तिकिटे निकाल येताच आपोआप तपासली जातात.</string>
+    <string name="tickets_empty">अजून एकही तिकीट सेव्ह केलेले नाही. तिकीट तपासा आणि “सेव्ह करा” दाबा.</string>
+    <string name="ticket_waiting">निकालाची वाट</string>
+    <string name="ticket_won">बक्षीस लागले: %1$s · %2$s</string>
+    <string name="ticket_no_prize">बक्षीस लागले नाही</string>
+    <string name="remove">काढून टाका</string>
 
-    <string name="info_title">लॉटरी मार्गदर्शक</string>
+    <string name="info_title">लॉटरी गाइड</string>
     <string name="info_schedule">आजच्या सोडती</string>
-    <string name="info_slot_meta">%1$s · ₹%2$d · तिकीट उदा. %3$s</string>
-    <string name="info_schedule_note">निकाल साधारणपणे प्रत्येक सोडतीनंतर 7–10 मिनिटांनी येतो. काही सुट्ट्यांना सोडत होत नाही (उदा. 2 ऑक्टोबर 2026).</string>
-    <string name="info_week_names">दिवसानुसार खेळांची नावे</string>
-    <string name="info_laxmi_legend">L = डियर लक्ष्मी (4 अंकी खेळ, 8 PM)</string>
-    <string name="info_prizes">बक्षीस तक्ता</string>
+    <string name="info_slot_meta">%1$s · ₹%2$d · तिकीट असे: %3$s</string>
+    <string name="info_schedule_note">प्रत्येक सोडतीनंतर साधारण 7–10 मिनिटांत निकाल येतो. काही सुट्टीच्या दिवशी सोडत होत नाही (उदा. 2 ऑक्टोबर 2026).</string>
+    <string name="info_week_names">कोणत्या दिवशी कोणता गेम</string>
+    <string name="info_laxmi_legend">L = डियर लक्ष्मी (4 अंकी गेम, 8 PM)</string>
+    <string name="info_prizes">बक्षिसांची यादी</string>
     <string name="info_prizes_pending">पहिला निकाल लोड झाल्यावर दिसेल.</string>
-    <string name="info_ticket_title">तुमचे तिकीट कसे वाचावे</string>
-    <string name="info_ticket_body">39 = सिरियल (34–99) · C = सिरीज अक्षर (A B C D E G H J K L — F आणि I कधीच नाही) · 06366 = नंबर.\n• पहिले बक्षीस: पूर्ण नंबर जुळला पाहिजे.\n• उत्तेजनार्थ बक्षीस: पहिल्या बक्षिसाचेच 5 अंक, कोणताही दुसरा सिरियल किंवा अक्षर.\n• दुसरे बक्षीस: शेवटचे 5 अंक.\n• तिसरे, चौथे आणि पाचवे बक्षीस: शेवटचे 4 अंक.\nडियर लक्ष्मी तिकिटे (10–29 + 4 अंक) 4 अंकांवर जिंकतात. बंपर तिकिटांचा (उदा. A 801021) स्वतःचा बक्षीस तक्ता असतो — निकाल पाहा.</string>
-    <string name="info_upcoming">येणाऱ्या विशेष सोडती</string>
-    <string name="official_results">अधिकृत निकाल (नागालँड)</string>
+    <string name="info_ticket_title">तिकीट कसे वाचायचे</string>
+    <string name="info_ticket_body">39 = सिरियल (34–99) · C = सिरीजचे अक्षर (A B C D E G H J K L — F आणि I नसतात) · 06366 = नंबर.\n• पहिले बक्षीस: पूर्ण नंबर जुळायला हवा.\n• उत्तेजनार्थ बक्षीस: पहिल्या बक्षिसाचेच 5 अंक, पण सिरियल किंवा अक्षर वेगळे.\n• दुसरे बक्षीस: शेवटचे 5 अंक.\n• तिसरे, चौथे आणि पाचवे बक्षीस: शेवटचे 4 अंक.\nडियर लक्ष्मी तिकिटांना (10–29 + 4 अंक) 4 अंकांवर बक्षीस लागते. बंपर तिकिटांची (उदा. A 801021) बक्षीस यादी वेगळी असते — निकालात पाहा.</string>
+    <string name="info_upcoming">पुढच्या विशेष सोडती</string>
+    <string name="official_results">सरकारी निकाल (नागालँड)</string>
     <string name="settings">सेटिंग्ज</string>
     <string name="language">भाषा</string>
-    <string name="notify_results">निकाल आल्यावर मला कळवा</string>
-    <string name="sources_title">निकालांचे स्रोत</string>
-    <string name="sources_body">जलद निकाल प्रत्येक सोडतीनंतर काही मिनिटांनी लॉटरी संवादच्या निकाल पत्रकातून येतात. सरकारी राजपत्र प्रसिद्ध झाल्यावर आम्ही जुळवतो आणि पहिल्या व दुसऱ्या बक्षिसाचे नंबर जुळल्यास निकाल “पडताळलेले” दाखवतो.</string>
+    <string name="notify_results">निकाल आल्यावर सूचना पाठवा</string>
+    <string name="sources_title">निकाल कुठून येतात</string>
+    <string name="sources_body">प्रत्येक सोडतीनंतर काही मिनिटांत Lottery Sambad च्या निकाल शीटमधून जलद निकाल येतो. सरकारी राजपत्र आल्यावर आम्ही दोन्ही जुळवून पाहतो, आणि पहिल्या व दुसऱ्या बक्षिसाचे नंबर जुळले की निकालावर “पडताळलेले” दाखवतो.</string>
     <string name="privacy_title">गोपनीयता</string>
-    <string name="privacy_body">खात्याची गरज नाही. सेव्ह केलेली तिकिटे तुमच्या फोनमध्येच राहतात. तिकिटाचा फोटो तुमच्या फोनवरच वाचला जातो आणि हे ॲप तो कधीही अपलोड करत नाही. फोनवर मजकूर वाचणाऱ्या साधनासाठी Google Play सेवा मूलभूत निदान माहिती घेऊ शकतात.</string>
+    <string name="privacy_body">खाते लागत नाही. सेव्ह केलेली तिकिटे फक्त तुमच्या फोनमध्येच राहतात. तिकिटाचा फोटो फोनवरच वाचला जातो, हे ॲप तो कुठेही अपलोड करत नाही. फोनवर मजकूर वाचणाऱ्या टूलसाठी Google Play सेवा काही मूलभूत डायग्नॉस्टिक माहिती घेऊ शकतात.</string>
     <string name="privacy_policy">गोपनीयता धोरण</string>
 </resources>

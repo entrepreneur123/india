@@ -70,6 +70,8 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     val q = query.filter { it in '0'..'9' }
     val footer = stringResource(R.string.share_footer)
+    val drawNoFmt = stringResource(R.string.draw_no)
+    val stateLabel = stringResource(R.string.state_lottery, stateName(draw.state))
     val dateTime = formatDate(draw.date) + " · " + formatTime(draw.time)
     val titles = draw.tiers.associate { it.rank to tierTitle(it) }
     val shareText = buildList {
@@ -79,7 +81,7 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
     }.joinToString("\n")
 
     fun shareImage() {
-        val bmp = ShareImage.render(draw, { titles[it] ?: it }, footer, dateTime)
+        val bmp = ShareImage.render(draw, { titles[it] ?: it }, footer, dateTime, stateLabel) { String.format(java.util.Locale.ROOT, drawNoFmt, it) }
         ShareImage.share(ctx, bmp, "${draw.id}.png", "${draw.name} — $dateTime\n$footer")
     }
 
@@ -99,8 +101,8 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
         LazyColumn(Modifier.padding(pad), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
                 Text(draw.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text(draw.drawNo?.let { stringResource(R.string.draw_meta, draw.state, it.toString(), draw.price) }
-                    ?: stringResource(R.string.draw_meta_special, draw.state, draw.price),
+                Text(draw.drawNo?.let { stringResource(R.string.draw_meta, stateName(draw.state), it.toString(), draw.price) }
+                    ?: stringResource(R.string.draw_meta_special, stateName(draw.state), draw.price),
                     style = MaterialTheme.typography.bodyMedium)
                 when {
                     draw.ocr -> Banner(stringResource(R.string.ocr_caution))

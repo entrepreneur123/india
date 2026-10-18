@@ -200,6 +200,15 @@ fun slotTag(slotId: String): String? = when (slotId) {
     else -> null
 }
 
+/** State names come from the feed in English; show them in the reader's script. Unknown names pass through. */
+@Composable
+fun stateName(state: String): String = when (state) {
+    "Nagaland" -> stringResource(R.string.state_nagaland)
+    "Sikkim" -> stringResource(R.string.state_sikkim)
+    "Punjab" -> stringResource(R.string.state_punjab)
+    else -> state
+}
+
 @Composable
 private fun SlotCard(slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfToday: ZonedDateTime?, liveUrl: String?, onOpen: (Draw) -> Unit) {
     val ctx = LocalContext.current
@@ -224,7 +233,7 @@ private fun SlotCard(slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfTo
                     Text(draw?.name?.takeIf { draw.status == "OK" }?.removeSuffix(" WEEKLY LOTTERY") ?: expected,
                         fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall,
                         maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text(stringResource(R.string.state_lottery, slot.state), style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.state_lottery, stateName(slot.state)), style = MaterialTheme.typography.bodySmall)
                 }
                 if (draw?.verified == true) AssistChip(onClick = {}, label = { Text(stringResource(R.string.verified)) })
             }
@@ -281,7 +290,7 @@ private fun SpecialCard(draw: Draw, onOpen: (Draw) -> Unit) {
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(draw.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
-                    val state = if (draw.state.isBlank()) null else stringResource(R.string.state_lottery, draw.state)
+                    val state = if (draw.state.isBlank()) null else stringResource(R.string.state_lottery, stateName(draw.state))
                     Text(listOfNotNull(formatTime(draw.time), state).joinToString(" · "), style = MaterialTheme.typography.bodySmall)
                 }
             }

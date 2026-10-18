@@ -29,6 +29,9 @@
     <string name="no_draw_day">No draw was held on this day.</string>
     <string name="source_note">Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.</string>
     <string name="state_lottery">%1$s State Lottery</string>
+    <string name="state_nagaland">Nagaland</string>
+    <string name="state_sikkim">Sikkim</string>
+    <string name="state_punjab">Punjab</string>
     <string name="tag_morning">Morning</string>
     <string name="tag_day">Day</string>
     <string name="tag_night">Night</string>
@@ -70,6 +73,7 @@
     <string name="share_whatsapp">Share result image (WhatsApp)</string>
     <string name="share_footer">Checked with the LottoDost app. Verify with the official result.</string>
     <string name="draw_meta">%1$s · Draw No. %2$s · Ticket ₹%3$d</string>
+    <string name="draw_no">Draw No. %1$s</string>
     <string name="draw_meta_special">%1$s · Ticket ₹%2$d</string>
     <string name="ocr_caution">These numbers were read automatically from the official scanned PDF. Please confirm on the official PDF before claiming.</string>
     <string name="find_in_result">Find my number in this result</string>

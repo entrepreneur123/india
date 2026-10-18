@@ -99,6 +99,7 @@ jobs:
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
+            python ../web/build.py ../public/index.html  # results web page (strings from the app)
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
             git -C ../public add -A
             if git -C ../public diff --cached --quiet; then return 0; fi

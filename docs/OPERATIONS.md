@@ -7,7 +7,8 @@
 3. **Settings → Pages**에서 Source를 *Deploy from a branch*, Branch를 `data`, 폴더를 `/ (root)`로 지정하고 저장합니다.
    - 확인: `https://entrepreneur123.github.io/india/v2/today.json`이 열리면 됩니다.
    - 확인: `https://entrepreneur123.github.io/india/privacy.html`이 열리면 됩니다. 이 주소가 Play 콘솔에 입력할 개인정보처리방침 URL입니다.
-4. `docs/privacy.html`의 연락처 이메일을 채웁니다.
+4. (완료) `docs/privacy.html` 연락처 이메일: yechan750745@gmail.com
+5. Pages가 켜지면 `https://entrepreneur123.github.io/india/`에 결과 웹페이지가 열립니다. 앱과 같은 번역 문구를 씁니다(`web/build.py`가 앱의 strings.xml에서 읽음).
 
 ## 매일 자동으로 도는 것
 

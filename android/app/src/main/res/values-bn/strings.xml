@@ -1,57 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Bengali. Machine-assisted translation: have a native speaker review before release. -->
+<!-- Bengali. Localized, not translated word-for-word: everyday Kolkata Bengali as lottery buyers speak it
+     (রেজাল্ট, টিকিট, ড্র, লটারি লেগেছে). Legal/claim text stays precise. Native review still recommended. -->
 <resources>
     <string name="tab_results">রেজাল্ট</string>
-    <string name="tab_check">টিকিট মেলান</string>
+    <string name="tab_check">টিকিট চেক</string>
     <string name="tab_tickets">আমার টিকিট</string>
-    <string name="tab_info">তথ্য</string>
+    <string name="tab_info">গাইড</string>
 
-    <string name="disclaimer_title">জরুরি তথ্য</string>
-    <string name="disclaimer_body">LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড সরকার, সিকিম সরকার, পাঞ্জাব সরকার বা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না এবং কখনও টাকা চাই না। রেজাল্ট সর্বজনীন উৎস থেকে নেওয়া হয় — পুরস্কার দাবির আগে সবসময় সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনা বৈধ নয়। শুধুমাত্র প্রাপ্তবয়স্কদের (18+) জন্য।</string>
-    <string name="disclaimer_ok">বুঝেছি</string>
-    <string name="safety_title">সাবধান থাকুন</string>
-    <string name="safety_body">কোনো অ্যাপ, এজেন্ট বা WhatsApp গ্রুপ লটারির নম্বর আগে থেকে বলতে বা ফিক্স করতে পারে না। LottoDost কখনও টিকিট বিক্রি করে না এবং কখনও টাকা, ব্যাংক বা UPI তথ্য চায় না। “নিশ্চিত নম্বর”-এর যেকোনো প্রস্তাবকে প্রতারণা বলে ধরুন।</string>
+    <string name="disclaimer_title">জরুরি কথা</string>
+    <string name="disclaimer_body">LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড, সিকিম বা পাঞ্জাব সরকার কিংবা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না, কখনো টাকাও চাই না। রেজাল্ট সর্বজনীন সূত্র থেকে নেওয়া হয়, তাই পুরস্কার নেওয়ার আগে অবশ্যই সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনার অনুমতি নেই। শুধুমাত্র 18 বছর বা তার বেশি বয়সিদের জন্য।</string>
+    <string name="disclaimer_ok">ঠিক আছে, বুঝেছি</string>
+    <string name="safety_title">প্রতারণা থেকে সাবধান</string>
+    <string name="safety_body">কোনো অ্যাপ, এজেন্ট বা WhatsApp গ্রুপ লটারির নম্বর আগে থেকে বলতে পারে না, ফিক্সও করতে পারে না। LottoDost টিকিট বিক্রি করে না, আর কখনো টাকা, ব্যাংক বা UPI-এর তথ্য চায় না। “পাক্কা নম্বর” বা “ফিক্সড নম্বর”-এর যেকোনো অফার মানেই প্রতারণা।</string>
 
     <string name="results_subtitle">ডিয়ার লটারি রেজাল্ট · 1 PM · 6 PM · 8 PM</string>
-    <string name="offline_banner">ইন্টারনেট নেই। সেভ করা রেজাল্ট দেখানো হচ্ছে।</string>
+    <string name="offline_banner">ইন্টারনেট নেই। আগে সেভ করা রেজাল্ট দেখানো হচ্ছে।</string>
     <string name="checking">নতুন রেজাল্ট দেখা হচ্ছে…</string>
     <string name="updated_just_now">এইমাত্র আপডেট হয়েছে</string>
     <string name="updated_min_ago">%1$d মিনিট আগে আপডেট হয়েছে</string>
-    <string name="update_required">এই সংস্করণটি অনেক পুরনো, রেজাল্ট ঠিকমতো দেখাতে পারবে না। অনুগ্রহ করে আপডেট করুন।</string>
-    <string name="update_available">অ্যাপের নতুন সংস্করণ এসেছে।</string>
-    <string name="update_button">আপডেট</string>
+    <string name="update_required">অ্যাপের এই ভার্সনটি পুরোনো, এতে রেজাল্ট ঠিকমতো দেখাবে না। অ্যাপটি আপডেট করুন।</string>
+    <string name="update_available">অ্যাপের নতুন ভার্সন এসেছে।</string>
+    <string name="update_button">আপডেট করুন</string>
     <string name="open">খুলুন</string>
     <string name="ok">ঠিক আছে</string>
-    <string name="upcoming_special">আসছে: %1$s, %2$s তারিখে</string>
+    <string name="upcoming_special">আসছে: %1$s · %2$s</string>
     <string name="today">আজ</string>
     <string name="more_dates">আরও তারিখ</string>
     <string name="no_draw_day">এই দিনে কোনো ড্র হয়নি।</string>
-    <string name="source_note">উৎস: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট। এটি সরকারি অ্যাপ নয়।</string>
-    <string name="state_lottery">%1$s রাজ্য লটারি</string>
+    <string name="source_note">সূত্র: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট। এটি সরকারি অ্যাপ নয়।</string>
+    <string name="state_lottery">%1$s স্টেট লটারি</string>
+    <string name="state_nagaland">নাগাল্যান্ড</string>
+    <string name="state_sikkim">সিকিম</string>
+    <string name="state_punjab">পাঞ্জাব</string>
     <string name="tag_morning">মর্নিং</string>
     <string name="tag_day">ডে</string>
     <string name="tag_night">নাইট</string>
-    <string name="verified">যাচাই করা</string>
-    <string name="verified_long">প্রথম ও দ্বিতীয় পুরস্কারের নম্বর সরকারি রেজাল্টের সঙ্গে মিলেছে।</string>
+    <string name="verified">ভেরিফায়েড</string>
+    <string name="verified_long">প্রথম ও দ্বিতীয় পুরস্কারের নম্বর সরকারি রেজাল্টের সঙ্গে মিলে গেছে।</string>
     <string name="first_prize">প্রথম পুরস্কার</string>
     <string name="tap_full_result">সব পুরস্কার দেখতে ট্যাপ করুন</string>
-    <string name="pdf_only">সরকারি রেজাল্ট PDF হিসেবে পাওয়া যাচ্ছে।</string>
+    <string name="pdf_only">সরকারি রেজাল্ট PDF-এ পাওয়া যাচ্ছে।</string>
     <string name="open_official_pdf">সরকারি রেজাল্ট (PDF) খুলুন</string>
-    <string name="open_sheet">রেজাল্ট শিট খুলুন (লটারি সংবাদ)</string>
-    <string name="sheet_only">রেজাল্ট শিট হিসেবে পাওয়া যাচ্ছে।</string>
-    <string name="special_tag">বিশেষ ড্র</string>
-    <string name="draw_in">ড্র %1$d ঘণ্টা %2$d মিনিট পরে</string>
+    <string name="open_sheet">রেজাল্ট শিট খুলুন (Lottery Sambad)</string>
+    <string name="sheet_only">রেজাল্ট শিটে পাওয়া যাচ্ছে।</string>
+    <string name="special_tag">স্পেশাল ড্র</string>
+    <string name="draw_in">ড্র হতে আর %1$d ঘণ্টা %2$d মিনিট</string>
     <string name="live">লাইভ</string>
     <string name="watch_live">লাইভ ড্র দেখুন</string>
-    <string name="result_coming">রেজাল্ট শীঘ্রই আসছে…</string>
-    <string name="result_delayed">স্বাভাবিকের চেয়ে বেশি সময় লাগছে। শিট সাধারণত ড্রয়ের 7–10 মিনিট পরে আসে — আমরা দেখতে থাকব।</string>
-    <string name="no_result">কোনো রেজাল্ট নেই</string>
+    <string name="result_coming">রেজাল্ট আসছে, একটু অপেক্ষা করুন…</string>
+    <string name="result_delayed">রেজাল্ট আসতে একটু দেরি হচ্ছে। সাধারণত ড্রয়ের 7–10 মিনিট পরেই শিট চলে আসে — আমরা বারবার চেক করছি।</string>
+    <string name="no_result">এখনও রেজাল্ট নেই</string>
 
     <string name="notif_channel">রেজাল্ট ও টিকিট অ্যালার্ট</string>
     <string name="notif_result_title">%1$s-এর রেজাল্ট বেরিয়েছে</string>
     <string name="notif_result_body">প্রথম পুরস্কার: %1$s। আপনার টিকিট মেলাতে ট্যাপ করুন।</string>
-    <string name="notif_ticket_won">আপনার টিকিট %1$s জিতেছে %2$s! সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
-    <string name="notif_ticket_lost">আপনার টিকিট %1$s এবার জেতেনি।</string>
+    <string name="notif_ticket_won">আপনার টিকিট %1$s-এ %2$s পুরস্কার লেগেছে! সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="notif_ticket_lost">আপনার টিকিট %1$s-এ এবার পুরস্কার লাগেনি।</string>
 
     <string name="tier_1">প্রথম পুরস্কার</string>
     <string name="tier_cons">সান্ত্বনা পুরস্কার</string>
@@ -60,76 +64,77 @@
     <string name="tier_4">চতুর্থ পুরস্কার</string>
     <string name="tier_5">পঞ্চম পুরস্কার</string>
     <string name="tier_n">%1$d নম্বর পুরস্কার</string>
-    <string name="match_last4">শেষ 4টি সংখ্যা মিলতে হবে</string>
-    <string name="match_last5">শেষ 5টি সংখ্যা মিলতে হবে</string>
-    <string name="match_cons">প্রথম পুরস্কারের একই 5টি সংখ্যা, অন্য সিরিয়াল বা অক্ষর</string>
+    <string name="match_last4">শেষ 4টি সংখ্যা মিললে</string>
+    <string name="match_last5">শেষ 5টি সংখ্যা মিললে</string>
+    <string name="match_cons">প্রথম পুরস্কারের 5টি সংখ্যা মিলবে, কিন্তু সিরিয়াল বা অক্ষর আলাদা</string>
 
-    <string name="back">পিছনে</string>
-    <string name="share_text">লেখা হিসেবে শেয়ার</string>
+    <string name="back">ফিরে যান</string>
+    <string name="share_text">টেক্সট শেয়ার করুন</string>
     <string name="share_whatsapp">রেজাল্টের ছবি শেয়ার করুন (WhatsApp)</string>
-    <string name="share_footer">LottoDost অ্যাপে মেলানো হয়েছে। সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="share_footer">LottoDost অ্যাপে চেক করা। সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
     <string name="draw_meta">%1$s · ড্র নং %2$s · টিকিট ₹%3$d</string>
+    <string name="draw_no">ড্র নং %1$s</string>
     <string name="draw_meta_special">%1$s · টিকিট ₹%2$d</string>
-    <string name="ocr_caution">এই নম্বরগুলি সরকারি স্ক্যান করা PDF থেকে স্বয়ংক্রিয়ভাবে পড়া হয়েছে। দাবি করার আগে সরকারি PDF-এ অবশ্যই মিলিয়ে নিন।</string>
+    <string name="ocr_caution">এই নম্বরগুলো সরকারি স্ক্যান করা PDF থেকে নিজে থেকে পড়া হয়েছে। পুরস্কার নেওয়ার আগে PDF-এ একবার নিজে দেখে নিন।</string>
     <string name="find_in_result">এই রেজাল্টে আমার নম্বর খুঁজুন</string>
-    <string name="claim_title">কীভাবে পুরস্কার দাবি করবেন</string>
-    <string name="claim_info">নাগাল্যান্ড লটারিতে ₹10,000-এর বেশি পুরস্কার ড্রয়ের 30 দিনের মধ্যে নাগাল্যান্ড স্টেট লটারি অধিদপ্তর, কোহিমা বা তার নোডাল অফিসে আসল টিকিট ও 3টি সত্যায়িত পাসপোর্ট ছবি সহ দাবি করতে হয় (সরকারি রেজাল্টে যেমন ছাপা আছে)। ছোট পুরস্কারের জন্য আপনার টিকিট বিক্রেতাকে জিজ্ঞাসা করুন। বড় পুরস্কারে কর কাটা হয়।</string>
-    <string name="claim_small">₹10,000 পর্যন্ত পুরস্কার: যেখান থেকে টিকিট কিনেছেন সেই বিক্রেতা বা স্টকিস্টকে জিজ্ঞাসা করুন। আগে সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
-    <string name="claim_other_state">সিকিম ও পাঞ্জাবের ড্রয়ের জন্য আপনার টিকিট ও সরকারি রেজাল্টে ছাপা দাবির নির্দেশ মেনে চলুন। আগে বিক্রেতাকে জিজ্ঞাসা করুন।</string>
+    <string name="claim_title">পুরস্কার কীভাবে নেবেন</string>
+    <string name="claim_info">নাগাল্যান্ড লটারিতে ₹10,000-এর বেশি পুরস্কারের জন্য ড্রয়ের 30 দিনের মধ্যে ক্লেম করতে হয়: আসল টিকিট আর 3টি অ্যাটেস্টেড পাসপোর্ট সাইজ ছবি কোহিমার নাগাল্যান্ড স্টেট লটারি ডিরেক্টরেট বা তার নোডাল অফিসে জমা দিন (সরকারি রেজাল্টে যেমন ছাপা আছে)। ছোট পুরস্কারের জন্য যেখান থেকে টিকিট কিনেছেন, সেই বিক্রেতাকে জিজ্ঞেস করুন। বড় পুরস্কারে ট্যাক্স কাটা হয়।</string>
+    <string name="claim_small">₹10,000 পর্যন্ত পুরস্কার: যে দোকান বা স্টকিস্টের কাছ থেকে টিকিট কিনেছেন, তাঁদের জিজ্ঞেস করুন। আগে সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন।</string>
+    <string name="claim_other_state">সিকিম ও পাঞ্জাবের ড্রয়ে পুরস্কার নেওয়ার নিয়ম টিকিটে আর সরকারি রেজাল্টে ছাপা থাকে। আগে আপনার বিক্রেতাকে জিজ্ঞেস করুন।</string>
 
-    <string name="check_title">আপনার টিকিট মেলান</string>
-    <string name="check_hint">পুরো নম্বর (যেমন 39C 06366, বাম্পার A 801021) বা শেষ 4–6টি সংখ্যা লিখুন, অথবা টিকিট স্ক্যান করুন।</string>
+    <string name="check_title">আপনার টিকিট চেক করুন</string>
+    <string name="check_hint">পুরো নম্বর লিখুন (যেমন 39C 06366, বাম্পার A 801021) বা শুধু শেষ 4–6টি সংখ্যা — অথবা টিকিট স্ক্যান করুন।</string>
     <string name="ticket_number">টিকিট নম্বর</string>
     <string name="ticket_invalid">এভাবে লিখুন: 39C 06366, A 801021, 06366 বা 6366</string>
-    <string name="scan_confirm">ছবি থেকে পড়া হয়েছে — আপনার টিকিটের সঙ্গে মিলিয়ে তারপর “মেলান” চাপুন।</string>
-    <string name="scan_none">টিকিট নম্বর পড়া গেল না। ভালো আলোয় আবার চেষ্টা করুন বা নম্বর লিখুন।</string>
-    <string name="check_button">মেলান</string>
-    <string name="scan_button">টিকিট স্ক্যান</string>
+    <string name="scan_confirm">ছবি থেকে নম্বর পড়া হয়েছে — আপনার টিকিটের সঙ্গে মিলিয়ে “চেক করুন” চাপুন।</string>
+    <string name="scan_none">টিকিট নম্বর পড়া গেল না। ভালো আলোয় আবার চেষ্টা করুন, বা নম্বরটি নিজে লিখুন।</string>
+    <string name="check_button">চেক করুন</string>
+    <string name="scan_button">টিকিট স্ক্যান করুন</string>
     <string name="only_date">শুধু %1$s (সব দেখতে ট্যাপ করুন)</string>
-    <string name="no_win_title">%1$s: কোনো পুরস্কার নেই</string>
+    <string name="no_win_title">%1$s: পুরস্কার লাগেনি</string>
     <plurals name="no_win_body">
         <item quantity="one">%1$dটি রেজাল্টের সঙ্গে মেলানো হয়েছে।</item>
         <item quantity="other">%1$dটি রেজাল্টের সঙ্গে মেলানো হয়েছে।</item>
     </plurals>
-    <string name="need_full_number">প্রথম, সান্ত্বনা ও দ্বিতীয় পুরস্কারও মেলাতে পুরো টিকিট নম্বর (সিরিয়াল ও অক্ষর সহ) লিখুন।</string>
-    <string name="you_won">অভিনন্দন! আপনি জিতেছেন</string>
-    <string name="maybe_first">বড় পুরস্কারের মতো একই সংখ্যা!</string>
-    <string name="also_matches">এটিও মিলেছে: %1$s</string>
-    <string name="save_title">রেজাল্ট বেরোলে অ্যালার্ট পেতে এই টিকিট সেভ করুন</string>
+    <string name="need_full_number">প্রথম, সান্ত্বনা ও দ্বিতীয় পুরস্কারও চেক করতে পুরো টিকিট নম্বর (সিরিয়াল ও অক্ষরসহ) লিখুন।</string>
+    <string name="you_won">অভিনন্দন! আপনার লটারি লেগেছে</string>
+    <string name="maybe_first">বড় পুরস্কারের সংখ্যা মিলছে!</string>
+    <string name="also_matches">এটার সঙ্গেও মিলেছে: %1$s</string>
+    <string name="save_title">রেজাল্ট বেরোলেই অ্যালার্ট পেতে টিকিটটি সেভ করুন</string>
     <string name="save_button">%1$s-এর জন্য সেভ করুন</string>
-    <string name="saved_ok">সেভ হয়েছে। আমরা নিজে থেকেই মিলিয়ে দেখব।</string>
+    <string name="saved_ok">সেভ হয়েছে। রেজাল্ট বেরোলে আমরা নিজে থেকেই চেক করব।</string>
 
-    <string name="scan_aim">টিকিট নম্বরটি বাক্সের ভিতরে রাখুন</string>
-    <string name="scan_need_camera">স্ক্যান করতে ক্যামেরার অনুমতি দরকার। আপনি ছবিও বেছে নিতে পারেন।</string>
+    <string name="scan_aim">টিকিট নম্বরটি বক্সের ভেতরে রাখুন</string>
+    <string name="scan_need_camera">স্ক্যান করতে ক্যামেরার অনুমতি লাগবে। চাইলে গ্যালারি থেকে ছবিও বেছে নিতে পারেন।</string>
     <string name="cancel">বাতিল</string>
-    <string name="pick_photo">ছবি বাছুন</string>
+    <string name="pick_photo">ছবি বেছে নিন</string>
 
     <string name="tickets_title">আমার টিকিট</string>
-    <string name="tickets_hint">রেজাল্ট প্রকাশ হলে সেভ করা টিকিট নিজে থেকেই মেলানো হয়।</string>
-    <string name="tickets_empty">এখনও কোনো টিকিট সেভ করা নেই। টিকিট মেলান এবং “সেভ” চাপুন।</string>
-    <string name="ticket_waiting">রেজাল্টের অপেক্ষা</string>
-    <string name="ticket_won">জিতেছে: %1$s · %2$s</string>
-    <string name="ticket_no_prize">কোনো পুরস্কার নেই</string>
-    <string name="remove">সরান</string>
+    <string name="tickets_hint">সেভ করা টিকিট রেজাল্ট বেরোলেই নিজে থেকে চেক হয়ে যায়।</string>
+    <string name="tickets_empty">এখনও কোনো টিকিট সেভ করা নেই। টিকিট চেক করে “সেভ করুন” চাপুন।</string>
+    <string name="ticket_waiting">রেজাল্টের অপেক্ষায়</string>
+    <string name="ticket_won">পুরস্কার লেগেছে: %1$s · %2$s</string>
+    <string name="ticket_no_prize">পুরস্কার লাগেনি</string>
+    <string name="remove">মুছে দিন</string>
 
     <string name="info_title">লটারি গাইড</string>
     <string name="info_schedule">আজকের ড্র</string>
-    <string name="info_slot_meta">%1$s · ₹%2$d · টিকিট যেমন %3$s</string>
-    <string name="info_schedule_note">সাধারণত প্রতিটি ড্রয়ের 7–10 মিনিট পরে রেজাল্ট আসে। কিছু ছুটির দিনে ড্র হয় না (যেমন 2 অক্টোবর 2026)।</string>
-    <string name="info_week_names">দিন অনুযায়ী খেলার নাম</string>
+    <string name="info_slot_meta">%1$s · ₹%2$d · টিকিট দেখতে এমন: %3$s</string>
+    <string name="info_schedule_note">সাধারণত প্রতিটি ড্রয়ের 7–10 মিনিট পরে রেজাল্ট চলে আসে। কিছু ছুটির দিনে ড্র হয় না (যেমন 2 অক্টোবর 2026)।</string>
+    <string name="info_week_names">কোন দিন কোন খেলা</string>
     <string name="info_laxmi_legend">L = ডিয়ার লক্ষ্মী (4 সংখ্যার খেলা, 8 PM)</string>
     <string name="info_prizes">পুরস্কারের তালিকা</string>
-    <string name="info_prizes_pending">প্রথম রেজাল্ট লোড হলে দেখানো হবে।</string>
-    <string name="info_ticket_title">আপনার টিকিট কীভাবে পড়বেন</string>
-    <string name="info_ticket_body">39 = সিরিয়াল (34–99) · C = সিরিজ অক্ষর (A B C D E G H J K L — F এবং I কখনও নয়) · 06366 = নম্বর।\n• প্রথম পুরস্কার: পুরো নম্বর মিলতে হবে।\n• সান্ত্বনা পুরস্কার: প্রথম পুরস্কারের একই 5টি সংখ্যা, অন্য যেকোনো সিরিয়াল বা অক্ষর।\n• দ্বিতীয় পুরস্কার: শেষ 5টি সংখ্যা।\n• তৃতীয়, চতুর্থ ও পঞ্চম পুরস্কার: শেষ 4টি সংখ্যা।\nডিয়ার লক্ষ্মী টিকিট (10–29 + 4 সংখ্যা) 4টি সংখ্যায় জেতে। বাম্পার টিকিটের (যেমন A 801021) নিজস্ব পুরস্কার তালিকা থাকে — রেজাল্ট দেখুন।</string>
-    <string name="info_upcoming">আসন্ন বিশেষ ড্র</string>
+    <string name="info_prizes_pending">প্রথম রেজাল্ট লোড হলে দেখা যাবে।</string>
+    <string name="info_ticket_title">টিকিট কীভাবে পড়বেন</string>
+    <string name="info_ticket_body">39 = সিরিয়াল (34–99) · C = সিরিজের অক্ষর (A B C D E G H J K L — F আর I হয় না) · 06366 = নম্বর।\n• প্রথম পুরস্কার: পুরো নম্বর মিলতে হবে।\n• সান্ত্বনা পুরস্কার: প্রথম পুরস্কারের 5টি সংখ্যা, কিন্তু সিরিয়াল বা অক্ষর আলাদা।\n• দ্বিতীয় পুরস্কার: শেষ 5টি সংখ্যা।\n• তৃতীয়, চতুর্থ ও পঞ্চম পুরস্কার: শেষ 4টি সংখ্যা।\nডিয়ার লক্ষ্মী টিকিটে (10–29 + 4 সংখ্যা) পুরস্কার মেলে 4টি সংখ্যায়। বাম্পার টিকিটের (যেমন A 801021) পুরস্কারের তালিকা আলাদা — রেজাল্টে দেখুন।</string>
+    <string name="info_upcoming">আসন্ন স্পেশাল ড্র</string>
     <string name="official_results">সরকারি রেজাল্ট (নাগাল্যান্ড)</string>
     <string name="settings">সেটিংস</string>
     <string name="language">ভাষা</string>
-    <string name="notify_results">রেজাল্ট বেরোলে আমাকে জানান</string>
-    <string name="sources_title">রেজাল্টের উৎস</string>
-    <string name="sources_body">প্রতিটি ড্রয়ের কয়েক মিনিট পরে লটারি সংবাদের রেজাল্ট শিট থেকে দ্রুত রেজাল্ট আসে। সরকারি গেজেট প্রকাশিত হলে আমরা মিলিয়ে দেখি এবং প্রথম ও দ্বিতীয় পুরস্কারের নম্বর মিললে “যাচাই করা” চিহ্ন দিই।</string>
-    <string name="privacy_title">গোপনীয়তা</string>
-    <string name="privacy_body">কোনো অ্যাকাউন্ট লাগে না। সেভ করা টিকিট আপনার ফোনেই থাকে। টিকিটের ছবি আপনার ফোনেই পড়া হয় এবং এই অ্যাপ কখনও তা আপলোড করে না। ফোনে লেখা পড়ার টুলের জন্য Google Play পরিষেবা সাধারণ ডায়াগনস্টিক তথ্য নিতে পারে।</string>
-    <string name="privacy_policy">গোপনীয়তা নীতি</string>
+    <string name="notify_results">রেজাল্ট বেরোলে নোটিফিকেশন দিন</string>
+    <string name="sources_title">রেজাল্ট কোথা থেকে আসে</string>
+    <string name="sources_body">প্রতিটি ড্রয়ের কয়েক মিনিট পরে Lottery Sambad-এর রেজাল্ট শিট থেকে দ্রুত রেজাল্ট আসে। সরকারি গেজেট বেরোলে আমরা দুটো মিলিয়ে দেখি, আর প্রথম ও দ্বিতীয় পুরস্কারের নম্বর মিললে রেজাল্টে “ভেরিফায়েড” দেখাই।</string>
+    <string name="privacy_title">প্রাইভেসি</string>
+    <string name="privacy_body">কোনো অ্যাকাউন্ট লাগে না। সেভ করা টিকিট শুধু আপনার ফোনেই থাকে। টিকিটের ছবি ফোনেই পড়া হয়, এই অ্যাপ সেটা কোথাও আপলোড করে না। ফোনে লেখা পড়ার টুলটির জন্য Google Play সার্ভিস কিছু সাধারণ ডায়াগনস্টিক তথ্য নিতে পারে।</string>
+    <string name="privacy_policy">প্রাইভেসি পলিসি</string>
 </resources>
