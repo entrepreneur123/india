@@ -82,13 +82,13 @@
     <string name="claim_other_state">सिक्किम और पंजाब के ड्रॉ में इनाम लेने का तरीका टिकट और सरकारी रिज़ल्ट पर छपा होता है। पहले अपने विक्रेता से पूछें।</string>
 
     <string name="check_title">अपना टिकट चेक करें</string>
-    <string name="check_hint">पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट स्कैन करें।</string>
+    <string name="check_hint">पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट या उसका QR कोड स्कैन करें।</string>
     <string name="ticket_number">टिकट नंबर</string>
     <string name="ticket_invalid">ऐसे लिखें: 39C 06366, A 801021, 06366 या 6366</string>
     <string name="scan_confirm">फ़ोटो से नंबर पढ़ा गया — अपने टिकट से मिलाकर “चेक करें” दबाएँ।</string>
     <string name="scan_none">टिकट नंबर पढ़ा नहीं जा सका। अच्छी रोशनी में दोबारा कोशिश करें या नंबर ख़ुद लिखें।</string>
     <string name="check_button">चेक करें</string>
-    <string name="scan_button">टिकट स्कैन करें</string>
+    <string name="scan_button">टिकट/QR स्कैन</string>
     <string name="only_date">सिर्फ़ %1$s (सब देखने के लिए टैप करें)</string>
     <string name="no_win_title">%1$s: इनाम नहीं लगा</string>
     <plurals name="no_win_body">
@@ -103,7 +103,7 @@
     <string name="save_button">%1$s के लिए सेव करें</string>
     <string name="saved_ok">सेव हो गया। रिज़ल्ट आने पर हम अपने-आप चेक करेंगे।</string>
 
-    <string name="scan_aim">टिकट नंबर को बॉक्स के अंदर रखें</string>
+    <string name="scan_aim">टिकट नंबर या QR कोड को बॉक्स के अंदर रखें</string>
     <string name="scan_need_camera">स्कैन करने के लिए कैमरे की परमिशन चाहिए। चाहें तो गैलरी से फ़ोटो भी चुन सकते हैं।</string>
     <string name="cancel">रद्द करें</string>
     <string name="pick_photo">फ़ोटो चुनें</string>

@@ -82,13 +82,13 @@
     <string name="claim_other_state">सिक्कीम आणि पंजाबच्या सोडतींसाठी बक्षीस घेण्याची पद्धत तिकिटावर आणि सरकारी निकालावर छापलेली असते. आधी तुमच्या विक्रेत्याला विचारा.</string>
 
     <string name="check_title">तुमचे तिकीट तपासा</string>
-    <string name="check_hint">पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट स्कॅन करा.</string>
+    <string name="check_hint">पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट किंवा त्याचा QR कोड स्कॅन करा.</string>
     <string name="ticket_number">तिकीट नंबर</string>
     <string name="ticket_invalid">असे लिहा: 39C 06366, A 801021, 06366 किंवा 6366</string>
     <string name="scan_confirm">फोटोतून नंबर वाचला — तुमच्या तिकिटाशी जुळवा आणि “तपासा” दाबा.</string>
     <string name="scan_none">तिकीट नंबर वाचता आला नाही. चांगल्या उजेडात पुन्हा प्रयत्न करा किंवा नंबर स्वतः लिहा.</string>
     <string name="check_button">तपासा</string>
-    <string name="scan_button">तिकीट स्कॅन करा</string>
+    <string name="scan_button">तिकीट/QR स्कॅन</string>
     <string name="only_date">फक्त %1$s (सगळे पाहण्यासाठी टॅप करा)</string>
     <string name="no_win_title">%1$s: बक्षीस लागले नाही</string>
     <plurals name="no_win_body">
@@ -103,7 +103,7 @@
     <string name="save_button">%1$s साठी सेव्ह करा</string>
     <string name="saved_ok">सेव्ह झाले. निकाल आल्यावर आम्ही आपोआप तपासू.</string>
 
-    <string name="scan_aim">तिकीट नंबर चौकटीच्या आत ठेवा</string>
+    <string name="scan_aim">तिकीट नंबर किंवा QR कोड चौकटीच्या आत ठेवा</string>
     <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेऱ्याची परवानगी हवी. हवे तर गॅलरीतून फोटोही निवडू शकता.</string>
     <string name="cancel">रद्द करा</string>
     <string name="pick_photo">फोटो निवडा</string>

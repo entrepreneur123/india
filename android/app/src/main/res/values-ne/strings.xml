@@ -82,13 +82,13 @@
     <string name="claim_other_state">सिक्किम र पञ्जाबका ड्रमा पुरस्कार लिने तरिका टिकट र सरकारी नतिजामा छापिएको हुन्छ। पहिले आफ्नो बिक्रेतालाई सोध्नुहोस्।</string>
 
     <string name="check_title">आफ्नो टिकट जाँच्नुहोस्</string>
-    <string name="check_hint">पूरा नम्बर लेख्नुहोस् (जस्तै 39C 06366, बम्पर A 801021) वा अन्तिम 4–6 अंक मात्र — वा टिकट स्क्यान गर्नुहोस्।</string>
+    <string name="check_hint">पूरा नम्बर लेख्नुहोस् (जस्तै 39C 06366, बम्पर A 801021) वा अन्तिम 4–6 अंक मात्र — वा टिकट वा यसको QR कोड स्क्यान गर्नुहोस्।</string>
     <string name="ticket_number">टिकट नम्बर</string>
     <string name="ticket_invalid">यसरी लेख्नुहोस्: 39C 06366, A 801021, 06366 वा 6366</string>
     <string name="scan_confirm">फोटोबाट नम्बर पढियो — आफ्नो टिकटसँग मिलाएर “जाँच्नुहोस्” थिच्नुहोस्।</string>
     <string name="scan_none">टिकट नम्बर पढ्न सकिएन। राम्रो उज्यालोमा फेरि प्रयास गर्नुहोस्, वा नम्बर आफैं लेख्नुहोस्।</string>
     <string name="check_button">जाँच्नुहोस्</string>
-    <string name="scan_button">टिकट स्क्यान गर्नुहोस्</string>
+    <string name="scan_button">टिकट/QR स्क्यान</string>
     <string name="only_date">%1$s मात्र (सबै हेर्न ट्याप गर्नुहोस्)</string>
     <string name="no_win_title">%1$s: पुरस्कार परेन</string>
     <plurals name="no_win_body">
@@ -103,7 +103,7 @@
     <string name="save_button">%1$s का लागि सेभ गर्नुहोस्</string>
     <string name="saved_ok">सेभ भयो। नतिजा आएपछि हामी आफैं जाँच्छौं।</string>
 
-    <string name="scan_aim">टिकट नम्बरलाई बाकसभित्र राख्नुहोस्</string>
+    <string name="scan_aim">टिकट नम्बर वा QR कोडलाई बाकसभित्र राख्नुहोस्</string>
     <string name="scan_need_camera">स्क्यान गर्न क्यामेराको अनुमति चाहिन्छ। चाहनुहुन्छ भने ग्यालरीबाट फोटो पनि छान्न सक्नुहुन्छ।</string>
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="pick_photo">फोटो छान्नुहोस्</string>

@@ -85,13 +85,13 @@
     <string name="claim_other_state">For Sikkim and Punjab draws, follow the claim instructions printed on your ticket and on the official result. Ask your seller first.</string>
 
     <string name="check_title">Check your ticket</string>
-    <string name="check_hint">Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket.</string>
+    <string name="check_hint">Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket or its QR code.</string>
     <string name="ticket_number">Ticket number</string>
     <string name="ticket_invalid">Enter like 39C 06366, A 801021, 06366 or 6366</string>
     <string name="scan_confirm">Read from photo — please check it matches your ticket, then tap Check.</string>
     <string name="scan_none">Could not read a ticket number. Try again in good light, or type it.</string>
     <string name="check_button">Check</string>
-    <string name="scan_button">Scan ticket</string>
+    <string name="scan_button">Scan ticket/QR</string>
     <string name="only_date">Only %1$s (tap to show all)</string>
     <string name="no_win_title">%1$s: no prize</string>
     <plurals name="no_win_body">
@@ -106,7 +106,7 @@
     <string name="save_button">Save for %1$s</string>
     <string name="saved_ok">Saved. We will check it automatically.</string>
 
-    <string name="scan_aim">Hold the ticket number inside the box</string>
+    <string name="scan_aim">Hold the ticket number or QR code inside the box</string>
     <string name="scan_need_camera">Camera permission is needed to scan. You can also pick a photo.</string>
     <string name="cancel">Cancel</string>
     <string name="pick_photo">Pick photo</string>
