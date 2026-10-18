@@ -1,0 +1,13 @@
+# Cloudflare Pages cache rules (GitHub Pages ignores this file).
+# today.json changes minutes after each draw: short edge TTL, serve stale while revalidating.
+/v2/today.json
+  Cache-Control: public, max-age=15, stale-while-revalidate=60
+  Access-Control-Allow-Origin: *
+/v2/latest.json
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+/v2/index.json
+  Cache-Control: public, max-age=300
+/v2/config.json
+  Cache-Control: public, max-age=300
+/v2/days/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
