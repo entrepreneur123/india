@@ -70,7 +70,6 @@
 
     <string name="back">ਵਾਪਸ</string>
     <string name="share_text">ਟੈਕਸਟ ਵਿੱਚ ਸ਼ੇਅਰ ਕਰੋ</string>
-    <string name="share_whatsapp">ਨਤੀਜੇ ਦੀ ਫ਼ੋਟੋ ਸ਼ੇਅਰ ਕਰੋ (WhatsApp)</string>
     <string name="share_footer">LottoDost ਐਪ ਨਾਲ ਚੈੱਕ ਕੀਤਾ। ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾ ਲਓ।</string>
     <string name="draw_meta">%1$s · ਡਰਾਅ ਨੰ. %2$s · ਟਿਕਟ ₹%3$d</string>
     <string name="draw_no">ਡਰਾਅ ਨੰ. %1$s</string>
@@ -178,4 +177,8 @@
     <string name="qr_open">ਲਿੰਕ ਖੋਲ੍ਹੋ</string>
     <string name="qr_keep_scanning">ਸਕੈਨ ਜਾਰੀ ਰੱਖੋ</string>
     <string name="qr_no_ticket">ਕੋਡ ਮਿਲਿਆ, ਪਰ ਇਸ ਵਿੱਚ ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ ਹੈ। ਕੈਮਰਾ ਛਪੇ ਨੰਬਰ ਵੱਲ ਕਰੋ।</string>
+    <string name="share_title">ਨਤੀਜਾ ਸ਼ੇਅਰ ਕਰੋ</string>
+    <string name="share_more">ਹੋਰ</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nਪਹਿਲਾ ਇਨਾਮ: %3$s\nਪੂਰਾ ਨਤੀਜਾ: %4$s</string>
 </resources>

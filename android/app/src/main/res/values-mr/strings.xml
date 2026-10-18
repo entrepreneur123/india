@@ -70,7 +70,6 @@
 
     <string name="back">मागे</string>
     <string name="share_text">मजकूर शेअर करा</string>
-    <string name="share_whatsapp">निकालाचा फोटो शेअर करा (WhatsApp)</string>
     <string name="share_footer">LottoDost ॲपने तपासले. सरकारी निकालाशी जुळवून पाहा.</string>
     <string name="draw_meta">%1$s · सोडत क्र. %2$s · तिकीट ₹%3$d</string>
     <string name="draw_no">सोडत क्र. %1$s</string>
@@ -178,4 +177,8 @@
     <string name="qr_open">लिंक उघडा</string>
     <string name="qr_keep_scanning">स्कॅन सुरू ठेवा</string>
     <string name="qr_no_ticket">कोड सापडला, पण त्यात तिकीट नंबर नाही. कॅमेरा छापलेल्या नंबरकडे धरा.</string>
+    <string name="share_title">निकाल शेअर करा</string>
+    <string name="share_more">आणखी</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nपहिले बक्षीस: %3$s\nपूर्ण निकाल: %4$s</string>
 </resources>

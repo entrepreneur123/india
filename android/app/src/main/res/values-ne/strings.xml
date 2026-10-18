@@ -70,7 +70,6 @@
 
     <string name="back">फर्कनुहोस्</string>
     <string name="share_text">टेक्स्ट सेयर गर्नुहोस्</string>
-    <string name="share_whatsapp">नतिजाको फोटो सेयर गर्नुहोस् (WhatsApp)</string>
     <string name="share_footer">LottoDost एपबाट जाँचिएको। सरकारी नतिजासँग मिलाउनुहोस्।</string>
     <string name="draw_meta">%1$s · ड्र नं. %2$s · टिकट ₹%3$d</string>
     <string name="draw_no">ड्र नं. %1$s</string>
@@ -178,4 +177,8 @@
     <string name="qr_open">लिंक खोल्नुहोस्</string>
     <string name="qr_keep_scanning">स्क्यान जारी राख्नुहोस्</string>
     <string name="qr_no_ticket">कोड भेटियो, तर यसमा टिकट नम्बर छैन। क्यामेरा छापिएको नम्बरतिर राख्नुहोस्।</string>
+    <string name="share_title">नतिजा सेयर गर्नुहोस्</string>
+    <string name="share_more">अरू</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nपहिलो पुरस्कार: %3$s\nपूरा नतिजा: %4$s</string>
 </resources>

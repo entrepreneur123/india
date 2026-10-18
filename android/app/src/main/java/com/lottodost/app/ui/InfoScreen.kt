@@ -42,6 +42,8 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 const val PRIVACY_URL = "https://entrepreneur123.github.io/india/privacy.html"
+/** Public results page: the link people can open without the app (SMS, forwards). */
+const val WEB_URL = "https://entrepreneur123.github.io/india/"
 // Official page with the current form (the PDF file name changes when the form is revised).
 const val CLAIM_FORM_URL = "https://www.nagalandlotteries.com/prize-claim-form.php"
 

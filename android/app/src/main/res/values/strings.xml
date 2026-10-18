@@ -73,7 +73,6 @@
 
     <string name="back">Back</string>
     <string name="share_text">Share as text</string>
-    <string name="share_whatsapp">Share result image (WhatsApp)</string>
     <string name="share_footer">Checked with the LottoDost app. Verify with the official result.</string>
     <string name="draw_meta">%1$s · Draw No. %2$s · Ticket ₹%3$d</string>
     <string name="draw_no">Draw No. %1$s</string>
@@ -180,4 +179,8 @@
     <string name="qr_open">Open link</string>
     <string name="qr_keep_scanning">Keep scanning</string>
     <string name="qr_no_ticket">Code found, but it has no ticket number. Point the camera at the printed number.</string>
+    <string name="share_title">Share result</string>
+    <string name="share_more">More</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\n1st Prize: %3$s\nFull result: %4$s</string>
 </resources>
