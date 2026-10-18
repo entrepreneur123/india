@@ -9,5 +9,6 @@
   ],
   "liveDrawUrl": "https://www.nagalandlotteries.com/livedraw/index.php",
   "officialResultsUrl": "https://www.nagalandlotteries.com/results.php",
-  "announcement": null
+  "announcement": null,
+  "claimFormUrl": "https://www.nagalandlotteries.com/prize-claim-form.php"
 }

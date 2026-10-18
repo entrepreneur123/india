@@ -37,6 +37,28 @@
                 android:resource="@xml/share_paths" />
         </provider>
 
+        <!-- Home-screen widget with today's 1st prizes. -->
+        <receiver
+            android:name=".widget.ResultsWidget"
+            android:exported="false"
+            android:label="@string/widget_desc">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
+        <!-- Instant "result is out" push (FCM). Inactive until a Firebase project is configured. -->
+        <service
+            android:name=".push.PushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <!-- Ask Google Play services to fetch the on-device OCR model at install time. -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"

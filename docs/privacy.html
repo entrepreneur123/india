@@ -45,11 +45,17 @@ ticket number. Images are not saved and are never uploaded by the app. Camera ac
   <li><strong>Result hosting</strong> (GitHub Pages, jsDelivr, raw.githubusercontent.com and, if enabled, Cloudflare). When the app downloads
     results, these providers receive standard request information such as your IP address and device user agent, as with any website.
     The app sends no identifier or personal data in these requests.</li>
+  <li><strong>Firebase Cloud Messaging</strong> (Google), used only to tell your phone that a new result is out. To deliver these
+    messages, Firebase creates an app instance identifier and a registration token for your installation. The message we send contains
+    no personal data, only "new result", and every phone receives the same message. See
+    <a href="https://firebase.google.com/support/privacy">Privacy and Security in Firebase</a>.</li>
   <li><strong>Links you open</strong> (official result PDFs, live-draw page) open in your browser and are governed by those websites' policies.</li>
 </ul>
 
 <h2>5. Notifications</h2>
-<p>Result and ticket alerts are generated on your phone. You can turn them off in the app (Guide → Settings) or in Android settings.</p>
+<p>Result and ticket alerts are written and shown on your phone; your saved tickets are checked on your phone and never sent anywhere.
+You can turn alerts off, or choose which draws to be alerted for, in the app (Guide → Settings) or in Android settings.</p>
+<p>Result PDFs you choose to save are stored in the app's own folder on your phone.</p>
 
 <h2>6. Children</h2>
 <p>The app is intended for adults (18+). We do not knowingly collect any data from children.</p>

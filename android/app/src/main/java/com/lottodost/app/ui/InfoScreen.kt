@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -42,16 +42,19 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 const val PRIVACY_URL = "https://entrepreneur123.github.io/india/privacy.html"
+// Official page with the current form (the PDF file name changes when the form is revised).
+const val CLAIM_FORM_URL = "https://www.nagalandlotteries.com/prize-claim-form.php"
 
 /** Everything a player asks about, in one place: schedule, prizes, how to read a ticket, claims, safety. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, modifier: Modifier = Modifier) {
+fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, onOpenHistory: () -> Unit, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     val draws = state.draws.values
     Column(modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.info_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold,
             modifier = Modifier.semantics { heading() })
+        OutlinedButton(onClick = onOpenHistory, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.history_open)) }
 
         Section(stringResource(R.string.info_schedule)) {
             val dow = now.dayOfWeek.value
@@ -118,7 +121,14 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, modifier: Modi
             }
         }
 
-        Section(stringResource(R.string.claim_title)) { Text(stringResource(R.string.claim_info)) }
+        Section(stringResource(R.string.claim_title)) {
+            Text(stringResource(R.string.claim_info))
+            Text(stringResource(R.string.claim_docs_title), fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 6.dp))
+            Text(stringResource(R.string.claim_docs_body))
+            TextButton(onClick = { openUrl(ctx, state.config?.claimFormUrl ?: CLAIM_FORM_URL) }) {
+                Text(stringResource(R.string.claim_form))
+            }
+        }
         Section(stringResource(R.string.safety_title)) { Text(stringResource(R.string.safety_body)) }
 
         Section(stringResource(R.string.sources_title)) {
@@ -144,6 +154,16 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, modifier: Modi
                 Text(stringResource(R.string.notify_results), Modifier.weight(1f))
                 Switch(checked = notify, onCheckedChange = { notify = it; Prefs.setNotificationsEnabled(ctx, it) })
             }
+            if (notify) {
+                Text(stringResource(R.string.alerts_for), style = MaterialTheme.typography.bodySmall)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val keys = DrawSchedule.SLOTS.map { it.id to it.label } + ("SPECIAL" to stringResource(R.string.alerts_specials))
+                    keys.forEach { (key, label) ->
+                        var on by remember(key) { mutableStateOf(Prefs.drawAlert(ctx, key)) }
+                        FilterChip(selected = on, onClick = { on = !on; Prefs.setDrawAlert(ctx, key, on) }, label = { Text(label) })
+                    }
+                }
+            }
         }
 
         Section(stringResource(R.string.disclaimer_title)) { Text(stringResource(R.string.disclaimer_body)) }
@@ -157,7 +177,7 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, modifier: Modi
 
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
-    Card(Modifier.fillMaxWidth()) {
+    Slip {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.semantics { heading() })

@@ -137,4 +137,35 @@
     <string name="privacy_title">गोपनीयता</string>
     <string name="privacy_body">खाते लागत नाही. सेव्ह केलेली तिकिटे फक्त तुमच्या फोनमध्येच राहतात. तिकिटाचा फोटो फोनवरच वाचला जातो, हे ॲप तो कुठेही अपलोड करत नाही. फोनवर मजकूर वाचणाऱ्या टूलसाठी Google Play सेवा काही मूलभूत डायग्नॉस्टिक माहिती घेऊ शकतात.</string>
     <string name="privacy_policy">गोपनीयता धोरण</string>
+    <string name="amount_crore">₹%1$s कोटी</string>
+    <string name="amount_lakh">₹%1$s लाख</string>
+    <string name="save_pdf">PDF सेव्ह करा (इंटरनेटशिवाय पाहण्यासाठी)</string>
+    <string name="need_full_short">पूर्ण नंबर तपासा: यापेक्षा मोठे बक्षीसही असू शकते</string>
+    <string name="history_title">नंबरचा इतिहास</string>
+    <string name="history_open">नंबरचा इतिहास: माझा नंबर कधी कधी लागला?</string>
+    <string name="history_hint">मागील %1$d दिवसांत ज्या निकालात हा नंबर लागला, ते सगळे इथे दिसतील. शेवटचे 4 किंवा 5 अंक, किंवा पूर्ण तिकीट नंबर लिहा.</string>
+    <string name="history_search">शोधा</string>
+    <string name="history_none">मागील %2$d दिवसांत %1$s लागला नाही.</string>
+    <string name="history_unavailable">जुने निकाल लोड झाले नाहीत. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="retry">पुन्हा प्रयत्न करा</string>
+    <string name="mode_one">एक तिकीट</string>
+    <string name="mode_many">अनेक तिकिटे</string>
+    <string name="bulk_hint">प्रत्येक ओळीत एक तिकीट किंवा रेंज लिहा, उदा. 39C 06300-06399 किंवा 6300-6399. एकावेळी 1000 तिकिटांपर्यंत, तुम्ही निवडलेल्या सोडतीशी जुळवली जातील.</string>
+    <string name="bulk_label">तिकीट नंबर</string>
+    <string name="bulk_draw">कोणत्या सोडतीशी जुळवायचे</string>
+    <string name="bulk_summary">तपासली: %1$d · बक्षीस लागले: %2$d · एकूण: %3$s</string>
+    <string name="bulk_none">या सोडतीत कोणतेही बक्षीस लागले नाही.</string>
+    <string name="bulk_too_many">फक्त पहिली %1$d तिकिटे तपासली.</string>
+    <string name="bulk_invalid">समजले नाही: %1$s</string>
+    <string name="alerts_for">या सोडतींचे अलर्ट पाठवा:</string>
+    <string name="alerts_specials">बंपर</string>
+    <string name="claim_form">सरकारी दावा अर्ज (नागालँड)</string>
+    <string name="claim_docs_title">सरकारी अर्जासोबत हे जोडा</string>
+    <string name="claim_docs_body">• मूळ तिकीट, मागे सही करून\n• स्वयंघोषणापत्र (अर्जासोबतच आहे)\n• प्रतिज्ञापत्र\n• PAN कार्ड आणि एक ओळखपत्र\n• 3 पासपोर्ट फोटो, 3 महिन्यांपेक्षा जुने नसलेले\n• तुमच्या बँक खात्याचा एक रद्द केलेला चेक\nअर्ज स्वतः जाऊन जमा करावा लागतो: कोहिमा येथे, किंवा कोलकाता, मुंबई, लुधियाना आणि गंगटोक येथील कॅम्पमध्ये.</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">आजची पहिली बक्षिसे</string>
+    <plurals name="history_count">
+        <item quantity="one">मागील %2$d दिवसांत %1$d वेळा लागला</item>
+        <item quantity="other">मागील %2$d दिवसांत %1$d वेळा लागला</item>
+    </plurals>
 </resources>

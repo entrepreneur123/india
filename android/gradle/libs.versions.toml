@@ -14,6 +14,7 @@ junit = "4.13.2"
 desugar = "2.1.5"
 robolectric = "4.16.1"
 roborazzi = "1.74.0"
+firebaseBom = "34.19.0"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,8 @@ roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose"
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 junit = { module = "junit:junit", version.ref = "junit" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

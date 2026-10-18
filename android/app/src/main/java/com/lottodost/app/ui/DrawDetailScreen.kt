@@ -1,6 +1,11 @@
 package com.lottodost.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -9,10 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,7 +66,40 @@ fun matchHint(tier: Tier): String? = when (tier.match) {
     else -> null
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+/** One prize tier as on the sheet: title and amount on a rule, then the numbers in plain columns. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TierBlock(tier: Tier, q: String) {
+    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(tierTitle(tier), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Text(formatRupees(tier.prize), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        }
+        matchHint(tier)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        val cell = when (tier.numbers.maxOfOrNull { it.length } ?: 4) { in 0..4 -> 52.dp; 5 -> 62.dp; else -> 100.dp }
+        FlowRow(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 8.dp)) {
+            tier.numbers.forEach { n ->
+                // Same rules as Matcher: last-4 tiers compare 4 digits, others need the full digits.
+                val hit = when (tier.match) {
+                    "LAST4" -> q.length >= 4 && n == q.takeLast(4)
+                    "LAST5" -> q.length >= 5 && n == q.takeLast(5)
+                    "CONS" -> q.length == 5 && n == q
+                    else -> q.length >= 5 && n.filter { it in '0'..'9' }.endsWith(q)
+                }
+                Text(
+                    n, fontFamily = FontFamily.Monospace, fontSize = 17.sp,
+                    fontWeight = if (hit) FontWeight.Black else FontWeight.Medium,
+                    color = if (hit) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.widthIn(min = cell)
+                        .then(if (hit) Modifier.background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.extraSmall) else Modifier)
+                        .padding(horizontal = 2.dp, vertical = 2.dp),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
     val ctx = LocalContext.current
@@ -100,57 +136,55 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
     }) { pad ->
         LazyColumn(Modifier.padding(pad), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
-                Text(draw.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text(draw.drawNo?.let { stringResource(R.string.draw_meta, stateName(draw.state), it.toString(), draw.price) }
-                    ?: stringResource(R.string.draw_meta_special, stateName(draw.state), draw.price),
-                    style = MaterialTheme.typography.bodyMedium)
+                // Laid out like the printed result sheet people know: title band, then the 1st prize big.
+                Slip {
+                    val band = if (isDark()) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary
+                    val onBand = if (isDark()) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary
+                    Surface(color = band, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                            Text(draw.name, color = onBand, style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold)
+                            Text(draw.drawNo?.let { stringResource(R.string.draw_meta, stateName(draw.state), it.toString(), draw.price) }
+                                ?: stringResource(R.string.draw_meta_special, stateName(draw.state), draw.price),
+                                color = onBand, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                    draw.tiers.firstOrNull()?.let { first ->
+                        Column(Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Eyebrow(tierTitle(first) + " · " + formatRupees(first.prize), Modifier.weight(1f))
+                                if (draw.verified) VerifiedMark()
+                            }
+                            val hit = q.length >= 5 && first.numbers.firstOrNull().orEmpty().filter { it in '0'..'9' }.endsWith(q)
+                            FitNumber(first.numbers.firstOrNull().orEmpty(), 40.sp,
+                                if (hit) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
                 when {
                     draw.ocr -> Banner(stringResource(R.string.ocr_caution))
                     draw.verified -> Banner(stringResource(R.string.verified_long))
                 }
-                Button(onClick = ::shareImage, modifier = Modifier.padding(top = 8.dp).fillMaxWidth()) {
-                    Text(stringResource(R.string.share_whatsapp))
+            }
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = ::shareImage, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.share_whatsapp)) }
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it.take(6) },
+                        label = { Text(stringResource(R.string.find_in_result)) },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.titleMedium.copy(fontFamily = FontFamily.Monospace),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
             item {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it.take(6) },
-                    label = { Text(stringResource(R.string.find_in_result)) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            items(draw.tiers, key = { it.rank }) { tier ->
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp)) {
-                        Row {
-                            Text(tierTitle(tier), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                            Text(formatRupees(tier.prize), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        }
-                        matchHint(tier)?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp),
-                            modifier = Modifier.padding(top = 8.dp)) {
-                            val big = tier.match == "FULL" || tier.match == "EXACT"
-                            tier.numbers.forEach { n ->
-                                // Same rules as Matcher: last-4 tiers compare 4 digits, others need the full digits.
-                                val hit = when (tier.match) {
-                                    "LAST4" -> q.length >= 4 && n == q.takeLast(4)
-                                    "LAST5" -> q.length >= 5 && n == q.takeLast(5)
-                                    "CONS" -> q.length == 5 && n == q
-                                    else -> q.length >= 5 && n.filter { it in '0'..'9' }.endsWith(q)
-                                }
-                                Surface(
-                                    color = if (hit) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surface,
-                                    shape = MaterialTheme.shapes.small,
-                                ) {
-                                    Text(n, fontFamily = FontFamily.Monospace, fontSize = if (big) 24.sp else 17.sp,
-                                        fontWeight = if (hit || big) FontWeight.Black else FontWeight.Medium,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp))
-                                }
-                            }
-                        }
+                Slip {
+                    draw.tiers.drop(1).forEachIndexed { i, tier ->
+                        if (i > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        TierBlock(tier, q)
                     }
                 }
             }
@@ -160,6 +194,9 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
                         OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.open_official_pdf))
                         }
+                        TextButton(onClick = { downloadPdf(ctx, url, "${draw.id}.pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.save_pdf))
+                        }
                     }
                     draw.sheetUrl?.let { url ->
                         OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
@@ -167,7 +204,7 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
                         }
                     }
                     Text(stringResource(if (draw.state == "Nagaland") R.string.claim_info else R.string.claim_other_state),
-                        style = MaterialTheme.typography.bodySmall)
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

@@ -50,6 +50,8 @@ class ResultRepository internal constructor(
         val feedGeneratedAt: String? = null,
         val clockOffsetMs: Long = 0,
         val loadingDay: String? = null,
+        val history: HistoryFeed? = null,
+        val historyLoading: Boolean = false,
     ) {
         val drawList: List<Draw>
             get() = draws.values.sortedWith(compareByDescending<Draw> { it.date }.thenByDescending { it.time })
@@ -261,6 +263,28 @@ class ResultRepository internal constructor(
         _state.update { it.copy(loadingDay = null) }
     }
 
+    /** Number history: cached copy at once, then a network refresh at most once an hour. */
+    suspend fun loadHistory() = withContext(Dispatchers.IO) {
+        val cached = _state.value.history ?: readCache<HistoryFeed>(HISTORY)
+        if (cached != null) _state.update { it.copy(history = cached) }
+        if (cached != null && !stale(K_HISTORY_AT, HISTORY_MAX_AGE_MS, clock())) return@withContext
+        _state.update { it.copy(historyLoading = true) }
+        val f = fetch(HISTORY, cached != null) { runCatching { json.decodeFromString<HistoryFeed>(it) }.isSuccess }
+        when (f) {
+            is Fetch.Body -> runCatching { json.decodeFromString<HistoryFeed>(f.text) }.getOrNull()?.let { h ->
+                // A lagging mirror can serve an older copy: keep whichever is newer.
+                if (cached == null || h.generatedAt >= cached.generatedAt) {
+                    writeCache(HISTORY, f.text)
+                    _state.update { it.copy(history = h) }
+                }
+                prefs.edit().putLong(K_HISTORY_AT, clock()).apply()
+            }
+            Fetch.NotModified -> prefs.edit().putLong(K_HISTORY_AT, clock()).apply()
+            else -> Unit
+        }
+        _state.update { it.copy(historyLoading = false) }
+    }
+
     private suspend fun mergeDay(day: DayFeed) = mutex.withLock {
         val map = HashMap(_state.value.draws)
         // Day files carry no generatedAt; they only fill gaps, never override feed data.
@@ -273,6 +297,9 @@ class ResultRepository internal constructor(
         const val LATEST = "latest.json"
         const val INDEX = "index.json"
         const val CONFIG = "config.json"
+        const val HISTORY = "history.json"
+        private const val K_HISTORY_AT = "historyAt"
+        private const val HISTORY_MAX_AGE_MS = 3600_000L
         private const val K_CHECKED = "checked"
         private const val K_OFFSET = "clockOffset"
         private const val K_MIRROR = "mirror"

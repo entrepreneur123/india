@@ -137,4 +137,35 @@
     <string name="privacy_title">प्राइवेसी</string>
     <string name="privacy_body">कोई अकाउंट नहीं चाहिए। सेव किए टिकट सिर्फ़ आपके फ़ोन में रहते हैं। टिकट की फ़ोटो फ़ोन पर ही पढ़ी जाती है, यह ऐप उसे कहीं अपलोड नहीं करता। फ़ोन पर टेक्स्ट पढ़ने वाले टूल के लिए Google Play सर्विसेज़ कुछ बेसिक डायग्नोस्टिक जानकारी ले सकती हैं।</string>
     <string name="privacy_policy">प्राइवेसी पॉलिसी</string>
+    <string name="amount_crore">₹%1$s करोड़</string>
+    <string name="amount_lakh">₹%1$s लाख</string>
+    <string name="save_pdf">PDF सेव करें (बिना इंटरनेट देखने के लिए)</string>
+    <string name="need_full_short">पूरा नंबर चेक करें: इससे बड़ा इनाम भी हो सकता है</string>
+    <string name="history_title">नंबर हिस्ट्री</string>
+    <string name="history_open">नंबर हिस्ट्री: मेरा नंबर कब-कब लगा?</string>
+    <string name="history_hint">पिछले %1$d दिनों में जिस भी रिज़ल्ट में यह नंबर लगा, सब यहाँ दिखेगा। आख़िरी 4 या 5 अंक लिखें, या पूरा टिकट नंबर।</string>
+    <string name="history_search">खोजें</string>
+    <string name="history_none">%1$s पिछले %2$d दिनों में नहीं लगा।</string>
+    <string name="history_unavailable">पुराने रिज़ल्ट लोड नहीं हो पाए। इंटरनेट चेक करके दोबारा कोशिश करें।</string>
+    <string name="retry">दोबारा कोशिश करें</string>
+    <string name="mode_one">एक टिकट</string>
+    <string name="mode_many">कई टिकट</string>
+    <string name="bulk_hint">हर लाइन में एक टिकट या रेंज लिखें, जैसे 39C 06300-06399 या 6300-6399। एक बार में 1000 टिकट तक, आपके चुने हुए ड्रॉ से मिलाए जाएँगे।</string>
+    <string name="bulk_label">टिकट नंबर</string>
+    <string name="bulk_draw">किस ड्रॉ से मिलाएँ</string>
+    <string name="bulk_summary">चेक किए: %1$d · इनाम लगा: %2$d · कुल: %3$s</string>
+    <string name="bulk_none">इस ड्रॉ में कोई इनाम नहीं लगा।</string>
+    <string name="bulk_too_many">सिर्फ़ पहले %1$d टिकट चेक किए गए।</string>
+    <string name="bulk_invalid">समझ नहीं आया: %1$s</string>
+    <string name="alerts_for">इन ड्रॉ का अलर्ट भेजें:</string>
+    <string name="alerts_specials">बंपर</string>
+    <string name="claim_form">सरकारी क्लेम फ़ॉर्म (नागालैंड)</string>
+    <string name="claim_docs_title">सरकारी फ़ॉर्म के साथ ये लगाएँ</string>
+    <string name="claim_docs_body">• असली टिकट, पीछे साइन करके\n• सेल्फ़ डिक्लेरेशन (फ़ॉर्म के साथ ही है)\n• एफ़िडेविट\n• PAN कार्ड और एक ID प्रूफ़\n• 3 पासपोर्ट फ़ोटो, 3 महीने से पुरानी नहीं\n• अपने बैंक खाते का एक कैंसल चेक\nफ़ॉर्म ख़ुद जाकर जमा करना होता है: कोहिमा में, या कोलकाता, मुंबई, लुधियाना और गंगटोक के कैंप में।</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">आज के पहले इनाम</string>
+    <plurals name="history_count">
+        <item quantity="one">पिछले %2$d दिनों में %1$d बार लगा</item>
+        <item quantity="other">पिछले %2$d दिनों में %1$d बार लगा</item>
+    </plurals>
 </resources>

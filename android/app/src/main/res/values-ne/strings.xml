@@ -137,4 +137,35 @@
     <string name="privacy_title">गोपनीयता</string>
     <string name="privacy_body">कुनै खाता चाहिँदैन। सेभ गरिएका टिकट तपाईंकै फोनमा मात्र रहन्छन्। टिकटको फोटो फोनमै पढिन्छ, यो एपले कतै अपलोड गर्दैन। फोनमा अक्षर पढ्ने टुलका लागि Google Play सेवाले केही आधारभूत डायग्नोस्टिक जानकारी लिन सक्छ।</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="amount_crore">₹%1$s करोड</string>
+    <string name="amount_lakh">₹%1$s लाख</string>
+    <string name="save_pdf">PDF सेभ गर्नुहोस् (इन्टरनेट बिना हेर्न)</string>
+    <string name="need_full_short">पूरा नम्बर जाँच्नुहोस्: योभन्दा ठूलो पुरस्कार पनि हुन सक्छ</string>
+    <string name="history_title">नम्बरको इतिहास</string>
+    <string name="history_open">नम्बरको इतिहास: मेरो नम्बर कहिले-कहिले पर्‍यो?</string>
+    <string name="history_hint">पछिल्लो %1$d दिनमा यो नम्बर परेका सबै नतिजा यहाँ देखिन्छन्। अन्तिम 4 वा 5 अंक, वा पूरा टिकट नम्बर लेख्नुहोस्।</string>
+    <string name="history_search">खोज्नुहोस्</string>
+    <string name="history_none">पछिल्लो %2$d दिनमा %1$s परेन।</string>
+    <string name="history_unavailable">पुराना नतिजा लोड हुन सकेनन्। इन्टरनेट जाँचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="retry">फेरि प्रयास गर्नुहोस्</string>
+    <string name="mode_one">एउटा टिकट</string>
+    <string name="mode_many">धेरै टिकट</string>
+    <string name="bulk_hint">हरेक लाइनमा एउटा टिकट वा दायरा लेख्नुहोस्, जस्तै 39C 06300-06399 वा 6300-6399। एक पटकमा 1000 टिकटसम्म, तपाईंले छानेको ड्रसँग मिलाइन्छ।</string>
+    <string name="bulk_label">टिकट नम्बर</string>
+    <string name="bulk_draw">कुन ड्रसँग मिलाउने</string>
+    <string name="bulk_summary">जाँचियो: %1$d · पुरस्कार पर्‍यो: %2$d · जम्मा: %3$s</string>
+    <string name="bulk_none">यो ड्रमा कुनै पुरस्कार परेन।</string>
+    <string name="bulk_too_many">पहिलो %1$d टिकट मात्र जाँचिए।</string>
+    <string name="bulk_invalid">बुझिएन: %1$s</string>
+    <string name="alerts_for">यी ड्रको अलर्ट पठाउनुहोस्:</string>
+    <string name="alerts_specials">बम्पर</string>
+    <string name="claim_form">सरकारी दाबी फारम (नागाल्याण्ड)</string>
+    <string name="claim_docs_title">सरकारी फारमसँग यी संलग्न गर्नुहोस्</string>
+    <string name="claim_docs_body">• सक्कली टिकट, पछाडि सही गरेर\n• स्वघोषणा (फारमसँगै छ)\n• एफिडेभिट\n• PAN कार्ड र एउटा परिचयपत्र\n• 3 वटा पासपोर्ट फोटो, 3 महिनाभन्दा पुरानो नभएको\n• आफ्नो बैंक खाताको एउटा रद्द गरिएको चेक\nफारम आफैं गएर बुझाउनुपर्छ: कोहिमामा, वा कोलकाता, मुम्बई, लुधियाना र गान्तोकका क्याम्पमा।</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">आजका पहिलो पुरस्कार</string>
+    <plurals name="history_count">
+        <item quantity="one">पछिल्लो %2$d दिनमा %1$d पटक पर्‍यो</item>
+        <item quantity="other">पछिल्लो %2$d दिनमा %1$d पटक पर्‍यो</item>
+    </plurals>
 </resources>

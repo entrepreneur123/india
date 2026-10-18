@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -213,97 +214,82 @@ fun stateName(state: String): String = when (state) {
 private fun SlotCard(slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfToday: ZonedDateTime?, liveUrl: String?, onOpen: (Draw) -> Unit) {
     val ctx = LocalContext.current
     val clickable = draw?.hasNumbers == true
-    Card(
-        modifier = Modifier.fillMaxWidth().then(if (clickable) Modifier.clickable { onOpen(draw!!) } else Modifier),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(color = MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small) {
-                    Column(Modifier.padding(horizontal = 10.dp, vertical = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(formatTime(slot.drawTime.toString()), color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
-                        slotTag(slot.id)?.let { Text(it, color = MaterialTheme.colorScheme.onPrimary, fontSize = 11.sp) }
-                    }
-                }
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) {
-                    // Before the result is in, show the scheduled game name for that weekday.
-                    val expected = slot.gameName(LocalDate.parse(date).dayOfWeek.value)
-                    // "WEEKLY LOTTERY" is on every weekly name; dropping it keeps the game name readable at large font sizes.
-                    Text(draw?.name?.takeIf { draw.status == "OK" }?.removeSuffix(" WEEKLY LOTTERY") ?: expected,
-                        fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall,
-                        maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text(stringResource(R.string.state_lottery, stateName(slot.state)), style = MaterialTheme.typography.bodySmall)
-                }
-                if (draw?.verified == true) AssistChip(onClick = {}, label = { Text(stringResource(R.string.verified)) })
+    StubSlip(formatTime(slot.drawTime.toString()), slotTag(slot.id), onClick = if (clickable) ({ onOpen(draw!!) }) else null) {
+        Row(verticalAlignment = Alignment.Top) {
+            Column(Modifier.weight(1f)) {
+                // Before the result is in, show the scheduled game name for that weekday.
+                val expected = slot.gameName(LocalDate.parse(date).dayOfWeek.value)
+                // "WEEKLY LOTTERY" is on every weekly name; dropping it keeps the game name readable at large font sizes.
+                Text(draw?.name?.takeIf { draw.status == "OK" }?.removeSuffix(" WEEKLY LOTTERY") ?: expected,
+                    fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(stringResource(R.string.state_lottery, stateName(slot.state)), style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Spacer(Modifier.padding(4.dp))
-            when {
-                draw != null && draw.hasNumbers -> {
-                    Text(stringResource(R.string.first_prize), style = MaterialTheme.typography.labelMedium)
-                    Text(draw.firstPrize.orEmpty(), fontSize = 34.sp, fontWeight = FontWeight.Black,
-                        fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)
-                    Text(stringResource(R.string.tap_full_result), style = MaterialTheme.typography.bodySmall)
-                }
-                draw != null && draw.officialPdf != null -> {
-                    Text(stringResource(R.string.pdf_only), style = MaterialTheme.typography.bodyMedium)
-                    OutlinedButton(onClick = { openUrl(ctx, draw.officialPdf!!) }) { Text(stringResource(R.string.open_official_pdf)) }
-                }
-                nowIfToday != null -> when (val st = DrawSchedule.status(slot, nowIfToday, false)) {
-                    is DrawSchedule.Status.Upcoming -> Text(
-                        stringResource(R.string.draw_in, st.minutesLeft / 60, st.minutesLeft % 60),
-                        style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    DrawSchedule.Status.Live -> Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(color = MaterialTheme.colorScheme.error, shape = CircleShape) {
-                            Text(stringResource(R.string.live), color = MaterialTheme.colorScheme.onError,
-                                fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp))
-                        }
-                        Spacer(Modifier.width(8.dp))
-                        if (liveUrl != null) Button(onClick = { openUrl(ctx, liveUrl) },
-                            colors = ButtonDefaults.buttonColors()) { Text(stringResource(R.string.watch_live)) }
-                    }
-                    DrawSchedule.Status.Delayed -> Column {
-                        Text(stringResource(R.string.result_delayed), style = MaterialTheme.typography.bodyMedium)
-                        if (liveUrl != null) OutlinedButton(onClick = { openUrl(ctx, liveUrl) }) { Text(stringResource(R.string.watch_live)) }
-                    }
-                    else -> Text(stringResource(R.string.result_coming), style = MaterialTheme.typography.titleMedium)
-                }
-                else -> Text(stringResource(R.string.no_result), style = MaterialTheme.typography.bodyMedium)
+            if (draw?.verified == true) VerifiedMark()
+        }
+        Spacer(Modifier.height(10.dp))
+        when {
+            draw != null && draw.hasNumbers -> {
+                Eyebrow(stringResource(R.string.first_prize) + " · " + prizeShort(draw.tiers.first().prize))
+                FitNumber(draw.firstPrize.orEmpty(), 32.sp, MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.tap_full_result), style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            draw != null && draw.officialPdf != null -> {
+                Text(stringResource(R.string.pdf_only), style = MaterialTheme.typography.bodyMedium)
+                OutlinedButton(onClick = { openUrl(ctx, draw.officialPdf!!) }) { Text(stringResource(R.string.open_official_pdf)) }
+            }
+            nowIfToday != null -> when (val st = DrawSchedule.status(slot, nowIfToday, false)) {
+                is DrawSchedule.Status.Upcoming -> Text(
+                    stringResource(R.string.draw_in, st.minutesLeft / 60, st.minutesLeft % 60),
+                    style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                DrawSchedule.Status.Live -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(color = MaterialTheme.colorScheme.error, shape = CircleShape) {
+                        Text(stringResource(R.string.live), color = MaterialTheme.colorScheme.onError,
+                            fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp))
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    if (liveUrl != null) Button(onClick = { openUrl(ctx, liveUrl) },
+                        colors = ButtonDefaults.buttonColors()) { Text(stringResource(R.string.watch_live)) }
+                }
+                DrawSchedule.Status.Delayed -> Column {
+                    Text(stringResource(R.string.result_delayed), style = MaterialTheme.typography.bodyMedium)
+                    if (liveUrl != null) OutlinedButton(onClick = { openUrl(ctx, liveUrl) }) { Text(stringResource(R.string.watch_live)) }
+                }
+                else -> Text(stringResource(R.string.result_coming), style = MaterialTheme.typography.titleMedium)
+            }
+            else -> Text(stringResource(R.string.no_result), style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
+}
+
+/** Text mark instead of a chip: reads as a stamp on the slip, and stays legible at 200 % font. */
+@Composable
+fun VerifiedMark() {
+    Text("✓ " + stringResource(R.string.verified), color = MaterialTheme.colorScheme.tertiary,
+        style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
 }
 
 @Composable
 private fun SpecialCard(draw: Draw, onOpen: (Draw) -> Unit) {
     val ctx = LocalContext.current
-    Card(
-        modifier = Modifier.fillMaxWidth().then(if (draw.hasNumbers) Modifier.clickable { onOpen(draw) } else Modifier),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-    ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(color = MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small) {
-                    Text(stringResource(R.string.special_tag), color = MaterialTheme.colorScheme.onSecondary,
-                        fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
-                }
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(draw.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
-                    val state = if (draw.state.isBlank()) null else stringResource(R.string.state_lottery, stateName(draw.state))
-                    Text(listOfNotNull(formatTime(draw.time), state).joinToString(" · "), style = MaterialTheme.typography.bodySmall)
-                }
-            }
-            Spacer(Modifier.padding(4.dp))
-            if (draw.hasNumbers) {
-                Text(stringResource(R.string.first_prize) + " · " + prizeShort(draw.tiers.first().prize), style = MaterialTheme.typography.labelMedium)
-                Text(draw.firstPrize.orEmpty(), fontSize = 34.sp, fontWeight = FontWeight.Black,
-                    fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)
-                Text(stringResource(R.string.tap_full_result), style = MaterialTheme.typography.bodySmall)
-            } else {
-                Text(stringResource(R.string.sheet_only), style = MaterialTheme.typography.bodyMedium)
-                draw.sheetUrl?.let { url -> OutlinedButton(onClick = { openUrl(ctx, url) }) { Text(stringResource(R.string.open_sheet)) } }
-            }
+    StubSlip(formatTime(draw.time), stringResource(R.string.special_tag),
+        stubColor = MaterialTheme.colorScheme.secondary, onStubColor = MaterialTheme.colorScheme.onSecondary,
+        onClick = if (draw.hasNumbers) ({ onOpen(draw) }) else null) {
+        Text(draw.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
+        if (draw.state.isNotBlank()) Text(stringResource(R.string.state_lottery, stateName(draw.state)),
+            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(10.dp))
+        if (draw.hasNumbers) {
+            Eyebrow(stringResource(R.string.first_prize) + " · " + prizeShort(draw.tiers.first().prize))
+            FitNumber(draw.firstPrize.orEmpty(), 32.sp, MaterialTheme.colorScheme.primary)
+            Text(stringResource(R.string.tap_full_result), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+            Text(stringResource(R.string.sheet_only), style = MaterialTheme.typography.bodyMedium)
+            draw.sheetUrl?.let { url -> OutlinedButton(onClick = { openUrl(ctx, url) }) { Text(stringResource(R.string.open_sheet)) } }
         }
     }
 }

@@ -1,6 +1,6 @@
 # Collects Dear lottery results and publishes static JSON (schema v2) to the `data` branch.
 # The app reads it from GitHub Pages first (enable: Settings > Pages > Deploy from branch `data`, / root),
-# then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages (see publish()).
+# then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages and FCM push (see publish()).
 #
 # GitHub starts scheduled runs late or skips them (measured 18-10-2026: "every 5 min" produced runs
 # at 15:09, 15:12 and 15:37 UTC). So each draw gets ONE run that starts before the draw and polls the
@@ -48,6 +48,8 @@ jobs:
     env:
       # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
       HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
+      FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
@@ -106,6 +108,15 @@ jobs:
             git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
               commit -q -m "results $(date -u +%FT%TZ)"
             git -C ../public push -q origin data
+            if [ "$HAS_FCM" = "true" ]; then
+              # Wake phones only once the new feed is live on the mirror they read first.
+              python -m lottery_pipeline.push --out ../public --wait-url https://entrepreneur123.github.io/india/v2/today.json
+              if [ -f ../public/push-state.json ] && git -C ../public add push-state.json \
+                && ! git -C ../public diff --cached --quiet; then
+                git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
+                  commit -q -m "push state" && git -C ../public push -q origin data
+              fi
+            fi
             if [ "$HAS_CF" = "true" ]; then
               npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" \
                 --branch main --commit-dirty=true || echo "::warning::Cloudflare deploy failed"

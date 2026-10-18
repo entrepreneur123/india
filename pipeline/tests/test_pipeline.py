@@ -193,6 +193,9 @@ def test_build_writes_v2_feeds(tmp_path, monkeypatch):
     assert index["noDraw"] == ["2026-10-17"]  # official calendar empty in this stub
     config = json.loads((tmp_path / "v2" / "config.json").read_text())
     assert config["mirrors"] and "_comment" not in config
+    history = json.loads((tmp_path / "v2" / "history.json").read_text())
+    assert [d["id"] for d in history["draws"]] == [d["id"] for d in today["draws"]]
+    assert all("sources" not in d and d["tiers"] for d in history["draws"])
 
 
 def test_build_skips_draws_that_cannot_exist_yet(tmp_path, monkeypatch):

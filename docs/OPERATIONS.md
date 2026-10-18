@@ -10,6 +10,23 @@
 4. (완료) `docs/privacy.html` 연락처 이메일: yechan750745@gmail.com
 5. Pages가 켜지면 `https://entrepreneur123.github.io/india/`에 결과 웹페이지가 열립니다. 앱과 같은 번역 문구를 씁니다(`web/build.py`가 앱의 strings.xml에서 읽음).
 
+## 즉시 푸시 알림 켜기 (Firebase, 한 번만)
+
+코드는 이미 들어 있고, 아래 값만 넣으면 작동합니다. 값이 없으면 앱은 지금처럼 예약 확인만 합니다.
+
+1. https://console.firebase.google.com 에서 프로젝트를 만들고 Android 앱을 추가합니다(패키지명 `com.lottodost.app`, 이름을 바꾸면 그 패키지명).
+2. 내려받은 `google-services.json`에서 네 값을 `android/gradle.properties`에 적습니다. 이 값들은 비밀번호가 아니라 프로젝트 식별자입니다.
+   ```
+   FIREBASE_APP_ID=<client[0].client_info.mobilesdk_app_id>
+   FIREBASE_API_KEY=<client[0].api_key[0].current_key>
+   FIREBASE_PROJECT_ID=<project_info.project_id>
+   FIREBASE_SENDER_ID=<project_info.project_number>
+   ```
+3. Firebase 콘솔 → 프로젝트 설정 → 서비스 계정 → "새 비공개 키 생성"으로 JSON을 받습니다. 저장소 **Settings → Secrets → Actions**에 `FCM_SERVICE_ACCOUNT`라는 이름으로 JSON 전체를 붙여 넣습니다. 이 파일은 비밀이므로 저장소에 절대 커밋하지 마세요.
+4. 다음 결과 게시부터 자동으로 푸시가 나갑니다. 첫 실행은 기존 결과를 기록만 하고 보내지 않습니다(설치자 전원에게 옛 결과 알림이 가지 않도록).
+
+동작 방식: 결과가 GitHub Pages에 실제로 반영된 것을 확인한 뒤 "새 결과" 신호만 보냅니다(`pipeline/lottery_pipeline/push.py`). 알림 문구는 폰이 직접 사용자 언어로 만들고, 저장한 티켓도 폰 안에서 확인합니다.
+
 ## 매일 자동으로 도는 것
 
 GitHub 예약 실행은 늦게 시작하거나 건너뛰는 경우가 있습니다. 2026-10-18 실측에서는 "5분마다"로 설정했는데 15:09, 15:12, 15:37 UTC에만 실행됐습니다. 그래서 **추첨마다 한 번, 추첨 10분 전에 시작하는 실행**을 두고, 그 실행 안에서 60초마다 직접 확인해 결과가 나오면 즉시 게시한 뒤 끝냅니다. 30분 뒤에는 백업 실행이 하나 더 있습니다.

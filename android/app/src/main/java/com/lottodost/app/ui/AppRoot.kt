@@ -58,6 +58,7 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
     var tab by rememberSaveable { mutableStateOf(Tab.Results) }
     var openDrawId by rememberSaveable { mutableStateOf<String?>(null) }
     var scanning by rememberSaveable { mutableStateOf(false) }
+    var showHistory by rememberSaveable { mutableStateOf(false) }
     var scannedText by remember { mutableStateOf<String?>(null) }
 
     // Clock for countdowns, corrected to server time; ticks often enough for a minute display.
@@ -84,6 +85,11 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
                 onClose = { scanning = false },
                 onText = { text -> scannedText = text; scanning = false; tab = Tab.Check },
             )
+            return
+        }
+        showHistory -> {
+            BackHandler { showHistory = false }
+            HistoryScreen(state.history, state.historyLoading, onLoad = vm::loadHistory, onBack = { showHistory = false })
             return
         }
         openDraw != null -> {
@@ -122,10 +128,11 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
                 onScan = { scanning = true },
                 onSave = vm::save,
                 onOpenDraw = { openDrawId = it.id },
+                onOpenHistory = { showHistory = true },
                 modifier = m,
             )
             Tab.Tickets -> TicketsScreen(tickets, draws, onRemove = vm::remove, onOpenDraw = { openDrawId = it.id }, modifier = m)
-            Tab.Info -> InfoScreen(state, now, modifier = m)
+            Tab.Info -> InfoScreen(state, now, onOpenHistory = { showHistory = true }, modifier = m)
         }
     }
 }

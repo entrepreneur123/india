@@ -52,12 +52,13 @@ Sources of information:
 |---|---|---|
 | 사용자 데이터를 수집하나요? | **예**. ML Kit(Google Play 서비스)이 진단 정보를 수집함 | ML Kit data disclosure: device info, app info, performance metrics, API configuration |
 | 수집 데이터 유형 | "App info and performance → Diagnostics", "Device or other IDs" | 같은 문서. "thin"(Play 서비스) 기능은 device identifier를 추가함 |
+| FCM 푸시 (Firebase 설정 시) | "Device or other IDs" 수집, 목적 **앱 기능**, 공유 안 함 | Firebase가 설치 ID와 등록 토큰을 만듦. 보내는 메시지에는 개인정보가 없음("새 결과" 신호뿐, 모든 폰에 같은 내용) |
 | 공유(제3자 전달)? | 아니요 | Google 문서: 제3자에게 전달하지 않음 |
 | 전송 중 암호화? | 예 (HTTPS) | |
 | 삭제 요청 방법? | 계정이 없으므로 앱 데이터 삭제 또는 삭제(언인스톨) | |
 | 카메라 이미지 | 수집 안 함 (기기 내 처리, 저장·업로드 없음) | ScanScreen: ML Kit 온디바이스 |
 
-> 나중에 AdMob·Firebase를 추가하면 이 답변을 반드시 다시 작성해야 합니다. AdMob은 IP, 광고 ID, 앱 상호작용을 **수집·공유**합니다.
+> Firebase Cloud Messaging은 이미 코드에 들어 있습니다(설정값을 넣어야 작동). AdMob을 추가하면 이 답변을 반드시 다시 작성해야 합니다. AdMob은 IP, 광고 ID, 앱 상호작용을 **수집·공유**합니다.
 
 ## 5. 콘솔 설정 체크리스트
 

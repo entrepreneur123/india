@@ -38,9 +38,12 @@
     <string name="verified">Verified</string>
     <string name="verified_long">1st and 2nd prize numbers match the official government result.</string>
     <string name="first_prize">1st Prize</string>
+    <string name="amount_crore">₹%1$s Crore</string>
+    <string name="amount_lakh">₹%1$s Lakh</string>
     <string name="tap_full_result">Tap to see all prizes</string>
     <string name="pdf_only">The official result is available as a PDF.</string>
     <string name="open_official_pdf">Open official result (PDF)</string>
+    <string name="save_pdf">Save PDF for offline</string>
     <string name="open_sheet">Open result sheet (Lottery Sambad)</string>
     <string name="sheet_only">The result is available as a sheet.</string>
     <string name="special_tag">Special draw</string>
@@ -137,4 +140,34 @@
     <string name="privacy_title">Privacy</string>
     <string name="privacy_body">No account needed. Saved tickets stay on your phone. Ticket photos are read on your phone and are never uploaded by this app. Google Play services may collect basic diagnostics for the on-device text reader.</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="history_title">Number history</string>
+    <string name="history_open">Number history: when did my number win?</string>
+    <string name="history_hint">See every result of the last %1$d days where a number won. Type the last 4 or 5 digits, or the full ticket number.</string>
+    <string name="history_search">Search</string>
+    <string name="history_none">%1$s did not win in the last %2$d days.</string>
+    <plurals name="history_count">
+        <item quantity="one">Won %1$d time in the last %2$d days</item>
+        <item quantity="other">Won %1$d times in the last %2$d days</item>
+    </plurals>
+    <string name="history_unavailable">Past results could not be loaded. Check your internet and try again.</string>
+    <string name="retry">Try again</string>
+
+    <string name="mode_one">One ticket</string>
+    <string name="mode_many">Many tickets</string>
+    <string name="bulk_hint">One ticket or range per line, for example 39C 06300-06399 or 6300-6399. Up to 1000 tickets, checked against the draw you pick.</string>
+    <string name="bulk_label">Ticket numbers</string>
+    <string name="bulk_draw">Check against</string>
+    <string name="bulk_summary">Checked: %1$d · Won: %2$d · Total: %3$s</string>
+    <string name="need_full_short">Check the full number: it could be a bigger prize</string>
+    <string name="bulk_none">No prize in this draw.</string>
+    <string name="bulk_too_many">Only the first %1$d tickets were checked.</string>
+    <string name="bulk_invalid">Not understood: %1$s</string>
+
+    <string name="alerts_for">Send alerts for:</string>
+    <string name="alerts_specials">Bumpers</string>
+    <string name="claim_form">Official claim form (Nagaland)</string>
+    <string name="claim_docs_title">Attach with the official form</string>
+    <string name="claim_docs_body">• Original ticket, signed on the back\n• Self declaration (part of the form)\n• Affidavit\n• PAN card and one ID proof\n• 3 passport photos, not older than 3 months\n• A cancelled cheque of your bank account\nThe form is handed in personally at Kohima or at the camps in Kolkata, Mumbai, Ludhiana and Gangtok.</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">Today\'s 1st prizes</string>
 </resources>

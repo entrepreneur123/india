@@ -32,6 +32,7 @@ from .model import SLOTS, SPECIALS, WEEKLY, Draw, ValidationError
 
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 SCHEMA = 2
+HISTORY_DAYS = 90  # number-history search: fetched only when the user opens it
 LATEST_DAYS = 7
 CONFIG_TEMPLATE = os.path.join(os.path.dirname(__file__), "..", "app_config.json")
 
@@ -248,6 +249,11 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
                                           "date": today.isoformat(), "draws": window(2)})
     _write_json(_v2(out, "latest.json"), {"schema": SCHEMA, "generatedAt": now,
                                            "date": today.isoformat(), "draws": window(LATEST_DAYS)})
+    # Number history: every published number of the last HISTORY_DAYS days, without sources.
+    keep = ("id", "slot", "date", "time", "state", "name", "drawNo", "format", "price", "special", "tiers")
+    history = [{k: d[k] for k in keep if k in d} for d in window(HISTORY_DAYS) if d.get("status") == "OK" and d.get("tiers")]
+    _write_json(_v2(out, "history.json"), {"schema": SCHEMA, "generatedAt": now, "days": HISTORY_DAYS,
+                                            "draws": history})
     days_dir = _v2(out, "days")
     dates_with_data = sorted((f[:-5] for f in os.listdir(days_dir) if f.endswith(".json")), reverse=True) \
         if os.path.isdir(days_dir) else []

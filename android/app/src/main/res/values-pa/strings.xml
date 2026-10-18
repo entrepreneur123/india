@@ -137,4 +137,35 @@
     <string name="privacy_title">ਪ੍ਰਾਈਵੇਸੀ</string>
     <string name="privacy_body">ਕੋਈ ਅਕਾਊਂਟ ਨਹੀਂ ਚਾਹੀਦਾ। ਸੇਵ ਕੀਤੀਆਂ ਟਿਕਟਾਂ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਫ਼ੋਨ ਵਿੱਚ ਰਹਿੰਦੀਆਂ ਹਨ। ਟਿਕਟ ਦੀ ਫ਼ੋਟੋ ਫ਼ੋਨ ’ਤੇ ਹੀ ਪੜ੍ਹੀ ਜਾਂਦੀ ਹੈ, ਇਹ ਐਪ ਉਸ ਨੂੰ ਕਿਤੇ ਅੱਪਲੋਡ ਨਹੀਂ ਕਰਦੀ। ਫ਼ੋਨ ’ਤੇ ਟੈਕਸਟ ਪੜ੍ਹਨ ਵਾਲੇ ਟੂਲ ਲਈ Google Play ਸੇਵਾਵਾਂ ਕੁਝ ਬੁਨਿਆਦੀ ਡਾਇਗਨੌਸਟਿਕ ਜਾਣਕਾਰੀ ਲੈ ਸਕਦੀਆਂ ਹਨ।</string>
     <string name="privacy_policy">ਪ੍ਰਾਈਵੇਸੀ ਪਾਲਿਸੀ</string>
+    <string name="amount_crore">₹%1$s ਕਰੋੜ</string>
+    <string name="amount_lakh">₹%1$s ਲੱਖ</string>
+    <string name="save_pdf">PDF ਸੇਵ ਕਰੋ (ਬਿਨਾਂ ਇੰਟਰਨੈੱਟ ਦੇਖਣ ਲਈ)</string>
+    <string name="need_full_short">ਪੂਰਾ ਨੰਬਰ ਚੈੱਕ ਕਰੋ: ਇਸ ਤੋਂ ਵੱਡਾ ਇਨਾਮ ਵੀ ਹੋ ਸਕਦਾ ਹੈ</string>
+    <string name="history_title">ਨੰਬਰ ਹਿਸਟਰੀ</string>
+    <string name="history_open">ਨੰਬਰ ਹਿਸਟਰੀ: ਮੇਰਾ ਨੰਬਰ ਕਦੋਂ-ਕਦੋਂ ਨਿਕਲਿਆ?</string>
+    <string name="history_hint">ਪਿਛਲੇ %1$d ਦਿਨਾਂ ਵਿੱਚ ਜਿਸ ਵੀ ਨਤੀਜੇ ਵਿੱਚ ਇਹ ਨੰਬਰ ਨਿਕਲਿਆ, ਸਭ ਇੱਥੇ ਦਿਖੇਗਾ। ਆਖ਼ਰੀ 4 ਜਾਂ 5 ਅੰਕ ਲਿਖੋ, ਜਾਂ ਪੂਰਾ ਟਿਕਟ ਨੰਬਰ।</string>
+    <string name="history_search">ਲੱਭੋ</string>
+    <string name="history_none">%1$s ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ ਨਹੀਂ ਨਿਕਲਿਆ।</string>
+    <string name="history_unavailable">ਪੁਰਾਣੇ ਨਤੀਜੇ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੇ। ਇੰਟਰਨੈੱਟ ਚੈੱਕ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="retry">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</string>
+    <string name="mode_one">ਇੱਕ ਟਿਕਟ</string>
+    <string name="mode_many">ਕਈ ਟਿਕਟਾਂ</string>
+    <string name="bulk_hint">ਹਰ ਲਾਈਨ ਵਿੱਚ ਇੱਕ ਟਿਕਟ ਜਾਂ ਰੇਂਜ ਲਿਖੋ, ਜਿਵੇਂ 39C 06300-06399 ਜਾਂ 6300-6399। ਇੱਕ ਵਾਰ ਵਿੱਚ 1000 ਟਿਕਟਾਂ ਤੱਕ, ਤੁਹਾਡੇ ਚੁਣੇ ਡਰਾਅ ਨਾਲ ਮਿਲਾਈਆਂ ਜਾਣਗੀਆਂ।</string>
+    <string name="bulk_label">ਟਿਕਟ ਨੰਬਰ</string>
+    <string name="bulk_draw">ਕਿਸ ਡਰਾਅ ਨਾਲ ਮਿਲਾਈਏ</string>
+    <string name="bulk_summary">ਚੈੱਕ ਕੀਤੀਆਂ: %1$d · ਇਨਾਮ ਨਿਕਲਿਆ: %2$d · ਕੁੱਲ: %3$s</string>
+    <string name="bulk_none">ਇਸ ਡਰਾਅ ਵਿੱਚ ਕੋਈ ਇਨਾਮ ਨਹੀਂ ਨਿਕਲਿਆ।</string>
+    <string name="bulk_too_many">ਸਿਰਫ਼ ਪਹਿਲੀਆਂ %1$d ਟਿਕਟਾਂ ਚੈੱਕ ਕੀਤੀਆਂ ਗਈਆਂ।</string>
+    <string name="bulk_invalid">ਸਮਝ ਨਹੀਂ ਆਇਆ: %1$s</string>
+    <string name="alerts_for">ਇਹਨਾਂ ਡਰਾਅ ਦਾ ਅਲਰਟ ਭੇਜੋ:</string>
+    <string name="alerts_specials">ਬੰਪਰ</string>
+    <string name="claim_form">ਸਰਕਾਰੀ ਕਲੇਮ ਫ਼ਾਰਮ (ਨਾਗਾਲੈਂਡ)</string>
+    <string name="claim_docs_title">ਸਰਕਾਰੀ ਫ਼ਾਰਮ ਨਾਲ ਇਹ ਲਾਓ</string>
+    <string name="claim_docs_body">• ਅਸਲ ਟਿਕਟ, ਪਿੱਛੇ ਦਸਤਖ਼ਤ ਕਰਕੇ\n• ਸੈਲਫ਼ ਡਿਕਲੇਰੇਸ਼ਨ (ਫ਼ਾਰਮ ਦੇ ਨਾਲ ਹੀ ਹੈ)\n• ਐਫ਼ੀਡੇਵਿਟ\n• PAN ਕਾਰਡ ਅਤੇ ਇੱਕ ID ਪਰੂਫ਼\n• 3 ਪਾਸਪੋਰਟ ਫ਼ੋਟੋਆਂ, 3 ਮਹੀਨਿਆਂ ਤੋਂ ਪੁਰਾਣੀਆਂ ਨਹੀਂ\n• ਆਪਣੇ ਬੈਂਕ ਖਾਤੇ ਦਾ ਇੱਕ ਕੈਂਸਲ ਚੈੱਕ\nਫ਼ਾਰਮ ਖ਼ੁਦ ਜਾ ਕੇ ਜਮ੍ਹਾਂ ਕਰਨਾ ਪੈਂਦਾ ਹੈ: ਕੋਹਿਮਾ ਵਿੱਚ, ਜਾਂ ਕੋਲਕਾਤਾ, ਮੁੰਬਈ, ਲੁਧਿਆਣਾ ਅਤੇ ਗੰਗਟੋਕ ਦੇ ਕੈਂਪ ਵਿੱਚ।</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">ਅੱਜ ਦੇ ਪਹਿਲੇ ਇਨਾਮ</string>
+    <plurals name="history_count">
+        <item quantity="one">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
+        <item quantity="other">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
+    </plurals>
 </resources>

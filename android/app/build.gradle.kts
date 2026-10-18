@@ -27,6 +27,14 @@ android {
                 "\"https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v2/\"," +
                 "\"https://raw.githubusercontent.com/entrepreneur123/india/data/v2/\"}"
         )
+
+        // Firebase Cloud Messaging (instant "result is out" push). Values come from the Firebase console
+        // (Project settings > Your apps): gradle.properties or environment variables. They identify the
+        // project and are not secrets. Left empty, the app builds and falls back to scheduled checks.
+        fun cfg(name: String) = (providers.gradleProperty(name).orNull ?: System.getenv(name) ?: "").trim()
+        for (name in listOf("FIREBASE_APP_ID", "FIREBASE_API_KEY", "FIREBASE_PROJECT_ID", "FIREBASE_SENDER_ID")) {
+            buildConfigField("String", name, "\"${cfg(name)}\"")
+        }
     }
 
     buildTypes {
@@ -81,6 +89,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // Unbundled ML Kit: the OCR model comes from Google Play services, keeping our APK small.
     implementation(libs.mlkit.text.recognition)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

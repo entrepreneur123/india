@@ -22,9 +22,12 @@ private val Light = lightColorScheme(
     tertiary = WinGreen,
     tertiaryContainer = Color(0xFFB7F1C0),
     onTertiaryContainer = Color(0xFF00210B),
-    background = Color(0xFFFFF8F4),
-    surface = Color(0xFFFFF8F4),
-    surfaceVariant = Color(0xFFF5DDDA),
+    // Paper-like ground with white result slips on it: lottery sheets are printed, not glossy.
+    background = Color(0xFFF7F3F1),
+    surface = Color(0xFFF7F3F1),
+    surfaceContainerLowest = Color.White,
+    surfaceVariant = Color(0xFFF1E6E3),
+    outlineVariant = Color(0xFFE2D4D0),
 )
 
 private val Dark = darkColorScheme(
@@ -38,6 +41,11 @@ private val Dark = darkColorScheme(
     tertiary = Color(0xFF9BD5A5),
     tertiaryContainer = Color(0xFF005322),
     onTertiaryContainer = Color(0xFFB7F1C0),
+    background = Color(0xFF191514),
+    surface = Color(0xFF191514),
+    surfaceContainerLowest = Color(0xFF231E1D),
+    surfaceVariant = Color(0xFF2E2725),
+    outlineVariant = Color(0xFF433835),
 )
 
 @Composable

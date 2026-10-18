@@ -17,10 +17,13 @@ fun formatRupees(amount: Long): String {
     return "₹$rest,$last3"
 }
 
-/** Short human label used on big prize chips: 1 Crore, 10 Thousand... */
+/** Short label for big prizes in the reader's language: ₹1 Crore / ₹1 करोड़, ₹10 Lakh / ₹10 লাখ. */
+@androidx.compose.runtime.Composable
 fun prizeShort(amount: Long): String = when {
-    amount >= 1_00_00_000 && amount % 1_00_00_000 == 0L -> "₹${amount / 1_00_00_000} Crore"
-    amount >= 1_00_000 && amount % 1_00_000 == 0L -> "₹${amount / 1_00_000} Lakh"
+    amount >= 1_00_00_000 && amount % 1_00_00_000 == 0L ->
+        androidx.compose.ui.res.stringResource(com.lottodost.app.R.string.amount_crore, (amount / 1_00_00_000).toString())
+    amount >= 1_00_000 && amount % 1_00_000 == 0L ->
+        androidx.compose.ui.res.stringResource(com.lottodost.app.R.string.amount_lakh, (amount / 1_00_000).toString())
     else -> formatRupees(amount)
 }
 
@@ -49,4 +52,22 @@ fun openUrl(ctx: Context, url: String) {
 fun shareText(ctx: Context, text: String) {
     val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
     ctx.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+}
+
+/**
+ * Saves a PDF for offline reading via the system downloader (progress + "tap to open" notification).
+ * App-specific storage needs no permission on any Android version.
+ */
+fun downloadPdf(ctx: Context, url: String, fileName: String, title: String) {
+    try {
+        val req = android.app.DownloadManager.Request(Uri.parse(url))
+            .setTitle(title)
+            .setMimeType("application/pdf")
+            .addRequestHeader("User-Agent", "LottoDost/${com.lottodost.app.BuildConfig.VERSION_NAME} (Android)")
+            .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalFilesDir(ctx, android.os.Environment.DIRECTORY_DOWNLOADS, fileName)
+        ctx.getSystemService(android.app.DownloadManager::class.java)?.enqueue(req)
+    } catch (_: RuntimeException) {
+        openUrl(ctx, url) // downloader disabled or storage unavailable: let the browser handle it
+    }
 }

@@ -23,6 +23,10 @@ data class IndexFeed(
     val upcoming: List<Upcoming> = emptyList(),
 )
 
+/** Last ~90 days of published numbers, for "when did my number win" search. */
+@Serializable
+data class HistoryFeed(val schema: Int, val generatedAt: String, val days: Int = 0, val draws: List<Draw> = emptyList())
+
 @Serializable
 data class Upcoming(val name: String, val date: String)
 
@@ -36,6 +40,7 @@ data class RemoteConfig(
     val liveDrawUrl: String? = null,
     val officialResultsUrl: String? = null,
     val announcement: Announcement? = null,
+    val claimFormUrl: String? = null,
 )
 
 @Serializable

@@ -75,6 +75,8 @@
 | Lottery Sambad – Dhankeshari | 500K+ | 3.8 |
 | Ponmitra (케랄라) | 1M+ | 4.3, "광고 없음·정확·QR 스캔"으로 호평 |
 
+**2차 조사 (2026-10-18, google-play-scraper country=in, 16개 앱)**: Dream2Win(Lottery & Sambad 855K, Lottery Aaj 1.42M), Lottery Master Pro 2.14M, Binodan Tech 2종, SK FastResult, T9Apps, Raj Labs, JP AppStudios, Kerala 앱(Ponkudam 5.04M, Ponmitra 1.87M, Malluz, 정부 공식 앱). 모든 앱에 광고가 있었습니다. 공통 기능: 오늘 결과, 날짜별 과거 결과(30일~2년), 끝 4자리 검색, 결과 푸시(일부는 "시작·종료만" 옵션), 원본 PDF 보기·저장, 라이브 영상 링크, 여러 주(州). 위험 기능(예측 번호, 유료 예측 멤버십)은 도입하지 않았습니다. 공식 청구서: https://www.nagalandlotteries.com/prize-claim-form.php (2026년 1월부터 이 양식만 유효, 직접 제출만 가능, 직접 내려받아 확인).
+
 **1~3점 리뷰의 공통 불만과 우리 대응**
 
 | 불만 | 대응 |

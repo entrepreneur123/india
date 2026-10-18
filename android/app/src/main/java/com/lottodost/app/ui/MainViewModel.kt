@@ -7,6 +7,7 @@ import com.lottodost.app.data.ResultRepository
 import com.lottodost.app.data.SavedTicket
 import com.lottodost.app.data.TicketStore
 import com.lottodost.app.domain.DrawSchedule
+import com.lottodost.app.widget.ResultsWidget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
@@ -20,14 +21,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     init {
         viewModelScope.launch {
             repo.loadCache()   // instant first paint from disk
-            repo.refresh()
+            if (repo.refresh()) ResultsWidget.update(app)
         }
     }
 
     /** IST "now", corrected by the server clock (many phones in the field have a wrong clock). */
     fun now(): ZonedDateTime = ZonedDateTime.now(DrawSchedule.IST).plusNanos(state.value.clockOffsetMs * 1_000_000)
 
-    fun refresh() { viewModelScope.launch { repo.refresh() } }
+    fun refresh() { viewModelScope.launch { if (repo.refresh()) ResultsWidget.update(getApplication()) } }
 
     fun loadDay(date: String) {
         viewModelScope.launch { repo.loadDay(date, now().toLocalDate().toString()) }
@@ -47,10 +48,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                 delay(60_000)
             } else {
                 delay(wait)
-                repo.refresh(ResultRepository.Mode.LIGHT)
+                if (repo.refresh(ResultRepository.Mode.LIGHT)) ResultsWidget.update(getApplication())
             }
         }
     }
+
+    fun loadHistory() { viewModelScope.launch { repo.loadHistory() } }
 
     fun save(t: SavedTicket) = store.add(t)
     fun remove(t: SavedTicket) = store.remove(t)

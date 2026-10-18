@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="lucky_red">#B3261E</color>
-    <color name="window_bg">#FFF8F4</color>
+    <color name="window_bg">#F7F3F1</color>
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_line">#E2D4D0</color>
+    <color name="widget_text">#4F4341</color>
+    <color name="widget_number">#B3261E</color>
 </resources>

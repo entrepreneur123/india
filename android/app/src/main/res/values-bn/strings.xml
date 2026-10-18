@@ -137,4 +137,35 @@
     <string name="privacy_title">প্রাইভেসি</string>
     <string name="privacy_body">কোনো অ্যাকাউন্ট লাগে না। সেভ করা টিকিট শুধু আপনার ফোনেই থাকে। টিকিটের ছবি ফোনেই পড়া হয়, এই অ্যাপ সেটা কোথাও আপলোড করে না। ফোনে লেখা পড়ার টুলটির জন্য Google Play সার্ভিস কিছু সাধারণ ডায়াগনস্টিক তথ্য নিতে পারে।</string>
     <string name="privacy_policy">প্রাইভেসি পলিসি</string>
+    <string name="amount_crore">₹%1$s কোটি</string>
+    <string name="amount_lakh">₹%1$s লাখ</string>
+    <string name="save_pdf">PDF সেভ করুন (ইন্টারনেট ছাড়া দেখতে)</string>
+    <string name="need_full_short">পুরো নম্বর মিলিয়ে দেখুন: এর চেয়ে বড় পুরস্কারও হতে পারে</string>
+    <string name="history_title">নম্বরের ইতিহাস</string>
+    <string name="history_open">নম্বরের ইতিহাস: আমার নম্বর কবে কবে লেগেছে?</string>
+    <string name="history_hint">গত %1$d দিনে যে রেজাল্টে এই নম্বর লেগেছে, সব এখানে দেখাবে। শেষ 4 বা 5টি সংখ্যা লিখুন, অথবা পুরো টিকিট নম্বর।</string>
+    <string name="history_search">খুঁজুন</string>
+    <string name="history_none">গত %2$d দিনে %1$s লাগেনি।</string>
+    <string name="history_unavailable">পুরোনো রেজাল্ট লোড হয়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।</string>
+    <string name="retry">আবার চেষ্টা করুন</string>
+    <string name="mode_one">একটা টিকিট</string>
+    <string name="mode_many">অনেক টিকিট</string>
+    <string name="bulk_hint">প্রতি লাইনে একটা টিকিট বা রেঞ্জ লিখুন, যেমন 39C 06300-06399 বা 6300-6399। একবারে 1000টি টিকিট পর্যন্ত, আপনার বাছা ড্রয়ের সঙ্গে মেলানো হবে।</string>
+    <string name="bulk_label">টিকিট নম্বর</string>
+    <string name="bulk_draw">কোন ড্রয়ের সঙ্গে মেলাবেন</string>
+    <string name="bulk_summary">চেক হয়েছে: %1$d · পুরস্কার লেগেছে: %2$d · মোট: %3$s</string>
+    <string name="bulk_none">এই ড্রয়ে কোনো পুরস্কার লাগেনি।</string>
+    <string name="bulk_too_many">শুধু প্রথম %1$dটি টিকিট চেক করা হয়েছে।</string>
+    <string name="bulk_invalid">বোঝা যায়নি: %1$s</string>
+    <string name="alerts_for">এই ড্রগুলোর অ্যালার্ট দিন:</string>
+    <string name="alerts_specials">বাম্পার</string>
+    <string name="claim_form">সরকারি ক্লেম ফর্ম (নাগাল্যান্ড)</string>
+    <string name="claim_docs_title">সরকারি ফর্মের সঙ্গে যা দিতে হবে</string>
+    <string name="claim_docs_body">• আসল টিকিট, পেছনে সই করে\n• সেল্ফ ডিক্লারেশন (ফর্মের সঙ্গেই আছে)\n• এফিডেভিট\n• PAN কার্ড ও একটি ID প্রুফ\n• 3টি পাসপোর্ট ছবি, 3 মাসের বেশি পুরোনো নয়\n• নিজের ব্যাংক অ্যাকাউন্টের একটি ক্যানসেল করা চেক\nফর্ম নিজে গিয়ে জমা দিতে হয়: কোহিমায়, অথবা কলকাতা, মুম্বই, লুধিয়ানা ও গ্যাংটকের ক্যাম্পে।</string>
+    <string name="widget_title">LottoDost · %1$s</string>
+    <string name="widget_desc">আজকের প্রথম পুরস্কার</string>
+    <plurals name="history_count">
+        <item quantity="one">গত %2$d দিনে %1$d বার লেগেছে</item>
+        <item quantity="other">গত %2$d দিনে %1$d বার লেগেছে</item>
+    </plurals>
 </resources>
