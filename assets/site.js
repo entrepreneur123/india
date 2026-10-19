@@ -18,15 +18,29 @@ else if(T.match==="EXACT"){if(full){if(N.indexOf(sh)>=0)w.push({T:T})}else if(n=
 else if(T.match==="LAST5"){if(n>=5&&N.indexOf(k.dg.slice(-5))>=0)w.push({T:T})}else if(T.match==="LAST4"){if(N.indexOf(k.dg.slice(-4))>=0)w.push({T:T})}});
 w.sort(function(a,b){return b.T.prize-a.T.prize});return{d:d,w:w}}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function hm(s){var p=s.split(":"),h=+p[0];return(h%12||12)+(p[1]!=="00"?":"+p[1]:"")+(h>=12?" PM":" AM")}
+function box(head,cls){var b=el("div","res"+(cls?" "+cls:""));b.appendChild(el("div","rh",head));var c=el("div","rb");b.appendChild(c);return[b,c]}
 var f=document.getElementById("checkForm");
 if(f)f.addEventListener("submit",function(ev){ev.preventDefault();var out=document.getElementById("checkRes");out.textContent="";
-var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v);if(!k){out.appendChild(el("div",null,t("ticket_invalid")));return}
+var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v);if(!k){var e=box(t("ticket_invalid"),"no");out.appendChild(e[0]);return}
 var cs=D.map(function(d){return check(k,d)}).filter(Boolean),won=cs.filter(function(c){return c.w.length});
-won.forEach(function(c){var b=el("div","won"),x=c.w[0];b.appendChild(el("strong",null,x.nf?t("maybe_first"):t("you_won")));
-b.appendChild(el("div",null,tier(x.T.rank)+" · "+rup(x.T.prize)));b.appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")));
-if(x.nf)b.appendChild(el("div","hint",t("need_full_number")));out.appendChild(b)});
-if(!won.length){var b=el("div");b.appendChild(el("strong",null,t("no_win_title",show(k))));b.appendChild(el("div","hint",t("no_win_body",cs.length)));out.appendChild(b)}
-var dg=k.dg;document.querySelectorAll(".nums span").forEach(function(s){var x=s.textContent;s.classList.toggle("hit",dg.length>=x.length&&dg.slice(-x.length)===x)})});
+won.forEach(function(c){var x=c.w[0],e=box(x.nf?t("maybe_first"):t("you_won"));e[1].appendChild(el("strong",null,tier(x.T.rank)+" · "+rup(x.T.prize)));
+e[1].appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)));
+if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));out.appendChild(e[0])});
+if(!won.length){var e=box(t("no_win_title",show(k)),"no");e[1].appendChild(el("div","hint",t(cs.length===1&&S.no_win_body_one?"no_win_body_one":"no_win_body",cs.length)));out.appendChild(e[0])}
+var dg=k.dg;document.querySelectorAll(".nums li").forEach(function(s){var x=s.textContent,hit=dg.length>=x.length&&dg.slice(-x.length)===x;
+s.classList.toggle("hit",hit);if(hit){var dt=s.closest("details");if(dt)dt.open=true}});
+out.scrollIntoView({block:"nearest",behavior:"smooth"})});
+// Share: copy the link, or the phone's own share sheet where the browser has one.
+document.querySelectorAll(".share .cp").forEach(function(b){b.addEventListener("click",function(){var u=b.dataset.url,l=b.textContent;
+function done(){b.textContent=t("copied");setTimeout(function(){b.textContent=l},1800)}
+if(navigator.clipboard)navigator.clipboard.writeText(u).then(done,function(){prompt("",u)});else prompt("",u)})});
+if(navigator.share)document.querySelectorAll(".share .more").forEach(function(b){b.hidden=false;b.addEventListener("click",function(){
+navigator.share({text:b.dataset.text}).catch(function(){})})});
+// Draws still to come: countdown, then LIVE, then the "taking longer" note, as in the app.
+var W=document.querySelectorAll(".when[data-at]");function tick(){var now=Date.now();W.forEach(function(e){var at=Date.parse(e.dataset.at),m=Math.floor((at-now)/60000);
+if(m>=0){e.textContent=t("draw_in",Math.floor(m/60),m%60)}else if(m>-15){e.textContent="";e.appendChild(el("span","live",t("live")));e.appendChild(document.createTextNode(t("result_coming")))}
+else e.textContent=t("result_delayed")})}if(W.length){tick();setInterval(tick,30000)}
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
 if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
