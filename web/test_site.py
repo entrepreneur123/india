@@ -82,3 +82,9 @@ def test_search_console_verification_tag(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     assert '<meta name="google-site-verification" content="abc123">' in (out / "index.html").read_text()
     assert "msvalidate.01" not in (out / "index.html").read_text()
+
+
+def test_verification_accepts_the_whole_meta_tag():
+    tag = '<meta name="google-site-verification" content="kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q" />'
+    assert sitegen.verification(tag) == "kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q"
+    assert sitegen.verification(" abc123 ") == "abc123"

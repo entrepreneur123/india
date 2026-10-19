@@ -18,6 +18,7 @@ import html
 import json
 import os
 import pathlib
+import re
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -169,6 +170,12 @@ def game(name: str) -> str:
     return name.removesuffix(" WEEKLY LOTTERY").strip().title()
 
 
+def verification(value: str) -> str:
+    """Accepts the bare code or the whole <meta ... content="code"> tag people copy from the console."""
+    m = re.search(r'content\s*=\s*["\']([^"\']+)', value)
+    return (m.group(1) if m else value).strip()
+
+
 def draw_slug(d: dict) -> str:
     return SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
 
@@ -199,8 +206,8 @@ class Site:
         self.dates = sorted(self.days, reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
         self.beacon = os.environ.get("CF_BEACON_TOKEN", "").strip()
-        self.verify = {"google-site-verification": os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip(),
-                       "msvalidate.01": os.environ.get("BING_SITE_VERIFICATION", "").strip()}
+        self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
+                       "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
         self.pages: list[tuple[str, dict[str, str]]] = []  # (key, {lang: path}) for the sitemap
         self._ads = 0
         self._keys: set[str] = set()
