@@ -8,6 +8,7 @@ import {
   type MatchEvent,
   type Message,
   type NewProfile,
+  type NewRoom,
   type Post,
   type Profile,
   type RecentMatch,
@@ -182,6 +183,8 @@ interface RoomState {
   messages: RoomMessage[]
   listeners: Set<(m: RoomMessage) => void>
   ticker: ReturnType<typeof setInterval> | null
+  inside?: boolean
+  closed?: boolean
 }
 
 export class MockBackend implements Backend {
@@ -224,17 +227,33 @@ export class MockBackend implements Backend {
       this.recentList.push({ matchId: id, partner, metAt: at, lastText: last })
     }
 
+    const official = (id: string, title: string, emoji: string, online: number): Room => ({
+      id, title, emoji, online, official: true, mine: false, category: 'chat', genderRule: 'any', minAge: 18, maxAge: 100,
+      isPrivate: false,
+    })
     const roomDefs: Room[] = [
-      { id: 'lounge', title: 'Global Lounge', emoji: '🌍', online: 166 },
-      { id: 'language', title: 'Language Exchange', emoji: '🗣️', online: 60 },
-      { id: 'music', title: 'Music', emoji: '🎧', online: 9 },
-      { id: 'movies', title: 'Movies & Series', emoji: '🎬', online: 55 },
-      { id: 'gaming', title: 'Gaming', emoji: '🎮', online: 23 },
-      { id: 'sports', title: 'Sports', emoji: '⚽', online: 19 },
-      { id: 'night', title: 'Late Night Talks', emoji: '🌙', online: 32 },
-      { id: 'memes', title: 'Memes', emoji: '😂', online: 14 },
-      { id: 'study', title: 'Study & Campus', emoji: '🎓', online: 11 },
-      { id: 'travel', title: 'Travel', emoji: '✈️', online: 8 },
+      official('lounge', 'Global Lounge', '🌍', 166),
+      official('language', 'Language Exchange', '🗣️', 60),
+      official('music', 'Music', '🎧', 9),
+      official('movies', 'Movies & Series', '🎬', 55),
+      official('gaming', 'Gaming', '🎮', 23),
+      official('sports', 'Sports', '⚽', 19),
+      official('night', 'Late Night Talks', '🌙', 32),
+      official('memes', 'Memes', '😂', 14),
+      official('study', 'Study & Campus', '🎓', 11),
+      official('travel', 'Travel', '✈️', 8),
+      {
+        id: 'u-demo1', title: 'Mumbai night owls', emoji: '🌙', online: 4, official: false, mine: false, ownerName: 'Ananya',
+        category: 'night', maxMembers: 8, genderRule: 'female', minAge: 20, maxAge: 30, isPrivate: false,
+      },
+      {
+        id: 'u-demo2', title: 'K-drama binge club', emoji: '🎬', online: 7, official: false, mine: false, ownerName: 'Yuki',
+        category: 'movies', maxMembers: 12, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false,
+      },
+      {
+        id: 'u-demo3', title: 'Cricket watch party', emoji: '⚽', online: 6, official: false, mine: false, ownerName: 'Kabir',
+        category: 'sports', maxMembers: 6, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false,
+      },
     ]
     for (const room of roomDefs) {
       const msgs: RoomMessage[] = Array.from({ length: 6 }, (_, i) => {
@@ -599,24 +618,83 @@ export class MockBackend implements Backend {
 
   /* ---------- rooms ---------- */
 
+  /** Same rules as the server's room_refusal(): owner always in; closed, gender, age, full. */
+  private refusal(r: RoomState): Room['refusal'] {
+    const room = r.room
+    if (room.official || room.mine) return null
+    if (r.closed) return 'room_closed'
+    const me = this.me
+    if (!me) return null
+    if (room.genderRule !== 'any' && me.gender !== room.genderRule) return 'room_gender'
+    if (me.age < room.minAge || me.age > room.maxAge) return 'room_age'
+    if (!r.inside && room.maxMembers != null && room.online >= room.maxMembers) return 'room_full'
+    return null
+  }
+
   async rooms() {
     await wait(600)
-    return [...this.rooms_.values()].map((r) => ({
-      ...r.room,
-      online: Math.max(0, r.room.online + Math.floor(jitter(-4, 4))),
-    }))
+    return [...this.rooms_.values()]
+      .filter((r) => !r.closed && (!r.room.isPrivate || r.room.mine || r.inside))
+      .map((r) => ({
+        ...r.room,
+        online: r.room.official ? Math.max(0, r.room.online + Math.floor(jitter(-4, 4))) : r.room.online,
+        refusal: this.refusal(r),
+      }))
+  }
+
+  async createRoom(n: NewRoom) {
+    await wait(500)
+    const title = n.title.trim()
+    if (title.length < 2 || title.length > 40) throw new BackendError('room_title')
+    if (n.maxMembers < 2 || n.maxMembers > 50) throw new BackendError('room_size')
+    for (const r of this.rooms_.values()) if (r.room.mine) r.closed = true // one open room per owner
+    const code = Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
+    const id = `u-${uid()}`
+    const emoji: Record<string, string> = {
+      friends: '🤝', language: '🗣️', music: '🎧', movies: '🎬', gaming: '🎮', sports: '⚽', study: '🎓', travel: '✈️', night: '🌙',
+    }
+    const room: Room = {
+      id, title, emoji: emoji[n.category] ?? '💬', online: 1, official: false, mine: true, ownerName: this.me?.name ?? null,
+      category: n.category, maxMembers: n.maxMembers, genderRule: n.genderRule, minAge: n.minAge, maxAge: n.maxAge,
+      isPrivate: n.isPrivate, code,
+    }
+    this.rooms_.set(id, { room, messages: [], listeners: new Set(), ticker: null, inside: true, closed: false })
+    return { id, code }
+  }
+
+  async joinRoomCode(code: string) {
+    await wait(400)
+    const r = [...this.rooms_.values()].find((x) => x.room.code === code.trim().toUpperCase() && !x.closed)
+    if (!r) throw new BackendError('not_found')
+    const why = this.refusal(r)
+    if (why) throw new BackendError(why)
+    r.inside = true
+    return r.room.id
+  }
+
+  async closeRoom(roomId: string) {
+    const r = this.rooms_.get(roomId)
+    if (!r || !r.room.mine) throw new BackendError('not_allowed')
+    await wait(300)
+    r.closed = true
   }
 
   async joinRoom(roomId: string) {
     const r = this.rooms_.get(roomId)
-    if (!r) throw new BackendError('not_found')
+    if (!r || (r.room.isPrivate && !r.room.mine && !r.inside)) throw new BackendError('not_found')
+    const why = this.refusal(r)
+    if (why) throw new BackendError(why)
     await wait(200)
+    if (!r.inside && !r.room.official && !r.room.mine) r.room.online++
+    r.inside = true
   }
 
   async leaveRoom(roomId: string) {
     const r = this.rooms_.get(roomId)
     if (!r) return
     await wait(100)
+    if (r.inside && !r.room.official && !r.room.mine) r.room.online = Math.max(0, r.room.online - 1)
+    if (!r.room.mine) r.inside = false // like the server: a private room needs its code again
   }
 
   async roomHistory(roomId: string) {
@@ -656,6 +734,7 @@ export class MockBackend implements Backend {
   async sendRoom(roomId: string, text: string) {
     const r = this.rooms_.get(roomId)
     if (!r || !this.me) throw new BackendError('not_found')
+    if (r.closed) throw new BackendError('room_closed')
     const now = Date.now()
     this.roomSendTimes = this.roomSendTimes.filter((t) => now - t < 5000)
     if (this.roomSendTimes.length >= 5) throw new BackendError('slow_down')

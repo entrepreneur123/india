@@ -27,7 +27,7 @@ export function Sidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        'sticky top-0 h-dvh w-20 shrink-0 flex-col border-r border-border bg-background px-3 py-6 transition-colors duration-500 lg:w-64 lg:px-4',
+        'sticky top-0 h-dvh w-20 shrink-0 flex-col border-r border-border bg-background px-3 py-6 lg:w-64 lg:px-4',
         className,
       )}
       aria-label="Main"
@@ -120,7 +120,7 @@ export function BottomTabs({ hidden }: { hidden?: boolean }) {
       initial={false}
       animate={{ y: hidden ? '110%' : 0 }}
       transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl transition-colors duration-500 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
     >
       <div className="mx-auto flex h-16 max-w-md items-stretch">
         {ITEMS.filter((i) => i.tab !== 'settings').map((item) => {

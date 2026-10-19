@@ -3,10 +3,10 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowLeft, ArrowRight, Pin } from 'lucide-react'
-import type { Room, RoomMessage } from '@/lib/backend'
+import { ArrowLeft, ArrowRight, Copy, KeyRound, Lock, Pin, Plus, Power } from 'lucide-react'
+import { BackendError, type Room, type RoomMessage } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { compactNumber, errorCode, flagEmoji } from '@/lib/format'
+import { compactNumber, errorCode, flagEmoji, friendlyError } from '@/lib/format'
 import { useApp, useReported } from '@/components/app-state'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
@@ -14,6 +14,8 @@ import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { Composer } from '@/components/screens/chat/composer'
+import { Modal } from '@/components/ui/modal'
+import { CreateRoomDialog, JoinCodeDialog, roomConditions } from './room-dialogs'
 import { cn } from '@/lib/utils'
 
 const FEATURED = 'lounge'
@@ -47,21 +49,37 @@ const TINTS = [
 
 export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | null; onOpenRoom: (id: string | null) => void }) {
   const backend = useBackend()
+  const toast = useToast()
   const { t } = useApp()
   const { data: rooms, error, mutate } = useSWR('rooms', () => backend.rooms(), { refreshInterval: 30_000 })
+  const [createOpen, setCreateOpen] = useState(false)
+  const [codeOpen, setCodeOpen] = useState(false)
   const open = rooms?.find((r) => r.id === openRoomId) ?? null
 
   if (openRoomId && open) return <RoomChat room={open} onBack={() => onOpenRoom(null)} />
 
   const featured = rooms?.find((r) => r.id === FEATURED) ?? null
-  const rest = rooms?.filter((r) => r.id !== FEATURED) ?? []
+  const rest = rooms?.filter((r) => r.official && r.id !== FEATURED) ?? []
+  const people = rooms?.filter((r) => !r.official).sort((a, b) => Number(b.mine) - Number(a.mine)) ?? []
+  // A room I can't enter explains why instead of failing on the server.
+  const enter = (r: Room) => (r.refusal ? toast.show(friendlyError(new BackendError(r.refusal)), 'info') : onOpenRoom(r.id))
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="mx-auto flex max-w-4xl flex-col gap-7 px-4 py-6 sm:px-8 sm:py-10">
-        <header>
-          <h1 className="text-3xl font-extrabold tracking-tight">{t('rooms.title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('rooms.subtitle')}</p>
+        <header className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight">{t('rooms.title')}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t('rooms.subtitle')}</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setCodeOpen(true)}>
+              <KeyRound className="size-4.5" aria-hidden /> Enter code
+            </Button>
+            <Button variant="brand" onClick={() => setCreateOpen(true)}>
+              <Plus className="size-4.5" aria-hidden /> Create room
+            </Button>
+          </div>
         </header>
 
         {error && !rooms ? (
@@ -81,8 +99,42 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
         ) : (
           <>
             {featured ? <FeaturedRoom room={featured} onOpen={() => onOpenRoom(featured.id)} /> : null}
+            <section aria-labelledby="rooms-people">
+              <div className="mb-3 flex items-baseline justify-between">
+                <h2 id="rooms-people" className="text-lg font-bold tracking-tight">Rooms by people</h2>
+                <span className="text-xs text-muted-foreground">Open to anyone who fits the host’s rules</span>
+              </div>
+              {people.length === 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setCreateOpen(true)}
+                  className="flex w-full items-center gap-4 rounded-3xl border-2 border-dashed border-input p-5 text-left transition-colors hover:border-primary hover:bg-primary/5"
+                >
+                  <span className="grid size-12 place-items-center rounded-2xl bg-brand text-primary-foreground">
+                    <Plus className="size-6" aria-hidden />
+                  </span>
+                  <span>
+                    <span className="block font-bold">No rooms by people right now</span>
+                    <span className="block text-sm text-muted-foreground">Open one: pick a topic, who can join and how many.</span>
+                  </span>
+                </button>
+              ) : (
+                <ul className="grid gap-2 sm:grid-cols-2">
+                  {people.map((r, i) => (
+                    <motion.li
+                      key={r.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.03 * i, type: 'spring', stiffness: 320, damping: 28 }}
+                    >
+                      <UserRoomCard room={r} onOpen={() => enter(r)} />
+                    </motion.li>
+                  ))}
+                </ul>
+              )}
+            </section>
             <section aria-labelledby="rooms-all">
-              <h2 id="rooms-all" className="mb-3 text-lg font-bold tracking-tight">All rooms</h2>
+              <h2 id="rooms-all" className="mb-3 text-lg font-bold tracking-tight">Official rooms</h2>
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {rest.map((r, i) => (
                   <motion.li
@@ -118,8 +170,81 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
           </>
         )}
       </div>
+      <CreateRoomDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={(id, code) => {
+          setCreateOpen(false)
+          toast.show(`Room created · code ${code}`, 'success')
+          onOpenRoom(id)
+        }}
+      />
+      <JoinCodeDialog
+        open={codeOpen}
+        onClose={() => setCodeOpen(false)}
+        onJoined={(id) => {
+          setCodeOpen(false)
+          onOpenRoom(id)
+        }}
+      />
     </div>
   )
+}
+
+function UserRoomCard({ room, onOpen }: { room: Room; onOpen: () => void }) {
+  const blocked = !!room.refusal
+  const conditions = roomConditions(room)
+  return (
+    <motion.button
+      type="button"
+      onClick={onOpen}
+      whileHover={blocked ? undefined : { y: -3 }}
+      whileTap={{ scale: 0.98 }}
+      aria-disabled={blocked}
+      className={cn(
+        'group flex w-full items-center gap-4 rounded-3xl bg-card p-4 text-left ring-1 ring-border transition-shadow',
+        blocked ? 'opacity-55' : 'hover:shadow-[0_16px_40px_-20px_rgb(255_61_104/0.5)]',
+        room.mine && 'ring-2 ring-primary/40',
+      )}
+    >
+      <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-muted text-3xl transition-transform group-hover:scale-105" aria-hidden>
+        {room.emoji}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5 truncate text-[15px] font-bold">
+          {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label="Private" /> : null}
+          <span className="truncate">{room.title}</span>
+        </span>
+        <span className="block truncate text-xs text-muted-foreground">
+          {room.mine ? 'Your room' : `Host: ${room.ownerName ?? 'someone'}`}
+          {room.refusal ? ` · ${refusalLabel(room)}` : ''}
+        </span>
+        {conditions.length ? (
+          <span className="mt-1.5 flex flex-wrap gap-1">
+            {conditions.map((c) => (
+              <span key={c} className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                {c}
+              </span>
+            ))}
+          </span>
+        ) : null}
+      </span>
+      <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold tabular-nums text-muted-foreground">
+        <PresenceDot /> {room.online}
+        {room.maxMembers ? `/${room.maxMembers}` : ''}
+      </span>
+    </motion.button>
+  )
+}
+
+function refusalLabel(r: Room) {
+  switch (r.refusal) {
+    case 'room_full': return 'Full'
+    case 'room_gender': return r.genderRule === 'female' ? 'Women only' : 'Men only'
+    case 'room_age': return 'Outside age range'
+    case 'room_closed': return 'Closed'
+    default: return 'Not available'
+  }
 }
 
 function FeaturedRoom({ room, onOpen }: { room: Room; onOpen: () => void }) {
@@ -165,8 +290,36 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   const { openProfile } = useApp()
   const [messages, setMessages] = useState<RoomMessage[] | null>(null)
   const [joined, setJoined] = useState(false)
+  const [closed, setClosed] = useState(false)
+  const [confirmClose, setConfirmClose] = useState(false)
+  const [closing, setClosing] = useState(false)
   const listRef = useRef<HTMLUListElement>(null)
   const stick = useRef(true)
+  const conditions = room.official ? [] : roomConditions(room)
+
+  const copyCode = async () => {
+    if (!room.code) return
+    try {
+      await navigator.clipboard.writeText(room.code)
+      toast.show(`Code ${room.code} copied`, 'success')
+    } catch {
+      toast.show(`Room code: ${room.code}`)
+    }
+  }
+
+  const closeRoom = async () => {
+    setClosing(true)
+    try {
+      await backend.closeRoom(room.id)
+      toast.show('Room closed', 'success')
+      onBack()
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setClosing(false)
+      setConfirmClose(false)
+    }
+  }
 
   const add = useCallback((list: RoomMessage[]) => {
     setMessages((prev) => {
@@ -194,7 +347,10 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
       }
       if (!alive) return
       setJoined(true)
-      beat = setInterval(() => void backend.joinRoom(room.id).catch(() => undefined), HEARTBEAT_MS)
+      beat = setInterval(
+        () => void backend.joinRoom(room.id).catch((err) => alive && errorCode(err) === 'room_closed' && setClosed(true)),
+        HEARTBEAT_MS,
+      )
     })()
     backend.roomHistory(room.id).then(
       (h) => alive && add(h),
@@ -238,6 +394,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
       stick.current = true
       return true
     } catch (err) {
+      if (errorCode(err) === 'room_closed') setClosed(true) // the host closed it while we were inside
       toast.error(err)
       return false
     }
@@ -258,15 +415,46 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           {room.emoji}
         </span>
         <span className="min-w-0 flex-1">
-          <h1 className="truncate text-[15px] font-bold">{room.title}</h1>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
-            <PresenceDot /> {compactNumber(room.online)} online
+          <h1 className="flex items-center gap-1.5 truncate text-[15px] font-bold">
+            {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label="Private" /> : null}
+            <span className="truncate">{room.title}</span>
+          </h1>
+          <span className="flex items-center gap-1.5 truncate text-xs text-muted-foreground tabular-nums">
+            <PresenceDot /> {compactNumber(room.online)}
+            {room.maxMembers ? `/${room.maxMembers}` : ''} online
+            {room.official ? '' : room.mine ? ' · you host' : ` · host ${room.ownerName ?? ''}`}
           </span>
         </span>
+        {room.mine && room.code ? (
+          <>
+            <button
+              type="button"
+              onClick={() => void copyCode()}
+              className="flex h-10 items-center gap-2 rounded-full bg-muted px-3.5 font-mono text-sm font-bold tracking-widest transition-colors hover:bg-input"
+              aria-label={`Copy room code ${room.code}`}
+            >
+              {room.code} <Copy className="size-4" aria-hidden />
+            </button>
+            <Button size="icon" variant="ghost" onClick={() => setConfirmClose(true)} aria-label="Close room" className="text-muted-foreground hover:text-destructive">
+              <Power className="size-5" aria-hidden />
+            </Button>
+          </>
+        ) : null}
       </header>
-      <p className="flex items-center justify-center gap-1.5 bg-muted/60 px-4 py-2 text-center text-xs text-muted-foreground">
-        <Pin className="size-3.5 shrink-0" aria-hidden /> Public room — anyone here can read what you write. Be kind.
+      <p className="flex flex-wrap items-center justify-center gap-1.5 bg-muted/60 px-4 py-2 text-center text-xs text-muted-foreground">
+        <Pin className="size-3.5 shrink-0" aria-hidden />
+        {room.isPrivate ? 'Private room — only people with the code can join.' : 'Anyone here can read what you write. Be kind.'}
+        {conditions.filter((c) => c !== 'Private').map((c) => (
+          <span key={c} className="rounded-full bg-card px-2 py-0.5 font-semibold ring-1 ring-border">
+            {c}
+          </span>
+        ))}
       </p>
+      {closed ? (
+        <p className="bg-destructive/10 px-4 py-2 text-center text-sm font-semibold text-destructive" role="status">
+          This room was closed by its host.
+        </p>
+      ) : null}
 
       <ul
         ref={listRef}
@@ -331,7 +519,29 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           </AnimatePresence>
         )}
       </ul>
-      <Composer onSend={send} allowMedia={false} disabled={!joined} disabledPlaceholder="Joining…" placeholder={`Message ${room.title}`} maxLength={500} />
+      <Composer
+        onSend={send}
+        allowMedia={false}
+        disabled={!joined || closed}
+        disabledPlaceholder={closed ? 'This room was closed' : 'Joining…'}
+        placeholder={`Message ${room.title}`}
+        maxLength={500}
+      />
+      <Modal
+        open={confirmClose}
+        onClose={() => setConfirmClose(false)}
+        title="Close this room?"
+        description="Everyone in it can no longer write, and it disappears from the list. This can’t be undone."
+      >
+        <div className="flex gap-3 p-6 pt-5">
+          <Button variant="secondary" className="flex-1" onClick={() => setConfirmClose(false)}>
+            Keep open
+          </Button>
+          <Button variant="danger" className="flex-1" loading={closing} onClick={() => void closeRoom()}>
+            Close room
+          </Button>
+        </div>
+      </Modal>
     </motion.div>
   )
 }

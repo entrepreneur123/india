@@ -12,12 +12,15 @@ import {
   type MatchEvent,
   type Message,
   type NewProfile,
+  type NewRoom,
   type Post,
   type Profile,
   type RecentMatch,
   type ReportReason,
   type Room,
+  type RoomCategory,
   type RoomMessage,
+  type RoomRefusal,
   type Target,
   type VideoStatus,
 } from './backend'
@@ -31,6 +34,7 @@ const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
 const CODES = [
   'exit_locked', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
+  'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size',
 ]
 
 type CardRow = {
@@ -47,6 +51,11 @@ type MatchRow = {
 type MessageRow = {
   id: number; match_id: string; sender: string; body: string | null
   media_path: string | null; media_kind: string | null; created_at: string
+}
+type RoomRow = {
+  id: string; title: string; emoji: string; online: number; official: boolean; mine: boolean; owner_name: string | null
+  category: string; max_members: number | null; gender_rule: string; min_age: number; max_age: number
+  is_private: boolean; code: string | null; refusal: string | null
 }
 type PostRow = { id: string; user_id: string; body: string; image_path: string | null; created_at: string }
 type RoomMessageRow = {
@@ -478,7 +487,31 @@ export class SupabaseBackend implements Backend {
   // ---- rooms ----
 
   async rooms(): Promise<Room[]> {
-    return this.rpc<Room[]>('room_list')
+    const rows = await this.rpc<RoomRow[]>('room_list2')
+    return rows.map((r) => ({
+      id: r.id, title: r.title, emoji: r.emoji, online: r.online, official: r.official, mine: r.mine,
+      ownerName: r.owner_name, category: r.category as RoomCategory, maxMembers: r.max_members,
+      genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
+      code: r.code, refusal: r.refusal as RoomRefusal | null,
+    }))
+  }
+
+  async createRoom(r: NewRoom) {
+    const rows = await this.rpc<{ room_id: string; room_code: string }[]>('create_room', {
+      p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule,
+      p_min_age: r.minAge, p_max_age: r.maxAge, p_private: r.isPrivate,
+    })
+    const row = rows?.[0]
+    if (!row) throw new BackendError('network')
+    return { id: row.room_id, code: row.room_code }
+  }
+
+  async joinRoomCode(code: string) {
+    return this.rpc<string>('join_room_code', { p_code: code })
+  }
+
+  async closeRoom(roomId: string) {
+    await this.rpc('close_room', { p_room: roomId })
   }
 
   async joinRoom(roomId: string) {

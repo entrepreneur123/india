@@ -44,11 +44,38 @@ export interface Friend {
   threadId?: string | null
 }
 
+export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' | 'gaming' | 'sports' | 'study' | 'travel' | 'night'
+/** Why I can't enter a user room (null/absent = I can). */
+export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed'
+
 export interface Room {
   id: string
   title: string
   emoji: string
   online: number
+  /** Official rooms are run by yaari; the rest were opened by a user. */
+  official: boolean
+  mine: boolean
+  ownerName?: string | null
+  category: RoomCategory
+  maxMembers?: number | null
+  genderRule: Target
+  minAge: number
+  maxAge: number
+  isPrivate: boolean
+  /** Only for my own rooms. */
+  code?: string | null
+  refusal?: RoomRefusal | null
+}
+
+export interface NewRoom {
+  title: string
+  category: RoomCategory
+  maxMembers: number
+  genderRule: Target
+  minAge: number
+  maxAge: number
+  isPrivate: boolean
 }
 
 export interface RoomMessage {
@@ -100,6 +127,12 @@ export type BackendErrorCode =
   | 'bad_media'
   | 'video_not_configured'
   | 'sms_unavailable'
+  | 'room_closed'
+  | 'room_gender'
+  | 'room_age'
+  | 'room_full'
+  | 'room_title'
+  | 'room_size'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -143,6 +176,12 @@ export interface Backend {
   removeFriend(userId: string): Promise<void>
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
   rooms(): Promise<Room[]>
+  /** Opens a room owned by me (closing my previous one); I am inside it. */
+  createRoom(r: NewRoom): Promise<{ id: string; code: string }>
+  /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
+  joinRoomCode(code: string): Promise<string>
+  /** Owner only: nobody can enter or write any more. */
+  closeRoom(roomId: string): Promise<void>
   joinRoom(roomId: string): Promise<void> // call again every 30 s while open
   leaveRoom(roomId: string): Promise<void>
   roomHistory(roomId: string): Promise<RoomMessage[]>

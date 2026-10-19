@@ -22,7 +22,7 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
   return (
     <aside
       className={cn(
-        'sticky top-0 h-dvh w-80 shrink-0 flex-col gap-8 overflow-y-auto border-l border-border bg-background px-5 py-6 scrollbar-thin transition-colors duration-500',
+        'sticky top-0 h-dvh w-80 shrink-0 flex-col gap-8 overflow-y-auto border-l border-border bg-background px-5 py-6 scrollbar-thin',
         className,
       )}
       aria-label="Activity"

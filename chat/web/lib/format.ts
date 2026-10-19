@@ -39,6 +39,12 @@ const ERROR_COPY: Record<string, string> = {
   bad_media: 'That file type can’t be sent. Use a photo, or an MP4, WebM or MOV video',
   video_not_configured: 'Video calls aren’t available yet',
   not_signed_in: 'Please sign in again',
+  room_closed: 'This room was closed',
+  room_gender: 'This room isn’t open to you (gender)',
+  room_age: 'You’re outside this room’s age range',
+  room_full: 'This room is full right now',
+  room_title: 'Room names are 2 to 40 characters',
+  room_size: 'Rooms hold 2 to 50 people',
   sms_unavailable: 'We couldn’t send a code to this number right now. Please try again later',
 }
 

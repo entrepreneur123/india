@@ -21,6 +21,14 @@ import { ThreadScreen } from '@/components/screens/random/thread-screen'
 import { ProfileSheet } from '@/components/screens/profile/profile-sheet'
 import { Paywall } from '@/components/screens/paywall'
 
+/** Tab change: fade and lift. Going to Random the light screen goes at once, so it never fades over the dark lobby. */
+const TAB_MOTION = {
+  enter: { opacity: 0, y: 14 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const } },
+  leave: (toRandom: boolean) =>
+    toRandom ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, y: -8, transition: { duration: 0.2 } },
+}
+
 interface Props {
   initialMe: Profile
   entitlements: Entitlements
@@ -124,23 +132,25 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       <NightContext.Provider value={night}>
         <div
           lang={lang === 'hi' ? 'hi' : 'en'}
-          className={cn('min-h-dvh bg-background text-foreground transition-colors duration-500', night && 'theme-night')}
+          className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}
         >
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
             <main className="relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
-              <div className={cn('min-h-0 flex-1 flex-col', randomVisible ? 'flex' : 'hidden')}>
+              {/* Screens are layered, never stacked: a tab fading out must not push the next one aside. */}
+              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden')}>
                 <RandomScreen active={randomVisible} />
               </div>
-              <AnimatePresence mode="wait" initial={false}>
+              <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
                 {!randomVisible && !thread ? (
                   <motion.div
                     key={tab}
-                    className={cn('flex min-h-0 flex-1 flex-col', !hideTabs && 'pb-16 md:pb-0')}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    custom={randomVisible}
+                    variants={TAB_MOTION}
+                    className={cn('absolute inset-0 flex flex-col', !hideTabs && 'pb-16 md:pb-0')}
+                    initial="enter"
+                    animate="shown"
+                    exit="leave"
                   >
                     {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
                     {tab === 'recent' ? <RecentScreen /> : null}
