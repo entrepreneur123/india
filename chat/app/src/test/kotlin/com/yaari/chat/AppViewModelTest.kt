@@ -351,8 +351,8 @@ class AppViewModelTest {
                 delay(900)
                 return Match("M", partner)
             }
-            override fun events(matchId: String) = kotlinx.coroutines.flow.emptyFlow<com.yaari.chat.data.MatchEvent>()
-            override suspend fun history(matchId: String) = emptyList<com.yaari.chat.model.Message>()
+            override fun events(matchId: String, live: Boolean, afterId: Long?) = kotlinx.coroutines.flow.emptyFlow<com.yaari.chat.data.MatchEvent>()
+            override suspend fun history(matchId: String, afterId: Long?) = emptyList<com.yaari.chat.model.Message>()
             override suspend fun leave(matchId: String) { left += matchId }
         }
         val vm = AppViewModel(sameMatch, DemoBilling(), clock = { now }, today = { today })

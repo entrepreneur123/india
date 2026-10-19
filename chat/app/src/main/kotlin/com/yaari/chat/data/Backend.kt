@@ -71,9 +71,19 @@ interface Backend {
     /** One matching attempt. Null = queued; call again every couple of seconds. */
     suspend fun findMatch(target: Target): Match?
     suspend fun cancelSearch()
-    /** Live updates for one chat. Collect while the chat is on screen. */
-    fun events(matchId: String): Flow<MatchEvent>
-    suspend fun history(matchId: String): List<Message>
+    /**
+     * Emits when the server may have just paired me (someone matched me while I was waiting), so the search polls at
+     * once instead of after its delay. Best effort: polling stays the source of truth. Collect while searching.
+     */
+    fun matchSignals(): Flow<Unit>
+    /**
+     * Live updates for one chat. Collect while the chat is on screen. [live]: a random chat (not a friend thread),
+     * where the partner's connection is watched and a partner who never connects or drops for good ends the chat
+     * ([MatchEvent.PartnerLeft]). [afterId]: the newest message id already shown; the re-syncs fetch only newer ones.
+     */
+    fun events(matchId: String, live: Boolean, afterId: Long? = null): Flow<MatchEvent>
+    /** The newest 200 messages, oldest first; with [afterId], up to 200 messages newer than it (for re-syncs). */
+    suspend fun history(matchId: String, afterId: Long? = null): List<Message>
     /** "I am typing" signal to the other person; arrives as [MatchEvent.Typing]. Best effort. */
     suspend fun sendTyping(matchId: String)
     suspend fun send(matchId: String, text: String?, media: Media?): Message
@@ -123,8 +133,9 @@ interface Backend {
     /** Owner only: nobody can enter or write any more. */
     suspend fun closeRoom(roomId: String)
     suspend fun leaveRoom(roomId: String)
-    suspend fun roomHistory(roomId: String): List<RoomMessage>
-    /** New messages in a room while it is open. */
-    fun roomEvents(roomId: String): Flow<RoomMessage>
+    /** The newest 100 messages, oldest first; with [afterId], up to 200 messages newer than it (for re-syncs). */
+    suspend fun roomHistory(roomId: String, afterId: Long? = null): List<RoomMessage>
+    /** New messages in a room while it is open. [afterId]: the newest message id already shown. */
+    fun roomEvents(roomId: String, afterId: Long? = null): Flow<RoomMessage>
     suspend fun sendRoom(roomId: String, text: String): RoomMessage
 }

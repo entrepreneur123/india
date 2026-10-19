@@ -79,8 +79,8 @@ class LiveServerTest {
         assertEquals("premium_required", code { a.requestVideo(ma.id) })
 
         // Realtime: A receives B's message, and B sees A typing.
-        val incoming = async { withTimeout(15_000) { a.events(ma.id).filterIsInstance<MatchEvent.NewMessage>().first { !it.message.fromMe } } }
-        val typing = async { withTimeout(15_000) { b.events(mb.id).filterIsInstance<MatchEvent.Typing>().first { it.on } } }
+        val incoming = async { withTimeout(15_000) { a.events(ma.id, live = false).filterIsInstance<MatchEvent.NewMessage>().first { !it.message.fromMe } } }
+        val typing = async { withTimeout(15_000) { b.events(mb.id, live = false).filterIsInstance<MatchEvent.Typing>().first { it.on } } }
         delay(2_000) // let both realtime channels subscribe
         a.sendTyping(ma.id)
         typing.await()
@@ -92,7 +92,7 @@ class LiveServerTest {
         assertEquals("QA Priya", a.profile(ma.partner.id)?.name)
 
         // After 5 s A leaves; B is told through realtime.
-        val left = async { withTimeout(20_000) { b.events(mb.id).filterIsInstance<MatchEvent.PartnerLeft>().first() } }
+        val left = async { withTimeout(20_000) { b.events(mb.id, live = false).filterIsInstance<MatchEvent.PartnerLeft>().first() } }
         delay(5_500)
         a.leave(ma.id)
         left.await()

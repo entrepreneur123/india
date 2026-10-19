@@ -445,10 +445,13 @@ private fun MatchReveal(matchId: String, partner: Profile) {
     }
 }
 
-/** Photo button, pill-shaped input and a round brand-colour send button. Follows the screen's colours (light or dark). */
+/**
+ * Photo button, pill-shaped input and a round brand-colour send button. Follows the screen's colours (light or dark).
+ * The field clears at once on send; [onText]'s second argument puts the text back if the message did not go out.
+ */
 @Composable
 fun Composer(
-    onText: (String) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
+    onText: (String, () -> Unit) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
     divider: Boolean = false,
 ) {
     var text by rememberSaveable { mutableStateOf("") }
@@ -496,7 +499,12 @@ fun Composer(
             val bg by animateColorAsState(if (enabled) Brand.Pink else MaterialTheme.colorScheme.surfaceContainerHighest, tween(150), label = "send")
             Box(
                 Modifier.size(48.dp).pressScale(interaction).clip(CircleShape).background(bg)
-                    .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) { tick(); onText(text); text = "" },
+                    .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) {
+                        tick()
+                        val sent = text
+                        text = ""
+                        onText(sent) { if (text.isEmpty()) text = sent } // nothing typed meanwhile: restore it
+                    },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant)
