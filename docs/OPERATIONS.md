@@ -8,7 +8,8 @@
    - 확인: `https://entrepreneur123.github.io/india/v2/today.json`이 열리면 됩니다.
    - 확인: `https://entrepreneur123.github.io/india/privacy.html`이 열리면 됩니다. 이 주소가 Play 콘솔에 입력할 개인정보처리방침 URL입니다.
 4. (완료) `docs/privacy.html` 연락처 이메일: yechan750745@gmail.com
-5. Pages가 켜지면 `https://entrepreneur123.github.io/india/`에 결과 웹페이지가 열립니다. 앱과 같은 번역 문구를 씁니다(`web/build.py`가 앱의 strings.xml에서 읽음).
+5. 결과 웹사이트는 `web/sitegen.py`가 결과가 바뀔 때마다 다시 만듭니다. 회차마다 미리 만든 HTML 페이지(영어 `/`, 벵골어 `/bn/`, 힌디어 `/hi/`), 날짜별 페이지, 보관함, 사이트맵을 만들고, 문구는 앱의 strings.xml을 그대로 씁니다.
+   - 저장소 Settings → Variables에서 설정합니다(모두 선택 사항): `SITE_URL`(자체 도메인, 예 `https://example.in`), `ADSENSE_CLIENT`(`ca-pub-…`, 넣으면 광고 칸과 ads.txt가 생김), `CF_BEACON_TOKEN`(Cloudflare 무료 방문자 통계).
 
 ## 즉시 푸시 알림 켜기 (Firebase, 한 번만)
 

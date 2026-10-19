@@ -11,3 +11,8 @@
   Cache-Control: public, max-age=300
 /v2/days/*
   Cache-Control: public, max-age=300, stale-while-revalidate=3600
+/v2/history.json
+  Cache-Control: public, max-age=600
+# Website: pages are rebuilt on every deploy (Cloudflare purges them), the script rarely changes.
+/assets/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400

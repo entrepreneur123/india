@@ -52,6 +52,10 @@ jobs:
     env:
       # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
       HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      # Website: public address, ad and analytics ids (repository Variables; all optional).
+      SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
+      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+      CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
       HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
       FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -105,7 +109,7 @@ jobs:
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
-            python ../web/build.py ../public/index.html  # results web page (strings from the app)
+            python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
