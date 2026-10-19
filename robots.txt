@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://entrepreneur123.github.io/india/sitemap.xml

@@ -2,347 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LottoDost Dear Results</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Dear lottery results today: Nagaland State Lottery 1 PM and 8 PM, Sikkim 6 PM, with a ticket checker. Not an official site.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Mukta:wght@400;600;700&family=Mukta+Mahee:wght@400;600;700&family=Roboto+Mono:wght@700&display=swap">
-<style>
-/* Layout: one narrow column like the app, result cards first, checker second, safety last. Colors are the app's theme. */
-:root {
-  --bg: #fff8f4; --fg: #231918; --muted: #6b5552; --card: #fdeeeb; --line: #e9cfca;
-  --red: #b3261e; --red-ink: #ffffff; --maroon: #410001; --gold: #f2b705; --gold-ink: #261a00;
-  --win: #1b7f3b; --win-bg: #d8f5dd;
-  --f-body: "Mukta", "Hind Siliguri", "Mukta Mahee", system-ui, "Noto Sans", sans-serif;
-  --f-num: "Roboto Mono", ui-monospace, "Noto Sans Mono", monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #201a19; --fg: #f1dfdc; --muted: #c9b2ae; --card: #2d2422; --line: #4a3936;
-  --red: #ffb4a9; --red-ink: #690002; --maroon: #ffdad5; --gold: #f2b705; --gold-ink: #261a00;
-  --win: #9bd5a5; --win-bg: #12391c; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #201a19; --fg: #f1dfdc; --muted: #c9b2ae; --card: #2d2422; --line: #4a3936;
-  --red: #ffb4a9; --red-ink: #690002; --maroon: #ffdad5; --gold: #f2b705; --gold-ink: #261a00;
-  --win: #9bd5a5; --win-bg: #12391c; color-scheme: dark }
-* { box-sizing: border-box }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 var(--f-body);
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-main { max-width: 34rem; margin: 0 auto; padding-block: 16px 40px; display: grid; gap: 14px }
-h1 { font-size: 1.6rem; margin: 0; line-height: 1.2 }
-h2 { font-size: 1.15rem; margin: 0; text-wrap: balance }
-.sub { color: var(--muted); margin: 0 }
-.langs, .dates { display: flex; gap: 8px; flex-wrap: wrap }
-.chip { border: 1px solid var(--line); background: transparent; color: var(--fg); border-radius: 999px;
-  padding: 6px 14px; font: inherit; font-size: .95rem; cursor: pointer; min-height: 40px }
-.chip[aria-pressed="true"] { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 700 }
-.chip:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px }
-.banner { background: var(--card); border-radius: 14px; padding: 10px 14px }
-.banner.hot { background: var(--gold); color: var(--gold-ink); font-weight: 600 }
-.cards { display: grid; gap: 12px }
-.card { background: var(--card); border-radius: 18px; padding: 14px 16px; display: grid; gap: 6px; min-width: 0 }
-.head { display: flex; gap: 12px; align-items: center }
-.time { background: var(--red); color: var(--red-ink); border-radius: 12px; padding: 6px 10px; text-align: center; flex: none; min-width: 5.2rem }
-.time b { display: block; font-size: 1.05rem; line-height: 1.2 }
-.time span { font-size: .8rem }
-.name { min-width: 0 }
-.name strong { display: block; overflow-wrap: anywhere }
-.name small { color: var(--muted) }
-.verified { margin-left: auto; flex: none; border: 1px solid var(--win); color: var(--win); border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 600 }
-.label { color: var(--muted); font-size: .9rem; margin-top: 4px }
-.first { font: 700 clamp(2rem, 9vw, 2.6rem)/1.1 var(--f-num); color: var(--red); letter-spacing: .02em; font-variant-numeric: tabular-nums }
-details summary { cursor: pointer; color: var(--muted); font-size: .9rem; padding-block: 4px }
-.tier { border-top: 1px solid var(--line); padding-block: 8px; display: grid; gap: 4px }
-.tier-h { display: flex; justify-content: space-between; gap: 8px; font-weight: 700 }
-.tier-h span:last-child { color: var(--red); white-space: nowrap }
-.hint { color: var(--muted); font-size: .85rem }
-.nums { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 700 1rem/1.5 var(--f-num); font-variant-numeric: tabular-nums }
-.nums mark { background: var(--gold); color: var(--gold-ink); border-radius: 4px; padding: 0 2px }
-a { color: var(--red) }
-.check { display: grid; gap: 10px; background: var(--card); border-radius: 18px; padding: 14px 16px }
-.row { display: flex; gap: 8px; flex-wrap: wrap }
-.row input { flex: 1 1 12rem; min-width: 0; font: 700 1.2rem var(--f-num); padding: 10px 12px; border-radius: 12px;
-  border: 1px solid var(--line); background: var(--bg); color: var(--fg); text-transform: uppercase }
-.row button { font: inherit; font-weight: 700; padding: 10px 22px; border-radius: 999px; border: 0; background: var(--red); color: var(--red-ink); cursor: pointer; min-height: 44px }
-.res { display: grid; gap: 8px }
-.res > div { border-radius: 12px; padding: 10px 12px; background: var(--bg) }
-.res .won { background: var(--win-bg); color: var(--fg) }
-.res .won strong { color: var(--win) }
-.err { color: var(--red) }
-footer { color: var(--muted); font-size: .85rem; display: grid; gap: 8px }
-footer h2 { font-size: 1rem; color: var(--fg) }
-@media (prefers-reduced-motion: no-preference) { .card { transition: background .2s } }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nagaland State Lottery Result Today 19.10.2026 – 1 PM, 6 PM, 8 PM Dear Lottery</title>
+<meta name="description" content="Dear lottery result 19.10.2026: 1 PM 72C 46097, 6 PM awaited, 8 PM awaited. Full prize list, ticket checker and official result links.">
+<link rel="canonical" href="https://entrepreneur123.github.io/india/">
+<link rel="alternate" hreflang="en" href="https://entrepreneur123.github.io/india/"><link rel="alternate" hreflang="bn" href="https://entrepreneur123.github.io/india/bn/"><link rel="alternate" hreflang="hi" href="https://entrepreneur123.github.io/india/hi/"><link rel="alternate" hreflang="x-default" href="https://entrepreneur123.github.io/india/">
+<meta property="og:title" content="Nagaland State Lottery Result Today 19.10.2026 – 1 PM, 6 PM, 8 PM Dear Lottery"><meta property="og:description" content="Dear lottery result 19.10.2026: 1 PM 72C 46097, 6 PM awaited, 8 PM awaited. Full prize list, ticket checker and official result links.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://entrepreneur123.github.io/india/">
+<meta name="theme-color" content="#b3261e">
+<style>:root{--bg:#f7f3f1;--fg:#231918;--mut:#6b5552;--card:#fff;--line:#e2d4d0;--red:#b3261e;--onred:#fff;--gold:#ffe08a;--ok:#1b7f3b}
+@media (prefers-color-scheme:dark){:root{--bg:#191514;--fg:#f1dfdc;--mut:#c9b2ae;--card:#231e1d;--line:#433835;--red:#ffb4a9;--onred:#410001;--gold:#5c4300;--ok:#9bd5a5}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,"Noto Sans","Noto Sans Bengali","Noto Sans Devanagari",sans-serif}
+.wrap{max-width:40rem;margin:0 auto;padding:0 16px}a{color:var(--red)}h1{font-size:1.4rem;line-height:1.25;margin:16px 0 4px}h1 .d{white-space:nowrap}
+h2{font-size:1.05rem;margin:0}h3{font-size:1rem;margin:0}.top{background:var(--red)}.top .wrap{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 16px;flex-wrap:wrap}
+.top a{color:var(--onred);text-decoration:none}.brand{font-weight:800;font-size:1.15rem}.top nav{font-size:.9rem}.top nav [aria-current]{text-decoration:underline}
+.hint{color:var(--mut);font-size:.9rem;margin:4px 0}.banner{background:var(--gold);border-radius:10px;padding:10px 12px}
+.slip{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:12px 0;overflow:hidden}
+.slip-h{display:flex;border-bottom:1px dashed var(--line)}.stub{background:var(--red);color:var(--onred);min-width:76px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.stub b{font-size:1rem}.stub span{font-size:.8rem}.nm{padding:10px 14px;min-width:0}.nm h2 a{color:var(--fg);text-decoration:none}.nm small{color:var(--mut)}.ok{color:var(--ok);font-style:normal;font-weight:700;font-size:.85rem;display:block}
+.slip-b{padding:10px 14px}.eyebrow{color:var(--mut);font-size:.85rem;margin:0}.first{font:800 clamp(1.9rem,9vw,2.5rem)/1.15 ui-monospace,"Roboto Mono",monospace;color:var(--red);margin:2px 0 6px;white-space:nowrap}
+.tier{border-top:1px solid var(--line);padding:8px 0}.tier-h{display:flex;justify-content:space-between;gap:8px}.tier-h b{color:var(--red);white-space:nowrap}
+.nums{display:flex;flex-wrap:wrap;gap:2px 12px;font:600 1.02rem/1.6 ui-monospace,"Roboto Mono",monospace;margin:4px 0}.nums .hit{background:var(--gold);border-radius:3px}
+.links,.nav{font-size:.95rem}.check{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:16px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row input{flex:1 1 11rem;min-width:0;font:700 1.15rem ui-monospace,monospace;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);text-transform:uppercase}
+.row button{font:inherit;font-weight:700;padding:10px 20px;border:0;border-radius:999px;background:var(--red);color:var(--onred)}
+#checkRes>div{margin-top:8px;padding:10px;border-radius:8px;background:var(--bg)}#checkRes .won{border-left:4px solid var(--ok)}
+.app{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.dates{columns:2;padding-left:18px}
+.faq p{margin:4px 0 10px}.foot{color:var(--mut);font-size:.8rem;padding:24px 16px}.ad{margin:12px 0;min-height:90px}
 </style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Today", "item": "https://entrepreneur123.github.io/india/"}]}</script>
 </head>
-<body>
-<main>
-  <header style="display:grid;gap:6px">
-    <h1>LottoDost</h1>
-    <p class="sub" id="subtitle"></p>
-    <div class="langs" id="langs" role="group" aria-label="Language"></div>
-  </header>
-  <div id="notice" class="banner" hidden></div>
-  <div id="upcoming" class="banner hot" hidden></div>
-  <div class="dates" id="dates" role="group" aria-label="Date"></div>
-  <section class="cards" id="cards" aria-live="polite"></section>
-  <section class="check">
-    <h2 id="checkTitle"></h2>
-    <p class="hint" id="checkHint" style="margin:0"></p>
-    <form class="row" id="checkForm" novalidate>
-      <input id="ticket" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="39C 06366">
-      <button id="checkBtn" type="submit"></button>
-    </form>
-    <div class="res" id="checkRes" aria-live="polite"></div>
-  </section>
-  <footer>
-    <h2 id="safetyTitle"></h2>
-    <p id="safetyBody" style="margin:0"></p>
-    <p id="disclaimer" style="margin:0"></p>
-    <p id="source" style="margin:0"></p>
-    <p style="margin:0"><a id="privacy" href="https://entrepreneur123.github.io/india/privacy.html" target="_blank" rel="noopener"></a></p>
-  </footer>
+<body data-live="2026-10-19">
+<header class="top"><div class="wrap"><a class="brand" href="/india/">LottoDost</a>
+<nav aria-label="Language"><a href="/india/" hreflang="en" lang="en" aria-current="true">English</a> · <a href="/india/bn/" hreflang="bn" lang="bn">বাংলা</a> · <a href="/india/hi/" hreflang="hi" lang="hi">हिन्दी</a></nav></div></header>
+<main class="wrap">
+<h1>Nagaland State Lottery Result Today <span class="d">19.10.2026</span></h1><p class="hint">Updated 19.10 13:28 IST</p><p class="banner">Coming up: DEAR PUJA BUMPER on 24.10.2026</p><section class="slip"><div class="slip-h"><div class="stub"><b>1 PM</b><span>Morning</span></div><div class="nm"><h2><a href="/india/result/19-10-2026/1pm/">Dear Rise Monday</a></h2><small>Nagaland State Lottery</small></div></div><div class="slip-b"><p class="eyebrow">1st Prize · ₹1 Crore</p><p class="first">72C 46097</p><div class="tier"><div class="tier-h"><h3>Consolation Prize</h3><b>₹1,000</b></div><p class="hint">Same 5 digits as the 1st Prize, other serial or letter</p><p class="nums"><span>46097</span></p></div><div class="tier"><div class="tier-h"><h3>2nd Prize</h3><b>₹10,000</b></div><p class="hint">Match the last 5 digits</p><p class="nums"><span>02459</span> <span>03462</span> <span>05569</span> <span>12367</span> <span>18081</span> <span>19128</span> <span>56427</span> <span>65071</span> <span>67958</span> <span>91573</span></p></div><div class="tier"><div class="tier-h"><h3>3rd Prize</h3><b>₹500</b></div><p class="hint">Match the last 4 digits</p><p class="nums"><span>3212</span> <span>3804</span> <span>4702</span> <span>5527</span> <span>5727</span> <span>5909</span> <span>6058</span> <span>6163</span> <span>6257</span> <span>9448</span></p></div><div class="tier"><div class="tier-h"><h3>4th Prize</h3><b>₹250</b></div><p class="hint">Match the last 4 digits</p><p class="nums"><span>1232</span> <span>3007</span> <span>3017</span> <span>3454</span> <span>4164</span> <span>5118</span> <span>5841</span> <span>6928</span> <span>8469</span> <span>9223</span></p></div><div class="tier"><div class="tier-h"><h3>5th Prize</h3><b>₹120</b></div><p class="hint">Match the last 4 digits</p><p class="nums"><span>0004</span> <span>0205</span> <span>0208</span> <span>0266</span> <span>0284</span> <span>0584</span> <span>0677</span> <span>0922</span> <span>1131</span> <span>1186</span> <span>1336</span> <span>1537</span> <span>1653</span> <span>1879</span> <span>1904</span> <span>1905</span> <span>2060</span> <span>2084</span> <span>2130</span> <span>2318</span> <span>2508</span> <span>2557</span> <span>2684</span> <span>3015</span> <span>3140</span> <span>3216</span> <span>3512</span> <span>3921</span> <span>4050</span> <span>4059</span> <span>4070</span> <span>4153</span> <span>4190</span> <span>4329</span> <span>4457</span> <span>4487</span> <span>4601</span> <span>4831</span> <span>4952</span> <span>5038</span> <span>5057</span> <span>5142</span> <span>5291</span> <span>5313</span> <span>5422</span> <span>5428</span> <span>5651</span> <span>5654</span> <span>6021</span> <span>6178</span> <span>6265</span> <span>6405</span> <span>6432</span> <span>6436</span> <span>6530</span> <span>6672</span> <span>6683</span> <span>6714</span> <span>6804</span> <span>6934</span> <span>6956</span> <span>6967</span> <span>7070</span> <span>7136</span> <span>7166</span> <span>7362</span> <span>7477</span> <span>7616</span> <span>7686</span> <span>7724</span> <span>7767</span> <span>7902</span> <span>8064</span> <span>8220</span> <span>8280</span> <span>8286</span> <span>8405</span> <span>8413</span> <span>8427</span> <span>8434</span> <span>8658</span> <span>8744</span> <span>8766</span> <span>8819</span> <span>8837</span> <span>8893</span> <span>8906</span> <span>8924</span> <span>9005</span> <span>9055</span> <span>9079</span> <span>9113</span> <span>9253</span> <span>9293</span> <span>9651</span> <span>9711</span> <span>9732</span> <span>9867</span> <span>9910</span> <span>9958</span></p></div><p class="links"><a rel="nofollow" href="https://www.lotterysambad.com/fetchtoday.php?filename=MN191026.PDF">Open result sheet (Lottery Sambad)</a> · <a rel="nofollow" href="https://www.nagalandlotteries.com/old_results/MN191026.PDF">Open official result (PDF)</a></p></div></section><section class="slip"><div class="slip-h"><div class="stub"><b>6 PM</b><span>Day</span></div><div class="nm"><h2>awaited</h2><small>Sikkim State Lottery</small></div></div><div class="slip-b"><p>Result coming soon…</p></div></section><section class="slip"><div class="slip-h"><div class="stub"><b>8 PM</b><span>Night</span></div><div class="nm"><h2><a href="/india/result/19-10-2026/8pm/">Dear 8 Pm</a></h2><small>Nagaland State Lottery</small></div></div><div class="slip-b"><p>The official result is available as a PDF.</p><p><a rel="nofollow" href="https://www.nagalandlotteries.com/old_results/EN191026.PDF">Open official result (PDF)</a></p></div></section><section class="slip"><div class="slip-h"><div class="stub"><b>8 PM</b></div><div class="nm"><h2><a href="/india/result/19-10-2026/laxmi-8pm/">Dear Laxmi 8 Pm</a></h2><small>Nagaland State Lottery</small></div></div><div class="slip-b"><p>The official result is available as a PDF.</p><p><a rel="nofollow" href="https://www.nagalandlotteries.com/old_results/DG191026.PDF">Open official result (PDF)</a></p></div></section><section class="check" id="check"><h2>Check your ticket</h2><p class="hint">Type the full number (e.g. 39C 06366, bumper A 801021) or just the last 4–6 digits.</p><form id="checkForm" class="row"><input id="ticket" aria-label="Ticket number" placeholder="39C 06366" autocomplete="off" autocapitalize="characters" spellcheck="false"><button>Check</button></form><div id="checkRes" aria-live="polite"></div></section><p class="app">Get the result the moment it is out: free LottoDost app (alerts, ticket scan, number history).</p><section><h2>Older results</h2><ul class="dates"><li><a href="/india/result/18-10-2026/">Result of 18.10.2026</a></li><li><a href="/india/result/17-10-2026/">Result of 17.10.2026</a></li><li><a href="/india/result/16-10-2026/">Result of 16.10.2026</a></li><li><a href="/india/result/15-10-2026/">Result of 15.10.2026</a></li><li><a href="/india/result/14-10-2026/">Result of 14.10.2026</a></li><li><a href="/india/result/13-10-2026/">Result of 13.10.2026</a></li><li><a href="/india/result/12-10-2026/">Result of 12.10.2026</a></li></ul><p><a href="/india/old-results/">Old results →</a></p></section><section class="faq"><h2>Common questions</h2><h3>When are the results declared?</h3><p>Dear lottery draws are at 1 PM (Nagaland), 6 PM (Sikkim) and 8 PM (Nagaland) IST every day. The result sheet usually appears 7–10 minutes after each draw, and this page updates by itself.</p><h3>How do I check my ticket?</h3><p>Type the full number (e.g. 39C 06366, bumper A 801021) or just the last 4–6 digits.</p><h3>How do I claim a prize?</h3><p>Nagaland prizes above ₹10,000 must be claimed within 30 days of the draw at the Directorate of Nagaland State Lotteries, Kohima, or its nodal offices, with the original ticket and 3 attested passport photos (as printed on the official result). Ask your ticket seller about smaller prizes. Tax is deducted on large prizes.</p><p>For Sikkim and Punjab draws, follow the claim instructions printed on your ticket and on the official result. Ask your seller first.</p><h3>Stay safe</h3><p>No app, agent or WhatsApp group can predict or fix lottery numbers. LottoDost never sells tickets and never asks for money, bank or UPI details. Treat any &quot;guaranteed number&quot; offer as fraud.</p><p class="hint">Also searched as Lottery Sambad, Dear Lottery Result, Nagaland Lottery Sambad.</p></section>
 </main>
-<script>
-"use strict";
-// Strings come from the Android app's res/values*/strings.xml (web/build.py), so web and app say the same thing.
-const I18N = {"en":{"disclaimer_body":"LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.","safety_title":"Stay safe","safety_body":"No app, agent or WhatsApp group can predict or fix lottery numbers. LottoDost never sells tickets and never asks for money, bank or UPI details. Treat any \"guaranteed number\" offer as fraud.","results_subtitle":"Dear lottery results · 1 PM · 6 PM · 8 PM","offline_banner":"No internet. Showing saved results.","upcoming_special":"Coming up: %1$s on %2$s","today":"Today","no_draw_day":"No draw was held on this day.","source_note":"Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.","state_lottery":"%1$s State Lottery","state_nagaland":"Nagaland","state_sikkim":"Sikkim","state_punjab":"Punjab","tag_morning":"Morning","tag_day":"Day","tag_night":"Night","verified":"Verified","verified_long":"1st and 2nd prize numbers match the official government result.","first_prize":"1st Prize","tap_full_result":"Tap to see all prizes","pdf_only":"The official result is available as a PDF.","open_official_pdf":"Open official result (PDF)","open_sheet":"Open result sheet (Lottery Sambad)","special_tag":"Special draw","draw_in":"Draw in %1$d h %2$d min","result_coming":"Result coming soon…","no_result":"No result available","tier_1":"1st Prize","tier_cons":"Consolation Prize","tier_2":"2nd Prize","tier_3":"3rd Prize","tier_4":"4th Prize","tier_5":"5th Prize","tier_n":"%1$dth Prize","match_last4":"Match the last 4 digits","match_last5":"Match the last 5 digits","match_cons":"Same 5 digits as the 1st Prize, other serial or letter","check_title":"Check your ticket","check_hint":"Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket or its QR code.","ticket_number":"Ticket number","ticket_invalid":"Enter like 39C 06366, A 801021, 06366 or 6366","check_button":"Check","no_win_title":"%1$s: no prize","no_win_body":"Checked against %1$d results.","need_full_number":"Enter the full ticket number (with serial and letter) to check the 1st, Consolation and 2nd prizes too.","you_won":"Congratulations! You won","maybe_first":"Same digits as a top prize!","also_matches":"Also matches: %1$s","privacy_policy":"Privacy policy"},"hi":{"disclaimer_body":"LottoDost एक स्वतंत्र ऐप है। नागालैंड, सिक्किम या पंजाब सरकार और किसी भी लॉटरी विभाग से इसका कोई संबंध नहीं है। हम टिकट नहीं बेचते और कभी पैसे नहीं माँगते। रिज़ल्ट सार्वजनिक स्रोतों से लिए जाते हैं, इसलिए इनाम लेने से पहले सरकारी रिज़ल्ट से ज़रूर मिला लें। हर राज्य में लॉटरी टिकट ख़रीदने की इजाज़त नहीं है। सिर्फ़ 18 साल या उससे ज़्यादा उम्र वालों के लिए।","safety_title":"धोखे से बचें","safety_body":"कोई भी ऐप, एजेंट या WhatsApp ग्रुप लॉटरी का नंबर पहले से नहीं बता सकता और न ही फ़िक्स कर सकता है। LottoDost न टिकट बेचता है, न कभी पैसे, बैंक या UPI डिटेल माँगता है। “पक्का नंबर” या “फ़िक्स नंबर” वाला हर ऑफ़र फ़्रॉड है।","results_subtitle":"डियर लॉटरी रिज़ल्ट · 1 PM · 6 PM · 8 PM","offline_banner":"इंटरनेट नहीं है। पहले से सेव रिज़ल्ट दिख रहे हैं।","upcoming_special":"आने वाला ड्रॉ: %1$s · %2$s","today":"आज","no_draw_day":"इस दिन कोई ड्रॉ नहीं हुआ।","source_note":"स्रोत: lotterysambad.com और nagalandlotteries.com पर सरकारी गज़ट। यह सरकारी ऐप नहीं है।","state_lottery":"%1$s स्टेट लॉटरी","state_nagaland":"नागालैंड","state_sikkim":"सिक्किम","state_punjab":"पंजाब","tag_morning":"मॉर्निंग","tag_day":"डे","tag_night":"नाइट","verified":"वेरिफ़ाइड","verified_long":"पहले और दूसरे इनाम के नंबर सरकारी रिज़ल्ट से मिल गए हैं।","first_prize":"पहला इनाम","tap_full_result":"सारे इनाम देखने के लिए टैप करें","pdf_only":"सरकारी रिज़ल्ट PDF में उपलब्ध है।","open_official_pdf":"सरकारी रिज़ल्ट (PDF) खोलें","open_sheet":"रिज़ल्ट शीट खोलें (Lottery Sambad)","special_tag":"स्पेशल ड्रॉ","draw_in":"ड्रॉ में %1$d घंटे %2$d मिनट बाकी","result_coming":"रिज़ल्ट बस आने वाला है…","no_result":"अभी कोई रिज़ल्ट नहीं","tier_1":"पहला इनाम","tier_cons":"सांत्वना इनाम","tier_2":"दूसरा इनाम","tier_3":"तीसरा इनाम","tier_4":"चौथा इनाम","tier_5":"पाँचवाँ इनाम","tier_n":"%1$dवाँ इनाम","match_last4":"आख़िरी 4 अंक मिलने पर","match_last5":"आख़िरी 5 अंक मिलने पर","match_cons":"पहले इनाम वाले 5 अंक, पर सीरियल या अक्षर अलग","check_title":"अपना टिकट चेक करें","check_hint":"पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट या उसका QR कोड स्कैन करें।","ticket_number":"टिकट नंबर","ticket_invalid":"ऐसे लिखें: 39C 06366, A 801021, 06366 या 6366","check_button":"चेक करें","no_win_title":"%1$s: इनाम नहीं लगा","no_win_body":"%1$d रिज़ल्ट से मिलाया गया।","need_full_number":"पहला, सांत्वना और दूसरा इनाम भी चेक करने के लिए पूरा टिकट नंबर (सीरियल और अक्षर के साथ) लिखें।","you_won":"बधाई हो! आपका इनाम लगा है","maybe_first":"बड़े इनाम वाले अंक मिल रहे हैं!","also_matches":"इससे भी मिला: %1$s","privacy_policy":"प्राइवेसी पॉलिसी"},"bn":{"disclaimer_body":"LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড, সিকিম বা পাঞ্জাব সরকার কিংবা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না, কখনো টাকাও চাই না। রেজাল্ট সর্বজনীন সূত্র থেকে নেওয়া হয়, তাই পুরস্কার নেওয়ার আগে অবশ্যই সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনার অনুমতি নেই। শুধুমাত্র 18 বছর বা তার বেশি বয়সিদের জন্য।","safety_title":"প্রতারণা থেকে সাবধান","safety_body":"কোনো অ্যাপ, এজেন্ট বা WhatsApp গ্রুপ লটারির নম্বর আগে থেকে বলতে পারে না, ফিক্সও করতে পারে না। LottoDost টিকিট বিক্রি করে না, আর কখনো টাকা, ব্যাংক বা UPI-এর তথ্য চায় না। “পাক্কা নম্বর” বা “ফিক্সড নম্বর”-এর যেকোনো অফার মানেই প্রতারণা।","results_subtitle":"ডিয়ার লটারি রেজাল্ট · 1 PM · 6 PM · 8 PM","offline_banner":"ইন্টারনেট নেই। আগে সেভ করা রেজাল্ট দেখানো হচ্ছে।","upcoming_special":"আসছে: %1$s · %2$s","today":"আজ","no_draw_day":"এই দিনে কোনো ড্র হয়নি।","source_note":"সূত্র: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট। এটি সরকারি অ্যাপ নয়।","state_lottery":"%1$s স্টেট লটারি","state_nagaland":"নাগাল্যান্ড","state_sikkim":"সিকিম","state_punjab":"পাঞ্জাব","tag_morning":"মর্নিং","tag_day":"ডে","tag_night":"নাইট","verified":"ভেরিফায়েড","verified_long":"প্রথম ও দ্বিতীয় পুরস্কারের নম্বর সরকারি রেজাল্টের সঙ্গে মিলে গেছে।","first_prize":"প্রথম পুরস্কার","tap_full_result":"সব পুরস্কার দেখতে ট্যাপ করুন","pdf_only":"সরকারি রেজাল্ট PDF-এ পাওয়া যাচ্ছে।","open_official_pdf":"সরকারি রেজাল্ট (PDF) খুলুন","open_sheet":"রেজাল্ট শিট খুলুন (Lottery Sambad)","special_tag":"স্পেশাল ড্র","draw_in":"ড্র হতে আর %1$d ঘণ্টা %2$d মিনিট","result_coming":"রেজাল্ট আসছে, একটু অপেক্ষা করুন…","no_result":"এখনও রেজাল্ট নেই","tier_1":"প্রথম পুরস্কার","tier_cons":"সান্ত্বনা পুরস্কার","tier_2":"দ্বিতীয় পুরস্কার","tier_3":"তৃতীয় পুরস্কার","tier_4":"চতুর্থ পুরস্কার","tier_5":"পঞ্চম পুরস্কার","tier_n":"%1$d নম্বর পুরস্কার","match_last4":"শেষ 4টি সংখ্যা মিললে","match_last5":"শেষ 5টি সংখ্যা মিললে","match_cons":"প্রথম পুরস্কারের 5টি সংখ্যা মিলবে, কিন্তু সিরিয়াল বা অক্ষর আলাদা","check_title":"আপনার টিকিট চেক করুন","check_hint":"পুরো নম্বর লিখুন (যেমন 39C 06366, বাম্পার A 801021) বা শুধু শেষ 4–6টি সংখ্যা — অথবা টিকিট বা তার QR কোড স্ক্যান করুন।","ticket_number":"টিকিট নম্বর","ticket_invalid":"এভাবে লিখুন: 39C 06366, A 801021, 06366 বা 6366","check_button":"চেক করুন","no_win_title":"%1$s: পুরস্কার লাগেনি","no_win_body":"%1$dটি রেজাল্টের সঙ্গে মেলানো হয়েছে।","need_full_number":"প্রথম, সান্ত্বনা ও দ্বিতীয় পুরস্কারও চেক করতে পুরো টিকিট নম্বর (সিরিয়াল ও অক্ষরসহ) লিখুন।","you_won":"অভিনন্দন! আপনার লটারি লেগেছে","maybe_first":"বড় পুরস্কারের সংখ্যা মিলছে!","also_matches":"এটার সঙ্গেও মিলেছে: %1$s","privacy_policy":"প্রাইভেসি পলিসি"},"ne":{"disclaimer_body":"LottoDost एउटा स्वतन्त्र एप हो। नागाल्याण्ड, सिक्किम वा पञ्जाब सरकार र कुनै पनि लटरी विभागसँग यसको कुनै सम्बन्ध छैन। हामी टिकट बेच्दैनौं र कहिल्यै पैसा माग्दैनौं। नतिजा सार्वजनिक स्रोतबाट लिइन्छ, त्यसैले पुरस्कार लिनुअघि सरकारी नतिजासँग अवश्य मिलाउनुहोस्। सबै राज्यमा लटरी टिकट किन्न पाइँदैन। 18 वर्ष वा सोभन्दा माथिका लागि मात्र।","safety_title":"ठगीबाट जोगिनुहोस्","safety_body":"कुनै पनि एप, एजेन्ट वा WhatsApp ग्रुपले लटरीको नम्बर पहिल्यै भन्न सक्दैन, न त फिक्स गर्न सक्छ। LottoDost ले टिकट बेच्दैन, र कहिल्यै पैसा, बैंक वा UPI विवरण माग्दैन। “पक्का नम्बर” वा “फिक्स नम्बर” को जुनसुकै अफर ठगी हो।","results_subtitle":"डियर लटरी नतिजा · 1 PM · 6 PM · 8 PM","offline_banner":"इन्टरनेट छैन। पहिले सेभ गरिएको नतिजा देखाइँदै छ।","upcoming_special":"आउँदै छ: %1$s · %2$s","today":"आज","no_draw_day":"यो दिन कुनै ड्र भएन।","source_note":"स्रोत: lotterysambad.com र nagalandlotteries.com को सरकारी राजपत्र। यो सरकारी एप होइन।","state_lottery":"%1$s राज्य लटरी","state_nagaland":"नागाल्याण्ड","state_sikkim":"सिक्किम","state_punjab":"पञ्जाब","tag_morning":"मर्निङ","tag_day":"डे","tag_night":"नाइट","verified":"प्रमाणित","verified_long":"पहिलो र दोस्रो पुरस्कारका नम्बर सरकारी नतिजासँग मिले।","first_prize":"पहिलो पुरस्कार","tap_full_result":"सबै पुरस्कार हेर्न ट्याप गर्नुहोस्","pdf_only":"सरकारी नतिजा PDF मा उपलब्ध छ।","open_official_pdf":"सरकारी नतिजा (PDF) खोल्नुहोस्","open_sheet":"नतिजा सिट खोल्नुहोस् (Lottery Sambad)","special_tag":"विशेष ड्र","draw_in":"ड्र हुन %1$d घण्टा %2$d मिनेट बाँकी","result_coming":"नतिजा आउनै लागेको छ…","no_result":"अहिलेसम्म नतिजा छैन","tier_1":"पहिलो पुरस्कार","tier_cons":"सान्त्वना पुरस्कार","tier_2":"दोस्रो पुरस्कार","tier_3":"तेस्रो पुरस्कार","tier_4":"चौथो पुरस्कार","tier_5":"पाँचौं पुरस्कार","tier_n":"%1$dऔं पुरस्कार","match_last4":"अन्तिम 4 अंक मिलेमा","match_last5":"अन्तिम 5 अंक मिलेमा","match_cons":"पहिलो पुरस्कारकै 5 अंक, तर सिरियल वा अक्षर फरक","check_title":"आफ्नो टिकट जाँच्नुहोस्","check_hint":"पूरा नम्बर लेख्नुहोस् (जस्तै 39C 06366, बम्पर A 801021) वा अन्तिम 4–6 अंक मात्र — वा टिकट वा यसको QR कोड स्क्यान गर्नुहोस्।","ticket_number":"टिकट नम्बर","ticket_invalid":"यसरी लेख्नुहोस्: 39C 06366, A 801021, 06366 वा 6366","check_button":"जाँच्नुहोस्","no_win_title":"%1$s: पुरस्कार परेन","no_win_body":"%1$d वटा नतिजासँग मिलाइयो।","need_full_number":"पहिलो, सान्त्वना र दोस्रो पुरस्कार पनि जाँच्न पूरा टिकट नम्बर (सिरियल र अक्षरसहित) लेख्नुहोस्।","you_won":"बधाई छ! तपाईंले जित्नुभयो","maybe_first":"ठूलो पुरस्कारका अंक मिल्दै छन्!","also_matches":"यससँग पनि मिल्यो: %1$s","privacy_policy":"गोपनीयता नीति"},"pa":{"disclaimer_body":"LottoDost ਇੱਕ ਸੁਤੰਤਰ ਐਪ ਹੈ। ਨਾਗਾਲੈਂਡ, ਸਿੱਕਮ ਜਾਂ ਪੰਜਾਬ ਸਰਕਾਰ ਅਤੇ ਕਿਸੇ ਵੀ ਲਾਟਰੀ ਵਿਭਾਗ ਨਾਲ ਇਸ ਦਾ ਕੋਈ ਸਬੰਧ ਨਹੀਂ ਹੈ। ਅਸੀਂ ਟਿਕਟਾਂ ਨਹੀਂ ਵੇਚਦੇ ਅਤੇ ਕਦੇ ਪੈਸੇ ਨਹੀਂ ਮੰਗਦੇ। ਨਤੀਜੇ ਜਨਤਕ ਸਰੋਤਾਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਜ਼ਰੂਰ ਮਿਲਾ ਲਓ। ਹਰ ਰਾਜ ਵਿੱਚ ਲਾਟਰੀ ਟਿਕਟ ਖਰੀਦਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਸਿਰਫ਼ 18 ਸਾਲ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਉਮਰ ਵਾਲਿਆਂ ਲਈ।","safety_title":"ਠੱਗੀ ਤੋਂ ਬਚੋ","safety_body":"ਕੋਈ ਵੀ ਐਪ, ਏਜੰਟ ਜਾਂ WhatsApp ਗਰੁੱਪ ਲਾਟਰੀ ਦਾ ਨੰਬਰ ਪਹਿਲਾਂ ਨਹੀਂ ਦੱਸ ਸਕਦਾ, ਨਾ ਹੀ ਫਿਕਸ ਕਰ ਸਕਦਾ ਹੈ। LottoDost ਨਾ ਟਿਕਟਾਂ ਵੇਚਦਾ ਹੈ, ਨਾ ਕਦੇ ਪੈਸੇ, ਬੈਂਕ ਜਾਂ UPI ਦੀ ਜਾਣਕਾਰੀ ਮੰਗਦਾ ਹੈ। “ਪੱਕਾ ਨੰਬਰ” ਜਾਂ “ਫਿਕਸ ਨੰਬਰ” ਵਾਲੀ ਹਰ ਪੇਸ਼ਕਸ਼ ਠੱਗੀ ਹੈ।","results_subtitle":"ਡੀਅਰ ਲਾਟਰੀ ਨਤੀਜੇ · 1 PM · 6 PM · 8 PM","offline_banner":"ਇੰਟਰਨੈੱਟ ਨਹੀਂ ਹੈ। ਪਹਿਲਾਂ ਸੇਵ ਕੀਤੇ ਨਤੀਜੇ ਦਿਖਾ ਰਹੇ ਹਾਂ।","upcoming_special":"ਆਉਣ ਵਾਲਾ ਡਰਾਅ: %1$s · %2$s","today":"ਅੱਜ","no_draw_day":"ਇਸ ਦਿਨ ਕੋਈ ਡਰਾਅ ਨਹੀਂ ਹੋਇਆ।","source_note":"ਸਰੋਤ: lotterysambad.com ਅਤੇ nagalandlotteries.com ’ਤੇ ਸਰਕਾਰੀ ਗਜ਼ਟ। ਇਹ ਸਰਕਾਰੀ ਐਪ ਨਹੀਂ ਹੈ।","state_lottery":"%1$s ਸਟੇਟ ਲਾਟਰੀ","state_nagaland":"ਨਾਗਾਲੈਂਡ","state_sikkim":"ਸਿੱਕਮ","state_punjab":"ਪੰਜਾਬ","tag_morning":"ਮਾਰਨਿੰਗ","tag_day":"ਡੇ","tag_night":"ਨਾਈਟ","verified":"ਵੈਰੀਫਾਈਡ","verified_long":"ਪਹਿਲੇ ਅਤੇ ਦੂਜੇ ਇਨਾਮ ਦੇ ਨੰਬਰ ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਮਿਲ ਗਏ ਹਨ।","first_prize":"ਪਹਿਲਾ ਇਨਾਮ","tap_full_result":"ਸਾਰੇ ਇਨਾਮ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ","pdf_only":"ਸਰਕਾਰੀ ਨਤੀਜਾ PDF ਵਿੱਚ ਮਿਲਦਾ ਹੈ।","open_official_pdf":"ਸਰਕਾਰੀ ਨਤੀਜਾ (PDF) ਖੋਲ੍ਹੋ","open_sheet":"ਨਤੀਜਾ ਸ਼ੀਟ ਖੋਲ੍ਹੋ (Lottery Sambad)","special_tag":"ਸਪੈਸ਼ਲ ਡਰਾਅ","draw_in":"ਡਰਾਅ ਵਿੱਚ %1$d ਘੰਟੇ %2$d ਮਿੰਟ ਬਾਕੀ","result_coming":"ਨਤੀਜਾ ਬੱਸ ਆਉਣ ਹੀ ਵਾਲਾ ਹੈ…","no_result":"ਹਾਲੇ ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ","tier_1":"ਪਹਿਲਾ ਇਨਾਮ","tier_cons":"ਤਸੱਲੀ ਇਨਾਮ","tier_2":"ਦੂਜਾ ਇਨਾਮ","tier_3":"ਤੀਜਾ ਇਨਾਮ","tier_4":"ਚੌਥਾ ਇਨਾਮ","tier_5":"ਪੰਜਵਾਂ ਇਨਾਮ","tier_n":"%1$dਵਾਂ ਇਨਾਮ","match_last4":"ਆਖ਼ਰੀ 4 ਅੰਕ ਮਿਲਣ ’ਤੇ","match_last5":"ਆਖ਼ਰੀ 5 ਅੰਕ ਮਿਲਣ ’ਤੇ","match_cons":"ਪਹਿਲੇ ਇਨਾਮ ਵਾਲੇ 5 ਅੰਕ, ਪਰ ਸੀਰੀਅਲ ਜਾਂ ਅੱਖਰ ਵੱਖਰਾ","check_title":"ਆਪਣੀ ਟਿਕਟ ਚੈੱਕ ਕਰੋ","check_hint":"ਪੂਰਾ ਨੰਬਰ ਲਿਖੋ (ਜਿਵੇਂ 39C 06366, ਬੰਪਰ A 801021) ਜਾਂ ਸਿਰਫ਼ ਆਖ਼ਰੀ 4–6 ਅੰਕ — ਜਾਂ ਟਿਕਟ ਜਾਂ ਉਸ ਦਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।","ticket_number":"ਟਿਕਟ ਨੰਬਰ","ticket_invalid":"ਇਸ ਤਰ੍ਹਾਂ ਲਿਖੋ: 39C 06366, A 801021, 06366 ਜਾਂ 6366","check_button":"ਚੈੱਕ ਕਰੋ","no_win_title":"%1$s: ਇਨਾਮ ਨਹੀਂ ਨਿਕਲਿਆ","no_win_body":"%1$d ਨਤੀਜਿਆਂ ਨਾਲ ਮਿਲਾਇਆ ਗਿਆ।","need_full_number":"ਪਹਿਲਾ, ਤਸੱਲੀ ਅਤੇ ਦੂਜਾ ਇਨਾਮ ਵੀ ਚੈੱਕ ਕਰਨ ਲਈ ਪੂਰਾ ਟਿਕਟ ਨੰਬਰ (ਸੀਰੀਅਲ ਅਤੇ ਅੱਖਰ ਸਮੇਤ) ਲਿਖੋ।","you_won":"ਵਧਾਈਆਂ! ਤੁਹਾਡਾ ਇਨਾਮ ਨਿਕਲਿਆ ਹੈ","maybe_first":"ਵੱਡੇ ਇਨਾਮ ਵਾਲੇ ਅੰਕ ਮਿਲ ਰਹੇ ਹਨ!","also_matches":"ਇਸ ਨਾਲ ਵੀ ਮਿਲਿਆ: %1$s","privacy_policy":"ਪ੍ਰਾਈਵੇਸੀ ਪਾਲਿਸੀ"},"mr":{"disclaimer_body":"LottoDost हे एक स्वतंत्र ॲप आहे. नागालँड, सिक्कीम किंवा पंजाब सरकार आणि कोणत्याही लॉटरी विभागाशी याचा काहीही संबंध नाही. आम्ही तिकिटे विकत नाही आणि कधीही पैसे मागत नाही. निकाल सार्वजनिक स्रोतांमधून घेतले जातात, म्हणून बक्षीस घेण्यापूर्वी सरकारी निकालाशी नक्की जुळवून पाहा. प्रत्येक राज्यात लॉटरी तिकीट खरेदी करण्याची परवानगी नाही. फक्त 18 वर्षे किंवा त्याहून अधिक वयाच्या व्यक्तींसाठी.","safety_title":"फसवणुकीपासून सावध","safety_body":"कोणतेही ॲप, एजंट किंवा WhatsApp ग्रुप लॉटरीचा नंबर आधीच सांगू शकत नाही किंवा फिक्सही करू शकत नाही. LottoDost तिकिटे विकत नाही आणि कधीही पैसे, बँक किंवा UPI तपशील मागत नाही. “पक्का नंबर” किंवा “फिक्स नंबर” देणारी प्रत्येक ऑफर म्हणजे फसवणूक.","results_subtitle":"डियर लॉटरी निकाल · 1 PM · 6 PM · 8 PM","offline_banner":"इंटरनेट नाही. आधी सेव्ह केलेले निकाल दाखवत आहोत.","upcoming_special":"पुढची सोडत: %1$s · %2$s","today":"आज","no_draw_day":"या दिवशी सोडत झाली नाही.","source_note":"स्रोत: lotterysambad.com आणि nagalandlotteries.com वरील सरकारी राजपत्र. हे सरकारी ॲप नाही.","state_lottery":"%1$s राज्य लॉटरी","state_nagaland":"नागालँड","state_sikkim":"सिक्कीम","state_punjab":"पंजाब","tag_morning":"मॉर्निंग","tag_day":"डे","tag_night":"नाइट","verified":"पडताळलेले","verified_long":"पहिल्या आणि दुसऱ्या बक्षिसाचे नंबर सरकारी निकालाशी जुळले आहेत.","first_prize":"पहिले बक्षीस","tap_full_result":"सगळी बक्षिसे पाहण्यासाठी टॅप करा","pdf_only":"सरकारी निकाल PDF मध्ये उपलब्ध आहे.","open_official_pdf":"सरकारी निकाल (PDF) उघडा","open_sheet":"निकाल शीट उघडा (Lottery Sambad)","special_tag":"विशेष सोडत","draw_in":"सोडतीला %1$d तास %2$d मिनिटे बाकी","result_coming":"निकाल आता येईलच…","no_result":"अजून निकाल नाही","tier_1":"पहिले बक्षीस","tier_cons":"उत्तेजनार्थ बक्षीस","tier_2":"दुसरे बक्षीस","tier_3":"तिसरे बक्षीस","tier_4":"चौथे बक्षीस","tier_5":"पाचवे बक्षीस","tier_n":"%1$dवे बक्षीस","match_last4":"शेवटचे 4 अंक जुळल्यास","match_last5":"शेवटचे 5 अंक जुळल्यास","match_cons":"पहिल्या बक्षिसाचेच 5 अंक, पण सिरियल किंवा अक्षर वेगळे","check_title":"तुमचे तिकीट तपासा","check_hint":"पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट किंवा त्याचा QR कोड स्कॅन करा.","ticket_number":"तिकीट नंबर","ticket_invalid":"असे लिहा: 39C 06366, A 801021, 06366 किंवा 6366","check_button":"तपासा","no_win_title":"%1$s: बक्षीस लागले नाही","no_win_body":"%1$d निकालांशी जुळवले.","need_full_number":"पहिले, उत्तेजनार्थ आणि दुसरे बक्षीसही तपासण्यासाठी पूर्ण तिकीट नंबर (सिरियल आणि अक्षरासह) लिहा.","you_won":"अभिनंदन! तुम्हाला बक्षीस लागले","maybe_first":"मोठ्या बक्षिसाचे अंक जुळत आहेत!","also_matches":"यांच्याशीही जुळले: %1$s","privacy_policy":"गोपनीयता धोरण"}};
-const SNAPSHOT = /*SNAPSHOT*/null;
-const BASES = ["v2/", "https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v2/"];
-const LANGS = [["bn", "বাংলা"], ["hi", "हिन्दी"], ["en", "English"], ["ne", "नेपाली"], ["pa", "ਪੰਜਾਬੀ"], ["mr", "मराठी"]];
-const WEEKLY = [["NL1PM", "13:00", "Nagaland", "tag_morning"], ["SK6PM", "18:00", "Sikkim", "tag_day"], ["NL8PM", "20:00", "Nagaland", "tag_night"]];
-const ORDER = { NL1PM: 0, SK6PM: 1, NL8PM: 2, NLLAXMI: 3 };
+<footer class="wrap foot"><p>LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.</p><p>Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.</p><p><a href="/india/about/">About</a> · <a href="/india/contact/">Contact</a> · <a href="/india/disclaimer/">Disclaimer</a> · <a href="/india/privacy.html">Privacy policy</a></p></footer>
+<script type="application/json" id="draws">[{"id":"2026-10-19_NL1PM","date":"2026-10-19","time":"13:00","name":"DEAR RISE MONDAY WEEKLY LOTTERY","format":"D5","tiers":[{"rank":"1","prize":10000000,"match":"FULL","numbers":["72C 46097"]},{"rank":"CONS","prize":1000,"match":"CONS","numbers":["46097"]},{"rank":"2","prize":10000,"match":"LAST5","numbers":["02459","03462","05569","12367","18081","19128","56427","65071","67958","91573"]},{"rank":"3","prize":500,"match":"LAST4","numbers":["3212","3804","4702","5527","5727","5909","6058","6163","6257","9448"]},{"rank":"4","prize":250,"match":"LAST4","numbers":["1232","3007","3017","3454","4164","5118","5841","6928","8469","9223"]},{"rank":"5","prize":120,"match":"LAST4","numbers":["0004","0205","0208","0266","0284","0584","0677","0922","1131","1186","1336","1537","1653","1879","1904","1905","2060","2084","2130","2318","2508","2557","2684","3015","3140","3216","3512","3921","4050","4059","4070","4153","4190","4329","4457","4487","4601","4831","4952","5038","5057","5142","5291","5313","5422","5428","5651","5654","6021","6178","6265","6405","6432","6436","6530","6672","6683","6714","6804","6934","6956","6967","7070","7136","7166","7362","7477","7616","7686","7724","7767","7902","8064","8220","8280","8286","8405","8413","8427","8434","8658","8744","8766","8819","8837","8893","8906","8924","9005","9055","9079","9113","9253","9293","9651","9711","9732","9867","9910","9958"]}]}]</script>
+<script type="application/json" id="i18n">{"disclaimer_body": "LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.", "safety_title": "Stay safe", "safety_body": "No app, agent or WhatsApp group can predict or fix lottery numbers. LottoDost never sells tickets and never asks for money, bank or UPI details. Treat any \"guaranteed number\" offer as fraud.", "upcoming_special": "Coming up: %1$s on %2$s", "no_draw_day": "No draw was held on this day.", "source_note": "Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.", "state_lottery": "%1$s State Lottery", "state_nagaland": "Nagaland", "state_sikkim": "Sikkim", "state_punjab": "Punjab", "tag_morning": "Morning", "tag_day": "Day", "tag_night": "Night", "verified": "Verified", "verified_long": "1st and 2nd prize numbers match the official government result.", "first_prize": "1st Prize", "amount_crore": "₹%1$s Crore", "amount_lakh": "₹%1$s Lakh", "pdf_only": "The official result is available as a PDF.", "open_official_pdf": "Open official result (PDF)", "open_sheet": "Open result sheet (Lottery Sambad)", "special_tag": "Special draw", "result_coming": "Result coming soon…", "tier_1": "1st Prize", "tier_cons": "Consolation Prize", "tier_2": "2nd Prize", "tier_3": "3rd Prize", "tier_4": "4th Prize", "tier_5": "5th Prize", "tier_n": "%1$dth Prize", "match_last4": "Match the last 4 digits", "match_last5": "Match the last 5 digits", "match_cons": "Same 5 digits as the 1st Prize, other serial or letter", "claim_info": "Nagaland prizes above ₹10,000 must be claimed within 30 days of the draw at the Directorate of Nagaland State Lotteries, Kohima, or its nodal offices, with the original ticket and 3 attested passport photos (as printed on the official result). Ask your ticket seller about smaller prizes. Tax is deducted on large prizes.", "claim_other_state": "For Sikkim and Punjab draws, follow the claim instructions printed on your ticket and on the official result. Ask your seller first.", "check_title": "Check your ticket", "check_hint": "Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket or its QR code.", "ticket_number": "Ticket number", "ticket_invalid": "Enter like 39C 06366, A 801021, 06366 or 6366", "check_button": "Check", "no_win_title": "%1$s: no prize", "no_win_body": "Checked against %1$d results.", "need_full_number": "Enter the full ticket number (with serial and letter) to check the 1st, Consolation and 2nd prizes too.", "you_won": "Congratulations! You won", "maybe_first": "Same digits as a top prize!", "also_matches": "Also matches: %1$s", "info_schedule_note": "Results usually appear 7–10 minutes after each draw. There is no draw on some holidays (for example 2 October 2026)."}</script>
+<script src="/india/assets/site.js" defer></script>
 
-let lang = "en", today = null, index = null, selected = null, query = "";
-const $ = id => document.getElementById(id);
-
-function pickLang() {
-  try { const s = localStorage.getItem("lang"); if (s && I18N[s]) return s; } catch (e) {}
-  for (const l of navigator.languages || []) { const c = l.slice(0, 2); if (I18N[c]) return c; }
-  return "en";
-}
-function t(key, ...args) {
-  const s = (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
-  return s.replace(/%(\d)\$[sd]/g, (_, n) => String(args[n - 1]));
-}
-const rupees = n => { const s = String(n); if (s.length <= 3) return "₹" + s;
-  return "₹" + s.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + s.slice(-3); };
-function fmtTime(hhmm) { const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm || ""); if (!m) return hhmm || "";
-  const h = +m[1]; return (h % 12 || 12) + ":" + m[2] + (h >= 12 ? " PM" : " AM"); }
-function fmtDate(iso) { // ASCII digits in every language: ticket numbers and dates must read the same everywhere.
-  try { return new Intl.DateTimeFormat(lang + "-IN-u-nu-latn", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
-    .format(new Date(iso + "T00:00:00Z")); } catch (e) { return iso; } }
-function istNow() { return new Date(Date.now() + 5.5 * 3600e3); } // fields read with getUTC*
-const istToday = () => istNow().toISOString().slice(0, 10);
-const stateName = s => ({ Nagaland: t("state_nagaland"), Sikkim: t("state_sikkim"), Punjab: t("state_punjab") })[s] || s;
-const cleanName = n => (n || "").replace(/ WEEKLY LOTTERY$/, "");
-function tierTitle(rank) { const k = { "1": "tier_1", CONS: "tier_cons", "2": "tier_2", "3": "tier_3", "4": "tier_4", "5": "tier_5" }[rank];
-  return k ? t(k) : t("tier_n", rank); }
-const matchHint = m => ({ LAST4: t("match_last4"), LAST5: t("match_last5"), CONS: t("match_cons") })[m] || "";
-const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-
-async function getJson(path) {
-  for (const base of BASES) {
-    try {
-      const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 6000);
-      const r = await fetch(base + path, { signal: ctl.signal, cache: "no-cache" }); clearTimeout(timer);
-      if (!r.ok) continue;
-      const j = await r.json(); if (j && j.schema === 2) return j; // a captive-portal page is not a feed
-    } catch (e) { /* next mirror */ }
-  }
-  return null;
-}
-
-// ---- ticket rules: same as android domain/Ticket.kt + Matcher.kt ----
-function parseTicket(raw) {
-  let s = raw.replace(/[०-९]/g, d => String(d.charCodeAt(0) - 0x966)).replace(/[০-৯]/g, d => String(d.charCodeAt(0) - 0x9e6))
-    .replace(/[੦-੯]/g, d => String(d.charCodeAt(0) - 0xa66));
-  s = s.trim().toUpperCase().replace(/[-_./,]/g, " ").replace(/\s+/g, " ");
-  const tryParse = x => {
-    let m = /^(\d{2})\s*([A-Z])\s*(\d{5})$/.exec(x);
-    if (m) return (+m[1] >= 34 && "ABCDEGHJKL".includes(m[2])) ? { prefix: m[1] + m[2], digits: m[3], fmt: "D5" } : false;
-    if ((m = /^(\d{2})\s+(\d{4})$/.exec(x))) return { prefix: m[1], digits: m[2], fmt: "D4" };
-    if ((m = /^([A-Z]{1,2})\s*(\d{6})$/.exec(x))) return { prefix: m[1], digits: m[2], fmt: "B6" };
-    return null;
-  };
-  const p = tryParse(s); if (p) return p; if (p === false) return null;
-  const c = s.replace(/ /g, "");
-  if (c !== s) { const q = tryParse(c); if (q) return q; if (q === false) return null; }
-  return /^\d{4,6}$/.test(c) ? { prefix: null, digits: c, fmt: "DIGITS" } : null;
-}
-// Lottery Sambad serves today's sheet only from fetchtoday.php and older ones only from the archive URL.
-const sambadUrl = (url, date) => date === istToday() ? url.replace("lotteryoldresultsdown.php", "fetchtoday.php")
-  : url.replace("fetchtoday.php", "lotteryoldresultsdown.php");
-const display = tk => tk.prefix ? tk.prefix + " " + tk.digits : tk.digits;
-function compatible(tk, d) {
-  if (d.format === "D5") return tk.fmt === "D5" || (tk.fmt === "DIGITS" && tk.digits.length <= 5);
-  if (d.format === "D4") return tk.fmt === "D4" || (tk.fmt === "DIGITS" && tk.digits.length === 4);
-  if (d.format === "B6") return tk.fmt === "B6" || tk.fmt === "DIGITS";
-  return false;
-}
-function check(tk, d) {
-  if (!(d.tiers && d.tiers.length) || !compatible(tk, d)) return null;
-  const wins = [], n = tk.digits.length, full = tk.fmt !== "DIGITS", shown = display(tk);
-  for (const tier of d.tiers) {
-    const nums = tier.numbers || [];
-    if (tier.match === "FULL") {
-      const first = nums[0]; if (!first) continue;
-      if (full) { if (shown === first) wins.push({ tier }); }
-      else if (n === 5 && tk.digits === first.slice(-5)) wins.push({ tier, needsFull: true });
-    } else if (tier.match === "CONS") {
-      if (n < 5) continue;
-      const isFirst = full && (d.tiers[0].numbers || [])[0] === shown;
-      if (!isFirst && nums.includes(tk.digits)) wins.push({ tier });
-    } else if (tier.match === "EXACT") {
-      if (full) { if (nums.includes(shown)) wins.push({ tier }); }
-      else if (n === 6 && nums.some(x => x.slice(-6) === tk.digits)) wins.push({ tier, needsFull: true });
-    } else if (tier.match === "LAST5") {
-      if (n >= 5 && nums.includes(tk.digits.slice(-5))) wins.push({ tier });
-    } else if (tier.match === "LAST4") {
-      if (nums.includes(tk.digits.slice(-4))) wins.push({ tier });
-    }
-  }
-  wins.sort((a, b) => b.tier.prize - a.tier.prize);
-  return { d, wins };
-}
-
-// ---- rendering ----
-function renderStatic() {
-  document.documentElement.lang = lang;
-  $("subtitle").textContent = t("results_subtitle");
-  $("checkTitle").textContent = t("check_title");
-  $("checkHint").textContent = t("check_hint");
-  $("ticket").setAttribute("aria-label", t("ticket_number"));
-  $("checkBtn").textContent = t("check_button");
-  $("safetyTitle").textContent = t("safety_title");
-  $("safetyBody").textContent = t("safety_body");
-  $("disclaimer").textContent = t("disclaimer_body");
-  $("source").textContent = t("source_note");
-  $("privacy").textContent = t("privacy_policy");
-  const langs = $("langs"); langs.replaceChildren();
-  for (const [code, label] of LANGS) {
-    if (!I18N[code]) continue;
-    const b = el("button", "chip", label); b.type = "button"; b.lang = code; b.setAttribute("aria-pressed", String(code === lang));
-    b.onclick = () => { lang = code; try { localStorage.setItem("lang", code); } catch (e) {} render(); };
-    langs.append(b);
-  }
-}
-
-function card(d) {
-  const c = el("article", "card");
-  const head = el("div", "head");
-  const time = el("div", "time"); time.append(el("b", null, fmtTime(d.time)));
-  const tag = (WEEKLY.find(w => w[0] === d.slot) || [])[3];
-  if (tag) time.append(el("span", null, t(tag))); else if (d.special) time.append(el("span", null, t("special_tag")));
-  const name = el("div", "name"); name.append(el("strong", null, cleanName(d.name)));
-  if (d.state) name.append(el("small", null, t("state_lottery", stateName(d.state))));
-  head.append(time, name);
-  if (d.verified) { const v = el("span", "verified", "✓ " + t("verified")); v.title = t("verified_long"); head.append(v); }
-  c.append(head);
-  const official = (d.sources || []).find(s => s.kind === "official");
-  const sheet = (d.sources || []).find(s => s.kind === "lotterysambad");
-  if (d.tiers && d.tiers.length) {
-    c.append(el("div", "label", t("first_prize") + " · " + rupees(d.tiers[0].prize)));
-    c.append(el("div", "first", d.tiers[0].numbers[0]));
-    const det = el("details"); det.append(el("summary", null, t("tap_full_result")));
-    for (const tier of d.tiers) {
-      const box = el("div", "tier"); const h = el("div", "tier-h");
-      h.append(el("span", null, tierTitle(tier.rank)), el("span", null, rupees(tier.prize))); box.append(h);
-      const hint = matchHint(tier.match); if (hint) box.append(el("div", "hint", hint));
-      const nums = el("div", "nums");
-      for (const x of tier.numbers) {
-        const xd = x.replace(/^\S+ /, ""); // "37K 90889" -> "90889": highlight by the digits a tier compares
-        const hit = query.length >= xd.length && query.slice(-xd.length) === xd;
-        nums.append(el(hit ? "mark" : "span", null, x));
-      }
-      box.append(nums); det.append(box);
-    }
-    if (query) det.open = true;
-    c.append(det);
-  } else {
-    c.append(el("div", "label", t("pdf_only")));
-  }
-  const links = el("div", "row");
-  if (official) { const a = el("a", null, t("open_official_pdf")); a.href = official.url; a.target = "_blank"; a.rel = "noopener"; links.append(a); }
-  if (sheet) { const a = el("a", null, t("open_sheet")); a.href = sambadUrl(sheet.url, d.date); a.target = "_blank"; a.rel = "noopener"; links.append(a); }
-  if (links.childElementCount) c.append(links);
-  return c;
-}
-
-function placeholder(w, date) {
-  const [slot, time, state, tag] = w;
-  const c = el("article", "card"); const head = el("div", "head");
-  const tb = el("div", "time"); tb.append(el("b", null, fmtTime(time)), el("span", null, t(tag)));
-  const name = el("div", "name"); name.append(el("strong", null, "—"), el("small", null, t("state_lottery", stateName(state))));
-  head.append(tb, name); c.append(head);
-  const now = istNow(), mins = (+time.slice(0, 2)) * 60 + (+time.slice(3)) - (now.getUTCHours() * 60 + now.getUTCMinutes());
-  let msg = t("no_result");
-  if (date === istToday()) msg = mins > 0 ? t("draw_in", Math.floor(mins / 60), mins % 60) : (mins > -90 ? t("result_coming") : t("no_result"));
-  c.append(el("div", "label", msg));
-  return c;
-}
-
-function render() {
-  renderStatic();
-  const notice = $("notice"), cards = $("cards"), dates = $("dates");
-  if (!today) { notice.hidden = false; notice.textContent = t("offline_banner"); cards.replaceChildren(); dates.replaceChildren(); return; }
-  notice.hidden = true; // an embedded snapshot still shows its own dates on the chips below
-  const up = ((index && index.upcoming) || []).find(u => u.date >= istToday());
-  $("upcoming").hidden = !up; if (up) $("upcoming").textContent = t("upcoming_special", up.name, fmtDate(up.date));
-  const all = [...new Set(today.draws.map(d => d.date))].sort().reverse();
-  if (!all.includes(istToday()) && istToday() > (all[0] || "")) all.unshift(istToday());
-  if (!selected || !all.includes(selected)) selected = all[0];
-  dates.replaceChildren();
-  for (const d of all) {
-    const b = el("button", "chip", d === istToday() ? t("today") : fmtDate(d)); b.type = "button";
-    b.setAttribute("aria-pressed", String(d === selected)); b.onclick = () => { selected = d; render(); }; dates.append(b);
-  }
-  cards.replaceChildren();
-  if (index && (index.noDraw || []).includes(selected)) { cards.append(el("div", "banner", t("no_draw_day"))); return; }
-  const day = today.draws.filter(d => d.date === selected)
-    .sort((a, b) => a.time.localeCompare(b.time) || (ORDER[a.slot] ?? 9) - (ORDER[b.slot] ?? 9));
-  for (const w of WEEKLY) if (!day.some(d => d.slot === w[0])) day.push({ __ph: w });
-  day.sort((a, b) => (a.time || a.__ph[1]).localeCompare(b.time || b.__ph[1]));
-  for (const d of day) cards.append(d.__ph ? placeholder(d.__ph, selected) : card(d));
-}
-
-function runCheck(ev) {
-  if (ev) ev.preventDefault();
-  const out = $("checkRes"); out.replaceChildren();
-  if (!$("ticket").value.trim()) { query = ""; render(); return; }
-  const tk = parseTicket($("ticket").value);
-  if (!tk) { query = ""; out.append(el("div", "err", t("ticket_invalid"))); render(); return; }
-  query = tk.digits; render();
-  if (!today) return;
-  const checks = today.draws.map(d => check(tk, d)).filter(Boolean)
-    .sort((a, b) => ((b.wins[0] || {}).tier?.prize ?? -1) - ((a.wins[0] || {}).tier?.prize ?? -1) || (b.d.date + b.d.time).localeCompare(a.d.date + a.d.time));
-  const won = checks.filter(c => c.wins.length);
-  for (const c of won) {
-    const w = c.wins[0], box = el("div", "won");
-    box.append(el("strong", null, (w.needsFull ? t("maybe_first") : t("you_won")) + " 🎉"));
-    box.append(el("div", null, tierTitle(w.tier.rank) + " · " + rupees(w.tier.prize)));
-    box.append(el("div", "hint", cleanName(c.d.name) + " · " + fmtDate(c.d.date) + " " + fmtTime(c.d.time)));
-    if (w.needsFull) box.append(el("div", "hint", t("need_full_number")));
-    if (c.wins.length > 1) box.append(el("div", "hint", t("also_matches", c.wins.slice(1).map(x => tierTitle(x.tier.rank)).join(", "))));
-    out.append(box);
-  }
-  if (!won.length) {
-    const box = el("div"); box.append(el("strong", null, t("no_win_title", display(tk))));
-    box.append(el("div", "hint", t("no_win_body", checks.length))); out.append(box);
-  } else if (tk.fmt === "DIGITS" && tk.digits.length < 5) {
-    out.append(el("div", "hint", t("need_full_number")));
-  }
-}
-
-async function boot() {
-  lang = pickLang(); render();
-  $("checkForm").addEventListener("submit", runCheck);
-  const [tj, ij] = await Promise.all([getJson("today.json"), getJson("index.json")]);
-  if (tj) { today = tj; index = ij; }
-  else if (SNAPSHOT) { today = Object.assign({ __snapshot: true }, SNAPSHOT.today); index = SNAPSHOT.index; }
-  render();
-}
-boot();
-</script>
 </body>
 </html>
