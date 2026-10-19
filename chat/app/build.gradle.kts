@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -39,13 +41,25 @@ android {
         }
     }
 
+    // Play upload key: chat/upload.properties (never committed) with storeFile, storePassword, keyAlias, keyPassword.
+    val upload = rootProject.file("upload.properties").takeIf { it.exists() }
+        ?.let { f -> Properties().apply { f.inputStream().use { load(it) } } }
+    if (upload != null) {
+        signingConfigs.create("upload") {
+            storeFile = file(upload.getProperty("storeFile"))
+            storePassword = upload.getProperty("storePassword")
+            keyAlias = upload.getProperty("keyAlias")
+            keyPassword = upload.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Prototype only: lets the release APK install from a file. Replace with the upload key before Play.
-            signingConfig = signingConfigs.getByName("debug")
+            // Without upload.properties (CI, prototype APKs) the debug key lets the release build install from a file.
+            signingConfig = signingConfigs.getByName(if (upload != null) "upload" else "debug")
         }
     }
 

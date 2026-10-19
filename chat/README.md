@@ -9,7 +9,7 @@
 | `yaari-demo.apk` (1.4MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
 | `yaari-live-arm64.apk` (17MB) | **실제 서버**(Supabase 뭄바이) 연결판. 아래 "출시 전 설정"을 마쳐야 로그인할 수 있습니다 |
 
-두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
+두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. 업로드 키는 `chat/upload.properties`(저장소에 올리지 않음)에 `storeFile`, `storePassword`, `keyAlias`, `keyPassword`를 적어 두면 자동으로 쓰입니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
 
 ## 화면
 
