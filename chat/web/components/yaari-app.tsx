@@ -16,7 +16,14 @@ const loadAuth = () => import('@/components/screens/auth/auth-screen')
 const loadShell = () => import('@/components/shell/app-shell')
 const AuthScreen = lazy(() => loadAuth().then((mod) => ({ default: mod.AuthScreen })))
 const AppShell = lazy(() => loadShell().then((mod) => ({ default: mod.AppShell })))
-const loadMotionFeatures = () => import('@/lib/motion-features').then((mod) => mod.default)
+// Motion's animation code is not needed for the first screen: fetch it after the page has loaded, so on a slow
+// connection it never competes with the sign-up screen or the backend.
+const afterLoad = () =>
+  new Promise<void>((resolve) => {
+    if (document.readyState === 'complete') resolve()
+    else window.addEventListener('load', () => resolve(), { once: true })
+  })
+const loadMotionFeatures = () => afterLoad().then(() => import('@/lib/motion-features')).then((mod) => mod.default)
 
 /** supabase-js keeps the session in localStorage under this key (see lib/supabaseBackend.ts). */
 function probablySignedIn() {

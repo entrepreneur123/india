@@ -16,9 +16,12 @@ export function LanguageSelect({ className }: { className?: string }) {
         value={lang}
         onChange={(e) => isLang(e.target.value) && setLang(e.target.value)}
         className="cursor-pointer appearance-none bg-transparent pr-1 outline-none"
+        // System font here: the option names include Vietnamese letters, which would otherwise make every
+        // visitor download the Vietnamese font file just for this menu.
+        style={{ fontFamily: 'system-ui, sans-serif' }}
       >
         {LANGS.map((l) => (
-          <option key={l.id} value={l.id} lang={l.id} style={{ fontFamily: 'system-ui, sans-serif' }}>
+          <option key={l.id} value={l.id} lang={l.id} >
             {l.native}
           </option>
         ))}
