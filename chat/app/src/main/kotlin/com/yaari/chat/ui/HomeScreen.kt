@@ -29,7 +29,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -109,7 +112,7 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
     Column(Modifier.fillMaxSize().background(bg)) {
         AnimatedContent(
             s.tab, Modifier.weight(1f),
-            transitionSpec = { (fadeIn(tween(220, delayMillis = 60)) + scaleIn(tween(220, delayMillis = 60), initialScale = 0.98f)) togetherWith fadeOut(tween(90)) },
+            transitionSpec = { (fadeIn(tween(210, delayMillis = 90)) + scaleIn(tween(210, delayMillis = 90), initialScale = 0.96f)) togetherWith fadeOut(tween(90)) },
             label = "tab",
         ) { tab ->
             when (tab) {
@@ -125,158 +128,118 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
     }
 }
 
-/** Push: new screen slides in from the right over a slightly receding one. Pop: the reverse. */
+/** Material shared-axis X: the new screen slides a short way in from the side while the old one fades out. */
 fun pushPop(forward: Boolean): ContentTransform {
-    val spec = tween<IntOffset>(320, easing = FastOutSlowInEasing)
+    val spec = tween<IntOffset>(300, easing = FastOutSlowInEasing)
+    val shift = { w: Int -> w / 10 }
     return if (forward) {
-        (slideInHorizontally(spec) { it } + fadeIn(tween(200))) togetherWith (slideOutHorizontally(spec) { -it / 4 } + fadeOut(tween(250)))
+        (slideInHorizontally(spec) { shift(it) } + fadeIn(tween(210, delayMillis = 90))) togetherWith (slideOutHorizontally(spec) { -shift(it) } + fadeOut(tween(90)))
     } else {
-        (slideInHorizontally(spec) { -it / 4 } + fadeIn(tween(250))) togetherWith (slideOutHorizontally(spec) { it } + fadeOut(tween(200)))
+        (slideInHorizontally(spec) { -shift(it) } + fadeIn(tween(210, delayMillis = 90))) togetherWith (slideOutHorizontally(spec) { shift(it) } + fadeOut(tween(90)))
     }
 }
 
 private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, ROOM }
 
-// ---- Bottom bar: Rooms · (Random) · Recent · Me, with the raised gradient Random button -----------
+// ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Recent · Me) with a tonal pill on the selected tab ----
 
 @Composable
 private fun BottomBar(s: UiState, me: Profile, dark: Boolean, bg: Color, onSelect: (Tab) -> Unit) {
-    val line = if (dark) Color.White.copy(alpha = 0.06f) else MaterialTheme.colorScheme.outlineVariant
+    val line = if (dark) Color.White.copy(alpha = 0.08f) else MaterialTheme.colorScheme.outlineVariant
     Column(Modifier.background(bg).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(1.dp).background(line))
-        Row(Modifier.fillMaxWidth().height(62.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            NavItem(s.tab == Tab.ROOMS, dark, Icons.Rounded.Forum, Icons.Outlined.Forum, R.string.tab_rooms) { onSelect(Tab.ROOMS) }
-            RandomButton(s.tab == Tab.RANDOM, dark, bg) { onSelect(Tab.RANDOM) }
-            NavItem(s.tab == Tab.RECENT, dark, Icons.Rounded.History, Icons.Outlined.History, R.string.tab_recent, badge = s.incomingRequests) {
-                onSelect(Tab.RECENT)
+        Row(Modifier.fillMaxWidth().height(72.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            NavItem(s.tab == Tab.ROOMS, dark, R.string.tab_rooms, onClick = { onSelect(Tab.ROOMS) }) { color ->
+                Icon(if (s.tab == Tab.ROOMS) Icons.Rounded.Forum else Icons.Outlined.Forum, null, Modifier.size(24.dp), tint = color)
             }
-            // Instagram-style: your own photo is the profile tab.
-            val selected = s.tab == Tab.ME
-            val tick = rememberTick()
-            val interaction = remember { MutableInteractionSource() }
-            Column(
-                Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.9f)
-                    .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onSelect(Tab.ME) },
-                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
-            ) {
-                Box(
-                    Modifier.size(28.dp).bounceOn(selected).then(
-                        if (selected) Modifier.border(2.dp, if (dark) Color.White else MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier,
-                    ),
-                    contentAlignment = Alignment.Center,
-                ) { Avatar(me, 22.dp) }
-                NavLabel(R.string.tab_me, selected, dark)
+            NavItem(s.tab == Tab.RANDOM, dark, R.string.tab_random, onClick = { onSelect(Tab.RANDOM) }) { color ->
+                Icon(Icons.Rounded.Shuffle, null, Modifier.size(24.dp), tint = color)
             }
-        }
-    }
-}
-
-@Composable
-private fun RowScope.RandomButton(selected: Boolean, dark: Boolean, bg: Color, onClick: () -> Unit) {
-    val tick = rememberTick()
-    val interaction = remember { MutableInteractionSource() }
-    Box(
-        Modifier.weight(1f).height(56.dp)
-            .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onClick() },
-    ) {
-        // Same slot as the other tabs' icons, so the label lines up with theirs.
-        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Spacer(Modifier.height(26.dp))
-            NavLabel(R.string.tab_random, selected, dark)
-        }
-        // Raised above the bar, ringed in the bar's own colour so it looks cut out of it.
-        Box(
-            Modifier.align(Alignment.TopCenter).offset(y = (-26).dp).pressScale(interaction, 0.9f).size(66.dp)
-                .glow(radius = 16.dp, offsetY = 10.dp, inset = 12.dp, alpha = 0.75f)
-                .clip(CircleShape).background(bg).padding(5.dp).clip(CircleShape).background(Brand.gradient),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Rounded.Shuffle, null, Modifier.size(25.dp).bounceOn(selected), tint = Color.White)
+            NavItem(s.tab == Tab.RECENT, dark, R.string.tab_recent, badge = s.incomingRequests, onClick = { onSelect(Tab.RECENT) }) { color ->
+                Icon(if (s.tab == Tab.RECENT) Icons.Rounded.History else Icons.Outlined.History, null, Modifier.size(24.dp), tint = color)
+            }
+            // Your own photo is the profile tab.
+            NavItem(s.tab == Tab.ME, dark, R.string.tab_me, onClick = { onSelect(Tab.ME) }) { Avatar(me, 24.dp) }
         }
     }
 }
 
 @Composable
 private fun RowScope.NavItem(
-    selected: Boolean, dark: Boolean, on: ImageVector, off: ImageVector, label: Int, badge: Int = 0, onClick: () -> Unit,
+    selected: Boolean, dark: Boolean, label: Int, badge: Int = 0, onClick: () -> Unit, icon: @Composable (Color) -> Unit,
 ) {
     val tick = rememberTick()
     val interaction = remember { MutableInteractionSource() }
+    val pill by animateColorAsState(
+        when {
+            !selected -> Color.Transparent
+            dark -> Color.White.copy(alpha = 0.14f)
+            else -> MaterialTheme.colorScheme.primaryContainer
+        },
+        tween(150), label = "pill",
+    )
+    val pillWidth by animateDpAsState(if (selected) 64.dp else 40.dp, tween(200, easing = FastOutSlowInEasing), label = "pillW")
     Column(
-        Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.9f)
+        Modifier.weight(1f).fillMaxHeight()
             .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onClick() },
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
-        Box {
-            Icon(if (selected) on else off, null, Modifier.size(26.dp).bounceOn(selected), tint = navColor(selected, dark))
+        Box(contentAlignment = Alignment.Center) {
+            Box(Modifier.width(pillWidth).height(32.dp).clip(CircleShape).background(pill))
+            icon(navColor(selected, dark))
             if (badge > 0) {
                 Box(
-                    Modifier.align(Alignment.TopEnd).offset(x = 8.dp, y = (-4).dp).height(17.dp).padding(0.dp)
-                        .clip(CircleShape).background(if (dark) Brand.Night else MaterialTheme.colorScheme.background).padding(1.5.dp)
-                        .clip(CircleShape).background(Brand.gradient).padding(horizontal = 4.5.dp),
+                    Modifier.align(Alignment.TopEnd).offset(x = (-8).dp, y = (-2).dp).height(16.dp).widthIn(min = 16.dp)
+                        .clip(CircleShape).background(Brand.Pink).padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text("$badge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta) }
+                ) { Text("$badge", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
             }
         }
-        NavLabel(label, selected, dark)
+        Text(
+            stringResource(label), Modifier.padding(top = 4.dp), color = navColor(selected, dark), style = MaterialTheme.typography.labelMedium,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
 @Composable
 private fun navColor(selected: Boolean, dark: Boolean) = when {
-    dark -> if (selected) Color.White else Color.White.copy(alpha = 0.5f)
-    else -> if (selected) MaterialTheme.colorScheme.onSurface else Color(0xFF9A9AA5)
+    dark -> if (selected) Color.White else Color.White.copy(alpha = 0.72f)
+    else -> if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 }
 
-@Composable
-private fun NavLabel(label: Int, selected: Boolean, dark: Boolean, modifier: Modifier = Modifier) {
-    Text(
-        stringResource(label), modifier.padding(top = 2.dp), color = navColor(selected, dark), style = MaterialTheme.typography.labelSmall,
-        fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1,
-    )
-}
-
-/** The light tabs' header: a big title and the settings gear in a soft circle on the right. */
+/** The light tabs' header: a title and the settings icon on the right (Material small top app bar). */
 @Composable
 fun TabHeader(title: String, onSettings: () -> Unit, modifier: Modifier = Modifier, actions: @Composable () -> Unit = {}) {
     Row(
-        modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 12.dp, top = 6.dp, bottom = 4.dp),
+        modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 16.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
         actions()
-        CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings)
+        CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
-// ---- Random chat: the dark, camera-like lobby (Azar-style) ---------------------------------------
+// ---- Random chat: the dark, camera-like lobby ------------------------------------------------------
 
 @Composable
 private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     val me = s.me ?: return
     Box(Modifier.fillMaxSize().aurora()) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
-            Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Wordmark(color = Color.White)
+            Row(Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Wordmark(size = 24)
                 Spacer(Modifier.weight(1f))
                 PlanChip(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
-                CircleIconButton(
-                    Icons.Outlined.Settings, stringResource(R.string.settings), onSettings,
-                    background = Color.White.copy(alpha = 0.08f), tint = Color.White,
-                )
+                CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = Color.White.copy(alpha = 0.85f))
             }
             Column(
                 Modifier.weight(1f).fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
             ) {
-                val float by rememberLoop(2400, from = -1f, to = 1f, reverse = true, easing = FastOutSlowInEasing, still = 0f)
-                Box(
-                    Modifier.size(176.dp).graphicsLayer { translationY = float * 3.dp.toPx() }.spinningRing(width = 3.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(Modifier.size(170.dp).clip(CircleShape).background(Brand.Night), contentAlignment = Alignment.Center) {
-                        Avatar(me, 156.dp)
-                    }
+                Box(Modifier.size(160.dp).brandRing(), contentAlignment = Alignment.Center) {
+                    Avatar(me, 144.dp)
                 }
                 Spacer(Modifier.height(24.dp))
                 Text(
@@ -284,18 +247,18 @@ private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
                     maxLines = 1, overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(4.dp))
-                Text(stringResource(R.string.lobby_title), color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                Text(stringResource(R.string.lobby_title), color = Color.White.copy(alpha = 0.72f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
             }
-            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 18.dp)) {
+            Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 TargetSelector(s.target, s.entitlements.canChooseGender, vm::setTarget)
                 Spacer(Modifier.height(16.dp))
-                GradientButton(
-                    stringResource(R.string.start_chatting), vm::startMatching, height = 64.dp, shine = true,
-                    leading = { Icon(Icons.Rounded.Shuffle, null, Modifier.size(22.dp), tint = Color.White) },
+                PrimaryButton(
+                    stringResource(R.string.start_chatting), vm::startMatching,
+                    leading = { Icon(Icons.Rounded.Shuffle, null, Modifier.size(20.dp), tint = Color.White) },
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    stringResource(R.string.lobby_rules), color = Color.White.copy(alpha = 0.45f),
+                    stringResource(R.string.lobby_rules), color = Color.White.copy(alpha = 0.66f),
                     style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -306,19 +269,20 @@ private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
 @Composable
 private fun PlanChip(s: UiState, onClick: () -> Unit) {
     val premium = s.premium
-    val interaction = remember { MutableInteractionSource() }
     Row(
-        Modifier.pressScale(interaction).clip(CircleShape).background(Color.White.copy(alpha = if (premium) 0.10f else 0.07f))
-            .then(if (premium) Modifier else Modifier.border(1.dp, androidx.compose.ui.graphics.Brush.linearGradient(listOf(Brand.Pink, Brand.Orange)), CircleShape))
-            .clickable(interaction, indication = null, enabled = !premium, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp),
+        Modifier.heightIn(min = 48.dp).clip(CircleShape).clickable(enabled = !premium, role = Role.Button, onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.Orange, modifier = Modifier.size(16.dp))
-        Text(
-            stringResource(if (premium) R.string.plan_badge_plus else R.string.get_plus), color = Color.White,
-            style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold,
-        )
+        Row(
+            Modifier.height(32.dp).clip(CircleShape).border(1.dp, Color.White.copy(alpha = 0.24f), CircleShape).padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.PinkOnDark, modifier = Modifier.size(16.dp))
+            Text(
+                stringResource(if (premium) R.string.plan_badge_plus else R.string.get_plus), color = Color.White,
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
     }
 }
 

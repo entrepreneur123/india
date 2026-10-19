@@ -85,14 +85,14 @@ fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) = NightThem
         }
         Row(
             Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 40.dp),
-            horizontalArrangement = Arrangement.spacedBy(22.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically,
         ) {
             // Off states turn the button white, like the mockup's muted mic.
             RoundButton(
                 if (mic) Icons.Rounded.Mic else Icons.Rounded.MicOff, stringResource(if (mic) R.string.mute else R.string.unmute),
                 if (mic) Color.White.copy(alpha = 0.2f) else Color.White, if (mic) Color.White else Brand.Night,
             ) { mic = !mic }
-            RoundButton(Icons.Rounded.CallEnd, stringResource(R.string.end), Brand.Danger, Color.White, size = 72.dp, glow = true, onClick = vm::endVideo)
+            RoundButton(Icons.Rounded.CallEnd, stringResource(R.string.end), Brand.Danger, Color.White, size = 72.dp, onClick = vm::endVideo)
             RoundButton(
                 if (cam) Icons.Rounded.Videocam else Icons.Rounded.VideocamOff, stringResource(if (cam) R.string.camera_off else R.string.camera_on),
                 if (cam) Color.White.copy(alpha = 0.2f) else Color.White, if (cam) Color.White else Brand.Night,
@@ -102,11 +102,10 @@ fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) = NightThem
 }
 
 @Composable
-private fun RoundButton(icon: ImageVector, label: String, bg: Color, fg: Color, size: Dp = 60.dp, glow: Boolean = false, onClick: () -> Unit) {
+private fun RoundButton(icon: ImageVector, label: String, bg: Color, fg: Color, size: Dp = 56.dp, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Box(
-        Modifier.size(size).pressScale(interaction, 0.9f)
-            .then(if (glow) Modifier.glow(Brand.Danger, radius = 18.dp, offsetY = 10.dp, inset = 8.dp, alpha = 0.7f) else Modifier)
+        Modifier.size(size).pressScale(interaction)
             .clip(CircleShape).background(bg)
             .clickable(interaction, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,

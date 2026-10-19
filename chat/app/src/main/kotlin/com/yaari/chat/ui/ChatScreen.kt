@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -44,7 +45,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Image
@@ -119,7 +120,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     Column(Modifier.fillMaxSize().background(Brand.Night).imePadding()) {
         Column {
             Row(
-                Modifier.fillMaxWidth().statusBarsPadding().height(68.dp).padding(start = 8.dp, end = 8.dp),
+                Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Normal exit: locked for 5 s (free) / 0.2 s (Plus) after the match starts.
@@ -141,7 +142,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                             }
                             Text(
                                 if (chat.partnerTyping) stringResource(R.string.typing) else stringResource(R.string.chat_subtitle, partner.city.ifBlank { stringResource(partner.gender.label) }),
-                                color = if (chat.partnerTyping) Brand.Orange else Color.White.copy(alpha = 0.55f),
+                                color = if (chat.partnerTyping) Brand.PinkOnDark else Color.White.copy(alpha = 0.7f),
                                 style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
                             )
                         }
@@ -150,8 +151,10 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 // Report & leave is never locked.
                 CircleIconButton(
                     Icons.Outlined.Flag, stringResource(R.string.report_and_leave), { reportDialog = true },
-                    background = Color.Transparent, tint = Color.White.copy(alpha = 0.7f), iconSize = 21.dp,
+                    tint = Color.White.copy(alpha = 0.8f),
                 )
+                // Block without reporting (also never locked).
+                PersonMenu(partner, onBlock = { vm.block(partner) }, onReport = null, tint = Color.White.copy(alpha = 0.8f))
                 VideoButton(
                     calling = chat.video == VideoStatus.REQUESTED_BY_ME,
                     enabled = !chat.partnerLeft && chat.video !in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER),
@@ -171,7 +174,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 Text(stringResource(R.string.partner_left, partner.name), style = MaterialTheme.typography.titleSmall, color = Color.White)
-                GradientButton(stringResource(R.string.next_match), { vm.leave(next = true) })
+                PrimaryButton(stringResource(R.string.next_match), { vm.leave(next = true) })
                 TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) }
             }
         } else {
@@ -186,7 +189,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
             containerColor = Brand.Ink2,
             title = { Text(stringResource(R.string.leave_title)) },
             text = { Text(stringResource(R.string.leave_text, partner.name)) },
-            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), fontWeight = FontWeight.Bold, color = Brand.Orange) } },
+            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.PinkOnDark) } },
             dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) } },
         )
     }
@@ -223,7 +226,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
             drawCircle(Color.White.copy(alpha = 0.12f), radius = arc.width / 2, style = Stroke(w))
             if (fraction > 0f) {
                 drawArc(
-                    Brush.linearGradient(listOf(Brand.Pink, Brand.Orange)), -90f, 360f * fraction, false,
+                    Brand.PinkOnDark, -90f, 360f * fraction, false,
                     topLeft = Offset(inset, inset), size = arc, style = Stroke(w, cap = StrokeCap.Round),
                 )
             }
@@ -238,7 +241,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
     }
 }
 
-/** Round gradient camera button; a spinner while our request waits for an answer. */
+/** Round brand-colour camera button; a spinner while our request waits for an answer. */
 @Composable
 private fun VideoButton(calling: Boolean, enabled: Boolean, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
@@ -248,7 +251,7 @@ private fun VideoButton(calling: Boolean, enabled: Boolean, onClick: () -> Unit)
         contentAlignment = Alignment.Center,
     ) {
         Box(
-            Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.gradient),
+            Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.Pink),
             contentAlignment = Alignment.Center,
         ) {
             if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
@@ -274,14 +277,14 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
             enter = slideInVertically(spring(dampingRatio = 0.85f, stiffness = 380f)) { it / 3 } + fadeIn(tween(200)),
         ) {
             Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)).background(Brand.Ink2)
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(Brand.Ink2)
                     .navigationBarsPadding().padding(horizontal = 24.dp).padding(top = 12.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(Modifier.size(40.dp, 4.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)))
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.size(104.dp), contentAlignment = Alignment.Center) {
-                    Radar(104.dp, rings = 2, ringColor = Brand.Pink.copy(alpha = 0.6f), fill = Color.Transparent, stroke = 2.dp)
+                    Radar(104.dp, rings = 2, ringColor = Brand.PinkOnDark.copy(alpha = 0.5f), stroke = 2.dp)
                     Avatar(partner, 88.dp)
                 }
                 Spacer(Modifier.height(20.dp))
@@ -306,7 +309,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                         Spacer(Modifier.width(8.dp))
                         Text(stringResource(R.string.decline), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     }
-                    GradientButton(
+                    PrimaryButton(
                         stringResource(R.string.accept), { onAnswer(true) }, Modifier.weight(1f),
                         leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Color.White) },
                     )
@@ -324,16 +327,13 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, o
             Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircleIconButton(
-                Icons.AutoMirrored.Rounded.ArrowBackIos, stringResource(R.string.back), onBack,
-                background = Color.Transparent, iconSize = 20.dp,
-            )
+            CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back), onBack)
             Row(
-                Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).clickable(role = Role.Button, onClick = onProfile).padding(4.dp),
+                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button, onClick = onProfile).padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Avatar(partner, 40.dp)
-                Column(Modifier.padding(start = 10.dp)) {
+                Column(Modifier.padding(start = 12.dp)) {
                     Text(partner.nameWithFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
@@ -400,11 +400,11 @@ private fun IntroLine(text: String) {
     )
 }
 
-/** New bubbles pop out of their corner with a quick spring (scale .96, rise 8 dp, fade), like the mockup. */
+/** New bubbles settle in from their corner (scale .96, rise 8 dp, fade) in 180 ms. */
 @Composable
 internal fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
     val p = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { p.animateTo(1f, spring(dampingRatio = 0.7f, stiffness = 520f)) }
+    LaunchedEffect(Unit) { p.animateTo(1f, tween(180, easing = EaseOutQuint)) }
     Box(
         Modifier.graphicsLayer {
             val v = p.value
@@ -417,32 +417,35 @@ internal fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
 }
 
 /**
- * The moment of a match: the partner's photo lands with a ring, their name, and confetti, then it fades into the chat.
+ * The moment of a match: the partner's photo and name fade and settle in (300 ms), then the card fades into the chat.
  * Plays once per match; it never blocks touches.
  */
 @Composable
 private fun MatchReveal(matchId: String, partner: Profile) {
     var shown by rememberSaveable(matchId) { mutableStateOf(true) }
-    LaunchedEffect(matchId) { delay(1500); shown = false }
-    AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(400))) {
-        val scale = remember { Animatable(0.4f) }
-        LaunchedEffect(Unit) { scale.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessLow)) }
+    // Timed on the frame clock (not delay), so it follows the animation scale and UI tests' virtual time.
+    LaunchedEffect(matchId) {
+        if (shown) Animatable(0f).animateTo(1f, tween(1300, easing = LinearEasing))
+        shown = false
+    }
+    AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(250))) {
+        val scale = remember { Animatable(0.92f) }
+        LaunchedEffect(Unit) { scale.animateTo(1f, tween(300, easing = EaseOutQuint)) }
         Box(Modifier.fillMaxSize().aurora(), contentAlignment = Alignment.Center) {
-            ConfettiBurst(matchId)
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }) {
-                Box(Modifier.size(150.dp).spinningRing(), contentAlignment = Alignment.Center) {
-                    Avatar(partner, 132.dp)
+                Box(Modifier.size(144.dp).brandRing(), contentAlignment = Alignment.Center) {
+                    Avatar(partner, 128.dp)
                 }
-                Spacer(Modifier.size(20.dp))
+                Spacer(Modifier.size(24.dp))
                 Text(stringResource(R.string.matched_with), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.titleMedium)
-                Text(partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineLarge)
+                Text(partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineMedium)
                 Text(partner.genderCity(), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
 }
 
-/** Photo button, pill-shaped input and a round gradient send button. Follows the screen's colours (light or dark). */
+/** Photo button, pill-shaped input and a round brand-colour send button. Follows the screen's colours (light or dark). */
 @Composable
 fun Composer(
     onText: (String) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
@@ -459,24 +462,24 @@ fun Composer(
     Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
         if (divider) Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
         Row(
-            Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp),
+            Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
             if (onMedia != null) {
                 CircleIconButton(
                     Icons.Outlined.Image, stringResource(R.string.send_media),
                     { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
-                    size = 44.dp, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Box(
-                Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).clip(RoundedCornerShape(22.dp))
+                Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).clip(RoundedCornerShape(24.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 11.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 if (text.isEmpty()) {
                     Text(
-                        hint ?: stringResource(R.string.message_hint), color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                        hint ?: stringResource(R.string.message_hint), color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -490,14 +493,13 @@ fun Composer(
             val enabled = text.isNotBlank()
             val interaction = remember { MutableInteractionSource() }
             val tick = rememberTick()
-            val grow by animateFloatAsState(if (enabled) 1f else 0.9f, spring(dampingRatio = 0.5f), label = "send")
+            val bg by animateColorAsState(if (enabled) Brand.Pink else MaterialTheme.colorScheme.surfaceContainerHighest, tween(150), label = "send")
             Box(
-                Modifier.padding(vertical = 2.dp).size(44.dp).graphicsLayer { scaleX = grow; scaleY = grow }.pressScale(interaction, 0.85f).clip(CircleShape)
-                    .alpha(if (enabled) 1f else 0.45f).background(Brand.gradient)
+                Modifier.size(48.dp).pressScale(interaction).clip(CircleShape).background(bg)
                     .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) { tick(); onText(text); text = "" },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(19.dp), tint = Color.White)
+                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

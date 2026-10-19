@@ -52,6 +52,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -134,16 +135,16 @@ private fun SmallChip(text: String, modifier: Modifier = Modifier, background: C
     }
 }
 
-/** Create (the brand gradient, the obvious action) and Enter code, side by side under the featured room. */
+/** Create (the brand colour, the obvious action) and Enter code, side by side under the featured room. */
 @Composable
 fun RoomActions(onCreate: () -> Unit, onCode: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-        GradientButton(
-            stringResource(R.string.rooms_create), onCreate, Modifier.weight(1.35f), height = 52.dp,
+    Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        PrimaryButton(
+            stringResource(R.string.rooms_create), onCreate, Modifier.weight(1.2f), height = 48.dp,
             leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Color.White) },
         )
         SoftButton(
-            stringResource(R.string.rooms_enter_code), onCode, Modifier.weight(1f), height = 52.dp, shape = CircleShape,
+            stringResource(R.string.rooms_enter_code), onCode, Modifier.weight(1f), height = 48.dp, outlined = true,
             leading = { Icon(Icons.Rounded.Tag, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurface) },
         )
     }
@@ -151,8 +152,8 @@ fun RoomActions(onCreate: () -> Unit, onCode: () -> Unit) {
 
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier, trailing: String? = null) {
-    Row(modifier.fillMaxWidth().padding(top = 18.dp, bottom = 2.dp), verticalAlignment = Alignment.Bottom) {
-        Text(text, style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp), modifier = Modifier.weight(1f))
+    Row(modifier.fillMaxWidth().padding(top = 16.dp, bottom = 0.dp), verticalAlignment = Alignment.Bottom) {
+        Text(text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
         trailing?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
 }
@@ -160,15 +161,15 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier, trailing: String? 
 @Composable
 fun NoUserRooms(onCreate: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
-            .clickable(role = Role.Button, onClick = onCreate).padding(18.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+            .clickable(role = Role.Button, onClick = onCreate).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(44.dp).clip(CircleShape).background(Brand.Pink.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.Add, null, Modifier.size(22.dp), tint = Brand.Pink)
+        Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(Icons.Rounded.Add, null, Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
         }
         Text(
-            stringResource(R.string.rooms_by_people_empty), Modifier.padding(start = 14.dp),
+            stringResource(R.string.rooms_by_people_empty), Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
@@ -182,19 +183,19 @@ fun UserRoomCard(room: Room, modifier: Modifier = Modifier, onClick: () -> Unit)
     val refused = room.refusal != null
     val fade = Modifier.alpha(if (refused) 0.5f else 1f)
     Row(
-        modifier.fillMaxWidth().pressScale(interaction, 0.98f).clip(RoundedCornerShape(24.dp))
+        modifier.fillMaxWidth().pressScale(interaction).clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainer)
-            .then(if (room.mine) Modifier.border(1.5.dp, Brand.gradient, RoundedCornerShape(24.dp)) else Modifier)
-            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(14.dp),
+            .border(if (room.mine) 1.5.dp else 1.dp, if (room.mine) Brand.Pink else MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
+            .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick).padding(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        Box(fade.size(56.dp).clip(RoundedCornerShape(18.dp)).background(categoryTint(room.category)), contentAlignment = Alignment.Center) {
+        Box(fade.size(56.dp).clip(RoundedCornerShape(16.dp)).background(categoryTint(room.category)), contentAlignment = Alignment.Center) {
             Text(room.emoji, fontSize = 28.sp)
         }
-        Column(Modifier.weight(1f).padding(start = 14.dp)) {
+        Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Row(fade, verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    room.title, style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.5.sp), maxLines = 1,
+                    room.title, style = MaterialTheme.typography.titleMedium, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
                 )
                 if (room.isPrivate) {
@@ -206,8 +207,8 @@ fun UserRoomCard(room: Room, modifier: Modifier = Modifier, onClick: () -> Unit)
                 by.joinToString(" · "), fade.padding(top = 1.dp), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
-            Spacer(Modifier.height(10.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Spacer(Modifier.height(8.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 val reason = if (refused) refusalLabel(room) else null
                 if (reason != null) {
                     SmallChip(
@@ -222,12 +223,12 @@ fun UserRoomCard(room: Room, modifier: Modifier = Modifier, onClick: () -> Unit)
         }
         if (room.mine) {
             Text(
-                stringResource(R.string.room_yours), Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.gradient).padding(horizontal = 10.dp, vertical = 4.dp),
+                stringResource(R.string.room_yours), Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 10.dp, vertical = 4.dp),
                 color = Color.White, style = MaterialTheme.typography.labelSmall,
             )
         } else if (!refused) {
-            Box(Modifier.padding(start = 8.dp).size(34.dp).clip(CircleShape).background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowForward, stringResource(R.string.join), Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface)
+            Box(Modifier.padding(start = 8.dp).size(32.dp), contentAlignment = Alignment.Center) {
+                Icon(Icons.AutoMirrored.Rounded.ArrowForward, stringResource(R.string.join), Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -237,7 +238,7 @@ fun UserRoomCard(room: Room, modifier: Modifier = Modifier, onClick: () -> Unit)
 private fun SheetLabel(text: String, value: String? = null) {
     Row(Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 10.dp), verticalAlignment = Alignment.Bottom) {
         Text(text, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-        value?.let { Text(it, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)) }
+        value?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
     }
 }
 
@@ -248,7 +249,7 @@ private fun SheetHeader(title: String, sub: String, onClose: () -> Unit) {
             Text(title, style = MaterialTheme.typography.headlineSmall)
             Text(sub, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
         }
-        CircleIconButton(Icons.Rounded.Close, stringResource(R.string.close), onClose, Modifier.padding(start = 8.dp), size = 36.dp, iconSize = 18.dp)
+        CircleIconButton(Icons.Rounded.Close, stringResource(R.string.close), onClose, Modifier.padding(start = 8.dp))
     }
 }
 
@@ -271,7 +272,7 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
     var private by rememberSaveable { mutableStateOf(false) }
     ModalBottomSheet(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp), containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
             SheetHeader(stringResource(R.string.create_title), stringResource(R.string.create_sub), onDismiss)
@@ -304,12 +305,12 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
             )
             Spacer(Modifier.height(14.dp))
             Row(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
-                    .clickable(role = Role.Switch) { private = !private }.padding(14.dp),
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                    .clickable(role = Role.Switch) { private = !private }.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Box(Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(Brand.Pink.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.Lock, null, Modifier.size(19.dp), tint = Brand.Pink)
+                Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.Lock, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
                 Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                     Text(stringResource(R.string.create_private), style = MaterialTheme.typography.titleSmall)
@@ -317,11 +318,11 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
                 }
                 Switch(
                     private, { private = it },
-                    colors = SwitchDefaults.colors(checkedTrackColor = Brand.Pink, checkedThumbColor = Color.White, uncheckedBorderColor = Color.Transparent),
+                    colors = SwitchDefaults.colors(checkedTrackColor = Brand.Pink, checkedThumbColor = Color.White),
                 )
             }
             Spacer(Modifier.height(22.dp))
-            GradientButton(
+            PrimaryButton(
                 stringResource(R.string.rooms_create),
                 { onCreate(NewRoom(title, category, max, who, minAge.roundToInt(), maxAge.roundToInt(), private)) },
                 enabled = !busy && title.trim().length >= Room.MIN_TITLE,
@@ -334,20 +335,23 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
     }
 }
 
-/** A selectable pill: brand gradient when chosen. */
+/** A selectable chip: tonal brand colour with a check when chosen (Material filter chip). */
 @Composable
 private fun Choice(text: String, selected: Boolean, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Box(
-        Modifier.height(38.dp).pressScale(interaction, 0.95f).clip(CircleShape)
-            .then(if (selected) Modifier.background(Brand.gradient) else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh))
-            .selectable(selected, interactionSource = interaction, indication = null, role = Role.RadioButton, onClick = onClick)
-            .padding(horizontal = 14.dp),
+        Modifier.height(36.dp).clip(RoundedCornerShape(8.dp))
+            .then(
+                if (selected) Modifier.background(MaterialTheme.colorScheme.primaryContainer)
+                else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp)),
+            )
+            .selectable(selected, interactionSource = interaction, indication = ripple(), role = Role.RadioButton, onClick = onClick)
+            .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text, style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.5.sp),
-            color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface,
+            text, style = MaterialTheme.typography.labelLarge,
+            color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -356,13 +360,13 @@ private fun Choice(text: String, selected: Boolean, onClick: () -> Unit) {
 @Composable
 private fun <T> Segmented(options: List<Pair<T, Int>>, selected: T, onSelect: (T) -> Unit) {
     Row(
-        Modifier.fillMaxWidth().height(48.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
+        Modifier.fillMaxWidth().height(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         options.forEach { (value, label) ->
             val on = value == selected
             Box(
-                Modifier.weight(1f).height(40.dp).clip(RoundedCornerShape(12.dp))
+                Modifier.weight(1f).height(40.dp).clip(CircleShape)
                     .then(if (on) Modifier.background(MaterialTheme.colorScheme.background) else Modifier)
                     .selectable(on, role = Role.RadioButton) { onSelect(value) },
                 contentAlignment = Alignment.Center,
@@ -384,7 +388,7 @@ fun JoinCodeSheet(busy: Boolean, onDismiss: () -> Unit, onJoin: (String) -> Unit
     val ready = code.length == Room.CODE_LENGTH && !busy
     ModalBottomSheet(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp), containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
             SheetHeader(stringResource(R.string.code_title), stringResource(R.string.code_sub), onDismiss)
@@ -395,7 +399,7 @@ fun JoinCodeSheet(busy: Boolean, onDismiss: () -> Unit, onJoin: (String) -> Unit
                     Text("ABC123", Modifier.fillMaxWidth(), textAlign = TextAlign.Center, style = codeStyle(), color = MaterialTheme.colorScheme.outline)
                 },
                 label = { Text(stringResource(R.string.code_hint)) },
-                textStyle = codeStyle().copy(textAlign = TextAlign.Center), shape = RoundedCornerShape(18.dp),
+                textStyle = codeStyle().copy(textAlign = TextAlign.Center), shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrectEnabled = false, imeAction = ImeAction.Go),
                 keyboardActions = KeyboardActions(onGo = { if (ready) onJoin(code) }),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -403,14 +407,14 @@ fun JoinCodeSheet(busy: Boolean, onDismiss: () -> Unit, onJoin: (String) -> Unit
                     focusedLabelColor = MaterialTheme.colorScheme.onSurface, cursorColor = Brand.Pink,
                 ),
             )
-            Spacer(Modifier.height(20.dp))
-            GradientButton(stringResource(R.string.join), { onJoin(code) }, enabled = ready)
+            Spacer(Modifier.height(24.dp))
+            PrimaryButton(stringResource(R.string.join), { onJoin(code) }, enabled = ready)
         }
     }
 }
 
 @Composable
-private fun codeStyle() = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, fontSize = 28.sp, letterSpacing = 6.sp)
+private fun codeStyle() = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 28.sp, letterSpacing = 6.sp)
 
 // ---- Inside a user room ---------------------------------------------------------------------------
 
@@ -435,15 +439,15 @@ fun RoomConditions(room: Room) {
 fun RoomCodeBar(room: Room, code: String) {
     val context = LocalContext.current
     Row(
-        Modifier.fillMaxWidth().background(Brand.Pink.copy(alpha = 0.07f)).padding(start = 20.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f).clip(RoundedCornerShape(10.dp)).clickable(role = Role.Button) { copyCode(context, code) }.padding(vertical = 4.dp)) {
             Text(stringResource(R.string.room_code), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(code, style = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp, letterSpacing = 4.sp, brush = Brand.gradient))
+            Text(code, style = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 20.sp, letterSpacing = 4.sp, color = MaterialTheme.colorScheme.onPrimaryContainer))
         }
-        CircleIconButton(Icons.Rounded.ContentCopy, stringResource(R.string.copy_code), { copyCode(context, code) }, background = MaterialTheme.colorScheme.background, size = 38.dp, iconSize = 18.dp)
-        CircleIconButton(Icons.Rounded.Share, stringResource(R.string.share), { shareCode(context, room.title, code) }, background = MaterialTheme.colorScheme.background, size = 38.dp, iconSize = 18.dp)
+        CircleIconButton(Icons.Rounded.ContentCopy, stringResource(R.string.copy_code), { copyCode(context, code) }, tint = MaterialTheme.colorScheme.onPrimaryContainer, iconSize = 20.dp)
+        CircleIconButton(Icons.Rounded.Share, stringResource(R.string.share), { shareCode(context, room.title, code) }, tint = MaterialTheme.colorScheme.onPrimaryContainer, iconSize = 20.dp)
     }
 }
 
@@ -474,7 +478,7 @@ fun RoomClosedBar(onBack: () -> Unit) {
             stringResource(R.string.room_closed_sub), style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
         )
-        SoftButton(stringResource(R.string.back_to_rooms), onBack, outlined = true, shape = CircleShape, height = 42.dp)
+        SoftButton(stringResource(R.string.back_to_rooms), onBack, outlined = true, height = 48.dp)
     }
 }
 
@@ -492,7 +496,7 @@ fun RoomCreatedDialog(room: Room, code: String, onDone: () -> Unit) {
                     code,
                     Modifier.padding(top = 16.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
                         .clickable(role = Role.Button) { copyCode(context, code) }.padding(horizontal = 22.dp, vertical = 12.dp),
-                    style = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, letterSpacing = 6.sp, brush = Brand.gradient),
+                    style = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 30.sp, letterSpacing = 6.sp, color = MaterialTheme.colorScheme.onSurface),
                 )
             }
         },

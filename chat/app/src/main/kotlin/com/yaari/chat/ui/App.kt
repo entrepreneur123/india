@@ -152,7 +152,7 @@ fun YaariApp(vm: AppViewModel) {
 
 private enum class Top { HOME, SEARCHING, CHAT, VIDEO, DM }
 
-/** "yaari Plus": perks, two plans to choose between, one gradient call to action. */
+/** "yaari Plus": perks, two plans to choose between, one call to action. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String, String>) {
@@ -160,7 +160,7 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
     var plan by rememberSaveable { mutableStateOf(Products.PREMIUM) }
     ModalBottomSheet(
         onDismissRequest = vm::dismissPaywall, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp), containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.Top) {
@@ -169,7 +169,7 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
                         Wordmark(size = 28, color = MaterialTheme.colorScheme.onSurface)
                         Text(
                             " " + stringResource(R.string.premium),
-                            style = TextStyle(brush = Brand.gradient, fontSize = 28.sp, fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.8).sp),
+                            style = TextStyle(color = Brand.Pink, fontSize = 28.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.8).sp),
                         )
                     }
                     Text(
@@ -177,16 +177,16 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
                         style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 2.dp),
                     )
                 }
-                CircleIconButton(Icons.Rounded.Close, stringResource(R.string.not_now), vm::dismissPaywall, Modifier.padding(start = 8.dp), size = 36.dp, iconSize = 18.dp)
+                CircleIconButton(Icons.Rounded.Close, stringResource(R.string.not_now), vm::dismissPaywall, Modifier.padding(start = 8.dp))
             }
-            Spacer(Modifier.height(20.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Spacer(Modifier.height(24.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Benefit(Icons.Rounded.Group, stringResource(R.string.premium_benefit_gender))
                 Benefit(Icons.Rounded.Videocam, stringResource(R.string.premium_benefit_video))
                 Benefit(Icons.Rounded.Bolt, stringResource(R.string.premium_benefit_skip, ExitPolicy.PREMIUM_LOCK_MS / 1000.0, ExitPolicy.FREE_LOCK_MS / 1000))
             }
             Spacer(Modifier.height(24.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 PlanCard(
                     stringResource(R.string.plan_monthly), stringResource(R.string.plan_monthly_sub), prices[Products.PREMIUM],
                     selected = plan == Products.PREMIUM,
@@ -196,15 +196,15 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
                     selected = plan == Products.GENDER_PASS,
                 ) { plan = Products.GENDER_PASS }
             }
-            Spacer(Modifier.height(22.dp))
-            GradientButton(
+            Spacer(Modifier.height(24.dp))
+            PrimaryButton(
                 if (plan == Products.PREMIUM) stringResource(R.string.premium_buy, prices[Products.PREMIUM] ?: stringResource(R.string.premium_buy_default))
                 else stringResource(R.string.pass_buy, prices[Products.GENDER_PASS] ?: stringResource(R.string.pass_buy_default)),
                 { activity?.let { vm.buy(it, plan) } },
             )
             Text(
                 stringResource(R.string.billing_note), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             )
         }
     }
@@ -213,37 +213,37 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
 @Composable
 private fun Benefit(icon: ImageVector, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(44.dp).clip(RoundedCornerShape(16.dp)).background(Brand.Pink.copy(alpha = 0.1f)), contentAlignment = Alignment.Center) {
-            Icon(icon, null, tint = Brand.Pink, modifier = Modifier.size(21.dp))
+        Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(icon, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(20.dp))
         }
-        Text(text, Modifier.padding(start = 14.dp), style = MaterialTheme.typography.titleSmall)
+        Text(text, Modifier.padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
     }
 }
 
-/** A plan as a radio card; the chosen one gets a gradient outline and a filled gradient dot. */
+/** A plan as a radio card; the chosen one gets a brand outline, a light brand tint and a filled radio dot. */
 @Composable
 private fun PlanCard(title: String, sub: String, price: String?, selected: Boolean, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(22.dp)
+    val shape = RoundedCornerShape(16.dp)
     Row(
         Modifier.fillMaxWidth().pressScale(interaction, 0.98f).clip(shape)
-            .then(if (selected) Modifier.border(2.dp, Brand.gradient, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape))
+            .then(if (selected) Modifier.background(Brand.Pink.copy(alpha = 0.06f)).border(2.dp, Brand.Pink, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, shape))
             .selectable(selected, interactionSource = interaction, indication = null, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             Modifier.size(24.dp).clip(CircleShape)
-                .then(if (selected) Modifier.background(Brand.gradient) else Modifier.border(2.dp, Color(0xFFD4D4DC), CircleShape)),
+                .then(if (selected) Modifier.background(Brand.Pink) else Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)),
             contentAlignment = Alignment.Center,
         ) { if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(Color.White)) }
-        Column(Modifier.weight(1f).padding(start = 14.dp)) {
+        Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         price?.let {
             Text(
-                it, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold), textAlign = TextAlign.End,
+                it, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.End,
                 modifier = Modifier.padding(start = 8.dp).widthIn(max = 120.dp),
             )
         }
