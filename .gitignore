@@ -19,3 +19,4 @@ chat/.kotlin/
 chat/upload.properties
 *.jks
 *.keystore
+.claude/worktrees/

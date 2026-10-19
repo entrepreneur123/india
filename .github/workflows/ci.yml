@@ -66,3 +66,22 @@ jobs:
             chat/app/build/outputs/apk/
             chat/app/build/outputs/bundle/
             chat/app/build/reports/
+
+  chat-web:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: chat/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: chat/web/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Yaari web - typecheck and static build (demo backend)
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec tsc --noEmit
+          pnpm build

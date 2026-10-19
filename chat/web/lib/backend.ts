@@ -1,0 +1,151 @@
+export type Gender = 'male' | 'female' | 'other'
+export type Target = 'any' | 'male' | 'female' // anything but 'any' is paid
+
+export interface Post {
+  id: string
+  text: string
+  imageUrl?: string | null
+  createdAt: number
+}
+
+export interface Profile {
+  id: string
+  name: string
+  gender: Gender
+  age: number
+  city: string
+  bio: string
+  photoUrl?: string | null
+  country?: string | null /* ISO-2, show flag emoji */
+  posts: Post[]
+}
+
+export interface Message {
+  id: number
+  fromMe: boolean
+  text?: string | null
+  media?: { url: string; kind: 'image' | 'video' } | null
+  at: number
+}
+
+export interface RecentMatch {
+  matchId: string
+  partner: Profile
+  metAt: number
+  lastText?: string | null
+}
+
+export type ReportReason = 'nudity' | 'minor' | 'harassment' | 'fake' | 'other'
+export type FriendState = 'none' | 'requested' | 'incoming' | 'friends'
+
+export interface Friend {
+  profile: Profile
+  state: FriendState
+  threadId?: string | null
+}
+
+export interface Room {
+  id: string
+  title: string
+  emoji: string
+  online: number
+}
+
+export interface RoomMessage {
+  id: number
+  sender: Profile
+  fromMe: boolean
+  text: string
+  at: number
+}
+
+export interface Match {
+  id: string
+  partner: Profile
+}
+
+export type VideoStatus = 'none' | 'requested_by_me' | 'requested_by_partner' | 'accepted' | 'declined'
+
+export type MatchEvent =
+  | { type: 'message'; message: Message }
+  | { type: 'typing'; on: boolean }
+  | { type: 'video'; status: VideoStatus }
+  | { type: 'partner_left' }
+
+export interface Entitlements {
+  premium: boolean
+  genderPass: boolean
+}
+
+export interface NewProfile {
+  name: string
+  gender: Gender
+  birthDate: string /* YYYY-MM-DD */
+  city: string
+  bio: string
+  photo?: File | null
+}
+
+export type BackendErrorCode =
+  | 'exit_locked'
+  | 'premium_required'
+  | 'banned'
+  | 'under_18'
+  | 'slow_down'
+  | 'not_allowed'
+  | 'not_found'
+  | 'network'
+  | 'blocked'
+  | 'too_large'
+  | 'bad_media'
+  | 'video_not_configured'
+  | 'sms_unavailable'
+
+export class BackendError extends Error {
+  constructor(public code: string) {
+    super(code)
+    this.name = 'BackendError'
+  }
+}
+
+export interface Backend {
+  sendOtp(phone: string): Promise<void> // digits incl. country code, e.g. "919876543210"
+  verifyOtp(phone: string, code: string): Promise<boolean>
+  isSignedIn(): Promise<boolean>
+  myProfile(): Promise<Profile | null>
+  createProfile(p: NewProfile): Promise<Profile>
+  entitlements(): Promise<Entitlements>
+  signOut(): Promise<void>
+  deleteAccount(): Promise<void>
+  /** Phone number of the signed-in account, shown in Settings. */
+  myPhone(): Promise<string | null>
+  findMatch(target: Target): Promise<Match | null> // null = still queued, UI calls again every 2 s
+  cancelSearch(): Promise<void>
+  /** Ends a match the user never saw (search cancelled while it was being made), once the exit lock allows. */
+  abandon(matchId: string): void
+  subscribe(matchId: string, on: (e: MatchEvent) => void): () => void
+  history(matchId: string): Promise<Message[]>
+  sendTyping(matchId: string): void
+  send(matchId: string, text: string | null, media: File | null): Promise<Message>
+  leave(matchId: string): Promise<void> // throws BackendError('exit_locked') inside the lock window
+  report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>
+  requestVideo(matchId: string): Promise<void> // paid
+  answerVideo(matchId: string, accept: boolean): Promise<void>
+  endVideo(matchId: string): Promise<void>
+  videoToken(matchId: string): Promise<{ url: string; token: string } | null>
+  recents(): Promise<RecentMatch[]>
+  profile(userId: string): Promise<Profile | null>
+  addPost(text: string, image: File | null): Promise<Post>
+  updateProfile(name: string, city: string, bio: string, photo: File | null): Promise<Profile>
+  friends(): Promise<Friend[]>
+  requestFriend(userId: string): Promise<FriendState>
+  answerFriend(userId: string, accept: boolean): Promise<void>
+  removeFriend(userId: string): Promise<void>
+  friendThread(userId: string): Promise<string> // a matchId to open the chat in
+  rooms(): Promise<Room[]>
+  joinRoom(roomId: string): Promise<void> // call again every 30 s while open
+  leaveRoom(roomId: string): Promise<void>
+  roomHistory(roomId: string): Promise<RoomMessage[]>
+  subscribeRoom(roomId: string, on: (m: RoomMessage) => void): () => void
+  sendRoom(roomId: string, text: string): Promise<RoomMessage>
+}
