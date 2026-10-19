@@ -41,6 +41,23 @@ navigator.share({text:b.dataset.text}).catch(function(){})})});
 var W=document.querySelectorAll(".when[data-at]");function tick(){var now=Date.now();W.forEach(function(e){var at=Date.parse(e.dataset.at),m=Math.floor((at-now)/60000);
 if(m>=0){e.textContent=t("draw_in",Math.floor(m/60),m%60)}else if(m>-15){e.textContent="";e.appendChild(el("span","live",t("live")));e.appendChild(document.createTextNode(t("result_coming")))}
 else e.textContent=t("result_delayed")})}if(W.length){tick();setInterval(tick,30000)}
+// Number history: the 90-day feed is fetched only when someone searches.
+var feed=function(name){return document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/"+name)};
+var hf=document.getElementById("histForm"),H=null;
+if(hf)hf.addEventListener("submit",function(ev){ev.preventDefault();var out=document.getElementById("histRes"),v=document.getElementById("histNum").value;
+out.textContent="";if(!v.trim())return;var k=parse(v);if(!k){out.appendChild(box(t("ticket_invalid"),"no")[0]);return}
+(H?Promise.resolve(H):fetch(feed("history.json")).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){H=j;return j})).then(function(j){
+var days=j.days||90,hits=[];(j.draws||[]).forEach(function(d){var c=check(k,d);if(c&&c.w.length)hits.push(c)});
+if(!hits.length){var e=box(t("history_none",show(k),days),"no");out.appendChild(e[0]);return}
+var e=box(t(hits.length===1&&S.history_count_one?"history_count_one":"history_count",hits.length,days)),ul=el("ul","hl");
+hits.forEach(function(c){var x=c.w[0];ul.appendChild(el("li",null,c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)+" · "+
+c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)+(x.nf?" *":"")))});e[1].appendChild(ul);out.appendChild(e[0])
+}).catch(function(){out.appendChild(box(t("history_unavailable"),"no")[0])})});
+// Old results: jump to a date we have a page for.
+var df=document.getElementById("dateForm");
+if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;
+var a=document.querySelector('a[href$="/result/'+p[2]+"-"+p[1]+"-"+p[0]+'/"]');if(a)location.href=a.getAttribute("href");
+else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
 if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
