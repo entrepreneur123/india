@@ -1,11 +1,14 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useState } from 'react'
 import { EyeOff, Flag, ShieldCheck } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
-import { Aurora } from '@/components/ui/ambient'
+import type { TKey } from '@/lib/i18n'
+import { Rich, useI18n } from '@/components/i18n'
 import { Logo } from '@/components/ui/bits'
+import { LanguageSelect } from '@/components/language-select'
 import { HeroPreview } from './hero-preview'
 import { PhoneStep } from './phone-step'
 import { OtpStep } from './otp-step'
@@ -13,16 +16,16 @@ import { ProfileStep } from './profile-step'
 
 type Step = 'phone' | 'otp' | 'profile'
 
-const HOW = [
-  { title: 'Verify your number', body: 'One quick code. No passwords, no email.' },
-  { title: 'Tap Start', body: 'We pair you with someone random, anywhere on Earth.' },
-  { title: 'Keep the good ones', body: 'Add friends, see their posts, message them anytime.' },
+const HOW: { title: TKey; body: TKey }[] = [
+  { title: 'auth.how1Title', body: 'auth.how1Body' },
+  { title: 'auth.how2Title', body: 'auth.how2Body' },
+  { title: 'auth.how3Title', body: 'auth.how3Body' },
 ]
 
-const SAFETY = [
-  { icon: ShieldCheck, text: 'Adults only (18+), one account per phone number' },
-  { icon: Flag, text: 'Report anyone in one tap, instantly, from any chat' },
-  { icon: EyeOff, text: 'Photos and videos in chats stay blurred until you choose to look' },
+const SAFETY: { icon: typeof ShieldCheck; text: TKey }[] = [
+  { icon: ShieldCheck, text: 'auth.safety1' },
+  { icon: Flag, text: 'auth.safety2' },
+  { icon: EyeOff, text: 'auth.safety3' },
 ]
 
 export function AuthScreen({
@@ -34,66 +37,49 @@ export function AuthScreen({
   onPhoneVerified: (phone: string) => void
   onComplete: (p: Profile | null) => void
 }) {
+  const { t } = useI18n()
   const [step, setStep] = useState<Step>(initialStep)
   const [phone, setPhone] = useState<{ digits: string; display: string } | null>(null)
 
   return (
-    <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[1.15fr_1fr]">
-      <section className="theme-night relative isolate overflow-hidden bg-background px-6 pt-8 pb-14 text-foreground sm:px-10 lg:flex lg:min-h-dvh lg:flex-col lg:px-14 lg:py-10">
-        <Aurora />
-        <header className="flex items-center justify-between">
+    <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative bg-muted px-5 pt-6 pb-12 sm:px-10 lg:flex lg:min-h-dvh lg:flex-col lg:px-14 lg:py-10">
+        <header className="flex items-center justify-between gap-3">
           <Logo />
-          <span className="rounded-full bg-ink-foreground/8 px-3 py-1.5 text-xs font-semibold ring-1 ring-ink-foreground/10">
-            18+ · phone-verified
-          </span>
+          <LanguageSelect className="bg-background" />
         </header>
 
-        <div className="mt-10 grid gap-10 lg:my-auto 2xl:grid-cols-[1fr_minmax(0,400px)] 2xl:items-center 2xl:gap-10">
+        <div className="mt-10 grid gap-10 lg:my-auto 2xl:grid-cols-[1fr_minmax(0,380px)] 2xl:items-center">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <motion.h1
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl 2xl:text-6xl"
-              >
-                Start chatting with <span className="text-brand">the whole world.</span>
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="max-w-md text-base leading-relaxed text-muted-foreground text-pretty"
-              >
-                Random 1:1 chats with people around the world. Text first, video only when you both say yes.
-              </motion.p>
+              <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                {t('auth.badge')}
+              </span>
+              <h1 className="text-[32px] leading-[1.15] font-bold tracking-tight text-balance sm:text-5xl">
+                <Rich text={t('auth.headline')} mark={(s) => <span className="text-primary-text">{s}</span>} />
+              </h1>
+              <p className="max-w-md text-base leading-relaxed text-pretty text-muted-foreground">{t('auth.intro')}</p>
             </div>
 
             <ol className="flex flex-col gap-4">
               {HOW.map((s, i) => (
-                <motion.li
-                  key={s.title}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + i * 0.08, duration: 0.5 }}
-                  className="flex gap-4"
-                >
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-primary-foreground">
+                <li key={s.title} className="flex gap-4">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-background text-sm font-semibold text-primary-text ring-1 ring-border">
                     {i + 1}
                   </span>
-                  <div className="flex flex-col gap-0.5">
-                    <p className="text-[15px] font-semibold">{s.title}</p>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <p className="text-[15px] font-semibold">{t(s.title)}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{t(s.body)}</p>
                   </div>
-                </motion.li>
+                </li>
               ))}
             </ol>
 
             <ul className="hidden flex-col gap-2.5 border-t border-border pt-6 sm:flex">
               {SAFETY.map(({ icon: Icon, text }) => (
                 <li key={text} className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Icon className="size-4 shrink-0 text-accent" aria-hidden />
-                  {text}
+                  <Icon className="size-4 shrink-0 text-primary-text" aria-hidden />
+                  {t(text)}
                 </li>
               ))}
             </ul>
@@ -104,15 +90,15 @@ export function AuthScreen({
         </div>
       </section>
 
-      <section className="relative -mt-6 flex items-start justify-center rounded-t-[32px] bg-background px-5 pt-8 pb-12 sm:px-10 lg:mt-0 lg:items-center lg:rounded-none lg:py-10">
-        <div className="w-full max-w-[420px]">
-          <AnimatePresence mode="wait">
-            <motion.div
+      <section className="relative -mt-6 flex items-start justify-center rounded-t-[28px] bg-background px-5 pt-8 pb-12 sm:px-10 lg:mt-0 lg:items-center lg:rounded-none lg:py-10">
+        <div className="w-full max-w-[400px]">
+          <AnimatePresence mode="wait" initial={false}>
+            <m.div
               key={step}
-              initial={{ opacity: 0, x: 24 }}
+              initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -24 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ type: 'tween', duration: 0.18, ease: [0.2, 0, 0, 1] }}
             >
               {step === 'phone' ? (
                 <PhoneStep
@@ -135,7 +121,7 @@ export function AuthScreen({
               ) : (
                 <ProfileStep onCreated={onComplete} />
               )}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
           <StepDots step={step} />
         </div>
@@ -145,16 +131,16 @@ export function AuthScreen({
 }
 
 function StepDots({ step }: { step: Step }) {
+  const { t } = useI18n()
   const order: Step[] = ['phone', 'otp', 'profile']
   const idx = order.indexOf(step)
   return (
-    <div className="mt-8 flex justify-center gap-1.5" aria-label={`Step ${idx + 1} of 3`} role="img">
+    <div className="mt-8 flex justify-center gap-1.5" aria-label={t('auth.step', { n: idx + 1, total: 3 })} role="img">
       {order.map((s, i) => (
-        <motion.span
+        <span
           key={s}
-          className="h-1.5 rounded-full bg-primary"
-          animate={{ width: i === idx ? 24 : 6, opacity: i <= idx ? 1 : 0.25 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          className="h-1.5 rounded-full bg-primary transition-[width,opacity] duration-200"
+          style={{ width: i === idx ? 24 : 6, opacity: i <= idx ? 1 : 0.25 }}
         />
       ))}
     </div>

@@ -13,33 +13,43 @@ interface AvatarProps {
   className?: string
 }
 
+// Letter avatars pick one of these by name; each keeps white text at ≥ 4.5:1.
+const TONES = ['#c8174a', '#1a73e8', '#188038', '#a142f4', '#c5221f', '#007b83', '#b06000', '#5f6368']
+
+function tone(name: string) {
+  let h = 0
+  for (const ch of name) h = (h * 31 + ch.codePointAt(0)!) | 0
+  return TONES[Math.abs(h) % TONES.length]
+}
+
 export function Avatar({ name, src, size = 40, country, online, className }: AvatarProps) {
   const [failed, setFailed] = useState<string | null>(null) // the src that failed; a new photo gets a new try
-  const initials = name
-    .split(/\s+/)
-    .map((w) => w[0])
+  const initials = [...name.trim()]
+    .slice(0, 1)
     .join('')
-    .slice(0, 2)
     .toUpperCase()
   const showImage = src && failed !== src
   const badge = Math.max(14, Math.round(size * 0.36))
 
   return (
     <span className={cn('relative inline-flex shrink-0', className)} style={{ width: size, height: size }}>
-      <span className="block size-full overflow-hidden rounded-full bg-brand">
+      <span className="block size-full overflow-hidden rounded-full" style={showImage ? undefined : { background: tone(name) }}>
         {showImage ? (
           <img
             src={src}
             alt=""
-            className="size-full object-cover"
+            width={size}
+            height={size}
+            className="size-full bg-muted object-cover"
             loading="lazy"
+            decoding="async"
             draggable={false}
             onError={() => setFailed(src)}
           />
         ) : (
           <span
-            className="grid size-full place-items-center font-bold text-primary-foreground"
-            style={{ fontSize: Math.max(11, size * 0.38) }}
+            className="grid size-full place-items-center font-semibold text-white"
+            style={{ fontSize: Math.max(11, size * 0.42) }}
             aria-hidden
           >
             {initials}
@@ -57,7 +67,6 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
       ) : null}
       {online ? (
         <span className="absolute top-0 right-0 flex size-3" aria-hidden>
-          <span className="absolute inline-flex size-full animate-ping-soft rounded-full bg-online" />
           <span className="relative inline-flex size-3 rounded-full bg-online ring-2 ring-card" />
         </span>
       ) : null}

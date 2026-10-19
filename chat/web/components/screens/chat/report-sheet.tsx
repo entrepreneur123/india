@@ -5,17 +5,19 @@ import { ChevronRight } from 'lucide-react'
 import type { Profile, ReportReason } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
+import type { TKey } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 
-const REASONS: { value: ReportReason; label: string; detail: string }[] = [
-  { value: 'nudity', label: 'Nudity or sexual content', detail: 'Explicit photos, video or requests' },
-  { value: 'minor', label: 'Looks under 18', detail: 'We act on these first' },
-  { value: 'harassment', label: 'Harassment or hate', detail: 'Abuse, threats, slurs' },
-  { value: 'fake', label: 'Fake profile or scam', detail: 'Impersonation, spam, money requests' },
-  { value: 'other', label: 'Something else', detail: 'Anything that felt wrong' },
+const REASONS: { value: ReportReason; label: TKey; detail: TKey }[] = [
+  { value: 'nudity', label: 'report.nudity', detail: 'report.nudityDetail' },
+  { value: 'minor', label: 'report.minor', detail: 'report.minorDetail' },
+  { value: 'harassment', label: 'report.harassment', detail: 'report.harassmentDetail' },
+  { value: 'fake', label: 'report.fake', detail: 'report.fakeDetail' },
+  { value: 'other', label: 'report.other', detail: 'report.otherDetail' },
 ]
 
 export function ReportSheet({
@@ -33,6 +35,7 @@ export function ReportSheet({
 }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const { reported } = useApp()
   const [busy, setBusy] = useState<ReportReason | null>(null)
 
@@ -45,7 +48,7 @@ export function ReportSheet({
         // "not_found": the account was already deleted — there is nothing left to report, the chat is over.
         if (errorCode(err) !== 'not_found') throw err
       }
-      toast.show(`Thanks. We’ll review ${partner.name}’s account.`, 'success')
+      toast.show(t('report.thanks', { name: partner.name }), 'success')
       onClose()
       onReported?.()
       reported(partner.id)
@@ -57,14 +60,8 @@ export function ReportSheet({
   }
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      variant="sheet"
-      title={`Report ${partner.name}`}
-      description="Reports are anonymous. They won’t know it was you."
-    >
-      <ul className="flex flex-col gap-1 p-3 pb-5">
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('report.title', { name: partner.name })} description={t('report.desc')}>
+      <ul className="flex flex-col p-3 pb-5">
         {REASONS.map((r) => (
           <li key={r.value}>
             <button
@@ -72,15 +69,15 @@ export function ReportSheet({
               disabled={busy !== null}
               onClick={() => void report(r.value)}
               className={cn(
-                'flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors hover:bg-muted disabled:opacity-60',
+                'flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60',
                 busy === r.value && 'bg-muted',
               )}
             >
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className={cn('text-[15px] font-semibold', r.value === 'minor' && 'text-destructive')}>{r.label}</span>
-                <span className="text-xs text-muted-foreground">{r.detail}</span>
+                <span className={cn('text-[15px] font-semibold', r.value === 'minor' && 'text-destructive')}>{t(r.label)}</span>
+                <span className="text-xs text-muted-foreground">{t(r.detail)}</span>
               </span>
-              <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
+              <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
             </button>
           </li>
         ))}

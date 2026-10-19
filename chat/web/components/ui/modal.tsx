@@ -1,10 +1,12 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { createContext, useContext, useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/components/i18n'
 
 interface ModalProps {
   open: boolean
@@ -38,6 +40,7 @@ export function Modal({
   dismissible = true,
   night,
 }: ModalProps) {
+  const { t } = useI18n()
   const inheritedNight = useContext(NightContext)
   const isNight = night ?? inheritedNight
   const titleId = useId()
@@ -102,28 +105,28 @@ export function Modal({
             isNight && 'theme-night',
           )}
         >
-          <motion.div
-            className="absolute inset-0 bg-overlay backdrop-blur-sm"
+          <m.div
+            className="absolute inset-0 bg-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             onClick={dismissible ? onClose : undefined}
             aria-hidden
           />
-          <motion.div
+          <m.div
             ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             aria-describedby={description ? descId : undefined}
             tabIndex={-1}
-            initial={isSheet ? { y: '100%', opacity: 0.6 } : { opacity: 0, scale: 0.94, y: 12 }}
-            animate={isSheet ? { y: 0, opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
-            exit={isSheet ? { y: '100%', opacity: 0.6 } : { opacity: 0, scale: 0.96, y: 8 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+            initial={isSheet ? { y: 48, opacity: 0 } : { opacity: 0, scale: 0.97 }}
+            animate={isSheet ? { y: 0, opacity: 1 } : { opacity: 1, scale: 1 }}
+            exit={isSheet ? { y: 32, opacity: 0 } : { opacity: 0, scale: 0.98 }}
+            transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
             className={cn(
-              'relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden bg-card text-card-foreground shadow-2xl outline-none',
+              'relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden bg-card text-card-foreground shadow-e3 outline-none',
               isSheet
                 ? 'rounded-t-[28px] pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-[28px]'
                 : 'max-w-md rounded-[28px]',
@@ -152,7 +155,7 @@ export function Modal({
                     type="button"
                     onClick={onClose}
                     className="-mr-2 grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    aria-label="Close"
+                    aria-label={t('common.close')}
                   >
                     <X className="size-5" aria-hidden />
                   </button>
@@ -160,7 +163,7 @@ export function Modal({
               </div>
             )}
             <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">{children}</div>
-          </motion.div>
+          </m.div>
         </div>
       ) : null}
     </AnimatePresence>,

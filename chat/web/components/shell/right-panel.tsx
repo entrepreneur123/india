@@ -1,19 +1,21 @@
 'use client'
 
-import { motion } from 'motion/react'
 import useSWR from 'swr'
 import { MessageCircle } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
-import { compactNumber, flagEmoji } from '@/lib/format'
+import { flagEmoji } from '@/lib/format'
+import { roomTitle } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 
 export function RightPanel({ className, onOpenRoom }: { className?: string; onOpenRoom: (id: string) => void }) {
   const backend = useBackend()
   const { t, openProfile, openThread, entitlements, openPaywall } = useApp()
+  const { plural, num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   const { data: rooms } = useSWR('rooms', () => backend.rooms(), { refreshInterval: 30_000 })
 
@@ -25,20 +27,20 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
         'sticky top-0 h-dvh w-80 shrink-0 flex-col gap-8 overflow-y-auto border-l border-border bg-background px-5 py-6 scrollbar-thin',
         className,
       )}
-      aria-label="Activity"
+      aria-label={t('panel.activity')}
     >
-      <section aria-labelledby="panel-friends" className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 id="panel-friends" className="text-sm font-bold tracking-tight">
+      <section aria-labelledby="panel-friends" className="flex flex-col gap-2">
+        <div className="flex items-center justify-between px-2">
+          <h2 id="panel-friends" className="text-sm font-semibold">
             {t('panel.friends')}
           </h2>
           {friendList ? (
-            <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              {friendList.length} {friendList.length === 1 ? 'friend' : 'friends'}
+            <span className="text-xs text-muted-foreground">
+              {plural(friendList.length, 'panel.friendCount.one', 'panel.friendCount.other')}
             </span>
           ) : null}
         </div>
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col">
           {friendList === null
             ? Array.from({ length: 3 }, (_, i) => (
                 <li key={i} className="flex items-center gap-3 p-2">
@@ -52,21 +54,15 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
             : friendList.length === 0
               ? (
                   <li className="rounded-2xl bg-muted px-4 py-5 text-center text-xs leading-relaxed text-muted-foreground">
-                    Friends you add from chats will show up here.
+                    {t('panel.noFriends')}
                   </li>
                 )
-              : friendList.map((f, i) => (
-                  <motion.li
-                    key={f.profile.id}
-                    initial={{ opacity: 0, x: 12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="group flex items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-muted"
-                  >
+              : friendList.map((f) => (
+                  <li key={f.profile.id} className="group flex items-center gap-3 rounded-xl p-2 transition-colors duration-150 hover:bg-muted">
                     <button
                       type="button"
                       onClick={() => openProfile(f.profile.id)}
-                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                      className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left"
                     >
                       <Avatar name={f.profile.name} src={f.profile.photoUrl} size={40} />
                       <span className="min-w-0">
@@ -79,60 +75,53 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
                     <Button
                       size="icon-sm"
                       variant="ghost"
-                      className="opacity-70 group-hover:opacity-100"
                       onClick={() => openThread(f.profile)}
-                      aria-label={`Message ${f.profile.name}`}
+                      aria-label={t('panel.message', { name: f.profile.name })}
                     >
                       <MessageCircle className="size-4.5" aria-hidden />
                     </Button>
-                  </motion.li>
+                  </li>
                 ))}
         </ul>
       </section>
 
-      <section aria-labelledby="panel-rooms" className="flex flex-col gap-3">
-        <h2 id="panel-rooms" className="text-sm font-bold tracking-tight">
+      <section aria-labelledby="panel-rooms" className="flex flex-col gap-2">
+        <h2 id="panel-rooms" className="px-2 text-sm font-semibold">
           {t('panel.rooms')}
         </h2>
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col">
           {!rooms
-            ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-12 w-full rounded-2xl" />)
+            ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="my-1 h-12 w-full" />)
             : [...rooms]
                 .sort((a, b) => b.online - a.online)
                 .slice(0, 5)
                 .map((r) => (
                   <li key={r.id}>
-                    <motion.button
+                    <button
                       type="button"
-                      whileHover={{ x: 3 }}
                       onClick={() => onOpenRoom(r.id)}
-                      className="flex w-full items-center gap-3 rounded-2xl p-2 text-left transition-colors hover:bg-muted"
+                      className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-muted"
                     >
                       <span className="grid size-10 place-items-center rounded-xl bg-muted text-xl" aria-hidden>
                         {r.emoji}
                       </span>
-                      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.title}</span>
-                      <span className="flex items-center gap-1.5 text-xs font-medium tabular-nums text-muted-foreground">
+                      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{roomTitle(r, t)}</span>
+                      <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                         <PresenceDot />
-                        {compactNumber(r.online)}
+                        {num(r.online)}
                       </span>
-                    </motion.button>
+                    </button>
                   </li>
                 ))}
         </ul>
       </section>
 
       {!entitlements.premium ? (
-        <div className="relative mt-auto overflow-hidden rounded-3xl bg-ink p-5 text-ink-foreground">
-          <div
-            className="pointer-events-none absolute -top-16 -right-10 size-44 animate-drift rounded-full opacity-60 blur-3xl"
-            style={{ background: 'radial-gradient(circle, #ff3d68, transparent 65%)' }}
-            aria-hidden
-          />
-          <p className="relative text-xs font-bold tracking-widest text-accent uppercase">Yaari Plus</p>
-          <p className="relative mt-2 text-base font-bold text-balance">{t('panel.plusTitle')}</p>
-          <p className="relative mt-1 text-sm leading-relaxed text-ink-foreground/70">{t('panel.plusBody')}</p>
-          <Button variant="brand" size="sm" className="relative mt-4" onClick={openPaywall}>
+        <div className="mt-auto rounded-2xl border border-border bg-card p-5">
+          <p className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('common.plus')}</p>
+          <p className="mt-2 text-base font-semibold text-balance">{t('panel.plusTitle')}</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('panel.plusBody')}</p>
+          <Button variant="brand" size="sm" className="mt-4" onClick={openPaywall}>
             {t('panel.plusCta')}
           </Button>
         </div>

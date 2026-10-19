@@ -6,6 +6,7 @@ import type { Gender, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { ageFromBirthDate, maxBirthDate, minBirthDate } from '@/lib/format'
 import { COMMUNITY_RULES } from '@/lib/config'
+import { useI18n } from '@/components/i18n'
 import { Button } from '@/components/ui/pressable'
 import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { useToast } from '@/components/ui/toast'
@@ -16,6 +17,7 @@ const BIO_MAX = 150
 export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const [photo, setPhoto] = useState<File | null>(null)
   const [name, setName] = useState('')
   const [gender, setGender] = useState<Gender | ''>('')
@@ -27,7 +29,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const [agreed, setAgreed] = useState(false)
 
   const age = birthDate ? ageFromBirthDate(birthDate) : null
-  const ageError = birthDate && (age === null || age < 18) ? 'You must be 18 or older to use yaari.' : null
+  const ageError = birthDate && (age === null || age < 18) ? t('pf.under18') : null
   const valid = name.trim().length >= 1 && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
 
   const submit = async (e: FormEvent) => {
@@ -40,7 +42,8 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         name: name.trim(),
         gender,
         birthDate,
-        city: city.trim() || 'India',
+        // No city typed: leave it empty rather than guess a country (users come from India, Bangladesh, Brazil…).
+        city: city.trim(),
         bio: bio.trim(),
         photo,
       })
@@ -55,80 +58,98 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   return (
     <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-extrabold tracking-tight">Make your profile</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground">This is what people see when you match.</p>
+        <h2 className="text-2xl font-bold tracking-tight">{t('pf.title')}</h2>
+        <p className="text-sm leading-relaxed text-muted-foreground">{t('pf.body')}</p>
       </div>
 
       <PhotoPicker file={photo} onChange={setPhoto} name={name} />
 
-      <Field label="Name" htmlFor="pf-name" error={touched && name.trim().length < 1 ? 'Add your first name' : null}>
-        <TextInput id="pf-name" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="Your first name" />
+      <Field label={t('pf.name')} htmlFor="pf-name" error={touched && name.trim().length < 1 ? t('pf.nameError') : null}>
+        <TextInput
+          id="pf-name"
+          value={name}
+          maxLength={30}
+          onChange={(e) => setName(e.target.value)}
+          autoComplete="given-name"
+          placeholder={t('pf.namePlaceholder')}
+        />
       </Field>
 
       <div className="flex flex-col gap-1.5">
         <span id="pf-gender" className="text-sm font-semibold">
-          I am
+          {t('pf.iam')}
         </span>
         <Segmented<Gender | ''>
-          label="Gender"
+          label={t('pf.gender')}
           value={gender}
           onChange={setGender}
           className="w-full"
           options={[
-            { value: 'female', label: 'Woman' },
-            { value: 'male', label: 'Man' },
-            { value: 'other', label: 'Other' },
+            { value: 'female', label: t('pf.woman') },
+            { value: 'male', label: t('pf.man') },
+            { value: 'other', label: t('pf.other') },
           ]}
         />
         {touched && gender === '' ? (
           <p className="text-xs font-medium text-destructive" role="alert">
-            Choose one
+            {t('pf.chooseOne')}
           </p>
         ) : null}
       </div>
 
-      <Field label="Birth date" htmlFor="pf-dob" error={ageError ?? (touched && !birthDate ? 'Add your birth date' : null)} hint={age !== null && age >= 18 ? `You’re ${age}` : undefined}>
+      <Field
+        label={t('pf.birth')}
+        htmlFor="pf-dob"
+        error={ageError ?? (touched && !birthDate ? t('pf.birthError') : null)}
+        hint={age !== null && age >= 18 ? t('pf.age', { age }) : undefined}
+      >
         <TextInput id="pf-dob" type="date" value={birthDate} max={maxBirthDate()} min={minBirthDate()} onChange={(e) => setBirthDate(e.target.value)} />
       </Field>
 
-      <p className="flex gap-2.5 rounded-2xl bg-accent/10 px-4 py-3 text-xs leading-relaxed text-foreground">
-        <Info className="mt-px size-4 shrink-0 text-accent" aria-hidden />
-        Gender and birth date can’t be changed later, so make sure they’re right.
+      <p className="flex gap-2.5 rounded-xl bg-primary-soft px-4 py-3 text-xs leading-relaxed text-foreground">
+        <Info className="mt-px size-4 shrink-0 text-primary-text" aria-hidden />
+        {t('pf.fixed')}
       </p>
 
-      <Field label="City (optional)" htmlFor="pf-city">
-        <TextInput id="pf-city" value={city} maxLength={30} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" placeholder="e.g. Pune" />
+      <Field label={t('pf.city')} htmlFor="pf-city">
+        <TextInput
+          id="pf-city"
+          value={city}
+          maxLength={30}
+          onChange={(e) => setCity(e.target.value)}
+          autoComplete="address-level2"
+          placeholder={t('pf.cityPlaceholder')}
+        />
       </Field>
 
       <Field
-        label="Bio"
+        label={t('pf.bio')}
         htmlFor="pf-bio"
         trailing={<span className="text-xs tabular-nums text-muted-foreground">{bio.length}/{BIO_MAX}</span>}
       >
-        <TextArea id="pf-bio" value={bio} maxLength={BIO_MAX} onChange={(e) => setBio(e.target.value)} placeholder="Chai or coffee? What are you into?" />
+        <TextArea id="pf-bio" value={bio} maxLength={BIO_MAX} onChange={(e) => setBio(e.target.value)} placeholder={t('pf.bioPlaceholder')} />
       </Field>
 
-      <details className="rounded-2xl bg-muted px-4 py-3 text-sm">
-        <summary className="cursor-pointer font-semibold">Community rules</summary>
+      <details className="rounded-xl border border-border px-4 py-3 text-sm">
+        <summary className="cursor-pointer font-semibold">{t('pf.rules')}</summary>
         <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-muted-foreground">
           {COMMUNITY_RULES.map((r) => (
-            <li key={r}>{r}</li>
+            <li key={r}>{t(r)}</li>
           ))}
         </ul>
       </details>
       <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed">
-        <input
-          type="checkbox"
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 size-5 shrink-0 accent-[#ff3d68]"
-        />
-        <span>I am 18 or older and I agree to the community rules.</span>
+        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" />
+        <span>{t('pf.agree')}</span>
       </label>
-      {touched && !agreed ? <p className="-mt-3 text-xs font-medium text-destructive" role="alert">Please accept the community rules.</p> : null}
+      {touched && !agreed ? (
+        <p className="-mt-3 text-xs font-medium text-destructive" role="alert">
+          {t('pf.agreeError')}
+        </p>
+      ) : null}
 
       <Button type="submit" variant="brand" size="lg" loading={busy} className="w-full">
-        Start chatting
+        {t('pf.submit')}
       </Button>
     </form>
   )

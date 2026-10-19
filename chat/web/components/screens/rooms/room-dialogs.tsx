@@ -1,39 +1,17 @@
 'use client'
 
-import { motion } from 'motion/react'
 import { useEffect, useId, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { Lock, Minus, Plus } from 'lucide-react'
-import type { NewRoom, Room, RoomCategory, Target } from '@/lib/backend'
+import type { NewRoom, RoomCategory, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { useI18n } from '@/components/i18n'
 import { Field, Segmented, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-
-export const CATEGORIES: { id: RoomCategory; label: string; emoji: string }[] = [
-  { id: 'chat', label: 'Just chat', emoji: '💬' },
-  { id: 'friends', label: 'Make friends', emoji: '🤝' },
-  { id: 'language', label: 'Language', emoji: '🗣️' },
-  { id: 'music', label: 'Music', emoji: '🎧' },
-  { id: 'movies', label: 'Movies & TV', emoji: '🎬' },
-  { id: 'gaming', label: 'Gaming', emoji: '🎮' },
-  { id: 'sports', label: 'Sports', emoji: '⚽' },
-  { id: 'study', label: 'Study', emoji: '🎓' },
-  { id: 'travel', label: 'Travel', emoji: '✈️' },
-  { id: 'night', label: 'Late night', emoji: '🌙' },
-]
-
-/** Short labels for who may join a user room, e.g. ["Women only", "Ages 20–30", "Private"]. */
-export function roomConditions(r: Room): string[] {
-  const out: string[] = []
-  if (r.genderRule === 'female') out.push('Women only')
-  if (r.genderRule === 'male') out.push('Men only')
-  if (r.minAge > 18 || r.maxAge < 100) out.push(r.maxAge >= 100 ? `Ages ${r.minAge}+` : `Ages ${r.minAge}–${r.maxAge}`)
-  if (r.isPrivate) out.push('Private')
-  return out
-}
+import { CATEGORIES, categoryLabel } from './room-text'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
 
@@ -48,6 +26,7 @@ export function CreateRoomDialog({
 }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const { mutate } = useSWRConfig()
   const id = useId()
   const [title, setTitle] = useState('')
@@ -88,87 +67,102 @@ export function CreateRoomDialog({
   }
 
   return (
-    <Modal open={open} onClose={onClose} variant="sheet" title="Create a room" description="You’re the host. Opening a new room closes your previous one.">
-      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-5 p-6 pt-4">
-        <Field label="Room name" htmlFor={`${id}-t`} trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/40</span>}>
-          <TextInput id={`${id}-t`} value={title} maxLength={40} placeholder="e.g. Sunday cricket chat" onChange={(e) => setTitle(e.target.value)} data-autofocus />
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('create.title')} description={t('create.desc')}>
+      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-6 p-6 pt-4">
+        <Field
+          label={t('create.name')}
+          htmlFor={`${id}-t`}
+          trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/40</span>}
+        >
+          <TextInput
+            id={`${id}-t`}
+            value={title}
+            maxLength={40}
+            placeholder={t('create.namePlaceholder')}
+            onChange={(e) => setTitle(e.target.value)}
+            data-autofocus
+          />
         </Field>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold">Category</span>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Category">
-            {CATEGORIES.map((c) => (
-              <motion.button
-                key={c.id}
-                type="button"
-                role="radio"
-                aria-checked={category === c.id}
-                whileTap={{ scale: 0.94 }}
-                onClick={() => setCategory(c.id)}
-                className={cn(
-                  'flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold ring-1 transition-colors',
-                  category === c.id ? 'bg-brand text-primary-foreground ring-transparent' : 'bg-card ring-border hover:bg-muted',
-                )}
-              >
-                <span aria-hidden>{c.emoji}</span> {c.label}
-              </motion.button>
-            ))}
+          <span className="text-sm font-semibold" id={`${id}-cat`}>
+            {t('create.category')}
+          </span>
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby={`${id}-cat`}>
+            {CATEGORIES.map((c) => {
+              const on = category === c.id
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setCategory(c.id)}
+                  className={cn(
+                    'flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors duration-150',
+                    on ? 'border-transparent bg-primary-soft text-primary-text' : 'border-input bg-card hover:bg-muted',
+                  )}
+                >
+                  <span aria-hidden>{c.emoji}</span> {categoryLabel(c.id, t)}
+                </button>
+              )
+            })}
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm font-semibold" id={`${id}-max`}>
-            Max people
+            {t('create.max')}
           </span>
-          <div className="flex items-center gap-2" aria-labelledby={`${id}-max`}>
-            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.max(2, m - 1))} aria-label="Fewer people" disabled={max <= 2}>
+          <div className="flex items-center gap-2" role="group" aria-labelledby={`${id}-max`}>
+            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.max(2, m - 1))} aria-label={t('create.fewer')} disabled={max <= 2}>
               <Minus className="size-4" aria-hidden />
             </Button>
-            <span className="w-8 text-center text-lg font-bold tabular-nums" aria-live="polite">
+            <span className="w-8 text-center text-lg font-semibold tabular-nums" aria-live="polite">
               {max}
             </span>
-            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.min(50, m + 1))} aria-label="More people" disabled={max >= 50}>
+            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.min(50, m + 1))} aria-label={t('create.more')} disabled={max >= 50}>
               <Plus className="size-4" aria-hidden />
             </Button>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold">Who can join</span>
+          <span className="text-sm font-semibold">{t('create.who')}</span>
           <Segmented
             className="w-full"
-            label="Who can join"
+            label={t('create.who')}
             value={gender}
             onChange={setGender}
             options={[
-              { value: 'any', label: 'Everyone' },
-              { value: 'female', label: 'Women' },
-              { value: 'male', label: 'Men' },
+              { value: 'any', label: t('lobby.everyone') },
+              { value: 'female', label: t('lobby.women') },
+              { value: 'male', label: t('lobby.men') },
             ]}
           />
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold">Ages</span>
+          <span className="text-sm font-semibold">{t('create.ages')}</span>
           <div className="flex items-center gap-3">
-            <AgeSelect label="Youngest" value={minAge} onChange={(v) => { setMinAge(v); if (v > maxAge) setMaxAge(v) }} />
+            <AgeSelect label={t('create.youngest')} value={minAge} onChange={(v) => { setMinAge(v); if (v > maxAge) setMaxAge(v) }} />
             <span className="text-muted-foreground">–</span>
-            <AgeSelect label="Oldest" value={maxAge} onChange={(v) => { setMaxAge(v); if (v < minAge) setMinAge(v) }} />
+            <AgeSelect label={t('create.oldest')} value={maxAge} onChange={(v) => { setMaxAge(v); if (v < minAge) setMinAge(v) }} />
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-start gap-3 rounded-2xl bg-muted p-4">
-          <input type="checkbox" checked={isPrivate} onChange={(e) => setPrivate(e.target.checked)} className="mt-0.5 size-5 accent-[#ff3d68]" />
+        <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4">
+          <input type="checkbox" checked={isPrivate} onChange={(e) => setPrivate(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" />
           <span className="text-sm leading-relaxed">
             <span className="flex items-center gap-1.5 font-semibold">
-              <Lock className="size-3.5" aria-hidden /> Private room
+              <Lock className="size-3.5" aria-hidden /> {t('create.private')}
             </span>
-            <span className="text-muted-foreground">Hidden from the list. People join only with the room code you share.</span>
+            <span className="text-muted-foreground">{t('create.privateBody')}</span>
           </span>
         </label>
 
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!valid}>
-          Create room
+          {t('create.submit')}
         </Button>
       </form>
     </Modal>
@@ -181,7 +175,7 @@ function AgeSelect({ label, value, onChange }: { label: string; value: number; o
       aria-label={label}
       value={value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className="h-11 flex-1 rounded-2xl border border-input bg-card px-3 text-[15px] focus:border-primary focus:outline-none"
+      className="h-11 flex-1 rounded-xl border border-input bg-card px-3 text-[15px] focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
     >
       {AGES.map((a) => (
         <option key={a} value={a}>
@@ -195,6 +189,7 @@ function AgeSelect({ label, value, onChange }: { label: string; value: number; o
 export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onClose: () => void; onJoined: (id: string) => void }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const { mutate } = useSWRConfig()
   const id = useId()
   const [code, setCode] = useState('')
@@ -220,10 +215,10 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Enter a room code" description="Ask the host for the 6-character code.">
+    <Modal open={open} onClose={onClose} title={t('join.title')} description={t('join.desc')}>
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-4 p-6 pt-4">
         <label htmlFor={`${id}-c`} className="sr-only">
-          Room code
+          {t('join.label')}
         </label>
         <input
           id={`${id}-c`}
@@ -234,10 +229,11 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
           autoCapitalize="characters"
           spellCheck={false}
           data-autofocus
-          className="h-16 w-full rounded-2xl border border-input bg-card text-center font-mono text-3xl font-bold tracking-[0.4em] focus:border-primary focus:shadow-[0_0_0_4px_rgb(255_61_104/0.14)] focus:outline-none"
+          dir="ltr"
+          className="h-16 w-full rounded-xl border border-input bg-card text-center font-mono text-3xl font-bold tracking-[0.4em] focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
         />
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={code.length !== 6}>
-          Join room
+          {t('join.submit')}
         </Button>
       </form>
     </Modal>

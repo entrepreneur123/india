@@ -1,33 +1,27 @@
 'use client'
 
-import { motion } from 'motion/react'
-import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { forwardRef, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function Skeleton({ className }: { className?: string }) {
-  return (
-    <div className={cn('relative overflow-hidden rounded-xl bg-muted', className)} aria-hidden>
-      <div className="absolute inset-y-0 left-0 w-1/2 animate-shimmer bg-gradient-to-r from-transparent via-card/60 to-transparent" />
-    </div>
-  )
+  return <div className={cn('animate-pulse rounded-xl bg-muted motion-reduce:animate-none', className)} aria-hidden />
 }
 
 export function PresenceDot({ className, label }: { className?: string; label?: string }) {
   return (
     <span className={cn('relative inline-flex size-2', className)}>
-      <span className="absolute inline-flex size-full animate-ping-soft rounded-full bg-online" aria-hidden />
       <span className="relative inline-flex size-2 rounded-full bg-online" aria-hidden />
       {label ? <span className="sr-only">{label}</span> : null}
     </span>
   )
 }
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({ className, compact }: { className?: string; compact?: boolean }) {
   return (
-    <span className={cn('inline-flex items-center gap-2', className)}>
-      <span className="relative grid size-8 place-items-center rounded-[10px] bg-brand shadow-[0_6px_18px_-6px_rgb(255_61_104/0.7)]">
-        <svg viewBox="0 0 24 24" className="size-4.5 text-primary-foreground" aria-hidden>
+    <span className={cn('inline-flex items-center gap-2', className)} dir="ltr">
+      <span className="relative grid size-8 place-items-center rounded-[10px] bg-brand">
+        <svg viewBox="0 0 24 24" className="size-4.5 text-white" aria-hidden>
           <path
             d="M5 5.5l7 7.5 7-7.5M12 13v6"
             fill="none"
@@ -38,7 +32,7 @@ export function Logo({ className }: { className?: string }) {
           />
         </svg>
       </span>
-      <span className="text-xl font-extrabold tracking-tight">yaari</span>
+      {compact ? <span className="sr-only">yaari</span> : <span className="text-xl font-extrabold tracking-tight">yaari</span>}
     </span>
   )
 }
@@ -56,6 +50,7 @@ export function Segmented<T extends string>({
   label,
   className,
   size = 'md',
+  lockedLabel,
 }: {
   options: SegmentOption<T>[]
   value: T
@@ -63,8 +58,9 @@ export function Segmented<T extends string>({
   label: string
   className?: string
   size?: 'md' | 'lg'
+  /** Accessible name of the lock icon on paid options. */
+  lockedLabel?: string
 }) {
-  const id = useId()
   return (
     <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-full bg-muted p-1', className)}>
       {options.map((o) => {
@@ -77,21 +73,21 @@ export function Segmented<T extends string>({
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={cn(
-              'relative flex flex-1 items-center justify-center gap-1.5 rounded-full font-semibold transition-colors',
-              size === 'lg' ? 'h-11 px-5 text-sm' : 'h-9 px-4 text-sm',
+              'relative flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full px-3 font-semibold transition-colors duration-150',
+              size === 'lg' ? 'h-11 text-sm' : 'h-9 text-sm',
               active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
             )}
           >
-            {active ? (
-              <motion.span
-                layoutId={`seg-${id}`}
-                className="absolute inset-0 rounded-full bg-card shadow-[0_2px_10px_-2px_rgb(0_0_0/0.15)] ring-1 ring-border"
-                transition={{ type: 'spring', stiffness: 500, damping: 36 }}
-              />
-            ) : null}
-            <span className="relative z-10 flex items-center gap-1.5">
-              {o.label}
-              {o.locked ? <Lock className="size-3.5 text-accent" aria-label="Yaari Plus" /> : null}
+            <span
+              className={cn(
+                'absolute inset-0 rounded-full bg-card shadow-e1 transition-opacity duration-150 night:bg-[#3a3a42]',
+                active ? 'opacity-100' : 'opacity-0',
+              )}
+              aria-hidden
+            />
+            <span className="relative z-10 flex min-w-0 items-center gap-1.5">
+              <span className="truncate">{o.label}</span>
+              {o.locked ? <Lock className="size-3.5 shrink-0 text-primary-text" aria-label={lockedLabel} /> : null}
             </span>
           </button>
         )
@@ -101,7 +97,7 @@ export function Segmented<T extends string>({
 }
 
 const fieldBase =
-  'w-full rounded-2xl border border-input bg-card px-4 text-[15px] text-foreground transition-[border-color,box-shadow] placeholder:text-muted-foreground/70 focus:border-primary focus:shadow-[0_0_0_4px_rgb(255_61_104/0.14)] focus:outline-none disabled:opacity-60'
+  'w-full rounded-xl border border-input bg-card px-4 text-[15px] text-foreground transition-[border-color,box-shadow] duration-150 placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none disabled:opacity-60'
 
 export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function TextInput(
   { className, ...rest },

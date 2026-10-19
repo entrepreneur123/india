@@ -24,6 +24,7 @@ import {
   type Target,
   type VideoStatus,
 } from './backend'
+import { onPageVisibility, pageHidden } from './visibility'
 
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
@@ -335,7 +336,9 @@ export class SupabaseBackend implements Backend {
     hub.listeners.add(onTyping)
 
     // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the UI de-duplicates by id).
+    // Paused while the browser tab is hidden (realtime keeps delivering); runs at once when it is shown again.
     const resync = async () => {
+      if (pageHidden()) return
       try {
         onMatch(await this.matchRow(matchId))
         for (const message of await this.history(matchId)) emit({ type: 'message', message })
@@ -343,10 +346,12 @@ export class SupabaseBackend implements Backend {
     }
     void resync()
     const timer = setInterval(resync, 10_000)
+    const stopWatching = onPageVisibility((visible) => visible && void resync())
 
     return () => {
       closed = true
       clearInterval(timer)
+      stopWatching()
       clearTimeout(typingOff)
       const h = this.typing.get(matchId)
       h?.listeners.delete(onTyping)
@@ -538,13 +543,17 @@ export class SupabaseBackend implements Backend {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'room_messages', filter: `room_id=eq.${roomId}` },
         (p) => void this.toRoomMessage(p.new as RoomMessageRow, me).then(emit, () => undefined))
       .subscribe()
-    // Re-sync after a dropped socket (the UI de-duplicates by id).
-    const timer = setInterval(() => {
+    // Re-sync after a dropped socket (the UI de-duplicates by id); paused while the browser tab is hidden.
+    const resync = () => {
+      if (pageHidden()) return
       this.roomHistory(roomId).then((h) => h.slice(-30).forEach(emit), () => undefined)
-    }, 15_000)
+    }
+    const timer = setInterval(resync, 15_000)
+    const stopWatching = onPageVisibility((visible) => visible && resync())
     return () => {
       closed = true
       clearInterval(timer)
+      stopWatching()
       void this.client.removeChannel(channel)
     }
   }

@@ -1,13 +1,13 @@
 'use client'
 
-import { motion } from 'motion/react'
 import { useState } from 'react'
 import useSWR from 'swr'
-import { ChevronRight, ExternalLink, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
+import { Check, ChevronRight, ExternalLink, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL } from '@/lib/config'
+import { LANGS } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
-import { Segmented } from '@/components/ui/bits'
+import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -16,9 +16,11 @@ import { cn } from '@/lib/utils'
 export function SettingsScreen() {
   const backend = useBackend()
   const toast = useToast()
-  const { t, lang, setLang, entitlements, openPaywall, signedOut, phone } = useApp()
+  const { t, lang, setLang } = useI18n()
+  const { entitlements, openPaywall, signedOut, phone } = useApp()
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
   const [rulesOpen, setRulesOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [busy, setBusy] = useState<'out' | 'delete' | null>(null)
 
@@ -38,7 +40,7 @@ export function SettingsScreen() {
     setBusy('delete')
     try {
       await backend.deleteAccount()
-      toast.show('Your account and everything in it were deleted', 'success')
+      toast.show(t('settings.deleted'), 'success')
       signedOut()
     } catch (err) {
       toast.error(err)
@@ -46,59 +48,74 @@ export function SettingsScreen() {
     }
   }
 
-  const plan = entitlements.premium ? 'Yaari Plus' : entitlements.genderPass ? '24-hour gender pass' : 'Free'
+  const plan = entitlements.premium ? t('common.plus') : entitlements.genderPass ? t('settings.planPass') : t('settings.planFree')
+  const current = LANGS.find((l) => l.id === lang)
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
-      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
-        <h1 className="text-3xl font-extrabold tracking-tight">{t('settings.title')}</h1>
+      <div className="mx-auto flex max-w-2xl flex-col gap-8 px-4 py-6 sm:px-8 sm:py-10">
+        <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('settings.title')}</h1>
 
         <Group title={t('settings.account')}>
-          <Item icon={Phone} label="Phone number" value={myPhone ?? phone ?? 'Verified'} />
-          <Item
-            icon={Sparkles}
-            label="Plan"
-            value={plan}
-            onClick={entitlements.premium ? undefined : openPaywall}
-            accent={!entitlements.premium}
-          />
-          <div className="flex items-center gap-3.5 px-4 py-3">
-            <Icon icon={Languages} />
-            <span className="flex-1 text-[15px] font-semibold">{t('settings.language')}</span>
-            <Segmented
-              label={t('settings.language')}
-              value={lang}
-              onChange={setLang}
-              options={[
-                { value: 'en', label: 'English' },
-                { value: 'hi', label: 'हिन्दी' },
-              ]}
-            />
-          </div>
+          <Item icon={Phone} label={t('settings.phone')} value={myPhone ?? phone ?? t('settings.verified')} ltrValue />
+          <Item icon={Sparkles} label={t('settings.plan')} value={plan} onClick={entitlements.premium ? undefined : openPaywall} accent={!entitlements.premium} />
+          <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
         </Group>
 
-        <Group title="Safety & legal">
-          <Item icon={ScrollText} label="Community rules" onClick={() => setRulesOpen(true)} />
-          <Item icon={ShieldCheck} label="Privacy policy" href={PRIVACY_URL} />
-          <Item icon={Mail} label="Grievance officer" value={GRIEVANCE_OFFICER.email} href={`mailto:${GRIEVANCE_OFFICER.email}`} />
-          <Item icon={Mail} label="Support" value={SUPPORT_EMAIL} href={`mailto:${SUPPORT_EMAIL}`} />
+        <Group title={t('settings.safety')}>
+          <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
+          <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />
+          <Item icon={Mail} label={t('settings.grievance')} value={GRIEVANCE_OFFICER.email} href={`mailto:${GRIEVANCE_OFFICER.email}`} ltrValue />
+          <Item icon={Mail} label={t('settings.support')} value={SUPPORT_EMAIL} href={`mailto:${SUPPORT_EMAIL}`} ltrValue />
         </Group>
 
         <Group>
           <Item icon={LogOut} label={t('settings.signOut')} onClick={() => void signOut()} busy={busy === 'out'} />
           <Item icon={Trash2} label={t('settings.delete')} onClick={() => setDeleteOpen(true)} danger />
         </Group>
-        <p className="px-2 text-center text-xs leading-relaxed text-muted-foreground">
-          yaari is for adults (18+) only. Report anyone who breaks the rules — reports are anonymous.
-        </p>
+        <p className="px-2 text-center text-xs leading-relaxed text-muted-foreground">{t('settings.footer')}</p>
       </div>
 
-      <Modal open={rulesOpen} onClose={() => setRulesOpen(false)} title="Community rules">
+      <Modal open={langOpen} onClose={() => setLangOpen(false)} variant="sheet" title={t('settings.chooseLanguage')}>
+        <ul className="flex flex-col p-3 pb-5" role="radiogroup" aria-label={t('settings.language')}>
+          {LANGS.map((l) => {
+            const on = l.id === lang
+            return (
+              <li key={l.id}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  data-autofocus={on ? true : undefined}
+                  onClick={() => {
+                    setLang(l.id)
+                    setLangOpen(false)
+                  }}
+                  className={cn(
+                    'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors duration-150 hover:bg-muted',
+                    on && 'bg-primary-soft hover:bg-primary-soft',
+                  )}
+                >
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span lang={l.id} className={cn('text-[15px] font-semibold', on && 'text-primary-text')}>
+                      {l.native}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{l.english}</span>
+                  </span>
+                  {on ? <Check className="size-5 shrink-0 text-primary-text" aria-hidden /> : null}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </Modal>
+
+      <Modal open={rulesOpen} onClose={() => setRulesOpen(false)} title={t('settings.rules')}>
         <ol className="flex flex-col gap-3 p-6 pt-4">
           {COMMUNITY_RULES.map((rule, i) => (
             <li key={rule} className="flex gap-3 text-[15px] leading-relaxed">
-              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-bold text-primary">{i + 1}</span>
-              {rule}
+              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary-soft text-xs font-semibold text-primary-text">{i + 1}</span>
+              {t(rule)}
             </li>
           ))}
         </ol>
@@ -107,16 +124,16 @@ export function SettingsScreen() {
       <Modal
         open={deleteOpen}
         onClose={() => busy !== 'delete' && setDeleteOpen(false)}
-        title="Delete your account?"
-        description="Your profile, posts, chats and photos are deleted for good. This can’t be undone. An active subscription must be cancelled separately in Google Play."
+        title={t('settings.deleteTitle')}
+        description={t('settings.deleteBody')}
         dismissible={busy !== 'delete'}
       >
         <div className="flex gap-3 p-6 pt-5">
-          <Button variant="secondary" className="flex-1" disabled={busy === 'delete'} onClick={() => setDeleteOpen(false)}>
-            Keep account
+          <Button variant="outline" className="flex-1" disabled={busy === 'delete'} onClick={() => setDeleteOpen(false)}>
+            {t('settings.keep')}
           </Button>
           <Button variant="danger" className="flex-1" loading={busy === 'delete'} onClick={() => void deleteAccount()}>
-            Delete forever
+            {t('settings.deleteForever')}
           </Button>
         </div>
       </Modal>
@@ -127,16 +144,16 @@ export function SettingsScreen() {
 function Group({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      {title ? <h2 className="px-2 text-xs font-bold tracking-wider text-muted-foreground uppercase">{title}</h2> : null}
-      <div className="flex flex-col divide-y divide-border overflow-hidden rounded-3xl bg-card ring-1 ring-border">{children}</div>
+      {title ? <h2 className="px-4 text-sm font-semibold text-primary-text">{title}</h2> : null}
+      <div className="flex flex-col divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">{children}</div>
     </section>
   )
 }
 
 function Icon({ icon: I, danger }: { icon: typeof Phone; danger?: boolean }) {
   return (
-    <span className={cn('grid size-9 shrink-0 place-items-center rounded-xl', danger ? 'bg-destructive/10 text-destructive' : 'bg-muted text-foreground')}>
-      <I className="size-4.5" aria-hidden />
+    <span className={cn('grid size-9 shrink-0 place-items-center', danger ? 'text-destructive' : 'text-muted-foreground')}>
+      <I className="size-5" aria-hidden />
     </span>
   )
 }
@@ -150,6 +167,7 @@ function Item({
   danger,
   accent,
   busy,
+  ltrValue,
 }: {
   icon: typeof Phone
   label: string
@@ -159,29 +177,35 @@ function Item({
   danger?: boolean
   accent?: boolean
   busy?: boolean
+  /** Phone numbers and e-mail addresses always read left to right. */
+  ltrValue?: boolean
 }) {
   const body = (
     <>
       <Icon icon={icon} danger={danger} />
-      <span className={cn('flex-1 text-[15px] font-semibold', danger && 'text-destructive')}>{label}</span>
-      {value ? <span className={cn('truncate text-sm', accent ? 'font-semibold text-primary' : 'text-muted-foreground')}>{value}</span> : null}
-      {href && !href.startsWith('mailto:') ? <ExternalLink className="size-4 text-muted-foreground" aria-hidden /> : null}
-      {onClick ? <ChevronRight className="size-4 text-muted-foreground" aria-hidden /> : null}
+      <span className={cn('min-w-0 flex-1 text-[15px] font-medium', danger && 'text-destructive')}>{label}</span>
+      {value ? (
+        <span dir={ltrValue ? 'ltr' : undefined} className={cn('max-w-[50%] truncate text-sm', accent ? 'font-semibold text-primary-text' : 'text-muted-foreground')}>
+          {value}
+        </span>
+      ) : null}
+      {href && !href.startsWith('mailto:') ? <ExternalLink className="size-4 shrink-0 text-muted-foreground" aria-hidden /> : null}
+      {onClick ? <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden /> : null}
     </>
   )
-  const cls = 'flex w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-muted disabled:opacity-60'
+  const cls = 'flex w-full items-center gap-3 px-3 py-3 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60'
   if (href) {
     return (
-      <motion.a whileTap={{ scale: 0.99 }} href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer" className={cls}>
+      <a href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer" className={cls}>
         {body}
-      </motion.a>
+      </a>
     )
   }
   if (onClick) {
     return (
-      <motion.button whileTap={{ scale: 0.99 }} type="button" onClick={onClick} disabled={busy} className={cls}>
+      <button type="button" onClick={onClick} disabled={busy} className={cls}>
         {body}
-      </motion.button>
+      </button>
     )
   }
   return <div className={cn(cls, 'hover:bg-transparent')}>{body}</div>

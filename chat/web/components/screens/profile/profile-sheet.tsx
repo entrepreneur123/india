@@ -7,6 +7,7 @@ import type { FriendState, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -35,6 +36,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const toast = useToast()
   const { mutate } = useSWRConfig()
   const { me, openThread } = useApp()
+  const { t, plural } = useI18n()
   const isMe = userId === me.id
   const { data: profile, isLoading, error: loadError, mutate: reload } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
   const { data: friends, mutate: refreshFriends } = useSWR('friends', () => backend.friends())
@@ -62,7 +64,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         type="button"
         onClick={onClose}
         className="absolute top-4 right-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        aria-label="Close"
+        aria-label={t('common.close')}
       >
         <X className="size-5" aria-hidden />
       </button>
@@ -75,52 +77,46 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         </div>
       ) : !shown && loadError ? (
         <div className="p-10 text-center">
-          <h2 className="text-lg font-bold">Couldn’t load this profile</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Check your connection and try again.</p>
-          <Button variant="secondary" className="mt-4" onClick={() => void reload()}>
-            Try again
+          <h2 className="text-lg font-semibold">{t('profile.loadFailed')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t('common.checkConnection')}</p>
+          <Button variant="outline" className="mt-4" onClick={() => void reload()}>
+            {t('common.tryAgain')}
           </Button>
         </div>
       ) : !shown ? (
         <div className="p-10 text-center">
-          <h2 className="text-lg font-bold">Profile not available</h2>
-          <p className="mt-1 text-sm text-muted-foreground">You can only see people you’ve met, and not anyone you blocked.</p>
+          <h2 className="text-lg font-semibold">{t('profile.unavailable')}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t('profile.unavailableBody')}</p>
         </div>
       ) : (
         <>
           <div className="flex flex-col items-center px-6 pt-8 text-center">
-            <span className="rounded-full bg-brand p-[3px]">
-              <span className="block rounded-full bg-card p-[3px]">
-                <Avatar name={shown.name} src={shown.photoUrl} size={96} />
-              </span>
-            </span>
-            <h2 className="mt-4 text-2xl font-extrabold tracking-tight">
+            <Avatar name={shown.name} src={shown.photoUrl} size={96} />
+            <h2 className="mt-4 text-2xl font-bold tracking-tight">
               {shown.name}, {shown.age} <span aria-hidden>{flagEmoji(shown.country)}</span>
             </h2>
             {shown.city ? <p className="text-sm text-muted-foreground">{shown.city}</p> : null}
             {shown.bio ? <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-pretty">{shown.bio}</p> : null}
-            <p className="mt-3 text-sm">
-              <span className="font-bold">{shown.posts.length}</span> <span className="text-muted-foreground">posts</span>
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{plural(shown.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
 
             {isMe ? null : (
               <div className="mt-5 flex w-full max-w-sm gap-2">
                 {state === 'friends' ? (
                   <Button variant="brand" className="flex-1" onClick={() => openThread(shown)}>
-                    <MessageCircle className="size-4.5" aria-hidden /> Message
+                    <MessageCircle className="size-4.5" aria-hidden /> {t('profile.message')}
                   </Button>
                 ) : state === 'incoming' ? (
                   <Button
                     variant="brand"
                     className="flex-1"
                     loading={busy}
-                    onClick={() => void act(() => backend.answerFriend(userId, true), `You and ${shown.name} are friends`)}
+                    onClick={() => void act(() => backend.answerFriend(userId, true), t('recent.nowFriends', { name: shown.name }))}
                   >
-                    <Check className="size-4.5" aria-hidden /> Accept request
+                    <Check className="size-4.5" aria-hidden /> {t('profile.acceptRequest')}
                   </Button>
                 ) : state === 'requested' ? (
-                  <Button variant="secondary" className="flex-1" loading={busy} onClick={() => void act(() => backend.removeFriend(userId))}>
-                    Request sent · Withdraw
+                  <Button variant="outline" className="flex-1" loading={busy} onClick={() => void act(() => backend.removeFriend(userId))}>
+                    {t('profile.withdraw')}
                   </Button>
                 ) : (
                   <Button
@@ -130,14 +126,14 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                     onClick={() =>
                       void act(async () => {
                         const s = await backend.requestFriend(userId)
-                        toast.show(s === 'friends' ? `You and ${shown.name} are friends` : 'Friend request sent', 'success')
+                        toast.show(s === 'friends' ? t('recent.nowFriends', { name: shown.name }) : t('profile.requestSent'), 'success')
                       })
                     }
                   >
-                    <UserPlus className="size-4.5" aria-hidden /> Add friend
+                    <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
                   </Button>
                 )}
-                <Button variant="secondary" size="icon" onClick={() => setReportOpen(true)} aria-label={`Report ${shown.name}`}>
+                <Button variant="outline" size="icon" onClick={() => setReportOpen(true)} aria-label={t('chat.report', { name: shown.name })}>
                   <Flag className="size-4.5" aria-hidden />
                 </Button>
               </div>

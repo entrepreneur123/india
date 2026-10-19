@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { DEMO_MODE } from '@/lib/config'
+import { Rich, useI18n } from '@/components/i18n'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { OtpInput } from './otp-input'
@@ -24,6 +25,7 @@ export function OtpStep({
 }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const [code, setCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [invalid, setInvalid] = useState(false)
@@ -46,7 +48,7 @@ export function OtpStep({
         if (!ok) {
           setInvalid(true)
           setCode('')
-          toast.show('That code didn’t match. Try again.', 'error')
+          toast.show(t('otp.wrong'), 'error')
           return
         }
       }
@@ -62,7 +64,7 @@ export function OtpStep({
     try {
       await backend.sendOtp(phone)
       setWait(RESEND_AFTER)
-      toast.show('New code sent', 'success')
+      toast.show(t('otp.sent'), 'success')
     } catch (err) {
       toast.error(err)
     }
@@ -73,41 +75,40 @@ export function OtpStep({
       <button
         type="button"
         onClick={onBack}
-        className="-ml-2 flex w-fit items-center gap-1.5 rounded-full px-2 py-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+        className="-ml-2 flex w-fit items-center gap-1.5 rounded-full px-2 py-1 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:text-foreground"
       >
-        <ArrowLeft className="size-4" aria-hidden />
-        Change number
+        <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden />
+        {t('otp.change')}
       </button>
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-extrabold tracking-tight">Enter the code</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('otp.title')}</h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Sent to <span className="font-semibold text-foreground tabular-nums">{display}</span>
+          <Rich
+            text={t('otp.sentTo')}
+            nodes={{
+              phone: (
+                <span className="font-semibold text-foreground tabular-nums" dir="ltr">
+                  {display}
+                </span>
+              ),
+            }}
+          />
         </p>
       </div>
       <OtpInput value={code} onChange={setCode} onComplete={verify} invalid={invalid} disabled={busy} />
-      {DEMO_MODE ? (
-        <p className="rounded-2xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-          Demo preview: any 6 digits will work.
-        </p>
-      ) : null}
-      <Button
-        variant="brand"
-        size="lg"
-        className="w-full"
-        disabled={code.length !== 6}
-        loading={busy}
-        onClick={() => void verify(code)}
-      >
-        Verify
+      {DEMO_MODE ? <p className="rounded-xl bg-muted px-4 py-3 text-xs leading-relaxed text-muted-foreground">{t('otp.demo')}</p> : null}
+      <Button variant="brand" size="lg" className="w-full" disabled={code.length !== 6} loading={busy} onClick={() => void verify(code)}>
+        {t('otp.verify')}
       </Button>
       <p className="text-center text-sm text-muted-foreground">
         {wait > 0 ? (
-          <>
-            Resend code in <span className="font-semibold tabular-nums text-foreground">0:{String(wait).padStart(2, '0')}</span>
-          </>
+          <Rich
+            text={t('otp.resendIn')}
+            nodes={{ time: <span className="font-semibold tabular-nums text-foreground">0:{String(wait).padStart(2, '0')}</span> }}
+          />
         ) : (
-          <button type="button" onClick={() => void resend()} className="font-semibold text-primary hover:underline">
-            Resend code
+          <button type="button" onClick={() => void resend()} className="rounded font-semibold text-primary-text hover:underline">
+            {t('otp.resend')}
           </button>
         )}
       </p>

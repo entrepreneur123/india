@@ -1,8 +1,10 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { ImagePlus, SendHorizontal, X } from 'lucide-react'
+import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 
 export function Composer({
@@ -10,9 +12,9 @@ export function Composer({
   onTyping,
   disabled,
   allowMedia = true,
-  placeholder = 'Say something nice…',
+  placeholder,
   maxLength = 1000,
-  disabledPlaceholder = 'Chat has ended',
+  disabledPlaceholder,
 }: {
   onSend: (text: string | null, media: File | null) => Promise<boolean>
   onTyping?: () => void
@@ -22,6 +24,7 @@ export function Composer({
   maxLength?: number
   disabledPlaceholder?: string
 }) {
+  const { t } = useI18n()
   const [text, setText] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -68,31 +71,32 @@ export function Composer({
   }
 
   return (
-    <div className="border-t border-border bg-background/80 px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl sm:px-5">
+    <div className="border-t border-border bg-background px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5">
       <AnimatePresence>
         {preview && file ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.15 }}
             className="overflow-hidden"
           >
             <div className="relative mb-2 w-fit">
               {file.type.startsWith('video') ? (
-                <video src={preview} className="h-20 rounded-2xl object-cover" muted />
+                <video src={preview} className="h-20 rounded-xl object-cover" muted />
               ) : (
-                <img src={preview} alt="Attachment preview" className="h-20 rounded-2xl object-cover" />
+                <img src={preview} alt={t('composer.preview')} className="h-20 rounded-xl object-cover" />
               )}
               <button
                 type="button"
                 onClick={() => setFile(null)}
                 className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-foreground text-background"
-                aria-label="Remove attachment"
+                aria-label={t('composer.remove')}
               >
                 <X className="size-3.5" aria-hidden />
               </button>
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
       <div className="flex items-end gap-2">
@@ -100,12 +104,12 @@ export function Composer({
           <label
             htmlFor={fileId}
             className={cn(
-              'grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-within:ring-2 focus-within:ring-ring',
+              'grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-muted hover:text-foreground',
               disabled && 'pointer-events-none opacity-40',
             )}
           >
             <ImagePlus className="size-5" aria-hidden />
-            <span className="sr-only">Attach photo or video</span>
+            <span className="sr-only">{t('composer.attach')}</span>
             <input
               id={fileId}
               type="file"
@@ -119,9 +123,9 @@ export function Composer({
             />
           </label>
         ) : null}
-        <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-muted px-4 ring-1 ring-transparent transition-shadow focus-within:ring-primary/50">
+        <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-muted px-4 ring-1 ring-transparent transition-shadow duration-150 focus-within:ring-primary">
           <label htmlFor={`${fileId}-text`} className="sr-only">
-            Message
+            {t('composer.message')}
           </label>
           <textarea
             id={`${fileId}-text`}
@@ -130,7 +134,7 @@ export function Composer({
             value={text}
             disabled={disabled}
             maxLength={maxLength}
-            placeholder={disabled ? disabledPlaceholder : placeholder}
+            placeholder={disabled ? (disabledPlaceholder ?? t('composer.ended')) : (placeholder ?? t('chat.placeholder'))}
             onChange={(e) => {
               setText(e.target.value)
               onTyping?.()
@@ -139,18 +143,17 @@ export function Composer({
             className="max-h-33 w-full resize-none bg-transparent py-2.5 text-[15px] leading-relaxed outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
           />
         </div>
-        <motion.button
+        <m.button
           type="button"
           onClick={() => void submit()}
           disabled={!canSend}
-          whileTap={canSend ? { scale: 0.88 } : undefined}
-          animate={{ scale: canSend ? 1 : 0.92, opacity: canSend ? 1 : 0.45 }}
-          transition={{ type: 'spring', stiffness: 520, damping: 26 }}
-          className="grid size-11 shrink-0 place-items-center rounded-full bg-brand text-primary-foreground shadow-[0_8px_20px_-8px_rgb(255_61_104/0.7)] disabled:cursor-not-allowed"
-          aria-label="Send message"
+          whileTap={canSend ? { scale: 0.94 } : undefined}
+          transition={{ duration: 0.1 }}
+          className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,background-color] duration-150 hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
+          aria-label={t('composer.send')}
         >
-          <SendHorizontal className="size-5" aria-hidden />
-        </motion.button>
+          <SendHorizontal className="size-5 rtl:rotate-180" aria-hidden />
+        </m.button>
       </div>
     </div>
   )

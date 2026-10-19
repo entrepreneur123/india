@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { LazyMotion } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useEffect, useRef, useState } from 'react'
 import { Mic, MicOff, PhoneOff, Video, VideoOff } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
@@ -8,12 +9,17 @@ import { useBackend } from '@/lib/backend-context'
 import type { Call, CallState } from '@/lib/livekit'
 import { flagEmoji } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
+import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
+
+/** Drag for the self-view: only the call screen needs it, so it downloads with the call. */
+const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
 
 /** Full-screen call over the chat. Real video through LiveKit; the demo backend has no token and shows a preview. */
 export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partner: Profile; onEnd: () => void }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const stageRef = useRef<HTMLDivElement>(null)
   const remoteRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<HTMLVideoElement>(null)
@@ -51,7 +57,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         if (call.devices === 'blocked') {
           setCamera(false)
           setMic(false)
-          toast.show('Allow camera and microphone in your browser so they can see and hear you', 'error')
+          toast.show(t('video.blocked'), 'error')
         }
       } catch (err) {
         if (cancelled) return
@@ -65,6 +71,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
       void callRef.current?.disconnect()
       callRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backend, matchId, toast])
 
   const toggleMic = async () => {
@@ -79,22 +86,23 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
   }
 
   const status =
-    state === 'connecting' ? 'Connecting…'
-    : state === 'reconnecting' ? 'Reconnecting…'
-    : state === 'failed' ? 'Call couldn’t connect'
-    : state === 'demo' ? 'Demo preview — real video runs on the live server'
+    state === 'connecting' ? t('video.connecting')
+    : state === 'reconnecting' ? t('video.reconnecting')
+    : state === 'failed' ? t('video.failed')
+    : state === 'demo' ? t('video.demo')
     : null
 
   return (
-    <motion.div
+    <LazyMotion features={loadDrag}>
+    <m.div
       ref={stageRef}
       className="theme-night absolute inset-0 z-30 overflow-hidden bg-ink text-ink-foreground"
-      initial={{ opacity: 0, scale: 1.04 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.02 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
       role="dialog"
-      aria-label={`Video call with ${partner.name}`}
+      aria-label={t('video.with', { name: partner.name })}
     >
       {partner.photoUrl && state !== 'connected' ? (
         <img src={partner.photoUrl} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl" />
@@ -104,53 +112,54 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/50 via-transparent to-ink/80" />
 
       <div className="absolute inset-x-0 top-0 flex items-center gap-3 p-5">
-        <span className="rounded-full bg-ink/50 px-3.5 py-1.5 text-sm font-semibold backdrop-blur-md">
+        <span className="rounded-full bg-black/55 px-3.5 py-1.5 text-sm font-semibold">
           {partner.name}, {partner.age} <span aria-hidden>{flagEmoji(partner.country)}</span>
         </span>
         {state === 'connected' ? (
-          <span className="flex items-center gap-1.5 rounded-full bg-ink/50 px-3 py-1.5 text-xs font-semibold backdrop-blur-md">
-            <span className="size-1.5 animate-pulse rounded-full bg-online" aria-hidden /> Live
+          <span className="flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold">
+            <span className="size-1.5 animate-pulse rounded-full bg-online" aria-hidden /> {t('video.live')}
           </span>
         ) : null}
       </div>
 
       {status ? (
         <div className="absolute inset-0 grid place-items-center p-6">
-          <p className="max-w-xs rounded-full bg-ink/60 px-5 py-2.5 text-center text-sm font-semibold backdrop-blur-md" role="status">
+          <p className="max-w-xs rounded-full bg-black/60 px-5 py-2.5 text-center text-sm font-semibold" role="status">
             {status}
           </p>
         </div>
       ) : null}
 
-      <motion.div
+      <m.div
         drag
         dragConstraints={stageRef}
         dragElastic={0.15}
         dragMomentum={false}
-        whileDrag={{ scale: 1.04 }}
-        className="absolute top-20 right-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-muted shadow-2xl ring-2 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
-        aria-label="Your camera"
+        whileDrag={{ scale: 1.02 }}
+        className="absolute top-20 right-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-muted shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
+        aria-label={t('video.yourCamera')}
       >
         <video ref={localRef} autoPlay playsInline muted className={cn('size-full -scale-x-100 object-cover', !camera && 'opacity-0')} />
         {!camera || state === 'demo' ? (
           <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-muted-foreground">
-            {camera ? 'Your camera' : 'Camera off'}
+            {camera ? t('video.yourCamera') : t('video.cameraOff')}
           </div>
         ) : null}
-      </motion.div>
+      </m.div>
 
       <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-4 p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-        <CallButton label={mic ? 'Mute' : 'Unmute'} onClick={() => void toggleMic()} active={!mic}>
+        <CallButton label={mic ? t('video.mute') : t('video.unmute')} onClick={() => void toggleMic()} active={!mic}>
           {mic ? <Mic className="size-6" aria-hidden /> : <MicOff className="size-6" aria-hidden />}
         </CallButton>
-        <CallButton label={camera ? 'Turn camera off' : 'Turn camera on'} onClick={() => void toggleCamera()} active={!camera}>
+        <CallButton label={camera ? t('video.camOff') : t('video.camOn')} onClick={() => void toggleCamera()} active={!camera}>
           {camera ? <Video className="size-6" aria-hidden /> : <VideoOff className="size-6" aria-hidden />}
         </CallButton>
-        <CallButton label="End call" onClick={onEnd} danger autoFocus>
+        <CallButton label={t('video.end')} onClick={onEnd} danger autoFocus>
           <PhoneOff className="size-6" aria-hidden />
         </CallButton>
       </div>
-    </motion.div>
+    </m.div>
+    </LazyMotion>
   )
 }
 
@@ -170,24 +179,24 @@ function CallButton({
   autoFocus?: boolean
 }) {
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onClick}
       autoFocus={autoFocus}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.9 }}
+      whileTap={{ scale: 0.94 }}
+      transition={{ duration: 0.1 }}
       aria-label={label}
       aria-pressed={danger ? undefined : active}
       className={cn(
-        'grid size-15 place-items-center rounded-full backdrop-blur-md transition-colors',
+        'grid size-15 place-items-center rounded-full transition-colors duration-150',
         danger
-          ? 'bg-destructive text-primary-foreground shadow-[0_10px_30px_-8px_rgb(229_38_61/0.8)]'
+          ? 'bg-[#c5221f] text-white hover:bg-[#a50e0e]'
           : active
             ? 'bg-ink-foreground text-ink'
             : 'bg-ink-foreground/15 text-ink-foreground hover:bg-ink-foreground/25',
       )}
     >
       {children}
-    </motion.button>
+    </m.button>
   )
 }

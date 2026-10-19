@@ -73,4 +73,32 @@ export const COUNTRIES: Country[] = [
 
 export const DEFAULT_COUNTRY = COUNTRIES[0]
 
+const BY_LANGUAGE: Record<string, string> = { hi: 'IN', bn: 'BD', pt: 'BR', vi: 'VN' }
+
+const BY_TIME_ZONE: Record<string, string> = {
+  'Asia/Kolkata': 'IN', 'Asia/Calcutta': 'IN', 'Asia/Dhaka': 'BD', 'Asia/Dacca': 'BD',
+  'Asia/Ho_Chi_Minh': 'VN', 'Asia/Saigon': 'VN', 'America/Sao_Paulo': 'BR', 'America/Bahia': 'BR',
+  'America/Fortaleza': 'BR', 'America/Recife': 'BR', 'America/Manaus': 'BR', 'America/Belem': 'BR',
+  'America/Cuiaba': 'BR', 'America/Campo_Grande': 'BR', 'America/Porto_Velho': 'BR', 'America/Boa_Vista': 'BR',
+  'America/Rio_Branco': 'BR', 'America/Maceio': 'BR', 'America/Araguaina': 'BR', 'America/Santarem': 'BR',
+  'America/Noronha': 'BR', 'Asia/Kathmandu': 'NP', 'Asia/Colombo': 'LK', 'Asia/Karachi': 'PK', 'Asia/Dubai': 'AE',
+}
+
+/**
+ * The likely phone country: the device's time zone first (an Indian phone set to "English (US)" is still in
+ * Asia/Kolkata), then the browser's languages ("bn-BD" → Bangladesh, "pt" → Brazil), else India.
+ */
+export function guessCountry(tags: readonly string[], timeZone?: string): Country {
+  const byZone = timeZone ? BY_TIME_ZONE[timeZone] : undefined
+  if (byZone) return COUNTRIES.find((c) => c.iso === byZone) ?? DEFAULT_COUNTRY
+  for (const tag of tags) {
+    const [lang, region] = tag.split('-')
+    const byRegion = region && COUNTRIES.find((c) => c.iso === region.toUpperCase())
+    if (byRegion) return byRegion
+    const iso = BY_LANGUAGE[lang?.toLowerCase()]
+    if (iso) return COUNTRIES.find((c) => c.iso === iso) ?? DEFAULT_COUNTRY
+  }
+  return DEFAULT_COUNTRY
+}
+
 export const SHOWCASE_FLAGS = ['IN', 'BR', 'JP', 'NG', 'FR', 'TR', 'AR', 'US', 'PT', 'AE', 'KR', 'MX', 'GB', 'ID']
