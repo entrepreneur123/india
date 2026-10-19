@@ -110,6 +110,7 @@ jobs:
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
             python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
+            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
@@ -131,6 +132,8 @@ jobs:
               fi
             fi
             [ "$changed" = 1 ] || return 0
+            # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
+            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
               npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" \
                 --branch main --commit-dirty=true || echo "::warning::Cloudflare deploy failed"
