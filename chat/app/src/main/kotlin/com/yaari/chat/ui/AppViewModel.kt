@@ -13,6 +13,7 @@ import com.yaari.chat.data.Entitlements
 import com.yaari.chat.data.Match
 import com.yaari.chat.data.MatchEvent
 import com.yaari.chat.data.NewProfile
+import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.domain.ExitPolicy
@@ -305,12 +306,22 @@ class AppViewModel(
             try {
                 while (isActive && current()) {
                     // Not cancellable: if the server created a match, we must learn about it (see abandon()).
-                    val m = withContext(NonCancellable) { backend.findMatch(s.target) }
+                    val m = try {
+                        withContext(NonCancellable) { backend.findMatch(s.target) }
+                    } catch (e: OrphanMatchException) {
+                        abandon(e.matchId) // paired, but the partner's profile couldn't load: end it and keep looking
+                        null
+                    } catch (e: BackendException) {
+                        // A chat we just left (or abandoned) still holds the exit lock for a moment: wait it out.
+                        if (e.code != "exit_locked" || !current()) throw e
+                        null
+                    }
                     if (!current()) { // cancelled (or restarted) while the request was in flight
-                        if (m != null) abandon(m) else if (!_state.value.searching) runCatching { backend.cancelSearch() }
+                        if (m != null) abandon(m.id) else if (!_state.value.searching) runCatching { backend.cancelSearch() }
                         return@launch
                     }
                     if (m != null) {
+                        abandoned -= m.id // the server can hand back a match an older search gave up on: keep it
                         openChat(m)
                         return@launch
                     }
@@ -319,8 +330,10 @@ class AppViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                _state.update { it.copy(searching = false) }
-                notice(explain(e))
+                if (gen == searchGeneration) { // an old search's error must not stop the new one
+                    _state.update { it.copy(searching = false) }
+                    notice(explain(e))
+                }
             }
         }
     }
@@ -328,18 +341,26 @@ class AppViewModel(
     /** Each search has a number; only the newest one may open a chat. */
     private var searchGeneration = 0
 
+    /** Matches the user never saw, waiting to be ended once the exit lock allows. */
+    private val abandoned = mutableSetOf<String>()
+    private val abandonJobs = mutableListOf<Job>()
+
     /** The loop notices on its next turn; a request already in flight still completes (see startMatching). */
     fun cancelMatching() {
         _state.update { it.copy(searching = false) }
         act { backend.cancelSearch() }
     }
 
-    /** A match the user never saw: end it once the exit lock allows, so the other person isn't left waiting. */
-    private fun abandon(m: Match) {
-        viewModelScope.launch {
+    /** End a match the user never saw, so the other person isn't left waiting, unless the user opened it after all. */
+    private fun abandon(matchId: String) {
+        abandoned += matchId
+        abandonJobs += viewModelScope.launch {
             delay(ExitPolicy.lockMs(_state.value.premium) + 500)
-            runCatching { backend.leave(m.id) }
+            if (abandoned.remove(matchId) && _state.value.chat?.match?.id != matchId) {
+                runCatching { backend.leave(matchId) }
+            }
         }
+        abandonJobs.removeAll { it.isCompleted }
     }
 
     private fun openChat(m: Match) {
@@ -570,6 +591,10 @@ class AppViewModel(
     }
 
     fun signOut() = act {
+        searchGeneration++
+        _state.update { it.copy(searching = false) }
+        matchJob?.join() // a match request in flight finishes first (it may hand back a match to end)
+        abandonJobs.toList().forEach { it.join() } // end those matches while still signed in
         backend.signOut()
         resetToStart()
     }

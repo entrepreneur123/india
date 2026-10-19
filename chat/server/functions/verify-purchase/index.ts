@@ -67,9 +67,10 @@ Deno.serve(async (req) => {
     if (!item?.expiryTime) return json(402, { error: "no_line_item" });
     if (!seen) await admin.from("purchases").insert({ token: purchase_token, user_id: user.id, product_id });
     // Only this column: a gender-pass redemption running at the same time keeps its own value.
-    await admin.from("subscriptions").upsert({
+    const { error: grantError } = await admin.from("subscriptions").upsert({
       user_id: user.id, premium_until: item.expiryTime, purchase_token, updated_at: new Date().toISOString(),
     });
+    if (grantError) return json(500, { error: "grant_failed" }); // the app retries on the next start
     if (s.acknowledgementState === "ACKNOWLEDGEMENT_STATE_PENDING") {
       await fetch(`${api}/subscriptions/${PREMIUM}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
     }
@@ -93,6 +94,11 @@ Deno.serve(async (req) => {
   }
   const base = Math.max(Date.now(), ent?.gender_until ? Date.parse(ent.gender_until) : 0);
   const genderUntil = new Date(base + 24 * 3600 * 1000).toISOString();
-  await admin.from("subscriptions").upsert({ user_id: user.id, gender_until: genderUntil, updated_at: new Date().toISOString() });
+  const { error: grantError } = await admin.from("subscriptions").upsert({ user_id: user.id, gender_until: genderUntil, updated_at: new Date().toISOString() });
+  if (grantError) {
+    // Undo the redemption so a retry grants it; the app only consumes the pass after a 200.
+    await admin.from("purchases").delete().eq("token", purchase_token).eq("user_id", user.id);
+    return json(500, { error: "grant_failed" });
+  }
   return json(200, { gender_until: genderUntil });
 });

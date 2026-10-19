@@ -5,6 +5,7 @@ import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
+import com.yaari.chat.data.Match
 import com.yaari.chat.data.Products
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.model.Gender
@@ -16,6 +17,7 @@ import com.yaari.chat.ui.ProfileDraft
 import com.yaari.chat.ui.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -332,6 +334,56 @@ class AppViewModelTest {
         assertTrue("pass granted at sign-in", vm.state.value.entitlements.genderPass)
         vm.restorePurchases(); advanceUntilIdle() // e.g. the app comes back to the foreground
         assertEquals("redeemed and consumed exactly once", listOf("upi-pending-token"), finished)
+    }
+
+    @Test fun aMatchHandedBackToTheNewSearchIsNotEnded() = runTest(dispatcher) {
+        // The server returns the same open match to the old (cancelled) request and to the new search.
+        val partner = FakeBackend.POOL.first()
+        val left = mutableListOf<String>()
+        val sameMatch = object : Backend by backend {
+            override suspend fun findMatch(target: Target): Match {
+                delay(900)
+                return Match("M", partner)
+            }
+            override fun events(matchId: String) = kotlinx.coroutines.flow.emptyFlow<com.yaari.chat.data.MatchEvent>()
+            override suspend fun history(matchId: String) = emptyList<com.yaari.chat.model.Message>()
+            override suspend fun leave(matchId: String) { left += matchId }
+        }
+        val vm = AppViewModel(sameMatch, DemoBilling(), clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        vm.startMatching()
+        advanceTimeBy(100); runCurrent()
+        vm.cancelMatching()
+        vm.startMatching()
+        advanceTimeBy(10_000); runCurrent()
+        assertEquals("M", vm.state.value.chat?.match?.id)
+        assertTrue("the chat on screen must not be ended by the old search", left.isEmpty())
+    }
+
+    @Test fun anOldSearchErrorDoesNotStopTheNewSearch() = runTest(dispatcher) {
+        var calls = 0
+        val flaky = object : Backend by backend {
+            override suspend fun findMatch(target: Target): Match? {
+                delay(900)
+                if (++calls == 1) throw BackendException("network")
+                return backend.findMatch(target)
+            }
+        }
+        val vm = AppViewModel(flaky, DemoBilling(), clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        vm.startMatching()
+        advanceTimeBy(100); runCurrent()
+        vm.cancelMatching()
+        vm.startMatching() // the first request fails after this
+        advanceTimeBy(10_000); runCurrent()
+        assertNotNull("the new search still found someone", vm.state.value.chat)
+        assertNull("no error from the old search", vm.state.value.notice)
     }
 
     @Test fun newPostAppearsOnMyProfile() = runTest(dispatcher) {

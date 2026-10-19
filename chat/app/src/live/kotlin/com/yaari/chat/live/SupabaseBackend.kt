@@ -14,6 +14,7 @@ import com.yaari.chat.data.Entitlements
 import com.yaari.chat.data.Match
 import com.yaari.chat.data.MatchEvent
 import com.yaari.chat.data.NewProfile
+import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.model.Gender
@@ -56,9 +57,8 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import io.ktor.client.call.body
 import io.ktor.http.ContentType
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
@@ -104,7 +104,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private val json = Json { ignoreUnknownKeys = true }
     /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
     private val signedUrls = ConcurrentHashMap<String, Pair<String, Long>>()
-    private val cleanup = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val typingChannels = ConcurrentHashMap<String, RealtimeChannel>()
 
     @Serializable private data class ProfileRow(
@@ -223,13 +222,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             val m = matchRow(id) ?: throw BackendException("not_found")
             val partnerId = if (m.userA == uid) m.userB else m.userA
             Match(id, card(partnerId) ?: throw BackendException("not_found"))
-        } catch (e: Exception) {
-            // The server already paired us: end that chat once the exit lock allows, or the partner waits for nobody.
-            cleanup.launch {
-                delay(EXIT_LOCK_MAX_MS)
-                runCatching { client.postgrest.rpc("leave_match", buildJsonObject { put("p_match", id) }) }
-            }
+        } catch (e: CancellationException) {
             throw e
+        } catch (e: Exception) {
+            // The server already paired us; the app ends that chat (it knows whether the user opened it).
+            throw OrphanMatchException(id)
         }
     }
 
@@ -449,7 +446,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     companion object {
         private const val BUCKET = "media"
-        private const val EXIT_LOCK_MAX_MS = 5_500L
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
         private val CODES = listOf(

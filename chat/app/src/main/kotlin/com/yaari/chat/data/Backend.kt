@@ -36,6 +36,9 @@ data class VideoToken(val url: String, val token: String)
 /** Server-side rule violations; [code] matches the database error (exit_locked, premium_required, banned, ...). */
 class BackendException(val code: String) : Exception(code)
 
+/** The server paired us ([matchId]) but the match can't be shown; the caller ends it once the exit lock allows. */
+class OrphanMatchException(val matchId: String) : Exception("orphan_match")
+
 object Products {
     const val PREMIUM = "yaari_premium_monthly"
     const val GENDER_PASS = "gender_pass_24h"
