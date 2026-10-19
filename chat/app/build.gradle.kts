@@ -115,6 +115,8 @@ dependencies {
     "liveImplementation"(libs.supabase.storage)
     "liveImplementation"(libs.supabase.functions)
     "liveImplementation"(libs.ktor.okhttp)
+    // Coil needs a network fetcher for https images (signed Supabase URLs); without it they silently fail.
+    "liveImplementation"(libs.coil.network.okhttp)
     "liveImplementation"(libs.kotlinx.serialization.json)
     "liveImplementation"(libs.livekit.android)
     "liveImplementation"(libs.billing.ktx)
