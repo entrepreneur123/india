@@ -2,4 +2,5 @@
     <string name="allow_camera">Allow camera and microphone to start the call</string>
     <string name="connecting">Connecting…</string>
     <string name="waiting_video">Waiting for %1$s\'s video…</string>
+    <string name="reconnecting">Reconnecting…</string>
 </resources>

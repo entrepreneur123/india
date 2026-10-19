@@ -37,6 +37,7 @@ import com.yaari.chat.live.SupabaseBackend
 import com.yaari.chat.model.Profile
 import com.yaari.chat.ui.Avatar
 import io.livekit.android.LiveKit
+import io.livekit.android.RoomOptions
 import io.livekit.android.events.RoomEvent
 import io.livekit.android.events.collect
 import io.livekit.android.renderer.TextureViewRenderer
@@ -76,10 +77,15 @@ object Flavor {
             return
         }
 
-        val room = remember(token) { LiveKit.create(context.applicationContext) }
+        // Adaptive stream: the receiver gets a resolution that fits its view and network.
+        // Dynacast: layers nobody watches are not sent. Both matter on Indian mobile networks.
+        val room = remember(token) {
+            LiveKit.create(context.applicationContext, options = RoomOptions(adaptiveStream = true, dynacast = true))
+        }
         val remote = remember(room) { TextureViewRenderer(context).also { room.initVideoRenderer(it) } }
         val local = remember(room) { TextureViewRenderer(context).also { room.initVideoRenderer(it); it.setMirror(true) } }
         var remoteOn by remember { mutableStateOf(false) }
+        var reconnecting by remember { mutableStateOf(false) }
 
         LaunchedEffect(room) {
             launch {
@@ -87,6 +93,8 @@ object Flavor {
                     when (e) {
                         is RoomEvent.TrackSubscribed -> (e.track as? VideoTrack)?.let { it.addRenderer(remote); remoteOn = true }
                         is RoomEvent.TrackUnsubscribed -> if (e.track is VideoTrack) remoteOn = false
+                        is RoomEvent.Reconnecting -> reconnecting = true
+                        is RoomEvent.Reconnected -> reconnecting = false
                         else -> Unit
                     }
                 }
@@ -115,6 +123,12 @@ object Flavor {
                     Avatar(partner, 140.dp)
                     Text(stringResource(R.string.waiting_video, partner.name), color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
                 }
+            }
+            if (reconnecting) {
+                Text(
+                    stringResource(R.string.reconnecting), color = Color.White,
+                    modifier = Modifier.align(Alignment.Center).background(Color(0x99000000), RoundedCornerShape(8.dp)).padding(12.dp),
+                )
             }
             Box(
                 Modifier.align(Alignment.TopEnd).padding(top = 48.dp, end = 16.dp).size(96.dp, 128.dp)
