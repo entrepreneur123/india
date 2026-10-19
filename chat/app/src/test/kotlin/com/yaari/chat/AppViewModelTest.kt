@@ -1,6 +1,7 @@
 package com.yaari.chat
 
 import com.yaari.chat.data.Backend
+import com.yaari.chat.model.Target as MatchTarget
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
@@ -20,6 +21,7 @@ import com.yaari.chat.ui.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -64,8 +66,8 @@ class AppViewModelTest {
 
     private val adult = ProfileDraft(name = "Dev", gender = Gender.MALE, day = "1", month = "1", year = "2000", agreed = true)
 
-    private fun TestScope.signedIn(phone: String = "9876543210"): AppViewModel {
-        val vm = vm()
+    private fun TestScope.signedIn(phone: String = "9876543210", make: () -> AppViewModel = { vm() }): AppViewModel {
+        val vm = make()
         advanceUntilIdle()
         vm.requestOtp(india, phone)
         advanceUntilIdle()
@@ -523,5 +525,98 @@ class AppViewModelTest {
         vm.enterRoom(vm.state.value.rooms.first()); advanceUntilIdle()
         assertNull(vm.state.value.room)
         assertEquals(UiText(R.string.err_banned), vm.state.value.notice)
+    }
+    // ---- Block (without reporting) --------------------------------------------------------------
+
+    /** Records which of block / report reached the server. */
+    private val calls = mutableListOf<String>()
+    private val spy = object : Backend by backend {
+        override suspend fun block(userId: String) { calls += "block"; backend.block(userId) }
+        override suspend fun report(partnerId: String, reason: ReportReason, matchId: String?) { calls += "report"; backend.report(partnerId, reason, matchId) }
+    }
+
+    @Test fun blockingInARandomChatEndsItWithoutAReport() = runTest(dispatcher) {
+        val vm = signedIn { AppViewModel(spy, DemoBilling(), clock = { now }, today = { today }) }
+        matched(vm)
+        val partner = vm.state.value.chat!!.match.partner
+        vm.block(partner); advanceUntilIdle()
+        assertNull("block works inside the exit lock and closes the chat", vm.state.value.chat)
+        assertEquals(listOf("block"), calls)
+        assertTrue(vm.state.value.recents.none { it.partner.id == partner.id })
+        assertNull("blocked profile is hidden", backend.profile(partner.id))
+        assertEquals(UiText(R.string.msg_blocked, partner.name), vm.state.value.notice)
+    }
+
+    @Test fun blockingFromRecentClosesTheThreadAndRemovesTheRow() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        now += 5_000
+        val partner = vm.state.value.chat!!.match.partner
+        vm.leave(next = false); advanceUntilIdle()
+        vm.openDm(partner.id); advanceTimeBy(100); runCurrent()
+        vm.openProfile(partner); advanceTimeBy(100); runCurrent()
+        vm.block(partner); advanceTimeBy(100); runCurrent()
+        assertNull(vm.state.value.dm)
+        assertNull(vm.state.value.viewing)
+        assertTrue(vm.state.value.recents.none { it.partner.id == partner.id })
+        vm.refreshRecents(); advanceUntilIdle()
+        assertTrue("still gone after a refresh", vm.state.value.recents.none { it.partner.id == partner.id })
+    }
+
+    @Test fun blockingAFriendRemovesThem() = runTest(dispatcher) {
+        val vm = signedIn { AppViewModel(spy, DemoBilling(), clock = { now }, today = { today }) }
+        val friend = vm.state.value.friends.single().profile
+        vm.block(friend); advanceUntilIdle()
+        assertTrue(vm.state.value.friends.isEmpty())
+        vm.selectTab(com.yaari.chat.ui.Tab.RECENT); advanceUntilIdle()
+        assertTrue("still gone after a refresh", vm.state.value.friends.isEmpty())
+        assertEquals(listOf("block"), calls)
+    }
+
+    // ---- Background: polling stops while the app is not on screen ---------------------------------
+
+    @Test fun matchingPollsOnlyWhileTheAppIsOnScreen() = runTest(dispatcher) {
+        val visible = MutableStateFlow(true)
+        var polls = 0
+        val counting = object : Backend by backend {
+            override suspend fun findMatch(target: MatchTarget): Match? { polls++; return null }
+        }
+        val vm = signedIn { AppViewModel(counting, DemoBilling(), clock = { now }, today = { today }, foreground = visible) }
+        vm.startMatching()
+        advanceTimeBy(5_000); runCurrent()
+        val onScreen = polls
+        assertTrue("polls every 2 s on screen", onScreen >= 2)
+        visible.value = false
+        advanceTimeBy(2_100); runCurrent() // a poll already waiting on its delay may still run once
+        val atPause = polls
+        advanceTimeBy(60_000); runCurrent()
+        assertEquals("no requests for a minute in the background", atPause, polls)
+        assertTrue("the search itself is kept", vm.state.value.searching)
+        visible.value = true
+        runCurrent()
+        assertEquals("back on screen: polls again at once", atPause + 1, polls)
+        vm.cancelMatching(); advanceTimeBy(3_000); runCurrent()
+    }
+
+    @Test fun roomHeartbeatPausesInTheBackgroundAndBeatsOnReturn() = runTest(dispatcher) {
+        val visible = MutableStateFlow(true)
+        var beats = 0
+        val counting = object : Backend by backend {
+            override suspend fun joinRoom(roomId: String) { beats++; backend.joinRoom(roomId) }
+        }
+        val vm = signedIn { AppViewModel(counting, DemoBilling(), clock = { now }, today = { today }, foreground = visible) }
+        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
+        vm.enterRoom(vm.state.value.rooms.first())
+        advanceTimeBy(100); runCurrent()
+        assertEquals("joined once", 1, beats)
+        advanceTimeBy(AppViewModel.ROOM_BEAT_MS); runCurrent()
+        assertEquals("one beat after 30 s", 2, beats)
+        visible.value = false
+        advanceTimeBy(AppViewModel.ROOM_BEAT_MS * 4); runCurrent()
+        assertEquals("no beats in the background", 2, beats)
+        visible.value = true
+        runCurrent()
+        assertEquals("beats at once when back", 3, beats)
+        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
     }
 }

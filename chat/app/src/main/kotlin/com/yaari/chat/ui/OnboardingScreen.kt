@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -33,7 +34,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.rounded.CameraAlt
@@ -45,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +81,7 @@ fun OnboardingScreen(vm: AppViewModel, state: Onboarding) {
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding().imePadding()
             .verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         when (state.step) {
             Onboarding.Step.PHONE -> PhoneStep(vm, state)
@@ -91,7 +93,7 @@ fun OnboardingScreen(vm: AppViewModel, state: Onboarding) {
 }
 
 @Composable
-private fun Title(text: String) = Text(text, style = MaterialTheme.typography.headlineLarge)
+private fun Title(text: String) = Text(text, style = MaterialTheme.typography.headlineMedium)
 
 @Composable
 private fun Lead(text: String) = Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
@@ -102,23 +104,23 @@ private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
     var iso by rememberSaveable { mutableStateOf(Countries.default().iso) }
     var picking by remember { mutableStateOf(false) }
     val country = Countries.byIso(iso) ?: Countries.default()
-    Wordmark(size = 26)
-    Spacer(Modifier.height(18.dp))
+    Wordmark(size = 28)
+    Spacer(Modifier.height(16.dp))
     Title(stringResource(R.string.phone_title))
     Lead(stringResource(R.string.phone_sub))
-    Spacer(Modifier.height(10.dp))
+    Spacer(Modifier.height(8.dp))
     // Bottom-aligned: the text field reserves room above its box for the floating label.
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Bottom) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
         val interaction = remember { MutableInteractionSource() }
         Row(
-            Modifier.height(56.dp).pressScale(interaction).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
-                .clickable(interaction, indication = null, role = Role.DropdownList) { picking = true }.padding(horizontal = 14.dp),
-            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+            Modifier.height(56.dp).clip(RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                .clickable(interaction, indication = ripple(), role = Role.DropdownList) { picking = true }.padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(country.flag, fontSize = 22.sp)
-            Text("+${country.dial}", style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp), fontWeight = FontWeight.SemiBold)
-            Icon(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.country), Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("+${country.dial}", style = MaterialTheme.typography.bodyLarge)
+            Icon(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.country), Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Field(
             phone, { if (it.length <= 16) phone = it }, stringResource(R.string.mobile_number), Modifier.weight(1f),
@@ -127,10 +129,7 @@ private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
     }
     Text(stringResource(R.string.phone_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Spacer(Modifier.height(8.dp))
-    GradientButton(
-        stringResource(R.string.send_otp), { vm.requestOtp(country, phone) }, enabled = !state.busy && phone.isNotBlank(),
-        shape = RoundedCornerShape(16.dp), corner = 16.dp,
-    )
+    PrimaryButton(stringResource(R.string.send_otp), { vm.requestOtp(country, phone) }, enabled = !state.busy && phone.isNotBlank())
     if (picking) CountrySheet(onDismiss = { picking = false }) { iso = it.iso; picking = false }
 }
 
@@ -145,11 +144,11 @@ private fun CountrySheet(onDismiss: () -> Unit, onPick: (Country) -> Unit) {
             LazyColumn(Modifier.fillMaxWidth().height(420.dp)) {
                 items(sorted.filter { query.isBlank() || it.name().contains(query.trim(), ignoreCase = true) || it.dial.startsWith(query.trim().removePrefix("+")) }) { c ->
                     Row(
-                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onPick(c) }.padding(vertical = 14.dp, horizontal = 8.dp),
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onPick(c) }.padding(vertical = 16.dp, horizontal = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(c.flag, fontSize = 20.sp)
-                        Text(c.name(), Modifier.weight(1f).padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                        Text(c.name(), Modifier.weight(1f).padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
                         Text("+${c.dial}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
@@ -163,8 +162,8 @@ private fun OtpStep(vm: AppViewModel, state: Onboarding) {
     var code by rememberSaveable { mutableStateOf("") }
     BackHandler { vm.backToPhone() }
     CircleIconButton(
-        Icons.AutoMirrored.Rounded.ArrowBackIos, stringResource(R.string.change_number), vm::backToPhone,
-        Modifier.offset(x = (-12).dp), background = Color.Transparent, iconSize = 20.dp,
+        Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.change_number), vm::backToPhone,
+        Modifier.offset(x = (-12).dp),
     )
     Title(stringResource(R.string.otp_title))
     Lead(stringResource(R.string.otp_prompt, "+" + state.phone))
@@ -172,14 +171,11 @@ private fun OtpStep(vm: AppViewModel, state: Onboarding) {
     OtpBoxes(code, stringResource(R.string.otp_label)) { if (it.length <= 6 && it.all(Char::isDigit)) code = it }
     Text(stringResource(R.string.demo_otp, FakeBackend.DEMO_OTP), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(
-        stringResource(R.string.change_number), color = Brand.Pink, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button) { vm.backToPhone() }.padding(vertical = 8.dp),
+        stringResource(R.string.change_number), color = Brand.Pink, style = MaterialTheme.typography.labelLarge,
+        modifier = Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button) { vm.backToPhone() }.padding(vertical = 14.dp),
     )
     Spacer(Modifier.height(8.dp))
-    GradientButton(
-        stringResource(R.string.verify), { vm.verifyOtp(code) }, enabled = code.length == 6 && !state.busy,
-        shape = RoundedCornerShape(16.dp), corner = 16.dp,
-    )
+    PrimaryButton(stringResource(R.string.verify), { vm.verifyOtp(code) }, enabled = code.length == 6 && !state.busy)
 }
 
 /** One hidden text field drawn as six boxes; the next empty box carries the brand focus ring. */
@@ -198,19 +194,18 @@ private fun OtpBoxes(code: String, label: String, onChange: (String) -> Unit) {
                     val border by animateColorAsState(
                         when {
                             focused -> Brand.Pink
-                            else -> MaterialTheme.colorScheme.outlineVariant
+                            else -> MaterialTheme.colorScheme.outline
                         },
                         label = "otp",
                     )
                     Box(
-                        Modifier.weight(1f).height(60.dp)
-                            .then(if (focused) Modifier.border(4.dp, Brand.Pink.copy(alpha = 0.12f), RoundedCornerShape(18.dp)).padding(3.dp) else Modifier)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(if (digit != null || focused) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceContainerHigh)
-                            .border(if (focused) 1.5.dp else 1.dp, border, RoundedCornerShape(16.dp)),
+                        Modifier.weight(1f).height(56.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .border(if (focused) 2.dp else 1.dp, border, RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center,
                     ) {
-                        if (digit != null) Text("$digit", style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp))
+                        if (digit != null) Text("$digit", style = MaterialTheme.typography.headlineSmall)
                         else if (focused) {
                             val blink by rememberLoop(1000, from = 1f, to = 0f, still = 1f)
                             Box(Modifier.size(2.dp, 28.dp).clip(CircleShape).background(Brand.Pink.copy(alpha = if (blink > 0.5f) 1f else 0f)))
@@ -249,7 +244,7 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
             contentAlignment = Alignment.Center,
         ) { Icon(Icons.Rounded.CameraAlt, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.surface) }
         Column(Modifier.offset(x = (-14).dp)) {
-            Text(stringResource(R.string.create_profile), style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp))
+            Text(stringResource(R.string.create_profile), style = MaterialTheme.typography.headlineSmall)
             Text(stringResource(R.string.create_profile_sub), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
         }
     }
@@ -260,17 +255,17 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Gender.entries.forEach { g ->
                 val selected = d.gender == g
-                val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface, label = "g")
+                val bg by animateColorAsState(if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface, label = "g")
                 val interaction = remember { MutableInteractionSource() }
                 Box(
-                    Modifier.weight(1f).height(48.dp).pressScale(interaction).clip(RoundedCornerShape(16.dp)).background(bg)
-                        .then(if (selected) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)))
-                        .clickable(interaction, indication = null, role = Role.RadioButton) { d = d.copy(gender = g) },
+                    Modifier.weight(1f).height(48.dp).clip(CircleShape).background(bg)
+                        .border(1.dp, if (selected) Brand.Pink else MaterialTheme.colorScheme.outline, CircleShape)
+                        .clickable(interaction, indication = ripple(), role = Role.RadioButton) { d = d.copy(gender = g) },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        stringResource(g.label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold,
-                        color = if (selected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface,
+                        stringResource(g.label), style = MaterialTheme.typography.labelLarge,
+                        color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -298,20 +293,21 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(d.agreed, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Brand.Pink))
-        Text(stringResource(R.string.consent), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 10.dp))
+        Text(stringResource(R.string.consent), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 8.dp))
     }
-    GradientButton(stringResource(R.string.start), { vm.createProfile(d) }, enabled = !busy, shape = RoundedCornerShape(16.dp), corner = 16.dp)
+    PrimaryButton(stringResource(R.string.start), { vm.createProfile(d) }, enabled = !busy)
 }
 
 @Composable
 private fun Panel(content: @Composable ColumnScope.() -> Unit) {
     Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp), content = content,
     )
 }
 
 @Composable
 private fun FieldLabel(text: String) {
-    Text(text, style = MaterialTheme.typography.labelMedium.copy(fontSize = 13.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(text, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

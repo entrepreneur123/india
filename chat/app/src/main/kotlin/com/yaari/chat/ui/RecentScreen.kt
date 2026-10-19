@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -67,7 +69,7 @@ fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     Column(Modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.tab_recent), onSettings)
         BoxWithConstraints(
-            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp).clip(CircleShape)
+            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
         ) {
             // A white thumb slides under the chosen segment.
@@ -75,8 +77,8 @@ fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
             val x by animateDpAsState(if (page == 0) 0.dp else half, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow), label = "seg")
             Box(
                 Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(half).height(40.dp)
-                    .shadow(2.dp, CircleShape, ambientColor = Brand.Night.copy(alpha = 0.2f), spotColor = Brand.Night.copy(alpha = 0.2f))
-                    .clip(CircleShape).background(MaterialTheme.colorScheme.surface),
+                    .clip(CircleShape).background(MaterialTheme.colorScheme.surface)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
             )
             Row {
                 Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f)) { page = 0 }
@@ -98,15 +100,14 @@ private fun Segment(text: String, selected: Boolean, modifier: Modifier, count: 
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+            text, style = MaterialTheme.typography.labelLarge,
             color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold,
         )
         if (count > 0) {
             Text(
                 "$count", Modifier.padding(start = 6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.07f))
                     .padding(horizontal = 6.dp, vertical = 1.dp),
-                style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelSmall,
                 color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -133,7 +134,8 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
             item { SectionLabel(stringResource(R.string.friends_count, friends.size)) }
             items(friends, key = { "f-" + it.profile.id }) { f ->
                 PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.genderCity(), onOpen = { vm.openDm(f.profile.id) }, onAvatar = { vm.openProfile(f.profile) }) {
-                    CircleIconButton(Icons.AutoMirrored.Outlined.Chat, stringResource(R.string.message), { vm.openDm(f.profile.id) }, iconSize = 19.dp)
+                    CircleIconButton(Icons.AutoMirrored.Outlined.Chat, stringResource(R.string.message), { vm.openDm(f.profile.id) }, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    PersonMenu(f.profile, onBlock = { vm.block(f.profile) }, onReport = { vm.report(f.profile.id, it) })
                 }
             }
         }
@@ -148,17 +150,17 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
     }
 }
 
-/** A friend request on a soft grey card: Decline (outlined) and Accept (gradient). */
+/** A friend request on a soft grey card: Decline (outlined) and Accept (filled brand colour). */
 @Composable
 private fun RequestCard(p: Profile, modifier: Modifier, onOpen: () -> Unit, onAnswer: (Boolean) -> Unit) {
     Row(
-        modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 5.dp).clip(RoundedCornerShape(22.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh).clickable(role = Role.Button, onClick = onOpen).padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer).clickable(role = Role.Button, onClick = onOpen).padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Avatar(p, 48.dp)
         Column(Modifier.weight(1f)) {
-            Text(p.nameAgeFlag(), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(p.nameAgeFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 p.genderCity(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
@@ -181,7 +183,10 @@ private fun RecentList(vm: AppViewModel, s: UiState) {
             PersonRow(
                 modifier = Modifier.animateItem(), p = r.partner, subtitle = r.lastText ?: r.partner.genderCity(), time = r.metAt,
                 onOpen = { vm.openDm(r.partner.id) }, onAvatar = { vm.openProfile(r.partner) },
-            ) { FriendAction(state, onAdd = { vm.addFriend(r.partner) }) }
+            ) {
+                FriendAction(state, onAdd = { vm.addFriend(r.partner) })
+                PersonMenu(r.partner, onBlock = { vm.block(r.partner) }, onReport = { vm.report(r.partner.id, it) })
+            }
         }
     }
 }
@@ -195,7 +200,7 @@ private fun FriendAction(state: FriendState, onAdd: () -> Unit) {
         FriendState.INCOMING -> SoftButton(stringResource(R.string.accept), onAdd, accent = true, height = 36.dp, shape = CircleShape)
         FriendState.NONE -> CircleIconButton(
             Icons.Outlined.PersonAddAlt, stringResource(R.string.add_friend), onAdd,
-            background = Brand.Pink.copy(alpha = 0.1f), tint = Brand.Pink, iconSize = 19.dp,
+            background = MaterialTheme.colorScheme.primaryContainer, tint = MaterialTheme.colorScheme.onPrimaryContainer, iconSize = 20.dp,
         )
     }
 }
@@ -203,8 +208,8 @@ private fun FriendAction(state: FriendState, onAdd: () -> Unit) {
 @Composable
 private fun SectionLabel(text: String) {
     Text(
-        text, style = MaterialTheme.typography.titleSmall,
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 22.dp, bottom = 8.dp),
+        text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
     )
 }
 
@@ -215,15 +220,15 @@ private fun PersonRow(
 ) {
     val interaction = remember { MutableInteractionSource() }
     Row(
-        modifier.fillMaxWidth().pressScale(interaction, 0.98f).clickable(interaction, indication = null, role = Role.Button, onClick = onOpen)
-            .padding(start = 20.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+        modifier.fillMaxWidth().clickable(interaction, indication = ripple(), role = Role.Button, onClick = onOpen)
+            .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Avatar(p, 52.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onAvatar))
+        Avatar(p, 48.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onAvatar))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    p.nameWithFlag(), style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.5.sp), maxLines = 1,
+                    p.nameWithFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
                 )
                 if (time != null && time > 0) {
@@ -234,10 +239,10 @@ private fun PersonRow(
                 }
             }
             Text(
-                subtitle, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.5.sp), color = MaterialTheme.colorScheme.onSurfaceVariant,
+                subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) { actions() }
+        Row(horizontalArrangement = Arrangement.spacedBy(0.dp), verticalAlignment = Alignment.CenterVertically) { actions() }
     }
 }

@@ -1,0 +1,4 @@
+Lcom/yaari/chat/**;
+HSPLcom/yaari/chat/**->**(**)**
+Lcoil3/**;
+HSPLcoil3/**->**(**)**

@@ -306,4 +306,9 @@
     <string name="room_empty_title">अभी यहाँ शांति है</string>
     <string name="room_empty_owner">लोगों को बुलाने के लिए कोड शेयर करें, फिर हाय बोलें।</string>
     <string name="room_empty">सबसे पहले हाय बोलिए।</string>
+    <string name="language_system">फ़ोन की भाषा</string>
+    <string name="block">ब्लॉक करें</string>
+    <string name="block_title">%1$s को ब्लॉक करें?</string>
+    <string name="block_text">आप एक-दूसरे को नहीं देखेंगे और दोबारा मैच नहीं होंगे।</string>
+    <string name="msg_blocked">%1$s को ब्लॉक कर दिया गया</string>
 </resources>

@@ -201,10 +201,12 @@ open class FakeBackend(
         m.ended = true
     }
 
-    override suspend fun report(partnerId: String, reason: ReportReason, matchId: String?) {
-        blocked += partnerId
-        friendships.remove(partnerId)
-        matches.values.filter { it.partner.id == partnerId }.forEach { it.ended = true }
+    override suspend fun report(partnerId: String, reason: ReportReason, matchId: String?) = block(partnerId)
+
+    override suspend fun block(userId: String) {
+        blocked += userId
+        friendships.remove(userId)
+        matches.values.filter { it.partner.id == userId }.forEach { it.ended = true }
     }
 
     override suspend fun requestVideo(matchId: String) {

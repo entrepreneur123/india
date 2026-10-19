@@ -29,7 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material.icons.rounded.WavingHand
@@ -38,6 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -114,13 +115,13 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
         PullToRefreshBox(refreshing, onRefresh = { refreshing = true; vm.refreshRooms() }, Modifier.fillMaxSize()) {
             LazyVerticalGrid(
                 GridCells.Fixed(2), Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (s.rooms.isEmpty()) {
                     // Skeletons while the list loads, shaped like the real cards.
-                    item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(28.dp)).shimmer()) }
-                    items(4) { Box(Modifier.height(164.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
+                    item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
+                    items(4) { Box(Modifier.height(160.dp).clip(RoundedCornerShape(16.dp)).shimmer()) }
                     return@LazyVerticalGrid
                 }
                 official.firstOrNull()?.let { featured ->
@@ -142,7 +143,7 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
                     item(key = "more", span = { GridItemSpan(maxLineSpan) }) { SectionTitle(stringResource(R.string.rooms_more)) }
                 }
                 itemsIndexed(official.drop(1), key = { _, r -> r.id }) { i, room ->
-                    RoomCard(room, tintFor(i), bobDelay = i * 180, modifier = Modifier.enterStagger(i)) { vm.enterRoom(room) }
+                    RoomCard(room, tintFor(i), modifier = Modifier.enterStagger(i)) { vm.enterRoom(room) }
                 }
             }
         }
@@ -156,66 +157,51 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
 
 private enum class RoomSheet { NONE, CREATE, CODE }
 
-/** The first room (Global Lounge), wide, in a slowly flowing brand gradient with a glow underneath. */
+/** The first room (Global Lounge), wide, on a flat tonal brand card: the one hero element of the tab. */
 @Composable
 private fun FeaturedRoom(room: Room, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
-    val flow by rememberLoop(9000, reverse = true, easing = FastOutSlowInEasing, still = 0.3f)
     Column(
-        Modifier.fillMaxWidth().pressScale(interaction, 0.98f)
-            .glow(Brand.Pink, radius = 22.dp, offsetY = 16.dp, corner = 28.dp, inset = 18.dp, alpha = 0.6f)
-            .clip(RoundedCornerShape(28.dp))
-            .drawBehind {
-                // background-size 240 %, background-position 0 -> 100 %: a gradient wider than the card sliding across it.
-                val span = size.width * 2.4f
-                val x = -(span - size.width) * flow
-                drawRect(
-                    Brush.linearGradient(
-                        0f to Color(0xFFFF3D68), 0.45f to Color(0xFFFF7A45), 0.75f to Color(0xFFFF4F8B), 1f to Color(0xFFFF3D68),
-                        start = Offset(x, 0f), end = Offset(x + span, size.height * 1.4f),
-                    ),
-                )
-            }
-            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(20.dp),
+        Modifier.fillMaxWidth().pressScale(interaction).clip(RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick).padding(20.dp),
     ) {
-        Row(verticalAlignment = Alignment.Top) {
-            Bobbing(room.emoji, 34.sp, delayMs = 0)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(room.emoji, fontSize = 32.sp)
             Spacer(Modifier.weight(1f))
             Pill(
-                pluralStringResource(R.plurals.online, room.online, room.online), background = Color.White.copy(alpha = 0.2f), color = Color.White,
-                leading = { PresenceDot(6.dp) },
+                pluralStringResource(R.plurals.online, room.online, room.online), background = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onSurface, leading = { PresenceDot(6.dp) },
             )
         }
-        Spacer(Modifier.height(26.dp))
-        Text(room.name(), style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp), color = Color.White)
+        Spacer(Modifier.height(16.dp))
+        Text(room.name(), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
         room.about()?.let {
             Spacer(Modifier.height(4.dp))
-            Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.88f))
+            Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
         }
-        Spacer(Modifier.height(18.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            Row(
-                Modifier.height(40.dp).clip(CircleShape).background(Color.White).padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text(stringResource(R.string.join), color = Brand.Night, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp))
-                Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, Modifier.size(16.dp), tint = Brand.Night)
-            }
+        Spacer(Modifier.height(16.dp))
+        Row(
+            Modifier.align(Alignment.End).height(40.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(stringResource(R.string.join), color = Color.White, style = MaterialTheme.typography.labelLarge)
+            Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, Modifier.size(18.dp), tint = Color.White)
         }
     }
 }
 
 @Composable
-private fun RoomCard(room: Room, tint: Color, bobDelay: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun RoomCard(room: Room, tint: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Column(
-        modifier.height(164.dp).pressScale(interaction, 0.97f).clip(RoundedCornerShape(24.dp)).background(tint)
-            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(16.dp),
+        modifier.height(160.dp).pressScale(interaction).clip(RoundedCornerShape(16.dp)).background(tint)
+            .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick).padding(16.dp),
     ) {
-        Bobbing(room.emoji, 28.sp, delayMs = bobDelay)
-        Spacer(Modifier.height(10.dp))
+        Text(room.emoji, fontSize = 28.sp)
+        Spacer(Modifier.height(8.dp))
         Text(
-            room.name(), style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.5.sp, lineHeight = 19.sp), maxLines = 2,
+            room.name(), style = MaterialTheme.typography.titleSmall, maxLines = 2,
             overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface,
         )
         room.about()?.let {
@@ -227,13 +213,6 @@ private fun RoomCard(room: Room, tint: Color, bobDelay: Int, modifier: Modifier 
         Spacer(Modifier.weight(1f))
         OnlineCount(room.online)
     }
-}
-
-/** An emoji that floats up and down a little, out of step with its neighbours. */
-@Composable
-private fun Bobbing(emoji: String, size: TextUnit, modifier: Modifier = Modifier, delayMs: Int) {
-    val y by rememberLoop(1800, from = -1f, to = 1f, reverse = true, easing = FastOutSlowInEasing, offsetMs = delayMs % 1800, still = 0f)
-    Text(emoji, modifier.graphicsLayer { translationY = y * 3.dp.toPx() }, fontSize = size)
 }
 
 @Composable
@@ -254,12 +233,12 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
     var confirmClose by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         Row(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 16.dp),
+            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBackIos, stringResource(R.string.back), vm::leaveRoom, background = Color.Transparent, iconSize = 20.dp)
+            CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back), vm::leaveRoom)
             Box(
-                Modifier.size(40.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) { Text(room.emoji, fontSize = 22.sp) }
             Column(Modifier.padding(start = 12.dp).weight(1f)) {
@@ -307,7 +286,7 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
             Modifier.weight(1f).fillMaxWidth(), state = list, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Brand.Pink) } }
+            if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) } }
             if (!state.loading && state.messages.isEmpty()) {
                 item {
                     EmptyState(
@@ -354,7 +333,7 @@ private fun RoomLine(m: RoomMessage, onProfile: () -> Unit) {
             }
             Text(
                 m.text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.clip(RoundedCornerShape(topStart = 6.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 20.dp))
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 20.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 10.dp),
             )
         }

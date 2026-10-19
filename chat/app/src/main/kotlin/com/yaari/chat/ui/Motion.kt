@@ -46,11 +46,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -59,13 +59,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
-// Motion language: springs for anything the finger touches, slow loops for ambient life, nothing linear on taps.
-// Ambient loops stop when the phone's "Remove animations" setting is on (animator duration scale 0).
+// Motion language (Material 3): short, subtle and critically damped; no bounce. A handful of small ambient loops
+// (typing dots, presence dot, the matching radar) stop when the phone's "Remove animations" setting is on.
 
 /** True when the user turned animations off; ambient loops then hold still. */
 val LocalReducedMotion = staticCompositionLocalOf { false }
@@ -99,13 +97,12 @@ fun rememberLoop(
     )
 }
 
-/** Shrinks a little while pressed and springs back, like iOS / Instagram buttons. Pair with the same [interaction] in clickable. */
-fun Modifier.pressScale(interaction: MutableInteractionSource, pressed: Float = 0.95f): Modifier = composed {
+/** Settles a touch smaller while pressed (no bounce). Pair with the same [interaction] in clickable. */
+fun Modifier.pressScale(interaction: MutableInteractionSource, pressed: Float = 0.98f): Modifier = composed {
     val isPressed by interaction.collectIsPressedAsState()
     val scale by animateFloatAsState(
-        if (isPressed) pressed else 1f,
-        // stiffness 600 / damping 30 / mass 0.6 in the mockup's framer-motion terms
-        spring(dampingRatio = 0.6f, stiffness = 900f), label = "press",
+        if (isPressed) maxOf(pressed, 0.96f) else 1f,
+        spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium), label = "press",
     )
     graphicsLayer { scaleX = scale; scaleY = scale }
 }
@@ -171,51 +168,19 @@ fun RollingNumber(value: Int, style: TextStyle, color: Color = Color.Unspecified
 }
 
 /**
- * Three slow drifting colour blobs over ink, like the mockup's lobby aurora (pink, orange, raspberry),
- * with a light ink veil on top so text stays readable.
+ * The dark screens' backdrop: flat ink with one very faint, static brand tint at the top.
+ * Static on purpose: no per-frame drawing, so it costs nothing on low-end GPUs and batteries.
  */
-fun Modifier.aurora(intensity: Float = 1f): Modifier = composed {
-    val a by rememberLoop(14_000, to = (2 * PI).toFloat(), still = 0.8f)
-    drawBehind {
+fun Modifier.aurora(): Modifier = drawWithCache {
+    val tint = Brush.radialGradient(
+        listOf(Brand.LogoPink.copy(alpha = 0.10f), Color.Transparent),
+        center = Offset(size.width * 0.5f, 0f), radius = size.width * 0.9f,
+    )
+    onDrawBehind {
         drawRect(Brand.Night)
-        val w = size.width
-        val h = size.height
-        fun blob(color: Color, alpha: Float, cx: Float, cy: Float, r: Float) =
-            drawCircle(
-                Brush.radialGradient(listOf(color.copy(alpha = alpha * intensity), color.copy(alpha = alpha * intensity * 0.35f), Color.Transparent), center = Offset(cx, cy), radius = r),
-                r, Offset(cx, cy),
-            )
-        blob(Color(0xFFFF3D68), 0.42f, w * (0.10f + 0.16f * sin(a)), h * (0.24f + 0.08f * sin(a)), w * 0.78f)
-        blob(Color(0xFFFF7A45), 0.34f, w * (0.95f - 0.18f * sin(a * 1.0f + 1f)), h * (0.42f - 0.05f * sin(a + 1f)), w * 0.80f)
-        blob(Color(0xFFD9346E), 0.28f, w * (0.40f + 0.10f * sin(a + 2f)), h * (0.70f - 0.08f * sin(a + 2f)), w * 0.62f)
-        drawRect(Brand.Night.copy(alpha = 0.30f))
+        drawRect(tint)
     }
 }
-
-/** A burst of confetti from the centre, played once when [key] changes (a new match). */
-@Composable
-fun ConfettiBurst(key: Any, modifier: Modifier = Modifier) {
-    if (LocalReducedMotion.current) return
-    val progress = remember(key) { Animatable(0f) }
-    LaunchedEffect(key) { progress.animateTo(1f, tween(1400)) }
-    val pieces = remember(key) {
-        val r = Random(key.hashCode())
-        List(48) { Triple(r.nextFloat() * 2 * PI.toFloat(), 0.4f + r.nextFloat() * 0.6f, Confetti[r.nextInt(Confetti.size)]) }
-    }
-    Canvas(modifier.fillMaxSize()) {
-        val p = progress.value
-        if (p >= 1f) return@Canvas
-        val c = Offset(size.width / 2, size.height * 0.42f)
-        pieces.forEach { (angle, speed, color) ->
-            val dist = size.minDimension * 0.55f * speed * p
-            val fall = size.height * 0.25f * p * p // gravity
-            val pos = Offset(c.x + cos(angle) * dist, c.y + sin(angle) * dist + fall)
-            drawRect(color.copy(alpha = 1f - p), topLeft = pos, size = androidx.compose.ui.geometry.Size(14f, 8f))
-        }
-    }
-}
-
-private val Confetti = listOf(Color(0xFFFF3D68), Color(0xFFFF7A45), Color(0xFFFFC94D), Color(0xFF4ADE80), Color(0xFF60A5FA), Color.White)
 
 /**
  * Green dot with a halo that swells and fades every 2 s: someone or something is live.
@@ -239,7 +204,7 @@ fun PresenceDot(size: Dp = 7.dp, color: Color = Brand.Online) {
  * Rings that grow from 35 % to 155 % of [diameter] and fade (the matching radar). [ringColor] strokes, [fill] tints.
  */
 @Composable
-fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs: Int = 3000, ringColor: Color = Brand.Pink.copy(alpha = 0.5f), fill: Color = Brand.Pink.copy(alpha = 0.05f), stroke: Dp = 1.dp) {
+fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs: Int = 3000, ringColor: Color = Brand.PinkOnDark.copy(alpha = 0.35f), fill: Color = Color.Transparent, stroke: Dp = 1.dp) {
     val phase by rememberLoop(periodMs, still = 0.4f)
     Canvas(modifier.requiredSize(diameter)) {
         val base = diameter.toPx() / 2
@@ -254,25 +219,9 @@ fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs:
     }
 }
 
-/**
- * The lobby's avatar ring: a conic brand gradient that fades out halfway round, turning slowly,
- * with a soft glow of the same colours behind it.
- */
-fun Modifier.spinningRing(width: Dp = 3.dp, glow: Boolean = true): Modifier = composed {
-    val turn by rememberLoop(6000, to = 360f, still = 30f)
-    drawBehind {
-        val conic = Brush.sweepGradient(
-            0f to Brand.Pink, 0.12f to Brand.Orange, 0.55f to Brand.Orange.copy(alpha = 0f), 0.8f to Brand.Pink.copy(alpha = 0f), 1f to Brand.Pink,
-            center = center,
-        )
-        rotate(turn) {
-            if (glow) {
-                // A wide translucent band stands in for CSS blur(18px).
-                for (k in 1..6) drawCircle(conic, radius = size.minDimension / 2 + k * 3.dp.toPx(), alpha = 0.09f, style = Stroke(6.dp.toPx()))
-            }
-            drawCircle(conic, radius = size.minDimension / 2 - width.toPx() / 2, style = Stroke(width.toPx()))
-        }
-    }
+/** A thin, flat brand ring around an avatar (the lobby, the match reveal). */
+fun Modifier.brandRing(width: Dp = 2.dp, color: Color = Brand.PinkOnDark): Modifier = drawBehind {
+    drawCircle(color, radius = size.minDimension / 2 - width.toPx() / 2, style = Stroke(width.toPx()))
 }
 
 /** Places children on a circle that turns once per [turnMs]; each child stays upright. */
@@ -292,29 +241,17 @@ fun Orbiting(count: Int, radius: Dp, turnMs: Int, modifier: Modifier = Modifier,
     }
 }
 
-/** A quick springy pop when something becomes selected (tab icons). */
-fun Modifier.bounceOn(selected: Boolean): Modifier = composed {
-    val scale = remember { Animatable(1f) }
-    LaunchedEffect(selected) {
-        if (selected) {
-            scale.snapTo(0.78f)
-            scale.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessMediumLow))
-        }
-    }
-    graphicsLayer { scaleX = scale.value; scaleY = scale.value }
-}
-
 /**
  * Fades and lifts content in once, [index] steps after the screen appears (the mockup's staggered pop-in).
  */
-fun Modifier.enterStagger(index: Int, stepMs: Int = 60): Modifier = composed {
+fun Modifier.enterStagger(index: Int, stepMs: Int = 30): Modifier = composed {
     val p = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay((index.coerceAtMost(10) * stepMs).toLong())
-        p.animateTo(1f, spring(dampingRatio = 0.8f, stiffness = 500f))
+        kotlinx.coroutines.delay((index.coerceAtMost(6) * stepMs).toLong())
+        p.animateTo(1f, tween(220, easing = EaseOutQuint))
     }
     graphicsLayer {
         alpha = p.value.coerceIn(0f, 1f)
-        translationY = (1f - p.value) * 10.dp.toPx()
+        translationY = (1f - p.value) * 8.dp.toPx()
     }
 }
