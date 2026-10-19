@@ -191,15 +191,16 @@ export function RandomScreen({ active }: { active: boolean }) {
     [cancelMatching, toast, t],
   )
 
-  // Leaving the page mid-search takes us out of the queue.
+  // Leaving the page mid-search takes us out of the queue (only then: after sign-out there is no session to ask with).
   useEffect(
     () => () => {
+      const wasSearching = searching.current
       generation.current++
       searching.current = false
       endSignals()
       clearTimeout(timer.current)
       clearTimeout(hiddenTimer.current)
-      backend.cancelSearch().catch(() => undefined)
+      if (wasSearching) backend.cancelSearch().catch(() => undefined)
     },
     [backend],
   )

@@ -9,11 +9,16 @@
   - 정책 페이지 `/privacy.html`, `/terms.html`, `/child-safety.html`, `/delete-account.html`.
     원본은 `chat/docs/*.html`, 빌드 때 `scripts/copy-legal.mjs`가 복사.
   - 신고 화면 아래에 "신고하지 않고 차단"(RPC `block_user`).
-- **안드로이드 0.3.0 (versionCode 3)**: 5개 언어 + 앱 안 언어 선택, Material 3 정리, 차단 버튼, 백그라운드 폴링 중지,
+- **안드로이드 0.4.0 (versionCode 4)** (0.3.0 내용 포함): 5개 언어 + 앱 안 언어 선택, Material 3 정리, 차단 버튼, 백그라운드 폴링 중지,
   릴리스 로그 제거·HTTPS 전용. 설정에 개인정보·이용약관·아동안전 링크(웹사이트 주소).
   - `chat/dist/`: `yaari-demo.apk`, `yaari-live-arm64.apk`, `yaari-live-armv7.apk`, `yaari-live.aab`.
   - 0.2.0과 같은 디버그 키라 덮어 설치됨(0.1.x에서 올 때는 삭제 후 설치).
-- **서버**: 마이그레이션 008(사용자 방), 009(보안 강화), 010(차단) 적용. 테스트 SQL은 `chat/server/test_*.sql`(롤백식).
+- **서버**: 마이그레이션 008(사용자 방), 009(보안 강화), 010(차단), 011(매칭: 전역 잠금 제거·같은 언어 우선 8초), 012(`match_card`) 적용. 테스트 SQL은 `chat/server/test_*.sql`(롤백식).
+- **랜덤채팅 연결 방식 (앱·웹 공통, 0.4.0)**:
+  - 검색 실패(약한 네트워크)는 2·4·8·10초 간격으로 최대 1분 재시도.
+  - 기다리는 쪽은 realtime(`matches` INSERT, `user_a=eq.<나>`)으로 즉시 다시 요청.
+  - 상대 끊김 감지: `typing-<matchId>` 채널 presence(key=내 id, payload `{"user": id}`). 12초 안에 안 들어오면 / 나간 뒤 20초 안에 안 돌아오면 채팅 종료. 상대의 메시지·입력중 표시도 "들어옴"으로 침. 바꿀 때는 앱(`data/PartnerWatch.kt`)·웹(`lib/supabaseBackend.ts`)·테스트 봇을 함께 바꿔야 함.
+  - 재동기화는 마지막 전체 조회 이후의 새 메시지만.
 
 ## 남은 일
 1. **실시간 영상 노출 감지** — 출시 전 최우선(LAUNCH_GUIDE 2절).
