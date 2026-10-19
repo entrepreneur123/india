@@ -28,6 +28,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "iconsCore" }
+compose-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "iconsCore" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 junit = { module = "junit:junit", version.ref = "junit" }

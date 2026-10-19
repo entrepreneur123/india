@@ -1,5 +1,6 @@
 package com.yaari.chat
 
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -14,6 +15,7 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.VideoStatus
+import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Target
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.YaariApp
@@ -39,7 +41,7 @@ import java.time.LocalDate
 class AppFlowTest {
     @get:Rule val compose = createComposeRule()
 
-    private var now = 1_000_000L
+    private var now = System.currentTimeMillis() // real time, so "2 min ago" labels look normal in the screenshots
     private val dice = ControlledRandom()
     private val today = LocalDate.of(2026, 10, 18)
     private val backend = FakeBackend(dice, clock = { now }, today = { today }, instant = true)
@@ -52,6 +54,8 @@ class AppFlowTest {
 
     private fun waitFor(text: String) = compose.waitUntil(5_000) { compose.onAllNodes(hasText(text, substring = true)).fetchSemanticsNodes().isNotEmpty() }
 
+    private fun waitForIcon(label: String) = compose.waitUntil(5_000) { compose.onAllNodes(hasContentDescription(label)).fetchSemanticsNodes().isNotEmpty() }
+
     private fun field(label: String) = compose.onNode(hasSetTextAction() and hasText(label))
 
     private fun send(text: String) {
@@ -59,15 +63,17 @@ class AppFlowTest {
         compose.onNodeWithContentDescription("Send").performClick()
     }
 
+    private fun tab(label: String) = compose.onAllNodes(hasText(label))[0].performClick()
+
     @Test fun fullFlow() {
         compose.setContent { YaariTheme { YaariApp(vm) } }
 
-        // 1. Phone + OTP (one number = one account)
+        // 1. Phone + OTP (any supported country; one number = one account)
         waitFor("Mobile number")
         shot("01_phone")
         field("Mobile number").performTextInput("9876543210")
         compose.onNodeWithText("Send OTP").performClick()
-        waitFor("Enter the 6-digit code")
+        waitFor("We sent a 6-digit code")
         field("OTP").performTextInput(FakeBackend.DEMO_OTP)
         shot("02_otp")
         compose.onNodeWithText("Verify").performClick()
@@ -89,10 +95,10 @@ class AppFlowTest {
         compose.onNodeWithText("Start").performScrollTo().performClick()
         waitFor("Meet someone new")
 
-        // 3. Gender choice: paywall, then the 24 h gender pass
-        shot("04_lobby")
+        // 3. Random tab; gender choice opens the paywall, then the 24 h gender pass
+        shot("04_random")
         compose.onNodeWithText("Women").performClick()
-        waitFor("needs Premium")
+        waitFor("needs Plus")
         shot("05_paywall")
         compose.onNodeWithText("Only gender choice", substring = true).performClick()
         waitFor("Meet someone new")
@@ -107,10 +113,12 @@ class AppFlowTest {
         waitFor("Hii")
         shot("07_chat")
 
-        // 5. Partner profile, Instagram-style grid, over the chat
+        // 5. Partner profile, Instagram-style, over the chat
         compose.onNodeWithText("View profile", substring = true).performClick()
-        waitFor("posts")
+        waitFor("Add friend")
         shot("08_partner_profile")
+        compose.onNodeWithText("Add friend").performClick()
+        waitFor("Requested")
         compose.onNodeWithContentDescription("Back").performClick()
 
         // 6. Incoming video call (the partner asks), declined
@@ -129,54 +137,76 @@ class AppFlowTest {
         waitFor("Meet someone new")
         assertNull(vm.state.value.chat)
 
-        // 8. Recent + message
-        compose.onNodeWithText("Recent").performClick()
-        waitFor("Message")
-        shot("11_recent")
-        compose.onNodeWithText("Message").performClick()
+        // 8. Recent: friends (with a request to accept) and matches
+        tab("Recent")
+        waitFor("Requests (1)")
+        shot("11_friends")
+        compose.onNodeWithText("Accept").performClick()
+        compose.waitUntil(5_000) { vm.state.value.friends.count { it.state == FriendState.FRIENDS } == 2 } // the partner accepted too
+        compose.onNodeWithText("Matches").performClick()
+        waitFor("video call?")
+        shot("12_matches")
+        compose.onNodeWithText("video call?", substring = true).performClick()
         send("Nice talking to you!")
-        compose.waitUntil(5_000) { (vm.state.value.dm?.messages?.size ?: 0) >= 2 }
-        shot("12_dm")
+        compose.waitUntil(5_000) { (vm.state.value.dm?.messages?.size ?: 0) >= 4 }
+        shot("13_dm")
         compose.onNodeWithContentDescription("Back").performClick()
 
-        // 9. Buy Premium from the profile tab, then a video call the partner accepts
-        compose.onNodeWithText("Me").performClick()
+        // 9. Public rooms
+        tab("Rooms")
+        waitFor("Global Lounge")
+        shot("14_rooms")
+        compose.onNodeWithText("Global Lounge").performClick()
+        waitFor("Be kind. Tap a name")
+        send("Hi everyone?")
+        compose.waitUntil(5_000) { vm.state.value.room?.messages?.let { m -> m.any { it.fromMe } && !m.last().fromMe } == true }
+        shot("15_room")
+        compose.onNodeWithContentDescription("Back").performClick()
+        compose.waitUntil(5_000) { vm.state.value.room == null }
+
+        // 10. Buy Plus from the profile tab, then a video call the partner accepts
+        tab("Me")
         compose.onNodeWithText("Upgrade").performScrollTo().performClick()
-        compose.onNodeWithText("Premium ·", substring = true).performClick()
-        waitFor("Premium active")
-        compose.onNodeWithText("Chat").performClick()
+        compose.onNodeWithText("Get Plus ·", substring = true).performClick()
+        compose.waitUntil(5_000) { vm.state.value.premium }
+        tab("Random")
         compose.onNodeWithText("Start chatting").performClick()
         waitFor("View profile")
-        compose.onNodeWithText("Video").performClick()
+        compose.onNodeWithContentDescription("Video").performClick()
         compose.waitUntil(5_000) { vm.state.value.chat?.video == VideoStatus.ACCEPTED }
-        waitFor("End")
-        shot("13_video")
-        compose.onNodeWithText("End").performClick()
+        waitForIcon("End")
+        shot("16_video")
+        compose.onNodeWithContentDescription("End").performClick()
         waitFor("View profile")
 
-        // 10. Report & leave
+        // 11. Report & leave
         compose.onNodeWithContentDescription("Report and leave").performClick()
         waitFor("Report this person")
-        shot("14_report")
+        shot("17_report")
         compose.onNodeWithText("Report & lobby").performClick()
         waitFor("Meet someone new")
         assertNull(vm.state.value.chat)
 
-        // 11. My profile with a new post
-        compose.onNodeWithText("Me").performClick()
+        // 12. My profile: a new post, then editing it
+        tab("Me")
         compose.onNodeWithText("New post").performClick()
         field("Write something").performTextInput("First day on Yaari ✨")
-        shot("15_new_post")
+        shot("18_new_post")
         compose.onNodeWithText("Share").performClick()
-        waitFor("1 post")
-        shot("16_my_profile")
+        waitFor("First day on Yaari")
+        shot("19_my_profile")
+        compose.onNodeWithText("Edit profile").performClick()
+        field("Bio").performTextReplacement("Chai, cricket and new friends")
+        shot("20_edit_profile")
+        compose.onNodeWithText("Done").performClick()
+        waitFor("new friends")
         assertEquals(1, vm.state.value.me!!.posts.size)
         assertTrue(vm.state.value.premium)
 
-        // 12. Settings: rules, grievance officer, account deletion (Google Play requirement)
-        compose.onNodeWithText("Settings & safety").performClick()
+        // 13. Settings: rules, grievance officer, account deletion (Google Play requirement)
+        compose.onNodeWithContentDescription("Settings").performClick()
         waitFor("Grievance Officer")
-        shot("17_settings")
+        shot("21_settings")
         compose.onNodeWithText("Delete account").performScrollTo().performClick()
         waitFor("Delete your account?")
         compose.onNodeWithText("Delete").performClick()

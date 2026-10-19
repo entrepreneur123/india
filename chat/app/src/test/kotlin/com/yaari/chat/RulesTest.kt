@@ -1,6 +1,8 @@
 package com.yaari.chat
 
+import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.ExitPolicy
+import com.yaari.chat.domain.flagOf
 import com.yaari.chat.domain.Validation
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Target
@@ -34,6 +36,26 @@ class RulesTest {
         assertNull(Validation.indianMobile("5876543210")) // must start with 6-9
         assertNull(Validation.indianMobile("98765"))
         assertNull(Validation.indianMobile(""))
+    }
+
+    @Test fun internationalNumbers() {
+        assertEquals("919876543210", Validation.phone("91", "98765 43210"))
+        assertNull(Validation.phone("91", "5876543210")) // India keeps its mobile rule
+        assertEquals("821012345678", Validation.phone("82", "010-1234-5678")) // national 0 dropped
+        assertEquals("447700900123", Validation.phone("44", "+44 7700 900123")) // pasted with the code
+        assertEquals("14155550100", Validation.phone("1", "(415) 555-0100"))
+        assertNull(Validation.phone("44", "123"))
+        assertNull(Validation.phone("1", "1234567890123456")) // longer than E.164 allows
+    }
+
+    @Test fun flags() {
+        assertEquals("🇮🇳", flagOf("IN"))
+        assertEquals("🇰🇷", flagOf("KR"))
+        assertEquals("", flagOf(null))
+        assertEquals("", flagOf("in"))
+        // Every sign-up country has a flag and a unique code entry
+        assertTrue(Countries.all.all { it.flag.isNotEmpty() })
+        assertEquals(Countries.all.size, Countries.all.map { it.iso }.toSet().size)
     }
 
     @Test fun ageCountsBirthdayOnlyOnceReached() {

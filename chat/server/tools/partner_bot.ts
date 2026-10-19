@@ -74,5 +74,29 @@ async function chat(db: SupabaseClient, name: string, matchId: string) {
   }
 }
 
-await Promise.all([bot("qa1@yaari.test", "Arjun"), bot("qa2@yaari.test", "Priya")]);
+// Public room: Priya sits in Global Lounge and answers whatever people write there.
+async function roomBot(email: string, name: string, room: string) {
+  const db: SupabaseClient = createClient(SUPABASE_URL, ANON, { auth: { persistSession: false } });
+  await db.auth.signInWithPassword({ email, password: PASSWORD });
+  let lastId = Number.MAX_SAFE_INTEGER;
+  let beat = 0;
+  while (Date.now() < stopAt) {
+    if (beat++ % 15 === 0) await db.rpc("join_room", { p_room: room }); // presence lasts 90 s; refresh every 30 s
+    const { data } = await db.from("room_messages").select("id,sender,sender_name,body").eq("room_id", room)
+      .order("id", { ascending: false }).limit(20);
+    const rows = (data ?? []).reverse();
+    if (lastId === Number.MAX_SAFE_INTEGER) lastId = rows.at(-1)?.id ?? 0; // only answer what arrives after start
+    for (const m of rows) {
+      if (m.id <= lastId) continue;
+      lastId = m.id;
+      if (botIds.has(m.sender)) continue;
+      log(name, `room: ${m.sender_name}: ${m.body}`);
+      await db.from("room_messages").insert({ room_id: room, body: `Hi ${m.sender_name}! ${name} here, a test bot 👋` });
+    }
+    await sleep(2000);
+  }
+  await db.rpc("leave_room", { p_room: room });
+}
+
+await Promise.all([bot("qa1@yaari.test", "Arjun"), bot("qa2@yaari.test", "Priya"), roomBot("qa2@yaari.test", "Priya", "lounge")]);
 log("bot", "time is up, stopped");

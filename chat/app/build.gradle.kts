@@ -103,6 +103,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.compose.icons.core)
+    implementation(libs.compose.icons.extended) // unused icons are stripped by R8
     implementation(libs.coil.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 

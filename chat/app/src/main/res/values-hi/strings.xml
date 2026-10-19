@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="gender_male">पुरुष</string>
     <string name="gender_female">महिला</string>
     <string name="gender_other">अन्य</string>
@@ -11,11 +11,11 @@
     <string name="reason_fake">नकली प्रोफ़ाइल या धोखाधड़ी</string>
     <string name="reason_other">कुछ और</string>
 
-    <string name="tagline">पूरे भारत में नए लोगों से मिलें</string>
+    <string name="tagline">दुनिया भर में दोस्त बनाएँ</string>
     <string name="mobile_number">मोबाइल नंबर</string>
     <string name="send_otp">OTP भेजें</string>
     <string name="phone_note">एक फ़ोन नंबर पर एक ही अकाउंट। Yaari सिर्फ़ 18+ लोगों के लिए है।</string>
-    <string name="otp_prompt">+91 %1$s पर भेजा गया 6 अंकों का कोड डालें</string>
+    <string name="otp_prompt">हमने %1$s पर 6 अंकों का कोड भेजा है</string>
     <string name="otp_label">OTP</string>
     <string name="demo_otp">डेमो: कोड %1$s है</string>
     <string name="verify">पुष्टि करें</string>
@@ -32,7 +32,7 @@
     <string name="consent">मेरी उम्र 18 साल या उससे ज़्यादा है और मैं कम्युनिटी नियम मानता/मानती हूँ: नग्नता नहीं, नाबालिग नहीं, परेशान करना नहीं। नियम तोड़ने पर हमेशा के लिए बैन।</string>
     <string name="start">शुरू करें</string>
 
-    <string name="err_phone">10 अंकों का सही भारतीय मोबाइल नंबर डालें</string>
+    <string name="err_phone">सही मोबाइल नंबर डालें</string>
     <string name="err_otp_send">कोड नहीं भेजा जा सका। फिर से कोशिश करें।</string>
     <string name="err_otp_wrong">कोड गलत है। फिर से कोशिश करें।</string>
     <string name="err_name">अपना नाम डालें</string>
@@ -43,7 +43,7 @@
     <string name="err_bio_long">बायो बहुत लंबा है</string>
     <string name="err_rules">कृपया कम्युनिटी नियम स्वीकार करें</string>
     <string name="err_exit_locked">निकलने से पहले थोड़ा रुकें</string>
-    <string name="err_premium">इसके लिए Premium चाहिए</string>
+    <string name="err_premium">इसके लिए Yaari Plus चाहिए</string>
     <string name="err_banned">शिकायतों के बाद आपका अकाउंट रोक दिया गया है। सपोर्ट से संपर्क करें।</string>
     <string name="err_slow_down">आप बहुत तेज़ी से मैसेज भेज रहे हैं</string>
     <string name="err_blocked">आप इस व्यक्ति को मैसेज नहीं कर सकते</string>
@@ -58,34 +58,30 @@
     <string name="msg_reported">रिपोर्ट और ब्लॉक कर दिया।</string>
     <string name="msg_deleted">आपका अकाउंट और डेटा मिटा दिया गया।</string>
 
-    <string name="tab_chat">चैट</string>
     <string name="tab_recent">हाल के</string>
     <string name="tab_me">मैं</string>
     <string name="lobby_title">किसी नए से मिलें</string>
-    <string name="lobby_question">आप किससे मिलना चाहते हैं?</string>
-    <string name="premium">Premium</string>
+    <string name="premium">Plus</string>
     <string name="start_chatting">चैट शुरू करें</string>
     <string name="lobby_rules">अच्छे से बात करें। नग्नता, परेशान करना या नाबालिग = हमेशा के लिए बैन।\nआप कभी भी तुरंत रिपोर्ट करके निकल सकते हैं।</string>
-    <string name="premium_title">Yaari Premium</string>
+    <string name="premium_title">Yaari Plus</string>
     <string name="premium_summary">लिंग चुनें · वीडियो कॉल · %1$s सेकंड में अगला</string>
     <string name="finding">आपके लिए कोई ढूँढ रहे हैं…</string>
     <string name="looking_for">ढूँढ रहे हैं: %1$s</string>
     <string name="cancel">रद्द करें</string>
-    <string name="recent_empty">जिनसे आप मिलेंगे, वे यहाँ दिखेंगे।</string>
-    <string name="met_at">%1$s पर मिले · %2$s</string>
+    <string name="recent_empty">रैंडम चैट में जिनसे आप मिलेंगे, वे यहाँ दिखेंगे।</string>
     <string name="message">मैसेज</string>
-    <string name="plan_premium">Premium चालू है</string>
+    <string name="plan_premium">Plus चालू है</string>
     <string name="plan_pass">लिंग पास चालू है</string>
-    <string name="plan_free">फ़्री प्लान</string>
-    <string name="plan_free_text">लिंग चुनने, वीडियो कॉल और तुरंत अगले के लिए अपग्रेड करें</string>
+    <string name="plan_free">फ़्री</string>
     <string name="upgrade">अपग्रेड</string>
 
-    <string name="premium_needed_gender">किससे मिलना है यह चुनने के लिए Premium चाहिए।</string>
-    <string name="premium_needed_video">वीडियो कॉल के लिए Premium चाहिए।</string>
-    <string name="premium_benefit_gender">• लड़के या लड़कियों से मिलना चुनें</string>
-    <string name="premium_benefit_video">• वीडियो कॉल (सामने वाले को मानना होगा)</string>
-    <string name="premium_benefit_skip">• अगले व्यक्ति पर %2$s की जगह %1$s सेकंड में जाएँ</string>
-    <string name="premium_buy">Premium · %1$s</string>
+    <string name="premium_needed_gender">किससे मिलना है यह चुनने के लिए Plus चाहिए।</string>
+    <string name="premium_needed_video">वीडियो कॉल के लिए Plus चाहिए।</string>
+    <string name="premium_benefit_gender">लड़के या लड़कियों से मिलना चुनें</string>
+    <string name="premium_benefit_video">वीडियो कॉल (सामने वाले को मानना होगा)</string>
+    <string name="premium_benefit_skip">अगले व्यक्ति पर %2$s की जगह %1$s सेकंड में जाएँ</string>
+    <string name="premium_buy">Plus लें · %1$s</string>
     <string name="premium_buy_default">हर महीने</string>
     <string name="pass_buy">सिर्फ़ लिंग चुनना · %1$s</string>
     <string name="pass_buy_default">24 घंटे</string>
@@ -94,7 +90,6 @@
     <string name="typing">लिख रहे हैं…</string>
     <string name="chat_subtitle">%1$s · प्रोफ़ाइल देखें</string>
     <string name="video">वीडियो</string>
-    <string name="calling">कॉल कर रहे हैं…</string>
     <string name="report_and_leave">रिपोर्ट करके निकलें</string>
     <string name="leave">निकलें</string>
     <string name="partner_left">%1$s चैट से चले गए</string>
@@ -109,23 +104,16 @@
     <string name="accept">मानें</string>
     <string name="decline">मना करें</string>
     <string name="back">वापस</string>
-    <string name="say_hi">हाय बोलिए 👋</string>
     <string name="send_media">फ़ोटो या वीडियो भेजें</string>
     <string name="send">भेजें</string>
     <string name="tap_to_view">देखने के लिए टैप करें</string>
     <string name="no_video_player">यह वीडियो चलाने के लिए कोई ऐप नहीं है</string>
     <string name="photo">फ़ोटो</string>
 
-    <string name="report">रिपोर्ट</string>
     <string name="report_block">रिपोर्ट और ब्लॉक</string>
     <string name="report_title">इस व्यक्ति की रिपोर्ट करें</string>
     <string name="report_note">यह व्यक्ति ब्लॉक हो जाएगा और हमारी टीम को सूचना मिलेगी।</string>
     <string name="phone_verified">फ़ोन वेरिफ़ाइड</string>
-    <plurals name="posts">
-        <item quantity="one">%d पोस्ट</item>
-        <item quantity="other">%d पोस्ट</item>
-    </plurals>
-    <string name="settings_safety">सेटिंग्स और सुरक्षा</string>
     <string name="new_post">नई पोस्ट</string>
     <string name="close">बंद करें</string>
     <string name="share">शेयर करें</string>
@@ -139,13 +127,12 @@
     <string name="rule_5">• नियम तोड़ने पर हमेशा के लिए बैन।</string>
     <string name="report_info">किसी भी चैट या प्रोफ़ाइल में रिपोर्ट दबाएँ: वह व्यक्ति तुरंत ब्लॉक हो जाता है और हमारी टीम जाँच करती है। निजी फ़ोटो या किसी और के नाम से बने अकाउंट की शिकायत पर 2 घंटे में कार्रवाई होती है।</string>
     <string name="grievance_officer">शिकायत अधिकारी</string>
-    <string name="help_email">मदद: %1$s</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="account">अकाउंट</string>
     <string name="sign_out">साइन आउट</string>
     <string name="delete_account">अकाउंट मिटाएँ</string>
     <string name="delete_title">अपना अकाउंट मिटाएँ?</string>
-    <string name="delete_text">आपकी प्रोफ़ाइल, पोस्ट, चैट और फ़ोटो हमेशा के लिए मिट जाएँगी। Premium आगे नहीं चलेगा; सब्सक्रिप्शन Google Play में रद्द करें।</string>
+    <string name="delete_text">आपकी प्रोफ़ाइल, पोस्ट, चैट और फ़ोटो हमेशा के लिए मिट जाएँगी। Plus आगे नहीं चलेगा; सब्सक्रिप्शन Google Play में रद्द करें।</string>
     <string name="delete">मिटाएँ</string>
 
     <string name="mute">म्यूट</string>
@@ -153,4 +140,74 @@
     <string name="camera_off">कैमरा बंद</string>
     <string name="camera_on">कैमरा चालू</string>
     <string name="end">कॉल काटें</string>
+
+    <string name="tab_rooms">रूम</string>
+    <string name="tab_random">रैंडम</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="tagline_sub">दुनिया भर के लोगों से रैंडम चैट, लाइव रूम और दोस्त।</string>
+    <string name="otp_title">कोड डालें</string>
+    <string name="country">देश</string>
+    <string name="search_country">देश या कोड खोजें</string>
+    <string name="lobby_sub">पहले टेक्स्ट। वीडियो तभी, जब दोनों चाहें।</string>
+    <string name="get_plus">Plus लें</string>
+    <string name="plan_badge_plus">Plus</string>
+    <string name="matching_tip">टिप: पहले हाय बोलिए। लोग ज़्यादा जवाब देते हैं 👋</string>
+    <string name="rooms_sub">लाइव ग्रुप चैट। अंदर आइए और हाय बोलिए।</string>
+    <plurals name="online">
+        <item quantity="one">%d ऑनलाइन</item>
+        <item quantity="other">%d ऑनलाइन</item>
+    </plurals>
+    <string name="room_lounge">ग्लोबल लाउंज</string>
+    <string name="room_language">भाषा सीखें-सिखाएँ</string>
+    <string name="room_music">संगीत</string>
+    <string name="room_movies">फ़िल्में और सीरीज़</string>
+    <string name="room_gaming">गेमिंग</string>
+    <string name="room_sports">खेल</string>
+    <string name="room_night">देर रात की बातें</string>
+    <string name="room_memes">मीम्स</string>
+    <string name="room_study">पढ़ाई और कॉलेज</string>
+    <string name="room_travel">घूमना-फिरना</string>
+    <string name="room_rules">अच्छे से बात करें। प्रोफ़ाइल देखने, दोस्त बनाने या रिपोर्ट करने के लिए नाम पर टैप करें।</string>
+    <string name="friends">दोस्त</string>
+    <string name="recent_matches">मैच</string>
+    <string name="friends_empty_title">अभी कोई दोस्त नहीं</string>
+    <string name="friends_empty">रैंडम चैट या रूम में मिले लोगों को दोस्त बनाएँ।</string>
+    <string name="friend_requests">रिक्वेस्ट (%1$d)</string>
+    <string name="friends_count">दोस्त (%1$d)</string>
+    <string name="requests_sent">भेजी गई रिक्वेस्ट</string>
+    <string name="cancel_request">रद्द करें</string>
+    <string name="recent_empty_title">अभी कोई चैट नहीं</string>
+    <string name="requested">रिक्वेस्ट भेजी</string>
+    <string name="add_friend">दोस्त बनाएँ</string>
+    <string name="accept_request">रिक्वेस्ट मानें</string>
+    <string name="friends_check">दोस्त ✓</string>
+    <string name="unfriend">दोस्ती हटाएँ</string>
+    <string name="unfriend_title">%1$s से दोस्ती हटाएँ?</string>
+    <string name="msg_now_friends">आप और %1$s अब दोस्त हैं</string>
+    <string name="msg_request_sent">%1$s को दोस्ती की रिक्वेस्ट भेजी</string>
+    <string name="err_not_found">यह अब उपलब्ध नहीं है</string>
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
+        <item quantity="one">पोस्ट</item>
+        <item quantity="other">पोस्ट</item>
+    </plurals>
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
+        <item quantity="one">दोस्त</item>
+        <item quantity="other">दोस्त</item>
+    </plurals>
+    <string name="age">उम्र</string>
+    <string name="more">और</string>
+    <string name="edit_profile">प्रोफ़ाइल बदलें</string>
+    <string name="done">हो गया</string>
+    <string name="locked_fields">लिंग और जन्म तिथि बदली नहीं जा सकती।</string>
+    <string name="share_first_title">अपनी पहली पोस्ट शेयर करें</string>
+    <string name="share_first">आप जो फ़ोटो और बातें शेयर करेंगे, वे आपकी प्रोफ़ाइल पर दिखेंगी।</string>
+    <string name="no_posts_title">अभी कोई पोस्ट नहीं</string>
+    <string name="no_posts">जब ये कुछ शेयर करेंगे, यहाँ दिखेगा।</string>
+    <string name="say_hi_to">%1$s को हाय बोलिए 👋</string>
+    <string name="message_hint">मैसेज…</string>
+    <string name="language">भाषा</string>
+    <string name="safety">सुरक्षा</string>
+    <string name="about">जानकारी</string>
+    <string name="help">मदद</string>
+    <string name="billing_note">भुगतान Google Play से होता है। सब्सक्रिप्शन Play Store में कभी भी रद्द करें।</string>
 </resources>

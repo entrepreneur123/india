@@ -30,6 +30,8 @@ data class Profile(
     val photoUri: String? = null,
     val colorSeed: Int = 0,
     val posts: List<Post> = emptyList(),
+    /** ISO country from the verified phone number (set by the server); null for test accounts. */
+    val country: String? = null,
 )
 
 enum class MediaKind { IMAGE, VIDEO }
@@ -47,3 +49,14 @@ enum class ReportReason(val code: String, @StringRes val label: Int) {
     FAKE("fake", R.string.reason_fake),
     OTHER("other", R.string.reason_other),
 }
+
+enum class FriendState { NONE, REQUESTED, INCOMING, FRIENDS }
+
+/** A friend or a pending request. [threadId] is the chat to continue in, if one exists yet. */
+data class Friend(val profile: Profile, val state: FriendState, val threadId: String? = null)
+
+/** A public room; [online] counts people who had it open in the last 90 s. */
+data class Room(val id: String, val title: String, val emoji: String, val online: Int)
+
+/** [sender] carries only the public card (name, age, gender, flag, photo); posts load on tap. */
+data class RoomMessage(val id: Long, val sender: Profile, val fromMe: Boolean, val text: String, val at: Long)

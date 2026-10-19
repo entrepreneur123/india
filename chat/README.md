@@ -1,4 +1,4 @@
-# Yaari (가칭) — 인도 랜덤채팅 앱
+# Yaari (가칭) — 글로벌 랜덤채팅 앱 (첫 시장: 인도)
 
 로또 앱(`/android`)과 **완전히 분리된 독립 프로젝트**입니다. 이 폴더만 떼어 새 저장소로 옮겨도 그대로 빌드됩니다.
 
@@ -13,19 +13,29 @@
 
 ## 화면
 
-| 로비 | 결제 | 채팅 (무료: 5초 잠금) | 상대 프로필 | 영상통화 요청 받음 | 나가기 선택 |
-|---|---|---|---|---|---|
-| ![](docs/screenshots/04_lobby.png) | ![](docs/screenshots/05_paywall.png) | ![](docs/screenshots/06_free_exit_locked.png) | ![](docs/screenshots/08_partner_profile.png) | ![](docs/screenshots/09_incoming_video.png) | ![](docs/screenshots/10_exit_choice.png) |
+하단 탭 4개: **공개방 · 랜챗 · 최근(친구/매칭) · 나**. 오른쪽 위 톱니바퀴 = 설정. 흰 바탕 + 포인트 색 하나(인스타·구글식), 랜챗만 아자르처럼 어두운 화면.
 
-| 최근 만난 사람 | 메시지 | 영상통화 | 신고 | 게시물 작성 | 내 프로필 |
+| 랜챗 대기 | 결제 | 채팅 (무료: 5초 잠금) | 상대 프로필 | 영상통화 요청 받음 | 나가기 선택 |
 |---|---|---|---|---|---|
-| ![](docs/screenshots/11_recent.png) | ![](docs/screenshots/12_dm.png) | ![](docs/screenshots/13_video.png) | ![](docs/screenshots/14_report.png) | ![](docs/screenshots/15_new_post.png) | ![](docs/screenshots/16_my_profile.png) |
+| ![](docs/screenshots/04_random.png) | ![](docs/screenshots/05_paywall.png) | ![](docs/screenshots/06_free_exit_locked.png) | ![](docs/screenshots/08_partner_profile.png) | ![](docs/screenshots/09_incoming_video.png) | ![](docs/screenshots/10_exit_choice.png) |
+
+| 친구 | 매칭 목록 | 메시지 | 공개방 | 공개방 대화 | 영상통화 |
+|---|---|---|---|---|---|
+| ![](docs/screenshots/11_friends.png) | ![](docs/screenshots/12_matches.png) | ![](docs/screenshots/13_dm.png) | ![](docs/screenshots/14_rooms.png) | ![](docs/screenshots/15_room.png) | ![](docs/screenshots/16_video.png) |
+
+| 신고 | 게시물 작성 | 내 프로필 | 프로필 편집 | 설정 | 가입 (국가 선택) |
+|---|---|---|---|---|---|
+| ![](docs/screenshots/17_report.png) | ![](docs/screenshots/18_new_post.png) | ![](docs/screenshots/19_my_profile.png) | ![](docs/screenshots/20_edit_profile.png) | ![](docs/screenshots/21_settings.png) | ![](docs/screenshots/01_phone.png) |
 
 ## 기획 항목별 구현 상태
 
 | 기획 | 구현 | 서버에서도 강제하는가 |
 |---|---|---|
-| 휴대폰 인증, 번호 하나당 계정 하나 | Supabase Phone OTP (+91) | ✅ 번호당 계정 1개 |
+| 휴대폰 인증, 번호 하나당 계정 하나 | Supabase Phone OTP, **51개국** 국가 선택 (폰 지역으로 자동 선택) | ✅ 번호당 계정 1개 |
+| 국기 표시 | 프로필·채팅·공개방에 국기 | ✅ 국가는 **인증된 전화번호로 서버가 결정** (앱이 위조 불가). +1은 미국으로 표시 |
+| 친구 | 랜챗·공개방에서 만난 사람에게 친구 요청 → 수락. 친구끼리 메시지 | ✅ 본 적 있는 사람에게만 요청 가능, 하루 50건 제한, 신고하면 친구 자동 해제 |
+| 공개방 | 주제별 10개 방(Global Lounge, 언어교환, 음악…), 실시간 접속자 수 | ✅ 방에 들어와 있어야 글쓰기, 10초에 5개 제한, 차단한 사람 글은 서버가 숨김 |
+| 프로필 편집 | 사진·이름·지역·소개 (인스타식) | ✅ 성별·생년월일은 서버에서도 변경 불가 |
 | 18세 이상만 | 생년월일 검사 | ✅ DB 트리거. **성별·생년월일은 가입 후 변경 불가** |
 | 프로필: 성별·나이·사진·피드 | 사진은 1280px로 압축 후 업로드, 인스타식 피드 | ✅ 매칭된 적 있는 사람만 프로필·사진을 볼 수 있음 |
 | 랜덤 매칭 + 상대 프로필 표시 | 2초마다 매칭 요청, 채팅방 상단에 상대 정보 | ✅ 서버 잠금으로 이중 매칭 방지, 방금 만난 상대는 제외 |
@@ -57,12 +67,13 @@ server/test_rules.sql  서버 규칙 테스트 시나리오
 
 ## 검증
 
-- **앱 테스트**: 총 68개 통과(demo 33개 + live 35개, 실패 0). 계정 삭제 실서버 테스트 1개는 QA 계정을 지우므로 평소에는 건너뜁니다.
+- **앱 테스트**: 총 90개 통과(demo 44개 + live 46개, 실패 0). 실서버 통합 테스트 `LiveServerTest`는 테스트 봇과 QA 계정을 같이 쓰므로 봇을 끈 상태에서만 돌립니다. 계정 삭제 실서버 테스트 1개는 QA 계정을 지우므로 평소에는 건너뜁니다.
   - 규칙, ViewModel 22개, 전체 UI 흐름(화면 17장), 힌디어 화면, 받은 사진 가림.
   - ViewModel 테스트에는 서버 쪽 잠금 확인, 영상 수락, 메시지(DM), 매칭 중 이탈한 방 정리, 로그아웃 중 남은 방 정리, 결제 복원도 포함됩니다.
 - **코드 리뷰 2회**: 1차 11건, 2차 4건 발견. 모두 수정했고, 2차 수정은 회귀 테스트가 실제로 버그를 잡는지 코드를 일부러 되돌려 확인했습니다.
 - **실제 서버 통합 테스트** (`LiveServerTest`): 통과. 계정 삭제 기능도 실제 서버에서 QA 계정 하나로 확인했고, 삭제 후 해당 계정의 데이터가 남지 않은 것까지 확인했습니다.
   - 로그인 → 매칭 → 실시간 메시지 수신 → 서버의 5초 잠금 거부 → 구독 없는 영상 요청 거부 → 프로필 조회 → 상대가 나감 실시간 감지 → 최근 목록.
+- **친구·공개방 SQL 테스트** (`server/test_social.sql`): 국기 위조 불가, 모르는 사람 요청 불가, 방에 없으면 글쓰기 불가, 발신자 이름 위조 불가, 도배 제한, 요청·수락·친구 메시지방, 신고 시 친구 해제·글 숨김. 모두 통과(실행 후 롤백).
 - **서버 규칙 SQL 테스트**: 18세 미만 거부, 성별 변경 불가, 남의 채팅 읽기·쓰기 불가, 잠금, 구독, 차단, 자동 정지, 스팸 제한. 모두 통과.
 - **서버 함수**: LiveKit 토큰 서명을 별도 JWT 라이브러리(jose)로 검증. 배포 후 미인증 요청 401, 키 미설정 503 확인.
 - **Lint**: 오류 0개. R8 최적화 후에도 서버 데이터 변환 코드가 유지되는 것을 확인.

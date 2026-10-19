@@ -8,6 +8,8 @@ import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.Match
 import com.yaari.chat.data.Products
 import com.yaari.chat.data.VideoStatus
+import com.yaari.chat.domain.Countries
+import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
@@ -58,12 +60,14 @@ class AppViewModelTest {
 
     private fun vm() = AppViewModel(backend, DemoBilling(), clock = { now }, today = { today })
 
+    private val india = Countries.byIso("IN")!!
+
     private val adult = ProfileDraft(name = "Dev", gender = Gender.MALE, day = "1", month = "1", year = "2000", agreed = true)
 
     private fun TestScope.signedIn(phone: String = "9876543210"): AppViewModel {
         val vm = vm()
         advanceUntilIdle()
-        vm.requestOtp(phone)
+        vm.requestOtp(india, phone)
         advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP)
         advanceUntilIdle()
@@ -82,9 +86,9 @@ class AppViewModelTest {
 
     @Test fun rejectsInvalidPhoneAndWrongOtp() = runTest(dispatcher) {
         val vm = vm()
-        vm.requestOtp("12345")
+        vm.requestOtp(india, "12345")
         assertNotNull(vm.state.value.onboarding.error)
-        vm.requestOtp("9876543210")
+        vm.requestOtp(india, "9876543210")
         advanceUntilIdle()
         assertEquals(Onboarding.Step.OTP, vm.state.value.onboarding.step)
         vm.verifyOtp("000000")
@@ -94,7 +98,7 @@ class AppViewModelTest {
 
     @Test fun under18CannotRegister() = runTest(dispatcher) {
         val vm = vm()
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult.copy(year = "2008", month = "10", day = "19")); advanceUntilIdle()
         assertEquals(UiText(R.string.err_under_18), vm.state.value.onboarding.error)
@@ -108,7 +112,7 @@ class AppViewModelTest {
         backend.signOut()
         val again = vm()
         advanceUntilIdle()
-        again.requestOtp("+91 98765 43210"); advanceUntilIdle()
+        again.requestOtp(india, "+91 98765 43210"); advanceUntilIdle()
         again.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         assertEquals(first, again.state.value.me)
     }
@@ -265,7 +269,7 @@ class AppViewModelTest {
         assertNull(vm.state.value.chat)
         assertEquals(Onboarding.Step.PHONE, vm.state.value.onboarding.step)
         // The same number can sign up again, as a brand-new account.
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         assertEquals(Onboarding.Step.PROFILE, vm.state.value.onboarding.step)
     }
@@ -306,7 +310,7 @@ class AppViewModelTest {
         }
         val vm = AppViewModel(gone, DemoBilling(), clock = { now }, today = { today })
         advanceUntilIdle()
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult); advanceUntilIdle()
         matched(vm)
@@ -328,7 +332,7 @@ class AppViewModelTest {
         }
         val vm = AppViewModel(backend, billing, clock = { now }, today = { today })
         advanceUntilIdle()
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult); advanceUntilIdle()
         assertTrue("pass granted at sign-in", vm.state.value.entitlements.genderPass)
@@ -351,7 +355,7 @@ class AppViewModelTest {
         }
         val vm = AppViewModel(sameMatch, DemoBilling(), clock = { now }, today = { today })
         advanceUntilIdle()
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult); advanceUntilIdle()
         vm.startMatching()
@@ -374,7 +378,7 @@ class AppViewModelTest {
         }
         val vm = AppViewModel(flaky, DemoBilling(), clock = { now }, today = { today })
         advanceUntilIdle()
-        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult); advanceUntilIdle()
         vm.startMatching()
@@ -390,5 +394,134 @@ class AppViewModelTest {
         val vm = signedIn()
         vm.addPost("First day ✨", null); advanceUntilIdle()
         assertEquals("First day ✨", vm.state.value.me!!.posts.single().text)
+    }
+
+    // ---- Global sign-up, friends, rooms, profile editing ----
+
+    @Test fun signsUpFromAnotherCountryWithItsFlag() = runTest(dispatcher) {
+        val vm = vm()
+        advanceUntilIdle()
+        vm.requestOtp(Countries.byIso("KR")!!, "010-1234-5678"); advanceUntilIdle()
+        assertEquals("821012345678", vm.state.value.onboarding.phone)
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        assertEquals("KR", vm.state.value.me!!.country)
+    }
+
+    @Test fun addFriendFromRecentThenMessageThem() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        val partner = vm.state.value.chat!!.match.partner
+        now += 5_000
+        vm.leave(next = false); advanceUntilIdle()
+        vm.addFriend(partner); advanceUntilIdle()
+        assertEquals(FriendState.REQUESTED, vm.state.value.friendState(partner.id))
+        vm.selectTab(com.yaari.chat.ui.Tab.RECENT); advanceUntilIdle() // the scripted partner accepts
+        assertEquals(FriendState.FRIENDS, vm.state.value.friendState(partner.id))
+        vm.openDm(partner.id); advanceUntilIdle()
+        assertEquals(partner.id, vm.state.value.dm!!.recent.partner.id)
+    }
+
+    @Test fun incomingRequestCanBeAcceptedOrDeclined() = runTest(dispatcher) {
+        val vm = signedIn()
+        val asking = vm.state.value.friends.single { it.state == FriendState.INCOMING }.profile
+        assertEquals(1, vm.state.value.incomingRequests)
+        vm.answerFriend(asking, accept = true); advanceUntilIdle()
+        assertEquals(FriendState.FRIENDS, vm.state.value.friendState(asking.id))
+        // A friend never met in random chat gets a private thread, which stays out of Recent.
+        vm.openDm(asking.id); advanceUntilIdle()
+        assertNotNull(vm.state.value.dm)
+        vm.closeDm(); advanceUntilIdle()
+        assertTrue(vm.state.value.recents.none { it.partner.id == asking.id })
+    }
+
+    @Test fun strangersCannotBeAdded() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.addFriend(FakeBackend.POOL.last()); advanceUntilIdle()
+        assertEquals(UiText(R.string.err_not_allowed), vm.state.value.notice)
+        assertEquals(FriendState.NONE, vm.state.value.friendState(FakeBackend.POOL.last().id))
+    }
+
+    @Test fun reportingAFriendRemovesThem() = runTest(dispatcher) {
+        val vm = signedIn()
+        val asking = vm.state.value.friends.single().profile
+        vm.report(asking.id, ReportReason.HARASSMENT); advanceUntilIdle()
+        assertTrue(vm.state.value.friends.isEmpty())
+        vm.selectTab(com.yaari.chat.ui.Tab.RECENT); advanceUntilIdle()
+        assertTrue("still gone after a refresh", vm.state.value.friends.isEmpty())
+    }
+
+    @Test fun roomsChatReportAndLeave() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
+        val lounge = vm.state.value.rooms.first()
+        vm.enterRoom(lounge)
+        advanceTimeBy(100); runCurrent() // rooms never go idle (presence beat, chatter): step the clock instead
+        val history = vm.state.value.room!!.messages
+        assertTrue(history.isNotEmpty())
+        vm.sendRoom("Hi everyone?")
+        advanceTimeBy(3_000); runCurrent()
+        val msgs = vm.state.value.room!!.messages
+        assertTrue(msgs.any { it.fromMe && it.text == "Hi everyone?" })
+        assertTrue("someone answered", msgs.last().let { !it.fromMe && it.id > msgs.first { m -> m.fromMe }.id })
+        // People in the room can be seen, added and reported
+        val someone = history.first().sender
+        vm.openProfile(someone); advanceTimeBy(100); runCurrent()
+        assertNotNull(vm.state.value.viewing)
+        vm.report(someone.id, ReportReason.HARASSMENT); advanceTimeBy(100); runCurrent()
+        assertTrue(vm.state.value.room!!.messages.none { it.sender.id == someone.id })
+        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
+        assertNull(vm.state.value.room)
+    }
+
+    @Test fun editProfileKeepsGenderAndAge() = runTest(dispatcher) {
+        val vm = signedIn()
+        val before = vm.state.value.me!!
+        var closed = false
+        vm.saveProfile("  ", "", "", null) { closed = true }; advanceUntilIdle()
+        assertEquals(UiText(R.string.err_name), vm.state.value.notice)
+        assertFalse(closed)
+        vm.saveProfile("Devraj", "Pune", "Hello world", null) { closed = true }; advanceUntilIdle()
+        val after = vm.state.value.me!!
+        assertTrue(closed)
+        assertEquals("Devraj" to "Hello world", after.name to after.bio)
+        assertEquals(before.gender to before.age, after.gender to after.age)
+    }
+
+    @Test fun roomMessageAfterLapsedPresenceRejoinsAndSends() = runTest(dispatcher) {
+        var joins = 0
+        var refusedOnce = false
+        val lapsing = object : Backend by backend {
+            override suspend fun joinRoom(roomId: String) { joins++; backend.joinRoom(roomId) }
+            override suspend fun sendRoom(roomId: String, text: String) =
+                if (!refusedOnce) { refusedOnce = true; throw BackendException("blocked") } else backend.sendRoom(roomId, text)
+        }
+        val vm = AppViewModel(lapsing, DemoBilling(), clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
+        vm.enterRoom(vm.state.value.rooms.first()); advanceTimeBy(100); runCurrent()
+        vm.sendRoom("still here"); advanceTimeBy(100); runCurrent()
+        assertTrue(vm.state.value.room!!.messages.any { it.fromMe && it.text == "still here" })
+        assertEquals(2, joins)
+        assertNull(vm.state.value.notice)
+        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
+    }
+
+    @Test fun roomThatCannotBeJoinedClosesAgain() = runTest(dispatcher) {
+        val banned = object : Backend by backend {
+            override suspend fun joinRoom(roomId: String) = throw BackendException("banned")
+        }
+        val vm = AppViewModel(banned, DemoBilling(), clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
+        vm.enterRoom(vm.state.value.rooms.first()); advanceUntilIdle()
+        assertNull(vm.state.value.room)
+        assertEquals(UiText(R.string.err_banned), vm.state.value.notice)
     }
 }

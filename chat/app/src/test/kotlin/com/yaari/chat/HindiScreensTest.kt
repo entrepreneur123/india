@@ -7,6 +7,7 @@ import androidx.compose.ui.test.performClick
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
+import com.yaari.chat.domain.Countries
 import com.yaari.chat.model.Gender
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
@@ -43,7 +44,7 @@ class HindiScreensTest {
         compose.setContent { YaariTheme { YaariApp(vm) } }
         waitFor("मोबाइल नंबर")
         shot("01_phone")
-        compose.runOnUiThread { vm.requestOtp("9876543210") }
+        compose.runOnUiThread { vm.requestOtp(Countries.byIso("IN")!!, "9876543210") }
         waitFor("6 अंकों का कोड")
         compose.runOnUiThread { vm.verifyOtp(FakeBackend.DEMO_OTP) }
         waitFor("अपनी प्रोफ़ाइल बनाएँ")
@@ -52,7 +53,7 @@ class HindiScreensTest {
         waitFor("किसी नए से मिलें")
         shot("03_lobby")
         compose.onNodeWithText("लड़कियाँ").performClick()
-        waitFor("Premium चाहिए")
+        waitFor("Plus चाहिए")
         shot("04_paywall")
         compose.onNodeWithText("अभी नहीं").performClick()
         compose.onNodeWithText("चैट शुरू करें").performClick()
@@ -63,9 +64,17 @@ class HindiScreensTest {
         shot("06_report")
         compose.onNodeWithText("रिपोर्ट करें, लॉबी").performClick()
         waitFor("किसी नए से मिलें")
+        compose.onAllNodes(androidx.compose.ui.test.hasText("रूम"))[0].performClick()
+        waitFor("ग्लोबल लाउंज")
+        shot("07_rooms")
+        compose.onAllNodes(androidx.compose.ui.test.hasText("हाल के"))[0].performClick()
+        waitFor("रिक्वेस्ट (1)")
+        shot("08_friends")
         compose.onNodeWithText("मैं").performClick()
-        compose.onNodeWithText("सेटिंग्स और सुरक्षा").performClick()
+        waitFor("प्रोफ़ाइल बदलें")
+        shot("09_me")
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("सेटिंग्स")).performClick()
         waitFor("शिकायत अधिकारी")
-        shot("07_settings")
+        shot("10_settings")
     }
 }

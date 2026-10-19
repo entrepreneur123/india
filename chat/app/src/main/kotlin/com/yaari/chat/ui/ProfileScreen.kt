@@ -1,46 +1,60 @@
 package com.yaari.chat.ui
 
-import androidx.compose.ui.res.stringResource
-import com.yaari.chat.R
-import androidx.compose.ui.res.pluralStringResource
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.GridOn
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.AddBox
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,44 +63,226 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.yaari.chat.data.Entitlements
+import com.yaari.chat.R
+import com.yaari.chat.domain.Countries
+import com.yaari.chat.domain.ExitPolicy
+import com.yaari.chat.domain.Validation
+import com.yaari.chat.domain.flagOf
+import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Post
-import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Profile
+import com.yaari.chat.model.ReportReason
 
-/** Someone else's profile, opened from a chat or from Recent. */
-@OptIn(ExperimentalMaterial3Api::class)
+// ---- My profile (the "Me" tab) -------------------------------------------------------------------
+
 @Composable
-fun ProfileScreen(p: Profile, inChat: Boolean, onBack: () -> Unit, onMessage: (() -> Unit)?, onReport: (ReportReason) -> Unit) {
+fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit) {
+    val me = s.me ?: return
+    val friends = s.friends.count { it.state == FriendState.FRIENDS }
+    Column(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 4.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+                Text(me.nameWithFlag(), style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                if (s.premium) Icon(Icons.Filled.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 6.dp).size(20.dp), tint = Brand.Orange)
+            }
+            IconButton(onNewPost) { Icon(Icons.Outlined.AddBox, stringResource(R.string.new_post), Modifier.size(26.dp)) }
+            IconButton(onSettings) { Icon(Icons.Outlined.Settings, stringResource(R.string.settings), Modifier.size(26.dp)) }
+        }
+        PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost) {
+            ProfileHeader(me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)))
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
+                SoftButton(stringResource(R.string.new_post), onNewPost, Modifier.weight(1f))
+            }
+            if (!s.premium) PlusBanner(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
+        }
+    }
+}
+
+@Composable
+private fun pluralLabel(id: Int, n: Int) = pluralStringResource(id, n)
+
+/** Yaari Plus advert on my profile, Instagram-style flat card. */
+@Composable
+private fun PlusBanner(s: UiState, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(16.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)).clickable(onClick = onClick).padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(40.dp).clip(CircleShape).background(Brand.gradient), contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.WorkspacePremium, null, tint = Color.White)
+        }
+        Column(Modifier.padding(start = 12.dp).weight(1f)) {
+            Text(stringResource(if (s.entitlements.genderPass) R.string.plan_pass else R.string.premium_title), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(stringResource(R.string.upgrade), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+    }
+}
+
+// ---- Someone else's profile ----------------------------------------------------------------------
+
+/** Opened from a chat, a room or Friends/Recent; shown over whatever is underneath. */
+@Composable
+fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
     SecureScreen()
-    BackHandler(onBack = onBack)
+    BackHandler(onBack = vm::closeProfile)
+    var menu by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
+    var unfriend by remember { mutableStateOf(false) }
+    val state = s.friendState(p.id)
+    val inChat = s.chat?.match?.partner?.id == p.id
+    val canMessage = !inChat && (state == FriendState.FRIENDS || s.recents.any { it.partner.id == p.id })
     Surface(Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(p.name) },
-                    navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } },
-                    actions = { TextButton({ reporting = true }) { Text(stringResource(R.string.report), color = MaterialTheme.colorScheme.error) } },
+        Column(Modifier.fillMaxSize()) {
+            Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(vm::closeProfile) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
+                Text(p.nameWithFlag(), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Box {
+                    IconButton({ menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.more)) }
+                    DropdownMenu(menu, { menu = false }) {
+                        if (state == FriendState.FRIENDS) DropdownMenuItem({ Text(stringResource(R.string.unfriend)) }, { menu = false; unfriend = true })
+                        DropdownMenuItem({ Text(stringResource(R.string.report_block), color = MaterialTheme.colorScheme.error) }, { menu = false; reporting = true })
+                    }
+                }
+            }
+            PostGrid(p.posts, p.colorSeed, emptyMine = null) {
+                val country = p.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
+                ProfileHeader(
+                    p,
+                    stats = listOfNotNull(
+                        p.posts.size to pluralLabel(R.plurals.posts_label, p.posts.size),
+                        p.age to stringResource(R.string.age),
+                    ),
+                    extra = country?.let { "${flagOf(p.country)} $it" },
                 )
-            },
-        ) { pad ->
-            Box(Modifier.padding(pad)) {
-                ProfileContent(p, isMe = false, footer = {
-                    if (onMessage != null && !inChat) Button(onMessage, Modifier.fillMaxWidth().padding(16.dp)) { Text(stringResource(R.string.message)) }
-                })
+                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    when (state) {
+                        FriendState.NONE -> SoftButton(stringResource(R.string.add_friend), { vm.addFriend(p) }, Modifier.weight(1f), accent = true)
+                        FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), { vm.answerFriend(p, true) }, Modifier.weight(1f), accent = true)
+                        FriendState.REQUESTED -> SoftButton(stringResource(R.string.requested), { vm.removeFriend(p) }, Modifier.weight(1f))
+                        FriendState.FRIENDS -> SoftButton(stringResource(R.string.friends_check), { unfriend = true }, Modifier.weight(1f))
+                    }
+                    if (canMessage) SoftButton(stringResource(R.string.message), { vm.openDm(p.id) }, Modifier.weight(1f))
+                }
             }
         }
     }
     if (reporting) ReportDialog(onDismiss = { reporting = false }, actions = listOf(stringResource(R.string.report_block))) { reason, _ ->
         reporting = false
-        onReport(reason)
+        vm.report(p.id, reason)
+    }
+    if (unfriend) {
+        AlertDialog(
+            onDismissRequest = { unfriend = false },
+            title = { Text(stringResource(R.string.unfriend_title, p.name)) },
+            confirmButton = { TextButton({ unfriend = false; vm.removeFriend(p) }) { Text(stringResource(R.string.unfriend), color = MaterialTheme.colorScheme.error) } },
+            dismissButton = { TextButton({ unfriend = false }) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
+}
+
+// ---- Shared pieces -------------------------------------------------------------------------------
+
+/** Avatar on the left, numbers on the right, then name, details and bio: the Instagram header. */
+@Composable
+private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Avatar(p, 88.dp, ring = true)
+            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceEvenly) {
+                stats.forEach { (n, label) ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("$n", style = MaterialTheme.typography.titleLarge)
+                        Text(label, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(p.name, style = MaterialTheme.typography.titleSmall)
+            Icon(Icons.Filled.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(15.dp), tint = Color(0xFF3B82F6))
+        }
+        Text(
+            listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (p.bio.isNotBlank()) Text(p.bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+        Spacer(Modifier.height(10.dp))
+    }
+}
+
+/** Header content, a grid icon bar, then the 3-column grid; tapping a post opens it full screen. */
+@Composable
+private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, header: @Composable () -> Unit) {
+    var open by remember { mutableStateOf<Post?>(null) }
+    LazyVerticalGrid(GridCells.Fixed(3), Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        item(span = { GridItemSpan(maxLineSpan) }) { Column { header() } }
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Column(Modifier.padding(top = 8.dp)) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) { Icon(Icons.Filled.GridOn, null) }
+            }
+        }
+        if (posts.isEmpty()) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                if (emptyMine != null) {
+                    Box(Modifier.clickable(onClick = emptyMine)) {
+                        EmptyState(Icons.Outlined.CameraAlt, stringResource(R.string.share_first_title), stringResource(R.string.share_first))
+                    }
+                } else {
+                    EmptyState(Icons.Outlined.CameraAlt, stringResource(R.string.no_posts_title), stringResource(R.string.no_posts))
+                }
+            }
+        }
+        items(posts, key = { it.id }) { post -> PostTile(post, seed) { open = post } }
+    }
+    open?.let { post -> PostViewer(post) { open = null } }
+}
+
+@Composable
+private fun PostTile(post: Post, seed: Int, onClick: () -> Unit) {
+    Box(Modifier.aspectRatio(1f).background(seedColor(seed + post.id.hashCode())).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+        if (post.imageUri != null) {
+            AsyncImage(post.imageUri, post.text, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        } else {
+            Text(
+                post.text, color = Color.White, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
+                modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PostViewer(post: Post, onClose: () -> Unit) {
+    BackHandler(onBack = onClose)
+    Surface(Modifier.fillMaxSize(), color = Color.Black) {
+        Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
+            Row(Modifier.fillMaxWidth()) {
+                IconButton(onClose) { Icon(Icons.Filled.Close, stringResource(R.string.close), tint = Color.White) }
+            }
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                if (post.imageUri != null) AsyncImage(post.imageUri, post.text, Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth)
+                else Text(post.text, color = Color.White, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
+            }
+            if (post.imageUri != null && post.text.isNotEmpty()) Text(post.text, color = Color.White, modifier = Modifier.padding(16.dp))
+        }
     }
 }
 
@@ -100,12 +296,12 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
         text = {
             Column {
                 ReportReason.entries.forEach { r ->
-                    Row(Modifier.fillMaxWidth().clickable { reason = r }, verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { reason = r }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(reason == r, { reason = r })
                         Text(stringResource(r.label))
                     }
                 }
-                Text(stringResource(R.string.report_note), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.report_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
         confirmButton = { TextButton({ onConfirm(reason, 0) }) { Text(actions[0], color = MaterialTheme.colorScheme.error) } },
@@ -116,90 +312,102 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
     )
 }
 
+// ---- Edit profile & new post -----------------------------------------------------------------------
+
+/** Top bar used by the full-screen editors: Cancel · Title · Done. */
 @Composable
-fun ProfileContent(
-    p: Profile,
-    isMe: Boolean,
-    entitlements: Entitlements = Entitlements(),
-    onUpgrade: () -> Unit = {},
-    onNewPost: () -> Unit = {},
-    onSettings: () -> Unit = {},
-    footer: @Composable () -> Unit = {},
-) {
-    var open by remember { mutableStateOf<Post?>(null) }
-    LazyVerticalGrid(GridCells.Fixed(3), Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Avatar(p, 88.dp)
-                    Column {
-                        Text(p.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                        Text(p.subtitle(), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 4.dp))
-                            Text(stringResource(R.string.phone_verified), style = MaterialTheme.typography.bodySmall)
-                        }
-                        Text(pluralStringResource(R.plurals.posts, p.posts.size, p.posts.size), style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-                if (p.bio.isNotBlank()) Text(p.bio)
-                if (isMe) {
-                    OutlinedButton(onSettings, Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_safety)) }
-                    OutlinedButton(onNewPost, Modifier.fillMaxWidth()) {
-                        Icon(Icons.Filled.Add, null)
-                        Text(stringResource(R.string.new_post))
-                    }
-                }
-            }
+private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEnabled: Boolean, onDone: () -> Unit) {
+    Column {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onCancel) { Icon(Icons.Filled.Close, stringResource(R.string.cancel)) }
+            Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            TextButton(onDone, enabled = doneEnabled) { Text(done, fontWeight = FontWeight.Bold) }
         }
-        if (isMe) item(span = { GridItemSpan(maxLineSpan) }) { PremiumCard(entitlements, onUpgrade) }
-        items(p.posts, key = { it.id }) { post -> PostTile(post, p.colorSeed) { open = post } }
-        item(span = { GridItemSpan(maxLineSpan) }) { footer() }
-    }
-    open?.let { post ->
-        AlertDialog(onDismissRequest = { open = null }, confirmButton = { TextButton({ open = null }) { Text(stringResource(R.string.close)) } }, text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                post.imageUri?.let { AsyncImage(it, null, Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth) }
-                if (post.text.isNotEmpty()) Text(post.text)
-            }
-        })
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
 @Composable
-private fun PostTile(post: Post, seed: Int, onClick: () -> Unit) {
-    Box(Modifier.aspectRatio(1f).background(seedColor(seed + post.id.hashCode())).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-        if (post.imageUri != null) {
-            AsyncImage(post.imageUri, post.text, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-        } else {
-            Text(post.text, color = Color.White, maxLines = 4, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.bodySmall)
+fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit) {
+    BackHandler(onBack = onDone)
+    var name by rememberSaveable { mutableStateOf(me.name) }
+    var city by rememberSaveable { mutableStateOf(me.city) }
+    var bio by rememberSaveable { mutableStateOf(me.bio) }
+    var photo by remember { mutableStateOf<String?>(null) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { if (it != null) photo = it.toString() }
+    fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    Surface(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().imePadding()) {
+            EditorBar(stringResource(R.string.edit_profile), onDone, stringResource(R.string.done), name.isNotBlank()) {
+                vm.saveProfile(name, city, bio, photo, onDone)
+            }
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Avatar(me.copy(photoUri = photo ?: me.photoUri, name = name.ifBlank { me.name }), 96.dp, Modifier.clip(CircleShape).clickable { pick() })
+                    TextButton(::pick) { Text(stringResource(R.string.change_photo), fontWeight = FontWeight.Bold) }
+                }
+                Field(name, { name = it.take(Validation.MAX_NAME) }, stringResource(R.string.name))
+                Field(city, { city = it.take(30) }, stringResource(R.string.city))
+                Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
+                // Locked on the server too: gender and age can't be changed after sign-up.
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Outlined.Lock, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Column(Modifier.padding(start = 10.dp)) {
+                        Text("${stringResource(me.gender.label)} · ${me.age}", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.locked_fields), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
         }
     }
+}
+
+@Composable
+fun Field(
+    value: String, onChange: (String) -> Unit, label: String, modifier: Modifier = Modifier, single: Boolean = true, counter: String? = null,
+    keyboard: KeyboardOptions = KeyboardOptions.Default,
+) {
+    OutlinedTextField(
+        value, onChange, modifier.fillMaxWidth(), label = { Text(label) }, singleLine = single, minLines = if (single) 1 else 3,
+        keyboardOptions = keyboard,
+        shape = RoundedCornerShape(14.dp),
+        supportingText = counter?.let { { Text(it, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End) } },
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = MaterialTheme.colorScheme.onSurface,
+            focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+        ),
+    )
 }
 
 /** Full-screen composer, like Instagram's. */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewPostScreen(onCancel: () -> Unit, onPost: (String, String?) -> Unit) {
     BackHandler(onBack = onCancel)
     var text by rememberSaveable { mutableStateOf("") }
     var uri by remember { mutableStateOf<String?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { if (it != null) uri = it.toString() }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.new_post)) },
-                navigationIcon = { IconButton(onCancel) { Icon(Icons.Filled.Close, stringResource(R.string.cancel)) } },
-                actions = { TextButton({ onPost(text, uri) }, enabled = text.isNotBlank() || uri != null) { Text(stringResource(R.string.share)) } },
-            )
-        },
-    ) { pad ->
-        Column(Modifier.padding(pad).fillMaxSize().imePadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            uri?.let { AsyncImage(it, null, Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop) }
-            OutlinedButton({ picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, Modifier.fillMaxWidth()) {
-                Text(stringResource(if (uri == null) R.string.add_photo else R.string.change_photo))
+    Surface(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().imePadding()) {
+            EditorBar(stringResource(R.string.new_post), onCancel, stringResource(R.string.share), text.isNotBlank() || uri != null) { onPost(text, uri) }
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(18.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+                        .clickable { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (uri != null) AsyncImage(uri, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    else Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Outlined.CameraAlt, null, Modifier.size(40.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.height(6.dp))
+                        Text(stringResource(R.string.add_photo), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                Field(text, { text = it.take(500) }, stringResource(R.string.write_something), single = false)
+                Spacer(Modifier.width(1.dp))
             }
-            OutlinedTextField(text, { text = it.take(500) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.write_something)) }, minLines = 4)
         }
     }
 }

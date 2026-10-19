@@ -16,14 +16,20 @@ import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
+import com.yaari.chat.domain.Countries
+import com.yaari.chat.domain.Country
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
+import com.yaari.chat.model.Friend
+import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
+import com.yaari.chat.model.Room
+import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -38,7 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-enum class Tab { CHAT, RECENT, ME }
+enum class Tab { ROOMS, RANDOM, RECENT, ME }
 
 /** Why the Premium sheet opened; [reason] is shown above the offer. */
 enum class Paywall(@StringRes val reason: Int?) {
@@ -47,6 +53,7 @@ enum class Paywall(@StringRes val reason: Int?) {
     VIDEO(R.string.premium_needed_video),
 }
 
+/** [phone] is the full international number in digits once entered ("919876543210"). */
 data class Onboarding(val step: Step = Step.PHONE, val phone: String = "", val busy: Boolean = false, val error: UiText? = null) {
     enum class Step { PHONE, OTP, PROFILE }
 }
@@ -75,23 +82,31 @@ data class ChatState(
 
 data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList())
 
+data class RoomState(val room: Room, val messages: List<RoomMessage> = emptyList(), val loading: Boolean = true)
+
 data class UiState(
     val booting: Boolean = true,
     val onboarding: Onboarding = Onboarding(),
     val me: Profile? = null,
     val entitlements: Entitlements = Entitlements(),
     val prices: Map<String, String> = emptyMap(),
-    val tab: Tab = Tab.CHAT,
+    val tab: Tab = Tab.RANDOM,
     val target: Target = Target.ANY,
     val searching: Boolean = false,
     val chat: ChatState? = null,
     val viewing: Profile? = null,
     val dm: DmState? = null,
     val recents: List<RecentMatch> = emptyList(),
+    val friends: List<Friend> = emptyList(),
+    val rooms: List<Room> = emptyList(),
+    val room: RoomState? = null,
     val paywall: Paywall? = null,
     val notice: UiText? = null,
 ) {
     val premium get() = entitlements.premium
+
+    fun friendState(userId: String) = friends.firstOrNull { it.profile.id == userId }?.state ?: FriendState.NONE
+    val incomingRequests get() = friends.count { it.state == FriendState.INCOMING }
 }
 
 class AppViewModel(
@@ -107,6 +122,7 @@ class AppViewModel(
     private var matchJob: Job? = null
     private var chatJob: Job? = null
     private var dmJob: Job? = null
+    private var roomJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -124,6 +140,7 @@ class AppViewModel(
     }
 
     private suspend fun afterSignIn() {
+        refreshFriends()
         refreshEntitlements()
         runCatching { billing.prices() }.onSuccess { p -> _state.update { it.copy(prices = p) } }
         restorePurchases()
@@ -171,6 +188,7 @@ class AppViewModel(
             "not_allowed" -> R.string.err_not_allowed
             "video_not_configured" -> R.string.err_video_off
             "too_large" -> R.string.err_too_large
+            "not_found" -> R.string.err_not_found
             else -> R.string.err_network
         },
     )
@@ -188,8 +206,8 @@ class AppViewModel(
 
     // ---- Onboarding -------------------------------------------------------------------------
 
-    fun requestOtp(input: String) {
-        val phone = Validation.indianMobile(input)
+    fun requestOtp(country: Country, input: String) {
+        val phone = Validation.phone(country.dial, input)
         if (phone == null) {
             _state.update { it.copy(onboarding = it.onboarding.copy(error = UiText(R.string.err_phone))) }
             return
@@ -260,7 +278,11 @@ class AppViewModel(
 
     fun selectTab(tab: Tab) {
         _state.update { it.copy(tab = tab) }
-        if (tab == Tab.RECENT) refreshRecents()
+        when (tab) {
+            Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() } }
+            Tab.ROOMS -> refreshRooms()
+            else -> Unit
+        }
     }
 
     fun setTarget(target: Target) {
@@ -300,6 +322,7 @@ class AppViewModel(
         if (s.me == null || s.searching || s.chat != null) return
         _state.update { it.copy(searching = true, dm = null, viewing = null) }
         dmJob?.cancel()
+        if (s.room != null) leaveRoom()
         val gen = ++searchGeneration
         fun current() = gen == searchGeneration && _state.value.searching
         matchJob = viewModelScope.launch {
@@ -547,6 +570,8 @@ class AppViewModel(
             _state.update { s ->
                 s.copy(
                     recents = s.recents.filterNot { it.partner.id == partnerId },
+                    friends = s.friends.filterNot { it.profile.id == partnerId },
+                    room = s.room?.let { r -> r.copy(messages = r.messages.filterNot { it.sender.id == partnerId }) },
                     viewing = s.viewing?.takeIf { it.id != partnerId },
                     dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
                     notice = UiText(R.string.msg_reported),
@@ -560,8 +585,18 @@ class AppViewModel(
         _state.update { it.copy(recents = list) }
     }
 
+    /** Message someone from Recent, or a friend (their chat, or a new private one the server opens). */
     fun openDm(partnerId: String) {
-        val r = _state.value.recents.firstOrNull { it.partner.id == partnerId } ?: return
+        val s = _state.value
+        s.recents.firstOrNull { it.partner.id == partnerId }?.let { return openThread(it) }
+        val friend = s.friends.firstOrNull { it.profile.id == partnerId && it.state == FriendState.FRIENDS } ?: return
+        act {
+            val thread = friend.threadId ?: backend.friendThread(partnerId)
+            openThread(RecentMatch(thread, friend.profile, 0))
+        }
+    }
+
+    private fun openThread(r: RecentMatch) {
         _state.update { it.copy(dm = DmState(r), viewing = null) }
         dmJob?.cancel()
         dmJob = viewModelScope.launch {
@@ -610,6 +645,7 @@ class AppViewModel(
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
+        roomJob?.cancel()
         _state.value = UiState(booting = false)
     }
 
@@ -622,8 +658,135 @@ class AppViewModel(
         }
     }
 
+    /** Edit my profile. Gender and birth date can't change (the server refuses too). */
+    fun saveProfile(name: String, city: String, bio: String, newPhotoUri: String?, done: () -> Unit) {
+        val n = name.trim()
+        val error = when {
+            n.isEmpty() -> UiText(R.string.err_name)
+            n.length > Validation.MAX_NAME -> UiText(R.string.err_name_long)
+            bio.length > Validation.MAX_BIO -> UiText(R.string.err_bio_long)
+            else -> null
+        }
+        if (error != null) return notice(error)
+        act {
+            val me = backend.updateProfile(n, city.trim().take(30), bio.trim(), newPhotoUri)
+            _state.update { it.copy(me = me) }
+            done()
+        }
+    }
+
+    // ---- Friends ----------------------------------------------------------------------------
+
+    private suspend fun refreshFriends() {
+        runCatching { backend.friends() }.onSuccess { list -> _state.update { it.copy(friends = list) } }
+    }
+
+    /** Add friend, or accept their request. */
+    fun addFriend(p: Profile) = act {
+        val state = backend.requestFriend(p.id)
+        _state.update { s ->
+            val others = s.friends.filterNot { it.profile.id == p.id }
+            val old = s.friends.firstOrNull { it.profile.id == p.id }
+            s.copy(friends = listOf(Friend(p, state, old?.threadId)) + others)
+        }
+        notice(UiText(if (state == FriendState.FRIENDS) R.string.msg_now_friends else R.string.msg_request_sent, p.name))
+    }
+
+    fun answerFriend(p: Profile, accept: Boolean) = act {
+        backend.answerFriend(p.id, accept)
+        _state.update { s ->
+            s.copy(friends = s.friends.mapNotNull { f ->
+                when {
+                    f.profile.id != p.id -> f
+                    accept -> f.copy(state = FriendState.FRIENDS)
+                    else -> null
+                }
+            })
+        }
+    }
+
+    /** Unfriend, or cancel a request I sent. */
+    fun removeFriend(p: Profile) = act {
+        backend.removeFriend(p.id)
+        _state.update { s -> s.copy(friends = s.friends.filterNot { it.profile.id == p.id }) }
+    }
+
+    // ---- Public rooms -----------------------------------------------------------------------
+
+    fun refreshRooms() = act {
+        val list = backend.rooms()
+        _state.update { it.copy(rooms = list) }
+    }
+
+    fun enterRoom(room: Room) {
+        if (_state.value.room?.room?.id == room.id) return
+        roomJob?.cancel()
+        _state.update { it.copy(room = RoomState(room)) }
+        roomJob = viewModelScope.launch {
+            try {
+                backend.joinRoom(room.id)
+                val history = backend.roomHistory(room.id)
+                updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, history), loading = false) }
+                launch {
+                    while (isActive) { // stay listed as present; the server forgets you 90 s after the last beat
+                        delay(ROOM_BEAT_MS)
+                        runCatching { backend.joinRoom(room.id) }
+                    }
+                }
+                backend.roomEvents(room.id).collect { m -> updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) } }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Couldn't get in (suspended, room removed, offline): back to the list instead of an empty room.
+                _state.update { s -> if (s.room?.room?.id == room.id) s.copy(room = null) else s }
+                notice(explain(e))
+            }
+        }
+    }
+
+    fun leaveRoom() {
+        val r = _state.value.room ?: return
+        roomJob?.cancel()
+        _state.update { it.copy(room = null) }
+        viewModelScope.launch { runCatching { backend.leaveRoom(r.room.id) } }
+        refreshRooms()
+    }
+
+    fun sendRoom(text: String) {
+        val t = text.trim().take(MAX_ROOM_TEXT)
+        val r = _state.value.room ?: return
+        if (t.isEmpty()) return
+        act {
+            val m = try {
+                backend.sendRoom(r.room.id, t)
+            } catch (e: BackendException) {
+                // Presence lapsed (phone asleep, network gap > 90 s): the server refuses until we rejoin. Rejoin once, retry.
+                if (e.code != "blocked") throw e
+                backend.joinRoom(r.room.id)
+                backend.sendRoom(r.room.id, t)
+            }
+            updateRoom(r.room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) }
+        }
+    }
+
+    private fun updateRoom(roomId: String, change: (RoomState) -> RoomState) = _state.update {
+        val r = it.room
+        if (r == null || r.room.id != roomId) it else it.copy(room = change(r))
+    }
+
+    /** Keeps the newest [MAX_ROOM_MESSAGES]; blocked senders never come back through a re-sync. */
+    private fun mergeRoom(old: List<RoomMessage>, new: List<RoomMessage>): List<RoomMessage> {
+        val ids = old.mapTo(HashSet()) { it.id }
+        val added = new.filter { it.id !in ids }
+        if (added.isEmpty()) return old
+        return (old + added).sortedBy { it.id }.takeLast(MAX_ROOM_MESSAGES)
+    }
+
     companion object {
         const val POLL_MS = 2_000L
+        const val ROOM_BEAT_MS = 30_000L
+        const val MAX_ROOM_TEXT = 500
+        const val MAX_ROOM_MESSAGES = 300
         const val MAX_TEXT = 1000
         const val TYPING_EVERY_MS = 3_000L
         const val RECONNECT_MS = 3_000L

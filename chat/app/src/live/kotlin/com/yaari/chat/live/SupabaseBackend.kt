@@ -17,6 +17,8 @@ import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
+import com.yaari.chat.model.Friend
+import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
@@ -25,6 +27,8 @@ import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
+import com.yaari.chat.model.Room
+import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import com.russhwolf.settings.SharedPreferencesSettings
 import io.github.jan.supabase.auth.Auth
@@ -110,17 +114,38 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
         val city: String = "India", val bio: String = "", @SerialName("photo_path") val photoPath: String? = null,
+        val country: String? = null,
     )
+    @Serializable private data class NewProfileRow(
+        val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
+        val city: String, val bio: String, @SerialName("photo_path") val photoPath: String?,
+    )
+    @Serializable private data class ProfileEdit(val name: String, val city: String, val bio: String)
+    @Serializable private data class PhotoEdit(@SerialName("photo_path") val photoPath: String)
     @Serializable private data class CardRow(
         val id: String, val name: String, val gender: String, val age: Int, val city: String, val bio: String,
-        @SerialName("photo_path") val photoPath: String? = null,
+        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
     )
     @Serializable private data class RecentRow(
         @SerialName("match_id") val matchId: String, @SerialName("met_at") val metAt: String,
         @SerialName("last_body") val lastBody: String? = null,
         val id: String, val name: String, val gender: String, val age: Int, val city: String, val bio: String,
-        @SerialName("photo_path") val photoPath: String? = null,
+        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
     )
+    @Serializable private data class FriendRow(
+        val state: String, @SerialName("match_id") val matchId: String? = null,
+        val id: String, val name: String, val gender: String, val age: Int, val city: String, val bio: String,
+        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
+    )
+    @Serializable private data class RoomRow(val id: String, val title: String, val emoji: String, val online: Int)
+    @Serializable private data class RoomMessageRow(
+        val id: Long, @SerialName("room_id") val roomId: String, val sender: String,
+        @SerialName("sender_name") val senderName: String, @SerialName("sender_gender") val senderGender: String,
+        @SerialName("sender_age") val senderAge: Int, @SerialName("sender_photo") val senderPhoto: String? = null,
+        @SerialName("sender_country") val senderCountry: String? = null, val body: String,
+        @SerialName("created_at") val createdAt: String,
+    )
+    @Serializable private data class NewRoomMessageRow(@SerialName("room_id") val roomId: String, val body: String)
     @Serializable private data class PostRow(
         val id: String, @SerialName("user_id") val userId: String, val body: String,
         @SerialName("image_path") val imagePath: String? = null, @SerialName("created_at") val createdAt: String,
@@ -158,10 +183,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     // ---- account ----
 
-    override suspend fun sendOtp(phone: String) = call { client.auth.signInWith(OTP) { this.phone = "+91$phone" } }
+    override suspend fun sendOtp(phone: String) = call { client.auth.signInWith(OTP) { this.phone = "+$phone" } }
 
     override suspend fun verifyOtp(phone: String, code: String): Boolean = runCatching {
-        client.auth.verifyPhoneOtp(type = OtpType.Phone.SMS, phone = "+91$phone", token = code)
+        client.auth.verifyPhoneOtp(type = OtpType.Phone.SMS, phone = "+$phone", token = code)
     }.isSuccess
 
     /** Integration tests only (QA accounts); users sign in with phone OTP. */
@@ -178,13 +203,14 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun myProfile(): Profile? = call {
         val row = client.postgrest["profiles"].select { filter { eq("id", uid) } }.decodeSingleOrNull<ProfileRow>() ?: return@call null
         val age = Period.between(LocalDate.parse(row.birthDate), LocalDate.now()).years
-        toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath), posts(row.id))
+        toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts(row.id))
     }
 
     override suspend fun createProfile(p: NewProfile): Profile = call {
         val photo = p.photoUri?.let { upload(it.toUri(), "avatar") }
+        // Country is set by the server from the verified phone number.
         client.postgrest["profiles"].insert(
-            ProfileRow(uid, p.name, p.gender.name.lowercase(), p.birthDate.toString(), p.city, p.bio, photo),
+            NewProfileRow(uid, p.name, p.gender.name.lowercase(), p.birthDate.toString(), p.city, p.bio, photo),
         )
         myProfile() ?: throw BackendException("network")
     }
@@ -362,22 +388,22 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     // ---- profiles ----
 
     override suspend fun recents(): List<RecentMatch> = call {
-        client.postgrest.rpc("recent_cards").decodeList<RecentRow>().map { r ->
+        client.postgrest.rpc("recent_list").decodeList<RecentRow>().map { r ->
             RecentMatch(
-                r.matchId, toProfile(CardRow(r.id, r.name, r.gender, r.age, r.city, r.bio, r.photoPath), emptyList()),
+                r.matchId, toProfile(CardRow(r.id, r.name, r.gender, r.age, r.city, r.bio, r.photoPath, r.country), emptyList()),
                 ts(r.metAt).toEpochMilli(), r.lastBody,
             )
         }
     }
 
     override suspend fun profile(userId: String): Profile? = call {
-        val c = client.postgrest.rpc("profile_card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()
+        val c = client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()
             ?: return@call null
         toProfile(c, posts(userId))
     }
 
     private suspend fun card(userId: String): Profile? =
-        client.postgrest.rpc("profile_card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()?.let { toProfile(it, posts(userId)) }
+        client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()?.let { toProfile(it, posts(userId)) }
 
     private suspend fun posts(userId: String): List<Post> =
         client.postgrest["posts"].select {
@@ -392,11 +418,112 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         Post(row.id, row.body, imageUri, ts(row.createdAt).toEpochMilli())
     }
 
+    override suspend fun updateProfile(name: String, city: String, bio: String, newPhotoUri: String?): Profile = call {
+        val me = uid
+        client.postgrest["profiles"].update(ProfileEdit(name, city, bio)) { filter { eq("id", me) } }
+        newPhotoUri?.let { uri ->
+            val path = upload(uri.toUri(), "avatar")
+            client.postgrest["profiles"].update(PhotoEdit(path)) { filter { eq("id", me) } }
+        }
+        myProfile() ?: throw BackendException("network")
+    }
+
+    // ---- friends ----
+
+    override suspend fun friends(): List<Friend> = call {
+        client.postgrest.rpc("friend_list").decodeList<FriendRow>().map { f ->
+            Friend(
+                toProfile(CardRow(f.id, f.name, f.gender, f.age, f.city, f.bio, f.photoPath, f.country), emptyList()),
+                when (f.state) {
+                    "friends" -> FriendState.FRIENDS
+                    "requested" -> FriendState.REQUESTED
+                    else -> FriendState.INCOMING
+                },
+                f.matchId,
+            )
+        }
+    }
+
+    override suspend fun requestFriend(userId: String): FriendState = call {
+        val raw = client.postgrest.rpc("request_friend", buildJsonObject { put("p_user", userId) }).data
+        if (json.decodeFromString<String>(raw.trim()) == "friends") FriendState.FRIENDS else FriendState.REQUESTED
+    }
+
+    override suspend fun answerFriend(userId: String, accept: Boolean) = call {
+        client.postgrest.rpc("answer_friend", buildJsonObject { put("p_user", userId); put("p_accept", accept) })
+        Unit
+    }
+
+    override suspend fun removeFriend(userId: String) = call {
+        client.postgrest.rpc("remove_friend", buildJsonObject { put("p_user", userId) })
+        Unit
+    }
+
+    override suspend fun friendThread(userId: String): String = call {
+        json.decodeFromString<String>(client.postgrest.rpc("friend_thread", buildJsonObject { put("p_user", userId) }).data.trim())
+    }
+
+    // ---- rooms ----
+
+    override suspend fun rooms(): List<Room> = call {
+        client.postgrest.rpc("room_list").decodeList<RoomRow>().map { Room(it.id, it.title, it.emoji, it.online) }
+    }
+
+    override suspend fun joinRoom(roomId: String) = call { client.postgrest.rpc("join_room", buildJsonObject { put("p_room", roomId) }); Unit }
+
+    override suspend fun leaveRoom(roomId: String) = call { client.postgrest.rpc("leave_room", buildJsonObject { put("p_room", roomId) }); Unit }
+
+    override suspend fun roomHistory(roomId: String): List<RoomMessage> = call {
+        val me = uid
+        client.postgrest["room_messages"].select {
+            filter { eq("room_id", roomId) }
+            order("id", Order.DESCENDING) // the newest 100, shown oldest first
+            limit(100)
+        }.decodeList<RoomMessageRow>().asReversed().map { toRoomMessage(it, me) }
+    }
+
+    override fun roomEvents(roomId: String): Flow<RoomMessage> = channelFlow {
+        val me = uid
+        val channel = client.channel("room-$roomId-${UUID.randomUUID()}")
+        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
+            table = "room_messages"
+            filter("room_id", FilterOperator.EQ, roomId)
+        }
+        launch { inserts.collect { a -> runCatching { toRoomMessage(a.decodeRecord<RoomMessageRow>(), me) }.onSuccess { send(it) } } }
+        try {
+            channel.subscribe(blockUntilSubscribed = true)
+            // Re-sync after a dropped socket (the app de-duplicates by id).
+            while (true) {
+                delay(15_000)
+                runCatching { roomHistory(roomId).takeLast(30).forEach { send(it) } }
+            }
+        } finally {
+            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
+        }
+    }
+
+    override suspend fun sendRoom(roomId: String, text: String): RoomMessage = call {
+        val row = client.postgrest["room_messages"].insert(NewRoomMessageRow(roomId, text)) { select() }.decodeSingle<RoomMessageRow>()
+        toRoomMessage(row, uid)
+    }
+
+    /** A photo the viewer may no longer see (that person left the room long ago) shows the initial instead. */
+    private suspend fun toRoomMessage(r: RoomMessageRow, me: String) = RoomMessage(
+        id = r.id,
+        sender = Profile(
+            id = r.sender, name = r.senderName,
+            gender = runCatching { Gender.valueOf(r.senderGender.uppercase()) }.getOrDefault(Gender.OTHER),
+            age = r.senderAge, city = "", bio = "", photoUri = r.senderPhoto?.let { p -> runCatching { signed(p) }.getOrNull() },
+            colorSeed = r.sender.hashCode(), country = r.senderCountry,
+        ),
+        fromMe = r.sender == me, text = r.body, at = ts(r.createdAt).toEpochMilli(),
+    )
+
     // ---- mapping & media ----
 
     private suspend fun toProfile(c: CardRow, posts: List<Post>) = Profile(
         id = c.id, name = c.name, gender = Gender.valueOf(c.gender.uppercase()), age = c.age, city = c.city, bio = c.bio,
-        photoUri = c.photoPath?.let { signed(it) }, colorSeed = c.id.hashCode(), posts = posts,
+        photoUri = c.photoPath?.let { signed(it) }, colorSeed = c.id.hashCode(), posts = posts, country = c.country,
     )
 
     private suspend fun toMessage(r: MessageRow, me: String) = Message(
