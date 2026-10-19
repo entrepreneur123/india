@@ -16,8 +16,8 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0-proto"
+        versionCode = 2
+        versionName = "0.2.0-proto"
     }
 
     // English + Hindi; Android 13+ also lists them in the per-app language setting.
@@ -115,6 +115,8 @@ dependencies {
     "liveImplementation"(libs.supabase.storage)
     "liveImplementation"(libs.supabase.functions)
     "liveImplementation"(libs.ktor.okhttp)
+    // Coil needs a network fetcher for https images (signed Supabase URLs); without it they silently fail.
+    "liveImplementation"(libs.coil.network.okhttp)
     "liveImplementation"(libs.kotlinx.serialization.json)
     "liveImplementation"(libs.livekit.android)
     "liveImplementation"(libs.billing.ktx)
