@@ -187,10 +187,14 @@ def draw_slug(d: dict) -> str:
 
 
 class Site:
-    def __init__(self, data: pathlib.Path, base_url: str, now: dt.datetime | None = None):
+    def __init__(self, data: pathlib.Path, base_url: str, now: dt.datetime | None = None,
+                 link_prefix: str | None = None):
         self.data = data
         self.base = base_url.rstrip("/")
-        self.path_prefix = "/" + self.base.split("/", 3)[3] if self.base.count("/") >= 3 else ""
+        if link_prefix is None:  # served where base_url points
+            link_prefix = "/" + self.base.split("/", 3)[3] if self.base.count("/") >= 3 else ""
+        # Links follow where this copy is served (a mirror at a host root uses ""); canonical URLs stay on base_url.
+        self.path_prefix = link_prefix.rstrip("/")
         self.now = now or dt.datetime.now(IST)
         self.today = self.now.date().isoformat()
         self.s = {code: app_strings(folder) for code, (folder, _) in LANGS.items()}
@@ -224,8 +228,7 @@ class Site:
         return f"{self.path_prefix}{LANGS[lang][1]}{path}"
 
     def abs(self, lang: str, path: str) -> str:
-        origin = self.base[: len(self.base) - len(self.path_prefix)] if self.path_prefix else self.base
-        return origin + self.url(lang, path)
+        return f"{self.base}{LANGS[lang][1]}{path}"
 
     @staticmethod
     def day_path(date: str) -> str:
@@ -576,8 +579,10 @@ def main(argv=None) -> int:
     ap.add_argument("--data", type=pathlib.Path, required=True, help="folder containing v2/")
     ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--base-url", default=os.environ.get("SITE_URL", "https://entrepreneur123.github.io/india"))
+    ap.add_argument("--link-prefix", default=None,
+                    help='path the copy is served under, if not base-url\'s ("" for a mirror at a host root)')
     a = ap.parse_args(argv)
-    n = Site(a.data, a.base_url).build(a.out)
+    n = Site(a.data, a.base_url, link_prefix=a.link_prefix).build(a.out)
     print(f"site: {n} pages")
     return 0
 

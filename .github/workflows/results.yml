@@ -144,7 +144,11 @@ jobs:
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
             python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
-              deploy() { npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
+              # Cloudflare serves the site at the host root, GitHub under /india/: rebuild the pages with root links.
+              rm -rf ../cf && cp -a ../public ../cf && rm -rf ../cf/.git
+              python ../web/sitegen.py --data ../cf --out ../cf --link-prefix ""
+              printf '/india /  301\n/india/* /:splat 301\n' > ../cf/_redirects   # old /india/ links from before this fix
+              deploy() { npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
               # First deploy: create the project (free plan) if it does not exist yet.
               deploy || { npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
                 || echo "::warning::Cloudflare deploy failed"

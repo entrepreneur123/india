@@ -9,7 +9,7 @@ import sitegen  # web/sitegen.py
 FEED = pathlib.Path(__file__).resolve().parent.parent / "android/app/src/test/resources/feed_latest.json"
 
 
-def build(tmp, monkeypatch, ads=""):
+def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None):
     monkeypatch.setenv("ADSENSE_CLIENT", ads)
     data = tmp / "data"
     (data / "v2/days").mkdir(parents=True)
@@ -20,7 +20,7 @@ def build(tmp, monkeypatch, ads=""):
     (data / "v2/index.json").write_text(json.dumps({"schema": 2, "dates": [], "noDraw": [], "upcoming": []}))
     now = dt.datetime(2026, 10, 18, 21, 0, tzinfo=sitegen.IST)
     out = tmp / "out"
-    s = sitegen.Site(data, "https://example.in", now=now)
+    s = sitegen.Site(data, base, now=now, link_prefix=link_prefix)
     s.build(out)
     return out
 
@@ -95,3 +95,13 @@ def test_beacon_accepts_the_whole_snippet():
                "data-cf-beacon='{\"token\": \"0123abcd\"}'></script><!-- End Cloudflare Web Analytics -->")
     assert sitegen.beacon_token(snippet) == "0123abcd"
     assert sitegen.beacon_token("0123abcd") == "0123abcd"
+
+
+def test_mirror_at_host_root_links_without_the_project_path(tmp_path, monkeypatch):
+    """GitHub serves the site under /india/, Cloudflare at the root: links must follow the copy, canonicals must not."""
+    gh = (build(tmp_path / "gh", monkeypatch, base="https://example.github.io/india") / "bn/index.html").read_text()
+    assert 'href="/india/bn/result/17-10-2026/"' in gh and 'src="/india/assets/site.js"' in gh
+    cf = (build(tmp_path / "cf", monkeypatch, base="https://example.github.io/india", link_prefix="") / "bn/index.html").read_text()
+    assert "/india/" not in cf.replace("https://example.github.io/india/", "")
+    assert 'href="/bn/result/17-10-2026/"' in cf and 'src="/assets/site.js"' in cf and 'href="/privacy.html"' in cf
+    assert '<link rel="canonical" href="https://example.github.io/india/bn/">' in cf
