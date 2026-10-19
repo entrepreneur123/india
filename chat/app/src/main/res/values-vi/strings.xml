@@ -136,6 +136,8 @@
     <string name="report_info">Dùng Báo cáo trong mọi cuộc chat hay hồ sơ: người đó bị chặn ngay và đội ngũ sẽ xem xét. Khiếu nại về ảnh nhạy cảm hoặc mạo danh được xử lý trong vòng 2 giờ.</string>
     <string name="grievance_officer">Người phụ trách khiếu nại</string>
     <string name="privacy_policy">Chính sách quyền riêng tư</string>
+    <string name="terms_of_use">Điều khoản sử dụng</string>
+    <string name="child_safety">An toàn trẻ em</string>
     <string name="account">Tài khoản</string>
     <string name="sign_out">Đăng xuất</string>
     <string name="delete_account">Xóa tài khoản</string>

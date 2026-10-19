@@ -399,7 +399,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
             <span className="truncate">{title}</span>
           </h1>
           <span className="flex items-center gap-1.5 truncate text-xs text-muted-foreground tabular-nums">
-            <PresenceDot /> <OnlineCount n={room.online} max={room.maxMembers} />
+            <PresenceDot /> <OnlineCount n={joined ? Math.max(room.online, 1) : room.online} max={room.maxMembers} />
             {room.official ? '' : room.mine ? ` · ${t('room.youHost')}` : ` · ${t('room.hostName', { name: room.ownerName ?? '' })}`}
           </span>
         </span>

@@ -136,6 +136,8 @@
     <string name="report_info">Use Denunciar em qualquer chat ou perfil: a pessoa é bloqueada na hora e nossa equipe analisa. Queixas sobre imagens íntimas ou perfis falsos são tratadas em até 2 horas.</string>
     <string name="grievance_officer">Responsável por reclamações</string>
     <string name="privacy_policy">Política de privacidade</string>
+    <string name="terms_of_use">Termos de uso</string>
+    <string name="child_safety">Segurança infantil</string>
     <string name="account">Conta</string>
     <string name="sign_out">Sair da conta</string>
     <string name="delete_account">Excluir conta</string>

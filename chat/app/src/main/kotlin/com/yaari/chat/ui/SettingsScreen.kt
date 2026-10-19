@@ -70,7 +70,11 @@ object Support {
     const val GRIEVANCE_OFFICER = "Grievance Officer, Yaari"
     const val GRIEVANCE_EMAIL = "grievance@yaari.app"
     const val SUPPORT_EMAIL = "support@yaari.app"
-    const val PRIVACY_URL = "https://entrepreneur123.github.io/india/yaari-privacy.html"
+    /** The policy pages (HTML files in chat/docs) are served by the Yaari website. Change this once it has its own domain. */
+    private const val SITE = "https://yaari-web-indol.vercel.app"
+    const val PRIVACY_URL = "$SITE/privacy.html"
+    const val TERMS_URL = "$SITE/terms.html"
+    const val CHILD_SAFETY_URL = "$SITE/child-safety.html"
 }
 
 private val Rules = listOf(R.string.rule_1, R.string.rule_2, R.string.rule_3, R.string.rule_4, R.string.rule_5)
@@ -128,6 +132,10 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
 
             Group(stringResource(R.string.about)) {
                 Item(stringResource(R.string.privacy_policy)) { uri.openUri(Support.PRIVACY_URL) }
+                Line()
+                Item(stringResource(R.string.terms_of_use)) { uri.openUri(Support.TERMS_URL) }
+                Line()
+                Item(stringResource(R.string.child_safety)) { uri.openUri(Support.CHILD_SAFETY_URL) }
                 Line()
                 Item(stringResource(R.string.help), value = Support.SUPPORT_EMAIL) {
                     runCatching { context.startActivity(Intent(Intent.ACTION_SENDTO, "mailto:${Support.SUPPORT_EMAIL}".toUri())) }
