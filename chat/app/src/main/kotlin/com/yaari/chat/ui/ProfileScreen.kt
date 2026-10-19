@@ -32,12 +32,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.GridOn
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.GridOn
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Verified
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Lock
@@ -93,7 +93,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 4.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                 Text(me.nameWithFlag(), style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-                if (s.premium) Icon(Icons.Filled.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 6.dp).size(20.dp), tint = Brand.Orange)
+                if (s.premium) Icon(Icons.Rounded.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 6.dp).size(20.dp), tint = Brand.Orange)
             }
             IconButton(onNewPost) { Icon(Icons.Outlined.AddBox, stringResource(R.string.new_post), Modifier.size(26.dp)) }
             IconButton(onSettings) { Icon(Icons.Outlined.Settings, stringResource(R.string.settings), Modifier.size(26.dp)) }
@@ -121,7 +121,7 @@ private fun PlusBanner(s: UiState, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(40.dp).clip(CircleShape).background(Brand.gradient), contentAlignment = Alignment.Center) {
-            Icon(Icons.Filled.WorkspacePremium, null, tint = Color.White)
+            Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White)
         }
         Column(Modifier.padding(start = 12.dp).weight(1f)) {
             Text(stringResource(if (s.entitlements.genderPass) R.string.plan_pass else R.string.premium_title), style = MaterialTheme.typography.titleSmall)
@@ -150,10 +150,10 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(vm::closeProfile) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
+                IconButton(vm::closeProfile) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
                 Text(p.nameWithFlag(), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Box {
-                    IconButton({ menu = true }) { Icon(Icons.Filled.MoreVert, stringResource(R.string.more)) }
+                    IconButton({ menu = true }) { Icon(Icons.Rounded.MoreVert, stringResource(R.string.more)) }
                     DropdownMenu(menu, { menu = false }) {
                         if (state == FriendState.FRIENDS) DropdownMenuItem({ Text(stringResource(R.string.unfriend)) }, { menu = false; unfriend = true })
                         DropdownMenuItem({ Text(stringResource(R.string.report_block), color = MaterialTheme.colorScheme.error) }, { menu = false; reporting = true })
@@ -216,7 +216,7 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
         Spacer(Modifier.height(10.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(p.name, style = MaterialTheme.typography.titleSmall)
-            Icon(Icons.Filled.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(15.dp), tint = Color(0xFF3B82F6))
+            Icon(Icons.Rounded.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(15.dp), tint = Color(0xFF3B82F6))
         }
         Text(
             listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodySmall,
@@ -236,7 +236,7 @@ private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, hea
         item(span = { GridItemSpan(maxLineSpan) }) {
             Column(Modifier.padding(top = 8.dp)) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) { Icon(Icons.Filled.GridOn, null) }
+                Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) { Icon(Icons.Rounded.GridOn, null) }
             }
         }
         if (posts.isEmpty()) {
@@ -275,7 +275,7 @@ private fun PostViewer(post: Post, onClose: () -> Unit) {
     Surface(Modifier.fillMaxSize(), color = Color.Black) {
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
             Row(Modifier.fillMaxWidth()) {
-                IconButton(onClose) { Icon(Icons.Filled.Close, stringResource(R.string.close), tint = Color.White) }
+                IconButton(onClose) { Icon(Icons.Rounded.Close, stringResource(R.string.close), tint = Color.White) }
             }
             Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 if (post.imageUri != null) AsyncImage(post.imageUri, post.text, Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth)
@@ -319,7 +319,7 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
 private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEnabled: Boolean, onDone: () -> Unit) {
     Column {
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onCancel) { Icon(Icons.Filled.Close, stringResource(R.string.cancel)) }
+            IconButton(onCancel) { Icon(Icons.Rounded.Close, stringResource(R.string.cancel)) }
             Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
             TextButton(onDone, enabled = doneEnabled) { Text(done, fontWeight = FontWeight.Bold) }
         }

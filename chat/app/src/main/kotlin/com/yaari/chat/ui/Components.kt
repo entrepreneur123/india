@@ -6,6 +6,16 @@ import android.content.Intent
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +34,7 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +59,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -99,15 +111,36 @@ private val Dark = darkColorScheme(
     error = Color(0xFFFF5A5F),
 )
 
+/** Plus Jakarta Sans (SIL OFL 1.1, docs/FONT_LICENSE_OFL.txt). Hindi falls back to the system Devanagari font. */
+val Jakarta = FontFamily(
+    Font(R.font.jakarta_regular, FontWeight.Normal),
+    Font(R.font.jakarta_medium, FontWeight.Medium),
+    Font(R.font.jakarta_semibold, FontWeight.SemiBold),
+    Font(R.font.jakarta_bold, FontWeight.Bold),
+    Font(R.font.jakarta_extrabold, FontWeight.ExtraBold),
+    Font(R.font.jakarta_extrabold, FontWeight.Black),
+)
+
 private val Base = Typography()
+private fun TextStyle.j(weight: FontWeight? = null, spacing: Float? = null) =
+    copy(fontFamily = Jakarta, fontWeight = weight ?: fontWeight, letterSpacing = spacing?.sp ?: letterSpacing)
+
 private val AppType = Typography(
-    headlineLarge = Base.headlineLarge.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp),
-    headlineMedium = Base.headlineMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.4).sp),
-    headlineSmall = Base.headlineSmall.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.3).sp),
-    titleLarge = Base.titleLarge.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.2).sp),
-    titleMedium = Base.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-    titleSmall = Base.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-    labelLarge = Base.labelLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = 15.sp),
+    displayLarge = Base.displayLarge.j(FontWeight.ExtraBold, -1f),
+    displayMedium = Base.displayMedium.j(FontWeight.ExtraBold, -0.6f),
+    displaySmall = Base.displaySmall.j(FontWeight.ExtraBold, -0.5f),
+    headlineLarge = Base.headlineLarge.j(FontWeight.ExtraBold, -0.4f),
+    headlineMedium = Base.headlineMedium.j(FontWeight.ExtraBold, -0.3f),
+    headlineSmall = Base.headlineSmall.j(FontWeight.Bold, -0.2f),
+    titleLarge = Base.titleLarge.j(FontWeight.Bold, -0.1f),
+    titleMedium = Base.titleMedium.j(FontWeight.Bold, -0.1f),
+    titleSmall = Base.titleSmall.j(FontWeight.Bold, 0f),
+    bodyLarge = Base.bodyLarge.j(spacing = 0.15f),
+    bodyMedium = Base.bodyMedium.j(spacing = 0.15f),
+    bodySmall = Base.bodySmall.j(spacing = 0.2f),
+    labelLarge = Base.labelLarge.j(FontWeight.Bold, 0f).copy(fontSize = 15.sp),
+    labelMedium = Base.labelMedium.j(FontWeight.SemiBold, 0.1f),
+    labelSmall = Base.labelSmall.j(FontWeight.SemiBold, 0.2f),
 )
 
 private val AppShapes = Shapes(
@@ -125,7 +158,7 @@ fun YaariTheme(content: @Composable () -> Unit) {
 fun Wordmark(modifier: Modifier = Modifier, size: Int = 26) {
     Text(
         "yaari", modifier,
-        style = TextStyle(brush = Brand.gradient, fontSize = size.sp, fontWeight = FontWeight.Black, letterSpacing = (-1).sp),
+        style = TextStyle(brush = Brand.gradient, fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.2).sp),
     )
 }
 
@@ -133,12 +166,31 @@ fun Wordmark(modifier: Modifier = Modifier, size: Int = 26) {
 @Composable
 fun GradientButton(
     text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, height: Dp = 54.dp,
-    leading: (@Composable () -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null, shine: Boolean = false,
 ) {
+    val interaction = remember { MutableInteractionSource() }
+    val tick = rememberTick()
+    // Optional light sweep every few seconds on the one button a screen is about (Start, Get Plus).
+    val sweep = if (shine && enabled) {
+        val t = rememberInfiniteTransition(label = "shine")
+        t.animateFloat(-0.6f, 1.6f, infiniteRepeatable(tween(2600, delayMillis = 1400, easing = LinearEasing)), label = "x").value
+    } else null
     Box(
-        modifier.fillMaxWidth().height(height).clip(CircleShape)
+        modifier.fillMaxWidth().height(height).pressScale(interaction).clip(CircleShape)
             .background(if (enabled) Brand.gradient else Brush.linearGradient(listOf(Color(0xFFBDBDC4), Color(0xFFBDBDC4))))
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
+            .then(
+                if (sweep == null) Modifier else Modifier.drawWithContent {
+                    drawContent()
+                    val x = size.width * sweep
+                    drawRect(
+                        Brush.linearGradient(
+                            listOf(Color.Transparent, Color.White.copy(alpha = 0.35f), Color.Transparent),
+                            start = Offset(x - size.height, 0f), end = Offset(x + size.height, size.height),
+                        ),
+                    )
+                },
+            )
+            .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) { tick(); onClick() },
         contentAlignment = Alignment.Center,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -151,10 +203,12 @@ fun GradientButton(
 /** Instagram-style grey button used on profiles ("Edit profile", "Message"). */
 @Composable
 fun SoftButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, accent: Boolean = false, enabled: Boolean = true) {
+    val interaction = remember { MutableInteractionSource() }
+    val bg by animateColorAsState(if (accent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh, label = "bg")
     Box(
-        modifier.height(38.dp).clip(RoundedCornerShape(10.dp))
-            .background(if (accent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+        modifier.height(38.dp).pressScale(interaction).clip(RoundedCornerShape(10.dp))
+            .background(bg)
+            .clickable(interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 14.dp),
         contentAlignment = Alignment.Center,
     ) {
@@ -230,7 +284,7 @@ fun Bubble(m: Message) {
                 Modifier.size(200.dp, 130.dp).background(Color.Black).clickable { playVideo(context, media.uri) },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.video), tint = Color.White, modifier = Modifier.size(48.dp))
+                Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.video), tint = Color.White, modifier = Modifier.size(48.dp))
             }
             else -> Text(
                 m.text.orEmpty(), color = if (mine) Color.White else MaterialTheme.colorScheme.onSurface,

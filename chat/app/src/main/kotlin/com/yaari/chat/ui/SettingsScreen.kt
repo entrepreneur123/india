@@ -19,12 +19,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Gavel
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Person
@@ -73,17 +74,18 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
     var confirmDelete by remember { mutableStateOf(false) }
     var rules by remember { mutableStateOf(false) }
     var grievance by remember { mutableStateOf(false) }
+    var licenses by remember { mutableStateOf(false) }
     val uri = LocalUriHandler.current
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
+            IconButton(onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
             Text(stringResource(R.string.settings), style = MaterialTheme.typography.titleLarge)
         }
         Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 24.dp)) {
             Group(stringResource(R.string.account))
             Item(
-                Icons.Filled.WorkspacePremium, stringResource(R.string.premium_title),
+                Icons.Rounded.WorkspacePremium, stringResource(R.string.premium_title),
                 value = stringResource(
                     when {
                         s.premium -> R.string.plan_premium
@@ -125,10 +127,26 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 runCatching { context.startActivity(Intent(Intent.ACTION_SENDTO, "mailto:${Support.SUPPORT_EMAIL}".toUri())) }
             }
 
+            Item(Icons.Outlined.Description, stringResource(R.string.licenses)) { licenses = true }
+
             HorizontalDivider(Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outlineVariant)
             Item(Icons.AutoMirrored.Outlined.Logout, stringResource(R.string.sign_out), chevron = false, onClick = vm::signOut)
             Item(Icons.Outlined.DeleteOutline, stringResource(R.string.delete_account), chevron = false, color = MaterialTheme.colorScheme.error) { confirmDelete = true }
         }
+    }
+    if (licenses) {
+        val text = remember { context.resources.openRawResource(R.raw.font_license).bufferedReader().use { it.readText() } }
+        AlertDialog(
+            onDismissRequest = { licenses = false },
+            title = { Text(stringResource(R.string.licenses)) },
+            text = {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    Text("Plus Jakarta Sans", style = MaterialTheme.typography.titleSmall)
+                    Text(text, style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = { TextButton({ licenses = false }) { Text(stringResource(R.string.close)) } },
+        )
     }
     if (confirmDelete) {
         AlertDialog(
@@ -165,7 +183,7 @@ private fun Item(
         value?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1) }
         if (chevron) {
             Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 4.dp).then(if (expanded == true) Modifier.rotate(90f) else Modifier),
             )
         }

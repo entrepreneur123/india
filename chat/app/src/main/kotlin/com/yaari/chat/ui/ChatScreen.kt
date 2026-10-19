@@ -1,6 +1,19 @@
 package com.yaari.chat.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,9 +39,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material.icons.outlined.Videocam
@@ -103,7 +116,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
             // Normal exit: locked for 5 s (free) / 0.2 s (Premium) after the match starts.
             ExitButton(lockLeft, ExitPolicy.lockMs(premium)) { exitDialog = true }
         }
-        Messages(chat.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name))
+        Messages(chat.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping)
         if (chat.partnerLeft) {
             Column(
                 Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer).navigationBarsPadding().padding(16.dp),
@@ -118,6 +131,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
         }
     }
 
+    MatchReveal(chat.match.id, partner)
     if (exitDialog) {
         AlertDialog(
             onDismissRequest = { exitDialog = false },
@@ -158,7 +172,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
                 Text("${(lockLeft + 999) / 1000}", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
             }
         } else {
-            Icon(Icons.Filled.Close, stringResource(R.string.leave), Modifier.size(26.dp))
+            Icon(Icons.Rounded.Close, stringResource(R.string.leave), Modifier.size(26.dp))
         }
     }
 }
@@ -171,7 +185,7 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, n
             Modifier.fillMaxWidth().statusBarsPadding().padding(start = if (navigation == null) 12.dp else 0.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            navigation?.let { IconButton(it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } }
+            navigation?.let { IconButton(it) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) } }
             Row(Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable(onClick = onProfile), verticalAlignment = Alignment.CenterVertically) {
                 Avatar(partner, 40.dp)
                 Column(Modifier.padding(start = 10.dp)) {
@@ -198,10 +212,10 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
 }
 
 @Composable
-private fun Messages(messages: List<Message>, modifier: Modifier, hint: String) {
+private fun Messages(messages: List<Message>, modifier: Modifier, hint: String, typing: Boolean = false) {
     val list = rememberLazyListState()
-    LaunchedEffect(messages.size) { if (messages.isNotEmpty()) list.animateScrollToItem(messages.lastIndex) }
-    if (messages.isEmpty()) {
+    LaunchedEffect(messages.size, typing) { if (messages.isNotEmpty()) list.animateScrollToItem(messages.size) }
+    if (messages.isEmpty() && !typing) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(hint, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
         }
@@ -209,8 +223,53 @@ private fun Messages(messages: List<Message>, modifier: Modifier, hint: String) 
     }
     LazyColumn(modifier.fillMaxSize(), state = list, contentPadding = PaddingValues(vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(messages, key = { it.id }) { m ->
-            Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp), contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart) {
-                Bubble(m)
+            Box(
+                Modifier.animateItem().fillMaxWidth().padding(horizontal = 12.dp),
+                contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart,
+            ) { PopIn(m.fromMe) { Bubble(m) } }
+        }
+        item(key = "typing") {
+            AnimatedVisibility(typing, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                Box(Modifier.padding(horizontal = 12.dp, vertical = 2.dp).clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 14.dp)) {
+                    TypingDots()
+                }
+            }
+        }
+    }
+}
+
+/** New bubbles grow out of their corner with a little spring, like iMessage. */
+@Composable
+private fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
+    val scale = remember { Animatable(0.6f) }
+    LaunchedEffect(Unit) { scale.animateTo(1f, spring(dampingRatio = 0.6f, stiffness = Spring.StiffnessMedium)) }
+    Box(
+        Modifier.graphicsLayer {
+            scaleX = scale.value; scaleY = scale.value; alpha = ((scale.value - 0.6f) / 0.4f).coerceIn(0f, 1f)
+            transformOrigin = TransformOrigin(if (fromMe) 1f else 0f, 1f)
+        },
+    ) { content() }
+}
+
+/**
+ * The moment of a match: the partner's photo lands with a ring, their name, and confetti, then it fades into the chat.
+ * Plays once per match; it never blocks touches.
+ */
+@Composable
+private fun MatchReveal(matchId: String, partner: Profile) {
+    var shown by rememberSaveable(matchId) { mutableStateOf(true) }
+    LaunchedEffect(matchId) { delay(1500); shown = false }
+    AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(400))) {
+        val scale = remember { Animatable(0.4f) }
+        LaunchedEffect(Unit) { scale.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessLow)) }
+        Box(Modifier.fillMaxSize().aurora(), contentAlignment = Alignment.Center) {
+            ConfettiBurst(matchId)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }) {
+                Avatar(partner, 132.dp, ring = true)
+                Spacer(Modifier.size(18.dp))
+                Text(stringResource(R.string.matched_with), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.titleMedium)
+                Text(partner.nameWithFlag(), color = Color.White, style = MaterialTheme.typography.headlineLarge)
+                Text(partner.subtitle(), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -252,14 +311,17 @@ fun Composer(onText: (String) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: ()
         }
         Spacer(Modifier.size(8.dp))
         val enabled = text.isNotBlank()
+        val interaction = remember { MutableInteractionSource() }
+        val tick = rememberTick()
+        val grow by animateFloatAsState(if (enabled) 1f else 0.88f, spring(dampingRatio = 0.5f), label = "send")
         Box(
-            Modifier.size(46.dp).clip(CircleShape)
+            Modifier.size(46.dp).graphicsLayer { scaleX = grow; scaleY = grow }.pressScale(interaction, 0.85f).clip(CircleShape)
                 .then(if (enabled) Modifier.background(Brand.gradient) else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh))
-                .clickable(enabled = enabled) { onText(text); text = "" },
+                .clickable(interaction, indication = null, enabled = enabled) { tick(); onText(text); text = "" },
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                Icons.AutoMirrored.Filled.Send, stringResource(R.string.send), Modifier.size(20.dp),
+                Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp),
                 tint = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

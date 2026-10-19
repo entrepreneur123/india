@@ -210,4 +210,7 @@
     <string name="about">जानकारी</string>
     <string name="help">मदद</string>
     <string name="billing_note">भुगतान Google Play से होता है। सब्सक्रिप्शन Play Store में कभी भी रद्द करें।</string>
+    <string name="matched_with">आपका मैच हुआ</string>
+    <string name="room_featured">सबसे लोकप्रिय</string>
+    <string name="licenses">ओपन-सोर्स लाइसेंस</string>
 </resources>

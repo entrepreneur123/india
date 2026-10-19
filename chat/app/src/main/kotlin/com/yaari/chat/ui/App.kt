@@ -1,6 +1,25 @@
 package com.yaari.chat.ui
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.graphicsLayer
+import com.yaari.chat.model.Profile
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,8 +35,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,7 +75,11 @@ fun YaariApp(vm: AppViewModel) {
     Surface(Modifier.fillMaxSize()) {
         val me = s.me
         if (s.booting) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Wordmark(size = 44) }
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                val t = rememberInfiniteTransition(label = "boot")
+                val a by t.animateFloat(0.55f, 1f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "a")
+                Wordmark(Modifier.graphicsLayer { alpha = a; scaleX = 0.96f + 0.04f * a; scaleY = 0.96f + 0.04f * a }, size = 48)
+            }
             return@Surface
         }
         if (me == null) {
@@ -65,20 +88,52 @@ fun YaariApp(vm: AppViewModel) {
         }
         val chat = s.chat
         val dm = s.dm
+        val top = when {
+            chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> Top.VIDEO
+            chat != null -> Top.CHAT
+            s.searching -> Top.SEARCHING
+            dm != null -> Top.DM
+            else -> Top.HOME
+        }
         Box(Modifier.fillMaxSize()) {
-            when {
-                chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> VideoCallScreen(vm, chat.match.partner, me)
-                chat != null -> ChatRoomScreen(vm, chat, s.premium)
-                s.searching -> MatchingScreen(vm, s)
-                dm != null -> DmScreen(vm, dm)
-                else -> HomeScreen(vm, s)
+            AnimatedContent(
+                top,
+                transitionSpec = {
+                    when {
+                        // Searching -> chat: the match "lands" (zoom), the reveal plays inside the chat screen.
+                        targetState == Top.CHAT && initialState == Top.SEARCHING ->
+                            (fadeIn(tween(250)) + scaleIn(tween(350), initialScale = 1.08f)) togetherWith fadeOut(tween(200))
+                        targetState == Top.VIDEO || initialState == Top.VIDEO -> fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+                        targetState == Top.SEARCHING || initialState == Top.SEARCHING -> fadeIn(tween(250)) togetherWith fadeOut(tween(250))
+                        targetState == Top.HOME -> pushPop(forward = false)
+                        else -> pushPop(forward = true)
+                    }
+                },
+                label = "top",
+            ) { t ->
+                // Each branch reads the latest state; during an exit animation it may already be gone.
+                when (t) {
+                    Top.VIDEO -> s.chat?.let { c -> VideoCallScreen(vm, c.match.partner, me) }
+                    Top.CHAT -> s.chat?.let { c -> ChatRoomScreen(vm, c, s.premium) }
+                    Top.SEARCHING -> MatchingScreen(vm, s)
+                    Top.DM -> s.dm?.let { d -> DmScreen(vm, d) }
+                    Top.HOME -> HomeScreen(vm, s)
+                }
             }
-            // Profiles open on top, so the chat underneath (and its draft) stays alive.
-            s.viewing?.let { p -> ProfileScreen(vm, p, s) }
+            // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
+            var lastViewed by remember { mutableStateOf<Profile?>(null) }
+            s.viewing?.let { lastViewed = it }
+            AnimatedVisibility(
+                s.viewing != null,
+                enter = slideInVertically(tween(320, easing = FastOutSlowInEasing)) { it / 3 } + fadeIn(tween(200)),
+                exit = slideOutVertically(tween(260)) { it / 3 } + fadeOut(tween(200)),
+            ) { lastViewed?.let { p -> ProfileScreen(vm, s.viewing ?: p, s) } }
         }
     }
     s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
 }
+
+private enum class Top { HOME, SEARCHING, CHAT, VIDEO, DM }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +142,7 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
     ModalBottomSheet(onDismissRequest = vm::dismissPaywall, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Box(Modifier.size(56.dp).clip(CircleShape).background(Brand.gradient).align(Alignment.CenterHorizontally), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(30.dp))
+                Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White, modifier = Modifier.size(30.dp))
             }
             Text(stringResource(R.string.premium_title), style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
             paywall.reason?.let {
@@ -126,7 +181,7 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
 @Composable
 private fun Benefit(text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Filled.CheckCircle, null, tint = Brand.Pink, modifier = Modifier.size(22.dp))
+        Icon(Icons.Rounded.CheckCircle, null, tint = Brand.Pink, modifier = Modifier.size(22.dp))
         Text(text, Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
     }
 }

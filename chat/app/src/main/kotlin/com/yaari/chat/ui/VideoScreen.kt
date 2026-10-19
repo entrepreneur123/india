@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CallEnd
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.MicOff
-import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material.icons.filled.VideocamOff
+import androidx.compose.material.icons.rounded.CallEnd
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.MicOff
+import androidx.compose.material.icons.rounded.Videocam
+import androidx.compose.material.icons.rounded.VideocamOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -60,9 +60,9 @@ fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) {
                 Text("${partner.nameWithFlag()} · %d:%02d".format(seconds / 60, seconds % 60), color = Color.White, style = MaterialTheme.typography.labelLarge)
             }
             Row(Modifier.align(Alignment.BottomCenter).padding(32.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                RoundButton(if (mic) Icons.Filled.Mic else Icons.Filled.MicOff, stringResource(if (mic) R.string.mute else R.string.unmute), Color.White.copy(alpha = if (mic) 0.18f else 0.9f), if (mic) Color.White else Color.Black) { mic = !mic }
-                RoundButton(if (cam) Icons.Filled.Videocam else Icons.Filled.VideocamOff, stringResource(if (cam) R.string.camera_off else R.string.camera_on), Color.White.copy(alpha = if (cam) 0.18f else 0.9f), if (cam) Color.White else Color.Black) { cam = !cam }
-                RoundButton(Icons.Filled.CallEnd, stringResource(R.string.end), Color(0xFFE5383B), Color.White, onClick = vm::endVideo)
+                RoundButton(if (mic) Icons.Rounded.Mic else Icons.Rounded.MicOff, stringResource(if (mic) R.string.mute else R.string.unmute), Color.White.copy(alpha = if (mic) 0.18f else 0.9f), if (mic) Color.White else Color.Black) { mic = !mic }
+                RoundButton(if (cam) Icons.Rounded.Videocam else Icons.Rounded.VideocamOff, stringResource(if (cam) R.string.camera_off else R.string.camera_on), Color.White.copy(alpha = if (cam) 0.18f else 0.9f), if (cam) Color.White else Color.Black) { cam = !cam }
+                RoundButton(Icons.Rounded.CallEnd, stringResource(R.string.end), Color(0xFFE5383B), Color.White, onClick = vm::endVideo)
             }
         }
     }

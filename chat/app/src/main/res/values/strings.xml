@@ -222,4 +222,7 @@
     <string name="about">About</string>
     <string name="help">Help</string>
     <string name="billing_note">Payments go through Google Play. Cancel the subscription any time in the Play Store.</string>
+    <string name="matched_with">You matched with</string>
+    <string name="room_featured">Most popular</string>
+    <string name="licenses">Open-source licenses</string>
 </resources>

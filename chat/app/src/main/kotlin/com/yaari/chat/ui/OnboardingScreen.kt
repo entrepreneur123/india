@@ -28,7 +28,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -91,7 +91,7 @@ private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("${country.flag} +${country.dial}", style = MaterialTheme.typography.bodyLarge)
-            Icon(Icons.Filled.ArrowDropDown, stringResource(R.string.country))
+            Icon(Icons.Rounded.ArrowDropDown, stringResource(R.string.country))
         }
         Field(
             phone, { if (it.length <= 16) phone = it }, stringResource(R.string.mobile_number), Modifier.weight(1f),

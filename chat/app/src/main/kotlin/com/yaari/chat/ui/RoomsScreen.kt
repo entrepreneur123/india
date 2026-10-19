@@ -1,6 +1,24 @@
 package com.yaari.chat.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.TextUnit
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +46,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -62,53 +80,102 @@ private val RoomNames = mapOf(
 @Composable
 fun Room.name() = RoomNames[id]?.let { stringResource(it) } ?: title
 
-private val RoomTints = listOf(0xFFFFE4EA, 0xFFE3F0FF, 0xFFE6F7EC, 0xFFFFF1DC, 0xFFEFE7FF, 0xFFDDF5F7)
-private val RoomTintsDark = listOf(0xFF3A1E26, 0xFF1C2A3D, 0xFF1C3326, 0xFF3A2C17, 0xFF2B2240, 0xFF173336)
+/** Two-tone washes per room, light and dark. */
+private val RoomWash = listOf(
+    0xFFFFE1E8 to 0xFFFFF4F6, 0xFFDCEBFF to 0xFFF1F7FF, 0xFFDDF5E6 to 0xFFF2FBF5, 0xFFFFEBD1 to 0xFFFFF7EC,
+    0xFFEAE0FF to 0xFFF6F1FF, 0xFFD5F2F5 to 0xFFEFFAFB,
+)
+private val RoomWashDark = listOf(
+    0xFF3A1E26 to 0xFF221419, 0xFF1C2A3D to 0xFF131B26, 0xFF1C3326 to 0xFF131F18, 0xFF3A2C17 to 0xFF231C11,
+    0xFF2B2240 to 0xFF1B1628, 0xFF173336 to 0xFF112122,
+)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    var refreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(refreshing) { if (refreshing) { delay(900); refreshing = false } }
     Column(Modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.tab_rooms), onSettings)
-        LazyVerticalGrid(
-            GridCells.Fixed(2), Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    stringResource(R.string.rooms_sub), color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
-                )
-            }
-            if (s.rooms.isEmpty()) {
+        PullToRefreshBox(refreshing, onRefresh = { refreshing = true; vm.refreshRooms() }, Modifier.fillMaxSize()) {
+            LazyVerticalGrid(
+                GridCells.Fixed(2), Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+                    Text(
+                        stringResource(R.string.rooms_sub), color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
+                    )
                 }
-            }
-            items(s.rooms, key = { it.id }) { room ->
-                val tints = if (dark) RoomTintsDark else RoomTints
-                Column(
-                    Modifier.aspectRatio(1.05f).clip(RoundedCornerShape(22.dp))
-                        .background(Color(tints[s.rooms.indexOf(room) % tints.size]))
-                        .clickable { vm.enterRoom(room) }.padding(16.dp),
-                ) {
-                    Text(room.emoji, fontSize = 34.sp)
-                    Spacer(Modifier.weight(1f))
-                    Text(room.name(), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Spacer(Modifier.height(6.dp))
-                    OnlineCount(room.online)
+                if (s.rooms.isEmpty()) {
+                    // Skeletons while the list loads, shaped like the real cards.
+                    item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
+                    items(4) { Box(Modifier.aspectRatio(1.05f).clip(RoundedCornerShape(22.dp)).shimmer()) }
+                }
+                s.rooms.firstOrNull()?.let { featured ->
+                    item(key = featured.id, span = { GridItemSpan(maxLineSpan) }) { FeaturedRoom(featured) { vm.enterRoom(featured) } }
+                }
+                itemsIndexed(s.rooms.drop(1), key = { _, r -> r.id }) { i, room ->
+                    val (from, to) = (if (dark) RoomWashDark else RoomWash)[i % RoomWash.size]
+                    RoomCard(room, Brush.linearGradient(listOf(Color(from), Color(to))), bobDelay = i * 180) { vm.enterRoom(room) }
                 }
             }
         }
     }
 }
 
+/** The busiest room, wide, in the brand gradient. */
 @Composable
-private fun OnlineCount(n: Int, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+private fun FeaturedRoom(room: Room, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        Modifier.fillMaxWidth().height(150.dp).pressScale(interaction, 0.97f).clip(RoundedCornerShape(24.dp)).background(Brand.gradient)
+            .clickable(interaction, indication = null, onClick = onClick).padding(20.dp),
+    ) {
+        Column(Modifier.align(Alignment.BottomStart)) {
+            Pill(stringResource(R.string.room_featured), background = Color.White.copy(alpha = 0.22f), color = Color.White)
+            Spacer(Modifier.height(10.dp))
+            Text(room.name(), style = MaterialTheme.typography.headlineSmall, color = Color.White)
+            Spacer(Modifier.height(4.dp))
+            OnlineCount(room.online, Color.White, dot = Color.White)
+        }
+        Bobbing(room.emoji, 64.sp, Modifier.align(Alignment.TopEnd), delayMs = 0)
+    }
+}
+
+@Composable
+private fun RoomCard(room: Room, wash: Brush, bobDelay: Int, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    Column(
+        Modifier.aspectRatio(1.05f).pressScale(interaction).clip(RoundedCornerShape(22.dp)).background(wash)
+            .clickable(interaction, indication = null, onClick = onClick).padding(16.dp),
+    ) {
+        Box(Modifier.size(52.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.7f)), contentAlignment = Alignment.Center) {
+            Bobbing(room.emoji, 28.sp, delayMs = bobDelay)
+        }
+        Spacer(Modifier.weight(1f))
+        Text(room.name(), style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface)
+        Spacer(Modifier.height(6.dp))
+        OnlineCount(room.online)
+    }
+}
+
+/** An emoji that floats up and down a little, out of step with its neighbours. */
+@Composable
+private fun Bobbing(emoji: String, size: TextUnit, modifier: Modifier = Modifier, delayMs: Int) {
+    val t = rememberInfiniteTransition(label = "bob")
+    val y by t.animateFloat(-1f, 1f, infiniteRepeatable(tween(1800, delayMillis = delayMs % 900, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "y")
+    Text(emoji, modifier.graphicsLayer { translationY = y * 4.dp.toPx() }, fontSize = size)
+}
+
+@Composable
+private fun OnlineCount(n: Int, color: Color = MaterialTheme.colorScheme.onSurfaceVariant, dot: Color = Brand.Online) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(if (n > 0) Brand.Online else Color.Gray))
-        Spacer(Modifier.width(6.dp))
+        if (n > 0) LiveDot(dot, 7.dp) else Box(Modifier.padding(4.dp).size(7.dp).clip(CircleShape).background(Color.Gray))
+        Spacer(Modifier.width(4.dp))
         Text(pluralStringResource(R.plurals.online, n, n), style = MaterialTheme.typography.labelMedium, color = color)
     }
 }
@@ -125,7 +192,7 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
                 .padding(horizontal = 4.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(vm::leaveRoom) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
+            IconButton(vm::leaveRoom) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
             Box(
                 Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
@@ -153,7 +220,7 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
                 }
             }
             if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
-            items(state.messages, key = { it.id }) { m -> RoomLine(m, onProfile = { vm.openProfile(m.sender) }) }
+            items(state.messages, key = { it.id }) { m -> Box(Modifier.animateItem()) { RoomLine(m, onProfile = { vm.openProfile(m.sender) }) } }
         }
         Composer(onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT)
     }

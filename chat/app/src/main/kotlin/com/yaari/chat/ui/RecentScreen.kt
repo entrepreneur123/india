@@ -1,6 +1,21 @@
 package com.yaari.chat.ui
 
 import android.text.format.DateUtils
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.shadow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,11 +63,20 @@ fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     var page by rememberSaveable { mutableIntStateOf(if (s.incomingRequests > 0 || s.recents.isEmpty()) 0 else 1) }
     Column(Modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.tab_recent), onSettings)
-        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp)) {
-            Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f)) { page = 0 }
-            Segment(stringResource(R.string.recent_matches), page == 1, Modifier.weight(1f)) { page = 1 }
+        BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp)) {
+            // A white thumb slides under the chosen segment.
+            val half = maxWidth / 2
+            val x by animateDpAsState(if (page == 0) 0.dp else half, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow), label = "seg")
+            Box(Modifier.offset { androidx.compose.ui.unit.IntOffset(x.roundToPx(), 0) }.width(half).height(36.dp).shadow(2.dp, CircleShape).clip(CircleShape).background(MaterialTheme.colorScheme.surface))
+            Row {
+                Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f)) { page = 0 }
+                Segment(stringResource(R.string.recent_matches), page == 1, Modifier.weight(1f)) { page = 1 }
+            }
         }
-        if (page == 0) FriendsList(vm, s) else RecentList(vm, s)
+        AnimatedContent(page, transitionSpec = {
+            val dir = if (targetState > initialState) 1 else -1
+            (slideInHorizontally { it / 6 * dir } + fadeIn()) togetherWith (slideOutHorizontally { -it / 6 * dir } + fadeOut())
+        }, label = "page") { p -> if (p == 0) FriendsList(vm, s) else RecentList(vm, s) }
     }
 }
 
@@ -60,8 +84,7 @@ fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
 private fun Segment(text: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(
         modifier.height(36.dp).clip(CircleShape)
-            .background(if (selected) MaterialTheme.colorScheme.surface else Color.Transparent)
-            .clickable(role = Role.Tab, onClick = onClick),
+            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Tab, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -85,7 +108,7 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
         if (incoming.isNotEmpty()) {
             item { SectionLabel(stringResource(R.string.friend_requests, incoming.size)) }
             items(incoming, key = { "in-" + it.profile.id }) { f ->
-                PersonRow(f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openProfile(f.profile) }) {
+                PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openProfile(f.profile) }) {
                     SoftButton(stringResource(R.string.accept), { vm.answerFriend(f.profile, true) }, accent = true)
                     SoftButton(stringResource(R.string.decline), { vm.answerFriend(f.profile, false) })
                 }
@@ -94,7 +117,7 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
         if (friends.isNotEmpty()) {
             item { SectionLabel(stringResource(R.string.friends_count, friends.size)) }
             items(friends, key = { "f-" + it.profile.id }) { f ->
-                PersonRow(f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openDm(f.profile.id) }, onAvatar = { vm.openProfile(f.profile) }) {
+                PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openDm(f.profile.id) }, onAvatar = { vm.openProfile(f.profile) }) {
                     IconButton({ vm.openDm(f.profile.id) }) { Icon(Icons.AutoMirrored.Outlined.Chat, stringResource(R.string.message)) }
                 }
             }
@@ -102,7 +125,7 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
         if (sent.isNotEmpty()) {
             item { SectionLabel(stringResource(R.string.requests_sent)) }
             items(sent, key = { "out-" + it.profile.id }) { f ->
-                PersonRow(f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openProfile(f.profile) }) {
+                PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.subtitle(), onOpen = { vm.openProfile(f.profile) }) {
                     SoftButton(stringResource(R.string.cancel_request), { vm.removeFriend(f.profile) })
                 }
             }
@@ -120,7 +143,7 @@ private fun RecentList(vm: AppViewModel, s: UiState) {
         items(s.recents, key = { it.partner.id }) { r ->
             val state = s.friendState(r.partner.id)
             PersonRow(
-                r.partner, subtitle = r.lastText ?: r.partner.subtitle(), time = r.metAt,
+                modifier = Modifier.animateItem(), p = r.partner, subtitle = r.lastText ?: r.partner.subtitle(), time = r.metAt,
                 onOpen = { vm.openDm(r.partner.id) }, onAvatar = { vm.openProfile(r.partner) },
             ) { FriendAction(state, onAdd = { vm.addFriend(r.partner) }) }
         }
@@ -145,11 +168,11 @@ private fun SectionLabel(text: String) {
 
 @Composable
 private fun PersonRow(
-    p: Profile, subtitle: String, onOpen: () -> Unit, onAvatar: () -> Unit = onOpen, time: Long? = null,
+    p: Profile, subtitle: String, onOpen: () -> Unit, onAvatar: () -> Unit = onOpen, time: Long? = null, modifier: Modifier = Modifier,
     actions: @Composable () -> Unit,
 ) {
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onOpen).padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+        modifier.fillMaxWidth().clickable(onClick = onOpen).padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Avatar(p, 54.dp, Modifier.clip(CircleShape).clickable(onClick = onAvatar))

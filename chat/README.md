@@ -13,9 +13,9 @@
 
 ## 화면
 
-하단 탭 4개: **공개방 · 랜챗 · 최근(친구/매칭) · 나**. 오른쪽 위 톱니바퀴 = 설정. 흰 바탕 + 포인트 색 하나(인스타·구글식), 랜챗만 아자르처럼 어두운 화면.
+하단 탭 4개: **공개방 · 랜챗 · 최근(친구/매칭) · 나**. 오른쪽 위 톱니바퀴 = 설정. 흰 바탕 + 포인트 색 하나, 글꼴 Plus Jakarta Sans(OFL). 랜챗은 오로라 배경과 국기가 도는 아자르식 화면. 버튼 눌림·진동·화면 전환·매칭 연출·메시지 팝인·입력 중 점·스켈레톤 로딩·당겨서 새로고침 등 모션 적용.
 
-| 랜챗 대기 | 결제 | 채팅 (무료: 5초 잠금) | 상대 프로필 | 영상통화 요청 받음 | 나가기 선택 |
+| 랜챗 대기 | 결제 | 매칭 순간 | 상대 프로필 | 영상통화 요청 받음 | 나가기 선택 |
 |---|---|---|---|---|---|
 | ![](docs/screenshots/04_random.png) | ![](docs/screenshots/05_paywall.png) | ![](docs/screenshots/06_free_exit_locked.png) | ![](docs/screenshots/08_partner_profile.png) | ![](docs/screenshots/09_incoming_video.png) | ![](docs/screenshots/10_exit_choice.png) |
 
