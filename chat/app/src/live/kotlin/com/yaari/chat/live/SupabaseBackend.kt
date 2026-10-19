@@ -76,6 +76,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.ByteArrayOutputStream
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.LocalDate
 import java.time.Period
 import java.util.UUID
@@ -192,8 +193,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val row = client.postgrest.rpc("my_entitlements").decodeList<EntRow>().firstOrNull() ?: return@call Entitlements()
         val now = Instant.now()
         Entitlements(
-            premium = row.premiumUntil?.let { Instant.parse(it).isAfter(now) } == true,
-            genderPass = row.genderUntil?.let { Instant.parse(it).isAfter(now) } == true,
+            premium = row.premiumUntil?.let { ts(it).isAfter(now) } == true,
+            genderPass = row.genderUntil?.let { ts(it).isAfter(now) } == true,
         )
     }
 
@@ -364,7 +365,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         client.postgrest.rpc("recent_cards").decodeList<RecentRow>().map { r ->
             RecentMatch(
                 r.matchId, toProfile(CardRow(r.id, r.name, r.gender, r.age, r.city, r.bio, r.photoPath), emptyList()),
-                Instant.parse(r.metAt).toEpochMilli(), r.lastBody,
+                ts(r.metAt).toEpochMilli(), r.lastBody,
             )
         }
     }
@@ -383,12 +384,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             filter { eq("user_id", userId) }
             order("created_at", Order.DESCENDING)
             limit(60)
-        }.decodeList<PostRow>().map { Post(it.id, it.body, it.imagePath?.let { p -> signed(p) }, Instant.parse(it.createdAt).toEpochMilli()) }
+        }.decodeList<PostRow>().map { Post(it.id, it.body, it.imagePath?.let { p -> signed(p) }, ts(it.createdAt).toEpochMilli()) }
 
     override suspend fun addPost(text: String, imageUri: String?): Post = call {
         val path = imageUri?.let { upload(it.toUri(), "posts") }
         val row = client.postgrest["posts"].insert(NewPostRow(text, path)) { select() }.decodeSingle<PostRow>()
-        Post(row.id, row.body, imageUri, Instant.parse(row.createdAt).toEpochMilli())
+        Post(row.id, row.body, imageUri, ts(row.createdAt).toEpochMilli())
     }
 
     // ---- mapping & media ----
@@ -401,7 +402,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private suspend fun toMessage(r: MessageRow, me: String) = Message(
         id = r.id, fromMe = r.sender == me, text = r.body,
         media = r.mediaPath?.let { Media(signed(it), if (r.mediaKind == "video") MediaKind.VIDEO else MediaKind.IMAGE) },
-        at = Instant.parse(r.createdAt).toEpochMilli(),
+        at = ts(r.createdAt).toEpochMilli(),
     )
 
     private suspend fun signed(path: String): String {
@@ -454,3 +455,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         )
     }
 }
+
+/**
+ * Postgres timestamps arrive as "2026-11-18T10:02:25.972799+00:00". Instant.parse only accepts a trailing "Z"
+ * on older Java runtimes (Android's own and the desugared one), so the offset form must go through OffsetDateTime.
+ */
+internal fun ts(value: String): Instant = OffsetDateTime.parse(value).toInstant()
