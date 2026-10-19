@@ -13,6 +13,8 @@
 - **안드로이드 0.2.0 (versionCode 2)**:
   - live 앱에서 서버 사진(프로필·게시물·채팅·방)이 안 보이던 버그 수정: Coil 3에 네트워크 모듈(`coil-network-okhttp`)이 없어 https 이미지가 전부 조용히 실패했음.
   - 사용자 방: 방 만들기(이름·주제·인원·성별·나이·비공개), 코드로 입장, 방장 코드 공유·방 닫기, 못 들어가는 방은 이유 표시. 서버는 `room_list2`/`create_room`/`join_room_code`/`close_room` 사용.
+  - 웹(https://yaari-web-indol.vercel.app)에도 같은 사용자 방 기능 적용. 서버 변경은 `chat/server/migrations/008_user_rooms.sql`(적용 완료), 테스트 `chat/server/test_user_rooms.sql`(실행 후 롤백, 통과).
+  - 웹에서 랜챗 탭을 누를 때 화면이 잠깐 깨지던 문제 수정(이전 탭이 사라지는 동안 두 화면이 위아래로 겹쳤음).
   - 주의: 이번 APK는 이전 `dist/` APK와 디버그 서명 키가 달라 기존 앱 위에 덮어 설치되지 않음. 기존 앱을 지우고 설치해야 함.
 
 ## 남은 일 / 사장님 확인 필요
