@@ -19,10 +19,5 @@ export const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON_KEY
 export const FREE_EXIT_LOCK_MS = 5000
 export const PLUS_EXIT_LOCK_MS = 200
 
-export const COMMUNITY_RULES = [
-  'Adults only (18+). Anyone who looks under 18 is removed.',
-  'No nudity or sexual content, in chat or on video.',
-  'No harassment, hate, threats or scams.',
-  'Don’t share anyone’s private photos or details.',
-  'Breaking the rules means a permanent ban.',
-]
+/** The community rules, as dictionary keys (text in lib/locales/*). Same rules as the Android app. */
+export const COMMUNITY_RULES = ['rules.1', 'rules.2', 'rules.3', 'rules.4', 'rules.5'] as const

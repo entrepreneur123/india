@@ -1,34 +1,44 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Flag, MessageCircle, Shuffle, Undo2, Video } from 'lucide-react'
 import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { SHOWCASE_FLAGS } from '@/lib/countries'
 import { errorCode, flagEmoji } from '@/lib/format'
+import { onPageVisibility, pageHidden } from '@/lib/visibility'
 import { useApp, useReported } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { Aurora } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { Segmented } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { ChatView } from '@/components/screens/chat/chat-view'
+
+// The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
+const loadChat = () => import('@/components/screens/chat/chat-view')
+const ChatView = lazy(() => loadChat().then((mod) => ({ default: mod.ChatView })))
 
 const POLL_MS = 2000
+/** A search in a background tab stops after this long (the server drops a queue spot after 20 s anyway). */
+const HIDDEN_CANCEL_MS = 60_000
 
 type Phase = 'lobby' | 'matching' | 'chat'
 type Live = Match & { startedAt: number }
 
+const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.15 } }
+
 /**
- * Random chat: lobby → matching (one request every 2 s) → chat → exit choice. Stays mounted while other tabs
- * are open so a search or chat survives a quick look at Rooms or Recent.
+ * Random chat: lobby → matching (one request every 2 s while the browser tab is visible) → chat → exit choice.
+ * Stays mounted while other tabs are open so a search or chat survives a quick look at Rooms or Recent.
  */
 export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
-  const { me, t, canChooseGender, openPaywall, setImmersive, setTab } = useApp()
+  const { t } = useI18n()
+  const { me, canChooseGender, openPaywall, setImmersive, setTab } = useApp()
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
@@ -38,6 +48,10 @@ export function RandomScreen({ active }: { active: boolean }) {
   const generation = useRef(0)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const searching = useRef(false)
+  const tickRef = useRef<(() => void) | null>(null)
+  const hiddenAt = useRef<number | null>(null)
+  const hiddenTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const stoppedWhileHidden = useRef(false)
   const visible = useRef(active)
   visible.current = active
 
@@ -47,17 +61,20 @@ export function RandomScreen({ active }: { active: boolean }) {
   }, [canChooseGender])
 
   const startMatching = useCallback(() => {
+    void loadChat().catch(() => undefined)
     const g = ++generation.current
     searching.current = true
     setPhase('matching')
     const tick = async () => {
       if (g !== generation.current) return
+      if (pageHidden()) return // paused; the visibility listener resumes (or cancels) the search
       let m: Match | null
       try {
         m = await backend.findMatch(target)
       } catch (err) {
         if (g !== generation.current) return
         searching.current = false
+        tickRef.current = null
         setPhase('lobby')
         if (errorCode(err) === 'premium_required') openPaywall()
         else toast.error(err)
@@ -71,26 +88,66 @@ export function RandomScreen({ active }: { active: boolean }) {
       }
       if (m) {
         searching.current = false
+        tickRef.current = null
         setMatch({ ...m, startedAt: Date.now() })
         setPhase('chat')
         if (!visible.current) {
           setTab('random') // matched while looking at another tab: bring the chat to the front
-          toast.show(`You matched with ${m.partner.name}`, 'success')
+          toast.show(t('match.with', { name: m.partner.name }), 'success')
         }
         return
       }
       timer.current = setTimeout(() => void tick(), POLL_MS)
     }
+    tickRef.current = () => void tick()
     void tick()
-  }, [backend, target, openPaywall, toast, setTab])
+  }, [backend, target, openPaywall, toast, setTab, t])
 
   const cancelMatching = useCallback(() => {
     generation.current++
     searching.current = false
+    tickRef.current = null
     clearTimeout(timer.current)
     setPhase('lobby')
     backend.cancelSearch().catch(() => undefined)
   }, [backend])
+
+  // Searching only while someone is looking: a hidden browser tab pauses the polling, and after 60 s hidden the
+  // search is cancelled (so nobody gets matched with a person who walked away).
+  useEffect(
+    () =>
+      onPageVisibility((shown) => {
+        if (!shown) {
+          if (!searching.current) return
+          clearTimeout(timer.current)
+          hiddenAt.current = Date.now()
+          clearTimeout(hiddenTimer.current)
+          hiddenTimer.current = setTimeout(() => {
+            if (!searching.current) return
+            stoppedWhileHidden.current = true
+            cancelMatching()
+          }, HIDDEN_CANCEL_MS)
+          return
+        }
+        clearTimeout(hiddenTimer.current)
+        const away = hiddenAt.current ? Date.now() - hiddenAt.current : 0
+        hiddenAt.current = null
+        if (searching.current && away > HIDDEN_CANCEL_MS) {
+          stoppedWhileHidden.current = true
+          cancelMatching() // background timers can run late
+        }
+        if (stoppedWhileHidden.current) {
+          stoppedWhileHidden.current = false
+          toast.show(t('matching.stopped'))
+          return
+        }
+        if (searching.current) {
+          clearTimeout(timer.current)
+          tickRef.current?.()
+        }
+      }),
+    [cancelMatching, toast, t],
+  )
 
   // Leaving the page mid-search takes us out of the queue.
   useEffect(
@@ -98,6 +155,7 @@ export function RandomScreen({ active }: { active: boolean }) {
       generation.current++
       searching.current = false
       clearTimeout(timer.current)
+      clearTimeout(hiddenTimer.current)
       backend.cancelSearch().catch(() => undefined)
     },
     [backend],
@@ -142,32 +200,30 @@ export function RandomScreen({ active }: { active: boolean }) {
     <div className="relative flex min-h-0 flex-1 flex-col" aria-hidden={!active}>
       <AnimatePresence mode="wait" initial={false}>
         {phase === 'lobby' ? (
-          <motion.section
+          <m.section
             key="lobby"
-            className="relative isolate flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden px-6 pt-10 pb-24 md:pb-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.3 }}
+            className="relative isolate flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 pt-10 pb-24 md:pb-10"
+            {...fade}
             aria-labelledby="lobby-title"
           >
             <Aurora />
             <div className="flex w-full max-w-md flex-col items-center text-center">
-              <GlowRing>
-                <Avatar name={me.name} src={me.photoUrl} size={148} />
-              </GlowRing>
-              <p className="mt-6 text-xl font-bold">
+              <span className="rounded-full p-1 ring-2 ring-primary-text/60">
+                <Avatar name={me.name} src={me.photoUrl} size={128} />
+              </span>
+              <p className="mt-5 text-lg font-semibold">
                 {me.name}, {me.age} <span aria-hidden>{flagEmoji(me.country)}</span>
               </p>
-              <h1 id="lobby-title" className="mt-6 text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">
+              <h1 id="lobby-title" className="mt-8 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
                 {t('lobby.title')}
               </h1>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground text-pretty">{t('lobby.subtitle')}</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-pretty text-muted-foreground">{t('lobby.subtitle')}</p>
 
               <Segmented
-                className="mt-8 w-full bg-ink-foreground/8 ring-1 ring-ink-foreground/10 backdrop-blur-md"
+                className="mt-8 w-full"
                 size="lg"
-                label="Who to meet"
+                label={t('lobby.who')}
+                lockedLabel={t('common.plus')}
                 value={target}
                 options={gender}
                 onChange={(v) => {
@@ -176,60 +232,52 @@ export function RandomScreen({ active }: { active: boolean }) {
                 }}
               />
 
-              <motion.button
+              <m.button
                 type="button"
                 onClick={startMatching}
-                whileHover={{ y: -3, scale: 1.01 }}
-                whileTap={{ scale: 0.96 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 22 }}
-                className="group relative mt-4 flex h-16 w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-brand text-lg font-bold text-primary-foreground shadow-[0_20px_50px_-14px_rgb(255_61_104/0.85)] transition-shadow hover:shadow-[0_26px_60px_-12px_rgb(255_61_104/0.95)]"
+                onPointerEnter={() => void loadChat().catch(() => undefined)}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.1 }}
+                className="mt-4 flex h-14 w-full items-center justify-center gap-3 rounded-full bg-primary text-lg font-semibold text-primary-foreground transition-[background-color,box-shadow] duration-150 hover:bg-primary-hover hover:shadow-e2"
               >
-                <span
-                  className="absolute inset-y-0 -left-1/3 w-1/3 animate-shimmer bg-gradient-to-r from-transparent via-white/35 to-transparent"
-                  aria-hidden
-                />
-                <Shuffle className="relative size-5.5 transition-transform group-hover:rotate-180" aria-hidden />
-                <span className="relative">{t('lobby.start')}</span>
-              </motion.button>
+                <Shuffle className="size-5.5" aria-hidden />
+                <span>{t('lobby.start')}</span>
+              </m.button>
 
               <ul className="mt-8 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
-                <Pill icon={<MessageCircle className="size-3.5" aria-hidden />}>Text first</Pill>
-                <Pill icon={<Video className="size-3.5" aria-hidden />}>Video only if both agree</Pill>
-                <Pill icon={<Flag className="size-3.5" aria-hidden />}>Report &amp; leave anytime</Pill>
+                <Pill icon={<MessageCircle className="size-3.5" aria-hidden />}>{t('lobby.textFirst')}</Pill>
+                <Pill icon={<Video className="size-3.5" aria-hidden />}>{t('lobby.videoAgree')}</Pill>
+                <Pill icon={<Flag className="size-3.5" aria-hidden />}>{t('lobby.reportLeave')}</Pill>
               </ul>
             </div>
-          </motion.section>
+          </m.section>
         ) : phase === 'matching' ? (
           <Matching key="matching" target={target} onCancel={cancelMatching} />
         ) : match ? (
-          <motion.div
-            key={match.id}
-            className="relative flex min-h-0 flex-1 flex-col"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <ChatView
-              matchId={match.id}
-              partner={match.partner}
-              mode="random"
-              visible={active}
-              startedAt={match.startedAt}
-              onExit={() => setChoiceOpen(true)}
-              onReported={closeChat}
-            />
+          <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
+            <Suspense fallback={<Matching target={target} onCancel={() => undefined} />}>
+              <ChatView
+                matchId={match.id}
+                partner={match.partner}
+                mode="random"
+                visible={active}
+                startedAt={match.startedAt}
+                onExit={() => setChoiceOpen(true)}
+                onReported={closeChat}
+              />
+            </Suspense>
             <MatchReveal key={match.id} partner={match.partner} />
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
 
-      <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title="Leave this chat?" night>
+      <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title={t('leave.title')} night>
         <div className="flex flex-col gap-2.5 p-6 pt-4">
           <Button variant="brand" size="lg" loading={leaving} onClick={() => void leave(true)} data-autofocus>
-            <Shuffle className="size-5" aria-hidden /> Next match
+            <Shuffle className="size-5" aria-hidden /> {t('leave.next')}
           </Button>
           <Button variant="secondary" size="lg" disabled={leaving} onClick={() => void leave(false)}>
-            <Undo2 className="size-5" aria-hidden /> Back to lobby
+            <Undo2 className="size-5" aria-hidden /> {t('leave.lobby')}
           </Button>
         </div>
       </Modal>
@@ -239,103 +287,47 @@ export function RandomScreen({ active }: { active: boolean }) {
 
 function Pill({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="flex items-center gap-1.5 rounded-full bg-ink-foreground/6 px-3 py-1.5 ring-1 ring-ink-foreground/10 backdrop-blur-sm">
+    <li className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5">
       {icon}
       {children}
     </li>
   )
 }
 
-/** Avatar inside a slowly turning gradient ring with a soft glow. */
-function GlowRing({ children }: { children: React.ReactNode }) {
-  return (
-    <motion.div
-      className="relative grid place-items-center rounded-full p-1.5"
-      initial={{ scale: 0.85, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 220, damping: 18 }}
-    >
-      <span className="absolute -inset-6 rounded-full bg-primary/25 blur-3xl" aria-hidden />
-      <span
-        className="absolute inset-0 animate-spin-slow rounded-full"
-        style={{ background: 'conic-gradient(from 0deg, #ff3d68, #ff7a45, transparent 55%, #ff3d68)' }}
-        aria-hidden
-      />
-      <span className="relative rounded-full bg-background p-1.5">{children}</span>
-    </motion.div>
-  )
-}
-
 function Matching({ target, onCancel }: { target: Target; onCancel: () => void }) {
   const { me } = useApp()
-  const flags = SHOWCASE_FLAGS.slice(0, 10)
+  const { t } = useI18n()
+  const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
   return (
-    <motion.section
-      className="relative isolate flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10"
-      initial={{ opacity: 0, scale: 1.02 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+    <m.section
+      className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10"
+      {...fade}
       aria-live="polite"
     >
-      <Aurora intensity="soft" />
-      <span className="rounded-full bg-ink-foreground/8 px-3.5 py-1.5 text-xs font-semibold text-muted-foreground ring-1 ring-ink-foreground/10">
-        {target === 'any' ? 'Everyone' : target === 'female' ? 'Women' : 'Men'} · Worldwide
+      <span className="rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
+        {t('matching.scope', { who })}
       </span>
 
-      <div className="relative mt-10 grid size-[300px] place-items-center sm:size-[360px]">
-        {[0, 1, 2].map((i) => (
-          <motion.span
-            key={i}
-            className="absolute inset-0 rounded-full border border-primary/40"
-            initial={{ scale: 0.35, opacity: 0.8 }}
-            animate={{ scale: 1.1, opacity: 0 }}
-            transition={{ duration: 3, repeat: Infinity, delay: i, ease: 'easeOut' }}
-            aria-hidden
-          />
-        ))}
-        <span className="absolute inset-[12%] rounded-full border border-dashed border-ink-foreground/12" aria-hidden />
-        <motion.div
-          className="absolute inset-[12%]"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-          aria-hidden
-        >
-          {flags.map((code, i) => {
-            const angle = (i / flags.length) * 2 * Math.PI
-            return (
-              <span
-                key={code}
-                className="absolute grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-card text-lg shadow-lg ring-1 ring-border"
-                style={{ left: `${50 + 50 * Math.cos(angle)}%`, top: `${50 + 50 * Math.sin(angle)}%` }}
-              >
-                <motion.span animate={{ rotate: -360 }} transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}>
-                  {flagEmoji(code)}
-                </motion.span>
-              </span>
-            )
-          })}
-        </motion.div>
-        <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}>
-          <Avatar name={me.name} src={me.photoUrl} size={112} className="ring-4 ring-primary/50 rounded-full" />
-        </motion.div>
+      <div className="relative mt-12 grid size-56 place-items-center">
+        {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}
+        <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50" aria-hidden />
+        <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50 [animation-delay:1.2s]" aria-hidden />
+        <span className="relative rounded-full p-1 ring-2 ring-primary-text/60">
+          <Avatar name={me.name} src={me.photoUrl} size={112} />
+        </span>
       </div>
 
-      <h2 className="mt-10 text-2xl font-extrabold tracking-tight">
-        Finding someone
-        <motion.span animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1.4, repeat: Infinity }}>
-          …
-        </motion.span>
-      </h2>
-      <Button variant="glass" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
-        Cancel
+      <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
+      <Button variant="outline" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
+        {t('matching.cancel')}
       </Button>
-    </motion.section>
+    </m.section>
   )
 }
 
-/** The partner's card springs in over the new chat for a moment, then gets out of the way. */
+/** The partner's card shows over the new chat for a moment, then gets out of the way. */
 function MatchReveal({ partner }: { partner: Match['partner'] }) {
+  const { t } = useI18n()
   const [show, setShow] = useState(true)
   useEffect(() => {
     const id = setTimeout(() => setShow(false), 1500)
@@ -344,30 +336,31 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
   return (
     <AnimatePresence>
       {show ? (
-        <motion.button
+        <m.button
           type="button"
           onClick={() => setShow(false)}
-          className="absolute inset-0 z-40 grid place-items-center bg-overlay backdrop-blur-md"
+          className="absolute inset-0 z-40 grid place-items-center bg-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          aria-label={`You matched with ${partner.name}`}
+          transition={{ duration: 0.15 }}
+          aria-label={t('match.with', { name: partner.name })}
         >
-          <motion.span
-            className="flex flex-col items-center gap-4 rounded-[32px] bg-card px-10 py-8 shadow-2xl ring-1 ring-border"
-            initial={{ scale: 0.6, y: 40, rotate: -4 }}
-            animate={{ scale: 1, y: 0, rotate: 0 }}
-            exit={{ scale: 0.9, y: -20, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+          <m.span
+            className="flex flex-col items-center gap-4 rounded-[28px] bg-card px-10 py-8 shadow-e3"
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.96, opacity: 0 }}
+            transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
           >
-            <span className="text-xs font-bold tracking-widest text-primary uppercase">It’s a match</span>
-            <Avatar name={partner.name} src={partner.photoUrl} size={120} country={partner.country} />
-            <span className="text-xl font-extrabold">
+            <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
+            <Avatar name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
+            <span className="text-xl font-bold">
               {partner.name}, {partner.age}
             </span>
             {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}
-          </motion.span>
-        </motion.button>
+          </m.span>
+        </m.button>
       ) : null}
     </AnimatePresence>
   )

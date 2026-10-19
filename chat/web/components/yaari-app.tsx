@@ -1,13 +1,38 @@
 'use client'
 
-import { AnimatePresence, MotionConfig, motion } from 'motion/react'
-import { useCallback, useEffect, useState } from 'react'
-import { BackendProvider, useBackend } from '@/lib/backend-context'
+import { LazyMotion, MotionConfig } from 'motion/react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { BackendProvider, preloadBackend, useBackend } from '@/lib/backend-context'
 import type { Entitlements, Profile } from '@/lib/backend'
+import { DEMO_MODE } from '@/lib/config'
+import { I18nProvider, useI18n } from '@/components/i18n'
 import { ToastProvider, useToast } from '@/components/ui/toast'
 import { Logo } from '@/components/ui/bits'
-import { AuthScreen } from '@/components/screens/auth/auth-screen'
-import { AppShell } from '@/components/shell/app-shell'
+import { Button } from '@/components/ui/pressable'
+import { Splash } from '@/components/splash'
+
+// The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
+const loadAuth = () => import('@/components/screens/auth/auth-screen')
+const loadShell = () => import('@/components/shell/app-shell')
+const AuthScreen = lazy(() => loadAuth().then((mod) => ({ default: mod.AuthScreen })))
+const AppShell = lazy(() => loadShell().then((mod) => ({ default: mod.AppShell })))
+const loadMotionFeatures = () => import('@/lib/motion-features').then((mod) => mod.default)
+
+/** supabase-js keeps the session in localStorage under this key (see lib/supabaseBackend.ts). */
+function probablySignedIn() {
+  if (DEMO_MODE) return false // the demo always starts signed out
+  try {
+    return localStorage.getItem('yaari_auth') !== null
+  } catch {
+    return false
+  }
+}
+
+if (typeof window !== 'undefined') {
+  // Start every download the first screen needs at once, instead of one after another.
+  void preloadBackend().catch(() => undefined)
+  void (probablySignedIn() ? loadShell() : loadAuth()).catch(() => undefined)
+}
 
 type Boot =
   | { stage: 'loading' }
@@ -18,18 +43,33 @@ type Boot =
 export function YaariApp() {
   return (
     <MotionConfig reducedMotion="user">
-      <BackendProvider>
-        <ToastProvider>
-          <Root />
-        </ToastProvider>
-      </BackendProvider>
+      <LazyMotion features={loadMotionFeatures} strict>
+        <I18nProvider fallback={<Splash />}>
+          <Localized />
+        </I18nProvider>
+      </LazyMotion>
     </MotionConfig>
+  )
+}
+
+function Localized() {
+  const { t } = useI18n()
+  const splash = <Splash label={t('common.loading')} />
+  return (
+    <BackendProvider fallback={splash}>
+      <ToastProvider>
+        <Suspense fallback={splash}>
+          <Root />
+        </Suspense>
+      </ToastProvider>
+    </BackendProvider>
   )
 }
 
 function Root() {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const [boot, setBoot] = useState<Boot>({ stage: 'loading' })
   const [phone, setPhone] = useState<string | null>(null)
 
@@ -66,55 +106,36 @@ function Root() {
     }
   }, [backend, enterApp])
 
+  // Stage changes fade in with CSS, so the first screen never waits for Motion's animation code to download.
+  const fade = 'animate-in fade-in duration-150 motion-reduce:animate-none'
   return (
-    <AnimatePresence mode="wait">
+    <>
       {boot.stage === 'loading' ? (
-        <motion.div
-          key="splash"
-          className="theme-night grid min-h-dvh place-items-center bg-background text-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div animate={{ scale: [1, 1.06, 1] }} transition={{ duration: 1.6, repeat: Infinity }}>
-            <Logo />
-          </motion.div>
-          <span className="sr-only">Loading yaari</span>
-        </motion.div>
+        <Splash key="splash" label={t('common.loading')} />
       ) : boot.stage === 'offline' ? (
-        <motion.div
-          key="offline"
-          className="theme-night grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+        <div key="offline" className={`theme-night grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground ${fade}`}>
           <div className="flex flex-col items-center gap-4">
             <Logo />
-            <h1 className="text-xl font-bold">Can’t reach yaari right now</h1>
-            <p className="max-w-xs text-sm text-muted-foreground">Check your internet connection, then try again.</p>
-            <button
-              type="button"
+            <h1 className="text-xl font-bold">{t('boot.offlineTitle')}</h1>
+            <p className="max-w-xs text-sm text-muted-foreground">{t('boot.offlineBody')}</p>
+            <Button
+              variant="brand"
+              size="lg"
               onClick={() => {
                 setBoot({ stage: 'loading' })
                 void enterApp()
               }}
-              className="h-12 rounded-full bg-brand px-8 font-semibold text-primary-foreground"
             >
-              Try again
-            </button>
+              {t('common.tryAgain')}
+            </Button>
           </div>
-        </motion.div>
+        </div>
       ) : boot.stage === 'auth' ? (
-        <motion.div key="auth" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <AuthScreen
-            initialStep={boot.step}
-            onPhoneVerified={setPhone}
-            onComplete={(p) => void enterApp(p)}
-          />
-        </motion.div>
+        <div key="auth" className={fade}>
+          <AuthScreen initialStep={boot.step} onPhoneVerified={setPhone} onComplete={(p) => void enterApp(p)} />
+        </div>
       ) : (
-        <motion.div key="app" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <div key="app" className={fade}>
           <AppShell
             initialMe={boot.me}
             entitlements={boot.entitlements}
@@ -124,8 +145,8 @@ function Root() {
               setBoot({ stage: 'auth', step: 'phone' })
             }}
           />
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   )
 }

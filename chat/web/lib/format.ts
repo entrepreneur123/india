@@ -1,59 +1,53 @@
 import { BackendError } from './backend'
+import type { TKey } from './i18n'
 
 export function flagEmoji(iso2?: string | null) {
   if (!iso2 || iso2.length !== 2) return ''
   return String.fromCodePoint(...[...iso2.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65))
 }
 
-export function timeAgo(at: number, now = Date.now()) {
+const rtf = new Map<string, Intl.RelativeTimeFormat>()
+
+/** "5 min ago", "vor 3 Std." … in the given locale; older than a week shows the date. */
+export function timeAgo(at: number, locale: string, justNow: string, now = Date.now()) {
   const s = Math.max(0, Math.round((now - at) / 1000))
-  if (s < 45) return 'just now'
+  if (s < 45) return justNow
+  let f = rtf.get(locale)
+  if (!f) {
+    f = new Intl.RelativeTimeFormat(locale, { numeric: 'always', style: 'short' })
+    rtf.set(locale, f)
+  }
   const m = Math.round(s / 60)
-  if (m < 60) return `${m}m ago`
+  if (m < 60) return f.format(-m, 'minute')
   const h = Math.round(m / 60)
-  if (h < 24) return `${h}h ago`
+  if (h < 24) return f.format(-h, 'hour')
   const d = Math.round(h / 24)
-  if (d < 7) return `${d}d ago`
-  return new Date(at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
+  if (d < 7) return f.format(-d, 'day')
+  return new Date(at).toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 }
 
-export function clockTime(at: number) {
-  return new Date(at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+export function clockTime(at: number, locale: string) {
+  return new Date(at).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 }
 
-export function compactNumber(n: number) {
-  return new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+export function compactNumber(n: number, locale: string) {
+  return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 }
 
-const ERROR_COPY: Record<string, string> = {
-  exit_locked: 'Wait a moment before leaving',
-  slow_down: 'You’re sending too fast',
-  banned: 'Your account is suspended',
-  premium_required: 'This is a Yaari Plus feature',
-  under_18: 'You must be 18 or older to use yaari',
-  not_allowed: 'That action isn’t allowed',
-  not_found: 'We couldn’t find that anymore',
-  network: 'Connection problem. Check your internet and try again',
-  blocked: 'You can’t interact with this person',
-  too_large: 'That file is too large (25 MB max)',
-  bad_media: 'That file type can’t be sent. Use a photo, or an MP4, WebM or MOV video',
-  video_not_configured: 'Video calls aren’t available yet',
-  not_signed_in: 'Please sign in again',
-  room_closed: 'This room was closed',
-  room_gender: 'This room isn’t open to you (gender)',
-  room_age: 'You’re outside this room’s age range',
-  room_full: 'This room is full right now',
-  room_title: 'Room names are 2 to 40 characters',
-  room_size: 'Rooms hold 2 to 50 people',
-  sms_unavailable: 'We couldn’t send a code to this number right now. Please try again later',
-}
+const ERROR_CODES = new Set([
+  'exit_locked', 'slow_down', 'banned', 'premium_required', 'under_18', 'not_allowed', 'not_found', 'network',
+  'blocked', 'too_large', 'bad_media', 'video_not_configured', 'not_signed_in', 'room_closed', 'room_gender',
+  'room_age', 'room_full', 'room_title', 'room_size', 'sms_unavailable',
+])
 
 export function errorCode(err: unknown) {
   return err instanceof BackendError ? err.code : 'network'
 }
 
-export function friendlyError(err: unknown) {
-  return ERROR_COPY[errorCode(err)] ?? 'Something went wrong. Please try again'
+/** The dictionary key for an error's message ("error.exit_locked", or "error.generic" for anything unknown). */
+export function errorKey(err: unknown): TKey {
+  const code = errorCode(err)
+  return (ERROR_CODES.has(code) ? `error.${code}` : 'error.generic') as TKey
 }
 
 export function ageFromBirthDate(value: string) {

@@ -4,7 +4,7 @@
 @custom-variant night (&:is(.theme-night *, .theme-night));
 
 @theme inline {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-stack);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -16,7 +16,10 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
+  --color-primary-soft: var(--primary-soft);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
@@ -25,77 +28,80 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-overlay: var(--overlay);
 
-  --radius-sm: calc(var(--radius) - 6px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 6px);
-  --radius-2xl: calc(var(--radius) + 12px);
+  /* One radius scale: 8 controls · 12 inputs/rows · 16 cards · 20 large cards · 28 dialogs and sheets. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
 
-  --animate-aurora: aurora 22s ease-in-out infinite alternate;
-  --animate-drift: drift 28s ease-in-out infinite alternate;
-  --animate-ping-soft: ping-soft 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-  --animate-spin-slow: spin 8s linear infinite;
-  --animate-shimmer: shimmer 2.6s ease-in-out infinite;
-  --animate-pan: pan 10s ease-in-out infinite alternate;
+  /* Material-like elevation: neutral, soft, never coloured. */
+  --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.08), 0 1px 3px 1px rgb(0 0 0 / 0.04);
+  --shadow-e2: 0 1px 2px rgb(0 0 0 / 0.1), 0 2px 6px 2px rgb(0 0 0 / 0.06);
+  --shadow-e3: 0 4px 8px 3px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.12);
 
-  @keyframes aurora {
-    0% { transform: translate3d(-8%, -6%, 0) scale(1) rotate(0deg); }
-    50% { transform: translate3d(6%, 4%, 0) scale(1.15) rotate(18deg); }
-    100% { transform: translate3d(-4%, 8%, 0) scale(1.05) rotate(-12deg); }
-  }
-  @keyframes drift {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(10%, -8%, 0) scale(1.2); }
-    100% { transform: translate3d(-6%, 6%, 0) scale(0.95); }
-  }
+  --animate-ping-soft: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+
   @keyframes ping-soft {
-    0% { transform: scale(1); opacity: 0.7; }
-    80%, 100% { transform: scale(2.4); opacity: 0; }
-  }
-  @keyframes shimmer {
-    0% { transform: translateX(-120%); }
-    60%, 100% { transform: translateX(220%); }
-  }
-  @keyframes pan {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    0% { transform: scale(1); opacity: 0.5; }
+    80%, 100% { transform: scale(1.9); opacity: 0; }
   }
 }
 
 :root {
-  --radius: 1rem;
+  /*
+   * Latin and Vietnamese: Plus Jakarta Sans (its Vietnamese face is in the CSS with a unicode-range, so it is
+   * fetched only when Vietnamese text is on screen). Devanagari and Bengali: the phone's or PC's own fonts
+   * (Noto on Android, Nirmala UI on Windows, the Sangam fonts on Apple), so Hindi and Bengali cost no download.
+   */
+  --font-stack: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans',
+    'Noto Sans Devanagari', 'Noto Sans Bengali', 'Nirmala UI', 'Kohinoor Devanagari', 'Bangla Sangam MN', sans-serif;
+
   --background: #ffffff;
-  --foreground: #0d0c11;
+  --foreground: #1f1f1f;
   --card: #ffffff;
-  --card-foreground: #0d0c11;
-  --muted: #f4f4f6;
-  --muted-foreground: #6b6a75;
-  --border: #ebebef;
-  --input: #e4e4ea;
-  --ring: #ff3d68;
-  --primary: #ff3d68;
+  --card-foreground: #1f1f1f;
+  --muted: #f1f3f4;
+  --muted-foreground: #5f6368;
+  --border: #e3e3e8;
+  --input: #c9cbd0;
+  --ring: #c8174a;
+  /* Brand #FF3D68 is used as-is on the logo; fills and text use deeper tones so text keeps ≥ 4.5:1. */
+  --brand: #ff3d68;
+  --primary: #dc1e52;
+  --primary-hover: #c8174a;
   --primary-foreground: #ffffff;
-  --accent: #ff7a45;
+  --primary-text: #c8174a;
+  --primary-soft: #fdecef;
+  --accent: #c8174a;
   --accent-foreground: #ffffff;
-  --destructive: #e5263d;
-  --online: #22c55e;
-  --ink: #0b0a0e;
+  --destructive: #c5221f;
+  --online: #1e8e3e;
+  --ink: #111114;
   --ink-foreground: #f6f5f8;
-  --overlay: rgb(11 10 14 / 0.55);
+  --overlay: rgb(0 0 0 / 0.45);
   --brand-gradient: linear-gradient(135deg, #ff3d68 0%, #ff7a45 100%);
   color-scheme: light;
 }
 
 .theme-night {
-  --background: #0b0a0e;
-  --foreground: #f6f5f8;
-  --card: #15141a;
-  --card-foreground: #f6f5f8;
-  --muted: #1d1c23;
-  --muted-foreground: #9a99a5;
-  --border: rgb(255 255 255 / 0.08);
-  --input: rgb(255 255 255 / 0.12);
-  --overlay: rgb(0 0 0 / 0.7);
+  --background: #111114;
+  --foreground: #f1f1f4;
+  --card: #1c1c21;
+  --card-foreground: #f1f1f4;
+  --muted: #26262c;
+  --muted-foreground: #a8a8b3;
+  --border: rgb(255 255 255 / 0.1);
+  --input: rgb(255 255 255 / 0.22);
+  --ring: #ff6b8b;
+  --primary-hover: #e0245a;
+  --primary-text: #ff6b8b;
+  --primary-soft: rgb(255 107 139 / 0.14);
+  --accent: #ff6b8b;
+  --destructive: #f28b82;
+  --online: #34c759;
+  --overlay: rgb(0 0 0 / 0.65);
   color-scheme: dark;
 }
 
@@ -105,10 +111,26 @@
   }
   html {
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-feature-settings: 'ss01', 'cv11';
+  }
+  /* Hindi and Bengali: no negative tracking (it breaks the joined headline of the letters) and taller lines. */
+  :lang(hi) *,
+  :lang(bn) * {
+    letter-spacing: normal !important;
+  }
+  :lang(hi) body,
+  :lang(bn) body {
+    line-height: 1.6;
+  }
+  :lang(hi) h1,
+  :lang(hi) h2,
+  :lang(bn) h1,
+  :lang(bn) h2 {
+    line-height: 1.35;
   }
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -123,15 +145,9 @@
   }
 }
 
+/* The logo is the one place the brand gradient appears. */
 @utility bg-brand {
   background-image: var(--brand-gradient);
-}
-
-@utility text-brand {
-  background-image: var(--brand-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 @utility scrollbar-thin {

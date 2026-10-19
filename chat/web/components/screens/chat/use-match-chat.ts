@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Message, VideoStatus } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useToast } from '@/components/ui/toast'
+import { useI18n } from '@/components/i18n'
 
 const TYPING_THROTTLE_MS = 2000
 const TYPING_TIMEOUT_MS = 6000
@@ -12,6 +13,9 @@ const TYPING_TIMEOUT_MS = 6000
 export function useMatchChat(matchId: string, partnerName: string, live: boolean) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
+  const tRef = useRef(t) // the language can change mid-chat without re-subscribing
+  tRef.current = t
   const [messages, setMessages] = useState<Message[] | null>(null)
   const [typing, setTyping] = useState(false)
   const [video, setVideoState] = useState<VideoStatus>('none')
@@ -70,7 +74,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           if (!live) break
           // Only a refusal of my own pending request is news; an old "declined" from the first sync is not.
           if (e.status === 'declined' && videoRef.current === 'requested_by_me') {
-            toast.show(`${partnerName} declined the video call`)
+            toast.show(tRef.current('chat.declined', { name: partnerName }))
           }
           setVideo(e.status === 'declined' ? 'none' : e.status)
           break

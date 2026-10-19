@@ -1,13 +1,15 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { Flag, MessageCircle, UserMinus, X } from 'lucide-react'
 import type { Friend, Profile, RecentMatch } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { flagEmoji, timeAgo } from '@/lib/format'
+import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { Segmented, Skeleton } from '@/components/ui/bits'
@@ -15,6 +17,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
+import { cn } from '@/lib/utils'
 
 type Segment = 'friends' | 'matches'
 
@@ -29,11 +32,11 @@ export function RecentScreen() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
-        <h1 className="text-3xl font-extrabold tracking-tight">{t('recent.title')}</h1>
+        <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('recent.title')}</h1>
         <Segmented
           className="w-full"
           size="lg"
-          label="Show"
+          label={t('recent.show')}
           value={segment}
           onChange={setSegment}
           options={[
@@ -43,7 +46,7 @@ export function RecentScreen() {
                 <>
                   {t('recent.friends')}
                   {incoming > 0 ? (
-                    <span className="grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">
+                    <span className="ml-1.5 inline-grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">
                       {incoming}
                     </span>
                   ) : null}
@@ -54,13 +57,7 @@ export function RecentScreen() {
           ]}
         />
         <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={segment}
-            initial={{ opacity: 0, x: segment === 'friends' ? -16 : 16 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-          >
+          <m.div key={segment} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
             {segment === 'friends' ? (
               <FriendsList
                 list={friends.data}
@@ -81,7 +78,7 @@ export function RecentScreen() {
                 onFind={() => setTab('random')}
               />
             )}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
     </div>
@@ -93,7 +90,7 @@ function ListSkeleton() {
     <ul className="flex flex-col gap-2">
       {Array.from({ length: 4 }, (_, i) => (
         <li key={i} className="flex items-center gap-3 p-2">
-          <Skeleton className="size-14 rounded-full" />
+          <Skeleton className="size-12 rounded-full" />
           <div className="flex flex-1 flex-col gap-2">
             <Skeleton className="h-3.5 w-32" />
             <Skeleton className="h-3 w-48" />
@@ -105,12 +102,13 @@ function ListSkeleton() {
 }
 
 function Failed({ retry }: { retry: () => void }) {
+  const { t } = useI18n()
   return (
     <EmptyState
       art="people"
-      title="Couldn’t load this"
-      body="Check your connection and try again."
-      action={<Button variant="secondary" onClick={retry}>Try again</Button>}
+      title={t('recent.loadFailed')}
+      body={t('common.checkConnection')}
+      action={<Button variant="outline" onClick={retry}>{t('common.tryAgain')}</Button>}
     />
   )
 }
@@ -118,10 +116,10 @@ function Failed({ retry }: { retry: () => void }) {
 function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
   const { openProfile } = useApp()
   return (
-    <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-      <Avatar name={p.name} src={p.photoUrl} size={54} country={p.country} />
+    <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left">
+      <Avatar name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
-        <span className="block truncate text-[15px] font-bold">
+        <span className="block truncate text-[15px] font-semibold">
           {p.name}, {p.age}
         </span>
         <span className="block truncate text-sm text-muted-foreground">{detail ?? p.city}</span>
@@ -145,6 +143,7 @@ function FriendsList({
 }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t } = useI18n()
   const { openThread } = useApp()
   const [busy, setBusy] = useState<string | null>(null)
   const [unfriend, setUnfriend] = useState<Profile | null>(null)
@@ -172,47 +171,51 @@ function FriendsList({
     return (
       <EmptyState
         art="people"
-        title="No friends yet"
-        body="Add people you click with in a random chat or a room — once they accept, you can message them anytime."
-        action={<Button variant="brand" onClick={onFind}>Meet someone</Button>}
+        title={t('recent.noFriends')}
+        body={t('recent.noFriendsBody')}
+        action={<Button variant="brand" onClick={onFind}>{t('recent.meet')}</Button>}
       />
     )
   }
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-8">
       {incoming.length ? (
-        <Section title="Friend requests" count={incoming.length}>
+        <Section title={t('recent.requests')} count={incoming.length}>
           {incoming.map((f) => (
-            <Row key={f.profile.id} className="bg-muted/70">
-              <Who p={f.profile} detail="Wants to be friends" />
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={busy === f.profile.id}
-                onClick={() => void run(f.profile.id, () => backend.answerFriend(f.profile.id, false))}
-              >
-                Decline
-              </Button>
-              <Button
-                size="sm"
-                variant="brand"
-                loading={busy === f.profile.id}
-                onClick={() => void run(f.profile.id, () => backend.answerFriend(f.profile.id, true), `You and ${f.profile.name} are friends`)}
-              >
-                Accept
-              </Button>
+            <Row key={f.profile.id} className="flex-wrap bg-muted sm:flex-nowrap">
+              <Who p={f.profile} detail={t('recent.wants')} />
+              <div className="ml-auto flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={busy === f.profile.id}
+                  onClick={() => void run(f.profile.id, () => backend.answerFriend(f.profile.id, false))}
+                >
+                  {t('recent.decline')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="brand"
+                  loading={busy === f.profile.id}
+                  onClick={() =>
+                    void run(f.profile.id, () => backend.answerFriend(f.profile.id, true), t('recent.nowFriends', { name: f.profile.name }))
+                  }
+                >
+                  {t('recent.accept')}
+                </Button>
+              </div>
             </Row>
           ))}
         </Section>
       ) : null}
 
       {friends.length ? (
-        <Section title="Friends" count={friends.length}>
+        <Section title={t('recent.friends')} count={friends.length}>
           {friends.map((f) => (
             <Row key={f.profile.id}>
               <Who p={f.profile} />
-              <Button size="icon" variant="secondary" onClick={() => openThread(f.profile)} aria-label={`Message ${f.profile.name}`}>
+              <Button size="icon" variant="ghost" onClick={() => openThread(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>
               <Button
@@ -220,7 +223,7 @@ function FriendsList({
                 variant="ghost"
                 className="text-muted-foreground"
                 onClick={() => setUnfriend(f.profile)}
-                aria-label={`Remove ${f.profile.name} from friends`}
+                aria-label={t('recent.removeAria', { name: f.profile.name })}
               >
                 <UserMinus className="size-5" aria-hidden />
               </Button>
@@ -230,17 +233,17 @@ function FriendsList({
       ) : null}
 
       {sent.length ? (
-        <Section title="Sent requests" count={sent.length}>
+        <Section title={t('recent.sent')} count={sent.length}>
           {sent.map((f) => (
             <Row key={f.profile.id}>
-              <Who p={f.profile} detail="Request sent" />
+              <Who p={f.profile} detail={t('recent.requestSent')} />
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 loading={busy === f.profile.id}
                 onClick={() => void run(f.profile.id, () => backend.removeFriend(f.profile.id))}
               >
-                <X className="size-4" aria-hidden /> Withdraw
+                <X className="size-4" aria-hidden /> {t('recent.withdraw')}
               </Button>
             </Row>
           ))}
@@ -250,12 +253,12 @@ function FriendsList({
       <Modal
         open={unfriend !== null}
         onClose={() => setUnfriend(null)}
-        title={unfriend ? `Remove ${unfriend.name}?` : ''}
-        description="You won’t be able to message each other until one of you sends a new request."
+        title={unfriend ? t('recent.removeTitle', { name: unfriend.name }) : ''}
+        description={t('recent.removeBody')}
       >
         <div className="flex gap-3 p-6 pt-5">
-          <Button variant="secondary" className="flex-1" onClick={() => setUnfriend(null)}>
-            Cancel
+          <Button variant="outline" className="flex-1" onClick={() => setUnfriend(null)}>
+            {t('common.cancel')}
           </Button>
           <Button
             variant="danger"
@@ -267,7 +270,7 @@ function FriendsList({
               void run(p.id, () => backend.removeFriend(p.id)).then(() => setUnfriend(null))
             }}
           >
-            Remove
+            {t('recent.remove')}
           </Button>
         </div>
       </Modal>
@@ -289,6 +292,7 @@ function MatchesList({
   onFind: () => void
 }) {
   const { openThread } = useApp()
+  const { t, timeAgo } = useI18n()
   const [reporting, setReporting] = useState<RecentMatch | null>(null)
 
   if (!list) return failed ? <Failed retry={retry} /> : <ListSkeleton />
@@ -296,23 +300,18 @@ function MatchesList({
     return (
       <EmptyState
         art="chat"
-        title="No matches yet"
-        body="People you meet in random chat show up here, so you can message them again."
-        action={<Button variant="brand" onClick={onFind}>Start a random chat</Button>}
+        title={t('recent.noMatches')}
+        body={t('recent.noMatchesBody')}
+        action={<Button variant="brand" onClick={onFind}>{t('recent.startRandom')}</Button>}
       />
     )
   }
 
   return (
     <>
-      <ul className="flex flex-col gap-1">
-        {list.map((r, i) => (
-          <motion.li
-            key={r.matchId}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(i, 10) * 0.03 }}
-          >
+      <ul className="flex flex-col">
+        {list.map((r) => (
+          <li key={r.matchId}>
             <Row>
               <Who
                 p={r.partner}
@@ -324,7 +323,7 @@ function MatchesList({
                   </>
                 }
               />
-              <Button size="icon" variant="secondary" onClick={() => openThread(r.partner, r.matchId)} aria-label={`Message ${r.partner.name}`}>
+              <Button size="icon" variant="ghost" onClick={() => openThread(r.partner, r.matchId)} aria-label={t('panel.message', { name: r.partner.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>
               <Button
@@ -332,12 +331,12 @@ function MatchesList({
                 variant="ghost"
                 className="text-muted-foreground hover:text-destructive"
                 onClick={() => setReporting(r)}
-                aria-label={`Report ${r.partner.name}`}
+                aria-label={t('chat.report', { name: r.partner.name })}
               >
                 <Flag className="size-5" aria-hidden />
               </Button>
             </Row>
-          </motion.li>
+          </li>
         ))}
       </ul>
       {reporting ? (
@@ -356,8 +355,8 @@ function MatchesList({
 function Section({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="px-1 text-sm font-bold">
-        {title} <span className="text-primary">· {count}</span>
+      <h2 className="px-1 text-sm font-semibold text-muted-foreground">
+        {title} · <span className="tabular-nums">{count}</span>
       </h2>
       <div className="flex flex-col gap-1">{children}</div>
     </section>
@@ -366,12 +365,8 @@ function Section({ title, count, children }: { title: string; count: number; chi
 
 function Row({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <motion.div
-      layout
-      whileHover={{ x: 2 }}
-      className={`flex items-center gap-2 rounded-3xl p-2.5 transition-colors hover:bg-muted ${className ?? ''}`}
-    >
+    <div className={cn('flex items-center gap-2 rounded-2xl p-2.5 transition-colors duration-150 hover:bg-muted', className)}>
       {children}
-    </motion.div>
+    </div>
   )
 }

@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 
+// One variable font file for every weight. Only the Latin file is preloaded; the Vietnamese (and Latin
+// extended) faces are in the same CSS with a unicode-range, so a browser fetches them only when Vietnamese
+// text is on screen. Devanagari and Bengali use the device's own fonts (see --font-stack in globals.css).
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-jakarta',
@@ -21,7 +24,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0b0a0e',
+  themeColor: '#111114',
 }
 
 export default function RootLayout({
@@ -29,6 +32,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // `lang` is set to the user's language on the client (components/i18n.tsx).
   return (
     <html lang="en" className={`${jakarta.variable} bg-background`}>
       <body className="font-sans antialiased">{children}</body>

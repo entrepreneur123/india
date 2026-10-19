@@ -1,13 +1,16 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ArrowLeft, ArrowRight, Copy, KeyRound, Lock, Pin, Plus, Power } from 'lucide-react'
-import { BackendError, type Room, type RoomMessage } from '@/lib/backend'
+import type { Room, RoomMessage } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { compactNumber, errorCode, flagEmoji, friendlyError } from '@/lib/format'
+import { errorCode, flagEmoji } from '@/lib/format'
+import { onPageVisibility, pageHidden } from '@/lib/visibility'
 import { useApp, useReported } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
@@ -15,8 +18,13 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { Composer } from '@/components/screens/chat/composer'
 import { Modal } from '@/components/ui/modal'
-import { CreateRoomDialog, JoinCodeDialog, roomConditions } from './room-dialogs'
+import { refusalLabel, roomAbout, roomConditions, roomTitle } from './room-text'
 import { cn } from '@/lib/utils'
+
+// The create / enter-code forms download when first opened.
+const loadDialogs = () => import('./room-dialogs')
+const CreateRoomDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.CreateRoomDialog })))
+const JoinCodeDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.JoinCodeDialog })))
 
 const FEATURED = 'lounge'
 const HEARTBEAT_MS = 30_000 // the server counts a member as present for 90 s after the last join
@@ -24,36 +32,14 @@ const HEARTBEAT_MS = 30_000 // the server counts a member as present for 90 s af
 /** A leave still on its way to the server, per room: re-entering waits for it so the join lands last. */
 const leaving = new Map<string, Promise<unknown>>()
 
-/** One line on what each server room is for; rooms without one just show their title. */
-const ABOUT: Record<string, string> = {
-  lounge: 'Everyone, everywhere. Say hi to the world.',
-  language: 'Practise a language with native speakers.',
-  music: 'Share what’s on repeat.',
-  movies: 'Recommendations, reviews, no spoilers.',
-  gaming: 'Find people to play with.',
-  sports: 'Match talk, live.',
-  night: 'For when you can’t sleep.',
-  memes: 'Post the funniest thing you saw today.',
-  study: 'Study together, ask for help.',
-  travel: 'Tips, stories and places to go.',
-}
-
-const TINTS = [
-  'bg-[#fff1f3] hover:shadow-[0_18px_40px_-18px_rgb(255_61_104/0.45)]',
-  'bg-[#fff4ec] hover:shadow-[0_18px_40px_-18px_rgb(255_122_69/0.45)]',
-  'bg-[#eef4ff] hover:shadow-[0_18px_40px_-18px_rgb(80_120_255/0.4)]',
-  'bg-[#effaf3] hover:shadow-[0_18px_40px_-18px_rgb(34_197_94/0.4)]',
-  'bg-[#f5f0ff] hover:shadow-[0_18px_40px_-18px_rgb(139_92_246/0.4)]',
-  'bg-[#fffbea] hover:shadow-[0_18px_40px_-18px_rgb(234_179_8/0.4)]',
-]
-
 export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | null; onOpenRoom: (id: string | null) => void }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t } = useApp()
+  const { t } = useI18n()
   const { data: rooms, error, mutate } = useSWR('rooms', () => backend.rooms(), { refreshInterval: 30_000 })
   const [createOpen, setCreateOpen] = useState(false)
   const [codeOpen, setCodeOpen] = useState(false)
+  const [dialogsUsed, setDialogsUsed] = useState(false)
   const open = rooms?.find((r) => r.id === openRoomId) ?? null
 
   if (openRoomId && open) return <RoomChat room={open} onBack={() => onOpenRoom(null)} />
@@ -62,22 +48,33 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
   const rest = rooms?.filter((r) => r.official && r.id !== FEATURED) ?? []
   const people = rooms?.filter((r) => !r.official).sort((a, b) => Number(b.mine) - Number(a.mine)) ?? []
   // A room I can't enter explains why instead of failing on the server.
-  const enter = (r: Room) => (r.refusal ? toast.show(friendlyError(new BackendError(r.refusal)), 'info') : onOpenRoom(r.id))
+  const enter = (r: Room) => (r.refusal ? toast.show(t(`error.${r.refusal}` as const), 'info') : onOpenRoom(r.id))
+  const openCreate = () => {
+    setDialogsUsed(true)
+    setCreateOpen(true)
+  }
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
-      <div className="mx-auto flex max-w-4xl flex-col gap-7 px-4 py-6 sm:px-8 sm:py-10">
+      <div className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-6 sm:px-8 sm:py-10">
         <header className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">{t('rooms.title')}</h1>
+          <div className="min-w-0">
+            <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('rooms.title')}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{t('rooms.subtitle')}</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => setCodeOpen(true)}>
-              <KeyRound className="size-4.5" aria-hidden /> Enter code
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              onPointerEnter={() => void loadDialogs()}
+              onClick={() => {
+                setDialogsUsed(true)
+                setCodeOpen(true)
+              }}
+            >
+              <KeyRound className="size-4.5" aria-hidden /> {t('rooms.enterCode')}
             </Button>
-            <Button variant="brand" onClick={() => setCreateOpen(true)}>
-              <Plus className="size-4.5" aria-hidden /> Create room
+            <Button variant="brand" onPointerEnter={() => void loadDialogs()} onClick={openCreate}>
+              <Plus className="size-4.5" aria-hidden /> {t('rooms.create')}
             </Button>
           </div>
         </header>
@@ -85,208 +82,182 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
         {error && !rooms ? (
           <EmptyState
             art="rooms"
-            title="Couldn’t load rooms"
-            body="Check your connection and try again."
-            action={<Button variant="secondary" onClick={() => void mutate()}>Try again</Button>}
+            title={t('rooms.loadFailed')}
+            body={t('common.checkConnection')}
+            action={<Button variant="outline" onClick={() => void mutate()}>{t('common.tryAgain')}</Button>}
           />
         ) : !rooms ? (
           <>
-            <Skeleton className="h-48 w-full rounded-[28px]" />
+            <Skeleton className="h-44 w-full rounded-3xl" />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-36 rounded-3xl" />)}
+              {Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-32 rounded-2xl" />)}
             </div>
           </>
         ) : (
           <>
             {featured ? <FeaturedRoom room={featured} onOpen={() => onOpenRoom(featured.id)} /> : null}
-            <section aria-labelledby="rooms-people">
-              <div className="mb-3 flex items-baseline justify-between">
-                <h2 id="rooms-people" className="text-lg font-bold tracking-tight">Rooms by people</h2>
-                <span className="text-xs text-muted-foreground">Open to anyone who fits the host’s rules</span>
+            <section aria-labelledby="rooms-people" className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h2 id="rooms-people" className="text-lg font-semibold">{t('rooms.byPeople')}</h2>
+                <span className="text-xs text-muted-foreground">{t('rooms.byPeopleHint')}</span>
               </div>
               {people.length === 0 ? (
                 <button
                   type="button"
-                  onClick={() => setCreateOpen(true)}
-                  className="flex w-full items-center gap-4 rounded-3xl border-2 border-dashed border-input p-5 text-left transition-colors hover:border-primary hover:bg-primary/5"
+                  onClick={openCreate}
+                  className="flex w-full items-center gap-4 rounded-2xl border border-dashed border-input p-5 text-left transition-colors duration-150 hover:bg-muted"
                 >
-                  <span className="grid size-12 place-items-center rounded-2xl bg-brand text-primary-foreground">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary-soft text-primary-text">
                     <Plus className="size-6" aria-hidden />
                   </span>
-                  <span>
-                    <span className="block font-bold">No rooms by people right now</span>
-                    <span className="block text-sm text-muted-foreground">Open one: pick a topic, who can join and how many.</span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold">{t('rooms.noneTitle')}</span>
+                    <span className="block text-sm text-muted-foreground">{t('rooms.noneBody')}</span>
                   </span>
                 </button>
               ) : (
-                <ul className="grid gap-2 sm:grid-cols-2">
-                  {people.map((r, i) => (
-                    <motion.li
-                      key={r.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.03 * i, type: 'spring', stiffness: 320, damping: 28 }}
-                    >
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {people.map((r) => (
+                    <li key={r.id}>
                       <UserRoomCard room={r} onOpen={() => enter(r)} />
-                    </motion.li>
+                    </li>
                   ))}
                 </ul>
               )}
             </section>
-            <section aria-labelledby="rooms-all">
-              <h2 id="rooms-all" className="mb-3 text-lg font-bold tracking-tight">Official rooms</h2>
+            <section aria-labelledby="rooms-all" className="flex flex-col gap-3">
+              <h2 id="rooms-all" className="text-lg font-semibold">{t('rooms.official')}</h2>
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {rest.map((r, i) => (
-                  <motion.li
-                    key={r.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.04 * i, type: 'spring', stiffness: 300, damping: 26 }}
-                  >
-                    <motion.button
-                      type="button"
-                      onClick={() => onOpenRoom(r.id)}
-                      whileHover={{ y: -4 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-                      className={cn(
-                        'group flex h-full w-full flex-col items-start gap-1 rounded-3xl p-4 text-left text-[#0d0c11] transition-shadow sm:p-5',
-                        TINTS[i % TINTS.length],
-                      )}
-                    >
-                      <span className="text-3xl transition-transform duration-300 group-hover:scale-115 group-hover:-rotate-6" aria-hidden>
-                        {r.emoji}
-                      </span>
-                      <span className="mt-2 text-[15px] font-bold leading-tight">{r.title}</span>
-                      {ABOUT[r.id] ? <span className="line-clamp-2 text-xs leading-relaxed text-[#6b6a75]">{ABOUT[r.id]}</span> : null}
-                      <span className="mt-auto flex items-center gap-1.5 pt-3 text-xs font-semibold tabular-nums text-[#3f3e47]">
-                        <PresenceDot /> {compactNumber(r.online)} online
-                      </span>
-                    </motion.button>
-                  </motion.li>
-                ))}
+                {rest.map((r) => {
+                  const about = roomAbout(r, t)
+                  return (
+                    <li key={r.id}>
+                      <button
+                        type="button"
+                        onClick={() => onOpenRoom(r.id)}
+                        className="flex h-full w-full flex-col items-start gap-1 rounded-2xl border border-border bg-card p-4 text-left transition-[box-shadow,background-color] duration-150 hover:shadow-e2 active:bg-muted"
+                      >
+                        <span className="grid size-11 place-items-center rounded-full bg-muted text-2xl" aria-hidden>
+                          {r.emoji}
+                        </span>
+                        <span className="mt-2 text-[15px] leading-snug font-semibold">{roomTitle(r, t)}</span>
+                        {about ? <span className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{about}</span> : null}
+                        <span className="mt-auto flex items-center gap-1.5 pt-3 text-xs font-medium tabular-nums text-muted-foreground">
+                          <PresenceDot /> <OnlineCount n={r.online} />
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </section>
           </>
         )}
       </div>
-      <CreateRoomDialog
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        onCreated={(id, code) => {
-          setCreateOpen(false)
-          toast.show(`Room created · code ${code}`, 'success')
-          onOpenRoom(id)
-        }}
-      />
-      <JoinCodeDialog
-        open={codeOpen}
-        onClose={() => setCodeOpen(false)}
-        onJoined={(id) => {
-          setCodeOpen(false)
-          onOpenRoom(id)
-        }}
-      />
+      {dialogsUsed ? (
+        <Suspense fallback={null}>
+          <CreateRoomDialog
+            open={createOpen}
+            onClose={() => setCreateOpen(false)}
+            onCreated={(id, code) => {
+              setCreateOpen(false)
+              toast.show(t('rooms.created', { code }), 'success')
+              onOpenRoom(id)
+            }}
+          />
+          <JoinCodeDialog
+            open={codeOpen}
+            onClose={() => setCodeOpen(false)}
+            onJoined={(id) => {
+              setCodeOpen(false)
+              onOpenRoom(id)
+            }}
+          />
+        </Suspense>
+      ) : null}
     </div>
   )
 }
 
+function OnlineCount({ n, max }: { n: number; max?: number | null }) {
+  const { t, num } = useI18n()
+  return <>{max ? t('rooms.onlineOf', { n: num(n), max }) : t('rooms.online', { n: num(n) })}</>
+}
+
 function UserRoomCard({ room, onOpen }: { room: Room; onOpen: () => void }) {
+  const { t } = useI18n()
   const blocked = !!room.refusal
-  const conditions = roomConditions(room)
+  const conditions = roomConditions(room, t)
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onOpen}
-      whileHover={blocked ? undefined : { y: -3 }}
-      whileTap={{ scale: 0.98 }}
       aria-disabled={blocked}
       className={cn(
-        'group flex w-full items-center gap-4 rounded-3xl bg-card p-4 text-left ring-1 ring-border transition-shadow',
-        blocked ? 'opacity-55' : 'hover:shadow-[0_16px_40px_-20px_rgb(255_61_104/0.5)]',
-        room.mine && 'ring-2 ring-primary/40',
+        'flex w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left transition-[box-shadow,background-color] duration-150',
+        blocked ? 'border-border opacity-60' : 'border-border hover:shadow-e2 active:bg-muted',
+        room.mine && 'border-primary',
       )}
     >
-      <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-muted text-3xl transition-transform group-hover:scale-105" aria-hidden>
+      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-muted text-2xl" aria-hidden>
         {room.emoji}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5 truncate text-[15px] font-bold">
-          {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label="Private" /> : null}
+        <span className="flex items-center gap-1.5 text-[15px] font-semibold">
+          {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label={t('rooms.private')} /> : null}
           <span className="truncate">{room.title}</span>
         </span>
         <span className="block truncate text-xs text-muted-foreground">
-          {room.mine ? 'Your room' : `Host: ${room.ownerName ?? 'someone'}`}
-          {room.refusal ? ` · ${refusalLabel(room)}` : ''}
+          {room.mine ? t('rooms.yours') : t('rooms.host', { name: room.ownerName ?? t('rooms.someone') })}
+          {room.refusal ? ` · ${refusalLabel(room, t)}` : ''}
         </span>
         {conditions.length ? (
           <span className="mt-1.5 flex flex-wrap gap-1">
             {conditions.map((c) => (
-              <span key={c} className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+              <span key={c} className="rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                 {c}
               </span>
             ))}
           </span>
         ) : null}
       </span>
-      <span className="flex shrink-0 items-center gap-1.5 text-xs font-semibold tabular-nums text-muted-foreground">
+      <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium tabular-nums text-muted-foreground">
         <PresenceDot /> {room.online}
         {room.maxMembers ? `/${room.maxMembers}` : ''}
       </span>
-    </motion.button>
+    </button>
   )
 }
 
-function refusalLabel(r: Room) {
-  switch (r.refusal) {
-    case 'room_full': return 'Full'
-    case 'room_gender': return r.genderRule === 'female' ? 'Women only' : 'Men only'
-    case 'room_age': return 'Outside age range'
-    case 'room_closed': return 'Closed'
-    default: return 'Not available'
-  }
-}
-
 function FeaturedRoom({ room, onOpen }: { room: Room; onOpen: () => void }) {
+  const { t, num } = useI18n()
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onOpen}
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, scale: 1.005 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="group relative isolate overflow-hidden rounded-[28px] p-6 text-left text-primary-foreground shadow-[0_24px_60px_-24px_rgb(255_61_104/0.8)] sm:p-8"
-      style={{ backgroundImage: 'linear-gradient(120deg, #ff3d68, #ff7a45, #ff3d68)', backgroundSize: '200% 200%' }}
+      className="group relative overflow-hidden rounded-3xl bg-primary-soft p-6 text-left text-foreground transition-shadow duration-150 hover:shadow-e2 sm:p-8"
     >
-      <span className="absolute inset-0 -z-10 animate-pan" style={{ backgroundImage: 'inherit', backgroundSize: 'inherit' }} aria-hidden />
-      <span className="absolute -top-20 -right-16 -z-10 size-72 rounded-full bg-white/20 blur-3xl transition-transform duration-700 group-hover:scale-125" aria-hidden />
       <span className="flex items-start justify-between gap-4">
-        <motion.span
-          className="text-5xl"
-          animate={{ rotate: [0, 8, -6, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          aria-hidden
-        >
+        <span className="grid size-14 place-items-center rounded-full bg-card text-3xl" aria-hidden>
           {room.emoji}
-        </motion.span>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-bold tabular-nums backdrop-blur-md">
-          <PresenceDot /> {compactNumber(room.online)} here now
+        </span>
+        <span className="flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground tabular-nums">
+          <PresenceDot /> {t('rooms.hereNow', { n: num(room.online) })}
         </span>
       </span>
-      <span className="mt-6 block text-3xl font-extrabold tracking-tight sm:text-4xl">{room.title}</span>
-      <span className="mt-1 block max-w-sm text-sm leading-relaxed text-white/85">{ABOUT[room.id]}</span>
-      <span className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-[#0d0c11] shadow-lg transition-transform group-hover:translate-x-1">
-        Join <ArrowRight className="size-4" aria-hidden />
+      <span className="mt-6 block text-2xl font-bold tracking-tight sm:text-3xl">{roomTitle(room, t)}</span>
+      <span className="mt-1 block max-w-sm text-sm leading-relaxed text-muted-foreground">{roomAbout(room, t)}</span>
+      <span className="mt-6 inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors duration-150 group-hover:bg-primary-hover">
+        {t('rooms.join')} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
       </span>
-    </motion.button>
+    </button>
   )
 }
 
 function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   const backend = useBackend()
   const toast = useToast()
+  const { t, num } = useI18n()
   const { openProfile } = useApp()
   const [messages, setMessages] = useState<RoomMessage[] | null>(null)
   const [joined, setJoined] = useState(false)
@@ -295,15 +266,16 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   const [closing, setClosing] = useState(false)
   const listRef = useRef<HTMLUListElement>(null)
   const stick = useRef(true)
-  const conditions = room.official ? [] : roomConditions(room)
+  const conditions = room.official ? [] : roomConditions(room, t, false)
+  const title = roomTitle(room, t)
 
   const copyCode = async () => {
     if (!room.code) return
     try {
       await navigator.clipboard.writeText(room.code)
-      toast.show(`Code ${room.code} copied`, 'success')
+      toast.show(t('room.copied', { code: room.code }), 'success')
     } catch {
-      toast.show(`Room code: ${room.code}`)
+      toast.show(t('room.codeIs', { code: room.code }))
     }
   }
 
@@ -311,7 +283,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
     setClosing(true)
     try {
       await backend.closeRoom(room.id)
-      toast.show('Room closed', 'success')
+      toast.show(t('room.closedToast'), 'success')
       onBack()
     } catch (err) {
       toast.error(err)
@@ -330,10 +302,16 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
     })
   }, [])
 
-  // Enter the room (the server only lets members post) and stay listed as present while it is open.
+  // Enter the room (the server only lets members read and post) and stay listed as present while it is open.
+  // The heartbeat pauses while the browser tab is hidden and runs at once when it is shown again.
   useEffect(() => {
     let alive = true
+    let inside = false
     let beat: ReturnType<typeof setInterval> | undefined
+    const heartbeat = () => {
+      if (!inside || pageHidden()) return
+      void backend.joinRoom(room.id).catch((err) => alive && errorCode(err) === 'room_closed' && setClosed(true))
+    }
     ;(async () => {
       await leaving.get(room.id)
       if (!alive) return
@@ -346,24 +324,25 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
         return
       }
       if (!alive) return
+      inside = true
       setJoined(true)
-      beat = setInterval(
-        () => void backend.joinRoom(room.id).catch((err) => alive && errorCode(err) === 'room_closed' && setClosed(true)),
-        HEARTBEAT_MS,
+      beat = setInterval(heartbeat, HEARTBEAT_MS)
+      // Messages are only readable once inside (the server checks presence), so history comes after the join.
+      backend.roomHistory(room.id).then(
+        (h) => alive && add(h),
+        (err) => {
+          if (!alive) return
+          setMessages((m) => m ?? [])
+          toast.error(err)
+        },
       )
     })()
-    backend.roomHistory(room.id).then(
-      (h) => alive && add(h),
-      (err) => {
-        if (!alive) return
-        setMessages((m) => m ?? [])
-        toast.error(err)
-      },
-    )
     const unsubscribe = backend.subscribeRoom(room.id, (m) => alive && add([m]))
+    const stopWatching = onPageVisibility((visible) => visible && heartbeat())
     return () => {
       alive = false
       clearInterval(beat)
+      stopWatching()
       unsubscribe()
       const done = backend.leaveRoom(room.id).catch(() => undefined)
       leaving.set(room.id, done)
@@ -401,28 +380,27 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   }
 
   return (
-    <motion.div
+    <m.div
       className="flex min-h-0 flex-1 flex-col"
-      initial={{ opacity: 0, x: 30 }}
+      initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ type: 'spring', stiffness: 360, damping: 34 }}
+      transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
     >
       <header className="flex items-center gap-3 border-b border-border px-3 py-2.5 sm:px-5">
-        <Button size="icon" variant="ghost" onClick={onBack} aria-label="Back to rooms">
+        <Button size="icon" variant="ghost" onClick={onBack} aria-label={t('room.back')}>
           <ArrowLeft className="size-5" aria-hidden />
         </Button>
-        <span className="grid size-11 place-items-center rounded-2xl bg-muted text-2xl" aria-hidden>
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-xl" aria-hidden>
           {room.emoji}
         </span>
         <span className="min-w-0 flex-1">
-          <h1 className="flex items-center gap-1.5 truncate text-[15px] font-bold">
-            {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label="Private" /> : null}
-            <span className="truncate">{room.title}</span>
+          <h1 className="flex items-center gap-1.5 text-[15px] font-semibold">
+            {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label={t('rooms.private')} /> : null}
+            <span className="truncate">{title}</span>
           </h1>
           <span className="flex items-center gap-1.5 truncate text-xs text-muted-foreground tabular-nums">
-            <PresenceDot /> {compactNumber(room.online)}
-            {room.maxMembers ? `/${room.maxMembers}` : ''} online
-            {room.official ? '' : room.mine ? ' · you host' : ` · host ${room.ownerName ?? ''}`}
+            <PresenceDot /> <OnlineCount n={room.online} max={room.maxMembers} />
+            {room.official ? '' : room.mine ? ` · ${t('room.youHost')}` : ` · ${t('room.hostName', { name: room.ownerName ?? '' })}`}
           </span>
         </span>
         {room.mine && room.code ? (
@@ -430,29 +408,30 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
             <button
               type="button"
               onClick={() => void copyCode()}
-              className="flex h-10 items-center gap-2 rounded-full bg-muted px-3.5 font-mono text-sm font-bold tracking-widest transition-colors hover:bg-input"
-              aria-label={`Copy room code ${room.code}`}
+              className="flex h-10 items-center gap-2 rounded-full bg-muted px-3.5 font-mono text-sm font-bold tracking-widest transition-colors duration-150 hover:bg-input/60"
+              aria-label={t('room.copy', { code: room.code })}
+              dir="ltr"
             >
               {room.code} <Copy className="size-4" aria-hidden />
             </button>
-            <Button size="icon" variant="ghost" onClick={() => setConfirmClose(true)} aria-label="Close room" className="text-muted-foreground hover:text-destructive">
+            <Button size="icon" variant="ghost" onClick={() => setConfirmClose(true)} aria-label={t('room.close')} className="text-muted-foreground hover:text-destructive">
               <Power className="size-5" aria-hidden />
             </Button>
           </>
         ) : null}
       </header>
-      <p className="flex flex-wrap items-center justify-center gap-1.5 bg-muted/60 px-4 py-2 text-center text-xs text-muted-foreground">
+      <p className="flex flex-wrap items-center justify-center gap-1.5 bg-muted px-4 py-2 text-center text-xs text-muted-foreground">
         <Pin className="size-3.5 shrink-0" aria-hidden />
-        {room.isPrivate ? 'Private room — only people with the code can join.' : 'Anyone here can read what you write. Be kind.'}
-        {conditions.filter((c) => c !== 'Private').map((c) => (
-          <span key={c} className="rounded-full bg-card px-2 py-0.5 font-semibold ring-1 ring-border">
+        {room.isPrivate ? t('room.privateNote') : t('room.publicNote')}
+        {conditions.map((c) => (
+          <span key={c} className="rounded-md bg-card px-2 py-0.5 font-medium">
             {c}
           </span>
         ))}
       </p>
       {closed ? (
-        <p className="bg-destructive/10 px-4 py-2 text-center text-sm font-semibold text-destructive" role="status">
-          This room was closed by its host.
+        <p className="bg-primary-soft px-4 py-2 text-center text-sm font-semibold text-primary-text" role="status">
+          {t('room.closedBanner')}
         </p>
       ) : null}
 
@@ -463,58 +442,57 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
         }}
         className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 scrollbar-thin sm:px-6"
-        aria-label={`${room.title} messages`}
+        aria-label={t('room.messages', { title })}
         aria-live="polite"
       >
         {messages === null ? (
           Array.from({ length: 5 }, (_, i) => (
             <li key={i} className="flex gap-3">
               <Skeleton className="size-9 rounded-full" />
-              <Skeleton className="h-14 w-56 rounded-3xl" />
+              <Skeleton className="h-14 w-56 rounded-2xl" />
             </li>
           ))
         ) : messages.length === 0 ? (
           <li className="m-auto">
-            <EmptyState art="chat" title="It’s quiet in here" body="Be the first to say something." />
+            <EmptyState art="chat" title={t('room.quiet')} body={t('room.first')} />
           </li>
         ) : (
           <AnimatePresence initial={false}>
-            {messages.map((m) => (
-              <motion.li
-                key={m.id}
-                layout="position"
-                initial={{ opacity: 0, y: 12, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-                className={cn('flex max-w-[85%] gap-2.5', m.fromMe ? 'self-end flex-row-reverse' : 'self-start')}
+            {messages.map((msg) => (
+              <m.li
+                key={msg.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
+                className={cn('flex max-w-[85%] gap-2.5', msg.fromMe ? 'self-end flex-row-reverse' : 'self-start')}
               >
-                {m.fromMe ? null : (
-                  <button type="button" onClick={() => openProfile(m.sender.id)} className="self-end rounded-full" aria-label={`View ${m.sender.name}`}>
-                    <Avatar name={m.sender.name} src={m.sender.photoUrl} size={36} />
+                {msg.fromMe ? null : (
+                  <button type="button" onClick={() => openProfile(msg.sender.id)} className="self-end rounded-full" aria-label={t('room.view', { name: msg.sender.name })}>
+                    <Avatar name={msg.sender.name} src={msg.sender.photoUrl} size={36} />
                   </button>
                 )}
-                <div className={cn('flex min-w-0 flex-col gap-1', m.fromMe && 'items-end')}>
-                  {m.fromMe ? null : (
+                <div className={cn('flex min-w-0 flex-col gap-1', msg.fromMe && 'items-end')}>
+                  {msg.fromMe ? null : (
                     <button
                       type="button"
-                      onClick={() => openProfile(m.sender.id)}
-                      className="flex items-center gap-1.5 self-start px-1 text-xs font-semibold hover:underline"
+                      onClick={() => openProfile(msg.sender.id)}
+                      className="flex items-center gap-1.5 self-start rounded px-1 text-xs font-semibold hover:underline"
                     >
-                      {m.sender.name}
-                      <span className="font-normal text-muted-foreground">{m.sender.age}</span>
-                      <span aria-hidden>{flagEmoji(m.sender.country)}</span>
+                      {msg.sender.name}
+                      <span className="font-normal text-muted-foreground">{msg.sender.age}</span>
+                      <span aria-hidden>{flagEmoji(msg.sender.country)}</span>
                     </button>
                   )}
                   <p
                     className={cn(
-                      'rounded-3xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap',
-                      m.fromMe ? 'rounded-br-lg bg-brand text-primary-foreground' : 'rounded-bl-lg bg-muted',
+                      'rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap',
+                      msg.fromMe ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md bg-muted',
                     )}
                   >
-                    {m.text}
+                    {msg.text}
                   </p>
                 </div>
-              </motion.li>
+              </m.li>
             ))}
           </AnimatePresence>
         )}
@@ -523,25 +501,20 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
         onSend={send}
         allowMedia={false}
         disabled={!joined || closed}
-        disabledPlaceholder={closed ? 'This room was closed' : 'Joining…'}
-        placeholder={`Message ${room.title}`}
+        disabledPlaceholder={closed ? t('room.closedPlaceholder') : t('room.joining')}
+        placeholder={t('room.messageTo', { title })}
         maxLength={500}
       />
-      <Modal
-        open={confirmClose}
-        onClose={() => setConfirmClose(false)}
-        title="Close this room?"
-        description="Everyone in it can no longer write, and it disappears from the list. This can’t be undone."
-      >
+      <Modal open={confirmClose} onClose={() => setConfirmClose(false)} title={t('room.confirmTitle')} description={t('room.confirmBody')}>
         <div className="flex gap-3 p-6 pt-5">
-          <Button variant="secondary" className="flex-1" onClick={() => setConfirmClose(false)}>
-            Keep open
+          <Button variant="outline" className="flex-1" onClick={() => setConfirmClose(false)}>
+            {t('room.keepOpen')}
           </Button>
           <Button variant="danger" className="flex-1" loading={closing} onClick={() => void closeRoom()}>
-            Close room
+            {t('room.close')}
           </Button>
         </div>
       </Modal>
-    </motion.div>
+    </m.div>
   )
 }

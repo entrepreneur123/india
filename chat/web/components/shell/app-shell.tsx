@@ -1,32 +1,38 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { SWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
 import type { Entitlements, Profile } from '@/lib/backend'
-import { DICTIONARIES, type Lang, type TKey } from '@/lib/i18n'
 import { AppContext, type AppState, type Tab, type Thread } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
 import { NightContext } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { BottomTabs, Sidebar } from './nav'
 import { RightPanel } from './right-panel'
 import { RandomScreen } from '@/components/screens/random/random-screen'
-import { RoomsScreen } from '@/components/screens/rooms/rooms-screen'
-import { RecentScreen } from '@/components/screens/recent/recent-screen'
-import { MeScreen } from '@/components/screens/me/me-screen'
-import { SettingsScreen } from '@/components/screens/settings/settings-screen'
-import { ThreadScreen } from '@/components/screens/random/thread-screen'
-import { ProfileSheet } from '@/components/screens/profile/profile-sheet'
-import { Paywall } from '@/components/screens/paywall'
+import { MeScreen, Paywall, ProfileSheet, RecentScreen, RoomsScreen, SettingsScreen, ThreadScreen } from './lazy-screens'
 
-/** Tab change: fade and lift. Going to Random the light screen goes at once, so it never fades over the dark lobby. */
+/** Tab change: a short fade (Material "fade through"). Going to Random the light screen goes at once. */
 const TAB_MOTION = {
-  enter: { opacity: 0, y: 14 },
-  shown: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const } },
-  leave: (toRandom: boolean) =>
-    toRandom ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, y: -8, transition: { duration: 0.2 } },
+  enter: { opacity: 0 },
+  shown: { opacity: 1, transition: { duration: 0.15, ease: [0.2, 0, 0, 1] as const } },
+  leave: (toRandom: boolean) => (toRandom ? { opacity: 0, transition: { duration: 0 } } : { opacity: 0, transition: { duration: 0.09 } }),
+}
+
+function useMediaQuery(query: string) {
+  const [match, setMatch] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const update = () => setMatch(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [query])
+  return match
 }
 
 interface Props {
@@ -49,23 +55,29 @@ export function AppShell(props: Props) {
 function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOut }: Props) {
   const backend = useBackend()
   const toast = useToast()
+  const { t, lang, setLang } = useI18n()
   const [me, setMe] = useState(initialMe)
   const [tab, setTabState] = useState<Tab>('random')
-  const [lang, setLang] = useState<Lang>('en')
   const [thread, setThread] = useState<Thread | null>(null)
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
   const [paywallOpen, setPaywallOpen] = useState(false)
+  // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
+  const [paywallUsed, setPaywallUsed] = useState(false)
+  const [profileUsed, setProfileUsed] = useState(false)
   const [immersive, setImmersive] = useState(false)
   const [openRoomId, setOpenRoomId] = useState<string | null>(null)
   const [entitlements, setEntitlements] = useState(initialEntitlements)
   const [reportListeners] = useState(() => new Set<(id: string) => void>())
+  // The friends/rooms panel exists only on wide screens; phones never load its data.
+  const wide = useMediaQuery('(min-width: 1280px)')
 
-  // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes.
+  // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes
+  // (only while the tab is visible).
   useEffect(() => {
     const refresh = () => backend.entitlements().then(setEntitlements, () => undefined)
     const onVisible = () => document.visibilityState === 'visible' && void refresh()
     document.addEventListener('visibilitychange', onVisible)
-    const timer = setInterval(refresh, 5 * 60_000)
+    const timer = setInterval(() => document.visibilityState === 'visible' && void refresh(), 5 * 60_000)
     return () => {
       document.removeEventListener('visibilitychange', onVisible)
       clearInterval(timer)
@@ -90,8 +102,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
     [backend, toast],
   )
 
-  const t = useCallback((key: TKey) => DICTIONARIES[lang][key], [lang])
-
   const state = useMemo<AppState>(
     () => ({
       me,
@@ -104,8 +114,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       lang,
       setLang,
       t,
-      openProfile: (userId, opts) => setProfileTarget({ userId, matchId: opts?.matchId ?? null }),
-      openPaywall: () => setPaywallOpen(true),
+      openProfile: (userId, opts) => {
+        setProfileUsed(true)
+        setProfileTarget({ userId, matchId: opts?.matchId ?? null })
+      },
+      openPaywall: () => {
+        setPaywallUsed(true)
+        setPaywallOpen(true)
+      },
       openThread: (partner, matchId) => void openThread(partner, matchId),
       setImmersive,
       randomVisible: tab === 'random' && thread === null,
@@ -120,7 +136,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       },
       signedOut: onSignedOut,
     }),
-    [me, phone, entitlements, tab, setTab, lang, t, openThread, onSignedOut, thread, reportListeners],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners],
   )
 
   const randomVisible = tab === 'random' && !thread
@@ -130,10 +146,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   return (
     <AppContext.Provider value={state}>
       <NightContext.Provider value={night}>
-        <div
-          lang={lang === 'hi' ? 'hi' : 'en'}
-          className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}
-        >
+        <div className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}>
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
             <main className="relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
@@ -143,7 +156,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
               </div>
               <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
                 {!randomVisible && !thread ? (
-                  <motion.div
+                  <m.div
                     key={tab}
                     custom={randomVisible}
                     variants={TAB_MOTION}
@@ -152,44 +165,55 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     animate="shown"
                     exit="leave"
                   >
-                    {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
-                    {tab === 'recent' ? <RecentScreen /> : null}
-                    {tab === 'me' ? <MeScreen /> : null}
-                    {tab === 'settings' ? <SettingsScreen /> : null}
-                  </motion.div>
+                    <Suspense fallback={null}>
+                      {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
+                      {tab === 'recent' ? <RecentScreen /> : null}
+                      {tab === 'me' ? <MeScreen /> : null}
+                      {tab === 'settings' ? <SettingsScreen /> : null}
+                    </Suspense>
+                  </m.div>
                 ) : null}
               </AnimatePresence>
               <AnimatePresence>
                 {thread ? (
-                  <motion.div
+                  <m.div
                     key={thread.matchId}
                     className="absolute inset-0 z-20 flex flex-col bg-background"
-                    initial={{ opacity: 0, x: 40 }}
+                    initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 40 }}
-                    transition={{ type: 'spring', stiffness: 360, damping: 36 }}
+                    exit={{ opacity: 0, x: 24 }}
+                    transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
                   >
-                    <ThreadScreen thread={thread} onClose={() => setThread(null)} />
-                  </motion.div>
+                    <Suspense fallback={null}>
+                      <ThreadScreen thread={thread} onClose={() => setThread(null)} />
+                    </Suspense>
+                  </m.div>
                 ) : null}
               </AnimatePresence>
             </main>
-            <RightPanel
-              className="hidden xl:flex"
-              onOpenRoom={(id) => {
-                setOpenRoomId(id)
-                setTab('rooms')
-              }}
-            />
+            {wide ? (
+              <RightPanel
+                className="flex"
+                onOpenRoom={(id) => {
+                  setOpenRoomId(id)
+                  setTab('rooms')
+                }}
+              />
+            ) : null}
           </div>
           <BottomTabs hidden={hideTabs} />
         </div>
 
-        <ProfileSheet
-          target={profileTarget}
-          onClose={() => setProfileTarget(null)}
-        />
-        <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+        {profileUsed ? (
+          <Suspense fallback={null}>
+            <ProfileSheet target={profileTarget} onClose={() => setProfileTarget(null)} />
+          </Suspense>
+        ) : null}
+        {paywallUsed ? (
+          <Suspense fallback={null}>
+            <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+          </Suspense>
+        ) : null}
       </NightContext.Provider>
     </AppContext.Provider>
   )

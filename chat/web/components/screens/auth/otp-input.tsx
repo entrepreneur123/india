@@ -1,8 +1,9 @@
 'use client'
 
-import { motion } from 'motion/react'
+import * as m from 'motion/react-m'
 import { useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/components/i18n'
 
 const LENGTH = 6
 
@@ -19,6 +20,7 @@ export function OtpInput({
   invalid?: boolean
   disabled?: boolean
 }) {
+  const { t } = useI18n()
   const refs = useRef<(HTMLInputElement | null)[]>([])
   const digits = Array.from({ length: LENGTH }, (_, i) => value[i] ?? '')
 
@@ -30,12 +32,13 @@ export function OtpInput({
   }
 
   return (
-    <motion.div
+    <m.div
       className="flex justify-between gap-2"
-      animate={invalid ? { x: [0, -8, 8, -6, 6, 0] } : { x: 0 }}
-      transition={{ duration: 0.4 }}
+      dir="ltr"
+      animate={invalid ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+      transition={{ duration: 0.3 }}
       role="group"
-      aria-label="6-digit verification code"
+      aria-label={t('otp.group')}
     >
       {digits.map((d, i) => (
         <input
@@ -48,7 +51,7 @@ export function OtpInput({
           inputMode="numeric"
           autoComplete={i === 0 ? 'one-time-code' : 'off'}
           maxLength={LENGTH}
-          aria-label={`Digit ${i + 1}`}
+          aria-label={t('otp.digit', { n: i + 1 })}
           autoFocus={i === 0}
           onFocus={(e) => e.currentTarget.select()}
           onChange={(e) => {
@@ -86,15 +89,15 @@ export function OtpInput({
             if (pasted) commit(pasted, pasted.length)
           }}
           className={cn(
-            'h-14 w-full min-w-0 rounded-2xl border bg-card text-center text-xl font-bold tabular-nums transition-[border-color,box-shadow,transform] focus:scale-105 focus:outline-none',
+            'h-14 w-full min-w-0 rounded-xl border bg-card text-center text-xl font-semibold tabular-nums transition-[border-color,box-shadow] duration-150 focus:outline-none',
             invalid
               ? 'border-destructive'
               : d
-                ? 'border-primary/60'
-                : 'border-input focus:border-primary focus:shadow-[0_0_0_4px_rgb(255_61_104/0.14)]',
+                ? 'border-foreground/40 focus:border-primary focus:ring-1 focus:ring-primary'
+                : 'border-input focus:border-primary focus:ring-1 focus:ring-primary',
           )}
         />
       ))}
-    </motion.div>
+    </m.div>
   )
 }
