@@ -351,15 +351,16 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
         () => void backend.joinRoom(room.id).catch((err) => alive && errorCode(err) === 'room_closed' && setClosed(true)),
         HEARTBEAT_MS,
       )
-    })()
-    backend.roomHistory(room.id).then(
-      (h) => alive && add(h),
-      (err) => {
+      // History only after joining: the server shows a room's messages to the people in it.
+      try {
+        const h = await backend.roomHistory(room.id)
+        if (alive) add(h)
+      } catch (err) {
         if (!alive) return
         setMessages((m) => m ?? [])
         toast.error(err)
-      },
-    )
+      }
+    })()
     const unsubscribe = backend.subscribeRoom(room.id, (m) => alive && add([m]))
     return () => {
       alive = false
