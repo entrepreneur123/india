@@ -56,6 +56,10 @@ jobs:
       SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
       ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
       CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
+      GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
+      BING_SITE_VERIFICATION: ${{ vars.BING_SITE_VERIFICATION }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID }}
       HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
       FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -125,18 +129,21 @@ jobs:
               # Runs every pass (cheap when nothing is new), so a failed send is retried a minute later.
               # Wake phones only once the new feed is live on the mirror they read first.
               python -m lottery_pipeline.push --out ../public --wait-url https://entrepreneur123.github.io/india/v2/today.json
-              if [ -f ../public/push-state.json ] && git -C ../public add push-state.json \
-                && ! git -C ../public diff --cached --quiet; then
-                git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
-                  commit -q -m "push state" && git -C ../public push -q origin data
-              fi
+            fi
+            python -m lottery_pipeline.telegram --out ../public --site-url "$SITE_URL"   # no-op without a bot token
+            for f in push-state.json telegram-state.json; do if [ -f "../public/$f" ]; then git -C ../public add "$f"; fi; done
+            if ! git -C ../public diff --cached --quiet; then
+              git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
+                commit -q -m "announce state" && git -C ../public push -q origin data
             fi
             [ "$changed" = 1 ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
             python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
-              npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" \
-                --branch main --commit-dirty=true || echo "::warning::Cloudflare deploy failed"
+              deploy() { npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
+              # First deploy: create the project (free plan) if it does not exist yet.
+              deploy || { npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
+                || echo "::warning::Cloudflare deploy failed"
             fi
           }
           args="--out ../public --backfill-days ${{ steps.mode.outputs.backfill }}"

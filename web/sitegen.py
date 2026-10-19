@@ -7,7 +7,8 @@ page-level texts below, so app and site say the same thing.
 
     python web/sitegen.py --data public --out public --base-url https://example.in
 Optional environment: ADSENSE_CLIENT (ca-pub-…) adds ad slots and ads.txt;
-CF_BEACON_TOKEN adds Cloudflare Web Analytics (cookie-free).
+CF_BEACON_TOKEN adds Cloudflare Web Analytics (cookie-free); GOOGLE_SITE_VERIFICATION and
+BING_SITE_VERIFICATION add the ownership meta tags for Search Console / Bing Webmaster Tools.
 """
 from __future__ import annotations
 
@@ -198,6 +199,8 @@ class Site:
         self.dates = sorted(self.days, reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
         self.beacon = os.environ.get("CF_BEACON_TOKEN", "").strip()
+        self.verify = {"google-site-verification": os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip(),
+                       "msvalidate.01": os.environ.get("BING_SITE_VERIFICATION", "").strip()}
         self.pages: list[tuple[str, dict[str, str]]] = []  # (key, {lang: path}) for the sitemap
         self._ads = 0
         self._keys: set[str] = set()
@@ -279,6 +282,7 @@ class Site:
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="website"><meta property="og:url" content="{esc(self.abs(lang, path))}">
 <meta name="theme-color" content="#b3261e">
+{"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
 {ads_head}{ld_html}
 </head>

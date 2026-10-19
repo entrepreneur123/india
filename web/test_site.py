@@ -75,3 +75,10 @@ def test_html_tags_are_balanced(tmp_path, monkeypatch):
 
     for f in out.rglob("*.html"):
         p = P(); p.feed(f.read_text()); assert p.stack == [], f
+
+
+def test_search_console_verification_tag(tmp_path, monkeypatch):
+    monkeypatch.setenv("GOOGLE_SITE_VERIFICATION", "abc123")
+    out = build(tmp_path, monkeypatch)
+    assert '<meta name="google-site-verification" content="abc123">' in (out / "index.html").read_text()
+    assert "msvalidate.01" not in (out / "index.html").read_text()
