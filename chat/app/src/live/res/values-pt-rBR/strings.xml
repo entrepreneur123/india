@@ -1,0 +1,7 @@
+<resources>
+    <string name="allow_camera">Permita câmera e microfone para começar a chamada</string>
+    <string name="connecting">Conectando…</string>
+    <string name="waiting_video">Aguardando o vídeo de %1$s…</string>
+    <string name="reconnecting">Reconectando…</string>
+    <string name="call_failed">Não deu para conectar a chamada. Toque em Encerrar e tente de novo.</string>
+</resources>

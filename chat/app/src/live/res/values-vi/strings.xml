@@ -1,0 +1,7 @@
+<resources>
+    <string name="allow_camera">Cho phép camera và micro để bắt đầu cuộc gọi</string>
+    <string name="connecting">Đang kết nối…</string>
+    <string name="waiting_video">Đang chờ video của %1$s…</string>
+    <string name="reconnecting">Đang kết nối lại…</string>
+    <string name="call_failed">Không kết nối được cuộc gọi. Chạm Kết thúc và thử lại.</string>
+</resources>

@@ -318,4 +318,9 @@
     <string name="room_empty_title">It\'s quiet here</string>
     <string name="room_empty_owner">Share the code to invite people, then say hi.</string>
     <string name="room_empty">Be the first to say hi.</string>
+    <string name="language_system">Phone\'s language</string>
+    <string name="block">Block</string>
+    <string name="block_title">Block %1$s?</string>
+    <string name="block_text">You won\'t see each other or be matched again.</string>
+    <string name="msg_blocked">%1$s is blocked</string>
 </resources>
