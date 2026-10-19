@@ -10,10 +10,12 @@ import { ToastProvider, useToast } from '@/components/ui/toast'
 import { Logo } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { Splash } from '@/components/splash'
+import { ScreenBoundary } from '@/components/ui/screen-boundary'
+import { retryImport } from '@/lib/retry-import'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
-const loadAuth = () => import('@/components/screens/auth/auth-screen')
-const loadShell = () => import('@/components/shell/app-shell')
+const loadAuth = () => retryImport(() => import('@/components/screens/auth/auth-screen'))
+const loadShell = () => retryImport(() => import('@/components/shell/app-shell'))
 const AuthScreen = lazy(() => loadAuth().then((mod) => ({ default: mod.AuthScreen })))
 const AppShell = lazy(() => loadShell().then((mod) => ({ default: mod.AppShell })))
 // Motion's animation code is not needed for the first screen: fetch it after the page has loaded, so on a slow
@@ -65,9 +67,11 @@ function Localized() {
   return (
     <BackendProvider fallback={splash}>
       <ToastProvider>
-        <Suspense fallback={splash}>
-          <Root />
-        </Suspense>
+        <ScreenBoundary>
+          <Suspense fallback={splash}>
+            <Root />
+          </Suspense>
+        </ScreenBoundary>
       </ToastProvider>
     </BackendProvider>
   )

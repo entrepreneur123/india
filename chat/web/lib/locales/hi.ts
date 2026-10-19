@@ -8,6 +8,8 @@ const hi: Dict = {
   'common.save': 'सेव करें',
   'common.tryAgain': 'फिर कोशिश करें',
   'common.checkConnection': 'अपना इंटरनेट देखें और फिर कोशिश करें।',
+  'net.offline': 'इंटरनेट नहीं है। फिर से जुड़ रहे हैं…',
+  'error.screenTitle': 'यह स्क्रीन लोड नहीं हो सकी',
   'common.loading': 'yaari खुल रहा है',
   'common.plus': 'Yaari Plus',
 
@@ -120,6 +122,7 @@ const hi: Dict = {
   'lobby.videoAgree': 'वीडियो सिर्फ़ दोनों की हाँ पर',
   'lobby.reportLeave': 'कभी भी रिपोर्ट करें और निकलें',
   'matching.title': 'कोई ढूँढ रहे हैं…',
+  'matching.reconnecting': 'नेटवर्क कमज़ोर है। कोशिश जारी है…',
   'matching.scope': '{who} · पूरी दुनिया',
   'matching.cancel': 'रद्द करें',
   'matching.stopped': 'आप दूर थे, इसलिए खोज रोक दी गई',

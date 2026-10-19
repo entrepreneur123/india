@@ -45,6 +45,18 @@ async function chat(db: SupabaseClient, name: string, matchId: string) {
     log(name, "matched the other bot, left");
     return;
   }
+  // Like the apps: say "I'm in this chat" on the match's presence channel, so a partner's app can tell when the
+  // bot is gone (the apps end a random chat whose partner never connects or disconnects for good).
+  const presence = db.channel(`typing-${matchId}`, { config: { presence: { key: user!.id } } });
+  presence.subscribe((status) => { if (status === "SUBSCRIBED") void presence.track({ user: user!.id }); });
+  try {
+    await talk(db, name, matchId, user!.id);
+  } finally {
+    await db.removeChannel(presence);
+  }
+}
+
+async function talk(db: SupabaseClient, name: string, matchId: string, me: string) {
   await db.from("messages").insert({ match_id: matchId, body: `Hi! I'm ${name}, a test bot. Send me anything, or start a video call.` });
   let lastId = 0;
   let video: Deno.ChildProcess | null = null;
@@ -52,7 +64,7 @@ async function chat(db: SupabaseClient, name: string, matchId: string) {
   while (Date.now() < stopAt) {
     const { data: m } = await db.from("matches").select("ended_at,video_status,video_requested_by").eq("id", matchId).maybeSingle();
     if (!m || m.ended_at) { stopVideo(); log(name, "partner left"); return; }
-    if (m.video_status === "requested" && m.video_requested_by !== user!.id) {
+    if (m.video_status === "requested" && m.video_requested_by !== me) {
       const { error } = await db.rpc("respond_video", { p_match: matchId, p_accept: true });
       log(name, `video request: ${error ? error.message : "accepted"}`);
       const { data: t, error: te } = error ? { data: null, error } : await db.functions.invoke("video-token", { body: { match_id: matchId } });
@@ -65,7 +77,7 @@ async function chat(db: SupabaseClient, name: string, matchId: string) {
       .eq("match_id", matchId).gt("id", lastId).order("id");
     for (const x of msgs ?? []) {
       lastId = x.id;
-      if (x.sender === user!.id) continue;
+      if (x.sender === me) continue;
       const got = x.media_kind ? `your ${x.media_kind}` : `"${x.body}"`;
       log(name, `got ${got}`);
       await db.from("messages").insert({ match_id: matchId, body: `${name} got ${got} 👍` });

@@ -2,17 +2,29 @@
 
 import { lazy } from 'react'
 import type { Tab } from '@/components/app-state'
+import { retryImport } from '@/lib/retry-import'
 
 // Screens that are not on screen at start are separate downloads, fetched when first needed (or when the
 // pointer reaches their tab, so they are usually ready by the time of the click).
+// A failed download is retried (see retryImport), and once the app is idle every screen is fetched ahead
+// (prefetchScreens), so switching tabs later works even if the network drops.
 const loaders = {
-  rooms: () => import('@/components/screens/rooms/rooms-screen'),
-  recent: () => import('@/components/screens/recent/recent-screen'),
-  me: () => import('@/components/screens/me/me-screen'),
-  settings: () => import('@/components/screens/settings/settings-screen'),
-  thread: () => import('@/components/screens/random/thread-screen'),
-  profile: () => import('@/components/screens/profile/profile-sheet'),
-  paywall: () => import('@/components/screens/paywall'),
+  rooms: () => retryImport(() => import('@/components/screens/rooms/rooms-screen')),
+  recent: () => retryImport(() => import('@/components/screens/recent/recent-screen')),
+  me: () => retryImport(() => import('@/components/screens/me/me-screen')),
+  settings: () => retryImport(() => import('@/components/screens/settings/settings-screen')),
+  thread: () => retryImport(() => import('@/components/screens/random/thread-screen')),
+  profile: () => retryImport(() => import('@/components/screens/profile/profile-sheet')),
+  paywall: () => retryImport(() => import('@/components/screens/paywall')),
+  chat: () => retryImport(() => import('@/components/screens/chat/chat-view')),
+  roomDialogs: () => retryImport(() => import('@/components/screens/rooms/room-dialogs')),
+}
+
+/** Fetches every screen in the background, unless the user asked the browser to save data. */
+export function prefetchScreens() {
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+  if (saveData) return
+  for (const load of Object.values(loaders)) void load().catch(() => undefined)
 }
 
 export function preloadScreen(name: keyof typeof loaders | Tab) {

@@ -8,6 +8,8 @@ const vi: Dict = {
   'common.save': 'Lưu',
   'common.tryAgain': 'Thử lại',
   'common.checkConnection': 'Kiểm tra kết nối mạng rồi thử lại.',
+  'net.offline': 'Không có mạng. Đang kết nối lại…',
+  'error.screenTitle': 'Không tải được màn hình này',
   'common.loading': 'Đang mở yaari',
   'common.plus': 'Yaari Plus',
 
@@ -120,6 +122,7 @@ const vi: Dict = {
   'lobby.videoAgree': 'Video chỉ khi cả hai đồng ý',
   'lobby.reportLeave': 'Báo cáo và rời đi bất cứ lúc nào',
   'matching.title': 'Đang tìm người…',
+  'matching.reconnecting': 'Kết nối yếu. Vẫn đang thử…',
   'matching.scope': '{who} · Toàn thế giới',
   'matching.cancel': 'Hủy',
   'matching.stopped': 'Đã dừng tìm kiếm khi bạn rời đi',

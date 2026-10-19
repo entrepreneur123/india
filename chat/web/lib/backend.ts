@@ -152,11 +152,18 @@ export interface Backend {
   deleteAccount(): Promise<void>
   /** Phone number of the signed-in account, shown in Settings. */
   myPhone(): Promise<string | null>
-  findMatch(target: Target): Promise<Match | null> // null = still queued, UI calls again every 2 s
+  /** Null = still queued; the UI calls again every 2 s. `lang` (the app language) is preferred in a partner. */
+  findMatch(target: Target, lang?: string): Promise<Match | null>
   cancelSearch(): Promise<void>
+  /** While searching: called when the server pairs us, so the UI can ask again at once. Returns the stop function. */
+  matchSignals(on: () => void): () => void
   /** Ends a match the user never saw (search cancelled while it was being made), once the exit lock allows. */
   abandon(matchId: string): void
-  subscribe(matchId: string, on: (e: MatchEvent) => void): () => void
+  /**
+   * Live updates for one chat. With `live` (an open random chat) it also reports `partner_left` when the
+   * partner's app never connects or disconnects for good.
+   */
+  subscribe(matchId: string, on: (e: MatchEvent) => void, opts?: { live?: boolean }): () => void
   history(matchId: string): Promise<Message[]>
   sendTyping(matchId: string): void
   send(matchId: string, text: string | null, media: File | null): Promise<Message>

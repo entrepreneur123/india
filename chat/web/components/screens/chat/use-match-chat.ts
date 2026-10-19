@@ -85,7 +85,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           setTyping(false)
           break
       }
-    })
+    }, { live })
 
     return () => {
       alive = false

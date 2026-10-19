@@ -14,7 +14,8 @@ import { cn } from '@/lib/utils'
 import { BottomTabs, Sidebar } from './nav'
 import { RightPanel } from './right-panel'
 import { RandomScreen } from '@/components/screens/random/random-screen'
-import { MeScreen, Paywall, ProfileSheet, RecentScreen, RoomsScreen, SettingsScreen, ThreadScreen } from './lazy-screens'
+import { MeScreen, Paywall, prefetchScreens, ProfileSheet, RecentScreen, RoomsScreen, SettingsScreen, ThreadScreen } from './lazy-screens'
+import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
 /** Tab change: a short fade (Material "fade through"). Going to Random the light screen goes at once. */
 const TAB_MOTION = {
@@ -83,6 +84,13 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       clearInterval(timer)
     }
   }, [backend])
+
+  // Once the app has settled, fetch every other screen in the background: later tab switches are instant and
+  // still work if the connection drops.
+  useEffect(() => {
+    const id = setTimeout(prefetchScreens, 3000)
+    return () => clearTimeout(id)
+  }, [])
 
   const setTab = useCallback((next: Tab) => {
     setThread(null)
@@ -165,12 +173,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     animate="shown"
                     exit="leave"
                   >
-                    <Suspense fallback={null}>
-                      {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
-                      {tab === 'recent' ? <RecentScreen /> : null}
-                      {tab === 'me' ? <MeScreen /> : null}
-                      {tab === 'settings' ? <SettingsScreen /> : null}
-                    </Suspense>
+                    <ScreenBoundary key={tab}>
+                      <Suspense fallback={<ScreenLoading />}>
+                        {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
+                        {tab === 'recent' ? <RecentScreen /> : null}
+                        {tab === 'me' ? <MeScreen /> : null}
+                        {tab === 'settings' ? <SettingsScreen /> : null}
+                      </Suspense>
+                    </ScreenBoundary>
                   </m.div>
                 ) : null}
               </AnimatePresence>
@@ -184,9 +194,11 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     exit={{ opacity: 0, x: 24 }}
                     transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
                   >
-                    <Suspense fallback={null}>
-                      <ThreadScreen thread={thread} onClose={() => setThread(null)} />
-                    </Suspense>
+                    <ScreenBoundary>
+                      <Suspense fallback={<ScreenLoading />}>
+                        <ThreadScreen thread={thread} onClose={() => setThread(null)} />
+                      </Suspense>
+                    </ScreenBoundary>
                   </m.div>
                 ) : null}
               </AnimatePresence>
@@ -205,14 +217,18 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         </div>
 
         {profileUsed ? (
-          <Suspense fallback={null}>
-            <ProfileSheet target={profileTarget} onClose={() => setProfileTarget(null)} />
-          </Suspense>
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <ProfileSheet target={profileTarget} onClose={() => setProfileTarget(null)} />
+            </Suspense>
+          </ScreenBoundary>
         ) : null}
         {paywallUsed ? (
-          <Suspense fallback={null}>
-            <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
-          </Suspense>
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+            </Suspense>
+          </ScreenBoundary>
         ) : null}
       </NightContext.Provider>
     </AppContext.Provider>

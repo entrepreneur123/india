@@ -408,7 +408,7 @@ export class MockBackend implements Backend {
 
   /* ---------- random matching ---------- */
 
-  async findMatch(target: Target) {
+  async findMatch(target: Target, _lang?: string) {
     this.requireMe()
     if (target !== 'any' && !this.ent.premium && !this.ent.genderPass) throw new BackendError('premium_required')
     await wait(jitter(300, 700))
@@ -433,6 +433,10 @@ export class MockBackend implements Backend {
 
   abandon(matchId: string) {
     setTimeout(() => void this.leave(matchId).catch(() => undefined), FREE_EXIT_LOCK_MS + 500)
+  }
+
+  matchSignals() {
+    return () => {}
   }
 
   async cancelSearch() {

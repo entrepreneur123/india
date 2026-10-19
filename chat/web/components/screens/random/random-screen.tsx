@@ -16,14 +16,21 @@ import { Segmented } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { ScreenBoundary } from '@/components/ui/screen-boundary'
+import { retryImport } from '@/lib/retry-import'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
-const loadChat = () => import('@/components/screens/chat/chat-view')
+const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
 const ChatView = lazy(() => loadChat().then((mod) => ({ default: mod.ChatView })))
 
 const POLL_MS = 2000
 /** A search in a background tab stops after this long (the server drops a queue spot after 20 s anyway). */
 const HIDDEN_CANCEL_MS = 60_000
+/** Errors that retrying can't fix; anything else (a weak network, a slow server) is retried. */
+const RULE_ERRORS = new Set(['premium_required', 'banned', 'no_profile', 'not_signed_in', 'bad_target', 'under_18', 'not_allowed'])
+/** Waits between attempts while requests keep failing; the search gives up after a minute of failures. */
+const RETRY_MS = [2000, 4000, 8000, 10_000]
+const GIVE_UP_MS = 60_000
 
 type Phase = 'lobby' | 'matching' | 'chat'
 type Live = Match & { startedAt: number }
@@ -37,18 +44,21 @@ const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity
 export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { me, canChooseGender, openPaywall, setImmersive, setTab } = useApp()
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
   const [choiceOpen, setChoiceOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
+  /** The last search request failed (weak network); it is being retried. */
+  const [reconnecting, setReconnecting] = useState(false)
   // Each search has a number; only the newest one may open a chat (a reply can arrive after Cancel).
   const generation = useRef(0)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const searching = useRef(false)
   const tickRef = useRef<(() => void) | null>(null)
+  const stopSignals = useRef<(() => void) | null>(null)
   const hiddenAt = useRef<number | null>(null)
   const hiddenTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const stoppedWhileHidden = useRef(false)
@@ -60,26 +70,52 @@ export function RandomScreen({ active }: { active: boolean }) {
     if (!canChooseGender) setTarget('any') // the pass or subscription ran out
   }, [canChooseGender])
 
+  const endSignals = () => {
+    stopSignals.current?.()
+    stopSignals.current = null
+  }
+
   const startMatching = useCallback(() => {
     void loadChat().catch(() => undefined)
     const g = ++generation.current
     searching.current = true
+    setReconnecting(false)
     setPhase('matching')
+    let busy = false // one request at a time (the poll timer and a match signal can both ask)
+    let failures = 0
+    let failingSince: number | null = null
     const tick = async () => {
-      if (g !== generation.current) return
+      if (g !== generation.current || busy) return
       if (pageHidden()) return // paused; the visibility listener resumes (or cancels) the search
+      busy = true
+      clearTimeout(timer.current)
       let m: Match | null
       try {
-        m = await backend.findMatch(target)
+        m = await backend.findMatch(target, lang)
       } catch (err) {
+        busy = false
         if (g !== generation.current) return
+        // A weak network or a slow server: keep trying with growing waits, for up to a minute.
+        const code = errorCode(err)
+        failingSince ??= Date.now()
+        if (!RULE_ERRORS.has(code) && Date.now() - failingSince < GIVE_UP_MS) {
+          setReconnecting(true)
+          timer.current = setTimeout(() => void tick(), RETRY_MS[Math.min(failures++, RETRY_MS.length - 1)])
+          return
+        }
         searching.current = false
         tickRef.current = null
+        endSignals()
+        setReconnecting(false)
         setPhase('lobby')
-        if (errorCode(err) === 'premium_required') openPaywall()
+        if (code === 'premium_required') openPaywall()
         else toast.error(err)
         return
       }
+      busy = false
+      failures = 0
+      failingSince = null
+      setReconnecting(false)
       if (g !== generation.current) {
         if (m) backend.abandon(m.id) // paired just as the user cancelled: end it so the other person isn't left waiting
         // A request that landed after Cancel put us back in the queue: take us out again (unless searching anew).
@@ -89,6 +125,7 @@ export function RandomScreen({ active }: { active: boolean }) {
       if (m) {
         searching.current = false
         tickRef.current = null
+        endSignals()
         setMatch({ ...m, startedAt: Date.now() })
         setPhase('chat')
         if (!visible.current) {
@@ -100,13 +137,18 @@ export function RandomScreen({ active }: { active: boolean }) {
       timer.current = setTimeout(() => void tick(), POLL_MS)
     }
     tickRef.current = () => void tick()
+    // Someone paired with us: ask now instead of at the next 2 s poll.
+    endSignals()
+    stopSignals.current = backend.matchSignals(() => void tick())
     void tick()
-  }, [backend, target, openPaywall, toast, setTab, t])
+  }, [backend, target, lang, openPaywall, toast, setTab, t])
 
   const cancelMatching = useCallback(() => {
     generation.current++
     searching.current = false
     tickRef.current = null
+    endSignals()
+    setReconnecting(false)
     clearTimeout(timer.current)
     setPhase('lobby')
     backend.cancelSearch().catch(() => undefined)
@@ -154,6 +196,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     () => () => {
       generation.current++
       searching.current = false
+      endSignals()
       clearTimeout(timer.current)
       clearTimeout(hiddenTimer.current)
       backend.cancelSearch().catch(() => undefined)
@@ -172,20 +215,24 @@ export function RandomScreen({ active }: { active: boolean }) {
     if (match?.partner.id === id) closeChat()
   })
 
-  const leave = async (next: boolean) => {
-    if (!match) return
+  const leavingRef = useRef(false) // a double tap must not leave twice (or start two searches)
+  /** `ended`: the partner already left, so the chat is over on the server too and nothing needs sending. */
+  const leave = async (next: boolean, ended = false) => {
+    if (!match || leavingRef.current) return
+    leavingRef.current = true
     setLeaving(true)
     try {
-      await backend.leave(match.id)
+      if (!ended) await backend.leave(match.id)
     } catch (err) {
       if (errorCode(err) !== 'not_found') {
         // "not_found": the chat no longer exists (the other person deleted their account) — that is done too.
         toast.error(err)
-        setLeaving(false)
         return
       }
+    } finally {
+      leavingRef.current = false
+      setLeaving(false)
     }
-    setLeaving(false)
     closeChat()
     if (next) startMatching()
   }
@@ -252,20 +299,23 @@ export function RandomScreen({ active }: { active: boolean }) {
             </div>
           </m.section>
         ) : phase === 'matching' ? (
-          <Matching key="matching" target={target} onCancel={cancelMatching} />
+          <Matching key="matching" target={target} reconnecting={reconnecting} onCancel={cancelMatching} />
         ) : match ? (
           <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
-            <Suspense fallback={<Matching target={target} onCancel={() => undefined} />}>
-              <ChatView
-                matchId={match.id}
-                partner={match.partner}
-                mode="random"
-                visible={active}
-                startedAt={match.startedAt}
-                onExit={() => setChoiceOpen(true)}
-                onReported={closeChat}
-              />
-            </Suspense>
+            <ScreenBoundary>
+              <Suspense fallback={<Matching target={target} onCancel={() => undefined} />}>
+                <ChatView
+                  matchId={match.id}
+                  partner={match.partner}
+                  mode="random"
+                  visible={active}
+                  startedAt={match.startedAt}
+                  onExit={() => setChoiceOpen(true)}
+                  onEnd={(next) => void leave(next, true)}
+                  onReported={closeChat}
+                />
+              </Suspense>
+            </ScreenBoundary>
             <MatchReveal key={match.id} partner={match.partner} />
           </m.div>
         ) : null}
@@ -294,7 +344,7 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
   )
 }
 
-function Matching({ target, onCancel }: { target: Target; onCancel: () => void }) {
+function Matching({ target, reconnecting = false, onCancel }: { target: Target; reconnecting?: boolean; onCancel: () => void }) {
   const { me } = useApp()
   const { t } = useI18n()
   const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
@@ -318,6 +368,7 @@ function Matching({ target, onCancel }: { target: Target; onCancel: () => void }
       </div>
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
+      <p className="mt-2 h-5 text-sm text-muted-foreground">{reconnecting ? t('matching.reconnecting') : null}</p>
       <Button variant="outline" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
         {t('matching.cancel')}
       </Button>

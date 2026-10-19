@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, Flag, Video } from 'lucide-react'
+import { ArrowLeft, Flag, Shuffle, Undo2, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { retryImport } from '@/lib/retry-import'
 import { Composer } from './composer'
 import { ExitButton } from './exit-button'
 import { MessageBubble, TypingBubble } from './message-bubble'
@@ -22,7 +23,7 @@ import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
-const VideoCall = lazy(() => import('@/components/video/video-call').then((mod) => ({ default: mod.VideoCall })))
+const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
 
 /**
  * One conversation. `random` is a live random match (exit lock, video, partner-left); `thread` is a message
@@ -35,6 +36,7 @@ export function ChatView({
   visible = true,
   startedAt,
   onExit,
+  onEnd,
   onClose,
   onReported,
 }: {
@@ -47,6 +49,8 @@ export function ChatView({
   startedAt?: number
   /** Random only: the X was pressed after the lock (or the partner already left). */
   onExit?: () => void
+  /** Random only, after the partner left: straight to the next person (`true`) or back to the lobby. */
+  onEnd?: (next: boolean) => void
   /** Thread only: back arrow. */
   onClose?: () => void
   /** The person was reported (and blocked); the chat is over. */
@@ -222,9 +226,20 @@ export function ChatView({
 
         {ended ? (
           <div className="flex justify-center gap-3 border-t border-border px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <Button variant="brand" size="lg" onClick={() => onExit?.()}>
-              {t('chat.continue')}
-            </Button>
+            {onEnd ? (
+              <>
+                <Button variant="secondary" size="lg" onClick={() => onEnd(false)}>
+                  <Undo2 className="size-5" aria-hidden /> {t('leave.lobby')}
+                </Button>
+                <Button variant="brand" size="lg" onClick={() => onEnd(true)} autoFocus>
+                  <Shuffle className="size-5" aria-hidden /> {t('leave.next')}
+                </Button>
+              </>
+            ) : (
+              <Button variant="brand" size="lg" onClick={() => onExit?.()}>
+                {t('chat.continue')}
+              </Button>
+            )}
           </div>
         ) : (
           <Composer

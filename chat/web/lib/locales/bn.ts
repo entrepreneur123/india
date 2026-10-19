@@ -8,6 +8,8 @@ const bn: Dict = {
   'common.save': 'সেভ করুন',
   'common.tryAgain': 'আবার চেষ্টা করুন',
   'common.checkConnection': 'ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।',
+  'net.offline': 'ইন্টারনেট নেই। আবার যুক্ত হচ্ছে…',
+  'error.screenTitle': 'এই স্ক্রিনটি লোড হয়নি',
   'common.loading': 'yaari খুলছে',
   'common.plus': 'Yaari Plus',
 
@@ -120,6 +122,7 @@ const bn: Dict = {
   'lobby.videoAgree': 'ভিডিও শুধু দুজনে রাজি হলে',
   'lobby.reportLeave': 'যখন খুশি রিপোর্ট করে বেরিয়ে যান',
   'matching.title': 'কাউকে খুঁজছি…',
+  'matching.reconnecting': 'নেটওয়ার্ক দুর্বল। চেষ্টা চলছে…',
   'matching.scope': '{who} · সারা পৃথিবী',
   'matching.cancel': 'বাতিল',
   'matching.stopped': 'আপনি দূরে ছিলেন, তাই খোঁজা বন্ধ করা হয়েছে',

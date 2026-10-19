@@ -20,9 +20,10 @@ import { Composer } from '@/components/screens/chat/composer'
 import { Modal } from '@/components/ui/modal'
 import { refusalLabel, roomAbout, roomConditions, roomTitle } from './room-text'
 import { cn } from '@/lib/utils'
+import { retryImport } from '@/lib/retry-import'
 
 // The create / enter-code forms download when first opened.
-const loadDialogs = () => import('./room-dialogs')
+const loadDialogs = () => retryImport(() => import('./room-dialogs'))
 const CreateRoomDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.CreateRoomDialog })))
 const JoinCodeDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.JoinCodeDialog })))
 

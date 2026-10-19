@@ -32,8 +32,15 @@ const MAX_VIDEO_BYTES = 25 * 1024 * 1024
 const SIGNED_URL_SECONDS = 12 * 3600
 /** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
 const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
+/** A request that hangs on a weak network fails after this long, so the screen can retry (uploads get longer). */
+const REQUEST_TIMEOUT_MS = 15_000
+const UPLOAD_TIMEOUT_MS = 120_000
+/** Random chats: the partner's app must connect to the chat within this long, or the chat ends. */
+const PARTNER_JOIN_TIMEOUT_MS = 12_000
+/** Random chats: after the partner's app disconnects, how long they have to come back. Same values as the app. */
+const PARTNER_GRACE_MS = 20_000
 const CODES = [
-  'exit_locked', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
+  'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size',
 ]
@@ -62,6 +69,19 @@ type PostRow = { id: string; user_id: string; body: string; image_path: string |
 type RoomMessageRow = {
   id: number; room_id: string; sender: string; sender_name: string; sender_gender: string; sender_age: number
   sender_photo: string | null; sender_country: string | null; body: string; created_at: string
+}
+
+function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
+  const upload = url.includes('/storage/v1/object/') && (init?.method ?? 'GET') !== 'GET'
+  if (typeof AbortSignal.timeout !== 'function') return fetch(input, init)
+  const timeout = AbortSignal.timeout(upload ? UPLOAD_TIMEOUT_MS : REQUEST_TIMEOUT_MS)
+  let signal: AbortSignal = timeout
+  if (init?.signal) {
+    // Without AbortSignal.any (older browsers) the caller's own signal wins and there is no timeout.
+    signal = typeof AbortSignal.any === 'function' ? AbortSignal.any([init.signal, timeout]) : init.signal
+  }
+  return fetch(input, { ...init, signal })
 }
 
 /** Database and function errors carry the rule name in their text ("exit_locked", ...). */
@@ -114,18 +134,38 @@ async function compressImage(file: File): Promise<Blob> {
   )
 }
 
+type TypingListener = { typing: (from: string) => void; presence: (connected: boolean, partnerHere: boolean) => void }
+type TypingHub = {
+  channel: RealtimeChannel
+  listeners: Set<TypingListener>
+  /** Our own connection to the channel is up. */
+  connected: boolean
+  /** The partner's app is in the chat right now (presence). */
+  partnerHere: boolean
+  /** The partner's presence was seen at least once (only then does a disconnect start the grace period). */
+  presenceSeen: boolean
+}
+
 export class SupabaseBackend implements Backend {
   private client: SupabaseClient
   /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
   private signedUrls = new Map<string, { url: string; reuseUntil: number }>()
-  /** One typing channel per match, shared by every view of it (realtime-js reuses a channel per topic). */
-  private typing = new Map<string, { channel: RealtimeChannel; listeners: Set<(from: string) => void> }>()
+  /**
+   * One channel per match for typing signals and presence ("my app is in this chat"), shared by every view of it
+   * (realtime-js reuses a channel per topic). The Android app uses the same topic and presence key (the user id).
+   */
+  private typing = new Map<string, TypingHub>()
+  /** Newest message id from the last complete fetch of a chat or room; re-syncs ask only for newer ones. */
+  private newest = new Map<string, number>()
   /** Matches the user never saw, waiting to be ended; opening one again (the server can hand it back) keeps it. */
   private abandoned = new Set<string>()
   private userId: string | null = null
 
   constructor(url: string, anonKey: string) {
-    this.client = createClient(url, anonKey, { auth: { persistSession: true, storageKey: 'yaari_auth' } })
+    this.client = createClient(url, anonKey, {
+      auth: { persistSession: true, storageKey: 'yaari_auth' },
+      global: { fetch: fetchWithTimeout },
+    })
     this.client.auth.onAuthStateChange((_event, session) => {
       this.userId = session?.user.id ?? null
     })
@@ -236,10 +276,11 @@ export class SupabaseBackend implements Backend {
 
   // ---- matching & chat ----
 
-  async findMatch(target: Target): Promise<Match | null> {
+  async findMatch(target: Target, lang?: string): Promise<Match | null> {
     let id: string | null
     try {
-      id = await this.rpc<string | null>('find_match', { p_target: target })
+      // The server prefers someone using the app in the same language for the first few seconds.
+      id = await this.rpc<string | null>('find_match2', { p_target: target, p_lang: lang ?? null })
     } catch (e) {
       // A chat we just left (or abandoned) still holds the exit lock for a moment: keep waiting.
       if (e instanceof BackendError && e.code === 'exit_locked') return null
@@ -247,10 +288,10 @@ export class SupabaseBackend implements Backend {
     }
     if (!id) return null
     try {
-      const m = await this.matchRow(id)
-      if (!m) throw new BackendError('not_found')
-      const partner = await this.card(m.user_a === this.uid ? m.user_b : m.user_a)
-      if (!partner) throw new BackendError('not_found')
+      // One request for the partner's card; their posts load only if the profile is opened (it fetches its own).
+      const rows = await this.rpc<CardRow[]>('match_card', { p_match: id })
+      if (!rows?.[0]) throw new BackendError('not_found')
+      const partner = await this.toProfile(rows[0], [])
       this.abandoned.delete(id)
       return { id, partner }
     } catch {
@@ -272,6 +313,14 @@ export class SupabaseBackend implements Backend {
     await this.rpc('cancel_search')
   }
 
+  /** The waiting side of a new match is user_a: its row appearing means "ask again now" (no 2 s wait). */
+  matchSignals(on: () => void): () => void {
+    const channel = this.client.channel(`match-wake-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'matches', filter: `user_a=eq.${this.uid}` }, () => on())
+      .subscribe()
+    return () => void this.client.removeChannel(channel)
+  }
+
   /** Null when the match is gone (the other person deleted their account). */
   private async matchRow(id: string): Promise<MatchRow | null> {
     const { data, error } = await this.client.from('matches')
@@ -289,17 +338,19 @@ export class SupabaseBackend implements Backend {
     }
   }
 
-  subscribe(matchId: string, on: (e: MatchEvent) => void): () => void {
+  subscribe(matchId: string, on: (e: MatchEvent) => void, opts: { live?: boolean } = {}): () => void {
     const me = this.uid
     let closed = false
     let lastVideo: VideoStatus | null = null
     let leftSent = false
     const emit = (e: MatchEvent) => { if (!closed) on(e) }
+    const partnerLeft = () => {
+      if (leftSent) return
+      leftSent = true
+      emit({ type: 'partner_left' })
+    }
     const onMatch = (m: MatchRow | null) => {
-      if ((m === null || (m.ended_at && m.ended_by !== me)) && !leftSent) {
-        leftSent = true
-        emit({ type: 'partner_left' })
-      }
+      if (m === null || (m.ended_at && m.ended_by !== me)) partnerLeft()
       if (!m) return
       const v = this.videoOf(m, me)
       if (v !== lastVideo) {
@@ -308,44 +359,83 @@ export class SupabaseBackend implements Backend {
       }
     }
 
-    // One bad record (or a failed media link) must not stop the chat: skip it, the 10 s re-sync retries.
-    const channel = this.client.channel(`match-${matchId}-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${matchId}` },
-        (p) => void this.toMessage(p.new as MessageRow, me).then((message) => emit({ type: 'message', message }), () => undefined))
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` },
-        (p) => onMatch(p.new as MatchRow))
-      .subscribe()
-
-    // Typing signals ride a broadcast channel shared with the Android app (not stored anywhere).
-    let typingOff: ReturnType<typeof setTimeout> | undefined
-    const onTyping = (from: string) => {
-      if (from === me) return
-      emit({ type: 'typing', on: true })
-      clearTimeout(typingOff)
-      typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
-    }
-    let hub = this.typing.get(matchId)
-    if (!hub) {
-      const listeners = new Set<(from: string) => void>()
-      const ch = this.client.channel(`typing-${matchId}`)
-        .on('broadcast', { event: 'typing' }, ({ payload }) => listeners.forEach((l) => l(String(payload?.from ?? ''))))
-        .subscribe()
-      hub = { channel: ch, listeners }
-      this.typing.set(matchId, hub)
-    }
-    hub.listeners.add(onTyping)
-
-    // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the UI de-duplicates by id).
-    // Paused while the browser tab is hidden (realtime keeps delivering); runs at once when it is shown again.
+    // Catch up: the match row (left? video?) and messages newer than the last complete fetch. Runs when the
+    // socket (re)connects, every 10 s as a safety net, and when the tab is shown again; paused while hidden.
     const resync = async () => {
-      if (pageHidden()) return
+      if (pageHidden() || closed) return
       try {
         onMatch(await this.matchRow(matchId))
-        for (const message of await this.history(matchId)) emit({ type: 'message', message })
+        const after = this.newest.get(matchId)
+        const list = after === undefined ? await this.history(matchId) : await this.newerMessages(matchId, after)
+        for (const message of list) emit({ type: 'message', message })
       } catch { /* next round */ }
     }
-    void resync()
-    const timer = setInterval(resync, 10_000)
+
+    // One bad record (or a failed media link) must not stop the chat: skip it, the re-sync retries.
+    const channel = this.client.channel(`match-${matchId}-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${matchId}` },
+        (p) => void this.toMessage(p.new as MessageRow, me).then((message) => {
+          if (!message.fromMe) partnerAlive()
+          emit({ type: 'message', message })
+        }, () => undefined))
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` },
+        (p) => onMatch(p.new as MatchRow))
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') void resync()
+      })
+
+    // Random chats end by themselves when the partner's app never connects (closed before the match reached it)
+    // or disconnects for good, instead of leaving this person in front of a silent chat. Judged only while our
+    // own connection is up; any message or typing from them also counts as connected (older app versions).
+    let partnerSeen = false
+    let joinTimer: ReturnType<typeof setTimeout> | undefined
+    let graceTimer: ReturnType<typeof setTimeout> | undefined
+    const giveUp = () => {
+      if (closed || leftSent) return
+      void this.leave(matchId).catch(() => undefined)
+      partnerLeft()
+    }
+    function partnerAlive() {
+      partnerSeen = true
+      clearTimeout(joinTimer)
+      joinTimer = undefined
+    }
+    const onPresence = (connected: boolean, partnerHere: boolean) => {
+      if (!opts.live || closed) return
+      if (!connected) {
+        clearTimeout(joinTimer)
+        clearTimeout(graceTimer)
+        joinTimer = graceTimer = undefined
+        return
+      }
+      if (partnerHere) {
+        partnerAlive()
+        clearTimeout(graceTimer)
+        graceTimer = undefined
+      } else if (!partnerSeen) {
+        joinTimer ??= setTimeout(giveUp, PARTNER_JOIN_TIMEOUT_MS)
+      } else if (hub.presenceSeen) {
+        graceTimer ??= setTimeout(giveUp, PARTNER_GRACE_MS)
+      }
+    }
+
+    // Typing signals and presence ride a channel shared with the Android app (nothing is stored).
+    let typingOff: ReturnType<typeof setTimeout> | undefined
+    const listener: TypingListener = {
+      typing: (from) => {
+        if (from === me) return
+        partnerAlive()
+        emit({ type: 'typing', on: true })
+        clearTimeout(typingOff)
+        typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
+      },
+      presence: onPresence,
+    }
+    const hub = this.typingHub(matchId)
+    hub.listeners.add(listener)
+    if (hub.connected) onPresence(true, hub.partnerHere)
+
+    const timer = setInterval(() => void resync(), 10_000)
     const stopWatching = onPageVisibility((visible) => visible && void resync())
 
     return () => {
@@ -353,14 +443,43 @@ export class SupabaseBackend implements Backend {
       clearInterval(timer)
       stopWatching()
       clearTimeout(typingOff)
-      const h = this.typing.get(matchId)
-      h?.listeners.delete(onTyping)
-      if (h && h.listeners.size === 0) {
+      clearTimeout(joinTimer)
+      clearTimeout(graceTimer)
+      hub.listeners.delete(listener)
+      if (hub.listeners.size === 0) {
         this.typing.delete(matchId)
-        void this.client.removeChannel(h.channel)
+        void this.client.removeChannel(hub.channel)
       }
       void this.client.removeChannel(channel)
     }
+  }
+
+  private typingHub(matchId: string): TypingHub {
+    const existing = this.typing.get(matchId)
+    if (existing) return existing
+    const me = this.uid
+    const hub: TypingHub = {
+      channel: this.client.channel(`typing-${matchId}`, { config: { presence: { key: me } } }),
+      listeners: new Set(),
+      connected: false,
+      partnerHere: false,
+      presenceSeen: false,
+    }
+    const tell = () => hub.listeners.forEach((l) => l.presence(hub.connected, hub.partnerHere))
+    hub.channel
+      .on('broadcast', { event: 'typing' }, ({ payload }) => hub.listeners.forEach((l) => l.typing(String(payload?.from ?? ''))))
+      .on('presence', { event: 'sync' }, () => {
+        hub.partnerHere = Object.keys(hub.channel.presenceState()).some((key) => key !== me)
+        if (hub.partnerHere) hub.presenceSeen = true
+        tell()
+      })
+      .subscribe((status) => {
+        hub.connected = status === 'SUBSCRIBED'
+        if (hub.connected) void hub.channel.track({ user: me }).catch(() => undefined)
+        tell()
+      })
+    this.typing.set(matchId, hub)
+    return hub
   }
 
   sendTyping(matchId: string) {
@@ -375,7 +494,30 @@ export class SupabaseBackend implements Backend {
       .select('id, match_id, sender, body, media_path, media_kind, created_at')
       .eq('match_id', matchId).order('id', { ascending: false }).limit(200) // the newest 200, shown oldest first
     if (error) fail(error)
-    return Promise.all((data as MessageRow[]).reverse().map((r) => this.toMessage(r, me)))
+    const rows = (data as MessageRow[]).reverse()
+    this.noteNewest(matchId, rows)
+    return Promise.all(rows.map((r) => this.toMessage(r, me)))
+  }
+
+  /** Messages after `afterId`, oldest first (a re-sync after a dropped connection). */
+  private async newerMessages(matchId: string, afterId: number): Promise<Message[]> {
+    const me = this.uid
+    const { data, error } = await this.client.from('messages')
+      .select('id, match_id, sender, body, media_path, media_kind, created_at')
+      .eq('match_id', matchId).gt('id', afterId).order('id', { ascending: true }).limit(200)
+    if (error) fail(error)
+    const rows = data as MessageRow[]
+    this.noteNewest(matchId, rows)
+    return Promise.all(rows.map((r) => this.toMessage(r, me)))
+  }
+
+  /**
+   * Only complete fetches move the mark: a message that arrived live (or one I sent) can have a newer id than
+   * one the socket dropped, so it must not move it.
+   */
+  private noteNewest(key: string, rows: { id: number }[]) {
+    const last = rows.at(-1)?.id
+    if (last !== undefined && last > (this.newest.get(key) ?? -1)) this.newest.set(key, last)
   }
 
   async send(matchId: string, text: string | null, media: File | null): Promise<Message> {
@@ -536,22 +678,27 @@ export class SupabaseBackend implements Backend {
     const { data, error } = await this.client.from('room_messages').select('*')
       .eq('room_id', roomId).order('id', { ascending: false }).limit(100) // the newest 100, shown oldest first
     if (error) fail(error)
-    return Promise.all((data as RoomMessageRow[]).reverse().map((r) => this.toRoomMessage(r, me)))
+    const rows = (data as RoomMessageRow[]).reverse()
+    this.noteNewest(`room:${roomId}`, rows)
+    return Promise.all(rows.map((r) => this.toRoomMessage(r, me)))
   }
 
   subscribeRoom(roomId: string, on: (m: RoomMessage) => void): () => void {
     const me = this.uid
     let closed = false
     const emit = (m: RoomMessage) => { if (!closed) on(m) }
+    // Re-sync after a dropped socket: only messages newer than the last complete fetch (the UI de-duplicates by
+    // id). On (re)connect, every 15 s, and when the tab is shown again; paused while it is hidden.
+    const resync = () => {
+      if (pageHidden() || closed) return
+      this.newerRoomMessages(roomId).then((list) => list.forEach(emit), () => undefined)
+    }
     const channel = this.client.channel(`room-${roomId}-${crypto.randomUUID()}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'room_messages', filter: `room_id=eq.${roomId}` },
         (p) => void this.toRoomMessage(p.new as RoomMessageRow, me).then(emit, () => undefined))
-      .subscribe()
-    // Re-sync after a dropped socket (the UI de-duplicates by id); paused while the browser tab is hidden.
-    const resync = () => {
-      if (pageHidden()) return
-      this.roomHistory(roomId).then((h) => h.slice(-30).forEach(emit), () => undefined)
-    }
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') resync()
+      })
     const timer = setInterval(resync, 15_000)
     const stopWatching = onPageVisibility((visible) => visible && resync())
     return () => {
@@ -560,6 +707,18 @@ export class SupabaseBackend implements Backend {
       stopWatching()
       void this.client.removeChannel(channel)
     }
+  }
+
+  private async newerRoomMessages(roomId: string): Promise<RoomMessage[]> {
+    const after = this.newest.get(`room:${roomId}`)
+    if (after === undefined) return [] // the room's history hasn't loaded yet; it covers everything so far
+    const me = this.uid
+    const { data, error } = await this.client.from('room_messages').select('*')
+      .eq('room_id', roomId).gt('id', after).order('id', { ascending: true }).limit(200)
+    if (error) fail(error)
+    const rows = data as RoomMessageRow[]
+    this.noteNewest(`room:${roomId}`, rows)
+    return Promise.all(rows.map((r) => this.toRoomMessage(r, me)))
   }
 
   async sendRoom(roomId: string, text: string): Promise<RoomMessage> {

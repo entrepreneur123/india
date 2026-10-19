@@ -8,6 +8,8 @@ const ptBR: Dict = {
   'common.save': 'Salvar',
   'common.tryAgain': 'Tentar de novo',
   'common.checkConnection': 'Confira sua conexão e tente de novo.',
+  'net.offline': 'Sem internet. Reconectando…',
+  'error.screenTitle': 'Não foi possível carregar esta tela',
   'common.loading': 'Abrindo o yaari',
   'common.plus': 'Yaari Plus',
 
@@ -120,6 +122,7 @@ const ptBR: Dict = {
   'lobby.videoAgree': 'Vídeo só se os dois aceitarem',
   'lobby.reportLeave': 'Denuncie e saia quando quiser',
   'matching.title': 'Procurando alguém…',
+  'matching.reconnecting': 'Conexão fraca. Ainda tentando…',
   'matching.scope': '{who} · Mundo todo',
   'matching.cancel': 'Cancelar',
   'matching.stopped': 'A busca parou enquanto você estava fora',

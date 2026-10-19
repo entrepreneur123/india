@@ -11,6 +11,7 @@ import { flagEmoji } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
+import { retryImport } from '@/lib/retry-import'
 
 /** Drag for the self-view: only the call screen needs it, so it downloads with the call. */
 const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
@@ -40,7 +41,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
           setState('demo')
           return
         }
-        const { joinCall } = await import('@/lib/livekit') // the video SDK loads only when a call starts
+        const { joinCall } = await retryImport(() => import('@/lib/livekit')) // the video SDK loads only when a call starts
         if (cancelled) return // the call ended while the SDK was loading
         const call = await joinCall(
           token.url,

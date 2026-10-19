@@ -8,6 +8,8 @@ const en = {
   'common.save': 'Save',
   'common.tryAgain': 'Try again',
   'common.checkConnection': 'Check your connection and try again.',
+  'net.offline': 'No internet. Reconnecting…',
+  'error.screenTitle': 'This screen couldn’t load',
   'common.loading': 'Loading yaari',
   'common.plus': 'Yaari Plus',
 
@@ -123,6 +125,7 @@ const en = {
   'lobby.videoAgree': 'Video only if both agree',
   'lobby.reportLeave': 'Report & leave anytime',
   'matching.title': 'Finding someone…',
+  'matching.reconnecting': 'Weak connection. Still trying…',
   'matching.scope': '{who} · Worldwide',
   'matching.cancel': 'Cancel',
   'matching.stopped': 'Search stopped while you were away',
