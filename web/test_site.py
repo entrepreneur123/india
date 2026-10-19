@@ -115,5 +115,5 @@ def test_every_internal_link_resolves(tmp_path, monkeypatch):
     assert any(not d.get("tiers") for d in feed["draws"])  # the fixture really has a PDF-only draw
     for page in out.rglob("*.html"):
         for link in set(re.findall(r'(?:href|src)="(/[^"]*)"', page.read_text())) - {"/privacy.html"}:  # copied by the workflow
-            target = out / link.lstrip("/")
+            target = out / link.split("#")[0].lstrip("/")
             assert (target / "index.html").exists() or target.is_file(), f"{page.relative_to(out)} -> {link}"
