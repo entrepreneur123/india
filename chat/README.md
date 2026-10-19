@@ -1,87 +1,79 @@
-# Yaari (가칭) — 인도 랜덤채팅 앱 프로토타입
+# Yaari (가칭) — 인도 랜덤채팅 앱
 
 로또 앱(`/android`)과 **완전히 분리된 독립 프로젝트**입니다. 이 폴더만 떼어 새 저장소로 옮겨도 그대로 빌드됩니다.
 
-- 설치 파일: [`dist/yaari-prototype.apk`](dist/yaari-prototype.apk) (1.5MB, 디버그 키 서명)
-  - 폰에서 내려받아 열고 "알 수 없는 앱 설치"를 허용하면 설치됩니다.
-- 서버 없이 폰 안에서만 돌아가는 **가짜 백엔드**(`FakeBackend`)로 동작합니다.
-  - 상대 12명, 자동 답장, 영상통화 수락·거절, 상대가 나가는 상황까지 흉내 냅니다.
-  - 앱을 끄면 데이터가 초기화됩니다.
-- 인증번호(OTP)는 `123456`입니다.
-- Premium은 "Me" 탭의 스위치로 켜고 끕니다. 실제 결제는 일어나지 않습니다.
+## 설치 파일 (`dist/`)
+
+| 파일 | 내용 |
+|---|---|
+| `yaari-demo.apk` (1.5MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
+| `yaari-live-arm64.apk` (17MB) | **실제 서버**(Supabase 뭄바이) 연결판. 아래 "출시 전 설정"을 마쳐야 로그인할 수 있습니다 |
+
+두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
 
 ## 화면
 
-| 가입 | 로비 | 채팅 | 상대 프로필 | 영상통화 |
-|---|---|---|---|---|
-| ![](docs/screenshots/03_profile.png) | ![](docs/screenshots/04_lobby.png) | ![](docs/screenshots/06_chat.png) | ![](docs/screenshots/07_partner_profile.png) | ![](docs/screenshots/08_video.png) |
+| 로비 | 결제 | 채팅 (무료: 5초 잠금) | 상대 프로필 | 영상통화 요청 받음 | 나가기 선택 |
+|---|---|---|---|---|---|
+| ![](docs/screenshots/04_lobby.png) | ![](docs/screenshots/05_paywall.png) | ![](docs/screenshots/06_free_exit_locked.png) | ![](docs/screenshots/08_partner_profile.png) | ![](docs/screenshots/09_incoming_video.png) | ![](docs/screenshots/10_exit_choice.png) |
 
-| 나가기 선택 | 무료: 5초 잠금 | 신고 | 최근 만난 사람 | 내 프로필 |
-|---|---|---|---|---|
-| ![](docs/screenshots/09_exit_choice.png) | ![](docs/screenshots/12_free_exit_locked.png) | ![](docs/screenshots/13_report.png) | ![](docs/screenshots/10_recent.png) | ![](docs/screenshots/15_my_profile.png) |
+| 최근 만난 사람 | 메시지 | 영상통화 | 신고 | 게시물 작성 | 내 프로필 |
+|---|---|---|---|---|---|
+| ![](docs/screenshots/11_recent.png) | ![](docs/screenshots/12_dm.png) | ![](docs/screenshots/13_video.png) | ![](docs/screenshots/14_report.png) | ![](docs/screenshots/15_new_post.png) | ![](docs/screenshots/16_my_profile.png) |
 
-스크린샷은 테스트(`AppFlowTest`)가 실제 앱 화면을 JVM에서 처음부터 끝까지 조작하면서 찍은 것입니다.
+## 기획 항목별 구현 상태
 
-## 구현된 기능
-
-| 기획 | 프로토타입 동작 |
-|---|---|
-| 휴대폰 인증, 번호 하나당 계정 하나 | 인도 번호(6~9로 시작하는 10자리)만 받습니다. 같은 번호로 다시 가입하면 기존 계정으로 로그인됩니다 |
-| 18세 이상만 | 생년월일로 만 나이를 계산합니다. 18세 생일 전날까지는 가입할 수 없습니다 |
-| 프로필 (성별·나이·사진·피드) | 사진 선택(권한 불필요한 Photo Picker), 인스타식 3열 피드, 게시물 작성 |
-| 랜덤 매칭 + 상대 프로필 표시 | 채팅방 상단에 상대 사진·나이·성별·도시가 뜨고, 누르면 피드가 열립니다 |
-| 성별 선택은 유료 | 무료는 "Everyone"만 가능. 남/여 선택은 결제 안내 화면으로 연결됩니다 |
-| 사진·동영상 전송 | 갤러리에서 골라 보낼 수 있습니다 |
-| 영상통화 (구독자만, 상대 수락) | 요청 → 상대 수락/거절 → 통화 화면. 실제 영상은 v2에서 LiveKit으로 연결합니다 |
-| 나가기 잠금 | 무료 5초, 유료 0.2초 동안 X 버튼에 남은 초가 표시됩니다. 서버 측(ViewModel)에서도 막혀 있습니다 |
-| 나가기 후 두 가지 선택 | "로비로" / "다음 매칭" |
-| **신고하고 나가기** | 잠금과 상관없이 **항상 즉시**. 신고하면 차단되고, 다시 매칭되지 않으며, 최근 목록에서도 빠집니다 |
-| 최근 만난 기록 → 메시지 | Recent 탭에서 다시 대화하거나 신고할 수 있습니다 |
-| 화면 캡처 차단 | 채팅·영상·상대 프로필 화면에서는 스크린샷과 녹화가 막힙니다 (FLAG_SECURE) |
-| 늦게 온 답장 처리 | 방을 나간 뒤 이전 상대의 답장이 새 대화방에 섞이지 않습니다 |
+| 기획 | 구현 | 서버에서도 강제하는가 |
+|---|---|---|
+| 휴대폰 인증, 번호 하나당 계정 하나 | Supabase Phone OTP (+91) | ✅ 번호당 계정 1개 |
+| 18세 이상만 | 생년월일 검사 | ✅ DB 트리거. **성별·생년월일은 가입 후 변경 불가** |
+| 프로필: 성별·나이·사진·피드 | 사진은 1280px로 압축 후 업로드, 인스타식 피드 | ✅ 매칭된 적 있는 사람만 프로필·사진을 볼 수 있음 |
+| 랜덤 매칭 + 상대 프로필 표시 | 2초마다 매칭 요청, 채팅방 상단에 상대 정보 | ✅ 서버 잠금으로 이중 매칭 방지, 방금 만난 상대는 제외 |
+| 채팅 + 사진·동영상 | 실시간 전송 + 10초마다 재동기화(망이 끊겨도 메시지 유실 없음) | ✅ 참여자만 읽기·쓰기, 10초에 10개 제한(스팸) |
+| 성별 선택 = 유료 | 월 구독 **또는 24시간 이용권(단건 결제)** | ✅ 서버가 구매를 검증, 영수증은 1회만 사용 가능 |
+| 영상통화 = 월 구독자만, 상대 수락 | LiveKit(인도 리전). 요청 → 상대 수락 → 통화. 받는 쪽은 무료 사용자도 가능 | ✅ 요청은 구독자만, 수락은 상대만 가능. 수락된 통화만 입장권 발급 |
+| 나가기 잠금: 무료 5초 / 유료 0.2초 | X 버튼에 남은 초 표시 | ✅ 서버가 다시 확인. "다음 매칭"으로 잠금을 우회하는 것도 막음 |
+| 나가기 후 「로비 / 다음 매칭」 | ✅ | — |
+| 신고하고 나가기 | **잠금과 관계없이 즉시**. 신고 시 자동 차단 | ✅ 24시간 안에 서로 다른 3명이 신고하면 자동으로 7일 정지 |
+| 최근 만난 사람 → 메시지, 신고 | ✅ | ✅ 차단된 상대에게는 메시지 전송 불가 |
+| 캡처 방지 | 채팅·영상·상대 프로필 화면 | — |
 
 ## 구조
 
 ```
-app/src/main/kotlin/com/yaari/chat/
-  model/Models.kt        데이터 모델
-  domain/Rules.kt        나가기 잠금 시간, 전화번호·나이 검증 (순수 로직, 테스트 대상)
-  data/Backend.kt        서버 인터페이스 ← v1에서 실제 구현으로 교체
-  data/FakeBackend.kt    프로토타입용 가짜 서버
-  ui/AppViewModel.kt     앱 상태와 규칙 (화면은 상태만 그림)
-  ui/*Screen.kt          화면들 (Jetpack Compose)
+app/src/main    공통 화면·규칙 (Jetpack Compose). Backend/Billing 인터페이스
+app/src/demo    FakeBackend (실제 서버와 같은 규칙) + 데모 결제
+app/src/live    SupabaseBackend + Google Play 결제 + LiveKit 영상
+server/migrations   Postgres 스키마·RLS·규칙 함수 (실제 프로젝트에 적용됨)
+server/functions    video-token (LiveKit 입장권), verify-purchase (Play 영수증 검증)
+server/test_rules.sql  서버 규칙 테스트 시나리오
 ```
-
-`Backend` 인터페이스 하나만 갈아 끼우면 실제 서버로 넘어가도록 설계했습니다.
-
-- 로그인: Firebase Phone Auth
-- 채팅: Firestore (오프라인 저장과 재전송 내장)
-- 매칭: Cloud Run + Redis 대기열
-- 영상: **LiveKit Cloud (인도 리전: 뭄바이·남인도)**
-- 결제: Google Play Billing
 
 ## 검증
 
+- **앱 테스트**: demo·live 빌드 각각 23개 통과.
+  - 규칙 7개, ViewModel 15개, 전체 UI 흐름 1개.
+  - ViewModel 테스트에는 서버 쪽 잠금 확인, 영상 수락, 메시지(DM)도 포함됩니다.
+- **실제 서버 통합 테스트** (`LiveServerTest`, QA 계정 2개): 통과.
+  - 로그인 → 매칭 → 실시간 메시지 수신 → 서버의 5초 잠금 거부 → 구독 없는 영상 요청 거부 → 프로필 조회 → 상대가 나감 실시간 감지 → 최근 목록.
+- **서버 규칙 SQL 테스트**: 18세 미만 거부, 성별 변경 불가, 남의 채팅 읽기·쓰기 불가, 잠금, 구독, 차단, 자동 정지, 스팸 제한. 모두 통과.
+- **서버 함수**: LiveKit 토큰 서명을 별도 JWT 라이브러리(jose)로 검증. 배포 후 미인증 요청 401, 키 미설정 503 확인.
+- **Lint**: 오류 0개. R8 최적화 후에도 서버 데이터 변환 코드가 유지되는 것을 확인.
+- **아직 못 한 것**: 실기기 테스트. 이 환경에는 에뮬레이터가 없습니다. 실제 영상통화는 LiveKit 키 설정 후 폰 2대로 확인해야 합니다.
+
+## 출시 전에 사장님이 직접 해야 할 설정
+
+| 순서 | 할 일 | 어디서 |
+|---|---|---|
+| 1 | **SMS 인증 연결** (이것이 없으면 live 앱 로그인 불가) | Supabase 대시보드 → Authentication → Sign In / Providers → Phone. Twilio Verify, MessageBird, Vonage, Textlocal 중 하나. 인도는 DLT 등록된 발신 번호가 필요 |
+| 2 | **LiveKit Cloud 가입** 후 프로젝트 생성. Edge Function Secrets에 `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` 입력 | livekit.io → Supabase → Edge Functions → Secrets |
+| 3 | **Play Console**에 앱 등록, 상품 2개 생성: 구독 `yaari_premium_monthly`, 단건(소모성) `gender_pass_24h`. 대상 연령은 18세 이상 전용 | Play Console |
+| 4 | Google Cloud 서비스 계정을 만들어 Play Console에 권한 부여(재무 데이터 보기, 주문 관리). 키 JSON을 Secret `GOOGLE_SERVICE_ACCOUNT_JSON`에 입력 | Google Cloud Console |
+| 5 | 테스트 데이터 삭제 승인(아래 SQL) | Supabase SQL Editor |
+
+테스트 데이터 정리용 SQL입니다. 서버 테스트용 가짜 사용자 6명과 QA 계정 3개를 지웁니다. 삭제 작업이라 승인이 필요해서 실행하지 않았습니다.
+
+```sql
+delete from auth.users where id::text like '00000000-0000-0000-0000-0000000000%' or email like 'qa_@yaari.test';
+drop table if exists public._t; drop function if exists public._act(uuid); drop function if exists public._fails(text, text);
 ```
-./gradlew testDebugUnitTest -Proborazzi.test.record=true lintRelease assembleRelease
-```
-
-- 테스트 19개 통과.
-  - 규칙 7개, ViewModel 11개, 전체 UI 흐름 1개.
-  - UI 흐름 테스트: 가입 → 18세 미만 거부 → 18세 가입 → 유료 성별 선택 → 매칭 → 채팅 → 상대 프로필 → 영상통화 → 나가기 → 최근 → 메시지 → 무료 잠금 → 신고 → 게시물 작성.
-- Lint 오류 0개. 경고는 라이브러리 새 버전 안내와 백업 속성 하나뿐입니다.
-- 실기기·에뮬레이터 테스트는 아직 하지 않았습니다. 이 개발 환경에는 가상화(KVM)가 없어서 에뮬레이터를 실행할 수 없습니다.
-
-## 프로토타입의 한계 (v1에서 할 일)
-
-- 서버가 없습니다. 실제 사용자끼리는 연결되지 않습니다.
-- 영상통화는 화면만 있습니다(LiveKit 연동 전).
-- UI는 영어만 지원합니다. 힌디어 등은 `strings.xml`로 옮기면서 추가합니다.
-- 신고는 차단까지만 됩니다. 실제 서비스에서는 다음이 필요합니다.
-  - 신고가 서버 검수 대기열로 들어가고, 2시간 안에 자동 조치
-  - 사진·영상 AI 검사
-- 출시 전에 바꿀 것:
-  - 서명 키(지금은 디버그 키)
-  - 개인정보처리방침
-  - 고충처리 담당자(Grievance Officer) 공개
-  - Play Console 18+ 설정

@@ -1,4 +1,5 @@
 -- Server rule tests. Runs in one transaction and rolls back: nothing is left behind.
+-- (The Supabase MCP asks for approval on TRUNCATE; run it from the SQL editor.)
 begin;
 set local statement_timeout = '8s';
 create function pg_temp.act(u uuid) returns void language sql as $$
@@ -78,12 +79,13 @@ select public.leave_match((select mid from t));
 
 -- 6. Premium: 0.2 s lock, gender filter works both ways, last partner is skipped
 reset role;
-insert into public.subscriptions values ('00000000-0000-0000-0000-00000000000a', now() + interval '30 days');
+insert into public.subscriptions (user_id, premium_until) values ('00000000-0000-0000-0000-00000000000a', now() + interval '30 days'),
+  ('00000000-0000-0000-0000-00000000000d', now() + interval '30 days');
 set local role authenticated;
-select pg_temp.act('00000000-0000-0000-0000-00000000000d');   -- Sneha (female) waits for men
-do $$ begin assert public.find_match('any') is null; end $$;
+select pg_temp.act('00000000-0000-0000-0000-00000000000d');   -- Sneha (female, Premium) waits for men
+do $$ begin assert public.find_match('male') is null; end $$;
 select pg_temp.act('00000000-0000-0000-0000-00000000000b');   -- Priya waits too (last partner of A)
-do $$ begin assert public.find_match('any') is null; end $$;
+do $$ begin assert public.find_match('any') is null, 'B (female) must not match D, who wants men'; end $$;
 select pg_temp.act('00000000-0000-0000-0000-00000000000a');   -- Arjun, Premium, wants women: gets Sneha (B was his last partner)
 truncate t; insert into t select public.find_match('female');
 do $$ begin assert (select user_a from public.matches where id = (select mid from t)) = '00000000-0000-0000-0000-00000000000d', 'should match Sneha, not last partner'; end $$;
@@ -98,7 +100,7 @@ truncate t; insert into t select public.find_match('any');
 do $$ begin assert (select user_a from public.matches where id = (select mid from t)) = '00000000-0000-0000-0000-00000000000b'; end $$;
 select pg_temp.fails($q$select public.request_video((select mid from t))$q$, 'premium_required');
 reset role;
-insert into public.subscriptions values ('00000000-0000-0000-0000-00000000000c', now() + interval '30 days');
+insert into public.subscriptions (user_id, premium_until) values ('00000000-0000-0000-0000-00000000000c', now() + interval '30 days');
 set local role authenticated;
 select public.request_video((select mid from t));
 select pg_temp.fails($q$select public.respond_video((select mid from t), true)$q$, 'not_allowed'); -- can't accept own request

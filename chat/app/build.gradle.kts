@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.roborazzi)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -42,6 +43,17 @@ android {
         }
     }
 
+    // Direct-install APKs per CPU with -PabiSplits (LiveKit's WebRTC is native). Off by default because
+    // AGP cannot build split APKs and the Play App Bundle (which splits by itself) in the same run.
+    splits {
+        abi {
+            isEnable = providers.gradleProperty("abiSplits").isPresent
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = false
+        }
+    }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true // java.time on Android 7.x
         sourceCompatibility = JavaVersion.VERSION_17
@@ -73,6 +85,18 @@ dependencies {
     implementation(libs.compose.icons.core)
     implementation(libs.coil.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // Live server, video and payments only in the live flavor (keeps the demo APK small).
+    "liveImplementation"(platform(libs.supabase.bom))
+    "liveImplementation"(libs.supabase.auth)
+    "liveImplementation"(libs.supabase.postgrest)
+    "liveImplementation"(libs.supabase.realtime)
+    "liveImplementation"(libs.supabase.storage)
+    "liveImplementation"(libs.supabase.functions)
+    "liveImplementation"(libs.ktor.okhttp)
+    "liveImplementation"(libs.kotlinx.serialization.json)
+    "liveImplementation"(libs.livekit.android)
+    "liveImplementation"(libs.billing.ktx)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
