@@ -127,6 +127,7 @@ jobs:
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
+            cp ../chat/docs/privacy.html ../public/yaari-privacy.html  # Yaari chat app (separate project in chat/)
             nosecret python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
             nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)

@@ -1,0 +1,7 @@
+<resources>
+    <string name="allow_camera">कॉल शुरू करने के लिए कैमरा और माइक की अनुमति दें</string>
+    <string name="connecting">कनेक्ट हो रहा है…</string>
+    <string name="waiting_video">%1$s के वीडियो का इंतज़ार…</string>
+    <string name="reconnecting">दोबारा कनेक्ट हो रहा है…</string>
+    <string name="call_failed">कॉल कनेक्ट नहीं हो सकी। कॉल काटें और फिर से कोशिश करें।</string>
+</resources>
