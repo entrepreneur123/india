@@ -53,19 +53,20 @@ Sources of information:
 | 사용자 데이터를 수집하나요? | **예**. ML Kit(Google Play 서비스)이 진단 정보를 수집함 | ML Kit data disclosure: device info, app info, performance metrics, API configuration |
 | 수집 데이터 유형 | "App info and performance → Diagnostics", "Device or other IDs" | 같은 문서. "thin"(Play 서비스) 기능은 device identifier를 추가함 |
 | FCM 푸시 (Firebase 설정 시) | "Device or other IDs" 수집, 목적 **앱 기능**, 공유 안 함 | Firebase가 설치 ID와 등록 토큰을 만듦. 보내는 메시지에는 개인정보가 없음("새 결과" 신호뿐, 모든 폰에 같은 내용) |
-| 공유(제3자 전달)? | 아니요 | Google 문서: 제3자에게 전달하지 않음 |
+| AdMob 광고 (ADMOB_* 설정 시) | IP 주소(대략적 위치), 앱 상호작용, 진단 정보, 광고 ID·앱 세트 ID를 **수집·공유**, 목적 광고·분석·사기 방지 | Google AdMob Data safety 문서(SDK 25.5.0, 2026-10-19 확인) |
+| 공유(제3자 전달)? | **예 (AdMob 사용 시)**. ML Kit·FCM 데이터는 공유 안 함 | |
 | 전송 중 암호화? | 예 (HTTPS) | |
 | 삭제 요청 방법? | 계정이 없으므로 앱 데이터 삭제 또는 삭제(언인스톨) | |
 | 카메라 이미지 | 수집 안 함 (기기 내 처리, 저장·업로드 없음) | ScanScreen: ML Kit 온디바이스 |
 
-> Firebase Cloud Messaging은 이미 코드에 들어 있습니다(설정값을 넣어야 작동). AdMob을 추가하면 이 답변을 반드시 다시 작성해야 합니다. AdMob은 IP, 광고 ID, 앱 상호작용을 **수집·공유**합니다.
+> AdMob이 들어갔습니다(ADMOB_APP_ID, ADMOB_BANNER, ADMOB_INTERSTITIAL을 넣어야 실제 광고가 나옴). 콘솔의 "광고 포함"은 **예**로 바꾸고, 위 AdMob 행대로 Data safety를 작성하세요.
 
 ## 5. 콘솔 설정 체크리스트
 
 - [ ] 개인정보처리방침 URL: `https://entrepreneur123.github.io/india/privacy.html` (Pages 활성화 후). 연락처 이메일을 채워 넣을 것
 - [ ] 타깃 연령: **18세 이상만** 선택. 이렇게 하면 Restrict Minor Access가 적용됨
 - [ ] 콘텐츠 등급(IARC) 질문지: 실제 돈 도박 "아니요", 시뮬레이션 도박 "아니요". 복권 결과 정보 제공은 사실대로 서술
-- [ ] 광고 포함: 현재 "아니요"
+- [ ] 광고 포함: **예** (AdMob). AdMob 콘솔 → 차단 관리 → 민감한 카테고리에서 도박·베팅은 기본 차단 상태 유지
 - [ ] 정부 앱 여부: "아니요". 설명문에 출처와 비제휴 문구 포함(위 3번)
 - [ ] 타깃 API 36 ✅, 64-bit ✅, AAB로 업로드(권장, `./gradlew bundleRelease`)
 - [ ] **비공개 테스트 필수 (개인 개발자 계정, 2023-11-13 이후 생성):** 테스터 **최소 12명**이 **2주 연속** 참여한 비공개 테스트를 마쳐야 프로덕션 출시 신청 가능. 중간에 나갔다 다시 들어오면 기간이 다시 시작됨. (Play 고객센터 answer/14151465, 2026-10-19 확인) → 출시 일정에 최소 2주를 잡을 것

@@ -1,7 +1,10 @@
 package com.lottodost.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import com.lottodost.app.ads.BannerAd
+import com.lottodost.app.ads.Interstitials
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -113,8 +116,10 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
             return
         }
         openDraw != null -> {
-            BackHandler { openDrawId = null }
-            DrawDetailScreen(openDraw, onBack = { openDrawId = null }, onOpenSheet = openSheet)
+            // Closing a result is the one natural break where a full-screen ad may appear (rate-limited).
+            val close = { openDrawId = null; Interstitials.atBreak(ctx) }
+            BackHandler { close() }
+            DrawDetailScreen(openDraw, onBack = close, onOpenSheet = openSheet)
             return
         }
     }
@@ -123,6 +128,8 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
 
     Scaffold(
         bottomBar = {
+            Column {
+            BannerAd()
             NavigationBar {
                 Tab.entries.forEach { t ->
                     NavigationBarItem(
@@ -132,6 +139,7 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
                         label = { Text(stringResource(t.label)) },
                     )
                 }
+            }
             }
         },
     ) { pad ->
