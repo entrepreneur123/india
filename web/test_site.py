@@ -105,3 +105,15 @@ def test_mirror_at_host_root_links_without_the_project_path(tmp_path, monkeypatc
     assert "/india/" not in cf.replace("https://example.github.io/india/", "")
     assert 'href="/bn/result/17-10-2026/"' in cf and 'src="/assets/site.js"' in cf and 'href="/privacy.html"' in cf
     assert '<link rel="canonical" href="https://example.github.io/india/bn/">' in cf
+
+
+def test_every_internal_link_resolves(tmp_path, monkeypatch):
+    """A PDF-only draw (no numbers) has no page of its own, so nothing may link to one."""
+    data = tmp_path / "pdfonly"
+    out = build(data, monkeypatch, base="https://example.github.io/india", link_prefix="")
+    feed = json.loads(FEED.read_text())
+    assert any(not d.get("tiers") for d in feed["draws"])  # the fixture really has a PDF-only draw
+    for page in out.rglob("*.html"):
+        for link in set(re.findall(r'(?:href|src)="(/[^"]*)"', page.read_text())) - {"/privacy.html"}:  # copied by the workflow
+            target = out / link.lstrip("/")
+            assert (target / "index.html").exists() or target.is_file(), f"{page.relative_to(out)} -> {link}"

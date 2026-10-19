@@ -333,8 +333,9 @@ class Site:
         stub = f'<b>{esc(short_time(d["time"]))}</b>' + (f'<span>{esc(s[tag])}</span>' if tag else
                                                           (f'<span>{esc(s["special_tag"])}</span>' if d.get("special") else ""))
         head = (f'<div class="slip-h"><div class="stub">{stub}</div><div class="nm">'
-                f'<h2><a href="{self.url(lang, self.draw_path(d))}">{esc(game(d["name"]))}</a></h2>'
-                f'<small>{esc(fmt(s["state_lottery"], self.state(lang, d.get("state", ""))))}</small>'
+                + (f'<h2><a href="{self.url(lang, self.draw_path(d))}">{esc(game(d["name"]))}</a></h2>' if d.get("tiers")
+                   else f'<h2>{esc(game(d["name"]))}</h2>')  # PDF-only draws get no page of their own
+                + f'<small>{esc(fmt(s["state_lottery"], self.state(lang, d.get("state", ""))))}</small>'
                 + (f'<em class="ok" title="{esc(s["verified_long"])}">✓ {esc(s["verified"])}</em>' if d.get("verified") else "")
                 + "</div></div>")
         sources = {x["kind"]: x["url"] for x in d.get("sources", [])}
