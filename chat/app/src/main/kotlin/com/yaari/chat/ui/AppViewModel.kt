@@ -6,7 +6,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaari.chat.R
+import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
+import com.yaari.chat.data.awaitVisible
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.Entitlements
@@ -122,6 +124,8 @@ class AppViewModel(
     private val billing: Billing,
     private val clock: () -> Long = SystemClock::elapsedRealtime,
     private val today: () -> LocalDate = LocalDate::now,
+    /** On screen or not: polling pauses in the background (see [AppForeground]). */
+    private val foreground: StateFlow<Boolean> = AppForeground.visible,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -343,6 +347,9 @@ class AppViewModel(
         matchJob = viewModelScope.launch {
             try {
                 while (isActive && current()) {
+                    // In the background the search holds still (no requests every 2 s) and resumes on return.
+                    foreground.awaitVisible()
+                    if (!current()) break
                     // Not cancellable: if the server created a match, we must learn about it (see abandon()).
                     val m = try {
                         withContext(NonCancellable) { backend.findMatch(s.target) }
@@ -581,17 +588,39 @@ class AppViewModel(
         }
         act {
             backend.report(partnerId, reason, null)
-            dmJob?.takeIf { _state.value.dm?.recent?.partner?.id == partnerId }?.cancel()
-            _state.update { s ->
-                s.copy(
-                    recents = s.recents.filterNot { it.partner.id == partnerId },
-                    friends = s.friends.filterNot { it.profile.id == partnerId },
-                    room = s.room?.let { r -> r.copy(messages = r.messages.filterNot { it.sender.id == partnerId }) },
-                    viewing = s.viewing?.takeIf { it.id != partnerId },
-                    dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
-                    notice = UiText(R.string.msg_reported),
-                )
+            forget(partnerId, UiText(R.string.msg_reported))
+        }
+    }
+
+    /**
+     * Block without reporting. Like a report it closes the chat, thread or profile with that person and drops them
+     * from Recent, Friends and the open room's messages.
+     */
+    fun block(person: Profile) {
+        val c = _state.value.chat
+        act {
+            if (c?.match?.partner?.id == person.id) {
+                gone { backend.block(person.id) }
+                closeChat()
+            } else {
+                backend.block(person.id)
             }
+            forget(person.id, UiText(R.string.msg_blocked, person.name))
+        }
+    }
+
+    /** Removes every trace of [partnerId] from what is on screen. */
+    private fun forget(partnerId: String, message: UiText) {
+        dmJob?.takeIf { _state.value.dm?.recent?.partner?.id == partnerId }?.cancel()
+        _state.update { s ->
+            s.copy(
+                recents = s.recents.filterNot { it.partner.id == partnerId },
+                friends = s.friends.filterNot { it.profile.id == partnerId },
+                room = s.room?.let { r -> r.copy(messages = r.messages.filterNot { it.sender.id == partnerId }) },
+                viewing = s.viewing?.takeIf { it.id != partnerId },
+                dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
+                notice = message,
+            )
         }
     }
 
@@ -751,6 +780,8 @@ class AppViewModel(
                 launch {
                     while (isActive) { // stay listed as present; the server forgets you 90 s after the last beat
                         delay(ROOM_BEAT_MS)
+                        // No beats from the background; back on screen, beat at once to be listed again.
+                        foreground.awaitVisible()
                         try {
                             backend.joinRoom(room.id)
                         } catch (e: CancellationException) {

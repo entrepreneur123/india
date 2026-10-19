@@ -16,13 +16,15 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0-proto"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
-    // English + Hindi; Android 13+ also lists them in the per-app language setting.
+    // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
+    // language from the libraries' resources (smaller APK); Android 13+ lists these in the per-app language setting.
+    // Keep in sync with res/values-*, AppLocale.languages and TranslationsTest.
     androidResources {
-        localeFilters += listOf("en", "hi")
+        localeFilters += listOf("en", "hi", "bn", "pt-rBR", "vi")
         generateLocaleConfig = true
     }
 
@@ -63,15 +65,32 @@ android {
         }
     }
 
-    // Direct-install APKs per CPU with -PabiSplits (LiveKit's WebRTC is native). Off by default because
-    // AGP cannot build split APKs and the Play App Bundle (which splits by itself) in the same run.
+    // Direct-install APKs per CPU with -PabiSplits (LiveKit's WebRTC is native): arm64-v8a for most phones,
+    // armeabi-v7a for older / 32-bit Android Go phones still common in India. Off by default because AGP cannot build
+    // split APKs and the Play App Bundle (which splits by itself) in the same run.
+    val directApks = providers.gradleProperty("abiSplits").isPresent
     splits {
         abi {
-            isEnable = providers.gradleProperty("abiSplits").isPresent
+            isEnable = directApks
             reset()
             include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = false
         }
+    }
+
+    // Play App Bundle: split by CPU and screen density, but keep all five languages in the base APK so the in-app
+    // language switch (Settings > Language) works offline on every phone. Together they are only a few KB.
+    bundle {
+        language { enableSplit = false }
+    }
+
+    packaging {
+        // APKs shared as files (WhatsApp, Files Go) are downloaded on mobile data: compress the native libraries
+        // (WebRTC alone is 12 MB stored, about 5 MB compressed). The Play bundle keeps them uncompressed: Play
+        // compresses the download itself and the phone then needs no extra copy.
+        jniLibs.useLegacyPackaging = directApks
+        // Sources and debug data nobody reads at runtime.
+        resources.excludes += listOf("google/protobuf/*.proto", "DebugProbesKt.bin", "META-INF/*.version")
     }
 
     compileOptions {
@@ -105,6 +124,9 @@ dependencies {
     implementation(libs.compose.icons.core)
     implementation(libs.compose.icons.extended) // unused icons are stripped by R8
     implementation(libs.coil.compose)
+    // Installs the baseline profile (src/main/baseline-prof.txt + the libraries' own) on sideloaded installs too,
+    // so the first launches run precompiled code instead of the interpreter.
+    implementation(libs.androidx.profileinstaller)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // Live server, video and payments only in the live flavor (keeps the demo APK small).

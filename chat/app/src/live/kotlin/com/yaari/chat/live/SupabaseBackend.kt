@@ -8,7 +8,9 @@ import android.net.Uri
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import com.yaari.chat.BuildConfig
+import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
+import com.yaari.chat.data.awaitVisible
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.Entitlements
 import com.yaari.chat.data.Match
@@ -48,6 +50,7 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
+import io.github.jan.supabase.logging.LogLevel
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
@@ -94,6 +97,8 @@ import kotlin.time.Duration.Companion.hours
 /** Live server: Supabase project "yaari-chat" (Mumbai). All rules are re-checked in Postgres (server/migrations). */
 class SupabaseBackend(private val app: Application, persistSession: Boolean = true) : Backend {
     private val client = createSupabaseClient(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY) {
+        // Release builds write nothing to Logcat: requests, sessions and phone numbers must not end up in device logs.
+        defaultLogLevel = if (BuildConfig.DEBUG) LogLevel.WARNING else LogLevel.NONE
         install(Auth) {
             // Explicit storage: does not depend on the androidx-startup initializer having run.
             if (persistSession) {
@@ -333,8 +338,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         try {
             channel.subscribe(blockUntilSubscribed = true)
             typingChannel.subscribe()
-            // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the app de-duplicates).
+            // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the app de-duplicates),
+            // only while the app is on screen; back from the background it re-syncs at once.
             while (true) {
+                AppForeground.visible.awaitVisible()
                 runCatching {
                     onMatch(matchRow(matchId))
                     history(matchId).forEach { send(MatchEvent.NewMessage(it)) }
@@ -380,6 +387,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             put("p_reason", reason.code)
             matchId?.let { put("p_match", it) }
         })
+        Unit
+    }
+
+    /** Server RPC block_user: blocks, ends any open chat between us and removes the friendship. */
+    override suspend fun block(userId: String) = call {
+        client.postgrest.rpc("block_user", buildJsonObject { put("p_user", userId) })
         Unit
     }
 
@@ -529,9 +542,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         launch { inserts.collect { a -> runCatching { toRoomMessage(a.decodeRecord<RoomMessageRow>(), me) }.onSuccess { send(it) } } }
         try {
             channel.subscribe(blockUntilSubscribed = true)
-            // Re-sync after a dropped socket (the app de-duplicates by id).
+            // Re-sync after a dropped socket (the app de-duplicates by id), only while the app is on screen.
             while (true) {
                 delay(15_000)
+                AppForeground.visible.awaitVisible()
                 runCatching { roomHistory(roomId).takeLast(30).forEach { send(it) } }
             }
         } finally {

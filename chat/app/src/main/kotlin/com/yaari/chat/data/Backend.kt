@@ -80,6 +80,11 @@ interface Backend {
     suspend fun leave(matchId: String)
     /** Always allowed: blocks the person and ends any open chat with them. */
     suspend fun report(partnerId: String, reason: ReportReason, matchId: String?)
+    /**
+     * Block without reporting (Play UGC policy): never matched or shown to each other again, any open chat between
+     * us ends, and a friendship is removed. Always allowed.
+     */
+    suspend fun block(userId: String)
 
     suspend fun requestVideo(matchId: String)
     suspend fun answerVideo(matchId: String, accept: Boolean)
