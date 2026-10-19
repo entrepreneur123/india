@@ -25,3 +25,13 @@ def get_bytes(url: str, data: dict | None = None, retries: int = 3, timeout: int
             last = e
         time.sleep(2 ** attempt)
     raise RuntimeError(f"GET {url} failed: {last}")
+
+
+def is_pdf(url: str, timeout: int = 20) -> bool:
+    """True only when the URL serves a PDF right now. Listings name files before they exist."""
+    req = urllib.request.Request(url, method="HEAD", headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.status == 200 and "pdf" in resp.headers.get("Content-Type", "").lower()
+    except (urllib.error.URLError, TimeoutError):
+        return False

@@ -265,7 +265,7 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit, onOpenSheet: (Draw, Boolean
                         OutlinedButton(onClick = { onOpenSheet(draw, true) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.open_official_pdf))
                         }
-                        TextButton(onClick = { downloadPdf(ctx, url, "${draw.id}.pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
+                        TextButton(onClick = { downloadPdf(ctx, url, (draw.id.takeIf(com.lottodost.app.domain.Trust::isId) ?: "result") + ".pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.save_pdf))
                         }
                     }

@@ -173,7 +173,12 @@ def listed_today() -> list[tuple[str, str]]:
     page = (get_bytes(BASE + "today.php") or b"").decode("utf-8", "replace")
     titles = re.findall(r"<h5[^>]*>(.*?)</h5>", page, re.S)
     stems = re.findall(r'id="([A-Z]{2}\d{6})\.PDF"\s+class="pdfile"', page)
-    return [(s, html.unescape(re.sub(r"<[^>]+>", " ", t)).strip()) for s, t in zip(stems, titles)]
+    return [(s, clean_title(html.unescape(re.sub(r"<[^>]+>", " ", t)))) for s, t in zip(stems, titles)]
+
+
+def clean_title(t: str) -> str:
+    """Draw names come from someone else's page and end up in our feed: plain words only."""
+    return " ".join(re.sub(r"[^A-Za-z0-9 :.,&'()/-]", " ", t).split())[:80]
 
 
 def special_catalog() -> list[dict]:
@@ -183,7 +188,7 @@ def special_catalog() -> list[dict]:
     for stem, label in re.findall(r'<option value="([A-Z]{2}\d{6})\.PDF">([^<]+)</option>', page):
         m = re.match(r"(.+?)\s+(\d{2})-(\d{2})-(\d{4})\s*$", label.strip())
         if m:
-            out.append({"stem": stem, "name": m.group(1).strip(),
+            out.append({"stem": stem, "name": clean_title(html.unescape(m.group(1))),
                         "date": f"{m.group(4)}-{m.group(3)}-{m.group(2)}",
                         "url": OLD_URL.format(stem=stem)})
     return out

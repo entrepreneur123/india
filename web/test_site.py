@@ -9,8 +9,10 @@ import sitegen  # web/sitegen.py
 FEED = pathlib.Path(__file__).resolve().parent.parent / "android/app/src/test/resources/feed_latest.json"
 
 
-def build(tmp, monkeypatch, ads=""):
+def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None, slot="", og=False):
+    monkeypatch.setenv("SITE_OG", "1" if og else "0")  # share images are slow to draw; one test covers them
     monkeypatch.setenv("ADSENSE_CLIENT", ads)
+    monkeypatch.setenv("ADSENSE_SLOT", slot)
     data = tmp / "data"
     (data / "v2/days").mkdir(parents=True)
     feed = json.loads(FEED.read_text())
@@ -20,7 +22,7 @@ def build(tmp, monkeypatch, ads=""):
     (data / "v2/index.json").write_text(json.dumps({"schema": 2, "dates": [], "noDraw": [], "upcoming": []}))
     now = dt.datetime(2026, 10, 18, 21, 0, tzinfo=sitegen.IST)
     out = tmp / "out"
-    s = sitegen.Site(data, "https://example.in", now=now)
+    s = sitegen.Site(data, base, now=now, link_prefix=link_prefix)
     s.build(out)
     return out
 
@@ -53,9 +55,11 @@ def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
 
 
 def test_ads_when_configured(tmp_path, monkeypatch):
-    out = build(tmp_path, monkeypatch, ads="ca-pub-1234567890")
+    auto = (build(tmp_path / "auto", monkeypatch, ads="ca-pub-1234567890") / "result/18-10-2026/index.html").read_text()
+    assert "adsbygoogle.js?client=ca-pub-1234567890" in auto and 'class="adsbygoogle"' not in auto  # Auto ads only
+    out = build(tmp_path, monkeypatch, ads="ca-pub-1234567890", slot="1234567")
     page = (out / "result/18-10-2026/index.html").read_text()
-    assert 0 < page.count('class="adsbygoogle"') <= 3
+    assert 0 < page.count('class="adsbygoogle"') <= 3 and 'data-ad-slot="1234567"' in page
     assert (out / "ads.txt").read_text() == "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0\n"
 
 
@@ -75,3 +79,64 @@ def test_html_tags_are_balanced(tmp_path, monkeypatch):
 
     for f in out.rglob("*.html"):
         p = P(); p.feed(f.read_text()); assert p.stack == [], f
+
+
+def test_search_console_verification_tag(tmp_path, monkeypatch):
+    monkeypatch.setenv("GOOGLE_SITE_VERIFICATION", "abc123")
+    out = build(tmp_path, monkeypatch)
+    assert '<meta name="google-site-verification" content="abc123">' in (out / "index.html").read_text()
+    assert "msvalidate.01" not in (out / "index.html").read_text()
+
+
+def test_verification_accepts_the_whole_meta_tag():
+    tag = '<meta name="google-site-verification" content="kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q" />'
+    assert sitegen.verification(tag) == "kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q"
+    assert sitegen.verification(" abc123 ") == "abc123"
+
+
+def test_beacon_accepts_the_whole_snippet():
+    snippet = ("<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' "
+               "data-cf-beacon='{\"token\": \"0123abcd\"}'></script><!-- End Cloudflare Web Analytics -->")
+    assert sitegen.beacon_token(snippet) == "0123abcd"
+    assert sitegen.beacon_token("0123abcd") == "0123abcd"
+
+
+def test_mirror_at_host_root_links_without_the_project_path(tmp_path, monkeypatch):
+    """GitHub serves the site under /india/, Cloudflare at the root: links must follow the copy, canonicals must not."""
+    gh = (build(tmp_path / "gh", monkeypatch, base="https://example.github.io/india") / "bn/index.html").read_text()
+    assert 'href="/india/bn/result/17-10-2026/"' in gh and 'src="/india/assets/site.js"' in gh
+    cf = (build(tmp_path / "cf", monkeypatch, base="https://example.github.io/india", link_prefix="") / "bn/index.html").read_text()
+    assert "/india/" not in cf.replace("https://example.github.io/india/", "")
+    assert 'href="/bn/result/17-10-2026/"' in cf and 'src="/assets/site.js"' in cf and 'href="/privacy.html"' in cf
+    assert '<link rel="canonical" href="https://example.github.io/india/bn/">' in cf
+
+
+def test_every_internal_link_resolves(tmp_path, monkeypatch):
+    """A PDF-only draw (no numbers) has no page of its own, so nothing may link to one."""
+    data = tmp_path / "pdfonly"
+    out = build(data, monkeypatch, base="https://example.github.io/india", link_prefix="")
+    feed = json.loads(FEED.read_text())
+    assert any(not d.get("tiers") for d in feed["draws"])  # the fixture really has a PDF-only draw
+    for page in out.rglob("*.html"):
+        for link in set(re.findall(r'(?:href|src)="(/[^"]*)"', page.read_text())) - {"/privacy.html"}:  # copied by the workflow
+            target = out / link.split("#")[0].lstrip("/")
+            assert (target / "index.html").exists() or target.is_file(), f"{page.relative_to(out)} -> {link}"
+
+
+def test_share_image_and_freshness(tmp_path, monkeypatch):
+    pytest = __import__("pytest")
+    pytest.importorskip("PIL")
+    out = build(tmp_path, monkeypatch, og=True)
+    page = (out / "result/18-10-2026/1pm/index.html").read_text()
+    assert '<meta property="og:image" content="https://example.in/og/2026-10-18_NL1PM.png">' in page
+    png = out / "og/2026-10-18_NL1PM.png"
+    assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n" and png.stat().st_size < 40_000
+    home = (out / "index.html").read_text()
+    assert '"dateModified": "2026-10-18T21:00+05:30"' in home
+
+
+def test_number_history_and_date_search_are_on_the_page(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    assert 'id="histForm"' in (out / "index.html").read_text()
+    old = (out / "old-results/index.html").read_text()
+    assert 'id="dateForm"' in old and 'min="2026-10-12" max="2026-10-18"' in old

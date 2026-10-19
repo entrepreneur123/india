@@ -1,5 +1,6 @@
 package com.lottodost.app.data
 
+import com.lottodost.app.domain.Trust
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
@@ -99,7 +100,7 @@ class ResultRepository internal constructor(
                 }
             }
             _state.update {
-                it.copy(draws = map, index = readCache(INDEX), config = readCache(CONFIG),
+                it.copy(draws = map, index = readCache(INDEX), config = readCache<RemoteConfig>(CONFIG)?.trusted(),
                     lastCheckedMs = prefs.getLong(K_CHECKED, 0), feedGeneratedAt = newest,
                     clockOffsetMs = prefs.getLong(K_OFFSET, 0))
             }
@@ -215,7 +216,7 @@ class ResultRepository internal constructor(
                 }
                 if (stale(K_CONFIG_AT, CONFIG_MAX_AGE_MS, now)) {
                     (fetch(CONFIG, readCache<RemoteConfig>(CONFIG) != null, ::isConfig) as? Fetch.Body)?.let { b ->
-                        runCatching { json.decodeFromString<RemoteConfig>(b.text) }.getOrNull()?.let { cfg ->
+                        runCatching { json.decodeFromString<RemoteConfig>(b.text).trusted() }.getOrNull()?.let { cfg ->
                             writeCache(CONFIG, b.text)
                             _state.update { it.copy(config = cfg) }
                         }
@@ -247,6 +248,7 @@ class ResultRepository internal constructor(
 
     /** Loads one day of history (cache first; days before yesterday never change once complete). */
     suspend fun loadDay(date: String, today: String) = withContext(Dispatchers.IO) {
+        if (!Trust.isDate(date)) return@withContext  // dates come from the feed: never let one shape a file path
         val path = "days/$date.json"
         val cached = readCache<DayFeed>(path)
         if (cached != null) mergeDay(cached)

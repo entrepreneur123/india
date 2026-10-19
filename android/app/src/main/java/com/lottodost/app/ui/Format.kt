@@ -42,6 +42,7 @@ fun formatTime(hhmm: String): String {
 }
 
 fun openUrl(ctx: Context, url: String) {
+    if (!com.lottodost.app.domain.Trust.isWebLink(url)) return  // never intent:, upi:, file: from data
     try {
         ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     } catch (_: ActivityNotFoundException) {

@@ -258,3 +258,26 @@ def test_require_exit_code_drives_the_watch_loop(tmp_path, monkeypatch):
     args = ["--out", str(tmp_path), "--date", "2026-10-18", "--backfill-days", "0", "--no-official"]
     assert build.main(args + ["--require", "NL1PM"]) == 0
     assert build.main(args + ["--require", "NL1PM,NL8PM"]) == 3
+
+
+def test_official_file_is_linked_only_after_the_draw_and_once_uploaded(tmp_path, monkeypatch):
+    """The official calendar lists tonight's files at noon; linking them then gave a 404 'result'."""
+    from lottery_pipeline import http
+    import json
+    monkeypatch.setattr(sambad, "fetch", lambda slot_id, date, today=None: None)
+    monkeypatch.setattr(sambad, "listed_today", lambda: [])
+    monkeypatch.setattr(official, "list_codes", lambda date: ["MN", "EN", "DG"])
+    uploaded = set()
+    monkeypatch.setattr(http, "is_pdf", lambda url: any(code in url for code in uploaded))
+
+    def slots_at(hh, mm):
+        build.run(str(tmp_path), OCT18, backfill_days=0, use_official=True, deep=False, ocr=False,
+                  now_ist=dt.datetime(2026, 10, 18, hh, mm, tzinfo=build.IST))
+        day = json.loads((tmp_path / "v2" / "today.json").read_text())["draws"]
+        return sorted(d["slot"] for d in day)
+
+    uploaded.add("MN")
+    assert slots_at(14, 0) == ["NL1PM"]              # 8 PM files listed but the draw is hours away
+    assert slots_at(20, 30) == ["NL1PM"]             # drawn, but not uploaded yet: no dead link
+    uploaded.update({"EN", "DG"})
+    assert slots_at(21, 0) == ["NL1PM", "NL8PM", "NLLAXMI"]
