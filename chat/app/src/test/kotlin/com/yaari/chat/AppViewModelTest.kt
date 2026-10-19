@@ -11,6 +11,7 @@ import com.yaari.chat.model.Target
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.Onboarding
 import com.yaari.chat.ui.ProfileDraft
+import com.yaari.chat.ui.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -84,7 +85,7 @@ class AppViewModelTest {
         assertEquals(Onboarding.Step.OTP, vm.state.value.onboarding.step)
         vm.verifyOtp("000000")
         advanceUntilIdle()
-        assertEquals("Wrong code. Try again.", vm.state.value.onboarding.error)
+        assertEquals(UiText(R.string.err_otp_wrong), vm.state.value.onboarding.error)
     }
 
     @Test fun under18CannotRegister() = runTest(dispatcher) {
@@ -92,7 +93,7 @@ class AppViewModelTest {
         vm.requestOtp("9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         vm.createProfile(adult.copy(year = "2008", month = "10", day = "19")); advanceUntilIdle()
-        assertEquals("Yaari is only for adults (18+)", vm.state.value.onboarding.error)
+        assertEquals(UiText(R.string.err_under_18), vm.state.value.onboarding.error)
         assertNull(vm.state.value.me)
         vm.createProfile(adult.copy(year = "2008", month = "10", day = "18")); advanceUntilIdle()
         assertNotNull("exactly 18 today is allowed", vm.state.value.me)

@@ -2,8 +2,10 @@ package com.yaari.chat.ui
 
 import android.app.Activity
 import android.os.SystemClock
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yaari.chat.R
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.Billing
@@ -35,7 +37,14 @@ import java.time.LocalDate
 
 enum class Tab { CHAT, RECENT, ME }
 
-data class Onboarding(val step: Step = Step.PHONE, val phone: String = "", val busy: Boolean = false, val error: String? = null) {
+/** Why the Premium sheet opened; [reason] is shown above the offer. */
+enum class Paywall(@StringRes val reason: Int?) {
+    GENERAL(null),
+    GENDER(R.string.premium_needed_gender),
+    VIDEO(R.string.premium_needed_video),
+}
+
+data class Onboarding(val step: Step = Step.PHONE, val phone: String = "", val busy: Boolean = false, val error: UiText? = null) {
     enum class Step { PHONE, OTP, PROFILE }
 }
 
@@ -76,8 +85,8 @@ data class UiState(
     val viewing: Profile? = null,
     val dm: DmState? = null,
     val recents: List<RecentMatch> = emptyList(),
-    val paywall: String? = null,
-    val notice: String? = null,
+    val paywall: Paywall? = null,
+    val notice: UiText? = null,
 ) {
     val premium get() = entitlements.premium
 }
@@ -128,19 +137,22 @@ class AppViewModel(
         it.copy(entitlements = e, target = if (e.canChooseGender) it.target else Target.ANY)
     }
 
-    private fun notice(text: String) = _state.update { it.copy(notice = text) }
+    private fun notice(text: UiText) = _state.update { it.copy(notice = text) }
 
-    private fun explain(e: Throwable): String = when ((e as? BackendException)?.code) {
-        "exit_locked" -> "Wait a moment before leaving"
-        "premium_required" -> "This needs Premium"
-        "banned" -> "Your account is suspended after reports. Contact support."
-        "under_18" -> "Yaari is only for adults (18+)"
-        "slow_down" -> "You're sending too fast"
-        "blocked" -> "You can't message this person"
-        "not_allowed" -> "That's not possible right now"
-        "video_not_configured" -> "Video calls are not available yet"
-        else -> "Network problem. Please try again."
-    }
+    private fun explain(e: Throwable) = UiText(
+        when ((e as? BackendException)?.code) {
+            "exit_locked" -> R.string.err_exit_locked
+            "premium_required" -> R.string.err_premium
+            "banned" -> R.string.err_banned
+            "under_18" -> R.string.err_under_18
+            "slow_down" -> R.string.err_slow_down
+            "blocked" -> R.string.err_blocked
+            "not_allowed" -> R.string.err_not_allowed
+            "video_not_configured" -> R.string.err_video_off
+            "too_large" -> R.string.err_too_large
+            else -> R.string.err_network
+        },
+    )
 
     /** Runs [block]; failures become a notice instead of a crash. */
     private fun act(block: suspend () -> Unit) = viewModelScope.launch {
@@ -158,7 +170,7 @@ class AppViewModel(
     fun requestOtp(input: String) {
         val phone = Validation.indianMobile(input)
         if (phone == null) {
-            _state.update { it.copy(onboarding = it.onboarding.copy(error = "Enter a valid 10-digit Indian mobile number")) }
+            _state.update { it.copy(onboarding = it.onboarding.copy(error = UiText(R.string.err_phone))) }
             return
         }
         _state.update { it.copy(onboarding = Onboarding(Onboarding.Step.PHONE, phone, busy = true)) }
@@ -166,7 +178,7 @@ class AppViewModel(
             val ok = runCatching { backend.sendOtp(phone) }.isSuccess
             _state.update {
                 it.copy(onboarding = if (ok) it.onboarding.copy(step = Onboarding.Step.OTP, busy = false)
-                else it.onboarding.copy(busy = false, error = "Couldn't send the code. Try again."))
+                else it.onboarding.copy(busy = false, error = UiText(R.string.err_otp_send)))
             }
         }
     }
@@ -177,7 +189,7 @@ class AppViewModel(
         viewModelScope.launch {
             val ok = runCatching { backend.verifyOtp(phone, code.trim()) }.getOrDefault(false)
             if (!ok) {
-                _state.update { it.copy(onboarding = it.onboarding.copy(busy = false, error = "Wrong code. Try again.")) }
+                _state.update { it.copy(onboarding = it.onboarding.copy(busy = false, error = UiText(R.string.err_otp_wrong))) }
                 return@launch
             }
             val existing = runCatching { backend.myProfile() }.getOrNull()
@@ -196,13 +208,13 @@ class AppViewModel(
         val birth = Validation.birthDate(d.day, d.month, d.year)
         val age = birth?.let { Validation.age(it, today()) }
         val error = when {
-            name.isEmpty() -> "Enter your name"
-            name.length > Validation.MAX_NAME -> "Name is too long"
-            d.gender == null -> "Select your gender"
-            birth == null || age == null || age > Validation.MAX_AGE -> "Enter a valid date of birth"
-            age < Validation.MIN_AGE -> "Yaari is only for adults (18+)"
-            d.bio.length > Validation.MAX_BIO -> "Bio is too long"
-            !d.agreed -> "Please accept the community rules"
+            name.isEmpty() -> UiText(R.string.err_name)
+            name.length > Validation.MAX_NAME -> UiText(R.string.err_name_long)
+            d.gender == null -> UiText(R.string.err_gender)
+            birth == null || age == null || age > Validation.MAX_AGE -> UiText(R.string.err_birth)
+            age < Validation.MIN_AGE -> UiText(R.string.err_under_18)
+            d.bio.length > Validation.MAX_BIO -> UiText(R.string.err_bio_long)
+            !d.agreed -> UiText(R.string.err_rules)
             else -> null
         }
         if (error != null) {
@@ -232,13 +244,13 @@ class AppViewModel(
 
     fun setTarget(target: Target) {
         if (target.isPaid && !_state.value.entitlements.canChooseGender) {
-            showPaywall("Choose who you meet")
+            showPaywall(Paywall.GENDER)
             return
         }
         _state.update { it.copy(target = target) }
     }
 
-    fun showPaywall(feature: String) = _state.update { it.copy(paywall = feature) }
+    fun showPaywall(reason: Paywall) = _state.update { it.copy(paywall = reason) }
 
     fun dismissPaywall() = _state.update { it.copy(paywall = null) }
 
@@ -251,7 +263,7 @@ class AppViewModel(
             val token = billing.buy(activity, productId, me.id) ?: return@act
             applyEntitlements(backend.redeem(productId, token))
             billing.finish(productId, token)
-            _state.update { it.copy(paywall = null, notice = "Purchase complete. Enjoy!") }
+            _state.update { it.copy(paywall = null, notice = UiText(R.string.msg_purchase_done)) }
         }
     }
 
@@ -297,7 +309,7 @@ class AppViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                notice("Connection lost. Reconnecting may need a new match.")
+                notice(UiText(R.string.msg_connection_lost))
             }
         }
     }
@@ -309,7 +321,7 @@ class AppViewModel(
             MatchEvent.PartnerLeft -> c.copy(partnerLeft = true, partnerTyping = false, video = VideoStatus.NONE)
             is MatchEvent.Video -> {
                 if (e.status == VideoStatus.DECLINED && c.video == VideoStatus.REQUESTED_BY_ME) {
-                    notice("${c.match.partner.name} declined the video call")
+                    notice(UiText(R.string.msg_declined, c.match.partner.name))
                 }
                 c.copy(video = e.status)
             }
@@ -367,7 +379,7 @@ class AppViewModel(
         act {
             backend.report(c.match.partner.id, reason, c.match.id)
             closeChat()
-            notice("Reported and blocked. You won't be matched again.")
+            notice(UiText(R.string.msg_reported_long))
             if (next) startMatching()
         }
     }
@@ -382,7 +394,7 @@ class AppViewModel(
         val s = _state.value
         val c = s.chat ?: return
         if (!s.premium) {
-            showPaywall("Video calls")
+            showPaywall(Paywall.VIDEO)
             return
         }
         if (c.partnerLeft || c.video in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.ACCEPTED)) return
@@ -445,7 +457,7 @@ class AppViewModel(
                     recents = s.recents.filterNot { it.partner.id == partnerId },
                     viewing = s.viewing?.takeIf { it.id != partnerId },
                     dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
-                    notice = "Reported and blocked.",
+                    notice = UiText(R.string.msg_reported),
                 )
             }
         }
@@ -495,7 +507,7 @@ class AppViewModel(
     fun deleteAccount() = act {
         backend.deleteAccount()
         resetToStart()
-        notice("Your account and data were deleted.")
+        notice(UiText(R.string.msg_deleted))
     }
 
     private fun resetToStart() {

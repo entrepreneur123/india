@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -55,23 +57,23 @@ fun OnboardingScreen(vm: AppViewModel, state: Onboarding) {
             Onboarding.Step.OTP -> OtpStep(vm, state)
             Onboarding.Step.PROFILE -> ProfileStep(vm, state.busy)
         }
-        state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        state.error?.let { Text(it.text(), color = MaterialTheme.colorScheme.error) }
     }
 }
 
 @Composable
 private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
     var phone by rememberSaveable { mutableStateOf(state.phone) }
-    Text("Meet new people across India", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.tagline), style = MaterialTheme.typography.titleMedium)
     OutlinedTextField(
-        phone, { if (it.length <= 14) phone = it }, label = { Text("Mobile number") }, prefix = { Text("+91 ") },
+        phone, { if (it.length <= 14) phone = it }, label = { Text(stringResource(R.string.mobile_number)) }, prefix = { Text("+91 ") },
         singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth(),
     )
     Button({ vm.requestOtp(phone) }, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) {
-        if (state.busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Send OTP")
+        if (state.busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text(stringResource(R.string.send_otp))
     }
     Text(
-        "One account per phone number. Yaari is for adults (18+) only.",
+        stringResource(R.string.phone_note),
         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
@@ -80,16 +82,16 @@ private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
 private fun OtpStep(vm: AppViewModel, state: Onboarding) {
     var code by rememberSaveable { mutableStateOf("") }
     BackHandler { vm.backToPhone() }
-    Text("Enter the 6-digit code sent to +91 ${state.phone}", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.otp_prompt, state.phone), style = MaterialTheme.typography.titleMedium)
     OutlinedTextField(
-        code, { if (it.length <= 6 && it.all(Char::isDigit)) code = it }, label = { Text("OTP") }, singleLine = true,
+        code, { if (it.length <= 6 && it.all(Char::isDigit)) code = it }, label = { Text(stringResource(R.string.otp_label)) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword), modifier = Modifier.fillMaxWidth(),
     )
-    Text("Prototype: the code is ${FakeBackend.DEMO_OTP}", style = MaterialTheme.typography.bodySmall)
+    Text(stringResource(R.string.demo_otp, FakeBackend.DEMO_OTP), style = MaterialTheme.typography.bodySmall)
     Button({ vm.verifyOtp(code) }, enabled = code.length == 6 && !state.busy, modifier = Modifier.fillMaxWidth()) {
-        if (state.busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Verify")
+        if (state.busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text(stringResource(R.string.verify))
     }
-    TextButton({ vm.backToPhone() }) { Text("Change number") }
+    TextButton({ vm.backToPhone() }) { Text(stringResource(R.string.change_number)) }
 }
 
 @Composable
@@ -101,41 +103,41 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
     }
     val preview = Profile("draft", d.name.ifBlank { "?" }, d.gender ?: Gender.OTHER, 0, "", "", d.photoUri)
 
-    Text("Create your profile", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.create_profile), style = MaterialTheme.typography.titleMedium)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Avatar(preview, 84.dp, Modifier.clickable { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) })
         Spacer(Modifier.padding(8.dp))
         TextButton({ picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }) {
-            Text(if (d.photoUri == null) "Add profile photo" else "Change photo")
+            Text(stringResource(if (d.photoUri == null) R.string.add_profile_photo else R.string.change_photo))
         }
     }
-    OutlinedTextField(d.name, { d = d.copy(name = it.take(30)) }, label = { Text("Name") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-    Text("Gender")
+    OutlinedTextField(d.name, { d = d.copy(name = it.take(30)) }, label = { Text(stringResource(R.string.name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    Text(stringResource(R.string.gender))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Gender.entries.forEach { g ->
-            FilterChip(d.gender == g, { d = d.copy(gender = g) }, label = { Text(g.label) })
+            FilterChip(d.gender == g, { d = d.copy(gender = g) }, label = { Text(stringResource(g.label)) })
         }
     }
-    Text("Date of birth")
+    Text(stringResource(R.string.date_of_birth))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         val num = KeyboardOptions(keyboardType = KeyboardType.Number)
         OutlinedTextField(d.day, { d = d.copy(day = it.filter(Char::isDigit).take(2)) }, label = { Text("DD") }, singleLine = true, keyboardOptions = num, modifier = Modifier.weight(1f))
         OutlinedTextField(d.month, { d = d.copy(month = it.filter(Char::isDigit).take(2)) }, label = { Text("MM") }, singleLine = true, keyboardOptions = num, modifier = Modifier.weight(1f))
         OutlinedTextField(d.year, { d = d.copy(year = it.filter(Char::isDigit).take(4)) }, label = { Text("YYYY") }, singleLine = true, keyboardOptions = num, modifier = Modifier.weight(1.4f))
     }
-    OutlinedTextField(d.city, { d = d.copy(city = it.take(30)) }, label = { Text("City") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-    OutlinedTextField(d.bio, { d = d.copy(bio = it.take(150)) }, label = { Text("Bio") }, minLines = 2, modifier = Modifier.fillMaxWidth())
+    OutlinedTextField(d.city, { d = d.copy(city = it.take(30)) }, label = { Text(stringResource(R.string.city)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    OutlinedTextField(d.bio, { d = d.copy(bio = it.take(150)) }, label = { Text(stringResource(R.string.bio)) }, minLines = 2, modifier = Modifier.fillMaxWidth())
     Row(
         Modifier.toggleable(d.agreed, role = Role.Checkbox) { d = d.copy(agreed = it) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Checkbox(d.agreed, onCheckedChange = null)
         Text(
-            "I am 18 or older and agree to the Community Rules: no nudity, no minors, no harassment. Breaking them means a permanent ban.",
+            stringResource(R.string.consent),
             style = MaterialTheme.typography.bodySmall,
         )
     }
     Button({ vm.createProfile(d) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
-        if (busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Start")
+        if (busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text(stringResource(R.string.start))
     }
 }

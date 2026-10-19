@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,13 +42,7 @@ object Support {
     const val SUPPORT_EMAIL = "support@yaari.app"
 }
 
-private val Rules = listOf(
-    "Adults only (18+). Anyone who looks under 18 is removed.",
-    "No nudity or sexual content, in chat or on video.",
-    "No harassment, hate, threats or scams.",
-    "Don't share anyone's private photos or details.",
-    "Breaking the rules means a permanent ban.",
-)
+private val Rules = listOf(R.string.rule_1, R.string.rule_2, R.string.rule_3, R.string.rule_4, R.string.rule_5)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,8 +52,8 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Settings & safety") },
-                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
+                title = { Text(stringResource(R.string.settings_safety)) },
+                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } },
             )
         },
     ) { pad ->
@@ -65,34 +61,33 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
             Modifier.padding(pad).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text("Community rules", fontWeight = FontWeight.Bold)
-            Rules.forEach { Text("• $it") }
+            Text(stringResource(R.string.community_rules), fontWeight = FontWeight.Bold)
+            Rules.forEach { Text(stringResource(it)) }
             Text(
-                "Use Report in any chat or profile: the person is blocked at once and our team reviews it. " +
-                    "Complaints about intimate images or impersonation are acted on within 2 hours.",
+                stringResource(R.string.report_info),
                 style = MaterialTheme.typography.bodySmall,
             )
             HorizontalDivider()
-            Text("Grievance Officer", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.grievance_officer), fontWeight = FontWeight.Bold)
             Text("${Support.GRIEVANCE_OFFICER}\n${Support.GRIEVANCE_EMAIL}")
-            Text("Help: ${Support.SUPPORT_EMAIL}", style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.help_email, Support.SUPPORT_EMAIL), style = MaterialTheme.typography.bodySmall)
             HorizontalDivider()
-            Text("Account", fontWeight = FontWeight.Bold)
-            OutlinedButton(vm::signOut, Modifier.fillMaxWidth()) { Text("Sign out") }
+            Text(stringResource(R.string.account), fontWeight = FontWeight.Bold)
+            OutlinedButton(vm::signOut, Modifier.fillMaxWidth()) { Text(stringResource(R.string.sign_out)) }
             OutlinedButton({ confirmDelete = true }, Modifier.fillMaxWidth()) {
-                Text("Delete account", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.delete_account), color = MaterialTheme.colorScheme.error)
             }
         }
     }
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
-            title = { Text("Delete your account?") },
-            text = { Text("Your profile, posts, chats and photos are deleted permanently. Premium does not carry over; cancel the subscription in Google Play.") },
+            title = { Text(stringResource(R.string.delete_title)) },
+            text = { Text(stringResource(R.string.delete_text)) },
             confirmButton = {
-                TextButton({ confirmDelete = false; vm.deleteAccount() }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+                TextButton({ confirmDelete = false; vm.deleteAccount() }) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
             },
-            dismissButton = { TextButton({ confirmDelete = false }) { Text("Cancel") } },
+            dismissButton = { TextButton({ confirmDelete = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
 }

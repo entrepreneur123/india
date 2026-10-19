@@ -1,5 +1,6 @@
 package com.yaari.chat
 
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
@@ -67,7 +68,7 @@ object Flavor {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Avatar(partner, 140.dp)
                     Text(
-                        if (!granted) "Allow camera and microphone to start the call" else "Connecting…",
+                        stringResource(if (!granted) R.string.allow_camera else R.string.connecting),
                         color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp),
                     )
                 }
@@ -112,7 +113,7 @@ object Flavor {
             if (!remoteOn) {
                 Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                     Avatar(partner, 140.dp)
-                    Text("Waiting for ${partner.name}'s video…", color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
+                    Text(stringResource(R.string.waiting_video, partner.name), color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
                 }
             }
             Box(

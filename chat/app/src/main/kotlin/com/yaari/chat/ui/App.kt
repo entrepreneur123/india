@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +34,7 @@ fun YaariApp(vm: AppViewModel) {
     val context = LocalContext.current
     LaunchedEffect(s.notice) {
         s.notice?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, it.get(context), Toast.LENGTH_SHORT).show()
             vm.consumeNotice()
         }
     }
@@ -66,32 +68,32 @@ fun YaariApp(vm: AppViewModel) {
             }
         }
     }
-    s.paywall?.let { feature -> Paywall(vm, feature, s.prices) }
+    s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
 }
 
 @Composable
-private fun Paywall(vm: AppViewModel, feature: String, prices: Map<String, String>) {
+private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String, String>) {
     val activity = LocalActivity.current
     AlertDialog(
         onDismissRequest = vm::dismissPaywall,
-        title = { Text("Yaari Premium") },
+        title = { Text(stringResource(R.string.premium_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                if (feature != "Yaari Premium") Text("$feature needs Premium.")
-                Text("• Choose to meet men or women")
-                Text("• Video calls (the other person must accept)")
-                Text("• Skip to the next person after ${ExitPolicy.PREMIUM_LOCK_MS / 1000.0}s instead of ${ExitPolicy.FREE_LOCK_MS / 1000}s")
+                paywall.reason?.let { Text(stringResource(it)) }
+                Text(stringResource(R.string.premium_benefit_gender))
+                Text(stringResource(R.string.premium_benefit_video))
+                Text(stringResource(R.string.premium_benefit_skip, ExitPolicy.PREMIUM_LOCK_MS / 1000.0, ExitPolicy.FREE_LOCK_MS / 1000))
                 Button(
                     { activity?.let { vm.buy(it, Products.PREMIUM) } },
                     Modifier.fillMaxWidth(),
-                ) { Text("Premium · ${prices[Products.PREMIUM] ?: "monthly"}") }
+                ) { Text(stringResource(R.string.premium_buy, prices[Products.PREMIUM] ?: stringResource(R.string.premium_buy_default))) }
                 OutlinedButton(
                     { activity?.let { vm.buy(it, Products.GENDER_PASS) } },
                     Modifier.fillMaxWidth(),
-                ) { Text("Only gender choice · ${prices[Products.GENDER_PASS] ?: "24 hours"}") }
+                ) { Text(stringResource(R.string.pass_buy, prices[Products.GENDER_PASS] ?: stringResource(R.string.pass_buy_default))) }
             }
         },
         confirmButton = {},
-        dismissButton = { TextButton(vm::dismissPaywall) { Text("Not now") } },
+        dismissButton = { TextButton(vm::dismissPaywall) { Text(stringResource(R.string.not_now)) } },
     )
 }

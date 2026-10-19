@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -47,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.model.Media
@@ -80,21 +83,22 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                         Column(Modifier.padding(start = 10.dp)) {
                             Text(partner.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                if (chat.partnerTyping) "typing…" else partner.subtitle() + " · View profile",
+                                if (chat.partnerTyping) stringResource(R.string.typing) else stringResource(R.string.chat_subtitle, partner.subtitle()),
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
                 },
                 actions = {
                     TextButton({ vm.requestVideo() }, enabled = !chat.partnerLeft && chat.video !in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER)) {
-                        Text(if (chat.video == VideoStatus.REQUESTED_BY_ME) "Calling…" else "Video")
+                        Text(stringResource(if (chat.video == VideoStatus.REQUESTED_BY_ME) R.string.calling else R.string.video))
                     }
-                    IconButton({ reportDialog = true }) { Icon(Icons.Filled.Warning, "Report and leave", tint = MaterialTheme.colorScheme.error) }
+                    IconButton({ reportDialog = true }) { Icon(Icons.Filled.Warning, stringResource(R.string.report_and_leave), tint = MaterialTheme.colorScheme.error) }
                     // Normal exit: locked for 5 s (free) / 0.2 s (Premium) after the match starts.
                     IconButton({ exitDialog = true }, enabled = lockLeft <= 0) {
                         if (lockLeft > 0) Text("${(lockLeft + 999) / 1000}", fontWeight = FontWeight.Bold)
-                        else Icon(Icons.Filled.Close, "Leave")
+                        else Icon(Icons.Filled.Close, stringResource(R.string.leave))
                     }
                 },
             )
@@ -104,10 +108,10 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
             Messages(chat.messages, Modifier.weight(1f))
             if (chat.partnerLeft) {
                 Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("${partner.name} left the chat")
+                    Text(stringResource(R.string.partner_left, partner.name))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
-                        OutlinedButton({ vm.leave(next = false) }) { Text("Back to lobby") }
-                        Button({ vm.leave(next = true) }) { Text("Next match") }
+                        OutlinedButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby)) }
+                        Button({ vm.leave(next = true) }) { Text(stringResource(R.string.next_match)) }
                     }
                 }
             } else {
@@ -119,14 +123,14 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     if (exitDialog) {
         AlertDialog(
             onDismissRequest = { exitDialog = false },
-            title = { Text("Leave this chat?") },
-            text = { Text("${partner.name} will be saved in Recent.") },
-            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text("Next match") } },
-            dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text("Back to lobby") } },
+            title = { Text(stringResource(R.string.leave_title)) },
+            text = { Text(stringResource(R.string.leave_text, partner.name)) },
+            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match)) } },
+            dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby)) } },
         )
     }
     if (reportDialog) {
-        ReportDialog(onDismiss = { reportDialog = false }, actions = listOf("Report & next", "Report & lobby")) { reason, action ->
+        ReportDialog(onDismiss = { reportDialog = false }, actions = listOf(stringResource(R.string.report_next), stringResource(R.string.report_lobby))) { reason, action ->
             reportDialog = false
             vm.reportAndLeave(reason, next = action == 0)
         }
@@ -134,10 +138,10 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     if (chat.video == VideoStatus.REQUESTED_BY_PARTNER && !chat.partnerLeft) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("${partner.name} wants to video call") },
-            text = { Text("Your camera turns on only if you accept. You can end the call any time.") },
-            confirmButton = { TextButton({ vm.answerVideo(true) }) { Text("Accept") } },
-            dismissButton = { TextButton({ vm.answerVideo(false) }) { Text("Decline") } },
+            title = { Text(stringResource(R.string.video_incoming_title, partner.name)) },
+            text = { Text(stringResource(R.string.video_incoming_text)) },
+            confirmButton = { TextButton({ vm.answerVideo(true) }) { Text(stringResource(R.string.accept)) } },
+            dismissButton = { TextButton({ vm.answerVideo(false) }) { Text(stringResource(R.string.decline)) } },
         )
     }
 }
@@ -151,7 +155,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = { IconButton(vm::closeDm) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
+                navigationIcon = { IconButton(vm::closeDm) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } },
                 title = {
                     Row(Modifier.clickable { vm.openProfile(r.partner) }, verticalAlignment = Alignment.CenterVertically) {
                         Avatar(r.partner, 36.dp)
@@ -174,7 +178,7 @@ private fun Messages(messages: List<Message>, modifier: Modifier) {
     LaunchedEffect(messages.size) { if (messages.isNotEmpty()) list.animateScrollToItem(messages.lastIndex) }
     if (messages.isEmpty()) {
         Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Say hi 👋", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.say_hi), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return
     }
@@ -200,10 +204,10 @@ private fun Composer(onText: (String) -> Unit, onMedia: ((Media) -> Unit)?) {
     Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         if (onMedia != null) {
             IconButton({ picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) }) {
-                Icon(Icons.Filled.Add, "Send photo or video")
+                Icon(Icons.Filled.Add, stringResource(R.string.send_media))
             }
         }
-        OutlinedTextField(text, { text = it.take(1000) }, Modifier.weight(1f), placeholder = { Text("Message") }, maxLines = 4)
-        IconButton({ onText(text); text = "" }, enabled = text.isNotBlank()) { Icon(Icons.AutoMirrored.Filled.Send, "Send") }
+        OutlinedTextField(text, { text = it.take(1000) }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.message)) }, maxLines = 4)
+        IconButton({ onText(text); text = "" }, enabled = text.isNotBlank()) { Icon(Icons.AutoMirrored.Filled.Send, stringResource(R.string.send)) }
     }
 }

@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,9 +49,9 @@ fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) {
                 modifier = Modifier.align(Alignment.TopStart).padding(16.dp),
             )
             Row(Modifier.align(Alignment.BottomCenter).padding(24.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FilledTonalButton({ mic = !mic }) { Text(if (mic) "Mute" else "Unmute") }
-                FilledTonalButton({ cam = !cam }) { Text(if (cam) "Camera off" else "Camera on") }
-                Button(vm::endVideo, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))) { Text("End") }
+                FilledTonalButton({ mic = !mic }) { Text(stringResource(if (mic) R.string.mute else R.string.unmute)) }
+                FilledTonalButton({ cam = !cam }) { Text(stringResource(if (cam) R.string.camera_off else R.string.camera_on)) }
+                Button(vm::endVideo, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))) { Text(stringResource(R.string.end)) }
             }
         }
     }

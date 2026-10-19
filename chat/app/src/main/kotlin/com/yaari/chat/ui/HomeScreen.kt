@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -64,9 +66,9 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
     Scaffold(
         bottomBar = {
             NavigationBar {
-                NavigationBarItem(s.tab == Tab.CHAT, { vm.selectTab(Tab.CHAT) }, { Icon(Icons.Filled.Home, null) }, label = { Text("Chat") })
-                NavigationBarItem(s.tab == Tab.RECENT, { vm.selectTab(Tab.RECENT) }, { Icon(Icons.AutoMirrored.Filled.List, null) }, label = { Text("Recent") })
-                NavigationBarItem(s.tab == Tab.ME, { vm.selectTab(Tab.ME) }, { Icon(Icons.Filled.Person, null) }, label = { Text("Me") })
+                NavigationBarItem(s.tab == Tab.CHAT, { vm.selectTab(Tab.CHAT) }, { Icon(Icons.Filled.Home, null) }, label = { Text(stringResource(R.string.tab_chat)) })
+                NavigationBarItem(s.tab == Tab.RECENT, { vm.selectTab(Tab.RECENT) }, { Icon(Icons.AutoMirrored.Filled.List, null) }, label = { Text(stringResource(R.string.tab_recent)) })
+                NavigationBarItem(s.tab == Tab.ME, { vm.selectTab(Tab.ME) }, { Icon(Icons.Filled.Person, null) }, label = { Text(stringResource(R.string.tab_me)) })
             }
         },
     ) { pad ->
@@ -75,7 +77,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 Tab.CHAT -> Lobby(vm, s)
                 Tab.RECENT -> Recents(vm, s)
                 Tab.ME -> s.me?.let { me ->
-                    ProfileContent(me, isMe = true, entitlements = s.entitlements, onUpgrade = { vm.showPaywall("Yaari Premium") }, onNewPost = { composing = true }, onSettings = { settings = true })
+                    ProfileContent(me, isMe = true, entitlements = s.entitlements, onUpgrade = { vm.showPaywall(Paywall.GENERAL) }, onNewPost = { composing = true }, onSettings = { settings = true })
                 }
             }
         }
@@ -89,26 +91,26 @@ private fun Lobby(vm: AppViewModel, s: UiState) {
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Meet someone new", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Who do you want to meet?", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.lobby_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.lobby_question), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Target.entries.forEach { t ->
                 FilterChip(
-                    s.target == t, { vm.setTarget(t) }, label = { Text(t.label) },
-                    leadingIcon = if (t.isPaid && !s.entitlements.canChooseGender) ({ Icon(Icons.Filled.Lock, "Premium", Modifier.height(16.dp)) }) else null,
+                    s.target == t, { vm.setTarget(t) }, label = { Text(stringResource(t.label)) },
+                    leadingIcon = if (t.isPaid && !s.entitlements.canChooseGender) ({ Icon(Icons.Filled.Lock, stringResource(R.string.premium), Modifier.height(16.dp)) }) else null,
                 )
             }
         }
-        Button({ vm.startMatching() }, Modifier.fillMaxWidth().height(56.dp)) { Text("Start chatting", style = MaterialTheme.typography.titleMedium) }
+        Button({ vm.startMatching() }, Modifier.fillMaxWidth().height(56.dp)) { Text(stringResource(R.string.start_chatting), style = MaterialTheme.typography.titleMedium) }
         Text(
-            "Be kind. Nudity, harassment or minors = permanent ban.\nYou can always report & leave instantly.",
+            stringResource(R.string.lobby_rules),
             style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (!s.premium) {
-            Card(Modifier.fillMaxWidth().clickable { vm.showPaywall("Yaari Premium") }) {
+            Card(Modifier.fillMaxWidth().clickable { vm.showPaywall(Paywall.GENERAL) }) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Yaari Premium", fontWeight = FontWeight.Bold)
-                    Text("Choose gender · Video calls · Skip in ${ExitPolicy.PREMIUM_LOCK_MS / 1000.0}s", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.premium_title), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -124,9 +126,9 @@ fun MatchingScreen(vm: AppViewModel, target: Target) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator()
-        Text("Finding someone for you…", style = MaterialTheme.typography.titleMedium)
-        Text("Looking for: ${target.label}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        OutlinedButton({ vm.cancelMatching() }) { Text("Cancel") }
+        Text(stringResource(R.string.finding), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.looking_for, stringResource(target.label)), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        OutlinedButton({ vm.cancelMatching() }) { Text(stringResource(R.string.cancel)) }
     }
 }
 
@@ -134,7 +136,7 @@ fun MatchingScreen(vm: AppViewModel, target: Target) {
 private fun Recents(vm: AppViewModel, s: UiState) {
     if (s.recents.isEmpty()) {
         Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-            Text("People you meet will appear here.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.recent_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return
     }
@@ -150,11 +152,11 @@ private fun Recents(vm: AppViewModel, s: UiState) {
                 Column(Modifier.weight(1f)) {
                     Text(r.partner.name, fontWeight = FontWeight.SemiBold)
                     Text(
-                        r.lastText ?: "Met at ${fmt.format(Date(r.metAt))} · ${r.partner.subtitle()}",
+                        r.lastText ?: stringResource(R.string.met_at, fmt.format(Date(r.metAt)), r.partner.subtitle()),
                         style = MaterialTheme.typography.bodySmall, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                TextButton({ vm.openDm(r.partner.id) }) { Text("Message") }
+                TextButton({ vm.openDm(r.partner.id) }) { Text(stringResource(R.string.message)) }
             }
             HorizontalDivider()
         }
@@ -167,18 +169,18 @@ fun PremiumCard(e: Entitlements, onUpgrade: () -> Unit) {
         Column(Modifier.weight(1f)) {
             Text(
                 when {
-                    e.premium -> "Premium active"
-                    e.genderPass -> "Gender pass active"
-                    else -> "Free plan"
+                    e.premium -> stringResource(R.string.plan_premium)
+                    e.genderPass -> stringResource(R.string.plan_pass)
+                    else -> stringResource(R.string.plan_free)
                 },
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                if (e.premium) "Gender choice · Video calls · Skip in ${ExitPolicy.PREMIUM_LOCK_MS / 1000.0}s"
-                else "Upgrade for gender choice, video calls and instant skip",
+                if (e.premium) stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0)
+                else stringResource(R.string.plan_free_text),
                 style = MaterialTheme.typography.bodySmall,
             )
         }
-        if (!e.premium) TextButton(onUpgrade) { Text("Upgrade") }
+        if (!e.premium) TextButton(onUpgrade) { Text(stringResource(R.string.upgrade)) }
     }
 }

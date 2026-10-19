@@ -1,5 +1,6 @@
 package com.yaari.chat
 
+import androidx.compose.ui.res.stringResource
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,14 +33,14 @@ object Flavor {
         Box(modifier) {
             Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                 Avatar(partner, 160.dp)
-                Text("Demo · real video in the live build", color = Color.White.copy(alpha = 0.6f), modifier = Modifier.padding(top = 12.dp))
+                Text(stringResource(R.string.demo_video), color = Color.White.copy(alpha = 0.6f), modifier = Modifier.padding(top = 12.dp))
             }
             Box(
                 Modifier.align(Alignment.TopEnd).padding(top = 48.dp, end = 16.dp).size(96.dp, 128.dp)
                     .clip(RoundedCornerShape(12.dp)).background(Color(0xFF333333)),
                 contentAlignment = Alignment.Center,
             ) {
-                if (cam) Avatar(me, 56.dp) else Text("Camera off", color = Color.White)
+                if (cam) Avatar(me, 56.dp) else Text(stringResource(R.string.camera_off), color = Color.White)
             }
         }
     }

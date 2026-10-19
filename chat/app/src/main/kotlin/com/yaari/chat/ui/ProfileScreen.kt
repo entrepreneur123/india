@@ -1,5 +1,8 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
+import androidx.compose.ui.res.pluralStringResource
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -69,19 +72,19 @@ fun ProfileScreen(p: Profile, inChat: Boolean, onBack: () -> Unit, onMessage: ((
             topBar = {
                 TopAppBar(
                     title = { Text(p.name) },
-                    navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
-                    actions = { TextButton({ reporting = true }) { Text("Report", color = MaterialTheme.colorScheme.error) } },
+                    navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } },
+                    actions = { TextButton({ reporting = true }) { Text(stringResource(R.string.report), color = MaterialTheme.colorScheme.error) } },
                 )
             },
         ) { pad ->
             Box(Modifier.padding(pad)) {
                 ProfileContent(p, isMe = false, footer = {
-                    if (onMessage != null && !inChat) Button(onMessage, Modifier.fillMaxWidth().padding(16.dp)) { Text("Message") }
+                    if (onMessage != null && !inChat) Button(onMessage, Modifier.fillMaxWidth().padding(16.dp)) { Text(stringResource(R.string.message)) }
                 })
             }
         }
     }
-    if (reporting) ReportDialog(onDismiss = { reporting = false }, actions = listOf("Report & block")) { reason, _ ->
+    if (reporting) ReportDialog(onDismiss = { reporting = false }, actions = listOf(stringResource(R.string.report_block))) { reason, _ ->
         reporting = false
         onReport(reason)
     }
@@ -93,22 +96,22 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
     var reason by remember { mutableStateOf(ReportReason.NUDITY) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Report this person") },
+        title = { Text(stringResource(R.string.report_title)) },
         text = {
             Column {
                 ReportReason.entries.forEach { r ->
                     Row(Modifier.fillMaxWidth().clickable { reason = r }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(reason == r, { reason = r })
-                        Text(r.label)
+                        Text(stringResource(r.label))
                     }
                 }
-                Text("They will be blocked and our team is alerted.", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.report_note), style = MaterialTheme.typography.bodySmall)
             }
         },
         confirmButton = { TextButton({ onConfirm(reason, 0) }) { Text(actions[0], color = MaterialTheme.colorScheme.error) } },
         dismissButton = {
             if (actions.size > 1) TextButton({ onConfirm(reason, 1) }) { Text(actions[1], color = MaterialTheme.colorScheme.error) }
-            else TextButton(onDismiss) { Text("Cancel") }
+            else TextButton(onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }
@@ -134,17 +137,17 @@ fun ProfileContent(
                         Text(p.subtitle(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Filled.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 4.dp))
-                            Text("Phone verified", style = MaterialTheme.typography.bodySmall)
+                            Text(stringResource(R.string.phone_verified), style = MaterialTheme.typography.bodySmall)
                         }
-                        Text(if (p.posts.size == 1) "1 post" else "${p.posts.size} posts", style = MaterialTheme.typography.bodySmall)
+                        Text(pluralStringResource(R.plurals.posts, p.posts.size, p.posts.size), style = MaterialTheme.typography.bodySmall)
                     }
                 }
                 if (p.bio.isNotBlank()) Text(p.bio)
                 if (isMe) {
-                    OutlinedButton(onSettings, Modifier.fillMaxWidth()) { Text("Settings & safety") }
+                    OutlinedButton(onSettings, Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_safety)) }
                     OutlinedButton(onNewPost, Modifier.fillMaxWidth()) {
                         Icon(Icons.Filled.Add, null)
-                        Text("New post")
+                        Text(stringResource(R.string.new_post))
                     }
                 }
             }
@@ -154,7 +157,7 @@ fun ProfileContent(
         item(span = { GridItemSpan(maxLineSpan) }) { footer() }
     }
     open?.let { post ->
-        AlertDialog(onDismissRequest = { open = null }, confirmButton = { TextButton({ open = null }) { Text("Close") } }, text = {
+        AlertDialog(onDismissRequest = { open = null }, confirmButton = { TextButton({ open = null }) { Text(stringResource(R.string.close)) } }, text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 post.imageUri?.let { AsyncImage(it, null, Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth) }
                 if (post.text.isNotEmpty()) Text(post.text)
@@ -185,18 +188,18 @@ fun NewPostScreen(onCancel: () -> Unit, onPost: (String, String?) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("New post") },
-                navigationIcon = { IconButton(onCancel) { Icon(Icons.Filled.Close, "Cancel") } },
-                actions = { TextButton({ onPost(text, uri) }, enabled = text.isNotBlank() || uri != null) { Text("Share") } },
+                title = { Text(stringResource(R.string.new_post)) },
+                navigationIcon = { IconButton(onCancel) { Icon(Icons.Filled.Close, stringResource(R.string.cancel)) } },
+                actions = { TextButton({ onPost(text, uri) }, enabled = text.isNotBlank() || uri != null) { Text(stringResource(R.string.share)) } },
             )
         },
     ) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().imePadding().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             uri?.let { AsyncImage(it, null, Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop) }
             OutlinedButton({ picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, Modifier.fillMaxWidth()) {
-                Text(if (uri == null) "Add photo" else "Change photo")
+                Text(stringResource(if (uri == null) R.string.add_photo else R.string.change_photo))
             }
-            OutlinedTextField(text, { text = it.take(500) }, Modifier.fillMaxWidth(), label = { Text("Write something") }, minLines = 4)
+            OutlinedTextField(text, { text = it.take(500) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.write_something)) }, minLines = 4)
         }
     }
 }

@@ -6,7 +6,7 @@
 
 | 파일 | 내용 |
 |---|---|
-| `yaari-demo.apk` (1.5MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
+| `yaari-demo.apk` (1.4MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
 | `yaari-live-arm64.apk` (17MB) | **실제 서버**(Supabase 뭄바이) 연결판. 아래 "출시 전 설정"을 마쳐야 로그인할 수 있습니다 |
 
 두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
@@ -37,6 +37,9 @@
 | 신고하고 나가기 | **잠금과 관계없이 즉시**. 신고 시 자동 차단 | ✅ 24시간 안에 서로 다른 3명이 신고하면 자동으로 7일 정지 |
 | 최근 만난 사람 → 메시지, 신고 | ✅ | ✅ 차단된 상대에게는 메시지 전송 불가 |
 | 캡처 방지 | 채팅·영상·상대 프로필 화면 | — |
+| **힌디어 / 영어** | 폰 언어를 따라갑니다. Android 13 이상은 앱별 언어 설정도 가능 | — |
+| 설정 & 안전 | 커뮤니티 규칙, 고충처리 담당자 연락처(IT Rules 2021), 로그아웃 | — |
+| **앱 안에서 계정 삭제** (Google Play 필수) | 프로필·게시물·채팅·사진 전부 삭제 | ✅ 정지된 사람은 탈퇴 후 같은 번호로 재가입해도 정지가 유지됨(번호는 해시로만 보관) |
 
 ## 구조
 
@@ -45,16 +48,16 @@ app/src/main    공통 화면·규칙 (Jetpack Compose). Backend/Billing 인터�
 app/src/demo    FakeBackend (실제 서버와 같은 규칙) + 데모 결제
 app/src/live    SupabaseBackend + Google Play 결제 + LiveKit 영상
 server/migrations   Postgres 스키마·RLS·규칙 함수 (실제 프로젝트에 적용됨)
-server/functions    video-token (LiveKit 입장권), verify-purchase (Play 영수증 검증)
+server/functions    video-token (LiveKit 입장권), verify-purchase (Play 영수증 검증), delete-account (계정 삭제)
 server/test_rules.sql  서버 규칙 테스트 시나리오
 ```
 
 ## 검증
 
-- **앱 테스트**: demo·live 빌드 각각 23개 통과.
+- **앱 테스트**: demo·live 빌드 각각 25개 통과(힌디어 화면 테스트 포함).
   - 규칙 7개, ViewModel 15개, 전체 UI 흐름 1개.
   - ViewModel 테스트에는 서버 쪽 잠금 확인, 영상 수락, 메시지(DM)도 포함됩니다.
-- **실제 서버 통합 테스트** (`LiveServerTest`, QA 계정 2개): 통과.
+- **실제 서버 통합 테스트** (`LiveServerTest`): 통과. 계정 삭제 기능도 실제 서버에서 QA 계정 하나로 확인했고, 삭제 후 해당 계정의 데이터가 남지 않은 것까지 확인했습니다.
   - 로그인 → 매칭 → 실시간 메시지 수신 → 서버의 5초 잠금 거부 → 구독 없는 영상 요청 거부 → 프로필 조회 → 상대가 나감 실시간 감지 → 최근 목록.
 - **서버 규칙 SQL 테스트**: 18세 미만 거부, 성별 변경 불가, 남의 채팅 읽기·쓰기 불가, 잠금, 구독, 차단, 자동 정지, 스팸 제한. 모두 통과.
 - **서버 함수**: LiveKit 토큰 서명을 별도 JWT 라이브러리(jose)로 검증. 배포 후 미인증 요청 401, 키 미설정 503 확인.
@@ -69,9 +72,11 @@ server/test_rules.sql  서버 규칙 테스트 시나리오
 | 2 | **LiveKit Cloud 가입** 후 프로젝트 생성. Edge Function Secrets에 `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` 입력 | livekit.io → Supabase → Edge Functions → Secrets |
 | 3 | **Play Console**에 앱 등록, 상품 2개 생성: 구독 `yaari_premium_monthly`, 단건(소모성) `gender_pass_24h`. 대상 연령은 18세 이상 전용 | Play Console |
 | 4 | Google Cloud 서비스 계정을 만들어 Play Console에 권한 부여(재무 데이터 보기, 주문 관리). 키 JSON을 Secret `GOOGLE_SERVICE_ACCOUNT_JSON`에 입력 | Google Cloud Console |
-| 5 | 테스트 데이터 삭제 승인(아래 SQL) | Supabase SQL Editor |
+| 5 | `chat/app/src/main/kotlin/com/yaari/chat/ui/SettingsScreen.kt`의 `Support`에 **실제 고충처리 담당자 이름과 이메일**을 입력합니다(IT Rules 2021 의무). 현재는 임시값입니다 | 코드 |
+| 6 | Play 스토어 등록용 **개인정보처리방침 웹페이지 URL**을 준비합니다 | 웹사이트 |
+| 7 | 테스트 데이터 삭제(아래 SQL) | Supabase SQL Editor |
 
-테스트 데이터 정리용 SQL입니다. 서버 테스트용 가짜 사용자 6명과 QA 계정 3개를 지웁니다. 삭제 작업이라 승인이 필요해서 실행하지 않았습니다.
+테스트 데이터 정리용 SQL입니다. 서버 테스트용 가짜 사용자 6명과 QA 계정 2개를 지웁니다(QA 계정 1개는 계정 삭제 테스트로 이미 지워졌습니다). Supabase 연결 도구가 삭제 명령마다 별도 승인을 요구해서 실행하지 못했습니다.
 
 ```sql
 delete from auth.users where id::text like '00000000-0000-0000-0000-0000000000%' or email like 'qa_@yaari.test';

@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.res.stringResource
+import com.yaari.chat.R
 import android.view.WindowManager
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
@@ -65,7 +67,8 @@ fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier) {
     }
 }
 
-fun Profile.subtitle() = "$age · ${gender.label} · $city"
+@Composable
+fun Profile.subtitle() = "$age · ${stringResource(gender.label)} · $city"
 
 @Composable
 fun Bubble(m: Message) {
@@ -76,7 +79,7 @@ fun Bubble(m: Message) {
         val media = m.media
         when {
             media?.kind == MediaKind.IMAGE -> AsyncImage(
-                media.uri, contentDescription = "Photo", contentScale = ContentScale.Crop,
+                media.uri, contentDescription = stringResource(R.string.photo), contentScale = ContentScale.Crop,
                 modifier = Modifier.sizeIn(maxWidth = 240.dp, maxHeight = 300.dp),
             )
             media?.kind == MediaKind.VIDEO -> Column(
@@ -84,7 +87,7 @@ fun Bubble(m: Message) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "Video", tint = Color.White, modifier = Modifier.size(48.dp))
+                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.video), tint = Color.White, modifier = Modifier.size(48.dp))
                 }
             }
             else -> Text(m.text.orEmpty(), color = fg, modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp))

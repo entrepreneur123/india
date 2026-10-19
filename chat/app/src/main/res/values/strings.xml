@@ -1,3 +1,164 @@
 <resources>
-    <string name="app_name">Yaari</string>
+    <string name="app_name" translatable="false">Yaari</string>
+
+    <!-- Enums -->
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+    <string name="target_any">Everyone</string>
+    <string name="target_men">Men</string>
+    <string name="target_women">Women</string>
+    <string name="reason_nudity">Nudity or sexual content</string>
+    <string name="reason_minor">Looks under 18</string>
+    <string name="reason_harassment">Harassment or abuse</string>
+    <string name="reason_fake">Fake profile or scam</string>
+    <string name="reason_other">Other</string>
+
+    <!-- Onboarding -->
+    <string name="tagline">Meet new people across India</string>
+    <string name="mobile_number">Mobile number</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="phone_note">One account per phone number. Yaari is for adults (18+) only.</string>
+    <string name="otp_prompt">Enter the 6-digit code sent to +91 %1$s</string>
+    <string name="otp_label">OTP</string>
+    <string name="demo_otp">Demo: the code is %1$s</string>
+    <string name="verify">Verify</string>
+    <string name="change_number">Change number</string>
+    <string name="create_profile">Create your profile</string>
+    <string name="add_profile_photo">Add profile photo</string>
+    <string name="change_photo">Change photo</string>
+    <string name="add_photo">Add photo</string>
+    <string name="name">Name</string>
+    <string name="gender">Gender</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="city">City</string>
+    <string name="bio">Bio</string>
+    <string name="consent">I am 18 or older and agree to the Community Rules: no nudity, no minors, no harassment. Breaking them means a permanent ban.</string>
+    <string name="start">Start</string>
+
+    <!-- Errors and notices -->
+    <string name="err_phone">Enter a valid 10-digit Indian mobile number</string>
+    <string name="err_otp_send">Couldn\'t send the code. Try again.</string>
+    <string name="err_otp_wrong">Wrong code. Try again.</string>
+    <string name="err_name">Enter your name</string>
+    <string name="err_name_long">Name is too long</string>
+    <string name="err_gender">Select your gender</string>
+    <string name="err_birth">Enter a valid date of birth</string>
+    <string name="err_under_18">Yaari is only for adults (18+)</string>
+    <string name="err_bio_long">Bio is too long</string>
+    <string name="err_rules">Please accept the community rules</string>
+    <string name="err_exit_locked">Wait a moment before leaving</string>
+    <string name="err_premium">This needs Premium</string>
+    <string name="err_banned">Your account is suspended after reports. Contact support.</string>
+    <string name="err_slow_down">You\'re sending too fast</string>
+    <string name="err_blocked">You can\'t message this person</string>
+    <string name="err_not_allowed">That\'s not possible right now</string>
+    <string name="err_video_off">Video calls are not available yet</string>
+    <string name="err_too_large">That video is too large (max 25 MB)</string>
+    <string name="err_network">Network problem. Please try again.</string>
+    <string name="msg_purchase_done">Purchase complete. Enjoy!</string>
+    <string name="msg_connection_lost">Connection lost. Start a new chat if messages stop.</string>
+    <string name="msg_declined">%1$s declined the video call</string>
+    <string name="msg_reported_long">Reported and blocked. You won\'t be matched again.</string>
+    <string name="msg_reported">Reported and blocked.</string>
+    <string name="msg_deleted">Your account and data were deleted.</string>
+
+    <!-- Lobby, Recent, Me -->
+    <string name="tab_chat">Chat</string>
+    <string name="tab_recent">Recent</string>
+    <string name="tab_me">Me</string>
+    <string name="lobby_title">Meet someone new</string>
+    <string name="lobby_question">Who do you want to meet?</string>
+    <string name="premium">Premium</string>
+    <string name="start_chatting">Start chatting</string>
+    <string name="lobby_rules">Be kind. Nudity, harassment or minors = permanent ban.\nYou can always report &amp; leave instantly.</string>
+    <string name="premium_title">Yaari Premium</string>
+    <string name="premium_summary">Choose gender · Video calls · Skip in %1$s s</string>
+    <string name="finding">Finding someone for you…</string>
+    <string name="looking_for">Looking for: %1$s</string>
+    <string name="cancel">Cancel</string>
+    <string name="recent_empty">People you meet will appear here.</string>
+    <string name="met_at">Met at %1$s · %2$s</string>
+    <string name="message">Message</string>
+    <string name="plan_premium">Premium active</string>
+    <string name="plan_pass">Gender pass active</string>
+    <string name="plan_free">Free plan</string>
+    <string name="plan_free_text">Upgrade for gender choice, video calls and instant skip</string>
+    <string name="upgrade">Upgrade</string>
+
+    <!-- Paywall -->
+    <string name="premium_needed_gender">Choosing who you meet needs Premium.</string>
+    <string name="premium_needed_video">Video calls need Premium.</string>
+    <string name="premium_benefit_gender">• Choose to meet men or women</string>
+    <string name="premium_benefit_video">• Video calls (the other person must accept)</string>
+    <string name="premium_benefit_skip">• Skip to the next person after %1$s s instead of %2$s s</string>
+    <string name="premium_buy">Premium · %1$s</string>
+    <string name="premium_buy_default">monthly</string>
+    <string name="pass_buy">Only gender choice · %1$s</string>
+    <string name="pass_buy_default">24 hours</string>
+    <string name="not_now">Not now</string>
+
+    <!-- Chat -->
+    <string name="typing">typing…</string>
+    <string name="chat_subtitle">%1$s · View profile</string>
+    <string name="video">Video</string>
+    <string name="calling">Calling…</string>
+    <string name="report_and_leave">Report and leave</string>
+    <string name="leave">Leave</string>
+    <string name="partner_left">%1$s left the chat</string>
+    <string name="back_to_lobby">Back to lobby</string>
+    <string name="next_match">Next match</string>
+    <string name="leave_title">Leave this chat?</string>
+    <string name="leave_text">%1$s will be saved in Recent.</string>
+    <string name="report_next">Report &amp; next</string>
+    <string name="report_lobby">Report &amp; lobby</string>
+    <string name="video_incoming_title">%1$s wants to video call</string>
+    <string name="video_incoming_text">Your camera turns on only if you accept. You can end the call any time.</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="back">Back</string>
+    <string name="say_hi">Say hi 👋</string>
+    <string name="send_media">Send photo or video</string>
+    <string name="send">Send</string>
+    <string name="photo">Photo</string>
+
+    <!-- Profile -->
+    <string name="report">Report</string>
+    <string name="report_block">Report &amp; block</string>
+    <string name="report_title">Report this person</string>
+    <string name="report_note">They will be blocked and our team is alerted.</string>
+    <string name="phone_verified">Phone verified</string>
+    <plurals name="posts">
+        <item quantity="one">%d post</item>
+        <item quantity="other">%d posts</item>
+    </plurals>
+    <string name="settings_safety">Settings &amp; safety</string>
+    <string name="new_post">New post</string>
+    <string name="close">Close</string>
+    <string name="share">Share</string>
+    <string name="write_something">Write something</string>
+
+    <!-- Settings -->
+    <string name="community_rules">Community rules</string>
+    <string name="rule_1">• Adults only (18+). Anyone who looks under 18 is removed.</string>
+    <string name="rule_2">• No nudity or sexual content, in chat or on video.</string>
+    <string name="rule_3">• No harassment, hate, threats or scams.</string>
+    <string name="rule_4">• Don\'t share anyone\'s private photos or details.</string>
+    <string name="rule_5">• Breaking the rules means a permanent ban.</string>
+    <string name="report_info">Use Report in any chat or profile: the person is blocked at once and our team reviews it. Complaints about intimate images or impersonation are acted on within 2 hours.</string>
+    <string name="grievance_officer">Grievance Officer</string>
+    <string name="help_email">Help: %1$s</string>
+    <string name="account">Account</string>
+    <string name="sign_out">Sign out</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_title">Delete your account?</string>
+    <string name="delete_text">Your profile, posts, chats and photos are deleted permanently. Premium does not carry over; cancel the subscription in Google Play.</string>
+    <string name="delete">Delete</string>
+
+    <!-- Video -->
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="camera_off">Camera off</string>
+    <string name="camera_on">Camera on</string>
+    <string name="end">End</string>
 </resources>

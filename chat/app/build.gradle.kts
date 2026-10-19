@@ -18,6 +18,12 @@ android {
         versionName = "0.1.0-proto"
     }
 
+    // English + Hindi; Android 13+ also lists them in the per-app language setting.
+    androidResources {
+        localeFilters += listOf("en", "hi")
+        generateLocaleConfig = true
+    }
+
     flavorDimensions += "server"
     productFlavors {
         create("demo") {
