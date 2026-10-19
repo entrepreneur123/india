@@ -159,7 +159,8 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, onOpenHistory:
             if (notify) {
                 Text(stringResource(R.string.alerts_for), style = MaterialTheme.typography.bodySmall)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val keys = DrawSchedule.SLOTS.map { it.id to it.label } + ("SPECIAL" to stringResource(R.string.alerts_specials))
+                    val keys = DrawSchedule.SLOTS.map { it.id to it.label } + ("KL" to stringResource(R.string.lottery_kerala)) +
+                        ("SPECIAL" to stringResource(R.string.alerts_specials))
                     keys.forEach { (key, label) ->
                         var on by remember(key) { mutableStateOf(Prefs.drawAlert(ctx, key)) }
                         FilterChip(selected = on, onClick = { on = !on; Prefs.setDrawAlert(ctx, key, on) }, label = { Text(label) })

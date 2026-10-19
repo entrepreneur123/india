@@ -73,7 +73,11 @@ data class Draw(
     val ocr: Boolean = false,  // numbers were OCR'd from the official scan: show caution
     val tiers: List<Tier> = emptyList(),
     val sources: List<Source> = emptyList(),
+    val lottery: String = "dear", // "dear" (Nagaland/Sikkim/Punjab) or "kerala"
 ) {
+    val isKerala: Boolean get() = lottery == "kerala"
+    /** The lottery's own site, for lotteries whose result we read from public copies (Kerala). */
+    val officialSite: String? get() = sources.firstOrNull { it.kind == "officialSite" }?.url
     val hasNumbers: Boolean get() = status == "OK" && tiers.isNotEmpty()
     val officialPdf: String? get() = sources.firstOrNull { it.kind == "official" }?.url
     val sheetUrl: String? get() = sources.firstOrNull { it.kind == "lotterysambad" }?.url
@@ -86,6 +90,7 @@ data class Tier(
     val prize: Long,           // rupees for the winner
     val match: String,         // FULL | CONS | EXACT | LAST5 | LAST4
     val numbers: List<String>,
+    val confirmed: Boolean = true, // false: the public copies disagree on this tier (Kerala); check the official result
 )
 
 @Serializable

@@ -16,5 +16,6 @@ class MainActivity : AppCompatActivity() {
         Locale.setDefault(resources.configuration.locales[0])
         enableEdgeToEdge()
         setContent { LottoTheme { AppRoot() } }
+        com.lottodost.app.ads.Ads.start(this)  // no-op until AdMob ids are configured
     }
 }

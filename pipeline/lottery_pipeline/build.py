@@ -27,7 +27,7 @@ import json
 import os
 import sys
 
-from . import http, official, sambad
+from . import http, kerala, official, sambad
 from .model import SLOTS, SPECIALS, WEEKLY, Draw, ValidationError
 
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
@@ -138,7 +138,7 @@ def _is_complete(entry: dict | None) -> bool:
 
 
 def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: bool,
-        now_ist: dt.datetime | None = None, ocr: bool = True) -> int:
+        now_ist: dt.datetime | None = None, ocr: bool = True, use_kerala: bool = False) -> int:
     warnings: list[str] = []
     now_ist = now_ist or dt.datetime.now(IST)
 
@@ -213,6 +213,21 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
             if merged is not None:
                 day[key] = merged
 
+        # Kerala (3 PM; copies appear ~16:10 IST): re-read until every tier is confirmed, for two days at most.
+        key = f"{date.isoformat()}_KL"
+        existing = day.get(key)
+        settled = existing is not None and all(t.get("confirmed", True) for t in existing.get("tiers", []))
+        # Published but not fully confirmed: re-read once per run (deep pass), not on every minute's poll.
+        if use_kerala and not settled and (existing is None or deep) and not not_drawn_yet(date, "16:00") \
+                and (today - date).days <= 2:
+            try:
+                got = kerala.fetch(date, warn)
+            except Exception as e:
+                warn(f"{key}: Kerala read failed: {type(e).__name__}: {e}")
+                got = None
+            if got is not None:
+                day[key] = got
+
         for (stem, d), sp in specials_seen.items():
             if d != date.isoformat():
                 continue
@@ -256,7 +271,7 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
     _write_json(_v2(out, "latest.json"), {"schema": SCHEMA, "generatedAt": now,
                                            "date": today.isoformat(), "draws": window(LATEST_DAYS)})
     # Number history: every published number of the last HISTORY_DAYS days, without sources.
-    keep = ("id", "slot", "date", "time", "state", "name", "drawNo", "format", "price", "special", "tiers")
+    keep = ("id", "slot", "lottery", "date", "time", "state", "name", "drawNo", "format", "price", "special", "tiers")
     history = [{k: d[k] for k in keep if k in d} for d in window(HISTORY_DAYS) if d.get("status") == "OK" and d.get("tiers")]
     _write_json(_v2(out, "history.json"), {"schema": SCHEMA, "generatedAt": now, "days": HISTORY_DAYS,
                                             "draws": history})
@@ -287,13 +302,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--no-official", action="store_true")
     p.add_argument("--no-ocr", action="store_true", help="link official PDFs without OCR verification")
     p.add_argument("--deep", action="store_true", help="also refresh special-draw catalog and upcoming list")
+    p.add_argument("--no-kerala", action="store_true", help="skip Kerala State Lottery")
     p.add_argument("--require", default="", help="comma-separated slots; exit 3 while any has no result today")
     a = p.parse_args(argv)
     today = dt.date.fromisoformat(a.date) if a.date else dt.datetime.now(IST).date()
     now_ist = dt.datetime.now(IST)
     if a.date:  # replaying a past day: treat every draw of that day as done
         now_ist = dt.datetime.combine(today, dt.time(23, 59), IST)
-    run(a.out, today, a.backfill_days, not a.no_official, a.deep, now_ist, ocr=not a.no_ocr)
+    run(a.out, today, a.backfill_days, not a.no_official, a.deep, now_ist, ocr=not a.no_ocr, use_kerala=not a.no_kerala)
     missing = missing_slots(a.out, today, [s for s in a.require.split(",") if s])
     if missing:
         print(f"waiting for: {', '.join(missing)}")

@@ -8,12 +8,12 @@
     <string name="tab_info">गाइड</string>
 
     <string name="disclaimer_title">जरुरी कुरा</string>
-    <string name="disclaimer_body">LottoDost एउटा स्वतन्त्र एप हो। नागाल्याण्ड, सिक्किम वा पञ्जाब सरकार र कुनै पनि लटरी विभागसँग यसको कुनै सम्बन्ध छैन। हामी टिकट बेच्दैनौं र कहिल्यै पैसा माग्दैनौं। नतिजा सार्वजनिक स्रोतबाट लिइन्छ, त्यसैले पुरस्कार लिनुअघि सरकारी नतिजासँग अवश्य मिलाउनुहोस्। सबै राज्यमा लटरी टिकट किन्न पाइँदैन। 18 वर्ष वा सोभन्दा माथिका लागि मात्र।</string>
+    <string name="disclaimer_body">LottoDost एउटा स्वतन्त्र एप हो। नागाल्याण्ड, सिक्किम, पञ्जाब वा केरला सरकार र कुनै पनि लटरी विभागसँग यसको कुनै सम्बन्ध छैन। हामी टिकट बेच्दैनौं र कहिल्यै पैसा माग्दैनौं। नतिजा सार्वजनिक स्रोतबाट लिइन्छ, त्यसैले पुरस्कार लिनुअघि सरकारी नतिजासँग अवश्य मिलाउनुहोस्। सबै राज्यमा लटरी टिकट किन्न पाइँदैन। 18 वर्ष वा सोभन्दा माथिका लागि मात्र।</string>
     <string name="disclaimer_ok">ठिक छ, बुझेँ</string>
     <string name="safety_title">ठगीबाट जोगिनुहोस्</string>
     <string name="safety_body">कुनै पनि एप, एजेन्ट वा WhatsApp ग्रुपले लटरीको नम्बर पहिल्यै भन्न सक्दैन, न त फिक्स गर्न सक्छ। LottoDost ले टिकट बेच्दैन, र कहिल्यै पैसा, बैंक वा UPI विवरण माग्दैन। “पक्का नम्बर” वा “फिक्स नम्बर” को जुनसुकै अफर ठगी हो।</string>
 
-    <string name="results_subtitle">डियर लटरी नतिजा · 1 PM · 6 PM · 8 PM</string>
+    <string name="results_subtitle">डियर 1 PM · 6 PM · 8 PM र केरला 3 PM का नतिजा</string>
     <string name="offline_banner">इन्टरनेट छैन। पहिले सेभ गरिएको नतिजा देखाइँदै छ।</string>
     <string name="checking">नयाँ नतिजा हेरिँदै छ…</string>
     <string name="updated_just_now">भर्खरै अपडेट भयो</string>
@@ -27,11 +27,17 @@
     <string name="today">आज</string>
     <string name="more_dates">अरू मितिहरू</string>
     <string name="no_draw_day">यो दिन कुनै ड्र भएन।</string>
-    <string name="source_note">स्रोत: lotterysambad.com र nagalandlotteries.com को सरकारी राजपत्र। यो सरकारी एप होइन।</string>
+    <string name="source_note">स्रोत: lotterysambad.com र nagalandlotteries.com को सरकारी राजपत्र; केरलाका नतिजा सरकारी नतिजाका सार्वजनिक प्रतिहरूबाट। यो सरकारी एप होइन।</string>
     <string name="state_lottery">%1$s राज्य लटरी</string>
     <string name="state_nagaland">नागाल्याण्ड</string>
     <string name="state_sikkim">सिक्किम</string>
     <string name="state_punjab">पञ्जाब</string>
+    <string name="state_kerala">केरला</string>
+    <string name="lottery_dear">डियर</string>
+    <string name="lottery_kerala">केरला</string>
+    <string name="tier_unconfirmed">दुई स्रोतबाट अझै पक्का भएको छैन — सरकारी नतिजा हेर्नुहोस्।</string>
+    <string name="kerala_source_note">केरलाका नतिजा सरकारी नतिजाका सार्वजनिक प्रतिहरूबाट लिइन्छन् र दुई प्रति मिलेपछि मात्र देखाइन्छन्। पुरस्कार दाबी गर्नुअघि सरकारी नतिजा अवश्य हेर्नुहोस्।</string>
+    <string name="open_kerala_official">केरला राज्य लटरी (सरकारी)</string>
     <string name="tag_morning">मर्निङ</string>
     <string name="tag_day">डे</string>
     <string name="tag_night">नाइट</string>
