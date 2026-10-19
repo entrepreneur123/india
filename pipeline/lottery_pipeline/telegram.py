@@ -51,6 +51,25 @@ def send(token: str, chat: str, message: str) -> None:
             raise RuntimeError("telegram refused the message")
 
 
+def _api(token: str, method: str, **params) -> dict:
+    data = urllib.parse.urlencode(params).encode() if params else None
+    with urllib.request.urlopen(f"https://api.telegram.org/bot{token}/{method}", data=data, timeout=20) as r:
+        return json.load(r)
+
+
+def check(token: str, chat: str) -> str:
+    """Can the bot post to the channel? One line for the run log; never posts anything."""
+    try:
+        me = _api(token, "getMe")["result"]
+        info = _api(token, "getChat", chat_id=chat)["result"]
+        member = _api(token, "getChatMember", chat_id=chat, user_id=me["id"])["result"]
+    except Exception as e:  # noqa: BLE001
+        return f"telegram: cannot reach {chat} as this bot ({e}); is the bot an admin of the channel and the id right?"
+    ok = member.get("status") == "creator" or (member.get("status") == "administrator" and member.get("can_post_messages"))
+    return (f"telegram: bot @{me.get('username')} → '{info.get('title')}' ({chat}): "
+            + ("can post" if ok else f"CANNOT post (status {member.get('status')}; give it 'Post messages')"))
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
@@ -65,6 +84,7 @@ def main(argv=None) -> int:
     posted = set() if first else set(json.load(open(path)).get("ids", []))
     fresh = new_draws(feed, posted, dt.datetime.now(IST).date())
     if first:  # starting up: remember what is already out instead of posting a backlog
+        print(check(token, chat))
         posted |= {d["id"] for d in fresh}
         fresh = []
     for d in fresh:
