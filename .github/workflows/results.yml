@@ -37,6 +37,10 @@ on:
         description: "OCR the official gazette to verify"
         type: boolean
         default: true
+      deploy:
+        description: "Deploy the site to Cloudflare even if no result changed"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -136,7 +140,7 @@ jobs:
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
                 commit -q -m "announce state" && git -C ../public push -q origin data
             fi
-            [ "$changed" = 1 ] || return 0
+            [ "$changed" = 1 ] || [ "${{ inputs.deploy }}" = "true" ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
             python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
