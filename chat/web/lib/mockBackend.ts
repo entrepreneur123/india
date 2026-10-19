@@ -29,11 +29,30 @@ const DAY = 24 * HOUR
 const FREE_EXIT_LOCK_MS = 5000
 const PLUS_EXIT_LOCK_MS = 200
 
+
+// Demo pictures are drawn here as small SVGs (no third-party image hosts; works offline and under the CSP).
+const ART_COLORS = [
+  ['#fde2e4', '#c8174a'], ['#e3f0ff', '#1a73e8'], ['#e6f4ea', '#188038'], ['#f3e8fd', '#8430ce'],
+  ['#fef7e0', '#b06000'], ['#e4f7f8', '#007b83'],
+]
+function art(seed: string, w = 720, h = 720) {
+  let n = 0
+  for (const ch of seed) n = (n * 31 + ch.charCodeAt(0)) | 0
+  const [bg, fg] = ART_COLORS[Math.abs(n) % ART_COLORS.length]
+  const sun = 20 + (Math.abs(n >> 3) % 60)
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/>` +
+    `<circle cx="${(sun / 100) * w}" cy="${h * 0.3}" r="${w * 0.09}" fill="${fg}" opacity=".35"/>` +
+    `<path d="M0 ${h * 0.75} L${w * 0.3} ${h * 0.5} L${w * 0.55} ${h * 0.7} L${w * 0.75} ${h * 0.55} L${w} ${h * 0.72} V${h} H0Z" fill="${fg}" opacity=".55"/>` +
+    `<path d="M0 ${h * 0.88} L${w * 0.4} ${h * 0.68} L${w} ${h * 0.9} V${h} H0Z" fill="${fg}"/></svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
 function post(seed: string, text: string, ageMs: number, withImage = true): Post {
   return {
     id: `p_${seed}`,
     text,
-    imageUrl: withImage ? `https://picsum.photos/seed/yaari-${seed}/720/720` : null,
+    imageUrl: withImage ? art(seed) : null,
     createdAt: Date.now() - ageMs,
   }
 }
@@ -42,7 +61,7 @@ const PEOPLE: Profile[] = [
   {
     id: 'u_ananya', name: 'Ananya', gender: 'female', age: 23, city: 'Mumbai', country: 'IN',
     bio: 'Chai over coffee, always. Learning Korean one drama at a time.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+    photoUrl: null,
     posts: [
       post('ananya1', 'Marine Drive at 6pm hits different', 2 * DAY),
       post('ananya2', 'Finally finished my first pottery class', 6 * DAY),
@@ -52,13 +71,13 @@ const PEOPLE: Profile[] = [
   {
     id: 'u_kabir', name: 'Kabir', gender: 'male', age: 25, city: 'Delhi', country: 'IN',
     bio: 'Product designer. Weekend cricket, weekday overthinking.',
-    photoUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+    photoUrl: null,
     posts: [post('kabir1', 'New desk setup, finally', 3 * DAY), post('kabir2', 'Old Delhi food walk', 9 * DAY)],
   },
   {
     id: 'u_sofia', name: 'Sofia', gender: 'female', age: 24, city: 'Lisbon', country: 'PT',
     bio: 'Surfing badly, cooking well. Ask me about pastel de nata.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
+    photoUrl: null,
     posts: [
       post('sofia1', 'Ericeira mornings', 1 * DAY),
       post('sofia2', 'Tram 28, tourist mode on', 5 * DAY),
@@ -69,13 +88,13 @@ const PEOPLE: Profile[] = [
   {
     id: 'u_mateo', name: 'Mateo', gender: 'male', age: 27, city: 'Buenos Aires', country: 'AR',
     bio: 'Tango on Thursdays, football every other day.',
-    photoUrl: 'https://randomuser.me/api/portraits/men/75.jpg',
+    photoUrl: null,
     posts: [post('mateo1', 'Asado with the crew', 4 * DAY)],
   },
   {
     id: 'u_yuki', name: 'Yuki', gender: 'female', age: 22, city: 'Osaka', country: 'JP',
     bio: 'Film photography and late-night ramen runs.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/90.jpg',
+    photoUrl: null,
     posts: [
       post('yuki1', 'Shot on Portra 400', 2 * DAY),
       post('yuki2', 'Dotonbori lights', 8 * DAY),
@@ -85,43 +104,43 @@ const PEOPLE: Profile[] = [
   {
     id: 'u_amara', name: 'Amara', gender: 'female', age: 26, city: 'Lagos', country: 'NG',
     bio: 'Afrobeats playlist curator. Building a fintech startup.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/21.jpg',
+    photoUrl: null,
     posts: [post('amara1', 'Demo day nerves', 1 * DAY), post('amara2', 'Lekki sunset', 7 * DAY)],
   },
   {
     id: 'u_lucas', name: 'Lucas', gender: 'male', age: 24, city: 'São Paulo', country: 'BR',
     bio: 'Skater, coder, açaí enthusiast.',
-    photoUrl: 'https://randomuser.me/api/portraits/men/46.jpg',
+    photoUrl: null,
     posts: [post('lucas1', 'Ibirapuera session', 3 * DAY)],
   },
   {
     id: 'u_leila', name: 'Leila', gender: 'female', age: 25, city: 'Istanbul', country: 'TR',
     bio: 'Two continents, one ferry ride. Bookworm.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/12.jpg',
+    photoUrl: null,
     posts: [post('leila1', 'Bosphorus by ferry', 2 * DAY), post('leila2', 'Current read', 10 * DAY, false)],
   },
   {
     id: 'u_arjun', name: 'Arjun', gender: 'male', age: 28, city: 'Bengaluru', country: 'IN',
     bio: 'Backend engineer by day, guitarist by night.',
-    photoUrl: 'https://randomuser.me/api/portraits/men/22.jpg',
+    photoUrl: null,
     posts: [post('arjun1', 'Nandi Hills sunrise ride', 5 * DAY), post('arjun2', 'Open mic tonight', 12 * DAY)],
   },
   {
     id: 'u_chloe', name: 'Chloé', gender: 'female', age: 23, city: 'Lyon', country: 'FR',
     bio: 'Architecture student. I will judge your city’s skyline.',
-    photoUrl: 'https://randomuser.me/api/portraits/women/33.jpg',
+    photoUrl: null,
     posts: [post('chloe1', 'Vieux Lyon rooftops', 4 * DAY)],
   },
   {
     id: 'u_omar', name: 'Omar', gender: 'male', age: 26, city: 'Dubai', country: 'AE',
     bio: 'Desert drives and good playlists.',
-    photoUrl: 'https://randomuser.me/api/portraits/men/61.jpg',
+    photoUrl: null,
     posts: [post('omar1', 'Hatta weekend', 6 * DAY)],
   },
   {
     id: 'u_riya', name: 'Riya', gender: 'other', age: 21, city: 'Pune', country: 'IN',
     bio: 'Illustrator. Cats > people (you might change my mind).',
-    photoUrl: 'https://randomuser.me/api/portraits/women/58.jpg',
+    photoUrl: null,
     posts: [post('riya1', 'Sketchbook page 42', 1 * DAY), post('riya2', 'Monsoon in the ghats', 9 * DAY)],
   },
 ]
@@ -462,7 +481,7 @@ export class MockBackend implements Backend {
     if (m.myCount === 2 && !m.sentMedia) {
       m.sentMedia = true
       this.partnerSays(m, 'this is the view from my window rn', {
-        url: `https://picsum.photos/seed/yaari-view-${m.partner.id}/800/1000`,
+        url: art(`view-${m.partner.id}`, 800, 1000),
         kind: 'image',
       })
     } else if (m.myCount === 3 && !m.askedVideo && m.video === 'none') {
