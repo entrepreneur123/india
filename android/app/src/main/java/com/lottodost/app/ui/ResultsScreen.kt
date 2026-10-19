@@ -123,15 +123,25 @@ fun ResultsScreen(
             if (state.loadingDay == selected) item {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(32.dp)) }
             }
-            if (selected in state.index?.noDraw.orEmpty()) item {
-                Banner(stringResource(R.string.no_draw_day))
-            } else {
-                val isToday = selected == today
-                items(DrawSchedule.SLOTS, key = { it.id }) { slot ->
-                    val draw = draws.firstOrNull { it.date == selected && it.slot == slot.id }
-                    SlotCard(slot, draw, selected, if (isToday) now else null, state.config?.liveDrawUrl, onOpen, onOpenSheet)
+            // The Nagaland calendar's "no draw" days do not stop Kerala's 3 PM draw.
+            val noDear = selected in state.index?.noDraw.orEmpty()
+            if (noDear) item { Banner(stringResource(R.string.no_draw_day)) }
+            val isToday = selected == today
+            val kerala = draws.firstOrNull { it.date == selected && it.isKerala }
+            val rows = buildList<Pair<String, Any>> {
+                if (!noDear) DrawSchedule.SLOTS.forEach { add(it.drawTime.toString() to it) }
+                if (kerala != null || isToday) add((kerala?.time ?: KERALA_TIME) to KERALA_ROW)
+            }.sortedBy { it.first }   // one timeline: 1 PM, 3 PM Kerala, 6 PM, 8 PM
+            items(rows, key = { (it.second as? DrawSchedule.Slot)?.id ?: KERALA_ROW }) { (_, row) ->
+                if (row is DrawSchedule.Slot) {
+                    val draw = draws.firstOrNull { it.date == selected && it.slot == row.id }
+                    SlotCard(row, draw, selected, if (isToday) now else null, state.config?.liveDrawUrl, onOpen, onOpenSheet)
+                } else {
+                    KeralaCard(kerala, if (isToday) now else null, onOpen)
                 }
-                val specials = draws.filter { it.date == selected && it.special }.sortedBy { it.time }
+            }
+            if (!noDear) {
+                val specials = draws.filter { it.date == selected && it.special && !it.isKerala }.sortedBy { it.time }
                 items(specials, key = { it.id }) { SpecialCard(it, onOpen, onOpenSheet) }
             }
             item {
@@ -208,6 +218,7 @@ fun stateName(state: String): String = when (state) {
     "Nagaland" -> stringResource(R.string.state_nagaland)
     "Sikkim" -> stringResource(R.string.state_sikkim)
     "Punjab" -> stringResource(R.string.state_punjab)
+    "Kerala" -> stringResource(R.string.state_kerala)
     else -> state
 }
 
@@ -274,6 +285,34 @@ private fun SlotCard(
 fun VerifiedMark() {
     Text("✓ " + stringResource(R.string.verified), color = MaterialTheme.colorScheme.tertiary,
         style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 8.dp))
+}
+
+private const val KERALA_ROW = "KL"
+private const val KERALA_TIME = "15:00"
+
+/** Kerala's daily 3 PM draw (bumpers at 2 PM), read from public copies of the official result. */
+@Composable
+private fun KeralaCard(draw: Draw?, nowIfToday: ZonedDateTime?, onOpen: (Draw) -> Unit) {
+    StubSlip(formatTime(draw?.time ?: KERALA_TIME), stringResource(R.string.lottery_kerala),
+        stubColor = MaterialTheme.colorScheme.tertiary, onStubColor = MaterialTheme.colorScheme.onTertiary,
+        onClick = if (draw?.hasNumbers == true) ({ onOpen(draw) }) else null) {
+        Text(draw?.name ?: stringResource(R.string.lottery_kerala), fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.state_lottery, stateName("Kerala")), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(10.dp))
+        if (draw?.hasNumbers == true) {
+            Eyebrow(stringResource(R.string.first_prize) + " · " + prizeShort(draw.tiers.first().prize))
+            FitNumber(draw.firstPrize.orEmpty(), 32.sp, MaterialTheme.colorScheme.primary)
+            Text(stringResource(R.string.tap_full_result), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else if (nowIfToday != null) {
+            val drawAt = nowIfToday.toLocalDate().atTime(java.time.LocalTime.parse(KERALA_TIME)).atZone(nowIfToday.zone)
+            val mins = java.time.Duration.between(nowIfToday, drawAt).toMinutes()
+            Text(if (mins > 0) stringResource(R.string.draw_in, (mins / 60).toInt(), (mins % 60).toInt())
+                 else stringResource(R.string.result_coming), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
 }
 
 @Composable

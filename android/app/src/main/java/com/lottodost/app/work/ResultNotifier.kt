@@ -58,7 +58,7 @@ object ResultNotifier {
         }
         val fresh = ready.filter { it.id !in seen }
         if (Prefs.notificationsEnabled(ctx)) {
-            fresh.filter { Prefs.drawAlert(ctx, Prefs.alertKey(it.slot, it.special)) }.forEach { d ->
+            fresh.filter { Prefs.drawAlert(ctx, Prefs.alertKey(it.slot, it.special, it.lottery)) }.forEach { d ->
                 post(ctx, d.id.hashCode(), ctx.getString(R.string.notif_result_title, d.name),
                     ctx.getString(R.string.notif_result_body, d.firstPrize ?: ""))
             }

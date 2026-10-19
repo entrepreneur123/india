@@ -188,6 +188,7 @@ fun CheckScreen(
                     notes = listOfNotNull(
                         if (c.wins.size > 1) stringResource(R.string.also_matches, c.wins.drop(1).map { tierTitle(it.tier) }.joinToString()) else null,
                         if (c.draw.ocr) stringResource(R.string.ocr_caution) else null,
+                        if (!win.tier.confirmed) stringResource(R.string.tier_unconfirmed) else null,
                         stringResource(claim),
                     ),
                     onClick = { onOpenDraw(c.draw) },
