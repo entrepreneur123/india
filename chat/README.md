@@ -57,9 +57,10 @@ server/test_rules.sql  서버 규칙 테스트 시나리오
 
 ## 검증
 
-- **앱 테스트**: demo·live 빌드 각각 25개 통과(힌디어 화면 테스트 포함).
-  - 규칙 7개, ViewModel 15개, 전체 UI 흐름 1개.
-  - ViewModel 테스트에는 서버 쪽 잠금 확인, 영상 수락, 메시지(DM)도 포함됩니다.
+- **앱 테스트**: 총 68개 통과(demo 33개 + live 35개, 실패 0). 계정 삭제 실서버 테스트 1개는 QA 계정을 지우므로 평소에는 건너뜁니다.
+  - 규칙, ViewModel 22개, 전체 UI 흐름(화면 17장), 힌디어 화면, 받은 사진 가림.
+  - ViewModel 테스트에는 서버 쪽 잠금 확인, 영상 수락, 메시지(DM), 매칭 중 이탈한 방 정리, 로그아웃 중 남은 방 정리, 결제 복원도 포함됩니다.
+- **코드 리뷰 2회**: 1차 11건, 2차 4건 발견. 모두 수정했고, 2차 수정은 회귀 테스트가 실제로 버그를 잡는지 코드를 일부러 되돌려 확인했습니다.
 - **실제 서버 통합 테스트** (`LiveServerTest`): 통과. 계정 삭제 기능도 실제 서버에서 QA 계정 하나로 확인했고, 삭제 후 해당 계정의 데이터가 남지 않은 것까지 확인했습니다.
   - 로그인 → 매칭 → 실시간 메시지 수신 → 서버의 5초 잠금 거부 → 구독 없는 영상 요청 거부 → 프로필 조회 → 상대가 나감 실시간 감지 → 최근 목록.
 - **서버 규칙 SQL 테스트**: 18세 미만 거부, 성별 변경 불가, 남의 채팅 읽기·쓰기 불가, 잠금, 구독, 차단, 자동 정지, 스팸 제한. 모두 통과.
@@ -76,7 +77,7 @@ server/test_rules.sql  서버 규칙 테스트 시나리오
 | 3 | **Play Console**에 앱 등록, 상품 2개 생성: 구독 `yaari_premium_monthly`, 단건(소모성) `gender_pass_24h`. 대상 연령은 18세 이상 전용 | Play Console |
 | 4 | Google Cloud 서비스 계정을 만들어 Play Console에 권한 부여(재무 데이터 보기, 주문 관리). 키 JSON을 Secret `GOOGLE_SERVICE_ACCOUNT_JSON`에 입력 | Google Cloud Console |
 | 5 | `chat/app/src/main/kotlin/com/yaari/chat/ui/SettingsScreen.kt`의 `Support`에 **실제 고충처리 담당자 이름과 이메일**을 입력합니다(IT Rules 2021 의무). 현재는 임시값입니다 | 코드 |
-| 6 | Play 스토어 등록용 **개인정보처리방침 웹페이지 URL**을 준비합니다 | 웹사이트 |
+| 6 | 개인정보처리방침 페이지(`docs/privacy.html`)는 이 PR이 병합되면 `https://entrepreneur123.github.io/india/yaari-privacy.html`에 자동으로 올라갑니다. 담당자 정보를 실제 값으로 고친 뒤 Play Console에 이 주소를 입력합니다 | GitHub Pages |
 | 7 | 테스트 데이터 삭제(아래 SQL) | Supabase SQL Editor |
 
 테스트 데이터 정리용 SQL입니다. 서버 테스트용 가짜 사용자 6명과 QA 계정 2개를 지웁니다(QA 계정 1개는 계정 삭제 테스트로 이미 지워졌습니다). Supabase 연결 도구가 삭제 명령마다 별도 승인을 요구해서 실행하지 못했습니다.
