@@ -148,6 +148,7 @@
     <string name="report_info">Use Report in any chat or profile: the person is blocked at once and our team reviews it. Complaints about intimate images or impersonation are acted on within 2 hours.</string>
     <string name="grievance_officer">Grievance Officer</string>
     <string name="help_email">Help: %1$s</string>
+    <string name="privacy_policy">Privacy policy</string>
     <string name="account">Account</string>
     <string name="sign_out">Sign out</string>
     <string name="delete_account">Delete account</string>

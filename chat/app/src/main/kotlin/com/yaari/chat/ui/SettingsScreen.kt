@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -40,6 +41,7 @@ object Support {
     const val GRIEVANCE_OFFICER = "Grievance Officer, Yaari"
     const val GRIEVANCE_EMAIL = "grievance@yaari.app"
     const val SUPPORT_EMAIL = "support@yaari.app"
+    const val PRIVACY_URL = "https://entrepreneur123.github.io/india/yaari-privacy.html"
 }
 
 private val Rules = listOf(R.string.rule_1, R.string.rule_2, R.string.rule_3, R.string.rule_4, R.string.rule_5)
@@ -70,6 +72,8 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
             HorizontalDivider()
             Text(stringResource(R.string.grievance_officer), fontWeight = FontWeight.Bold)
             Text("${Support.GRIEVANCE_OFFICER}\n${Support.GRIEVANCE_EMAIL}")
+            val uri = LocalUriHandler.current
+            TextButton({ uri.openUri(Support.PRIVACY_URL) }) { Text(stringResource(R.string.privacy_policy)) }
             Text(stringResource(R.string.help_email, Support.SUPPORT_EMAIL), style = MaterialTheme.typography.bodySmall)
             HorizontalDivider()
             Text(stringResource(R.string.account), fontWeight = FontWeight.Bold)

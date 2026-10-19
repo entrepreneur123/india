@@ -138,6 +138,7 @@
     <string name="report_info">किसी भी चैट या प्रोफ़ाइल में रिपोर्ट दबाएँ: वह व्यक्ति तुरंत ब्लॉक हो जाता है और हमारी टीम जाँच करती है। निजी फ़ोटो या किसी और के नाम से बने अकाउंट की शिकायत पर 2 घंटे में कार्रवाई होती है।</string>
     <string name="grievance_officer">शिकायत अधिकारी</string>
     <string name="help_email">मदद: %1$s</string>
+    <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="account">अकाउंट</string>
     <string name="sign_out">साइन आउट</string>
     <string name="delete_account">अकाउंट मिटाएँ</string>
