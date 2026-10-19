@@ -12,6 +12,7 @@ import { AppShell } from '@/components/shell/app-shell'
 type Boot =
   | { stage: 'loading' }
   | { stage: 'auth'; step: 'phone' | 'profile' }
+  | { stage: 'offline' }
   | { stage: 'app'; me: Profile; entitlements: Entitlements }
 
 export function YaariApp() {
@@ -42,8 +43,9 @@ function Root() {
         }
         setBoot({ stage: 'app', me, entitlements })
       } catch (err) {
+        // Signed in but the server couldn't be reached: keep the session and offer a retry (no new SMS code).
         toast.error(err)
-        setBoot({ stage: 'auth', step: 'phone' })
+        setBoot({ stage: 'offline' })
       }
     },
     [backend, toast],
@@ -78,6 +80,30 @@ function Root() {
             <Logo />
           </motion.div>
           <span className="sr-only">Loading yaari</span>
+        </motion.div>
+      ) : boot.stage === 'offline' ? (
+        <motion.div
+          key="offline"
+          className="theme-night grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="flex flex-col items-center gap-4">
+            <Logo />
+            <h1 className="text-xl font-bold">Can’t reach yaari right now</h1>
+            <p className="max-w-xs text-sm text-muted-foreground">Check your internet connection, then try again.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setBoot({ stage: 'loading' })
+                void enterApp()
+              }}
+              className="h-12 rounded-full bg-brand px-8 font-semibold text-primary-foreground"
+            >
+              Try again
+            </button>
+          </div>
         </motion.div>
       ) : boot.stage === 'auth' ? (
         <motion.div key="auth" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

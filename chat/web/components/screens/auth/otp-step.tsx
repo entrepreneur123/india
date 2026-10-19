@@ -40,12 +40,15 @@ export function OtpStep({
     setBusy(true)
     setInvalid(false)
     try {
-      const ok = await backend.verifyOtp(phone, value)
-      if (!ok) {
-        setInvalid(true)
-        setCode('')
-        toast.show('That code didn’t match. Try again.', 'error')
-        return
+      // A code works once: after it succeeded, a retry (profile load failed) only loads the profile again.
+      if (!(await backend.isSignedIn())) {
+        const ok = await backend.verifyOtp(phone, value)
+        if (!ok) {
+          setInvalid(true)
+          setCode('')
+          toast.show('That code didn’t match. Try again.', 'error')
+          return
+        }
       }
       onVerified(await backend.myProfile())
     } catch (err) {

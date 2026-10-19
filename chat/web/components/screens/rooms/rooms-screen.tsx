@@ -6,8 +6,8 @@ import useSWR from 'swr'
 import { ArrowLeft, ArrowRight, Pin } from 'lucide-react'
 import type { Room, RoomMessage } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { compactNumber, flagEmoji } from '@/lib/format'
-import { useApp } from '@/components/app-state'
+import { compactNumber, errorCode, flagEmoji } from '@/lib/format'
+import { useApp, useReported } from '@/components/app-state'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
@@ -18,6 +18,9 @@ import { cn } from '@/lib/utils'
 
 const FEATURED = 'lounge'
 const HEARTBEAT_MS = 30_000 // the server counts a member as present for 90 s after the last join
+
+/** A leave still on its way to the server, per room: re-entering waits for it so the join lands last. */
+const leaving = new Map<string, Promise<unknown>>()
 
 /** One line on what each server room is for; rooms without one just show their title. */
 const ABOUT: Record<string, string> = {
@@ -177,13 +180,22 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   // Enter the room (the server only lets members post) and stay listed as present while it is open.
   useEffect(() => {
     let alive = true
-    const join = () =>
-      backend.joinRoom(room.id).then(
-        () => alive && setJoined(true),
-        (err) => alive && toast.error(err),
-      )
-    void join()
-    const beat = setInterval(join, HEARTBEAT_MS)
+    let beat: ReturnType<typeof setInterval> | undefined
+    ;(async () => {
+      await leaving.get(room.id)
+      if (!alive) return
+      try {
+        await backend.joinRoom(room.id)
+      } catch (err) {
+        if (!alive) return
+        toast.error(err) // banned, or the room is gone: nothing to do here
+        onBack()
+        return
+      }
+      if (!alive) return
+      setJoined(true)
+      beat = setInterval(() => void backend.joinRoom(room.id).catch(() => undefined), HEARTBEAT_MS)
+    })()
     backend.roomHistory(room.id).then(
       (h) => alive && add(h),
       (err) => {
@@ -197,9 +209,15 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
       alive = false
       clearInterval(beat)
       unsubscribe()
-      backend.leaveRoom(room.id).catch(() => undefined)
+      const done = backend.leaveRoom(room.id).catch(() => undefined)
+      leaving.set(room.id, done)
+      void done.then(() => leaving.get(room.id) === done && leaving.delete(room.id))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backend, room.id, add, toast])
+
+  // Someone reported from this room is blocked: their messages go at once (the server hides them from now on).
+  useReported((id) => setMessages((list) => list?.filter((m) => m.sender.id !== id) ?? list))
 
   useLayoutEffect(() => {
     const el = listRef.current
@@ -209,7 +227,14 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   const send = async (text: string | null) => {
     if (!text) return false
     try {
-      add([await backend.sendRoom(room.id, text)])
+      try {
+        add([await backend.sendRoom(room.id, text)])
+      } catch (err) {
+        // Presence lapsed (the laptop slept, timers were throttled): the server no longer counts us as in the room.
+        if (errorCode(err) !== 'blocked') throw err
+        await backend.joinRoom(room.id)
+        add([await backend.sendRoom(room.id, text)])
+      }
       stick.current = true
       return true
     } catch (err) {

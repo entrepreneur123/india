@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 import type { Entitlements, Profile } from '@/lib/backend'
 import type { Lang, TKey } from '@/lib/i18n'
 
@@ -26,6 +26,11 @@ export interface AppState {
   openPaywall: () => void
   openThread: (partner: Profile, matchId?: string) => void
   setImmersive: (on: boolean) => void
+  /** The random screen is on screen (its tab is selected and no thread covers it). */
+  randomVisible: boolean
+  /** Someone was reported (and so blocked): every open chat, thread or room view with them closes. */
+  reported: (partnerId: string) => void
+  onReported: (listener: (partnerId: string) => void) => () => void
   signedOut: () => void
 }
 
@@ -35,4 +40,12 @@ export function useApp() {
   const ctx = useContext(AppContext)
   if (!ctx) throw new Error('useApp must be used inside <AppShell>')
   return ctx
+}
+
+/** Runs `listener` whenever someone is reported, from any screen. */
+export function useReported(listener: (partnerId: string) => void) {
+  const { onReported } = useApp()
+  const ref = useRef(listener)
+  ref.current = listener
+  useEffect(() => onReported((id) => ref.current(id)), [onReported])
 }

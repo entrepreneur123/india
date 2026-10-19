@@ -7,7 +7,7 @@ import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { SHOWCASE_FLAGS } from '@/lib/countries'
 import { errorCode, flagEmoji } from '@/lib/format'
-import { useApp } from '@/components/app-state'
+import { useApp, useReported } from '@/components/app-state'
 import { Aurora } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { Segmented } from '@/components/ui/bits'
@@ -28,7 +28,7 @@ type Live = Match & { startedAt: number }
 export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
-  const { me, t, canChooseGender, openPaywall, setImmersive } = useApp()
+  const { me, t, canChooseGender, openPaywall, setImmersive, setTab } = useApp()
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
@@ -37,6 +37,9 @@ export function RandomScreen({ active }: { active: boolean }) {
   // Each search has a number; only the newest one may open a chat (a reply can arrive after Cancel).
   const generation = useRef(0)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const searching = useRef(false)
+  const visible = useRef(active)
+  visible.current = active
 
   useEffect(() => setImmersive(phase !== 'lobby'), [phase, setImmersive])
   useEffect(() => {
@@ -45,6 +48,7 @@ export function RandomScreen({ active }: { active: boolean }) {
 
   const startMatching = useCallback(() => {
     const g = ++generation.current
+    searching.current = true
     setPhase('matching')
     const tick = async () => {
       if (g !== generation.current) return
@@ -53,6 +57,7 @@ export function RandomScreen({ active }: { active: boolean }) {
         m = await backend.findMatch(target)
       } catch (err) {
         if (g !== generation.current) return
+        searching.current = false
         setPhase('lobby')
         if (errorCode(err) === 'premium_required') openPaywall()
         else toast.error(err)
@@ -60,20 +65,28 @@ export function RandomScreen({ active }: { active: boolean }) {
       }
       if (g !== generation.current) {
         if (m) backend.abandon(m.id) // paired just as the user cancelled: end it so the other person isn't left waiting
+        // A request that landed after Cancel put us back in the queue: take us out again (unless searching anew).
+        else if (!searching.current) backend.cancelSearch().catch(() => undefined)
         return
       }
       if (m) {
+        searching.current = false
         setMatch({ ...m, startedAt: Date.now() })
         setPhase('chat')
+        if (!visible.current) {
+          setTab('random') // matched while looking at another tab: bring the chat to the front
+          toast.show(`You matched with ${m.partner.name}`, 'success')
+        }
         return
       }
       timer.current = setTimeout(() => void tick(), POLL_MS)
     }
     void tick()
-  }, [backend, target, openPaywall, toast])
+  }, [backend, target, openPaywall, toast, setTab])
 
   const cancelMatching = useCallback(() => {
     generation.current++
+    searching.current = false
     clearTimeout(timer.current)
     setPhase('lobby')
     backend.cancelSearch().catch(() => undefined)
@@ -83,6 +96,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   useEffect(
     () => () => {
       generation.current++
+      searching.current = false
       clearTimeout(timer.current)
       backend.cancelSearch().catch(() => undefined)
     },
@@ -94,6 +108,11 @@ export function RandomScreen({ active }: { active: boolean }) {
     setMatch(null)
     setPhase('lobby')
   }
+
+  // Reported from a profile sheet or Recent while chatting with them: the server already ended the chat.
+  useReported((id) => {
+    if (match?.partner.id === id) closeChat()
+  })
 
   const leave = async (next: boolean) => {
     if (!match) return
@@ -194,6 +213,7 @@ export function RandomScreen({ active }: { active: boolean }) {
               matchId={match.id}
               partner={match.partner}
               mode="random"
+              visible={active}
               startedAt={match.startedAt}
               onExit={() => setChoiceOpen(true)}
               onReported={closeChat}
@@ -307,7 +327,6 @@ function Matching({ target, onCancel }: { target: Target; onCancel: () => void }
           …
         </motion.span>
       </h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">Usually takes a few seconds</p>
       <Button variant="glass" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
         Cancel
       </Button>

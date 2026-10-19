@@ -36,7 +36,7 @@ const ERROR_COPY: Record<string, string> = {
   network: 'Connection problem. Check your internet and try again',
   blocked: 'You can’t interact with this person',
   too_large: 'That file is too large (25 MB max)',
-  bad_media: 'That file can’t be sent',
+  bad_media: 'That file type can’t be sent. Use a photo, or an MP4, WebM or MOV video',
   video_not_configured: 'Video calls aren’t available yet',
   not_signed_in: 'Please sign in again',
   sms_unavailable: 'We couldn’t send a code to this number right now. Please try again later',

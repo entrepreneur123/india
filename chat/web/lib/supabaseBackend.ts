@@ -26,6 +26,8 @@ const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
 const MAX_VIDEO_BYTES = 25 * 1024 * 1024
 const SIGNED_URL_SECONDS = 12 * 3600
+/** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
+const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
 const CODES = [
   'exit_locked', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
@@ -74,7 +76,17 @@ function ageOn(birth: string, today = new Date()): number {
   return age
 }
 
-const time = (ts: string) => Date.parse(ts)
+/**
+ * Postgres sends "2026-10-19 12:41:01.00537+00" / "...T12:41:01.005372+00:00". Older Safari rejects more than
+ * three fraction digits, a space separator and a "+00" offset, so normalise to strict ISO first.
+ */
+export const time = (ts: string) =>
+  Date.parse(
+    ts
+      .replace(' ', 'T')
+      .replace(/(\.\d{3})\d+/, '$1')
+      .replace(/([+-]\d{2})$/, '$1:00'),
+  )
 
 /** Shrinks a photo to 1280 px JPEG to save mobile data (same as the app). */
 async function compressImage(file: File): Promise<Blob> {
@@ -96,7 +108,10 @@ export class SupabaseBackend implements Backend {
   private client: SupabaseClient
   /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
   private signedUrls = new Map<string, { url: string; reuseUntil: number }>()
-  private typingChannels = new Map<string, RealtimeChannel>()
+  /** One typing channel per match, shared by every view of it (realtime-js reuses a channel per topic). */
+  private typing = new Map<string, { channel: RealtimeChannel; listeners: Set<(from: string) => void> }>()
+  /** Matches the user never saw, waiting to be ended; opening one again (the server can hand it back) keeps it. */
+  private abandoned = new Set<string>()
   private userId: string | null = null
 
   constructor(url: string, anonKey: string) {
@@ -179,7 +194,8 @@ export class SupabaseBackend implements Backend {
     const { error } = await this.client.from('profiles').insert({
       id: this.uid, name: p.name, gender: p.gender, birth_date: p.birthDate, city: p.city, bio: p.bio, photo_path: photo,
     })
-    if (error) fail(error)
+    // 23505: the row already exists — an earlier attempt was saved but its reply was lost. That is success.
+    if (error && error.code !== '23505') fail(error)
     const me = await this.myProfile()
     if (!me) throw new BackendError('network')
     return me
@@ -225,6 +241,7 @@ export class SupabaseBackend implements Backend {
       if (!m) throw new BackendError('not_found')
       const partner = await this.card(m.user_a === this.uid ? m.user_b : m.user_a)
       if (!partner) throw new BackendError('not_found')
+      this.abandoned.delete(id)
       return { id, partner }
     } catch {
       // The server paired us but the partner can't be shown: end that chat once the exit lock allows, keep looking.
@@ -235,7 +252,10 @@ export class SupabaseBackend implements Backend {
 
   /** Ends a match the user never saw, after the longest exit lock (5 s), so the other person isn't left waiting. */
   abandon(matchId: string) {
-    setTimeout(() => void this.leave(matchId).catch(() => undefined), 5_500)
+    this.abandoned.add(matchId)
+    setTimeout(() => {
+      if (this.abandoned.delete(matchId)) void this.leave(matchId).catch(() => undefined)
+    }, 5_500)
   }
 
   async cancelSearch() {
@@ -288,15 +308,22 @@ export class SupabaseBackend implements Backend {
 
     // Typing signals ride a broadcast channel shared with the Android app (not stored anywhere).
     let typingOff: ReturnType<typeof setTimeout> | undefined
-    const typing = this.client.channel(`typing-${matchId}`)
-      .on('broadcast', { event: 'typing' }, ({ payload }) => {
-        if (payload?.from === me) return
-        emit({ type: 'typing', on: true })
-        clearTimeout(typingOff)
-        typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
-      })
-      .subscribe()
-    this.typingChannels.set(matchId, typing)
+    const onTyping = (from: string) => {
+      if (from === me) return
+      emit({ type: 'typing', on: true })
+      clearTimeout(typingOff)
+      typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
+    }
+    let hub = this.typing.get(matchId)
+    if (!hub) {
+      const listeners = new Set<(from: string) => void>()
+      const ch = this.client.channel(`typing-${matchId}`)
+        .on('broadcast', { event: 'typing' }, ({ payload }) => listeners.forEach((l) => l(String(payload?.from ?? ''))))
+        .subscribe()
+      hub = { channel: ch, listeners }
+      this.typing.set(matchId, hub)
+    }
+    hub.listeners.add(onTyping)
 
     // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the UI de-duplicates by id).
     const resync = async () => {
@@ -312,14 +339,18 @@ export class SupabaseBackend implements Backend {
       closed = true
       clearInterval(timer)
       clearTimeout(typingOff)
-      if (this.typingChannels.get(matchId) === typing) this.typingChannels.delete(matchId)
+      const h = this.typing.get(matchId)
+      h?.listeners.delete(onTyping)
+      if (h && h.listeners.size === 0) {
+        this.typing.delete(matchId)
+        void this.client.removeChannel(h.channel)
+      }
       void this.client.removeChannel(channel)
-      void this.client.removeChannel(typing)
     }
   }
 
   sendTyping(matchId: string) {
-    const ch = this.typingChannels.get(matchId)
+    const ch = this.typing.get(matchId)?.channel
     if (!ch || !this.userId) return
     void ch.send({ type: 'broadcast', event: 'typing', payload: { from: this.userId } }).catch(() => undefined)
   }
@@ -539,6 +570,7 @@ export class SupabaseBackend implements Backend {
     let type = file.type
     let ext: string
     if (isVideo) {
+      if (!VIDEO_TYPES.includes(file.type)) throw new BackendError('bad_media')
       if (file.size > MAX_VIDEO_BYTES) throw new BackendError('too_large')
       ext = type === 'video/mp4' ? 'mp4' : type.split('/')[1] || 'mp4'
     } else {

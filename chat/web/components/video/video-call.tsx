@@ -35,6 +35,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
           return
         }
         const { joinCall } = await import('@/lib/livekit') // the video SDK loads only when a call starts
+        if (cancelled) return // the call ended while the SDK was loading
         const call = await joinCall(
           token.url,
           token.token,
@@ -145,7 +146,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         <CallButton label={camera ? 'Turn camera off' : 'Turn camera on'} onClick={() => void toggleCamera()} active={!camera}>
           {camera ? <Video className="size-6" aria-hidden /> : <VideoOff className="size-6" aria-hidden />}
         </CallButton>
-        <CallButton label="End call" onClick={onEnd} danger>
+        <CallButton label="End call" onClick={onEnd} danger autoFocus>
           <PhoneOff className="size-6" aria-hidden />
         </CallButton>
       </div>
@@ -159,17 +160,20 @@ function CallButton({
   children,
   active,
   danger,
+  autoFocus,
 }: {
   label: string
   onClick: () => void
   children: React.ReactNode
   active?: boolean
   danger?: boolean
+  autoFocus?: boolean
 }) {
   return (
     <motion.button
       type="button"
       onClick={onClick}
+      autoFocus={autoFocus}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.9 }}
       aria-label={label}

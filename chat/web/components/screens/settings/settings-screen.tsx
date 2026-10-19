@@ -25,6 +25,7 @@ export function SettingsScreen() {
   const signOut = async () => {
     setBusy('out')
     try {
+      await backend.cancelSearch().catch(() => undefined) // out of the match queue while still signed in
       await backend.signOut()
       signedOut()
     } catch (err) {

@@ -50,6 +50,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [immersive, setImmersive] = useState(false)
   const [openRoomId, setOpenRoomId] = useState<string | null>(null)
   const [entitlements, setEntitlements] = useState(initialEntitlements)
+  const [reportListeners] = useState(() => new Set<(id: string) => void>())
 
   // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes.
   useEffect(() => {
@@ -99,9 +100,19 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       openPaywall: () => setPaywallOpen(true),
       openThread: (partner, matchId) => void openThread(partner, matchId),
       setImmersive,
+      randomVisible: tab === 'random' && thread === null,
+      reported: (id) => {
+        setThread((th) => (th?.partner.id === id ? null : th))
+        setProfileTarget(null)
+        reportListeners.forEach((l) => l(id))
+      },
+      onReported: (l) => {
+        reportListeners.add(l)
+        return () => void reportListeners.delete(l)
+      },
       signedOut: onSignedOut,
     }),
-    [me, phone, entitlements, tab, setTab, lang, t, openThread, onSignedOut],
+    [me, phone, entitlements, tab, setTab, lang, t, openThread, onSignedOut, thread, reportListeners],
   )
 
   const randomVisible = tab === 'random' && !thread

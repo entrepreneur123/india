@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, Flag, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
@@ -28,6 +28,7 @@ export function ChatView({
   matchId,
   partner,
   mode,
+  visible = true,
   startedAt,
   onExit,
   onClose,
@@ -36,6 +37,8 @@ export function ChatView({
   matchId: string
   partner: Profile
   mode: 'random' | 'thread'
+  /** False while another tab covers the chat (random chats stay alive in the background). */
+  visible?: boolean
   /** Random only: when the chat opened here (the exit lock counts from it). */
   startedAt?: number
   /** Random only: the X was pressed after the lock (or the partner already left). */
@@ -47,7 +50,7 @@ export function ChatView({
 }) {
   const backend = useBackend()
   const toast = useToast()
-  const { entitlements, openPaywall, openProfile } = useApp()
+  const { entitlements, openPaywall, openProfile, setTab } = useApp()
   const live = mode === 'random'
   const chat = useMatchChat(matchId, partner.name, live)
   const [reportOpen, setReportOpen] = useState(false)
@@ -96,8 +99,19 @@ export function ChatView({
 
   const ended = live && chat.partnerLeft
 
+  // A call never runs off screen (camera and mic would stay live with no controls), and an incoming
+  // request brings the chat back to the front so it can be answered.
+  useEffect(() => {
+    if (!live || visible) return
+    if (chat.video === 'accepted') endVideo()
+    else if (chat.video === 'requested_by_partner') setTab('random')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live, visible, chat.video])
+
   return (
     <div className="relative flex min-h-0 flex-1 flex-col bg-background">
+      {/* While a call covers the chat, keyboard focus must not reach the chat behind it. */}
+      <div className="flex min-h-0 flex-1 flex-col" inert={live && visible && chat.video === 'accepted'}>
       <header className="flex items-center gap-3 border-b border-border px-3 py-2.5 sm:px-5">
         {live ? (
           <ExitButton
@@ -218,6 +232,8 @@ export function ChatView({
         />
       )}
 
+      </div>
+
       <ReportSheet
         open={reportOpen}
         onClose={() => setReportOpen(false)}
@@ -227,7 +243,7 @@ export function ChatView({
       />
 
       <Modal
-        open={live && chat.video === 'requested_by_partner'}
+        open={live && visible && chat.video === 'requested_by_partner'}
         onClose={() => void answerVideo(false)}
         hideHeader
         className="max-w-sm"
@@ -253,7 +269,7 @@ export function ChatView({
       </Modal>
 
       <AnimatePresence>
-        {live && chat.video === 'accepted' ? (
+        {live && visible && chat.video === 'accepted' ? (
           <VideoCall key="call" matchId={matchId} partner={partner} onEnd={endVideo} />
         ) : null}
       </AnimatePresence>

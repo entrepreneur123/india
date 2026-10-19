@@ -36,7 +36,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const { mutate } = useSWRConfig()
   const { me, openThread } = useApp()
   const isMe = userId === me.id
-  const { data: profile, isLoading } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
+  const { data: profile, isLoading, error: loadError, mutate: reload } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
   const { data: friends, mutate: refreshFriends } = useSWR('friends', () => backend.friends())
   const [busy, setBusy] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
@@ -72,6 +72,14 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
           <Skeleton className="size-24 rounded-full" />
           <Skeleton className="h-5 w-40" />
           <Skeleton className="h-4 w-56" />
+        </div>
+      ) : !shown && loadError ? (
+        <div className="p-10 text-center">
+          <h2 className="text-lg font-bold">Couldn’t load this profile</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Check your connection and try again.</p>
+          <Button variant="secondary" className="mt-4" onClick={() => void reload()}>
+            Try again
+          </Button>
         </div>
       ) : !shown ? (
         <div className="p-10 text-center">

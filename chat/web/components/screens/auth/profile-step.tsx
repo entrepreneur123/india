@@ -28,7 +28,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
 
   const age = birthDate ? ageFromBirthDate(birthDate) : null
   const ageError = birthDate && (age === null || age < 18) ? 'You must be 18 or older to use yaari.' : null
-  const valid = name.trim().length >= 2 && gender !== '' && age !== null && age >= 18 && age <= 100 && city.trim().length >= 2 && agreed
+  const valid = name.trim().length >= 1 && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -40,7 +40,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         name: name.trim(),
         gender,
         birthDate,
-        city: city.trim(),
+        city: city.trim() || 'India',
         bio: bio.trim(),
         photo,
       })
@@ -61,7 +61,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
 
       <PhotoPicker file={photo} onChange={setPhoto} name={name} />
 
-      <Field label="Name" htmlFor="pf-name" error={touched && name.trim().length < 2 ? 'Add your first name' : null}>
+      <Field label="Name" htmlFor="pf-name" error={touched && name.trim().length < 1 ? 'Add your first name' : null}>
         <TextInput id="pf-name" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} autoComplete="given-name" placeholder="Your first name" />
       </Field>
 
@@ -96,7 +96,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         Gender and birth date can’t be changed later, so make sure they’re right.
       </p>
 
-      <Field label="City" htmlFor="pf-city" error={touched && city.trim().length < 2 ? 'Add your city' : null}>
+      <Field label="City (optional)" htmlFor="pf-city">
         <TextInput id="pf-city" value={city} maxLength={30} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" placeholder="e.g. Pune" />
       </Field>
 

@@ -22,7 +22,7 @@ const HOW = [
 const SAFETY = [
   { icon: ShieldCheck, text: 'Adults only (18+), one account per phone number' },
   { icon: Flag, text: 'Report anyone in one tap, instantly, from any chat' },
-  { icon: EyeOff, text: 'Photos and videos stay blurred until you choose to look' },
+  { icon: EyeOff, text: 'Photos and videos in chats stay blurred until you choose to look' },
 ]
 
 export function AuthScreen({

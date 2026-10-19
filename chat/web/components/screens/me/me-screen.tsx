@@ -196,7 +196,7 @@ function NewPost({ open, onClose }: { open: boolean; onClose: () => void }) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New post" description="People you’ve met can see your posts.">
+    <Modal open={open} onClose={onClose} title="New post" description="People you’ve chatted with, your friends and people in the same room can see your posts.">
       <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-4 p-6 pt-5">
         {preview ? (
           <div className="relative overflow-hidden rounded-3xl bg-muted">

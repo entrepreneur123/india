@@ -52,15 +52,13 @@ export function HeroPreview() {
 
       <div className="absolute inset-x-[17%] top-1/2 flex -translate-y-1/2 flex-col gap-2 rounded-[28px] bg-ink/70 p-4 shadow-[0_30px_80px_-30px_rgb(255_61_104/0.55)] ring-1 ring-ink-foreground/10 backdrop-blur-xl">
         <div className="flex items-center gap-2.5 border-b border-ink-foreground/8 pb-3">
-          <img
-            src="https://randomuser.me/api/portraits/women/68.jpg"
-            alt=""
-            className="size-8 rounded-full object-cover"
-          />
+          <span className="grid size-8 place-items-center rounded-full bg-brand text-sm font-bold text-primary-foreground" aria-hidden>
+            S
+          </span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-ink-foreground">Sofia, 24 {flagEmoji('PT')}</p>
             <p className="flex items-center gap-1.5 text-[11px] text-ink-foreground/60">
-              <span className="size-1.5 rounded-full bg-online" /> Matched just now
+              <span className="size-1.5 rounded-full bg-online" /> Example chat
             </p>
           </div>
         </div>

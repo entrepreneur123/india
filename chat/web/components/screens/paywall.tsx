@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 const BENEFITS = [
   { icon: Users, title: 'Choose who you meet', body: 'Filter random matches by women or men.' },
-  { icon: Video, title: 'Video calls', body: 'Switch any chat to face-to-face video.' },
+  { icon: Video, title: 'Video calls', body: 'Ask your random-chat partner for a video call.' },
   { icon: Zap, title: '0.2 s skip', body: 'Leave a chat instantly instead of waiting 5 s.' },
 ]
 

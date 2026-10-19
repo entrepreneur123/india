@@ -14,14 +14,14 @@ interface AvatarProps {
 }
 
 export function Avatar({ name, src, size = 40, country, online, className }: AvatarProps) {
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState<string | null>(null) // the src that failed; a new photo gets a new try
   const initials = name
     .split(/\s+/)
     .map((w) => w[0])
     .join('')
     .slice(0, 2)
     .toUpperCase()
-  const showImage = src && !failed
+  const showImage = src && failed !== src
   const badge = Math.max(14, Math.round(size * 0.36))
 
   return (
@@ -34,7 +34,7 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
             className="size-full object-cover"
             loading="lazy"
             draggable={false}
-            onError={() => setFailed(true)}
+            onError={() => setFailed(src)}
           />
         ) : (
           <span

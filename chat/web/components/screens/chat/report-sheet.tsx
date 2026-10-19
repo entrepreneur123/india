@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import type { Profile, ReportReason } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { errorCode } from '@/lib/format'
+import { useApp } from '@/components/app-state'
 import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
@@ -31,15 +33,22 @@ export function ReportSheet({
 }) {
   const backend = useBackend()
   const toast = useToast()
+  const { reported } = useApp()
   const [busy, setBusy] = useState<ReportReason | null>(null)
 
   const report = async (reason: ReportReason) => {
     setBusy(reason)
     try {
-      await backend.report(partner.id, reason, matchId)
+      try {
+        await backend.report(partner.id, reason, matchId)
+      } catch (err) {
+        // "not_found": the account was already deleted — there is nothing left to report, the chat is over.
+        if (errorCode(err) !== 'not_found') throw err
+      }
       toast.show(`Thanks. We’ll review ${partner.name}’s account.`, 'success')
       onClose()
       onReported?.()
+      reported(partner.id)
     } catch (err) {
       toast.error(err)
     } finally {

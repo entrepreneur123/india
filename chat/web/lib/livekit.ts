@@ -20,6 +20,7 @@ export async function joinCall(
   /** Aborting (the call screen closed) disconnects at once, even while still connecting. */
   signal?: AbortSignal,
 ): Promise<Call> {
+  if (signal?.aborted) throw new DOMException('call ended', 'AbortError')
   const room = new Room({
     adaptiveStream: true,
     dynacast: true,
@@ -50,11 +51,13 @@ export async function joinCall(
     onState('failed')
     throw e
   }
+  if (signal?.aborted) throw new DOMException('call ended', 'AbortError')
   // Tracks the partner published before we joined.
   room.remoteParticipants.forEach((p) => p.trackPublications.forEach((pub) => pub.track && attach(pub.track)))
   onState('connected')
   // The partner shows even if this browser has no camera or the user blocks it.
   let devices: 'ok' | 'blocked' = 'ok'
+  if (signal?.aborted) throw new DOMException('call ended', 'AbortError') // never turn the camera on for an ended call
   try {
     await room.localParticipant.enableCameraAndMicrophone()
     room.localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack?.attach(els.local)
