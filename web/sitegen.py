@@ -28,7 +28,7 @@ RES = ROOT / "android/app/src/main/res"
 LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "/hi")}
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 WEEKLY = [("NL1PM", "13:00", "1pm"), ("SK6PM", "18:00", "6pm"), ("NL8PM", "20:00", "8pm")]
-SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm"}
+SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}
 TAG = {"NL1PM": "tag_morning", "SK6PM": "tag_day", "NL8PM": "tag_night"}
 CONTACT = "yechan750745@gmail.com"
 
