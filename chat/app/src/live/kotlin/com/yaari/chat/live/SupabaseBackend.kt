@@ -284,9 +284,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         if (raw == "null" || raw.isEmpty()) return@call null
         val id = json.decodeFromString<String>(raw)
         try {
-            val m = matchRow(id) ?: throw BackendException("not_found")
-            val partnerId = if (m.userA == uid) m.userB else m.userA
-            Match(id, card(partnerId) ?: throw BackendException("not_found"))
+            // One request for the partner's card (match_card), no posts: the chat opens fast; the profile screen
+            // loads the full profile with posts when opened. A photo link that fails to sign shows the initial.
+            val c = client.postgrest.rpc("match_card", buildJsonObject { put("p_match", id) }).decodeList<CardRow>().firstOrNull()
+                ?: throw BackendException("not_found")
+            val photo = c.photoPath?.let { p -> runCatching { signed(p) }.getOrNull() }
+            Match(id, toProfile(c.copy(photoPath = null), emptyList()).copy(photoUri = photo))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -535,9 +538,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             ?: return@call null
         toProfile(c, posts(userId))
     }
-
-    private suspend fun card(userId: String): Profile? =
-        client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()?.let { toProfile(it, posts(userId)) }
 
     private suspend fun posts(userId: String): List<Post> =
         client.postgrest["posts"].select {
