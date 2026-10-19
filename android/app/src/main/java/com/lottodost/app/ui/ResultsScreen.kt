@@ -70,6 +70,7 @@ fun ResultsScreen(
     onOpen: (Draw) -> Unit,
     onRefresh: () -> Unit,
     onLoadDay: (String) -> Unit,
+    onOpenSheet: (Draw, Boolean) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     val ctx = LocalContext.current
@@ -128,10 +129,10 @@ fun ResultsScreen(
                 val isToday = selected == today
                 items(DrawSchedule.SLOTS, key = { it.id }) { slot ->
                     val draw = draws.firstOrNull { it.date == selected && it.slot == slot.id }
-                    SlotCard(slot, draw, selected, if (isToday) now else null, state.config?.liveDrawUrl, onOpen)
+                    SlotCard(slot, draw, selected, if (isToday) now else null, state.config?.liveDrawUrl, onOpen, onOpenSheet)
                 }
                 val specials = draws.filter { it.date == selected && it.special }.sortedBy { it.time }
-                items(specials, key = { it.id }) { SpecialCard(it, onOpen) }
+                items(specials, key = { it.id }) { SpecialCard(it, onOpen, onOpenSheet) }
             }
             item {
                 Text(stringResource(R.string.source_note), style = MaterialTheme.typography.bodySmall,
@@ -211,7 +212,10 @@ fun stateName(state: String): String = when (state) {
 }
 
 @Composable
-private fun SlotCard(slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfToday: ZonedDateTime?, liveUrl: String?, onOpen: (Draw) -> Unit) {
+private fun SlotCard(
+    slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfToday: ZonedDateTime?, liveUrl: String?,
+    onOpen: (Draw) -> Unit, onOpenSheet: (Draw, Boolean) -> Unit,
+) {
     val ctx = LocalContext.current
     val clickable = draw?.hasNumbers == true
     StubSlip(formatTime(slot.drawTime.toString()), slotTag(slot.id), onClick = if (clickable) ({ onOpen(draw!!) }) else null) {
@@ -238,7 +242,7 @@ private fun SlotCard(slot: DrawSchedule.Slot, draw: Draw?, date: String, nowIfTo
             }
             draw != null && draw.officialPdf != null -> {
                 Text(stringResource(R.string.pdf_only), style = MaterialTheme.typography.bodyMedium)
-                OutlinedButton(onClick = { openUrl(ctx, draw.officialPdf!!) }) { Text(stringResource(R.string.open_official_pdf)) }
+                OutlinedButton(onClick = { onOpenSheet(draw, true) }) { Text(stringResource(R.string.open_official_pdf)) }
             }
             nowIfToday != null -> when (val st = DrawSchedule.status(slot, nowIfToday, false)) {
                 is DrawSchedule.Status.Upcoming -> Text(
@@ -273,7 +277,7 @@ fun VerifiedMark() {
 }
 
 @Composable
-private fun SpecialCard(draw: Draw, onOpen: (Draw) -> Unit) {
+private fun SpecialCard(draw: Draw, onOpen: (Draw) -> Unit, onOpenSheet: (Draw, Boolean) -> Unit) {
     val ctx = LocalContext.current
     StubSlip(formatTime(draw.time), stringResource(R.string.special_tag),
         stubColor = MaterialTheme.colorScheme.secondary, onStubColor = MaterialTheme.colorScheme.onSecondary,
@@ -289,7 +293,7 @@ private fun SpecialCard(draw: Draw, onOpen: (Draw) -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
             Text(stringResource(R.string.sheet_only), style = MaterialTheme.typography.bodyMedium)
-            draw.sheetUrl?.let { url -> OutlinedButton(onClick = { openUrl(ctx, url) }) { Text(stringResource(R.string.open_sheet)) } }
+            if (draw.sheetUrl != null) OutlinedButton(onClick = { onOpenSheet(draw, false) }) { Text(stringResource(R.string.open_sheet)) }
         }
     }
 }

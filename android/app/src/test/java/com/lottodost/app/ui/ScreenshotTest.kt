@@ -56,7 +56,20 @@ class ScreenshotTest {
 
     @Test fun results() = shot("01_results") { ResultsScreen(state, evening, {}, {}, {}) }
 
-    @Test fun drawDetail() = shot("02_detail") { DrawDetailScreen(wish, onBack = {}) }
+    @Test fun drawDetail() {
+        // Share bar shows installed messaging apps only: pretend WhatsApp and Telegram are installed.
+        for ((pkg, label) in listOf("com.whatsapp" to "WhatsApp", "org.telegram.messenger" to "Telegram")) {
+            org.robolectric.Shadows.shadowOf(org.robolectric.RuntimeEnvironment.getApplication().packageManager).installPackage(
+                android.content.pm.PackageInfo().apply {
+                    packageName = pkg
+                    applicationInfo = android.content.pm.ApplicationInfo().apply { packageName = pkg; nonLocalizedLabel = label; enabled = true }
+                })
+        }
+        shot("02_detail") { DrawDetailScreen(wish, onBack = {}) }
+        compose.onNodeWithText("WhatsApp").assertExists()
+        compose.onNodeWithText("Telegram").assertExists()
+        compose.onNodeWithText("SMS").assertExists()
+    }
 
     @Test fun checkWinningTicket() {
         compose.setContent { LottoTheme { CheckScreen(state.drawList, index.upcoming, "2026-10-18", null, {}, {}, {}, {}, {}) } }

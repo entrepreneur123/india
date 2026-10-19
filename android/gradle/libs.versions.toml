@@ -8,6 +8,7 @@ camerax = "1.5.3"
 work = "2.11.0"
 serialization = "1.9.0"
 mlkitTextUnbundled = "19.0.1"
+mlkitBarcodeUnbundled = "18.3.1"
 coreKtx = "1.17.0"
 appcompat = "1.7.1"
 junit = "4.13.2"
@@ -32,6 +33,7 @@ camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = 
 camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+mlkit-barcode-scanning = { module = "com.google.android.gms:play-services-mlkit-barcode-scanning", version.ref = "mlkitBarcodeUnbundled" }
 mlkit-text-recognition = { module = "com.google.android.gms:play-services-mlkit-text-recognition", version.ref = "mlkitTextUnbundled" }
 desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }

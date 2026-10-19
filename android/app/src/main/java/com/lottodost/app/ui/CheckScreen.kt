@@ -150,7 +150,9 @@ fun CheckScreen(
                 Button(onClick = { submitted = input; focus.clearFocus() }, modifier = Modifier.weight(1f)) {
                     Text(stringResource(R.string.check_button))
                 }
-                OutlinedButton(onClick = onScan, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.scan_button)) }
+                OutlinedButton(onClick = onScan, modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.scan_button), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
             }
             dateFilter?.let { d ->
                 FilterChip(selected = true, onClick = { dateFilter = null },

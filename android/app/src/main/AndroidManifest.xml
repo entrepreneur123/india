@@ -7,6 +7,23 @@
     <!-- Scanning is optional: phones without a usable camera can still type numbers. -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Android 11+ package visibility: lets the share bar show which of these messaging apps are installed. -->
+    <queries>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+        <package android:name="org.telegram.messenger" />
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.facebook.orca" />
+        <package android:name="com.instagram.android" />
+        <package android:name="in.mohalla.sharechat" />
+        <package android:name="com.twitter.android" />
+        <package android:name="org.thoughtcrime.securesms" />
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+    </queries>
+
     <application
         android:name=".LottoApp"
         android:allowBackup="true"
@@ -59,10 +76,10 @@
             </intent-filter>
         </service>
 
-        <!-- Ask Google Play services to fetch the on-device OCR model at install time. -->
+        <!-- Ask Google Play services to fetch the on-device OCR and QR/barcode models at install time. -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="ocr" />
+            android:value="ocr,barcode" />
 
         <!-- Persists the in-app language choice on Android 7-12 (Android 13+ does it natively). -->
         <service

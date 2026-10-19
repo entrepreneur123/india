@@ -73,7 +73,6 @@
 
     <string name="back">Back</string>
     <string name="share_text">Share as text</string>
-    <string name="share_whatsapp">Share result image (WhatsApp)</string>
     <string name="share_footer">Checked with the LottoDost app. Verify with the official result.</string>
     <string name="draw_meta">%1$s · Draw No. %2$s · Ticket ₹%3$d</string>
     <string name="draw_no">Draw No. %1$s</string>
@@ -86,13 +85,13 @@
     <string name="claim_other_state">For Sikkim and Punjab draws, follow the claim instructions printed on your ticket and on the official result. Ask your seller first.</string>
 
     <string name="check_title">Check your ticket</string>
-    <string name="check_hint">Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket.</string>
+    <string name="check_hint">Type the full number (e.g. 39C 06366, bumper A 801021) or the last 4–6 digits, or scan the ticket or its QR code.</string>
     <string name="ticket_number">Ticket number</string>
     <string name="ticket_invalid">Enter like 39C 06366, A 801021, 06366 or 6366</string>
     <string name="scan_confirm">Read from photo — please check it matches your ticket, then tap Check.</string>
     <string name="scan_none">Could not read a ticket number. Try again in good light, or type it.</string>
     <string name="check_button">Check</string>
-    <string name="scan_button">Scan ticket</string>
+    <string name="scan_button">Scan ticket/QR</string>
     <string name="only_date">Only %1$s (tap to show all)</string>
     <string name="no_win_title">%1$s: no prize</string>
     <plurals name="no_win_body">
@@ -107,7 +106,7 @@
     <string name="save_button">Save for %1$s</string>
     <string name="saved_ok">Saved. We will check it automatically.</string>
 
-    <string name="scan_aim">Hold the ticket number inside the box</string>
+    <string name="scan_aim">Hold the ticket number or QR code inside the box</string>
     <string name="scan_need_camera">Camera permission is needed to scan. You can also pick a photo.</string>
     <string name="cancel">Cancel</string>
     <string name="pick_photo">Pick photo</string>
@@ -170,4 +169,18 @@
     <string name="claim_docs_body">• Original ticket, signed on the back\n• Self declaration (part of the form)\n• Affidavit\n• PAN card and one ID proof\n• 3 passport photos, not older than 3 months\n• A cancelled cheque of your bank account\nThe form is handed in personally at Kohima or at the camps in Kolkata, Mumbai, Ludhiana and Gangtok.</string>
     <string name="widget_title">LottoDost · %1$s</string>
     <string name="widget_desc">Today\'s 1st prizes</string>
+    <string name="open_in_browser">Browser</string>
+    <string name="sheet_loading">Loading the result sheet…</string>
+    <string name="sheet_not_ready">This sheet is not published yet. Try again in a few minutes.</string>
+    <string name="sheet_failed">Could not load the sheet. Check your internet and try again.</string>
+    <string name="sheet_source">Shown as published by %1$s. Pinch to zoom.</string>
+    <string name="qr_link_title">This code is a web link, not a ticket number</string>
+    <string name="qr_link_body">Open it only if you trust this website. LottoDost never asks for money, bank or UPI details, and no one can charge you to release a prize.</string>
+    <string name="qr_open">Open link</string>
+    <string name="qr_keep_scanning">Keep scanning</string>
+    <string name="qr_no_ticket">Code found, but it has no ticket number. Point the camera at the printed number.</string>
+    <string name="share_title">Share result</string>
+    <string name="share_more">More</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\n1st Prize: %3$s\nFull result: %4$s</string>
 </resources>

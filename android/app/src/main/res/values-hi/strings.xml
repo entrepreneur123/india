@@ -70,7 +70,6 @@
 
     <string name="back">वापस</string>
     <string name="share_text">टेक्स्ट में शेयर करें</string>
-    <string name="share_whatsapp">रिज़ल्ट फ़ोटो शेयर करें (WhatsApp)</string>
     <string name="share_footer">LottoDost ऐप से चेक किया। सरकारी रिज़ल्ट से मिला लें।</string>
     <string name="draw_meta">%1$s · ड्रॉ नं. %2$s · टिकट ₹%3$d</string>
     <string name="draw_no">ड्रॉ नं. %1$s</string>
@@ -83,13 +82,13 @@
     <string name="claim_other_state">सिक्किम और पंजाब के ड्रॉ में इनाम लेने का तरीका टिकट और सरकारी रिज़ल्ट पर छपा होता है। पहले अपने विक्रेता से पूछें।</string>
 
     <string name="check_title">अपना टिकट चेक करें</string>
-    <string name="check_hint">पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट स्कैन करें।</string>
+    <string name="check_hint">पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट या उसका QR कोड स्कैन करें।</string>
     <string name="ticket_number">टिकट नंबर</string>
     <string name="ticket_invalid">ऐसे लिखें: 39C 06366, A 801021, 06366 या 6366</string>
     <string name="scan_confirm">फ़ोटो से नंबर पढ़ा गया — अपने टिकट से मिलाकर “चेक करें” दबाएँ।</string>
     <string name="scan_none">टिकट नंबर पढ़ा नहीं जा सका। अच्छी रोशनी में दोबारा कोशिश करें या नंबर ख़ुद लिखें।</string>
     <string name="check_button">चेक करें</string>
-    <string name="scan_button">टिकट स्कैन करें</string>
+    <string name="scan_button">टिकट/QR स्कैन</string>
     <string name="only_date">सिर्फ़ %1$s (सब देखने के लिए टैप करें)</string>
     <string name="no_win_title">%1$s: इनाम नहीं लगा</string>
     <plurals name="no_win_body">
@@ -104,7 +103,7 @@
     <string name="save_button">%1$s के लिए सेव करें</string>
     <string name="saved_ok">सेव हो गया। रिज़ल्ट आने पर हम अपने-आप चेक करेंगे।</string>
 
-    <string name="scan_aim">टिकट नंबर को बॉक्स के अंदर रखें</string>
+    <string name="scan_aim">टिकट नंबर या QR कोड को बॉक्स के अंदर रखें</string>
     <string name="scan_need_camera">स्कैन करने के लिए कैमरे की परमिशन चाहिए। चाहें तो गैलरी से फ़ोटो भी चुन सकते हैं।</string>
     <string name="cancel">रद्द करें</string>
     <string name="pick_photo">फ़ोटो चुनें</string>
@@ -168,4 +167,18 @@
         <item quantity="one">पिछले %2$d दिनों में %1$d बार लगा</item>
         <item quantity="other">पिछले %2$d दिनों में %1$d बार लगा</item>
     </plurals>
+    <string name="open_in_browser">ब्राउज़र</string>
+    <string name="sheet_loading">रिज़ल्ट शीट खुल रही है…</string>
+    <string name="sheet_not_ready">यह शीट अभी आई नहीं है। कुछ मिनट बाद फिर कोशिश करें।</string>
+    <string name="sheet_failed">शीट नहीं खुल पाई। इंटरनेट चेक करके दोबारा कोशिश करें।</string>
+    <string name="sheet_source">%1$s ने जैसी छापी, वैसी ही। ज़ूम करने के लिए दो उँगलियों से फैलाएँ।</string>
+    <string name="qr_link_title">यह कोड वेब लिंक है, टिकट नंबर नहीं</string>
+    <string name="qr_link_body">इसे तभी खोलें जब आपको इस वेबसाइट पर भरोसा हो। LottoDost कभी पैसे, बैंक या UPI डिटेल नहीं माँगता, और इनाम दिलाने के नाम पर कोई आपसे पैसे नहीं ले सकता।</string>
+    <string name="qr_open">लिंक खोलें</string>
+    <string name="qr_keep_scanning">स्कैन जारी रखें</string>
+    <string name="qr_no_ticket">कोड मिला, पर उसमें टिकट नंबर नहीं है। कैमरा छपे हुए नंबर पर रखें।</string>
+    <string name="share_title">रिज़ल्ट शेयर करें</string>
+    <string name="share_more">और</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nपहला इनाम: %3$s\nपूरा रिज़ल्ट: %4$s</string>
 </resources>

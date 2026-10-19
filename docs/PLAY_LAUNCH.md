@@ -26,7 +26,7 @@
 LottoDost shows Dear lottery results minutes after every draw and checks your ticket for you.
 
 • All of today's draws on one screen: 1 PM (Nagaland), 6 PM (Sikkim), 8 PM (Nagaland) and Dear Laxmi
-• Scan your ticket with the camera or a photo – the number is read on your phone
+• Scan your ticket or its QR code with the camera or a photo – read on your phone
 • Checks every prize rule: full number, consolation, last 5 and last 4 digits
 • Bumper and monthly draws, 30+ days of old results
 • Save tickets and get an alert when the result is out

@@ -70,7 +70,6 @@
 
     <string name="back">मागे</string>
     <string name="share_text">मजकूर शेअर करा</string>
-    <string name="share_whatsapp">निकालाचा फोटो शेअर करा (WhatsApp)</string>
     <string name="share_footer">LottoDost ॲपने तपासले. सरकारी निकालाशी जुळवून पाहा.</string>
     <string name="draw_meta">%1$s · सोडत क्र. %2$s · तिकीट ₹%3$d</string>
     <string name="draw_no">सोडत क्र. %1$s</string>
@@ -83,13 +82,13 @@
     <string name="claim_other_state">सिक्कीम आणि पंजाबच्या सोडतींसाठी बक्षीस घेण्याची पद्धत तिकिटावर आणि सरकारी निकालावर छापलेली असते. आधी तुमच्या विक्रेत्याला विचारा.</string>
 
     <string name="check_title">तुमचे तिकीट तपासा</string>
-    <string name="check_hint">पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट स्कॅन करा.</string>
+    <string name="check_hint">पूर्ण नंबर लिहा (उदा. 39C 06366, बंपर A 801021) किंवा फक्त शेवटचे 4–6 अंक — किंवा तिकीट किंवा त्याचा QR कोड स्कॅन करा.</string>
     <string name="ticket_number">तिकीट नंबर</string>
     <string name="ticket_invalid">असे लिहा: 39C 06366, A 801021, 06366 किंवा 6366</string>
     <string name="scan_confirm">फोटोतून नंबर वाचला — तुमच्या तिकिटाशी जुळवा आणि “तपासा” दाबा.</string>
     <string name="scan_none">तिकीट नंबर वाचता आला नाही. चांगल्या उजेडात पुन्हा प्रयत्न करा किंवा नंबर स्वतः लिहा.</string>
     <string name="check_button">तपासा</string>
-    <string name="scan_button">तिकीट स्कॅन करा</string>
+    <string name="scan_button">तिकीट/QR स्कॅन</string>
     <string name="only_date">फक्त %1$s (सगळे पाहण्यासाठी टॅप करा)</string>
     <string name="no_win_title">%1$s: बक्षीस लागले नाही</string>
     <plurals name="no_win_body">
@@ -104,7 +103,7 @@
     <string name="save_button">%1$s साठी सेव्ह करा</string>
     <string name="saved_ok">सेव्ह झाले. निकाल आल्यावर आम्ही आपोआप तपासू.</string>
 
-    <string name="scan_aim">तिकीट नंबर चौकटीच्या आत ठेवा</string>
+    <string name="scan_aim">तिकीट नंबर किंवा QR कोड चौकटीच्या आत ठेवा</string>
     <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेऱ्याची परवानगी हवी. हवे तर गॅलरीतून फोटोही निवडू शकता.</string>
     <string name="cancel">रद्द करा</string>
     <string name="pick_photo">फोटो निवडा</string>
@@ -168,4 +167,18 @@
         <item quantity="one">मागील %2$d दिवसांत %1$d वेळा लागला</item>
         <item quantity="other">मागील %2$d दिवसांत %1$d वेळा लागला</item>
     </plurals>
+    <string name="open_in_browser">ब्राउझर</string>
+    <string name="sheet_loading">निकाल पत्रक उघडत आहे…</string>
+    <string name="sheet_not_ready">हे पत्रक अजून प्रसिद्ध झालेले नाही. काही मिनिटांनी पुन्हा प्रयत्न करा.</string>
+    <string name="sheet_failed">पत्रक उघडता आले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="sheet_source">%1$s ने जसे प्रसिद्ध केले, तसेच. झूम करण्यासाठी दोन बोटांनी पसरवा.</string>
+    <string name="qr_link_title">हा कोड वेब लिंक आहे, तिकीट नंबर नाही</string>
+    <string name="qr_link_body">या वेबसाइटवर विश्वास असेल तरच उघडा. LottoDost कधीही पैसे, बँक किंवा UPI तपशील मागत नाही, आणि बक्षीस मिळवून देण्याच्या नावाखाली कोणी तुमच्याकडून पैसे घेऊ शकत नाही.</string>
+    <string name="qr_open">लिंक उघडा</string>
+    <string name="qr_keep_scanning">स्कॅन सुरू ठेवा</string>
+    <string name="qr_no_ticket">कोड सापडला, पण त्यात तिकीट नंबर नाही. कॅमेरा छापलेल्या नंबरकडे धरा.</string>
+    <string name="share_title">निकाल शेअर करा</string>
+    <string name="share_more">आणखी</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nपहिले बक्षीस: %3$s\nपूर्ण निकाल: %4$s</string>
 </resources>

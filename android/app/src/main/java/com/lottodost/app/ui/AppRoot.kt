@@ -26,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lottodost.app.R
 import com.lottodost.app.data.Prefs
+import com.lottodost.app.data.SheetSource
 import kotlinx.coroutines.delay
 
 enum class Tab(val label: Int, val icon: Int) {
@@ -59,6 +60,9 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
     var openDrawId by rememberSaveable { mutableStateOf<String?>(null) }
     var scanning by rememberSaveable { mutableStateOf(false) }
     var showHistory by rememberSaveable { mutableStateOf(false) }
+    var sheetDrawId by rememberSaveable { mutableStateOf<String?>(null) }
+    var sheetOfficial by rememberSaveable { mutableStateOf(false) }
+    val openSheet = { d: com.lottodost.app.data.Draw, official: Boolean -> sheetDrawId = d.id; sheetOfficial = official }
     var scannedText by remember { mutableStateOf<String?>(null) }
 
     // Clock for countdowns, corrected to server time; ticks often enough for a minute display.
@@ -78,7 +82,23 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
     val draws = state.drawList
     val openDraw = draws.firstOrNull { it.id == openDrawId }
 
+    val sheetDraw = draws.firstOrNull { it.id == sheetDrawId }
+    val sheetUrl = sheetDraw?.let { d ->
+        if (sheetOfficial) d.officialPdf
+        else d.sheetUrl?.let { SheetSource.sambadUrl(it, d.date, now.toLocalDate().toString()) }
+    }
     when {
+        sheetDraw != null && sheetUrl != null -> {
+            BackHandler { sheetDrawId = null }
+            SheetViewerScreen(
+                title = "${formatDate(sheetDraw.date)} · ${formatTime(sheetDraw.time)}",
+                url = sheetUrl,
+                publisher = if (sheetOfficial) "nagalandlotteries.com" else "lotterysambad.com",
+                mayChange = sheetDraw.date >= now.toLocalDate().minusDays(1).toString(),
+                onBack = { sheetDrawId = null },
+            )
+            return
+        }
         scanning -> {
             BackHandler { scanning = false }
             ScanScreen(
@@ -94,7 +114,7 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
         }
         openDraw != null -> {
             BackHandler { openDrawId = null }
-            DrawDetailScreen(openDraw, onBack = { openDrawId = null })
+            DrawDetailScreen(openDraw, onBack = { openDrawId = null }, onOpenSheet = openSheet)
             return
         }
     }
@@ -118,7 +138,7 @@ fun AppRoot(vm: MainViewModel = viewModel()) {
         val m = Modifier.padding(pad)
         when (tab) {
             Tab.Results -> ResultsScreen(state, now, onOpen = { openDrawId = it.id }, onRefresh = vm::refresh,
-                onLoadDay = vm::loadDay, modifier = m)
+                onLoadDay = vm::loadDay, onOpenSheet = openSheet, modifier = m)
             Tab.Check -> CheckScreen(
                 draws = draws,
                 upcoming = state.index?.upcoming.orEmpty(),

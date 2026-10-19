@@ -1,6 +1,21 @@
 package com.lottodost.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.HorizontalDivider
@@ -66,6 +81,46 @@ fun matchHint(tier: Tier): String? = when (tier.match) {
     else -> null
 }
 
+/** Share bar: the installed messaging apps first (their own icons), then SMS and the system sheet. */
+@Composable
+private fun ShareRow(onApp: (String) -> Unit, onSms: () -> Unit, onMore: () -> Unit) {
+    val ctx = LocalContext.current
+    val apps = remember { ShareTargets.installed(ctx) }
+    Eyebrow(stringResource(R.string.share_title))
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        items(apps, key = { it.pkg }) { app ->
+            ShareButton(app.label, onClick = { onApp(app.pkg) }) {
+                if (app.icon != null) androidx.compose.foundation.Image(app.icon.asImageBitmap(), contentDescription = null,
+                    modifier = Modifier.size(40.dp))
+            }
+        }
+        item { ShareButton(stringResource(R.string.share_sms), onClick = onSms) { ShareGlyph("SMS") } }
+        item { ShareButton(stringResource(R.string.share_more), onClick = onMore) {
+            Icon(painterResource(R.drawable.ic_share), contentDescription = null, modifier = Modifier.size(28.dp)) } }
+    }
+}
+
+@Composable
+private fun ShareButton(label: String, onClick: () -> Unit, icon: @Composable () -> Unit) {
+    Column(
+        Modifier.width(72.dp).clip(MaterialTheme.shapes.small).clickable(onClick = onClick).padding(vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) { icon() }
+        Text(label, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+@Composable
+private fun ShareGlyph(text: String) {
+    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer, modifier = Modifier.size(40.dp)) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(text, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSecondaryContainer)
+        }
+    }
+}
+
 /** One prize tier as on the sheet: title and amount on a rule, then the numbers in plain columns. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -101,7 +156,7 @@ private fun TierBlock(tier: Tier, q: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
+fun DrawDetailScreen(draw: Draw, onBack: () -> Unit, onOpenSheet: (Draw, Boolean) -> Unit = { _, _ -> }) {
     val ctx = LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
     val q = query.filter { it in '0'..'9' }
@@ -116,9 +171,20 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
         add(footer)
     }.joinToString("\n")
 
-    fun shareImage() {
-        val bmp = ShareImage.render(draw, { titles[it] ?: it }, footer, dateTime, stateLabel) { String.format(java.util.Locale.ROOT, drawNoFmt, it) }
-        ShareImage.share(ctx, bmp, "${draw.id}.png", "${draw.name} — $dateTime\n$footer")
+    val scope = rememberCoroutineScope()
+    val webLink = stringResource(R.string.share_short, draw.name.removeSuffix(" WEEKLY LOTTERY"), dateTime,
+        draw.firstPrize.orEmpty(), WEB_URL)
+    /** Renders the sheet image off the main thread, then hands it to [pkg] (null: system share sheet). */
+    fun shareImage(pkg: String?) {
+        scope.launch {
+            val uri = withContext(Dispatchers.Default) {
+                val bmp = ShareImage.render(draw, { titles[it] ?: it }, footer, dateTime, stateLabel) {
+                    String.format(java.util.Locale.ROOT, drawNoFmt, it)
+                }
+                ShareTargets.imageUri(ctx, bmp, "${draw.id}.png").also { bmp.recycle() }
+            }
+            ShareTargets.sendImage(ctx, uri, shareText, pkg)
+        }
     }
 
     Scaffold(topBar = {
@@ -168,7 +234,7 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
             }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = ::shareImage, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.share_whatsapp)) }
+                    ShareRow(onApp = { shareImage(it) }, onSms = { ShareTargets.sendSms(ctx, webLink) }, onMore = { shareImage(null) })
                     OutlinedTextField(
                         value = query,
                         onValueChange = { query = it.take(6) },
@@ -190,17 +256,17 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit) {
             }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    draw.sheetUrl?.let {
+                        Button(onClick = { onOpenSheet(draw, false) }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.open_sheet))
+                        }
+                    }
                     draw.officialPdf?.let { url ->
-                        OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(onClick = { onOpenSheet(draw, true) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.open_official_pdf))
                         }
                         TextButton(onClick = { downloadPdf(ctx, url, "${draw.id}.pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.save_pdf))
-                        }
-                    }
-                    draw.sheetUrl?.let { url ->
-                        OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
-                            Text(stringResource(R.string.open_sheet))
                         }
                     }
                     Text(stringResource(if (draw.state == "Nagaland") R.string.claim_info else R.string.claim_other_state),

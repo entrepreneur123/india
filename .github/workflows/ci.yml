@@ -15,8 +15,8 @@ jobs:
         run: python -m pytest -q tests
       - name: Load model runs
         run: pip install -q numpy && python loadsim/simulate.py
-      - name: Web page builds from the app strings
-        run: python web/build.py /tmp/index.html
+      - name: Website generator (pages, languages, sitemap, ads)
+        run: python -m pytest -q web/test_site.py
 
   android:
     runs-on: ubuntu-24.04

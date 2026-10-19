@@ -70,7 +70,6 @@
 
     <string name="back">ਵਾਪਸ</string>
     <string name="share_text">ਟੈਕਸਟ ਵਿੱਚ ਸ਼ੇਅਰ ਕਰੋ</string>
-    <string name="share_whatsapp">ਨਤੀਜੇ ਦੀ ਫ਼ੋਟੋ ਸ਼ੇਅਰ ਕਰੋ (WhatsApp)</string>
     <string name="share_footer">LottoDost ਐਪ ਨਾਲ ਚੈੱਕ ਕੀਤਾ। ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਮਿਲਾ ਲਓ।</string>
     <string name="draw_meta">%1$s · ਡਰਾਅ ਨੰ. %2$s · ਟਿਕਟ ₹%3$d</string>
     <string name="draw_no">ਡਰਾਅ ਨੰ. %1$s</string>
@@ -83,13 +82,13 @@
     <string name="claim_other_state">ਸਿੱਕਮ ਅਤੇ ਪੰਜਾਬ ਦੇ ਡਰਾਅ ਵਿੱਚ ਇਨਾਮ ਲੈਣ ਦਾ ਤਰੀਕਾ ਟਿਕਟ ਅਤੇ ਸਰਕਾਰੀ ਨਤੀਜੇ ’ਤੇ ਛਪਿਆ ਹੁੰਦਾ ਹੈ। ਪਹਿਲਾਂ ਆਪਣੇ ਵਿਕਰੇਤਾ ਨੂੰ ਪੁੱਛੋ।</string>
 
     <string name="check_title">ਆਪਣੀ ਟਿਕਟ ਚੈੱਕ ਕਰੋ</string>
-    <string name="check_hint">ਪੂਰਾ ਨੰਬਰ ਲਿਖੋ (ਜਿਵੇਂ 39C 06366, ਬੰਪਰ A 801021) ਜਾਂ ਸਿਰਫ਼ ਆਖ਼ਰੀ 4–6 ਅੰਕ — ਜਾਂ ਟਿਕਟ ਸਕੈਨ ਕਰੋ।</string>
+    <string name="check_hint">ਪੂਰਾ ਨੰਬਰ ਲਿਖੋ (ਜਿਵੇਂ 39C 06366, ਬੰਪਰ A 801021) ਜਾਂ ਸਿਰਫ਼ ਆਖ਼ਰੀ 4–6 ਅੰਕ — ਜਾਂ ਟਿਕਟ ਜਾਂ ਉਸ ਦਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।</string>
     <string name="ticket_number">ਟਿਕਟ ਨੰਬਰ</string>
     <string name="ticket_invalid">ਇਸ ਤਰ੍ਹਾਂ ਲਿਖੋ: 39C 06366, A 801021, 06366 ਜਾਂ 6366</string>
     <string name="scan_confirm">ਫ਼ੋਟੋ ਤੋਂ ਨੰਬਰ ਪੜ੍ਹਿਆ ਗਿਆ — ਆਪਣੀ ਟਿਕਟ ਨਾਲ ਮਿਲਾ ਕੇ “ਚੈੱਕ ਕਰੋ” ਦਬਾਓ।</string>
     <string name="scan_none">ਟਿਕਟ ਨੰਬਰ ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਚੰਗੀ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ, ਜਾਂ ਨੰਬਰ ਖ਼ੁਦ ਲਿਖੋ।</string>
     <string name="check_button">ਚੈੱਕ ਕਰੋ</string>
-    <string name="scan_button">ਟਿਕਟ ਸਕੈਨ ਕਰੋ</string>
+    <string name="scan_button">ਟਿਕਟ/QR ਸਕੈਨ</string>
     <string name="only_date">ਸਿਰਫ਼ %1$s (ਸਾਰੇ ਦੇਖਣ ਲਈ ਟੈਪ ਕਰੋ)</string>
     <string name="no_win_title">%1$s: ਇਨਾਮ ਨਹੀਂ ਨਿਕਲਿਆ</string>
     <plurals name="no_win_body">
@@ -104,7 +103,7 @@
     <string name="save_button">%1$s ਲਈ ਸੇਵ ਕਰੋ</string>
     <string name="saved_ok">ਸੇਵ ਹੋ ਗਈ। ਨਤੀਜਾ ਆਉਣ ’ਤੇ ਅਸੀਂ ਆਪਣੇ-ਆਪ ਚੈੱਕ ਕਰਾਂਗੇ।</string>
 
-    <string name="scan_aim">ਟਿਕਟ ਨੰਬਰ ਨੂੰ ਡੱਬੇ ਦੇ ਅੰਦਰ ਰੱਖੋ</string>
+    <string name="scan_aim">ਟਿਕਟ ਨੰਬਰ ਜਾਂ QR ਕੋਡ ਨੂੰ ਡੱਬੇ ਦੇ ਅੰਦਰ ਰੱਖੋ</string>
     <string name="scan_need_camera">ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਚਾਹੋ ਤਾਂ ਗੈਲਰੀ ਤੋਂ ਫ਼ੋਟੋ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ।</string>
     <string name="cancel">ਰੱਦ ਕਰੋ</string>
     <string name="pick_photo">ਫ਼ੋਟੋ ਚੁਣੋ</string>
@@ -168,4 +167,18 @@
         <item quantity="one">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
         <item quantity="other">ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ %1$d ਵਾਰ ਨਿਕਲਿਆ</item>
     </plurals>
+    <string name="open_in_browser">ਬ੍ਰਾਊਜ਼ਰ</string>
+    <string name="sheet_loading">ਨਤੀਜਾ ਸ਼ੀਟ ਖੁੱਲ੍ਹ ਰਹੀ ਹੈ…</string>
+    <string name="sheet_not_ready">ਇਹ ਸ਼ੀਟ ਹਾਲੇ ਨਹੀਂ ਆਈ। ਕੁਝ ਮਿੰਟਾਂ ਬਾਅਦ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="sheet_failed">ਸ਼ੀਟ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕੀ। ਇੰਟਰਨੈੱਟ ਚੈੱਕ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="sheet_source">%1$s ਨੇ ਜਿਵੇਂ ਛਾਪੀ, ਉਵੇਂ ਹੀ। ਜ਼ੂਮ ਕਰਨ ਲਈ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਫੈਲਾਓ।</string>
+    <string name="qr_link_title">ਇਹ ਕੋਡ ਵੈੱਬ ਲਿੰਕ ਹੈ, ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ</string>
+    <string name="qr_link_body">ਇਸ ਵੈੱਬਸਾਈਟ ’ਤੇ ਭਰੋਸਾ ਹੋਵੇ ਤਾਂ ਹੀ ਖੋਲ੍ਹੋ। LottoDost ਕਦੇ ਪੈਸੇ, ਬੈਂਕ ਜਾਂ UPI ਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮੰਗਦਾ, ਅਤੇ ਇਨਾਮ ਦਿਵਾਉਣ ਦੇ ਨਾਂ ’ਤੇ ਕੋਈ ਤੁਹਾਡੇ ਤੋਂ ਪੈਸੇ ਨਹੀਂ ਲੈ ਸਕਦਾ।</string>
+    <string name="qr_open">ਲਿੰਕ ਖੋਲ੍ਹੋ</string>
+    <string name="qr_keep_scanning">ਸਕੈਨ ਜਾਰੀ ਰੱਖੋ</string>
+    <string name="qr_no_ticket">ਕੋਡ ਮਿਲਿਆ, ਪਰ ਇਸ ਵਿੱਚ ਟਿਕਟ ਨੰਬਰ ਨਹੀਂ ਹੈ। ਕੈਮਰਾ ਛਪੇ ਨੰਬਰ ਵੱਲ ਕਰੋ।</string>
+    <string name="share_title">ਨਤੀਜਾ ਸ਼ੇਅਰ ਕਰੋ</string>
+    <string name="share_more">ਹੋਰ</string>
+    <string name="share_sms">SMS</string>
+    <string name="share_short">%1$s · %2$s\nਪਹਿਲਾ ਇਨਾਮ: %3$s\nਪੂਰਾ ਨਤੀਜਾ: %4$s</string>
 </resources>

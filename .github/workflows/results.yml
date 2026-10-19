@@ -2,23 +2,27 @@
 # The app reads it from GitHub Pages first (enable: Settings > Pages > Deploy from branch `data`, / root),
 # then jsDelivr, then raw.githubusercontent.com. Optional: Cloudflare Pages and FCM push (see publish()).
 #
-# GitHub starts scheduled runs late or skips them (measured 18-10-2026: "every 5 min" produced runs
-# at 15:09, 15:12 and 15:37 UTC). So each draw gets ONE run that starts before the draw and polls the
-# source every 60 s itself until the sheet is published, plus a backup run 30 min later.
-# Times are UTC; IST = UTC+5:30.
-#   07:20  1 PM IST window   12:20  6 PM IST window   14:20  8 PM IST window   (+ :50 backups)
+# GitHub starts scheduled runs late or skips them (measured: "every 5 min" ran at 15:09, 15:12 and
+# 15:37 UTC on 18-10-2026; the 07:20 run of 19-10-2026 started at 07:58, so the 1 PM result went out
+# 28 minutes after the draw). So each draw's run is scheduled ~1 h 45 min early, waits in the job
+# until 5 minutes after the draw, then polls the source every 60 s until the sheet is out.
+# A backup run is scheduled 15 minutes before the draw. Times are UTC; IST = UTC+5:30.
+#   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35
+#   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
+#   12:47 (backup 14:17)  8 PM IST draw = 14:30 UTC, polling from 14:35
+# Odd minutes on purpose: runs scheduled on the hour are delayed most.
 #   15:10 / 15:40 / 16:10  official gazette (~20:30 IST): OCR check, Dear Laxmi, specials catalog
 #   03:00  daily re-check of yesterday
 name: results
 
 on:
   schedule:
-    - cron: "20 7 * * *"
-    - cron: "50 7 * * *"
-    - cron: "20 12 * * *"
-    - cron: "50 12 * * *"
-    - cron: "20 14 * * *"
-    - cron: "50 14 * * *"
+    - cron: "47 5 * * *"
+    - cron: "17 7 * * *"
+    - cron: "47 10 * * *"
+    - cron: "17 12 * * *"
+    - cron: "47 12 * * *"
+    - cron: "17 14 * * *"
     - cron: "10 15 * * *"
     - cron: "40 15 * * *"
     - cron: "10 16 * * *"
@@ -44,10 +48,14 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 240   # up to ~2 h waiting for the draw + 90 min polling
     env:
       # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
       HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      # Website: public address, ad and analytics ids (repository Variables; all optional).
+      SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
+      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+      CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
       HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
       FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -69,19 +77,19 @@ jobs:
       - name: Decide run mode
         id: mode
         run: |
-          # require: slots this run waits for; watch: minutes to keep polling.
-          require=""; watch=0; deep=false; ocr=false; backfill=1
+          # require: slots this run waits for; from: UTC time polling starts; watch: minutes to keep polling.
+          require=""; from=""; watch=0; deep=false; ocr=false; backfill=1
           case "${{ github.event.schedule }}" in
-            "20 7 * * *"|"50 7 * * *")   require=NL1PM; watch=75 ;;
-            "20 12 * * *"|"50 12 * * *") require=SK6PM; watch=75 ;;
-            "20 14 * * *"|"50 14 * * *") require=NL8PM; watch=75 ;;
+            "47 5 * * *"|"17 7 * * *")    require=NL1PM; from=07:35; watch=90 ;;
+            "47 10 * * *"|"17 12 * * *")  require=SK6PM; from=12:35; watch=90 ;;
+            "47 12 * * *"|"17 14 * * *")  require=NL8PM; from=14:35; watch=90 ;;
             "10 15 * * *"|"40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
             "0 3 * * *") deep=true; ocr=true; backfill=2 ;;
           esac
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             deep=true; ocr="${{ inputs.ocr }}"; backfill="${{ inputs.backfill_days }}"
           fi
-          { echo "require=$require"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
+          { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
@@ -102,7 +110,8 @@ jobs:
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
             cp ../chat/docs/privacy.html ../public/yaari-privacy.html  # Yaari chat app (separate project in chat/)
-            python ../web/build.py ../public/index.html  # results web page (strings from the app)
+            python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
+            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
@@ -124,6 +133,8 @@ jobs:
               fi
             fi
             [ "$changed" = 1 ] || return 0
+            # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
+            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
               npx --yes wrangler@4.147.0 pages deploy ../public --project-name "$CF_PAGES_PROJECT" \
                 --branch main --commit-dirty=true || echo "::warning::Cloudflare deploy failed"
@@ -134,6 +145,13 @@ jobs:
           if [ "${{ steps.mode.outputs.ocr }}" != "true" ]; then args="$args --no-ocr"; fi
           require="${{ steps.mode.outputs.require }}"
           if [ -n "$require" ]; then args="$args --require $require"; fi
+          from="${{ steps.mode.outputs.from }}"
+          if [ -n "$from" ]; then
+            start=$(date -u -d "today $from" +%s)
+            now=$(date +%s)
+            # Started early (the normal case): wait here instead of asking the source every minute.
+            if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
+          fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do
             set +e; python -m lottery_pipeline.build $args; code=$?; set -e
