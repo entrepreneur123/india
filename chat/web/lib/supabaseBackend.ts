@@ -396,6 +396,10 @@ export class SupabaseBackend implements Backend {
     await this.rpc('report_user', matchId ? { p_reported: partnerId, p_reason: reason, p_match: matchId } : { p_reported: partnerId, p_reason: reason })
   }
 
+  async block(userId: string) {
+    await this.rpc('block_user', { p_user: userId })
+  }
+
   async requestVideo(matchId: string) {
     await this.rpc('request_video', { p_match: matchId })
   }

@@ -108,14 +108,16 @@ export function Rich({
   nodes,
 }: {
   text: string
-  mark?: (inner: string) => ReactNode
+  /** Renders each [bracketed] part; `index` counts them from 0 in the order they appear. */
+  mark?: (inner: string, index: number) => ReactNode
   nodes?: Record<string, ReactNode>
 }) {
   const parts = text.split(/(\[[^\]]+\]|\{\w+\})/g).filter(Boolean)
+  let marked = 0
   return (
     <>
       {parts.map((p, i) => {
-        if (p.startsWith('[') && p.endsWith(']')) return <Fragment key={i}>{mark ? mark(p.slice(1, -1)) : p.slice(1, -1)}</Fragment>
+        if (p.startsWith('[') && p.endsWith(']')) return <Fragment key={i}>{mark ? mark(p.slice(1, -1), marked++) : p.slice(1, -1)}</Fragment>
         const name = /^\{(\w+)\}$/.exec(p)?.[1]
         if (name && nodes && name in nodes) return <Fragment key={i}>{nodes[name]}</Fragment>
         return <Fragment key={i}>{p}</Fragment>

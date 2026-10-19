@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Check, ChevronRight, ExternalLink, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
+import { Baby, Check, ChevronRight, ExternalLink, FileText, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
-import { COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL } from '@/lib/config'
+import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -65,6 +65,8 @@ export function SettingsScreen() {
         <Group title={t('settings.safety')}>
           <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
           <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />
+          <Item icon={FileText} label={t('settings.terms')} href={TERMS_URL} />
+          <Item icon={Baby} label={t('settings.childSafety')} href={CHILD_SAFETY_URL} />
           <Item icon={Mail} label={t('settings.grievance')} value={GRIEVANCE_OFFICER.email} href={`mailto:${GRIEVANCE_OFFICER.email}`} ltrValue />
           <Item icon={Mail} label={t('settings.support')} value={SUPPORT_EMAIL} href={`mailto:${SUPPORT_EMAIL}`} ltrValue />
         </Group>

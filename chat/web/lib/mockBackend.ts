@@ -513,6 +513,10 @@ export class MockBackend implements Backend {
     await wait(500)
   }
 
+  async block(_userId: string) {
+    await wait(300)
+  }
+
   async requestVideo(matchId: string) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')

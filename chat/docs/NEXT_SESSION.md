@@ -1,35 +1,33 @@
 # 다음 세션 인수인계
 
+출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
+
 ## 현재 상태 (2026-10-19)
-- **웹/PC 버전 완성·배포**: https://yaari-web-indol.vercel.app (Vercel 프로젝트 `yaari-web`, 루트 `chat/web`).
-  - 실서버(Supabase) 연결. 안드로이드 앱 사용자와 같은 매칭·공개방·친구를 씁니다.
-  - 디자인: v0로 디자인 시스템과 첫 화면들을 만들었고, v0 크레딧이 떨어진 뒤 나머지 7개 화면(랜챗·공개방·최근·나·프로필·설정·스레드)은 같은 스타일로 직접 작성.
-  - PC: 사이드바·본문·오른쪽 패널. 모바일 브라우저: 가운데가 떠 있는 하단 탭.
-  - 실서버 E2E 검증(테스트 봇 상대): 로그인 → 매칭 → 실시간 메시지 → Plus 0.2초 나가기 → 영상 요청·수락·종료 → 최근 목록 → 공개방 메시지·봇 답장. 콘솔 오류 0.
-- **안드로이드 앱 화면 교체**: Magic Patterns 시안(https://www.magicpatterns.com/c/vqpzdrys5sbewgh1kykx8n) 기준으로 Compose 화면 전부 교체.
-  - 어두운 1:1 채팅, 떠 있는 랜챗 버튼, 공개방 카드 등을 반영. 동작·규칙은 그대로.
-  - 테스트 demo 44 + live 48 통과, lint 오류 0. 스크린샷은 `chat/docs/screenshots/`.
+- **웹**: https://yaari-web-indol.vercel.app (Vercel 프로젝트 `yaari-web`, 루트 `chat/web`, 빌드 명령은 반드시 `pnpm build`).
+  - 실서버(Supabase) 연결. 안드로이드와 같은 매칭·방·친구.
+  - 5개 언어(en/hi/bn/pt-BR/vi), 보안 헤더(`vercel.json`), 첫 로딩 218KB(데모)/278KB(실서버).
+  - 정책 페이지 `/privacy.html`, `/terms.html`, `/child-safety.html`, `/delete-account.html`.
+    원본은 `chat/docs/*.html`, 빌드 때 `scripts/copy-legal.mjs`가 복사.
+  - 신고 화면 아래에 "신고하지 않고 차단"(RPC `block_user`).
+- **안드로이드 0.3.0 (versionCode 3)**: 5개 언어 + 앱 안 언어 선택, Material 3 정리, 차단 버튼, 백그라운드 폴링 중지,
+  릴리스 로그 제거·HTTPS 전용. 설정에 개인정보·이용약관·아동안전 링크(웹사이트 주소).
+  - `chat/dist/`: `yaari-demo.apk`, `yaari-live-arm64.apk`, `yaari-live-armv7.apk`, `yaari-live.aab`.
+  - 0.2.0과 같은 디버그 키라 덮어 설치됨(0.1.x에서 올 때는 삭제 후 설치).
+- **서버**: 마이그레이션 008(사용자 방), 009(보안 강화), 010(차단) 적용. 테스트 SQL은 `chat/server/test_*.sql`(롤백식).
 
-- **안드로이드 0.2.0 (versionCode 2)**:
-  - live 앱에서 서버 사진(프로필·게시물·채팅·방)이 안 보이던 버그 수정: Coil 3에 네트워크 모듈(`coil-network-okhttp`)이 없어 https 이미지가 전부 조용히 실패했음.
-  - 사용자 방: 방 만들기(이름·주제·인원·성별·나이·비공개), 코드로 입장, 방장 코드 공유·방 닫기, 못 들어가는 방은 이유 표시. 서버는 `room_list2`/`create_room`/`join_room_code`/`close_room` 사용.
-  - 웹(https://yaari-web-indol.vercel.app)에도 같은 사용자 방 기능 적용. 서버 변경은 `chat/server/migrations/008_user_rooms.sql`(적용 완료), 테스트 `chat/server/test_user_rooms.sql`(실행 후 롤백, 통과).
-  - 웹에서 랜챗 탭을 누를 때 화면이 잠깐 깨지던 문제 수정(이전 탭이 사라지는 동안 두 화면이 위아래로 겹쳤음).
-  - 주의: 이번 APK는 이전 `dist/` APK와 디버그 서명 키가 달라 기존 앱 위에 덮어 설치되지 않음. 기존 앱을 지우고 설치해야 함.
-
-## 남은 일 / 사장님 확인 필요
-1. **SMS 인증 연결**(Supabase → Authentication → Phone). 지금은 테스트 번호(919000000001/2, 코드 123456)만 로그인 가능하고, 일반 번호는 "지금은 코드를 보낼 수 없음"이 표시됨.
-2. **영상통화 실제 화면·소리**: 이 작업 환경은 WebRTC 미디어 연결이 막혀 있어 "연결 중"까지만 확인. 실제 폰/PC 두 대로 확인 필요(신호 서버 연결·토큰 발급은 확인됨).
-3. 웹 결제는 없음(구매는 안드로이드 앱 Google Play). 같은 계정이면 웹에서도 Plus가 적용됨.
-4. 고충처리 담당자 실제 이름·이메일(웹 `chat/web/lib/config.ts`, 앱 `SettingsScreen.kt` `Support`).
-5. 웹 힌디어: 메뉴 등 일부만 번역. 앱은 전체 힌디어.
-6. v0 크레딧 소진: v0를 다시 쓰려면 https://v0.app/chat/settings/billing 에서 충전.
+## 남은 일
+1. **실시간 영상 노출 감지** — 출시 전 최우선(LAUNCH_GUIDE 2절).
+2. 사장님 승인 필요(데이터 삭제 성격): 신고 기록을 탈퇴 시 보존(FK SET NULL), 보관 기간 자동 삭제(pg_cron),
+   본인 파일 삭제 정책, 테스트 함수 `_t`/`_act`/`_fails` 제거.
+   → 신고 보존 전까지는 정책 페이지에 "증거 보관"을 약속하지 않았음.
+3. 보안 후속(코드): 입력중 표시 채널을 private 채널로, 서명 URL 12시간 → 1시간, LiveKit 토큰 15분 → 5분,
+   verify-purchase 환불 처리, 방 코드 대입 시도 제한, 친구 요청 거절 후 재요청 쿨다운.
+4. 사이트 도메인이 생기면 `SettingsScreen.kt`의 `Support.SITE`와 Play Console URL 변경.
+5. 번역은 현지인 검수 필요. 실제 폰 시작 속도·영상통화 화면/소리는 기기에서 확인 필요(이 환경은 WebRTC 차단).
 
 ## 테스트 봇
-- `chat/server/tools/partner_bot.ts`가 지금도 어딘가에서 실행 중(QA Arjun, QA Priya).
-- 서버는 같은 상대를 연속으로 다시 매칭하지 않음. 그래서 같은 테스트 계정으로 연속 테스트하면 봇 하나가 제외될 수 있음.
-- 919000000001("seyoen")은 Plus 구독 중(2026-11-18까지).
-- 919000000002에는 이번 세션에서 "QA Web" 프로필을 만들었음.
+- `chat/server/tools/partner_bot.ts`(QA Arjun, QA Priya)가 실행 중일 수 있음. 출시 전 종료 + Email 로그인 끄기.
+- 서버는 같은 상대를 연속 매칭하지 않음. 919000000001("seyoen")은 Plus(2026-11-18까지), 919000000002는 "QA Web".
 
-## 서버 (변경 없음)
-Supabase `dgynsckrqgnpyyvqekzi`(뭄바이), LiveKit `wss://yaari-sofpbngs.livekit.cloud`. RPC·테이블·규칙은 `chat/server/migrations`.
+## 서버 정보
+Supabase `dgynsckrqgnpyyvqekzi`(ap-south-1 뭄바이), LiveKit `wss://yaari-sofpbngs.livekit.cloud`.

@@ -1,6 +1,8 @@
-// Same values as the Android app (chat/app/.../SettingsScreen.kt `Support`). The grievance officer's real
-// name and email must be filled in before launch (IT Rules 2021); see chat/README.md.
-export const PRIVACY_URL = 'https://entrepreneur123.github.io/india/yaari-privacy.html'
+// The policy pages are chat/docs/*.html, copied into this site at build time (scripts/copy-legal.mjs).
+// The grievance officer's real name and email must be filled in before launch (IT Rules 2021); see chat/README.md.
+export const PRIVACY_URL = '/privacy.html'
+export const TERMS_URL = '/terms.html'
+export const CHILD_SAFETY_URL = '/child-safety.html'
 export const SUPPORT_EMAIL = 'support@yaari.app'
 export const GRIEVANCE_OFFICER = {
   name: 'Grievance Officer, Yaari',

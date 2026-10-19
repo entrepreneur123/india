@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { phoneDigits } from '@/lib/format'
 import { guessCountry, type Country } from '@/lib/countries'
-import { PRIVACY_URL } from '@/lib/config'
+import { PRIVACY_URL, TERMS_URL } from '@/lib/config'
 import { Rich, useI18n } from '@/components/i18n'
 import { Button } from '@/components/ui/pressable'
 import { TextInput } from '@/components/ui/bits'
@@ -78,8 +78,8 @@ export function PhoneStep({ onSent }: { onSent: (digits: string, display: string
       <p className="text-center text-xs leading-relaxed text-muted-foreground">
         <Rich
           text={t('phone.legal')}
-          mark={(s) => (
-            <a href={PRIVACY_URL} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline underline-offset-2">
+          mark={(s, i) => (
+            <a href={i === 0 ? TERMS_URL : PRIVACY_URL} target="_blank" rel="noreferrer" className="font-semibold text-foreground underline underline-offset-2">
               {s}
             </a>
           )}

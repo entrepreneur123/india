@@ -162,6 +162,8 @@ export interface Backend {
   send(matchId: string, text: string | null, media: File | null): Promise<Message>
   leave(matchId: string): Promise<void> // throws BackendError('exit_locked') inside the lock window
   report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>
+  /** Blocks without reporting: open chats with them end and neither side sees the other again. */
+  block(userId: string): Promise<void>
   requestVideo(matchId: string): Promise<void> // paid
   answerVideo(matchId: string, accept: boolean): Promise<void>
   endVideo(matchId: string): Promise<void>
