@@ -56,7 +56,8 @@ WEB = {
         "contact_body": "Questions, corrections or removal requests: {e}. We usually reply within two working days.",
         "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland Lottery Sambad.",
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
-        "open_page": "Open the full result page",
+        "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
+        "telegram": "Get every result the moment it is out on our Telegram channel",
     },
     "bn": {
         "home_title": "নাগাল্যান্ড স্টেট লটারি রেজাল্ট আজ {d} – দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা ডিয়ার লটারি",
@@ -80,7 +81,8 @@ WEB = {
         "contact_body": "প্রশ্ন, সংশোধন বা কিছু সরানোর অনুরোধ: {e}। সাধারণত দুই কাজের দিনের মধ্যে উত্তর দিই।",
         "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড লটারি সংবাদ নামেও খোঁজা হয়।",
         "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
-        "open_page": "পুরো রেজাল্টের পেজ খুলুন",
+        "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
+        "telegram": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে পেতে আমাদের Telegram চ্যানেলে যোগ দিন",
     },
     "hi": {
         "home_title": "नागालैंड स्टेट लॉटरी रिज़ल्ट आज {d} – 1 PM, 6 PM, 8 PM डियर लॉटरी",
@@ -104,7 +106,8 @@ WEB = {
         "contact_body": "सवाल, सुधार या कुछ हटवाने के लिए: {e}। आमतौर पर दो कामकाजी दिनों में जवाब देते हैं।",
         "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड लॉटरी संबाद नाम से भी खोजा जाता है।",
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
-        "open_page": "पूरे रिज़ल्ट का पेज खोलें",
+        "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
+        "telegram": "रिज़ल्ट आते ही पाने के लिए हमारे Telegram चैनल से जुड़ें",
     },
 }
 
@@ -114,7 +117,8 @@ pdf_only open_official_pdf open_sheet special_tag check_title check_hint ticket_
 no_win_title no_win_body need_full_number you_won maybe_first also_matches disclaimer_body safety_title safety_body
 claim_info claim_other_state source_note info_schedule_note no_draw_day upcoming_special amount_crore amount_lakh
 result_coming today more_dates draw_in live result_delayed tap_full_result draw_meta draw_meta_special find_in_result
-share_title share_more share_short tab_results tab_check results_subtitle""".split()
+share_title share_more share_short tab_results tab_check results_subtitle watch_live no_result history_title history_hint
+history_search history_none history_count history_unavailable""".split()
 
 
 def _unescape(s: str) -> str:
@@ -228,12 +232,17 @@ class Site:
         self.play_url = os.environ.get("PLAY_URL", "").strip()
         # A manual unit needs its slot id (AdSense → Ads → By ad unit); without one, Auto ads alone place ads.
         self.ad_slot = os.environ.get("ADSENSE_SLOT", "").strip()
+        cfg = json.loads((data / "v2/config.json").read_text()) if (data / "v2/config.json").exists() else {}
+        self.live_url = cfg.get("liveDrawUrl") or "https://www.nagalandlotteries.com/livedraw/index.php"
+        chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+        self.telegram = f"https://t.me/{chat[1:]}" if re.fullmatch(r"@[A-Za-z0-9_]{5,32}", chat) else ""
         self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
         self.pages: list[tuple[str, dict[str, str]]] = []  # (key, {lang: path}) for the sitemap
         self._ads = 0
         self._keys: set[str] = set()
+        self.og_images: dict[str, str] = {}
 
     # ---- URLs ----
     def url(self, lang: str, path: str) -> str:
@@ -275,7 +284,7 @@ class Site:
     # ---- page shell ----
     def page(self, lang: str, path: str, title: str, desc: str, body: str, alternates: bool = True,
              data: list[dict] | None = None, live: bool = False, crumbs: list[tuple[str, str]] | None = None,
-             tab: str = "") -> str:
+             tab: str = "", image: str = "", modified: dt.datetime | None = None) -> str:
         w, s = WEB[lang], self.s[lang]
         alt = ""
         if alternates:
@@ -289,7 +298,14 @@ class Site:
         if crumbs:
             ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
                 {"@type": "ListItem", "position": i + 1, "name": n, "item": self.abs(lang, p)} for i, (n, p) in enumerate(crumbs)]})
-        ld_html = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in ld)
+        if modified:  # a real freshness signal: when these numbers last changed
+            ld.append({"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path),
+                       "dateModified": modified.isoformat(timespec="minutes")})
+        ld_html = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False).replace("</", "<\\/")}</script>'
+                          for x in ld)
+        og_img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
+                  f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
+                  if image else "")
         nav_lang = lang if alternates else "en"
         langs_nav = "".join(
             f'<a href="{esc(self.url(l, path))}" hreflang="{l}" lang="{l}"{" aria-current=\"true\"" if l == lang else ""}>'
@@ -316,7 +332,7 @@ class Site:
 <link rel="canonical" href="{esc(self.abs(lang, path))}">
 {alt}
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
-<meta property="og:type" content="website"><meta property="og:url" content="{esc(self.abs(lang, path))}">
+<meta property="og:type" content="website"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
@@ -408,7 +424,8 @@ class Site:
         at = f"{date}T{time}:00+05:30"
         return (f'<section class="slip wait">{self.stub(lang, {"slot": slot, "time": time})}<div class="sb">'
                 f'<h2>Dear {esc(short_time(time))}</h2><p class="meta">{esc(fmt(s["state_lottery"], self.state(lang, st)))}</p>'
-                f'<p class="when" data-at="{at}">{esc(s["result_coming"])}</p></div></section>')
+                f'<p class="when" data-at="{at}">{esc(s["result_coming"])}</p>'
+                f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(self.live_url)}">{esc(s["watch_live"])}</a></p></div></section>')
 
     def sheet(self, lang: str, d: dict) -> str:
         """The draw page's header, shaped like the printed result sheet."""
@@ -447,6 +464,66 @@ class Site:
                 f'<form id="checkForm" class="row"><input id="ticket" aria-label="{esc(s["ticket_number"])}" placeholder="39C 06366" '
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"><button>{esc(s["check_button"])}</button></form>'
                 f'<div id="checkRes" aria-live="polite"></div></section>')
+
+    def history(self, lang: str) -> str:
+        """The app's number history on the web: every win of a number in the last 90 days (loaded on demand)."""
+        s = self.s[lang]
+        return (f'<section class="check" id="history"><h2>{esc(s["history_title"])}</h2>'
+                f'<p class="hint">{esc(fmt(s["history_hint"], 90))}</p>'
+                f'<form id="histForm" class="row"><input id="histNum" aria-label="{esc(s["ticket_number"])}" placeholder="0889" '
+                f'autocomplete="off" autocapitalize="characters" spellcheck="false"><button>{esc(s["history_search"])}</button></form>'
+                f'<div id="histRes" aria-live="polite"></div></section>')
+
+    def telegram_cta(self, lang: str) -> str:
+        if not self.telegram:
+            return ""
+        return f'<p class="btns"><a class="btn tgc" rel="noopener" href="{esc(self.telegram)}">{esc(WEB[lang]["telegram"])} →</a></p>'
+
+    def og_image(self, out: pathlib.Path, d: dict) -> str:
+        """A 1200x630 card with the 1st prize for WhatsApp/Telegram/Facebook previews. Our own rendering of
+        the published numbers (facts), not a copy of anyone's sheet. Skipped when Pillow is missing."""
+        if os.environ.get("SITE_OG", "1") == "0":
+            return ""
+        try:
+            from PIL import Image, ImageDraw, ImageFont
+        except ImportError:
+            return ""
+        fonts = [pathlib.Path(p) for p in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                                            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")]
+        if not all(f.exists() for f in fonts):
+            return ""
+        rel = f"og/{d['id']}.png"
+        f = out / rel
+        if f.exists() and d["date"] < (self.now.date() - dt.timedelta(days=2)).isoformat():
+            return f"{self.base}/{rel}"  # numbers of older draws no longer change
+        cache: dict = self.__dict__.setdefault("_fonts", {})
+
+        def font(i: int, n: int):
+            if (i, n) not in cache:
+                cache[(i, n)] = ImageFont.truetype(str(fonts[i]), n)
+            return cache[(i, n)]
+        bold = lambda n: font(0, n)
+        reg = lambda n: font(1, n)
+        img = Image.new("RGB", (1200, 630), "#f7f2f0")
+        g = ImageDraw.Draw(img)
+        g.rectangle((0, 0, 1200, 150), fill="#b3261e")
+        g.text((60, 38), game(d["name"]).upper(), font=bold(50), fill="#ffffff")
+        g.text((60, 100), f'{fmt("%1$s State Lottery", d.get("state", ""))} · {ddmmyyyy(d["date"])} · {time12(d["time"])}',
+               font=reg(30), fill="#ffdad5")
+        first = d["tiers"][0]
+        g.text((60, 200), f'1st Prize · {rupees(first["prize"])}', font=reg(40), fill="#6b5552")
+        num, size = first["numbers"][0], 170
+        while g.textlength(num, font=bold(size)) > 1080 and size > 60:
+            size -= 10
+        g.text((60, 260), num, font=bold(size), fill="#b3261e")
+        g.text((60, 545), "LottoDost · All prizes and ticket check", font=reg(32), fill="#6b5552")
+        f.parent.mkdir(parents=True, exist_ok=True)
+        import io
+        buf = io.BytesIO()
+        img.quantize(16).save(buf, "PNG")  # flat colours: ~17 KB
+        if not f.exists() or f.read_bytes() != buf.getvalue():  # unchanged numbers: leave the file (and git) alone
+            f.write_bytes(buf.getvalue())
+        return f"{self.base}/{rel}"
 
     def faq(self, lang: str) -> str:
         s, w = self.s[lang], WEB[lang]
@@ -506,10 +583,11 @@ class Site:
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
                     + self.chips(lang, latest)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
-                    + self.day_cards(lang, latest) + self.ad() + self.checker(lang) + self.app_promo(lang) + self.faq(lang))
+                    + self.day_cards(lang, latest) + self.telegram_cta(lang) + self.ad() + self.checker(lang)
+                    + self.history(lang) + self.app_promo(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
-                                                 crumbs=[(w["home"], "/")], tab="results"), key="home")
+                                                 crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home")
             # one page per day and per draw
             for i, date in enumerate(self.dates):
                 dd = ddmmyyyy(date)
@@ -526,8 +604,12 @@ class Site:
                                      w["home_desc"].format(d=dd, list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
                                                                                   for d in draws)) if draws else w["day_title"].format(d=dd),
                                      body, data=draws, live=date == self.today,
-                                     crumbs=[(w["home"], "/"), (dd, self.day_path(date))], tab="results"), key=f"day:{date}")
+                                     crumbs=[(w["home"], "/"), (dd, self.day_path(date))], tab="results",
+                                     modified=self.updated if date == self.today else None), key=f"day:{date}")
                 for d in draws:  # PDF-only draws have nothing to read: the day page links the PDF
+                    if d["id"] not in self.og_images:  # one image per draw, shared by the three languages
+                        self.og_images[d["id"]] = self.og_image(out, d)
+                    image = self.og_images[d["id"]]
                     t, g, first = short_time(d["time"]), game(d["name"]), d["tiers"][0]["numbers"][0]
                     title = w["draw_title"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
                     sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
@@ -541,11 +623,11 @@ class Site:
                     self.write(out, lang, self.draw_path(d),
                                self.page(lang, self.draw_path(d), title, w["draw_desc"].format(g=g, d=dd, t=t, n=first), body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
-                                         tab="results"),
+                                         tab="results", image=image),
                                key=f"draw:{d['id']}")
             # archive: every date with its three 1st prizes, so the right day is easy to spot
             self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
-                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.archive(lang)}',
+                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}{self.archive(lang)}{self.history(lang)}',
                                                              crumbs=[(w["home"], "/"), (w["old_h1"], "/old-results/")], tab="old"),
                        key="old")
         # English-only trust pages (required by ad networks; also what visitors look for)
@@ -568,6 +650,13 @@ class Site:
         if not self.play_url:
             return ""
         return f'<p class="app"><a href="{esc(self.play_url)}">{esc(WEB[lang]["app"])}</a></p>'
+
+    def date_form(self, lang: str) -> str:
+        w, s = WEB[lang], self.s[lang]
+        lo, hi = (self.dates[-1], self.dates[0]) if self.dates else ("", "")
+        return (f'<form id="dateForm" class="check row" data-none="{esc(s["no_result"])}"><input type="date" id="dateIn" '
+                f'aria-label="{esc(w["pick_date"])}" min="{lo}" max="{hi}" value="{hi}"><button>{esc(w["go"])}</button></form>'
+                f'<p id="dateRes" class="hint" aria-live="polite"></p>')
 
     def archive(self, lang: str) -> str:
         s, w = self.s[lang], WEB[lang]
@@ -666,6 +755,8 @@ background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px)
 th,td{padding:10px 6px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}th:first-child{padding-left:14px}td:last-child{padding-right:12px}thead th{border-top:0;background:var(--soft);color:var(--mut);font-size:.8rem}
 tbody th a{color:var(--fg);font-weight:700;text-decoration:none}tbody th small{display:block;color:var(--mut);font-weight:400}
 td a{color:var(--red);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums;font-size:.86rem}tbody th small{font-size:.75rem}
+.hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}.tgc{background:#2481cc;color:#fff;border:0}
+#dateForm{display:flex;align-items:center;gap:8px;padding:12px}#dateForm input{flex:1 1 10rem;font-size:1.05rem;letter-spacing:0;text-transform:none}
 .foot{color:var(--mut);font-size:.8rem;padding:28px 0 36px;margin-top:24px;border-top:1px solid var(--line)}.foot p{margin:0 0 8px}
 .foot .links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.88rem}.ad{margin:16px 0;min-height:100px}
 @media (min-width:720px){.intro{margin-top:28px}h1{font-size:1.7rem}.slip{grid-template-columns:104px 1fr}}
@@ -716,6 +807,23 @@ navigator.share({text:b.dataset.text}).catch(function(){})})});
 var W=document.querySelectorAll(".when[data-at]");function tick(){var now=Date.now();W.forEach(function(e){var at=Date.parse(e.dataset.at),m=Math.floor((at-now)/60000);
 if(m>=0){e.textContent=t("draw_in",Math.floor(m/60),m%60)}else if(m>-15){e.textContent="";e.appendChild(el("span","live",t("live")));e.appendChild(document.createTextNode(t("result_coming")))}
 else e.textContent=t("result_delayed")})}if(W.length){tick();setInterval(tick,30000)}
+// Number history: the 90-day feed is fetched only when someone searches.
+var feed=function(name){return document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/"+name)};
+var hf=document.getElementById("histForm"),H=null;
+if(hf)hf.addEventListener("submit",function(ev){ev.preventDefault();var out=document.getElementById("histRes"),v=document.getElementById("histNum").value;
+out.textContent="";if(!v.trim())return;var k=parse(v);if(!k){out.appendChild(box(t("ticket_invalid"),"no")[0]);return}
+(H?Promise.resolve(H):fetch(feed("history.json")).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){H=j;return j})).then(function(j){
+var days=j.days||90,hits=[];(j.draws||[]).forEach(function(d){var c=check(k,d);if(c&&c.w.length)hits.push(c)});
+if(!hits.length){var e=box(t("history_none",show(k),days),"no");out.appendChild(e[0]);return}
+var e=box(t(hits.length===1&&S.history_count_one?"history_count_one":"history_count",hits.length,days)),ul=el("ul","hl");
+hits.forEach(function(c){var x=c.w[0];ul.appendChild(el("li",null,c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)+" · "+
+c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)+(x.nf?" *":"")))});e[1].appendChild(ul);out.appendChild(e[0])
+}).catch(function(){out.appendChild(box(t("history_unavailable"),"no")[0])})});
+// Old results: jump to a date we have a page for.
+var df=document.getElementById("dateForm");
+if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;
+var a=document.querySelector('a[href$="/result/'+p[2]+"-"+p[1]+"-"+p[0]+'/"]');if(a)location.href=a.getAttribute("href");
+else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
 if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");

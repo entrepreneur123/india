@@ -9,7 +9,8 @@ import sitegen  # web/sitegen.py
 FEED = pathlib.Path(__file__).resolve().parent.parent / "android/app/src/test/resources/feed_latest.json"
 
 
-def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None, slot=""):
+def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None, slot="", og=False):
+    monkeypatch.setenv("SITE_OG", "1" if og else "0")  # share images are slow to draw; one test covers them
     monkeypatch.setenv("ADSENSE_CLIENT", ads)
     monkeypatch.setenv("ADSENSE_SLOT", slot)
     data = tmp / "data"
@@ -120,3 +121,22 @@ def test_every_internal_link_resolves(tmp_path, monkeypatch):
         for link in set(re.findall(r'(?:href|src)="(/[^"]*)"', page.read_text())) - {"/privacy.html"}:  # copied by the workflow
             target = out / link.split("#")[0].lstrip("/")
             assert (target / "index.html").exists() or target.is_file(), f"{page.relative_to(out)} -> {link}"
+
+
+def test_share_image_and_freshness(tmp_path, monkeypatch):
+    pytest = __import__("pytest")
+    pytest.importorskip("PIL")
+    out = build(tmp_path, monkeypatch, og=True)
+    page = (out / "result/18-10-2026/1pm/index.html").read_text()
+    assert '<meta property="og:image" content="https://example.in/og/2026-10-18_NL1PM.png">' in page
+    png = out / "og/2026-10-18_NL1PM.png"
+    assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n" and png.stat().st_size < 40_000
+    home = (out / "index.html").read_text()
+    assert '"dateModified": "2026-10-18T21:00+05:30"' in home
+
+
+def test_number_history_and_date_search_are_on_the_page(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    assert 'id="histForm"' in (out / "index.html").read_text()
+    old = (out / "old-results/index.html").read_text()
+    assert 'id="dateForm"' in old and 'min="2026-10-12" max="2026-10-18"' in old
