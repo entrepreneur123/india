@@ -24,11 +24,25 @@ import kotlin.coroutines.resume
 
 /** Google Play Billing. The app never grants anything itself: tokens go to the server (verify-purchase). */
 class PlayBilling(app: Application) : Billing {
-    private var pending: CompletableDeferred<Purchase?>? = null
+    /** The product a purchase sheet is open for, and who waits for its token. */
+    private var pending: Pair<String, CompletableDeferred<Purchase?>>? = null
+    /** Completed purchases nobody was waiting for (e.g. a UPI payment that finished later). */
+    private val unclaimed = mutableListOf<Purchase>()
 
     private val listener = PurchasesUpdatedListener { result, purchases ->
-        val p = purchases?.firstOrNull { it.purchaseState == Purchase.PurchaseState.PURCHASED }
-        pending?.complete(if (result.responseCode == BillingClient.BillingResponseCode.OK) p else null)
+        val done = purchases.orEmpty().filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+        val waiting = pending
+        var delivered = false
+        for (p in done) {
+            if (!delivered && waiting != null && waiting.first in p.products) {
+                waiting.second.complete(p)
+                delivered = true
+            } else {
+                synchronized(unclaimed) { unclaimed += p }
+            }
+        }
+        // Cancelled, failed or still pending: the sheet is closed. A pending payment arrives later as "unclaimed".
+        if (!delivered) waiting?.second?.complete(null)
     }
 
     private val client = BillingClient.newBuilder(app)
@@ -72,13 +86,17 @@ class PlayBilling(app: Application) : Billing {
         val params = BillingFlowParams.ProductDetailsParams.newBuilder().setProductDetails(d).apply {
             d.subscriptionOfferDetails?.firstOrNull()?.offerToken?.let { setOfferToken(it) }
         }.build()
-        val deferred = CompletableDeferred<Purchase?>().also { pending = it }
+        val deferred = CompletableDeferred<Purchase?>().also { pending = productId to it }
         val launched = client.launchBillingFlow(
             activity,
             BillingFlowParams.newBuilder().setProductDetailsParamsList(listOf(params)).setObfuscatedAccountId(accountId).build(),
         )
         if (launched.responseCode != BillingClient.BillingResponseCode.OK) return null
-        return deferred.await()?.purchaseToken
+        return try {
+            deferred.await()?.purchaseToken
+        } finally {
+            pending = null
+        }
     }
 
     override suspend fun finish(productId: String, token: String) {
@@ -88,10 +106,15 @@ class PlayBilling(app: Application) : Billing {
         }
     }
 
+    /** Active subscriptions, unconsumed passes (paid but not yet redeemed) and late-arriving purchases. */
     override suspend fun ownedPurchases(): List<Pair<String, String>> {
-        if (!ready()) return emptyList()
-        val subs = client.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build())
-        return subs.purchasesList.filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+        val late = synchronized(unclaimed) { unclaimed.toList().also { unclaimed.clear() } }
+        if (!ready()) return late.flatMap { p -> p.products.map { it to p.purchaseToken } }
+        val owned = listOf(BillingClient.ProductType.SUBS, BillingClient.ProductType.INAPP).flatMap { type ->
+            client.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(type).build()).purchasesList
+        }
+        return (owned + late).filter { it.purchaseState == Purchase.PurchaseState.PURCHASED }
+            .distinctBy { it.purchaseToken }
             .flatMap { p -> p.products.map { it to p.purchaseToken } }
     }
 }

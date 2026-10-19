@@ -43,6 +43,7 @@ import io.livekit.android.events.collect
 import io.livekit.android.renderer.TextureViewRenderer
 import io.livekit.android.room.track.Track
 import io.livekit.android.room.track.VideoTrack
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /** Live build: Supabase (Mumbai) + LiveKit video + Google Play Billing. */
@@ -86,6 +87,8 @@ object Flavor {
         val local = remember(room) { TextureViewRenderer(context).also { room.initVideoRenderer(it); it.setMirror(true) } }
         var remoteOn by remember { mutableStateOf(false) }
         var reconnecting by remember { mutableStateOf(false) }
+        var connected by remember { mutableStateOf(false) }
+        var failed by remember { mutableStateOf(false) }
 
         LaunchedEffect(room) {
             launch {
@@ -99,19 +102,32 @@ object Flavor {
                     }
                 }
             }
-            room.connect(token.url, token.token)
-            room.localParticipant.setMicrophoneEnabled(mic)
-            room.localParticipant.setCameraEnabled(cam)
-            (room.localParticipant.getTrackPublication(Track.Source.CAMERA)?.track as? VideoTrack)?.addRenderer(local)
+            // A network drop or bad token must not crash the app: show it and let the user end the call.
+            try {
+                room.connect(token.url, token.token)
+                connected = true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                failed = true
+            }
         }
-        LaunchedEffect(room, mic) { room.localParticipant.setMicrophoneEnabled(mic) }
-        LaunchedEffect(room, cam) {
-            room.localParticipant.setCameraEnabled(cam)
-            if (cam) (room.localParticipant.getTrackPublication(Track.Source.CAMERA)?.track as? VideoTrack)?.addRenderer(local)
+        // Mic and camera follow the buttons once connected (camera/mic errors are shown as "failed", never thrown).
+        LaunchedEffect(room, connected, mic) {
+            if (connected) runCatching { room.localParticipant.setMicrophoneEnabled(mic) }.onFailure { failed = true }
+        }
+        LaunchedEffect(room, connected, cam) {
+            if (!connected) return@LaunchedEffect
+            runCatching {
+                room.localParticipant.setCameraEnabled(cam)
+                if (cam) (room.localParticipant.getTrackPublication(Track.Source.CAMERA)?.track as? VideoTrack)?.addRenderer(local)
+            }.onFailure { failed = true }
         }
         DisposableEffect(room) {
             onDispose {
                 room.disconnect()
+                remote.release()
+                local.release()
                 room.release()
             }
         }
@@ -123,6 +139,12 @@ object Flavor {
                     Avatar(partner, 140.dp)
                     Text(stringResource(R.string.waiting_video, partner.name), color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
                 }
+            }
+            if (failed) {
+                Text(
+                    stringResource(R.string.call_failed), color = Color.White,
+                    modifier = Modifier.align(Alignment.Center).background(Color(0x99000000), RoundedCornerShape(8.dp)).padding(12.dp),
+                )
             }
             if (reconnecting) {
                 Text(

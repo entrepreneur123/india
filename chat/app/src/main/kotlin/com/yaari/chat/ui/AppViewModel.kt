@@ -26,6 +26,7 @@ import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 enum class Tab { CHAT, RECENT, ME }
@@ -123,9 +125,27 @@ class AppViewModel(
     private suspend fun afterSignIn() {
         refreshEntitlements()
         runCatching { billing.prices() }.onSuccess { p -> _state.update { it.copy(prices = p) } }
-        // Purchases made while offline or on another install are re-verified by the server.
-        runCatching { billing.ownedPurchases() }.getOrDefault(emptyList()).forEach { (product, token) ->
-            runCatching { applyEntitlements(backend.redeem(product, token)) }
+        restorePurchases()
+    }
+
+    private val redeemedTokens = mutableSetOf<String>()
+
+    /**
+     * Purchases made offline, on another install, paid later (UPI "pending"), or whose server reply was
+     * lost are verified by the server here; passes are consumed only after the server granted them.
+     * Called at sign-in and whenever the app comes back to the foreground.
+     */
+    fun restorePurchases() {
+        if (_state.value.me == null) return
+        viewModelScope.launch {
+            runCatching { billing.ownedPurchases() }.getOrDefault(emptyList()).forEach { (product, token) ->
+                if (token in redeemedTokens) return@forEach
+                runCatching { backend.redeem(product, token) }.onSuccess { e ->
+                    redeemedTokens += token
+                    applyEntitlements(e)
+                    runCatching { billing.finish(product, token) }
+                }
+            }
         }
     }
 
@@ -260,8 +280,13 @@ class AppViewModel(
     fun buy(activity: Activity, productId: String) {
         val me = _state.value.me ?: return
         act {
-            val token = billing.buy(activity, productId, me.id) ?: return@act
+            val token = billing.buy(activity, productId, me.id)
+            if (token == null) {
+                restorePurchases() // a payment that completed outside the sheet is picked up here
+                return@act
+            }
             applyEntitlements(backend.redeem(productId, token))
+            redeemedTokens += token
             billing.finish(productId, token)
             _state.update { it.copy(paywall = null, notice = UiText(R.string.msg_purchase_done)) }
         }
@@ -274,10 +299,17 @@ class AppViewModel(
         if (s.me == null || s.searching || s.chat != null) return
         _state.update { it.copy(searching = true, dm = null, viewing = null) }
         dmJob?.cancel()
+        val gen = ++searchGeneration
+        fun current() = gen == searchGeneration && _state.value.searching
         matchJob = viewModelScope.launch {
             try {
-                while (isActive) {
-                    val m = backend.findMatch(s.target)
+                while (isActive && current()) {
+                    // Not cancellable: if the server created a match, we must learn about it (see abandon()).
+                    val m = withContext(NonCancellable) { backend.findMatch(s.target) }
+                    if (!current()) { // cancelled (or restarted) while the request was in flight
+                        if (m != null) abandon(m) else if (!_state.value.searching) runCatching { backend.cancelSearch() }
+                        return@launch
+                    }
                     if (m != null) {
                         openChat(m)
                         return@launch
@@ -293,23 +325,42 @@ class AppViewModel(
         }
     }
 
+    /** Each search has a number; only the newest one may open a chat. */
+    private var searchGeneration = 0
+
+    /** The loop notices on its next turn; a request already in flight still completes (see startMatching). */
     fun cancelMatching() {
-        matchJob?.cancel()
         _state.update { it.copy(searching = false) }
         act { backend.cancelSearch() }
     }
 
+    /** A match the user never saw: end it once the exit lock allows, so the other person isn't left waiting. */
+    private fun abandon(m: Match) {
+        viewModelScope.launch {
+            delay(ExitPolicy.lockMs(_state.value.premium) + 500)
+            runCatching { backend.leave(m.id) }
+        }
+    }
+
     private fun openChat(m: Match) {
         _state.update { it.copy(searching = false, chat = ChatState(m, clock())) }
+        viewModelScope.launch { refreshEntitlements() } // the exit lock depends on Premium, which may have expired
         chatJob?.cancel()
         chatJob = viewModelScope.launch {
-            runCatching { backend.history(m.id) }.onSuccess { h -> updateChat(m.id) { c -> c.copy(messages = merge(c.messages, h)) } }
-            try {
-                backend.events(m.id).collect { e -> applyChatEvent(m.id, e) }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                notice(UiText(R.string.msg_connection_lost))
+            var warned = false
+            // Reconnects on its own after a dropped connection; the history merge fills any gap.
+            while (isActive) {
+                runCatching { backend.history(m.id) }.onSuccess { h -> updateChat(m.id) { c -> c.copy(messages = merge(c.messages, h)) } }
+                try {
+                    backend.events(m.id).collect { e -> applyChatEvent(m.id, e) }
+                    return@launch
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    if (!warned) notice(UiText(R.string.msg_connection_lost))
+                    warned = true
+                    delay(RECONNECT_MS)
+                }
             }
         }
     }
@@ -378,7 +429,7 @@ class AppViewModel(
         val c = _state.value.chat ?: return
         if (exitRemainingMs() > 0) return
         act {
-            backend.leave(c.match.id)
+            gone { backend.leave(c.match.id) }
             closeChat()
             if (next) startMatching()
         }
@@ -388,10 +439,19 @@ class AppViewModel(
     fun reportAndLeave(reason: ReportReason, next: Boolean) {
         val c = _state.value.chat ?: return
         act {
-            backend.report(c.match.partner.id, reason, c.match.id)
+            gone { backend.report(c.match.partner.id, reason, c.match.id) }
             closeChat()
             notice(UiText(R.string.msg_reported_long))
             if (next) startMatching()
+        }
+    }
+
+    /** "not_found" means the chat no longer exists (the other person deleted their account): treat as done. */
+    private suspend fun gone(block: suspend () -> Unit) {
+        try {
+            block()
+        } catch (e: BackendException) {
+            if (e.code != "not_found") throw e
         }
     }
 
@@ -541,5 +601,6 @@ class AppViewModel(
         const val POLL_MS = 2_000L
         const val MAX_TEXT = 1000
         const val TYPING_EVERY_MS = 3_000L
+        const val RECONNECT_MS = 3_000L
     }
 }

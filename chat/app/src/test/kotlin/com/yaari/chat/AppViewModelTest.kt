@@ -1,6 +1,8 @@
 package com.yaari.chat
 
+import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.Products
@@ -264,6 +266,72 @@ class AppViewModelTest {
         vm.requestOtp("9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
         assertEquals(Onboarding.Step.PROFILE, vm.state.value.onboarding.step)
+    }
+
+    @Test fun cancellingWhileTheRequestIsInFlightEndsThatMatch() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.startMatching()
+        advanceTimeBy(100); runCurrent() // the server is still answering (900 ms)
+        vm.cancelMatching()
+        advanceTimeBy(1_000); runCurrent() // the server answers with a match nobody will see
+        now += 6_000 // the exit lock has passed by the time abandon() runs
+        advanceTimeBy(10_000); runCurrent()
+        assertNull("no chat was opened", vm.state.value.chat)
+        assertFalse(vm.state.value.searching)
+        // The abandoned match was ended, so searching again works (no "exit_locked").
+        vm.startMatching()
+        advanceTimeBy(5_000); runCurrent()
+        assertNotNull(vm.state.value.chat)
+        assertNull(vm.state.value.notice)
+    }
+
+    @Test fun restartingTheSearchKeepsOnlyOneLoop() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.startMatching()
+        advanceTimeBy(100); runCurrent()
+        vm.cancelMatching()
+        vm.startMatching() // second search while the first request is still in flight
+        now += 6_000
+        advanceTimeBy(10_000); runCurrent()
+        assertNotNull("the newest search opened a chat", vm.state.value.chat)
+        assertFalse(vm.state.value.searching)
+    }
+
+    @Test fun leavingAChatThatNoLongerExistsStillCloses() = runTest(dispatcher) {
+        val gone = object : Backend by backend {
+            override suspend fun leave(matchId: String) = throw BackendException("not_found")
+            override suspend fun report(partnerId: String, reason: ReportReason, matchId: String?) = throw BackendException("not_found")
+        }
+        val vm = AppViewModel(gone, DemoBilling(), clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        matched(vm)
+        now += 5_000
+        vm.leave(next = false); advanceUntilIdle()
+        assertNull(vm.state.value.chat)
+        matched(vm)
+        vm.reportAndLeave(ReportReason.HARASSMENT, next = false); advanceUntilIdle()
+        assertNull(vm.state.value.chat)
+    }
+
+    @Test fun purchasesCompletedLaterAreRedeemedOnceAndConsumed() = runTest(dispatcher) {
+        val finished = mutableListOf<String>()
+        val billing = object : Billing {
+            override suspend fun prices() = emptyMap<String, String>()
+            override suspend fun buy(activity: android.app.Activity, productId: String, accountId: String): String? = null
+            override suspend fun finish(productId: String, token: String) { finished += token }
+            override suspend fun ownedPurchases() = listOf(Products.GENDER_PASS to "upi-pending-token")
+        }
+        val vm = AppViewModel(backend, billing, clock = { now }, today = { today })
+        advanceUntilIdle()
+        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        vm.createProfile(adult); advanceUntilIdle()
+        assertTrue("pass granted at sign-in", vm.state.value.entitlements.genderPass)
+        vm.restorePurchases(); advanceUntilIdle() // e.g. the app comes back to the foreground
+        assertEquals("redeemed and consumed exactly once", listOf("upi-pending-token"), finished)
     }
 
     @Test fun newPostAppearsOnMyProfile() = runTest(dispatcher) {

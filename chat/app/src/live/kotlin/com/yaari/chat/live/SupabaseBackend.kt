@@ -56,7 +56,9 @@ import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import io.ktor.client.call.body
 import io.ktor.http.ContentType
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
@@ -100,7 +102,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         install(Functions)
     }
     private val json = Json { ignoreUnknownKeys = true }
-    private val signedUrls = ConcurrentHashMap<String, String>()
+    /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
+    private val signedUrls = ConcurrentHashMap<String, Pair<String, Long>>()
+    private val cleanup = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val typingChannels = ConcurrentHashMap<String, RealtimeChannel>()
 
     @Serializable private data class ProfileRow(
@@ -215,15 +219,25 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val raw = client.postgrest.rpc("find_match", buildJsonObject { put("p_target", target.name.lowercase()) }).data.trim()
         if (raw == "null" || raw.isEmpty()) return@call null
         val id = json.decodeFromString<String>(raw)
-        val m = matchRow(id)
-        val partnerId = if (m.userA == uid) m.userB else m.userA
-        Match(id, card(partnerId) ?: throw BackendException("not_found"))
+        try {
+            val m = matchRow(id) ?: throw BackendException("not_found")
+            val partnerId = if (m.userA == uid) m.userB else m.userA
+            Match(id, card(partnerId) ?: throw BackendException("not_found"))
+        } catch (e: Exception) {
+            // The server already paired us: end that chat once the exit lock allows, or the partner waits for nobody.
+            cleanup.launch {
+                delay(EXIT_LOCK_MAX_MS)
+                runCatching { client.postgrest.rpc("leave_match", buildJsonObject { put("p_match", id) }) }
+            }
+            throw e
+        }
     }
 
     override suspend fun cancelSearch() = call { client.postgrest.rpc("cancel_search"); Unit }
 
+    /** Null when the match is gone (the other person deleted their account). */
     private suspend fun matchRow(id: String) =
-        client.postgrest["matches"].select { filter { eq("id", id) } }.decodeSingle<MatchRow>()
+        client.postgrest["matches"].select { filter { eq("id", id) } }.decodeSingleOrNull<MatchRow>()
 
     private fun videoOf(m: MatchRow, me: String) = when (m.videoStatus) {
         "requested" -> if (m.videoRequestedBy == me) VideoStatus.REQUESTED_BY_ME else VideoStatus.REQUESTED_BY_PARTNER
@@ -236,7 +250,14 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val me = uid
         var lastVideo: VideoStatus? = null
         var leftSent = false
-        suspend fun onMatch(m: MatchRow) {
+        suspend fun onMatch(m: MatchRow?) {
+            if (m == null) { // deleted: treat as the partner leaving
+                if (!leftSent) {
+                    leftSent = true
+                    send(MatchEvent.PartnerLeft)
+                }
+                return
+            }
             if (m.endedAt != null && m.endedBy != me && !leftSent) {
                 leftSent = true
                 send(MatchEvent.PartnerLeft)
@@ -257,7 +278,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             table = "matches"
             filter("id", FilterOperator.EQ, matchId)
         }
-        launch { inserts.collect { send(MatchEvent.NewMessage(toMessage(it.decodeRecord<MessageRow>(), me))) } }
+        // One bad record (or a failed media link) must not stop the chat: skip it, the 10 s re-sync retries.
+        launch { inserts.collect { a -> runCatching { toMessage(a.decodeRecord<MessageRow>(), me) }.onSuccess { send(MatchEvent.NewMessage(it)) } } }
 
         // Typing signals ride a broadcast channel shared by the two participants (not stored anywhere).
         val typingChannel = client.channel("typing-$matchId")
@@ -271,7 +293,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 typingOff = launch { delay(4_000); send(MatchEvent.Typing(false)) }
             }
         }
-        launch { updates.collect { onMatch(it.decodeRecord<MatchRow>()) } }
+        launch { updates.collect { a -> runCatching { a.decodeRecord<MatchRow>() }.onSuccess { onMatch(it) } } }
         try {
             channel.subscribe(blockUntilSubscribed = true)
             typingChannel.subscribe()
@@ -301,9 +323,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val me = uid
         client.postgrest["messages"].select {
             filter { eq("match_id", matchId) }
-            order("id", Order.ASCENDING)
+            order("id", Order.DESCENDING) // the newest 200, shown oldest first
             limit(200)
-        }.decodeList<MessageRow>().map { toMessage(it, me) }
+        }.decodeList<MessageRow>().asReversed().map { toMessage(it, me) }
     }
 
     override suspend fun send(matchId: String, text: String?, media: Media?): Message = call {
@@ -385,8 +407,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         at = Instant.parse(r.createdAt).toEpochMilli(),
     )
 
-    private suspend fun signed(path: String): String =
-        signedUrls[path] ?: client.storage.from(BUCKET).createSignedUrl(path, 12.hours).also { signedUrls[path] = it }
+    private suspend fun signed(path: String): String {
+        val now = System.currentTimeMillis()
+        signedUrls[path]?.let { (url, reuseUntil) -> if (now < reuseUntil) return url }
+        val url = client.storage.from(BUCKET).createSignedUrl(path, 12.hours)
+        signedUrls[path] = url to now + 11 * 3_600_000L
+        return url
+    }
 
     /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG to save mobile data. */
     private suspend fun upload(uri: Uri, folder: String, kind: MediaKind = MediaKind.IMAGE): String {
@@ -422,6 +449,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     companion object {
         private const val BUCKET = "media"
+        private const val EXIT_LOCK_MAX_MS = 5_500L
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
         private val CODES = listOf(
