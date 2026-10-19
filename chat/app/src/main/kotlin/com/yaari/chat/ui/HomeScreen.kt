@@ -27,7 +27,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yaari.chat.data.Entitlements
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.model.Target
 import androidx.activity.compose.BackHandler
@@ -70,7 +70,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 Tab.CHAT -> Lobby(vm, s)
                 Tab.RECENT -> Recents(vm, s)
                 Tab.ME -> s.me?.let { me ->
-                    ProfileContent(me, isMe = true, premium = s.premium, onPremium = vm::setPremium, onNewPost = { composing = true })
+                    ProfileContent(me, isMe = true, entitlements = s.entitlements, onUpgrade = { vm.showPaywall("Yaari Premium") }, onNewPost = { composing = true })
                 }
             }
         }
@@ -90,7 +90,7 @@ private fun Lobby(vm: AppViewModel, s: UiState) {
             Target.entries.forEach { t ->
                 FilterChip(
                     s.target == t, { vm.setTarget(t) }, label = { Text(t.label) },
-                    leadingIcon = if (t.isPaid && !s.premium) ({ Icon(Icons.Filled.Lock, "Premium", Modifier.height(16.dp)) }) else null,
+                    leadingIcon = if (t.isPaid && !s.entitlements.canChooseGender) ({ Icon(Icons.Filled.Lock, "Premium", Modifier.height(16.dp)) }) else null,
                 )
             }
         }
@@ -145,7 +145,7 @@ private fun Recents(vm: AppViewModel, s: UiState) {
                 Column(Modifier.weight(1f)) {
                     Text(r.partner.name, fontWeight = FontWeight.SemiBold)
                     Text(
-                        r.dm.lastOrNull()?.text ?: "Met at ${fmt.format(Date(r.metAt))} · ${r.partner.subtitle()}",
+                        r.lastText ?: "Met at ${fmt.format(Date(r.metAt))} · ${r.partner.subtitle()}",
                         style = MaterialTheme.typography.bodySmall, maxLines = 1, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -157,12 +157,23 @@ private fun Recents(vm: AppViewModel, s: UiState) {
 }
 
 @Composable
-fun PremiumRow(premium: Boolean, onPremium: (Boolean) -> Unit) {
+fun PremiumCard(e: Entitlements, onUpgrade: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text("Premium (prototype switch)", fontWeight = FontWeight.SemiBold)
-            Text("Replaced by Google Play Billing in v1", style = MaterialTheme.typography.bodySmall)
+            Text(
+                when {
+                    e.premium -> "Premium active"
+                    e.genderPass -> "Gender pass active"
+                    else -> "Free plan"
+                },
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                if (e.premium) "Gender choice · Video calls · Skip in ${ExitPolicy.PREMIUM_LOCK_MS / 1000.0}s"
+                else "Upgrade for gender choice, video calls and instant skip",
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
-        Switch(premium, onPremium)
+        if (!e.premium) TextButton(onUpgrade) { Text("Upgrade") }
     }
 }

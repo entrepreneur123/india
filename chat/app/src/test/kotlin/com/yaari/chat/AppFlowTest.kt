@@ -11,17 +11,16 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import com.github.takahirom.roborazzi.captureRoboImage
-import com.yaari.chat.data.Backend
+import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
-import com.yaari.chat.data.PartnerEvent
-import com.yaari.chat.model.Profile
+import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.model.Target
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.YaariApp
 import com.yaari.chat.ui.YaariTheme
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,22 +29,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
-/** No delays and no randomness, so the UI flow is deterministic. */
-private class InstantBackend : Backend {
-    private val accounts = mutableMapOf<String, Profile>()
-    override suspend fun sendOtp(phone: String) = Unit
-    override suspend fun verifyOtp(phone: String, code: String) = code == FakeBackend.DEMO_OTP
-    override fun accountFor(phone: String) = accounts[phone]
-    override fun register(phone: String, profile: Profile) { accounts[phone] = profile }
-    override suspend fun findPartner(me: Profile, target: Target, exclude: Set<String>) =
-        FakeBackend.POOL.first { target.accepts(it.gender) && it.id !in exclude }
-    override suspend fun partnerReact(partner: Profile, incoming: String?, canLeave: Boolean) = PartnerEvent.Reply("Hii 😊 where are you from?")
-    override suspend fun answerVideoRequest(partner: Profile) = true
-}
-
 /**
- * Drives the real app UI on the JVM through every prototype flow and saves screenshots
- * to build/outputs/roborazzi. Fails on any crash or missing screen element.
+ * Drives the real app UI on the JVM through every flow and saves screenshots to build/outputs/roborazzi.
+ * Fails on any crash or missing screen element.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -53,8 +39,11 @@ private class InstantBackend : Backend {
 class AppFlowTest {
     @get:Rule val compose = createComposeRule()
 
-    private var now = 0L
-    private val vm = AppViewModel(InstantBackend(), clock = { now }, wallClock = { 1_760_800_000_000L + now }, today = { LocalDate.of(2026, 10, 18) })
+    private var now = 1_000_000L
+    private val dice = ControlledRandom()
+    private val today = LocalDate.of(2026, 10, 18)
+    private val backend = FakeBackend(dice, clock = { now }, today = { today }, instant = true)
+    private val vm = AppViewModel(backend, DemoBilling(), clock = { now }, today = { today })
 
     private fun shot(name: String) {
         compose.waitForIdle()
@@ -65,10 +54,16 @@ class AppFlowTest {
 
     private fun field(label: String) = compose.onNode(hasSetTextAction() and hasText(label))
 
-    @Test fun fullPrototypeFlow() {
+    private fun send(text: String) {
+        compose.onNode(hasSetTextAction()).performTextInput(text)
+        compose.onNodeWithContentDescription("Send").performClick()
+    }
+
+    @Test fun fullFlow() {
         compose.setContent { YaariTheme { YaariApp(vm) } }
 
         // 1. Phone + OTP (one number = one account)
+        waitFor("Mobile number")
         shot("01_phone")
         field("Mobile number").performTextInput("9876543210")
         compose.onNodeWithText("Send OTP").performClick()
@@ -93,79 +88,89 @@ class AppFlowTest {
         field("DD").performScrollTo().performTextReplacement("18") // exactly 18 today
         compose.onNodeWithText("Start").performScrollTo().performClick()
         waitFor("Meet someone new")
-        assertNotNull(vm.state.value.me)
 
-        // 3. Lobby: gender choice is Premium
+        // 3. Gender choice: paywall, then the 24 h gender pass
         shot("04_lobby")
         compose.onNodeWithText("Women").performClick()
         waitFor("needs Premium")
         shot("05_paywall")
-        compose.onNodeWithText("Turn on Premium").performClick()
+        compose.onNodeWithText("Only gender choice", substring = true).performClick()
+        waitFor("Meet someone new")
         compose.onNodeWithText("Women").performClick()
-        assertEquals(Target.FEMALE, vm.state.value.target)
+        compose.waitUntil(5_000) { vm.state.value.target == Target.FEMALE }
 
-        // 4. Random chat with the partner's profile on top
+        // 4. Random chat; a free user's X shows the 5 s countdown; report & leave is always there
         compose.onNodeWithText("Start chatting").performClick()
         waitFor("View profile")
-        compose.onNode(hasSetTextAction()).performTextInput("Hello!")
-        compose.onNodeWithContentDescription("Send").performClick()
-        waitFor("where are you from")
-        shot("06_chat")
+        shot("06_free_exit_locked")
+        send("Hello!")
+        waitFor("Hii")
+        shot("07_chat")
 
-        // 5. Partner profile, Instagram-style grid, opened over the chat
+        // 5. Partner profile, Instagram-style grid, over the chat
         compose.onNodeWithText("View profile", substring = true).performClick()
         waitFor("posts")
-        shot("07_partner_profile")
+        shot("08_partner_profile")
         compose.onNodeWithContentDescription("Back").performClick()
 
-        // 6. Video call (Premium, partner accepts)
-        compose.onNodeWithText("Video").performClick()
-        waitFor("End")
-        shot("08_video")
-        compose.onNodeWithText("End").performClick()
-        waitFor("View profile")
+        // 6. Incoming video call (the partner asks), declined
+        send("video call?")
+        waitFor("wants to video call")
+        shot("09_incoming_video")
+        compose.onNodeWithText("Decline").performClick()
 
-        // 7. Exit: two choices
-        now += 1_000
+        // 7. Exit after the lock: two choices
+        now += 5_000
         compose.mainClock.advanceTimeBy(300)
         compose.onNodeWithContentDescription("Leave").performClick()
         waitFor("Leave this chat?")
-        shot("09_exit_choice")
+        shot("10_exit_choice")
         compose.onNodeWithText("Back to lobby").performClick()
         waitFor("Meet someone new")
-        assertNull(vm.state.value.session)
+        assertNull(vm.state.value.chat)
 
         // 8. Recent + message
         compose.onNodeWithText("Recent").performClick()
         waitFor("Message")
-        shot("10_recent")
+        shot("11_recent")
         compose.onNodeWithText("Message").performClick()
-        compose.onNode(hasSetTextAction()).performTextInput("Nice talking to you!")
-        compose.onNodeWithContentDescription("Send").performClick()
-        waitFor("where are you from")
-        shot("11_dm")
+        send("Nice talking to you!")
+        compose.waitUntil(5_000) { (vm.state.value.dm?.messages?.size ?: 0) >= 2 }
+        shot("12_dm")
         compose.onNodeWithContentDescription("Back").performClick()
 
-        // 9. Free user: X shows a countdown, Report & leave is always available
-        vm.setPremium(false)
+        // 9. Buy Premium from the profile tab, then a video call the partner accepts
+        compose.onNodeWithText("Me").performClick()
+        compose.onNodeWithText("Upgrade").performScrollTo().performClick()
+        compose.onNodeWithText("Premium ·", substring = true).performClick()
+        waitFor("Premium active")
         compose.onNodeWithText("Chat").performClick()
         compose.onNodeWithText("Start chatting").performClick()
         waitFor("View profile")
-        shot("12_free_exit_locked")
+        compose.onNodeWithText("Video").performClick()
+        compose.waitUntil(5_000) { vm.state.value.chat?.video == VideoStatus.ACCEPTED }
+        waitFor("End")
+        shot("13_video")
+        compose.onNodeWithText("End").performClick()
+        waitFor("View profile")
+
+        // 10. Report & leave
         compose.onNodeWithContentDescription("Report and leave").performClick()
         waitFor("Report this person")
-        shot("13_report")
+        shot("14_report")
         compose.onNodeWithText("Report & lobby").performClick()
         waitFor("Meet someone new")
-        assertEquals(1, vm.state.value.blocked.size)
+        assertNull(vm.state.value.chat)
 
-        // 10. My profile with a new post
+        // 11. My profile with a new post
         compose.onNodeWithText("Me").performClick()
         compose.onNodeWithText("New post").performClick()
         field("Write something").performTextInput("First day on Yaari ✨")
-        shot("14_new_post")
+        shot("15_new_post")
         compose.onNodeWithText("Share").performClick()
         waitFor("1 post")
-        shot("15_my_profile")
+        shot("16_my_profile")
+        assertEquals(1, vm.state.value.me!!.posts.size)
+        assertTrue(vm.state.value.premium)
     }
 }

@@ -53,7 +53,7 @@ fun OnboardingScreen(vm: AppViewModel, state: Onboarding) {
         when (state.step) {
             Onboarding.Step.PHONE -> PhoneStep(vm, state)
             Onboarding.Step.OTP -> OtpStep(vm, state)
-            Onboarding.Step.PROFILE -> ProfileStep(vm)
+            Onboarding.Step.PROFILE -> ProfileStep(vm, state.busy)
         }
         state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     }
@@ -93,10 +93,9 @@ private fun OtpStep(vm: AppViewModel, state: Onboarding) {
 }
 
 @Composable
-private fun ProfileStep(vm: AppViewModel) {
+private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
     // Plain remember: a content:// grant from the photo picker does not survive process death anyway.
     var d by remember { mutableStateOf(ProfileDraft()) }
-    var error by remember { mutableStateOf<String?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) d = d.copy(photoUri = uri.toString())
     }
@@ -136,6 +135,7 @@ private fun ProfileStep(vm: AppViewModel) {
             style = MaterialTheme.typography.bodySmall,
         )
     }
-    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-    Button({ error = vm.createProfile(d) }, modifier = Modifier.fillMaxWidth()) { Text("Start") }
+    Button({ vm.createProfile(d) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+        if (busy) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Start")
+    }
 }

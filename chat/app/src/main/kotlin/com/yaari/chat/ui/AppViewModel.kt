@@ -1,31 +1,37 @@
 package com.yaari.chat.ui
 
+import android.app.Activity
 import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yaari.chat.data.Backend
-import com.yaari.chat.data.FakeBackend
-import com.yaari.chat.data.PartnerEvent
+import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.Billing
+import com.yaari.chat.data.Entitlements
+import com.yaari.chat.data.Match
+import com.yaari.chat.data.MatchEvent
+import com.yaari.chat.data.NewProfile
+import com.yaari.chat.data.VideoStatus
+import com.yaari.chat.data.VideoToken
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
-import com.yaari.chat.model.ChatSession
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
+import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
-import com.yaari.chat.model.VideoState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.UUID
 
 enum class Tab { CHAT, RECENT, ME }
 
@@ -45,43 +51,107 @@ data class ProfileDraft(
     val agreed: Boolean = false,
 )
 
+data class ChatState(
+    val match: Match,
+    /** Monotonic clock (elapsedRealtime) when the match opened here; the server's own clock starts earlier. */
+    val startedAtMs: Long,
+    val messages: List<Message> = emptyList(),
+    val partnerTyping: Boolean = false,
+    val partnerLeft: Boolean = false,
+    val video: VideoStatus = VideoStatus.NONE,
+)
+
+data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList())
+
 data class UiState(
+    val booting: Boolean = true,
     val onboarding: Onboarding = Onboarding(),
     val me: Profile? = null,
-    val premium: Boolean = false,
+    val entitlements: Entitlements = Entitlements(),
+    val prices: Map<String, String> = emptyMap(),
     val tab: Tab = Tab.CHAT,
     val target: Target = Target.ANY,
     val searching: Boolean = false,
-    val session: ChatSession? = null,
+    val chat: ChatState? = null,
     val viewing: Profile? = null,
-    val dmPartnerId: String? = null,
+    val dm: DmState? = null,
     val recents: List<RecentMatch> = emptyList(),
-    val blocked: Set<String> = emptySet(),
     val paywall: String? = null,
     val notice: String? = null,
-)
+) {
+    val premium get() = entitlements.premium
+}
 
 class AppViewModel(
-    private val backend: Backend = FakeBackend(),
+    private val backend: Backend,
+    private val billing: Billing,
     private val clock: () -> Long = SystemClock::elapsedRealtime,
-    private val wallClock: () -> Long = System::currentTimeMillis,
     private val today: () -> LocalDate = LocalDate::now,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state.asStateFlow()
 
-    private var nextId = 0L
     private var matchJob: Job? = null
-    private var lastPartnerId: String? = null
+    private var chatJob: Job? = null
+    private var dmJob: Job? = null
 
-    /** Parent of every coroutine tied to the current chat, so leaving cancels late replies. */
-    private var sessionJob = newSessionJob()
+    init {
+        viewModelScope.launch {
+            val signedIn = runCatching { backend.isSignedIn() }.getOrDefault(false)
+            val me = if (signedIn) runCatching { backend.myProfile() }.getOrNull() else null
+            _state.update {
+                when {
+                    !signedIn -> it.copy(booting = false)
+                    me == null -> it.copy(booting = false, onboarding = Onboarding(Onboarding.Step.PROFILE))
+                    else -> it.copy(booting = false, me = me)
+                }
+            }
+            if (me != null) afterSignIn()
+        }
+    }
 
-    private fun newSessionJob() = SupervisorJob(viewModelScope.coroutineContext[Job])
+    private suspend fun afterSignIn() {
+        refreshEntitlements()
+        runCatching { billing.prices() }.onSuccess { p -> _state.update { it.copy(prices = p) } }
+        // Purchases made while offline or on another install are re-verified by the server.
+        runCatching { billing.ownedPurchases() }.getOrDefault(emptyList()).forEach { (product, token) ->
+            runCatching { applyEntitlements(backend.redeem(product, token)) }
+        }
+    }
 
-    private fun message(fromMe: Boolean, text: String? = null, media: Media? = null) =
-        Message(nextId++, fromMe, text, media, wallClock())
+    private suspend fun refreshEntitlements() {
+        runCatching { backend.entitlements() }.onSuccess(::applyEntitlements)
+    }
+
+    private fun applyEntitlements(e: Entitlements) = _state.update {
+        it.copy(entitlements = e, target = if (e.canChooseGender) it.target else Target.ANY)
+    }
+
+    private fun notice(text: String) = _state.update { it.copy(notice = text) }
+
+    private fun explain(e: Throwable): String = when ((e as? BackendException)?.code) {
+        "exit_locked" -> "Wait a moment before leaving"
+        "premium_required" -> "This needs Premium"
+        "banned" -> "Your account is suspended after reports. Contact support."
+        "under_18" -> "Yaari is only for adults (18+)"
+        "slow_down" -> "You're sending too fast"
+        "blocked" -> "You can't message this person"
+        "not_allowed" -> "That's not possible right now"
+        "video_not_configured" -> "Video calls are not available yet"
+        else -> "Network problem. Please try again."
+    }
+
+    /** Runs [block]; failures become a notice instead of a crash. */
+    private fun act(block: suspend () -> Unit) = viewModelScope.launch {
+        try {
+            block()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            notice(explain(e))
+        }
+    }
 
     // ---- Onboarding -------------------------------------------------------------------------
 
@@ -93,8 +163,11 @@ class AppViewModel(
         }
         _state.update { it.copy(onboarding = Onboarding(Onboarding.Step.PHONE, phone, busy = true)) }
         viewModelScope.launch {
-            backend.sendOtp(phone)
-            _state.update { it.copy(onboarding = it.onboarding.copy(step = Onboarding.Step.OTP, busy = false)) }
+            val ok = runCatching { backend.sendOtp(phone) }.isSuccess
+            _state.update {
+                it.copy(onboarding = if (ok) it.onboarding.copy(step = Onboarding.Step.OTP, busy = false)
+                else it.onboarding.copy(busy = false, error = "Couldn't send the code. Try again."))
+            }
         }
     }
 
@@ -102,22 +175,23 @@ class AppViewModel(
         val phone = _state.value.onboarding.phone
         _state.update { it.copy(onboarding = it.onboarding.copy(busy = true, error = null)) }
         viewModelScope.launch {
-            if (!backend.verifyOtp(phone, code.trim())) {
+            val ok = runCatching { backend.verifyOtp(phone, code.trim()) }.getOrDefault(false)
+            if (!ok) {
                 _state.update { it.copy(onboarding = it.onboarding.copy(busy = false, error = "Wrong code. Try again.")) }
                 return@launch
             }
-            val existing = backend.accountFor(phone)
+            val existing = runCatching { backend.myProfile() }.getOrNull()
             _state.update {
                 if (existing != null) it.copy(me = existing, onboarding = Onboarding())
                 else it.copy(onboarding = it.onboarding.copy(step = Onboarding.Step.PROFILE, busy = false))
             }
+            if (existing != null) afterSignIn()
         }
     }
 
     fun backToPhone() = _state.update { it.copy(onboarding = Onboarding()) }
 
-    /** Returns an error message, or null after the account is created. */
-    fun createProfile(d: ProfileDraft): String? {
+    fun createProfile(d: ProfileDraft) {
         val name = d.name.trim()
         val birth = Validation.birthDate(d.day, d.month, d.year)
         val age = birth?.let { Validation.age(it, today()) }
@@ -131,36 +205,37 @@ class AppViewModel(
             !d.agreed -> "Please accept the community rules"
             else -> null
         }
-        if (error != null) return error
-        val phone = _state.value.onboarding.phone
-        val me = Profile(
-            id = "me-" + UUID.randomUUID(), name = name, gender = d.gender!!, age = age!!,
-            city = d.city.trim().ifEmpty { "India" }, bio = d.bio.trim(), photoUri = d.photoUri, colorSeed = phone.hashCode(),
-        )
-        try {
-            backend.register(phone, me)
-        } catch (e: IllegalStateException) {
-            return e.message
+        if (error != null) {
+            _state.update { it.copy(onboarding = it.onboarding.copy(error = error)) }
+            return
         }
-        _state.update { it.copy(me = me, onboarding = Onboarding()) }
-        return null
+        _state.update { it.copy(onboarding = it.onboarding.copy(busy = true, error = null)) }
+        viewModelScope.launch {
+            try {
+                val me = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim().ifEmpty { "India" }, d.bio.trim(), d.photoUri))
+                _state.update { it.copy(me = me, onboarding = Onboarding()) }
+                afterSignIn()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _state.update { it.copy(onboarding = it.onboarding.copy(busy = false, error = explain(e))) }
+            }
+        }
     }
 
-    // ---- Lobby ------------------------------------------------------------------------------
+    // ---- Lobby, Premium ---------------------------------------------------------------------
 
-    fun selectTab(tab: Tab) = _state.update { it.copy(tab = tab) }
+    fun selectTab(tab: Tab) {
+        _state.update { it.copy(tab = tab) }
+        if (tab == Tab.RECENT) refreshRecents()
+    }
 
     fun setTarget(target: Target) {
-        if (target.isPaid && !_state.value.premium) {
-            _state.update { it.copy(paywall = "Choose who you meet") }
+        if (target.isPaid && !_state.value.entitlements.canChooseGender) {
+            showPaywall("Choose who you meet")
             return
         }
         _state.update { it.copy(target = target) }
-    }
-
-    /** Prototype stand-in for Google Play Billing. */
-    fun setPremium(on: Boolean) = _state.update {
-        it.copy(premium = on, paywall = null, target = if (on) it.target else Target.ANY)
     }
 
     fun showPaywall(feature: String) = _state.update { it.copy(paywall = feature) }
@@ -169,17 +244,39 @@ class AppViewModel(
 
     fun consumeNotice() = _state.update { it.copy(notice = null) }
 
+    /** Google Play purchase, then server-side verification. The entitlement only comes from the server. */
+    fun buy(activity: Activity, productId: String) {
+        val me = _state.value.me ?: return
+        act {
+            val token = billing.buy(activity, productId, me.id) ?: return@act
+            applyEntitlements(backend.redeem(productId, token))
+            billing.finish(productId, token)
+            _state.update { it.copy(paywall = null, notice = "Purchase complete. Enjoy!") }
+        }
+    }
+
+    // ---- Matching -----------------------------------------------------------------------------
+
     fun startMatching() {
         val s = _state.value
-        val me = s.me ?: return
-        if (s.searching || s.session != null) return
-        _state.update { it.copy(searching = true, dmPartnerId = null, viewing = null) }
+        if (s.me == null || s.searching || s.chat != null) return
+        _state.update { it.copy(searching = true, dm = null, viewing = null) }
+        dmJob?.cancel()
         matchJob = viewModelScope.launch {
-            val exclude = s.blocked + listOfNotNull(lastPartnerId)
-            val partner = backend.findPartner(me, s.target, exclude)
-            _state.update {
-                if (partner == null) it.copy(searching = false, notice = "No one is online for \"${s.target.label}\" right now")
-                else it.copy(searching = false, session = ChatSession(partner, clock()))
+            try {
+                while (isActive) {
+                    val m = backend.findMatch(s.target)
+                    if (m != null) {
+                        openChat(m)
+                        return@launch
+                    }
+                    delay(POLL_MS)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _state.update { it.copy(searching = false) }
+                notice(explain(e))
             }
         }
     }
@@ -187,145 +284,219 @@ class AppViewModel(
     fun cancelMatching() {
         matchJob?.cancel()
         _state.update { it.copy(searching = false) }
+        act { backend.cancelSearch() }
+    }
+
+    private fun openChat(m: Match) {
+        _state.update { it.copy(searching = false, chat = ChatState(m, clock())) }
+        chatJob?.cancel()
+        chatJob = viewModelScope.launch {
+            runCatching { backend.history(m.id) }.onSuccess { h -> updateChat(m.id) { c -> c.copy(messages = merge(c.messages, h)) } }
+            try {
+                backend.events(m.id).collect { e -> applyChatEvent(m.id, e) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice("Connection lost. Reconnecting may need a new match.")
+            }
+        }
+    }
+
+    private fun applyChatEvent(matchId: String, e: MatchEvent) = updateChat(matchId) { c ->
+        when (e) {
+            is MatchEvent.NewMessage -> c.copy(messages = merge(c.messages, listOf(e.message)), partnerTyping = false)
+            is MatchEvent.Typing -> c.copy(partnerTyping = e.on)
+            MatchEvent.PartnerLeft -> c.copy(partnerLeft = true, partnerTyping = false, video = VideoStatus.NONE)
+            is MatchEvent.Video -> {
+                if (e.status == VideoStatus.DECLINED && c.video == VideoStatus.REQUESTED_BY_ME) {
+                    notice("${c.match.partner.name} declined the video call")
+                }
+                c.copy(video = e.status)
+            }
+        }
+    }
+
+    private fun updateChat(matchId: String, change: (ChatState) -> ChatState) = _state.update {
+        val c = it.chat
+        if (c == null || c.match.id != matchId) it else it.copy(chat = change(c))
+    }
+
+    private fun merge(old: List<Message>, new: List<Message>): List<Message> {
+        if (new.isEmpty()) return old
+        val ids = old.mapTo(HashSet()) { it.id }
+        val added = new.filter { it.id !in ids }
+        return if (added.isEmpty()) old else (old + added).sortedBy { it.id }
     }
 
     // ---- Chat -------------------------------------------------------------------------------
 
     fun exitRemainingMs(): Long {
         val s = _state.value
-        val session = s.session ?: return 0
-        if (session.partnerLeft) return 0
-        return ExitPolicy.remainingMs(s.premium, session.startedAtMs, clock())
+        val c = s.chat ?: return 0
+        if (c.partnerLeft) return 0
+        return ExitPolicy.remainingMs(s.premium, c.startedAtMs, clock())
     }
 
     fun sendText(text: String) {
-        val t = text.trim()
-        if (t.isNotEmpty()) send(message(true, text = t.take(1000)))
+        val t = text.trim().take(MAX_TEXT)
+        val c = _state.value.chat ?: return
+        if (t.isEmpty() || c.partnerLeft) return
+        act { backend.send(c.match.id, t, null).also { m -> updateChat(c.match.id) { it.copy(messages = merge(it.messages, listOf(m))) } } }
     }
 
-    fun sendMedia(media: Media) = send(message(true, media = media))
-
-    private fun send(msg: Message) {
-        val session = _state.value.session ?: return
-        if (session.partnerLeft) return
-        updateSession(session.partner.id) { it.copy(messages = it.messages + msg) }
-        viewModelScope.launch(sessionJob) {
-            updateSession(session.partner.id) { it.copy(partnerTyping = true) }
-            val event = backend.partnerReact(session.partner, msg.text, canLeave = true)
-            updateSession(session.partner.id) {
-                when (event) {
-                    is PartnerEvent.Reply -> it.copy(partnerTyping = false, messages = it.messages + message(false, event.text))
-                    PartnerEvent.Left -> it.copy(partnerTyping = false, partnerLeft = true, video = VideoState.NONE)
-                    PartnerEvent.Silent -> it.copy(partnerTyping = false)
-                }
-            }
-        }
+    fun sendMedia(media: Media) {
+        val c = _state.value.chat ?: return
+        if (c.partnerLeft) return
+        act { backend.send(c.match.id, null, media).also { m -> updateChat(c.match.id) { it.copy(messages = merge(it.messages, listOf(m))) } } }
     }
 
-    /** Applies [change] only if the chat with [partnerId] is still the open one. */
-    private fun updateSession(partnerId: String, change: (ChatSession) -> ChatSession) = _state.update {
-        val s = it.session
-        if (s == null || s.partner.id != partnerId) it else it.copy(session = change(s))
-    }
-
-    /** Normal exit (X / back). Ignored while the exit lock is running. */
+    /** Normal exit (X / back). Ignored while the exit lock is running; the server checks it again. */
     fun leave(next: Boolean) {
-        if (_state.value.session == null || exitRemainingMs() > 0) return
-        endSession(keepInRecents = true)
-        if (next) startMatching()
-    }
-
-    /** Safety exit: never locked, blocks the partner and drops them from recents. */
-    fun reportAndLeave(reason: String, next: Boolean) {
-        val partner = _state.value.session?.partner ?: return
-        report(partner.id, reason)
-        endSession(keepInRecents = false)
-        if (next) startMatching()
-    }
-
-    private fun endSession(keepInRecents: Boolean) {
-        val session = _state.value.session ?: return
-        sessionJob.cancel()
-        sessionJob = newSessionJob()
-        lastPartnerId = session.partner.id
-        _state.update { s ->
-            val old = s.recents.firstOrNull { it.partner.id == session.partner.id }
-            val recents = if (!keepInRecents) s.recents
-            else listOf(RecentMatch(session.partner, wallClock(), old?.dm.orEmpty())) +
-                s.recents.filterNot { it.partner.id == session.partner.id }
-            s.copy(session = null, viewing = null, recents = recents.take(MAX_RECENTS))
+        val c = _state.value.chat ?: return
+        if (exitRemainingMs() > 0) return
+        act {
+            backend.leave(c.match.id)
+            closeChat()
+            if (next) startMatching()
         }
+    }
+
+    /** Safety exit: never locked. Blocks the partner and removes them from Recent. */
+    fun reportAndLeave(reason: ReportReason, next: Boolean) {
+        val c = _state.value.chat ?: return
+        act {
+            backend.report(c.match.partner.id, reason, c.match.id)
+            closeChat()
+            notice("Reported and blocked. You won't be matched again.")
+            if (next) startMatching()
+        }
+    }
+
+    private fun closeChat() {
+        chatJob?.cancel()
+        _state.update { it.copy(chat = null, viewing = null) }
+        refreshRecents()
     }
 
     fun requestVideo() {
         val s = _state.value
-        val session = s.session ?: return
+        val c = s.chat ?: return
         if (!s.premium) {
-            _state.update { it.copy(paywall = "Video calls") }
+            showPaywall("Video calls")
             return
         }
-        if (session.partnerLeft || session.video != VideoState.NONE) return
-        updateSession(session.partner.id) { it.copy(video = VideoState.REQUESTING) }
-        viewModelScope.launch(sessionJob) {
-            val accepted = backend.answerVideoRequest(session.partner)
-            updateSession(session.partner.id) { it.copy(video = if (accepted) VideoState.IN_CALL else VideoState.NONE) }
-            if (!accepted) _state.update { it.copy(notice = "${session.partner.name} declined the video call") }
+        if (c.partnerLeft || c.video in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.ACCEPTED)) return
+        act {
+            backend.requestVideo(c.match.id)
+            updateChat(c.match.id) { it.copy(video = VideoStatus.REQUESTED_BY_ME) }
+        }
+    }
+
+    fun answerVideo(accept: Boolean) {
+        val c = _state.value.chat ?: return
+        act {
+            backend.answerVideo(c.match.id, accept)
+            updateChat(c.match.id) { it.copy(video = if (accept) VideoStatus.ACCEPTED else VideoStatus.NONE) }
         }
     }
 
     fun endVideo() {
-        val id = _state.value.session?.partner?.id ?: return
-        updateSession(id) { it.copy(video = VideoState.NONE) }
+        val c = _state.value.chat ?: return
+        updateChat(c.match.id) { it.copy(video = VideoStatus.NONE) }
+        act { backend.endVideo(c.match.id) }
     }
 
-    // ---- Profiles, recents, DMs -------------------------------------------------------------
-
-    fun openProfile(p: Profile) = _state.update { it.copy(viewing = p) }
-
-    fun closeProfile() = _state.update { it.copy(viewing = null) }
-
-    /** Blocks and removes the user everywhere. In v1 this also files a moderation ticket. */
-    fun report(partnerId: String, @Suppress("UNUSED_PARAMETER") reason: String) = _state.update { s ->
-        s.copy(
-            blocked = s.blocked + partnerId,
-            recents = s.recents.filterNot { it.partner.id == partnerId },
-            viewing = s.viewing?.takeIf { it.id != partnerId },
-            dmPartnerId = s.dmPartnerId?.takeIf { it != partnerId },
-            notice = "Reported and blocked. You won't be matched again.",
-        )
-    }
-
-    fun openDm(partnerId: String) = _state.update { it.copy(dmPartnerId = partnerId, viewing = null) }
-
-    fun closeDm() = _state.update { it.copy(dmPartnerId = null) }
-
-    fun sendDm(text: String) {
-        val t = text.trim()
-        val id = _state.value.dmPartnerId ?: return
-        if (t.isEmpty()) return
-        updateDm(id) { it + message(true, text = t.take(1000)) }
-        val partner = _state.value.recents.firstOrNull { it.partner.id == id }?.partner ?: return
-        viewModelScope.launch {
-            val event = backend.partnerReact(partner, t, canLeave = false)
-            if (event is PartnerEvent.Reply) updateDm(id) { it + message(false, event.text) }
+    suspend fun videoToken(): VideoToken? {
+        val c = _state.value.chat ?: return null
+        return try {
+            backend.videoToken(c.match.id)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            notice(explain(e))
+            null
         }
     }
 
-    private fun updateDm(partnerId: String, change: (List<Message>) -> List<Message>) = _state.update { s ->
-        s.copy(recents = s.recents.map { if (it.partner.id == partnerId) it.copy(dm = change(it.dm)) else it })
+    // ---- Profiles, Recent, DMs --------------------------------------------------------------
+
+    fun openProfile(p: Profile) {
+        _state.update { it.copy(viewing = p) }
+        act {
+            val full = backend.profile(p.id) ?: return@act
+            _state.update { if (it.viewing?.id == p.id) it.copy(viewing = full) else it }
+        }
+    }
+
+    fun closeProfile() = _state.update { it.copy(viewing = null) }
+
+    /** Report from a profile or Recent: blocks and removes the person everywhere. */
+    fun report(partnerId: String, reason: ReportReason) {
+        val c = _state.value.chat
+        if (c?.match?.partner?.id == partnerId) {
+            reportAndLeave(reason, next = false)
+            return
+        }
+        act {
+            backend.report(partnerId, reason, null)
+            dmJob?.takeIf { _state.value.dm?.recent?.partner?.id == partnerId }?.cancel()
+            _state.update { s ->
+                s.copy(
+                    recents = s.recents.filterNot { it.partner.id == partnerId },
+                    viewing = s.viewing?.takeIf { it.id != partnerId },
+                    dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
+                    notice = "Reported and blocked.",
+                )
+            }
+        }
+    }
+
+    fun refreshRecents() = act {
+        val list = backend.recents()
+        _state.update { it.copy(recents = list) }
+    }
+
+    fun openDm(partnerId: String) {
+        val r = _state.value.recents.firstOrNull { it.partner.id == partnerId } ?: return
+        _state.update { it.copy(dm = DmState(r), viewing = null) }
+        dmJob?.cancel()
+        dmJob = viewModelScope.launch {
+            runCatching { backend.history(r.matchId) }.onSuccess { h -> updateDm(r.matchId) { merge(it, h) } }
+            runCatching {
+                backend.events(r.matchId).collect { e -> if (e is MatchEvent.NewMessage) updateDm(r.matchId) { merge(it, listOf(e.message)) } }
+            }
+        }
+    }
+
+    fun closeDm() {
+        dmJob?.cancel()
+        _state.update { it.copy(dm = null) }
+        refreshRecents()
+    }
+
+    fun sendDm(text: String) {
+        val t = text.trim().take(MAX_TEXT)
+        val dm = _state.value.dm ?: return
+        if (t.isEmpty()) return
+        act { backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } } }
+    }
+
+    private fun updateDm(matchId: String, change: (List<Message>) -> List<Message>) = _state.update {
+        val dm = it.dm
+        if (dm == null || dm.recent.matchId != matchId) it else it.copy(dm = dm.copy(messages = change(dm.messages)))
     }
 
     fun addPost(text: String, imageUri: String?) {
-        val t = text.trim()
+        val t = text.trim().take(500)
         if (t.isEmpty() && imageUri == null) return
-        _state.update { s ->
-            val me = s.me ?: return@update s
-            val post = Post(UUID.randomUUID().toString(), t.take(500), imageUri, wallClock())
-            s.copy(me = me.copy(posts = listOf(post) + me.posts))
+        act {
+            val post = backend.addPost(t, imageUri)
+            _state.update { s -> s.copy(me = s.me?.let { it.copy(posts = listOf(post) + it.posts) }) }
         }
     }
 
     companion object {
-        const val MAX_RECENTS = 50
+        const val POLL_MS = 2_000L
+        const val MAX_TEXT = 1000
     }
 }

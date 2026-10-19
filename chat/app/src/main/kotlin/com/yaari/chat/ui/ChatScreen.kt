@@ -48,21 +48,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.yaari.chat.model.ChatSession
+import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.VideoState
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatRoomScreen(vm: AppViewModel, session: ChatSession, premium: Boolean) {
+fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     SecureScreen()
+    val partner = chat.match.partner
     var exitDialog by remember { mutableStateOf(false) }
     var reportDialog by remember { mutableStateOf(false) }
     var lockLeft by remember { mutableLongStateOf(vm.exitRemainingMs()) }
-    LaunchedEffect(session.startedAtMs, premium, session.partnerLeft) {
+    LaunchedEffect(chat.startedAtMs, premium, chat.partnerLeft) {
         while (true) {
             lockLeft = vm.exitRemainingMs()
             if (lockLeft <= 0) break
@@ -75,20 +75,20 @@ fun ChatRoomScreen(vm: AppViewModel, session: ChatSession, premium: Boolean) {
         topBar = {
             TopAppBar(
                 title = {
-                    Row(Modifier.clickable { vm.openProfile(session.partner) }, verticalAlignment = Alignment.CenterVertically) {
-                        Avatar(session.partner, 40.dp)
+                    Row(Modifier.clickable { vm.openProfile(partner) }, verticalAlignment = Alignment.CenterVertically) {
+                        Avatar(partner, 40.dp)
                         Column(Modifier.padding(start = 10.dp)) {
-                            Text(session.partner.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
+                            Text(partner.name, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleMedium)
                             Text(
-                                if (session.partnerTyping) "typing…" else session.partner.subtitle() + " · View profile",
+                                if (chat.partnerTyping) "typing…" else partner.subtitle() + " · View profile",
                                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
                             )
                         }
                     }
                 },
                 actions = {
-                    TextButton({ vm.requestVideo() }, enabled = !session.partnerLeft && session.video == VideoState.NONE) {
-                        Text(if (session.video == VideoState.REQUESTING) "Calling…" else "Video")
+                    TextButton({ vm.requestVideo() }, enabled = !chat.partnerLeft && chat.video !in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER)) {
+                        Text(if (chat.video == VideoStatus.REQUESTED_BY_ME) "Calling…" else "Video")
                     }
                     IconButton({ reportDialog = true }) { Icon(Icons.Filled.Warning, "Report and leave", tint = MaterialTheme.colorScheme.error) }
                     // Normal exit: locked for 5 s (free) / 0.2 s (Premium) after the match starts.
@@ -101,10 +101,10 @@ fun ChatRoomScreen(vm: AppViewModel, session: ChatSession, premium: Boolean) {
         },
     ) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().imePadding()) {
-            Messages(session.messages, Modifier.weight(1f))
-            if (session.partnerLeft) {
+            Messages(chat.messages, Modifier.weight(1f))
+            if (chat.partnerLeft) {
                 Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("${session.partner.name} left the chat")
+                    Text("${partner.name} left the chat")
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
                         OutlinedButton({ vm.leave(next = false) }) { Text("Back to lobby") }
                         Button({ vm.leave(next = true) }) { Text("Next match") }
@@ -120,7 +120,7 @@ fun ChatRoomScreen(vm: AppViewModel, session: ChatSession, premium: Boolean) {
         AlertDialog(
             onDismissRequest = { exitDialog = false },
             title = { Text("Leave this chat?") },
-            text = { Text("${session.partner.name} will be saved in Recent.") },
+            text = { Text("${partner.name} will be saved in Recent.") },
             confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text("Next match") } },
             dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text("Back to lobby") } },
         )
@@ -131,12 +131,21 @@ fun ChatRoomScreen(vm: AppViewModel, session: ChatSession, premium: Boolean) {
             vm.reportAndLeave(reason, next = action == 0)
         }
     }
+    if (chat.video == VideoStatus.REQUESTED_BY_PARTNER && !chat.partnerLeft) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = { Text("${partner.name} wants to video call") },
+            text = { Text("Your camera turns on only if you accept. You can end the call any time.") },
+            confirmButton = { TextButton({ vm.answerVideo(true) }) { Text("Accept") } },
+            dismissButton = { TextButton({ vm.answerVideo(false) }) { Text("Decline") } },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DmScreen(vm: AppViewModel, s: UiState) {
-    val r = s.recents.firstOrNull { it.partner.id == s.dmPartnerId } ?: return
+fun DmScreen(vm: AppViewModel, dm: DmState) {
+    val r = dm.recent
     SecureScreen()
     BackHandler { vm.closeDm() }
     Scaffold(
@@ -153,7 +162,7 @@ fun DmScreen(vm: AppViewModel, s: UiState) {
         },
     ) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().imePadding()) {
-            Messages(r.dm, Modifier.weight(1f))
+            Messages(dm.messages, Modifier.weight(1f))
             Composer(onText = vm::sendDm, onMedia = null)
         }
     }

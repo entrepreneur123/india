@@ -17,6 +17,21 @@ android {
         versionName = "0.1.0-proto"
     }
 
+    flavorDimensions += "server"
+    productFlavors {
+        create("demo") {
+            dimension = "server"
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+        }
+        create("live") {
+            dimension = "server"
+            // Public client keys of the Supabase project "yaari-chat" (Mumbai). Not secrets: RLS protects the data.
+            buildConfigField("String", "SUPABASE_URL", "\"https://dgynsckrqgnpyyvqekzi.supabase.co\"")
+            buildConfigField("String", "SUPABASE_ANON_KEY", "\"${providers.gradleProperty("SUPABASE_ANON_KEY").get()}\"")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -37,6 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

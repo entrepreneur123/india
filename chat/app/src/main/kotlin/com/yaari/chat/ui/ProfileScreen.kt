@@ -52,15 +52,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.yaari.chat.data.Entitlements
 import com.yaari.chat.model.Post
+import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Profile
-
-val ReportReasons = listOf("Nudity or sexual content", "Looks under 18", "Harassment or abuse", "Fake profile or scam", "Other")
 
 /** Someone else's profile, opened from a chat or from Recent. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(p: Profile, inChat: Boolean, onBack: () -> Unit, onMessage: (() -> Unit)?, onReport: (String) -> Unit) {
+fun ProfileScreen(p: Profile, inChat: Boolean, onBack: () -> Unit, onMessage: (() -> Unit)?, onReport: (ReportReason) -> Unit) {
     SecureScreen()
     BackHandler(onBack = onBack)
     var reporting by remember { mutableStateOf(false) }
@@ -89,17 +89,17 @@ fun ProfileScreen(p: Profile, inChat: Boolean, onBack: () -> Unit, onMessage: ((
 
 /** Reason picker. [actions] are button labels; the chosen index is passed back. */
 @Composable
-fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reason: String, action: Int) -> Unit) {
-    var reason by remember { mutableStateOf(ReportReasons.first()) }
+fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reason: ReportReason, action: Int) -> Unit) {
+    var reason by remember { mutableStateOf(ReportReason.NUDITY) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Report this person") },
         text = {
             Column {
-                ReportReasons.forEach { r ->
+                ReportReason.entries.forEach { r ->
                     Row(Modifier.fillMaxWidth().clickable { reason = r }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(reason == r, { reason = r })
-                        Text(r)
+                        Text(r.label)
                     }
                 }
                 Text("They will be blocked and our team is alerted.", style = MaterialTheme.typography.bodySmall)
@@ -117,8 +117,8 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
 fun ProfileContent(
     p: Profile,
     isMe: Boolean,
-    premium: Boolean = false,
-    onPremium: (Boolean) -> Unit = {},
+    entitlements: Entitlements = Entitlements(),
+    onUpgrade: () -> Unit = {},
     onNewPost: () -> Unit = {},
     footer: @Composable () -> Unit = {},
 ) {
@@ -147,7 +147,7 @@ fun ProfileContent(
                 }
             }
         }
-        if (isMe) item(span = { GridItemSpan(maxLineSpan) }) { PremiumRow(premium, onPremium) }
+        if (isMe) item(span = { GridItemSpan(maxLineSpan) }) { PremiumCard(entitlements, onUpgrade) }
         items(p.posts, key = { it.id }) { post -> PostTile(post, p.colorSeed) { open = post } }
         item(span = { GridItemSpan(maxLineSpan) }) { footer() }
     }

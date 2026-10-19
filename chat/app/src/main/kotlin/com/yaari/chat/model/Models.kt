@@ -35,16 +35,12 @@ data class Media(val uri: String, val kind: MediaKind)
 
 data class Message(val id: Long, val fromMe: Boolean, val text: String? = null, val media: Media? = null, val at: Long)
 
-enum class VideoState { NONE, REQUESTING, IN_CALL }
+data class RecentMatch(val matchId: String, val partner: Profile, val metAt: Long, val lastText: String? = null)
 
-data class ChatSession(
-    val partner: Profile,
-    /** Monotonic clock (elapsedRealtime) when the match started; drives the exit lock. */
-    val startedAtMs: Long,
-    val messages: List<Message> = emptyList(),
-    val partnerTyping: Boolean = false,
-    val partnerLeft: Boolean = false,
-    val video: VideoState = VideoState.NONE,
-)
-
-data class RecentMatch(val partner: Profile, val metAt: Long, val dm: List<Message> = emptyList())
+enum class ReportReason(val code: String, val label: String) {
+    NUDITY("nudity", "Nudity or sexual content"),
+    MINOR("minor", "Looks under 18"),
+    HARASSMENT("harassment", "Harassment or abuse"),
+    FAKE("fake", "Fake profile or scam"),
+    OTHER("other", "Other"),
+}
