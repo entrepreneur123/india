@@ -8,6 +8,7 @@
 # until 5 minutes after the draw, then polls the source every 60 s until the sheet is out.
 # A backup run is scheduled 15 minutes before the draw. Times are UTC; IST = UTC+5:30.
 #   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35
+#   09:17                 Kerala 3 PM IST draw = 09:30 UTC; copies appear ~10:40 UTC, polling from 10:35
 #   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
 #   12:47 (backup 14:17)  8 PM IST draw = 14:30 UTC, polling from 14:35
 # Odd minutes on purpose: runs scheduled on the hour are delayed most.
@@ -19,6 +20,7 @@ on:
   schedule:
     - cron: "47 5 * * *"
     - cron: "17 7 * * *"
+    - cron: "17 9 * * *"
     - cron: "47 10 * * *"
     - cron: "17 12 * * *"
     - cron: "47 12 * * *"
@@ -91,6 +93,7 @@ jobs:
           require=""; from=""; watch=0; deep=false; ocr=false; backfill=1
           case "${{ github.event.schedule }}" in
             "47 5 * * *"|"17 7 * * *")    require=NL1PM; from=07:35; watch=90 ;;
+            "17 9 * * *")                 require=KL; from=10:35; watch=90 ;;
             "47 10 * * *"|"17 12 * * *")  require=SK6PM; from=12:35; watch=90 ;;
             "47 12 * * *"|"17 14 * * *")  require=NL8PM; from=14:35; watch=90 ;;
             "10 15 * * *"|"40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;

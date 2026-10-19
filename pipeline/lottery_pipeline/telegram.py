@@ -40,7 +40,9 @@ def text(d: dict, site_url: str) -> str:
 
 def new_draws(feed: dict, posted: set[str], today: dt.date) -> list[dict]:
     since = (today - dt.timedelta(days=1)).isoformat()
-    return sorted((d for d in feed.get("draws", []) if d.get("tiers") and d["date"] >= since and d["id"] not in posted),
+    # The channel is about Dear (Nagaland/Sikkim) results; other lotteries would need their own channel.
+    return sorted((d for d in feed.get("draws", []) if d.get("tiers") and d["date"] >= since and d["id"] not in posted
+                   and d.get("lottery", "dear") == "dear"),
                   key=lambda d: (d["date"], d["time"]))
 
 
