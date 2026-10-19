@@ -118,7 +118,8 @@ private fun render(file: File, screenWidth: Int): SheetState {
             val page = pdf.openPage(i)
             try {
                 val w = (screenWidth * 1.5f).toInt().coerceIn(800, 1800)
-                val h = (w.toLong() * page.height / page.width).toInt()
+                // A crafted page size must not ask for a gigantic bitmap: at most 3x as tall as wide.
+                val h = (w.toLong() * page.height / page.width.coerceAtLeast(1)).toInt().coerceIn(1, w * 3)
                 // PdfRenderer draws onto ARGB_8888 only; convert once, then let the large copy go.
                 val argb = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply { eraseColor(AColor.WHITE) }
                 page.render(argb, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
@@ -131,6 +132,8 @@ private fun render(file: File, screenWidth: Int): SheetState {
     } catch (_: Exception) {
         // A damaged or unexpected file: drop it so the next try downloads it again.
         file.delete()
+        SheetState.Failed
+    } catch (_: OutOfMemoryError) {
         SheetState.Failed
     } finally {
         pdf?.close()

@@ -1,5 +1,6 @@
 package com.lottodost.app.data
 
+import com.lottodost.app.domain.Trust
 import kotlinx.serialization.Serializable
 
 /** Mirrors pipeline/lottery_pipeline/build.py output (schema 2). Unknown keys are ignored. */
@@ -41,7 +42,16 @@ data class RemoteConfig(
     val officialResultsUrl: String? = null,
     val announcement: Announcement? = null,
     val claimFormUrl: String? = null,
-)
+) {
+    /** What the app may act on: our own mirrors, links to trusted sites only. */
+    fun trusted() = copy(
+        mirrors = mirrors.filter(Trust::isMirror),
+        liveDrawUrl = liveDrawUrl?.takeIf(Trust::isTrustedLink),
+        officialResultsUrl = officialResultsUrl?.takeIf(Trust::isTrustedLink),
+        announcement = announcement?.let { a -> a.copy(url = a.url?.takeIf(Trust::isTrustedLink)) },
+        claimFormUrl = claimFormUrl?.takeIf(Trust::isTrustedLink),
+    )
+}
 
 @Serializable
 data class Announcement(val text: String, val url: String? = null)

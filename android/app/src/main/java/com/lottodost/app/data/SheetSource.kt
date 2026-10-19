@@ -35,6 +35,7 @@ object SheetSource {
         val dir = File(cacheDir, "sheets").apply { mkdirs() }
         val f = File(dir, url.hashCode().toUInt().toString(16) + ".pdf")
         if (f.length() > 0 && !mayChange) return Result.Ok(f)
+        if (!url.startsWith("https://", ignoreCase = true)) return Result.Failed  // feed data: https only
         return try {
             val c = URL(url).openConnection() as HttpURLConnection
             c.connectTimeout = 6_000
@@ -42,7 +43,9 @@ object SheetSource {
             c.setRequestProperty("User-Agent", userAgent)
             try {
                 if (c.responseCode != 200) return if (f.length() > 0) Result.Ok(f) else Result.NotPublished
-                val bytes = c.inputStream.use { it.readBytes() }
+                if (c.contentLengthLong > MAX_BYTES) return Result.NotPublished
+                val bytes = c.inputStream.use { it.readNBytesCompat(MAX_BYTES + 1) }
+                if (bytes.size > MAX_BYTES) return Result.NotPublished  // a result sheet is ~1 MB
                 if (!isPdf(bytes)) return if (f.length() > 0) Result.Ok(f) else Result.NotPublished
                 val tmp = File(dir, f.name + ".tmp")
                 tmp.writeBytes(bytes)
@@ -54,5 +57,19 @@ object SheetSource {
         } catch (_: IOException) {
             if (f.length() > 0) Result.Ok(f) else Result.Failed
         }
+    }
+
+    private const val MAX_BYTES = 15 * 1024 * 1024
+
+    /** InputStream.readNBytes needs API 33; minSdk is 24. */
+    private fun java.io.InputStream.readNBytesCompat(limit: Int): ByteArray {
+        val out = java.io.ByteArrayOutputStream()
+        val buf = ByteArray(16 * 1024)
+        while (out.size() < limit) {
+            val n = read(buf, 0, minOf(buf.size, limit - out.size()))
+            if (n < 0) break
+            out.write(buf, 0, n)
+        }
+        return out.toByteArray()
     }
 }
