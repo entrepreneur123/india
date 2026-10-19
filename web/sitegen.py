@@ -58,6 +58,12 @@ WEB = {
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
         "telegram": "Get every result the moment it is out on our Telegram channel",
+        "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
+        "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM",
+        "kl_desc": "Kerala lottery result {d}: {g}, 1st prize {n}. All prizes, ticket checker and the official result link.",
+        "kl_draw_title": "Kerala Lottery Result {d} – {g}",
+        "kl_schedule": "Draw every day at 3 PM: Monday Bhagyathara, Tuesday Sthree Sakthi, Wednesday Dhanalekshmi, Thursday Karunya Plus, Friday Suvarna Keralam, Saturday Karunya, Sunday Samrudhi. The result usually appears about an hour after the draw.",
+        "kl_recent": "Recent Kerala results", "game": "Lottery",
     },
     "bn": {
         "home_title": "নাগাল্যান্ড স্টেট লটারি রেজাল্ট আজ {d} – দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা ডিয়ার লটারি",
@@ -83,6 +89,12 @@ WEB = {
         "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
         "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
         "telegram": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে পেতে আমাদের Telegram চ্যানেলে যোগ দিন",
+        "check_hint_kl": "পুরো নম্বর লিখুন (যেমন MM 289707) বা শুধু শেষ 4টি সংখ্যা।", "kl_tab": "কেরালা", "kl_h1": "কেরালা লটারি আজকের রেজাল্ট",
+        "kl_title": "কেরালা লটারি রেজাল্ট আজ {d} – {g} দুপুর 3টা",
+        "kl_desc": "কেরালা লটারি রেজাল্ট {d}: {g}, প্রথম পুরস্কার {n}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্টের লিংক।",
+        "kl_draw_title": "কেরালা লটারি রেজাল্ট {d} – {g}",
+        "kl_schedule": "রোজ দুপুর 3টায় ড্র: সোমবার ভাগ্যতারা, মঙ্গলবার স্ত্রী শক্তি, বুধবার ধনলক্ষ্মী, বৃহস্পতিবার করুণ্যা প্লাস, শুক্রবার সুবর্ণ কেরালাম, শনিবার করুণ্যা, রবিবার সমৃদ্ধি। রেজাল্ট সাধারণত ড্রয়ের প্রায় এক ঘণ্টা পরে আসে।",
+        "kl_recent": "কেরালার সাম্প্রতিক রেজাল্ট", "game": "লটারি",
     },
     "hi": {
         "home_title": "नागालैंड स्टेट लॉटरी रिज़ल्ट आज {d} – 1 PM, 6 PM, 8 PM डियर लॉटरी",
@@ -108,6 +120,12 @@ WEB = {
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
         "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
         "telegram": "रिज़ल्ट आते ही पाने के लिए हमारे Telegram चैनल से जुड़ें",
+        "check_hint_kl": "पूरा नंबर लिखें (जैसे MM 289707) या सिर्फ़ आख़िरी 4 अंक।", "kl_tab": "केरल", "kl_h1": "केरल लॉटरी आज का रिज़ल्ट",
+        "kl_title": "केरल लॉटरी रिज़ल्ट आज {d} – {g} 3 PM",
+        "kl_desc": "केरल लॉटरी रिज़ल्ट {d}: {g}, पहला इनाम {n}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट का लिंक।",
+        "kl_draw_title": "केरल लॉटरी रिज़ल्ट {d} – {g}",
+        "kl_schedule": "रोज़ दोपहर 3 बजे ड्रॉ: सोमवार भाग्यतारा, मंगलवार स्त्री शक्ति, बुधवार धनलक्ष्मी, गुरुवार करुण्या प्लस, शुक्रवार सुवर्ण केरलम, शनिवार करुण्या, रविवार समृद्धि। रिज़ल्ट आमतौर पर ड्रॉ के लगभग एक घंटे बाद आता है।",
+        "kl_recent": "केरल के हाल के रिज़ल्ट", "game": "लॉटरी",
     },
 }
 
@@ -118,7 +136,8 @@ no_win_title no_win_body need_full_number you_won maybe_first also_matches discl
 claim_info claim_other_state source_note info_schedule_note no_draw_day upcoming_special amount_crore amount_lakh
 result_coming today more_dates draw_in live result_delayed tap_full_result draw_meta draw_meta_special find_in_result
 share_title share_more share_short tab_results tab_check results_subtitle watch_live no_result history_title history_hint
-history_search history_none history_count history_unavailable""".split()
+history_search history_none history_count history_unavailable state_kerala tier_unconfirmed kerala_source_note
+open_kerala_official""".split()
 
 
 def _unescape(s: str) -> str:
@@ -180,8 +199,9 @@ def ddmmyyyy(iso: str, sep: str = ".") -> str:
 
 
 def game(name: str) -> str:
-    """'DEAR RISE MONDAY WEEKLY LOTTERY' -> 'Dear Rise Monday' (titles read better than all caps)."""
-    return name.removesuffix(" WEEKLY LOTTERY").strip().title()
+    """'DEAR RISE MONDAY WEEKLY LOTTERY' -> 'Dear Rise Monday', 'SAMRUDHI SM-77' -> 'Samrudhi SM-77'."""
+    t = name.removesuffix(" WEEKLY LOTTERY").strip().title()
+    return re.sub(r"\b([A-Z][a-z])-(\d+)\b", lambda m: m.group(1).upper() + "-" + m.group(2), t)
 
 
 def verification(value: str) -> str:
@@ -262,7 +282,8 @@ class Site:
     # ---- text helpers ----
     def state(self, lang: str, st: str) -> str:
         s = self.s[lang]
-        return {"Nagaland": s["state_nagaland"], "Sikkim": s["state_sikkim"], "Punjab": s["state_punjab"]}.get(st, st)
+        return {"Nagaland": s["state_nagaland"], "Sikkim": s["state_sikkim"], "Punjab": s["state_punjab"],
+                "Kerala": s["state_kerala"]}.get(st, st)
 
     def tier_title(self, lang: str, rank: str) -> str:
         s = self.s[lang]
@@ -284,7 +305,7 @@ class Site:
     # ---- page shell ----
     def page(self, lang: str, path: str, title: str, desc: str, body: str, alternates: bool = True,
              data: list[dict] | None = None, live: bool = False, crumbs: list[tuple[str, str]] | None = None,
-             tab: str = "", image: str = "", modified: dt.datetime | None = None) -> str:
+             tab: str = "", image: str = "", modified: dt.datetime | None = None, wait: str = "") -> str:
         w, s = WEB[lang], self.s[lang]
         alt = ""
         if alternates:
@@ -311,12 +332,13 @@ class Site:
             f'<a href="{esc(self.url(l, path))}" hreflang="{l}" lang="{l}"{" aria-current=\"true\"" if l == lang else ""}>'
             f'{ {"en": "EN", "bn": "বাংলা", "hi": "हिन्दी"}[l] }</a>' for l in LANGS) if alternates else ""
         check_href = "#check" if 'id="check"' in body else self.url(nav_lang, "/") + "#check"
-        tabs = [("results", s["tab_results"], self.url(nav_lang, "/")), ("check", s["tab_check"], check_href),
-                ("old", w["old_h1"], self.url(nav_lang, "/old-results/"))]
+        tabs = [("results", s["tab_results"], self.url(nav_lang, "/")), ("kerala", w["kl_tab"], self.url(nav_lang, "/kerala/")),
+                ("check", s["tab_check"], check_href), ("old", w["old_h1"], self.url(nav_lang, "/old-results/"))]
         tabs_html = "".join(f'<a href="{esc(h)}"{" aria-current=\"page\"" if k == tab else ""}>{esc(n)}</a>' for k, n, h in tabs)
         data_json = json.dumps([{k: d[k] for k in ("id", "date", "time", "name", "format", "tiers") if k in d} for d in data or []],
                                ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
         live_attr = f' data-live="{esc(data[0]["date"])}"' if live and data else (f' data-live="{self.today}"' if live else "")
+        live_attr += f' data-wait="{esc(wait)}"' if wait else ""
         self._ads = 0  # the body is built: the next page starts its own ad count
         i18n = dict(self.s[lang], copied=w["copied"])
         foot = (f'<p class="links"><a href="{self.url("en", "/about/")}">{esc(w["about"])}</a><a href="{self.url("en", "/contact/")}">{esc(w["contact"])}</a>'
@@ -366,7 +388,7 @@ class Site:
     # ---- blocks ----
     def stub(self, lang: str, d: dict) -> str:
         s, tag = self.s[lang], TAG.get(d["slot"])
-        sub = s[tag] if tag else (s["special_tag"] if d.get("special") else "")
+        sub = s[tag] if tag else (WEB[lang]["kl_tab"] if d["slot"] == "KL" else s["special_tag"] if d.get("special") else "")
         return f'<div class="stub"><b>{esc(short_time(d["time"]))}</b>' + (f'<span>{esc(sub)}</span>' if sub else "") + "</div>"
 
     def sources(self, d: dict) -> dict[str, str]:
@@ -379,7 +401,8 @@ class Site:
     def source_buttons(self, lang: str, d: dict) -> str:
         s, src = self.s[lang], self.sources(d)
         b = [f'<a class="btn" rel="nofollow" href="{esc(src[k])}">{esc(s[t])}</a>'
-             for k, t in (("lotterysambad", "open_sheet"), ("official", "open_official_pdf")) if k in src]
+             for k, t in (("lotterysambad", "open_sheet"), ("official", "open_official_pdf"),
+                          ("officialSite", "open_kerala_official")) if k in src]
         return f'<p class="btns">{"".join(b)}</p>' if b else ""
 
     def verified(self, lang: str, d: dict) -> str:
@@ -395,7 +418,9 @@ class Site:
             nums = "".join(f"<li>{esc(n)}</li>" for n in t["numbers"])
             out.append(f'<div class="tier"><div class="th"><h3>{esc(self.tier_title(lang, t["rank"]))}</h3>'
                        f'<b>{esc(rupees(t["prize"]))}</b></div>'
-                       + (f'<p class="hint">{esc(hint)}</p>' if hint else "") + f'<ul class="nums {cls}">{nums}</ul></div>')
+                       + (f'<p class="hint">{esc(hint)}</p>' if hint else "")
+                       + ("" if t.get("confirmed", True) else f'<p class="warn">{esc(self.s[lang]["tier_unconfirmed"])}</p>')
+                       + f'<ul class="nums {cls}">{nums}</ul></div>')
             if ads and i == 1:
                 out.append(self.ad())
         return "".join(out)
@@ -420,12 +445,15 @@ class Site:
 
     def waiting(self, lang: str, slot: str, time: str, date: str) -> str:
         s = self.s[lang]
-        st = "Sikkim" if slot == "SK6PM" else "Nagaland"
+        kerala = slot == "KL"
+        st = "Kerala" if kerala else "Sikkim" if slot == "SK6PM" else "Nagaland"
         at = f"{date}T{time}:00+05:30"
+        title = f'{WEB[lang]["kl_tab"]} {short_time(time)}' if kerala else f"Dear {short_time(time)}"
+        live = "" if kerala else (f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(self.live_url)}">'
+                                  f'{esc(s["watch_live"])}</a></p>')   # Dear's official live stream only
         return (f'<section class="slip wait">{self.stub(lang, {"slot": slot, "time": time})}<div class="sb">'
-                f'<h2>Dear {esc(short_time(time))}</h2><p class="meta">{esc(fmt(s["state_lottery"], self.state(lang, st)))}</p>'
-                f'<p class="when" data-at="{at}">{esc(s["result_coming"])}</p>'
-                f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(self.live_url)}">{esc(s["watch_live"])}</a></p></div></section>')
+                f'<h2>{esc(title)}</h2><p class="meta">{esc(fmt(s["state_lottery"], self.state(lang, st)))}</p>'
+                f'<p class="when" data-at="{at}">{esc(s["result_coming"])}</p>{live}</div></section>')
 
     def sheet(self, lang: str, d: dict) -> str:
         """The draw page's header, shaped like the printed result sheet."""
@@ -458,10 +486,11 @@ class Site:
                 f'<div class="row">{a}<button type="button" class="cp" data-url="{esc(url)}">{esc(WEB[lang]["copy"])}</button>'
                 f'<button type="button" class="more" hidden data-url="{esc(url)}" data-text="{esc(text)}">{esc(s["share_more"])}</button></div></section>')
 
-    def checker(self, lang: str, title: str | None = None) -> str:
-        s = self.s[lang]
-        return (f'<section class="check" id="check"><h2>{esc(title or s["check_title"])}</h2><p class="hint">{esc(WEB[lang]["check_hint"])}</p>'
-                f'<form id="checkForm" class="row"><input id="ticket" aria-label="{esc(s["ticket_number"])}" placeholder="39C 06366" '
+    def checker(self, lang: str, title: str | None = None, kerala: bool = False) -> str:
+        s, w = self.s[lang], WEB[lang]
+        hint, example = (w["check_hint_kl"], "MM 289707") if kerala else (w["check_hint"], "39C 06366")
+        return (f'<section class="check" id="check"><h2>{esc(title or s["check_title"])}</h2><p class="hint">{esc(hint)}</p>'
+                f'<form id="checkForm" class="row"><input id="ticket" aria-label="{esc(s["ticket_number"])}" placeholder="{example}" '
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"><button>{esc(s["check_button"])}</button></form>'
                 f'<div id="checkRes" aria-live="polite"></div></section>')
 
@@ -551,14 +580,14 @@ class Site:
 
     def day_cards(self, lang: str, date: str) -> str:
         draws = self.ordered(self.days.get(date, []))
-        if date in self.index.get("noDraw", []):
-            return f'<p class="banner">{esc(self.s[lang]["no_draw_day"])}</p>'
+        no_dear = date in self.index.get("noDraw", [])   # the Nagaland calendar; Kerala draws regardless
         parts = [(d["time"], self.slip(lang, d)) for d in draws]
         have = {d["slot"] for d in draws}
-        for slot, time, _ in WEEKLY:  # show the empty slots of today so people know a result is coming
-            if date == self.today and slot not in have:
+        for slot, time, _ in WEEKLY + [("KL", "15:00", "kerala")]:  # today's empty slots: a result is coming
+            if date == self.today and slot not in have and not (no_dear and slot != "KL"):
                 parts.append((time, self.waiting(lang, slot, time, date)))
-        return "".join(h for _, h in sorted(parts, key=lambda p: p[0]))
+        banner = f'<p class="banner">{esc(self.s[lang]["no_draw_day"])}</p>' if no_dear else ""
+        return banner + "".join(h for _, h in sorted(parts, key=lambda p: p[0]))
 
     def write(self, out: pathlib.Path, lang: str, path: str, content: str, key: str | None = None):
         f = out / (LANGS[lang][1].lstrip("/")) / path.strip("/") / "index.html" if path != "/404" else out / "404.html"
@@ -611,20 +640,25 @@ class Site:
                         self.og_images[d["id"]] = self.og_image(out, d)
                     image = self.og_images[d["id"]]
                     t, g, first = short_time(d["time"]), game(d["name"]), d["tiers"][0]["numbers"][0]
-                    title = w["draw_title"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
+                    kl = d["slot"] == "KL"
+                    title = (w["kl_draw_title"].format(d=dd, g=g) if kl else
+                             w["draw_title"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g))
+                    desc = w["kl_desc"].format(d=dd, g=g, n=first) if kl else w["draw_desc"].format(g=g, d=dd, t=t, n=first)
                     sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
                                    f'<b>{esc(short_time(x["time"]))}</b>{esc(game(x["name"]).replace("Dear ", ""))}</a>' for x in draws)
                     body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d) + self.share(lang, d)
-                            + self.checker(lang, s["find_in_result"])
+                            + self.checker(lang, s["find_in_result"], kerala=kl)
+                            + (f'<p class="hint">{esc(s["kerala_source_note"])}</p>' if kl else "")
                             + f'<section class="card">{self.tiers(lang, d, ads=True)}</section>' + self.source_buttons(lang, d)
                             + f'<nav class="chips" aria-label="{esc(w["all_of_day"].format(d=dd))}">{sibs}</nav>'
                             + f'<p class="pn"><a class="btn" href="{self.url(lang, self.day_path(date))}">{esc(w["all_of_day"].format(d=dd))}</a></p>'
                             + self.app_promo(lang))
                     self.write(out, lang, self.draw_path(d),
-                               self.page(lang, self.draw_path(d), title, w["draw_desc"].format(g=g, d=dd, t=t, n=first), body,
+                               self.page(lang, self.draw_path(d), title, desc, body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
-                                         tab="results", image=image),
+                                         tab="kerala" if kl else "results", image=image),
                                key=f"draw:{d['id']}")
+            self.kerala_hub(out, lang)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
             self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
                                                              f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}{self.archive(lang)}{self.history(lang)}',
@@ -644,6 +678,31 @@ class Site:
                                                alternates=False))
         self.assets(out)
         return len(self.pages)
+
+    def kerala_hub(self, out: pathlib.Path, lang: str) -> None:
+        """/kerala/: today's Kerala result (or the countdown to it) and the recent draws."""
+        w, s = WEB[lang], self.s[lang]
+        kl = [d for x in self.dates for d in self.days[x] if d["slot"] == "KL" and d.get("tiers")]
+        today_done = any(d["date"] == self.today for d in kl)
+        latest = kl[0] if kl else None
+        cards = ("" if today_done else self.waiting(lang, "KL", "15:00", self.today)) + (self.slip(lang, latest) if latest else "")
+        rows = "".join(
+            f'<tr><th scope="row"><a href="{self.url(lang, self.day_path(d["date"]))}">{d["date"][8:]}.{d["date"][5:7]}</a>'
+            f'<small>{esc(w["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(game(d["name"]))}</td><td><a href="{self.url(lang, self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a></td></tr>'
+            for d in kl[:30])
+        table = (f'<h2 class="sub">{esc(w["kl_recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(w["date"])}</th>'
+                 f'<th>{esc(w["game"])}</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
+        d0 = ddmmyyyy(latest["date"]) if latest else ddmmyyyy(self.today)
+        body = (f'<div class="intro"><h1>{esc(w["kl_h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + cards + self.ad() + self.checker(lang, kerala=True) + table
+                + f'<p class="hint">{esc(s["kerala_source_note"])}</p>' + self.history(lang))
+        title = w["kl_title"].format(d=d0, g=game(latest["name"])) if latest else w["kl_h1"]
+        desc = w["kl_desc"].format(d=d0, g=game(latest["name"]), n=latest["tiers"][0]["numbers"][0]) if latest else w["kl_schedule"]
+        self.write(out, lang, "/kerala/", self.page(lang, "/kerala/", title, desc, body, data=kl[:7],
+                                                    crumbs=[(w["home"], "/"), (w["kl_tab"], "/kerala/")], tab="kerala",
+                                                    wait=f"{self.today}_KL" if not today_done else "",
+                                                    modified=self.updated if today_done else None), key="kerala")
 
     def app_promo(self, lang: str) -> str:
         # Only once the app is really on Google Play: never point people to something they cannot get.
@@ -717,7 +776,7 @@ background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px)
 .stub b{font-size:1.05rem;white-space:nowrap}.stub span{font-size:.78rem;opacity:.92}
 .sb{padding:14px 16px;min-width:0}.sb h2{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.01em}.sb h2 a{color:var(--fg);text-decoration:none}
 .meta{color:var(--mut);font-size:.85rem;margin:2px 0 10px}.sb>p:not(.meta):not(.eyebrow):not(.first){margin-top:6px}
-.ok{color:var(--ok);font-style:normal;font-weight:700;white-space:nowrap}
+.ok{color:var(--ok);font-style:normal;font-weight:700;white-space:nowrap}.warn{background:var(--pink);color:var(--onpink);border-radius:8px;padding:6px 10px;font-size:.85rem;margin-top:6px}
 .first{font-weight:800;font-size:clamp(1.7rem,9vw,2.7rem);line-height:1.1;color:var(--red);word-spacing:.28em;white-space:nowrap;font-variant-numeric:tabular-nums;margin-top:2px}
 .all{grid-column:1/-1;border-top:1px dashed var(--line)}
 .all>summary,.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -749,7 +808,7 @@ background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px)
 .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.btn{display:inline-flex;align-items:center;min-height:42px;padding:8px 16px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--fg);text-decoration:none;font-weight:600;font-size:.92rem}
 .pn{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:14px 0}
 .app{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:12px 0;font-weight:600}
-.faq{margin:24px 0 8px}.faq h2{font-size:1.1rem;margin-bottom:8px}.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0}
+h2.sub{font-size:1.1rem;margin:22px 0 4px}.faq{margin:24px 0 8px}.faq h2{font-size:1.1rem;margin-bottom:8px}.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:8px 0}
 .faq summary{padding:12px 16px;font-weight:600}.faq details p{padding:0 16px 12px}
 .tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;margin:14px 0}table{width:100%;border-collapse:collapse;font-size:.92rem}
 th,td{padding:10px 6px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}th:first-child{padding-left:14px}td:last-child{padding-right:12px}thead th{border-top:0;background:var(--soft);color:var(--mut);font-size:.8rem}
@@ -792,7 +851,7 @@ var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v)
 var cs=D.map(function(d){return check(k,d)}).filter(Boolean),won=cs.filter(function(c){return c.w.length});
 won.forEach(function(c){var x=c.w[0],e=box(x.nf?t("maybe_first"):t("you_won"));e[1].appendChild(el("strong",null,tier(x.T.rank)+" · "+rup(x.T.prize)));
 e[1].appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)));
-if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));out.appendChild(e[0])});
+if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
 if(!won.length){var e=box(t("no_win_title",show(k)),"no");e[1].appendChild(el("div","hint",t(cs.length===1&&S.no_win_body_one?"no_win_body_one":"no_win_body",cs.length)));out.appendChild(e[0])}
 var dg=k.dg;document.querySelectorAll(".nums li").forEach(function(s){var x=s.textContent,hit=dg.length>=x.length&&dg.slice(-x.length)===x;
 s.classList.toggle("hit",hit);if(hit){var dt=s.closest("details");if(dt)dt.open=true}});
@@ -829,6 +888,10 @@ var day=document.body.dataset.live;
 if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
 setInterval(function(){if(document.hidden)return;fetch(url,{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
 var n=j.draws.filter(function(d){return d.date===day&&d.tiers&&d.tiers.length}).length;if(n>shown)location.reload()}).catch(function(){})},60000)}
+// A page waiting for one draw (Kerala's page before 4 PM) reloads once that draw is in the feed.
+var wid=document.body.dataset.wait;
+if(wid)setInterval(function(){if(document.hidden)return;fetch(feed("today.json"),{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
+if(j.draws.some(function(d){return d.id===wid&&d.tiers&&d.tiers.length}))location.reload()}).catch(function(){})},60000);
 })();
 """
 

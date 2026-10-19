@@ -8,7 +8,7 @@
     <string name="tab_info">गाइड</string>
 
     <string name="disclaimer_title">महत्त्वाचे</string>
-    <string name="disclaimer_body">LottoDost हे एक स्वतंत्र ॲप आहे. नागालँड, सिक्कीम किंवा पंजाब सरकार आणि कोणत्याही लॉटरी विभागाशी याचा काहीही संबंध नाही. आम्ही तिकिटे विकत नाही आणि कधीही पैसे मागत नाही. निकाल सार्वजनिक स्रोतांमधून घेतले जातात, म्हणून बक्षीस घेण्यापूर्वी सरकारी निकालाशी नक्की जुळवून पाहा. प्रत्येक राज्यात लॉटरी तिकीट खरेदी करण्याची परवानगी नाही. फक्त 18 वर्षे किंवा त्याहून अधिक वयाच्या व्यक्तींसाठी.</string>
+    <string name="disclaimer_body">LottoDost हे एक स्वतंत्र ॲप आहे. नागालँड, सिक्कीम, पंजाब किंवा केरळ सरकार आणि कोणत्याही लॉटरी विभागाशी याचा काहीही संबंध नाही. आम्ही तिकिटे विकत नाही आणि कधीही पैसे मागत नाही. निकाल सार्वजनिक स्रोतांमधून घेतले जातात, म्हणून बक्षीस घेण्यापूर्वी सरकारी निकालाशी नक्की जुळवून पाहा. प्रत्येक राज्यात लॉटरी तिकीट खरेदी करण्याची परवानगी नाही. फक्त 18 वर्षे किंवा त्याहून अधिक वयाच्या व्यक्तींसाठी.</string>
     <string name="disclaimer_ok">ठीक आहे, समजले</string>
     <string name="safety_title">फसवणुकीपासून सावध</string>
     <string name="safety_body">कोणतेही ॲप, एजंट किंवा WhatsApp ग्रुप लॉटरीचा नंबर आधीच सांगू शकत नाही किंवा फिक्सही करू शकत नाही. LottoDost तिकिटे विकत नाही आणि कधीही पैसे, बँक किंवा UPI तपशील मागत नाही. “पक्का नंबर” किंवा “फिक्स नंबर” देणारी प्रत्येक ऑफर म्हणजे फसवणूक.</string>
@@ -27,11 +27,17 @@
     <string name="today">आज</string>
     <string name="more_dates">आणखी तारखा</string>
     <string name="no_draw_day">या दिवशी सोडत झाली नाही.</string>
-    <string name="source_note">स्रोत: lotterysambad.com आणि nagalandlotteries.com वरील सरकारी राजपत्र. हे सरकारी ॲप नाही.</string>
+    <string name="source_note">स्रोत: lotterysambad.com आणि nagalandlotteries.com वरील सरकारी राजपत्र; केरळचे निकाल सरकारी निकालाच्या सार्वजनिक प्रतींमधून. हे सरकारी ॲप नाही.</string>
     <string name="state_lottery">%1$s राज्य लॉटरी</string>
     <string name="state_nagaland">नागालँड</string>
     <string name="state_sikkim">सिक्कीम</string>
     <string name="state_punjab">पंजाब</string>
+    <string name="state_kerala">केरळ</string>
+    <string name="lottery_dear">डिअर</string>
+    <string name="lottery_kerala">केरळ</string>
+    <string name="tier_unconfirmed">दोन स्रोतांतून अजून खात्री झालेली नाही — सरकारी निकाल पाहा.</string>
+    <string name="kerala_source_note">केरळचे निकाल सरकारी निकालाच्या सार्वजनिक प्रतींमधून घेतले जातात आणि दोन प्रती जुळल्यावरच दाखवले जातात. बक्षीस घेण्यापूर्वी सरकारी निकाल नक्की पाहा.</string>
+    <string name="open_kerala_official">केरळ राज्य लॉटरी (सरकारी)</string>
     <string name="tag_morning">मॉर्निंग</string>
     <string name="tag_day">डे</string>
     <string name="tag_night">नाइट</string>

@@ -8,7 +8,7 @@
     <string name="tab_info">गाइड</string>
 
     <string name="disclaimer_title">ज़रूरी बात</string>
-    <string name="disclaimer_body">LottoDost एक स्वतंत्र ऐप है। नागालैंड, सिक्किम या पंजाब सरकार और किसी भी लॉटरी विभाग से इसका कोई संबंध नहीं है। हम टिकट नहीं बेचते और कभी पैसे नहीं माँगते। रिज़ल्ट सार्वजनिक स्रोतों से लिए जाते हैं, इसलिए इनाम लेने से पहले सरकारी रिज़ल्ट से ज़रूर मिला लें। हर राज्य में लॉटरी टिकट ख़रीदने की इजाज़त नहीं है। सिर्फ़ 18 साल या उससे ज़्यादा उम्र वालों के लिए।</string>
+    <string name="disclaimer_body">LottoDost एक स्वतंत्र ऐप है। नागालैंड, सिक्किम, पंजाब या केरल सरकार और किसी भी लॉटरी विभाग से इसका कोई संबंध नहीं है। हम टिकट नहीं बेचते और कभी पैसे नहीं माँगते। रिज़ल्ट सार्वजनिक स्रोतों से लिए जाते हैं, इसलिए इनाम लेने से पहले सरकारी रिज़ल्ट से ज़रूर मिला लें। हर राज्य में लॉटरी टिकट ख़रीदने की इजाज़त नहीं है। सिर्फ़ 18 साल या उससे ज़्यादा उम्र वालों के लिए।</string>
     <string name="disclaimer_ok">ठीक है, समझ आ गया</string>
     <string name="safety_title">धोखे से बचें</string>
     <string name="safety_body">कोई भी ऐप, एजेंट या WhatsApp ग्रुप लॉटरी का नंबर पहले से नहीं बता सकता और न ही फ़िक्स कर सकता है। LottoDost न टिकट बेचता है, न कभी पैसे, बैंक या UPI डिटेल माँगता है। “पक्का नंबर” या “फ़िक्स नंबर” वाला हर ऑफ़र फ़्रॉड है।</string>
@@ -27,11 +27,17 @@
     <string name="today">आज</string>
     <string name="more_dates">और तारीख़ें</string>
     <string name="no_draw_day">इस दिन कोई ड्रॉ नहीं हुआ।</string>
-    <string name="source_note">स्रोत: lotterysambad.com और nagalandlotteries.com पर सरकारी गज़ट। यह सरकारी ऐप नहीं है।</string>
+    <string name="source_note">स्रोत: lotterysambad.com और nagalandlotteries.com पर सरकारी गज़ट; केरल के रिज़ल्ट सरकारी रिज़ल्ट की सार्वजनिक कॉपियों से। यह सरकारी ऐप नहीं है।</string>
     <string name="state_lottery">%1$s स्टेट लॉटरी</string>
     <string name="state_nagaland">नागालैंड</string>
     <string name="state_sikkim">सिक्किम</string>
     <string name="state_punjab">पंजाब</string>
+    <string name="state_kerala">केरल</string>
+    <string name="lottery_dear">डियर</string>
+    <string name="lottery_kerala">केरल</string>
+    <string name="tier_unconfirmed">दो स्रोतों से अभी पक्का नहीं हुआ — सरकारी रिज़ल्ट से मिलाएँ।</string>
+    <string name="kerala_source_note">केरल के रिज़ल्ट सरकारी रिज़ल्ट की सार्वजनिक कॉपियों से लिए जाते हैं और दो कॉपियाँ मिलने पर ही दिखाए जाते हैं। इनाम लेने से पहले सरकारी रिज़ल्ट ज़रूर देखें।</string>
+    <string name="open_kerala_official">केरल राज्य लॉटरी (सरकारी)</string>
     <string name="tag_morning">मॉर्निंग</string>
     <string name="tag_day">डे</string>
     <string name="tag_night">नाइट</string>

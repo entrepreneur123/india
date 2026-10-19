@@ -8,7 +8,7 @@
     <string name="tab_info">ਗਾਈਡ</string>
 
     <string name="disclaimer_title">ਜ਼ਰੂਰੀ ਗੱਲ</string>
-    <string name="disclaimer_body">LottoDost ਇੱਕ ਸੁਤੰਤਰ ਐਪ ਹੈ। ਨਾਗਾਲੈਂਡ, ਸਿੱਕਮ ਜਾਂ ਪੰਜਾਬ ਸਰਕਾਰ ਅਤੇ ਕਿਸੇ ਵੀ ਲਾਟਰੀ ਵਿਭਾਗ ਨਾਲ ਇਸ ਦਾ ਕੋਈ ਸਬੰਧ ਨਹੀਂ ਹੈ। ਅਸੀਂ ਟਿਕਟਾਂ ਨਹੀਂ ਵੇਚਦੇ ਅਤੇ ਕਦੇ ਪੈਸੇ ਨਹੀਂ ਮੰਗਦੇ। ਨਤੀਜੇ ਜਨਤਕ ਸਰੋਤਾਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਜ਼ਰੂਰ ਮਿਲਾ ਲਓ। ਹਰ ਰਾਜ ਵਿੱਚ ਲਾਟਰੀ ਟਿਕਟ ਖਰੀਦਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਸਿਰਫ਼ 18 ਸਾਲ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਉਮਰ ਵਾਲਿਆਂ ਲਈ।</string>
+    <string name="disclaimer_body">LottoDost ਇੱਕ ਸੁਤੰਤਰ ਐਪ ਹੈ। ਨਾਗਾਲੈਂਡ, ਸਿੱਕਮ, ਪੰਜਾਬ ਜਾਂ ਕੇਰਲ ਸਰਕਾਰ ਅਤੇ ਕਿਸੇ ਵੀ ਲਾਟਰੀ ਵਿਭਾਗ ਨਾਲ ਇਸ ਦਾ ਕੋਈ ਸਬੰਧ ਨਹੀਂ ਹੈ। ਅਸੀਂ ਟਿਕਟਾਂ ਨਹੀਂ ਵੇਚਦੇ ਅਤੇ ਕਦੇ ਪੈਸੇ ਨਹੀਂ ਮੰਗਦੇ। ਨਤੀਜੇ ਜਨਤਕ ਸਰੋਤਾਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ, ਇਸ ਲਈ ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜੇ ਨਾਲ ਜ਼ਰੂਰ ਮਿਲਾ ਲਓ। ਹਰ ਰਾਜ ਵਿੱਚ ਲਾਟਰੀ ਟਿਕਟ ਖਰੀਦਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਸਿਰਫ਼ 18 ਸਾਲ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਉਮਰ ਵਾਲਿਆਂ ਲਈ।</string>
     <string name="disclaimer_ok">ਠੀਕ ਹੈ, ਸਮਝ ਆ ਗਈ</string>
     <string name="safety_title">ਠੱਗੀ ਤੋਂ ਬਚੋ</string>
     <string name="safety_body">ਕੋਈ ਵੀ ਐਪ, ਏਜੰਟ ਜਾਂ WhatsApp ਗਰੁੱਪ ਲਾਟਰੀ ਦਾ ਨੰਬਰ ਪਹਿਲਾਂ ਨਹੀਂ ਦੱਸ ਸਕਦਾ, ਨਾ ਹੀ ਫਿਕਸ ਕਰ ਸਕਦਾ ਹੈ। LottoDost ਨਾ ਟਿਕਟਾਂ ਵੇਚਦਾ ਹੈ, ਨਾ ਕਦੇ ਪੈਸੇ, ਬੈਂਕ ਜਾਂ UPI ਦੀ ਜਾਣਕਾਰੀ ਮੰਗਦਾ ਹੈ। “ਪੱਕਾ ਨੰਬਰ” ਜਾਂ “ਫਿਕਸ ਨੰਬਰ” ਵਾਲੀ ਹਰ ਪੇਸ਼ਕਸ਼ ਠੱਗੀ ਹੈ।</string>
@@ -27,11 +27,17 @@
     <string name="today">ਅੱਜ</string>
     <string name="more_dates">ਹੋਰ ਤਰੀਕਾਂ</string>
     <string name="no_draw_day">ਇਸ ਦਿਨ ਕੋਈ ਡਰਾਅ ਨਹੀਂ ਹੋਇਆ।</string>
-    <string name="source_note">ਸਰੋਤ: lotterysambad.com ਅਤੇ nagalandlotteries.com ’ਤੇ ਸਰਕਾਰੀ ਗਜ਼ਟ। ਇਹ ਸਰਕਾਰੀ ਐਪ ਨਹੀਂ ਹੈ।</string>
+    <string name="source_note">ਸਰੋਤ: lotterysambad.com ਅਤੇ nagalandlotteries.com ’ਤੇ ਸਰਕਾਰੀ ਗਜ਼ਟ; ਕੇਰਲ ਦੇ ਨਤੀਜੇ ਸਰਕਾਰੀ ਨਤੀਜੇ ਦੀਆਂ ਜਨਤਕ ਕਾਪੀਆਂ ਤੋਂ। ਇਹ ਸਰਕਾਰੀ ਐਪ ਨਹੀਂ ਹੈ।</string>
     <string name="state_lottery">%1$s ਸਟੇਟ ਲਾਟਰੀ</string>
     <string name="state_nagaland">ਨਾਗਾਲੈਂਡ</string>
     <string name="state_sikkim">ਸਿੱਕਮ</string>
     <string name="state_punjab">ਪੰਜਾਬ</string>
+    <string name="state_kerala">ਕੇਰਲ</string>
+    <string name="lottery_dear">ਡੀਅਰ</string>
+    <string name="lottery_kerala">ਕੇਰਲ</string>
+    <string name="tier_unconfirmed">ਦੋ ਸਰੋਤਾਂ ਤੋਂ ਅਜੇ ਪੱਕਾ ਨਹੀਂ ਹੋਇਆ — ਸਰਕਾਰੀ ਨਤੀਜਾ ਵੇਖੋ।</string>
+    <string name="kerala_source_note">ਕੇਰਲ ਦੇ ਨਤੀਜੇ ਸਰਕਾਰੀ ਨਤੀਜੇ ਦੀਆਂ ਜਨਤਕ ਕਾਪੀਆਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ ਅਤੇ ਦੋ ਕਾਪੀਆਂ ਮਿਲਣ \'ਤੇ ਹੀ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ। ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜਾ ਜ਼ਰੂਰ ਵੇਖੋ।</string>
+    <string name="open_kerala_official">ਕੇਰਲ ਰਾਜ ਲਾਟਰੀ (ਸਰਕਾਰੀ)</string>
     <string name="tag_morning">ਮਾਰਨਿੰਗ</string>
     <string name="tag_day">ਡੇ</string>
     <string name="tag_night">ਨਾਈਟ</string>

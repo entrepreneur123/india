@@ -8,7 +8,7 @@
     <string name="tab_info">গাইড</string>
 
     <string name="disclaimer_title">জরুরি কথা</string>
-    <string name="disclaimer_body">LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড, সিকিম বা পাঞ্জাব সরকার কিংবা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না, কখনো টাকাও চাই না। রেজাল্ট সর্বজনীন সূত্র থেকে নেওয়া হয়, তাই পুরস্কার নেওয়ার আগে অবশ্যই সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনার অনুমতি নেই। শুধুমাত্র 18 বছর বা তার বেশি বয়সিদের জন্য।</string>
+    <string name="disclaimer_body">LottoDost একটি স্বাধীন অ্যাপ। নাগাল্যান্ড, সিকিম, পাঞ্জাব বা কেরালা সরকার কিংবা কোনো লটারি দপ্তরের সঙ্গে এর কোনো সম্পর্ক নেই। আমরা টিকিট বিক্রি করি না, কখনো টাকাও চাই না। রেজাল্ট সর্বজনীন সূত্র থেকে নেওয়া হয়, তাই পুরস্কার নেওয়ার আগে অবশ্যই সরকারি রেজাল্টের সঙ্গে মিলিয়ে নিন। সব রাজ্যে লটারি টিকিট কেনার অনুমতি নেই। শুধুমাত্র 18 বছর বা তার বেশি বয়সিদের জন্য।</string>
     <string name="disclaimer_ok">ঠিক আছে, বুঝেছি</string>
     <string name="safety_title">প্রতারণা থেকে সাবধান</string>
     <string name="safety_body">কোনো অ্যাপ, এজেন্ট বা WhatsApp গ্রুপ লটারির নম্বর আগে থেকে বলতে পারে না, ফিক্সও করতে পারে না। LottoDost টিকিট বিক্রি করে না, আর কখনো টাকা, ব্যাংক বা UPI-এর তথ্য চায় না। “পাক্কা নম্বর” বা “ফিক্সড নম্বর”-এর যেকোনো অফার মানেই প্রতারণা।</string>
@@ -27,11 +27,17 @@
     <string name="today">আজ</string>
     <string name="more_dates">আরও তারিখ</string>
     <string name="no_draw_day">এই দিনে কোনো ড্র হয়নি।</string>
-    <string name="source_note">সূত্র: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট। এটি সরকারি অ্যাপ নয়।</string>
+    <string name="source_note">সূত্র: lotterysambad.com এবং nagalandlotteries.com-এর সরকারি গেজেট; কেরালার রেজাল্ট সরকারি রেজাল্টের প্রকাশ্য কপি থেকে। এটি সরকারি অ্যাপ নয়।</string>
     <string name="state_lottery">%1$s স্টেট লটারি</string>
     <string name="state_nagaland">নাগাল্যান্ড</string>
     <string name="state_sikkim">সিকিম</string>
     <string name="state_punjab">পাঞ্জাব</string>
+    <string name="state_kerala">কেরালা</string>
+    <string name="lottery_dear">ডিয়ার</string>
+    <string name="lottery_kerala">কেরালা</string>
+    <string name="tier_unconfirmed">দুটি সূত্রে এখনও মেলানো যায়নি — সরকারি রেজাল্ট দেখে নিন।</string>
+    <string name="kerala_source_note">কেরালার রেজাল্ট সরকারি রেজাল্টের প্রকাশ্য কপি থেকে নেওয়া হয়, দুটি কপি মিললে তবেই দেখানো হয়। পুরস্কার নেওয়ার আগে সরকারি রেজাল্ট অবশ্যই দেখুন।</string>
+    <string name="open_kerala_official">কেরালা রাজ্য লটারি (সরকারি)</string>
     <string name="tag_morning">মর্নিং</string>
     <string name="tag_day">ডে</string>
     <string name="tag_night">নাইট</string>

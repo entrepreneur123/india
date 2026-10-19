@@ -140,3 +140,29 @@ def test_number_history_and_date_search_are_on_the_page(tmp_path, monkeypatch):
     assert 'id="histForm"' in (out / "index.html").read_text()
     old = (out / "old-results/index.html").read_text()
     assert 'id="dateForm"' in old and 'min="2026-10-12" max="2026-10-18"' in old
+
+
+def test_kerala_hub_and_draw_page(tmp_path, monkeypatch):
+    kl = {"id": "2026-10-17_KL", "slot": "KL", "lottery": "kerala", "date": "2026-10-17", "time": "15:00", "state": "Kerala",
+          "name": "KARUNYA KR-772", "drawNo": 772, "format": "B6", "price": 0, "special": False, "verified": False, "status": "OK",
+          "tiers": [{"rank": "1", "prize": 10000000, "match": "EXACT", "numbers": ["KG 709965"]},
+                    {"rank": "CONS", "prize": 5000, "match": "EXACT", "numbers": ["KA 709965"]},
+                    {"rank": "9", "prize": 100, "match": "LAST4", "numbers": ["9865"], "confirmed": False}],
+          "sources": [{"kind": "copy", "url": "https://g.test/a.pdf"}, {"kind": "officialSite", "url": "https://statelottery.kerala.gov.in/"}]}
+    orig = sitegen.Site.__init__
+
+    def init(self, *a, **k):
+        orig(self, *a, **k)
+        self.days.setdefault("2026-10-17", []).append(kl)
+        self.dates = sorted(self.days, reverse=True)
+    monkeypatch.setattr(sitegen.Site, "__init__", init)
+    out = build(tmp_path, monkeypatch)
+    hub = (out / "kerala/index.html").read_text()
+    assert "<title>Kerala Lottery Result Today 17.10.2026 – Karunya KR-772 3 PM</title>" in hub
+    assert "KG 709965" in hub and 'placeholder="MM 289707"' in hub
+    page = (out / "result/17-10-2026/kerala/index.html").read_text()
+    assert "<title>Kerala Lottery Result 17.10.2026 – Karunya KR-772</title>" in page
+    assert "Not yet confirmed by two sources" in page and "statelottery.kerala.gov.in" in page
+    assert "https://example.in/kerala/" in (out / "sitemap.xml").read_text()
+    day = (out / "result/17-10-2026/index.html").read_text()
+    assert day.index("<b>1 PM</b>") < day.index("<b>3 PM</b>") < day.index("<b>6 PM</b>")   # in draw-time order

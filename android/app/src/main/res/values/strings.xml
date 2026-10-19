@@ -8,7 +8,7 @@
     <string name="tab_info">Guide</string>
 
     <string name="disclaimer_title">Important</string>
-    <string name="disclaimer_body">LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.</string>
+    <string name="disclaimer_body">LottoDost is an independent app. It is not affiliated with or endorsed by the Government of Nagaland, the Government of Sikkim, the Government of Punjab, the Government of Kerala or any lottery department. We do not sell tickets and never ask for money. Results are collected from public sources — always verify with the official result before claiming a prize. Buying lottery tickets is not allowed in every state. For adults (18+) only.</string>
     <string name="disclaimer_ok">I understand</string>
     <string name="safety_title">Stay safe</string>
     <string name="safety_body">No app, agent or WhatsApp group can predict or fix lottery numbers. LottoDost never sells tickets and never asks for money, bank or UPI details. Treat any \"guaranteed number\" offer as fraud.</string>
@@ -27,11 +27,17 @@
     <string name="today">Today</string>
     <string name="more_dates">More dates</string>
     <string name="no_draw_day">No draw was held on this day.</string>
-    <string name="source_note">Source: lotterysambad.com and the official gazette at nagalandlotteries.com. Not an official app.</string>
+    <string name="source_note">Source: lotterysambad.com and the official gazette at nagalandlotteries.com; Kerala results from public copies of the official result. Not an official app.</string>
     <string name="state_lottery">%1$s State Lottery</string>
     <string name="state_nagaland">Nagaland</string>
     <string name="state_sikkim">Sikkim</string>
     <string name="state_punjab">Punjab</string>
+    <string name="state_kerala">Kerala</string>
+    <string name="lottery_dear">Dear</string>
+    <string name="lottery_kerala">Kerala</string>
+    <string name="tier_unconfirmed">Not yet confirmed by two sources — check the official result.</string>
+    <string name="kerala_source_note">Kerala results come from public copies of the official result and are shown only when two copies agree. Check the official result before claiming a prize.</string>
+    <string name="open_kerala_official">Kerala State Lotteries (official)</string>
     <string name="tag_morning">Morning</string>
     <string name="tag_day">Day</string>
     <string name="tag_night">Night</string>
