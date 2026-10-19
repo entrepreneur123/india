@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -153,8 +154,9 @@ object Flavor {
                 )
             }
             Box(
-                Modifier.align(Alignment.TopEnd).padding(top = 48.dp, end = 16.dp).size(96.dp, 128.dp)
-                    .clip(RoundedCornerShape(12.dp)).background(Color(0xFF333333)),
+                Modifier.align(Alignment.TopEnd).padding(top = 112.dp, end = 16.dp).size(108.dp, 152.dp)
+                    .clip(RoundedCornerShape(20.dp)).background(Color(0xFF1E1E27))
+                    .border(1.dp, Color.White.copy(alpha = 0.25f), RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 if (cam) AndroidView({ local }, Modifier.fillMaxSize()) else Avatar(me, 56.dp)

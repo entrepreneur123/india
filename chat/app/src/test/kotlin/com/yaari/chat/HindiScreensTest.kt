@@ -55,7 +55,7 @@ class HindiScreensTest {
         compose.onNodeWithText("लड़कियाँ").performClick()
         waitFor("Plus चाहिए")
         shot("04_paywall")
-        compose.onNodeWithText("अभी नहीं").performClick()
+        compose.onNode(androidx.compose.ui.test.hasContentDescription("अभी नहीं")).performClick()
         compose.onNodeWithText("चैट शुरू करें").performClick()
         waitFor("प्रोफ़ाइल देखें")
         shot("05_chat")

@@ -4,92 +4,76 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.rounded.Settings
-import com.yaari.chat.domain.flagOf
-import kotlin.math.cos
-import kotlin.math.sin
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ChatBubble
-import androidx.compose.material.icons.rounded.Groups
+import androidx.compose.material.icons.outlined.Forum
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Forum
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.WorkspacePremium
-import androidx.compose.material.icons.outlined.ChatBubbleOutline
-import androidx.compose.material.icons.outlined.Groups
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Shuffle
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
+import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.Target
 
@@ -137,7 +121,7 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
                 )
             }
         }
-        BottomBar(s, me, dark, vm::selectTab)
+        BottomBar(s, me, dark, bg, vm::selectTab)
     }
 }
 
@@ -153,30 +137,34 @@ fun pushPop(forward: Boolean): ContentTransform {
 
 private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, ROOM }
 
+// ---- Bottom bar: Rooms · (Random) · Recent · Me, with the raised gradient Random button -----------
+
 @Composable
-private fun BottomBar(s: UiState, me: Profile, dark: Boolean, onSelect: (Tab) -> Unit) {
-    val bg = if (dark) Brand.Night else MaterialTheme.colorScheme.background
+private fun BottomBar(s: UiState, me: Profile, dark: Boolean, bg: Color, onSelect: (Tab) -> Unit) {
+    val line = if (dark) Color.White.copy(alpha = 0.06f) else MaterialTheme.colorScheme.outlineVariant
     Column(Modifier.background(bg).navigationBarsPadding()) {
-        HorizontalDivider(color = if (dark) Color.White.copy(alpha = 0.08f) else MaterialTheme.colorScheme.outlineVariant)
-        Row(Modifier.fillMaxWidth().height(58.dp), verticalAlignment = Alignment.CenterVertically) {
-            NavItem(s.tab == Tab.ROOMS, dark, Icons.Rounded.Groups, Icons.Outlined.Groups, R.string.tab_rooms) { onSelect(Tab.ROOMS) }
-            NavItem(s.tab == Tab.RANDOM, dark, Icons.Rounded.Shuffle, Icons.Outlined.Shuffle, R.string.tab_random) { onSelect(Tab.RANDOM) }
-            NavItem(s.tab == Tab.RECENT, dark, Icons.Rounded.ChatBubble, Icons.Outlined.ChatBubbleOutline, R.string.tab_recent, badge = s.incomingRequests) {
+        Box(Modifier.fillMaxWidth().height(1.dp).background(line))
+        Row(Modifier.fillMaxWidth().height(62.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            NavItem(s.tab == Tab.ROOMS, dark, Icons.Rounded.Forum, Icons.Outlined.Forum, R.string.tab_rooms) { onSelect(Tab.ROOMS) }
+            RandomButton(s.tab == Tab.RANDOM, dark, bg) { onSelect(Tab.RANDOM) }
+            NavItem(s.tab == Tab.RECENT, dark, Icons.Rounded.History, Icons.Outlined.History, R.string.tab_recent, badge = s.incomingRequests) {
                 onSelect(Tab.RECENT)
             }
             // Instagram-style: your own photo is the profile tab.
             val selected = s.tab == Tab.ME
             val tick = rememberTick()
+            val interaction = remember { MutableInteractionSource() }
             Column(
-                Modifier.weight(1f).clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Tab) { if (!selected) tick(); onSelect(Tab.ME) },
-                horizontalAlignment = Alignment.CenterHorizontally,
+                Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.9f)
+                    .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onSelect(Tab.ME) },
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
             ) {
                 Box(
                     Modifier.size(28.dp).bounceOn(selected).then(
                         if (selected) Modifier.border(2.dp, if (dark) Color.White else MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier,
                     ),
                     contentAlignment = Alignment.Center,
-                ) { Avatar(me, 24.dp) }
+                ) { Avatar(me, 22.dp) }
                 NavLabel(R.string.tab_me, selected, dark)
             }
         }
@@ -184,110 +172,135 @@ private fun BottomBar(s: UiState, me: Profile, dark: Boolean, onSelect: (Tab) ->
 }
 
 @Composable
-private fun androidx.compose.foundation.layout.RowScope.NavItem(
+private fun RowScope.RandomButton(selected: Boolean, dark: Boolean, bg: Color, onClick: () -> Unit) {
+    val tick = rememberTick()
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        Modifier.weight(1f).height(56.dp)
+            .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onClick() },
+    ) {
+        // Same slot as the other tabs' icons, so the label lines up with theirs.
+        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Spacer(Modifier.height(26.dp))
+            NavLabel(R.string.tab_random, selected, dark)
+        }
+        // Raised above the bar, ringed in the bar's own colour so it looks cut out of it.
+        Box(
+            Modifier.align(Alignment.TopCenter).offset(y = (-26).dp).pressScale(interaction, 0.9f).size(66.dp)
+                .glow(radius = 16.dp, offsetY = 10.dp, inset = 12.dp, alpha = 0.75f)
+                .clip(CircleShape).background(bg).padding(5.dp).clip(CircleShape).background(Brand.gradient),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Rounded.Shuffle, null, Modifier.size(25.dp).bounceOn(selected), tint = Color.White)
+        }
+    }
+}
+
+@Composable
+private fun RowScope.NavItem(
     selected: Boolean, dark: Boolean, on: ImageVector, off: ImageVector, label: Int, badge: Int = 0, onClick: () -> Unit,
 ) {
     val tick = rememberTick()
+    val interaction = remember { MutableInteractionSource() }
     Column(
-        Modifier.weight(1f).clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Tab) { if (!selected) tick(); onClick() },
-        horizontalAlignment = Alignment.CenterHorizontally,
+        Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.9f)
+            .clickable(interaction, indication = null, role = Role.Tab) { if (!selected) tick(); onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
     ) {
-        val tint = when {
-            dark -> if (selected) Color.White else Color.White.copy(alpha = 0.55f)
-            else -> if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-        }
-        BadgedBox(badge = { if (badge > 0) Badge(containerColor = Brand.Pink) { Text("$badge") } }) {
-            Icon(if (selected) on else off, null, Modifier.size(28.dp).bounceOn(selected), tint = tint)
+        Box {
+            Icon(if (selected) on else off, null, Modifier.size(26.dp).bounceOn(selected), tint = navColor(selected, dark))
+            if (badge > 0) {
+                Box(
+                    Modifier.align(Alignment.TopEnd).offset(x = 8.dp, y = (-4).dp).height(17.dp).padding(0.dp)
+                        .clip(CircleShape).background(if (dark) Brand.Night else MaterialTheme.colorScheme.background).padding(1.5.dp)
+                        .clip(CircleShape).background(Brand.gradient).padding(horizontal = 4.5.dp),
+                    contentAlignment = Alignment.Center,
+                ) { Text("$badge", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta) }
+            }
         }
         NavLabel(label, selected, dark)
     }
 }
 
 @Composable
-private fun NavLabel(label: Int, selected: Boolean, dark: Boolean) {
-    val color = when {
-        dark -> if (selected) Color.White else Color.White.copy(alpha = 0.55f)
-        else -> if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-    }
+private fun navColor(selected: Boolean, dark: Boolean) = when {
+    dark -> if (selected) Color.White else Color.White.copy(alpha = 0.5f)
+    else -> if (selected) MaterialTheme.colorScheme.onSurface else Color(0xFF9A9AA5)
+}
+
+@Composable
+private fun NavLabel(label: Int, selected: Boolean, dark: Boolean, modifier: Modifier = Modifier) {
     Text(
-        stringResource(label), color = color, style = MaterialTheme.typography.labelSmall,
-        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium, maxLines = 1,
+        stringResource(label), modifier.padding(top = 2.dp), color = navColor(selected, dark), style = MaterialTheme.typography.labelSmall,
+        fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1,
     )
 }
 
-/** A quick springy pop when something becomes selected (tab icons). */
-private fun Modifier.bounceOn(selected: Boolean): Modifier = composed {
-    val scale = remember { Animatable(1f) }
-    LaunchedEffect(selected) {
-        if (selected) {
-            scale.snapTo(0.78f)
-            scale.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessMediumLow))
-        }
-    }
-    graphicsLayer { scaleX = scale.value; scaleY = scale.value }
-}
-
-/** The light tabs' header: a big title and the settings gear on the right. */
+/** The light tabs' header: a big title and the settings gear in a soft circle on the right. */
 @Composable
 fun TabHeader(title: String, onSettings: () -> Unit, modifier: Modifier = Modifier, actions: @Composable () -> Unit = {}) {
     Row(
-        modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
+        modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 12.dp, top = 6.dp, bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+        Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
         actions()
-        IconButton(onSettings) { Icon(Icons.Outlined.Settings, stringResource(R.string.settings), Modifier.size(26.dp)) }
+        CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings)
     }
 }
 
 // ---- Random chat: the dark, camera-like lobby (Azar-style) ---------------------------------------
 
-/** Flags drifting around you: the world is on the other side of the button. */
-private val WorldFlags = listOf("IN", "BR", "KR", "US", "JP", "GB", "AE", "ES", "PH", "DE", "MX", "NG")
-
 @Composable
 private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     val me = s.me ?: return
     Box(Modifier.fillMaxSize().aurora()) {
-        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Wordmark()
-            Spacer(Modifier.weight(1f))
-            PlanChip(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
-            IconButton(onSettings) { Icon(Icons.Rounded.Settings, stringResource(R.string.settings), tint = Color.White, modifier = Modifier.size(26.dp)) }
-        }
-        Column(
-            Modifier.align(Alignment.Center).padding(horizontal = 32.dp).padding(bottom = 140.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Orbit(me, avatar = 124.dp, turnMs = 40_000, pulseMs = 2600)
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.lobby_title), color = Color.White, style = MaterialTheme.typography.headlineLarge, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.lobby_sub), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-        }
-        Column(
-            Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            TargetSelector(s.target, s.entitlements.canChooseGender, vm::setTarget)
-            GradientButton(stringResource(R.string.start_chatting), vm::startMatching, height = 60.dp, shine = true)
-            Text(
-                stringResource(R.string.lobby_rules), color = Color.White.copy(alpha = 0.45f),
-                style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
-            )
+        Column(Modifier.fillMaxSize().statusBarsPadding()) {
+            Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 12.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Wordmark(color = Color.White)
+                Spacer(Modifier.weight(1f))
+                PlanChip(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
+                CircleIconButton(
+                    Icons.Outlined.Settings, stringResource(R.string.settings), onSettings,
+                    background = Color.White.copy(alpha = 0.08f), tint = Color.White,
+                )
+            }
+            Column(
+                Modifier.weight(1f).fillMaxWidth().padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+            ) {
+                val float by rememberLoop(2400, from = -1f, to = 1f, reverse = true, easing = FastOutSlowInEasing, still = 0f)
+                Box(
+                    Modifier.size(176.dp).graphicsLayer { translationY = float * 3.dp.toPx() }.spinningRing(width = 3.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(Modifier.size(170.dp).clip(CircleShape).background(Brand.Night), contentAlignment = Alignment.Center) {
+                        Avatar(me, 156.dp)
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    me.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(R.string.lobby_title), color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+            }
+            Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 18.dp)) {
+                TargetSelector(s.target, s.entitlements.canChooseGender, vm::setTarget)
+                Spacer(Modifier.height(16.dp))
+                GradientButton(
+                    stringResource(R.string.start_chatting), vm::startMatching, height = 64.dp, shine = true,
+                    leading = { Icon(Icons.Rounded.Shuffle, null, Modifier.size(22.dp), tint = Color.White) },
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    stringResource(R.string.lobby_rules), color = Color.White.copy(alpha = 0.45f),
+                    style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
-}
-
-/** Near-black with a warm glow behind the center, sized to the screen. */
-fun Modifier.nightGlow() = drawBehind {
-    drawRect(Brand.Night)
-    drawRect(
-        Brush.radialGradient(
-            listOf(Color(0xFF3A1626), Color.Transparent),
-            center = Offset(size.width / 2, size.height * 0.42f), radius = size.maxDimension * 0.6f,
-        ),
-    )
 }
 
 @Composable
@@ -295,9 +308,10 @@ private fun PlanChip(s: UiState, onClick: () -> Unit) {
     val premium = s.premium
     val interaction = remember { MutableInteractionSource() }
     Row(
-        Modifier.pressScale(interaction).clip(CircleShape).background(Color.White.copy(alpha = if (premium) 0.12f else 0.08f))
-            .then(if (premium) Modifier else Modifier.border(1.dp, Brand.gradient, CircleShape))
-            .clickable(interaction, indication = null, enabled = !premium, onClick = onClick).padding(horizontal = 12.dp, vertical = 7.dp),
+        Modifier.pressScale(interaction).clip(CircleShape).background(Color.White.copy(alpha = if (premium) 0.10f else 0.07f))
+            .then(if (premium) Modifier else Modifier.border(1.dp, androidx.compose.ui.graphics.Brush.linearGradient(listOf(Brand.Pink, Brand.Orange)), CircleShape))
+            .clickable(interaction, indication = null, enabled = !premium, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.Orange, modifier = Modifier.size(16.dp))
@@ -312,101 +326,86 @@ private fun PlanChip(s: UiState, onClick: () -> Unit) {
 @Composable
 private fun TargetSelector(target: Target, unlocked: Boolean, onSelect: (Target) -> Unit) {
     val tick = rememberTick()
-    BoxWithConstraints(Modifier.fillMaxWidth().clip(CircleShape).background(Color.White.copy(alpha = 0.09f)).padding(4.dp)) {
+    BoxWithConstraints(Modifier.fillMaxWidth().clip(CircleShape).background(Color.White.copy(alpha = 0.08f)).padding(4.dp)) {
         val w = maxWidth / Target.entries.size
         val x by animateDpAsState(w * target.ordinal, spring(dampingRatio = 0.75f, stiffness = Spring.StiffnessMediumLow), label = "thumb")
-        Box(Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(w).height(42.dp).clip(CircleShape).background(Color.White))
+        Box(Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(w).height(46.dp).clip(CircleShape).background(Color.White))
         Row(Modifier.fillMaxWidth()) {
             Target.entries.forEach { t ->
                 val selected = t == target
-                val color by animateColorAsState(if (selected) Color.Black else Color.White.copy(alpha = 0.85f), label = "c")
+                val color by animateColorAsState(if (selected) Brand.Night else Color.White.copy(alpha = 0.7f), label = "c")
+                val interaction = remember { MutableInteractionSource() }
                 Row(
-                    Modifier.weight(1f).height(42.dp).clip(CircleShape)
-                        .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.RadioButton) { tick(); onSelect(t) },
+                    Modifier.weight(1f).height(46.dp).pressScale(interaction).clip(CircleShape)
+                        .clickable(interaction, indication = null, role = Role.RadioButton) { tick(); onSelect(t) },
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (t.isPaid && !unlocked) {
-                        Icon(Icons.Rounded.Lock, stringResource(R.string.premium), Modifier.size(14.dp), tint = color)
-                        Spacer(Modifier.width(4.dp))
+                        Icon(Icons.Rounded.Lock, stringResource(R.string.premium), Modifier.size(13.dp), tint = color)
+                        Spacer(Modifier.width(5.dp))
                     }
-                    Text(stringResource(t.label), color = color, style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        stringResource(t.label), color = color, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp),
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold, maxLines = 1,
+                    )
                 }
             }
         }
     }
 }
 
-/**
- * You in the middle with radar rings, and flags of the world slowly circling: alive without being busy.
- * [turnMs] is one full turn of the flags; [pulseMs] one ring.
- */
-@Composable
-private fun Orbit(me: Profile, avatar: Dp, turnMs: Int, pulseMs: Int) {
-    val t = rememberInfiniteTransition(label = "orbit")
-    val phase by t.animateFloat(0f, 1f, infiniteRepeatable(tween(pulseMs, easing = LinearEasing)), label = "pulse")
-    val turn by t.animateFloat(0f, 360f, infiniteRepeatable(tween(turnMs, easing = LinearEasing)), label = "turn")
-    val float by t.animateFloat(-1f, 1f, infiniteRepeatable(tween(2200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "float")
-    Box(Modifier.size(avatar * 2.5f), contentAlignment = Alignment.Center) {
-        Canvas(Modifier.fillMaxSize()) {
-            val base = avatar.toPx() / 2
-            val max = size.minDimension / 2
-            for (i in 0 until 3) {
-                val p = (phase + i / 3f) % 1f
-                drawCircle(
-                    brush = Brush.linearGradient(listOf(Brand.Pink, Brand.Orange)), radius = base + (max - base) * p,
-                    alpha = (1f - p) * 0.5f, style = Stroke(width = 1.5.dp.toPx()),
-                )
-            }
-        }
-        // Flags on two rings turning in opposite directions.
-        // Positions are read in the layout phase (lambda offsets), so the animation never recomposes this screen.
-        WorldFlags.forEachIndexed { i, iso ->
-            val inner = i % 2 == 0
-            val radius = if (inner) avatar * 0.92f else avatar * 1.18f
-            Box(
-                Modifier.offset {
-                    val angle = Math.toRadians((i * 360.0 / WorldFlags.size) + if (inner) turn.toDouble() else -turn.toDouble())
-                    val r = radius.toPx()
-                    IntOffset((r * cos(angle)).toInt(), (r * sin(angle) + float * 3.dp.toPx()).toInt())
-                }
-                    .size(if (inner) 34.dp else 28.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.10f)),
-                contentAlignment = Alignment.Center,
-            ) { Text(flagOf(iso), fontSize = if (inner) 18.sp else 14.sp) }
-        }
-        Box(Modifier.offset { IntOffset(0, (float * 2.dp.toPx()).toInt()) }) { Avatar(me, avatar, ring = true) }
-    }
-}
+/** Flags circling the matching radar: the world is on the other side. */
+private val OrbitFlags = listOf("IN", "MX", "KR", "TR", "BR", "JP", "NG", "FR")
 
 @Composable
 fun MatchingScreen(vm: AppViewModel, s: UiState) {
     BackHandler { vm.cancelMatching() }
     val me = s.me ?: return
-    Box(Modifier.fillMaxSize().aurora().statusBarsPadding().navigationBarsPadding()) {
-        Column(Modifier.align(Alignment.Center).padding(bottom = 80.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Orbit(me, avatar = 104.dp, turnMs = 7_000, pulseMs = 1200)
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.finding), color = Color.White, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(10.dp))
+    Box(Modifier.fillMaxSize().background(Brand.Night).statusBarsPadding().navigationBarsPadding()) {
+        Column(Modifier.fillMaxSize()) {
             Pill(
                 stringResource(R.string.looking_for, stringResource(s.target.label)),
-                background = Color.White.copy(alpha = 0.12f), color = Color.White,
+                Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp),
+                background = Color.White.copy(alpha = 0.07f), color = Color.White.copy(alpha = 0.8f),
+                leading = { Icon(Icons.Outlined.Public, null, Modifier.size(15.dp), tint = Color.White.copy(alpha = 0.8f)) },
             )
-        }
-        Column(
-            Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                stringResource(R.string.matching_tip),
-                color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center,
-            )
-            val interaction = remember { MutableInteractionSource() }
-            Box(
-                Modifier.fillMaxWidth().height(54.dp).pressScale(interaction).clip(CircleShape).background(Color.White.copy(alpha = 0.10f))
-                    .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape)
-                    .clickable(interaction, indication = null, role = Role.Button) { vm.cancelMatching() },
-                contentAlignment = Alignment.Center,
-            ) { Text(stringResource(R.string.cancel), color = Color.White, style = MaterialTheme.typography.titleMedium) }
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Radar(300.dp)
+                Canvas(Modifier.size(276.dp)) {
+                    drawCircle(
+                        Color.White.copy(alpha = 0.10f), radius = size.minDimension / 2,
+                        style = Stroke(1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(5.dp.toPx(), 5.dp.toPx()))),
+                    )
+                }
+                Orbiting(OrbitFlags.size, 138.dp, turnMs = 28_000) { i ->
+                    Box(
+                        Modifier.size(44.dp).clip(CircleShape).background(Brand.Ink2).border(1.dp, Color.White.copy(alpha = 0.10f), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) { Text(flagOf(OrbitFlags[i]), fontSize = 21.sp) }
+                }
+                val breathe by rememberLoop(1600, from = 1f, to = 1.04f, reverse = true, easing = FastOutSlowInEasing, still = 1f)
+                Box(
+                    Modifier.graphicsLayer { scaleX = breathe; scaleY = breathe }.size(112.dp).clip(CircleShape).background(Brand.Night),
+                    contentAlignment = Alignment.Center,
+                ) { Avatar(me, 104.dp) }
+            }
+            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(stringResource(R.string.finding), color = Color.White, style = MaterialTheme.typography.headlineSmall.copy(fontSize = 26.sp), textAlign = TextAlign.Center)
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.matching_tip),
+                    color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(32.dp))
+                val interaction = remember { MutableInteractionSource() }
+                Box(
+                    Modifier.fillMaxWidth().height(56.dp).pressScale(interaction, 0.97f).clip(CircleShape).background(Color.White.copy(alpha = 0.04f))
+                        .border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape)
+                        .clickable(interaction, indication = null, role = Role.Button) { vm.cancelMatching() },
+                    contentAlignment = Alignment.Center,
+                ) { Text(stringResource(R.string.cancel), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
+            }
         }
     }
 }
+

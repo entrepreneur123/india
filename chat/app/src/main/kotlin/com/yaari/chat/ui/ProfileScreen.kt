@@ -1,5 +1,11 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Add
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -90,19 +96,24 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
     val me = s.me ?: return
     val friends = s.friends.count { it.state == FriendState.FRIENDS }
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 4.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 20.dp, end = 12.dp, top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-                Text(me.nameWithFlag(), style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                Text(
+                    me.name, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold), maxLines = 1,
+                    overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
+                )
                 if (s.premium) Icon(Icons.Rounded.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 6.dp).size(20.dp), tint = Brand.Orange)
             }
-            IconButton(onNewPost) { Icon(Icons.Outlined.AddBox, stringResource(R.string.new_post), Modifier.size(26.dp)) }
-            IconButton(onSettings) { Icon(Icons.Outlined.Settings, stringResource(R.string.settings), Modifier.size(26.dp)) }
+            CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings)
         }
         PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost) {
             ProfileHeader(me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)))
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
-                SoftButton(stringResource(R.string.new_post), onNewPost, Modifier.weight(1f))
+                SoftButton(
+                    stringResource(R.string.new_post), onNewPost, Modifier.weight(1f), accent = true,
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
+                )
             }
             if (!s.premium) PlusBanner(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
         }
@@ -115,22 +126,26 @@ private fun pluralLabel(id: Int, n: Int) = pluralStringResource(id, n)
 /** Yaari Plus advert on my profile, Instagram-style flat card. */
 @Composable
 private fun PlusBanner(s: UiState, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
     Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp).clip(RoundedCornerShape(16.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)).clickable(onClick = onClick).padding(14.dp),
+        Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 14.dp).pressScale(interaction, 0.98f).clip(RoundedCornerShape(22.dp))
+            .background(Brand.Night).clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(40.dp).clip(CircleShape).background(Brand.gradient), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.WorkspacePremium, null, tint = Color.White)
+        Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(Brand.gradient), contentAlignment = Alignment.Center) {
+            Icon(Icons.Rounded.AutoAwesome, null, tint = Color.White, modifier = Modifier.size(20.dp))
         }
         Column(Modifier.padding(start = 12.dp).weight(1f)) {
-            Text(stringResource(if (s.entitlements.genderPass) R.string.plan_pass else R.string.premium_title), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(if (s.entitlements.genderPass) R.string.plan_pass else R.string.premium_title), style = MaterialTheme.typography.titleSmall, color = Color.White)
             Text(
                 stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = Color.White.copy(alpha = 0.6f), maxLines = 2,
             )
         }
-        Text(stringResource(R.string.upgrade), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+        Text(
+            stringResource(R.string.upgrade), color = Brand.Night, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 8.dp).clip(CircleShape).background(Color.White).padding(horizontal = 12.dp, vertical = 7.dp),
+        )
     }
 }
 
@@ -149,8 +164,8 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
     val canMessage = !inChat && (state == FriendState.FRIENDS || s.recents.any { it.partner.id == p.id })
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(vm::closeProfile) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+            Row(Modifier.fillMaxWidth().statusBarsPadding().height(56.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBackIos, stringResource(R.string.back), vm::closeProfile, background = Color.Transparent, iconSize = 20.dp)
                 Text(p.nameWithFlag(), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Box {
                     IconButton({ menu = true }) { Icon(Icons.Rounded.MoreVert, stringResource(R.string.more)) }
@@ -170,7 +185,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     ),
                     extra = country?.let { "${flagOf(p.country)} $it" },
                 )
-                Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (state) {
                         FriendState.NONE -> SoftButton(stringResource(R.string.add_friend), { vm.addFriend(p) }, Modifier.weight(1f), accent = true)
                         FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), { vm.answerFriend(p, true) }, Modifier.weight(1f), accent = true)
@@ -201,29 +216,29 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
 /** Avatar on the left, numbers on the right, then name, details and bio: the Instagram header. */
 @Composable
 private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(p, 88.dp, ring = true)
-            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Avatar(p, 92.dp, ring = true)
+            Row(Modifier.weight(1f).padding(start = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                 stats.forEach { (n, label) ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("$n", style = MaterialTheme.typography.titleLarge)
-                        Text(label, style = MaterialTheme.typography.bodySmall)
+                        RollingNumber(n, MaterialTheme.typography.titleLarge.copy(fontSize = 19.sp, fontWeight = FontWeight.ExtraBold))
+                        Text(label, style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
         }
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(14.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(p.name, style = MaterialTheme.typography.titleSmall)
             Icon(Icons.Rounded.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(15.dp), tint = Color(0xFF3B82F6))
         }
         Text(
-            listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodySmall,
+            listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.5.sp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (p.bio.isNotBlank()) Text(p.bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(14.dp))
     }
 }
 
@@ -234,9 +249,12 @@ private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, hea
     LazyVerticalGrid(GridCells.Fixed(3), Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         item(span = { GridItemSpan(maxLineSpan) }) { Column { header() } }
         item(span = { GridItemSpan(maxLineSpan) }) {
-            Column(Modifier.padding(top = 8.dp)) {
+            Column(Modifier.padding(top = 18.dp)) {
+                Box(Modifier.fillMaxWidth().height(44.dp), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.GridOn, null, Modifier.size(22.dp))
+                    Box(Modifier.align(Alignment.BottomCenter).width(120.dp).height(2.dp).background(MaterialTheme.colorScheme.onSurface))
+                }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Box(Modifier.fillMaxWidth().padding(vertical = 10.dp), contentAlignment = Alignment.Center) { Icon(Icons.Rounded.GridOn, null) }
             }
         }
         if (posts.isEmpty()) {
@@ -257,7 +275,12 @@ private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, hea
 
 @Composable
 private fun PostTile(post: Post, seed: Int, onClick: () -> Unit) {
-    Box(Modifier.aspectRatio(1f).background(seedColor(seed + post.id.hashCode())).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        Modifier.aspectRatio(1f).pressScale(interaction, 0.96f).background(seedColor(seed + post.id.hashCode()))
+            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
         if (post.imageUri != null) {
             AsyncImage(post.imageUri, post.text, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
         } else {
@@ -373,11 +396,13 @@ fun Field(
     OutlinedTextField(
         value, onChange, modifier.fillMaxWidth(), label = { Text(label) }, singleLine = single, minLines = if (single) 1 else 3,
         keyboardOptions = keyboard,
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(16.dp),
+        textStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold, fontSize = 16.sp),
         supportingText = counter?.let { { Text(it, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End) } },
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = MaterialTheme.colorScheme.onSurface,
-            focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant, focusedBorderColor = MaterialTheme.colorScheme.onSurface,
+            focusedLabelColor = MaterialTheme.colorScheme.onSurface, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = Brand.Pink, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }

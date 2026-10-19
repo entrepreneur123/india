@@ -74,7 +74,8 @@ class AppFlowTest {
         field("Mobile number").performTextInput("9876543210")
         compose.onNodeWithText("Send OTP").performClick()
         waitFor("We sent a 6-digit code")
-        field("OTP").performTextInput(FakeBackend.DEMO_OTP)
+        // The code is one hidden field drawn as six boxes (its label is the content description).
+        compose.onNode(hasSetTextAction() and hasContentDescription("OTP")).performTextInput(FakeBackend.DEMO_OTP)
         shot("02_otp")
         compose.onNodeWithText("Verify").performClick()
         waitFor("Create your profile")
@@ -100,6 +101,7 @@ class AppFlowTest {
         compose.onNodeWithText("Women").performClick()
         waitFor("needs Plus")
         shot("05_paywall")
+        compose.onNodeWithText("24-hour pass").performClick() // choose the plan, then buy it
         compose.onNodeWithText("Only gender choice", substring = true).performClick()
         waitFor("Meet someone new")
         compose.onNodeWithText("Women").performClick()

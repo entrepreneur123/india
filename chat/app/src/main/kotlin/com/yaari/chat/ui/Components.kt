@@ -7,18 +7,10 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.runtime.remember
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,8 +26,8 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -44,16 +36,26 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -62,6 +64,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -75,39 +78,48 @@ import com.yaari.chat.model.Message
 import com.yaari.chat.model.Profile
 
 // ---- Design tokens ------------------------------------------------------------------------------
-// Neutral canvas (white / near-black) like the big social apps, one warm accent for actions and brand moments.
+// Clean white for the social screens, near-black "ink" for anything camera-like (random chat, video),
+// one warm gradient for actions and brand moments. Values match the design mockup's Tailwind tokens.
 
 object Brand {
     val Pink = Color(0xFFFF3D68)
     val Orange = Color(0xFFFF7A45)
     val gradient = Brush.linearGradient(listOf(Pink, Orange))
     val Online = Color(0xFF22C55E)
-    /** The random-chat screens are always dark, like a camera view. */
-    val Night = Color(0xFF0B0B0F)
-    val NightCard = Color(0xFF1A1A21)
+    val Danger = Color(0xFFE5303F)
+
+    /** Ink: the random-chat and video screens are always this dark, like a camera view. */
+    val Night = Color(0xFF0B0B10)
+    val Ink2 = Color(0xFF15151C)
+    val Ink3 = Color(0xFF1E1E27)
+
+    /** Light neutrals. */
+    val Muted = Color(0xFF6E6E7A)
+    val Line = Color(0xFFECECF1)
+    val Surface = Color(0xFFF5F5F8)
 }
 
 private val Light = lightColorScheme(
     primary = Brand.Pink, onPrimary = Color.White,
-    secondary = Color(0xFF111114), onSecondary = Color.White,
-    background = Color.White, onBackground = Color(0xFF111114),
-    surface = Color.White, onSurface = Color(0xFF111114),
-    surfaceVariant = Color(0xFFF2F2F5), onSurfaceVariant = Color(0xFF6B6B76),
-    surfaceContainer = Color(0xFFF7F7F9), surfaceContainerHigh = Color(0xFFEFEFF2), surfaceContainerLow = Color(0xFFFAFAFB),
-    surfaceContainerLowest = Color.White, surfaceContainerHighest = Color(0xFFE9E9ED),
-    outline = Color(0xFFD9D9DF), outlineVariant = Color(0xFFEAEAEE),
-    error = Color(0xFFE5383B),
+    secondary = Brand.Night, onSecondary = Color.White,
+    background = Color.White, onBackground = Brand.Night,
+    surface = Color.White, onSurface = Brand.Night,
+    surfaceVariant = Brand.Surface, onSurfaceVariant = Brand.Muted,
+    surfaceContainer = Brand.Surface, surfaceContainerHigh = Brand.Surface, surfaceContainerLow = Color(0xFFFAFAFB),
+    surfaceContainerLowest = Color.White, surfaceContainerHighest = Color(0xFFEBEBF0),
+    outline = Color(0xFFDADAE0), outlineVariant = Brand.Line,
+    error = Brand.Danger,
 )
 
 private val Dark = darkColorScheme(
     primary = Color(0xFFFF5C82), onPrimary = Color.White,
-    secondary = Color(0xFFF5F5F7), onSecondary = Color(0xFF111114),
+    secondary = Color(0xFFF5F5F7), onSecondary = Brand.Night,
     background = Brand.Night, onBackground = Color(0xFFF5F5F7),
     surface = Brand.Night, onSurface = Color(0xFFF5F5F7),
-    surfaceVariant = Color(0xFF1E1E24), onSurfaceVariant = Color(0xFFA1A1AA),
-    surfaceContainer = Color(0xFF16161B), surfaceContainerHigh = Color(0xFF1E1E24), surfaceContainerLow = Color(0xFF121216),
-    surfaceContainerLowest = Brand.Night, surfaceContainerHighest = Color(0xFF26262D),
-    outline = Color(0xFF3A3A42), outlineVariant = Color(0xFF2A2A31),
+    surfaceVariant = Brand.Ink3, onSurfaceVariant = Color(0xFFA1A1AA),
+    surfaceContainer = Brand.Ink2, surfaceContainerHigh = Color(0xFF1F1F27), surfaceContainerLow = Color(0xFF111117),
+    surfaceContainerLowest = Brand.Night, surfaceContainerHighest = Color(0xFF282831),
+    outline = Color(0xFF3A3A44), outlineVariant = Color(0xFF22222A),
     error = Color(0xFFFF5A5F),
 )
 
@@ -127,64 +139,86 @@ private fun TextStyle.j(weight: FontWeight? = null, spacing: Float? = null) =
 
 private val AppType = Typography(
     displayLarge = Base.displayLarge.j(FontWeight.ExtraBold, -1f),
-    displayMedium = Base.displayMedium.j(FontWeight.ExtraBold, -0.6f),
-    displaySmall = Base.displaySmall.j(FontWeight.ExtraBold, -0.5f),
-    headlineLarge = Base.headlineLarge.j(FontWeight.ExtraBold, -0.4f),
-    headlineMedium = Base.headlineMedium.j(FontWeight.ExtraBold, -0.3f),
-    headlineSmall = Base.headlineSmall.j(FontWeight.Bold, -0.2f),
-    titleLarge = Base.titleLarge.j(FontWeight.Bold, -0.1f),
+    displayMedium = Base.displayMedium.j(FontWeight.ExtraBold, -0.8f),
+    displaySmall = Base.displaySmall.j(FontWeight.ExtraBold, -0.6f),
+    headlineLarge = Base.headlineLarge.j(FontWeight.ExtraBold, -0.8f).copy(fontSize = 30.sp, lineHeight = 34.sp),
+    headlineMedium = Base.headlineMedium.j(FontWeight.ExtraBold, -0.8f).copy(fontSize = 28.sp, lineHeight = 32.sp),
+    headlineSmall = Base.headlineSmall.j(FontWeight.Bold, -0.5f).copy(fontSize = 22.sp, lineHeight = 28.sp),
+    titleLarge = Base.titleLarge.j(FontWeight.Bold, -0.3f).copy(fontSize = 20.sp),
     titleMedium = Base.titleMedium.j(FontWeight.Bold, -0.1f),
-    titleSmall = Base.titleSmall.j(FontWeight.Bold, 0f),
-    bodyLarge = Base.bodyLarge.j(spacing = 0.15f),
-    bodyMedium = Base.bodyMedium.j(spacing = 0.15f),
-    bodySmall = Base.bodySmall.j(spacing = 0.2f),
+    titleSmall = Base.titleSmall.j(FontWeight.Bold, 0f).copy(fontSize = 15.sp),
+    bodyLarge = Base.bodyLarge.j(spacing = 0f).copy(fontSize = 15.sp, lineHeight = 22.sp),
+    bodyMedium = Base.bodyMedium.j(spacing = 0f).copy(fontSize = 14.sp, lineHeight = 20.sp),
+    bodySmall = Base.bodySmall.j(spacing = 0f).copy(fontSize = 12.5.sp, lineHeight = 17.sp),
     labelLarge = Base.labelLarge.j(FontWeight.Bold, 0f).copy(fontSize = 15.sp),
-    labelMedium = Base.labelMedium.j(FontWeight.SemiBold, 0.1f),
-    labelSmall = Base.labelSmall.j(FontWeight.SemiBold, 0.2f),
+    labelMedium = Base.labelMedium.j(FontWeight.SemiBold, 0f).copy(fontSize = 12.5.sp),
+    labelSmall = Base.labelSmall.j(FontWeight.SemiBold, 0.1f).copy(fontSize = 11.sp),
 )
 
 private val AppShapes = Shapes(
-    small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(14.dp), large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(28.dp),
+    small = RoundedCornerShape(12.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(22.dp),
+    extraLarge = RoundedCornerShape(32.dp),
 )
 
 @Composable
 fun YaariTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) Dark else Light, typography = AppType, shapes = AppShapes, content = content)
+    CompositionLocalProvider(LocalReducedMotion provides rememberReducedMotion()) {
+        MaterialTheme(colorScheme = if (isSystemInDarkTheme()) Dark else Light, typography = AppType, shapes = AppShapes, content = content)
+    }
 }
 
-/** The lowercase brand wordmark in the accent gradient. */
+/** The camera-like screens (random chat, video, incoming call) are dark whatever the system theme is. */
 @Composable
-fun Wordmark(modifier: Modifier = Modifier, size: Int = 26) {
-    Text(
-        "yaari", modifier,
-        style = TextStyle(brush = Brand.gradient, fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.2).sp),
-    )
+fun NightTheme(content: @Composable () -> Unit) {
+    MaterialTheme(colorScheme = Dark, typography = AppType, shapes = AppShapes, content = content)
 }
 
-/** The main call to action: a full-width gradient pill. */
+/** The lowercase brand wordmark, in the accent gradient or plain [color]. */
+@Composable
+fun Wordmark(modifier: Modifier = Modifier, size: Int = 26, color: Color? = null) {
+    val base = TextStyle(fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.04 * size).sp)
+    Text("yaari", modifier, style = if (color == null) base.copy(brush = Brand.gradient) else base.copy(color = color))
+}
+
+/**
+ * A soft coloured glow under a button or card (the mockup's `shadow-[0_18px_40px_-14px_brand]`).
+ * Drawn with a shadow layer, which hardware rendering supports from Android 9; older phones simply skip it.
+ */
+fun Modifier.glow(
+    color: Color = Brand.Pink, radius: Dp = 22.dp, offsetY: Dp = 12.dp, corner: Dp = 999.dp, inset: Dp = 10.dp, alpha: Float = 0.55f,
+): Modifier = drawBehind {
+    val paint = Paint().asFrameworkPaint().apply {
+        this.color = android.graphics.Color.TRANSPARENT
+        setShadowLayer(radius.toPx(), 0f, offsetY.toPx(), color.copy(alpha = alpha).toArgb())
+    }
+    val i = inset.toPx()
+    val r = minOf(corner.toPx(), size.minDimension / 2)
+    drawIntoCanvas { it.nativeCanvas.drawRoundRect(i, i, size.width - i, size.height - i, r, r, paint) }
+}
+
+/** The main call to action: a full-width gradient pill, optionally glowing and with a light sweep. */
 @Composable
 fun GradientButton(
-    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, height: Dp = 54.dp,
-    leading: (@Composable () -> Unit)? = null, shine: Boolean = false,
+    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, height: Dp = 56.dp,
+    leading: (@Composable () -> Unit)? = null, shine: Boolean = false, glow: Boolean = true, shape: Shape = CircleShape,
+    corner: Dp = 999.dp,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val tick = rememberTick()
     // Optional light sweep every few seconds on the one button a screen is about (Start, Get Plus).
-    val sweep = if (shine && enabled) {
-        val t = rememberInfiniteTransition(label = "shine")
-        t.animateFloat(-0.6f, 1.6f, infiniteRepeatable(tween(2600, delayMillis = 1400, easing = LinearEasing)), label = "x").value
-    } else null
+    val sweep = if (shine && enabled) rememberLoop(2600, from = -0.6f, to = 1.6f, delayMs = 1400, still = -1f).value else null
     Box(
-        modifier.fillMaxWidth().height(height).pressScale(interaction).clip(CircleShape)
-            .background(if (enabled) Brand.gradient else Brush.linearGradient(listOf(Color(0xFFBDBDC4), Color(0xFFBDBDC4))))
+        modifier.fillMaxWidth().height(height).pressScale(interaction, 0.97f)
+            .then(if (glow && enabled) Modifier.glow(corner = corner) else Modifier)
+            .clip(shape)
+            .background(if (enabled) Brand.gradient else Brush.linearGradient(listOf(MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.surfaceContainerHigh)))
             .then(
                 if (sweep == null) Modifier else Modifier.drawWithContent {
                     drawContent()
                     val x = size.width * sweep
                     drawRect(
                         Brush.linearGradient(
-                            listOf(Color.Transparent, Color.White.copy(alpha = 0.35f), Color.Transparent),
+                            listOf(Color.Transparent, Color.White.copy(alpha = 0.32f), Color.Transparent),
                             start = Offset(x - size.height, 0f), end = Offset(x + size.height, size.height),
                         ),
                     )
@@ -195,25 +229,42 @@ fun GradientButton(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             leading?.invoke()
-            Text(text, color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text, color = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 12.dp),
+            )
         }
     }
 }
 
-/** Instagram-style grey button used on profiles ("Edit profile", "Message"). */
+/** Instagram-style flat button ("Edit profile", "Message"); [accent] fills it with the brand gradient. */
 @Composable
-fun SoftButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, accent: Boolean = false, enabled: Boolean = true) {
+fun SoftButton(
+    text: String, onClick: () -> Unit, modifier: Modifier = Modifier, accent: Boolean = false, enabled: Boolean = true,
+    height: Dp = 40.dp, shape: Shape = RoundedCornerShape(12.dp), outlined: Boolean = false, leading: (@Composable () -> Unit)? = null,
+) {
     val interaction = remember { MutableInteractionSource() }
-    val bg by animateColorAsState(if (accent) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh, label = "bg")
-    Box(
-        modifier.height(38.dp).pressScale(interaction).clip(RoundedCornerShape(10.dp))
+    val bg by animateColorAsState(
+        when {
+            accent -> Color.Transparent
+            outlined -> MaterialTheme.colorScheme.surface
+            else -> MaterialTheme.colorScheme.surfaceContainerHigh
+        },
+        label = "bg",
+    )
+    Row(
+        modifier.height(height).pressScale(interaction).clip(shape)
             .background(bg)
+            .then(if (accent) Modifier.background(Brand.gradient) else Modifier)
+            .then(if (outlined) Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape) else Modifier)
             .clickable(interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 14.dp),
-        contentAlignment = Alignment.Center,
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically,
     ) {
+        leading?.invoke()
         Text(
-            text, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            text, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp), maxLines = 1, overflow = TextOverflow.Ellipsis,
             color = if (accent) Color.White else MaterialTheme.colorScheme.onSurface,
         )
     }
@@ -221,30 +272,55 @@ fun SoftButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier,
 
 /** A small pill: room counts, plan badges, filters. */
 @Composable
-fun Pill(text: String, modifier: Modifier = Modifier, background: Color = MaterialTheme.colorScheme.surfaceContainerHigh, color: Color = MaterialTheme.colorScheme.onSurface) {
-    Text(
-        text, modifier.clip(CircleShape).background(background).padding(PaddingValues(horizontal = 10.dp, vertical = 4.dp)),
-        color = color, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, maxLines = 1,
-    )
+fun Pill(
+    text: String, modifier: Modifier = Modifier, background: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    color: Color = MaterialTheme.colorScheme.onSurface, leading: (@Composable () -> Unit)? = null,
+) {
+    Row(
+        modifier.clip(CircleShape).background(background).padding(PaddingValues(horizontal = 12.dp, vertical = 6.dp)),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        leading?.invoke()
+        Text(text, color = color, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, maxLines = 1)
+    }
+}
+
+/** Round 40 dp icon button on a tinted disc (settings gear, close), with a 48 dp touch target. */
+@Composable
+fun CircleIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit, modifier: Modifier = Modifier,
+    background: Color = MaterialTheme.colorScheme.surfaceContainerHigh, tint: Color = MaterialTheme.colorScheme.onSurface,
+    size: Dp = 40.dp, iconSize: Dp = 20.dp, enabled: Boolean = true,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    Box(
+        modifier.size(48.dp).pressScale(interaction, 0.9f)
+            .clickable(interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(Modifier.size(size).clip(CircleShape).background(background), contentAlignment = Alignment.Center) {
+            Icon(icon, label, Modifier.size(iconSize), tint = tint)
+        }
+    }
 }
 
 private val AvatarColors = listOf(0xFFFF8A80, 0xFF82B1FF, 0xFF69D2A0, 0xFFFFC56E, 0xFFC3A6FF, 0xFF5FD0D8, 0xFFFF9EC7)
 
 fun seedColor(seed: Int) = Color(AvatarColors[Math.floorMod(seed, AvatarColors.size)])
 
-/** Photo, or the first letter on a soft color. [ring] draws the brand gradient ring (own profile, stories). */
+/** Photo, or the first letter on a soft colour. [ring] draws the brand gradient ring with a gap (own profile, stories). */
 @Composable
-fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false) {
-    val inner = if (ring) size - 8.dp else size
+fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, gap: Color = MaterialTheme.colorScheme.background) {
+    val inner = if (ring) size - 10.dp else size
     Box(
-        modifier.size(size).then(if (ring) Modifier.border(2.5.dp, Brand.gradient, CircleShape) else Modifier),
+        modifier.size(size).then(if (ring) Modifier.clip(CircleShape).background(Brand.gradient).padding(2.5.dp).clip(CircleShape).background(gap) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.size(inner).clip(CircleShape).background(seedColor(p.colorSeed)), contentAlignment = Alignment.Center) {
             if (p.photoUri != null) {
                 AsyncImage(p.photoUri, contentDescription = p.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             } else {
-                Text(p.name.take(1).uppercase(), color = Color.White, fontSize = (inner.value * 0.42f).sp, fontWeight = FontWeight.Bold)
+                Text(p.name.take(1).uppercase(), color = Color.White, fontSize = (inner.value * 0.42f).sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)
             }
         }
     }
@@ -253,8 +329,15 @@ fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = 
 /** "Priya 🇮🇳" */
 fun Profile.nameWithFlag() = flagOf(country).let { if (it.isEmpty()) name else "$name $it" }
 
+/** "Priya, 22 🇮🇳", the mockup's way of naming someone you meet. */
+fun Profile.nameAgeFlag() = flagOf(country).let { if (it.isEmpty()) "$name, $age" else "$name, $age $it" }
+
 @Composable
 fun Profile.subtitle() = listOf(age.toString(), stringResource(gender.label), city).filter { it.isNotBlank() }.joinToString(" · ")
+
+/** "Female · Mumbai" */
+@Composable
+fun Profile.genderCity() = listOf(stringResource(gender.label), city).filter { it.isNotBlank() }.joinToString(" · ")
 
 @Composable
 fun Bubble(m: Message) {
@@ -263,18 +346,29 @@ fun Bubble(m: Message) {
     // Media from the other person stays hidden until tapped, so nobody sees an unwanted photo by surprise.
     var revealed by rememberSaveable(m.id) { mutableStateOf(mine) }
     val context = LocalContext.current
-    val shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = if (mine) 20.dp else 6.dp, bottomEnd = if (mine) 6.dp else 20.dp)
+    val shape = RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp, bottomStart = if (mine) 22.dp else 6.dp, bottomEnd = if (mine) 6.dp else 22.dp)
     val bg = if (mine) Modifier.background(Brand.gradient) else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh)
-    Box(Modifier.sizeIn(maxWidth = 280.dp).clip(shape).then(bg)) {
+    Box(Modifier.sizeIn(maxWidth = 270.dp).clip(shape).then(bg)) {
         when {
             media != null && !revealed -> Column(
-                Modifier.size(200.dp, 130.dp).background(Color(0xFF26262D)).clickable { revealed = true },
+                Modifier.size(176.dp, 220.dp)
+                    // Nothing of the photo is loaded until it is tapped: a warm blur-like wash stands in for it.
+                    .background(Brush.linearGradient(listOf(Color(0xFF5A3A3C), Color(0xFF2A1E22), Color(0xFF3C2A24))))
+                    .clickable(role = Role.Button) { revealed = true },
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Icon(Icons.Outlined.VisibilityOff, null, tint = Color.White.copy(alpha = 0.8f))
-                Text(stringResource(if (media.kind == MediaKind.VIDEO) R.string.video else R.string.photo), color = Color.White, fontWeight = FontWeight.Bold)
-                Text(stringResource(R.string.tap_to_view), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
+                Box(Modifier.size(44.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Outlined.Visibility, null, tint = Color.White, modifier = Modifier.size(20.dp))
+                }
+                Text(
+                    stringResource(R.string.tap_to_view), color = Color.White, fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 10.dp),
+                )
+                Text(
+                    stringResource(if (media.kind == MediaKind.VIDEO) R.string.video else R.string.photo),
+                    color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall,
+                )
             }
             media?.kind == MediaKind.IMAGE -> AsyncImage(
                 media.uri, contentDescription = stringResource(R.string.photo), contentScale = ContentScale.Crop,
@@ -288,7 +382,7 @@ fun Bubble(m: Message) {
             }
             else -> Text(
                 m.text.orEmpty(), color = if (mine) Color.White else MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp), style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp), style = MaterialTheme.typography.bodyLarge,
             )
         }
     }
@@ -313,11 +407,15 @@ fun EmptyState(icon: androidx.compose.ui.graphics.vector.ImageVector, title: Str
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Box(
-            Modifier.size(72.dp).border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape),
+            Modifier.size(76.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh),
             contentAlignment = Alignment.Center,
-        ) { Icon(icon, null, Modifier.size(34.dp)) }
-        Text(title, style = MaterialTheme.typography.titleLarge)
-        Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        ) {
+            Box(Modifier.size(52.dp).clip(CircleShape).background(Brand.gradient), contentAlignment = Alignment.Center) {
+                Icon(icon, null, Modifier.size(26.dp), tint = Color.White)
+            }
+        }
+        Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 6.dp))
+        Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
     }
 }
 
