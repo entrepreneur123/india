@@ -148,6 +148,7 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
         return now_ist < dt.datetime.combine(date, dt.time(h, m), IST) + dt.timedelta(minutes=5)
 
     def warn(msg: str) -> None:
+        msg = " ".join(str(msg).split())  # one line: text from source sites must not inject ::commands::
         warnings.append(msg)
         print(f"::warning::{msg}")
 
@@ -191,8 +192,8 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
                     fast = sambad.fetch(slot_id, date, today)
                 except ValidationError as e:
                     warn(f"{key}: Sambad file rejected: {e}")
-                except RuntimeError as e:
-                    warn(f"{key}: Sambad unavailable: {e}")
+                except Exception as e:  # network, pdftotext, a corrupt file…: skip this slot, keep publishing
+                    warn(f"{key}: Sambad unavailable: {type(e).__name__}: {e}")
             gazette, gazette_url, gazette_texts = None, None, []
             already_checked = existing is not None and _official_pdf(existing) is not None
             # The official calendar lists the day's files before they are uploaded: never before the draw.
@@ -200,8 +201,8 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
                 if ocr:
                     try:
                         gazette, gazette_url, gazette_texts = official.fetch(slot_id, date)
-                    except (ValidationError, RuntimeError) as e:
-                        warn(f"{key}: official fetch failed: {e}")
+                    except Exception as e:  # incl. OCR tool errors and image decoder limits
+                        warn(f"{key}: official fetch failed: {type(e).__name__}: {e}")
                 else:  # link it without downloading, once the file is really there (listed != uploaded)
                     url = official.PDF_URL.format(code=slot.file_code, ddmmyy=date.strftime("%d%m%y"))
                     gazette_url = url if http.is_pdf(url) else None
@@ -223,8 +224,8 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
             if slot is not None:
                 try:
                     draw = sambad.fetch(slot.id, date, today)
-                except (ValidationError, RuntimeError) as e:
-                    warn(f"{key}: special sheet rejected: {e}")
+                except Exception as e:
+                    warn(f"{key}: special sheet rejected: {type(e).__name__}: {e}")
             if draw is not None:
                 day[key] = draw.to_json() | {"status": "OK", "ocr": False}
             else:

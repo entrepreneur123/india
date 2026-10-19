@@ -64,12 +64,12 @@ jobs:
       CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
       GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
       BING_SITE_VERIFICATION: ${{ vars.BING_SITE_VERIFICATION }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID }}
       HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
-      FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Typed inputs reach the shell through env, never pasted into the script.
+      IN_DEPLOY: ${{ inputs.deploy }}
+      IN_OCR: ${{ inputs.ocr }}
+      IN_BACKFILL: ${{ inputs.backfill_days }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
             "0 3 * * *") deep=true; ocr=true; backfill=2 ;;
           esac
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            deep=true; ocr="${{ inputs.ocr }}"; backfill="${{ inputs.backfill_days }}"
+            deep=true; ocr="$IN_OCR"; backfill=$(( IN_BACKFILL + 0 ))
           fi
           { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
 
@@ -106,7 +106,7 @@ jobs:
           pkgs="poppler-utils"
           if [ "${{ steps.mode.outputs.ocr }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
           sudo apt-get update -qq && sudo apt-get install -y -qq $pkgs
-          pip install -q pillow pytest
+          pip install -q pillow==12.3.0 pytest==9.1.1
 
       - name: Unit tests
         working-directory: pipeline
@@ -114,13 +114,21 @@ jobs:
 
       - name: Fetch, build and publish (polls until the result is out)
         working-directory: pipeline
+        # Secrets live only in this step, and each tool below sees only the one it needs:
+        # the scrapers (pdftotext, OCR on third-party PDFs) and the site build see none.
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          nosecret() { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "$@"; }
           publish() {
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
-            python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
-            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
+            nosecret python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
+            nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
@@ -134,25 +142,27 @@ jobs:
             if [ "$HAS_FCM" = "true" ]; then
               # Runs every pass (cheap when nothing is new), so a failed send is retried a minute later.
               # Wake phones only once the new feed is live on the mirror they read first.
-              python -m lottery_pipeline.push --out ../public --wait-url https://entrepreneur123.github.io/india/v2/today.json
+              env -u TELEGRAM_BOT_TOKEN -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID \
+                python -m lottery_pipeline.push --out ../public --wait-url https://entrepreneur123.github.io/india/v2/today.json
             fi
-            python -m lottery_pipeline.telegram --out ../public --site-url "$SITE_URL"   # no-op without a bot token
+            env -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID \
+              python -m lottery_pipeline.telegram --out ../public --site-url "$SITE_URL"   # no-op without a bot token
             for f in push-state.json telegram-state.json; do if [ -f "../public/$f" ]; then git -C ../public add "$f"; fi; done
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
                 commit -q -m "announce state" && git -C ../public push -q origin data
             fi
-            [ "$changed" = 1 ] || [ "${{ inputs.deploy }}" = "true" ] || return 0
+            [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
-            python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
+            nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
               # Cloudflare serves the site at the host root, GitHub under /india/: rebuild the pages with root links.
               rm -rf ../cf && cp -a ../public ../cf && rm -rf ../cf/.git
-              python ../web/sitegen.py --data ../cf --out ../cf --link-prefix ""
+              nosecret python ../web/sitegen.py --data ../cf --out ../cf --link-prefix ""
               printf '/india /  301\n/india/* /:splat 301\n' > ../cf/_redirects   # old /india/ links from before this fix
-              deploy() { npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
+              deploy() { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
               # First deploy: create the project (free plan) if it does not exist yet.
-              deploy || { npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
+              deploy || { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
                 || echo "::warning::Cloudflare deploy failed"
             fi
           }
@@ -170,7 +180,7 @@ jobs:
           fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do
-            set +e; python -m lottery_pipeline.build $args; code=$?; set -e
+            set +e; nosecret python -m lottery_pipeline.build $args; code=$?; set -e
             if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then exit "$code"; fi
             publish
             [ "$code" -eq 0 ] && break
