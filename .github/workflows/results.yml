@@ -59,6 +59,8 @@ jobs:
       # Website: public address, ad and analytics ids (repository Variables; all optional).
       SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
       ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+      ADSENSE_SLOT: ${{ vars.ADSENSE_SLOT }}
+      PLAY_URL: ${{ vars.PLAY_URL }}
       CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
       GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
       BING_SITE_VERIFICATION: ${{ vars.BING_SITE_VERIFICATION }}

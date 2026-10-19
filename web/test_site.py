@@ -9,8 +9,9 @@ import sitegen  # web/sitegen.py
 FEED = pathlib.Path(__file__).resolve().parent.parent / "android/app/src/test/resources/feed_latest.json"
 
 
-def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None):
+def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None, slot=""):
     monkeypatch.setenv("ADSENSE_CLIENT", ads)
+    monkeypatch.setenv("ADSENSE_SLOT", slot)
     data = tmp / "data"
     (data / "v2/days").mkdir(parents=True)
     feed = json.loads(FEED.read_text())
@@ -53,9 +54,11 @@ def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
 
 
 def test_ads_when_configured(tmp_path, monkeypatch):
-    out = build(tmp_path, monkeypatch, ads="ca-pub-1234567890")
+    auto = (build(tmp_path / "auto", monkeypatch, ads="ca-pub-1234567890") / "result/18-10-2026/index.html").read_text()
+    assert "adsbygoogle.js?client=ca-pub-1234567890" in auto and 'class="adsbygoogle"' not in auto  # Auto ads only
+    out = build(tmp_path, monkeypatch, ads="ca-pub-1234567890", slot="1234567")
     page = (out / "result/18-10-2026/index.html").read_text()
-    assert 0 < page.count('class="adsbygoogle"') <= 3
+    assert 0 < page.count('class="adsbygoogle"') <= 3 and 'data-ad-slot="1234567"' in page
     assert (out / "ads.txt").read_text() == "google.com, pub-1234567890, DIRECT, f08c47fec0942fa0\n"
 
 

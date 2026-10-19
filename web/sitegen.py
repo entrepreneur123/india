@@ -6,7 +6,8 @@ under /hi/, linked with hreflang. Wording comes from the Android app's strings.x
 page-level texts below, so app and site say the same thing.
 
     python web/sitegen.py --data public --out public --base-url https://example.in
-Optional environment: ADSENSE_CLIENT (ca-pub-…) adds ad slots and ads.txt; PLAY_URL links the app once it is on Google Play;
+Optional environment: ADSENSE_CLIENT (ca-pub-…) adds the AdSense script (Auto ads) and ads.txt, and
+ADSENSE_SLOT (a display ad unit id) adds in-page units; PLAY_URL links the app once it is on Google Play;
 CF_BEACON_TOKEN adds Cloudflare Web Analytics (cookie-free); GOOGLE_SITE_VERIFICATION and
 BING_SITE_VERIFICATION add the ownership meta tags for Search Console / Bing Webmaster Tools.
 """
@@ -225,6 +226,8 @@ class Site:
         self.dates = sorted(self.days, reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
         self.play_url = os.environ.get("PLAY_URL", "").strip()
+        # A manual unit needs its slot id (AdSense → Ads → By ad unit); without one, Auto ads alone place ads.
+        self.ad_slot = os.environ.get("ADSENSE_SLOT", "").strip()
         self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
@@ -337,11 +340,11 @@ class Site:
 
     def ad(self) -> str:
         # At most 3 units per page and never inside the numbers: people come for the numbers.
-        if not self.adsense or self._ads >= 3:
+        if not self.adsense or not self.ad_slot or self._ads >= 3:
             return ""
         self._ads += 1
         return (f'<div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="{esc(self.adsense)}" '
-                f'data-ad-format="auto" data-full-width-responsive="true"></ins>'
+                f'data-ad-slot="{esc(self.ad_slot)}" data-ad-format="auto" data-full-width-responsive="true"></ins>'
                 f'<script>(adsbygoogle=window.adsbygoogle||[]).push({{}});</script></div>')
 
     # ---- blocks ----
