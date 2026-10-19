@@ -26,7 +26,7 @@ var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v)
 var cs=D.map(function(d){return check(k,d)}).filter(Boolean),won=cs.filter(function(c){return c.w.length});
 won.forEach(function(c){var x=c.w[0],e=box(x.nf?t("maybe_first"):t("you_won"));e[1].appendChild(el("strong",null,tier(x.T.rank)+" · "+rup(x.T.prize)));
 e[1].appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)));
-if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));out.appendChild(e[0])});
+if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
 if(!won.length){var e=box(t("no_win_title",show(k)),"no");e[1].appendChild(el("div","hint",t(cs.length===1&&S.no_win_body_one?"no_win_body_one":"no_win_body",cs.length)));out.appendChild(e[0])}
 var dg=k.dg;document.querySelectorAll(".nums li").forEach(function(s){var x=s.textContent,hit=dg.length>=x.length&&dg.slice(-x.length)===x;
 s.classList.toggle("hit",hit);if(hit){var dt=s.closest("details");if(dt)dt.open=true}});
@@ -63,4 +63,8 @@ var day=document.body.dataset.live;
 if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
 setInterval(function(){if(document.hidden)return;fetch(url,{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
 var n=j.draws.filter(function(d){return d.date===day&&d.tiers&&d.tiers.length}).length;if(n>shown)location.reload()}).catch(function(){})},60000)}
+// A page waiting for one draw (Kerala's page before 4 PM) reloads once that draw is in the feed.
+var wid=document.body.dataset.wait;
+if(wid)setInterval(function(){if(document.hidden)return;fetch(feed("today.json"),{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
+if(j.draws.some(function(d){return d.id===wid&&d.tiers&&d.tiers.length}))location.reload()}).catch(function(){})},60000);
 })();
