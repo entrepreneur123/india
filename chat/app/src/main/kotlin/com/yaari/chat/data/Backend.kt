@@ -3,8 +3,10 @@ package com.yaari.chat.data
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
+import com.yaari.chat.model.CreatedRoom
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
@@ -102,9 +104,19 @@ interface Backend {
     /** The chat to message a friend in (their last chat, or a new private one). */
     suspend fun friendThread(userId: String): String
 
+    /** Official rooms first, then live public user rooms, plus open rooms I own or am in. */
     suspend fun rooms(): List<Room>
-    /** Enter a room, and stay listed as present: call again every 30 s while it is open. */
+    /**
+     * Enter a room, and stay listed as present: call again every 30 s while it is open. Refused with
+     * room_closed, room_gender, room_age, room_full or not_found (private rooms are entered with their code first).
+     */
     suspend fun joinRoom(roomId: String)
+    /** Opens a user room (closing my previous open one); I am already in it. */
+    suspend fun createRoom(room: NewRoom): CreatedRoom
+    /** Finds a room by its 6-character code (any case) and enters it; returns the room id. */
+    suspend fun joinRoomCode(code: String): String
+    /** Owner only: nobody can enter or write any more. */
+    suspend fun closeRoom(roomId: String)
     suspend fun leaveRoom(roomId: String)
     suspend fun roomHistory(roomId: String): List<RoomMessage>
     /** New messages in a room while it is open. */

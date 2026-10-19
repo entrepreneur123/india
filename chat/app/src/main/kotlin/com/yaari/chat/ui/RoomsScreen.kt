@@ -32,6 +32,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,10 +86,10 @@ private val RoomAbout = mapOf(
 )
 
 @Composable
-fun Room.name() = RoomNames[id]?.let { stringResource(it) } ?: title
+fun Room.name() = (if (official) RoomNames[id] else null)?.let { stringResource(it) } ?: title
 
 @Composable
-private fun Room.about() = RoomAbout[id]?.let { stringResource(it) }
+private fun Room.about() = (if (official) RoomAbout[id] else null)?.let { stringResource(it) }
 
 /** Pastel tints for the room cards (mint, peach, lavender, blush, sky, butter), light and dark. */
 private val RoomTint = listOf(0xFFE9F7EF, 0xFFFFF0E6, 0xFFEEF0FF, 0xFFFFEEF3, 0xFFE8F3FF, 0xFFFFF7DF)
@@ -104,6 +106,9 @@ private fun tintFor(i: Int): Color {
 fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     var refreshing by remember { mutableStateOf(false) }
     LaunchedEffect(refreshing) { if (refreshing) { delay(900); refreshing = false } }
+    var sheet by rememberSaveable { mutableStateOf(RoomSheet.NONE) }
+    val official = s.rooms.filter { it.official }
+    val people = s.rooms.filterNot { it.official }
     Column(Modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.tab_rooms), onSettings)
         PullToRefreshBox(refreshing, onRefresh = { refreshing = true; vm.refreshRooms() }, Modifier.fillMaxSize()) {
@@ -116,25 +121,40 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
                     // Skeletons while the list loads, shaped like the real cards.
                     item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(28.dp)).shimmer()) }
                     items(4) { Box(Modifier.height(164.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
+                    return@LazyVerticalGrid
                 }
-                s.rooms.firstOrNull()?.let { featured ->
+                official.firstOrNull()?.let { featured ->
                     item(key = featured.id, span = { GridItemSpan(maxLineSpan) }) { FeaturedRoom(featured) { vm.enterRoom(featured) } }
                 }
-                if (s.rooms.size > 1) {
-                    item(key = "more", span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            stringResource(R.string.rooms_more), style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
-                            modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
-                        )
-                    }
+                item(key = "actions", span = { GridItemSpan(maxLineSpan) }) {
+                    RoomActions(onCreate = { sheet = RoomSheet.CREATE }, onCode = { sheet = RoomSheet.CODE })
                 }
-                itemsIndexed(s.rooms.drop(1), key = { _, r -> r.id }) { i, room ->
+                item(key = "people", span = { GridItemSpan(maxLineSpan) }) {
+                    SectionTitle(stringResource(R.string.rooms_by_people), trailing = people.size.takeIf { it > 0 }?.toString())
+                }
+                if (people.isEmpty()) {
+                    item(key = "people-empty", span = { GridItemSpan(maxLineSpan) }) { NoUserRooms { sheet = RoomSheet.CREATE } }
+                }
+                itemsIndexed(people, key = { _, r -> r.id }, span = { _, _ -> GridItemSpan(maxLineSpan) }) { i, room ->
+                    UserRoomCard(room, Modifier.enterStagger(i)) { vm.enterRoom(room) }
+                }
+                if (official.size > 1) {
+                    item(key = "more", span = { GridItemSpan(maxLineSpan) }) { SectionTitle(stringResource(R.string.rooms_more)) }
+                }
+                itemsIndexed(official.drop(1), key = { _, r -> r.id }) { i, room ->
                     RoomCard(room, tintFor(i), bobDelay = i * 180, modifier = Modifier.enterStagger(i)) { vm.enterRoom(room) }
                 }
             }
         }
     }
+    when (sheet) {
+        RoomSheet.CREATE -> CreateRoomSheet(s.roomBusy, onDismiss = { sheet = RoomSheet.NONE }) { spec -> vm.createRoom(spec) { sheet = RoomSheet.NONE } }
+        RoomSheet.CODE -> JoinCodeSheet(s.roomBusy, onDismiss = { sheet = RoomSheet.NONE }) { code -> vm.joinByCode(code) { sheet = RoomSheet.NONE } }
+        RoomSheet.NONE -> Unit
+    }
 }
+
+private enum class RoomSheet { NONE, CREATE, CODE }
 
 /** The first room (Global Lounge), wide, in a slowly flowing brand gradient with a glow underneath. */
 @Composable
@@ -230,6 +250,8 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
     BackHandler(onBack = vm::leaveRoom)
     SecureScreen()
     val room = state.room
+    val code = room.code
+    var confirmClose by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         Row(
             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 16.dp),
@@ -242,19 +264,42 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
             ) { Text(room.emoji, fontSize = 22.sp) }
             Column(Modifier.padding(start = 12.dp).weight(1f)) {
                 Text(room.name(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                OnlineCount(maxOf(room.online, 1), MaterialTheme.colorScheme.onSurfaceVariant)
+                if (state.closed) {
+                    Text(stringResource(R.string.refusal_closed), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                } else if (room.maxMembers != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        PresenceDot(6.dp)
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                            stringResource(R.string.room_count, maxOf(room.online, 1), room.maxMembers),
+                            style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                } else {
+                    OnlineCount(maxOf(room.online, 1), MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            if (room.mine && !state.closed) {
+                Pill(
+                    stringResource(R.string.close_room), Modifier.clip(CircleShape).clickable(role = Role.Button) { confirmClose = true },
+                    background = Brand.Danger.copy(alpha = 0.1f), color = Brand.Danger,
+                )
             }
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
-        Row(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer).padding(horizontal = 20.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Outlined.PushPin, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
-            Text(
-                stringResource(R.string.room_rules), Modifier.padding(start = 8.dp),
-                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        if (room.mine && code != null && !state.closed) RoomCodeBar(room, code)
+        Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer).padding(horizontal = 20.dp, vertical = 10.dp)) {
+            if (!room.official) {
+                RoomConditions(room)
+                Spacer(Modifier.height(8.dp))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.PushPin, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    stringResource(R.string.room_rules), Modifier.padding(start = 8.dp),
+                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         val list = rememberLazyListState()
         LaunchedEffect(state.messages.size) { if (state.messages.isNotEmpty()) list.animateScrollToItem(state.messages.size - 1 + if (state.loading) 1 else 0) }
@@ -263,15 +308,29 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Brand.Pink) } }
+            if (!state.loading && state.messages.isEmpty()) {
+                item {
+                    EmptyState(
+                        Icons.Rounded.WavingHand, stringResource(R.string.room_empty_title),
+                        stringResource(if (room.mine && !state.closed) R.string.room_empty_owner else R.string.room_empty),
+                    )
+                }
+            }
             items(state.messages, key = { it.id }) { m ->
                 Box(Modifier.animateItem()) { PopIn(m.fromMe) { RoomLine(m, onProfile = { vm.openProfile(m.sender) }) } }
             }
         }
-        Composer(
-            onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT,
-            hint = stringResource(R.string.message_room, room.name()), divider = true,
-        )
+        if (state.closed) {
+            RoomClosedBar(vm::leaveRoom)
+        } else {
+            Composer(
+                onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT,
+                hint = stringResource(R.string.message_room, room.name()), divider = true,
+            )
+        }
     }
+    if (state.showCode && code != null) RoomCreatedDialog(room, code, vm::dismissRoomCode)
+    if (confirmClose) CloseRoomDialog(onConfirm = { confirmClose = false; vm.closeRoom() }, onCancel = { confirmClose = false })
 }
 
 @Composable

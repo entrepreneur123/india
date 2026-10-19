@@ -17,17 +17,21 @@ import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
+import com.yaari.chat.model.CreatedRoom
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
+import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Room
+import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -137,7 +141,15 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val id: String, val name: String, val gender: String, val age: Int, val city: String, val bio: String,
         @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
     )
-    @Serializable private data class RoomRow(val id: String, val title: String, val emoji: String, val online: Int)
+    @Serializable private data class RoomRow(
+        val id: String, val title: String, val emoji: String, val online: Int,
+        val official: Boolean = true, val mine: Boolean = false, @SerialName("owner_name") val ownerName: String? = null,
+        val category: String? = null, @SerialName("max_members") val maxMembers: Int? = null,
+        @SerialName("gender_rule") val genderRule: String? = null, @SerialName("min_age") val minAge: Int = Room.MIN_AGE,
+        @SerialName("max_age") val maxAge: Int = Room.MAX_AGE, @SerialName("is_private") val isPrivate: Boolean = false,
+        val code: String? = null, val refusal: String? = null,
+    )
+    @Serializable private data class CreatedRoomRow(@SerialName("room_id") val roomId: String, @SerialName("room_code") val roomCode: String)
     @Serializable private data class RoomMessageRow(
         val id: Long, @SerialName("room_id") val roomId: String, val sender: String,
         @SerialName("sender_name") val senderName: String, @SerialName("sender_gender") val senderGender: String,
@@ -466,8 +478,33 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     // ---- rooms ----
 
     override suspend fun rooms(): List<Room> = call {
-        client.postgrest.rpc("room_list").decodeList<RoomRow>().map { Room(it.id, it.title, it.emoji, it.online) }
+        client.postgrest.rpc("room_list2").decodeList<RoomRow>().map {
+            Room(
+                it.id, it.title, it.emoji, it.online, official = it.official, mine = it.mine, ownerName = it.ownerName,
+                category = RoomCategory.of(it.category), maxMembers = it.maxMembers, genderRule = GenderRule.of(it.genderRule),
+                minAge = it.minAge, maxAge = it.maxAge, isPrivate = it.isPrivate, code = it.code, refusal = it.refusal,
+            )
+        }
     }
+
+    override suspend fun createRoom(room: NewRoom): CreatedRoom = call {
+        val row = client.postgrest.rpc("create_room", buildJsonObject {
+            put("p_title", room.title)
+            put("p_category", room.category.code)
+            put("p_max", room.maxMembers)
+            put("p_gender", room.genderRule.code)
+            put("p_min_age", room.minAge)
+            put("p_max_age", room.maxAge)
+            put("p_private", room.isPrivate)
+        }).decodeList<CreatedRoomRow>().firstOrNull() ?: throw BackendException("network")
+        CreatedRoom(row.roomId, row.roomCode)
+    }
+
+    override suspend fun joinRoomCode(code: String): String = call {
+        json.decodeFromString<String>(client.postgrest.rpc("join_room_code", buildJsonObject { put("p_code", code) }).data.trim())
+    }
+
+    override suspend fun closeRoom(roomId: String) = call { client.postgrest.rpc("close_room", buildJsonObject { put("p_room", roomId) }); Unit }
 
     override suspend fun joinRoom(roomId: String) = call { client.postgrest.rpc("join_room", buildJsonObject { put("p_room", roomId) }); Unit }
 
@@ -576,7 +613,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val BUCKET = "media"
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
+        // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
+            "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",
         )
