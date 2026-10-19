@@ -40,7 +40,9 @@ class ScreenshotTest {
     private val bumperDay: DayFeed = json.decodeFromString(res("day_2026-09-19.json"))
     private val index: IndexFeed = json.decodeFromString(res("feed_index.json"))
     private val config: RemoteConfig = json.decodeFromString(res("feed_config.json"))
-    private val allDraws: Map<String, Draw> = (latest.draws + bumperDay.draws).associateBy { it.id }
+    // Kerala SM-77 (18-10) and KR-772 (17-10, 9th prize unconfirmed), as the pipeline published them.
+    private val kerala: ResultFeed = json.decodeFromString(res("kerala_draws.json"))
+    private val allDraws: Map<String, Draw> = (latest.draws + bumperDay.draws + kerala.draws).associateBy { it.id }
     private val state = ResultRepository.State(draws = allDraws, index = index, config = config,
         lastCheckedMs = ZonedDateTime.of(2026, 10, 18, 20, 58, 0, 0, DrawSchedule.IST).toInstant().toEpochMilli())
     private val evening = ZonedDateTime.of(2026, 10, 18, 21, 0, 0, 0, DrawSchedule.IST)
@@ -98,6 +100,14 @@ class ScreenshotTest {
         compose.onNodeWithText("1st Prize · ₹3,00,00,000").assertExists()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/05_bumper_win.png")
     }
+
+    @Test fun keralaInTheTimeline() {
+        shot("21_results_kerala") { ResultsScreen(state, evening, {}, {}, {}) }
+        compose.onNodeWithText("SAMRUDHI SM-77").assertExists()
+    }
+
+    @Test fun keralaDetailWithUnconfirmedTier() =
+        shot("22_kerala_detail") { DrawDetailScreen(allDraws.getValue("2026-10-17_KL"), onBack = {}) }
 
     @Test fun bumperDetail() = shot("06_bumper_detail") { DrawDetailScreen(ganesh, onBack = {}) }
 

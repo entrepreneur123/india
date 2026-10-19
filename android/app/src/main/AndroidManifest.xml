@@ -76,6 +76,17 @@
             </intent-filter>
         </service>
 
+        <!-- AdMob (see ads/Ads.kt). Test id unless ADMOB_APP_ID is set; initialization work off the main thread. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
+
         <!-- Ask Google Play services to fetch the on-device OCR and QR/barcode models at install time. -->
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"

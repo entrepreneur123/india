@@ -35,9 +35,20 @@ android {
         for (name in listOf("FIREBASE_APP_ID", "FIREBASE_API_KEY", "FIREBASE_PROJECT_ID", "FIREBASE_SENDER_ID")) {
             buildConfigField("String", name, "\"${cfg(name)}\"")
         }
+        // AdMob: real ids from gradle properties / env (ADMOB_APP_ID, ADMOB_BANNER, ADMOB_INTERSTITIAL).
+        // Without them a release shows no ads; debug builds use Google's documented test ids.
+        val admobApp = cfg("ADMOB_APP_ID").ifEmpty { "ca-app-pub-3940256099942544~3347511713" }
+        manifestPlaceholders["admobAppId"] = admobApp
+        buildConfigField("String", "ADMOB_BANNER", "\"${cfg("ADMOB_BANNER")}\"")
+        buildConfigField("String", "ADMOB_INTERSTITIAL", "\"${cfg("ADMOB_INTERSTITIAL")}\"")
     }
 
     buildTypes {
+        debug {
+            fun cfg(name: String) = (providers.gradleProperty(name).orNull ?: System.getenv(name) ?: "").trim()
+            buildConfigField("String", "ADMOB_BANNER", "\"${cfg("ADMOB_BANNER").ifEmpty { "ca-app-pub-3940256099942544/9214589741" }}\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL", "\"${cfg("ADMOB_INTERSTITIAL").ifEmpty { "ca-app-pub-3940256099942544/1033173712" }}\"")
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -92,6 +103,11 @@ dependencies {
     implementation(libs.mlkit.barcode.scanning)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+    implementation(libs.play.services.ads)
+    implementation(libs.ump)
+    // The ads SDK brings Guava at runtime and an empty listenablefuture stub at compile time;
+    // CameraX's ListenableFuture then needs the real class on the compile classpath (same version).
+    implementation(libs.guava)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

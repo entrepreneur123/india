@@ -131,8 +131,13 @@ private fun TierBlock(tier: Tier, q: String) {
             Text(formatRupees(tier.prize), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         }
         matchHint(tier)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-        val cell = when (tier.numbers.maxOfOrNull { it.length } ?: 4) { in 0..4 -> 52.dp; 5 -> 62.dp; else -> 100.dp }
-        FlowRow(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 8.dp)) {
+        if (!tier.confirmed) Text(stringResource(R.string.tier_unconfirmed), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier.padding(top = 4.dp).background(MaterialTheme.colorScheme.errorContainer, MaterialTheme.shapes.small)
+                .padding(horizontal = 8.dp, vertical = 4.dp))
+        val cell = when (tier.numbers.maxOfOrNull { it.length } ?: 4) { in 0..4 -> 52.dp; 5 -> 62.dp; in 6..8 -> 100.dp; else -> 112.dp }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.padding(top = 8.dp)) {
             tier.numbers.forEach { n ->
                 // Same rules as Matcher: last-4 tiers compare 4 digits, others need the full digits.
                 val hit = when (tier.match) {
@@ -210,9 +215,12 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit, onOpenSheet: (Draw, Boolean
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                             Text(draw.name, color = onBand, style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold)
-                            Text(draw.drawNo?.let { stringResource(R.string.draw_meta, stateName(draw.state), it.toString(), draw.price) }
-                                ?: stringResource(R.string.draw_meta_special, stateName(draw.state), draw.price),
-                                color = onBand, style = MaterialTheme.typography.bodySmall)
+                            // A price we have not verified (0) is left out rather than shown as ₹0.
+                            Text(when {
+                                draw.price <= 0 -> stateLabel
+                                draw.drawNo != null -> stringResource(R.string.draw_meta, stateName(draw.state), draw.drawNo.toString(), draw.price)
+                                else -> stringResource(R.string.draw_meta_special, stateName(draw.state), draw.price)
+                            }, color = onBand, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                     draw.tiers.firstOrNull()?.let { first ->
@@ -268,6 +276,13 @@ fun DrawDetailScreen(draw: Draw, onBack: () -> Unit, onOpenSheet: (Draw, Boolean
                         TextButton(onClick = { downloadPdf(ctx, url, (draw.id.takeIf(com.lottodost.app.domain.Trust::isId) ?: "result") + ".pdf", draw.name) }, modifier = Modifier.fillMaxWidth()) {
                             Text(stringResource(R.string.save_pdf))
                         }
+                    }
+                    draw.officialSite?.let { url ->
+                        OutlinedButton(onClick = { openUrl(ctx, url) }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.open_kerala_official))
+                        }
+                        Text(stringResource(R.string.kerala_source_note), style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Text(stringResource(if (draw.state == "Nagaland") R.string.claim_info else R.string.claim_other_state),
                         style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
