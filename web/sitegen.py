@@ -176,6 +176,12 @@ def verification(value: str) -> str:
     return (m.group(1) if m else value).strip()
 
 
+def beacon_token(value: str) -> str:
+    """Accepts the bare token or the whole Cloudflare snippet (… data-cf-beacon='{"token": "…"}' …)."""
+    m = re.search(r'"token"\s*:\s*"([^"]+)"', value)
+    return (m.group(1) if m else value).strip()
+
+
 def draw_slug(d: dict) -> str:
     return SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
 
@@ -205,7 +211,7 @@ class Site:
         self.index = json.loads((data / "v2/index.json").read_text()) if (data / "v2/index.json").exists() else {}
         self.dates = sorted(self.days, reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
-        self.beacon = os.environ.get("CF_BEACON_TOKEN", "").strip()
+        self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
         self.pages: list[tuple[str, dict[str, str]]] = []  # (key, {lang: path}) for the sitemap

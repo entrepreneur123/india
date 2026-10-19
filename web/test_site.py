@@ -88,3 +88,10 @@ def test_verification_accepts_the_whole_meta_tag():
     tag = '<meta name="google-site-verification" content="kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q" />'
     assert sitegen.verification(tag) == "kaGs6GCkJCjF95K6r6FLMmRcG76VAjaoHo8bTWcLL9Q"
     assert sitegen.verification(" abc123 ") == "abc123"
+
+
+def test_beacon_accepts_the_whole_snippet():
+    snippet = ("<!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' "
+               "data-cf-beacon='{\"token\": \"0123abcd\"}'></script><!-- End Cloudflare Web Analytics -->")
+    assert sitegen.beacon_token(snippet) == "0123abcd"
+    assert sitegen.beacon_token("0123abcd") == "0123abcd"
