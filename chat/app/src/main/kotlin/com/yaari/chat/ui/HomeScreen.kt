@@ -49,6 +49,11 @@ import java.util.Date
 @Composable
 fun HomeScreen(vm: AppViewModel, s: UiState) {
     var composing by rememberSaveable { mutableStateOf(false) }
+    var settings by rememberSaveable { mutableStateOf(false) }
+    if (settings) {
+        SettingsScreen(vm, onBack = { settings = false })
+        return
+    }
     if (composing) {
         NewPostScreen(onCancel = { composing = false }) { text, uri ->
             vm.addPost(text, uri)
@@ -70,7 +75,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 Tab.CHAT -> Lobby(vm, s)
                 Tab.RECENT -> Recents(vm, s)
                 Tab.ME -> s.me?.let { me ->
-                    ProfileContent(me, isMe = true, entitlements = s.entitlements, onUpgrade = { vm.showPaywall("Yaari Premium") }, onNewPost = { composing = true })
+                    ProfileContent(me, isMe = true, entitlements = s.entitlements, onUpgrade = { vm.showPaywall("Yaari Premium") }, onNewPost = { composing = true }, onSettings = { settings = true })
                 }
             }
         }

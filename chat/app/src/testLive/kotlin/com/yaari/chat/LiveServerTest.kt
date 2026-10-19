@@ -44,6 +44,17 @@ class LiveServerTest {
         try { block(); null } catch (e: BackendException) { e.code }
     }
 
+    @Test fun deleteAccountRemovesTheUser() = runBlocking {
+        assumeTrue(!password.isNullOrBlank() && System.getenv("YAARI_QA_DELETE") == "1")
+        val c = SupabaseBackend(RuntimeEnvironment.getApplication(), persistSession = false)
+        c.signInWithEmailForTest("qa3@yaari.test", password)
+        assertNotNull("qa3 has a profile", c.myProfile())
+        c.deleteAccount()
+        val again = SupabaseBackend(RuntimeEnvironment.getApplication(), persistSession = false)
+        val signIn = runCatching { again.signInWithEmailForTest("qa3@yaari.test", password) }
+        assertTrue("deleted user must not sign in", signIn.isFailure)
+    }
+
     @Test fun twoUsersMatchChatAndLeave() = runBlocking {
         assumeTrue("set YAARI_QA_PASSWORD to run against the live server", !password.isNullOrBlank())
         val a = user("qa1@yaari.test", "QA Arjun", Gender.MALE)

@@ -197,6 +197,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     override suspend fun signOut() = call { client.auth.signOut() }
 
+    override suspend fun deleteAccount() = call {
+        client.functions.invoke("delete-account")
+        client.auth.clearSession() // the server already removed the user; only the local session is left
+    }
+
     // ---- matching & chat ----
 
     override suspend fun findMatch(target: Target): Match? = call {

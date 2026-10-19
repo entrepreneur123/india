@@ -56,6 +56,8 @@ interface Backend {
     suspend fun entitlements(): Entitlements
     suspend fun redeem(productId: String, purchaseToken: String): Entitlements
     suspend fun signOut()
+    /** Permanently deletes the account, profile, posts, chats and media (Google Play requirement). */
+    suspend fun deleteAccount()
 
     /** One matching attempt. Null = queued; call again every couple of seconds. */
     suspend fun findMatch(target: Target): Match?

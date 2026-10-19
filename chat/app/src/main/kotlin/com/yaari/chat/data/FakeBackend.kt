@@ -91,6 +91,15 @@ open class FakeBackend(
         return entitlements
     }
 
+    override suspend fun deleteAccount() {
+        val ph = phone ?: throw BackendException("not_signed_in")
+        accounts.remove(ph)
+        matches.clear()
+        entitlements = Entitlements()
+        lastPartner = null
+        phone = null
+    }
+
     override suspend fun signOut() {
         phone = null
     }

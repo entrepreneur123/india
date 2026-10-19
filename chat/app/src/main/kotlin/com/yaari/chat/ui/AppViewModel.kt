@@ -486,6 +486,25 @@ class AppViewModel(
         if (dm == null || dm.recent.matchId != matchId) it else it.copy(dm = dm.copy(messages = change(dm.messages)))
     }
 
+    fun signOut() = act {
+        backend.signOut()
+        resetToStart()
+    }
+
+    /** Irreversible; the confirmation dialog is in the settings screen. */
+    fun deleteAccount() = act {
+        backend.deleteAccount()
+        resetToStart()
+        notice("Your account and data were deleted.")
+    }
+
+    private fun resetToStart() {
+        matchJob?.cancel()
+        chatJob?.cancel()
+        dmJob?.cancel()
+        _state.value = UiState(booting = false)
+    }
+
     fun addPost(text: String, imageUri: String?) {
         val t = text.trim().take(500)
         if (t.isEmpty() && imageUri == null) return

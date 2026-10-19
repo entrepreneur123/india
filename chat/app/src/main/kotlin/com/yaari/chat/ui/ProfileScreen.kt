@@ -120,6 +120,7 @@ fun ProfileContent(
     entitlements: Entitlements = Entitlements(),
     onUpgrade: () -> Unit = {},
     onNewPost: () -> Unit = {},
+    onSettings: () -> Unit = {},
     footer: @Composable () -> Unit = {},
 ) {
     var open by remember { mutableStateOf<Post?>(null) }
@@ -140,6 +141,7 @@ fun ProfileContent(
                 }
                 if (p.bio.isNotBlank()) Text(p.bio)
                 if (isMe) {
+                    OutlinedButton(onSettings, Modifier.fillMaxWidth()) { Text("Settings & safety") }
                     OutlinedButton(onNewPost, Modifier.fillMaxWidth()) {
                         Icon(Icons.Filled.Add, null)
                         Text("New post")

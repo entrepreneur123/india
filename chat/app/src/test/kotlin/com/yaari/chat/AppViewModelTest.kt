@@ -251,6 +251,20 @@ class AppViewModelTest {
         assertEquals(2, texts.size)
     }
 
+    @Test fun deletingTheAccountStartsOver() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        now += 5_000
+        vm.deleteAccount(); advanceUntilIdle()
+        assertNull(vm.state.value.me)
+        assertNull(vm.state.value.chat)
+        assertEquals(Onboarding.Step.PHONE, vm.state.value.onboarding.step)
+        // The same number can sign up again, as a brand-new account.
+        vm.requestOtp("9876543210"); advanceUntilIdle()
+        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
+        assertEquals(Onboarding.Step.PROFILE, vm.state.value.onboarding.step)
+    }
+
     @Test fun newPostAppearsOnMyProfile() = runTest(dispatcher) {
         val vm = signedIn()
         vm.addPost("First day ✨", null); advanceUntilIdle()

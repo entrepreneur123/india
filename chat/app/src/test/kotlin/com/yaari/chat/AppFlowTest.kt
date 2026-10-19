@@ -172,5 +172,15 @@ class AppFlowTest {
         shot("16_my_profile")
         assertEquals(1, vm.state.value.me!!.posts.size)
         assertTrue(vm.state.value.premium)
+
+        // 12. Settings: rules, grievance officer, account deletion (Google Play requirement)
+        compose.onNodeWithText("Settings & safety").performClick()
+        waitFor("Grievance Officer")
+        shot("17_settings")
+        compose.onNodeWithText("Delete account").performScrollTo().performClick()
+        waitFor("Delete your account?")
+        compose.onNodeWithText("Delete").performClick()
+        waitFor("Mobile number")
+        assertNull(vm.state.value.me)
     }
 }
