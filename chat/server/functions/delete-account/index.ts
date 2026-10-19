@@ -2,11 +2,11 @@
 // phone number if they are currently banned (so a ban cannot be escaped), then deletes the auth user;
 // the database cascades to profile, posts, matches, messages, reports and blocks.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+import { json, preflight } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
+  const pre = preflight(req);
+  if (pre) return pre;
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
   const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
     global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },

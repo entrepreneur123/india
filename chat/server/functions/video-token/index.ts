@@ -1,12 +1,12 @@
 // Issues a LiveKit join token for one accepted video call. Room = match id, identity = user id.
 // Secrets (Supabase dashboard > Edge Functions > Secrets): LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET.
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { json, preflight } from "../_shared/cors.ts";
 import { livekitToken } from "../_shared/jwt.ts";
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
-
 Deno.serve(async (req) => {
+  const pre = preflight(req);
+  if (pre) return pre;
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
   const url = Deno.env.get("LIVEKIT_URL"), apiKey = Deno.env.get("LIVEKIT_API_KEY"), apiSecret = Deno.env.get("LIVEKIT_API_SECRET");
   if (!url || !apiKey || !apiSecret) return json(503, { error: "video_not_configured" });
