@@ -164,6 +164,8 @@
     <string name="get_plus">Plus নিন</string>
     <string name="plan_badge_plus">Plus</string>
     <string name="matching_tip">টিপ: আগে হাই বলুন। তাহলে উত্তর বেশি আসে 👋</string>
+    <string name="matching_reconnecting">আবার সংযোগ হচ্ছে…</string>
+    <string name="offline_banner">ইন্টারনেট সংযোগ নেই। আবার সংযোগের চেষ্টা চলছে…</string>
     <string name="rooms_sub">লাইভ গ্রুপ চ্যাট। ঢুকে হাই বলুন।</string>
     <plurals name="online">
         <item quantity="one">%d জন অনলাইন</item>

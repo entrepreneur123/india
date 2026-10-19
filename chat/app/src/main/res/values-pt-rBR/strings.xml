@@ -164,6 +164,8 @@
     <string name="get_plus">Assinar Plus</string>
     <string name="plan_badge_plus">Plus</string>
     <string name="matching_tip">Dica: diga oi primeiro. As pessoas respondem mais 👋</string>
+    <string name="matching_reconnecting">Reconectando…</string>
+    <string name="offline_banner">Sem conexão com a internet. Tentando reconectar…</string>
     <string name="rooms_sub">Chats em grupo ao vivo. Entre e diga oi.</string>
     <plurals name="online">
         <item quantity="one">%d online</item>

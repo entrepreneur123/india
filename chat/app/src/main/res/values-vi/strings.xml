@@ -164,6 +164,8 @@
     <string name="get_plus">Mua Plus</string>
     <string name="plan_badge_plus">Plus</string>
     <string name="matching_tip">Mẹo: chào trước nhé. Mọi người sẽ trả lời nhiều hơn 👋</string>
+    <string name="matching_reconnecting">Đang kết nối lại…</string>
+    <string name="offline_banner">Không có kết nối Internet. Đang thử kết nối lại…</string>
     <string name="rooms_sub">Chat nhóm trực tiếp. Vào và chào mọi người.</string>
     <plurals name="online">
         <item quantity="other">%d trực tuyến</item>

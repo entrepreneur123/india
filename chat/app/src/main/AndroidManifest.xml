@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- The offline banner watches whether there is a network (Connectivity). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!-- Nothing is backed up or moved to a new phone (login session included); see xml/data_extraction_rules.xml.
          Only HTTPS: xml/network_security_config.xml. The per-app language list (Android 13+) is generated
          from the shipped locales (androidResources.generateLocaleConfig). -->

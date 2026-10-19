@@ -48,6 +48,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,14 +75,26 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import com.yaari.chat.R
+import com.yaari.chat.data.Connectivity
+import kotlinx.coroutines.flow.StateFlow
 import com.yaari.chat.data.Products
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.domain.ExitPolicy
 
+/** [online]: false shows the offline banner above everything (see [Connectivity]). */
 @Composable
-fun YaariApp(vm: AppViewModel) {
+fun YaariApp(vm: AppViewModel, online: StateFlow<Boolean> = Connectivity.online) {
     val s by vm.state.collectAsStateWithLifecycle()
+    val connected by online.collectAsStateWithLifecycle()
     val context = LocalContext.current
     LaunchedEffect(s.notice) {
         s.notice?.let {
@@ -90,64 +103,92 @@ fun YaariApp(vm: AppViewModel) {
         }
     }
     Surface(Modifier.fillMaxSize()) {
-        val me = s.me
-        if (s.booting) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                val t = rememberInfiniteTransition(label = "boot")
-                val a by t.animateFloat(0.55f, 1f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "a")
-                Wordmark(Modifier.graphicsLayer { alpha = a; scaleX = 0.96f + 0.04f * a; scaleY = 0.96f + 0.04f * a }, size = 48)
+        Column(Modifier.fillMaxSize()) {
+            // Slim and informative only: every screen stays usable, and the requests retry by themselves.
+            // The banner takes the status bar area, so the screen below does not pad for it a second time.
+            if (!connected) OfflineBanner()
+            Box(Modifier.weight(1f).then(if (connected) Modifier else Modifier.consumeWindowInsets(WindowInsets.statusBars))) {
+                Screens(vm, s)
             }
-            return@Surface
-        }
-        if (me == null) {
-            OnboardingScreen(vm, s.onboarding)
-            return@Surface
-        }
-        val chat = s.chat
-        val dm = s.dm
-        val top = when {
-            chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> Top.VIDEO
-            chat != null -> Top.CHAT
-            s.searching -> Top.SEARCHING
-            dm != null -> Top.DM
-            else -> Top.HOME
-        }
-        Box(Modifier.fillMaxSize()) {
-            AnimatedContent(
-                top,
-                transitionSpec = {
-                    when {
-                        // Searching -> chat: the match "lands" (zoom), the reveal plays inside the chat screen.
-                        targetState == Top.CHAT && initialState == Top.SEARCHING ->
-                            (fadeIn(tween(250)) + scaleIn(tween(350), initialScale = 1.08f)) togetherWith fadeOut(tween(200))
-                        targetState == Top.VIDEO || initialState == Top.VIDEO -> fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-                        targetState == Top.SEARCHING || initialState == Top.SEARCHING -> fadeIn(tween(250)) togetherWith fadeOut(tween(250))
-                        targetState == Top.HOME -> pushPop(forward = false)
-                        else -> pushPop(forward = true)
-                    }
-                },
-                label = "top",
-            ) { t ->
-                // Each branch reads the latest state; during an exit animation it may already be gone.
-                when (t) {
-                    Top.VIDEO -> s.chat?.let { c -> VideoCallScreen(vm, c.match.partner, me) }
-                    Top.CHAT -> s.chat?.let { c -> ChatRoomScreen(vm, c, s.premium) }
-                    Top.SEARCHING -> MatchingScreen(vm, s)
-                    Top.DM -> s.dm?.let { d -> DmScreen(vm, d) }
-                    Top.HOME -> HomeScreen(vm, s)
-                }
-            }
-            // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
-            var lastViewed by remember { mutableStateOf<Profile?>(null) }
-            s.viewing?.let { lastViewed = it }
-            AnimatedVisibility(
-                s.viewing != null,
-                enter = slideInVertically(tween(320, easing = FastOutSlowInEasing)) { it / 3 } + fadeIn(tween(200)),
-                exit = slideOutVertically(tween(260)) { it / 3 } + fadeOut(tween(200)),
-            ) { lastViewed?.let { p -> ProfileScreen(vm, s.viewing ?: p, s) } }
         }
     }
     s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
+}
+
+@Composable
+private fun OfflineBanner() {
+    Row(
+        Modifier.fillMaxWidth().background(Brand.Ink2).statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp)
+            .semantics { liveRegion = LiveRegionMode.Polite },
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Rounded.CloudOff, null, Modifier.size(16.dp), tint = Color.White.copy(alpha = 0.8f))
+        Text(
+            stringResource(R.string.offline_banner), Modifier.padding(start = 8.dp), color = Color.White,
+            style = MaterialTheme.typography.labelMedium, maxLines = 2, textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun Screens(vm: AppViewModel, s: UiState) {
+    val me = s.me
+    if (s.booting) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            val t = rememberInfiniteTransition(label = "boot")
+            val a by t.animateFloat(0.55f, 1f, infiniteRepeatable(tween(700), RepeatMode.Reverse), label = "a")
+            Wordmark(Modifier.graphicsLayer { alpha = a; scaleX = 0.96f + 0.04f * a; scaleY = 0.96f + 0.04f * a }, size = 48)
+        }
+        return
+    }
+    if (me == null) {
+        OnboardingScreen(vm, s.onboarding)
+        return
+    }
+    val chat = s.chat
+    val dm = s.dm
+    val top = when {
+        chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> Top.VIDEO
+        chat != null -> Top.CHAT
+        s.searching -> Top.SEARCHING
+        dm != null -> Top.DM
+        else -> Top.HOME
+    }
+    Box(Modifier.fillMaxSize()) {
+        AnimatedContent(
+            top,
+            transitionSpec = {
+                when {
+                    // Searching -> chat: the match "lands" (zoom), the reveal plays inside the chat screen.
+                    targetState == Top.CHAT && initialState == Top.SEARCHING ->
+                        (fadeIn(tween(250)) + scaleIn(tween(350), initialScale = 1.08f)) togetherWith fadeOut(tween(200))
+                    targetState == Top.VIDEO || initialState == Top.VIDEO -> fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+                    targetState == Top.SEARCHING || initialState == Top.SEARCHING -> fadeIn(tween(250)) togetherWith fadeOut(tween(250))
+                    targetState == Top.HOME -> pushPop(forward = false)
+                    else -> pushPop(forward = true)
+                }
+            },
+            label = "top",
+        ) { t ->
+            // Each branch reads the latest state; during an exit animation it may already be gone.
+            when (t) {
+                Top.VIDEO -> s.chat?.let { c -> VideoCallScreen(vm, c.match.partner, me) }
+                // Keyed by match: a new chat never inherits the last one's draft, dialogs or exit sheet.
+                Top.CHAT -> s.chat?.let { c -> key(c.match.id) { ChatRoomScreen(vm, c, s.premium) } }
+                Top.SEARCHING -> MatchingScreen(vm, s)
+                Top.DM -> s.dm?.let { d -> DmScreen(vm, d) }
+                Top.HOME -> HomeScreen(vm, s)
+            }
+        }
+        // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
+        var lastViewed by remember { mutableStateOf<Profile?>(null) }
+        s.viewing?.let { lastViewed = it }
+        AnimatedVisibility(
+            s.viewing != null,
+            enter = slideInVertically(tween(320, easing = FastOutSlowInEasing)) { it / 3 } + fadeIn(tween(200)),
+            exit = slideOutVertically(tween(260)) { it / 3 } + fadeOut(tween(200)),
+        ) { lastViewed?.let { p -> ProfileScreen(vm, s.viewing ?: p, s) } }
+    }
 }
 
 private enum class Top { HOME, SEARCHING, CHAT, VIDEO, DM }

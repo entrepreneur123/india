@@ -9,14 +9,20 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.request.allowRgb565
 import coil3.request.crossfade
+import com.yaari.chat.data.Connectivity
 import okio.Path.Companion.toOkioPath
 
 /**
  * Image loading sized for 2–3 GB phones: a smaller memory cache on low-RAM devices (and 16-bit bitmaps there),
  * a bounded disk cache so photos seen once are not downloaded again on paid mobile data, and no crossfade.
- * Nothing else runs at startup.
+ * Besides that only the network watch for the offline banner runs at startup.
  */
 class YaariApplication : Application(), SingletonImageLoader.Factory {
+    override fun onCreate() {
+        super.onCreate()
+        Connectivity.register(this)
+    }
+
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         val am = getSystemService(ActivityManager::class.java)
         // memoryClass is the per-app heap in MB: 96–192 on 2–3 GB phones, 256+ on mid-range and up.
