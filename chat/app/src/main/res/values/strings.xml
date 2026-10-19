@@ -225,4 +225,29 @@
     <string name="matched_with">You matched with</string>
     <string name="room_featured">Most popular</string>
     <string name="licenses">Open-source licenses</string>
+
+    <!-- Mockup redesign -->
+    <string name="matched_from">You matched with %1$s from %2$s</string>
+    <string name="rooms_more">More rooms</string>
+    <string name="join">Join</string>
+    <string name="room_about_lounge">Everyone, everywhere, in one room</string>
+    <string name="room_about_language">Practise languages together</string>
+    <string name="room_about_music">Share the songs you love</string>
+    <string name="room_about_movies">Talk films and shows</string>
+    <string name="room_about_gaming">Find teammates, talk games</string>
+    <string name="room_about_sports">Cricket, football and more</string>
+    <string name="room_about_night">For the night owls</string>
+    <string name="room_about_memes">Share what made you laugh</string>
+    <string name="room_about_study">Study buddies and campus life</string>
+    <string name="room_about_travel">Trips, tips and places to see</string>
+    <string name="message_room">Message %1$s</string>
+    <string name="phone_title">What\'s your phone number?</string>
+    <string name="phone_sub">We\'ll text you a code. Your number stays private: other people on Yaari never see it.</string>
+    <string name="create_profile_sub">This is how people will meet you.</string>
+    <string name="premium_tagline">Meet exactly who you want to meet.</string>
+    <string name="plan_monthly">Monthly</string>
+    <string name="plan_monthly_sub">Gender choice, video calls and quick skip</string>
+    <string name="plan_pass_title">24-hour pass</string>
+    <string name="plan_pass_sub">Gender choice only, for 24 hours</string>
+    <string name="delete_sub">Permanently removes your profile, posts and chats</string>
 </resources>

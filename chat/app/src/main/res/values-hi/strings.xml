@@ -213,4 +213,29 @@
     <string name="matched_with">आपका मैच हुआ</string>
     <string name="room_featured">सबसे लोकप्रिय</string>
     <string name="licenses">ओपन-सोर्स लाइसेंस</string>
+
+    <!-- Mockup redesign -->
+    <string name="matched_from">%1$s (%2$s) से आपका मैच हुआ</string>
+    <string name="rooms_more">और रूम</string>
+    <string name="join">जुड़ें</string>
+    <string name="room_about_lounge">हर जगह के लोग, एक ही रूम में</string>
+    <string name="room_about_language">साथ मिलकर भाषा का अभ्यास करें</string>
+    <string name="room_about_music">अपने पसंदीदा गाने शेयर करें</string>
+    <string name="room_about_movies">फ़िल्मों और शो की बातें</string>
+    <string name="room_about_gaming">टीममेट ढूँढें, गेम की बातें करें</string>
+    <string name="room_about_sports">क्रिकेट, फ़ुटबॉल और भी बहुत कुछ</string>
+    <string name="room_about_night">रात में जागने वालों के लिए</string>
+    <string name="room_about_memes">जिस पर हँसी आई, वो शेयर करें</string>
+    <string name="room_about_study">पढ़ाई के साथी और कैंपस लाइफ़</string>
+    <string name="room_about_travel">सफ़र, टिप्स और घूमने की जगहें</string>
+    <string name="message_room">%1$s में मैसेज करें</string>
+    <string name="phone_title">आपका फ़ोन नंबर क्या है?</string>
+    <string name="phone_sub">हम आपको SMS से एक कोड भेजेंगे। आपका नंबर निजी रहता है: Yaari पर दूसरे लोग इसे कभी नहीं देखते।</string>
+    <string name="create_profile_sub">लोग आपसे इसी तरह मिलेंगे।</string>
+    <string name="premium_tagline">जिससे मिलना चाहें, उसी से मिलें।</string>
+    <string name="plan_monthly">मासिक</string>
+    <string name="plan_monthly_sub">लिंग चुनें, वीडियो कॉल और जल्दी अगला</string>
+    <string name="plan_pass_title">24 घंटे का पास</string>
+    <string name="plan_pass_sub">सिर्फ़ लिंग चुनना, 24 घंटे के लिए</string>
+    <string name="delete_sub">आपकी प्रोफ़ाइल, पोस्ट और चैट हमेशा के लिए मिट जाएँगी</string>
 </resources>

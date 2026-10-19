@@ -2,32 +2,15 @@ package com.yaari.chat.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.TextUnit
-import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,35 +23,50 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.outlined.PushPin
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
+import com.yaari.chat.domain.flagOf
+import com.yaari.chat.model.Message
 import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomMessage
+import kotlinx.coroutines.delay
 
 /** Rooms the app knows get a translated name; new rooms added on the server show the server's title. */
 private val RoomNames = mapOf(
@@ -77,23 +75,33 @@ private val RoomNames = mapOf(
     "night" to R.string.room_night, "memes" to R.string.room_memes, "study" to R.string.room_study, "travel" to R.string.room_travel,
 )
 
+/** A one-line description of what each known room is for (static, keyed by room id); unknown rooms show none. */
+private val RoomAbout = mapOf(
+    "lounge" to R.string.room_about_lounge, "language" to R.string.room_about_language, "music" to R.string.room_about_music,
+    "movies" to R.string.room_about_movies, "gaming" to R.string.room_about_gaming, "sports" to R.string.room_about_sports,
+    "night" to R.string.room_about_night, "memes" to R.string.room_about_memes, "study" to R.string.room_about_study,
+    "travel" to R.string.room_about_travel,
+)
+
 @Composable
 fun Room.name() = RoomNames[id]?.let { stringResource(it) } ?: title
 
-/** Two-tone washes per room, light and dark. */
-private val RoomWash = listOf(
-    0xFFFFE1E8 to 0xFFFFF4F6, 0xFFDCEBFF to 0xFFF1F7FF, 0xFFDDF5E6 to 0xFFF2FBF5, 0xFFFFEBD1 to 0xFFFFF7EC,
-    0xFFEAE0FF to 0xFFF6F1FF, 0xFFD5F2F5 to 0xFFEFFAFB,
-)
-private val RoomWashDark = listOf(
-    0xFF3A1E26 to 0xFF221419, 0xFF1C2A3D to 0xFF131B26, 0xFF1C3326 to 0xFF131F18, 0xFF3A2C17 to 0xFF231C11,
-    0xFF2B2240 to 0xFF1B1628, 0xFF173336 to 0xFF112122,
-)
+@Composable
+private fun Room.about() = RoomAbout[id]?.let { stringResource(it) }
+
+/** Pastel tints for the room cards (mint, peach, lavender, blush, sky, butter), light and dark. */
+private val RoomTint = listOf(0xFFE9F7EF, 0xFFFFF0E6, 0xFFEEF0FF, 0xFFFFEEF3, 0xFFE8F3FF, 0xFFFFF7DF)
+private val RoomTintDark = listOf(0xFF15261C, 0xFF2A1D15, 0xFF1B1D33, 0xFF2C171E, 0xFF15212F, 0xFF2A2514)
+
+@Composable
+private fun tintFor(i: Int): Color {
+    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+    return Color((if (dark) RoomTintDark else RoomTint)[Math.floorMod(i, RoomTint.size)])
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
-    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
     var refreshing by remember { mutableStateOf(false) }
     LaunchedEffect(refreshing) { if (refreshing) { delay(900); refreshing = false } }
     Column(Modifier.fillMaxSize()) {
@@ -101,64 +109,102 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
         PullToRefreshBox(refreshing, onRefresh = { refreshing = true; vm.refreshRooms() }, Modifier.fillMaxSize()) {
             LazyVerticalGrid(
                 GridCells.Fixed(2), Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        stringResource(R.string.rooms_sub), color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
-                    )
-                }
                 if (s.rooms.isEmpty()) {
                     // Skeletons while the list loads, shaped like the real cards.
-                    item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
-                    items(4) { Box(Modifier.aspectRatio(1.05f).clip(RoundedCornerShape(22.dp)).shimmer()) }
+                    item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(28.dp)).shimmer()) }
+                    items(4) { Box(Modifier.height(164.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
                 }
                 s.rooms.firstOrNull()?.let { featured ->
                     item(key = featured.id, span = { GridItemSpan(maxLineSpan) }) { FeaturedRoom(featured) { vm.enterRoom(featured) } }
                 }
+                if (s.rooms.size > 1) {
+                    item(key = "more", span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            stringResource(R.string.rooms_more), style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                            modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
+                        )
+                    }
+                }
                 itemsIndexed(s.rooms.drop(1), key = { _, r -> r.id }) { i, room ->
-                    val (from, to) = (if (dark) RoomWashDark else RoomWash)[i % RoomWash.size]
-                    RoomCard(room, Brush.linearGradient(listOf(Color(from), Color(to))), bobDelay = i * 180) { vm.enterRoom(room) }
+                    RoomCard(room, tintFor(i), bobDelay = i * 180, modifier = Modifier.enterStagger(i)) { vm.enterRoom(room) }
                 }
             }
         }
     }
 }
 
-/** The busiest room, wide, in the brand gradient. */
+/** The first room (Global Lounge), wide, in a slowly flowing brand gradient with a glow underneath. */
 @Composable
 private fun FeaturedRoom(room: Room, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
-    Box(
-        Modifier.fillMaxWidth().height(150.dp).pressScale(interaction, 0.97f).clip(RoundedCornerShape(24.dp)).background(Brand.gradient)
-            .clickable(interaction, indication = null, onClick = onClick).padding(20.dp),
+    val flow by rememberLoop(9000, reverse = true, easing = FastOutSlowInEasing, still = 0.3f)
+    Column(
+        Modifier.fillMaxWidth().pressScale(interaction, 0.98f)
+            .glow(Brand.Pink, radius = 22.dp, offsetY = 16.dp, corner = 28.dp, inset = 18.dp, alpha = 0.6f)
+            .clip(RoundedCornerShape(28.dp))
+            .drawBehind {
+                // background-size 240 %, background-position 0 -> 100 %: a gradient wider than the card sliding across it.
+                val span = size.width * 2.4f
+                val x = -(span - size.width) * flow
+                drawRect(
+                    Brush.linearGradient(
+                        0f to Color(0xFFFF3D68), 0.45f to Color(0xFFFF7A45), 0.75f to Color(0xFFFF4F8B), 1f to Color(0xFFFF3D68),
+                        start = Offset(x, 0f), end = Offset(x + span, size.height * 1.4f),
+                    ),
+                )
+            }
+            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(20.dp),
     ) {
-        Column(Modifier.align(Alignment.BottomStart)) {
-            Pill(stringResource(R.string.room_featured), background = Color.White.copy(alpha = 0.22f), color = Color.White)
-            Spacer(Modifier.height(10.dp))
-            Text(room.name(), style = MaterialTheme.typography.headlineSmall, color = Color.White)
-            Spacer(Modifier.height(4.dp))
-            OnlineCount(room.online, Color.White, dot = Color.White)
+        Row(verticalAlignment = Alignment.Top) {
+            Bobbing(room.emoji, 34.sp, delayMs = 0)
+            Spacer(Modifier.weight(1f))
+            Pill(
+                pluralStringResource(R.plurals.online, room.online, room.online), background = Color.White.copy(alpha = 0.2f), color = Color.White,
+                leading = { PresenceDot(6.dp) },
+            )
         }
-        Bobbing(room.emoji, 64.sp, Modifier.align(Alignment.TopEnd), delayMs = 0)
+        Spacer(Modifier.height(26.dp))
+        Text(room.name(), style = MaterialTheme.typography.headlineMedium.copy(fontSize = 26.sp), color = Color.White)
+        room.about()?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.88f))
+        }
+        Spacer(Modifier.height(18.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(
+                Modifier.height(40.dp).clip(CircleShape).background(Color.White).padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(stringResource(R.string.join), color = Brand.Night, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp))
+                Icon(Icons.AutoMirrored.Rounded.ArrowForward, null, Modifier.size(16.dp), tint = Brand.Night)
+            }
+        }
     }
 }
 
 @Composable
-private fun RoomCard(room: Room, wash: Brush, bobDelay: Int, onClick: () -> Unit) {
+private fun RoomCard(room: Room, tint: Color, bobDelay: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Column(
-        Modifier.aspectRatio(1.05f).pressScale(interaction).clip(RoundedCornerShape(22.dp)).background(wash)
-            .clickable(interaction, indication = null, onClick = onClick).padding(16.dp),
+        modifier.height(164.dp).pressScale(interaction, 0.97f).clip(RoundedCornerShape(24.dp)).background(tint)
+            .clickable(interaction, indication = null, role = Role.Button, onClick = onClick).padding(16.dp),
     ) {
-        Box(Modifier.size(52.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.7f)), contentAlignment = Alignment.Center) {
-            Bobbing(room.emoji, 28.sp, delayMs = bobDelay)
+        Bobbing(room.emoji, 28.sp, delayMs = bobDelay)
+        Spacer(Modifier.height(10.dp))
+        Text(
+            room.name(), style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.5.sp, lineHeight = 19.sp), maxLines = 2,
+            overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface,
+        )
+        room.about()?.let {
+            Text(
+                it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp),
+            )
         }
         Spacer(Modifier.weight(1f))
-        Text(room.name(), style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface)
-        Spacer(Modifier.height(6.dp))
         OnlineCount(room.online)
     }
 }
@@ -166,16 +212,15 @@ private fun RoomCard(room: Room, wash: Brush, bobDelay: Int, onClick: () -> Unit
 /** An emoji that floats up and down a little, out of step with its neighbours. */
 @Composable
 private fun Bobbing(emoji: String, size: TextUnit, modifier: Modifier = Modifier, delayMs: Int) {
-    val t = rememberInfiniteTransition(label = "bob")
-    val y by t.animateFloat(-1f, 1f, infiniteRepeatable(tween(1800, delayMillis = delayMs % 900, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "y")
-    Text(emoji, modifier.graphicsLayer { translationY = y * 4.dp.toPx() }, fontSize = size)
+    val y by rememberLoop(1800, from = -1f, to = 1f, reverse = true, easing = FastOutSlowInEasing, offsetMs = delayMs % 1800, still = 0f)
+    Text(emoji, modifier.graphicsLayer { translationY = y * 3.dp.toPx() }, fontSize = size)
 }
 
 @Composable
-private fun OnlineCount(n: Int, color: Color = MaterialTheme.colorScheme.onSurfaceVariant, dot: Color = Brand.Online) {
+private fun OnlineCount(n: Int, color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        if (n > 0) LiveDot(dot, 7.dp) else Box(Modifier.padding(4.dp).size(7.dp).clip(CircleShape).background(Color.Gray))
-        Spacer(Modifier.width(4.dp))
+        if (n > 0) PresenceDot(6.dp) else Box(Modifier.size(6.dp).clip(CircleShape).background(Color.Gray))
+        Spacer(Modifier.width(6.dp))
         Text(pluralStringResource(R.plurals.online, n, n), style = MaterialTheme.typography.labelMedium, color = color)
     }
 }
@@ -187,61 +232,72 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
     val room = state.room
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         Row(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                .statusBarsPadding()
-                .padding(horizontal = 4.dp, vertical = 6.dp),
+            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background).statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(vm::leaveRoom) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back)) }
+            CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBackIos, stringResource(R.string.back), vm::leaveRoom, background = Color.Transparent, iconSize = 20.dp)
             Box(
-                Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                Modifier.size(40.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) { Text(room.emoji, fontSize = 22.sp) }
-            Column(Modifier.padding(start = 10.dp).weight(1f)) {
+            Column(Modifier.padding(start = 12.dp).weight(1f)) {
                 Text(room.name(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                OnlineCount(maxOf(room.online, 1))
+                OnlineCount(maxOf(room.online, 1), MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        androidx.compose.material3.HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
+        Row(
+            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer).padding(horizontal = 20.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Outlined.PushPin, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
+            Text(
+                stringResource(R.string.room_rules), Modifier.padding(start = 8.dp),
+                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         val list = rememberLazyListState()
-        LaunchedEffect(state.messages.size) { if (state.messages.isNotEmpty()) list.animateScrollToItem(state.messages.size) }
-        LazyColumn(Modifier.weight(1f).fillMaxWidth(), state = list, contentPadding = PaddingValues(vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            item {
-                Row(
-                    Modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(14.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainer).padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(Icons.Outlined.Shield, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(
-                        stringResource(R.string.room_rules), Modifier.padding(start = 8.dp),
-                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+        LaunchedEffect(state.messages.size) { if (state.messages.isNotEmpty()) list.animateScrollToItem(state.messages.size - 1 + if (state.loading) 1 else 0) }
+        LazyColumn(
+            Modifier.weight(1f).fillMaxWidth(), state = list, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Brand.Pink) } }
+            items(state.messages, key = { it.id }) { m ->
+                Box(Modifier.animateItem()) { PopIn(m.fromMe) { RoomLine(m, onProfile = { vm.openProfile(m.sender) }) } }
             }
-            if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
-            items(state.messages, key = { it.id }) { m -> Box(Modifier.animateItem()) { RoomLine(m, onProfile = { vm.openProfile(m.sender) }) } }
         }
-        Composer(onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT)
+        Composer(
+            onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT,
+            hint = stringResource(R.string.message_room, room.name()), divider = true,
+        )
     }
 }
 
 @Composable
 private fun RoomLine(m: RoomMessage, onProfile: () -> Unit) {
     if (m.fromMe) {
-        Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp), contentAlignment = Alignment.CenterEnd) {
-            Bubble(com.yaari.chat.model.Message(m.id, true, m.text, null, m.at))
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+            Bubble(Message(m.id, true, m.text, null, m.at))
         }
         return
     }
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.Top) {
-        Avatar(m.sender, 34.dp, Modifier.clip(CircleShape).clickable(onClick = onProfile))
-        Column(Modifier.padding(start = 8.dp)) {
+    Row(Modifier.fillMaxWidth().padding(end = 40.dp), verticalAlignment = Alignment.Top) {
+        Avatar(m.sender, 34.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onProfile))
+        Column(Modifier.padding(start = 10.dp)) {
+            Row(
+                Modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClick = onProfile).padding(start = 4.dp, end = 4.dp, bottom = 4.dp),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(m.sender.name, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                Text("${m.sender.age}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                flagOf(m.sender.country).takeIf { it.isNotEmpty() }?.let { Text(it, fontSize = 12.sp) }
+            }
             Text(
-                "${m.sender.nameWithFlag()} · ${m.sender.age}", style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.clickable(onClick = onProfile).padding(start = 4.dp, bottom = 2.dp),
+                m.text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 6.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 20.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 10.dp),
             )
-            Bubble(com.yaari.chat.model.Message(m.id, false, m.text, null, m.at))
         }
     }
 }
