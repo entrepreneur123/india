@@ -6,12 +6,14 @@
 
 | 파일 | 내용 |
 |---|---|
-| `yaari-demo.apk` (1.9MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
-| `yaari-live-arm64.apk` (17MB) | **실제 서버**(Supabase 뭄바이) 연결판. 아래 "출시 전 설정"을 마쳐야 로그인할 수 있습니다 |
+| `yaari-demo.apk` (1.8MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명. OTP는 `123456`. 결제는 즉시 승인(데모) |
+| `yaari-live-arm64.apk` (9.9MB) | **실제 서버**(Supabase 뭄바이) 연결판, 대부분의 폰. 아래 "출시 전 설정"을 마쳐야 일반 번호로 로그인할 수 있습니다 |
+| `yaari-live-armv7.apk` (8.2MB) | 같은 실서버판, 오래된 32비트 폰용 |
+| `yaari-live.aab` (33MB) | Play Console 업로드용 묶음(Play가 폰별로 쪼개서 내려줌) |
 
-버전 0.2.0 (versionCode 2). 이전 0.1.0 파일은 다른 컴퓨터의 디버그 키로 서명되어 있어, 이미 설치한 앱은 지우고 새로 설치해야 합니다.
+버전 0.3.0 (versionCode 3). 0.2.0과 같은 디버그 키라 덮어 설치됩니다(0.1.x는 지우고 설치).
 
-두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. 업로드 키는 `chat/upload.properties`(저장소에 올리지 않음)에 `storeFile`, `storePassword`, `keyAlias`, `keyPassword`를 적어 두면 자동으로 쓰입니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
+APK·AAB 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. 업로드 키는 `chat/upload.properties`(저장소에 올리지 않음)에 `storeFile`, `storePassword`, `keyAlias`, `keyPassword`를 적어 두면 자동으로 쓰입니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
 
 ## 웹 / PC 버전 (`web/`)
 
