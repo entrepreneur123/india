@@ -11,6 +11,12 @@
 
 두 파일 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. 업로드 키는 `chat/upload.properties`(저장소에 올리지 않음)에 `storeFile`, `storePassword`, `keyAlias`, `keyPassword`를 적어 두면 자동으로 쓰입니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
 
+## 웹 / PC 버전 (`web/`)
+
+- 주소: https://yaari-web-indol.vercel.app
+- 같은 서버·같은 규칙을 씁니다. 웹 사용자와 앱 사용자가 서로 매칭됩니다.
+- 실행 방법·구조는 `web/README.md`에 있습니다.
+
 ## 화면
 
 하단 탭 4개: **공개방 · 랜챗 · 최근(친구/매칭) · 나**. 오른쪽 위 톱니바퀴 = 설정. 흰 바탕 + 포인트 색 하나, 글꼴 Plus Jakarta Sans(OFL). 랜챗은 오로라 배경과 국기가 도는 아자르식 화면. 버튼 눌림·진동·화면 전환·매칭 연출·메시지 팝인·입력 중 점·스켈레톤 로딩·당겨서 새로고침 등 모션 적용.
