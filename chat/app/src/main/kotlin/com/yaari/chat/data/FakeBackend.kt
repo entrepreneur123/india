@@ -21,6 +21,7 @@ import com.yaari.chat.model.Target
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.merge
 import java.time.LocalDate
@@ -144,7 +145,11 @@ open class FakeBackend(
 
     override suspend fun cancelSearch() = Unit
 
-    override fun events(matchId: String): Flow<MatchEvent> = flow {
+    /** Scripted partners never wait in a queue: every match comes from polling. */
+    override fun matchSignals(): Flow<Unit> = emptyFlow()
+
+    /** Scripted partners are always connected; [live] changes nothing here. */
+    override fun events(matchId: String, live: Boolean, afterId: Long?): Flow<MatchEvent> = flow {
         val m = match(matchId)
         for (out in m.outgoing) {
             when (out) {
@@ -183,7 +188,10 @@ open class FakeBackend(
 
     override suspend fun sendTyping(matchId: String) = Unit
 
-    override suspend fun history(matchId: String) = match(matchId).messages.toList()
+    override suspend fun history(matchId: String, afterId: Long?): List<Message> {
+        val all = match(matchId).messages.toList()
+        return if (afterId == null) all.takeLast(200) else all.filter { it.id > afterId }.take(200)
+    }
 
     override suspend fun send(matchId: String, text: String?, media: Media?): Message {
         val m = match(matchId)
@@ -418,10 +426,12 @@ open class FakeBackend(
     private fun regulars(roomId: String) =
         userRooms[roomId]?.let { r -> POOL.filter { it.id in r.members } } ?: POOL.shuffled(Random(roomId.hashCode())).take(4)
 
-    override suspend fun roomHistory(roomId: String): List<RoomMessage> =
-        messagesOf(roomId).filter { it.sender.id !in blocked }.takeLast(100)
+    override suspend fun roomHistory(roomId: String, afterId: Long?): List<RoomMessage> {
+        val visible = messagesOf(roomId).filter { it.sender.id !in blocked }
+        return if (afterId == null) visible.takeLast(100) else visible.filter { it.id > afterId }.take(200)
+    }
 
-    override fun roomEvents(roomId: String): Flow<RoomMessage> {
+    override fun roomEvents(roomId: String, afterId: Long?): Flow<RoomMessage> {
         val outgoing = roomOutgoing.getOrPut(roomId) { Channel(Channel.UNLIMITED) }
         val replies = flow {
             for (text in outgoing) {

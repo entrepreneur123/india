@@ -154,6 +154,8 @@
     <string name="get_plus">Plus लें</string>
     <string name="plan_badge_plus">Plus</string>
     <string name="matching_tip">टिप: पहले हाय बोलिए। लोग ज़्यादा जवाब देते हैं 👋</string>
+    <string name="matching_reconnecting">दोबारा कनेक्ट हो रहा है…</string>
+    <string name="offline_banner">इंटरनेट कनेक्शन नहीं है। दोबारा कनेक्ट करने की कोशिश हो रही है…</string>
     <string name="rooms_sub">लाइव ग्रुप चैट। अंदर आइए और हाय बोलिए।</string>
     <plurals name="online">
         <item quantity="one">%d ऑनलाइन</item>

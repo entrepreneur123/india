@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
+import com.yaari.chat.AppLocale
 import com.yaari.chat.BuildConfig
 import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
@@ -17,6 +18,7 @@ import com.yaari.chat.data.Match
 import com.yaari.chat.data.MatchEvent
 import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
+import com.yaari.chat.data.PartnerWatch
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.model.CreatedRoom
@@ -67,17 +69,25 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
 import io.ktor.client.call.body
+import io.ktor.client.plugins.timeout
 import io.ktor.http.ContentType
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -86,6 +96,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.LocalDate
@@ -93,12 +104,16 @@ import java.time.Period
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 /** Live server: Supabase project "yaari-chat" (Mumbai). All rules are re-checked in Postgres (server/migrations). */
 class SupabaseBackend(private val app: Application, persistSession: Boolean = true) : Backend {
     private val client = createSupabaseClient(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_ANON_KEY) {
         // Release builds write nothing to Logcat: requests, sessions and phone numbers must not end up in device logs.
         defaultLogLevel = if (BuildConfig.DEBUG) LogLevel.WARNING else LogLevel.NONE
+        // A request that hangs on a weak network fails (as "network") instead of freezing the search or a send;
+        // media uploads get longer (see upload). The realtime socket is not affected.
+        requestTimeout = REQUEST_TIMEOUT_MS.milliseconds
         install(Auth) {
             // Explicit storage: does not depend on the androidx-startup initializer having run.
             if (persistSession) {
@@ -190,12 +205,14 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     private val uid get() = client.auth.currentUserOrNull()?.id ?: throw BackendException("not_signed_in")
 
-    /** Maps database/function errors to the rule codes the app understands. */
+    /** Maps database/function errors to the rule codes the app understands; timeouts and dropped connections are "network". */
     private suspend fun <T> call(block: suspend () -> T): T = try {
         block()
     } catch (e: RestException) {
         val text = listOfNotNull(e.message, e.error, e.description).joinToString(" ")
         throw BackendException(if ("row-level security" in text) "blocked" else CODES.firstOrNull { it in text } ?: "network")
+    } catch (e: IOException) { // includes HttpRequestTimeoutException and supabase-kt's HttpRequestException
+        throw BackendException("network")
     }
 
     // ---- account ----
@@ -258,14 +275,21 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     // ---- matching & chat ----
 
+    /** find_match2 prefers a partner who uses the app in the same language for a few seconds, then anyone. */
     override suspend fun findMatch(target: Target): Match? = call {
-        val raw = client.postgrest.rpc("find_match", buildJsonObject { put("p_target", target.name.lowercase()) }).data.trim()
+        val raw = client.postgrest.rpc("find_match2", buildJsonObject {
+            put("p_target", target.name.lowercase())
+            put("p_lang", AppLocale.matchLanguage(app))
+        }).data.trim()
         if (raw == "null" || raw.isEmpty()) return@call null
         val id = json.decodeFromString<String>(raw)
         try {
-            val m = matchRow(id) ?: throw BackendException("not_found")
-            val partnerId = if (m.userA == uid) m.userB else m.userA
-            Match(id, card(partnerId) ?: throw BackendException("not_found"))
+            // One request for the partner's card (match_card), no posts: the chat opens fast; the profile screen
+            // loads the full profile with posts when opened. A photo link that fails to sign shows the initial.
+            val c = client.postgrest.rpc("match_card", buildJsonObject { put("p_match", id) }).decodeList<CardRow>().firstOrNull()
+                ?: throw BackendException("not_found")
+            val photo = c.photoPath?.let { p -> runCatching { signed(p) }.getOrNull() }
+            Match(id, toProfile(c.copy(photoPath = null), emptyList()).copy(photoUri = photo))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -275,6 +299,41 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
 
     override suspend fun cancelSearch() = call { client.postgrest.rpc("cancel_search"); Unit }
+
+    /** The waiting side of a new match is always user_a: its row arriving means "poll now". */
+    override fun matchSignals(): Flow<Unit> = channelFlow {
+        val me = uid
+        val channel = client.channel("matches-$me-${UUID.randomUUID()}")
+        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
+            table = "matches"
+            filter("user_a", FilterOperator.EQ, me)
+        }
+        launch { inserts.collect { send(Unit) } }
+        try {
+            channel.subscribe()
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
+        }
+    }
+
+    /**
+     * True while this channel is joined over a connected socket. A dropped socket shows as false, and true again once
+     * the channel has rejoined. After a reconnect the channel still reads SUBSCRIBED for a moment, until its rejoin
+     * starts, so every "true" after the first one has to hold for a moment.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun RealtimeChannel.joined(): Flow<Boolean> {
+        var first = true
+        return combine(status, client.realtime.status) { c, r -> c == RealtimeChannel.Status.SUBSCRIBED && r == Realtime.Status.CONNECTED }
+            .distinctUntilChanged()
+            .transformLatest { up ->
+                if (up && !first) delay(REJOIN_SETTLE_MS)
+                if (up) first = false
+                emit(up)
+            }
+            .distinctUntilChanged()
+    }
 
     /** Null when the match is gone (the other person deleted their account). */
     private suspend fun matchRow(id: String) =
@@ -287,27 +346,31 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         else -> VideoStatus.NONE
     }
 
-    override fun events(matchId: String): Flow<MatchEvent> = channelFlow {
+    override fun events(matchId: String, live: Boolean, afterId: Long?): Flow<MatchEvent> = channelFlow {
         val me = uid
         var lastVideo: VideoStatus? = null
         var leftSent = false
-        suspend fun onMatch(m: MatchRow?) {
-            if (m == null) { // deleted: treat as the partner leaving
-                if (!leftSent) {
-                    leftSent = true
-                    send(MatchEvent.PartnerLeft)
-                }
-                return
-            }
-            if (m.endedAt != null && m.endedBy != me && !leftSent) {
+        suspend fun partnerLeft() {
+            if (!leftSent) {
                 leftSent = true
                 send(MatchEvent.PartnerLeft)
             }
+        }
+        suspend fun onMatch(m: MatchRow?) {
+            if (m == null) return partnerLeft() // deleted: treat as the partner leaving
+            if (m.endedAt != null && m.endedBy != me) partnerLeft()
             val v = videoOf(m, me)
             if (v != lastVideo) {
                 lastVideo = v
                 send(MatchEvent.Video(v))
             }
+        }
+        // Random chats only: a partner who never connects, or drops and does not come back, ends the chat for both
+        // (the server cannot tell; the other side may be gone for good). The leave may be refused (exit lock, already
+        // ended): the chat shows as ended either way. All of this runs on the collector's thread.
+        val watch = PartnerWatch(this) {
+            runCatching { leave(matchId) }
+            partnerLeft()
         }
 
         val channel = client.channel("match-$matchId-${UUID.randomUUID()}")
@@ -319,34 +382,73 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             table = "matches"
             filter("id", FilterOperator.EQ, matchId)
         }
-        // One bad record (or a failed media link) must not stop the chat: skip it, the 10 s re-sync retries.
-        launch { inserts.collect { a -> runCatching { toMessage(a.decodeRecord<MessageRow>(), me) }.onSuccess { send(MatchEvent.NewMessage(it)) } } }
+        // One bad record (or a failed media link) must not stop the chat: skip it, the re-sync retries.
+        launch {
+            inserts.collect { a ->
+                runCatching { toMessage(a.decodeRecord<MessageRow>(), me) }.onSuccess {
+                    if (!it.fromMe && live) watch.activity()
+                    send(MatchEvent.NewMessage(it))
+                }
+            }
+        }
 
-        // Typing signals ride a broadcast channel shared by the two participants (not stored anywhere).
-        val typingChannel = client.channel("typing-$matchId")
+        // Typing signals ride a broadcast channel shared by the two participants (not stored anywhere). Its presence
+        // (key = user id, state {"user": id}) tells whether the partner is connected; the web uses the same topic.
+        val typingChannel = client.channel("typing-$matchId") { presence { key = me } }
         typingChannels[matchId] = typingChannel
         var typingOff: Job? = null
         launch {
             typingChannel.broadcastFlow<JsonObject>("typing").collect { msg ->
                 if (msg["from"]?.jsonPrimitive?.content == me) return@collect
+                if (live) watch.activity()
                 send(MatchEvent.Typing(true))
                 typingOff?.cancel()
                 typingOff = launch { delay(4_000); send(MatchEvent.Typing(false)) }
             }
         }
+        // Registered before the join below, so the join asks for presence. One partner key can hold several
+        // connections (refs); they are there while at least one is.
+        val partnerRefs = mutableMapOf<String, MutableSet<String>>()
+        launch(start = CoroutineStart.UNDISPATCHED) {
+            typingChannel.presenceChangeFlow().collect { action ->
+                action.joins.forEach { (key, p) -> if (key != me) partnerRefs.getOrPut(key) { mutableSetOf() } += p.presenceRef }
+                action.leaves.forEach { (key, p) -> if (key != me) partnerRefs[key]?.let { it -= p.presenceRef; if (it.isEmpty()) partnerRefs -= key } }
+                if (live) watch.presence(partnerRefs.isNotEmpty())
+            }
+        }
+        // Every (re)join: track my presence again (it does not survive a rejoin), and let the timers run only while
+        // joined. A rejoin's presence sync then tells who is there now.
+        launch {
+            typingChannel.joined().collect { up ->
+                if (!up) partnerRefs.clear()
+                if (up) runCatching { typingChannel.track(buildJsonObject { put("user", me) }) }
+                if (live) watch.connection(up)
+            }
+        }
+        // Back after a dropped connection: re-sync at once instead of at the next tick.
+        val resync = Channel<Unit>(Channel.CONFLATED)
+        launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
         launch { updates.collect { a -> runCatching { a.decodeRecord<MatchRow>() }.onSuccess { onMatch(it) } } }
         try {
-            channel.subscribe(blockUntilSubscribed = true)
+            // Not waiting for the joins: where the socket cannot connect at all, the re-syncs below still work.
+            channel.subscribe()
             typingChannel.subscribe()
-            // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the app de-duplicates),
-            // only while the app is on screen; back from the background it re-syncs at once.
+            // Safety net if the realtime socket drops on a weak network: every 10 s the match row and only the messages
+            // newer than the newest seen (the app de-duplicates), only while the app is on screen; back from the
+            // background it re-syncs at once.
+            var cursor = afterId
             while (true) {
                 AppForeground.visible.awaitVisible()
                 runCatching {
                     onMatch(matchRow(matchId))
-                    history(matchId).forEach { send(MatchEvent.NewMessage(it)) }
+                    val newer = history(matchId, cursor)
+                    newer.forEach {
+                        if (!it.fromMe && live) watch.activity()
+                        send(MatchEvent.NewMessage(it))
+                    }
+                    newer.maxOfOrNull { it.id }?.let { id -> cursor = maxOf(id, cursor ?: id) }
                 }
-                delay(10_000)
+                withTimeoutOrNull(RESYNC_MS) { resync.receive() }
             }
         } finally {
             withContext(NonCancellable) {
@@ -362,8 +464,18 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         runCatching { ch.broadcast("typing", buildJsonObject { put("from", uid) }) }
     }
 
-    override suspend fun history(matchId: String): List<Message> = call {
+    override suspend fun history(matchId: String, afterId: Long?): List<Message> = call {
         val me = uid
+        if (afterId != null) { // re-sync: only what came after, oldest first
+            return@call client.postgrest["messages"].select {
+                filter {
+                    eq("match_id", matchId)
+                    gt("id", afterId)
+                }
+                order("id", Order.ASCENDING)
+                limit(200)
+            }.decodeList<MessageRow>().map { toMessage(it, me) }
+        }
         client.postgrest["messages"].select {
             filter { eq("match_id", matchId) }
             order("id", Order.DESCENDING) // the newest 200, shown oldest first
@@ -426,9 +538,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             ?: return@call null
         toProfile(c, posts(userId))
     }
-
-    private suspend fun card(userId: String): Profile? =
-        client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()?.let { toProfile(it, posts(userId)) }
 
     private suspend fun posts(userId: String): List<Post> =
         client.postgrest["posts"].select {
@@ -523,8 +632,18 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     override suspend fun leaveRoom(roomId: String) = call { client.postgrest.rpc("leave_room", buildJsonObject { put("p_room", roomId) }); Unit }
 
-    override suspend fun roomHistory(roomId: String): List<RoomMessage> = call {
+    override suspend fun roomHistory(roomId: String, afterId: Long?): List<RoomMessage> = call {
         val me = uid
+        if (afterId != null) { // re-sync: only what came after, oldest first
+            return@call client.postgrest["room_messages"].select {
+                filter {
+                    eq("room_id", roomId)
+                    gt("id", afterId)
+                }
+                order("id", Order.ASCENDING)
+                limit(200)
+            }.decodeList<RoomMessageRow>().map { toRoomMessage(it, me) }
+        }
         client.postgrest["room_messages"].select {
             filter { eq("room_id", roomId) }
             order("id", Order.DESCENDING) // the newest 100, shown oldest first
@@ -532,7 +651,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }.decodeList<RoomMessageRow>().asReversed().map { toRoomMessage(it, me) }
     }
 
-    override fun roomEvents(roomId: String): Flow<RoomMessage> = channelFlow {
+    override fun roomEvents(roomId: String, afterId: Long?): Flow<RoomMessage> = channelFlow {
         val me = uid
         val channel = client.channel("room-$roomId-${UUID.randomUUID()}")
         val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
@@ -540,13 +659,22 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             filter("room_id", FilterOperator.EQ, roomId)
         }
         launch { inserts.collect { a -> runCatching { toRoomMessage(a.decodeRecord<RoomMessageRow>(), me) }.onSuccess { send(it) } } }
+        // Joined (again, after a dropped socket): re-sync at once.
+        val resync = Channel<Unit>(Channel.CONFLATED)
+        launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
         try {
-            channel.subscribe(blockUntilSubscribed = true)
-            // Re-sync after a dropped socket (the app de-duplicates by id), only while the app is on screen.
+            channel.subscribe()
+            // Re-sync every 15 s, only messages newer than the newest seen (the app de-duplicates by id), only while
+            // the app is on screen.
+            var cursor = afterId
             while (true) {
-                delay(15_000)
+                withTimeoutOrNull(ROOM_RESYNC_MS) { resync.receive() }
                 AppForeground.visible.awaitVisible()
-                runCatching { roomHistory(roomId).takeLast(30).forEach { send(it) } }
+                runCatching {
+                    val newer = roomHistory(roomId, cursor)
+                    newer.forEach { send(it) }
+                    newer.maxOfOrNull { it.id }?.let { id -> cursor = maxOf(id, cursor ?: id) }
+                }
             }
         } finally {
             withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
@@ -603,7 +731,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             }
         }
         val path = "$uid/$folder/${UUID.randomUUID()}.$ext"
-        client.storage.from(BUCKET).upload(path, bytes) { contentType = type }
+        client.storage.from(BUCKET).upload(path, bytes) {
+            contentType = type
+            httpOverride { timeout { requestTimeoutMillis = UPLOAD_TIMEOUT_MS } } // up to 25 MB on a slow uplink
+        }
         return path
     }
 
@@ -627,6 +758,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val BUCKET = "media"
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
+        private const val REQUEST_TIMEOUT_MS = 15_000L
+        private const val UPLOAD_TIMEOUT_MS = 120_000L
+        private const val RESYNC_MS = 10_000L
+        private const val ROOM_RESYNC_MS = 15_000L
+        private const val REJOIN_SETTLE_MS = 500L
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
             "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",

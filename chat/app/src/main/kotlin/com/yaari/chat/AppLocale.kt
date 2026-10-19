@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.LocaleManager
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Build
 import android.os.LocaleList
 import java.util.Locale
@@ -55,6 +56,22 @@ object AppLocale {
         Locale.setDefault(locale)
         val config = Configuration(base.resources.configuration).apply { setLocales(LocaleList(locale)) }
         return base.createConfigurationContext(config)
+    }
+
+    /**
+     * The language matching prefers (server find_match2): the app's language, else the phone's when it is one of
+     * ours, else English. One of en, hi, bn, pt-br, vi.
+     */
+    fun matchLanguage(context: Context): String =
+        matchLanguageOf(current(context), Resources.getSystem().configuration.locales.takeIf { !it.isEmpty }?.get(0))
+
+    internal fun matchLanguageOf(chosen: String, phone: Locale?): String {
+        val tag = chosen.substringBefore(',').ifEmpty { phone?.toLanguageTag().orEmpty() }
+        return when (val language = tag.substringBefore('-').substringBefore('_').lowercase()) {
+            "hi", "bn", "vi" -> language
+            "pt" -> "pt-br"
+            else -> "en"
+        }
     }
 
     /** The display name for [tag], or null for "follow the phone". */

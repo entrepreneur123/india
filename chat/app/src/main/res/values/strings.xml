@@ -166,6 +166,8 @@
     <string name="get_plus">Get Plus</string>
     <string name="plan_badge_plus">Plus</string>
     <string name="matching_tip">Tip: say hi first. People reply more 👋</string>
+    <string name="matching_reconnecting">Reconnecting…</string>
+    <string name="offline_banner">No internet connection. Trying to reconnect…</string>
     <string name="rooms_sub">Live group chats. Jump in and say hi.</string>
     <plurals name="online">
         <item quantity="one">%d online</item>

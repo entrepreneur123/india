@@ -38,6 +38,9 @@ import com.yaari.chat.model.Target
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +49,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.time.LocalDate
 
 enum class Tab { ROOMS, RANDOM, RECENT, ME }
@@ -101,6 +105,8 @@ data class UiState(
     val tab: Tab = Tab.RANDOM,
     val target: Target = Target.ANY,
     val searching: Boolean = false,
+    /** Searching, but the last attempt failed (weak or no network): the search keeps retrying. */
+    val reconnecting: Boolean = false,
     val chat: ChatState? = null,
     val viewing: Profile? = null,
     val dm: DmState? = null,
@@ -339,27 +345,46 @@ class AppViewModel(
     fun startMatching() {
         val s = _state.value
         if (s.me == null || s.searching || s.chat != null) return
-        _state.update { it.copy(searching = true, dm = null, viewing = null) }
+        _state.update { it.copy(searching = true, reconnecting = false, dm = null, viewing = null) }
         dmJob?.cancel()
         if (s.room != null) leaveRoom()
         val gen = ++searchGeneration
         fun current() = gen == searchGeneration && _state.value.searching
+        fun reconnecting(on: Boolean) = _state.update { if (current() && it.reconnecting != on) it.copy(reconnecting = on) else it }
         matchJob = viewModelScope.launch {
+            // Someone matched me while I was waiting: poll at once instead of after the delay. Polling stays the fallback.
+            val signals = Channel<Unit>(Channel.CONFLATED)
+            val listener = launch { listenForMatches(signals) }
+            // Weak networks: failed attempts are retried with a growing pause; only a minute of nothing but failures
+            // (on screen) ends the search.
+            var failingSince: Long? = null
+            var failures = 0
             try {
                 while (isActive && current()) {
                     // In the background the search holds still (no requests every 2 s) and resumes on return.
-                    foreground.awaitVisible()
+                    if (!foreground.value) {
+                        foreground.awaitVisible()
+                        failingSince = null // time off screen is not time spent failing
+                    }
                     if (!current()) break
+                    var failed: Exception? = null
                     // Not cancellable: if the server created a match, we must learn about it (see abandon()).
                     val m = try {
                         withContext(NonCancellable) { backend.findMatch(s.target) }
                     } catch (e: OrphanMatchException) {
                         abandon(e.matchId) // paired, but the partner's profile couldn't load: end it and keep looking
                         null
-                    } catch (e: BackendException) {
-                        // A chat we just left (or abandoned) still holds the exit lock for a moment: wait it out.
-                        if (e.code != "exit_locked" || !current()) throw e
-                        null
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        val code = (e as? BackendException)?.code
+                        when {
+                            !current() -> null // stopped meanwhile; handled just below
+                            // A chat we just left (or abandoned) still holds the exit lock for a moment: wait it out.
+                            code == "exit_locked" -> null
+                            code in STOP_CODES -> throw e
+                            else -> null.also { failed = e } // network, timeout, server hiccup: try again
+                        }
                     }
                     if (!current()) { // cancelled (or restarted) while the request was in flight
                         if (m != null) abandon(m.id) else if (!_state.value.searching) runCatching { backend.cancelSearch() }
@@ -370,15 +395,49 @@ class AppViewModel(
                         openChat(m)
                         return@launch
                     }
-                    delay(POLL_MS)
+                    val error = failed
+                    if (error == null) {
+                        failingSince = null
+                        failures = 0
+                        reconnecting(false)
+                    } else {
+                        val now = clock()
+                        val since = failingSince ?: now.also { failingSince = it }
+                        if (now - since >= GIVE_UP_MS) throw error
+                        failures++
+                        reconnecting(true)
+                    }
+                    nextAttempt(signals, if (error == null) POLL_MS else retryMs(failures))
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 if (gen == searchGeneration) { // an old search's error must not stop the new one
-                    _state.update { it.copy(searching = false) }
+                    _state.update { it.copy(searching = false, reconnecting = false) }
                     notice(explain(e))
                 }
+            } finally {
+                listener.cancel()
+                if (gen == searchGeneration) _state.update { if (it.reconnecting) it.copy(reconnecting = false) else it }
+            }
+        }
+    }
+
+    /** Waits [ms] before the next attempt, or less when a match signal arrives. */
+    private suspend fun nextAttempt(signals: ReceiveChannel<Unit>, ms: Long) {
+        withTimeoutOrNull(ms) { signals.receive() }
+    }
+
+    /** Forwards the backend's match signals while the search runs; a dropped subscription is retried, polling covers the gap. */
+    private suspend fun listenForMatches(signals: SendChannel<Unit>) {
+        while (true) {
+            try {
+                backend.matchSignals().collect { signals.trySend(Unit) }
+                return // a backend without signals (demo) just ends the flow
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                delay(SIGNALS_RETRY_MS)
             }
         }
     }
@@ -392,8 +451,10 @@ class AppViewModel(
 
     /** The loop notices on its next turn; a request already in flight still completes (see startMatching). */
     fun cancelMatching() {
-        _state.update { it.copy(searching = false) }
-        act { backend.cancelSearch() }
+        if (!_state.value.searching) return
+        _state.update { it.copy(searching = false, reconnecting = false) }
+        // Offline this fails; no error for that: the server drops a queue spot that is not refreshed within seconds.
+        viewModelScope.launch { runCatching { backend.cancelSearch() } }
     }
 
     /** End a match the user never saw, so the other person isn't left waiting, unless the user opened it after all. */
@@ -409,16 +470,22 @@ class AppViewModel(
     }
 
     private fun openChat(m: Match) {
-        _state.update { it.copy(searching = false, chat = ChatState(m, clock())) }
-        viewModelScope.launch { refreshEntitlements() } // the exit lock depends on Premium, which may have expired
         chatJob?.cancel()
+        dmJob?.cancel()
+        _state.update { it.copy(searching = false, reconnecting = false, chat = ChatState(m, clock()), dm = null, viewing = null) }
+        viewModelScope.launch { refreshEntitlements() } // the exit lock depends on Premium, which may have expired
         chatJob = viewModelScope.launch {
             var warned = false
-            // Reconnects on its own after a dropped connection; the history merge fills any gap.
+            var newest: Long? = null
+            // Reconnects on its own after a dropped connection; the history merge fills any gap. One full history
+            // load, then only newer messages (here after a reconnect, and in the re-syncs inside events()).
             while (isActive) {
-                runCatching { backend.history(m.id) }.onSuccess { h -> updateChat(m.id) { c -> c.copy(messages = merge(c.messages, h)) } }
+                runCatching { backend.history(m.id, newest) }.onSuccess { h ->
+                    h.maxOfOrNull { it.id }?.let { id -> newest = maxOf(id, newest ?: id) }
+                    updateChat(m.id) { c -> c.copy(messages = merge(c.messages, h)) }
+                }
                 try {
-                    backend.events(m.id).collect { e -> applyChatEvent(m.id, e) }
+                    backend.events(m.id, live = true, afterId = newest).collect { e -> applyChatEvent(m.id, e) }
                     return@launch
                 } catch (e: CancellationException) {
                     throw e
@@ -466,11 +533,24 @@ class AppViewModel(
         return ExitPolicy.remainingMs(s.premium, c.startedAtMs, clock())
     }
 
-    fun sendText(text: String) {
+    /** [onFailed]: the message did not reach the server, so the composer puts the text back (the error shows as a notice). */
+    fun sendText(text: String, onFailed: () -> Unit = {}) {
         val t = text.trim().take(MAX_TEXT)
         val c = _state.value.chat ?: return
         if (t.isEmpty() || c.partnerLeft) return
-        act { backend.send(c.match.id, t, null).also { m -> updateChat(c.match.id) { it.copy(messages = merge(it.messages, listOf(m))) } } }
+        send(onFailed) { backend.send(c.match.id, t, null).also { m -> updateChat(c.match.id) { it.copy(messages = merge(it.messages, listOf(m))) } } }
+    }
+
+    /** Like [act], and on failure also [onFailed]. */
+    private fun send(onFailed: () -> Unit, block: suspend () -> Unit) = viewModelScope.launch {
+        try {
+            block()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            notice(explain(e))
+            onFailed()
+        }
     }
 
     private var lastTypingSentMs = Long.MIN_VALUE / 2
@@ -494,21 +574,29 @@ class AppViewModel(
     fun leave(next: Boolean) {
         val c = _state.value.chat ?: return
         if (exitRemainingMs() > 0) return
+        if (!leaving.add(c.match.id)) return // a second tap while the first is on its way
         act {
-            gone { backend.leave(c.match.id) }
-            closeChat()
-            if (next) startMatching()
+            try {
+                gone { backend.leave(c.match.id) }
+            } finally {
+                leaving.remove(c.match.id)
+            }
+            // Only the chat that was left closes, and only once: a late answer must not close (or restart) a newer one.
+            if (closeChat(c.match.id) && next) startMatching()
         }
     }
+
+    /** Matches whose leave request is in flight. */
+    private val leaving = mutableSetOf<String>()
 
     /** Safety exit: never locked. Blocks the partner and removes them from Recent. */
     fun reportAndLeave(reason: ReportReason, next: Boolean) {
         val c = _state.value.chat ?: return
         act {
             gone { backend.report(c.match.partner.id, reason, c.match.id) }
-            closeChat()
+            val closed = closeChat(c.match.id)
             notice(UiText(R.string.msg_reported_long))
-            if (next) startMatching()
+            if (closed && next) startMatching()
         }
     }
 
@@ -521,10 +609,13 @@ class AppViewModel(
         }
     }
 
-    private fun closeChat() {
+    /** Closes the chat [matchId] if it is still the one open; false when it was already closed (or replaced). */
+    private fun closeChat(matchId: String): Boolean {
+        if (_state.value.chat?.match?.id != matchId) return false
         chatJob?.cancel()
         _state.update { it.copy(chat = null, viewing = null) }
         refreshRecents()
+        return true
     }
 
     fun requestVideo() {
@@ -601,7 +692,7 @@ class AppViewModel(
         act {
             if (c?.match?.partner?.id == person.id) {
                 gone { backend.block(person.id) }
-                closeChat()
+                closeChat(c.match.id)
             } else {
                 backend.block(person.id)
             }
@@ -624,9 +715,15 @@ class AppViewModel(
         }
     }
 
-    fun refreshRecents() = act {
-        val list = backend.recents()
-        _state.update { it.copy(recents = list) }
+    private var recentsJob: Job? = null
+
+    /** The newest request wins: quick tab switching neither stacks requests nor lets an older answer overwrite a newer one. */
+    fun refreshRecents() {
+        recentsJob?.cancel()
+        recentsJob = act {
+            val list = backend.recents()
+            _state.update { it.copy(recents = list) }
+        }
     }
 
     /** Message someone from Recent, or a friend (their chat, or a new private one the server opens). */
@@ -636,6 +733,8 @@ class AppViewModel(
         val friend = s.friends.firstOrNull { it.profile.id == partnerId && it.state == FriendState.FRIENDS } ?: return
         act {
             val thread = friend.threadId ?: backend.friendThread(partnerId)
+            // A search or chat started while the thread was looked up wins: no thread pops up over it later.
+            if (_state.value.searching || _state.value.chat != null) return@act
             openThread(RecentMatch(thread, friend.profile, 0))
         }
     }
@@ -644,9 +743,11 @@ class AppViewModel(
         _state.update { it.copy(dm = DmState(r), viewing = null) }
         dmJob?.cancel()
         dmJob = viewModelScope.launch {
-            runCatching { backend.history(r.matchId) }.onSuccess { h -> updateDm(r.matchId) { merge(it, h) } }
+            val h = runCatching { backend.history(r.matchId) }.getOrNull()
+            h?.let { updateDm(r.matchId) { old -> merge(old, it) } }
             runCatching {
-                backend.events(r.matchId).collect { e -> if (e is MatchEvent.NewMessage) updateDm(r.matchId) { merge(it, listOf(e.message)) } }
+                backend.events(r.matchId, live = false, afterId = h?.maxOfOrNull { it.id })
+                    .collect { e -> if (e is MatchEvent.NewMessage) updateDm(r.matchId) { merge(it, listOf(e.message)) } }
             }
         }
     }
@@ -657,11 +758,11 @@ class AppViewModel(
         refreshRecents()
     }
 
-    fun sendDm(text: String) {
+    fun sendDm(text: String, onFailed: () -> Unit = {}) {
         val t = text.trim().take(MAX_TEXT)
         val dm = _state.value.dm ?: return
         if (t.isEmpty()) return
-        act { backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } } }
+        send(onFailed) { backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } } }
     }
 
     private fun updateDm(matchId: String, change: (List<Message>) -> List<Message>) = _state.update {
@@ -757,9 +858,15 @@ class AppViewModel(
 
     // ---- Public rooms -----------------------------------------------------------------------
 
-    fun refreshRooms() = act {
-        val list = backend.rooms()
-        _state.update { it.copy(rooms = list) }
+    private var roomsJob: Job? = null
+
+    /** The newest request wins (see [refreshRecents]). */
+    fun refreshRooms() {
+        roomsJob?.cancel()
+        roomsJob = act {
+            val list = backend.rooms()
+            _state.update { it.copy(rooms = list) }
+        }
     }
 
     /** A room the server says I can't enter shows why instead of trying. */
@@ -775,7 +882,7 @@ class AppViewModel(
         roomJob = viewModelScope.launch {
             try {
                 backend.joinRoom(room.id)
-                val history = backend.roomHistory(room.id)
+                val history = backend.roomHistory(room.id) // the one full load; the re-syncs fetch only newer messages
                 updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, history), loading = false) }
                 launch {
                     while (isActive) { // stay listed as present; the server forgets you 90 s after the last beat
@@ -796,7 +903,7 @@ class AppViewModel(
                         }
                     }
                 }
-                backend.roomEvents(room.id).collect { m -> updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) } }
+                backend.roomEvents(room.id, afterId = history.maxOfOrNull { it.id }).collect { m -> updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) } }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -894,11 +1001,11 @@ class AppViewModel(
         refreshRooms()
     }
 
-    fun sendRoom(text: String) {
+    fun sendRoom(text: String, onFailed: () -> Unit = {}) {
         val t = text.trim().take(MAX_ROOM_TEXT)
         val r = _state.value.room ?: return
         if (t.isEmpty() || r.closed) return
-        act {
+        send(onFailed) {
             val m = try {
                 try {
                     backend.sendRoom(r.room.id, t)
@@ -911,7 +1018,7 @@ class AppViewModel(
             } catch (e: BackendException) {
                 if (e.code != "room_closed") throw e
                 markRoomClosed(r.room.id)
-                return@act
+                return@send
             }
             updateRoom(r.room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) }
         }
@@ -932,6 +1039,19 @@ class AppViewModel(
 
     companion object {
         const val POLL_MS = 2_000L
+        /** A search that has failed for this long (on screen) without a single answer stops with the network notice. */
+        const val GIVE_UP_MS = 60_000L
+        private const val SIGNALS_RETRY_MS = 10_000L
+        /** Rule refusals end the search at once; everything else except exit_locked is retried. */
+        private val STOP_CODES = setOf("premium_required", "banned", "no_profile", "not_signed_in", "bad_target")
+
+        /** Pause before retry number [failures] (1, 2, ...): 2 s, 4 s, 8 s, then 10 s each. */
+        fun retryMs(failures: Int): Long = when (failures) {
+            1 -> 2_000L
+            2 -> 4_000L
+            3 -> 8_000L
+            else -> 10_000L
+        }
         private const val FALLBACK_EMOJI = "💬"
         const val ROOM_BEAT_MS = 30_000L
         const val MAX_ROOM_TEXT = 500

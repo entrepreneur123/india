@@ -57,6 +57,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -99,7 +100,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 vm.addPost(text, uri)
                 screen = Sub.NONE
             }
-            Sub.ROOM -> s.room?.let { RoomScreen(vm, it) } ?: Box(Modifier.fillMaxSize())
+            Sub.ROOM -> s.room?.let { key(it.room.id) { RoomScreen(vm, it) } } ?: Box(Modifier.fillMaxSize())
             Sub.NONE -> Tabs(vm, s, me) { screen = it }
         }
     }
@@ -360,7 +361,16 @@ fun MatchingScreen(vm: AppViewModel, s: UiState) {
                     stringResource(R.string.matching_tip),
                     color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
                 )
-                Spacer(Modifier.height(32.dp))
+                // The last attempt failed (weak network); the search keeps going. Fixed height, so nothing jumps.
+                Box(Modifier.height(28.dp), contentAlignment = Alignment.BottomCenter) {
+                    androidx.compose.animation.AnimatedVisibility(s.reconnecting, enter = fadeIn(tween(200)), exit = fadeOut(tween(200))) {
+                        Text(
+                            stringResource(R.string.matching_reconnecting), color = Brand.PinkOnDark,
+                            style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
                 val interaction = remember { MutableInteractionSource() }
                 Box(
                     Modifier.fillMaxWidth().height(56.dp).pressScale(interaction, 0.97f).clip(CircleShape).background(Color.White.copy(alpha = 0.04f))

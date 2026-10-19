@@ -16,8 +16,8 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
     }
 
     // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
