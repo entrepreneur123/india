@@ -112,6 +112,8 @@
     <string name="say_hi">हाय बोलिए 👋</string>
     <string name="send_media">फ़ोटो या वीडियो भेजें</string>
     <string name="send">भेजें</string>
+    <string name="tap_to_view">देखने के लिए टैप करें</string>
+    <string name="no_video_player">यह वीडियो चलाने के लिए कोई ऐप नहीं है</string>
     <string name="photo">फ़ोटो</string>
 
     <string name="report">रिपोर्ट</string>

@@ -65,6 +65,8 @@ interface Backend {
     /** Live updates for one chat. Collect while the chat is on screen. */
     fun events(matchId: String): Flow<MatchEvent>
     suspend fun history(matchId: String): List<Message>
+    /** "I am typing" signal to the other person; arrives as [MatchEvent.Typing]. Best effort. */
+    suspend fun sendTyping(matchId: String)
     suspend fun send(matchId: String, text: String?, media: Media?): Message
     suspend fun leave(matchId: String)
     /** Always allowed: blocks the person and ends any open chat with them. */

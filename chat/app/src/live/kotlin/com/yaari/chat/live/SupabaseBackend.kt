@@ -45,6 +45,9 @@ import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcast
+import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
@@ -54,6 +57,7 @@ import io.github.jan.supabase.storage.storage
 import io.ktor.client.call.body
 import io.ktor.http.ContentType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
@@ -64,7 +68,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.ByteArrayOutputStream
 import java.time.Instant
@@ -95,6 +101,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
     private val json = Json { ignoreUnknownKeys = true }
     private val signedUrls = ConcurrentHashMap<String, String>()
+    private val typingChannels = ConcurrentHashMap<String, RealtimeChannel>()
 
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
@@ -251,9 +258,23 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             filter("id", FilterOperator.EQ, matchId)
         }
         launch { inserts.collect { send(MatchEvent.NewMessage(toMessage(it.decodeRecord<MessageRow>(), me))) } }
+
+        // Typing signals ride a broadcast channel shared by the two participants (not stored anywhere).
+        val typingChannel = client.channel("typing-$matchId")
+        typingChannels[matchId] = typingChannel
+        var typingOff: Job? = null
+        launch {
+            typingChannel.broadcastFlow<JsonObject>("typing").collect { msg ->
+                if (msg["from"]?.jsonPrimitive?.content == me) return@collect
+                send(MatchEvent.Typing(true))
+                typingOff?.cancel()
+                typingOff = launch { delay(4_000); send(MatchEvent.Typing(false)) }
+            }
+        }
         launch { updates.collect { onMatch(it.decodeRecord<MatchRow>()) } }
         try {
             channel.subscribe(blockUntilSubscribed = true)
+            typingChannel.subscribe()
             // Safety net if the realtime socket drops on a weak network: re-sync every 10 s (the app de-duplicates).
             while (true) {
                 runCatching {
@@ -263,8 +284,17 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 delay(10_000)
             }
         } finally {
-            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
+            withContext(NonCancellable) {
+                typingChannels.remove(matchId, typingChannel)
+                runCatching { client.realtime.removeChannel(channel) }
+                runCatching { client.realtime.removeChannel(typingChannel) }
+            }
         }
+    }
+
+    override suspend fun sendTyping(matchId: String) {
+        val ch = typingChannels[matchId] ?: return
+        runCatching { ch.broadcast("typing", buildJsonObject { put("from", uid) }) }
     }
 
     override suspend fun history(matchId: String): List<Message> = call {

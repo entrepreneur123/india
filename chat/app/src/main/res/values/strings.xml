@@ -120,6 +120,8 @@
     <string name="say_hi">Say hi 👋</string>
     <string name="send_media">Send photo or video</string>
     <string name="send">Send</string>
+    <string name="tap_to_view">Tap to view</string>
+    <string name="no_video_player">No app to play this video</string>
     <string name="photo">Photo</string>
 
     <!-- Profile -->

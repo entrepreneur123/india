@@ -78,9 +78,12 @@ class LiveServerTest {
         assertEquals("exit_locked", code { a.leave(ma.id) })
         assertEquals("premium_required", code { a.requestVideo(ma.id) })
 
-        // Realtime: A receives B's message.
+        // Realtime: A receives B's message, and B sees A typing.
         val incoming = async { withTimeout(15_000) { a.events(ma.id).filterIsInstance<MatchEvent.NewMessage>().first { !it.message.fromMe } } }
-        delay(2_000) // let A's realtime channel subscribe
+        val typing = async { withTimeout(15_000) { b.events(mb.id).filterIsInstance<MatchEvent.Typing>().first { it.on } } }
+        delay(2_000) // let both realtime channels subscribe
+        a.sendTyping(ma.id)
+        typing.await()
         val sent = b.send(mb.id, "hello from live test", null)
         assertTrue(sent.fromMe)
         assertEquals("hello from live test", incoming.await().message.text)

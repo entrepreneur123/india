@@ -115,7 +115,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                     }
                 }
             } else {
-                Composer(onText = vm::sendText, onMedia = vm::sendMedia)
+                Composer(onText = vm::sendText, onMedia = vm::sendMedia, onTyping = vm::typing)
             }
         }
     }
@@ -167,7 +167,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
     ) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().imePadding()) {
             Messages(dm.messages, Modifier.weight(1f))
-            Composer(onText = vm::sendDm, onMedia = null)
+            Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
         }
     }
 }
@@ -192,7 +192,7 @@ private fun Messages(messages: List<Message>, modifier: Modifier) {
 }
 
 @Composable
-private fun Composer(onText: (String) -> Unit, onMedia: ((Media) -> Unit)?) {
+private fun Composer(onText: (String) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -207,7 +207,7 @@ private fun Composer(onText: (String) -> Unit, onMedia: ((Media) -> Unit)?) {
                 Icon(Icons.Filled.Add, stringResource(R.string.send_media))
             }
         }
-        OutlinedTextField(text, { text = it.take(1000) }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.message)) }, maxLines = 4)
+        OutlinedTextField(text, { text = it.take(1000); if (it.isNotBlank()) onTyping() }, Modifier.weight(1f), placeholder = { Text(stringResource(R.string.message)) }, maxLines = 4)
         IconButton({ onText(text); text = "" }, enabled = text.isNotBlank()) { Icon(Icons.AutoMirrored.Filled.Send, stringResource(R.string.send)) }
     }
 }

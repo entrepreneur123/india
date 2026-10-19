@@ -356,6 +356,17 @@ class AppViewModel(
         act { backend.send(c.match.id, t, null).also { m -> updateChat(c.match.id) { it.copy(messages = merge(it.messages, listOf(m))) } } }
     }
 
+    private var lastTypingSentMs = Long.MIN_VALUE / 2
+
+    /** Called on every keystroke; tells the other person at most every 3 s. */
+    fun typing() {
+        val id = _state.value.chat?.match?.id ?: _state.value.dm?.recent?.matchId ?: return
+        val now = clock()
+        if (now - lastTypingSentMs < TYPING_EVERY_MS) return
+        lastTypingSentMs = now
+        viewModelScope.launch { runCatching { backend.sendTyping(id) } }
+    }
+
     fun sendMedia(media: Media) {
         val c = _state.value.chat ?: return
         if (c.partnerLeft) return
@@ -529,5 +540,6 @@ class AppViewModel(
     companion object {
         const val POLL_MS = 2_000L
         const val MAX_TEXT = 1000
+        const val TYPING_EVERY_MS = 3_000L
     }
 }

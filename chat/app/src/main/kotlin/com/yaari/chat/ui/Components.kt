@@ -1,5 +1,17 @@
 package com.yaari.chat.ui
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import androidx.core.net.toUri
+import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.yaari.chat.R
 import android.view.WindowManager
@@ -75,23 +87,43 @@ fun Bubble(m: Message) {
     val mine = m.fromMe
     val bg = if (mine) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     val fg = if (mine) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val media = m.media
+    // Media from the other person stays hidden until tapped, so nobody sees an unwanted photo by surprise.
+    var revealed by rememberSaveable(m.id) { mutableStateOf(mine) }
+    val context = LocalContext.current
     Box(Modifier.sizeIn(maxWidth = 280.dp).clip(RoundedCornerShape(18.dp)).background(bg)) {
-        val media = m.media
         when {
+            media != null && !revealed -> Column(
+                Modifier.size(200.dp, 130.dp).background(Color(0xFF2B2B2B)).clickable { revealed = true },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text(stringResource(if (media.kind == MediaKind.VIDEO) R.string.video else R.string.photo), color = Color.White, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.tap_to_view), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
+            }
             media?.kind == MediaKind.IMAGE -> AsyncImage(
                 media.uri, contentDescription = stringResource(R.string.photo), contentScale = ContentScale.Crop,
                 modifier = Modifier.sizeIn(maxWidth = 240.dp, maxHeight = 300.dp),
             )
-            media?.kind == MediaKind.VIDEO -> Column(
-                Modifier.size(200.dp, 130.dp).background(Color.Black),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            media?.kind == MediaKind.VIDEO -> Box(
+                Modifier.size(200.dp, 130.dp).background(Color.Black).clickable { playVideo(context, media.uri) },
+                contentAlignment = Alignment.Center,
             ) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.video), tint = Color.White, modifier = Modifier.size(48.dp))
-                }
+                Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.video), tint = Color.White, modifier = Modifier.size(48.dp))
             }
             else -> Text(m.text.orEmpty(), color = fg, modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp))
         }
+    }
+}
+
+/** Opens the phone's video player (signed https URL for received videos, content:// for our own). */
+private fun playVideo(context: Context, uri: String) {
+    val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri.toUri(), "video/*")
+        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, context.getString(R.string.no_video_player), Toast.LENGTH_SHORT).show()
     }
 }
 

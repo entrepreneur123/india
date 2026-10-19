@@ -159,6 +159,8 @@ open class FakeBackend(
         }
     }
 
+    override suspend fun sendTyping(matchId: String) = Unit
+
     override suspend fun history(matchId: String) = match(matchId).messages.toList()
 
     override suspend fun send(matchId: String, text: String?, media: Media?): Message {
