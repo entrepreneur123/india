@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
   const { data: seen } = await admin.from("purchases").select("user_id").eq("token", purchase_token).maybeSingle();
   if (seen && seen.user_id !== user.id) return json(409, { error: "token_used_by_other_account" });
 
-  const { data: ent } = await admin.from("subscriptions").select("premium_until, gender_until").eq("user_id", user.id).maybeSingle();
+  const { data: ent } = await admin.from("subscriptions").select("gender_until").eq("user_id", user.id).maybeSingle();
 
   if (product_id === PREMIUM) {
     const r = await fetch(`${api}/subscriptionsv2/tokens/${tok}`, { headers: auth });
@@ -66,9 +66,9 @@ Deno.serve(async (req) => {
     const item = (s.lineItems ?? []).find((l: { productId: string }) => l.productId === PREMIUM);
     if (!item?.expiryTime) return json(402, { error: "no_line_item" });
     if (!seen) await admin.from("purchases").insert({ token: purchase_token, user_id: user.id, product_id });
+    // Only this column: a gender-pass redemption running at the same time keeps its own value.
     await admin.from("subscriptions").upsert({
-      user_id: user.id, premium_until: item.expiryTime, gender_until: ent?.gender_until ?? null,
-      purchase_token, updated_at: new Date().toISOString(),
+      user_id: user.id, premium_until: item.expiryTime, purchase_token, updated_at: new Date().toISOString(),
     });
     if (s.acknowledgementState === "ACKNOWLEDGEMENT_STATE_PENDING") {
       await fetch(`${api}/subscriptions/${PREMIUM}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
@@ -77,18 +77,22 @@ Deno.serve(async (req) => {
   }
 
   // Gender pass: one-time, redeemed once, then consumed by the app so it can be bought again.
-  if (seen) return json(409, { error: "already_redeemed" });
+  // Same user retrying (lost response, or re-check at app start): success, nothing granted twice.
+  if (seen) return json(200, { gender_until: ent?.gender_until ?? null, already_redeemed: true });
   const r = await fetch(`${api}/products/${GENDER_PASS}/tokens/${tok}`, { headers: auth });
   if (!r.ok) return json(402, { error: `play_${r.status}` });
   const p = await r.json();
   if (p.purchaseState !== 0) return json(402, { error: "not_purchased" });
   if (p.obfuscatedExternalAccountId !== user.id) return json(403, { error: "wrong_account" });
   const { error: dup } = await admin.from("purchases").insert({ token: purchase_token, user_id: user.id, product_id });
-  if (dup) return json(409, { error: "already_redeemed" });
+  if (dup) {
+    // Lost a race: success only if the winner was this same user (a parallel retry).
+    const { data: owner } = await admin.from("purchases").select("user_id").eq("token", purchase_token).maybeSingle();
+    if (owner?.user_id !== user.id) return json(409, { error: "token_used_by_other_account" });
+    return json(200, { gender_until: ent?.gender_until ?? null, already_redeemed: true });
+  }
   const base = Math.max(Date.now(), ent?.gender_until ? Date.parse(ent.gender_until) : 0);
   const genderUntil = new Date(base + 24 * 3600 * 1000).toISOString();
-  await admin.from("subscriptions").upsert({
-    user_id: user.id, premium_until: ent?.premium_until ?? null, gender_until: genderUntil, updated_at: new Date().toISOString(),
-  });
+  await admin.from("subscriptions").upsert({ user_id: user.id, gender_until: genderUntil, updated_at: new Date().toISOString() });
   return json(200, { gender_until: genderUntil });
 });
