@@ -2,7 +2,7 @@
 
 SSC(Staff Selection Commission) 공식 사이트 **ssc.gov.in에서만** 공고·결과·입장권·정답지를 가져오고, 지원자가 생년월일·카테고리·학력을 넣으면 **직무별로 지원 가능 여부**를 알려주는 웹(이후 앱)입니다. LottoDost와 같은 원칙으로 만들었습니다: **틀린 날짜보다 늦은 날짜가 낫다.**
 
-- 아직 게시(배포)하지 않은 시제품입니다. 데이터 브랜치·Pages 연결은 하지 않았습니다(아래 "다음 단계").
+- 게시 워크플로(`jobs-publish`)는 준비돼 있지만 `JOBS_PUBLISH` 변수를 켜기 전에는 아무것도 공개하지 않습니다(아래 "운영").
 - 정부 사이트가 아님을 화면 맨 위에 고지하고, 모든 항목은 공식 PDF로 연결합니다(Google Play 정부 정보 정책 대응).
 
 ## 구조
@@ -29,7 +29,10 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | `pipeline/rules/ssc-*.json` | **공고 원문에서 옮긴 규칙** (문단·쪽수 `ref` 포함) |
 | `pipeline/sarkari/build.py` | 전체 실행, 안전장치, 새 항목(`new.json`) 산출 |
 | `web/eligibility.js` | 판정 로직 JS 포팅 (Python과 같은 테스트 케이스로 검증) |
-| `web/index.html`, `web/app.js` | 최신 공고 / 자격 판정 / 일정 3개 탭 |
+| `web/index.html`, `web/app.js` | 최신 / 시험 / 자격 / 도구 / 저장 5개 탭 |
+| `web/i18n.js`, `web/tools.js`, `web/sw.js` | 영어·힌디어 문구, 서명·나이·캘린더 도구, 오프라인 |
+| `pipeline/sarkari/telegram.py` | 새 공고를 텔레그램 채널에 게시 |
+| `pipeline/exam_families.json` | 시험별 이름(영·힌)과 공고에서 확인한 학력 |
 
 ## 실제 API에서 측정해 반영한 것 (추측 아님)
 
@@ -51,30 +54,61 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 
 ```bash
 cd jobs/pipeline
-python -m pytest -q tests                       # 87 tests (실제 SSC 응답 fixture)
+python -m pytest -q tests                       # 100 tests (실제 SSC 응답 fixture)
 python -m sarkari.build --out ../../public       # 실제 수집 (약 25초, 요청 약 15회, 요청 간 1초 간격)
 
-cd ../web && node --test eligibility.test.mjs    # 26 tests (Python과 같은 케이스 23개 포함)
-# 미리보기: build 결과의 public/jobs/ 에 index.html, app.js, eligibility.js 를 복사하고 정적 서버로 열기
+cd ../web && node --test eligibility.test.mjs tools.test.mjs   # 40 tests (Python과 같은 판정 케이스 31개 포함)
+# 미리보기: jobs/web/ 의 파일을 build 결과의 public/jobs/ 에 복사하고 정적 서버로 열기
 ```
 
-GitHub 러너(인도 밖)에서 ssc.gov.in이 열리는지는 아직 모릅니다. **Actions → jobs-probe** 를 한 번 수동 실행하면 확인됩니다. 이 컨테이너에서는 ssc.gov.in만 열렸고 ssc.nic.in·upsc.gov.in·ibps.in·rrbcdg.gov.in은 연결이 끊겼습니다.
+GitHub 러너(인도 밖)에서 ssc.gov.in이 열리는지는 jobs-probe로 확인합니다(아래 "운영"). 이 개발 환경에서는 ssc.gov.in만 열렸고 ssc.nic.in·upsc.gov.in·ibps.in·rrbcdg.gov.in은 연결이 끊겼습니다.
 
-## 대형 서비스와 비교해 아직 부족한 점 (솔직하게)
+## 기능 (경쟁 서비스 벤치마킹 반영)
 
-| 항목 | 현재 | 대형 앱(Adda247, Testbook 등) 수준 |
+sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Alert 등 앱 설명을 참고했습니다.
+
+| 기능 | 내용 | 근거 데이터 |
 |---|---|---|
-| 기관 범위 | SSC만 | SSC·UPSC·RRB·IBPS·주 공무원위원회 |
-| 푸시 알림 | `new.json`만 생성, 발송 없음 | 시험별 구독 푸시 |
-| 판정 대상 시험 | CGL 2026, CHSL 2026 (둘 다 접수 마감) | 진행 중인 공고 위주 |
-| 언어 | 화면은 영어, 공고 제목은 영어·힌디어 원문 | 힌디어 UI 기본 |
-| 앱 | 웹만 | Android 앱 |
-| 사진·서명 크기 조정 | 없음 | 일부 제공 |
+| 최신 공고 | 검색, 종류(새 채용·결과·입장권·정답지·정정·모집 인원), 시험·학력·언어 필터, 내 시험만, 지난 방문 이후 NEW 표시 | SSC API |
+| 저장·공유 | 공고 저장(기기 안), WhatsApp/공유 버튼 | — |
+| 시험 상세 | 주요 날짜, 응시료(정정 수수료 포함), 나이(출생일 범위), 완화표, 모집 인원, 직무, 중요 링크, 그 시험의 모든 공지 | 공고 원문(문단·쪽수) |
+| 캘린더 알림 | 남은 일정만 `.ics`로 저장, 하루 전 알림 | 규칙 파일 |
+| 자격 판정 | CGL·CHSL·속기사·SI 2026, 성별 제한 직무, 계산 불가 조건은 "확인 필요" | 공고 원문 |
+| 공식 자료 | 강의계획서, 잠정·최종 모집 인원, 기출문제, 증명서 양식, 지침 (SSC PDF 링크만) | SSC API |
+| 도구 | 서명 JPEG 10~20KB 맞춤(기기 안에서 처리), 나이 계산기, 사진 촬영 안내 | 공고 9.4~9.6항 |
+| 힌디어 화면 | 버튼 하나로 전환, 기기 언어가 힌디어면 기본 | `i18n.js` |
+| 오프라인·설치 | PWA: 인터넷이 끊겨도 마지막 공고 표시, 홈 화면 설치 | `sw.js` |
+| 텔레그램 채널 | 새 공고 자동 게시 (토큰 있을 때만) | `new.json` |
 
-## 다음 단계 (추천 순서)
+**일부러 넣지 않은 것**
+- **SSC용 사진 크기 조정기:** SSC는 사진 업로드를 받지 않고 지원서에서 카메라로 직접 촬영하며, 기존 사진을 찍으면 탈락시킵니다(CHSL·CGL 2026 공고 9.4~9.5항). 경쟁 사이트의 사진 조정기는 SSC에는 잘못된 안내입니다.
+- **모의고사·문제 풀이 콘텐츠:** 정확성·저작권 검증이 불가능하므로 SSC 공식 기출문제와 강의계획서 링크만 둡니다.
+- **UPSC·RRB·IBPS 등 다른 기관:** 이 환경에서 접속이 끊겼습니다. jobs-probe로 GitHub 러너에서 접속되는지 먼저 확인해야 합니다.
 
-1. Actions에서 **jobs-probe** 실행 → 러너에서 SSC 접속 가능 여부 확인 (불가하면 인도 리전 호스팅 필요)
-2. 게시 워크플로: 30분마다 실행(`lastUpdates`로 대부분 요청 1회), `data` 브랜치의 `jobs/`에 게시
-3. 다음 공고(MTS 2026 등)가 나오는 즉시 규칙 파일 추가: 공고 PDF → 규칙 JSON → 공식 대조 테스트
-4. 힌디어 UI (원어민 검수 필수), 푸시(FCM, 기존 앱의 `push.py` 재사용)
-5. Android 앱: LottoDost의 오프라인 캐시·미러 전환 구조 재사용
+## 공고에서 확인한 사실 (2026-10-20)
+
+- 시험 일정: CGL 1차 09-30~10-30(12-09 공지), JE 11-02~06, SI 11-20~28, CHSL 1차 11-30~12-31(01-10 공지, 모두 "예정")
+- 학력: CGL 학사 · CHSL 12학년 · 속기사 12학년 · SI 학사(Fire는 10학년+3년 디플로마도 가능) · JE 공학 디플로마/학사 · 힌디 번역사 석사. MTS·GD·Selection Post·델리 경찰은 미확인이라 "공고 확인"으로 표시합니다.
+- SI 2026 공고에는 장애인(PwBD) 나이 완화가 없고, 서명 크기가 본문(6cm)과 부록(4cm)에서 서로 다릅니다. 둘 다 그대로 안내합니다.
+- SSC 자체 힌디어 시험명 일부(MTS·속기사)는 글자가 깨져 있어, 공지 제목의 표기를 씁니다.
+
+## 운영
+
+**jobs-probe 실행 (GitHub 러너에서 SSC 접속 확인)**
+- 지금: 이 PR에 `jobs/pipeline`이 바뀔 때마다 자동 실행됩니다. PR의 Checks → jobs-probe → Summary에 결과가 나옵니다.
+- 기본 브랜치에 병합한 뒤: 저장소 → **Actions** 탭 → 왼쪽 목록의 **jobs-probe** → 오른쪽 **Run workflow** → 브랜치 선택 → **Run workflow**. 수동 실행 버튼은 워크플로 파일이 기본 브랜치에 있어야만 보입니다.
+
+**게시 켜기**
+1. Settings → Secrets and variables → Actions → **Variables**에 `JOBS_PUBLISH` = `true`
+2. (선택) 텔레그램: Secret `JOBS_TELEGRAM_BOT_TOKEN`, Variable `JOBS_TELEGRAM_CHAT_ID`
+3. 30분마다 `data` 브랜치의 `jobs/`에 게시되고, 주소는 `<사이트>/jobs/` 입니다. 변화가 없으면 커밋하지 않습니다.
+
+## 남은 부족한 점
+
+| 항목 | 현재 | 대형 앱 수준 |
+|---|---|---|
+| 기관 범위 | SSC만 | SSC·UPSC·RRB·IBPS·주 위원회 |
+| 앱 푸시 | 텔레그램·캘린더 알림 | 시험별 앱 푸시 (Android 앱 필요) |
+| 자격 판정 | 2026 공고 4개 (모두 접수 마감) | 진행 중인 공고 전체 |
+| 힌디어 | 앱이 쓴 번역, **원어민 검수 전** | 원어민 작성 |
+| 검색 노출(SEO) | 단일 페이지 | 시험별 정적 페이지 |

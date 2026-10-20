@@ -34,7 +34,7 @@ jobs:
           node-version: 22
       - name: Website eligibility port gives the same answers as the pipeline
         working-directory: jobs/web
-        run: node --test eligibility.test.mjs
+        run: node --test eligibility.test.mjs tools.test.mjs
 
   android:
     runs-on: ubuntu-24.04

@@ -5,10 +5,12 @@
 Output (static files, served from any CDN), schema 1:
   jobs/v1/feed.json             notices/results/admit cards/answer keys, newest first
   jobs/v1/calendar.json         SSC's tentative calendar (application windows, exam months)
+  jobs/v1/resources.json        links to SSC's syllabus, vacancy, previous-paper, certificate PDFs
+  jobs/v1/exams.json            exam families: names (en/hi), qualification from the latest Notice
   jobs/v1/rules/index.json      exams with an eligibility checker
   jobs/v1/rules/<id>.json       copied from rules/ after validation
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
-  jobs/v1/status.json           when the source was last checked (changes every run)
+  jobs/v1/status.json           last full check and SSC's lastUpdates stamp (changes on full checks only)
 
 Publishing rules (a wrong date or a missing notice is worse than a late one):
   * Every listing is fetched in full before anything is written. Any failure exits 1 and
@@ -28,7 +30,7 @@ import json
 import os
 import sys
 
-from . import eligibility, http, ssc
+from . import classify, eligibility, http, ssc
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -67,8 +69,11 @@ def _write_json(path: str, obj: dict, volatile: tuple[str, ...] = ("generatedAt"
     return True
 
 
+FAMILIES = os.path.join(os.path.dirname(__file__), "..", "exam_families.json")
+
+
 def collect(get: ssc.Getter, now: dt.datetime, window_days: int, max_pages: int,
-            previous_kinds: dict[str, int]) -> tuple[list[ssc.Item], list[dict], dict[str, int]]:
+            previous_kinds: dict[str, int]) -> tuple[list[ssc.Item], list[dict], dict[str, int], dict]:
     exams = ssc.exam_index(get(ssc.EXAMS))
     cutoff = now - dt.timedelta(days=window_days)
     streams = []
@@ -84,7 +89,8 @@ def collect(get: ssc.Getter, now: dt.datetime, window_days: int, max_pages: int,
     merged = ssc.merge([s for _, s, _ in streams])[:FEED_MAX_ITEMS]
     if not merged:
         raise ssc.FormatChanged("no items at all")
-    return merged, calendar, {k: n for k, _, n in streams}
+    resources = ssc.fetch_resources(get, exams, now)
+    return merged, calendar, {k: n for k, _, n in streams}, resources
 
 
 def publish_rules(out: str, all_rules: list[dict], today: dt.date) -> list[dict]:
@@ -124,13 +130,17 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     last_full = status.get("fullCheckAt")
     if not force and stamp == status.get("sourceUpdatedAt") and last_full and \
             now - dt.datetime.fromisoformat(last_full) < dt.timedelta(hours=FULL_CHECK_HOURS):
+        # Nothing is written: a file changed on every run would mean a commit and a Pages build
+        # every 30 minutes for no news.
         print(f"ssc: unchanged since {stamp}; last full check {last_full}")
-        _write_json(status_path, {**status, "checkedAt": now.isoformat(timespec="seconds")}, volatile=())
         return 0
 
     all_rules = eligibility.load_all()  # a broken rules file stops the run before anything is written
     old_feed = _read_json(_v1(out, "feed.json"), {"items": []})
-    items, calendar, counts = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
+    families = _read_json(FAMILIES, None)
+    if not families or set(families["families"]) != set(classify.EXAM_FAMILIES):
+        raise ssc.FormatChanged("exam_families.json does not list exactly classify.EXAM_FAMILIES")
+    items, calendar, counts, resources = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
     feed = [i.to_json() for i in items]
     new = new_items(old_feed["items"], items, now)
 
@@ -140,8 +150,11 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                             "entries": calendar})
     _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})
+    _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
+                                             "sections": resources})
+    _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
     publish_rules(out, all_rules, now.date())
-    _write_json(status_path, {"schema": SCHEMA, "checkedAt": stamp_now, "fullCheckAt": stamp_now,
+    _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
                               "sourceUpdatedAt": stamp, "streamCounts": counts}, volatile=())
     print(f"ssc: {len(feed)} items ({len(new)} new), {len(calendar)} calendar entries"
           f"{'' if changed else ', feed unchanged'}")

@@ -17,6 +17,10 @@
     "correction": ["2026-10-14", "2026-10-16"],
     "ref": "Notice p.1"
   },
+  "examSchedule": [
+    {"stage": "Tier-I (CBE)", "from": "2026-11-30", "to": "2026-12-31", "ref": "SSC Important Notice dated 01-10-2026 (proposed dates)"},
+    {"stage": "Tier-II (CBE)", "when": "To be notified later", "ref": "Notice p.1"}
+  ],
   "vacancies": {"count": 2536, "tentative": true, "ref": "para 2.1, p.2"},
   "age": {
     "asOn": "2026-08-01",
@@ -28,7 +32,8 @@
     "ref": "para 5.1-5.2, p.4"
   },
   "education": {"asOn": "2026-10-07", "appearingAllowed": true, "ref": "para 8.2-8.3, 8.6, p.10-11"},
-  "fee": {"amount": 100, "exempt": ["female", "SC", "ST", "PwBD", "ESM"], "ref": "para 10.1-10.2, p.13"},
+  "fee": {"amount": 100, "exempt": ["female", "SC", "ST", "PwBD", "ESM"], "correction": [200, 500], "ref": "para 10.1-10.2, 11.4, p.13"},
+  "upload": {"photo": "live_capture", "signature": {"format": "JPEG", "minKB": 10, "maxKB": 20, "widthCm": 6, "heightCm": 2}, "ref": "para 9.4-9.6, p.11-12"},
   "posts": [
     {"name": "Lower Division Clerk / Junior Secretariat Assistant", "org": "Various Ministries/Departments", "payLevel": "2", "group": "C", "ageBand": "18-27", "education": "12",
      "notes": ["bro_male_only"]},

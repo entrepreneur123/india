@@ -25,6 +25,8 @@ RULES_DIR = os.path.join(os.path.dirname(__file__), "..", "rules")
 CATEGORIES = ("UR", "EWS", "OBC", "SC", "ST")
 EDUCATION_LEVELS = ("10", "12", "graduate")
 STATUSES = ("eligible", "check", "ineligible")  # best to worst
+GENDERS = ("male", "female", "other")
+RELAXATION_KEYS = ("SC", "ST", "OBC", "PwBD", "PwBD_OBC", "PwBD_SC", "PwBD_ST")
 
 
 class RulesError(ValueError):
@@ -78,9 +80,23 @@ def validate(rules: dict) -> dict:
             raise RulesError(f"{rid}: band {name} says born {got[0]}..{got[1]}, "
                              f"formula gives {want[0]}..{want[1]}")
     relax = age["relaxation"]
-    for key in ("SC", "ST", "OBC", "PwBD", "PwBD_OBC", "PwBD_SC", "PwBD_ST"):
+    # PwBD codes are optional: some Notices (SI 2026) list none, and then nothing is assumed.
+    required = ("SC", "ST", "OBC") + (("PwBD_OBC", "PwBD_SC", "PwBD_ST") if "PwBD" in relax else ())
+    for key in required:
         if not isinstance(relax.get(key), int) or relax[key] < 0:
             raise RulesError(f"{rid}: relaxation {key} missing")
+    for key, value in relax.items():
+        if key not in RELAXATION_KEYS or not isinstance(value, int) or value < 0:
+            raise RulesError(f"{rid}: relaxation {key}={value!r}")
+    for stage in rules.get("examSchedule", []):
+        if "from" in stage:
+            if _date(stage["from"], "examSchedule.from") > _date(stage["to"], "examSchedule.to"):
+                raise RulesError(f"{rid}: exam stage {stage['stage']} ends before it starts")
+        elif not stage.get("when"):
+            raise RulesError(f"{rid}: exam stage {stage.get('stage')} has no dates")
+    sig = rules.get("upload", {}).get("signature")
+    if sig and not 0 < sig["minKB"] < sig["maxKB"]:
+        raise RulesError(f"{rid}: signature size range")
     _date(rules["education"]["asOn"], "education.asOn")
     if not rules.get("posts"):
         raise RulesError(f"{rid}: no posts")
@@ -89,6 +105,8 @@ def validate(rules: dict) -> dict:
             raise RulesError(f"{rid}: {p['name']} uses unknown band {p['ageBand']}")
         if p["education"] not in EDUCATION_LEVELS:
             raise RulesError(f"{rid}: {p['name']} education {p['education']!r}")
+        if not set(p.get("genders", GENDERS)) <= set(GENDERS) or not p.get("genders", GENDERS):
+            raise RulesError(f"{rid}: {p['name']} genders {p.get('genders')!r}")
     return rules
 
 
@@ -104,7 +122,7 @@ def load_all(rules_dir: str = RULES_DIR) -> list[dict]:
 
 def relaxation_years(rules: dict, category: str, pwbd: bool) -> int:
     relax = rules["age"]["relaxation"]
-    if pwbd:
+    if pwbd and "PwBD" in relax:
         return relax.get(f"PwBD_{category}", relax["PwBD"])
     return relax.get(category, 0)
 
@@ -129,6 +147,8 @@ def check_profile(profile: dict) -> None:
         raise ValueError(f"category must be one of {CATEGORIES}")
     if profile.get("education") not in EDUCATION_LEVELS:
         raise ValueError(f"education must be one of {EDUCATION_LEVELS}")
+    if profile.get("gender") not in (None, *GENDERS):
+        raise ValueError(f"gender must be one of {GENDERS}")
     _date(profile.get("dob"), "dob")
 
 
@@ -162,14 +182,25 @@ def evaluate(rules: dict, profile: dict, today: dt.date) -> dict:
                 worse("check", "age_other_relaxation")
             else:
                 worse("ineligible", f"age_above_max:{band['max'] + relax}")
+        if profile.get("pwbd") and "PwBD" not in rules["age"]["relaxation"]:
+            worse("check", "pwbd_not_in_notice")
+        genders = p.get("genders")
+        if genders and profile.get("gender") not in genders:
+            # A post for the other binary gender is out; "other" or not given is left to the Notice.
+            if profile.get("gender") in ("male", "female"):
+                worse("ineligible", f"gender_only:{'/'.join(genders)}")
+            else:
+                worse("check", f"gender_only:{'/'.join(genders)}")
         need = EDUCATION_LEVELS.index(p["education"])
         if level < need:
             worse("ineligible", f"education_needs:{p['education']}")
         elif level == need and profile.get("appearing"):
-            if not rules["education"]["appearingAllowed"] or today > edu_by:
+            if today > edu_by:
                 worse("ineligible", f"result_needed_by:{edu_by.isoformat()}")
-            else:
+            elif rules["education"]["appearingAllowed"]:
                 worse("check", f"result_needed_by:{edu_by.isoformat()}")
+            else:  # the Notice neither allows nor forbids appearing candidates
+                worse("check", f"appearing_not_stated:{edu_by.isoformat()}")
         for req in p.get("requires", []):
             worse("check", f"requires:{req}")
         posts.append({

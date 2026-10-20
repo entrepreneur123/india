@@ -21,6 +21,10 @@
     "correction": ["2026-07-01", "2026-07-03"],
     "ref": "Notice p.1; reopening notice of 23-06-2026 para 3-4"
   },
+  "examSchedule": [
+    {"stage": "Tier-I (CBE)", "from": "2026-09-30", "to": "2026-10-30", "ref": "SSC Important Notice dated 12-09-2026"},
+    {"stage": "Tier-II (CBE)", "when": "December, 2026 (tentative)", "ref": "Notice p.1"}
+  ],
   "vacancies": {"count": 12256, "tentative": true, "ref": "para 3.1, p.5"},
   "age": {
     "asOn": "2026-08-01",
@@ -35,7 +39,8 @@
     "ref": "para 5.1-5.2, p.6-8"
   },
   "education": {"asOn": "2026-08-01", "appearingAllowed": true, "ref": "para 8.1-8.5, p.14-16"},
-  "fee": {"amount": 100, "exempt": ["female", "SC", "ST", "PwBD", "ESM"], "ref": "para 10.1-10.2, p.19"},
+  "fee": {"amount": 100, "exempt": ["female", "SC", "ST", "PwBD", "ESM"], "correction": [200, 500], "ref": "para 10.1-10.2, p.19; 11.4, p.20"},
+  "upload": {"photo": "live_capture", "signature": {"format": "JPEG", "minKB": 10, "maxKB": 20, "widthCm": 6, "heightCm": 2}, "ref": "para 9.4-9.6, p.18"},
   "posts": [
     {"name": "Assistant Audit Officer (Central Cadre)", "org": "Indian Audit & Accounts Department (C&AG)", "payLevel": "8", "group": "B", "ageBand": "18-30", "education": "graduate"},
     {"name": "Assistant Audit Officer (State Cadre)", "org": "Indian Audit & Accounts Department (C&AG)", "payLevel": "8", "group": "B", "ageBand": "18-30", "education": "graduate", "requires": ["state_language"]},

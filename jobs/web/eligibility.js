@@ -4,6 +4,7 @@
 
 export const CATEGORIES = ['UR', 'EWS', 'OBC', 'SC', 'ST'];
 export const EDUCATION_LEVELS = ['10', '12', 'graduate'];
+export const GENDERS = ['male', 'female', 'other'];
 const STATUSES = ['eligible', 'check', 'ineligible'];
 
 function parse(s, what) {
@@ -40,7 +41,7 @@ export function bornWindow(asOn, minAge, maxAge, relaxYears = 0) {
 
 export function relaxationYears(rules, category, pwbd) {
   const r = rules.age.relaxation;
-  if (pwbd) return r[`PwBD_${category}`] ?? r.PwBD;
+  if (pwbd && 'PwBD' in r) return r[`PwBD_${category}`] ?? r.PwBD;
   return r[category] ?? 0;
 }
 
@@ -60,6 +61,7 @@ export function fee(rules, profile) {
 export function checkProfile(profile) {
   if (!CATEGORIES.includes(profile.category)) throw new RangeError(`category must be one of ${CATEGORIES}`);
   if (!EDUCATION_LEVELS.includes(profile.education)) throw new RangeError(`education must be one of ${EDUCATION_LEVELS}`);
+  if (profile.gender != null && !GENDERS.includes(profile.gender)) throw new RangeError(`gender must be one of ${GENDERS}`);
   parse(profile.dob, 'dob');
 }
 
@@ -86,12 +88,20 @@ export function evaluate(rules, profile, today) {
       if (profile.otherCategory) worse('check', 'age_other_relaxation');
       else worse('ineligible', `age_above_max:${band.max + relax}`);
     }
+    if (profile.pwbd && !('PwBD' in rules.age.relaxation)) worse('check', 'pwbd_not_in_notice');
+    if (p.genders && !p.genders.includes(profile.gender)) {
+      // A post for the other binary gender is out; "other" or not given is left to the Notice.
+      const code = `gender_only:${p.genders.join('/')}`;
+      if (profile.gender === 'male' || profile.gender === 'female') worse('ineligible', code);
+      else worse('check', code);
+    }
     const need = EDUCATION_LEVELS.indexOf(p.education);
     if (level < need) {
       worse('ineligible', `education_needs:${p.education}`);
     } else if (level === need && profile.appearing) {
-      if (!rules.education.appearingAllowed || today > eduBy) worse('ineligible', `result_needed_by:${eduBy}`);
-      else worse('check', `result_needed_by:${eduBy}`);
+      if (today > eduBy) worse('ineligible', `result_needed_by:${eduBy}`);
+      else if (rules.education.appearingAllowed) worse('check', `result_needed_by:${eduBy}`);
+      else worse('check', `appearing_not_stated:${eduBy}`); // the Notice neither allows nor forbids it
     }
     for (const req of p.requires ?? []) worse('check', `requires:${req}`);
     return {

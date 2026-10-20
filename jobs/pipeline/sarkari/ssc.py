@@ -220,6 +220,27 @@ def fetch_stream(get: Getter, content_type: str, language: str | None, stream_ki
     return sorted(items.values(), key=lambda i: (i.published, i.id), reverse=True), seen
 
 
+# Official reference material, shown on the website as links to SSC's own PDFs (no copies,
+# no content of ours): contentType -> section name.
+RESOURCE_TYPES = {
+    "syllabus": "syllabus",
+    "tentative-vacancy": "vacancy",
+    "model-questions": "previous_papers",
+    "format-certificates": "certificate_formats",
+    "special-instructions": "instructions",
+}
+RESOURCE_MAX = 60  # per section; tentative-vacancy alone has 75 records going back years
+
+
+def fetch_resources(get: Getter, exams: dict, now: dt.datetime,
+                    warn: Callable[[str], None] = print) -> dict[str, list[dict]]:
+    out = {}
+    for content_type, section in RESOURCE_TYPES.items():
+        items, _ = fetch_stream(get, content_type, None, None, exams, now, _FIRST_VALID, max_pages=1, warn=warn)
+        out[section] = [i.to_json() for i in items[:RESOURCE_MAX]]
+    return out
+
+
 def merge(streams: list[list[Item]]) -> list[Item]:
     """One list, newest first. The same notice posted to two listings is shown once.
 

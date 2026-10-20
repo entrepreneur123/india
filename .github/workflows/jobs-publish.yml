@@ -1,0 +1,96 @@
+# Publishes the SSC job-alert data and website to the `data` branch under jobs/
+# (served by GitHub Pages at <site>/jobs/). Off until the repository Variable
+# JOBS_PUBLISH is set to "true" (Settings > Secrets and variables > Actions > Variables).
+#
+# Every 30 minutes. A run with no change at SSC costs one small request (lastUpdates) and
+# no commit; a full check runs at least every 3 hours (sarkari/build.py FULL_CHECK_HOURS).
+# Odd minutes on purpose: runs scheduled on the hour are delayed most.
+#
+# Optional Telegram channel: secret JOBS_TELEGRAM_BOT_TOKEN, variable JOBS_TELEGRAM_CHAT_ID.
+name: jobs-publish
+
+on:
+  schedule:
+    - cron: "13,43 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Full check even if SSC's lastUpdates is unchanged"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  # Its own group: sharing the lottery's "results" group would let a queued run here cancel
+  # a queued lottery run. Both write the data branch, so the push below rebases and retries.
+  group: jobs-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: vars.JOBS_PUBLISH == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
+      JOBS_TELEGRAM_CHAT_ID: ${{ vars.JOBS_TELEGRAM_CHAT_ID }}
+      IN_FORCE: ${{ inputs.force }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out data branch
+        run: |
+          if git ls-remote --exit-code --heads origin data >/dev/null; then
+            git fetch --depth 1 origin data
+            git worktree add public origin/data
+            git -C public checkout -B data
+          else
+            git worktree add --orphan -b data public
+          fi
+
+      - name: Unit tests
+        run: |
+          pip install -q pytest==9.1.1
+          (cd jobs/pipeline && python -m pytest -q tests)
+
+      - name: Fetch and build
+        working-directory: jobs/pipeline
+        run: |
+          args="--out ../../public"
+          if [ "$IN_FORCE" = "true" ]; then args="$args --force"; fi
+          python -m sarkari.build $args
+
+      - name: Website files
+        run: |
+          mkdir -p public/jobs
+          cp jobs/web/index.html jobs/web/app.js jobs/web/eligibility.js jobs/web/i18n.js \
+             jobs/web/tools.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
+          touch public/.nojekyll
+
+      - name: Commit and push
+        run: |
+          git -C public add -A jobs .nojekyll
+          if git -C public diff --cached --quiet; then echo "no change"; exit 0; fi
+          git -C public -c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com" \
+            commit -q -m "jobs $(date -u +%FT%TZ)"
+          for i in 1 2 3 4 5; do
+            git -C public push -q origin data && exit 0
+            # The lottery workflow pushed in between; it never touches jobs/, so a rebase is clean.
+            git -C public fetch -q --depth 20 origin data && git -C public rebase -q origin/data || true
+            sleep $(( i * 5 ))
+          done
+          echo "::error::could not push to data after 5 tries"; exit 1
+
+      - name: Telegram channel
+        env:
+          JOBS_TELEGRAM_BOT_TOKEN: ${{ secrets.JOBS_TELEGRAM_BOT_TOKEN }}
+        working-directory: jobs/pipeline
+        run: |
+          python -m sarkari.telegram --out ../../public --site-url "$SITE_URL/jobs/"   # no-op without a token
+          git -C ../../public add jobs/telegram-state.json 2>/dev/null || true
+          if ! git -C ../../public diff --cached --quiet; then
+            git -C ../../public -c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com" \
+              commit -q -m "jobs telegram state" && git -C ../../public push -q origin data || true
+          fi

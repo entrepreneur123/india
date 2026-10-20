@@ -1,0 +1,85 @@
+{
+  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines.",
+  "families": {
+    "CGL": {
+      "name": "Combined Graduate Level (CGL)",
+      "hi": "संयुक्त स्नातक स्तरीय परीक्षा",
+      "qualifications": [
+        "graduate"
+      ],
+      "ref": "CGL 2026 Notice para 8"
+    },
+    "CHSL": {
+      "name": "Combined Higher Secondary Level (CHSL, 10+2)",
+      "hi": "संयुक्त उच्चतर माध्यमिक स्तर (10+2) परीक्षा",
+      "qualifications": [
+        "12"
+      ],
+      "ref": "CHSL 2026 Notice para 8"
+    },
+    "STENO": {
+      "name": "Stenographer Grade C & D",
+      "hi": "आशुलिपिक ग्रेड 'ग' और 'घ' परीक्षा",
+      "qualifications": [
+        "12"
+      ],
+      "ref": "Steno 2026 Notice para 8.1"
+    },
+    "CAPF": {
+      "name": "Sub-Inspector in Delhi Police & CAPFs",
+      "hi": "दिल्ली पुलिस और केंद्रीय सशस्त्र पुलिस बल में उप-निरीक्षक",
+      "qualifications": [
+        "graduate",
+        "diploma"
+      ],
+      "ref": "SI 2026 Notice para 7.1-7.2 (Diploma: SI Fire in CISF only)"
+    },
+    "JE": {
+      "name": "Junior Engineer (Civil, Mechanical, Electrical)",
+      "hi": "कनिष्ठ अभियंता (सिविल, यांत्रिकी एवं वैद्युत) परीक्षा",
+      "qualifications": [
+        "diploma",
+        "graduate"
+      ],
+      "ref": "JE 2026 Notice para 2 (engineering diploma or degree, by post)"
+    },
+    "JHT": {
+      "name": "Combined Hindi Translators",
+      "hi": "संयुक्त हिंदी अनुवादक परीक्षा",
+      "qualifications": [
+        "postgraduate"
+      ],
+      "ref": "JHT 2026 Notice para 7.1"
+    },
+    "MTS": {
+      "name": "Multi-Tasking Staff & Havaldar",
+      "hi": "मल्टी टास्किंग (गैर-तकनीकी) स्टाफ और हवलदार",
+      "qualifications": null,
+      "ref": null
+    },
+    "CTGD": {
+      "name": "Constable (GD) in CAPFs, SSF & Rifleman in Assam Rifles",
+      "hi": "कांस्टेबल (जीडी)",
+      "qualifications": null,
+      "ref": null
+    },
+    "RHQ": {
+      "name": "Selection Posts",
+      "hi": "चयन पद परीक्षा",
+      "qualifications": null,
+      "ref": null
+    },
+    "DP": {
+      "name": "Delhi Police (Constable, Head Constable)",
+      "hi": "दिल्ली पुलिस",
+      "qualifications": null,
+      "ref": null
+    },
+    "LDCE": {
+      "name": "Departmental exams (serving Govt employees only)",
+      "hi": "विभागीय परीक्षाएं",
+      "qualifications": null,
+      "ref": null
+    }
+  }
+}

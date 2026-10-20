@@ -23,25 +23,29 @@ def _files(out):
 def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
-    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json",
-                           "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json"}
+    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json",
+                           "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
+                           "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
     assert feed["schema"] == 1 and len(feed["items"]) > 100
     assert len({i["id"] for i in feed["items"]}) == len(feed["items"])
     assert all(i["publishedAt"] >= "2026-06-22" for i in feed["items"])  # 120-day window
     assert _read(out, "new.json")["items"] == []
     idx = _read(out, "rules/index.json")["exams"]
-    assert {e["id"]: e["application"] for e in idx} == {"ssc-cgl-2026": "closed", "ssc-chsl-2026": "closed"}
+    assert {e["id"]: e["application"] for e in idx} == {
+        "ssc-cgl-2026": "closed", "ssc-chsl-2026": "closed", "ssc-steno-2026": "closed", "ssc-si-2026": "closed"}
 
 
 def test_unchanged_source_stops_after_one_request(tmp_path):
     out = str(tmp_path)
     build.run(out, FakeSSC(), NOW)
     feed_before = os.path.getmtime(os.path.join(out, "jobs", "v1", "feed.json"))
+    status_before = os.path.getmtime(os.path.join(out, "jobs", "v1", "status.json"))
     fake = FakeSSC()
     assert build.run(out, fake, NOW + dt.timedelta(minutes=30)) == 0
     assert len(fake.urls) == 1 and fake.urls[0].endswith("/lastUpdates")
     assert os.path.getmtime(os.path.join(out, "jobs", "v1", "feed.json")) == feed_before
+    assert os.path.getmtime(os.path.join(out, "jobs", "v1", "status.json")) == status_before  # no commit for no news
     # ...but a full check still runs every FULL_CHECK_HOURS, since results can skip lastUpdates.
     fake = FakeSSC()
     build.run(out, fake, NOW + dt.timedelta(hours=build.FULL_CHECK_HOURS, minutes=1))
@@ -110,3 +114,15 @@ def test_a_listing_that_ages_out_of_the_window_is_not_an_error(tmp_path):
     fake.overrides[("answer-key", None, 1)] = page
     assert build.run(out, fake, later, force=True) == 0
     assert len(_read(out, "feed.json")["items"]) == 1
+
+
+def test_official_resources_and_exam_families(tmp_path):
+    out = str(tmp_path)
+    build.run(out, FakeSSC(), NOW)
+    sections = _read(out, "resources.json")["sections"]
+    assert set(sections) == {"syllabus", "vacancy", "previous_papers", "certificate_formats", "instructions"}
+    assert len(sections["syllabus"]) == 5 and len(sections["vacancy"]) == build.ssc.RESOURCE_MAX
+    assert all(f["url"].startswith("https://ssc.gov.in/api/attachment/") for s in sections.values()
+               for i in s for f in i["files"])
+    fams = _read(out, "exams.json")["families"]
+    assert fams["CGL"]["qualifications"] == ["graduate"] and fams["MTS"]["qualifications"] is None

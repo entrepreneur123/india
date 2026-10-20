@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "id": "ssc-si-2026",
+  "exam": "CAPF",
+  "examYear": 2026,
+  "title": "Sub-Inspector in Delhi Police and Central Armed Police Forces Examination, 2026",
+  "source": {
+    "notice": "https://ssc.gov.in/api/attachment/uploads/masterData/NoticeBoards/Notice_of_adv_capf_2026.pdf",
+    "published": "2026-09-10",
+    "amendments": [],
+    "checkedOn": "2026-10-20"
+  },
+  "dates": {
+    "applyFrom": "2026-09-10",
+    "applyTo": "2026-09-30",
+    "feeTo": "2026-10-01",
+    "correction": ["2026-10-08", "2026-10-10"],
+    "ref": "Notice p.1"
+  },
+  "examSchedule": [
+    {"stage": "Paper-I (CBE)", "from": "2026-11-20", "to": "2026-11-28", "ref": "SSC Important Notice dated 01-10-2026 (proposed dates)"}
+  ],
+  "vacancies": {"count": 1871, "tentative": true, "ref": "para 2, p.2-3 (Delhi Police 205 male + 112 female, CAPFs 1320, CISF Fire 234)"},
+  "age": {
+    "asOn": "2026-08-01",
+    "bands": {
+      "20-25": {"min": 20, "max": 25, "bornFrom": "2001-08-02", "bornTo": "2006-08-01"},
+      "18-30": {"min": 18, "max": 30, "bornFrom": "1996-08-02", "bornTo": "2008-08-01"}
+    },
+    "relaxation": {"SC": 5, "ST": 5, "OBC": 3},
+    "notComputed": ["Ex-Servicemen", "Widows / divorced / judicially separated women (Delhi Police only)", "Departmental candidates of Delhi Police"],
+    "ref": "para 5.1-5.3, p.4-5"
+  },
+  "education": {"asOn": "2026-09-30", "appearingAllowed": true, "ref": "para 7.1-7.2, p.8"},
+  "fee": {"amount": 100, "exempt": ["female", "SC", "ST", "ESM"], "correction": [200, 500], "ref": "para 9.1-9.2, 10.5"},
+  "upload": {"photo": "live_capture", "signature": {"format": "JPEG", "minKB": 10, "maxKB": 20, "widthCm": 6, "heightCm": 2},
+             "ref": "para 8.6 (an annexure of the same Notice says about 4.0 cm wide)"},
+  "posts": [
+    {"name": "Sub-Inspector (Executive) - Male", "org": "Delhi Police", "payLevel": "6", "group": "C", "ageBand": "20-25", "education": "graduate", "genders": ["male"],
+     "requires": ["driving_licence_lmv"], "notes": ["physical_standards"]},
+    {"name": "Sub-Inspector (Executive) - Female", "org": "Delhi Police", "payLevel": "6", "group": "C", "ageBand": "20-25", "education": "graduate", "genders": ["female"],
+     "notes": ["physical_standards"]},
+    {"name": "Sub-Inspector (GD)", "org": "CAPFs (CRPF, BSF, ITBP, CISF, SSB)", "payLevel": "6", "group": "B", "ageBand": "20-25", "education": "graduate", "genders": ["male", "female"],
+     "notes": ["physical_standards"]},
+    {"name": "Sub-Inspector (Fire) - Male", "org": "CISF", "payLevel": "6", "group": "B", "ageBand": "18-30", "education": "10", "genders": ["male"],
+     "requires": ["si_fire_qualification"], "notes": ["physical_standards"]}
+  ]
+}

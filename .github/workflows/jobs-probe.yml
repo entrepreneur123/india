@@ -1,9 +1,15 @@
-# Manual check: does ssc.gov.in answer GitHub's runners (outside India), and does a full
+# Check: does ssc.gov.in answer GitHub's runners (outside India), and does a full
 # job-alert build work from there? Publishes nothing; the output is kept as a run artifact.
+# Runs by hand (Actions > jobs-probe > Run workflow, once this file is on the default branch)
+# and on pull requests that change the pipeline (manual runs need the default branch; this doesn't).
 name: jobs-probe
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "jobs/pipeline/**"
+      - ".github/workflows/jobs-probe.yml"
 
 permissions:
   contents: read
@@ -21,8 +27,21 @@ jobs:
             curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} %{content_type} %{size_download}B %{time_total}s %{remote_ip}\n' "$u" || echo "FAILED ($?)"
           done
       - name: Full build into a scratch folder
+        id: build
+        # The answer (reachable or not) is the point of this job, so a blocked runner is
+        # reported in the run summary instead of turning the pull request red.
+        continue-on-error: true
         working-directory: jobs/pipeline
         run: python -m sarkari.build --out "$RUNNER_TEMP/out" --force
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.build.outcome }}" = success ]; then
+            echo "ssc.gov.in reachable from GitHub runners: full build OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::ssc.gov.in build FAILED from GitHub runners (see the build step log)"
+            echo "ssc.gov.in build FAILED from GitHub runners" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:

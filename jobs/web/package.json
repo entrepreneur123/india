@@ -1,5 +1,5 @@
 {
   "private": true,
   "type": "module",
-  "scripts": {"test": "node --test eligibility.test.mjs"}
+  "scripts": {"test": "node --test eligibility.test.mjs tools.test.mjs"}
 }

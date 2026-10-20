@@ -35,9 +35,11 @@ def test_shared_cases(case):
 
 
 def test_rule_files_load_and_bands_match_the_notices():
-    assert set(RULES) == {"ssc-chsl-2026", "ssc-cgl-2026"}
+    assert set(RULES) == {"ssc-chsl-2026", "ssc-cgl-2026", "ssc-steno-2026", "ssc-si-2026"}
     assert len(RULES["ssc-cgl-2026"]["posts"]) == 40  # Notice para 2.1-2.5: 3 + 15 + 10 + 6 + 6
     assert len(RULES["ssc-chsl-2026"]["posts"]) == 3
+    assert len(RULES["ssc-steno-2026"]["posts"]) == 2
+    assert len(RULES["ssc-si-2026"]["posts"]) == 4
 
 
 def test_a_typo_in_a_copied_date_fails_validation():
@@ -84,8 +86,9 @@ def test_bad_profiles_are_refused(profile):
 
 def test_every_reason_and_note_has_a_known_code():
     # The website shows a sentence for each code; an unknown code would show raw text.
-    known_requires = {"state_language", "jso_maths_or_statistics", "sig2_degree_subject"}
-    known_notes = {"physical_standards", "bro_male_only", "deo_science_maths_some"}
+    known_requires = {"state_language", "jso_maths_or_statistics", "sig2_degree_subject",
+                      "driving_licence_lmv", "si_fire_qualification"}
+    known_notes = {"physical_standards", "bro_male_only", "deo_science_maths_some", "stenography_skill_test"}
     for rules in RULES.values():
         for p in rules["posts"]:
             assert set(p.get("requires", [])) <= known_requires, p["name"]
