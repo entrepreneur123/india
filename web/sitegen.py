@@ -70,11 +70,11 @@ WEB = {
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
         "telegram": "Get every result the moment it is out on our Telegram channel",
         "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
-        "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM",
+        "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM, Result Chart",
         "kl_desc": "Kerala lottery result {d}: {g}, 1st prize {n}. All prizes, ticket checker and the official result link.",
         "kl_draw_title": "Kerala Lottery Result {d} – {g}",
         "kl_schedule": "Draw every day at 3 PM: Monday Bhagyathara, Tuesday Sthree Sakthi, Wednesday Dhanalekshmi, Thursday Karunya Plus, Friday Suvarna Keralam, Saturday Karunya, Sunday Samrudhi. The result usually appears about an hour after the draw.",
-        "kl_recent": "Recent Kerala results", "game": "Lottery",
+        "kl_recent": "Kerala lottery result chart – recent draws", "game": "Lottery",
     },
     "bn": {
         "home_title": "লটারি সংবাদ রেজাল্ট আজ {d} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",

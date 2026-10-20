@@ -158,7 +158,7 @@ def test_kerala_hub_and_draw_page(tmp_path, monkeypatch):
     monkeypatch.setattr(sitegen.Site, "__init__", init)
     out = build(tmp_path, monkeypatch)
     hub = (out / "kerala/index.html").read_text()
-    assert "<title>Kerala Lottery Result Today 17.10.2026 – Karunya KR-772 3 PM</title>" in hub
+    assert "<title>Kerala Lottery Result Today 17.10.2026 – Karunya KR-772 3 PM, Result Chart</title>" in hub
     assert "KG 709965" in hub and 'placeholder="MM 289707"' in hub
     page = (out / "result/17-10-2026/kerala/index.html").read_text()
     assert "<title>Kerala Lottery Result 17.10.2026 – Karunya KR-772</title>" in page
