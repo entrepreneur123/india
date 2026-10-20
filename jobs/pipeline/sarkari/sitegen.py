@@ -48,6 +48,29 @@ def _gov(url: str) -> str | None:
     return url if url.startswith("https://ssc.gov.in/") else None
 
 
+def _faq(short: str, fam: dict, r: dict) -> str:
+    """The questions people type into Google, answered from the rules file only."""
+    d, fee = r["dates"], r["fee"]
+    qa = [(f"What is the last date to apply for {short} {r['examYear']}?",
+           f"{_day(d['applyTo'])}. Fee payment closes on {_day(d['feeTo'])}."),
+          (f"What is the age limit for {short} {r['examYear']}?",
+           "; ".join(f"{b} years: born {_day(x['bornFrom'])} to {_day(x['bornTo'])}" for b, x in r["age"]["bands"].items())
+           + f" (as on {_day(r['age']['asOn'])}), plus category relaxation."),
+          (f"What is the {short} application fee?",
+           f"₹{fee['amount']}; no fee for {', '.join(EXEMPT.get(x, x) for x in fee['exempt'])}.")]
+    if r.get("payScales"):
+        qa.append((f"What is the {short} salary?", "; ".join(
+            f"Level {k}: ₹{inr(v[0])} to ₹{inr(v[1])} basic pay a month" for k, v in r["payScales"].items() if k != "ref")
+            + ". Allowances are extra."))
+    if r.get("examSchedule"):
+        qa.append((f"When is the {short} {r['examYear']} exam?", "; ".join(
+            f"{x['stage']}: {_day(x['from'])} to {_day(x['to'])} (tentative)" if x.get("from") else f"{x['stage']}: {x['when']}"
+            for x in r["examSchedule"])))
+    if fam.get("qualifications"):
+        qa.append((f"What qualification is needed for {short}?", " / ".join(QUAL.get(q, q) for q in fam["qualifications"]) + "."))
+    return "<h2>Frequently asked questions</h2>" + "".join(f"<h3>{E(q)}</h3><p>{E(a)}</p>" for q, a in qa)
+
+
 def page(code: str, fam: dict, rules: dict | None, items: list[dict], today: dt.date, site_url: str | None) -> str:
     short = fam.get("short") or fam["name"]
     year = rules["examYear"] if rules else max((i["examYear"] or 0 for i in items), default=0) or today.year
@@ -90,6 +113,7 @@ def page(code: str, fam: dict, rules: dict | None, items: list[dict], today: dt.
         if notice:
             b.append(f'<p><a href="{E(notice)}" rel="noopener">Official Notice (PDF)</a></p>')
         b.append(f'<p><a class="cta" href="../../#check/{E(rules["id"])}">Check your eligibility for each post →</a></p>')
+        b.append(_faq(short, fam, rules))
     latest = sorted(items, key=lambda i: i["publishedAt"], reverse=True)[:25]
     if latest:
         b.append(f"<h2>Latest {E(short)} notices: results, admit cards, answer keys</h2><ul>")

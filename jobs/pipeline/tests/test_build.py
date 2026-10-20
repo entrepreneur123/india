@@ -23,7 +23,7 @@ def _files(out):
 def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
-    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json",
+    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json",
                            "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
                            "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
@@ -126,3 +126,17 @@ def test_official_resources_and_exam_families(tmp_path):
                for i in s for f in i["files"])
     fams = _read(out, "exams.json")["families"]
     assert fams["CGL"]["qualifications"] == ["graduate"] and fams["MTS"]["qualifications"] is None
+
+
+def test_guide_is_published_and_checked(tmp_path, monkeypatch):
+    out = str(tmp_path)
+    build.run(out, FakeSSC(), NOW)
+    g = _read(out, "guide.json")
+    assert g["helplines"]["list"][0]["phones"] == ["1800 309 3063"]  # CHSL 2026 Notice p.1 and p.37
+    assert {t["id"]: t["kdph"] for t in g["skillTests"]["tests"]}["chsl-typing-en"] == 10500  # para 13.9.13.7
+    assert all(e["ref"].startswith("para ") for e in g["steps"] + g["documents"])
+    bad = tmp_path / "guide.json"
+    bad.write_text(json.dumps({"steps": [{"en": "x"}], "documents": [], "helplines": {}}))
+    monkeypatch.setattr(build, "GUIDE", str(bad))
+    with pytest.raises(build.ssc.FormatChanged, match="ssc_guide"):
+        build.run(out, FakeSSC(), NOW + dt.timedelta(hours=4))

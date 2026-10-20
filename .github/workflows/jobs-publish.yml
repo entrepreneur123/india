@@ -67,7 +67,7 @@ jobs:
         run: |
           mkdir -p public/jobs
           cp jobs/web/index.html jobs/web/app.js jobs/web/eligibility.js jobs/web/i18n.js \
-             jobs/web/tools.js jobs/web/tracker.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
+             jobs/web/tools.js jobs/web/tracker.js jobs/web/passages.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
           touch public/.nojekyll
 
       - name: Commit and push

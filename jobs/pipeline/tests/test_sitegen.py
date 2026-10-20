@@ -38,6 +38,8 @@ def test_cgl_page_says_what_people_search_for_from_the_notice(tmp_path):
     assert "No fee for: women, SC, ST, persons with benchmark disabilities, ex-servicemen." in page
     assert 'href="../../#check/ssc-cgl-2026"' in page
     assert "<strong>Qualification:</strong> Bachelor&#x27;s degree (CGL 2026 Notice para 8)" in page
+    assert "<h3>What is the last date to apply for SSC CGL 2026?</h3><p>25 Jun 2026. Fee payment closes on 26 Jun 2026.</p>" in page
+    assert "<h3>When is the SSC CGL 2026 exam?</h3>" in page
 
 
 def test_untrusted_text_is_escaped_and_only_ssc_links_are_kept(tmp_path):

@@ -7,6 +7,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/calendar.json         SSC's tentative calendar (application windows, exam months)
   jobs/v1/resources.json        links to SSC's syllabus, vacancy, previous-paper, certificate PDFs
   jobs/v1/exams.json            exam families: names (en/hi), qualification from the latest Notice
+  jobs/v1/guide.json            how to apply, documents, helplines, skill-test standards (ssc_guide.json)
   jobs/v1/rules/index.json      exams with an eligibility checker
   jobs/v1/rules/<id>.json       copied from rules/ after validation
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
@@ -72,6 +73,21 @@ def _write_json(path: str, obj: dict, volatile: tuple[str, ...] = ("generatedAt"
 
 
 FAMILIES = os.path.join(os.path.dirname(__file__), "..", "exam_families.json")
+GUIDE = os.path.join(os.path.dirname(__file__), "..", "ssc_guide.json")
+
+
+def load_guide() -> dict:
+    """How to apply / documents / helplines / skill tests; checked so a bad edit stops the run."""
+    g = _read_json(GUIDE, None)
+    if not g or not g.get("steps") or not g.get("documents") or not g.get("helplines", {}).get("list"):
+        raise ssc.FormatChanged("ssc_guide.json is missing steps, documents or helplines")
+    for entry in g["steps"] + g["documents"]:
+        if not (entry.get("en") and entry.get("hi") and entry.get("ref")):
+            raise ssc.FormatChanged(f"ssc_guide.json entry without en/hi/ref: {entry}")
+    for t in g["skillTests"]["tests"]:
+        if not (t["minutes"] > 0 and t["kdph"] > 0):
+            raise ssc.FormatChanged(f"ssc_guide.json skill test {t.get('id')}")
+    return g
 
 
 def collect(get: ssc.Getter, now: dt.datetime, window_days: int, max_pages: int,
@@ -138,6 +154,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
         return 0
 
     all_rules = eligibility.load_all()  # a broken rules file stops the run before anything is written
+    guide = load_guide()
     old_feed = _read_json(_v1(out, "feed.json"), {"items": []})
     families = _read_json(FAMILIES, None)
     if not families or set(families["families"]) != set(classify.EXAM_FAMILIES):
@@ -155,6 +172,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
+    _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
     sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
     if get_bytes is not None:

@@ -127,3 +127,25 @@ export async function makeSignature(file, minKB, maxKB) {
   }
   return null;
 }
+
+/**
+ * Typing / data-entry score for a timed practice run.
+ * SSC counts "key depressions" and states 35 w.p.m. ≈ 10,500 key depressions an hour
+ * (CHSL 2026 Notice para 13.9.13.7), i.e. one word = 5 key depressions. Here a key depression
+ * counts as correct when the character typed matches the passage at the same position.
+ * SSC's own evaluation guidelines (error rules) are stricter; this is a speed practice, not a mark.
+ */
+export function typingScore(passage, typed, seconds) {
+  const n = typed.length;
+  let correct = 0;
+  for (let i = 0; i < n && i < passage.length; i++) if (typed[i] === passage[i]) correct += 1;
+  const hours = Math.max(seconds, 1) / 3600;
+  const kdph = Math.round(correct / hours);
+  return {
+    typed: n,
+    correct,
+    accuracy: n ? Math.round((correct / n) * 1000) / 10 : 0,
+    kdph,
+    wpm: Math.round(kdph / 300),
+  };
+}

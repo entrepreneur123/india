@@ -3,7 +3,8 @@
 // Every string from SSC goes into the page through textContent, never innerHTML.
 import { evaluate, todayIST } from './eligibility.js';
 import { getLang, setLang, t } from './i18n.js';
-import { ageOn, buildIcs, examEvents, makeSignature } from './tools.js';
+import { practiceText } from './passages.js';
+import { ageOn, buildIcs, examEvents, makeSignature, typingScore } from './tools.js';
 import { timeline } from './tracker.js';
 
 const DATA = new URL('v1/', document.baseURI);
@@ -88,6 +89,15 @@ async function getJSON(path) {
 }
 const errorBox = (e) => { console.error(e); return el('p', { class: 'error' }, t('loadError')); };
 
+let toastTimer;
+function toast(msg) {
+  document.querySelector('.toast')?.remove();
+  clearTimeout(toastTimer);
+  const n = el('div', { class: 'toast', role: 'status' }, msg);
+  document.body.append(n);
+  toastTimer = setTimeout(() => n.remove(), 2200);
+}
+
 // ---------- saved items and followed exams (this device only) ----------
 const savedItems = () => store.get('saved', {});
 const followed = () => store.get('follow', []);
@@ -95,6 +105,7 @@ function toggleSave(item, btn) {
   const s = savedItems();
   if (s[item.id]) delete s[item.id]; else s[item.id] = item;
   store.set('saved', s);
+  toast(t(s[item.id] ? 'toastSaved' : 'toastRemoved'));
   btn.textContent = s[item.id] ? `★ ${t('saved')}` : `☆ ${t('save')}`;
   btn.setAttribute('aria-pressed', String(Boolean(s[item.id])));
 }
@@ -102,6 +113,7 @@ function toggleFollow(code, btn) {
   const f = new Set(followed());
   if (f.has(code)) f.delete(code); else f.add(code);
   store.set('follow', [...f]);
+  toast(t(f.has(code) ? 'toastFollow' : 'toastUnfollow'));
   btn.textContent = f.has(code) ? `✓ ${t('following')}` : `+ ${t('follow')}`;
   btn.setAttribute('aria-pressed', String(f.has(code)));
 }
@@ -140,11 +152,11 @@ function itemCard(i, { isNew = false, families = {} } = {}) {
 // ---------- Latest ----------
 const filters = store.get('filters', { kind: 'all', exam: 'all', qual: 'all', lang: 'en', dept: false, mine: false, q: '' });
 
-async function viewLatest(root) {
+async function viewLatest(root, preloaded = null) {
   let feed;
   let families;
   try {
-    [feed, { families }] = await Promise.all([getJSON('feed.json'), getJSON('exams.json')]);
+    [feed, { families }] = await Promise.all([preloaded ?? getJSON('feed.json'), getJSON('exams.json')]);
   } catch (e) { fill(root, errorBox(e)); return; }
   const lastSeen = store.get('lastSeen', null);
   const newest = feed.items.reduce((m, i) => (i.publishedAt > m ? i.publishedAt : m), '');
@@ -195,10 +207,7 @@ async function viewLatest(root) {
   chips.classList.add('scroll-row');
   const active = ['exam', 'qual', 'mine', 'dept'].filter((k) => (k === 'exam' || k === 'qual' ? filters[k] !== 'all' : filters[k])).length
     + (filters.lang !== 'en' ? 1 : 0);
-  fill(root, 
-    store.get('profile', null)?.dob ? null
-      : el('a', { class: 'banner upcoming cta', href: '#forme' }, `${t('forMeNoProfile')} →`),
-    el('div', { class: 'actions' }, el('a', { class: 'chip small', href: '#saved' }, t('savedLink'))),
+  fill(root,
     search, chips,
     el('details', { class: 'filter-box' }, el('summary', {}, `${t('filters')}${active ? ` (${active})` : ''}`),
       el('div', { class: 'filters' }, examSel, qualSel, langSel, check('mine', t('myExams')), check('dept', t('departmental')))),
@@ -290,8 +299,10 @@ async function viewExam(root, code) {
   ];
   const year = rules ? rules.examYear : Math.max(0, ...notices.map((i) => i.examYear ?? 0)) || null;
   if (year) parts.push(whenBlock(timeline(rules, feed.items, code, year, today), f.name, year, feed.items));
-  if (rules) parts.push(...examDetails(rules, entry, today));
+  if (rules) parts.push(...examDetails(rules, entry, today), faqBlock(rules, f));
   else parts.push(el('p', { class: 'small' }, t('noRules')));
+  const guide = await getJSON('guide.json').catch(() => null);
+  if (guide) parts.push(guideBlock(guide, false));
   if (examResources.length) parts.push(el('h3', {}, t('resourcesTitle')), ...examResources.map(([k, items]) => resourceBlock(k, items, false)));
   parts.push(el('h3', {}, `${t('allNotices')} (${notices.length})`),
     el('ul', { class: 'list' }, ...(notices.length ? notices.slice(0, 60).map((i) => itemCard(i, { families })) : [el('li', { class: 'empty' }, t('nothing'))])));
@@ -561,14 +572,56 @@ function renderResult(box, rules, r, today) {
     el('p', { class: 'small' }, t('rulesFrom', { date: day(rules.source.published), checked: day(rules.source.checkedOn) })));
 }
 
-// ---------- Tools ----------
-async function viewTools(root) {
+// ---------- How to apply, documents, helplines (from ssc_guide.json) ----------
+const L = (entry) => entry[getLang()] ?? entry.en;
+function guideBlock(g, open) {
+  return el('details', { class: 'group', open },
+    el('summary', {}, `${t('howToApply')} · ${t('documents')}`),
+    el('div', { class: 'inner' },
+      el('ol', {}, ...g.steps.map((x) => el('li', {}, L(x), ' ', el('span', { class: 'ref' }, `(${x.ref})`),
+        x.tool === 'signature' ? el('span', {}, ' ', el('a', { href: '#more' }, `→ ${t('sigTitle')}`)) : null))),
+      el('strong', {}, t('documents')),
+      el('ul', {}, ...g.documents.map((x) => el('li', {}, L(x), ' ', el('span', { class: 'ref' }, `(${x.ref})`)))),
+      el('p', { class: 'ref' }, t('sourceRef', { ref: g.source.title }), ' · ',
+        el('a', { href: safeUrl(g.source.notice) ?? 'https://ssc.gov.in', rel: 'noopener', target: '_blank' }, t('noticePdf')))));
+}
+function helplineBlock(g) {
+  return el('details', { class: 'group' }, el('summary', {}, `☎ ${t('helplineTitle')}`),
+    el('div', { class: 'inner' }, el('p', { class: 'small' }, t('helplineNote')),
+      el('ul', { class: 'rows' }, ...g.helplines.list.map((h) => el('li', {}, el('strong', {}, h.office), el('br'),
+        ...h.phones.flatMap((ph, i) => [i ? ' · ' : '', el('a', { href: `tel:${ph.replace(/\s/g, '')}` }, ph)])))),
+      el('p', { class: 'ref' }, t('sourceRef', { ref: g.helplines.ref }))));
+}
+
+// ---------- FAQ (answers only from the rules file) ----------
+function faqBlock(r, fam) {
+  const name = fam.short ?? r.title;
+  const qa = [
+    [t('faqLast', { exam: name }), t('faqLastA', { date: day(r.dates.applyTo), fee: day(r.dates.feeTo) })],
+    [t('faqAge', { exam: name }), Object.entries(r.age.bands).map(([b, x]) => t('ageBand', { band: b, from: day(x.bornFrom), to: day(x.bornTo) })).join('; ')],
+    [t('faqFee'), t('faqFeeA', { amount: r.fee.amount, exempt: r.fee.exempt.map((x) => t(`exempt_${x}`)).join(', ') })],
+  ];
+  if (r.payScales) {
+    const levels = [...new Set(r.posts.flatMap((p) => String(p.payLevel ?? '').split('/')).filter(Boolean))].sort((x, y) => x - y);
+    qa.push([t('faqSalary'), levels.map((l) => payText(r, l)).filter(Boolean).join(' · ')]);
+  }
+  if (r.examSchedule?.length) {
+    qa.push([t('faqExam', { exam: name }), r.examSchedule.map((x) => `${x.stage}: ${x.from ? `${day(x.from)} – ${day(x.to)} (${t('tentative')})` : x.when}`).join('; ')]);
+  }
+  if (r.vacancies) qa.push([t('faqVacancy'), t('vacancyCount', { n: r.vacancies.count.toLocaleString('en-IN'), tentative: t('tentative') })]);
+  if (fam.qualifications) qa.push([t('faqQual'), `${fam.qualifications.map((q) => t(`qual_${q}`)).join(' / ')} (${fam.ref})`]);
+  return el('details', { class: 'group' }, el('summary', {}, t('faqTitle')),
+    el('div', { class: 'inner' }, ...qa.map(([q, a]) => el('div', {}, el('h3', {}, q), el('p', {}, a)))));
+}
+
+// ---------- tools ----------
+function signatureTool() {
   const spec = { minKB: 10, maxKB: 20, widthCm: 6, heightCm: 2 }; // every 2026 SSC Notice checked (CHSL, CGL, Steno, SI)
   const out = el('div', { 'aria-live': 'polite' });
   const file = el('input', { type: 'file', accept: 'image/*', 'aria-label': t('sigPick') });
   file.addEventListener('change', async () => {
     if (!file.files[0]) return;
-    fill(out, el('p', { class: 'small' }, '…'));
+    fill(out, el('p', { class: 'small' }, t('loading')));
     try {
       const res = await makeSignature(file.files[0], spec.minKB, spec.maxKB);
       if (!res) { fill(out, el('p', { class: 'error' }, t('sigFail', { min: spec.minKB, max: spec.maxKB }))); return; }
@@ -578,27 +631,139 @@ async function viewTools(root) {
         el('a', { class: 'primary link-button', href: url, download: 'signature.jpg' }, `⬇ ${t('sigDownload')}`));
     } catch (e) { fill(out, errorBox(e)); }
   });
-  const dob = el('input', { type: 'date', 'aria-label': t('dob') });
-  const on = el('input', { type: 'date', value: todayIST(), 'aria-label': t('ageOn') });
-  const ageOut = el('p', { 'aria-live': 'polite' });
+  return el('section', { class: 'card', id: 'tool-signature' }, el('h3', {}, t('sigTitle')),
+    el('p', {}, t('sigRule', { min: spec.minKB, max: spec.maxKB, w: spec.widthCm, h: spec.heightCm })), file, out,
+    el('p', { class: 'small' }, `${t('photoTitle')}: ${t('photoRule')}`), el('p', { class: 'ref' }, t('photoSource')));
+}
+
+function ageTool() {
+  const dob = el('input', { type: 'date', id: 'age-dob' });
+  const on = el('input', { type: 'date', id: 'age-on', value: todayIST() });
+  const out = el('p', { 'aria-live': 'polite' });
   const calc = () => {
-    if (!dob.value || !on.value) { ageOut.textContent = ''; return; }
+    if (!dob.value || !on.value) { out.textContent = ''; return; }
     const a = ageOn(dob.value, on.value);
-    ageOut.textContent = a ? t('ageResult', a) : t('ageInvalid');
+    out.textContent = a ? t('ageResult', a) : t('ageInvalid');
   };
   dob.addEventListener('input', calc);
   on.addEventListener('input', calc);
-  let formats = [];
-  try { formats = (await getJSON('resources.json')).sections.certificate_formats; } catch { /* the rest still works */ }
-  fill(root, 
-    el('p', { class: 'small' }, t('toolsIntro')),
-    el('section', { class: 'card' }, el('h3', {}, t('sigTitle')),
-      el('p', {}, t('sigRule', { min: spec.minKB, max: spec.maxKB, w: spec.widthCm, h: spec.heightCm })), file, out),
-    el('section', { class: 'card' }, el('h3', {}, t('photoTitle')), el('p', {}, t('photoRule')), el('p', { class: 'small' }, t('photoSource'))),
-    el('section', { class: 'card' }, el('h3', {}, t('ageTitle')),
-      el('div', { class: 'grid' }, el('div', { class: 'field' }, el('label', {}, t('dob')), dob), el('div', { class: 'field' }, el('label', {}, t('ageOn')), on)), ageOut),
-    formats.length ? el('section', { class: 'card' }, el('h3', {}, t('docsTitle')), el('p', { class: 'small' }, t('docsNote')),
-      resourceBlock('certificate_formats', formats, false)) : null);
+  return el('section', { class: 'card' }, el('h3', {}, t('ageTitle')),
+    el('div', { class: 'grid' }, el('div', { class: 'field' }, el('label', { for: 'age-dob' }, t('dob')), dob),
+      el('div', { class: 'field' }, el('label', { for: 'age-on' }, t('ageOn')), on)), out);
+}
+
+function typingTool(g) {
+  const tests = g.skillTests.tests.filter((x) => !x.id.endsWith('-hi')); // Hindi needs a Hindi layout: not practised here
+  const testSel = el('select', { id: 'ty-test' }, ...tests.map((x) => el('option', { value: x.id }, x.name)));
+  const minSel = el('select', { id: 'ty-min' });
+  const text = el('div', { class: 'typing-text', lang: 'en' });
+  const box = el('textarea', { id: 'ty-box', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', 'aria-label': t('typingTitle') });
+  const status = el('p', { 'aria-live': 'polite', class: 'small' });
+  const out = el('div', { 'aria-live': 'polite' });
+  let passage = ''; let started = 0; let timer = null; let n = 0;
+  const test = () => tests.find((x) => x.id === testSel.value);
+  const fillMinutes = () => {
+    const full = test().minutes;
+    fill(minSel, ...[...new Set([1, 2, 5, full])].map((m) => el('option', { value: String(m) }, m === full ? t('typingFull', { n: m }) : `${m} min`)));
+    minSel.value = String(full);
+  };
+  const finish = () => {
+    clearInterval(timer); timer = null; box.readOnly = true;
+    const secs = Math.min((Date.now() - started) / 1000, Number(minSel.value) * 60);
+    const sc = typingScore(passage, box.value, secs);
+    const tt = test();
+    fill(out, el('div', { class: `banner ${sc.kdph >= tt.kdph ? 'open' : 'upcoming'}` },
+      t('typingResult', { kdph: sc.kdph.toLocaleString('en-IN'), wpm: sc.wpm, accuracy: sc.accuracy, correct: sc.correct, typed: sc.typed }), el('br'),
+      t(sc.kdph >= tt.kdph ? 'typingMeets' : 'typingBelow', { name: tt.name, kdph: tt.kdph.toLocaleString('en-IN') })));
+  };
+  const reset = () => {
+    clearInterval(timer); timer = null; started = 0;
+    passage = practiceText(n++);
+    text.textContent = passage;
+    box.value = ''; box.readOnly = false;
+    status.textContent = `${t('typingMinutes')}: ${minSel.value}:00`;
+    fill(out);
+  };
+  box.addEventListener('input', () => {
+    if (!started) {
+      started = Date.now();
+      const limit = Number(minSel.value) * 60;
+      timer = setInterval(() => {
+        const left = Math.max(0, limit - Math.floor((Date.now() - started) / 1000));
+        status.textContent = `${t('typingMinutes')}: ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+        if (left === 0) { status.textContent = t('typingDone'); finish(); }
+      }, 250);
+    }
+    if (box.value.length >= passage.length) finish();
+  });
+  testSel.addEventListener('change', () => { fillMinutes(); reset(); });
+  minSel.addEventListener('change', reset);
+  fillMinutes(); reset();
+  return el('section', { class: 'card', id: 'tool-typing' }, el('h3', {}, t('typingTitle')), el('p', { class: 'small' }, t('typingIntro')),
+    el('div', { class: 'grid' }, el('div', { class: 'field' }, el('label', { for: 'ty-test' }, t('typingTest')), testSel),
+      el('div', { class: 'field' }, el('label', { for: 'ty-min' }, t('typingMinutes')), minSel)),
+    el('h3', {}, status), text, box,
+    el('div', { class: 'actions' }, el('button', { class: 'chip', type: 'button', onclick: reset }, `↺ ${t('typingStart')}`)), out,
+    el('p', { class: 'ref' }, t('typingNote'), ' ', t('sourceRef', { ref: g.skillTests.ref })));
+}
+
+// ---------- More: tools, guide, helplines, saved, settings, about ----------
+async function viewMore(root) {
+  let g = null; let formats = [];
+  try { g = await getJSON('guide.json'); } catch { /* tools still work */ }
+  try { formats = (await getJSON('resources.json')).sections.certificate_formats; } catch { /* optional */ }
+  const themeSel = el('select', { id: 'set-theme' }, ...['auto', 'light', 'dark'].map((v) => el('option', { value: v }, t(`theme${v[0].toUpperCase()}${v.slice(1)}`))));
+  themeSel.value = store.get('theme', 'auto');
+  themeSel.addEventListener('change', () => applyTheme(themeSel.value));
+  const langSel = el('select', { id: 'set-lang' }, el('option', { value: 'en' }, 'English'), el('option', { value: 'hi' }, 'हिन्दी'));
+  langSel.value = getLang();
+  langSel.addEventListener('change', () => { setLang(langSel.value); store.set('lang', getLang()); paintShell(); route(); });
+  fill(root,
+    el('div', { class: 'tiles' },
+      el('a', { class: 'tile', href: '#saved' }, el('strong', {}, t('savedLink')), el('span', { class: 'small' }, t('followedExams'))),
+      el('a', { class: 'tile', href: '#forme' }, el('strong', {}, `✎ ${t('forMeEdit')}`), el('span', { class: 'small' }, t('forMeTitle')))),
+    el('h2', {}, t('toolsTitle')), signatureTool(), g ? typingTool(g) : null, ageTool(),
+    g ? el('h2', {}, t('howToApply')) : null, g ? guideBlock(g, true) : null, g ? helplineBlock(g) : null,
+    formats.length ? el('details', { class: 'group' }, el('summary', {}, t('docsTitle')),
+      el('div', { class: 'inner' }, el('p', { class: 'small' }, t('docsNote')), resourceBlock('certificate_formats', formats, false))) : null,
+    el('h2', {}, t('settings')),
+    el('div', { class: 'card grid' },
+      el('div', { class: 'field' }, el('label', { for: 'set-lang' }, t('language')), langSel),
+      el('div', { class: 'field' }, el('label', { for: 'set-theme' }, t('theme')), themeSel)),
+    el('h2', {}, t('aboutTitle')), el('div', { class: 'card' }, el('p', {}, t('aboutText')), el('p', { class: 'small' }, t('disclaimer'))));
+}
+
+// ---------- Home: what is open, what is coming, what is new ----------
+async function viewHome(root) {
+  let index; let cal; let feed;
+  try {
+    [{ exams: index }, cal, feed] = await Promise.all([getJSON('rules/index.json'), getJSON('calendar.json'), getJSON('feed.json')]);
+  } catch (e) { fill(root, errorBox(e)); return; }
+  const today = todayIST();
+  const rulesList = await Promise.all(index.map((e) => getJSON(`rules/${e.id}.json`).catch(() => null)));
+  const open = index.filter((e) => statusOf(e, today) === 'open');
+  const in30 = new Date(Date.parse(`${today}T00:00:00Z`) + 30 * 864e5).toISOString().slice(0, 10);
+  const coming = rulesList.filter(Boolean).flatMap((r) => (r.examSchedule ?? [])
+    .filter((x) => x.from && x.to >= today && x.from <= in30).map((x) => ({ r, x })))
+    .sort((a, b) => (a.x.from < b.x.from ? -1 : 1));
+  const nextPlan = cal.entries.filter((c) => c.applyFrom > today).sort((a, b) => (a.applyFrom < b.applyFrom ? -1 : 1))[0];
+  const latestBox = el('div');
+  fill(root,
+    store.get('profile', null)?.dob ? null : el('a', { class: 'banner upcoming cta', href: '#forme' }, `${t('forMeNoProfile')} →`),
+    el('h2', {}, t('homeOpen')),
+    open.length ? el('div', { class: 'tiles' }, ...open.map((e) => el('a', { class: 'tile', href: `#exam/${e.exam}` },
+      el('strong', {}, e.title), el('span', { class: 'count open' }, statusText(e, today)))))
+      : el('div', { class: 'card' }, el('p', {}, t('homeNoneOpen')),
+        nextPlan ? el('p', { class: 'small' }, t('homeNextPlan', { title: nextPlan.title, from: day(nextPlan.applyFrom), to: day(nextPlan.applyTo) })) : null),
+    el('h2', {}, t('homeComing')),
+    coming.length ? el('div', { class: 'tiles' }, ...coming.map(({ r, x }) => {
+      const now = x.from <= today;
+      const n = daysBetween(today, x.from);
+      return el('a', { class: 'tile', href: `#exam/${r.exam}` }, el('strong', {}, `${r.title}`), el('span', { class: 'small' }, `${x.stage} · ${day(x.from)} – ${day(x.to)}`),
+        el('br'), el('span', { class: `count ${now ? 'now' : 'soon'}` }, now ? t('onNow') : n === 0 ? t('today') : t('inDays', { n })));
+    })) : el('p', { class: 'card small' }, t('homeNoneComing')),
+    el('h2', {}, t('homeLatest')), latestBox);
+  await viewLatest(latestBox, feed);
 }
 
 // ---------- Saved ----------
@@ -614,36 +779,71 @@ async function viewSaved(root) {
 }
 
 // ---------- shell ----------
-// Ordered by what people search for (jobs/research/NEEDS.md): which exams suit me, latest notices,
-// results, exam details. Eligibility for one exam (#check) and saved items (#saved) open from those.
-const TABS = [['forme', 'tabForMe'], ['latest', 'tabLatest'], ['result', 'tabResult'], ['exams', 'tabExams'], ['tools', 'tabTools']];
-const PARENT = { exam: 'exams', check: 'forme', saved: 'latest' };
+// Bottom navigation, ordered by what people search for (jobs/research/NEEDS.md): what is new and open,
+// which exams suit me, my result, exam details; tools and help under More.
+const ICON = {
+  home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  forme: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9a7 7 0 0 1 14 0',
+  result: 'M10 17a7 7 0 1 1 5-2l5 5M10 7v6m-3-3h6',
+  exams: 'M7 3h10v18H7zM10 7h4M10 11h4M10 15h2',
+  more: 'M5 12h.01M12 12h.01M19 12h.01',
+  auto: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v18',
+  light: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
+  dark: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+};
+const TABS = [['home', 'tabHome'], ['forme', 'tabForMe'], ['result', 'tabResult'], ['exams', 'tabExams'], ['more', 'tabMore']];
+const PARENT = { exam: 'exams', check: 'forme', saved: 'more', latest: 'home', tools: 'more' };
+function icon(path) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', path);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', 'currentColor');
+  p.setAttribute('stroke-width', '2');
+  p.setAttribute('stroke-linecap', 'round');
+  p.setAttribute('stroke-linejoin', 'round');
+  svg.append(p);
+  return svg;
+}
+function applyTheme(mode) {
+  store.set('theme', mode);
+  if (mode === 'light' || mode === 'dark') document.documentElement.dataset.theme = mode;
+  else delete document.documentElement.dataset.theme;
+  $('theme').setAttribute('aria-label', `${t('theme')}: ${t(`theme${mode[0].toUpperCase()}${mode.slice(1)}`)}`);
+  fill($('theme'), icon(ICON[mode]));
+}
 function paintShell() {
-  document.title = `${t('appName')}`;
+  document.title = t('appName');
   $('app-name').textContent = t('appName');
-  $('tagline').textContent = t('tagline');
   $('disclaimer').textContent = t('shortDisclaimer');
   $('footer-disclaimer').textContent = t('disclaimer');
   $('lang').textContent = t('langToggle');
   $('offline').textContent = t('offline');
-  $('tabs').replaceChildren(...TABS.map(([id, key]) => el('a', { role: 'tab', href: `#${id}`, id: `tab-${id}` }, t(key))));
+  applyTheme(store.get('theme', 'auto'));
+  fill($('tabs'), ...TABS.map(([id, key]) => el('a', { href: `#${id}`, id: `tab-${id}` }, icon(ICON[id]), el('span', {}, t(key)))));
 }
+const skeleton = () => [1, 2, 3].map(() => el('div', { class: 'skeleton' }));
 async function route() {
   const [hashView, arg] = location.hash.slice(1).split('/');
-  const fallback = store.get('profile', null)?.dob ? 'forme' : 'latest';
-  const view = hashView || fallback;
-  const tab = PARENT[view] ?? (TABS.some(([id]) => id === view) ? view : 'latest');
-  for (const [id] of TABS) $(`tab-${id}`).setAttribute('aria-selected', String(id === tab));
+  const view = hashView || 'home';
+  const tab = PARENT[view] ?? (TABS.some(([id]) => id === view) ? view : 'home');
+  for (const [id] of TABS) {
+    if (id === tab) $(`tab-${id}`).setAttribute('aria-current', 'page'); else $(`tab-${id}`).removeAttribute('aria-current');
+  }
   const root = $('view');
   root.setAttribute('aria-busy', 'true');
+  fill(root, ...skeleton());
+  window.scrollTo(0, 0);
   if (view === 'exam' && arg) await viewExam(root, decodeURIComponent(arg));
   else if (tab === 'exams') await viewExams(root);
   else if (view === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
   else if (view === 'saved') await viewSaved(root);
   else if (tab === 'forme') await viewForMe(root);
   else if (tab === 'result') await viewResult(root);
-  else if (tab === 'tools') await viewTools(root);
-  else await viewLatest(root);
+  else if (tab === 'more') await viewMore(root);
+  else await viewHome(root);
   root.removeAttribute('aria-busy');
   $('offline').hidden = navigator.onLine !== false;
 }
@@ -655,6 +855,10 @@ $('lang').addEventListener('click', () => {
   store.set('lang', getLang());
   paintShell();
   route();
+});
+$('theme').addEventListener('click', () => {
+  const order = ['auto', 'light', 'dark'];
+  applyTheme(order[(order.indexOf(store.get('theme', 'auto')) + 1) % order.length]);
 });
 window.addEventListener('hashchange', route);
 window.addEventListener('online', () => { $('offline').hidden = true; });

@@ -36,7 +36,9 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | `pipeline/sarkari/sitegen.py` | 시험별 검색 노출용 정적 페이지와 사이트맵 |
 | `web/tracker.js` | 시험 단계 추적 (공식 날짜만, 없으면 "미발표") |
 | `research/` | 니즈 분석: 자동완성 원본 데이터, 수집·분석 스크립트, 보고서 |
-| `pipeline/exam_families.json` | 시험별 이름(영·힌)과 공고에서 확인한 학력 |
+| `pipeline/exam_families.json` | 시험별 이름(영·힌, 검색용 이름)과 공고에서 확인한 학력 |
+| `pipeline/ssc_guide.json` | 지원 방법·준비 서류·고객센터·타자 기준 (공고 문단 번호 포함) |
+| `web/passages.js` | 타자 연습 지문 (직접 작성, SSC 지문 아님) |
 
 ## 실제 API에서 측정해 반영한 것 (추측 아님)
 
@@ -58,10 +60,10 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 
 ```bash
 cd jobs/pipeline
-python -m pytest -q tests                       # 114 tests (실제 SSC 응답 fixture)
+python -m pytest -q tests                       # 115 tests (실제 SSC 응답 fixture)
 python -m sarkari.build --out ../../public       # 실제 수집 (약 25초, 요청 약 15회, 요청 간 1초 간격)
 
-cd ../web && node --test eligibility.test.mjs tools.test.mjs   # 43 tests (Python과 같은 판정 케이스 31개 포함)
+cd ../web && node --test eligibility.test.mjs tools.test.mjs   # 45 tests (Python과 같은 판정 케이스 31개 포함)
 # 미리보기: jobs/web/ 의 파일을 build 결과의 public/jobs/ 에 복사하고 정적 서버로 열기
 ```
 
@@ -77,6 +79,20 @@ Google 인도 자동완성 3,386개를 분석한 결과, 사람들이 찾는 것
 4. **시험별 정보**: 언제 무엇이 있는지, 급여, 나이 등.
 
 검색 유입을 위해 시험마다 정적 페이지(`jobs/exam/<시험>/`)와 사이트맵도 만듭니다.
+
+## 화면 구성 (2차 개편, 근거: [research/BENCHMARK.md](research/BENCHMARK.md))
+
+하단 탭 5개로 바꿨습니다(앱처럼 엄지로 누르기 쉬운 위치).
+
+| 탭 | 내용 |
+|---|---|
+| 홈 | 지금 접수 중인 시험(남은 일수), 30일 안의 시험 일정, 최신 공고(검색·필터) |
+| 나에게 맞는 시험 | 정보를 한 번 입력하면 모든 시험의 지원 가능 여부와 다음 단계 |
+| 결과 | 수험번호로 합격 명단 검색 |
+| 시험 | 시험별 상세: 단계 추적, 주요 날짜, 응시료, 나이, 급여, 직무, FAQ, 지원 방법, 공식 자료 |
+| 더보기 | 서명 조정, 타자·데이터 입력 속도 연습(SSC 기준), 나이 계산기, 지원 방법, 준비 서류, 고객센터, 저장, 설정(언어·테마), 앱 소개 |
+
+그 밖에 테마 수동 전환(자동/라이트/다크), 불러오는 동안 자리 표시 화면, 저장·구독 알림 메시지를 넣었습니다.
 
 ## 기능 (경쟁 서비스 벤치마킹 반영)
 

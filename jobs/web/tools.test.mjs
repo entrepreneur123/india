@@ -87,3 +87,22 @@ test('timeline: an exam with no rules file shows only what the feed has', async 
   // Admit card and answer key came before the result, outside the 120-day feed: not shown as "next".
   assert.deepEqual(timeline(null, items, 'CTGD', 2026, '2026-10-20').map((s) => [s.key, s.state]), [['result', 'done']]);
 });
+
+test('typingScore uses SSC key depressions (35 w.p.m. = 10,500 an hour)', async () => {
+  const { typingScore } = await import('./tools.js');
+  const passage = 'a'.repeat(2000);
+  // 1750 correct key depressions in 10 minutes = 10,500 an hour = 35 w.p.m.
+  assert.deepEqual(typingScore(passage, 'a'.repeat(1750), 600), { typed: 1750, correct: 1750, accuracy: 100, kdph: 10500, wpm: 35 });
+  // CGL DEST: about 2000 key depressions in 15 minutes = 8,000 an hour
+  assert.equal(typingScore(passage, 'a'.repeat(2000), 900).kdph, 8000);
+  const s = typingScore('The office', 'The offxce', 60);
+  assert.equal(s.correct, 9);
+  assert.equal(s.accuracy, 90);
+  assert.equal(typingScore('abc', '', 60).accuracy, 0);
+});
+
+test('practice text is long enough for the fastest SSC standard', async () => {
+  const { practiceText, PASSAGES } = await import('./passages.js');
+  assert.ok(practiceText(0).length >= 15000 / 4 && practiceText(1).length >= 3750);
+  assert.ok(practiceText(1).startsWith(PASSAGES[1].slice(0, 20)));
+});
