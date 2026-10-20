@@ -170,7 +170,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Text("Plus Jakarta Sans", style = MaterialTheme.typography.titleSmall)
                     Text(text, style = MaterialTheme.typography.bodySmall)
-                    for ((title, id) in Flavor.licenses) {
+                    for ((title, id) in listOf("android-youtube-player (voice rooms)" to R.raw.youtube_player_license) + Flavor.licenses) {
                         val more = remember(id) { context.resources.openRawResource(id).bufferedReader().use { it.readText() } }
                         Text(title, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 16.dp))
                         Text(more, style = MaterialTheme.typography.bodySmall)

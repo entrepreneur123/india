@@ -7,13 +7,18 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <!-- Voice rooms: talking while the room is minimised or in the background (only while on a seat). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <!-- LiveKit ships a screen-sharing service; Yaari never shares screens, and an unused media-projection
-         foreground service would need a Play Console declaration. -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+         foreground service would need a Play Console declaration. (FOREGROUND_SERVICE itself stays: voice rooms.) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" tools:node="remove" />
 
     <application>
+        <service
+            android:name="com.yaari.chat.VoiceService"
+            android:foregroundServiceType="mediaPlayback|microphone"
+            tools:replace="android:foregroundServiceType" />
         <service
             android:name="io.livekit.android.room.track.screencapture.ScreenCaptureService"
             tools:node="remove" />

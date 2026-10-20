@@ -190,7 +190,7 @@ fun UserRoomCard(room: Room, modifier: Modifier = Modifier, onClick: () -> Unit)
         verticalAlignment = Alignment.Top,
     ) {
         Box(fade.size(56.dp).clip(RoundedCornerShape(16.dp)).background(categoryTint(room.category)), contentAlignment = Alignment.Center) {
-            Text(room.emoji, fontSize = 28.sp)
+            TopicIcon(room.topic(), size = 30.dp)
         }
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Row(fade, verticalAlignment = Alignment.CenterVertically) {
@@ -284,7 +284,7 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
             )
             SheetLabel(stringResource(R.string.create_category))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                RoomCategory.entries.forEach { c -> Choice("${c.emoji}  ${stringResource(c.label)}", category == c) { category = c } }
+                RoomCategory.entries.forEach { c -> Choice(stringResource(c.label), category == c, leading = { TopicIcon(c.topic(), size = 18.dp) }) { category = c } }
             }
             SheetLabel(stringResource(R.string.create_max), "$max")
             Slider(
@@ -337,7 +337,7 @@ fun CreateRoomSheet(busy: Boolean, onDismiss: () -> Unit, onCreate: (NewRoom) ->
 
 /** A selectable chip: tonal brand colour with a check when chosen (Material filter chip). */
 @Composable
-private fun Choice(text: String, selected: Boolean, onClick: () -> Unit) {
+private fun Choice(text: String, selected: Boolean, leading: (@Composable () -> Unit)? = null, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Box(
         Modifier.height(36.dp).clip(RoundedCornerShape(8.dp))
@@ -349,10 +349,13 @@ private fun Choice(text: String, selected: Boolean, onClick: () -> Unit) {
             .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text, style = MaterialTheme.typography.labelLarge,
-            color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            leading?.invoke()
+            Text(
+                text, style = MaterialTheme.typography.labelLarge,
+                color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
@@ -422,7 +425,7 @@ private fun codeStyle() = TextStyle(fontFamily = Jakarta, fontWeight = FontWeigh
 @Composable
 fun RoomConditions(room: Room) {
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        SmallChip("${room.category.emoji} ${stringResource(room.category.label)}")
+        SmallChip(stringResource(room.category.label), leading = { TopicIcon(room.category.topic(), size = 14.dp) })
         room.ownerName?.let { SmallChip(stringResource(R.string.room_by, it)) }
         conditionLabels(room).forEach { SmallChip(it) }
         if (room.isPrivate) {

@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.background
@@ -109,14 +111,22 @@ fun RoomsTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
     var sheet by rememberSaveable { mutableStateOf(RoomSheet.NONE) }
     val official = s.rooms.filter { it.official }
     val people = s.rooms.filterNot { it.official }
+    val voiceList by vm.voice.list.collectAsStateWithLifecycle()
+    val inVoice by vm.voice.state.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize()) {
         TabHeader(stringResource(R.string.tab_rooms), onSettings)
+        // Voice rooms first (the default), chat rooms on the other side of the switch.
+        if (voiceList.voiceTab) {
+            VoiceRoomsList(vm, here = inVoice?.roomId) { RoomsKindSwitch(true, vm.voice::showVoiceTab) }
+            return@Column
+        }
         PullToRefreshBox(refreshing, onRefresh = { refreshing = true; vm.refreshRooms() }, Modifier.fillMaxSize()) {
             LazyVerticalGrid(
                 GridCells.Fixed(2), Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                item(key = "kind", span = { GridItemSpan(maxLineSpan) }) { RoomsKindSwitch(false, vm.voice::showVoiceTab, Modifier.padding(bottom = 4.dp)) }
                 if (s.rooms.isEmpty()) {
                     // Skeletons while the list loads, shaped like the real cards.
                     item(span = { GridItemSpan(maxLineSpan) }) { Box(Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(24.dp)).shimmer()) }
@@ -166,7 +176,9 @@ private fun FeaturedRoom(room: Room, onClick: () -> Unit) {
             .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick).padding(20.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(room.emoji, fontSize = 32.sp)
+            Box(Modifier.size(56.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surface), contentAlignment = Alignment.Center) {
+                TopicIcon(room.topic(), size = 30.dp)
+            }
             Spacer(Modifier.weight(1f))
             Pill(
                 pluralStringResource(R.plurals.online, room.online, room.online), background = MaterialTheme.colorScheme.surface,
@@ -197,7 +209,7 @@ private fun RoomCard(room: Room, tint: Color, modifier: Modifier = Modifier, onC
         modifier.height(160.dp).pressScale(interaction).clip(RoundedCornerShape(16.dp)).background(tint)
             .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick).padding(16.dp),
     ) {
-        Text(room.emoji, fontSize = 28.sp)
+        TopicTile(room.topic(), size = 44.dp)
         Spacer(Modifier.height(8.dp))
         Text(
             room.name(), style = MaterialTheme.typography.titleSmall, maxLines = 2,
@@ -239,7 +251,7 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
             Box(
                 Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
-            ) { Text(room.emoji, fontSize = 22.sp) }
+            ) { TopicIcon(room.topic(), size = 22.dp) }
             Column(Modifier.padding(start = 12.dp).weight(1f)) {
                 Text(room.name(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (state.closed) {

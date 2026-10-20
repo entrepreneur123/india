@@ -1,6 +1,7 @@
 package com.yaari.chat
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) VoiceService.handle(intent)
         setContent {
             YaariTheme {
                 val vm = viewModel { AppViewModel(Flavor.backend(application), Flavor.billing(application)) }
@@ -30,6 +32,12 @@ class MainActivity : ComponentActivity() {
                 YaariApp(vm)
             }
         }
+    }
+
+    // The voice room notification: open the room, or the host's "end it?" confirm.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        VoiceService.handle(intent)
     }
 
     // Polling (matching, re-syncs, room heartbeat) runs only while the app is visible.

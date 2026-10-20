@@ -65,7 +65,7 @@ class HindiScreensTest {
         compose.onNodeWithText("रिपोर्ट करें, लॉबी").performClick()
         waitFor("किसी नए से मिलें")
         compose.onAllNodes(androidx.compose.ui.test.hasText("रूम"))[0].performClick()
-        waitFor("ग्लोबल लाउंज")
+        waitFor("अभी लाइव") // voice rooms first
         shot("07_rooms")
         compose.onAllNodes(androidx.compose.ui.test.hasText("हाल के"))[0].performClick()
         waitFor("रिक्वेस्ट (1)")

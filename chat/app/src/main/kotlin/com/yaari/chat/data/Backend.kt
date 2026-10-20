@@ -14,6 +14,11 @@ import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.VoiceEvent
+import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceRoomSummary
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -147,4 +152,27 @@ interface Backend {
     /** New messages in a room while it is open. [afterId]: the newest message id already shown. */
     fun roomEvents(roomId: String, afterId: Long? = null): Flow<RoomMessage>
     suspend fun sendRoom(roomId: String, text: String): RoomMessage
+
+    // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit in the live build) ----
+
+    /** Live voice rooms: mine first, then the server's order. */
+    suspend fun voiceRooms(): List<VoiceRoomSummary>
+    /** Opens a voice room with me as host (ending my previous one); returns its id. Refused with room_title, slow_down. */
+    suspend fun createVoiceRoom(room: NewVoiceRoom): String
+    /**
+     * Enters a voice room (as a listener, or as the host of my own) and follows it while collected: the first event is
+     * [VoiceEvent.RoomChanged]; then every change, chat line, reaction, audio level and the end. Fails at once with
+     * room_closed, not_found, voice_removed or not_allowed. Cancelling stops following; [leaveVoice] leaves.
+     */
+    fun voiceSession(roomId: String): Flow<VoiceEvent>
+    suspend fun leaveVoice(roomId: String)
+    /** Host only: everyone is moved out and the room closes. */
+    suspend fun endVoice(roomId: String)
+    /** The newest 100 chat and system lines, oldest first (only readable after entering). */
+    suspend fun voiceLines(roomId: String): List<VoiceLine>
+    suspend fun sendVoice(roomId: String, text: String): VoiceLine
+    /** Throws not_allowed when my role may not do it; mic_denied when the microphone can't be used. */
+    suspend fun voiceAction(roomId: String, action: VoiceAction)
+    /** Reported through its host (the report keeps what the host wrote in it). */
+    suspend fun reportVoiceRoom(roomId: String, reason: ReportReason)
 }

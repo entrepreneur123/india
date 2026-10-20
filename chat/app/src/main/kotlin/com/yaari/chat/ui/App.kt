@@ -1,5 +1,7 @@
 package com.yaari.chat.ui
 
+import com.yaari.chat.VoiceService
+
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -180,6 +182,9 @@ private fun Screens(vm: AppViewModel, s: UiState) {
                 Top.HOME -> HomeScreen(vm, s)
             }
         }
+        // A voice room full screen over everything but profiles (minimised, it is the pill on the tabs).
+        VoiceLayer(vm)
+        VoiceService.Follow(vm)
         // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
         var lastViewed by remember { mutableStateOf<Profile?>(null) }
         s.viewing?.let { lastViewed = it }

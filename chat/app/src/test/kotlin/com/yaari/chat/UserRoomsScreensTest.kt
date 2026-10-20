@@ -65,7 +65,7 @@ class UserRoomsScreensTest {
         waitFor("Create your profile")
         compose.runOnUiThread { vm.createProfile(ProfileDraft("Dev", Gender.MALE, "1", "1", "2000", "Mumbai", "", agreed = true)) }
         waitFor("Meet someone new")
-        compose.runOnUiThread { vm.selectTab(Tab.ROOMS) }
+        compose.runOnUiThread { vm.selectTab(Tab.ROOMS); vm.voice.showVoiceTab(false) }
         waitFor("Global Lounge")
 
         // The list: people's rooms with owner, count and conditions; the ones I can't enter say why.
@@ -80,7 +80,7 @@ class UserRoomsScreensTest {
         click("Create room")
         waitFor("Create a room")
         compose.onNode(hasSetTextAction() and hasText("Room name")).performTextInput("Cricket night 🏏")
-        compose.onAllNodes(hasText("⚽  Sports"))[0].performClick()
+        compose.onAllNodes(hasText("Sports"))[0].performClick()
         compose.onAllNodes(hasText("Men"))[0].performClick()
         val sliders = compose.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.SetProgress))
         sliders[0].performSemanticsAction(SemanticsActions.SetProgress) { it(12f) }

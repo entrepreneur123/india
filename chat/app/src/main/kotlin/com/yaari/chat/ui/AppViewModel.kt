@@ -18,6 +18,7 @@ import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
+import com.yaari.chat.data.VoiceBus
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
 import com.yaari.chat.domain.ExitPolicy
@@ -146,6 +147,9 @@ class AppViewModel(
     private var dmJob: Job? = null
     private var roomJob: Job? = null
 
+    /** Voice rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain)
+
     init {
         viewModelScope.launch {
             val signedIn = runCatching { backend.isSignedIn() }.getOrDefault(false)
@@ -160,6 +164,16 @@ class AppViewModel(
             if (me != null) afterSignIn()
         }
         watchReads()
+        // The voice room notification's buttons.
+        viewModelScope.launch {
+            VoiceBus.requests.collect { r ->
+                when (r) {
+                    VoiceBus.Request.OPEN -> voice.expand()
+                    VoiceBus.Request.LEAVE -> voice.close()
+                    VoiceBus.Request.END -> voice.leave()
+                }
+            }
+        }
     }
 
     /**
@@ -237,6 +251,9 @@ class AppViewModel(
             "room_title" -> R.string.err_room_title
             "room_size" -> R.string.err_room_size
             "bad_request" -> R.string.err_room_settings
+            "voice_removed" -> R.string.voice_removed
+            "mic_denied" -> R.string.err_mic_denied
+            "queue_full" -> R.string.err_queue_full
             else -> R.string.err_network
         },
     )
@@ -328,7 +345,7 @@ class AppViewModel(
         _state.update { it.copy(tab = tab) }
         when (tab) {
             Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() } }
-            Tab.ROOMS -> refreshRooms()
+            Tab.ROOMS -> { refreshRooms(); voice.refreshList() }
             else -> Unit
         }
     }
@@ -740,6 +757,7 @@ class AppViewModel(
 
     /** Removes every trace of [partnerId] from what is on screen. */
     private fun forget(partnerId: String, message: UiText) {
+        voice.forget(partnerId)
         dmJob?.takeIf { _state.value.dm?.recent?.partner?.id == partnerId }?.cancel()
         _state.update { s ->
             s.copy(
@@ -833,6 +851,7 @@ class AppViewModel(
     }
 
     private fun resetToStart() {
+        voice.close()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()

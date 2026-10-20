@@ -73,7 +73,7 @@ abstract class LocaleScreens(private val prefix: String) {
         tap(s(R.string.report_lobby))
         waitFor(s(R.string.lobby_title))
         tap(s(R.string.tab_rooms))
-        waitFor(s(R.string.room_lounge))
+        waitFor(s(R.string.voice_live_now)) // voice rooms first
         shot("07_rooms")
         tap(s(R.string.tab_recent))
         waitFor(s(R.string.friend_requests, 1))

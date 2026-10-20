@@ -18,6 +18,9 @@ import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.VoiceLine
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +42,8 @@ open class FakeBackend(
     private val today: () -> LocalDate = LocalDate::now,
     /** UI tests: no artificial network/partner delays. */
     private val instant: Boolean = false,
+    /** Voice rooms talk, chat and react by themselves (the demo); tests drive them through [voice] instead. */
+    voiceAmbient: Boolean = !instant,
 ) : Backend {
     private suspend fun wait(ms: Long) {
         if (!instant) delay(ms)
@@ -70,6 +75,9 @@ open class FakeBackend(
     private val seenInRooms = mutableSetOf<String>()
 
     private fun me() = phone?.let { accounts[it] } ?: throw BackendException("not_signed_in")
+
+    /** The demo's voice rooms (and the hooks tests drive them with). */
+    val voice = FakeVoice(::me, random, clock, ::wait, voiceAmbient)
     private fun match(id: String) = matches[id] ?: throw BackendException("not_found")
 
     override suspend fun sendOtp(phone: String) = wait(500)
@@ -252,6 +260,7 @@ open class FakeBackend(
     override suspend fun profile(userId: String): Profile? {
         if (userId in blocked) return null
         if (userId == phone?.let { accounts[it] }?.id) return me()
+        voice.profileOf(userId)?.let { return it } // people met in a voice room
         if (!visible(userId)) return null
         return POOL.firstOrNull { it.id == userId }
     }
@@ -475,6 +484,23 @@ open class FakeBackend(
         messagesOf(roomId) += msg
         roomOutgoing.getOrPut(roomId) { Channel(Channel.UNLIMITED) }.trySend(text)
         return msg
+    }
+
+    // ---- voice rooms (FakeVoice) ----
+
+    override suspend fun voiceRooms() = voice.list().filter { it.host.id !in blocked }
+    override suspend fun createVoiceRoom(room: NewVoiceRoom) = voice.create(room)
+    override fun voiceSession(roomId: String) = voice.session(roomId)
+    override suspend fun leaveVoice(roomId: String) = voice.leave(roomId)
+    override suspend fun endVoice(roomId: String) = voice.endRoom(roomId)
+    override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter { it !is VoiceLine.Text || it.sender.id !in blocked }
+    override suspend fun sendVoice(roomId: String, text: String) = voice.send(roomId, text)
+    override suspend fun voiceAction(roomId: String, action: VoiceAction) = voice.act(roomId, action)
+
+    override suspend fun reportVoiceRoom(roomId: String, reason: ReportReason) {
+        val host = voice.hostOf(roomId) ?: throw BackendException("not_found")
+        if (host == me().id) throw BackendException("not_allowed")
+        block(host)
     }
 
     companion object {

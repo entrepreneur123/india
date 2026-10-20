@@ -38,6 +38,25 @@ import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
+import com.yaari.chat.data.ServerClock
+import com.yaari.chat.model.AudioStatus
+import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.SpeakMode
+import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.VoiceAudioState
+import com.yaari.chat.model.VoiceEvent
+import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceMember
+import com.yaari.chat.model.VoiceQueueItem
+import com.yaari.chat.model.VoiceReaction
+import com.yaari.chat.model.VoiceRole
+import com.yaari.chat.model.VoiceRoom
+import com.yaari.chat.model.VoiceRoomSummary
+import com.yaari.chat.model.VoiceSeat
+import com.yaari.chat.model.VoiceSystemEvent
+import com.yaari.chat.model.VoiceTrack
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import com.russhwolf.settings.SharedPreferencesSettings
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.MemoryCodeVerifierCache
@@ -734,6 +753,470 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         fromMe = r.sender == me, text = r.body, at = ts(r.createdAt).toEpochMilli(),
     )
 
+    // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit, VoiceAudio.kt) ----
+
+    @Serializable private data class VoiceCardRow(
+        val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null, val bio: String? = null,
+        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
+    )
+    @Serializable private data class VoiceListRow(
+        val id: String, val title: String, val category: String, val mine: Boolean = false, val host: VoiceCardRow? = null,
+        val speakers: List<VoiceCardRow> = emptyList(), val listeners: Int = 0, @SerialName("now_playing") val nowPlaying: String? = null,
+    )
+    @Serializable private data class VoiceMusicRow(
+        val id: String, val videoId: String, val title: String = "", val by: String = "", val startedAt: Long, val pausedAt: Long? = null,
+    )
+    @Serializable private data class VoiceQueueRow(val id: String, val videoId: String, val title: String = "", val by: String = "", val suggested: Boolean = false)
+    @Serializable private data class VoiceMemberRow(
+        val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null, val bio: String? = null,
+        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
+        val role: String, val seat: Int? = null, val muted: Boolean = true, val hand: Boolean = false,
+    )
+    /** voice_state(): the room, the people present with their cards, and the server clock (ms). */
+    @Serializable private data class VoiceStateRow(
+        val id: String, val title: String, val category: String, val mode: String, val host: String, val rev: Long, val now: Long,
+        val locked: List<Int> = emptyList(), val music: VoiceMusicRow? = null, val queue: List<VoiceQueueRow> = emptyList(),
+        val members: List<VoiceMemberRow> = emptyList(),
+    )
+    @Serializable private data class VoiceMessageRow(
+        val id: Long, @SerialName("room_id") val roomId: String, val sender: String, val kind: String, val body: String? = null,
+        val payload: JsonObject? = null, @SerialName("sender_name") val senderName: String,
+        @SerialName("sender_gender") val senderGender: String? = null, @SerialName("sender_age") val senderAge: Int? = null,
+        @SerialName("sender_photo") val senderPhoto: String? = null, @SerialName("sender_country") val senderCountry: String? = null,
+        @SerialName("created_at") val createdAt: String,
+    )
+    @Serializable private data class VoiceRevRow(val rev: Long = 0, @SerialName("ended_at") val endedAt: String? = null)
+
+    /** What the voice methods need from the room being followed ([voiceSession]). */
+    private class VoiceLive(val refresh: () -> Unit, val mic: suspend (Boolean) -> Unit) {
+        @Volatile var room: VoiceRoom? = null
+    }
+
+    private val voiceLive = ConcurrentHashMap<String, VoiceLive>()
+    private val serverClock = ServerClock()
+    /** Fire-and-forget requests (voice-sync) that must not die with the screen that started them. */
+    private val background = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    override suspend fun voiceRooms(): List<VoiceRoomSummary> = call {
+        val rows = client.postgrest.rpc("voice_list").decodeList<VoiceListRow>()
+        signMany(rows.flatMap { r -> listOf(r.host?.photoPath) + r.speakers.map { it.photoPath } })
+        rows.mapNotNull { r ->
+            val host = r.host ?: return@mapNotNull null
+            VoiceRoomSummary(
+                r.id, r.title, RoomCategory.of(r.category), card(host), r.speakers.map(::card), r.listeners,
+                r.nowPlaying?.ifEmpty { null }, r.mine,
+            )
+        }.sortedByDescending { it.mine }
+    }
+
+    override suspend fun createVoiceRoom(room: NewVoiceRoom): String = call {
+        json.decodeFromString<String>(client.postgrest.rpc("create_voice_room", buildJsonObject {
+            put("p_title", room.title)
+            put("p_category", room.category.code)
+            put("p_mode", room.mode.code)
+        }).data.trim())
+    }
+
+    override suspend fun leaveVoice(roomId: String) = call { client.postgrest.rpc("leave_voice", buildJsonObject { put("p_room", roomId) }); Unit }
+
+    override suspend fun endVoice(roomId: String) = call {
+        client.postgrest.rpc("end_voice_room", buildJsonObject { put("p_room", roomId) })
+        voiceSync(roomId) // LiveKit closes the room for everyone still connected
+    }
+
+    override suspend fun voiceLines(roomId: String): List<VoiceLine> = call {
+        client.postgrest["voice_messages"].select {
+            filter {
+                eq("room_id", roomId)
+                isIn("kind", listOf("text", "system"))
+            }
+            order("id", Order.DESCENDING) // the newest 100, shown oldest first
+            limit(100)
+        }.decodeList<VoiceMessageRow>().asReversed().let { toVoiceLines(it) }
+    }
+
+    private suspend fun voiceLinesAfter(roomId: String, afterId: Long): List<VoiceLine> =
+        client.postgrest["voice_messages"].select {
+            filter {
+                eq("room_id", roomId)
+                isIn("kind", listOf("text", "system"))
+                gt("id", afterId)
+            }
+            order("id", Order.ASCENDING)
+            limit(200)
+        }.decodeList<VoiceMessageRow>().let { toVoiceLines(it) }
+
+    override suspend fun sendVoice(roomId: String, text: String): VoiceLine = call {
+        val row = client.postgrest.rpc("voice_send", buildJsonObject {
+            put("p_room", roomId)
+            put("p_text", text)
+        }).decodeAs<VoiceMessageRow>()
+        toVoiceLines(listOf(row)).first()
+    }
+
+    override suspend fun reportVoiceRoom(roomId: String, reason: ReportReason) {
+        val host = voiceLive[roomId]?.room?.hostId ?: call {
+            client.postgrest.rpc("voice_state", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>().host
+        }
+        if (host == uid) throw BackendException("not_allowed")
+        report(host, reason, null)
+    }
+
+    override suspend fun voiceAction(roomId: String, action: VoiceAction) = call {
+        val live = voiceLive[roomId]
+        suspend fun rpc(fn: String, extra: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit = {}) =
+            client.postgrest.rpc(fn, buildJsonObject { put("p_room", roomId); extra() })
+        when (action) {
+            is VoiceAction.Hand -> rpc("voice_hand") { put("p_up", action.up) }
+            is VoiceAction.Mic -> (live ?: throw BackendException("network")).mic(action.on)
+            // An open room seats me; a hand-raise room raises my hand instead. Either way LiveKit hears about it.
+            is VoiceAction.TakeSeat -> if (rpc("voice_take_seat") { put("p_seat", action.seat) }.data.contains("seated")) voiceSync(roomId, uid)
+            VoiceAction.Unseat -> {
+                runCatching { live?.mic?.invoke(false) }
+                rpc("voice_leave_seat")
+                voiceSync(roomId, uid)
+            }
+            is VoiceAction.React -> {
+                rpc("voice_react") { put("p_kind", action.kind.code) }
+                return@call // it comes back over realtime, like everyone else's
+            }
+            is VoiceAction.Invite -> {
+                rpc("voice_invite") { put("p_user", action.userId); action.seat?.let { put("p_seat", it) } }
+                voiceSync(roomId, action.userId)
+            }
+            is VoiceAction.Answer -> {
+                rpc("voice_answer") { put("p_user", action.userId); put("p_accept", action.accept) }
+                if (action.accept) voiceSync(roomId, action.userId)
+            }
+            is VoiceAction.ToAudience -> {
+                rpc("voice_to_audience") { put("p_user", action.userId) }
+                voiceSync(roomId, action.userId)
+            }
+            is VoiceAction.Mute -> {
+                rpc("voice_mute_member") { put("p_user", action.userId) }
+                voiceSync(roomId, action.userId, mute = true)
+            }
+            is VoiceAction.Lock -> rpc("voice_lock_seat") { put("p_seat", action.seat); put("p_on", action.locked) }
+            is VoiceAction.Cohost -> rpc("voice_set_cohost") { put("p_user", action.userId); put("p_on", action.on) }
+            is VoiceAction.Kick -> {
+                rpc("voice_kick") { put("p_user", action.userId) }
+                voiceSync(roomId, action.userId)
+            }
+            // The server decides: the host's track plays or queues, anyone else's waits for the host.
+            is VoiceAction.AddTrack -> rpc("voice_queue_add") { put("p_video", action.videoId); put("p_title", "") }
+            is VoiceAction.Suggest -> rpc("voice_queue_add") { put("p_video", action.videoId); put("p_title", "") }
+            is VoiceAction.Approve -> rpc("voice_queue_approve") { put("p_item", action.itemId); put("p_accept", action.accept) }
+            is VoiceAction.Play -> rpc("voice_play_item") { put("p_item", action.itemId) }
+            is VoiceAction.RemoveItem -> rpc("voice_queue_remove") { put("p_item", action.itemId) }
+            VoiceAction.Pause -> rpc("voice_pause")
+            VoiceAction.Resume -> rpc("voice_resume")
+            is VoiceAction.Skip -> rpc("voice_skip") { (action.trackId ?: live?.room?.track?.id)?.let { put("p_current", it) } }
+        }
+        live?.refresh?.invoke() // don't wait for the realtime round trip
+    }
+
+    /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host re-checks every minute. */
+    private fun voiceSync(roomId: String, userId: String? = null, mute: Boolean = false) {
+        background.launch {
+            runCatching {
+                client.functions.invoke("voice-sync", body = buildJsonObject {
+                    put("room_id", roomId)
+                    userId?.let { put("user_id", it) }
+                    if (mute) put("mute", true)
+                })
+            }
+        }
+    }
+
+    override fun voiceSession(roomId: String): Flow<VoiceEvent> = channelFlow {
+        val me = uid
+        var rev = -1L
+        var over = false
+        var beats = 0
+        var newest = 0L
+        var mine: Pair<Int?, Boolean>? = null // my seat and mute, to notice changes
+        var audio: VoiceAudio? = null
+        var audioJob: Job? = null
+        var audioTries = 0
+        val refresh = Channel<Unit>(Channel.CONFLATED)
+        val permissionsChanged = Channel<Unit>(Channel.CONFLATED)
+        var retryAudio: () -> Unit = {}
+
+        // Ended or removed: said once; the collector stops following then.
+        suspend fun finish(e: VoiceEvent) {
+            if (over) return
+            over = true
+            audio?.disconnect()
+            audio = null
+            send(e)
+        }
+        suspend fun failed(e: Throwable) {
+            when ((e as? BackendException)?.code) {
+                "room_closed", "not_found" -> finish(VoiceEvent.Ended)
+                "voice_removed" -> finish(VoiceEvent.Removed)
+            }
+        }
+
+        val audioEvents = object : VoiceAudio.Events {
+            override fun status(s: AudioStatus) { trySend(VoiceEvent.Audio(VoiceAudioState(s))) }
+            override fun interrupted(on: Boolean) { trySend(VoiceEvent.Audio(VoiceAudioState(AudioStatus.CONNECTED, interrupted = on))) }
+            override fun levels(levels: Map<String, Float>) { trySend(VoiceEvent.Levels(levels)) }
+            override fun permissions(canPublish: Boolean) { permissionsChanged.trySend(Unit) }
+            override fun micMutedByServer() { refresh.trySend(Unit) }
+            override fun gone(removed: Boolean) {
+                audio?.disconnect()
+                audio = null
+                audioJob = null
+                trySend(VoiceEvent.Levels(emptyMap()))
+                if (removed) refresh.trySend(Unit) // removed or ended: the state says which
+                retryAudio()
+            }
+        }
+
+        fun connectAudio() {
+            if (over || audioJob != null) return
+            audioJob = launch {
+                try {
+                    val t = call { client.functions.invoke("voice-token", body = buildJsonObject { put("room_id", roomId) }).body<TokenRow>() }
+                    val a = VoiceAudio(app, this@channelFlow, audioEvents)
+                    try {
+                        a.connect(t.url, t.token)
+                    } catch (e: Exception) {
+                        a.disconnect()
+                        throw e
+                    }
+                    audio = a
+                    audioTries = 0
+                    // Back after a dropped connection while unmuted on a seat: talk again (or show the mic as off).
+                    if (mine?.first != null && mine?.second == false) {
+                        runCatching { a.setMic(true) }.onFailure {
+                            runCatching { client.postgrest.rpc("voice_mic", buildJsonObject { put("p_room", roomId); put("p_on", false) }) }
+                            refresh.trySend(Unit)
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: LinkageError) {
+                    // No WebRTC on this device or build (JVM tests): the room works without audio.
+                    audioJob = null
+                    send(VoiceEvent.Audio(VoiceAudioState(AudioStatus.FAILED)))
+                } catch (e: Exception) {
+                    audioJob = null
+                    send(VoiceEvent.Audio(VoiceAudioState(AudioStatus.FAILED)))
+                    // Not in the room any more (403): the state will say why; anything else is worth another try.
+                    if ((e as? BackendException)?.code == "not_allowed") refresh.trySend(Unit)
+                    retryAudio()
+                }
+            }
+        }
+
+        suspend fun apply(state: VoiceStateRow, sent: Long) {
+            serverClock.note(state.now, sent, System.currentTimeMillis())
+            val room = toVoiceRoom(state, me)
+            if (over) return
+            rev = maxOf(rev, state.rev)
+            voiceLive[roomId]?.room = room
+            val m = room.me
+            val before = mine
+            mine = m?.let { it.seat to it.muted }
+            if (m != null && before != null) {
+                // Brought up to a seat: ask LiveKit for the right to talk. Sent back to the audience, or muted by a
+                // host: the microphone goes off here too.
+                if (before.first == null && m.seat != null) voiceSync(roomId, me)
+                if ((m.seat == null && before.first != null) || (m.muted && !before.second)) runCatching { audio?.setMic(false) }
+            }
+            if (m != null && audio == null) connectAudio()
+            send(VoiceEvent.RoomChanged(room))
+        }
+
+        suspend fun fetchState() {
+            if (over) return
+            try {
+                val sent = System.currentTimeMillis()
+                apply(call { client.postgrest.rpc("voice_state", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }, sent)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                failed(e)
+            }
+        }
+
+        suspend fun mic(on: Boolean) {
+            if (!on) {
+                runCatching { audio?.setMic(false) }
+                call { client.postgrest.rpc("voice_mic", buildJsonObject { put("p_room", roomId); put("p_on", false) }) }
+                return
+            }
+            val a = withTimeoutOrNull(8_000) { while (audio == null) delay(100); audio } ?: throw BackendException("network")
+            try {
+                a.setMic(true)
+            } catch (e: BackendException) {
+                if (e.code != "not_allowed") throw e
+                // LiveKit hasn't heard I'm on a seat yet: ask for it and try once more.
+                voiceSync(roomId, me)
+                withTimeoutOrNull(4_000) { permissionsChanged.receive() }
+                a.setMic(true)
+            }
+            try {
+                call { client.postgrest.rpc("voice_mic", buildJsonObject { put("p_room", roomId); put("p_on", true) }) }
+            } catch (e: Exception) {
+                runCatching { a.setMic(false) }
+                throw e
+            }
+        }
+
+        val live = VoiceLive(refresh = { refresh.trySend(Unit) }, mic = { on -> mic(on) })
+        voiceLive[roomId] = live
+
+        retryAudio = {
+            launch {
+                // A weak network gets a few quick tries, then one every 30 s; the room itself (chat, seats) carries on.
+                delay(minOf(30_000L, 2_000L shl minOf(audioTries++, 4)))
+                connectAudio()
+            }
+        }
+
+        val channel = client.channel("voice-$roomId-${UUID.randomUUID()}")
+        val roomChanges = channel.postgresChangeFlow<PostgresAction.Update>("public") {
+            table = "voice_rooms"
+            filter("id", FilterOperator.EQ, roomId)
+        }
+        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
+            table = "voice_messages"
+            filter("room_id", FilterOperator.EQ, roomId)
+        }
+        try {
+            // Enter first: a refusal (ended, removed, blocked) fails the flow before anything else starts.
+            val sent = System.currentTimeMillis()
+            val state = call { client.postgrest.rpc("join_voice", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }
+            apply(state, sent)
+
+            launch {
+                roomChanges.collect { a ->
+                    val row = runCatching { a.decodeRecord<VoiceRevRow>() }.getOrNull() ?: return@collect
+                    if (row.endedAt != null) finish(VoiceEvent.Ended) else if (row.rev != rev) refresh.trySend(Unit)
+                }
+            }
+            launch {
+                inserts.collect { a ->
+                    val row = runCatching { a.decodeRecord<VoiceMessageRow>() }.getOrNull() ?: return@collect
+                    if (row.kind == "reaction") {
+                        // A reaction is a moment: an old one (replayed after a reconnect) is not shown.
+                        val kind = VoiceReaction.of(row.payload?.get("kind")?.jsonPrimitive?.content)
+                        if (kind != null && System.currentTimeMillis() - ts(row.createdAt).toEpochMilli() < 15_000) send(VoiceEvent.Reaction(row.sender, kind))
+                        return@collect
+                    }
+                    newest = maxOf(newest, row.id)
+                    runCatching { toVoiceLines(listOf(row)) }.getOrNull()?.forEach { send(VoiceEvent.Line(it)) }
+                }
+            }
+            // State re-fetches, a little debounced (several changes in a burst cost one request).
+            launch {
+                for (x in refresh) {
+                    delay(150)
+                    fetchState()
+                }
+            }
+            // Heartbeat every 20 s, also in the background (the foreground service keeps the room alive there):
+            // the server lets go of anyone not seen for 90 s.
+            launch {
+                while (true) {
+                    delay(HEARTBEAT_MS)
+                    try {
+                        val now = call { client.postgrest.rpc("voice_heartbeat", buildJsonObject { put("p_room", roomId) }).data.trim().toLongOrNull() }
+                        if (now != null && now != rev) refresh.trySend(Unit)
+                        // The host re-checks LiveKit against the room every minute (anyone a sync missed).
+                        if (++beats % 3 == 0 && live.room?.hostId == me) voiceSync(roomId)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        failed(e)
+                    }
+                }
+            }
+            // Re-sync after a dropped socket and every 10 s while on screen: missed changes and lines.
+            val resync = Channel<Unit>(Channel.CONFLATED)
+            launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
+            channel.subscribe()
+            while (true) {
+                withTimeoutOrNull(RESYNC_MS) { resync.receive() }
+                AppForeground.visible.awaitVisible()
+                runCatching {
+                    val row = client.postgrest["voice_rooms"].select { filter { eq("id", roomId) } }.decodeSingleOrNull<VoiceRevRow>()
+                    if (row?.endedAt != null) finish(VoiceEvent.Ended) else if (row != null && row.rev != rev) refresh.trySend(Unit)
+                    if (newest > 0) voiceLinesAfter(roomId, newest).forEach { line ->
+                        newest = maxOf(newest, line.id)
+                        send(VoiceEvent.Line(line))
+                    }
+                }
+                if (over) break
+            }
+        } finally {
+            withContext(NonCancellable) {
+                if (voiceLive[roomId] === live) voiceLive.remove(roomId)
+                audio?.disconnect()
+                runCatching { client.realtime.removeChannel(channel) }
+            }
+        }
+    }
+
+    private suspend fun toVoiceRoom(s: VoiceStateRow, me: String): VoiceRoom {
+        signMany(s.members.map { it.photoPath })
+        return VoiceRoom(
+            id = s.id, title = s.title, category = RoomCategory.of(s.category), mode = SpeakMode.of(s.mode), hostId = s.host, meId = me,
+            members = s.members.map { m ->
+                VoiceMember(
+                    card(VoiceCardRow(m.id, m.name, m.gender, m.age, m.city, m.bio, m.photoPath, m.country)),
+                    VoiceRole.of(m.role), m.seat, m.muted, m.hand,
+                )
+            },
+            seats = List(VoiceRoom.SEATS) { VoiceSeat(it, it in s.locked) },
+            track = s.music?.let {
+                VoiceTrack(it.id, it.videoId, it.title, it.by, serverClock.toLocal(it.startedAt), it.pausedAt?.let(serverClock::toLocal))
+            },
+            queue = s.queue.map { VoiceQueueItem(it.id, it.videoId, it.title, it.by, it.suggested) },
+        )
+    }
+
+    private suspend fun toVoiceLines(rows: List<VoiceMessageRow>): List<VoiceLine> {
+        val me = uid
+        signMany(rows.filter { it.kind == "text" }.map { it.senderPhoto })
+        return rows.mapNotNull { r ->
+            val at = ts(r.createdAt).toEpochMilli()
+            if (r.kind == "text") {
+                VoiceLine.Text(
+                    r.id, card(VoiceCardRow(r.sender, r.senderName, r.senderGender ?: "other", r.senderAge ?: 0, null, null, r.senderPhoto, r.senderCountry)),
+                    r.sender == me, r.body.orEmpty(), at,
+                )
+            } else {
+                val p = r.payload
+                val event = VoiceSystemEvent.of(p?.get("event")?.jsonPrimitive?.content) ?: return@mapNotNull null
+                VoiceLine.System(
+                    r.id, event, p?.get("name")?.jsonPrimitive?.content ?: r.senderName, at,
+                    seat = p?.get("seat")?.jsonPrimitive?.content?.toIntOrNull(),
+                    title = p?.get("title")?.jsonPrimitive?.content,
+                )
+            }
+        }
+    }
+
+    /** A card from a voice room; the photo comes from [signMany] (one request for the whole room), else the initial. */
+    private fun card(c: VoiceCardRow) = Profile(
+        id = c.id, name = c.name, gender = runCatching { Gender.valueOf(c.gender.uppercase()) }.getOrDefault(Gender.OTHER),
+        age = c.age, city = c.city.orEmpty(), bio = c.bio.orEmpty(),
+        photoUri = c.photoPath?.let { p -> signedUrls[p]?.first }, colorSeed = c.id.hashCode(), country = c.country,
+    )
+
+    /** Signs every photo not signed yet in one request (a voice room shows dozens of faces at once). */
+    private suspend fun signMany(paths: List<String?>) {
+        val now = System.currentTimeMillis()
+        val need = paths.filterNotNull().distinct().filter { (signedUrls[it]?.second ?: 0L) <= now }
+        if (need.isEmpty()) return
+        runCatching { client.storage.from(BUCKET).createSignedUrls(1.hours, need) }.getOrNull()?.forEach { u ->
+            if (u.error == null && u.signedURL.isNotEmpty()) signedUrls[u.path] = u.signedURL to now + 50 * 60_000L
+        }
+    }
+
     // ---- mapping & media ----
 
     private suspend fun toProfile(c: CardRow, posts: List<Post>) = Profile(
@@ -799,11 +1282,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val RESYNC_MS = 10_000L
         private const val ROOM_RESYNC_MS = 15_000L
         private const val REJOIN_SETTLE_MS = 500L
+        private const val HEARTBEAT_MS = 20_000L
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
             "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",
+            "voice_removed", "mic_denied", "queue_full",
         )
     }
 }

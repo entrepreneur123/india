@@ -72,6 +72,9 @@ object Flavor {
     private var billing: Billing? = null
 
     fun backend(app: Application): Backend = backend ?: SupabaseBackend(app).also { backend = it }
+    /** Voice rooms send the microphone through LiveKit: asked the first time someone unmutes. */
+    const val voiceMicPermission = true
+
     fun billing(app: Application): Billing = billing ?: PlayBilling(app).also { billing = it }
 
     /** Third-party licenses beyond the font (title to raw text resource). */

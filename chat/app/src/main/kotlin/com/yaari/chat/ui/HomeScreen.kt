@@ -111,8 +111,9 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
     val dark = s.tab == Tab.RANDOM
     val bg by animateColorAsState(if (dark) Brand.Night else MaterialTheme.colorScheme.background, tween(300), label = "bg")
     Column(Modifier.fillMaxSize().background(bg)) {
+        Box(Modifier.weight(1f)) {
         AnimatedContent(
-            s.tab, Modifier.weight(1f),
+            s.tab, Modifier.fillMaxSize(),
             transitionSpec = { (fadeIn(tween(210, delayMillis = 90)) + scaleIn(tween(210, delayMillis = 90), initialScale = 0.96f)) togetherWith fadeOut(tween(90)) },
             label = "tab",
         ) { tab ->
@@ -124,6 +125,9 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
                     vm, s, onSettings = { open(Sub.SETTINGS) }, onEdit = { open(Sub.EDIT) }, onNewPost = { open(Sub.NEW_POST) },
                 )
             }
+        }
+            // The voice room I'm in, minimised: it keeps playing while I look around.
+            VoicePill(vm, Modifier.align(Alignment.BottomCenter))
         }
         BottomBar(s, me, dark, bg, vm::selectTab)
     }

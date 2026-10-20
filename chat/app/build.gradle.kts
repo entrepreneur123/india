@@ -16,8 +16,8 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.4.2"
+        versionCode = 7
+        versionName = "0.5.0"
     }
 
     // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
@@ -124,6 +124,8 @@ dependencies {
     implementation(libs.compose.icons.core)
     implementation(libs.compose.icons.extended) // unused icons are stripped by R8
     implementation(libs.coil.compose)
+    // Voice rooms' "listen together": YouTube's official IFrame player in a WebView (MIT, ~80 KB), both flavors.
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
     // Installs the baseline profile (src/main/baseline-prof.txt + the libraries' own) on sideloaded installs too,
     // so the first launches run precompiled code instead of the interpreter.
     implementation(libs.androidx.profileinstaller)

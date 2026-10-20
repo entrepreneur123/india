@@ -156,6 +156,8 @@ class AppFlowTest {
 
         // 9. Public rooms
         tab("Rooms")
+        waitFor("Live now") // voice rooms come first
+        compose.onNodeWithText("Chat").performClick()
         waitFor("Global Lounge")
         shot("14_rooms")
         compose.onNodeWithText("Global Lounge").performClick()

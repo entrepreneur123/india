@@ -27,6 +27,9 @@ import com.yaari.chat.ui.Avatar
 /** Demo build: everything runs on the phone with scripted partners. */
 object Flavor {
     fun backend(app: Application): Backend = FakeBackend()
+    /** The demo has no real audio, so it never asks for the microphone. */
+    const val voiceMicPermission = false
+
     fun billing(app: Application): Billing = DemoBilling()
 
     /** Third-party licenses beyond the font (title to raw text resource): none in the demo. */
