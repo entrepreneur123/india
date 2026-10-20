@@ -17,6 +17,7 @@ import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { Composer } from '@/components/screens/chat/composer'
+import { Bubble, MetaSpacer } from '@/components/screens/chat/message-bubble'
 import { Modal } from '@/components/ui/modal'
 import { refusalLabel, roomAbout, roomConditions, roomTitle } from './room-text'
 import { cn } from '@/lib/utils'
@@ -258,7 +259,7 @@ function FeaturedRoom({ room, onOpen }: { room: Room; onOpen: () => void }) {
 function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t, num } = useI18n()
+  const { t, num, clock } = useI18n()
   const { openProfile } = useApp()
   const [messages, setMessages] = useState<RoomMessage[] | null>(null)
   const [joined, setJoined] = useState(false)
@@ -442,7 +443,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           const el = e.currentTarget
           stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
         }}
-        className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4 scrollbar-thin sm:px-6"
+        className="flex w-full min-h-0 flex-1 flex-col overflow-y-auto bg-chat-wall px-[max(1.25rem,calc((100%-48rem)/2))] py-3 scrollbar-thin"
         aria-label={t('room.messages', { title })}
         aria-live="polite"
       >
@@ -450,7 +451,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           Array.from({ length: 5 }, (_, i) => (
             <li key={i} className="flex gap-3">
               <Skeleton className="size-9 rounded-full" />
-              <Skeleton className="h-14 w-56 rounded-2xl" />
+              <Skeleton className="h-14 w-56 rounded-lg" />
             </li>
           ))
         ) : messages.length === 0 ? (
@@ -459,42 +460,46 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
           </li>
         ) : (
           <AnimatePresence initial={false}>
-            {messages.map((msg) => (
-              <m.li
-                key={msg.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-                className={cn('flex max-w-[85%] gap-2.5', msg.fromMe ? 'self-end flex-row-reverse' : 'self-start')}
-              >
-                {msg.fromMe ? null : (
-                  <button type="button" onClick={() => openProfile(msg.sender.id)} className="self-end rounded-full" aria-label={t('room.view', { name: msg.sender.name })}>
-                    <Avatar name={msg.sender.name} src={msg.sender.photoUrl} size={36} />
-                  </button>
-                )}
-                <div className={cn('flex min-w-0 flex-col gap-1', msg.fromMe && 'items-end')}>
-                  {msg.fromMe ? null : (
-                    <button
-                      type="button"
-                      onClick={() => openProfile(msg.sender.id)}
-                      className="flex items-center gap-1.5 self-start rounded px-1 text-xs font-semibold hover:underline"
-                    >
-                      {msg.sender.name}
-                      <span className="font-normal text-muted-foreground">{msg.sender.age}</span>
-                      <span aria-hidden>{flagEmoji(msg.sender.country)}</span>
+            {messages.map((msg, i) => {
+              const grouped = i > 0 && messages[i - 1].sender.id === msg.sender.id
+              const meta = clock(msg.at)
+              return (
+                <m.li
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
+                  className={cn('flex max-w-[85%] gap-2 md:max-w-[65%]', msg.fromMe ? 'self-end' : 'self-start', grouped ? 'mt-0.5' : 'mt-2')}
+                >
+                  {msg.fromMe ? null : grouped ? (
+                    <span className="w-8 shrink-0" aria-hidden />
+                  ) : (
+                    <button type="button" onClick={() => openProfile(msg.sender.id)} className="shrink-0 self-start rounded-full" aria-label={t('room.view', { name: msg.sender.name })}>
+                      <Avatar name={msg.sender.name} src={msg.sender.photoUrl} size={32} />
                     </button>
                   )}
-                  <p
-                    className={cn(
-                      'rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap',
-                      msg.fromMe ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md bg-muted',
+                  <Bubble mine={msg.fromMe} tail={!grouped} className="px-2.5 pb-1.5 pt-1">
+                    {msg.fromMe || grouped ? null : (
+                      <button
+                        type="button"
+                        onClick={() => openProfile(msg.sender.id)}
+                        className="flex max-w-full items-center gap-1.5 text-[13px] font-semibold leading-5 hover:underline"
+                        style={{ color: nameColor(msg.sender.id) }}
+                      >
+                        <span className="truncate">{msg.sender.name}</span>
+                        <span className="font-normal text-bubble-meta">{msg.sender.age}</span>
+                        <span aria-hidden>{flagEmoji(msg.sender.country)}</span>
+                      </button>
                     )}
-                  >
-                    {msg.text}
-                  </p>
-                </div>
-              </m.li>
-            ))}
+                    <p className={cn('relative text-[15px] leading-[1.35] break-words whitespace-pre-wrap', msg.fromMe || grouped ? 'pt-0.5' : '')}>
+                      {msg.text}
+                      <MetaSpacer>{meta}</MetaSpacer>
+                      <span className="absolute -bottom-0.5 right-0 text-[11px] leading-none text-bubble-meta">{meta}</span>
+                    </p>
+                  </Bubble>
+                </m.li>
+              )
+            })}
           </AnimatePresence>
         )}
       </ul>
@@ -518,4 +523,11 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
       </Modal>
     </m.div>
   )
+}
+
+/** A steady colour per person, like names in a group chat. */
+function nameColor(id: string) {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
+  return `var(--name-${Math.abs(h) % 8})`
 }

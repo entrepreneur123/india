@@ -164,6 +164,8 @@ const ptBR: Dict = {
   'bubble.sensitivePhoto': 'A foto pode ser sensível',
   'bubble.sensitiveVideo': 'O vídeo pode ser sensível',
   'bubble.typing': '{name} está digitando',
+  'bubble.sent': 'Enviada',
+  'bubble.read': 'Lida',
 
   'report.title': 'Denunciar {name}',
   'report.desc': 'As denúncias são anônimas. A pessoa não vai saber que foi você.',

@@ -164,6 +164,8 @@ const bn: Dict = {
   'bubble.sensitivePhoto': 'ছবিটি সংবেদনশীল হতে পারে',
   'bubble.sensitiveVideo': 'ভিডিওটি সংবেদনশীল হতে পারে',
   'bubble.typing': '{name} লিখছেন',
+  'bubble.sent': 'পাঠানো হয়েছে',
+  'bubble.read': 'পড়া হয়েছে',
 
   'report.title': '{name}-কে রিপোর্ট করুন',
   'report.desc': 'রিপোর্ট বেনামি। তারা জানবে না যে আপনি করেছেন।',

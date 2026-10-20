@@ -25,6 +25,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setVideoState(v)
   }, [])
   const [partnerLeft, setPartnerLeft] = useState(false)
+  const [partnerRead, setPartnerRead] = useState(0)
   const lastTypingSent = useRef(0)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -41,6 +42,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setTyping(false)
     setVideo('none')
     setPartnerLeft(false)
+    setPartnerRead(0)
 
     backend
       .history(matchId)
@@ -78,6 +80,9 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           }
           setVideo(e.status === 'declined' ? 'none' : e.status)
           break
+        case 'read':
+          setPartnerRead((r) => Math.max(r, e.upto))
+          break
         case 'partner_left':
           if (!live) break
           setPartnerLeft(true)
@@ -93,6 +98,17 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
       if (typingTimer.current) clearTimeout(typingTimer.current)
     }
   }, [backend, matchId, append, toast, partnerName, live, setVideo])
+
+  // Read ticks: what's on screen while the tab is visible counts as read.
+  let lastIncoming = 0
+  for (const m of messages ?? []) if (!m.fromMe) lastIncoming = m.id // sorted by id
+  useEffect(() => {
+    if (!lastIncoming) return
+    const mark = () => { if (document.visibilityState === 'visible') backend.markRead(matchId, lastIncoming) }
+    mark()
+    document.addEventListener('visibilitychange', mark)
+    return () => document.removeEventListener('visibilitychange', mark)
+  }, [backend, matchId, lastIncoming])
 
   const notifyTyping = useCallback(() => {
     const now = Date.now()
@@ -115,5 +131,5 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     [backend, matchId, append, toast],
   )
 
-  return { messages, typing, video, setVideo, partnerLeft, send, notifyTyping }
+  return { messages, typing, video, setVideo, partnerLeft, partnerRead, send, notifyTyping }
 }

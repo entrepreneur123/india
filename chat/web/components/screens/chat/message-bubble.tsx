@@ -1,44 +1,97 @@
 'use client'
 
 import * as m from 'motion/react-m'
-import { useState } from 'react'
-import { Eye } from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { Check, CheckCheck, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 
-export function MessageBubble({ message, grouped }: { message: Message; grouped: boolean }) {
-  const { clock } = useI18n()
+/**
+ * Chat bubbles in the style people in India use every day: green (mine) / white (theirs) on a warm wallpaper,
+ * a tail on the first bubble of a run, and the time with read ticks tucked into the bubble's corner.
+ */
+export function MessageBubble({ message, grouped, read }: { message: Message; grouped: boolean; read?: boolean }) {
+  const { t, clock } = useI18n()
   const mine = message.fromMe
+  const meta = (
+    <>
+      {clock(message.at)}
+      {mine ? (
+        read ? (
+          <CheckCheck className="size-4 text-tick-read" aria-label={t('bubble.read')} />
+        ) : (
+          <Check className="size-4" aria-label={t('bubble.sent')} />
+        )
+      ) : null}
+    </>
+  )
   return (
     <m.li
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-      className={cn('flex max-w-[78%] flex-col gap-1', mine ? 'self-end items-end' : 'self-start items-start', grouped ? 'mt-0.5' : 'mt-3')}
+      className={cn('flex max-w-[82%] md:max-w-[65%]', mine ? 'self-end' : 'self-start', grouped ? 'mt-0.5' : 'mt-2')}
     >
-      {message.media ? <MediaBubble media={message.media} mine={mine} /> : null}
-      {message.text ? (
-        // User text is always rendered as text (React escapes it), never as HTML.
-        <div
-          className={cn(
-            'rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap',
-            mine ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md bg-muted text-foreground',
-          )}
-        >
-          {message.text}
-        </div>
-      ) : null}
-      {!grouped ? null : <span className="sr-only">{clock(message.at)}</span>}
+      <Bubble mine={mine} tail={!grouped} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
+        {message.media ? (
+          <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
+        ) : null}
+        {message.text ? (
+          // User text is always rendered as text (React escapes it), never as HTML.
+          <p className={cn('relative text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}>
+            {message.text}
+            <MetaSpacer>{meta}</MetaSpacer>
+            <span className="absolute -bottom-0.5 right-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
+          </p>
+        ) : null}
+      </Bubble>
     </m.li>
   )
 }
 
-function MediaBubble({ media, mine }: { media: NonNullable<Message['media']>; mine: boolean }) {
+/** Shared bubble shell (random chats and rooms). */
+export function Bubble({ mine, tail, className, children }: { mine: boolean; tail: boolean; className?: string; children: ReactNode }) {
+  return (
+    <div
+      className={cn(
+        'relative min-w-0 rounded-lg text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]',
+        mine ? 'bg-bubble-out' : 'bg-bubble-in',
+        tail && (mine ? 'rounded-tr-none' : 'rounded-tl-none'),
+        className,
+      )}
+    >
+      {tail ? (
+        <svg
+          viewBox="0 0 8 13"
+          aria-hidden
+          className={cn('absolute top-0 h-[13px] w-2', mine ? '-right-2 text-bubble-out' : '-left-2 text-bubble-in')}
+        >
+          <path
+            fill="currentColor"
+            d={mine ? 'M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z' : 'M2.812 0H8v11.193L1.533 2.568C.474 1.156 1.042 0 2.812 0z'}
+          />
+        </svg>
+      ) : null}
+      {children}
+    </div>
+  )
+}
+
+/** Invisible copy of the time that reserves room on the last line, so the real one never covers the text. */
+export function MetaSpacer({ children }: { children: ReactNode }) {
+  return (
+    <span aria-hidden className="invisible ml-2 inline-flex items-center gap-0.5 align-bottom text-[11px] leading-none">
+      {children}
+    </span>
+  )
+}
+
+function MediaBubble({ media, mine, meta }: { media: NonNullable<Message['media']>; mine: boolean; meta: ReactNode | null }) {
   const { t } = useI18n()
   const [revealed, setRevealed] = useState(mine)
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-muted">
+    <div className="relative overflow-hidden rounded-md bg-black/5">
       {media.kind === 'video' ? (
         <video
           src={media.url}
@@ -69,6 +122,11 @@ function MediaBubble({ media, mine }: { media: NonNullable<Message['media']>; mi
           <span className="text-xs text-white/85">{media.kind === 'video' ? t('bubble.sensitiveVideo') : t('bubble.sensitivePhoto')}</span>
         </button>
       ) : null}
+      {meta && revealed && media.kind === 'image' ? (
+        <span className="pointer-events-none absolute bottom-1 right-1.5 flex items-center gap-0.5 rounded-full bg-black/35 px-1.5 py-0.5 text-[11px] leading-none text-white">
+          {meta}
+        </span>
+      ) : null}
     </div>
   )
 }
@@ -81,18 +139,20 @@ export function TypingBubble({ name }: { name: string }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className="mt-3 flex items-center gap-1.5 self-start rounded-2xl rounded-bl-md bg-muted px-4 py-3.5"
+      className="mt-2 self-start"
       aria-live="polite"
     >
-      <span className="sr-only">{t('bubble.typing', { name })}</span>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="size-2 animate-pulse rounded-full bg-muted-foreground motion-reduce:animate-none"
-          style={{ animationDelay: `${i * 0.2}s` }}
-          aria-hidden
-        />
-      ))}
+      <Bubble mine={false} tail className="flex items-center gap-1.5 px-4 py-3">
+        <span className="sr-only">{t('bubble.typing', { name })}</span>
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            className="size-2 animate-pulse rounded-full bg-bubble-meta motion-reduce:animate-none"
+            style={{ animationDelay: `${i * 0.2}s` }}
+            aria-hidden
+          />
+        ))}
+      </Bubble>
     </m.li>
   )
 }

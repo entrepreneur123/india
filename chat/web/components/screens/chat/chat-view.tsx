@@ -195,11 +195,11 @@ export function ChatView({
             const el = e.currentTarget
             stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
           }}
-          className="mx-auto flex w-full max-w-3xl min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4 scrollbar-thin sm:px-6"
+          className="flex w-full min-h-0 flex-1 flex-col overflow-y-auto bg-chat-wall px-[max(1.25rem,calc((100%-48rem)/2))] py-3 scrollbar-thin"
           aria-label={t('chat.conversation', { name: partner.name })}
         >
           {live ? (
-            <li className="mx-auto mb-2 max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
+            <li className="mx-auto mb-2 max-w-xs rounded-lg bg-bubble-in px-3 py-1.5 text-center text-xs leading-relaxed text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
               {partner.city
                 ? t('chat.introCity', { name: partner.name, city: partner.city })
                 : t('chat.intro', { name: partner.name })}
@@ -207,18 +207,18 @@ export function ChatView({
           ) : null}
           {chat.messages === null ? (
             <>
-              <Skeleton className="mt-3 h-10 w-48 self-start rounded-2xl" />
-              <Skeleton className="mt-3 h-10 w-40 self-end rounded-2xl" />
-              <Skeleton className="mt-3 h-10 w-56 self-start rounded-2xl" />
+              <Skeleton className="mt-3 h-10 w-48 self-start rounded-lg" />
+              <Skeleton className="mt-3 h-10 w-40 self-end rounded-lg" />
+              <Skeleton className="mt-3 h-10 w-56 self-start rounded-lg" />
             </>
           ) : (
             chat.messages.map((msg, i) => (
-              <MessageBubble key={msg.id} message={msg} grouped={i > 0 && chat.messages![i - 1].fromMe === msg.fromMe} />
+              <MessageBubble key={msg.id} message={msg} grouped={i > 0 && chat.messages![i - 1].fromMe === msg.fromMe} read={msg.fromMe && msg.id <= chat.partnerRead} />
             ))
           )}
           <AnimatePresence>{chat.typing ? <TypingBubble key="typing" name={partner.name} /> : null}</AnimatePresence>
           {ended ? (
-            <li className="mx-auto mt-6 rounded-full bg-muted px-4 py-2 text-xs font-semibold text-muted-foreground">
+            <li className="mx-auto mt-6 rounded-lg bg-bubble-in px-4 py-2 text-xs font-semibold text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
               {t('chat.partnerLeft', { name: partner.name })}
             </li>
           ) : null}

@@ -71,7 +71,7 @@ export function Composer({
   }
 
   return (
-    <div className="border-t border-border bg-background px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5">
+    <div className="bg-chat-wall px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-[max(1.25rem,calc((100%-48rem)/2))]">
       <AnimatePresence>
         {preview && file ? (
           <m.div
@@ -123,7 +123,7 @@ export function Composer({
             />
           </label>
         ) : null}
-        <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-muted px-4 ring-1 ring-transparent transition-shadow duration-150 focus-within:ring-primary">
+        <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-bubble-in px-4 text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)] ring-1 ring-transparent transition-shadow duration-150 focus-within:ring-primary">
           <label htmlFor={`${fileId}-text`} className="sr-only">
             {t('composer.message')}
           </label>

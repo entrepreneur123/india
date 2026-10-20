@@ -167,6 +167,8 @@ const en = {
   'bubble.sensitivePhoto': 'Photo may be sensitive',
   'bubble.sensitiveVideo': 'Video may be sensitive',
   'bubble.typing': '{name} is typing',
+  'bubble.sent': 'Sent',
+  'bubble.read': 'Read',
 
   'report.title': 'Report {name}',
   'report.desc': 'Reports are anonymous. They won’t know it was you.',

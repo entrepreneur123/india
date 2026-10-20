@@ -320,7 +320,11 @@ export class MockBackend implements Backend {
   }
 
   private partnerSays(m: MatchState, text: string | null, media?: Message['media'], delay = jitter(900, 1800)) {
-    this.schedule(m, 350, () => this.emit(m, { type: 'typing', on: true }))
+    this.schedule(m, 350, () => {
+      const mine = m.messages.filter((x) => x.fromMe)
+      if (mine.length) this.emit(m, { type: 'read', upto: mine[mine.length - 1].id })
+      this.emit(m, { type: 'typing', on: true })
+    })
     this.schedule(m, delay, () => {
       const msg: Message = { id: this.msgSeq++, fromMe: false, text, media: media ?? null, at: Date.now() }
       m.messages.push(msg)
@@ -466,6 +470,8 @@ export class MockBackend implements Backend {
   }
 
   sendTyping() {}
+
+  markRead() {}
 
   async send(matchId: string, text: string | null, media: File | null) {
     const m = this.matches.get(matchId)

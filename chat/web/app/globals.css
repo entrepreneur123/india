@@ -13,6 +13,12 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-chat-wall: var(--chat-wall);
+  --color-bubble-out: var(--bubble-out);
+  --color-bubble-in: var(--bubble-in);
+  --color-bubble-text: var(--bubble-text);
+  --color-bubble-meta: var(--bubble-meta);
+  --color-tick-read: var(--tick-read);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-primary: var(--primary);
@@ -78,6 +84,15 @@
   --accent-foreground: #ffffff;
   --destructive: #c5221f;
   --online: #1e8e3e;
+  /* Chats look like the messenger India already uses: warm wallpaper, green sent / white received bubbles. */
+  --chat-wall: #efeae2;
+  --bubble-out: #d9fdd3;
+  --bubble-in: #ffffff;
+  --bubble-text: #111b21;
+  --bubble-meta: #667781;
+  --tick-read: #53bdeb;
+  --name-0: #1f7aec; --name-1: #c2410c; --name-2: #7c3aed; --name-3: #0f766e;
+  --name-4: #be185d; --name-5: #15803d; --name-6: #a16207; --name-7: #4338ca;
   --ink: #111114;
   --ink-foreground: #f6f5f8;
   --overlay: rgb(0 0 0 / 0.45);
@@ -101,6 +116,14 @@
   --accent: #ff6b8b;
   --destructive: #f28b82;
   --online: #34c759;
+  --chat-wall: #0b141a;
+  --bubble-out: #005c4b;
+  --bubble-in: #202c33;
+  --bubble-text: #e9edef;
+  --bubble-meta: rgb(233 237 239 / 0.6);
+  --tick-read: #53bdeb;
+  --name-0: #6bb2ff; --name-1: #ff9b6b; --name-2: #b69cff; --name-3: #4fd1c5;
+  --name-4: #ff7eb6; --name-5: #6fdc8c; --name-6: #f6c453; --name-7: #a5b4fc;
   --overlay: rgb(0 0 0 / 0.65);
   color-scheme: dark;
 }

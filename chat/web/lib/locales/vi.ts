@@ -164,6 +164,8 @@ const vi: Dict = {
   'bubble.sensitivePhoto': 'Ảnh có thể nhạy cảm',
   'bubble.sensitiveVideo': 'Video có thể nhạy cảm',
   'bubble.typing': '{name} đang nhập',
+  'bubble.sent': 'Đã gửi',
+  'bubble.read': 'Đã xem',
 
   'report.title': 'Báo cáo {name}',
   'report.desc': 'Báo cáo là ẩn danh. Họ sẽ không biết là bạn.',

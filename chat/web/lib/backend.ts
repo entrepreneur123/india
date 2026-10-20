@@ -98,6 +98,7 @@ export type MatchEvent =
   | { type: 'typing'; on: boolean }
   | { type: 'video'; status: VideoStatus }
   | { type: 'partner_left' }
+  | { type: 'read'; upto: number } // the partner has read my messages up to this id
 
 export interface Entitlements {
   premium: boolean
@@ -166,6 +167,8 @@ export interface Backend {
   subscribe(matchId: string, on: (e: MatchEvent) => void, opts?: { live?: boolean }): () => void
   history(matchId: string): Promise<Message[]>
   sendTyping(matchId: string): void
+  /** Tells the partner I've read their messages up to this id (the read ticks). Fire and forget. */
+  markRead(matchId: string, upto: number): void
   send(matchId: string, text: string | null, media: File | null): Promise<Message>
   leave(matchId: string): Promise<void> // throws BackendError('exit_locked') inside the lock window
   report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>

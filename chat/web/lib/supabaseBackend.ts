@@ -54,7 +54,7 @@ type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string
 type FriendRow = CardRow & { state: string; match_id: string | null }
 type MatchRow = {
   id: string; user_a: string; user_b: string; ended_at: string | null; ended_by: string | null
-  video_status: string; video_requested_by: string | null
+  video_status: string; video_requested_by: string | null; read_a: number | null; read_b: number | null
 }
 type MessageRow = {
   id: number; match_id: string; sender: string; body: string | null
@@ -150,6 +150,7 @@ export class SupabaseBackend implements Backend {
   private client: SupabaseClient
   /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
   private signedUrls = new Map<string, { url: string; reuseUntil: number }>()
+  private readSent = new Map<string, number>()
   /**
    * One channel per match for typing signals and presence ("my app is in this chat"), shared by every view of it
    * (realtime-js reuses a channel per topic). The Android app uses the same topic and presence key (the user id).
@@ -324,7 +325,7 @@ export class SupabaseBackend implements Backend {
   /** Null when the match is gone (the other person deleted their account). */
   private async matchRow(id: string): Promise<MatchRow | null> {
     const { data, error } = await this.client.from('matches')
-      .select('id, user_a, user_b, ended_at, ended_by, video_status, video_requested_by').eq('id', id).maybeSingle<MatchRow>()
+      .select('id, user_a, user_b, ended_at, ended_by, video_status, video_requested_by, read_a, read_b').eq('id', id).maybeSingle<MatchRow>()
     if (error) fail(error)
     return data
   }
@@ -342,6 +343,7 @@ export class SupabaseBackend implements Backend {
     const me = this.uid
     let closed = false
     let lastVideo: VideoStatus | null = null
+    let partnerRead = 0
     let leftSent = false
     const emit = (e: MatchEvent) => { if (!closed) on(e) }
     const partnerLeft = () => {
@@ -352,6 +354,11 @@ export class SupabaseBackend implements Backend {
     const onMatch = (m: MatchRow | null) => {
       if (m === null || (m.ended_at && m.ended_by !== me)) partnerLeft()
       if (!m) return
+      const read = (m.user_a === me ? m.read_b : m.read_a) ?? 0
+      if (read > partnerRead) {
+        partnerRead = read
+        emit({ type: 'read', upto: read })
+      }
       const v = this.videoOf(m, me)
       if (v !== lastVideo) {
         lastVideo = v
@@ -480,6 +487,14 @@ export class SupabaseBackend implements Backend {
       })
     this.typing.set(matchId, hub)
     return hub
+  }
+
+  markRead(matchId: string, upto: number) {
+    if (upto <= (this.readSent.get(matchId) ?? 0)) return
+    this.readSent.set(matchId, upto)
+    void this.client.rpc('mark_read', { p_match: matchId, p_upto: upto }).then(({ error }) => {
+      if (error && this.readSent.get(matchId) === upto) this.readSent.delete(matchId) // retried on the next call
+    })
   }
 
   sendTyping(matchId: string) {

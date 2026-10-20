@@ -164,6 +164,8 @@ const hi: Dict = {
   'bubble.sensitivePhoto': 'फ़ोटो संवेदनशील हो सकती है',
   'bubble.sensitiveVideo': 'वीडियो संवेदनशील हो सकता है',
   'bubble.typing': '{name} लिख रहे हैं',
+  'bubble.sent': 'भेजा गया',
+  'bubble.read': 'पढ़ लिया',
 
   'report.title': '{name} को रिपोर्ट करें',
   'report.desc': 'रिपोर्ट गुमनाम होती है। उन्हें पता नहीं चलेगा कि आपने की।',
