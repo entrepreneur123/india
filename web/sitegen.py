@@ -23,6 +23,8 @@ import re
 import urllib.parse
 import xml.etree.ElementTree as ET
 
+import guides  # web/guides.py: tax, claim and scam guides
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RES = ROOT / "android/app/src/main/res"
 LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "/hi")}
@@ -369,7 +371,10 @@ class Site:
         live_attr += f' data-wait="{esc(wait)}"' if wait else ""
         self._ads = 0  # the body is built: the next page starts its own ad count
         i18n = dict(self.s[lang], copied=w["copied"])
-        foot = (f'<p class="links"><a href="{self.url("en", "/about/")}">{esc(w["about"])}</a><a href="{self.url("en", "/contact/")}">{esc(w["contact"])}</a>'
+        gl = guides.G[nav_lang]
+        foot = (f'<p class="links">' + "".join(f'<a href="{self.url(nav_lang, p)}">{esc(gl["names"][k])}</a>' for k, p in guides.PATHS.items())
+                + '</p>'
+                f'<p class="links"><a href="{self.url("en", "/about/")}">{esc(w["about"])}</a><a href="{self.url("en", "/contact/")}">{esc(w["contact"])}</a>'
                 f'<a href="{self.url("en", "/disclaimer/")}">{esc(w["disclaimer"])}</a><a href="{self.path_prefix}/privacy.html">{esc(w["privacy"])}</a></p>'
                 f'<p>{esc(s["disclaimer_body"])}</p><p>{esc(s["source_note"])}</p>')
         return f"""<!doctype html>
@@ -646,7 +651,7 @@ class Site:
                     + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
                     + self.day_cards(lang, latest) + self.telegram_cta(lang) + self.ad() + self.checker(lang)
-                    + self.history(lang) + self.app_promo(lang) + self.faq(lang))
+                    + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
                                                  crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home", lastmod=self.stamp)
@@ -692,13 +697,14 @@ class Site:
                             + f'<p class="pn"><a class="btn" href="{self.url(lang, self.day_path(date))}">{esc(w["all_of_day"].format(d=dd))}</a>'
                             + (f'<a class="btn" href="{self.url(lang, HUB[d["slot"]])}">{esc(w["slot_all"].format(w=s[TAG[d["slot"]]], t=t))}</a>'
                                if d["slot"] in HUB else "") + '</p>'
-                            + self.app_promo(lang))
+                            + self.app_promo(lang) + self.guide_links(lang))
                     self.write(out, lang, self.draw_path(d),
                                self.page(lang, self.draw_path(d), title, desc, body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
                                          tab="kerala" if kl else "results", image=image),
                                key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date)
             self.kerala_hub(out, lang)
+            self.guide_pages(out, lang)
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
@@ -757,6 +763,35 @@ class Site:
                                                     crumbs=[(w["home"], "/"), (w["kl_tab"], "/kerala/")], tab="kerala",
                                                     wait=f"{self.today}_KL" if not today_done else "",
                                                     modified=self.updated if today_done else None), key="kerala", lastmod=self.stamp)
+
+    def guide_links(self, lang: str, current: str = "") -> str:
+        gl = guides.G[lang]
+        a = "".join(f'<a class="chip"{" aria-current=\"page\"" if k == current else ""} href="{self.url(lang, p)}"><b>→</b>{esc(gl["names"][k])}</a>'
+                    for k, p in guides.PATHS.items())
+        return f'<h2 class="sub">{esc(gl["nav"])}</h2><nav class="chips wrapchips" aria-label="{esc(gl["nav"])}">{a}</nav>'
+
+    def tax_calc(self, lang: str) -> str:
+        c = guides.G[lang]["tax"]["calc"]
+        return (f'<section class="check" id="tax"><form id="taxForm" class="row" data-l="{esc(json.dumps(c, ensure_ascii=False))}">'
+                f'<input id="taxAmt" aria-label="{esc(c["amount"])}" placeholder="{esc(c["amount"])}" inputmode="numeric" autocomplete="off">'
+                f'<button>{esc(c["go"])}</button></form><div id="taxRes" aria-live="polite"></div>'
+                f'<p class="hint">{esc(c["note"])}</p></section>')
+
+    def guide_pages(self, out: pathlib.Path, lang: str) -> None:
+        """Our own explainers, written from the official texts (sources listed on each page)."""
+        w, gl = WEB[lang], guides.G[lang]
+        for key, path in guides.PATHS.items():
+            g = gl[key]
+            secs = "".join(f'<h2>{esc(h)}</h2>' + "".join(f"<p>{esc(x)}</p>" for x in ps) for h, ps in g["sections"])
+            src = "".join(f'<li><a rel="noopener" href="{esc(u)}">{esc(n)}</a></li>' for n, u in g["src"])
+            body = (f'<div class="intro"><h1>{esc(g["h1"])}</h1><p class="hint">{esc(g["intro"])}</p></div>'
+                    + (self.tax_calc(lang) if key == "tax" else "") + self.ad()
+                    + f'<section class="card prose guide">{secs}</section>'
+                    + f'<section class="card prose"><h2>{esc(gl["sources"])}</h2><ul class="src">{src}</ul><p class="hint">{esc(gl["checked"])}</p></section>'
+                    + self.guide_links(lang, key))
+            self.write(out, lang, path, self.page(lang, path, g["title"], g["desc"], body,
+                                                  crumbs=[(w["home"], "/"), (gl["names"][key], path)]),
+                       key=f"guide:{key}", lastmod="2026-10-20")
 
     def recent_table(self, lang: str, draws: list[dict], heading: str) -> str:
         w, s = WEB[lang], self.s[lang]
@@ -875,7 +910,7 @@ CSS = """:root{--bg:#f7f2f0;--fg:#221a19;--mut:#6b5552;--card:#fff;--line:#eaddd
 .tabs a[aria-current]{color:#fff;border-color:var(--gold)}
 .intro{margin:20px 0 4px}h1{font-size:1.45rem;font-weight:800;letter-spacing:-.01em}h1 .d{white-space:nowrap;color:var(--red)}h1.sm{font-size:1.15rem}
 .hint{color:var(--mut);font-size:.88rem;margin-top:4px}.eyebrow{color:var(--mut);font-size:.85rem;font-weight:600}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.wrapchips{flex-wrap:wrap;overflow:visible;margin:10px 0}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.wrapchips{flex-wrap:wrap;overflow:visible;margin:10px 0}.guide h2{font-size:1.05rem;margin:18px 0 6px}.guide h2:first-child{margin-top:4px}.guide p{margin:0 0 10px}.src{padding-left:18px}.src li{margin:6px 0}.tax{width:100%;border-collapse:collapse;margin:10px 0}.tax td{padding:8px 0;border-bottom:1px solid var(--line)}.tax td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.tax tr.keep td{font-size:1.1rem;color:var(--brand);border-bottom:0}
 .chip{flex:none;min-width:64px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px;color:var(--fg);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.25}
 .chip b{display:block;font-size:.72rem;color:var(--mut);font-weight:600}.chip[aria-current]{background:var(--gold);border-color:var(--gold);color:var(--ongold)}.chip[aria-current] b{color:var(--ongold)}
 .banner{background:var(--pink);color:var(--onpink);border-radius:14px;padding:12px 16px;margin:12px 0;font-weight:600}
@@ -987,6 +1022,19 @@ var e=box(t(hits.length===1&&S.history_count_one?"history_count_one":"history_co
 hits.forEach(function(c){var x=c.w[0];ul.appendChild(el("li",null,c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)+" · "+
 c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)+(x.nf?" *":"")))});e[1].appendChild(ul);out.appendChild(e[0])
 }).catch(function(){out.appendChild(box(t("history_unavailable"),"no")[0])})});
+// Lottery tax: 30% cut above Rs 10,000 (s.393(3)); at filing 30% + surcharge (new regime, marginal relief) + 4% cess.
+var tf=document.getElementById("taxForm");
+function lotteryTax(p){var tds=p>10000?Math.round(p*0.3):0,t=p*0.3,r=0,T=0,rp=0;
+if(p>20000000){r=0.25;T=20000000;rp=0.15}else if(p>10000000){r=0.15;T=10000000;rp=0.10}else if(p>5000000){r=0.10;T=5000000;rp=0}
+var ts=t*(1+r);if(r){var cap=T*0.3*(1+rp)+(p-T);if(ts>cap)ts=cap}var total=Math.round(ts*1.04);
+return{tds:tds,paid:p-tds,more:total-tds,total:total,keep:p-total}}
+window.lotteryTax=lotteryTax;
+if(tf)tf.addEventListener("submit",function(ev){ev.preventDefault();var L=JSON.parse(tf.dataset.l),out=document.getElementById("taxRes");
+var p=parseInt(document.getElementById("taxAmt").value.replace(/[^0-9]/g,""),10);out.textContent="";if(!(p>0))return;
+var x=lotteryTax(p),inr=function(n){return"₹"+n.toLocaleString("en-IN")},tb=el("table","tax");
+[["prize",p],["tds",x.tds],["paid",x.paid],["more",x.more],["total",x.total],["keep",x.keep]].forEach(function(r){var tr=el("tr",r[0]==="keep"?"keep":"");
+tr.appendChild(el("td","",L[r[0]]));tr.appendChild(el("td","",inr(r[1])));tb.appendChild(tr)});out.appendChild(tb);
+if(p<=10000)out.appendChild(el("p","hint",L.small))});
 // Old results: jump to a date we have a page for.
 var df=document.getElementById("dateForm");
 if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;

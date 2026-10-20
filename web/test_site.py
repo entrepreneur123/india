@@ -213,3 +213,41 @@ def test_month_archive_and_date_search_reach_every_date(tmp_path, monkeypatch):
     assert 'href="/old-results/2026-10/"' in old
     assert re.search(r'data-days="[0-9 ]*20261017[0-9 ]*"', old) and 'data-base="/result/"' in old
     assert "https://example.in/old-results/2026-10/" in (out / "sitemap.xml").read_text()
+
+
+def ref_tax(p):
+    """Income-tax Act 2025 s.194/s.393(3) and Finance Bill 2026 (new regime), prize as the only income."""
+    tds = round(p * 0.3) if p > 10000 else 0
+    t = p * 0.3
+    for lim, r, rp in ((20_000_000, 0.25, 0.15), (10_000_000, 0.15, 0.10), (5_000_000, 0.10, 0.0)):
+        if p > lim:
+            t = min(t * (1 + r), lim * 0.3 * (1 + rp) + (p - lim))   # marginal relief
+            break
+    total = round(t * 1.04)
+    return {"tds": tds, "paid": p - tds, "more": total - tds, "total": total, "keep": p - total}
+
+
+def test_guides_are_built_with_sources_and_the_calculator_matches_the_law(tmp_path, monkeypatch):
+    import shutil
+    import subprocess
+    out = build(tmp_path, monkeypatch)
+    for lang in ("", "bn/", "hi/"):
+        for p in ("lottery-tax", "claim-prize", "lottery-scams"):
+            page = (out / f"{lang}{p}/index.html").read_text()
+            assert '<ul class="src"><li><a rel="noopener" href="https://' in page
+    tax = (out / "lottery-tax/index.html").read_text()
+    assert "<title>Lottery Tax in India 2026 – Tax on Lottery Prize Calculator</title>" in tax and 'id="taxForm"' in tax
+    assert 'href="/claim-prize/"' in (out / "index.html").read_text()
+    assert 'href="/hi/lottery-tax/"' in (out / "hi/result/18-10-2026/1pm/index.html").read_text()
+    assert ref_tax(10_000_000) == {"tds": 3_000_000, "paid": 7_000_000, "more": 432_000, "total": 3_432_000, "keep": 6_568_000}
+    node = shutil.which("node")
+    if not node:
+        return
+    amounts = [5000, 10000, 10001, 500000, 5_000_000, 5_000_001, 5_200_000, 10_000_000, 10_100_000, 20_000_000, 20_500_000, 120_000_000]
+    js = ("var window={},navigator={},stub={textContent:'[]',dataset:{},addEventListener:function(){}};"
+          "var document={getElementById:function(){return stub},querySelector:function(){return null},"
+          "querySelectorAll:function(){return[]},body:{dataset:{}}};"
+          + (out / "assets/site.js").read_text()
+          + f";console.log(JSON.stringify({amounts}.map(function(p){{return window.lotteryTax(p)}})))")
+    got = json.loads(subprocess.run([node, "-e", js], capture_output=True, text=True, check=True).stdout)
+    assert got == [ref_tax(p) for p in amounts]
