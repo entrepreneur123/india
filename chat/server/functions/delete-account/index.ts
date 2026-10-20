@@ -1,6 +1,6 @@
 // In-app account deletion (Google Play requirement). Removes the user's media, keeps only a hashed
 // phone number if they are currently banned (so a ban cannot be escaped), then deletes the auth user;
-// the database cascades to profile, posts, matches, messages, reports and blocks.
+// the database cascades to profile, posts, matches, messages and blocks (reports stay, without the person).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { json, preflight } from "../_shared/cors.ts";
 
