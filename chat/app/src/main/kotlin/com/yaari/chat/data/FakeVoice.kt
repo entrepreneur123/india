@@ -71,7 +71,23 @@ class FakeVoice(
         seed("v-cricket", "Cricket talk: IND vs AUS", RoomCategory.SPORTS, SpeakMode.APPROVAL, "Vikram", 7, 58)
         seed("v-english", "Hindi–English practice", RoomCategory.LANGUAGE, SpeakMode.OPEN, "Meera", 4, 21)
         seed("v-lofi", "Lo-fi study together", RoomCategory.STUDY, SpeakMode.OPEN, "Kavya", 3, 17, Music("lTRiuFIWV54", 480_000, emptyList()))
+        // A Ludo game is on here (FakeLudo), to watch.
+        seed(FakeLudo.LUDO_ROOM, "Ludo night: come watch", RoomCategory.GAMING, SpeakMode.OPEN, "Arnab", 4, 12)
     }
+
+    /** Ludo in these rooms: the people present play, and leaving the room is a forfeit. */
+    val ludo = FakeLudo(
+        object : FakeLudo.Rooms {
+            override fun peek(roomId: String): FakeLudo.RoomView? {
+                val r = rooms[roomId]?.takeIf { !it.ended } ?: return null
+                return FakeLudo.RoomView(
+                    r.members.map { FakeLudo.Person(it.profile, it.role == VoiceRole.HOST || it.role == VoiceRole.COHOST, it.seat) },
+                    r.hostId, r.mine,
+                )
+            }
+        },
+        { runCatching { me() }.getOrNull() }, random, clock, wait, ambient,
+    )
 
     private class Music(val playing: String, val ago: Long, val queue: List<String>)
 
@@ -236,6 +252,7 @@ class FakeVoice(
         wait(100)
         if (r.mine) return // my own room stays live until I end it
         r.members.removeAll { it.profile.id == me.id }
+        ludo.left(roomId, me.id)
         changed(r)
     }
 
@@ -633,6 +650,10 @@ class FakeVoice(
             "lTRiuFIWV54" to ("1 A.M Study Session · lofi hip hop" to 0), // an hour long: the demo never moves on
         )
 
+        private val GAMING = listOf(
+            "bas ek six chahiye yaar", "green ko maaro!", "Arnab bhai ka luck dekho", "who is winning?", "next game mujhe bhi lo",
+            "safe square pe hai, bach gaya", "yellow is so close to home", "that capture was brutal",
+        )
         private val LINES = mapOf(
             RoomCategory.MUSIC to listOf(
                 "Arijit ka koi bhi gaana, bas 🔥", "next Kal Ho Naa Ho please 🙏", "volume ekdum perfect hai", "who added this? legend",
@@ -646,6 +667,7 @@ class FakeVoice(
                 "Bumrah ka over lethal tha", "Kohli 100 today, mark my words", "Head ka wicket chahiye jaldi", "DRS was clearly out!",
                 "IND will chase this easily", "what a catch by Jadeja 🔥", "Gill looking in form today",
             ),
+            RoomCategory.GAMING to GAMING,
             RoomCategory.STUDY to listOf(
                 "45 min focus, 10 min break?", "UPSC prep day 112 ✍️", "anyone doing NEET this year?", "this beat is so calm",
                 "back after chai ☕", "Pomodoro #3 done", "library vibes at home",

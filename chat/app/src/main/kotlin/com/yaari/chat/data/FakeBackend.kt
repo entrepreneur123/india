@@ -18,6 +18,7 @@ import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceLine
@@ -502,6 +503,12 @@ open class FakeBackend(
         if (host == me().id) throw BackendException("not_allowed")
         block(host)
     }
+
+    // ---- Ludo in a voice room (FakeLudo) ----
+
+    override suspend fun ludoGame(roomId: String) = voice.ludo.game(roomId)
+    override fun ludoGames(roomId: String) = voice.ludo.follow(roomId)
+    override suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction) = voice.ludo.act(roomId, gameId, action)
 
     companion object {
         const val DEMO_OTP = "123456"

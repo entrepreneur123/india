@@ -137,6 +137,8 @@ class AppViewModel(
     private val today: () -> LocalDate = LocalDate::now,
     /** On screen or not: polling pauses in the background (see [AppForeground]). */
     private val foreground: StateFlow<Boolean> = AppForeground.visible,
+    /** Wall clock, for deadlines set by the server (Ludo turns). */
+    wallClock: () -> Long = System::currentTimeMillis,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -148,7 +150,7 @@ class AppViewModel(
     private var roomJob: Job? = null
 
     /** Voice rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
-    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain)
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, wallClock = wallClock)
 
     init {
         viewModelScope.launch {

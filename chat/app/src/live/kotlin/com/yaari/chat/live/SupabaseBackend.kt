@@ -29,6 +29,11 @@ import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.LudoAction
+import com.yaari.chat.model.LudoEvent
+import com.yaari.chat.model.LudoGame
+import com.yaari.chat.model.LudoOut
+import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
@@ -110,7 +115,10 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -1217,6 +1225,115 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
     }
 
+    // ---- Ludo in a voice room (018_ludo.sql): every change bumps the game's version; the app follows its row ----
+
+    /** ludo_json(): timestamps in server ms, and the server's clock. */
+    @Serializable private data class LudoJson(
+        val id: String, val room: String, val status: String, val players: List<String?>, val names: List<String?>,
+        val out: List<Boolean>, val tokens: List<Int>, val turn: Int? = null, val dice: Int? = null, val roll: Int? = null,
+        val winner: Int? = null, val events: JsonArray = JsonArray(emptyList()), val version: Int,
+        val deadline: Long? = null, val endedAt: Long? = null, val now: Long? = null,
+    )
+    /** A ludo_games row (realtime). */
+    @Serializable private data class LudoRow(
+        val id: String, @SerialName("room_id") val roomId: String, val status: String, val players: List<String?>,
+        val names: List<String?>, val out: List<Boolean>, val tokens: List<Int>, val turn: Int? = null, val dice: Int? = null,
+        val roll: Int? = null, val winner: Int? = null, val events: JsonArray = JsonArray(emptyList()), val version: Int,
+        val deadline: String? = null, @SerialName("ended_at") val endedAt: String? = null,
+    )
+
+    override suspend fun ludoGame(roomId: String): LudoGame? = call {
+        val sent = System.currentTimeMillis()
+        val text = client.postgrest.rpc("ludo_state", buildJsonObject { put("p_room", roomId) }).data.trim()
+        if (text.isEmpty() || text == "null") null else fromLudoJson(json.decodeFromString<LudoJson>(text), sent)
+    }
+
+    override suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction): LudoGame? = call {
+        val sent = System.currentTimeMillis()
+        suspend fun rpc(fn: String, extra: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit = {}) =
+            client.postgrest.rpc(fn, buildJsonObject { put("p_game", gameId); extra() }).data.trim()
+        val text = when (action) {
+            LudoAction.Open -> client.postgrest.rpc("ludo_open", buildJsonObject { put("p_room", roomId) }).data.trim()
+            is LudoAction.Join -> rpc("ludo_join") { put("p_seat", action.seat) }
+            LudoAction.Leave -> rpc("ludo_leave")
+            LudoAction.Start -> rpc("ludo_start")
+            LudoAction.Close -> rpc("ludo_close")
+            is LudoAction.Roll -> rpc("ludo_roll") { put("p_version", action.version) }
+            is LudoAction.Timeout -> rpc("ludo_timeout") { put("p_version", action.version) }
+            is LudoAction.Move -> rpc("ludo_move") { put("p_token", action.token); put("p_version", action.version) }
+        }
+        if (text.isEmpty() || text == "null") null else fromLudoJson(json.decodeFromString<LudoJson>(text), sent)
+    }
+
+    /**
+     * The room's game rows over realtime (a new game is an insert), re-read when the channel (re)connects and every
+     * 10 s while on screen (a missed change shows up within seconds even on a weak network).
+     */
+    override fun ludoGames(roomId: String): Flow<LudoGame> = channelFlow {
+        val channel = client.channel("ludo-$roomId-${UUID.randomUUID()}")
+        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
+            table = "ludo_games"
+            filter("room_id", FilterOperator.EQ, roomId)
+        }
+        val updates = channel.postgresChangeFlow<PostgresAction.Update>("public") {
+            table = "ludo_games"
+            filter("room_id", FilterOperator.EQ, roomId)
+        }
+        try {
+            launch { inserts.collect { a -> runCatching { fromLudoRow(a.decodeRecord<LudoRow>()) }.onSuccess { send(it) } } }
+            launch { updates.collect { a -> runCatching { fromLudoRow(a.decodeRecord<LudoRow>()) }.onSuccess { send(it) } } }
+            val resync = Channel<Unit>(Channel.CONFLATED)
+            launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
+            channel.subscribe()
+            while (true) {
+                withTimeoutOrNull(RESYNC_MS) { resync.receive() }
+                AppForeground.visible.awaitVisible()
+                runCatching { ludoGame(roomId) }.getOrNull()?.let { send(it) }
+            }
+        } finally {
+            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
+        }
+    }
+
+    private fun fromLudoJson(j: LudoJson, sent: Long): LudoGame {
+        j.now?.let { serverClock.note(it, sent, System.currentTimeMillis()) }
+        return LudoGame(
+            j.id, j.room, LudoStatus.of(j.status), j.players, j.names, j.out, j.tokens, j.turn, j.dice, j.roll,
+            deadline = j.deadline?.let(serverClock::toLocal), winner = j.winner, events = ludoEvents(j.events), version = j.version,
+            endedAt = j.endedAt?.let(serverClock::toLocal),
+        )
+    }
+
+    private fun fromLudoRow(r: LudoRow) = LudoGame(
+        r.id, r.roomId, LudoStatus.of(r.status), r.players, r.names, r.out, r.tokens, r.turn, r.dice, r.roll,
+        deadline = r.deadline?.let { serverClock.toLocal(ts(it).toEpochMilli()) }, winner = r.winner, events = ludoEvents(r.events),
+        version = r.version, endedAt = r.endedAt?.let { serverClock.toLocal(ts(it).toEpochMilli()) },
+    )
+
+    /** {k: start | roll | move | pass | triple | timeout | out | win, s, d, t, f, to, cap: [[seat, token, from]], why} */
+    private fun ludoEvents(events: JsonArray): List<LudoEvent> = events.mapNotNull { e ->
+        val o = e as? JsonObject ?: return@mapNotNull null
+        fun int(key: String) = o[key]?.jsonPrimitive?.intOrNull
+        val s = int("s") ?: return@mapNotNull null
+        when (o["k"]?.jsonPrimitive?.contentOrNull) {
+            "start" -> LudoEvent.Start(s)
+            "roll" -> LudoEvent.Roll(s, int("d") ?: return@mapNotNull null)
+            "move" -> LudoEvent.Move(
+                s, int("t") ?: return@mapNotNull null, int("f") ?: return@mapNotNull null, int("to") ?: return@mapNotNull null,
+                (o["cap"] as? JsonArray).orEmpty().mapNotNull { c ->
+                    val v = (c as? JsonArray)?.mapNotNull { it.jsonPrimitive.intOrNull } ?: return@mapNotNull null
+                    if (v.size == 3) Triple(v[0], v[1], v[2]) else null
+                },
+            )
+            "pass" -> LudoEvent.Pass(s)
+            "triple" -> LudoEvent.Triple6(s)
+            "timeout" -> LudoEvent.Timeout(s)
+            "win" -> LudoEvent.Win(s)
+            "out" -> LudoEvent.Out(s, LudoOut.of(o["why"]?.jsonPrimitive?.contentOrNull))
+            else -> null
+        }
+    }
+
     // ---- mapping & media ----
 
     private suspend fun toProfile(c: CardRow, posts: List<Post>) = Profile(
@@ -1289,6 +1406,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",
             "voice_removed", "mic_denied", "queue_full",
+            "stale", "not_your_turn", "seat_taken", "game_full", "need_players",
         )
     }
 }

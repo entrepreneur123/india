@@ -14,6 +14,8 @@ import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.LudoAction
+import com.yaari.chat.model.LudoGame
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
@@ -175,4 +177,16 @@ interface Backend {
     suspend fun voiceAction(roomId: String, action: VoiceAction)
     /** Reported through its host (the report keeps what the host wrote in it). */
     suspend fun reportVoiceRoom(roomId: String, reason: ReportReason)
+
+    // ---- Ludo in a voice room (018_ludo.sql; rules in domain/Ludo.kt) ----
+
+    /** The room's game: the one open, else one that ended in the last 5 minutes (its result), else null. */
+    suspend fun ludoGame(roomId: String): LudoGame?
+    /** Every change to the room's games (a new game too) while collected; re-reads after a dropped connection. */
+    fun ludoGames(roomId: String): Flow<LudoGame>
+    /**
+     * Does [action] in the room's game [gameId] (null to open one) and returns the game as it now is. Refused with
+     * not_allowed, stale (the screen showed an older version), not_your_turn, seat_taken, game_full, need_players.
+     */
+    suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction): LudoGame?
 }

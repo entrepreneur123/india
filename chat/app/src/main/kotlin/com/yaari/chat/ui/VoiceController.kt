@@ -2,6 +2,10 @@ package com.yaari.chat.ui
 
 import com.yaari.chat.R
 import com.yaari.chat.data.Backend
+import com.yaari.chat.data.BackendException
+import com.yaari.chat.model.LudoAction
+import com.yaari.chat.model.LudoGame
+import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.VoiceAction
@@ -51,12 +55,28 @@ data class VoiceState(
     /** The host asked to leave: their room would carry on without them, so leaving ends it (after this confirm). */
     val confirmEnd: Boolean = false,
     val ending: Boolean = false,
+    /** The room's Ludo game (lobby, playing, or a result from the last few minutes), as the server last said. */
+    val ludo: LudoGame? = null,
+    /** The stage is shown instead of the game (anyone can switch back). */
+    val ludoStage: Boolean = false,
+    /** The id of a result I dismissed ("Back to the room"). */
+    val ludoDismissed: String? = null,
+    val confirmLudoClose: Boolean = false,
 ) {
     val me get() = room?.me
     val isHost get() = me?.role == VoiceRole.HOST
     val isMod get() = me?.isMod == true
     /** Raised hands a host or co-host should see. */
     val hands get() = if (isMod) room?.audience?.count { it.hand } ?: 0 else 0
+
+    /** A game is up for this room: open, or a result not dismissed yet. */
+    val ludoOn get() = ludo != null && (ludo.status.open || (ludo.status == LudoStatus.FINISHED && ludoDismissed != ludo.id))
+    /** The game shown in place of the stage, or null. */
+    val ludoShown get() = if (ludoOn && !ludoStage) ludo else null
+    /** A game is on but the stage is shown: a way back to it is offered. */
+    val ludoHidden get() = ludoOn && ludoStage
+    /** My colour (0-3) in the game, or -1 when I watch. */
+    val ludoSeat get() = room?.meId?.let { id -> ludo?.players?.indexOf(id) } ?: -1
 }
 
 /**
@@ -70,6 +90,8 @@ class VoiceController(
     private val notice: (UiText) -> Unit,
     private val explain: (Throwable) -> UiText,
     private val random: Random = Random.Default,
+    /** Wall clock (Ludo deadlines are on it). */
+    private val wallClock: () -> Long = System::currentTimeMillis,
 ) {
     private val _list = MutableStateFlow(VoiceListState())
     val list: StateFlow<VoiceListState> = _list.asStateFlow()
@@ -83,6 +105,9 @@ class VoiceController(
     private var session: Job? = null
     private var listJob: Job? = null
     private var reactionSeq = 0L
+    private var ludoTimeout: Job? = null
+    /** I'm closing the game myself (no "the game was closed" notice then). */
+    private var closingLudo = false
 
     // ---- the list ----
 
@@ -144,6 +169,7 @@ class VoiceController(
                             if (!loadedLines) {
                                 loadedLines = true
                                 launch { loadLines(roomId) }
+                                launch { followLudo(roomId) }
                             }
                         }
                         is VoiceEvent.Levels -> _levels.value = e.levels
@@ -205,6 +231,8 @@ class VoiceController(
         if (_state.value?.roomId != roomId) return
         val job = session
         session = null
+        ludoTimeout?.cancel()
+        ludoTimeout = null
         _state.value = null
         _levels.value = emptyMap()
         if (leave) scope.launch { runCatching { backend.leaveVoice(roomId) } }
@@ -325,7 +353,135 @@ class VoiceController(
         s?.copy(lines = s.lines?.filterNot { it is VoiceLine.Text && it.sender.id == userId })
     }
 
+    // ---- Ludo in the room ----
+
+    /** The room's game, followed while I'm in the room (its rows are readable by people in the room only). */
+    private suspend fun followLudo(roomId: String) {
+        try {
+            setLudo(roomId, backend.ludoGame(roomId))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // The follow below re-reads it.
+        }
+        while (true) {
+            try {
+                backend.ludoGames(roomId).collect { setLudo(roomId, it) }
+                return
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                delay(LUDO_RETRY_MS)
+            }
+        }
+    }
+
+    /** A newer version of the same game, or another game unless that would replace an open one with an old result. */
+    internal fun setLudo(roomId: String, g: LudoGame?) {
+        if (g == null) return
+        val s = _state.value?.takeIf { it.roomId == roomId } ?: return
+        val prev = s.ludo
+        val take = prev == null || (if (g.id == prev.id) g.version > prev.version else g.status.open || !prev.status.open)
+        if (!take) return
+        // A new game comes up for everyone.
+        _state.value = s.copy(ludo = g, ludoStage = if (prev?.id != g.id) false else s.ludoStage)
+        // A game the host closed: the stage is back, with a word for those who didn't close it.
+        if (g.status == LudoStatus.CANCELLED && prev?.id == g.id && prev.status.open && !closingLudo) notice(UiText(R.string.ludo_closed))
+        scheduleLudoTimeout(roomId)
+    }
+
+    /**
+     * The turn's time is up and the player hasn't moved: players and hosts ask the server to play it (it checks the
+     * clock and the version, so the first call wins and the others change nothing). Clocks differ a little, so a
+     * refused call is tried again shortly, a few times.
+     */
+    private fun scheduleLudoTimeout(roomId: String) {
+        ludoTimeout?.cancel()
+        ludoTimeout = null
+        val s = _state.value ?: return
+        val g = s.ludo ?: return
+        val deadline = g.deadline
+        if (g.status != LudoStatus.PLAYING || deadline == null || (s.ludoSeat < 0 && !s.isMod)) return
+        ludoTimeout = scope.launch {
+            repeat(LUDO_TIMEOUT_TRIES) {
+                delay(timeoutDelay(deadline, wallClock(), random.nextLong(LUDO_TIMEOUT_JITTER_MS)))
+                val got = try {
+                    backend.ludoAction(roomId, g.id, LudoAction.Timeout(g.version))
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    null
+                }
+                if (got != null && got.version != g.version) return@launch setLudo(roomId, got)
+            }
+        }
+    }
+
+    /** Does [action] in the room's game; [done] gets whether it worked. A stale screen re-reads the game. */
+    fun ludo(action: LudoAction, done: (Boolean) -> Unit = {}) {
+        val s = _state.value ?: return done(false)
+        val gameId = if (action == LudoAction.Open) null else s.ludo?.id
+        scope.launch {
+            val ok = try {
+                setLudo(s.roomId, backend.ludoAction(s.roomId, gameId, action))
+                true
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                when (val code = (e as? BackendException)?.code) {
+                    "stale" -> runCatching { backend.ludoGame(s.roomId) }.getOrNull()?.let { setLudo(s.roomId, it) }
+                    else -> notice(ludoError(code) ?: explain(e))
+                }
+                false
+            }
+            done(ok)
+        }
+    }
+
+    /** The game button: back to the game, or (hosts and co-hosts) a new one. */
+    fun ludoButton() {
+        val s = _state.value ?: return
+        if (s.ludoOn) return showLudo(true)
+        if (!s.isMod) return
+        ludo(LudoAction.Open) { ok -> if (ok) showLudo(true) }
+    }
+
+    /** The game (true) or the stage (false) in the top half of the room. */
+    fun showLudo(game: Boolean) = _state.update { it?.copy(ludoStage = !game) }
+
+    /** "Back to the room" on a result. */
+    fun dismissLudo() = _state.update { s -> s?.copy(ludoDismissed = s.ludo?.id) }
+
+    fun askCloseLudo(show: Boolean) = _state.update { it?.copy(confirmLudoClose = show) }
+
+    /** Host or co-host, after the confirm: the game ends for everyone and the stage comes back. */
+    fun closeLudo() {
+        closingLudo = true
+        ludo(LudoAction.Close) {
+            closingLudo = false
+            askCloseLudo(false)
+        }
+    }
+
     companion object {
+        const val LUDO_RETRY_MS = 5_000L
+        const val LUDO_TIMEOUT_TRIES = 8
+        /** Spread the timeout calls of everyone in the room a little (the first one wins). */
+        const val LUDO_TIMEOUT_GRACE_MS = 700L
+        const val LUDO_TIMEOUT_JITTER_MS = 1_300L
+
+        /** How long to wait before asking the server to play a turn that ends at [deadline] (wall clock). */
+        fun timeoutDelay(deadline: Long, now: Long, jitter: Long) = maxOf(0L, deadline - now) + LUDO_TIMEOUT_GRACE_MS + jitter
+
+        /** The game's own refusals, in the reader's language; null for the rest. */
+        fun ludoError(code: String?): UiText? = when (code) {
+            "not_your_turn" -> UiText(R.string.ludo_e_not_your_turn)
+            "seat_taken" -> UiText(R.string.ludo_e_seat_taken)
+            "game_full" -> UiText(R.string.ludo_e_game_full)
+            "need_players" -> UiText(R.string.ludo_e_need_players)
+            else -> null
+        }
+
         const val REACTION_MS = 2_600L
         const val MAX_REACTIONS = 12
         /** A long session keeps the latest lines (the server keeps none for long: rooms are not recorded). */

@@ -71,7 +71,7 @@ class VoiceTest {
     @Test fun listShowsLiveRoomsAndCreatingOpensMineAsHost() = runTest(dispatcher) {
         val vm = signedIn()
         val list = vm.voice.list.value.rooms!!
-        assertEquals(listOf("v-bolly", "v-cricket", "v-english", "v-lofi"), list.map { it.id })
+        assertEquals(listOf("v-bolly", "v-cricket", "v-english", "v-lofi", "v-ludo"), list.map { it.id })
         assertEquals("Kesariya – Brahmāstra · Arijit Singh", list.first().nowPlaying)
         assertTrue(list.all { it.speakers.size <= 4 && it.speakers.first().id == it.host.id })
 

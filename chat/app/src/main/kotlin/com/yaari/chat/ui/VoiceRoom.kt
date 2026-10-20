@@ -205,8 +205,23 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
             AudioNotice(s)
             BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
                 val maxTop = maxHeight * 0.68f
+                val game = s.ludoShown
+                // The game takes the top of the room; the chat goes on under it. The board is as big as fits.
+                val boardMax = minOf(maxWidth - 24.dp, maxHeight - MIN_CHAT - LUDO_CHROME).coerceAtLeast(200.dp)
+                val ludoTop = maxHeight - MIN_CHAT
                 Column(Modifier.fillMaxSize()) {
-                    Column(Modifier.fillMaxWidth().heightIn(max = maxTop).verticalScroll(rememberScrollState())) {
+                    if (game != null) {
+                        Column(Modifier.fillMaxWidth().heightIn(max = ludoTop).verticalScroll(rememberScrollState())) {
+                            LudoPanel(
+                                room, game, s.isMod, levels, boardMax,
+                                LudoHandlers(
+                                    act = { a, done -> vm.voice.ludo(a, done) }, showStage = { vm.voice.showLudo(false) },
+                                    askClose = { vm.voice.askCloseLudo(true) }, dismiss = vm.voice::dismissLudo, person = { sheet = VoiceSheet.Person(it) },
+                                ),
+                            )
+                        }
+                    } else Column(Modifier.fillMaxWidth().heightIn(max = maxTop).verticalScroll(rememberScrollState())) {
+                        if (s.ludoHidden) LudoBackPill { vm.voice.showLudo(true) }
                         room.track?.let { t ->
                             Box(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
                                 MusicPanel(t, room.queue, s.isHost, musicOpen, { musicOpen = it }, { sheet = VoiceSheet.Queue }) { a -> vm.voice.act(a) }
@@ -237,6 +252,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
         }
         VoiceSheets(vm, s, room, sheet, actor, onSheet = { sheet = it })
         if (s.confirmEnd) EndDialog(s.ending, onCancel = vm.voice::dismissEnd, onEnd = vm.voice::end)
+        if (s.confirmLudoClose) LudoCloseDialog(onCancel = { vm.voice.askCloseLudo(false) }, onClose = vm.voice::closeLudo)
     }
 }
 
@@ -628,7 +644,7 @@ private fun ControlBar(
         Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             Row(
                 Modifier.height(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .clickable(role = Role.Button, onClick = vm.voice::leave).padding(horizontal = 16.dp),
+                    .clickable(role = Role.Button, onClick = vm.voice::leave).padding(horizontal = 14.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Icon(Icons.AutoMirrored.Rounded.Logout, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error)
@@ -646,16 +662,23 @@ private fun ControlBar(
                         )
                     }
                 }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(BAR_GAP))
             }
             if (s.isHost) {
                 RoundButton(stringResource(R.string.voice_music), onMusic) { TopicIcon(Topic.MUSIC, size = 22.dp) }
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(BAR_GAP))
+            }
+            // Ludo: hosts and co-hosts open a game; anyone goes back to the one on.
+            if (s.isMod || s.ludoOn) {
+                RoundButton(stringResource(if (s.ludoShown != null || s.ludoHidden) R.string.ludo_back_to_game else R.string.ludo_play), vm.voice::ludoButton) {
+                    TopicIcon(Topic.GAMING, size = 22.dp)
+                }
+                Spacer(Modifier.width(BAR_GAP))
             }
             RoundButton(stringResource(R.string.voice_react), onReactions) {
                 Icon(Icons.Outlined.AddReaction, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.onSurface)
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(BAR_GAP))
             if (me.seat != null) {
                 val bg by animateColorAsState(if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink, label = "mic")
                 val interaction = remember { MutableInteractionSource() }
@@ -695,7 +718,7 @@ private fun ControlBar(
 @Composable
 private fun RoundButton(label: String, onClick: () -> Unit, content: @Composable () -> Unit) {
     Box(
-        Modifier.size(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh)
+        Modifier.size(46.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) { content() }
@@ -772,6 +795,15 @@ private fun EndDialog(busy: Boolean, onCancel: () -> Unit, onEnd: () -> Unit) {
         dismissButton = { TextButton(onCancel) { Text(stringResource(R.string.cancel)) } },
     )
 }
+
+/** Between the round buttons of the control bar (a host has five, and the bar must fit a 393 dp phone). */
+private val BAR_GAP = 6.dp
+
+/** The chat keeps at least this much room under the game. */
+private val MIN_CHAT = 96.dp
+
+/** The game's toolbar, the players above and below the board, and the turn line. */
+private val LUDO_CHROME = 190.dp
 
 // ---- the pill: the room minimised over the tabs ----
 
