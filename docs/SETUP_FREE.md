@@ -30,6 +30,14 @@
 | `ADSENSE_SLOT` | Variable | 나중 (AdSense → 광고 → 광고 단위별 → 디스플레이 광고 단위의 숫자 ID). 없으면 자동 광고만 |
 | `PLAY_URL` | Variable | 나중 (Play 출시 후 앱 주소. 넣으면 사이트에 앱 안내가 나타남) |
 
+### 도메인 연결 (유료 1개: AdSense 신청과 검색 순위에 필요)
+AdSense는 직접 소유한 도메인만 받습니다. `github.io`·`pages.dev` 주소로는 신청할 수 없습니다(Blogger 같은 협력 호스트만 예외). 검색 신뢰도도 도메인에 쌓이므로 **빨리 바꿀수록 손해가 적습니다**.
+1. Cloudflare 대시보드 → 도메인 등록(Registrar) → 도메인 구입. `.com` 원가 연 US$10.46(2026-10-20 확인, 갱신도 같은 값). 이름은 짧게, "lottery"·"result"를 넣는 것이 검색에 약간 유리.
+2. Workers & Pages → `lottodost` 프로젝트 → Custom domains → 산 도메인 입력 (DNS는 자동으로 잡힘).
+3. Variable `SITE_URL` = `https://새도메인` (끝에 / 없이). 다음 실행부터 모든 canonical·sitemap·공유 링크가 새 주소로 바뀌고, 옛 github.io 페이지는 새 주소를 대표 주소로 가리킵니다.
+4. Search Console에 새 도메인 추가 → sitemap `https://새도메인/sitemap.xml` 제출.
+5. AdSense 신청 → 사이트에 새 도메인 입력 → Variable `ADSENSE_CLIENT` = `ca-pub-…` (ads.txt는 자동 생성).
+
 ### 앱 광고 (AdMob, Play 출시 전에)
 1. https://admob.google.com 가입 → 앱 추가(Android, 아직 미출시 선택) → **앱 ID**(`ca-app-pub-…~…`)
 2. 광고 단위 2개 만들기: **배너**(적응형) 1개, **전면 광고** 1개 → 각각의 광고 단위 ID(`ca-app-pub-…/…`)

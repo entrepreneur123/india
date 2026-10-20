@@ -30,7 +30,7 @@ def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None,
 def test_draw_page_is_readable_without_javascript(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     page = (out / "result/18-10-2026/1pm/index.html").read_text()
-    assert "<title>Nagaland State Lottery Result 18.10.2026 1 PM – Dear Wish Sunday</title>" in page
+    assert "<title>Dear Lottery Result 18.10.2026 1 PM – Dear Wish Sunday | Nagaland State Lottery</title>" in page
     assert "74D 70698" in page and "15172" in page          # 1st prize and a 2nd-prize number in the HTML itself
     assert '<link rel="canonical" href="https://example.in/result/18-10-2026/1pm/">' in page
     assert 'hreflang="bn" href="https://example.in/bn/result/18-10-2026/1pm/"' in page
