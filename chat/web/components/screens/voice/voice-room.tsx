@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { ChevronDown, ChevronRight, EllipsisVertical, Headphones, Link2, LogOut, Mic, MicOff, SmilePlus } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -11,13 +11,21 @@ import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicChip, TopicIcon, topicColor } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { categoryLabel } from '@/components/screens/rooms/room-text'
+import { Modal } from '@/components/ui/modal'
+import { useBackend } from '@/lib/backend-context'
+import { retryImport } from '@/lib/retry-import'
 import { cn } from '@/lib/utils'
+import { useLudoT } from './ludo/ludo-text'
 import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicPanel, QueueSheet } from './voice-music'
+import type { LudoGame } from '@/lib/backend'
 import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, type SheetState } from './voice-sheets'
 import { Stage } from './voice-stage'
 import { isMod, REACTIONS } from './voice-text'
+
+// The game is its own chunk, fetched when a room has one.
+const LudoPanel = lazy(() => retryImport(() => import('./ludo/ludo-panel')).then((mod) => ({ default: mod.LudoPanel })))
 
 function useWide() {
   const [wide, setWide] = useState(false)
@@ -43,6 +51,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const [sheet, setSheet] = useState<SheetState>(null)
   const [musicOpen, setMusicOpen] = useState(true)
   const { room, me } = s
+  const ludo = useLudo(s)
 
   if (!room || !me)
     return (
@@ -107,7 +116,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
     />
   ) : null
 
-  const top = (
+  const stage = (
     <>
       {music && !wide ? <div className="pt-1 pb-2">{music}</div> : null}
       <Stage
@@ -137,6 +146,34 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         ) : null}
         <ChevronRight className="size-4.5 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
       </button>
+    </>
+  )
+
+  // A game in the room takes the stage's place (the people on the stage stay in a strip above the board).
+  const game = ludo.shown ? (
+    <Suspense fallback={<div className="mx-auto my-2 aspect-square w-[min(100%-1.5rem,560px)] animate-pulse rounded-[18px] bg-muted" aria-busy />}>
+      <LudoPanel
+        s={s}
+        game={ludo.shown}
+        wide={wide}
+        onGame={s.setLudo}
+        onStage={() => ludo.setView('stage')}
+        onDismiss={() => ludo.dismiss(ludo.shown!.id)}
+        onClose={() => ludo.setConfirmClose(true)}
+        onPerson={person}
+      />
+    </Suspense>
+  ) : null
+  const top = game ?? (
+    <>
+      {ludo.hidden ? (
+        <div className="flex justify-center px-4 pb-1">
+          <Button size="sm" variant="secondary" onClick={() => ludo.setView('game')}>
+            <TopicIcon topic="gaming" size={18} /> {ludo.lt('inProgress')} · {ludo.lt('backToGame')}
+          </Button>
+        </div>
+      ) : null}
+      {stage}
     </>
   )
 
@@ -177,7 +214,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           </div>
         ) : (
           <>
-            <div className="max-h-[60%] shrink-0 overflow-y-auto no-scrollbar">{top}</div>
+            <div className={cn('shrink-0 overflow-y-auto no-scrollbar', game ? 'max-h-[80%]' : 'max-h-[60%]')}>{top}</div>
             <VoiceChat lines={s.lines} onPerson={person} className="flex-1 border-t border-border pt-1" />
           </>
         )}
@@ -189,6 +226,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           onRequests={() => setSheet({ kind: 'requests' })}
           onMusic={() => setSheet({ kind: 'queue' })}
           onLeave={onLeave}
+          onGame={ludo.button}
+          gameLabel={ludo.lt(ludo.shown || ludo.hidden ? 'backToGame' : 'play')}
         />
       </div>
 
@@ -234,8 +273,78 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         }}
       />
       <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
+      <Modal open={ludo.confirmClose} onClose={() => ludo.setConfirmClose(false)} title={ludo.lt('closeTitle')} description={ludo.lt('closeBody')}>
+        <div className="flex gap-3 p-6 pt-5">
+          <Button variant="outline" className="flex-1" onClick={() => ludo.setConfirmClose(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button variant="danger" className="flex-1" onClick={() => void ludo.close()}>
+            {ludo.lt('closeConfirm')}
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
+}
+
+/**
+ * The room's Ludo game as this screen shows it: up for everyone when one opens; anyone can switch back to the
+ * stage, and a result stays until it is dismissed. Hosts and co-hosts open and close games.
+ */
+function useLudo(s: VoiceSession) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { lt } = useLudoT()
+  const [view, setView] = useState<'game' | 'stage'>('game')
+  const [dismissed, setDismissed] = useState<string | null>(null)
+  const [confirmClose, setConfirmClose] = useState(false)
+  const closing = useRef(false)
+  const g = s.ludo
+  const open = !!g && (g.status === 'lobby' || g.status === 'playing')
+  const on = open || (!!g && g.status === 'finished' && dismissed !== g.id)
+  const mod = isMod(s.me)
+
+  // A new game comes up for everyone.
+  const id = g?.id
+  useEffect(() => {
+    if (id) setView('game')
+  }, [id])
+  // A game the host closed: the stage is back, with a word for those who didn't close it.
+  const prev = useRef(g?.status)
+  useEffect(() => {
+    if (g?.status === 'cancelled' && (prev.current === 'lobby' || prev.current === 'playing') && !closing.current) toast.show(lt('closed'), 'info')
+    prev.current = g?.status
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [g?.status])
+
+  const act = async (fn: () => Promise<LudoGame | null>) => {
+    try {
+      s.setLudo(await fn())
+      return true
+    } catch (err) {
+      toast.error(err)
+      return false
+    }
+  }
+  const room = s.room
+  return {
+    lt,
+    shown: on && view === 'game' ? g : null,
+    hidden: on && view === 'stage',
+    setView,
+    dismiss: setDismissed,
+    confirmClose,
+    setConfirmClose,
+    close: async () => {
+      if (!g || !room) return
+      closing.current = true
+      await act(() => backend.ludoAction(room.id, g.id, { type: 'close' }))
+      closing.current = false
+      setConfirmClose(false)
+    },
+    /** The game button: back to the game, or (hosts) a new one. */
+    button: on ? () => setView('game') : mod && room ? () => void act(() => backend.ludoAction(room.id, null, { type: 'open' })).then(() => setView('game')) : null,
+  }
 }
 
 /** Only when the audio needs something: a tap (autoplay rules), or it is reconnecting / can't connect. */
@@ -266,6 +375,8 @@ function ControlBar({
   onRequests,
   onMusic,
   onLeave,
+  onGame,
+  gameLabel,
 }: {
   s: VoiceSession
   wide: boolean
@@ -273,6 +384,9 @@ function ControlBar({
   onRequests: () => void
   onMusic: () => void
   onLeave: () => void
+  /** Ludo: open a game (hosts) or go back to the one on. Null: nothing to show. */
+  onGame: (() => void) | null
+  gameLabel: string
 }) {
   const { t, num } = useI18n()
   const toast = useToast()
@@ -306,6 +420,11 @@ function ControlBar({
         {me.role === 'host' ? (
           <Button size="icon" variant="secondary" onClick={onMusic} aria-label={t('voice.music')}>
             <TopicIcon topic="music" size={22} />
+          </Button>
+        ) : null}
+        {onGame ? (
+          <Button size="icon" variant="secondary" onClick={onGame} aria-label={gameLabel} title={gameLabel}>
+            <TopicIcon topic="gaming" size={22} />
           </Button>
         ) : null}
         <ReactionTray onReact={(kind) => void s.act({ type: 'react', kind })} />

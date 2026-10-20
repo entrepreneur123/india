@@ -25,6 +25,10 @@ import {
   type Target,
   type VideoStatus,
   VOICE_SEATS,
+  type LudoAction,
+  type LudoEvent,
+  type LudoGame,
+  type LudoStatus,
   type VoiceAction,
   type VoiceAudioState,
   type VoiceEvent,
@@ -56,6 +60,7 @@ const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
+  'not_your_turn', 'seat_taken', 'game_full', 'need_players', 'stale',
 ]
 
 type CardRow = {
@@ -103,6 +108,14 @@ type VoiceLive = {
   startAudio: () => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
 }
+/** ludo_json() (functions): timestamps in server ms. */
+type LudoJson = {
+  id: string; room: string; status: string; players: (string | null)[]; names: (string | null)[]; out: boolean[]
+  tokens: number[]; turn: number | null; dice: number | null; roll: number | null; winner: number | null
+  events: LudoEvent[]; version: number; deadline: number | null; endedAt: number | null; now: number
+}
+/** A ludo_games row (realtime). */
+type LudoRow = Omit<LudoJson, 'room' | 'deadline' | 'endedAt' | 'now'> & { room_id: string; deadline: string | null; ended_at: string | null }
 type RoomMessageRow = {
   id: number; room_id: string; sender: string; sender_name: string; sender_gender: string; sender_age: number
   sender_photo: string | null; sender_country: string | null; body: string; created_at: string
@@ -1215,6 +1228,85 @@ export class SupabaseBackend implements Backend {
       stopAudio()
       if (this.voice.get(roomId) === live) this.voice.delete(roomId)
       void this.client.removeChannel(channel)
+    }
+  }
+
+  // ---- Ludo in a voice room (018_ludo.sql): every change bumps the game's version; clients follow its row ----
+
+  async ludoGame(roomId: string): Promise<LudoGame | null> {
+    const sent = Date.now()
+    const j = await this.rpc<LudoJson | null>('ludo_state', { p_room: roomId })
+    return j ? this.fromLudoJson(j, sent) : null
+  }
+
+  async ludoAction(roomId: string, gameId: string | null, a: LudoAction): Promise<LudoGame | null> {
+    const game = { p_game: gameId }
+    const sent = Date.now()
+    let j: LudoJson
+    switch (a.type) {
+      case 'open':
+        j = await this.rpc('ludo_open', { p_room: roomId })
+        break
+      case 'join':
+        j = await this.rpc('ludo_join', { ...game, p_seat: a.seat ?? null })
+        break
+      case 'leave':
+      case 'start':
+      case 'close':
+        j = await this.rpc(`ludo_${a.type}`, game)
+        break
+      case 'roll':
+      case 'timeout':
+        j = await this.rpc(`ludo_${a.type}`, { ...game, p_version: a.version })
+        break
+      case 'move':
+        j = await this.rpc('ludo_move', { ...game, p_token: a.token, p_version: a.version })
+        break
+    }
+    return this.fromLudoJson(j, sent)
+  }
+
+  /** The game row over realtime (a new game is an insert), re-read when the channel (re)connects or the tab is shown. */
+  subscribeLudo(roomId: string, on: (game: LudoGame) => void): () => void {
+    let closed = false
+    const resync = () => {
+      if (closed || pageHidden()) return
+      this.ludoGame(roomId).then((g) => !closed && g && on(g), () => undefined)
+    }
+    const row = (p: { new: unknown }) => {
+      if (!closed) on(this.fromLudoRow(p.new as LudoRow))
+    }
+    const channel = this.client.channel(`ludo-${roomId}-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ludo_games', filter: `room_id=eq.${roomId}` }, row)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ludo_games', filter: `room_id=eq.${roomId}` }, row)
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') resync()
+      })
+    const stopWatching = onPageVisibility((visible) => visible && resync())
+    return () => {
+      closed = true
+      stopWatching()
+      void this.client.removeChannel(channel)
+    }
+  }
+
+  private fromLudoJson(j: LudoJson, sent: number): LudoGame {
+    this.noteClock(j.now, sent)
+    return this.toLudo({ ...j, roomId: j.room })
+  }
+
+  private fromLudoRow(r: LudoRow): LudoGame {
+    const ms = (ts: string | null) => (ts ? time(ts) : null) // the server's clock, as ludo_json() sends it
+    return this.toLudo({ ...r, roomId: r.room_id, deadline: ms(r.deadline), endedAt: ms(r.ended_at) })
+  }
+
+  /** Server times → this device's clock. */
+  private toLudo(g: Omit<LudoJson, 'room' | 'now'> & { roomId: string }): LudoGame {
+    const local = (ms: number | null) => (ms === null ? null : ms - this.clockOffset)
+    return {
+      id: g.id, roomId: g.roomId, status: g.status as LudoStatus, players: g.players, names: g.names, out: g.out,
+      tokens: g.tokens, turn: g.turn, dice: g.dice, roll: g.roll, winner: g.winner, events: g.events ?? [],
+      version: g.version, deadline: local(g.deadline), endedAt: local(g.endedAt),
     }
   }
 

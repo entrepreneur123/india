@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import type { VoiceAction, VoiceAudioState, VoiceLine, VoiceMember, VoiceReaction, VoiceRoom } from '@/lib/backend'
+import type { LudoGame, VoiceAction, VoiceAudioState, VoiceLine, VoiceMember, VoiceReaction, VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -64,6 +64,10 @@ export interface VoiceSession {
   send: (text: string) => Promise<boolean>
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
+  /** The room's Ludo game (lobby, playing, or a result from the last few minutes). */
+  ludo: LudoGame | null
+  /** Takes a newer state of the game (an action's reply); older versions are ignored. */
+  setLudo: (g: LudoGame | null) => void
 }
 
 const REACTION_MS = 2600
@@ -76,6 +80,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [lines, setLines] = useState<VoiceLine[] | null>(null)
   const [reactions, setReactions] = useState<Reaction[]>([])
   const [audio, setAudio] = useState<VoiceAudioState | null>(null)
+  const [ludo, setLudoState] = useState<LudoGame | null>(null)
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
@@ -156,6 +161,26 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
 
   const me = room ? memberOf(room, room.meId) : null
 
+  // A newer version of the same game, or another game unless that would replace an open one with an old result.
+  const setLudo = useCallback((g: LudoGame | null) => {
+    if (!g) return
+    const open = (x: LudoGame) => x.status === 'lobby' || x.status === 'playing'
+    setLudoState((prev) => (!prev || (g.id === prev.id ? g.version > prev.version : open(g) || !open(prev)) ? g : prev))
+  }, [])
+
+  // The game follows the room once I'm in it (its rows are readable by people in the room only).
+  const inRoom = !!room
+  useEffect(() => {
+    if (!inRoom) return
+    let alive = true
+    const stop = backend.subscribeLudo(roomId, (g) => alive && setLudo(g))
+    backend.ludoGame(roomId).then((g) => alive && setLudo(g), () => undefined)
+    return () => {
+      alive = false
+      stop()
+    }
+  }, [backend, roomId, inRoom, setLudo])
+
   // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.
   const seat = me?.seat ?? null
   const prevSeat = useRef<number | null>(null)
@@ -204,7 +229,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => document.removeEventListener('pointerdown', startAudio)
   }, [needsTap, startAudio])
 
-  return { room, me, lines, levels, reactions, audio, act, send, startAudio }
+  return { room, me, lines, levels, reactions, audio, act, send, startAudio, ludo, setLudo }
 }
 
 /**

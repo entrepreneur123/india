@@ -219,6 +219,60 @@ export type VoiceAction =
   /** `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
   | { type: 'skip'; trackId?: string }
 
+// ---- Ludo in a voice room (018_ludo.sql; rules in lib/ludo.ts) ----
+
+/** Seats 0-3 are red, green, yellow and blue, played in that order. */
+export type LudoStatus = 'lobby' | 'playing' | 'finished' | 'cancelled'
+
+/**
+ * What the last action did, in order (a roll, the move it made, a capture...): the apps animate and announce it.
+ * Token positions: -1 base, 0-50 track (from the colour's start square), 51-55 home column, 56 home.
+ */
+export type LudoEvent =
+  | { k: 'start'; s: number }
+  | { k: 'roll'; s: number; d: number }
+  /** `cap`: tokens sent home, as [seat, token, position]. */
+  | { k: 'move'; s: number; t: number; f: number; to: number; cap: [number, number, number][] }
+  | { k: 'pass' | 'triple' | 'timeout' | 'win'; s: number }
+  | { k: 'out'; s: number; why: 'left' | 'timeouts' | 'quit' }
+
+export interface LudoGame {
+  id: string
+  roomId: string
+  status: LudoStatus
+  /** User id per colour (null = free) and the name they sat down with. */
+  players: (string | null)[]
+  names: (string | null)[]
+  out: boolean[]
+  /** 16 positions: tokens[seat * 4 + k]. */
+  tokens: number[]
+  turn: number | null
+  /** A roll waiting for a move (null: the player rolls next). */
+  dice: number | null
+  /** The last value shown on the die. */
+  roll: number | null
+  /** The turn ends then (this device's clock); anyone in the room may then play it for the absent player. */
+  deadline: number | null
+  winner: number | null
+  events: LudoEvent[]
+  /** Bumped by every change; actions carry the one the screen showed. */
+  version: number
+  endedAt: number | null
+}
+
+export type LudoAction =
+  // host and co-hosts
+  | { type: 'open' }
+  | { type: 'start' }
+  | { type: 'close' }
+  // anyone in the room
+  | { type: 'join'; seat?: number }
+  | { type: 'leave' }
+  | { type: 'roll'; version: number }
+  | { type: 'move'; token: number; version: number }
+  /** The turn's time is up: the server plays it (or does nothing when it was already played). */
+  | { type: 'timeout'; version: number }
+
 export interface Match {
   id: string
   partner: Profile
@@ -270,6 +324,11 @@ export type BackendErrorCode =
   | 'voice_removed'
   | 'mic_denied'
   | 'queue_full'
+  | 'not_your_turn'
+  | 'seat_taken'
+  | 'game_full'
+  | 'need_players'
+  | 'stale'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -353,4 +412,10 @@ export interface Backend {
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
   voiceStartAudio(roomId: string): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
+  /** The room's game: open, or one that ended in the last few minutes (its result); null when there is none. */
+  ludoGame(roomId: string): Promise<LudoGame | null>
+  /** Every change to the room's game (a new game, each roll and move), while I'm in the room. */
+  subscribeLudo(roomId: string, on: (game: LudoGame) => void): () => void
+  /** Returns the game as it is after the action. Refusals: not_your_turn, seat_taken, game_full, need_players, stale. */
+  ludoAction(roomId: string, gameId: string | null, action: LudoAction): Promise<LudoGame | null>
 }

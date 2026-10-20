@@ -89,6 +89,10 @@ const LINES: Partial<Record<RoomCategory, string[]>> & { any: string[] } = {
     '45 min focus, 10 min break?', 'UPSC prep day 112 ✍️', 'anyone doing NEET this year?', 'this beat is so calm',
     'back after chai ☕', 'Pomodoro #3 done', 'library vibes at home',
   ],
+  gaming: [
+    'bas ek six chahiye yaar', 'green ko maaro!', 'Arnab bhai ka luck dekho', 'who is winning?', 'next game mujhe bhi lo',
+    'safe square pe hai, bach gaya', 'yellow is so close to home', 'that capture was brutal',
+  ],
   any: ['hello everyone 👋', 'nice room yaar', 'hi from {city}!', 'first time in a voice room 😄', 'mic quality is great'],
 }
 
@@ -119,6 +123,14 @@ export class VoiceSim {
     this.seed('v-cricket', 'Cricket talk: IND vs AUS', 'sports', 'approval', 'Vikram', 7, 58)
     this.seed('v-english', 'Hindi–English practice', 'language', 'open', 'Meera', 4, 21)
     this.seed('v-lofi', 'Lo-fi study together', 'study', 'open', 'Kavya', 3, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [] })
+    // A Ludo game is on here (mockLudo.ts), to watch.
+    this.seed('v-ludo', 'Ludo night: come watch', 'gaming', 'open', 'Arnab', 4, 12)
+  }
+
+  /** Who is in a live room, for the demo Ludo game. */
+  peek(roomId: string): { members: VoiceMember[]; hostId: string; mine: boolean } | null {
+    const r = this.rooms.get(roomId)
+    return r && !r.ended ? { members: r.room.members, hostId: r.room.hostId, mine: r.mine } : null
   }
 
   /** Profiles of demo people, for the profile sheet. */

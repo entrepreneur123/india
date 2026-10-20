@@ -17,10 +17,13 @@ import {
   type RoomMessage,
   type Target,
   type VideoStatus,
+  type LudoAction,
+  type LudoGame,
   type NewVoiceRoom,
   type VoiceAction,
   type VoiceEvent,
 } from './backend'
+import type { LudoSim } from './mockLudo'
 import type { VoiceSim } from './mockVoice'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
@@ -227,6 +230,7 @@ export class MockBackend implements Backend {
   /** Voice rooms are simulated in their own chunk, fetched the first time they are used. */
   private voice_: Promise<VoiceSim> | null = null
   private voiceSim: VoiceSim | null = null
+  private ludo_: Promise<LudoSim> | null = null
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -844,4 +848,31 @@ export class MockBackend implements Backend {
 
   /** The demo has no real audio, so nothing is ever blocked. */
   async voiceStartAudio(_roomId: string) {}
+
+  // ---- Ludo (its own chunk too) ----
+
+  private ludo() {
+    this.ludo_ ??= Promise.all([this.voice(), import('./mockLudo')]).then(([v, m]) => new m.LudoSim(v, () => this.me))
+    return this.ludo_
+  }
+
+  async ludoGame(roomId: string) {
+    return (await this.ludo()).game(roomId)
+  }
+
+  subscribeLudo(roomId: string, on: (game: LudoGame) => void) {
+    let stop: (() => void) | null = null
+    let closed = false
+    void this.ludo().then((sim) => {
+      if (!closed) stop = sim.subscribe(roomId, on)
+    })
+    return () => {
+      closed = true
+      stop?.()
+    }
+  }
+
+  async ludoAction(roomId: string, gameId: string | null, action: LudoAction) {
+    return (await this.ludo()).act(roomId, gameId, action)
+  }
 }
