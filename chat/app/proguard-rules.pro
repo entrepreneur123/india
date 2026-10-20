@@ -11,3 +11,7 @@
 # images (signed Supabase URLs) keep loading after R8.
 -keep class * implements coil3.util.FetcherServiceLoaderTarget { <init>(); *; }
 -keepnames class coil3.util.FetcherServiceLoaderTarget
+
+# TensorFlow Lite (LiteRT, live flavor: the nudity check in video calls). Its JNI library looks up the Java
+# interpreter classes and their members by name; the library's own rules cover only @UsedByReflection. Small (~50 KB).
+-keep class org.tensorflow.lite.** { *; }

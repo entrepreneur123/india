@@ -242,6 +242,8 @@ open class FakeBackend(
 
     override suspend fun videoToken(matchId: String): VideoToken? = null
 
+    override suspend fun flagNudity(matchId: String) = Unit
+
     override suspend fun recents(): List<RecentMatch> =
         matches.entries.reversed().filter { !it.value.dm }.distinctBy { it.value.partner.id }
             .filter { it.value.partner.id !in blocked }

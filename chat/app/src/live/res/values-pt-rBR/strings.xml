@@ -4,4 +4,7 @@
     <string name="waiting_video">Aguardando o vídeo de %1$s…</string>
     <string name="reconnecting">Reconectando…</string>
     <string name="call_failed">Não deu para conectar a chamada. Toque em Encerrar e tente de novo.</string>
+    <string name="video_checking">Verificação de segurança…</string>
+    <string name="video_hidden_title">Vídeo oculto</string>
+    <string name="video_hidden_body">Pode conter nudez, o que não é permitido. Avisamos nossa equipe de segurança.</string>
 </resources>

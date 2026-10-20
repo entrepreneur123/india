@@ -105,6 +105,11 @@ interface Backend {
     suspend fun endVideo(matchId: String)
     /** Null when the build has no real video (demo). */
     suspend fun videoToken(matchId: String): VideoToken?
+    /**
+     * The on-device check hid the partner's video in this call ([watchNudity]): tells the safety team. Once per call,
+     * best effort (never throws, never blocks the call).
+     */
+    suspend fun flagNudity(matchId: String)
 
     suspend fun recents(): List<RecentMatch>
     /** Someone's profile with posts; null if not visible (never matched, or blocked). */

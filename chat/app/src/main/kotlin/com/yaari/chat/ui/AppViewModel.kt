@@ -682,6 +682,20 @@ class AppViewModel(
         }
     }
 
+    /** The nudity check hid the partner's video (the call screen asks once per call). Best effort, no notice. */
+    fun flagNudity() {
+        val c = _state.value.chat ?: return
+        viewModelScope.launch {
+            try {
+                backend.flagNudity(c.match.id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Unit
+            }
+        }
+    }
+
     // ---- Profiles, Recent, DMs --------------------------------------------------------------
 
     fun openProfile(p: Profile) {

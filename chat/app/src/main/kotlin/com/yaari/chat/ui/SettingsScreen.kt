@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.yaari.chat.Flavor
 import com.yaari.chat.R
 import com.yaari.chat.domain.ExitPolicy
 
@@ -169,6 +170,11 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Text("Plus Jakarta Sans", style = MaterialTheme.typography.titleSmall)
                     Text(text, style = MaterialTheme.typography.bodySmall)
+                    for ((title, id) in Flavor.licenses) {
+                        val more = remember(id) { context.resources.openRawResource(id).bufferedReader().use { it.readText() } }
+                        Text(title, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 16.dp))
+                        Text(more, style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             },
             confirmButton = { TextButton({ licenses = false }) { Text(stringResource(R.string.close)) } },

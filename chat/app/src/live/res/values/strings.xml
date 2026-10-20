@@ -4,4 +4,7 @@
     <string name="waiting_video">Waiting for %1$s\'s video…</string>
     <string name="reconnecting">Reconnecting…</string>
     <string name="call_failed">Couldn\'t connect the call. Tap End and try again.</string>
+    <string name="video_checking">Safety check…</string>
+    <string name="video_hidden_title">Video hidden</string>
+    <string name="video_hidden_body">It may show nudity, which isn’t allowed. We’ve let our safety team know.</string>
 </resources>

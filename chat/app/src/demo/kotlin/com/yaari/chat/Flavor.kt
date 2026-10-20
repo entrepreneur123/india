@@ -29,8 +29,12 @@ object Flavor {
     fun backend(app: Application): Backend = FakeBackend()
     fun billing(app: Application): Billing = DemoBilling()
 
+    /** Third-party licenses beyond the font (title to raw text resource): none in the demo. */
+    val licenses: List<Pair<String, Int>> = emptyList()
+
+    /** The preview has no partner video, so no nudity check either ([onNudity] is never called). */
     @Composable
-    fun VideoStage(token: VideoToken?, mic: Boolean, cam: Boolean, partner: Profile, me: Profile, modifier: Modifier) {
+    fun VideoStage(token: VideoToken?, mic: Boolean, cam: Boolean, partner: Profile, me: Profile, onNudity: () -> Unit, modifier: Modifier) {
         Box(modifier) {
             Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                 Avatar(partner, 160.dp)

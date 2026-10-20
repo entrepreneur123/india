@@ -63,7 +63,7 @@ fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) = NightThem
     LaunchedEffect(Unit) { while (true) { delay(1000); seconds++ } }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        Flavor.VideoStage(token, mic, cam, partner, me, Modifier.fillMaxSize())
+        Flavor.VideoStage(token, mic, cam, partner, me, vm::flagNudity, Modifier.fillMaxSize())
         Box(Modifier.fillMaxWidth().height(190.dp).background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.55f), Color.Transparent))))
         Box(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(260.dp)

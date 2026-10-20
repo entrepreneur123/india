@@ -546,6 +546,17 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         VideoToken(t.url, t.token)
     }
 
+    /** Server RPC flag_nudity (migration 016). Errors are ignored: the call goes on either way. */
+    override suspend fun flagNudity(matchId: String) {
+        try {
+            client.postgrest.rpc("flag_nudity", buildJsonObject { put("p_match", matchId) })
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Unit
+        }
+    }
+
     // ---- profiles ----
 
     override suspend fun recents(): List<RecentMatch> = call {

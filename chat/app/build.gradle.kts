@@ -16,8 +16,8 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.4.1"
+        versionCode = 6
+        versionName = "0.4.2"
     }
 
     // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
@@ -142,6 +142,9 @@ dependencies {
     "liveImplementation"(libs.kotlinx.serialization.json)
     "liveImplementation"(libs.livekit.android)
     "liveImplementation"(libs.billing.ktx)
+    // On-device nudity check of the partner's video (live/assets/nsfw_mobilenet_v2.tflite, data/Nudity.kt). LiteRT 1.x
+    // is the classic TensorFlow Lite interpreter, CPU (XNNPACK) only; 2.x adds a GPU accelerator and Guava.
+    "liveImplementation"("com.google.ai.edge.litert:litert:1.4.2")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

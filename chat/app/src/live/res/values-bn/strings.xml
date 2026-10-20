@@ -4,4 +4,7 @@
     <string name="waiting_video">%1$s-এর ভিডিওর অপেক্ষায়…</string>
     <string name="reconnecting">আবার সংযোগ হচ্ছে…</string>
     <string name="call_failed">কল সংযোগ করা গেল না। কল কাটুন চেপে আবার চেষ্টা করুন।</string>
+    <string name="video_checking">নিরাপত্তা যাচাই…</string>
+    <string name="video_hidden_title">ভিডিও লুকানো হয়েছে</string>
+    <string name="video_hidden_body">এতে নগ্নতা থাকতে পারে, যা অনুমোদিত নয়। আমরা আমাদের নিরাপত্তা টিমকে জানিয়েছি।</string>
 </resources>
