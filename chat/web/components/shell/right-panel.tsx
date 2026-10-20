@@ -9,7 +9,8 @@ import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { flagEmoji } from '@/lib/format'
-import { roomTitle } from '@/components/screens/rooms/room-text'
+import { roomTitle, roomTopic } from '@/components/screens/rooms/room-text'
+import { TopicTile } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 
 export function RightPanel({ className, onOpenRoom }: { className?: string; onOpenRoom: (id: string) => void }) {
@@ -102,9 +103,7 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
                       onClick={() => onOpenRoom(r.id)}
                       className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-muted"
                     >
-                      <span className="grid size-10 place-items-center rounded-xl bg-muted text-xl" aria-hidden>
-                        {r.emoji}
-                      </span>
+                      <TopicTile topic={roomTopic(r)} size={40} />
                       <span className="min-w-0 flex-1 truncate text-sm font-semibold">{roomTitle(r, t)}</span>
                       <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                         <PresenceDot />

@@ -25,6 +25,10 @@ export interface AppState {
   openProfile: (userId: string, opts?: { matchId?: string | null }) => void
   openPaywall: () => void
   openThread: (partner: Profile, matchId?: string) => void
+  /** Enters a voice room full screen (leaving the one I'm in, if another). */
+  openVoice: (roomId: string) => void
+  /** The voice room I'm in, open or minimised. */
+  voiceRoomId: string | null
   setImmersive: (on: boolean) => void
   /** The random screen is on screen (its tab is selected and no thread covers it). */
   randomVisible: boolean

@@ -48,6 +48,13 @@
   --shadow-e3: 0 4px 8px 3px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.12);
 
   --animate-ping-soft: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-eq: eq 0.9s ease-in-out infinite;
+
+  /* "Live" equaliser bars on voice rooms. */
+  @keyframes eq {
+    0%, 100% { transform: scaleY(0.35); }
+    50% { transform: scaleY(1); }
+  }
 
   @keyframes ping-soft {
     0% { transform: scale(1); opacity: 0.5; }
@@ -97,6 +104,10 @@
   --ink-foreground: #f6f5f8;
   --overlay: rgb(0 0 0 / 0.45);
   --brand-gradient: linear-gradient(135deg, #ff3d68 0%, #ff7a45 100%);
+  /* Room topics: the colour of each topic glyph (components/ui/topic-icons.tsx). */
+  --topic-chat: #4c7cf0; --topic-globe: #4c7cf0; --topic-friends: #f2994a; --topic-language: #22a06b;
+  --topic-music: #e2558a; --topic-movies: #7b61ff; --topic-gaming: #0fa3b1; --topic-sports: #f5a623;
+  --topic-study: #8e5cf7; --topic-travel: #0ea5e9; --topic-night: #5b6cff; --topic-memes: #f7b500;
   color-scheme: light;
 }
 
@@ -125,6 +136,9 @@
   --name-0: #6bb2ff; --name-1: #ff9b6b; --name-2: #b69cff; --name-3: #4fd1c5;
   --name-4: #ff7eb6; --name-5: #6fdc8c; --name-6: #f6c453; --name-7: #a5b4fc;
   --overlay: rgb(0 0 0 / 0.65);
+  --topic-chat: #6e97ff; --topic-globe: #6e97ff; --topic-friends: #f6ae6b; --topic-language: #3dbe86;
+  --topic-music: #ee77a4; --topic-movies: #9683ff; --topic-gaming: #2ec0cc; --topic-sports: #f8b94a;
+  --topic-study: #a47cfa; --topic-travel: #38bdf8; --topic-night: #7d8bff; --topic-memes: #f9c43a;
   color-scheme: dark;
 }
 
@@ -182,6 +196,16 @@
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/*
+ * The app frame never scrolls itself: with overflow hidden, focusing or revealing something inside it (a sheet
+ * giving focus back, a tray button) could still push the whole screen up. Clip where the browser supports it.
+ */
+@supports (overflow: clip) {
+  .app-frame {
+    overflow: clip;
   }
 }
 

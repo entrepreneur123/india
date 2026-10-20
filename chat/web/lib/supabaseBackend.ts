@@ -23,6 +23,9 @@ import {
   type RoomRefusal,
   type Target,
   type VideoStatus,
+  type VoiceLine,
+  type VoiceRoom,
+  type VoiceRoomSummary,
 } from './backend'
 import { onPageVisibility, pageHidden } from './visibility'
 
@@ -748,6 +751,46 @@ export class SupabaseBackend implements Backend {
       .select('*').single<RoomMessageRow>()
     if (error) fail(error)
     return this.toRoomMessage(data, this.uid)
+  }
+
+  // ---- voice rooms: demo only for now; the live version (tables, RPCs, LiveKit audio) comes next ----
+
+  async voiceRooms(): Promise<VoiceRoomSummary[]> {
+    return []
+  }
+
+  async createVoiceRoom(): Promise<string> {
+    throw new BackendError('not_allowed')
+  }
+
+  async joinVoice(): Promise<VoiceRoom> {
+    throw new BackendError('not_found')
+  }
+
+  async leaveVoice() {}
+
+  async endVoice() {
+    throw new BackendError('not_allowed')
+  }
+
+  async voiceLines(): Promise<VoiceLine[]> {
+    return []
+  }
+
+  subscribeVoice() {
+    return () => {}
+  }
+
+  async sendVoice(): Promise<VoiceLine> {
+    throw new BackendError('not_allowed')
+  }
+
+  async voiceAction() {
+    throw new BackendError('not_allowed')
+  }
+
+  async reportVoiceRoom() {
+    throw new BackendError('not_allowed')
   }
 
   /** A photo the viewer may no longer see (that person left the room long ago) shows the initial instead. */

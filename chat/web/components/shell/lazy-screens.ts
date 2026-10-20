@@ -18,13 +18,16 @@ const loaders = {
   paywall: () => retryImport(() => import('@/components/screens/paywall')),
   chat: () => retryImport(() => import('@/components/screens/chat/chat-view')),
   roomDialogs: () => retryImport(() => import('@/components/screens/rooms/room-dialogs')),
+  voice: () => retryImport(() => import('@/components/screens/voice/voice-session')),
+  panel: () => retryImport(() => import('./right-panel')),
 }
 
 /** Fetches every screen in the background, unless the user asked the browser to save data. */
 export function prefetchScreens() {
   const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
   if (saveData) return
-  for (const load of Object.values(loaders)) void load().catch(() => undefined)
+  const wide = window.matchMedia('(min-width: 1280px)').matches
+  for (const [name, load] of Object.entries(loaders)) if (name !== 'panel' || wide) void load().catch(() => undefined)
 }
 
 export function preloadScreen(name: keyof typeof loaders | Tab) {
@@ -39,3 +42,6 @@ export const SettingsScreen = lazy(() => loaders.settings().then((m) => ({ defau
 export const ThreadScreen = lazy(() => loaders.thread().then((m) => ({ default: m.ThreadScreen })))
 export const ProfileSheet = lazy(() => loaders.profile().then((m) => ({ default: m.ProfileSheet })))
 export const Paywall = lazy(() => loaders.paywall().then((m) => ({ default: m.Paywall })))
+export const VoiceHost = lazy(() => loaders.voice().then((m) => ({ default: m.VoiceHost })))
+/** The friends / rooms column exists only on wide screens, so phones never download it. */
+export const RightPanel = lazy(() => loaders.panel().then((m) => ({ default: m.RightPanel })))

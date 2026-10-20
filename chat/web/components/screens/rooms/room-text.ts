@@ -1,18 +1,17 @@
 import type { Room, RoomCategory } from '@/lib/backend'
 import { EN, type T, type TKey } from '@/lib/i18n'
+import type { Topic } from '@/components/ui/topic-icons'
 
-export const CATEGORIES: { id: RoomCategory; emoji: string }[] = [
-  { id: 'chat', emoji: '💬' },
-  { id: 'friends', emoji: '🤝' },
-  { id: 'language', emoji: '🗣️' },
-  { id: 'music', emoji: '🎧' },
-  { id: 'movies', emoji: '🎬' },
-  { id: 'gaming', emoji: '🎮' },
-  { id: 'sports', emoji: '⚽' },
-  { id: 'study', emoji: '🎓' },
-  { id: 'travel', emoji: '✈️' },
-  { id: 'night', emoji: '🌙' },
-]
+export const CATEGORIES: RoomCategory[] = ['chat', 'friends', 'language', 'music', 'movies', 'gaming', 'sports', 'study', 'travel', 'night']
+
+/** The built-in rooms have no category of their own: their glyph comes from their id. */
+const OFFICIAL_TOPICS: Record<string, Topic> = {
+  lounge: 'globe', language: 'language', music: 'music', movies: 'movies', gaming: 'gaming', sports: 'sports',
+  night: 'night', memes: 'memes', study: 'study', travel: 'travel',
+}
+
+/** Which glyph a room shows (the server's emoji is not used in the web UI). */
+export const roomTopic = (r: Room): Topic => (r.official ? OFFICIAL_TOPICS[r.id] ?? 'chat' : r.category)
 
 export const categoryLabel = (id: RoomCategory, t: T) => t(`cat.${id}` as TKey)
 

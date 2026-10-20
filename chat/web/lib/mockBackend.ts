@@ -17,7 +17,11 @@ import {
   type RoomMessage,
   type Target,
   type VideoStatus,
+  type NewVoiceRoom,
+  type VoiceAction,
+  type VoiceEvent,
 } from './backend'
+import type { VoiceSim } from './mockVoice'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
@@ -220,6 +224,9 @@ export class MockBackend implements Backend {
   private rooms_ = new Map<string, RoomState>()
   private msgSeq = 1
   private roomSendTimes: number[] = []
+  /** Voice rooms are simulated in their own chunk, fetched the first time they are used. */
+  private voice_: Promise<VoiceSim> | null = null
+  private voiceSim: VoiceSim | null = null
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -573,7 +580,7 @@ export class MockBackend implements Backend {
   async profile(userId: string) {
     await wait(450)
     if (this.me && userId === this.me.id) return { ...this.me }
-    return this.person(userId)
+    return this.person(userId) ?? this.voiceSim?.person(userId) ?? null
   }
 
   async addPost(text: string, image: File | null) {
@@ -778,5 +785,60 @@ export class MockBackend implements Backend {
     const msg: RoomMessage = { id: this.msgSeq++, sender: this.me, fromMe: true, text: text.trim(), at: now }
     r.messages.push(msg)
     return msg
+  }
+
+  // ---- voice rooms ----
+
+  private voice() {
+    this.voice_ ??= import('./mockVoice').then((m) => (this.voiceSim = new m.VoiceSim(() => this.me)))
+    return this.voice_
+  }
+
+  async voiceRooms() {
+    return (await this.voice()).list()
+  }
+
+  async createVoiceRoom(r: NewVoiceRoom) {
+    return (await this.voice()).create(r)
+  }
+
+  async joinVoice(roomId: string) {
+    return (await this.voice()).join(roomId)
+  }
+
+  async leaveVoice(roomId: string) {
+    return (await this.voice()).leave(roomId)
+  }
+
+  async endVoice(roomId: string) {
+    return (await this.voice()).endRoom(roomId)
+  }
+
+  async voiceLines(roomId: string) {
+    return (await this.voice()).lines(roomId)
+  }
+
+  subscribeVoice(roomId: string, on: (e: VoiceEvent) => void) {
+    let stop: (() => void) | null = null
+    let closed = false
+    void this.voice().then((sim) => {
+      if (!closed) stop = sim.subscribe(roomId, on)
+    })
+    return () => {
+      closed = true
+      stop?.()
+    }
+  }
+
+  async sendVoice(roomId: string, text: string) {
+    return (await this.voice()).send(roomId, text)
+  }
+
+  async voiceAction(roomId: string, action: VoiceAction) {
+    return (await this.voice()).act(roomId, action)
+  }
+
+  async reportVoiceRoom(_roomId: string, _reason: ReportReason) {
+    await wait(500)
   }
 }

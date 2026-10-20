@@ -3,7 +3,8 @@
 // vercel.json sends the full Content-Security-Policy header. Its script-src must allow inline scripts, because
 // Next.js streams page data through inline scripts whose contents change on every build. This adds a second,
 // stricter policy as a <meta> tag: browsers enforce both, so the only inline scripts that can run are the
-// exact ones Next.js wrote at build time (plus scripts from this origin).
+// exact ones Next.js wrote at build time (plus scripts from this origin, and YouTube's IFrame player API, which
+// voice rooms load from https://www.youtube.com only when a shared track plays).
 import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -26,7 +27,7 @@ for (const file of htmlFiles(OUT)) {
   for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
     hashes.add(`'sha256-${createHash('sha256').update(match[1], 'utf8').digest('base64')}'`)
   }
-  const policy = `script-src 'self' ${[...hashes].join(' ')}; object-src 'none'; base-uri 'self'`
+  const policy = `script-src 'self' https://www.youtube.com ${[...hashes].join(' ')}; object-src 'none'; base-uri 'self'`
   html = html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="${policy}"/>`)
   writeFileSync(file, html)
   pages++

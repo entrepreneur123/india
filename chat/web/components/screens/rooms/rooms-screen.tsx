@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
-import { ArrowLeft, ArrowRight, Copy, KeyRound, Lock, Pin, Plus, Power } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Copy, KeyRound, Lock, MessagesSquare, Mic, Pin, Plus, Power } from 'lucide-react'
 import type { Room, RoomMessage } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode, flagEmoji } from '@/lib/format'
@@ -13,13 +13,15 @@ import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
-import { PresenceDot, Skeleton } from '@/components/ui/bits'
+import { PresenceDot, Segmented, Skeleton } from '@/components/ui/bits'
+import { VoiceRooms } from '@/components/screens/voice/voice-list'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { Composer } from '@/components/screens/chat/composer'
 import { Bubble, MetaSpacer } from '@/components/screens/chat/message-bubble'
 import { Modal } from '@/components/ui/modal'
-import { refusalLabel, roomAbout, roomConditions, roomTitle } from './room-text'
+import { refusalLabel, roomAbout, roomConditions, roomTitle, roomTopic } from './room-text'
+import { TopicIcon, TopicTile } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 import { retryImport } from '@/lib/retry-import'
 
@@ -27,6 +29,12 @@ import { retryImport } from '@/lib/retry-import'
 const loadDialogs = () => retryImport(() => import('./room-dialogs'))
 const CreateRoomDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.CreateRoomDialog })))
 const JoinCodeDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.JoinCodeDialog })))
+const loadVoiceCreate = () => retryImport(() => import('@/components/screens/voice/voice-create'))
+const CreateVoiceDialog = lazy(() => loadVoiceCreate().then((mod) => ({ default: mod.CreateVoiceDialog })))
+
+type Kind = 'voice' | 'chat'
+/** The last Voice / Chat choice, for coming back to the tab in this visit. */
+let lastKind: Kind = 'voice'
 
 const FEATURED = 'lounge'
 const HEARTBEAT_MS = 30_000 // the server counts a member as present for 90 s after the last join
@@ -42,7 +50,19 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
   const [createOpen, setCreateOpen] = useState(false)
   const [codeOpen, setCodeOpen] = useState(false)
   const [dialogsUsed, setDialogsUsed] = useState(false)
+  const [voiceOpen, setVoiceOpen] = useState(false)
+  const [voiceUsed, setVoiceUsed] = useState(false)
+  const [kind, setKindState] = useState<Kind>(() => (openRoomId ? 'chat' : lastKind))
+  const { openVoice } = useApp()
+  const setKind = (k: Kind) => {
+    lastKind = k
+    setKindState(k)
+  }
   const open = rooms?.find((r) => r.id === openRoomId) ?? null
+  // A chat room opened from elsewhere (the side panel): coming back from it lands on the chat rooms.
+  useEffect(() => {
+    if (openRoomId) setKind('chat')
+  }, [openRoomId])
 
   if (openRoomId && open) return <RoomChat room={open} onBack={() => onOpenRoom(null)} />
 
@@ -55,6 +75,10 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
     setDialogsUsed(true)
     setCreateOpen(true)
   }
+  const startVoice = () => {
+    setVoiceUsed(true)
+    setVoiceOpen(true)
+  }
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
@@ -62,26 +86,49 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('rooms.title')}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{t('rooms.subtitle')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{kind === 'voice' ? t('voice.subtitle') : t('rooms.subtitle')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              onPointerEnter={() => void loadDialogs()}
-              onClick={() => {
-                setDialogsUsed(true)
-                setCodeOpen(true)
-              }}
-            >
-              <KeyRound className="size-4.5" aria-hidden /> {t('rooms.enterCode')}
-            </Button>
-            <Button variant="brand" onPointerEnter={() => void loadDialogs()} onClick={openCreate}>
-              <Plus className="size-4.5" aria-hidden /> {t('rooms.create')}
-            </Button>
+            {kind === 'voice' ? (
+              <Button variant="brand" onPointerEnter={() => void loadVoiceCreate()} onClick={startVoice}>
+                <Plus className="size-4.5" aria-hidden /> {t('voice.start')}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onPointerEnter={() => void loadDialogs()}
+                  onClick={() => {
+                    setDialogsUsed(true)
+                    setCodeOpen(true)
+                  }}
+                >
+                  <KeyRound className="size-4.5" aria-hidden /> {t('rooms.enterCode')}
+                </Button>
+                <Button variant="brand" onPointerEnter={() => void loadDialogs()} onClick={openCreate}>
+                  <Plus className="size-4.5" aria-hidden /> {t('rooms.create')}
+                </Button>
+              </>
+            )}
           </div>
         </header>
 
-        {error && !rooms ? (
+        <div id="rooms-kind" className="-mt-3">
+          <Segmented
+            className="w-full sm:w-72"
+            label={t('rooms.kind')}
+            value={kind}
+            onChange={setKind}
+            options={[
+              { value: 'voice', label: <span className="flex items-center gap-1.5"><Mic className="size-4" aria-hidden /> {t('rooms.voice')}</span> },
+              { value: 'chat', label: <span className="flex items-center gap-1.5"><MessagesSquare className="size-4" aria-hidden /> {t('rooms.chat')}</span> },
+            ]}
+          />
+        </div>
+
+        {kind === 'voice' ? (
+          <VoiceRooms onStart={startVoice} />
+        ) : error && !rooms ? (
           <EmptyState
             art="rooms"
             title={t('rooms.loadFailed')}
@@ -139,9 +186,7 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
                         onClick={() => onOpenRoom(r.id)}
                         className="flex h-full w-full flex-col items-start gap-1 rounded-2xl border border-border bg-card p-4 text-left transition-[box-shadow,background-color] duration-150 hover:shadow-e2 active:bg-muted"
                       >
-                        <span className="grid size-11 place-items-center rounded-full bg-muted text-2xl" aria-hidden>
-                          {r.emoji}
-                        </span>
+                        <TopicTile topic={roomTopic(r)} size={44} />
                         <span className="mt-2 text-[15px] leading-snug font-semibold">{roomTitle(r, t)}</span>
                         {about ? <span className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{about}</span> : null}
                         <span className="mt-auto flex items-center gap-1.5 pt-3 text-xs font-medium tabular-nums text-muted-foreground">
@@ -156,6 +201,18 @@ export function RoomsScreen({ openRoomId, onOpenRoom }: { openRoomId: string | n
           </>
         )}
       </div>
+      {voiceUsed ? (
+        <Suspense fallback={null}>
+          <CreateVoiceDialog
+            open={voiceOpen}
+            onClose={() => setVoiceOpen(false)}
+            onCreated={(id) => {
+              setVoiceOpen(false)
+              openVoice(id)
+            }}
+          />
+        </Suspense>
+      ) : null}
       {dialogsUsed ? (
         <Suspense fallback={null}>
           <CreateRoomDialog
@@ -201,9 +258,7 @@ function UserRoomCard({ room, onOpen }: { room: Room; onOpen: () => void }) {
         room.mine && 'border-primary',
       )}
     >
-      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-muted text-2xl" aria-hidden>
-        {room.emoji}
-      </span>
+      <TopicTile topic={roomTopic(room)} size={48} />
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
           {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label={t('rooms.private')} /> : null}
@@ -240,8 +295,8 @@ function FeaturedRoom({ room, onOpen }: { room: Room; onOpen: () => void }) {
       className="group relative overflow-hidden rounded-3xl bg-primary-soft p-6 text-left text-foreground transition-shadow duration-150 hover:shadow-e2 sm:p-8"
     >
       <span className="flex items-start justify-between gap-4">
-        <span className="grid size-14 place-items-center rounded-full bg-card text-3xl" aria-hidden>
-          {room.emoji}
+        <span className="grid size-14 place-items-center rounded-full bg-card" aria-hidden>
+          <TopicIcon topic={roomTopic(room)} size={30} />
         </span>
         <span className="flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground tabular-nums">
           <PresenceDot /> {t('rooms.hereNow', { n: num(room.online) })}
@@ -392,9 +447,7 @@ function RoomChat({ room, onBack }: { room: Room; onBack: () => void }) {
         <Button size="icon" variant="ghost" onClick={onBack} aria-label={t('room.back')}>
           <ArrowLeft className="size-5" aria-hidden />
         </Button>
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-xl" aria-hidden>
-          {room.emoji}
-        </span>
+        <TopicTile topic={roomTopic(room)} size={40} />
         <span className="min-w-0 flex-1">
           <h1 className="flex items-center gap-1.5 text-[15px] font-semibold">
             {room.isPrivate ? <Lock className="size-3.5 shrink-0" aria-label={t('rooms.private')} /> : null}

@@ -11,7 +11,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-import { CATEGORIES, categoryLabel } from './room-text'
+import { TopicPicker } from './topic-picker'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
 
@@ -88,26 +88,7 @@ export function CreateRoomDialog({
           <span className="text-sm font-semibold" id={`${id}-cat`}>
             {t('create.category')}
           </span>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-labelledby={`${id}-cat`}>
-            {CATEGORIES.map((c) => {
-              const on = category === c.id
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setCategory(c.id)}
-                  className={cn(
-                    'flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors duration-150',
-                    on ? 'border-transparent bg-primary-soft text-primary-text' : 'border-input bg-card hover:bg-muted',
-                  )}
-                >
-                  <span aria-hidden>{c.emoji}</span> {categoryLabel(c.id, t)}
-                </button>
-              )
-            })}
-          </div>
+          <TopicPicker labelledBy={`${id}-cat`} value={category} onChange={setCategory} />
         </div>
 
         <div className="flex items-center justify-between gap-4">

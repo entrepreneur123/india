@@ -12,9 +12,19 @@ import { NightContext } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { BottomTabs, Sidebar } from './nav'
-import { RightPanel } from './right-panel'
 import { RandomScreen } from '@/components/screens/random/random-screen'
-import { MeScreen, Paywall, prefetchScreens, ProfileSheet, RecentScreen, RoomsScreen, SettingsScreen, ThreadScreen } from './lazy-screens'
+import {
+  MeScreen,
+  Paywall,
+  prefetchScreens,
+  ProfileSheet,
+  RecentScreen,
+  RightPanel,
+  RoomsScreen,
+  SettingsScreen,
+  ThreadScreen,
+  VoiceHost,
+} from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
 /** Tab change: a short fade (Material "fade through"). Going to Random the light screen goes at once. */
@@ -67,6 +77,8 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [profileUsed, setProfileUsed] = useState(false)
   const [immersive, setImmersive] = useState(false)
   const [openRoomId, setOpenRoomId] = useState<string | null>(null)
+  // The voice room I'm in: full screen, or minimised to a pill while I use the rest of the app.
+  const [voice, setVoice] = useState<{ id: string; expanded: boolean } | null>(null)
   const [entitlements, setEntitlements] = useState(initialEntitlements)
   const [reportListeners] = useState(() => new Set<(id: string) => void>())
   // The friends/rooms panel exists only on wide screens; phones never load its data.
@@ -84,6 +96,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       clearInterval(timer)
     }
   }, [backend])
+
+  // A shared room link (/?voice=<id>) opens that room.
+  useEffect(() => {
+    const id = new URLSearchParams(location.search).get('voice')
+    if (!id) return
+    setVoice({ id, expanded: true })
+    history.replaceState(null, '', location.pathname)
+  }, [])
 
   // Once the app has settled, fetch every other screen in the background: later tab switches are instant and
   // still work if the connection drops.
@@ -131,6 +151,8 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setPaywallOpen(true)
       },
       openThread: (partner, matchId) => void openThread(partner, matchId),
+      openVoice: (id) => setVoice({ id, expanded: true }),
+      voiceRoomId: voice?.id ?? null,
       setImmersive,
       randomVisible: tab === 'random' && thread === null,
       reported: (id) => {
@@ -144,12 +166,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       },
       signedOut: onSignedOut,
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners, voice?.id],
   )
 
   const randomVisible = tab === 'random' && !thread
-  const night = randomVisible || thread !== null
-  const hideTabs = (randomVisible && immersive) || thread !== null || (tab === 'rooms' && openRoomId !== null)
+  const voiceOpen = !!voice?.expanded
+  const night = randomVisible || thread !== null || voiceOpen
+  const busyScreen = (randomVisible && immersive) || thread !== null || (tab === 'rooms' && openRoomId !== null)
+  const hideTabs = busyScreen || voiceOpen
 
   return (
     <AppContext.Provider value={state}>
@@ -157,9 +181,10 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         <div className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}>
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
-            <main className="relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
+            <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
               {/* Screens are layered, never stacked: a tab fading out must not push the next one aside. */}
-              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden')}>
+              {/* While a voice room is full screen, what's under it can't be reached by keyboard or screen reader. */}
+              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden')} inert={voiceOpen}>
                 <RandomScreen active={randomVisible} />
               </div>
               <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
@@ -169,6 +194,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     custom={randomVisible}
                     variants={TAB_MOTION}
                     className={cn('absolute inset-0 flex flex-col', !hideTabs && 'pb-16 md:pb-0')}
+                    inert={voiceOpen}
                     initial="enter"
                     animate="shown"
                     exit="leave"
@@ -202,15 +228,31 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                   </m.div>
                 ) : null}
               </AnimatePresence>
+              {voice ? (
+                <ScreenBoundary key={voice.id}>
+                  <Suspense fallback={null}>
+                    <VoiceHost
+                      roomId={voice.id}
+                      expanded={voice.expanded}
+                      pillHidden={busyScreen}
+                      onExpand={() => setVoice((v) => v && { ...v, expanded: true })}
+                      onMinimise={() => setVoice((v) => v && { ...v, expanded: false })}
+                      onClose={() => setVoice(null)}
+                    />
+                  </Suspense>
+                </ScreenBoundary>
+              ) : null}
             </main>
-            {wide ? (
-              <RightPanel
-                className="flex"
-                onOpenRoom={(id) => {
-                  setOpenRoomId(id)
-                  setTab('rooms')
-                }}
-              />
+            {wide && !voiceOpen ? (
+              <Suspense fallback={null}>
+                <RightPanel
+                  className="flex"
+                  onOpenRoom={(id) => {
+                    setOpenRoomId(id)
+                    setTab('rooms')
+                  }}
+                />
+              </Suspense>
             ) : null}
           </div>
           <BottomTabs hidden={hideTabs} />

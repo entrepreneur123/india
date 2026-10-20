@@ -86,6 +86,128 @@ export interface RoomMessage {
   at: number
 }
 
+// ---- voice rooms (X Spaces-style party rooms: a stage of seats, an audience, chat and shared music) ----
+
+/** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
+export type VoiceRole = 'host' | 'cohost' | 'speaker' | 'listener'
+/** Who may take a seat: listeners raise a hand and the host invites them up, or anyone takes a free seat. */
+export type SpeakMode = 'approval' | 'open'
+
+/** Seat 0 is the host's; seats 1–8 are the stage. */
+export const VOICE_SEATS = 9
+
+export interface VoiceMember {
+  profile: Profile
+  role: VoiceRole
+  /** 0–8 on the stage, null in the audience. */
+  seat: number | null
+  muted: boolean
+  hand: boolean
+}
+
+export interface VoiceSeat {
+  index: number
+  locked: boolean
+}
+
+/**
+ * The shared track. Everyone plays the same YouTube video at the same position: a client seeks to
+ * now − startedAt (or pausedAt − startedAt while paused).
+ */
+export interface VoiceTrack {
+  id: string
+  videoId: string
+  /** Empty when unknown (a pasted link): the player's own title is shown. */
+  title: string
+  addedBy: string
+  startedAt: number
+  pausedAt: number | null
+}
+
+export interface VoiceQueueItem {
+  id: string
+  videoId: string
+  title: string
+  addedBy: string
+  /** A listener's suggestion the host has not approved yet. */
+  pending: boolean
+}
+
+export interface VoiceRoomSummary {
+  id: string
+  title: string
+  category: RoomCategory
+  host: Profile
+  /** Up to 4 people on the stage, the host first. */
+  speakers: Profile[]
+  listeners: number
+  nowPlaying: string | null
+  mine: boolean
+}
+
+export interface VoiceRoom {
+  id: string
+  title: string
+  category: RoomCategory
+  mode: SpeakMode
+  hostId: string
+  meId: string
+  members: VoiceMember[]
+  seats: VoiceSeat[]
+  track: VoiceTrack | null
+  queue: VoiceQueueItem[]
+}
+
+export interface NewVoiceRoom {
+  title: string
+  category: RoomCategory
+  mode: SpeakMode
+}
+
+/** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
+export type VoiceReaction = 'heart' | 'laugh' | 'fire' | 'clap' | 'wow'
+
+export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'track' | 'removed'
+
+export type VoiceLine =
+  | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number }
+  | { id: number; kind: 'system'; event: VoiceSystemEvent; name: string; seat?: number; title?: string; at: number }
+
+export type VoiceEvent =
+  | { type: 'room'; room: VoiceRoom }
+  /** Audio level 0..1 per user id, several times a second (absent = silent). */
+  | { type: 'levels'; levels: Record<string, number> }
+  | { type: 'line'; line: VoiceLine }
+  | { type: 'reaction'; userId: string; kind: VoiceReaction }
+  | { type: 'ended' }
+  | { type: 'removed' }
+
+export type VoiceAction =
+  | { type: 'hand'; up: boolean }
+  | { type: 'mic'; on: boolean }
+  /** Take this free seat (open rooms, host and co-hosts); in a hand-raise room it raises my hand. */
+  | { type: 'seat'; seat: number }
+  | { type: 'unseat' }
+  | { type: 'react'; kind: VoiceReaction }
+  // host and co-hosts
+  | { type: 'invite'; userId: string; seat?: number }
+  | { type: 'answer'; userId: string; accept: boolean }
+  | { type: 'toAudience'; userId: string }
+  | { type: 'mute'; userId: string }
+  | { type: 'lock'; seat: number; locked: boolean }
+  // host only
+  | { type: 'cohost'; userId: string; on: boolean }
+  | { type: 'kick'; userId: string }
+  // music: the host (DJ) adds and controls; everyone else suggests
+  | { type: 'addTrack'; videoId: string }
+  | { type: 'suggest'; videoId: string }
+  | { type: 'approve'; itemId: string; accept: boolean }
+  | { type: 'play'; itemId: string }
+  | { type: 'removeItem'; itemId: string }
+  | { type: 'pause' }
+  | { type: 'resume' }
+  | { type: 'skip' }
+
 export interface Match {
   id: string
   partner: Profile
@@ -201,4 +323,18 @@ export interface Backend {
   roomHistory(roomId: string): Promise<RoomMessage[]>
   subscribeRoom(roomId: string, on: (m: RoomMessage) => void): () => void
   sendRoom(roomId: string, text: string): Promise<RoomMessage>
+  voiceRooms(): Promise<VoiceRoomSummary[]>
+  /** Opens a voice room with me as host (ending my previous one); returns its id. */
+  createVoiceRoom(r: NewVoiceRoom): Promise<string>
+  /** Enters as a listener (or as the host of my own room). */
+  joinVoice(roomId: string): Promise<VoiceRoom>
+  leaveVoice(roomId: string): Promise<void>
+  /** Host only: everyone is moved out and the room closes. */
+  endVoice(roomId: string): Promise<void>
+  voiceLines(roomId: string): Promise<VoiceLine[]>
+  subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void
+  sendVoice(roomId: string, text: string): Promise<VoiceLine>
+  /** Throws BackendError('not_allowed') when my role may not do it. */
+  voiceAction(roomId: string, action: VoiceAction): Promise<void>
+  reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
 }
