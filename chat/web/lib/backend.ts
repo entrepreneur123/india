@@ -44,49 +44,16 @@ export interface Friend {
   threadId?: string | null
 }
 
+/** Topics the room glyphs are drawn for (components/ui/topic-icons.tsx). */
 export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' | 'gaming' | 'sports' | 'study' | 'travel' | 'night'
-/** Why I can't enter a user room (null/absent = I can). */
+/** Why I can't enter a room (null/absent = I can). */
 export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed'
 
-export interface Room {
-  id: string
-  title: string
-  emoji: string
-  online: number
-  /** Official rooms are run by yaari; the rest were opened by a user. */
-  official: boolean
-  mine: boolean
-  ownerName?: string | null
-  category: RoomCategory
-  maxMembers?: number | null
-  genderRule: Target
-  minAge: number
-  maxAge: number
-  isPrivate: boolean
-  /** Only for my own rooms. */
-  code?: string | null
-  refusal?: RoomRefusal | null
-}
+// ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos), a stage
+// of seats with an audience, shared music and Ludo; its category sets the layout and one signature feature. ----
 
-export interface NewRoom {
-  title: string
-  category: RoomCategory
-  maxMembers: number
-  genderRule: Target
-  minAge: number
-  maxAge: number
-  isPrivate: boolean
-}
-
-export interface RoomMessage {
-  id: number
-  sender: Profile
-  fromMe: boolean
-  text: string
-  at: number
-}
-
-// ---- voice rooms (X Spaces-style party rooms: a stage of seats, an audience, chat and shared music) ----
+/** Talk: chat first, icebreakers. Music: the player first, song requests by vote. Games: Ludo first, a leaderboard. */
+export type RoomKind = 'talk' | 'music' | 'games'
 
 /** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
 export type VoiceRole = 'host' | 'cohost' | 'speaker' | 'listener'
@@ -124,31 +91,51 @@ export interface VoiceTrack {
   pausedAt: number | null
 }
 
+/** A song request: anyone adds one; the host's "next" plays the most voted (ties: the oldest). */
 export interface VoiceQueueItem {
   id: string
   videoId: string
   title: string
   addedBy: string
-  /** A listener's suggestion the host has not approved yet. */
-  pending: boolean
+  votes: number
+  /** I voted for it. */
+  voted: boolean
 }
 
-export interface VoiceRoomSummary {
+/** Who may come in. */
+export interface RoomRules {
+  maxMembers: number
+  genderRule: Target
+  minAge: number
+  maxAge: number
+  /** Found only by its code. */
+  isPrivate: boolean
+}
+
+export interface VoiceRoomSummary extends RoomRules {
   id: string
   title: string
-  category: RoomCategory
+  category: RoomKind
   host: Profile
-  /** Up to 4 people on the stage, the host first. */
+  /** Up to 4 people on the stage, the host first (empty: a chat-only room right now). */
   speakers: Profile[]
   listeners: number
+  /** People present, me included. */
+  members: number
   nowPlaying: string | null
+  /** A Ludo game open in the room. */
+  game: 'lobby' | 'playing' | null
+  announcement: string | null
   mine: boolean
+  /** Only for my own room. */
+  code: string | null
+  refusal: RoomRefusal | null
 }
 
-export interface VoiceRoom {
+export interface VoiceRoom extends RoomRules {
   id: string
   title: string
-  category: RoomCategory
+  category: RoomKind
   mode: SpeakMode
   hostId: string
   meId: string
@@ -156,12 +143,21 @@ export interface VoiceRoom {
   seats: VoiceSeat[]
   track: VoiceTrack | null
   queue: VoiceQueueItem[]
+  /** Pinned at the top by the host. */
+  announcement: string | null
+  /** The room's 6-character code, for its host only. */
+  code: string | null
 }
 
-export interface NewVoiceRoom {
+export interface NewVoiceRoom extends RoomRules {
   title: string
-  category: RoomCategory
-  mode: SpeakMode
+  category: RoomKind
+  announcement: string
+}
+
+export interface RoomLeader {
+  profile: Profile
+  wins: number
 }
 
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
@@ -172,6 +168,10 @@ export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost
 export type VoiceLine =
   | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number }
   | { id: number; kind: 'system'; event: VoiceSystemEvent; name: string; seat?: number; title?: string; at: number }
+  /** A conversation starter: prompt 1-40 (the text is in each app's own language). */
+  | { id: number; kind: 'icebreaker'; prompt: number; name: string; fromMe: boolean; at: number }
+  /** A photo (checked on the sender's device; shown blurred until tapped). */
+  | { id: number; kind: 'photo'; sender: Profile; fromMe: boolean; url: string; at: number }
 
 /**
  * The room's live audio (live server only; the demo has none). `needsTap`: the browser blocked playback until
@@ -184,7 +184,8 @@ export interface VoiceAudioState {
 
 export type VoiceEvent =
   | { type: 'room'; room: VoiceRoom }
-  | { type: 'audio'; audio: VoiceAudioState }
+  /** Null: no audio connection (nobody is on the stage, so the room is a chat room for now). */
+  | { type: 'audio'; audio: VoiceAudioState | null }
   /** Audio level 0..1 per user id, several times a second (absent = silent). */
   | { type: 'levels'; levels: Record<string, number> }
   | { type: 'line'; line: VoiceLine }
@@ -208,15 +209,14 @@ export type VoiceAction =
   // host only
   | { type: 'cohost'; userId: string; on: boolean }
   | { type: 'kick'; userId: string }
-  // music: the host (DJ) adds and controls; everyone else suggests
+  // music: anyone adds a song request and votes; the host (DJ) plays, removes and controls
   | { type: 'addTrack'; videoId: string }
-  | { type: 'suggest'; videoId: string }
-  | { type: 'approve'; itemId: string; accept: boolean }
+  | { type: 'vote'; itemId: string; on: boolean }
   | { type: 'play'; itemId: string }
   | { type: 'removeItem'; itemId: string }
   | { type: 'pause' }
   | { type: 'resume' }
-  /** `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
+  /** The most voted request plays. `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
   | { type: 'skip'; trackId?: string }
 
 // ---- Ludo in a voice room (018_ludo.sql; rules in lib/ludo.ts) ----
@@ -329,6 +329,8 @@ export type BackendErrorCode =
   | 'game_full'
   | 'need_players'
   | 'stale'
+  /** The photo looked like nudity on this device's check: it was not sent. */
+  | 'nude_photo'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -384,21 +386,13 @@ export interface Backend {
   answerFriend(userId: string, accept: boolean): Promise<void>
   removeFriend(userId: string): Promise<void>
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
-  rooms(): Promise<Room[]>
-  /** Opens a room owned by me (closing my previous one); I am inside it. */
-  createRoom(r: NewRoom): Promise<{ id: string; code: string }>
-  /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
-  joinRoomCode(code: string): Promise<string>
-  /** Owner only: nobody can enter or write any more. */
-  closeRoom(roomId: string): Promise<void>
-  joinRoom(roomId: string): Promise<void> // call again every 30 s while open
-  leaveRoom(roomId: string): Promise<void>
-  roomHistory(roomId: string): Promise<RoomMessage[]>
-  subscribeRoom(roomId: string, on: (m: RoomMessage) => void): () => void
-  sendRoom(roomId: string, text: string): Promise<RoomMessage>
   voiceRooms(): Promise<VoiceRoomSummary[]>
-  /** Opens a voice room with me as host (ending my previous one); returns its id. */
-  createVoiceRoom(r: NewVoiceRoom): Promise<string>
+  /** Opens a room with me as host, not on the stage yet (ending my previous one). */
+  createVoiceRoom(r: NewVoiceRoom): Promise<{ id: string; code: string }>
+  /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
+  joinVoiceCode(code: string): Promise<string>
+  /** Host only: the title and the pinned announcement (empty removes it). */
+  updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }): Promise<void>
   /** Enters as a listener (or as the host of my own room). */
   joinVoice(roomId: string): Promise<VoiceRoom>
   leaveVoice(roomId: string): Promise<void>
@@ -407,6 +401,12 @@ export interface Backend {
   voiceLines(roomId: string): Promise<VoiceLine[]>
   subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void
   sendVoice(roomId: string, text: string): Promise<VoiceLine>
+  /** Shrinks the photo to 1280 px JPEG and sends it (the screen has run classifyImage() on it first). */
+  sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine>
+  /** Posts a conversation starter (one per room every 20 s: 'slow_down'). */
+  voiceIcebreaker(roomId: string): Promise<VoiceLine>
+  /** The room's Ludo winners, top 5. */
+  voiceLeaders(roomId: string): Promise<RoomLeader[]>
   /** Throws BackendError('not_allowed') when my role may not do it. */
   voiceAction(roomId: string, action: VoiceAction): Promise<void>
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */

@@ -9,16 +9,17 @@ import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { flagEmoji } from '@/lib/format'
-import { roomTitle, roomTopic } from '@/components/screens/rooms/room-text'
+import { kindTopic } from '@/components/screens/rooms/room-text'
 import { TopicTile } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 
-export function RightPanel({ className, onOpenRoom }: { className?: string; onOpenRoom: (id: string) => void }) {
+export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, openProfile, openThread, entitlements, openPaywall } = useApp()
+  const { t, openProfile, openThread, entitlements, openPaywall, openVoice } = useApp()
   const { plural, num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
-  const { data: rooms } = useSWR('rooms', () => backend.rooms(), { refreshInterval: 30_000 })
+  // The same list as the Rooms tab (one request serves both).
+  const { data: rooms } = useSWR('voiceRooms', () => backend.voiceRooms(), { refreshInterval: 15_000 })
 
   const friendList = friends?.filter((f) => f.state === 'friends') ?? null // presence isn't tracked, so no online dots
 
@@ -93,21 +94,28 @@ export function RightPanel({ className, onOpenRoom }: { className?: string; onOp
         <ul className="flex flex-col">
           {!rooms
             ? Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="my-1 h-12 w-full" />)
-            : [...rooms]
-                .sort((a, b) => b.online - a.online)
+            : rooms.filter((r) => !r.refusal).length === 0
+              ? (
+                  <li className="rounded-2xl bg-muted px-4 py-5 text-center text-xs leading-relaxed text-muted-foreground">
+                    {t('rooms.noneTitle')}
+                  </li>
+                )
+              : rooms
+                .filter((r) => !r.refusal)
+                .sort((a, b) => b.members - a.members)
                 .slice(0, 5)
                 .map((r) => (
                   <li key={r.id}>
                     <button
                       type="button"
-                      onClick={() => onOpenRoom(r.id)}
+                      onClick={() => openVoice(r.id)}
                       className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-muted"
                     >
-                      <TopicTile topic={roomTopic(r)} size={40} />
-                      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{roomTitle(r, t)}</span>
+                      <TopicTile topic={kindTopic(r.category)} size={40} />
+                      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.title}</span>
                       <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                         <PresenceDot />
-                        {num(r.online)}
+                        {num(r.members)}
                       </span>
                     </button>
                   </li>

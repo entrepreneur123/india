@@ -12,14 +12,12 @@ import {
   type MatchEvent,
   type Message,
   type NewProfile,
-  type NewRoom,
   type Post,
   type Profile,
   type RecentMatch,
   type ReportReason,
-  type Room,
-  type RoomCategory,
-  type RoomMessage,
+  type RoomKind,
+  type RoomLeader,
   type RoomRefusal,
   type NewVoiceRoom,
   type Target,
@@ -60,7 +58,7 @@ const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
-  'not_your_turn', 'seat_taken', 'game_full', 'need_players', 'stale',
+  'not_your_turn', 'seat_taken', 'game_full', 'need_players', 'stale', 'bad_media',
 ]
 
 type CardRow = {
@@ -78,25 +76,23 @@ type MessageRow = {
   id: number; match_id: string; sender: string; body: string | null
   media_path: string | null; media_kind: string | null; created_at: string
 }
-type RoomRow = {
-  id: string; title: string; emoji: string; online: number; official: boolean; mine: boolean; owner_name: string | null
-  category: string; max_members: number | null; gender_rule: string; min_age: number; max_age: number
-  is_private: boolean; code: string | null; refusal: string | null
-}
 type PostRow = { id: string; user_id: string; body: string; image_path: string | null; created_at: string }
 type VoiceListRow = {
   id: string; title: string; category: string; mine: boolean; host: CardRow; speakers: CardRow[]; listeners: number
-  now_playing: string | null
+  members: number; now_playing: string | null; game: string | null; max_members: number; gender_rule: string
+  min_age: number; max_age: number; is_private: boolean; announcement: string | null; code: string | null; refusal: string | null
 }
 /** voice_state(): the room, the people present with their cards, and the server clock (ms). */
 type VoiceStateRow = {
   id: string; title: string; category: string; mode: string; host: string; rev: number; now: number; locked: number[]
   music: { id: string; videoId: string; title: string; by: string; startedAt: number; pausedAt: number | null } | null
-  queue: { id: string; videoId: string; title: string; by: string; suggested: boolean }[]
+  queue: { id: string; videoId: string; title: string; by: string; votes: number; voted: boolean }[]
   members: (CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean })[]
+  announcement: string | null; max: number; gender: string; minAge: number; maxAge: number; private: boolean; code: string | null
 }
 type VoiceMessageRow = {
-  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction'; body: string | null
+  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo'; body: string | null
+  media_path: string | null
   payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
   sender_photo: string | null; sender_country: string | null; created_at: string
 }
@@ -116,10 +112,6 @@ type LudoJson = {
 }
 /** A ludo_games row (realtime). */
 type LudoRow = Omit<LudoJson, 'room' | 'deadline' | 'endedAt' | 'now'> & { room_id: string; deadline: string | null; ended_at: string | null }
-type RoomMessageRow = {
-  id: number; room_id: string; sender: string; sender_name: string; sender_gender: string; sender_age: number
-  sender_photo: string | null; sender_country: string | null; body: string; created_at: string
-}
 
 function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
@@ -144,6 +136,12 @@ function fail(error: { message?: string; details?: string | null; hint?: string 
   const text = [error?.message, error?.details, error?.hint].filter(Boolean).join(' ')
   throw new BackendError(codeOf(text))
 }
+
+/** The chat's lines (reactions come over realtime only). */
+const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo']
+
+/** A room's category; rooms from before 019 were migrated, anything unknown is a talk room. */
+const kind = (c: string): RoomKind => (c === 'music' || c === 'games' ? c : 'talk')
 
 function gender(g: string): Gender {
   return g === 'male' || g === 'female' ? g : 'other'
@@ -712,116 +710,37 @@ export class SupabaseBackend implements Backend {
     return this.rpc<string>('friend_thread', { p_user: userId })
   }
 
-  // ---- rooms ----
+  // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
 
-  async rooms(): Promise<Room[]> {
-    const rows = await this.rpc<RoomRow[]>('room_list2')
-    return rows.map((r) => ({
-      id: r.id, title: r.title, emoji: r.emoji, online: r.online, official: r.official, mine: r.mine,
-      ownerName: r.owner_name, category: r.category as RoomCategory, maxMembers: r.max_members,
-      genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
-      code: r.code, refusal: r.refusal as RoomRefusal | null,
+  async voiceRooms(): Promise<VoiceRoomSummary[]> {
+    const rows = await this.rpc<VoiceListRow[]>('voice_list2')
+    await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
+    return rows.filter((r) => r.host).map((r) => ({
+      id: r.id, title: r.title, category: kind(r.category), host: this.cardProfile(r.host),
+      speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners, members: r.members,
+      nowPlaying: r.now_playing || null, game: r.game === 'lobby' || r.game === 'playing' ? r.game : null,
+      announcement: r.announcement, mine: r.mine, code: r.code, refusal: (r.refusal as RoomRefusal | null) ?? null,
+      maxMembers: r.max_members, genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
     }))
   }
 
-  async createRoom(r: NewRoom) {
-    const rows = await this.rpc<{ room_id: string; room_code: string }[]>('create_room', {
-      p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule,
-      p_min_age: r.minAge, p_max_age: r.maxAge, p_private: r.isPrivate,
+  async createVoiceRoom(r: NewVoiceRoom) {
+    return this.rpc<{ id: string; code: string }>('create_voice_room2', {
+      p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
+      p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement,
     })
-    const row = rows?.[0]
-    if (!row) throw new BackendError('network')
-    return { id: row.room_id, code: row.room_code }
   }
 
-  /** A wrong code comes back as null (the server counts it; 10 misses in 10 minutes → slow_down). */
-  async joinRoomCode(code: string) {
-    const id = await this.rpc<string | null>('join_room_code', { p_code: code })
+  async joinVoiceCode(code: string): Promise<string> {
+    // A wrong code comes back as null (so the miss is counted: 10 in 10 minutes and code entry pauses).
+    const id = await this.rpc<string | null>('join_voice_code', { p_code: code })
     if (!id) throw new BackendError('not_found')
     return id
   }
 
-  async closeRoom(roomId: string) {
-    await this.rpc('close_room', { p_room: roomId })
-  }
-
-  async joinRoom(roomId: string) {
-    await this.rpc('join_room', { p_room: roomId })
-  }
-
-  async leaveRoom(roomId: string) {
-    await this.rpc('leave_room', { p_room: roomId })
-  }
-
-  async roomHistory(roomId: string): Promise<RoomMessage[]> {
-    const me = this.uid
-    const { data, error } = await this.client.from('room_messages').select('*')
-      .eq('room_id', roomId).order('id', { ascending: false }).limit(100) // the newest 100, shown oldest first
-    if (error) fail(error)
-    const rows = (data as RoomMessageRow[]).reverse()
-    this.noteNewest(`room:${roomId}`, rows)
-    return Promise.all(rows.map((r) => this.toRoomMessage(r, me)))
-  }
-
-  subscribeRoom(roomId: string, on: (m: RoomMessage) => void): () => void {
-    const me = this.uid
-    let closed = false
-    const emit = (m: RoomMessage) => { if (!closed) on(m) }
-    // Re-sync after a dropped socket: only messages newer than the last complete fetch (the UI de-duplicates by
-    // id). On (re)connect, every 15 s, and when the tab is shown again; paused while it is hidden.
-    const resync = () => {
-      if (pageHidden() || closed) return
-      this.newerRoomMessages(roomId).then((list) => list.forEach(emit), () => undefined)
-    }
-    const channel = this.client.channel(`room-${roomId}-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'room_messages', filter: `room_id=eq.${roomId}` },
-        (p) => void this.toRoomMessage(p.new as RoomMessageRow, me).then(emit, () => undefined))
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') resync()
-      })
-    const timer = setInterval(resync, 15_000)
-    const stopWatching = onPageVisibility((visible) => visible && resync())
-    return () => {
-      closed = true
-      clearInterval(timer)
-      stopWatching()
-      void this.client.removeChannel(channel)
-    }
-  }
-
-  private async newerRoomMessages(roomId: string): Promise<RoomMessage[]> {
-    const after = this.newest.get(`room:${roomId}`)
-    if (after === undefined) return [] // the room's history hasn't loaded yet; it covers everything so far
-    const me = this.uid
-    const { data, error } = await this.client.from('room_messages').select('*')
-      .eq('room_id', roomId).gt('id', after).order('id', { ascending: true }).limit(200)
-    if (error) fail(error)
-    const rows = data as RoomMessageRow[]
-    this.noteNewest(`room:${roomId}`, rows)
-    return Promise.all(rows.map((r) => this.toRoomMessage(r, me)))
-  }
-
-  async sendRoom(roomId: string, text: string): Promise<RoomMessage> {
-    const { data, error } = await this.client.from('room_messages').insert({ room_id: roomId, body: text })
-      .select('*').single<RoomMessageRow>()
-    if (error) fail(error)
-    return this.toRoomMessage(data, this.uid)
-  }
-
-  // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
-
-  async voiceRooms(): Promise<VoiceRoomSummary[]> {
-    const rows = await this.rpc<VoiceListRow[]>('voice_list')
-    await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
-    return rows.filter((r) => r.host).map((r) => ({
-      id: r.id, title: r.title, category: r.category as RoomCategory, host: this.cardProfile(r.host),
-      speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners,
-      nowPlaying: r.now_playing || null, mine: r.mine,
-    }))
-  }
-
-  async createVoiceRoom(r: NewVoiceRoom): Promise<string> {
-    return this.rpc<string>('create_voice_room', { p_title: r.title, p_category: r.category, p_mode: r.mode })
+  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }) {
+    await this.rpc('voice_settings', { p_room: roomId, p_title: patch.title, p_announcement: patch.announcement })
+    this.voice.get(roomId)?.refresh()
   }
 
   async joinVoice(roomId: string): Promise<VoiceRoom> {
@@ -844,7 +763,7 @@ export class SupabaseBackend implements Backend {
 
   async voiceLines(roomId: string): Promise<VoiceLine[]> {
     const { data, error } = await this.client.from('voice_messages').select('*').eq('room_id', roomId)
-      .in('kind', ['text', 'system']).order('id', { ascending: false }).limit(100) // the newest 100, shown oldest first
+      .in('kind', LINE_KINDS).order('id', { ascending: false }).limit(100) // the newest 100, shown oldest first
     if (error) fail(error)
     const rows = (data as VoiceMessageRow[]).reverse()
     this.noteNewest(`voice:${roomId}`, rows)
@@ -854,6 +773,27 @@ export class SupabaseBackend implements Backend {
   async sendVoice(roomId: string, text: string): Promise<VoiceLine> {
     const row = await this.rpc<VoiceMessageRow>('voice_send', { p_room: roomId, p_text: text })
     return (await this.toVoiceLines([row]))[0]
+  }
+
+  async sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine> {
+    if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
+    const path = await this.upload(photo, 'rooms')
+    const row = await this.rpc<VoiceMessageRow>('voice_photo', { p_room: roomId, p_path: path })
+    return (await this.toVoiceLines([row]))[0]
+  }
+
+  async voiceIcebreaker(roomId: string): Promise<VoiceLine> {
+    const row = await this.rpc<VoiceMessageRow>('voice_icebreaker', { p_room: roomId })
+    return (await this.toVoiceLines([row]))[0]
+  }
+
+  async voiceLeaders(roomId: string): Promise<RoomLeader[]> {
+    const rows = await this.rpc<{ id: string; name: string; photo_path: string | null; wins: number }[]>('voice_leaders', { p_room: roomId })
+    await this.signMany(rows.map((r) => r.photo_path))
+    return rows.map((r) => ({
+      wins: r.wins,
+      profile: this.cardProfile({ id: r.id, name: r.name, gender: 'other', age: 0, city: '', bio: '', photo_path: r.photo_path, country: null }),
+    }))
   }
 
   async reportVoiceRoom(roomId: string, reason: ReportReason) {
@@ -918,12 +858,11 @@ export class SupabaseBackend implements Backend {
         this.voiceSync(roomId, a.userId)
         break
       case 'addTrack':
-      case 'suggest':
-        // The server decides: the host's track plays or queues, anyone else's waits for the host.
+        // The host's track plays at once when nothing does; everything else joins the requests.
         await this.rpc('voice_queue_add', { ...room, p_video: a.videoId, p_title: '' })
         break
-      case 'approve':
-        await this.rpc('voice_queue_approve', { ...room, p_item: a.itemId, p_accept: a.accept })
+      case 'vote':
+        await this.rpc('voice_vote', { ...room, p_item: a.itemId, p_on: a.on })
         break
       case 'play':
         await this.rpc('voice_play_item', { ...room, p_item: a.itemId })
@@ -977,6 +916,7 @@ export class SupabaseBackend implements Backend {
 
     // ---- state ----
     let mine: { seat: number | null; muted: boolean } | null = null
+    let stage = false
     const apply = async (state: VoiceStateRow, sent: number) => {
       this.noteClock(state.now, sent)
       const room = await this.toVoiceRoom(state)
@@ -992,7 +932,10 @@ export class SupabaseBackend implements Backend {
         if (before.seat === null && mine.seat !== null) this.voiceSync(roomId, me)
         if ((mine.seat === null && before.seat !== null) || (mine.muted && !before.muted)) void audio?.setMic(false).catch(() => undefined)
       }
-      if (mine && !audio && !audioCtl) void connectAudio()
+      // Audio only while someone is on the stage: a room nobody talks in is a chat room and costs no LiveKit minutes.
+      stage = room.members.some((x) => x.seat !== null)
+      if (mine && stage && !audio && !audioCtl) void connectAudio()
+      else if (!stage && (audio || audioCtl)) stopAudio(true)
       emit({ type: 'room', room })
       return room
     }
@@ -1029,7 +972,7 @@ export class SupabaseBackend implements Backend {
       const after = this.newest.get(`voice:${roomId}`)
       if (after === undefined) return // the history hasn't loaded yet; it covers everything so far
       const { data, error } = await this.client.from('voice_messages').select('*').eq('room_id', roomId)
-        .in('kind', ['text', 'system']).gt('id', after).order('id', { ascending: true }).limit(200)
+        .in('kind', LINE_KINDS).gt('id', after).order('id', { ascending: true }).limit(200)
       if (error) return
       const rows = data as VoiceMessageRow[]
       this.noteNewest(`voice:${roomId}`, rows)
@@ -1059,11 +1002,12 @@ export class SupabaseBackend implements Backend {
     }
     const retryAudio = () => {
       clearTimeout(audioRetry)
+      if (!stage) return
       // A weak network gets a few quick tries, then one every 30 s; the room itself (chat, seats) carries on.
       audioRetry = setTimeout(() => void connectAudio(), Math.min(30_000, 2_000 * 2 ** audioTries++))
     }
     const connectAudio = async () => {
-      if (closed || over || audioCtl) return
+      if (closed || over || audioCtl || !stage) return
       const ctl = new AbortController()
       audioCtl = ctl
       try {
@@ -1104,13 +1048,20 @@ export class SupabaseBackend implements Backend {
         retryAudio()
       }
     }
-    const stopAudio = () => {
+    /** `idle`: the stage emptied (the room goes on without audio until someone takes a seat). */
+    const stopAudio = (idle = false) => {
       clearTimeout(audioRetry)
       audioCtl?.abort()
       audioCtl = null
       void audio?.disconnect().catch(() => undefined)
       audio = null
       audioWaiters.splice(0).forEach((f) => f(null))
+      if (idle) {
+        audioTries = 0
+        audioState = { status: 'connecting', needsTap: false }
+        emit({ type: 'audio', audio: null })
+        emit({ type: 'levels', levels: {} })
+      }
     }
     const audioWaiters: ((a: VoiceAudio | null) => void)[] = []
     const permissionWaiters: (() => void)[] = []
@@ -1326,8 +1277,10 @@ export class SupabaseBackend implements Backend {
     await this.signMany(s.members.map((m) => m.photo_path))
     const local = (ms: number) => ms - this.clockOffset // server time → this device's clock
     return {
-      id: s.id, title: s.title, category: s.category as RoomCategory, mode: s.mode === 'open' ? 'open' : 'approval',
-      hostId: s.host, meId: this.uid,
+      id: s.id, title: s.title, category: kind(s.category), mode: s.mode === 'open' ? 'open' : 'approval',
+      hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null,
+      maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
+      isPrivate: !!s.private,
       members: s.members.map((m) => ({
         profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand,
       })),
@@ -1336,30 +1289,35 @@ export class SupabaseBackend implements Backend {
         id: s.music.id, videoId: s.music.videoId, title: s.music.title, addedBy: s.music.by,
         startedAt: local(s.music.startedAt), pausedAt: s.music.pausedAt === null ? null : local(s.music.pausedAt),
       } : null,
-      queue: s.queue.map((q) => ({ id: q.id, videoId: q.videoId, title: q.title, addedBy: q.by, pending: q.suggested })),
+      queue: s.queue.map((q) => ({ id: q.id, videoId: q.videoId, title: q.title, addedBy: q.by, votes: q.votes ?? 0, voted: !!q.voted })),
     }
   }
 
   private async toVoiceLines(rows: VoiceMessageRow[]): Promise<VoiceLine[]> {
     const me = this.uid
-    await this.signMany(rows.map((r) => (r.kind === 'text' ? r.sender_photo : null)))
-    return rows.map((r): VoiceLine => {
+    // One request signs every face and photo in the batch.
+    await this.signMany(rows.flatMap((r) => (r.kind === 'text' || r.kind === 'photo' ? [r.sender_photo, r.media_path] : [])))
+    return rows.flatMap((r): VoiceLine[] => {
       const at = time(r.created_at)
-      if (r.kind === 'text') {
-        return {
-          id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at,
-          sender: this.cardProfile({
-            id: r.sender, name: r.sender_name, gender: r.sender_gender ?? 'other', age: r.sender_age ?? 0, city: '', bio: '',
-            photo_path: r.sender_photo, country: r.sender_country,
-          }),
-        }
+      const sender = () => this.cardProfile({
+        id: r.sender, name: r.sender_name, gender: r.sender_gender ?? 'other', age: r.sender_age ?? 0, city: '', bio: '',
+        photo_path: r.sender_photo, country: r.sender_country,
+      })
+      if (r.kind === 'text') return [{ id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at, sender: sender() }]
+      if (r.kind === 'photo') {
+        const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
+        return url ? [{ id: r.id, kind: 'photo', fromMe: r.sender === me, url, at, sender: sender() }] : [] // no longer readable
+      }
+      if (r.kind === 'icebreaker') {
+        const prompt = Number(r.payload?.q)
+        return prompt >= 1 ? [{ id: r.id, kind: 'icebreaker', prompt, name: r.sender_name, fromMe: r.sender === me, at }] : []
       }
       const p = r.payload ?? {}
-      return {
+      return [{
         id: r.id, kind: 'system', event: String(p.event) as VoiceSystemEvent, name: String(p.name ?? r.sender_name), at,
         ...(typeof p.seat === 'number' ? { seat: p.seat } : {}),
         ...(typeof p.title === 'string' ? { title: p.title } : {}),
-      }
+      }]
     })
   }
 
@@ -1380,19 +1338,6 @@ export class SupabaseBackend implements Backend {
     const { data } = await this.client.storage.from(BUCKET).createSignedUrls(need, SIGNED_URL_SECONDS).catch(() => ({ data: null }))
     for (const d of data ?? []) {
       if (d.path && d.signedUrl) this.signedUrls.set(d.path, { url: d.signedUrl, reuseUntil: now + 50 * 60_000 })
-    }
-  }
-
-  /** A photo the viewer may no longer see (that person left the room long ago) shows the initial instead. */
-  private async toRoomMessage(r: RoomMessageRow, me: string): Promise<RoomMessage> {
-    const photoUrl = r.sender_photo ? await this.signed(r.sender_photo).catch(() => null) : null
-    return {
-      id: r.id,
-      sender: {
-        id: r.sender, name: r.sender_name, gender: gender(r.sender_gender), age: r.sender_age, city: '', bio: '',
-        photoUrl, country: r.sender_country, posts: [],
-      },
-      fromMe: r.sender === me, text: r.body, at: time(r.created_at),
     }
   }
 
@@ -1424,7 +1369,7 @@ export class SupabaseBackend implements Backend {
   }
 
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
-  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts'): Promise<string> {
+  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms'): Promise<string> {
     const isVideo = file.type.startsWith('video/')
     let body: Blob = file
     let type = file.type

@@ -27,7 +27,8 @@ for (const file of htmlFiles(OUT)) {
   for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
     hashes.add(`'sha256-${createHash('sha256').update(match[1], 'utf8').digest('base64')}'`)
   }
-  const policy = `script-src 'self' https://www.youtube.com ${[...hashes].join(' ')}; object-src 'none'; base-uri 'self'`
+  // 'wasm-unsafe-eval': TensorFlow.js (the on-device nudity check) compiles a tiny WebAssembly helper (long.js); no JS eval.
+  const policy = `script-src 'self' 'wasm-unsafe-eval' https://www.youtube.com ${[...hashes].join(' ')}; object-src 'none'; base-uri 'self'`
   html = html.replace('<head>', `<head><meta http-equiv="Content-Security-Policy" content="${policy}"/>`)
   writeFileSync(file, html)
   pages++

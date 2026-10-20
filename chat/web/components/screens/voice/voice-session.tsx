@@ -4,8 +4,10 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import type { LudoGame, VoiceAction, VoiceAudioState, VoiceLine, VoiceMember, VoiceReaction, VoiceRoom } from '@/lib/backend'
+import { BackendError, type LudoGame, type VoiceAction, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { errorCode } from '@/lib/format'
+import { retryImport } from '@/lib/retry-import'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -62,6 +64,10 @@ export interface VoiceSession {
   audio: VoiceAudioState | null
   act: (a: VoiceAction) => Promise<boolean>
   send: (text: string) => Promise<boolean>
+  /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude). */
+  sendPhoto: (photo: File) => Promise<boolean>
+  /** Posts a conversation starter card. */
+  icebreaker: () => void
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
   /** The room's Ludo game (lobby, playing, or a result from the last few minutes). */
@@ -219,6 +225,43 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     [backend, roomId, addLines, toast],
   )
 
+  const sendPhoto = useCallback(
+    async (photo: File) => {
+      if (!photo.type.startsWith('image/')) {
+        toast.error(new BackendError('bad_media'))
+        return false
+      }
+      // The model runs here, before anything is uploaded; a photo that can't be checked isn't sent either.
+      try {
+        const { classifyImage } = await retryImport(() => import('@/lib/nudity'))
+        if (await classifyImage(photo)) {
+          toast.error(new BackendError('nude_photo'))
+          return false
+        }
+      } catch {
+        toast.error(new BackendError('network'))
+        return false
+      }
+      try {
+        addLines([await backend.sendVoicePhoto(roomId, photo)])
+        return true
+      } catch (err) {
+        toast.error(err)
+        return false
+      }
+    },
+    [backend, roomId, addLines, toast],
+  )
+
+  const icebreaker = useCallback(async () => {
+    try {
+      addLines([await backend.voiceIcebreaker(roomId)])
+    } catch (err) {
+      if (errorCode(err) === 'slow_down') toast.show(tRef.current('ib.wait'), 'info')
+      else toast.error(err)
+    }
+  }, [backend, roomId, addLines, toast])
+
   const startAudio = useCallback(() => void backend.voiceStartAudio(roomId).catch(() => undefined), [backend, roomId])
 
   // Browsers keep audio off until the page is touched: any tap anywhere turns it on.
@@ -229,7 +272,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => document.removeEventListener('pointerdown', startAudio)
   }, [needsTap, startAudio])
 
-  return { room, me, lines, levels, reactions, audio, act, send, startAudio, ludo, setLudo }
+  return { room, me, lines, levels, reactions, audio, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio, ludo, setLudo }
 }
 
 /**

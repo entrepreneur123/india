@@ -36,7 +36,7 @@ export function compactNumber(n: number, locale: string) {
 
 const ERROR_CODES = new Set([
   'exit_locked', 'slow_down', 'banned', 'premium_required', 'under_18', 'not_allowed', 'not_found', 'network',
-  'blocked', 'too_large', 'bad_media', 'video_not_configured', 'not_signed_in', 'room_closed', 'room_gender',
+  'blocked', 'too_large', 'bad_media', 'video_not_configured', 'not_signed_in', 'room_closed', 'room_gender', 'nude_photo',
   'room_age', 'room_full', 'room_title', 'room_size', 'sms_unavailable', 'voice_removed', 'mic_denied', 'queue_full',
 ])
 

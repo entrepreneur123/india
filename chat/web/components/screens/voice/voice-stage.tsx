@@ -101,7 +101,7 @@ export function Stage({
   )
 }
 
-function SeatPerson({
+export function SeatPerson({
   member,
   px,
   levels,
@@ -157,7 +157,7 @@ function SeatPerson({
       <span className="flex max-w-full min-w-0 flex-col items-center">
         <span className={cn('max-w-full truncate font-semibold leading-tight', wide ? 'text-sm' : 'text-xs')}>{member.profile.name}</span>
         {role ? (
-          <span className="mt-0.5 rounded-full bg-primary-soft px-1.5 py-px text-[10px] leading-tight font-bold text-primary-text">{role}</span>
+          <span className="mt-0.5 rounded-full bg-primary-soft px-1.5 py-px text-[10px] leading-tight font-bold whitespace-nowrap text-primary-text">{role}</span>
         ) : null}
       </span>
     </button>
@@ -190,7 +190,7 @@ function EmptySeat({ seat, px, locked, canManage, onClick }: { seat: number; px:
 }
 
 /** Reactions float up over the stage (X Spaces); under reduced motion they only fade in and out in place. */
-function ReactionLayer({ reactions }: { reactions: Reaction[] }) {
+export function ReactionLayer({ reactions }: { reactions: Reaction[] }) {
   const reduce = useReducedMotion()
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>

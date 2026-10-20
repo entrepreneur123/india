@@ -30,7 +30,8 @@ export interface YTPlayer {
   loadVideoById(o: { videoId: string; startSeconds?: number }): void
   getCurrentTime(): number
   getPlayerState(): number
-  getVideoData(): { title?: string }
+  getVideoData(): { title?: string; author?: string }
+  getDuration(): number
   destroy(): void
 }
 

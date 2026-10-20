@@ -3,26 +3,35 @@
 import { useEffect, useId, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { Lock, Minus, Plus } from 'lucide-react'
-import type { NewRoom, RoomCategory, Target } from '@/lib/backend'
+import type { NewVoiceRoom, RoomKind, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useI18n } from '@/components/i18n'
-import { Field, Segmented, TextInput } from '@/components/ui/bits'
+import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { cn } from '@/lib/utils'
-import { TopicPicker } from './topic-picker'
+import { CategoryPicker } from './topic-picker'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
+const MAX_TITLE = 40
+const MAX_NOTE = 200
+const MIN_SIZE = 2
+const MAX_SIZE = 200
+/** Finer steps for small rooms: 1 up to 10, 5 up to 50, then 10. */
+const stepUp = (n: number) => Math.min(MAX_SIZE, n < 10 ? n + 1 : n < 50 ? n + 5 : n + 10)
+const stepDown = (n: number) => Math.max(MIN_SIZE, n <= 10 ? n - 1 : n <= 50 ? n - 5 : n - 10)
 
+/** A new room: its name, category, who may come in and an optional pinned announcement. */
 export function CreateRoomDialog({
   open,
+  initialCategory,
   onClose,
   onCreated,
 }: {
   open: boolean
+  initialCategory?: RoomKind
   onClose: () => void
-  onCreated: (id: string, code: string) => void
+  onCreated: (id: string, code: string, isPrivate: boolean) => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -30,35 +39,39 @@ export function CreateRoomDialog({
   const { mutate } = useSWRConfig()
   const id = useId()
   const [title, setTitle] = useState('')
-  const [category, setCategory] = useState<RoomCategory>('chat')
-  const [max, setMax] = useState(10)
+  const [category, setCategory] = useState<RoomKind>('talk')
+  const [max, setMax] = useState(50)
   const [gender, setGender] = useState<Target>('any')
   const [minAge, setMinAge] = useState(18)
   const [maxAge, setMaxAge] = useState(100)
   const [isPrivate, setPrivate] = useState(false)
+  const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
-  const valid = title.trim().length >= 2 && title.trim().length <= 40 && minAge <= maxAge
+  const valid = title.trim().length >= 2 && title.trim().length <= MAX_TITLE && minAge <= maxAge
 
   useEffect(() => {
     if (!open) return
     setTitle('')
-    setCategory('chat')
-    setMax(10)
+    setCategory(initialCategory ?? 'talk')
+    setMax(50)
     setGender('any')
     setMinAge(18)
     setMaxAge(100)
     setPrivate(false)
-  }, [open])
+    setNote('')
+  }, [open, initialCategory])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
     setBusy(true)
-    const room: NewRoom = { title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate }
+    const room: NewVoiceRoom = {
+      title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(),
+    }
     try {
-      const made = await backend.createRoom(room)
-      await mutate('rooms')
-      onCreated(made.id, made.code)
+      const made = await backend.createVoiceRoom(room)
+      void mutate('voiceRooms')
+      onCreated(made.id, made.code, isPrivate)
     } catch (err) {
       toast.error(err)
     } finally {
@@ -72,12 +85,12 @@ export function CreateRoomDialog({
         <Field
           label={t('create.name')}
           htmlFor={`${id}-t`}
-          trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/40</span>}
+          trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/{MAX_TITLE}</span>}
         >
           <TextInput
             id={`${id}-t`}
             value={title}
-            maxLength={40}
+            maxLength={MAX_TITLE}
             placeholder={t('create.namePlaceholder')}
             onChange={(e) => setTitle(e.target.value)}
             data-autofocus
@@ -88,7 +101,7 @@ export function CreateRoomDialog({
           <span className="text-sm font-semibold" id={`${id}-cat`}>
             {t('create.category')}
           </span>
-          <TopicPicker labelledBy={`${id}-cat`} value={category} onChange={setCategory} />
+          <CategoryPicker labelledBy={`${id}-cat`} value={category} onChange={setCategory} />
         </div>
 
         <div className="flex items-center justify-between gap-4">
@@ -96,13 +109,13 @@ export function CreateRoomDialog({
             {t('create.max')}
           </span>
           <div className="flex items-center gap-2" role="group" aria-labelledby={`${id}-max`}>
-            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.max(2, m - 1))} aria-label={t('create.fewer')} disabled={max <= 2}>
+            <Button size="icon-sm" variant="secondary" onClick={() => setMax(stepDown)} aria-label={t('create.fewer')} disabled={max <= MIN_SIZE}>
               <Minus className="size-4" aria-hidden />
             </Button>
-            <span className="w-8 text-center text-lg font-semibold tabular-nums" aria-live="polite">
+            <span className="w-10 text-center text-lg font-semibold tabular-nums" aria-live="polite">
               {max}
             </span>
-            <Button size="icon-sm" variant="secondary" onClick={() => setMax((m) => Math.min(50, m + 1))} aria-label={t('create.more')} disabled={max >= 50}>
+            <Button size="icon-sm" variant="secondary" onClick={() => setMax(stepUp)} aria-label={t('create.more')} disabled={max >= MAX_SIZE}>
               <Plus className="size-4" aria-hidden />
             </Button>
           </div>
@@ -131,6 +144,23 @@ export function CreateRoomDialog({
             <AgeSelect label={t('create.oldest')} value={maxAge} onChange={(v) => { setMaxAge(v); if (v < minAge) setMinAge(v) }} />
           </div>
         </div>
+
+        <Field
+          label={t('create.announcement')}
+          htmlFor={`${id}-n`}
+          hint={t('create.announcementHint')}
+          trailing={<span className="text-xs tabular-nums text-muted-foreground">{note.length}/{MAX_NOTE}</span>}
+        >
+          <TextArea
+            id={`${id}-n`}
+            value={note}
+            maxLength={MAX_NOTE}
+            rows={2}
+            placeholder={t('create.announcementPlaceholder')}
+            onChange={(e) => setNote(e.target.value)}
+            className="min-h-20"
+          />
+        </Field>
 
         <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4">
           <input type="checkbox" checked={isPrivate} onChange={(e) => setPrivate(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" />
@@ -185,8 +215,8 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
     if (code.length !== 6 || busy) return
     setBusy(true)
     try {
-      const roomId = await backend.joinRoomCode(code)
-      await mutate('rooms')
+      const roomId = await backend.joinVoiceCode(code)
+      void mutate('voiceRooms')
       onJoined(roomId)
     } catch (err) {
       toast.error(err)

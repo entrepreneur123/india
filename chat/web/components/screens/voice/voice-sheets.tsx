@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { ChevronRight, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Search, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
+import { ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -9,7 +9,7 @@ import type { TKey } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
-import { TextInput } from '@/components/ui/bits'
+import { Field, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { ReactionIcon } from '@/components/ui/topic-icons'
@@ -26,6 +26,7 @@ export type SheetState =
   | { kind: 'queue' }
   | { kind: 'options' }
   | { kind: 'reportRoom' }
+  | { kind: 'settings' }
   | null
 
 export const freeSeats = (room: VoiceRoom) => {
@@ -149,7 +150,7 @@ export function PersonSheet({
               }}
             />
           )}
-          {self && target.seat !== null && target.role !== 'host' ? (
+          {self && target.seat !== null ? (
             <Row icon={<ArrowDownToLine />} label={t('voice.leaveStage')} onClick={() => void run({ type: 'unseat' })} />
           ) : null}
           {mod && target.seat === null ? (
@@ -364,12 +365,35 @@ export function SeatSheet({ room, seat, onClose, onInvite, act }: { room: VoiceR
   )
 }
 
-export function OptionsSheet({ open, onClose, isHost, onShare, onReport, onLeave }: { open: boolean; onClose: () => void; isHost: boolean; onShare: () => void; onReport: () => void; onLeave: () => void }) {
+export function OptionsSheet({
+  open,
+  onClose,
+  isHost,
+  code,
+  onShare,
+  onCopyCode,
+  onSettings,
+  onReport,
+  onLeave,
+}: {
+  open: boolean
+  onClose: () => void
+  isHost: boolean
+  /** The room's code (host only). */
+  code: string | null
+  onShare: () => void
+  onCopyCode: () => void
+  onSettings: () => void
+  onReport: () => void
+  onLeave: () => void
+}) {
   const { t } = useI18n()
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.options')}>
       <div className="flex flex-col pt-2 pb-4">
         <Row icon={<Link2 />} label={t('voice.share')} onClick={onShare} />
+        {code ? <Row icon={<Copy />} label={t('room.copy', { code })} onClick={onCopyCode} /> : null}
+        {isHost ? <Row icon={<Settings2 />} label={t('room.settings')} onClick={onSettings} /> : null}
         {isHost ? null : <Row icon={<Flag />} label={t('voice.reportRoom')} onClick={onReport} />}
         <Row icon={<LogOut />} label={isHost ? t('voice.endConfirm') : t('voice.leaveQuietly')} danger onClick={onLeave} />
       </div>
@@ -383,6 +407,58 @@ const ROOM_REASONS: { value: ReportReason; label: TKey; detail: TKey }[] = [
   { value: 'minor', label: 'report.minor', detail: 'report.minorDetail' },
   { value: 'other', label: 'report.other', detail: 'report.otherDetail' },
 ]
+
+/** Host: the room's title and its pinned announcement. */
+export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { t } = useI18n()
+  const id = useId()
+  const [title, setTitle] = useState(room.title)
+  const [note, setNote] = useState(room.announcement ?? '')
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    setTitle(room.title)
+    setNote(room.announcement ?? '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+  const valid = title.trim().length >= 2 && title.trim().length <= 40
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!valid || busy) return
+    setBusy(true)
+    try {
+      await backend.updateVoiceRoom(room.id, { title: title.trim(), announcement: note.trim() })
+      toast.show(t('room.saved'), 'success')
+      onClose()
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('room.settings')} description={t('room.settingsDesc')}>
+      <form onSubmit={(e) => void save(e)} className="flex flex-col gap-5 p-6 pt-4">
+        <Field label={t('create.name')} htmlFor={`${id}-t`} trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/40</span>}>
+          <TextInput id={`${id}-t`} value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} data-autofocus />
+        </Field>
+        <Field
+          label={t('create.announcement')}
+          htmlFor={`${id}-n`}
+          hint={t('create.announcementHint')}
+          trailing={<span className="text-xs tabular-nums text-muted-foreground">{note.length}/200</span>}
+        >
+          <TextArea id={`${id}-n`} value={note} maxLength={200} rows={3} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} />
+        </Field>
+        <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!valid}>
+          {t('common.save')}
+        </Button>
+      </form>
+    </Modal>
+  )
+}
 
 export function ReportRoomSheet({ roomId, open, onClose }: { roomId: string; open: boolean; onClose: () => void }) {
   const backend = useBackend()

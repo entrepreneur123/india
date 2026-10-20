@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useId, useRef, useState } from 'react'
-import { Check, ChevronUp, ListMusic, LoaderCircle, Pause, Play, SkipForward, Trash2, X } from 'lucide-react'
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
+import { ChevronUp, ListMusic, LoaderCircle, Pause, Play, Plus, SkipForward, Trash2 } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
 import { thumbnail, youTubeId, YT_ENDED, YT_PAUSED, YT_PLAYING, loadYouTube, type YTPlayer } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
@@ -10,11 +10,21 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
+import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 
 /** Where the shared track is now, in seconds (the room stores when it started, not a position). */
 const position = (tr: VoiceTrack) => Math.max(0, ((tr.pausedAt ?? Date.now()) - tr.startedAt) / 1000)
 const DRIFT_S = 2.5
+
+/** Requests in the order they'll play: most votes first, then the oldest. */
+export const byVotes = (queue: VoiceQueueItem[]) =>
+  queue.map((q, i) => [q, i] as const).sort((a, b) => b[0].votes - a[0].votes || a[1] - b[1]).map(([q]) => q)
+
+/** "Song – Film · Artist" titles carry the artist after the last " · ": shown as the song, then its artist. */
+const songOf = (title: string) => (title.includes(' · ') ? title.slice(0, title.lastIndexOf(' · ')) : title)
+const artistOf = (title: string) => (title.includes(' · ') ? title.slice(title.lastIndexOf(' · ') + 3) : '')
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
 /**
  * "Listen together": the room's YouTube track. Open, it plays in a 16:9 player at least 200×200 (YouTube's minimum);
@@ -40,7 +50,7 @@ export function MusicPanel({
   const { t } = useI18n()
   const [playerTitle, setPlayerTitle] = useState('')
   const title = track.title || playerTitle || t('voice.ytVideo')
-  const upNext = queue.filter((q) => !q.pending).length
+  const upNext = queue.length
 
   if (!open)
     return (
@@ -102,7 +112,20 @@ export function MusicPanel({
  * The YouTube IFrame player (youtube-nocookie.com). The API script loads with the first track; until it is ready,
  * or when YouTube can't be reached, the thumbnail and a status stand in for it.
  */
-function Player({ track, onTitle, onEnded }: { track: VoiceTrack; onTitle: (title: string) => void; onEnded?: () => void }) {
+function Player({
+  track,
+  onTitle,
+  onEnded,
+  onMeta,
+  className,
+}: {
+  track: VoiceTrack
+  onTitle: (title: string) => void
+  onEnded?: () => void
+  /** The channel and the length, once the player knows them. */
+  onMeta?: (author: string, seconds: number) => void
+  className?: string
+}) {
   const { t } = useI18n()
   const hostRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<YTPlayer | null>(null)
@@ -113,6 +136,9 @@ function Player({ track, onTitle, onEnded }: { track: VoiceTrack; onTitle: (titl
   endedRef.current = onEnded
   const titleRef = useRef(onTitle)
   titleRef.current = onTitle
+  const metaRef = useRef(onMeta)
+  metaRef.current = onMeta
+  const tellMeta = (p: YTPlayer) => metaRef.current?.(p.getVideoData().author ?? '', p.getDuration?.() || 0)
   // failed: YouTube can't be reached; unavailable: this video won't play embedded (or here).
   const [state, setState] = useState<'loading' | 'ready' | 'failed' | 'unavailable'>('loading')
   const [thumbOk, setThumbOk] = useState(true)
@@ -140,10 +166,14 @@ function Player({ track, onTitle, onEnded }: { track: VoiceTrack; onTitle: (titl
               playerRef.current = player
               setState('ready')
               titleRef.current(player.getVideoData().title ?? '')
+              tellMeta(player)
             },
             onStateChange: (e) => {
               if (!alive || !player) return
-              if (e.data === YT_PLAYING) titleRef.current(player.getVideoData().title ?? '')
+              if (e.data === YT_PLAYING) {
+                titleRef.current(player.getVideoData().title ?? '')
+                tellMeta(player)
+              }
               if (e.data === YT_ENDED) endedRef.current?.()
             },
             onError: () => alive && setState('unavailable'),
@@ -191,7 +221,7 @@ function Player({ track, onTitle, onEnded }: { track: VoiceTrack; onTitle: (titl
   }, [state])
 
   return (
-    <div className="relative aspect-video min-h-[200px] w-full overflow-hidden rounded-2xl bg-black">
+    <div className={cn('relative aspect-video min-h-[200px] w-full overflow-hidden rounded-2xl bg-black', className)}>
       <div ref={hostRef} className="absolute inset-0 [&>iframe]:size-full" />
       {state !== 'ready' ? (
         <div className={cn('absolute inset-0 grid place-items-center', state !== 'loading' && 'bg-black')}>
@@ -213,14 +243,160 @@ function Player({ track, onTitle, onEnded }: { track: VoiceTrack; onTitle: (titl
   )
 }
 
-/** "Up next": the queue, the host's approvals, and the box to add (host) or suggest (everyone else) a link. */
+/**
+ * The music room's hero: the shared player big, the song, its progress and the DJ, and the requests by vote under it.
+ * With nothing playing, an invitation to request the first song.
+ */
+export function MusicHero({
+  track,
+  queue,
+  isHost,
+  hostName,
+  onQueue,
+  act,
+}: {
+  track: VoiceTrack | null
+  queue: VoiceQueueItem[]
+  isHost: boolean
+  hostName: string
+  onQueue: () => void
+  act: (a: VoiceAction) => Promise<boolean>
+}) {
+  const { t, num, plural } = useI18n()
+  const [playerTitle, setPlayerTitle] = useState('')
+  const [meta, setMeta] = useState<{ author: string; seconds: number }>({ author: '', seconds: 0 })
+  const ordered = byVotes(queue)
+  const title = track ? songOf(track.title) || playerTitle || t('voice.ytVideo') : ''
+  const artist = track ? artistOf(track.title) || meta.author : ''
+  useEffect(() => setMeta({ author: '', seconds: 0 }), [track?.id])
+
+  return (
+    <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4" style={{ '--k': kindColor('music') } as CSSProperties}>
+      {track ? (
+        <div>
+          <Player
+            track={track}
+            onTitle={setPlayerTitle}
+            onMeta={(author, seconds) => setMeta({ author, seconds })}
+            onEnded={isHost ? () => void act({ type: 'skip', trackId: track.id }) : undefined}
+            className="shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--k)_70%,transparent)]"
+          />
+          <div className="mt-3 flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <h2 className="truncate text-lg leading-tight font-bold">{title}</h2>
+              <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                {[artist, track.pausedAt ? t('voice.pausedByHost') : t('music.dj', { name: hostName })].filter(Boolean).join(' · ')}
+              </p>
+            </div>
+            {isHost ? (
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
+                  aria-label={track.pausedAt ? t('voice.resume') : t('voice.pause')}
+                >
+                  {track.pausedAt ? <Play className="size-5 fill-current" aria-hidden /> : <Pause className="size-5 fill-current" aria-hidden />}
+                </Button>
+                <Button size="icon" variant="brand" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('music.next')} title={t('music.next')}>
+                  <SkipForward className="size-5 fill-current" aria-hidden />
+                </Button>
+              </div>
+            ) : null}
+          </div>
+          <Progress track={track} seconds={meta.seconds} />
+          <p className="mt-1 text-xs text-muted-foreground">{t('voice.addedBy', { name: track.addedBy })}</p>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] px-6 py-8 text-center ring-1 ring-[color-mix(in_srgb,var(--k)_28%,transparent)]">
+          <TopicIcon topic="music" size={52} />
+          <div>
+            <h2 className="text-lg font-bold">{t('music.nothing')}</h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('music.nothingBody')}</p>
+          </div>
+          <Button variant="brand" onClick={onQueue}>
+            <Plus className="size-4.5" aria-hidden /> {isHost ? t('music.add') : t('music.request')}
+          </Button>
+        </div>
+      )}
+
+      <div className="rounded-2xl bg-muted/50 p-3">
+        <div className="flex items-center justify-between gap-2 pb-1">
+          <h3 className="flex min-w-0 items-baseline gap-2 text-sm font-semibold whitespace-nowrap">
+            {t('voice.upNext')}
+            <span className="truncate text-xs font-normal text-muted-foreground max-sm:hidden">{t('music.mostVoted')}</span>
+          </h3>
+          <Button size="sm" variant="ghost" onClick={onQueue} className="shrink-0 px-2.5" aria-label={`${t('music.request')} · ${num(queue.length)}`}>
+            <ListMusic className="size-4.5" aria-hidden /> {t('music.request')}
+          </Button>
+        </div>
+        {ordered.length === 0 ? (
+          <p className="py-2 text-sm text-muted-foreground">{t('music.noRequests')}</p>
+        ) : (
+          <ol className="flex flex-col">
+            {ordered.slice(0, 3).map((q) => (
+              <li key={q.id}>
+                <TrackRow videoId={q.videoId} title={songOf(q.title) || t('voice.ytVideo')} sub={`${t('voice.addedBy', { name: q.addedBy })} · ${plural(q.votes, 'music.votes.one', 'music.votes.other')}`}>
+                  <VoteButton item={q} act={act} />
+                </TrackRow>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </section>
+  )
+}
+
+/** Where the song is, as a bar and times (the length comes from the player once it has loaded). */
+function Progress({ track, seconds }: { track: VoiceTrack; seconds: number }) {
+  const [, tick] = useState(0)
+  useEffect(() => {
+    if (track.pausedAt) return
+    const id = setInterval(() => tick((x) => x + 1), 1000)
+    return () => clearInterval(id)
+  }, [track.pausedAt])
+  const at = seconds ? Math.min(position(track), seconds) : position(track)
+  return (
+    <div className="mt-2.5">
+      <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
+        <div className="h-full rounded-full bg-[var(--k)] transition-[width] duration-1000 ease-linear" style={{ width: seconds ? `${(at / seconds) * 100}%` : '0%' }} />
+      </div>
+      <div className="mt-1 flex justify-between text-[11px] text-muted-foreground tabular-nums" dir="ltr">
+        <span>{mmss(at)}</span>
+        <span>{seconds ? mmss(seconds) : ''}</span>
+      </div>
+    </div>
+  )
+}
+
+/** One vote per person and song; tapping again takes it back. */
+export function VoteButton({ item, act }: { item: VoiceQueueItem; act: (a: VoiceAction) => Promise<boolean> }) {
+  const { t, num } = useI18n()
+  const title = item.title || t('voice.ytVideo')
+  return (
+    <button
+      type="button"
+      onClick={() => void act({ type: 'vote', itemId: item.id, on: !item.voted })}
+      aria-pressed={item.voted}
+      aria-label={item.voted ? t('music.unvote', { title }) : t('music.vote', { title })}
+      className={cn(
+        'flex h-9 min-w-14 items-center justify-center gap-1 rounded-full px-3 text-sm font-bold tabular-nums transition-colors duration-150',
+        item.voted ? 'bg-[var(--k,var(--primary))] text-white' : 'bg-card text-foreground ring-1 ring-border hover:bg-muted',
+      )}
+    >
+      <ChevronUp className="size-4.5" strokeWidth={2.6} aria-hidden /> {num(item.votes)}
+    </button>
+  )
+}
+
+/** "Up next": the requests by vote, the box to add one, and (for the host) play now and remove. */
 export function QueueSheet({
   open,
   onClose,
   track,
   queue,
   isHost,
-  meName,
   act,
 }: {
   open: boolean
@@ -228,18 +404,15 @@ export function QueueSheet({
   track: VoiceTrack | null
   queue: VoiceQueueItem[]
   isHost: boolean
-  meName: string
   act: (a: VoiceAction) => Promise<boolean>
 }) {
-  const { t } = useI18n()
+  const { t, plural } = useI18n()
   const toast = useToast()
   const id = useId()
   const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const next = queue.filter((q) => !q.pending)
-  // The host sees every suggestion; others see only their own, waiting.
-  const pending = queue.filter((q) => q.pending && (isHost || q.addedBy === meName))
+  const ordered = byVotes(queue)
 
   useEffect(() => {
     if (open) {
@@ -256,7 +429,7 @@ export function QueueSheet({
       return
     }
     setBusy(true)
-    const ok = await act(isHost ? { type: 'addTrack', videoId } : { type: 'suggest', videoId })
+    const ok = await act({ type: 'addTrack', videoId })
     setBusy(false)
     if (ok) {
       setLink('')
@@ -267,7 +440,7 @@ export function QueueSheet({
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.musicTitle')} description={isHost ? t('voice.djDesc') : t('voice.suggestDesc')}>
-      <div className="flex flex-col gap-6 p-6 pt-4">
+      <div className="flex flex-col gap-6 p-6 pt-4" style={{ '--k': kindColor('music') } as CSSProperties}>
         <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-l`} className="sr-only">
             {t('voice.pasteLink')}
@@ -290,7 +463,7 @@ export function QueueSheet({
               className="h-11 min-w-0 flex-1"
             />
             <Button type="submit" variant="brand" className="h-11" loading={busy} disabled={!link.trim()}>
-              {isHost ? t('voice.add') : t('voice.suggest')}
+              {isHost ? t('voice.add') : t('music.request')}
             </Button>
           </div>
           <p id={`${id}-h`} className={cn('text-xs leading-relaxed', error ? 'font-medium text-destructive' : 'text-muted-foreground')} role={error ? 'alert' : undefined}>
@@ -305,56 +478,43 @@ export function QueueSheet({
           </section>
         ) : null}
 
-        {isHost && pending.length ? (
-          <section className="flex flex-col gap-2">
-            <h3 className="text-sm font-semibold">{t('voice.suggestions')}</h3>
-            <ul className="flex flex-col gap-1">
-              {pending.map((q) => (
-                <li key={q.id}>
-                  <TrackRow videoId={q.videoId} title={q.title || t('voice.ytVideo')} sub={t('voice.suggestedBy', { name: q.addedBy })}>
-                    <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'approve', itemId: q.id, accept: false })} aria-label={t('voice.decline')}>
-                      <X className="size-4.5" aria-hidden />
-                    </Button>
-                    <Button size="icon-sm" variant="brand" onClick={() => void act({ type: 'approve', itemId: q.id, accept: true })} aria-label={t('voice.approve')}>
-                      <Check className="size-4.5" aria-hidden />
-                    </Button>
-                  </TrackRow>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
         <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold">{t('voice.upNext')}</h3>
-          {next.length === 0 && (isHost || pending.length === 0) ? (
-            <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">{t('voice.queueEmpty')}</p>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold">{t('voice.upNext')}</h3>
+            {isHost && ordered.length ? (
+              <Button size="sm" variant="secondary" onClick={() => void act({ type: 'skip', trackId: track?.id })}>
+                <SkipForward className="size-4" aria-hidden /> {t('music.next')}
+              </Button>
+            ) : (
+              <span className="text-xs text-muted-foreground">{t('music.mostVoted')}</span>
+            )}
+          </div>
+          {ordered.length === 0 ? (
+            <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">{t('music.noRequests')}</p>
           ) : (
-            <ul className="flex flex-col gap-1">
-              {next.map((q) => (
+            <ol className="flex flex-col gap-1">
+              {ordered.map((q) => (
                 <li key={q.id}>
-                  <TrackRow videoId={q.videoId} title={q.title || t('voice.ytVideo')} sub={t('voice.addedBy', { name: q.addedBy })}>
+                  <TrackRow
+                    videoId={q.videoId}
+                    title={q.title || t('voice.ytVideo')}
+                    sub={`${t('voice.addedBy', { name: q.addedBy })} · ${plural(q.votes, 'music.votes.one', 'music.votes.other')}`}
+                  >
                     {isHost ? (
                       <>
                         <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'removeItem', itemId: q.id })} aria-label={t('voice.remove')}>
                           <Trash2 className="size-4.5" aria-hidden />
                         </Button>
-                        <Button size="icon-sm" variant="secondary" onClick={() => void act({ type: 'play', itemId: q.id })} aria-label={t('voice.playNow')}>
+                        <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'play', itemId: q.id })} aria-label={t('voice.playNow')}>
                           <Play className="size-4" aria-hidden />
                         </Button>
                       </>
                     ) : null}
+                    <VoteButton item={q} act={act} />
                   </TrackRow>
                 </li>
               ))}
-              {isHost
-                ? null
-                : pending.map((q) => (
-                    <li key={q.id}>
-                      <TrackRow videoId={q.videoId} title={q.title || t('voice.ytVideo')} sub={t('voice.waiting')} />
-                    </li>
-                  ))}
-            </ul>
+            </ol>
           )}
         </section>
       </div>

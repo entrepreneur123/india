@@ -1,10 +1,14 @@
-// Demo voice rooms: a few live rooms with people talking (audio levels), chat, reactions, raised hands and a
-// shared YouTube track. Loaded by the demo backend the first time a voice room is listed or opened.
+// Demo rooms: a few live rooms with people talking (audio levels), chat, icebreakers, reactions, raised hands, song
+// requests with votes and a Ludo leaderboard. Same rules as the server (019): who may come in, private codes, rate
+// limits. Loaded by the demo backend the first time a room is listed or opened.
 import {
   BackendError,
   type NewVoiceRoom,
   type Profile,
-  type RoomCategory,
+  type RoomKind,
+  type RoomLeader,
+  type RoomRefusal,
+  type RoomRules,
   type SpeakMode,
   VOICE_SEATS,
   type VoiceAction,
@@ -72,24 +76,17 @@ const TRACKS: Record<string, { title: string; seconds: number }> = {
   lTRiuFIWV54: { title: '1 A.M Study Session · lofi hip hop', seconds: 0 }, // an hour long: the demo never moves on
 }
 
-const LINES: Partial<Record<RoomCategory, string[]>> & { any: string[] } = {
+const LINES: Record<RoomKind, string[]> & { any: string[] } = {
   music: [
     'Arijit ka koi bhi gaana, bas 🔥', 'next Kal Ho Naa Ho please 🙏', 'volume ekdum perfect hai', 'who added this? legend',
     'goosebumps every single time', 'late night + Arijit = therapy', 'Priya di please play Tum Hi Ho', 'this chorus 😭❤️',
   ],
-  language: [
-    'How do you say “I’m bored” in Hindi?', 'main thoda thoda English bolta hoon', 'is it “in the bus” or “on the bus”?',
-    'practice makes perfect 💪', 'can someone correct my sentence?', 'मुझे English बोलने में डर लगता है', 'Meera ma’am explains so well',
+  talk: [
+    'Bumrah ka over lethal tha', 'Kohli 100 today, mark my words', 'DRS was clearly out!', 'what a catch by Jadeja 🔥',
+    'How do you say “I’m bored” in Hindi?', 'is it “in the bus” or “on the bus”?', 'chai or coffee, final answer?',
+    'Sunday plans anyone?', 'mera vote Goa ke liye', 'best street food in {city}?', 'haha same here',
   ],
-  sports: [
-    'Bumrah ka over lethal tha', 'Kohli 100 today, mark my words', 'Head ka wicket chahiye jaldi', 'DRS was clearly out!',
-    'IND will chase this easily', 'what a catch by Jadeja 🔥', 'Gill looking in form today',
-  ],
-  study: [
-    '45 min focus, 10 min break?', 'UPSC prep day 112 ✍️', 'anyone doing NEET this year?', 'this beat is so calm',
-    'back after chai ☕', 'Pomodoro #3 done', 'library vibes at home',
-  ],
-  gaming: [
+  games: [
     'bas ek six chahiye yaar', 'green ko maaro!', 'Arnab bhai ka luck dekho', 'who is winning?', 'next game mujhe bhi lo',
     'safe square pe hai, bach gaya', 'yellow is so close to home', 'that capture was brutal',
   ],
@@ -97,9 +94,26 @@ const LINES: Partial<Record<RoomCategory, string[]>> & { any: string[] } = {
 }
 
 const REACTIONS: VoiceReaction[] = ['heart', 'laugh', 'fire', 'clap', 'wow']
+/** Replies after an icebreaker, so the card starts a conversation in the demo too. */
+const ANSWERS = ['ooh good one', 'mine is easy: Goa 🌊', 'haha let me think', 'chai, always chai', 'my nani’s kitchen', 'this is fun']
+const PROMPTS = 40
+/** A holiday snap someone shared in the demo (drawn, so it needs no network). */
+const SNAP = `data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ff9a62'/><stop offset='.55' stop-color='#ffd39a'/><stop offset='1' stop-color='#8cc3cf'/></linearGradient></defs><rect width='640' height='480' fill='url(#s)'/><circle cx='430' cy='250' r='70' fill='#fff2c9'/><path d='M0 330 Q160 270 320 320 T640 300 V480 H0Z' fill='#3f6f7a'/><path d='M0 385 Q200 345 400 385 T640 372 V480 H0Z' fill='#2c4f58'/></svg>",
+)}`
+const ANYONE: RoomRules = { maxMembers: 120, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false }
+const code = () => Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
 
 interface SimRoom {
   room: Omit<VoiceRoom, 'meId'>
+  /** The room's code (the host sees it). */
+  code: string
+  /** I came in with the code once (a private room then lets me back by its id). */
+  admitted: boolean
+  /** Ludo winners here: user id → name and wins. */
+  wins: Map<string, { profile: Profile; wins: number }>
+  game: 'lobby' | 'playing' | null
+  lastIcebreaker: number
   lines: VoiceLine[]
   subs: Set<(e: VoiceEvent) => void>
   timers: ReturnType<typeof setTimeout>[]
@@ -115,16 +129,21 @@ export class VoiceSim {
   private rooms = new Map<string, SimRoom>()
   private lineSeq = 1
   private sendTimes: number[] = []
+  private photoTimes: number[] = []
 
   constructor(private me: () => Profile | null) {
     this.seed('v-bolly', 'Late night Bollywood songs', 'music', 'approval', 'Priya', 5, 34, {
-      playing: 'BddP6PYo2gs', ago: 74_000, queue: ['Umqb9KENgmk', '284Ov7ysmfA', 'VAdGW7QDJiU'],
-    })
-    this.seed('v-cricket', 'Cricket talk: IND vs AUS', 'sports', 'approval', 'Vikram', 7, 58)
-    this.seed('v-english', 'Hindi–English practice', 'language', 'open', 'Meera', 4, 21)
-    this.seed('v-lofi', 'Lo-fi study together', 'study', 'open', 'Kavya', 3, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [] })
-    // A Ludo game is on here (mockLudo.ts), to watch.
-    this.seed('v-ludo', 'Ludo night: come watch', 'gaming', 'open', 'Arnab', 4, 12)
+      playing: 'BddP6PYo2gs', ago: 74_000, queue: ['Umqb9KENgmk', '284Ov7ysmfA', 'VAdGW7QDJiU'], votes: [4, 7, 2],
+    }, undefined, 'Requests welcome: paste a YouTube link, vote for the next song.')
+    this.seed('v-chai', 'Chai pe charcha', 'talk', 'approval', 'Meera', 0, 14, undefined, undefined, 'Be kind. No phone numbers in the chat.')
+    this.seed('v-cricket', 'Cricket talk: IND vs AUS', 'talk', 'approval', 'Vikram', 6, 48)
+    // A Ludo game is on here (mockLudo.ts), to watch; a leaderboard from earlier games.
+    this.seed('v-ludo', 'Ludo night: come watch', 'games', 'open', 'Arnab', 4, 12)
+    this.seed('v-lofi', 'Lo-fi study together', 'music', 'open', 'Kavya', 2, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [], votes: [] })
+    this.seed('v-gym', 'Gym bros: fitness talk', 'talk', 'open', 'Harsh', 2, 6, undefined, { ...ANYONE, maxMembers: 30, genderRule: 'male', minAge: 18, maxAge: 30 })
+    const ludo = this.rooms.get('v-ludo')!
+    ludo.game = 'playing'
+    ludo.room.members.slice(0, 5).forEach((m, i) => ludo.wins.set(m.profile.id, { profile: m.profile, wins: [6, 4, 3, 3, 1][i] }))
   }
 
   /** Who is in a live room, for the demo Ludo game. */
@@ -145,14 +164,16 @@ export class VoiceSim {
   private seed(
     id: string,
     title: string,
-    category: RoomCategory,
+    category: RoomKind,
     mode: SpeakMode,
     hostName: string,
     speakers: number,
     listeners: number,
-    music?: { playing: string; ago: number; queue: string[] },
+    music?: { playing: string; ago: number; queue: string[]; votes: number[] },
+    rules: RoomRules = ANYONE,
+    announcement: string | null = null,
   ) {
-    const people = [person(hostName), ...Array.from({ length: speakers + listeners - 1 }, () => person())]
+    const people = [person(hostName), ...Array.from({ length: Math.max(speakers, 1) + listeners - 1 }, () => person())]
     const members: VoiceMember[] = people.map((profile, i) => ({
       profile,
       role: i === 0 ? 'host' : i === 1 && speakers > 2 ? 'cohost' : i < speakers ? 'speaker' : 'listener',
@@ -163,14 +184,16 @@ export class VoiceSim {
     }))
     const host = people[0]
     const room: SimRoom['room'] = {
-      id, title, category, mode, hostId: host.id, members,
+      id, title, category, mode, hostId: host.id, members, ...rules, announcement, code: null,
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: index === 8 && mode === 'approval' })),
       track: null,
       queue: [],
     }
     if (music) {
       room.track = this.track(music.playing, host.name, Date.now() - music.ago)
-      room.queue = music.queue.map((v, i) => ({ id: uid(), videoId: v, title: TRACKS[v]?.title ?? '', addedBy: people[i + 1].name, pending: false }))
+      room.queue = music.queue.map((v, i) => ({
+        id: uid(), videoId: v, title: TRACKS[v]?.title ?? '', addedBy: people[i + 1].name, votes: music.votes[i] ?? 0, voted: false,
+      }))
     }
     const lines: VoiceLine[] = []
     const now = Date.now()
@@ -178,17 +201,57 @@ export class VoiceSim {
       const sender = pick(people)
       const at = now - (7 - i) * 45_000
       if (i === 2) lines.push({ id: this.lineSeq++, kind: 'system', event: 'joined', name: pick(people).name, at })
+      if (i === 3 && category === 'talk') lines.push({ id: this.lineSeq++, kind: 'icebreaker', prompt: 7, name: pick(people).name, fromMe: false, at })
+      if (i === 5 && id === 'v-chai') lines.push({ id: this.lineSeq++, kind: 'photo', sender: people[1], fromMe: false, url: SNAP, at })
       lines.push({ id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: this.chatLine(category, sender), at })
     }
-    this.rooms.set(id, { room, lines, subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, mine: false, handsRaised: 0 })
+    this.rooms.set(id, this.sim(room, lines, false))
+  }
+
+  private sim(room: SimRoom['room'], lines: VoiceLine[], mine: boolean): SimRoom {
+    return {
+      room, lines, mine, code: code(), admitted: false, wins: new Map(), game: null, lastIcebreaker: 0,
+      subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, handsRaised: 0,
+    }
+  }
+
+  /** Same rules as the server's voice_refusal(): the host always may; blocked, gender, age, full. */
+  private refusal(r: SimRoom): RoomRefusal | null {
+    const me = this.me()
+    const rm = r.room
+    if (!me || r.mine) return null
+    if (rm.genderRule !== 'any' && me.gender !== rm.genderRule) return 'room_gender'
+    if (me.age < rm.minAge || me.age > rm.maxAge) return 'room_age'
+    if (!this.meMember(r) && rm.members.length >= rm.maxMembers) return 'room_full'
+    return null
+  }
+
+  /** Called by the demo Ludo when a game in the room ends or opens. */
+  win(roomId: string, userId: string | null, name: string | null) {
+    const r = this.rooms.get(roomId)
+    if (!r || !userId) return
+    const profile = r.room.members.find((m) => m.profile.id === userId)?.profile ?? { ...person(name ?? '?'), id: userId }
+    const w = r.wins.get(userId)
+    r.wins.set(userId, { profile, wins: (w?.wins ?? 0) + 1 })
+  }
+
+  gameState(roomId: string, game: 'lobby' | 'playing' | null) {
+    const r = this.rooms.get(roomId)
+    if (r) r.game = game
+  }
+
+  async leaders(roomId: string): Promise<RoomLeader[]> {
+    await wait(250)
+    const r = this.get(roomId)
+    return [...r.wins.values()].sort((a, b) => b.wins - a.wins).slice(0, 5).map((w) => ({ profile: w.profile, wins: w.wins }))
   }
 
   private track(videoId: string, addedBy: string, startedAt = Date.now()): VoiceTrack {
     return { id: uid(), videoId, title: TRACKS[videoId]?.title ?? '', addedBy, startedAt, pausedAt: null }
   }
 
-  private chatLine(category: RoomCategory, sender: Profile) {
-    const list = Math.random() < 0.8 ? (LINES[category] ?? LINES.any) : LINES.any
+  private chatLine(category: RoomKind, sender: Profile) {
+    const list = Math.random() < 0.8 ? LINES[category] : LINES.any
     return pick(list).replace('{city}', sender.city)
   }
 
@@ -204,7 +267,7 @@ export class VoiceSim {
   }
 
   private snapshot(r: SimRoom): VoiceRoom {
-    return structuredClone({ ...r.room, meId: this.me()?.id ?? '' })
+    return structuredClone({ ...r.room, code: r.mine ? r.code : null, meId: this.me()?.id ?? '' })
   }
 
   private emit(r: SimRoom, e: VoiceEvent) {
@@ -241,9 +304,10 @@ export class VoiceSim {
     await wait(450)
     const me = this.me()
     return [...this.rooms.values()]
-      .filter((r) => !r.ended)
-      .sort((a, b) => Number(b.mine) - Number(a.mine))
-      .map(({ room, mine }) => {
+      .filter((r) => !r.ended && (!r.room.isPrivate || r.mine || r.admitted))
+      .sort((a, b) => Number(b.mine) - Number(a.mine) || b.room.members.length - a.room.members.length)
+      .map((r): VoiceRoomSummary => {
+        const { room, mine } = r
         const host = room.members.find((m) => m.profile.id === room.hostId)!.profile
         const stage = room.members.filter((m) => m.seat !== null).sort((a, b) => a.seat! - b.seat!)
         return {
@@ -253,8 +317,18 @@ export class VoiceSim {
           host,
           speakers: stage.slice(0, 4).map((m) => m.profile),
           listeners: room.members.filter((m) => m.seat === null && m.profile.id !== me?.id).length,
+          members: room.members.length,
           nowPlaying: room.track ? room.track.title || null : null,
+          game: r.game,
+          announcement: room.announcement,
           mine,
+          code: mine ? r.code : null,
+          refusal: this.refusal(r),
+          maxMembers: room.maxMembers,
+          genderRule: room.genderRule,
+          minAge: room.minAge,
+          maxAge: room.maxAge,
+          isPrivate: room.isPrivate,
         }
       })
   }
@@ -265,22 +339,84 @@ export class VoiceSim {
     if (!me) throw new BackendError('not_allowed')
     const title = n.title.trim()
     if (title.length < 2 || title.length > 40) throw new BackendError('room_title')
+    if (n.maxMembers < 2 || n.maxMembers > 200) throw new BackendError('room_size')
     for (const r of this.rooms.values()) if (r.mine) this.end(r) // one live room per host
     const id = `v-${uid()}`
-    // A couple of people are already waiting to listen, so the host isn't alone on the first screenshot.
+    // A couple of people are already in, so the host isn't alone on the first screenshot.
     const early = Array.from({ length: 3 }, () => person())
     const room: SimRoom['room'] = {
-      id, title, category: n.category, mode: n.mode, hostId: me.id,
+      id, title, category: n.category, mode: 'approval', hostId: me.id, code: null,
+      maxMembers: n.maxMembers, genderRule: n.genderRule, minAge: n.minAge, maxAge: n.maxAge, isPrivate: n.isPrivate,
+      announcement: n.announcement.trim() || null,
+      // The host comes in off the stage: the room is a chat room until someone joins the voice.
       members: [
-        { profile: me, role: 'host', seat: 0, muted: false, hand: false },
+        { profile: me, role: 'host', seat: null, muted: true, hand: false },
         ...early.map((profile): VoiceMember => ({ profile, role: 'listener', seat: null, muted: true, hand: false })),
       ],
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: false })),
       track: null,
       queue: [],
     }
-    this.rooms.set(id, { room, lines: [], subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, mine: true, handsRaised: 0 })
-    return id
+    const r = this.sim(room, [], true)
+    this.rooms.set(id, r)
+    return { id, code: r.code }
+  }
+
+  async joinCode(c: string) {
+    await wait(350)
+    const r = [...this.rooms.values()].find((x) => !x.ended && x.code === c.trim().toUpperCase())
+    if (!r) throw new BackendError('not_found')
+    const why = this.refusal(r)
+    if (why) throw new BackendError(why)
+    r.admitted = true
+    return r.room.id
+  }
+
+  async settings(roomId: string, patch: { title: string; announcement: string }) {
+    const r = this.get(roomId)
+    if (!r.mine) throw new BackendError('not_allowed')
+    const title = patch.title.trim()
+    if (title.length < 2 || title.length > 40) throw new BackendError('room_title')
+    await wait(200)
+    r.room.title = title
+    r.room.announcement = patch.announcement.trim().slice(0, 200) || null
+    this.changed(r)
+  }
+
+  private post(r: SimRoom, line: VoiceLine) {
+    r.lines.push(line)
+    this.emit(r, { type: 'line', line: { ...line } })
+    return line
+  }
+
+  async icebreaker(roomId: string): Promise<VoiceLine> {
+    const r = this.get(roomId)
+    const me = this.me()
+    if (!me || !this.meMember(r)) throw new BackendError('not_allowed')
+    if (Date.now() - r.lastIcebreaker < 20_000) throw new BackendError('slow_down')
+    await wait(150)
+    r.lastIcebreaker = Date.now()
+    const used = new Set(r.lines.slice(-60).flatMap((l) => (l.kind === 'icebreaker' ? [l.prompt] : [])))
+    const free = Array.from({ length: PROMPTS }, (_, i) => i + 1).filter((q) => !used.has(q))
+    const line = this.post(r, { id: this.lineSeq++, kind: 'icebreaker', prompt: pick(free.length ? free : [1]), name: me.name, fromMe: true, at: Date.now() })
+    // Someone answers a moment later.
+    this.later(r, jitter(2500, 4000), () => {
+      const sender = pick(this.others(r)).profile
+      this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: pick(ANSWERS), at: Date.now() })
+    })
+    return line
+  }
+
+  async photo(roomId: string, url: string): Promise<VoiceLine> {
+    const r = this.get(roomId)
+    const me = this.me()
+    if (!me || !this.meMember(r)) throw new BackendError('not_allowed')
+    const now = Date.now()
+    this.photoTimes = this.photoTimes.filter((t) => now - t < 60_000)
+    if (this.photoTimes.length >= 5) throw new BackendError('slow_down')
+    this.photoTimes.push(now)
+    await wait(400)
+    return this.post(r, { id: this.lineSeq++, kind: 'photo', sender: me, fromMe: true, url, at: now })
   }
 
   async join(roomId: string) {
@@ -288,6 +424,9 @@ export class VoiceSim {
     const r = this.get(roomId)
     const me = this.me()
     if (!me) throw new BackendError('not_allowed')
+    if (r.room.isPrivate && !r.mine && !r.admitted) throw new BackendError('not_found')
+    const why = this.refusal(r)
+    if (why) throw new BackendError(why)
     if (!this.meMember(r)) {
       r.room.members.push({ profile: me, role: 'listener', seat: null, muted: true, hand: false })
       this.system(r, 'joined', me.name)
@@ -333,10 +472,7 @@ export class VoiceSim {
     if (this.sendTimes.length >= 5) throw new BackendError('slow_down')
     this.sendTimes.push(now)
     await wait(120)
-    const line: VoiceLine = { id: this.lineSeq++, kind: 'text', sender: me, fromMe: true, text: text.trim(), at: now }
-    r.lines.push(line)
-    for (const on of r.subs) on({ type: 'line', line: { ...line } })
-    return line
+    return this.post(r, { id: this.lineSeq++, kind: 'text', sender: me, fromMe: true, text: text.trim(), at: now })
   }
 
   subscribe(roomId: string, on: (e: VoiceEvent) => void) {
@@ -468,8 +604,10 @@ export class VoiceSim {
     }
   }
 
+  /** The most voted request plays next (ties: the oldest). */
   private skip(r: SimRoom) {
-    const i = r.room.queue.findIndex((q) => !q.pending)
+    const q = r.room.queue
+    const i = q.reduce((best, x, k) => (best < 0 || x.votes > q[best].votes ? k : best), -1)
     if (i < 0) {
       r.room.track = null
     } else {
@@ -514,7 +652,11 @@ export class VoiceSim {
         me.muted = !a.on
         break
       case 'seat': {
-        if (me.seat !== null) {
+        if (isHost && me.seat === null) {
+          me.seat = 0 // the host joins the voice
+          me.hand = false
+          me.muted = true
+        } else if (me.seat !== null) {
           need(!isHost && this.freeSeat(r, a.seat) === a.seat)
           me.seat = a.seat // moving to another seat on the stage
         } else if (r.room.mode === 'open' || isMod) {
@@ -526,10 +668,11 @@ export class VoiceSim {
         break
       }
       case 'unseat':
-        need(me.seat !== null && !isHost)
+        need(me.seat !== null)
         me.seat = null
+        me.muted = true
         if (me.role === 'speaker') me.role = 'listener'
-        this.system(r, 'audience', me.profile.name)
+        if (!isHost) this.system(r, 'audience', me.profile.name)
         break
       case 'react':
         this.emit(r, { type: 'reaction', userId: me.profile.id, kind: a.kind })
@@ -591,32 +734,31 @@ export class VoiceSim {
         this.system(r, 'removed', target!.profile.name)
         break
       case 'addTrack': {
-        need(isHost)
         const title = TRACKS[a.videoId]?.title ?? ''
-        if (!r.room.track) {
+        if (isHost && !r.room.track) {
           r.room.track = this.track(a.videoId, me.profile.name)
           this.system(r, 'track', me.profile.name, { title })
-        } else {
-          r.room.queue.push({ id: uid(), videoId: a.videoId, title, addedBy: me.profile.name, pending: false })
+          break
+        }
+        if (r.room.queue.length >= 30) throw new BackendError('queue_full')
+        if (!isHost && r.room.queue.filter((q) => q.addedBy === me.profile.name).length >= 3) throw new BackendError('slow_down')
+        const item: VoiceQueueItem = { id: uid(), videoId: a.videoId, title, addedBy: me.profile.name, votes: 0, voted: false }
+        r.room.queue.push(item)
+        // People in the room like it: a couple of votes arrive.
+        for (const ms of [2200, 4800]) {
+          this.later(r, ms, () => {
+            item.votes++
+            this.changed(r)
+          })
         }
         break
       }
-      case 'suggest': {
-        const item: VoiceQueueItem = { id: uid(), videoId: a.videoId, title: TRACKS[a.videoId]?.title ?? '', addedBy: me.profile.name, pending: true }
-        r.room.queue.push(item)
-        // The demo host likes every suggestion.
-        this.later(r, 3000, () => {
-          item.pending = false
-          this.changed(r)
-        })
-        break
-      }
-      case 'approve': {
-        need(isHost)
-        const i = r.room.queue.findIndex((q) => q.id === a.itemId)
-        need(i >= 0)
-        if (a.accept) r.room.queue[i].pending = false
-        else r.room.queue.splice(i, 1)
+      case 'vote': {
+        const item = r.room.queue.find((q) => q.id === a.itemId)
+        if (!item) throw new BackendError('not_found')
+        if (item.voted === a.on) return
+        item.voted = a.on
+        item.votes += a.on ? 1 : -1
         break
       }
       case 'play': {

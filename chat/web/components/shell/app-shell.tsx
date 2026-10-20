@@ -76,7 +76,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [paywallUsed, setPaywallUsed] = useState(false)
   const [profileUsed, setProfileUsed] = useState(false)
   const [immersive, setImmersive] = useState(false)
-  const [openRoomId, setOpenRoomId] = useState<string | null>(null)
   // The voice room I'm in: full screen, or minimised to a pill while I use the rest of the app.
   const [voice, setVoice] = useState<{ id: string; expanded: boolean } | null>(null)
   const [entitlements, setEntitlements] = useState(initialEntitlements)
@@ -172,7 +171,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const randomVisible = tab === 'random' && !thread
   const voiceOpen = !!voice?.expanded
   const night = randomVisible || thread !== null || voiceOpen
-  const busyScreen = (randomVisible && immersive) || thread !== null || (tab === 'rooms' && openRoomId !== null)
+  const busyScreen = (randomVisible && immersive) || thread !== null
   const hideTabs = busyScreen || voiceOpen
 
   return (
@@ -201,7 +200,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                   >
                     <ScreenBoundary key={tab}>
                       <Suspense fallback={<ScreenLoading />}>
-                        {tab === 'rooms' ? <RoomsScreen openRoomId={openRoomId} onOpenRoom={setOpenRoomId} /> : null}
+                        {tab === 'rooms' ? <RoomsScreen /> : null}
                         {tab === 'recent' ? <RecentScreen /> : null}
                         {tab === 'me' ? <MeScreen /> : null}
                         {tab === 'settings' ? <SettingsScreen /> : null}
@@ -245,13 +244,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
             </main>
             {wide && !voiceOpen ? (
               <Suspense fallback={null}>
-                <RightPanel
-                  className="flex"
-                  onOpenRoom={(id) => {
-                    setOpenRoomId(id)
-                    setTab('rooms')
-                  }}
-                />
+                <RightPanel className="flex" />
               </Suspense>
             ) : null}
           </div>

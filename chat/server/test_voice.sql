@@ -134,11 +134,11 @@ select pg_temp.check((select r.music->>'pausedAt' from public.voice_rooms r wher
 select public.voice_resume((select id from v where k = 'r'));
 select pg_temp.check((select r.music->'pausedAt' = 'null' from public.voice_rooms r where r.id = (select id from v where k = 'r')), 'resumed');
 select public.voice_skip((select id from v where k = 'r'), (select id from v where k = 't1'));
--- The first approved item in queue order: B's approved suggestion came before the host's own.
-select pg_temp.check((select r.music->>'videoId' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = '284Ov7ysmfA', 'skip plays the next approved');
+-- Since 019 suggestions go straight into the queue and the most voted plays; with no votes, the oldest: B's first.
+select pg_temp.check((select r.music->>'videoId' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = 'BddP6PYo2gs', 'skip plays the oldest (no votes)');
 select public.voice_skip((select id from v where k = 'r'), (select id from v where k = 't1')); -- stale: nothing happens
-select pg_temp.check((select r.music->>'videoId' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = '284Ov7ysmfA', 'stale skip ignored');
-select pg_temp.check((select r.music->>'title' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = '', 'title kept');
+select pg_temp.check((select r.music->>'videoId' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = 'BddP6PYo2gs', 'stale skip ignored');
+select pg_temp.check((select r.music->>'title' from public.voice_rooms r where r.id = (select id from v where k = 'r')) = 'Kesariya', 'title kept');
 
 -- ---- chat: limits and reactions ----
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000106');

@@ -87,7 +87,8 @@ export function MetaSpacer({ children }: { children: ReactNode }) {
   )
 }
 
-function MediaBubble({ media, mine, meta }: { media: NonNullable<Message['media']>; mine: boolean; meta: ReactNode | null }) {
+/** A photo or video, blurred until tapped when it's someone else's (random chats and rooms). */
+export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message['media']>; mine: boolean; meta: ReactNode | null }) {
   const { t } = useI18n()
   const [revealed, setRevealed] = useState(mine)
   return (

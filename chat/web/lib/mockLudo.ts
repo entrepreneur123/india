@@ -20,6 +20,8 @@ interface Table {
   timers: Set<ReturnType<typeof setTimeout>>
   /** Bots about to take a colour in my lobby. */
   joiners: Profile[]
+  /** The finished game already on the room's leaderboard. */
+  counted?: string
 }
 
 export class LudoSim {
@@ -72,6 +74,11 @@ export class LudoSim {
     g.events = events
     g.version++
     t.game = g
+    this.voice.gameState(g.roomId, g.status === 'lobby' || g.status === 'playing' ? g.status : null)
+    if (g.status === 'finished' && g.winner !== null && t.counted !== g.id) {
+      t.counted = g.id
+      this.voice.win(g.roomId, g.players[g.winner], g.names[g.winner])
+    }
     const snap = this.snapshot(g)
     for (const on of t.subs) on(snap)
     this.schedule(t)

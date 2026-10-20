@@ -8,13 +8,10 @@ import {
   type MatchEvent,
   type Message,
   type NewProfile,
-  type NewRoom,
   type Post,
   type Profile,
   type RecentMatch,
   type ReportReason,
-  type Room,
-  type RoomMessage,
   type Target,
   type VideoStatus,
   type LudoAction,
@@ -176,19 +173,6 @@ const FALLBACK = [
   'lol you’re funny',
 ]
 
-const ROOM_LINES = [
-  'good morning from {city}!',
-  'anyone here into anime?',
-  'what’s everyone listening to?',
-  'first time here, hi all 👋',
-  'it’s 2am here and I can’t sleep',
-  'who wants to play skribbl later?',
-  'the weather in {city} is wild today',
-  'recommend me a show to binge',
-  'hello hello',
-  'this room is so chill',
-]
-
 interface MatchState {
   id: string
   partner: Profile
@@ -204,15 +188,6 @@ interface MatchState {
   timers: ReturnType<typeof setTimeout>[]
 }
 
-interface RoomState {
-  room: Room
-  messages: RoomMessage[]
-  listeners: Set<(m: RoomMessage) => void>
-  ticker: ReturnType<typeof setInterval> | null
-  inside?: boolean
-  closed?: boolean
-}
-
 export class MockBackend implements Backend {
   private signedIn = false
   private pendingPhone: string | null = null
@@ -224,9 +199,7 @@ export class MockBackend implements Backend {
   private recentList: RecentMatch[] = []
   private friendMap = new Map<string, FriendState>()
   private threadByUser = new Map<string, string>()
-  private rooms_ = new Map<string, RoomState>()
   private msgSeq = 1
-  private roomSendTimes: number[] = []
   /** Voice rooms are simulated in their own chunk, fetched the first time they are used. */
   private voice_: Promise<VoiceSim> | null = null
   private voiceSim: VoiceSim | null = null
@@ -255,48 +228,6 @@ export class MockBackend implements Backend {
         { id: this.msgSeq++, fromMe: false, text: last, at: at + 60_000 },
       ]))
       this.recentList.push({ matchId: id, partner, metAt: at, lastText: last })
-    }
-
-    const official = (id: string, title: string, emoji: string, online: number): Room => ({
-      id, title, emoji, online, official: true, mine: false, category: 'chat', genderRule: 'any', minAge: 18, maxAge: 100,
-      isPrivate: false,
-    })
-    const roomDefs: Room[] = [
-      official('lounge', 'Global Lounge', '🌍', 166),
-      official('language', 'Language Exchange', '🗣️', 60),
-      official('music', 'Music', '🎧', 9),
-      official('movies', 'Movies & Series', '🎬', 55),
-      official('gaming', 'Gaming', '🎮', 23),
-      official('sports', 'Sports', '⚽', 19),
-      official('night', 'Late Night Talks', '🌙', 32),
-      official('memes', 'Memes', '😂', 14),
-      official('study', 'Study & Campus', '🎓', 11),
-      official('travel', 'Travel', '✈️', 8),
-      {
-        id: 'u-demo1', title: 'Mumbai night owls', emoji: '🌙', online: 4, official: false, mine: false, ownerName: 'Ananya',
-        category: 'night', maxMembers: 8, genderRule: 'female', minAge: 20, maxAge: 30, isPrivate: false,
-      },
-      {
-        id: 'u-demo2', title: 'K-drama binge club', emoji: '🎬', online: 7, official: false, mine: false, ownerName: 'Yuki',
-        category: 'movies', maxMembers: 12, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false,
-      },
-      {
-        id: 'u-demo3', title: 'Cricket watch party', emoji: '⚽', online: 6, official: false, mine: false, ownerName: 'Kabir',
-        category: 'sports', maxMembers: 6, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false,
-      },
-    ]
-    for (const room of roomDefs) {
-      const msgs: RoomMessage[] = Array.from({ length: 6 }, (_, i) => {
-        const sender = pick(PEOPLE)
-        return {
-          id: this.msgSeq++,
-          sender,
-          fromMe: false,
-          text: pick(ROOM_LINES).replace('{city}', sender.city),
-          at: Date.now() - (6 - i) * 90_000,
-        }
-      })
-      this.rooms_.set(room.id, { room, messages: msgs, listeners: new Set(), ticker: null })
     }
   }
 
@@ -662,135 +593,6 @@ export class MockBackend implements Backend {
     return id
   }
 
-  /* ---------- rooms ---------- */
-
-  /** Same rules as the server's room_refusal(): owner always in; closed, gender, age, full. */
-  private refusal(r: RoomState): Room['refusal'] {
-    const room = r.room
-    if (room.official || room.mine) return null
-    if (r.closed) return 'room_closed'
-    const me = this.me
-    if (!me) return null
-    if (room.genderRule !== 'any' && me.gender !== room.genderRule) return 'room_gender'
-    if (me.age < room.minAge || me.age > room.maxAge) return 'room_age'
-    if (!r.inside && room.maxMembers != null && room.online >= room.maxMembers) return 'room_full'
-    return null
-  }
-
-  async rooms() {
-    await wait(600)
-    return [...this.rooms_.values()]
-      .filter((r) => !r.closed && (!r.room.isPrivate || r.room.mine || r.inside))
-      .map((r) => ({
-        ...r.room,
-        online: r.room.official ? Math.max(0, r.room.online + Math.floor(jitter(-4, 4))) : r.room.online,
-        refusal: this.refusal(r),
-      }))
-  }
-
-  async createRoom(n: NewRoom) {
-    await wait(500)
-    const title = n.title.trim()
-    if (title.length < 2 || title.length > 40) throw new BackendError('room_title')
-    if (n.maxMembers < 2 || n.maxMembers > 50) throw new BackendError('room_size')
-    for (const r of this.rooms_.values()) if (r.room.mine) r.closed = true // one open room per owner
-    const code = Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
-    const id = `u-${uid()}`
-    const emoji: Record<string, string> = {
-      friends: '🤝', language: '🗣️', music: '🎧', movies: '🎬', gaming: '🎮', sports: '⚽', study: '🎓', travel: '✈️', night: '🌙',
-    }
-    const room: Room = {
-      id, title, emoji: emoji[n.category] ?? '💬', online: 1, official: false, mine: true, ownerName: this.me?.name ?? null,
-      category: n.category, maxMembers: n.maxMembers, genderRule: n.genderRule, minAge: n.minAge, maxAge: n.maxAge,
-      isPrivate: n.isPrivate, code,
-    }
-    this.rooms_.set(id, { room, messages: [], listeners: new Set(), ticker: null, inside: true, closed: false })
-    return { id, code }
-  }
-
-  async joinRoomCode(code: string) {
-    await wait(400)
-    const r = [...this.rooms_.values()].find((x) => x.room.code === code.trim().toUpperCase() && !x.closed)
-    if (!r) throw new BackendError('not_found')
-    const why = this.refusal(r)
-    if (why) throw new BackendError(why)
-    r.inside = true
-    return r.room.id
-  }
-
-  async closeRoom(roomId: string) {
-    const r = this.rooms_.get(roomId)
-    if (!r || !r.room.mine) throw new BackendError('not_allowed')
-    await wait(300)
-    r.closed = true
-  }
-
-  async joinRoom(roomId: string) {
-    const r = this.rooms_.get(roomId)
-    if (!r || (r.room.isPrivate && !r.room.mine && !r.inside)) throw new BackendError('not_found')
-    const why = this.refusal(r)
-    if (why) throw new BackendError(why)
-    await wait(200)
-    if (!r.inside && !r.room.official && !r.room.mine) r.room.online++
-    r.inside = true
-  }
-
-  async leaveRoom(roomId: string) {
-    const r = this.rooms_.get(roomId)
-    if (!r) return
-    await wait(100)
-    if (r.inside && !r.room.official && !r.room.mine) r.room.online = Math.max(0, r.room.online - 1)
-    if (!r.room.mine) r.inside = false // like the server: a private room needs its code again
-  }
-
-  async roomHistory(roomId: string) {
-    await wait(500)
-    const r = this.rooms_.get(roomId)
-    if (!r) throw new BackendError('not_found')
-    return [...r.messages]
-  }
-
-  subscribeRoom(roomId: string, on: (m: RoomMessage) => void) {
-    const r = this.rooms_.get(roomId)
-    if (!r) return () => {}
-    r.listeners.add(on)
-    if (!r.ticker) {
-      r.ticker = setInterval(() => {
-        const sender = pick(PEOPLE)
-        const msg: RoomMessage = {
-          id: this.msgSeq++,
-          sender,
-          fromMe: false,
-          text: pick(ROOM_LINES).replace('{city}', sender.city),
-          at: Date.now(),
-        }
-        r.messages.push(msg)
-        for (const l of r.listeners) l(msg)
-      }, jitter(3500, 6000))
-    }
-    return () => {
-      r.listeners.delete(on)
-      if (r.listeners.size === 0 && r.ticker) {
-        clearInterval(r.ticker)
-        r.ticker = null
-      }
-    }
-  }
-
-  async sendRoom(roomId: string, text: string) {
-    const r = this.rooms_.get(roomId)
-    if (!r || !this.me) throw new BackendError('not_found')
-    if (r.closed) throw new BackendError('room_closed')
-    const now = Date.now()
-    this.roomSendTimes = this.roomSendTimes.filter((t) => now - t < 5000)
-    if (this.roomSendTimes.length >= 5) throw new BackendError('slow_down')
-    this.roomSendTimes.push(now)
-    await wait(150)
-    const msg: RoomMessage = { id: this.msgSeq++, sender: this.me, fromMe: true, text: text.trim(), at: now }
-    r.messages.push(msg)
-    return msg
-  }
-
   // ---- voice rooms ----
 
   private voice() {
@@ -836,6 +638,27 @@ export class MockBackend implements Backend {
 
   async sendVoice(roomId: string, text: string) {
     return (await this.voice()).send(roomId, text)
+  }
+
+  async joinVoiceCode(code: string) {
+    return (await this.voice()).joinCode(code)
+  }
+
+  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }) {
+    return (await this.voice()).settings(roomId, patch)
+  }
+
+  async sendVoicePhoto(roomId: string, photo: File) {
+    if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
+    return (await this.voice()).photo(roomId, URL.createObjectURL(photo))
+  }
+
+  async voiceIcebreaker(roomId: string) {
+    return (await this.voice()).icebreaker(roomId)
+  }
+
+  async voiceLeaders(roomId: string) {
+    return (await this.voice()).leaders(roomId)
   }
 
   async voiceAction(roomId: string, action: VoiceAction) {
