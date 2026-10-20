@@ -57,3 +57,33 @@ test('ageOn: days are never negative and stay under a month, over 30 years of da
     assert.ok(a.d >= 0 && a.d <= 30 && a.m >= 0 && a.m <= 11 && a.y >= 0, `${dob} ${on} ${JSON.stringify(a)}`);
   }
 });
+
+test('timeline: CHSL 2026 on 20-10-2026 (closed, Tier-I announced, nothing else yet)', async () => {
+  const { timeline } = await import('./tracker.js');
+  const items = [
+    { id: 'n', kind: 'recruitment', exam: 'CHSL', examYear: 2026, lang: 'en', publishedAt: '2026-09-07T18:00:00+05:30' },
+    { id: 'r25', kind: 'result', exam: 'CHSL', examYear: 2025, lang: 'en', publishedAt: '2026-10-07T19:10:47+05:30' },
+  ];
+  const t = timeline(rules('ssc-chsl-2026'), items, 'CHSL', 2026, '2026-10-20');
+  assert.deepEqual(t.map((s) => [s.key, s.state]), [
+    ['notice', 'done'], ['apply', 'done'], ['admit_card', 'next'], ['exam', 'later'],
+    ['answer_key', 'later'], ['result', 'later'], ['exam', 'later']]);
+  assert.equal(t[3].from, '2026-11-30');
+  assert.equal(t[6].when, 'To be notified later');
+});
+
+test('timeline: CGL 2026 while Tier-I is on', async () => {
+  const { timeline } = await import('./tracker.js');
+  const items = [{ id: 'a', kind: 'admit_card', exam: 'CGL', examYear: 2026, lang: 'en', publishedAt: '2026-09-21T10:00:00+05:30' }];
+  const t = timeline(rules('ssc-cgl-2026'), items, 'CGL', 2026, '2026-10-20');
+  assert.deepEqual(t.map((s) => [s.key, s.state]), [
+    ['notice', 'done'], ['apply', 'done'], ['admit_card', 'done'], ['exam', 'now'],
+    ['answer_key', 'next'], ['result', 'later'], ['exam', 'later']]);
+});
+
+test('timeline: an exam with no rules file shows only what the feed has', async () => {
+  const { timeline } = await import('./tracker.js');
+  const items = [{ id: 'r', kind: 'result', exam: 'CTGD', examYear: 2026, lang: 'en', publishedAt: '2026-10-12T18:47:07+05:30' }];
+  // Admit card and answer key came before the result, outside the 120-day feed: not shown as "next".
+  assert.deepEqual(timeline(null, items, 'CTGD', 2026, '2026-10-20').map((s) => [s.key, s.state]), [['result', 'done']]);
+});

@@ -1,5 +1,5 @@
 {
-  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines.",
+  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines. 'short' is the name people search with (Google India autocomplete, 2026-10-20: e.g. 'ssc cpo' for the SI exam).",
   "families": {
     "CGL": {
       "name": "Combined Graduate Level (CGL)",
@@ -7,7 +7,8 @@
       "qualifications": [
         "graduate"
       ],
-      "ref": "CGL 2026 Notice para 8"
+      "ref": "CGL 2026 Notice para 8",
+      "short": "SSC CGL"
     },
     "CHSL": {
       "name": "Combined Higher Secondary Level (CHSL, 10+2)",
@@ -15,7 +16,8 @@
       "qualifications": [
         "12"
       ],
-      "ref": "CHSL 2026 Notice para 8"
+      "ref": "CHSL 2026 Notice para 8",
+      "short": "SSC CHSL"
     },
     "STENO": {
       "name": "Stenographer Grade C & D",
@@ -23,7 +25,8 @@
       "qualifications": [
         "12"
       ],
-      "ref": "Steno 2026 Notice para 8.1"
+      "ref": "Steno 2026 Notice para 8.1",
+      "short": "SSC Stenographer"
     },
     "CAPF": {
       "name": "Sub-Inspector in Delhi Police & CAPFs",
@@ -32,7 +35,8 @@
         "graduate",
         "diploma"
       ],
-      "ref": "SI 2026 Notice para 7.1-7.2 (Diploma: SI Fire in CISF only)"
+      "ref": "SI 2026 Notice para 7.1-7.2 (Diploma: SI Fire in CISF only)",
+      "short": "SSC CPO (SI in Delhi Police & CAPFs)"
     },
     "JE": {
       "name": "Junior Engineer (Civil, Mechanical, Electrical)",
@@ -41,7 +45,8 @@
         "diploma",
         "graduate"
       ],
-      "ref": "JE 2026 Notice para 2 (engineering diploma or degree, by post)"
+      "ref": "JE 2026 Notice para 2 (engineering diploma or degree, by post)",
+      "short": "SSC JE"
     },
     "JHT": {
       "name": "Combined Hindi Translators",
@@ -49,37 +54,43 @@
       "qualifications": [
         "postgraduate"
       ],
-      "ref": "JHT 2026 Notice para 7.1"
+      "ref": "JHT 2026 Notice para 7.1",
+      "short": "SSC JHT"
     },
     "MTS": {
       "name": "Multi-Tasking Staff & Havaldar",
       "hi": "मल्टी टास्किंग (गैर-तकनीकी) स्टाफ और हवलदार",
       "qualifications": null,
-      "ref": null
+      "ref": null,
+      "short": "SSC MTS"
     },
     "CTGD": {
       "name": "Constable (GD) in CAPFs, SSF & Rifleman in Assam Rifles",
       "hi": "कांस्टेबल (जीडी)",
       "qualifications": null,
-      "ref": null
+      "ref": null,
+      "short": "SSC GD Constable"
     },
     "RHQ": {
       "name": "Selection Posts",
       "hi": "चयन पद परीक्षा",
       "qualifications": null,
-      "ref": null
+      "ref": null,
+      "short": "SSC Selection Post"
     },
     "DP": {
       "name": "Delhi Police (Constable, Head Constable)",
       "hi": "दिल्ली पुलिस",
       "qualifications": null,
-      "ref": null
+      "ref": null,
+      "short": "SSC Delhi Police"
     },
     "LDCE": {
       "name": "Departmental exams (serving Govt employees only)",
       "hi": "विभागीय परीक्षाएं",
       "qualifications": null,
-      "ref": null
+      "ref": null,
+      "short": "SSC Departmental Exams"
     }
   }
 }

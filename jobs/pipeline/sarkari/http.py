@@ -40,3 +40,24 @@ def get_json(url: str, retries: int = 3, timeout: int = 40) -> dict:
                 ValueError, FetchError) as e:
             last = e
     raise FetchError(f"GET {url} failed after {retries} attempts: {last}")
+
+
+def get_bytes(url: str, retries: int = 3, timeout: int = 120, max_bytes: int = 60_000_000) -> bytes:
+    """GET a file (a result PDF), refusing anything over max_bytes."""
+    last: Exception | None = None
+    for attempt in range(retries):
+        if attempt:
+            time.sleep(2 ** attempt)
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                body = resp.read(max_bytes + 1)
+            if len(body) > max_bytes:
+                raise FetchError(f"{url}: larger than {max_bytes} bytes")
+            time.sleep(POLITE_DELAY_S)
+            return body
+        except FetchError:
+            raise
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError) as e:
+            last = e
+    raise FetchError(f"GET {url} failed after {retries} attempts: {last}")

@@ -25,6 +25,7 @@
     {"stage": "Tier-I (CBE)", "from": "2026-09-30", "to": "2026-10-30", "ref": "SSC Important Notice dated 12-09-2026"},
     {"stage": "Tier-II (CBE)", "when": "December, 2026 (tentative)", "ref": "Notice p.1"}
   ],
+  "payScales": {"4": [25500, 81100], "5": [29200, 92300], "6": [35400, 112400], "7": [44900, 142400], "8": [47600, 151100], "ref": "para 2.1-2.5, p.2-4"},
   "vacancies": {"count": 12256, "tentative": true, "ref": "para 3.1, p.5"},
   "age": {
     "asOn": "2026-08-01",

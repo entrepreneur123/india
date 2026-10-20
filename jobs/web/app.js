@@ -4,6 +4,7 @@
 import { evaluate, todayIST } from './eligibility.js';
 import { getLang, setLang, t } from './i18n.js';
 import { ageOn, buildIcs, examEvents, makeSignature } from './tools.js';
+import { timeline } from './tracker.js';
 
 const DATA = new URL('v1/', document.baseURI);
 const KINDS = [
@@ -49,6 +50,8 @@ function el(tag, attrs = {}, ...children) {
   for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) node.append(c);
   return node;
 }
+// replaceChildren(null) would print "null" (seen twice in testing): every view goes through this.
+const fill = (node, ...children) => node.replaceChildren(...children.flat().filter((c) => c !== null && c !== undefined && c !== false));
 
 const locale = () => (getLang() === 'hi' ? 'hi-IN' : 'en-IN');
 function day(iso) {
@@ -66,6 +69,12 @@ function size(bytes) {
 }
 function safeUrl(u) {
   try { const x = new URL(u); return x.protocol === 'https:' && /(^|\.)(gov|nic)\.in$/.test(x.hostname) ? x.href : null; } catch { return null; }
+}
+function payText(rules, level) {
+  if (!level || !rules.payScales) return null;
+  const inr = (n) => n.toLocaleString('en-IN');
+  return String(level).split('/').filter((l) => rules.payScales[l])
+    .map((l) => t('payRange', { from: inr(rules.payScales[l][0]), to: inr(rules.payScales[l][1]), l })).join(' · ') || null;
 }
 const daysBetween = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
 
@@ -136,7 +145,7 @@ async function viewLatest(root) {
   let families;
   try {
     [feed, { families }] = await Promise.all([getJSON('feed.json'), getJSON('exams.json')]);
-  } catch (e) { root.replaceChildren(errorBox(e)); return; }
+  } catch (e) { fill(root, errorBox(e)); return; }
   const lastSeen = store.get('lastSeen', null);
   const newest = feed.items.reduce((m, i) => (i.publishedAt > m ? i.publishedAt : m), '');
   const isNew = (i) => lastSeen !== null && i.publishedAt > lastSeen;
@@ -155,11 +164,11 @@ async function viewLatest(root) {
       (filters.dept || i.exam !== 'LDCE') &&
       (!filters.mine || mine.has(i.exam)) &&
       (!q || i.title.toLowerCase().includes(q)));
-    list.replaceChildren(...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families }))
+    fill(list, ...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families }))
       : [el('li', { class: 'empty' }, t('nothing'))]));
   };
   const chips = el('div', { class: 'filters', role: 'group' });
-  const drawChips = () => chips.replaceChildren(...KINDS.map(([k, key]) => el('button', {
+  const drawChips = () => fill(chips, ...KINDS.map(([k, key]) => el('button', {
     class: 'chip', type: 'button', 'aria-pressed': String(filters.kind === k),
     onclick: () => { filters.kind = k; drawChips(); render(); },
   }, t(key))));
@@ -186,7 +195,10 @@ async function viewLatest(root) {
   chips.classList.add('scroll-row');
   const active = ['exam', 'qual', 'mine', 'dept'].filter((k) => (k === 'exam' || k === 'qual' ? filters[k] !== 'all' : filters[k])).length
     + (filters.lang !== 'en' ? 1 : 0);
-  root.replaceChildren(
+  fill(root, 
+    store.get('profile', null)?.dob ? null
+      : el('a', { class: 'banner upcoming cta', href: '#forme' }, `${t('forMeNoProfile')} →`),
+    el('div', { class: 'actions' }, el('a', { class: 'chip small', href: '#saved' }, t('savedLink'))),
     search, chips,
     el('details', { class: 'filter-box' }, el('summary', {}, `${t('filters')}${active ? ` (${active})` : ''}`),
       el('div', { class: 'filters' }, examSel, qualSel, langSel, check('mine', t('myExams')), check('dept', t('departmental')))),
@@ -203,7 +215,7 @@ async function viewExams(root) {
   try {
     [{ families }, { exams: index }, cal, resources] = await Promise.all([
       getJSON('exams.json'), getJSON('rules/index.json'), getJSON('calendar.json'), getJSON('resources.json')]);
-  } catch (e) { root.replaceChildren(errorBox(e)); return; }
+  } catch (e) { fill(root, errorBox(e)); return; }
   const today = todayIST();
   const mine = new Set(followed());
   const cards = Object.entries(families).filter(([c]) => c !== 'LDCE').map(([code, f]) => {
@@ -213,12 +225,12 @@ async function viewExams(root) {
     btn.addEventListener('click', (ev) => { ev.preventDefault(); toggleFollow(code, btn); });
     return el('li', { class: 'item' },
       el('h3', {}, el('a', { href: `#exam/${code}` }, f.name)),
-      el('div', { class: 'small', lang: 'hi' }, f.hi),
+      el('div', { class: 'small' }, f.short ?? '', ' · ', el('span', { lang: 'hi' }, f.hi)),
       el('div', { class: 'small' }, f.qualifications ? t('minQual', { q: f.qualifications.map((q) => t(`qual_${q}`)).join(' / ') }) : t('qualUnknown')),
       latest ? el('div', { class: `banner small-banner ${statusOf(latest, today)}` }, statusText(latest, today)) : null,
       el('div', { class: 'actions' }, btn));
   });
-  root.replaceChildren(
+  fill(root, 
     el('p', { class: 'small' }, t('examsIntro')),
     el('ul', { class: 'list' }, ...cards),
     el('h2', {}, t('calendarTitle')), el('p', { class: 'small' }, t('calendarNote')),
@@ -257,7 +269,7 @@ async function viewExam(root, code) {
   try {
     [{ families }, { exams: index }, feed, resources] = await Promise.all([
       getJSON('exams.json'), getJSON('rules/index.json'), getJSON('feed.json'), getJSON('resources.json')]);
-  } catch (e) { root.replaceChildren(errorBox(e)); return; }
+  } catch (e) { fill(root, errorBox(e)); return; }
   const f = families[code];
   if (!f) { location.hash = '#exams'; return; }
   const today = todayIST();
@@ -276,12 +288,29 @@ async function viewExam(root, code) {
     el('div', { class: 'small' }, f.qualifications ? `${t('minQual', { q: f.qualifications.map((q) => t(`qual_${q}`)).join(' / ') })} (${f.ref})` : t('qualUnknown')),
     el('div', { class: 'actions' }, followBtn),
   ];
+  const year = rules ? rules.examYear : Math.max(0, ...notices.map((i) => i.examYear ?? 0)) || null;
+  if (year) parts.push(whenBlock(timeline(rules, feed.items, code, year, today), f.name, year, feed.items));
   if (rules) parts.push(...examDetails(rules, entry, today));
   else parts.push(el('p', { class: 'small' }, t('noRules')));
   if (examResources.length) parts.push(el('h3', {}, t('resourcesTitle')), ...examResources.map(([k, items]) => resourceBlock(k, items, false)));
   parts.push(el('h3', {}, `${t('allNotices')} (${notices.length})`),
     el('ul', { class: 'list' }, ...(notices.length ? notices.slice(0, 60).map((i) => itemCard(i, { families })) : [el('li', { class: 'empty' }, t('nothing'))])));
-  root.replaceChildren(...parts);
+  fill(root, ...parts);
+}
+
+function whenBlock(stages, name, year, items) {
+  const byId = Object.fromEntries(items.map((i) => [i.id, i]));
+  return el('div', { class: 'card' }, el('h3', {}, `${t('whenTitle')} · ${year}`),
+    el('ol', { class: 'timeline' }, ...stages.map((s) => {
+      const label = s.key === 'exam' ? s.label : t(`stage_${s.key}`);
+      const date = s.at ? day(s.at) : s.from ? `${day(s.from)} – ${day(s.to)}` : s.when ?? t('notAnnounced');
+      const item = s.itemId ? byId[s.itemId] : null;
+      const pdf = item?.files.map((f) => safeUrl(f.url)).find(Boolean);
+      return el('li', { class: `stage ${s.state}` },
+        el('span', { class: 'stage-state' }, t(`st_${s.state}`)),
+        el('strong', {}, label), el('span', { class: 'small' }, ` · ${date}`),
+        pdf ? el('a', { href: pdf, rel: 'noopener', target: '_blank', class: 'small' }, ` ${t('pdf')}`) : null);
+    })));
 }
 
 function examDetails(r, entry, today) {
@@ -317,7 +346,9 @@ function examDetails(r, entry, today) {
       el('div', { class: 'small' }, t('notComputed', { list: r.age.notComputed.join('; ') }))),
     r.vacancies ? el('p', {}, el('strong', {}, `${t('vacancies')}: `), t('vacancyCount', { n: r.vacancies.count.toLocaleString('en-IN'), tentative: t('tentative') })) : null,
     el('details', { class: 'group' }, el('summary', {}, `${t('posts')} (${r.posts.length})`),
-      el('ul', { class: 'rows' }, ...r.posts.map((p) => el('li', {}, el('strong', {}, p.name), el('span', { class: 'small' }, ` · ${p.org} · ${p.payLevel ? t('payLevel', { l: p.payLevel, g: p.group }) : t('groupOnly', { g: p.group })} · ${p.ageBand}`))))),
+      el('ul', { class: 'rows' }, ...r.posts.map((p) => el('li', {}, el('strong', {}, p.name),
+        el('span', { class: 'small' }, ` · ${p.org} · ${p.payLevel ? t('payLevel', { l: p.payLevel, g: p.group }) : t('groupOnly', { g: p.group })} · ${p.ageBand}`),
+        payText(r, p.payLevel) ? el('div', { class: 'small' }, payText(r, p.payLevel)) : null)))),
     el('div', { class: 'card' }, el('strong', {}, t('importantLinks')), el('ul', {},
       el('li', {}, el('a', { href: 'https://ssc.gov.in', rel: 'noopener', target: '_blank' }, t('applyOnline'))),
       notice ? el('li', {}, el('a', { href: notice, rel: 'noopener', target: '_blank' }, t('noticePdf'))) : null,
@@ -338,14 +369,12 @@ function reasonText(code, rules) {
 }
 const noteText = (n) => NOTE[n]?.[getLang()] ?? NOTE[n]?.en ?? n;
 
-async function viewCheck(root, preselect) {
-  let index;
-  try { ({ exams: index } = await getJSON('rules/index.json')); } catch (e) { root.replaceChildren(errorBox(e)); return; }
+function profileForm({ index = null, preselect = null, submitLabel, onSubmit }) {
   const saved = store.get('profile', {});
   const sel = (id, opts, value) => {
-    const s = el('select', { id }, ...opts.map(([v, label]) => el('option', { value: v }, label)));
-    if (value) s.value = value;
-    return s;
+    const x = el('select', { id }, ...opts.map(([v, label]) => el('option', { value: v }, label)));
+    if (value) x.value = value;
+    return x;
   };
   const field = (label, input) => el('div', { class: 'field' }, el('label', { for: input.id }, label), input);
   const box = (id, label, checked) => {
@@ -353,34 +382,149 @@ async function viewCheck(root, preselect) {
     b.checked = Boolean(checked);
     return el('label', { class: 'check' }, b, ` ${label}`);
   };
-  const exam = sel('f-exam', index.map((e) => [e.id, e.title]), preselect || saved.exam);
   const dob = el('input', { type: 'date', id: 'f-dob', required: true, min: '1960-01-01', max: '2015-12-31', value: saved.dob ?? '' });
-  const result = el('div', { 'aria-live': 'polite' });
+  const error = el('p', { class: 'error', role: 'alert', hidden: true });
   const form = el('form', { class: 'card', novalidate: true },
     el('div', { class: 'grid' },
-      field(t('examLabel'), exam), field(t('dob'), dob),
+      index ? field(t('examLabel'), sel('f-exam', index.map((e) => [e.id, e.title]), preselect || saved.exam)) : null,
+      field(t('dob'), dob),
       field(t('category'), sel('f-cat', [['UR', t('catUR')], ['EWS', t('catEWS')], ['OBC', t('catOBC')], ['SC', t('catSC')], ['ST', t('catST')]], saved.category)),
       field(t('education'), sel('f-edu', [['10', t('edu10')], ['12', t('edu12')], ['graduate', t('eduGraduate')]], saved.education ?? '12')),
       field(t('gender'), sel('f-gender', [['male', t('male')], ['female', t('female')], ['other', t('other')]], saved.gender)),
       el('div', { class: 'field' }, box('f-appearing', t('appearing'), saved.appearing), box('f-pwbd', t('pwbd'), saved.pwbd),
         box('f-other', t('otherCategory'), saved.otherCategory))),
-    el('button', { class: 'primary', type: 'submit' }, t('check')),
+    error, el('button', { class: 'primary', type: 'submit' }, submitLabel),
     el('p', { class: 'small' }, t('privacy')));
-  form.addEventListener('submit', async (ev) => {
+  form.addEventListener('submit', (ev) => {
     ev.preventDefault();
     const profile = {
-      exam: $('f-exam').value, dob: $('f-dob').value, category: $('f-cat').value, education: $('f-edu').value,
+      ...saved, dob: $('f-dob').value, category: $('f-cat').value, education: $('f-edu').value,
       gender: $('f-gender').value, appearing: $('f-appearing').checked, pwbd: $('f-pwbd').checked, otherCategory: $('f-other').checked,
     };
-    if (!profile.dob) { $('f-dob').focus(); result.replaceChildren(el('p', { class: 'error' }, t('enterDob'))); return; }
+    if (index) profile.exam = $('f-exam').value;
+    if (!profile.dob) { error.textContent = t('enterDob'); error.hidden = false; $('f-dob').focus(); return; }
+    error.hidden = true;
     store.set('profile', profile);
-    try {
-      const rules = await getJSON(`rules/${profile.exam}.json`);
-      renderResult(result, rules, evaluate(rules, profile, todayIST()), todayIST());
-      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (e) { result.replaceChildren(errorBox(e)); }
+    onSubmit(profile);
   });
-  root.replaceChildren(form, result);
+  return form;
+}
+
+async function viewCheck(root, preselect) {
+  let index;
+  try { ({ exams: index } = await getJSON('rules/index.json')); } catch (e) { fill(root, errorBox(e)); return; }
+  const result = el('div', { 'aria-live': 'polite' });
+  const form = profileForm({
+    index, preselect, submitLabel: t('check'),
+    onSubmit: async (profile) => {
+      try {
+        const rules = await getJSON(`rules/${profile.exam}.json`);
+        renderResult(result, rules, evaluate(rules, profile, todayIST()), todayIST());
+        result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (e) { fill(result, errorBox(e)); }
+    },
+  });
+  fill(root, form, result);
+}
+
+// ---------- For me: one profile, every exam ----------
+const QUAL_OK = { 10: ['10'], 12: ['10', '12'], graduate: ['10', '12', 'graduate'] };
+async function viewForMe(root, editing = false) {
+  let index; let families; let cal; let feed;
+  try {
+    [{ exams: index }, { families }, cal, feed] = await Promise.all([
+      getJSON('rules/index.json'), getJSON('exams.json'), getJSON('calendar.json'), getJSON('feed.json')]);
+  } catch (e) { fill(root, errorBox(e)); return; }
+  const profile = store.get('profile', null);
+  if (!profile?.dob || editing) {
+    fill(root, el('h2', {}, t('forMeTitle')), el('p', { class: 'small' }, t('forMeIntro')),
+      profileForm({ submitLabel: t('saveDetails'), onSubmit: () => viewForMe(root) }));
+    return;
+  }
+  const today = todayIST();
+  const rank = { open: 0, upcoming: 1, closed: 2 };
+  const results = await Promise.all(index.map(async (e) => {
+    const rules = await getJSON(`rules/${e.id}.json`);
+    return { e, rules, r: evaluate(rules, profile, today), status: statusOf(e, today) };
+  }));
+  results.sort((a, b) => rank[a.status] - rank[b.status] || b.r.counts.eligible - a.r.counts.eligible);
+  const covered = new Set(index.map((e) => e.exam));
+  const ok = QUAL_OK[profile.education] ?? [];
+  const matching = Object.entries(families).filter(([code, f]) => code !== 'LDCE' && !covered.has(code)
+    && (f.qualifications ?? []).some((q) => ok.includes(q)));
+  const upcoming = cal.entries.filter((c) => c.applyTo >= today && (families[c.exam]?.qualifications ?? []).some((q) => ok.includes(q)));
+  const card = ({ e, rules, r, status }) => {
+    const next = timeline(rules, feed.items, rules.exam, rules.examYear, today).find((s) => s.state === 'now' || s.state === 'next');
+    const nextLabel = next ? `${next.key === 'exam' ? next.label : t(`stage_${next.key}`)}: ${next.at ? day(next.at) : next.from ? `${day(next.from)} – ${day(next.to)}` : next.when ?? t('notAnnounced')}` : null;
+    return el('li', { class: 'item' },
+      el('h3', {}, el('a', { href: `#exam/${rules.exam}` }, e.title)),
+      el('div', { class: `banner small-banner ${status}` }, statusText(e, today)),
+      el('div', { class: 'summary' },
+        el('span', { class: 's-eligible' }, t('canApply', { n: r.counts.eligible })),
+        el('span', { class: 's-check' }, t('toCheck', { n: r.counts.check })),
+        el('span', { class: 's-ineligible' }, t('notEligible', { n: r.counts.ineligible }))),
+      nextLabel ? el('p', { class: 'small' }, `${t(`st_${next.state}`)} → ${nextLabel}`) : null,
+      el('div', { class: 'actions' }, el('a', { class: 'chip small', href: `#check/${e.id}` }, `✔ ${t('checkThis')}`),
+        el('a', { class: 'chip small', href: `#exam/${rules.exam}` }, t('importantDates'))));
+  };
+  fill(root, 
+    el('h2', {}, t('forMeTitle')),
+    el('div', { class: 'actions' }, el('button', { class: 'chip small', type: 'button', onclick: () => viewForMe(root, true) }, `✎ ${t('forMeEdit')}`)),
+    el('ul', { class: 'list' }, ...results.map(card)),
+    matching.length ? el('h3', {}, t('forMeMatch')) : null,
+    matching.length ? el('div', { class: 'actions' }, ...matching.map(([code, f]) => el('a', { class: 'chip', href: `#exam/${code}` }, f.name))) : null,
+    upcoming.length ? el('h3', {}, t('forMeCalendar')) : null,
+    upcoming.length ? el('ul', { class: 'rows card' }, ...upcoming.map((c) => el('li', {}, el('strong', {}, c.title),
+      el('span', { class: 'small' }, ` · ${day(c.applyFrom)} – ${day(c.applyTo)}`)))) : null);
+}
+
+// ---------- Result by roll number ----------
+async function viewResult(root) {
+  let lists; let feed; let families;
+  try {
+    [{ lists }, feed, { families }] = await Promise.all([getJSON('results/index.json'), getJSON('feed.json'), getJSON('exams.json')]);
+  } catch (e) { fill(root, errorBox(e)); return; }
+  if (!lists.length) { fill(root, el('h2', {}, t('resultTitle')), el('p', { class: 'empty' }, t('noLists'))); return; }
+  const groups = [];
+  // One choice per exam cycle: a roll number is looked up in every list of that cycle at once
+  // (CT(GD) 2026 has separate female, male and withheld lists, each its own notice).
+  for (const l of lists) {
+    const key = l.exam && l.examYear ? `${l.exam}|${l.examYear}` : l.item;
+    let g = groups.find((x) => x.key === key);
+    if (!g) { g = { key, name: l.exam && l.examYear ? `${families[l.exam]?.name ?? l.exam} ${l.examYear}` : l.notice, items: [], lists: [] }; groups.push(g); }
+    g.lists.push(l);
+    if (!g.items.includes(l.item)) g.items.push(l.item);
+  }
+  for (const g of groups) g.label = `${g.name} · ${g.lists.length} ${g.lists.length === 1 ? 'list' : 'lists'}`;
+  const sel = el('select', { id: 'r-exam' }, ...groups.map((g, i) => el('option', { value: String(i) }, g.label)));
+  const roll = el('input', { id: 'r-roll', type: 'text', inputmode: 'numeric', autocomplete: 'off', placeholder: '126280000002', maxlength: '20' });
+  roll.value = store.get('roll', '');
+  const out = el('div', { 'aria-live': 'polite' });
+  const form = el('form', { class: 'card', novalidate: true },
+    el('div', { class: 'grid' },
+      el('div', { class: 'field' }, el('label', { for: 'r-exam' }, t('resultExam')), sel),
+      el('div', { class: 'field' }, el('label', { for: 'r-roll' }, t('rollNo')), roll)),
+    el('button', { class: 'primary', type: 'submit' }, t('find')),
+    el('p', { class: 'small' }, t('resultNote')));
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const no = roll.value.replace(/\D/g, '');
+    if (!/^\d{8,14}$/.test(no)) { fill(out, el('p', { class: 'error' }, t('rollInvalid'))); return; }
+    store.set('roll', no);
+    const g = groups[Number(sel.value)];
+    try {
+      const hits = await Promise.all(g.lists.map(async (l) => ({ l, found: (await getJSON(`results/${l.id}/${no.slice(-2)}.json`)).includes(no) })));
+      const items = feed.items.filter((i) => g.items.includes(i.id));
+      const found = hits.filter((h) => h.found);
+      fill(out, 
+        ...found.map((h) => el('div', { class: 'banner open' }, t('foundIn', { list: h.l.title }))),
+        ...hits.filter((h) => !h.found).map((h) => el('p', { class: 'small' }, `${t('notIn', { list: h.l.title })} (${t('listCount', { n: h.l.count.toLocaleString('en-IN') })})`)),
+        found.length ? null : el('div', { class: 'banner upcoming' }, t('notFoundAny')),
+        items.length ? el('div', { class: 'card' }, el('strong', {}, t('officialFiles')), el('div', { class: 'files' },
+          ...[...new Map(items.flatMap((i) => i.files).map((f) => [f.url, f])).values()].map((f) => (safeUrl(f.url) ? el('a', { href: safeUrl(f.url), rel: 'noopener', target: '_blank' }, `${t('pdf')}: ${f.name}${size(f.size)}`) : null)))) : null);
+    } catch (e) { fill(out, errorBox(e)); }
+  });
+  fill(root, el('h2', {}, t('resultTitle')), form, out);
 }
 
 function renderResult(box, rules, r, today) {
@@ -390,9 +534,11 @@ function renderResult(box, rules, r, today) {
     el('div', { class: 'meta' }, el('span', {}, p.payLevel ? t('payLevel', { l: p.payLevel, g: p.group }) : t('groupOnly', { g: p.group }))),
     el('h3', {}, p.name), el('div', { class: 'small' }, p.org),
     el('div', { class: 'small' }, t('bornWindow', { from: day(p.bornFrom), to: day(p.bornTo) })),
+    payText(rules, p.payLevel) ? el('div', { class: 'small' }, payText(rules, p.payLevel)) : null,
     lines(p).length ? el('ul', {}, ...lines(p).map((x) => el('li', {}, x))) : null);
   // 40 CGL posts as full cards is ~15 phone screens: only "check" gets cards; the rest are short rows.
   const row = (p) => el('li', { class: `row ${p.status}` }, el('strong', {}, p.name), el('span', { class: 'small' }, ` · ${p.org}`),
+    payText(rules, p.payLevel) ? el('div', { class: 'small' }, payText(rules, p.payLevel)) : null,
     lines(p).length ? el('div', { class: 'small' }, lines(p).join(' ')) : null);
   const group = (status, open) => {
     const posts = of(status);
@@ -402,7 +548,7 @@ function renderResult(box, rules, r, today) {
       status === 'check' ? el('ul', { class: 'list' }, ...posts.map(card)) : el('ul', { class: 'rows' }, ...posts.map(row)));
   };
   const entry = { applyFrom: rules.dates.applyFrom, applyTo: rules.dates.applyTo };
-  box.replaceChildren(
+  fill(box, 
     el('div', { class: `banner ${r.application}` }, statusText(entry, today), r.application === 'closed' ? ` ${t('closedNote')}` : ''),
     el('div', { class: 'summary' },
       el('span', { class: 's-eligible' }, t('canApply', { n: r.counts.eligible })),
@@ -422,15 +568,15 @@ async function viewTools(root) {
   const file = el('input', { type: 'file', accept: 'image/*', 'aria-label': t('sigPick') });
   file.addEventListener('change', async () => {
     if (!file.files[0]) return;
-    out.replaceChildren(el('p', { class: 'small' }, '…'));
+    fill(out, el('p', { class: 'small' }, '…'));
     try {
       const res = await makeSignature(file.files[0], spec.minKB, spec.maxKB);
-      if (!res) { out.replaceChildren(el('p', { class: 'error' }, t('sigFail', { min: spec.minKB, max: spec.maxKB }))); return; }
+      if (!res) { fill(out, el('p', { class: 'error' }, t('sigFail', { min: spec.minKB, max: spec.maxKB }))); return; }
       const url = URL.createObjectURL(res.blob);
-      out.replaceChildren(el('img', { src: url, alt: '', class: 'sig' }),
+      fill(out, el('img', { src: url, alt: '', class: 'sig' }),
         el('p', {}, t('sigResult', { kb: (res.blob.size / 1024).toFixed(1), w: res.width, h: res.height })),
         el('a', { class: 'primary link-button', href: url, download: 'signature.jpg' }, `⬇ ${t('sigDownload')}`));
-    } catch (e) { out.replaceChildren(errorBox(e)); }
+    } catch (e) { fill(out, errorBox(e)); }
   });
   const dob = el('input', { type: 'date', 'aria-label': t('dob') });
   const on = el('input', { type: 'date', value: todayIST(), 'aria-label': t('ageOn') });
@@ -444,7 +590,7 @@ async function viewTools(root) {
   on.addEventListener('input', calc);
   let formats = [];
   try { formats = (await getJSON('resources.json')).sections.certificate_formats; } catch { /* the rest still works */ }
-  root.replaceChildren(
+  fill(root, 
     el('p', { class: 'small' }, t('toolsIntro')),
     el('section', { class: 'card' }, el('h3', {}, t('sigTitle')),
       el('p', {}, t('sigRule', { min: spec.minKB, max: spec.maxKB, w: spec.widthCm, h: spec.heightCm })), file, out),
@@ -461,14 +607,17 @@ async function viewSaved(root) {
   let families = {};
   try { ({ families } = await getJSON('exams.json')); } catch { /* names fall back to codes */ }
   const f = followed();
-  root.replaceChildren(
+  fill(root, 
     f.length ? el('div', { class: 'card' }, el('strong', {}, t('followedExams')),
       el('div', { class: 'actions' }, ...f.map((c) => el('a', { class: 'chip', href: `#exam/${c}` }, families[c]?.name ?? c)))) : null,
     items.length ? el('ul', { class: 'list' }, ...items.map((i) => itemCard(i, { families }))) : el('p', { class: 'empty' }, t('savedEmpty')));
 }
 
 // ---------- shell ----------
-const TABS = [['latest', 'tabLatest'], ['exams', 'tabExams'], ['check', 'tabCheck'], ['tools', 'tabTools'], ['saved', 'tabSaved']];
+// Ordered by what people search for (jobs/research/NEEDS.md): which exams suit me, latest notices,
+// results, exam details. Eligibility for one exam (#check) and saved items (#saved) open from those.
+const TABS = [['forme', 'tabForMe'], ['latest', 'tabLatest'], ['result', 'tabResult'], ['exams', 'tabExams'], ['tools', 'tabTools']];
+const PARENT = { exam: 'exams', check: 'forme', saved: 'latest' };
 function paintShell() {
   document.title = `${t('appName')}`;
   $('app-name').textContent = t('appName');
@@ -480,16 +629,20 @@ function paintShell() {
   $('tabs').replaceChildren(...TABS.map(([id, key]) => el('a', { role: 'tab', href: `#${id}`, id: `tab-${id}` }, t(key))));
 }
 async function route() {
-  const [view, arg] = location.hash.slice(1).split('/');
-  const tab = { exam: 'exams' }[view] ?? (TABS.some(([id]) => id === view) ? view : 'latest');
+  const [hashView, arg] = location.hash.slice(1).split('/');
+  const fallback = store.get('profile', null)?.dob ? 'forme' : 'latest';
+  const view = hashView || fallback;
+  const tab = PARENT[view] ?? (TABS.some(([id]) => id === view) ? view : 'latest');
   for (const [id] of TABS) $(`tab-${id}`).setAttribute('aria-selected', String(id === tab));
   const root = $('view');
   root.setAttribute('aria-busy', 'true');
   if (view === 'exam' && arg) await viewExam(root, decodeURIComponent(arg));
   else if (tab === 'exams') await viewExams(root);
-  else if (tab === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
+  else if (view === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
+  else if (view === 'saved') await viewSaved(root);
+  else if (tab === 'forme') await viewForMe(root);
+  else if (tab === 'result') await viewResult(root);
   else if (tab === 'tools') await viewTools(root);
-  else if (tab === 'saved') await viewSaved(root);
   else await viewLatest(root);
   root.removeAttribute('aria-busy');
   $('offline').hidden = navigator.onLine !== false;

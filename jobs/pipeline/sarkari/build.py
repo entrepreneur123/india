@@ -10,6 +10,8 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/rules/index.json      exams with an eligibility checker
   jobs/v1/rules/<id>.json       copied from rules/ after validation
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
+  jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
+  jobs/exam/<code>/index.html   one static page per exam for search engines (sitegen.py), + jobs/sitemap.xml
   jobs/v1/status.json           last full check and SSC's lastUpdates stamp (changes on full checks only)
 
 Publishing rules (a wrong date or a missing notice is worse than a late one):
@@ -30,7 +32,7 @@ import json
 import os
 import sys
 
-from . import classify, eligibility, http, ssc
+from . import classify, eligibility, http, results_index, sitegen, ssc
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -123,7 +125,7 @@ def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[
 
 
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
-        force: bool = False) -> int:
+        force: bool = False, get_bytes=None, site_url: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -154,6 +156,10 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
     publish_rules(out, all_rules, now.date())
+    sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
+    if get_bytes is not None:
+        added = results_index.update(out, feed, get_bytes)
+        print(f"results: {added} new roll-number lists")
     _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
                               "sourceUpdatedAt": stamp, "streamCounts": counts}, volatile=())
     print(f"ssc: {len(feed)} items ({len(new)} new), {len(calendar)} calendar entries"
@@ -167,9 +173,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--window-days", type=int, default=120)
     ap.add_argument("--max-pages", type=int, default=4)
     ap.add_argument("--force", action="store_true", help="full check even if lastUpdates is unchanged")
+    ap.add_argument("--site-url", help="public address, for canonical links and jobs/sitemap.xml")
+    ap.add_argument("--no-results", action="store_true", help="skip roll-number indexing of result PDFs")
     args = ap.parse_args(argv)
     try:
-        return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force)
+        return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,
+                   get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url)
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

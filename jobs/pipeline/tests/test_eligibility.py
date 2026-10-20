@@ -93,3 +93,12 @@ def test_every_reason_and_note_has_a_known_code():
         for p in rules["posts"]:
             assert set(p.get("requires", [])) <= known_requires, p["name"]
             assert set(p.get("notes", [])) <= known_notes, p["name"]
+
+
+def test_pay_scales_cover_every_post_and_match_the_notices():
+    assert RULES["ssc-cgl-2026"]["payScales"]["8"] == [47600, 151100]  # Notice para 2.1
+    assert RULES["ssc-chsl-2026"]["payScales"]["2"] == [19900, 63200]  # Notice para 1.1
+    bad = copy.deepcopy(RULES["ssc-chsl-2026"])
+    del bad["payScales"]["5"]  # DEO is Level 4/5
+    with pytest.raises(el.RulesError, match="pay level 5"):
+        el.validate(bad)

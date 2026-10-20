@@ -94,6 +94,15 @@ def validate(rules: dict) -> dict:
                 raise RulesError(f"{rid}: exam stage {stage['stage']} ends before it starts")
         elif not stage.get("when"):
             raise RulesError(f"{rid}: exam stage {stage.get('stage')} has no dates")
+    scales = rules.get("payScales")
+    if scales:
+        for p in rules["posts"]:
+            for level in str(p["payLevel"] or "").split("/"):
+                if level and level not in scales:
+                    raise RulesError(f"{rid}: {p['name']} pay level {level} has no payScales entry")
+        for level, rng in scales.items():
+            if level != "ref" and not (isinstance(rng, list) and len(rng) == 2 and 0 < rng[0] < rng[1]):
+                raise RulesError(f"{rid}: payScales {level}={rng!r}")
     sig = rules.get("upload", {}).get("signature")
     if sig and not 0 < sig["minKB"] < sig["maxKB"]:
         raise RulesError(f"{rid}: signature size range")

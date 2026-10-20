@@ -32,7 +32,7 @@ jobs:
   publish:
     if: vars.JOBS_PUBLISH == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25   # a new 26 MB result list takes ~1-2 min; up to 4 per run
     env:
       SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
       JOBS_TELEGRAM_CHAT_ID: ${{ vars.JOBS_TELEGRAM_CHAT_ID }}
@@ -52,13 +52,14 @@ jobs:
 
       - name: Unit tests
         run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils   # pdftotext: roll-number lists
           pip install -q pytest==9.1.1
           (cd jobs/pipeline && python -m pytest -q tests)
 
       - name: Fetch and build
         working-directory: jobs/pipeline
         run: |
-          args="--out ../../public"
+          args="--out ../../public --site-url $SITE_URL"
           if [ "$IN_FORCE" = "true" ]; then args="$args --force"; fi
           python -m sarkari.build $args
 
@@ -66,7 +67,7 @@ jobs:
         run: |
           mkdir -p public/jobs
           cp jobs/web/index.html jobs/web/app.js jobs/web/eligibility.js jobs/web/i18n.js \
-             jobs/web/tools.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
+             jobs/web/tools.js jobs/web/tracker.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
           touch public/.nojekyll
 
       - name: Commit and push
