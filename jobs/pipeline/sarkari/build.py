@@ -14,6 +14,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
   jobs/v1/results/cutoffs.json  pages of the result write-ups that give the cut-off marks (cutoffs.py)
   jobs/exam/<code>/index.html   one static page per exam for search engines (sitegen.py), + jobs/sitemap.xml
+  jobs/v1/site.json             public links of this site (the Telegram channel, if one is set)
   jobs/v1/status.json           last full check and SSC's lastUpdates stamp (changes on full checks only)
 
 Publishing rules (a wrong date or a missing notice is worse than a late one):
@@ -26,7 +27,7 @@ Publishing rules (a wrong date or a missing notice is worse than a late one):
   * If SSC's lastUpdates stamp is unchanged and the last full check is under
     FULL_CHECK_HOURS old, the run stops after one small request (other boards are then
     checked on the next full check, at most FULL_CHECK_HOURS later).
-  * Other boards (upprpb.py) are isolated: if one fails, its items from the previous feed
+  * Other boards (upprpb.py, hssc.py) are isolated: if one fails, its items from the previous feed
     are kept, a warning is printed and status.json names it; SSC is still published.
 """
 from __future__ import annotations
@@ -35,10 +36,11 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import sys
 
-from . import classify, cutoffs, eligibility, http, results_index, sitegen, ssc, upprpb
+from . import classify, cutoffs, eligibility, hssc, http, results_index, sitegen, ssc, upprpb
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -145,22 +147,41 @@ def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[
     return out[:NEW_MAX_ITEMS]
 
 
+BOARDS = (upprpb, hssc)  # besides SSC; each has SOURCE, NOTICE_PAGE and fetch(get_text, now, days, warn)
+
+
 def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[dict],
                  warn=print) -> tuple[list[ssc.Item], list[dict], list[str]]:
-    """(fresh items, previous items kept for a board that failed or wasn't asked, failed boards)."""
+    """(fresh items, previous items kept for a board that failed or wasn't asked, failed boards).
+    One board failing never stops the others or SSC."""
     cutoff = (now - dt.timedelta(days=window_days)).isoformat(timespec="seconds")
-    previous = [i for i in old_feed if i.get("source") == upprpb.SOURCE and i["publishedAt"] >= cutoff]
-    if get_text is None:
-        return [], previous, []
-    try:
-        return upprpb.fetch(get_text, now, window_days, warn), [], []
-    except (http.FetchError, ssc.FormatChanged, UnicodeDecodeError) as e:
-        warn(f"::warning::{upprpb.SOURCE}: {e}; keeping its previous items")
-        return [], previous, [upprpb.SOURCE]
+    fresh, kept, failed = [], [], []
+    for board in BOARDS:
+        previous = [i for i in old_feed if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff]
+        if get_text is None:
+            kept += previous
+            continue
+        try:
+            fresh += board.fetch(get_text, now, window_days, warn)
+        except (http.FetchError, ssc.FormatChanged, UnicodeDecodeError) as e:
+            warn(f"::warning::{board.SOURCE}: {e}; keeping its previous items")
+            kept += previous
+            failed.append(board.SOURCE)
+    return fresh, kept, failed
+
+
+_CHANNEL = re.compile(r"^@([A-Za-z][A-Za-z0-9_]{4,31})$")  # a public Telegram username
+
+
+def site_info(channel: str | None) -> dict:
+    """Only a public @channel becomes a link; a numeric chat id (a private chat) is never shown."""
+    m = _CHANNEL.match((channel or "").strip())
+    return {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
 
 
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
-        force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None) -> int:
+        force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
+        channel: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -187,7 +208,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     stamp_now = now.isoformat(timespec="seconds")
     changed = _write_json(_v1(out, "feed.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                                   "sourcePage": ssc.NOTICE_BOARD_PAGE,
-                                                  "sources": {"ssc": ssc.NOTICE_BOARD_PAGE, upprpb.SOURCE: upprpb.NOTICE_PAGE},
+                                                  "sources": {"ssc": ssc.NOTICE_BOARD_PAGE,
+                                                              **{x.SOURCE: x.NOTICE_PAGE for x in BOARDS}},
                                                   "items": feed})
     _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                             "entries": calendar})
@@ -195,6 +217,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
+    _write_json(_v1(out, "site.json"), site_info(channel))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
     sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
@@ -223,7 +246,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,
                    get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url,
-                   get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"))
+                   get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"),
+                   channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

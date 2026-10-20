@@ -95,7 +95,7 @@ function toast(msg) {
   clearTimeout(toastTimer);
   const n = el('div', { class: 'toast', role: 'status' }, msg);
   document.body.append(n);
-  toastTimer = setTimeout(() => n.remove(), 2200);
+  toastTimer = setTimeout(() => n.remove(), msg.length > 40 ? 4500 : 2200); // time to read a longer hint
 }
 
 // ---------- saved items and followed exams (this device only) ----------
@@ -113,7 +113,8 @@ function toggleFollow(code, btn) {
   const f = new Set(followed());
   if (f.has(code)) f.delete(code); else f.add(code);
   store.set('follow', [...f]);
-  toast(t(f.has(code) ? 'toastFollow' : 'toastUnfollow'));
+  syncAlerts();
+  toast(t(!f.has(code) ? 'toastUnfollow' : store.get('alerts', false) ? 'toastFollow' : 'toastFollowAlerts'));
   btn.textContent = f.has(code) ? `✓ ${t('following')}` : `+ ${t('follow')}`;
   btn.setAttribute('aria-pressed', String(f.has(code)));
 }
@@ -152,7 +153,7 @@ function itemCard(i, { isNew = false, families = {} } = {}) {
 }
 
 // ---------- Latest ----------
-const filters = store.get('filters', { kind: 'all', exam: 'all', qual: 'all', lang: 'en', dept: false, mine: false, q: '' });
+const filters = { board: 'all', ...store.get('filters', { kind: 'all', exam: 'all', qual: 'all', lang: 'en', dept: false, mine: false, q: '' }) };
 
 async function viewLatest(root, preloaded = null) {
   let feed;
@@ -166,20 +167,26 @@ async function viewLatest(root, preloaded = null) {
   const newCount = feed.items.filter(isNew).length;
 
   const list = el('ul', { class: 'list' });
+  const summary = el('summary');
   const render = () => {
     store.set('filters', filters);
+    // How many filters are set, shown on the closed box (kept up to date as they change).
+    const active = ['board', 'exam', 'qual', 'mine', 'dept'].filter((k) => (['board', 'exam', 'qual'].includes(k) ? filters[k] !== 'all' : filters[k])).length
+      + (filters.lang !== 'en' ? 1 : 0);
+    summary.textContent = `${t('filters')}${active ? ` (${active})` : ''}`;
     const q = filters.q.trim().toLowerCase();
     const mine = new Set(followed());
     const items = feed.items.filter((i) =>
       (filters.kind === 'all' || i.kind === filters.kind) &&
+      (filters.board === 'all' || (i.source ?? 'ssc') === filters.board) &&
       (filters.exam === 'all' || i.exam === filters.exam) &&
       (filters.qual === 'all' || (families[i.exam]?.qualifications ?? []).includes(filters.qual)) &&
       // SSC posts each notice in English and Hindi; other boards post one copy, always shown.
       (filters.lang === 'all' || i.lang === filters.lang || (i.source ?? 'ssc') !== 'ssc') &&
       (filters.dept || i.exam !== 'LDCE') &&
       (!filters.mine || mine.has(i.exam)) &&
-      // Headlines from some boards are Hindi only: the exam's search name is searched too ("up police", "cgl").
-      (!q || `${i.title} ${i.exam ?? ''} ${families[i.exam]?.short ?? ''}`.toLowerCase().includes(q)));
+      // Headlines from some boards are Hindi only: the exam's names are searched too ("up police", "cgl", "haryana").
+      (!q || `${i.title} ${i.exam ?? ''} ${families[i.exam]?.short ?? ''} ${families[i.exam]?.name ?? ''}`.toLowerCase().includes(q)));
     fill(list, ...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families }))
       : [el('li', { class: 'empty' }, t('nothing'))]));
   };
@@ -199,6 +206,10 @@ async function viewLatest(root, preloaded = null) {
   const langSel = el('select', { 'aria-label': 'Language', onchange: (e) => { filters.lang = e.target.value; render(); } },
     el('option', { value: 'en' }, t('langEn')), el('option', { value: 'hi' }, t('langHi')), el('option', { value: 'all' }, t('langBoth')));
   langSel.value = filters.lang;
+  const boards = [...new Set(feed.items.map((i) => i.source ?? 'ssc'))];
+  const boardSel = boards.length > 1 ? el('select', { 'aria-label': t('allBoards'), onchange: (e) => { filters.board = e.target.value; render(); } },
+    el('option', { value: 'all' }, t('allBoards')), ...boards.map((b) => el('option', { value: b }, t(`board_${b}`)))) : null;
+  if (boardSel) boardSel.value = boards.includes(filters.board) ? filters.board : 'all';
   const search = el('input', { type: 'search', placeholder: t('search'), 'aria-label': t('search'), value: filters.q });
   search.addEventListener('input', () => { filters.q = search.value; render(); });
   const check = (key, label) => {
@@ -209,12 +220,11 @@ async function viewLatest(root, preloaded = null) {
   };
   // Content first: on a 360 px phone the filters used to fill the whole first screen.
   chips.classList.add('scroll-row');
-  const active = ['exam', 'qual', 'mine', 'dept'].filter((k) => (k === 'exam' || k === 'qual' ? filters[k] !== 'all' : filters[k])).length
-    + (filters.lang !== 'en' ? 1 : 0);
+
   fill(root,
     search, chips,
-    el('details', { class: 'filter-box' }, el('summary', {}, `${t('filters')}${active ? ` (${active})` : ''}`),
-      el('div', { class: 'filters' }, examSel, qualSel, langSel, check('mine', t('myExams')), check('dept', t('departmental')))),
+    el('details', { class: 'filter-box' }, summary,
+      el('div', { class: 'filters' }, boardSel, examSel, qualSel, langSel, check('mine', t('myExams')), check('dept', t('departmental')))),
     el('p', { class: 'small', 'aria-live': 'polite' }, t('updated', { time: when(feed.generatedAt) }),
       newCount ? el('strong', {}, ` · ${t('newSince', { n: newCount })}`) : null),
     list);
@@ -746,7 +756,7 @@ async function viewMore(root) {
   themeSel.addEventListener('change', () => applyTheme(themeSel.value));
   const langSel = el('select', { id: 'set-lang' }, el('option', { value: 'en' }, 'English'), el('option', { value: 'hi' }, 'हिन्दी'));
   langSel.value = getLang();
-  langSel.addEventListener('change', () => { setLang(langSel.value); store.set('lang', getLang()); paintShell(); route(); });
+  langSel.addEventListener('change', () => { setLang(langSel.value); store.set('lang', getLang()); syncAlerts(); paintShell(); route(); });
   fill(root,
     el('div', { class: 'tiles' },
       el('a', { class: 'tile', href: '#saved' }, el('strong', {}, t('savedLink')), el('span', { class: 'small' }, t('followedExams'))),
@@ -756,10 +766,98 @@ async function viewMore(root) {
     formats.length ? el('details', { class: 'group' }, el('summary', {}, t('docsTitle')),
       el('div', { class: 'inner' }, el('p', { class: 'small' }, t('docsNote')), resourceBlock('certificate_formats', formats, false))) : null,
     el('h2', {}, t('settings')),
+    alertsCard(), installCard(),
     el('div', { class: 'card grid' },
       el('div', { class: 'field' }, el('label', { for: 'set-lang' }, t('language')), langSel),
       el('div', { class: 'field' }, el('label', { for: 'set-theme' }, t('theme')), themeSel)),
     el('h2', {}, t('aboutTitle')), el('div', { class: 'card' }, el('p', {}, t('aboutText')), el('p', { class: 'small' }, t('disclaimer'))));
+}
+
+// ---------- Alerts and install (see alerts.js, sw.js) ----------
+// The worker can't read localStorage, so what it needs (followed exams, their names, the alert
+// texts in the user's language) is written where it can read it: the Cache API.
+async function alertConfig() {
+  let families = {};
+  try { ({ families } = await getJSON('exams.json')); } catch { /* codes are shown instead */ }
+  const exams = followed();
+  return {
+    exams,
+    names: Object.fromEntries(exams.map((c) => [c, families[c]?.short ?? families[c]?.name ?? c])),
+    text: {
+      newItem: t('alertNew', { exam: '{exam}', kind: '{kind}' }), more: t('alertMore', { n: '{n}' }),
+      lastDays: t('alertLastDays', { title: '{title}', n: '{n}' }), lastDay: t('alertLastDay', { title: '{title}' }),
+      kinds: Object.fromEntries(['recruitment', 'amendment', 'result', 'answer_key', 'admit_card', 'vacancy', 'schedule', 'notice'].map((k) => [k, t(`kind_${k}`)])),
+    },
+  };
+}
+async function syncAlerts() {
+  if (!store.get('alerts', false) || !('caches' in window)) return;
+  try {
+    await (await caches.open('jobs-alerts')).put('alerts/config', new Response(JSON.stringify(await alertConfig()),
+      { headers: { 'content-type': 'application/json' } }));
+  } catch { /* storage blocked: alerts keep the last settings */ }
+}
+// navigator.serviceWorker.ready never settles when the worker could not be registered.
+const swReady = () => ('serviceWorker' in navigator
+  ? Promise.race([navigator.serviceWorker.ready, new Promise((r) => { setTimeout(() => r(null), 3000); })]) : Promise.resolve(null));
+async function alertsSupport() {
+  if (!('Notification' in window)) return 'unsupported';
+  const reg = await swReady();
+  return reg?.periodicSync ? 'ok' : 'unsupported';
+}
+function alertsCard() {
+  const status = el('p', { class: 'small', 'aria-live': 'polite' });
+  const btn = el('button', { class: 'primary', type: 'button' });
+  const paint = async () => {
+    const on = store.get('alerts', false);
+    btn.textContent = t(on ? 'alertsOff' : 'alertsOn');
+    if (on) status.textContent = t('alertsActive', { n: followed().length });
+    else if ('Notification' in window && Notification.permission === 'denied') status.textContent = t('alertsBlocked');
+    else status.textContent = (await alertsSupport()) === 'ok' ? '' : t('alertsUnsupported');
+  };
+  btn.addEventListener('click', async () => {
+    const reg = await swReady();
+    if (store.get('alerts', false)) {
+      store.set('alerts', false);
+      try { await reg?.periodicSync?.unregister('jobs-alerts'); await (await caches.open('jobs-alerts')).delete('alerts/config'); } catch { /* already gone */ }
+      paint(); return;
+    }
+    if (!followed().length) { status.textContent = t('alertsNoExams'); return; }
+    if ((await alertsSupport()) !== 'ok') { status.textContent = t('alertsUnsupported'); return; }
+    if ((await Notification.requestPermission()) !== 'granted') { status.textContent = t('alertsBlocked'); return; }
+    try {
+      // Chrome only grants this to an installed app; anything else throws.
+      await reg.periodicSync.register('jobs-alerts', { minInterval: 6 * 3600e3 });
+    } catch { status.textContent = t('alertsUnsupported'); return; }
+    store.set('alerts', true);
+    await syncAlerts();
+    reg.active?.postMessage('check-alerts'); // records what is already there
+    paint();
+  });
+  paint();
+  // Works on every phone, background check or not: the Telegram channel, when the site has one.
+  const telegram = el('p');
+  getJSON('site.json').then((site) => {
+    if (typeof site.telegram === 'string' && /^https:\/\/t\.me\/[A-Za-z0-9_]{5,32}$/.test(site.telegram)) {
+      fill(telegram, el('a', { href: site.telegram, rel: 'noopener', target: '_blank' }, t('telegramJoin')));
+    }
+  }).catch(() => { /* no channel */ });
+  return el('div', { class: 'card' }, el('h3', {}, t('alertsTitle')), el('p', { class: 'small' }, t('alertsIntro')), btn, status, telegram);
+}
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+window.addEventListener('appinstalled', () => { installPrompt = null; });
+function installCard() {
+  const standalone = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone;
+  if (standalone) return null;
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (!installPrompt && !ios) return null;
+  return el('div', { class: 'card' }, el('h3', {}, t('installTitle')), el('p', { class: 'small' }, t('installNote')),
+    installPrompt ? el('button', { class: 'primary', type: 'button', onclick: async (e) => {
+      installPrompt.prompt();
+      await installPrompt.userChoice.catch(() => null);
+      installPrompt = null; e.target.closest('.card').remove();
+    } }, t('installBtn')) : el('p', {}, t('installIos')));
 }
 
 // ---------- Home: what is open, what is coming, what is new ----------

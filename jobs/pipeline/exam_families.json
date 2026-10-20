@@ -124,6 +124,15 @@
       "ref": null,
       "source": "upprpb",
       "noTimeline": true
+    },
+    "HSSC": {
+      "name": "Haryana SSC (HSSC): Group C & D, CET, Haryana Police",
+      "hi": "हरियाणा कर्मचारी चयन आयोग",
+      "qualifications": null,
+      "ref": null,
+      "short": "HSSC",
+      "source": "hssc",
+      "noTimeline": true
     }
   }
 }

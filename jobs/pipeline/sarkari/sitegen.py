@@ -48,6 +48,7 @@ def _status(rules: dict, today: dt.date) -> str:
 SOURCES = {
     "ssc": ("SSC", "Staff Selection Commission", "https://ssc.gov.in"),
     "upprpb": ("UPPRPB", "UP Police Recruitment & Promotion Board", "https://uppbpb.gov.in"),
+    "hssc": ("HSSC", "Haryana Staff Selection Commission", "https://hssc.gov.in"),
 }
 
 
@@ -80,12 +81,15 @@ def _faq(short: str, fam: dict, r: dict) -> str:
 
 def page(code: str, fam: dict, rules: dict | None, items: list[dict], today: dt.date, site_url: str | None) -> str:
     short = fam.get("short") or fam["name"]
-    year = rules["examYear"] if rules else max((i["examYear"] or 0 for i in items), default=0) or today.year
-    topics = "Exam Date, Notification, Age Limit, Salary, Admit Card, Result"
-    title = f"{short} {year}: {topics}"
+    year = rules["examYear"] if rules else max((i["examYear"] or 0 for i in items), default=0) or None
+    # Only what the page really has: age limit and salary come from a rules file (SSC exams).
+    topics = ("Exam Date, Notification, Age Limit, Salary, Admit Card, Result" if rules
+              else "Latest Notices, Admit Card, Answer Key, Result")
+    title = f"{short}{' ' + str(year) if year else ''}: {topics}"
     org, org_name, home = SOURCES[fam.get("source", "ssc")]
     host = home.split("//", 1)[1]
-    desc = (f"{fam['name']} {year}: latest {org} notices, exam dates, application dates, fee, age limit, pay and results, "
+    what = "exam dates, application dates, fee, age limit, pay and results" if rules else "admit cards, answer keys and results"
+    desc = (f"{fam['name']}{' ' + str(year) if year else ''}: latest {org} notices, {what}, "
             f"with links to the official PDFs on {host}. Not a government website.")
     canonical = f"{site_url.rstrip('/')}/jobs/exam/{code.lower()}/" if site_url else None
     b = []

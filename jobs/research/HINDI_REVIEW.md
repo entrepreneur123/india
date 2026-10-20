@@ -68,7 +68,7 @@
 | `faqVacancy` | How many vacancies are there? | कितनी रिक्तियाँ हैं? | |
 | `faqQual` | What qualification is needed? | कौन सी योग्यता चाहिए? | |
 | `aboutTitle` | About this app | इस ऐप के बारे में | |
-| `aboutText` | An unofficial helper for candidates of SSC exams and UP Police recruitment. Notices, dates and rules are copied from ssc.gov.in, uppbpb.gov.in and the official Notices, with paragraph references. It does not collect personal data: your details and roll number stay on this phone. | SSC परीक्षाओं और UP पुलिस भर्ती के उम्मीदवारों के लिए एक अनौपचारिक सहायक। सूचनाएँ, तिथियाँ और नियम ssc.gov.in, uppbpb.gov.in और आधिकारिक नोटिस से पैरा संदर्भ के साथ लिए गए हैं। यह कोई निजी जानकारी इकट्ठा नहीं करता: आपकी जानकारी और रोल नंबर इसी फ़ोन में रहते हैं। | |
+| `aboutText` | An unofficial helper for candidates of SSC exams, UP Police and Haryana SSC recruitment. Notices, dates and rules are copied from ssc.gov.in, uppbpb.gov.in, hssc.gov.in and the official Notices, with paragraph references. It does not collect personal data: your details and roll number stay on this phone. | SSC परीक्षाओं, UP पुलिस और हरियाणा SSC भर्ती के उम्मीदवारों के लिए एक अनौपचारिक सहायक। सूचनाएँ, तिथियाँ और नियम ssc.gov.in, uppbpb.gov.in, hssc.gov.in और आधिकारिक नोटिस से पैरा संदर्भ के साथ लिए गए हैं। यह कोई निजी जानकारी इकट्ठा नहीं करता: आपकी जानकारी और रोल नंबर इसी फ़ोन में रहते हैं। | |
 | `sourceRef` | Source: {ref} | स्रोत: {ref} | |
 | `toastSaved` | Saved | सहेजा गया | |
 | `toastRemoved` | Removed | हटाया गया | |
@@ -111,9 +111,9 @@
 | `notAnnounced` | Date not announced by SSC yet | SSC ने अभी तिथि घोषित नहीं की है | |
 | `payRange` | Basic pay ₹{from}–{to} a month (Level {l}; allowances extra) | मूल वेतन ₹{from}–{to} प्रति माह (लेवल {l}; भत्ते अलग) | |
 | `savedLink` | ★ Saved | ★ सहेजे गए | |
-| `disclaimer` | Not a government website and not affiliated with the Staff Selection Commission, the UP Police Recruitment & Promotion Board or any government. Everything here is copied from ssc.gov.in and uppbpb.gov.in; every item links to the official file. Always confirm with the official Notice before applying. | यह सरकारी वेबसाइट नहीं है और कर्मचारी चयन आयोग, उत्तर प्रदेश पुलिस भर्ती एवं प्रोन्नति बोर्ड या किसी भी सरकार से जुड़ी नहीं है। यहाँ सब कुछ ssc.gov.in और uppbpb.gov.in से लिया गया है; हर सूचना आधिकारिक फ़ाइल से जुड़ी है। आवेदन से पहले आधिकारिक नोटिस ज़रूर पढ़ें। | |
+| `disclaimer` | Not a government website and not affiliated with the Staff Selection Commission, the UP Police Recruitment & Promotion Board, the Haryana Staff Selection Commission or any government. Everything here is copied from ssc.gov.in, uppbpb.gov.in and hssc.gov.in; every item links to the official file. Always confirm with the official Notice before applying. | यह सरकारी वेबसाइट नहीं है और कर्मचारी चयन आयोग, उत्तर प्रदेश पुलिस भर्ती एवं प्रोन्नति बोर्ड, हरियाणा कर्मचारी चयन आयोग या किसी भी सरकार से जुड़ी नहीं है। यहाँ सब कुछ ssc.gov.in, uppbpb.gov.in और hssc.gov.in से लिया गया है; हर सूचना आधिकारिक फ़ाइल से जुड़ी है। आवेदन से पहले आधिकारिक नोटिस ज़रूर पढ़ें। | |
 | `tabExams` | Exams | परीक्षाएँ | |
-| `shortDisclaimer` | Unofficial: not affiliated with SSC, UPPRPB or any government. Sources: ssc.gov.in, uppbpb.gov.in | अनौपचारिक: SSC, UPPRPB या किसी सरकार से संबद्ध नहीं। स्रोत: ssc.gov.in, uppbpb.gov.in | |
+| `shortDisclaimer` | Unofficial: not affiliated with SSC, UPPRPB, HSSC or any government. Sources: ssc.gov.in, uppbpb.gov.in, hssc.gov.in | अनौपचारिक: SSC, UPPRPB, HSSC या किसी सरकार से संबद्ध नहीं। स्रोत: ssc.gov.in, uppbpb.gov.in, hssc.gov.in | |
 | `filters` | Filters | फ़िल्टर | |
 | `langToggle` | हिन्दी | English | |
 | `kindAll` | All | सभी | |
@@ -144,13 +144,35 @@
 | `langHi` | हिन्दी | हिन्दी | |
 | `langBoth` | English + हिन्दी | English + हिन्दी | |
 | `departmental` | Departmental exams | विभागीय परीक्षाएँ | |
-| `updated` | Updated {time} IST · sources: ssc.gov.in, uppbpb.gov.in | अपडेट {time} IST · स्रोत: ssc.gov.in, uppbpb.gov.in | |
+| `updated` | Updated {time} IST · sources: ssc.gov.in, uppbpb.gov.in, hssc.gov.in | अपडेट {time} IST · स्रोत: ssc.gov.in, uppbpb.gov.in, hssc.gov.in | |
 | `newSince` | {n} new since your last visit | आपकी पिछली विज़िट के बाद {n} नई | |
 | `cutoffTitle` | Cut-off marks | कट-ऑफ़ अंक | |
 | `cutoffNote` | SSC gives cut-offs only inside the result write-up. The numbers are not copied here (one wrong figure would mislead): each link opens SSC's PDF at the page where the cut-off details start. | SSC कट-ऑफ़ केवल रिज़ल्ट राइट-अप में देता है। यहाँ अंक नकल नहीं किए जाते (एक भी गलत अंक भ्रम पैदा करेगा): हर लिंक SSC की PDF को उसी पेज पर खोलता है जहाँ से कट-ऑफ़ विवरण शुरू होता है। | |
 | `cutoffFrom` | Open at page {p} | पेज {p} पर खोलें | |
 | `cutoffPages` | mentioned on p. {pages} | पेज {pages} पर उल्लेख | |
 | `noCutoffs` | No cut-off found in the result write-ups of the last 120 days. | पिछले 120 दिनों के रिज़ल्ट राइट-अप में कोई कट-ऑफ़ नहीं मिला। | |
+| `alertsTitle` | Alerts on this phone | इस फ़ोन पर अलर्ट | |
+| `alertsIntro` | A notification when there is news for an exam you follow, and two days before its application closes. | जिन परीक्षाओं को आप फ़ॉलो करते हैं, उनकी नई सूचना पर और आवेदन बंद होने से दो दिन पहले नोटिफ़िकेशन। | |
+| `alertsOn` | Turn on alerts | अलर्ट चालू करें | |
+| `alertsOff` | Turn off alerts | अलर्ट बंद करें | |
+| `alertsNoExams` | Follow an exam first (Exams → Follow). | पहले कोई परीक्षा फ़ॉलो करें (परीक्षाएँ → फ़ॉलो करें)। | |
+| `alertsActive` | On for {n} exams. Chrome decides when to check, more often if you open the app often, so news can reach you hours after it is posted. | {n} परीक्षाओं के लिए चालू। Chrome खुद तय करता है कि कब जाँचे (ऐप ज़्यादा खोलें तो ज़्यादा बार), इसलिए सूचना कुछ घंटे बाद पहुँच सकती है। | |
+| `alertsBlocked` | Notifications are blocked for this site. Allow them in the browser's site settings. | इस साइट के नोटिफ़िकेशन बंद हैं। ब्राउज़र की साइट सेटिंग्स में अनुमति दें। | |
+| `alertsUnsupported` | This browser can't check in the background. On Android, install this app from Chrome first. Otherwise, use the calendar reminders on each exam page. | यह ब्राउज़र बैकग्राउंड में जाँच नहीं कर सकता। Android पर पहले Chrome से यह ऐप इंस्टॉल करें। नहीं तो हर परीक्षा पेज पर कैलेंडर रिमाइंडर इस्तेमाल करें। | |
+| `alertNew` | {exam}: {kind} | {exam}: {kind} | |
+| `alertMore` | {n} more updates for your exams | आपकी परीक्षाओं के {n} और अपडेट | |
+| `alertLastDays` | {title}: applications close in {n} days | {title}: {n} दिन में आवेदन बंद | |
+| `alertLastDay` | {title}: today is the last day to apply | {title}: आवेदन का आज अंतिम दिन है | |
+| `installTitle` | Install the app | ऐप इंस्टॉल करें | |
+| `installBtn` | Install | इंस्टॉल करें | |
+| `installNote` | Opens like an app, works offline, and allows alerts on Android. | ऐप की तरह खुलता है, ऑफ़लाइन चलता है और Android पर अलर्ट देता है। | |
+| `installIos` | On iPhone: tap Share, then "Add to Home Screen". | iPhone पर: शेयर दबाएँ, फिर "Add to Home Screen"। | |
+| `telegramJoin` | Join the Telegram channel: every new notice, on any phone | Telegram चैनल से जुड़ें: हर नई सूचना, किसी भी फ़ोन पर | |
+| `toastFollowAlerts` | Following. For phone alerts: More → Turn on alerts | फ़ॉलो किया। फ़ोन पर अलर्ट के लिए: और → अलर्ट चालू करें | |
+| `allBoards` | All recruiters | सभी भर्ती संस्थाएँ | |
+| `board_ssc` | SSC (Central) | SSC (केंद्र) | |
+| `board_upprpb` | UP Police | UP पुलिस | |
+| `board_hssc` | Haryana SSC | हरियाणा SSC | |
 | `newBadge` | NEW | नया | |
 | `nothing` | Nothing here in the last 120 days. | पिछले 120 दिनों में यहाँ कुछ नहीं है। | |
 | `loadError` | Couldn't load. Check your connection, or see ssc.gov.in. | लोड नहीं हो सका। इंटरनेट जाँचें या ssc.gov.in देखें। | |
@@ -301,3 +323,4 @@
 | UPSI | UP Police Sub-Inspector (UPPRPB) | उत्तर प्रदेश पुलिस उप निरीक्षक भर्ती | |
 | UPHG | UP Home Guard enrolment (UPPRPB) | उत्तर प्रदेश होमगार्ड्स एनरोलमेंट | |
 | UPP | UP Police, other posts (UPPRPB) | उत्तर प्रदेश पुलिस भर्ती एवं प्रोन्नति बोर्ड | |
+| HSSC | Haryana SSC (HSSC): Group C & D, CET, Haryana Police | हरियाणा कर्मचारी चयन आयोग | |

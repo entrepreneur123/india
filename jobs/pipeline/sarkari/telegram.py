@@ -1,4 +1,4 @@
-"""Posts each new notice (SSC, UP Police board) (jobs/v1/new.json) to a Telegram channel.
+"""Posts each new notice (SSC, UP Police board, Haryana SSC) (jobs/v1/new.json) to a Telegram channel.
 
 SarkariResult and similar sites grow through Telegram/WhatsApp channels; this is the free
 equivalent. Needs a bot (from @BotFather) that is an admin of the channel:
@@ -21,7 +21,7 @@ LABEL = {
     "admit_card": "Admit card", "vacancy": "Vacancy", "schedule": "Exam dates", "notice": "Notice",
 }
 SKIP_EXAMS = {"LDCE"}  # departmental exams: only for serving employees
-SOURCE_SITE = {"ssc": "ssc.gov.in", "upprpb": "uppbpb.gov.in"}
+SOURCE_SITE = {"ssc": "ssc.gov.in", "upprpb": "uppbpb.gov.in", "hssc": "hssc.gov.in"}
 
 
 def text(item: dict, site_url: str, families: dict | None = None) -> str:

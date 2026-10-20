@@ -23,7 +23,7 @@ def _files(out):
 def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
-    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json",
+    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "site.json",
                            "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
                            "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
@@ -145,13 +145,21 @@ def test_guide_is_published_and_checked(tmp_path, monkeypatch):
 UP_PAGE = open(os.path.join(os.path.dirname(__file__), "fixtures", "upprpb_notice.html"), encoding="utf-8").read()
 
 
+def boards(url):
+    """The other boards' saved pages: UP Police (HTML) and HSSC (JSON)."""
+    if url.startswith("https://hssc.gov.in/"):
+        from test_hssc import fake
+        return fake()(url)
+    return UP_PAGE
+
+
 def test_up_police_board_joins_the_feed_and_a_failure_keeps_its_old_items(tmp_path):
     out = str(tmp_path)
-    assert build.run(out, FakeSSC(), NOW, get_text=lambda url: UP_PAGE) == 0
+    assert build.run(out, FakeSSC(), NOW, get_text=boards) == 0
     feed = _read(out, "feed.json")["items"]
     up = [i for i in feed if i["source"] == "upprpb"]
     assert len(up) == 27 and all(i["dateOnly"] for i in up)
-    assert {i["source"] for i in feed} == {"ssc", "upprpb"}
+    assert {i["source"] for i in feed} == {"ssc", "upprpb", "hssc"}
     assert [i["publishedAt"] for i in feed] == sorted((i["publishedAt"] for i in feed), reverse=True)
     assert _read(out, "status.json")["failedSources"] == []
     assert os.path.exists(os.path.join(out, "jobs", "exam", "uppc", "index.html"))
@@ -160,7 +168,7 @@ def test_up_police_board_joins_the_feed_and_a_failure_keeps_its_old_items(tmp_pa
         raise build.http.FetchError("timed out")
     assert build.run(out, FakeSSC(), NOW + dt.timedelta(hours=4), get_text=down) == 0  # SSC still published
     assert [i for i in _read(out, "feed.json")["items"] if i["source"] == "upprpb"] == up
-    assert _read(out, "status.json")["failedSources"] == ["upprpb"]
+    assert _read(out, "status.json")["failedSources"] == ["upprpb", "hssc"]
 
     # Kept items still age out of the window.
     build.run(out, FakeSSC(), NOW + dt.timedelta(days=60), get_text=down)
@@ -174,3 +182,12 @@ def test_without_pdftotext_no_pdf_is_downloaded(tmp_path, monkeypatch):
     def get_bytes(url):
         raise AssertionError(f"downloaded {url}")
     assert build.run(str(tmp_path), FakeSSC(), NOW, get_bytes=get_bytes) == 0
+
+
+@pytest.mark.parametrize("channel,link", [
+    ("@SarkariAlertsIN", "https://t.me/SarkariAlertsIN"),
+    ("-1001234567890", None),  # a numeric chat id: private, never shown
+    ("@a b", None), ("", None), (None, None),
+])
+def test_only_a_public_telegram_channel_is_linked(channel, link):
+    assert build.site_info(channel).get("telegram") == link

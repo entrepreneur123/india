@@ -115,3 +115,42 @@ test('timeline: a board that posts in Hindi only still gets its stages', async (
   assert.deepEqual(t.map((s) => [s.key, s.state, s.at]), [
     ['answer_key', 'done', '2026-07-31'], ['admit_card', 'done', '2026-09-24'], ['result', 'done', '2026-10-14']]);
 });
+
+test('alerts: nothing on the first check, then only new items for followed exams', async () => {
+  await import('./alerts.js');
+  const { pick, MAX } = globalThis.JobsAlerts;
+  const config = { exams: ['CGL', 'UPPC'], names: { CGL: 'SSC CGL', UPPC: 'UP Police Constable' },
+    text: { newItem: '{exam}: {kind}', more: '{n} more', lastDays: '{title} closes in {n} days', lastDay: '{title}: last day',
+      kinds: { result: 'Result', notice: 'Notice', admit_card: 'Admit card' } } };
+  const it = (id, exam, kind, at) => ({ id, exam, kind, title: `t-${id}`, publishedAt: `${at}T10:00:00+05:30` });
+  const feed1 = { items: [it('a', 'CGL', 'result', '2026-10-18'), it('b', 'CHSL', 'result', '2026-10-18')] };
+  const first = pick(feed1, null, null, config, '2026-10-20');
+  assert.deepEqual(first.notes, []);
+  const feed2 = { items: [it('c', 'UPPC', 'admit_card', '2026-10-20'), it('d', 'CHSL', 'result', '2026-10-20'),
+    it('old', 'CGL', 'result', '2026-09-01'), ...feed1.items] };
+  const second = pick(feed2, null, first.state, config, '2026-10-20');
+  assert.deepEqual(second.notes.map((n) => [n.title, n.body, n.url]), [['UP Police Constable: Admit card', 't-c', '#exam/UPPC']]);
+  assert.deepEqual(pick(feed2, null, second.state, config, '2026-10-21').notes, []); // never twice
+
+  const many = { items: Array.from({ length: 9 }, (_, n) => it(`n${n}`, 'CGL', 'notice', '2026-10-20')) };
+  const notes = pick(many, null, { seen: [] }, config, '2026-10-20').notes;
+  assert.equal(notes.length, MAX);
+  assert.equal(notes.at(-1).title, `${9 - (MAX - 1)} more`);
+});
+
+test('alerts: last days to apply, once per cycle, from the rules index', async () => {
+  await import('./alerts.js');
+  const { pick } = globalThis.JobsAlerts;
+  const config = { exams: ['CGL'], names: {}, text: { newItem: '', more: '', lastDays: '{title} closes in {n} days', lastDay: '{title}: last day', kinds: {} } };
+  const index = { exams: [{ id: 'ssc-cgl-2026', exam: 'CGL', title: 'CGL 2026', applyFrom: '2026-06-01', applyTo: '2026-06-30' },
+    { id: 'ssc-chsl-2026', exam: 'CHSL', title: 'CHSL 2026', applyFrom: '2026-06-01', applyTo: '2026-06-29' }] };
+  const feed = { items: [] };
+  let state = { seen: [] };
+  assert.deepEqual(pick(feed, index, state, config, '2026-06-27').notes, []); // 3 days left: not yet
+  const r1 = pick(feed, index, state, config, '2026-06-28');
+  assert.deepEqual(r1.notes.map((n) => n.title), ['CGL 2026 closes in 2 days']);
+  state = r1.state;
+  assert.deepEqual(pick(feed, index, state, config, '2026-06-30').notes, []); // already told for this cycle
+  assert.deepEqual(pick(feed, index, { seen: [] }, config, '2026-06-30').notes.map((n) => n.title), ['CGL 2026: last day']);
+  assert.deepEqual(pick(feed, index, { seen: [] }, config, '2026-07-01').notes, []); // closed
+});
