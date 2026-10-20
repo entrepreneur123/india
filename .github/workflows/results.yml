@@ -58,6 +58,8 @@ jobs:
     env:
       # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
       HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      # Seconds between source requests for dates older than 3 days (manual backfills only).
+      PIPELINE_PACE: "1"
       # Website: public address, ad and analytics ids (repository Variables; all optional).
       SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
       ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}

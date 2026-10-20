@@ -52,6 +52,9 @@ WEB = {
         "draw_desc": "{g} result {d} {t}: 1st prize {n}. All prize numbers and a ticket checker.",
         "awaited": "awaited", "result_of": "Result of {d}", "all_of_day": "All results of {d}",
         "old_title": "Lottery Sambad Old Result – Dear Lottery 1 PM, 6 PM, 8 PM, All Dates", "old_h1": "Old results",
+        "month_title": "Lottery Sambad Old Result {m} – Dear Lottery 1 PM, 6 PM, 8 PM", "month_h1": "Old results – {m}",
+        "months": "By month", "recent_days": "Last 31 days",
+        "mon": "January February March April May June July August September October November December".split(),
         "prev": "Previous day", "next": "Next day", "older": "Older results",
         "app": "Get the result the moment it is out: free LottoDost app (alerts, ticket scan, number history).",
         "faq": "Common questions", "q_time": "When are the results declared?",
@@ -88,6 +91,9 @@ WEB = {
         "draw_desc": "{g} রেজাল্ট {d} {t}: প্রথম পুরস্কার {n}। সব পুরস্কারের নম্বর আর টিকিট চেক।",
         "awaited": "রেজাল্টের অপেক্ষা", "result_of": "{d}-এর রেজাল্ট", "all_of_day": "{d}-এর সব রেজাল্ট",
         "old_title": "লটারি সংবাদ পুরোনো রেজাল্ট – ডিয়ার লটারি সব তারিখ", "old_h1": "পুরোনো রেজাল্ট",
+        "month_title": "লটারি সংবাদ পুরোনো রেজাল্ট {m} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা", "month_h1": "পুরোনো রেজাল্ট – {m}",
+        "months": "মাস অনুযায়ী", "recent_days": "গত 31 দিন",
+        "mon": "জানুয়ারি ফেব্রুয়ারি মার্চ এপ্রিল মে জুন জুলাই আগস্ট সেপ্টেম্বর অক্টোবর নভেম্বর ডিসেম্বর".split(),
         "prev": "আগের দিন", "next": "পরের দিন", "older": "পুরোনো রেজাল্ট",
         "app": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে জানতে ফ্রি LottoDost অ্যাপ নিন (অ্যালার্ট, টিকিট স্ক্যান, নম্বরের ইতিহাস)।",
         "faq": "সাধারণ প্রশ্ন", "q_time": "রেজাল্ট কখন বেরোয়?",
@@ -124,6 +130,9 @@ WEB = {
         "draw_desc": "{g} रिज़ल्ट {d} {t}: पहला इनाम {n}। सारे इनाम के नंबर और टिकट चेक।",
         "awaited": "रिज़ल्ट का इंतज़ार", "result_of": "{d} का रिज़ल्ट", "all_of_day": "{d} के सारे रिज़ल्ट",
         "old_title": "लॉटरी संबाद पुराने रिज़ल्ट – डियर लॉटरी सभी तारीख़ें", "old_h1": "पुराने रिज़ल्ट",
+        "month_title": "लॉटरी संबाद पुराने रिज़ल्ट {m} – डियर लॉटरी 1 PM, 6 PM, 8 PM", "month_h1": "पुराने रिज़ल्ट – {m}",
+        "months": "महीने के हिसाब से", "recent_days": "पिछले 31 दिन",
+        "mon": "जनवरी फ़रवरी मार्च अप्रैल मई जून जुलाई अगस्त सितंबर अक्टूबर नवंबर दिसंबर".split(),
         "prev": "पिछला दिन", "next": "अगला दिन", "older": "पुराने रिज़ल्ट",
         "app": "रिज़ल्ट आते ही जानने के लिए फ़्री LottoDost ऐप लें (अलर्ट, टिकट स्कैन, नंबर हिस्ट्री)।",
         "faq": "आम सवाल", "q_time": "रिज़ल्ट कब आता है?",
@@ -542,6 +551,8 @@ class Site:
             return ""
         rel = f"og/{d['id']}.png"
         f = out / rel
+        if d["date"] < (self.now.date() - dt.timedelta(days=30)).isoformat():
+            return f"{self.base}/{rel}" if f.exists() else ""   # old draws (archive backfill) get no new image
         if f.exists() and d["date"] < (self.now.date() - dt.timedelta(days=2)).isoformat():
             return f"{self.base}/{rel}"  # numbers of older draws no longer change
         cache: dict = self.__dict__.setdefault("_fonts", {})
@@ -585,7 +596,10 @@ class Site:
         """Recent dates as one row of chips, like the app's date picker."""
         s, w = self.s[lang], WEB[lang]
         out = []
-        for x in self.dates[:7]:
+        # The dates around this one (a page of an old date stays unchanged as new days come in).
+        i = self.dates.index(current) if current in self.dates else 0
+        lo = max(0, min(i - 3, len(self.dates) - 7))
+        for x in self.dates[lo:lo + 7]:
             y, m, d = x.split("-")
             label = s["today"] if x == self.today else w["wd"][dt.date(int(y), int(m), int(d)).weekday()]
             cur = ' aria-current="page"' if x == current else ""
@@ -688,10 +702,28 @@ class Site:
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
+            months = sorted({x[:7] for x in self.dates}, reverse=True)
             self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
-                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}{self.archive(lang)}{self.history(lang)}',
+                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}'
+                                                             f'{self.month_links(lang, months)}<h2 class="sub">{esc(w["recent_days"])}</h2>'
+                                                             f'{self.archive(lang, self.dates[:31])}{self.history(lang)}',
                                                              crumbs=[(w["home"], "/"), (w["old_h1"], "/old-results/")], tab="old"),
                        key="old", lastmod=self.stamp)
+            # one page per month, so every old date is two clicks from anywhere and searchable by month
+            for i, ym in enumerate(months):
+                path, m = f"/old-results/{ym}/", self.month_name(lang, ym)
+                nav = []
+                if i + 1 < len(months):
+                    nav.append(f'<a class="btn" href="{self.url(lang, f"/old-results/{months[i + 1]}/")}">← {esc(self.month_name(lang, months[i + 1]))}</a>')
+                if i > 0:
+                    nav.append(f'<a class="btn" href="{self.url(lang, f"/old-results/{months[i - 1]}/")}">{esc(self.month_name(lang, months[i - 1]))} →</a>')
+                body = (f'<div class="intro"><h1>{esc(w["month_h1"].format(m=m))}</h1></div>'
+                        + self.archive(lang, [x for x in self.dates if x.startswith(ym)]) + f'<p class="pn">{"".join(nav)}</p>'
+                        + self.month_links(lang, months, ym))
+                last = max(x for x in self.dates if x.startswith(ym))
+                self.write(out, lang, path, self.page(lang, path, w["month_title"].format(m=m), w["month_title"].format(m=m), body,
+                                                      crumbs=[(w["home"], "/"), (w["old_h1"], "/old-results/"), (m, path)], tab="old"),
+                           key=f"month:{ym}", lastmod=self.stamp if last == self.dates[0] else last)
         # English-only trust pages (required by ad networks; also what visitors look for)
         w = WEB["en"]
         for path, title, text in (("/about/", w["about"], w["about_body"]),
@@ -780,15 +812,24 @@ class Site:
     def date_form(self, lang: str) -> str:
         w, s = WEB[lang], self.s[lang]
         lo, hi = (self.dates[-1], self.dates[0]) if self.dates else ("", "")
-        return (f'<form id="dateForm" class="check row" data-none="{esc(s["no_result"])}"><input type="date" id="dateIn" '
+        return (f'<form id="dateForm" class="check row" data-none="{esc(s["no_result"])}" data-base="{self.url(lang, "/result/")}" '
+                f'data-days="{" ".join(x.replace("-", "") for x in self.dates)}"><input type="date" id="dateIn" '
                 f'aria-label="{esc(w["pick_date"])}" min="{lo}" max="{hi}" value="{hi}"><button>{esc(w["go"])}</button></form>'
                 f'<p id="dateRes" class="hint" aria-live="polite"></p>')
 
-    def archive(self, lang: str) -> str:
+    def month_name(self, lang: str, ym: str) -> str:
+        return f'{WEB[lang]["mon"][int(ym[5:]) - 1]} {ym[:4]}'
+
+    def month_links(self, lang: str, months: list[str], current: str = "") -> str:
+        a = "".join(f'<a class="chip"{" aria-current=\"page\"" if ym == current else ""} href="{self.url(lang, f"/old-results/{ym}/")}">'
+                    f'<b>{ym[:4]}</b>{esc(WEB[lang]["mon"][int(ym[5:]) - 1])}</a>' for ym in months)
+        return f'<h2 class="sub">{esc(WEB[lang]["months"])}</h2><nav class="chips wrapchips" aria-label="{esc(WEB[lang]["months"])}">{a}</nav>'
+
+    def archive(self, lang: str, dates: list[str]) -> str:
         s, w = self.s[lang], WEB[lang]
         head = "".join(f"<th>{esc(short_time(t))}</th>" for _, t, _ in WEEKLY)
         rows = []
-        for x in self.dates:
+        for x in dates:
             y, m, d = x.split("-")
             by_slot = {dr["slot"]: dr for dr in self.days[x] if dr.get("tiers")}
             cells = "".join(f'<td><a href="{self.url(lang, self.draw_path(by_slot[sl]))}">{esc(by_slot[sl]["tiers"][0]["numbers"][0])}</a></td>'
@@ -834,7 +875,7 @@ CSS = """:root{--bg:#f7f2f0;--fg:#221a19;--mut:#6b5552;--card:#fff;--line:#eaddd
 .tabs a[aria-current]{color:#fff;border-color:var(--gold)}
 .intro{margin:20px 0 4px}h1{font-size:1.45rem;font-weight:800;letter-spacing:-.01em}h1 .d{white-space:nowrap;color:var(--red)}h1.sm{font-size:1.15rem}
 .hint{color:var(--mut);font-size:.88rem;margin-top:4px}.eyebrow{color:var(--mut);font-size:.85rem;font-weight:600}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.wrapchips{flex-wrap:wrap;overflow:visible;margin:10px 0}
 .chip{flex:none;min-width:64px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px;color:var(--fg);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.25}
 .chip b{display:block;font-size:.72rem;color:var(--mut);font-weight:600}.chip[aria-current]{background:var(--gold);border-color:var(--gold);color:var(--ongold)}.chip[aria-current] b{color:var(--ongold)}
 .banner{background:var(--pink);color:var(--onpink);border-radius:14px;padding:12px 16px;margin:12px 0;font-weight:600}
@@ -949,7 +990,7 @@ c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)
 // Old results: jump to a date we have a page for.
 var df=document.getElementById("dateForm");
 if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;
-var a=document.querySelector('a[href$="/result/'+p[2]+"-"+p[1]+"-"+p[0]+'/"]');if(a)location.href=a.getAttribute("href");
+if((" "+df.dataset.days+" ").indexOf(" "+p.join("")+" ")>=0)location.href=df.dataset.base+p[2]+"-"+p[1]+"-"+p[0]+"/";
 else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;

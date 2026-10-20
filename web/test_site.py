@@ -201,3 +201,15 @@ def test_draw_time_page_waits_for_todays_result(tmp_path, monkeypatch):
     assert "Lottery Sambad Morning Result Today 19.10.2026" in page
     assert 'data-at="2026-10-19T13:00:00+05:30"' in page    # the countdown
     assert "74D 70698" in page                              # and yesterday's result below it
+
+
+def test_month_archive_and_date_search_reach_every_date(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    month = (out / "old-results/2026-10/index.html").read_text()
+    assert "<title>Lottery Sambad Old Result October 2026 – Dear Lottery 1 PM, 6 PM, 8 PM</title>" in month
+    assert 'href="/result/17-10-2026/"' in month and "74D 70698" in month
+    assert (out / "bn/old-results/2026-10/index.html").exists()
+    old = (out / "old-results/index.html").read_text()
+    assert 'href="/old-results/2026-10/"' in old
+    assert re.search(r'data-days="[0-9 ]*20261017[0-9 ]*"', old) and 'data-base="/result/"' in old
+    assert "https://example.in/old-results/2026-10/" in (out / "sitemap.xml").read_text()
