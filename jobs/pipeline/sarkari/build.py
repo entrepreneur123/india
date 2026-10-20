@@ -35,6 +35,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import shutil
 import sys
 
 from . import classify, cutoffs, eligibility, http, results_index, sitegen, ssc, upprpb
@@ -197,7 +198,9 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
     sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
-    if get_bytes is not None:
+    if get_bytes is not None and not shutil.which("pdftotext"):
+        print("::warning::pdftotext (poppler-utils) is not installed: result lists and cut-offs skipped")
+    elif get_bytes is not None:
         added = results_index.update(out, feed, get_bytes)
         print(f"results: {added} new roll-number lists")
         print(f"cut-offs: {cutoffs.update(out, feed, get_bytes)} write-ups read")

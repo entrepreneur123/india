@@ -96,3 +96,14 @@ def test_a_list_without_its_own_title_is_named_after_the_notice(tmp_path):
     ri.update(str(tmp_path), items, lambda u: b"x", lambda d: text, warn=lambda m: None)
     index = json.load(open(os.path.join(str(tmp_path), "jobs", "v1", "results", "index.json")))["lists"]
     assert index[0]["title"] == "CT(GD) 2026 - List of Female candidates"
+
+
+def test_failed_downloads_count_towards_the_per_run_limit(tmp_path):
+    calls = []
+
+    def get(url):
+        calls.append(url)
+        raise OSError("pdftotext missing")
+    items = [_item(f"ssc-{n}", [(f"LIST{n}.pdf", 100)]) for n in range(20)]
+    assert ri.update(str(tmp_path), items, get, lambda d: "", warn=lambda m: None) == 0
+    assert len(calls) == ri.MAX_TRIES_PER_RUN

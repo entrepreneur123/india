@@ -65,3 +65,14 @@ def test_a_failed_download_is_tried_again_next_run_not_once_per_notice(tmp_path)
     assert cutoffs.update(str(tmp_path), items, get, lambda d: "", warn=lambda m: None) == 0
     assert len(calls) == 1
     assert json.load(open(os.path.join(str(tmp_path), "jobs", "v1", "results", "cutoffs-done.json"))) == {}
+
+
+def test_failed_downloads_count_towards_the_per_run_limit(tmp_path):
+    calls = []
+
+    def get(url):
+        calls.append(url)
+        raise OSError("pdftotext missing")
+    items = [_item(str(n), [f"writeup_{n}.pdf"]) for n in range(30)]
+    cutoffs.update(str(tmp_path), items, get, lambda d: "", warn=lambda m: None)
+    assert len(calls) == cutoffs.MAX_NEW_PER_RUN * 2

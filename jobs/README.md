@@ -131,6 +131,10 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 - 지금: 이 PR에 `jobs/pipeline`이 바뀔 때마다 자동 실행됩니다. PR의 Checks → jobs-probe → Summary에 결과가 나옵니다.
 - 기본 브랜치에 병합한 뒤: 저장소 → **Actions** 탭 → 왼쪽 목록의 **jobs-probe** → 오른쪽 **Run workflow** → 브랜치 선택 → **Run workflow**. 수동 실행 버튼은 워크플로 파일이 기본 브랜치에 있어야만 보입니다.
 
+**GitHub 러너에서 접속되는 채용 사이트** (jobs-probe, 2026-10-20, 28곳 중)
+- 응답함: uppbpb.gov.in(UP 경찰, 수집 중), hssc.gov.in(하리야나), keralapsc.gov.in(케랄라), indianrailways.gov.in, indiapostgdsonline.gov.in(우체국 GDS), opportunities.rbi.org.in(RBI), opsc.gov.in(302 이동)
+- 응답 없음(20초 초과): RRB, IBPS, UPSC, UPSSSC, BPSC, RPSC/RSSB, MPPSC/ESB, HPSC, DSSSB, PPSC, MPSC, TNPSC, WBPSC, JSSC, 육군, CTET 등. 해외 IP 차단으로 보이며, 이런 곳은 인도 내 서버가 있어야 수집할 수 있습니다.
+
 **게시 켜기**
 1. Settings → Secrets and variables → Actions → **Variables**에 `JOBS_PUBLISH` = `true`
 2. (선택) 텔레그램: Secret `JOBS_TELEGRAM_BOT_TOKEN`, Variable `JOBS_TELEGRAM_CHAT_ID`

@@ -27,6 +27,7 @@ from typing import Callable
 
 MAX_PDF_BYTES = 60_000_000
 MAX_NEW_PER_RUN = 4  # each list is a big download; the rest wait for the next run
+MAX_TRIES_PER_RUN = 8  # failed downloads count too: a broken converter must not fetch every list
 _ROW = re.compile(r"^\s*(\d{1,7})\s+(\d{8,14})\s")
 _TITLE = re.compile(r"\bLIST[- ]?[IVX0-9]+\s*[:\-–]\s*(.+)$", re.I)
 
@@ -121,13 +122,14 @@ def update(out: str, feed_items: list[dict], get_bytes: Callable[[str], bytes],
     lists = [x for x in lists if x["item"] in live]
     done = {x["pdf"] for x in lists}
 
-    added = 0
+    added = tries = 0
     for item in (i for i in feed_items if i["kind"] == "result" and i["lang"] == "en" and i.get("source", "ssc") == "ssc"):
         for f in _list_files(item):
             if f["url"] in done or f["url"] in skipped:
                 continue
-            if added >= MAX_NEW_PER_RUN:
+            if added >= MAX_NEW_PER_RUN or tries >= MAX_TRIES_PER_RUN:
                 break
+            tries += 1
             try:
                 title, rolls = parse(to_text(get_bytes(f["url"])))
             except NotIndexable as e:

@@ -166,3 +166,11 @@ def test_up_police_board_joins_the_feed_and_a_failure_keeps_its_old_items(tmp_pa
     build.run(out, FakeSSC(), NOW + dt.timedelta(days=60), get_text=down)
     kept = [i for i in _read(out, "feed.json")["items"] if i["source"] == "upprpb"]
     assert kept and all(i["publishedAt"] >= "2026-08-20" for i in kept) and len(kept) < 27
+
+
+def test_without_pdftotext_no_pdf_is_downloaded(tmp_path, monkeypatch):
+    monkeypatch.setattr(build.shutil, "which", lambda name: None)
+
+    def get_bytes(url):
+        raise AssertionError(f"downloaded {url}")
+    assert build.run(str(tmp_path), FakeSSC(), NOW, get_bytes=get_bytes) == 0

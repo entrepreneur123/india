@@ -69,6 +69,8 @@ def update(out: str, feed_items: list[dict], get_bytes: Callable[[str], bytes],
             if f["url"] in done or f["url"] in tried or looked >= MAX_NEW_PER_RUN:
                 continue
             tried.add(f["url"])  # the same file is attached to several notices: one attempt a run
+            if len(tried) > MAX_NEW_PER_RUN * 2:  # failures count too, or a broken converter fetches them all
+                break
             try:
                 found = pages(to_text(get_bytes(f["url"])))
             except Exception as e:  # noqa: BLE001 - network trouble or a broken PDF: try again next run
