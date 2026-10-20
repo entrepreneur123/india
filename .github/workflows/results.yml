@@ -188,6 +188,8 @@ jobs:
             publish
             [ "$code" -eq 0 ] && break
             if [ "$(date +%s)" -ge "$end" ]; then echo "::warning::still waiting for $require; giving up this run"; break; fi
-            sleep 60
+            # A Dear sheet usually lands 7-13 min after the draw: ask every 20 s for the first 25 min, then every minute.
+            # (Kerala's copies come ~1 h after the draw and are large pages: once a minute is enough.)
+            if [ -n "$from" ] && [ "$require" != "KL" ] && [ "$(date +%s)" -lt $(( start + 1500 )) ]; then sleep 20; else sleep 60; fi
             args="${args/ --deep/}"   # catalog refresh only on the first pass (be gentle to the sources)
           done
