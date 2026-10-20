@@ -26,6 +26,26 @@ jobs:
             printf '%s ' "$u"
             curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} %{content_type} %{size_download}B %{time_total}s %{remote_ip}\n' "$u" || echo "FAILED ($?)"
           done
+      - name: Other recruiters (which official sites answer GitHub's runners)
+        run: |
+          {
+            echo "### Other recruiters from GitHub runners"
+            echo "| site | HTTP | bytes |"
+            echo "|---|---|---|"
+            for u in \
+              https://www.rrbcdg.gov.in/ https://indianrailways.gov.in/ https://www.rrbapply.gov.in/ \
+              https://www.ibps.in/ https://upsc.gov.in/ https://uppbpb.gov.in/ https://upsssc.gov.in/ \
+              https://bpsc.bihar.gov.in/ https://rpsc.rajasthan.gov.in/ https://rssb.rajasthan.gov.in/ \
+              https://mppsc.mp.gov.in/ https://esb.mp.gov.in/ https://hpsc.gov.in/ https://hssc.gov.in/ \
+              https://dsssb.delhi.gov.in/ https://ppsc.gov.in/ https://sssb.punjab.gov.in/ https://www.mpsc.gov.in/ \
+              https://www.tnpsc.gov.in/ https://keralapsc.gov.in/ https://wbpsc.gov.in/ https://opsc.gov.in/ \
+              https://jssc.jharkhand.gov.in/ https://ukpsc.net.in/ https://joinindianarmy.nic.in/ \
+              https://indiapostgdsonline.gov.in/ https://opportunities.rbi.org.in/ https://ctet.nic.in/ ; do
+              r=$(curl -s -o /dev/null -m 20 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} | %{size_download}' "$u" || true)
+              echo "| $u | $r |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$GITHUB_STEP_SUMMARY"
       - name: Full build into a scratch folder
         id: build
         # The answer (reachable or not) is the point of this job, so a blocked runner is

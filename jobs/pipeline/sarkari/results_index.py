@@ -122,7 +122,7 @@ def update(out: str, feed_items: list[dict], get_bytes: Callable[[str], bytes],
     done = {x["pdf"] for x in lists}
 
     added = 0
-    for item in (i for i in feed_items if i["kind"] == "result" and i["lang"] == "en"):
+    for item in (i for i in feed_items if i["kind"] == "result" and i["lang"] == "en" and i.get("source", "ssc") == "ssc"):
         for f in _list_files(item):
             if f["url"] in done or f["url"] in skipped:
                 continue

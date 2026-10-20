@@ -136,8 +136,10 @@ function itemCard(i, { isNew = false, families = {} } = {}) {
     el('div', { class: 'meta' },
       isNew ? el('span', { class: 'badge new' }, t('newBadge')) : null,
       el('span', { class: `badge ${i.kind}` }, t(`kind_${i.kind}`)),
-      i.exam ? el('a', { class: 'badge', href: `#exam/${i.exam}`, title: fam?.name ?? '' }, `${i.exam}${i.examYear ? ` ${i.examYear}` : ''}`) : null,
-      el('time', { datetime: i.publishedAt }, `${when(i.publishedAt)} ${t('ist')}`)),
+      // SSC's codes (CGL, CHSL) are what candidates say; other boards' codes are ours, so their name is shown.
+      i.exam ? el('a', { class: 'badge', href: `#exam/${i.exam}`, title: fam?.name ?? '' }, `${fam?.source ? fam.short : i.exam}${i.examYear ? ` ${i.examYear}` : ''}`) : null,
+      // Some boards give only the day; showing midnight as a time would be invented.
+      el('time', { datetime: i.dateOnly ? i.publishedAt.slice(0, 10) : i.publishedAt }, i.dateOnly ? day(i.publishedAt.slice(0, 10)) : `${when(i.publishedAt)} ${t('ist')}`)),
     el('h3', { lang: i.lang }, i.title),
     el('div', { class: 'files' },
       ...i.files.map((f) => {
@@ -172,10 +174,12 @@ async function viewLatest(root, preloaded = null) {
       (filters.kind === 'all' || i.kind === filters.kind) &&
       (filters.exam === 'all' || i.exam === filters.exam) &&
       (filters.qual === 'all' || (families[i.exam]?.qualifications ?? []).includes(filters.qual)) &&
-      (filters.lang === 'all' || i.lang === filters.lang) &&
+      // SSC posts each notice in English and Hindi; other boards post one copy, always shown.
+      (filters.lang === 'all' || i.lang === filters.lang || (i.source ?? 'ssc') !== 'ssc') &&
       (filters.dept || i.exam !== 'LDCE') &&
       (!filters.mine || mine.has(i.exam)) &&
-      (!q || i.title.toLowerCase().includes(q)));
+      // Headlines from some boards are Hindi only: the exam's search name is searched too ("up police", "cgl").
+      (!q || `${i.title} ${i.exam ?? ''} ${families[i.exam]?.short ?? ''}`.toLowerCase().includes(q)));
     fill(list, ...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families }))
       : [el('li', { class: 'empty' }, t('nothing'))]));
   };
@@ -298,10 +302,10 @@ async function viewExam(root, code) {
     el('div', { class: 'actions' }, followBtn),
   ];
   const year = rules ? rules.examYear : Math.max(0, ...notices.map((i) => i.examYear ?? 0)) || null;
-  if (year) parts.push(whenBlock(timeline(rules, feed.items, code, year, today), f.name, year, feed.items));
+  if (year && !f.noTimeline) parts.push(whenBlock(timeline(rules, feed.items, code, year, today), f.name, year, feed.items));
   if (rules) parts.push(...examDetails(rules, entry, today), faqBlock(rules, f));
   else parts.push(el('p', { class: 'small' }, t('noRules')));
-  const guide = await getJSON('guide.json').catch(() => null);
+  const guide = (f.source ?? 'ssc') === 'ssc' ? await getJSON('guide.json').catch(() => null) : null; // SSC's how-to-apply
   if (guide) parts.push(guideBlock(guide, false));
   if (examResources.length) parts.push(el('h3', {}, t('resourcesTitle')), ...examResources.map(([k, items]) => resourceBlock(k, items, false)));
   parts.push(el('h3', {}, `${t('allNotices')} (${notices.length})`),

@@ -40,3 +40,10 @@ def test_posts_once_and_remembers(tmp_path, monkeypatch):
     telegram.main(["--out", out, "--site-url", "https://x"])
     telegram.main(["--out", out, "--site-url", "https://x"])
     assert len(sent) == 1
+
+
+def test_other_boards_name_their_own_site():
+    item = dict(ITEM, source="upprpb", files=[{"name": "a.pdf", "url": "https://uppbpb.gov.in/FilesUploaded/Notice/a.pdf"}])
+    t = telegram.text(dict(item, exam="UPPC", examYear=2025), "https://example.in/jobs/",
+                      {"UPPC": {"short": "UP Police Constable", "source": "upprpb"}})
+    assert t.splitlines()[0] == "New job · UP Police Constable 2025" and "Source: uppbpb.gov.in" in t

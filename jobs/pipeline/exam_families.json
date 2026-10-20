@@ -1,5 +1,5 @@
 {
-  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines. 'short' is the name people search with (Google India autocomplete, 2026-10-20: e.g. 'ssc cpo' for the SI exam).",
+  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines. 'short' is the name people search with (Google India autocomplete, 2026-10-20: e.g. 'ssc cpo' for the SI exam). 'source' is set for exams that are not SSC's (default ssc); 'noTimeline' marks a family that mixes recruitments, so a stage tracker would mix them too.",
   "families": {
     "CGL": {
       "name": "Combined Graduate Level (CGL)",
@@ -91,6 +91,39 @@
       "qualifications": null,
       "ref": null,
       "short": "SSC Departmental Exams"
+    },
+    "UPPC": {
+      "name": "UP Police Constable (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस आरक्षी भर्ती",
+      "short": "UP Police Constable",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb"
+    },
+    "UPSI": {
+      "name": "UP Police Sub-Inspector (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस उप निरीक्षक भर्ती",
+      "short": "UP Police SI",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb"
+    },
+    "UPHG": {
+      "name": "UP Home Guard enrolment (UPPRPB)",
+      "hi": "उत्तर प्रदेश होमगार्ड्स एनरोलमेंट",
+      "short": "UP Home Guard",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb"
+    },
+    "UPP": {
+      "name": "UP Police, other posts (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस भर्ती एवं प्रोन्नति बोर्ड",
+      "short": "UP Police",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb",
+      "noTimeline": true
     }
   }
 }

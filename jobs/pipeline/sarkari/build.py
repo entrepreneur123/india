@@ -23,7 +23,10 @@ Publishing rules (a wrong date or a missing notice is worse than a late one):
   * Unchanged content is not rewritten, so the data branch only gets a commit when
     something real changed.
   * If SSC's lastUpdates stamp is unchanged and the last full check is under
-    FULL_CHECK_HOURS old, the run stops after one small request.
+    FULL_CHECK_HOURS old, the run stops after one small request (other boards are then
+    checked on the next full check, at most FULL_CHECK_HOURS later).
+  * Other boards (upprpb.py) are isolated: if one fails, its items from the previous feed
+    are kept, a warning is printed and status.json names it; SSC is still published.
 """
 from __future__ import annotations
 
@@ -33,7 +36,7 @@ import json
 import os
 import sys
 
-from . import classify, eligibility, http, results_index, sitegen, ssc
+from . import classify, eligibility, http, results_index, sitegen, ssc, upprpb
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -140,8 +143,22 @@ def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[
     return out[:NEW_MAX_ITEMS]
 
 
+def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[dict],
+                 warn=print) -> tuple[list[ssc.Item], list[dict], list[str]]:
+    """(fresh items, previous items kept for a board that failed or wasn't asked, failed boards)."""
+    cutoff = (now - dt.timedelta(days=window_days)).isoformat(timespec="seconds")
+    previous = [i for i in old_feed if i.get("source") == upprpb.SOURCE and i["publishedAt"] >= cutoff]
+    if get_text is None:
+        return [], previous, []
+    try:
+        return upprpb.fetch(get_text, now, window_days, warn), [], []
+    except (http.FetchError, ssc.FormatChanged, UnicodeDecodeError) as e:
+        warn(f"::warning::{upprpb.SOURCE}: {e}; keeping its previous items")
+        return [], previous, [upprpb.SOURCE]
+
+
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
-        force: bool = False, get_bytes=None, site_url: str | None = None) -> int:
+        force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -160,12 +177,16 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     if not families or set(families["families"]) != set(classify.EXAM_FAMILIES):
         raise ssc.FormatChanged("exam_families.json does not list exactly classify.EXAM_FAMILIES")
     items, calendar, counts, resources = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
-    feed = [i.to_json() for i in items]
+    others, kept, failed = other_boards(get_text, now, window_days, old_feed["items"])
+    items = sorted(items + others, key=lambda i: (i.published, i.id), reverse=True)
+    feed = sorted([i.to_json() for i in items] + kept, key=lambda i: (i["publishedAt"], i["id"]), reverse=True)
     new = new_items(old_feed["items"], items, now)
 
     stamp_now = now.isoformat(timespec="seconds")
     changed = _write_json(_v1(out, "feed.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
-                                                  "sourcePage": ssc.NOTICE_BOARD_PAGE, "items": feed})
+                                                  "sourcePage": ssc.NOTICE_BOARD_PAGE,
+                                                  "sources": {"ssc": ssc.NOTICE_BOARD_PAGE, upprpb.SOURCE: upprpb.NOTICE_PAGE},
+                                                  "items": feed})
     _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                             "entries": calendar})
     _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})
@@ -179,8 +200,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
         added = results_index.update(out, feed, get_bytes)
         print(f"results: {added} new roll-number lists")
     _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
-                              "sourceUpdatedAt": stamp, "streamCounts": counts}, volatile=())
-    print(f"ssc: {len(feed)} items ({len(new)} new), {len(calendar)} calendar entries"
+                              "sourceUpdatedAt": stamp, "streamCounts": counts, "failedSources": failed}, volatile=())
+    print(f"feed: {len(feed)} items ({len(new)} new, {len(others) + len(kept)} from other boards), {len(calendar)} calendar entries"
           f"{'' if changed else ', feed unchanged'}")
     return 0
 
@@ -196,7 +217,8 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     try:
         return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,
-                   get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url)
+                   get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url,
+                   get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

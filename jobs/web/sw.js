@@ -1,7 +1,7 @@
 // Offline support: network first for everything, the last good copy when offline.
 // (Cache-first for the page shell could pair a new app.js with an old i18n.js from the
 // cache right after an update; network-first never mixes versions while online.)
-const VERSION = 'jobs-v3';
+const VERSION = 'jobs-v4';
 const SHELL = ['./', 'index.html', 'app.js', 'eligibility.js', 'i18n.js', 'tools.js', 'tracker.js', 'passages.js', 'manifest.webmanifest', 'icon.svg'];
 
 self.addEventListener('install', (e) => {

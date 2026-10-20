@@ -80,6 +80,8 @@ class Item:
     published: dt.datetime  # IST
     files: tuple[tuple[str, str, int | None], ...]  # (name, url, size in bytes)
     link: str | None = None  # an official page the record points to instead of / besides a file
+    source: str = "ssc"
+    date_only: bool = False  # the source gives a day, no time (published is midnight IST)
 
     def to_json(self) -> dict:
         out = {
@@ -91,7 +93,10 @@ class Item:
             "examYear": self.exam_year,
             "publishedAt": self.published.isoformat(timespec="seconds"),
             "files": [{"name": n, "url": u, "size": s} for n, u, s in self.files],
+            "source": self.source,
         }
+        if self.date_only:
+            out["dateOnly"] = True
         if self.link:
             out["link"] = self.link
         return out

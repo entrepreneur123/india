@@ -1,4 +1,4 @@
-"""Posts each new SSC notice (jobs/v1/new.json) to a Telegram channel.
+"""Posts each new notice (SSC, UP Police board) (jobs/v1/new.json) to a Telegram channel.
 
 SarkariResult and similar sites grow through Telegram/WhatsApp channels; this is the free
 equivalent. Needs a bot (from @BotFather) that is an admin of the channel:
@@ -21,18 +21,21 @@ LABEL = {
     "admit_card": "Admit card", "vacancy": "Vacancy", "schedule": "Exam dates", "notice": "Notice",
 }
 SKIP_EXAMS = {"LDCE"}  # departmental exams: only for serving employees
+SOURCE_SITE = {"ssc": "ssc.gov.in", "upprpb": "uppbpb.gov.in"}
 
 
-def text(item: dict, site_url: str) -> str:
+def text(item: dict, site_url: str, families: dict | None = None) -> str:
     """Plain text (no parse_mode), so nothing in an SSC headline can turn into markup."""
     head = LABEL.get(item["kind"], "Notice")
     if item.get("exam"):
-        head += f" · {item['exam']}{' ' + str(item['examYear']) if item.get('examYear') else ''}"
+        fam = (families or {}).get(item["exam"], {})
+        name = fam["short"] if fam.get("source") else item["exam"]  # our codes for other boards mean nothing to readers
+        head += f" · {name}{' ' + str(item['examYear']) if item.get('examYear') else ''}"
     lines = [head, item["title"]]
     if item["files"]:
         lines.append(f"Official PDF: {item['files'][0]['url']}")
-    lines.append(f"All SSC updates + eligibility check: {site_url}")
-    lines.append("(Not a government channel. Source: ssc.gov.in)")
+    lines.append(f"All updates + eligibility check: {site_url}")
+    lines.append(f"(Not a government channel. Source: {SOURCE_SITE.get(item.get('source', 'ssc'), 'ssc.gov.in')})")
     return "\n".join(lines)
 
 
@@ -60,6 +63,11 @@ def main(argv=None) -> int:
             items = json.load(f)["items"]
     except FileNotFoundError:
         return 0
+    try:
+        with open(os.path.join(a.out, "jobs", "v1", "exams.json"), encoding="utf-8") as f:
+            families = json.load(f)["families"]
+    except FileNotFoundError:
+        families = {}
     path = os.path.join(a.out, STATE)
     try:
         with open(path, encoding="utf-8") as f:
@@ -68,7 +76,7 @@ def main(argv=None) -> int:
         posted = set()
     for item in to_post(items, posted):
         try:
-            send(token, chat, text(item, a.site_url))
+            send(token, chat, text(item, a.site_url, families))
             posted.add(item["id"])
             print("telegram: posted", item["id"])
         except Exception as e:  # noqa: BLE001 - retried on the next run

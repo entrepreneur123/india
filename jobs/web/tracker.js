@@ -8,7 +8,10 @@
  * Returns [{key, state: 'done'|'now'|'next'|'later', from?, to?, when?, at?, itemId?}] in order.
  */
 export function timeline(rules, items, exam, year, today) {
-  const mine = items.filter((i) => i.exam === exam && i.examYear === year && i.lang === 'en');
+  // SSC posts each notice twice (English, Hindi): English is used. Boards with Hindi only use that.
+  const cycle = items.filter((i) => i.exam === exam && i.examYear === year);
+  const english = cycle.filter((i) => i.lang === 'en');
+  const mine = english.length ? english : cycle;
   const latest = (kind) => mine.filter((i) => i.kind === kind).sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1))[0];
   const stages = [];
   const notice = latest('recruitment');

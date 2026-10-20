@@ -106,3 +106,12 @@ test('practice text is long enough for the fastest SSC standard', async () => {
   assert.ok(practiceText(0).length >= 15000 / 4 && practiceText(1).length >= 3750);
   assert.ok(practiceText(1).startsWith(PASSAGES[1].slice(0, 20)));
 });
+
+test('timeline: a board that posts in Hindi only still gets its stages', async () => {
+  const { timeline } = await import('./tracker.js');
+  const up = (id, kind, at) => ({ id, kind, lang: 'hi', exam: 'UPPC', examYear: 2025, publishedAt: `${at}T00:00:00+05:30`, source: 'upprpb' });
+  const t = timeline(null, [up('a', 'answer_key', '2026-07-31'), up('b', 'admit_card', '2026-09-24'), up('c', 'result', '2026-10-14')],
+    'UPPC', 2025, '2026-10-20');
+  assert.deepEqual(t.map((s) => [s.key, s.state, s.at]), [
+    ['answer_key', 'done', '2026-07-31'], ['admit_card', 'done', '2026-09-24'], ['result', 'done', '2026-10-14']]);
+});

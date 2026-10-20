@@ -64,3 +64,13 @@ def test_a_new_day_alone_does_not_rewrite_the_page(tmp_path):
 def test_indian_grouping():
     assert [sitegen.inr(n) for n in (5, 999, 1000, 12256, 151100, 181570, 12345678)] == \
         ["5", "999", "1,000", "12,256", "1,51,100", "1,81,570", "1,23,45,678"]
+
+
+def test_up_police_page_names_its_own_board(tmp_path):
+    item = {"id": "upprpb-1", "kind": "result", "lang": "hi", "exam": "UPPC", "examYear": 2025, "source": "upprpb",
+            "dateOnly": True, "publishedAt": "2026-10-14T00:00:00+05:30", "title": "आरक्षी भर्ती-2025 परिणाम",
+            "files": [{"name": "a.pdf", "url": "https://uppbpb.gov.in/FilesUploaded/Notice/a.pdf", "size": None}]}
+    sitegen.build(str(tmp_path), FAMILIES, RULES, [item], TODAY, None)
+    page = open(os.path.join(str(tmp_path), "jobs", "exam", "uppc", "index.html"), encoding="utf-8").read()
+    assert "UP Police Constable 2025" in page and "uppbpb.gov.in" in page
+    assert "SSC" not in page and 'href="https://uppbpb.gov.in/FilesUploaded/Notice/a.pdf"' in page

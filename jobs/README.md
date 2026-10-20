@@ -24,6 +24,7 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | 파일 | 역할 |
 |---|---|
 | `pipeline/sarkari/ssc.py` | API 클라이언트, 레코드 검증, 페이지 처리, 병합 |
+| `pipeline/sarkari/upprpb.py` | UP 경찰 채용위원회(uppbpb.gov.in) 공지 수집: 위원회 자체 PDF만, 외부 대행사 포털 링크 제외, 실패해도 SSC는 게시 |
 | `pipeline/sarkari/classify.py` | 제목으로 종류·시험·연도 판별 (영어·힌디어) |
 | `pipeline/sarkari/eligibility.py` | 나이·완화·학력·응시료 판정 |
 | `pipeline/rules/ssc-*.json` | **공고 원문에서 옮긴 규칙** (문단·쪽수 `ref` 포함) |
@@ -138,8 +139,8 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 
 | 항목 | 현재 | 대형 앱 수준 |
 |---|---|---|
-| 기관 범위 | SSC만 | SSC·UPSC·RRB·IBPS·주 위원회 |
+| 기관 범위 | SSC + UP 경찰 채용위원회 (공지만; 자격 판정은 SSC만) | SSC·UPSC·RRB·IBPS·주 위원회 |
+| 앱 이름 | "SSC Job Alerts" 그대로 (UP 경찰이 들어가며 이름과 범위가 어긋남) | 결정 필요: 이름을 넓힐지 |
 | 앱 푸시 | 텔레그램·캘린더 알림 | 시험별 앱 푸시 (Android 앱 필요) |
 | 자격 판정 | 2026 공고 4개 (모두 접수 마감) | 진행 중인 공고 전체 |
 | 힌디어 | 앱이 쓴 번역, **원어민 검수 전** | 원어민 작성 |
-| 검색 노출(SEO) | 단일 페이지 | 시험별 정적 페이지 |

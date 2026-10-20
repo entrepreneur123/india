@@ -44,8 +44,15 @@ def _status(rules: dict, today: dt.date) -> str:
             "closed": f"Applications closed on {_day(d['applyTo'])}"}[s]
 
 
+# Who publishes an exam family's notices (exam_families.json "source"; default ssc).
+SOURCES = {
+    "ssc": ("SSC", "Staff Selection Commission", "https://ssc.gov.in"),
+    "upprpb": ("UPPRPB", "UP Police Recruitment & Promotion Board", "https://uppbpb.gov.in"),
+}
+
+
 def _gov(url: str) -> str | None:
-    return url if url.startswith("https://ssc.gov.in/") else None
+    return url if any(url.startswith(home + "/") for _, _, home in SOURCES.values()) else None
 
 
 def _faq(short: str, fam: dict, r: dict) -> str:
@@ -76,14 +83,16 @@ def page(code: str, fam: dict, rules: dict | None, items: list[dict], today: dt.
     year = rules["examYear"] if rules else max((i["examYear"] or 0 for i in items), default=0) or today.year
     topics = "Exam Date, Notification, Age Limit, Salary, Admit Card, Result"
     title = f"{short} {year}: {topics}"
-    desc = (f"{fam['name']} {year}: latest SSC notices, exam dates, application dates, fee, age limit, pay and results, "
-            "with links to the official PDFs on ssc.gov.in. Not a government website.")
+    org, org_name, home = SOURCES[fam.get("source", "ssc")]
+    host = home.split("//", 1)[1]
+    desc = (f"{fam['name']} {year}: latest {org} notices, exam dates, application dates, fee, age limit, pay and results, "
+            f"with links to the official PDFs on {host}. Not a government website.")
     canonical = f"{site_url.rstrip('/')}/jobs/exam/{code.lower()}/" if site_url else None
     b = []
     b.append(f"<h1>{E(title)}</h1>")
     b.append(f'<p class="hi" lang="hi">{E(fam["hi"])}</p>')
-    b.append('<p class="note">Unofficial: not affiliated with SSC or the Government of India. Source: '
-             '<a href="https://ssc.gov.in" rel="noopener">ssc.gov.in</a>. Always read the official Notice.</p>')
+    b.append(f'<p class="note">Unofficial: not affiliated with the {E(org_name)} or any government. Source: '
+             f'<a href="{E(home)}" rel="noopener">{E(host)}</a>. Always read the official Notice.</p>')
     if fam.get("qualifications"):
         b.append(f"<p><strong>Qualification:</strong> {E(' / '.join(QUAL.get(q, q) for q in fam['qualifications']))} ({E(fam['ref'])})</p>")
     if rules:
