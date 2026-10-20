@@ -3,7 +3,7 @@
 import { LazyMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef, useState } from 'react'
-import { Mic, MicOff, PhoneOff, Video, VideoOff } from 'lucide-react'
+import { EyeOff, Mic, MicOff, PhoneOff, ShieldCheck, Video, VideoOff } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import type { Call, CallState } from '@/lib/livekit'
@@ -29,18 +29,45 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
   const [state, setState] = useState<CallState | 'demo'>('connecting')
   const [mic, setMic] = useState(true)
   const [camera, setCamera] = useState(true)
+  // Nudity check on the partner's video (lib/nudity.ts): blurred until the first clean frame, hidden while flagged.
+  const [shield, setShield] = useState<'checking' | 'clear' | 'hidden'>('checking')
 
   useEffect(() => {
     let cancelled = false
     const abort = new AbortController()
+    let watch: { stop(): void } | null = null
+    let flagged = false
+    // A phone too slow (or unable) to run the model still gets the call: the start-up blur lifts after 8 s.
+    const startShield = async () => {
+      const slow = setTimeout(() => !cancelled && setShield((s) => (s === 'checking' ? 'clear' : s)), 8000)
+      try {
+        const { watchNudity } = await retryImport(() => import('@/lib/nudity'))
+        if (cancelled) return
+        const w = await watchNudity(remoteRef.current!, (hide) => {
+          if (cancelled) return
+          setShield(hide ? 'hidden' : 'clear')
+          if (hide && !flagged) {
+            flagged = true
+            void backend.flagNudity(matchId)
+          }
+        })
+        if (cancelled) w.stop()
+        else watch = w
+      } catch {
+        clearTimeout(slow)
+        if (!cancelled) setShield('clear')
+      }
+    }
     ;(async () => {
       try {
         const token = await backend.videoToken(matchId)
         if (cancelled) return
         if (!token) {
           setState('demo')
+          setShield('clear')
           return
         }
+        void startShield() // the model downloads while the call connects
         const { joinCall } = await retryImport(() => import('@/lib/livekit')) // the video SDK loads only when a call starts
         if (cancelled) return // the call ended while the SDK was loading
         const call = await joinCall(
@@ -68,6 +95,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
     })()
     return () => {
       cancelled = true
+      watch?.stop()
       abort.abort()
       void callRef.current?.disconnect()
       callRef.current = null
@@ -108,7 +136,16 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
       {partner.photoUrl && state !== 'connected' ? (
         <img src={partner.photoUrl} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl" />
       ) : null}
-      <video ref={remoteRef} autoPlay playsInline className={cn('absolute inset-0 size-full object-cover', state !== 'connected' && 'opacity-0')} />
+      <video
+        ref={remoteRef}
+        autoPlay
+        playsInline
+        className={cn(
+          'absolute inset-0 size-full object-cover transition-[filter] duration-200',
+          state !== 'connected' && 'opacity-0',
+          shield !== 'clear' && 'scale-110 blur-3xl',
+        )}
+      />
       <audio ref={audioRef} autoPlay />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/50 via-transparent to-ink/80" />
 
@@ -122,6 +159,24 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
           </span>
         ) : null}
       </div>
+
+      {state === 'connected' && shield === 'hidden' ? (
+        <div className="absolute inset-0 grid place-items-center bg-black/50 p-6" role="alert">
+          <div className="flex max-w-xs flex-col items-center gap-3 text-center">
+            <span className="grid size-14 place-items-center rounded-full bg-white/15">
+              <EyeOff className="size-7" aria-hidden />
+            </span>
+            <p className="text-lg font-semibold">{t('video.hiddenTitle')}</p>
+            <p className="text-sm text-ink-foreground/80">{t('video.hiddenBody')}</p>
+          </div>
+        </div>
+      ) : state === 'connected' && shield === 'checking' ? (
+        <div className="absolute inset-0 grid place-items-center p-6">
+          <p className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-semibold" role="status">
+            <ShieldCheck className="size-4" aria-hidden /> {t('video.checking')}
+          </p>
+        </div>
+      ) : null}
 
       {status ? (
         <div className="absolute inset-0 grid place-items-center p-6">

@@ -45,6 +45,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -86,9 +88,11 @@ data class ChatState(
     val partnerTyping: Boolean = false,
     val partnerLeft: Boolean = false,
     val video: VideoStatus = VideoStatus.NONE,
+    /** The partner has read my messages up to this id (double blue tick). */
+    val partnerRead: Long = 0,
 )
 
-data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList())
+data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0)
 
 /** [closed]: the owner closed the room while it was open; nobody can write any more. [showCode]: just created, show its code. */
 data class RoomState(
@@ -155,6 +159,25 @@ class AppViewModel(
             }
             if (me != null) afterSignIn()
         }
+        watchReads()
+    }
+
+    /**
+     * Read ticks: the newest message from the partner counts as read while its chat is on screen (no profile over it)
+     * and the app is in the foreground. Sent again only when that message changes; the backend drops repeats.
+     */
+    private fun watchReads() = viewModelScope.launch {
+        combine(_state, foreground) { s, visible -> if (visible && s.viewing == null) s.newestIncoming() else null }
+            .distinctUntilChanged()
+            .collect { read -> if (read != null) launch { runCatching { backend.markRead(read.first, read.second) } } }
+    }
+
+    /** (match id, id of the partner's newest message) of the chat on screen, or null. */
+    private fun UiState.newestIncoming(): Pair<String, Long>? {
+        val c = chat
+        if (c != null) return c.messages.lastOrNull { !it.fromMe }?.let { c.match.id to it.id }
+        val d = dm ?: return null
+        return d.messages.lastOrNull { !it.fromMe }?.let { d.recent.matchId to it.id }
     }
 
     private suspend fun afterSignIn() {
@@ -503,6 +526,7 @@ class AppViewModel(
             is MatchEvent.NewMessage -> c.copy(messages = merge(c.messages, listOf(e.message)), partnerTyping = false)
             is MatchEvent.Typing -> c.copy(partnerTyping = e.on)
             MatchEvent.PartnerLeft -> c.copy(partnerLeft = true, partnerTyping = false, video = VideoStatus.NONE)
+            is MatchEvent.Read -> c.copy(partnerRead = maxOf(c.partnerRead, e.upto))
             is MatchEvent.Video -> {
                 if (e.status == VideoStatus.DECLINED && c.video == VideoStatus.REQUESTED_BY_ME) {
                     notice(UiText(R.string.msg_declined, c.match.partner.name))
@@ -747,7 +771,13 @@ class AppViewModel(
             h?.let { updateDm(r.matchId) { old -> merge(old, it) } }
             runCatching {
                 backend.events(r.matchId, live = false, afterId = h?.maxOfOrNull { it.id })
-                    .collect { e -> if (e is MatchEvent.NewMessage) updateDm(r.matchId) { merge(it, listOf(e.message)) } }
+                    .collect { e ->
+                        when (e) {
+                            is MatchEvent.NewMessage -> updateDm(r.matchId) { merge(it, listOf(e.message)) }
+                            is MatchEvent.Read -> updateDmState(r.matchId) { it.copy(partnerRead = maxOf(it.partnerRead, e.upto)) }
+                            else -> Unit
+                        }
+                    }
             }
         }
     }
@@ -765,9 +795,11 @@ class AppViewModel(
         send(onFailed) { backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } } }
     }
 
-    private fun updateDm(matchId: String, change: (List<Message>) -> List<Message>) = _state.update {
+    private fun updateDm(matchId: String, change: (List<Message>) -> List<Message>) = updateDmState(matchId) { it.copy(messages = change(it.messages)) }
+
+    private fun updateDmState(matchId: String, change: (DmState) -> DmState) = _state.update {
         val dm = it.dm
-        if (dm == null || dm.recent.matchId != matchId) it else it.copy(dm = dm.copy(messages = change(dm.messages)))
+        if (dm == null || dm.recent.matchId != matchId) it else it.copy(dm = change(dm))
     }
 
     fun signOut() = act {

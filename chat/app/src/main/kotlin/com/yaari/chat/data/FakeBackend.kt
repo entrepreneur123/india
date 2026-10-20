@@ -154,6 +154,8 @@ open class FakeBackend(
         for (out in m.outgoing) {
             when (out) {
                 is Outgoing.Text -> {
+                    // The partner opens the chat before answering: my messages so far show as read.
+                    m.messages.lastOrNull { it.fromMe }?.let { emit(MatchEvent.Read(it.id)) }
                     emit(MatchEvent.Typing(true))
                     wait(random.nextLong(700, 1800))
                     val roll = random.nextInt(100)
@@ -201,6 +203,9 @@ open class FakeBackend(
         m.outgoing.trySend(Outgoing.Text(text)) // after the chat ends this is a DM; the partner still answers
         return msg
     }
+
+    /** Scripted partners don't look at read ticks. */
+    override suspend fun markRead(matchId: String, upto: Long) = Unit
 
     override suspend fun leave(matchId: String) {
         val m = match(matchId)

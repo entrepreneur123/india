@@ -328,4 +328,6 @@
     <string name="block_title">Bloquear %1$s?</string>
     <string name="block_text">Vocês não vão mais se ver nem ser pareados de novo.</string>
     <string name="msg_blocked">%1$s foi bloqueado</string>
+    <string name="bubble_sent">Enviada</string>
+    <string name="bubble_read">Lida</string>
 </resources>

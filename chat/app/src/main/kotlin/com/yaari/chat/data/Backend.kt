@@ -26,6 +26,8 @@ sealed interface MatchEvent {
     data class Typing(val on: Boolean) : MatchEvent
     data class Video(val status: VideoStatus) : MatchEvent
     data object PartnerLeft : MatchEvent
+    /** The partner has read my messages up to and including id [upto] (only ever grows). */
+    data class Read(val upto: Long) : MatchEvent
 }
 
 data class Entitlements(val premium: Boolean = false, val genderPass: Boolean = false) {
@@ -87,6 +89,8 @@ interface Backend {
     /** "I am typing" signal to the other person; arrives as [MatchEvent.Typing]. Best effort. */
     suspend fun sendTyping(matchId: String)
     suspend fun send(matchId: String, text: String?, media: Media?): Message
+    /** I have read the partner's messages up to id [upto]; arrives on their side as [MatchEvent.Read]. Best effort. */
+    suspend fun markRead(matchId: String, upto: Long)
     suspend fun leave(matchId: String)
     /** Always allowed: blocks the person and ends any open chat with them. */
     suspend fun report(partnerId: String, reason: ReportReason, matchId: String?)

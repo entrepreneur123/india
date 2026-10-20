@@ -473,6 +473,8 @@ export class MockBackend implements Backend {
 
   markRead() {}
 
+  async flagNudity() {}
+
   async send(matchId: string, text: string | null, media: File | null) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')

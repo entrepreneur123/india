@@ -5,16 +5,19 @@
   "packageManager": "pnpm@12.3.4",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/copy-legal.mjs && next build && node scripts/csp-hashes.mjs",
+    "build": "node scripts/copy-legal.mjs && node scripts/nsfw-model.mjs && next build && node scripts/csp-hashes.mjs",
     "start": "next start"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
+    "@tensorflow/tfjs": "4.22.0",
+    "buffer": "6.0.3",
     "clsx": "^2.1.1",
     "livekit-client": "^2.23.0",
     "lucide-react": "^1.16.0",
     "motion": "^14.3.0",
     "next": "16.4.0",
+    "nsfwjs": "4.4.0",
     "react": "^19",
     "react-dom": "^19",
     "swr": "^2.5.1",

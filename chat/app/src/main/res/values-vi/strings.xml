@@ -322,4 +322,6 @@
     <string name="block_title">Chặn %1$s?</string>
     <string name="block_text">Hai bạn sẽ không thấy nhau và không được ghép lại nữa.</string>
     <string name="msg_blocked">Đã chặn %1$s</string>
+    <string name="bubble_sent">Đã gửi</string>
+    <string name="bubble_read">Đã xem</string>
 </resources>

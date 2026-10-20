@@ -134,6 +134,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
     private val signedUrls = ConcurrentHashMap<String, Pair<String, Long>>()
     private val typingChannels = ConcurrentHashMap<String, RealtimeChannel>()
+    /** The newest read position sent per match, so scrolling or re-syncs don't repeat the same request. */
+    private val readSent = ConcurrentHashMap<String, Long>()
 
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
@@ -188,6 +190,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("ended_at") val endedAt: String? = null, @SerialName("ended_by") val endedBy: String? = null,
         @SerialName("video_status") val videoStatus: String = "none",
         @SerialName("video_requested_by") val videoRequestedBy: String? = null,
+        // The last message id each side has read (015_read_receipts.sql).
+        @SerialName("read_a") val readA: Long? = null, @SerialName("read_b") val readB: Long? = null,
     )
     @Serializable private data class MessageRow(
         val id: Long, @SerialName("match_id") val matchId: String, val sender: String, val body: String? = null,
@@ -349,6 +353,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override fun events(matchId: String, live: Boolean, afterId: Long?): Flow<MatchEvent> = channelFlow {
         val me = uid
         var lastVideo: VideoStatus? = null
+        var partnerRead = 0L
         var leftSent = false
         suspend fun partnerLeft() {
             if (!leftSent) {
@@ -363,6 +368,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             if (v != lastVideo) {
                 lastVideo = v
                 send(MatchEvent.Video(v))
+            }
+            val read = (if (m.userA == me) m.readB else m.readA) ?: 0L
+            if (read > partnerRead) {
+                partnerRead = read
+                send(MatchEvent.Read(read))
             }
         }
         // Random chats only: a partner who never connects, or drops and does not come back, ends the chat for both
@@ -489,6 +499,20 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             NewMessageRow(matchId, text, path, media?.kind?.name?.lowercase()),
         ) { select() }.decodeSingle<MessageRow>()
         toMessage(row, uid)
+    }
+
+    override suspend fun markRead(matchId: String, upto: Long) {
+        val sent = readSent[matchId]
+        if (sent != null && upto <= sent) return
+        readSent[matchId] = upto
+        try {
+            call { client.postgrest.rpc("mark_read", buildJsonObject { put("p_match", matchId); put("p_upto", upto) }); Unit }
+        } catch (e: CancellationException) {
+            readSent.remove(matchId, upto)
+            throw e
+        } catch (e: Exception) {
+            readSent.remove(matchId, upto) // forgotten, so the next call tries again
+        }
     }
 
     override suspend fun leave(matchId: String) = call { client.postgrest.rpc("leave_match", buildJsonObject { put("p_match", matchId) }); Unit }

@@ -169,6 +169,8 @@ export interface Backend {
   sendTyping(matchId: string): void
   /** Tells the partner I've read their messages up to this id (the read ticks). Fire and forget. */
   markRead(matchId: string, upto: number): void
+  /** The call's nudity check hid the partner's video: files an automatic report for review. Never throws. */
+  flagNudity(matchId: string): Promise<void>
   send(matchId: string, text: string | null, media: File | null): Promise<Message>
   leave(matchId: string): Promise<void> // throws BackendError('exit_locked') inside the lock window
   report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>

@@ -497,6 +497,10 @@ export class SupabaseBackend implements Backend {
     })
   }
 
+  async flagNudity(matchId: string) {
+    await this.client.rpc('flag_nudity', { p_match: matchId }).then(() => undefined, () => undefined)
+  }
+
   sendTyping(matchId: string) {
     const ch = this.typing.get(matchId)?.channel
     if (!ch || !this.userId) return

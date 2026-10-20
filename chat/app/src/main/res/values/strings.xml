@@ -327,4 +327,6 @@
     <string name="block_title">Block %1$s?</string>
     <string name="block_text">You won\'t see each other or be matched again.</string>
     <string name="msg_blocked">%1$s is blocked</string>
+    <string name="bubble_sent">Sent</string>
+    <string name="bubble_read">Read</string>
 </resources>

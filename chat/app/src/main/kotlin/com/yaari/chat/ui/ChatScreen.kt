@@ -39,7 +39,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -165,7 +165,8 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
         val country = partner.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
         Messages(
             chat.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping,
-            intro = country?.let { stringResource(R.string.matched_from, partner.name, it) },
+            intro = country?.let { stringResource(R.string.matched_from, partner.name, it) }, partnerRead = chat.partnerRead,
+            ended = if (chat.partnerLeft) stringResource(R.string.partner_left, partner.name) else null,
         )
         if (chat.partnerLeft) {
             Column(
@@ -173,7 +174,6 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                     .navigationBarsPadding().padding(horizontal = 20.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(stringResource(R.string.partner_left, partner.name), style = MaterialTheme.typography.titleSmall, color = Color.White)
                 PrimaryButton(stringResource(R.string.next_match), { vm.leave(next = true) })
                 TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) }
             }
@@ -350,54 +350,59 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
     BackHandler { vm.closeDm() }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         ChatBar(r.partner, r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) }, onBack = vm::closeDm)
-        Messages(dm.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name))
+        Messages(dm.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), partnerRead = dm.partnerRead)
         Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
     }
 }
 
+/**
+ * The conversation on the chat wallpaper. Runs of messages from one side sit 2 dp apart (only the first has a tail),
+ * 8 dp between runs. [partnerRead]: my messages up to this id show two blue ticks. [ended]: the "… left" note.
+ */
 @Composable
-private fun Messages(messages: List<Message>, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null) {
+private fun Messages(
+    messages: List<Message>, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null,
+    partnerRead: Long = 0, ended: String? = null,
+) {
+    val colors = chatColors()
     val list = rememberLazyListState()
-    LaunchedEffect(messages.size, typing) {
+    LaunchedEffect(messages.size, typing, ended) {
         if (messages.isNotEmpty()) list.animateScrollToItem(maxOf(0, list.layoutInfo.totalItemsCount - 1))
     }
     if (messages.isEmpty() && !typing) {
-        Column(modifier.fillMaxSize().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            intro?.let { IntroLine(it) }
-            Text(hint, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        Column(
+            modifier.fillMaxSize().background(colors.wall).padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        ) {
+            intro?.let { ChatChip(it) }
+            Text(hint, color = colors.meta, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            ended?.let { ChatChip(it, bold = true) }
         }
         return
     }
     LazyColumn(
-        modifier.fillMaxSize(), state = list, contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier.fillMaxSize().background(colors.wall), state = list,
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
     ) {
-        intro?.let { item(key = "intro") { IntroLine(it) } }
-        items(messages, key = { it.id }) { m ->
+        intro?.let { item(key = "intro") { ChatChip(it, Modifier.padding(bottom = 6.dp)) } }
+        itemsIndexed(messages, key = { _, m -> m.id }) { i, m ->
+            val grouped = i > 0 && messages[i - 1].fromMe == m.fromMe
             Box(
-                Modifier.animateItem().fillMaxWidth(),
+                Modifier.animateItem().fillMaxWidth().padding(top = if (grouped) 2.dp else 8.dp),
                 contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart,
-            ) { PopIn(m.fromMe) { Bubble(m) } }
+            ) {
+                Box(Modifier.fillMaxWidth(0.82f), contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart) {
+                    PopIn(m.fromMe) { Bubble(m, tail = !grouped, read = m.fromMe && m.id <= partnerRead) }
+                }
+            }
         }
         item(key = "typing") {
             AnimatedVisibility(typing, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-                Box(
-                    Modifier.height(40.dp)
-                        .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp, bottomEnd = 22.dp, bottomStart = 6.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp),
-                    contentAlignment = Alignment.Center,
-                ) { TypingDots() }
+                Box(Modifier.padding(top = 8.dp)) { TypingBubble() }
             }
         }
+        ended?.let { item(key = "ended") { ChatChip(it, Modifier.padding(top = 20.dp), bold = true) } }
     }
-}
-
-@Composable
-private fun IntroLine(text: String) {
-    Text(
-        text, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall,
-        textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp),
-    )
 }
 
 /** New bubbles settle in from their corner (scale .96, rise 8 dp, fade) in 180 ms. */

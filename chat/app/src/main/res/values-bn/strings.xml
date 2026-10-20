@@ -325,4 +325,6 @@
     <string name="block_title">%1$s-কে ব্লক করবেন?</string>
     <string name="block_text">আপনারা আর একে অপরকে দেখবেন না, আবার ম্যাচও হবে না।</string>
     <string name="msg_blocked">%1$s-কে ব্লক করা হয়েছে</string>
+    <string name="bubble_sent">পাঠানো হয়েছে</string>
+    <string name="bubble_read">পড়া হয়েছে</string>
 </resources>
