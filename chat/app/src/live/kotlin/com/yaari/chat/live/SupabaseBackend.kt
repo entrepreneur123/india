@@ -622,9 +622,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         CreatedRoom(row.roomId, row.roomCode)
     }
 
+    /** A wrong code comes back as null (the server counts it; 10 misses in 10 minutes → slow_down). */
     override suspend fun joinRoomCode(code: String): String = call {
-        json.decodeFromString<String>(client.postgrest.rpc("join_room_code", buildJsonObject { put("p_code", code) }).data.trim())
-    }
+        json.decodeFromString<String?>(client.postgrest.rpc("join_room_code", buildJsonObject { put("p_code", code) }).data.trim())
+    } ?: throw BackendException("not_found")
 
     override suspend fun closeRoom(roomId: String) = call { client.postgrest.rpc("close_room", buildJsonObject { put("p_room", roomId) }); Unit }
 
@@ -714,8 +715,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private suspend fun signed(path: String): String {
         val now = System.currentTimeMillis()
         signedUrls[path]?.let { (url, reuseUntil) -> if (now < reuseUntil) return url }
-        val url = client.storage.from(BUCKET).createSignedUrl(path, 12.hours)
-        signedUrls[path] = url to now + 11 * 3_600_000L
+        val url = client.storage.from(BUCKET).createSignedUrl(path, 1.hours)
+        signedUrls[path] = url to now + 50 * 60_000L
         return url
     }
 

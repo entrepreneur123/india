@@ -13,10 +13,10 @@ export async function signHs256(payload: Record<string, unknown>, secret: string
   return `${head}.${body}.${b64url(sig)}`;
 }
 
-/** LiveKit join token: room = match id, identity = user id, 15 minutes. */
+/** LiveKit join token: room = match id, identity = user id, 5 minutes (LiveKit refreshes it while the call is connected). */
 export function livekitToken(apiKey: string, apiSecret: string, room: string, identity: string, nowSec = Math.floor(Date.now() / 1000)) {
   return signHs256({
-    iss: apiKey, sub: identity, nbf: nowSec, exp: nowSec + 15 * 60,
+    iss: apiKey, sub: identity, nbf: nowSec, exp: nowSec + 5 * 60,
     video: { room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false },
   }, apiSecret);
 }

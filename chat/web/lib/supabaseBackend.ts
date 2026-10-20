@@ -29,7 +29,7 @@ import { onPageVisibility, pageHidden } from './visibility'
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
 const MAX_VIDEO_BYTES = 25 * 1024 * 1024
-const SIGNED_URL_SECONDS = 12 * 3600
+const SIGNED_URL_SECONDS = 3600
 /** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
 const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
 /** A request that hangs on a weak network fails after this long, so the screen can retry (uploads get longer). */
@@ -657,8 +657,11 @@ export class SupabaseBackend implements Backend {
     return { id: row.room_id, code: row.room_code }
   }
 
+  /** A wrong code comes back as null (the server counts it; 10 misses in 10 minutes → slow_down). */
   async joinRoomCode(code: string) {
-    return this.rpc<string>('join_room_code', { p_code: code })
+    const id = await this.rpc<string | null>('join_room_code', { p_code: code })
+    if (!id) throw new BackendError('not_found')
+    return id
   }
 
   async closeRoom(roomId: string) {
@@ -764,7 +767,7 @@ export class SupabaseBackend implements Backend {
     if (hit && now < hit.reuseUntil) return hit.url
     const { data, error } = await this.client.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_SECONDS)
     if (error || !data) fail(error)
-    this.signedUrls.set(path, { url: data.signedUrl, reuseUntil: now + 11 * 3_600_000 })
+    this.signedUrls.set(path, { url: data.signedUrl, reuseUntil: now + 50 * 60_000 })
     return data.signedUrl
   }
 
