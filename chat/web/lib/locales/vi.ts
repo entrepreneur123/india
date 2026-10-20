@@ -414,6 +414,7 @@ const vi: Dict = {
   'voice.sys.cohost': '{name} giờ là đồng chủ',
   'voice.sys.track': '{name} đã phát {title}',
   'voice.sys.removed': '{name} đã bị mời ra',
+  'voice.sys.host': '{name} giờ là chủ phòng',
   'voice.music': 'Nhạc',
   'voice.musicTitle': 'Nghe cùng nhau',
   'voice.djDesc': 'Dán liên kết YouTube. Mọi người nghe cùng lúc.',
@@ -446,6 +447,9 @@ const vi: Dict = {
   'voice.ytFailed': 'Hiện không kết nối được YouTube',
   'voice.ytUnavailable': 'Không thể phát video này ở đây',
   'voice.ytVideo': 'Video YouTube',
+  'voice.tapToListen': 'Chạm để nghe',
+  'voice.audioReconnecting': 'Đang kết nối lại âm thanh…',
+  'voice.audioFailed': 'Chưa kết nối được âm thanh. Bạn vẫn có thể trò chuyện.',
 
   'recent.title': 'Gần đây',
   'recent.show': 'Hiển thị',
@@ -566,6 +570,9 @@ const vi: Dict = {
   'error.room_full': 'Phòng này hiện đã đầy',
   'error.room_title': 'Tên phòng dài từ 2 đến 40 ký tự',
   'error.room_size': 'Mỗi phòng có từ 2 đến 50 người',
+  'error.voice_removed': 'Bạn đã bị mời ra khỏi phòng',
+  'error.mic_denied': 'Hãy cho phép trình duyệt dùng micrô để nói',
+  'error.queue_full': 'Hàng chờ đã đầy (30 bài)',
   'error.sms_unavailable': 'Hiện chưa gửi được mã tới số này. Vui lòng thử lại sau',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',
 }

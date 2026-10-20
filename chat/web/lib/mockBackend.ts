@@ -841,4 +841,7 @@ export class MockBackend implements Backend {
   async reportVoiceRoom(_roomId: string, _reason: ReportReason) {
     await wait(500)
   }
+
+  /** The demo has no real audio, so nothing is ever blocked. */
+  async voiceStartAudio(_roomId: string) {}
 }

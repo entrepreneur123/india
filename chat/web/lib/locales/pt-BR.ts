@@ -414,6 +414,7 @@ const ptBR: Dict = {
   'voice.sys.cohost': '{name} agora é coanfitrião',
   'voice.sys.track': '{name} tocou {title}',
   'voice.sys.removed': '{name} foi removido',
+  'voice.sys.host': '{name} agora é o anfitrião',
   'voice.music': 'Música',
   'voice.musicTitle': 'Ouvir junto',
   'voice.djDesc': 'Cole um link do YouTube. Todos ouvem em sincronia.',
@@ -446,6 +447,9 @@ const ptBR: Dict = {
   'voice.ytFailed': 'Não foi possível acessar o YouTube agora',
   'voice.ytUnavailable': 'Este vídeo não pode ser reproduzido aqui',
   'voice.ytVideo': 'Vídeo do YouTube',
+  'voice.tapToListen': 'Toque para ouvir',
+  'voice.audioReconnecting': 'Reconectando o áudio…',
+  'voice.audioFailed': 'Não foi possível conectar o áudio agora. O chat continua funcionando.',
 
   'recent.title': 'Recentes',
   'recent.show': 'Mostrar',
@@ -566,6 +570,9 @@ const ptBR: Dict = {
   'error.room_full': 'Esta sala está lotada agora',
   'error.room_title': 'O nome da sala precisa ter de 2 a 40 caracteres',
   'error.room_size': 'As salas comportam de 2 a 50 pessoas',
+  'error.voice_removed': 'Você foi removido desta sala',
+  'error.mic_denied': 'Permita o acesso ao microfone no navegador para falar',
+  'error.queue_full': 'A fila está cheia (30 músicas)',
   'error.sms_unavailable': 'Não conseguimos enviar o código para este número agora. Tente mais tarde',
   'error.generic': 'Algo deu errado. Tente de novo',
 }

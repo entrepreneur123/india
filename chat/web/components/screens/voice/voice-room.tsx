@@ -169,6 +169,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             <EllipsisVertical className="size-5" aria-hidden />
           </Button>
         </header>
+        <AudioNotice s={s} />
 
         {wide ? (
           <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
@@ -234,6 +235,27 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       />
       <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
     </div>
+  )
+}
+
+/** Only when the audio needs something: a tap (autoplay rules), or it is reconnecting / can't connect. */
+function AudioNotice({ s }: { s: VoiceSession }) {
+  const { t } = useI18n()
+  const a = s.audio
+  if (!a) return null
+  if (a.needsTap)
+    return (
+      <div className="flex justify-center px-4 pb-2">
+        <Button size="sm" variant="brand" onClick={s.startAudio}>
+          <Headphones className="size-4" aria-hidden /> {t('voice.tapToListen')}
+        </Button>
+      </div>
+    )
+  if (a.status !== 'reconnecting' && a.status !== 'failed') return null
+  return (
+    <p className="px-4 pb-2 text-center text-xs text-muted-foreground" role="status">
+      {a.status === 'reconnecting' ? t('voice.audioReconnecting') : t('voice.audioFailed')}
+    </p>
   )
 }
 

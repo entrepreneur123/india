@@ -20,3 +20,25 @@ export function livekitToken(apiKey: string, apiSecret: string, room: string, id
     video: { room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: false },
   }, apiSecret);
 }
+
+/**
+ * Voice room token: room = "voice-<id>", identity = user id. Everyone listens; only people on a seat may send
+ * audio, and only from the microphone (no camera, no screen, no data). LiveKit keeps it fresh while connected,
+ * carrying any permission voice-sync set since.
+ */
+export function livekitVoiceToken(
+  apiKey: string, apiSecret: string, room: string, identity: string, canPublish: boolean, nowSec = Math.floor(Date.now() / 1000),
+) {
+  return signHs256({
+    iss: apiKey, sub: identity, nbf: nowSec, exp: nowSec + 5 * 60,
+    video: {
+      room, roomJoin: true, canSubscribe: true, canPublish, canPublishData: false,
+      canPublishSources: canPublish ? ["microphone"] : [],
+    },
+  }, apiSecret);
+}
+
+/** Server-side token for the RoomService API (voice-sync), limited to one room, valid for a minute. */
+export function livekitAdminToken(apiKey: string, apiSecret: string, room: string, nowSec = Math.floor(Date.now() / 1000)) {
+  return signHs256({ iss: apiKey, sub: "yaari-voice-sync", nbf: nowSec, exp: nowSec + 60, video: { room, roomAdmin: true, roomCreate: true } }, apiSecret);
+}

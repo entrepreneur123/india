@@ -252,7 +252,7 @@ export class VoiceSim {
     const me = this.me()
     if (!me) throw new BackendError('not_allowed')
     const title = n.title.trim()
-    if (title.length < 2 || title.length > 60) throw new BackendError('room_title')
+    if (title.length < 2 || title.length > 40) throw new BackendError('room_title')
     for (const r of this.rooms.values()) if (r.mine) this.end(r) // one live room per host
     const id = `v-${uid()}`
     // A couple of people are already waiting to listen, so the host isn't alone on the first screenshot.
@@ -633,6 +633,7 @@ export class VoiceSim {
       }
       case 'skip':
         need(isHost)
+        if (a.trackId && r.room.track?.id !== a.trackId) return // that track already moved on
         this.skip(r)
         return
     }

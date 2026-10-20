@@ -60,7 +60,7 @@ export function MusicPanel({
 
   return (
     <div className="px-4">
-      <Player track={track} onTitle={setPlayerTitle} onEnded={isHost ? () => void act({ type: 'skip' }) : undefined} />
+      <Player track={track} onTitle={setPlayerTitle} onEnded={isHost ? () => void act({ type: 'skip', trackId: track.id }) : undefined} />
       <div className="mt-2 flex items-center gap-1">
         <span className="min-w-0 flex-1 pr-1">
           <span className="flex items-center gap-1.5">
@@ -81,7 +81,7 @@ export function MusicPanel({
             >
               {track.pausedAt ? <Play className="size-4.5" aria-hidden /> : <Pause className="size-4.5" aria-hidden />}
             </Button>
-            <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'skip' })} aria-label={t('voice.skip')}>
+            <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('voice.skip')}>
               <SkipForward className="size-4.5" aria-hidden />
             </Button>
           </>

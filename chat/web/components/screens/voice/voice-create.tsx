@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/toast'
 import { TopicPicker } from '@/components/screens/rooms/topic-picker'
 import { cn } from '@/lib/utils'
 
-const MAX_TITLE = 60
+const MAX_TITLE = 40
 
 export function CreateVoiceDialog({ open, onClose, onCreated }: { open: boolean; onClose: () => void; onCreated: (id: string) => void }) {
   const backend = useBackend()

@@ -21,12 +21,22 @@ import {
   type RoomCategory,
   type RoomMessage,
   type RoomRefusal,
+  type NewVoiceRoom,
   type Target,
   type VideoStatus,
+  VOICE_SEATS,
+  type VoiceAction,
+  type VoiceAudioState,
+  type VoiceEvent,
   type VoiceLine,
+  type VoiceReaction,
+  type VoiceRole,
   type VoiceRoom,
   type VoiceRoomSummary,
+  type VoiceSystemEvent,
 } from './backend'
+import { retryImport } from './retry-import'
+import type { VoiceAudio } from './voice-audio'
 import { onPageVisibility, pageHidden } from './visibility'
 
 const BUCKET = 'media'
@@ -45,7 +55,7 @@ const PARTNER_GRACE_MS = 20_000
 const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
-  'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size',
+  'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
 ]
 
 type CardRow = {
@@ -69,6 +79,30 @@ type RoomRow = {
   is_private: boolean; code: string | null; refusal: string | null
 }
 type PostRow = { id: string; user_id: string; body: string; image_path: string | null; created_at: string }
+type VoiceListRow = {
+  id: string; title: string; category: string; mine: boolean; host: CardRow; speakers: CardRow[]; listeners: number
+  now_playing: string | null
+}
+/** voice_state(): the room, the people present with their cards, and the server clock (ms). */
+type VoiceStateRow = {
+  id: string; title: string; category: string; mode: string; host: string; rev: number; now: number; locked: number[]
+  music: { id: string; videoId: string; title: string; by: string; startedAt: number; pausedAt: number | null } | null
+  queue: { id: string; videoId: string; title: string; by: string; suggested: boolean }[]
+  members: (CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean })[]
+}
+type VoiceMessageRow = {
+  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction'; body: string | null
+  payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
+  sender_photo: string | null; sender_country: string | null; created_at: string
+}
+/** What the voice methods need from an open subscription (subscribeVoice). */
+type VoiceLive = {
+  room: VoiceRoom | null
+  refresh: () => void
+  mic: (on: boolean) => Promise<void>
+  startAudio: () => Promise<void>
+  joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
+}
 type RoomMessageRow = {
   id: number; room_id: string; sender: string; sender_name: string; sender_gender: string; sender_age: number
   sender_photo: string | null; sender_country: string | null; body: string; created_at: string
@@ -164,14 +198,22 @@ export class SupabaseBackend implements Backend {
   /** Matches the user never saw, waiting to be ended; opening one again (the server can hand it back) keeps it. */
   private abandoned = new Set<string>()
   private userId: string | null = null
+  /** For the leave request sent while the page closes (no time to wait for the session then). */
+  private accessToken: string | null = null
+  /** Open voice rooms (subscribeVoice), for the actions taken in them. */
+  private voice = new Map<string, VoiceLive>()
+  /** Server clock minus this device's, and the round trip it was measured with. */
+  private clockOffset = 0
+  private clockRtt = Infinity
 
-  constructor(url: string, anonKey: string) {
+  constructor(private url: string, private anonKey: string) {
     this.client = createClient(url, anonKey, {
       auth: { persistSession: true, storageKey: 'yaari_auth' },
       global: { fetch: fetchWithTimeout },
     })
     this.client.auth.onAuthStateChange((_event, session) => {
       this.userId = session?.user.id ?? null
+      this.accessToken = session?.access_token ?? null
     })
   }
 
@@ -753,44 +795,500 @@ export class SupabaseBackend implements Backend {
     return this.toRoomMessage(data, this.uid)
   }
 
-  // ---- voice rooms: demo only for now; the live version (tables, RPCs, LiveKit audio) comes next ----
+  // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
 
   async voiceRooms(): Promise<VoiceRoomSummary[]> {
-    return []
+    const rows = await this.rpc<VoiceListRow[]>('voice_list')
+    await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
+    return rows.filter((r) => r.host).map((r) => ({
+      id: r.id, title: r.title, category: r.category as RoomCategory, host: this.cardProfile(r.host),
+      speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners,
+      nowPlaying: r.now_playing || null, mine: r.mine,
+    }))
   }
 
-  async createVoiceRoom(): Promise<string> {
-    throw new BackendError('not_allowed')
+  async createVoiceRoom(r: NewVoiceRoom): Promise<string> {
+    return this.rpc<string>('create_voice_room', { p_title: r.title, p_category: r.category, p_mode: r.mode })
   }
 
-  async joinVoice(): Promise<VoiceRoom> {
-    throw new BackendError('not_found')
+  async joinVoice(roomId: string): Promise<VoiceRoom> {
+    const sent = Date.now()
+    const state = await this.rpc<VoiceStateRow>('join_voice', { p_room: roomId })
+    const live = this.voice.get(roomId)
+    if (live) return live.joined(state, sent)
+    this.noteClock(state.now, sent)
+    return this.toVoiceRoom(state)
   }
 
-  async leaveVoice() {}
-
-  async endVoice() {
-    throw new BackendError('not_allowed')
+  async leaveVoice(roomId: string) {
+    await this.rpc('leave_voice', { p_room: roomId })
   }
 
-  async voiceLines(): Promise<VoiceLine[]> {
-    return []
+  async endVoice(roomId: string) {
+    await this.rpc('end_voice_room', { p_room: roomId })
+    this.voiceSync(roomId) // LiveKit closes the room for everyone still connected
   }
 
-  subscribeVoice() {
-    return () => {}
+  async voiceLines(roomId: string): Promise<VoiceLine[]> {
+    const { data, error } = await this.client.from('voice_messages').select('*').eq('room_id', roomId)
+      .in('kind', ['text', 'system']).order('id', { ascending: false }).limit(100) // the newest 100, shown oldest first
+    if (error) fail(error)
+    const rows = (data as VoiceMessageRow[]).reverse()
+    this.noteNewest(`voice:${roomId}`, rows)
+    return this.toVoiceLines(rows)
   }
 
-  async sendVoice(): Promise<VoiceLine> {
-    throw new BackendError('not_allowed')
+  async sendVoice(roomId: string, text: string): Promise<VoiceLine> {
+    const row = await this.rpc<VoiceMessageRow>('voice_send', { p_room: roomId, p_text: text })
+    return (await this.toVoiceLines([row]))[0]
   }
 
-  async voiceAction() {
-    throw new BackendError('not_allowed')
+  async reportVoiceRoom(roomId: string, reason: ReportReason) {
+    // A room is reported through its host (the report keeps what the host wrote in it).
+    const hostId = this.voice.get(roomId)?.room?.hostId
+      ?? (await this.rpc<VoiceStateRow>('voice_state', { p_room: roomId })).host
+    if (hostId === this.uid) throw new BackendError('not_allowed')
+    await this.report(hostId, reason, null)
   }
 
-  async reportVoiceRoom() {
-    throw new BackendError('not_allowed')
+  async voiceStartAudio(roomId: string) {
+    await this.voice.get(roomId)?.startAudio()
+  }
+
+  async voiceAction(roomId: string, a: VoiceAction) {
+    const room = { p_room: roomId }
+    const live = this.voice.get(roomId)
+    switch (a.type) {
+      case 'hand':
+        await this.rpc('voice_hand', { ...room, p_up: a.up })
+        break
+      case 'mic':
+        if (!live) throw new BackendError('network')
+        await live.mic(a.on)
+        break
+      case 'seat':
+        // An open room seats me; a hand-raise room raises my hand instead. Either way LiveKit hears about it.
+        if ((await this.rpc<string>('voice_take_seat', { ...room, p_seat: a.seat })) === 'seated') this.voiceSync(roomId, this.uid)
+        break
+      case 'unseat':
+        await live?.mic(false).catch(() => undefined)
+        await this.rpc('voice_leave_seat', room)
+        this.voiceSync(roomId, this.uid)
+        break
+      case 'react':
+        await this.rpc('voice_react', { ...room, p_kind: a.kind })
+        return // it comes back over realtime, like everyone else's
+      case 'invite':
+        await this.rpc('voice_invite', { ...room, p_user: a.userId, p_seat: a.seat ?? null })
+        this.voiceSync(roomId, a.userId)
+        break
+      case 'answer':
+        await this.rpc('voice_answer', { ...room, p_user: a.userId, p_accept: a.accept })
+        if (a.accept) this.voiceSync(roomId, a.userId)
+        break
+      case 'toAudience':
+        await this.rpc('voice_to_audience', { ...room, p_user: a.userId })
+        this.voiceSync(roomId, a.userId)
+        break
+      case 'mute':
+        await this.rpc('voice_mute_member', { ...room, p_user: a.userId })
+        this.voiceSync(roomId, a.userId, true)
+        break
+      case 'lock':
+        await this.rpc('voice_lock_seat', { ...room, p_seat: a.seat, p_on: a.locked })
+        break
+      case 'cohost':
+        await this.rpc('voice_set_cohost', { ...room, p_user: a.userId, p_on: a.on })
+        break
+      case 'kick':
+        await this.rpc('voice_kick', { ...room, p_user: a.userId })
+        this.voiceSync(roomId, a.userId)
+        break
+      case 'addTrack':
+      case 'suggest':
+        // The server decides: the host's track plays or queues, anyone else's waits for the host.
+        await this.rpc('voice_queue_add', { ...room, p_video: a.videoId, p_title: '' })
+        break
+      case 'approve':
+        await this.rpc('voice_queue_approve', { ...room, p_item: a.itemId, p_accept: a.accept })
+        break
+      case 'play':
+        await this.rpc('voice_play_item', { ...room, p_item: a.itemId })
+        break
+      case 'removeItem':
+        await this.rpc('voice_queue_remove', { ...room, p_item: a.itemId })
+        break
+      case 'pause':
+        await this.rpc('voice_pause', room)
+        break
+      case 'resume':
+        await this.rpc('voice_resume', room)
+        break
+      case 'skip':
+        await this.rpc('voice_skip', { ...room, p_current: a.trackId ?? live?.room?.track?.id ?? null })
+        break
+    }
+    live?.refresh() // don't wait for the realtime round trip
+  }
+
+  /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host's client re-checks every minute. */
+  private voiceSync(roomId: string, userId?: string, mute?: boolean) {
+    void this.invoke('voice-sync', { room_id: roomId, ...(userId ? { user_id: userId } : {}), ...(mute ? { mute: true } : {}) })
+      .catch(() => undefined)
+  }
+
+  /**
+   * Follows a voice room: its row (every change bumps `rev`, then the state is fetched again), its chat and
+   * reactions over realtime, a heartbeat every 20 s (also in the background: people keep listening, as on
+   * X Spaces), and the LiveKit audio once I'm in. Re-syncs on (re)connect, every 10 s and when the tab is shown.
+   */
+  subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void {
+    const me = this.uid
+    let closed = false
+    let joined = false
+    let rev = -1
+    let over = false
+    let beats = 0
+    const emit = (e: VoiceEvent) => { if (!closed) on(e) }
+    const finish = (e: 'ended' | 'removed') => {
+      if (over) return
+      over = true
+      stopAudio()
+      emit({ type: e })
+    }
+    const failed = (err: unknown) => {
+      const code = err instanceof BackendError ? err.code : ''
+      if (code === 'room_closed' || code === 'not_found') finish('ended')
+      else if (code === 'voice_removed') finish('removed')
+    }
+
+    // ---- state ----
+    let mine: { seat: number | null; muted: boolean } | null = null
+    const apply = async (state: VoiceStateRow, sent: number) => {
+      this.noteClock(state.now, sent)
+      const room = await this.toVoiceRoom(state)
+      if (closed || over) return room
+      rev = Math.max(rev, state.rev)
+      live.room = room
+      const m = room.members.find((x) => x.profile.id === me)
+      const before = mine
+      mine = m ? { seat: m.seat, muted: m.muted } : null
+      if (mine && before) {
+        // Brought up to a seat: ask LiveKit for the right to talk. Sent back to the audience, or muted by a host:
+        // the microphone goes off here too.
+        if (before.seat === null && mine.seat !== null) this.voiceSync(roomId, me)
+        if ((mine.seat === null && before.seat !== null) || (mine.muted && !before.muted)) void audio?.setMic(false).catch(() => undefined)
+      }
+      if (mine && !audio && !audioCtl) void connectAudio()
+      emit({ type: 'room', room })
+      return room
+    }
+    let fetching = false
+    let again = false
+    let debounce: ReturnType<typeof setTimeout> | undefined
+    const fetchState = async () => {
+      if (!joined || closed || over) return
+      if (fetching) {
+        again = true
+        return
+      }
+      fetching = true
+      try {
+        const sent = Date.now()
+        await apply(await this.rpc<VoiceStateRow>('voice_state', { p_room: roomId }), sent)
+      } catch (err) {
+        failed(err)
+      } finally {
+        fetching = false
+        if (again) {
+          again = false
+          void fetchState()
+        }
+      }
+    }
+    const refresh = () => {
+      clearTimeout(debounce)
+      debounce = setTimeout(() => void fetchState(), 150)
+    }
+
+    // ---- lines ----
+    const resyncLines = async () => {
+      const after = this.newest.get(`voice:${roomId}`)
+      if (after === undefined) return // the history hasn't loaded yet; it covers everything so far
+      const { data, error } = await this.client.from('voice_messages').select('*').eq('room_id', roomId)
+        .in('kind', ['text', 'system']).gt('id', after).order('id', { ascending: true }).limit(200)
+      if (error) return
+      const rows = data as VoiceMessageRow[]
+      this.noteNewest(`voice:${roomId}`, rows)
+      for (const line of await this.toVoiceLines(rows)) emit({ type: 'line', line })
+    }
+    const onMessage = async (row: VoiceMessageRow) => {
+      if (row.kind === 'reaction') {
+        // A reaction is a moment: an old one (replayed after a reconnect) is not shown.
+        const kind = row.payload?.kind
+        if (typeof kind === 'string' && Date.now() - time(row.created_at) < 15_000) {
+          emit({ type: 'reaction', userId: row.sender, kind: kind as VoiceReaction })
+        }
+        return
+      }
+      for (const line of await this.toVoiceLines([row])) emit({ type: 'line', line })
+    }
+
+    // ---- audio ----
+    let audio: VoiceAudio | null = null
+    let audioCtl: AbortController | null = null
+    let audioState: VoiceAudioState = { status: 'connecting', needsTap: false }
+    let audioTries = 0
+    let audioRetry: ReturnType<typeof setTimeout> | undefined
+    const setAudio = (patch: Partial<VoiceAudioState>) => {
+      audioState = { ...audioState, ...patch }
+      emit({ type: 'audio', audio: audioState })
+    }
+    const retryAudio = () => {
+      clearTimeout(audioRetry)
+      // A weak network gets a few quick tries, then one every 30 s; the room itself (chat, seats) carries on.
+      audioRetry = setTimeout(() => void connectAudio(), Math.min(30_000, 2_000 * 2 ** audioTries++))
+    }
+    const connectAudio = async () => {
+      if (closed || over || audioCtl) return
+      const ctl = new AbortController()
+      audioCtl = ctl
+      try {
+        const [{ url, token }, { joinVoiceAudio }] = await Promise.all([
+          this.invoke<{ url: string; token: string }>('voice-token', { room_id: roomId }),
+          retryImport(() => import('./voice-audio')),
+        ])
+        if (ctl.signal.aborted) return
+        const a = await joinVoiceAudio(url, token, {
+          status: (status) => setAudio({ status }),
+          blocked: (needsTap) => setAudio({ needsTap }),
+          levels: (levels) => emit({ type: 'levels', levels }),
+          permissions: () => permissionWaiters.splice(0).forEach((f) => f()),
+          micMutedByServer: () => refresh(),
+          gone: (removed) => {
+            if (audioCtl !== ctl) return
+            audio = null
+            audioCtl = null
+            emit({ type: 'levels', levels: {} })
+            if (removed) void fetchState() // removed or ended: the state says which
+            retryAudio()
+          },
+        }, ctl.signal)
+        if (ctl.signal.aborted) return void a.disconnect()
+        audio = a
+        audioTries = 0
+        audioWaiters.splice(0).forEach((f) => f(a))
+        // Back after a dropped connection while unmuted on a seat: talk again (or show the mic as off).
+        if (mine?.seat !== null && mine?.muted === false) {
+          a.setMic(true).catch(() => void this.rpc('voice_mic', { p_room: roomId, p_on: false }).then(refresh, () => undefined))
+        }
+      } catch (err) {
+        if (ctl.signal.aborted || audioCtl !== ctl) return
+        audioCtl = null
+        setAudio({ status: 'failed' })
+        // Not in the room any more (403): the state will say why; anything else is worth another try.
+        if (err instanceof BackendError && err.code === 'not_allowed') void fetchState()
+        retryAudio()
+      }
+    }
+    const stopAudio = () => {
+      clearTimeout(audioRetry)
+      audioCtl?.abort()
+      audioCtl = null
+      void audio?.disconnect().catch(() => undefined)
+      audio = null
+      audioWaiters.splice(0).forEach((f) => f(null))
+    }
+    const audioWaiters: ((a: VoiceAudio | null) => void)[] = []
+    const permissionWaiters: (() => void)[] = []
+    const waitAudio = (ms: number) =>
+      audio ? Promise.resolve(audio) : new Promise<VoiceAudio | null>((resolve) => {
+        audioWaiters.push(resolve)
+        setTimeout(() => resolve(audio), ms)
+      })
+    const waitPermission = (ms: number) => new Promise<void>((resolve) => {
+      permissionWaiters.push(resolve)
+      setTimeout(resolve, ms)
+    })
+
+    const mic = async (on: boolean) => {
+      if (!on) {
+        await audio?.setMic(false).catch(() => undefined)
+        await this.rpc('voice_mic', { p_room: roomId, p_on: false })
+        return
+      }
+      const a = await waitAudio(8_000)
+      if (!a) throw new BackendError('network')
+      const enable = async () => {
+        try {
+          await a.setMic(true)
+          return true
+        } catch (e) {
+          if (e instanceof Error && e.message === 'mic_denied') throw new BackendError('mic_denied')
+          return false
+        }
+      }
+      if (!(await enable())) {
+        // LiveKit hasn't heard I'm on a seat yet: ask for it and try once more.
+        this.voiceSync(roomId, me)
+        await waitPermission(4_000)
+        if (!(await enable())) throw new BackendError('not_allowed')
+      }
+      try {
+        await this.rpc('voice_mic', { p_room: roomId, p_on: true })
+      } catch (e) {
+        await a.setMic(false).catch(() => undefined)
+        throw e
+      }
+    }
+
+    const live: VoiceLive = {
+      room: null,
+      refresh,
+      mic,
+      startAudio: async () => {
+        await audio?.startAudio()
+        setAudio({ needsTap: false })
+      },
+      joined: async (state, sent) => {
+        joined = true
+        return apply(state, sent)
+      },
+    }
+    this.voice.set(roomId, live)
+
+    // ---- keeping up ----
+    const heartbeat = async () => {
+      if (!joined || closed || over) return
+      try {
+        const now = await this.rpc<number>('voice_heartbeat', { p_room: roomId })
+        if (now !== rev) refresh()
+        // The host re-checks LiveKit against the room every minute (anyone a sync missed).
+        if (++beats % 3 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
+      } catch (err) {
+        failed(err)
+      }
+    }
+    const resync = () => {
+      if (pageHidden() || closed || !joined) return
+      void (async () => {
+        const { data } = await this.client.from('voice_rooms').select('rev, ended_at').eq('id', roomId).maybeSingle<{ rev: number; ended_at: string | null }>()
+        if (data?.ended_at) finish('ended')
+        else if (data && data.rev !== rev) refresh()
+        await resyncLines()
+      })().catch(() => undefined)
+    }
+    const channel = this.client.channel(`voice-${roomId}-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'voice_rooms', filter: `id=eq.${roomId}` }, (p) => {
+        const row = p.new as { rev: number; ended_at: string | null }
+        if (row.ended_at) finish('ended')
+        else if (row.rev !== rev) refresh()
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'voice_messages', filter: `room_id=eq.${roomId}` },
+        (p) => void onMessage(p.new as VoiceMessageRow).catch(() => undefined))
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') resync()
+      })
+    const beatTimer = setInterval(() => void heartbeat(), 20_000)
+    const syncTimer = setInterval(resync, 10_000)
+    const stopWatching = onPageVisibility((visible) => visible && resync())
+    // Closing the tab leaves at once (a listener's seat and count free up); the host keeps their 2 minutes
+    // to come back after a reload.
+    const onPageHide = () => {
+      if (!joined || over || live.room?.hostId === me || !this.accessToken) return
+      void fetch(`${this.url}/rest/v1/rpc/leave_voice`, {
+        method: 'POST',
+        keepalive: true,
+        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_room: roomId }),
+      }).catch(() => undefined)
+    }
+    window.addEventListener('pagehide', onPageHide)
+
+    return () => {
+      closed = true
+      clearTimeout(debounce)
+      clearInterval(beatTimer)
+      clearInterval(syncTimer)
+      stopWatching()
+      window.removeEventListener('pagehide', onPageHide)
+      stopAudio()
+      if (this.voice.get(roomId) === live) this.voice.delete(roomId)
+      void this.client.removeChannel(channel)
+    }
+  }
+
+  /** Server clock minus mine, from the reply with the shortest round trip (the music position depends on it). */
+  private noteClock(serverNow: number, sent: number) {
+    const received = Date.now()
+    const rtt = received - sent
+    if (!Number.isFinite(serverNow) || rtt > this.clockRtt + 150) {
+      this.clockRtt += 20 // a better sample is welcome again after a while
+      return
+    }
+    this.clockRtt = rtt
+    this.clockOffset = serverNow - (sent + rtt / 2)
+  }
+
+  private async toVoiceRoom(s: VoiceStateRow): Promise<VoiceRoom> {
+    await this.signMany(s.members.map((m) => m.photo_path))
+    const local = (ms: number) => ms - this.clockOffset // server time → this device's clock
+    return {
+      id: s.id, title: s.title, category: s.category as RoomCategory, mode: s.mode === 'open' ? 'open' : 'approval',
+      hostId: s.host, meId: this.uid,
+      members: s.members.map((m) => ({
+        profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand,
+      })),
+      seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: s.locked.includes(index) })),
+      track: s.music ? {
+        id: s.music.id, videoId: s.music.videoId, title: s.music.title, addedBy: s.music.by,
+        startedAt: local(s.music.startedAt), pausedAt: s.music.pausedAt === null ? null : local(s.music.pausedAt),
+      } : null,
+      queue: s.queue.map((q) => ({ id: q.id, videoId: q.videoId, title: q.title, addedBy: q.by, pending: q.suggested })),
+    }
+  }
+
+  private async toVoiceLines(rows: VoiceMessageRow[]): Promise<VoiceLine[]> {
+    const me = this.uid
+    await this.signMany(rows.map((r) => (r.kind === 'text' ? r.sender_photo : null)))
+    return rows.map((r): VoiceLine => {
+      const at = time(r.created_at)
+      if (r.kind === 'text') {
+        return {
+          id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at,
+          sender: this.cardProfile({
+            id: r.sender, name: r.sender_name, gender: r.sender_gender ?? 'other', age: r.sender_age ?? 0, city: '', bio: '',
+            photo_path: r.sender_photo, country: r.sender_country,
+          }),
+        }
+      }
+      const p = r.payload ?? {}
+      return {
+        id: r.id, kind: 'system', event: String(p.event) as VoiceSystemEvent, name: String(p.name ?? r.sender_name), at,
+        ...(typeof p.seat === 'number' ? { seat: p.seat } : {}),
+        ...(typeof p.title === 'string' ? { title: p.title } : {}),
+      }
+    })
+  }
+
+  /** A card from a voice room; the photo comes from signMany (one request for the whole room), else the initial. */
+  private cardProfile(c: CardRow): Profile {
+    const hit = c.photo_path ? this.signedUrls.get(c.photo_path) : undefined
+    return {
+      id: c.id, name: c.name, gender: gender(c.gender), age: c.age, city: c.city, bio: c.bio,
+      photoUrl: hit?.url ?? null, country: c.country, posts: [],
+    }
+  }
+
+  /** Signs every photo not signed yet in one request (a voice room shows dozens of faces at once). */
+  private async signMany(paths: (string | null | undefined)[]) {
+    const now = Date.now()
+    const need = [...new Set(paths.filter((p): p is string => !!p && !((this.signedUrls.get(p)?.reuseUntil ?? 0) > now)))]
+    if (!need.length) return
+    const { data } = await this.client.storage.from(BUCKET).createSignedUrls(need, SIGNED_URL_SECONDS).catch(() => ({ data: null }))
+    for (const d of data ?? []) {
+      if (d.path && d.signedUrl) this.signedUrls.set(d.path, { url: d.signedUrl, reuseUntil: now + 50 * 60_000 })
+    }
   }
 
   /** A photo the viewer may no longer see (that person left the room long ago) shows the initial instead. */

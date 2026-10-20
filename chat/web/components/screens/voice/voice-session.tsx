@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import type { VoiceAction, VoiceLine, VoiceMember, VoiceReaction, VoiceRoom } from '@/lib/backend'
+import type { VoiceAction, VoiceAudioState, VoiceLine, VoiceMember, VoiceReaction, VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -58,8 +58,12 @@ export interface VoiceSession {
   lines: VoiceLine[] | null
   levels: LevelStore
   reactions: Reaction[]
+  /** The live audio (null in the demo, or before it starts). */
+  audio: VoiceAudioState | null
   act: (a: VoiceAction) => Promise<boolean>
   send: (text: string) => Promise<boolean>
+  /** After a tap, when the browser blocked the room's audio. */
+  startAudio: () => void
 }
 
 const REACTION_MS = 2600
@@ -71,6 +75,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [room, setRoom] = useState<VoiceRoom | null>(null)
   const [lines, setLines] = useState<VoiceLine[] | null>(null)
   const [reactions, setReactions] = useState<Reaction[]>([])
+  const [audio, setAudio] = useState<VoiceAudioState | null>(null)
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
@@ -100,6 +105,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'levels':
           levels.set(e.levels)
+          break
+        case 'audio':
+          setAudio(e.audio)
           break
         case 'line':
           addLines([e.line])
@@ -186,7 +194,17 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     [backend, roomId, addLines, toast],
   )
 
-  return { room, me, lines, levels, reactions, act, send }
+  const startAudio = useCallback(() => void backend.voiceStartAudio(roomId).catch(() => undefined), [backend, roomId])
+
+  // Browsers keep audio off until the page is touched: any tap anywhere turns it on.
+  const needsTap = !!audio?.needsTap
+  useEffect(() => {
+    if (!needsTap) return
+    document.addEventListener('pointerdown', startAudio, { once: true })
+    return () => document.removeEventListener('pointerdown', startAudio)
+  }, [needsTap, startAudio])
+
+  return { room, me, lines, levels, reactions, audio, act, send, startAudio }
 }
 
 /**

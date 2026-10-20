@@ -420,6 +420,7 @@ const en = {
   'voice.sys.cohost': '{name} is now a co-host',
   'voice.sys.track': '{name} played {title}',
   'voice.sys.removed': '{name} was removed',
+  'voice.sys.host': '{name} is now the host',
   'voice.music': 'Music',
   'voice.musicTitle': 'Listen together',
   'voice.djDesc': 'Paste a YouTube link. Everyone hears it in sync.',
@@ -452,6 +453,9 @@ const en = {
   'voice.ytFailed': 'Can’t reach YouTube right now',
   'voice.ytUnavailable': 'This video can’t be played here',
   'voice.ytVideo': 'YouTube video',
+  'voice.tapToListen': 'Tap to listen',
+  'voice.audioReconnecting': 'Reconnecting audio…',
+  'voice.audioFailed': 'Can’t connect audio right now. Chat still works.',
 
   // recent
   'recent.title': 'Recent',
@@ -577,6 +581,9 @@ const en = {
   'error.room_full': 'This room is full right now',
   'error.room_title': 'Room names are 2 to 40 characters',
   'error.room_size': 'Rooms hold 2 to 50 people',
+  'error.voice_removed': 'You were removed from this room',
+  'error.mic_denied': 'Allow microphone access in your browser to talk',
+  'error.queue_full': 'The queue is full (30 songs)',
   'error.sms_unavailable': 'We couldn’t send a code to this number right now. Please try again later',
   'error.generic': 'Something went wrong. Please try again',
 } as const

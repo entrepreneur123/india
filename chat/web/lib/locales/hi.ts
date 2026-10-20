@@ -414,6 +414,7 @@ const hi: Dict = {
   'voice.sys.cohost': '{name} अब को-होस्ट हैं',
   'voice.sys.track': '{name} ने चलाया: {title}',
   'voice.sys.removed': '{name} को हटाया गया',
+  'voice.sys.host': '{name} अब होस्ट हैं',
   'voice.music': 'म्यूज़िक',
   'voice.musicTitle': 'साथ में सुनें',
   'voice.djDesc': 'YouTube लिंक डालें। सब एक साथ सुनेंगे।',
@@ -446,6 +447,9 @@ const hi: Dict = {
   'voice.ytFailed': 'अभी YouTube से जुड़ नहीं पा रहे',
   'voice.ytUnavailable': 'यह वीडियो यहाँ नहीं चल सकता',
   'voice.ytVideo': 'YouTube वीडियो',
+  'voice.tapToListen': 'सुनने के लिए टैप करें',
+  'voice.audioReconnecting': 'ऑडियो फिर से जुड़ रहा है…',
+  'voice.audioFailed': 'अभी ऑडियो नहीं जुड़ पा रहा। चैट चालू है।',
 
   'recent.title': 'हाल के',
   'recent.show': 'दिखाएँ',
@@ -566,6 +570,9 @@ const hi: Dict = {
   'error.room_full': 'यह रूम अभी भरा हुआ है',
   'error.room_title': 'रूम का नाम 2 से 40 अक्षरों का हो',
   'error.room_size': 'रूम में 2 से 50 लोग हो सकते हैं',
+  'error.voice_removed': 'आपको इस रूम से हटा दिया गया',
+  'error.mic_denied': 'बोलने के लिए ब्राउज़र में माइक्रोफ़ोन की अनुमति दें',
+  'error.queue_full': 'कतार भर गई है (30 गाने)',
   'error.sms_unavailable': 'अभी इस नंबर पर कोड नहीं भेज सके। कृपया बाद में कोशिश करें',
   'error.generic': 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें',
 }

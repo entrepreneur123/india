@@ -167,14 +167,24 @@ export interface NewVoiceRoom {
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
 export type VoiceReaction = 'heart' | 'laugh' | 'fire' | 'clap' | 'wow'
 
-export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'track' | 'removed'
+export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed'
 
 export type VoiceLine =
   | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number }
   | { id: number; kind: 'system'; event: VoiceSystemEvent; name: string; seat?: number; title?: string; at: number }
 
+/**
+ * The room's live audio (live server only; the demo has none). `needsTap`: the browser blocked playback until
+ * the user touches the page (autoplay rules).
+ */
+export interface VoiceAudioState {
+  status: 'connecting' | 'connected' | 'reconnecting' | 'failed'
+  needsTap: boolean
+}
+
 export type VoiceEvent =
   | { type: 'room'; room: VoiceRoom }
+  | { type: 'audio'; audio: VoiceAudioState }
   /** Audio level 0..1 per user id, several times a second (absent = silent). */
   | { type: 'levels'; levels: Record<string, number> }
   | { type: 'line'; line: VoiceLine }
@@ -206,7 +216,8 @@ export type VoiceAction =
   | { type: 'removeItem'; itemId: string }
   | { type: 'pause' }
   | { type: 'resume' }
-  | { type: 'skip' }
+  /** `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
+  | { type: 'skip'; trackId?: string }
 
 export interface Match {
   id: string
@@ -256,6 +267,9 @@ export type BackendErrorCode =
   | 'room_full'
   | 'room_title'
   | 'room_size'
+  | 'voice_removed'
+  | 'mic_denied'
+  | 'queue_full'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -336,5 +350,7 @@ export interface Backend {
   sendVoice(roomId: string, text: string): Promise<VoiceLine>
   /** Throws BackendError('not_allowed') when my role may not do it. */
   voiceAction(roomId: string, action: VoiceAction): Promise<void>
+  /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
+  voiceStartAudio(roomId: string): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
 }

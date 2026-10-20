@@ -414,6 +414,7 @@ const bn: Dict = {
   'voice.sys.cohost': '{name} এখন কো-হোস্ট',
   'voice.sys.track': '{name} চালালেন: {title}',
   'voice.sys.removed': '{name}-কে সরানো হয়েছে',
+  'voice.sys.host': '{name} এখন হোস্ট',
   'voice.music': 'মিউজিক',
   'voice.musicTitle': 'একসাথে শুনুন',
   'voice.djDesc': 'YouTube লিংক দিন। সবাই একসাথে শুনবে।',
@@ -446,6 +447,9 @@ const bn: Dict = {
   'voice.ytFailed': 'এখন YouTube-এ পৌঁছানো যাচ্ছে না',
   'voice.ytUnavailable': 'এই ভিডিও এখানে চালানো যাচ্ছে না',
   'voice.ytVideo': 'YouTube ভিডিও',
+  'voice.tapToListen': 'শুনতে ট্যাপ করুন',
+  'voice.audioReconnecting': 'অডিও আবার যুক্ত হচ্ছে…',
+  'voice.audioFailed': 'এখন অডিও যুক্ত করা যাচ্ছে না। চ্যাট চালু আছে।',
 
   'recent.title': 'সাম্প্রতিক',
   'recent.show': 'দেখান',
@@ -566,6 +570,9 @@ const bn: Dict = {
   'error.room_full': 'এই রুম এখন পূর্ণ',
   'error.room_title': 'রুমের নাম ২ থেকে ৪০ অক্ষরের হতে হবে',
   'error.room_size': 'রুমে ২ থেকে ৫০ জন থাকতে পারে',
+  'error.voice_removed': 'আপনাকে এই রুম থেকে সরানো হয়েছে',
+  'error.mic_denied': 'কথা বলতে ব্রাউজারে মাইক্রোফোনের অনুমতি দিন',
+  'error.queue_full': 'তালিকা পূর্ণ (৩০টি গান)',
   'error.sms_unavailable': 'এখন এই নম্বরে কোড পাঠানো যাচ্ছে না। পরে আবার চেষ্টা করুন',
   'error.generic': 'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন',
 }

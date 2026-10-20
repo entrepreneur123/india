@@ -18,6 +18,8 @@ export function systemText(line: Extract<VoiceLine, { kind: 'system' }>, t: T) {
       return t('voice.sys.audience', { name: line.name })
     case 'cohost':
       return t('voice.sys.cohost', { name: line.name })
+    case 'host':
+      return t('voice.sys.host', { name: line.name })
     case 'track':
       return t('voice.sys.track', { name: line.name, title: line.title || t('voice.ytVideo') })
     case 'removed':
