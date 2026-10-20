@@ -308,6 +308,8 @@ async function viewExam(root, code) {
   const guide = (f.source ?? 'ssc') === 'ssc' ? await getJSON('guide.json').catch(() => null) : null; // SSC's how-to-apply
   if (guide) parts.push(guideBlock(guide, false));
   if (examResources.length) parts.push(el('h3', {}, t('resourcesTitle')), ...examResources.map(([k, items]) => resourceBlock(k, items, false)));
+  const writeups = ((await getJSON('results/cutoffs.json').catch(() => null))?.writeups ?? []).filter((w) => w.exam === code);
+  if (writeups.length) parts.push(cutoffBlock(writeups, families, false));
   parts.push(el('h3', {}, `${t('allNotices')} (${notices.length})`),
     el('ul', { class: 'list' }, ...(notices.length ? notices.slice(0, 60).map((i) => itemCard(i, { families })) : [el('li', { class: 'empty' }, t('nothing'))])));
   fill(root, ...parts);
@@ -494,12 +496,35 @@ async function viewForMe(root, editing = false) {
 }
 
 // ---------- Result by roll number ----------
+// Pages of SSC's result write-ups where the cut-off details start (pipeline cutoffs.py).
+// The marks themselves are never copied: the link opens SSC's PDF at that page.
+function pageList(pages) {
+  const runs = [];
+  for (const p of pages) {
+    const last = runs[runs.length - 1];
+    if (last && p === last[1] + 1) last[1] = p; else runs.push([p, p]);
+  }
+  return runs.map(([a, b]) => (a === b ? String(a) : `${a}–${b}`)).join(', ');
+}
+function cutoffBlock(writeups, families, withExam = true) {
+  const shown = writeups.filter((w) => w.exam !== 'LDCE' && safeUrl(w.url));
+  return el('div', { class: 'card' }, el('h3', {}, t('cutoffTitle')), el('p', { class: 'small' }, t('cutoffNote')),
+    shown.length ? el('ul', { class: 'rows' }, ...shown.map((w) => el('li', { class: 'row' },
+      withExam && w.exam ? el('strong', {}, `${families[w.exam]?.short ?? w.exam}${w.examYear ? ` ${w.examYear}` : ''}`) : null,
+      el('div', { class: 'small' }, w.title),
+      el('a', { href: `${safeUrl(w.url)}#page=${w.pages[0]}`, rel: 'noopener', target: '_blank' }, t('cutoffFrom', { p: w.pages[0] })),
+      el('span', { class: 'small' }, ` · ${w.name} · ${t('cutoffPages', { pages: pageList(w.pages) })} · ${day(w.publishedAt.slice(0, 10))}`))))
+      : el('p', { class: 'empty' }, t('noCutoffs')));
+}
+
 async function viewResult(root) {
   let lists; let feed; let families;
   try {
     [{ lists }, feed, { families }] = await Promise.all([getJSON('results/index.json'), getJSON('feed.json'), getJSON('exams.json')]);
   } catch (e) { fill(root, errorBox(e)); return; }
-  if (!lists.length) { fill(root, el('h2', {}, t('resultTitle')), el('p', { class: 'empty' }, t('noLists'))); return; }
+  const writeups = (await getJSON('results/cutoffs.json').catch(() => null))?.writeups;
+  const cutoffs = writeups ? cutoffBlock(writeups, families) : null;
+  if (!lists.length) { fill(root, el('h2', {}, t('resultTitle')), el('p', { class: 'empty' }, t('noLists')), cutoffs); return; }
   const groups = [];
   // One choice per exam cycle: a roll number is looked up in every list of that cycle at once
   // (CT(GD) 2026 has separate female, male and withheld lists, each its own notice).
@@ -539,7 +564,7 @@ async function viewResult(root) {
           ...[...new Map(items.flatMap((i) => i.files).map((f) => [f.url, f])).values()].map((f) => (safeUrl(f.url) ? el('a', { href: safeUrl(f.url), rel: 'noopener', target: '_blank' }, `${t('pdf')}: ${f.name}${size(f.size)}`) : null)))) : null);
     } catch (e) { fill(out, errorBox(e)); }
   });
-  fill(root, el('h2', {}, t('resultTitle')), form, out);
+  fill(root, el('h2', {}, t('resultTitle')), form, out, cutoffs);
 }
 
 function renderResult(box, rules, r, today) {

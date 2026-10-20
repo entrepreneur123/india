@@ -12,6 +12,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/rules/<id>.json       copied from rules/ after validation
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
   jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
+  jobs/v1/results/cutoffs.json  pages of the result write-ups that give the cut-off marks (cutoffs.py)
   jobs/exam/<code>/index.html   one static page per exam for search engines (sitegen.py), + jobs/sitemap.xml
   jobs/v1/status.json           last full check and SSC's lastUpdates stamp (changes on full checks only)
 
@@ -36,7 +37,7 @@ import json
 import os
 import sys
 
-from . import classify, eligibility, http, results_index, sitegen, ssc, upprpb
+from . import classify, cutoffs, eligibility, http, results_index, sitegen, ssc, upprpb
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -199,6 +200,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     if get_bytes is not None:
         added = results_index.update(out, feed, get_bytes)
         print(f"results: {added} new roll-number lists")
+        print(f"cut-offs: {cutoffs.update(out, feed, get_bytes)} write-ups read")
     _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
                               "sourceUpdatedAt": stamp, "streamCounts": counts, "failedSources": failed}, volatile=())
     print(f"feed: {len(feed)} items ({len(new)} new, {len(others) + len(kept)} from other boards), {len(calendar)} calendar entries"

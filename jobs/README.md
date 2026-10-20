@@ -34,6 +34,7 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | `web/i18n.js`, `web/tools.js`, `web/sw.js` | 영어·힌디어 문구, 서명·나이·캘린더 도구, 오프라인 |
 | `pipeline/sarkari/telegram.py` | 새 공고를 텔레그램 채널에 게시 |
 | `pipeline/sarkari/results_index.py` | 결과 명단 PDF → 수험번호 색인 (이름 제외, 순번 연속성 검증) |
+| `pipeline/sarkari/cutoffs.py` | 결과 해설(write-up) PDF에서 합격선이 나오는 쪽 번호만 찾음 (숫자는 옮기지 않음) |
 | `pipeline/sarkari/sitegen.py` | 시험별 검색 노출용 정적 페이지와 사이트맵 |
 | `web/tracker.js` | 시험 단계 추적 (공식 날짜만, 없으면 "미발표") |
 | `research/` | 니즈 분석: 자동완성 원본 데이터, 수집·분석 스크립트, 보고서 |
