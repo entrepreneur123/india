@@ -30,7 +30,7 @@ def build(tmp, monkeypatch, ads="", base="https://example.in", link_prefix=None,
 def test_draw_page_is_readable_without_javascript(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     page = (out / "result/18-10-2026/1pm/index.html").read_text()
-    assert "<title>Dear Lottery Result 18.10.2026 1 PM – Dear Wish Sunday | Nagaland State Lottery</title>" in page
+    assert "<title>Lottery Sambad Morning 1 PM Result 18.10.2026 – Dear Wish Sunday</title>" in page
     assert "74D 70698" in page and "15172" in page          # 1st prize and a 2nd-prize number in the HTML itself
     assert '<link rel="canonical" href="https://example.in/result/18-10-2026/1pm/">' in page
     assert 'hreflang="bn" href="https://example.in/bn/result/18-10-2026/1pm/"' in page
@@ -166,3 +166,38 @@ def test_kerala_hub_and_draw_page(tmp_path, monkeypatch):
     assert "https://example.in/kerala/" in (out / "sitemap.xml").read_text()
     day = (out / "result/17-10-2026/index.html").read_text()
     assert day.index("<b>1 PM</b>") < day.index("<b>3 PM</b>") < day.index("<b>6 PM</b>")   # in draw-time order
+
+
+def test_draw_time_pages_rank_before_the_result_exists(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    night = (out / "night-8pm/index.html").read_text()   # 18-10 at 9 PM: the 8 PM result is in
+    assert "<title>Lottery Sambad Night Result Today 18.10.2026 – Dear 8 PM</title>" in night
+    assert '<link rel="canonical" href="https://example.in/night-8pm/">' in night
+    assert "data-wait" not in night and night.count("<tr>") >= 2   # the result and its last days
+    bn = (out / "bn/morning-1pm/index.html").read_text()
+    assert "লটারি সংবাদ মর্নিং রেজাল্ট আজ 18.10.2026" in bn
+    home = (out / "index.html").read_text()
+    for p in ("/morning-1pm/", "/day-6pm/", "/night-8pm/", "/kerala/"):
+        assert f'href="{p}"' in home
+    draw = (out / "result/18-10-2026/8pm/index.html").read_text()
+    assert 'href="/night-8pm/"' in draw
+    sitemap = (out / "sitemap.xml").read_text()
+    assert "https://example.in/day-6pm/" in sitemap and "https://example.in/hi/day-6pm/" in sitemap
+    assert "<url><loc>https://example.in/result/17-10-2026/</loc><lastmod>2026-10-17</lastmod>" in sitemap
+    assert "<url><loc>https://example.in/night-8pm/</loc><lastmod>2026-10-18T21:00+05:30</lastmod>" in sitemap
+
+
+def test_draw_time_page_waits_for_todays_result(tmp_path, monkeypatch):
+    monkeypatch.setenv("SITE_OG", "0")
+    data = tmp_path / "data"
+    (data / "v2/days").mkdir(parents=True)
+    feed = json.loads(FEED.read_text())
+    (data / "v2/days/2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18",
+                                                              "draws": [d for d in feed["draws"] if d["date"] == "2026-10-18"]}))
+    now = dt.datetime(2026, 10, 19, 12, 50, tzinfo=sitegen.IST)   # before the 1 PM draw of the next day
+    sitegen.Site(data, "https://example.in", now=now).build(tmp_path / "out")
+    page = (tmp_path / "out/morning-1pm/index.html").read_text()
+    assert 'data-wait="2026-10-19_NL1PM"' in page
+    assert "Lottery Sambad Morning Result Today 19.10.2026" in page
+    assert 'data-at="2026-10-19T13:00:00+05:30"' in page    # the countdown
+    assert "74D 70698" in page                              # and yesterday's result below it
