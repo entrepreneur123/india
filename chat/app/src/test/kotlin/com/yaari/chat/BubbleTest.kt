@@ -3,12 +3,17 @@ package com.yaari.chat
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
 import com.yaari.chat.ui.Bubble
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,5 +36,20 @@ class BubbleTest {
     @Test fun ownPhotoIsShownDirectly() {
         compose.setContent { Bubble(photo(fromMe = true)) }
         compose.onAllNodesWithText("Tap to view").assertCountEquals(0)
+    }
+
+    @Test fun ownMessageShowsSentThenReadTick() {
+        val text = Message(2, true, "Hello", null, 0)
+        var read by mutableStateOf(false)
+        compose.setContent { Bubble(text, read = read) }
+        compose.onNodeWithContentDescription("Sent").assertExists()
+        read = true
+        compose.onNodeWithContentDescription("Read").assertExists()
+    }
+
+    @Test fun receivedMessageHasNoTicks() {
+        compose.setContent { Bubble(Message(3, false, "Hi", null, 0)) }
+        compose.onAllNodesWithContentDescription("Sent").assertCountEquals(0)
+        compose.onAllNodesWithContentDescription("Read").assertCountEquals(0)
     }
 }

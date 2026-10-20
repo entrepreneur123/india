@@ -619,4 +619,28 @@ class AppViewModelTest {
         assertEquals("beats at once when back", 3, beats)
         vm.leaveRoom(); advanceTimeBy(100); runCurrent()
     }
+
+    // ---- Read ticks ------------------------------------------------------------------------------
+
+    @Test fun readTicksBothWaysOnlyWhileOnScreen() = runTest(dispatcher) {
+        val visible = MutableStateFlow(true)
+        val marked = mutableListOf<Long>()
+        val counting = object : Backend by backend {
+            override suspend fun markRead(matchId: String, upto: Long) { marked += upto }
+        }
+        val vm = signedIn { AppViewModel(counting, DemoBilling(), clock = { now }, today = { today }, foreground = visible) }
+        matched(vm)
+        visible.value = false
+        vm.sendText("Hi!"); advanceTimeBy(5_000); runCurrent()
+        val chat = vm.state.value.chat!!
+        val mine = chat.messages.first { it.fromMe }
+        val reply = chat.messages.last { !it.fromMe }
+        assertEquals("the partner read my message before answering", mine.id, chat.partnerRead)
+        assertTrue("nothing marked read in the background", marked.isEmpty())
+        visible.value = true
+        runCurrent()
+        assertEquals("back on screen: their reply is marked read", listOf(reply.id), marked)
+        vm.openProfile(chat.match.partner); runCurrent()
+        assertEquals("no repeat for the same message", listOf(reply.id), marked)
+    }
 }

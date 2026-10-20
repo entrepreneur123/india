@@ -24,7 +24,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
 import com.yaari.chat.domain.flagOf
-import com.yaari.chat.model.Message
 import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomMessage
 import kotlinx.coroutines.delay
@@ -283,8 +282,8 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
         val list = rememberLazyListState()
         LaunchedEffect(state.messages.size) { if (state.messages.isNotEmpty()) list.animateScrollToItem(state.messages.size - 1 + if (state.loading) 1 else 0) }
         LazyColumn(
-            Modifier.weight(1f).fillMaxWidth(), state = list, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            Modifier.weight(1f).fillMaxWidth().background(chatColors().wall), state = list,
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
         ) {
             if (state.loading) item { Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) } }
             if (!state.loading && state.messages.isEmpty()) {
@@ -295,8 +294,12 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
                     )
                 }
             }
-            items(state.messages, key = { it.id }) { m ->
-                Box(Modifier.animateItem()) { PopIn(m.fromMe) { RoomLine(m, onProfile = { vm.openProfile(m.sender) }) } }
+            itemsIndexed(state.messages, key = { _, m -> m.id }) { i, m ->
+                // A run of messages from one person: avatar, name and tail on the first only, 2 dp apart.
+                val grouped = i > 0 && state.messages[i - 1].sender.id == m.sender.id
+                Box(Modifier.animateItem().padding(top = if (grouped) 2.dp else 8.dp)) {
+                    PopIn(m.fromMe) { RoomLine(m, grouped, onProfile = { vm.openProfile(m.sender) }) }
+                }
             }
         }
         if (state.closed) {
@@ -304,7 +307,7 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
         } else {
             Composer(
                 onText = vm::sendRoom, onMedia = null, onTyping = {}, maxLength = AppViewModel.MAX_ROOM_TEXT,
-                hint = stringResource(R.string.message_room, room.name()), divider = true,
+                hint = stringResource(R.string.message_room, room.name()),
             )
         }
     }
@@ -312,30 +315,41 @@ fun RoomScreen(vm: AppViewModel, state: RoomState) {
     if (confirmClose) CloseRoomDialog(onConfirm = { confirmClose = false; vm.closeRoom() }, onCancel = { confirmClose = false })
 }
 
+/** A room message as in a group chat: mine on the right; others with avatar and coloured name on the first of a run. */
 @Composable
-private fun RoomLine(m: RoomMessage, onProfile: () -> Unit) {
+private fun RoomLine(m: RoomMessage, grouped: Boolean, onProfile: () -> Unit) {
+    val colors = chatColors()
     if (m.fromMe) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Bubble(Message(m.id, true, m.text, null, m.at))
+            Box(Modifier.fillMaxWidth(0.85f), contentAlignment = Alignment.CenterEnd) {
+                BubbleShell(mine = true, tail = !grouped, padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp)) {
+                    TextWithMeta(m.text, colors.text, meta = { BubbleMeta(m.at, mine = false, read = false) })
+                }
+            }
         }
         return
     }
-    Row(Modifier.fillMaxWidth().padding(end = 40.dp), verticalAlignment = Alignment.Top) {
-        Avatar(m.sender, 34.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onProfile))
-        Column(Modifier.padding(start = 10.dp)) {
-            Row(
-                Modifier.clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button, onClick = onProfile).padding(start = 4.dp, end = 4.dp, bottom = 4.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text(m.sender.name, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-                Text("${m.sender.age}", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Normal, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                flagOf(m.sender.country).takeIf { it.isNotEmpty() }?.let { Text(it, fontSize = 12.sp) }
+    Row(Modifier.fillMaxWidth(0.85f), verticalAlignment = Alignment.Top) {
+        if (grouped) Spacer(Modifier.width(32.dp))
+        else Avatar(m.sender, 32.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onProfile))
+        BubbleShell(mine = false, tail = !grouped, padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 5.dp)) {
+            Column {
+                if (!grouped) {
+                    Row(
+                        Modifier.clip(RoundedCornerShape(4.dp)).clickable(role = Role.Button, onClick = onProfile),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text(
+                            m.sender.name, color = colors.names[nameColorIndex(m.sender.id)], fontSize = 13.sp, lineHeight = 20.sp,
+                            fontWeight = FontWeight.SemiBold, fontFamily = Jakarta, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        Text("${m.sender.age}", color = colors.meta, fontSize = 13.sp, lineHeight = 20.sp, fontFamily = Jakarta)
+                        flagOf(m.sender.country).takeIf { it.isNotEmpty() }?.let { Text(it, fontSize = 12.sp) }
+                    }
+                }
+                TextWithMeta(m.text, colors.text, meta = { BubbleMeta(m.at, mine = false, read = false) })
             }
-            Text(
-                m.text, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.clip(RoundedCornerShape(topStart = 4.dp, topEnd = 20.dp, bottomEnd = 20.dp, bottomStart = 20.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 10.dp),
-            )
         }
     }
 }

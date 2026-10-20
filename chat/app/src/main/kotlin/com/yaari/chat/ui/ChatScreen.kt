@@ -70,6 +70,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -451,14 +452,15 @@ private fun MatchReveal(matchId: String, partner: Profile) {
 }
 
 /**
- * Photo button, pill-shaped input and a round brand-colour send button. Follows the screen's colours (light or dark).
+ * Photo button, pill-shaped input and a round brand-colour send button, on the chat wallpaper. Follows the screen's
+ * colours (light or dark).
  * The field clears at once on send; [onText]'s second argument puts the text back if the message did not go out.
  */
 @Composable
 fun Composer(
     onText: (String, () -> Unit) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
-    divider: Boolean = false,
 ) {
+    val colors = chatColors()
     var text by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -467,33 +469,32 @@ fun Composer(
             onMedia(Media(uri.toString(), if (video) MediaKind.VIDEO else MediaKind.IMAGE))
         }
     }
-    Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
-        if (divider) Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
+    Column(Modifier.fillMaxWidth().background(colors.wall)) {
         Row(
-            Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 8.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
             if (onMedia != null) {
                 CircleIconButton(
                     Icons.Outlined.Image, stringResource(R.string.send_media),
                     { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = colors.meta,
                 )
             }
             Box(
-                Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).clip(RoundedCornerShape(24.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 16.dp, vertical = 11.dp),
+                Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).shadow(1.dp, RoundedCornerShape(24.dp))
+                    .background(colors.incoming).padding(horizontal = 16.dp, vertical = 11.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 if (text.isEmpty()) {
                     Text(
-                        hint ?: stringResource(R.string.message_hint), color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        hint ?: stringResource(R.string.message_hint), color = colors.meta,
                         style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
                     )
                 }
                 BasicTextField(
                     text, { text = it.take(maxLength); if (it.isNotBlank()) onTyping() }, Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.text),
                     cursorBrush = SolidColor(Brand.Pink), maxLines = 5,
                 )
             }
