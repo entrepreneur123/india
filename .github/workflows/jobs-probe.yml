@@ -1,0 +1,30 @@
+# Manual check: does ssc.gov.in answer GitHub's runners (outside India), and does a full
+# job-alert build work from there? Publishes nothing; the output is kept as a run artifact.
+name: jobs-probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reachability
+        run: |
+          for u in https://ssc.gov.in/ https://ssc.gov.in/api/general-website/portal/lastUpdates; do
+            printf '%s ' "$u"
+            curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} %{content_type} %{size_download}B %{time_total}s %{remote_ip}\n' "$u" || echo "FAILED ($?)"
+          done
+      - name: Full build into a scratch folder
+        working-directory: jobs/pipeline
+        run: python -m sarkari.build --out "$RUNNER_TEMP/out" --force
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jobs-probe-output
+          path: ${{ runner.temp }}/out/

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SSC Job Alerts &amp; Eligibility Check</title>
+<meta name="description" content="Latest SSC notices, results, admit cards and answer keys from ssc.gov.in, with an age and education eligibility check for SSC CGL and CHSL. Not a government website.">
+<meta name="theme-color" content="#1d4ed8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --text: #111827; --muted: #4b5563; --line: #e5e7eb;
+  --brand: #1d4ed8; --brand-ink: #ffffff; --chip: #eef2ff;
+  --ok: #047857; --ok-bg: #ecfdf5; --warn: #92400e; --warn-bg: #fffbeb; --bad: #b91c1c; --bad-bg: #fef2f2;
+  --focus: #f59e0b;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220; --card: #111a2e; --text: #e5e7eb; --muted: #9ca3af; --line: #1f2a44;
+    --brand: #60a5fa; --brand-ink: #0b1220; --chip: #1e293b;
+    --ok: #34d399; --ok-bg: #052e22; --warn: #fbbf24; --warn-bg: #2d2006; --bad: #f87171; --bad-bg: #2c0b0b;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+}
+a { color: var(--brand); }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+header { background: var(--brand); color: var(--brand-ink); padding: 14px 16px 0; }
+header h1 { margin: 0; font-size: 1.15rem; }
+header p { margin: 2px 0 10px; font-size: .85rem; opacity: .9; }
+nav { display: flex; gap: 4px; overflow-x: auto; }
+nav button {
+  flex: 1 0 auto; min-height: 44px; padding: 0 14px; border: 0; border-radius: 10px 10px 0 0;
+  background: transparent; color: inherit; font: inherit; font-weight: 600; cursor: pointer; opacity: .85;
+}
+nav button[aria-selected="true"] { background: var(--bg); color: var(--text); opacity: 1; }
+main { max-width: 760px; margin: 0 auto; padding: 12px 16px 32px; }
+.disclaimer {
+  font-size: .8rem; color: var(--muted); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 12px; margin-bottom: 12px; background: var(--card);
+}
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; align-items: center; }
+.chip {
+  min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--card); color: var(--text); font: inherit; font-size: .9rem; cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+select, input[type="date"] {
+  min-height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--card); color: var(--text); font: inherit; max-width: 100%;
+}
+label.check { display: flex; gap: 8px; align-items: center; min-height: 44px; }
+label.check input { flex: none; width: 20px; height: 20px; margin: 0; }
+ul.list { list-style: none; margin: 0; padding: 0; }
+.item {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;
+}
+.meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .8rem; color: var(--muted); }
+.badge { padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--text); font-weight: 600; }
+.badge.recruitment { background: var(--ok-bg); color: var(--ok); }
+.badge.amendment { background: var(--warn-bg); color: var(--warn); }
+.item h3 { margin: 6px 0; font-size: 1rem; font-weight: 600; overflow-wrap: anywhere; }
+.files { display: flex; flex-wrap: wrap; gap: 8px; }
+.files a {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 10px;
+  border: 1px solid var(--line); text-decoration: none; font-size: .9rem; overflow-wrap: anywhere;
+}
+.empty, .error { text-align: center; color: var(--muted); padding: 32px 8px; }
+.error { color: var(--bad); }
+form.card, .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 560px) { .grid { grid-template-columns: 1fr 1fr; } }
+.field label:not(.check) { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+.field select, .field input[type="date"] { width: 100%; }
+button.primary {
+  min-height: 48px; width: 100%; margin-top: 12px; border: 0; border-radius: 12px;
+  background: var(--brand); color: var(--brand-ink); font: inherit; font-weight: 700; cursor: pointer;
+}
+.banner { border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; font-weight: 600; }
+.banner.open { background: var(--ok-bg); color: var(--ok); }
+.banner.closed { background: var(--bad-bg); color: var(--bad); }
+.banner.upcoming { background: var(--warn-bg); color: var(--warn); }
+.summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.summary span { flex: 1 1 30%; text-align: center; border-radius: 12px; padding: 8px; font-weight: 700; }
+.s-eligible { background: var(--ok-bg); color: var(--ok); }
+.s-check { background: var(--warn-bg); color: var(--warn); }
+.s-ineligible { background: var(--bad-bg); color: var(--bad); }
+.post { border-left: 4px solid var(--line); }
+.post.eligible { border-left-color: var(--ok); }
+.post.check { border-left-color: var(--warn); }
+.post.ineligible { border-left-color: var(--bad); }
+.post ul { margin: 6px 0 0; padding-left: 18px; font-size: .9rem; }
+details.group { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; }
+details.group > summary { min-height: 48px; display: flex; align-items: center; padding: 0 14px; font-weight: 700; cursor: pointer; }
+details.group.eligible > summary { color: var(--ok); }
+details.group.check > summary { color: var(--warn); }
+details.group.ineligible > summary { color: var(--bad); }
+details.group > .list { padding: 0 10px 2px; }
+ul.rows { list-style: none; margin: 0; padding: 0 14px 6px; }
+ul.rows li { padding: 8px 0; border-top: 1px solid var(--line); }
+.small { font-size: .85rem; color: var(--muted); }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SSC Job Alerts</h1>
+  <p>Notices, results and admit cards from ssc.gov.in, and who can apply.</p>
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-latest" aria-controls="latest" aria-selected="true">Latest</button>
+    <button role="tab" id="tab-eligibility" aria-controls="eligibility" aria-selected="false">Am I eligible?</button>
+    <button role="tab" id="tab-calendar" aria-controls="calendar" aria-selected="false">Calendar</button>
+  </nav>
+</header>
+<main>
+  <p class="disclaimer">
+    Not a government website and not affiliated with the Staff Selection Commission or the Government of India.
+    Everything here is copied from <a href="https://ssc.gov.in" rel="noopener">ssc.gov.in</a>; every item links to the
+    official file. Always confirm with the official Notice before applying.
+  </p>
+
+  <section id="latest" role="tabpanel" aria-labelledby="tab-latest">
+    <div class="filters" id="kind-filters" role="group" aria-label="Show"></div>
+    <div class="filters">
+      <label class="sr" for="exam-filter">Exam</label>
+      <select id="exam-filter"></select>
+      <label class="sr" for="lang-filter">Language</label>
+      <select id="lang-filter">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="all">English + हिन्दी</option>
+      </select>
+      <label class="check"><input type="checkbox" id="dept-filter"> Departmental exams</label>
+    </div>
+    <p class="small" id="feed-status" aria-live="polite"></p>
+    <ul class="list" id="feed"></ul>
+  </section>
+
+  <section id="eligibility" role="tabpanel" aria-labelledby="tab-eligibility" hidden>
+    <form class="card" id="elig-form" novalidate>
+      <div class="grid">
+        <div class="field"><label for="f-exam">Exam</label><select id="f-exam" required></select></div>
+        <div class="field"><label for="f-dob">Date of birth (as in Class 10 certificate)</label>
+          <input type="date" id="f-dob" required min="1960-01-01" max="2015-12-31"></div>
+        <div class="field"><label for="f-cat">Category</label>
+          <select id="f-cat">
+            <option value="UR">General (UR)</option><option value="EWS">EWS</option><option value="OBC">OBC (non-creamy layer)</option>
+            <option value="SC">SC</option><option value="ST">ST</option>
+          </select></div>
+        <div class="field"><label for="f-edu">Highest qualification</label>
+          <select id="f-edu">
+            <option value="10">Class 10</option><option value="12" selected>Class 12</option><option value="graduate">Bachelor's degree or higher</option>
+          </select></div>
+        <div class="field"><label for="f-gender">Gender (for the fee)</label>
+          <select id="f-gender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+        <div class="field">
+          <label class="check"><input type="checkbox" id="f-appearing"> Final exam of that level taken, result not out yet</label>
+          <label class="check"><input type="checkbox" id="f-pwbd"> Person with benchmark disability (PwBD)</label>
+          <label class="check"><input type="checkbox" id="f-other"> Ex-serviceman, Central Govt employee, or widow/divorced woman</label>
+        </div>
+      </div>
+      <button class="primary" type="submit">Check</button>
+      <p class="small">Your answers stay on this device. Nothing is sent anywhere.</p>
+    </form>
+    <div id="elig-result" aria-live="polite"></div>
+  </section>
+
+  <section id="calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+    <p class="small">The Commission's <strong>tentative</strong> calendar. Real dates are in each exam's Notice, which can differ.</p>
+    <div id="cal"></div>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

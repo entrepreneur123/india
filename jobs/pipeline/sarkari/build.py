@@ -1,0 +1,166 @@
+"""Fetch SSC notices and publish static JSON for the job-alert app and website.
+
+  python -m sarkari.build --out ../public [--window-days 120] [--max-pages 4] [--force]
+
+Output (static files, served from any CDN), schema 1:
+  jobs/v1/feed.json             notices/results/admit cards/answer keys, newest first
+  jobs/v1/calendar.json         SSC's tentative calendar (application windows, exam months)
+  jobs/v1/rules/index.json      exams with an eligibility checker
+  jobs/v1/rules/<id>.json       copied from rules/ after validation
+  jobs/v1/new.json              items that were not in the previous feed (for push alerts)
+  jobs/v1/status.json           when the source was last checked (changes every run)
+
+Publishing rules (a wrong date or a missing notice is worse than a late one):
+  * Every listing is fetched in full before anything is written. Any failure exits 1 and
+    the previous files stay as they are.
+  * A listing that had items before and is empty now, or whose records stop validating,
+    is treated as an API change, not as "SSC deleted everything".
+  * Unchanged content is not rewritten, so the data branch only gets a commit when
+    something real changed.
+  * If SSC's lastUpdates stamp is unchanged and the last full check is under
+    FULL_CHECK_HOURS old, the run stops after one small request.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import os
+import sys
+
+from . import eligibility, http, ssc
+
+SCHEMA = 1
+FEED_MAX_ITEMS = 400
+NEW_MAX_ITEMS = 20  # a first run or a long outage must not fire 400 push notifications
+# The API's page size changes without notice; a bigger page brings older records into the
+# window. Those are not news, so only recent items can be "new".
+NEW_MAX_AGE = dt.timedelta(days=3)
+# lastUpdates follows the notice board; results and answer keys may be posted without
+# touching it, so a full check still runs every few hours.
+FULL_CHECK_HOURS = 3
+
+
+def _v1(out: str, *parts: str) -> str:
+    return os.path.join(out, "jobs", "v1", *parts)
+
+
+def _read_json(path: str, default):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return default
+
+
+def _write_json(path: str, obj: dict, volatile: tuple[str, ...] = ("generatedAt",)) -> bool:
+    """Atomic write; skipped when nothing but `volatile` keys changed. True if written."""
+    old = _read_json(path, None)
+    if old is not None and {k: v for k, v in old.items() if k not in volatile} == \
+            {k: v for k, v in obj.items() if k not in volatile}:
+        return False
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
+    os.replace(tmp, path)
+    return True
+
+
+def collect(get: ssc.Getter, now: dt.datetime, window_days: int, max_pages: int,
+            previous_kinds: dict[str, int]) -> tuple[list[ssc.Item], list[dict], dict[str, int]]:
+    exams = ssc.exam_index(get(ssc.EXAMS))
+    cutoff = now - dt.timedelta(days=window_days)
+    streams = []
+    for content_type, language, kind in ssc.STREAMS:
+        items, returned = ssc.fetch_stream(get, content_type, language, kind, exams, now, cutoff, max_pages)
+        key = f"{content_type}/{language or 'all'}"
+        # A listing can lose all items to the time window (no answer key for 4 months); that is
+        # fine. The API returning nothing at all for a listing that had records is not.
+        if not returned and previous_kinds.get(key, 0) > 0:
+            raise ssc.FormatChanged(f"{key}: API returned no records, {previous_kinds[key]} before")
+        streams.append((key, items, returned))
+    calendar = ssc.parse_calendar(get(ssc.calendar_url()), exams)
+    merged = ssc.merge([s for _, s, _ in streams])[:FEED_MAX_ITEMS]
+    if not merged:
+        raise ssc.FormatChanged("no items at all")
+    return merged, calendar, {k: n for k, _, n in streams}
+
+
+def publish_rules(out: str, all_rules: list[dict], today: dt.date) -> list[dict]:
+    index = []
+    for rules in all_rules:
+        _write_json(_v1(out, "rules", f"{rules['id']}.json"), rules)
+        index.append({
+            "id": rules["id"], "exam": rules["exam"], "examYear": rules["examYear"], "title": rules["title"],
+            "applyFrom": rules["dates"]["applyFrom"], "applyTo": rules["dates"]["applyTo"],
+            "application": eligibility.application_status(rules, today),
+        })
+    _write_json(_v1(out, "rules", "index.json"), {"schema": SCHEMA, "exams": index})
+    return index
+
+
+def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[dict]:
+    """Items to announce: not in the previous feed (by id, or by title and day, since the
+    merged copy of a notice can switch between listings), and published recently.
+    A first run (no previous feed) announces nothing."""
+    if not old:
+        return []
+    seen_ids = {i["id"] for i in old}
+    seen_keys = {(i["title"].casefold(), i["publishedAt"][:10]) for i in old}
+    out = []
+    for item in items:
+        key = (item.title.casefold(), item.published.date().isoformat())
+        if item.id not in seen_ids and key not in seen_keys and now - item.published <= NEW_MAX_AGE:
+            out.append(item.to_json())
+    return out[:NEW_MAX_ITEMS]
+
+
+def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
+        force: bool = False) -> int:
+    status_path = _v1(out, "status.json")
+    status = _read_json(status_path, {})
+    stamp = ssc.last_update(get(ssc.LAST_UPDATES))
+    last_full = status.get("fullCheckAt")
+    if not force and stamp == status.get("sourceUpdatedAt") and last_full and \
+            now - dt.datetime.fromisoformat(last_full) < dt.timedelta(hours=FULL_CHECK_HOURS):
+        print(f"ssc: unchanged since {stamp}; last full check {last_full}")
+        _write_json(status_path, {**status, "checkedAt": now.isoformat(timespec="seconds")}, volatile=())
+        return 0
+
+    all_rules = eligibility.load_all()  # a broken rules file stops the run before anything is written
+    old_feed = _read_json(_v1(out, "feed.json"), {"items": []})
+    items, calendar, counts = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
+    feed = [i.to_json() for i in items]
+    new = new_items(old_feed["items"], items, now)
+
+    stamp_now = now.isoformat(timespec="seconds")
+    changed = _write_json(_v1(out, "feed.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
+                                                  "sourcePage": ssc.NOTICE_BOARD_PAGE, "items": feed})
+    _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
+                                            "entries": calendar})
+    _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})
+    publish_rules(out, all_rules, now.date())
+    _write_json(status_path, {"schema": SCHEMA, "checkedAt": stamp_now, "fullCheckAt": stamp_now,
+                              "sourceUpdatedAt": stamp, "streamCounts": counts}, volatile=())
+    print(f"ssc: {len(feed)} items ({len(new)} new), {len(calendar)} calendar entries"
+          f"{'' if changed else ', feed unchanged'}")
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--window-days", type=int, default=120)
+    ap.add_argument("--max-pages", type=int, default=4)
+    ap.add_argument("--force", action="store_true", help="full check even if lastUpdates is unchanged")
+    args = ap.parse_args(argv)
+    try:
+        return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force)
+    except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
+        print(f"::error::{e}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

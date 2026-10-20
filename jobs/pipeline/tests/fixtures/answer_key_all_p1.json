@@ -1,0 +1,2343 @@
+{
+"statusCode": "200",
+"statusMessage": "Document Found!",
+"isCache": true,
+"data": [
+{
+"id": "w0n99m3emwbq0vzh0lzlg",
+"headline": "Phase-XIV/2026/Selection Posts Examination - Uploading of Candidate’s Response Sheet(s) along with Tentative Answer Keys and inviting challenges thereon",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-09T10:33:50.202Z",
+"attachments": [
+{
+"id": "1y46orbdhe2pleiuiw17f",
+"attIdtyfrId": "w0n99m3emwbq0vzh0lzlg",
+"fileName": "writeup_rhq.pdf",
+"type": "application/pdf",
+"size": 403747,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_rhq.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "4a2z9dsugemhpfwnbik6n",
+"headline": "Stenographer Grade C and D Examination 2026 : Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) and inviting challenges thereon",
+"examId": "steno0svofmeb26",
+"examYear": "2026",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-23T17:00:17.512Z",
+"attachments": [
+{
+"id": "61gkyvfsxg0qkj8w51p39",
+"attIdtyfrId": "4a2z9dsugemhpfwnbik6n",
+"fileName": "Approved_WriteUp_23092026.pdf",
+"type": "application/pdf",
+"size": 27113,
+"path": "uploads\\masterData\\AnswerKeys\\Approved_WriteUp_23092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "t2jg9x1e27ree0wqkhrlp",
+"headline": "Combined Hindi Translators Examination, 2026: Uploading of Tentative Answer Key(s) along with Candidates’ Response Sheet(s)",
+"examId": "nri55c0igljht26",
+"examYear": "2026",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-21T17:23:04.983Z",
+"attachments": [
+{
+"id": "ahshiktaggpp7vvq7iyfu",
+"attIdtyfrId": "t2jg9x1e27ree0wqkhrlp",
+"fileName": "writeup_21092026.pdf",
+"type": "application/pdf",
+"size": 117542,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_21092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rqqmpp1zbamqpvhugec3o",
+"headline": "ग्रेड 'सी' आशुलिपिक सीमित विभागीय प्रतियोगी परीक्षा, 2025:अंतिम उत्तर कुंजी और अंतिम अंक अपलोड करना",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-09-17T12:42:59.113Z",
+"attachments": [
+{
+"id": "rwhlxelu5rzfgz342upcr",
+"attIdtyfrId": "rqqmpp1zbamqpvhugec3o",
+"fileName": "writeup_finalanswerkey_hindi_17092026.pdf",
+"type": "application/pdf",
+"size": 513443,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_finalanswerkey_hindi_17092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tuipj50fxdp14dyjbdwpt",
+"headline": "Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025 : Uploading of Final Answer Key and Final Marks",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-17T12:41:31.830Z",
+"attachments": [
+{
+"id": "x5r7js0zqso9gslcbxddh",
+"attIdtyfrId": "tuipj50fxdp14dyjbdwpt",
+"fileName": "writeup_finalanswerkey_17092026.pdf",
+"type": "application/pdf",
+"size": 276125,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_finalanswerkey_17092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "h8z4kgpfncgztazp004k2",
+"headline": "वरिष्ठ सचिवालय सहायक/ प्रवर श्रेणी लिपिक ग्रेड सीमित विभागीय प्रतियोगी परीक्षा, 2025 [कार्मिक एवं प्रशिक्षण विभाग (DoPT) के केंद्रीय सचिवालय लिपिकीय सेवा (CSCS) संवर्ग] : अभ्यर्थियों की रिस्पॉन्स शीट के साथ अस्थायी उत्तर कुंजियां अपलोड किए जाने के संबंध में।",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-09-10T13:28:25.932Z",
+"attachments": [
+{
+"id": "ie3fljakzpocl8rp6geus",
+"attIdtyfrId": "h8z4kgpfncgztazp004k2",
+"fileName": "write_up_10092026.pdf",
+"type": "application/pdf",
+"size": 286763,
+"path": "uploads\\masterData\\AnswerKeys\\write_up_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zlnnn1f9oq3ib16sptpv2",
+"headline": "वरिष्ठ सचिवालय सहायक/ प्रवर श्रेणी लिपिक ग्रेड सीमित विभागीय प्रतियोगी परीक्षा, 2025: अभ्यर्थियों की रिस्पॉन्स शीट के साथ अस्थायी उत्तर कुंजियां अपलोड किए जाने के संबंध में।",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-09-10T13:23:53.938Z",
+"attachments": [
+{
+"id": "fop0ew2dpswncsg20cmi0",
+"attIdtyfrId": "zlnnn1f9oq3ib16sptpv2",
+"fileName": "writeup_hin_10092026.pdf",
+"type": "application/pdf",
+"size": 647952,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_hin_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tjbghk7pmx3qystvfs6ob",
+"headline": "कनिष्ठ सचिवालय सहायक/ अवर श्रेणी लिपिक ग्रेड सीमित विभागीय प्रतियोगी परीक्षा, 2025: अभ्यर्थियों की रिस्पॉन्स शीट के साथ अस्थायी उत्तर कुंजियां अपलोड किए जाने के संबंध में।",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-09-10T13:20:11.384Z",
+"attachments": [
+{
+"id": "8n6d6my6pxtzf4yhlbq61",
+"attIdtyfrId": "tjbghk7pmx3qystvfs6ob",
+"fileName": "Writeup_Hindi_10092026.pdf",
+"type": "application/pdf",
+"size": 647952,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_Hindi_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rnsvy7bcc7yae79180iqi",
+"headline": "सहायक अनुभाग अधिकारी/ सहायक ग्रेड सीमित विभागीय प्रतियोगी परीक्षा, 2025: अस्थायी उत्तर कुंजियों के साथ अभ्यर्थियों की रिस्पॉन्स शीट अपलोड किए जाने के संबंध में।",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-09-10T13:17:49.134Z",
+"attachments": [
+{
+"id": "51jdwpdz5bjq9lrb3ynzl",
+"attIdtyfrId": "rnsvy7bcc7yae79180iqi",
+"fileName": "WriteUP_10092026.pdf",
+"type": "application/pdf",
+"size": 262804,
+"path": "uploads\\masterData\\AnswerKeys\\WriteUP_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "nk5qiwnxvyxhj04gw32ys",
+"headline": "Assistant Section Officer/ Assistant Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:47:10.072Z",
+"attachments": [
+{
+"id": "k3p9n9kgz7veq3rywhoyp",
+"attIdtyfrId": "nk5qiwnxvyxhj04gw32ys",
+"fileName": "Write_up_answerkey_09092026.pdf",
+"type": "application/pdf",
+"size": 388119,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_answerkey_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "fbpb3tgn1uhecitgo980e",
+"headline": "Senior Secretariat Assistant/ Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:32:59.380Z",
+"attachments": [
+{
+"id": "7lz6wc6uowv6dsgxfh28f",
+"attIdtyfrId": "fbpb3tgn1uhecitgo980e",
+"fileName": "Writeup_09092026.pdf",
+"type": "application/pdf",
+"size": 388320,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rio8kukx4zzknp8cxe98o",
+"headline": "Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:30:55.438Z",
+"attachments": [
+{
+"id": "r066wvyxaaseabu176wwx",
+"attIdtyfrId": "rio8kukx4zzknp8cxe98o",
+"fileName": "Write_up_09092026.pdf",
+"type": "application/pdf",
+"size": 388865,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "i78lwwlgiu3esk6li26ax",
+"headline": "Senior Secretariat Assistant / Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:28:39.337Z",
+"attachments": [
+{
+"id": "fp1gecynxdz9pmkjpuqcc",
+"attIdtyfrId": "i78lwwlgiu3esk6li26ax",
+"fileName": "writeup_tentative_answer_key_09092026.pdf",
+"type": "application/pdf",
+"size": 211630,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_tentative_answer_key_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "0z8yklk0mzikttrchwc80",
+"headline": "कनिष्ठ अभियंता (सिविल, यांत्रिकी और वैद्युत) परीक्षा, 2025: अंतिम उत्तर कुंजियों के साथ पेपर-II के प्रश्नपत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) सहित अंतिम अंक अपलोड करने के संबंध में।",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-08-24T11:19:09.381Z",
+"attachments": [
+{
+"id": "pje9nurp7egx8h7pp98wk",
+"attIdtyfrId": "0z8yklk0mzikttrchwc80",
+"fileName": "hindi_writeup_24082026.pdf",
+"type": "application/pdf",
+"size": 263029,
+"path": "uploads\\masterData\\AnswerKeys\\hindi_writeup_24082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "h4vz52vrmxradgqm7uujn",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025: Uploading of Final Answer Keys along with Question Paper(s) cum Response Sheet(s) and Marks of Paper-II.",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-21T12:49:09.393Z",
+"attachments": [
+{
+"id": "qv1q0nscztbwparpux219",
+"attIdtyfrId": "h4vz52vrmxradgqm7uujn",
+"fileName": "Final_Answer_Key_21082026.pdf",
+"type": "application/pdf",
+"size": 199946,
+"path": "uploads\\masterData\\AnswerKeys\\Final_Answer_Key_21082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "d8nro80p7bpv47inv0m7y",
+"headline": "ग्रेड 'सी' आशुलिपिक सीमित विभागीय प्रतियोगी परीक्षा, 2025 : अस्थायी उत्तर कुंजी एवं अभ्यर्थियों की रिस्पॉन्स शीट अपलोड किए जाने के संबंध में",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-07-16T12:33:06.951Z",
+"attachments": [
+{
+"id": "5hoo4d86s99mfe06eyxp8",
+"attIdtyfrId": "d8nro80p7bpv47inv0m7y",
+"fileName": "Writeup_hindi_16072026.pdf",
+"type": "application/pdf",
+"size": 607325,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_hindi_16072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "lxli5hs5m1lawgeeewa4v",
+"headline": "Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025 : Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s)",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-16T12:32:36.557Z",
+"attachments": [
+{
+"id": "w6puzrvalquo0w490s9o0",
+"attIdtyfrId": "lxli5hs5m1lawgeeewa4v",
+"fileName": "Writeup_english_16072026.pdf",
+"type": "application/pdf",
+"size": 206780,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_english_16072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "z5yide0o4mdwsqayjhi5t",
+"headline": "दिल्ली पुलिस में महिला और पुरुष सिपाही (कार्यकारी) परीक्षा, 2025: अंतिम उत्तर कुंजियों के साथ सीबीई के प्रश्न पत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) सहित अंक अपलोड करने के संबंध में।",
+"examId": "dpce00ab6eu9si1c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-07-09T06:28:03.377Z",
+"attachments": [
+{
+"id": "sc816v7g8fx2pd977qxwl",
+"attIdtyfrId": "z5yide0o4mdwsqayjhi5t",
+"fileName": "writeup_hindi_09072026.pdf",
+"type": "application/pdf",
+"size": 133675,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_hindi_09072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "maq45artge5eozefn9f9h",
+"headline": "Constable (Executive) Male and Female in Delhi Police Examination, 2025: Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE along with the Marks.",
+"examId": "ooqnwrr4dyev3hw",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-07T12:45:19.641Z",
+"attachments": [
+{
+"id": "h8jgoov1txw4uo25wa8t5",
+"attIdtyfrId": "maq45artge5eozefn9f9h",
+"fileName": "Write_up_Final_Answer_Keys_CBE_Executive_2025..pdf",
+"type": "application/pdf",
+"size": 197814,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Final_Answer_Keys_CBE_Executive_2025..pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "irm4z0f0djw3kep3c4968",
+"headline": "दिल्ली पुलिस में प्रधान सिपाही (लिपिकीय) परीक्षा, 2025: कम्प्यूटर आधारित परीक्षा (सीबीई) की अंतिम उत्तर कुंजियों के साथ प्रश्नपत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) अंक सहित अपलोड करने के संबंध में ।",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-06-23T13:11:54.918Z",
+"attachments": [
+{
+"id": "t8ysn8d1pbaktuhmtm3h5",
+"attIdtyfrId": "irm4z0f0djw3kep3c4968",
+"fileName": "DPHCM_Answer_Key_23062026.pdf",
+"type": "application/pdf",
+"size": 314875,
+"path": "uploads\\masterData\\AnswerKeys\\DPHCM_Answer_Key_23062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "60mls48cv597g9c4d0cmq",
+"headline": "Head Constable (Ministerial) in Delhi Police Examination, 2025: Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE along with the Marks",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-22T12:40:02.859Z",
+"attachments": [
+{
+"id": "k2svnzgg3i9i0jlpl3f3e",
+"attIdtyfrId": "60mls48cv597g9c4d0cmq",
+"fileName": "Write_up_Final_Answer_Keys_CBE_min_2025..pdf",
+"type": "application/pdf",
+"size": 195922,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Final_Answer_Keys_CBE_min_2025..pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "2ixbnttrj423jafqdp82g",
+"headline": "Uploading of Final Answer Key(s) along with Candidates’ Response Sheet(s) and Marks of candidates of Combined Graduate Level Examination, 2025 (Tier-II) -reg",
+"examId": "twoxxhjkshdcgl25",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-17T16:05:54.172Z",
+"attachments": [
+{
+"id": "n71egbc2l6coxdbo6bjr6",
+"attIdtyfrId": "2ixbnttrj423jafqdp82g",
+"fileName": "Final_writeup_17062026.pdf",
+"type": "application/pdf",
+"size": 104258,
+"path": "uploads\\masterData\\AnswerKeys\\Final_writeup_17062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "bpahq16ioz3useibyug38",
+"headline": "Head Constable (AWO/TPO) in Delhi Police Examination, 2025: Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE along with the Marks",
+"examId": "dphct0ab6eutvfq0",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-16T12:51:16.612Z",
+"attachments": [
+{
+"id": "qyoe0g27clrc1eo7ayrz8",
+"attIdtyfrId": "bpahq16ioz3useibyug38",
+"fileName": "writeup_16062026.pdf",
+"type": "application/pdf",
+"size": 257323,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_16062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "1lw4j7ntoj0f04ixdfgiq",
+"headline": "केंद्रीय सशस्‍त्र पुलिस बल (के.स.पु.ब.) और सचिवालय सुरक्षा बल (एस.एस.एफ.) में कांस्‍टेबल (जीडी) तथा असम राइफल्‍स में राइफलमैन (जीडी) परीक्षा, 2026 - अनंतिम उत्तर कुंजियों के साथ प्रश्न पत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) अपलोड करने के संबंध में ।",
+"examId": "ctgd1yln49o2026",
+"examYear": "2026",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-06-15T13:05:10.101Z",
+"attachments": [
+{
+"id": "k9ffj3jl3hmbtqy5wovr8",
+"attIdtyfrId": "1lw4j7ntoj0f04ixdfgiq",
+"fileName": "tentative_answerkeyCAPF_hindi_15062026.pdf",
+"type": "application/pdf",
+"size": 353320,
+"path": "uploads\\masterData\\AnswerKeys\\tentative_answerkeyCAPF_hindi_15062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "sfmwogzlpy79893ikq8za",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026: Uploading of Tentative Answer Keys along with Question Paper(s) cum Response Sheet(s).",
+"examId": "ctgd1yln49o2026",
+"examYear": "2026",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-15T12:36:16.927Z",
+"attachments": [
+{
+"id": "xw0ux9krhto7zpqm4gapt",
+"attIdtyfrId": "sfmwogzlpy79893ikq8za",
+"fileName": "tentative_answerkey_15062026.pdf",
+"type": "application/pdf",
+"size": 625359,
+"path": "uploads\\masterData\\AnswerKeys\\tentative_answerkey_15062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "sjy872ztpiyxepapfgx8q",
+"headline": "Constable (Driver) Male in Delhi Police Examination, 2025 – Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE, along with the Marks",
+"examId": "dpcdsgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-05-26T13:01:44.992Z",
+"attachments": [
+{
+"id": "dlivygifq4s48p4sx7ush",
+"attIdtyfrId": "sjy872ztpiyxepapfgx8q",
+"fileName": "writeup_26052026.pdf",
+"type": "application/pdf",
+"size": 164520,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_26052026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "e029lf7eenjwo8rlkggfo",
+"headline": "Sub Inspector in Delhi Police and Central Armed Police Forces Examination, 2025 (Paper-I): Uploading of Final Answer Keys along with Question Paper(s) cum Response Sheet(s), and Marks",
+"examId": "j2k7sgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-04-21T12:59:04.521Z",
+"attachments": [
+{
+"id": "hb169a8frd330duegzt1z",
+"attIdtyfrId": "e029lf7eenjwo8rlkggfo",
+"fileName": "writeup_21042026.pdf",
+"type": "application/pdf",
+"size": 265927,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_21042026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "p7n9xi6pufdou0d4mgazp",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025 (Paper-II): Uploading of Tentative Answer Keys along with Question Paper(s) cum Response Sheet(s)",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-04-16T12:39:50.850Z",
+"attachments": [
+{
+"id": "lpvuxw9i3yqkps7ywsvyd",
+"attIdtyfrId": "p7n9xi6pufdou0d4mgazp",
+"fileName": "tentative_answer_key_16042026.pdf",
+"type": "application/pdf",
+"size": 257631,
+"path": "uploads\\masterData\\AnswerKeys\\tentative_answer_key_16042026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ic5zz3xzz8x4dhhaj1kmf",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025 \r\n(Paper-I): Uploading of Final Answer Keys along with Question Paper(s) cum \r\nResponse Sheet(s), and Marks – regarding",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-03-23T12:39:28.766Z",
+"attachments": [
+{
+"id": "ny2f8z2b8b9l6lc2ys3rg",
+"attIdtyfrId": "ic5zz3xzz8x4dhhaj1kmf",
+"fileName": "writeup_23032026.pdf",
+"type": "application/pdf",
+"size": 101463,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_23032026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "sfri2pe5c212vey31a15r",
+"headline": "Phase-XIII/2025/Selection Posts Examination - Uploading of Final \r\nAnswer Keys along with Question Paper cum Response Sheets",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-03-20T13:12:48.454Z",
+"attachments": [
+{
+"id": "71g1e2y27k2jdxt9l2ks6",
+"attIdtyfrId": "sfri2pe5c212vey31a15r",
+"fileName": "writeup_20032026.pdf",
+"type": "application/pdf",
+"size": 142501,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_20032026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ej86ikj5p5w3b64c9iqmu",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025 (Tier-I): Uploading \r\nof Final Answer Key(s) along-with Candidates’ Response Sheet(s) and Marks/Scorecard – \r\nreg",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-03-19T13:03:18.570Z",
+"attachments": [
+{
+"id": "59p49qti77v1k490olnul",
+"attIdtyfrId": "ej86ikj5p5w3b64c9iqmu",
+"fileName": "Answer_key_19032026.pdf",
+"type": "application/pdf",
+"size": 243881,
+"path": "uploads\\masterData\\AnswerKeys\\Answer_key_19032026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zk93n0y9d1sm4ru44nzzu",
+"headline": "ASO Grade LDCE, 2022-2024, SSA Grade LDCE, 2024 (DoPT) and JSA Grade LDCE, 2024 (DoPT) : Uploading of Final Answer Key and Final Marks",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-03-12T13:09:24.259Z",
+"attachments": [
+{
+"id": "7zv3827uetpnze8ogid5y",
+"attIdtyfrId": "zk93n0y9d1sm4ru44nzzu",
+"fileName": "writeup_12032026.pdf",
+"type": "application/pdf",
+"size": 21880,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_12032026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "a74w8b6xwi117d3keeyv3",
+"headline": "MTS(NT) and Havaldar (CBIC and CBN) Examination 2025 : Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) and inviting challenges thereon.",
+"examId": "gh67ytxj8tmts26",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-03-03T12:35:58.095Z",
+"attachments": [
+{
+"id": "s9nk6t6fs20g8btm0e8gk",
+"attIdtyfrId": "a74w8b6xwi117d3keeyv3",
+"fileName": "writeupMTS2025_03032026.pdf",
+"type": "application/pdf",
+"size": 471670,
+"path": "uploads\\masterData\\AnswerKeys\\writeupMTS2025_03032026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "d18yw3fvgtvh9y85lyc4c",
+"headline": "Head Constable {Assistant Wireless Operator (AWO)/Tele-Printer \r\nOperator (TPO)} in Delhi Police Examination, 2025: Uploading of Tentative Answer \r\nKeys along with Question Paper(s) cum Response Sheet(s) – regarding",
+"examId": "dphct0ab6eutvfq0",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-02-05T12:29:55.349Z",
+"attachments": [
+{
+"id": "ugrdmahu2f7fk74qfaadk",
+"attIdtyfrId": "d18yw3fvgtvh9y85lyc4c",
+"fileName": "Writeup_AWO_TPO_05022026.pdf",
+"type": "application/pdf",
+"size": 99580,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_AWO_TPO_05022026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "77tpeq1b03ge4msw35bpr",
+"headline": "Head Constable (Ministerial) in Delhi Police Examination, 2025: Uploading \r\nof Tentative Answer Keys along with Question Paper(s) cum Response Sheet(s) – \r\nregarding",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-02-05T12:29:06.442Z",
+"attachments": [
+{
+"id": "onqrua87kl7wm222qbz1c",
+"attIdtyfrId": "77tpeq1b03ge4msw35bpr",
+"fileName": "Writeup_Ministerial_05022026.pdf",
+"type": "application/pdf",
+"size": 97045,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_Ministerial_05022026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ahh44n9x230zk07r9wwte",
+"headline": "Combined Graduate Level Examination, 2025 (Tier-II): Uploading of Tentative Answer Key(s) along with Candidates’ Response Sheet(s) and inviting challenges thereon",
+"examId": "xsd91hjkshdk92xk",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-01-30T14:14:25.950Z",
+"attachments": [
+{
+"id": "y4km5ccweym2su3rvqq4p",
+"attIdtyfrId": "ahh44n9x230zk07r9wwte",
+"fileName": "Tentative_answer_key_30012026.pdf",
+"type": "application/pdf",
+"size": 380668,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative_answer_key_30012026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6u5q1kbxhvv941w9kpllt",
+"headline": "Constable (Executive) Male and Female in Delhi Police Examination-2025: Uploading of Tentative Answer Keys along with Question Paper(s) cum Response Sheet(s). ",
+"examId": "ooqnwrr4dyev3hw",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-01-13T12:51:46.902Z",
+"attachments": [
+{
+"id": "yctjxs29a9wohzd6n1ts0",
+"attIdtyfrId": "6u5q1kbxhvv941w9kpllt",
+"fileName": "Write_up_Tentative_Answer_Keys_DP_Executive_2025.pdf",
+"type": "application/pdf",
+"size": 97868,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Tentative_Answer_Keys_DP_Executive_2025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6xymixmxfpr4urcdcyn9x",
+"headline": "Combined Graduate Level Examination, 2025 (Tier-I): Uploading of Marks and Final Answer Key(s) along with Candidates’ Response Sheet(s)",
+"examId": "xsd91hjkshdk92xk",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-01-09T12:43:51.736Z",
+"attachments": [
+{
+"id": "3gpg618p1dx4wbi9wawmm",
+"attIdtyfrId": "6xymixmxfpr4urcdcyn9x",
+"fileName": "Answer_key_09012025.pdf",
+"type": "application/pdf",
+"size": 277268,
+"path": "uploads\\masterData\\AnswerKeys\\Answer_key_09012025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tc3cel7321mxlilcah78l",
+"headline": "Stenographer Grade 'C' &amp; 'D' Examination, 2025 : Uploading of Final Answer Key(s) along with Candidates’ Response Sheet(s) and Marks in Computer Based Examination",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-01-02T13:32:48.289Z",
+"attachments": [
+{
+"id": "c7mfrjv894sxsan5nfx6v",
+"attIdtyfrId": "tc3cel7321mxlilcah78l",
+"fileName": "writeup_02012026.pdf",
+"type": "application/pdf",
+"size": 24876,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_02012026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6jvbb07zo8ov239q0c4v9",
+"headline": "दिल्ली पुलिस में कांस्टेबल (ड्राइवर)- पुरुष परीक्षा, 2025: प्रश्नपत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) के साथ अनंतिम उत्तर कुंजियां अपलोड करने के संबंध में ",
+"examId": "dpcdsgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2026-01-01T12:15:34.702Z",
+"attachments": [
+{
+"id": "nazv0l6d1waa36y1ua5dd",
+"attIdtyfrId": "6jvbb07zo8ov239q0c4v9",
+"fileName": "Tentative_answerkey_01012026.pdf",
+"type": "application/pdf",
+"size": 807862,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative_answerkey_01012026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "h7hizq6uwdwoj7a3ch3jw",
+"headline": "Constable (Driver)-Male in the Delhi Police Examination, 2025: Uploading of Tentative Answer Keys along with Question Paper(s) cum Response Sheet(s)",
+"examId": "dpcdsgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-12-31T12:49:50.228Z",
+"attachments": [
+{
+"id": "cillb13bdzkogg1y11cys",
+"attIdtyfrId": "h7hizq6uwdwoj7a3ch3jw",
+"fileName": "writeup_31122025.pdf",
+"type": "application/pdf",
+"size": 646010,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_31122025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rlntul28j5ngm3klnp2cy",
+"headline": "Combined Hindi Translators Examination, 2025 (Paper-I): Uploading of Marks and Final Answer Key(s) along with Candidates’ Response Sheet(s)",
+"examId": "nri55c0igljht25",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-12-30T13:40:00.045Z",
+"attachments": [
+{
+"id": "ipj2l6d50lnb865066ltj",
+"attIdtyfrId": "rlntul28j5ngm3klnp2cy",
+"fileName": "writeup_301225.pdf",
+"type": "application/pdf",
+"size": 40704,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_301225.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "mcvox1vhfb5hdwdl827j6",
+"headline": "Sub Inspector in Delhi Police and Central Armed Police Forces Examination, \r\n2025 (Paper-I): Uploading of Tentative Answer Keys along with Question Paper(s) \r\ncum Response Sheet(s) – regarding",
+"examId": "j2k7sgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-12-24T13:45:59.975Z",
+"attachments": [
+{
+"id": "1zgkn286ik2j6a3zn66cs",
+"attIdtyfrId": "mcvox1vhfb5hdwdl827j6",
+"fileName": "writeup_24122025.pdf",
+"type": "application/pdf",
+"size": 1122563,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_24122025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tn336xgk7zd0fw3lrtkbs",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) \r\nof Combined Higher Secondary (10+2) Level Examination (Tier-I), 2025 - regarding",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-12-08T12:45:21.106Z",
+"attachments": [
+{
+"id": "y232lcoex3i4x3v5pfgd5",
+"attIdtyfrId": "tn336xgk7zd0fw3lrtkbs",
+"fileName": "writeup_08122025.pdf",
+"type": "application/pdf",
+"size": 1039361,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_08122025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "mcz05domv01vygirlievw",
+"headline": "Phase-XIII/2025/Selection Posts Examination - Uploading of Candidates’ Response Sheets along with Tentative Answer Keys and inviting challenges thereon.",
+"examId": "rhq74fte5xsjy25",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-09-26T17:59:53.305Z",
+"attachments": [
+{
+"id": "l7cqvovfocxlyfcovma38",
+"attIdtyfrId": "mcz05domv01vygirlievw",
+"fileName": "Write_up_Tentative_Answer_Key_Phase-XIII_2025_Selection_Posts_26092025.pdf",
+"type": "application/pdf",
+"size": 1358024,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Tentative_Answer_Key_Phase-XIII_2025_Selection_Posts_26092025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "auzs5s7a0ics6fzcrh9tt",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Combined Hindi Translators Examination, 2025 (Paper-I)",
+"examId": "nri55c0igljht25",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-09-04T12:34:26.935Z",
+"attachments": [
+{
+"id": "d7t50opusggc15007z0tl",
+"attIdtyfrId": "auzs5s7a0ics6fzcrh9tt",
+"fileName": "Writeup_04092025.pdf",
+"type": "application/pdf",
+"size": 1391679,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_04092025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "2wu7mkxk9zs0919kzv1jo",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Stenographer Grade 'C' and 'D' Examination, 2025",
+"examId": "59g9y0svo3zgwiu",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-08-22T12:21:42.350Z",
+"attachments": [
+{
+"id": "ycivqiwbiwjyumisfc5ac",
+"attIdtyfrId": "2wu7mkxk9zs0919kzv1jo",
+"fileName": "Answer_Key_22082025.pdf",
+"type": "application/pdf",
+"size": 1532957,
+"path": "uploads\\masterData\\AnswerKeys\\Answer_Key_22082025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "dpe44ce6dxpvfinarr86r",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of  Assistant Section Officer/ Assistant Grade Limited Departmental Competitive Examination, 2022, 2023 and 2024 held on 15.06.2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-07-03T12:56:26.432Z",
+"attachments": [
+{
+"id": "w2ktq9cj4qk8dj1wte2n9",
+"attIdtyfrId": "dpe44ce6dxpvfinarr86r",
+"fileName": "ASO_03072025.pdf",
+"type": "application/pdf",
+"size": 1445202,
+"path": "uploads\\masterData\\AnswerKeys\\ASO_03072025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "agx9oby7da3usilyvwlwe",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Senior Secretariat Assistant/ Upper Division Clerk Limited Departmental Competitive Examination, 2024 [Central Secretariat Clerical Service (CSCS) of Department of Personnel and Training (DoPT)] held on 15.06.2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-07-03T12:55:07.791Z",
+"attachments": [
+{
+"id": "rs4i45pldo95b624uoltv",
+"attIdtyfrId": "agx9oby7da3usilyvwlwe",
+"fileName": "SSA_2024_DoPT_03072025.pdf",
+"type": "application/pdf",
+"size": 1446098,
+"path": "uploads\\masterData\\AnswerKeys\\SSA_2024_DoPT_03072025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "lud9xy18tfdmtwkiwg1ne",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Junior Secretariat Assistant/ Lower Division Clerk Limited Departmental Competitive Examination, 2024 [Central Secretariat Clerical Service (CSCS) of Department of Personnel and Training (DoPT)] held on 15.06.2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-07-03T12:54:06.716Z",
+"attachments": [
+{
+"id": "sphjfx2lohq4wqwro6k11",
+"attIdtyfrId": "lud9xy18tfdmtwkiwg1ne",
+"fileName": "JSA_2024_DoPT_03072025.pdf",
+"type": "application/pdf",
+"size": 1447212,
+"path": "uploads\\masterData\\AnswerKeys\\JSA_2024_DoPT_03072025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rj971wl8k848ffpi6dsi8",
+"headline": "केंद्रीय सशस्त्र पुलिस बलों(CAPFs) और सचिवालय सुरक्षा बल (SSF) में कांस्टेबल (सामान्य ड्यूटी), असम राइफल्स में राइफलमैन (सामान्य ड्यूटी) और नारकोटिक्स कंट्रोल ब्यूरो में सिपाही परीक्षा, 2025- अंतिम उत्तर कुंजियों के साथ प्रश्नपत्र-सह-उत्तर पत्रक (रिस्पॉन्स शीट) और कंप्यूटर आधारित परीक्षा के अंक अपलोड करने के संबंध में ।",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2025-06-26T11:50:24.433Z",
+"attachments": [
+{
+"id": "6zp2i523jvsiobs1gvaeb",
+"attIdtyfrId": "rj971wl8k848ffpi6dsi8",
+"fileName": "Write_Up_Hindi_26062025.pdf",
+"type": "application/pdf",
+"size": 194100,
+"path": "uploads\\masterData\\AnswerKeys\\Write_Up_Hindi_26062025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "yoqhs2w5azp0kwv0blb9b",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, Rifleman (GD) in Assam Rifles, and Sepoy in Narcotics Control Bureau Examination, 2025: Uploading of Final Answer Keys along with Question Paper(s) cum Response Sheet(s) and Marks of Computer Based Examination – regarding",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-06-26T11:49:47.493Z",
+"attachments": [
+{
+"id": "9vzzloo77qxq0rml2t9cq",
+"attIdtyfrId": "yoqhs2w5azp0kwv0blb9b",
+"fileName": "Write_Up_English_26062025.pdf",
+"type": "application/pdf",
+"size": 127759,
+"path": "uploads\\masterData\\AnswerKeys\\Write_Up_English_26062025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "cw2o78eqw8o9eegj37fnb",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of SI in Delhi Police and CAPF Examination (Paper-II) - 2024 held on 30.04.2025",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-05-05T12:41:21.103Z",
+"attachments": [
+{
+"id": "asn4srizg3vml4ry6h667",
+"attIdtyfrId": "cw2o78eqw8o9eegj37fnb",
+"fileName": "CPO 2024 Paper-II 30.04.2025 answer key write up.pdf",
+"type": "application/pdf",
+"size": 750894,
+"path": "uploads\\masterData\\AnswerKeys\\CPO 2024 Paper-II 30.04.2025 answer key write up.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6vko0zwttvbvk4zmwkoi9",
+"headline": "Uploading of Final Answer Key(s) along with Candidates' Response Sheet(s) of Grade 'C' Stenographers Limited Departmental Competitive Examination, 2023-2024",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2023",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-04-04T12:50:44.040Z",
+"attachments": [
+{
+"id": "sc8s8bjxkgjhqz7oys7ze",
+"attIdtyfrId": "6vko0zwttvbvk4zmwkoi9",
+"fileName": "writeup_04042025.pdf",
+"type": "application/pdf",
+"size": 319159,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_04042025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "mwipcvhcn616iwaqkdizq",
+"headline": "Multi-Tasking (Non-Techinal) Staff and Havaldar (CBIC & CBN) Examination, 2024 : Uploading of Final Answer Key(s) along with Candidates' response Sheet(s) ",
+"examId": "wzeujzxj8ts5z9n",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-26T12:33:04.267Z",
+"attachments": [
+{
+"id": "ra6vmyvehwsgcbt5fotr8",
+"attIdtyfrId": "mwipcvhcn616iwaqkdizq",
+"fileName": "approved_writeup_26425.pdf",
+"type": "application/pdf",
+"size": 450830,
+"path": "uploads\\masterData\\AnswerKeys\\approved_writeup_26425.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "588fax0rjvoosvku6nnk9",
+"headline": "Stenographer Grade 'C' & 'D' Examination, 2024 : Uploading of Final Answer Key(s) along with Candidates’ Response Sheet(s) and Marks in Computer Based Examination.",
+"examId": "59g9y0svo3zgwiu",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-20T13:06:52.660Z",
+"attachments": [
+{
+"id": "5gc3v5l6x22cwv2uxh0ew",
+"attIdtyfrId": "588fax0rjvoosvku6nnk9",
+"fileName": "Write-up,_Final_Answer_Key_marks,StenoCD2024_20325.pdf",
+"type": "application/pdf",
+"size": 166650,
+"path": "uploads\\masterData\\AnswerKeys\\Write-up,_Final_Answer_Key_marks,StenoCD2024_20325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "8ph35ckmyljn1i2a8x022",
+"headline": "Combined Graduate Level Examination, 2024 (Tier-II): Uploading of Final Answer Key(s) along with Candidates’ Response Sheet(s) and Marks.",
+"examId": "xsd91hjkshdk92xk",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-18T12:35:48.969Z",
+"attachments": [
+{
+"id": "xsxhpfxe4t035zglcxzt0",
+"attIdtyfrId": "8ph35ckmyljn1i2a8x022",
+"fileName": "Writeup_Final_Answer_Keyand_marks_CGLE_2024_Tier-II_18325.pdf",
+"type": "application/pdf",
+"size": 278059,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_Final_Answer_Keyand_marks_CGLE_2024_Tier-II_18325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "1ih1fwvvxxbag6nr9zg2o",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of SI in Delhi Police and CAPF Examination (Paper-II) - 2024.",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-12T12:33:58.448Z",
+"attachments": [
+{
+"id": "yc4f6qgcdebas0ckhugjm",
+"attIdtyfrId": "1ih1fwvvxxbag6nr9zg2o",
+"fileName": "Write-up, Tentative Answer Key , CPO-2024 (Paper-II)_12325.pdf",
+"type": "application/pdf",
+"size": 940714,
+"path": "uploads\\masterData\\AnswerKeys\\Write-up, Tentative Answer Key , CPO-2024 (Paper-II)_12325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "u4vpj6ql8djysm53264o3",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2024: Uploading of Final Answer Keys along with Question Paper(s) of Tier-II and Marks.",
+"examId": "s40d16nackd16h0",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-06T12:54:31.128Z",
+"attachments": [
+{
+"id": "i2c5x59ohmbgis6manm2t",
+"attIdtyfrId": "u4vpj6ql8djysm53264o3",
+"fileName": "Writeup for Marks_Final Answer_key_CHSLE_2024_6325.pdf",
+"type": "application/pdf",
+"size": 316317,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup for Marks_Final Answer_key_CHSLE_2024_6325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6ffn6pur3t3jgd5e8jyp8",
+"headline": "केंद्रीय सशस्त्र पुलिस बलों (सीएपीएफ), सचिवालय सुरक्षा बल में कांस्टेबल (सामान्य ड्यूटी), और असम राइफल्स में राइफलमैन (सामान्य ड्यूटी), परीक्षा, 2024 : - अंतिम अंक अपलोड करने के संबंध में ।",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2025-03-05T07:25:59.738Z",
+"attachments": [
+{
+"id": "bjnl5azaqxwv1el7ywor0",
+"attIdtyfrId": "6ffn6pur3t3jgd5e8jyp8",
+"fileName": "Write Up Final Marks CTGD 2024 HINDI_5325.pdf",
+"type": "application/pdf",
+"size": 184390,
+"path": "uploads\\masterData\\AnswerKeys\\Write Up Final Marks CTGD 2024 HINDI_5325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ys1npwkdg9h1hj54yce4h",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, Rifleman (GD) in Assam Rifles and Sepoy in Narcotics Control Bureau Examination - 2025:  Uploading of Candidates’ Response Sheet(s) along with Tentative Answer Keys. ",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2025",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-04T12:45:12.852Z",
+"attachments": [
+{
+"id": "0mvst8797bfgkj9n8eydc",
+"attIdtyfrId": "ys1npwkdg9h1hj54yce4h",
+"fileName": "Write UP CTGD_2025 Tentative Anser Keys_4325.pdf",
+"type": "application/pdf",
+"size": 317526,
+"path": "uploads\\masterData\\AnswerKeys\\Write UP CTGD_2025 Tentative Anser Keys_4325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "v2evrh7pl2y25b19nmk21",
+"headline": "Combined Hindi Translators Examination, 2024 (Paper-I): Uploading of Marks and Final Answer Key(s) along with Candidates’ Response Sheet(s)",
+"examId": "nri55c0igl5cs45",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-03-03T12:41:44.932Z",
+"attachments": [
+{
+"id": "ocr7h21j026kurhcfw3kv",
+"attIdtyfrId": "v2evrh7pl2y25b19nmk21",
+"fileName": "Write-up_CHTE_2024_Paper-I_3325.pdf",
+"type": "application/pdf",
+"size": 206832,
+"path": "uploads\\masterData\\AnswerKeys\\Write-up_CHTE_2024_Paper-I_3325.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "hsaz5lkif78r5pt43437e",
+"headline": "कनिष्ठ अभियंता (सिविल, यांत्रिकी और वैद्युत) परीक्षा, 2024: अभ्यर्थियों के अंतिम उत्तर कुंजियों  के साथ उत्तर पत्रक (रिस्पॉन्स शीट) और अंक अपलोड करने के संबंध में । ",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2025-02-19T12:49:39.870Z",
+"attachments": [
+{
+"id": "b0ie9gg15letsd9pomv2s",
+"attIdtyfrId": "hsaz5lkif78r5pt43437e",
+"fileName": "Write_up_Final_Answer_Keys_JE_2024_hindi_19022025.pdf",
+"type": "application/pdf",
+"size": 70586,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Final_Answer_Keys_JE_2024_hindi_19022025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "1d6u1vp0sy4n5tsug3o9a",
+"headline": "Junior Engineer (Civil, Mechanical & Electrical) Examination, 2024– Uploading of Final Answer Keys along with Question Paper(s) cum Response Sheet(s) and Marks. ",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-02-19T12:46:55.979Z",
+"attachments": [
+{
+"id": "x7z0mouudi0i6emovsie2",
+"attIdtyfrId": "1d6u1vp0sy4n5tsug3o9a",
+"fileName": "Write_up_Final_Answer_Keys_JE_2024_19022025.pdf",
+"type": "application/pdf",
+"size": 208119,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Final_Answer_Keys_JE_2024_19022025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zs4awvfkuiprxlabi38c0",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Combined Graduate Level Examination (Paper-II) - 2024.",
+"examId": "xsd91hjkshdk92xk",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2025-01-21T12:32:04.500Z",
+"attachments": [
+{
+"id": "hwre0r9p8o6nqpj6fvwse",
+"attIdtyfrId": "zs4awvfkuiprxlabi38c0",
+"fileName": "Write_up_tentative_answer_key_21012025.pdf",
+"type": "application/pdf",
+"size": 384700,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_tentative_answer_key_21012025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "omgk9wtyl8fj4aiacrmh8",
+"headline": "Uploading of Final Answer Key(s) along with Response Sheet(s) of Combined Graduate Level Examination, 2024 (Tier-I)",
+"examId": "nri55c0igl5cs45",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-12-19T12:42:45.253Z",
+"attachments": [
+{
+"id": "u1fee5ph7k9y96v2mjqiz",
+"attIdtyfrId": "omgk9wtyl8fj4aiacrmh8",
+"fileName": "Writeup_Final_Anwerkey_CGLE_2024_T1_191224.pdf",
+"type": "application/pdf",
+"size": 522521,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_Final_Anwerkey_CGLE_2024_T1_191224.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "t8zemev5q5oii980ieqep",
+"headline": "Stenographer Grade 'C' & 'D' Examination, 2024: Uploading of Tentative Answer Key(s) along with Candidates' Response Sheet(s).",
+"examId": "59g9y0svo3zgwiu",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-12-16T12:34:29.030Z",
+"attachments": [
+{
+"id": "sug7pjy4my1jvn765jh5a",
+"attIdtyfrId": "t8zemev5q5oii980ieqep",
+"fileName": "Write_Up_tentative_answer_key_Stenographer_GradeCandD_2024_161224.pdf",
+"type": "application/pdf",
+"size": 632341,
+"path": "uploads\\masterData\\AnswerKeys\\Write_Up_tentative_answer_key_Stenographer_GradeCandD_2024_161224.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zghxsf4fkph8ptnfvx8z3",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response  Sheet(s) of Combined Hindi Translators Examination (Paper-I) - 2024.",
+"examId": "nri55c0igl5cs45",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-12-12T12:25:29.644Z",
+"attachments": [
+{
+"id": "t2s7vloeedawvof3x3qex",
+"attIdtyfrId": "zghxsf4fkph8ptnfvx8z3",
+"fileName": "CHT 24 CM Live_121224.pdf",
+"type": "application/pdf",
+"size": 560652,
+"path": "uploads\\masterData\\AnswerKeys\\CHT 24 CM Live_121224.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "2nksbe8zeqbpwiqo16lqp",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Multi-Tasking (Non-Technical) Staff and Havaldar (CBIC & CBN) Examination, 2024",
+"examId": "wzeujzxj8ts5z9n",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-11-29T11:32:10.721Z",
+"attachments": [
+{
+"id": "3zd2erbux22nzt83vupuu",
+"attIdtyfrId": "2nksbe8zeqbpwiqo16lqp",
+"fileName": "tentative answer key mts 2024_291124.pdf",
+"type": "application/pdf",
+"size": 529386,
+"path": "uploads\\masterData\\AnswerKeys\\tentative answer key mts 2024_291124.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tcyk7vft8uj9fdafynt90",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Combined Higher Secondary (10+2) Level Examination (Tier-II), 2024",
+"examId": "s40d16nackd16h0",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-11-26T10:33:26.242Z",
+"attachments": [
+{
+"id": "gfrijouuhtmpvm520v0ve",
+"attIdtyfrId": "tcyk7vft8uj9fdafynt90",
+"fileName": "Tentative_Answer_Key_for_CHSLE Tier-II_Write-Up_261124.pdf",
+"type": "application/pdf",
+"size": 369025,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative_Answer_Key_for_CHSLE Tier-II_Write-Up_261124.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zg6dtr3jhj00h027n6ai1",
+"headline": "कनिष्ठ अभियंता (सिविल, यांत्रिकी एवं वैद्युत) परीक्षा, 2024 (पेपर-II) : अनंतिम उत्तर कुंजियों के साथ अभ्यर्थियों के उत्तर-पत्रक (पत्रकों) को अपलोड किए जाने के संबंध में। ",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-11-11",
+"endDate": "2024-12-11",
+"language": "hindi",
+"createdAt": "2024-11-11T15:27:01.812Z",
+"attachments": [
+{
+"id": "qsndrgua1ej4cn94egfbm",
+"attIdtyfrId": "zg6dtr3jhj00h027n6ai1",
+"fileName": "Tentative Answer Keys_JE PAPER-II_2024 (Hindi)_11112024.pdf",
+"type": "application/pdf",
+"size": 261567,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative Answer Keys_JE PAPER-II_2024 (Hindi)_11112024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rgem5ltcuezdpyz1kjl70",
+"headline": "Junior Engineer (Civil, Mechanical & Electrical) Examination, 2024 (Paper-II): Uploading of Candidates’ Response Sheet(s) along with Tentative Answer Keys",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-11-11",
+"endDate": "2024-12-11",
+"language": "english",
+"createdAt": "2024-11-11T14:55:42.851Z",
+"attachments": [
+{
+"id": "pg9mk65iqgjujscposawb",
+"attIdtyfrId": "rgem5ltcuezdpyz1kjl70",
+"fileName": "JE-2024 -Paper-II Tentative_Answer_Key11112024.pdf",
+"type": "application/pdf",
+"size": 123747,
+"path": "uploads\\masterData\\AnswerKeys\\JE-2024 -Paper-II Tentative_Answer_Key11112024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "vslzy2am63xss2gsc4rpo",
+"headline": "Phase-XII/2024/Selection Posts Examination -Uploading of Final Answer Key(s) along-with Question Paper cum Response Sheet(s).",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-10-25T09:15:00.921Z",
+"attachments": [
+{
+"id": "jh7jscs6z1bpp4eupo2u4",
+"attIdtyfrId": "vslzy2am63xss2gsc4rpo",
+"fileName": "RHQ_2024XII_Write-up_Final_Answer_Key_251024.pdf",
+"type": "application/pdf",
+"size": 122198,
+"path": "uploads\\masterData\\AnswerKeys\\RHQ_2024XII_Write-up_Final_Answer_Key_251024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "x6sgh4dfe1b9zxmhvcsx5",
+"headline": "Sub-Inspector in Delhi Police and Central Armed Police Forces Examination, 2024 (Paper-I): Uploading of Final Answer Keys along with Question Paper(s) and Marks.",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-10-23T12:31:44.378Z",
+"attachments": [
+{
+"id": "kpzscpil3l69erscrufd3",
+"attIdtyfrId": "x6sgh4dfe1b9zxmhvcsx5",
+"fileName": "write up final answer key si cpo 2024231024.pdf",
+"type": "application/pdf",
+"size": 90932,
+"path": "uploads\\masterData\\AnswerKeys\\write up final answer key si cpo 2024231024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tup0xgwk3521qu7rfbmpx",
+"headline": "Uploading of Final Answer Keys along with Question Paper(s) and Marks of Combined Higher Secondary (10+2) Level Examination, 2024 (Tier-I)",
+"examId": "s40d16nackd16h0",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-10-16T12:52:43.289Z",
+"attachments": [
+{
+"id": "wogvp8hwniumqmymjpsxa",
+"attIdtyfrId": "tup0xgwk3521qu7rfbmpx",
+"fileName": "Final Answer Key and marks CHSLE 2024 Tier-I161024.pdf",
+"type": "application/pdf",
+"size": 251534,
+"path": "uploads\\masterData\\AnswerKeys\\Final Answer Key and marks CHSLE 2024 Tier-I161024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "jet66f5g1jhgkmymg5yxx",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) of Combined Graduate Level Examination (Tier-I) - 2024",
+"examId": "s40d16nackd16h0",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-10-03",
+"endDate": "2024-12-03",
+"language": "english",
+"createdAt": "2024-10-03T12:30:57.419Z",
+"attachments": [
+{
+"id": "nv42bf8tr0q8jraqcs22o",
+"attIdtyfrId": "jet66f5g1jhgkmymg5yxx",
+"fileName": "Writeup_Answerkey_Tier_1_CGLE_2024_031024.pdf",
+"type": "application/pdf",
+"size": 491342,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_Answerkey_Tier_1_CGLE_2024_031024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ogs9nj90k249yapfhbyw8",
+"headline": "SSA UDC Grade Limited Departmental Competitive Examination 2018 and 2019 for the year 2019 : Uploading of Final Marks.",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2019",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-10-01T12:03:12.533Z",
+"attachments": [
+{
+"id": "q06wy5frsfu8975g93zxy",
+"attIdtyfrId": "ogs9nj90k249yapfhbyw8",
+"fileName": "SSA 2019 Final Marks APPd11024.pdf",
+"type": "application/pdf",
+"size": 197258,
+"path": "uploads\\masterData\\AnswerKeys\\SSA 2019 Final Marks APPd11024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ac0s3kzvtw8ct8q3c33lk",
+"headline": "SSA UDC Grade Limited Departmental Competitive Examination 2018 and 2019 for the year 2018 : Uploading of Final Marks.\r\n",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2018",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-10-01T12:02:46.949Z",
+"attachments": [
+{
+"id": "7pyjex772hrmfkpa60pts",
+"attIdtyfrId": "ac0s3kzvtw8ct8q3c33lk",
+"fileName": "SSA 2018 Final Marks APpd11024.pdf",
+"type": "application/pdf",
+"size": 198347,
+"path": "uploads\\masterData\\AnswerKeys\\SSA 2018 Final Marks APpd11024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "uqft6gw9mtd3ouys3idm1",
+"headline": "कनिष्ठ अभियंता (सिविल, यांत्रिकी और वैद्युत) परीक्षा, 2024 (पेपर-I) : प्रश्नपत्र (प्रश्नपत्रों) सह उत्तर-पत्रक (उत्तर-पत्रकों) और अंकों के साथ अंतिम उत्तर कुंजियां अपलोड किए जाने के संबंध में ।",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2024-08-30T12:40:47.112Z",
+"attachments": [
+{
+"id": "vg4agz96ya1npr0v6q1mj",
+"attIdtyfrId": "uqft6gw9mtd3ouys3idm1",
+"fileName": "Final Answer Keys Hindi Writeup JE_2024_P_1_30824.pdf",
+"type": "application/pdf",
+"size": 77975,
+"path": "uploads\\masterData\\AnswerKeys\\Final Answer Keys Hindi Writeup JE_2024_P_1_30824.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "92duy3ilgbmoistpl4vvb",
+"headline": "Uploading of Final Answer Key(s) along with Question Paper(s) and Marks of Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination, 2019 & 2020.",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2019",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-08-20T12:55:20.614Z",
+"attachments": [
+{
+"id": "xbfy1b0dgz1rfact9kdfe",
+"attIdtyfrId": "92duy3ilgbmoistpl4vvb",
+"fileName": "document (57)_20824.pdf",
+"type": "application/pdf",
+"size": 64130,
+"path": "uploads\\masterData\\AnswerKeys\\document (57)_20824.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ghkjnnjppsimqnicvc3ov",
+"headline": "Uploading of Tentative Answer Keys along with Candidates’ Response  Sheet(s) of Combined Higher Secondary Level Examination (Tier-I) - 2024.\r\n",
+"examId": "s40d16nackd16h0",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-07-18T12:31:14.000Z",
+"attachments": [
+{
+"id": "7kbhimp7my2j07i83q7tw",
+"attIdtyfrId": "ghkjnnjppsimqnicvc3ov",
+"fileName": "Write-Up for Tentative Answer Keys CHSLE 2024.pdf",
+"type": "application/pdf",
+"size": 217708,
+"path": "uploads\\masterData\\AnswerKeys\\Write-Up for Tentative Answer Keys CHSLE 2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "0maylvbxeis8akknwa5b8",
+"headline": "Uploading of Final answer key and Marks Module -SSA UDC Grade Limited Departmental Competitive Examination 2018 and 2019",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2019",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-07-05",
+"endDate": "2024-10-05",
+"language": "english",
+"createdAt": "2024-07-05T15:49:36.960Z",
+"attachments": [
+{
+"id": "pzxw1dxdalzbpvg74u3sm",
+"attIdtyfrId": "0maylvbxeis8akknwa5b8",
+"fileName": "Final Write Up Appd 2018-19.pdf",
+"type": "application/pdf",
+"size": 129195,
+"path": "uploads\\masterData\\AnswerKeys\\Final Write Up Appd 2018-19.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "3ul0stzh8xk4bf2m4ybm8",
+"headline": "Uploading of Final answer key and Marks Module -SSA UDC Grade Limited Departmental Competitive Examination 2020, 2021 & 2022",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2022",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-07-05",
+"endDate": "2024-10-05",
+"language": "english",
+"createdAt": "2024-07-05T15:48:48.276Z",
+"attachments": [
+{
+"id": "724wbphcpal43bt10x630",
+"attIdtyfrId": "3ul0stzh8xk4bf2m4ybm8",
+"fileName": "Final Marks write up appd 2020-22.pdf",
+"type": "application/pdf",
+"size": 127010,
+"path": "uploads\\masterData\\AnswerKeys\\Final Marks write up appd 2020-22.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "qlhnrzfzp91zgdk86p4qq",
+"headline": "Sub-Inspector in Delhi Police and Central Armed Police Forces Examination, 2024 (Paper-I): Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s)",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-07-05",
+"endDate": "2024-10-05",
+"language": "english",
+"createdAt": "2024-07-05T15:34:51.072Z",
+"attachments": [
+{
+"id": "p2k6gpd4q2iqqvtfeiil4",
+"attIdtyfrId": "qlhnrzfzp91zgdk86p4qq",
+"fileName": "CPO 2024 final marks write up.pdf",
+"type": "application/pdf",
+"size": 686569,
+"path": "uploads\\masterData\\AnswerKeys\\CPO 2024 final marks write up.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "l9h0qe3k0y3wp6rvr5l4w",
+"headline": "Uploading of Candidate's Response Sheet(s) along with Tentative Answer Key of Phase-XII/2024/Selection Posts.",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-07-02T13:02:08.876Z",
+"attachments": [
+{
+"id": "hz14nh5xwbloq1g3uxqcw",
+"attIdtyfrId": "l9h0qe3k0y3wp6rvr5l4w",
+"fileName": "Write_up_Tentative_Answer_Key_Phase-XII_2024_Selection_Posts. Final.pdf",
+"type": "application/pdf",
+"size": 627582,
+"path": "uploads\\masterData\\AnswerKeys\\Write_up_Tentative_Answer_Key_Phase-XII_2024_Selection_Posts. Final.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "y024cfq4qqpl64f6jgdgy",
+"headline": "कनिष्ठ अभियंता (सिविल, यांत्रिकी एवं वैद्युत) परीक्षा- 2024 (पेपर-I):\r\n\r\nअभ्यर्थियों के उत्तर पत्रकों (रिस्पांस शीट) के साथ अनंतिम उत्तर कुंजियां\r\n\r\nअपलोड करने के संबंध में ।",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-06-14",
+"endDate": "2024-10-14",
+"language": "hindi",
+"createdAt": "2024-06-14T12:51:07.369Z",
+"attachments": [
+{
+"id": "jovi1tfnfs4k6383pxj6m",
+"attIdtyfrId": "y024cfq4qqpl64f6jgdgy",
+"fileName": "JE2024_Response Sheets_Tentative_Answer_Keys_14062024.pdf",
+"type": "application/pdf",
+"size": 690848,
+"path": "uploads\\masterData\\AnswerKeys\\JE2024_Response Sheets_Tentative_Answer_Keys_14062024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ur8udbjkvytxpds90orx3",
+"headline": "Uploading of Candidates’ Response Sheet(s) along with Tentative Answer Keys of Junior Engineer (Civil, Mechanical & Electrical) Examination, 2024 (Paper-I)\r\n",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-06-12T14:42:55.959Z",
+"attachments": [
+{
+"id": "53ejbvj3ao0mp9ls53rkp",
+"attIdtyfrId": "ur8udbjkvytxpds90orx3",
+"fileName": "writeup.pdf",
+"type": "application/pdf",
+"size": 780810,
+"path": "uploads\\masterData\\AnswerKeys\\writeup.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "x47fmg0bgv9qf16348fx4",
+"headline": "SSA/ UDC Grade Limited Departmental Competitive Examination, 2023 & 2024: Uploading of Tentative Answer Key(s) along with Candidates' Response Sheet(s).\r\n\r\n",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-05-20T12:32:35.780Z",
+"attachments": [
+{
+"id": "dpko0l5qurreqleibi5o2",
+"attIdtyfrId": "x47fmg0bgv9qf16348fx4",
+"fileName": "Write up tentitive answer key SSAUDC Grade LDCE, 2023 & 2024.pdf",
+"type": "application/pdf",
+"size": 83304,
+"path": "uploads\\masterData\\AnswerKeys\\Write up tentitive answer key SSAUDC Grade LDCE, 2023 & 2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ctadqehzh7kk5hsubur0y",
+"headline": "कनिष्ठ सचिवालय सहायक/ अवर श्रेणी लिपिक ग्रेड सीमित विभागीय प्रतियोगिता परीक्षा, 2023 & 2024 : अभ्यर्थियों की उत्तर कुंजियों के साथ अभ्यर्थियों के उत्तर पत्रक (रिस्पॉन्स शीट) अपलोड करने के संबंध में",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2024-05-17T09:33:14.586Z",
+"attachments": [
+{
+"id": "2jd5472u7y144q8trxgbo",
+"attIdtyfrId": "ctadqehzh7kk5hsubur0y",
+"fileName": "Tentative Key JSA&SSA 2023-24.pdf",
+"type": "application/pdf",
+"size": 94834,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative Key JSA&SSA 2023-24.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "gk7av7rbzbei5e7leyd6j",
+"headline": "Grade ‘C’ Stenographers Limited Departmental Competitive Examination, 2023, & 2024: Uploading of Tentative Answer Key(s) along with Candidates' Response Sheet(s).\r\n\r\n",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-05-16T12:30:58.153Z",
+"attachments": [
+{
+"id": "an7jahc4g6e0b4habdo52",
+"attIdtyfrId": "gk7av7rbzbei5e7leyd6j",
+"fileName": "Write up tentitive answer key Grade 'C' LDCE 2023 & 2024.pdf",
+"type": "application/pdf",
+"size": 82470,
+"path": "uploads\\masterData\\AnswerKeys\\Write up tentitive answer key Grade 'C' LDCE 2023 & 2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "pm52i3c0hqifwu651q6od",
+"headline": "Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination 2023 & 2024: Uploading of Tentative Answer Keys alongwith Candidates’ Response Sheet(s).\r\n\r\n",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-05-16T12:29:56.738Z",
+"attachments": [
+{
+"id": "5ea9ycau04doy9a9ap0ou",
+"attIdtyfrId": "pm52i3c0hqifwu651q6od",
+"fileName": "writeup tentative answer key jsa 2023 2024.pdf",
+"type": "application/pdf",
+"size": 119816,
+"path": "uploads\\masterData\\AnswerKeys\\writeup tentative answer key jsa 2023 2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "4isybuu3p4ro9wak49kid",
+"headline": "केंद्रीय सशस्त्र पुलिस बलों (सीएपीएफ), सचिवालय सुरक्षा बल में कांस्टेबल (सामान्य ड्यूटी), और असम राइफल्स में राइफलमैन (सामान्य ड्यूटी), परीक्षा, 2024 : अनंतिम उत्तर कुंजियों के साथ अभ्यर्थियों की उत्तर शीट अपलोड करने के संबंध में ।",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2024-04-05T06:41:55.148Z",
+"attachments": [
+{
+"id": "kiougkftf7wkdnq08cdvt",
+"attIdtyfrId": "4isybuu3p4ro9wak49kid",
+"fileName": "Tentative Answer Keys_CBE_CTGD_2024 (Hindi).pdf",
+"type": "application/pdf",
+"size": 104169,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative Answer Keys_CBE_CTGD_2024 (Hindi).pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "gsacxpmacmsc03s00dts9",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs), SSF, and Rifleman (GD) in Assam Rifles Examination, 2024:  Uploading of Candidates’ Response Sheet(s) along with Tentative Answer Keys.",
+"examId": "q7sw4cqpvyitarc",
+"examYear": "2024",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": "2024-04-03",
+"endDate": null,
+"language": "english",
+"createdAt": "2024-04-03T15:06:28.008Z",
+"attachments": [
+{
+"id": "a3u6yh9sx8r359a3xgwxb",
+"attIdtyfrId": "gsacxpmacmsc03s00dts9",
+"fileName": "Tentative Answer Keys_CBE_CTGD_2024.pdf",
+"type": "application/pdf",
+"size": 163717,
+"path": "uploads\\masterData\\AnswerKeys\\Tentative Answer Keys_CBE_CTGD_2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "wqdlxik7h6xtq2bek4pca",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2023 (Tier-II) Final: Uploading of Final Answer Keys along with Question Paper(s) and Marks",
+"examId": "s40d16nackd16h0",
+"examYear": "2023",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-03-22T15:45:39.648Z",
+"attachments": [
+{
+"id": "61f65azavwkjezp0adj9d",
+"attIdtyfrId": "wqdlxik7h6xtq2bek4pca",
+"fileName": "CHSLE 2023 Final Answer Keys and Marks.pdf",
+"type": "application/pdf",
+"size": 102832,
+"path": "uploads\\masterData\\AnswerKeys\\CHSLE 2023 Final Answer Keys and Marks.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "siwz3absb1ky1gymc3eyv",
+"headline": "कनिष्ठ सचिवालय सहायक/ अवर श्रेणी लिपिक ग्रेड सीमित विभागीय प्रतियोगी परीक्षा, 2021 & 2022 : अभ्यर्थियों की उत्तर कुंजियों के साथ अभ्यर्थियों के उत्तर पत्रक (रिस्पॉन्स शीट) अपलोड करना",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2021",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "hindi",
+"createdAt": "2024-03-06T12:46:38.481Z",
+"attachments": [
+{
+"id": "ivglydmb8krvit28ryu5n",
+"attIdtyfrId": "siwz3absb1ky1gymc3eyv",
+"fileName": "writeup_06032024_hindi.pdf",
+"type": "application/pdf",
+"size": 146980,
+"path": "uploads\\masterData\\AnswerKeys\\writeup_06032024_hindi.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "8katmd67cobupunc6ikim",
+"headline": "Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination 2021 & 2022: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s)",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2021",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-03-06T12:44:55.902Z",
+"attachments": [
+{
+"id": "or51p0ry2dtu7kx2dg8ak",
+"attIdtyfrId": "8katmd67cobupunc6ikim",
+"fileName": "Writeup_06032024.pdf",
+"type": "application/pdf",
+"size": 127581,
+"path": "uploads\\masterData\\AnswerKeys\\Writeup_06032024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "c1dcc6b7x37bzy6oiy065",
+"headline": "Sub-Inspector in Delhi Police and Central Armed Police Forces Examination, 2023 : Uploading of Final Answer Keys along with Question Paper(s) and Marks ",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2023",
+"contentType": "answer-key",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-02-20T12:11:52.757Z",
+"attachments": [
+{
+"id": "9xvhk7svn4sa6nb5gapp0",
+"attIdtyfrId": "c1dcc6b7x37bzy6oiy065",
+"fileName": "answer_key_20022024.pdf",
+"type": "application/pdf",
+"size": 46921,
+"path": "uploads\\masterData\\AnswerKeys\\answer_key_20022024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+}
+],
+"paginate": {
+"totalRecords": 97,
+"totalPerpage": "100",
+"totalPage": 1,
+"currentPage": 1,
+"nextPage": 0,
+"previousPage": 0
+}
+}

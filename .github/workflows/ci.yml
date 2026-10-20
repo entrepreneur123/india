@@ -21,6 +21,21 @@ jobs:
       - name: Website generator (pages, languages, sitemap, ads)
         run: python -m pytest -q web/test_site.py
 
+  jobs-alerts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -q pytest
+      - name: SSC pipeline, classifier and eligibility rules (fixtures from ssc.gov.in)
+        working-directory: jobs/pipeline
+        run: python -m pytest -q tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Website eligibility port gives the same answers as the pipeline
+        working-directory: jobs/web
+        run: node --test eligibility.test.mjs
+
   android:
     runs-on: ubuntu-24.04
     steps:
