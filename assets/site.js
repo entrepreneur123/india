@@ -53,10 +53,23 @@ var e=box(t(hits.length===1&&S.history_count_one?"history_count_one":"history_co
 hits.forEach(function(c){var x=c.w[0];ul.appendChild(el("li",null,c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)+" · "+
 c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)+(x.nf?" *":"")))});e[1].appendChild(ul);out.appendChild(e[0])
 }).catch(function(){out.appendChild(box(t("history_unavailable"),"no")[0])})});
+// Lottery tax: 30% cut above Rs 10,000 (s.393(3)); at filing 30% + surcharge (new regime, marginal relief) + 4% cess.
+var tf=document.getElementById("taxForm");
+function lotteryTax(p){var tds=p>10000?Math.round(p*0.3):0,t=p*0.3,r=0,T=0,rp=0;
+if(p>20000000){r=0.25;T=20000000;rp=0.15}else if(p>10000000){r=0.15;T=10000000;rp=0.10}else if(p>5000000){r=0.10;T=5000000;rp=0}
+var ts=t*(1+r);if(r){var cap=T*0.3*(1+rp)+(p-T);if(ts>cap)ts=cap}var total=Math.round(ts*1.04);
+return{tds:tds,paid:p-tds,more:total-tds,total:total,keep:p-total}}
+window.lotteryTax=lotteryTax;
+if(tf)tf.addEventListener("submit",function(ev){ev.preventDefault();var L=JSON.parse(tf.dataset.l),out=document.getElementById("taxRes");
+var p=parseInt(document.getElementById("taxAmt").value.replace(/[^0-9]/g,""),10);out.textContent="";if(!(p>0))return;
+var x=lotteryTax(p),inr=function(n){return"₹"+n.toLocaleString("en-IN")},tb=el("table","tax");
+[["prize",p],["tds",x.tds],["paid",x.paid],["more",x.more],["total",x.total],["keep",x.keep]].forEach(function(r){var tr=el("tr",r[0]==="keep"?"keep":"");
+tr.appendChild(el("td","",L[r[0]]));tr.appendChild(el("td","",inr(r[1])));tb.appendChild(tr)});out.appendChild(tb);
+if(p<=10000)out.appendChild(el("p","hint",L.small))});
 // Old results: jump to a date we have a page for.
 var df=document.getElementById("dateForm");
 if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;
-var a=document.querySelector('a[href$="/result/'+p[2]+"-"+p[1]+"-"+p[0]+'/"]');if(a)location.href=a.getAttribute("href");
+if((" "+df.dataset.days+" ").indexOf(" "+p.join("")+" ")>=0)location.href=df.dataset.base+p[2]+"-"+p[1]+"-"+p[0]+"/";
 else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
