@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http.client
 import time
 import urllib.error
 import urllib.parse
@@ -21,8 +22,8 @@ def get_bytes(url: str, data: dict | None = None, retries: int = 3, timeout: int
             if e.code == 404:
                 return None
             last = e
-        except (urllib.error.URLError, TimeoutError) as e:
-            last = e
+        except (urllib.error.URLError, TimeoutError, http.client.IncompleteRead, ConnectionError) as e:
+            last = e   # incl. a body cut off mid-transfer (seen on 2 of ~880 archive PDFs, 20-10-2026)
         time.sleep(2 ** attempt)
     raise RuntimeError(f"GET {url} failed: {last}")
 
