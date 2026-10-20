@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef, type CSSProperties, type KeyboardEvent } from 'react'
+import { useId, useLayoutEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react'
 import { HOME, spot, TRACK } from '@/lib/ludo'
 
 /**
@@ -196,19 +196,36 @@ function Token({
   onToken?: (idx: number) => void
 }) {
   const seat = t.idx >> 2
-  const body = useRef<SVGGElement>(null)
-  const pos = useRef(t.pos)
+  const el = useRef<SVGGElement>(null)
+  /** Where the token is drawn right now (mid-move too). */
+  const drawn = useRef<{ x: number; y: number; s: number } | null>(null)
 
-  // Each square of a move is a little hop.
-  useEffect(() => {
-    if (pos.current === t.pos) return
-    pos.current = t.pos
-    if (reduce || t.motion !== 'hop') return
-    body.current?.animate(
-      [{ transform: 'translateY(0) scale(1)' }, { transform: 'translateY(-0.32px) scale(1.12)' }, { transform: 'translateY(0) scale(1)' }],
-      { duration: 130, easing: 'ease-out' },
-    )
-  }, [t.pos, t.motion, reduce])
+  // Moves are drawn here, frame by frame, on the SVG transform attribute: a hop with a little lift for each
+  // square, an eased slide back to the base after a capture. (CSS or Web Animations transforms on nested SVG
+  // groups can be composited at the wrong scale in Chrome, which once drew a pawn several times its size.)
+  useLayoutEffect(() => {
+    const g = el.current
+    if (!g) return
+    const to = { x, y, s: scale }
+    const draw = (p: { x: number; y: number; s: number }, lift = 0) => {
+      drawn.current = p
+      g.setAttribute('transform', `translate(${p.x.toFixed(4)} ${(p.y - lift).toFixed(4)}) scale(${p.s.toFixed(4)})`)
+    }
+    const from = drawn.current
+    if (!from || reduce || !t.motion || (from.x === x && from.y === y)) return draw(to)
+    const slide = t.motion === 'slide'
+    const duration = slide ? 420 : 125
+    const start = performance.now()
+    let raf = 0
+    const frame = (now: number) => {
+      const k = Math.min(1, (now - start) / duration)
+      const e = slide ? 1 - (1 - k) ** 3 : k
+      draw({ x: from.x + (x - from.x) * e, y: from.y + (y - from.y) * e, s: from.s + (scale - from.s) * e }, slide ? 0 : 0.3 * Math.sin(Math.PI * k))
+      if (k < 1) raf = requestAnimationFrame(frame)
+    }
+    raf = requestAnimationFrame(frame)
+    return () => cancelAnimationFrame(raf)
+  }, [x, y, scale, t.motion, reduce])
 
   const act = () => t.movable && onToken?.(t.idx)
   const key = (e: KeyboardEvent) => {
@@ -217,19 +234,19 @@ function Token({
       act()
     }
   }
-  const move = reduce ? undefined : t.motion === 'slide' ? 'transform 420ms cubic-bezier(.3,0,.2,1)' : 'transform 120ms ease-out'
 
   return (
     <g
+      ref={el}
       role="button"
       tabIndex={t.movable ? 0 : -1}
       aria-label={t.label}
       aria-disabled={!t.movable}
       onClick={act}
       onKeyDown={key}
-      style={{ transform: `translate(${x}px, ${y}px)`, transition: move, cursor: t.movable ? 'pointer' : undefined }}
+      style={{ cursor: t.movable ? 'pointer' : undefined }}
     >
-      <g style={{ transform: `scale(${scale})`, transition: reduce ? undefined : 'transform 160ms ease-out' }}>
+      <g>
         {t.movable ? (
           // A steady ring (it reads in a still frame and under reduced motion) and a ripple going out of it.
           <g>
@@ -243,7 +260,7 @@ function Token({
           </g>
         ) : null}
         <ellipse cx={0} cy={0.31} rx={0.34} ry={0.11} fill={`url(#${ids}-shadow)`} />
-        <g ref={body} style={{ transformBox: 'fill-box', transformOrigin: '50% 100%' }}>
+        <g>
           {t.movable && !reduce ? (
             <animateTransform attributeName="transform" type="translate" values="0 0;0 -0.07;0 0" dur="0.9s" repeatCount="indefinite" />
           ) : null}

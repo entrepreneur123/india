@@ -197,6 +197,16 @@ export function LudoPanel({
   }
 
   const play = useLudoPlay(game, reduce, describe)
+  // A capture, a token home, three sixes...: the banner shows it for a moment.
+  const [flash, setFlash] = useState<News | null>(null)
+  useEffect(() => {
+    if (play.news?.show) setFlash(play.news)
+  }, [play.news])
+  useEffect(() => {
+    if (!flash) return
+    const id = setTimeout(() => setFlash(null), 2400)
+    return () => clearTimeout(id)
+  }, [flash])
   const view = play.view
   const mySeat = game.players.indexOf(me.profile.id)
   const seated = mySeat >= 0 && !game.out[mySeat]
@@ -326,6 +336,14 @@ export function LudoPanel({
   }
 
   const winner = view.status === 'finished' ? view.winner : null
+  const turnSeat = view.status === 'playing' ? view.turn : null
+  const banner: { key: string; text: string; colour?: string } = flash
+    ? { key: `n${flash.key}`, text: flash.text, colour: 'var(--foreground)' }
+    : turnSeat === null
+      ? { key: 'none', text: '' }
+      : turnSeat === mySeat
+        ? { key: `me${game.dice !== null}`, text: `${lt('yourTurn')} · ${game.dice !== null && !play.busy ? lt('pick') : lt('roll')}`, colour: pal.seats[turnSeat] }
+        : { key: `t${turnSeat}`, text: lt('turnOf', { name: nameOf(view, turnSeat) }), colour: 'var(--muted-foreground)' }
   return (
     <section aria-label={lt('title')} className="ludo flex flex-col">
       <style>{LUDO_CSS}</style>
@@ -345,20 +363,6 @@ export function LudoPanel({
             onToken={move}
             className="block aspect-square w-full rounded-[18px] shadow-[0_10px_30px_-8px_rgb(0_0_0/0.55),0_0_0_1px_rgb(255_255_255/0.06)]"
           />
-          <AnimatePresence>
-            {play.news?.show ? (
-              <m.p
-                key={play.news.key}
-                aria-hidden
-                className="pointer-events-none absolute top-[42%] left-1/2 w-max max-w-[86%] -translate-x-1/2 rounded-full bg-black/80 px-3.5 py-1.5 text-center text-[12px] leading-snug font-semibold text-white shadow-e2 backdrop-blur-sm sm:text-[13px]"
-                initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                animate={{ opacity: [0, 1, 1, 0], y: 0, scale: 1, transition: { duration: 2, times: [0, 0.1, 0.8, 1] } }}
-                exit={{ opacity: 0, transition: { duration: 0.1 } }}
-              >
-                {play.news.text}
-              </m.p>
-            ) : null}
-          </AnimatePresence>
           {view.status === 'finished' && !play.busy ? (
             <Result
               game={view}
@@ -372,6 +376,23 @@ export function LudoPanel({
             />
           ) : null}
         </div>
+        {/* The turn banner: what just happened (a capture, a token home...) for a moment, else whose turn it is.
+            Off the board, so it never hides a token; one fixed line, so nothing below it moves. */}
+        <p aria-hidden className="relative h-5 overflow-hidden text-center text-[12px] leading-5 font-semibold sm:text-[13px]">
+          <AnimatePresence initial={false}>
+            <m.span
+              key={banner.key}
+              className="absolute inset-0 truncate px-2"
+              style={banner.colour ? { color: banner.colour } : undefined}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              {banner.text}
+            </m.span>
+          </AnimatePresence>
+        </p>
         <div className="flex items-center gap-2">
           {chip(0, 'left')}
           {chip(3, 'right')}
