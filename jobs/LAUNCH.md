@@ -1,0 +1,52 @@
+# 출시 절차 (웹 → 안드로이드 앱)
+
+순서대로 하면 됩니다. ⚙️는 저장소 설정, 🖥️는 서버 작업, 📱는 스토어 작업입니다.
+
+## 0. 출시 전에 정할 것
+1. **앱 이름.** 지금은 임시로 "Sarkari Job Alerts"입니다.
+   - 바꿀 곳: `web/i18n.js`의 `appName`, `web/lang/*.js`의 `appName`, `web/manifest.webmanifest`
+   - 정부 기관처럼 보이는 이름·로고는 피하세요. 국가 문장이나 부처 로고가 해당합니다.
+2. **도메인.** 예: `내이름.in`. 광고(AdSense)와 인도 서버 주소에 필요합니다.
+3. **원어민 검수.** `research/lang_review/<언어>.md`
+   - 최소한 힌디어는 출시 전에 끝내세요.
+   - 나머지 언어는 출시 후 차례로 해도 됩니다.
+
+## 1. 웹 공개 (무료, 서버 없이도 가능)
+1. ⚙️ PR을 병합합니다.
+2. ⚙️ Settings → Secrets and variables → Actions → Variables에 `JOBS_PUBLISH` = `true`를 추가합니다.
+3. ⚙️ 첫 실행이 끝나면 Settings → Pages에서 브랜치를 `data`로 지정합니다.
+   - 주소: `https://<계정>.github.io/<저장소>/jobs/`
+4. ⚙️ (선택) 채널 변수를 추가합니다.
+   - WhatsApp 채널: `JOBS_WHATSAPP_CHANNEL`
+   - 텔레그램: `JOBS_TELEGRAM_CHAT_ID` 변수와 `JOBS_TELEGRAM_BOT_TOKEN` 시크릿
+5. Google Search Console에 사이트를 등록하고 `jobs/sitemap.xml`을 제출합니다.
+
+## 2. 인도 서버 (권장: 철도·은행·UPSC 수집, 즉시 알림, 인도 내 빠른 응답)
+1. 🖥️ 인도 리전에 Ubuntu 24.04 서버를 만듭니다.
+2. 🖥️ `deploy/india/README.md`의 1~6단계를 따릅니다.
+   - 설치
+   - `JOBS_RUNNER=india`로 전환
+   - 즉시 알림
+   - 도메인으로 사이트 제공(`enable-site.sh`)
+3. 이후 수집은 30분마다 돌고, 사이트는 인도에서 압축되어 나갑니다.
+
+## 3. 안드로이드 앱 (Google Play)
+웹앱(PWA)을 그대로 감싸는 방식(TWA)이 가장 빠릅니다. 웹을 고치면 앱도 바로 바뀝니다.
+1. 📱 Google Play 개발자 계정을 만듭니다. 가입비는 1회 25달러입니다.
+   - 개인 계정은 정식 출시 전에 비공개 테스트 요건(테스터 수·기간)이 있습니다. 가입할 때 현재 조건을 확인하세요.
+2. PWABuilder(pwabuilder.com)나 Bubblewrap에 도메인 주소를 넣고 안드로이드 패키지를 만듭니다.
+3. 웹 서버의 `/.well-known/assetlinks.json`에 앱 서명 지문을 올립니다(디지털 자산 링크).
+   - 이게 없으면 앱 위에 주소창이 보입니다.
+4. 📱 스토어 등록 정보를 준비합니다.
+   - 개인정보처리방침 URL
+   - 설명란 첫 줄에 "정부 앱이 아님 + 정보 출처(공식 사이트 목록)"
+   - Google Play는 정부 정보를 다루는 앱에 이것을 요구합니다. 제출 전 최신 정책을 확인하세요.
+   - 스크린샷, 콘텐츠 등급 설문, 데이터 보안 양식(이 앱은 개인정보를 수집하지 않음)
+5. 📱 비공개 테스트 → 프로덕션 출시
+
+## 4. 출시 후 첫 달
+- 결과·입장권 발표일에 WhatsApp·텔레그램 채널로 "수험번호로 바로 확인" 링크를 퍼뜨립니다.
+  - 채널에 올릴 글은 `사이트/jobs/v1/whatsapp.txt`에 매번 만들어집니다.
+- jobs-watchdog 메일(수집 중단 경고)을 확인합니다.
+- Search Console에서 어떤 검색어로 들어오는지 보고 다음 수집 기관을 정합니다.
+- 광고는 방문자가 생긴 뒤 AdSense를 신청합니다. 자체 도메인이 필요합니다.
