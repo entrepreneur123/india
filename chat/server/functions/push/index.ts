@@ -16,8 +16,7 @@ Deno.serve(async (req) => {
   const { data: ok } = await admin.rpc("edge_key_ok", { p_key: req.headers.get("x-edge-key") ?? "" });
   if (ok !== true) return json(403, { error: "forbidden" });
 
-  // x-test-fcm: a stand-in key for a self-test of the failure paths (only with the vault key above).
-  const secret = req.headers.get("x-test-fcm") ?? Deno.env.get("FCM_SERVICE_ACCOUNT");
+  const secret = Deno.env.get("FCM_SERVICE_ACCOUNT");
   if (!secret) return json(200, { skipped: true });
 
   const { id } = await req.json().catch(() => ({}));
