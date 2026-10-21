@@ -1,6 +1,13 @@
 -- Unified rooms (migration 019). One transaction, rolled back.
 begin;
 set local statement_timeout = '20s';
+-- 020 revoked the old app's functions; they are still exercised here (rolled back) to keep the logic covered.
+grant execute on function public.create_voice_room(text, text, text), public.voice_list() to authenticated;
+-- The rooms list is a summary rebuilt every 5 s (020); within one transaction the clock stands still, so the
+-- checks below mark it old first.
+grant select, update on public.voice_list_cache to authenticated;
+create policy test_only on public.voice_list_cache for all to authenticated using (true);
+create function pg_temp.stale() returns void language sql as $$ update public.voice_list_cache set at = '-infinity' where id = 1 $$;
 create function pg_temp.act(u uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true) $$;
 create function pg_temp.check(ok boolean, what text) returns void language plpgsql as $$
@@ -74,12 +81,15 @@ select pg_temp.check((select count(*) from public.voice_grant(pg_temp.r())) = 0,
 
 -- ---- private: hidden, entered only with the code ----
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000302');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list2() l where l.id = pg_temp.r()) = 0, 'private: not listed');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = pg_temp.r()) = 0, 'private: not in the old list');
 select pg_temp.fails($$select public.join_voice(pg_temp.r())$$, 'not_found');
 select pg_temp.fails($$select public.voice_heartbeat(pg_temp.r())$$, 'not_found');
 select pg_temp.check(public.join_voice_code('ZZZZZZ') is null, 'wrong code: null');
 select pg_temp.check(public.join_voice_code(lower(pg_temp.r('code'))) = pg_temp.r(), 'code (any case) lets me in');
+select pg_temp.stale();
 select pg_temp.check((select l.members from public.voice_list2() l where l.id = pg_temp.r()) = 2, 'listed for me now, 2 present');
 select pg_temp.check(jsonb_array_length(public.join_voice(pg_temp.r())->'members') = 2, 'back in by id');
 select pg_temp.check(public.voice_state(pg_temp.r())->>'code' is null, 'code only for the host');
@@ -194,9 +204,11 @@ select pg_temp.check(not public.can_read_media('eeeeeeee-0000-0000-0000-00000000
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000306');
 insert into v values ('p', public.create_voice_room2('Open talk', 'talk', 50, 'male', 18, 100, false, null)->>'id');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000302');
+select pg_temp.stale();
 select pg_temp.check((select l.refusal from public.voice_list2() l where l.id = pg_temp.r('p')) = 'room_gender', 'list says why not');
 select pg_temp.fails($$select public.join_voice(pg_temp.r('p'))$$, 'room_gender');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000303');
+select pg_temp.stale();
 select pg_temp.check((select l.refusal is null and l.code is null and l.category = 'talk' from public.voice_list2() l where l.id = pg_temp.r('p')), 'listed, open to me');
 select public.join_voice(pg_temp.r('p'));
 

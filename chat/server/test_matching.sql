@@ -3,6 +3,8 @@
 -- holding its own queue row and skipping locked ones (FOR UPDATE SKIP LOCKED).
 begin;
 set local statement_timeout = '8s';
+-- 020 revoked the old app's functions; they are still exercised here (rolled back) to keep the logic covered.
+grant execute on function public.find_match(text) to authenticated;
 create function pg_temp.act(u uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true) $$;
 create function pg_temp.check(ok boolean, what text) returns void language plpgsql as $$

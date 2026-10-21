@@ -2,6 +2,8 @@
 -- (honoured only in a direct database session like this one, never for requests from the apps).
 begin;
 set local statement_timeout = '30s';
+-- 020 revoked the old app's functions; they are still exercised here (rolled back) to keep the logic covered.
+grant execute on function public.create_voice_room(text, text, text) to authenticated;
 create function pg_temp.act(u uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true) $$;
 create function pg_temp.check(ok boolean, what text) returns void language plpgsql as $$
@@ -74,7 +76,7 @@ insert into v values ('g', public.ludo_open(pg_temp.room())->>'id');
 select pg_temp.check((pg_temp.game()).status = 'lobby', 'opened: lobby');
 select pg_temp.check((pg_temp.game()).players[1] = 'eeeeeeee-0000-0000-0000-000000000201', 'opener takes red');
 select pg_temp.check((public.ludo_open(pg_temp.room())->>'id')::uuid = pg_temp.g(), 'one game per room');
-select pg_temp.fails($$update public.ludo_games set status = 'finished'$$, 'permission denied');
+select pg_temp.fails($$update public.ludo_games set status = 'finished' where true$$, 'permission denied');
 
 -- ---- outsiders see and do nothing ----
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000205');

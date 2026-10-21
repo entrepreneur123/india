@@ -1,6 +1,13 @@
 -- Voice rooms (migration 017). One transaction, rolled back.
 begin;
 set local statement_timeout = '20s';
+-- 020 revoked the old app's functions; they are still exercised here (rolled back) to keep the logic covered.
+grant execute on function public.create_voice_room(text, text, text), public.voice_list(), public.voice_queue_approve(text, text, boolean) to authenticated;
+-- The rooms list is a summary rebuilt every 5 s (020); within one transaction the clock stands still, so the
+-- checks below mark it old first.
+grant select, update on public.voice_list_cache to authenticated;
+create policy test_only on public.voice_list_cache for all to authenticated using (true);
+create function pg_temp.stale() returns void language sql as $$ update public.voice_list_cache set at = '-infinity' where id = 1 $$;
 create function pg_temp.act(u uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true) $$;
 create function pg_temp.check(ok boolean, what text) returns void language plpgsql as $$
@@ -48,7 +55,9 @@ select pg_temp.check((select id from v where k = 'r') like 'v-%', 'room id');
 select pg_temp.check(public.voice_state((select id from v where k = 'r'))->'members'->0->>'role' = 'host', 'creator is host');
 select pg_temp.check((public.voice_state((select id from v where k = 'r'))->'members'->0->>'seat')::int = 0, 'host on seat 0');
 select pg_temp.fails($$select public.voice_state((select id from v where k = 'r1'))$$, 'room_closed');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = (select id from v where k = 'r1')) = 0, 'old room not listed');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = (select id from v where k = 'r') and l.mine) = 1, 'new room listed as mine');
 
 -- ---- join, heartbeat, list ----
@@ -57,7 +66,9 @@ select pg_temp.check(jsonb_array_length(public.join_voice((select id from v wher
 select pg_temp.check(public.voice_heartbeat((select id from v where k = 'r')) > 0, 'heartbeat returns rev');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000103');
 select public.join_voice((select id from v where k = 'r'));
+select pg_temp.stale();
 select pg_temp.check((select l.listeners from public.voice_list() l where l.id = (select id from v where k = 'r')) = 1, 'list: other listeners');
+select pg_temp.stale();
 select pg_temp.check((select jsonb_array_length(l.speakers) from public.voice_list() l where l.id = (select id from v where k = 'r')) = 1, 'list: host on stage');
 select pg_temp.check((select count(*) from public.voice_messages m where m.room_id = (select id from v where k = 'r')
                         and m.kind = 'system' and m.payload->>'event' = 'joined') = 2, 'joined lines readable by members');
@@ -170,6 +181,7 @@ select pg_temp.fails($$select public.join_voice((select id from v where k = 'r')
 select pg_temp.fails($$select public.voice_heartbeat((select id from v where k = 'r'))$$, 'voice_removed');
 select pg_temp.fails($$select public.voice_send((select id from v where k = 'r'), 'hi')$$, 'voice_removed');
 select pg_temp.check((select count(*) from public.voice_grant((select id from v where k = 'r'))) = 0, 'kicked: no token');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = (select id from v where k = 'r')) = 0, 'kicked: not listed');
 select pg_temp.check((select count(*) from public.voice_messages m where m.room_id = (select id from v where k = 'r')) = 0, 'kicked: chat hidden');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000104');
@@ -177,6 +189,7 @@ select pg_temp.fails($$select public.join_voice((select id from v where k = 'r')
 select pg_temp.fails($$select public.create_voice_room('Banned room', 'chat', 'open')$$, 'banned');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000105');
 select pg_temp.fails($$select public.join_voice((select id from v where k = 'r'))$$, 'not_allowed');
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = (select id from v where k = 'r')) = 0, 'blocked: not listed');
 
 -- ---- the host leaves: the co-host takes over; then the last one leaves: the room ends ----
@@ -208,6 +221,7 @@ select pg_temp.check((select left_at is not null and seat is null from public.vo
 update public.voice_members set seen_at = now() - interval '3 minutes'
  where room_id = (select id from v where k = 'o') and user_id = 'eeeeeeee-0000-0000-0000-000000000106';
 set local role authenticated;
+select pg_temp.stale();
 select pg_temp.check((select count(*) from public.voice_list() l where l.id = (select id from v where k = 'o')) = 0, 'host gone 2 min: not listed');
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000000105');
 select pg_temp.fails($$select public.voice_heartbeat((select id from v where k = 'o'))$$, 'room_closed');
