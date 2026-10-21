@@ -3,6 +3,12 @@ import type { Dict } from '../i18n'
 // हिन्दी — short, everyday app Hindi; common words like चैट, रूम, प्रोफ़ाइल stay as people say them.
 const hi: Dict = {
   'common.close': 'बंद करें',
+  'inapp.title': 'Yaari को अपने ब्राउज़र में खोलें',
+  'inapp.body': 'इस ऐप के अंदर वॉइस रूम और कॉल में माइक्रोफ़ोन काम नहीं करता। बात करने के लिए Yaari को ब्राउज़र में खोलें।',
+  'inapp.bodyMenu': 'इस ऐप के अंदर वॉइस रूम और कॉल में माइक्रोफ़ोन काम नहीं करता। ऐप का मेनू (⋯) खोलें और “ब्राउज़र में खोलें” चुनें, या लिंक कॉपी करें।',
+  'inapp.open': 'ब्राउज़र में खोलें',
+  'inapp.copy': 'लिंक कॉपी करें',
+  'inapp.copied': 'लिंक कॉपी हो गया',
   'common.cancel': 'रद्द करें',
   'common.back': 'वापस',
   'common.save': 'सेव करें',

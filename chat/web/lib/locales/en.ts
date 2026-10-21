@@ -3,6 +3,12 @@
 const en = {
   // common
   'common.close': 'Close',
+  'inapp.title': 'Open Yaari in your browser',
+  'inapp.body': 'Voice rooms and calls can’t use the microphone inside this app. Open Yaari in your browser to talk.',
+  'inapp.bodyMenu': 'Voice rooms and calls can’t use the microphone inside this app. Use its menu (⋯) and choose “Open in browser”, or copy the link.',
+  'inapp.open': 'Open in browser',
+  'inapp.copy': 'Copy link',
+  'inapp.copied': 'Link copied',
   'common.cancel': 'Cancel',
   'common.back': 'Back',
   'common.save': 'Save',

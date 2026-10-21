@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/pressable'
 import { Splash } from '@/components/splash'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { retryImport } from '@/lib/retry-import'
+import { InAppBanner } from '@/components/shell/in-app-banner'
 import { installErrorReporting } from '@/lib/telemetry'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
@@ -78,6 +79,7 @@ function Localized() {
   return (
     <BackendProvider fallback={splash}>
       <ToastProvider>
+        <InAppBanner />
         <ScreenBoundary>
           <Suspense fallback={splash}>
             <Root />

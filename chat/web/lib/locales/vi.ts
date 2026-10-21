@@ -3,6 +3,12 @@ import type { Dict } from '../i18n'
 // Tiếng Việt — friendly, short app copy ("bạn").
 const vi: Dict = {
   'common.close': 'Đóng',
+  'inapp.title': 'Mở Yaari trong trình duyệt',
+  'inapp.body': 'Trong ứng dụng này, phòng thoại và cuộc gọi không dùng được micrô. Hãy mở Yaari trong trình duyệt để nói chuyện.',
+  'inapp.bodyMenu': 'Trong ứng dụng này, phòng thoại và cuộc gọi không dùng được micrô. Mở menu (⋯) và chọn “Mở trong trình duyệt”, hoặc sao chép liên kết.',
+  'inapp.open': 'Mở trong trình duyệt',
+  'inapp.copy': 'Sao chép liên kết',
+  'inapp.copied': 'Đã sao chép liên kết',
   'common.cancel': 'Hủy',
   'common.back': 'Quay lại',
   'common.save': 'Lưu',

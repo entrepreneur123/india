@@ -3,6 +3,12 @@ import type { Dict } from '../i18n'
 // বাংলা — short, everyday app Bengali (works for Bangladesh and West Bengal).
 const bn: Dict = {
   'common.close': 'বন্ধ করুন',
+  'inapp.title': 'Yaari আপনার ব্রাউজারে খুলুন',
+  'inapp.body': 'এই অ্যাপের ভেতরে ভয়েস রুম আর কলে মাইক্রোফোন কাজ করে না। কথা বলতে Yaari ব্রাউজারে খুলুন।',
+  'inapp.bodyMenu': 'এই অ্যাপের ভেতরে ভয়েস রুম আর কলে মাইক্রোফোন কাজ করে না। অ্যাপের মেনু (⋯) থেকে “ব্রাউজারে খুলুন” বেছে নিন, বা লিংক কপি করুন।',
+  'inapp.open': 'ব্রাউজারে খুলুন',
+  'inapp.copy': 'লিংক কপি করুন',
+  'inapp.copied': 'লিংক কপি হয়েছে',
   'common.cancel': 'বাতিল',
   'common.back': 'ফিরে যান',
   'common.save': 'সেভ করুন',

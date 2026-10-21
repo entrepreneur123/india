@@ -3,6 +3,12 @@ import type { Dict } from '../i18n'
 // Português (Brasil) — informal "você", short app copy.
 const ptBR: Dict = {
   'common.close': 'Fechar',
+  'inapp.title': 'Abra o Yaari no seu navegador',
+  'inapp.body': 'Dentro deste app, salas de voz e chamadas não conseguem usar o microfone. Abra o Yaari no navegador para falar.',
+  'inapp.bodyMenu': 'Dentro deste app, salas de voz e chamadas não conseguem usar o microfone. Use o menu (⋯) e escolha “Abrir no navegador”, ou copie o link.',
+  'inapp.open': 'Abrir no navegador',
+  'inapp.copy': 'Copiar link',
+  'inapp.copied': 'Link copiado',
   'common.cancel': 'Cancelar',
   'common.back': 'Voltar',
   'common.save': 'Salvar',
