@@ -241,6 +241,7 @@ const ptBR: Dict = {
   'music.dj': 'DJ {name}',
   'music.request': 'Pedir música',
   'music.add': 'Adicionar música',
+  'music.adding': 'Adicionando…',
   'music.votes.one': '{n} voto',
   'music.votes.other': '{n} votos',
   'music.vote': 'Votar em {title}',

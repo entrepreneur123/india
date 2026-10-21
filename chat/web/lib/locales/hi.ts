@@ -241,6 +241,7 @@ const hi: Dict = {
   'music.dj': 'DJ {name}',
   'music.request': 'गाना माँगें',
   'music.add': 'गाना जोड़ें',
+  'music.adding': 'जोड़ रहे हैं…',
   'music.votes.one': '{n} वोट',
   'music.votes.other': '{n} वोट',
   'music.vote': '{title} को वोट दें',

@@ -241,6 +241,7 @@ const vi: Dict = {
   'music.dj': 'DJ {name}',
   'music.request': 'Yêu cầu bài hát',
   'music.add': 'Thêm bài hát',
+  'music.adding': 'Đang thêm…',
   'music.votes.one': '{n} phiếu',
   'music.votes.other': '{n} phiếu',
   'music.vote': 'Bình chọn {title}',

@@ -244,6 +244,7 @@ const en = {
   'music.dj': 'DJ {name}',
   'music.request': 'Request a song',
   'music.add': 'Add a song',
+  'music.adding': 'Adding…',
   'music.votes.one': '{n} vote',
   'music.votes.other': '{n} votes',
   'music.vote': 'Vote for {title}',

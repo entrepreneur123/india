@@ -411,7 +411,8 @@ export function QueueSheet({
   const id = useId()
   const [link, setLink] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  /** The video being added (its title is looked up first); the box is free for the next link meanwhile. */
+  const [pending, setPending] = useState<string | null>(null)
   const ordered = byVotes(queue)
 
   useEffect(() => {
@@ -423,22 +424,34 @@ export function QueueSheet({
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const videoId = youTubeId(link)
+    if (pending) return
+    const sent = link
+    const videoId = youTubeId(sent)
     if (!videoId) {
       setError(t('voice.badLink'))
       return
     }
-    setBusy(true)
+    setLink('')
+    setError(null)
+    setPending(videoId)
     // Everyone's request carries its real title (the room card and the queue show it to everyone).
     const title = await videoTitle(videoId)
     const ok = await act({ type: 'addTrack', videoId, title })
-    setBusy(false)
-    if (ok) {
-      setLink('')
-      setError(null)
-      toast.show(isHost ? t('voice.added') : t('voice.suggested'), 'success')
+    setPending(null)
+    if (ok) toast.show(isHost ? t('voice.added') : t('voice.suggested'), 'success')
+    else {
+      // Not added (the reason is in the toast): the link comes back, unless something new was typed meanwhile.
+      setLink((now) => (now.trim() ? now : sent))
+      setError(t('error.generic'))
     }
   }
+  const adding = pending ? (
+    <li aria-live="polite">
+      <TrackRow videoId={pending} title={t('music.adding')} sub={`youtu.be/${pending}`}>
+        <LoaderCircle className="size-4.5 animate-spin text-muted-foreground" aria-hidden />
+      </TrackRow>
+    </li>
+  ) : null
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.musicTitle')} description={isHost ? t('voice.djDesc') : t('voice.suggestDesc')}>
@@ -464,7 +477,7 @@ export function QueueSheet({
               data-autofocus
               className="h-11 min-w-0 flex-1"
             />
-            <Button type="submit" variant="brand" className="h-11" loading={busy} disabled={!link.trim()}>
+            <Button type="submit" variant="brand" className="h-11" loading={!!pending} disabled={!link.trim() || !!pending}>
               {isHost ? t('voice.add') : t('music.request')}
             </Button>
           </div>
@@ -491,10 +504,11 @@ export function QueueSheet({
               <span className="text-xs text-muted-foreground">{t('music.mostVoted')}</span>
             )}
           </div>
-          {ordered.length === 0 ? (
+          {ordered.length === 0 && !pending ? (
             <p className="rounded-xl bg-muted px-4 py-3 text-sm text-muted-foreground">{t('music.noRequests')}</p>
           ) : (
             <ol className="flex flex-col gap-1">
+              {adding}
               {ordered.map((q) => (
                 <li key={q.id}>
                   <TrackRow
