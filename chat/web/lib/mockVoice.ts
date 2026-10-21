@@ -101,6 +101,8 @@ const PROMPTS = 40
 const SNAP = `data:image/svg+xml,${encodeURIComponent(
   "<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ff9a62'/><stop offset='.55' stop-color='#ffd39a'/><stop offset='1' stop-color='#8cc3cf'/></linearGradient></defs><rect width='640' height='480' fill='url(#s)'/><circle cx='430' cy='250' r='70' fill='#fff2c9'/><path d='M0 330 Q160 270 320 320 T640 300 V480 H0Z' fill='#3f6f7a'/><path d='M0 385 Q200 345 400 385 T640 372 V480 H0Z' fill='#2c4f58'/></svg>",
 )}`
+/** The language each demo room speaks. */
+const SEED_LANG: Record<string, string> = { 'v-bolly': 'hi', 'v-chai': 'hi', 'v-cricket': 'en', 'v-ludo': 'bn', 'v-lofi': 'en', 'v-gym': 'hi' }
 const ANYONE: RoomRules = { maxMembers: 120, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false }
 const code = () => Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
 
@@ -184,7 +186,7 @@ export class VoiceSim {
     }))
     const host = people[0]
     const room: SimRoom['room'] = {
-      id, title, category, mode, hostId: host.id, members, ...rules, announcement, code: null,
+      id, title, category, mode, hostId: host.id, members, ...rules, announcement, code: null, lang: SEED_LANG[id] ?? 'en',
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: index === 8 && mode === 'approval' })),
       track: null,
       queue: [],
@@ -329,6 +331,7 @@ export class VoiceSim {
           minAge: room.minAge,
           maxAge: room.maxAge,
           isPrivate: room.isPrivate,
+          lang: room.lang,
         }
       })
   }
@@ -348,6 +351,7 @@ export class VoiceSim {
       id, title, category: n.category, mode: 'approval', hostId: me.id, code: null,
       maxMembers: n.maxMembers, genderRule: n.genderRule, minAge: n.minAge, maxAge: n.maxAge, isPrivate: n.isPrivate,
       announcement: n.announcement.trim() || null,
+      lang: n.lang,
       // The host comes in off the stage: the room is a chat room until someone joins the voice.
       members: [
         { profile: me, role: 'host', seat: null, muted: true, hand: false },
@@ -372,7 +376,19 @@ export class VoiceSim {
     return r.room.id
   }
 
-  async settings(roomId: string, patch: { title: string; announcement: string }) {
+  /** An invite lets me in like the room's code. */
+  admit(roomId: string) {
+    const r = this.rooms.get(roomId)
+    if (!r || r.ended) throw new BackendError('room_closed')
+    r.admitted = true
+  }
+
+  /** The demo's live rooms (id, title), for seeding invites. */
+  liveRooms() {
+    return [...this.rooms.values()].filter((r) => !r.ended).map((r) => ({ id: r.room.id, title: r.room.title }))
+  }
+
+  async settings(roomId: string, patch: { title: string; announcement: string; lang?: string }) {
     const r = this.get(roomId)
     if (!r.mine) throw new BackendError('not_allowed')
     const title = patch.title.trim()
@@ -380,6 +396,7 @@ export class VoiceSim {
     await wait(200)
     r.room.title = title
     r.room.announcement = patch.announcement.trim().slice(0, 200) || null
+    if (patch.lang) r.room.lang = patch.lang
     this.changed(r)
   }
 

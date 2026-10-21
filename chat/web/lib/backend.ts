@@ -18,6 +18,61 @@ export interface Profile {
   photoUrl?: string | null
   country?: string | null /* ISO-2, show flag emoji */
   posts: Post[]
+  /** 3-5 of INTERESTS (absent: not loaded for this card). */
+  interests?: Interest[]
+  /** Up to 4 more photos (id = the stored file). */
+  photos?: ProfilePhoto[]
+}
+
+/** Interest tags (024_discovery_profiles.sql has the same list); the apps translate them. */
+export const INTERESTS = [
+  'music', 'movies', 'cricket', 'football', 'gaming', 'travel', 'food', 'fitness', 'books', 'tech',
+  'art', 'dance', 'fashion', 'photography', 'anime', 'pets', 'study', 'business', 'spirituality', 'comedy',
+] as const
+export type Interest = (typeof INTERESTS)[number]
+export const MIN_INTERESTS = 3
+export const MAX_INTERESTS = 5
+export const MAX_PHOTOS = 4
+
+export interface ProfilePhoto {
+  id: string
+  url: string
+}
+
+// ---- notifications (023_notifications.sql) ----
+
+export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite'
+
+export interface InboxItem {
+  id: number
+  kind: InboxKind
+  actor: Profile
+  at: number
+  read: boolean
+  /** Messages folded into a 'message' item. */
+  count: number
+  matchId: string | null
+  roomId: string | null
+  roomTitle: string | null
+  /** The invited-to room is still live. */
+  roomOpen: boolean
+  /** A friend request still waiting for my answer. */
+  pending: boolean
+}
+
+export interface Badges {
+  /** Unread inbox items. */
+  inbox: number
+  /** Friend requests waiting for me. */
+  friends: number
+  /** Unread messages per chat (match id). */
+  chats: Record<string, number>
+}
+
+/** Room search: title words, the room's language (an app language) and its category; empty = everything. */
+export interface RoomQuery {
+  text?: string
+  lang?: string | null
 }
 
 export interface Message {
@@ -130,6 +185,8 @@ export interface VoiceRoomSummary extends RoomRules {
   /** Only for my own room. */
   code: string | null
   refusal: RoomRefusal | null
+  /** The language the room speaks (en, hi, bn, pt-BR, vi), null when unknown. */
+  lang: string | null
 }
 
 export interface VoiceRoom extends RoomRules {
@@ -147,12 +204,15 @@ export interface VoiceRoom extends RoomRules {
   announcement: string | null
   /** The room's 6-character code, for its host only. */
   code: string | null
+  lang: string | null
 }
 
 export interface NewVoiceRoom extends RoomRules {
   title: string
   category: RoomKind
   announcement: string
+  /** The language the room speaks (the app language by default). */
+  lang: string
 }
 
 export interface RoomLeader {
@@ -391,13 +451,33 @@ export interface Backend {
   answerFriend(userId: string, accept: boolean): Promise<void>
   removeFriend(userId: string): Promise<void>
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
-  voiceRooms(): Promise<VoiceRoomSummary[]>
+  /** Live rooms, most people first; `query` narrows them on the server. */
+  voiceRooms(query?: RoomQuery): Promise<VoiceRoomSummary[]>
   /** Opens a room with me as host, not on the stage yet (ending my previous one). */
   createVoiceRoom(r: NewVoiceRoom): Promise<{ id: string; code: string }>
   /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
   joinVoiceCode(code: string): Promise<string>
-  /** Host only: the title and the pinned announcement (empty removes it). */
-  updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }): Promise<void>
+  /** Host only: the title, the pinned announcement (empty removes it) and the language. */
+  updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }): Promise<void>
+  /** Tells a friend about the room I'm in (their inbox, and a push when phones get them). */
+  inviteToRoom(roomId: string, userId: string): Promise<void>
+  /** Opens an invite: lets me into the room even when it is private; returns its id (then joinVoice). */
+  joinInvite(inboxId: number): Promise<string>
+  /** People with the app open right now (a server count, at most 10 s old). */
+  onlineCount(): Promise<number>
+  // ---- inbox and badges ----
+  inbox(before?: number): Promise<InboxItem[]>
+  /** Marks these items (or all of them) read. */
+  markInboxRead(ids?: number[]): Promise<void>
+  /** Unread counts; also tells the server I have the app open (no pushes meanwhile). */
+  badges(): Promise<Badges>
+  /** Called whenever an inbox item of mine arrives or changes. Returns the stop function. */
+  inboxSignals(on: () => void): () => void
+  // ---- profile extras ----
+  setInterests(tags: Interest[]): Promise<Profile>
+  /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
+  addProfilePhoto(photo: File): Promise<Profile>
+  removeProfilePhoto(id: string): Promise<Profile>
   /** Enters as a listener (or as the host of my own room). */
   joinVoice(roomId: string): Promise<VoiceRoom>
   leaveVoice(roomId: string): Promise<void>

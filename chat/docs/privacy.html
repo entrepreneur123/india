@@ -24,23 +24,25 @@
 <tr><th>Data</th><th>Why</th></tr>
 <tr><td>Mobile number</td><td>Sign-in by one-time code, and one account per number.</td></tr>
 <tr><td>Name, gender, date of birth, city, bio, profile photo</td><td>Your profile. Other people see your name, gender, age (not your date of birth), city, bio and photo only after they have been matched with you. Gender and date of birth cannot be changed after sign-up, to prevent fake profiles.</td></tr>
+<tr><td>Interests and extra profile photos (optional)</td><td>Up to 5 interest tags you choose and up to 4 more photos. They show on your profile to the same people who can see your profile. Your interests also help random chat prefer someone who shares one (after language); the person you meet sees which ones you share. Each photo is checked for nudity on your own device before it is added.</td></tr>
 <tr><td>Posts, chat messages, photos and videos you send</td><td>To deliver them to the people you choose. Media is stored privately and shown only to people you have been matched with.</td></tr>
 <tr><td>Matches, reports and blocks</td><td>To run matching, keep blocked people away from you, and act on reports (including automatic suspension after repeated reports).</td></tr>
 <tr><td>Video calls</td><td>In the app and on the website, the other person's video is checked for nudity on your own device; no picture leaves it. If nudity is detected, the video is hidden and a report (who, when, no images) goes to our safety team. Calls themselves are not recorded.</td></tr>
 <tr><td>Rooms</td><td>To run rooms (talk, music and games): chat, live audio, shared music and Ludo. People in the same room see your name, age, city and photo, and while you are on the stage anyone browsing rooms can see them too. Your voice is relayed live only while someone is on the stage, and is not recorded. Room chat (including photos and question cards), raised hands, song votes, reactions and Ludo results are stored so everyone in the room sees them; the room's settings (who may join, its code, its announcement) are stored with the room.</td></tr>
 <tr><td>Photos in rooms</td><td>Before a photo is sent to a room, it is checked for nudity on your own device; nothing leaves your device for this check, and a photo that looks like nudity is not sent. Photos are stored privately and shown only to people in that room (or there in the last day), blurred until they tap to view.</td></tr>
+<tr><td>Notifications</td><td>Your in-app notifications (friend requests and acceptances, a friend's new messages, room invites) record who, what kind and when, never the message text. To send phone notifications, the app stores a notification token for your device with its language and time zone (so nothing is sent at night, 23:00 to 08:00 your time, except friend requests); a notification carries only the sender's name and the kind of event. We note when you last had the app open so no notification is sent while you are using it. Phone notifications are delivered by Google Firebase Cloud Messaging. You can turn them off in your phone's settings; signing out removes the token from use.</td></tr>
 <tr><td>Diagnostics</td><td>To find and fix crashes and see whether the main steps work (signing up, getting a match, sending a first message, opening or joining a room, starting Ludo or a video call, buying Plus). When something breaks we receive the error message and the place in the code where it happened, the app version, the platform (web or Android) and the screen, linked to your account if you are signed in. For the main steps we receive only the step's name and the time. Diagnostics never contain your messages, photos, phone number or what you say in calls, and they are kept on our own server (Supabase), not shared with analytics or advertising companies.</td></tr>
 <tr><td>Purchase records from Google Play</td><td>To grant Premium or the 24-hour gender pass. We receive a purchase token from Google; we never see your card or UPI details.</td></tr>
 </table>
 <p>Video calls and room audio are relayed live and are not recorded by Yaari. In the Android app, screenshots and screen recording are blocked in chats, video calls and other people's profiles; a website cannot block them.</p>
-<p>On the website, your sign-in session and language choice are kept in your browser's local storage. The website uses no advertising or analytics cookies; the diagnostics above are sent to our own server.</p>
+<p>On the website, your sign-in session, language choice and whether you have seen the welcome tour are kept in your browser's local storage. The website uses no advertising or analytics cookies; the diagnostics above are sent to our own server.</p>
 
 <h2>Who processes your data</h2>
 <ul>
 <li>Supabase (database, file storage, sign-in), hosted in the Mumbai, India region.</li>
 <li>LiveKit Cloud (relaying video calls and room audio), through the server nearest to the people talking.</li>
 <li>YouTube (the shared music player in rooms), loaded only when a room plays music and you open the player. YouTube's own privacy policy applies to what it plays.</li>
-<li>Google Play (payments), our SMS provider (sending sign-in codes) and Vercel (serving the website).</li>
+<li>Google Play (payments, and refund notices that end what a refunded purchase gave), Google Firebase Cloud Messaging (delivering phone notifications), our SMS provider (sending sign-in codes) and Vercel (serving the website).</li>
 </ul>
 <p>We do not sell your data and do not use it for advertising.</p>
 
@@ -54,6 +56,7 @@
 <li>Room chat, including photos sent to rooms: 30 days. Rooms: 7 days after they end. The audio itself is never stored.</li>
 <li>Old profile photos, photos of deleted chats or posts, and room photos past their 30 days: within a day or two.</li>
 <li>Reports: one year, with a copy of the reported chat or room messages (what the reported person wrote or posted, photos included, in the last day) so we can review them, even if either account is deleted. The reported person does not see who reported them.</li>
+<li>Notifications: 90 days after you have read them (180 days if never read). Notification tokens of devices no longer in use: 30 days.</li>
 <li>Diagnostics (error reports and step names): 90 days. If you delete your account they stay for those 90 days without the link to your account.</li>
 <li>If an account is deleted while it is suspended, we keep only a one-way hash of the phone number until the suspension ends, so that a suspension cannot be avoided by signing up again.</li>
 </ul>

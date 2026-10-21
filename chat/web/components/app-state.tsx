@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef } from 'react'
-import type { Entitlements, Profile } from '@/lib/backend'
+import type { Badges, Entitlements, Profile } from '@/lib/backend'
 import type { Lang, T } from '@/lib/i18n'
 
 export type Tab = 'rooms' | 'random' | 'recent' | 'me' | 'settings'
@@ -36,6 +36,10 @@ export interface AppState {
   reported: (partnerId: string) => void
   onReported: (listener: (partnerId: string) => void) => () => void
   signedOut: () => void
+  /** Unread counts (null until the first answer). */
+  badges: Badges | null
+  refreshBadges: () => void
+  openInbox: () => void
 }
 
 export const AppContext = createContext<AppState | null>(null)

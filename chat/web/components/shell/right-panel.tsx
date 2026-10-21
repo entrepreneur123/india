@@ -11,11 +11,12 @@ import { Button } from '@/components/ui/pressable'
 import { flagEmoji } from '@/lib/format'
 import { kindTopic } from '@/components/screens/rooms/room-text'
 import { TopicTile } from '@/components/ui/topic-icons'
+import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, openProfile, openThread, entitlements, openPaywall, openVoice } = useApp()
+  const { t, openProfile, openThread, entitlements, openPaywall, openVoice, badges } = useApp()
   const { plural, num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   // The same list as the Rooms tab (one request serves both).
@@ -77,6 +78,7 @@ export function RightPanel({ className }: { className?: string }) {
                         <span className="block truncate text-xs text-muted-foreground">{f.profile.city}</span>
                       </span>
                     </button>
+                    <CountBadge n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />
                     <Button
                       size="icon-sm"
                       variant="ghost"

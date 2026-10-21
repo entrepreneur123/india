@@ -2,6 +2,32 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-21 변경 (감사 결과 2단계: 알림·방 찾기·관심사·환불)
+- **서버 마이그레이션 023~027 적용 완료.**
+  - 023: 알림함 `notifications`(친구 메시지는 대화당 1줄로 묶음, 친구 요청/수락, 방 초대), `my_badges()`(안 읽은 수 + "앱 켜져 있음"
+    표시 `user_seen`), `inbox()`, `inbox_read()`, 휴대폰 토큰 `device_tokens` + `register_device`/`unregister_device`.
+    푸시 판단 `push_dispatch`(토큰 없으면 아무것도 안 함, 60초 안 접속 중이면 안 보냄, 대화당 30초 1번, 현지 23~08시는 친구 요청만)
+    → pg_net으로 edge function `push`(볼트 키 `edge_call_key`). `push`는 `FCM_SERVICE_ACCOUNT`가 없으면 `{skipped:true}`.
+  - 024: 방 언어 `voice_rooms.lang`(안드로이드 0.7.0이 만든 방은 마지막 랜덤채팅 언어), `voice_list3(검색어, 언어, 분류)`,
+    `create_voice_room3`, `voice_settings2`, `online_count()`(10초 캐시), `invite_to_room`/`join_invite`(비공개 방도 초대로 입장),
+    관심사 `profiles.interests`(20개 중 3~5, `set_interests`), 추가 사진 4장 `profiles.photos`(`set_photos`, 본인 avatar 폴더만),
+    `profile_extras(ids)`, `stale_media`가 추가 사진을 지우지 않음, 매칭: 언어 다음 공통 관심사(10초 넘게 기다린 사람은 순서 유지).
+  - 025: Play 환불/취소 `play_revoke`(구독 → Plus 즉시 종료, 성별 패스 → 24시간 회수), 매일 04:41 UTC `play-rtdn?mode=voided`.
+  - 026: 정지되면 즉시 대기줄에서 빠짐 → `find_match2`가 대기자마다 프로필을 읽지 않음 (2,000명 대기 4~5.6 ms).
+  - 027: `voice_state`에 `lang`.
+- **edge function** `push`, `play-rtdn`(verify_jwt 끔, 자체 인증: 볼트 키 / Pub/Sub OIDC 또는 `?token=`). 설정법은 LAUNCH_GUIDE 4-1, 4-2.
+- **웹**: 알림(데스크톱 사이드바 "Notifications", 휴대폰은 랜덤 첫 화면·Recent 상단 종), Recent 탭/친구·매치 줄의 안 읽은 수(실시간),
+  방 검색(이름·언어), 방 카드에 언어, 방 만들기/설정에 언어, 방에서 친구 초대 + 링크 `/r/<id>`(비공개는 `/r/<코드>`, 로그인 전에 열어도
+  가입 후 그 방으로), 랜덤 화면 "N people online", 첫 실행 관심사 고르기 + 3장 소개(한 번만, 건너뛰기 가능), Me의 관심사·사진 4장,
+  프로필 시트의 관심사(공통은 강조)·사진. 새 문구는 `components/social/locales/*`(첫 화면 용량 영향 없음).
+  `vercel.json`: `cleanUrls`(→ `/admin` 동작) + `/r/:code` 재작성.
+- **사장님이 하실 일**: `owner_run_once_3.sql` 다음 `owner_run_once_4.sql` 실행(알림 90일·토큰 30일 정리, 자체 점검용 가짜 토큰 삭제).
+  Firebase·Play Console 계정이 생기면 LAUNCH_GUIDE 4-1(환불), 4-2(푸시)의 비밀값만 넣으면 켜짐.
+- **안드로이드 다음 버전**: FCM 붙이기(`register_device`, 채널 3개, data 메시지로 알림 만들기), 알림함·관심사·방 검색 화면.
+- 테스트: `test_notifications.sql`, `test_discovery.sql`, `test_play_refunds.sql` 추가. (MCP의 SQL 도구는 WHERE 없는 UPDATE가 있으면
+  사용자 확인을 기다리다 60초에 끊김 — 테스트에는 항상 WHERE를 붙일 것.)
+- 테스트 계정 919000000001(seyoen)과 919000000002(QA Web)를 친구로 만들어 둠(실시간 알림 점검용).
+
 ## 2026-10-21 변경 (감사 결과 1단계: 서버 + 웹)
 - **서버 마이그레이션 020~022 적용 완료.**
   - 020: 매칭 경합 수정(한 사람이 두 매칭에 들어가던 버그), 대기줄 `seen_at` 색인, 빠진 FK 색인,

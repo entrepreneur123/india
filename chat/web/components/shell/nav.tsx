@@ -1,11 +1,14 @@
 'use client'
 
 import * as m from 'motion/react-m'
-import { MessagesSquare, Settings, Shuffle, UserRound, Users, type LucideIcon } from 'lucide-react'
+import { Bell, MessagesSquare, Settings, Shuffle, UserRound, Users, type LucideIcon } from 'lucide-react'
 import { useApp, type Tab } from '@/components/app-state'
 import type { TKey } from '@/lib/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Logo } from '@/components/ui/bits'
+import { CountBadge } from '@/components/social/bits'
+import { useSocialT } from '@/components/social/social-text'
+import type { Badges } from '@/lib/backend'
 import { cn } from '@/lib/utils'
 import { preloadScreen } from './lazy-screens'
 
@@ -13,6 +16,12 @@ interface NavItem {
   tab: Tab
   label: TKey
   icon: LucideIcon
+}
+
+/** The Recent tab's number: chats with unread messages, and friend requests waiting for me. */
+export function recentCount(b: Badges | null) {
+  if (!b) return 0
+  return Object.values(b.chats).filter((n) => n > 0).length + b.friends
 }
 
 const ITEMS: NavItem[] = [
@@ -24,7 +33,9 @@ const ITEMS: NavItem[] = [
 ]
 
 export function Sidebar({ className }: { className?: string }) {
-  const { tab, setTab, t, me, entitlements, openPaywall } = useApp()
+  const { tab, setTab, t, me, entitlements, openPaywall, badges, openInbox } = useApp()
+  const { st } = useSocialT()
+  const inboxCount = badges?.inbox ?? 0
   return (
     <aside
       className={cn(
@@ -65,9 +76,21 @@ export function Sidebar({ className }: { className?: string }) {
               />
               <Icon className="relative z-10 size-5.5 shrink-0" strokeWidth={active ? 2.4 : 2} aria-hidden />
               <span className="relative z-10 hidden truncate lg:inline">{t(item.label)}</span>
+              <NavCount n={item.tab === 'recent' ? recentCount(badges) : 0} label={st('nav.newCount', { n: recentCount(badges) })} />
             </button>
           )
         })}
+        <button
+          type="button"
+          onClick={openInbox}
+          title={st('inbox.title')}
+          aria-label={inboxCount ? st('inbox.openUnread', { n: inboxCount }) : st('inbox.open')}
+          className="relative flex h-12 items-center justify-center gap-4 rounded-full px-4 text-[15px] font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground lg:justify-start"
+        >
+          <Bell className="size-5.5 shrink-0" strokeWidth={2} aria-hidden />
+          <span className="hidden truncate lg:inline">{st('inbox.title')}</span>
+          <NavCount n={inboxCount} />
+        </button>
       </nav>
 
       <div className="mt-auto flex flex-col gap-3">
@@ -101,7 +124,8 @@ export function Sidebar({ className }: { className?: string }) {
 }
 
 export function BottomTabs({ hidden }: { hidden?: boolean }) {
-  const { tab, setTab, t } = useApp()
+  const { tab, setTab, t, badges } = useApp()
+  const { st } = useSocialT()
   return (
     <m.nav
       aria-label={t('nav.main')}
@@ -134,12 +158,29 @@ export function BottomTabs({ hidden }: { hidden?: boolean }) {
                 )}
               >
                 <Icon className="size-5" strokeWidth={active ? 2.4 : 2} aria-hidden />
+                {item.tab === 'recent' ? (
+                  <CountBadge n={recentCount(badges)} className="absolute -top-1 right-2 ring-2 ring-background" />
+                ) : null}
               </span>
+              {item.tab === 'recent' && recentCount(badges) ? (
+                <span className="sr-only">{st('nav.newCount', { n: recentCount(badges) })}</span>
+              ) : null}
               <span className="max-w-full truncate">{t(item.label)}</span>
             </button>
           )
         })}
       </div>
     </m.nav>
+  )
+}
+
+/** A count at the end of a sidebar item (a dot on the narrow sidebar). */
+function NavCount({ n, label }: { n: number; label?: string }) {
+  if (n <= 0) return null
+  return (
+    <>
+      <CountBadge n={n} className="absolute top-1.5 right-3 z-10 ring-2 ring-background lg:static lg:ml-auto lg:ring-0" />
+      {label ? <span className="sr-only">{label}</span> : null}
+    </>
   )
 }

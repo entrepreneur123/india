@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react'
 import useSWR from 'swr'
 import { Lock, Plus, Users } from 'lucide-react'
-import type { VoiceRoomSummary } from '@/lib/backend'
+import type { RoomQuery, VoiceRoomSummary } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -16,15 +16,22 @@ import { TopicChip, TopicIcon } from '@/components/ui/topic-icons'
 import { categoryLabel, kindColor, kindTopic, refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
 import type { RoomFilter } from '@/components/screens/rooms/rooms-screen'
 import { cn } from '@/lib/utils'
+import { langName } from '@/components/social/room-lang'
+import { useSocialT } from '@/components/social/social-text'
 import { LiveBars } from './voice-stage'
 
 /** The live rooms on the Rooms tab (and its filter by category). */
-export function VoiceRooms({ filter, onCreate }: { filter: RoomFilter; onCreate: () => void }) {
+export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilter; query?: RoomQuery; onCreate: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
   const { openVoice, voiceRoomId } = useApp()
-  const { data: rooms, error, mutate } = useSWR('voiceRooms', () => backend.voiceRooms(), {
+  const { st } = useSocialT()
+  const searching = !!(query.text || query.lang)
+  // Without a search this is the same list (and request) as the right panel's.
+  const key = searching ? ['voiceRooms', query.text ?? '', query.lang ?? ''] : 'voiceRooms'
+  const { data: rooms, error, mutate } = useSWR(key, () => backend.voiceRooms(searching ? query : undefined), {
+    keepPreviousData: true,
     // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.
     refreshInterval: 30_000, refreshWhenHidden: false, focusThrottleInterval: 30_000, dedupingInterval: 5_000,
   })
@@ -57,6 +64,17 @@ export function VoiceRooms({ filter, onCreate }: { filter: RoomFilter; onCreate:
             <Skeleton key={i} className="h-52 rounded-2xl" />
           ))}
         </div>
+      ) : shown.length === 0 && searching ? (
+        <EmptyState
+          art="rooms"
+          title={st('rooms.noMatch')}
+          body={st('rooms.noMatchBody')}
+          action={
+            <Button variant="brand" onClick={onCreate}>
+              <Plus className="size-4.5" aria-hidden /> {t('rooms.create')}
+            </Button>
+          }
+        />
       ) : shown.length === 0 ? (
         <EmptyState
           art="rooms"
@@ -104,6 +122,11 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
         <span className="flex min-w-0 items-center gap-1.5">
           <TopicChip topic={kindTopic(room.category)} label={categoryLabel(room.category, t)} />
           {room.isPrivate ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t('rooms.private')} /> : null}
+          {langName(room.lang) ? (
+            <span lang={room.lang ?? undefined} className="truncate rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+              {langName(room.lang)}
+            </span>
+          ) : null}
         </span>
         {live || here ? (
           <span className="flex shrink-0 items-center gap-1.5 text-xs font-bold text-primary-text">

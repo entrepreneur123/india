@@ -12,6 +12,10 @@ import { Field, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { InterestChips } from '@/components/social/bits'
+import { Gallery } from '@/components/social/gallery'
+import { InterestsSheet } from '@/components/social/interests-sheet'
+import { useSocialT } from '@/components/social/social-text'
 import { PhotoPicker } from './photo-picker'
 import { PostGrid } from './post-grid'
 
@@ -26,6 +30,8 @@ export function MeScreen() {
   const { data: friends } = useSWR('friends', () => backend.friends())
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
+  const [interestsOpen, setInterestsOpen] = useState(false)
+  const { st } = useSocialT()
   const friendCount = friends?.filter((f) => f.state === 'friends').length
 
   return (
@@ -66,6 +72,28 @@ export function MeScreen() {
               <Plus className="size-4.5" aria-hidden /> {t('me.newPost')}
             </Button>
           </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold">{st('interests.label')}</h2>
+              {me.interests?.length ? (
+                <Button size="sm" variant="ghost" className="-mr-3" onClick={() => setInterestsOpen(true)}>
+                  {st('interests.edit')}
+                </Button>
+              ) : null}
+            </div>
+            {me.interests?.length ? (
+              <InterestChips tags={me.interests} />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setInterestsOpen(true)}
+                className="rounded-2xl border border-dashed border-input px-4 py-3 text-left text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+              >
+                {st('interests.add')}
+              </button>
+            )}
+          </div>
+          <Gallery photos={me.photos ?? []} owner={me.name} editable />
         </section>
 
         <div className="mt-8 border-t border-border sm:mx-8">
@@ -78,6 +106,7 @@ export function MeScreen() {
       </div>
       <EditProfile open={editOpen} onClose={() => setEditOpen(false)} />
       <NewPost open={postOpen} onClose={() => setPostOpen(false)} />
+      <InterestsSheet open={interestsOpen} onClose={() => setInterestsOpen(false)} />
     </div>
   )
 }

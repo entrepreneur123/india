@@ -81,6 +81,40 @@
 8. **서명 키**: 지금 APK는 디버그 키 서명. Play에는 `./gradlew bundleLiveRelease`로 만든 AAB를 업로드 키로 서명해 올립니다(README "upload.properties").
 9. 국가: 인도 → 방글라데시 → 브라질 → 베트남 순으로 열기. 브라질은 2026-09-30부터 **Android 개발자 인증**(Play 밖 배포 포함) 시행.
 
+### 4-1. 환불·취소 자동 처리(RTDN) — Play Console이 생긴 뒤 (서버 쪽은 준비 완료, 비밀값만 넣으면 켜짐)
+
+환불되거나 취소된 구매는 즉시 Plus/성별 패스를 끝냅니다 (edge function `play-rtdn`, 마이그레이션 025).
+비밀값이 없으면 `play-rtdn`은 모든 호출을 거절(401)하고, 매일 새벽 점검도 아무것도 하지 않습니다.
+
+1. **Google Cloud 콘솔**(Play Console과 연결된 프로젝트) → Pub/Sub → **주제(Topic) 만들기**: 예 `yaari-play-rtdn`.
+   주제의 권한에 `google-play-developer-notifications@system.gserviceaccount.com` 을 **Pub/Sub 게시자(Publisher)** 로 추가.
+2. 같은 주제에 **구독(Subscription) 만들기** → 전송 유형 **푸시(Push)** →
+   엔드포인트 `https://dgynsckrqgnpyyvqekzi.supabase.co/functions/v1/play-rtdn` →
+   **인증 사용(Enable authentication)** 체크 → 서비스 계정 하나 선택(새로 만들어도 됨) → 대상(Audience)은 위 엔드포인트 주소 그대로.
+3. Supabase 대시보드 → Edge Functions → Secrets:
+   - `PLAY_RTDN_AUDIENCE` = 2번의 대상(엔드포인트 주소)
+   - `PLAY_RTDN_SA_EMAIL` = 2번에서 고른 서비스 계정 이메일 (선택이지만 권장)
+   - (OIDC가 어렵다면 대신) `PLAY_RTDN_TOKEN` = 16자 이상 임의 문자열, 엔드포인트를 `...play-rtdn?token=<그 값>` 으로. 덜 안전하므로 OIDC 권장.
+4. **Play Console → 수익 창출 설정(Monetization setup) → 실시간 개발자 알림** → 주제 이름 `projects/<프로젝트ID>/topics/yaari-play-rtdn` 입력 →
+   **테스트 알림 보내기** → Supabase Edge Functions 로그에서 `play-rtdn` 200 확인.
+5. 매일 점검(놓친 알림 보충, pg_cron `yaari-play-voided`, 04:41 UTC): Play의 **Voided Purchases API** 를 읽습니다.
+   Secret `PLAY_SERVICE_ACCOUNT`(또는 이미 넣은 `GOOGLE_SERVICE_ACCOUNT_JSON`)의 서비스 계정에 Play Console에서 **재무 데이터 보기** 권한이 있어야 합니다.
+
+### 4-2. 휴대폰 푸시 알림(FCM) — Firebase 계정이 생긴 뒤 (서버 쪽은 준비 완료)
+
+친구 메시지·친구 요청/수락·방 초대가 앱 안 알림함(웹은 이미 사용 중)에 쌓이고, 휴대폰 토큰이 등록된 사람에게는 푸시도 갑니다
+(마이그레이션 023, edge function `push`). 규칙: 앱을 열고 있으면(60초 안) 안 보냄, 같은 대화는 30초에 1번, 현지 시각 23~08시는
+친구 요청만. 푸시 내용은 종류·ID·보낸 사람 이름뿐(메시지 내용 없음) — 문장은 앱이 각 언어로 만듭니다.
+지금은 등록된 토큰이 0개라 아무것도 나가지 않고, 비밀값이 없으면 `push`는 `{skipped:true}`만 돌려줍니다.
+
+1. **Firebase 콘솔** → 프로젝트 추가(위 Google Cloud 프로젝트를 그대로 써도 됨) → Android 앱 추가: 패키지 `com.yaari.chat` →
+   `google-services.json` 다운로드 (안드로이드 앱에 FCM을 붙이는 다음 버전에서 사용).
+2. 프로젝트 설정 → 서비스 계정 → **새 비공개 키 생성** → 받은 JSON 파일 내용 전체를 Supabase Secret **`FCM_SERVICE_ACCOUNT`** 에 붙여넣기.
+3. 안드로이드 앱(다음 버전)이 할 일: 첫 친구를 추가한 뒤 알림 권한 요청(Android 13+), 채널 3개(messages / social / rooms),
+   토큰을 `register_device(token, 'android', 언어, 시간대)` 로 등록, 로그아웃 때 `unregister_device(token)`.
+   푸시는 data 메시지(`kind`, `channel`, `actor_name`, `match`/`room`, `n`)이므로 앱이 알림을 직접 만듭니다.
+4. 확인: SQL Editor에서 `select * from net._http_response order by id desc limit 5;` → `push` 응답이 `{"sent":1,...}`.
+
 ---
 
 ## 5. 국가별 법적 필수 사항 (MVP 단계)
@@ -165,7 +199,7 @@
 - 인도 DPDP 2027-05 전 동의·고지 정비, 사용자 500만 명 근접 시 인도 거주 책임자 3명(SSMI).
 - 베트남 월 10만 방문 전후 전화번호 인증·연락처 통지.
 - 웹 결제(현지 결제 게이트웨이 — 대부분 현지 법인·KYC 필요), Galaxy Store·Indus Appstore 추가 배포.
-- 사람 검수 모더레이션 도구(신고 큐 화면), 친구 접속 상태, 푸시 알림.
+- 친구 접속 상태, 웹 푸시(Web Push). (모더레이션 콘솔은 /admin, 푸시 서버는 4-2절 — 완료.)
 
 ---
 

@@ -3,13 +3,14 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
-import { SWRConfig } from 'swr'
+import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
 import type { Entitlements, Profile } from '@/lib/backend'
 import { AppContext, type AppState, type Tab, type Thread } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { NightContext } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
+import { onboardingDue } from '@/components/social/first-run'
 import { cn } from '@/lib/utils'
 import { BottomTabs, Sidebar } from './nav'
 import { RandomScreen } from '@/components/screens/random/random-screen'
@@ -24,6 +25,8 @@ import {
   SettingsScreen,
   ThreadScreen,
   VoiceHost,
+  InboxSheet,
+  Onboarding,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
@@ -82,6 +85,26 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [reportListeners] = useState(() => new Set<(id: string) => void>())
   // The friends/rooms panel exists only on wide screens; phones never load its data.
   const wide = useMediaQuery('(min-width: 1280px)')
+  const [inboxOpen, setInboxOpen] = useState(false)
+  const [inboxUsed, setInboxUsed] = useState(false)
+  const [onboarding, setOnboarding] = useState(() => onboardingDue(!!initialMe.interests?.length))
+  const { mutate } = useSWRConfig()
+
+  // Unread counts. Asking also tells the server the app is open (no phone pushes meanwhile): at start, every 30 s
+  // while the tab is visible, and at once when one of my notifications arrives or changes.
+  const { data: badges } = useSWR('badges', () => backend.badges(), {
+    refreshInterval: 30_000, refreshWhenHidden: false, dedupingInterval: 2_000, focusThrottleInterval: 10_000,
+  })
+  const refreshBadges = useCallback(() => void mutate('badges'), [mutate])
+  useEffect(
+    () =>
+      backend.inboxSignals(() => {
+        void mutate('badges')
+        void mutate('inbox')
+        void mutate('friends')
+      }),
+    [backend, mutate],
+  )
 
   // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes
   // (only while the tab is visible).
@@ -96,13 +119,27 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
     }
   }, [backend])
 
-  // A shared room link (/?voice=<id>) opens that room.
+  // A shared room link opens that room: /r/<id> for a public room, /r/<code> for a private one (the code lets the
+  // person in; yaari-app.tsx keeps it in sessionStorage, also through sign-up), and the older /?voice=<id>.
   useEffect(() => {
-    const id = new URLSearchParams(location.search).get('voice')
-    if (!id) return
-    setVoice({ id, expanded: true })
-    history.replaceState(null, '', location.pathname)
-  }, [])
+    let link: string | null = null
+    try {
+      link = sessionStorage.getItem('yaari_link')
+      sessionStorage.removeItem('yaari_link')
+    } catch {
+      /* storage blocked */
+    }
+    const voiceParam = new URLSearchParams(location.search).get('voice')
+    if (voiceParam) history.replaceState(null, '', location.pathname)
+    link = voiceParam ?? link
+    if (!link) return
+    if (/^v-[0-9a-z]+$/i.test(link)) return setVoice({ id: link, expanded: true })
+    if (!/^[A-Z0-9]{6}$/i.test(link)) return
+    backend.joinVoiceCode(link.toUpperCase()).then(
+      (id) => setVoice({ id, expanded: true }),
+      (err) => toast.error(err),
+    )
+  }, [backend, toast])
 
   // Once the app has settled, fetch every other screen in the background: later tab switches are instant and
   // still work if the connection drops.
@@ -164,8 +201,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         return () => void reportListeners.delete(l)
       },
       signedOut: onSignedOut,
+      badges: badges ?? null,
+      refreshBadges,
+      openInbox: () => {
+        setInboxUsed(true)
+        setInboxOpen(true)
+      },
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners, voice?.id],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges],
   )
 
   const randomVisible = tab === 'random' && !thread
@@ -221,7 +264,13 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                   >
                     <ScreenBoundary>
                       <Suspense fallback={<ScreenLoading />}>
-                        <ThreadScreen thread={thread} onClose={() => setThread(null)} />
+                        <ThreadScreen
+                          thread={thread}
+                          onClose={() => {
+                            setThread(null)
+                            refreshBadges() // what was read there
+                          }}
+                        />
                       </Suspense>
                     </ScreenBoundary>
                   </m.div>
@@ -255,6 +304,20 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           <ScreenBoundary>
             <Suspense fallback={null}>
               <ProfileSheet target={profileTarget} onClose={() => setProfileTarget(null)} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {inboxUsed ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <InboxSheet open={inboxOpen} onClose={() => setInboxOpen(false)} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {onboarding ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <Onboarding onDone={() => setOnboarding(false)} />
             </Suspense>
           </ScreenBoundary>
         ) : null}

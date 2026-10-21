@@ -17,6 +17,8 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
+import { BellButton, CountBadge } from '@/components/social/bits'
+import { useSocialT } from '@/components/social/social-text'
 import { cn } from '@/lib/utils'
 
 type Segment = 'friends' | 'matches'
@@ -28,11 +30,17 @@ export function RecentScreen() {
   const friends = useSWR('friends', () => backend.friends())
   const recents = useSWR('recents', () => backend.recents())
   const incoming = friends.data?.filter((f) => f.state === 'incoming').length ?? 0
+  const { badges } = useApp()
+  const unreadMatches = recents.data?.filter((r) => (badges?.chats[r.matchId] ?? 0) > 0).length ?? 0
+  const unreadFriends = friends.data?.filter((f) => f.threadId && (badges?.chats[f.threadId] ?? 0) > 0).length ?? 0
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
       <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
-        <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('recent.title')}</h1>
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('recent.title')}</h1>
+          <BellButton className="md:hidden" />
+        </div>
         <Segmented
           className="w-full"
           size="lg"
@@ -45,15 +53,19 @@ export function RecentScreen() {
               label: (
                 <>
                   {t('recent.friends')}
-                  {incoming > 0 ? (
-                    <span className="ml-1.5 inline-grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">
-                      {incoming}
-                    </span>
-                  ) : null}
+                  <CountBadge n={incoming + unreadFriends} className="ml-1.5" />
                 </>
               ),
             },
-            { value: 'matches', label: t('recent.matches') },
+            {
+              value: 'matches',
+              label: (
+                <>
+                  {t('recent.matches')}
+                  <CountBadge n={unreadMatches} className="ml-1.5" />
+                </>
+              ),
+            },
           ]}
         />
         <AnimatePresence mode="wait" initial={false}>
@@ -144,7 +156,7 @@ function FriendsList({
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { openThread } = useApp()
+  const { openThread, badges } = useApp()
   const [busy, setBusy] = useState<string | null>(null)
   const [unfriend, setUnfriend] = useState<Profile | null>(null)
 
@@ -215,6 +227,7 @@ function FriendsList({
           {friends.map((f) => (
             <Row key={f.profile.id}>
               <Who p={f.profile} />
+              <Unread n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />
               <Button size="icon" variant="ghost" onClick={() => openThread(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>
@@ -291,7 +304,7 @@ function MatchesList({
   onReported: (partnerId: string) => void
   onFind: () => void
 }) {
-  const { openThread } = useApp()
+  const { openThread, badges } = useApp()
   const { t, timeAgo } = useI18n()
   const [reporting, setReporting] = useState<RecentMatch | null>(null)
 
@@ -323,6 +336,7 @@ function MatchesList({
                   </>
                 }
               />
+              <Unread n={badges?.chats[r.matchId] ?? 0} />
               <Button size="icon" variant="ghost" onClick={() => openThread(r.partner, r.matchId)} aria-label={t('panel.message', { name: r.partner.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>
@@ -368,5 +382,17 @@ function Row({ children, className }: { children: React.ReactNode; className?: s
     <div className={cn('flex items-center gap-2 rounded-2xl p-2.5 transition-colors duration-150 hover:bg-muted', className)}>
       {children}
     </div>
+  )
+}
+
+/** Unread messages in a chat (from my_badges). */
+function Unread({ n }: { n: number }) {
+  const { st } = useSocialT()
+  if (n <= 0) return null
+  return (
+    <>
+      <CountBadge n={n} />
+      <span className="sr-only">{st('unread.count', { n })}</span>
+    </>
   )
 }

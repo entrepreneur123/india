@@ -39,6 +39,15 @@ function probablySignedIn() {
 }
 
 if (typeof window !== 'undefined') {
+  // A room link (/r/<id or code>): kept until the app is ready to open it, even through sign-up.
+  const link = /^\/r\/([^/?#]+)/.exec(location.pathname)?.[1]
+  if (link) {
+    try {
+      sessionStorage.setItem('yaari_link', decodeURIComponent(link))
+    } catch {
+      /* storage blocked: the link is lost, the app still opens */
+    }
+  }
   installErrorReporting()
   // Start every download the first screen needs at once, instead of one after another.
   void preloadBackend().catch(() => undefined)
@@ -103,6 +112,13 @@ function Root() {
     },
     [backend, toast],
   )
+
+  // A room link's address goes back to "/" once kept (after Next's router has set up its history entry).
+  useEffect(() => {
+    if (!location.pathname.startsWith('/r/')) return
+    const id = setTimeout(() => history.replaceState(history.state, '', '/'), 0)
+    return () => clearTimeout(id)
+  }, [])
 
   useEffect(() => {
     let alive = true

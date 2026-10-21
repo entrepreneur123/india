@@ -1,6 +1,11 @@
 import {
   type Backend,
   BackendError,
+  type Badges,
+  type InboxItem,
+  type Interest,
+  MAX_PHOTOS,
+  type RoomQuery,
   type Entitlements,
   type Friend,
   type FriendState,
@@ -149,6 +154,26 @@ const PEOPLE: Profile[] = [
   },
 ]
 
+// Interests and a second photo for some demo people (024).
+const EXTRAS: Record<string, { interests: Interest[]; photos?: number }> = {
+  u_ananya: { interests: ['movies', 'food', 'travel'], photos: 2 },
+  u_kabir: { interests: ['cricket', 'tech', 'art'] },
+  u_sofia: { interests: ['travel', 'food', 'fitness', 'music'], photos: 3 },
+  u_mateo: { interests: ['football', 'dance', 'music'] },
+  u_yuki: { interests: ['photography', 'anime', 'food'], photos: 2 },
+  u_amara: { interests: ['music', 'business', 'tech'] },
+  u_lucas: { interests: ['tech', 'fitness', 'music'] },
+  u_leila: { interests: ['books', 'travel', 'photography'] },
+  u_arjun: { interests: ['music', 'tech', 'cricket'], photos: 1 },
+  u_chloe: { interests: ['art', 'travel', 'fashion'] },
+}
+for (const p of PEOPLE) {
+  const x = EXTRAS[p.id]
+  if (!x) continue
+  p.interests = x.interests
+  p.photos = Array.from({ length: x.photos ?? 0 }, (_, i) => ({ id: `${p.id}_g${i}`, url: art(`${p.id}-gallery-${i}`) }))
+}
+
 const GREETINGS = [
   'hey! where are you from?',
   'hiii 👋 how’s your day going?',
@@ -204,6 +229,9 @@ export class MockBackend implements Backend {
   private voice_: Promise<VoiceSim> | null = null
   private voiceSim: VoiceSim | null = null
   private ludo_: Promise<LudoSim> | null = null
+  private inboxItems: InboxItem[] = []
+  private unread = new Map<string, number>()
+  private inboxListeners = new Set<() => void>()
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -229,6 +257,33 @@ export class MockBackend implements Backend {
       ]))
       this.recentList.push({ matchId: id, partner, metAt: at, lastText: last })
     }
+    this.unread.set(this.recentList[0].matchId, 1) // Leila's last message is unread
+
+    // A friend's thread with two unread messages, and an inbox to show (023).
+    const sofia = this.person('u_sofia')!
+    const sofiaAt = Date.now() - 12 * 60_000
+    this.matches.set('t_sofia', this.newMatchState('t_sofia', sofia, 'thread', sofiaAt - DAY, [
+      { id: this.msgSeq++, fromMe: true, text: 'that sunrise photo was unreal', at: sofiaAt - DAY },
+      { id: this.msgSeq++, fromMe: false, text: 'right?! I woke up at 5 for it', at: sofiaAt - 60_000 },
+      { id: this.msgSeq++, fromMe: false, text: 'are you coming to the music room tonight?', at: sofiaAt },
+    ]))
+    this.threadByUser.set('u_sofia', 't_sofia')
+    this.unread.set('t_sofia', 2)
+    const item = (id: number, kind: InboxItem['kind'], actor: string, ago: number, extra: Partial<InboxItem> = {}): InboxItem => ({
+      id, kind, actor: this.person(actor)!, at: Date.now() - ago, read: false, count: 1, matchId: null, roomId: null,
+      roomTitle: null, roomOpen: false, pending: false, ...extra,
+    })
+    this.inboxItems = [
+      item(5, 'room_invite', 'u_arjun', 4 * 60_000, { roomId: 'v-chai', roomTitle: 'Chai pe charcha', roomOpen: true }),
+      item(4, 'message', 'u_sofia', 12 * 60_000, { matchId: 't_sofia', count: 2 }),
+      item(3, 'friend_request', 'u_amara', HOUR, { pending: true }),
+      item(2, 'friend_request', 'u_lucas', 3 * HOUR, { pending: true, read: true }),
+      item(1, 'friend_accept', 'u_yuki', DAY, { read: true }),
+    ]
+  }
+
+  private inboxChanged() {
+    for (const l of this.inboxListeners) l()
   }
 
   private person(id: string) {
@@ -332,6 +387,8 @@ export class MockBackend implements Backend {
       photoUrl: p.photo ? URL.createObjectURL(p.photo) : null,
       country: this.pendingPhone?.startsWith('91') ? 'IN' : null,
       posts: [],
+      interests: [],
+      photos: [],
     }
     return { ...this.me }
   }
@@ -413,7 +470,11 @@ export class MockBackend implements Backend {
 
   sendTyping() {}
 
-  markRead() {}
+  markRead(matchId: string) {
+    if (!this.unread.delete(matchId)) return
+    for (const i of this.inboxItems) if (i.kind === 'message' && i.matchId === matchId) i.read = true
+    this.inboxChanged()
+  }
 
   async flagNudity() {}
 
@@ -567,6 +628,10 @@ export class MockBackend implements Backend {
     await wait(400)
     if (accept) this.friendMap.set(userId, 'friends')
     else this.friendMap.delete(userId)
+    for (const i of this.inboxItems) {
+      if (i.kind === 'friend_request' && i.actor.id === userId) Object.assign(i, { pending: false, read: true })
+    }
+    this.inboxChanged()
   }
 
   async removeFriend(userId: string) {
@@ -600,8 +665,90 @@ export class MockBackend implements Backend {
     return this.voice_
   }
 
-  async voiceRooms() {
-    return (await this.voice()).list()
+  async voiceRooms(query: RoomQuery = {}) {
+    const text = query.text?.trim().toLocaleLowerCase() ?? ''
+    return (await (await this.voice()).list()).filter(
+      (r) => (!text || r.title.toLocaleLowerCase().includes(text)) && (!query.lang || r.lang === query.lang),
+    )
+  }
+
+  async inviteToRoom(roomId: string, userId: string) {
+    await wait(350)
+    if (this.friendMap.get(userId) !== 'friends') throw new BackendError('not_allowed')
+    if (!(await this.voice()).peek(roomId)) throw new BackendError('room_closed')
+  }
+
+  async joinInvite(inboxId: number) {
+    await wait(250)
+    const i = this.inboxItems.find((x) => x.id === inboxId && x.kind === 'room_invite')
+    if (!i?.roomId) throw new BackendError('not_found')
+    i.read = true
+    this.inboxChanged()
+    ;(await this.voice()).admit(i.roomId)
+    return i.roomId
+  }
+
+  async onlineCount() {
+    await wait(200)
+    // A believable, slowly moving number for the demo.
+    return 2400 + Math.round(60 * Math.sin(Date.now() / 600_000))
+  }
+
+  // ---- inbox and badges ----
+
+  async inbox(before?: number) {
+    await wait(400)
+    const sim = this.voiceSim
+    if (sim) {
+      const live = new Set(sim.liveRooms().map((r) => r.id))
+      for (const i of this.inboxItems) if (i.roomId) i.roomOpen = live.has(i.roomId)
+    }
+    return this.inboxItems.filter((i) => before === undefined || i.id < before).map((i) => ({ ...i }))
+  }
+
+  async markInboxRead(ids?: number[]) {
+    await wait(150)
+    for (const i of this.inboxItems) if (!ids || ids.includes(i.id)) i.read = true
+    this.inboxChanged()
+  }
+
+  async badges(): Promise<Badges> {
+    await wait(150)
+    return {
+      inbox: this.inboxItems.filter((i) => !i.read).length,
+      friends: [...this.friendMap.values()].filter((s) => s === 'incoming').length,
+      chats: Object.fromEntries(this.unread),
+    }
+  }
+
+  inboxSignals(on: () => void) {
+    this.inboxListeners.add(on)
+    return () => void this.inboxListeners.delete(on)
+  }
+
+  // ---- profile extras ----
+
+  async setInterests(tags: Interest[]) {
+    if (!this.me) throw new BackendError('not_found')
+    await wait(400)
+    this.me = { ...this.me, interests: [...new Set(tags)] }
+    return { ...this.me }
+  }
+
+  async addProfilePhoto(photo: File) {
+    if (!this.me) throw new BackendError('not_found')
+    const photos = this.me.photos ?? []
+    if (photos.length >= MAX_PHOTOS) throw new BackendError('not_allowed')
+    await wait(600)
+    this.me = { ...this.me, photos: [...photos, { id: `me_${uid()}`, url: URL.createObjectURL(photo) }] }
+    return { ...this.me }
+  }
+
+  async removeProfilePhoto(id: string) {
+    if (!this.me) throw new BackendError('not_found')
+    await wait(300)
+    this.me = { ...this.me, photos: (this.me.photos ?? []).filter((p) => p.id !== id) }
+    return { ...this.me }
   }
 
   async createVoiceRoom(r: NewVoiceRoom) {
@@ -644,7 +791,7 @@ export class MockBackend implements Backend {
     return (await this.voice()).joinCode(code)
   }
 
-  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }) {
+  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }) {
     return (await this.voice()).settings(roomId, patch)
   }
 

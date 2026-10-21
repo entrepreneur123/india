@@ -10,6 +10,8 @@ import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { RoomLangSelect } from '@/components/social/room-lang'
+import { useSocialT } from '@/components/social/social-text'
 import { CategoryPicker } from './topic-picker'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
@@ -35,10 +37,12 @@ export function CreateRoomDialog({
 }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t } = useI18n()
+  const { t, lang: appLang } = useI18n()
+  const { st } = useSocialT()
   const { mutate } = useSWRConfig()
   const id = useId()
   const [title, setTitle] = useState('')
+  const [lang, setLang] = useState<string>(appLang)
   const [category, setCategory] = useState<RoomKind>('talk')
   const [max, setMax] = useState(50)
   const [gender, setGender] = useState<Target>('any')
@@ -59,14 +63,15 @@ export function CreateRoomDialog({
     setMaxAge(100)
     setPrivate(false)
     setNote('')
-  }, [open, initialCategory])
+    setLang(appLang)
+  }, [open, initialCategory, appLang])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
     setBusy(true)
     const room: NewVoiceRoom = {
-      title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(),
+      title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang,
     }
     try {
       const made = await backend.createVoiceRoom(room)
@@ -102,6 +107,11 @@ export function CreateRoomDialog({
             {t('create.category')}
           </span>
           <CategoryPicker labelledBy={`${id}-cat`} value={category} onChange={setCategory} />
+        </div>
+
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-sm font-semibold">{st('rooms.lang')}</span>
+          <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} className="w-48" />
         </div>
 
         <div className="flex items-center justify-between gap-4">

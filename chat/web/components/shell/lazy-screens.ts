@@ -20,6 +20,7 @@ const loaders = {
   roomDialogs: () => retryImport(() => import('@/components/screens/rooms/room-dialogs')),
   voice: () => retryImport(() => import('@/components/screens/voice/voice-session')),
   panel: () => retryImport(() => import('./right-panel')),
+  inbox: () => retryImport(() => import('@/components/social/inbox-sheet')),
 }
 
 /** Fetches every screen in the background, unless the user asked the browser to save data. */
@@ -44,4 +45,7 @@ export const ProfileSheet = lazy(() => loaders.profile().then((m) => ({ default:
 export const Paywall = lazy(() => loaders.paywall().then((m) => ({ default: m.Paywall })))
 export const VoiceHost = lazy(() => loaders.voice().then((m) => ({ default: m.VoiceHost })))
 /** The friends / rooms column exists only on wide screens, so phones never download it. */
+export const InboxSheet = lazy(() => loaders.inbox().then((m) => ({ default: m.InboxSheet })))
+const loadOnboarding = () => retryImport(() => import('@/components/social/onboarding'))
+export const Onboarding = lazy(() => loadOnboarding().then((m) => ({ default: m.Onboarding })))
 export const RightPanel = lazy(() => loaders.panel().then((m) => ({ default: m.RightPanel })))

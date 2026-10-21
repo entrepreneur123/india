@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { PostGrid } from '@/components/screens/me/post-grid'
+import { InterestChips } from '@/components/social/bits'
+import { Gallery } from '@/components/social/gallery'
 
 /** Someone's profile with their posts. The server only shows people you have met (and not blocked). */
 export function ProfileSheet({
@@ -97,6 +99,13 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
             </h2>
             {shown.city ? <p className="text-sm text-muted-foreground">{shown.city}</p> : null}
             {shown.bio ? <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-pretty">{shown.bio}</p> : null}
+            {shown.interests?.length ? (
+              <InterestChips
+                tags={shown.interests}
+                shared={isMe ? undefined : shown.interests.filter((i) => me.interests?.includes(i))}
+                className="mt-3 justify-center"
+              />
+            ) : null}
             <p className="mt-3 text-sm text-muted-foreground">{plural(shown.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
 
             {isMe ? null : (
@@ -139,6 +148,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               </div>
             )}
           </div>
+          {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-6" /> : null}
           <div className="mt-6 border-t border-border">
             <PostGrid posts={shown.posts} owner={shown.name} />
           </div>

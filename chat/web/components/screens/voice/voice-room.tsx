@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { ChevronDown, ChevronRight, Copy, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, Users } from 'lucide-react'
+import { ChevronDown, ChevronRight, Copy, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
@@ -24,6 +24,8 @@ import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { ReactionLayer, SeatPerson, Stage } from './voice-stage'
 import { isMod, REACTIONS } from './voice-text'
+import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
+import { useSocialT } from '@/components/social/social-text'
 
 // The game is its own chunk, fetched when a room has one (or is a games room).
 const loadLudo = () => retryImport(() => import('./ludo/ludo-panel'))
@@ -60,6 +62,7 @@ const freeSeat = (room: VoiceRoom) => {
 export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; onMinimise: () => void; onLeave: () => void }) {
   const { t, num } = useI18n()
   const toast = useToast()
+  const { st: sst } = useSocialT()
   const wide = useWide()
   const [sheet, setSheet] = useState<SheetState>(null)
   const [stageOpen, setStageOpen] = useState(false)
@@ -101,9 +104,10 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const host = room.members.find((x) => x.profile.id === room.hostId)
   // Talk rooms keep the chat in the middle; the others put it in a column on the right on wide screens.
   const aside = wide && kind !== 'talk'
+  const inviteLabel = sst('invite.title')
 
   const share = async () => {
-    const url = `${location.origin}/?voice=${encodeURIComponent(room.id)}`
+    const url = roomLink(room)
     try {
       await navigator.clipboard.writeText(url)
       toast.show(t('voice.linkCopied'), 'success')
@@ -264,6 +268,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               {room.code} <Copy className="size-3.5" aria-hidden />
             </button>
           ) : null}
+          <Button size="icon" variant="ghost" onClick={() => setSheet({ kind: 'invite' })} aria-label={inviteLabel}>
+            <UserPlus className="size-5" aria-hidden />
+          </Button>
           <Button size="icon" variant="ghost" onClick={() => setSheet({ kind: 'options' })} aria-label={t('voice.more')}>
             <EllipsisVertical className="size-5" aria-hidden />
           </Button>
@@ -339,6 +346,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         onClose={close}
         isHost={isHost}
         code={room.code}
+        canShare={canShareLink(room)}
+        onInvite={() => setSheet({ kind: 'invite' })}
         onShare={() => {
           close()
           void share()
@@ -355,6 +364,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         }}
       />
       {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
+      <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
       <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
       <Modal open={ludo.confirmClose} onClose={() => ludo.setConfirmClose(false)} title={ludo.lt('closeTitle')} description={ludo.lt('closeBody')}>
         <div className="flex gap-3 p-6 pt-5">

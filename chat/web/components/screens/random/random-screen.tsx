@@ -17,6 +17,9 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
+import { BellButton, InterestChips } from '@/components/social/bits'
+import { OnlineCount } from '@/components/social/online'
+import { useSocialT } from '@/components/social/social-text'
 import { retryImport } from '@/lib/retry-import'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
@@ -255,6 +258,7 @@ export function RandomScreen({ active }: { active: boolean }) {
             aria-labelledby="lobby-title"
           >
             <Aurora />
+            <BellButton className="absolute top-3 right-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
               <span className="rounded-full p-1 ring-2 ring-primary-text/60">
                 <Avatar name={me.name} src={me.photoUrl} size={128} />
@@ -266,6 +270,7 @@ export function RandomScreen({ active }: { active: boolean }) {
                 {t('lobby.title')}
               </h1>
               <p className="mt-2 text-[15px] leading-relaxed text-pretty text-muted-foreground">{t('lobby.subtitle')}</p>
+              <OnlineCount active={active} className="mt-4" />
 
               <Segmented
                 className="mt-8 w-full"
@@ -300,7 +305,7 @@ export function RandomScreen({ active }: { active: boolean }) {
             </div>
           </m.section>
         ) : phase === 'matching' ? (
-          <Matching key="matching" target={target} reconnecting={reconnecting} onCancel={cancelMatching} />
+          <Matching key="matching" target={target} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
         ) : match ? (
           <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
             <ScreenBoundary>
@@ -345,7 +350,17 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
   )
 }
 
-function Matching({ target, reconnecting = false, onCancel }: { target: Target; reconnecting?: boolean; onCancel: () => void }) {
+function Matching({
+  target,
+  reconnecting = false,
+  onCancel,
+  active = false,
+}: {
+  target: Target
+  reconnecting?: boolean
+  onCancel: () => void
+  active?: boolean
+}) {
   const { me } = useApp()
   const { t } = useI18n()
   const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
@@ -370,6 +385,7 @@ function Matching({ target, reconnecting = false, onCancel }: { target: Target; 
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
       <p className="mt-2 h-5 text-sm text-muted-foreground">{reconnecting ? t('matching.reconnecting') : null}</p>
+      {reconnecting ? null : <OnlineCount active={active} className="mt-1" />}
       <Button variant="outline" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
         {t('matching.cancel')}
       </Button>
@@ -380,6 +396,9 @@ function Matching({ target, reconnecting = false, onCancel }: { target: Target; 
 /** The partner's card shows over the new chat for a moment, then gets out of the way. */
 function MatchReveal({ partner }: { partner: Match['partner'] }) {
   const { t } = useI18n()
+  const { me } = useApp()
+  const { st } = useSocialT()
+  const shared = (partner.interests ?? []).filter((i) => me.interests?.includes(i))
   const [show, setShow] = useState(true)
   useEffect(() => {
     const id = setTimeout(() => setShow(false), 1500)
@@ -411,6 +430,14 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
               {partner.name}, {partner.age}
             </span>
             {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}
+            {shared.length ? (
+              <span className="flex flex-col items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground">{st('interests.common')}</span>
+                <InterestChips tags={shared} shared={shared} className="justify-center" />
+              </span>
+            ) : partner.interests?.length ? (
+              <InterestChips tags={partner.interests.slice(0, 3)} className="justify-center" />
+            ) : null}
           </m.span>
         </m.button>
       ) : null}

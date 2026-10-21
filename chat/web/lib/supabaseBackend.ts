@@ -5,8 +5,14 @@ import {
   BackendError,
   type Backend,
   type Entitlements,
+  type Badges,
   type Friend,
   type FriendState,
+  type InboxItem,
+  type InboxKind,
+  type Interest,
+  INTERESTS,
+  MAX_PHOTOS,
   type Gender,
   type Match,
   type MatchEvent,
@@ -17,6 +23,7 @@ import {
   type RecentMatch,
   type ReportReason,
   type RoomKind,
+  type RoomQuery,
   type RoomLeader,
   type RoomRefusal,
   type NewVoiceRoom,
@@ -68,7 +75,12 @@ type CardRow = {
   id: string; name: string; gender: string; age: number; city: string; bio: string
   photo_path: string | null; country: string | null
 }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string }
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null }
+type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
+type InboxRow = {
+  id: number; kind: string; n: number; created_at: string; read_at: string | null; match_id: string | null; room_id: string | null
+  room_title: string | null; room_open: boolean; pending: boolean; actor: CardRow
+}
 type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string | null }
 type FriendRow = CardRow & { state: string; match_id: string | null }
 type MatchRow = {
@@ -84,6 +96,7 @@ type VoiceListRow = {
   id: string; title: string; category: string; mine: boolean; host: CardRow; speakers: CardRow[]; listeners: number
   members: number; now_playing: string | null; game: string | null; max_members: number; gender_rule: string
   min_age: number; max_age: number; is_private: boolean; announcement: string | null; code: string | null; refusal: string | null
+  lang: string | null
 }
 /** voice_state(): the room, the people present with their cards, and the server clock (ms). */
 type VoiceStateRow = {
@@ -92,6 +105,8 @@ type VoiceStateRow = {
   queue: { id: string; videoId: string; title: string; by: string; votes: number; voted: boolean }[]
   members: VoiceMemberRow[]
   announcement: string | null; max: number; gender: string; minAge: number; maxAge: number; private: boolean; code: string | null
+  /** 027: the room's language. */
+  lang?: string | null
   /** The room's change number (020); events carry the next ones. */
   seq?: number
 }
@@ -185,6 +200,11 @@ function fail(error: { message?: string; details?: string | null; hint?: string 
 
 /** The chat's lines (reactions come over realtime only). */
 const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo']
+
+/** The server writes app languages in lower case (pt-br). */
+const appLang = (l: string | null | undefined) => (l === 'pt-br' ? 'pt-BR' : l ?? null)
+const interestsOf = (tags: string[] | null | undefined): Interest[] =>
+  (tags ?? []).filter((x): x is Interest => (INTERESTS as readonly string[]).includes(x))
 
 /** A room's category; rooms from before 019 were migrated, anything unknown is a talk room. */
 const kind = (c: string): RoomKind => (c === 'music' || c === 'games' ? c : 'talk')
@@ -333,12 +353,12 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country').eq('id', me).maybeSingle<ProfileRow>(),
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos').eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
     if (error) fail(error)
     if (!data) return null
-    return this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts)
+    return this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
   }
 
   async createProfile(p: NewProfile) {
@@ -395,7 +415,8 @@ export class SupabaseBackend implements Backend {
       // One request for the partner's card; their posts load only if the profile is opened (it fetches its own).
       const rows = await this.rpc<CardRow[]>('match_card', { p_match: id })
       if (!rows?.[0]) throw new BackendError('not_found')
-      const partner = await this.toProfile(rows[0], [])
+      const [partner, extras] = await Promise.all([this.toProfile(rows[0], []), this.extras([rows[0].id]).catch(() => [])])
+      if (extras[0]) partner.interests = interestsOf(extras[0].interests)
       this.abandoned.delete(id)
       track('match_found')
       return { id, partner }
@@ -700,7 +721,26 @@ export class SupabaseBackend implements Backend {
     const rows = await this.rpc<CardRow[]>('card', { uid: userId })
     const c = rows?.[0]
     if (!c) return null
-    return this.toProfile(c, await this.posts(userId))
+    const [posts, extras] = await Promise.all([this.posts(userId), this.extras([userId]).catch(() => [])])
+    const p = await this.toProfile(c, posts)
+    return extras[0] ? this.withExtras(p, extras[0]) : p
+  }
+
+  /** Interests and gallery of people I may see (024). */
+  private async extras(ids: string[]): Promise<ExtrasRow[]> {
+    return (await this.rpc<ExtrasRow[] | null>('profile_extras', { p_users: ids })) ?? []
+  }
+
+  private async withExtras(p: Profile, x: { interests: string[] | null; photos: string[] | null }): Promise<Profile> {
+    const paths = (x.photos ?? []).slice(0, MAX_PHOTOS)
+    await this.signMany(paths)
+    return {
+      ...p, interests: interestsOf(x.interests),
+      photos: paths.flatMap((id) => {
+        const url = this.signedUrls.get(id)?.url
+        return url ? [{ id, url }] : []
+      }),
+    }
   }
 
   private async posts(userId: string): Promise<Post[]> {
@@ -762,8 +802,8 @@ export class SupabaseBackend implements Backend {
 
   // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
 
-  async voiceRooms(): Promise<VoiceRoomSummary[]> {
-    const rows = await this.rpc<VoiceListRow[]>('voice_list2')
+  async voiceRooms(query: RoomQuery = {}): Promise<VoiceRoomSummary[]> {
+    const rows = await this.rpc<VoiceListRow[]>('voice_list3', { p_query: query.text?.trim() || null, p_lang: query.lang ?? null })
     await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
     return rows.filter((r) => r.host).map((r) => ({
       id: r.id, title: r.title, category: kind(r.category), host: this.cardProfile(r.host),
@@ -771,13 +811,14 @@ export class SupabaseBackend implements Backend {
       nowPlaying: r.now_playing || null, game: r.game === 'lobby' || r.game === 'playing' ? r.game : null,
       announcement: r.announcement, mine: r.mine, code: r.code, refusal: (r.refusal as RoomRefusal | null) ?? null,
       maxMembers: r.max_members, genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
+      lang: appLang(r.lang),
     }))
   }
 
   async createVoiceRoom(r: NewVoiceRoom) {
-    const room = await this.rpc<{ id: string; code: string }>('create_voice_room2', {
+    const room = await this.rpc<{ id: string; code: string }>('create_voice_room3', {
       p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
-      p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement,
+      p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang,
     })
     track('room_created')
     return room
@@ -790,9 +831,81 @@ export class SupabaseBackend implements Backend {
     return id
   }
 
-  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }) {
-    await this.rpc('voice_settings', { p_room: roomId, p_title: patch.title, p_announcement: patch.announcement })
-    this.voice.get(roomId)?.acted()
+  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }) {
+    await this.rpc('voice_settings2', { p_room: roomId, p_title: patch.title, p_announcement: patch.announcement, p_lang: patch.lang ?? null })
+    // The language is not part of the room's change events: keep the open room's copy current.
+    const live = this.voice.get(roomId)
+    if (live?.room && patch.lang) live.room.lang = patch.lang
+    live?.acted()
+  }
+
+  async inviteToRoom(roomId: string, userId: string) {
+    await this.rpc('invite_to_room', { p_room: roomId, p_user: userId })
+  }
+
+  async joinInvite(inboxId: number) {
+    return this.rpc<string>('join_invite', { p_id: inboxId })
+  }
+
+  async onlineCount() {
+    return (await this.rpc<number | null>('online_count')) ?? 0
+  }
+
+  // ---- inbox and badges (023) ----
+
+  async inbox(before?: number): Promise<InboxItem[]> {
+    const rows = await this.rpc<InboxRow[]>('inbox', { p_before: before ?? null, p_limit: 30 })
+    await this.signMany(rows.map((r) => r.actor.photo_path))
+    return rows.map((r) => ({
+      id: r.id, kind: r.kind as InboxKind, actor: this.cardProfile(r.actor), at: time(r.created_at), read: r.read_at !== null,
+      count: r.n, matchId: r.match_id, roomId: r.room_id, roomTitle: r.room_title, roomOpen: r.room_open, pending: r.pending,
+    }))
+  }
+
+  async markInboxRead(ids?: number[]) {
+    await this.rpc('inbox_read', { p_ids: ids ?? null })
+  }
+
+  async badges(): Promise<Badges> {
+    const b = await this.rpc<{ inbox: number; friends: number; chats: Record<string, number> }>('my_badges')
+    return { inbox: b.inbox ?? 0, friends: b.friends ?? 0, chats: b.chats ?? {} }
+  }
+
+  inboxSignals(on: () => void): () => void {
+    const channel = this.client.channel(`inbox-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${this.uid}` }, () => on())
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') on() // anything that arrived while the connection was down
+      })
+    return () => void this.client.removeChannel(channel)
+  }
+
+  // ---- profile extras (024) ----
+
+  async setInterests(tags: Interest[]) {
+    await this.rpc('set_interests', { p_tags: tags })
+    return this.mine()
+  }
+
+  async addProfilePhoto(photo: File) {
+    const now = await this.mine()
+    const ids = (now.photos ?? []).map((p) => p.id)
+    if (ids.length >= MAX_PHOTOS) throw new BackendError('not_allowed')
+    const path = await this.upload(photo, 'avatar')
+    await this.rpc('set_photos', { p_paths: [...ids, path] })
+    return this.mine()
+  }
+
+  async removeProfilePhoto(id: string) {
+    const now = await this.mine()
+    await this.rpc('set_photos', { p_paths: (now.photos ?? []).map((p) => p.id).filter((x) => x !== id) })
+    return this.mine()
+  }
+
+  private async mine(): Promise<Profile> {
+    const p = await this.myProfile()
+    if (!p) throw new BackendError('network')
+    return p
   }
 
   async joinVoice(roomId: string): Promise<VoiceRoom> {
@@ -1450,7 +1563,7 @@ export class SupabaseBackend implements Backend {
       id: s.id, title: s.title, category: kind(s.category), mode: s.mode === 'open' ? 'open' : 'approval',
       hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null,
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
-      isPrivate: !!s.private,
+      isPrivate: !!s.private, lang: appLang(s.lang),
       members: s.members.map((m) => ({
         profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand,
       })),

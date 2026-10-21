@@ -12,6 +12,8 @@ import { Avatar } from '@/components/ui/avatar'
 import { Field, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
+import { RoomLangSelect } from '@/components/social/room-lang'
+import { useSocialT } from '@/components/social/social-text'
 import { ReactionIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
@@ -27,6 +29,7 @@ export type SheetState =
   | { kind: 'options' }
   | { kind: 'reportRoom' }
   | { kind: 'settings' }
+  | { kind: 'invite' }
   | null
 
 export const freeSeats = (room: VoiceRoom) => {
@@ -370,6 +373,8 @@ export function OptionsSheet({
   onClose,
   isHost,
   code,
+  canShare,
+  onInvite,
   onShare,
   onCopyCode,
   onSettings,
@@ -381,6 +386,9 @@ export function OptionsSheet({
   isHost: boolean
   /** The room's code (host only). */
   code: string | null
+  /** The link works for others (a private room's link carries the code, which only the host has). */
+  canShare: boolean
+  onInvite: () => void
   onShare: () => void
   onCopyCode: () => void
   onSettings: () => void
@@ -388,10 +396,12 @@ export function OptionsSheet({
   onLeave: () => void
 }) {
   const { t } = useI18n()
+  const { st } = useSocialT()
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.options')}>
       <div className="flex flex-col pt-2 pb-4">
-        <Row icon={<Link2 />} label={t('voice.share')} onClick={onShare} />
+        <Row icon={<UserPlus />} label={st('invite.title')} onClick={onInvite} />
+        {canShare ? <Row icon={<Link2 />} label={t('voice.share')} onClick={onShare} /> : null}
         {code ? <Row icon={<Copy />} label={t('room.copy', { code })} onClick={onCopyCode} /> : null}
         {isHost ? <Row icon={<Settings2 />} label={t('room.settings')} onClick={onSettings} /> : null}
         {isHost ? null : <Row icon={<Flag />} label={t('voice.reportRoom')} onClick={onReport} />}
@@ -416,11 +426,14 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
   const id = useId()
   const [title, setTitle] = useState(room.title)
   const [note, setNote] = useState(room.announcement ?? '')
+  const [lang, setLang] = useState(room.lang ?? '')
+  const { st } = useSocialT()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     if (!open) return
     setTitle(room.title)
     setNote(room.announcement ?? '')
+    setLang(room.lang ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
   const valid = title.trim().length >= 2 && title.trim().length <= 40
@@ -429,7 +442,7 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
     if (!valid || busy) return
     setBusy(true)
     try {
-      await backend.updateVoiceRoom(room.id, { title: title.trim(), announcement: note.trim() })
+      await backend.updateVoiceRoom(room.id, { title: title.trim(), announcement: note.trim(), lang: lang || undefined })
       toast.show(t('room.saved'), 'success')
       onClose()
     } catch (err) {
@@ -452,6 +465,10 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
         >
           <TextArea id={`${id}-n`} value={note} maxLength={200} rows={3} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} />
         </Field>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-sm font-semibold">{st('rooms.lang')}</span>
+          <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={lang ? undefined : '—'} className="w-48" />
+        </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!valid}>
           {t('common.save')}
         </Button>
