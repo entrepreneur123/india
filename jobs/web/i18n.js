@@ -354,7 +354,9 @@ export async function setLang(code) {
   return lang;
 }
 export const getLang = () => lang;
-export const locale = () => LANGS.find((l) => l.code === lang).locale;
+// Digits 0-9 in every language (Marathi, Bengali, Urdu, ... would otherwise get their own digits):
+// the same digits as the official notices, roll numbers and fees.
+export const locale = () => `${LANGS.find((l) => l.code === lang).locale}-u-nu-latn`;
 
 /** The browser's first language that we have, else English. */
 export function guessLang(prefs) {
