@@ -24,20 +24,16 @@ import {
   type ReportReason,
   type RoomKind,
   type RoomQuery,
-  type RoomLeader,
   type RoomRefusal,
   type NewVoiceRoom,
   type Target,
   type VideoStatus,
   VOICE_SEATS,
-  type LudoAction,
-  type LudoEvent,
-  type LudoGame,
-  type LudoStatus,
   type VoiceAction,
   type VoiceAudioState,
   type VoiceEvent,
   type VoiceLine,
+  type VoicePoll,
   type VoiceReaction,
   type VoiceRole,
   type VoiceRoom,
@@ -45,6 +41,8 @@ import {
   type VoiceSystemEvent,
 } from './backend'
 import { retryImport } from './retry-import'
+import { parseReply } from './voice-chat'
+import { parsePoll, POLLS_PER_READ } from './voice-polls'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
@@ -68,7 +66,7 @@ const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
-  'not_your_turn', 'seat_taken', 'game_full', 'need_players', 'stale', 'bad_media',
+  'poll_closed', 'bad_request', 'bad_media',
 ]
 
 type CardRow = {
@@ -94,7 +92,7 @@ type MessageRow = {
 type PostRow = { id: string; user_id: string; body: string; image_path: string | null; created_at: string }
 type VoiceListRow = {
   id: string; title: string; category: string; mine: boolean; host: CardRow; speakers: CardRow[]; listeners: number
-  members: number; now_playing: string | null; game: string | null; max_members: number; gender_rule: string
+  members: number; now_playing: string | null; max_members: number; gender_rule: string
   min_age: number; max_age: number; is_private: boolean; announcement: string | null; code: string | null; refusal: string | null
   lang: string | null
 }
@@ -119,6 +117,8 @@ type VoiceChange = { seq?: number | null } & (
   | ({ t: 'r'; ended: boolean } & Pick<VoiceStateRow, 'title' | 'category' | 'mode' | 'host' | 'locked' | 'music' | 'announcement'
       | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
   | { t: 'v'; item: string; user: string; on: boolean; votes: number }
+  /** 029: a poll changed (a vote, closed); `mine` is null. Numbered like the rest, nothing in the state. */
+  | { t: 'p'; poll: unknown }
 )
 
 /** voice_state's member order: the stage by seat, then raised hands (oldest first), then by arrival. */
@@ -141,7 +141,7 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
       announcement: c.announcement, max: c.max, gender: c.gender, minAge: c.minAge, maxAge: c.maxAge, private: c.private,
       queue: c.queue.map((q) => ({ ...q, voted: voted.has(q.id) })),
     })
-  } else {
+  } else if (c.t === 'v') {
     const q = s.queue.find((x) => x.id === c.item)
     if (q) {
       q.votes = c.votes
@@ -150,7 +150,7 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
   }
 }
 type VoiceMessageRow = {
-  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo'; body: string | null
+  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo' | 'poll'; body: string | null
   media_path: string | null
   payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
   sender_photo: string | null; sender_country: string | null; created_at: string
@@ -165,15 +165,6 @@ type VoiceLive = {
   startAudio: () => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
 }
-/** ludo_json() (functions): timestamps in server ms. */
-type LudoJson = {
-  id: string; room: string; status: string; players: (string | null)[]; names: (string | null)[]; out: boolean[]
-  tokens: number[]; turn: number | null; dice: number | null; roll: number | null; winner: number | null
-  events: LudoEvent[]; version: number; deadline: number | null; endedAt: number | null; now: number
-}
-/** A ludo_games row (realtime). */
-type LudoRow = Omit<LudoJson, 'room' | 'deadline' | 'endedAt' | 'now'> & { room_id: string; deadline: string | null; ended_at: string | null }
-
 function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
   const upload = url.includes('/storage/v1/object/') && (init?.method ?? 'GET') !== 'GET'
@@ -199,15 +190,15 @@ function fail(error: { message?: string; details?: string | null; hint?: string 
 }
 
 /** The chat's lines (reactions come over realtime only). */
-const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo']
+const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo', 'poll']
 
 /** The server writes app languages in lower case (pt-br). */
 const appLang = (l: string | null | undefined) => (l === 'pt-br' ? 'pt-BR' : l ?? null)
 const interestsOf = (tags: string[] | null | undefined): Interest[] =>
   (tags ?? []).filter((x): x is Interest => (INTERESTS as readonly string[]).includes(x))
 
-/** A room's category; rooms from before 019 were migrated, anything unknown is a talk room. */
-const kind = (c: string): RoomKind => (c === 'music' || c === 'games' ? c : 'talk')
+/** A room's category; anything but music is a talk room (rooms from before 019, and 'games' from older apps). */
+const kind = (c: string): RoomKind => (c === 'music' ? 'music' : 'talk')
 
 function gender(g: string): Gender {
   return g === 'male' || g === 'female' ? g : 'other'
@@ -808,7 +799,7 @@ export class SupabaseBackend implements Backend {
     return rows.filter((r) => r.host).map((r) => ({
       id: r.id, title: r.title, category: kind(r.category), host: this.cardProfile(r.host),
       speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners, members: r.members,
-      nowPlaying: r.now_playing || null, game: r.game === 'lobby' || r.game === 'playing' ? r.game : null,
+      nowPlaying: r.now_playing || null,
       announcement: r.announcement, mine: r.mine, code: r.code, refusal: (r.refusal as RoomRefusal | null) ?? null,
       maxMembers: r.max_members, genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
       lang: appLang(r.lang),
@@ -936,8 +927,9 @@ export class SupabaseBackend implements Backend {
     return this.toVoiceLines(rows)
   }
 
-  async sendVoice(roomId: string, text: string): Promise<VoiceLine> {
-    const row = await this.rpc<VoiceMessageRow>('voice_send', { p_room: roomId, p_text: text })
+  async sendVoice(roomId: string, text: string, replyTo?: number | null): Promise<VoiceLine> {
+    // voice_send2 (029) answers a line; voice_send stays for older apps.
+    const row = await this.rpc<VoiceMessageRow>('voice_send2', { p_room: roomId, p_text: text, p_reply_to: replyTo ?? null })
     return (await this.toVoiceLines([row]))[0]
   }
 
@@ -953,13 +945,33 @@ export class SupabaseBackend implements Backend {
     return (await this.toVoiceLines([row]))[0]
   }
 
-  async voiceLeaders(roomId: string): Promise<RoomLeader[]> {
-    const rows = await this.rpc<{ id: string; name: string; photo_path: string | null; wins: number }[]>('voice_leaders', { p_room: roomId })
-    await this.signMany(rows.map((r) => r.photo_path))
-    return rows.map((r) => ({
-      wins: r.wins,
-      profile: this.cardProfile({ id: r.id, name: r.name, gender: 'other', age: 0, city: '', bio: '', photo_path: r.photo_path, country: null }),
-    }))
+  // ---- polls (029) ----
+
+  async voicePollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine> {
+    const row = await this.rpc<VoiceMessageRow>('voice_poll_create', { p_room: roomId, p_question: question, p_options: options })
+    const [line] = await this.toVoiceLines([row])
+    if (!line) throw new BackendError('network')
+    return line
+  }
+
+  async voicePollVote(pollId: number, choice: number): Promise<VoicePoll> {
+    return this.toPoll(await this.rpc<unknown>('voice_poll_vote', { p_poll: pollId, p_choice: choice }))
+  }
+
+  async voicePollClose(pollId: number): Promise<VoicePoll> {
+    return this.toPoll(await this.rpc<unknown>('voice_poll_close', { p_poll: pollId }))
+  }
+
+  async voicePolls(ids: number[]): Promise<VoicePoll[]> {
+    if (!ids.length) return []
+    const list = await this.rpc<unknown[]>('voice_polls_get', { p_ids: ids.slice(-POLLS_PER_READ) })
+    return (Array.isArray(list) ? list : []).flatMap((j) => parsePoll(j) ?? [])
+  }
+
+  private toPoll(j: unknown): VoicePoll {
+    const p = parsePoll(j)
+    if (!p) throw new BackendError('network')
+    return p
   }
 
   async reportVoiceRoom(roomId: string, reason: ReportReason) {
@@ -1134,8 +1146,15 @@ export class SupabaseBackend implements Backend {
         }
         seq = c.seq
         applyChange(state, c, me)
+        pollChanged(c)
       }
       return show(state)
+    }
+    /** A poll's change goes to the screen as it is: counts and totals for everyone, my own vote stays mine. */
+    const pollChanged = (c: VoiceChange) => {
+      if (c.t !== 'p') return
+      const poll = parsePoll(c.poll)
+      if (poll) emit({ type: 'poll', poll: { ...poll, mine: null } })
     }
     const onChange = (c: VoiceChange) => {
       if (closed || over) return
@@ -1147,6 +1166,7 @@ export class SupabaseBackend implements Backend {
       if (typeof c.seq !== 'number') {
         // Sent without a number (a rare collision between two rooms): apply it, then check against the server.
         applyChange(base, c, me)
+        pollChanged(c)
         showSoon()
         refresh()
         return
@@ -1154,6 +1174,7 @@ export class SupabaseBackend implements Backend {
       if (c.seq <= seq) return
       if (c.seq !== seq + 1) return refresh() // missed one
       seq = c.seq
+      if (c.t === 'p') return pollChanged(c) // the room itself is unchanged
       // Handed the room: the code is the host's only, the full state has it.
       if (c.t === 'r' && c.host === me && base.host !== me) refresh()
       // Taken out of the room myself (removed, or dropped while away): a heartbeat brings me back in, or says
@@ -1175,6 +1196,8 @@ export class SupabaseBackend implements Backend {
       try {
         const sent = Date.now()
         await apply(await this.rpc<VoiceStateRow>('voice_state', { p_room: roomId }), sent)
+        // The state has no polls: the screen reads the ones it shows again (a vote may be among what was missed).
+        emit({ type: 'resync' })
       } catch (err) {
         failed(err)
       } finally {
@@ -1464,86 +1487,6 @@ export class SupabaseBackend implements Backend {
     }
   }
 
-  // ---- Ludo in a voice room (018_ludo.sql): every change bumps the game's version; clients follow its row ----
-
-  async ludoGame(roomId: string): Promise<LudoGame | null> {
-    const sent = Date.now()
-    const j = await this.rpc<LudoJson | null>('ludo_state', { p_room: roomId })
-    return j ? this.fromLudoJson(j, sent) : null
-  }
-
-  async ludoAction(roomId: string, gameId: string | null, a: LudoAction): Promise<LudoGame | null> {
-    const game = { p_game: gameId }
-    const sent = Date.now()
-    let j: LudoJson
-    switch (a.type) {
-      case 'open':
-        j = await this.rpc('ludo_open', { p_room: roomId })
-        break
-      case 'join':
-        j = await this.rpc('ludo_join', { ...game, p_seat: a.seat ?? null })
-        break
-      case 'leave':
-      case 'start':
-      case 'close':
-        j = await this.rpc(`ludo_${a.type}`, game)
-        if (a.type === 'start') track('ludo_started')
-        break
-      case 'roll':
-      case 'timeout':
-        j = await this.rpc(`ludo_${a.type}`, { ...game, p_version: a.version })
-        break
-      case 'move':
-        j = await this.rpc('ludo_move', { ...game, p_token: a.token, p_version: a.version })
-        break
-    }
-    return this.fromLudoJson(j, sent)
-  }
-
-  /** The game row over realtime (a new game is an insert), re-read when the channel (re)connects or the tab is shown. */
-  subscribeLudo(roomId: string, on: (game: LudoGame) => void): () => void {
-    let closed = false
-    const resync = () => {
-      if (closed || pageHidden()) return
-      this.ludoGame(roomId).then((g) => !closed && g && on(g), () => undefined)
-    }
-    const row = (p: { new: unknown }) => {
-      if (!closed) on(this.fromLudoRow(p.new as LudoRow))
-    }
-    const channel = this.client.channel(`ludo-${roomId}-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ludo_games', filter: `room_id=eq.${roomId}` }, row)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'ludo_games', filter: `room_id=eq.${roomId}` }, row)
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') resync()
-      })
-    const stopWatching = onPageVisibility((visible) => visible && resync())
-    return () => {
-      closed = true
-      stopWatching()
-      void this.client.removeChannel(channel)
-    }
-  }
-
-  private fromLudoJson(j: LudoJson, sent: number): LudoGame {
-    this.noteClock(j.now, sent)
-    return this.toLudo({ ...j, roomId: j.room })
-  }
-
-  private fromLudoRow(r: LudoRow): LudoGame {
-    const ms = (ts: string | null) => (ts ? time(ts) : null) // the server's clock, as ludo_json() sends it
-    return this.toLudo({ ...r, roomId: r.room_id, deadline: ms(r.deadline), endedAt: ms(r.ended_at) })
-  }
-
-  /** Server times → this device's clock. */
-  private toLudo(g: Omit<LudoJson, 'room' | 'now'> & { roomId: string }): LudoGame {
-    const local = (ms: number | null) => (ms === null ? null : ms - this.clockOffset)
-    return {
-      id: g.id, roomId: g.roomId, status: g.status as LudoStatus, players: g.players, names: g.names, out: g.out,
-      tokens: g.tokens, turn: g.turn, dice: g.dice, roll: g.roll, winner: g.winner, events: g.events ?? [],
-      version: g.version, deadline: local(g.deadline), endedAt: local(g.endedAt),
-    }
-  }
-
   /** Server clock minus mine, from the reply with the shortest round trip (the music position depends on it). */
   private noteClock(serverNow: number, sent: number) {
     const received = Date.now()
@@ -1579,14 +1522,16 @@ export class SupabaseBackend implements Backend {
   private async toVoiceLines(rows: VoiceMessageRow[]): Promise<VoiceLine[]> {
     const me = this.uid
     // One request signs every face and photo in the batch.
-    await this.signMany(rows.flatMap((r) => (r.kind === 'text' || r.kind === 'photo' ? [r.sender_photo, r.media_path] : [])))
+    await this.signMany(rows.flatMap((r) => (r.kind === 'text' || r.kind === 'photo' || r.kind === 'poll' ? [r.sender_photo, r.media_path] : [])))
     return rows.flatMap((r): VoiceLine[] => {
       const at = time(r.created_at)
       const sender = () => this.cardProfile({
         id: r.sender, name: r.sender_name, gender: r.sender_gender ?? 'other', age: r.sender_age ?? 0, city: '', bio: '',
         photo_path: r.sender_photo, country: r.sender_country,
       })
-      if (r.kind === 'text') return [{ id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at, sender: sender() }]
+      if (r.kind === 'text') {
+        return [{ id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at, sender: sender(), reply: parseReply(r.payload) }]
+      }
       if (r.kind === 'photo') {
         const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
         return url ? [{ id: r.id, kind: 'photo', fromMe: r.sender === me, url, at, sender: sender() }] : [] // no longer readable
@@ -1595,6 +1540,14 @@ export class SupabaseBackend implements Backend {
         const prompt = Number(r.payload?.q)
         return prompt >= 1 ? [{ id: r.id, kind: 'icebreaker', prompt, name: r.sender_name, fromMe: r.sender === me, at }] : []
       }
+      if (r.kind === 'poll') {
+        const p = r.payload ?? {}
+        const pollId = Number(p.poll_id)
+        const options = Array.isArray(p.options) ? p.options.filter((o): o is string => typeof o === 'string') : []
+        if (!Number.isFinite(pollId) || typeof p.question !== 'string' || options.length < 2) return []
+        return [{ id: r.id, kind: 'poll', fromMe: r.sender === me, pollId, question: p.question, options, at, sender: sender() }]
+      }
+      if (r.kind !== 'system') return [] // a kind this app doesn't know yet
       const p = r.payload ?? {}
       return [{
         id: r.id, kind: 'system', event: String(p.event) as VoiceSystemEvent, name: String(p.name ?? r.sender_name), at,

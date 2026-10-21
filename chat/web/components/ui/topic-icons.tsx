@@ -231,6 +231,18 @@ export function IcebreakerIcon({ size = 20, className }: { size?: number; classN
   )
 }
 
+/** A room poll's glyph: a card with three result bars, in the study violet (the poll cards' colour). */
+export function PollIcon({ size = 20, className }: { size?: number; className?: string }) {
+  return (
+    <Glyph color={topicColor('study')} size={size} className={className}>
+      <rect x="2.5" y="3" width="19" height="18" rx="4.2" fill={L} />
+      <rect x="5.6" y="6.6" width="12.8" height="2.8" rx="1.4" fill={M} />
+      <rect x="5.6" y="10.6" width="8.4" height="2.8" rx="1.4" fill={M} />
+      <rect x="5.6" y="14.6" width="10.6" height="2.8" rx="1.4" fill={M} />
+    </Glyph>
+  )
+}
+
 /** The leading tile of a room: the glyph in full colour on a light wash of it (never a loud colour block). */
 export function TopicTile({ topic, size = 44, className }: { topic: Topic; size?: number; className?: string }) {
   return (

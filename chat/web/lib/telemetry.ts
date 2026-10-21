@@ -4,7 +4,7 @@
 import { DEMO_MODE, SUPABASE_ANON_KEY, SUPABASE_URL } from './config'
 
 export type FunnelEvent =
-  | 'signup_done' | 'match_found' | 'chat_message_sent' | 'room_created' | 'room_joined' | 'ludo_started' | 'call_started'
+  | 'signup_done' | 'match_found' | 'chat_message_sent' | 'room_created' | 'room_joined' | 'call_started'
   | 'plus_purchased'
 
 type Item = { kind: 'error' | 'event'; name: string; message?: string; stack?: string; version: string; platform: 'web'; route: string }

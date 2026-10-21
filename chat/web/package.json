@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/copy-legal.mjs && node scripts/nsfw-model.mjs && next build && node scripts/csp-hashes.mjs",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test lib/tests/*.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

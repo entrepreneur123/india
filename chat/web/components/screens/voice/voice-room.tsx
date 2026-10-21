@@ -11,13 +11,10 @@ import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicChip, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { categoryLabel, kindColor, kindTopic } from '@/components/screens/rooms/room-text'
-import { Modal } from '@/components/ui/modal'
-import { useBackend } from '@/lib/backend-context'
 import { retryImport } from '@/lib/retry-import'
 import { cn } from '@/lib/utils'
-import { VOICE_SEATS, type LudoGame, type VoiceRoom } from '@/lib/backend'
-import { useLudoT } from './ludo/ludo-text'
-import { Leaderboard } from './room-leaders'
+import { VOICE_SEATS, type VoiceRoom } from '@/lib/backend'
+import type { Quotable } from '@/lib/voice-chat'
 import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicHero, MusicPanel, QueueSheet } from './voice-music'
 import type { VoiceSession } from './voice-session'
@@ -27,10 +24,9 @@ import { isMod, REACTIONS } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
 
-// The game is its own chunk, fetched when a room has one (or is a games room).
-const loadLudo = () => retryImport(() => import('./ludo/ludo-panel'))
-const LudoPanel = lazy(() => loadLudo().then((mod) => ({ default: mod.LudoPanel })))
-const StartLudoCard = lazy(() => retryImport(() => import('./ludo/ludo-start')).then((mod) => ({ default: mod.StartLudoCard })))
+// The poll form is its own chunk, fetched when a host or co-host first opens the composer's menu.
+const loadPollSheet = () => retryImport(() => import('./poll-sheet'))
+const PollSheet = lazy(() => loadPollSheet().then((mod) => ({ default: mod.PollSheet })))
 
 function useWide() {
   const [wide, setWide] = useState(false)
@@ -51,11 +47,10 @@ const freeSeat = (room: VoiceRoom) => {
 }
 
 /**
- * A room, full screen and always dark. Every room has the chat (text, icebreakers, photos), the stage, shared music
- * and Ludo; the category decides what comes first:
+ * A room, full screen and always dark. Every room has the chat (text with replies and @mentions, icebreakers, photos,
+ * polls), the stage and shared music; the category decides what comes first:
  *  - talk: the chat, under a slim strip of the people on the stage;
- *  - music: the shared player with the song requests by vote;
- *  - games: Ludo (or a card to start it) with the room's leaderboard.
+ *  - music: the shared player with the song requests by vote.
  * Phones: that hero on top, the chat below, the controls at the bottom. Wide screens: the hero in the middle and the
  * chat on the right (talk rooms keep the chat in the middle).
  */
@@ -67,8 +62,10 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const [sheet, setSheet] = useState<SheetState>(null)
   const [stageOpen, setStageOpen] = useState(false)
   const [musicOpen, setMusicOpen] = useState(false)
+  const [replyTo, setReplyTo] = useState<Quotable | null>(null)
+  const [pollOpen, setPollOpen] = useState(false)
+  const [pollUsed, setPollUsed] = useState(false)
   const { room, me } = s
-  const ludo = useLudo(s)
 
   if (!room || !me)
     return (
@@ -179,65 +176,51 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       <MusicPanel track={room.track} queue={room.queue} isHost={isHost} open={musicOpen} onOpenChange={setMusicOpen} onQueue={() => setSheet({ kind: 'queue' })} act={s.act} />
     ) : null
 
-  const game = ludo.shown ? (
-    <Suspense fallback={<div className="mx-auto my-2 aspect-square w-[min(100%-1.5rem,560px)] animate-pulse rounded-[18px] bg-muted" aria-busy />}>
-      <LudoPanel
-        s={s}
-        game={ludo.shown}
-        wide={wide}
-        onGame={s.setLudo}
-        onStage={() => ludo.setView('stage')}
-        onDismiss={() => ludo.dismiss(ludo.shown!.id)}
-        onClose={() => ludo.setConfirmClose(true)}
-        onPerson={person}
-      />
-    </Suspense>
-  ) : null
-  const backToGame = ludo.hidden ? (
-    <div className="flex justify-center px-4">
-      <Button size="sm" variant="secondary" onClick={() => ludo.setView('game')}>
-        <TopicIcon topic="gaming" size={18} /> {ludo.lt('inProgress')} · {ludo.lt('backToGame')}
-      </Button>
-    </div>
-  ) : null
-
-  let top: ReactNode
-  if (kind === 'music') {
-    top = (
+  const top: ReactNode =
+    kind === 'music' ? (
       <>
-        {game ?? backToGame}
         <MusicHero track={room.track} queue={room.queue} isHost={isHost} hostName={host?.profile.name ?? ''} onQueue={() => setSheet({ kind: 'queue' })} act={s.act} />
         {stage}
       </>
-    )
-  } else if (kind === 'games') {
-    top = (
-      <>
-        {game ??
-          backToGame ?? (
-            <Suspense fallback={<div className="mx-3 h-64 animate-pulse rounded-3xl bg-muted sm:mx-4" aria-busy />}>
-              <StartLudoCard canStart={mod} onStart={ludo.open} wide={wide} />
-            </Suspense>
-          )}
-        {aside ? null : <Leaderboard roomId={room.id} meId={room.meId} after={ludo.finishedId} className="mx-3 sm:mx-4" />}
-        {musicBar}
-        {stage}
-      </>
-    )
-  } else {
-    top = (
+    ) : (
       <>
         {stage}
         {musicBar}
-        {game ?? backToGame}
       </>
     )
-  }
 
   const chat = (
-    <VoiceChat lines={s.lines} onPerson={person} onIcebreaker={kind === 'talk' ? s.icebreaker : undefined} className={cn('flex-1', !aside && 'border-t border-border pt-1')} />
+    <VoiceChat
+      s={s}
+      onPerson={person}
+      onReply={setReplyTo}
+      onIcebreaker={kind === 'talk' ? s.icebreaker : undefined}
+      className={cn('flex-1', !aside && 'border-t border-border pt-1')}
+    />
   )
-  const composer = <VoiceComposer onSend={s.send} onPhoto={s.sendPhoto} onIcebreaker={s.icebreaker} />
+  const composer = (
+    <VoiceComposer
+      onSend={async (text) => {
+        const ok = await s.send(text, replyTo?.id ?? null)
+        if (ok) setReplyTo(null)
+        return ok
+      }}
+      onPhoto={s.sendPhoto}
+      onIcebreaker={s.icebreaker}
+      onPoll={
+        mod
+          ? () => {
+              setPollUsed(true)
+              setPollOpen(true)
+            }
+          : undefined
+      }
+      onMenu={mod ? () => void loadPollSheet().catch(() => undefined) : undefined}
+      members={room.members.filter((x) => x.profile.id !== room.meId).map((x) => x.profile)}
+      reply={replyTo}
+      onCancelReply={() => setReplyTo(null)}
+    />
+  )
 
   return (
     <div className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground" style={{ '--k': kindColor(kind) } as CSSProperties}>
@@ -292,7 +275,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           </div>
         ) : (
           <>
-            <div className={cn('flex shrink-0 flex-col gap-2 overflow-y-auto no-scrollbar', kind === 'talk' ? (game ? 'max-h-[70%]' : 'max-h-[45%]') : 'max-h-[62%]')}>{top}</div>
+            <div className={cn('flex shrink-0 flex-col gap-2 overflow-y-auto no-scrollbar', kind === 'music' ? 'max-h-[62%]' : 'max-h-[45%]')}>{top}</div>
             {chat}
           </>
         )}
@@ -304,8 +287,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           hands={hands}
           onRequests={() => setSheet({ kind: 'requests' })}
           onMusic={() => setSheet({ kind: 'queue' })}
-          onGame={ludo.button}
-          gameLabel={ludo.lt(ludo.shown || ludo.hidden ? 'backToGame' : 'play')}
           onJoin={() => {
             const seat = me.role === 'host' ? 0 : room.mode === 'open' || mod ? freeSeat(room) : null
             if (seat !== null) return void s.act({ type: 'seat', seat })
@@ -316,7 +297,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
       {aside ? (
         <aside className="relative flex w-[400px] shrink-0 flex-col border-l border-border bg-black/20" aria-label={t('voice.chat')}>
-          {kind === 'games' ? <Leaderboard roomId={room.id} meId={room.meId} after={ludo.finishedId} className="mx-3 mt-3 bg-white/5" /> : null}
           <h2 className="px-4 pt-4 pb-1 text-sm font-semibold">{t('voice.chat')}</h2>
           {chat}
           <div className="border-t border-border p-3">{composer}</div>
@@ -366,16 +346,11 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
       <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
       <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
-      <Modal open={ludo.confirmClose} onClose={() => ludo.setConfirmClose(false)} title={ludo.lt('closeTitle')} description={ludo.lt('closeBody')}>
-        <div className="flex gap-3 p-6 pt-5">
-          <Button variant="outline" className="flex-1" onClick={() => ludo.setConfirmClose(false)}>
-            {t('common.cancel')}
-          </Button>
-          <Button variant="danger" className="flex-1" onClick={() => void ludo.close()}>
-            {ludo.lt('closeConfirm')}
-          </Button>
-        </div>
-      </Modal>
+      {pollUsed ? (
+        <Suspense fallback={null}>
+          <PollSheet open={pollOpen} onClose={() => setPollOpen(false)} onCreate={s.createPoll} />
+        </Suspense>
+      ) : null}
     </div>
   )
 }
@@ -436,72 +411,6 @@ function StageStrip({ s, open, onToggle, onPerson }: { s: VoiceSession; open: bo
   )
 }
 
-/**
- * The room's Ludo game as this screen shows it: up for everyone when one opens; anyone can switch back to the
- * stage, and a result stays until it is dismissed. Hosts and co-hosts open and close games.
- */
-function useLudo(s: VoiceSession) {
-  const backend = useBackend()
-  const toast = useToast()
-  const { lt } = useLudoT()
-  const [view, setView] = useState<'game' | 'stage'>('game')
-  const [dismissed, setDismissed] = useState<string | null>(null)
-  const [confirmClose, setConfirmClose] = useState(false)
-  const closing = useRef(false)
-  const g = s.ludo
-  const open = !!g && (g.status === 'lobby' || g.status === 'playing')
-  const on = open || (!!g && g.status === 'finished' && dismissed !== g.id)
-  const mod = isMod(s.me)
-
-  // A new game comes up for everyone.
-  const id = g?.id
-  useEffect(() => {
-    if (id) setView('game')
-  }, [id])
-  // A game the host closed: the stage is back, with a word for those who didn't close it.
-  const prev = useRef(g?.status)
-  useEffect(() => {
-    if (g?.status === 'cancelled' && (prev.current === 'lobby' || prev.current === 'playing') && !closing.current) toast.show(lt('closed'), 'info')
-    prev.current = g?.status
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [g?.status])
-
-  const act = async (fn: () => Promise<LudoGame | null>) => {
-    try {
-      s.setLudo(await fn())
-      return true
-    } catch (err) {
-      toast.error(err)
-      return false
-    }
-  }
-  const room = s.room
-  const openGame = async () => {
-    if (room && (await act(() => backend.ludoAction(room.id, null, { type: 'open' })))) setView('game')
-  }
-  return {
-    lt,
-    shown: on && view === 'game' ? g : null,
-    hidden: on && view === 'stage',
-    /** The last game that ended with a winner (the leaderboard reads again after one). */
-    finishedId: g?.status === 'finished' ? g.id : null,
-    setView,
-    dismiss: setDismissed,
-    confirmClose,
-    setConfirmClose,
-    open: openGame,
-    close: async () => {
-      if (!g || !room) return
-      closing.current = true
-      await act(() => backend.ludoAction(room.id, g.id, { type: 'close' }))
-      closing.current = false
-      setConfirmClose(false)
-    },
-    /** The game button: back to the game, or (hosts) a new one. */
-    button: on ? () => setView('game') : mod && room ? () => void openGame() : null,
-  }
-}
-
 /** Only when the audio needs something: a tap (autoplay rules), or it is reconnecting / can't connect. */
 function AudioNotice({ s }: { s: VoiceSession }) {
   const { t } = useI18n()
@@ -524,8 +433,8 @@ function AudioNotice({ s }: { s: VoiceSession }) {
 }
 
 /**
- * The same controls in every room: the composer (text, photo, icebreaker), reactions, the music and Ludo, the
- * hands raised (hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
+ * The same controls in every room: the composer (text, photo, icebreaker, polls), reactions, the music, the hands
+ * raised (hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
  */
 function ControlBar({
   s,
@@ -534,8 +443,6 @@ function ControlBar({
   hands,
   onRequests,
   onMusic,
-  onGame,
-  gameLabel,
   onJoin,
 }: {
   s: VoiceSession
@@ -545,9 +452,6 @@ function ControlBar({
   hands: number
   onRequests: () => void
   onMusic: () => void
-  /** Ludo: open a game (hosts) or go back to the one on. Null: nothing to show. */
-  onGame: (() => void) | null
-  gameLabel: string
   onJoin: () => void
 }) {
   const { t, num } = useI18n()
@@ -565,11 +469,6 @@ function ControlBar({
         <Button size="icon" variant="secondary" onClick={onMusic} aria-label={t('voice.music')} title={t('voice.music')}>
           <TopicIcon topic="music" size={22} />
         </Button>
-        {onGame ? (
-          <Button size="icon" variant="secondary" onClick={onGame} aria-label={gameLabel} title={gameLabel}>
-            <TopicIcon topic="gaming" size={22} />
-          </Button>
-        ) : null}
         {mod && hands > 0 ? (
           <Button size="icon" variant="secondary" onClick={onRequests} aria-label={t('voice.requestsN', { n: num(hands) })}>
             <ReactionIcon kind="hand" size={22} />

@@ -2,19 +2,23 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import { BackendError, type LudoGame, type VoiceAction, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
+import { BackendError, type VoiceAction, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
+import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { TopicIcon } from '@/components/ui/topic-icons'
+import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
+import { RoomPlayerProvider } from './room-player'
 import { VoiceRoomScreen } from './voice-room'
 import { LiveBars, SpeakingRing } from './voice-stage'
 import { memberOf, SPEAKING } from './voice-text'
@@ -63,17 +67,20 @@ export interface VoiceSession {
   /** The live audio (null in the demo, or before it starts). */
   audio: VoiceAudioState | null
   act: (a: VoiceAction) => Promise<boolean>
-  send: (text: string) => Promise<boolean>
+  /** `replyTo`: the line this one answers. */
+  send: (text: string, replyTo?: number | null) => Promise<boolean>
   /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude). */
   sendPhoto: (photo: File) => Promise<boolean>
   /** Posts a conversation starter card. */
   icebreaker: () => void
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
-  /** The room's Ludo game (lobby, playing, or a result from the last few minutes). */
-  ludo: LudoGame | null
-  /** Takes a newer state of the game (an action's reply); older versions are ignored. */
-  setLudo: (g: LudoGame | null) => void
+  /** The polls of the poll lines on screen, by poll id (absent: still being read). */
+  polls: PollMap
+  createPoll: (question: string, options: string[]) => Promise<boolean>
+  /** Shown at once, then as the server counted it. */
+  votePoll: (pollId: number, choice: number) => void
+  closePoll: (pollId: number) => Promise<boolean>
 }
 
 const REACTION_MS = 2600
@@ -86,7 +93,15 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [lines, setLines] = useState<VoiceLine[] | null>(null)
   const [reactions, setReactions] = useState<Reaction[]>([])
   const [audio, setAudio] = useState<VoiceAudioState | null>(null)
-  const [ludo, setLudoState] = useState<LudoGame | null>(null)
+  const [polls, dispatch] = useReducer(pollsReducer, {})
+  const pollsRef = useRef(polls)
+  pollsRef.current = polls
+  /** Polls read with my own vote (a live update alone doesn't say whether I voted). */
+  const mineKnown = useRef(new Set<number>())
+  const dispatchPoll = useCallback((a: PollAction) => {
+    if (a.type === 'mine') mineKnown.current.add(a.poll.id)
+    dispatch(a)
+  }, [])
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
@@ -122,6 +137,12 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'line':
           addLines([e.line])
+          break
+        case 'poll':
+          dispatchPoll({ type: 'room', poll: e.poll })
+          break
+        case 'resync':
+          readPolls(true)
           break
         case 'reaction': {
           const r: Reaction = { key: ++seq, userId: e.userId, kind: e.kind, x: 0.12 + Math.random() * 0.76 }
@@ -175,25 +196,28 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
 
   const me = room ? memberOf(room, room.meId) : null
 
-  // A newer version of the same game, or another game unless that would replace an open one with an old result.
-  const setLudo = useCallback((g: LudoGame | null) => {
-    if (!g) return
-    const open = (x: LudoGame) => x.status === 'lobby' || x.status === 'playing'
-    setLudoState((prev) => (!prev || (g.id === prev.id ? g.version > prev.version : open(g) || !open(prev)) ? g : prev))
-  }, [])
-
-  // The game follows the room once I'm in it (its rows are readable by people in the room only).
-  const inRoom = !!room
+  // Poll lines show their votes: the ones not read yet are read (with my own vote) as they arrive; after the room
+  // was read again following a gap, every open one is read again too.
+  const lineIds = useRef<number[]>([])
+  const reading = useRef(new Set<number>())
+  const readPolls = useCallback(
+    (all = false) => {
+      const want = lineIds.current.filter((id) => !reading.current.has(id) && (all ? !pollsRef.current[id]?.closed : !mineKnown.current.has(id)))
+      if (!want.length) return
+      const ids = want.slice(-POLLS_PER_READ)
+      ids.forEach((id) => reading.current.add(id))
+      backend.voicePolls(ids).then(
+        (list) => list.forEach((poll) => dispatchPoll({ type: 'mine', poll })),
+        () => undefined,
+      ).finally(() => ids.forEach((id) => reading.current.delete(id)))
+    },
+    [backend, dispatchPoll],
+  )
+  const pollKey = lines?.flatMap((l) => (l.kind === 'poll' ? [l.pollId] : [])).join(',') ?? ''
   useEffect(() => {
-    if (!inRoom) return
-    let alive = true
-    const stop = backend.subscribeLudo(roomId, (g) => alive && setLudo(g))
-    backend.ludoGame(roomId).then((g) => alive && setLudo(g), () => undefined)
-    return () => {
-      alive = false
-      stop()
-    }
-  }, [backend, roomId, inRoom, setLudo])
+    lineIds.current = pollKey ? pollKey.split(',').map(Number) : []
+    readPolls()
+  }, [pollKey, readPolls])
 
   // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.
   const seat = me?.seat ?? null
@@ -221,9 +245,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   )
 
   const send = useCallback(
-    async (text: string) => {
+    async (text: string, replyTo?: number | null) => {
       try {
-        addLines([await backend.sendVoice(roomId, text)])
+        addLines([await backend.sendVoice(roomId, text, replyTo ?? null)])
         return true
       } catch (err) {
         toast.error(err)
@@ -270,6 +294,50 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     }
   }, [backend, roomId, addLines, toast])
 
+  const createPoll = useCallback(
+    async (question: string, options: string[]) => {
+      try {
+        addLines([await backend.voicePollCreate(roomId, question, options)])
+        return true
+      } catch (err) {
+        toast.error(err)
+        return false
+      }
+    },
+    [backend, roomId, addLines, toast],
+  )
+
+  const votePoll = useCallback(
+    (pollId: number, choice: number) => {
+      const before = pollsRef.current[pollId]
+      if (!before || before.closed || before.mine === choice) return
+      dispatchPoll({ type: 'vote', id: pollId, choice })
+      backend.voicePollVote(pollId, choice).then(
+        (poll) => dispatchPoll({ type: 'mine', poll }),
+        (err) => {
+          dispatchPoll({ type: 'restore', poll: before })
+          toast.error(err)
+          // Closed meanwhile, or gone: show it as it is now.
+          if (errorCode(err) === 'poll_closed') backend.voicePolls([pollId]).then((l) => l.forEach((poll) => dispatchPoll({ type: 'mine', poll })), () => undefined)
+        },
+      )
+    },
+    [backend, toast, dispatchPoll],
+  )
+
+  const closePoll = useCallback(
+    async (pollId: number) => {
+      try {
+        dispatchPoll({ type: 'mine', poll: await backend.voicePollClose(pollId) })
+        return true
+      } catch (err) {
+        toast.error(err)
+        return false
+      }
+    },
+    [backend, toast, dispatchPoll],
+  )
+
   const startAudio = useCallback(() => void backend.voiceStartAudio(roomId).catch(() => undefined), [backend, roomId])
 
   // Browsers keep audio off until the page is touched: any tap anywhere turns it on.
@@ -280,17 +348,30 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => document.removeEventListener('pointerdown', startAudio)
   }, [needsTap, startAudio])
 
-  return { room, me, lines, levels, reactions, audio, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio, ludo, setLudo }
+  return {
+    room, me, lines, levels, reactions, audio, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
+    polls, createPoll, votePoll, closePoll,
+  }
+}
+
+/** What the shell needs from the room I'm in (one live session at a time: see lib/live-session.ts). */
+export interface VoiceControl {
+  title: string
+  isHost: boolean
+  /** Leaves exactly like the Leave button (the host's room ends), without asking. */
+  leave: () => Promise<boolean>
 }
 
 /**
- * A voice room the user is in: full screen while expanded, a small pill while they browse the rest of the app
- * (they keep listening, as in X Spaces). Unmounting it leaves the room.
+ * A voice room the user is in: full screen while expanded, a bar above the navigation while they browse the rest of
+ * the app (they keep listening and the music plays on, as on X Spaces or a WhatsApp call). Unmounting it leaves the
+ * room; only Leave (or the shell, see VoiceControl) does that.
  */
 export function VoiceHost({
   roomId,
   expanded,
   pillHidden,
+  control,
   onExpand,
   onMinimise,
   onClose,
@@ -298,6 +379,8 @@ export function VoiceHost({
   roomId: string
   expanded: boolean
   pillHidden: boolean
+  /** Filled in for the shell while I'm in the room. */
+  control: React.RefObject<VoiceControl | null>
   onExpand: () => void
   onMinimise: () => void
   onClose: () => void
@@ -311,8 +394,6 @@ export function VoiceHost({
   const [busy, setBusy] = useState(false)
   const isHost = s.me?.role === 'host'
 
-  // The host's room would carry on without them, so the host's "leave" ends it (after a confirm).
-  const leave = () => (isHost ? setConfirmEnd(true) : onClose())
   const end = async () => {
     setBusy(true)
     ending.current = true
@@ -320,17 +401,29 @@ export function VoiceHost({
       await backend.endVoice(roomId)
       toast.show(t('voice.endedByYou'), 'success')
       onClose()
+      return true
     } catch (err) {
       ending.current = false
       toast.error(err)
+      return false
     } finally {
       setBusy(false)
       setConfirmEnd(false)
     }
   }
+  // The host's room would carry on without them, so the host's "leave" ends it (after a confirm).
+  const leave = () => (isHost ? setConfirmEnd(true) : onClose())
+
+  const title = s.room?.title ?? ''
+  useEffect(() => {
+    control.current = { title, isHost, leave: async () => (isHost ? end() : (onClose(), true)) }
+    return () => {
+      control.current = null
+    }
+  })
 
   return (
-    <>
+    <RoomPlayerProvider track={s.room?.track ?? null} isHost={isHost} shown={expanded} act={s.act}>
       <AnimatePresence>
         {expanded ? (
           <m.div
@@ -358,10 +451,14 @@ export function VoiceHost({
           </Button>
         </div>
       </Modal>
-    </>
+    </RoomPlayerProvider>
   )
 }
 
+/**
+ * The room while I'm elsewhere in the app: who is talking (or how many listen), the live mark and the song playing;
+ * my microphone when I'm on the stage, and Leave. A tap anywhere else opens the room again.
+ */
 function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => void; onLeave: () => void }) {
   const { t, num } = useI18n()
   const room = s.room!
@@ -371,10 +468,12 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
   const listening = room.members.filter((x) => x.seat === null).length
   const onStage = s.me?.seat !== null && s.me?.seat !== undefined
   const muted = s.me?.muted ?? true
+  const song = room.track && !room.track.pausedAt ? room.track.title : null
 
   return (
     <m.div
-      className="theme-night absolute inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-5 md:left-5 md:w-[22rem]"
+      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:left-6 md:w-[24rem]"
+      style={{ '--k': kindColor(room.category) } as CSSProperties}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
@@ -382,22 +481,29 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
       role="region"
       aria-label={t('voice.pill', { title: room.title })}
     >
-      <div className="flex items-center gap-1 rounded-2xl bg-card p-2 text-foreground shadow-e3 ring-1 ring-border">
-        <button type="button" onClick={onExpand} className="flex min-w-0 flex-1 items-center gap-3 rounded-xl p-1 text-left">
+      <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-[color-mix(in_srgb,var(--k)_45%,transparent)]">
+        {/* The room's colour, washed in from the left. */}
+        <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,color-mix(in_srgb,var(--k)_30%,transparent),transparent_70%)]" />
+        <button type="button" onClick={onExpand} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-left" aria-label={`${t('voice.expand')}: ${room.title}`}>
           <span className="relative shrink-0">
             {face ? (
               <>
                 <SpeakingRing store={s.levels} id={face.profile.id} />
-                <Avatar name={face.profile.name} src={face.profile.photoUrl} size={40} />
+                <Avatar name={face.profile.name} src={face.profile.photoUrl} size={42} />
               </>
             ) : null}
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-sm font-semibold">{room.title}</span>
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground" aria-live="off">
-              <LiveBars className="shrink-0" />
+            <span className="flex items-center gap-2">
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] leading-none font-bold tracking-wide text-primary-foreground uppercase">
+                <LiveBars className="h-2.5 [&>span]:bg-primary-foreground" /> {t('voice.live')}
+              </span>
+              <span className="truncate text-sm font-bold">{room.title}</span>
+            </span>
+            <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground" aria-live="off">
+              {song && !speaker ? <TopicIcon topic="music" size={14} className="shrink-0" /> : null}
               <span className="truncate">
-                {speaker ? t('voice.isSpeaking', { name: speaker.profile.name }) : t('voice.listening', { n: num(listening) })}
+                {speaker ? t('voice.isSpeaking', { name: speaker.profile.name }) : song || t('voice.listening', { n: num(listening) })}
               </span>
             </span>
           </span>
@@ -409,14 +515,15 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
             onClick={() => void s.act({ type: 'mic', on: muted })}
             aria-label={muted ? t('voice.unmute') : t('voice.mute')}
             aria-pressed={!muted}
+            className="relative"
           >
             {muted ? <MicOff className="size-5" aria-hidden /> : <Mic className="size-5" aria-hidden />}
           </Button>
         ) : null}
-        <Button size="icon" variant="ghost" onClick={onExpand} aria-label={t('voice.expand')}>
+        <Button size="icon" variant="ghost" onClick={onExpand} aria-label={t('voice.expand')} className="relative max-sm:hidden">
           <ChevronUp className="size-5" aria-hidden />
         </Button>
-        <Button size="icon" variant="ghost" onClick={onLeave} aria-label={t('voice.leave')} className={cn('text-muted-foreground hover:text-destructive')}>
+        <Button size="icon" variant="ghost" onClick={onLeave} aria-label={t('voice.leave')} className={cn('relative text-destructive hover:text-destructive')}>
           <LogOut className="size-5" aria-hidden />
         </Button>
       </div>

@@ -95,9 +95,18 @@ const en = {
   'tour.1.title': 'Meet someone new',
   'tour.1.body': 'Tap Start for a random one-to-one chat. Text comes first; video only when you both say yes.',
   'tour.2.title': 'Rooms for every mood',
-  'tour.2.body': 'Talk, listen to music together or play Ludo. Search by name or language, or open your own room.',
+  'tour.2.body': 'Talk, listen to music together or run a poll. Search by name or language, or open your own room.',
   'tour.3.title': 'Keep your people close',
   'tour.3.body': 'Add the friends you click with. Their messages, requests and room invites arrive in Notifications.',
+  // one live session at a time: a room or a random chat
+  'live.leaveRoomTitle': 'Leave “{room}” to start a random chat?',
+  'live.leaveRoomBody': 'One live chat at a time. You can come back to the room later.',
+  'live.endRoomBody': 'You’re the host: leaving ends the room for everyone.',
+  'live.leaveAndStart': 'Leave and start',
+  'live.stay': 'Stay',
+  'live.endChatTitle': 'End your chat with {name} to join this room?',
+  'live.endChatBody': 'One live chat at a time. Your chat ends for both of you.',
+  'live.endAndJoin': 'End chat and join',
 }
 
 export default en

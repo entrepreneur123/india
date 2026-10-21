@@ -2,13 +2,17 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
 import type { Entitlements, Profile } from '@/lib/backend'
-import { AppContext, type AppState, type Tab, type Thread } from '@/components/app-state'
+import { planLive } from '@/lib/live-session'
+import { AppContext, type AppState, type RandomControl, type Tab, type Thread } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { NightContext } from '@/components/ui/modal'
+import { Modal, NightContext } from '@/components/ui/modal'
+import { Button } from '@/components/ui/pressable'
+import { useSocialT } from '@/components/social/social-text'
+import type { VoiceControl } from '@/components/screens/voice/voice-session'
 import { useToast } from '@/components/ui/toast'
 import { onboardingDue } from '@/components/social/first-run'
 import { cn } from '@/lib/utils'
@@ -89,6 +93,67 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [inboxUsed, setInboxUsed] = useState(false)
   const [onboarding, setOnboarding] = useState(() => onboardingDue(!!initialMe.interests?.length))
   const { mutate } = useSWRConfig()
+  const { st } = useSocialT()
+  // One live session at a time (lib/live-session.ts): the room and the random tab say where they are, and a step
+  // that would run both asks first.
+  const voiceCtl = useRef<VoiceControl | null>(null)
+  const randomCtl = useRef<RandomControl | null>(null)
+  const [ask, setAsk] = useState<{ kind: 'leaveRoom'; title: string; host: boolean } | { kind: 'endChat'; partner: string } | null>(null)
+  const [askBusy, setAskBusy] = useState(false)
+  const answer = useRef<((ok: boolean) => void) | null>(null)
+  const voiceRef = useRef(voice)
+  voiceRef.current = voice
+
+  const settle = (ok: boolean) => {
+    answer.current?.(ok)
+    answer.current = null
+    setAsk(null)
+  }
+  const freeForRoom = useCallback(
+    () =>
+      new Promise<boolean>((resolve) => {
+        const plan = planLive({ room: null, random: randomCtl.current?.live() ?? { phase: 'idle' } }, { kind: 'room', roomId: '' })
+        if (plan.do === 'stopSearch') randomCtl.current?.cancelSearch()
+        if (plan.do !== 'confirmEndChat') return resolve(true)
+        answer.current?.(false)
+        answer.current = resolve
+        setAsk({ kind: 'endChat', partner: plan.partner })
+      }),
+    [],
+  )
+  const freeForRandom = useCallback(
+    () =>
+      new Promise<boolean>((resolve) => {
+        const v = voiceRef.current
+        const room = v ? { id: v.id, title: voiceCtl.current?.title ?? '' } : null
+        const plan = planLive({ room, random: { phase: 'idle' } }, { kind: 'random' })
+        if (plan.do !== 'confirmLeaveRoom') return resolve(true)
+        answer.current?.(false)
+        answer.current = resolve
+        setAsk({ kind: 'leaveRoom', title: plan.title, host: !!voiceCtl.current?.isHost })
+      }),
+    [],
+  )
+  /** "Leave and start" / "End chat and join": what Leave or leaving the chat would do, then the step goes ahead. */
+  const confirmAsk = async () => {
+    if (!ask) return
+    setAskBusy(true)
+    let ok: boolean
+    if (ask.kind === 'leaveRoom') ok = voiceCtl.current ? await voiceCtl.current.leave() : (setVoice(null), true)
+    else ok = (await randomCtl.current?.endChat()) ?? true
+    setAskBusy(false)
+    settle(ok)
+  }
+  const registerRandom = useCallback((c: RandomControl | null) => {
+    randomCtl.current = c
+  }, [])
+  const openVoice = useCallback(
+    (id: string) => {
+      if (voiceRef.current?.id === id) return setVoice((v) => v && { ...v, expanded: true })
+      void freeForRoom().then((ok) => ok && setVoice({ id, expanded: true }))
+    },
+    [freeForRoom],
+  )
 
   // Unread counts. Asking also tells the server the app is open (no phone pushes meanwhile): at start, every 30 s
   // while the tab is visible, and at once when one of my notifications arrives or changes.
@@ -133,13 +198,10 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
     if (voiceParam) history.replaceState(null, '', location.pathname)
     link = voiceParam ?? link
     if (!link) return
-    if (/^v-[0-9a-z]+$/i.test(link)) return setVoice({ id: link, expanded: true })
+    if (/^v-[0-9a-z]+$/i.test(link)) return openVoice(link)
     if (!/^[A-Z0-9]{6}$/i.test(link)) return
-    backend.joinVoiceCode(link.toUpperCase()).then(
-      (id) => setVoice({ id, expanded: true }),
-      (err) => toast.error(err),
-    )
-  }, [backend, toast])
+    backend.joinVoiceCode(link.toUpperCase()).then(openVoice, (err) => toast.error(err))
+  }, [backend, toast, openVoice])
 
   // Once the app has settled, fetch every other screen in the background: later tab switches are instant and
   // still work if the connection drops.
@@ -148,10 +210,16 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
     return () => clearTimeout(id)
   }, [])
 
-  const setTab = useCallback((next: Tab) => {
-    setThread(null)
-    setTabState(next)
-  }, [])
+  // Going anywhere else in the app keeps me in the room: it shrinks to its bar (audio and music go on).
+  const minimiseVoice = useCallback(() => setVoice((v) => (v?.expanded ? { ...v, expanded: false } : v)), [])
+  const setTab = useCallback(
+    (next: Tab) => {
+      setThread(null)
+      setTabState(next)
+      minimiseVoice()
+    },
+    [minimiseVoice],
+  )
 
   const openThread = useCallback(
     async (partner: Profile, matchId?: string) => {
@@ -159,11 +227,12 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       try {
         const id = matchId ?? (await backend.friendThread(partner.id))
         setThread({ matchId: id, partner })
+        minimiseVoice()
       } catch (err) {
         toast.error(err)
       }
     },
-    [backend, toast],
+    [backend, toast, minimiseVoice],
   )
 
   const state = useMemo<AppState>(
@@ -187,7 +256,10 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setPaywallOpen(true)
       },
       openThread: (partner, matchId) => void openThread(partner, matchId),
-      openVoice: (id) => setVoice({ id, expanded: true }),
+      openVoice,
+      freeForRoom,
+      freeForRandom,
+      registerRandom,
       voiceRoomId: voice?.id ?? null,
       setImmersive,
       randomVisible: tab === 'random' && thread === null,
@@ -208,7 +280,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setInboxOpen(true)
       },
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, openVoice, freeForRoom, freeForRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges],
   )
 
   const randomVisible = tab === 'random' && !thread
@@ -216,6 +288,8 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const night = randomVisible || thread !== null || voiceOpen
   const busyScreen = (randomVisible && immersive) || thread !== null
   const hideTabs = busyScreen || voiceOpen
+  // The room's bar sits above the navigation (phones) or in the corner (wide screens): screens keep room for it.
+  const pillShown = !!voice && !voice.expanded && !busyScreen
 
   return (
     <AppContext.Provider value={state}>
@@ -226,7 +300,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
             <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
               {/* Screens are layered, never stacked: a tab fading out must not push the next one aside. */}
               {/* While a voice room is full screen, what's under it can't be reached by keyboard or screen reader. */}
-              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden')} inert={voiceOpen}>
+              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden', pillShown && 'pb-[5.5rem] md:pb-24')} inert={voiceOpen}>
                 <RandomScreen active={randomVisible} />
               </div>
               <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
@@ -235,7 +309,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     key={tab}
                     custom={randomVisible}
                     variants={TAB_MOTION}
-                    className={cn('absolute inset-0 flex flex-col', !hideTabs && 'pb-16 md:pb-0')}
+                    className={cn('absolute inset-0 flex flex-col', !hideTabs && (pillShown ? 'pb-[9.5rem] md:pb-24' : 'pb-16 md:pb-0'))}
                     inert={voiceOpen}
                     initial="enter"
                     animate="shown"
@@ -283,6 +357,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                       roomId={voice.id}
                       expanded={voice.expanded}
                       pillHidden={busyScreen}
+                      control={voiceCtl}
                       onExpand={() => setVoice((v) => v && { ...v, expanded: true })}
                       onMinimise={() => setVoice((v) => v && { ...v, expanded: false })}
                       onClose={() => setVoice(null)}
@@ -321,6 +396,21 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
             </Suspense>
           </ScreenBoundary>
         ) : null}
+        <Modal
+          open={!!ask}
+          onClose={() => !askBusy && settle(false)}
+          title={ask?.kind === 'leaveRoom' ? st('live.leaveRoomTitle', { room: ask.title }) : ask ? st('live.endChatTitle', { name: ask.partner }) : ''}
+          description={ask?.kind === 'leaveRoom' ? (ask.host ? st('live.endRoomBody') : st('live.leaveRoomBody')) : st('live.endChatBody')}
+        >
+          <div className="flex gap-3 p-6 pt-5">
+            <Button variant="outline" className="flex-1" disabled={askBusy} onClick={() => settle(false)} data-autofocus>
+              {st('live.stay')}
+            </Button>
+            <Button variant={ask?.kind === 'leaveRoom' && ask.host ? 'danger' : 'brand'} className="flex-1" loading={askBusy} onClick={() => void confirmAsk()}>
+              {ask?.kind === 'leaveRoom' ? st('live.leaveAndStart') : st('live.endAndJoin')}
+            </Button>
+          </div>
+        </Modal>
         {paywallUsed ? (
           <ScreenBoundary>
             <Suspense fallback={null}>

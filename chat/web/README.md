@@ -15,6 +15,8 @@ The web version of Yaari. It uses the **same Supabase server and the same rules*
 pnpm install
 pnpm dev            # http://localhost:3000 — demo backend (no server, any 6-digit code)
 pnpm build          # static site in out/ (next build + scripts/csp-hashes.mjs)
+pnpm typecheck      # tsc --noEmit (next build runs it too)
+pnpm test           # unit tests of the pure logic in lib/ (node --test, lib/tests/*.test.ts)
 ```
 
 Live server: set both variables (Vercel → Project → Settings → Environment Variables), then build.

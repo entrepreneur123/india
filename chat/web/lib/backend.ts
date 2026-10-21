@@ -104,11 +104,14 @@ export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' 
 /** Why I can't enter a room (null/absent = I can). */
 export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed'
 
-// ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos), a stage
-// of seats with an audience, shared music and Ludo; its category sets the layout and one signature feature. ----
+// ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos, polls), a
+// stage of seats with an audience and shared music; its category sets the layout and one signature feature. ----
 
-/** Talk: chat first, icebreakers. Music: the player first, song requests by vote. Games: Ludo first, a leaderboard. */
-export type RoomKind = 'talk' | 'music' | 'games'
+/**
+ * Talk: chat first, icebreakers. Music: the player first, song requests by vote. Games are gone (029): the server
+ * makes 'games' a talk room, and the apps read any category they don't know as talk.
+ */
+export type RoomKind = 'talk' | 'music'
 
 /** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
 export type VoiceRole = 'host' | 'cohost' | 'speaker' | 'listener'
@@ -178,8 +181,6 @@ export interface VoiceRoomSummary extends RoomRules {
   /** People present, me included. */
   members: number
   nowPlaying: string | null
-  /** A Ludo game open in the room. */
-  game: 'lobby' | 'playing' | null
   announcement: string | null
   mine: boolean
   /** Only for my own room. */
@@ -215,23 +216,49 @@ export interface NewVoiceRoom extends RoomRules {
   lang: string
 }
 
-export interface RoomLeader {
-  profile: Profile
-  wins: number
-}
-
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
 export type VoiceReaction = 'heart' | 'laugh' | 'fire' | 'clap' | 'wow'
 
 export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed'
 
+/**
+ * The line a reply answers, as the server copied it into the reply (029): shown without looking it up, also when the
+ * original is far back. `text`: up to 120 characters of a text line, a poll's question, null for a photo.
+ */
+export interface VoiceReply {
+  id: number
+  /** The sender's user id. */
+  sender: string
+  name: string
+  kind: 'text' | 'photo' | 'poll'
+  text: string | null
+}
+
+/**
+ * A poll (029): the host or a co-host asks, everyone in the room votes once and may change it while it is open.
+ * `mine`: my choice (0-based), null when I haven't voted (or, on a live update, unknown: each app keeps its own).
+ */
+export interface VoicePoll {
+  id: number
+  question: string
+  options: string[]
+  counts: number[]
+  total: number
+  closed: boolean
+  /** Who asked (user id). */
+  by: string
+  mine: number | null
+}
+
 export type VoiceLine =
-  | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number }
+  | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number; reply?: VoiceReply | null }
   | { id: number; kind: 'system'; event: VoiceSystemEvent; name: string; seat?: number; title?: string; at: number }
   /** A conversation starter: prompt 1-40 (the text is in each app's own language). */
   | { id: number; kind: 'icebreaker'; prompt: number; name: string; fromMe: boolean; at: number }
   /** A photo (checked on the sender's device; shown blurred until tapped). */
   | { id: number; kind: 'photo'; sender: Profile; fromMe: boolean; url: string; at: number }
+  /** A poll's place in the chat; its votes are a VoicePoll (Backend.voicePolls, VoiceEvent 'poll'). */
+  | { id: number; kind: 'poll'; sender: Profile; fromMe: boolean; pollId: number; question: string; options: string[]; at: number }
 
 /**
  * The room's live audio (live server only; the demo has none). `needsTap`: the browser blocked playback until
@@ -250,6 +277,10 @@ export type VoiceEvent =
   | { type: 'levels'; levels: Record<string, number> }
   | { type: 'line'; line: VoiceLine }
   | { type: 'reaction'; userId: string; kind: VoiceReaction }
+  /** A poll changed (a vote, closed): counts and totals; `mine` is null (keep my own). */
+  | { type: 'poll'; poll: VoicePoll }
+  /** The room was read again after a gap: polls shown may have missed changes meanwhile. */
+  | { type: 'resync' }
   | { type: 'ended' }
   | { type: 'removed' }
   /** The server no longer lets me be here (the room filled while I was away, I was banned, ...): `code` says why. */
@@ -283,60 +314,6 @@ export type VoiceAction =
   | { type: 'resume' }
   /** The most voted request plays. `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
   | { type: 'skip'; trackId?: string }
-
-// ---- Ludo in a voice room (018_ludo.sql; rules in lib/ludo.ts) ----
-
-/** Seats 0-3 are red, green, yellow and blue, played in that order. */
-export type LudoStatus = 'lobby' | 'playing' | 'finished' | 'cancelled'
-
-/**
- * What the last action did, in order (a roll, the move it made, a capture...): the apps animate and announce it.
- * Token positions: -1 base, 0-50 track (from the colour's start square), 51-55 home column, 56 home.
- */
-export type LudoEvent =
-  | { k: 'start'; s: number }
-  | { k: 'roll'; s: number; d: number }
-  /** `cap`: tokens sent home, as [seat, token, position]. */
-  | { k: 'move'; s: number; t: number; f: number; to: number; cap: [number, number, number][] }
-  | { k: 'pass' | 'triple' | 'timeout' | 'win'; s: number }
-  | { k: 'out'; s: number; why: 'left' | 'timeouts' | 'quit' }
-
-export interface LudoGame {
-  id: string
-  roomId: string
-  status: LudoStatus
-  /** User id per colour (null = free) and the name they sat down with. */
-  players: (string | null)[]
-  names: (string | null)[]
-  out: boolean[]
-  /** 16 positions: tokens[seat * 4 + k]. */
-  tokens: number[]
-  turn: number | null
-  /** A roll waiting for a move (null: the player rolls next). */
-  dice: number | null
-  /** The last value shown on the die. */
-  roll: number | null
-  /** The turn ends then (this device's clock); anyone in the room may then play it for the absent player. */
-  deadline: number | null
-  winner: number | null
-  events: LudoEvent[]
-  /** Bumped by every change; actions carry the one the screen showed. */
-  version: number
-  endedAt: number | null
-}
-
-export type LudoAction =
-  // host and co-hosts
-  | { type: 'open' }
-  | { type: 'start' }
-  | { type: 'close' }
-  // anyone in the room
-  | { type: 'join'; seat?: number }
-  | { type: 'leave' }
-  | { type: 'roll'; version: number }
-  | { type: 'move'; token: number; version: number }
-  /** The turn's time is up: the server plays it (or does nothing when it was already played). */
-  | { type: 'timeout'; version: number }
 
 export interface Match {
   id: string
@@ -389,11 +366,10 @@ export type BackendErrorCode =
   | 'voice_removed'
   | 'mic_denied'
   | 'queue_full'
-  | 'not_your_turn'
-  | 'seat_taken'
-  | 'game_full'
-  | 'need_players'
-  | 'stale'
+  /** A vote on a poll that has closed. */
+  | 'poll_closed'
+  /** Input the server refused (a poll with repeated options, an empty line ...). */
+  | 'bad_request'
   /** The photo looked like nudity on this device's check: it was not sent. */
   | 'nude_photo'
 
@@ -485,22 +461,23 @@ export interface Backend {
   endVoice(roomId: string): Promise<void>
   voiceLines(roomId: string): Promise<VoiceLine[]>
   subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void
-  sendVoice(roomId: string, text: string): Promise<VoiceLine>
+  /** `replyTo`: the line this one answers (voice_send2); its quote comes back in the line's `reply`. */
+  sendVoice(roomId: string, text: string, replyTo?: number | null): Promise<VoiceLine>
   /** Shrinks the photo to 1280 px JPEG and sends it (the screen has run classifyImage() on it first). */
   sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine>
   /** Posts a conversation starter (one per room every 20 s: 'slow_down'). */
   voiceIcebreaker(roomId: string): Promise<VoiceLine>
-  /** The room's Ludo winners, top 5. */
-  voiceLeaders(roomId: string): Promise<RoomLeader[]>
+  /** Host or co-host: asks the room (2-4 distinct options); closes the room's open poll. Returns the poll's line. */
+  voicePollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine>
+  /** My vote (0-based), or a new one in place of it; refused with 'poll_closed' once it has closed. */
+  voicePollVote(pollId: number, choice: number): Promise<VoicePoll>
+  /** The host, a co-host or who asked closes it. */
+  voicePollClose(pollId: number): Promise<VoicePoll>
+  /** Polls by id (at most 50), with my votes: for poll lines from the history. */
+  voicePolls(ids: number[]): Promise<VoicePoll[]>
   /** Throws BackendError('not_allowed') when my role may not do it. */
   voiceAction(roomId: string, action: VoiceAction): Promise<void>
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
   voiceStartAudio(roomId: string): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
-  /** The room's game: open, or one that ended in the last few minutes (its result); null when there is none. */
-  ludoGame(roomId: string): Promise<LudoGame | null>
-  /** Every change to the room's game (a new game, each roll and move), while I'm in the room. */
-  subscribeLudo(roomId: string, on: (game: LudoGame) => void): () => void
-  /** Returns the game as it is after the action. Refusals: not_your_turn, seat_taken, game_full, need_players, stale. */
-  ludoAction(roomId: string, gameId: string | null, action: LudoAction): Promise<LudoGame | null>
 }

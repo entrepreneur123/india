@@ -7,12 +7,12 @@ import { TopicIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 import { CATEGORIES, categoryBody, categoryLabel, kindColor, kindTopic } from './room-text'
 
-/** The three categories as chips, and what the chosen one is like underneath. */
+/** The two categories as chips, and what the chosen one is like underneath. */
 export function CategoryPicker({ labelledBy, value, onChange }: { labelledBy: string; value: RoomKind; onChange: (c: RoomKind) => void }) {
   const { t } = useI18n()
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-labelledby={labelledBy}>
+      <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby={labelledBy}>
         {CATEGORIES.map((c) => {
           const on = value === c
           return (

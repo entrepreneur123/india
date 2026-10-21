@@ -24,6 +24,8 @@ export function systemText(line: Extract<VoiceLine, { kind: 'system' }>, t: T) {
       return t('voice.sys.track', { name: line.name, title: line.title || t('voice.ytVideo') })
     case 'removed':
       return t('voice.sys.removed', { name: line.name })
+    default:
+      return '' // an event this app doesn't know yet: not shown
   }
 }
 

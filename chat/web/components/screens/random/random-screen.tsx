@@ -48,7 +48,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang } = useI18n()
-  const { me, canChooseGender, openPaywall, setImmersive, setTab } = useApp()
+  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom } = useApp()
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
@@ -241,6 +241,37 @@ export function RandomScreen({ active }: { active: boolean }) {
     if (next) startMatching()
   }
 
+  // One live session at a time: the shell asks here before a room opens (lib/live-session.ts).
+  const now = useRef({ phase, match, cancelMatching, closeChat })
+  now.current = { phase, match, cancelMatching, closeChat }
+  useEffect(() => {
+    registerRandom({
+      live: () => {
+        const { phase, match } = now.current
+        return phase === 'chat' && match ? { phase: 'chat', partner: match.partner.name } : phase === 'matching' ? { phase: 'searching' } : { phase: 'idle' }
+      },
+      cancelSearch: () => now.current.cancelMatching(),
+      endChat: async () => {
+        const { match } = now.current
+        if (!match) return true
+        try {
+          await backend.leave(match.id)
+        } catch (err) {
+          if (errorCode(err) !== 'not_found') {
+            toast.error(err)
+            return false
+          }
+        }
+        now.current.closeChat()
+        return true
+      },
+    })
+    return () => registerRandom(null)
+  }, [registerRandom, backend, toast])
+
+  /** Start from the lobby: out of my room first (after a confirm), then the search. */
+  const start = () => void freeForRandom().then((ok) => ok && startMatching())
+
   const gender: { value: Target; label: string; locked?: boolean }[] = [
     { value: 'any', label: t('lobby.everyone') },
     { value: 'female', label: t('lobby.women'), locked: !canChooseGender },
@@ -287,7 +318,7 @@ export function RandomScreen({ active }: { active: boolean }) {
 
               <m.button
                 type="button"
-                onClick={startMatching}
+                onClick={start}
                 onPointerEnter={() => void loadChat().catch(() => undefined)}
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.1 }}

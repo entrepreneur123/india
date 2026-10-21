@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { Lock, Minus, Plus } from 'lucide-react'
 import type { NewVoiceRoom, RoomKind, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -40,6 +41,7 @@ export function CreateRoomDialog({
   const { t, lang: appLang } = useI18n()
   const { st } = useSocialT()
   const { mutate } = useSWRConfig()
+  const { freeForRoom } = useApp()
   const id = useId()
   const [title, setTitle] = useState('')
   const [lang, setLang] = useState<string>(appLang)
@@ -69,6 +71,8 @@ export function CreateRoomDialog({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
+    // Out of a random chat first (one live session at a time); staying in it keeps the form as it is.
+    if (!(await freeForRoom())) return
     setBusy(true)
     const room: NewVoiceRoom = {
       title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang,

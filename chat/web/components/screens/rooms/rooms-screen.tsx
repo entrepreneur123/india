@@ -25,7 +25,7 @@ export type RoomFilter = RoomKind | 'all'
 let lastFilter: RoomFilter = 'all'
 let lastSearch = { text: '', lang: '' }
 
-/** One kind of room: every room has chat, voice, music and Ludo; its category sets the layout. */
+/** One kind of room: every room has chat, voice and music; its category (talk or music) sets the layout. */
 export function RoomsScreen() {
   const toast = useToast()
   const { t } = useI18n()

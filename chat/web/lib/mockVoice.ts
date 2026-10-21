@@ -1,12 +1,11 @@
-// Demo rooms: a few live rooms with people talking (audio levels), chat, icebreakers, reactions, raised hands, song
-// requests with votes and a Ludo leaderboard. Same rules as the server (019): who may come in, private codes, rate
-// limits. Loaded by the demo backend the first time a room is listed or opened.
+// Demo rooms: a few live rooms with people talking (audio levels), chat with replies and @mentions, icebreakers,
+// polls, reactions, raised hands and song requests with votes. Same rules as the server (019, 029): who may come in,
+// private codes, rate limits, who may ask a poll. Loaded by the demo backend the first time a room is listed or opened.
 import {
   BackendError,
   type NewVoiceRoom,
   type Profile,
   type RoomKind,
-  type RoomLeader,
   type RoomRefusal,
   type RoomRules,
   type SpeakMode,
@@ -15,6 +14,7 @@ import {
   type VoiceEvent,
   type VoiceLine,
   type VoiceMember,
+  type VoicePoll,
   type VoiceQueueItem,
   type VoiceReaction,
   type VoiceRoom,
@@ -22,6 +22,8 @@ import {
   type VoiceSystemEvent,
   type VoiceTrack,
 } from './backend'
+import { quotable, replyOf } from './voice-chat'
+import { checkPoll, POLLS_PER_READ } from './voice-polls'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
@@ -86,23 +88,22 @@ const LINES: Record<RoomKind, string[]> & { any: string[] } = {
     'How do you say “I’m bored” in Hindi?', 'is it “in the bus” or “on the bus”?', 'chai or coffee, final answer?',
     'Sunday plans anyone?', 'mera vote Goa ke liye', 'best street food in {city}?', 'haha same here',
   ],
-  games: [
-    'bas ek six chahiye yaar', 'green ko maaro!', 'Arnab bhai ka luck dekho', 'who is winning?', 'next game mujhe bhi lo',
-    'safe square pe hai, bach gaya', 'yellow is so close to home', 'that capture was brutal',
-  ],
   any: ['hello everyone 👋', 'nice room yaar', 'hi from {city}!', 'first time in a voice room 😄', 'mic quality is great'],
 }
 
 const REACTIONS: VoiceReaction[] = ['heart', 'laugh', 'fire', 'clap', 'wow']
 /** Replies after an icebreaker, so the card starts a conversation in the demo too. */
 const ANSWERS = ['ooh good one', 'mine is easy: Goa 🌊', 'haha let me think', 'chai, always chai', 'my nani’s kitchen', 'this is fun']
+/** Answers to someone's line (a reply), and what people say to me by name (an @mention). */
+const REPLIES = ['haha true', 'agreed 💯', 'no way, really?', 'same here', 'exactly what I was thinking', 'lol']
+const TO_ME = ['@{me} what do you think?', 'welcome @{me}! 👋', '@{me} which city are you from?', '@{me} join the stage na']
 const PROMPTS = 40
 /** A holiday snap someone shared in the demo (drawn, so it needs no network). */
 const SNAP = `data:image/svg+xml,${encodeURIComponent(
   "<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ff9a62'/><stop offset='.55' stop-color='#ffd39a'/><stop offset='1' stop-color='#8cc3cf'/></linearGradient></defs><rect width='640' height='480' fill='url(#s)'/><circle cx='430' cy='250' r='70' fill='#fff2c9'/><path d='M0 330 Q160 270 320 320 T640 300 V480 H0Z' fill='#3f6f7a'/><path d='M0 385 Q200 345 400 385 T640 372 V480 H0Z' fill='#2c4f58'/></svg>",
 )}`
 /** The language each demo room speaks. */
-const SEED_LANG: Record<string, string> = { 'v-bolly': 'hi', 'v-chai': 'hi', 'v-cricket': 'en', 'v-ludo': 'bn', 'v-lofi': 'en', 'v-gym': 'hi' }
+const SEED_LANG: Record<string, string> = { 'v-bolly': 'hi', 'v-chai': 'hi', 'v-cricket': 'en', 'v-adda': 'bn', 'v-lofi': 'en', 'v-gym': 'hi' }
 const ANYONE: RoomRules = { maxMembers: 120, genderRule: 'any', minAge: 18, maxAge: 100, isPrivate: false }
 const code = () => Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
 
@@ -112,10 +113,9 @@ interface SimRoom {
   code: string
   /** I came in with the code once (a private room then lets me back by its id). */
   admitted: boolean
-  /** Ludo winners here: user id → name and wins. */
-  wins: Map<string, { profile: Profile; wins: number }>
-  game: 'lobby' | 'playing' | null
   lastIcebreaker: number
+  /** When polls were asked here (5 in 10 minutes, as on the server). */
+  pollTimes: number[]
   lines: VoiceLine[]
   subs: Set<(e: VoiceEvent) => void>
   timers: ReturnType<typeof setTimeout>[]
@@ -131,6 +131,9 @@ export class VoiceSim {
   private rooms = new Map<string, SimRoom>()
   private lineSeq = 1
   private sendTimes: number[] = []
+  private pollSeq = 1
+  /** Every poll: its room, the votes by user id (the counts come from them). */
+  private pollStore = new Map<number, { roomId: string; poll: Omit<VoicePoll, 'counts' | 'total' | 'mine'>; votes: Map<string, number> }>()
   private photoTimes: number[] = []
 
   constructor(private me: () => Profile | null) {
@@ -139,19 +142,20 @@ export class VoiceSim {
     }, undefined, 'Requests welcome: paste a YouTube link, vote for the next song.')
     this.seed('v-chai', 'Chai pe charcha', 'talk', 'approval', 'Meera', 0, 14, undefined, undefined, 'Be kind. No phone numbers in the chat.')
     this.seed('v-cricket', 'Cricket talk: IND vs AUS', 'talk', 'approval', 'Vikram', 6, 48)
-    // A Ludo game is on here (mockLudo.ts), to watch; a leaderboard from earlier games.
-    this.seed('v-ludo', 'Ludo night: come watch', 'games', 'open', 'Arnab', 4, 12)
+    this.seed('v-adda', 'Adda: Kolkata evenings', 'talk', 'open', 'Arnab', 4, 12)
     this.seed('v-lofi', 'Lo-fi study together', 'music', 'open', 'Kavya', 2, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [], votes: [] })
     this.seed('v-gym', 'Gym bros: fitness talk', 'talk', 'open', 'Harsh', 2, 6, undefined, { ...ANYONE, maxMembers: 30, genderRule: 'male', minAge: 18, maxAge: 30 })
-    const ludo = this.rooms.get('v-ludo')!
-    ludo.game = 'playing'
-    ludo.room.members.slice(0, 5).forEach((m, i) => ludo.wins.set(m.profile.id, { profile: m.profile, wins: [6, 4, 3, 3, 1][i] }))
-  }
-
-  /** Who is in a live room, for the demo Ludo game. */
-  peek(roomId: string): { members: VoiceMember[]; hostId: string; mine: boolean } | null {
-    const r = this.rooms.get(roomId)
-    return r && !r.ended ? { members: r.room.members, hostId: r.room.hostId, mine: r.mine } : null
+    // The cricket room has a poll on, with votes coming in, and a reply in its chat.
+    const cricket = this.rooms.get('v-cricket')!
+    const host = cricket.room.members[0].profile
+    const id = this.newPoll(cricket, host.id, 'Who wins the series?', ['India', 'Australia', 'It’s a draw'])
+    cricket.room.members.slice(1, 15).forEach((m, i) => this.pollStore.get(id)!.votes.set(m.profile.id, [0, 0, 1, 0, 2, 0, 1][i % 7]))
+    cricket.lines.push({ id: this.lineSeq++, kind: 'poll', sender: host, fromMe: false, pollId: id, question: 'Who wins the series?', options: ['India', 'Australia', 'It’s a draw'], at: Date.now() - 20_000 })
+    const said = [...cricket.lines].reverse().find((l) => l.kind === 'text')
+    if (said && quotable(said)) {
+      const by = cricket.room.members[2].profile
+      cricket.lines.push({ id: this.lineSeq++, kind: 'text', sender: by, fromMe: false, text: pick(REPLIES), at: Date.now() - 10_000, reply: replyOf(said) })
+    }
   }
 
   /** Profiles of demo people, for the profile sheet. */
@@ -212,7 +216,7 @@ export class VoiceSim {
 
   private sim(room: SimRoom['room'], lines: VoiceLine[], mine: boolean): SimRoom {
     return {
-      room, lines, mine, code: code(), admitted: false, wins: new Map(), game: null, lastIcebreaker: 0,
+      room, lines, mine, code: code(), admitted: false, lastIcebreaker: 0, pollTimes: [],
       subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, handsRaised: 0,
     }
   }
@@ -226,26 +230,6 @@ export class VoiceSim {
     if (me.age < rm.minAge || me.age > rm.maxAge) return 'room_age'
     if (!this.meMember(r) && rm.members.length >= rm.maxMembers) return 'room_full'
     return null
-  }
-
-  /** Called by the demo Ludo when a game in the room ends or opens. */
-  win(roomId: string, userId: string | null, name: string | null) {
-    const r = this.rooms.get(roomId)
-    if (!r || !userId) return
-    const profile = r.room.members.find((m) => m.profile.id === userId)?.profile ?? { ...person(name ?? '?'), id: userId }
-    const w = r.wins.get(userId)
-    r.wins.set(userId, { profile, wins: (w?.wins ?? 0) + 1 })
-  }
-
-  gameState(roomId: string, game: 'lobby' | 'playing' | null) {
-    const r = this.rooms.get(roomId)
-    if (r) r.game = game
-  }
-
-  async leaders(roomId: string): Promise<RoomLeader[]> {
-    await wait(250)
-    const r = this.get(roomId)
-    return [...r.wins.values()].sort((a, b) => b.wins - a.wins).slice(0, 5).map((w) => ({ profile: w.profile, wins: w.wins }))
   }
 
   private track(videoId: string, addedBy: string, startedAt = Date.now()): VoiceTrack {
@@ -321,7 +305,6 @@ export class VoiceSim {
           listeners: room.members.filter((m) => m.seat === null && m.profile.id !== me?.id).length,
           members: room.members.length,
           nowPlaying: room.track ? room.track.title || null : null,
-          game: r.game,
           announcement: room.announcement,
           mine,
           code: mine ? r.code : null,
@@ -447,6 +430,13 @@ export class VoiceSim {
     if (!this.meMember(r)) {
       r.room.members.push({ profile: me, role: 'listener', seat: null, muted: true, hand: false })
       this.system(r, 'joined', me.name)
+      // Someone says hello by name (an @mention, highlighted for me).
+      if (!r.mine) {
+        this.later(r, jitter(3000, 5000), () => {
+          const sender = pick(this.others(r)).profile
+          this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: `welcome @${me.name}! 👋`, at: Date.now() })
+        })
+      }
     }
     return this.snapshot(r)
   }
@@ -480,7 +470,7 @@ export class VoiceSim {
     return [...this.get(roomId).lines]
   }
 
-  async send(roomId: string, text: string): Promise<VoiceLine> {
+  async send(roomId: string, text: string, replyTo: number | null = null): Promise<VoiceLine> {
     const r = this.get(roomId)
     const me = this.me()
     if (!me) throw new BackendError('not_allowed')
@@ -488,8 +478,96 @@ export class VoiceSim {
     this.sendTimes = this.sendTimes.filter((t) => now - t < 5000)
     if (this.sendTimes.length >= 5) throw new BackendError('slow_down')
     this.sendTimes.push(now)
+    if (!text.trim() || text.trim().length > 500) throw new BackendError('bad_request')
     await wait(120)
-    return this.post(r, { id: this.lineSeq++, kind: 'text', sender: me, fromMe: true, text: text.trim(), at: now })
+    // As voice_send2: the answered line's quote is copied in (when it is still in this room).
+    const q = replyTo === null ? undefined : r.lines.find((l) => l.id === replyTo)
+    const reply = q && quotable(q) ? replyOf(q) : null
+    const line = this.post(r, { id: this.lineSeq++, kind: 'text', sender: me, fromMe: true, text: text.trim(), at: now, reply })
+    // Someone mentioned by name answers.
+    const named = this.others(r).find((m) => text.toLowerCase().includes(`@${m.profile.name.toLowerCase()}`))
+    if (named) {
+      this.later(r, jitter(1800, 3200), () => {
+        const answer: VoiceLine = { id: this.lineSeq++, kind: 'text', sender: named.profile, fromMe: false, text: pick(REPLIES), at: Date.now() }
+        this.post(r, { ...answer, reply: replyOf(line as Extract<VoiceLine, { kind: 'text' }>) })
+      })
+    }
+    return line
+  }
+
+  // ---- polls (029): one open poll per room; the host or a co-host asks; everyone votes and may change it ----
+
+  private newPoll(r: SimRoom, by: string, question: string, options: string[]) {
+    // A new poll closes the open one.
+    for (const [, p] of this.pollStore) {
+      if (p.roomId === r.room.id && !p.poll.closed) {
+        p.poll.closed = true
+        this.emit(r, { type: 'poll', poll: this.pollJson(p, null) })
+      }
+    }
+    const id = this.pollSeq++
+    this.pollStore.set(id, { roomId: r.room.id, poll: { id, question, options, closed: false, by }, votes: new Map() })
+    return id
+  }
+
+  /** A poll as voice_poll_json sends it; `meId` null: as the room hears it (no one's vote). */
+  private pollJson(p: { poll: Omit<VoicePoll, 'counts' | 'total' | 'mine'>; votes: Map<string, number> }, meId: string | null): VoicePoll {
+    const counts = p.poll.options.map(() => 0)
+    for (const c of p.votes.values()) counts[c]++
+    return structuredClone({ ...p.poll, counts, total: p.votes.size, mine: meId ? p.votes.get(meId) ?? null : null })
+  }
+
+  private pollOf(pollId: number) {
+    const p = this.pollStore.get(pollId)
+    const r = p && this.rooms.get(p.roomId)
+    if (!p || !r || r.ended || !this.meMember(r)) throw new BackendError('not_found')
+    return { p, r }
+  }
+
+  async pollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine> {
+    const r = this.get(roomId)
+    const me = this.meMember(r)
+    const c = checkPoll(question, options)
+    if (c.problem) throw new BackendError('bad_request')
+    if (!me) throw new BackendError('not_found')
+    if (me.role !== 'host' && me.role !== 'cohost') throw new BackendError('not_allowed')
+    const now = Date.now()
+    r.pollTimes = r.pollTimes.filter((t) => now - t < 10 * 60_000)
+    if (r.pollTimes.length >= 5) throw new BackendError('slow_down')
+    r.pollTimes.push(now)
+    await wait(250)
+    const id = this.newPoll(r, me.profile.id, c.question, c.options)
+    return this.post(r, { id: this.lineSeq++, kind: 'poll', sender: me.profile, fromMe: true, pollId: id, question: c.question, options: c.options, at: now })
+  }
+
+  async pollVote(pollId: number, choice: number): Promise<VoicePoll> {
+    const { p, r } = this.pollOf(pollId)
+    if (p.poll.closed) throw new BackendError('poll_closed')
+    if (!Number.isInteger(choice) || choice < 0 || choice >= p.poll.options.length) throw new BackendError('bad_request')
+    await wait(180)
+    const me = this.me()!
+    p.votes.set(me.id, choice)
+    this.emit(r, { type: 'poll', poll: this.pollJson(p, null) })
+    return this.pollJson(p, me.id)
+  }
+
+  async pollClose(pollId: number): Promise<VoicePoll> {
+    const { p, r } = this.pollOf(pollId)
+    const me = this.meMember(r)!
+    if (p.poll.by !== me.profile.id && me.role !== 'host' && me.role !== 'cohost') throw new BackendError('not_allowed')
+    await wait(180)
+    p.poll.closed = true
+    this.emit(r, { type: 'poll', poll: this.pollJson(p, null) })
+    return this.pollJson(p, me.profile.id)
+  }
+
+  async polls(ids: number[]): Promise<VoicePoll[]> {
+    await wait(150)
+    const meId = this.me()?.id ?? null
+    return ids.slice(-POLLS_PER_READ).flatMap((id) => {
+      const p = this.pollStore.get(id)
+      return p ? [this.pollJson(p, meId)] : []
+    })
   }
 
   subscribe(roomId: string, on: (e: VoiceEvent) => void) {
@@ -562,11 +640,22 @@ export class VoiceSim {
     })
     this.every(r, 3500, 7500, () => {
       const sender = pick(this.others(r)).profile
-      const line: VoiceLine = {
-        id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: this.chatLine(r.room.category, sender), at: Date.now(),
-      }
-      r.lines.push(line)
-      this.emit(r, { type: 'line', line })
+      const me = this.me()
+      const roll = Math.random()
+      // Now and then someone answers a recent line, or says something to me by name.
+      const recent = r.lines.slice(-6).filter((l) => quotable(l) && l.sender.id !== sender.id)
+      const reply = roll < 0.2 && recent.length ? replyOf(pick(recent) as Extract<VoiceLine, { kind: 'text' }>) : null
+      const toMe = !reply && roll < 0.28 && me && this.meMember(r)
+      const text = reply ? pick(REPLIES) : toMe ? pick(TO_ME).replace('{me}', me.name) : this.chatLine(r.room.category, sender)
+      this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text, at: Date.now(), reply })
+    })
+    // An open poll here gets votes from people in the room.
+    this.every(r, 4000, 9000, () => {
+      const open = [...this.pollStore.values()].find((p) => p.roomId === r.room.id && !p.poll.closed)
+      const voter = open && this.others(r).find((m) => !open.votes.has(m.profile.id))
+      if (!open || !voter) return
+      open.votes.set(voter.profile.id, Math.random() < 0.5 ? 0 : Math.floor(Math.random() * open.poll.options.length))
+      this.emit(r, { type: 'poll', poll: this.pollJson(open, null) })
     })
     this.every(r, 2500, 6000, () => {
       const from = Math.random() < 0.6 ? this.others(r).filter((m) => m.seat !== null) : this.others(r)

@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
-import { ChevronUp, ListMusic, LoaderCircle, Pause, Play, Plus, SkipForward, Trash2 } from 'lucide-react'
+import { useEffect, useId, useState, type CSSProperties } from 'react'
+import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, SkipForward, Trash2 } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
-import { thumbnail, videoTitle, youTubeId, YT_ENDED, YT_PAUSED, YT_PLAYING, loadYouTube, type YTPlayer } from '@/lib/youtube'
+import { thumbnail, videoTitle, youTubeId } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
 import { TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -12,10 +12,9 @@ import { TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
-
-/** Where the shared track is now, in seconds (the room stores when it started, not a position). */
-const position = (tr: VoiceTrack) => Math.max(0, ((tr.pausedAt ?? Date.now()) - tr.startedAt) / 1000)
-const DRIFT_S = 2.5
+import { PlayerSlot, position, useRoomPlayer } from './room-player'
+import { useRoomT } from './room-t'
+import { LiveBars } from './voice-stage'
 
 /** Requests in the order they'll play: most votes first, then the oldest. */
 export const byVotes = (queue: VoiceQueueItem[]) =>
@@ -27,8 +26,8 @@ const artistOf = (title: string) => (title.includes(' · ') ? title.slice(title.
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
 /**
- * "Listen together": the room's YouTube track. Open, it plays in a 16:9 player at least 200×200 (YouTube's minimum);
- * closed, the local player is gone (no hidden background playback) and a slim bar says it's paused for you.
+ * "Listen together" outside a music room: the video with its controls, or (hidden) a compact now-playing strip.
+ * Hiding only shrinks it: the room's player (room-player.tsx) plays on either way.
  */
 export function MusicPanel({
   track,
@@ -48,29 +47,55 @@ export function MusicPanel({
   act: (a: VoiceAction) => Promise<boolean>
 }) {
   const { t } = useI18n()
-  const [playerTitle, setPlayerTitle] = useState('')
-  const title = track.title || playerTitle || t('voice.ytVideo')
+  const { rt } = useRoomT()
+  const player = useRoomPlayer()
+  const title = track.title || player?.title || t('voice.ytVideo')
   const upNext = queue.length
+  const playPause = isHost ? (
+    <Button
+      size="icon-sm"
+      variant="ghost"
+      onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
+      aria-label={track.pausedAt ? t('voice.resume') : t('voice.pause')}
+    >
+      {track.pausedAt ? <Play className="size-4.5" aria-hidden /> : <Pause className="size-4.5" aria-hidden />}
+    </Button>
+  ) : null
 
   if (!open)
     return (
-      <div className="mx-4 flex h-14 items-center gap-3 rounded-2xl bg-muted/70 pr-2 pl-3">
-        <TopicIcon topic="music" size={22} />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold">{title}</span>
-          <span className="block truncate text-xs text-muted-foreground">
-            {track.pausedAt ? t('voice.pausedByHost') : t('voice.pausedForYou')}
+      <div className="mx-3 flex h-14 items-center gap-1 rounded-2xl bg-[color-mix(in_srgb,var(--topic-music)_12%,var(--card))] pr-1.5 pl-2 ring-1 ring-[color-mix(in_srgb,var(--topic-music)_26%,transparent)] sm:mx-4">
+        <button type="button" onClick={() => onOpenChange(true)} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl py-1 pl-1 text-left">
+          <span className="relative grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
+            <img src={thumbnail(track.videoId)} alt="" className="absolute inset-0 size-full object-cover" />
           </span>
-        </span>
-        <Button size="sm" variant="brand" onClick={() => onOpenChange(true)}>
-          <Play className="size-4 fill-current" aria-hidden /> {t('voice.listen')}
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold">{title}</span>
+            <span className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+              {track.pausedAt ? t('voice.pausedByHost') : (
+                <>
+                  <LiveBars className="shrink-0" /> {rt('playing')}
+                </>
+              )}
+            </span>
+          </span>
+        </button>
+        {player?.blocked && !track.pausedAt ? (
+          <Button size="sm" variant="brand" onClick={player.play}>
+            <Headphones className="size-4" aria-hidden /> {t('voice.tapToListen')}
+          </Button>
+        ) : (
+          playPause
+        )}
+        <Button size="icon-sm" variant="ghost" onClick={() => onOpenChange(true)} aria-label={rt('showPlayer')} aria-expanded={false}>
+          <ChevronDown className="size-4.5" aria-hidden />
         </Button>
       </div>
     )
 
   return (
     <div className="px-4">
-      <Player track={track} onTitle={setPlayerTitle} onEnded={isHost ? () => void act({ type: 'skip', trackId: track.id }) : undefined} />
+      <PlayerSlot track={track} />
       <div className="mt-2 flex items-center gap-1">
         <span className="min-w-0 flex-1 pr-1">
           <span className="flex items-center gap-1.5">
@@ -81,164 +106,20 @@ export function MusicPanel({
             {track.pausedAt ? t('voice.pausedByHost') : t('voice.addedBy', { name: track.addedBy })}
           </span>
         </span>
+        {playPause}
         {isHost ? (
-          <>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
-              aria-label={track.pausedAt ? t('voice.resume') : t('voice.pause')}
-            >
-              {track.pausedAt ? <Play className="size-4.5" aria-hidden /> : <Pause className="size-4.5" aria-hidden />}
-            </Button>
-            <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('voice.skip')}>
-              <SkipForward className="size-4.5" aria-hidden />
-            </Button>
-          </>
+          <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('voice.skip')}>
+            <SkipForward className="size-4.5" aria-hidden />
+          </Button>
         ) : null}
         <Button size="sm" variant="ghost" onClick={onQueue} className="px-2.5" aria-label={t('voice.upNextN', { n: upNext })}>
           <ListMusic className="size-4.5" aria-hidden />
           <span className="tabular-nums">{upNext}</span>
         </Button>
-        <Button size="icon-sm" variant="ghost" onClick={() => onOpenChange(false)} aria-label={t('voice.collapse')}>
+        <Button size="icon-sm" variant="ghost" onClick={() => onOpenChange(false)} aria-label={t('voice.collapse')} aria-expanded>
           <ChevronUp className="size-4.5" aria-hidden />
         </Button>
       </div>
-    </div>
-  )
-}
-
-/**
- * The YouTube IFrame player (youtube-nocookie.com). The API script loads with the first track; until it is ready,
- * or when YouTube can't be reached, the thumbnail and a status stand in for it.
- */
-function Player({
-  track,
-  onTitle,
-  onEnded,
-  onMeta,
-  className,
-}: {
-  track: VoiceTrack
-  onTitle: (title: string) => void
-  onEnded?: () => void
-  /** The channel and the length, once the player knows them. */
-  onMeta?: (author: string, seconds: number) => void
-  className?: string
-}) {
-  const { t } = useI18n()
-  const hostRef = useRef<HTMLDivElement>(null)
-  const playerRef = useRef<YTPlayer | null>(null)
-  const loadedId = useRef<string | null>(null)
-  const trackRef = useRef(track)
-  trackRef.current = track
-  const endedRef = useRef(onEnded)
-  endedRef.current = onEnded
-  const titleRef = useRef(onTitle)
-  titleRef.current = onTitle
-  const metaRef = useRef(onMeta)
-  metaRef.current = onMeta
-  const tellMeta = (p: YTPlayer) => metaRef.current?.(p.getVideoData().author ?? '', p.getDuration?.() || 0)
-  // failed: YouTube can't be reached; unavailable: this video won't play embedded (or here).
-  const [state, setState] = useState<'loading' | 'ready' | 'failed' | 'unavailable'>('loading')
-  const [thumbOk, setThumbOk] = useState(true)
-
-  // One player for as long as the panel is open; leaving the room or closing the panel destroys it.
-  useEffect(() => {
-    let alive = true
-    let player: YTPlayer | null = null
-    loadYouTube().then(
-      (YT) => {
-        if (!alive || !hostRef.current) return
-        const tr = trackRef.current
-        const el = document.createElement('div') // the API swaps this for its iframe
-        hostRef.current.appendChild(el)
-        loadedId.current = tr.videoId
-        player = new YT.Player(el, {
-          host: 'https://www.youtube-nocookie.com',
-          videoId: tr.videoId,
-          width: '100%',
-          height: '100%',
-          playerVars: { autoplay: tr.pausedAt ? 0 : 1, start: Math.floor(position(tr)), playsinline: 1, rel: 0, origin: location.origin },
-          events: {
-            onReady: () => {
-              if (!alive || !player) return
-              playerRef.current = player
-              setState('ready')
-              titleRef.current(player.getVideoData().title ?? '')
-              tellMeta(player)
-            },
-            onStateChange: (e) => {
-              if (!alive || !player) return
-              if (e.data === YT_PLAYING) {
-                titleRef.current(player.getVideoData().title ?? '')
-                tellMeta(player)
-              }
-              if (e.data === YT_ENDED) endedRef.current?.()
-            },
-            onError: () => alive && setState('unavailable'),
-          },
-        })
-      },
-      () => alive && setState('failed'),
-    )
-    return () => {
-      alive = false
-      playerRef.current = null
-      try {
-        player?.destroy()
-      } catch {
-        /* the iframe is already gone */
-      }
-    }
-  }, [])
-
-  // Follow the room: a new track, the host pausing or resuming.
-  useEffect(() => {
-    const p = playerRef.current
-    if (!p || state !== 'ready') return
-    if (loadedId.current !== track.videoId) {
-      loadedId.current = track.videoId
-      p.loadVideoById({ videoId: track.videoId, startSeconds: position(track) })
-      if (track.pausedAt) p.pauseVideo()
-      return
-    }
-    if (Math.abs(p.getCurrentTime() - position(track)) > DRIFT_S) p.seekTo(position(track), true)
-    if (track.pausedAt) p.pauseVideo()
-    else if (p.getPlayerState() === YT_PAUSED) p.playVideo()
-  }, [state, track.videoId, track.startedAt, track.pausedAt, track])
-
-  // Stay in step with everyone while playing (a slow phone or a buffering pause drifts behind).
-  useEffect(() => {
-    if (state !== 'ready') return
-    const id = setInterval(() => {
-      const p = playerRef.current
-      const tr = trackRef.current
-      if (p && !tr.pausedAt && p.getPlayerState() === YT_PLAYING && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S)
-        p.seekTo(position(tr), true)
-    }, 5000)
-    return () => clearInterval(id)
-  }, [state])
-
-  return (
-    <div className={cn('relative aspect-video min-h-[200px] w-full overflow-hidden rounded-2xl bg-black', className)}>
-      <div ref={hostRef} className="absolute inset-0 [&>iframe]:size-full" />
-      {state !== 'ready' ? (
-        <div className={cn('absolute inset-0 grid place-items-center', state !== 'loading' && 'bg-black')}>
-          {thumbOk ? (
-            <img
-              src={thumbnail(track.videoId)}
-              alt=""
-              className="absolute inset-0 size-full object-cover opacity-45"
-              onError={() => setThumbOk(false)}
-            />
-          ) : null}
-          <p className="relative flex max-w-[85%] items-center gap-2 rounded-full bg-black/65 px-4 py-2 text-center text-sm font-semibold text-white" role="status">
-            {state === 'loading' ? <LoaderCircle className="size-4 shrink-0 animate-spin" aria-hidden /> : null}
-            {state === 'loading' ? t('voice.ytConnecting') : state === 'failed' ? t('voice.ytFailed') : t('voice.ytUnavailable')}
-          </p>
-        </div>
-      ) : null}
     </div>
   )
 }
@@ -263,24 +144,16 @@ export function MusicHero({
   act: (a: VoiceAction) => Promise<boolean>
 }) {
   const { t, num, plural } = useI18n()
-  const [playerTitle, setPlayerTitle] = useState('')
-  const [meta, setMeta] = useState<{ author: string; seconds: number }>({ author: '', seconds: 0 })
+  const player = useRoomPlayer()
   const ordered = byVotes(queue)
-  const title = track ? songOf(track.title) || playerTitle || t('voice.ytVideo') : ''
-  const artist = track ? artistOf(track.title) || meta.author : ''
-  useEffect(() => setMeta({ author: '', seconds: 0 }), [track?.id])
+  const title = track ? songOf(track.title) || player?.title || t('voice.ytVideo') : ''
+  const artist = track ? artistOf(track.title) || player?.author || '' : ''
 
   return (
     <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4" style={{ '--k': kindColor('music') } as CSSProperties}>
       {track ? (
         <div>
-          <Player
-            track={track}
-            onTitle={setPlayerTitle}
-            onMeta={(author, seconds) => setMeta({ author, seconds })}
-            onEnded={isHost ? () => void act({ type: 'skip', trackId: track.id }) : undefined}
-            className="shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--k)_70%,transparent)]"
-          />
+          <PlayerSlot track={track} className="shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--k)_70%,transparent)]" />
           <div className="mt-3 flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-lg leading-tight font-bold">{title}</h2>
@@ -304,7 +177,7 @@ export function MusicHero({
               </div>
             ) : null}
           </div>
-          <Progress track={track} seconds={meta.seconds} />
+          <Progress track={track} seconds={player?.seconds ?? 0} />
           <p className="mt-1 text-xs text-muted-foreground">{t('voice.addedBy', { name: track.addedBy })}</p>
         </div>
       ) : (

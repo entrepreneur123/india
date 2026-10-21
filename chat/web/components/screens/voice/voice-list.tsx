@@ -150,21 +150,11 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
           <span className="truncate">{t('rooms.chatting')}</span>
         </span>
       )}
-      {room.nowPlaying || room.game ? (
-        <span className="-mt-1 flex min-w-0 flex-col gap-1 text-xs font-medium text-foreground">
-          {room.nowPlaying ? (
-            <span className="flex min-w-0 items-center gap-1.5">
-              <TopicIcon topic="music" size={15} />
-              <span className="sr-only">{t('voice.nowPlayingLabel')}:</span>
-              <span className="truncate">{room.nowPlaying}</span>
-            </span>
-          ) : null}
-          {room.game ? (
-            <span className="flex min-w-0 items-center gap-1.5">
-              <TopicIcon topic="gaming" size={15} />
-              <span className="truncate">{room.game === 'playing' ? t('rooms.ludoOn') : t('rooms.ludoLobby')}</span>
-            </span>
-          ) : null}
+      {room.nowPlaying ? (
+        <span className="-mt-1 flex min-w-0 items-center gap-1.5 text-xs font-medium text-foreground">
+          <TopicIcon topic="music" size={15} />
+          <span className="sr-only">{t('voice.nowPlayingLabel')}:</span>
+          <span className="truncate">{room.nowPlaying}</span>
         </span>
       ) : null}
       {conditions.length || blocked ? (
