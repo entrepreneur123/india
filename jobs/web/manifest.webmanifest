@@ -1,7 +1,7 @@
 {
   "name": "SSC Job Alerts (unofficial)",
   "short_name": "SSC Alerts",
-  "description": "SSC notices, results, admit cards and an eligibility check. Not a government app; source: ssc.gov.in.",
+  "description": "Government job notices, results, admit cards, cut-off pages and an eligibility check from ssc.gov.in, uppbpb.gov.in and hssc.gov.in. Not a government app.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,6 +9,29 @@
   "theme_color": "#1d4ed8",
   "lang": "en-IN",
   "icons": [
-    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

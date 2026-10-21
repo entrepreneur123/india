@@ -547,7 +547,7 @@ async function viewResult(root) {
   }
   for (const g of groups) g.label = `${g.name} · ${g.lists.length} ${g.lists.length === 1 ? 'list' : 'lists'}`;
   const sel = el('select', { id: 'r-exam' }, ...groups.map((g, i) => el('option', { value: String(i) }, g.label)));
-  const roll = el('input', { id: 'r-roll', type: 'text', inputmode: 'numeric', autocomplete: 'off', placeholder: '126280000002', maxlength: '20' });
+  const roll = el('input', { id: 'r-roll', type: 'text', inputmode: 'numeric', autocomplete: 'off', placeholder: t('rollPlaceholder'), maxlength: '20' }); // not a real roll number: those are people's
   roll.value = store.get('roll', '');
   const out = el('div', { 'aria-live': 'polite' });
   const form = el('form', { class: 'card', novalidate: true },
@@ -864,17 +864,19 @@ function installCard() {
 async function viewHome(root) {
   let index; let cal; let feed;
   try {
-    [{ exams: index }, cal, feed] = await Promise.all([getJSON('rules/index.json'), getJSON('calendar.json'), getJSON('feed.json')]);
+    // The feed is the biggest file: start it now, but draw "open now" and "exam dates" without waiting for it.
+    feed = getJSON('feed.json');
+    feed.catch(() => { /* shown by the latest-notices box */ });
+    [{ exams: index }, cal] = await Promise.all([getJSON('rules/index.json'), getJSON('calendar.json')]);
   } catch (e) { fill(root, errorBox(e)); return; }
   const today = todayIST();
-  const rulesList = await Promise.all(index.map((e) => getJSON(`rules/${e.id}.json`).catch(() => null)));
   const open = index.filter((e) => statusOf(e, today) === 'open');
   const in30 = new Date(Date.parse(`${today}T00:00:00Z`) + 30 * 864e5).toISOString().slice(0, 10);
-  const coming = rulesList.filter(Boolean).flatMap((r) => (r.examSchedule ?? [])
+  const coming = index.flatMap((r) => (r.examSchedule ?? [])
     .filter((x) => x.from && x.to >= today && x.from <= in30).map((x) => ({ r, x })))
     .sort((a, b) => (a.x.from < b.x.from ? -1 : 1));
   const nextPlan = cal.entries.filter((c) => c.applyFrom > today).sort((a, b) => (a.applyFrom < b.applyFrom ? -1 : 1))[0];
-  const latestBox = el('div');
+  const latestBox = el('div', {}, ...skeleton()); // filled when the feed arrives
   fill(root,
     store.get('profile', null)?.dob ? null : el('a', { class: 'banner upcoming cta', href: '#forme' }, `${t('forMeNoProfile')} →`),
     el('h2', {}, t('homeOpen')),

@@ -126,6 +126,8 @@ def publish_rules(out: str, all_rules: list[dict], today: dt.date) -> list[dict]
             "id": rules["id"], "exam": rules["exam"], "examYear": rules["examYear"], "title": rules["title"],
             "applyFrom": rules["dates"]["applyFrom"], "applyTo": rules["dates"]["applyTo"],
             "application": eligibility.application_status(rules, today),
+            # The home screen lists exam dates from this alone, without fetching every rules file.
+            "examSchedule": rules.get("examSchedule", []),
         })
     _write_json(_v1(out, "rules", "index.json"), {"schema": SCHEMA, "exams": index})
     return index
@@ -179,18 +181,22 @@ def site_info(channel: str | None) -> dict:
     return {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
 
 
+def needs_full_check(status: dict, stamp: str, now: dt.datetime, force: bool = False) -> bool:
+    last_full = status.get("fullCheckAt")
+    return force or stamp != status.get("sourceUpdatedAt") or not last_full or \
+        now - dt.datetime.fromisoformat(last_full) >= dt.timedelta(hours=FULL_CHECK_HOURS)
+
+
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
         force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
         channel: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
-    last_full = status.get("fullCheckAt")
-    if not force and stamp == status.get("sourceUpdatedAt") and last_full and \
-            now - dt.datetime.fromisoformat(last_full) < dt.timedelta(hours=FULL_CHECK_HOURS):
+    if not needs_full_check(status, stamp, now, force):
         # Nothing is written: a file changed on every run would mean a commit and a Pages build
         # every 30 minutes for no news.
-        print(f"ssc: unchanged since {stamp}; last full check {last_full}")
+        print(f"ssc: unchanged since {stamp}; last full check {status.get('fullCheckAt')}")
         return 0
 
     all_rules = eligibility.load_all()  # a broken rules file stops the run before anything is written
@@ -242,7 +248,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--force", action="store_true", help="full check even if lastUpdates is unchanged")
     ap.add_argument("--site-url", help="public address, for canonical links and jobs/sitemap.xml")
     ap.add_argument("--no-results", action="store_true", help="skip roll-number indexing of result PDFs")
+    ap.add_argument("--plan", action="store_true",
+                    help="only print true/false: would this run do a full check (so the workflow installs pdftotext only then)")
     args = ap.parse_args(argv)
+    if args.plan:
+        try:
+            stamp = ssc.last_update(http.get_json(ssc.LAST_UPDATES))
+        except (http.FetchError, ssc.FormatChanged):
+            print("true")  # the build will report the error properly
+            return 0
+        status = _read_json(_v1(args.out, "status.json"), {})
+        print("true" if needs_full_check(status, stamp, dt.datetime.now(ssc.IST), args.force) else "false")
+        return 0
     try:
         return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,
                    get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url,

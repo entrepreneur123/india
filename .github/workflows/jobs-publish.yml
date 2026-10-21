@@ -52,9 +52,21 @@ jobs:
 
       - name: Unit tests
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils   # pdftotext: roll-number lists
           pip install -q pytest==9.1.1
           (cd jobs/pipeline && python -m pytest -q tests)
+
+      - name: Full check due?
+        id: plan
+        working-directory: jobs/pipeline
+        run: |
+          force=""; if [ "$IN_FORCE" = "true" ]; then force="--force"; fi
+          echo "full=$(python -m sarkari.build --out ../../public --plan $force)" >> "$GITHUB_OUTPUT"
+
+      # Only full checks read result PDFs; most runs stop after one request, so apt is skipped then.
+      # If the 3-hour mark passes between here and the build, it skips the PDFs with a warning.
+      - name: pdftotext
+        if: steps.plan.outputs.full == 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
 
       - name: Fetch and build
         working-directory: jobs/pipeline
@@ -67,7 +79,7 @@ jobs:
         run: |
           mkdir -p public/jobs
           cp jobs/web/index.html jobs/web/app.js jobs/web/eligibility.js jobs/web/i18n.js \
-             jobs/web/tools.js jobs/web/tracker.js jobs/web/passages.js jobs/web/alerts.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg public/jobs/
+             jobs/web/tools.js jobs/web/tracker.js jobs/web/passages.js jobs/web/alerts.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg jobs/web/icon-192.png jobs/web/icon-512.png jobs/web/icon-maskable-512.png public/jobs/
           touch public/.nojekyll
 
       - name: Commit and push

@@ -191,3 +191,11 @@ def test_without_pdftotext_no_pdf_is_downloaded(tmp_path, monkeypatch):
 ])
 def test_only_a_public_telegram_channel_is_linked(channel, link):
     assert build.site_info(channel).get("telegram") == link
+
+
+def test_full_check_plan():
+    status = {"fullCheckAt": NOW.isoformat(), "sourceUpdatedAt": "A"}
+    assert not build.needs_full_check(status, "A", NOW + dt.timedelta(minutes=30))
+    assert build.needs_full_check(status, "B", NOW + dt.timedelta(minutes=30))  # SSC posted something
+    assert build.needs_full_check(status, "A", NOW + dt.timedelta(hours=build.FULL_CHECK_HOURS))
+    assert build.needs_full_check({}, "A", NOW) and build.needs_full_check(status, "A", NOW, force=True)

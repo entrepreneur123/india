@@ -2,9 +2,9 @@
 // (Cache-first for the page shell could pair a new app.js with an old i18n.js from the
 // cache right after an update; network-first never mixes versions while online.)
 importScripts('alerts.js');
-const VERSION = 'jobs-v6';
+const VERSION = 'jobs-v7';
 const ALERTS = 'jobs-alerts'; // alert settings and what was announced: kept across app updates
-const SHELL = ['./', 'index.html', 'app.js', 'eligibility.js', 'i18n.js', 'tools.js', 'tracker.js', 'passages.js', 'alerts.js', 'manifest.webmanifest', 'icon.svg'];
+const SHELL = ['./', 'index.html', 'app.js', 'eligibility.js', 'i18n.js', 'tools.js', 'tracker.js', 'passages.js', 'alerts.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -46,7 +46,7 @@ async function checkAlerts() {
   const { notes, state } = self.JobsAlerts.pick(feed, index, await readJSON('alerts/state'), config, today);
   if (self.Notification && Notification.permission === 'granted') {
     for (const n of notes) {
-      await self.registration.showNotification(n.title, { body: n.body, tag: n.tag, icon: 'icon.svg', data: { url: n.url } });
+      await self.registration.showNotification(n.title, { body: n.body, tag: n.tag, icon: 'icon-192.png', data: { url: n.url } }); // Android shows no SVG icons
     }
   }
   await writeJSON('alerts/state', state);

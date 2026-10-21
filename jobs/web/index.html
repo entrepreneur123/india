@@ -204,6 +204,9 @@ img.sig { display: block; max-width: 100%; border: 1px solid var(--line); border
 <footer><p id="footer-disclaimer"></p></footer>
 <nav id="tabs" aria-label="Sections"></nav>
 <noscript><p style="padding:16px">This site needs JavaScript. Official notices: <a href="https://ssc.gov.in">ssc.gov.in</a></p></noscript>
+<!-- app.js imports these; listing them lets the browser fetch all at once instead of after app.js -->
+<link rel="modulepreload" href="i18n.js"><link rel="modulepreload" href="eligibility.js"><link rel="modulepreload" href="tools.js">
+<link rel="modulepreload" href="tracker.js"><link rel="modulepreload" href="passages.js">
 <script type="module" src="app.js"></script>
 </body>
 </html>
