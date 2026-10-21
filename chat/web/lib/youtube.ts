@@ -20,6 +20,27 @@ export function youTubeId(input: string): string | null {
   return id && /^[\w-]{11}$/.test(id) ? id : null
 }
 
+/**
+ * The video's real title, from YouTube's oEmbed endpoint (CORS-enabled; connect-src allows www.youtube.com).
+ * Empty when it can't be looked up (offline, a private video): the apps then show "YouTube video".
+ */
+export async function videoTitle(videoId: string, timeoutMs = 5000): Promise<string> {
+  const ctl = new AbortController()
+  const timer = setTimeout(() => ctl.abort(), timeoutMs)
+  try {
+    const watch = encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)
+    const res = await fetch(`https://www.youtube.com/oembed?url=${watch}&format=json`, { signal: ctl.signal, credentials: 'omit' })
+    if (!res.ok) return ''
+    const j = (await res.json()) as { title?: unknown }
+    // The server keeps up to 100 characters.
+    return typeof j.title === 'string' ? j.title.trim().slice(0, 100) : ''
+  } catch {
+    return ''
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 export const thumbnail = (videoId: string) => `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`
 
 /** The part of the IFrame API this app uses. */

@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
 import { ChevronUp, ListMusic, LoaderCircle, Pause, Play, Plus, SkipForward, Trash2 } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
-import { thumbnail, youTubeId, YT_ENDED, YT_PAUSED, YT_PLAYING, loadYouTube, type YTPlayer } from '@/lib/youtube'
+import { thumbnail, videoTitle, youTubeId, YT_ENDED, YT_PAUSED, YT_PLAYING, loadYouTube, type YTPlayer } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
 import { TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -429,7 +429,9 @@ export function QueueSheet({
       return
     }
     setBusy(true)
-    const ok = await act({ type: 'addTrack', videoId })
+    // Everyone's request carries its real title (the room card and the queue show it to everyone).
+    const title = await videoTitle(videoId)
+    const ok = await act({ type: 'addTrack', videoId, title })
     setBusy(false)
     if (ok) {
       setLink('')

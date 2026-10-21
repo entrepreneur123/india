@@ -210,7 +210,8 @@ export type VoiceAction =
   | { type: 'cohost'; userId: string; on: boolean }
   | { type: 'kick'; userId: string }
   // music: anyone adds a song request and votes; the host (DJ) plays, removes and controls
-  | { type: 'addTrack'; videoId: string }
+  /** `title`: the video's real title (lib/youtube.ts videoTitle), empty when it couldn't be looked up. */
+  | { type: 'addTrack'; videoId: string; title?: string }
   | { type: 'vote'; itemId: string; on: boolean }
   | { type: 'play'; itemId: string }
   | { type: 'removeItem'; itemId: string }

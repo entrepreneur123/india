@@ -734,7 +734,7 @@ export class VoiceSim {
         this.system(r, 'removed', target!.profile.name)
         break
       case 'addTrack': {
-        const title = TRACKS[a.videoId]?.title ?? ''
+        const title = a.title || (TRACKS[a.videoId]?.title ?? '')
         if (isHost && !r.room.track) {
           r.room.track = this.track(a.videoId, me.profile.name)
           this.system(r, 'track', me.profile.name, { title })

@@ -859,7 +859,7 @@ export class SupabaseBackend implements Backend {
         break
       case 'addTrack':
         // The host's track plays at once when nothing does; everything else joins the requests.
-        await this.rpc('voice_queue_add', { ...room, p_video: a.videoId, p_title: '' })
+        await this.rpc('voice_queue_add', { ...room, p_video: a.videoId, p_title: (a.title ?? '').trim().slice(0, 100) })
         break
       case 'vote':
         await this.rpc('voice_vote', { ...room, p_item: a.itemId, p_on: a.on })
