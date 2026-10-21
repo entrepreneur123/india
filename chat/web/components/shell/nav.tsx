@@ -1,21 +1,23 @@
 'use client'
 
 import * as m from 'motion/react-m'
-import { Bell, MessagesSquare, Settings, Shuffle, UserRound, Users, type LucideIcon } from 'lucide-react'
+import type { ComponentType } from 'react'
+import { Bell, MessagesSquare, Settings, Shuffle, UserRound, Users } from 'lucide-react'
 import { useApp, type Tab } from '@/components/app-state'
 import type { TKey } from '@/lib/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Logo } from '@/components/ui/bits'
 import { CountBadge } from '@/components/social/bits'
-import { useSocialT } from '@/components/social/social-text'
+import { useSocialT, type SocialKey } from '@/components/social/social-text'
+import { FeedIcon } from '@/components/ui/topic-icons'
 import type { Badges } from '@/lib/backend'
 import { cn } from '@/lib/utils'
 import { preloadScreen } from './lazy-screens'
 
 interface NavItem {
   tab: Tab
-  label: TKey
-  icon: LucideIcon
+  label: TKey | { social: SocialKey }
+  icon: ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>
 }
 
 /** The Recent tab's number: chats with unread messages, and friend requests waiting for me. */
@@ -24,17 +26,26 @@ export function recentCount(b: Badges | null) {
   return Object.values(b.chats).filter((n) => n > 0).length + b.friends
 }
 
+// Random stays in the middle of the phone's bar; Feed sits between Rooms and Random.
 const ITEMS: NavItem[] = [
   { tab: 'rooms', label: 'nav.rooms', icon: MessagesSquare },
+  { tab: 'feed', label: { social: 'nav.feed' }, icon: FeedIcon },
   { tab: 'random', label: 'nav.random', icon: Shuffle },
   { tab: 'recent', label: 'nav.recent', icon: Users },
   { tab: 'me', label: 'nav.me', icon: UserRound },
   { tab: 'settings', label: 'nav.settings', icon: Settings },
 ]
 
+function useLabel() {
+  const { t } = useApp()
+  const { st } = useSocialT()
+  return (item: NavItem) => (typeof item.label === 'string' ? t(item.label) : st(item.label.social))
+}
+
 export function Sidebar({ className }: { className?: string }) {
   const { tab, setTab, t, me, entitlements, openPaywall, badges, openInbox } = useApp()
   const { st } = useSocialT()
+  const label = useLabel()
   const inboxCount = badges?.inbox ?? 0
   return (
     <aside
@@ -64,7 +75,7 @@ export function Sidebar({ className }: { className?: string }) {
               onPointerEnter={() => preloadScreen(item.tab)}
               onFocus={() => preloadScreen(item.tab)}
               aria-current={active ? 'page' : undefined}
-              title={t(item.label)}
+              title={label(item)}
               className={cn(
                 'relative flex h-12 items-center justify-center gap-4 rounded-full px-4 text-[15px] font-semibold transition-colors duration-150 lg:justify-start',
                 active ? 'text-primary-text' : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -75,7 +86,7 @@ export function Sidebar({ className }: { className?: string }) {
                 aria-hidden
               />
               <Icon className="relative z-10 size-5.5 shrink-0" strokeWidth={active ? 2.4 : 2} aria-hidden />
-              <span className="relative z-10 hidden truncate lg:inline">{t(item.label)}</span>
+              <span className="relative z-10 hidden truncate lg:inline">{label(item)}</span>
               <NavCount n={item.tab === 'recent' ? recentCount(badges) : 0} label={st('nav.newCount', { n: recentCount(badges) })} />
             </button>
           )
@@ -126,6 +137,7 @@ export function Sidebar({ className }: { className?: string }) {
 export function BottomTabs({ hidden }: { hidden?: boolean }) {
   const { tab, setTab, t, badges } = useApp()
   const { st } = useSocialT()
+  const label = useLabel()
   return (
     <m.nav
       aria-label={t('nav.main')}
@@ -165,7 +177,7 @@ export function BottomTabs({ hidden }: { hidden?: boolean }) {
               {item.tab === 'recent' && recentCount(badges) ? (
                 <span className="sr-only">{st('nav.newCount', { n: recentCount(badges) })}</span>
               ) : null}
-              <span className="max-w-full truncate">{t(item.label)}</span>
+              <span className="max-w-full truncate">{label(item)}</span>
             </button>
           )
         })}

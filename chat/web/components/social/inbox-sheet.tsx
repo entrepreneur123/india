@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { Check, Headphones, MessageCircle, X } from 'lucide-react'
 import type { InboxItem } from '@/lib/backend'
+import { likeLine } from '@/lib/feed'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
+import { CommentIcon, LikeIcon } from '@/components/ui/topic-icons'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -17,8 +19,9 @@ import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
 /**
- * Notifications: friend requests and acceptances, friends' messages (one line per chat) and room invites. Opening it
- * marks everything read; what was new stays highlighted until it closes.
+ * Notifications: friend requests and acceptances, friends' messages (one line per chat), room invites, and likes and
+ * comments on my posts (one line per post). Opening it marks everything read; what was new stays highlighted until it
+ * closes. Lines of a kind this app doesn't know never reach here (lib/feed.ts inboxKind).
  */
 export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const backend = useBackend()
@@ -105,7 +108,7 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
   const { mutate } = useSWRConfig()
   const { t, timeAgo } = useI18n()
   const { st, plural } = useSocialT()
-  const { openProfile, openThread, openVoice } = useApp()
+  const { openProfile, openThread, openVoice, openPost } = useApp()
   const [busy, setBusy] = useState(false)
   const name = item.actor.name
 
@@ -139,8 +142,25 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
     case 'friend_accept':
       text = st('inbox.accept', { name })
       break
-    default:
+    case 'room_invite':
       text = st('inbox.invite', { name, room: item.roomTitle ?? '' })
+      break
+    case 'post_like': {
+      const line = likeLine(item.count)
+      text = st(`inbox.like.${line.key}`, { name, n: line.others })
+      break
+    }
+    case 'post_comment':
+      text = item.count > 1 ? st('inbox.comment.other', { name, n: item.count - 1 }) : st('inbox.comment.single', { name })
+      break
+    default:
+      return null
+  }
+  const post = item.kind === 'post_like' || item.kind === 'post_comment' ? item.post : null
+  const showPost = () => {
+    if (!post) return
+    onDone()
+    openPost(post.id, { focus: false })
   }
 
   let action: React.ReactNode = null
@@ -167,6 +187,22 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
       >
         <MessageCircle className="size-4" aria-hidden /> {item.kind === 'message' ? st('inbox.reply') : t('profile.message')}
       </Button>
+    )
+  } else if (post) {
+    // The post it is about: its photo, or the start of its text.
+    action = (
+      <button
+        type="button"
+        onClick={showPost}
+        className="grid size-12 place-items-center overflow-hidden rounded-xl bg-primary-soft text-[10px] leading-tight font-semibold text-primary-text"
+        aria-label={st('inbox.viewPost')}
+      >
+        {post.imageUrl ? (
+          <img src={post.imageUrl} alt="" className="size-full object-cover" loading="lazy" />
+        ) : (
+          <span className="line-clamp-3 px-1 text-center break-words">{post.text}</span>
+        )}
+      </button>
     )
   } else if (item.kind === 'room_invite') {
     action = item.roomOpen ? (
@@ -197,12 +233,28 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
           <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
             <Headphones className="size-3.5" aria-hidden />
           </span>
+        ) : item.kind === 'post_like' ? (
+          <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">
+            <LikeIcon on size={18} />
+          </span>
+        ) : item.kind === 'post_comment' ? (
+          <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
+            <CommentIcon size={14} />
+          </span>
         ) : null}
       </button>
-      <div className="min-w-0 flex-1">
-        <p className="text-[14px] leading-snug">{text}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(item.at)}</p>
-      </div>
+      {post ? (
+        <button type="button" onClick={showPost} className="min-w-0 flex-1 rounded-lg text-left">
+          <span className="block text-[14px] leading-snug">{text}</span>
+          {post.text ? <span className="mt-0.5 block truncate text-xs text-muted-foreground">“{post.text}”</span> : null}
+          <span className="mt-0.5 block text-xs text-muted-foreground">{timeAgo(item.at)}</span>
+        </button>
+      ) : (
+        <div className="min-w-0 flex-1">
+          <p className="text-[14px] leading-snug">{text}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(item.at)}</p>
+        </div>
+      )}
       <div className="ml-auto shrink-0">{action}</div>
     </li>
   )

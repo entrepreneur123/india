@@ -49,6 +49,24 @@
 
   --animate-ping-soft: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
   --animate-eq: eq 0.9s ease-in-out infinite;
+  --animate-heart-pop: heart-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  --animate-heart-burst: heart-burst 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+
+  /* A like: the small heart jumps; a double tap on a photo: a big heart pops up and fades (Instagram). */
+  @keyframes heart-pop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.35) rotate(-8deg); }
+    60% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  @keyframes heart-burst {
+    0% { opacity: 0; transform: scale(0.2) rotate(-12deg); }
+    18% { opacity: 1; transform: scale(1.18) rotate(4deg); }
+    32% { transform: scale(0.94) rotate(0deg); }
+    46% { transform: scale(1.02); }
+    75% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9) translateY(-18px); }
+  }
 
   /* "Live" equaliser bars on voice rooms. */
   @keyframes eq {

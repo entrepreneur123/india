@@ -5,10 +5,8 @@ import useSWR, { useSWRConfig } from 'swr'
 import { Check, Flag, MessageCircle, UserPlus, X } from 'lucide-react'
 import type { FriendState, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -17,8 +15,12 @@ import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { PostGrid } from '@/components/screens/me/post-grid'
 import { InterestChips } from '@/components/social/bits'
 import { Gallery } from '@/components/social/gallery'
+import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
 
-/** Someone's profile with their posts. The server only shows people you have met (and not blocked). */
+/**
+ * Someone's profile: cover and colour, status, languages, prompts, photos and posts. The server shows people I have
+ * met, and anyone who posts publicly (033), never someone blocked.
+ */
 export function ProfileSheet({
   target,
   onClose,
@@ -62,14 +64,16 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
 
   return (
     <div className="relative">
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-        aria-label={t('common.close')}
-      >
-        <X className="size-5" aria-hidden />
-      </button>
+      {shown ? null : (
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label={t('common.close')}
+        >
+          <X className="size-5" aria-hidden />
+        </button>
+      )}
 
       {shown === undefined && isLoading ? (
         <div className="flex flex-col items-center gap-3 p-8">
@@ -92,18 +96,26 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center px-6 pt-8 text-center">
-            <Avatar name={shown.name} src={shown.photoUrl} size={96} />
-            <h2 className="mt-4 text-2xl font-bold tracking-tight">
-              {shown.name}, {shown.age} <span aria-hidden>{flagEmoji(shown.country)}</span>
-            </h2>
-            {shown.city ? <p className="text-sm text-muted-foreground">{shown.city}</p> : null}
-            {shown.bio ? <p className="mt-3 max-w-sm text-[15px] leading-relaxed text-pretty">{shown.bio}</p> : null}
+          <div className="flex flex-col items-center px-3 pt-3 text-center">
+            <ProfileHero
+              profile={shown}
+              className="w-full"
+              coverSlot={
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="absolute top-3 right-3 grid size-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition-colors hover:bg-black/45"
+                  aria-label={t('common.close')}
+                >
+                  <X className="size-5" aria-hidden />
+                </button>
+              }
+            />
             {shown.interests?.length ? (
               <InterestChips
                 tags={shown.interests}
                 shared={isMe ? undefined : shown.interests.filter((i) => me.interests?.includes(i))}
-                className="mt-3 justify-center"
+                className="mt-3 justify-center px-3"
               />
             ) : null}
             <p className="mt-3 text-sm text-muted-foreground">{plural(shown.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
@@ -148,9 +160,10 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               </div>
             )}
           </div>
-          {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-6" /> : null}
-          <div className="mt-6 border-t border-border">
-            <PostGrid posts={shown.posts} owner={shown.name} />
+          {shown.style?.prompts.length ? <PromptCards prompts={shown.style.prompts} accent={shown.style.accent} className="mt-6 px-4" /> : null}
+          {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-4" /> : null}
+          <div className="mt-6 border-t border-border px-1 pt-1 pb-4">
+            <PostGrid posts={shown.posts} owner={shown.name} accent={shown.style?.accent} />
           </div>
           {isMe ? null : (
             <ReportSheet

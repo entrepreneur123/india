@@ -270,3 +270,56 @@ export function TopicChip({ topic, label, className }: { topic: Topic; label: st
     </span>
   )
 }
+
+const HEART_PATH =
+  'M12 20.8c-.3 0-.6-.1-.85-.3C6.3 16.7 2.8 13.6 2.8 9.6c0-2.75 2.1-4.9 4.8-4.9 1.75 0 3.3.9 4.4 2.35C13.1 5.6 14.65 4.7 16.4 4.7c2.7 0 4.8 2.15 4.8 4.9 0 4-3.5 7.1-8.35 10.9-.25.2-.55.3-.85.3z'
+const BUBBLE_PATH =
+  'M12 3.2c5.1 0 9.2 3.6 9.2 8.1s-4.1 8.1-9.2 8.1c-1.2 0-2.4-.2-3.5-.6l-3.9 1.7c-.6.25-1.2-.3-1-.9l1-3.3C3.4 14.9 2.8 13.2 2.8 11.3c0-4.5 4.1-8.1 9.2-8.1z'
+
+/**
+ * A post's like and comment glyphs, in the same rounded shapes as the rest. The like is the reaction heart when on
+ * (two tones, in the heart's red), an outline in the text colour when off; the comment is always an outline.
+ */
+export function LikeIcon({ on, size = 26, className }: { on: boolean; size?: number; className?: string }) {
+  if (on) return <ReactionIcon kind="heart" size={size} className={className} />
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false" className={cn('shrink-0', className)}>
+      <path d={HEART_PATH} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function CommentIcon({ size = 26, className }: { size?: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false" className={cn('shrink-0', className)}>
+      <path d={BUBBLE_PATH} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/** The big heart that pops over a photo on a double tap (Instagram): two tones on a soft shadow. */
+export function BigHeart({ size = 96, className }: { size?: number; className?: string }) {
+  return (
+    <Glyph color={REACTION_COLORS.heart} size={size} className={cn('drop-shadow-[0_6px_18px_rgb(0_0_0/0.35)]', className)}>
+      <path d={HEART_PATH} fill="#fff" />
+      <path d={HEART_PATH} fill={M} transform="translate(12 12.4) scale(.86) translate(-12 -12.4)" />
+      <ellipse cx="7.9" cy="9.2" rx="1.7" ry="1.1" transform="rotate(-40 7.9 9.2)" fill={L} />
+    </Glyph>
+  )
+}
+
+/** The Feed tab: a post card with a heart on it, drawn like the navigation's line icons (stroke, current colour). */
+export function FeedIcon({ className, strokeWidth = 2 }: { className?: string; strokeWidth?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden focusable="false" className={className}>
+      <path d="M7 3h10" />
+      <rect x="3.5" y="6" width="17" height="15" rx="4" />
+      <path d="M12 17.1c-2.2-1.5-3.4-2.7-3.4-4.1 0-1 .8-1.8 1.8-1.8.7 0 1.2.35 1.6.9.4-.55.9-.9 1.6-.9 1 0 1.8.8 1.8 1.8 0 1.4-1.2 2.6-3.4 4.1z" fill="currentColor" strokeWidth={Math.max(1, strokeWidth - 0.6)} />
+    </svg>
+  )
+}
+
+/** A post's audience, small: the globe (everyone) or two people (friends), in their topic colours. */
+export function AudienceIcon({ visibility, size = 14, className }: { visibility: 'public' | 'friends'; size?: number; className?: string }) {
+  return <TopicIcon topic={visibility === 'public' ? 'globe' : 'friends'} size={size} className={className} />
+}

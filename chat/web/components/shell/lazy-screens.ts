@@ -10,6 +10,8 @@ import { retryImport } from '@/lib/retry-import'
 // (prefetchScreens), so switching tabs later works even if the network drops.
 const loaders = {
   rooms: () => retryImport(() => import('@/components/screens/rooms/rooms-screen')),
+  feed: () => retryImport(() => import('@/components/screens/feed/feed-screen')),
+  post: () => retryImport(() => import('@/components/social/posts/post-sheet')),
   recent: () => retryImport(() => import('@/components/screens/recent/recent-screen')),
   me: () => retryImport(() => import('@/components/screens/me/me-screen')),
   settings: () => retryImport(() => import('@/components/screens/settings/settings-screen')),
@@ -37,6 +39,8 @@ export function preloadScreen(name: keyof typeof loaders | Tab) {
 }
 
 export const RoomsScreen = lazy(() => loaders.rooms().then((m) => ({ default: m.RoomsScreen })))
+export const FeedScreen = lazy(() => loaders.feed().then((m) => ({ default: m.FeedScreen })))
+export const PostSheet = lazy(() => loaders.post().then((m) => ({ default: m.PostSheet })))
 export const RecentScreen = lazy(() => loaders.recent().then((m) => ({ default: m.RecentScreen })))
 export const MeScreen = lazy(() => loaders.me().then((m) => ({ default: m.MeScreen })))
 export const SettingsScreen = lazy(() => loaders.settings().then((m) => ({ default: m.SettingsScreen })))

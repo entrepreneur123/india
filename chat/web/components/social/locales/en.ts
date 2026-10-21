@@ -5,7 +5,7 @@ const en = {
   'inbox.open': 'Notifications',
   'inbox.openUnread': 'Notifications, {n} new',
   'inbox.empty': 'Nothing new yet',
-  'inbox.emptyBody': 'Friend requests, messages from friends and room invites show up here.',
+  'inbox.emptyBody': 'Friend requests, messages from friends, likes, comments and room invites show up here.',
   'inbox.markAll': 'Mark all as read',
   'inbox.new': 'New',
   'inbox.earlier': 'Earlier',
@@ -22,6 +22,13 @@ const en = {
   'inbox.more': 'Show older',
   'unread.count': '{n} unread',
   'nav.newCount': '{n} new',
+  'nav.feed': 'Feed',
+  'inbox.like.single': '{name} liked your post',
+  'inbox.like.one': '{name} and 1 other liked your post',
+  'inbox.like.other': '{name} and {n} others liked your post',
+  'inbox.comment.single': '{name} commented on your post',
+  'inbox.comment.other': '{name} and {n} others commented on your post',
+  'inbox.viewPost': 'View post',
 
   // rooms: search, language, people online
   'rooms.search': 'Search rooms',

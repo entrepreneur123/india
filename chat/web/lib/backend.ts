@@ -6,6 +6,84 @@ export interface Post {
   text: string
   imageUrl?: string | null
   createdAt: number
+  /** 033: who sees it, its counts and whether I liked it (absent on posts read the old way). */
+  visibility?: PostVisibility
+  likes?: number
+  comments?: number
+  liked?: boolean
+}
+
+// ---- profile style, likes, comments and the feed (033_profiles_feed.sql; lists and limits in lib/profile-style.ts) ----
+
+/** The profile's colour (null: the brand's). */
+export type Accent = 'rose' | 'violet' | 'ocean' | 'mint' | 'sunset' | 'gold' | 'berry' | 'slate'
+/** Languages someone speaks (not the app's language). */
+export type SpokenLang = 'en' | 'hi' | 'bn' | 'ta' | 'te' | 'mr' | 'gu' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'pt' | 'vi'
+/** The questions a profile can answer (the apps write the question text). */
+export type PromptQ = 'weekend' | 'food' | 'song' | 'travel' | 'talk' | 'laugh' | 'goal' | 'secret'
+
+export interface ProfilePrompt {
+  q: PromptQ
+  a: string
+}
+
+export interface ProfileStyle {
+  /** The cover photo above the profile (id = the stored file); null: the accent's gradient. */
+  cover: ProfilePhoto | null
+  accent: Accent | null
+  /** A short line under the name (1-60), like WhatsApp's About. */
+  status: string | null
+  languages: SpokenLang[]
+  prompts: ProfilePrompt[]
+}
+
+/** What set_profile_style takes: the whole style every time. `coverId`: the stored cover to keep (null: none). */
+export interface ProfileStyleInput {
+  coverId: string | null
+  accent: Accent | null
+  status: string | null
+  languages: SpokenLang[]
+  prompts: ProfilePrompt[]
+}
+
+/** 'friends': friends and people I chatted with (the default); 'public': anyone, in Discover. */
+export type PostVisibility = 'friends' | 'public'
+export type FeedTab = 'friends' | 'discover'
+
+export interface PostAuthor {
+  id: string
+  name: string
+  gender: Gender
+  age: number
+  city: string | null
+  country: string | null
+  photoUrl: string | null
+  accent: Accent | null
+}
+
+/** A post as the feed reads it: with its author, counts and my like. */
+export interface FeedPost extends Post {
+  visibility: PostVisibility
+  likes: number
+  comments: number
+  liked: boolean
+  author: PostAuthor
+  /** The server's own time text: the next page starts before it (exact to the microsecond). */
+  cursor: string
+}
+
+export interface PostComment {
+  id: number
+  postId: string
+  text: string
+  at: number
+  /** The comment this one answers, and its author's name. */
+  replyTo: number | null
+  replyName: string | null
+  mine: boolean
+  /** Mine, or a comment on my post. */
+  canRemove: boolean
+  author: PostAuthor
 }
 
 export interface Profile {
@@ -22,6 +100,8 @@ export interface Profile {
   interests?: Interest[]
   /** Up to 4 more photos (id = the stored file). */
   photos?: ProfilePhoto[]
+  /** Cover, colour, status, languages and prompts (absent: not loaded for this card). */
+  style?: ProfileStyle
 }
 
 /** Interest tags (024_discovery_profiles.sql has the same list); the apps translate them. */
@@ -41,7 +121,7 @@ export interface ProfilePhoto {
 
 // ---- notifications (023_notifications.sql) ----
 
-export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite'
+export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite' | 'post_like' | 'post_comment'
 
 export interface InboxItem {
   id: number
@@ -58,6 +138,8 @@ export interface InboxItem {
   roomOpen: boolean
   /** A friend request still waiting for my answer. */
   pending: boolean
+  /** The post a like or comment is about (`text`: its first 80 characters). */
+  post: { id: string; text: string; imageUrl: string | null } | null
 }
 
 export interface Badges {
@@ -422,7 +504,10 @@ export interface Backend {
   videoToken(matchId: string): Promise<{ url: string; token: string } | null>
   recents(): Promise<RecentMatch[]>
   profile(userId: string): Promise<Profile | null>
-  addPost(text: string, image: File | null): Promise<Post>
+  /** `visibility`: 'friends' unless given. At most 20 a day ('slow_down'). */
+  addPost(text: string, image: File | null, visibility?: PostVisibility): Promise<FeedPost>
+  /** My own post only. */
+  deletePost(postId: string): Promise<void>
   updateProfile(name: string, city: string, bio: string, photo: File | null): Promise<Profile>
   friends(): Promise<Friend[]>
   requestFriend(userId: string): Promise<FriendState>
@@ -456,6 +541,23 @@ export interface Backend {
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
   addProfilePhoto(photo: File): Promise<Profile>
   removeProfilePhoto(id: string): Promise<Profile>
+  /** Sets the whole style. `cover`: a new cover photo (the screen has run classifyImage() on it first). */
+  setProfileStyle(style: ProfileStyleInput, cover?: File | null): Promise<Profile>
+  // ---- posts, likes, comments, the feed (033) ----
+  /** Newest first; `before`: the last post's cursor, for the next page. */
+  feed(tab: FeedTab, before?: string): Promise<FeedPost[]>
+  postsOf(userId: string, before?: string): Promise<FeedPost[]>
+  /** Null: gone, or not mine to see. */
+  post(postId: string): Promise<FeedPost | null>
+  likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>
+  /** Oldest first; `after`: the last comment's id, for more. */
+  comments(postId: string, after?: number): Promise<PostComment[]>
+  /** 1-300 characters, 10 a minute ('slow_down'). */
+  addComment(postId: string, text: string, replyTo?: number | null): Promise<PostComment>
+  /** Mine, or any on my post. */
+  removeComment(commentId: number): Promise<void>
+  reportPost(postId: string, reason: ReportReason): Promise<void>
+  reportComment(commentId: number, reason: ReportReason): Promise<void>
   /** Enters as a listener (or as the host of my own room). */
   joinVoice(roomId: string): Promise<VoiceRoom>
   leaveVoice(roomId: string): Promise<void>

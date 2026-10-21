@@ -50,8 +50,10 @@ link/highlight and `{name}` placeholders can be React nodes via `<Rich>`.
 
 - First load fetches only React, the app shell, English and the screen that is needed. The demo never downloads
   supabase-js and the live site never downloads the demo (`lib/backend-context.tsx`, dynamic import).
-- Sign-up and the signed-in app are separate chunks; Rooms, Recent, Me, Settings, threads, profile sheet, paywall,
-  room dialogs, the chat view and the call screen load on demand (prefetched on hover/pointer-down).
+- Sign-up and the signed-in app are separate chunks; Rooms, Feed, Recent, Me, Settings, threads, profile sheet, post
+  sheet, paywall, room dialogs, the chat view and the call screen load on demand (prefetched on hover/pointer-down).
+  The feed's strings (`components/social/locales/feed/`), the post composer, the style editor and the live backend's
+  post/comment parsing (`lib/supabaseFeed.ts`) are their own chunks too; the demo's posts are `lib/mockFeed.ts`.
   `livekit-client` loads only when a call is accepted.
 - Motion's animation code loads after the page `load` event; drag only inside the call screen.
 - The right panel (friends, live rooms) and its requests exist only on screens ≥ 1280 px.

@@ -27,12 +27,18 @@ export function ReportSheet({
   partner,
   matchId,
   onReported,
+  about,
 }: {
   open: boolean
   onClose: () => void
   partner: Profile
   matchId: string | null
   onReported?: () => void
+  /**
+   * A post or comment of theirs (033): the report keeps it as evidence, and only it is hidden here (reporting a
+   * post doesn't block). `title` and `thanks` are the sheet's title and the word after.
+   */
+  about?: { post: string; title: string; thanks: string } | { comment: number; title: string; thanks: string }
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -49,6 +55,14 @@ export function ReportSheet({
   const report = async (reason: ReportReason) => {
     setBusy(reason)
     try {
+      if (about) {
+        if ('post' in about) await backend.reportPost(about.post, reason)
+        else await backend.reportComment(about.comment, reason)
+        toast.show(about.thanks, 'success')
+        close()
+        onReported?.()
+        return
+      }
       try {
         await backend.report(partner.id, reason, matchId)
       } catch (err) {
@@ -87,7 +101,7 @@ export function ReportSheet({
   }
 
   return (
-    <Modal open={open} onClose={close} variant="sheet" title={t('report.title', { name: partner.name })} description={t('report.desc')}>
+    <Modal open={open} onClose={close} variant="sheet" title={about?.title ?? t('report.title', { name: partner.name })} description={t('report.desc')}>
       <ul className="flex flex-col p-3 pb-5">
         {REASONS.map((r) => (
           <li key={r.value}>

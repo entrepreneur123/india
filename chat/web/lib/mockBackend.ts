@@ -7,6 +7,10 @@ import {
   MAX_PHOTOS,
   type RoomQuery,
   type Entitlements,
+  type FeedTab,
+  type FeedPost,
+  type PostVisibility,
+  type ProfileStyleInput,
   type Friend,
   type FriendState,
   type Match,
@@ -24,6 +28,7 @@ import {
   type VoiceEvent,
 } from './backend'
 import type { VoiceSim } from './mockVoice'
+import type { FeedSim } from './mockFeed'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
@@ -228,6 +233,9 @@ export class MockBackend implements Backend {
   private inboxItems: InboxItem[] = []
   private unread = new Map<string, number>()
   private inboxListeners = new Set<() => void>()
+  /** Posts, likes, comments and profile styles are simulated in their own chunk too (lib/mockFeed.ts). */
+  private feed_: Promise<FeedSim> | null = null
+  private feedSim: FeedSim | null = null
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -267,7 +275,7 @@ export class MockBackend implements Backend {
     this.unread.set('t_sofia', 2)
     const item = (id: number, kind: InboxItem['kind'], actor: string, ago: number, extra: Partial<InboxItem> = {}): InboxItem => ({
       id, kind, actor: this.person(actor)!, at: Date.now() - ago, read: false, count: 1, matchId: null, roomId: null,
-      roomTitle: null, roomOpen: false, pending: false, ...extra,
+      roomTitle: null, roomOpen: false, pending: false, post: null, ...extra,
     })
     this.inboxItems = [
       item(5, 'room_invite', 'u_arjun', 4 * 60_000, { roomId: 'v-chai', roomTitle: 'Chai pe charcha', roomOpen: true }),
@@ -361,7 +369,9 @@ export class MockBackend implements Backend {
 
   async myProfile() {
     await wait(300)
-    return this.me ? { ...this.me, posts: [...this.me.posts] } : null
+    if (!this.me) return null
+    // My posts with their current counts, once the feed's chunk is here.
+    return { ...this.me, posts: this.feedSim ? this.feedSim.postsOfNow(this.me.id) : [...this.me.posts] }
   }
 
   async createProfile(p: NewProfile) {
@@ -572,12 +582,17 @@ export class MockBackend implements Backend {
   async profile(userId: string) {
     await wait(450)
     if (this.me && userId === this.me.id) return { ...this.me }
-    return this.person(userId) ?? this.voiceSim?.person(userId) ?? null
+    const p = this.person(userId) ?? this.voiceSim?.person(userId) ?? null
+    if (!p) return null
+    const sim = await this.feedChunk()
+    return { ...p, posts: this.person(userId) ? sim.postsOfNow(userId) : p.posts, style: sim.style(userId) }
   }
 
-  async addPost(text: string, image: File | null) {
+  async addPost(text: string, image: File | null, visibility: PostVisibility = 'friends'): Promise<FeedPost> {
     this.requireMe()
     if (!this.me) throw new BackendError('not_found')
+    const sim = await this.feedChunk()
+    if (this.me.posts.filter((x) => Date.now() - x.createdAt < DAY).length >= 20) throw new BackendError('slow_down')
     await wait(700)
     const p: Post = {
       id: `p_${uid()}`,
@@ -585,8 +600,75 @@ export class MockBackend implements Backend {
       imageUrl: image ? URL.createObjectURL(image) : null,
       createdAt: Date.now(),
     }
-    this.me.posts = [p, ...this.me.posts]
-    return p
+    const full = await sim.add(p, visibility)
+    this.me.posts = [full, ...this.me.posts]
+    return full
+  }
+
+  async deletePost(postId: string) {
+    if (!this.me) throw new BackendError('not_found')
+    await (await this.feedChunk()).remove(postId)
+    this.me.posts = this.me.posts.filter((p) => p.id !== postId)
+  }
+
+  // ---- posts, likes, comments, the feed ----
+
+  private feedChunk() {
+    this.feed_ ??= import('./mockFeed').then(
+      (m) =>
+        (this.feedSim = new m.FeedSim({
+          me: () => this.me,
+          person: (id) => this.person(id),
+          people: PEOPLE,
+          friends: () => [...this.friendMap].filter(([, st]) => st === 'friends').map(([id]) => id),
+          close: (id) => this.friendMap.get(id) === 'friends' || this.threadByUser.has(id) || this.recentList.some((r) => r.partner.id === id),
+          inbox: () => this.inboxItems,
+          inboxChanged: () => this.inboxChanged(),
+        })),
+    )
+    return this.feed_
+  }
+
+  async setProfileStyle(style: ProfileStyleInput, cover?: File | null) {
+    if (!this.me) throw new BackendError('not_found')
+    this.me = { ...this.me, style: await (await this.feedChunk()).setStyle(style, cover) }
+    return (await this.myProfile())!
+  }
+
+  async feed(tab: FeedTab, before?: string) {
+    return (await this.feedChunk()).feed(tab, before)
+  }
+
+  async postsOf(userId: string, before?: string) {
+    return (await this.feedChunk()).postsOf(userId, before)
+  }
+
+  async post(postId: string) {
+    return (await this.feedChunk()).post(postId)
+  }
+
+  async likePost(postId: string, on: boolean) {
+    return (await this.feedChunk()).like(postId, on)
+  }
+
+  async comments(postId: string, after?: number) {
+    return (await this.feedChunk()).comments(postId, after)
+  }
+
+  async addComment(postId: string, text: string, replyTo?: number | null) {
+    return (await this.feedChunk()).addComment(postId, text, replyTo ?? null)
+  }
+
+  async removeComment(commentId: number) {
+    return (await this.feedChunk()).removeComment(commentId)
+  }
+
+  async reportPost(postId: string, _reason: ReportReason) {
+    return (await this.feedChunk()).report(postId, null)
+  }
+
+  async reportComment(commentId: number, _reason: ReportReason) {
+    return (await this.feedChunk()).report(null, commentId)
   }
 
   async updateProfile(name: string, city: string, bio: string, photo: File | null) {

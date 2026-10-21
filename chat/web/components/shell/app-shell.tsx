@@ -18,7 +18,10 @@ import { cn } from '@/lib/utils'
 import { ChatPill } from './chat-pill'
 import { BottomTabs, Sidebar } from './nav'
 import { RandomScreen } from '@/components/screens/random/random-screen'
+import type { PostTarget } from '@/components/social/posts/post-sheet'
 import {
+  FeedScreen,
+  PostSheet,
   MeScreen,
   Paywall,
   prefetchScreens,
@@ -82,6 +85,8 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
   const [paywallUsed, setPaywallUsed] = useState(false)
   const [profileUsed, setProfileUsed] = useState(false)
+  const [postTarget, setPostTarget] = useState<PostTarget | null>(null)
+  const [postUsed, setPostUsed] = useState(false)
   const [immersive, setImmersive] = useState(false)
   // The voice room I'm in: full screen, or minimised to a pill while I use the rest of the app.
   const [voice, setVoice] = useState<{ id: string; expanded: boolean } | null>(null)
@@ -232,6 +237,10 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setProfileUsed(true)
         setProfileTarget({ userId, matchId: opts?.matchId ?? null })
       },
+      openPost: (postId, opts) => {
+        setPostUsed(true)
+        setPostTarget({ postId, initial: opts?.initial ?? null, focus: opts?.focus })
+      },
       openPaywall: () => {
         setPaywallUsed(true)
         setPaywallOpen(true)
@@ -303,6 +312,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     <ScreenBoundary key={tab}>
                       <Suspense fallback={<ScreenLoading />}>
                         {tab === 'rooms' ? <RoomsScreen /> : null}
+                        {tab === 'feed' ? <FeedScreen /> : null}
                         {tab === 'recent' ? <RecentScreen /> : null}
                         {tab === 'me' ? <MeScreen /> : null}
                         {tab === 'settings' ? <SettingsScreen /> : null}
@@ -367,6 +377,13 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           <ScreenBoundary>
             <Suspense fallback={null}>
               <ProfileSheet target={profileTarget} onClose={() => setProfileTarget(null)} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {postUsed ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <PostSheet target={postTarget} onClose={() => setPostTarget(null)} />
             </Suspense>
           </ScreenBoundary>
         ) : null}

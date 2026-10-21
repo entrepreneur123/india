@@ -6,10 +6,14 @@ import {
   type Backend,
   type Entitlements,
   type Badges,
+  type FeedPost,
+  type FeedTab,
+  type PostComment,
+  type PostVisibility,
+  type ProfileStyleInput,
   type Friend,
   type FriendState,
   type InboxItem,
-  type InboxKind,
   type Interest,
   INTERESTS,
   MAX_PHOTOS,
@@ -73,11 +77,15 @@ type CardRow = {
   id: string; name: string; gender: string; age: number; city: string; bio: string
   photo_path: string | null; country: string | null
 }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null }
+/** 033: cover, colour, status, languages, prompts (profiles columns, or profile_style rows). */
+type StyleRow = { cover_path: string | null; accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null } & StyleRow
 type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
+/** inbox2 (033): inbox's lines plus the post a like or comment is about. */
 type InboxRow = {
   id: number; kind: string; n: number; created_at: string; read_at: string | null; match_id: string | null; room_id: string | null
   room_title: string | null; room_open: boolean; pending: boolean; actor: CardRow
+  post: { id: string; body: string | null; image_path: string | null } | null
 }
 type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string | null }
 type FriendRow = CardRow & { state: string; match_id: string | null }
@@ -285,6 +293,14 @@ export class SupabaseBackend implements Backend {
     })
   }
 
+  /** 033's parsing (posts, comments, styles) downloads when first needed (lib/supabaseFeed.ts). */
+  private social_: Promise<typeof import('./supabaseFeed')> | null = null
+  private social() {
+    this.social_ ??= retryImport(() => import('./supabaseFeed'))
+    this.social_.catch(() => (this.social_ = null))
+    return this.social_
+  }
+
   private get uid(): string {
     if (!this.userId) throw new BackendError('not_signed_in')
     return this.userId
@@ -344,12 +360,14 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos').eq('id', me).maybeSingle<ProfileRow>(),
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, cover_path, accent, status, languages, prompts')
+        .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
     if (error) fail(error)
     if (!data) return null
-    return this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
+    const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
+    return { ...p, style: await this.toStyle(data) }
   }
 
   async createProfile(p: NewProfile) {
@@ -712,9 +730,19 @@ export class SupabaseBackend implements Backend {
     const rows = await this.rpc<CardRow[]>('card', { uid: userId })
     const c = rows?.[0]
     if (!c) return null
-    const [posts, extras] = await Promise.all([this.posts(userId), this.extras([userId]).catch(() => [])])
+    const [posts, extras, styles] = await Promise.all([
+      this.posts(userId), this.extras([userId]).catch(() => []),
+      this.rpc<(StyleRow & { id: string })[] | null>('profile_style', { p_users: [userId] }).catch(() => null),
+    ])
     const p = await this.toProfile(c, posts)
-    return extras[0] ? this.withExtras(p, extras[0]) : p
+    const withX = extras[0] ? await this.withExtras(p, extras[0]) : p
+    return styles?.[0] ? { ...withX, style: await this.toStyle(styles[0]) } : withX
+  }
+
+  /** The style with its cover signed (a cover that can't be signed is shown as the gradient). */
+  private async toStyle(row: StyleRow) {
+    const [url, { parseStyle }] = await Promise.all([row.cover_path ? this.signed(row.cover_path).catch(() => null) : null, this.social()])
+    return parseStyle(row, row.cover_path && url ? { id: row.cover_path, url } : null)
   }
 
   /** Interests and gallery of people I may see (024). */
@@ -734,21 +762,89 @@ export class SupabaseBackend implements Backend {
     }
   }
 
+  /** A profile's posts (the grid): the newest 50 I may see, with their counts. */
   private async posts(userId: string): Promise<Post[]> {
-    const { data, error } = await this.client.from('posts').select('id, user_id, body, image_path, created_at')
-      .eq('user_id', userId).order('created_at', { ascending: false }).limit(60)
-    if (error) fail(error)
-    return Promise.all((data as PostRow[]).map(async (p) => ({
-      id: p.id, text: p.body, imageUrl: p.image_path ? await this.signed(p.image_path) : null, createdAt: time(p.created_at),
-    })))
+    return this.postsOf(userId)
   }
 
-  async addPost(text: string, image: File | null): Promise<Post> {
+  async addPost(text: string, image: File | null, visibility: PostVisibility = 'friends'): Promise<FeedPost> {
     const path = image ? await this.upload(image, 'posts') : null
-    const { data, error } = await this.client.from('posts').insert({ body: text, image_path: path })
+    const { data, error } = await this.client.from('posts').insert({ body: text, image_path: path, visibility })
       .select('id, user_id, body, image_path, created_at').single<PostRow>()
     if (error) fail(error)
-    return { id: data.id, text: data.body, imageUrl: path ? await this.signed(path) : null, createdAt: time(data.created_at) }
+    const full = await this.post(data.id).catch(() => null)
+    if (full) return full
+    const me = await this.mine()
+    return {
+      id: data.id, text: data.body, imageUrl: path ? await this.signed(path) : null, createdAt: time(data.created_at), cursor: data.created_at,
+      visibility, likes: 0, comments: 0, liked: false,
+      author: { id: me.id, name: me.name, gender: me.gender, age: me.age, city: me.city, country: me.country ?? null, photoUrl: me.photoUrl ?? null, accent: me.style?.accent ?? null },
+    }
+  }
+
+  async deletePost(postId: string) {
+    const { error } = await this.client.from('posts').delete().eq('id', postId).eq('user_id', this.uid)
+    if (error) fail(error)
+  }
+
+  // ---- posts, likes, comments, the feed (033) ----
+
+  /** Signs every photo in the rows in one request, then reads them. */
+  private async toPosts(rows: unknown): Promise<FeedPost[]> {
+    const list = Array.isArray(rows) ? rows : []
+    const { mediaPaths, parsePost } = await this.social()
+    await this.signMany(mediaPaths(list))
+    return list.flatMap((r) => parsePost(r, this.signedNow) ?? [])
+  }
+
+  private signedNow = (path: string | null) => (path ? this.signedUrls.get(path)?.url ?? null : null)
+
+  async feed(tab: FeedTab, before?: string): Promise<FeedPost[]> {
+    const { FEED_PAGE } = await this.social()
+    return this.toPosts(await this.rpc('feed', { p_tab: tab, p_before: before ?? null, p_limit: FEED_PAGE }))
+  }
+
+  async postsOf(userId: string, before?: string): Promise<FeedPost[]> {
+    return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
+  }
+
+  async post(postId: string): Promise<FeedPost | null> {
+    const row = await this.rpc<unknown>('post_get', { p_post: postId })
+    return row ? (await this.toPosts([row]))[0] ?? null : null
+  }
+
+  async likePost(postId: string, on: boolean) {
+    return this.rpc<{ likes: number; liked: boolean }>('post_like', { p_post: postId, p_on: on })
+  }
+
+  async comments(postId: string, after?: number): Promise<PostComment[]> {
+    const { COMMENTS_PAGE, mediaPaths, parseComment } = await this.social()
+    const rows = await this.rpc<unknown>('comments_list', { p_post: postId, p_after: after ?? null, p_limit: COMMENTS_PAGE })
+    const list = Array.isArray(rows) ? rows : []
+    await this.signMany(mediaPaths(list))
+    return list.flatMap((r) => parseComment(r, this.signedNow) ?? [])
+  }
+
+  async addComment(postId: string, text: string, replyTo?: number | null): Promise<PostComment> {
+    const [row, { mediaPaths, parseComment }] = await Promise.all([
+      this.rpc<unknown>('comment_add', { p_post: postId, p_body: text, p_reply_to: replyTo ?? null }), this.social(),
+    ])
+    await this.signMany(mediaPaths([row]))
+    const c = parseComment(row, this.signedNow)
+    if (!c) throw new BackendError('network')
+    return c
+  }
+
+  async removeComment(commentId: number) {
+    await this.rpc('comment_remove', { p_id: commentId })
+  }
+
+  async reportPost(postId: string, reason: ReportReason) {
+    await this.rpc('report_post', { p_post: postId, p_reason: reason })
+  }
+
+  async reportComment(commentId: number, reason: ReportReason) {
+    await this.rpc('report_comment', { p_id: commentId, p_reason: reason })
   }
 
   /** Gender and birth date never change (the server refuses). [photo] is a new picture, or null to keep the current one. */
@@ -845,12 +941,20 @@ export class SupabaseBackend implements Backend {
   // ---- inbox and badges (023) ----
 
   async inbox(before?: number): Promise<InboxItem[]> {
-    const rows = await this.rpc<InboxRow[]>('inbox', { p_before: before ?? null, p_limit: 30 })
-    await this.signMany(rows.map((r) => r.actor.photo_path))
-    return rows.map((r) => ({
-      id: r.id, kind: r.kind as InboxKind, actor: this.cardProfile(r.actor), at: time(r.created_at), read: r.read_at !== null,
-      count: r.n, matchId: r.match_id, roomId: r.room_id, roomTitle: r.room_title, roomOpen: r.room_open, pending: r.pending,
-    }))
+    const [rows0, { inboxKind }] = await Promise.all([this.rpc<InboxRow[] | null>('inbox2', { p_before: before ?? null, p_limit: 30 }), this.social()])
+    const rows = rows0 ?? []
+    await this.signMany(rows.flatMap((r) => [r.actor?.photo_path, r.post?.image_path]))
+    // A kind this app doesn't know yet (a newer server) is left out.
+    return rows.flatMap((r) => {
+      const kind = inboxKind(r.kind)
+      if (!kind || !r.actor) return []
+      const post = r.post ? { id: r.post.id, text: r.post.body ?? '', imageUrl: this.signedNow(r.post.image_path) } : null
+      if ((kind === 'post_like' || kind === 'post_comment') && !post) return []
+      return [{
+        id: r.id, kind, actor: this.cardProfile(r.actor), at: time(r.created_at), read: r.read_at !== null,
+        count: r.n, matchId: r.match_id, roomId: r.room_id, roomTitle: r.room_title, roomOpen: r.room_open, pending: r.pending, post,
+      }]
+    })
   }
 
   async markInboxRead(ids?: number[]) {
@@ -890,6 +994,14 @@ export class SupabaseBackend implements Backend {
   async removeProfilePhoto(id: string) {
     const now = await this.mine()
     await this.rpc('set_photos', { p_paths: (now.photos ?? []).map((p) => p.id).filter((x) => x !== id) })
+    return this.mine()
+  }
+
+  async setProfileStyle(style: ProfileStyleInput, cover?: File | null) {
+    const path = cover ? await this.upload(cover, 'cover') : style.coverId
+    await this.rpc('set_profile_style', {
+      p_cover_path: path, p_accent: style.accent, p_status: style.status, p_languages: style.languages, p_prompts: style.prompts,
+    })
     return this.mine()
   }
 
@@ -1607,7 +1719,7 @@ export class SupabaseBackend implements Backend {
   }
 
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
-  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms'): Promise<string> {
+  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms' | 'cover'): Promise<string> {
     const isVideo = file.type.startsWith('video/')
     let body: Blob = file
     let type = file.type

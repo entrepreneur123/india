@@ -1,11 +1,11 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef } from 'react'
-import type { Badges, Entitlements, Profile } from '@/lib/backend'
+import type { Badges, Entitlements, FeedPost, Profile } from '@/lib/backend'
 import type { Lang, T } from '@/lib/i18n'
 import type { RandomLive } from '@/lib/live-session'
 
-export type Tab = 'rooms' | 'random' | 'recent' | 'me' | 'settings'
+export type Tab = 'rooms' | 'feed' | 'random' | 'recent' | 'me' | 'settings'
 
 export interface Thread {
   matchId: string
@@ -44,6 +44,8 @@ export interface AppState {
   t: T
   openProfile: (userId: string, opts?: { matchId?: string | null }) => void
   openPaywall: () => void
+  /** A post with its comments, over whatever is on screen. `initial`: shown while it is read again; `focus`: the comment box. */
+  openPost: (postId: string, opts?: { initial?: FeedPost | null; focus?: boolean }) => void
   openThread: (partner: Profile, matchId?: string) => void
   /**
    * Enters a voice room full screen (leaving the one I'm in, if another). A random chat in progress ends (with a
