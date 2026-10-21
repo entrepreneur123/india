@@ -48,6 +48,7 @@
     <string name="err_slow_down">आप बहुत तेज़ी से मैसेज भेज रहे हैं</string>
     <string name="err_blocked">आप इस व्यक्ति को मैसेज नहीं कर सकते</string>
     <string name="err_not_allowed">अभी यह नहीं हो सकता</string>
+    <string name="err_not_signed_in">कृपया फिर से साइन इन करें</string>
     <string name="err_video_off">वीडियो कॉल अभी उपलब्ध नहीं है</string>
     <string name="err_too_large">वीडियो बहुत बड़ा है (ज़्यादा से ज़्यादा 25 MB)</string>
     <string name="err_network">नेटवर्क की समस्या। फिर से कोशिश करें।</string>
@@ -292,6 +293,7 @@
     <string name="voice_ended">होस्ट ने यह रूम बंद कर दिया</string>
     <string name="voice_ended_by_you">रूम बंद हो गया</string>
     <string name="voice_removed">आपको इस रूम से हटा दिया गया</string>
+    <string name="voice_idle_left">30 मिनट बैकग्राउंड में रहने के बाद आप रूम से बाहर हो गए</string>
     <string name="voice_joining">जुड़ रहे हैं…</string>
     <string name="voice_safety">अच्छे से पेश आएँ। रूम रिकॉर्ड नहीं होते। शिकायत के लिए किसी पर टैप करें।</string>
     <string name="voice_stage">स्टेज</string>

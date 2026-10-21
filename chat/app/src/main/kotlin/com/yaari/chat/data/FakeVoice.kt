@@ -752,6 +752,14 @@ class FakeVoice(
         emit(r, VoiceEvent.Removed)
     }
 
+    /** The server no longer lets me be in the room ([code]: room_full, banned, ...), as a heartbeat would say. */
+    fun refuseMe(roomId: String, code: String) {
+        val r = rooms[roomId] ?: return
+        val me = runCatching { me().id }.getOrNull() ?: return
+        r.members.removeAll { it.profile.id == me }
+        emit(r, VoiceEvent.Refused(code))
+    }
+
     companion object {
         private const val LEVEL_MS = 150L
         /** One icebreaker per room every 20 s (the server's rule). */

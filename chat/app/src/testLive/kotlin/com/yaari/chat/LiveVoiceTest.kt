@@ -11,7 +11,11 @@ import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.VoiceRole
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -90,5 +94,31 @@ class LiveVoiceTest {
         host.endVoice(id)
         assertEquals("room_closed", code { guest.voiceSession(id).first() })
         assertTrue(host.voiceRooms().none { it.id == id })
+    }
+
+    /** 020: the guest's room follows the host's changes over Broadcast (each one applied, no full re-fetch needed). */
+    @Test fun changesArriveOverBroadcast() = runBlocking {
+        assumeTrue("set YAARI_QA_PASSWORD to run against the live server", !password.isNullOrBlank())
+        val host = user("qa1@yaari.test", "QA Arjun", Gender.MALE)
+        val guest = user("qa2@yaari.test", "QA Priya", Gender.FEMALE)
+        val id = host.createVoiceRoom(NewVoiceRoom("QA broadcast", RoomCategory.TALK)).id
+        try {
+            coroutineScope {
+                val hostSide = launch { host.voiceSession(id).collect { } }
+                val rooms = Channel<com.yaari.chat.model.VoiceRoom>(Channel.UNLIMITED)
+                val guestSide = launch { guest.voiceSession(id).filterIsInstance<VoiceEvent.RoomChanged>().collect { rooms.send(it.room) } }
+                withTimeout(15_000) { while (rooms.receive().members.none { it.profile.id == host.myProfile()!!.id }) Unit }
+                delay(3_000) // the private channel joins
+                host.updateVoiceRoom(id, "QA broadcast 2", "pinned")
+                withTimeout(10_000) { while (rooms.receive().let { it.title != "QA broadcast 2" || it.announcement != "pinned" }) Unit }
+                host.voiceAction(id, VoiceAction.TakeSeat(0))
+                withTimeout(10_000) { while (rooms.receive().members.none { it.role == VoiceRole.HOST && it.seat == 0 }) Unit }
+                guestSide.cancel()
+                hostSide.cancel()
+            }
+        } finally {
+            runCatching { guest.leaveVoice(id) }
+            runCatching { host.endVoice(id) }
+        }
     }
 }

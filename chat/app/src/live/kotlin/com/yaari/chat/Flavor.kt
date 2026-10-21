@@ -47,6 +47,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.Billing
+import com.yaari.chat.data.CrashReports
 import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.data.Shield
 import com.yaari.chat.data.VideoToken
@@ -78,6 +79,9 @@ object Flavor {
     const val voiceMicPermission = true
 
     fun billing(app: Application): Billing = billing ?: PlayBilling(app).also { billing = it }
+
+    /** Crashes are written down here and sent on the next launch (SupabaseBackend's telemetry). */
+    fun crashReports(app: Application) = CrashReports.install(SupabaseBackend.reportsDir(app), SupabaseBackend.VERSION)
 
     /** Room photos are checked by the call check's nudity model before they are sent. */
     fun photoCheck(app: Application): PhotoCheck = PhotoModel(app)

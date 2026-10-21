@@ -198,6 +198,11 @@ sealed interface VoiceEvent {
     data class Reaction(val userId: String, val kind: VoiceReaction) : VoiceEvent
     data object Ended : VoiceEvent
     data object Removed : VoiceEvent
+    /**
+     * The server no longer lets me be here (the room filled while I was away, I was banned, the rules changed, ...):
+     * [code] says why. Said once; the collector leaves the room with that reason.
+     */
+    data class Refused(val code: String) : VoiceEvent
 }
 
 sealed interface VoiceAction {

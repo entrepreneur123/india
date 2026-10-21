@@ -53,6 +53,7 @@
     <string name="err_slow_down">You\'re sending too fast</string>
     <string name="err_blocked">You can\'t message this person</string>
     <string name="err_not_allowed">That\'s not possible right now</string>
+    <string name="err_not_signed_in">Please sign in again</string>
     <string name="err_video_off">Video calls are not available yet</string>
     <string name="err_too_large">That video is too large (max 25 MB)</string>
     <string name="err_network">Network problem. Please try again.</string>
@@ -304,6 +305,7 @@
     <string name="voice_ended">The host ended this room</string>
     <string name="voice_ended_by_you">Room ended</string>
     <string name="voice_removed">You were removed from this room</string>
+    <string name="voice_idle_left">You left the room after 30 minutes in the background</string>
     <string name="voice_joining">Joining…</string>
     <string name="voice_safety">Be kind. Rooms are not recorded. Tap a person to report.</string>
     <string name="voice_stage">Stage</string>

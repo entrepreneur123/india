@@ -51,6 +51,7 @@
     <string name="err_slow_down">Você está enviando rápido demais</string>
     <string name="err_blocked">Você não pode mandar mensagem para essa pessoa</string>
     <string name="err_not_allowed">Isso não é possível agora</string>
+    <string name="err_not_signed_in">Entre de novo na sua conta</string>
     <string name="err_video_off">Chamadas de vídeo ainda não estão disponíveis</string>
     <string name="err_too_large">Vídeo grande demais (máx. 25 MB)</string>
     <string name="err_network">Problema de conexão. Tente de novo.</string>
@@ -304,6 +305,7 @@
     <string name="voice_ended">O anfitrião encerrou esta sala</string>
     <string name="voice_ended_by_you">Sala encerrada</string>
     <string name="voice_removed">Você foi removido desta sala</string>
+    <string name="voice_idle_left">Você saiu da sala depois de 30 minutos em segundo plano</string>
     <string name="voice_joining">Entrando…</string>
     <string name="voice_safety">Seja gentil. As salas não são gravadas. Toque em alguém para denunciar.</string>
     <string name="voice_stage">Palco</string>

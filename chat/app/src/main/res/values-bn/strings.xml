@@ -51,6 +51,7 @@
     <string name="err_slow_down">আপনি খুব দ্রুত পাঠাচ্ছেন</string>
     <string name="err_blocked">এই মানুষটিকে আপনি মেসেজ পাঠাতে পারবেন না</string>
     <string name="err_not_allowed">এখন এটা করা যাচ্ছে না</string>
+    <string name="err_not_signed_in">অনুগ্রহ করে আবার সাইন ইন করুন</string>
     <string name="err_video_off">ভিডিও কল এখনো চালু হয়নি</string>
     <string name="err_too_large">ভিডিওটি অনেক বড় (সর্বোচ্চ ২৫ MB)</string>
     <string name="err_network">নেটওয়ার্কে সমস্যা। আবার চেষ্টা করুন।</string>
@@ -302,6 +303,7 @@
     <string name="voice_ended">হোস্ট রুমটি বন্ধ করেছেন</string>
     <string name="voice_ended_by_you">রুম বন্ধ হয়েছে</string>
     <string name="voice_removed">আপনাকে এই রুম থেকে সরানো হয়েছে</string>
+    <string name="voice_idle_left">৩০ মিনিট ব্যাকগ্রাউন্ডে থাকার পর আপনি রুম থেকে বেরিয়ে গেছেন</string>
     <string name="voice_joining">যোগ দেওয়া হচ্ছে…</string>
     <string name="voice_safety">ভদ্র থাকুন। রুম রেকর্ড হয় না। রিপোর্ট করতে কারও ওপর ট্যাপ করুন।</string>
     <string name="voice_stage">স্টেজ</string>

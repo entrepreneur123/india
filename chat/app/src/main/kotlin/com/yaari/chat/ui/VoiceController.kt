@@ -1,6 +1,7 @@
 package com.yaari.chat.ui
 
 import com.yaari.chat.R
+import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.PhotoCheck
@@ -29,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -114,8 +116,10 @@ class VoiceController(
     /** Room photos are shrunk and checked for nudity on this phone before they are sent. */
     private val photos: PhotoCheck = PhotoCheck.None,
     private val random: Random = Random.Default,
-    /** Wall clock (Ludo deadlines are on it). */
+    /** Wall clock (Ludo deadlines are on it, and the time spent in the background). */
     private val wallClock: () -> Long = System::currentTimeMillis,
+    /** The app on screen or not ([AppForeground]): a listener in the background for 30 minutes leaves. */
+    private val visible: StateFlow<Boolean> = AppForeground.visible,
 ) {
     private val _list = MutableStateFlow(VoiceListState())
     val list: StateFlow<VoiceListState> = _list.asStateFlow()
@@ -227,6 +231,7 @@ class VoiceController(
         _state.value = VoiceState(roomId)
         session = scope.launch {
             var loadedLines = false
+            launch { leaveWhenIdle(roomId) }
             try {
                 backend.voiceSession(roomId).collect { e ->
                     when (e) {
@@ -251,6 +256,11 @@ class VoiceController(
                             notice(UiText(R.string.voice_removed))
                             gone(roomId, leave = false)
                         }
+                        // The server no longer lets me in (it filled while I was away, I was banned, ...): out, with why.
+                        is VoiceEvent.Refused -> {
+                            notice(refusedText(e.code, _state.value?.room?.rules))
+                            gone(roomId, leave = false)
+                        }
                     }
                 }
             } catch (e: CancellationException) {
@@ -261,6 +271,33 @@ class VoiceController(
                 gone(roomId, leave = false)
             }
         }
+    }
+
+    /**
+     * A listener whose app stays in the background for [IDLE_LEAVE_MS] has gone: leave (the room's count, the battery,
+     * and the foreground service stops with it). The host and anyone on the stage are the room: never. Checked on a
+     * timer and again on the way back (a sleeping phone may have held the timer back).
+     */
+    private suspend fun leaveWhenIdle(roomId: String) {
+        var hiddenAt: Long? = null
+        visible.collectLatest { shown ->
+            if (shown) {
+                val since = hiddenAt
+                hiddenAt = null
+                if (since != null && wallClock() - since >= IDLE_LEAVE_MS) idleLeave(roomId)
+                return@collectLatest
+            }
+            if (hiddenAt == null) hiddenAt = wallClock()
+            delay(IDLE_LEAVE_MS)
+            idleLeave(roomId)
+        }
+    }
+
+    private fun idleLeave(roomId: String) {
+        val s = _state.value?.takeIf { it.roomId == roomId } ?: return
+        if (s.isHost || s.me?.seat != null) return
+        notice(UiText(R.string.voice_idle_left))
+        gone(roomId, leave = true)
     }
 
     private suspend fun loadLines(roomId: String) {
@@ -672,7 +709,9 @@ class VoiceController(
         /** The player is put back in step when it is this far (seconds) from the room's position. */
         const val DRIFT_S = 2.5f
         /** How often the list refreshes while it is on screen. */
-        const val LIST_REFRESH_MS = 15_000L
+        const val LIST_REFRESH_MS = 30_000L
+        /** A listener whose app stays in the background this long leaves the room (the web's IDLE_LEAVE_MS). */
+        const val IDLE_LEAVE_MS = 30 * 60_000L
 
         fun merge(old: List<VoiceLine>?, new: List<VoiceLine>): List<VoiceLine> {
             val current = old ?: emptyList()
@@ -726,6 +765,23 @@ class VoiceController(
 
         /** Prompt [n] (1..40) as a string resource; an unknown number (a newer server) shows the first. */
         fun prompt(n: Int): Int = PROMPTS.getOrElse(n - 1) { PROMPTS[0] }
+
+        /** Why the server sent me out of the room I was in ([VoiceEvent.Refused]), with the room's rules when known. */
+        fun refusedText(code: String, rules: com.yaari.chat.model.RoomRules?): UiText = when {
+            code == "room_gender" && rules != null && rules.genderRule != GenderRule.ANY ->
+                UiText(if (rules.genderRule == GenderRule.MALE) R.string.err_room_men else R.string.err_room_women)
+            code == "room_age" && rules != null -> UiText(R.string.err_room_ages, rules.minAge, rules.maxAge)
+            else -> UiText(
+                when (code) {
+                    "room_full" -> R.string.err_room_full
+                    "room_gender" -> R.string.err_room_gender
+                    "room_age" -> R.string.err_room_age
+                    "banned" -> R.string.err_banned
+                    "not_signed_in" -> R.string.err_not_signed_in
+                    else -> R.string.err_not_allowed
+                },
+            )
+        }
 
         /** Why I can't enter [room], said with what the room asks for. */
         fun refusalText(room: VoiceRoomSummary): UiText = when (room.refusal) {

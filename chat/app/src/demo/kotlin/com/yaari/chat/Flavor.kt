@@ -33,6 +33,9 @@ object Flavor {
 
     fun billing(app: Application): Billing = DemoBilling()
 
+    /** No crash reports or funnel events from the demo: nothing leaves the phone. */
+    fun crashReports(app: Application) = Unit
+
     /** No nudity model in the demo: room photos are sent as picked. */
     fun photoCheck(app: Application): PhotoCheck = PhotoCheck.None
 

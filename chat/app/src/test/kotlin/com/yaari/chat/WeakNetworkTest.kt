@@ -134,7 +134,7 @@ class WeakNetworkTest {
     }
 
     @Test fun ruleErrorsStopTheSearchAtOnce() = runTest(dispatcher) {
-        for ((code, text) in listOf("banned" to R.string.err_banned, "premium_required" to R.string.err_premium, "not_signed_in" to R.string.err_network)) {
+        for ((code, text) in listOf("banned" to R.string.err_banned, "premium_required" to R.string.err_premium, "not_signed_in" to R.string.err_not_signed_in)) {
             val refused = Offline(fake) { BackendException(code) }
             val vm = signedIn(refused)
             vm.startMatching()

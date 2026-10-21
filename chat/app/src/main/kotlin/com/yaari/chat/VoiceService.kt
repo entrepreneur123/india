@@ -24,6 +24,8 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import com.yaari.chat.data.VoiceBus
 import com.yaari.chat.ui.AppViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 /**
  * Keeps a room's audio or music alive while the room is minimised or the app is in the background (as X Spaces does): a
@@ -120,6 +122,9 @@ class VoiceService : Service() {
 
         private var askedNotifications = false
 
+        /** What the notification shows; a change restarts it ([muted]: unmuting adds the microphone type). */
+        private data class Shown(val roomId: String, val title: String, val host: Boolean, val onStage: Boolean, val muted: Boolean)
+
         /**
          * Runs the service while I'm in a voice room and keeps its notification up to date. Asks once (per app run) for
          * the notification permission when a room opens (Android 13+); without it the room still works, the
@@ -128,14 +133,8 @@ class VoiceService : Service() {
         @Composable
         fun Follow(vm: AppViewModel) {
             val context = LocalContext.current
-            // Not lifecycle-bound: leaving from the notification must stop the service while the app is in the background.
             val s by vm.voice.state.collectAsState()
             val roomId = s?.roomId
-            val title = s?.room?.title.orEmpty()
-            val host = s?.isHost == true
-            val onStage = s?.me?.seat != null
-            // Unmuting (right after the microphone permission was granted) adds the microphone type.
-            val muted = s?.me?.muted != false
             val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
             LaunchedEffect(roomId) {
                 if (roomId == null || askedNotifications || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return@LaunchedEffect
@@ -145,9 +144,14 @@ class VoiceService : Service() {
             }
             // Only while there is something to keep alive: the room's audio (someone is on the stage) or its music
             // playing. A room nobody talks or plays music in is a chat room: no service, no notification.
-            val alive = s?.keepAlive == true
-            LaunchedEffect(roomId, alive, title, host, onStage, muted) {
-                if (roomId == null || !alive) stop(context) else start(context, title, host, onStage)
+            // Collected here rather than read in composition: Compose stops recomposing while the app is in the
+            // background, and leaving there (the notification's button, 30 minutes idle) must stop the service at once.
+            LaunchedEffect(vm) {
+                vm.voice.state
+                    .map { v -> v?.takeIf { it.keepAlive }?.let { Shown(it.roomId, it.room?.title.orEmpty(), it.isHost, it.me?.seat != null, it.me?.muted != false) } }
+                    .distinctUntilChanged()
+                    // Unmuting (right after the microphone permission was granted) adds the microphone type.
+                    .collect { n -> if (n == null) stop(context) else start(context, n.title, n.host, n.onStage) }
             }
             DisposableEffect(Unit) { onDispose { stop(context) } }
         }

@@ -17,6 +17,8 @@ import com.yaari.chat.data.MatchEvent
 import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.PhotoCheck
+import com.yaari.chat.data.Products
+import com.yaari.chat.data.Funnel
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.data.VoiceBus
@@ -138,7 +140,7 @@ class AppViewModel(
     private var dmJob: Job? = null
 
     /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
-    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock)
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock, visible = foreground)
 
     init {
         viewModelScope.launch {
@@ -231,6 +233,7 @@ class AppViewModel(
             "slow_down" -> R.string.err_slow_down
             "blocked" -> R.string.err_blocked
             "not_allowed" -> R.string.err_not_allowed
+            "not_signed_in" -> R.string.err_not_signed_in
             "video_not_configured" -> R.string.err_video_off
             "too_large" -> R.string.err_too_large
             "not_found" -> R.string.err_not_found
@@ -366,6 +369,7 @@ class AppViewModel(
             }
             applyEntitlements(backend.redeem(productId, token))
             redeemedTokens += token
+            if (productId == Products.PREMIUM) backend.track(Funnel.PLUS_PURCHASED)
             billing.finish(productId, token)
             _state.update { it.copy(paywall = null, notice = UiText(R.string.msg_purchase_done)) }
         }

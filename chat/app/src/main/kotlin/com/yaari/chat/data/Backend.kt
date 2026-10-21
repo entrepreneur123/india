@@ -74,6 +74,8 @@ interface Backend {
     suspend fun signOut()
     /** Permanently deletes the account, profile, posts, chats and media (Google Play requirement). */
     suspend fun deleteAccount()
+    /** A funnel step reached, for the team's diagnostics (log_events). Best effort, never throws; none in the demo. */
+    fun track(step: Funnel) {}
 
     /** One matching attempt. Null = queued; call again every couple of seconds. */
     suspend fun findMatch(target: Target): Match?

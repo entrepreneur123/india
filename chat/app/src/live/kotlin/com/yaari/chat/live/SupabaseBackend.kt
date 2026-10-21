@@ -13,6 +13,10 @@ import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.awaitVisible
 import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.ChangeOrder
+import com.yaari.chat.data.Funnel
+import com.yaari.chat.data.Telemetry
+import com.yaari.chat.data.roomRefusal
 import com.yaari.chat.data.Entitlements
 import com.yaari.chat.data.Match
 import com.yaari.chat.data.MatchEvent
@@ -123,6 +127,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -163,6 +168,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private val typingChannels = ConcurrentHashMap<String, RealtimeChannel>()
     /** The newest read position sent per match, so scrolling or re-syncs don't repeat the same request. */
     private val readSent = ConcurrentHashMap<String, Long>()
+    /** Fire-and-forget requests (voice-sync, diagnostics) that must not die with the screen that started them. */
+    private val background = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    /** Crash reports from the last run and the funnel steps (021: log_events). */
+    private val telemetry = Telemetry(reportsDir(app), VERSION, background, ::logEvents, AppForeground.visible).also { it.sendSaved() }
 
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
@@ -260,7 +269,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         client.postgrest["profiles"].insert(
             NewProfileRow(uid, p.name, p.gender.name.lowercase(), p.birthDate.toString(), p.city, p.bio, photo),
         )
-        myProfile() ?: throw BackendException("network")
+        (myProfile() ?: throw BackendException("network")).also { telemetry.track(Funnel.SIGNUP_DONE) }
     }
 
     override suspend fun entitlements(): Entitlements = call {
@@ -281,6 +290,16 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
 
     override suspend fun signOut() = call { client.auth.signOut() }
+
+    override fun track(step: Funnel) = telemetry.track(step)
+
+    /** One batch of diagnostics (a JSON array): log_events signed in, log_events_anon before (one shared daily cap). */
+    private suspend fun logEvents(batch: String) {
+        client.auth.awaitInitialization()
+        val events = json.parseToJsonElement(batch)
+        val fn = if (client.auth.currentUserOrNull() != null) "log_events" else "log_events_anon"
+        client.postgrest.rpc(fn, buildJsonObject { put("p_events", events) })
+    }
 
     override suspend fun deleteAccount() = call {
         client.functions.invoke("delete-account")
@@ -303,7 +322,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             val c = client.postgrest.rpc("match_card", buildJsonObject { put("p_match", id) }).decodeList<CardRow>().firstOrNull()
                 ?: throw BackendException("not_found")
             val photo = c.photoPath?.let { p -> runCatching { signed(p) }.getOrNull() }
-            Match(id, toProfile(c.copy(photoPath = null), emptyList()).copy(photoUri = photo))
+            Match(id, toProfile(c.copy(photoPath = null), emptyList()).copy(photoUri = photo)).also { telemetry.track(Funnel.MATCH_FOUND) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -508,6 +527,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val row = client.postgrest["messages"].insert(
             NewMessageRow(matchId, text, path, media?.kind?.name?.lowercase()),
         ) { select() }.decodeSingle<MessageRow>()
+        telemetry.track(Funnel.CHAT_MESSAGE_SENT)
         toMessage(row, uid)
     }
 
@@ -553,6 +573,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     override suspend fun videoToken(matchId: String): VideoToken = call {
         val t = client.functions.invoke("video-token", body = buildJsonObject { put("match_id", matchId) }).body<TokenRow>()
+        telemetry.track(Funnel.CALL_STARTED)
         VideoToken(t.url, t.token)
     }
 
@@ -660,25 +681,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     )
     @Serializable private data class CreatedVoiceRow(val id: String, val code: String)
     @Serializable private data class LeaderRow(val id: String, val name: String, @SerialName("photo_path") val photoPath: String? = null, val wins: Int = 0)
-    @Serializable private data class VoiceMusicRow(
-        val id: String, val videoId: String, val title: String = "", val by: String = "", val startedAt: Long, val pausedAt: Long? = null,
-    )
-    @Serializable private data class VoiceQueueRow(
-        val id: String, val videoId: String, val title: String = "", val by: String = "", val votes: Int = 0, val voted: Boolean = false,
-    )
-    @Serializable private data class VoiceMemberRow(
-        val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null, val bio: String? = null,
-        @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
-        val role: String, val seat: Int? = null, val muted: Boolean = true, val hand: Boolean = false,
-    )
-    /** voice_state(): the room, the people present with their cards, and the server clock (ms). */
-    @Serializable private data class VoiceStateRow(
-        val id: String, val title: String, val category: String, val mode: String, val host: String, val rev: Long, val now: Long,
-        val locked: List<Int> = emptyList(), val music: VoiceMusicRow? = null, val queue: List<VoiceQueueRow> = emptyList(),
-        val members: List<VoiceMemberRow> = emptyList(),
-        val announcement: String? = null, val max: Int = VoiceRoom.DEFAULT_MEMBERS, val gender: String? = null,
-        val minAge: Int = VoiceRoom.MIN_AGE, val maxAge: Int = VoiceRoom.MAX_AGE, val private: Boolean = false, val code: String? = null,
-    )
     @Serializable private data class VoiceMessageRow(
         val id: Long, @SerialName("room_id") val roomId: String, val sender: String, val kind: String, val body: String? = null,
         val payload: JsonObject? = null, @SerialName("media_path") val mediaPath: String? = null, @SerialName("sender_name") val senderName: String,
@@ -687,16 +689,18 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("created_at") val createdAt: String,
     )
     @Serializable private data class VoiceRevRow(val rev: Long = 0, @SerialName("ended_at") val endedAt: String? = null)
+    @Serializable private data class VoiceSeqRow(val seq: Long = 0)
 
-    /** What the voice methods need from the room being followed ([voiceSession]). */
-    private class VoiceLive(val refresh: () -> Unit, val mic: suspend (Boolean) -> Unit) {
+    /**
+     * What the voice methods need from the room being followed ([voiceSession]). [acted]: after my own action, whose
+     * change arrives over Broadcast; the state is fetched only while that connection is down.
+     */
+    private class VoiceLive(val refresh: () -> Unit, val acted: () -> Unit, val mic: suspend (Boolean) -> Unit) {
         @Volatile var room: VoiceRoom? = null
     }
 
     private val voiceLive = ConcurrentHashMap<String, VoiceLive>()
     private val serverClock = ServerClock()
-    /** Fire-and-forget requests (voice-sync) that must not die with the screen that started them. */
-    private val background = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override suspend fun voiceRooms(): List<VoiceRoomSummary> = call {
         val rows = client.postgrest.rpc("voice_list2").decodeList<VoiceListRow>()
@@ -729,6 +733,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             put("p_private", r.isPrivate)
             put("p_announcement", room.announcement)
         }).decodeAs<CreatedVoiceRow>()
+        telemetry.track(Funnel.ROOM_CREATED)
         CreatedVoiceRoom(row.id, row.code)
     }
 
@@ -743,7 +748,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             put("p_title", title)
             put("p_announcement", announcement)
         })
-        voiceLive[roomId]?.refresh?.invoke()
+        voiceLive[roomId]?.acted?.invoke()
         Unit
     }
 
@@ -860,7 +865,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             VoiceAction.Resume -> rpc("voice_resume")
             is VoiceAction.Skip -> rpc("voice_skip") { (action.trackId ?: live?.room?.track?.id)?.let { put("p_current", it) } }
         }
-        live?.refresh?.invoke() // don't wait for the realtime round trip
+        live?.acted?.invoke() // its change arrives over Broadcast; fetched only while that is down
     }
 
     /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host re-checks every minute. */
@@ -876,6 +881,15 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
     }
 
+    /**
+     * Follows a voice room. Once I'm in: one full state, then every change itself over a private Broadcast topic
+     * (020: a member, the room's settings and music, a vote, each numbered), applied here; the full state is fetched
+     * again only on a gap in the numbers, a reconnect, or when the heartbeat says the room is further on. Without
+     * Broadcast (its channel can't join) the room's `rev` is compared instead, as before 020. Chat lines and
+     * reactions come over realtime. A heartbeat every 20 s, also in the background (the foreground service keeps the
+     * room alive there); a re-sync every 45 s while realtime is up, every 10 s while it isn't, only while on screen.
+     * Any refusal from the server about my being here ends the session with its reason ([roomRefusal]).
+     */
     override fun voiceSession(roomId: String): Flow<VoiceEvent> = channelFlow {
         val me = uid
         var rev = -1L
@@ -889,7 +903,17 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         /** Someone is on the stage: only then is there audio (voice_grant refuses a token before). */
         var stage = false
         val refresh = Channel<Unit>(Channel.CONFLATED)
+        /** Changes come in bursts (someone joins: a card and a line): one render, one photo-signing request. */
+        val render = Channel<Unit>(Channel.CONFLATED)
         val permissionsChanged = Channel<Unit>(Channel.CONFLATED)
+        // ---- the last full state with every change since applied to it ----
+        var base: VoiceStateRow? = null
+        val order = ChangeOrder<VoiceChange> { it.seq }
+        var fetching = false
+        var shown = 0
+        var behind: Job? = null
+        var broadcastUp = false
+        var linesUp = false
         var retryAudio: () -> Unit = {}
         /** The stage emptied: the room goes on without audio until someone takes a seat. */
         var stopAudio: () -> Unit = {}
@@ -902,11 +926,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             audio = null
             send(e)
         }
+        // Anything the server says about my being here (the heartbeat brings me back after a gap, and the room may
+        // have filled, banned me, ...) ends the session with its reason, instead of a room nobody else sees me in.
         suspend fun failed(e: Throwable) {
-            when ((e as? BackendException)?.code) {
-                "room_closed", "not_found" -> finish(VoiceEvent.Ended)
-                "voice_removed" -> finish(VoiceEvent.Removed)
-            }
+            roomRefusal((e as? BackendException)?.code)?.let { finish(it) }
         }
 
         val audioEvents = object : VoiceAudio.Events {
@@ -967,11 +990,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             }
         }
 
-        suspend fun apply(state: VoiceStateRow, sent: Long) {
-            serverClock.note(state.now, sent, System.currentTimeMillis())
+        suspend fun show(state: VoiceStateRow) {
+            val n = ++shown
             val room = toVoiceRoom(state, me)
-            if (over) return
-            rev = maxOf(rev, state.rev)
+            if (over || n != shown) return // a newer state was shown meanwhile
             voiceLive[roomId]?.room = room
             val m = room.me
             val before = mine
@@ -989,15 +1011,41 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             send(VoiceEvent.RoomChanged(room))
         }
 
+        /** A full state: the changes that arrived while it was on its way go on top of it. */
+        suspend fun apply(state: VoiceStateRow, sent: Long) {
+            serverClock.note(state.now, sent, System.currentTimeMillis())
+            rev = maxOf(rev, state.rev)
+            val (later, gap) = order.base(state.seq)
+            val s = later.fold(state) { acc, c -> acc.apply(c, me) }
+            base = s
+            if (gap) refresh.trySend(Unit)
+            show(s)
+        }
+
         suspend fun fetchState() {
             if (over) return
             try {
                 val sent = System.currentTimeMillis()
-                apply(call { client.postgrest.rpc("voice_state", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }, sent)
+                fetching = true
+                val state = try {
+                    call { client.postgrest.rpc("voice_state", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }
+                } finally {
+                    fetching = false
+                }
+                apply(state, sent)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 failed(e)
+            }
+        }
+
+        /** The server's number for the room (heartbeat, re-sync): still behind it a moment later, a change was missed. */
+        fun serverAt(n: Long) {
+            if (!order.behind(n) || behind?.isActive == true) return
+            behind = launch {
+                delay(ChangeOrder.BEHIND_GRACE_MS)
+                if (order.behind(n)) refresh.trySend(Unit)
             }
         }
 
@@ -1025,7 +1073,48 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             }
         }
 
-        val live = VoiceLive(refresh = { refresh.trySend(Unit) }, mic = { on -> mic(on) })
+        val live = VoiceLive(
+            refresh = { refresh.trySend(Unit) },
+            acted = { if (!broadcastUp) refresh.trySend(Unit) },
+            mic = { on -> mic(on) },
+        )
+
+        suspend fun heartbeat() {
+            if (over) return
+            try {
+                call { client.postgrest.rpc("voice_heartbeat2", buildJsonObject { put("p_room", roomId) }).data.trim().toLongOrNull() }?.let(::serverAt)
+                // The host re-checks LiveKit against the room every minute (anyone a sync missed).
+                if (++beats % 3 == 0 && live.room?.hostId == me) voiceSync(roomId)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                failed(e)
+            }
+        }
+
+        suspend fun onChange(c: VoiceChange) {
+            if (over) return
+            if (c is VoiceChange.Room && c.room.ended) return finish(VoiceEvent.Ended)
+            val b = base
+            when (order.offer(c, ready = b != null && !fetching)) {
+                ChangeOrder.Step.HOLD, ChangeOrder.Step.SKIP -> Unit
+                ChangeOrder.Step.REFETCH -> refresh.trySend(Unit) // missed one
+                ChangeOrder.Step.APPLY_RECHECK -> {
+                    base = b!!.apply(c, me)
+                    render.trySend(Unit)
+                    refresh.trySend(Unit)
+                }
+                ChangeOrder.Step.APPLY -> {
+                    // Handed the room: the code is the host's only, the full state has it.
+                    if (c is VoiceChange.Room && c.room.host == me && b!!.host != me) refresh.trySend(Unit)
+                    // Taken out of the room myself (removed, or dropped while away): a heartbeat brings me back in, or
+                    // says why not (voice_removed, room_full, ...).
+                    if (c is VoiceChange.Gone && c.id == me) launch { heartbeat() }
+                    base = b!!.apply(c, me)
+                    render.trySend(Unit)
+                }
+            }
+        }
 
         stopAudio = {
             audioJob?.cancel()
@@ -1041,16 +1130,15 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         retryAudio = {
             if (stage) launch {
                 // A weak network gets a few quick tries, then one every 30 s; the room itself (chat, seats) carries on.
-                delay(minOf(30_000L, 2_000L shl minOf(audioTries++, 4)))
+                delay(ChangeOrder.audioRetryMs(audioTries++))
                 connectAudio()
             }
         }
 
         val channel = client.channel("voice-$roomId-${UUID.randomUUID()}")
-        val roomChanges = channel.postgresChangeFlow<PostgresAction.Update>("public") {
-            table = "voice_rooms"
-            filter("id", FilterOperator.EQ, roomId)
-        }
+        // The changes: a private topic (RLS on realtime.messages: people who entered the room), joined once I'm in.
+        val changes = client.channel("voice:$roomId") { isPrivate = true }
+        val changeEvents = changes.broadcastFlow<JsonObject>("v")
         val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
             table = "voice_messages"
             filter("room_id", FilterOperator.EQ, roomId)
@@ -1059,12 +1147,14 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             // Enter first: a refusal (ended, removed, blocked) fails the flow before anything else starts.
             val sent = System.currentTimeMillis()
             val state = call { client.postgrest.rpc("join_voice", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }
+            telemetry.track(Funnel.ROOM_JOINED)
             apply(state, sent)
 
+            launch { changeEvents.collect { o -> VoiceChange.parse(json, o)?.let { onChange(it) } } }
             launch {
-                roomChanges.collect { a ->
-                    val row = runCatching { a.decodeRecord<VoiceRevRow>() }.getOrNull() ?: return@collect
-                    if (row.endedAt != null) finish(VoiceEvent.Ended) else if (row.rev != rev) refresh.trySend(Unit)
+                for (x in render) {
+                    delay(RENDER_MS)
+                    base?.let { show(it) }
                 }
             }
             launch {
@@ -1092,28 +1182,45 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             launch {
                 while (true) {
                     delay(HEARTBEAT_MS)
-                    try {
-                        val now = call { client.postgrest.rpc("voice_heartbeat", buildJsonObject { put("p_room", roomId) }).data.trim().toLongOrNull() }
-                        if (now != null && now != rev) refresh.trySend(Unit)
-                        // The host re-checks LiveKit against the room every minute (anyone a sync missed).
-                        if (++beats % 3 == 0 && live.room?.hostId == me) voiceSync(roomId)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: Exception) {
-                        failed(e)
-                    }
+                    heartbeat()
                 }
             }
-            // Re-sync after a dropped socket and every 10 s while on screen: missed changes and lines.
+            // Re-sync when a connection comes up or goes down, and every 45 s (realtime up) or 10 s (not) while on
+            // screen: missed changes and lines.
             val resync = Channel<Unit>(Channel.CONFLATED)
-            launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
+            launch {
+                var wasUp = false
+                channel.joined().collect { up ->
+                    linesUp = up
+                    if (up || wasUp) resync.trySend(Unit)
+                    if (up) wasUp = true
+                }
+            }
+            launch {
+                var wasUp = false
+                changes.joined().collect { up ->
+                    broadcastUp = up
+                    // Back after a drop: changes may have been missed while away.
+                    if (up && wasUp) refresh.trySend(Unit)
+                    if (up || wasUp) resync.trySend(Unit)
+                    if (up) wasUp = true
+                }
+            }
             channel.subscribe()
+            // A topic left over from a session that is still closing would take this one's messages with it.
+            client.realtime.subscriptions[changes.topic]?.takeIf { it !== changes }?.let { runCatching { client.realtime.removeChannel(it) } }
+            changes.subscribe()
             while (true) {
-                withTimeoutOrNull(RESYNC_MS) { resync.receive() }
+                withTimeoutOrNull(ChangeOrder.resyncMs(broadcastUp && linesUp)) { resync.receive() }
                 AppForeground.visible.awaitVisible()
                 runCatching {
-                    val row = client.postgrest["voice_rooms"].select { filter { eq("id", roomId) } }.decodeSingleOrNull<VoiceRevRow>()
-                    if (row?.endedAt != null) finish(VoiceEvent.Ended) else if (row != null && row.rev != rev) refresh.trySend(Unit)
+                    if (broadcastUp) {
+                        client.postgrest["voice_seq"].select { filter { eq("room_id", roomId) } }.decodeSingleOrNull<VoiceSeqRow>()?.let { serverAt(it.seq) }
+                    } else {
+                        // Without Broadcast: the room's rev, as before 020 (the server still bumps it on every change).
+                        val row = client.postgrest["voice_rooms"].select { filter { eq("id", roomId) } }.decodeSingleOrNull<VoiceRevRow>()
+                        if (row?.endedAt != null) finish(VoiceEvent.Ended) else if (row != null && row.rev != rev) refresh.trySend(Unit)
+                    }
                     if (newest > 0) voiceLinesAfter(roomId, newest).forEach { line ->
                         newest = maxOf(newest, line.id)
                         send(VoiceEvent.Line(line))
@@ -1126,6 +1233,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 if (voiceLive[roomId] === live) voiceLive.remove(roomId)
                 audio?.disconnect()
                 runCatching { client.realtime.removeChannel(channel) }
+                // Only while it is still this session's: a newer session for the same room may hold the topic now.
+                if (client.realtime.subscriptions[changes.topic] === changes) runCatching { client.realtime.removeChannel(changes) }
             }
         }
     }
@@ -1226,7 +1335,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             LudoAction.Open -> client.postgrest.rpc("ludo_open", buildJsonObject { put("p_room", roomId) }).data.trim()
             is LudoAction.Join -> rpc("ludo_join") { put("p_seat", action.seat) }
             LudoAction.Leave -> rpc("ludo_leave")
-            LudoAction.Start -> rpc("ludo_start")
+            LudoAction.Start -> rpc("ludo_start").also { telemetry.track(Funnel.LUDO_STARTED) }
             LudoAction.Close -> rpc("ludo_close")
             is LudoAction.Roll -> rpc("ludo_roll") { put("p_version", action.version) }
             is LudoAction.Timeout -> rpc("ludo_timeout") { put("p_version", action.version) }
@@ -1361,6 +1470,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
 
     companion object {
+        /** The app version as the diagnostics show it (the web sends "web-..."). */
+        const val VERSION = "android-" + BuildConfig.VERSION_NAME
+        /** Crash reports waiting for the next launch. */
+        fun reportsDir(app: Application) = File(app.filesDir, "reports")
+
         private const val BUCKET = "media"
         /** The chat's lines (reactions come over realtime only). */
         private val LINE_KINDS = listOf("text", "system", "icebreaker", "photo")
@@ -1369,11 +1483,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val REQUEST_TIMEOUT_MS = 15_000L
         private const val UPLOAD_TIMEOUT_MS = 120_000L
         private const val RESYNC_MS = 10_000L
+        private const val RENDER_MS = 60L
         private const val REJOIN_SETTLE_MS = 500L
         private const val HEARTBEAT_MS = 20_000L
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
-            "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
+            "not_signed_in", "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",
             "voice_removed", "mic_denied", "queue_full",

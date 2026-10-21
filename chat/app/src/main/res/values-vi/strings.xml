@@ -51,6 +51,7 @@
     <string name="err_slow_down">Bạn gửi nhanh quá</string>
     <string name="err_blocked">Bạn không thể nhắn tin cho người này</string>
     <string name="err_not_allowed">Hiện chưa làm được việc này</string>
+    <string name="err_not_signed_in">Vui lòng đăng nhập lại</string>
     <string name="err_video_off">Gọi video chưa khả dụng</string>
     <string name="err_too_large">Video quá lớn (tối đa 25 MB)</string>
     <string name="err_network">Lỗi mạng. Vui lòng thử lại.</string>
@@ -300,6 +301,7 @@
     <string name="voice_ended">Chủ phòng đã kết thúc phòng</string>
     <string name="voice_ended_by_you">Đã kết thúc phòng</string>
     <string name="voice_removed">Bạn đã bị mời ra khỏi phòng</string>
+    <string name="voice_idle_left">Bạn đã rời phòng sau 30 phút chạy nền</string>
     <string name="voice_joining">Đang vào…</string>
     <string name="voice_safety">Hãy tử tế. Phòng không ghi âm. Chạm vào một người để báo cáo.</string>
     <string name="voice_stage">Sân khấu</string>
