@@ -27,6 +27,9 @@ begin
   -- 021: 앱 오류·이벤트 90일, 하루 사용량 카운터 2일
   delete from public.client_events e where e.created_at < now() - interval '90 days';
   delete from public.client_event_quota q where q.day < current_date - 2;
+  -- 023: 읽은 알림 90일, 안 읽은 알림 180일, 안 쓰는 휴대폰 토큰 30일
+  delete from public.notifications n where n.read_at < now() - interval '90 days' or n.created_at < now() - interval '180 days';
+  delete from public.device_tokens d where not d.active and d.updated_at < now() - interval '30 days';
 end $$;
 revoke execute on function public.purge_old_data() from public, anon, authenticated;
 
