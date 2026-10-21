@@ -13,7 +13,7 @@ import datetime as dt
 import html
 import os
 
-from . import eligibility
+from . import eligibility, sources
 
 E = html.escape
 EXEMPT = {"female": "women", "PwBD": "persons with benchmark disabilities", "ESM": "ex-servicemen"}
@@ -44,16 +44,12 @@ def _status(rules: dict, today: dt.date) -> str:
             "closed": f"Applications closed on {_day(d['applyTo'])}"}[s]
 
 
-# Who publishes an exam family's notices (exam_families.json "source"; default ssc).
-SOURCES = {
-    "ssc": ("SSC", "Staff Selection Commission", "https://ssc.gov.in"),
-    "upprpb": ("UPPRPB", "UP Police Recruitment & Promotion Board", "https://uppbpb.gov.in"),
-    "hssc": ("HSSC", "Haryana Staff Selection Commission", "https://hssc.gov.in"),
-}
+# Who publishes an exam family's notices (exam_families.json "source"; default ssc): sources.py.
+SOURCES = {k: (s["short"], s["name"], s["site"]) for k, s in sources.SOURCES.items()}
 
 
 def _gov(url: str) -> str | None:
-    return url if any(url.startswith(home + "/") for _, _, home in SOURCES.values()) else None
+    return url if sources.official(url) else None
 
 
 def _faq(short: str, fam: dict, r: dict) -> str:

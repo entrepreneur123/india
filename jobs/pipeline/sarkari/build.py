@@ -40,7 +40,7 @@ import re
 import shutil
 import sys
 
-from . import classify, cutoffs, eligibility, hssc, http, results_index, sitegen, ssc, upprpb
+from . import classify, cutoffs, eligibility, hssc, http, listboards, results_index, sitegen, sources, ssc, upprpb
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -149,7 +149,7 @@ def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[
     return out[:NEW_MAX_ITEMS]
 
 
-BOARDS = (upprpb, hssc)  # besides SSC; each has SOURCE, NOTICE_PAGE and fetch(get_text, now, days, warn)
+BOARDS = (upprpb, hssc, *listboards.ALL)  # besides SSC; each has SOURCE, NOTICE_PAGE and fetch(get_text, now, days, warn)
 
 
 def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[dict],
@@ -245,7 +245,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
-    _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
+    _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"], "sources": sources.SOURCES})
     _write_json(_v1(out, "site.json"), site_info(channel, *push))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())

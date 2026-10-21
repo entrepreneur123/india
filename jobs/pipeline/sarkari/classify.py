@@ -58,8 +58,8 @@ _FAMILY = {
     "STENOLDC": "LDCE", "DOPTJSA": "LDCE", "DOPTSSA": "LDCE", "DEPARTMENTAL EXAMS": "LDCE",
     "RHQLDK": "RHQ", "OTHERS": None,
 }
-# Other boards' families (UP Police board: upprpb.py; Haryana SSC: hssc.py), never read from SSC headlines.
-EXAM_FAMILIES = tuple(code for code, _ in _EXAM_RULES) + ("UPPC", "UPSI", "UPHG", "UPP", "HSSC")
+# Other boards' families (upprpb.py, hssc.py, listboards.py), never read from SSC headlines.
+EXAM_FAMILIES = tuple(code for code, _ in _EXAM_RULES) + ("UPPC", "UPSI", "UPHG", "UPP", "HSSC", "CSBC", "BPSSC", "ISRO", "ONGC")
 
 
 def family_of(exam_code: str) -> str | None:

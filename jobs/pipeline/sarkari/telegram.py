@@ -15,13 +15,14 @@ import os
 import urllib.parse
 import urllib.request
 
+from . import sources
+
 STATE = os.path.join("jobs", "telegram-state.json")
 LABEL = {
     "recruitment": "New job", "amendment": "Change", "result": "Result", "answer_key": "Answer key",
     "admit_card": "Admit card", "vacancy": "Vacancy", "schedule": "Exam dates", "notice": "Notice",
 }
 SKIP_EXAMS = {"LDCE"}  # departmental exams: only for serving employees
-SOURCE_SITE = {"ssc": "ssc.gov.in", "upprpb": "uppbpb.gov.in", "hssc": "hssc.gov.in"}
 
 
 def text(item: dict, site_url: str, families: dict | None = None) -> str:
@@ -34,8 +35,10 @@ def text(item: dict, site_url: str, families: dict | None = None) -> str:
     lines = [head, item["title"]]
     if item["files"]:
         lines.append(f"Official PDF: {item['files'][0]['url']}")
+    elif item.get("link") and sources.official(item["link"]):
+        lines.append(f"Official page: {item['link']}")
     lines.append(f"All updates + eligibility check: {site_url}")
-    lines.append(f"(Not a government channel. Source: {SOURCE_SITE.get(item.get('source', 'ssc'), 'ssc.gov.in')})")
+    lines.append(f"(Not a government channel. Source: {sources.host(item.get('source', 'ssc'))})")
     return "\n".join(lines)
 
 

@@ -145,11 +145,17 @@ def test_guide_is_published_and_checked(tmp_path, monkeypatch):
 UP_PAGE = open(os.path.join(os.path.dirname(__file__), "fixtures", "upprpb_notice.html"), encoding="utf-8").read()
 
 
+LIST_PAGES = {b.NOTICE_PAGE: os.path.join(os.path.dirname(__file__), "fixtures", f"{b.SOURCE}.html")
+              for b in build.listboards.ALL}
+
+
 def boards(url):
-    """The other boards' saved pages: UP Police (HTML) and HSSC (JSON)."""
+    """The other boards' saved pages: UP Police (HTML), HSSC (JSON), the list boards (HTML)."""
     if url.startswith("https://hssc.gov.in/"):
         from test_hssc import fake
         return fake()(url)
+    if url in LIST_PAGES:
+        return open(LIST_PAGES[url], encoding="utf-8").read()
     return UP_PAGE
 
 
@@ -159,7 +165,7 @@ def test_up_police_board_joins_the_feed_and_a_failure_keeps_its_old_items(tmp_pa
     feed = _read(out, "feed.json")["items"]
     up = [i for i in feed if i["source"] == "upprpb"]
     assert len(up) == 27 and all(i["dateOnly"] for i in up)
-    assert {i["source"] for i in feed} == {"ssc", "upprpb", "hssc"}
+    assert {i["source"] for i in feed} == {"ssc", "upprpb", "hssc", "csbc", "bpssc", "isro", "ongc"}
     assert [i["publishedAt"] for i in feed] == sorted((i["publishedAt"] for i in feed), reverse=True)
     assert _read(out, "status.json")["failedSources"] == []
     assert os.path.exists(os.path.join(out, "jobs", "exam", "uppc", "index.html"))
@@ -168,7 +174,7 @@ def test_up_police_board_joins_the_feed_and_a_failure_keeps_its_old_items(tmp_pa
         raise build.http.FetchError("timed out")
     assert build.run(out, FakeSSC(), NOW + dt.timedelta(hours=4), get_text=down) == 0  # SSC still published
     assert [i for i in _read(out, "feed.json")["items"] if i["source"] == "upprpb"] == up
-    assert _read(out, "status.json")["failedSources"] == ["upprpb", "hssc"]
+    assert _read(out, "status.json")["failedSources"] == ["upprpb", "hssc", "csbc", "bpssc", "isro", "ongc"]
 
     # Kept items still age out of the window.
     build.run(out, FakeSSC(), NOW + dt.timedelta(days=60), get_text=down)
