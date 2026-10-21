@@ -1,0 +1,39 @@
+name: jobs-watchdog
+
+# Fails (and GitHub e-mails the owner) when the published job data has not had a full check for
+# 7 hours: the India server is down, or the publish workflow stopped. A full check runs at least
+# every 3 hours, so 7 hours is two missed checks plus slack.
+
+on:
+  schedule:
+    - cron: "37 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: vars.JOBS_PUBLISH == 'true' || vars.JOBS_RUNNER == 'india'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Age of the last full check
+        env:
+          SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+        run: |
+          status=$(curl -fsS --retry 3 "$SITE_URL/jobs/v1/status.json")
+          echo "$status"
+          python3 - "$status" <<'EOF'
+          import datetime as dt, json, sys
+          s = json.loads(sys.argv[1])
+          age = dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(s["fullCheckAt"])
+          print(f"last full check {age} ago; failed sources: {s.get('failedSources') or 'none'}")
+          if age > dt.timedelta(hours=7):
+              print(f"::error::no full check for {age}: is the India server (or jobs-publish) running?")
+              sys.exit(1)
+          if s.get("failedSources"):
+              print(f"::warning::sources failing: {s['failedSources']}")
+          for r in s.get("rulesNeeded", []):
+              print(f"::warning::no eligibility rules yet for {r['exam']} {r['examYear']}: {r['title']} ({r['notice']})")
+          EOF

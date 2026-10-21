@@ -1,0 +1,18 @@
+[Unit]
+Description=Sarkari job alerts: push subscription server (sarkari.push), behind Caddy
+After=network-online.target
+
+[Service]
+User=sarkari
+EnvironmentFile=/etc/sarkari.env
+WorkingDirectory=/opt/sarkari/code/jobs/pipeline
+ExecStart=/opt/sarkari/venv/bin/python -m sarkari.push --db /opt/sarkari/push/subscriptions.db --origin ${SITE_ORIGIN}
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/sarkari/push
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

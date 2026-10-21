@@ -1,0 +1,2415 @@
+{
+"statusCode": "200",
+"statusMessage": "Document Found!",
+"isCache": true,
+"data": [
+{
+"id": "4c7ljfaennt7oqjhq34mu",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026– Shortlisting of candidates to appear in Physical Efficiency Test (PET)/Physical Standard Test (PST)",
+"examId": "ctgd1yln49o2026",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-12T13:17:07.360Z",
+"attachments": [
+{
+"id": "1vkh91tvw612x3imor11o",
+"attIdtyfrId": "4c7ljfaennt7oqjhq34mu",
+"fileName": "writeup_12102026.pdf",
+"type": "application/pdf",
+"size": 1262226,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_12102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "bbw0ks6t0zkinggae5ywv",
+"headline": "Phase-XIV/2026/Selection Posts Examination - Uploading of Candidate’s Response Sheet(s) along with Tentative Answer Keys and inviting challenges thereon",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-09T10:34:40.589Z",
+"attachments": [
+{
+"id": "649aetdydm2ve1qihurg1",
+"attIdtyfrId": "bbw0ks6t0zkinggae5ywv",
+"fileName": "writeup_rhq.pdf",
+"type": "application/pdf",
+"size": 403747,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_rhq.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "psw9qwjtvvz9qzyxzc5yl",
+"headline": "Tentative Vacancies of Junior Engineer Examination, 2026.",
+"examId": "bxtirqg6pmwje26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-08T07:43:05.605Z",
+"attachments": [
+{
+"id": "cczbzwn3i7nq8b04iz5vs",
+"attIdtyfrId": "psw9qwjtvvz9qzyxzc5yl",
+"fileName": "JE_Tentative_Vacancy_08102026.pdf",
+"type": "application/pdf",
+"size": 62755,
+"path": "uploads\\masterData\\NoticeBoards\\JE_Tentative_Vacancy_08102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "wtu0oigqapytu2kei0kp7",
+"headline": "Stenographer Grade 'C' and 'D' Examination, 2025: Uploading Marks of CBE and Skill Test",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-07T13:44:58.738Z",
+"attachments": [
+{
+"id": "6m1bsv0zxb1zyk4z6xyfg",
+"attIdtyfrId": "wtu0oigqapytu2kei0kp7",
+"fileName": "Final_Marks_Writeup_07102026.pdf",
+"type": "application/pdf",
+"size": 437547,
+"path": "uploads\\masterData\\NoticeBoards\\Final_Marks_Writeup_07102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "032axg8peetdg1f0f8bs1",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025: Declaration of Final Result",
+"examId": "s40d16naqchsl25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-07T13:40:47.800Z",
+"attachments": [
+{
+"id": "qslr7pbsm804h4zhi3vdj",
+"attIdtyfrId": "032axg8peetdg1f0f8bs1",
+"fileName": "writeup_final_chsl_2025_07102026.pdf",
+"type": "application/pdf",
+"size": 663249,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_final_chsl_2025_07102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "4kl4na9q0to0q2s07qgcx",
+"headline": "Multi Tasking (Non-Technical) Staff, and Havaldar (CBIC and CBN) Examination, 2025:  Declaration of additional result of Computer Based Examination to shortlist candidates for PET/ PST for the post of Havaldar.",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-07T07:38:43.958Z",
+"attachments": [
+{
+"id": "bmz6cikayjaavtgjugdgp",
+"attIdtyfrId": "4kl4na9q0to0q2s07qgcx",
+"fileName": "writeup_07102026.pdf",
+"type": "application/pdf",
+"size": 291587,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_07102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "9paboeatqo0fvg36xpylu",
+"headline": "NOTIFICATION FOR RECRUITMENT OF ENROLLED PERSONS IN THE INDIAN COAST GUARD THROUGH \r\nCOAST GUARD ENROLLED PERSONS TEST (CGEPT) –BATCHES 01/2027 and 02/2027",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-06T12:44:50.498Z",
+"attachments": [
+{
+"id": "gm4vkk8sxl1v0hr0cnizg",
+"attIdtyfrId": "9paboeatqo0fvg36xpylu",
+"fileName": "advertisement_06102026.pdf",
+"type": "application/pdf",
+"size": 927193,
+"path": "uploads\\masterData\\NoticeBoards\\advertisement_06102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "iy1ohvozsq9qq5l34roy4",
+"headline": "Important Notice - Schedule of Examinations",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-01T12:43:07.517Z",
+"attachments": [
+{
+"id": "zeogtikiidt08qusrx9w5",
+"attIdtyfrId": "iy1ohvozsq9qq5l34roy4",
+"fileName": "Notice_01102026.pdf",
+"type": "application/pdf",
+"size": 489064,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_01102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ov25zsduz2sgmcdn6egrt",
+"headline": "Cancellation Notice for the post of  'Junior Technical Officer', Post Code KK13526, advertised under Selection Posts Examination, Phase-XIV/2026",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-01T08:48:06.178Z",
+"attachments": [
+{
+"id": "5y6jvc1lmtf6nuijvm238",
+"attIdtyfrId": "ov25zsduz2sgmcdn6egrt",
+"fileName": "Notice_KK13526_01102026.pdf",
+"type": "application/pdf",
+"size": 594240,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_KK13526_01102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "4o3qezyhjhk7550mpr6lm",
+"headline": "Cancellation Notice for the post of  'Agriculture Assistant', Post Code KK11426, advertised under Selection Posts Examination, Phase-XIV/2026",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-10-01T08:47:09.180Z",
+"attachments": [
+{
+"id": "r01gv9vqcxrj4hqgcvsv2",
+"attIdtyfrId": "4o3qezyhjhk7550mpr6lm",
+"fileName": "Notice_KK11426_01102026.pdf",
+"type": "application/pdf",
+"size": 593274,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_KK11426_01102026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "kdskp1am38v97158ev52g",
+"headline": "Important Notice- Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-25T11:01:09.946Z",
+"attachments": [
+{
+"id": "qpkb83dp0g88zgc12cgrr",
+"attIdtyfrId": "kdskp1am38v97158ev52g",
+"fileName": "notice_25092026.pdf",
+"type": "application/pdf",
+"size": 88228,
+"path": "uploads\\masterData\\NoticeBoards\\notice_25092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "qsoz5f2593gueisi9550p",
+"headline": "Tentative Vacancy of Combined Graduate Level Examination, 2026 as on 24.09.2026",
+"examId": "w2sxxhjkshdcgl26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-24T11:53:36.250Z",
+"attachments": [
+{
+"id": "lyjhs4jg3taztzye3b9wf",
+"attIdtyfrId": "qsoz5f2593gueisi9550p",
+"fileName": "Tentative_vacancy_CGLE2026_24092026.pdf",
+"type": "application/pdf",
+"size": 4913727,
+"path": "uploads\\masterData\\NoticeBoards\\Tentative_vacancy_CGLE2026_24092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "q545vtli5t730h90p62b2",
+"headline": "Stenographer Grade C and D Examination 2026 : Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s) and inviting challenges thereon",
+"examId": "steno0svofmeb26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-23T17:00:52.733Z",
+"attachments": [
+{
+"id": "g46mfiaxuvzqp3rslgzzt",
+"attIdtyfrId": "q545vtli5t730h90p62b2",
+"fileName": "Approved_WriteUp_23092026.pdf",
+"type": "application/pdf",
+"size": 27113,
+"path": "uploads\\masterData\\NoticeBoards\\Approved_WriteUp_23092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rpuu8bds277opkjvohk1u",
+"headline": "Stenographer Grade C and D Examination 2026, Addendum: Mandatory use of Mangal Font in Hindi Typing/Skill Test for Stenographer Grade ‘C’ and ‘D’ Examination-2026",
+"examId": "steno0svofmeb26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-23T15:06:10.260Z",
+"attachments": [
+{
+"id": "txchrwzp1nf7l0hparnyg",
+"attIdtyfrId": "rpuu8bds277opkjvohk1u",
+"fileName": "addendum_23092026.pdf",
+"type": "application/pdf",
+"size": 56392,
+"path": "uploads\\masterData\\NoticeBoards\\addendum_23092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "2hl504dhub0ozf4znws8g",
+"headline": "Information regarding the city of examination and Admission Certificate for the candidates of Combined Graduate level Examination, 2026 (Tier-I)",
+"examId": "w2sxxhjkshdcgl26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-21T18:12:30.985Z",
+"attachments": [
+{
+"id": "h4l4jg3wyflibfq23hex3",
+"attIdtyfrId": "2hl504dhub0ozf4znws8g",
+"fileName": "cgle_2026_city_live_21092026.pdf",
+"type": "application/pdf",
+"size": 24949,
+"path": "uploads\\masterData\\NoticeBoards\\cgle_2026_city_live_21092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "qu4a0e5nm68m2ackh5sjj",
+"headline": "Combined Hindi Translators Examination, 2026: Uploading of Tentative Answer Key(s) along with Candidates’ Response Sheet(s)",
+"examId": "nri55c0igljht26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-21T17:24:27.893Z",
+"attachments": [
+{
+"id": "3wg9hiqtkxqfuk5fyfs2z",
+"attIdtyfrId": "qu4a0e5nm68m2ackh5sjj",
+"fileName": "writeup_21092026.pdf",
+"type": "application/pdf",
+"size": 117542,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_21092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "wdh6atwix315qq5kwjdos",
+"headline": "Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025 : Uploading of Final Answer Key and Final Marks",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-17T12:42:07.766Z",
+"attachments": [
+{
+"id": "is5nvcbmkwt0aszc45z9z",
+"attIdtyfrId": "wdh6atwix315qq5kwjdos",
+"fileName": "writeup_finalanswerkey_17092026.pdf",
+"type": "application/pdf",
+"size": 276125,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_finalanswerkey_17092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "2d062fxo155eecu7aw4f9",
+"headline": "Important Notice  -  Junior Engineer Examination, 2026",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-17T10:43:53.946Z",
+"attachments": [
+{
+"id": "mat9fkzngd6oev9b1389g",
+"attIdtyfrId": "2d062fxo155eecu7aw4f9",
+"fileName": "English_JE_17092026.pdf",
+"type": "application/pdf",
+"size": 272504,
+"path": "uploads\\masterData\\NoticeBoards\\English_JE_17092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rqi16gcexo98epgb3jt29",
+"headline": "Recruitment of Scientific Assistant in IMD through Junior Engineer Examination, 2026",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-16T06:41:14.900Z",
+"attachments": [
+{
+"id": "0apdx17i1jul7xyh293jj",
+"attIdtyfrId": "rqi16gcexo98epgb3jt29",
+"fileName": "notice_16092026.pdf",
+"type": "application/pdf",
+"size": 3650347,
+"path": "uploads\\masterData\\NoticeBoards\\notice_16092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "knylq6kego1yuc00bxa6l",
+"headline": "Phase-VIII/2020/Selection Posts and Phase-X/2022/Selection Posts and Ladakh/2022 Examinations – Declaration of Marks of Computer Based Examination",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2022",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-14T16:46:37.816Z",
+"attachments": [
+{
+"id": "bv6dvenaty9dtxkvvm0g1",
+"attIdtyfrId": "knylq6kego1yuc00bxa6l",
+"fileName": "writeup_selectionpost_14092026.pdf",
+"type": "application/pdf",
+"size": 108231,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_selectionpost_14092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "8izvhc6fuh962gwvwiu4r",
+"headline": "Important Notice - Schedule of Examination.",
+"examId": "w2sxxhjkshdcgl26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-12T12:36:48.395Z",
+"attachments": [
+{
+"id": "8is6kybuqux976om96aoe",
+"attIdtyfrId": "8izvhc6fuh962gwvwiu4r",
+"fileName": "Important Notice 2026_cgle_2026_12092026.pdf",
+"type": "application/pdf",
+"size": 143608,
+"path": "uploads\\masterData\\NoticeBoards\\Important Notice 2026_cgle_2026_12092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "bgxqbyckjzkdayd2n6vun",
+"headline": "IMPORTANT NOTICE - Instructions for PwBD Candidates with Locomotor Disability for Selection Post",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-11T10:02:49.619Z",
+"attachments": [
+{
+"id": "ohpivcl1ydrhnwuaveath",
+"attIdtyfrId": "bgxqbyckjzkdayd2n6vun",
+"fileName": "notice_11092026.pdf",
+"type": "application/pdf",
+"size": 192879,
+"path": "uploads\\masterData\\NoticeBoards\\notice_11092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "u5sd584nsvenzcjlyl9lu",
+"headline": "Calling Options/Preferences by CBIC from selected candidates for the post of Stenographer Grade II/Grade D for allocation of Zones/Formations - Stenographer Grade C and D Examination, 2025-reg",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-11T04:49:42.938Z",
+"attachments": [
+{
+"id": "er20evkqbn83e9ltcb9zx",
+"attIdtyfrId": "u5sd584nsvenzcjlyl9lu",
+"fileName": "Stenographer_GradeD_10092026.pdf",
+"type": "application/pdf",
+"size": 2417109,
+"path": "uploads\\masterData\\NoticeBoards\\Stenographer_GradeD_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tcdqkpf6dxehxjt1n1ivw",
+"headline": "Calling Options/Preferences by CBIC from selected candidates for the post of Stenographer Grade I/Grade C for allocation of Zones/Formations - Stenographer Grade C and D Examination, 2025- reg.",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-11T04:49:06.356Z",
+"attachments": [
+{
+"id": "083i8m3pww9v53upyfxlm",
+"attIdtyfrId": "tcdqkpf6dxehxjt1n1ivw",
+"fileName": "Stenographer_GradeC_10092026.pdf",
+"type": "application/pdf",
+"size": 2415079,
+"path": "uploads\\masterData\\NoticeBoards\\Stenographer_GradeC_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tzb7yxig5rqssipf0qlte",
+"headline": "Notice of Sub-Inspector in Delhi Police and Central Armed Police Forces Examination, 2026.",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-10T07:35:10.190Z",
+"attachments": [
+{
+"id": "k0mrlw10bj2ybfpymkc0t",
+"attIdtyfrId": "tzb7yxig5rqssipf0qlte",
+"fileName": "Notice_of_adv_capf_2026.pdf",
+"type": "application/pdf",
+"size": 5119971,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_adv_capf_2026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "qib1ol5bl5h2fimwg9c5b",
+"headline": "Addendum- Notice of Junior Engineer Examination, 2026",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-10T05:22:40.004Z",
+"attachments": [
+{
+"id": "rxaqjjrdklcyftsxyzis7",
+"attIdtyfrId": "qib1ol5bl5h2fimwg9c5b",
+"fileName": "Addendum_JE_10092026.pdf",
+"type": "application/pdf",
+"size": 651795,
+"path": "uploads\\masterData\\NoticeBoards\\Addendum_JE_10092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ebnvgls4sxk52fz4gr04w",
+"headline": "Declaration of Result of Annual Departmental Typing Test, 2024",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T14:46:05.455Z",
+"attachments": [
+{
+"id": "ztkdp5ud8hzowgjk4haa0",
+"attIdtyfrId": "ebnvgls4sxk52fz4gr04w",
+"fileName": "Result_writeup_typing_09092026.pdf",
+"type": "application/pdf",
+"size": 194179,
+"path": "uploads\\masterData\\NoticeBoards\\Result_writeup_typing_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "azh58gykdk64vrk03c799",
+"headline": "Declaration of Result of Annual Departmental Stenography Test, 2024",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2024",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T14:45:07.280Z",
+"attachments": [
+{
+"id": "o7xhd78zbt5yjhd8doq9k",
+"attIdtyfrId": "azh58gykdk64vrk03c799",
+"fileName": "Result_writeup_stenography_09092026.pdf",
+"type": "application/pdf",
+"size": 192417,
+"path": "uploads\\masterData\\NoticeBoards\\Result_writeup_stenography_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "jz70snhcl6wocxrbnkc8t",
+"headline": "Assistant Section Officer/ Assistant Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:46:49.067Z",
+"attachments": [
+{
+"id": "he902il0muezlpffzr3qm",
+"attIdtyfrId": "jz70snhcl6wocxrbnkc8t",
+"fileName": "Write_up_answerkey_09092026.pdf",
+"type": "application/pdf",
+"size": 388119,
+"path": "uploads\\masterData\\NoticeBoards\\Write_up_answerkey_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "wbg1kvmx3j6atttdle3mc",
+"headline": "Senior Secretariat Assistant/ Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:32:33.750Z",
+"attachments": [
+{
+"id": "q9ncpwq69669ryvrkx28a",
+"attIdtyfrId": "wbg1kvmx3j6atttdle3mc",
+"fileName": "Writeup_09092026.pdf",
+"type": "application/pdf",
+"size": 388320,
+"path": "uploads\\masterData\\NoticeBoards\\Writeup_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "p3182rsztta8b1o9gy096",
+"headline": "Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination, 2025: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s)",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:30:28.680Z",
+"attachments": [
+{
+"id": "kv7t9na4ntzfbgnx015tw",
+"attIdtyfrId": "p3182rsztta8b1o9gy096",
+"fileName": "Write_up_09092026.pdf",
+"type": "application/pdf",
+"size": 388865,
+"path": "uploads\\masterData\\NoticeBoards\\Write_up_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ofowjsqpn28u5irmoi7hk",
+"headline": "Senior Secretariat Assistant / Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]: Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s).",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-09T13:29:05.409Z",
+"attachments": [
+{
+"id": "ppq3dlbw049y5vbnsa8ky",
+"attIdtyfrId": "ofowjsqpn28u5irmoi7hk",
+"fileName": "writeup_tentative_answer_key_09092026.pdf",
+"type": "application/pdf",
+"size": 211630,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_tentative_answer_key_09092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "k8jfauxzn0ncwyph0wda6",
+"headline": "Final Vacancies of Combined Hindi Translators Examination, 2025 (as on 08.09.2026)",
+"examId": "nri55c0igl5cs45",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-08T13:24:57.675Z",
+"attachments": [
+{
+"id": "3k7d43s76s6y55df95yts",
+"attIdtyfrId": "k8jfauxzn0ncwyph0wda6",
+"fileName": "Final_Vacancies_08092026.pdf",
+"type": "application/pdf",
+"size": 470081,
+"path": "uploads\\masterData\\NoticeBoards\\Final_Vacancies_08092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "a5czrx39fmog6wdcxp1pp",
+"headline": "     Combined Hindi Translators Examination, 2025: Sample Option-cum-Preference Form",
+"examId": "nri55c0igl5cs45",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-08T13:24:29.464Z",
+"attachments": [
+{
+"id": "hw9baqgghr0ryianpvse6",
+"attIdtyfrId": "a5czrx39fmog6wdcxp1pp",
+"fileName": "Sample_Option_Form_CHTE_2025_08092026.pdf",
+"type": "application/pdf",
+"size": 668444,
+"path": "uploads\\masterData\\NoticeBoards\\Sample_Option_Form_CHTE_2025_08092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "cue4f36rte1h7wizdlm93",
+"headline": "Combined Hindi Translators Examination, 2025: Important Notice regarding Option-cum-Preference Form",
+"examId": "nri55c0igl5cs45",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-08T13:24:02.495Z",
+"attachments": [
+{
+"id": "z331zanwdlm707i402vhf",
+"attIdtyfrId": "cue4f36rte1h7wizdlm93",
+"fileName": "Important_Notice_Option_Form_CHTE_2025_08092026.pdf",
+"type": "application/pdf",
+"size": 147729,
+"path": "uploads\\masterData\\NoticeBoards\\Important_Notice_Option_Form_CHTE_2025_08092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "rygnpyv1p9n2u70lvnd7v",
+"headline": "Information regarding the city of examination and Admission Certificate for the candidates of \r\nPhase-XIV/2026/Selection Posts Examination (CBE)",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-08T13:19:29.417Z",
+"attachments": [
+{
+"id": "p8eflnapkcru0mwnpmd3t",
+"attIdtyfrId": "rygnpyv1p9n2u70lvnd7v",
+"fileName": "notice_for_selectionpost_08092026.pdf",
+"type": "application/pdf",
+"size": 285630,
+"path": "uploads\\masterData\\NoticeBoards\\notice_for_selectionpost_08092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "7o3nzmpio3jf7m06ipea3",
+"headline": "Tentative vacancy of Assistant Section Officer/Assistant Grade Limited Departmental Competitive Examination, 2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-08T11:51:51.146Z",
+"attachments": [
+{
+"id": "9mw35zfrfgpay1p5h6nrm",
+"attIdtyfrId": "7o3nzmpio3jf7m06ipea3",
+"fileName": "Tentative_vacancies_08092026.pdf",
+"type": "application/pdf",
+"size": 369424,
+"path": "uploads\\masterData\\NoticeBoards\\Tentative_vacancies_08092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "dd7znmp89av4jzgqnu2o2",
+"headline": "Notice of Combined Higher Secondary (10+2) Level Examination, 2026",
+"examId": "s40d16nackd16h0",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-07T15:59:02.300Z",
+"attachments": [
+{
+"id": "tkdzbamhfp91d1sy98h8o",
+"attIdtyfrId": "dd7znmp89av4jzgqnu2o2",
+"fileName": "Notice_of_adv_chsle_2026.pdf",
+"type": "application/pdf",
+"size": 4233297,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_adv_chsle_2026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "i40468mk5wj5l2j4gyd61",
+"headline": "Verification of Compensatory Time / Scribe Entitlement and Document Examination for PwBD Candidates with Locomotor Disability",
+"examId": "yafd7c3qloz8ixl",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-07T12:56:12.148Z",
+"attachments": [
+{
+"id": "ufjpxkhp2egk0pttjmwoc",
+"attIdtyfrId": "i40468mk5wj5l2j4gyd61",
+"fileName": "Important Notice.pdf",
+"type": "application/pdf",
+"size": 900211,
+"path": "uploads\\masterData\\NoticeBoards\\Important Notice.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "p39ngo5uu9pxp8kpqp5v2",
+"headline": "Advisory to Candidates and Exam Functionaries for Computer Based Examinations of SSC",
+"examId": "yafd7c3qloz8ixl",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-07T07:09:31.183Z",
+"attachments": [
+{
+"id": "eqsuca7beicql1hjzsbt7",
+"attIdtyfrId": "p39ngo5uu9pxp8kpqp5v2",
+"fileName": "ADVISORY.pdf",
+"type": "application/pdf",
+"size": 286420,
+"path": "uploads\\masterData\\NoticeBoards\\ADVISORY.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "mnk2pahkt4m53d0puz16c",
+"headline": "Information regarding  the city of examination and Admission Certificate for\r\nthe candidates of Combined Hindi Translator Examination, 2026(Tier-I) and\r\nStenographer Grade 'C' and 'D' Examination, 2026 (Tier-I)  - Corrigendum",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-03T18:28:32.028Z",
+"attachments": [
+{
+"id": "4lv9dwcsq1uzwyw04hxp6",
+"attIdtyfrId": "mnk2pahkt4m53d0puz16c",
+"fileName": "cht_2026_steno_2026_corrigendum_03092026.pdf",
+"type": "application/pdf",
+"size": 43902,
+"path": "uploads\\masterData\\NoticeBoards\\cht_2026_steno_2026_corrigendum_03092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "xt78tm0814jiq5e3k7a5n",
+"headline": "Head Constable {Assistant Wireless Operator (AWO)/Tele-Printer Operator (TPO)} in Delhi Police Examination, 2025: Corrigendum - Conduct of PE and MT",
+"examId": "dphct0ab6eutvfq0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-03T12:02:30.617Z",
+"attachments": [
+{
+"id": "g2yx2m8meuswrcsupevou",
+"attIdtyfrId": "xt78tm0814jiq5e3k7a5n",
+"fileName": "Corrigendum_DPHCT_03092026.pdf",
+"type": "application/pdf",
+"size": 296688,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum_DPHCT_03092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "urrsdfei3j6vtqlwmhwgt",
+"headline": "Constable (Executive) Male and Female in the Delhi Police Examination, 2025: Corrigendum- Conduct of PE and MT.",
+"examId": "dpce00ab6eu9si1c",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-03T12:01:02.823Z",
+"attachments": [
+{
+"id": "g3g0vwmvnlibt53lk93gg",
+"attIdtyfrId": "urrsdfei3j6vtqlwmhwgt",
+"fileName": "Corrigendum_DPCE2025_03092026.pdf",
+"type": "application/pdf",
+"size": 294178,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum_DPCE2025_03092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "m0ycy569p17541off865p",
+"headline": "Head Constable (Ministerial) in Delhi Police Examination, 2025: Corrigendum- Conduct of PE and MT",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-03T11:59:40.044Z",
+"attachments": [
+{
+"id": "37jtehwe5lbokv2yvzyr6",
+"attIdtyfrId": "m0ycy569p17541off865p",
+"fileName": "Corrigendum_DPHCM2025_03092026.pdf",
+"type": "application/pdf",
+"size": 293382,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum_DPHCM2025_03092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "0aobvy9garqp03jpbqcsn",
+"headline": "Constable (Driver) Male in Delhi Police Examination, 2025: Corrigendum- Conduct of PE and MT",
+"examId": "dpcdsgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-03T11:58:10.234Z",
+"attachments": [
+{
+"id": "j3x9d1m7gw28g7v5e3ce5",
+"attIdtyfrId": "0aobvy9garqp03jpbqcsn",
+"fileName": "Corrigendum_DPCD2025_03092026.pdf",
+"type": "application/pdf",
+"size": 293764,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum_DPCD2025_03092026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "r7tegjkyts4r2sht4ec5b",
+"headline": "Notice of Junior Engineer Examination, 2026",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-09-02T12:38:43.600Z",
+"attachments": [
+{
+"id": "craf86ud26co0s1pext52",
+"attIdtyfrId": "r7tegjkyts4r2sht4ec5b",
+"fileName": "Notice_of_adv_je_2026.pdf",
+"type": "application/pdf",
+"size": 3497956,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_adv_je_2026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "pl0brupjdwdgfnk93e2rh",
+"headline": "Information regarding the city of examination and Admission Certificate for \r\nthe candidates of Combined Hindi Translator Examination, 2026(Tier-I) and \r\nStenographer Grade 'C' and 'D' Examination, 2026 (Tier-I).",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-31T13:05:00.392Z",
+"attachments": [
+{
+"id": "ejytu75ynfwxyyrvaxjtv",
+"attIdtyfrId": "pl0brupjdwdgfnk93e2rh",
+"fileName": "Notice_31082026.pdf",
+"type": "application/pdf",
+"size": 287120,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_31082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "v754mtooajic93lvx8aci",
+"headline": "Important Notice-revised dates for Stenographer Grade 'C' and 'D' Examination, 2026",
+"examId": "steno0svofmeb26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-31T11:05:00.392Z",
+"attachments": [
+{
+"id": "8ow7rv5k3wlp7hi7kwnnx",
+"attIdtyfrId": "v754mtooajic93lvx8aci",
+"fileName": "Steno_2026_Dates_31082026.pdf",
+"type": "application/pdf",
+"size": 544631,
+"path": "uploads\\masterData\\NoticeBoards\\Steno_2026_Dates_31082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6vinan0rd3yo0axrkwxkp",
+"headline": "  Stenographer Grade 'C' and 'D' Examination, 2025: Declaration of Final Result",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-25T12:18:21.042Z",
+"attachments": [
+{
+"id": "q2qnuspj38xj739bpfjjb",
+"attIdtyfrId": "6vinan0rd3yo0axrkwxkp",
+"fileName": "Final_Result_Write_up_25082026.pdf",
+"type": "application/pdf",
+"size": 941873,
+"path": "uploads\\masterData\\NoticeBoards\\Final_Result_Write_up_25082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "k7j4j27cfov4jf8vsgss3",
+"headline": "Grade ‘C’ Stenographers Limited Departmental Competitive Examination, 2025: Declaration of result of Computer Based Examination for appearing in the Stenography Skill Test",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-25T11:57:45.355Z",
+"attachments": [
+{
+"id": "qmqjrpz118mue0hyq8eu1",
+"attIdtyfrId": "k7j4j27cfov4jf8vsgss3",
+"fileName": "writeup_25082026.pdf",
+"type": "application/pdf",
+"size": 718680,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_25082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "c5cac75b7l9yu2h32nb1m",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025: Uploading of Final Answer Keys along with Question Paper(s) cum Response Sheet(s) and Marks of Paper-II",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-21T12:49:39.858Z",
+"attachments": [
+{
+"id": "w5qlvjx472nti1xsx0h0g",
+"attIdtyfrId": "c5cac75b7l9yu2h32nb1m",
+"fileName": "Final_Answer_Key_21082026.pdf",
+"type": "application/pdf",
+"size": 199946,
+"path": "uploads\\masterData\\NoticeBoards\\Final_Answer_Key_21082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "c3wbruo1zybty2gqcsoag",
+"headline": "Important  Notice",
+"examId": "1bv75ftehwsjy1f",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-21T12:44:11.826Z",
+"attachments": [
+{
+"id": "o5bosrae691zb06ltwnfm",
+"attIdtyfrId": "c3wbruo1zybty2gqcsoag",
+"fileName": "important_notice_21082026.pdf",
+"type": "application/pdf",
+"size": 152588,
+"path": "uploads\\masterData\\NoticeBoards\\important_notice_21082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "7mwai2tmi9lnrlmtvfxu0",
+"headline": "IMPORTANT NOTICE:  Schedule of PET/PST for MTS (NT) and Havaldar Examination 2025",
+"examId": "wzeujzxj8ts5z9n",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-20T08:19:46.861Z",
+"attachments": [
+{
+"id": "7y77rafys2ibn7zrrxweg",
+"attIdtyfrId": "7mwai2tmi9lnrlmtvfxu0",
+"fileName": "Notice_20082026.pdf",
+"type": "application/pdf",
+"size": 549762,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_20082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "78no32a9g9o300xj1jtcv",
+"headline": "Corrigendum to First Round of Tentative Allocation (FRTA) dated 17.08.2026 of Combined Higher Secondary (10+2) Level Examination, 2025",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-19T11:13:16.545Z",
+"attachments": [
+{
+"id": "7tb7c87r5u4t6g0dmsus7",
+"attIdtyfrId": "78no32a9g9o300xj1jtcv",
+"fileName": "corrigendum_19082026.pdf",
+"type": "application/pdf",
+"size": 491491,
+"path": "uploads\\masterData\\NoticeBoards\\corrigendum_19082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ukr1lb9mkn7gsgnc5mr9l",
+"headline": "Filling up 04 ex-cadre post of Accounts Officer in Regional Offices of SSC on deputation basis",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-19T07:26:02.508Z",
+"attachments": [
+{
+"id": "cwfag4j1hssz46mr3pow2",
+"attIdtyfrId": "ukr1lb9mkn7gsgnc5mr9l",
+"fileName": "Accounts_officer_19082026.pdf",
+"type": "application/pdf",
+"size": 2459797,
+"path": "uploads\\masterData\\NoticeBoards\\Accounts_officer_19082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "j0i3xit88gar5krjcgh11",
+"headline": "Filling up 06 ex-cadre post of Accountant in Regional Offices of SSC on deputation basis",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-19T07:25:37.882Z",
+"attachments": [
+{
+"id": "lt7jh66y0up4jcm63xib0",
+"attIdtyfrId": "j0i3xit88gar5krjcgh11",
+"fileName": "Accountant_19082026.pdf",
+"type": "application/pdf",
+"size": 2126023,
+"path": "uploads\\masterData\\NoticeBoards\\Accountant_19082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "kvivi074wdrnltkz7d2lb",
+"headline": "Important  Notice",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-18T11:33:58.353Z",
+"attachments": [
+{
+"id": "sbs7j4fbndkcpwd6vzusc",
+"attIdtyfrId": "kvivi074wdrnltkz7d2lb",
+"fileName": "Important_Notice_18082026.pdf",
+"type": "application/pdf",
+"size": 189360,
+"path": "uploads\\masterData\\NoticeBoards\\Important_Notice_18082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "6x26diroyww676b7wo3n5",
+"headline": "Identity Verification (IV) for the candidates shortlisted in FRTA of Combined \r\nHigher Secondary (10+2) Level Examination (CHSLE), 2025 - reg",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-18T11:01:32.535Z",
+"attachments": [
+{
+"id": "7c2qg9oydg2da8und96ia",
+"attIdtyfrId": "6x26diroyww676b7wo3n5",
+"fileName": "notice_18082026.pdf",
+"type": "application/pdf",
+"size": 85410,
+"path": "uploads\\masterData\\NoticeBoards\\notice_18082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "dv03dcoub7ohnf8utkw7j",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025 - Declaration of First Round of Tentative Allocation (FRTA)",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-17T13:12:38.122Z",
+"attachments": [
+{
+"id": "eq8zgjvgixd1qwty95v3y",
+"attIdtyfrId": "dv03dcoub7ohnf8utkw7j",
+"fileName": "FRTA_CHSLE_2025_17082026.pdf",
+"type": "application/pdf",
+"size": 830689,
+"path": "uploads\\masterData\\NoticeBoards\\FRTA_CHSLE_2025_17082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "s5k1e8wpoqrjiop9w9l1e",
+"headline": "Important Notice for Departmental examinations, 2025 to be held on 23.08.2026 at Delhi ",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-17T11:41:51.680Z",
+"attachments": [
+{
+"id": "z8et3dj81drhlcnag0g3a",
+"attIdtyfrId": "s5k1e8wpoqrjiop9w9l1e",
+"fileName": "Important_Notice_Departmental_Examinations_2025.pdf",
+"type": "application/pdf",
+"size": 253462,
+"path": "uploads\\masterData\\NoticeBoards\\Important_Notice_Departmental_Examinations_2025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "mfgkk0t67ofyqhmedqyf8",
+"headline": "Important Notice - Schedule of Examinations",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-12T13:15:20.032Z",
+"attachments": [
+{
+"id": "gpfjka9q9pusw3rpzlzuf",
+"attIdtyfrId": "mfgkk0t67ofyqhmedqyf8",
+"fileName": "notice_12082026.pdf",
+"type": "application/pdf",
+"size": 373501,
+"path": "uploads\\masterData\\NoticeBoards\\notice_12082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "fln5s86kok1pbpyyb0y1e",
+"headline": "Notice for recommended candidates of Combined Hindi Translators Examination, 2025 for appearing in Physical Standard Test (PST) for the post of Sub-Inspector (Hindi Translator) in CRPF",
+"examId": "nri55c0igl5cs45",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-06T12:08:56.160Z",
+"attachments": [
+{
+"id": "zl3vlnirqheb611fj8lqh",
+"attIdtyfrId": "fln5s86kok1pbpyyb0y1e",
+"fileName": "web_notice_06082026.pdf",
+"type": "application/pdf",
+"size": 118400,
+"path": "uploads\\masterData\\NoticeBoards\\web_notice_06082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ptd64bwagcre4sa714dyd",
+"headline": "Identity Verification (IV) for the candidates shortlisted in FRTA of Stenographer \r\nGrade ‘C’ and ‘D’ Examination, 2025 – reg",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-03T14:04:02.976Z",
+"attachments": [
+{
+"id": "fre3877axjyktcb9nmrro",
+"attIdtyfrId": "ptd64bwagcre4sa714dyd",
+"fileName": "IV_NOTICE_03082026.pdf",
+"type": "application/pdf",
+"size": 36364,
+"path": "uploads\\masterData\\NoticeBoards\\IV_NOTICE_03082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "zcaeg534gp0eus6kq337w",
+"headline": "Multi Tasking (Non-Technical) Staff, and Havaldar (CBIC and CBN) Examination, 2025:  Declaration of result of Computer Based Examination to shortlist candidates for PET/ PST for the post of Havaldar.",
+"examId": "wzeujzxj8ts5z9n",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-03T12:58:49.070Z",
+"attachments": [
+{
+"id": "pkratbc8tmcrg1qvksfz9",
+"attIdtyfrId": "zcaeg534gp0eus6kq337w",
+"fileName": "writeup_mts_03082026.pdf",
+"type": "application/pdf",
+"size": 894631,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_mts_03082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "lmfd0c42i0v3cs3z938ho",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025- Declaration of Final Result",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-08-03T06:49:31.011Z",
+"attachments": [
+{
+"id": "ct0sfa5qsnyf7hqx5k4f4",
+"attIdtyfrId": "lmfd0c42i0v3cs3z938ho",
+"fileName": "writeup_03082026.pdf",
+"type": "application/pdf",
+"size": 332541,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_03082026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "fi30ddmzneqlhmbki40nh",
+"headline": "Stenographer Grade 'C' and 'D' Examination, 2025: Declaration of Revised First Round of Tentative Allocation (FRTA)",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-31T11:46:18.876Z",
+"attachments": [
+{
+"id": "y69m0eicib1lq1f9cx7ro",
+"attIdtyfrId": "fi30ddmzneqlhmbki40nh",
+"fileName": "writeup_31072026.pdf",
+"type": "application/pdf",
+"size": 876954,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_31072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "pt7u0jxtmmwfku19qx5jf",
+"headline": "Important Notice - Schedule of Examinations",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-27T13:02:56.883Z",
+"attachments": [
+{
+"id": "kbu48oe0zowgoqrm4xv2w",
+"attIdtyfrId": "pt7u0jxtmmwfku19qx5jf",
+"fileName": "important_notice_27072026.pdf",
+"type": "application/pdf",
+"size": 371480,
+"path": "uploads\\masterData\\NoticeBoards\\important_notice_27072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ywaxd1kmxa4bsnu7lo3xi",
+"headline": "IMPORTANT NOTICE - Postponement of Physical Endurance and Measurement Test (PE and MT) for  various  Examinations in Delhi Police,  2025.",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-27T11:52:51.820Z",
+"attachments": [
+{
+"id": "j8dlypodp76o999ugz1h6",
+"attIdtyfrId": "ywaxd1kmxa4bsnu7lo3xi",
+"fileName": "notice_27072026.pdf",
+"type": "application/pdf",
+"size": 265247,
+"path": "uploads\\masterData\\NoticeBoards\\notice_27072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "nkmya0gdsjs9wyztz5s0y",
+"headline": "Addendum to Notice of Combined Hindi Translators Examination, 2025",
+"examId": "nri55c0igl5cs45",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-27T06:32:40.741Z",
+"attachments": [
+{
+"id": "hyza8qm9cqex4vu3dpyy3",
+"attIdtyfrId": "nkmya0gdsjs9wyztz5s0y",
+"fileName": "Addendum_27072026.pdf",
+"type": "application/pdf",
+"size": 659478,
+"path": "uploads\\masterData\\NoticeBoards\\Addendum_27072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "tklhz4zi73n9mq2rm2u9j",
+"headline": "Sub Inspector in Delhi Police and CAPFs Examination, 2024:- Uploading Final Marks of candidates. ",
+"examId": "f2tt2k1tpp3qpb5",
+"examYear": "2024",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-24T06:44:06.341Z",
+"attachments": [
+{
+"id": "kypo2gk0ipfvuplaz9t5i",
+"attIdtyfrId": "tklhz4zi73n9mq2rm2u9j",
+"fileName": "Write-up, Final Marks, SI CPO-2024.pdf",
+"type": "application/pdf",
+"size": 331031,
+"path": "uploads\\masterData\\NoticeBoards\\Write-up, Final Marks, SI CPO-2024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "0feehyaw4pazjvbuah6a5",
+"headline": "Corrigendum for the post of Vocational Instructor (Except Women Training) {Post Code NE11526 to NE14426} under Phase-XIV/2026/Selection Posts Examination",
+"examId": "rhq74fte5xsjy25",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-20T07:00:59.234Z",
+"attachments": [
+{
+"id": "7txulg8lsxofcjnqygv1p",
+"attIdtyfrId": "0feehyaw4pazjvbuah6a5",
+"fileName": "corrigendum_20072026.pdf",
+"type": "application/pdf",
+"size": 89768,
+"path": "uploads\\masterData\\NoticeBoards\\corrigendum_20072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "y510f4xei4s4riuk26awl",
+"headline": "Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025 : Uploading of Tentative Answer Keys along with Candidates’ Response Sheet(s)",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-16T12:33:40.437Z",
+"attachments": [
+{
+"id": "c8ypyvq1879y2plh3mh7v",
+"attIdtyfrId": "y510f4xei4s4riuk26awl",
+"fileName": "Writeup_english_16072026.pdf",
+"type": "application/pdf",
+"size": 206780,
+"path": "uploads\\masterData\\NoticeBoards\\Writeup_english_16072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "bxalrs4mopiqrieyafwc4",
+"headline": "Tentative vacancies of  Senior Secretariat Assistant/ Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-15T13:19:36.973Z",
+"attachments": [
+{
+"id": "oe8xxqyhjn5z1gxlry460",
+"attIdtyfrId": "bxalrs4mopiqrieyafwc4",
+"fileName": "Tentative_vacancies_15072026.pdf",
+"type": "application/pdf",
+"size": 431195,
+"path": "uploads\\masterData\\NoticeBoards\\Tentative_vacancies_15072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "15d28i7odqc2qpx2uj4pw",
+"headline": "Corrigendum for the post of E.C.G. Technician (Junior) Post Code MP11626 under Selection Post Examination, Phase-XIV/2026",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-14T08:09:41.701Z",
+"attachments": [
+{
+"id": "cjqaukkv53zxhgskmkzzr",
+"attIdtyfrId": "15d28i7odqc2qpx2uj4pw",
+"fileName": "RHQ_2026_MP11626 Corringendum_14072026.pdf",
+"type": "application/pdf",
+"size": 204623,
+"path": "uploads\\masterData\\NoticeBoards\\RHQ_2026_MP11626 Corringendum_14072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "v34crph8j7zsjlnft4wcz",
+"headline": "Cancellation Notice for the post of “Ayurvedic Pharmacist”, Post Code MP10826, under Selection Posts Examination, Phase-XIV/2026",
+"examId": "rhq74fte5xsjy26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-14T08:08:47.734Z",
+"attachments": [
+{
+"id": "24ssg1nerqykl5sb6cl86",
+"attIdtyfrId": "v34crph8j7zsjlnft4wcz",
+"fileName": "MP10826 Cancellation Notice_14072026.pdf",
+"type": "application/pdf",
+"size": 199597,
+"path": "uploads\\masterData\\NoticeBoards\\MP10826 Cancellation Notice_14072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "l278eqz7a8wzb7g8nsjla",
+"headline": "Addendum to the Notice of Junior Secretariat Assistant / Lower Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-13T13:17:31.445Z",
+"attachments": [
+{
+"id": "ja4e9otswg11upy4vvif7",
+"attIdtyfrId": "l278eqz7a8wzb7g8nsjla",
+"fileName": "Addendum_English_13072026.pdf",
+"type": "application/pdf",
+"size": 686961,
+"path": "uploads\\masterData\\NoticeBoards\\Addendum_English_13072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "m9ezyylscfg8wsj8k7yir",
+"headline": "Identity Verification (IV) for the candidates shortlisted in FRTA of Junior \r\nEngineer (Civil, Mechanical and Electrical) Examination, 2025 – reg",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-10T16:07:16.462Z",
+"attachments": [
+{
+"id": "n74diixkjwxi4hjdz9vx6",
+"attIdtyfrId": "m9ezyylscfg8wsj8k7yir",
+"fileName": "Sliding_Website_Notice_for_JE_25_10072026.pdf",
+"type": "application/pdf",
+"size": 143554,
+"path": "uploads\\masterData\\NoticeBoards\\Sliding_Website_Notice_for_JE_25_10072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "0y46i3on4svdamyqc0k29",
+"headline": "Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025- Declaration of First Round of Tentative Allocation (FRTA)",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-09T11:28:40.862Z",
+"attachments": [
+{
+"id": "ds286060rx3s47exul828",
+"attIdtyfrId": "0y46i3on4svdamyqc0k29",
+"fileName": "writeup_je_09072026.pdf",
+"type": "application/pdf",
+"size": 411309,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_je_09072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "5e13hhplp66nqcjht9djy",
+"headline": "Tentative Vacancy for Combined Hindi Translators Examination, 2026 (as on 09.07.2026)",
+"examId": "nri55c0igl5cs45",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-09T09:25:43.306Z",
+"attachments": [
+{
+"id": "ojz4dueyfnowbnj3xxsmu",
+"attIdtyfrId": "5e13hhplp66nqcjht9djy",
+"fileName": "tentative_vacancies_09072026.pdf",
+"type": "application/pdf",
+"size": 225725,
+"path": "uploads\\masterData\\NoticeBoards\\tentative_vacancies_09072026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "y2llvzg6qwkyv48pjq0w1",
+"headline": "Constable (Executive) Male and Female in Delhi Police Examination, 2025: Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE along with the Marks.",
+"examId": "ooqnwrr4dyev3hw",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-07T12:44:04.335Z",
+"attachments": [
+{
+"id": "g96xlgjqx9bydx1fby9zg",
+"attIdtyfrId": "y2llvzg6qwkyv48pjq0w1",
+"fileName": "Write_up_Final_Answer_Keys_CBE_Executive_2025..pdf",
+"type": "application/pdf",
+"size": 197814,
+"path": "uploads\\masterData\\NoticeBoards\\Write_up_Final_Answer_Keys_CBE_Executive_2025..pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "q0pcmlskqk5avv5qso6va",
+"headline": "Corrigendum to the Notice of Grade 'C' Stenographers Limited Departmental Competitive Examination, 2025.",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-07-02T14:13:07.133Z",
+"attachments": [
+{
+"id": "lktthbfqv4zn977q2npds",
+"attIdtyfrId": "q0pcmlskqk5avv5qso6va",
+"fileName": "Corrigendum to Notice Steno, 2025.pdf",
+"type": "application/pdf",
+"size": 717543,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum to Notice Steno, 2025.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "p8n0u1v8e1dliw4dka5ub",
+"headline": "Corrigendum to the Notice of Senior Secretariat Assistant/ Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-29T11:31:14.793Z",
+"attachments": [
+{
+"id": "sb994wv9m58e7hwn5df8w",
+"attIdtyfrId": "p8n0u1v8e1dliw4dka5ub",
+"fileName": "Corrigendum_29062026.pdf",
+"type": "application/pdf",
+"size": 880476,
+"path": "uploads\\masterData\\NoticeBoards\\Corrigendum_29062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ga2zatgendk88xqlivwub",
+"headline": "Head Constable (Ministerial) in Delhi Police Examination, 2025 – Shortlisting additional candidates to appear in Physical Endurance and Measurement Test (PE and MT)/ Document Verification (DV)/ Trade Test (Skill Test).",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T13:16:23.141Z",
+"attachments": [
+{
+"id": "7p78ublhie7urh5x6ie9r",
+"attIdtyfrId": "ga2zatgendk88xqlivwub",
+"fileName": "writeup_dphcm_25062026.pdf",
+"type": "application/pdf",
+"size": 275105,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_dphcm_25062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "xtbermltivfsv4x2pxwhp",
+"headline": "Notice of  Assistant Section Officer/ Assistant Grade Limited Departmental Competitive Examination, 2025",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T13:02:44.973Z",
+"attachments": [
+{
+"id": "lv66uy49waupumt71ld8m",
+"attIdtyfrId": "xtbermltivfsv4x2pxwhp",
+"fileName": "Notice_of_ASO_2026_06_25.pdf.pdf",
+"type": "application/pdf",
+"size": 4043495,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_ASO_2026_06_25.pdf.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "x3z4u0yu3vcxglk1n0cd4",
+"headline": "Notice of  Senior Secretariat Assistant/ Upper Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T13:02:11.321Z",
+"attachments": [
+{
+"id": "nrl8pa9kiugqpln3j59et",
+"attIdtyfrId": "x3z4u0yu3vcxglk1n0cd4",
+"fileName": "Notice_of_SSA_Dopt_2026_06_25.pdf.pdf",
+"type": "application/pdf",
+"size": 4077335,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_SSA_Dopt_2026_06_25.pdf.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "7m5jknu6ux9b1o44qabv2",
+"headline": "Notice of  Junior Secretariat Assistant/ Lower Division Clerk Grade Limited Departmental Competitive Examination, 2025 [Central Secretariat Clerical Service (CSCS) Cadre of Department of Personnel and Training (DoPT)]",
+"examId": "q5zvwlkwna3s17u",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T13:01:50.260Z",
+"attachments": [
+{
+"id": "8vlakpcobao266jxktn9k",
+"attIdtyfrId": "7m5jknu6ux9b1o44qabv2",
+"fileName": "Notice_of_JSA_Dopt_2026_06_25.pdf.pdf",
+"type": "application/pdf",
+"size": 4204978,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_of_JSA_Dopt_2026_06_25.pdf.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "iokdc58skyrnjavtbv95n",
+"headline": "Head Constable {Assistant Wireless Operator (AWO)/Tele-Printer Operator (TPO)} in Delhi Police Examination, 2025 – Shortlisting of additional candidates to appear in Physical Endurance and Measurement Test (PE and MT)/ Document Verification (DV)/ Trade Test",
+"examId": "dphct0ab6eutvfq0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T12:56:41.645Z",
+"attachments": [
+{
+"id": "ftnfmoupsbqk28tnft21g",
+"attIdtyfrId": "iokdc58skyrnjavtbv95n",
+"fileName": "writeup_dphct_25062026.pdf",
+"type": "application/pdf",
+"size": 426066,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_dphct_25062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "ydpkyogf76cts5p1mhpqu",
+"headline": "Constable (Driver) Male in Delhi Police Examination, 2025 – Shortlisting of one (01) additional candidate to appear in Physical Endurance and Measurement Test (PE and MT)/ Document Verification (DV)/ Trade Test",
+"examId": "dpcdsgab6eu9sh6c",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-25T12:46:53.807Z",
+"attachments": [
+{
+"id": "4r8q7kpaq2ckmnkg4xb3w",
+"attIdtyfrId": "ydpkyogf76cts5p1mhpqu",
+"fileName": "writeup_dpcd_25062026.pdf",
+"type": "application/pdf",
+"size": 410173,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_dpcd_25062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "xishmebtrokf30avjuwmz",
+"headline": "Final Vacancies of Junior Engineer (Civil, Mechanical and Electrical) Examination, 2025",
+"examId": "g21irqg6pmtxbag",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-24T13:06:31.976Z",
+"attachments": [
+{
+"id": "1ioymldjrpv3rs9x7267x",
+"attIdtyfrId": "xishmebtrokf30avjuwmz",
+"fileName": "JE2025_FINAL_VACANCY_24062026.pdf",
+"type": "application/pdf",
+"size": 263603,
+"path": "uploads\\masterData\\NoticeBoards\\JE2025_FINAL_VACANCY_24062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "biczwm1llezw57l2pvh4h",
+"headline": "Important Notice regarding re-opening of window for submission of online application form for Combined Graduate Level Examination, 2026",
+"examId": "w2sxxhjkshdcgl26",
+"examYear": "2026",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-23T12:52:43.374Z",
+"attachments": [
+{
+"id": "jyabuju9w5304qv5v32rs",
+"attIdtyfrId": "biczwm1llezw57l2pvh4h",
+"fileName": "CGLE_Reopen_23062026.pdf",
+"type": "application/pdf",
+"size": 596888,
+"path": "uploads\\masterData\\NoticeBoards\\CGLE_Reopen_23062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "3qe0utvdwmqipxq5pfkkf",
+"headline": "Head Constable (Ministerial) in Delhi Police Examination, 2025: Uploading of Final Answer Keys along with Question Papers cum Response Sheets of CBE along with the Marks",
+"examId": "dphcm0ab6eutguzu",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-22T12:40:51.954Z",
+"attachments": [
+{
+"id": "hwzgk1gk5obhgyg5nw48a",
+"attIdtyfrId": "3qe0utvdwmqipxq5pfkkf",
+"fileName": "Write_up_Final_Answer_Keys_CBE_min_2025..pdf",
+"type": "application/pdf",
+"size": 195922,
+"path": "uploads\\masterData\\NoticeBoards\\Write_up_Final_Answer_Keys_CBE_min_2025..pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "h4ys9uavxqir59es3kn9g",
+"headline": "Important Notice - Combined Higher Secondary (10+2) Level Examination, 2025-Extension of window for Option-cum-Preference Form",
+"examId": "s40d16naqchsl25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-22T12:17:54.723Z",
+"attachments": [
+{
+"id": "xjojd6h2he597m2pv9biv",
+"attIdtyfrId": "h4ys9uavxqir59es3kn9g",
+"fileName": "Notice_22062026.pdf",
+"type": "application/pdf",
+"size": 243976,
+"path": "uploads\\masterData\\NoticeBoards\\Notice_22062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "c4bgak1bswj1q1ncnsezk",
+"headline": "Constable (Executive) Male and Female in Delhi Police Examination, 2025– Declaration of result of Computer Based Examination for shortlisting candidates to appear in Physical Endurance and Measurement Test (PE and MT)/ Document Verification (DV)",
+"examId": "dpce00ab6eu9si1c",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-19T13:19:40.421Z",
+"attachments": [
+{
+"id": "lulbud9p80h6l46taewl6",
+"attIdtyfrId": "c4bgak1bswj1q1ncnsezk",
+"fileName": "writeup_dpce_19062026.pdf",
+"type": "application/pdf",
+"size": 355475,
+"path": "uploads\\masterData\\NoticeBoards\\writeup_dpce_19062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "negb6wqkwxlh531tevidm",
+"headline": "Notice: Stenographer Grade 'C' and 'D' Examination, 2025 - Withholding FRTA dated 19-06-2026",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-19T12:59:29.832Z",
+"attachments": [
+{
+"id": "gokzz3v1s54eybzz8f5mz",
+"attIdtyfrId": "negb6wqkwxlh531tevidm",
+"fileName": "notice_steno_19062026.pdf",
+"type": "application/pdf",
+"size": 716665,
+"path": "uploads\\masterData\\NoticeBoards\\notice_steno_19062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "gaibjewu5j9osxrd4w5ik",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025: Sample Option-cum-Preference Form",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-19T12:38:28.246Z",
+"attachments": [
+{
+"id": "zh033g5po1affhw9dfbbo",
+"attIdtyfrId": "gaibjewu5j9osxrd4w5ik",
+"fileName": "option_preference_form_19062026.pdf",
+"type": "application/pdf",
+"size": 274704,
+"path": "uploads\\masterData\\NoticeBoards\\option_preference_form_19062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "uw81toikp472x8li8yc9m",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025: Important Notice regarding Option-cum-Preference Form",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-19T12:37:54.294Z",
+"attachments": [
+{
+"id": "ytj3zbfwo2w683ip4gbyq",
+"attIdtyfrId": "uw81toikp472x8li8yc9m",
+"fileName": "Important_Notice_19062026.pdf",
+"type": "application/pdf",
+"size": 426925,
+"path": "uploads\\masterData\\NoticeBoards\\Important_Notice_19062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "m13utc3dr8gb6apu2oi3v",
+"headline": "Stenographer Grade 'C' and 'D' Examination, 2025: Declaration of First Round of Tentative Allocation (FRTA)",
+"examId": "59g9y0svsteno25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-18T12:39:26.254Z",
+"attachments": [
+{
+"id": "u38bpgmxsshhtawguouhs",
+"attIdtyfrId": "m13utc3dr8gb6apu2oi3v",
+"fileName": "Result Writeup_2025_Steno C and Steno D.pdf",
+"type": "application/pdf",
+"size": 971783,
+"path": "uploads\\masterData\\NoticeBoards\\Result Writeup_2025_Steno C and Steno D.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "z7cdt4htyu3nsktlyj68v",
+"headline": "Final Vacancies of Combined Higher Secondary (10+2) Level Examination, 2025 (as on 18.06.2026)",
+"examId": "s40d16nackd16h0",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-18T05:15:50.220Z",
+"attachments": [
+{
+"id": "5dthpjq67pw5y6hun1kw8",
+"attIdtyfrId": "z7cdt4htyu3nsktlyj68v",
+"fileName": "final_vacancies_18062026.pdf",
+"type": "application/pdf",
+"size": 473152,
+"path": "uploads\\masterData\\NoticeBoards\\final_vacancies_18062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "3dmo63q4je5bt5x7jhnul",
+"headline": "Uploading of Final Answer Key(s) along with Candidates’ Response Sheet(s) and Marks of candidates of Combined Graduate Level Examination, 2025 (Tier-II) -reg",
+"examId": "twoxxhjkshdcgl25",
+"examYear": "2025",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-17T16:06:37.577Z",
+"attachments": [
+{
+"id": "gdarc2hr0sglq5heds1vn",
+"attIdtyfrId": "3dmo63q4je5bt5x7jhnul",
+"fileName": "Final_writeup_17062026.pdf",
+"type": "application/pdf",
+"size": 104258,
+"path": "uploads\\masterData\\NoticeBoards\\Final_writeup_17062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "yf8413vc99gl9ynitnick",
+"headline": "Addendum to Notices of Empanelment of Subject Matter Experts dated 09.06.2026 and Language Experts dated 02.06.2026",
+"examId": "",
+"examYear": "",
+"contentType": "notice-boards",
+"redirectUrl": "",
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2026-06-17T13:32:25.020Z",
+"attachments": [
+{
+"id": "6moy86la6f53avnqqgrrm",
+"attIdtyfrId": "yf8413vc99gl9ynitnick",
+"fileName": "Addendum_17062026.pdf",
+"type": "application/pdf",
+"size": 197145,
+"path": "uploads\\masterData\\NoticeBoards\\Addendum_17062026.pdf",
+"documentType": null,
+"comment": null
+}
+]
+}
+],
+"paginate": {
+"totalRecords": 711,
+"totalPerpage": "100",
+"totalPage": 8,
+"currentPage": 1,
+"nextPage": 2,
+"previousPage": 0
+}
+}

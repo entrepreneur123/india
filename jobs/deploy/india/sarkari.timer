@@ -1,0 +1,10 @@
+[Unit]
+Description=Sarkari job alerts every 30 minutes
+
+[Timer]
+OnCalendar=*:13,43
+RandomizedDelaySec=60
+Persistent=true
+
+[Install]
+WantedBy=timers.target

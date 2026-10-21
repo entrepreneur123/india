@@ -1,0 +1,13 @@
+[Unit]
+Description=Sarkari job alerts: one collection run (deploy/india/run.sh)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=sarkari
+EnvironmentFile=/etc/sarkari.env
+Environment=HOME=/opt/sarkari
+ExecStart=/opt/sarkari/code/jobs/deploy/india/run.sh
+TimeoutStartSec=25min
+Nice=10

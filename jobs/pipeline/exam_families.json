@@ -1,0 +1,239 @@
+{
+  "_comment": "One entry per exam family (classify.EXAM_FAMILIES). 'qualifications' is filled only where it was read from that exam's latest Notice (ref); null means not checked yet, and the website says 'see the Notice' instead of guessing. Hindi names are copied from SSC's own exam list or notice headlines. 'short' is the name people search with (Google India autocomplete, 2026-10-20: e.g. 'ssc cpo' for the SI exam). 'source' is set for exams that are not SSC's (default ssc); 'noTimeline' marks a family that mixes recruitments, so a stage tracker would mix them too. 'sectors' (sources.SECTORS) groups families for 'jobs by sector'. For boards other than SSC, 'hi' is a plain Hindi label (what candidates call the recruitment), not an official name.",
+  "families": {
+    "CGL": {
+      "name": "Combined Graduate Level (CGL)",
+      "hi": "संयुक्त स्नातक स्तरीय परीक्षा",
+      "qualifications": [
+        "graduate"
+      ],
+      "ref": "CGL 2026 Notice para 8",
+      "short": "SSC CGL",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "CHSL": {
+      "name": "Combined Higher Secondary Level (CHSL, 10+2)",
+      "hi": "संयुक्त उच्चतर माध्यमिक स्तर (10+2) परीक्षा",
+      "qualifications": [
+        "12"
+      ],
+      "ref": "CHSL 2026 Notice para 8",
+      "short": "SSC CHSL",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "STENO": {
+      "name": "Stenographer Grade C & D",
+      "hi": "आशुलिपिक ग्रेड 'ग' और 'घ' परीक्षा",
+      "qualifications": [
+        "12"
+      ],
+      "ref": "Steno 2026 Notice para 8.1",
+      "short": "SSC Stenographer",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "CAPF": {
+      "name": "Sub-Inspector in Delhi Police & CAPFs",
+      "hi": "दिल्ली पुलिस और केंद्रीय सशस्त्र पुलिस बल में उप-निरीक्षक",
+      "qualifications": [
+        "graduate",
+        "diploma"
+      ],
+      "ref": "SI 2026 Notice para 7.1-7.2 (Diploma: SI Fire in CISF only)",
+      "short": "SSC CPO (SI in Delhi Police & CAPFs)",
+      "sectors": [
+        "ssc",
+        "police"
+      ]
+    },
+    "JE": {
+      "name": "Junior Engineer (Civil, Mechanical, Electrical)",
+      "hi": "कनिष्ठ अभियंता (सिविल, यांत्रिकी एवं वैद्युत) परीक्षा",
+      "qualifications": [
+        "diploma",
+        "graduate"
+      ],
+      "ref": "JE 2026 Notice para 2 (engineering diploma or degree, by post)",
+      "short": "SSC JE",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "JHT": {
+      "name": "Combined Hindi Translators",
+      "hi": "संयुक्त हिंदी अनुवादक परीक्षा",
+      "qualifications": [
+        "postgraduate"
+      ],
+      "ref": "JHT 2026 Notice para 7.1",
+      "short": "SSC JHT",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "MTS": {
+      "name": "Multi-Tasking Staff & Havaldar",
+      "hi": "मल्टी टास्किंग (गैर-तकनीकी) स्टाफ और हवलदार",
+      "qualifications": null,
+      "ref": null,
+      "short": "SSC MTS",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "CTGD": {
+      "name": "Constable (GD) in CAPFs, SSF & Rifleman in Assam Rifles",
+      "hi": "कांस्टेबल (जीडी)",
+      "qualifications": null,
+      "ref": null,
+      "short": "SSC GD Constable",
+      "sectors": [
+        "ssc",
+        "police",
+        "defence"
+      ]
+    },
+    "RHQ": {
+      "name": "Selection Posts",
+      "hi": "चयन पद परीक्षा",
+      "qualifications": null,
+      "ref": null,
+      "short": "SSC Selection Post",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "DP": {
+      "name": "Delhi Police (Constable, Head Constable)",
+      "hi": "दिल्ली पुलिस",
+      "qualifications": null,
+      "ref": null,
+      "short": "SSC Delhi Police",
+      "sectors": [
+        "ssc",
+        "police"
+      ]
+    },
+    "LDCE": {
+      "name": "Departmental exams (serving Govt employees only)",
+      "hi": "विभागीय परीक्षाएं",
+      "qualifications": null,
+      "ref": null,
+      "short": "SSC Departmental Exams",
+      "sectors": [
+        "ssc"
+      ]
+    },
+    "UPPC": {
+      "name": "UP Police Constable (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस आरक्षी भर्ती",
+      "short": "UP Police Constable",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb",
+      "sectors": [
+        "police"
+      ]
+    },
+    "UPSI": {
+      "name": "UP Police Sub-Inspector (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस उप निरीक्षक भर्ती",
+      "short": "UP Police SI",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb",
+      "sectors": [
+        "police"
+      ]
+    },
+    "UPHG": {
+      "name": "UP Home Guard enrolment (UPPRPB)",
+      "hi": "उत्तर प्रदेश होमगार्ड्स एनरोलमेंट",
+      "short": "UP Home Guard",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb",
+      "sectors": [
+        "police"
+      ]
+    },
+    "UPP": {
+      "name": "UP Police, other posts (UPPRPB)",
+      "hi": "उत्तर प्रदेश पुलिस भर्ती एवं प्रोन्नति बोर्ड",
+      "short": "UP Police",
+      "qualifications": null,
+      "ref": null,
+      "source": "upprpb",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "HSSC": {
+      "name": "Haryana SSC (HSSC): Group C & D, CET, Haryana Police",
+      "hi": "हरियाणा कर्मचारी चयन आयोग",
+      "qualifications": null,
+      "ref": null,
+      "short": "HSSC",
+      "source": "hssc",
+      "noTimeline": true,
+      "sectors": [
+        "state",
+        "police"
+      ]
+    },
+    "CSBC": {
+      "name": "Bihar Police Constable (CSBC)",
+      "hi": "बिहार पुलिस सिपाही भर्ती",
+      "short": "Bihar Police Constable",
+      "qualifications": null,
+      "ref": null,
+      "source": "csbc",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "BPSSC": {
+      "name": "Bihar Police SI & ASI (BPSSC)",
+      "hi": "बिहार पुलिस अधीनस्थ सेवा आयोग: दारोगा (SI) व ASI भर्ती",
+      "short": "Bihar Police SI",
+      "qualifications": null,
+      "ref": null,
+      "source": "bpssc",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "ISRO": {
+      "name": "ISRO: scientists, engineers, technicians, assistants",
+      "hi": "इसरो भर्ती",
+      "short": "ISRO Recruitment",
+      "qualifications": null,
+      "ref": null,
+      "source": "isro",
+      "noTimeline": true,
+      "sectors": [
+        "science"
+      ]
+    },
+    "ONGC": {
+      "name": "ONGC: engineers, geologists, consultants, apprentices",
+      "hi": "ओएनजीसी भर्ती",
+      "short": "ONGC Recruitment",
+      "qualifications": null,
+      "ref": null,
+      "source": "ongc",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    }
+  }
+}

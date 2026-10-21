@@ -1,0 +1,63 @@
+{
+"statusCode": "200",
+"statusMessage": "Document Found!",
+"isCache": true,
+"data": [
+{
+"id": "rfx788saspbworzuhngl8",
+"headline": "Information regarding downloading the Admission Certificate and Scribe's Entry Pass (for 'Own Scribe' candidates) for Stenographer Grade 'C' & 'D' Examination, 2024 (Paper-I)",
+"examId": "59g9y0svo3zgwiu",
+"examYear": "2024",
+"contentType": "admit-card",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-12-06T04:26:23.281Z",
+"attachments": [
+{
+"id": "haaohxd27j5uk0bt8ttyj",
+"attIdtyfrId": "rfx788saspbworzuhngl8",
+"fileName": "Steno Paper-I 2024 AC_51224.pdf",
+"type": "application/pdf",
+"size": 74197,
+"path": "uploads\\masterData\\AdmitCard\\Steno Paper-I 2024 AC_51224.pdf",
+"documentType": null,
+"comment": null
+}
+]
+},
+{
+"id": "wc0or2emwcs2oygp1std1",
+"headline": "Information regarding downloading the Admission Certificate and Scribe's Entry Pass (for 'Own Scribe' candidates) for CHT Examination, 2024 (Paper-I).",
+"examId": "nri55c0igl5cs45",
+"examYear": "2024",
+"contentType": "admit-card",
+"redirectUrl": null,
+"startDate": null,
+"endDate": null,
+"language": "english",
+"createdAt": "2024-11-10T10:12:50.883Z",
+"attachments": [
+{
+"id": "dcdvgvt52ms18acrsof2k",
+"attIdtyfrId": "wc0or2emwcs2oygp1std1",
+"fileName": "CHT_Paper-I_2024_AC_04122024.pdf",
+"type": "application/pdf",
+"size": 79379,
+"path": "uploads\\masterData\\AdmitCard\\CHT_Paper-I_2024_AC_04122024.pdf",
+"documentType": null,
+"comment": null
+}
+]
+}
+],
+"paginate": {
+"totalRecords": 2,
+"totalPerpage": "100",
+"totalPage": 1,
+"currentPage": 1,
+"nextPage": 0,
+"previousPage": 0
+}
+}

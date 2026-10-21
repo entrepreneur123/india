@@ -1,0 +1,9 @@
+[Unit]
+Description=Sarkari job alerts: weekly page copies
+
+[Timer]
+OnCalendar=Mon 05:07
+Persistent=true
+
+[Install]
+WantedBy=timers.target

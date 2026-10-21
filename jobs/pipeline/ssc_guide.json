@@ -1,0 +1,57 @@
+{
+  "_comment": "How to apply, documents and helplines, summarised from the SSC CHSL 2026 Notice (07-09-2026); the same paragraphs appear in the CGL 2026 Notice (para 9.1-9.11). Every entry carries its paragraph ('ref'). Hindi is the app's own translation and needs a native speaker's review.",
+  "source": {"notice": "https://ssc.gov.in/api/attachment/uploads/masterData/NoticeBoards/Notice_of_adv_chsle_2026.pdf", "title": "CHSL 2026 Notice", "checkedOn": "2026-10-20"},
+  "steps": [
+    {"en": "Do the One-Time Registration (OTR) on ssc.gov.in or in the mySSC app. An OTR made on the old site ssc.nic.in does not work any more.",
+     "hi": "ssc.gov.in या mySSC ऐप पर वन-टाइम रजिस्ट्रेशन (OTR) करें। पुरानी साइट ssc.nic.in पर किया गया OTR अब काम नहीं करता।", "ref": "para 9.1-9.2"},
+    {"en": "Choose Aadhaar-based authentication in the OTR. Forms authenticated with Aadhaar are not rejected over photo or signature problems.",
+     "hi": "OTR में आधार आधारित प्रमाणीकरण चुनें। आधार से प्रमाणित फ़ॉर्म फ़ोटो या हस्ताक्षर की समस्या के कारण रद्द नहीं होते।", "ref": "para 9.3"},
+    {"en": "Your photo is taken live by the camera inside the form: good light, plain background, camera at eye level, no cap, mask or glasses. Photographing an old photo gets the form rejected.",
+     "hi": "आपकी फ़ोटो फ़ॉर्म के अंदर कैमरे से ली जाती है: अच्छी रोशनी, सादी पृष्ठभूमि, आँखों के स्तर पर कैमरा; टोपी, मास्क या चश्मा नहीं। पुरानी फ़ोटो की फ़ोटो खींचने पर फ़ॉर्म रद्द हो जाता है।", "ref": "para 9.4-9.5"},
+    {"en": "Upload your signature as a JPEG of 10-20 KB, about 6 cm wide and 2 cm high.",
+     "hi": "हस्ताक्षर 10-20 KB के JPEG में अपलोड करें, लगभग 6 सेमी चौड़ा और 2 सेमी ऊँचा।", "ref": "para 9.6", "tool": "signature"},
+    {"en": "Persons with benchmark disabilities who want reservation, a scribe or extra time upload the disability certificate in the form.",
+     "hi": "आरक्षण, लेखक (स्क्राइब) या अतिरिक्त समय चाहने वाले दिव्यांग उम्मीदवार फ़ॉर्म में दिव्यांगता प्रमाण पत्र अपलोड करें।", "ref": "para 9.7"},
+    {"en": "Check the preview before you submit, and keep a copy of the form. Apply well before the last day: the site gets very slow at the end.",
+     "hi": "जमा करने से पहले प्रीव्यू जाँचें और फ़ॉर्म की कॉपी रखें। अंतिम दिन से काफ़ी पहले आवेदन करें: आख़िरी दिनों में साइट बहुत धीमी हो जाती है।", "ref": "para 9.9-9.11"},
+    {"en": "Pay the ₹100 fee online (BHIM UPI, net banking, or Visa, Mastercard, Maestro, RuPay debit card) unless you are exempt. Without the fee the form stays 'Incomplete'.",
+     "hi": "₹100 शुल्क ऑनलाइन भरें (BHIM UPI, नेट बैंकिंग, या Visa, Mastercard, Maestro, RuPay डेबिट कार्ड), यदि आपको छूट नहीं है। शुल्क के बिना फ़ॉर्म 'Incomplete' रहता है।", "ref": "para 10.1-10.4"},
+    {"en": "Made a mistake? Use the correction window: ₹200 the first time, ₹500 the second time, for every candidate.",
+     "hi": "कोई गलती हुई? सुधार विंडो का उपयोग करें: पहली बार ₹200, दूसरी बार ₹500, सभी उम्मीदवारों के लिए।", "ref": "para 11.4"}
+  ],
+  "documents": [
+    {"en": "Class 10 (matriculation) certificate: your date of birth is taken from it and cannot be changed later.",
+     "hi": "10वीं का प्रमाण पत्र: जन्म तिथि इसी से ली जाती है और बाद में बदली नहीं जा सकती।", "ref": "para 5.3"},
+    {"en": "Category certificate (SC/ST/OBC/EWS/PwBD/ESM) in SSC's own format, shown at document verification. Other formats can be rejected.",
+     "hi": "वर्ग प्रमाण पत्र (SC/ST/OBC/EWS/PwBD/ESM) SSC के प्रारूप में, दस्तावेज़ सत्यापन के समय। दूसरे प्रारूप रद्द हो सकते हैं।", "ref": "para 6.1", "resource": "certificate_formats"},
+    {"en": "OBC: you must not be in the creamy layer on the closing date. EWS: an Income & Asset certificate valid for the financial year the Notice names.",
+     "hi": "OBC: अंतिम तिथि पर आप क्रीमी लेयर में नहीं होने चाहिए। EWS: नोटिस में बताए गए वित्तीय वर्ष के लिए मान्य आय एवं संपत्ति प्रमाण पत्र।", "ref": "para 6.4-6.5"},
+    {"en": "Mark sheets / certificates showing you had the qualification by the cut-off date (a result declared by then counts; one still being processed does not).",
+     "hi": "अंतिम तिथि तक योग्यता होने के प्रमाण में अंकतालिका/प्रमाण पत्र (तब तक घोषित परिणाम मान्य है; प्रक्रिया में चल रहा नहीं)।", "ref": "para 8.6"}
+  ],
+  "helplines": {
+    "ref": "CHSL 2026 Notice, Annexure (p.37)",
+    "list": [
+      {"office": "SSC Headquarters, New Delhi (toll free)", "phones": ["1800 309 3063"]},
+      {"office": "SSC (CR), Prayagraj", "phones": ["0532 2460511", "0532 6541021"]},
+      {"office": "SSC (ER), Kolkata", "phones": ["09477461228", "033 22902230"]},
+      {"office": "SSC (KKR), Bengaluru", "phones": ["080 25502520", "09483862020"]},
+      {"office": "SSC (MPR), Raipur", "phones": ["0771 2282507", "0771 2282678"]},
+      {"office": "SSC (NER), Guwahati", "phones": ["09085073593", "09085015252"]},
+      {"office": "SSC (NR), New Delhi", "phones": ["011 24363343"]},
+      {"office": "SSC (NWR), Chandigarh", "phones": ["0172 2749378", "0172 2744366"]},
+      {"office": "SSC (SR), Chennai", "phones": ["09445195946", "044 28251139"]},
+      {"office": "SSC (WR), Mumbai", "phones": ["09869730700", "07738422705"]}
+    ]
+  },
+  "skillTests": {
+    "ref": "CHSL 2026 Notice para 13.9.13.6-13.9.13.7 (p.20-21); CGL 2026 Notice para 13.9.10.2 (p.29)",
+    "tests": [
+      {"id": "chsl-typing-en", "name": "CHSL LDC/JSA typing test (English)", "minutes": 10, "kdph": 10500, "wpm": 35},
+      {"id": "chsl-typing-hi", "name": "CHSL LDC/JSA typing test (Hindi)", "minutes": 10, "kdph": 9000, "wpm": 30},
+      {"id": "chsl-deo-b", "name": "CHSL DEO skill test (most departments)", "minutes": 15, "kdph": 8000},
+      {"id": "chsl-deo-a", "name": "CHSL DEO skill test (Consumer Affairs & Food, SSC, Culture)", "minutes": 15, "kdph": 15000},
+      {"id": "cgl-dest", "name": "CGL Data Entry Speed Test (about 2000 key depressions in 15 minutes)", "minutes": 15, "kdph": 8000}
+    ]
+  }
+}
