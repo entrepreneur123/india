@@ -10,6 +10,7 @@ import com.yaari.chat.model.InboxItem
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ProfilePhoto
+import com.yaari.chat.model.ProfileStyle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -45,6 +46,8 @@ data class SocialState(
     val invited: Map<String, Set<String>> = emptyMap(),
     val inviting: String? = null,
     val askNotifications: Boolean = false,
+    /** My profile's style is being saved (a new cover is checked on this phone first). */
+    val savingStyle: Boolean = false,
 ) {
     val interestsShown get() = editingInterests || firstRun == FirstRunStep.INTERESTS
     fun isNew(i: InboxItem) = fresh?.contains(i.id) ?: !i.read
@@ -266,6 +269,40 @@ class SocialController(
                 notice(explain(e))
             } finally {
                 _state.update { it.copy(photoBusy = false) }
+            }
+        }
+    }
+
+    /**
+     * Saves my profile's whole style ([style], as the editor shows it). [newCoverUri]: a picked cover, shrunk and checked
+     * for nudity on this phone first (a nude one is refused, nothing is saved). [done] runs once it is saved.
+     */
+    fun saveStyle(style: ProfileStyle, newCoverUri: String?, done: () -> Unit = {}) {
+        if (_state.value.savingStyle) return
+        if (!style.valid()) return notice(UiText(R.string.style_bad))
+        _state.update { it.copy(savingStyle = true) }
+        scope.launch {
+            try {
+                val jpeg = newCoverUri?.let { uri ->
+                    try {
+                        photos.shrink(uri).also { if (photos.nude(it)) return@launch notice(UiText(R.string.photos_nude)) }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: BackendException) {
+                        return@launch notice(explain(e))
+                    } catch (_: Exception) {
+                        return@launch notice(UiText(R.string.err_network))
+                    }
+                }
+                onMe(backend.setProfileStyle(style, jpeg))
+                notice(UiText(R.string.style_saved))
+                done()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(if ((e as? BackendException)?.code == "bad_request") UiText(R.string.style_bad) else explain(e))
+            } finally {
+                _state.update { it.copy(savingStyle = false) }
             }
         }
     }

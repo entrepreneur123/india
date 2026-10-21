@@ -36,7 +36,11 @@ data class ProfilePhoto(val id: String, val url: String) {
 }
 
 enum class InboxKind(val code: String) {
-    MESSAGE("message"), FRIEND_REQUEST("friend_request"), FRIEND_ACCEPT("friend_accept"), ROOM_INVITE("room_invite");
+    MESSAGE("message"), FRIEND_REQUEST("friend_request"), FRIEND_ACCEPT("friend_accept"), ROOM_INVITE("room_invite"),
+    /** Likes on my post: one line per post until read, [InboxItem.count] people (the newest is the actor). */
+    POST_LIKE("post_like"),
+    /** Comments on my post, folded the same way. */
+    POST_COMMENT("post_comment");
 
     companion object {
         fun of(code: String?) = entries.firstOrNull { it.code == code }
@@ -44,13 +48,16 @@ enum class InboxKind(val code: String) {
 }
 
 /**
- * A line in Notifications. [count]: messages folded into a [InboxKind.MESSAGE] item (one per chat). [roomOpen]: the room
+ * A line in Notifications. [count]: messages folded into a [InboxKind.MESSAGE] item (one per chat), or the likes and
+ * comments of a post. [roomOpen]: the room
  * of an invite is still live. [pending]: a friend request still waiting for my answer.
  */
 data class InboxItem(
     val id: Long, val kind: InboxKind, val actor: Profile, val at: Long, val read: Boolean,
     val count: Int = 1, val matchId: String? = null, val roomId: String? = null, val roomTitle: String? = null,
     val roomOpen: Boolean = false, val pending: Boolean = false,
+    /** The post a like or comment is about. */
+    val post: PostRef? = null,
 )
 
 /** Unread counts (my_badges): Notifications, friend requests waiting for me, and unread messages per chat (match id). */

@@ -222,6 +222,8 @@ private fun Screens(vm: AppViewModel, s: UiState) {
             RoomPlayerHost(vm)
         }
         VoiceService.Follow(vm)
+        // A post opened full screen (a profile's grid, Notifications) and the comments sheet; profiles go over them.
+        FeedLayer(vm, s)
         // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
         var lastViewed by remember { mutableStateOf<Profile?>(null) }
         s.viewing?.let { lastViewed = it }

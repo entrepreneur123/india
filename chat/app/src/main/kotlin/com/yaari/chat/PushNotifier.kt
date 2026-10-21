@@ -28,6 +28,10 @@ object PushNotifier {
         InboxKind.FRIEND_REQUEST -> context.getString(R.string.inbox_request, m.actorName)
         InboxKind.FRIEND_ACCEPT -> context.getString(R.string.inbox_accept, m.actorName)
         InboxKind.ROOM_INVITE -> context.getString(R.string.push_invite, m.actorName)
+        InboxKind.POST_LIKE ->
+            if (m.count > 1) context.resources.getQuantityString(R.plurals.inbox_post_likes, m.count - 1, m.actorName, m.count - 1)
+            else context.getString(R.string.inbox_post_like, m.actorName)
+        InboxKind.POST_COMMENT -> context.getString(R.string.inbox_post_comment, m.actorName)
     }
 
     fun channelName(context: Context, c: PushChannel) = context.getString(

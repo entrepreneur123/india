@@ -9,6 +9,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -196,8 +199,12 @@ class AppFlowTest {
         field("Write something").performTextInput("First day on Yaari ✨")
         shot("18_new_post")
         compose.onNodeWithText("Share").performClick()
+        // The profile's header (cover, prompts, photos) is tall: the grid scrolls down to the new post.
+        compose.waitUntil(5_000) { vm.state.value.me?.posts?.size == 1 }
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText("First day on Yaari", substring = true))
         waitFor("First day on Yaari")
         shot("19_my_profile")
+        compose.onNode(hasScrollAction()).performScrollToIndex(0)
         compose.onNodeWithText("Edit profile").performClick()
         field("Bio").performTextReplacement("Chai, cricket and new friends")
         shot("20_edit_profile")

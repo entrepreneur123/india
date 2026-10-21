@@ -21,6 +21,11 @@ import com.yaari.chat.model.Badges
 import com.yaari.chat.model.InboxItem
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.RoomQuery
+import com.yaari.chat.model.Comment
+import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.PostVisibility
+import com.yaari.chat.model.ProfileStyle
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -121,9 +126,12 @@ interface Backend {
     suspend fun flagNudity(matchId: String)
 
     suspend fun recents(): List<RecentMatch>
-    /** Someone's profile with posts; null if not visible (never matched, or blocked). */
+    /** Someone's profile with posts and style; null if not visible (never matched, not a public poster, or blocked). */
     suspend fun profile(userId: String): Profile?
-    suspend fun addPost(text: String, imageUri: String?): Post
+    /** [visibility]: friends (the default) or everyone. 20 a day (slow_down). */
+    suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility = PostVisibility.FRIENDS): Post
+    /** My own post only (as before: the posts table's delete rule); its likes and comments go with it. */
+    suspend fun deletePost(postId: String)
     /** Gender and birth date never change. [newPhotoUri] is a picked image, or null to keep the current photo. */
     suspend fun updateProfile(name: String, city: String, bio: String, newPhotoUri: String?): Profile
 
@@ -204,7 +212,7 @@ interface Backend {
 
     // ---- Notifications and unread counts (023_notifications.sql) ----
 
-    /** My notifications, newest first, 30 at a time ([before]: the oldest id already shown). */
+    /** My notifications (inbox2: with the post of a like or comment), newest first, 30 at a time ([before]: the oldest id shown). */
     suspend fun inbox(before: Long? = null): List<InboxItem>
     /** Marks these items (null: all of them) read. */
     suspend fun markInboxRead(ids: List<Long>? = null)
@@ -224,4 +232,29 @@ interface Backend {
     /** Adds a photo to my profile ([jpegUri]: already shrunk and checked on this phone, [PhotoCheck]); at most 4 (not_allowed). */
     suspend fun addProfilePhoto(jpegUri: String): Profile
     suspend fun removeProfilePhoto(id: String): Profile
+
+    // ---- Profile style, posts' likes and comments, the feed (033_profiles_feed.sql) ----
+
+    /**
+     * Sets all of my profile's style at once (set_profile_style). [newCoverJpeg]: a picked cover already shrunk and
+     * checked on this phone ([PhotoCheck]), stored in my "cover" folder; null keeps [ProfileStyle.coverId] (null: no
+     * cover). bad_request when something is out of bounds. Returns my profile.
+     */
+    suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String? = null): Profile
+    /** Newest first, 20 at a time; [before]: the oldest post already shown. Friends: theirs and mine; Discover: public ones. */
+    suspend fun feed(tab: FeedTab, before: Post? = null): List<Post>
+    /** One person's posts I may see, newest first ([before] as in [feed]). */
+    suspend fun postsOf(userId: String, before: Post? = null): List<Post>
+    /** One post with its author and counts; null when it is gone or not for me. */
+    suspend fun post(postId: String): Post?
+    /** Heart on or off; not_found when the post is gone. */
+    suspend fun likePost(postId: String, on: Boolean): LikeState
+    /** Oldest first, 50 at a time ([after]: the newest comment id already shown). */
+    suspend fun comments(postId: String, after: Long? = null): List<Comment>
+    /** 1–300 characters; [replyTo]: the comment it answers. 10 a minute (slow_down); not_found, bad_request. */
+    suspend fun addComment(postId: String, body: String, replyTo: Long? = null): Comment
+    /** Mine, or any under my post. */
+    suspend fun removeComment(commentId: Long)
+    suspend fun reportPost(postId: String, reason: ReportReason)
+    suspend fun reportComment(commentId: Long, reason: ReportReason)
 }

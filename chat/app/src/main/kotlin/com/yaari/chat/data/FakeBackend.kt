@@ -28,6 +28,16 @@ import com.yaari.chat.model.InboxKind
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.ProfilePhoto
 import com.yaari.chat.model.RoomQuery
+import com.yaari.chat.model.Accent
+import com.yaari.chat.model.Comment
+import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.PostRef
+import com.yaari.chat.model.PostVisibility
+import com.yaari.chat.model.ProfilePrompt
+import com.yaari.chat.model.ProfileStyle
+import com.yaari.chat.model.PromptQ
+import com.yaari.chat.model.SpokenLang
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -46,6 +56,9 @@ open class FakeBackend(
     /** Voice rooms talk, chat and react by themselves (the demo); tests drive them through [voice] instead. */
     voiceAmbient: Boolean = !instant,
 ) : Backend {
+    /** The demo's people like and comment on my posts by themselves (tests call [reactToPost] instead). */
+    private val ambient = voiceAmbient
+
     private suspend fun wait(ms: Long) {
         if (!instant) delay(ms)
     }
@@ -74,8 +87,8 @@ open class FakeBackend(
 
     /** Notifications, as the server's triggers write them (023): a friend's messages fold into one unread row per chat. */
     private class Note(
-        val id: Long, val kind: InboxKind, val actor: Profile, var at: Long, var read: Boolean = false, var n: Int = 1,
-        val matchId: String? = null, val roomId: String? = null,
+        val id: Long, val kind: InboxKind, var actor: Profile, var at: Long, var read: Boolean = false, var n: Int = 1,
+        val matchId: String? = null, val roomId: String? = null, val postId: String? = null,
     )
     private val notes = mutableListOf<Note>()
     private var noteSeq = 1L
@@ -88,8 +101,122 @@ open class FakeBackend(
     var deviceToken: String? = null
         private set
 
+    // ---- posts, likes and comments (033), as the server keeps them ----
+
+    private class FakePost(
+        val id: String, val author: String, val text: String, val image: String?, val at: Long, val visibility: PostVisibility,
+        val likes: MutableSet<String> = mutableSetOf(), val comments: MutableList<FakeComment> = mutableListOf(),
+    )
+    private class FakeComment(val id: Long, val authorId: String, val body: String, val at: Long, val replyTo: Long?, var removed: Boolean = false)
+
+    private val posts = mutableListOf<FakePost>()
+    private var commentSeq = 1L
+    /** My posts the demo's people have reacted to already (once each). */
+    private val reacted = mutableSetOf<String>()
+    /** Reports of posts and comments ("post:<id>" / "comment:<id>" to the reason), for tests. */
+    val postReports = mutableListOf<Pair<String, ReportReason>>()
+    /** The demo people's style (cover, colour, status, languages, prompts). */
+    private val styles = STYLES.toMutableMap()
+
     init {
         notify(InboxKind.FRIEND_REQUEST, POOL.first { it.id == "p3" }, at = clock() - 3_600_000L)
+        seedPosts()
+    }
+
+    /** The demo's people posted over the last days; some posts are public (Discover), with likes and comments. */
+    private fun seedPosts() {
+        val now = clock()
+        val hour = 3_600_000L
+        var k = 0
+        POOL.forEach { p ->
+            p.posts.forEachIndexed { i, post ->
+                val public = p.id in PUBLIC_POSTERS && i == 0 || p.id in setOf("p6", "p8") && i == 1
+                val at = now - (k++ * 5 + 1) * hour / 2 - i * 20 * hour
+                posts += FakePost(post.id, p.id, post.text, post.imageUri, at, if (public) PostVisibility.PUBLIC else PostVisibility.FRIENDS)
+            }
+        }
+        // Likes and comments from the others.
+        posts.forEachIndexed { i, fp ->
+            POOL.filter { it.id != fp.author }.take((i * 7 + 3) % 9).forEach { fp.likes += it.id }
+        }
+        fun comment(postId: String, from: String, body: String, replyTo: Long? = null, ago: Long = 20 * 60_000L): Long {
+            val id = commentSeq++
+            posts.first { it.id == postId }.comments += FakeComment(id, from, body, now - ago, replyTo)
+            return id
+        }
+        val first = comment("p1-0", "p7", "This view is unreal. Saving it for my next trip", ago = 50 * 60_000L)
+        comment("p1-0", "p1", "Come in the monsoon, it is even better", replyTo = first, ago = 42 * 60_000L)
+        comment("p1-0", "p5", "Golden hour hits different there", ago = 30 * 60_000L)
+        comment("p6-0", "p1", "The colours! Which lens?", ago = 3 * hour)
+        comment("p8-0", "p2", "Adding this to my list", ago = 5 * hour)
+        comment("p8-1", "p4", "Best gyoza in town, I believe it", ago = 7 * hour)
+    }
+
+    private fun personOf(id: String): Profile? =
+        phone?.let { accounts[it] }?.takeIf { it.id == id } ?: POOL.firstOrNull { it.id == id }?.let { it.copy(style = styles[it.id] ?: ProfileStyle(), posts = emptyList()) }
+
+    private fun meId() = phone?.let { accounts[it] }?.id
+
+    /** The server's post_visible: mine; else not blocked, and public, a friend's or someone I chatted with. */
+    private fun canSee(p: FakePost): Boolean {
+        val me = meId()
+        if (p.author == me) return true
+        if (p.author in blocked) return false
+        return p.visibility == PostVisibility.PUBLIC || friendships[p.author] == FriendState.FRIENDS || matches.values.any { it.partner.id == p.author }
+    }
+
+    private fun toPost(p: FakePost, withAuthor: Boolean = true): Post {
+        val me = meId()
+        return Post(
+            p.id, p.text, p.image, p.at, p.visibility, p.likes.size, p.comments.count { !it.removed && it.authorId !in blocked },
+            me != null && me in p.likes, if (withAuthor) personOf(p.author) else null,
+        )
+    }
+
+    private fun postsBy(userId: String): List<Post> = posts.filter { it.author == userId && canSee(it) }.sortedByDescending { it.at }.map { toPost(it, withAuthor = false) }
+
+    private fun page(list: List<FakePost>, before: Post?) =
+        list.filter { canSee(it) && (before == null || it.at < before.createdAt) }.sortedByDescending { it.at }.take(PAGE).map { toPost(it) }
+
+    private fun visiblePost(id: String) = posts.firstOrNull { it.id == id }?.takeIf { canSee(it) } ?: throw BackendException("not_found")
+
+    /**
+     * Someone likes (and, with [comment], comments on) my post [postId] while I'm elsewhere (the demo, tests): the
+     * notification folds into the post's unread line, as the server's.
+     */
+    fun reactToPost(postId: String, actorId: String, comment: String? = null) {
+        val p = posts.firstOrNull { it.id == postId } ?: return
+        val actor = personOf(actorId) ?: return
+        if (p.likes.add(actorId)) notifyPost(InboxKind.POST_LIKE, actor, p)
+        if (comment != null) {
+            p.comments += FakeComment(commentSeq++, actorId, comment, clock(), null)
+            notifyPost(InboxKind.POST_COMMENT, actor, p)
+        }
+    }
+
+    private fun notifyPost(kind: InboxKind, actor: Profile, p: FakePost) {
+        if (p.author != meId() || actor.id == meId()) return
+        val open = notes.firstOrNull { !it.read && it.kind == kind && it.postId == p.id }
+        if (open != null) {
+            open.n++
+            open.actor = actor
+            open.at = clock()
+        } else {
+            notes += Note(noteSeq++, kind, actor, clock(), postId = p.id)
+        }
+        noteSignals.tryEmit(Unit)
+    }
+
+    /** The demo: a couple of people react to each of my posts once, the next time I look around. */
+    private fun ambientReactions() {
+        if (!ambient) return
+        val me = meId() ?: return
+        posts.filter { it.author == me && it.id !in reacted && clock() - it.at > 5_000L }.forEach { p ->
+            reacted += p.id
+            reactToPost(p.id, "p1")
+            reactToPost(p.id, "p7", "Love this!")
+            reactToPost(p.id, "p5")
+        }
     }
 
     /**
@@ -101,7 +228,7 @@ open class FakeBackend(
             !it.read && it.kind == kind && when (kind) {
                 InboxKind.MESSAGE -> it.matchId == matchId
                 InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT -> it.actor.id == actor.id
-                InboxKind.ROOM_INVITE -> false
+                InboxKind.ROOM_INVITE, InboxKind.POST_LIKE, InboxKind.POST_COMMENT -> false
             }
         }
         if (open != null) {
@@ -127,7 +254,8 @@ open class FakeBackend(
         noteSignals.tryEmit(Unit)
     }
 
-    private fun me() = phone?.let { accounts[it] } ?: throw BackendException("not_signed_in")
+    /** My profile with my posts as they are now (counts included). */
+    private fun me() = (phone?.let { accounts[it] } ?: throw BackendException("not_signed_in")).let { it.copy(posts = postsBy(it.id)) }
 
     /** The demo's voice rooms (and the hooks tests drive them with). */
     val voice = FakeVoice(::me, random, clock, ::wait, voiceAmbient)
@@ -144,7 +272,7 @@ open class FakeBackend(
     }
 
     override suspend fun isSignedIn() = phone != null
-    override suspend fun myProfile() = phone?.let { accounts[it] }
+    override suspend fun myProfile() = phone?.let { accounts[it] }?.let { me() }
 
     override suspend fun createProfile(p: NewProfile): Profile {
         val ph = phone ?: throw BackendException("not_signed_in")
@@ -171,6 +299,7 @@ open class FakeBackend(
 
     override suspend fun deleteAccount() {
         val ph = phone ?: throw BackendException("not_signed_in")
+        accounts[ph]?.let { me -> posts.removeAll { it.author == me.id } }
         accounts.remove(ph)
         matches.clear()
         friendships.clear()
@@ -315,25 +444,32 @@ open class FakeBackend(
         if (userId == phone?.let { accounts[it] }?.id) return me()
         voice.profileOf(userId)?.let { return it } // people met in a voice room
         if (!visible(userId)) return null
-        return POOL.firstOrNull { it.id == userId }
+        return POOL.firstOrNull { it.id == userId }?.let { it.copy(posts = postsBy(it.id), style = styles[it.id] ?: ProfileStyle()) }
     }
 
+    /** The server's can_view: chatted with, a friend or a request, or someone who posts publicly. */
     private fun visible(userId: String) = userId !in blocked &&
-        (matches.values.any { it.partner.id == userId } || userId in friendships)
+        (matches.values.any { it.partner.id == userId } || userId in friendships ||
+            posts.any { it.author == userId && it.visibility == PostVisibility.PUBLIC })
 
-    override suspend fun addPost(text: String, imageUri: String?): Post {
-        val ph = phone ?: throw BackendException("not_signed_in")
-        val post = Post(UUID.randomUUID().toString(), text, imageUri, clock())
-        accounts[ph] = me().let { it.copy(posts = listOf(post) + it.posts) }
-        return post
+    override suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility): Post {
+        val me = me()
+        if (posts.count { it.author == me.id && clock() - it.at < 86_400_000L } >= Post.PER_DAY) throw BackendException("slow_down")
+        val p = FakePost(UUID.randomUUID().toString(), me.id, text, imageUri, clock(), visibility)
+        posts += p
+        return toPost(p, withAuthor = false)
+    }
+
+    override suspend fun deletePost(postId: String) {
+        val me = me()
+        if (!posts.removeAll { it.id == postId && it.author == me.id }) throw BackendException("not_found")
+        notes.removeAll { it.postId == postId }
+        noteSignals.tryEmit(Unit)
     }
 
     override suspend fun updateProfile(name: String, city: String, bio: String, newPhotoUri: String?): Profile {
-        val ph = phone ?: throw BackendException("not_signed_in")
         wait(300)
-        val updated = me().copy(name = name, city = city, bio = bio, photoUri = newPhotoUri ?: me().photoUri)
-        accounts[ph] = updated
-        return updated
+        return updateMe { it.copy(name = name, city = city, bio = bio, photoUri = newPhotoUri ?: it.photoUri) }
     }
 
     // ---- friends: scripted people accept a request the next time the list loads ----
@@ -415,11 +551,13 @@ open class FakeBackend(
 
     override suspend fun inbox(before: Long?): List<InboxItem> {
         me()
+        ambientReactions()
         wait(300)
         return notes.filter { it.actor.id !in blocked && (before == null || it.id < before) }.sortedByDescending { it.id }.take(30).map { n ->
             InboxItem(
                 n.id, n.kind, n.actor, n.at, n.read, n.n, n.matchId, n.roomId, voice.titleOf(n.roomId), voice.isOpen(n.roomId),
                 pending = n.kind == InboxKind.FRIEND_REQUEST && friendships[n.actor.id] == FriendState.INCOMING,
+                post = n.postId?.let { id -> posts.firstOrNull { it.id == id } }?.let { PostRef(it.id, it.text.take(80), it.image) },
             )
         }
     }
@@ -431,6 +569,7 @@ open class FakeBackend(
 
     override suspend fun badges(): Badges {
         me()
+        ambientReactions()
         return Badges(
             inbox = notes.count { !it.read && it.actor.id !in blocked }.coerceAtMost(99),
             friends = friendships.entries.count { it.value == FriendState.INCOMING && it.key !in blocked },
@@ -474,6 +613,97 @@ open class FakeBackend(
     }
 
     override suspend fun removeProfilePhoto(id: String): Profile = updateMe { it.copy(photos = it.photos.filterNot { p -> p.id == id }) }
+
+    // ---- profile style, the feed, likes and comments (the server's 033 rules) ----
+
+    override suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String?): Profile {
+        val status = style.status?.trim()?.ifEmpty { null }
+        val clean = style.copy(status = status, languages = style.languages.distinct(), prompts = style.prompts.map { it.copy(answer = it.answer.trim()) })
+        if (!clean.valid()) throw BackendException("bad_request")
+        wait(300)
+        val cover = newCoverJpeg ?: style.coverId
+        return updateMe { it.copy(style = clean.copy(cover = cover, coverId = cover)) }
+    }
+
+    override suspend fun feed(tab: FeedTab, before: Post?): List<Post> {
+        val me = me()
+        ambientReactions()
+        wait(400)
+        return when (tab) {
+            FeedTab.FRIENDS -> page(posts.filter { it.author == me.id || friendships[it.author] == FriendState.FRIENDS }, before)
+            FeedTab.DISCOVER -> page(posts.filter { it.visibility == PostVisibility.PUBLIC }, before)
+        }
+    }
+
+    override suspend fun postsOf(userId: String, before: Post?): List<Post> {
+        me()
+        return page(posts.filter { it.author == userId }, before)
+    }
+
+    override suspend fun post(postId: String): Post? {
+        me()
+        return posts.firstOrNull { it.id == postId }?.takeIf { canSee(it) }?.let { toPost(it) }
+    }
+
+    override suspend fun likePost(postId: String, on: Boolean): LikeState {
+        val me = me()
+        val p = visiblePost(postId)
+        val fresh = on && me.id !in p.likes
+        if (on) p.likes += me.id else p.likes -= me.id
+        if (fresh) notifyPost(InboxKind.POST_LIKE, me, p)
+        return LikeState(p.likes.size, on)
+    }
+
+    override suspend fun comments(postId: String, after: Long?): List<Comment> {
+        val me = me()
+        val p = visiblePost(postId)
+        wait(250)
+        return p.comments.filter { !it.removed && it.authorId !in blocked && (after == null || it.id > after) }.sortedBy { it.id }.take(50)
+            .mapNotNull { c -> comment(p, c, me.id) }
+    }
+
+    private fun comment(p: FakePost, c: FakeComment, me: String): Comment? {
+        val author = personOf(c.authorId) ?: return null
+        val replyName = c.replyTo?.let { r -> p.comments.firstOrNull { it.id == r } }?.let { personOf(it.authorId)?.name }
+        return Comment(c.id, p.id, c.body, c.at, author, c.replyTo, replyName, c.authorId == me, c.authorId == me || p.author == me)
+    }
+
+    override suspend fun addComment(postId: String, body: String, replyTo: Long?): Comment {
+        val me = me()
+        val text = body.trim()
+        if (text.length !in 1..Comment.MAX) throw BackendException("bad_request")
+        val p = visiblePost(postId)
+        val recent = posts.sumOf { fp -> fp.comments.count { it.authorId == me.id && clock() - it.at < 60_000L } }
+        if (recent >= COMMENTS_PER_MINUTE) throw BackendException("slow_down")
+        val reply = replyTo?.takeIf { r -> p.comments.any { it.id == r && !it.removed } }
+        val c = FakeComment(commentSeq++, me.id, text, clock(), reply)
+        p.comments += c
+        notifyPost(InboxKind.POST_COMMENT, me, p)
+        return comment(p, c, me.id)!!
+    }
+
+    override suspend fun removeComment(commentId: Long) {
+        val me = me()
+        val p = posts.firstOrNull { fp -> fp.comments.any { it.id == commentId && !it.removed } } ?: throw BackendException("not_found")
+        val c = p.comments.first { it.id == commentId }
+        if (c.authorId != me.id && p.author != me.id) throw BackendException("not_found")
+        c.removed = true
+    }
+
+    override suspend fun reportPost(postId: String, reason: ReportReason) {
+        val me = me()
+        val p = visiblePost(postId)
+        if (p.author == me.id) throw BackendException("not_found")
+        postReports += "post:$postId" to reason
+    }
+
+    override suspend fun reportComment(commentId: Long, reason: ReportReason) {
+        val me = me()
+        val p = posts.firstOrNull { fp -> fp.comments.any { it.id == commentId && !it.removed } }?.takeIf { canSee(it) }
+            ?: throw BackendException("not_found")
+        if (p.comments.first { it.id == commentId }.authorId == me.id) throw BackendException("not_found")
+        postReports += "comment:$commentId" to reason
+    }
     override fun voiceSession(roomId: String) = voice.session(roomId)
     override suspend fun leaveVoice(roomId: String) = voice.leave(roomId)
     override suspend fun endVoice(roomId: String) = voice.endRoom(roomId)
@@ -500,6 +730,43 @@ open class FakeBackend(
 
     companion object {
         const val DEMO_OTP = "123456"
+        private const val PAGE = 20
+        private const val COMMENTS_PER_MINUTE = 10
+        /** Their first post is public (Discover); everyone else posts for friends only. */
+        private val PUBLIC_POSTERS = setOf("p1", "p2", "p5", "p6", "p7", "p8", "p11")
+
+        /** Drawn pictures for the demo's posts (no network needed): see ui DemoArt. */
+        const val ART_SUNSET = "demo://snap"
+        const val ART_CITY = "demo://city"
+        const val ART_HILLS = "demo://hills"
+        const val ART_LIGHTS = "demo://lights"
+
+        /** The demo people's own style, so their profiles show the 033 features. */
+        private val STYLES = mapOf(
+            "p1" to ProfileStyle(
+                accent = Accent.ROSE, status = "Chai first, then everything else", languages = SpokenLang.of(listOf("en", "hi", "mr")),
+                prompts = listOf(
+                    ProfilePrompt(PromptQ.WEEKEND, "A long walk on Marine Drive, then pav bhaji at midnight"),
+                    ProfilePrompt(PromptQ.SONG, "Kesariya. It has been on loop since forever"),
+                    ProfilePrompt(PromptQ.TALK, "You have a book recommendation ready"),
+                ),
+            ),
+            "p2" to ProfileStyle(accent = Accent.MINT, status = "Code by day, football by night", languages = SpokenLang.of(listOf("pt", "en"))),
+            "p3" to ProfileStyle(
+                accent = Accent.VIOLET, status = "Dancing through the week", languages = SpokenLang.of(listOf("en", "kn", "hi")),
+                prompts = listOf(ProfilePrompt(PromptQ.LAUGH, "Bruno chasing his own tail at 6 am")),
+            ),
+            "p5" to ProfileStyle(accent = Accent.SUNSET, languages = SpokenLang.of(listOf("en", "pt"))),
+            "p6" to ProfileStyle(
+                accent = Accent.OCEAN, status = "Chasing golden hour", languages = SpokenLang.of(listOf("hi", "en")),
+                prompts = listOf(ProfilePrompt(PromptQ.TRAVEL, "Spiti valley, camera fully charged")),
+            ),
+            "p7" to ProfileStyle(accent = Accent.BERRY, status = "Vinyl collector"),
+            "p8" to ProfileStyle(
+                accent = Accent.GOLD, prompts = listOf(ProfilePrompt(PromptQ.FOOD, "A bowl of tonkotsu in a tiny Osaka alley")),
+            ),
+            "p10" to ProfileStyle(accent = Accent.SLATE, status = "Building something", languages = SpokenLang.of(listOf("hi", "en", "pa"))),
+        )
 
         private val REPLIES = listOf(
             "Hii 😊", "Where are you from?", "Haha nice", "What do you do?", "Same here!",
@@ -511,10 +778,13 @@ open class FakeBackend(
             "Maybe! You?", "Bollywood all the way", "Cricket obviously 🏏",
         )
 
+        /** The demo's posts that come with a (drawn) picture. */
+        private val ART = mapOf("p1-0" to ART_SUNSET, "p6-0" to ART_HILLS, "p8-0" to ART_LIGHTS, "p4-0" to ART_CITY, "p7-0" to ART_CITY)
+
         private fun profile(id: Int, name: String, g: Gender, age: Int, city: String, country: String, bio: String, vararg posts: String) =
             Profile(
                 id = "p$id", name = name, gender = g, age = age, city = city, bio = bio, colorSeed = id, country = country,
-                posts = posts.mapIndexed { i, t -> Post("p$id-$i", t, createdAt = 1_760_000_000_000L - i * 86_400_000L) },
+                posts = posts.mapIndexed { i, t -> Post("p$id-$i", t, ART["p$id-$i"], createdAt = 1_760_000_000_000L - i * 86_400_000L) },
             )
 
         /** Some scripted people picked interests (shown on their profiles, "You both like"). */

@@ -28,11 +28,11 @@ data class PushMessage(
 ) {
     val channel get() = when (kind) {
         InboxKind.MESSAGE -> PushChannel.MESSAGES
-        InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT -> PushChannel.SOCIAL
+        InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT, InboxKind.POST_LIKE, InboxKind.POST_COMMENT -> PushChannel.SOCIAL
         InboxKind.ROOM_INVITE -> PushChannel.ROOMS
     }
 
-    /** Where tapping it goes: the chat, the room (through the invite), else Notifications. */
+    /** Where tapping it goes: the chat, the room (through the invite), else Notifications (likes and comments: the post is there). */
     val link: DeepLink get() = when {
         kind == InboxKind.MESSAGE && matchId != null -> DeepLink.Thread(matchId, actorId, actorName)
         kind == InboxKind.ROOM_INVITE && inboxId != null && roomId != null -> DeepLink.Invite(inboxId, roomId)

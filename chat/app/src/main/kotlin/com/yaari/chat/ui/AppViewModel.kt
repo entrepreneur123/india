@@ -40,6 +40,8 @@ import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.Post
+import com.yaari.chat.model.PostVisibility
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -60,7 +62,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.time.LocalDate
 
-enum class Tab { ROOMS, RANDOM, RECENT, ME }
+enum class Tab { ROOMS, RANDOM, FEED, RECENT, ME }
 
 /** Why the Premium sheet opened; [reason] is shown above the offer. */
 enum class Paywall(@StringRes val reason: Int?) {
@@ -164,6 +166,20 @@ class AppViewModel(
     val social = SocialController(backend, viewModelScope, ::notice, ::explain, photos, firstRun, push.enabled) { me ->
         _state.update { it.copy(me = me) }
     }
+
+    /** The feed, hearts and comments; a post's new counts reach my profile and the open one. */
+    val feed = FeedController(
+        backend, viewModelScope, ::notice, ::explain,
+        onPost = { id, change -> _state.update { s -> s.copy(me = s.me?.patchPost(id, change), viewing = s.viewing?.patchPost(id, change)) } },
+        onRemoved = { id ->
+            _state.update { s ->
+                s.copy(me = s.me?.let { m -> m.copy(posts = m.posts.filterNot { it.id == id }) }, viewing = s.viewing?.let { v -> v.copy(posts = v.posts.filterNot { it.id == id }) })
+            }
+        },
+    )
+
+    private fun Profile.patchPost(id: String, change: (Post) -> Post) =
+        if (posts.none { it.id == id }) this else copy(posts = posts.map { if (it.id == id) change(it) else it })
 
     init {
         viewModelScope.launch {
@@ -397,6 +413,7 @@ class AppViewModel(
         when (tab) {
             Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() }; social.refreshBadges() }
             Tab.ROOMS -> voice.refreshList()
+            Tab.FEED -> feed.opened()
             else -> Unit
         }
     }
@@ -892,6 +909,7 @@ class AppViewModel(
     /** Removes every trace of [partnerId] from what is on screen. */
     private fun forget(partnerId: String, message: UiText) {
         voice.forget(partnerId)
+        feed.forget(partnerId)
         dmJob?.takeIf { _state.value.dm?.recent?.partner?.id == partnerId }?.cancel()
         _state.update { s ->
             s.copy(
@@ -975,6 +993,13 @@ class AppViewModel(
 
     fun inboxJoin(item: InboxItem) = voice.guard(item.roomId) { social.joinInvite(item, voice::openNow) }
 
+    /** A like or comment on my post: the post full screen with its comments. */
+    fun inboxPost(item: InboxItem) {
+        val id = item.post?.id ?: return
+        social.closeInbox()
+        feed.openPost(id)
+    }
+
     /** Links wait until I'm signed in (a room link survives signing up first). */
     private fun followLinks() = viewModelScope.launch {
         combine(links.pending, _state.map { !it.booting && it.me != null }.distinctUntilChanged()) { link, ready -> link.takeIf { ready } }
@@ -1037,18 +1062,22 @@ class AppViewModel(
     private fun resetToStart() {
         voice.close()
         social.reset()
+        feed.reset()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
         _state.value = UiState(booting = false)
     }
 
-    fun addPost(text: String, imageUri: String?) {
-        val t = text.trim().take(500)
+    /** Shares a post with friends or everyone; it shows on my profile and on top of the feed at once. */
+    fun addPost(text: String, imageUri: String?, visibility: PostVisibility = PostVisibility.FRIENDS) {
+        val t = text.trim().take(Post.MAX_TEXT)
         if (t.isEmpty() && imageUri == null) return
         act {
-            val post = backend.addPost(t, imageUri)
+            val post = backend.addPost(t, imageUri, visibility)
             _state.update { s -> s.copy(me = s.me?.let { it.copy(posts = listOf(post) + it.posts) }) }
+            _state.value.me?.let { me -> feed.added(post.copy(author = post.author ?: me.copy(posts = emptyList()))) }
+            notice(UiText(R.string.msg_posted))
         }
     }
 

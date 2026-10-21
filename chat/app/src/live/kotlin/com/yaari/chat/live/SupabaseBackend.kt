@@ -66,6 +66,19 @@ import com.yaari.chat.model.Interest
 import com.yaari.chat.model.ProfilePhoto
 import com.yaari.chat.model.RoomLang
 import com.yaari.chat.model.RoomQuery
+import com.yaari.chat.model.Accent
+import com.yaari.chat.model.Comment
+import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.PostRef
+import com.yaari.chat.model.PostVisibility
+import com.yaari.chat.model.ProfilePrompt
+import com.yaari.chat.model.ProfileStyle
+import com.yaari.chat.model.PromptQ
+import com.yaari.chat.model.SpokenLang
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.addJsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -189,6 +202,29 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("read_at") val readAt: String? = null, @SerialName("match_id") val matchId: String? = null,
         @SerialName("room_id") val roomId: String? = null, @SerialName("room_title") val roomTitle: String? = null,
         @SerialName("room_open") val roomOpen: Boolean = false, val pending: Boolean = false, val actor: VoiceCardRow,
+        val post: PostRefRow? = null,
+    )
+    // ---- 033_profiles_feed.sql ----
+    @Serializable private data class PostRefRow(val id: String, val body: String = "", @SerialName("image_path") val imagePath: String? = null)
+    @Serializable private data class AuthorRow(
+        val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null,
+        val country: String? = null, @SerialName("photo_path") val photoPath: String? = null, val accent: String? = null,
+    )
+    @Serializable private data class FeedPostRow(
+        val id: String, val body: String = "", @SerialName("image_path") val imagePath: String? = null,
+        @SerialName("created_at") val createdAt: String, val visibility: String = "friends", val likes: Int = 0, val comments: Int = 0,
+        val liked: Boolean = false, val author: AuthorRow? = null,
+    )
+    @Serializable private data class CommentRow(
+        val id: Long, @SerialName("post_id") val postId: String, val body: String, @SerialName("created_at") val createdAt: String,
+        @SerialName("reply_to") val replyTo: Long? = null, @SerialName("reply_name") val replyName: String? = null,
+        val mine: Boolean = false, @SerialName("can_remove") val canRemove: Boolean = false, val author: AuthorRow,
+    )
+    @Serializable private data class LikeRow(val likes: Int = 0, val liked: Boolean = false)
+    @Serializable private data class PromptRow(val q: String, val a: String = "")
+    @Serializable private data class StyleRow(
+        val id: String, @SerialName("cover_path") val coverPath: String? = null, val accent: String? = null, val status: String? = null,
+        val languages: List<String>? = null, val prompts: List<PromptRow>? = null,
     )
     @Serializable private data class BadgesRow(val inbox: Int = 0, val friends: Int = 0, val chats: Map<String, Int> = emptyMap())
     @Serializable private data class NewProfileRow(
@@ -216,7 +252,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val id: String, @SerialName("user_id") val userId: String, val body: String,
         @SerialName("image_path") val imagePath: String? = null, @SerialName("created_at") val createdAt: String,
     )
-    @Serializable private data class NewPostRow(val body: String, @SerialName("image_path") val imagePath: String?)
+    @Serializable private data class NewPostRow(val body: String, @SerialName("image_path") val imagePath: String?, val visibility: String)
     @Serializable private data class MatchRow(
         val id: String, @SerialName("user_a") val userA: String, @SerialName("user_b") val userB: String,
         @SerialName("ended_at") val endedAt: String? = null, @SerialName("ended_by") val endedBy: String? = null,
@@ -273,8 +309,25 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun myProfile(): Profile? = call {
         val row = client.postgrest["profiles"].select { filter { eq("id", uid) } }.decodeSingleOrNull<ProfileRow>() ?: return@call null
         val age = Period.between(LocalDate.parse(row.birthDate), LocalDate.now()).years
-        withExtras(toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts(row.id)), row.interests, row.photos)
+        val (posts, style) = coroutineScope {
+            val posts = async { posts(row.id) }
+            val style = async { style(row.id) }
+            posts.await() to style.await()
+        }
+        val p = toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts)
+        withExtras(p.copy(style = style ?: p.style), row.interests, row.photos)
     }
+
+    /** Cover (signed), colour, status, languages and prompts of someone I may see (profile_style); null if it can't be read. */
+    private suspend fun style(userId: String): ProfileStyle? = runCatching {
+        val r = client.postgrest.rpc("profile_style", buildJsonObject { putJsonArray("p_users") { add(userId) } })
+            .decodeList<StyleRow>().firstOrNull() ?: return@runCatching null
+        ProfileStyle(
+            cover = r.coverPath?.let { signed(it) }, coverId = r.coverPath, accent = Accent.of(r.accent), status = r.status?.ifBlank { null },
+            languages = SpokenLang.of(r.languages),
+            prompts = r.prompts.orEmpty().mapNotNull { q -> PromptQ.of(q.q)?.let { ProfilePrompt(it, q.a) } }.distinctBy { it.q }.take(ProfilePrompt.MAX),
+        )
+    }.getOrNull()
 
     /** Interests and up to 4 photos (signed in one request). */
     private suspend fun withExtras(p: Profile, interests: List<String>?, photos: List<String>?): Profile {
@@ -626,22 +679,128 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun profile(userId: String): Profile? = call {
         val c = client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()
             ?: return@call null
-        val p = toProfile(c, posts(userId))
-        extras(userId)?.let { withExtras(p, it.interests, it.photos) } ?: p
+        coroutineScope {
+            val posts = async { posts(userId) }
+            val extras = async { extras(userId) }
+            val style = async { style(userId) }
+            val p = toProfile(c, posts.await()).let { p -> style.await()?.let { p.copy(style = it) } ?: p }
+            extras.await()?.let { withExtras(p, it.interests, it.photos) } ?: p
+        }
     }
 
-    private suspend fun posts(userId: String): List<Post> =
-        client.postgrest["posts"].select {
-            filter { eq("user_id", userId) }
-            order("created_at", Order.DESCENDING)
-            limit(60)
-        }.decodeList<PostRow>().map { Post(it.id, it.body, it.imagePath?.let { p -> signed(p) }, ts(it.createdAt).toEpochMilli()) }
+    /** A profile's grid: the newest 50 posts I may see, with their counts (posts_of). */
+    private suspend fun posts(userId: String): List<Post> = postsPage(userId, null, 50)
 
-    override suspend fun addPost(text: String, imageUri: String?): Post = call {
+    private suspend fun postsPage(userId: String, before: Post?, limit: Int): List<Post> = toPosts(
+        client.postgrest.rpc("posts_of", buildJsonObject {
+            put("p_user", userId)
+            put("p_before", before?.stamp)
+            put("p_limit", limit)
+        }).decodeList<FeedPostRow>(),
+    )
+
+    override suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility): Post = call {
         val path = imageUri?.let { upload(it.toUri(), "posts") }
-        val row = client.postgrest["posts"].insert(NewPostRow(text, path)) { select() }.decodeSingle<PostRow>()
-        Post(row.id, row.body, imageUri, ts(row.createdAt).toEpochMilli())
+        val row = client.postgrest["posts"].insert(NewPostRow(text, path, visibility.code)) { select() }.decodeSingle<PostRow>()
+        Post(row.id, row.body, imageUri, ts(row.createdAt).toEpochMilli(), visibility = visibility, stamp = row.createdAt)
     }
+
+    override suspend fun deletePost(postId: String) = call {
+        client.postgrest["posts"].delete { filter { eq("id", postId) } }
+        Unit
+    }
+
+    // ---- profile style, likes, comments, the feed (033_profiles_feed.sql) ----
+
+    override suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String?): Profile = call {
+        val cover = newCoverJpeg?.let { upload(it.toUri(), "cover") } ?: style.coverId
+        client.postgrest.rpc("set_profile_style", buildJsonObject {
+            put("p_cover_path", cover)
+            put("p_accent", style.accent?.code)
+            put("p_status", style.status?.trim()?.ifEmpty { null })
+            putJsonArray("p_languages") { style.languages.distinct().forEach { add(it.code) } }
+            putJsonArray("p_prompts") {
+                style.prompts.forEach { pr -> addJsonObject { put("q", pr.q.code); put("a", pr.answer.trim()) } }
+            }
+        })
+        myProfile() ?: throw BackendException("network")
+    }
+
+    override suspend fun feed(tab: FeedTab, before: Post?): List<Post> = call {
+        toPosts(
+            client.postgrest.rpc("feed", buildJsonObject {
+                put("p_tab", tab.code)
+                put("p_before", before?.stamp)
+                put("p_limit", FEED_PAGE)
+            }).decodeList<FeedPostRow>(),
+        )
+    }
+
+    override suspend fun postsOf(userId: String, before: Post?): List<Post> = call { postsPage(userId, before, FEED_PAGE) }
+
+    override suspend fun post(postId: String): Post? = call {
+        val raw = client.postgrest.rpc("post_get", buildJsonObject { put("p_post", postId) }).data.trim()
+        if (raw.isEmpty() || raw == "null") null else toPosts(listOf(json.decodeFromString<FeedPostRow>(raw))).firstOrNull()
+    }
+
+    override suspend fun likePost(postId: String, on: Boolean): LikeState = call {
+        val r = client.postgrest.rpc("post_like", buildJsonObject { put("p_post", postId); put("p_on", on) }).decodeAs<LikeRow>()
+        LikeState(r.likes, r.liked)
+    }
+
+    override suspend fun comments(postId: String, after: Long?): List<Comment> = call {
+        val rows = client.postgrest.rpc("comments_list", buildJsonObject {
+            put("p_post", postId)
+            put("p_after", after)
+            put("p_limit", 50)
+        }).decodeList<CommentRow>()
+        signMany(rows.map { it.author.photoPath })
+        rows.map(::toComment)
+    }
+
+    override suspend fun addComment(postId: String, body: String, replyTo: Long?): Comment = call {
+        val row = client.postgrest.rpc("comment_add", buildJsonObject {
+            put("p_post", postId)
+            put("p_body", body)
+            put("p_reply_to", replyTo)
+        }).decodeAs<CommentRow>()
+        signMany(listOf(row.author.photoPath))
+        toComment(row)
+    }
+
+    override suspend fun removeComment(commentId: Long) = call {
+        client.postgrest.rpc("comment_remove", buildJsonObject { put("p_id", commentId) })
+        Unit
+    }
+
+    override suspend fun reportPost(postId: String, reason: ReportReason) = call {
+        client.postgrest.rpc("report_post", buildJsonObject { put("p_post", postId); put("p_reason", reason.code) })
+        Unit
+    }
+
+    override suspend fun reportComment(commentId: Long, reason: ReportReason) = call {
+        client.postgrest.rpc("report_comment", buildJsonObject { put("p_id", commentId); put("p_reason", reason.code) })
+        Unit
+    }
+
+    /** Feed posts with their authors; every photo is signed in one request. */
+    private suspend fun toPosts(rows: List<FeedPostRow>): List<Post> {
+        signMany(rows.flatMap { listOf(it.imagePath, it.author?.photoPath) })
+        return rows.map { r ->
+            Post(
+                r.id, r.body, r.imagePath?.let { p -> signedUrls[p]?.first ?: runCatching { signed(p) }.getOrNull() },
+                ts(r.createdAt).toEpochMilli(), PostVisibility.of(r.visibility), r.likes, r.comments, r.liked,
+                r.author?.let(::author), r.createdAt,
+            )
+        }
+    }
+
+    private fun author(a: AuthorRow) = card(VoiceCardRow(a.id, a.name, a.gender, a.age, a.city, null, a.photoPath, a.country))
+        .let { it.copy(style = ProfileStyle(accent = Accent.of(a.accent))) }
+
+    private fun toComment(r: CommentRow) = Comment(
+        r.id, r.postId, r.body, ts(r.createdAt).toEpochMilli(), author(r.author), r.replyTo, r.replyName, r.mine, r.canRemove,
+    )
 
     override suspend fun updateProfile(name: String, city: String, bio: String, newPhotoUri: String?): Profile = call {
         val me = uid
@@ -793,12 +952,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     // ---- notifications and unread counts (023_notifications.sql) ----
 
     override suspend fun inbox(before: Long?): List<InboxItem> = call {
-        val rows = client.postgrest.rpc("inbox", buildJsonObject { put("p_before", before); put("p_limit", 30) }).decodeList<InboxRow>()
-        signMany(rows.map { it.actor.photoPath })
+        val rows = client.postgrest.rpc("inbox2", buildJsonObject { put("p_before", before); put("p_limit", 30) }).decodeList<InboxRow>()
+        signMany(rows.flatMap { listOf(it.actor.photoPath, it.post?.imagePath) })
         rows.mapNotNull { r ->
             InboxItem(
                 r.id, InboxKind.of(r.kind) ?: return@mapNotNull null, card(r.actor), ts(r.createdAt).toEpochMilli(), r.readAt != null,
                 r.n, r.matchId, r.roomId, r.roomTitle, r.roomOpen, r.pending,
+                r.post?.let { PostRef(it.id, it.body, it.imagePath?.let { p -> signedUrls[p]?.first }) },
             )
         }
     }
@@ -1528,6 +1688,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         fun reportsDir(app: Application) = File(app.filesDir, "reports")
 
         private const val BUCKET = "media"
+        /** Feed and profile pages (feed / posts_of; the server allows up to 50). */
+        private const val FEED_PAGE = 20
         /** The chat's lines (reactions come over realtime only). */
         private val LINE_KINDS = listOf("text", "system", "icebreaker", "photo", "poll")
         private const val MAX_PHOTO_PX = 1280

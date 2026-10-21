@@ -106,6 +106,7 @@ import com.yaari.chat.data.DeepLink
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.InboxItem
 import com.yaari.chat.model.InboxKind
+import com.yaari.chat.model.PostRef
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ProfilePhoto
@@ -208,6 +209,9 @@ fun inboxText(i: InboxItem): String {
         InboxKind.FRIEND_REQUEST -> stringResource(if (i.pending) R.string.inbox_request else R.string.inbox_request_done, name)
         InboxKind.FRIEND_ACCEPT -> stringResource(R.string.inbox_accept, name)
         InboxKind.ROOM_INVITE -> stringResource(R.string.inbox_invite, name, i.roomTitle.orEmpty())
+        InboxKind.POST_LIKE ->
+            if (i.count > 1) pluralStringResource(R.plurals.inbox_post_likes, i.count - 1, name, i.count - 1) else stringResource(R.string.inbox_post_like, name)
+        InboxKind.POST_COMMENT -> stringResource(R.string.inbox_post_comment, name)
     }
 }
 
@@ -216,7 +220,9 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
     val working = busy == i.id
     Row(
         Modifier.fillMaxWidth().then(if (highlight) Modifier.background(Brand.Pink.copy(alpha = 0.06f)) else Modifier)
-            .clickable(role = Role.Button) { vm.social.closeInbox(); vm.openProfile(i.actor) }
+            .clickable(role = Role.Button) {
+                if (i.post != null) vm.inboxPost(i) else { vm.social.closeInbox(); vm.openProfile(i.actor) }
+            }
             .padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -228,6 +234,14 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                         .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape).background(Brand.Pink),
                     contentAlignment = Alignment.Center,
                 ) { Icon(Icons.Rounded.Headphones, null, Modifier.size(12.dp), tint = Color.White) }
+            }
+            if (i.kind == InboxKind.POST_LIKE || i.kind == InboxKind.POST_COMMENT) {
+                Box(
+                    Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp).size(22.dp).clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape)
+                        .background(if (i.kind == InboxKind.POST_LIKE) Color(0xFFF2416B) else Color(0xFF4C7CF0)),
+                    contentAlignment = Alignment.Center,
+                ) { MarkIcon(if (i.kind == InboxKind.POST_LIKE) Mark.HEART else Mark.COMMENT, Color.White, size = 12.dp) }
             }
         }
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
@@ -254,8 +268,23 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                 leading = { Icon(Icons.AutoMirrored.Outlined.Chat, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface) },
             )
             i.kind == InboxKind.ROOM_INVITE && i.roomOpen -> SoftButton(stringResource(R.string.inbox_join), { vm.inboxJoin(i) }, accent = true, enabled = !working, height = 36.dp)
+            i.post != null -> PostThumb(i.post) { vm.inboxPost(i) }
             else -> Unit
         }
+    }
+}
+
+/** The post a like or comment is about: its photo, or its words on a tile. */
+@Composable
+private fun PostThumb(post: PostRef, onClick: () -> Unit) {
+    val label = stringResource(R.string.inbox_view_post)
+    Box(
+        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Brand.logoGradient)
+            .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (post.imageUri != null) PostImage(post.imageUri, null, Modifier.fillMaxSize())
+        else Text(post.body, Modifier.padding(4.dp), color = Color.White, fontSize = 8.sp, lineHeight = 10.sp, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
     }
 }
 

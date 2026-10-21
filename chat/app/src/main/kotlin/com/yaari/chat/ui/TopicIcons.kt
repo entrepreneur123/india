@@ -222,3 +222,74 @@ fun TopicChip(topic: Topic, label: String, modifier: Modifier = Modifier, height
         )
     }
 }
+
+// ---- the app's own marks for the feed and profiles: an outline (off) and a two-tone fill (on), in any colour ----------
+
+/** Chrome marks drawn like the topic glyphs (24×24, two tones), coloured by the caller (nav colour, text colour). */
+enum class Mark { FEED, HEART, COMMENT, GLOBE, FRIENDS, PALETTE, SEND, IMAGE }
+
+private const val HEART_PATH =
+    "M12 20.8c-.3 0-.6-.1-.85-.3C6.3 16.7 2.8 13.6 2.8 9.6c0-2.75 2.1-4.9 4.8-4.9 1.75 0 3.3.9 4.4 2.35C13.1 5.6 14.65 4.7 16.4 4.7c2.7 0 4.8 2.15 4.8 4.9 0 4-3.5 7.1-8.35 10.9-.25.2-.55.3-.85.3z"
+private const val BUBBLE_PATH =
+    "M12 3.4c4.9 0 8.6 3.4 8.6 7.7s-3.7 7.7-8.6 7.7c-1.1 0-2.2-.2-3.2-.5l-3.9 1.6c-.7.3-1.4-.4-1.1-1.1l1.1-2.9C3.9 14.5 3.4 12.9 3.4 11.1c0-4.3 3.7-7.7 8.6-7.7z"
+private const val GLOBE_LINES = "M2.9 12h18.2M12 2.6c2.5 2.6 3.8 5.7 3.8 9.4s-1.3 6.8-3.8 9.4M12 2.6C9.5 5.2 8.2 8.3 8.2 12s1.3 6.8 3.8 9.4"
+private const val PALETTE_PATH =
+    "M12 2.8c-5.2 0-9.2 3.9-9.2 8.9 0 4.9 4 8.9 8.9 8.9 1.3 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.2 0-1 .8-1.8 1.8-1.8h2.1c2.8 0 5-2.2 5-5 0-4.3-4.1-7.7-9.6-7.7z"
+private const val PLANE_PATH = "M3.4 11.1 19.6 3.6c.9-.4 1.8.5 1.4 1.4l-7.5 16.2c-.4.9-1.7.8-2-.1l-1.7-5.1-5.1-1.7c-.9-.3-1-1.6-.1-2z"
+
+private val MarkFilled: Map<Mark, List<Part>> = mapOf(
+    // Two cards, the front one a photo: the feed.
+    Mark.FEED to listOf(
+        Fill(rect(6.8f, 3f, 14.2f, 14.2f, 3.2f), Ink.L),
+        Fill(rect(3f, 6.8f, 14.2f, 14.2f, 3.2f), Ink.M),
+        Fill("M5.6 18.4l3.9-4.3 2.5 2.5 1.8-1.8 3.4 3.6z", Ink.L),
+        Fill(circle(8.6f, 10.8f, 1.5f), Ink.L),
+    ),
+    Mark.HEART to listOf(
+        Fill(HEART_PATH, Ink.M),
+        Turn(listOf(Fill(ellipse(7.4f, 8.9f, 1.9f, 1.25f), Ink.L)), -40f, 7.4f, 8.9f),
+    ),
+    Mark.COMMENT to listOf(
+        Fill(BUBBLE_PATH, Ink.M),
+        Fill(circle(8.2f, 11.1f, 1.25f), Ink.L), Fill(circle(12f, 11.1f, 1.25f), Ink.L), Fill(circle(15.8f, 11.1f, 1.25f), Ink.L),
+    ),
+    Mark.GLOBE to listOf(Fill(circle(12f, 12f, 9.4f), Ink.M), Line(GLOBE_LINES, Ink.L, 1.5f)),
+    // Two people, the friend behind in the light tone.
+    Mark.FRIENDS to listOf(
+        Fill(circle(16.4f, 8.4f, 3f), Ink.L),
+        Fill("M16.2 13.2c3 0 5.3 2.3 5.3 5.4 0 .7-.5 1.1-1.1 1.1h-3.6c.1-.4.2-.9.2-1.4 0-2-.8-3.8-2.2-5 .4-.07.9-.1 1.4-.1z", Ink.L),
+        Fill(circle(9f, 7.9f, 3.6f), Ink.M),
+        Fill("M2.8 19.2c0-3.5 2.8-6 6.2-6s6.2 2.5 6.2 6c0 .7-.5 1.2-1.2 1.2H4c-.7 0-1.2-.5-1.2-1.2z", Ink.M),
+    ),
+    Mark.PALETTE to listOf(
+        Fill(PALETTE_PATH, Ink.M),
+        Fill(circle(7.4f, 11.4f, 1.5f), Ink.L), Fill(circle(9.6f, 7.3f, 1.5f), Ink.L),
+        Fill(circle(14.4f, 7.1f, 1.5f), Ink.L), Fill(circle(17.2f, 10.6f, 1.5f), Ink.L),
+    ),
+    Mark.SEND to listOf(Fill(PLANE_PATH, Ink.M), Line("M10.3 13.7 15 9", Ink.L, 1.6f)),
+    Mark.IMAGE to listOf(
+        Fill(rect(2.8f, 4.2f, 18.4f, 15.6f, 3.6f), Ink.M),
+        Fill("M4.8 17.6l4.6-5.1 3 3 2.1-2.1 4.7 4.2z", Ink.L),
+        Fill(circle(15.6f, 9f, 1.8f), Ink.L),
+    ),
+)
+
+private val MarkOutline: Map<Mark, List<Part>> = mapOf(
+    Mark.FEED to listOf(
+        Line("M7.2 3.4h10.2a3.2 3.2 0 0 1 3.2 3.2v10.2", Ink.M, 1.8f, roundJoin = true),
+        Line(rect(3.4f, 7.2f, 13.6f, 13.6f, 3.2f), Ink.M, 1.8f, roundJoin = true),
+        Line("M6.4 17.6l3.2-3.5 2.2 2.2 1.6-1.6 2.4 2.6", Ink.M, 1.6f, roundJoin = true),
+        Fill(circle(8.6f, 11f, 1.3f), Ink.M),
+    ),
+    Mark.HEART to listOf(Line(HEART_PATH, Ink.M, 1.9f, roundJoin = true)),
+    Mark.COMMENT to listOf(Line(BUBBLE_PATH, Ink.M, 1.9f, roundJoin = true)),
+    Mark.GLOBE to listOf(Line(circle(12f, 12f, 9.1f), Ink.M, 1.7f), Line(GLOBE_LINES, Ink.M, 1.5f)),
+)
+
+/** A [Mark] in [color]: [filled] is the two-tone drawing (selected, on), otherwise its outline (where it has one). */
+@Composable
+fun MarkIcon(mark: Mark, color: Color, modifier: Modifier = Modifier, filled: Boolean = true, size: Dp = 24.dp) {
+    val parts = if (filled) MarkFilled.getValue(mark) else MarkOutline[mark] ?: MarkFilled.getValue(mark)
+    val vector = remember(mark, color, filled) { build("mark_${mark.name}_$filled", parts, color) }
+    Image(rememberVectorPainter(vector), null, modifier.size(size))
+}

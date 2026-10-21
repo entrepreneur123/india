@@ -18,7 +18,21 @@ enum class Target(@StringRes val label: Int) {
     }
 }
 
-data class Post(val id: String, val text: String, val imageUri: String? = null, val createdAt: Long)
+/**
+ * A post. [author] comes with feed posts (and is null on a profile's own grid); [likes], [comments] and [liked] are the
+ * counts as the server keeps them. [stamp]: the server's exact time, the cursor for the next page (null in the demo).
+ */
+data class Post(
+    val id: String, val text: String, val imageUri: String? = null, val createdAt: Long,
+    val visibility: PostVisibility = PostVisibility.FRIENDS, val likes: Int = 0, val comments: Int = 0, val liked: Boolean = false,
+    val author: Profile? = null, val stamp: String? = null,
+) {
+    companion object {
+        const val MAX_TEXT = 500
+        /** A person can post this many times a day (slow_down after). */
+        const val PER_DAY = 20
+    }
+}
 
 data class Profile(
     val id: String,
@@ -36,6 +50,8 @@ data class Profile(
     val interests: List<Interest> = emptyList(),
     /** Up to [ProfilePhoto.MAX] more photos. */
     val photos: List<ProfilePhoto> = emptyList(),
+    /** Cover, colour, status, languages and prompts (033); empty when not loaded for this card. */
+    val style: ProfileStyle = ProfileStyle(),
 )
 
 enum class MediaKind { IMAGE, VIDEO }

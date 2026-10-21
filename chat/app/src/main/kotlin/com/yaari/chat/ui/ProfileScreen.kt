@@ -88,13 +88,14 @@ import com.yaari.chat.domain.Validation
 import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Post
+import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ReportReason
 
 // ---- My profile (the "Me" tab) -------------------------------------------------------------------
 
 @Composable
-fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit) {
+fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit, onCustomize: () -> Unit) {
     val me = s.me ?: return
     val friends = s.friends.count { it.state == FriendState.FRIENDS }
     Column(Modifier.fillMaxSize()) {
@@ -108,8 +109,11 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
             }
             CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost) {
-            ProfileHeader(me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)))
+        PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: me.copy(posts = emptyList()))) }) {
+            ProfileHeader(
+                me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)),
+                onCustomize = onCustomize,
+            )
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
                 SoftButton(
@@ -118,7 +122,9 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                 )
             }
             val social by vm.social.state.collectAsStateWithLifecycle()
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(16.dp))
+            if (me.style.isEmpty) StyleNudge(onCustomize, Modifier.padding(bottom = 8.dp))
+            PromptCards(me, Modifier.padding(bottom = 8.dp))
             InterestsSection(me, mine = true, onEdit = { vm.social.editInterests(true) })
             PhotosSection(me.photos, editable = true, busy = social.photoBusy, onAdd = { vm.social.addPhoto(it, me.photos.size) }, onRemove = vm.social::removePhoto)
             if (!s.premium) PlusBanner(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
@@ -181,7 +187,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                 }
             }
-            PostGrid(p.posts, p.colorSeed, emptyMine = null) {
+            PostGrid(p.posts, p.colorSeed, emptyMine = null, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: p.copy(posts = emptyList()))) }) {
                 val country = p.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
                 ProfileHeader(
                     p,
@@ -200,7 +206,8 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                     if (canMessage) SoftButton(stringResource(R.string.message), { vm.openDm(p.id) }, Modifier.weight(1f))
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
+                PromptCards(p, Modifier.padding(bottom = 8.dp))
                 InterestsSection(p, mine = false, onEdit = {}, shared = p.interests.intersect(s.me?.interests.orEmpty().toSet()))
                 PhotosSection(p.photos, editable = false)
             }
@@ -223,39 +230,59 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
 
 // ---- Shared pieces -------------------------------------------------------------------------------
 
-/** Avatar on the left, numbers on the right, then name, details and bio: the Instagram header. */
+/**
+ * The cover (photo, or the profile's colour), the avatar in its accent ring over the cover's edge with the numbers
+ * beside it, then the name, the status, details, bio and languages. [onCustomize]: mine, with the cover's button.
+ */
 @Composable
-private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(p, 88.dp, ring = true)
-            Row(Modifier.weight(1f).padding(start = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                stats.forEach { (n, label) ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        RollingNumber(n, MaterialTheme.typography.titleLarge)
-                        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null, onCustomize: (() -> Unit)? = null) {
+    val cover = 148.dp
+    Column(Modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(top = 4.dp)) {
+            ProfileCover(p.style, Modifier.fillMaxWidth().height(cover)) {
+                if (onCustomize != null) {
+                    Row(
+                        Modifier.align(Alignment.TopEnd).padding(10.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.32f))
+                            .clickable(role = Role.Button, onClick = onCustomize).padding(horizontal = 12.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        MarkIcon(Mark.PALETTE, Color.White, size = 16.dp)
+                        Text(stringResource(R.string.customize_short), Modifier.padding(start = 6.dp), color = Color.White, style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth().padding(start = 12.dp, top = cover - 44.dp), verticalAlignment = Alignment.Bottom) {
+                AccentAvatar(p, 96.dp, ring = 3.dp)
+                Row(Modifier.weight(1f).padding(start = 8.dp, bottom = 2.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    stats.forEach { (n, label) ->
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            RollingNumber(n, MaterialTheme.typography.titleLarge)
+                            Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
                 }
             }
         }
-        Spacer(Modifier.height(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(p.name, style = MaterialTheme.typography.titleMedium)
-            Icon(Icons.Rounded.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(15.dp), tint = Color(0xFF1A73E8))
+        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(p.name, style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp))
+                Icon(Icons.Rounded.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(16.dp), tint = Color(0xFF1A73E8))
+            }
+            StatusLine(p, Modifier.padding(vertical = 2.dp))
+            Text(
+                listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (p.bio.isNotBlank()) Text(p.bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
+            LanguagesRow(p, Modifier.padding(top = 8.dp))
         }
-        Text(
-            listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (p.bio.isNotBlank()) Text(p.bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(16.dp))
     }
 }
 
-/** Header content, a grid icon bar, then the 3-column grid; tapping a post opens it full screen. */
+/** Header content, a grid icon bar, then the 3-column grid; tapping a post opens it full screen ([onOpen]). */
 @Composable
-private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, header: @Composable () -> Unit) {
-    var open by remember { mutableStateOf<Post?>(null) }
+private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, onOpen: (Post) -> Unit, header: @Composable () -> Unit) {
     LazyVerticalGrid(GridCells.Fixed(3), Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         item(span = { GridItemSpan(maxLineSpan) }) { Column { header() } }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -278,9 +305,8 @@ private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, hea
                 }
             }
         }
-        items(posts, key = { it.id }) { post -> PostTile(post, seed) { open = post } }
+        items(posts, key = { it.id }) { post -> PostTile(post, seed) { onOpen(post) } }
     }
-    open?.let { post -> PostViewer(post) { open = null } }
 }
 
 @Composable
@@ -292,29 +318,26 @@ private fun PostTile(post: Post, seed: Int, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         if (post.imageUri != null) {
-            AsyncImage(post.imageUri, post.text, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            PostImage(post.imageUri, post.text.ifEmpty { null }, Modifier.fillMaxSize())
         } else {
             Text(
                 post.text, color = Color.White, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
                 modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium,
             )
         }
-    }
-}
-
-@Composable
-private fun PostViewer(post: Post, onClose: () -> Unit) {
-    BackHandler(onBack = onClose)
-    Surface(Modifier.fillMaxSize(), color = Color.Black) {
-        Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
-            Row(Modifier.fillMaxWidth()) {
-                IconButton(onClose) { Icon(Icons.Rounded.Close, stringResource(R.string.close), tint = Color.White) }
+        if (post.likes > 0 || post.comments > 0) {
+            Row(
+                Modifier.align(Alignment.BottomStart).padding(6.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.38f))
+                    .padding(horizontal = 7.dp, vertical = 3.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                MarkIcon(Mark.HEART, Color.White, size = 12.dp)
+                Text("${post.likes}", Modifier.padding(start = 3.dp), color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                if (post.comments > 0) {
+                    MarkIcon(Mark.COMMENT, Color.White, Modifier.padding(start = 6.dp), size = 12.dp)
+                    Text("${post.comments}", Modifier.padding(start = 3.dp), color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                }
             }
-            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                if (post.imageUri != null) AsyncImage(post.imageUri, post.text, Modifier.fillMaxWidth(), contentScale = ContentScale.FillWidth)
-                else Text(post.text, color = Color.White, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
-            }
-            if (post.imageUri != null && post.text.isNotEmpty()) Text(post.text, color = Color.White, modifier = Modifier.padding(16.dp))
         }
     }
 }
@@ -402,7 +425,7 @@ private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEna
 }
 
 @Composable
-fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit) {
+fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onCustomize: () -> Unit = {}) {
     BackHandler(onBack = onDone)
     var name by rememberSaveable { mutableStateOf(me.name) }
     var city by rememberSaveable { mutableStateOf(me.city) }
@@ -423,6 +446,17 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit) {
                 Field(name, { name = it.take(Validation.MAX_NAME) }, stringResource(R.string.name))
                 Field(city, { city = it.take(30) }, stringResource(R.string.city))
                 Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(accentColors(me.style.accent).start.copy(alpha = 0.10f))
+                        .clickable(role = Role.Button, onClick = onCustomize).padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    MarkIcon(Mark.PALETTE, accentColors(me.style.accent).ink, size = 22.dp)
+                    Column(Modifier.weight(1f).padding(start = 16.dp)) {
+                        Text(stringResource(R.string.customize_profile), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(R.string.style_nudge), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
                 // Locked on the server too: gender and age can't be changed after sign-up.
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
@@ -460,14 +494,15 @@ fun Field(
 
 /** Full-screen composer, like Instagram's. */
 @Composable
-fun NewPostScreen(onCancel: () -> Unit, onPost: (String, String?) -> Unit) {
+fun NewPostScreen(onCancel: () -> Unit, onPost: (String, String?, PostVisibility) -> Unit) {
     BackHandler(onBack = onCancel)
     var text by rememberSaveable { mutableStateOf("") }
+    var visibility by rememberSaveable { mutableStateOf(PostVisibility.FRIENDS) }
     var uri by remember { mutableStateOf<String?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { if (it != null) uri = it.toString() }
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().imePadding()) {
-            EditorBar(stringResource(R.string.new_post), onCancel, stringResource(R.string.share), text.isNotBlank() || uri != null) { onPost(text, uri) }
+            EditorBar(stringResource(R.string.new_post), onCancel, stringResource(R.string.share), text.isNotBlank() || uri != null) { onPost(text, uri, visibility) }
             Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(
                     Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
@@ -481,7 +516,8 @@ fun NewPostScreen(onCancel: () -> Unit, onPost: (String, String?) -> Unit) {
                         Text(stringResource(R.string.add_photo), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                Field(text, { text = it.take(500) }, stringResource(R.string.write_something), single = false)
+                Field(text, { text = it.take(Post.MAX_TEXT) }, stringResource(R.string.write_something), single = false)
+                VisibilityChooser(visibility) { visibility = it }
                 Spacer(Modifier.width(1.dp))
             }
         }
