@@ -48,19 +48,22 @@ object DrawSchedule {
     /** How long after a draw we keep polling for its result while the app is open. */
     private const val WAIT_WINDOW_MIN = 90L
     private const val DELAYED_AFTER_MIN = 40L
+    /** Kerala (3 PM draw): the public copies we confirm against appear around 16:05-16:30. */
+    private val KERALA_CHECK: LocalTime = LocalTime.of(16, 15)
+    private val KERALA_WAIT_UNTIL: LocalTime = LocalTime.of(17, 30)
 
     fun nextCheckAt(now: ZonedDateTime, random: Random = Random.Default): ZonedDateTime {
         val today = now.toLocalDate()
-        val candidates = SLOTS.map { it.drawTime }.distinct().sorted().flatMap { t ->
-            listOf(today, today.plusDays(1)).map { d -> d.atTime(t).plusMinutes(PUBLISH_DELAY_MIN).atZone(IST) }
-        }
+        val times = SLOTS.map { it.drawTime.plusMinutes(PUBLISH_DELAY_MIN) } + KERALA_CHECK
+        val candidates = times.distinct().flatMap { t -> listOf(today, today.plusDays(1)).map { d -> d.atTime(t).atZone(IST) } }
         val base = candidates.filter { it.isAfter(now) }.minOrNull()!!
         return base.plusSeconds(random.nextLong(0, BACKGROUND_JITTER_S))
     }
 
-    /** A 5-digit slot drawn within the last hour whose result we are still waiting for. */
+    /** The slot whose result we are still waiting for: a 5-digit Dear draw of the last hour, or Kerala ("KL"). */
     fun recentlyDrawnSlot(now: ZonedDateTime): String? {
         val t = now.toLocalTime()
+        if (!t.isBefore(KERALA_CHECK.minusMinutes(15)) && t.isBefore(KERALA_WAIT_UNTIL)) return "KL"
         return SLOTS.filter { it.format == "D5" }.lastOrNull { s ->
             !t.isBefore(s.drawTime) && t.isBefore(s.drawTime.plusMinutes(60))
         }?.id
@@ -75,7 +78,7 @@ object DrawSchedule {
         val t = now.toLocalTime()
         val pending = SLOTS.filter { it.format == "D5" }.any { s ->
             !t.isBefore(s.drawTime) && t.isBefore(s.drawTime.plusMinutes(WAIT_WINDOW_MIN)) && !hasResult(s.id)
-        }
+        } || (!t.isBefore(KERALA_CHECK.minusMinutes(15)) && t.isBefore(KERALA_WAIT_UNTIL) && !hasResult("KL"))
         return if (pending) 30_000L + random.nextLong(-8_000, 8_000) else null
     }
 

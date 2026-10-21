@@ -56,7 +56,8 @@ object ResultNotifier {
             prefs.edit().putStringSet("draws", ready.map { it.id }.toSet()).apply()
             return
         }
-        val fresh = ready.filter { it.id !in seen }
+        val pushed = prefs.getStringSet("pushed", emptySet())!!   // already shown from a push message
+        val fresh = ready.filter { it.id !in seen && it.id !in pushed }
         if (Prefs.notificationsEnabled(ctx)) {
             fresh.filter { Prefs.drawAlert(ctx, Prefs.alertKey(it.slot, it.special, it.lottery)) }.forEach { d ->
                 post(ctx, d.id.hashCode(), ctx.getString(R.string.notif_result_title, d.name),
@@ -66,6 +67,25 @@ object ResultNotifier {
         // Keep only ids still in the feed so the set stays small.
         val keep = (seen intersect draws.map { it.id }.toSet()) + fresh.map { it.id }
         if (keep != seen) prefs.edit().putStringSet("draws", keep).apply()
+    }
+
+    /**
+     * A result notification straight from a push message (name and 1st prize), before the feed is
+     * downloaded. The same draw is not announced again when the feed arrives.
+     */
+    @Synchronized
+    fun announce(ctx: Context, id: String, key: String, name: String, firstPrize: String) {
+        val prefs = ctx.getSharedPreferences("notified", Context.MODE_PRIVATE)
+        val yesterday = ZonedDateTime.now(DrawSchedule.IST).toLocalDate().minusDays(1).toString()
+        if (id.take(10) < yesterday) return   // a delayed message about an old result is not news
+        val seen = prefs.getStringSet("draws", emptySet())!!
+        val pushed = prefs.getStringSet("pushed", emptySet())!!
+        if (id in seen || id in pushed) return
+        if (Prefs.notificationsEnabled(ctx) && (key.isEmpty() || Prefs.drawAlert(ctx, key))) {
+            post(ctx, id.hashCode(), ctx.getString(R.string.notif_result_title, name), ctx.getString(R.string.notif_result_body, firstPrize))
+        }
+        // Remember the last two days only; ids start with their date.
+        prefs.edit().putStringSet("pushed", pushed.filter { it.take(10) >= yesterday }.toSet() + id).apply()
     }
 
     private fun notifySavedTickets(ctx: Context, draws: List<Draw>) {

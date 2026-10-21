@@ -36,6 +36,18 @@ class DrawScheduleTest {
         assertEquals(13, next.hour)
     }
 
+    @Test fun backgroundCheckCoversKeralaToo() {
+        val next = DrawSchedule.nextCheckAt(at(14, 0), Random(1))   // after the 1 PM check, before 6 PM
+        assertEquals(16, next.hour)
+        assertTrue(next.minute in 15..21)
+        assertEquals("KL", DrawSchedule.recentlyDrawnSlot(at(16, 20)))
+        assertEquals("NL1PM", DrawSchedule.recentlyDrawnSlot(at(13, 20)))
+        assertNull(DrawSchedule.recentlyDrawnSlot(at(17, 40)))
+        // An open app keeps checking for Kerala's result between 16:00 and 17:30, and stops once it is in.
+        assertTrue(DrawSchedule.pollDelayMs(at(16, 10), { false }) != null)
+        assertNull(DrawSchedule.pollDelayMs(at(16, 10), { it == "KL" }))
+    }
+
     @Test fun pollingOnlyWhileAResultIsDue() {
         assertNull(DrawSchedule.pollDelayMs(at(11, 0), { false }))
         val d = DrawSchedule.pollDelayMs(at(13, 5), { false }, Random(3))!!
