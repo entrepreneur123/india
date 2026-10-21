@@ -169,6 +169,10 @@
 | `installIos` | On iPhone: tap Share, then "Add to Home Screen". | iPhone पर: शेयर दबाएँ, फिर "Add to Home Screen"। | |
 | `telegramJoin` | Join the Telegram channel: every new notice, on any phone | Telegram चैनल से जुड़ें: हर नई सूचना, किसी भी फ़ोन पर | |
 | `toastFollowAlerts` | Following. For phone alerts: More → Turn on alerts | फ़ॉलो किया। फ़ोन पर अलर्ट के लिए: और → अलर्ट चालू करें | |
+| `rollPlaceholder` | Roll number on your admit card | एडमिट कार्ड पर छपा रोल नंबर | |
+| `alertsActivePush` | On for {n} exams. SSC notices usually reach you within an hour of being posted; results and other boards' notices can take up to 3 hours. | {n} परीक्षाओं के लिए चालू। SSC की सूचना आम तौर पर जारी होने के एक घंटे के भीतर पहुँचती है; रिज़ल्ट और दूसरे बोर्ड की सूचनाओं में 3 घंटे तक लग सकते हैं। | |
+| `alertsUnsupportedPush` | This browser can't show alerts. On iPhone, add this app to the Home Screen first (Share → Add to Home Screen), then open it from there. | यह ब्राउज़र अलर्ट नहीं दिखा सकता। iPhone पर पहले इस ऐप को होम स्क्रीन पर जोड़ें (शेयर → Add to Home Screen), फिर वहीं से खोलें। | |
+| `alertsFailed` | Couldn't turn on alerts. Check your connection and try again. | अलर्ट चालू नहीं हो सके। इंटरनेट जाँचें और फिर कोशिश करें। | |
 | `allBoards` | All recruiters | सभी भर्ती संस्थाएँ | |
 | `board_ssc` | SSC (Central) | SSC (केंद्र) | |
 | `board_upprpb` | UP Police | UP पुलिस | |
