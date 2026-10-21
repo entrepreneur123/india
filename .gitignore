@@ -11,3 +11,11 @@ __pycache__/
 .pytest_cache/
 # pipeline output when run locally
 public/
+chat/.gradle/
+chat/build/
+chat/app/build/
+chat/local.properties
+chat/.kotlin/
+chat/upload.properties
+*.jks
+*.keystore
