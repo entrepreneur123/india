@@ -21,10 +21,14 @@ export async function joinCall(
   signal?: AbortSignal,
 ): Promise<Call> {
   if (signal?.aborted) throw new DOMException('call ended', 'AbortError')
+  // Safari (iPhone, iPad) encodes H.264 in hardware but VP8 in software, which looks soft and blocky on an iPad;
+  // every other browser and the Android app keep VP8. Retina screens ask for the sharper layer.
+  const safari = /^((?!chrome|chromium|crios|fxios|edg|android).)*safari/i.test(navigator.userAgent)
   const room = new Room({
-    adaptiveStream: true,
+    adaptiveStream: { pixelDensity: 'screen' },
     dynacast: true,
-    videoCaptureDefaults: { resolution: VideoPresets.h720.resolution },
+    videoCaptureDefaults: { resolution: VideoPresets.h720.resolution, facingMode: 'user' },
+    publishDefaults: { videoCodec: safari ? 'h264' : 'vp8', simulcast: true, videoEncoding: VideoPresets.h720.encoding },
   })
   let leaving = false
   signal?.addEventListener('abort', () => {
