@@ -32,6 +32,10 @@ data class Profile(
     val posts: List<Post> = emptyList(),
     /** ISO country from the verified phone number (set by the server); null for test accounts. */
     val country: String? = null,
+    /** 3-5 tags, or none (024_discovery_profiles.sql); empty when not loaded for this card. */
+    val interests: List<Interest> = emptyList(),
+    /** Up to [ProfilePhoto.MAX] more photos. */
+    val photos: List<ProfilePhoto> = emptyList(),
 )
 
 enum class MediaKind { IMAGE, VIDEO }

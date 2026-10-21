@@ -22,6 +22,7 @@ class YaariApplication : Application(), SingletonImageLoader.Factory {
         super.onCreate()
         Flavor.crashReports(this)
         Connectivity.register(this)
+        Flavor.initPush(this) // nothing unless Firebase is configured
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {

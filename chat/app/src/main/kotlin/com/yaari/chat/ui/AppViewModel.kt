@@ -22,6 +22,11 @@ import com.yaari.chat.data.Funnel
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.data.VoiceBus
+import com.yaari.chat.data.DeepLink
+import com.yaari.chat.data.FirstRun
+import com.yaari.chat.data.LinkBus
+import com.yaari.chat.data.Push
+import com.yaari.chat.model.InboxItem
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
 import com.yaari.chat.domain.ExitPolicy
@@ -47,6 +52,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -128,8 +134,14 @@ class AppViewModel(
     private val foreground: StateFlow<Boolean> = AppForeground.visible,
     /** Wall clock, for deadlines set by the server (Ludo turns). */
     wallClock: () -> Long = System::currentTimeMillis,
-    /** Room photos: shrunk and checked for nudity on this phone (the live build's model; none in the demo). */
+    /** Room and profile photos: shrunk and checked for nudity on this phone (the live build's model; none in the demo). */
     photos: PhotoCheck = PhotoCheck.None,
+    /** First-run steps already seen on this phone (tests: all of them, so nothing pops up). */
+    firstRun: FirstRun = FirstRun.Seen,
+    /** Phone push (FCM): registered after sign-in, off until Firebase is configured. */
+    private val push: Push = Push.Off,
+    /** Room links and tapped notifications waiting to be opened. */
+    private val links: LinkBus = LinkBus.app,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -141,6 +153,11 @@ class AppViewModel(
 
     /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
     val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock, visible = foreground)
+
+    /** Notifications, unread counts, interests, photos, invites and the first run. */
+    val social = SocialController(backend, viewModelScope, ::notice, ::explain, photos, firstRun, push.enabled) { me ->
+        _state.update { it.copy(me = me) }
+    }
 
     init {
         viewModelScope.launch {
@@ -156,6 +173,11 @@ class AppViewModel(
             if (me != null) afterSignIn()
         }
         watchReads()
+        followLinks()
+        // The first friend: their messages and invites can now reach the phone (the permission is asked once).
+        viewModelScope.launch {
+            _state.map { s -> s.friends.any { it.state == FriendState.FRIENDS } }.distinctUntilChanged().collect { if (it) social.friendAdded() }
+        }
         // The voice room notification's buttons.
         viewModelScope.launch {
             VoiceBus.requests.collect { r ->
@@ -187,6 +209,8 @@ class AppViewModel(
     }
 
     private suspend fun afterSignIn() {
+        _state.value.me?.let(social::start)
+        viewModelScope.launch { runCatching { push.register() } }
         refreshFriends()
         refreshEntitlements()
         runCatching { billing.prices() }.onSuccess { p -> _state.update { it.copy(prices = p) } }
@@ -212,6 +236,17 @@ class AppViewModel(
                 }
             }
         }
+    }
+
+    /**
+     * Back in the foreground: payments completed meanwhile (UPI), a refunded or cancelled purchase (the server ends it,
+     * 025_play_refunds.sql: Plus features go at once) and the unread counts.
+     */
+    fun resumed() {
+        if (_state.value.me == null) return
+        restorePurchases()
+        viewModelScope.launch { refreshEntitlements() }
+        social.refreshBadges()
     }
 
     private suspend fun refreshEntitlements() {
@@ -338,7 +373,7 @@ class AppViewModel(
     fun selectTab(tab: Tab) {
         _state.update { it.copy(tab = tab) }
         when (tab) {
-            Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() } }
+            Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() }; social.refreshBadges() }
             Tab.ROOMS -> voice.refreshList()
             else -> Unit
         }
@@ -811,6 +846,54 @@ class AppViewModel(
         dmJob?.cancel()
         _state.update { it.copy(dm = null) }
         refreshRecents()
+        social.refreshBadges() // what was read there
+    }
+
+    // ---- Notifications, links -----------------------------------------------------------------
+
+    /** Reply / Message: the chat with them (a friend's thread the server opens when there is none yet). */
+    fun inboxChat(item: InboxItem) = social.itemAction(item) {
+        val thread = item.matchId ?: backend.friendThread(item.actor.id)
+        social.closeInbox()
+        openThread(RecentMatch(thread, item.actor, 0))
+    }
+
+    fun inboxAnswer(item: InboxItem, accept: Boolean) = social.itemAction(item) {
+        backend.answerFriend(item.actor.id, accept)
+        applyAnswer(item.actor, accept)
+        if (accept) notice(UiText(R.string.msg_now_friends, item.actor.name))
+        social.loadInbox()
+        social.refreshBadges()
+    }
+
+    fun inboxJoin(item: InboxItem) = social.joinInvite(item, voice::open)
+
+    /** Links wait until I'm signed in (a room link survives signing up first). */
+    private fun followLinks() = viewModelScope.launch {
+        combine(links.pending, _state.map { !it.booting && it.me != null }.distinctUntilChanged()) { link, ready -> link.takeIf { ready } }
+            .collect { link ->
+                if (link == null) return@collect
+                links.taken(link)
+                openLink(link)
+            }
+    }
+
+    private fun openLink(link: DeepLink) {
+        when (link) {
+            is DeepLink.Room -> voice.open(link.id)
+            is DeepLink.Code -> voice.joinCode(link.code)
+            is DeepLink.Invite -> act { voice.open(backend.joinInvite(link.inboxId)) }
+            is DeepLink.Thread -> {
+                val placeholder = Profile(link.actorId.orEmpty(), link.actorName, Gender.OTHER, 0, "", "", colorSeed = link.actorId.hashCode())
+                openThread(RecentMatch(link.matchId, placeholder, 0))
+                val id = link.actorId ?: return
+                act {
+                    val p = backend.profile(id) ?: return@act
+                    updateDmState(link.matchId) { it.copy(recent = it.recent.copy(partner = p)) }
+                }
+            }
+            DeepLink.Inbox -> social.openInbox()
+        }
     }
 
     fun sendDm(text: String, onFailed: () -> Unit = {}) {
@@ -832,6 +915,7 @@ class AppViewModel(
         _state.update { it.copy(searching = false) }
         matchJob?.join() // a match request in flight finishes first (it may hand back a match to end)
         abandonJobs.toList().forEach { it.join() } // end those matches while still signed in
+        runCatching { push.unregister() } // no pushes for this account on this phone any more
         backend.signOut()
         resetToStart()
     }
@@ -845,6 +929,7 @@ class AppViewModel(
 
     private fun resetToStart() {
         voice.close()
+        social.reset()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
@@ -896,7 +981,13 @@ class AppViewModel(
 
     fun answerFriend(p: Profile, accept: Boolean) = act {
         backend.answerFriend(p.id, accept)
+        applyAnswer(p, accept)
+        social.refreshBadges()
+    }
+
+    private fun applyAnswer(p: Profile, accept: Boolean) {
         _state.update { s ->
+            if (accept && s.friends.none { it.profile.id == p.id }) return@update s.copy(friends = listOf(Friend(p, FriendState.FRIENDS)) + s.friends)
             s.copy(friends = s.friends.mapNotNull { f ->
                 when {
                     f.profile.id != p.id -> f

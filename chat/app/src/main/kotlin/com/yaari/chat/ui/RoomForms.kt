@@ -227,6 +227,8 @@ fun CreateRoomSheet(busy: Boolean, initial: RoomCategory?, onDismiss: () -> Unit
     var maxAge by rememberSaveable { mutableIntStateOf(VoiceRoom.MAX_AGE) }
     var note by rememberSaveable { mutableStateOf("") }
     var private by rememberSaveable { mutableStateOf(false) }
+    val appLang = appRoomLang()
+    var lang by rememberSaveable { mutableStateOf(appLang) }
     ModalBottomSheet(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surface,
@@ -242,6 +244,8 @@ fun CreateRoomSheet(busy: Boolean, initial: RoomCategory?, onDismiss: () -> Unit
             )
             SheetLabel(stringResource(R.string.create_category))
             CategoryPicker(category) { category = it }
+            SheetLabel(stringResource(R.string.rooms_lang))
+            LanguageSelect(lang, { lang = it ?: appLang }, Modifier.fillMaxWidth())
             Row(Modifier.fillMaxWidth().padding(top = 22.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.create_max), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
                 CircleIconButton(
@@ -300,7 +304,7 @@ fun CreateRoomSheet(busy: Boolean, initial: RoomCategory?, onDismiss: () -> Unit
             Spacer(Modifier.height(22.dp))
             PrimaryButton(
                 stringResource(R.string.rooms_create),
-                { onCreate(NewVoiceRoom(title, category, RoomRules(max, who, minAge, maxAge, private), note)) },
+                { onCreate(NewVoiceRoom(title, category, RoomRules(max, who, minAge, maxAge, private), note, lang)) },
                 enabled = !busy && title.trim().length >= VoiceRoom.MIN_TITLE,
             )
         }

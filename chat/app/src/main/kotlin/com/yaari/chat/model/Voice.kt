@@ -88,6 +88,8 @@ data class VoiceRoomSummary(
     val announcement: String? = null,
     val code: String? = null,
     val refusal: String? = null,
+    /** The language the room speaks ([RoomLang] tag), null when unknown. */
+    val lang: String? = null,
 )
 
 data class VoiceRoom(
@@ -102,6 +104,8 @@ data class VoiceRoom(
     val announcement: String? = null,
     /** The room's 6-character code, for its host only. */
     val code: String? = null,
+    /** The language the room speaks ([RoomLang] tag), null when unknown. */
+    val lang: String? = null,
 ) {
     fun member(userId: String) = members.firstOrNull { it.profile.id == userId }
     val me get() = member(meId)
@@ -143,7 +147,11 @@ data class VoiceRoom(
 }
 
 /** A room I'm opening (I host it, off the stage until I join the voice). The server validates every field again. */
-data class NewVoiceRoom(val title: String, val category: RoomCategory, val rules: RoomRules = RoomRules(), val announcement: String = "")
+data class NewVoiceRoom(
+    val title: String, val category: RoomCategory, val rules: RoomRules = RoomRules(), val announcement: String = "",
+    /** [RoomLang] tag; null lets the server use the language I match in. */
+    val lang: String? = null,
+)
 
 data class CreatedVoiceRoom(val id: String, val code: String)
 

@@ -108,12 +108,24 @@
 지금은 등록된 토큰이 0개라 아무것도 나가지 않고, 비밀값이 없으면 `push`는 `{skipped:true}`만 돌려줍니다.
 
 1. **Firebase 콘솔** → 프로젝트 추가(위 Google Cloud 프로젝트를 그대로 써도 됨) → Android 앱 추가: 패키지 `com.yaari.chat` →
-   `google-services.json` 다운로드 (안드로이드 앱에 FCM을 붙이는 다음 버전에서 사용).
+   `google-services.json` 다운로드. 앱은 google-services 플러그인을 쓰지 않으므로 이 파일은 저장소에 넣지 않고, 값 4개만 옮깁니다.
 2. 프로젝트 설정 → 서비스 계정 → **새 비공개 키 생성** → 받은 JSON 파일 내용 전체를 Supabase Secret **`FCM_SERVICE_ACCOUNT`** 에 붙여넣기.
-3. 안드로이드 앱(다음 버전)이 할 일: 첫 친구를 추가한 뒤 알림 권한 요청(Android 13+), 채널 3개(messages / social / rooms),
-   토큰을 `register_device(token, 'android', 언어, 시간대)` 로 등록, 로그아웃 때 `unregister_device(token)`.
-   푸시는 data 메시지(`kind`, `channel`, `actor_name`, `match`/`room`, `n`)이므로 앱이 알림을 직접 만듭니다.
-4. 확인: SQL Editor에서 `select * from net._http_response order by id desc limit 5;` → `push` 응답이 `{"sent":1,...}`.
+3. **안드로이드 앱(0.9.0부터 준비 완료)**: `google-services.json`의 값을 `chat/gradle.properties`(또는 `~/.gradle/gradle.properties`,
+   CI라면 같은 이름의 환경 변수)에 적고 다시 빌드합니다. 값이 하나라도 비어 있으면 푸시 코드는 아예 돌지 않습니다(토큰 등록 없음).
+   ```
+   FIREBASE_APP_ID=      # client[0].client_info.mobilesdk_app_id  (예: 1:1234567890:android:abc123...)
+   FIREBASE_API_KEY=     # client[0].api_key[0].current_key
+   FIREBASE_PROJECT_ID=  # project_info.project_id
+   FIREBASE_SENDER_ID=   # project_info.project_number
+   ```
+   그 뒤 앱이 하는 일: 로그인 후 토큰을 `register_device(token, 'android', 언어, 시간대)`로 등록, 로그아웃 때 `unregister_device`,
+   첫 친구가 생긴 뒤 한 번만 알림 권한 요청(Android 13+), 채널 3개(messages / social / rooms), 알림 탭 → 그 대화방/방(초대)으로 이동.
+4. **방 링크로 앱 열기(App Links)**: 앱은 `https://yaari-web-indol.vercel.app/r/<방 id 또는 코드>` 를 받도록 등록돼 있지만
+   (`autoVerify=false`), 지금은 링크를 누르면 "어떤 앱으로 열기" 선택창이 뜹니다. 선택창 없이 바로 열리게 하려면 출시 서명 키가 생긴 뒤:
+   Play Console → 설정 → **앱 무결성 → 앱 서명 키 인증서의 SHA-256** 복사 → 웹에 `web/public/.well-known/assetlinks.json` 추가
+   (`[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"com.yaari.chat","sha256_cert_fingerprints":["<SHA-256>"]}}]`)
+   → 배포 → 앱의 `live/AndroidManifest.xml` 에서 `autoVerify="true"` 로 바꿔 다음 버전 출시.
+5. 확인: SQL Editor에서 `select * from net._http_response order by id desc limit 5;` → `push` 응답이 `{"sent":1,...}`.
 
 ---
 

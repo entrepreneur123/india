@@ -60,14 +60,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
 import com.yaari.chat.model.FriendState
+import com.yaari.chat.model.Badges
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.yaari.chat.model.Profile
 
 @Composable
-fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
+fun RecentTab(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () -> Unit) {
     // 0 = Friends, 1 = Matches (people met in random chat)
     var page by rememberSaveable { mutableIntStateOf(if (s.incomingRequests > 0 || s.recents.isEmpty()) 0 else 1) }
+    val b = social.badges
+    val unreadFriends = s.friends.count { it.state == FriendState.FRIENDS && b.unread(it.threadId) > 0 }
+    val unreadMatches = s.recents.count { b.unread(it.matchId) > 0 }
     Column(Modifier.fillMaxSize()) {
-        TabHeader(stringResource(R.string.tab_recent), onSettings)
+        TabHeader(stringResource(R.string.tab_recent), onSettings) { BellButton(b.inbox, vm.social::openInbox) }
         BoxWithConstraints(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
@@ -81,14 +87,14 @@ fun RecentTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
                     .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
             )
             Row {
-                Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f)) { page = 0 }
-                Segment(stringResource(R.string.recent_matches), page == 1, Modifier.weight(1f), count = s.recents.size) { page = 1 }
+                Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f), count = s.incomingRequests + unreadFriends) { page = 0 }
+                Segment(stringResource(R.string.recent_matches), page == 1, Modifier.weight(1f), count = unreadMatches) { page = 1 }
             }
         }
         AnimatedContent(page, transitionSpec = {
             val dir = if (targetState > initialState) 1 else -1
             (slideInHorizontally { it / 6 * dir } + fadeIn()) togetherWith (slideOutHorizontally { -it / 6 * dir } + fadeOut())
-        }, label = "page") { p -> if (p == 0) FriendsList(vm, s) else RecentList(vm, s) }
+        }, label = "page") { p -> if (p == 0) FriendsList(vm, s, b) else RecentList(vm, s, b) }
     }
 }
 
@@ -103,19 +109,12 @@ private fun Segment(text: String, selected: Boolean, modifier: Modifier, count: 
             text, style = MaterialTheme.typography.labelLarge,
             color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        if (count > 0) {
-            Text(
-                "$count", Modifier.padding(start = 6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.07f))
-                    .padding(horizontal = 6.dp, vertical = 1.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        CountBadge(count, Modifier.padding(start = 6.dp))
     }
 }
 
 @Composable
-private fun FriendsList(vm: AppViewModel, s: UiState) {
+private fun FriendsList(vm: AppViewModel, s: UiState, b: Badges) {
     val incoming = s.friends.filter { it.state == FriendState.INCOMING }
     val friends = s.friends.filter { it.state == FriendState.FRIENDS }
     val sent = s.friends.filter { it.state == FriendState.REQUESTED }
@@ -133,7 +132,10 @@ private fun FriendsList(vm: AppViewModel, s: UiState) {
         if (friends.isNotEmpty()) {
             item { SectionLabel(stringResource(R.string.friends_count, friends.size)) }
             items(friends, key = { "f-" + it.profile.id }) { f ->
-                PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.genderCity(), onOpen = { vm.openDm(f.profile.id) }, onAvatar = { vm.openProfile(f.profile) }) {
+                PersonRow(
+                    modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.genderCity(), unread = b.unread(f.threadId),
+                    onOpen = { vm.openDm(f.profile.id) }, onAvatar = { vm.openProfile(f.profile) },
+                ) {
                     CircleIconButton(Icons.AutoMirrored.Outlined.Chat, stringResource(R.string.message), { vm.openDm(f.profile.id) }, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     PersonMenu(f.profile, onBlock = { vm.block(f.profile) }, onReport = { vm.report(f.profile.id, it) })
                 }
@@ -172,7 +174,7 @@ private fun RequestCard(p: Profile, modifier: Modifier, onOpen: () -> Unit, onAn
 }
 
 @Composable
-private fun RecentList(vm: AppViewModel, s: UiState) {
+private fun RecentList(vm: AppViewModel, s: UiState, b: Badges) {
     if (s.recents.isEmpty()) {
         EmptyState(Icons.Outlined.ChatBubbleOutline, stringResource(R.string.recent_empty_title), stringResource(R.string.recent_empty))
         return
@@ -182,6 +184,7 @@ private fun RecentList(vm: AppViewModel, s: UiState) {
             val state = s.friendState(r.partner.id)
             PersonRow(
                 modifier = Modifier.animateItem(), p = r.partner, subtitle = r.lastText ?: r.partner.genderCity(), time = r.metAt,
+                unread = b.unread(r.matchId),
                 onOpen = { vm.openDm(r.partner.id) }, onAvatar = { vm.openProfile(r.partner) },
             ) {
                 FriendAction(state, onAdd = { vm.addFriend(r.partner) })
@@ -216,7 +219,7 @@ private fun SectionLabel(text: String) {
 @Composable
 private fun PersonRow(
     p: Profile, subtitle: String, onOpen: () -> Unit, onAvatar: () -> Unit = onOpen, time: Long? = null, modifier: Modifier = Modifier,
-    actions: @Composable () -> Unit,
+    unread: Int = 0, actions: @Composable () -> Unit,
 ) {
     val interaction = remember { MutableInteractionSource() }
     Row(
@@ -242,6 +245,10 @@ private fun PersonRow(
                 subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
+        }
+        if (unread > 0) {
+            val label = stringResource(R.string.unread_count, unread)
+            CountBadge(unread, Modifier.semantics { contentDescription = label })
         }
         Row(horizontalArrangement = Arrangement.spacedBy(0.dp), verticalAlignment = Alignment.CenterVertically) { actions() }
     }

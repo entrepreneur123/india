@@ -64,6 +64,13 @@ import com.yaari.chat.model.VoiceRoomSummary
 import com.yaari.chat.model.VoiceSeat
 import com.yaari.chat.model.VoiceSystemEvent
 import com.yaari.chat.model.VoiceTrack
+import com.yaari.chat.model.Badges
+import com.yaari.chat.model.InboxItem
+import com.yaari.chat.model.InboxKind
+import com.yaari.chat.model.Interest
+import com.yaari.chat.model.ProfilePhoto
+import com.yaari.chat.model.RoomLang
+import com.yaari.chat.model.RoomQuery
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -126,6 +133,8 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.putJsonArray
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -176,8 +185,17 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
         val city: String = "India", val bio: String = "", @SerialName("photo_path") val photoPath: String? = null,
-        val country: String? = null,
+        val country: String? = null, val interests: List<String> = emptyList(), val photos: List<String> = emptyList(),
     )
+    /** profile_extras (024): interests and the gallery of people I may see. */
+    @Serializable private data class ExtrasRow(val id: String, val interests: List<String>? = null, val photos: List<String>? = null)
+    @Serializable private data class InboxRow(
+        val id: Long, val kind: String, val n: Int = 1, @SerialName("created_at") val createdAt: String,
+        @SerialName("read_at") val readAt: String? = null, @SerialName("match_id") val matchId: String? = null,
+        @SerialName("room_id") val roomId: String? = null, @SerialName("room_title") val roomTitle: String? = null,
+        @SerialName("room_open") val roomOpen: Boolean = false, val pending: Boolean = false, val actor: VoiceCardRow,
+    )
+    @Serializable private data class BadgesRow(val inbox: Int = 0, val friends: Int = 0, val chats: Map<String, Int> = emptyMap())
     @Serializable private data class NewProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
         val city: String, val bio: String, @SerialName("photo_path") val photoPath: String?,
@@ -260,8 +278,19 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun myProfile(): Profile? = call {
         val row = client.postgrest["profiles"].select { filter { eq("id", uid) } }.decodeSingleOrNull<ProfileRow>() ?: return@call null
         val age = Period.between(LocalDate.parse(row.birthDate), LocalDate.now()).years
-        toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts(row.id))
+        withExtras(toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts(row.id)), row.interests, row.photos)
     }
+
+    /** Interests and up to 4 photos (signed in one request). */
+    private suspend fun withExtras(p: Profile, interests: List<String>?, photos: List<String>?): Profile {
+        val paths = photos.orEmpty().take(ProfilePhoto.MAX)
+        signMany(paths)
+        return p.copy(interests = Interest.of(interests), photos = paths.mapNotNull { id -> signedUrls[id]?.first?.let { ProfilePhoto(id, it) } })
+    }
+
+    private suspend fun extras(userId: String): ExtrasRow? = runCatching {
+        client.postgrest.rpc("profile_extras", buildJsonObject { putJsonArray("p_users") { add(userId) } }).decodeList<ExtrasRow>().firstOrNull()
+    }.getOrNull()
 
     override suspend fun createProfile(p: NewProfile): Profile = call {
         val photo = p.photoUri?.let { upload(it.toUri(), "avatar") }
@@ -602,7 +631,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun profile(userId: String): Profile? = call {
         val c = client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()
             ?: return@call null
-        toProfile(c, posts(userId))
+        val p = toProfile(c, posts(userId))
+        extras(userId)?.let { withExtras(p, it.interests, it.photos) } ?: p
     }
 
     private suspend fun posts(userId: String): List<Post> =
@@ -677,7 +707,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("max_members") val maxMembers: Int = VoiceRoom.DEFAULT_MEMBERS, @SerialName("gender_rule") val genderRule: String? = null,
         @SerialName("min_age") val minAge: Int = VoiceRoom.MIN_AGE, @SerialName("max_age") val maxAge: Int = VoiceRoom.MAX_AGE,
         @SerialName("is_private") val isPrivate: Boolean = false, val announcement: String? = null, val code: String? = null,
-        val refusal: String? = null,
+        val refusal: String? = null, val lang: String? = null,
     )
     @Serializable private data class CreatedVoiceRow(val id: String, val code: String)
     @Serializable private data class LeaderRow(val id: String, val name: String, @SerialName("photo_path") val photoPath: String? = null, val wins: Int = 0)
@@ -702,8 +732,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private val voiceLive = ConcurrentHashMap<String, VoiceLive>()
     private val serverClock = ServerClock()
 
-    override suspend fun voiceRooms(): List<VoiceRoomSummary> = call {
-        val rows = client.postgrest.rpc("voice_list2").decodeList<VoiceListRow>()
+    override suspend fun voiceRooms(query: RoomQuery): List<VoiceRoomSummary> = call {
+        val rows = client.postgrest.rpc("voice_list3", buildJsonObject {
+            put("p_query", query.text.trim().ifEmpty { null })
+            put("p_lang", RoomLang.server(query.lang))
+        }).decodeList<VoiceListRow>()
         signMany(rows.flatMap { r -> listOf(r.host?.photoPath) + r.speakers.map { it.photoPath } })
         rows.mapNotNull { r ->
             val host = r.host ?: return@mapNotNull null
@@ -716,14 +749,14 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                     else -> null
                 },
                 rules = RoomRules(r.maxMembers, GenderRule.of(r.genderRule), r.minAge, r.maxAge, r.isPrivate),
-                announcement = r.announcement, code = r.code, refusal = r.refusal,
+                announcement = r.announcement, code = r.code, refusal = r.refusal, lang = RoomLang.of(r.lang),
             )
         }.sortedByDescending { it.mine }
     }
 
     override suspend fun createVoiceRoom(room: NewVoiceRoom): CreatedVoiceRoom = call {
         val r = room.rules
-        val row = client.postgrest.rpc("create_voice_room2", buildJsonObject {
+        val row = client.postgrest.rpc("create_voice_room3", buildJsonObject {
             put("p_title", room.title)
             put("p_category", room.category.code)
             put("p_max", r.maxMembers)
@@ -732,6 +765,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             put("p_max_age", r.maxAge)
             put("p_private", r.isPrivate)
             put("p_announcement", room.announcement)
+            put("p_lang", RoomLang.server(room.lang))
         }).decodeAs<CreatedVoiceRow>()
         telemetry.track(Funnel.ROOM_CREATED)
         CreatedVoiceRoom(row.id, row.code)
@@ -742,14 +776,112 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         json.decodeFromString<String?>(client.postgrest.rpc("join_voice_code", buildJsonObject { put("p_code", code) }).data.trim())
     } ?: throw BackendException("not_found")
 
-    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String) = call {
-        client.postgrest.rpc("voice_settings", buildJsonObject {
+    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String, lang: String?) = call {
+        client.postgrest.rpc("voice_settings2", buildJsonObject {
             put("p_room", roomId)
             put("p_title", title)
             put("p_announcement", announcement)
+            put("p_lang", RoomLang.server(lang))
         })
-        voiceLive[roomId]?.acted?.invoke()
+        // The language is not in the room's change events: a new language re-reads the whole state.
+        voiceLive[roomId]?.let { if (lang != null) it.refresh() else it.acted() }
         Unit
+    }
+
+    override suspend fun inviteToRoom(roomId: String, userId: String) = call {
+        client.postgrest.rpc("invite_to_room", buildJsonObject { put("p_room", roomId); put("p_user", userId) })
+        Unit
+    }
+
+    override suspend fun joinInvite(inboxId: Long): String = call {
+        json.decodeFromString<String>(client.postgrest.rpc("join_invite", buildJsonObject { put("p_id", inboxId) }).data.trim())
+    }
+
+    override suspend fun onlineCount(): Int = call {
+        client.postgrest.rpc("online_count").data.trim().toIntOrNull() ?: 0
+    }
+
+    // ---- notifications and unread counts (023_notifications.sql) ----
+
+    override suspend fun inbox(before: Long?): List<InboxItem> = call {
+        val rows = client.postgrest.rpc("inbox", buildJsonObject { put("p_before", before); put("p_limit", 30) }).decodeList<InboxRow>()
+        signMany(rows.map { it.actor.photoPath })
+        rows.mapNotNull { r ->
+            InboxItem(
+                r.id, InboxKind.of(r.kind) ?: return@mapNotNull null, card(r.actor), ts(r.createdAt).toEpochMilli(), r.readAt != null,
+                r.n, r.matchId, r.roomId, r.roomTitle, r.roomOpen, r.pending,
+            )
+        }
+    }
+
+    override suspend fun markInboxRead(ids: List<Long>?) = call {
+        client.postgrest.rpc("inbox_read", buildJsonObject {
+            if (ids == null) put("p_ids", null as String?) else putJsonArray("p_ids") { ids.forEach { add(it) } }
+        })
+        Unit
+    }
+
+    override suspend fun badges(): Badges = call {
+        val b = client.postgrest.rpc("my_badges").decodeAs<BadgesRow>()
+        Badges(b.inbox, b.friends, b.chats)
+    }
+
+    /** Inserts and updates of my notifications (RLS: my rows only); one signal once joined, for what came meanwhile. */
+    override fun inboxSignals(): Flow<Unit> = channelFlow {
+        val me = uid
+        val channel = client.channel("inbox-$me-${UUID.randomUUID()}")
+        val changes = channel.postgresChangeFlow<PostgresAction>("public") {
+            table = "notifications"
+            filter("user_id", FilterOperator.EQ, me)
+        }
+        launch { changes.collect { send(Unit) } }
+        try {
+            channel.subscribe(blockUntilSubscribed = true)
+            send(Unit)
+            awaitCancellation()
+        } finally {
+            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
+        }
+    }
+
+    override suspend fun registerDevice(token: String, locale: String, timeZone: String) = call {
+        client.postgrest.rpc("register_device", buildJsonObject {
+            put("p_token", token)
+            put("p_platform", "android")
+            put("p_locale", locale)
+            put("p_tz", timeZone)
+        })
+        Unit
+    }
+
+    override suspend fun unregisterDevice(token: String) = call {
+        client.postgrest.rpc("unregister_device", buildJsonObject { put("p_token", token) })
+        Unit
+    }
+
+    // ---- profile extras (024_discovery_profiles.sql) ----
+
+    override suspend fun setInterests(tags: List<Interest>): Profile = call {
+        client.postgrest.rpc("set_interests", buildJsonObject { putJsonArray("p_tags") { tags.forEach { add(it.code) } } })
+        myProfile() ?: throw BackendException("network")
+    }
+
+    /** Stored like the profile photo (avatar folder: set_photos accepts only those), then the list is set. */
+    override suspend fun addProfilePhoto(jpegUri: String): Profile = call {
+        val now = myProfile() ?: throw BackendException("network")
+        if (now.photos.size >= ProfilePhoto.MAX) throw BackendException("not_allowed")
+        val path = upload(jpegUri.toUri(), "avatar")
+        setPhotos(now.photos.map { it.id } + path)
+    }
+
+    override suspend fun removeProfilePhoto(id: String): Profile = call {
+        val now = myProfile() ?: throw BackendException("network")
+        setPhotos(now.photos.map { it.id }.filter { it != id })
+    }
+
+    private suspend fun setPhotos(paths: List<String>): Profile {
+        client.postgrest.rpc("set_photos", buildJsonObject { putJsonArray("p_paths") { paths.forEach { add(it) } } })
+        return myProfile() ?: throw BackendException("network")
     }
 
     override suspend fun sendVoicePhoto(roomId: String, jpegUri: String): VoiceLine = call {
@@ -1250,7 +1382,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 )
             },
             rules = RoomRules(s.max, GenderRule.of(s.gender), s.minAge, s.maxAge, s.private),
-            announcement = s.announcement, code = s.code,
+            announcement = s.announcement, code = s.code, lang = RoomLang.of(s.lang),
             seats = List(VoiceRoom.SEATS) { VoiceSeat(it, it in s.locked) },
             track = s.music?.let {
                 VoiceTrack(it.id, it.videoId, it.title, it.by, serverClock.toLocal(it.startedAt), it.pausedAt?.let(serverClock::toLocal))

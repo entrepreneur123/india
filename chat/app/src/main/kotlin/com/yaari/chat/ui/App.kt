@@ -87,6 +87,10 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import com.yaari.chat.R
 import com.yaari.chat.data.Connectivity
+import com.yaari.chat.data.AppForeground
+import com.yaari.chat.data.awaitVisible
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import com.yaari.chat.data.Products
 import com.yaari.chat.data.VideoStatus
@@ -115,6 +119,28 @@ fun YaariApp(vm: AppViewModel, online: StateFlow<Boolean> = Connectivity.online)
         }
     }
     s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
+    s.me?.takeIf { !s.booting }?.let { me -> SocialLayer(vm, me) }
+}
+
+/**
+ * Signed in: the unread counts (asked every 30 s while on screen, and at once when a notification arrives over
+ * realtime), Notifications, the interests question and the tour (first run), and the notifications permission.
+ */
+@Composable
+private fun SocialLayer(vm: AppViewModel, me: Profile) {
+    val social by vm.social.state.collectAsStateWithLifecycle()
+    LaunchedEffect(me.id) {
+        launch { vm.social.follow() }
+        while (true) {
+            AppForeground.visible.awaitVisible()
+            vm.social.refreshBadges()
+            delay(SocialController.BADGES_MS)
+        }
+    }
+    if (social.inboxOpen) InboxSheet(vm, social)
+    if (social.interestsShown) InterestsSheet(vm, me, social)
+    else if (social.firstRun == FirstRunStep.TOUR) TourDialog(vm, social.tourCard)
+    NotificationsPermission(social.askNotifications, vm.social::notificationsAsked)
 }
 
 @Composable

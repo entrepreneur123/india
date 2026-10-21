@@ -20,7 +20,15 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import com.yaari.chat.model.Badges
+import com.yaari.chat.model.InboxItem
+import com.yaari.chat.model.InboxKind
+import com.yaari.chat.model.Interest
+import com.yaari.chat.model.ProfilePhoto
+import com.yaari.chat.model.RoomQuery
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -64,6 +72,61 @@ open class FakeBackend(
     private var nextId = 0L
     /** Pool id -> state. One person has already asked, so the demo shows a request. */
     private val friendships = linkedMapOf("p3" to FriendState.INCOMING)
+
+    /** Notifications, as the server's triggers write them (023): a friend's messages fold into one unread row per chat. */
+    private class Note(
+        val id: Long, val kind: InboxKind, val actor: Profile, var at: Long, var read: Boolean = false, var n: Int = 1,
+        val matchId: String? = null, val roomId: String? = null,
+    )
+    private val notes = mutableListOf<Note>()
+    private var noteSeq = 1L
+    private val noteSignals = MutableSharedFlow<Unit>(extraBufferCapacity = 16)
+    /** The newest message id I have read, per chat. */
+    private val readUpto = mutableMapOf<String, Long>()
+    /** Friends I invited to a room: (room id, user id). */
+    val invited = mutableListOf<Pair<String, String>>()
+    /** The push token this phone registered (null: none, or unregistered). */
+    var deviceToken: String? = null
+        private set
+
+    init {
+        notify(InboxKind.FRIEND_REQUEST, POOL.first { it.id == "p3" }, at = clock() - 3_600_000L)
+    }
+
+    /**
+     * Something to tell me (the demo's scripted people, and tests): a friend's message folds into the chat's unread
+     * row, a request or acceptance is once per person while unread.
+     */
+    fun notify(kind: InboxKind, actor: Profile, matchId: String? = null, roomId: String? = null, at: Long = clock()) {
+        val open = notes.firstOrNull {
+            !it.read && it.kind == kind && when (kind) {
+                InboxKind.MESSAGE -> it.matchId == matchId
+                InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT -> it.actor.id == actor.id
+                InboxKind.ROOM_INVITE -> false
+            }
+        }
+        if (open != null) {
+            if (kind == InboxKind.MESSAGE) {
+                open.n++
+                open.at = at
+            }
+        } else {
+            notes += Note(noteSeq++, kind, actor, at, matchId = matchId, roomId = roomId)
+        }
+        noteSignals.tryEmit(Unit)
+    }
+
+    /** The partner of [matchId] writes while I'm not looking (tests, screenshots): unread until I read it. */
+    fun partnerSays(matchId: String, text: String) {
+        val m = match(matchId)
+        m.messages += Message(nextId++, false, text, null, clock())
+        if (friendships[m.partner.id] == FriendState.FRIENDS) notify(InboxKind.MESSAGE, m.partner, matchId)
+    }
+
+    private fun readNotes(which: (Note) -> Boolean) {
+        notes.filter { !it.read && which(it) }.forEach { it.read = true }
+        noteSignals.tryEmit(Unit)
+    }
 
     private fun me() = phone?.let { accounts[it] } ?: throw BackendException("not_signed_in")
 
@@ -168,6 +231,7 @@ open class FakeBackend(
                             val text = if (out.text?.contains('?') == true) ANSWERS.random(random) else REPLIES.random(random)
                             val msg = Message(nextId++, false, text, null, clock())
                             m.messages += msg
+                            if (friendships[m.partner.id] == FriendState.FRIENDS) notify(InboxKind.MESSAGE, m.partner, matchId)
                             emit(MatchEvent.NewMessage(msg))
                         }
                     }
@@ -198,8 +262,12 @@ open class FakeBackend(
         return msg
     }
 
-    /** Scripted partners don't look at read ticks. */
-    override suspend fun markRead(matchId: String, upto: Long) = Unit
+    /** Scripted partners don't look at read ticks; my unread counts do (and reading clears the chat's notification). */
+    override suspend fun markRead(matchId: String, upto: Long) {
+        if (upto <= (readUpto[matchId] ?: -1L)) return
+        readUpto[matchId] = upto
+        readNotes { it.kind == InboxKind.MESSAGE && it.matchId == matchId }
+    }
 
     override suspend fun leave(matchId: String) {
         val m = match(matchId)
@@ -273,7 +341,10 @@ open class FakeBackend(
 
     override suspend fun friends(): List<Friend> {
         me()
-        friendships.entries.filter { it.value == FriendState.REQUESTED }.forEach { it.setValue(FriendState.FRIENDS) }
+        friendships.entries.filter { it.value == FriendState.REQUESTED }.forEach { e ->
+            e.setValue(FriendState.FRIENDS)
+            POOL.firstOrNull { it.id == e.key }?.let { notify(InboxKind.FRIEND_ACCEPT, it) }
+        }
         return friendships.entries.reversed().filter { it.key !in blocked }.mapNotNull { (id, state) ->
             POOL.firstOrNull { it.id == id }?.let { p ->
                 Friend(p, state, matches.entries.lastOrNull { it.value.partner.id == id }?.key)
@@ -289,12 +360,14 @@ open class FakeBackend(
             else -> FriendState.REQUESTED
         }
         friendships[userId] = now
+        if (now == FriendState.FRIENDS) readNotes { it.kind == InboxKind.FRIEND_REQUEST && it.actor.id == userId }
         return now
     }
 
     override suspend fun answerFriend(userId: String, accept: Boolean) {
         if (friendships[userId] != FriendState.INCOMING) throw BackendException("not_found")
         if (accept) friendships[userId] = FriendState.FRIENDS else friendships.remove(userId)
+        if (accept) readNotes { it.kind == InboxKind.FRIEND_REQUEST && it.actor.id == userId } else noteSignals.tryEmit(Unit)
     }
 
     override suspend fun removeFriend(userId: String) {
@@ -312,10 +385,96 @@ open class FakeBackend(
 
     // ---- rooms (FakeVoice) ----
 
-    override suspend fun voiceRooms() = voice.list().filter { it.host.id !in blocked }
+    override suspend fun voiceRooms(query: RoomQuery) = voice.list(query).filter { it.host.id !in blocked }
     override suspend fun createVoiceRoom(room: NewVoiceRoom) = voice.create(room)
     override suspend fun joinVoiceCode(code: String) = voice.joinCode(code)
-    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String) = voice.settings(roomId, title, announcement)
+    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String, lang: String?) =
+        voice.settings(roomId, title, announcement, lang)
+
+    /** The server's invite_to_room: I am in the room, they are my friend. */
+    override suspend fun inviteToRoom(roomId: String, userId: String) {
+        val me = me()
+        if (!voice.isOpen(roomId)) throw BackendException("room_closed")
+        if (!voice.isIn(roomId, me.id) || friendships[userId] != FriendState.FRIENDS || userId in blocked) throw BackendException("not_allowed")
+        if ((roomId to userId) !in invited) invited += roomId to userId
+    }
+
+    override suspend fun joinInvite(inboxId: Long): String {
+        val n = notes.firstOrNull { it.id == inboxId && it.kind == InboxKind.ROOM_INVITE && it.actor.id !in blocked }
+            ?: throw BackendException("not_found")
+        readNotes { it.id == inboxId }
+        val room = n.roomId ?: throw BackendException("not_found")
+        if (!voice.isOpen(room)) throw BackendException("room_closed")
+        voice.admit(room)
+        return room
+    }
+
+    /** A believable, slowly changing number (no dice: tests script the dice). */
+    override suspend fun onlineCount() = 1_240 + (clock() / 60_000L % 60).toInt()
+
+    // ---- notifications ----
+
+    override suspend fun inbox(before: Long?): List<InboxItem> {
+        me()
+        wait(300)
+        return notes.filter { it.actor.id !in blocked && (before == null || it.id < before) }.sortedByDescending { it.id }.take(30).map { n ->
+            InboxItem(
+                n.id, n.kind, n.actor, n.at, n.read, n.n, n.matchId, n.roomId, voice.titleOf(n.roomId), voice.isOpen(n.roomId),
+                pending = n.kind == InboxKind.FRIEND_REQUEST && friendships[n.actor.id] == FriendState.INCOMING,
+            )
+        }
+    }
+
+    override suspend fun markInboxRead(ids: List<Long>?) {
+        me()
+        readNotes { ids == null || it.id in ids }
+    }
+
+    override suspend fun badges(): Badges {
+        me()
+        return Badges(
+            inbox = notes.count { !it.read && it.actor.id !in blocked }.coerceAtMost(99),
+            friends = friendships.entries.count { it.value == FriendState.INCOMING && it.key !in blocked },
+            chats = matches.entries.filter { it.value.partner.id !in blocked }.associate { (id, m) ->
+                id to m.messages.count { !it.fromMe && it.id > (readUpto[id] ?: -1L) }.coerceAtMost(99)
+            }.filterValues { it > 0 },
+        )
+    }
+
+    override fun inboxSignals(): Flow<Unit> = flow {
+        emit(Unit) // anything that arrived before listening
+        emitAll(noteSignals)
+    }
+
+    override suspend fun registerDevice(token: String, locale: String, timeZone: String) {
+        me()
+        deviceToken = token
+    }
+
+    override suspend fun unregisterDevice(token: String) {
+        if (deviceToken == token) deviceToken = null
+    }
+
+    // ---- profile extras ----
+
+    private fun updateMe(change: (Profile) -> Profile): Profile {
+        val ph = phone ?: throw BackendException("not_signed_in")
+        return change(me()).also { accounts[ph] = it }
+    }
+
+    override suspend fun setInterests(tags: List<Interest>): Profile {
+        if (!Interest.valid(tags)) throw BackendException("bad_request")
+        wait(250)
+        return updateMe { it.copy(interests = Interest.entries.filter { t -> t in tags }) }
+    }
+
+    override suspend fun addProfilePhoto(jpegUri: String): Profile {
+        if (me().photos.size >= ProfilePhoto.MAX) throw BackendException("not_allowed")
+        wait(400)
+        return updateMe { it.copy(photos = it.photos + ProfilePhoto(UUID.randomUUID().toString(), jpegUri)) }
+    }
+
+    override suspend fun removeProfilePhoto(id: String): Profile = updateMe { it.copy(photos = it.photos.filterNot { p -> p.id == id }) }
     override fun voiceSession(roomId: String) = voice.session(roomId)
     override suspend fun leaveVoice(roomId: String) = voice.leave(roomId)
     override suspend fun endVoice(roomId: String) = voice.endRoom(roomId)
@@ -362,6 +521,13 @@ open class FakeBackend(
                 posts = posts.mapIndexed { i, t -> Post("p$id-$i", t, createdAt = 1_760_000_000_000L - i * 86_400_000L) },
             )
 
+        /** Some scripted people picked interests (shown on their profiles, "You both like"). */
+        private val TAGS = mapOf(
+            "p1" to listOf(Interest.MUSIC, Interest.BOOKS, Interest.TRAVEL), "p2" to listOf(Interest.FOOTBALL, Interest.TECH, Interest.GAMING),
+            "p3" to listOf(Interest.DANCE, Interest.PETS, Interest.MUSIC, Interest.FITNESS), "p5" to listOf(Interest.TRAVEL, Interest.FOOD, Interest.ART),
+            "p6" to listOf(Interest.PHOTOGRAPHY, Interest.TRAVEL, Interest.ART), "p10" to listOf(Interest.BUSINESS, Interest.TECH, Interest.CRICKET),
+        )
+
         val POOL = listOf(
             profile(1, "Priya", Gender.FEMALE, 22, "Mumbai", "IN", "Chai, books & sunsets 🌅", "Marine Drive evenings", "New cafe find!", "Monsoon mood"),
             profile(2, "Lucas", Gender.MALE, 25, "São Paulo", "BR", "Football and coding", "Weekend match ⚽", "Office view"),
@@ -375,6 +541,6 @@ open class FakeBackend(
             profile(10, "Rohan", Gender.MALE, 24, "Delhi", "IN", "Startup dreams", "Pitch day!", "Diwali lights"),
             profile(11, "Maria", Gender.FEMALE, 25, "Manila", "PH", "Karaoke queen 🎤", "Beach weekend"),
             profile(12, "Daniel", Gender.MALE, 22, "Berlin", "DE", "Techno, bikes, coffee", "Sunday flea market"),
-        )
+        ).map { it.copy(interests = Interest.entries.filter { t -> t in TAGS[it.id].orEmpty() }) }
     }
 }

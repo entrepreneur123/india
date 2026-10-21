@@ -13,6 +13,7 @@ import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomLeader
+import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
@@ -46,6 +47,8 @@ data class CreatedNotice(val title: String, val code: String)
 data class VoiceListState(
     val rooms: List<VoiceRoomSummary>? = null, val failed: Boolean = false, val busy: Boolean = false,
     val filter: RoomCategory? = null, val created: CreatedNotice? = null,
+    /** Search words and language (the server narrows the list). */
+    val query: RoomQuery = RoomQuery(),
 ) {
     val shown get() = rooms?.filter { filter == null || it.category == filter }
 }
@@ -142,12 +145,20 @@ class VoiceController(
     /** All rooms or one category (kept while the app runs, like the web). */
     fun filter(category: RoomCategory?) = _list.update { it.copy(filter = category) }
 
+    /** Searches by title words and the room's language; the list reloads at once. */
+    fun search(query: RoomQuery) {
+        val q = query.copy(text = query.text.take(MAX_SEARCH))
+        if (q == _list.value.query) return
+        _list.update { it.copy(query = q) }
+        refreshList()
+    }
+
     /** The newest request wins. */
     fun refreshList() {
         listJob?.cancel()
         listJob = scope.launch {
             try {
-                val rooms = backend.voiceRooms()
+                val rooms = backend.voiceRooms(_list.value.query)
                 _list.update { it.copy(rooms = rooms, failed = false) }
             } catch (e: CancellationException) {
                 throw e
@@ -485,14 +496,16 @@ class VoiceController(
         s?.copy(lines = s.lines?.filterNot { (it is VoiceLine.Text && it.sender.id == userId) || (it is VoiceLine.Photo && it.sender.id == userId) })
     }
 
-    /** Host: the title and the pinned announcement (empty removes it). */
-    fun saveSettings(title: String, announcement: String, done: () -> Unit = {}) {
+    /** Host: the title, the pinned announcement (empty removes it) and the language (null keeps it). */
+    fun saveSettings(title: String, announcement: String, lang: String? = null, done: () -> Unit = {}) {
         val s = _state.value ?: return
         val t = title.trim()
         if (t.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE) return notice(UiText(R.string.err_room_title))
         scope.launch {
             try {
-                backend.updateVoiceRoom(s.roomId, t, announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT))
+                backend.updateVoiceRoom(s.roomId, t, announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT), lang)
+                // The language is not part of the room's change events: keep the open room's copy current.
+                if (lang != null) update(s.roomId) { v -> v.copy(room = v.room?.copy(lang = lang)) }
                 notice(UiText(R.string.room_saved))
                 done()
             } catch (e: CancellationException) {
@@ -682,6 +695,8 @@ class VoiceController(
     }
 
     companion object {
+        /** The server takes up to 40 characters of search. */
+        const val MAX_SEARCH = 40
         const val LUDO_RETRY_MS = 5_000L
         const val LUDO_TIMEOUT_TRIES = 8
         /** Spread the timeout calls of everyone in the room a little (the first one wins). */

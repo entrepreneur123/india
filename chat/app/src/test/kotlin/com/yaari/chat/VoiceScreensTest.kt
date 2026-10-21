@@ -124,7 +124,7 @@ class VoiceScreensTest {
         compose.runOnUiThread { backend.voice.say("v-bolly", vm.voice.state.value!!.room!!.members.first { it.seat == null }.profile.id, "this chorus is everything") }
         waitFor("this chorus is everything")
         // Chat from me, as a WhatsApp bubble on the right.
-        compose.onNode(hasSetTextAction()).performTextInput("Arijit forever")
+        compose.onNode(input()).performTextInput("Arijit forever")
         compose.onNode(hasContentDescription("Send")).performClick()
         compose.waitUntil(5_000) { vm.voice.state.value!!.lines!!.any { it is com.yaari.chat.model.VoiceLine.Text && it.fromMe } }
         shot("voice_04_music_chat")
@@ -155,8 +155,8 @@ class VoiceScreensTest {
         signIn()
         click("Create room")
         waitFor("You’re the host")
-        compose.onAllNodes(hasSetTextAction())[0].performTextInput("Sunday cricket chat")
-        compose.onAllNodes(hasSetTextAction())[1].performTextInput("Be kind. Hindi or English, both welcome.")
+        compose.onAllNodes(input())[0].performTextInput("Sunday cricket chat")
+        compose.onAllNodes(input())[1].performTextInput("Be kind. Hindi or English, both welcome.")
         screen("voice_05_create")
         compose.onAllNodes(hasText("Create room")).let { it[it.fetchSemanticsNodes().size - 1] }.performScrollTo().performClick()
         compose.waitUntil(5_000) { vm.voice.state.value?.room != null }
@@ -207,3 +207,6 @@ class VoiceScreensNightTest {
         captureScreenRoboImage("build/outputs/roborazzi/voice_05_create_dark.png")
     }
 }
+
+/** A text field other than the Rooms tab's search (which stays composed under a room or a sheet). */
+internal fun input() = hasSetTextAction() and !hasText("Search by room name")

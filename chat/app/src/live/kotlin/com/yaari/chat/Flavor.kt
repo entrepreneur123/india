@@ -49,6 +49,9 @@ import com.yaari.chat.data.Backend
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.CrashReports
 import com.yaari.chat.data.PhotoCheck
+import com.yaari.chat.data.PushRegistrar
+import com.yaari.chat.live.Fcm
+import com.yaari.chat.live.FcmTokens
 import com.yaari.chat.data.Shield
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.data.watchNudity
@@ -79,6 +82,16 @@ object Flavor {
     const val voiceMicPermission = true
 
     fun billing(app: Application): Billing = billing ?: PlayBilling(app).also { billing = it }
+
+    private var push: PushRegistrar? = null
+
+    /** Firebase starts only when its values were given at build time (live/Fcm.kt). */
+    fun initPush(app: Application) = Fcm.init(app)
+
+    /** Phone push through FCM; [PushRegistrar] does nothing while Firebase is not configured. */
+    fun push(app: Application): PushRegistrar = push ?: PushRegistrar(
+        Fcm.config, { FcmTokens() }, backend(app), { AppLocale.matchLanguage(app) }, { java.util.TimeZone.getDefault().id },
+    ).also { push = it }
 
     /** Crashes are written down here and sent on the next launch (SupabaseBackend's telemetry). */
     fun crashReports(app: Application) = CrashReports.install(SupabaseBackend.reportsDir(app), SupabaseBackend.VERSION)

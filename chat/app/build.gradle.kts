@@ -16,8 +16,17 @@ android {
         applicationId = "com.yaari.chat"
         minSdk = 24          // Android 7.0+: low-end phones are still common in India
         targetSdk = 36
-        versionCode = 10
-        versionName = "0.8.0"
+        versionCode = 11
+        versionName = "0.9.0"
+
+        // Phone push (FCM) without the google-services plugin: the Firebase project's values from gradle properties or
+        // the environment (FIREBASE_APP_ID, FIREBASE_API_KEY, FIREBASE_PROJECT_ID, FIREBASE_SENDER_ID). Empty (the
+        // default) = push off: no Firebase start-up and no token (live/Fcm.kt). docs/LAUNCH_GUIDE.md 4-2.
+        listOf("FIREBASE_APP_ID", "FIREBASE_API_KEY", "FIREBASE_PROJECT_ID", "FIREBASE_SENDER_ID").forEach { key ->
+            val value = providers.gradleProperty(key).orElse(providers.environmentVariable(key)).getOrElse("")
+            require(value.none { it == '"' || it == '\\' }) { "$key: no quotes or backslashes" }
+            buildConfigField("String", key, "\"$value\"")
+        }
     }
 
     // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
@@ -147,6 +156,8 @@ dependencies {
     // On-device nudity check of the partner's video (live/assets/nsfw_mobilenet_v2.tflite, data/Nudity.kt). LiteRT 1.x
     // is the classic TensorFlow Lite interpreter, CPU (XNNPACK) only; 2.x adds a GPU accelerator and Guava.
     "liveImplementation"("com.google.ai.edge.litert:litert:1.4.2")
+    // Phone push (FCM). FirebaseApp is set up by hand from BuildConfig (no google-services plugin); see live/Fcm.kt.
+    "liveImplementation"("com.google.firebase:firebase-messaging:25.0.1")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

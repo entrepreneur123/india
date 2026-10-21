@@ -19,6 +19,10 @@ import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.VoiceRoomSummary
+import com.yaari.chat.model.Badges
+import com.yaari.chat.model.InboxItem
+import com.yaari.chat.model.Interest
+import com.yaari.chat.model.RoomQuery
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -138,8 +142,11 @@ interface Backend {
     // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit in the live build, and only
     // while someone is on the stage) ----
 
-    /** Live rooms I may see (private ones only when mine or entered with the code): mine first, then the server's order. */
-    suspend fun voiceRooms(): List<VoiceRoomSummary>
+    /**
+     * Live rooms I may see (private ones only when mine or entered with the code): mine first, then the most people
+     * present. [query] narrows them on the server (title words, the room's language).
+     */
+    suspend fun voiceRooms(query: RoomQuery = RoomQuery()): List<VoiceRoomSummary>
     /**
      * Opens a room with me as host, not on the stage yet (ending my previous one). Refused with room_title, room_size,
      * bad_request, slow_down.
@@ -150,8 +157,14 @@ interface Backend {
      * (10 misses in 10 minutes and code entry pauses: slow_down), or the room's refusal.
      */
     suspend fun joinVoiceCode(code: String): String
-    /** Host only: the title and the pinned announcement (empty removes it). */
-    suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String)
+    /** Host only: the title, the pinned announcement (empty removes it) and the language (null keeps it). */
+    suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String, lang: String? = null)
+    /** Tells a friend about the room I'm in (their Notifications, and a push). Refused with room_closed, not_allowed, slow_down. */
+    suspend fun inviteToRoom(roomId: String, userId: String)
+    /** Opens an invite ([InboxItem.id]): lets me into the room even when it is private; returns its id (then [voiceSession]). */
+    suspend fun joinInvite(inboxId: Long): String
+    /** People with the app open right now (a server count, at most 10 s old). */
+    suspend fun onlineCount(): Int
     /**
      * Enters a room (as a listener, or as the host of my own) and follows it while collected: the first event is
      * [VoiceEvent.RoomChanged]; then every change, chat line, reaction, audio level and the end. Fails at once with
@@ -180,6 +193,29 @@ interface Backend {
     suspend fun voiceAction(roomId: String, action: VoiceAction)
     /** Reported through its host (the report keeps what the host wrote in it). */
     suspend fun reportVoiceRoom(roomId: String, reason: ReportReason)
+
+    // ---- Notifications and unread counts (023_notifications.sql) ----
+
+    /** My notifications, newest first, 30 at a time ([before]: the oldest id already shown). */
+    suspend fun inbox(before: Long? = null): List<InboxItem>
+    /** Marks these items (null: all of them) read. */
+    suspend fun markInboxRead(ids: List<Long>? = null)
+    /** Unread counts; asking also tells the server the app is open (no pushes meanwhile). */
+    suspend fun badges(): Badges
+    /** Emits when one of my notifications arrives or changes (and once connected), while collected. Best effort. */
+    fun inboxSignals(): Flow<Unit>
+    /** This phone's push token (FCM), with the app's language and time zone (quiet hours are in local time). */
+    suspend fun registerDevice(token: String, locale: String, timeZone: String)
+    /** No more pushes to this phone (sign-out). */
+    suspend fun unregisterDevice(token: String)
+
+    // ---- Profile extras (024_discovery_profiles.sql) ----
+
+    /** None, or [Interest.MIN] to [Interest.MAX] tags (bad_request otherwise); returns my profile. */
+    suspend fun setInterests(tags: List<Interest>): Profile
+    /** Adds a photo to my profile ([jpegUri]: already shrunk and checked on this phone, [PhotoCheck]); at most 4 (not_allowed). */
+    suspend fun addProfilePhoto(jpegUri: String): Profile
+    suspend fun removeProfilePhoto(id: String): Profile
 
     // ---- Ludo in a voice room (018_ludo.sql; rules in domain/Ludo.kt) ----
 

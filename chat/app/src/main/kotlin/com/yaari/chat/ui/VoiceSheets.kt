@@ -48,6 +48,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -152,14 +153,22 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
         is VoiceSheet.Audience -> AudienceSheet(room, sheet.inviteSeat, act, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         is VoiceSheet.Seat -> SeatSheet(room, sheet.seat, act, onInvite = { onSheet(VoiceSheet.Audience(it)) }, onClose = close)
         VoiceSheet.Queue -> QueueSheet(room.track, room.queue, s.isHost, s.adding, act, vm.voice::addSong, vm.voice::vote, close)
-        VoiceSheet.Settings -> SettingsSheet(room, onSave = { title, note -> vm.voice.saveSettings(title, note, close) }, onClose = close)
+        VoiceSheet.Settings -> SettingsSheet(room, onSave = { title, note, lang -> vm.voice.saveSettings(title, note, lang, close) }, onClose = close)
+        VoiceSheet.Invite -> {
+            val app by vm.state.collectAsStateWithLifecycle()
+            val social by vm.social.state.collectAsStateWithLifecycle()
+            InviteSheet(vm, room, app.acceptedFriends(), social, close)
+        }
         VoiceSheet.Options -> RoomSheet(close) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 Box(Modifier.padding(horizontal = 24.dp)) { SheetTitle(stringResource(R.string.voice_options), null, close) }
                 Spacer(Modifier.height(8.dp))
-                SheetRow(Icons.Rounded.Link, stringResource(R.string.voice_share)) {
-                    close()
-                    copyLink(context, room.id)
+                SheetRow(Icons.Outlined.PersonAdd, stringResource(R.string.invite_title)) { onSheet(VoiceSheet.Invite) }
+                if (!room.rules.isPrivate || room.code != null) {
+                    SheetRow(Icons.Rounded.Link, stringResource(R.string.voice_share)) {
+                        close()
+                        copyLink(context, room)
+                    }
                 }
                 room.code?.let { code ->
                     SheetRow(Icons.Rounded.ContentCopy, stringResource(R.string.room_copy, code)) {
@@ -381,9 +390,10 @@ private fun SeatSheet(room: VoiceRoom, seat: Int, act: VoiceActor, onInvite: (In
 
 /** Host: the room's title and its pinned announcement. */
 @Composable
-private fun SettingsSheet(room: VoiceRoom, onSave: (String, String) -> Unit, onClose: () -> Unit) {
+private fun SettingsSheet(room: VoiceRoom, onSave: (String, String, String?) -> Unit, onClose: () -> Unit) {
     var title by rememberSaveable { mutableStateOf(room.title) }
     var note by rememberSaveable { mutableStateOf(room.announcement.orEmpty()) }
+    var lang by rememberSaveable { mutableStateOf(room.lang) }
     RoomSheet(onClose) {
         Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
             SheetTitle(stringResource(R.string.room_settings), stringResource(R.string.room_settings_desc), onClose)
@@ -400,8 +410,10 @@ private fun SettingsSheet(room: VoiceRoom, onSave: (String, String) -> Unit, onC
                 placeholder = { Text(stringResource(R.string.create_announcement_placeholder)) },
                 supportingText = { Text(stringResource(R.string.create_announcement_hint) + "  ${note.length}/${VoiceRoom.MAX_ANNOUNCEMENT}") },
             )
+            Spacer(Modifier.height(8.dp))
+            LanguageSelect(lang, { lang = it }, Modifier.fillMaxWidth(), height = 52.dp)
             Spacer(Modifier.height(16.dp))
-            PrimaryButton(stringResource(R.string.save), { onSave(title, note) }, enabled = title.trim().length >= VoiceRoom.MIN_TITLE)
+            PrimaryButton(stringResource(R.string.save), { onSave(title, note, lang.takeIf { it != room.lang }) }, enabled = title.trim().length >= VoiceRoom.MIN_TITLE)
         }
     }
 }

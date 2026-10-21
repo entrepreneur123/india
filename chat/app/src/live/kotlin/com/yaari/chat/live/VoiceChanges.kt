@@ -37,6 +37,8 @@ import kotlinx.serialization.json.longOrNull
     val announcement: String? = null, val max: Int = VoiceRoom.DEFAULT_MEMBERS, val gender: String? = null,
     val minAge: Int = VoiceRoom.MIN_AGE, val maxAge: Int = VoiceRoom.MAX_AGE, val private: Boolean = false, val code: String? = null,
     val seq: Long? = null,
+    /** 027: the room's language (not part of the change events: a settings change re-reads the state). */
+    val lang: String? = null,
 )
 
 /** The room's own part of the state (no members; `voted` is each client's own, the code is the host's). */

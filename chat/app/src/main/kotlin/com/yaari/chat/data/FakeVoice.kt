@@ -5,6 +5,8 @@ import com.yaari.chat.model.Gender
 import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.RoomLang
+import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomGame
@@ -54,7 +56,7 @@ class FakeVoice(
     private class SimRoom(
         val id: String, var title: String, val category: RoomCategory, val mode: SpeakMode, var hostId: String,
         val members: MutableList<Member>, val locked: BooleanArray, var mine: Boolean,
-        val rules: RoomRules, var announcement: String?, val code: String,
+        val rules: RoomRules, var announcement: String?, val code: String, var lang: String? = null,
     ) {
         var track: VoiceTrack? = null
         val queue = mutableListOf<VoiceQueueItem>()
@@ -83,14 +85,14 @@ class FakeVoice(
     init {
         seed("v-bolly", "Late night Bollywood songs", RoomCategory.MUSIC, SpeakMode.APPROVAL, "Priya", 5, 34,
             Music("BddP6PYo2gs", 74_000, listOf("Umqb9KENgmk", "284Ov7ysmfA", "VAdGW7QDJiU"), listOf(4, 7, 2)),
-            announcement = "Requests welcome: paste a YouTube link, vote for the next song.")
-        seed("v-chai", "Chai pe charcha", RoomCategory.TALK, SpeakMode.APPROVAL, "Meera", 0, 14, announcement = "Be kind. No phone numbers in the chat.")
-        seed("v-cricket", "Cricket talk: IND vs AUS", RoomCategory.TALK, SpeakMode.APPROVAL, "Vikram", 6, 48)
+            announcement = "Requests welcome: paste a YouTube link, vote for the next song.", lang = "hi")
+        seed("v-chai", "Chai pe charcha", RoomCategory.TALK, SpeakMode.APPROVAL, "Meera", 0, 14, announcement = "Be kind. No phone numbers in the chat.", lang = "hi")
+        seed("v-cricket", "Cricket talk: IND vs AUS", RoomCategory.TALK, SpeakMode.APPROVAL, "Vikram", 6, 48, lang = "en")
         // A Ludo game is on here (FakeLudo), to watch; a leaderboard from earlier games.
-        seed(FakeLudo.LUDO_ROOM, "Ludo night: come watch", RoomCategory.GAMES, SpeakMode.OPEN, "Arnab", 4, 12)
-        seed("v-lofi", "Lo-fi study together", RoomCategory.MUSIC, SpeakMode.OPEN, "Kavya", 2, 17, Music("lTRiuFIWV54", 480_000, emptyList(), emptyList()))
+        seed(FakeLudo.LUDO_ROOM, "Ludo night: come watch", RoomCategory.GAMES, SpeakMode.OPEN, "Arnab", 4, 12, lang = "bn")
+        seed("v-lofi", "Lo-fi study together", RoomCategory.MUSIC, SpeakMode.OPEN, "Kavya", 2, 17, Music("lTRiuFIWV54", 480_000, emptyList(), emptyList()), lang = "en")
         seed("v-gym", "Gym bros: fitness talk", RoomCategory.TALK, SpeakMode.OPEN, "Harsh", 2, 6,
-            rules = RoomRules(maxMembers = 30, genderRule = GenderRule.MALE, minAge = 18, maxAge = 30))
+            rules = RoomRules(maxMembers = 30, genderRule = GenderRule.MALE, minAge = 18, maxAge = 30), lang = "hi")
         rooms.getValue(FakeLudo.LUDO_ROOM).let { r ->
             r.members.take(5).forEachIndexed { i, m -> r.wins[m.profile.id] = m.profile to listOf(6, 4, 3, 3, 1)[i] }
         }
@@ -146,7 +148,7 @@ class FakeVoice(
 
     private fun seed(
         id: String, title: String, category: RoomCategory, mode: SpeakMode, hostName: String, speakers: Int, listeners: Int,
-        music: Music? = null, rules: RoomRules = ANYONE, announcement: String? = null,
+        music: Music? = null, rules: RoomRules = ANYONE, announcement: String? = null, lang: String? = null,
     ) {
         val people = listOf(person(hostName)) + List(maxOf(speakers, 1) + listeners - 1) { person() }
         val members = people.mapIndexed { i, p ->
@@ -165,7 +167,7 @@ class FakeVoice(
             )
         }
         val r = SimRoom(id, title, category, mode, people[0].id, members.toMutableList(),
-            BooleanArray(VoiceRoom.SEATS) { it == 8 && mode == SpeakMode.APPROVAL }, mine = false, rules, announcement, code(id))
+            BooleanArray(VoiceRoom.SEATS) { it == 8 && mode == SpeakMode.APPROVAL }, mine = false, rules, announcement, code(id), lang)
         if (music != null) {
             r.track = track(music.playing, people[0].name, clock() - music.ago)
             music.queue.forEachIndexed { i, v -> r.queue += VoiceQueueItem(uid(), v, TRACKS[v]?.first.orEmpty(), people[i + 1].name, music.votes.getOrElse(i) { 0 }) }
@@ -214,7 +216,7 @@ class FakeVoice(
         r.id, r.title, r.category, r.mode, r.hostId, runCatching { me().id }.getOrDefault(""),
         r.members.map { VoiceMember(it.profile, it.role, it.seat, it.muted, it.hand) },
         List(VoiceRoom.SEATS) { VoiceSeat(it, r.locked[it]) }, r.track, r.queue.toList(),
-        r.rules, r.announcement, if (r.mine) r.code else null,
+        r.rules, r.announcement, if (r.mine) r.code else null, r.lang,
     )
 
     private fun emit(r: SimRoom, e: VoiceEvent) = r.subs.toList().forEach { it(e) }
@@ -245,11 +247,24 @@ class FakeVoice(
     fun profileOf(id: String): Profile? = rooms.values.firstNotNullOfOrNull { r -> r.members.firstOrNull { it.profile.id == id }?.profile }
 
     fun hostOf(roomId: String) = rooms[roomId]?.hostId
+    fun titleOf(roomId: String?) = rooms[roomId]?.title
+    fun isOpen(roomId: String?) = rooms[roomId]?.ended == false
+    /** [userId] is in the room right now. */
+    fun isIn(roomId: String, userId: String) = rooms[roomId]?.takeIf { !it.ended }?.members?.any { it.profile.id == userId } == true
 
-    suspend fun list(): List<VoiceRoomSummary> {
+    /** An invite lets me in even when the room is private (the server's join_invite). */
+    fun admit(roomId: String) {
+        get(roomId).admitted = true
+    }
+
+    /** Live rooms (the server's voice_list3): mine first, then the most people present; [query] narrows them. */
+    suspend fun list(query: RoomQuery = RoomQuery()): List<VoiceRoomSummary> {
         wait(450)
         val me = runCatching { me() }.getOrNull()
+        val words = query.text.trim()
+        val lang = RoomLang.of(query.lang)
         return rooms.values.filter { !it.ended && (!it.rules.isPrivate || it.mine || it.admitted) }
+            .filter { (words.isEmpty() || it.title.contains(words, ignoreCase = true)) && (lang == null || it.lang == lang) }
             .sortedWith(compareByDescending<SimRoom> { it.mine }.thenByDescending { it.members.size }).map { r ->
                 val host = r.members.first { it.profile.id == r.hostId }.profile
                 VoiceRoomSummary(
@@ -264,6 +279,7 @@ class FakeVoice(
                         else -> null
                     },
                     rules = r.rules, announcement = r.announcement, code = if (r.mine) r.code else null, refusal = refusal(r),
+                    lang = r.lang,
                 )
             }
     }
@@ -283,7 +299,7 @@ class FakeVoice(
         early.forEach { members += Member(it, VoiceRole.LISTENER, null, muted = true, hand = false) }
         val r = SimRoom(
             id, title, n.category, SpeakMode.APPROVAL, me.id, members, BooleanArray(VoiceRoom.SEATS), mine = true,
-            n.rules, n.announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT).ifEmpty { null }, code(id),
+            n.rules, n.announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT).ifEmpty { null }, code(id), RoomLang.of(n.lang) ?: "en",
         )
         rooms[id] = r
         return CreatedVoiceRoom(id, r.code)
@@ -297,7 +313,7 @@ class FakeVoice(
         return r.id
     }
 
-    suspend fun settings(roomId: String, title: String, announcement: String) {
+    suspend fun settings(roomId: String, title: String, announcement: String, lang: String? = null) {
         val r = get(roomId)
         if (!r.mine) throw BackendException("not_allowed")
         val t = title.trim()
@@ -305,6 +321,7 @@ class FakeVoice(
         wait(200)
         r.title = t
         r.announcement = announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT).ifEmpty { null }
+        RoomLang.of(lang)?.let { r.lang = it }
         changed(r)
     }
 

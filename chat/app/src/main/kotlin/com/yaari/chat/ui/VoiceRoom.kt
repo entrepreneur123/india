@@ -166,11 +166,10 @@ fun RoomTheme(content: @Composable () -> Unit) = NightTheme {
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface, content = content)
 }
 
-/** Where to send people to open a room (the web app; the Android app opens rooms from the list). */
-private fun roomLink(roomId: String) = "https://yaari-web-indol.vercel.app/?voice=$roomId"
-
-internal fun copyLink(context: Context, roomId: String) {
-    context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("Yaari", roomLink(roomId)))
+/** The room's link (/r/<id>, or /r/<code> for a private room): the app opens it when installed, else the web app. */
+internal fun copyLink(context: Context, room: VoiceRoom) {
+    val link = com.yaari.chat.data.DeepLink.roomLink(room.id, room.code, room.rules.isPrivate)
+    context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("Yaari", link))
     Toast.makeText(context, context.getString(R.string.voice_link_copied), Toast.LENGTH_SHORT).show()
 }
 
@@ -184,6 +183,7 @@ sealed interface VoiceSheet {
     data object Options : VoiceSheet
     data object Settings : VoiceSheet
     data object ReportRoom : VoiceSheet
+    data object Invite : VoiceSheet
 }
 
 /**

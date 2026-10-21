@@ -55,6 +55,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -76,6 +77,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
+import com.yaari.chat.data.AppForeground
+import com.yaari.chat.data.awaitVisible
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.Target
@@ -101,6 +109,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
 
 @Composable
 private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit) {
+    val social by vm.social.state.collectAsStateWithLifecycle()
     val dark = s.tab == Tab.RANDOM
     val bg by animateColorAsState(if (dark) Brand.Night else MaterialTheme.colorScheme.background, tween(300), label = "bg")
     Column(Modifier.fillMaxSize().background(bg)) {
@@ -112,8 +121,8 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
         ) { tab ->
             when (tab) {
                 Tab.ROOMS -> RoomsTab(vm, onSettings = { open(Sub.SETTINGS) })
-                Tab.RANDOM -> RandomTab(vm, s, onSettings = { open(Sub.SETTINGS) })
-                Tab.RECENT -> RecentTab(vm, s, onSettings = { open(Sub.SETTINGS) })
+                Tab.RANDOM -> RandomTab(vm, s, social.badges.inbox, onSettings = { open(Sub.SETTINGS) })
+                Tab.RECENT -> RecentTab(vm, s, social, onSettings = { open(Sub.SETTINGS) })
                 Tab.ME -> MyProfileTab(
                     vm, s, onSettings = { open(Sub.SETTINGS) }, onEdit = { open(Sub.EDIT) }, onNewPost = { open(Sub.NEW_POST) },
                 )
@@ -122,7 +131,7 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
             // The voice room I'm in, minimised: it keeps playing while I look around.
             VoicePill(vm, Modifier.align(Alignment.BottomCenter))
         }
-        BottomBar(s, me, dark, bg, vm::selectTab)
+        BottomBar(s, me, maxOf(social.badges.recent, s.incomingRequests), dark, bg, vm::selectTab)
     }
 }
 
@@ -142,7 +151,7 @@ private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST }
 // ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Recent · Me) with a tonal pill on the selected tab ----
 
 @Composable
-private fun BottomBar(s: UiState, me: Profile, dark: Boolean, bg: Color, onSelect: (Tab) -> Unit) {
+private fun BottomBar(s: UiState, me: Profile, recentCount: Int, dark: Boolean, bg: Color, onSelect: (Tab) -> Unit) {
     val line = if (dark) Color.White.copy(alpha = 0.08f) else MaterialTheme.colorScheme.outlineVariant
     Column(Modifier.background(bg).navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(1.dp).background(line))
@@ -153,7 +162,7 @@ private fun BottomBar(s: UiState, me: Profile, dark: Boolean, bg: Color, onSelec
             NavItem(s.tab == Tab.RANDOM, dark, R.string.tab_random, onClick = { onSelect(Tab.RANDOM) }) { color ->
                 Icon(Icons.Rounded.Shuffle, null, Modifier.size(24.dp), tint = color)
             }
-            NavItem(s.tab == Tab.RECENT, dark, R.string.tab_recent, badge = s.incomingRequests, onClick = { onSelect(Tab.RECENT) }) { color ->
+            NavItem(s.tab == Tab.RECENT, dark, R.string.tab_recent, badge = recentCount, onClick = { onSelect(Tab.RECENT) }) { color ->
                 Icon(if (s.tab == Tab.RECENT) Icons.Rounded.History else Icons.Outlined.History, null, Modifier.size(24.dp), tint = color)
             }
             // Your own photo is the profile tab.
@@ -190,11 +199,13 @@ private fun RowScope.NavItem(
                     Modifier.align(Alignment.TopEnd).offset(x = (-8).dp, y = (-2).dp).height(16.dp).widthIn(min = 16.dp)
                         .clip(CircleShape).background(Brand.Pink).padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text("$badge", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
+                ) { Text(if (badge > 99) "99+" else "$badge", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
             }
         }
+        val newCount = if (badge > 0) stringResource(R.string.nav_new_count, badge) else null
         Text(
-            stringResource(label), Modifier.padding(top = 4.dp), color = navColor(selected, dark), style = MaterialTheme.typography.labelMedium,
+            stringResource(label), Modifier.padding(top = 4.dp).then(if (newCount != null) Modifier.semantics { stateDescription = newCount } else Modifier),
+            color = navColor(selected, dark), style = MaterialTheme.typography.labelMedium,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
         )
     }
@@ -222,7 +233,7 @@ fun TabHeader(title: String, onSettings: () -> Unit, modifier: Modifier = Modifi
 // ---- Random chat: the dark, camera-like lobby ------------------------------------------------------
 
 @Composable
-private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
+private fun RandomTab(vm: AppViewModel, s: UiState, inbox: Int, onSettings: () -> Unit) {
     val me = s.me ?: return
     Box(Modifier.fillMaxSize().aurora()) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
@@ -230,6 +241,7 @@ private fun RandomTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit) {
                 Wordmark(size = 24)
                 Spacer(Modifier.weight(1f))
                 PlanChip(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
+                BellButton(inbox, vm.social::openInbox, tint = Color.White.copy(alpha = 0.85f))
                 CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = Color.White.copy(alpha = 0.85f))
             }
             Column(
@@ -359,12 +371,30 @@ fun MatchingScreen(vm: AppViewModel, s: UiState) {
                     color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
                 )
                 // The last attempt failed (weak network); the search keeps going. Fixed height, so nothing jumps.
+                // Otherwise: how many people have the app open (the server's count, every 15 s).
+                val online = vm.social.state.collectAsStateWithLifecycle().value.online
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        AppForeground.visible.awaitVisible()
+                        vm.social.refreshOnline()
+                        delay(SocialController.ONLINE_MS)
+                    }
+                }
                 Box(Modifier.height(28.dp), contentAlignment = Alignment.BottomCenter) {
                     androidx.compose.animation.AnimatedVisibility(s.reconnecting, enter = fadeIn(tween(200)), exit = fadeOut(tween(200))) {
                         Text(
                             stringResource(R.string.matching_reconnecting), color = Brand.PinkOnDark,
                             style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center,
                         )
+                    }
+                    if (!s.reconnecting && online != null && online > 0) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(8.dp).clip(CircleShape).background(Brand.Online))
+                            Text(
+                                pluralStringResource(R.plurals.online_count, online, online), Modifier.padding(start = 8.dp),
+                                color = Color.White.copy(alpha = 0.72f), style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
                     }
                 }
                 Spacer(Modifier.height(4.dp))

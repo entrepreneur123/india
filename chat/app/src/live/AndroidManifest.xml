@@ -15,6 +15,30 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" tools:node="remove" />
 
     <application>
+        <!-- Room links open the app when installed (the web app otherwise): https://yaari-web-indol.vercel.app/r/<id or code>.
+             Not verified (autoVerify false): Android shows the "open with" choice until the site serves
+             .well-known/assetlinks.json with the release key's SHA-256 (docs/LAUNCH_GUIDE.md 4-2). -->
+        <activity android:name="com.yaari.chat.MainActivity" android:exported="true">
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="yaari-web-indol.vercel.app" android:pathPrefix="/r/" />
+            </intent-filter>
+        </activity>
+        <!-- Push (FCM, live/Fcm.kt): data messages from the server's push function. Firebase's own start-up provider
+             is removed: FirebaseApp is set up by hand, and only when the build has the project's values. -->
+        <service
+            android:name="com.yaari.chat.live.YaariMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="${applicationId}.firebaseinitprovider"
+            tools:node="remove" />
         <service
             android:name="com.yaari.chat.VoiceService"
             android:foregroundServiceType="mediaPlayback|microphone"

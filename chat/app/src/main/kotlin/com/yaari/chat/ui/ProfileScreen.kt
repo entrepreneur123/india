@@ -81,6 +81,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yaari.chat.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
@@ -116,6 +117,10 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                     leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
                 )
             }
+            val social by vm.social.state.collectAsStateWithLifecycle()
+            Spacer(Modifier.height(8.dp))
+            InterestsSection(me, mine = true, onEdit = { vm.social.editInterests(true) })
+            PhotosSection(me.photos, editable = true, busy = social.photoBusy, onAdd = { vm.social.addPhoto(it, me.photos.size) }, onRemove = vm.social::removePhoto)
             if (!s.premium) PlusBanner(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
         }
     }
@@ -195,6 +200,9 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                     if (canMessage) SoftButton(stringResource(R.string.message), { vm.openDm(p.id) }, Modifier.weight(1f))
                 }
+                Spacer(Modifier.height(8.dp))
+                InterestsSection(p, mine = false, onEdit = {}, shared = p.interests.intersect(s.me?.interests.orEmpty().toSet()))
+                PhotosSection(p.photos, editable = false)
             }
         }
     }

@@ -43,6 +43,18 @@ import com.yaari.chat.R
 import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.awaitVisible
 import com.yaari.chat.model.RoomCategory
+import com.yaari.chat.model.RoomQuery
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.delay
 
 /**
@@ -86,6 +98,7 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
                         }
                     }
                 }
+                item(key = "search") { RoomSearch(list.query, vm.voice::search) }
                 item(key = "filter") {
                     Segmented(
                         listOf<Pair<RoomCategory?, String>>(null to stringResource(R.string.rooms_all)) +
@@ -116,6 +129,15 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
                         }
                     }
                     rooms == null -> items(3) { Box(Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(20.dp)).shimmer()) }
+                    rooms.isEmpty() && !list.query.isEmpty -> item(key = "nomatch") {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                            EmptyState(Icons.Rounded.SearchOff, stringResource(R.string.rooms_no_match), stringResource(R.string.rooms_no_match_body))
+                            PrimaryButton(
+                                stringResource(R.string.rooms_create), { sheet = RoomSheet.CREATE }, height = 48.dp,
+                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Color.White) },
+                            )
+                        }
+                    }
                     rooms.isEmpty() -> item(key = "none") {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                             EmptyState(Icons.Rounded.GraphicEq, stringResource(R.string.rooms_none_title), stringResource(R.string.rooms_none_body))
@@ -142,3 +164,32 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
 }
 
 private enum class RoomSheet { NONE, CREATE, CODE }
+
+/** Search by room name (sent after a short pause in typing) and by the room's language. */
+@Composable
+private fun RoomSearch(query: RoomQuery, onSearch: (RoomQuery) -> Unit) {
+    var text by rememberSaveable { mutableStateOf(query.text) }
+    LaunchedEffect(text) {
+        if (text == query.text) return@LaunchedEffect
+        delay(SEARCH_PAUSE_MS)
+        onSearch(query.copy(text = text.trim()))
+    }
+    Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(
+            text, { if (it.length <= VoiceController.MAX_SEARCH) text = it }, Modifier.weight(1.25f).heightIn(min = 52.dp), singleLine = true,
+            placeholder = { Text(stringResource(R.string.rooms_search_placeholder), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            leadingIcon = { Icon(Icons.Rounded.Search, null) },
+            trailingIcon = if (text.isNotEmpty()) ({
+                CircleIconButton(Icons.Rounded.Close, stringResource(R.string.rooms_clear), { text = ""; onSearch(query.copy(text = "")) })
+            }) else null,
+            shape = CircleShape, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { onSearch(query.copy(text = text.trim())) }),
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink, cursorColor = Brand.Pink,
+            ),
+        )
+        LanguageSelect(query.lang, { onSearch(query.copy(lang = it, text = text.trim())) }, Modifier.weight(1f), anyLabel = stringResource(R.string.rooms_any_lang), height = 52.dp)
+    }
+}
+
+private const val SEARCH_PAUSE_MS = 350L

@@ -105,6 +105,7 @@ fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Mo
         Row(verticalAlignment = Alignment.CenterVertically) {
             Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
                 TopicChip(room.category.topic(), stringResource(room.category.label))
+                RoomLangChip(room.lang, Modifier.padding(start = 6.dp))
                 if (room.rules.isPrivate) {
                     Icon(Icons.Rounded.Lock, stringResource(R.string.chip_private), Modifier.padding(start = 6.dp).size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }

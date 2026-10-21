@@ -59,7 +59,7 @@ class AppFlowTest {
     private fun field(label: String) = compose.onNode(hasSetTextAction() and hasText(label))
 
     private fun send(text: String) {
-        compose.onNode(hasSetTextAction()).performTextInput(text)
+        compose.onNode(input()).performTextInput(text)
         compose.onNodeWithContentDescription("Send").performClick()
     }
 

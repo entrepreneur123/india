@@ -21,6 +21,7 @@ import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.PhotoCheck
+import com.yaari.chat.data.Push
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.model.Profile
 import com.yaari.chat.ui.Avatar
@@ -35,6 +36,10 @@ object Flavor {
 
     /** No crash reports or funnel events from the demo: nothing leaves the phone. */
     fun crashReports(app: Application) = Unit
+
+    /** No phone push in the demo (no server, no Firebase). */
+    fun initPush(app: Application) = Unit
+    fun push(app: Application): Push = Push.Off
 
     /** No nudity model in the demo: room photos are sent as picked. */
     fun photoCheck(app: Application): PhotoCheck = PhotoCheck.None
