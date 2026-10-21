@@ -3,13 +3,14 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, Flag, Shuffle, Undo2, Video } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Flag, Shuffle, Undo2, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
 import { FREE_EXIT_LOCK_MS, PLUS_EXIT_LOCK_MS } from '@/lib/config'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
+import { useSocialT } from '@/components/social/social-text'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -39,6 +40,8 @@ export function ChatView({
   onEnd,
   onClose,
   onReported,
+  onMinimise,
+  onStatus,
 }: {
   matchId: string
   partner: Profile
@@ -55,6 +58,10 @@ export function ChatView({
   onClose?: () => void
   /** The person was reported (and blocked); the chat is over. */
   onReported: () => void
+  /** Random only: back to the other tabs; the chat stays live behind its bar. */
+  onMinimise?: () => void
+  /** Random only: what the chat's bar shows while another tab is open (typing, messages not seen yet). */
+  onStatus?: (s: { typing: boolean; unread: number }) => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -67,6 +74,19 @@ export function ChatView({
   const listRef = useRef<HTMLUListElement>(null)
   const stickToBottom = useRef(true)
   const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
+  const { st } = useSocialT()
+
+  // Messages that arrive while another tab is open count as unread for the bar, until the chat is shown again.
+  const [unread, setUnread] = useState(0)
+  const seen = useRef(0)
+  const incoming = chat.messages?.filter((x) => !x.fromMe).length ?? 0
+  useEffect(() => {
+    if (visible) seen.current = incoming
+    setUnread(visible ? 0 : Math.max(0, incoming - seen.current))
+  }, [visible, incoming])
+  const status = useRef(onStatus)
+  status.current = onStatus
+  useEffect(() => status.current?.({ typing: chat.typing, unread }), [chat.typing, unread])
 
   // Follow new messages unless the user scrolled up to read older ones.
   useLayoutEffect(() => {
@@ -122,6 +142,11 @@ export function ChatView({
       {/* While a call covers the chat, keyboard focus must not reach the chat behind it. */}
       <div className="flex min-h-0 flex-1 flex-col" inert={live && visible && chat.video === 'accepted'}>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2 sm:px-5">
+          {live && onMinimise ? (
+            <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={st('chatbar.minimise')} title={st('chatbar.minimise')}>
+              <ChevronDown className="size-6" aria-hidden />
+            </Button>
+          ) : null}
           {live ? (
             <ExitButton
               startedAt={startedAt ?? 0}

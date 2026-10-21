@@ -66,7 +66,7 @@ const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
-  'poll_closed', 'bad_request', 'bad_media',
+  'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
 ]
 
 type CardRow = {
@@ -1093,6 +1093,8 @@ export class SupabaseBackend implements Backend {
     const failed = (err: unknown) => {
       const code = err instanceof BackendError ? err.code : ''
       if (code === 'room_closed' || code === 'not_found') finish({ type: 'ended' })
+      // 031: I'm in a random chat now (it took me out of the room): the room just closes here, without a word.
+      else if (code === 'in_random_chat') finish({ type: 'left' })
       else if (code === 'voice_removed') finish({ type: 'removed' })
       else if (['room_full', 'room_gender', 'room_age', 'not_allowed', 'banned', 'not_signed_in'].includes(code)) {
         finish({ type: 'refused', code })

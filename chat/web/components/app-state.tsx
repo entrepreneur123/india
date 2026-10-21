@@ -17,8 +17,18 @@ export interface RandomControl {
   live: () => RandomLive
   /** Stops a search without a word. */
   cancelSearch: () => void
-  /** Ends the open chat (leave_match); false when it couldn't (the exit lock, the network: the reason was shown). */
-  endChat: () => Promise<boolean>
+  /**
+   * Ends the open chat (leave_match). `force` (a room is opening): it ends here whatever the server says (inside the
+   * exit lock the server ends it itself); otherwise false when it couldn't (the reason was shown).
+   */
+  endChat: (force: boolean) => Promise<boolean>
+}
+
+/** The random chat while another tab is open: its bar (like a room's) says who, typing, unread. */
+export interface ChatBar {
+  partner: Profile
+  typing: boolean
+  unread: number
 }
 
 export interface AppState {
@@ -36,16 +46,20 @@ export interface AppState {
   openPaywall: () => void
   openThread: (partner: Profile, matchId?: string) => void
   /**
-   * Enters a voice room full screen (leaving the one I'm in, if another). A random chat in progress is ended first,
-   * after a confirm; a search just stops.
+   * Enters a voice room full screen (leaving the one I'm in, if another). A random chat in progress ends (with a
+   * word); a search just stops.
    */
   openVoice: (roomId: string) => void
-  /** Before making a room: true once nothing live is in the way (the same confirm as openVoice), false to stay. */
+  /** Before making a room: ends a random chat or search, as openVoice does. */
   freeForRoom: () => Promise<boolean>
-  /** Before a random search: true once I'm out of my room (after a confirm), false to stay in it. */
+  /** Before a random search: leaves my room (the host's ends, as Leave does); false if that failed. */
   freeForRandom: () => Promise<boolean>
   /** The random tab tells the shell where it is (null when it goes). */
   registerRandom: (c: RandomControl | null) => void
+  /** The open random chat for its bar (null: none). */
+  setChatBar: (bar: ChatBar | null) => void
+  /** Leaves the random chat on screen for the tab before it (the chat goes on behind its bar). */
+  minimiseRandom: () => void
   /** The voice room I'm in, open or minimised. */
   voiceRoomId: string | null
   setImmersive: (on: boolean) => void

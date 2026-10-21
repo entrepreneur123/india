@@ -98,15 +98,15 @@ const en = {
   'tour.2.body': 'Talk, listen to music together or run a poll. Search by name or language, or open your own room.',
   'tour.3.title': 'Keep your people close',
   'tour.3.body': 'Add the friends you click with. Their messages, requests and room invites arrive in Notifications.',
-  // one live session at a time: a room or a random chat
-  'live.leaveRoomTitle': 'Leave “{room}” to start a random chat?',
-  'live.leaveRoomBody': 'One live chat at a time. You can come back to the room later.',
-  'live.endRoomBody': 'You’re the host: leaving ends the room for everyone.',
-  'live.leaveAndStart': 'Leave and start',
-  'live.stay': 'Stay',
-  'live.endChatTitle': 'End your chat with {name} to join this room?',
-  'live.endChatBody': 'One live chat at a time. Your chat ends for both of you.',
-  'live.endAndJoin': 'End chat and join',
+  // one live session at a time (entering a room or a random chat leaves the other), and the random chat's bar
+  'live.leftRoom': 'Left “{room}”',
+  'live.endedChat': 'Ended your chat with {name}',
+  'chatbar.with': 'Chatting with {name}',
+  'chatbar.label': 'Random chat with {name}',
+  'chatbar.open': 'Open your chat with {name}',
+  'chatbar.end': 'End chat',
+  'chatbar.live': 'Live chat · tap to open',
+  'chatbar.minimise': 'Minimise chat',
 }
 
 export default en

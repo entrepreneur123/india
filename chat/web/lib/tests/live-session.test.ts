@@ -4,14 +4,14 @@ import { planLive } from '../live-session.ts'
 
 const room = { id: 'v-1', title: 'Chai pe charcha' }
 
-test('starting a random chat from a room asks to leave the room', () => {
-  assert.deepEqual(planLive({ room, random: { phase: 'idle' } }, { kind: 'random' }), { do: 'confirmLeaveRoom', title: 'Chai pe charcha' })
+test('starting a random chat from a room leaves the room', () => {
+  assert.deepEqual(planLive({ room, random: { phase: 'idle' } }, { kind: 'random' }), { do: 'leaveRoom', title: 'Chai pe charcha' })
   assert.deepEqual(planLive({ room: null, random: { phase: 'idle' } }, { kind: 'random' }), { do: 'go' })
 })
 
-test('joining a room from a random chat asks to end it; a search just stops', () => {
+test('joining a room from a random chat ends it; a search just stops', () => {
   assert.deepEqual(planLive({ room: null, random: { phase: 'chat', partner: 'Ananya' } }, { kind: 'room', roomId: 'v-2' }), {
-    do: 'confirmEndChat',
+    do: 'endChat',
     partner: 'Ananya',
   })
   assert.deepEqual(planLive({ room: null, random: { phase: 'searching' } }, { kind: 'room', roomId: 'v-2' }), { do: 'stopSearch' })

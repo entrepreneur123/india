@@ -93,15 +93,15 @@ const bn: SocialDict = {
   'tour.2.body': 'গল্প করুন, একসঙ্গে গান শুনুন বা পোল চালান। নাম বা ভাষা দিয়ে খুঁজুন, বা নিজের রুম খুলুন।',
   'tour.3.title': 'কাছের মানুষদের কাছে রাখুন',
   'tour.3.body': 'যাঁদের সঙ্গে জমে, তাঁদের বন্ধু করুন। তাঁদের মেসেজ, অনুরোধ আর রুমের আমন্ত্রণ নোটিফিকেশনে আসবে।',
-  // one live session at a time: a room or a random chat
-  'live.leaveRoomTitle': 'র‍্যান্ডম চ্যাট শুরু করতে “{room}” ছেড়ে যাবেন?',
-  'live.leaveRoomBody': 'একসঙ্গে একটাই লাইভ চ্যাট। পরে আবার রুমে ফিরতে পারবেন।',
-  'live.endRoomBody': 'আপনি হোস্ট: ছেড়ে গেলে রুমটা সবার জন্য বন্ধ হয়ে যাবে।',
-  'live.leaveAndStart': 'ছেড়ে শুরু করুন',
-  'live.stay': 'থাকুন',
-  'live.endChatTitle': 'এই রুমে যোগ দিতে {name}-এর সঙ্গে চ্যাট শেষ করবেন?',
-  'live.endChatBody': 'একসঙ্গে একটাই লাইভ চ্যাট। চ্যাটটা দুজনের জন্যই শেষ হবে।',
-  'live.endAndJoin': 'চ্যাট শেষ করে যোগ দিন',
+  // one live session at a time (entering a room or a random chat leaves the other), and the random chat's bar
+  'live.leftRoom': '“{room}” ছেড়ে এসেছেন',
+  'live.endedChat': '{name}-এর সঙ্গে চ্যাট শেষ হয়েছে',
+  'chatbar.with': '{name}-এর সঙ্গে চ্যাট চলছে',
+  'chatbar.label': '{name}-এর সঙ্গে র‍্যান্ডম চ্যাট',
+  'chatbar.open': '{name}-এর সঙ্গে চ্যাট খুলুন',
+  'chatbar.end': 'চ্যাট শেষ করুন',
+  'chatbar.live': 'লাইভ চ্যাট · খুলতে ট্যাপ করুন',
+  'chatbar.minimise': 'চ্যাট ছোট করুন',
 }
 
 export default bn

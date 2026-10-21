@@ -93,15 +93,15 @@ const vi: SocialDict = {
   'tour.2.body': 'Trò chuyện, nghe nhạc cùng nhau hoặc mở bình chọn. Tìm theo tên hay ngôn ngữ, hoặc tự mở phòng.',
   'tour.3.title': 'Giữ những người bạn quý',
   'tour.3.body': 'Kết bạn với người hợp ý. Tin nhắn, lời mời kết bạn và lời mời vào phòng sẽ đến trong Thông báo.',
-  // one live session at a time: a room or a random chat
-  'live.leaveRoomTitle': 'Rời “{room}” để bắt đầu trò chuyện ngẫu nhiên?',
-  'live.leaveRoomBody': 'Mỗi lúc chỉ một cuộc trò chuyện trực tiếp. Bạn có thể quay lại phòng sau.',
-  'live.endRoomBody': 'Bạn là chủ phòng: rời đi sẽ đóng phòng với mọi người.',
-  'live.leaveAndStart': 'Rời và bắt đầu',
-  'live.stay': 'Ở lại',
-  'live.endChatTitle': 'Kết thúc trò chuyện với {name} để vào phòng này?',
-  'live.endChatBody': 'Mỗi lúc chỉ một cuộc trò chuyện trực tiếp. Cuộc trò chuyện sẽ kết thúc với cả hai.',
-  'live.endAndJoin': 'Kết thúc và vào phòng',
+  // one live session at a time (entering a room or a random chat leaves the other), and the random chat's bar
+  'live.leftRoom': 'Đã rời “{room}”',
+  'live.endedChat': 'Đã kết thúc trò chuyện với {name}',
+  'chatbar.with': 'Đang trò chuyện với {name}',
+  'chatbar.label': 'Trò chuyện ngẫu nhiên với {name}',
+  'chatbar.open': 'Mở cuộc trò chuyện với {name}',
+  'chatbar.end': 'Kết thúc trò chuyện',
+  'chatbar.live': 'Đang trò chuyện · chạm để mở',
+  'chatbar.minimise': 'Thu nhỏ trò chuyện',
 }
 
 export default vi

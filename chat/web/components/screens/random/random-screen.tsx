@@ -48,7 +48,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang } = useI18n()
-  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom } = useApp()
+  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom } = useApp()
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
@@ -251,13 +251,16 @@ export function RandomScreen({ active }: { active: boolean }) {
         return phase === 'chat' && match ? { phase: 'chat', partner: match.partner.name } : phase === 'matching' ? { phase: 'searching' } : { phase: 'idle' }
       },
       cancelSearch: () => now.current.cancelMatching(),
-      endChat: async () => {
+      endChat: async (force) => {
         const { match } = now.current
         if (!match) return true
         try {
           await backend.leave(match.id)
         } catch (err) {
-          if (errorCode(err) !== 'not_found') {
+          // Opening a room ends the chat here anyway: inside the exit lock the server ends it (and this ends it too
+          // once the lock allows).
+          if (force) backend.abandon(match.id)
+          else if (errorCode(err) !== 'not_found') {
             toast.error(err)
             return false
           }
@@ -268,6 +271,12 @@ export function RandomScreen({ active }: { active: boolean }) {
     })
     return () => registerRandom(null)
   }, [registerRandom, backend, toast])
+
+  // The chat's bar for the other tabs: who, typing, unread (the chat view reports the last two).
+  const [status, setStatus] = useState({ typing: false, unread: 0 })
+  const barPartner = phase === 'chat' ? match?.partner ?? null : null
+  useEffect(() => setChatBar(barPartner ? { partner: barPartner, ...status } : null), [barPartner, status, setChatBar])
+  useEffect(() => () => setChatBar(null), [setChatBar])
 
   /** Start from the lobby: out of my room first (after a confirm), then the search. */
   const start = () => void freeForRandom().then((ok) => ok && startMatching())
@@ -350,6 +359,8 @@ export function RandomScreen({ active }: { active: boolean }) {
                   onExit={() => setChoiceOpen(true)}
                   onEnd={(next) => void leave(next, true)}
                   onReported={closeChat}
+                  onMinimise={minimiseRandom}
+                  onStatus={setStatus}
                 />
               </Suspense>
             </ScreenBoundary>

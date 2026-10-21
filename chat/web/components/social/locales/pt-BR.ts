@@ -93,15 +93,15 @@ const ptBR: SocialDict = {
   'tour.2.body': 'Converse, ouça música junto ou faça uma enquete. Busque por nome ou idioma, ou abra sua própria sala.',
   'tour.3.title': 'Mantenha sua turma por perto',
   'tour.3.body': 'Adicione quem tiver afinidade. Mensagens, pedidos e convites para salas chegam em Notificações.',
-  // one live session at a time: a room or a random chat
-  'live.leaveRoomTitle': 'Sair de “{room}” para começar um chat aleatório?',
-  'live.leaveRoomBody': 'Um chat ao vivo por vez. Você pode voltar à sala depois.',
-  'live.endRoomBody': 'Você é o anfitrião: ao sair, a sala acaba para todos.',
-  'live.leaveAndStart': 'Sair e começar',
-  'live.stay': 'Ficar',
-  'live.endChatTitle': 'Encerrar seu chat com {name} para entrar nesta sala?',
-  'live.endChatBody': 'Um chat ao vivo por vez. O chat termina para vocês dois.',
-  'live.endAndJoin': 'Encerrar e entrar',
+  // one live session at a time (entering a room or a random chat leaves the other), and the random chat's bar
+  'live.leftRoom': 'Você saiu de “{room}”',
+  'live.endedChat': 'Seu chat com {name} foi encerrado',
+  'chatbar.with': 'Conversando com {name}',
+  'chatbar.label': 'Chat aleatório com {name}',
+  'chatbar.open': 'Abrir seu chat com {name}',
+  'chatbar.end': 'Encerrar chat',
+  'chatbar.live': 'Chat ao vivo · toque para abrir',
+  'chatbar.minimise': 'Minimizar chat',
 }
 
 export default ptBR

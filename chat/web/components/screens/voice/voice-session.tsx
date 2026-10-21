@@ -170,6 +170,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           toast.show(tRef.current('voice.idleLeft'), 'info')
           gone.current()
           break
+        case 'left':
+          gone.current()
+          break
       }
     })
     ;(async () => {
@@ -181,7 +184,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         if (alive) addLines(history)
       } catch (err) {
         if (!alive) return
-        toast.error(err)
+        if (errorCode(err) !== 'in_random_chat') toast.error(err) // a random chat has me now: nothing to say
         gone.current()
       }
     })()
@@ -394,12 +397,13 @@ export function VoiceHost({
   const [busy, setBusy] = useState(false)
   const isHost = s.me?.role === 'host'
 
-  const end = async () => {
+  /** `quiet`: the shell says it its own way (a random search took me out of my room). */
+  const end = async (quiet = false) => {
     setBusy(true)
     ending.current = true
     try {
       await backend.endVoice(roomId)
-      toast.show(t('voice.endedByYou'), 'success')
+      if (!quiet) toast.show(t('voice.endedByYou'), 'success')
       onClose()
       return true
     } catch (err) {
@@ -416,7 +420,7 @@ export function VoiceHost({
 
   const title = s.room?.title ?? ''
   useEffect(() => {
-    control.current = { title, isHost, leave: async () => (isHost ? end() : (onClose(), true)) }
+    control.current = { title, isHost, leave: async () => (isHost ? end(true) : (onClose(), true)) }
     return () => {
       control.current = null
     }

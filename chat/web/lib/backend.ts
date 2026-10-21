@@ -287,6 +287,8 @@ export type VoiceEvent =
   | { type: 'refused'; code: string }
   /** Left on my own after 30 minutes in the background as a listener. */
   | { type: 'idle' }
+  /** Out of the room because I'm in a random chat now (the server leaves rooms for it): no message needed. */
+  | { type: 'left' }
 
 export type VoiceAction =
   | { type: 'hand'; up: boolean }
