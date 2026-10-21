@@ -15,7 +15,6 @@ import com.yaari.chat.domain.Countries
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceReaction
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
@@ -23,7 +22,8 @@ import com.yaari.chat.ui.Tab
 import com.yaari.chat.ui.YaariApp
 import com.yaari.chat.ui.YaariTheme
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import androidx.compose.ui.test.performScrollTo
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -113,7 +113,7 @@ class VoiceScreensTest {
         shot("voice_06_pill_over_rooms")
         compose.onNode(hasContentDescription("Open room")).performClick()
         compose.waitUntil(5_000) { vm.voice.state.value?.expanded == true }
-        compose.onAllNodes(hasText("Leave"))[0].performClick()
+        compose.onNode(hasContentDescription("Leave")).performClick()
         compose.waitUntil(5_000) { vm.voice.state.value == null }
     }
 
@@ -128,15 +128,11 @@ class VoiceScreensTest {
         compose.onNode(hasContentDescription("Send")).performClick()
         compose.waitUntil(5_000) { vm.voice.state.value!!.lines!!.any { it is com.yaari.chat.model.VoiceLine.Text && it.fromMe } }
         shot("voice_04_music_chat")
-        // Hiding the player stops it for me (no background playback).
-        compose.onNode(hasContentDescription("Hide player")).performClick()
-        waitFor("Paused for you")
-        shot("voice_04b_music_collapsed")
     }
 
     @Test fun hostWithRequests() {
         signIn()
-        compose.runOnUiThread { vm.voice.create(NewVoiceRoom("Sunday chai and gossip", RoomCategory.MUSIC, SpeakMode.APPROVAL)) }
+        compose.runOnUiThread { vm.voice.create(NewVoiceRoom("Sunday chai and gossip", RoomCategory.MUSIC)) }
         compose.waitUntil(5_000) { vm.voice.state.value?.room != null }
         val id = vm.voice.state.value!!.roomId
         compose.runOnUiThread { backend.voice.raiseHands(id, 2) }
@@ -146,7 +142,7 @@ class VoiceScreensTest {
         waitFor("Invite someone up")
         screen("voice_03_host_requests")
         click("Invite up")
-        compose.waitUntil(5_000) { vm.voice.state.value?.room?.members?.count { it.seat != null } == 2 }
+        compose.waitUntil(5_000) { vm.voice.state.value?.room?.members?.count { it.seat != null } == 1 } // the host is not on the stage
         assertEquals(1, vm.voice.state.value!!.hands)
 
         // The host's leave ends the room for everyone, after a confirm.
@@ -157,13 +153,16 @@ class VoiceScreensTest {
 
     @Test fun createSheet() {
         signIn()
-        click("Start a voice room")
+        click("Create room")
         waitFor("You’re the host")
-        compose.onNode(hasSetTextAction()).performTextInput("Sunday chai and gossip")
+        compose.onAllNodes(hasSetTextAction())[0].performTextInput("Sunday cricket chat")
+        compose.onAllNodes(hasSetTextAction())[1].performTextInput("Be kind. Hindi or English, both welcome.")
         screen("voice_05_create")
-        click("Go live")
+        compose.onAllNodes(hasText("Create room")).let { it[it.fetchSemanticsNodes().size - 1] }.performScrollTo().performClick()
         compose.waitUntil(5_000) { vm.voice.state.value?.room != null }
-        assertNotNull(vm.voice.state.value!!.room!!.member(vm.voice.state.value!!.room!!.meId)?.seat)
+        val room = vm.voice.state.value!!.room!!
+        assertNull("the host starts off the stage", room.member(room.meId)?.seat)
+        assertEquals("Be kind. Hindi or English, both welcome.", room.announcement)
     }
 }
 
@@ -202,7 +201,7 @@ class VoiceScreensNightTest {
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/voice_06_pill_over_rooms_dark.png")
 
-        compose.onAllNodes(hasText("Start a voice room"))[0].performClick()
+        compose.onAllNodes(hasText("Create room"))[0].performClick()
         waitFor("You’re the host")
         compose.waitForIdle()
         captureScreenRoboImage("build/outputs/roborazzi/voice_05_create_dark.png")

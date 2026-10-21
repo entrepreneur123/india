@@ -2,21 +2,15 @@ package com.yaari.chat.data
 
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
-import com.yaari.chat.model.CreatedRoom
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
-import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
-import com.yaari.chat.model.Room
-import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.NewVoiceRoom
@@ -27,7 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.merge
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -71,9 +64,6 @@ open class FakeBackend(
     private var nextId = 0L
     /** Pool id -> state. One person has already asked, so the demo shows a request. */
     private val friendships = linkedMapOf("p3" to FriendState.INCOMING)
-    private val roomMessages = mutableMapOf<String, MutableList<RoomMessage>>()
-    private val roomOutgoing = mutableMapOf<String, Channel<String>>()
-    private val seenInRooms = mutableSetOf<String>()
 
     private fun me() = phone?.let { accounts[it] } ?: throw BackendException("not_signed_in")
 
@@ -119,14 +109,9 @@ open class FakeBackend(
 
     override suspend fun deleteAccount() {
         val ph = phone ?: throw BackendException("not_signed_in")
-        accounts[ph]?.let { me -> // my rooms go with the account, like the server's cascade
-            userRooms.values.removeAll { it.owner.id == me.id }
-            userRooms.values.forEach { it.members.remove(me.id) }
-        }
         accounts.remove(ph)
         matches.clear()
         friendships.clear()
-        roomMessages.values.forEach { list -> list.removeAll { it.fromMe } }
         entitlements = Entitlements()
         lastPartner = null
         phone = null
@@ -267,7 +252,7 @@ open class FakeBackend(
     }
 
     private fun visible(userId: String) = userId !in blocked &&
-        (matches.values.any { it.partner.id == userId } || userId in friendships || userId in seenInRooms)
+        (matches.values.any { it.partner.id == userId } || userId in friendships)
 
     override suspend fun addPost(text: String, imageUri: String?): Post {
         val ph = phone ?: throw BackendException("not_signed_in")
@@ -325,177 +310,25 @@ open class FakeBackend(
         return id
     }
 
-    // ---- rooms: scripted regulars chat among themselves and answer you ----
-
-    /** A room someone opened. [members] are the people in it (scripted people count as present). */
-    private class UserRoom(
-        val id: String, val owner: Profile, val spec: NewRoom, val code: String, val createdAt: Long,
-        val members: MutableSet<String>,
-    ) {
-        var closed = false
-    }
-
-    /** A few rooms opened by the scripted people, so the demo shows every kind of condition. */
-    private val userRooms = linkedMapOf<String, UserRoom>().apply {
-        fun seed(id: String, owner: Int, spec: NewRoom, code: String, vararg members: Int) {
-            val p = POOL.first { it.id == "p$owner" }
-            put(id, UserRoom(id, p, spec, code, 0L, members.mapTo(linkedSetOf()) { "p$it" }))
-        }
-        seed("u-seed-music", 1, NewRoom("Bollywood songs all night", RoomCategory.MUSIC, 12, GenderRule.ANY, 18, 100, false), "BLY7KQ", 1, 6, 10, 7)
-        seed("u-seed-chai", 3, NewRoom("Chai & chill, girls only", RoomCategory.FRIENDS, 8, GenderRule.FEMALE, 20, 30, false), "CHA4WZ", 3, 9, 11)
-        seed("u-seed-korean", 4, NewRoom("Korean ↔ Hindi practice", RoomCategory.LANGUAGE, 2, GenderRule.ANY, 18, 40, false), "KOR8HN", 4, 2)
-    }
-
-    private fun online(r: UserRoom) = r.members.size
-
-    /** Same order of checks as the server's room_refusal(). The owner may always enter. */
-    private fun refusal(r: UserRoom, me: Profile): String? = when {
-        r.owner.id == me.id -> null
-        r.closed -> "room_closed"
-        r.owner.id in blocked -> "not_allowed"
-        !r.spec.genderRule.accepts(me.gender) -> "room_gender"
-        me.age !in r.spec.minAge..r.spec.maxAge -> "room_age"
-        me.id !in r.members && online(r) >= r.spec.maxMembers -> "room_full"
-        else -> null
-    }
-
-    private fun UserRoom.toRoom(me: Profile) = Room(
-        id, spec.title, spec.category.emoji, online(this), official = false, mine = owner.id == me.id, ownerName = owner.name,
-        category = spec.category, maxMembers = spec.maxMembers, genderRule = spec.genderRule, minAge = spec.minAge,
-        maxAge = spec.maxAge, isPrivate = spec.isPrivate, code = code.takeIf { owner.id == me.id }, refusal = refusal(this, me),
-    )
-
-    override suspend fun rooms(): List<Room> {
-        val me = me()
-        val official = ROOMS.mapIndexed { i, (id, title, emoji) ->
-            Room(id, title, emoji, online = 4 + (id.hashCode() and 0x7fffffff) % 60 + if (i == 0) 120 else 0)
-        }
-        val mine = userRooms.values.filter { r ->
-            !r.closed && r.owner.id !in blocked && (!r.spec.isPrivate || r.owner.id == me.id || me.id in r.members)
-        }.sortedWith(compareByDescending<UserRoom> { online(it) }.thenByDescending { it.createdAt })
-        return official + mine.map { it.toRoom(me) }
-    }
-
-    override suspend fun joinRoom(roomId: String) {
-        val me = me()
-        if (ROOMS.none { it.first == roomId }) {
-            val r = userRooms[roomId] ?: throw BackendException("not_found")
-            // A private room answers like a wrong id until you came in with its code.
-            if (r.spec.isPrivate && r.owner.id != me.id && me.id !in r.members) throw BackendException("not_found")
-            refusal(r, me)?.let { throw BackendException(it) }
-            r.members += me.id
-        }
-        messagesOf(roomId)
-    }
-
-    override suspend fun createRoom(room: NewRoom): CreatedRoom {
-        val me = me()
-        val title = room.title.trim()
-        if (title.length !in Room.MIN_TITLE..Room.MAX_TITLE) throw BackendException("room_title")
-        if (room.maxMembers !in Room.MIN_MEMBERS..Room.MAX_MEMBERS) throw BackendException("room_size")
-        if (room.minAge !in Room.MIN_AGE..Room.MAX_AGE || room.maxAge !in Room.MIN_AGE..Room.MAX_AGE || room.minAge > room.maxAge) {
-            throw BackendException("bad_request")
-        }
-        if (userRooms.values.count { it.owner.id == me.id && clock() - it.createdAt < 86_400_000L } >= 10) throw BackendException("slow_down")
-        userRooms.values.filter { it.owner.id == me.id }.forEach { it.closed = true } // one open room per owner
-        // Own dice for codes, so tests with fixed dice still get distinct, realistic codes.
-        var seed = title.hashCode() * 31 + userRooms.size
-        var code: String
-        do {
-            val dice = Random(seed++)
-            code = (1..Room.CODE_LENGTH).joinToString("") { CODE_CHARS[dice.nextInt(CODE_CHARS.length)].toString() }
-        } while (userRooms.values.any { it.code == code })
-        val id = "u-" + UUID.randomUUID().toString().replace("-", "").take(16)
-        userRooms[id] = UserRoom(id, me, room.copy(title = title), code, clock(), linkedSetOf(me.id))
-        return CreatedRoom(id, code)
-    }
-
-    override suspend fun joinRoomCode(code: String): String {
-        val me = me()
-        val r = userRooms.values.firstOrNull { it.code == code.trim().uppercase() } ?: throw BackendException("not_found")
-        refusal(r, me)?.let { throw BackendException(it) }
-        r.members += me.id
-        messagesOf(r.id)
-        return r.id
-    }
-
-    override suspend fun closeRoom(roomId: String) {
-        val r = userRooms[roomId]
-        if (r == null || r.owner.id != me().id || r.closed) throw BackendException("not_allowed")
-        r.closed = true
-    }
-
-    override suspend fun leaveRoom(roomId: String) {
-        val me = phone?.let { accounts[it] } ?: return
-        userRooms[roomId]?.members?.remove(me.id)
-    }
-
-    private fun messagesOf(roomId: String) = roomMessages.getOrPut(roomId) {
-        val people = regulars(roomId)
-        people.forEach { seenInRooms += it.id }
-        if (people.isEmpty()) return@getOrPut mutableListOf() // a room you just opened starts empty
-        ROOM_LINES.shuffled(Random(roomId.hashCode())).take(6).mapIndexed { i, line ->
-            RoomMessage(nextId++, people[i % people.size], false, line, clock() - (6 - i) * 45_000L)
-        }.toMutableList()
-    }
-
-    /** Official rooms: four scripted regulars. User rooms: the scripted people inside it (none in a room you opened). */
-    private fun regulars(roomId: String) =
-        userRooms[roomId]?.let { r -> POOL.filter { it.id in r.members } } ?: POOL.shuffled(Random(roomId.hashCode())).take(4)
-
-    override suspend fun roomHistory(roomId: String, afterId: Long?): List<RoomMessage> {
-        val visible = messagesOf(roomId).filter { it.sender.id !in blocked }
-        return if (afterId == null) visible.takeLast(100) else visible.filter { it.id > afterId }.take(200)
-    }
-
-    override fun roomEvents(roomId: String, afterId: Long?): Flow<RoomMessage> {
-        val outgoing = roomOutgoing.getOrPut(roomId) { Channel(Channel.UNLIMITED) }
-        val replies = flow {
-            for (text in outgoing) {
-                wait(random.nextLong(900, 2500))
-                roomLine(roomId, if ('?' in text) ANSWERS.random(random) else REPLIES.random(random))?.let { emit(it) }
-            }
-        }
-        val chatter = flow {
-            if (instant) return@flow // tests: only answers, so screens are stable
-            while (true) {
-                delay(random.nextLong(5_000, 11_000))
-                roomLine(roomId, ROOM_LINES.random(random))?.let { emit(it) }
-            }
-        }
-        return merge(replies, chatter)
-    }
-
-    /** Null when nobody else is there to talk (an empty user room, or a closed one). */
-    private fun roomLine(roomId: String, text: String): RoomMessage? {
-        val user = userRooms[roomId]
-        if (user?.closed == true) return null
-        val sender = regulars(roomId).filter { it.id !in blocked }.randomOrNull(random)
-            ?: if (user != null) return null else POOL.first()
-        return RoomMessage(nextId++, sender, false, text, clock()).also { messagesOf(roomId) += it }
-    }
-
-    override suspend fun sendRoom(roomId: String, text: String): RoomMessage {
-        val me = me()
-        userRooms[roomId]?.let { r ->
-            if (r.closed) throw BackendException("room_closed")
-            if (me.id !in r.members && r.owner.id != me.id) throw BackendException("blocked") // like the server's RLS refusal
-        }
-        val msg = RoomMessage(nextId++, me, true, text, clock())
-        messagesOf(roomId) += msg
-        roomOutgoing.getOrPut(roomId) { Channel(Channel.UNLIMITED) }.trySend(text)
-        return msg
-    }
-
-    // ---- voice rooms (FakeVoice) ----
+    // ---- rooms (FakeVoice) ----
 
     override suspend fun voiceRooms() = voice.list().filter { it.host.id !in blocked }
     override suspend fun createVoiceRoom(room: NewVoiceRoom) = voice.create(room)
+    override suspend fun joinVoiceCode(code: String) = voice.joinCode(code)
+    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String) = voice.settings(roomId, title, announcement)
     override fun voiceSession(roomId: String) = voice.session(roomId)
     override suspend fun leaveVoice(roomId: String) = voice.leave(roomId)
     override suspend fun endVoice(roomId: String) = voice.endRoom(roomId)
-    override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter { it !is VoiceLine.Text || it.sender.id !in blocked }
+    override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter {
+        (it !is VoiceLine.Text || it.sender.id !in blocked) && (it !is VoiceLine.Photo || it.sender.id !in blocked)
+    }
     override suspend fun sendVoice(roomId: String, text: String) = voice.send(roomId, text)
+    /** The demo keeps the photo on the phone: the line shows it from where it is. */
+    override suspend fun sendVoicePhoto(roomId: String, jpegUri: String) = voice.photo(roomId, jpegUri)
+    override suspend fun voiceIcebreaker(roomId: String) = voice.icebreaker(roomId)
+    override suspend fun voiceLeaders(roomId: String) = voice.leaders(roomId)
+    /** The demo's videos carry their titles; anything else is "YouTube video". */
+    override suspend fun videoTitle(videoId: String) = FakeVoice.TRACKS[videoId]?.first.orEmpty()
     override suspend fun voiceAction(roomId: String, action: VoiceAction) = voice.act(roomId, action)
 
     override suspend fun reportVoiceRoom(roomId: String, reason: ReportReason) {
@@ -512,8 +345,6 @@ open class FakeBackend(
 
     companion object {
         const val DEMO_OTP = "123456"
-        /** Room codes: no 0/O or 1/I, like the server. */
-        private const val CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
         private val REPLIES = listOf(
             "Hii 😊", "Where are you from?", "Haha nice", "What do you do?", "Same here!",
@@ -523,19 +354,6 @@ open class FakeBackend(
         private val ANSWERS = listOf(
             "Yes 🙂", "Not really haha", "I'm from Pune", "Studying engineering",
             "Maybe! You?", "Bollywood all the way", "Cricket obviously 🏏",
-        )
-
-        val ROOMS = listOf(
-            Triple("lounge", "Global Lounge", "🌍"), Triple("language", "Language Exchange", "🗣️"),
-            Triple("music", "Music", "🎧"), Triple("movies", "Movies & Series", "🎬"), Triple("gaming", "Gaming", "🎮"),
-            Triple("sports", "Sports", "⚽"), Triple("night", "Late Night Talks", "🌙"), Triple("memes", "Memes", "😂"),
-            Triple("study", "Study & Campus", "🎓"), Triple("travel", "Travel", "✈️"),
-        )
-        private val ROOM_LINES = listOf(
-            "Hello everyone 👋", "Where is everyone from?", "Good morning from here ☀️", "Anyone up for a chat?",
-            "Just finished work, finally", "What are you all listening to?", "Haha this room is fun", "Hi from Brazil 🇧🇷",
-            "Any movie recommendations?", "It's 2am here lol", "Can someone teach me a word in their language?",
-            "Weekend plans?", "Coffee or tea? ☕", "First time here!",
         )
 
         private fun profile(id: Int, name: String, g: Gender, age: Int, city: String, country: String, bio: String, vararg posts: String) =

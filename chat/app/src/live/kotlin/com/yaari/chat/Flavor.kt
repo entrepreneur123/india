@@ -47,11 +47,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.Billing
+import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.data.Shield
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.data.watchNudity
 import com.yaari.chat.live.FrameGrabber
 import com.yaari.chat.live.NudityModel
+import com.yaari.chat.live.PhotoModel
 import com.yaari.chat.live.PlayBilling
 import com.yaari.chat.live.SupabaseBackend
 import com.yaari.chat.model.Profile
@@ -76,6 +78,9 @@ object Flavor {
     const val voiceMicPermission = true
 
     fun billing(app: Application): Billing = billing ?: PlayBilling(app).also { billing = it }
+
+    /** Room photos are checked by the call check's nudity model before they are sent. */
+    fun photoCheck(app: Application): PhotoCheck = PhotoModel(app)
 
     /** Third-party licenses beyond the font (title to raw text resource). */
     val licenses: List<Pair<String, Int>> = listOf("nsfw_model (nudity check)" to R.raw.nsfw_model_license)

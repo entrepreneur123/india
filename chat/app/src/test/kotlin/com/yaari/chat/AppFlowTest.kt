@@ -154,19 +154,18 @@ class AppFlowTest {
         shot("13_dm")
         compose.onNodeWithContentDescription("Back").performClick()
 
-        // 9. Public rooms
+        // 9. Rooms: one kind of room (talk, music, games); a talk room's chat
         tab("Rooms")
-        waitFor("Live now") // voice rooms come first
-        compose.onNodeWithText("Chat").performClick()
-        waitFor("Global Lounge")
+        waitFor("Live now")
+        waitFor("Late night Bollywood songs")
         shot("14_rooms")
-        compose.onNodeWithText("Global Lounge").performClick()
-        waitFor("Be kind. Tap a name")
+        compose.runOnUiThread { vm.voice.open("v-chai") }
+        compose.waitUntil(5_000) { vm.voice.state.value?.lines != null }
         send("Hi everyone?")
-        compose.waitUntil(5_000) { vm.state.value.room?.messages?.let { m -> m.any { it.fromMe } && !m.last().fromMe } == true }
+        compose.waitUntil(5_000) { vm.voice.state.value?.lines?.any { it is com.yaari.chat.model.VoiceLine.Text && it.fromMe } == true }
         shot("15_room")
-        compose.onNodeWithContentDescription("Back").performClick()
-        compose.waitUntil(5_000) { vm.state.value.room == null }
+        compose.runOnUiThread { vm.voice.close() }
+        compose.waitUntil(5_000) { vm.voice.state.value == null }
 
         // 10. Buy Plus from the profile tab, then a video call the partner accepts
         tab("Me")

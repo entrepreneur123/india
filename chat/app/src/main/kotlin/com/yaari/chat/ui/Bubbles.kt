@@ -210,10 +210,11 @@ fun TextWithMeta(text: String, color: Color, meta: @Composable () -> Unit, modif
 /**
  * One chat message. [tail]: first of a run (the sender differs from the previous message). [read]: mine, and the
  * partner has seen it. Media from the other person stays hidden until tapped, so nobody sees an unwanted photo by
- * surprise; without a caption the time sits over the media on a dark pill.
+ * surprise; without a caption the time sits over the media on a dark pill. [header]: the sender's name (room chat);
+ * [image]: draws the photo itself instead of loading [Message.media] (the demo's drawn snap).
  */
 @Composable
-fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false) {
+fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false, header: (@Composable () -> Unit)? = null, image: (@Composable () -> Unit)? = null) {
     val mine = m.fromMe
     val media = m.media
     val colors = chatColors()
@@ -225,6 +226,7 @@ fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false) {
         padding = if (media != null) Modifier.padding(4.dp) else Modifier.padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp),
     ) {
         Column {
+            header?.invoke()
             if (media != null) {
                 Box(Modifier.clip(RoundedCornerShape(6.dp))) {
                     when {
@@ -248,6 +250,7 @@ fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false) {
                                 color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall,
                             )
                         }
+                        media.kind == MediaKind.IMAGE && image != null -> image()
                         media.kind == MediaKind.IMAGE -> AsyncImage(
                             media.uri, contentDescription = stringResource(R.string.photo), contentScale = ContentScale.Crop,
                             modifier = Modifier.sizeIn(minWidth = 120.dp, minHeight = 80.dp, maxWidth = 240.dp, maxHeight = 300.dp),

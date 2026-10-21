@@ -1,5 +1,14 @@
 package com.yaari.chat.ui
 
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.ui.semantics.heading
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.ui.semantics.stateDescription
+import com.yaari.chat.model.RoomCategory
 import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -160,7 +169,7 @@ fun RoomTheme(content: @Composable () -> Unit) = NightTheme {
 /** Where to send people to open a room (the web app; the Android app opens rooms from the list). */
 private fun roomLink(roomId: String) = "https://yaari-web-indol.vercel.app/?voice=$roomId"
 
-private fun copyLink(context: Context, roomId: String) {
+internal fun copyLink(context: Context, roomId: String) {
     context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("Yaari", roomLink(roomId)))
     Toast.makeText(context, context.getString(R.string.voice_link_copied), Toast.LENGTH_SHORT).show()
 }
@@ -173,9 +182,17 @@ sealed interface VoiceSheet {
     data class Seat(val seat: Int) : VoiceSheet
     data object Queue : VoiceSheet
     data object Options : VoiceSheet
+    data object Settings : VoiceSheet
     data object ReportRoom : VoiceSheet
 }
 
+/**
+ * A room, full screen and always dark. Every room has the chat (text, icebreakers, photos), the stage, shared music and
+ * Ludo; the category decides what comes first (as the web's voice-room.tsx):
+ *  - talk: the chat, under a slim strip of the people on the stage;
+ *  - music: the shared player with the song requests by vote;
+ *  - games: Ludo (or a card to start it) with the room's leaderboard.
+ */
 @Composable
 fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
     BackHandler(onBack = vm.voice::minimise)
@@ -183,14 +200,16 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
     val room = s.room
     val me = s.me
     var sheet by remember { mutableStateOf<VoiceSheet?>(null) }
-    var musicOpen by rememberSaveable { mutableStateOf(true) }
+    var musicOpen by rememberSaveable { mutableStateOf(false) }
+    var stageOpen by rememberSaveable { mutableStateOf(false) }
     val levels = vm.voice.levels.collectAsStateWithLifecycle()
+    val list by vm.voice.list.collectAsStateWithLifecycle()
     val actor: VoiceActor = { a, ok, done -> vm.voice.act(a, ok, done) }
     val topic = room?.category?.topic() ?: Topic.CHAT
     val glow = topicColor(topic).copy(alpha = 0.24f)
     Box(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).drawBehind {
-            // One soft glow in the room's topic colour.
+            // One soft glow in the room's category colour.
             drawRect(Brush.radialGradient(listOf(glow, Color.Transparent), Offset(size.width / 2, 0f), size.width * 0.75f))
         },
     ) {
@@ -200,42 +219,77 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
         }
         var barHeight by remember { mutableIntStateOf(0) }
         var tray by remember { mutableStateOf(false) }
+        val person: (String) -> Unit = { sheet = VoiceSheet.Person(it) }
+        val kind = room.category
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().imePadding()) {
-            Header(room, onMinimise = vm.voice::minimise, onShare = { copyLink(context, room.id) }, onMore = { sheet = VoiceSheet.Options })
+            Header(room, onMinimise = vm.voice::minimise, onMore = { sheet = VoiceSheet.Options }, onLeave = vm.voice::leave)
+            room.announcement?.let { Announcement(it, topicColor(topic), onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
             AudioNotice(s)
             BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
-                val maxTop = maxHeight * 0.68f
                 val game = s.ludoShown
                 // The game takes the top of the room; the chat goes on under it. The board is as big as fits.
                 val boardMax = minOf(maxWidth - 24.dp, maxHeight - MIN_CHAT - LUDO_CHROME).coerceAtLeast(200.dp)
-                val ludoTop = maxHeight - MIN_CHAT
-                Column(Modifier.fillMaxSize()) {
-                    if (game != null) {
-                        Column(Modifier.fillMaxWidth().heightIn(max = ludoTop).verticalScroll(rememberScrollState())) {
-                            LudoPanel(
-                                room, game, s.isMod, levels, boardMax,
-                                LudoHandlers(
-                                    act = { a, done -> vm.voice.ludo(a, done) }, showStage = { vm.voice.showLudo(false) },
-                                    askClose = { vm.voice.askCloseLudo(true) }, dismiss = vm.voice::dismissLudo, person = { sheet = VoiceSheet.Person(it) },
-                                ),
-                            )
-                        }
-                    } else Column(Modifier.fillMaxWidth().heightIn(max = maxTop).verticalScroll(rememberScrollState())) {
-                        if (s.ludoHidden) LudoBackPill { vm.voice.showLudo(true) }
-                        room.track?.let { t ->
-                            Box(Modifier.padding(top = 4.dp, bottom = 8.dp)) {
-                                MusicPanel(t, room.queue, s.isHost, musicOpen, { musicOpen = it }, { sheet = VoiceSheet.Queue }) { a -> vm.voice.act(a) }
+                val topMax = when {
+                    game != null -> maxHeight - MIN_CHAT
+                    kind == RoomCategory.TALK -> maxHeight * 0.45f
+                    else -> maxHeight * 0.62f
+                }
+                val gameView: (@Composable () -> Unit)? = when {
+                    game != null -> ({
+                        LudoPanel(
+                            room, game, s.isMod, levels, boardMax,
+                            LudoHandlers(
+                                act = { a, done -> vm.voice.ludo(a, done) }, showStage = { vm.voice.showLudo(false) },
+                                askClose = { vm.voice.askCloseLudo(true) }, dismiss = vm.voice::dismissLudo, person = person,
+                            ),
+                        )
+                    })
+                    s.ludoHidden -> ({ LudoBackPill { vm.voice.showLudo(true) } })
+                    else -> null
+                }
+                val stage: @Composable () -> Unit = {
+                    Column(Modifier.fillMaxWidth()) {
+                        StageStrip(room, levels, s.reactions, stageOpen, { stageOpen = !stageOpen }, person)
+                        AnimatedVisibility(stageOpen, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+                            Column {
+                                Stage(room, levels, emptyList(), small = true, onPerson = person, onEmpty = { seat -> vm.voice.tapSeat(seat) { sheet = VoiceSheet.Seat(it) } })
+                                ListenersStrip(room, s.hands) { sheet = VoiceSheet.Audience() }
                             }
                         }
-                        Stage(
-                            room, levels, s.reactions, small = room.track != null && musicOpen,
-                            onPerson = { sheet = VoiceSheet.Person(it) },
-                            onEmpty = { seat -> vm.voice.tapSeat(seat) { sheet = VoiceSheet.Seat(it) } },
-                        )
-                        ListenersStrip(room, s.hands) { sheet = VoiceSheet.Audience() }
+                    }
+                }
+                // Music outside a music room: the slim "listen" bar (the player opens on a tap).
+                val musicBar: @Composable () -> Unit = {
+                    room.track?.let { t ->
+                        if (kind != RoomCategory.MUSIC) MusicPanel(t, room.queue, s.isHost, musicOpen, { musicOpen = it }, { sheet = VoiceSheet.Queue }) { a -> vm.voice.act(a) }
+                    }
+                }
+                Column(Modifier.fillMaxSize()) {
+                    Column(
+                        Modifier.fillMaxWidth().heightIn(max = topMax).verticalScroll(rememberScrollState()).padding(bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        when (kind) {
+                            RoomCategory.MUSIC -> {
+                                gameView?.invoke()
+                                MusicHero(room, s.isHost, s.adding, onQueue = { sheet = VoiceSheet.Queue }, act = { a -> vm.voice.act(a) }, vote = vm.voice::vote)
+                                stage()
+                            }
+                            RoomCategory.GAMES -> {
+                                gameView?.invoke() ?: StartLudoCard(s.isMod) { vm.voice.ludoButton() }
+                                Leaderboard(s.leaders, room.meId)
+                                musicBar()
+                                stage()
+                            }
+                            RoomCategory.TALK -> {
+                                stage()
+                                musicBar()
+                                gameView?.invoke()
+                            }
+                        }
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    VoiceChat(s.lines, Modifier.weight(1f)) { sheet = VoiceSheet.Person(it) }
+                    VoiceChat(s.lines, Modifier.weight(1f), onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person)
                 }
             }
             ControlBar(
@@ -246,13 +300,14 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
         if (tray) {
             Box(Modifier.fillMaxSize().clickable(remember { MutableInteractionSource() }, indication = null) { tray = false })
             ReactionTray(
-                Modifier.align(Alignment.BottomEnd).navigationBarsPadding().imePadding()
-                    .padding(end = 12.dp, bottom = with(LocalDensity.current) { barHeight.toDp() } + 8.dp),
+                Modifier.align(Alignment.BottomStart).navigationBarsPadding().imePadding()
+                    .padding(start = 12.dp, bottom = with(LocalDensity.current) { barHeight.toDp() } + 8.dp),
             ) { vm.voice.act(VoiceAction.React(it)) }
         }
         VoiceSheets(vm, s, room, sheet, actor, onSheet = { sheet = it })
         if (s.confirmEnd) EndDialog(s.ending, onCancel = vm.voice::dismissEnd, onEnd = vm.voice::end)
         if (s.confirmLudoClose) LudoCloseDialog(onCancel = { vm.voice.askCloseLudo(false) }, onClose = vm.voice::closeLudo)
+        list.created?.let { RoomCreatedDialog(it.title, it.code, vm.voice::dismissCreated) }
     }
 }
 
@@ -277,22 +332,89 @@ private fun Joining(onMinimise: () -> Unit) {
 }
 
 @Composable
-private fun Header(room: VoiceRoom, onMinimise: () -> Unit, onShare: () -> Unit, onMore: () -> Unit) {
+private fun Header(room: VoiceRoom, onMinimise: () -> Unit, onMore: () -> Unit, onLeave: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.voice_minimise), onMinimise, iconSize = 28.dp)
         Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
-            Text(room.title, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                room.title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1, overflow = TextOverflow.Ellipsis,
+            )
             Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 TopicChip(room.category.topic(), stringResource(room.category.label), height = 24.dp)
-                Icon(Icons.Outlined.Headphones, null, Modifier.padding(start = 10.dp).size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.Outlined.Group, null, Modifier.padding(start = 10.dp).size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
-                    stringResource(R.string.voice_listening, room.audience.size), Modifier.padding(start = 4.dp),
+                    stringResource(R.string.rooms_here, room.members.size, room.rules.maxMembers), Modifier.padding(start = 4.dp),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
                 )
             }
         }
-        CircleIconButton(Icons.Rounded.Link, stringResource(R.string.voice_share), onShare)
         CircleIconButton(Icons.Rounded.MoreVert, stringResource(R.string.voice_more), onMore)
+        CircleIconButton(Icons.AutoMirrored.Rounded.Logout, stringResource(R.string.voice_leave), onLeave, tint = MaterialTheme.colorScheme.error)
+    }
+}
+
+/** The host's announcement, pinned under the header (the host edits it from here). */
+@Composable
+private fun Announcement(text: String, color: Color, onEdit: (() -> Unit)?) {
+    val label = stringResource(R.string.room_announcement)
+    Row(
+        Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .background(color.copy(alpha = 0.14f)).border(1.dp, color.copy(alpha = 0.26f), RoundedCornerShape(12.dp))
+            .padding(start = 12.dp, end = if (onEdit != null) 2.dp else 12.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(Icons.Outlined.PushPin, null, Modifier.padding(top = 2.dp).size(15.dp), tint = color)
+        Text(
+            text, Modifier.weight(1f).padding(start = 8.dp).semantics { contentDescription = "$label: $text" },
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp, lineHeight = 19.sp), maxLines = 3, overflow = TextOverflow.Ellipsis,
+        )
+        if (onEdit != null) {
+            CircleIconButton(Icons.Outlined.Edit, stringResource(R.string.room_settings), onEdit, Modifier.offset(y = (-6).dp), size = 32.dp, iconSize = 16.dp, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+/** The people on the stage, small, with their speaking rings; or, with nobody there, why there's no sound. */
+@Composable
+private fun StageStrip(
+    room: VoiceRoom, levels: State<Map<String, Float>>, reactions: List<FloatingReaction>, open: Boolean, onToggle: () -> Unit, onPerson: (String) -> Unit,
+) {
+    val stage = room.members.filter { it.seat != null }.sortedBy { it.seat }
+    val stageName = stringResource(R.string.voice_stage)
+    Box(Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))) {
+        Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            if (stage.isNotEmpty()) {
+                Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()).semantics { paneTitle = stageName }) {
+                    stage.forEach { m -> Box(Modifier.width(68.dp)) { SeatPerson(m, 40.dp, levels, null) { onPerson(m.profile.id) } } }
+                }
+            } else {
+                Row(Modifier.weight(1f).padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
+                        Icon(Icons.Rounded.MicOff, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Text(
+                        stringResource(R.string.room_stage_empty), Modifier.padding(start = 10.dp), fontSize = 12.sp, lineHeight = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta,
+                    )
+                }
+            }
+            val turn by animateFloatAsState(if (open) 180f else 0f, label = "chevron")
+            Row(
+                Modifier.padding(start = 8.dp).height(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainer)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                    .clickable(role = Role.Button, onClick = onToggle).semantics { stateDescription = if (open) "expanded" else "collapsed" }
+                    .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    if (stage.isNotEmpty()) stringResource(R.string.room_on_stage, stage.size) else stageName,
+                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
+                )
+                Icon(Icons.Rounded.KeyboardArrowDown, null, Modifier.padding(start = 2.dp).size(18.dp).graphicsLayer { rotationZ = turn })
+            }
+        }
+        if (!open) ReactionLayer(reactions, Modifier.matchParentSize())
     }
 }
 
@@ -509,113 +631,6 @@ private fun ListenersStrip(room: VoiceRoom, hands: Int, onClick: () -> Unit) {
     }
 }
 
-// ---- the chat ----
-
-/**
- * The room's chat: compact WhatsApp-style bubbles and centred system lines in my language. It follows new lines while
- * the reader is at the bottom; scrolled up, it stays put and offers a "new messages" pill instead.
- */
-@Composable
-private fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onPerson: (String) -> Unit) {
-    val list = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    val count = lines?.size ?: 0
-    // Following the newest line while the reader is at the bottom (the line before the newest still in view counts:
-    // a new line has just arrived under it); scrolled up, it stays put and counts what came in.
-    val atEnd by remember {
-        derivedStateOf {
-            val info = list.layoutInfo
-            val last = info.visibleItemsInfo.lastOrNull()
-            last == null || last.index >= info.totalItemsCount - 2
-        }
-    }
-    var seen by remember { mutableIntStateOf(0) }
-    LaunchedEffect(count) {
-        if (count > 0 && (atEnd || seen == 0)) {
-            list.scrollToItem(count) // the last line (the safety note is item 0)
-            seen = count
-        }
-    }
-    LaunchedEffect(atEnd) { if (atEnd) seen = count }
-    val unseen = if (atEnd) 0 else (count - seen).coerceAtLeast(0)
-    val chat = stringResource(R.string.voice_chat)
-    Box(modifier.fillMaxWidth().semantics { paneTitle = chat }) {
-        LazyColumn(Modifier.fillMaxSize(), state = list, contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 8.dp)) {
-            item(key = "safety") {
-                Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.GppGood, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(
-                        stringResource(R.string.voice_safety), Modifier.padding(start = 6.dp), fontSize = 11.sp, lineHeight = 15.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, fontFamily = Jakarta,
-                    )
-                }
-            }
-            if (lines == null) {
-                items(3) { Box(Modifier.padding(top = 8.dp).size(200.dp, 40.dp).clip(RoundedCornerShape(8.dp)).shimmer()) }
-            } else {
-                itemsIndexed(lines, key = { _, l -> l.id }) { i, line ->
-                    when (line) {
-                        is VoiceLine.System -> Box(Modifier.fillMaxWidth().padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
-                            Text(
-                                VoiceController.systemText(line).text(), Modifier.clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 12.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
-                            )
-                        }
-                        is VoiceLine.Text -> {
-                            val prev = lines.getOrNull(i - 1)
-                            val grouped = prev is VoiceLine.Text && prev.sender.id == line.sender.id
-                            Box(Modifier.padding(top = if (grouped) 2.dp else 8.dp)) { ChatLine(line, grouped) { onPerson(line.sender.id) } }
-                        }
-                    }
-                }
-            }
-        }
-        AnimatedVisibility(unseen > 0, Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp), enter = fadeIn() + scaleIn(initialScale = 0.9f), exit = fadeOut() + scaleOut()) {
-            Row(
-                Modifier.height(36.dp).clip(CircleShape).background(Brand.Pink)
-                    .clickable(role = Role.Button) { scope.launch { list.animateScrollToItem(count) } }.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Icon(Icons.Rounded.ArrowDownward, null, Modifier.size(16.dp), tint = Color.White)
-                Text(stringResource(R.string.voice_new_messages), color = Color.White, style = MaterialTheme.typography.labelLarge)
-            }
-        }
-    }
-}
-
-/** A chat line, as in a group chat: mine on the right; others with avatar and coloured name on the first of a run. */
-@Composable
-private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, onPerson: () -> Unit) {
-    val colors = chatColors()
-    if (line.fromMe) {
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Box(Modifier.fillMaxWidth(0.88f), contentAlignment = Alignment.CenterEnd) {
-                BubbleShell(mine = true, tail = !grouped, padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp)) {
-                    TextWithMeta(line.text, colors.text, meta = { BubbleMeta(line.at, mine = false, read = false) })
-                }
-            }
-        }
-        return
-    }
-    Row(Modifier.fillMaxWidth(0.88f), verticalAlignment = Alignment.Top) {
-        if (grouped) Spacer(Modifier.width(28.dp))
-        else Avatar(line.sender, 28.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onPerson))
-        BubbleShell(mine = false, tail = !grouped, modifier = Modifier.padding(start = 2.dp), padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 5.dp)) {
-            Column {
-                if (!grouped) {
-                    Text(
-                        line.sender.name, Modifier.clip(RoundedCornerShape(4.dp)).clickable(role = Role.Button, onClick = onPerson),
-                        color = colors.names[nameColorIndex(line.sender.id)], fontSize = 13.sp, lineHeight = 20.sp,
-                        fontWeight = FontWeight.SemiBold, fontFamily = Jakarta, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                TextWithMeta(line.text, colors.text, meta = { BubbleMeta(line.at, mine = false, read = false) })
-            }
-        }
-    }
-}
-
 // ---- the controls ----
 
 /** The microphone needs the permission in the live build (asked the first time I unmute, not before). */
@@ -632,53 +647,48 @@ private fun rememberMic(vm: AppViewModel): (Boolean) -> Unit {
     }
 }
 
+/**
+ * The same controls in every room: the composer (photo, icebreaker, text), reactions, the music and Ludo, the hands
+ * raised (hosts and co-hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
+ */
 @Composable
 private fun ControlBar(
     vm: AppViewModel, s: VoiceState, me: VoiceMember, modifier: Modifier,
     onRequests: () -> Unit, onMusic: () -> Unit, onReactions: () -> Unit,
 ) {
     val mic = rememberMic(vm)
+    val room = s.room ?: return
     Column(modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        VoiceComposer(Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp)) { text, failed -> vm.voice.send(text, failed) }
+        VoiceComposer(
+            Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp), s.photoBusy,
+            onPhoto = vm.voice::sendPhoto, onIcebreaker = vm.voice::icebreaker,
+        ) { text, failed -> vm.voice.send(text, failed) }
         Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Row(
-                Modifier.height(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .clickable(role = Role.Button, onClick = vm.voice::leave).padding(horizontal = 14.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Icon(Icons.AutoMirrored.Rounded.Logout, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.error)
-                Text(stringResource(R.string.voice_leave), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp))
-            }
-            Spacer(Modifier.weight(1f))
-            if (s.isMod) {
-                Box {
-                    RoundButton(stringResource(R.string.voice_requests_n, s.hands), onRequests) { GlyphIcon(Glyph.HAND, size = 22.dp) }
-                    if (s.hands > 0) {
-                        Text(
-                            "${s.hands}", Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp).clip(CircleShape).background(MaterialTheme.colorScheme.background)
-                                .padding(2.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 5.dp),
-                            color = Color.White, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
-                        )
-                    }
-                }
-                Spacer(Modifier.width(BAR_GAP))
-            }
-            if (s.isHost) {
-                RoundButton(stringResource(R.string.voice_music), onMusic) { TopicIcon(Topic.MUSIC, size = 22.dp) }
-                Spacer(Modifier.width(BAR_GAP))
-            }
-            // Ludo: hosts and co-hosts open a game; anyone goes back to the one on.
-            if (s.isMod || s.ludoOn) {
-                RoundButton(stringResource(if (s.ludoShown != null || s.ludoHidden) R.string.ludo_back_to_game else R.string.ludo_play), vm.voice::ludoButton) {
-                    TopicIcon(Topic.GAMING, size = 22.dp)
-                }
-                Spacer(Modifier.width(BAR_GAP))
-            }
             RoundButton(stringResource(R.string.voice_react), onReactions) {
                 Icon(Icons.Outlined.AddReaction, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.onSurface)
             }
             Spacer(Modifier.width(BAR_GAP))
+            RoundButton(stringResource(R.string.voice_music), onMusic) { TopicIcon(Topic.MUSIC, size = 22.dp) }
+            // Ludo: hosts and co-hosts open a game; anyone goes back to the one on.
+            if (s.isMod || s.ludoOn) {
+                Spacer(Modifier.width(BAR_GAP))
+                RoundButton(stringResource(if (s.ludoShown != null || s.ludoHidden) R.string.ludo_back_to_game else R.string.ludo_play), vm.voice::ludoButton) {
+                    TopicIcon(Topic.GAMING, size = 22.dp)
+                }
+            }
+            if (s.isMod && s.hands > 0) {
+                Spacer(Modifier.width(BAR_GAP))
+                Box {
+                    RoundButton(stringResource(R.string.voice_requests_n, s.hands), onRequests) { GlyphIcon(Glyph.HAND, size = 22.dp) }
+                    Text(
+                        "${s.hands}", Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp).clip(CircleShape).background(MaterialTheme.colorScheme.background)
+                            .padding(2.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 5.dp),
+                        color = Color.White, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
+                    )
+                }
+            }
+            Spacer(Modifier.weight(1f).widthIn(min = BAR_GAP))
             if (me.seat != null) {
                 val bg by animateColorAsState(if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink, label = "mic")
                 val interaction = remember { MutableInteractionSource() }
@@ -694,20 +704,23 @@ private fun ControlBar(
                 }
             } else {
                 val interaction = remember { MutableInteractionSource() }
-                val raised = me.hand
+                // The host, co-hosts and anyone in an open room take a seat; elsewhere a hand goes up.
+                val joins = VoiceController.joinsDirectly(room)
+                val raised = me.hand && !joins
                 Row(
                     Modifier.height(48.dp).pressScale(interaction, 0.96f).clip(CircleShape)
                         .background(if (raised) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onSurface)
                         .then(if (raised) Modifier.border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape) else Modifier)
-                        .clickable(interaction, indication = ripple(), role = Role.Button) { vm.voice.hand(!raised) }
+                        .clickable(interaction, indication = ripple(), role = Role.Button, onClick = vm.voice::joinVoice)
                         .padding(start = 14.dp, end = 18.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    GlyphIcon(Glyph.HAND, size = 20.dp)
+                    if (joins) Icon(Icons.Rounded.Mic, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.background)
+                    else GlyphIcon(Glyph.HAND, size = 20.dp)
                     Text(
-                        stringResource(if (raised) R.string.voice_hand_raised else R.string.voice_raise_hand),
+                        stringResource(if (joins) R.string.room_join_voice else if (raised) R.string.voice_hand_raised else R.string.voice_raise_hand),
                         color = if (raised) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
-                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp), maxLines = 1,
                     )
                 }
             }
@@ -722,43 +735,6 @@ private fun RoundButton(label: String, onClick: () -> Unit, content: @Composable
             .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) { content() }
-}
-
-@Composable
-private fun VoiceComposer(modifier: Modifier, onSend: (String, () -> Unit) -> Unit) {
-    var text by rememberSaveable { mutableStateOf("") }
-    val can = text.isNotBlank()
-    val send = {
-        if (can) {
-            val sent = text
-            text = ""
-            onSend(sent) { if (text.isEmpty()) text = sent }
-        }
-    }
-    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier.weight(1f).heightIn(min = 44.dp).clip(RoundedCornerShape(22.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            if (text.isEmpty()) {
-                Text(stringResource(R.string.voice_chat_placeholder), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
-            }
-            val hint = stringResource(R.string.voice_chat_placeholder)
-            BasicTextField(
-                text, { text = it.take(VoiceRoom.MAX_TEXT) }, Modifier.fillMaxWidth().semantics { contentDescription = hint },
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(Brand.Pink), maxLines = 3,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
-            )
-        }
-        Spacer(Modifier.width(8.dp))
-        Box(
-            Modifier.size(44.dp).graphicsLayer { alpha = if (can) 1f else 0.4f }.clip(CircleShape).background(Brand.Pink)
-                .clickable(enabled = can, role = Role.Button) { send() },
-            contentAlignment = Alignment.Center,
-        ) { Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.voice_send), Modifier.size(20.dp), tint = Color.White) }
-    }
 }
 
 /** Five reactions in a tray above the button; it stays open for a burst of taps (X Spaces). */

@@ -65,6 +65,24 @@ object Nsfw {
     }
 
     private fun channel(value: Float): Float = value.coerceIn(0f, 255f) / 255f
+
+    /** Writes [SIZE] x [SIZE] ARGB pixels (Bitmap.getPixels) into [out] as the model's input. [out] is rewound and filled from 0. */
+    fun argbToInput(pixels: IntArray, out: FloatBuffer) {
+        out.rewind()
+        for (p in pixels) {
+            out.put(((p shr 16) and 0xFF) / 255f)
+            out.put(((p shr 8) and 0xFF) / 255f)
+            out.put((p and 0xFF) / 255f)
+        }
+        out.rewind()
+    }
+
+    /**
+     * A photo is not sent when the whole picture (squeezed to a square) or its centre square scores as nude, as on the
+     * web (lib/nudity.ts classifyImage). [centre] is looked at only when the whole picture is clean.
+     */
+    suspend fun isNudePhoto(whole: suspend () -> FloatArray, centre: suspend () -> FloatArray): Boolean =
+        isNude(whole()) || isNude(centre())
 }
 
 /** Counts samples into hide / show verdicts, like web/lib/nudity.ts. */

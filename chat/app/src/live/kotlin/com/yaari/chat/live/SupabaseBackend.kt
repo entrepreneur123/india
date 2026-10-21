@@ -21,7 +21,6 @@ import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.PartnerWatch
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
-import com.yaari.chat.model.CreatedRoom
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
@@ -34,18 +33,19 @@ import com.yaari.chat.model.LudoEvent
 import com.yaari.chat.model.LudoGame
 import com.yaari.chat.model.LudoOut
 import com.yaari.chat.model.LudoStatus
-import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
-import com.yaari.chat.model.Room
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import com.yaari.chat.data.ServerClock
 import com.yaari.chat.model.AudioStatus
+import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.RoomGame
+import com.yaari.chat.model.RoomLeader
+import com.yaari.chat.model.RoomRules
 import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceAudioState
@@ -190,23 +190,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val id: String, val name: String, val gender: String, val age: Int, val city: String, val bio: String,
         @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
     )
-    @Serializable private data class RoomRow(
-        val id: String, val title: String, val emoji: String, val online: Int,
-        val official: Boolean = true, val mine: Boolean = false, @SerialName("owner_name") val ownerName: String? = null,
-        val category: String? = null, @SerialName("max_members") val maxMembers: Int? = null,
-        @SerialName("gender_rule") val genderRule: String? = null, @SerialName("min_age") val minAge: Int = Room.MIN_AGE,
-        @SerialName("max_age") val maxAge: Int = Room.MAX_AGE, @SerialName("is_private") val isPrivate: Boolean = false,
-        val code: String? = null, val refusal: String? = null,
-    )
-    @Serializable private data class CreatedRoomRow(@SerialName("room_id") val roomId: String, @SerialName("room_code") val roomCode: String)
-    @Serializable private data class RoomMessageRow(
-        val id: Long, @SerialName("room_id") val roomId: String, val sender: String,
-        @SerialName("sender_name") val senderName: String, @SerialName("sender_gender") val senderGender: String,
-        @SerialName("sender_age") val senderAge: Int, @SerialName("sender_photo") val senderPhoto: String? = null,
-        @SerialName("sender_country") val senderCountry: String? = null, val body: String,
-        @SerialName("created_at") val createdAt: String,
-    )
-    @Serializable private data class NewRoomMessageRow(@SerialName("room_id") val roomId: String, val body: String)
     @Serializable private data class PostRow(
         val id: String, @SerialName("user_id") val userId: String, val body: String,
         @SerialName("image_path") val imagePath: String? = null, @SerialName("created_at") val createdAt: String,
@@ -659,109 +642,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         json.decodeFromString<String>(client.postgrest.rpc("friend_thread", buildJsonObject { put("p_user", userId) }).data.trim())
     }
 
-    // ---- rooms ----
-
-    override suspend fun rooms(): List<Room> = call {
-        client.postgrest.rpc("room_list2").decodeList<RoomRow>().map {
-            Room(
-                it.id, it.title, it.emoji, it.online, official = it.official, mine = it.mine, ownerName = it.ownerName,
-                category = RoomCategory.of(it.category), maxMembers = it.maxMembers, genderRule = GenderRule.of(it.genderRule),
-                minAge = it.minAge, maxAge = it.maxAge, isPrivate = it.isPrivate, code = it.code, refusal = it.refusal,
-            )
-        }
-    }
-
-    override suspend fun createRoom(room: NewRoom): CreatedRoom = call {
-        val row = client.postgrest.rpc("create_room", buildJsonObject {
-            put("p_title", room.title)
-            put("p_category", room.category.code)
-            put("p_max", room.maxMembers)
-            put("p_gender", room.genderRule.code)
-            put("p_min_age", room.minAge)
-            put("p_max_age", room.maxAge)
-            put("p_private", room.isPrivate)
-        }).decodeList<CreatedRoomRow>().firstOrNull() ?: throw BackendException("network")
-        CreatedRoom(row.roomId, row.roomCode)
-    }
-
-    /** A wrong code comes back as null (the server counts it; 10 misses in 10 minutes → slow_down). */
-    override suspend fun joinRoomCode(code: String): String = call {
-        json.decodeFromString<String?>(client.postgrest.rpc("join_room_code", buildJsonObject { put("p_code", code) }).data.trim())
-    } ?: throw BackendException("not_found")
-
-    override suspend fun closeRoom(roomId: String) = call { client.postgrest.rpc("close_room", buildJsonObject { put("p_room", roomId) }); Unit }
-
-    override suspend fun joinRoom(roomId: String) = call { client.postgrest.rpc("join_room", buildJsonObject { put("p_room", roomId) }); Unit }
-
-    override suspend fun leaveRoom(roomId: String) = call { client.postgrest.rpc("leave_room", buildJsonObject { put("p_room", roomId) }); Unit }
-
-    override suspend fun roomHistory(roomId: String, afterId: Long?): List<RoomMessage> = call {
-        val me = uid
-        if (afterId != null) { // re-sync: only what came after, oldest first
-            return@call client.postgrest["room_messages"].select {
-                filter {
-                    eq("room_id", roomId)
-                    gt("id", afterId)
-                }
-                order("id", Order.ASCENDING)
-                limit(200)
-            }.decodeList<RoomMessageRow>().map { toRoomMessage(it, me) }
-        }
-        client.postgrest["room_messages"].select {
-            filter { eq("room_id", roomId) }
-            order("id", Order.DESCENDING) // the newest 100, shown oldest first
-            limit(100)
-        }.decodeList<RoomMessageRow>().asReversed().map { toRoomMessage(it, me) }
-    }
-
-    override fun roomEvents(roomId: String, afterId: Long?): Flow<RoomMessage> = channelFlow {
-        val me = uid
-        val channel = client.channel("room-$roomId-${UUID.randomUUID()}")
-        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
-            table = "room_messages"
-            filter("room_id", FilterOperator.EQ, roomId)
-        }
-        launch { inserts.collect { a -> runCatching { toRoomMessage(a.decodeRecord<RoomMessageRow>(), me) }.onSuccess { send(it) } } }
-        // Joined (again, after a dropped socket): re-sync at once.
-        val resync = Channel<Unit>(Channel.CONFLATED)
-        launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
-        try {
-            channel.subscribe()
-            // Re-sync every 15 s, only messages newer than the newest seen (the app de-duplicates by id), only while
-            // the app is on screen.
-            var cursor = afterId
-            while (true) {
-                withTimeoutOrNull(ROOM_RESYNC_MS) { resync.receive() }
-                AppForeground.visible.awaitVisible()
-                runCatching {
-                    val newer = roomHistory(roomId, cursor)
-                    newer.forEach { send(it) }
-                    newer.maxOfOrNull { it.id }?.let { id -> cursor = maxOf(id, cursor ?: id) }
-                }
-            }
-        } finally {
-            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
-        }
-    }
-
-    override suspend fun sendRoom(roomId: String, text: String): RoomMessage = call {
-        val row = client.postgrest["room_messages"].insert(NewRoomMessageRow(roomId, text)) { select() }.decodeSingle<RoomMessageRow>()
-        toRoomMessage(row, uid)
-    }
-
-    /** A photo the viewer may no longer see (that person left the room long ago) shows the initial instead. */
-    private suspend fun toRoomMessage(r: RoomMessageRow, me: String) = RoomMessage(
-        id = r.id,
-        sender = Profile(
-            id = r.sender, name = r.senderName,
-            gender = runCatching { Gender.valueOf(r.senderGender.uppercase()) }.getOrDefault(Gender.OTHER),
-            age = r.senderAge, city = "", bio = "", photoUri = r.senderPhoto?.let { p -> runCatching { signed(p) }.getOrNull() },
-            colorSeed = r.sender.hashCode(), country = r.senderCountry,
-        ),
-        fromMe = r.sender == me, text = r.body, at = ts(r.createdAt).toEpochMilli(),
-    )
-
-    // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit, VoiceAudio.kt) ----
+    // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, VoiceAudio.kt, only while
+    // someone is on the stage) ----
 
     @Serializable private data class VoiceCardRow(
         val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null, val bio: String? = null,
@@ -769,12 +651,21 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     )
     @Serializable private data class VoiceListRow(
         val id: String, val title: String, val category: String, val mine: Boolean = false, val host: VoiceCardRow? = null,
-        val speakers: List<VoiceCardRow> = emptyList(), val listeners: Int = 0, @SerialName("now_playing") val nowPlaying: String? = null,
+        val speakers: List<VoiceCardRow> = emptyList(), val listeners: Int = 0, val members: Int = 0,
+        @SerialName("now_playing") val nowPlaying: String? = null, val game: String? = null,
+        @SerialName("max_members") val maxMembers: Int = VoiceRoom.DEFAULT_MEMBERS, @SerialName("gender_rule") val genderRule: String? = null,
+        @SerialName("min_age") val minAge: Int = VoiceRoom.MIN_AGE, @SerialName("max_age") val maxAge: Int = VoiceRoom.MAX_AGE,
+        @SerialName("is_private") val isPrivate: Boolean = false, val announcement: String? = null, val code: String? = null,
+        val refusal: String? = null,
     )
+    @Serializable private data class CreatedVoiceRow(val id: String, val code: String)
+    @Serializable private data class LeaderRow(val id: String, val name: String, @SerialName("photo_path") val photoPath: String? = null, val wins: Int = 0)
     @Serializable private data class VoiceMusicRow(
         val id: String, val videoId: String, val title: String = "", val by: String = "", val startedAt: Long, val pausedAt: Long? = null,
     )
-    @Serializable private data class VoiceQueueRow(val id: String, val videoId: String, val title: String = "", val by: String = "", val suggested: Boolean = false)
+    @Serializable private data class VoiceQueueRow(
+        val id: String, val videoId: String, val title: String = "", val by: String = "", val votes: Int = 0, val voted: Boolean = false,
+    )
     @Serializable private data class VoiceMemberRow(
         val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null, val bio: String? = null,
         @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
@@ -785,10 +676,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val id: String, val title: String, val category: String, val mode: String, val host: String, val rev: Long, val now: Long,
         val locked: List<Int> = emptyList(), val music: VoiceMusicRow? = null, val queue: List<VoiceQueueRow> = emptyList(),
         val members: List<VoiceMemberRow> = emptyList(),
+        val announcement: String? = null, val max: Int = VoiceRoom.DEFAULT_MEMBERS, val gender: String? = null,
+        val minAge: Int = VoiceRoom.MIN_AGE, val maxAge: Int = VoiceRoom.MAX_AGE, val private: Boolean = false, val code: String? = null,
     )
     @Serializable private data class VoiceMessageRow(
         val id: Long, @SerialName("room_id") val roomId: String, val sender: String, val kind: String, val body: String? = null,
-        val payload: JsonObject? = null, @SerialName("sender_name") val senderName: String,
+        val payload: JsonObject? = null, @SerialName("media_path") val mediaPath: String? = null, @SerialName("sender_name") val senderName: String,
         @SerialName("sender_gender") val senderGender: String? = null, @SerialName("sender_age") val senderAge: Int? = null,
         @SerialName("sender_photo") val senderPhoto: String? = null, @SerialName("sender_country") val senderCountry: String? = null,
         @SerialName("created_at") val createdAt: String,
@@ -806,24 +699,72 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     private val background = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override suspend fun voiceRooms(): List<VoiceRoomSummary> = call {
-        val rows = client.postgrest.rpc("voice_list").decodeList<VoiceListRow>()
+        val rows = client.postgrest.rpc("voice_list2").decodeList<VoiceListRow>()
         signMany(rows.flatMap { r -> listOf(r.host?.photoPath) + r.speakers.map { it.photoPath } })
         rows.mapNotNull { r ->
             val host = r.host ?: return@mapNotNull null
             VoiceRoomSummary(
                 r.id, r.title, RoomCategory.of(r.category), card(host), r.speakers.map(::card), r.listeners,
-                r.nowPlaying?.ifEmpty { null }, r.mine,
+                r.nowPlaying?.ifEmpty { null }, r.mine, members = r.members,
+                game = when (r.game) {
+                    "lobby" -> RoomGame.LOBBY
+                    "playing" -> RoomGame.PLAYING
+                    else -> null
+                },
+                rules = RoomRules(r.maxMembers, GenderRule.of(r.genderRule), r.minAge, r.maxAge, r.isPrivate),
+                announcement = r.announcement, code = r.code, refusal = r.refusal,
             )
         }.sortedByDescending { it.mine }
     }
 
-    override suspend fun createVoiceRoom(room: NewVoiceRoom): String = call {
-        json.decodeFromString<String>(client.postgrest.rpc("create_voice_room", buildJsonObject {
+    override suspend fun createVoiceRoom(room: NewVoiceRoom): CreatedVoiceRoom = call {
+        val r = room.rules
+        val row = client.postgrest.rpc("create_voice_room2", buildJsonObject {
             put("p_title", room.title)
             put("p_category", room.category.code)
-            put("p_mode", room.mode.code)
-        }).data.trim())
+            put("p_max", r.maxMembers)
+            put("p_gender", r.genderRule.code)
+            put("p_min_age", r.minAge)
+            put("p_max_age", r.maxAge)
+            put("p_private", r.isPrivate)
+            put("p_announcement", room.announcement)
+        }).decodeAs<CreatedVoiceRow>()
+        CreatedVoiceRoom(row.id, row.code)
     }
+
+    /** A wrong code comes back as null (so the miss is counted: 10 in 10 minutes and code entry pauses). */
+    override suspend fun joinVoiceCode(code: String): String = call {
+        json.decodeFromString<String?>(client.postgrest.rpc("join_voice_code", buildJsonObject { put("p_code", code) }).data.trim())
+    } ?: throw BackendException("not_found")
+
+    override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String) = call {
+        client.postgrest.rpc("voice_settings", buildJsonObject {
+            put("p_room", roomId)
+            put("p_title", title)
+            put("p_announcement", announcement)
+        })
+        voiceLive[roomId]?.refresh?.invoke()
+        Unit
+    }
+
+    override suspend fun sendVoicePhoto(roomId: String, jpegUri: String): VoiceLine = call {
+        val path = upload(jpegUri.toUri(), "rooms")
+        val row = client.postgrest.rpc("voice_photo", buildJsonObject { put("p_room", roomId); put("p_path", path) }).decodeAs<VoiceMessageRow>()
+        toVoiceLines(listOf(row)).first()
+    }
+
+    override suspend fun voiceIcebreaker(roomId: String): VoiceLine = call {
+        val row = client.postgrest.rpc("voice_icebreaker", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceMessageRow>()
+        toVoiceLines(listOf(row)).first()
+    }
+
+    override suspend fun voiceLeaders(roomId: String): List<RoomLeader> = call {
+        val rows = json.decodeFromString<List<LeaderRow>>(client.postgrest.rpc("voice_leaders", buildJsonObject { put("p_room", roomId) }).data.trim())
+        signMany(rows.map { it.photoPath })
+        rows.map { RoomLeader(card(VoiceCardRow(it.id, it.name, photoPath = it.photoPath)), it.wins) }
+    }
+
+    override suspend fun videoTitle(videoId: String): String = youTubeTitle(videoId)
 
     override suspend fun leaveVoice(roomId: String) = call { client.postgrest.rpc("leave_voice", buildJsonObject { put("p_room", roomId) }); Unit }
 
@@ -836,7 +777,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         client.postgrest["voice_messages"].select {
             filter {
                 eq("room_id", roomId)
-                isIn("kind", listOf("text", "system"))
+                isIn("kind", LINE_KINDS)
             }
             order("id", Order.DESCENDING) // the newest 100, shown oldest first
             limit(100)
@@ -847,7 +788,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         client.postgrest["voice_messages"].select {
             filter {
                 eq("room_id", roomId)
-                isIn("kind", listOf("text", "system"))
+                isIn("kind", LINE_KINDS)
                 gt("id", afterId)
             }
             order("id", Order.ASCENDING)
@@ -910,10 +851,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 rpc("voice_kick") { put("p_user", action.userId) }
                 voiceSync(roomId, action.userId)
             }
-            // The server decides: the host's track plays or queues, anyone else's waits for the host.
-            is VoiceAction.AddTrack -> rpc("voice_queue_add") { put("p_video", action.videoId); put("p_title", "") }
-            is VoiceAction.Suggest -> rpc("voice_queue_add") { put("p_video", action.videoId); put("p_title", "") }
-            is VoiceAction.Approve -> rpc("voice_queue_approve") { put("p_item", action.itemId); put("p_accept", action.accept) }
+            // The host's track plays at once when nothing does; everything else joins the requests.
+            is VoiceAction.AddTrack -> rpc("voice_queue_add") { put("p_video", action.videoId); put("p_title", action.title.take(100)) }
+            is VoiceAction.Vote -> rpc("voice_vote") { put("p_item", action.itemId); put("p_on", action.on) }
             is VoiceAction.Play -> rpc("voice_play_item") { put("p_item", action.itemId) }
             is VoiceAction.RemoveItem -> rpc("voice_queue_remove") { put("p_item", action.itemId) }
             VoiceAction.Pause -> rpc("voice_pause")
@@ -946,9 +886,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         var audio: VoiceAudio? = null
         var audioJob: Job? = null
         var audioTries = 0
+        /** Someone is on the stage: only then is there audio (voice_grant refuses a token before). */
+        var stage = false
         val refresh = Channel<Unit>(Channel.CONFLATED)
         val permissionsChanged = Channel<Unit>(Channel.CONFLATED)
         var retryAudio: () -> Unit = {}
+        /** The stage emptied: the room goes on without audio until someone takes a seat. */
+        var stopAudio: () -> Unit = {}
 
         // Ended or removed: said once; the collector stops following then.
         suspend fun finish(e: VoiceEvent) {
@@ -982,7 +926,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
 
         fun connectAudio() {
-            if (over || audioJob != null) return
+            if (over || audioJob != null || !stage) return
             audioJob = launch {
                 try {
                     val t = call { client.functions.invoke("voice-token", body = buildJsonObject { put("room_id", roomId) }).body<TokenRow>() }
@@ -992,6 +936,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                     } catch (e: Exception) {
                         a.disconnect()
                         throw e
+                    }
+                    if (!stage || over) { // the stage emptied while connecting
+                        a.disconnect()
+                        audioJob = null
+                        return@launch
                     }
                     audio = a
                     audioTries = 0
@@ -1033,7 +982,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 if (before.first == null && m.seat != null) voiceSync(roomId, me)
                 if ((m.seat == null && before.first != null) || (m.muted && !before.second)) runCatching { audio?.setMic(false) }
             }
-            if (m != null && audio == null) connectAudio()
+            // Audio only while someone is on the stage: a room nobody talks in is a chat room and costs no LiveKit minutes.
+            stage = room.stageLive
+            if (m != null && stage && audio == null) connectAudio()
+            else if (!stage && (audio != null || audioJob != null)) stopAudio()
             send(VoiceEvent.RoomChanged(room))
         }
 
@@ -1074,10 +1026,20 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
 
         val live = VoiceLive(refresh = { refresh.trySend(Unit) }, mic = { on -> mic(on) })
+
+        stopAudio = {
+            audioJob?.cancel()
+            audioJob = null
+            audio?.disconnect()
+            audio = null
+            audioTries = 0
+            trySend(VoiceEvent.Audio(null))
+            trySend(VoiceEvent.Levels(emptyMap()))
+        }
         voiceLive[roomId] = live
 
         retryAudio = {
-            launch {
+            if (stage) launch {
                 // A weak network gets a few quick tries, then one every 30 s; the room itself (chat, seats) carries on.
                 delay(minOf(30_000L, 2_000L shl minOf(audioTries++, 4)))
                 connectAudio()
@@ -1178,24 +1140,32 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                     VoiceRole.of(m.role), m.seat, m.muted, m.hand,
                 )
             },
+            rules = RoomRules(s.max, GenderRule.of(s.gender), s.minAge, s.maxAge, s.private),
+            announcement = s.announcement, code = s.code,
             seats = List(VoiceRoom.SEATS) { VoiceSeat(it, it in s.locked) },
             track = s.music?.let {
                 VoiceTrack(it.id, it.videoId, it.title, it.by, serverClock.toLocal(it.startedAt), it.pausedAt?.let(serverClock::toLocal))
             },
-            queue = s.queue.map { VoiceQueueItem(it.id, it.videoId, it.title, it.by, it.suggested) },
+            queue = s.queue.map { VoiceQueueItem(it.id, it.videoId, it.title, it.by, it.votes, it.voted) },
         )
     }
 
     private suspend fun toVoiceLines(rows: List<VoiceMessageRow>): List<VoiceLine> {
         val me = uid
-        signMany(rows.filter { it.kind == "text" }.map { it.senderPhoto })
+        // One request signs every face and photo in the batch.
+        signMany(rows.filter { it.kind == "text" || it.kind == "photo" }.flatMap { listOf(it.senderPhoto, it.mediaPath) })
         return rows.mapNotNull { r ->
             val at = ts(r.createdAt).toEpochMilli()
+            fun sender() = card(VoiceCardRow(r.sender, r.senderName, r.senderGender ?: "other", r.senderAge ?: 0, null, null, r.senderPhoto, r.senderCountry))
             if (r.kind == "text") {
-                VoiceLine.Text(
-                    r.id, card(VoiceCardRow(r.sender, r.senderName, r.senderGender ?: "other", r.senderAge ?: 0, null, null, r.senderPhoto, r.senderCountry)),
-                    r.sender == me, r.body.orEmpty(), at,
-                )
+                VoiceLine.Text(r.id, sender(), r.sender == me, r.body.orEmpty(), at)
+            } else if (r.kind == "photo") {
+                // A photo no longer readable (its sender blocked, or I left the room long ago) is left out.
+                val url = r.mediaPath?.let { signedUrls[it]?.first } ?: return@mapNotNull null
+                VoiceLine.Photo(r.id, sender(), r.sender == me, url, at)
+            } else if (r.kind == "icebreaker") {
+                val prompt = r.payload?.get("q")?.jsonPrimitive?.content?.toIntOrNull()?.takeIf { it >= 1 } ?: return@mapNotNull null
+                VoiceLine.Icebreaker(r.id, prompt, r.senderName, r.sender == me, at)
             } else {
                 val p = r.payload
                 val event = VoiceSystemEvent.of(p?.get("event")?.jsonPrimitive?.content) ?: return@mapNotNull null
@@ -1392,12 +1362,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     companion object {
         private const val BUCKET = "media"
+        /** The chat's lines (reactions come over realtime only). */
+        private val LINE_KINDS = listOf("text", "system", "icebreaker", "photo")
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
         private const val REQUEST_TIMEOUT_MS = 15_000L
         private const val UPLOAD_TIMEOUT_MS = 120_000L
         private const val RESYNC_MS = 10_000L
-        private const val ROOM_RESYNC_MS = 15_000L
         private const val REJOIN_SETTLE_MS = 500L
         private const val HEARTBEAT_MS = 20_000L
         // Most specific first: a message is matched by the first code it contains.
@@ -1409,6 +1380,26 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             "stale", "not_your_turn", "seat_taken", "game_full", "need_players",
         )
     }
+}
+
+/**
+ * A YouTube video's real title from its oEmbed (no API key), 5 s at most; "" when it can't be looked up. The server
+ * keeps up to 100 characters.
+ */
+internal suspend fun youTubeTitle(videoId: String, timeoutMs: Int = 5_000): String = withContext(Dispatchers.IO) {
+    runCatching {
+        val watch = java.net.URLEncoder.encode("https://www.youtube.com/watch?v=$videoId", "UTF-8")
+        val c = java.net.URL("https://www.youtube.com/oembed?url=$watch&format=json").openConnection() as java.net.HttpURLConnection
+        c.connectTimeout = timeoutMs
+        c.readTimeout = timeoutMs
+        try {
+            if (c.responseCode != 200) return@runCatching ""
+            val body = c.inputStream.bufferedReader().use { it.readText() }
+            (Json.parseToJsonElement(body) as? JsonObject)?.get("title")?.jsonPrimitive?.content?.trim()?.take(100).orEmpty()
+        } finally {
+            c.disconnect()
+        }
+    }.getOrDefault("")
 }
 
 /**

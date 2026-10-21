@@ -6,12 +6,12 @@
 
 | 파일 | 내용 |
 |---|---|
-| `yaari-demo.apk` (2.1MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명, 보이스룸 5개(음성은 없음, 음악은 실제 YouTube, "Ludo night" 방에서는 봇들이 루도 게임 중). OTP는 `123456`. 결제는 즉시 승인(데모) |
+| `yaari-demo.apk` (2.1MB) | 서버 없이 폰 안에서 도는 체험판. 가상 상대 12명, 웹과 같은 데모 방 6개(토크·음악·게임; 음성은 없음, 음악은 실제 YouTube, "Ludo night" 방에서는 봇들이 루도 게임 중). OTP는 `123456`. 결제는 즉시 승인(데모) |
 | `yaari-live-arm64.apk` (15.0MB) | **실제 서버**(Supabase 뭄바이) 연결판, 대부분의 폰. 아래 "출시 전 설정"을 마쳐야 일반 번호로 로그인할 수 있습니다 |
 | `yaari-live-armv7.apk` (12.8MB) | 같은 실서버판, 오래된 32비트 폰용 |
-| `yaari-live.aab` (44.5MB) | Play Console 업로드용 묶음(Play가 폰별로 쪼개서 내려줌) |
+| `yaari-live.aab` (44.4MB) | Play Console 업로드용 묶음(Play가 폰별로 쪼개서 내려줌) |
 
-버전 0.6.0 (versionCode 8): 보이스룸 안의 루도(호스트·공동호스트가 하단 게임 버튼으로 열기, 2–4명, 서버가 주사위와 규칙 판정, 15초 턴 제한, 관전). 0.5.0: 보이스룸(X Spaces식 음성 방, 채팅, 같이 듣는 YouTube 음악). 0.2.0–0.5.0과 같은 디버그 키라 덮어 설치됩니다(0.1.x는 지우고 설치).
+버전 0.7.0 (versionCode 9): 방이 한 종류로 통합(웹과 같음). 카테고리는 토크·음악·게임 셋, 모든 방에 채팅·음성 무대·같이 듣는 음악·루도·사진. 토크는 채팅 우선 + 아이스브레이커 카드, 음악은 플레이어 + 투표로 다음 곡, 게임은 루도 + 방 순위. 방 설정(인원 2–200, 성별, 나이, 비공개 코드, 공지), 코드로 입장, 사진은 보내기 전 폰에서 누드 검사(실서버판) 후 받는 쪽에서는 탭하기 전까지 가림. 음성(LiveKit)은 무대에 누가 있을 때만 연결. 예전 "채팅" 방 탭은 없어짐. 0.6.0: 보이스룸 안의 루도(호스트·공동호스트가 하단 게임 버튼으로 열기, 2–4명, 서버가 주사위와 규칙 판정, 15초 턴 제한, 관전). 0.5.0: 보이스룸(X Spaces식 음성 방, 채팅, 같이 듣는 YouTube 음악). 0.2.0–0.6.0과 같은 디버그 키라 덮어 설치됩니다(0.1.x는 지우고 설치).
 
 APK·AAB 모두 디버그 키로 서명한 테스트용입니다. Play Store에는 `./gradlew bundleLiveRelease`로 만든 App Bundle(.aab)을 올립니다. 업로드 키는 `chat/upload.properties`(저장소에 올리지 않음)에 `storeFile`, `storePassword`, `keyAlias`, `keyPassword`를 적어 두면 자동으로 쓰입니다. Play가 폰 CPU에 맞는 파일만 내려주므로 실제 다운로드 크기는 더 작습니다.
 
@@ -37,11 +37,11 @@ APK·AAB 모두 디버그 키로 서명한 테스트용입니다. Play Store에�
 |---|---|---|---|---|---|
 | ![](docs/screenshots/17_report.png) | ![](docs/screenshots/18_new_post.png) | ![](docs/screenshots/19_my_profile.png) | ![](docs/screenshots/20_edit_profile.png) | ![](docs/screenshots/21_settings.png) | ![](docs/screenshots/01_phone.png) |
 
-| 사람들이 만든 방 | 방 만들기 | 방 코드 | 내 방 | 닫힌 방 |
-|---|---|---|---|---|
-| ![](docs/screenshots/22_user_rooms.png) | ![](docs/screenshots/23_create_room.png) | ![](docs/screenshots/24_room_created.png) | ![](docs/screenshots/25_my_room.png) | ![](docs/screenshots/26_room_closed.png) |
+| 방 목록(전체·토크·음악·게임) | 토크: 아이스브레이커 | 사진(탭 전 흐림) | 사진 보기 | 음악: 투표로 다음 곡 | 게임: 루도 + 순위 | 비공개 방 코드 |
+|---|---|---|---|---|---|---|
+| ![](docs/screenshots/rooms_01_list.png) | ![](docs/screenshots/rooms_03_talk_icebreaker.png) | ![](docs/screenshots/rooms_04_photo_blurred.png) | ![](docs/screenshots/rooms_05_photo_revealed.png) | ![](docs/screenshots/rooms_06_music_hero_votes.png) | ![](docs/screenshots/rooms_07_games_leaderboard.png) | ![](docs/screenshots/rooms_08_private_code.png) |
 
-| 보이스룸 목록 | 청취자로 입장 | 호스트: 발언 요청 | 음악 + 채팅 | 보이스룸 만들기 | 최소화(알약) |
+| 목록(이전 화면) | 청취자로 입장 | 호스트: 발언 요청 | 음악 + 채팅 | 방 만들기 | 최소화(알약) |
 |---|---|---|---|---|---|
 | ![](docs/screenshots/voice_01_list.png) | ![](docs/screenshots/voice_02_room_listener.png) | ![](docs/screenshots/voice_03_host_requests.png) | ![](docs/screenshots/voice_04_music_chat.png) | ![](docs/screenshots/voice_05_create.png) | ![](docs/screenshots/voice_06_pill_over_rooms.png) |
 

@@ -59,11 +59,13 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
@@ -82,6 +84,7 @@ import com.yaari.chat.model.LudoGame
 import com.yaari.chat.model.LudoOut
 import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.Profile
+import com.yaari.chat.model.RoomLeader
 import com.yaari.chat.model.VoiceRoom
 
 // ---- Ludo in a voice room (the web's components/screens/voice/ludo/ludo-panel.tsx) ------------------------------
@@ -559,5 +562,104 @@ fun LudoBackPill(onClick: () -> Unit) {
             "${stringResource(R.string.ludo_in_progress)} · ${stringResource(R.string.ludo_back_to_game)}", onClick, height = 36.dp,
             leading = { TopicIcon(Topic.GAMING, size = 18.dp) },
         )
+    }
+}
+
+/** A games room with no game on: the board, the four colours, and (hosts and co-hosts) the button to open one. */
+@Composable
+fun StartLudoCard(canStart: Boolean, onStart: () -> Unit) {
+    val palette = ludoPalette()
+    Column(
+        Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp)).padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        LudoBoard(
+            List(16) { LudoTokenView(it, -1, "", false, null) }, listOf(true, true, true, true), null, palette, stringResource(R.string.ludo_board),
+            Modifier.width(176.dp).shadow(10.dp, RoundedCornerShape(16.dp)).clip(RoundedCornerShape(16.dp)).clearAndSetSemantics {},
+        )
+        Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TopicIcon(Topic.GAMING, size = 24.dp)
+            Text(stringResource(R.string.games_start), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold))
+        }
+        Text(
+            stringResource(R.string.games_start_body), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+        )
+        Row(Modifier.padding(top = 12.dp).clearAndSetSemantics {}, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            (0..3).forEach { seat ->
+                Row(
+                    Modifier.height(28.dp).clip(CircleShape).background(palette.seats[seat].copy(alpha = 0.16f)).padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Box(Modifier.size(10.dp).clip(CircleShape).background(palette.seats[seat]))
+                    Text(colourName(seat), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        if (canStart) {
+            PrimaryButton(stringResource(R.string.games_start), onStart, height = 48.dp)
+        } else {
+            Text(
+                stringResource(R.string.games_wait_host), Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 12.dp, vertical = 10.dp),
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+/** Gold, silver and bronze for the top three. */
+private val MEDALS = listOf(Color(0xFFF2C14E), Color(0xFFC5CCD6), Color(0xFFD89A63))
+
+/** The room's Ludo winners, top 5 (null while loading); my own line is highlighted. */
+@Composable
+fun Leaderboard(leaders: List<RoomLeader>?, meId: String) {
+    val title = stringResource(R.string.games_leaders)
+    Column(
+        Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp)).padding(16.dp),
+    ) {
+        Row(Modifier.semantics { heading() }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TopicIcon(Topic.GAMING, size = 20.dp)
+            Text(title, style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+        }
+        when {
+            leaders == null -> repeat(3) { Box(Modifier.padding(top = 8.dp).fillMaxWidth().height(36.dp).clip(RoundedCornerShape(12.dp)).shimmer()) }
+            leaders.isEmpty() -> Text(
+                stringResource(R.string.games_no_wins), Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            else -> Column(Modifier.padding(top = 6.dp)) {
+                leaders.forEachIndexed { i, l ->
+                    val rank = stringResource(R.string.games_rank, i + 1)
+                    val wins = pluralStringResource(R.plurals.games_wins, l.wins, l.wins)
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+                            .then(if (l.profile.id == meId) Modifier.background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)) else Modifier)
+                            .semantics(mergeDescendants = true) { contentDescription = "$rank, ${l.profile.name}, $wins" }
+                            .padding(horizontal = 4.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(
+                            Modifier.size(28.dp).clip(CircleShape).then(if (i < 3) Modifier.background(MEDALS[i]) else Modifier),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                "${i + 1}", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (i < 3) Color(0xFF2B1A00) else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Avatar(l.profile, 30.dp, Modifier.padding(start = 12.dp))
+                        Text(
+                            l.profile.name, Modifier.weight(1f).padding(start = 12.dp), style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(wins, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+        }
     }
 }

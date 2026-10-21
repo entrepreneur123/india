@@ -26,7 +26,7 @@ import com.yaari.chat.data.VoiceBus
 import com.yaari.chat.ui.AppViewModel
 
 /**
- * Keeps a voice room alive while the room is minimised or the app is in the background (as X Spaces does): a
+ * Keeps a room's audio or music alive while the room is minimised or the app is in the background (as X Spaces does): a
  * foreground service of type mediaPlayback (the room's audio), plus microphone while I may talk, with the ongoing
  * "In a voice room · Leave" notification. It holds no state of its own: the room lives in [AppViewModel]; the service
  * only follows it ([Follow]) and passes the notification's buttons back through [VoiceBus].
@@ -143,8 +143,11 @@ class VoiceService : Service() {
                 askedNotifications = true
                 runCatching { ask.launch(Manifest.permission.POST_NOTIFICATIONS) }
             }
-            LaunchedEffect(roomId, title, host, onStage, muted) {
-                if (roomId == null) stop(context) else start(context, title, host, onStage)
+            // Only while there is something to keep alive: the room's audio (someone is on the stage) or its music
+            // playing. A room nobody talks or plays music in is a chat room: no service, no notification.
+            val alive = s?.keepAlive == true
+            LaunchedEffect(roomId, alive, title, host, onStage, muted) {
+                if (roomId == null || !alive) stop(context) else start(context, title, host, onStage)
             }
             DisposableEffect(Unit) { onDispose { stop(context) } }
         }

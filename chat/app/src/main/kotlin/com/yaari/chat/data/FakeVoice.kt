@@ -1,9 +1,15 @@
 package com.yaari.chat.data
 
+import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.Gender
+import com.yaari.chat.model.GenderRule
+import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RoomCategory
+import com.yaari.chat.model.RoomGame
+import com.yaari.chat.model.RoomLeader
+import com.yaari.chat.model.RoomRules
 import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
@@ -17,6 +23,7 @@ import com.yaari.chat.model.VoiceRoomSummary
 import com.yaari.chat.model.VoiceSeat
 import com.yaari.chat.model.VoiceSystemEvent
 import com.yaari.chat.model.VoiceTrack
+import com.yaari.chat.model.byVotes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.awaitClose
@@ -28,8 +35,9 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 /**
- * Demo voice rooms (a port of the web's lib/mockVoice.ts): a few live rooms with people talking (audio levels), chat,
- * reactions, raised hands and a shared YouTube track. It applies the server's rules (017_voice_rooms.sql). The
+ * Demo rooms (a port of the web's lib/mockVoice.ts): a few live rooms with people talking (audio levels), chat,
+ * icebreakers, photos, reactions, raised hands, song requests with votes and a Ludo leaderboard. It applies the
+ * server's rules (017_voice_rooms.sql, 019_unified_rooms.sql: who may come in, private codes, rate limits). The
  * simulation runs only while a room is followed ([session]), on the collector's dispatcher (virtual time in tests).
  * [ambient]: people talk, chat, react and come and go by themselves (off in tests, which drive the room through the
  * hooks at the bottom instead).
@@ -44,11 +52,17 @@ class FakeVoice(
     private class Member(val profile: Profile, var role: VoiceRole, var seat: Int?, var muted: Boolean, var hand: Boolean)
 
     private class SimRoom(
-        val id: String, val title: String, val category: RoomCategory, val mode: SpeakMode, var hostId: String,
+        val id: String, var title: String, val category: RoomCategory, val mode: SpeakMode, var hostId: String,
         val members: MutableList<Member>, val locked: BooleanArray, var mine: Boolean,
+        val rules: RoomRules, var announcement: String?, val code: String,
     ) {
         var track: VoiceTrack? = null
         val queue = mutableListOf<VoiceQueueItem>()
+        /** I came in with the code once (a private room then lets me back by its id). */
+        var admitted = false
+        /** Ludo winners here: user id to (profile, wins). */
+        val wins = linkedMapOf<String, Pair<Profile, Int>>()
+        var lastIcebreaker = Long.MIN_VALUE / 2
         val lines = mutableListOf<VoiceLine>()
         val subs = mutableSetOf<(VoiceEvent) -> Unit>()
         var scope: CoroutineScope? = null
@@ -64,15 +78,22 @@ class FakeVoice(
     private var personSeq = 0
     private var uidSeq = 0
     private val sendTimes = ArrayDeque<Long>()
+    private val photoTimes = ArrayDeque<Long>()
 
     init {
         seed("v-bolly", "Late night Bollywood songs", RoomCategory.MUSIC, SpeakMode.APPROVAL, "Priya", 5, 34,
-            Music("BddP6PYo2gs", 74_000, listOf("Umqb9KENgmk", "284Ov7ysmfA", "VAdGW7QDJiU")))
-        seed("v-cricket", "Cricket talk: IND vs AUS", RoomCategory.SPORTS, SpeakMode.APPROVAL, "Vikram", 7, 58)
-        seed("v-english", "Hindi–English practice", RoomCategory.LANGUAGE, SpeakMode.OPEN, "Meera", 4, 21)
-        seed("v-lofi", "Lo-fi study together", RoomCategory.STUDY, SpeakMode.OPEN, "Kavya", 3, 17, Music("lTRiuFIWV54", 480_000, emptyList()))
-        // A Ludo game is on here (FakeLudo), to watch.
-        seed(FakeLudo.LUDO_ROOM, "Ludo night: come watch", RoomCategory.GAMING, SpeakMode.OPEN, "Arnab", 4, 12)
+            Music("BddP6PYo2gs", 74_000, listOf("Umqb9KENgmk", "284Ov7ysmfA", "VAdGW7QDJiU"), listOf(4, 7, 2)),
+            announcement = "Requests welcome: paste a YouTube link, vote for the next song.")
+        seed("v-chai", "Chai pe charcha", RoomCategory.TALK, SpeakMode.APPROVAL, "Meera", 0, 14, announcement = "Be kind. No phone numbers in the chat.")
+        seed("v-cricket", "Cricket talk: IND vs AUS", RoomCategory.TALK, SpeakMode.APPROVAL, "Vikram", 6, 48)
+        // A Ludo game is on here (FakeLudo), to watch; a leaderboard from earlier games.
+        seed(FakeLudo.LUDO_ROOM, "Ludo night: come watch", RoomCategory.GAMES, SpeakMode.OPEN, "Arnab", 4, 12)
+        seed("v-lofi", "Lo-fi study together", RoomCategory.MUSIC, SpeakMode.OPEN, "Kavya", 2, 17, Music("lTRiuFIWV54", 480_000, emptyList(), emptyList()))
+        seed("v-gym", "Gym bros: fitness talk", RoomCategory.TALK, SpeakMode.OPEN, "Harsh", 2, 6,
+            rules = RoomRules(maxMembers = 30, genderRule = GenderRule.MALE, minAge = 18, maxAge = 30))
+        rooms.getValue(FakeLudo.LUDO_ROOM).let { r ->
+            r.members.take(5).forEachIndexed { i, m -> r.wins[m.profile.id] = m.profile to listOf(6, 4, 3, 3, 1)[i] }
+        }
     }
 
     /** Ludo in these rooms: the people present play, and leaving the room is a forfeit. */
@@ -85,11 +106,17 @@ class FakeVoice(
                     r.hostId, r.mine,
                 )
             }
+
+            override fun won(roomId: String, userId: String, name: String) {
+                val r = rooms[roomId] ?: return
+                val profile = r.members.firstOrNull { it.profile.id == userId }?.profile ?: person(name).copy(id = userId)
+                r.wins[userId] = profile to (r.wins[userId]?.second ?: 0) + 1
+            }
         },
         { runCatching { me() }.getOrNull() }, random, clock, wait, ambient,
     )
 
-    private class Music(val playing: String, val ago: Long, val queue: List<String>)
+    private class Music(val playing: String, val ago: Long, val queue: List<String>, val votes: List<Int>)
 
     private fun uid() = "q" + (uidSeq++).toString(36) + random.nextInt(1_000_000).toString(36)
     private fun <T> pick(list: List<T>) = list[random.nextInt(list.size)]
@@ -107,11 +134,21 @@ class FakeVoice(
         )
     }
 
+    /** A room's code: its own dice (seeded by the room id), so tests with fixed dice still get distinct, realistic codes. */
+    private fun code(roomId: String): String {
+        var seed = roomId.hashCode()
+        while (true) {
+            val dice = Random(seed++)
+            val c = String(CharArray(VoiceRoom.CODE_LENGTH) { CODE_CHARS[dice.nextInt(CODE_CHARS.length)] })
+            if (rooms.values.none { it.code == c }) return c
+        }
+    }
+
     private fun seed(
         id: String, title: String, category: RoomCategory, mode: SpeakMode, hostName: String, speakers: Int, listeners: Int,
-        music: Music? = null,
+        music: Music? = null, rules: RoomRules = ANYONE, announcement: String? = null,
     ) {
-        val people = listOf(person(hostName)) + List(speakers + listeners - 1) { person() }
+        val people = listOf(person(hostName)) + List(maxOf(speakers, 1) + listeners - 1) { person() }
         val members = people.mapIndexed { i, p ->
             Member(
                 p,
@@ -128,16 +165,18 @@ class FakeVoice(
             )
         }
         val r = SimRoom(id, title, category, mode, people[0].id, members.toMutableList(),
-            BooleanArray(VoiceRoom.SEATS) { it == 8 && mode == SpeakMode.APPROVAL }, mine = false)
+            BooleanArray(VoiceRoom.SEATS) { it == 8 && mode == SpeakMode.APPROVAL }, mine = false, rules, announcement, code(id))
         if (music != null) {
             r.track = track(music.playing, people[0].name, clock() - music.ago)
-            music.queue.forEachIndexed { i, v -> r.queue += VoiceQueueItem(uid(), v, TRACKS[v]?.first.orEmpty(), people[i + 1].name, pending = false) }
+            music.queue.forEachIndexed { i, v -> r.queue += VoiceQueueItem(uid(), v, TRACKS[v]?.first.orEmpty(), people[i + 1].name, music.votes.getOrElse(i) { 0 }) }
         }
         val now = clock()
         for (i in 0 until 7) {
             val sender = pick(people)
             val at = now - (7 - i) * 45_000L
             if (i == 2) r.lines += VoiceLine.System(lineSeq++, VoiceSystemEvent.JOINED, pick(people).name, at)
+            if (i == 3 && category == RoomCategory.TALK) r.lines += VoiceLine.Icebreaker(lineSeq++, 7, pick(people).name, false, at)
+            if (i == 5 && id == "v-chai") r.lines += VoiceLine.Photo(lineSeq++, people[1], false, SNAP, at)
             r.lines += VoiceLine.Text(lineSeq++, sender, false, chatLine(category, sender), at)
         }
         rooms[id] = r
@@ -147,7 +186,7 @@ class FakeVoice(
         VoiceTrack(uid(), videoId, TRACKS[videoId]?.first.orEmpty(), addedBy, startedAt, null)
 
     private fun chatLine(category: RoomCategory, sender: Profile): String {
-        val list = if (random.nextFloat() < 0.8f) LINES[category] ?: ANY else ANY
+        val list = if (random.nextFloat() < 0.8f) LINES.getValue(category) else ANY
         return pick(list).replace("{city}", sender.city)
     }
 
@@ -159,10 +198,23 @@ class FakeVoice(
 
     private fun meIn(r: SimRoom): Member? = runCatching { me() }.getOrNull()?.let { m -> r.members.firstOrNull { it.profile.id == m.id } }
 
+    /** Same rules as the server's voice_refusal(): the host always may; gender, age, full. */
+    private fun refusal(r: SimRoom): String? {
+        val me = runCatching { me() }.getOrNull() ?: return null
+        if (r.mine) return null
+        return when {
+            !r.rules.genderRule.accepts(me.gender) -> "room_gender"
+            me.age < r.rules.minAge || me.age > r.rules.maxAge -> "room_age"
+            meIn(r) == null && r.members.size >= r.rules.maxMembers -> "room_full"
+            else -> null
+        }
+    }
+
     private fun snapshot(r: SimRoom) = VoiceRoom(
         r.id, r.title, r.category, r.mode, r.hostId, runCatching { me().id }.getOrDefault(""),
         r.members.map { VoiceMember(it.profile, it.role, it.seat, it.muted, it.hand) },
         List(VoiceRoom.SEATS) { VoiceSeat(it, r.locked[it]) }, r.track, r.queue.toList(),
+        r.rules, r.announcement, if (r.mine) r.code else null,
     )
 
     private fun emit(r: SimRoom, e: VoiceEvent) = r.subs.toList().forEach { it(e) }
@@ -197,30 +249,103 @@ class FakeVoice(
     suspend fun list(): List<VoiceRoomSummary> {
         wait(450)
         val me = runCatching { me() }.getOrNull()
-        return rooms.values.filter { !it.ended }.sortedByDescending { it.mine }.map { r ->
-            val host = r.members.first { it.profile.id == r.hostId }.profile
-            VoiceRoomSummary(
-                r.id, r.title, r.category, host,
-                speakers = r.members.filter { it.seat != null }.sortedBy { it.seat }.take(4).map { it.profile },
-                listeners = r.members.count { it.seat == null && it.profile.id != me?.id },
-                nowPlaying = r.track?.title?.ifEmpty { null }, mine = r.mine,
-            )
-        }
+        return rooms.values.filter { !it.ended && (!it.rules.isPrivate || it.mine || it.admitted) }
+            .sortedWith(compareByDescending<SimRoom> { it.mine }.thenByDescending { it.members.size }).map { r ->
+                val host = r.members.first { it.profile.id == r.hostId }.profile
+                VoiceRoomSummary(
+                    r.id, r.title, r.category, host,
+                    speakers = r.members.filter { it.seat != null }.sortedBy { it.seat }.take(4).map { it.profile },
+                    listeners = r.members.count { it.seat == null && it.profile.id != me?.id },
+                    nowPlaying = r.track?.title?.ifEmpty { null }, mine = r.mine,
+                    members = r.members.size,
+                    game = when (ludo.openStatus(r.id)) {
+                        LudoStatus.LOBBY -> RoomGame.LOBBY
+                        LudoStatus.PLAYING -> RoomGame.PLAYING
+                        else -> null
+                    },
+                    rules = r.rules, announcement = r.announcement, code = if (r.mine) r.code else null, refusal = refusal(r),
+                )
+            }
     }
 
-    suspend fun create(n: NewVoiceRoom): String {
+    suspend fun create(n: NewVoiceRoom): CreatedVoiceRoom {
         wait(500)
         val me = me()
         val title = n.title.trim()
         if (title.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE) throw BackendException("room_title")
+        if (n.rules.maxMembers !in VoiceRoom.MIN_MEMBERS..VoiceRoom.MAX_MEMBERS) throw BackendException("room_size")
         rooms.values.filter { it.mine && !it.ended }.forEach { end(it) } // one live room per host
         val id = "v-" + uid()
-        // A couple of people are already waiting to listen, so the host isn't alone.
+        // A couple of people are already in, so the host isn't alone. The host comes in off the stage: the room is a
+        // chat room until someone joins the voice.
         val early = List(3) { person() }
-        val members = mutableListOf(Member(me, VoiceRole.HOST, 0, muted = false, hand = false))
+        val members = mutableListOf(Member(me, VoiceRole.HOST, null, muted = true, hand = false))
         early.forEach { members += Member(it, VoiceRole.LISTENER, null, muted = true, hand = false) }
-        rooms[id] = SimRoom(id, title, n.category, n.mode, me.id, members, BooleanArray(VoiceRoom.SEATS), mine = true)
-        return id
+        val r = SimRoom(
+            id, title, n.category, SpeakMode.APPROVAL, me.id, members, BooleanArray(VoiceRoom.SEATS), mine = true,
+            n.rules, n.announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT).ifEmpty { null }, code(id),
+        )
+        rooms[id] = r
+        return CreatedVoiceRoom(id, r.code)
+    }
+
+    suspend fun joinCode(code: String): String {
+        wait(350)
+        val r = rooms.values.firstOrNull { !it.ended && it.code == code.trim().uppercase() } ?: throw BackendException("not_found")
+        refusal(r)?.let { throw BackendException(it) }
+        r.admitted = true
+        return r.id
+    }
+
+    suspend fun settings(roomId: String, title: String, announcement: String) {
+        val r = get(roomId)
+        if (!r.mine) throw BackendException("not_allowed")
+        val t = title.trim()
+        if (t.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE) throw BackendException("room_title")
+        wait(200)
+        r.title = t
+        r.announcement = announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT).ifEmpty { null }
+        changed(r)
+    }
+
+    suspend fun leaders(roomId: String): List<RoomLeader> {
+        wait(250)
+        return get(roomId).wins.values.sortedByDescending { it.second }.take(5).map { RoomLeader(it.first, it.second) }
+    }
+
+    private fun post(r: SimRoom, line: VoiceLine): VoiceLine {
+        r.lines += line
+        emit(r, VoiceEvent.Line(line))
+        return line
+    }
+
+    suspend fun icebreaker(roomId: String): VoiceLine {
+        val r = get(roomId)
+        val me = me()
+        if (meIn(r) == null) throw BackendException("not_allowed")
+        if (clock() - r.lastIcebreaker < ICEBREAKER_MS) throw BackendException("slow_down")
+        wait(150)
+        r.lastIcebreaker = clock()
+        val used = r.lines.takeLast(60).filterIsInstance<VoiceLine.Icebreaker>().map { it.prompt }.toSet()
+        val free = (1..VoiceRoom.PROMPTS).filter { it !in used }
+        val line = post(r, VoiceLine.Icebreaker(lineSeq++, pick(free.ifEmpty { listOf(1) }), me.name, true, clock()))
+        // Someone answers a moment later.
+        later(r, jitter(2_500, 4_000)) {
+            others(r).takeIf { it.isNotEmpty() }?.let { post(r, VoiceLine.Text(lineSeq++, pick(it).profile, false, pick(ANSWERS), clock())) }
+        }
+        return line
+    }
+
+    suspend fun photo(roomId: String, url: String): VoiceLine {
+        val r = get(roomId)
+        val me = me()
+        if (meIn(r) == null) throw BackendException("not_allowed")
+        val now = clock()
+        while (photoTimes.isNotEmpty() && now - photoTimes.first() >= 60_000) photoTimes.removeFirst()
+        if (photoTimes.size >= 5) throw BackendException("slow_down")
+        photoTimes += now
+        wait(400)
+        return post(r, VoiceLine.Photo(lineSeq++, me, true, url, now))
     }
 
     /** Enters the room and follows it; the simulation runs while collected. */
@@ -228,6 +353,8 @@ class FakeVoice(
         wait(350)
         val r = get(roomId)
         val me = me()
+        if (r.rules.isPrivate && !r.mine && !r.admitted && meIn(r) == null) throw BackendException("not_found")
+        refusal(r)?.let { throw BackendException(it) }
         val sub: (VoiceEvent) -> Unit = { trySend(it) }
         r.subs += sub
         r.scope = this
@@ -387,12 +514,13 @@ class FakeVoice(
         }
     }
 
+    /** The most voted request plays next (ties: the oldest). */
     private fun skip(r: SimRoom) {
-        val i = r.queue.indexOfFirst { !it.pending }
-        if (i < 0) {
+        val best = r.queue.byVotes().firstOrNull()
+        if (best == null) {
             r.track = null
         } else {
-            val next = r.queue.removeAt(i)
+            val next = best.also { r.queue.remove(it) }
             r.track = track(next.videoId, next.addedBy).copy(title = next.title)
             system(r, VoiceSystemEvent.TRACK, next.addedBy, title = next.title)
         }
@@ -441,6 +569,11 @@ class FakeVoice(
                 me.muted = !a.on
             }
             is VoiceAction.TakeSeat -> when {
+                isHost && me.seat == null -> {
+                    me.seat = 0 // the host joins the voice
+                    me.hand = false
+                    me.muted = true
+                }
                 me.seat != null -> {
                     need(!isHost && freeSeat(r, a.seat) == a.seat)
                     me.seat = a.seat // moving to another seat on the stage
@@ -452,10 +585,11 @@ class FakeVoice(
                 else -> return act(roomId, VoiceAction.Hand(true))
             }
             VoiceAction.Unseat -> {
-                need(me.seat != null && !isHost)
+                need(me.seat != null)
                 me.seat = null
+                me.muted = true
                 if (me.role == VoiceRole.SPEAKER) me.role = VoiceRole.LISTENER
-                system(r, VoiceSystemEvent.AUDIENCE, me.profile.name)
+                if (!isHost) system(r, VoiceSystemEvent.AUDIENCE, me.profile.name)
             }
             is VoiceAction.React -> {
                 emit(r, VoiceEvent.Reaction(me.profile.id, a.kind))
@@ -516,34 +650,33 @@ class FakeVoice(
                 system(r, VoiceSystemEvent.REMOVED, target.profile.name)
             }
             is VoiceAction.AddTrack -> {
-                need(isHost)
-                val title = TRACKS[a.videoId]?.first.orEmpty()
-                if (r.track == null) {
-                    r.track = track(a.videoId, me.profile.name)
+                val title = a.title.ifEmpty { TRACKS[a.videoId]?.first.orEmpty() }
+                if (isHost && r.track == null) {
+                    r.track = track(a.videoId, me.profile.name).copy(title = title)
                     system(r, VoiceSystemEvent.TRACK, me.profile.name, title = title)
                 } else {
                     if (r.queue.size >= 30) throw BackendException("queue_full")
-                    r.queue += VoiceQueueItem(uid(), a.videoId, title, me.profile.name, pending = false)
-                }
-            }
-            is VoiceAction.Suggest -> {
-                if (r.queue.size >= 30) throw BackendException("queue_full")
-                val item = VoiceQueueItem(uid(), a.videoId, TRACKS[a.videoId]?.first.orEmpty(), me.profile.name, pending = true)
-                r.queue += item
-                // The demo host likes every suggestion.
-                later(r, 3_000) {
-                    val i = r.queue.indexOfFirst { it.id == item.id }
-                    if (i >= 0) {
-                        r.queue[i] = r.queue[i].copy(pending = false)
-                        changed(r)
+                    if (!isHost && r.queue.count { it.addedBy == me.profile.name } >= 3) throw BackendException("slow_down")
+                    val item = VoiceQueueItem(uid(), a.videoId, title, me.profile.name)
+                    r.queue += item
+                    // People in the room like it: a couple of votes arrive.
+                    for (ms in listOf(2_200L, 4_800L)) {
+                        later(r, ms) {
+                            val i = r.queue.indexOfFirst { it.id == item.id }
+                            if (i >= 0) {
+                                r.queue[i] = r.queue[i].copy(votes = r.queue[i].votes + 1)
+                                changed(r)
+                            }
+                        }
                     }
                 }
             }
-            is VoiceAction.Approve -> {
-                need(isHost)
+            is VoiceAction.Vote -> {
                 val i = r.queue.indexOfFirst { it.id == a.itemId }
-                need(i >= 0)
-                if (a.accept) r.queue[i] = r.queue[i].copy(pending = false) else r.queue.removeAt(i)
+                if (i < 0) throw BackendException("not_found")
+                val q = r.queue[i]
+                if (q.voted == a.on) return
+                r.queue[i] = q.copy(voted = a.on, votes = q.votes + if (a.on) 1 else -1)
             }
             is VoiceAction.Play -> {
                 need(isHost)
@@ -621,6 +754,14 @@ class FakeVoice(
 
     companion object {
         private const val LEVEL_MS = 150L
+        /** One icebreaker per room every 20 s (the server's rule). */
+        const val ICEBREAKER_MS = 20_000L
+        private const val CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        private val ANYONE = RoomRules(maxMembers = 120)
+        /** A holiday snap someone shared in the demo: drawn by the app (ui DemoSnap), so it needs no network. */
+        const val SNAP = "demo://snap"
+        /** Replies after an icebreaker, so the card starts a conversation in the demo too. */
+        private val ANSWERS = listOf("ooh good one", "mine is easy: Goa 🌊", "haha let me think", "chai, always chai", "my nani’s kitchen", "this is fun")
 
         private val NAMES = listOf(
             "Priya", "Rohan", "Sneha", "Vikram", "Meera", "Aditya", "Kavya", "Ishaan", "Nisha", "Rahul", "Pooja", "Siddharth",
@@ -650,27 +791,19 @@ class FakeVoice(
             "lTRiuFIWV54" to ("1 A.M Study Session · lofi hip hop" to 0), // an hour long: the demo never moves on
         )
 
-        private val GAMING = listOf(
-            "bas ek six chahiye yaar", "green ko maaro!", "Arnab bhai ka luck dekho", "who is winning?", "next game mujhe bhi lo",
-            "safe square pe hai, bach gaya", "yellow is so close to home", "that capture was brutal",
-        )
         private val LINES = mapOf(
             RoomCategory.MUSIC to listOf(
                 "Arijit ka koi bhi gaana, bas 🔥", "next Kal Ho Naa Ho please 🙏", "volume ekdum perfect hai", "who added this? legend",
                 "goosebumps every single time", "late night + Arijit = therapy", "Priya di please play Tum Hi Ho", "this chorus 😭❤️",
             ),
-            RoomCategory.LANGUAGE to listOf(
-                "How do you say “I’m bored” in Hindi?", "main thoda thoda English bolta hoon", "is it “in the bus” or “on the bus”?",
-                "practice makes perfect 💪", "can someone correct my sentence?", "मुझे English बोलने में डर लगता है", "Meera ma’am explains so well",
+            RoomCategory.TALK to listOf(
+                "Bumrah ka over lethal tha", "Kohli 100 today, mark my words", "DRS was clearly out!", "what a catch by Jadeja 🔥",
+                "How do you say “I’m bored” in Hindi?", "is it “in the bus” or “on the bus”?", "chai or coffee, final answer?",
+                "Sunday plans anyone?", "mera vote Goa ke liye", "best street food in {city}?", "haha same here",
             ),
-            RoomCategory.SPORTS to listOf(
-                "Bumrah ka over lethal tha", "Kohli 100 today, mark my words", "Head ka wicket chahiye jaldi", "DRS was clearly out!",
-                "IND will chase this easily", "what a catch by Jadeja 🔥", "Gill looking in form today",
-            ),
-            RoomCategory.GAMING to GAMING,
-            RoomCategory.STUDY to listOf(
-                "45 min focus, 10 min break?", "UPSC prep day 112 ✍️", "anyone doing NEET this year?", "this beat is so calm",
-                "back after chai ☕", "Pomodoro #3 done", "library vibes at home",
+            RoomCategory.GAMES to listOf(
+                "bas ek six chahiye yaar", "green ko maaro!", "Arnab bhai ka luck dekho", "who is winning?", "next game mujhe bhi lo",
+                "safe square pe hai, bach gaya", "yellow is so close to home", "that capture was brutal",
             ),
         )
         private val ANY = listOf("hello everyone 👋", "nice room yaar", "hi from {city}!", "first time in a voice room 😄", "mic quality is great")

@@ -57,7 +57,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -87,12 +86,7 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
     var screen by rememberSaveable { mutableStateOf(Sub.NONE) }
     val me = s.me ?: return
     // Pushed screens slide in from the right and back out, like every native app.
-    val page = when {
-        screen != Sub.NONE -> screen
-        s.room != null -> Sub.ROOM
-        else -> Sub.NONE
-    }
-    AnimatedContent(page, transitionSpec = { pushPop(forward = targetState != Sub.NONE) }, label = "page") { p ->
+    AnimatedContent(screen, transitionSpec = { pushPop(forward = targetState != Sub.NONE) }, label = "page") { p ->
         when (p) {
             Sub.SETTINGS -> SettingsScreen(vm, s, onBack = { screen = Sub.NONE }, onEditProfile = { screen = Sub.EDIT })
             Sub.EDIT -> EditProfileScreen(vm, me, onDone = { screen = Sub.NONE })
@@ -100,7 +94,6 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 vm.addPost(text, uri)
                 screen = Sub.NONE
             }
-            Sub.ROOM -> s.room?.let { key(it.room.id) { RoomScreen(vm, it) } } ?: Box(Modifier.fillMaxSize())
             Sub.NONE -> Tabs(vm, s, me) { screen = it }
         }
     }
@@ -118,7 +111,7 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
             label = "tab",
         ) { tab ->
             when (tab) {
-                Tab.ROOMS -> RoomsTab(vm, s, onSettings = { open(Sub.SETTINGS) })
+                Tab.ROOMS -> RoomsTab(vm, onSettings = { open(Sub.SETTINGS) })
                 Tab.RANDOM -> RandomTab(vm, s, onSettings = { open(Sub.SETTINGS) })
                 Tab.RECENT -> RecentTab(vm, s, onSettings = { open(Sub.SETTINGS) })
                 Tab.ME -> MyProfileTab(
@@ -144,7 +137,7 @@ fun pushPop(forward: Boolean): ContentTransform {
     }
 }
 
-private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, ROOM }
+private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST }
 
 // ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Recent · Me) with a tonal pill on the selected tab ----
 

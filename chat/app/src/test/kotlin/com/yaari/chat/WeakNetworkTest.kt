@@ -12,7 +12,7 @@ import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
-import com.yaari.chat.model.RoomMessage
+import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.Target
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
@@ -255,8 +255,8 @@ class WeakNetworkTest {
         val flaky = object : Backend by fake {
             override suspend fun send(matchId: String, text: String?, media: Media?): Message =
                 if (down) throw IOException("timeout") else fake.send(matchId, text, media)
-            override suspend fun sendRoom(roomId: String, text: String): RoomMessage =
-                if (down) throw BackendException("network") else fake.sendRoom(roomId, text)
+            override suspend fun sendVoice(roomId: String, text: String): VoiceLine =
+                if (down) throw BackendException("network") else fake.sendVoice(roomId, text)
         }
         val vm = signedIn(flaky)
         vm.startMatching(); step(3_000)
@@ -276,13 +276,14 @@ class WeakNetworkTest {
         vm.reportAndLeave(ReportReason.HARASSMENT, next = false); step()
         down = true
         vm.selectTab(Tab.ROOMS); step()
-        vm.enterRoom(vm.state.value.rooms.first()); step()
+        vm.voice.open("v-chai"); step(1_000)
         var roomRestored = false
-        vm.sendRoom("anyone here?") { roomRestored = true }
+        vm.voice.send("anyone here?") { roomRestored = true }
         step()
         assertTrue(roomRestored)
-        assertTrue(vm.state.value.room!!.messages.none { it.fromMe })
-        vm.leaveRoom(); step()
+        val lines = vm.voice.state.value?.lines.orEmpty()
+        vm.voice.close(); step()
+        assertTrue(lines.none { it is VoiceLine.Text && it.fromMe })
     }
 
     // ---- 8. Rapid navigation ------------------------------------------------------------------------------------

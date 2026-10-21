@@ -24,7 +24,6 @@ import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.LudoHandlers
 import com.yaari.chat.ui.LudoPanel
@@ -99,7 +98,7 @@ class LudoScreensTest {
     /** My room, a lobby, and three people seated with me. */
     private fun hostLobby(): String {
         signIn()
-        compose.runOnUiThread { vm.voice.create(NewVoiceRoom("Ludo night in", RoomCategory.GAMING, SpeakMode.OPEN)) }
+        compose.runOnUiThread { vm.voice.create(NewVoiceRoom("Ludo night in", RoomCategory.GAMES)) }
         compose.waitUntil(5_000) { vm.voice.state.value?.room != null }
         compose.onNode(hasContentDescription("Play Ludo")).performClick()
         compose.waitUntil(5_000) { vm.voice.state.value?.ludoShown != null }

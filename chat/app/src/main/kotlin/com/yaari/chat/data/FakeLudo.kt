@@ -33,6 +33,8 @@ class FakeLudo(
     /** What the game needs to know about a voice room (FakeVoice). */
     interface Rooms {
         fun peek(roomId: String): RoomView?
+        /** A game in the room ended with this winner (the room's leaderboard). */
+        fun won(roomId: String, userId: String, name: String) {}
     }
 
     data class RoomView(val members: List<Person>, val hostId: String, val mine: Boolean)
@@ -91,7 +93,12 @@ class FakeLudo(
     }
 
     private fun publish(t: Table, f: Full, events: List<LudoEvent>) {
+        val before = f.game.status
         f.game = f.game.copy(events = events, version = f.game.version + 1)
+        val g = f.game
+        if (g.status == LudoStatus.FINISHED && before != LudoStatus.FINISHED) {
+            g.winner?.let { w -> g.players[w]?.let { voice.won(g.roomId, it, g.names[w].orEmpty()) } }
+        }
         t.full = f
         val snap = f.game
         t.subs.toList().forEach { it(snap) }
@@ -188,6 +195,10 @@ class FakeLudo(
     }
 
     // ---- the Backend methods ----
+
+    /** The room's open game for the rooms list (lobby or playing), without starting anything. */
+    fun openStatus(roomId: String): LudoStatus? =
+        (if (roomId == LUDO_ROOM) table(roomId) else tables[roomId])?.full?.game?.status?.takeIf { it.open }
 
     suspend fun game(roomId: String): LudoGame? {
         wait(200)

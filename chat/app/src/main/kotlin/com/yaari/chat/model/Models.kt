@@ -55,25 +55,25 @@ enum class FriendState { NONE, REQUESTED, INCOMING, FRIENDS }
 /** A friend or a pending request. [threadId] is the chat to continue in, if one exists yet. */
 data class Friend(val profile: Profile, val state: FriendState, val threadId: String? = null)
 
-/** What a user room is about; the server picks the emoji from it. */
-enum class RoomCategory(val code: String, val emoji: String, @StringRes val label: Int) {
-    CHAT("chat", "💬", R.string.cat_chat),
-    FRIENDS("friends", "🤝", R.string.cat_friends),
-    LANGUAGE("language", "🗣️", R.string.cat_language),
-    MUSIC("music", "🎧", R.string.cat_music),
-    MOVIES("movies", "🎬", R.string.cat_movies),
-    GAMING("gaming", "🎮", R.string.cat_gaming),
-    SPORTS("sports", "⚽", R.string.cat_sports),
-    STUDY("study", "🎓", R.string.cat_study),
-    TRAVEL("travel", "✈️", R.string.cat_travel),
-    NIGHT("night", "🌙", R.string.cat_night);
+/**
+ * A room's category (019_unified_rooms.sql): every room has the chat, the stage, music and Ludo; the category sets its
+ * layout and signature feature. Rooms from before 019 (and anything unknown) are talk rooms.
+ */
+enum class RoomCategory(val code: String, @StringRes val label: Int, @StringRes val body: Int) {
+    TALK("talk", R.string.cat_talk, R.string.cat_talk_body),
+    MUSIC("music", R.string.cat_music, R.string.cat_music_body),
+    GAMES("games", R.string.cat_games, R.string.cat_games_body);
 
     companion object {
-        fun of(code: String?) = entries.firstOrNull { it.code == code } ?: CHAT
+        fun of(code: String?) = when (code) {
+            "music" -> MUSIC
+            "games", "gaming" -> GAMES
+            else -> TALK
+        }
     }
 }
 
-/** Who may enter a user room. */
+/** Who may enter a room. */
 enum class GenderRule(val code: String) {
     ANY("any"), FEMALE("female"), MALE("male");
 
@@ -87,46 +87,3 @@ enum class GenderRule(val code: String) {
         fun of(code: String?) = entries.firstOrNull { it.code == code } ?: ANY
     }
 }
-
-/**
- * A room; [online] counts people who had it open in the last 90 s. Official rooms have no owner and no conditions.
- * User rooms carry their conditions; [code] is known only for my own rooms, and [refusal] is the server's reason
- * why I can't enter (room_closed, room_gender, room_age, room_full, not_allowed), null when I may.
- */
-data class Room(
-    val id: String, val title: String, val emoji: String, val online: Int,
-    val official: Boolean = true,
-    val mine: Boolean = false,
-    val ownerName: String? = null,
-    val category: RoomCategory = RoomCategory.CHAT,
-    val maxMembers: Int? = null,
-    val genderRule: GenderRule = GenderRule.ANY,
-    val minAge: Int = MIN_AGE,
-    val maxAge: Int = MAX_AGE,
-    val isPrivate: Boolean = false,
-    val code: String? = null,
-    val refusal: String? = null,
-) {
-    val hasAgeLimit get() = minAge > MIN_AGE || maxAge < MAX_AGE
-
-    companion object {
-        const val MIN_AGE = 18
-        const val MAX_AGE = 100
-        const val MIN_MEMBERS = 2
-        const val MAX_MEMBERS = 50
-        const val MIN_TITLE = 2
-        const val MAX_TITLE = 40
-        const val CODE_LENGTH = 6
-    }
-}
-
-/** A room the user is opening. The server validates every field again. */
-data class NewRoom(
-    val title: String, val category: RoomCategory, val maxMembers: Int, val genderRule: GenderRule,
-    val minAge: Int, val maxAge: Int, val isPrivate: Boolean,
-)
-
-data class CreatedRoom(val roomId: String, val code: String)
-
-/** [sender] carries only the public card (name, age, gender, flag, photo); posts load on tap. */
-data class RoomMessage(val id: Long, val sender: Profile, val fromMe: Boolean, val text: String, val at: Long)

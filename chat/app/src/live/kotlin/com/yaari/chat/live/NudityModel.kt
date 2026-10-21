@@ -108,16 +108,19 @@ class NudityModel private constructor(private val interpreter: Interpreter, priv
         /** A partner sending at least 4 frames a second is looked at; waiting longer would slow the sampling. */
         private const val FRAME_WAIT_MS = 250L
 
+        /** The model's interpreter, from assets (call it off the main thread). */
+        internal fun interpreter(context: Context): Interpreter {
+            // Stored uncompressed in the APK (AGP's default for .tflite), so it is mapped, not copied into memory.
+            val file = context.assets.openFd(MODEL).use { fd ->
+                FileInputStream(fd.fileDescriptor).use { it.channel.map(FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength) }
+            }
+            // Two threads: leaves the other cores to the call itself (video decoding and encoding).
+            return Interpreter(file, Interpreter.Options().setNumThreads(2))
+        }
+
         /** Loads the model; the caller closes it. Throws if the model can't load on this phone (the video then shows). */
         suspend fun open(context: Context, frames: FrameGrabber): NudityModel {
-            val model = withContext(Dispatchers.IO + NonCancellable) {
-                // Stored uncompressed in the APK (AGP's default for .tflite), so it is mapped, not copied into memory.
-                val file = context.assets.openFd(MODEL).use { fd ->
-                    FileInputStream(fd.fileDescriptor).use { it.channel.map(FileChannel.MapMode.READ_ONLY, fd.startOffset, fd.declaredLength) }
-                }
-                // Two threads: leaves the other cores to the call itself (video decoding and encoding).
-                NudityModel(Interpreter(file, Interpreter.Options().setNumThreads(2)), frames)
-            }
+            val model = withContext(Dispatchers.IO + NonCancellable) { NudityModel(interpreter(context), frames) }
             try {
                 currentCoroutineContext().ensureActive() // the call ended while loading
             } catch (e: CancellationException) {

@@ -8,7 +8,6 @@ import com.yaari.chat.model.Gender
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.VoiceReaction
@@ -71,21 +70,22 @@ class VoiceTest {
     @Test fun listShowsLiveRoomsAndCreatingOpensMineAsHost() = runTest(dispatcher) {
         val vm = signedIn()
         val list = vm.voice.list.value.rooms!!
-        assertEquals(listOf("v-bolly", "v-cricket", "v-english", "v-lofi", "v-ludo"), list.map { it.id })
-        assertEquals("Kesariya – Brahmāstra · Arijit Singh", list.first().nowPlaying)
-        assertTrue(list.all { it.speakers.size <= 4 && it.speakers.first().id == it.host.id })
+        assertEquals(setOf("v-bolly", "v-chai", "v-cricket", "v-lofi", "v-ludo", "v-gym"), list.map { it.id }.toSet())
+        assertEquals(list.sortedByDescending { it.members }, list) // the busiest first
+        assertEquals("Kesariya – Brahmāstra · Arijit Singh", list.first { it.id == "v-bolly" }.nowPlaying)
+        assertTrue(list.all { it.speakers.size <= 4 && (it.speakers.isEmpty() || it.speakers.first().id == it.host.id) })
 
-        vm.voice.create(NewVoiceRoom(" x ", RoomCategory.MUSIC, SpeakMode.APPROVAL)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom(" x ", RoomCategory.MUSIC)); advanceUntilIdle()
         assertEquals(UiText(R.string.err_room_title), vm.notice())
         assertNull(vm.voice.state.value)
 
         var closed = false
-        vm.voice.create(NewVoiceRoom("  Sunday chai and gossip ", RoomCategory.MUSIC, SpeakMode.APPROVAL)) { closed = true }; advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("  Sunday chai and gossip ", RoomCategory.MUSIC)) { closed = true }; advanceUntilIdle()
         assertTrue(closed)
         val s = vm.voice.state.value!!
         assertEquals("Sunday chai and gossip", s.room!!.title)
         assertTrue(s.expanded && s.isHost)
-        assertEquals(0, s.me!!.seat)
+        assertNull("the host starts off the stage", s.me!!.seat)
         assertEquals(s.roomId, vm.voice.list.value.rooms!!.first().id) // mine first
         assertTrue(vm.voice.list.value.rooms!!.first().mine)
     }
@@ -151,14 +151,14 @@ class VoiceTest {
         vm.voice.close(); advanceUntilIdle()
 
         // An open room: the free seat is mine at once.
-        vm.voice.open("v-english"); advanceUntilIdle()
+        vm.voice.open("v-lofi"); advanceUntilIdle()
         vm.voice.tapSeat(5) { error("listeners don't manage seats") }; advanceUntilIdle()
         assertEquals(5, vm.me!!.seat)
     }
 
     @Test fun hostAnswersRequestsAndManagesThePeopleOnStage() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.voice.create(NewVoiceRoom("Chai", RoomCategory.FRIENDS, SpeakMode.APPROVAL)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("Chai", RoomCategory.TALK)); advanceUntilIdle()
         val id = vm.voice.state.value!!.roomId
         fake.voice.raiseHands(id, 2); runCurrent()
         assertEquals(2, vm.voice.state.value!!.hands)
@@ -192,7 +192,7 @@ class VoiceTest {
 
     @Test fun aFullStageRefusesAnotherSpeaker() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.voice.create(NewVoiceRoom("Full", RoomCategory.CHAT, SpeakMode.APPROVAL)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("Full", RoomCategory.TALK)); advanceUntilIdle()
         val id = vm.voice.state.value!!.roomId
         for (seat in 1..7) vm.voice.act(VoiceAction.Lock(seat, true))
         advanceUntilIdle()
@@ -217,7 +217,7 @@ class VoiceTest {
 
     @Test fun theHostsLeaveAsksToEndTheRoomForEveryone() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.voice.create(NewVoiceRoom("Night owls", RoomCategory.NIGHT, SpeakMode.OPEN)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("Night owls", RoomCategory.TALK)); advanceUntilIdle()
         vm.voice.minimise()
         vm.voice.leave()
         val s = vm.voice.state.value!!
@@ -240,8 +240,8 @@ class VoiceTest {
         assertNull(vm.voice.state.value) // can't enter an ended room
         assertEquals(UiText(R.string.err_room_closed), vm.notice())
 
-        vm.voice.open("v-english"); advanceUntilIdle()
-        fake.voice.kickMe("v-english"); advanceUntilIdle()
+        vm.voice.open("v-cricket"); advanceUntilIdle()
+        fake.voice.kickMe("v-cricket"); advanceUntilIdle()
         assertNull(vm.voice.state.value)
         assertEquals(UiText(R.string.voice_removed), vm.notice())
     }
@@ -308,7 +308,7 @@ class VoiceTest {
 
     @Test fun musicFollowsTheHost() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.voice.create(NewVoiceRoom("DJ night", RoomCategory.MUSIC, SpeakMode.APPROVAL)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("DJ night", RoomCategory.MUSIC)); advanceUntilIdle()
         vm.voice.act(VoiceAction.AddTrack("BddP6PYo2gs")); advanceUntilIdle()
         val playing = vm.room!!.track!!
         assertEquals("Kesariya – Brahmāstra · Arijit Singh" to now, playing.title to playing.startedAt)
@@ -330,16 +330,6 @@ class VoiceTest {
         assertEquals("Umqb9KENgmk", vm.room!!.track!!.videoId)
         vm.voice.act(VoiceAction.Skip(ended)); advanceUntilIdle()
         assertEquals("Umqb9KENgmk", vm.room!!.track!!.videoId)
-    }
-
-    @Test fun listenersSuggestAndTheHostApproves() = runTest(dispatcher) {
-        val vm = signedIn()
-        vm.voice.open("v-bolly"); advanceUntilIdle()
-        vm.voice.act(VoiceAction.Suggest("g0eO74UmRBs")); advanceUntilIdle()
-        // The demo host approves a suggestion a few seconds later.
-        assertFalse(vm.room!!.queue.first { it.videoId == "g0eO74UmRBs" }.pending)
-        vm.voice.act(VoiceAction.AddTrack("g0eO74UmRBs")); advanceUntilIdle()
-        assertEquals(UiText(R.string.err_not_allowed), vm.notice())
     }
 
     @Test fun positionAndDriftMath() {

@@ -3,11 +3,15 @@ package com.yaari.chat.ui
 import com.yaari.chat.R
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.LudoGame
 import com.yaari.chat.model.LudoStatus
+import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.ReportReason
+import com.yaari.chat.model.RoomCategory
+import com.yaari.chat.model.RoomLeader
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
@@ -30,13 +34,19 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.random.Random
 
+/** A private room I just opened: its code is shown once, to copy or share. */
+data class CreatedNotice(val title: String, val code: String)
+
 /**
- * The Voice list on the Rooms tab. [rooms] is null until the first load; [failed]: that load failed. [voiceTab]: the
- * tab shows voice rooms (the default) rather than chat rooms.
+ * The rooms list on the Rooms tab. [rooms] is null until the first load; [failed]: that load failed. [filter]: one
+ * category, or all (null). [busy]: creating a room or entering a code is in flight.
  */
 data class VoiceListState(
-    val rooms: List<VoiceRoomSummary>? = null, val failed: Boolean = false, val creating: Boolean = false, val voiceTab: Boolean = true,
-)
+    val rooms: List<VoiceRoomSummary>? = null, val failed: Boolean = false, val busy: Boolean = false,
+    val filter: RoomCategory? = null, val created: CreatedNotice? = null,
+) {
+    val shown get() = rooms?.filter { filter == null || it.category == filter }
+}
 
 /** A reaction floating up over the stage; [x] is where it starts across the stage (0..1). */
 data class FloatingReaction(val key: Long, val userId: String, val kind: VoiceReaction, val x: Float)
@@ -62,6 +72,12 @@ data class VoiceState(
     /** The id of a result I dismissed ("Back to the room"). */
     val ludoDismissed: String? = null,
     val confirmLudoClose: Boolean = false,
+    /** The room's Ludo winners (games rooms), null until loaded. */
+    val leaders: List<RoomLeader>? = null,
+    /** A photo is being checked and sent. */
+    val photoBusy: Boolean = false,
+    /** A song request whose title is being looked up (its video id). */
+    val adding: String? = null,
 ) {
     val me get() = room?.me
     val isHost get() = me?.role == VoiceRole.HOST
@@ -77,6 +93,12 @@ data class VoiceState(
     val ludoHidden get() = ludoOn && ludoStage
     /** My colour (0-3) in the game, or -1 when I watch. */
     val ludoSeat get() = room?.meId?.let { id -> ludo?.players?.indexOf(id) } ?: -1
+
+    /**
+     * The foreground service (and its notification) runs only while there is something to keep alive: the audio
+     * connection (someone is on the stage) or the room's music playing.
+     */
+    val keepAlive get() = audio != null || room?.track?.let { it.pausedAt == null } == true
 }
 
 /**
@@ -89,6 +111,8 @@ class VoiceController(
     private val scope: CoroutineScope,
     private val notice: (UiText) -> Unit,
     private val explain: (Throwable) -> UiText,
+    /** Room photos are shrunk and checked for nudity on this phone before they are sent. */
+    private val photos: PhotoCheck = PhotoCheck.None,
     private val random: Random = Random.Default,
     /** Wall clock (Ludo deadlines are on it). */
     private val wallClock: () -> Long = System::currentTimeMillis,
@@ -111,8 +135,8 @@ class VoiceController(
 
     // ---- the list ----
 
-    /** Voice or Chat on the Rooms tab (kept while the app runs, like the web). */
-    fun showVoiceTab(voice: Boolean) = _list.update { it.copy(voiceTab = voice) }
+    /** All rooms or one category (kept while the app runs, like the web). */
+    fun filter(category: RoomCategory?) = _list.update { it.copy(filter = category) }
 
     /** The newest request wins. */
     fun refreshList() {
@@ -129,24 +153,66 @@ class VoiceController(
         }
     }
 
-    /** Validates what the server validates, then opens the new room with me as host. */
+    /** Validates what the server validates, then opens the new room with me as host (off the stage). */
     fun create(spec: NewVoiceRoom, done: () -> Unit = {}) {
         val title = spec.title.trim()
-        if (title.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE) return notice(UiText(R.string.err_room_title))
-        if (_list.value.creating) return
-        _list.update { it.copy(creating = true) }
+        val r = spec.rules
+        val problem = when {
+            title.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE -> R.string.err_room_title
+            r.maxMembers !in VoiceRoom.MIN_MEMBERS..VoiceRoom.MAX_MEMBERS -> R.string.err_room_size
+            r.minAge !in VoiceRoom.MIN_AGE..VoiceRoom.MAX_AGE || r.maxAge !in VoiceRoom.MIN_AGE..VoiceRoom.MAX_AGE || r.minAge > r.maxAge ||
+                spec.announcement.trim().length > VoiceRoom.MAX_ANNOUNCEMENT -> R.string.err_room_settings
+            else -> null
+        }
+        if (problem != null) return notice(UiText(problem))
+        task {
+            val made = backend.createVoiceRoom(spec.copy(title = title, announcement = spec.announcement.trim()))
+            done()
+            if (r.isPrivate) _list.update { it.copy(created = CreatedNotice(title, made.code)) }
+            open(made.id)
+            refreshList()
+        }
+    }
+
+    fun dismissCreated() = _list.update { it.copy(created = null) }
+
+    /** Enters a room with the code its host shared (the only way into a private room). */
+    fun joinCode(input: String, done: () -> Unit = {}) {
+        val code = input.trim().uppercase()
+        if (code.length != VoiceRoom.CODE_LENGTH || !code.all { it in 'A'..'Z' || it in '0'..'9' }) return notice(UiText(R.string.err_room_code))
+        task {
+            val id = try {
+                backend.joinVoiceCode(code)
+            } catch (e: BackendException) {
+                if (e.code == "not_found") return@task notice(UiText(R.string.err_room_code_unknown))
+                throw e
+            }
+            done()
+            open(id)
+            refreshList()
+        }
+    }
+
+    /** A room on the list: one I can't enter says why instead of trying (unless I'm already in it). */
+    fun enter(room: VoiceRoomSummary) {
+        val refusal = room.refusal
+        if (refusal != null && _state.value?.roomId != room.id) return notice(refusalText(room))
+        open(room.id)
+    }
+
+    /** One list action at a time (a double tap opens one room, not two). */
+    private fun task(block: suspend () -> Unit) {
+        if (_list.value.busy) return
+        _list.update { it.copy(busy = true) }
         scope.launch {
             try {
-                val id = backend.createVoiceRoom(spec.copy(title = title))
-                done()
-                open(id)
-                refreshList()
+                block()
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 notice(explain(e))
             } finally {
-                _list.update { it.copy(creating = false) }
+                _list.update { it.copy(busy = false) }
             }
         }
     }
@@ -170,6 +236,7 @@ class VoiceController(
                                 loadedLines = true
                                 launch { loadLines(roomId) }
                                 launch { followLudo(roomId) }
+                                if (e.room.category == RoomCategory.GAMES) launch { loadLeaders(roomId) }
                             }
                         }
                         is VoiceEvent.Levels -> _levels.value = e.levels
@@ -204,6 +271,18 @@ class VoiceController(
             throw e
         } catch (_: Exception) {
             update(roomId) { it.copy(lines = it.lines ?: emptyList()) }
+        }
+    }
+
+    /** The room's Ludo leaderboard (again after each finished game). A failed load keeps what was shown. */
+    private suspend fun loadLeaders(roomId: String) {
+        try {
+            val list = backend.voiceLeaders(roomId)
+            update(roomId) { it.copy(leaders = list) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            update(roomId) { it.copy(leaders = it.leaders ?: emptyList()) }
         }
     }
 
@@ -316,6 +395,22 @@ class VoiceController(
         }
     }
 
+    /**
+     * "Join voice": the host takes seat 0; co-hosts and anyone in an open room the first free seat; everyone else
+     * raises (or lowers) a hand.
+     */
+    fun joinVoice() {
+        val room = _state.value?.room ?: return
+        val me = room.me ?: return
+        if (me.seat != null) return
+        val seat = when {
+            me.role == VoiceRole.HOST -> 0
+            joinsDirectly(room) -> room.firstFreeSeat() ?: return notice(UiText(R.string.voice_stage_full))
+            else -> null
+        }
+        if (seat != null) act(VoiceAction.TakeSeat(seat)) else hand(!me.hand)
+    }
+
     fun send(text: String, onFailed: () -> Unit = {}) {
         val s = _state.value ?: return
         val t = text.trim().take(VoiceRoom.MAX_TEXT)
@@ -348,10 +443,92 @@ class VoiceController(
         }
     }
 
-    /** Someone was reported or blocked: their lines go at once. */
+    /** Someone was reported or blocked: their lines and photos go at once. */
     fun forget(userId: String) = _state.update { s ->
-        s?.copy(lines = s.lines?.filterNot { it is VoiceLine.Text && it.sender.id == userId })
+        s?.copy(lines = s.lines?.filterNot { (it is VoiceLine.Text && it.sender.id == userId) || (it is VoiceLine.Photo && it.sender.id == userId) })
     }
+
+    /** Host: the title and the pinned announcement (empty removes it). */
+    fun saveSettings(title: String, announcement: String, done: () -> Unit = {}) {
+        val s = _state.value ?: return
+        val t = title.trim()
+        if (t.length !in VoiceRoom.MIN_TITLE..VoiceRoom.MAX_TITLE) return notice(UiText(R.string.err_room_title))
+        scope.launch {
+            try {
+                backend.updateVoiceRoom(s.roomId, t, announcement.trim().take(VoiceRoom.MAX_ANNOUNCEMENT))
+                notice(UiText(R.string.room_saved))
+                done()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(explain(e))
+            }
+        }
+    }
+
+    /** Posts a conversation starter; the server allows one per room every 20 s, which is said kindly. */
+    fun icebreaker() {
+        val s = _state.value ?: return
+        scope.launch {
+            try {
+                val line = backend.voiceIcebreaker(s.roomId)
+                update(s.roomId) { it.copy(lines = merge(it.lines, listOf(line))) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(if ((e as? BackendException)?.code == "slow_down") UiText(R.string.ib_wait) else explain(e))
+            }
+        }
+    }
+
+    /**
+     * A photo picked for the chat: shrunk to 1280 px and checked for nudity on this phone first. One that looks like
+     * nudity is not sent (and said so); one that can't be checked isn't sent either.
+     */
+    fun sendPhoto(uri: String) {
+        val s = _state.value ?: return
+        if (s.photoBusy) return
+        update(s.roomId) { it.copy(photoBusy = true) }
+        scope.launch {
+            try {
+                val jpeg = try {
+                    photos.shrink(uri).also { if (photos.nude(it)) return@launch notice(UiText(R.string.err_nude_photo)) }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: BackendException) {
+                    return@launch notice(explain(e))
+                } catch (_: Exception) {
+                    return@launch notice(UiText(R.string.err_network))
+                }
+                val line = backend.sendVoicePhoto(s.roomId, jpeg)
+                update(s.roomId) { it.copy(lines = merge(it.lines, listOf(line))) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(explain(e))
+            } finally {
+                update(s.roomId) { it.copy(photoBusy = false) }
+            }
+        }
+    }
+
+    /**
+     * A song request (anyone; the host's plays at once when nothing does). Its real title is looked up first, so the
+     * queue and the room card show it to everyone. [done] gets whether it was added.
+     */
+    fun addSong(videoId: String, done: (Boolean) -> Unit = {}) {
+        val s = _state.value ?: return done(false)
+        if (s.adding != null) return done(false)
+        update(s.roomId) { it.copy(adding = videoId) }
+        scope.launch {
+            val title = backend.videoTitle(videoId)
+            update(s.roomId) { it.copy(adding = null) }
+            act(VoiceAction.AddTrack(videoId, title), UiText(if (s.isHost) R.string.voice_added else R.string.voice_suggested), done)
+        }
+    }
+
+    /** One vote per song; again takes it back. */
+    fun vote(itemId: String, on: Boolean) = act(VoiceAction.Vote(itemId, on))
 
     // ---- Ludo in the room ----
 
@@ -387,6 +564,10 @@ class VoiceController(
         _state.value = s.copy(ludo = g, ludoStage = if (prev?.id != g.id) false else s.ludoStage)
         // A game the host closed: the stage is back, with a word for those who didn't close it.
         if (g.status == LudoStatus.CANCELLED && prev?.id == g.id && prev.status.open && !closingLudo) notice(UiText(R.string.ludo_closed))
+        // A game won: the leaderboard has a new line.
+        if (g.status == LudoStatus.FINISHED && (prev?.id != g.id || prev.status != LudoStatus.FINISHED) && s.room?.category == RoomCategory.GAMES) {
+            scope.launch { loadLeaders(roomId) }
+        }
         scheduleLudoTimeout(roomId)
     }
 
@@ -524,6 +705,35 @@ class VoiceController(
             VoiceSystemEvent.TRACK ->
                 if (line.title.isNullOrBlank()) UiText(R.string.voice_sys_track_video, line.name) else UiText(R.string.voice_sys_track, line.name, line.title)
             VoiceSystemEvent.REMOVED -> UiText(R.string.voice_sys_removed, line.name)
+        }
+
+        /** I take a seat at once (the host, co-hosts, anyone in an open room) rather than raising a hand. */
+        fun joinsDirectly(room: VoiceRoom) = room.me?.let { it.isMod || room.mode == com.yaari.chat.model.SpeakMode.OPEN } == true
+
+        /** The 40 icebreaker prompts, in the reader's language (the server stores only the number). */
+        private val PROMPTS = intArrayOf(
+            R.string.ib_1, R.string.ib_2, R.string.ib_3, R.string.ib_4, R.string.ib_5, R.string.ib_6, R.string.ib_7, R.string.ib_8,
+            R.string.ib_9, R.string.ib_10, R.string.ib_11, R.string.ib_12, R.string.ib_13, R.string.ib_14, R.string.ib_15, R.string.ib_16,
+            R.string.ib_17, R.string.ib_18, R.string.ib_19, R.string.ib_20, R.string.ib_21, R.string.ib_22, R.string.ib_23, R.string.ib_24,
+            R.string.ib_25, R.string.ib_26, R.string.ib_27, R.string.ib_28, R.string.ib_29, R.string.ib_30, R.string.ib_31, R.string.ib_32,
+            R.string.ib_33, R.string.ib_34, R.string.ib_35, R.string.ib_36, R.string.ib_37, R.string.ib_38, R.string.ib_39, R.string.ib_40,
+        )
+
+        /** The create sheet's size steps, finer for small rooms: 1 up to 10, 5 up to 50, then 10 (as the web). */
+        fun sizeUp(n: Int) = minOf(VoiceRoom.MAX_MEMBERS, if (n < 10) n + 1 else if (n < 50) n + 5 else n + 10)
+
+        fun sizeDown(n: Int) = maxOf(VoiceRoom.MIN_MEMBERS, if (n <= 10) n - 1 else if (n <= 50) n - 5 else n - 10)
+
+        /** Prompt [n] (1..40) as a string resource; an unknown number (a newer server) shows the first. */
+        fun prompt(n: Int): Int = PROMPTS.getOrElse(n - 1) { PROMPTS[0] }
+
+        /** Why I can't enter [room], said with what the room asks for. */
+        fun refusalText(room: VoiceRoomSummary): UiText = when (room.refusal) {
+            "room_gender" -> UiText(if (room.rules.genderRule == GenderRule.MALE) R.string.err_room_men else R.string.err_room_women)
+            "room_age" -> UiText(R.string.err_room_ages, room.rules.minAge, room.rules.maxAge)
+            "room_full" -> UiText(R.string.err_room_full)
+            "room_closed" -> UiText(R.string.err_room_closed)
+            else -> UiText(R.string.err_not_allowed)
         }
     }
 }

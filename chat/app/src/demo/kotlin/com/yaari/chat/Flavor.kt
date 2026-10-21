@@ -20,6 +20,7 @@ import com.yaari.chat.data.Backend
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
+import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.model.Profile
 import com.yaari.chat.ui.Avatar
@@ -31,6 +32,9 @@ object Flavor {
     const val voiceMicPermission = false
 
     fun billing(app: Application): Billing = DemoBilling()
+
+    /** No nudity model in the demo: room photos are sent as picked. */
+    fun photoCheck(app: Application): PhotoCheck = PhotoCheck.None
 
     /** Third-party licenses beyond the font (title to raw text resource): none in the demo. */
     val licenses: List<Pair<String, Int>> = emptyList()

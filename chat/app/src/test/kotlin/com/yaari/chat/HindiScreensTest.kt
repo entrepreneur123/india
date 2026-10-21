@@ -67,6 +67,13 @@ class HindiScreensTest {
         compose.onAllNodes(androidx.compose.ui.test.hasText("रूम"))[0].performClick()
         waitFor("अभी लाइव") // voice rooms first
         shot("07_rooms")
+        compose.runOnUiThread { vm.voice.open("v-chai") }
+        compose.waitUntil(5_000) { vm.voice.state.value?.lines != null }
+        compose.runOnUiThread { vm.voice.icebreaker() }
+        compose.waitUntil(5_000) { vm.voice.state.value!!.lines!!.any { it is com.yaari.chat.model.VoiceLine.Icebreaker && it.fromMe } }
+        shot("07b_talk_room")
+        compose.runOnUiThread { vm.voice.close() }
+        compose.waitUntil(5_000) { vm.voice.state.value == null }
         compose.onAllNodes(androidx.compose.ui.test.hasText("हाल के"))[0].performClick()
         waitFor("रिक्वेस्ट (1)")
         shot("08_friends")

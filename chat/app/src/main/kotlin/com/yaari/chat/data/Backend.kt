@@ -3,20 +3,18 @@ package com.yaari.chat.data
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
-import com.yaari.chat.model.CreatedRoom
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
-import com.yaari.chat.model.Room
-import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.LudoGame
+import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.RoomLeader
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
@@ -135,36 +133,28 @@ interface Backend {
     /** The chat to message a friend in (their last chat, or a new private one). */
     suspend fun friendThread(userId: String): String
 
-    /** Official rooms first, then live public user rooms, plus open rooms I own or am in. */
-    suspend fun rooms(): List<Room>
-    /**
-     * Enter a room, and stay listed as present: call again every 30 s while it is open. Refused with
-     * room_closed, room_gender, room_age, room_full or not_found (private rooms are entered with their code first).
-     */
-    suspend fun joinRoom(roomId: String)
-    /** Opens a user room (closing my previous open one); I am already in it. */
-    suspend fun createRoom(room: NewRoom): CreatedRoom
-    /** Finds a room by its 6-character code (any case) and enters it; returns the room id. */
-    suspend fun joinRoomCode(code: String): String
-    /** Owner only: nobody can enter or write any more. */
-    suspend fun closeRoom(roomId: String)
-    suspend fun leaveRoom(roomId: String)
-    /** The newest 100 messages, oldest first; with [afterId], up to 200 messages newer than it (for re-syncs). */
-    suspend fun roomHistory(roomId: String, afterId: Long? = null): List<RoomMessage>
-    /** New messages in a room while it is open. [afterId]: the newest message id already shown. */
-    fun roomEvents(roomId: String, afterId: Long? = null): Flow<RoomMessage>
-    suspend fun sendRoom(roomId: String, text: String): RoomMessage
+    // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit in the live build, and only
+    // while someone is on the stage) ----
 
-    // ---- voice rooms (017_voice_rooms.sql; audio through LiveKit in the live build) ----
-
-    /** Live voice rooms: mine first, then the server's order. */
+    /** Live rooms I may see (private ones only when mine or entered with the code): mine first, then the server's order. */
     suspend fun voiceRooms(): List<VoiceRoomSummary>
-    /** Opens a voice room with me as host (ending my previous one); returns its id. Refused with room_title, slow_down. */
-    suspend fun createVoiceRoom(room: NewVoiceRoom): String
     /**
-     * Enters a voice room (as a listener, or as the host of my own) and follows it while collected: the first event is
+     * Opens a room with me as host, not on the stage yet (ending my previous one). Refused with room_title, room_size,
+     * bad_request, slow_down.
+     */
+    suspend fun createVoiceRoom(room: NewVoiceRoom): CreatedVoiceRoom
+    /**
+     * Finds a live room by its 6-character code (any case) and enters it; returns its id. not_found for a wrong code
+     * (10 misses in 10 minutes and code entry pauses: slow_down), or the room's refusal.
+     */
+    suspend fun joinVoiceCode(code: String): String
+    /** Host only: the title and the pinned announcement (empty removes it). */
+    suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String)
+    /**
+     * Enters a room (as a listener, or as the host of my own) and follows it while collected: the first event is
      * [VoiceEvent.RoomChanged]; then every change, chat line, reaction, audio level and the end. Fails at once with
-     * room_closed, not_found, voice_removed or not_allowed. Cancelling stops following; [leaveVoice] leaves.
+     * room_closed, not_found, voice_removed, not_allowed or the room's rules (room_gender, room_age, room_full).
+     * Cancelling stops following; [leaveVoice] leaves.
      */
     fun voiceSession(roomId: String): Flow<VoiceEvent>
     suspend fun leaveVoice(roomId: String)
@@ -173,6 +163,17 @@ interface Backend {
     /** The newest 100 chat and system lines, oldest first (only readable after entering). */
     suspend fun voiceLines(roomId: String): List<VoiceLine>
     suspend fun sendVoice(roomId: String, text: String): VoiceLine
+    /**
+     * Sends a photo: [jpegUri] is the picked image already shrunk to 1280 px JPEG and checked for nudity on this phone
+     * ([PhotoCheck]). 5 a minute (slow_down).
+     */
+    suspend fun sendVoicePhoto(roomId: String, jpegUri: String): VoiceLine
+    /** Posts a conversation starter (one per room every 20 s: slow_down). */
+    suspend fun voiceIcebreaker(roomId: String): VoiceLine
+    /** The room's Ludo winners, top 5. */
+    suspend fun voiceLeaders(roomId: String): List<RoomLeader>
+    /** A YouTube video's real title (oEmbed, 5 s at most); "" when it can't be looked up. Never throws. */
+    suspend fun videoTitle(videoId: String): String
     /** Throws not_allowed when my role may not do it; mic_denied when the microphone can't be used. */
     suspend fun voiceAction(roomId: String, action: VoiceAction)
     /** Reported through its host (the report keeps what the host wrote in it). */

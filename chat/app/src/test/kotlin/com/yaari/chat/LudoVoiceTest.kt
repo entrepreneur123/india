@@ -11,7 +11,6 @@ import com.yaari.chat.model.LudoEvent
 import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
 import com.yaari.chat.ui.Tab
@@ -71,7 +70,7 @@ class LudoVoiceTest {
     /** My own room with a game open in it and two people seated with me. */
     private fun TestScope.hosting(): AppViewModel {
         val vm = signedIn()
-        vm.voice.create(NewVoiceRoom("Ludo with friends", RoomCategory.GAMING, SpeakMode.OPEN)); advanceUntilIdle()
+        vm.voice.create(NewVoiceRoom("Ludo with friends", RoomCategory.GAMES)); advanceUntilIdle()
         assertTrue(vm.s.isHost)
         assertNull(vm.s.ludo)
         vm.voice.ludoButton(); advanceUntilIdle()

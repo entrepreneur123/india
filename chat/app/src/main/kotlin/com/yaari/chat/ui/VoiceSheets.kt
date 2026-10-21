@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.automirrored.rounded.ArrowForwardIos
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.outlined.Flag
@@ -48,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -148,18 +151,23 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
         VoiceSheet.Requests -> RequestsSheet(room, act, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         is VoiceSheet.Audience -> AudienceSheet(room, sheet.inviteSeat, act, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         is VoiceSheet.Seat -> SeatSheet(room, sheet.seat, act, onInvite = { onSheet(VoiceSheet.Audience(it)) }, onClose = close)
-        VoiceSheet.Queue -> QueueSheet(room.track, room.queue, s.isHost, me.profile.name, act, close)
+        VoiceSheet.Queue -> QueueSheet(room.track, room.queue, s.isHost, s.adding, act, vm.voice::addSong, vm.voice::vote, close)
+        VoiceSheet.Settings -> SettingsSheet(room, onSave = { title, note -> vm.voice.saveSettings(title, note, close) }, onClose = close)
         VoiceSheet.Options -> RoomSheet(close) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 Box(Modifier.padding(horizontal = 24.dp)) { SheetTitle(stringResource(R.string.voice_options), null, close) }
                 Spacer(Modifier.height(8.dp))
                 SheetRow(Icons.Rounded.Link, stringResource(R.string.voice_share)) {
                     close()
-                    android.content.ClipData.newPlainText("Yaari", "https://yaari-web-indol.vercel.app/?voice=${room.id}").let { clip ->
-                        context.getSystemService(android.content.ClipboardManager::class.java)?.setPrimaryClip(clip)
-                    }
-                    vm.voice.say(UiText(R.string.voice_link_copied))
+                    copyLink(context, room.id)
                 }
+                room.code?.let { code ->
+                    SheetRow(Icons.Rounded.ContentCopy, stringResource(R.string.room_copy, code)) {
+                        close()
+                        copyCode(context, code)
+                    }
+                }
+                if (s.isHost) SheetRow(Icons.Outlined.Tune, stringResource(R.string.room_settings)) { onSheet(VoiceSheet.Settings) }
                 if (!s.isHost) SheetRow(Icons.Outlined.Flag, stringResource(R.string.voice_report_room)) { onSheet(VoiceSheet.ReportRoom) }
                 SheetRow(Icons.AutoMirrored.Rounded.Logout, stringResource(if (s.isHost) R.string.voice_end_confirm else R.string.voice_leave_quietly), danger = true) {
                     close()
@@ -232,7 +240,7 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
                 }
                 Spacer(Modifier.height(8.dp))
                 if (!self) SheetRow(Icons.Outlined.PersonOutline, stringResource(R.string.voice_view_profile)) { onClose(); vm.openProfile(target.profile) }
-                if (self && target.seat != null && target.role != VoiceRole.HOST) {
+                if (self && target.seat != null) {
                     SheetRow(Icons.Rounded.Download, stringResource(R.string.voice_leave_stage)) { run(VoiceAction.Unseat, null) }
                 }
                 if (mod && target.seat == null) {
@@ -367,6 +375,33 @@ private fun SeatSheet(room: VoiceRoom, seat: Int, act: VoiceActor, onInvite: (In
             SheetRow(if (locked) Icons.Rounded.LockOpen else Icons.Rounded.Lock, stringResource(if (locked) R.string.voice_unlock_seat else R.string.voice_lock_seat)) {
                 act(VoiceAction.Lock(seat, !locked), null) { ok -> if (ok) onClose() }
             }
+        }
+    }
+}
+
+/** Host: the room's title and its pinned announcement. */
+@Composable
+private fun SettingsSheet(room: VoiceRoom, onSave: (String, String) -> Unit, onClose: () -> Unit) {
+    var title by rememberSaveable { mutableStateOf(room.title) }
+    var note by rememberSaveable { mutableStateOf(room.announcement.orEmpty()) }
+    RoomSheet(onClose) {
+        Column(Modifier.fillMaxWidth().imePadding().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
+            SheetTitle(stringResource(R.string.room_settings), stringResource(R.string.room_settings_desc), onClose)
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                title, { if (it.length <= VoiceRoom.MAX_TITLE) title = it }, Modifier.fillMaxWidth(), singleLine = true,
+                label = { Text(stringResource(R.string.create_name)) }, shape = RoundedCornerShape(12.dp),
+                supportingText = { Text("${title.length}/${VoiceRoom.MAX_TITLE}") },
+            )
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                note, { if (it.length <= VoiceRoom.MAX_ANNOUNCEMENT) note = it }, Modifier.fillMaxWidth(), minLines = 3, maxLines = 5,
+                label = { Text(stringResource(R.string.create_announcement)) }, shape = RoundedCornerShape(12.dp),
+                placeholder = { Text(stringResource(R.string.create_announcement_placeholder)) },
+                supportingText = { Text(stringResource(R.string.create_announcement_hint) + "  ${note.length}/${VoiceRoom.MAX_ANNOUNCEMENT}") },
+            )
+            Spacer(Modifier.height(16.dp))
+            PrimaryButton(stringResource(R.string.save), { onSave(title, note) }, enabled = title.trim().length >= VoiceRoom.MIN_TITLE)
         }
     }
 }

@@ -453,29 +453,6 @@ class AppViewModelTest {
         assertTrue("still gone after a refresh", vm.state.value.friends.isEmpty())
     }
 
-    @Test fun roomsChatReportAndLeave() = runTest(dispatcher) {
-        val vm = signedIn()
-        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
-        val lounge = vm.state.value.rooms.first()
-        vm.enterRoom(lounge)
-        advanceTimeBy(100); runCurrent() // rooms never go idle (presence beat, chatter): step the clock instead
-        val history = vm.state.value.room!!.messages
-        assertTrue(history.isNotEmpty())
-        vm.sendRoom("Hi everyone?")
-        advanceTimeBy(3_000); runCurrent()
-        val msgs = vm.state.value.room!!.messages
-        assertTrue(msgs.any { it.fromMe && it.text == "Hi everyone?" })
-        assertTrue("someone answered", msgs.last().let { !it.fromMe && it.id > msgs.first { m -> m.fromMe }.id })
-        // People in the room can be seen, added and reported
-        val someone = history.first().sender
-        vm.openProfile(someone); advanceTimeBy(100); runCurrent()
-        assertNotNull(vm.state.value.viewing)
-        vm.report(someone.id, ReportReason.HARASSMENT); advanceTimeBy(100); runCurrent()
-        assertTrue(vm.state.value.room!!.messages.none { it.sender.id == someone.id })
-        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
-        assertNull(vm.state.value.room)
-    }
-
     @Test fun editProfileKeepsGenderAndAge() = runTest(dispatcher) {
         val vm = signedIn()
         val before = vm.state.value.me!!
@@ -490,42 +467,6 @@ class AppViewModelTest {
         assertEquals(before.gender to before.age, after.gender to after.age)
     }
 
-    @Test fun roomMessageAfterLapsedPresenceRejoinsAndSends() = runTest(dispatcher) {
-        var joins = 0
-        var refusedOnce = false
-        val lapsing = object : Backend by backend {
-            override suspend fun joinRoom(roomId: String) { joins++; backend.joinRoom(roomId) }
-            override suspend fun sendRoom(roomId: String, text: String) =
-                if (!refusedOnce) { refusedOnce = true; throw BackendException("blocked") } else backend.sendRoom(roomId, text)
-        }
-        val vm = AppViewModel(lapsing, DemoBilling(), clock = { now }, today = { today })
-        advanceUntilIdle()
-        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
-        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
-        vm.createProfile(adult); advanceUntilIdle()
-        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
-        vm.enterRoom(vm.state.value.rooms.first()); advanceTimeBy(100); runCurrent()
-        vm.sendRoom("still here"); advanceTimeBy(100); runCurrent()
-        assertTrue(vm.state.value.room!!.messages.any { it.fromMe && it.text == "still here" })
-        assertEquals(2, joins)
-        assertNull(vm.state.value.notice)
-        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
-    }
-
-    @Test fun roomThatCannotBeJoinedClosesAgain() = runTest(dispatcher) {
-        val banned = object : Backend by backend {
-            override suspend fun joinRoom(roomId: String) = throw BackendException("banned")
-        }
-        val vm = AppViewModel(banned, DemoBilling(), clock = { now }, today = { today })
-        advanceUntilIdle()
-        vm.requestOtp(india, "9876543210"); advanceUntilIdle()
-        vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
-        vm.createProfile(adult); advanceUntilIdle()
-        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
-        vm.enterRoom(vm.state.value.rooms.first()); advanceUntilIdle()
-        assertNull(vm.state.value.room)
-        assertEquals(UiText(R.string.err_banned), vm.state.value.notice)
-    }
     // ---- Block (without reporting) --------------------------------------------------------------
 
     /** Records which of block / report reached the server. */
@@ -596,28 +537,6 @@ class AppViewModelTest {
         runCurrent()
         assertEquals("back on screen: polls again at once", atPause + 1, polls)
         vm.cancelMatching(); advanceTimeBy(3_000); runCurrent()
-    }
-
-    @Test fun roomHeartbeatPausesInTheBackgroundAndBeatsOnReturn() = runTest(dispatcher) {
-        val visible = MutableStateFlow(true)
-        var beats = 0
-        val counting = object : Backend by backend {
-            override suspend fun joinRoom(roomId: String) { beats++; backend.joinRoom(roomId) }
-        }
-        val vm = signedIn { AppViewModel(counting, DemoBilling(), clock = { now }, today = { today }, foreground = visible) }
-        vm.selectTab(com.yaari.chat.ui.Tab.ROOMS); advanceUntilIdle()
-        vm.enterRoom(vm.state.value.rooms.first())
-        advanceTimeBy(100); runCurrent()
-        assertEquals("joined once", 1, beats)
-        advanceTimeBy(AppViewModel.ROOM_BEAT_MS); runCurrent()
-        assertEquals("one beat after 30 s", 2, beats)
-        visible.value = false
-        advanceTimeBy(AppViewModel.ROOM_BEAT_MS * 4); runCurrent()
-        assertEquals("no beats in the background", 2, beats)
-        visible.value = true
-        runCurrent()
-        assertEquals("beats at once when back", 3, beats)
-        vm.leaveRoom(); advanceTimeBy(100); runCurrent()
     }
 
     // ---- Read ticks ------------------------------------------------------------------------------

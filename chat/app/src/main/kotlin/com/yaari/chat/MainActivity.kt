@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) VoiceService.handle(intent)
         setContent {
             YaariTheme {
-                val vm = viewModel { AppViewModel(Flavor.backend(application), Flavor.billing(application)) }
+                val vm = viewModel { AppViewModel(Flavor.backend(application), Flavor.billing(application), photos = Flavor.photoCheck(application)) }
                 // Back in the foreground: pick up payments that completed meanwhile (e.g. UPI).
                 LifecycleResumeEffect(vm) {
                     vm.restorePurchases()

@@ -16,6 +16,7 @@ import com.yaari.chat.data.Match
 import com.yaari.chat.data.MatchEvent
 import com.yaari.chat.data.NewProfile
 import com.yaari.chat.data.OrphanMatchException
+import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
 import com.yaari.chat.data.VoiceBus
@@ -27,14 +28,10 @@ import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
-import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.NewRoom
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
-import com.yaari.chat.model.Room
-import com.yaari.chat.model.RoomMessage
 import com.yaari.chat.model.Target
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -95,12 +92,6 @@ data class ChatState(
 
 data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0)
 
-/** [closed]: the owner closed the room while it was open; nobody can write any more. [showCode]: just created, show its code. */
-data class RoomState(
-    val room: Room, val messages: List<RoomMessage> = emptyList(), val loading: Boolean = true,
-    val closed: Boolean = false, val showCode: Boolean = false,
-)
-
 data class UiState(
     val booting: Boolean = true,
     val onboarding: Onboarding = Onboarding(),
@@ -117,10 +108,6 @@ data class UiState(
     val dm: DmState? = null,
     val recents: List<RecentMatch> = emptyList(),
     val friends: List<Friend> = emptyList(),
-    val rooms: List<Room> = emptyList(),
-    val room: RoomState? = null,
-    /** Creating a room or entering a code is in flight. */
-    val roomBusy: Boolean = false,
     val paywall: Paywall? = null,
     val notice: UiText? = null,
 ) {
@@ -139,6 +126,8 @@ class AppViewModel(
     private val foreground: StateFlow<Boolean> = AppForeground.visible,
     /** Wall clock, for deadlines set by the server (Ludo turns). */
     wallClock: () -> Long = System::currentTimeMillis,
+    /** Room photos: shrunk and checked for nudity on this phone (the live build's model; none in the demo). */
+    photos: PhotoCheck = PhotoCheck.None,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -147,10 +136,9 @@ class AppViewModel(
     private var matchJob: Job? = null
     private var chatJob: Job? = null
     private var dmJob: Job? = null
-    private var roomJob: Job? = null
 
-    /** Voice rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
-    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, wallClock = wallClock)
+    /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock)
 
     init {
         viewModelScope.launch {
@@ -256,6 +244,7 @@ class AppViewModel(
             "voice_removed" -> R.string.voice_removed
             "mic_denied" -> R.string.err_mic_denied
             "queue_full" -> R.string.err_queue_full
+            "bad_media" -> R.string.err_bad_media
             else -> R.string.err_network
         },
     )
@@ -347,7 +336,7 @@ class AppViewModel(
         _state.update { it.copy(tab = tab) }
         when (tab) {
             Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() } }
-            Tab.ROOMS -> { refreshRooms(); voice.refreshList() }
+            Tab.ROOMS -> voice.refreshList()
             else -> Unit
         }
     }
@@ -389,7 +378,6 @@ class AppViewModel(
         if (s.me == null || s.searching || s.chat != null) return
         _state.update { it.copy(searching = true, reconnecting = false, dm = null, viewing = null) }
         dmJob?.cancel()
-        if (s.room != null) leaveRoom()
         val gen = ++searchGeneration
         fun current() = gen == searchGeneration && _state.value.searching
         fun reconnecting(on: Boolean) = _state.update { if (current() && it.reconnecting != on) it.copy(reconnecting = on) else it }
@@ -742,7 +730,7 @@ class AppViewModel(
 
     /**
      * Block without reporting. Like a report it closes the chat, thread or profile with that person and drops them
-     * from Recent, Friends and the open room's messages.
+     * from Recent, Friends and the room's chat.
      */
     fun block(person: Profile) {
         val c = _state.value.chat
@@ -765,7 +753,6 @@ class AppViewModel(
             s.copy(
                 recents = s.recents.filterNot { it.partner.id == partnerId },
                 friends = s.friends.filterNot { it.profile.id == partnerId },
-                room = s.room?.let { r -> r.copy(messages = r.messages.filterNot { it.sender.id == partnerId }) },
                 viewing = s.viewing?.takeIf { it.id != partnerId },
                 dm = s.dm?.takeIf { it.recent.partner.id != partnerId },
                 notice = message,
@@ -857,7 +844,6 @@ class AppViewModel(
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
-        roomJob?.cancel()
         _state.value = UiState(booting = false)
     }
 
@@ -923,187 +909,6 @@ class AppViewModel(
         _state.update { s -> s.copy(friends = s.friends.filterNot { it.profile.id == p.id }) }
     }
 
-    // ---- Public rooms -----------------------------------------------------------------------
-
-    private var roomsJob: Job? = null
-
-    /** The newest request wins (see [refreshRecents]). */
-    fun refreshRooms() {
-        roomsJob?.cancel()
-        roomsJob = act {
-            val list = backend.rooms()
-            _state.update { it.copy(rooms = list) }
-        }
-    }
-
-    /** A room the server says I can't enter shows why instead of trying. */
-    fun enterRoom(room: Room) {
-        if (room.refusal != null) return notice(refusalText(room))
-        openRoom(room)
-    }
-
-    private fun openRoom(room: Room, showCode: Boolean = false) {
-        if (_state.value.room?.room?.id == room.id) return
-        roomJob?.cancel()
-        _state.update { it.copy(room = RoomState(room, showCode = showCode)) }
-        roomJob = viewModelScope.launch {
-            try {
-                backend.joinRoom(room.id)
-                val history = backend.roomHistory(room.id) // the one full load; the re-syncs fetch only newer messages
-                updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, history), loading = false) }
-                launch {
-                    while (isActive) { // stay listed as present; the server forgets you 90 s after the last beat
-                        delay(ROOM_BEAT_MS)
-                        // No beats from the background; back on screen, beat at once to be listed again.
-                        foreground.awaitVisible()
-                        try {
-                            backend.joinRoom(room.id)
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (e: BackendException) {
-                            if (e.code == "room_closed") { // the owner closed it while we were inside
-                                markRoomClosed(room.id)
-                                return@launch
-                            }
-                        } catch (_: Exception) {
-                            // offline for a moment: the next beat tries again
-                        }
-                    }
-                }
-                backend.roomEvents(room.id, afterId = history.maxOfOrNull { it.id }).collect { m -> updateRoom(room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) } }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                // Couldn't get in (suspended, room removed, offline): back to the list instead of an empty room.
-                _state.update { s -> if (s.room?.room?.id == room.id) s.copy(room = null) else s }
-                notice(explain(e))
-            }
-        }
-    }
-
-    private fun markRoomClosed(roomId: String) {
-        updateRoom(roomId) { it.copy(closed = true, showCode = false) }
-        _state.update { s -> s.copy(rooms = s.rooms.filterNot { it.id == roomId }) }
-    }
-
-    /** Validates what the server validates, then opens the new room and shows its code. */
-    fun createRoom(spec: NewRoom, done: () -> Unit = {}) {
-        val title = spec.title.trim()
-        val error = when {
-            title.length !in Room.MIN_TITLE..Room.MAX_TITLE -> UiText(R.string.err_room_title)
-            spec.maxMembers !in Room.MIN_MEMBERS..Room.MAX_MEMBERS -> UiText(R.string.err_room_size)
-            spec.minAge !in Room.MIN_AGE..Room.MAX_AGE || spec.maxAge !in Room.MIN_AGE..Room.MAX_AGE || spec.minAge > spec.maxAge ->
-                UiText(R.string.err_room_settings)
-            else -> null
-        }
-        if (error != null) return notice(error)
-        roomTask {
-            val created = backend.createRoom(spec.copy(title = title))
-            done()
-            if (_state.value.room != null) leaveRoom()
-            val room = Room(
-                created.roomId, title, spec.category.emoji, online = 1, official = false, mine = true,
-                ownerName = _state.value.me?.name, category = spec.category, maxMembers = spec.maxMembers,
-                genderRule = spec.genderRule, minAge = spec.minAge, maxAge = spec.maxAge, isPrivate = spec.isPrivate,
-                code = created.code,
-            )
-            openRoom(room, showCode = true)
-            runCatching { backend.rooms() }.onSuccess { list -> _state.update { it.copy(rooms = list) } }
-        }
-    }
-
-    /** Enter a room with the code its owner shared (also the only way into a private room). */
-    fun joinByCode(input: String, done: () -> Unit = {}) {
-        val code = input.trim().uppercase()
-        if (code.length != Room.CODE_LENGTH || !code.all { it in 'A'..'Z' || it in '0'..'9' }) return notice(UiText(R.string.err_room_code))
-        roomTask {
-            val id = try {
-                backend.joinRoomCode(code)
-            } catch (e: BackendException) {
-                if (e.code == "not_found") return@roomTask notice(UiText(R.string.err_room_code_unknown))
-                throw e
-            }
-            val list = runCatching { backend.rooms() }.getOrNull()
-            list?.let { l -> _state.update { it.copy(rooms = l) } }
-            done()
-            if (_state.value.room != null) leaveRoom()
-            openRoom(list?.firstOrNull { it.id == id } ?: Room(id, code, FALLBACK_EMOJI, online = 1, official = false))
-        }
-    }
-
-    /** Owner only, after the confirm dialog. Everyone inside sees that it closed. */
-    fun closeRoom() {
-        val r = _state.value.room ?: return
-        if (!r.room.mine || r.closed) return
-        act {
-            backend.closeRoom(r.room.id)
-            markRoomClosed(r.room.id)
-        }
-    }
-
-    fun dismissRoomCode() = _state.update { s -> s.room?.let { s.copy(room = it.copy(showCode = false)) } ?: s }
-
-    /** One room action at a time (double taps create one room, not two). */
-    private fun roomTask(block: suspend () -> Unit) {
-        if (_state.value.roomBusy) return
-        _state.update { it.copy(roomBusy = true) }
-        viewModelScope.launch {
-            try {
-                block()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                notice(explain(e))
-            } finally {
-                _state.update { it.copy(roomBusy = false) }
-            }
-        }
-    }
-
-    fun leaveRoom() {
-        val r = _state.value.room ?: return
-        roomJob?.cancel()
-        _state.update { it.copy(room = null) }
-        viewModelScope.launch { runCatching { backend.leaveRoom(r.room.id) } }
-        refreshRooms()
-    }
-
-    fun sendRoom(text: String, onFailed: () -> Unit = {}) {
-        val t = text.trim().take(MAX_ROOM_TEXT)
-        val r = _state.value.room ?: return
-        if (t.isEmpty() || r.closed) return
-        send(onFailed) {
-            val m = try {
-                try {
-                    backend.sendRoom(r.room.id, t)
-                } catch (e: BackendException) {
-                    // Presence lapsed (phone asleep, network gap > 90 s): the server refuses until we rejoin. Rejoin once, retry.
-                    if (e.code != "blocked") throw e
-                    backend.joinRoom(r.room.id)
-                    backend.sendRoom(r.room.id, t)
-                }
-            } catch (e: BackendException) {
-                if (e.code != "room_closed") throw e
-                markRoomClosed(r.room.id)
-                return@send
-            }
-            updateRoom(r.room.id) { it.copy(messages = mergeRoom(it.messages, listOf(m))) }
-        }
-    }
-
-    private fun updateRoom(roomId: String, change: (RoomState) -> RoomState) = _state.update {
-        val r = it.room
-        if (r == null || r.room.id != roomId) it else it.copy(room = change(r))
-    }
-
-    /** Keeps the newest [MAX_ROOM_MESSAGES]; blocked senders never come back through a re-sync. */
-    private fun mergeRoom(old: List<RoomMessage>, new: List<RoomMessage>): List<RoomMessage> {
-        val ids = old.mapTo(HashSet()) { it.id }
-        val added = new.filter { it.id !in ids }
-        if (added.isEmpty()) return old
-        return (old + added).sortedBy { it.id }.takeLast(MAX_ROOM_MESSAGES)
-    }
-
     companion object {
         const val POLL_MS = 2_000L
         /** A search that has failed for this long (on screen) without a single answer stops with the network notice. */
@@ -1119,21 +924,8 @@ class AppViewModel(
             3 -> 8_000L
             else -> 10_000L
         }
-        private const val FALLBACK_EMOJI = "💬"
-        const val ROOM_BEAT_MS = 30_000L
-        const val MAX_ROOM_TEXT = 500
-        const val MAX_ROOM_MESSAGES = 300
         const val MAX_TEXT = 1000
         const val TYPING_EVERY_MS = 3_000L
         const val RECONNECT_MS = 3_000L
     }
-}
-
-/** Why I can't enter [room], said with what the room asks for. */
-fun refusalText(room: Room): UiText = when (room.refusal) {
-    "room_gender" -> UiText(if (room.genderRule == GenderRule.MALE) R.string.err_room_men else R.string.err_room_women)
-    "room_age" -> UiText(R.string.err_room_ages, room.minAge, room.maxAge)
-    "room_full" -> UiText(R.string.err_room_full)
-    "room_closed" -> UiText(R.string.err_room_closed)
-    else -> UiText(R.string.err_not_allowed)
 }

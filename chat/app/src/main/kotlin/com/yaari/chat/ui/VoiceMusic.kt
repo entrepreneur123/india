@@ -1,6 +1,9 @@
 package com.yaari.chat.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -23,8 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -55,8 +58,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +73,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil3.compose.AsyncImage
@@ -77,7 +86,9 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.yaari.chat.R
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceQueueItem
+import com.yaari.chat.model.VoiceRoom
 import com.yaari.chat.model.VoiceTrack
+import com.yaari.chat.model.byVotes
 import com.yaari.chat.model.YouTube
 import kotlinx.coroutines.delay
 
@@ -97,7 +108,7 @@ fun MusicPanel(
     onQueue: () -> Unit, act: (VoiceAction) -> Unit,
 ) {
     val title = track.title.ifEmpty { stringResource(R.string.voice_yt_video) }
-    val upNext = queue.count { !it.pending }
+    val upNext = queue.size
     if (!open) {
         Row(
             Modifier.padding(horizontal = 16.dp).fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp))
@@ -159,12 +170,12 @@ fun MusicPanel(
  * stand in for it.
  */
 @Composable
-private fun Player(track: VoiceTrack, onEnded: (() -> Unit)?) {
-    BoxWithConstraints(Modifier.fillMaxWidth()) {
+private fun Player(track: VoiceTrack, onEnded: (() -> Unit)?, modifier: Modifier = Modifier, onDuration: (Float) -> Unit = {}) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
         val height = maxOf(200.dp, maxWidth * 9 / 16)
         Box(Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(16.dp)).background(Color.Black)) {
             var state by remember { mutableStateOf(PlayerState.LOADING) }
-            if (LocalYouTubePlayer.current) YouTubeView(track, onEnded) { state = it }
+            if (LocalYouTubePlayer.current) YouTubeView(track, onEnded, onDuration) { state = it }
             if (state != PlayerState.READY) {
                 AsyncImage(
                     YouTube.thumbnail(track.videoId), null, Modifier.fillMaxSize().alpha(0.45f), contentScale = ContentScale.Crop,
@@ -192,12 +203,13 @@ private fun Player(track: VoiceTrack, onEnded: (() -> Unit)?) {
 }
 
 @Composable
-private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onState: (PlayerState) -> Unit) {
+private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (Float) -> Unit, onState: (PlayerState) -> Unit) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val current by rememberUpdatedState(track)
     val ended by rememberUpdatedState(onEnded)
     val report by rememberUpdatedState(onState)
+    val duration by rememberUpdatedState(onDuration)
     var player by remember { mutableStateOf<YouTubePlayer?>(null) }
     var ready by remember { mutableStateOf(false) }
     var loadedId by remember { mutableStateOf<String?>(null) }
@@ -226,6 +238,10 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onState: (Pla
 
             override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
                 report(PlayerState.UNAVAILABLE)
+            }
+
+            override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
+                duration(duration)
             }
         }
         val options = IFramePlayerOptions.Builder(context).controls(1).rel(0).ivLoadPolicy(3).build()
@@ -267,16 +283,168 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onState: (Pla
     AndroidView({ view }, Modifier.fillMaxSize())
 }
 
-/** "Up next": the queue, the host's approvals, and the box to add (host) or suggest (everyone else) a link. */
+/** Where the song is in seconds, while it plays (ticks once a second). */
+@Composable
+private fun rememberPosition(track: VoiceTrack): Float {
+    var now by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(track.id, track.pausedAt, track.startedAt) {
+        now = System.currentTimeMillis()
+        while (track.pausedAt == null) {
+            delay(1_000)
+            now = System.currentTimeMillis()
+        }
+    }
+    return track.position(now)
+}
+
+private fun mmss(seconds: Float) = "%d:%02d".format(java.util.Locale.ROOT, seconds.toInt() / 60, seconds.toInt() % 60)
+
+/**
+ * A music room's hero: the shared player with the song, who added it and where it is, the host's controls (pause,
+ * play the most voted next), and the song requests by vote. With nothing playing, the way to request the first.
+ */
+@Composable
+fun MusicHero(room: VoiceRoom, isHost: Boolean, adding: String?, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit) {
+    val color = topicColor(Topic.MUSIC)
+    val track = room.track
+    val ordered = room.queue.byVotes()
+    val hostName = room.member(room.hostId)?.profile?.name.orEmpty()
+    val music = stringResource(R.string.voice_music_title)
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).semantics { contentDescription = music }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (track != null) {
+            var seconds by remember(track.id) { mutableStateOf(0f) }
+            Column {
+                Player(
+                    track, onEnded = if (isHost) ({ act(VoiceAction.Skip(track.id)) }) else null,
+                    modifier = Modifier.shadow(24.dp, RoundedCornerShape(16.dp), ambientColor = color, spotColor = color),
+                ) { seconds = it }
+                Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            YouTube.songOf(track.title).ifEmpty { stringResource(R.string.voice_yt_video) },
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            listOf(
+                                YouTube.artistOf(track.title),
+                                if (track.pausedAt != null) stringResource(R.string.voice_paused_by_host) else stringResource(R.string.music_dj, hostName),
+                            ).filter { it.isNotEmpty() }.joinToString(" · "),
+                            Modifier.padding(top = 2.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    if (isHost) {
+                        val paused = track.pausedAt != null
+                        CircleIconButton(
+                            if (paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause, stringResource(if (paused) R.string.voice_resume else R.string.voice_pause),
+                            { act(if (paused) VoiceAction.Resume else VoiceAction.Pause) }, background = MaterialTheme.colorScheme.surfaceContainerHigh, iconSize = 22.dp,
+                        )
+                        Spacer(Modifier.width(6.dp))
+                        CircleIconButton(
+                            Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
+                            background = Brand.Pink, tint = Color.White, iconSize = 22.dp,
+                        )
+                    }
+                }
+                val at = rememberPosition(track).let { if (seconds > 0) minOf(it, seconds) else it }
+                Box(Modifier.padding(top = 10.dp).fillMaxWidth().height(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
+                    if (seconds > 0) Box(Modifier.fillMaxWidth(at / seconds).height(6.dp).clip(CircleShape).background(color))
+                }
+                Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                    Text(mmss(at), Modifier.weight(1f), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
+                    if (seconds > 0) Text(mmss(seconds), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
+                }
+                Text(
+                    stringResource(R.string.voice_added_by, track.addedBy), Modifier.padding(top = 2.dp),
+                    style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        } else {
+            Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer).background(color.copy(alpha = 0.12f))
+                    .border(1.dp, color.copy(alpha = 0.28f), RoundedCornerShape(24.dp)).padding(horizontal = 24.dp, vertical = 28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                TopicIcon(Topic.MUSIC, size = 52.dp)
+                Text(stringResource(R.string.music_nothing), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                Text(
+                    stringResource(R.string.music_nothing_body), style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+                )
+                SoftButton(
+                    stringResource(if (isHost) R.string.music_add else R.string.music_request), onQueue, accent = true, height = 44.dp,
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
+                )
+            }
+        }
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f)).padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.voice_up_next), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, maxLines = 1)
+                Row(
+                    Modifier.heightIn(min = 40.dp).clip(CircleShape).clickable(role = Role.Button, onClick = onQueue).padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Icon(Icons.AutoMirrored.Rounded.QueueMusic, null, Modifier.size(20.dp))
+                    Text(stringResource(R.string.music_request), style = MaterialTheme.typography.labelLarge)
+                }
+            }
+            if (ordered.isEmpty() && adding == null) {
+                Text(
+                    stringResource(R.string.music_no_requests), Modifier.padding(vertical = 8.dp),
+                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                adding?.let { AddingRow(it) }
+                ordered.take(3).forEach { q ->
+                    TrackRow(q.videoId, YouTube.songOf(q.title), requestSub(q)) { VoteButton(q, color) { vote(q.id, !q.voted) } }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun requestSub(q: VoiceQueueItem) =
+    stringResource(R.string.voice_added_by, q.addedBy) + " · " + pluralStringResource(R.plurals.music_votes, q.votes, q.votes)
+
+/** A request whose title is being looked up before it is added. */
+@Composable
+private fun AddingRow(videoId: String) {
+    TrackRow(videoId, stringResource(R.string.music_adding), "youtu.be/$videoId") {
+        CircularProgressIndicator(Modifier.padding(end = 8.dp).size(18.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** One vote per person and song; tapping again takes it back. */
+@Composable
+private fun VoteButton(item: VoiceQueueItem, color: Color, onClick: () -> Unit) {
+    val title = item.title.ifEmpty { stringResource(R.string.voice_yt_video) }
+    val label = stringResource(if (item.voted) R.string.music_unvote else R.string.music_vote, title)
+    Row(
+        Modifier.height(36.dp).widthIn(min = 56.dp).clip(CircleShape)
+            .background(if (item.voted) color else MaterialTheme.colorScheme.surfaceContainer)
+            .then(if (item.voted) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape))
+            .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label; selected = item.voted }
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
+    ) {
+        val tint = if (item.voted) Color.White else MaterialTheme.colorScheme.onSurface
+        Icon(Icons.Rounded.KeyboardArrowUp, null, Modifier.size(20.dp), tint = tint)
+        Text("${item.votes}", color = tint, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
+    }
+}
+
+/** "Up next": the box to request a song, what plays, the requests by vote, and (for the host) play now and remove. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QueueSheet(track: VoiceTrack?, queue: List<VoiceQueueItem>, isHost: Boolean, meName: String, act: VoiceActor, onDismiss: () -> Unit) {
+fun QueueSheet(
+    track: VoiceTrack?, queue: List<VoiceQueueItem>, isHost: Boolean, adding: String?, act: VoiceActor,
+    addSong: (String, (Boolean) -> Unit) -> Unit, vote: (String, Boolean) -> Unit, onDismiss: () -> Unit,
+) {
     var link by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
-    var busy by remember { mutableStateOf(false) }
-    val next = queue.filter { !it.pending }
-    // The host sees every suggestion; others see only their own, waiting.
-    val pending = queue.filter { it.pending && (isHost || it.addedBy == meName) }
+    val ordered = queue.byVotes()
+    val color = topicColor(Topic.MUSIC)
     ModalBottomSheet(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -293,20 +461,19 @@ fun QueueSheet(track: VoiceTrack?, queue: List<VoiceQueueItem>, isHost: Boolean,
                 )
                 Spacer(Modifier.size(8.dp))
                 SoftButton(
-                    stringResource(if (isHost) R.string.voice_add else R.string.voice_suggest),
+                    stringResource(if (isHost) R.string.voice_add else R.string.music_request),
                     {
                         val id = YouTube.videoId(link)
                         if (id == null) {
                             error = true
                         } else {
-                            busy = true
-                            act(
-                                if (isHost) VoiceAction.AddTrack(id) else VoiceAction.Suggest(id),
-                                UiText(if (isHost) R.string.voice_added else R.string.voice_suggested),
-                            ) { ok -> busy = false; if (ok) link = "" }
+                            val sent = link
+                            link = ""
+                            // Not added (the reason is said): the link comes back, unless something new was typed meanwhile.
+                            addSong(id) { ok -> if (!ok && link.isBlank()) link = sent }
                         }
                     },
-                    accent = true, height = 48.dp, enabled = link.isNotBlank() && !busy,
+                    accent = true, height = 48.dp, enabled = link.isNotBlank() && adding == null,
                 )
             }
             Text(
@@ -319,37 +486,33 @@ fun QueueSheet(track: VoiceTrack?, queue: List<VoiceQueueItem>, isHost: Boolean,
                 SectionLabel(stringResource(R.string.voice_now_playing_label))
                 TrackRow(track.videoId, track.title, stringResource(R.string.voice_added_by, track.addedBy), playing = true)
             }
-            if (isHost && pending.isNotEmpty()) {
-                SectionLabel(stringResource(R.string.voice_suggestions))
-                pending.forEach { q ->
-                    TrackRow(q.videoId, q.title, stringResource(R.string.voice_suggested_by, q.addedBy)) {
-                        CircleIconButton(Icons.Rounded.Close, stringResource(R.string.voice_decline), { act(VoiceAction.Approve(q.id, false), null) {} }, iconSize = 20.dp)
-                        CircleIconButton(
-                            Icons.Rounded.Check, stringResource(R.string.voice_approve), { act(VoiceAction.Approve(q.id, true), null) {} },
-                            background = Brand.Pink, tint = Color.White, size = 36.dp, iconSize = 20.dp,
-                        )
-                    }
+            Row(Modifier.padding(top = 20.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.voice_up_next), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                if (isHost && ordered.isNotEmpty()) {
+                    SoftButton(
+                        stringResource(R.string.music_next), { act(VoiceAction.Skip(track?.id), null) {} }, height = 36.dp,
+                        leading = { Icon(Icons.Rounded.SkipNext, null, Modifier.size(18.dp)) },
+                    )
+                } else {
+                    Text(stringResource(R.string.music_most_voted), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            SectionLabel(stringResource(R.string.voice_up_next))
-            if (next.isEmpty() && (isHost || pending.isEmpty())) {
+            if (ordered.isEmpty() && adding == null) {
                 Text(
-                    stringResource(R.string.voice_queue_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    stringResource(R.string.music_no_requests), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
                 )
             } else {
-                next.forEach { q ->
-                    TrackRow(q.videoId, q.title, stringResource(R.string.voice_added_by, q.addedBy)) {
+                adding?.let { AddingRow(it) }
+                ordered.forEach { q ->
+                    TrackRow(q.videoId, q.title, requestSub(q)) {
                         if (isHost) {
-                            CircleIconButton(Icons.Outlined.Delete, stringResource(R.string.voice_remove), { act(VoiceAction.RemoveItem(q.id), null) {} }, iconSize = 20.dp)
-                            CircleIconButton(
-                                Icons.Rounded.PlayArrow, stringResource(R.string.voice_play_now), { act(VoiceAction.Play(q.id), null) {} },
-                                background = MaterialTheme.colorScheme.surfaceContainerHighest, size = 36.dp, iconSize = 20.dp,
-                            )
+                            CircleIconButton(Icons.Outlined.Delete, stringResource(R.string.voice_remove), { act(VoiceAction.RemoveItem(q.id), null) {} }, size = 36.dp, iconSize = 20.dp)
+                            CircleIconButton(Icons.Rounded.PlayArrow, stringResource(R.string.voice_play_now), { act(VoiceAction.Play(q.id), null) {} }, size = 36.dp, iconSize = 20.dp)
                         }
+                        VoteButton(q, color) { vote(q.id, !q.voted) }
                     }
                 }
-                if (!isHost) pending.forEach { q -> TrackRow(q.videoId, q.title, stringResource(R.string.voice_waiting)) }
             }
         }
     }
