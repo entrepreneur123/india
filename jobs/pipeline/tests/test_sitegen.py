@@ -20,7 +20,8 @@ ITEMS = [
 
 def test_pages_for_exams_with_rules_or_notices_and_a_sitemap(tmp_path):
     paths = sitegen.build(str(tmp_path), FAMILIES, RULES, ITEMS, TODAY, "https://example.in/india")
-    assert set(paths) == {"jobs/exam/cgl/", "jobs/exam/chsl/", "jobs/exam/steno/", "jobs/exam/capf/", "jobs/exam/ctgd/"}
+    assert set(paths) == {"jobs/exam/cgl/", "jobs/exam/chsl/", "jobs/exam/steno/", "jobs/exam/capf/", "jobs/exam/ctgd/",
+                          *(f"jobs/topic/{h[0]}/" for h in sitegen.HUBS)}
     sitemap = open(os.path.join(str(tmp_path), "jobs", "sitemap.xml")).read()
     assert "<loc>https://example.in/india/jobs/exam/cgl/</loc>" in sitemap and "<loc>https://example.in/india/jobs/</loc>" in sitemap
 
@@ -74,3 +75,26 @@ def test_up_police_page_names_its_own_board(tmp_path):
     page = open(os.path.join(str(tmp_path), "jobs", "exam", "uppc", "index.html"), encoding="utf-8").read()
     assert "UP Police Constable 2025" in page and "uppbpb.gov.in" in page
     assert "SSC" not in page and 'href="https://uppbpb.gov.in/FilesUploaded/Notice/a.pdf"' in page
+
+
+def test_topic_pages_list_only_matching_notices_with_official_links(tmp_path):
+    items = ITEMS + [
+        {"id": "bpssc-1", "kind": "recruitment", "lang": "en", "exam": "BPSSC", "examYear": 2026, "source": "bpssc",
+         "publishedAt": "2026-10-01T00:00:00+05:30", "title": "Advt. No.-09/2026: For Selection of Police Sub-Inspector", "dateOnly": True,
+         "files": [{"name": "a.pdf", "url": "https://bpssc.bihar.gov.in/Notices/a.pdf", "size": None}]},
+        {"id": "ongc-1", "kind": "recruitment", "lang": "en", "exam": "ONGC", "examYear": None, "source": "ongc",
+         "publishedAt": "2026-10-16T00:00:00+05:30", "title": "Advertisement for the posts of Consultants", "dateOnly": True,
+         "files": [], "link": "https://ongcindia.com/web/eng/detail?assetEntry=1"},
+    ]
+    sitegen.build(str(tmp_path), FAMILIES, RULES, items, TODAY, "https://example.in/india")
+    read = lambda slug: open(os.path.join(str(tmp_path), "jobs", "topic", slug, "index.html"), encoding="utf-8").read()  # noqa: E731
+    bihar, police, jobs, psu = read("bihar-govt-jobs"), read("police-jobs"), read("latest-govt-jobs"), read("psu-jobs")
+    assert "<title>Bihar Govt Jobs 2026: Bihar Police constable and SI vacancy</title>" in bihar
+    assert 'href="https://bpssc.bihar.gov.in/Notices/a.pdf"' in bihar and "ONGC" not in bihar.split("<h2>More</h2>")[0]
+    assert "Police Sub-Inspector" in police and "Constable (GD) 2026 - shortlisting" in police  # CTGD is SSC + police
+    assert "evil.example" not in police
+    assert "Police Sub-Inspector" in jobs and "Consultants" in jobs and "shortlisting" not in jobs  # new jobs only
+    assert 'href="https://ongcindia.com/web/eng/detail?assetEntry=1"' in psu
+    assert '<link rel="canonical" href="https://example.in/india/jobs/topic/psu-jobs/">' in psu
+    sitemap = open(os.path.join(str(tmp_path), "jobs", "sitemap.xml")).read()
+    assert "<loc>https://example.in/india/jobs/topic/police-jobs/</loc>" in sitemap

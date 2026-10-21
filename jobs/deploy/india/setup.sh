@@ -34,6 +34,8 @@ SITE_URL=https://${repo%%/*}.github.io/${repo##*/}
 # Optional: Telegram channel (bot must be an admin of it)
 JOBS_TELEGRAM_BOT_TOKEN=
 JOBS_TELEGRAM_CHAT_ID=
+# Optional: WhatsApp Channel invite link (https://whatsapp.com/channel/...), shown in the app
+JOBS_WHATSAPP_CHANNEL=
 # Optional: instant push. PUSH_HOST is a hostname that points at this server (see README).
 PUSH_HOST=
 PUSH_CONTACT=mailto:you@example.com
@@ -43,6 +45,7 @@ EOF
 chmod 600 /etc/sarkari.env
 
 chown -R sarkari:sarkari "$home"
+chmod 700 "$home/push" "$home/.ssh"  # VAPID key, subscriptions, deploy key
 echo "== Add this deploy key on GitHub (repo → Settings → Deploy keys → Add, tick 'Allow write access'):"
 cat "$home/.ssh/id_ed25519.pub"
 read -r -p "Press Enter once the key is added... " _

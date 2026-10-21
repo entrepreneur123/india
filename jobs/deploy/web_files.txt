@@ -13,3 +13,15 @@ icon.svg
 icon-192.png
 icon-512.png
 icon-maskable-512.png
+lang/hi.js
+lang/bn.js
+lang/mr.js
+lang/te.js
+lang/ta.js
+lang/gu.js
+lang/ur.js
+lang/kn.js
+lang/or.js
+lang/ml.js
+lang/pa.js
+lang/as.js

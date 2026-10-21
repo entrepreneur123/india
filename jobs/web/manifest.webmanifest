@@ -1,12 +1,12 @@
 {
-  "name": "SSC Job Alerts (unofficial)",
-  "short_name": "SSC Alerts",
-  "description": "Government job notices, results, admit cards, cut-off pages and an eligibility check from ssc.gov.in, uppbpb.gov.in and hssc.gov.in. Not a government app.",
+  "name": "Sarkari Job Alerts (unofficial)",
+  "short_name": "Sarkari Alerts",
+  "description": "Government job notices from official websites (SSC, UP Police, Bihar Police, Haryana SSC, ISRO, ONGC): new jobs, results, admit cards, answer keys, exam dates and an eligibility check. 13 languages. Not a government app.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f7f9",
-  "theme_color": "#1d4ed8",
+  "background_color": "#f6f8fb",
+  "theme_color": "#1769e0",
   "lang": "en-IN",
   "icons": [
     {

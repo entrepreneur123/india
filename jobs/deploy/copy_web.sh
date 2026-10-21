@@ -5,6 +5,7 @@ here="$(cd "$(dirname "$0")" && pwd)"
 dest="$1/jobs"
 mkdir -p "$dest"
 grep -v '^\s*#' "$here/web_files.txt" | grep -v '^\s*$' | while read -r f; do
+  mkdir -p "$(dirname "$dest/$f")"
   cp "$here/../web/$f" "$dest/$f"
 done
 touch "$1/.nojekyll"

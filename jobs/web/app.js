@@ -2,7 +2,7 @@
 //   v1/feed.json, exams.json, calendar.json, resources.json, rules/index.json, rules/<id>.json
 // Every string from SSC goes into the page through textContent, never innerHTML.
 import { evaluate, todayIST } from './eligibility.js';
-import { getLang, setLang, t } from './i18n.js';
+import { EN, LANGS, getLang, guessLang, locale, setLang, t } from './i18n.js';
 import { practiceText } from './passages.js';
 import { ageOn, buildIcs, examEvents, makeSignature, typingScore } from './tools.js';
 import { timeline } from './tracker.js';
@@ -13,28 +13,6 @@ const KINDS = [
   ['answer_key', 'kindAnswer'], ['amendment', 'kindAmendment'], ['vacancy', 'kindVacancy'],
 ];
 const QUALS = ['10', '12', 'diploma', 'graduate', 'postgraduate'];
-const REASON = {
-  age_below_min: (n, r) => (getLang() === 'hi' ? `आयु कम: ${day(r.age.asOn)} को कम से कम ${n} वर्ष होनी चाहिए।` : `Too young: you must be at least ${n} on ${day(r.age.asOn)}.`),
-  age_above_max: (n, r) => (getLang() === 'hi' ? `आयु सीमा से अधिक: ${day(r.age.asOn)} को ${n} वर्ष से कम होनी चाहिए (छूट सहित)।` : `Over the age limit: you must be under ${n} on ${day(r.age.asOn)} (relaxation included).`),
-  age_other_relaxation: (_, r) => (getLang() === 'hi' ? `सामान्य आयु सीमा से अधिक। भूतपूर्व सैनिक / सरकारी कर्मचारी / विधवा की छूट लागू हो सकती है: नोटिस ${r.age.ref} देखें।` : `Over the general age limit. Your ex-serviceman / Govt employee / widow relaxation may cover it: see Notice ${r.age.ref}.`),
-  education_needs: (lvl) => (lvl === 'graduate' ? (getLang() === 'hi' ? 'स्नातक डिग्री चाहिए।' : "Needs a bachelor's degree.") : lvl === '12' ? (getLang() === 'hi' ? '12वीं पास चाहिए।' : 'Needs Class 12 pass.') : (getLang() === 'hi' ? '10वीं पास चाहिए।' : 'Needs Class 10 pass.')),
-  result_needed_by: (d) => (getLang() === 'hi' ? `आपका परिणाम ${day(d)} तक घोषित होना चाहिए।` : `Your result must be declared by ${day(d)}.`),
-  appearing_not_stated: (d) => (getLang() === 'hi' ? `नोटिस में परिणाम-प्रतीक्षित उम्मीदवारों का उल्लेख नहीं है; योग्यता ${day(d)} तक होनी चाहिए।` : `The Notice does not say candidates awaiting results may apply; you must hold the qualification by ${day(d)}.`),
-  pwbd_not_in_notice: () => (getLang() === 'hi' ? 'इस नोटिस में दिव्यांग (PwBD) आयु छूट नहीं दी गई है: नोटिस देखें।' : 'This Notice lists no PwBD age relaxation: check the Notice.'),
-  gender_only: (g) => (getLang() === 'hi' ? `केवल ${g === 'male' ? 'पुरुष' : g === 'female' ? 'महिला' : 'पुरुष/महिला'} उम्मीदवारों के लिए।` : `Only for ${g.replace('/', ' / ')} candidates.`),
-  'requires:state_language': () => (getLang() === 'hi' ? 'राज्य की राजभाषा/क्षेत्रीय भाषा में दक्षता चाहिए (माध्यमिक स्तर का प्रमाण पत्र)।' : "Needs proficiency in the State's official/regional language (Secondary School level certificate)."),
-  'requires:jso_maths_or_statistics': () => (getLang() === 'hi' ? '12वीं में गणित में 60% अंक, या डिग्री में सांख्यिकी विषय चाहिए।' : 'Needs 60% in Mathematics at Class 12, or Statistics as a subject in your degree.'),
-  'requires:sig2_degree_subject': () => (getLang() === 'hi' ? 'डिग्री सांख्यिकी, गणित, अर्थशास्त्र, जनसांख्यिकी, कंप्यूटर आदि विषयों में होनी चाहिए (नोटिस पैरा 8.3)।' : 'Degree must be in Statistics, Mathematics, Economics, Demography, Population Studies, Operations Research, IT, Computer Science/Engineering/Applications, Data Science or AI.'),
-  'requires:driving_licence_lmv': () => (getLang() === 'hi' ? 'PE&MT की तिथि पर LMV (मोटरसाइकिल और कार) का वैध ड्राइविंग लाइसेंस चाहिए।' : 'Needs a valid LMV (motorcycle and car) driving licence on the date of the physical test.'),
-  'requires:si_fire_qualification': () => (getLang() === 'hi' ? 'भौतिकी, रसायन और गणित के साथ B.Sc., या 10वीं के साथ मैकेनिकल/सिविल/इलेक्ट्रिकल आदि में 3 वर्ष का डिप्लोमा चाहिए।' : 'Needs a B.Sc. with Physics, Chemistry and Mathematics, or Class 10 plus a 3-year diploma in Mechanical, Civil, Electrical or a listed engineering branch.'),
-};
-const NOTE = {
-  physical_standards: { en: 'Physical and medical standards apply (see the Notice).', hi: 'शारीरिक और चिकित्सा मानक लागू (नोटिस देखें)।' },
-  bro_male_only: { en: 'Border Roads Organisation vacancies: male candidates only, physical standards apply.', hi: 'सीमा सड़क संगठन की रिक्तियाँ: केवल पुरुष, शारीरिक मानक लागू।' },
-  deo_science_maths_some: { en: 'In some offices (Consumer Affairs & Food, SSC, Culture) this post needs Class 12 Science with Mathematics.', hi: 'कुछ कार्यालयों में इस पद के लिए 12वीं विज्ञान (गणित सहित) चाहिए।' },
-  stenography_skill_test: { en: 'A stenography skill test is part of the selection.', hi: 'चयन में आशुलिपि कौशल परीक्षा शामिल है।' },
-};
-
 const $ = (id) => document.getElementById(id);
 const store = {
   get(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } },
@@ -54,7 +32,6 @@ function el(tag, attrs = {}, ...children) {
 // replaceChildren(null) would print "null" (seen twice in testing): every view goes through this.
 const fill = (node, ...children) => node.replaceChildren(...children.flat().filter((c) => c !== null && c !== undefined && c !== false));
 
-const locale = () => (getLang() === 'hi' ? 'hi-IN' : 'en-IN');
 function day(iso) {
   return new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
     .format(new Date(`${iso}T00:00:00Z`));
@@ -68,8 +45,14 @@ function size(bytes) {
   if (!Number.isFinite(bytes)) return '';
   return bytes >= 1e6 ? ` · ${(bytes / 1e6).toFixed(1)} MB` : ` · ${Math.max(1, Math.round(bytes / 1e3))} KB`;
 }
+// Links open only to government domains and to the recruiters' own sites (exams.json "sources",
+// e.g. ongcindia.com): a headline can never send anyone to a look-alike site.
+const officialHosts = new Set();
 function safeUrl(u) {
-  try { const x = new URL(u); return x.protocol === 'https:' && /(^|\.)(gov|nic)\.in$/.test(x.hostname) ? x.href : null; } catch { return null; }
+  try {
+    const x = new URL(u);
+    return x.protocol === 'https:' && (/(^|\.)(gov|nic)\.in$/.test(x.hostname) || officialHosts.has(x.hostname)) ? x.href : null;
+  } catch { return null; }
 }
 function payText(rules, level) {
   if (!level || !rules.payScales) return null;
@@ -85,6 +68,9 @@ async function getJSON(path) {
   const res = await fetch(new URL(path, DATA), { cache: 'no-cache' });
   if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
   cache[path] = await res.json();
+  if (path === 'exams.json') {
+    for (const src of Object.values(cache[path].sources ?? {})) { try { officialHosts.add(new URL(src.site).hostname); } catch { /* skip */ } }
+  }
   return cache[path];
 }
 const errorBox = (e) => { console.error(e); return el('p', { class: 'error' }, t('loadError')); };
@@ -106,7 +92,8 @@ function toggleSave(item, btn) {
   if (s[item.id]) delete s[item.id]; else s[item.id] = item;
   store.set('saved', s);
   toast(t(s[item.id] ? 'toastSaved' : 'toastRemoved'));
-  btn.textContent = s[item.id] ? `★ ${t('saved')}` : `☆ ${t('save')}`;
+  btn.querySelector('span').textContent = t(s[item.id] ? 'saved' : 'save');
+  btn.setAttribute('aria-label', t(s[item.id] ? 'saved' : 'save'));
   btn.setAttribute('aria-pressed', String(Boolean(s[item.id])));
 }
 function toggleFollow(code, btn) {
@@ -118,98 +105,132 @@ function toggleFollow(code, btn) {
   btn.textContent = f.has(code) ? `✓ ${t('following')}` : `+ ${t('follow')}`;
   btn.setAttribute('aria-pressed', String(f.has(code)));
 }
+const appUrl = () => new URL('./', location.href).href;
 async function share(title, url) {
-  const text = t('shareText', { title, url });
+  const text = t('shareText', { title, url, app: t('appName') });
   if (navigator.share) {
-    try { await navigator.share({ title, text, url }); return; } catch { /* cancelled: fall through to nothing */ return; }
+    try { await navigator.share({ title, text, url }); } catch { /* cancelled */ }
+    return;
   }
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  shareWhatsApp(text);
 }
+// WhatsApp is how most people in India pass a link on: its own button, not hidden in the share sheet.
+const shareWhatsApp = (text) => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
 
 // ---------- shared pieces ----------
-function itemCard(i, { isNew = false, families = {} } = {}) {
-  const pdf = i.files.map((f) => safeUrl(f.url)).find(Boolean);
-  const saveBtn = el('button', { class: 'chip small', type: 'button', 'aria-pressed': String(Boolean(savedItems()[i.id])) },
-    savedItems()[i.id] ? `★ ${t('saved')}` : `☆ ${t('save')}`);
-  saveBtn.addEventListener('click', () => toggleSave(i, saveBtn));
+const KIND_ICON = {
+  recruitment: 'briefcase', result: 'clipboardCheck', admit_card: 'fileCheck', answer_key: 'key',
+  amendment: 'pencil', vacancy: 'users', schedule: 'calendar', notice: 'bell',
+};
+const sourceName = (i, families, sources) => {
   const fam = i.exam ? families[i.exam] : null;
-  return el('li', { class: 'item' },
-    el('div', { class: 'meta' },
-      isNew ? el('span', { class: 'badge new' }, t('newBadge')) : null,
-      el('span', { class: `badge ${i.kind}` }, t(`kind_${i.kind}`)),
-      // SSC's codes (CGL, CHSL) are what candidates say; other boards' codes are ours, so their name is shown.
-      i.exam ? el('a', { class: 'badge', href: `#exam/${i.exam}`, title: fam?.name ?? '' }, `${fam?.source ? fam.short : i.exam}${i.examYear ? ` ${i.examYear}` : ''}`) : null,
-      // Some boards give only the day; showing midnight as a time would be invented.
-      el('time', { datetime: i.dateOnly ? i.publishedAt.slice(0, 10) : i.publishedAt }, i.dateOnly ? day(i.publishedAt.slice(0, 10)) : `${when(i.publishedAt)} ${t('ist')}`)),
-    el('h3', { lang: i.lang }, i.title),
-    el('div', { class: 'files' },
-      ...i.files.map((f) => {
-        const href = safeUrl(f.url);
-        return href ? el('a', { href, rel: 'noopener', target: '_blank' }, `${t('pdf')}: ${f.name}${size(f.size)}`) : null;
-      }),
-      i.link && safeUrl(i.link) ? el('a', { href: safeUrl(i.link), rel: 'noopener', target: '_blank' }, t('officialPage')) : null),
-    el('div', { class: 'actions' }, saveBtn,
-      pdf ? el('button', { class: 'chip small', type: 'button', onclick: () => share(i.title, pdf) }, `↗ ${t('share')}`) : null));
+  // SSC's codes (CGL, CHSL) are what candidates say; other boards' codes are ours, so their names are shown.
+  if (fam) return `${fam.source ? fam.short : i.exam}${i.examYear ? ` ${i.examYear}` : ''}`;
+  return sources?.[i.source ?? 'ssc']?.short ?? (i.source ?? 'SSC').toUpperCase();
+};
+function itemCard(i, { isNew = false, families = {}, sources = {} } = {}) {
+  const official = i.files.map((f) => safeUrl(f.url)).find(Boolean) ?? (i.link ? safeUrl(i.link) : null);
+  const isSaved = Boolean(savedItems()[i.id]);
+  const saveBtn = el('button', { class: 'act', type: 'button', 'aria-pressed': String(isSaved), 'aria-label': t(isSaved ? 'saved' : 'save') },
+    icon(ICON.bookmark), el('span', {}, t(isSaved ? 'saved' : 'save')));
+  saveBtn.addEventListener('click', () => toggleSave(i, saveBtn));
+  const text = () => t('shareText', { title: i.title, url: official, app: t('appName') });
+  return el('li', { class: `item k-${i.kind}` },
+    el('span', { class: 'kicon', 'aria-hidden': 'true' }, icon(ICON[KIND_ICON[i.kind]] ?? ICON.bell)),
+    el('div', { class: 'grow' },
+      el('div', { class: 'meta' },
+        isNew ? el('span', { class: 'badge-new' }, t('newBadge')) : null,
+        el('span', { class: 'label' }, t(`kind_${i.kind}`)),
+        i.exam && i.exam !== 'LDCE' ? el('a', { href: `#exam/${i.exam}`, title: families[i.exam]?.name ?? '' }, sourceName(i, families, sources))
+          : el('span', {}, sourceName(i, families, sources)),
+        // Some boards give only the day; showing midnight as a time would be invented.
+        el('time', { datetime: i.dateOnly ? i.publishedAt.slice(0, 10) : i.publishedAt }, i.dateOnly ? day(i.publishedAt.slice(0, 10)) : `${when(i.publishedAt)} ${t('ist')}`)),
+      el('h3', { lang: i.lang }, i.title),
+      el('div', { class: 'files' },
+        ...i.files.map((f) => {
+          const href = safeUrl(f.url);
+          return href ? el('a', { href, rel: 'noopener', target: '_blank' }, icon(ICON.file), `${t('pdf')}: ${f.name}${size(f.size)}`) : null;
+        }),
+        i.link && safeUrl(i.link) ? el('a', { href: safeUrl(i.link), rel: 'noopener', target: '_blank' }, icon(ICON.external), t('officialPage')) : null),
+      el('div', { class: 'acts' }, saveBtn,
+        official ? el('button', { class: 'act wa', type: 'button', onclick: () => shareWhatsApp(text()) }, icon(ICON.whatsapp), el('span', {}, t('shareWhatsapp'))) : null,
+        official && navigator.share ? el('button', { class: 'act', type: 'button', 'aria-label': t('share'), onclick: () => share(i.title, official) }, icon(ICON.share)) : null)));
 }
 
-// ---------- Latest ----------
-const filters = { board: 'all', ...store.get('filters', { kind: 'all', exam: 'all', qual: 'all', lang: 'en', dept: false, mine: false, q: '' }) };
+// ---------- All updates, filtered (#jobs, #jobs/kind/result, #jobs/sector/police, #jobs/state/BR) ----------
+const filters = {
+  board: 'all', sector: 'all', state: 'all',
+  ...store.get('filters', { kind: 'all', exam: 'all', qual: 'all', lang: 'en', dept: false, mine: false, q: '' }),
+};
+const SECTOR_ORDER = ['ssc', 'police', 'defence', 'railway', 'bank', 'psu', 'science', 'state', 'teaching'];
+const sectorsOf = (i, families) => families[i.exam]?.sectors ?? ((i.source ?? 'ssc') === 'ssc' ? ['ssc'] : []);
+const stateOf = (i, sources) => sources[i.source ?? 'ssc']?.state ?? null;
+// SSC posts each notice in English and Hindi; one copy is enough unless asked. Other boards post one copy.
+const stateName = (x) => (`state_${x}` in EN ? t(`state_${x}`) : x); // a new board's state before its name is translated
+const oneCopy = (i) => (i.source ?? 'ssc') !== 'ssc' || i.lang === 'en';
 
-async function viewLatest(root, preloaded = null) {
-  let feed;
-  let families;
+async function viewJobs(root, field = null, value = null) {
+  let feed; let families; let sources;
   try {
-    [feed, { families }] = await Promise.all([preloaded ?? getJSON('feed.json'), getJSON('exams.json')]);
+    [feed, { families, sources = {} }] = await Promise.all([getJSON('feed.json'), getJSON('exams.json')]);
   } catch (e) { fill(root, errorBox(e)); return; }
+  // A link from Home sets one filter and clears the others it would fight with.
+  if (field === 'kind') Object.assign(filters, { kind: value, sector: 'all', state: 'all', board: 'all', exam: 'all' });
+  if (field === 'sector') Object.assign(filters, { kind: 'all', sector: value, state: 'all', board: 'all', exam: 'all' });
+  if (field === 'state') Object.assign(filters, { kind: 'all', sector: 'all', state: value, board: 'all', exam: 'all' });
   const lastSeen = store.get('lastSeen', null);
   const newest = feed.items.reduce((m, i) => (i.publishedAt > m ? i.publishedAt : m), '');
   const isNew = (i) => lastSeen !== null && i.publishedAt > lastSeen;
-  const newCount = feed.items.filter(isNew).length;
+  const newCount = feed.items.filter((i) => isNew(i) && oneCopy(i)).length;
 
-  const list = el('ul', { class: 'list' });
+  const title = el('h1', { class: 'page' });
+  const count = el('p', { class: 'small', 'aria-live': 'polite' });
+  const list = el('ul', { class: 'rowlist' });
   const summary = el('summary');
   const render = () => {
     store.set('filters', filters);
-    // How many filters are set, shown on the closed box (kept up to date as they change).
-    const active = ['board', 'exam', 'qual', 'mine', 'dept'].filter((k) => (['board', 'exam', 'qual'].includes(k) ? filters[k] !== 'all' : filters[k])).length
-      + (filters.lang !== 'en' ? 1 : 0);
+    const active = ['board', 'exam', 'qual', 'sector', 'state'].filter((k) => filters[k] !== 'all').length
+      + ['mine', 'dept'].filter((k) => filters[k]).length + (filters.lang !== 'en' ? 1 : 0);
     summary.textContent = `${t('filters')}${active ? ` (${active})` : ''}`;
+    title.textContent = filters.sector !== 'all' ? t('jobsSector', { name: t(`sector_${filters.sector}`) })
+      : filters.state === 'central' ? t('centralJobs')
+        : filters.state !== 'all' ? t('jobsState', { name: stateName(filters.state) })
+          : filters.kind !== 'all' ? t('jobsKind', { name: t(KINDS.find(([k]) => k === filters.kind)?.[1] ?? 'kindAll') }) : t('homeLatest');
     const q = filters.q.trim().toLowerCase();
     const mine = new Set(followed());
     const items = feed.items.filter((i) =>
       (filters.kind === 'all' || i.kind === filters.kind) &&
       (filters.board === 'all' || (i.source ?? 'ssc') === filters.board) &&
+      (filters.sector === 'all' || sectorsOf(i, families).includes(filters.sector)) &&
+      (filters.state === 'all' || (filters.state === 'central' ? !stateOf(i, sources) : stateOf(i, sources) === filters.state)) &&
       (filters.exam === 'all' || i.exam === filters.exam) &&
       (filters.qual === 'all' || (families[i.exam]?.qualifications ?? []).includes(filters.qual)) &&
-      // SSC posts each notice in English and Hindi; other boards post one copy, always shown.
       (filters.lang === 'all' || i.lang === filters.lang || (i.source ?? 'ssc') !== 'ssc') &&
       (filters.dept || i.exam !== 'LDCE') &&
       (!filters.mine || mine.has(i.exam)) &&
-      // Headlines from some boards are Hindi only: the exam's names are searched too ("up police", "cgl", "haryana").
-      (!q || `${i.title} ${i.exam ?? ''} ${families[i.exam]?.short ?? ''} ${families[i.exam]?.name ?? ''}`.toLowerCase().includes(q)));
-    fill(list, ...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families }))
-      : [el('li', { class: 'empty' }, t('nothing'))]));
+      // Headlines from some boards are Hindi only: the exam's and board's names are searched too ("up police", "bihar", "isro").
+      (!q || `${i.title} ${i.exam ?? ''} ${families[i.exam]?.short ?? ''} ${families[i.exam]?.name ?? ''} ${sources[i.source ?? 'ssc']?.name ?? ''}`.toLowerCase().includes(q)));
+    count.textContent = `${t('updated', { time: when(feed.generatedAt) })} · ${items.length}`;
+    fill(list, ...(items.length ? items.slice(0, 150).map((i) => itemCard(i, { isNew: isNew(i), families, sources }))
+      : [el('li', { class: 'empty' }, filters.sector !== 'all' || filters.state !== 'all' ? t('notCovered') : t('nothing'))]));
   };
-  const chips = el('div', { class: 'filters', role: 'group' });
+  const chips = el('div', { class: 'pills', role: 'group' });
   const drawChips = () => fill(chips, ...KINDS.map(([k, key]) => el('button', {
-    class: 'chip', type: 'button', 'aria-pressed': String(filters.kind === k),
+    class: 'pill', type: 'button', 'aria-pressed': String(filters.kind === k),
     onclick: () => { filters.kind = k; drawChips(); render(); },
   }, t(key))));
   drawChips();
+  const select = (key, label, options) => {
+    const x = el('select', { 'aria-label': label, onchange: (e) => { filters[key] = e.target.value; render(); } },
+      el('option', { value: 'all' }, label), ...options.map(([v, text]) => el('option', { value: v }, text)));
+    x.value = options.some(([v]) => v === filters[key]) ? filters[key] : 'all';
+    if (x.value === 'all') filters[key] = 'all';
+    return x;
+  };
   const exams = [...new Set(feed.items.map((i) => i.exam).filter((e) => e && e !== 'LDCE'))].sort();
-  const examSel = el('select', { 'aria-label': t('allExams'), onchange: (e) => { filters.exam = e.target.value; render(); } },
-    el('option', { value: 'all' }, t('allExams')), ...exams.map((e) => el('option', { value: e }, families[e]?.name ?? e)));
-  examSel.value = exams.includes(filters.exam) ? filters.exam : 'all';
-  const qualSel = el('select', { 'aria-label': t('anyQualification'), onchange: (e) => { filters.qual = e.target.value; render(); } },
-    el('option', { value: 'all' }, t('anyQualification')), ...QUALS.map((q) => el('option', { value: q }, t(`qual_${q}`))));
-  qualSel.value = filters.qual;
-  const langSel = el('select', { 'aria-label': 'Language', onchange: (e) => { filters.lang = e.target.value; render(); } },
-    el('option', { value: 'en' }, t('langEn')), el('option', { value: 'hi' }, t('langHi')), el('option', { value: 'all' }, t('langBoth')));
-  langSel.value = filters.lang;
   const boards = [...new Set(feed.items.map((i) => i.source ?? 'ssc'))];
-  const boardSel = boards.length > 1 ? el('select', { 'aria-label': t('allBoards'), onchange: (e) => { filters.board = e.target.value; render(); } },
-    el('option', { value: 'all' }, t('allBoards')), ...boards.map((b) => el('option', { value: b }, t(`board_${b}`)))) : null;
-  if (boardSel) boardSel.value = boards.includes(filters.board) ? filters.board : 'all';
+  const sectors = SECTOR_ORDER.filter((x) => feed.items.some((i) => sectorsOf(i, families).includes(x)));
+  const states = [...new Set(Object.values(sources).map((x) => x.state).filter(Boolean))].sort();
   const search = el('input', { type: 'search', placeholder: t('search'), 'aria-label': t('search'), value: filters.q });
   search.addEventListener('input', () => { filters.q = search.value; render(); });
   const check = (key, label) => {
@@ -218,15 +239,22 @@ async function viewLatest(root, preloaded = null) {
     box.addEventListener('change', () => { filters[key] = box.checked; render(); });
     return el('label', { class: 'check' }, box, ` ${label}`);
   };
-  // Content first: on a 360 px phone the filters used to fill the whole first screen.
-  chips.classList.add('scroll-row');
-
   fill(root,
-    search, chips,
+    title, el('label', { class: 'searchbox' }, icon(ICON.search), search), el('div', { style: 'height:10px' }), chips,
     el('details', { class: 'filter-box' }, summary,
-      el('div', { class: 'filters' }, boardSel, examSel, qualSel, langSel, check('mine', t('myExams')), check('dept', t('departmental')))),
-    el('p', { class: 'small', 'aria-live': 'polite' }, t('updated', { time: when(feed.generatedAt) }),
-      newCount ? el('strong', {}, ` · ${t('newSince', { n: newCount })}`) : null),
+      el('div', { class: 'filters' },
+        select('sector', t('anySector'), sectors.map((x) => [x, t(`sector_${x}`)])),
+        select('state', t('anyState'), [['central', t('centralJobs')], ...states.map((x) => [x, stateName(x)])]),
+        boards.length > 1 ? select('board', t('allBoards'), boards.map((b) => [b, sources[b]?.short ?? b])) : null,
+        select('exam', t('allExams'), exams.map((e) => [e, families[e]?.name ?? e])),
+        select('qual', t('anyQualification'), QUALS.map((q) => [q, t(`qual_${q}`)])),
+        el('select', { 'aria-label': t('language'), onchange: (e) => { filters.lang = e.target.value; render(); } },
+          ...[['en', 'English'], ['hi', 'हिन्दी'], ['all', 'English + हिन्दी']].map(([v, l]) => {
+            const o = el('option', { value: v }, l); if (filters.lang === v) o.selected = true; return o;
+          })),
+        check('mine', t('myExams')), check('dept', t('departmental'))),
+      el('p', { class: 'small' }, t('titlesNote'))),
+    count, newCount ? el('p', { class: 'small' }, el('strong', {}, t('newSince', { n: newCount }))) : null,
     list);
   render();
   if (newest) store.set('lastSeen', newest);
@@ -246,7 +274,7 @@ async function viewExams(root) {
     const btn = el('button', { class: 'chip small', type: 'button', 'aria-pressed': String(mine.has(code)) },
       mine.has(code) ? `✓ ${t('following')}` : `+ ${t('follow')}`);
     btn.addEventListener('click', (ev) => { ev.preventDefault(); toggleFollow(code, btn); });
-    return el('li', { class: 'item' },
+    return el('li', { class: 'box' },
       el('h3', {}, el('a', { href: `#exam/${code}` }, f.name)),
       el('div', { class: 'small' }, f.short ?? '', ' · ', el('span', { lang: 'hi' }, f.hi)),
       el('div', { class: 'small' }, f.qualifications ? t('minQual', { q: f.qualifications.map((q) => t(`qual_${q}`)).join(' / ') }) : t('qualUnknown')),
@@ -388,13 +416,24 @@ function examDetails(r, entry, today) {
 }
 
 // ---------- Eligibility ----------
+// Reason codes from eligibility.js ("age_below_min:18", "requires:state_language", ...) in words.
 function reasonText(code, rules) {
-  if (REASON[code]) return REASON[code](null, rules);
   const i = code.indexOf(':');
-  const [k, v] = [code.slice(0, i), code.slice(i + 1)];
-  return REASON[k] ? REASON[k](v, rules) : code;
+  const [k, v] = i < 0 ? [code, null] : [code.slice(0, i), code.slice(i + 1)];
+  const asOn = day(rules.age.asOn);
+  switch (k) {
+    case 'age_below_min': case 'age_above_max': return t(`r_${k}`, { n: v, date: asOn });
+    case 'age_other_relaxation': return t('r_age_other_relaxation', { ref: rules.age.ref });
+    case 'education_needs': return t(`r_education_${v === 'graduate' || v === '12' ? v : '10'}`);
+    case 'result_needed_by': case 'appearing_not_stated': return t(`r_${k}`, { date: day(v) });
+    case 'pwbd_not_in_notice': return t('r_pwbd_not_in_notice');
+    case 'gender_only': return v === 'male' || v === 'female' ? t(`r_gender_${v}`)
+      : t('r_gender_other', { g: v.split('/').map((g) => (['male', 'female', 'other'].includes(g) ? t(g) : g)).join(' / ') });
+    case 'requires': return `r_${v}` in EN ? t(`r_${v}`) : code;
+    default: return code;
+  }
 }
-const noteText = (n) => NOTE[n]?.[getLang()] ?? NOTE[n]?.en ?? n;
+const noteText = (n) => (`note_${n}` in EN ? t(`note_${n}`) : n);
 
 function profileForm({ index = null, preselect = null, submitLabel, onSubmit }) {
   const saved = store.get('profile', {});
@@ -483,7 +522,7 @@ async function viewForMe(root, editing = false) {
   const card = ({ e, rules, r, status }) => {
     const next = timeline(rules, feed.items, rules.exam, rules.examYear, today).find((s) => s.state === 'now' || s.state === 'next');
     const nextLabel = next ? `${next.key === 'exam' ? next.label : t(`stage_${next.key}`)}: ${next.at ? day(next.at) : next.from ? `${day(next.from)} – ${day(next.to)}` : next.when ?? t('notAnnounced')}` : null;
-    return el('li', { class: 'item' },
+    return el('li', { class: 'box' },
       el('h3', {}, el('a', { href: `#exam/${rules.exam}` }, e.title)),
       el('div', { class: `banner small-banner ${status}` }, statusText(e, today)),
       el('div', { class: 'summary' },
@@ -545,7 +584,7 @@ async function viewResult(root) {
     g.lists.push(l);
     if (!g.items.includes(l.item)) g.items.push(l.item);
   }
-  for (const g of groups) g.label = `${g.name} · ${g.lists.length} ${g.lists.length === 1 ? 'list' : 'lists'}`;
+  for (const g of groups) g.label = `${g.name} · ${t('listWord', { n: g.lists.length })}`;
   const sel = el('select', { id: 'r-exam' }, ...groups.map((g, i) => el('option', { value: String(i) }, g.label)));
   const roll = el('input', { id: 'r-roll', type: 'text', inputmode: 'numeric', autocomplete: 'off', placeholder: t('rollPlaceholder'), maxlength: '20' }); // not a real roll number: those are people's
   roll.value = store.get('roll', '');
@@ -580,7 +619,7 @@ async function viewResult(root) {
 function renderResult(box, rules, r, today) {
   const of = (s) => r.posts.filter((p) => p.status === s);
   const lines = (p) => [...p.reasons.map((c) => reasonText(c, rules)), ...p.notes.map(noteText)];
-  const card = (p) => el('li', { class: `item post ${p.status}` },
+  const card = (p) => el('li', { class: `box post ${p.status}` },
     el('div', { class: 'meta' }, el('span', {}, p.payLevel ? t('payLevel', { l: p.payLevel, g: p.group }) : t('groupOnly', { g: p.group }))),
     el('h3', {}, p.name), el('div', { class: 'small' }, p.org),
     el('div', { class: 'small' }, t('bornWindow', { from: day(p.bornFrom), to: day(p.bornTo) })),
@@ -754,9 +793,11 @@ async function viewMore(root) {
   const themeSel = el('select', { id: 'set-theme' }, ...['auto', 'light', 'dark'].map((v) => el('option', { value: v }, t(`theme${v[0].toUpperCase()}${v.slice(1)}`))));
   themeSel.value = store.get('theme', 'auto');
   themeSel.addEventListener('change', () => applyTheme(themeSel.value));
-  const langSel = el('select', { id: 'set-lang' }, el('option', { value: 'en' }, 'English'), el('option', { value: 'hi' }, 'हिन्दी'));
+  const langSel = el('select', { id: 'set-lang' }, ...LANGS.map((l) => el('option', { value: l.code }, l.name)));
   langSel.value = getLang();
-  langSel.addEventListener('change', () => { setLang(langSel.value); store.set('lang', getLang()); syncAlerts(); paintShell(); route(); });
+  langSel.addEventListener('change', () => changeLang(langSel.value));
+  let sources = {};
+  try { ({ sources = {} } = await getJSON('exams.json')); } catch { /* list left out */ }
   fill(root,
     el('div', { class: 'tiles' },
       el('a', { class: 'tile', href: '#saved' }, el('strong', {}, t('savedLink')), el('span', { class: 'small' }, t('followedExams'))),
@@ -770,6 +811,11 @@ async function viewMore(root) {
     el('div', { class: 'card grid' },
       el('div', { class: 'field' }, el('label', { for: 'set-lang' }, t('language')), langSel),
       el('div', { class: 'field' }, el('label', { for: 'set-theme' }, t('theme')), themeSel)),
+    el('h2', {}, t('recruitersTitle')), el('p', { class: 'small' }, t('recruitersNote')),
+    el('ul', { class: 'rowlist' }, ...Object.values(sources).map((x) => (safeUrl(x.site) ? el('li', {},
+      el('a', { class: 'drow', href: safeUrl(x.site), rel: 'noopener', target: '_blank' },
+        el('span', { class: 'grow' }, el('strong', {}, x.short), el('div', { class: 'small' }, `${x.name} · ${x.state ? stateName(x.state) : t('centralJobs')}`)),
+        icon(ICON.external, 'chev'))) : null))),
     el('h2', {}, t('aboutTitle')), el('div', { class: 'card' }, el('p', {}, t('aboutText')), el('p', { class: 'small' }, t('disclaimer'))));
 }
 
@@ -900,39 +946,92 @@ function installCard() {
     } }, t('installBtn')) : el('p', {}, t('installIos')));
 }
 
-// ---------- Home: what is open, what is coming, what is new ----------
+// ---------- Home: search, shortcuts, sectors and states, what closes soon, exam dates, latest ----------
 async function viewHome(root) {
-  let index; let cal; let feed;
+  let index; let families; let sources;
+  // The feed is the biggest file: start it now, draw everything else without waiting for it.
+  const feedP = getJSON('feed.json');
+  feedP.catch(() => { /* shown by the latest box */ });
   try {
-    // The feed is the biggest file: start it now, but draw "open now" and "exam dates" without waiting for it.
-    feed = getJSON('feed.json');
-    feed.catch(() => { /* shown by the latest-notices box */ });
-    [{ exams: index }, cal] = await Promise.all([getJSON('rules/index.json'), getJSON('calendar.json')]);
+    [{ exams: index }, { families, sources = {} }] = await Promise.all([getJSON('rules/index.json'), getJSON('exams.json')]);
   } catch (e) { fill(root, errorBox(e)); return; }
   const today = todayIST();
-  const open = index.filter((e) => statusOf(e, today) === 'open');
+
+  const search = el('input', { type: 'search', placeholder: t('search'), 'aria-label': t('search'), enterkeyhint: 'search' });
+  // A search from Home looks through everything, not inside a sector or state picked earlier.
+  search.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { Object.assign(filters, { q: search.value, kind: 'all', sector: 'all', state: 'all', board: 'all', exam: 'all' }); location.hash = '#jobs'; }
+  });
+  const quick = [
+    ['#jobs/kind/recruitment', 'briefcase', 'qaLatest'], ['#jobs/kind/result', 'clipboardCheck', 'qaResults'],
+    ['#jobs/kind/admit_card', 'fileCheck', 'qaAdmit'], ['#jobs/kind/answer_key', 'key', 'qaAnswer'],
+    ['#forme', 'shieldCheck', 'qaEligibility'], ['#result', 'search', 'qaRoll'],
+  ];
+  const sectors = SECTOR_ORDER.filter((x) => Object.entries(families).some(([c, f]) => c !== 'LDCE' && (f.sectors ?? []).includes(x)));
+  const states = [...new Set(Object.values(sources).map((x) => x.state).filter(Boolean))].sort();
+  const closing = index.filter((e) => statusOf(e, today) === 'open').sort((a, b) => (a.applyTo < b.applyTo ? -1 : 1));
   const in30 = new Date(Date.parse(`${today}T00:00:00Z`) + 30 * 864e5).toISOString().slice(0, 10);
   const coming = index.flatMap((r) => (r.examSchedule ?? [])
     .filter((x) => x.from && x.to >= today && x.from <= in30).map((x) => ({ r, x })))
     .sort((a, b) => (a.x.from < b.x.from ? -1 : 1));
-  const nextPlan = cal.entries.filter((c) => c.applyFrom > today).sort((a, b) => (a.applyFrom < b.applyFrom ? -1 : 1))[0];
-  const latestBox = el('div', {}, ...skeleton()); // filled when the feed arrives
+  const monthDay = (iso) => {
+    const d = new Date(`${iso}T00:00:00Z`);
+    return [new Intl.DateTimeFormat(locale(), { day: 'numeric', timeZone: 'UTC' }).format(d),
+      new Intl.DateTimeFormat(locale(), { month: 'short', timeZone: 'UTC' }).format(d)];
+  };
+  const latestBox = el('div', {}, ...skeleton());
+  const channels = el('div');
   fill(root,
-    store.get('profile', null)?.dob ? null : el('a', { class: 'banner upcoming cta', href: '#forme' }, `${t('forMeNoProfile')} →`),
-    el('h2', {}, t('homeOpen')),
-    open.length ? el('div', { class: 'tiles' }, ...open.map((e) => el('a', { class: 'tile', href: `#exam/${e.exam}` },
-      el('strong', {}, e.title), el('span', { class: 'count open' }, statusText(e, today)))))
-      : el('div', { class: 'card' }, el('p', {}, t('homeNoneOpen')),
-        nextPlan ? el('p', { class: 'small' }, t('homeNextPlan', { title: nextPlan.title, from: day(nextPlan.applyFrom), to: day(nextPlan.applyTo) })) : null),
-    el('h2', {}, t('homeComing')),
-    coming.length ? el('div', { class: 'tiles' }, ...coming.map(({ r, x }) => {
+    el('label', { class: 'searchbox' }, icon(ICON.search), search),
+    el('nav', { class: 'quick', 'aria-label': t('homeLatest') }, ...quick.map(([href, ic, key]) => el('a', { href }, icon(ICON[ic]), t(key)))),
+    sectors.length ? el('h2', {}, t('homeSectors')) : null,
+    sectors.length ? el('div', { class: 'pills' }, ...sectors.map((x) => el('a', { class: 'pill', href: `#jobs/sector/${x}` }, t(`sector_${x}`)))) : null,
+    el('h2', {}, t('homeStates')),
+    el('div', { class: 'pills' }, el('a', { class: 'pill', href: '#jobs/state/central' }, t('centralJobs')),
+      ...states.map((x) => el('a', { class: 'pill', href: `#jobs/state/${x}` }, stateName(x)))),
+    closing.length ? el('h2', {}, t('homeClosing')) : null,
+    closing.length ? el('div', { class: 'hscroll' }, ...closing.map((e) => {
+      const left = daysBetween(today, e.applyTo);
+      return el('a', { class: 'hcard', href: `#exam/${e.exam}` },
+        el('span', { class: `days${left > 7 ? ' ok' : ''}` }, left === 0 ? t('lastDay') : t('daysLeft', { n: left })),
+        el('h3', {}, e.title), el('div', { class: 'small' }, t('status_open', { date: day(e.applyTo) })));
+    })) : null,
+    coming.length ? el('h2', {}, t('homeComing')) : null,
+    coming.length ? el('ul', { class: 'rowlist' }, ...coming.map(({ r, x }) => {
+      const [d, m] = monthDay(x.from);
       const now = x.from <= today;
-      const n = daysBetween(today, x.from);
-      return el('a', { class: 'tile', href: `#exam/${r.exam}` }, el('strong', {}, `${r.title}`), el('span', { class: 'small' }, `${x.stage} · ${day(x.from)} – ${day(x.to)}`),
-        el('br'), el('span', { class: `count ${now ? 'now' : 'soon'}` }, now ? t('onNow') : n === 0 ? t('today') : t('inDays', { n })));
-    })) : el('p', { class: 'card small' }, t('homeNoneComing')),
-    el('h2', {}, t('homeLatest')), latestBox);
-  await viewLatest(latestBox, feed);
+      return el('li', {}, el('a', { class: 'drow', href: `#exam/${r.exam}` },
+        el('span', { class: 'dblock', 'aria-hidden': 'true' }, el('strong', {}, d), el('span', {}, m)),
+        el('span', { class: 'grow' }, el('h3', {}, r.title),
+          el('span', { class: 'small' }, `${x.stage} · ${day(x.from)} – ${day(x.to)} · `,
+            el('strong', {}, now ? t('onNow') : daysBetween(today, x.from) === 0 ? t('today') : t('inDays', { n: daysBetween(today, x.from) })))),
+        icon(ICON.chevron, 'chev')));
+    })) : null,
+    el('div', { class: 'sec-head' }, el('h2', {}, t('homeLatest')),
+      el('a', { class: 'more-link', href: '#jobs/kind/all' }, t('moreUpdates'), icon(ICON.chevron))),
+    latestBox,
+    el('h2', {}, t('homeChannels')), channels,
+    el('p', { class: 'trust' }, icon(ICON.shieldCheck), t('trustLine')));
+
+  siteInfo().then((site) => {
+    const tg = typeof site.telegram === 'string' && /^https:\/\/t\.me\/[A-Za-z0-9_]{5,32}$/.test(site.telegram) ? site.telegram : null;
+    const wa = typeof site.whatsapp === 'string' && /^https:\/\/(www\.)?whatsapp\.com\/channel\/[A-Za-z0-9]{10,40}$/.test(site.whatsapp) ? site.whatsapp : null;
+    fill(channels, el('div', { class: 'card channels' },
+      el('span', { class: 'ic', 'aria-hidden': 'true' }, icon(ICON.send)),
+      el('div', { class: 'grow' }, el('strong', {}, t('homeChannelsNote'))),
+      el('div', { class: 'btns' },
+        wa ? el('a', { class: 'btn wa', href: wa, rel: 'noopener', target: '_blank' }, icon(ICON.whatsapp), t('whatsappJoin'))
+          // No channel yet: the next best thing is passing the app on in WhatsApp.
+          : el('button', { class: 'btn wa', type: 'button', onclick: () => shareWhatsApp(`${t('appName')}: ${t('trustLine')}\n${appUrl()}`) }, icon(ICON.whatsapp), t('shareWhatsapp')),
+        tg ? el('a', { class: 'btn primary', href: tg, rel: 'noopener', target: '_blank' }, icon(ICON.send), t('telegramJoin')) : null)));
+  });
+  try {
+    const feed = await feedP;
+    const lastSeen = store.get('lastSeen', null);
+    const latest = feed.items.filter((i) => oneCopy(i) && i.exam !== 'LDCE').slice(0, 8);
+    fill(latestBox, el('ul', { class: 'rowlist' },
+      ...latest.map((i) => itemCard(i, { isNew: lastSeen !== null && i.publishedAt > lastSeen, families, sources }))));
+  } catch (e) { fill(latestBox, errorBox(e)); }
 }
 
 // ---------- Saved ----------
@@ -950,27 +1049,49 @@ async function viewSaved(root) {
 // ---------- shell ----------
 // Bottom navigation, ordered by what people search for (jobs/research/NEEDS.md): what is new and open,
 // which exams suit me, my result, exam details; tools and help under More.
+// Line icons (24 px grid, drawn for this app in the style of the v0 concept).
 const ICON = {
-  home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
-  forme: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9a7 7 0 0 1 14 0',
-  result: 'M10 17a7 7 0 1 1 5-2l5 5M10 7v6m-3-3h6',
-  exams: 'M7 3h10v18H7zM10 7h4M10 11h4M10 15h2',
-  more: 'M5 12h.01M12 12h.01M19 12h.01',
+  home: 'M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  forme: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM5 21a7 7 0 0 1 14 0',
+  result: 'M9 3h6v3H9zM7 4.5H5V21h14V4.5h-2M9 14l2 2 4-4',
+  exams: 'M2 9l10-5 10 5-10 5zM6 11v5c3.5 2.5 8.5 2.5 12 0v-5M22 9v6',
+  more: 'M4 6h16M4 12h16M4 18h16',
   auto: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 3v18',
   light: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
   dark: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+  landmark: 'M3 21h18M5 21v-9M9.5 21v-9M14.5 21v-9M19 21v-9M2.5 9.5L12 4l9.5 5.5z',
+  globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9s-1.2 6.4-3.6 9c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3z',
+  search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5',
+  briefcase: 'M3 7.5h18V20H3zM8.5 7.5V4.5h7v3M3 12.5h18',
+  clipboardCheck: 'M9 3h6v3H9zM7 4.5H5V21h14V4.5h-2M9 14l2 2 4-4',
+  fileCheck: 'M14 3H6v18h12V7zM14 3v4h4M9 15l2 2 4-4',
+  key: 'M14.5 4a5.5 5.5 0 1 1-4.9 8L3 18.6V21h3v-2h2v-2h2l1.4-1.4A5.5 5.5 0 0 1 14.5 4zM16 8.5h.01',
+  shieldCheck: 'M12 3l8 3v6c0 4.8-3.4 8-8 9-4.6-1-8-4.2-8-9V6zM9 12l2 2 4-4',
+  pencil: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+  users: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21a7 7 0 0 1 14 0M16 3.5a4 4 0 0 1 0 7.5M22 21a7 7 0 0 0-4-6.3',
+  calendar: 'M4 5h16v16H4zM16 3v4M8 3v4M4 10h16',
+  bell: 'M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 21h4',
+  bookmark: 'M6 3h12v18l-6-4.5L6 21z',
+  share: 'M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4',
+  whatsapp: 'M3.5 20.5l1.4-4.3A8.5 8.5 0 1 1 8 19.2zM9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9c-1.2-.5-2.3-1.6-2.8-2.8l.9-1-1-2z',
+  send: 'M21.5 2.5L10.5 13.5M21.5 2.5l-7 19-4-8-8-4z',
+  chevron: 'M9 6l6 6-6 6',
+  file: 'M14 3H6v18h12V7zM14 3v4h4',
+  external: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6',
+  close: 'M6 6l12 12M18 6L6 18',
 };
 const TABS = [['home', 'tabHome'], ['forme', 'tabForMe'], ['result', 'tabResult'], ['exams', 'tabExams'], ['more', 'tabMore']];
-const PARENT = { exam: 'exams', check: 'forme', saved: 'more', latest: 'home', tools: 'more' };
-function icon(path) {
+const PARENT = { exam: 'exams', check: 'forme', saved: 'more', jobs: 'home', tools: 'more' };
+function icon(path, cls = '') {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', `i ${cls}`.trim());
   const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   p.setAttribute('d', path);
   p.setAttribute('fill', 'none');
   p.setAttribute('stroke', 'currentColor');
-  p.setAttribute('stroke-width', '2');
+  p.setAttribute('stroke-width', '1.9');
   p.setAttribute('stroke-linecap', 'round');
   p.setAttribute('stroke-linejoin', 'round');
   svg.append(p);
@@ -983,19 +1104,39 @@ function applyTheme(mode) {
   $('theme').setAttribute('aria-label', `${t('theme')}: ${t(`theme${mode[0].toUpperCase()}${mode.slice(1)}`)}`);
   fill($('theme'), icon(ICON[mode]));
 }
+async function changeLang(code) {
+  await setLang(code);
+  store.set('lang', getLang());
+  syncAlerts();
+  paintShell();
+  route();
+}
+function openLangSheet() {
+  const sheet = $('lang-sheet');
+  fill(sheet,
+    el('div', { class: 'sheet-head' }, el('h2', { id: 'lang-title' }, t('chooseLanguage')),
+      el('button', { class: 'act', type: 'button', 'aria-label': 'Close', onclick: () => sheet.close() }, icon(ICON.close))),
+    el('div', { class: 'langs' }, ...LANGS.map((l) => el('button', {
+      type: 'button', lang: l.code, dir: l.dir ?? 'ltr', 'aria-current': String(l.code === getLang()),
+      onclick: async () => { sheet.close(); await changeLang(l.code); },
+    }, l.name, el('span', { class: 'code' }, l.code.toUpperCase())))),
+    el('p', { class: 'small', style: 'padding:10px 18px 18px;margin:0' }, t('titlesNote')));
+  if (typeof sheet.showModal === 'function') sheet.showModal(); else sheet.setAttribute('open', '');
+}
 function paintShell() {
   document.title = t('appName');
   $('app-name').textContent = t('appName');
-  $('disclaimer').textContent = t('shortDisclaimer');
+  fill($('logo'), icon(ICON.landmark));
   $('footer-disclaimer').textContent = t('disclaimer');
-  $('lang').textContent = t('langToggle');
+  fill($('lang'), icon(ICON.globe), el('span', {}, getLang().toUpperCase()));
+  $('lang').setAttribute('aria-label', `${t('language')}: ${LANGS.find((l) => l.code === getLang()).name}`);
   $('offline').textContent = t('offline');
   applyTheme(store.get('theme', 'auto'));
   fill($('tabs'), ...TABS.map(([id, key]) => el('a', { href: `#${id}`, id: `tab-${id}` }, icon(ICON[id]), el('span', {}, t(key)))));
 }
 const skeleton = () => [1, 2, 3].map(() => el('div', { class: 'skeleton' }));
 async function route() {
-  const [hashView, arg] = location.hash.slice(1).split('/');
+  const [hashView, arg, arg2] = location.hash.slice(1).split('/');
   const view = hashView || 'home';
   const tab = PARENT[view] ?? (TABS.some(([id]) => id === view) ? view : 'home');
   for (const [id] of TABS) {
@@ -1006,6 +1147,7 @@ async function route() {
   fill(root, ...skeleton());
   window.scrollTo(0, 0);
   if (view === 'exam' && arg) await viewExam(root, decodeURIComponent(arg));
+  else if (view === 'jobs') await viewJobs(root, ['kind', 'sector', 'state'].includes(arg) ? arg : null, arg2 ? decodeURIComponent(arg2) : null);
   else if (tab === 'exams') await viewExams(root);
   else if (view === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
   else if (view === 'saved') await viewSaved(root);
@@ -1017,14 +1159,10 @@ async function route() {
   $('offline').hidden = navigator.onLine !== false;
 }
 
-setLang(store.get('lang', navigator.language?.startsWith('hi') ? 'hi' : 'en'));
+await setLang(store.get('lang', null) ?? guessLang(navigator.languages ?? [navigator.language]));
 paintShell();
-$('lang').addEventListener('click', () => {
-  setLang(getLang() === 'hi' ? 'en' : 'hi');
-  store.set('lang', getLang());
-  paintShell();
-  route();
-});
+$('lang').addEventListener('click', openLangSheet);
+$('lang-sheet').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }); // tap outside closes
 $('theme').addEventListener('click', () => {
   const order = ['auto', 'light', 'dark'];
   applyTheme(order[(order.indexOf(store.get('theme', 'auto')) + 1) % order.length]);

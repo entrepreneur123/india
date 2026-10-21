@@ -43,3 +43,23 @@
 | 텔레그램 채널 안내 | SR, FJA | ✅ 공개 채널이 설정되면 앱에 링크 | **추가** |
 | 학교 시험 결과 (10/12학년) | SR, FJA | ❌ | 범위 밖 (취업 앱) |
 | 시사·일반상식 퀴즈 | Adda247 | ❌ | 범위 밖 (학습 앱) |
+
+## 4차 (2026-10-21): 범위·언어·디자인
+
+이번 차수에서 근거로 삼은 것:
+- Google 인도 자동완성 검색어 (research/google_suggest_IN_2026-10-21.json). 예: "bihar police vacancy 2026", "isro recruitment 2026", "up govt jobs 2026", "police bharti 2026".
+- 경쟁 사이트의 내비게이션 구조. FreeJobAlert, SarkariResult 모두 분야별(철도·은행·경찰·국방·교사)·주별·종류별(결과·입장권·정답지) 목록을 둡니다.
+
+| 기능 | 경쟁사 | 우리 | 결정 |
+|---|---|---|---|
+| 분야별 목록 (경찰·SSC·국방·PSU·과학) | SR, FJA | ✅ 홈 칩 + 목록 필터 + 검색용 페이지 | **추가** |
+| 주별 목록 (UP·비하르·하리야나·중앙) | SR, FJA | ✅ | **추가** |
+| 비하르 경찰 (CSBC 순경, BPSSC SI/ASI) | SR, FJA | ✅ 위원회 공식 사이트 수집 | **추가** |
+| ISRO, ONGC 채용 | FJA | ✅ | **추가** |
+| 철도(RRB)·은행(IBPS)·UPSC | 전부 | ❌ | **다음 단계**: GitHub(미국) 서버에서 접속되지 않음. 인도 서버 필요. 철도는 rrb.indianrailways.gov.in 경로 확인 |
+| RBI·SBI·Canara 은행 | FJA | ❌ | 보류: RBI·SBI 목록은 스크립트로 그려져 HTML에 없음, Canara는 날짜가 없음 |
+| WhatsApp 공유·채널 | 전부 | ✅ 공고마다 WhatsApp 버튼, 채널 링크, 채널에 올릴 매일의 글(whatsapp.txt) | **추가** |
+| 지역 언어 | 일부 앱(힌디·영어) | ✅ 13개 언어 (인구 상위 12개 인도어 + 영어) | **추가**: 원어민 검수 필요 (research/lang_review/) |
+| 마감 임박 | FJA | ✅ 홈 "곧 마감" (남은 일수) | **추가** |
+| 검색어 페이지 (Latest Govt Jobs, Sarkari Result, Police Vacancy 등) | SR, FJA | ✅ 11개, 공식 링크만 | **추가** |
+| 디자인 | 광고 많은 표 형식 | ✅ v0 시안 기반의 밝은 선형 디자인, 44px 이상 터치 영역 | **개선** |

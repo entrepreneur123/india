@@ -10,16 +10,8 @@ origin=$(python3 -c "import urllib.parse,sys; u=urllib.parse.urlsplit(sys.argv[1
 sed -i "s|^JOBS_PUSH_URL=.*|JOBS_PUSH_URL=https://$PUSH_HOST/push|; s|^JOBS_PUSH_KEY=.*|JOBS_PUSH_KEY=$key|" /etc/sarkari.env
 grep -q '^SITE_ORIGIN=' /etc/sarkari.env && sed -i "s|^SITE_ORIGIN=.*|SITE_ORIGIN=$origin|" /etc/sarkari.env || echo "SITE_ORIGIN=$origin" >> /etc/sarkari.env
 # Caddy gets the HTTPS certificate for PUSH_HOST by itself (ports 80 and 443 must be open).
-cat > /etc/caddy/Caddyfile <<CADDY
-$PUSH_HOST {
-	handle /push/* {
-		reverse_proxy 127.0.0.1:8787
-	}
-	respond 404
-}
-CADDY
+bash "$(dirname "$0")/caddy.sh"
 systemctl enable --now sarkari-push
-systemctl enable caddy && systemctl restart caddy
 sleep 5
 curl -fsS "https://$PUSH_HOST/push/health" && echo " <- push server reachable over HTTPS"
 echo "Push is announced to the app with the next collection run (site.json)."

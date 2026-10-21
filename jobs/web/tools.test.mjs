@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { STRINGS } from './i18n.js';
+import { EN, LANGS } from './i18n.js';
 import { ageOn, buildIcs, examEvents } from './tools.js';
 
 const rules = (id) => JSON.parse(readFileSync(new URL(`../pipeline/rules/${id}.json`, import.meta.url), 'utf8'));
@@ -41,10 +41,18 @@ test('examEvents keeps only dates still ahead', () => {
   assert.equal(examEvents(rules('ssc-steno-2026'), '2026-10-20').length, 0); // only a month name, no dates
 });
 
-test('English and Hindi have the same keys and placeholders', () => {
+test('every language has exactly the English keys and placeholders, and no HTML', async () => {
   const ph = (s) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort().join(',');
-  assert.deepEqual(Object.keys(STRINGS.hi).sort(), Object.keys(STRINGS.en).sort());
-  for (const [k, v] of Object.entries(STRINGS.en)) assert.equal(ph(STRINGS.hi[k]), ph(v), k);
+  for (const { code } of LANGS.filter((l) => l.code !== 'en')) {
+    const L = (await import(`./lang/${code}.js`)).default;
+    assert.deepEqual(Object.keys(L).sort(), Object.keys(EN).sort(), code);
+    for (const [k, v] of Object.entries(EN)) {
+      assert.equal(typeof L[k], 'string', `${code}.${k}`);
+      assert.equal(ph(L[k]), ph(v), `${code}.${k}`);
+      assert.ok(!/<[a-z/]/i.test(L[k]), `${code}.${k} has markup`);
+      assert.ok(L[k].trim().length > 0, `${code}.${k} is empty`);
+    }
+  }
 });
 
 test('ageOn: days are never negative and stay under a month, over 30 years of dates', () => {

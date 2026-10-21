@@ -40,7 +40,7 @@ import re
 import shutil
 import sys
 
-from . import classify, cutoffs, eligibility, hssc, http, listboards, results_index, sitegen, sources, ssc, upprpb
+from . import classify, cutoffs, eligibility, hssc, http, listboards, results_index, sitegen, sources, ssc, upprpb, whatsapp_post
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -76,6 +76,20 @@ def _write_json(path: str, obj: dict, volatile: tuple[str, ...] = ("generatedAt"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, separators=(",", ":"))
     os.replace(tmp, path)
+    return True
+
+
+def _write_text(path: str, text: str) -> bool:
+    try:
+        with open(path, encoding="utf-8") as f:
+            if f.read() == text:
+                return False
+    except FileNotFoundError:
+        pass
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path + ".tmp", "w", encoding="utf-8") as f:
+        f.write(text)
+    os.replace(path + ".tmp", path)
     return True
 
 
@@ -179,11 +193,17 @@ _PUSH_URL = re.compile(r"^https://[a-z0-9.-]+(:\d{2,5})?/push$")
 _PUSH_KEY = re.compile(r"^[A-Za-z0-9_-]{87}$")  # 65-byte P-256 public key, base64url without padding
 
 
-def site_info(channel: str | None, push_url: str | None = None, push_key: str | None = None) -> dict:
+_WHATSAPP = re.compile(r"^https://(www\.)?whatsapp\.com/channel/[A-Za-z0-9]{10,40}$")  # a WhatsApp Channel's invite link
+
+
+def site_info(channel: str | None, push_url: str | None = None, push_key: str | None = None,
+              whatsapp: str | None = None) -> dict:
     """Only a public @channel becomes a link; a numeric chat id (a private chat) is never shown.
     The push server (India server, sarkari.push) is announced only when both address and key look right."""
     m = _CHANNEL.match((channel or "").strip())
     out = {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
+    if whatsapp and _WHATSAPP.match(whatsapp.strip()):
+        out["whatsapp"] = whatsapp.strip()
     if push_url and push_key and _PUSH_URL.match(push_url.strip()) and _PUSH_KEY.match(push_key.strip()):
         out["push"] = {"url": push_url.strip(), "key": push_key.strip()}
     return out
@@ -212,7 +232,8 @@ def rules_needed(feed: list[dict], all_rules: list[dict]) -> list[dict]:
 
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
         force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
-        channel: str | None = None, push: tuple[str | None, str | None] = (None, None)) -> int:
+        channel: str | None = None, push: tuple[str | None, str | None] = (None, None),
+        whatsapp: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -246,7 +267,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"], "sources": sources.SOURCES})
-    _write_json(_v1(out, "site.json"), site_info(channel, *push))
+    _write_json(_v1(out, "site.json"), site_info(channel, *push, whatsapp=whatsapp))
+    _write_text(_v1(out, "whatsapp.txt"), whatsapp_post.digest(feed, families["families"], now, site_url))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
     sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
@@ -289,7 +311,8 @@ def main(argv: list[str] | None = None) -> int:
                    get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url,
                    get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"),
                    channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"),
-                   push=(os.environ.get("JOBS_PUSH_URL"), os.environ.get("JOBS_PUSH_KEY")))
+                   push=(os.environ.get("JOBS_PUSH_URL"), os.environ.get("JOBS_PUSH_KEY")),
+                   whatsapp=os.environ.get("JOBS_WHATSAPP_CHANNEL"))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

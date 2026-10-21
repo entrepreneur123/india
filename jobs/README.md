@@ -1,4 +1,4 @@
-# SSC Job Alerts (가칭): 인도 공무원 채용 알림 + 자격 판정
+# Sarkari Job Alerts (가칭): 인도 공무원 채용 알림 + 자격 판정
 
 SSC(Staff Selection Commission) 공식 사이트 **ssc.gov.in에서만** 공고·결과·입장권·정답지를 가져오고, 지원자가 생년월일·카테고리·학력을 넣으면 **직무별로 지원 가능 여부**를 알려주는 웹(이후 앱)입니다. LottoDost와 같은 원칙으로 만들었습니다: **틀린 날짜보다 늦은 날짜가 낫다.**
 
@@ -29,6 +29,9 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | `pipeline/sarkari/capture.py` | 인도에서만 열리는 채용 사이트 페이지 저장 (수집기 작성용) |
 | `pipeline/sarkari/hssc.py` | 하리야나 SSC(hssc.gov.in) 공지·광고·결과: 사이트 자체 JSON 목록 사용 |
 | `web/alerts.js` | 알림 판단(새 공고·마감 임박). 서비스 워커가 백그라운드에서 사용 |
+| `pipeline/sarkari/listboards.py` | 목록형 공지판 공통 수집기: 비하르 경찰 순경(CSBC)·SI(BPSSC), ISRO, ONGC. 각 기관 자체 사이트 링크만 |
+| `pipeline/sarkari/sources.py` | 수집 기관 목록(이름·공식 사이트·주) 한 곳에서 관리 |
+| `pipeline/sarkari/whatsapp_post.py` | WhatsApp 채널에 올릴 매일의 글(jobs/v1/whatsapp.txt) |
 | `pipeline/sarkari/upprpb.py` | UP 경찰 채용위원회(uppbpb.gov.in) 공지 수집: 위원회 자체 PDF만, 외부 대행사 포털 링크 제외, 실패해도 SSC는 게시 |
 | `pipeline/sarkari/classify.py` | 제목으로 종류·시험·연도 판별 (영어·힌디어) |
 | `pipeline/sarkari/eligibility.py` | 나이·완화·학력·응시료 판정 |
@@ -36,7 +39,9 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
 | `pipeline/sarkari/build.py` | 전체 실행, 안전장치, 새 항목(`new.json`) 산출 |
 | `web/eligibility.js` | 판정 로직 JS 포팅 (Python과 같은 테스트 케이스로 검증) |
 | `web/index.html`, `web/app.js` | 최신 / 시험 / 자격 / 도구 / 저장 5개 탭 |
-| `web/i18n.js`, `web/tools.js`, `web/sw.js` | 영어·힌디어 문구, 서명·나이·캘린더 도구, 오프라인 |
+| `web/i18n.js`, `web/lang/*.js` | 영어 + 인도어 12개(힌디·벵골·마라티·텔루구·타밀·구자라티·우르두·칸나다·오디아·말라얄람·펀자비·아삼). 고른 언어 파일만 내려받음 |
+| `web/tools.js`, `web/sw.js` | 서명·나이·캘린더 도구, 오프라인 |
+| `deploy/india/caddy.sh`, `enable-site.sh` | 인도 서버에서 사이트 직접 제공(HTTPS·압축·캐시·보안 헤더) |
 | `pipeline/sarkari/telegram.py` | 새 공고를 텔레그램 채널에 게시 |
 | `pipeline/sarkari/results_index.py` | 결과 명단 PDF → 수험번호 색인 (이름 제외, 순번 연속성 검증) |
 | `pipeline/sarkari/cutoffs.py` | 결과 해설(write-up) PDF에서 합격선이 나오는 쪽 번호만 찾음 (숫자는 옮기지 않음) |
@@ -114,7 +119,7 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 | 자격 판정 | CGL·CHSL·속기사·SI 2026, 성별 제한 직무, 계산 불가 조건은 "확인 필요" | 공고 원문 |
 | 공식 자료 | 강의계획서, 잠정·최종 모집 인원, 기출문제, 증명서 양식, 지침 (SSC PDF 링크만) | SSC API |
 | 도구 | 서명 JPEG 10~20KB 맞춤(기기 안에서 처리), 나이 계산기, 사진 촬영 안내 | 공고 9.4~9.6항 |
-| 힌디어 화면 | 버튼 하나로 전환, 기기 언어가 힌디어면 기본 | `i18n.js` |
+| 13개 언어 화면 | 상단 언어 버튼으로 선택, 기기 언어가 그중 하나면 기본. 우르두는 오른쪽→왼쪽 | `i18n.js`, `lang/` |
 | 오프라인·설치 | PWA: 인터넷이 끊겨도 마지막 공고 표시, 홈 화면 설치 | `sw.js` |
 | 텔레그램 채널 | 새 공고 자동 게시 (토큰 있을 때만) | `new.json` |
 
@@ -150,7 +155,7 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 | 항목 | 현재 | 대형 앱 수준 |
 |---|---|---|
 | 기관 범위 | SSC + UP 경찰 채용위원회 + 하리야나 SSC (공지만; 자격 판정은 SSC만) | SSC·UPSC·RRB·IBPS·주 위원회 |
-| 앱 이름 | "SSC Job Alerts" 그대로 (UP 경찰이 들어가며 이름과 범위가 어긋남) | 결정 필요: 이름을 넓힐지 |
+| 앱 이름 | 임시로 "Sarkari Job Alerts" (범위가 SSC 밖으로 넓어짐) | 결정 필요: 최종 이름 (`web/i18n.js`의 appName, 각 언어 파일, manifest) |
 | 앱 푸시 | 인도 서버가 있으면 즉시 알림(Web Push, 아이폰 포함). 없으면 Android 설치 앱의 백그라운드 확인, 텔레그램, 캘린더 | 서버 푸시로 즉시 알림 |
 | 자격 판정 | 2026 공고 4개 (모두 접수 마감) | 진행 중인 공고 전체 |
-| 힌디어 | 앱이 쓴 번역, **원어민 검수 전** ([검수표](research/HINDI_REVIEW.md) 준비됨) | 원어민 작성 |
+| 12개 인도어 | 앱이 쓴 번역, **원어민 검수 전** (언어별 검수표: research/lang_review/) | 원어민 검수 |

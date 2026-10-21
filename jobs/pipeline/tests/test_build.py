@@ -24,7 +24,7 @@ def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
     assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "site.json",
-                           "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
+                           "whatsapp.txt", "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
                            "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
     assert feed["schema"] == 1 and len(feed["items"]) > 100
@@ -214,3 +214,35 @@ def test_rules_needed_lists_new_ssc_recruitments_without_a_rules_file():
     feed = [it("MTS", 2026), it("MTS", 2026), it("CGL", 2026), it("CHSL", 2027, kind="result"), it("LDCE", 2026),
             it("UPPC", 2026, source="upprpb"), it("JE", 2026, lang="hi")]
     assert [(r["exam"], r["examYear"]) for r in build.rules_needed(feed, rules)] == [("MTS", 2026)]
+
+
+@pytest.mark.parametrize("link,ok", [
+    ("https://whatsapp.com/channel/0029VaABCDEFGHIJ12345678", True),
+    ("https://www.whatsapp.com/channel/0029VaABCDEFGHIJ12345678", True),
+    ("https://whatsapp.com.evil.example/channel/0029VaABCDEFGHIJ", False),
+    ("http://whatsapp.com/channel/0029VaABCDEFGHIJ12345678", False),
+    ("https://chat.whatsapp.com/AbCdEf123456", False),  # a group invite, not a channel
+])
+def test_only_a_whatsapp_channel_link_is_shown(link, ok):
+    assert ("whatsapp" in build.site_info(None, whatsapp=link)) is ok
+
+
+def test_whatsapp_post_lists_the_last_day_with_official_links():
+    from sarkari import whatsapp_post
+    now = dt.datetime(2026, 10, 21, 12, 0, tzinfo=build.ssc.IST)
+    feed = [
+        {"id": "a", "kind": "result", "title": "CGL *Tier-I* result", "exam": "CGL", "examYear": 2026, "lang": "en", "source": "ssc",
+         "publishedAt": "2026-10-21T10:00:00+05:30", "files": [{"name": "r.pdf", "url": "https://ssc.gov.in/api/attachment/x", "size": 1}]},
+        {"id": "b", "kind": "result", "title": "हिंदी", "exam": "CGL", "lang": "hi", "source": "ssc",
+         "publishedAt": "2026-10-21T10:00:00+05:30", "files": []},
+        {"id": "c", "kind": "recruitment", "title": "Advt. No. 09/2026", "exam": "BPSSC", "lang": "en", "source": "bpssc",
+         "publishedAt": "2026-10-21T00:00:00+05:30", "files": [{"name": "a.pdf", "url": "https://evil.example/a.pdf", "size": None}]},
+        {"id": "d", "kind": "notice", "title": "old", "exam": "CGL", "lang": "en", "source": "ssc",
+         "publishedAt": "2026-10-19T10:00:00+05:30", "files": []},
+    ]
+    text = whatsapp_post.digest(feed, {"CGL": {"short": "SSC CGL"}, "BPSSC": {"short": "Bihar Police SI"}}, now, "https://x.example/jobs/")
+    lines = text.splitlines()
+    assert lines[0] == "Sarkari job updates · 21 Oct 2026"
+    assert lines[2].startswith("🆕 New job · Bihar Police SI") and "evil.example" not in text  # new jobs first; odd links left out
+    assert "✅ Result · SSC CGL: CGL Tier-I result" in text and "https://ssc.gov.in/api/attachment/x" in text
+    assert "हिंदी" not in text and "old" not in text and "https://x.example/jobs/" in text

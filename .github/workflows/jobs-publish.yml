@@ -7,6 +7,7 @@
 # Odd minutes on purpose: runs scheduled on the hour are delayed most.
 #
 # Optional Telegram channel: secret JOBS_TELEGRAM_BOT_TOKEN, variable JOBS_TELEGRAM_CHAT_ID.
+# Optional WhatsApp Channel link shown in the app: variable JOBS_WHATSAPP_CHANNEL (https://whatsapp.com/channel/...).
 name: jobs-publish
 
 on:
@@ -37,6 +38,7 @@ jobs:
     env:
       SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
       JOBS_TELEGRAM_CHAT_ID: ${{ vars.JOBS_TELEGRAM_CHAT_ID }}
+      JOBS_WHATSAPP_CHANNEL: ${{ vars.JOBS_WHATSAPP_CHANNEL }}
       IN_FORCE: ${{ inputs.force }}
     steps:
       - uses: actions/checkout@v4

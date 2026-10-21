@@ -41,6 +41,10 @@ journalctl -u sarkari -n 50              # 최근 실행 기록 ("published" / "
 ## 3. 설정 (선택)
 `sudo nano /etc/sarkari.env`에서 설정합니다.
 - 텔레그램: `JOBS_TELEGRAM_BOT_TOKEN`, `JOBS_TELEGRAM_CHAT_ID=@채널이름`
+- WhatsApp 채널: `JOBS_WHATSAPP_CHANNEL=https://whatsapp.com/channel/...`
+  - 앱의 홈과 알림 화면에 "WhatsApp" 참여 버튼으로 나옵니다.
+  - WhatsApp 채널은 자동 게시 기능이 없어(공개된 게시 API를 찾지 못함), 수집할 때마다 올릴 글을 만들어 둡니다.
+  - 그 글은 `사이트주소/jobs/v1/whatsapp.txt`(지난 24시간 공고와 공식 링크)에 있습니다. 복사해서 WhatsApp 앱에서 채널에 붙여 넣으면 됩니다.
 - 사이트 주소가 다르면 `SITE_URL`
 
 ## 4. GitHub를 이 서버로 전환
@@ -63,7 +67,28 @@ journalctl -u sarkari -n 50              # 최근 실행 기록 ("published" / "
 - **SSC 공지:** 서버가 30분마다 확인하므로 보통 1시간 안에 갑니다.
 - **결과와 UP·하리야나 공지:** 3시간마다의 전체 확인에서 잡히므로 최대 3시간이 걸립니다.
 
-## 6. 인도에서만 열리는 채용 사이트
+## 6. 사이트를 인도 서버에서 직접 제공 (권장)
+GitHub Pages 대신 이 서버(인도)가 사이트를 보냅니다.
+- 인도 휴대폰과 가까워 응답이 빠릅니다.
+- 3G/4G에서 파일이 작아지도록 압축합니다(zstd, gzip).
+- 새 공고가 수집 즉시 보입니다. GitHub Pages는 다시 빌드하는 데 몇 분이 걸립니다.
+
+설정 순서:
+1. 도메인의 하위 이름(예: `jobs.내도메인.in`)에 서버 IP로 A 레코드를 추가합니다.
+2. `/etc/sarkari.env`에 `SITE_HOST=jobs.내도메인.in`을 적습니다.
+   - 즉시 알림과 같은 이름을 써도 됩니다(`PUSH_HOST`도 같은 값).
+3. `sudo bash /opt/sarkari/code/jobs/deploy/india/enable-site.sh`를 실행합니다.
+   - Caddy가 HTTPS 인증서를 자동으로 받습니다.
+   - 사이트 주소, 사이트맵, 텔레그램·WhatsApp 글 속 링크가 새 주소로 바뀝니다.
+   - 끝에 "site reachable"이 나오면 성공입니다.
+
+함께 적용되는 것:
+- 보안 헤더: HSTS, CSP, nosniff, 프레임 금지.
+- 공개하지 않는 경로 차단: `.git`, `captures`.
+- `robots.txt`와 사이트맵.
+- 캐시: 데이터는 2분, 코드는 5분. 오프라인 앱 기능은 그대로입니다.
+
+## 7. 인도에서만 열리는 채용 사이트
 - 매주 월요일, 22개 사이트의 첫 페이지와 링크 목록이 `captures` 브랜치에 저장됩니다. 설치 직후 한 번은 바로 실행됩니다.
 - 이 실제 페이지를 보고 사이트별 수집기를 만듭니다. SSC·UP·하리야나도 이렇게 만들었습니다.
 - 어떤 사이트가 열렸는지는 `captures/index.json`에서 볼 수 있습니다.
