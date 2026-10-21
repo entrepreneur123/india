@@ -192,6 +192,10 @@ export type VoiceEvent =
   | { type: 'reaction'; userId: string; kind: VoiceReaction }
   | { type: 'ended' }
   | { type: 'removed' }
+  /** The server no longer lets me be here (the room filled while I was away, I was banned, ...): `code` says why. */
+  | { type: 'refused'; code: string }
+  /** Left on my own after 30 minutes in the background as a listener. */
+  | { type: 'idle' }
 
 export type VoiceAction =
   | { type: 'hand'; up: boolean }

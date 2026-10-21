@@ -373,6 +373,7 @@ const en = {
   'voice.ended': 'The host ended this room',
   'voice.endedByYou': 'Room ended',
   'voice.removed': 'You were removed from this room',
+  'voice.idleLeft': 'You left the room after 30 minutes in the background',
   'voice.joining': 'Joining…',
   'voice.safety': 'Be kind. Rooms are not recorded. Tap a person to report.',
   'voice.stage': 'Stage',

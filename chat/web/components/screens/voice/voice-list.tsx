@@ -24,7 +24,10 @@ export function VoiceRooms({ filter, onCreate }: { filter: RoomFilter; onCreate:
   const toast = useToast()
   const { t } = useI18n()
   const { openVoice, voiceRoomId } = useApp()
-  const { data: rooms, error, mutate } = useSWR('voiceRooms', () => backend.voiceRooms(), { refreshInterval: 15_000 })
+  const { data: rooms, error, mutate } = useSWR('voiceRooms', () => backend.voiceRooms(), {
+    // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.
+    refreshInterval: 30_000, refreshWhenHidden: false, focusThrottleInterval: 30_000, dedupingInterval: 5_000,
+  })
   const shown = rooms?.filter((r) => filter === 'all' || r.category === filter)
 
   if (error && !rooms)

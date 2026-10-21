@@ -4,6 +4,7 @@ import { Component, type ReactNode } from 'react'
 import { WifiOff } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Button } from '@/components/ui/pressable'
+import { reportError } from '@/lib/telemetry'
 
 /**
  * Catches a screen that failed to load (its download broke off on a weak network) or crashed, and offers a
@@ -18,6 +19,7 @@ export class ScreenBoundary extends Component<{ children: ReactNode }, { failed:
 
   componentDidCatch(error: unknown) {
     console.error(error)
+    reportError(error, 'screen')
   }
 
   render() {

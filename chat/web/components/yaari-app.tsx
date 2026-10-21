@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/pressable'
 import { Splash } from '@/components/splash'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { retryImport } from '@/lib/retry-import'
+import { installErrorReporting } from '@/lib/telemetry'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
 const loadAuth = () => retryImport(() => import('@/components/screens/auth/auth-screen'))
@@ -38,6 +39,7 @@ function probablySignedIn() {
 }
 
 if (typeof window !== 'undefined') {
+  installErrorReporting()
   // Start every download the first screen needs at once, instead of one after another.
   void preloadBackend().catch(() => undefined)
   void (probablySignedIn() ? loadShell() : loadAuth()).catch(() => undefined)

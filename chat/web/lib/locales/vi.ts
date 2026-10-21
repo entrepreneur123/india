@@ -368,6 +368,7 @@ const vi: Dict = {
   'voice.ended': 'Chủ phòng đã kết thúc phòng',
   'voice.endedByYou': 'Đã kết thúc phòng',
   'voice.removed': 'Bạn đã bị mời ra khỏi phòng',
+  'voice.idleLeft': 'Bạn đã rời phòng sau 30 phút chạy nền',
   'voice.joining': 'Đang vào…',
   'voice.safety': 'Hãy tử tế. Phòng không ghi âm. Chạm vào một người để báo cáo.',
   'voice.stage': 'Sân khấu',

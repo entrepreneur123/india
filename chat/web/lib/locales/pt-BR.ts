@@ -368,6 +368,7 @@ const ptBR: Dict = {
   'voice.ended': 'O anfitrião encerrou esta sala',
   'voice.endedByYou': 'Sala encerrada',
   'voice.removed': 'Você foi removido desta sala',
+  'voice.idleLeft': 'Você saiu da sala depois de 30 minutos em segundo plano',
   'voice.joining': 'Entrando…',
   'voice.safety': 'Seja gentil. As salas não são gravadas. Toque em alguém para denunciar.',
   'voice.stage': 'Palco',

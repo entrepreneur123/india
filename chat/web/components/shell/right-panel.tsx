@@ -19,7 +19,10 @@ export function RightPanel({ className }: { className?: string }) {
   const { plural, num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   // The same list as the Rooms tab (one request serves both).
-  const { data: rooms } = useSWR('voiceRooms', () => backend.voiceRooms(), { refreshInterval: 15_000 })
+  const { data: rooms } = useSWR('voiceRooms', () => backend.voiceRooms(), {
+    // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.
+    refreshInterval: 30_000, refreshWhenHidden: false, focusThrottleInterval: 30_000, dedupingInterval: 5_000,
+  })
 
   const friendList = friends?.filter((f) => f.state === 'friends') ?? null // presence isn't tracked, so no online dots
 

@@ -141,6 +141,14 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           toast.show(tRef.current('voice.removed'), 'info')
           gone.current()
           break
+        case 'refused':
+          toast.error(new BackendError(e.code))
+          gone.current()
+          break
+        case 'idle':
+          toast.show(tRef.current('voice.idleLeft'), 'info')
+          gone.current()
+          break
       }
     })
     ;(async () => {

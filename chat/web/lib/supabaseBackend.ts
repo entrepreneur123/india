@@ -39,6 +39,7 @@ import {
 } from './backend'
 import { retryImport } from './retry-import'
 import type { VoiceAudio } from './voice-audio'
+import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
 
 const BUCKET = 'media'
@@ -50,6 +51,8 @@ const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
 /** A request that hangs on a weak network fails after this long, so the screen can retry (uploads get longer). */
 const REQUEST_TIMEOUT_MS = 15_000
 const UPLOAD_TIMEOUT_MS = 120_000
+/** A listener whose tab stays in the background this long leaves the room. */
+const IDLE_LEAVE_MS = 30 * 60_000
 /** Random chats: the partner's app must connect to the chat within this long, or the chat ends. */
 const PARTNER_JOIN_TIMEOUT_MS = 12_000
 /** Random chats: after the partner's app disconnects, how long they have to come back. Same values as the app. */
@@ -87,8 +90,49 @@ type VoiceStateRow = {
   id: string; title: string; category: string; mode: string; host: string; rev: number; now: number; locked: number[]
   music: { id: string; videoId: string; title: string; by: string; startedAt: number; pausedAt: number | null } | null
   queue: { id: string; videoId: string; title: string; by: string; votes: number; voted: boolean }[]
-  members: (CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean })[]
+  members: VoiceMemberRow[]
   announcement: string | null; max: number; gender: string; minAge: number; maxAge: number; private: boolean; code: string | null
+  /** The room's change number (020); events carry the next ones. */
+  seq?: number
+}
+/** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
+type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number }
+/** One change in a room, over Broadcast (020). `seq` null: sent without a number, the client re-checks. */
+type VoiceChange = { seq?: number | null } & (
+  | ({ t: 'm'; present: true } & VoiceMemberRow)
+  | { t: 'm'; id: string; present: false }
+  | ({ t: 'r'; ended: boolean } & Pick<VoiceStateRow, 'title' | 'category' | 'mode' | 'host' | 'locked' | 'music' | 'announcement'
+      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
+  | { t: 'v'; item: string; user: string; on: boolean; votes: number }
+)
+
+/** voice_state's member order: the stage by seat, then raised hands (oldest first), then by arrival. */
+const stageOrder = (a: VoiceMemberRow, b: VoiceMemberRow) =>
+  (a.seat ?? 99) - (b.seat ?? 99) || (a.hand ? a.ha ?? 0 : Infinity) - (b.hand ? b.ha ?? 0 : Infinity) || (a.j ?? 0) - (b.j ?? 0)
+
+/** Applies one change to a room's state (in place). `voted` is mine to keep; the code stays the host's. */
+function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
+  if (c.t === 'm') {
+    const members = s.members.filter((m) => m.id !== c.id)
+    if (c.present) {
+      const { t: _t, present: _p, seq: _s, ...m } = c
+      members.push(m)
+    }
+    s.members = members.sort(stageOrder)
+  } else if (c.t === 'r') {
+    const voted = new Set(s.queue.filter((q) => q.voted).map((q) => q.id))
+    Object.assign(s, {
+      title: c.title, category: c.category, mode: c.mode, host: c.host, locked: c.locked, music: c.music,
+      announcement: c.announcement, max: c.max, gender: c.gender, minAge: c.minAge, maxAge: c.maxAge, private: c.private,
+      queue: c.queue.map((q) => ({ ...q, voted: voted.has(q.id) })),
+    })
+  } else {
+    const q = s.queue.find((x) => x.id === c.item)
+    if (q) {
+      q.votes = c.votes
+      if (c.user === me) q.voted = c.on
+    }
+  }
 }
 type VoiceMessageRow = {
   id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo'; body: string | null
@@ -100,6 +144,8 @@ type VoiceMessageRow = {
 type VoiceLive = {
   room: VoiceRoom | null
   refresh: () => void
+  /** After my own action: its change arrives over realtime; fetch only while that connection is down. */
+  acted: () => void
   mic: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
@@ -305,6 +351,7 @@ export class SupabaseBackend implements Backend {
     if (error && error.code !== '23505') fail(error)
     const me = await this.myProfile()
     if (!me) throw new BackendError('network')
+    track('signup_done')
     return me
   }
 
@@ -350,6 +397,7 @@ export class SupabaseBackend implements Backend {
       if (!rows?.[0]) throw new BackendError('not_found')
       const partner = await this.toProfile(rows[0], [])
       this.abandoned.delete(id)
+      track('match_found')
       return { id, partner }
     } catch {
       // The server paired us but the partner can't be shown: end that chat once the exit lock allows, keep looking.
@@ -602,6 +650,7 @@ export class SupabaseBackend implements Backend {
       .insert({ match_id: matchId, body: text, media_path: path, media_kind: kind })
       .select('id, match_id, sender, body, media_path, media_kind, created_at').single<MessageRow>()
     if (error) fail(error)
+    track('chat_message_sent')
     return this.toMessage(data, this.uid)
   }
 
@@ -630,6 +679,7 @@ export class SupabaseBackend implements Backend {
   }
 
   async videoToken(matchId: string) {
+    track('call_started')
     return this.invoke<{ url: string; token: string }>('video-token', { match_id: matchId })
   }
 
@@ -725,10 +775,12 @@ export class SupabaseBackend implements Backend {
   }
 
   async createVoiceRoom(r: NewVoiceRoom) {
-    return this.rpc<{ id: string; code: string }>('create_voice_room2', {
+    const room = await this.rpc<{ id: string; code: string }>('create_voice_room2', {
       p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
       p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement,
     })
+    track('room_created')
+    return room
   }
 
   async joinVoiceCode(code: string): Promise<string> {
@@ -740,12 +792,13 @@ export class SupabaseBackend implements Backend {
 
   async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string }) {
     await this.rpc('voice_settings', { p_room: roomId, p_title: patch.title, p_announcement: patch.announcement })
-    this.voice.get(roomId)?.refresh()
+    this.voice.get(roomId)?.acted()
   }
 
   async joinVoice(roomId: string): Promise<VoiceRoom> {
     const sent = Date.now()
     const state = await this.rpc<VoiceStateRow>('join_voice', { p_room: roomId })
+    track('room_joined')
     const live = this.voice.get(roomId)
     if (live) return live.joined(state, sent)
     this.noteClock(state.now, sent)
@@ -880,7 +933,7 @@ export class SupabaseBackend implements Backend {
         await this.rpc('voice_skip', { ...room, p_current: a.trackId ?? live?.room?.track?.id ?? null })
         break
     }
-    live?.refresh() // don't wait for the realtime round trip
+    live?.acted()
   }
 
   /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host's client re-checks every minute. */
@@ -890,38 +943,48 @@ export class SupabaseBackend implements Backend {
   }
 
   /**
-   * Follows a voice room: its row (every change bumps `rev`, then the state is fetched again), its chat and
-   * reactions over realtime, a heartbeat every 20 s (also in the background: people keep listening, as on
-   * X Spaces), and the LiveKit audio once I'm in. Re-syncs on (re)connect, every 10 s and when the tab is shown.
+   * Follows a voice room. Once I'm in: one full state, then every change itself over a private Broadcast topic
+   * (020: a member, the room's settings and music, a vote, each numbered), applied here; the full state is fetched
+   * again only on a gap in the numbers, a reconnect, or when the heartbeat (every 20 s, also in the background:
+   * people keep listening, as on X Spaces) says the room is further on. Chat and reactions come over realtime too.
+   * A re-sync runs every 45 s while the realtime connection is up, every 10 s while it isn't, and when the tab is
+   * shown. A listener whose tab stays hidden for 30 minutes leaves. LiveKit audio while someone is on the stage.
    */
   subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void {
     const me = this.uid
     let closed = false
     let joined = false
-    let rev = -1
     let over = false
     let beats = 0
     const emit = (e: VoiceEvent) => { if (!closed) on(e) }
-    const finish = (e: 'ended' | 'removed') => {
+    const finish = (e: VoiceEvent) => {
       if (over) return
       over = true
       stopAudio()
-      emit({ type: e })
+      emit(e)
     }
+    // Anything the server says about my being here (the heartbeat brings me back after a gap, and the room may
+    // have filled, banned me, ...) ends the session with its reason, instead of a room nobody else sees me in.
     const failed = (err: unknown) => {
       const code = err instanceof BackendError ? err.code : ''
-      if (code === 'room_closed' || code === 'not_found') finish('ended')
-      else if (code === 'voice_removed') finish('removed')
+      if (code === 'room_closed' || code === 'not_found') finish({ type: 'ended' })
+      else if (code === 'voice_removed') finish({ type: 'removed' })
+      else if (['room_full', 'room_gender', 'room_age', 'not_allowed', 'banned', 'not_signed_in'].includes(code)) {
+        finish({ type: 'refused', code })
+      }
     }
 
-    // ---- state ----
+    // ---- state: the last full state with every change since applied to it ----
+    let base: VoiceStateRow | null = null
+    let seq = -1
+    let pending: VoiceChange[] = [] // arrived while a full state was on its way
     let mine: { seat: number | null; muted: boolean } | null = null
     let stage = false
-    const apply = async (state: VoiceStateRow, sent: number) => {
-      this.noteClock(state.now, sent)
+    let shown = 0
+    const show = async (state: VoiceStateRow) => {
+      const n = ++shown
       const room = await this.toVoiceRoom(state)
-      if (closed || over) return room
-      rev = Math.max(rev, state.rev)
+      if (closed || over || n !== shown) return room
       live.room = room
       const m = room.members.find((x) => x.profile.id === me)
       const before = mine
@@ -938,6 +1001,53 @@ export class SupabaseBackend implements Backend {
       else if (!stage && (audio || audioCtl)) stopAudio(true)
       emit({ type: 'room', room })
       return room
+    }
+    let showTimer: ReturnType<typeof setTimeout> | undefined
+    /** Changes come in bursts (someone joins: a card and a line): one render, one photo-signing request. */
+    const showSoon = () => {
+      clearTimeout(showTimer)
+      showTimer = setTimeout(() => base && void show(base), 60)
+    }
+    const apply = async (state: VoiceStateRow, sent: number) => {
+      this.noteClock(state.now, sent)
+      base = state
+      seq = typeof state.seq === 'number' ? state.seq : -1
+      const later = pending.filter((c) => typeof c.seq === 'number' && c.seq > seq).sort((a, b) => a.seq! - b.seq!)
+      pending = []
+      for (const c of later) {
+        if (c.seq !== seq + 1) {
+          refresh()
+          break
+        }
+        seq = c.seq
+        applyChange(state, c, me)
+      }
+      return show(state)
+    }
+    const onChange = (c: VoiceChange) => {
+      if (closed || over) return
+      if (c.t === 'r' && c.ended) return finish({ type: 'ended' })
+      if (!base || fetching) {
+        pending.push(c)
+        return
+      }
+      if (typeof c.seq !== 'number') {
+        // Sent without a number (a rare collision between two rooms): apply it, then check against the server.
+        applyChange(base, c, me)
+        showSoon()
+        refresh()
+        return
+      }
+      if (c.seq <= seq) return
+      if (c.seq !== seq + 1) return refresh() // missed one
+      seq = c.seq
+      // Handed the room: the code is the host's only, the full state has it.
+      if (c.t === 'r' && c.host === me && base.host !== me) refresh()
+      // Taken out of the room myself (removed, or dropped while away): a heartbeat brings me back in, or says
+      // why not (voice_removed, room_full, ...).
+      if (c.t === 'm' && c.id === me && !c.present) void heartbeat()
+      applyChange(base, c, me)
+      showSoon()
     }
     let fetching = false
     let again = false
@@ -965,6 +1075,15 @@ export class SupabaseBackend implements Backend {
     const refresh = () => {
       clearTimeout(debounce)
       debounce = setTimeout(() => void fetchState(), 150)
+    }
+    /** The server's number for the room (heartbeat, re-sync): behind it a moment later means a change was missed. */
+    let behindTimer: ReturnType<typeof setTimeout> | undefined
+    const serverAt = (n: number) => {
+      if (n <= seq || behindTimer) return
+      behindTimer = setTimeout(() => {
+        behindTimer = undefined
+        if (n > seq) refresh()
+      }, 3_000)
     }
 
     // ---- lines ----
@@ -1106,9 +1225,55 @@ export class SupabaseBackend implements Backend {
       }
     }
 
+    // ---- keeping up ----
+    let channel: RealtimeChannel | null = null
+    let healthy = false
+    let syncTimer: ReturnType<typeof setTimeout> | undefined
+    const nextResync = () => {
+      clearTimeout(syncTimer)
+      syncTimer = setTimeout(() => {
+        resync()
+        nextResync()
+      }, healthy ? 45_000 : 10_000)
+    }
+    const resync = () => {
+      if (pageHidden() || closed || !joined || over) return
+      void (async () => {
+        const { data } = await this.client.from('voice_seq').select('seq').eq('room_id', roomId).maybeSingle<{ seq: number }>()
+        if (data) serverAt(data.seq)
+        await resyncLines()
+      })().catch(() => undefined)
+    }
+    // The topic is private (RLS on realtime.messages: people who entered the room), so it opens once I'm in.
+    const openChannel = () => {
+      if (channel || closed) return
+      const topic = `voice:${roomId}`
+      for (const c of this.client.getChannels()) if (c.topic === `realtime:${topic}`) void this.client.removeChannel(c)
+      let wasUp = false
+      channel = this.client.channel(topic, { config: { private: true } })
+        .on('broadcast', { event: 'v' }, ({ payload }) => onChange(payload as VoiceChange))
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'voice_messages', filter: `room_id=eq.${roomId}` },
+          (p) => void onMessage(p.new as VoiceMessageRow).catch(() => undefined))
+        .subscribe((status) => {
+          const up = status === 'SUBSCRIBED'
+          if (up !== healthy) {
+            healthy = up
+            nextResync()
+          }
+          if (!up) return
+          // Back after a drop: changes may have been missed while away.
+          if (wasUp) refresh()
+          else resync()
+          wasUp = true
+        })
+    }
+
     const live: VoiceLive = {
       room: null,
       refresh,
+      acted: () => {
+        if (!healthy) refresh()
+      },
       mic,
       startAudio: async () => {
         await audio?.startAudio()
@@ -1116,46 +1281,47 @@ export class SupabaseBackend implements Backend {
       },
       joined: async (state, sent) => {
         joined = true
+        openChannel()
         return apply(state, sent)
       },
     }
     this.voice.set(roomId, live)
 
-    // ---- keeping up ----
     const heartbeat = async () => {
       if (!joined || closed || over) return
       try {
-        const now = await this.rpc<number>('voice_heartbeat', { p_room: roomId })
-        if (now !== rev) refresh()
+        serverAt(await this.rpc<number>('voice_heartbeat2', { p_room: roomId }))
         // The host re-checks LiveKit against the room every minute (anyone a sync missed).
         if (++beats % 3 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
       } catch (err) {
         failed(err)
       }
     }
-    const resync = () => {
-      if (pageHidden() || closed || !joined) return
-      void (async () => {
-        const { data } = await this.client.from('voice_rooms').select('rev, ended_at').eq('id', roomId).maybeSingle<{ rev: number; ended_at: string | null }>()
-        if (data?.ended_at) finish('ended')
-        else if (data && data.rev !== rev) refresh()
-        await resyncLines()
-      })().catch(() => undefined)
-    }
-    const channel = this.client.channel(`voice-${roomId}-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'voice_rooms', filter: `id=eq.${roomId}` }, (p) => {
-        const row = p.new as { rev: number; ended_at: string | null }
-        if (row.ended_at) finish('ended')
-        else if (row.rev !== rev) refresh()
-      })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'voice_messages', filter: `room_id=eq.${roomId}` },
-        (p) => void onMessage(p.new as VoiceMessageRow).catch(() => undefined))
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') resync()
-      })
     const beatTimer = setInterval(() => void heartbeat(), 20_000)
-    const syncTimer = setInterval(resync, 10_000)
-    const stopWatching = onPageVisibility((visible) => visible && resync())
+    nextResync()
+
+    // A listener who left the tab in the background for 30 minutes has gone: leave (the count, the battery).
+    let hiddenAt = pageHidden() ? Date.now() : 0
+    let idleTimer: ReturnType<typeof setTimeout> | undefined
+    const idleCheck = () => {
+      if (!hiddenAt || Date.now() - hiddenAt < IDLE_LEAVE_MS || !joined || over) return
+      if (live.room?.hostId === me || mine?.seat != null) return // on the stage or hosting: they're the room
+      void this.rpc('leave_voice', { p_room: roomId }).catch(() => undefined)
+      finish({ type: 'idle' })
+    }
+    const stopWatching = onPageVisibility((visible) => {
+      clearTimeout(idleTimer)
+      if (visible) {
+        idleCheck() // timers sleep in a background tab: check on the way back too
+        hiddenAt = 0
+        resync()
+      } else {
+        hiddenAt = Date.now()
+        idleTimer = setTimeout(idleCheck, IDLE_LEAVE_MS + 1_000)
+      }
+    })
+    if (hiddenAt) idleTimer = setTimeout(idleCheck, IDLE_LEAVE_MS + 1_000)
+
     // Closing the tab leaves at once (a listener's seat and count free up); the host keeps their 2 minutes
     // to come back after a reload.
     const onPageHide = () => {
@@ -1172,13 +1338,16 @@ export class SupabaseBackend implements Backend {
     return () => {
       closed = true
       clearTimeout(debounce)
+      clearTimeout(showTimer)
+      clearTimeout(behindTimer)
+      clearTimeout(syncTimer)
+      clearTimeout(idleTimer)
       clearInterval(beatTimer)
-      clearInterval(syncTimer)
       stopWatching()
       window.removeEventListener('pagehide', onPageHide)
       stopAudio()
       if (this.voice.get(roomId) === live) this.voice.delete(roomId)
-      void this.client.removeChannel(channel)
+      if (channel) void this.client.removeChannel(channel)
     }
   }
 
@@ -1205,6 +1374,7 @@ export class SupabaseBackend implements Backend {
       case 'start':
       case 'close':
         j = await this.rpc(`ludo_${a.type}`, game)
+        if (a.type === 'start') track('ludo_started')
         break
       case 'roll':
       case 'timeout':
