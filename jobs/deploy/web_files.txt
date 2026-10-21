@@ -1,0 +1,15 @@
+# Website files copied next to the data (jobs-publish workflow and deploy/india/run.sh both read this)
+index.html
+app.js
+eligibility.js
+i18n.js
+tools.js
+tracker.js
+passages.js
+alerts.js
+sw.js
+manifest.webmanifest
+icon.svg
+icon-192.png
+icon-512.png
+icon-maskable-512.png

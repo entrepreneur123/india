@@ -2,7 +2,7 @@
 // (Cache-first for the page shell could pair a new app.js with an old i18n.js from the
 // cache right after an update; network-first never mixes versions while online.)
 importScripts('alerts.js');
-const VERSION = 'jobs-v7';
+const VERSION = 'jobs-v8';
 const ALERTS = 'jobs-alerts'; // alert settings and what was announced: kept across app updates
 const SHELL = ['./', 'index.html', 'app.js', 'eligibility.js', 'i18n.js', 'tools.js', 'tracker.js', 'passages.js', 'alerts.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png'];
 
@@ -51,6 +51,15 @@ async function checkAlerts() {
   }
   await writeJSON('alerts/state', state);
 }
+// From the push server (India server): instant, worded here in the phone's language.
+self.addEventListener('push', (e) => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch { /* not ours: still shown, browsers require it */ }
+  e.waitUntil(readJSON('alerts/config').catch(() => null).then((config) => {
+    const n = self.JobsAlerts.fromPush(data, config);
+    return self.registration.showNotification(n.title, { body: n.body, tag: n.tag, icon: 'icon-192.png', data: { url: n.url } });
+  }));
+});
 self.addEventListener('periodicsync', (e) => { if (e.tag === 'jobs-alerts') e.waitUntil(checkAlerts()); });
 // The app asks for one check right after alerts are switched on: it records what is already
 // there, so the first background check only announces what is new after that.

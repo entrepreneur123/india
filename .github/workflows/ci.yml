@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: pip install -q pytest
+      - run: pip install -q pytest pywebpush==2.0.3   # pywebpush: the real encrypted-push test (India server)
       - name: SSC pipeline, classifier and eligibility rules (fixtures from ssc.gov.in)
         working-directory: jobs/pipeline
         run: python -m pytest -q tests

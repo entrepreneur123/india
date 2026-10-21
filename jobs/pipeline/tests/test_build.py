@@ -199,3 +199,12 @@ def test_full_check_plan():
     assert build.needs_full_check(status, "B", NOW + dt.timedelta(minutes=30))  # SSC posted something
     assert build.needs_full_check(status, "A", NOW + dt.timedelta(hours=build.FULL_CHECK_HOURS))
     assert build.needs_full_check({}, "A", NOW) and build.needs_full_check(status, "A", NOW, force=True)
+
+
+def test_rules_needed_lists_new_ssc_recruitments_without_a_rules_file():
+    rules = [{"exam": "CGL", "examYear": 2026}]
+    it = lambda exam, year, kind="recruitment", **kw: {"exam": exam, "examYear": year, "kind": kind, "lang": "en",  # noqa: E731
+                                                      "title": f"{exam} {year}", "publishedAt": "x", "files": [], **kw}
+    feed = [it("MTS", 2026), it("MTS", 2026), it("CGL", 2026), it("CHSL", 2027, kind="result"), it("LDCE", 2026),
+            it("UPPC", 2026, source="upprpb"), it("JE", 2026, lang="hi")]
+    assert [(r["exam"], r["examYear"]) for r in build.rules_needed(feed, rules)] == [("MTS", 2026)]

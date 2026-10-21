@@ -1,0 +1,11 @@
+[Unit]
+Description=Sarkari job alerts: weekly copies of recruiters' pages (deploy/india/capture.sh)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=sarkari
+EnvironmentFile=/etc/sarkari.env
+Environment=HOME=/opt/sarkari
+ExecStart=/opt/sarkari/code/jobs/deploy/india/capture.sh
+TimeoutStartSec=30min

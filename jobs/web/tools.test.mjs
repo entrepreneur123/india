@@ -154,3 +154,14 @@ test('alerts: last days to apply, once per cycle, from the rules index', async (
   assert.deepEqual(pick(feed, index, { seen: [] }, config, '2026-06-30').notes.map((n) => n.title), ['CGL 2026: last day']);
   assert.deepEqual(pick(feed, index, { seen: [] }, config, '2026-07-01').notes, []); // closed
 });
+
+test('alerts: messages from the push server are worded on the phone and can only open exam pages', async () => {
+  await import('./alerts.js');
+  const { fromPush } = globalThis.JobsAlerts;
+  const config = { names: { CGL: 'SSC CGL' }, text: { newItem: '{exam}: {kind}', lastDays: '{title} closes in {n} days', lastDay: '{title}: last day', kinds: { result: 'रिज़ल्ट', notice: 'सूचना' } } };
+  assert.deepEqual(fromPush({ type: 'item', id: 'ssc-1', exam: 'CGL', kind: 'result', title: 'CGL result', url: '#exam/CGL' }, config),
+    { title: 'SSC CGL: रिज़ल्ट', body: 'CGL result', tag: 'ssc-1', url: '#exam/CGL' });
+  assert.equal(fromPush({ type: 'deadline', exam: 'CGL', title: 'CGL 2026', n: 0, url: '#exam/CGL' }, config).title, 'CGL 2026: last day');
+  assert.equal(fromPush({ type: 'item', exam: 'CGL', kind: 'x', url: 'https://evil.example' }, config).url, '#home');
+  assert.equal(fromPush({ type: 'item', exam: 'CGL', kind: 'result', title: 't' }, null).title, 'CGL: result'); // no config yet
+});

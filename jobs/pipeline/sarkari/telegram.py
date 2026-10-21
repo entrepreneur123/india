@@ -54,6 +54,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--site-url", required=True)
+    ap.add_argument("--state", help="where to remember what was posted (default: <out>/jobs/telegram-state.json); "
+                                    "the India server keeps it on its own disk, since it resets the data copy each run")
     a = ap.parse_args(argv)
     token, chat = os.environ.get("JOBS_TELEGRAM_BOT_TOKEN", ""), os.environ.get("JOBS_TELEGRAM_CHAT_ID", "")
     if not token or not chat:
@@ -68,7 +70,7 @@ def main(argv=None) -> int:
             families = json.load(f)["families"]
     except FileNotFoundError:
         families = {}
-    path = os.path.join(a.out, STATE)
+    path = a.state or os.path.join(a.out, STATE)
     try:
         with open(path, encoding="utf-8") as f:
             posted = set(json.load(f).get("ids", []))
@@ -82,7 +84,7 @@ def main(argv=None) -> int:
         except Exception as e:  # noqa: BLE001 - retried on the next run
             print(f"::warning::telegram post failed: {e}")
             break
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         # new.json only holds this run's news, so only those ids need remembering.
         json.dump({"ids": sorted(posted & {i["id"] for i in items})}, f)

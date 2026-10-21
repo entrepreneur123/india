@@ -52,5 +52,19 @@
     return { notes, state: next };
   }
 
-  root.JobsAlerts = { pick, MAX, MAX_AGE_DAYS };
+  /** Words a message from the push server (sarkari/pushsend.py) like pick() does; config may be null. */
+  function fromPush(data, config) {
+    const text = (config && config.text) || { newItem: '{exam}: {kind}', lastDays: '{title}: applications close in {n} days',
+      lastDay: '{title}: today is the last day to apply', kinds: {} };
+    const names = (config && config.names) || {};
+    // Only the app's own exam pages: a message can't send the phone anywhere else.
+    const url = /^#exam\/[A-Z0-9]{2,12}$/.test(data.url || '') ? data.url : '#home';
+    if (data.type === 'deadline') {
+      return { title: fmt(data.n === 0 ? text.lastDay : text.lastDays, { title: data.title, n: data.n }), body: '', tag: `deadline:${data.exam}`, url };
+    }
+    return { title: fmt(text.newItem, { exam: names[data.exam] || data.exam, kind: text.kinds[data.kind] || text.kinds.notice || data.kind }),
+      body: data.title || '', tag: data.id || url, url };
+  }
+
+  root.JobsAlerts = { pick, fromPush, MAX, MAX_AGE_DAYS };
 }(typeof self !== 'undefined' ? self : globalThis));

@@ -14,7 +14,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
   jobs/v1/results/cutoffs.json  pages of the result write-ups that give the cut-off marks (cutoffs.py)
   jobs/exam/<code>/index.html   one static page per exam for search engines (sitegen.py), + jobs/sitemap.xml
-  jobs/v1/site.json             public links of this site (the Telegram channel, if one is set)
+  jobs/v1/site.json             public links of this site (Telegram channel, push server, if set)
   jobs/v1/status.json           last full check and SSC's lastUpdates stamp (changes on full checks only)
 
 Publishing rules (a wrong date or a missing notice is worse than a late one):
@@ -175,10 +175,18 @@ def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[di
 _CHANNEL = re.compile(r"^@([A-Za-z][A-Za-z0-9_]{4,31})$")  # a public Telegram username
 
 
-def site_info(channel: str | None) -> dict:
-    """Only a public @channel becomes a link; a numeric chat id (a private chat) is never shown."""
+_PUSH_URL = re.compile(r"^https://[a-z0-9.-]+(:\d{2,5})?/push$")
+_PUSH_KEY = re.compile(r"^[A-Za-z0-9_-]{87}$")  # 65-byte P-256 public key, base64url without padding
+
+
+def site_info(channel: str | None, push_url: str | None = None, push_key: str | None = None) -> dict:
+    """Only a public @channel becomes a link; a numeric chat id (a private chat) is never shown.
+    The push server (India server, sarkari.push) is announced only when both address and key look right."""
     m = _CHANNEL.match((channel or "").strip())
-    return {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
+    out = {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
+    if push_url and push_key and _PUSH_URL.match(push_url.strip()) and _PUSH_KEY.match(push_key.strip()):
+        out["push"] = {"url": push_url.strip(), "key": push_key.strip()}
+    return out
 
 
 def needs_full_check(status: dict, stamp: str, now: dt.datetime, force: bool = False) -> bool:
@@ -187,9 +195,24 @@ def needs_full_check(status: dict, stamp: str, now: dt.datetime, force: bool = F
         now - dt.datetime.fromisoformat(last_full) >= dt.timedelta(hours=FULL_CHECK_HOURS)
 
 
+def rules_needed(feed: list[dict], all_rules: list[dict]) -> list[dict]:
+    """New SSC recruitment notices with no rules file yet: the eligibility check can't cover them
+    until someone copies the Notice into pipeline/rules/ (the slow, human step)."""
+    have = {(r["exam"], r["examYear"]) for r in all_rules}
+    out, seen = [], set()
+    for i in feed:
+        key = (i.get("exam"), i.get("examYear"))
+        if i["kind"] == "recruitment" and i.get("source", "ssc") == "ssc" and i["lang"] == "en" and \
+                key[0] and key[0] != "LDCE" and key[1] and key not in have and key not in seen:
+            seen.add(key)
+            out.append({"exam": key[0], "examYear": key[1], "title": i["title"], "publishedAt": i["publishedAt"],
+                        "notice": next((f["url"] for f in i["files"]), None)})
+    return out
+
+
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
         force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
-        channel: str | None = None) -> int:
+        channel: str | None = None, push: tuple[str | None, str | None] = (None, None)) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -223,7 +246,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"]})
-    _write_json(_v1(out, "site.json"), site_info(channel))
+    _write_json(_v1(out, "site.json"), site_info(channel, *push))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
     sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
@@ -234,7 +257,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
         print(f"results: {added} new roll-number lists")
         print(f"cut-offs: {cutoffs.update(out, feed, get_bytes)} write-ups read")
     _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
-                              "sourceUpdatedAt": stamp, "streamCounts": counts, "failedSources": failed}, volatile=())
+                              "sourceUpdatedAt": stamp, "streamCounts": counts, "failedSources": failed,
+                              "rulesNeeded": rules_needed(feed, all_rules)}, volatile=())
     print(f"feed: {len(feed)} items ({len(new)} new, {len(others) + len(kept)} from other boards), {len(calendar)} calendar entries"
           f"{'' if changed else ', feed unchanged'}")
     return 0
@@ -264,7 +288,8 @@ def main(argv: list[str] | None = None) -> int:
         return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,
                    get_bytes=None if args.no_results else http.get_bytes, site_url=args.site_url,
                    get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"),
-                   channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"))
+                   channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"),
+                   push=(os.environ.get("JOBS_PUSH_URL"), os.environ.get("JOBS_PUSH_KEY")))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

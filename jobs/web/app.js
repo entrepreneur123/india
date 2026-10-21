@@ -790,58 +790,98 @@ async function alertConfig() {
     },
   };
 }
+// Two ways to alert. With a push server (India server, site.json "push"): instant, any browser
+// with Web Push (Android, desktop, iPhone once added to the home screen). Without one: the
+// installed app's background check (alerts.js), Android Chrome only.
+const siteInfo = () => getJSON('site.json').catch(() => ({}));
+const pushServer = async () => {
+  const site = await siteInfo();
+  return site.push && /^https:\/\/[a-z0-9.-]+(:\d{2,5})?\/push$/.test(site.push.url) && /^[A-Za-z0-9_-]{87}$/.test(site.push.key) ? site.push : null;
+};
+const b64urlBytes = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4)), (c) => c.charCodeAt(0));
+async function postPush(server, path, body) {
+  const res = await fetch(`${server.url}/${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`push ${path}: HTTP ${res.status}`);
+}
 async function syncAlerts() {
   if (!store.get('alerts', false) || !('caches' in window)) return;
   try {
+    // The worker words notifications from this (names, kinds, language).
     await (await caches.open('jobs-alerts')).put('alerts/config', new Response(JSON.stringify(await alertConfig()),
       { headers: { 'content-type': 'application/json' } }));
-  } catch { /* storage blocked: alerts keep the last settings */ }
+    if (store.get('alertsMode', '') === 'push') {
+      const [server, reg] = await Promise.all([pushServer(), swReady()]);
+      const sub = await reg?.pushManager?.getSubscription();
+      if (server && sub) await postPush(server, 'subscribe', { subscription: sub.toJSON(), exams: followed(), lang: getLang() });
+    }
+  } catch { /* offline or storage blocked: the next change sends it again */ }
 }
 // navigator.serviceWorker.ready never settles when the worker could not be registered.
 const swReady = () => ('serviceWorker' in navigator
   ? Promise.race([navigator.serviceWorker.ready, new Promise((r) => { setTimeout(() => r(null), 3000); })]) : Promise.resolve(null));
 async function alertsSupport() {
   if (!('Notification' in window)) return 'unsupported';
-  const reg = await swReady();
-  return reg?.periodicSync ? 'ok' : 'unsupported';
+  const [reg, server] = await Promise.all([swReady(), pushServer()]);
+  if (server && reg?.pushManager) return 'push';
+  return reg?.periodicSync ? 'sync' : 'unsupported';
 }
 function alertsCard() {
   const status = el('p', { class: 'small', 'aria-live': 'polite' });
   const btn = el('button', { class: 'primary', type: 'button' });
+  const unsupported = async () => t((await pushServer()) ? 'alertsUnsupportedPush' : 'alertsUnsupported');
   const paint = async () => {
     const on = store.get('alerts', false);
     btn.textContent = t(on ? 'alertsOff' : 'alertsOn');
-    if (on) status.textContent = t('alertsActive', { n: followed().length });
+    if (on) status.textContent = t(store.get('alertsMode', '') === 'push' ? 'alertsActivePush' : 'alertsActive', { n: followed().length });
     else if ('Notification' in window && Notification.permission === 'denied') status.textContent = t('alertsBlocked');
-    else status.textContent = (await alertsSupport()) === 'ok' ? '' : t('alertsUnsupported');
+    else status.textContent = (await alertsSupport()) === 'unsupported' ? await unsupported() : '';
   };
   btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    try { await toggle(); } finally { btn.disabled = false; }
+  });
+  async function toggle() {
     const reg = await swReady();
     if (store.get('alerts', false)) {
       store.set('alerts', false);
-      try { await reg?.periodicSync?.unregister('jobs-alerts'); await (await caches.open('jobs-alerts')).delete('alerts/config'); } catch { /* already gone */ }
+      try {
+        const sub = await reg?.pushManager?.getSubscription();
+        const server = await pushServer();
+        if (sub && server) await postPush(server, 'unsubscribe', { endpoint: sub.endpoint }).catch(() => null);
+        await sub?.unsubscribe();
+        await reg?.periodicSync?.unregister('jobs-alerts');
+        await (await caches.open('jobs-alerts')).delete('alerts/config');
+      } catch { /* already gone */ }
       paint(); return;
     }
     if (!followed().length) { status.textContent = t('alertsNoExams'); return; }
-    if ((await alertsSupport()) !== 'ok') { status.textContent = t('alertsUnsupported'); return; }
+    const mode = await alertsSupport();
+    if (mode === 'unsupported') { status.textContent = await unsupported(); return; }
     if ((await Notification.requestPermission()) !== 'granted') { status.textContent = t('alertsBlocked'); return; }
     try {
-      // Chrome only grants this to an installed app; anything else throws.
-      await reg.periodicSync.register('jobs-alerts', { minInterval: 6 * 3600e3 });
-    } catch { status.textContent = t('alertsUnsupported'); return; }
+      if (mode === 'push') {
+        const server = await pushServer();
+        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64urlBytes(server.key) });
+        await postPush(server, 'subscribe', { subscription: sub.toJSON(), exams: followed(), lang: getLang() });
+      } else {
+        // Chrome only grants this to an installed app; anything else throws.
+        await reg.periodicSync.register('jobs-alerts', { minInterval: 6 * 3600e3 });
+      }
+    } catch { status.textContent = t(mode === 'push' ? 'alertsFailed' : 'alertsUnsupported'); return; }
     store.set('alerts', true);
+    store.set('alertsMode', mode);
     await syncAlerts();
-    reg.active?.postMessage('check-alerts'); // records what is already there
+    if (mode === 'sync') reg.active?.postMessage('check-alerts'); // records what is already there
     paint();
-  });
+  }
   paint();
-  // Works on every phone, background check or not: the Telegram channel, when the site has one.
+  // Works on every phone: the Telegram channel, when the site has one.
   const telegram = el('p');
-  getJSON('site.json').then((site) => {
+  siteInfo().then((site) => {
     if (typeof site.telegram === 'string' && /^https:\/\/t\.me\/[A-Za-z0-9_]{5,32}$/.test(site.telegram)) {
       fill(telegram, el('a', { href: site.telegram, rel: 'noopener', target: '_blank' }, t('telegramJoin')));
     }
-  }).catch(() => { /* no channel */ });
+  });
   return el('div', { class: 'card' }, el('h3', {}, t('alertsTitle')), el('p', { class: 'small' }, t('alertsIntro')), btn, status, telegram);
 }
 let installPrompt = null;

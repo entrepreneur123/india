@@ -30,7 +30,8 @@ concurrency:
 
 jobs:
   publish:
-    if: vars.JOBS_PUBLISH == 'true'
+    # JOBS_RUNNER=india: the India server (jobs/deploy/india) publishes instead; one writer only.
+    if: vars.JOBS_PUBLISH == 'true' && vars.JOBS_RUNNER != 'india'
     runs-on: ubuntu-24.04
     timeout-minutes: 25   # a new 26 MB result list takes ~1-2 min; up to 4 per run
     env:
@@ -76,11 +77,7 @@ jobs:
           python -m sarkari.build $args
 
       - name: Website files
-        run: |
-          mkdir -p public/jobs
-          cp jobs/web/index.html jobs/web/app.js jobs/web/eligibility.js jobs/web/i18n.js \
-             jobs/web/tools.js jobs/web/tracker.js jobs/web/passages.js jobs/web/alerts.js jobs/web/sw.js jobs/web/manifest.webmanifest jobs/web/icon.svg jobs/web/icon-192.png jobs/web/icon-512.png jobs/web/icon-maskable-512.png public/jobs/
-          touch public/.nojekyll
+        run: jobs/deploy/copy_web.sh public
 
       - name: Commit and push
         run: |
