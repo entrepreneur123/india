@@ -58,7 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.delay
 
 /**
- * The Rooms tab: every room is user-created and has chat, voice, music and Ludo. Enter a code or create one, filter by
+ * The Rooms tab: every room is user-created and has chat, voice and music. Enter a code or create one, filter by
  * category, and the live rooms (refreshed every 30 s while on screen, pull to refresh, mine first).
  */
 @OptIn(ExperimentalMaterial3Api::class)

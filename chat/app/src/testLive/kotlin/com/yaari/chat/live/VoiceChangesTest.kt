@@ -7,7 +7,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** The Broadcast payloads of 020_scale_fixes.sql (voice_member_json, voice_room_event, voice_vote_event) applied to a state. */
+/** The Broadcast payloads of 020_scale_fixes.sql (voice_member_json, voice_room_event, voice_vote_event) and 029 (polls) applied to a state. */
 class VoiceChangesTest {
     private val json = Json { ignoreUnknownKeys = true }
     private fun change(text: String) = VoiceChange.parse(json, json.parseToJsonElement(text).jsonObject)
@@ -73,5 +73,25 @@ class VoiceChangesTest {
         assertNull(change("""{"t":"v","item":"q1"}"""))
         assertNull(change("""{"t":"m","id":"a","present":false,"seq":null}""")!!.seq)
         assertTrue(change("""{"t":"r","title":"x","category":"talk","mode":"hand","host":"h","ended":true}""").let { it is VoiceChange.Room && it.room.ended })
+        // A poll without its poll object.
+        assertNull(change("""{"t":"p","seq":6}"""))
+    }
+
+    /** 029: a poll's counts come numbered with the room's other changes; the state itself stays as it is. */
+    @Test fun aPollChangeTakesItsNumberAndLeavesTheStateAlone() {
+        val c = change(
+            """{"t":"p","seq":5,"poll":{"id":42,"question":"Tea or coffee?","options":["Tea","Coffee"],"counts":[3,1],
+               "total":4,"closed":false,"by":"h","mine":null}}""",
+        ) as VoiceChange.Poll
+        assertEquals(5L, c.seq)
+        assertEquals(42L, c.poll.id)
+        assertEquals(listOf(3, 1), c.poll.counts)
+        assertEquals(75, c.poll.percent(0))
+        assertNull(c.poll.mine)
+        assertEquals(state, state.apply(c, "me"))
+        // Counts shorter than the options (an older row): the missing ones are 0.
+        val short = change("""{"t":"p","seq":6,"poll":{"id":1,"question":"Q","options":["a","b","c"],"counts":[1],"total":1,"closed":true,"by":"h"}}""") as VoiceChange.Poll
+        assertEquals(listOf(1, 0, 0), short.poll.counts)
+        assertTrue(short.poll.closed)
     }
 }

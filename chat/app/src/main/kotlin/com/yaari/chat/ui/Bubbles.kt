@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -176,7 +177,12 @@ fun BubbleMeta(at: Long, mine: Boolean, read: Boolean, color: Color = chatColors
  * its own (measured, so the time never covers the text).
  */
 @Composable
-fun TextWithMeta(text: String, color: Color, meta: @Composable () -> Unit, modifier: Modifier = Modifier) {
+fun TextWithMeta(text: String, color: Color, meta: @Composable () -> Unit, modifier: Modifier = Modifier) =
+    TextWithMeta(AnnotatedString(text), color, meta, modifier)
+
+/** The same, for text with styled parts (a room line's @mentions). */
+@Composable
+fun TextWithMeta(text: AnnotatedString, color: Color, meta: @Composable () -> Unit, modifier: Modifier = Modifier) {
     // Written by the Text while it is measured, read right after in the same pass.
     val textLayout = remember { arrayOfNulls<TextLayoutResult>(1) }
     Layout(

@@ -28,7 +28,8 @@ import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.HeadsetOff
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
@@ -42,22 +43,18 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.draw.shadow
@@ -74,15 +71,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil3.compose.AsyncImage
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yaari.chat.R
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceQueueItem
@@ -92,24 +81,19 @@ import com.yaari.chat.model.byVotes
 import com.yaari.chat.model.YouTube
 import kotlinx.coroutines.delay
 
-/** False in screenshot tests: the YouTube WebView is replaced by its loading placeholder. */
-val LocalYouTubePlayer = staticCompositionLocalOf { true }
-
-private enum class PlayerState { LOADING, READY, FAILED, UNAVAILABLE }
-
 /**
- * "Listen together": the room's YouTube track. Open, it plays in YouTube's own IFrame player at least 200 dp tall
- * (YouTube's minimum player size); closed, the player is gone (no hidden background playback: YouTube's rules) and a
- * slim bar says it is paused for me.
+ * "Listen together" outside a music room: the room's YouTube track. Before I listen, a slim bar offers it ("Paused for
+ * you"). Listening and open, the player ([PlayerSlot]: the room's one player, [RoomPlayerHost]) with its controls;
+ * collapsed (the chevron), a compact now-playing strip: the music plays on, also while the room is minimised.
  */
 @Composable
 fun MusicPanel(
-    track: VoiceTrack, queue: List<VoiceQueueItem>, isHost: Boolean, open: Boolean, onOpenChange: (Boolean) -> Unit,
-    onQueue: () -> Unit, act: (VoiceAction) -> Unit,
+    track: VoiceTrack, queue: List<VoiceQueueItem>, isHost: Boolean, listening: Boolean, open: Boolean, active: Boolean,
+    onListen: (Boolean) -> Unit, onOpenChange: (Boolean) -> Unit, onQueue: () -> Unit, act: (VoiceAction) -> Unit,
 ) {
     val title = track.title.ifEmpty { stringResource(R.string.voice_yt_video) }
     val upNext = queue.size
-    if (!open) {
+    if (!listening) {
         Row(
             Modifier.padding(horizontal = 16.dp).fillMaxWidth().height(56.dp).clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(start = 12.dp, end = 8.dp),
@@ -124,14 +108,18 @@ fun MusicPanel(
                 )
             }
             SoftButton(
-                stringResource(R.string.voice_listen), { onOpenChange(true) }, accent = true, height = 36.dp,
+                stringResource(R.string.voice_listen), { onListen(true) }, accent = true, height = 36.dp,
                 leading = { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp), tint = Color.White) },
             )
         }
         return
     }
+    if (!open) {
+        NowPlayingStrip(track, title) { onOpenChange(true) }
+        return
+    }
     Column(Modifier.padding(horizontal = 16.dp)) {
-        Player(track, onEnded = if (isHost) ({ act(VoiceAction.Skip(track.id)) }) else null)
+        PlayerSlot(track, active = active)
         Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f).padding(end = 4.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -143,6 +131,10 @@ fun MusicPanel(
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
                 )
             }
+            CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.voice_collapse), { onOpenChange(false) }, iconSize = 24.dp)
+        }
+        // The controls on a line of their own, so the title keeps its room on a narrow phone.
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (isHost) {
                 val paused = track.pausedAt != null
                 CircleIconButton(
@@ -158,129 +150,44 @@ fun MusicPanel(
                 Icon(Icons.AutoMirrored.Rounded.QueueMusic, null, Modifier.size(20.dp))
                 Text("$upNext", style = MaterialTheme.typography.labelLarge)
             }
-            CircleIconButton(Icons.Rounded.ExpandLess, stringResource(R.string.voice_collapse), { onOpenChange(false) }, iconSize = 20.dp)
+            Spacer(Modifier.weight(1f))
+            SoftButton(
+                stringResource(R.string.voice_stop_listening), { onListen(false) }, height = 36.dp,
+                leading = { Icon(Icons.Rounded.HeadsetOff, null, Modifier.size(18.dp)) },
+            )
         }
     }
 }
 
 /**
- * YouTube's IFrame player (android-youtube-player). It follows the room: the same video at the same position
- * (startedAt, corrected for this phone's clock), paused when the host pauses, put back in step when it drifts.
- * While it can't play (loading, YouTube unreachable, a video that won't play embedded) the thumbnail and a status
- * stand in for it.
+ * The music panel collapsed: what plays (it keeps playing), in a compact strip with moving bars; a tap or the
+ * chevron opens the player again.
  */
 @Composable
-private fun Player(track: VoiceTrack, onEnded: (() -> Unit)?, modifier: Modifier = Modifier, onDuration: (Float) -> Unit = {}) {
-    BoxWithConstraints(modifier.fillMaxWidth()) {
-        val height = maxOf(200.dp, maxWidth * 9 / 16)
-        Box(Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(16.dp)).background(Color.Black)) {
-            var state by remember { mutableStateOf(PlayerState.LOADING) }
-            if (LocalYouTubePlayer.current) YouTubeView(track, onEnded, onDuration) { state = it }
-            if (state != PlayerState.READY) {
-                AsyncImage(
-                    YouTube.thumbnail(track.videoId), null, Modifier.fillMaxSize().alpha(0.45f), contentScale = ContentScale.Crop,
-                )
-                Row(
-                    Modifier.align(Alignment.Center).widthIn(max = 300.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.65f))
-                        .padding(horizontal = 16.dp, vertical = 8.dp).semantics { liveRegion = LiveRegionMode.Polite },
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (state == PlayerState.LOADING) CircularProgressIndicator(Modifier.size(16.dp), color = Color.White, strokeWidth = 2.dp)
-                    Text(
-                        stringResource(
-                            when (state) {
-                                PlayerState.LOADING -> R.string.voice_yt_connecting
-                                PlayerState.FAILED -> R.string.voice_yt_failed
-                                else -> R.string.voice_yt_unavailable
-                            },
-                        ),
-                        color = Color.White, style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.Center,
-                    )
-                }
-            }
+private fun NowPlayingStrip(track: VoiceTrack, title: String, onExpand: () -> Unit) {
+    val color = topicColor(Topic.MUSIC)
+    val shape = RoundedCornerShape(18.dp)
+    val expand = stringResource(R.string.voice_show_player)
+    Row(
+        Modifier.padding(horizontal = 16.dp).fillMaxWidth().height(60.dp).clip(shape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh).background(color.copy(alpha = 0.12f))
+            .border(1.dp, color.copy(alpha = 0.3f), shape)
+            .clickable(role = Role.Button, onClickLabel = expand, onClick = onExpand).padding(start = 8.dp, end = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(44.dp, 44.dp).clip(RoundedCornerShape(12.dp)).background(Color.Black), contentAlignment = Alignment.Center) {
+            AsyncImage(YouTube.thumbnail(track.videoId), null, Modifier.fillMaxSize().alpha(0.7f), contentScale = ContentScale.Crop)
+            if (track.pausedAt == null) LiveBars(color = Color.White, height = 14.dp) else Icon(Icons.Rounded.Pause, null, Modifier.size(18.dp), tint = Color.White)
         }
-    }
-}
-
-@Composable
-private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (Float) -> Unit, onState: (PlayerState) -> Unit) {
-    val context = LocalContext.current
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val current by rememberUpdatedState(track)
-    val ended by rememberUpdatedState(onEnded)
-    val report by rememberUpdatedState(onState)
-    val duration by rememberUpdatedState(onDuration)
-    var player by remember { mutableStateOf<YouTubePlayer?>(null) }
-    var ready by remember { mutableStateOf(false) }
-    var loadedId by remember { mutableStateOf<String?>(null) }
-    val tracker = remember { YouTubePlayerTracker() }
-    val view = remember { YouTubePlayerView(context).apply { enableAutomaticInitialization = false } }
-
-    // One player while the panel is open; closing the panel or leaving the room releases it. The lifecycle
-    // observer pauses it when the app goes to the background (no background playback).
-    DisposableEffect(view) {
-        lifecycle.addObserver(view)
-        val listener = object : AbstractYouTubePlayerListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.addListener(tracker)
-                val t = current
-                val at = t.position(System.currentTimeMillis())
-                loadedId = t.videoId
-                if (t.pausedAt == null) youTubePlayer.loadVideo(t.videoId, at) else youTubePlayer.cueVideo(t.videoId, at)
-                player = youTubePlayer
-                ready = true
-                report(PlayerState.READY)
-            }
-
-            override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerConstants.PlayerState) {
-                if (state == PlayerConstants.PlayerState.ENDED) ended?.invoke()
-            }
-
-            override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
-                report(PlayerState.UNAVAILABLE)
-            }
-
-            override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
-                duration(duration)
-            }
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(YouTube.songOf(title), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                stringResource(if (track.pausedAt != null) R.string.voice_paused_by_host else R.string.music_playing_for_you),
+                style = MaterialTheme.typography.bodySmall, color = color, maxLines = 1,
+            )
         }
-        val options = IFramePlayerOptions.Builder(context).controls(1).rel(0).ivLoadPolicy(3).build()
-        view.initialize(listener, true, options)
-        onDispose {
-            lifecycle.removeObserver(view)
-            player = null
-            view.release()
-        }
+        CircleIconButton(Icons.Rounded.KeyboardArrowUp, expand, onExpand, iconSize = 22.dp)
     }
-    // YouTube unreachable (blocked, offline): say so after a while instead of loading forever.
-    LaunchedEffect(view) {
-        delay(12_000)
-        if (!ready) report(PlayerState.FAILED)
-    }
-    // Follow the room: a new track, the host pausing or resuming.
-    LaunchedEffect(player, track.videoId, track.startedAt, track.pausedAt) {
-        val p = player ?: return@LaunchedEffect
-        val at = track.position(System.currentTimeMillis())
-        if (loadedId != track.videoId) {
-            loadedId = track.videoId
-            if (track.pausedAt == null) p.loadVideo(track.videoId, at) else p.cueVideo(track.videoId, at)
-            return@LaunchedEffect
-        }
-        VoiceController.seekTarget(tracker.currentSecond, track, System.currentTimeMillis())?.let(p::seekTo)
-        if (track.pausedAt != null) p.pause() else if (tracker.state != PlayerConstants.PlayerState.PLAYING) p.play()
-    }
-    // Stay in step with everyone while playing (a slow phone or a buffering pause drifts behind).
-    LaunchedEffect(player) {
-        val p = player ?: return@LaunchedEffect
-        while (true) {
-            delay(5_000)
-            val t = current
-            if (t.pausedAt == null && tracker.state == PlayerConstants.PlayerState.PLAYING) {
-                VoiceController.seekTarget(tracker.currentSecond, t, System.currentTimeMillis())?.let(p::seekTo)
-            }
-        }
-    }
-    AndroidView({ view }, Modifier.fillMaxSize())
 }
 
 /** Where the song is in seconds, while it plays (ticks once a second). */
@@ -300,11 +207,14 @@ private fun rememberPosition(track: VoiceTrack): Float {
 private fun mmss(seconds: Float) = "%d:%02d".format(java.util.Locale.ROOT, seconds.toInt() / 60, seconds.toInt() % 60)
 
 /**
- * A music room's hero: the shared player with the song, who added it and where it is, the host's controls (pause,
+ * A music room's hero: the shared player (the room's one player over its [PlayerSlot]; [active]: this screen is the
+ * one shown) with the song, who added it and where it is, the host's controls (pause,
  * play the most voted next), and the song requests by vote. With nothing playing, the way to request the first.
  */
 @Composable
-fun MusicHero(room: VoiceRoom, isHost: Boolean, adding: String?, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit) {
+fun MusicHero(
+    room: VoiceRoom, isHost: Boolean, adding: String?, active: Boolean, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit,
+) {
     val color = topicColor(Topic.MUSIC)
     val track = room.track
     val ordered = room.queue.byVotes()
@@ -312,12 +222,9 @@ fun MusicHero(room: VoiceRoom, isHost: Boolean, adding: String?, onQueue: () -> 
     val music = stringResource(R.string.voice_music_title)
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).semantics { contentDescription = music }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (track != null) {
-            var seconds by remember(track.id) { mutableStateOf(0f) }
+            val seconds = LocalRoomPlayer.current.duration
             Column {
-                Player(
-                    track, onEnded = if (isHost) ({ act(VoiceAction.Skip(track.id)) }) else null,
-                    modifier = Modifier.shadow(24.dp, RoundedCornerShape(16.dp), ambientColor = color, spotColor = color),
-                ) { seconds = it }
+                PlayerSlot(track, Modifier.shadow(24.dp, RoundedCornerShape(16.dp), ambientColor = color, spotColor = color), active = active)
                 Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(

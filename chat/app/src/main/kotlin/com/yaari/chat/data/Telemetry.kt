@@ -12,7 +12,7 @@ import java.io.File
 /** The steps people reach, counted on the server (the same names as the web app's lib/telemetry.ts). */
 enum class Funnel(val code: String) {
     SIGNUP_DONE("signup_done"), MATCH_FOUND("match_found"), CHAT_MESSAGE_SENT("chat_message_sent"),
-    ROOM_CREATED("room_created"), ROOM_JOINED("room_joined"), LUDO_STARTED("ludo_started"), CALL_STARTED("call_started"),
+    ROOM_CREATED("room_created"), ROOM_JOINED("room_joined"), CALL_STARTED("call_started"),
     PLUS_PURCHASED("plus_purchased"),
 }
 

@@ -255,8 +255,8 @@ class WeakNetworkTest {
         val flaky = object : Backend by fake {
             override suspend fun send(matchId: String, text: String?, media: Media?): Message =
                 if (down) throw IOException("timeout") else fake.send(matchId, text, media)
-            override suspend fun sendVoice(roomId: String, text: String): VoiceLine =
-                if (down) throw BackendException("network") else fake.sendVoice(roomId, text)
+            override suspend fun sendVoice(roomId: String, text: String, replyTo: Long?): VoiceLine =
+                if (down) throw BackendException("network") else fake.sendVoice(roomId, text, replyTo)
         }
         val vm = signedIn(flaky)
         vm.startMatching(); step(3_000)

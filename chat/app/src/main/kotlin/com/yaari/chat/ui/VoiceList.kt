@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
 import com.yaari.chat.model.Profile
-import com.yaari.chat.model.RoomGame
 import com.yaari.chat.model.VoiceRoomSummary
 
 // ---- The rooms list: live bars, faces, the room card ----------------------------------------------------------
@@ -84,7 +83,7 @@ fun FaceStack(people: List<Profile>, size: Dp, ring: Color, modifier: Modifier =
     }
 }
 
-/** A room on the list, as on the web: the category's colour along the top, who is on the stage (or that it's chatting), music or Ludo on, who may come in. */
+/** A room on the list, as on the web: the category's colour along the top, who is on the stage (or that it's chatting), music on, who may come in. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
@@ -140,15 +139,6 @@ fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Mo
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 TopicIcon(Topic.MUSIC, size = 15.dp)
                 Text(title, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            }
-        }
-        room.game?.let { game ->
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                TopicIcon(Topic.GAMING, size = 15.dp)
-                Text(
-                    stringResource(if (game == RoomGame.PLAYING) R.string.rooms_ludo_on else R.string.rooms_ludo_lobby),
-                    style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                )
             }
         }
         val conditions = conditionLabels(room.rules)

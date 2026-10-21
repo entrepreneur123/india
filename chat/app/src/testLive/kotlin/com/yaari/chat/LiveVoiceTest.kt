@@ -82,7 +82,21 @@ class LiveVoiceTest {
         assertEquals("slow_down", code { host.voiceIcebreaker(id) })
         assertTrue(host.voiceLines(id).any { it is VoiceLine.Text && it.text == "hello from the live rooms test" && !it.fromMe })
         guest.voiceAction(id, VoiceAction.AddTrack("BddP6PYo2gs", guest.videoTitle("BddP6PYo2gs")))
-        assertTrue(host.voiceLeaders(id).isEmpty())
+        // 029: a reply quotes the line; a poll (host only) is answered, changed, counted and closed.
+        val answer = host.sendVoice(id, "welcome!", replyTo = line.id) as VoiceLine.Text
+        assertEquals(line.id, answer.reply?.id)
+        assertEquals("hello from the live rooms test", answer.reply?.text)
+        assertEquals("not_allowed", code { guest.createVoicePoll(id, "Tea or coffee?", listOf("Tea", "Coffee")) })
+        assertEquals("bad_request", code { host.createVoicePoll(id, "Same?", listOf("Tea", "tea")) })
+        val poll = host.createVoicePoll(id, "Tea or coffee?", listOf("Tea", "Coffee")) as VoiceLine.Poll
+        assertEquals(listOf("Tea", "Coffee"), poll.options)
+        assertEquals(0, guest.voicePollVote(poll.pollId, 0).mine)
+        val changed = guest.voicePollVote(poll.pollId, 1)
+        assertEquals(listOf(0, 1), changed.counts)
+        assertEquals(1, changed.total)
+        assertTrue(host.closeVoicePoll(poll.pollId).closed)
+        assertEquals("poll_closed", code { guest.voicePollVote(poll.pollId, 0) })
+        assertEquals(1, guest.voicePolls(listOf(poll.pollId)).single().mine)
 
         // Rules: a listener can't end; the host joins the voice on seat 0 and leaves it again.
         assertEquals("not_allowed", code { guest.endVoice(id) })

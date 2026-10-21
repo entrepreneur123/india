@@ -32,11 +32,6 @@ import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
-import com.yaari.chat.model.LudoAction
-import com.yaari.chat.model.LudoEvent
-import com.yaari.chat.model.LudoGame
-import com.yaari.chat.model.LudoOut
-import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
@@ -47,8 +42,6 @@ import com.yaari.chat.data.ServerClock
 import com.yaari.chat.model.AudioStatus
 import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.NewVoiceRoom
-import com.yaari.chat.model.RoomGame
-import com.yaari.chat.model.RoomLeader
 import com.yaari.chat.model.RoomRules
 import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
@@ -56,6 +49,8 @@ import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.VoiceMember
+import com.yaari.chat.model.VoicePoll
+import com.yaari.chat.model.VoiceReply
 import com.yaari.chat.model.VoiceQueueItem
 import com.yaari.chat.model.VoiceReaction
 import com.yaari.chat.model.VoiceRole
@@ -129,7 +124,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
@@ -703,14 +698,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class VoiceListRow(
         val id: String, val title: String, val category: String, val mine: Boolean = false, val host: VoiceCardRow? = null,
         val speakers: List<VoiceCardRow> = emptyList(), val listeners: Int = 0, val members: Int = 0,
-        @SerialName("now_playing") val nowPlaying: String? = null, val game: String? = null,
+        @SerialName("now_playing") val nowPlaying: String? = null,
         @SerialName("max_members") val maxMembers: Int = VoiceRoom.DEFAULT_MEMBERS, @SerialName("gender_rule") val genderRule: String? = null,
         @SerialName("min_age") val minAge: Int = VoiceRoom.MIN_AGE, @SerialName("max_age") val maxAge: Int = VoiceRoom.MAX_AGE,
         @SerialName("is_private") val isPrivate: Boolean = false, val announcement: String? = null, val code: String? = null,
         val refusal: String? = null, val lang: String? = null,
     )
     @Serializable private data class CreatedVoiceRow(val id: String, val code: String)
-    @Serializable private data class LeaderRow(val id: String, val name: String, @SerialName("photo_path") val photoPath: String? = null, val wins: Int = 0)
     @Serializable private data class VoiceMessageRow(
         val id: Long, @SerialName("room_id") val roomId: String, val sender: String, val kind: String, val body: String? = null,
         val payload: JsonObject? = null, @SerialName("media_path") val mediaPath: String? = null, @SerialName("sender_name") val senderName: String,
@@ -743,11 +737,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             VoiceRoomSummary(
                 r.id, r.title, RoomCategory.of(r.category), card(host), r.speakers.map(::card), r.listeners,
                 r.nowPlaying?.ifEmpty { null }, r.mine, members = r.members,
-                game = when (r.game) {
-                    "lobby" -> RoomGame.LOBBY
-                    "playing" -> RoomGame.PLAYING
-                    else -> null
-                },
                 rules = RoomRules(r.maxMembers, GenderRule.of(r.genderRule), r.minAge, r.maxAge, r.isPrivate),
                 announcement = r.announcement, code = r.code, refusal = r.refusal, lang = RoomLang.of(r.lang),
             )
@@ -895,10 +884,27 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         toVoiceLines(listOf(row)).first()
     }
 
-    override suspend fun voiceLeaders(roomId: String): List<RoomLeader> = call {
-        val rows = json.decodeFromString<List<LeaderRow>>(client.postgrest.rpc("voice_leaders", buildJsonObject { put("p_room", roomId) }).data.trim())
-        signMany(rows.map { it.photoPath })
-        rows.map { RoomLeader(card(VoiceCardRow(it.id, it.name, photoPath = it.photoPath)), it.wins) }
+    override suspend fun createVoicePoll(roomId: String, question: String, options: List<String>): VoiceLine = call {
+        val row = client.postgrest.rpc("voice_poll_create", buildJsonObject {
+            put("p_room", roomId)
+            put("p_question", question)
+            putJsonArray("p_options") { options.forEach { add(it) } }
+        }).decodeAs<VoiceMessageRow>()
+        toVoiceLines(listOf(row)).firstOrNull() ?: throw BackendException("bad_request")
+    }
+
+    override suspend fun voicePollVote(pollId: Long, choice: Int): VoicePoll = call {
+        client.postgrest.rpc("voice_poll_vote", buildJsonObject { put("p_poll", pollId); put("p_choice", choice) }).decodeAs<VoicePollRow>().toPoll()
+    }
+
+    override suspend fun closeVoicePoll(pollId: Long): VoicePoll = call {
+        client.postgrest.rpc("voice_poll_close", buildJsonObject { put("p_poll", pollId) }).decodeAs<VoicePollRow>().toPoll()
+    }
+
+    override suspend fun voicePolls(ids: List<Long>): List<VoicePoll> = call {
+        if (ids.isEmpty()) return@call emptyList()
+        client.postgrest.rpc("voice_polls_get", buildJsonObject { putJsonArray("p_ids") { ids.take(50).forEach { add(it) } } })
+            .decodeList<VoicePollRow>().map { it.toPoll() }
     }
 
     override suspend fun videoTitle(videoId: String): String = youTubeTitle(videoId)
@@ -932,10 +938,12 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             limit(200)
         }.decodeList<VoiceMessageRow>().let { toVoiceLines(it) }
 
-    override suspend fun sendVoice(roomId: String, text: String): VoiceLine = call {
-        val row = client.postgrest.rpc("voice_send", buildJsonObject {
+    /** voice_send2 (029): the same row as voice_send, with the answered line quoted in payload.reply. */
+    override suspend fun sendVoice(roomId: String, text: String, replyTo: Long?): VoiceLine = call {
+        val row = client.postgrest.rpc("voice_send2", buildJsonObject {
             put("p_room", roomId)
             put("p_text", text)
+            put("p_reply_to", replyTo)
         }).decodeAs<VoiceMessageRow>()
         toVoiceLines(listOf(row)).first()
     }
@@ -1228,7 +1236,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             if (over) return
             if (c is VoiceChange.Room && c.room.ended) return finish(VoiceEvent.Ended)
             val b = base
-            when (order.offer(c, ready = b != null && !fetching)) {
+            val step = order.offer(c, ready = b != null && !fetching)
+            // A poll is not part of the room's state (a full state doesn't bring it): its counts are shown as they
+            // come, also while a state is on its way or after a gap; only a replay is left out.
+            if (c is VoiceChange.Poll && step != ChangeOrder.Step.SKIP) send(VoiceEvent.PollChanged(c.poll))
+            when (step) {
                 ChangeOrder.Step.HOLD, ChangeOrder.Step.SKIP -> Unit
                 ChangeOrder.Step.REFETCH -> refresh.trySend(Unit) // missed one
                 ChangeOrder.Step.APPLY_RECHECK -> {
@@ -1399,7 +1411,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             val at = ts(r.createdAt).toEpochMilli()
             fun sender() = card(VoiceCardRow(r.sender, r.senderName, r.senderGender ?: "other", r.senderAge ?: 0, null, null, r.senderPhoto, r.senderCountry))
             if (r.kind == "text") {
-                VoiceLine.Text(r.id, sender(), r.sender == me, r.body.orEmpty(), at)
+                VoiceLine.Text(r.id, sender(), r.sender == me, r.body.orEmpty(), at, reply(r.payload))
+            } else if (r.kind == "poll") {
+                val p = r.payload ?: return@mapNotNull null
+                val pollId = p["poll_id"]?.jsonPrimitive?.longOrNull ?: return@mapNotNull null
+                val options = (p["options"] as? JsonArray)?.mapNotNull { it.jsonPrimitive.contentOrNull }.orEmpty()
+                if (options.size < VoicePoll.MIN_OPTIONS) return@mapNotNull null
+                VoiceLine.Poll(r.id, sender(), r.sender == me, pollId, p["question"]?.jsonPrimitive?.contentOrNull.orEmpty(), options, at)
             } else if (r.kind == "photo") {
                 // A photo no longer readable (its sender blocked, or I left the room long ago) is left out.
                 val url = r.mediaPath?.let { signedUrls[it]?.first } ?: return@mapNotNull null
@@ -1407,7 +1425,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             } else if (r.kind == "icebreaker") {
                 val prompt = r.payload?.get("q")?.jsonPrimitive?.content?.toIntOrNull()?.takeIf { it >= 1 } ?: return@mapNotNull null
                 VoiceLine.Icebreaker(r.id, prompt, r.senderName, r.sender == me, at)
-            } else {
+            } else if (r.kind == "system") {
                 val p = r.payload
                 val event = VoiceSystemEvent.of(p?.get("event")?.jsonPrimitive?.content) ?: return@mapNotNull null
                 VoiceLine.System(
@@ -1415,9 +1433,22 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                     seat = p?.get("seat")?.jsonPrimitive?.content?.toIntOrNull(),
                     title = p?.get("title")?.jsonPrimitive?.content,
                 )
+            } else {
+                null // a kind this app doesn't know (a newer server): left out
             }
         }
     }
+
+    /** payload.reply of a text line (029): the line it answers, as quoted when it was sent; null when absent or unreadable. */
+    private fun reply(payload: JsonObject?): VoiceReply? = runCatching {
+        val q = payload?.get("reply") as? JsonObject ?: return null
+        val kind = VoiceReply.Kind.of(q["kind"]?.jsonPrimitive?.contentOrNull) ?: return null
+        VoiceReply(
+            q["id"]!!.jsonPrimitive.longOrNull!!, q["sender"]?.jsonPrimitive?.contentOrNull.orEmpty(),
+            q["name"]?.jsonPrimitive?.contentOrNull.orEmpty(), kind,
+            if (kind == VoiceReply.Kind.PHOTO) null else q["text"]?.jsonPrimitive?.contentOrNull?.take(VoiceReply.MAX_QUOTE),
+        )
+    }.getOrNull()
 
     /** A card from a voice room; the photo comes from [signMany] (one request for the whole room), else the initial. */
     private fun card(c: VoiceCardRow) = Profile(
@@ -1435,117 +1466,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             if (u.error == null && u.signedURL.isNotEmpty()) signedUrls[u.path] = u.signedURL to now + 50 * 60_000L
         }
     }
-
-    // ---- Ludo in a voice room (018_ludo.sql): every change bumps the game's version; the app follows its row ----
-
-    /** ludo_json(): timestamps in server ms, and the server's clock. */
-    @Serializable private data class LudoJson(
-        val id: String, val room: String, val status: String, val players: List<String?>, val names: List<String?>,
-        val out: List<Boolean>, val tokens: List<Int>, val turn: Int? = null, val dice: Int? = null, val roll: Int? = null,
-        val winner: Int? = null, val events: JsonArray = JsonArray(emptyList()), val version: Int,
-        val deadline: Long? = null, val endedAt: Long? = null, val now: Long? = null,
-    )
-    /** A ludo_games row (realtime). */
-    @Serializable private data class LudoRow(
-        val id: String, @SerialName("room_id") val roomId: String, val status: String, val players: List<String?>,
-        val names: List<String?>, val out: List<Boolean>, val tokens: List<Int>, val turn: Int? = null, val dice: Int? = null,
-        val roll: Int? = null, val winner: Int? = null, val events: JsonArray = JsonArray(emptyList()), val version: Int,
-        val deadline: String? = null, @SerialName("ended_at") val endedAt: String? = null,
-    )
-
-    override suspend fun ludoGame(roomId: String): LudoGame? = call {
-        val sent = System.currentTimeMillis()
-        val text = client.postgrest.rpc("ludo_state", buildJsonObject { put("p_room", roomId) }).data.trim()
-        if (text.isEmpty() || text == "null") null else fromLudoJson(json.decodeFromString<LudoJson>(text), sent)
-    }
-
-    override suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction): LudoGame? = call {
-        val sent = System.currentTimeMillis()
-        suspend fun rpc(fn: String, extra: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit = {}) =
-            client.postgrest.rpc(fn, buildJsonObject { put("p_game", gameId); extra() }).data.trim()
-        val text = when (action) {
-            LudoAction.Open -> client.postgrest.rpc("ludo_open", buildJsonObject { put("p_room", roomId) }).data.trim()
-            is LudoAction.Join -> rpc("ludo_join") { put("p_seat", action.seat) }
-            LudoAction.Leave -> rpc("ludo_leave")
-            LudoAction.Start -> rpc("ludo_start").also { telemetry.track(Funnel.LUDO_STARTED) }
-            LudoAction.Close -> rpc("ludo_close")
-            is LudoAction.Roll -> rpc("ludo_roll") { put("p_version", action.version) }
-            is LudoAction.Timeout -> rpc("ludo_timeout") { put("p_version", action.version) }
-            is LudoAction.Move -> rpc("ludo_move") { put("p_token", action.token); put("p_version", action.version) }
-        }
-        if (text.isEmpty() || text == "null") null else fromLudoJson(json.decodeFromString<LudoJson>(text), sent)
-    }
-
-    /**
-     * The room's game rows over realtime (a new game is an insert), re-read when the channel (re)connects and every
-     * 10 s while on screen (a missed change shows up within seconds even on a weak network).
-     */
-    override fun ludoGames(roomId: String): Flow<LudoGame> = channelFlow {
-        val channel = client.channel("ludo-$roomId-${UUID.randomUUID()}")
-        val inserts = channel.postgresChangeFlow<PostgresAction.Insert>("public") {
-            table = "ludo_games"
-            filter("room_id", FilterOperator.EQ, roomId)
-        }
-        val updates = channel.postgresChangeFlow<PostgresAction.Update>("public") {
-            table = "ludo_games"
-            filter("room_id", FilterOperator.EQ, roomId)
-        }
-        try {
-            launch { inserts.collect { a -> runCatching { fromLudoRow(a.decodeRecord<LudoRow>()) }.onSuccess { send(it) } } }
-            launch { updates.collect { a -> runCatching { fromLudoRow(a.decodeRecord<LudoRow>()) }.onSuccess { send(it) } } }
-            val resync = Channel<Unit>(Channel.CONFLATED)
-            launch { channel.joined().collect { up -> if (up) resync.trySend(Unit) } }
-            channel.subscribe()
-            while (true) {
-                withTimeoutOrNull(RESYNC_MS) { resync.receive() }
-                AppForeground.visible.awaitVisible()
-                runCatching { ludoGame(roomId) }.getOrNull()?.let { send(it) }
-            }
-        } finally {
-            withContext(NonCancellable) { runCatching { client.realtime.removeChannel(channel) } }
-        }
-    }
-
-    private fun fromLudoJson(j: LudoJson, sent: Long): LudoGame {
-        j.now?.let { serverClock.note(it, sent, System.currentTimeMillis()) }
-        return LudoGame(
-            j.id, j.room, LudoStatus.of(j.status), j.players, j.names, j.out, j.tokens, j.turn, j.dice, j.roll,
-            deadline = j.deadline?.let(serverClock::toLocal), winner = j.winner, events = ludoEvents(j.events), version = j.version,
-            endedAt = j.endedAt?.let(serverClock::toLocal),
-        )
-    }
-
-    private fun fromLudoRow(r: LudoRow) = LudoGame(
-        r.id, r.roomId, LudoStatus.of(r.status), r.players, r.names, r.out, r.tokens, r.turn, r.dice, r.roll,
-        deadline = r.deadline?.let { serverClock.toLocal(ts(it).toEpochMilli()) }, winner = r.winner, events = ludoEvents(r.events),
-        version = r.version, endedAt = r.endedAt?.let { serverClock.toLocal(ts(it).toEpochMilli()) },
-    )
-
-    /** {k: start | roll | move | pass | triple | timeout | out | win, s, d, t, f, to, cap: [[seat, token, from]], why} */
-    private fun ludoEvents(events: JsonArray): List<LudoEvent> = events.mapNotNull { e ->
-        val o = e as? JsonObject ?: return@mapNotNull null
-        fun int(key: String) = o[key]?.jsonPrimitive?.intOrNull
-        val s = int("s") ?: return@mapNotNull null
-        when (o["k"]?.jsonPrimitive?.contentOrNull) {
-            "start" -> LudoEvent.Start(s)
-            "roll" -> LudoEvent.Roll(s, int("d") ?: return@mapNotNull null)
-            "move" -> LudoEvent.Move(
-                s, int("t") ?: return@mapNotNull null, int("f") ?: return@mapNotNull null, int("to") ?: return@mapNotNull null,
-                (o["cap"] as? JsonArray).orEmpty().mapNotNull { c ->
-                    val v = (c as? JsonArray)?.mapNotNull { it.jsonPrimitive.intOrNull } ?: return@mapNotNull null
-                    if (v.size == 3) Triple(v[0], v[1], v[2]) else null
-                },
-            )
-            "pass" -> LudoEvent.Pass(s)
-            "triple" -> LudoEvent.Triple6(s)
-            "timeout" -> LudoEvent.Timeout(s)
-            "win" -> LudoEvent.Win(s)
-            "out" -> LudoEvent.Out(s, LudoOut.of(o["why"]?.jsonPrimitive?.contentOrNull))
-            else -> null
-        }
-    }
-
-    // ---- mapping & media ----
 
     private suspend fun toProfile(c: CardRow, posts: List<Post>) = Profile(
         id = c.id, name = c.name, gender = Gender.valueOf(c.gender.uppercase()), age = c.age, city = c.city, bio = c.bio,
@@ -1609,7 +1529,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
         private const val BUCKET = "media"
         /** The chat's lines (reactions come over realtime only). */
-        private val LINE_KINDS = listOf("text", "system", "icebreaker", "photo")
+        private val LINE_KINDS = listOf("text", "system", "icebreaker", "photo", "poll")
         private const val MAX_PHOTO_PX = 1280
         private const val MAX_VIDEO_BYTES = 25 * 1024 * 1024
         private const val REQUEST_TIMEOUT_MS = 15_000L

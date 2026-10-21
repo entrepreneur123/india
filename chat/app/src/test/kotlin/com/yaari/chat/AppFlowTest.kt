@@ -154,7 +154,7 @@ class AppFlowTest {
         shot("13_dm")
         compose.onNodeWithContentDescription("Back").performClick()
 
-        // 9. Rooms: one kind of room (talk, music, games); a talk room's chat
+        // 9. Rooms: one kind of room (talk, music); a talk room's chat
         tab("Rooms")
         waitFor("Live now")
         waitFor("Late night Bollywood songs")

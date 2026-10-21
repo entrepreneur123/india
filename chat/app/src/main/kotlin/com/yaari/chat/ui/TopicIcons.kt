@@ -39,25 +39,26 @@ import com.yaari.chat.model.VoiceReaction
 // every phone). A port of the web's components/ui/topic-icons.tsx with the same 24×24 paths: solid rounded shapes
 // in two tones, the topic colour (M) and a light tint of it (L, 42 % colour on white). Colours are lighter at night.
 
-/** A room's glyph: the ten categories, plus the built-in rooms that have none of their own. */
-enum class Topic { CHAT, MUSIC, GAMING }
+/** A room's glyph: talk or music. */
+enum class Topic { CHAT, MUSIC }
 
-/** A room's glyph and colour: talk is the chat bubble, music the note, games the gamepad (as the web's kindTopic). */
+/** A room's glyph and colour: talk is the chat bubble, music the note (as the web's kindTopic). */
 fun RoomCategory.topic(): Topic = when (this) {
     RoomCategory.TALK -> Topic.CHAT
     RoomCategory.MUSIC -> Topic.MUSIC
-    RoomCategory.GAMES -> Topic.GAMING
 }
 
 // The web's --topic-* colours (app/globals.css), day and night.
-private val TopicDay = mapOf(Topic.CHAT to 0xFF4C7CF0, Topic.MUSIC to 0xFFE2558A, Topic.GAMING to 0xFF0FA3B1)
-private val TopicNight = mapOf(Topic.CHAT to 0xFF6E97FF, Topic.MUSIC to 0xFFEE77A4, Topic.GAMING to 0xFF2EC0CC)
+private val TopicDay = mapOf(Topic.CHAT to 0xFF4C7CF0, Topic.MUSIC to 0xFFE2558A)
+private val TopicNight = mapOf(Topic.CHAT to 0xFF6E97FF, Topic.MUSIC to 0xFFEE77A4)
 
 /** Reaction glyphs (and the raised hand, the icebreaker card) have one colour in both themes. */
 enum class Glyph(val color: Long) {
     HEART(0xFFF2416B), LAUGH(0xFFF7B500), FIRE(0xFFFF6A2B), CLAP(0xFFF59E0B), WOW(0xFF8E5CF7), HAND(0xFFF59E0B),
     /** In the talk colour (rooms are always dark: its night shade). */
     ICEBREAKER(0xFF6E97FF),
+    /** A room poll: answer bars. */
+    POLL(0xFF22B8A6),
 }
 
 fun VoiceReaction.glyph(): Glyph = when (this) {
@@ -115,15 +116,15 @@ private val TopicParts: Map<Topic, List<Part>> = mapOf(
         Turn(listOf(Fill(ellipse(6.9f, 17.7f, 3.4f, 2.7f), Ink.M)), -18f, 6.9f, 17.7f),
         Turn(listOf(Fill(ellipse(16.8f, 15.1f, 3.4f, 2.7f), Ink.M)), -18f, 16.8f, 15.1f),
     ),
-    Topic.GAMING to listOf(
-        Fill("M7.2 6h9.6c2.6 0 4.6 1.9 5 4.5l.85 5.2c.36 2.3-1.36 4.3-3.6 4.3-1.38 0-2.62-.8-3.2-2.05L15.2 16.6H8.8l-.65 1.35C7.57 19.2 6.33 20 4.95 20c-2.24 0-3.96-2-3.6-4.3l.85-5.2c.4-2.6 2.4-4.5 5-4.5z", Ink.M),
-        Fill(rect(5.4f, 10.4f, 5.2f, 1.8f, 0.9f), Ink.L),
-        Fill(rect(7.1f, 8.7f, 1.8f, 5.2f, 0.9f), Ink.L),
-        Fill(circle(16.1f, 10f, 1.2f), Ink.L), Fill(circle(18.1f, 12.6f, 1.2f), Ink.L),
-    ),
 )
 
 private val GlyphParts: Map<Glyph, List<Part>> = mapOf(
+    // Three answers, each a light track with its share in the full colour.
+    Glyph.POLL to listOf(
+        Fill(rect(2.5f, 3.6f, 19f, 4.4f, 2.2f), Ink.L), Fill(rect(2.5f, 3.6f, 13.5f, 4.4f, 2.2f), Ink.M),
+        Fill(rect(2.5f, 9.8f, 19f, 4.4f, 2.2f), Ink.L), Fill(rect(2.5f, 9.8f, 7.6f, 4.4f, 2.2f), Ink.M),
+        Fill(rect(2.5f, 16f, 19f, 4.4f, 2.2f), Ink.L), Fill(rect(2.5f, 16f, 16.4f, 4.4f, 2.2f), Ink.M),
+    ),
     // A speech bubble with a question mark.
     Glyph.ICEBREAKER to listOf(
         Fill("M2.5 6.5A3.5 3.5 0 0 1 6 3h12a3.5 3.5 0 0 1 3.5 3.5v7A3.5 3.5 0 0 1 18 17h-6.2l-4.3 3.4c-.66.52-1.62.05-1.62-.79V17H6a3.5 3.5 0 0 1-3.5-3.5z", Ink.M),

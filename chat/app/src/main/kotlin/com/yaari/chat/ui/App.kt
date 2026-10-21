@@ -40,6 +40,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -177,14 +179,19 @@ private fun Screens(vm: AppViewModel, s: UiState) {
     val dm = s.dm
     val top = when {
         chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> Top.VIDEO
-        chat != null -> Top.CHAT
+        // Minimised, the chat is the bar over the tabs (still on).
+        chat != null && !s.chatMinimised -> Top.CHAT
         s.searching -> Top.SEARCHING
         dm != null -> Top.DM
         else -> Top.HOME
     }
+    val voice by vm.voice.state.collectAsStateWithLifecycle()
+    // A room open full screen covers the screens: they are out of reach for TalkBack too (and the tests).
+    val covered = voice?.expanded == true
+    val player = remember { RoomPlayer() }
     Box(Modifier.fillMaxSize()) {
         AnimatedContent(
-            top,
+            top, if (covered) Modifier.clearAndSetSemantics { } else Modifier,
             transitionSpec = {
                 when {
                     // Searching -> chat: the match "lands" (zoom), the reveal plays inside the chat screen.
@@ -208,8 +215,12 @@ private fun Screens(vm: AppViewModel, s: UiState) {
                 Top.HOME -> HomeScreen(vm, s)
             }
         }
-        // A voice room full screen over everything but profiles (minimised, it is the pill on the tabs).
-        VoiceLayer(vm)
+        // A voice room full screen over everything but profiles (minimised, it is the bar over the tabs), and the
+        // room's one music player (over its frame in the room, else out of sight, still playing).
+        CompositionLocalProvider(LocalRoomPlayer provides player) {
+            VoiceLayer(vm)
+            RoomPlayerHost(vm)
+        }
         VoiceService.Follow(vm)
         // Profiles slide up over whatever is open, so the chat underneath (and its draft) stays alive.
         var lastViewed by remember { mutableStateOf<Profile?>(null) }

@@ -45,6 +45,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.Flag
@@ -124,6 +125,8 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Down to the bar over the tabs (the chat stays on), as a voice room does.
+                CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.chat_minimise), vm::minimiseChat, tint = Color.White.copy(alpha = 0.85f))
                 // Normal exit: locked for 5 s (free) / 0.2 s (Plus) after the match starts.
                 ExitButton(lockLeft, ExitPolicy.lockMs(premium)) { exitDialog = true }
                 Row(

@@ -118,7 +118,13 @@ data class UiState(
     val friends: List<Friend> = emptyList(),
     val paywall: Paywall? = null,
     val notice: UiText? = null,
+    /** The random chat is open but minimised to its bar over the tabs (still on; a tap brings it back). */
+    val chatMinimised: Boolean = false,
+    /** Id of the partner's newest message seen before the chat was minimised (newer ones light the bar's dot). */
+    val chatSeen: Long = 0,
 ) {
+    /** The minimised chat has a message from the partner I haven't seen. */
+    val chatUnread get() = chat != null && chatMinimised && chat.messages.any { !it.fromMe && it.id > chatSeen }
     val premium get() = entitlements.premium
 
     fun friendState(userId: String) = friends.firstOrNull { it.profile.id == userId }?.state ?: FriendState.NONE
@@ -132,7 +138,7 @@ class AppViewModel(
     private val today: () -> LocalDate = LocalDate::now,
     /** On screen or not: polling pauses in the background (see [AppForeground]). */
     private val foreground: StateFlow<Boolean> = AppForeground.visible,
-    /** Wall clock, for deadlines set by the server (Ludo turns). */
+    /** Wall clock (how long the app was in the background). */
     wallClock: () -> Long = System::currentTimeMillis,
     /** Room and profile photos: shrunk and checked for nudity on this phone (the live build's model; none in the demo). */
     photos: PhotoCheck = PhotoCheck.None,
@@ -177,6 +183,19 @@ class AppViewModel(
         // The first friend: their messages and invites can now reach the phone (the permission is asked once).
         viewModelScope.launch {
             _state.map { s -> s.friends.any { it.state == FriendState.FRIENDS } }.distinctUntilChanged().collect { if (it) social.friendAdded() }
+        }
+        voice.gate = ::beforeRoom
+        // A host starting a random chat: the room ends first (as its Leave does); the search starts once it is gone.
+        viewModelScope.launch {
+            voice.state.collect { v ->
+                if (!searchAfterRoom) return@collect
+                if (v == null) {
+                    searchAfterRoom = false
+                    startMatching()
+                } else if (!v.ending) {
+                    searchAfterRoom = false // ending failed (offline): the room stays, nothing starts
+                }
+            }
         }
         // The voice room notification's buttons.
         viewModelScope.launch {
@@ -370,7 +389,10 @@ class AppViewModel(
 
     // ---- Lobby, Premium ---------------------------------------------------------------------
 
+    /** A tab: the room I'm in, if open full screen, goes down to the bar over the tabs (still in it). */
     fun selectTab(tab: Tab) {
+        if (voice.state.value?.expanded == true) voice.minimise()
+        if (_state.value.chat != null) minimiseChat()
         _state.update { it.copy(tab = tab) }
         when (tab) {
             Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() }; social.refreshBadges() }
@@ -412,7 +434,82 @@ class AppViewModel(
 
     // ---- Matching -----------------------------------------------------------------------------
 
+    // ---- One live session at a time ----------------------------------------------------------
+    // A voice room, or a random chat (and its search): entering one leaves the other, without asking, and says so.
+    // The server does the same (find_match2 leaves rooms; joining or opening a room ends the random chat), so a room
+    // or chat the server ended this way just closes here.
+
+    /** The host chose a random chat: the search starts when the room has ended. */
+    private var searchAfterRoom = false
+
+    /**
+     * Before entering another room ([VoiceController.gate]): a random chat ends ("Ended your chat with …"), a search
+     * stops quietly.
+     */
+    private fun beforeRoom(proceed: () -> Unit) {
+        val s = _state.value
+        val c = s.chat
+        when {
+            c != null -> {
+                endChatForRoom(c)
+                if (!c.partnerLeft) notice(UiText(R.string.live_ended_chat, c.match.partner.name))
+                proceed()
+            }
+            s.searching -> {
+                cancelMatching()
+                proceed()
+            }
+            else -> proceed()
+        }
+    }
+
+    /** Closes the random chat at once and tells the server (which also ends it when the room is entered). */
+    private fun endChatForRoom(c: ChatState) {
+        closeChat(c.match.id)
+        viewModelScope.launch { runCatching { backend.leave(c.match.id) } }
+    }
+
+    // ---- The random chat, minimised -------------------------------------------------------------
+
+    /** The chat goes down to its bar over the tabs (still on, as a room does). */
+    fun minimiseChat() {
+        val c = _state.value.chat ?: return
+        if (_state.value.chatMinimised) return
+        _state.update { it.copy(chatMinimised = true, chatSeen = c.messages.filter { m -> !m.fromMe }.maxOfOrNull { m -> m.id } ?: 0) }
+    }
+
+    fun expandChat() = _state.update { if (it.chat != null) it.copy(chatMinimised = false, dm = null, viewing = null) else it }
+
+    /** The bar's end button: the chat's own exit (the exit lock still holds; then it says to wait). */
+    fun endChatFromBar() {
+        if (_state.value.chat == null) return
+        if (exitRemainingMs() > 0) return notice(UiText(R.string.err_exit_locked))
+        leave(next = false)
+    }
+
+    /**
+     * Start chatting. From inside a room, the room is left first, as its Leave does (the host's ends), and that is
+     * said ("Left “…”"). A chat already on (minimised) just comes back.
+     */
     fun startMatching() {
+        val s = _state.value
+        if (s.chat != null) return expandChat()
+        if (s.me == null || s.searching) return
+        voice.state.value?.let { room ->
+            notice(UiText(R.string.live_left_room, room.room?.title.orEmpty()))
+            if (room.isHost) {
+                searchAfterRoom = true
+                voice.end(quiet = true)
+            } else {
+                voice.close()
+                startMatchingNow()
+            }
+            return
+        }
+        startMatchingNow()
+    }
+
+    private fun startMatchingNow() {
         val s = _state.value
         if (s.me == null || s.searching || s.chat != null) return
         _state.update { it.copy(searching = true, reconnecting = false, dm = null, viewing = null) }
@@ -541,7 +638,7 @@ class AppViewModel(
     private fun openChat(m: Match) {
         chatJob?.cancel()
         dmJob?.cancel()
-        _state.update { it.copy(searching = false, reconnecting = false, chat = ChatState(m, clock()), dm = null, viewing = null) }
+        _state.update { it.copy(searching = false, reconnecting = false, chat = ChatState(m, clock()), chatMinimised = false, dm = null, viewing = null) }
         viewModelScope.launch { refreshEntitlements() } // the exit lock depends on Premium, which may have expired
         chatJob = viewModelScope.launch {
             var warned = false
@@ -567,7 +664,15 @@ class AppViewModel(
         }
     }
 
-    private fun applyChatEvent(matchId: String, e: MatchEvent) = updateChat(matchId) { c ->
+    private fun applyChatEvent(matchId: String, e: MatchEvent) {
+        // A call request (or the call itself) brings a minimised chat back up.
+        if (e is MatchEvent.Video && (e.status == VideoStatus.REQUESTED_BY_PARTNER || e.status == VideoStatus.ACCEPTED)) {
+            _state.update { if (it.chat?.match?.id == matchId) it.copy(chatMinimised = false) else it }
+        }
+        applyChatChange(matchId, e)
+    }
+
+    private fun applyChatChange(matchId: String, e: MatchEvent) = updateChat(matchId) { c ->
         when (e) {
             is MatchEvent.NewMessage -> c.copy(messages = merge(c.messages, listOf(e.message)), partnerTyping = false)
             is MatchEvent.Typing -> c.copy(partnerTyping = e.on)
@@ -683,7 +788,7 @@ class AppViewModel(
     private fun closeChat(matchId: String): Boolean {
         if (_state.value.chat?.match?.id != matchId) return false
         chatJob?.cancel()
-        _state.update { it.copy(chat = null, viewing = null) }
+        _state.update { it.copy(chat = null, chatMinimised = false, viewing = null) }
         refreshRecents()
         return true
     }
@@ -824,6 +929,8 @@ class AppViewModel(
     }
 
     private fun openThread(r: RecentMatch) {
+        // A room open full screen goes down to its bar: the chat would open under it, out of sight.
+        voice.minimise()
         _state.update { it.copy(dm = DmState(r), viewing = null) }
         dmJob?.cancel()
         dmJob = viewModelScope.launch {
@@ -866,7 +973,7 @@ class AppViewModel(
         social.refreshBadges()
     }
 
-    fun inboxJoin(item: InboxItem) = social.joinInvite(item, voice::open)
+    fun inboxJoin(item: InboxItem) = voice.guard(item.roomId) { social.joinInvite(item, voice::openNow) }
 
     /** Links wait until I'm signed in (a room link survives signing up first). */
     private fun followLinks() = viewModelScope.launch {
@@ -882,7 +989,7 @@ class AppViewModel(
         when (link) {
             is DeepLink.Room -> voice.open(link.id)
             is DeepLink.Code -> voice.joinCode(link.code)
-            is DeepLink.Invite -> act { voice.open(backend.joinInvite(link.inboxId)) }
+            is DeepLink.Invite -> voice.guard { act { voice.openNow(backend.joinInvite(link.inboxId)) } }
             is DeepLink.Thread -> {
                 val placeholder = Profile(link.actorId.orEmpty(), link.actorName, Gender.OTHER, 0, "", "", colorSeed = link.actorId.hashCode())
                 openThread(RecentMatch(link.matchId, placeholder, 0))

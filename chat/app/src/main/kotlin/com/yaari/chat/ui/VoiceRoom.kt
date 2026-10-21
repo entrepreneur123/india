@@ -74,13 +74,13 @@ import androidx.compose.material.icons.outlined.GppGood
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
-import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.MicOff
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -107,6 +107,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -140,15 +142,24 @@ import com.yaari.chat.model.VoiceMember
 import com.yaari.chat.model.VoiceReaction
 import com.yaari.chat.model.VoiceRole
 import com.yaari.chat.model.VoiceRoom
+import com.yaari.chat.model.YouTube
 import kotlinx.coroutines.launch
 
 // ---- A voice room: full screen and always dark (party rooms are a night-time thing, and the stage reads better) ---
 // Stage on top, chat below, controls at the bottom; the web's components/screens/voice/*.
 
-/** The room over everything while expanded; the back gesture minimises it to the pill (still in the room). */
+/**
+ * The room over everything while expanded. The back gesture minimises it to the bar over the tabs (still in the room,
+ * like the chevron), never leaves; only Leave does. Its handler lives here, composed as long as the app is, so a back
+ * press right after the room opens (before its screen has composed) minimises it too instead of closing the app.
+ */
 @Composable
 fun VoiceLayer(vm: AppViewModel) {
     val s by vm.voice.state.collectAsStateWithLifecycle()
+    // Registered again each time the room comes up, so it goes before any screen underneath that has its own (the
+    // newest handler is asked first).
+    val up = s?.expanded == true
+    key(s?.roomId, up) { BackHandler(enabled = up, onBack = vm.voice::minimise) }
     var last by remember { mutableStateOf(s) }
     s?.let { last = it }
     AnimatedVisibility(
@@ -187,28 +198,27 @@ sealed interface VoiceSheet {
 }
 
 /**
- * A room, full screen and always dark. Every room has the chat (text, icebreakers, photos), the stage, shared music and
- * Ludo; the category decides what comes first (as the web's voice-room.tsx):
+ * A room, full screen and always dark. Every room has the chat (text, replies, icebreakers, photos, polls), the stage
+ * and shared music; the category decides what comes first (as the web's voice-room.tsx):
  *  - talk: the chat, under a slim strip of the people on the stage;
- *  - music: the shared player with the song requests by vote;
- *  - games: Ludo (or a card to start it) with the room's leaderboard.
+ *  - music: the shared player with the song requests by vote.
+ * It takes every touch (nothing reaches the tabs under it). The back gesture ([VoiceLayer]) and the chevron minimise it
+ * to the bar over the tabs: still in the room, audio and music on.
  */
 @Composable
 fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
-    BackHandler(onBack = vm.voice::minimise)
-    val context = LocalContext.current
     val room = s.room
     val me = s.me
     var sheet by remember { mutableStateOf<VoiceSheet?>(null) }
-    var musicOpen by rememberSaveable { mutableStateOf(false) }
     var stageOpen by rememberSaveable { mutableStateOf(false) }
+    var pollSheet by rememberSaveable { mutableStateOf(false) }
     val levels = vm.voice.levels.collectAsStateWithLifecycle()
     val list by vm.voice.list.collectAsStateWithLifecycle()
     val actor: VoiceActor = { a, ok, done -> vm.voice.act(a, ok, done) }
     val topic = room?.category?.topic() ?: Topic.CHAT
     val glow = topicColor(topic).copy(alpha = 0.24f)
     Box(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).drawBehind {
+        Modifier.fillMaxSize().blockTouches().background(MaterialTheme.colorScheme.background).drawBehind {
             // One soft glow in the room's category colour.
             drawRect(Brush.radialGradient(listOf(glow, Color.Transparent), Offset(size.width / 2, 0f), size.width * 0.75f))
         },
@@ -226,27 +236,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
             room.announcement?.let { Announcement(it, topicColor(topic), onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
             AudioNotice(s)
             BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
-                val game = s.ludoShown
-                // The game takes the top of the room; the chat goes on under it. The board is as big as fits.
-                val boardMax = minOf(maxWidth - 24.dp, maxHeight - MIN_CHAT - LUDO_CHROME).coerceAtLeast(200.dp)
-                val topMax = when {
-                    game != null -> maxHeight - MIN_CHAT
-                    kind == RoomCategory.TALK -> maxHeight * 0.45f
-                    else -> maxHeight * 0.62f
-                }
-                val gameView: (@Composable () -> Unit)? = when {
-                    game != null -> ({
-                        LudoPanel(
-                            room, game, s.isMod, levels, boardMax,
-                            LudoHandlers(
-                                act = { a, done -> vm.voice.ludo(a, done) }, showStage = { vm.voice.showLudo(false) },
-                                askClose = { vm.voice.askCloseLudo(true) }, dismiss = vm.voice::dismissLudo, person = person,
-                            ),
-                        )
-                    })
-                    s.ludoHidden -> ({ LudoBackPill { vm.voice.showLudo(true) } })
-                    else -> null
-                }
+                val topMax = if (kind == RoomCategory.TALK) maxHeight * 0.45f else maxHeight * 0.62f
                 val stage: @Composable () -> Unit = {
                     Column(Modifier.fillMaxWidth()) {
                         StageStrip(room, levels, s.reactions, stageOpen, { stageOpen = !stageOpen }, person)
@@ -258,12 +248,6 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                         }
                     }
                 }
-                // Music outside a music room: the slim "listen" bar (the player opens on a tap).
-                val musicBar: @Composable () -> Unit = {
-                    room.track?.let { t ->
-                        if (kind != RoomCategory.MUSIC) MusicPanel(t, room.queue, s.isHost, musicOpen, { musicOpen = it }, { sheet = VoiceSheet.Queue }) { a -> vm.voice.act(a) }
-                    }
-                }
                 Column(Modifier.fillMaxSize()) {
                     Column(
                         Modifier.fillMaxWidth().heightIn(max = topMax).verticalScroll(rememberScrollState()).padding(bottom = 8.dp),
@@ -271,30 +255,36 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                     ) {
                         when (kind) {
                             RoomCategory.MUSIC -> {
-                                gameView?.invoke()
-                                MusicHero(room, s.isHost, s.adding, onQueue = { sheet = VoiceSheet.Queue }, act = { a -> vm.voice.act(a) }, vote = vm.voice::vote)
-                                stage()
-                            }
-                            RoomCategory.GAMES -> {
-                                gameView?.invoke() ?: StartLudoCard(s.isMod) { vm.voice.ludoButton() }
-                                Leaderboard(s.leaders, room.meId)
-                                musicBar()
+                                MusicHero(room, s.isHost, s.adding, active = s.expanded, onQueue = { sheet = VoiceSheet.Queue }, act = { a -> vm.voice.act(a) }, vote = vm.voice::vote)
                                 stage()
                             }
                             RoomCategory.TALK -> {
                                 stage()
-                                musicBar()
-                                gameView?.invoke()
+                                // Music in a talk room: the slim "listen" bar, the player, or the now-playing strip.
+                                room.track?.let { t ->
+                                    MusicPanel(
+                                        t, room.queue, s.isHost, listening = s.listen, open = s.musicOpen, active = s.expanded,
+                                        onListen = vm.voice::listen, onOpenChange = vm.voice::musicPanel, onQueue = { sheet = VoiceSheet.Queue },
+                                    ) { a -> vm.voice.act(a) }
+                                }
                             }
                         }
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    VoiceChat(s.lines, Modifier.weight(1f), onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person)
+                    VoiceChat(
+                        s.lines, Modifier.weight(1f), onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person,
+                        chat = RoomChat(
+                            myId = room.meId, myName = me.profile.name, polls = s.polls, names = room.members.map { it.profile.name },
+                            onReply = vm.voice::reply,
+                            onVote = vm.voice::votePoll, onClosePoll = vm.voice::closePoll, canClose = vm.voice::canClose,
+                        ),
+                    )
                 }
             }
             ControlBar(
                 vm, s, me, Modifier.onSizeChanged { barHeight = it.height },
                 onRequests = { sheet = VoiceSheet.Requests }, onMusic = { sheet = VoiceSheet.Queue }, onReactions = { tray = !tray },
+                onPoll = { pollSheet = true },
             )
         }
         if (tray) {
@@ -305,9 +295,19 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
             ) { vm.voice.act(VoiceAction.React(it)) }
         }
         VoiceSheets(vm, s, room, sheet, actor, onSheet = { sheet = it })
+        if (pollSheet && s.isMod) PollSheet(s.pollBusy, onDismiss = { pollSheet = false }) { q, o -> vm.voice.createPoll(q, o) { pollSheet = false } }
         if (s.confirmEnd) EndDialog(s.ending, onCancel = vm.voice::dismissEnd, onEnd = vm.voice::end)
-        if (s.confirmLudoClose) LudoCloseDialog(onCancel = { vm.voice.askCloseLudo(false) }, onClose = vm.voice::closeLudo)
         list.created?.let { RoomCreatedDialog(it.title, it.code, vm.voice::dismissCreated) }
+    }
+}
+
+/**
+ * Takes every touch that reaches it, so nothing falls through to the screen underneath (the tabs under a room: a tap on
+ * an empty part of the room used to switch the hidden tab). Its children still get their touches first.
+ */
+fun Modifier.blockTouches(): Modifier = pointerInput(Unit) {
+    awaitPointerEventScope {
+        while (true) awaitPointerEvent()
     }
 }
 
@@ -648,13 +648,14 @@ private fun rememberMic(vm: AppViewModel): (Boolean) -> Unit {
 }
 
 /**
- * The same controls in every room: the composer (photo, icebreaker, text), reactions, the music and Ludo, the hands
- * raised (hosts and co-hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
+ * The same controls in every room: the composer (the quote of the line I answer, attachments: a photo, and a poll for
+ * hosts and co-hosts; an icebreaker, text with @mentions), reactions, the music, the hands raised (hosts and
+ * co-hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
  */
 @Composable
 private fun ControlBar(
     vm: AppViewModel, s: VoiceState, me: VoiceMember, modifier: Modifier,
-    onRequests: () -> Unit, onMusic: () -> Unit, onReactions: () -> Unit,
+    onRequests: () -> Unit, onMusic: () -> Unit, onReactions: () -> Unit, onPoll: () -> Unit,
 ) {
     val mic = rememberMic(vm)
     val room = s.room ?: return
@@ -663,6 +664,9 @@ private fun ControlBar(
         VoiceComposer(
             Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp), s.photoBusy,
             onPhoto = vm.voice::sendPhoto, onIcebreaker = vm.voice::icebreaker,
+            replyTo = s.replyTo, myId = room.meId, onCancelReply = vm.voice::cancelReply,
+            people = room.members.filter { it.profile.id != room.meId }.map { it.profile },
+            onPoll = if (s.isMod) onPoll else null,
         ) { text, failed -> vm.voice.send(text, failed) }
         Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             RoundButton(stringResource(R.string.voice_react), onReactions) {
@@ -670,13 +674,6 @@ private fun ControlBar(
             }
             Spacer(Modifier.width(BAR_GAP))
             RoundButton(stringResource(R.string.voice_music), onMusic) { TopicIcon(Topic.MUSIC, size = 22.dp) }
-            // Ludo: hosts and co-hosts open a game; anyone goes back to the one on.
-            if (s.isMod || s.ludoOn) {
-                Spacer(Modifier.width(BAR_GAP))
-                RoundButton(stringResource(if (s.ludoShown != null || s.ludoHidden) R.string.ludo_back_to_game else R.string.ludo_play), vm.voice::ludoButton) {
-                    TopicIcon(Topic.GAMING, size = 22.dp)
-                }
-            }
             if (s.isMod && s.hands > 0) {
                 Spacer(Modifier.width(BAR_GAP))
                 Box {
@@ -772,74 +769,180 @@ private fun EndDialog(busy: Boolean, onCancel: () -> Unit, onEnd: () -> Unit) {
     )
 }
 
-/** Between the round buttons of the control bar (a host has five, and the bar must fit a 393 dp phone). */
+/** Between the round buttons of the control bar (a host has four, and the bar must fit a 393 dp phone). */
 private val BAR_GAP = 6.dp
 
-/** The chat keeps at least this much room under the game. */
-private val MIN_CHAT = 96.dp
+// ---- the room bar: the room minimised, above the tabs ----
 
-/** The game's toolbar, the players above and below the board, and the turn line. */
-private val LUDO_CHROME = 190.dp
-
-// ---- the pill: the room minimised over the tabs ----
-
-/** The room while browsing the rest of the app: who is talking, my mic, back to the room, leave. */
+/**
+ * The room while I look around the rest of the app (WhatsApp's ongoing-call bar, X Spaces' dock): above the tabs on
+ * every tab, with the room's title, that it is live, who talks or what plays, my microphone when I'm on the stage, and
+ * Leave (only Leave leaves). A tap opens the room again.
+ */
 @Composable
 fun VoicePill(vm: AppViewModel, modifier: Modifier = Modifier) {
     val s by vm.voice.state.collectAsStateWithLifecycle()
     val levels = vm.voice.levels.collectAsStateWithLifecycle()
-    val state = s
-    val room = state?.room
+    var last by remember { mutableStateOf(s) }
+    s?.let { last = it }
     AnimatedVisibility(
-        state != null && !state.expanded && room != null, modifier,
-        enter = slideInVertically { it / 2 } + fadeIn(), exit = slideOutVertically { it / 2 } + fadeOut(),
+        s != null && !s!!.expanded, modifier,
+        enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(), exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut(),
     ) {
-        if (state == null || room == null) return@AnimatedVisibility
+        val state = s ?: last ?: return@AnimatedVisibility
+        RoomTheme { RoomBar(vm, state, levels) }
+    }
+}
+
+@Composable
+private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<String, Float>>) {
+    val room = state.room
+    val color = topicColor(room?.category?.topic() ?: Topic.CHAT)
+    val loudest by remember { derivedStateOf { VoiceController.loudest(levels.value) } }
+    val speaker = loudest?.let { room?.member(it) }
+    val face = speaker ?: room?.member(room.hostId)
+    val me = room?.me
+    val mic = rememberMic(vm)
+    val title = room?.title ?: stringResource(R.string.voice_joining)
+    val region = stringResource(R.string.voice_pill, title)
+    val open = stringResource(R.string.voice_expand)
+    val shape = RoundedCornerShape(22.dp)
+    Row(
+        Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).semantics { paneTitle = region }.fillMaxWidth()
+            .shadow(10.dp, shape, ambientColor = color, spotColor = color).clip(shape)
+            .background(MaterialTheme.colorScheme.surfaceContainer).background(color.copy(alpha = 0.16f))
+            .border(1.dp, color.copy(alpha = 0.38f), shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            Modifier.weight(1f).clip(RoundedCornerShape(16.dp)).clickable(role = Role.Button, onClickLabel = open, onClick = vm.voice::expand)
+                .semantics { contentDescription = open }.padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+                if (face != null) {
+                    SpeakingRing(levels, face.profile.id, 44.dp)
+                    Avatar(face.profile, 44.dp)
+                } else {
+                    Box(Modifier.size(44.dp).clip(CircleShape).background(color.copy(alpha = 0.3f)), contentAlignment = Alignment.Center) {
+                        TopicIcon(room?.category?.topic() ?: Topic.CHAT, size = 24.dp)
+                    }
+                }
+            }
+            Column(Modifier.padding(start = 12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        Modifier.clip(CircleShape).background(Brand.Pink).padding(horizontal = 7.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        LiveBars(color = Color.White, height = 9.dp)
+                        Text(
+                            stringResource(R.string.voice_bar_live).uppercase(), color = Color.White, fontSize = 10.sp, lineHeight = 13.sp,
+                            fontWeight = FontWeight.Bold, letterSpacing = 0.6.sp, fontFamily = Jakarta,
+                        )
+                    }
+                    Text(
+                        title, Modifier.padding(start = 8.dp), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                val track = room?.track
+                Text(
+                    when {
+                        room == null -> stringResource(R.string.voice_bar_joining)
+                        speaker != null -> stringResource(R.string.voice_is_speaking, speaker.profile.name)
+                        state.playing && track != null -> stringResource(R.string.voice_bar_playing, YouTube.songOf(track.title).ifEmpty { stringResource(R.string.voice_yt_video) })
+                        else -> stringResource(R.string.voice_listening, room.audience.size)
+                    },
+                    Modifier.padding(top = 2.dp), style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+        if (me?.seat != null) {
+            CircleIconButton(
+                if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
+                { mic(me.muted) }, background = if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink,
+                tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Color.White,
+            )
+        }
+        CircleIconButton(
+            Icons.AutoMirrored.Rounded.Logout, stringResource(R.string.voice_leave), vm.voice::leave,
+            background = MaterialTheme.colorScheme.error.copy(alpha = 0.16f), tint = MaterialTheme.colorScheme.error,
+        )
+    }
+}
+
+// ---- the random chat's bar: the chat minimised, above the tabs (same place and look as the room's) ----
+
+/**
+ * The random chat while I look around the tabs: the partner's face and name, "typing…" or a dot for a new message,
+ * a tap to go back, and End chat (the chat's own exit, so its lock still holds).
+ */
+@Composable
+fun ChatBar(vm: AppViewModel, s: UiState, modifier: Modifier = Modifier) {
+    val chat = s.chat
+    var last by remember { mutableStateOf(chat) }
+    chat?.let { last = it }
+    AnimatedVisibility(
+        chat != null && s.chatMinimised, modifier,
+        enter = expandVertically(expandFrom = Alignment.Bottom) + fadeIn(), exit = shrinkVertically(shrinkTowards = Alignment.Bottom) + fadeOut(),
+    ) {
+        val c = chat ?: last ?: return@AnimatedVisibility
+        val partner = c.match.partner
+        val color = Brand.PinkOnDark
+        val shape = RoundedCornerShape(22.dp)
+        val open = stringResource(R.string.chat_open)
         RoomTheme {
-            val loudest by remember { derivedStateOf { VoiceController.loudest(levels.value) } }
-            val speaker = loudest?.let(room::member)
-            val face = speaker ?: room.member(room.hostId)
-            val me = room.me
-            val mic = rememberMic(vm)
-            val region = stringResource(R.string.voice_pill, room.title)
             Row(
-                Modifier.padding(horizontal = 12.dp, vertical = 8.dp).semantics { paneTitle = region }.fillMaxWidth().clip(RoundedCornerShape(18.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainer).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(18.dp))
-                    .padding(6.dp),
+                Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).fillMaxWidth()
+                    .shadow(10.dp, shape, ambientColor = color, spotColor = color).clip(shape)
+                    .background(MaterialTheme.colorScheme.surfaceContainer).background(color.copy(alpha = 0.14f))
+                    .border(1.dp, color.copy(alpha = 0.38f), shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
-                    Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button, onClick = vm.voice::expand).padding(4.dp),
+                    Modifier.weight(1f).clip(RoundedCornerShape(16.dp)).clickable(role = Role.Button, onClickLabel = open, onClick = vm::expandChat)
+                        .semantics { contentDescription = open }.padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    face?.let {
-                        Box(Modifier.size(40.dp)) {
-                            SpeakingRing(levels, it.profile.id, 40.dp)
-                            Avatar(it.profile, 40.dp)
+                    Box(Modifier.size(44.dp)) {
+                        Avatar(partner, 44.dp)
+                        if (s.chatUnread) {
+                            Box(
+                                Modifier.align(Alignment.TopEnd).size(14.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainer)
+                                    .padding(2.dp).clip(CircleShape).background(Brand.Pink),
+                            )
                         }
                     }
                     Column(Modifier.padding(start = 12.dp)) {
-                        Text(room.title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            LiveBars(height = 11.dp)
+                        Text(
+                            stringResource(R.string.chat_bar_with, partner.name), style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        )
+                        Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                            if (!c.partnerLeft) {
+                                PresenceDot(6.dp)
+                                Spacer(Modifier.width(6.dp))
+                            }
                             Text(
-                                speaker?.let { stringResource(R.string.voice_is_speaking, it.profile.name) }
-                                    ?: stringResource(R.string.voice_listening, room.audience.size),
-                                Modifier.padding(start = 6.dp), style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                when {
+                                    c.partnerLeft -> stringResource(R.string.partner_left, partner.name)
+                                    c.partnerTyping -> stringResource(R.string.typing)
+                                    s.chatUnread -> stringResource(R.string.chat_bar_new)
+                                    else -> stringResource(R.string.chat_bar_tap)
+                                },
+                                style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                color = if (c.partnerTyping || s.chatUnread) color else MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = if (s.chatUnread) FontWeight.SemiBold else null,
                             )
                         }
                     }
                 }
-                if (me?.seat != null) {
-                    CircleIconButton(
-                        if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
-                        { mic(me.muted) }, background = if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink,
-                        tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Color.White,
-                    )
-                }
-                CircleIconButton(Icons.Rounded.ExpandLess, stringResource(R.string.voice_expand), vm.voice::expand)
-                CircleIconButton(Icons.AutoMirrored.Rounded.Logout, stringResource(R.string.voice_leave), vm.voice::leave, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                CircleIconButton(
+                    Icons.Rounded.CallEnd, stringResource(R.string.chat_end), vm::endChatFromBar,
+                    background = MaterialTheme.colorScheme.error.copy(alpha = 0.16f), tint = MaterialTheme.colorScheme.error,
+                )
             }
         }
     }

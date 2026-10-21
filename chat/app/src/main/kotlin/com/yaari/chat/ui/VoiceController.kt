@@ -4,20 +4,19 @@ import com.yaari.chat.R
 import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.IN_RANDOM_CHAT
 import com.yaari.chat.data.PhotoCheck
-import com.yaari.chat.model.LudoAction
-import com.yaari.chat.model.LudoGame
-import com.yaari.chat.model.LudoStatus
 import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.RoomCategory
-import com.yaari.chat.model.RoomLeader
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoicePoll
+import com.yaari.chat.model.VoiceReply
 import com.yaari.chat.model.VoiceReaction
 import com.yaari.chat.model.VoiceRole
 import com.yaari.chat.model.VoiceRoom
@@ -70,15 +69,19 @@ data class VoiceState(
     /** The host asked to leave: their room would carry on without them, so leaving ends it (after this confirm). */
     val confirmEnd: Boolean = false,
     val ending: Boolean = false,
-    /** The room's Ludo game (lobby, playing, or a result from the last few minutes), as the server last said. */
-    val ludo: LudoGame? = null,
-    /** The stage is shown instead of the game (anyone can switch back). */
-    val ludoStage: Boolean = false,
-    /** The id of a result I dismissed ("Back to the room"). */
-    val ludoDismissed: String? = null,
-    val confirmLudoClose: Boolean = false,
-    /** The room's Ludo winners (games rooms), null until loaded. */
-    val leaders: List<RoomLeader>? = null,
+    /** The polls of the chat's poll lines by id, as last counted ([VoicePoll.mine]: my answer, kept here). */
+    val polls: Map<Long, VoicePoll> = emptyMap(),
+    /** The line my next message answers (the composer's quote bar). */
+    val replyTo: VoiceReply? = null,
+    /** A poll is being asked. */
+    val pollBusy: Boolean = false,
+    /**
+     * I listen to the room's music outside a music room (tapped "Listen"); it keeps playing while the panel is
+     * collapsed and while the room is minimised, until I leave. A music room always plays.
+     */
+    val listen: Boolean = false,
+    /** The music panel is open (the player shows); collapsed it is the now-playing strip. */
+    val musicOpen: Boolean = false,
     /** A photo is being checked and sent. */
     val photoBusy: Boolean = false,
     /** A song request whose title is being looked up (its video id). */
@@ -90,14 +93,8 @@ data class VoiceState(
     /** Raised hands a host or co-host should see. */
     val hands get() = if (isMod) room?.audience?.count { it.hand } ?: 0 else 0
 
-    /** A game is up for this room: open, or a result not dismissed yet. */
-    val ludoOn get() = ludo != null && (ludo.status.open || (ludo.status == LudoStatus.FINISHED && ludoDismissed != ludo.id))
-    /** The game shown in place of the stage, or null. */
-    val ludoShown get() = if (ludoOn && !ludoStage) ludo else null
-    /** A game is on but the stage is shown: a way back to it is offered. */
-    val ludoHidden get() = ludoOn && ludoStage
-    /** My colour (0-3) in the game, or -1 when I watch. */
-    val ludoSeat get() = room?.meId?.let { id -> ludo?.players?.indexOf(id) } ?: -1
+    /** The room's music plays for me: the one player is alive (shown in the room, or kept playing out of sight). */
+    val playing get() = room?.track != null && (listen || room.category == RoomCategory.MUSIC)
 
     /**
      * The foreground service (and its notification) runs only while there is something to keep alive: the audio
@@ -119,7 +116,7 @@ class VoiceController(
     /** Room photos are shrunk and checked for nudity on this phone before they are sent. */
     private val photos: PhotoCheck = PhotoCheck.None,
     private val random: Random = Random.Default,
-    /** Wall clock (Ludo deadlines are on it, and the time spent in the background). */
+    /** Wall clock (the time spent in the background). */
     private val wallClock: () -> Long = System::currentTimeMillis,
     /** The app on screen or not ([AppForeground]): a listener in the background for 30 minutes leaves. */
     private val visible: StateFlow<Boolean> = AppForeground.visible,
@@ -136,9 +133,18 @@ class VoiceController(
     private var session: Job? = null
     private var listJob: Job? = null
     private var reactionSeq = 0L
-    private var ludoTimeout: Job? = null
-    /** I'm closing the game myself (no "the game was closed" notice then). */
-    private var closingLudo = false
+
+    /**
+     * Asked before entering another room (a card, a code, an invite, a link, a new room): one live session at a time,
+     * so the app may first end a random chat (with a confirm) or stop searching. [AppViewModel] sets it.
+     */
+    var gate: (proceed: () -> Unit) -> Unit = { it() }
+
+    /** Runs [proceed] once the way into another room is clear ([gate]); straight away for the room I'm in. */
+    fun guard(roomId: String? = null, proceed: () -> Unit) {
+        if (roomId != null && _state.value?.roomId == roomId) return proceed()
+        gate(proceed)
+    }
 
     // ---- the list ----
 
@@ -180,11 +186,15 @@ class VoiceController(
             else -> null
         }
         if (problem != null) return notice(UiText(problem))
+        guard { create2(spec, title, r.isPrivate, done) }
+    }
+
+    private fun create2(spec: NewVoiceRoom, title: String, private: Boolean, done: () -> Unit) {
         task {
             val made = backend.createVoiceRoom(spec.copy(title = title, announcement = spec.announcement.trim()))
             done()
-            if (r.isPrivate) _list.update { it.copy(created = CreatedNotice(title, made.code)) }
-            open(made.id)
+            if (private) _list.update { it.copy(created = CreatedNotice(title, made.code)) }
+            openNow(made.id)
             refreshList()
         }
     }
@@ -195,7 +205,7 @@ class VoiceController(
     fun joinCode(input: String, done: () -> Unit = {}) {
         val code = input.trim().uppercase()
         if (code.length != VoiceRoom.CODE_LENGTH || !code.all { it in 'A'..'Z' || it in '0'..'9' }) return notice(UiText(R.string.err_room_code))
-        task {
+        guard { task {
             val id = try {
                 backend.joinVoiceCode(code)
             } catch (e: BackendException) {
@@ -203,9 +213,9 @@ class VoiceController(
                 throw e
             }
             done()
-            open(id)
+            openNow(id)
             refreshList()
-        }
+        } }
     }
 
     /** A room on the list: one I can't enter says why instead of trying (unless I'm already in it). */
@@ -234,8 +244,11 @@ class VoiceController(
 
     // ---- being in a room ----
 
+    /** Enters [roomId] full screen (or brings it back up when I'm already in it), once [gate] lets me. */
+    fun open(roomId: String) = guard(roomId) { openNow(roomId) }
+
     /** Enters [roomId] full screen (or brings it back up when I'm already in it). One room at a time. */
-    fun open(roomId: String) {
+    fun openNow(roomId: String) {
         val current = _state.value
         if (current?.roomId == roomId) return expand()
         if (current != null) close()
@@ -251,13 +264,15 @@ class VoiceController(
                             if (!loadedLines) {
                                 loadedLines = true
                                 launch { loadLines(roomId) }
-                                launch { followLudo(roomId) }
-                                if (e.room.category == RoomCategory.GAMES) launch { loadLeaders(roomId) }
                             }
                         }
                         is VoiceEvent.Levels -> _levels.value = e.levels
                         is VoiceEvent.Audio -> update(roomId) { it.copy(audio = e.audio) }
-                        is VoiceEvent.Line -> update(roomId) { it.copy(lines = merge(it.lines, listOf(e.line))) }
+                        is VoiceEvent.Line -> {
+                            update(roomId) { it.copy(lines = merge(it.lines, listOf(e.line))) }
+                            (e.line as? VoiceLine.Poll)?.let { launch { pollsFor(roomId, listOf(it)) } }
+                        }
+                        is VoiceEvent.PollChanged -> setPoll(roomId, e.poll, mine = false)
                         is VoiceEvent.Reaction -> launch { float(roomId, e.userId, e.kind) }
                         VoiceEvent.Ended -> {
                             if (_state.value?.ending != true) notice(UiText(R.string.voice_ended))
@@ -269,7 +284,7 @@ class VoiceController(
                         }
                         // The server no longer lets me in (it filled while I was away, I was banned, ...): out, with why.
                         is VoiceEvent.Refused -> {
-                            notice(refusedText(e.code, _state.value?.room?.rules))
+                            if (e.code != IN_RANDOM_CHAT) notice(refusedText(e.code, _state.value?.room?.rules))
                             gone(roomId, leave = false)
                         }
                     }
@@ -277,8 +292,9 @@ class VoiceController(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                // Couldn't get in (the room ended, I was removed, offline): back to where I was.
-                notice(explain(e))
+                // Couldn't get in (the room ended, I was removed, offline): back to where I was. A random chat that took
+                // me out of it (the server's one live session) says nothing.
+                if ((e as? BackendException)?.code != IN_RANDOM_CHAT) notice(explain(e))
                 gone(roomId, leave = false)
             }
         }
@@ -315,6 +331,7 @@ class VoiceController(
         try {
             val history = backend.voiceLines(roomId)
             update(roomId) { it.copy(lines = merge(it.lines, history)) }
+            pollsFor(roomId, history.filterIsInstance<VoiceLine.Poll>())
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
@@ -322,17 +339,115 @@ class VoiceController(
         }
     }
 
-    /** The room's Ludo leaderboard (again after each finished game). A failed load keeps what was shown. */
-    private suspend fun loadLeaders(roomId: String) {
-        try {
-            val list = backend.voiceLeaders(roomId)
-            update(roomId) { it.copy(leaders = list) }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            update(roomId) { it.copy(leaders = it.leaders ?: emptyList()) }
+    // ---- polls ----
+
+    /**
+     * The counts of poll lines not counted yet: shown at once as asked (no answers yet, open), then as the server
+     * counts them (voice_polls_get, 50 at a time). A failed load keeps the placeholder; live changes still arrive.
+     */
+    private suspend fun pollsFor(roomId: String, lines: List<VoiceLine.Poll>) {
+        val known = _state.value?.takeIf { it.roomId == roomId }?.polls ?: return
+        val fresh = lines.filter { it.pollId !in known }
+        if (fresh.isEmpty()) return
+        update(roomId) { s ->
+            s.copy(polls = s.polls + fresh.filter { it.pollId !in s.polls }.associate {
+                it.pollId to VoicePoll(it.pollId, it.question, it.options, List(it.options.size) { 0 }, 0, closed = false, by = it.sender.id)
+            })
+        }
+        for (ids in fresh.map { it.pollId }.distinct().chunked(MAX_POLLS)) {
+            try {
+                backend.voicePolls(ids).forEach { setPoll(roomId, it, mine = true) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // Placeholders stay; a vote or a live change brings the counts.
+            }
         }
     }
+
+    /** A poll as the server counts it. [mine]: it carries my answer (a broadcast doesn't: the one I know stays). */
+    internal fun setPoll(roomId: String, poll: VoicePoll, mine: Boolean) = update(roomId) { s ->
+        val old = s.polls[poll.id]
+        s.copy(polls = s.polls + (poll.id to if (mine) poll else poll.copy(mine = old?.mine)))
+    }
+
+    /** Host or co-host: asks the room (the server's rules are checked here first). [done] when it was asked. */
+    fun createPoll(question: String, options: List<String>, done: () -> Unit = {}) {
+        val s = _state.value ?: return
+        if (s.pollBusy) return
+        if (!s.isMod) return notice(UiText(R.string.poll_e_not_allowed))
+        val o = options.map { it.trim() }.filter { it.isNotEmpty() }
+        if (!VoicePoll.valid(question, o)) return notice(UiText(R.string.poll_e_bad_request))
+        update(s.roomId) { it.copy(pollBusy = true) }
+        scope.launch {
+            try {
+                val line = backend.createVoicePoll(s.roomId, question.trim(), o)
+                update(s.roomId) { it.copy(lines = merge(it.lines, listOf(line))) }
+                (line as? VoiceLine.Poll)?.let { pollsFor(s.roomId, listOf(it)) }
+                done()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(pollError(e) ?: explain(e))
+            } finally {
+                update(s.roomId) { it.copy(pollBusy = false) }
+            }
+        }
+    }
+
+    /** My answer (0-based); tapping another one while the poll is open changes it. */
+    fun votePoll(pollId: Long, choice: Int) {
+        val s = _state.value ?: return
+        val p = s.polls[pollId] ?: return
+        if (p.closed || p.mine == choice || choice !in p.options.indices) return
+        scope.launch {
+            try {
+                setPoll(s.roomId, backend.voicePollVote(pollId, choice), mine = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                val code = (e as? BackendException)?.code
+                // Closed meanwhile: show it closed (the broadcast may still be on its way).
+                if (code == "poll_closed") update(s.roomId) { v -> v.copy(polls = v.polls + (pollId to (v.polls[pollId] ?: p).copy(closed = true))) }
+                notice(pollError(e) ?: explain(e))
+            }
+        }
+    }
+
+    /** The host, a co-host or who asked: no more answers. */
+    fun closePoll(pollId: Long) {
+        val s = _state.value ?: return
+        scope.launch {
+            try {
+                setPoll(s.roomId, backend.closeVoicePoll(pollId), mine = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(pollError(e) ?: explain(e))
+            }
+        }
+    }
+
+    /** I may close [poll]: I asked it, or I'm the host or a co-host. */
+    fun canClose(poll: VoicePoll) = _state.value?.let { s -> !poll.closed && (s.isMod || poll.by == s.room?.meId) } == true
+
+    // ---- replies ----
+
+    /** My next message answers [line] (the quote bar above the composer); lines that can't be answered are ignored. */
+    fun reply(line: VoiceLine) {
+        val quote = VoiceReply.of(line) ?: return
+        _state.update { it?.copy(replyTo = quote) }
+    }
+
+    fun cancelReply() = _state.update { it?.copy(replyTo = null) }
+
+    // ---- music ----
+
+    /** Listen to the room's music (outside a music room), or stop. */
+    fun listen(on: Boolean) = _state.update { it?.copy(listen = on, musicOpen = on) }
+
+    /** The music panel open (the player) or collapsed to the now-playing strip; the music plays on either way. */
+    fun musicPanel(open: Boolean) = _state.update { it?.copy(musicOpen = open) }
 
     private fun onRoom(room: VoiceRoom) {
         val before = _state.value?.takeIf { it.roomId == room.id }?.me
@@ -358,8 +473,6 @@ class VoiceController(
         if (_state.value?.roomId != roomId) return
         val job = session
         session = null
-        ludoTimeout?.cancel()
-        ludoTimeout = null
         _state.value = null
         _levels.value = emptyMap()
         if (leave) scope.launch { runCatching { backend.leaveVoice(roomId) } }
@@ -387,15 +500,15 @@ class VoiceController(
         gone(s.roomId, leave = true)
     }
 
-    /** Host only, after the confirm: everyone leaves and the room closes. */
-    fun end() {
+    /** Host only, after the confirm: everyone leaves and the room closes. [quiet]: the caller says something else. */
+    fun end(quiet: Boolean = false) {
         val s = _state.value ?: return
         if (!s.isHost || s.ending) return
         update(s.roomId) { it.copy(ending = true) }
         scope.launch {
             try {
                 backend.endVoice(s.roomId)
-                notice(UiText(R.string.voice_ended_by_you))
+                if (!quiet) notice(UiText(R.string.voice_ended_by_you))
                 gone(s.roomId, leave = false)
             } catch (e: CancellationException) {
                 throw e
@@ -459,18 +572,22 @@ class VoiceController(
         if (seat != null) act(VoiceAction.TakeSeat(seat)) else hand(!me.hand)
     }
 
+    /** A chat line; it answers the line in the quote bar, if any (voice_send2). A failed send puts the quote back. */
     fun send(text: String, onFailed: () -> Unit = {}) {
         val s = _state.value ?: return
         val t = text.trim().take(VoiceRoom.MAX_TEXT)
         if (t.isEmpty()) return
+        val quote = s.replyTo
+        if (quote != null) update(s.roomId) { it.copy(replyTo = null) }
         scope.launch {
             try {
-                val line = backend.sendVoice(s.roomId, t)
+                val line = backend.sendVoice(s.roomId, t, quote?.id)
                 update(s.roomId) { it.copy(lines = merge(it.lines, listOf(line))) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 notice(explain(e))
+                if (quote != null) update(s.roomId) { if (it.replyTo == null) it.copy(replyTo = quote) else it }
                 onFailed()
             }
         }
@@ -580,139 +697,53 @@ class VoiceController(
     /** One vote per song; again takes it back. */
     fun vote(itemId: String, on: Boolean) = act(VoiceAction.Vote(itemId, on))
 
-    // ---- Ludo in the room ----
-
-    /** The room's game, followed while I'm in the room (its rows are readable by people in the room only). */
-    private suspend fun followLudo(roomId: String) {
-        try {
-            setLudo(roomId, backend.ludoGame(roomId))
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            // The follow below re-reads it.
-        }
-        while (true) {
-            try {
-                backend.ludoGames(roomId).collect { setLudo(roomId, it) }
-                return
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                delay(LUDO_RETRY_MS)
-            }
-        }
-    }
-
-    /** A newer version of the same game, or another game unless that would replace an open one with an old result. */
-    internal fun setLudo(roomId: String, g: LudoGame?) {
-        if (g == null) return
-        val s = _state.value?.takeIf { it.roomId == roomId } ?: return
-        val prev = s.ludo
-        val take = prev == null || (if (g.id == prev.id) g.version > prev.version else g.status.open || !prev.status.open)
-        if (!take) return
-        // A new game comes up for everyone.
-        _state.value = s.copy(ludo = g, ludoStage = if (prev?.id != g.id) false else s.ludoStage)
-        // A game the host closed: the stage is back, with a word for those who didn't close it.
-        if (g.status == LudoStatus.CANCELLED && prev?.id == g.id && prev.status.open && !closingLudo) notice(UiText(R.string.ludo_closed))
-        // A game won: the leaderboard has a new line.
-        if (g.status == LudoStatus.FINISHED && (prev?.id != g.id || prev.status != LudoStatus.FINISHED) && s.room?.category == RoomCategory.GAMES) {
-            scope.launch { loadLeaders(roomId) }
-        }
-        scheduleLudoTimeout(roomId)
-    }
-
-    /**
-     * The turn's time is up and the player hasn't moved: players and hosts ask the server to play it (it checks the
-     * clock and the version, so the first call wins and the others change nothing). Clocks differ a little, so a
-     * refused call is tried again shortly, a few times.
-     */
-    private fun scheduleLudoTimeout(roomId: String) {
-        ludoTimeout?.cancel()
-        ludoTimeout = null
-        val s = _state.value ?: return
-        val g = s.ludo ?: return
-        val deadline = g.deadline
-        if (g.status != LudoStatus.PLAYING || deadline == null || (s.ludoSeat < 0 && !s.isMod)) return
-        ludoTimeout = scope.launch {
-            repeat(LUDO_TIMEOUT_TRIES) {
-                delay(timeoutDelay(deadline, wallClock(), random.nextLong(LUDO_TIMEOUT_JITTER_MS)))
-                val got = try {
-                    backend.ludoAction(roomId, g.id, LudoAction.Timeout(g.version))
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (_: Exception) {
-                    null
-                }
-                if (got != null && got.version != g.version) return@launch setLudo(roomId, got)
-            }
-        }
-    }
-
-    /** Does [action] in the room's game; [done] gets whether it worked. A stale screen re-reads the game. */
-    fun ludo(action: LudoAction, done: (Boolean) -> Unit = {}) {
-        val s = _state.value ?: return done(false)
-        val gameId = if (action == LudoAction.Open) null else s.ludo?.id
-        scope.launch {
-            val ok = try {
-                setLudo(s.roomId, backend.ludoAction(s.roomId, gameId, action))
-                true
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                when (val code = (e as? BackendException)?.code) {
-                    "stale" -> runCatching { backend.ludoGame(s.roomId) }.getOrNull()?.let { setLudo(s.roomId, it) }
-                    else -> notice(ludoError(code) ?: explain(e))
-                }
-                false
-            }
-            done(ok)
-        }
-    }
-
-    /** The game button: back to the game, or (hosts and co-hosts) a new one. */
-    fun ludoButton() {
-        val s = _state.value ?: return
-        if (s.ludoOn) return showLudo(true)
-        if (!s.isMod) return
-        ludo(LudoAction.Open) { ok -> if (ok) showLudo(true) }
-    }
-
-    /** The game (true) or the stage (false) in the top half of the room. */
-    fun showLudo(game: Boolean) = _state.update { it?.copy(ludoStage = !game) }
-
-    /** "Back to the room" on a result. */
-    fun dismissLudo() = _state.update { s -> s?.copy(ludoDismissed = s.ludo?.id) }
-
-    fun askCloseLudo(show: Boolean) = _state.update { it?.copy(confirmLudoClose = show) }
-
-    /** Host or co-host, after the confirm: the game ends for everyone and the stage comes back. */
-    fun closeLudo() {
-        closingLudo = true
-        ludo(LudoAction.Close) {
-            closingLudo = false
-            askCloseLudo(false)
-        }
-    }
-
     companion object {
         /** The server takes up to 40 characters of search. */
         const val MAX_SEARCH = 40
-        const val LUDO_RETRY_MS = 5_000L
-        const val LUDO_TIMEOUT_TRIES = 8
-        /** Spread the timeout calls of everyone in the room a little (the first one wins). */
-        const val LUDO_TIMEOUT_GRACE_MS = 700L
-        const val LUDO_TIMEOUT_JITTER_MS = 1_300L
+        /** A mention being typed is at most this long (names are up to 30 characters). */
+        const val MAX_MENTION = 30
+        /** voice_polls_get takes up to 50 ids a call. */
+        const val MAX_POLLS = 50
 
-        /** How long to wait before asking the server to play a turn that ends at [deadline] (wall clock). */
-        fun timeoutDelay(deadline: Long, now: Long, jitter: Long) = maxOf(0L, deadline - now) + LUDO_TIMEOUT_GRACE_MS + jitter
-
-        /** The game's own refusals, in the reader's language; null for the rest. */
-        fun ludoError(code: String?): UiText? = when (code) {
-            "not_your_turn" -> UiText(R.string.ludo_e_not_your_turn)
-            "seat_taken" -> UiText(R.string.ludo_e_seat_taken)
-            "game_full" -> UiText(R.string.ludo_e_game_full)
-            "need_players" -> UiText(R.string.ludo_e_need_players)
+        /** A poll call's refusals, in the reader's language; null for the rest (network, ...). */
+        fun pollError(e: Throwable): UiText? = when ((e as? BackendException)?.code) {
+            "poll_closed" -> UiText(R.string.poll_e_closed)
+            "not_found" -> UiText(R.string.poll_e_not_found)
+            "bad_request" -> UiText(R.string.poll_e_bad_request)
+            "slow_down" -> UiText(R.string.poll_e_slow_down)
+            "not_allowed" -> UiText(R.string.poll_e_not_allowed)
             else -> null
+        }
+
+        /**
+         * The mention being typed at the end of [text] ("@" and what follows it, no space yet), or null. "@" counts
+         * at the start or after a space, so an e-mail address is not a mention.
+         */
+        fun mentionQuery(text: String): String? {
+            val at = text.lastIndexOf('@')
+            if (at < 0 || (at > 0 && !text[at - 1].isWhitespace())) return null
+            val q = text.substring(at + 1)
+            return q.takeIf { it.length <= MAX_MENTION && '\n' !in it && !it.endsWith(' ') }
+        }
+
+        /** [text] with the mention being typed replaced by "@Name ". */
+        fun insertMention(text: String, name: String): String {
+            val at = text.lastIndexOf('@')
+            return if (at < 0) "$text@$name " else text.substring(0, at) + "@" + name + " "
+        }
+
+        /** [text] mentions [name] ("@" + the name, any case, not inside another word). */
+        fun mentions(text: String, name: String): Boolean {
+            if (name.isBlank()) return false
+            val needle = "@" + name.trim()
+            var i = text.indexOf(needle, ignoreCase = true)
+            while (i >= 0) {
+                val before = if (i == 0) ' ' else text[i - 1]
+                val after = text.getOrNull(i + needle.length) ?: ' '
+                if (!before.isLetterOrDigit() && !after.isLetterOrDigit()) return true
+                i = text.indexOf(needle, i + 1, ignoreCase = true)
+            }
+            return false
         }
 
         const val REACTION_MS = 2_600L

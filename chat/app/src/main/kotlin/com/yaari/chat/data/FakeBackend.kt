@@ -12,7 +12,6 @@ import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
-import com.yaari.chat.model.LudoAction
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceLine
@@ -481,11 +480,14 @@ open class FakeBackend(
     override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter {
         (it !is VoiceLine.Text || it.sender.id !in blocked) && (it !is VoiceLine.Photo || it.sender.id !in blocked)
     }
-    override suspend fun sendVoice(roomId: String, text: String) = voice.send(roomId, text)
+    override suspend fun sendVoice(roomId: String, text: String, replyTo: Long?) = voice.send(roomId, text, replyTo)
     /** The demo keeps the photo on the phone: the line shows it from where it is. */
     override suspend fun sendVoicePhoto(roomId: String, jpegUri: String) = voice.photo(roomId, jpegUri)
     override suspend fun voiceIcebreaker(roomId: String) = voice.icebreaker(roomId)
-    override suspend fun voiceLeaders(roomId: String) = voice.leaders(roomId)
+    override suspend fun createVoicePoll(roomId: String, question: String, options: List<String>) = voice.createPoll(roomId, question, options)
+    override suspend fun voicePollVote(pollId: Long, choice: Int) = voice.votePoll(pollId, choice)
+    override suspend fun closeVoicePoll(pollId: Long) = voice.closePoll(pollId)
+    override suspend fun voicePolls(ids: List<Long>) = voice.pollsOf(ids)
     /** The demo's videos carry their titles; anything else is "YouTube video". */
     override suspend fun videoTitle(videoId: String) = FakeVoice.TRACKS[videoId]?.first.orEmpty()
     override suspend fun voiceAction(roomId: String, action: VoiceAction) = voice.act(roomId, action)
@@ -495,12 +497,6 @@ open class FakeBackend(
         if (host == me().id) throw BackendException("not_allowed")
         block(host)
     }
-
-    // ---- Ludo in a voice room (FakeLudo) ----
-
-    override suspend fun ludoGame(roomId: String) = voice.ludo.game(roomId)
-    override fun ludoGames(roomId: String) = voice.ludo.follow(roomId)
-    override suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction) = voice.ludo.act(roomId, gameId, action)
 
     companion object {
         const val DEMO_OTP = "123456"

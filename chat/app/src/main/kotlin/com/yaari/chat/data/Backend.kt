@@ -10,11 +10,9 @@ import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
-import com.yaari.chat.model.LudoAction
-import com.yaari.chat.model.LudoGame
 import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.NewVoiceRoom
-import com.yaari.chat.model.RoomLeader
+import com.yaari.chat.model.VoicePoll
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
@@ -177,7 +175,8 @@ interface Backend {
     suspend fun endVoice(roomId: String)
     /** The newest 100 chat and system lines, oldest first (only readable after entering). */
     suspend fun voiceLines(roomId: String): List<VoiceLine>
-    suspend fun sendVoice(roomId: String, text: String): VoiceLine
+    /** A chat line (voice_send2); [replyTo]: the line it answers (a text, photo or poll line of this room). */
+    suspend fun sendVoice(roomId: String, text: String, replyTo: Long? = null): VoiceLine
     /**
      * Sends a photo: [jpegUri] is the picked image already shrunk to 1280 px JPEG and checked for nudity on this phone
      * ([PhotoCheck]). 5 a minute (slow_down).
@@ -185,8 +184,17 @@ interface Backend {
     suspend fun sendVoicePhoto(roomId: String, jpegUri: String): VoiceLine
     /** Posts a conversation starter (one per room every 20 s: slow_down). */
     suspend fun voiceIcebreaker(roomId: String): VoiceLine
-    /** The room's Ludo winners, top 5. */
-    suspend fun voiceLeaders(roomId: String): List<RoomLeader>
+    /**
+     * Host or co-host: asks the room [question] (1–120 characters) with 2–4 [options] (1–40, all different); returns
+     * the poll's chat line. Closes the poll open before it. Refused with bad_request, not_allowed, slow_down.
+     */
+    suspend fun createVoicePoll(roomId: String, question: String, options: List<String>): VoiceLine
+    /** My answer ([choice] 0-based; again changes it while the poll is open). Refused with poll_closed, not_found, bad_request. */
+    suspend fun voicePollVote(pollId: Long, choice: Int): VoicePoll
+    /** The host, a co-host or who asked: no more answers. not_allowed, not_found. */
+    suspend fun closeVoicePoll(pollId: Long): VoicePoll
+    /** Polls of lines loaded from the history (at most 50 ids; unknown or unreadable ones are left out). */
+    suspend fun voicePolls(ids: List<Long>): List<VoicePoll>
     /** A YouTube video's real title (oEmbed, 5 s at most); "" when it can't be looked up. Never throws. */
     suspend fun videoTitle(videoId: String): String
     /** Throws not_allowed when my role may not do it; mic_denied when the microphone can't be used. */
@@ -216,16 +224,4 @@ interface Backend {
     /** Adds a photo to my profile ([jpegUri]: already shrunk and checked on this phone, [PhotoCheck]); at most 4 (not_allowed). */
     suspend fun addProfilePhoto(jpegUri: String): Profile
     suspend fun removeProfilePhoto(id: String): Profile
-
-    // ---- Ludo in a voice room (018_ludo.sql; rules in domain/Ludo.kt) ----
-
-    /** The room's game: the one open, else one that ended in the last 5 minutes (its result), else null. */
-    suspend fun ludoGame(roomId: String): LudoGame?
-    /** Every change to the room's games (a new game too) while collected; re-reads after a dropped connection. */
-    fun ludoGames(roomId: String): Flow<LudoGame>
-    /**
-     * Does [action] in the room's game [gameId] (null to open one) and returns the game as it now is. Refused with
-     * not_allowed, stale (the screen showed an older version), not_your_turn, seat_taken, game_full, need_players.
-     */
-    suspend fun ludoAction(roomId: String, gameId: String?, action: LudoAction): LudoGame?
 }

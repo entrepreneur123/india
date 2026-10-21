@@ -4,7 +4,7 @@ import java.net.URI
 
 // ---- Voice rooms (X Spaces-style party rooms: a stage of seats, an audience, chat and shared music) ------------
 // Same shapes as the web (chat/web/lib/backend.ts); the server is chat/server/migrations/017_voice_rooms.sql and
-// 019_unified_rooms.sql: one kind of room, with the chat (text, icebreakers, photos), the stage, music and Ludo.
+// 019_unified_rooms.sql: one kind of room, with the chat (text, icebreakers, photos, replies, polls), the stage and music.
 
 /** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
 enum class VoiceRole(val code: String) {
@@ -69,9 +69,6 @@ data class RoomRules(
     val hasAgeLimit get() = minAge > VoiceRoom.MIN_AGE || maxAge < VoiceRoom.MAX_AGE
 }
 
-/** The live rooms list: lobby or playing. */
-enum class RoomGame { LOBBY, PLAYING }
-
 /**
  * A room on the list. [refusal] is the server's reason why I can't come in (room_closed, room_gender, room_age,
  * room_full, not_allowed), null when I may; [code] is known only for my own room.
@@ -83,7 +80,6 @@ data class VoiceRoomSummary(
     val listeners: Int, val nowPlaying: String?, val mine: Boolean,
     /** People present, me included. */
     val members: Int = speakers.size + listeners,
-    val game: RoomGame? = null,
     val rules: RoomRules = RoomRules(),
     val announcement: String? = null,
     val code: String? = null,
@@ -155,9 +151,6 @@ data class NewVoiceRoom(
 
 data class CreatedVoiceRoom(val id: String, val code: String)
 
-/** A Ludo winner of the room (top 5). */
-data class RoomLeader(val profile: Profile, val wins: Int)
-
 /** Reactions are drawn glyphs (ui/TopicIcons.kt), never emoji. */
 enum class VoiceReaction(val code: String) {
     HEART("heart"), LAUGH("laugh"), FIRE("fire"), CLAP("clap"), WOW("wow");
@@ -175,12 +168,72 @@ enum class VoiceSystemEvent(val code: String) {
     }
 }
 
+/**
+ * What a reply quotes (029: payload.reply, copied by the server when the reply is sent, so the quote shows even when
+ * the line answered is far back in the history). [text]: up to [MAX_QUOTE] characters of a line, the question of a
+ * poll, null for a photo.
+ */
+data class VoiceReply(val id: Long, val senderId: String, val name: String, val kind: Kind, val text: String?) {
+    enum class Kind(val code: String) {
+        TEXT("text"), PHOTO("photo"), POLL("poll");
+
+        companion object {
+            fun of(code: String?) = entries.firstOrNull { it.code == code }
+        }
+    }
+
+    companion object {
+        const val MAX_QUOTE = 120
+
+        /** The quote a reply to [line] carries (as the server copies it), or null for lines that can't be answered. */
+        fun of(line: VoiceLine): VoiceReply? = when (line) {
+            is VoiceLine.Text -> VoiceReply(line.id, line.sender.id, line.sender.name, Kind.TEXT, line.text.take(MAX_QUOTE))
+            is VoiceLine.Photo -> VoiceReply(line.id, line.sender.id, line.sender.name, Kind.PHOTO, null)
+            is VoiceLine.Poll -> VoiceReply(line.id, line.sender.id, line.sender.name, Kind.POLL, line.question.take(MAX_QUOTE))
+            else -> null
+        }
+    }
+}
+
+/**
+ * A room poll as the server counts it (029_room_replies_polls.sql): [counts] per option, [mine] my answer (0-based)
+ * or null. One poll is open per room; a new one closes the last. [by]: who asked.
+ */
+data class VoicePoll(
+    val id: Long, val question: String, val options: List<String>, val counts: List<Int>, val total: Int,
+    val closed: Boolean, val by: String, val mine: Int? = null,
+) {
+    fun count(i: Int) = counts.getOrElse(i) { 0 }
+
+    /** The share of option [i], 0..100 (rounded; nothing yet is 0). */
+    fun percent(i: Int) = if (total <= 0) 0 else Math.round(count(i) * 100f / total)
+
+    companion object {
+        const val MAX_QUESTION = 120
+        const val MAX_OPTION = 40
+        const val MIN_OPTIONS = 2
+        const val MAX_OPTIONS = 4
+
+        /** The server's rules for a new poll: 1–120 characters, 2–4 answers of 1–40, no two the same (any case). */
+        fun valid(question: String, options: List<String>): Boolean {
+            val q = question.trim()
+            val o = options.map { it.trim() }
+            return q.length in 1..MAX_QUESTION && o.size in MIN_OPTIONS..MAX_OPTIONS && o.all { it.length in 1..MAX_OPTION } &&
+                o.map { it.lowercase() }.distinct().size == o.size
+        }
+    }
+}
+
 /** A chat line under the stage. System lines carry a typed payload and are written in the reader's language. */
 sealed interface VoiceLine {
     val id: Long
     val at: Long
 
-    data class Text(override val id: Long, val sender: Profile, val fromMe: Boolean, val text: String, override val at: Long) : VoiceLine
+    /** [reply]: the line it answers, as quoted when it was sent. */
+    data class Text(
+        override val id: Long, val sender: Profile, val fromMe: Boolean, val text: String, override val at: Long,
+        val reply: VoiceReply? = null,
+    ) : VoiceLine
     data class System(
         override val id: Long, val event: VoiceSystemEvent, val name: String, override val at: Long,
         val seat: Int? = null, val title: String? = null,
@@ -189,6 +242,11 @@ sealed interface VoiceLine {
     data class Icebreaker(override val id: Long, val prompt: Int, val name: String, val fromMe: Boolean, override val at: Long) : VoiceLine
     /** A photo (checked on the sender's phone; shown blurred until tapped). */
     data class Photo(override val id: Long, val sender: Profile, val fromMe: Boolean, val url: String, override val at: Long) : VoiceLine
+    /** A poll a host or co-host asked: the question and answers; the counts are in [VoicePoll] ([pollId]). */
+    data class Poll(
+        override val id: Long, val sender: Profile, val fromMe: Boolean, val pollId: Long, val question: String, val options: List<String>,
+        override val at: Long,
+    ) : VoiceLine
 }
 
 enum class AudioStatus { CONNECTING, CONNECTED, RECONNECTING, FAILED }
@@ -204,6 +262,8 @@ sealed interface VoiceEvent {
     data class Levels(val levels: Map<String, Float>) : VoiceEvent
     data class Line(val line: VoiceLine) : VoiceEvent
     data class Reaction(val userId: String, val kind: VoiceReaction) : VoiceEvent
+    /** A poll's counts changed, or it closed. [VoicePoll.mine] is null: each app keeps its own answer. */
+    data class PollChanged(val poll: VoicePoll) : VoiceEvent
     data object Ended : VoiceEvent
     data object Removed : VoiceEvent
     /**

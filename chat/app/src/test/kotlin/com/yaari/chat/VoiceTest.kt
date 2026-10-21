@@ -70,7 +70,7 @@ class VoiceTest {
     @Test fun listShowsLiveRoomsAndCreatingOpensMineAsHost() = runTest(dispatcher) {
         val vm = signedIn()
         val list = vm.voice.list.value.rooms!!
-        assertEquals(setOf("v-bolly", "v-chai", "v-cricket", "v-lofi", "v-ludo", "v-gym"), list.map { it.id }.toSet())
+        assertEquals(setOf("v-bolly", "v-chai", "v-cricket", "v-lofi", "v-adda", "v-gym"), list.map { it.id }.toSet())
         assertEquals(list.sortedByDescending { it.members }, list) // the busiest first
         assertEquals("Kesariya – Brahmāstra · Arijit Singh", list.first { it.id == "v-bolly" }.nowPlaying)
         assertTrue(list.all { it.speakers.size <= 4 && (it.speakers.isEmpty() || it.speakers.first().id == it.host.id) })

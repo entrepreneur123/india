@@ -119,15 +119,6 @@ class RoomsScreensTest {
         r.shot("06_music_hero_votes")
     }
 
-    @Test fun gamesRoomWithLeaderboard() {
-        r.signIn()
-        r.open("v-ludo")
-        compose.waitUntil(5_000) { r.vm.voice.state.value?.leaders != null }
-        r.waitFor("Room leaderboard")
-        compose.onAllNodes(hasText(r.vm.voice.state.value!!.leaders!!.last().profile.name))[0].performScrollTo()
-        r.shot("07_games_leaderboard")
-    }
-
     @Test fun privateRoomShowsItsCode() {
         r.signIn()
         compose.runOnUiThread { r.vm.voice.create(NewVoiceRoom("Sunday cricket chat", RoomCategory.TALK, RoomRules(isPrivate = true), "Be kind. Hindi or English, both welcome.")) }

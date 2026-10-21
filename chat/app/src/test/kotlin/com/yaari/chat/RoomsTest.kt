@@ -58,7 +58,7 @@ import java.time.LocalDate
 /**
  * One kind of room (019_unified_rooms.sql) against the FakeBackend, which applies the server's rules: categories and
  * the filter, the create sheet's rules, codes, the host off the stage, icebreakers (one per room every 20 s), song
- * requests by vote, the Ludo leaderboard, photos checked on the phone, and audio only while someone is on the stage.
+ * requests by vote, photos checked on the phone, and audio only while someone is on the stage.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomsTest {
@@ -89,7 +89,7 @@ class RoomsTest {
     @Test fun theListHasTheWebsDemoRoomsAndFiltersByCategory() = runTest(dispatcher) {
         val vm = signedIn()
         val list = vm.voice.list.value
-        assertEquals(setOf("v-bolly", "v-chai", "v-cricket", "v-ludo", "v-lofi", "v-gym"), list.rooms!!.map { it.id }.toSet())
+        assertEquals(setOf("v-bolly", "v-chai", "v-cricket", "v-adda", "v-lofi", "v-gym"), list.rooms!!.map { it.id }.toSet())
         assertEquals(RoomCategory.TALK, list.rooms!!.first { it.id == "v-chai" }.category)
         assertTrue("nobody on the chai stage: a chat room", list.rooms!!.first { it.id == "v-chai" }.speakers.isEmpty())
         assertEquals(RoomRules(30, GenderRule.MALE, 18, 30), list.rooms!!.first { it.id == "v-gym" }.rules)
@@ -97,9 +97,13 @@ class RoomsTest {
         assertEquals(setOf("v-bolly", "v-lofi"), vm.voice.list.value.shown!!.map { it.id }.toSet())
         vm.voice.filter(null)
         assertEquals(6, vm.voice.list.value.shown!!.size)
-        // Old categories from before 019 map like the server's voice_kind().
-        assertEquals(RoomCategory.GAMES, RoomCategory.of("gaming"))
+        // Rooms are talk or music: games (029), categories from before 019 and anything unknown are talk.
+        assertEquals(listOf(RoomCategory.TALK, RoomCategory.MUSIC), RoomCategory.entries.toList())
+        assertEquals(RoomCategory.TALK, RoomCategory.of("games"))
+        assertEquals(RoomCategory.TALK, RoomCategory.of("gaming"))
         assertEquals(RoomCategory.TALK, RoomCategory.of("night"))
+        assertEquals(RoomCategory.TALK, RoomCategory.of(null))
+        assertEquals(RoomCategory.MUSIC, RoomCategory.of("music"))
     }
 
     @Test fun aRoomThatRefusesMeSaysWhyInsteadOfOpening() = runTest(dispatcher) {
@@ -249,16 +253,6 @@ class RoomsTest {
         assertEquals(listOf("Umqb9KENgmk"), vm.room.queue.map { it.videoId })
     }
 
-    @Test fun gamesRoomsLoadTheLeaderboard() = runTest(dispatcher) {
-        val vm = signedIn()
-        vm.voice.open("v-ludo"); advanceUntilIdle()
-        val leaders = vm.s.leaders!!
-        assertEquals(listOf(6, 4, 3, 3, 1), leaders.map { it.wins })
-        vm.voice.close(); advanceUntilIdle()
-        vm.voice.open("v-chai"); advanceUntilIdle()
-        assertNull("a talk room doesn't ask", vm.s.leaders)
-    }
-
     private class FakePhotos(var verdict: () -> Boolean) : PhotoCheck {
         val shrunk = mutableListOf<String>()
         override suspend fun shrink(uri: String) = "$uri.small.jpg".also { shrunk += it }
@@ -324,8 +318,6 @@ class RoomsTest {
         val scripted = object : Backend by fake {
             override fun voiceSession(roomId: String): Flow<VoiceEvent> = events.receiveAsFlow()
             override suspend fun voiceLines(roomId: String) = emptyList<VoiceLine>()
-            override suspend fun ludoGame(roomId: String) = null
-            override fun ludoGames(roomId: String) = kotlinx.coroutines.flow.emptyFlow<com.yaari.chat.model.LudoGame>()
         }
         val vm = signedIn(scripted)
         vm.voice.open("r")

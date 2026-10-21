@@ -1,5 +1,6 @@
 package com.yaari.chat.live
 
+import com.yaari.chat.model.VoicePoll
 import com.yaari.chat.model.VoiceRoom
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,6 +13,7 @@ import kotlinx.serialization.json.longOrNull
 
 // A room's state as voice_state() sends it, and the changes to it that come over Realtime Broadcast (020_scale_fixes.sql:
 // private topic "voice:<room>", event "v"). Applied here the way the web app applies them (lib/supabaseBackend.ts).
+// 029 adds polls ({t: 'p', poll}) to the same numbered stream: they take a number but change nothing in the state.
 
 @Serializable internal data class VoiceMusicRow(
     val id: String, val videoId: String, val title: String = "", val by: String = "", val startedAt: Long, val pausedAt: Long? = null,
@@ -49,6 +51,14 @@ import kotlinx.serialization.json.longOrNull
     val maxAge: Int = VoiceRoom.MAX_AGE, val private: Boolean = false, val ended: Boolean = false,
 )
 
+/** voice_poll_json(): a poll's question, answers and counts; [mine] is null over Broadcast (each app keeps its own). */
+@Serializable internal data class VoicePollRow(
+    val id: Long, val question: String = "", val options: List<String> = emptyList(), val counts: List<Int> = emptyList(),
+    val total: Int = 0, val closed: Boolean = false, val by: String = "", val mine: Int? = null,
+) {
+    fun toPoll() = VoicePoll(id, question, options, List(options.size) { counts.getOrElse(it) { 0 } }, total, closed, by, mine)
+}
+
 /** One change to a room. [seq] null: sent without a number (see ChangeOrder.Step.APPLY_RECHECK). */
 internal sealed interface VoiceChange {
     val seq: Long?
@@ -57,6 +67,8 @@ internal sealed interface VoiceChange {
     data class Gone(override val seq: Long?, val id: String) : VoiceChange
     data class Room(override val seq: Long?, val room: VoiceRoomPart) : VoiceChange
     data class Vote(override val seq: Long?, val item: String, val user: String, val on: Boolean, val votes: Int) : VoiceChange
+    /** A poll's new counts (or it closed); the room's state stays as it is. */
+    data class Poll(override val seq: Long?, val poll: VoicePoll) : VoiceChange
 
     companion object {
         /** A Broadcast payload; null when it is not one this app knows (a newer server). */
@@ -70,6 +82,7 @@ internal sealed interface VoiceChange {
                     seq, o["item"]!!.jsonPrimitive.content, o["user"]!!.jsonPrimitive.content,
                     o["on"]!!.jsonPrimitive.booleanOrNull == true, o["votes"]!!.jsonPrimitive.content.toInt(),
                 )
+                "p" -> Poll(seq, json.decodeFromJsonElement(VoicePollRow.serializer(), o["poll"]!!).toPoll())
                 else -> null
             }
         }.getOrNull()
@@ -96,4 +109,5 @@ internal fun VoiceStateRow.apply(c: VoiceChange, me: String): VoiceStateRow = wh
     is VoiceChange.Vote -> copy(
         queue = queue.map { q -> if (q.id != c.item) q else q.copy(votes = c.votes, voted = if (c.user == me) c.on else q.voted) },
     )
+    is VoiceChange.Poll -> this
 }

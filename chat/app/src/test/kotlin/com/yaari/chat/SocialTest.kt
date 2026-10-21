@@ -156,7 +156,7 @@ class SocialTest {
         vm.voice.search(RoomQuery("CHAI")); advanceUntilIdle()
         assertEquals(listOf("v-chai"), vm.voice.list.value.rooms!!.map { it.id })
         vm.voice.search(RoomQuery(lang = "bn")); advanceUntilIdle()
-        assertEquals(listOf("v-ludo"), vm.voice.list.value.rooms!!.map { it.id })
+        assertEquals(listOf("v-adda"), vm.voice.list.value.rooms!!.map { it.id })
         vm.voice.search(RoomQuery(lang = "hi")); advanceUntilIdle()
         vm.voice.filter(RoomCategory.MUSIC)
         assertEquals("language and category together", listOf("v-bolly"), vm.voice.list.value.shown!!.map { it.id })

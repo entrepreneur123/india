@@ -74,6 +74,9 @@ class ChangeOrder<C : Any>(private val seqOf: (C) -> Long?) {
     }
 }
 
+/** The server's word that a random chat took me out of the room (031_one_live_session): no error is shown. */
+const val IN_RANDOM_CHAT = "in_random_chat"
+
 /** Refusals that mean I may not be in the room any more (heartbeat, re-entry after a gap, or a state fetch). */
 val ROOM_REFUSALS = setOf("room_full", "room_gender", "room_age", "not_allowed", "banned", "blocked", "not_signed_in")
 
@@ -84,6 +87,8 @@ val ROOM_REFUSALS = setOf("room_full", "room_gender", "room_age", "not_allowed",
 fun roomRefusal(code: String?): VoiceEvent? = when (code) {
     "room_closed", "not_found" -> VoiceEvent.Ended
     "voice_removed" -> VoiceEvent.Removed
+    // 031: I'm in a random chat now (the server left the room for me): out of the room, quietly.
+    IN_RANDOM_CHAT -> VoiceEvent.Refused(IN_RANDOM_CHAT)
     in ROOM_REFUSALS -> VoiceEvent.Refused(code!!)
     else -> null
 }

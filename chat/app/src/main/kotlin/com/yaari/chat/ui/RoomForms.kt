@@ -127,7 +127,7 @@ private fun SheetLabel(text: String, modifier: Modifier = Modifier, trailing: St
     }
 }
 
-/** Talk, Music, Games as three chips, and what the chosen one is like underneath. */
+/** Talk and Music as two chips, and what the chosen one is like underneath. */
 @Composable
 fun CategoryPicker(value: RoomCategory, onChange: (RoomCategory) -> Unit) {
     val night = MaterialTheme.colorScheme.background.luminance() < 0.5f

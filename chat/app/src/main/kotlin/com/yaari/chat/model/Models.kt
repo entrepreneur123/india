@@ -60,20 +60,16 @@ enum class FriendState { NONE, REQUESTED, INCOMING, FRIENDS }
 data class Friend(val profile: Profile, val state: FriendState, val threadId: String? = null)
 
 /**
- * A room's category (019_unified_rooms.sql): every room has the chat, the stage, music and Ludo; the category sets its
- * layout and signature feature. Rooms from before 019 (and anything unknown) are talk rooms.
+ * A room's category (019_unified_rooms.sql): every room has the chat, the stage and music; the category sets its
+ * layout and signature feature. Rooms are talk or music (029: games are gone, the server makes them talk); rooms from
+ * before 019, games rooms from older apps and anything unknown are talk rooms.
  */
 enum class RoomCategory(val code: String, @StringRes val label: Int, @StringRes val body: Int) {
     TALK("talk", R.string.cat_talk, R.string.cat_talk_body),
-    MUSIC("music", R.string.cat_music, R.string.cat_music_body),
-    GAMES("games", R.string.cat_games, R.string.cat_games_body);
+    MUSIC("music", R.string.cat_music, R.string.cat_music_body);
 
     companion object {
-        fun of(code: String?) = when (code) {
-            "music" -> MUSIC
-            "games", "gaming" -> GAMES
-            else -> TALK
-        }
+        fun of(code: String?) = if (code == "music") MUSIC else TALK
     }
 }
 
