@@ -124,8 +124,10 @@ class _Outside(Exception):
 
 
 def _dmy(raw: str, _title: str = "") -> dt.date:
-    d, m, y = re.fullmatch(r"\s*(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\s*", raw).groups()
-    return dt.date(int(y), int(m), int(d))
+    m = re.fullmatch(r"\s*(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\s*", raw)
+    if not m:
+        raise ValueError(raw)  # parse_entry turns it into a RecordError
+    return dt.date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
 
 
 # Bihar boards: <tr><td ...>17-10-2026</td><td ...><a ... href="Advt/x.pdf">headline</a> ...</td></tr>

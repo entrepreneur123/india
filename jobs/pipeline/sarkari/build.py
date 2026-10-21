@@ -179,8 +179,8 @@ def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[di
             continue
         try:
             fresh += board.fetch(get_text, now, window_days, warn)
-        except (http.FetchError, ssc.FormatChanged, UnicodeDecodeError) as e:
-            warn(f"::warning::{board.SOURCE}: {e}; keeping its previous items")
+        except Exception as e:  # noqa: BLE001 - whatever breaks in one board, SSC and the others still publish
+            warn(f"::warning::{board.SOURCE}: {type(e).__name__}: {e}; keeping its previous items")
             kept += previous
             failed.append(board.SOURCE)
     return fresh, kept, failed

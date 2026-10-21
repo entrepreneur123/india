@@ -246,3 +246,22 @@ def test_whatsapp_post_lists_the_last_day_with_official_links():
     assert lines[2].startswith("🆕 New job · Bihar Police SI") and "evil.example" not in text  # new jobs first; odd links left out
     assert "✅ Result · SSC CGL: CGL Tier-I result" in text and "https://ssc.gov.in/api/attachment/x" in text
     assert "हिंदी" not in text and "old" not in text and "https://x.example/jobs/" in text
+
+
+def test_whatsapp_post_keeps_yesterdays_notice_from_a_board_that_gives_only_the_day():
+    from sarkari import whatsapp_post
+    now = dt.datetime(2026, 10, 21, 9, 30, tzinfo=build.ssc.IST)
+    item = {"id": "c", "kind": "result", "title": "Final Selection List", "exam": "CSBC", "lang": "en", "source": "csbc",
+            "publishedAt": "2026-10-20T00:00:00+05:30", "dateOnly": True,
+            "files": [{"name": "r.pdf", "url": "https://csbc.bihar.gov.in/Advt/r.pdf", "size": None}]}
+    assert "Final Selection List" in whatsapp_post.digest([item], {"CSBC": {"short": "Bihar Police Constable"}}, now, None)
+    old = {**item, "publishedAt": "2026-10-19T00:00:00+05:30"}
+    assert "Final Selection List" not in whatsapp_post.digest([old], {}, now, None)
+
+
+def test_an_unexpected_error_in_one_board_does_not_stop_the_others(monkeypatch):
+    def broken(*a, **k):
+        raise AttributeError("page changed in a way nobody planned for")
+    monkeypatch.setattr(build.listboards.ISRO.__class__, "fetch", lambda self, *a, **k: broken() if self.SOURCE == "isro" else [])
+    fresh, kept, failed = build.other_boards(boards, NOW, 120, [], warn=lambda m: None)
+    assert failed == ["isro"] and any(i.source == "upprpb" for i in fresh)

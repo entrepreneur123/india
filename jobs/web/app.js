@@ -229,7 +229,8 @@ async function viewJobs(root, field = null, value = null) {
   };
   const exams = [...new Set(feed.items.map((i) => i.exam).filter((e) => e && e !== 'LDCE'))].sort();
   const boards = [...new Set(feed.items.map((i) => i.source ?? 'ssc'))];
-  const sectors = SECTOR_ORDER.filter((x) => feed.items.some((i) => sectorsOf(i, families).includes(x)));
+  // The same sectors and states as Home offers, even when one has nothing right now ("nothing yet" beats a silent reset).
+  const sectors = SECTOR_ORDER.filter((x) => Object.entries(families).some(([c, f]) => c !== 'LDCE' && (f.sectors ?? []).includes(x)));
   const states = [...new Set(Object.values(sources).map((x) => x.state).filter(Boolean))].sort();
   const search = el('input', { type: 'search', placeholder: t('search'), 'aria-label': t('search'), value: filters.q });
   search.addEventListener('input', () => { filters.q = search.value; render(); });
@@ -1104,21 +1105,26 @@ function applyTheme(mode) {
   $('theme').setAttribute('aria-label', `${t('theme')}: ${t(`theme${mode[0].toUpperCase()}${mode.slice(1)}`)}`);
   fill($('theme'), icon(ICON[mode]));
 }
+let langRequest = 0;
 async function changeLang(code) {
+  const mine = ++langRequest;
   await setLang(code);
-  store.set('lang', getLang());
+  if (mine !== langRequest) return; // a later tap won
+  // Offline before that language's first download: English is shown, the choice is not overwritten.
+  if (getLang() === code) store.set('lang', code); else toast(t('offline'));
   syncAlerts();
   paintShell();
   route();
 }
+const closeSheet = (sheet) => (typeof sheet.close === 'function' ? sheet.close() : sheet.removeAttribute('open')); // no <dialog>: iOS < 15.4
 function openLangSheet() {
   const sheet = $('lang-sheet');
   fill(sheet,
     el('div', { class: 'sheet-head' }, el('h2', { id: 'lang-title' }, t('chooseLanguage')),
-      el('button', { class: 'act', type: 'button', 'aria-label': 'Close', onclick: () => sheet.close() }, icon(ICON.close))),
+      el('button', { class: 'act', type: 'button', 'aria-label': '×', onclick: () => closeSheet(sheet) }, icon(ICON.close))),
     el('div', { class: 'langs' }, ...LANGS.map((l) => el('button', {
       type: 'button', lang: l.code, dir: l.dir ?? 'ltr', 'aria-current': String(l.code === getLang()),
-      onclick: async () => { sheet.close(); await changeLang(l.code); },
+      onclick: async () => { closeSheet(sheet); await changeLang(l.code); },
     }, l.name, el('span', { class: 'code' }, l.code.toUpperCase())))),
     el('p', { class: 'small', style: 'padding:10px 18px 18px;margin:0' }, t('titlesNote')));
   if (typeof sheet.showModal === 'function') sheet.showModal(); else sheet.setAttribute('open', '');
@@ -1162,7 +1168,7 @@ async function route() {
 await setLang(store.get('lang', null) ?? guessLang(navigator.languages ?? [navigator.language]));
 paintShell();
 $('lang').addEventListener('click', openLangSheet);
-$('lang-sheet').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }); // tap outside closes
+$('lang-sheet').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeSheet(e.currentTarget); }); // tap outside closes
 $('theme').addEventListener('click', () => {
   const order = ['auto', 'light', 'dark'];
   applyTheme(order[(order.indexOf(store.get('theme', 'auto')) + 1) % order.length]);

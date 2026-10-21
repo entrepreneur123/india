@@ -25,9 +25,16 @@ def _plain(text: str) -> str:
 
 
 def digest(feed: list[dict], families: dict, now: dt.datetime, site_url: str | None) -> str:
-    """Updates published in the 24 hours before now (IST); SSC's English copy only."""
+    """Updates published in the 24 hours before now (IST); SSC's English copy only. Boards that give
+    only a day (dateOnly, stamped 00:00) count from that day, so yesterday's notice is not lost
+    when the post is read the next morning. ISRO dates its updates by the advert's date: an update
+    to an older advert can be missed here (it still reaches the site, Telegram and alerts)."""
     since = (now - dt.timedelta(hours=24)).isoformat(timespec="seconds")
-    items = [i for i in feed if i["publishedAt"] >= since and i.get("exam") not in SKIP_EXAMS
+    since_day = (now - dt.timedelta(hours=24)).date().isoformat()
+
+    def recent(i: dict) -> bool:
+        return i["publishedAt"][:10] >= since_day if i.get("dateOnly") else i["publishedAt"] >= since
+    items = [i for i in feed if recent(i) and i.get("exam") not in SKIP_EXAMS
              and (i.get("source", "ssc") != "ssc" or i.get("lang") == "en")]
     items.sort(key=lambda i: (ORDER.index(i["kind"]) if i["kind"] in ORDER else len(ORDER), i["publishedAt"]))
     lines = [f"Sarkari job updates · {now.strftime('%d %b %Y')}", ""]
