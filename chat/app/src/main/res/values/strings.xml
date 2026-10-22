@@ -426,13 +426,13 @@
     <string name="cat_talk">Talk</string>
     <string name="cat_talk_body">Chat first. Break the ice with question cards.</string>
     <string name="cat_music_body">Listen together. Everyone votes for the next song.</string>
-    <string name="create_name_placeholder">e.g. Sunday cricket chat</string>
+    <string name="create_name_placeholder">e.g. Sunday sports chat</string>
     <string name="create_fewer">Fewer people</string>
     <string name="create_more">More people</string>
     <string name="create_youngest">Youngest</string>
     <string name="create_oldest">Oldest</string>
     <string name="create_announcement">Announcement (optional)</string>
-    <string name="create_announcement_placeholder">e.g. Be kind. Hindi or English, both welcome.</string>
+    <string name="create_announcement_placeholder">e.g. Be kind. Every language is welcome.</string>
     <string name="create_announcement_hint">Pinned at the top for everyone.</string>
     <string name="room_announcement">Announcement</string>
     <string name="room_settings">Room settings</string>
@@ -469,7 +469,7 @@
     <string name="save">Save</string>
     <string name="ib_1">What’s the best street food you’ve ever had?</string>
     <string name="ib_2">Which movie can you watch again and again?</string>
-    <string name="ib_3">If you could travel anywhere in India tomorrow, where would you go?</string>
+    <string name="ib_3">If you could travel anywhere in the world tomorrow, where would you go?</string>
     <string name="ib_4">Which song is stuck in your head these days?</string>
     <string name="ib_5">Chai or coffee? Defend your answer!</string>
     <string name="ib_6">What’s one skill you’d love to learn this year?</string>
@@ -480,7 +480,7 @@
     <string name="ib_11">What small thing made you happy this week?</string>
     <string name="ib_12">Which web series should everyone watch?</string>
     <string name="ib_13">What’s your comfort food after a long day?</string>
-    <string name="ib_14">If you could have dinner with any cricketer or athlete, who would it be?</string>
+    <string name="ib_14">If you could have dinner with any athlete, who would it be?</string>
     <string name="ib_15">What’s the most beautiful place you’ve visited?</string>
     <string name="ib_16">What do you love most about your city?</string>
     <string name="ib_17">Morning person or night owl?</string>
@@ -616,6 +616,19 @@
     <string name="chat_reply">Reply</string>
     <string name="chat_copy">Copy</string>
     <string name="chat_copied">Copied</string>
+    <!-- Chat translation (edge function translate) -->
+    <string name="translate">Translate</string>
+    <string name="translate_show_original">Show original</string>
+    <string name="translated_show_original">Translated · Show original</string>
+    <string name="translating">Translating…</string>
+    <string name="translate_unavailable">Translation isn’t available yet</string>
+    <string name="translate_cannot">This message can’t be translated</string>
+    <string name="translate_failed">Couldn’t translate. Try again.</string>
+    <string name="settings_translation">Translation</string>
+    <string name="translate_auto">Translate chats automatically</string>
+    <string name="translate_auto_sub">Messages in other languages show in yours</string>
+    <string name="translate_to">Translate to</string>
+    <string name="translate_to_app">App language (%1$s)</string>
     <string name="chat_replying_to">Replying to %1$s</string>
     <string name="chat_cancel_reply">Cancel reply</string>
     <string name="chat_quote_photo">Photo</string>

@@ -50,6 +50,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -197,7 +199,10 @@ private fun Screens(vm: AppViewModel, s: UiState) {
     val covered = voice?.expanded == true
     val player = remember { RoomPlayer() }
     val links = remember(vm) { LinkActions(vm.linkCards) }
-    CompositionLocalProvider(LocalLinks provides links) { Box(Modifier.fillMaxSize()) {
+    // Translations go into the app's language unless Settings chose another (follows a language change at once).
+    val locale = LocalConfiguration.current.locales.takeIf { !it.isEmpty }?.get(0)
+    SideEffect { vm.translator.followLocale(locale) }
+    CompositionLocalProvider(LocalLinks provides links, LocalTranslator provides vm.translator) { Box(Modifier.fillMaxSize()) {
         AnimatedContent(
             top, if (covered) Modifier.clearAndSetSemantics { } else Modifier,
             transitionSpec = {

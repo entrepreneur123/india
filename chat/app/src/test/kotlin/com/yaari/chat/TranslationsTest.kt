@@ -12,9 +12,27 @@ import javax.xml.parsers.DocumentBuilderFactory
  * in each source set (main, demo, live). Runs on the resource files themselves, so it also covers flavor strings.
  */
 class TranslationsTest {
-    private val locales = listOf("hi", "pt-rBR", "vi", "bn")
     private val sourceSets = listOf("main", "demo", "live")
     private val src = File("src").takeIf { it.isDirectory } ?: File("app/src")
+
+    /**
+     * The resource folder of each UI language (AppLocale.languages): what a translator creates as
+     * src/{main,live,demo}/res/values-<qualifier>/strings.xml. Hebrew and Indonesian use Android's old codes.
+     */
+    private val qualifiers = mapOf(
+        "hi" to "hi", "bn" to "bn", "ur" to "ur", "pa" to "pa", "mr" to "mr", "gu" to "gu", "ta" to "ta", "te" to "te",
+        "kn" to "kn", "ml" to "ml", "ne" to "ne", "pt-BR" to "pt-rBR", "es" to "es", "fr" to "fr", "de" to "de", "it" to "it",
+        "nl" to "nl", "pl" to "pl", "ro" to "ro", "tr" to "tr", "ru" to "ru", "uk" to "uk", "ar" to "ar", "fa" to "fa",
+        "he" to "iw", "sw" to "sw", "vi" to "vi", "th" to "th", "id" to "in", "ms" to "ms", "fil" to "fil", "ja" to "ja",
+        "ko" to "ko", "zh-Hans" to "b+zh+Hans", "zh-Hant" to "b+zh+Hant",
+    )
+
+    /** Every translated language in the app: each must be complete (a new folder is checked as soon as it exists). */
+    private val locales: List<String> by lazy {
+        File(src, "main/res").listFiles()!!.map { it.name }
+            .filter { it.startsWith("values-") && File(src, "main/res/$it/strings.xml").exists() }
+            .map { it.removePrefix("values-") }.sorted()
+    }
 
     private data class Res(val strings: Map<String, String>, val plurals: Map<String, Map<String, String>>)
 
@@ -90,13 +108,19 @@ class TranslationsTest {
         assertEquals(listOf("%d"), placeholders("%d online"))
     }
 
-    /** The languages offered in the app and to Android's per-app language setting are the ones translated. */
+    /**
+     * Translated folders are UI languages, the four first ones are there, and every UI language is offered: in the
+     * app's picker, to Android 13+'s per-app language setting (xml/locales_config.xml) and kept by localeFilters.
+     */
     @Test fun shippedLanguagesMatchTheResourceFolders() {
-        val folders = File(src, "main/res").listFiles()!!.map { it.name }
-            .filter { it.startsWith("values-") && File(it.let { n -> File(src, "main/res/$n") }, "strings.xml").exists() }
-            .map { it.removePrefix("values-") }.toSet()
-        assertEquals(locales.toSet(), folders)
+        assertTrue("unknown language folders: ${locales - qualifiers.values.toSet()}", qualifiers.values.containsAll(locales))
+        assertTrue(locales.containsAll(listOf("hi", "bn", "pt-rBR", "vi")))
+        assertEquals(setOf("en") + qualifiers.keys, AppLocale.languages.map { it.first }.toSet())
+        val config = File(src, "main/res/xml/locales_config.xml").readText()
+        (listOf("en") + qualifiers.keys).forEach { assertTrue("locales_config lacks $it", "android:name=\"$it\"" in config) }
         val gradle = File(src.parentFile, "build.gradle.kts").readText()
-        listOf("en", "hi", "pt-rBR", "vi", "bn").forEach { assertTrue("localeFilters lacks $it", "\"$it\"" in gradle) }
+        (listOf("en") + qualifiers.values).forEach { assertTrue("localeFilters lacks $it", "\"$it\"" in gradle) }
+        // The flavors' strings come with the language too (a folder in main without live's would show English there).
+        for (set in listOf("live")) locales.forEach { assertTrue("$set lacks values-$it", File(src, "$set/res/values-$it/strings.xml").exists()) }
     }
 }

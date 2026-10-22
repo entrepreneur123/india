@@ -12,6 +12,7 @@ import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.DeepLink
 import com.yaari.chat.data.FirstRun
 import com.yaari.chat.data.LinkBus
+import com.yaari.chat.data.TranslatePrefs
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.YaariApp
 import com.yaari.chat.ui.YaariTheme
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
                     AppViewModel(
                         Flavor.backend(application), Flavor.billing(application), photos = Flavor.photoCheck(application),
                         firstRun = FirstRun.Prefs(application), push = Flavor.push(application),
+                        translatePrefs = TranslatePrefs.Prefs(application),
                     )
                 }
                 // Back in the foreground: payments that completed meanwhile (e.g. UPI), refunds, unread counts.

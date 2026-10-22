@@ -279,7 +279,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                     VoiceChat(
                         s.lines, m, onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person,
                         chat = RoomChat(
-                            myId = room.meId, myName = me.profile.name, polls = s.polls, names = room.members.map { it.profile.name },
+                            roomId = room.id, myId = room.meId, myName = me.profile.name, polls = s.polls, names = room.members.map { it.profile.name },
                             onReply = vm.voice::reply,
                             onVote = vm.voice::votePoll, onClosePoll = vm.voice::closePoll, canClose = vm.voice::canClose,
                             roles = room.members.filter { it.isMod }.associate { it.profile.id to it.role },

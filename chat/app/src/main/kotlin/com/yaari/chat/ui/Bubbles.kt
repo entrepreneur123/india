@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,6 +50,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -59,7 +61,7 @@ import java.util.Date
 import kotlin.math.abs
 
 // ---- Chat look ----------------------------------------------------------------------------------
-// The messenger people in India use every day: green (mine) / white (theirs) bubbles on a warm wallpaper, a tail on
+// The messenger look people everywhere use every day: green (mine) / white (theirs) bubbles on a warm wallpaper, a tail on
 // the first bubble of a run, the time and read ticks tucked into the bubble's corner. Same tokens as the web
 // (chat/web/app/globals.css).
 
@@ -102,6 +104,7 @@ private val Radius = 8.dp
 /**
  * Bubble outline: an 8 dp rounded body, and on the first bubble of a run the tail at the top outer corner (that
  * corner square). The 8 dp tail gutter is always reserved, so grouped bubbles line up with the first one.
+ * [mine]: the tail and gutter on the right (my bubbles left to right; theirs in a right-to-left layout).
  */
 private fun bubblePath(w: Float, h: Float, mine: Boolean, tail: Boolean, d: Density): Path = with(d) {
     val t = TailWidth.toPx()
@@ -148,7 +151,9 @@ fun BubbleShell(mine: Boolean, tail: Boolean, modifier: Modifier = Modifier, pad
     Box(
         modifier
             .drawBehind {
-                val path = bubblePath(size.width, size.height, mine, tail, this)
+                // The tail sits on the outer side: the end for mine, the start for theirs (mirrored in RTL).
+                val tailRight = mine == (layoutDirection == LayoutDirection.Ltr)
+                val path = bubblePath(size.width, size.height, tailRight, tail, this)
                 translate(top = 1.dp.toPx()) { drawPath(path, colors.shadow) } // the soft 1 dp shadow under the edge
                 drawPath(path, fill)
             }
@@ -210,9 +215,10 @@ fun TextWithMeta(text: AnnotatedString, color: Color, meta: @Composable () -> Un
         val width = if (sameLine) maxOf(textP.width, lastWidth + gap + metaP.width) else maxOf(textP.width, metaP.width)
         val height = if (sameLine) maxOf(textP.height, metaP.height) else textP.height + metaP.height
         layout(width.coerceAtLeast(constraints.minWidth), height) {
-            textP.place(0, 0)
+            // Relative: in a right-to-left layout the text starts on the right and the time sits bottom-left.
+            textP.placeRelative(0, 0)
             // On the last line it sits a touch low, like the messenger: its bottom on the text's bottom edge.
-            metaP.place(width - metaP.width, height - metaP.height + if (sameLine) 2.dp.roundToPx() else 0)
+            metaP.placeRelative(width - metaP.width, height - metaP.height + if (sameLine) 2.dp.roundToPx() else 0)
         }
     }
 }
@@ -224,13 +230,17 @@ fun TextWithMeta(text: AnnotatedString, color: Color, meta: @Composable () -> Un
  * [image]: draws the photo itself instead of loading [Message.media] (the demo's drawn snap).
  */
 @Composable
-fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false, header: (@Composable () -> Unit)? = null, image: (@Composable () -> Unit)? = null) {
+fun Bubble(
+    m: Message, tail: Boolean = true, read: Boolean = false, header: (@Composable () -> Unit)? = null, image: (@Composable () -> Unit)? = null,
+    translation: LineTranslation? = null,
+) {
     val mine = m.fromMe
     val media = m.media
     val colors = chatColors()
     var revealed by rememberSaveable(m.id) { mutableStateOf(mine) }
     val context = LocalContext.current
-    val text = m.text?.takeIf { it.isNotEmpty() }
+    val original = m.text?.takeIf { it.isNotEmpty() }
+    val text = if (original != null) translation?.view?.text ?: original else null
     BubbleShell(
         mine, tail,
         padding = if (media != null) Modifier.padding(4.dp) else Modifier.padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp),
@@ -282,7 +292,8 @@ fun Bubble(m: Message, tail: Boolean = true, read: Boolean = false, header: (@Co
             }
             if (text != null) {
                 // A link's card on top (as messengers do), the text with its links tappable under it.
-                MessageLinkCard(text, Modifier.padding(bottom = 4.dp))
+                MessageLinkCard(original!!, Modifier.padding(bottom = 4.dp))
+                translation?.let { TranslationNote(it, Modifier.padding(bottom = 2.dp)) }
                 TextWithMeta(
                     rememberLinked(AnnotatedString(text), colors.link), colors.text, meta = { BubbleMeta(m.at, mine, read) },
                     modifier = if (media != null) Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 1.dp) else Modifier,
@@ -316,5 +327,29 @@ fun ChatChip(text: String, modifier: Modifier = Modifier, bold: Boolean = false)
                 }
                 .padding(horizontal = 12.dp, vertical = 6.dp),
         )
+    }
+}
+
+/**
+ * Above a translated line: "Translated · Show original" (tapping it shows the original), or "Translating…" while a
+ * translation I asked for is on its way. Nothing for a line shown as written.
+ */
+@Composable
+fun TranslationNote(t: LineTranslation, modifier: Modifier = Modifier) {
+    val color = chatColors().meta
+    val style = TextStyle(fontFamily = Jakarta, fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.Medium)
+    when (t.view.state) {
+        LineView.State.TRANSLATED -> Row(
+            modifier.clip(RoundedCornerShape(4.dp)).clickable(role = Role.Button, onClick = t.showOriginal),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Translate, null, Modifier.padding(end = 4.dp).size(14.dp), tint = color)
+            Text(stringResource(R.string.translated_show_original), color = color, style = style)
+        }
+        LineView.State.LOADING -> Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Rounded.Translate, null, Modifier.padding(end = 4.dp).size(14.dp), tint = color)
+            Text(stringResource(R.string.translating), color = color, style = style)
+        }
+        LineView.State.ORIGINAL -> Unit
     }
 }

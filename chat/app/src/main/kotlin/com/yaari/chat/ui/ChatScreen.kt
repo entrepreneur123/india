@@ -1,5 +1,19 @@
 package com.yaari.chat.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
+import com.yaari.chat.domain.TranslateKind
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -171,7 +185,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
         }
         val country = partner.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
         Messages(
-            chat.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping,
+            chat.messages, chat.match.id, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping,
             intro = country?.let { stringResource(R.string.matched_from, partner.name, it) }, partnerRead = chat.partnerRead,
             ended = if (chat.partnerLeft) stringResource(R.string.partner_left, partner.name) else null,
         )
@@ -367,7 +381,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
             onBack = vm::closeDm, typing = dm.partnerTyping,
         )
         Messages(
-            dm.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
+            dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
             partnerRead = dm.partnerRead,
         )
         Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
@@ -380,7 +394,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
  */
 @Composable
 private fun Messages(
-    messages: List<Message>, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null,
+    messages: List<Message>, chatId: String, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null,
     partnerRead: Long = 0, ended: String? = null,
 ) {
     val colors = chatColors()
@@ -411,7 +425,12 @@ private fun Messages(
                 contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart,
             ) {
                 Box(Modifier.fillMaxWidth(0.82f), contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart) {
-                    PopIn(m.fromMe) { Bubble(m, tail = !grouped, read = m.fromMe && m.id <= partnerRead) }
+                    val translation = lineTranslation(TranslateKind.CHAT, m.id, m.text?.takeIf { it.isNotEmpty() }, m.fromMe, chatId)
+                    PopIn(m.fromMe) {
+                        MessageMenu(m.text?.takeIf { it.isNotBlank() }, translation) {
+                            Bubble(m, tail = !grouped, read = m.fromMe && m.id <= partnerRead, translation = translation)
+                        }
+                    }
                 }
             }
         }
@@ -424,9 +443,67 @@ private fun Messages(
     }
 }
 
+/**
+ * A message's long-press menu: Copy, and Translate or Show original for someone else's text (also as TalkBack
+ * actions). Media without a caption has no menu (its tap reveals it).
+ */
+@Composable
+internal fun MessageMenu(text: String?, translation: LineTranslation?, content: @Composable () -> Unit) {
+    if (text == null) {
+        content()
+        return
+    }
+    var menu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val copyLabel = stringResource(R.string.chat_copy)
+    val copied = stringResource(R.string.chat_copied)
+    val translateLabel = stringResource(R.string.translate)
+    val originalLabel = stringResource(R.string.translate_show_original)
+    val copy = {
+        context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("Yaari", text))
+        Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
+    }
+    val t = translation
+    val canTranslate = t != null && t.view.canTranslate
+    val translated = t != null && t.view.translated
+    Box(
+        Modifier
+            .combinedClickable(interactionSource = null, indication = null, onLongClick = { menu = true }, onClick = {})
+            .semantics {
+                customActions = listOfNotNull(
+                    CustomAccessibilityAction(copyLabel) { copy(); true },
+                    if (canTranslate) CustomAccessibilityAction(translateLabel) { t?.translate?.invoke(); true } else null,
+                    if (translated) CustomAccessibilityAction(originalLabel) { t?.showOriginal?.invoke(); true } else null,
+                )
+            },
+    ) {
+        content()
+        DropdownMenu(menu, onDismissRequest = { menu = false }, shape = RoundedCornerShape(16.dp)) {
+            if (canTranslate) {
+                DropdownMenuItem(
+                    text = { Text(translateLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                    onClick = { menu = false; t?.translate?.invoke() },
+                )
+            }
+            if (translated) {
+                DropdownMenuItem(
+                    text = { Text(originalLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                    onClick = { menu = false; t?.showOriginal?.invoke() },
+                )
+            }
+            DropdownMenuItem(
+                text = { Text(copyLabel) }, leadingIcon = { Icon(Icons.Rounded.ContentCopy, null) },
+                onClick = { menu = false; copy() },
+            )
+        }
+    }
+}
+
 /** New bubbles settle in from their corner (scale .96, rise 8 dp, fade) in 180 ms. */
 @Composable
 internal fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
+    // The corner is the bubble's side: the end for mine, which is the left in a right-to-left layout.
+    val endIsRight = LocalLayoutDirection.current == LayoutDirection.Ltr
     val p = remember { Animatable(0f) }
     LaunchedEffect(Unit) { p.animateTo(1f, tween(180, easing = EaseOutQuint)) }
     Box(
@@ -435,7 +512,7 @@ internal fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
             scaleX = 0.96f + 0.04f * v; scaleY = 0.96f + 0.04f * v
             translationY = (1f - v) * 8.dp.toPx()
             alpha = v.coerceIn(0f, 1f)
-            transformOrigin = TransformOrigin(if (fromMe) 1f else 0f, 1f)
+            transformOrigin = TransformOrigin(if (fromMe == endIsRight) 1f else 0f, 1f)
         },
     ) { content() }
 }

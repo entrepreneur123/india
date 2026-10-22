@@ -46,6 +46,10 @@ import com.yaari.chat.model.MannerTag
 import com.yaari.chat.model.MyTrust
 import com.yaari.chat.model.TagCount
 import com.yaari.chat.model.Trust
+import com.yaari.chat.domain.ForeignText
+import com.yaari.chat.domain.TranslateKind
+import com.yaari.chat.domain.TranslateTargets
+import com.yaari.chat.domain.Translation
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -859,6 +863,22 @@ open class FakeBackend(
         return LinkPreview(url, known?.first ?: host, known?.second, null, host)
     }
 
+    /**
+     * The demo's translator: a small phrasebook for its own romanised Hindi lines (into English and Hindi). A line
+     * already in the target language is "same"; anything else can't be translated without the live server.
+     */
+    override suspend fun translate(kind: TranslateKind, id: Long, target: String): Translation {
+        if (!TranslateTargets.isValid(target)) throw BackendException("bad_request")
+        wait(400)
+        val text = when (kind) {
+            TranslateKind.CHAT -> matches.values.firstNotNullOfOrNull { m -> m.messages.firstOrNull { it.id == id }?.text }
+            TranslateKind.ROOM -> voice.lineText(id)
+        } ?: throw BackendException("not_found")
+        PHRASEBOOK[text]?.get(target)?.let { return Translation(it, same = false) }
+        if (!ForeignText.looksForeign(text, target)) return Translation(text, same = true)
+        throw BackendException("cannot_translate")
+    }
+
     override suspend fun reportVoiceRoom(roomId: String, reason: ReportReason) {
         val host = voice.hostOf(roomId) ?: throw BackendException("not_found")
         if (host == me().id) throw BackendException("not_allowed")
@@ -874,9 +894,23 @@ open class FakeBackend(
             "wikipedia.org" to ("Wikipedia" to "The free encyclopedia"),
             "en.wikipedia.org" to ("Wikipedia" to "The free encyclopedia"),
             "cricbuzz.com" to ("Cricbuzz" to "Live cricket scores and news"),
-            "yaari-web.vercel.app" to ("Yaari" to "Talk to new people across India"),
+            "yaari-web.vercel.app" to ("Yaari" to "Make friends around the world"),
         )
         private const val DAY = 86_400_000L
+
+        /** The demo people's romanised Hindi, as the live translator would put it (English, Hindi). */
+        private val PHRASEBOOK: Map<String, Map<String, String>> = mapOf(
+            "Kya haal hai?" to mapOf("en" to "How's it going?", "hi" to "क्या हाल है?"),
+            "Arre wah 😄" to mapOf("en" to "Oh wow 😄", "hi" to "अरे वाह 😄"),
+            "nice room yaar" to mapOf("en" to "nice room, buddy", "hi" to "बढ़िया रूम है यार"),
+            "mera vote Goa ke liye" to mapOf("en" to "my vote goes to Goa", "hi" to "मेरा वोट गोवा के लिए"),
+            "volume ekdum perfect hai" to mapOf("en" to "the volume is just perfect", "hi" to "वॉल्यूम एकदम परफ़ेक्ट है"),
+            "Arijit ka koi bhi gaana, bas 🔥" to mapOf("en" to "any Arijit song, that's all 🔥", "hi" to "अरिजीत का कोई भी गाना, बस 🔥"),
+            "Bumrah ka over lethal tha" to mapOf("en" to "Bumrah's over was lethal", "hi" to "बुमराह का ओवर घातक था"),
+            "Kohli 100 today, mark my words" to mapOf("hi" to "कोहली आज 100 मारेगा, लिख के ले लो"),
+            "Where are you from?" to mapOf("hi" to "आप कहाँ से हो?", "bn" to "আপনি কোথা থেকে?", "pt-BR" to "De onde você é?", "vi" to "Bạn đến từ đâu?"),
+            "What do you do?" to mapOf("hi" to "आप क्या करते हो?", "bn" to "আপনি কী করেন?", "pt-BR" to "O que você faz?", "vi" to "Bạn làm nghề gì?"),
+        )
 
         /** manner_refresh: starts at 50; a bad rating weighs double. */
         fun manner(good: Int, bad: Int) = Math.round(100.0 * (good + 5) / (good + 2 * bad + 10)).toInt()

@@ -1,5 +1,9 @@
 package com.yaari.chat.ui
 
+import androidx.compose.ui.platform.LocalContext
+import java.util.Locale
+import android.telephony.TelephonyManager
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -98,12 +102,24 @@ private fun Title(text: String) = Text(text, style = MaterialTheme.typography.he
 @Composable
 private fun Lead(text: String) = Text(text, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
 
+/**
+ * The country the number most likely has: the SIM's, else the mobile network's, else the phone's language region
+ * (people often keep the phone in English (US) wherever they live, so the SIM comes first).
+ */
+private fun defaultCountry(context: Context): Country {
+    val tm = runCatching { context.getSystemService(TelephonyManager::class.java) }.getOrNull()
+    return Countries.default(
+        runCatching { tm?.simCountryIso }.getOrNull(), runCatching { tm?.networkCountryIso }.getOrNull(), Locale.getDefault().country,
+    )
+}
+
 @Composable
 private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
     var phone by rememberSaveable { mutableStateOf("") }
-    var iso by rememberSaveable { mutableStateOf(Countries.default().iso) }
+    val context = LocalContext.current
+    var iso by rememberSaveable { mutableStateOf(defaultCountry(context).iso) }
     var picking by remember { mutableStateOf(false) }
-    val country = Countries.byIso(iso) ?: Countries.default()
+    val country = Countries.byIso(iso) ?: defaultCountry(context)
     Wordmark(size = 28)
     Spacer(Modifier.height(16.dp))
     Title(stringResource(R.string.phone_title))

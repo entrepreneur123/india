@@ -14,10 +14,10 @@ android {
 
     defaultConfig {
         applicationId = "com.yaari.chat"
-        minSdk = 24          // Android 7.0+: low-end phones are still common in India
+        minSdk = 24          // Android 7.0+: low-end phones are still common in many markets
         targetSdk = 36
-        versionCode = 16
-        versionName = "0.13.0"
+        versionCode = 17
+        versionName = "0.14.0"
 
         // Phone push (FCM) without the google-services plugin: the Firebase project's values from gradle properties or
         // the environment (FIREBASE_APP_ID, FIREBASE_API_KEY, FIREBASE_PROJECT_ID, FIREBASE_SENDER_ID). Empty (the
@@ -29,12 +29,20 @@ android {
         }
     }
 
-    // Shipped languages: English, Hindi, Bengali, Portuguese (Brazil), Vietnamese. localeFilters also drops every other
-    // language from the libraries' resources (smaller APK); Android 13+ lists these in the per-app language setting.
-    // Keep in sync with res/values-*, AppLocale.languages and TranslationsTest.
+    // UI languages (the in-app picker, AppLocale.languages, and Android 13+'s per-app language list from
+    // res/xml/locales_config.xml): English, Hindi, Bengali, Urdu, Punjabi, Marathi, Gujarati, Tamil, Telugu, Kannada,
+    // Malayalam, Nepali, Portuguese (Brazil), Spanish, French, German, Italian, Dutch, Polish, Romanian, Turkish,
+    // Russian, Ukrainian, Arabic, Persian, Hebrew (iw), Swahili, Vietnamese, Thai, Indonesian (in), Malay, Filipino,
+    // Japanese, Korean, Chinese (Simplified, Traditional). A language without its res/values-* strings yet shows in
+    // English. localeFilters also drops every other language from the libraries' resources (smaller APK); zh-rCN/TW/HK
+    // and es-rUS keep the libraries' own Chinese and Latin American Spanish. Keep in sync with AppLocale.languages,
+    // xml/locales_config.xml and TranslationsTest.
     androidResources {
-        localeFilters += listOf("en", "hi", "bn", "pt-rBR", "vi")
-        generateLocaleConfig = true
+        localeFilters += listOf(
+            "en", "hi", "bn", "ur", "pa", "mr", "gu", "ta", "te", "kn", "ml", "ne", "pt-rBR", "es", "es-rUS", "fr", "de", "it",
+            "nl", "pl", "ro", "tr", "ru", "uk", "ar", "fa", "iw", "sw", "vi", "th", "in", "ms", "fil", "ja", "ko",
+            "b+zh+Hans", "b+zh+Hant", "zh-rCN", "zh-rTW", "zh-rHK",
+        )
     }
 
     flavorDimensions += "server"
@@ -75,7 +83,7 @@ android {
     }
 
     // Direct-install APKs per CPU with -PabiSplits (LiveKit's WebRTC is native): arm64-v8a for most phones,
-    // armeabi-v7a for older / 32-bit Android Go phones still common in India. Off by default because AGP cannot build
+    // armeabi-v7a for older / 32-bit Android Go phones still common in many markets. Off by default because AGP cannot build
     // split APKs and the Play App Bundle (which splits by itself) in the same run.
     val directApks = providers.gradleProperty("abiSplits").isPresent
     splits {
@@ -87,8 +95,8 @@ android {
         }
     }
 
-    // Play App Bundle: split by CPU and screen density, but keep all five languages in the base APK so the in-app
-    // language switch (Settings > Language) works offline on every phone. Together they are only a few KB.
+    // Play App Bundle: split by CPU and screen density, but keep every language in the base APK so the in-app
+    // language switch (Settings > Language) works offline on every phone. Together they are only a few hundred KB.
     bundle {
         language { enableSplit = false }
     }

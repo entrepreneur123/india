@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -62,6 +64,7 @@ import androidx.core.net.toUri
 import com.yaari.chat.Flavor
 import com.yaari.chat.R
 import com.yaari.chat.domain.ExitPolicy
+import com.yaari.chat.domain.TranslateTargets
 
 /**
  * Contact details the IT Rules 2021 (India) require an intermediary to publish. Fill these in before launch.
@@ -89,6 +92,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
     var grievance by remember { mutableStateOf(false) }
     var licenses by remember { mutableStateOf(false) }
     var language by remember { mutableStateOf(false) }
+    var translateTo by remember { mutableStateOf(false) }
     val activity = LocalActivity.current
     val uri = LocalUriHandler.current
     val context = LocalContext.current
@@ -111,6 +115,17 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 Item(stringResource(R.string.language), value = AppLocale.nameOf(langTag) ?: stringResource(R.string.language_system)) {
                     language = true
                 }
+            }
+
+            // Chat translation: on by default; the automatic switch goes while the server has no translation yet.
+            val tr = vm.translator
+            Group(stringResource(R.string.settings_translation)) {
+                if (tr.available) {
+                    SwitchItem(stringResource(R.string.translate_auto), stringResource(R.string.translate_auto_sub), tr.auto, tr::switchAuto)
+                    Line()
+                }
+                val targetName = TranslateTargets.names[tr.target].orEmpty()
+                Item(stringResource(R.string.translate_to), value = targetName) { translateTo = true }
             }
 
             Group(stringResource(R.string.safety)) {
@@ -159,6 +174,13 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
         LanguageDialog(AppLocale.current(context), onDismiss = { language = false }) { tag ->
             language = false
             activity?.let { AppLocale.set(it, tag) }
+        }
+    }
+    if (translateTo) {
+        val tr = vm.translator
+        TargetDialog(tr.chosen, tr.appTarget, onDismiss = { translateTo = false }) { code ->
+            translateTo = false
+            tr.choose(code)
         }
     }
     if (licenses) {
@@ -281,7 +303,7 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.language)) },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 options.forEach { (tag, name) ->
                     Row(
                         Modifier.fillMaxWidth().heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp))
@@ -289,6 +311,48 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(tag == selected, onClick = null, Modifier.padding(horizontal = 8.dp))
+                        Text(name, style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
+}
+
+/** On and off with a switch; the whole row toggles it. */
+@Composable
+private fun SwitchItem(label: String, sub: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).toggleable(checked, role = Role.Switch, onValueChange = onChange)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            sub?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
+        Switch(checked, onCheckedChange = null, Modifier.padding(start = 12.dp))
+    }
+}
+
+/** "App language (…)" first, then every language translations can be in, each in its own script. */
+@Composable
+private fun TargetDialog(chosen: String?, appTarget: String, onDismiss: () -> Unit, onPick: (String?) -> Unit) {
+    val follow = stringResource(R.string.translate_to_app, TranslateTargets.names[appTarget].orEmpty())
+    val options = listOf<Pair<String?, String>>(null to follow) + TranslateTargets.names.toList()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.translate_to)) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                options.forEach { (code, name) ->
+                    Row(
+                        Modifier.fillMaxWidth().heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp))
+                            .selectable(code == chosen, role = Role.RadioButton) { onPick(code) },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(code == chosen, onClick = null, Modifier.padding(horizontal = 8.dp))
                         Text(name, style = MaterialTheme.typography.bodyLarge)
                     }
                 }

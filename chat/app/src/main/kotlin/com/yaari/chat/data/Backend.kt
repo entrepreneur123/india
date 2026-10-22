@@ -31,6 +31,8 @@ import com.yaari.chat.model.KycResult
 import com.yaari.chat.model.MannerTag
 import com.yaari.chat.model.MyTrust
 import com.yaari.chat.model.Trust
+import com.yaari.chat.domain.TranslateKind
+import com.yaari.chat.domain.Translation
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -224,6 +226,15 @@ interface Backend {
 
     /** A web page's title, description, image and site for its card in the chat; null when it can't be read. Never throws. */
     suspend fun linkPreview(url: String): LinkPreview?
+
+    // ---- Translation (edge function translate) ----
+
+    /**
+     * A saved message in the [target] language (TranslateTargets): a random chat or friend message ([TranslateKind.CHAT])
+     * or a room's text line ([TranslateKind.ROOM]) by its server id. Refused with translate_unavailable (not switched on
+     * yet), slow_down, not_found, cannot_translate, translate_failed, network.
+     */
+    suspend fun translate(kind: TranslateKind, id: Long, target: String): Translation
 
     // ---- Notifications and unread counts (023_notifications.sql) ----
 

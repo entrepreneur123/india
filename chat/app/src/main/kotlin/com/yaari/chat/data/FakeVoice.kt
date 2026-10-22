@@ -240,6 +240,9 @@ class FakeVoice(
     /** Profiles of demo people, for the profile screen. */
     fun profileOf(id: String): Profile? = rooms.values.firstNotNullOfOrNull { r -> r.members.firstOrNull { it.profile.id == id }?.profile }
 
+    /** A text line's words by its id, in any room (the demo's translator). */
+    fun lineText(id: Long): String? = rooms.values.firstNotNullOfOrNull { r -> (r.lines.firstOrNull { it.id == id } as? VoiceLine.Text)?.text }
+
     fun hostOf(roomId: String) = rooms[roomId]?.hostId
     fun titleOf(roomId: String?) = rooms[roomId]?.title
     fun isOpen(roomId: String?) = rooms[roomId]?.ended == false

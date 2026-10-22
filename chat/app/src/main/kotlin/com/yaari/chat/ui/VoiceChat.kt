@@ -19,6 +19,10 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import com.yaari.chat.domain.TranslateKind
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.focus.FocusRequester
@@ -135,6 +139,8 @@ private val TalkColor = Color(Glyph.ICEBREAKER.color)
 
 /** What the room's chat needs besides its lines: my name (mentions), the polls' counts, and what lines can do. */
 data class RoomChat(
+    /** The room (its lines' translations belong to it). */
+    val roomId: String = "",
     val myId: String = "",
     val myName: String = "",
     val polls: Map<Long, VoicePoll> = emptyMap(),
@@ -230,9 +236,10 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                             is VoiceLine.Text -> {
                                 val prev = lines.getOrNull(i - 1)
                                 val grouped = prev is VoiceLine.Text && prev.sender.id == line.sender.id && line.reply == null
-                                Replyable(line, chat.onReply) { menu ->
+                                val translation = lineTranslation(TranslateKind.ROOM, line.id, line.text, line.fromMe, chat.roomId)
+                                Replyable(line, chat.onReply, translation) { menu ->
                                     Box(Modifier.padding(top = if (grouped) 2.dp else 8.dp)) {
-                                        ChatLine(line, grouped, chat, menu, onQuote = jump) { onPerson(line.sender.id) }
+                                        ChatLine(line, grouped, chat, menu, onQuote = jump, translation = translation) { onPerson(line.sender.id) }
                                     }
                                 }
                             }
@@ -309,9 +316,13 @@ private val SWIPE_REPLY = 64.dp
  * put on its bubble.
  */
 @Composable
-private fun Replyable(line: VoiceLine, onReply: (VoiceLine) -> Unit, content: @Composable (menu: () -> Unit) -> Unit) {
+private fun Replyable(
+    line: VoiceLine, onReply: (VoiceLine) -> Unit, translation: LineTranslation? = null, content: @Composable (menu: () -> Unit) -> Unit,
+) {
     val density = LocalDensity.current
     val limit = with(density) { SWIPE_REPLY.toPx() }
+    // The swipe goes towards the end side (right, or left in a right-to-left layout), as the offset is drawn.
+    val towardsEnd = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1f else 1f
     val offset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
     val tick = rememberTick()
@@ -319,10 +330,20 @@ private fun Replyable(line: VoiceLine, onReply: (VoiceLine) -> Unit, content: @C
     var menu by remember { mutableStateOf(false) }
     val replyLabel = stringResource(R.string.chat_reply)
     val copied = stringResource(R.string.chat_copied)
+    val translateLabel = stringResource(R.string.translate)
+    val originalLabel = stringResource(R.string.translate_show_original)
+    val canTranslate = translation != null && translation.view.canTranslate
+    val translated = translation != null && translation.view.translated
     Box(
         Modifier.fillMaxWidth()
-            .semantics { customActions = listOf(CustomAccessibilityAction(replyLabel) { onReply(line); true }) }
-            .pointerInput(line.id) {
+            .semantics {
+                customActions = listOfNotNull(
+                    CustomAccessibilityAction(replyLabel) { onReply(line); true },
+                    if (canTranslate) CustomAccessibilityAction(translateLabel) { translation?.translate?.invoke(); true } else null,
+                    if (translated) CustomAccessibilityAction(originalLabel) { translation?.showOriginal?.invoke(); true } else null,
+                )
+            }
+            .pointerInput(line.id, towardsEnd) {
                 var passed = false
                 detectHorizontalDragGestures(
                     onDragStart = { passed = false },
@@ -333,7 +354,7 @@ private fun Replyable(line: VoiceLine, onReply: (VoiceLine) -> Unit, content: @C
                     onDragCancel = { scope.launch { offset.animateTo(0f) } },
                 ) { change, drag ->
                     change.consume()
-                    val next = (offset.value + drag * 0.6f).coerceIn(0f, limit * 1.4f)
+                    val next = (offset.value + drag * towardsEnd * 0.6f).coerceIn(0f, limit * 1.4f)
                     if (!passed && next >= limit) {
                         passed = true
                         tick()
@@ -358,6 +379,18 @@ private fun Replyable(line: VoiceLine, onReply: (VoiceLine) -> Unit, content: @C
                     text = { Text(replyLabel) }, leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Reply, null) },
                     onClick = { menu = false; onReply(line) },
                 )
+                if (canTranslate) {
+                    DropdownMenuItem(
+                        text = { Text(translateLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                        onClick = { menu = false; translation?.translate?.invoke() },
+                    )
+                }
+                if (translated) {
+                    DropdownMenuItem(
+                        text = { Text(originalLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                        onClick = { menu = false; translation?.showOriginal?.invoke() },
+                    )
+                }
                 if (line is VoiceLine.Text) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.chat_copy)) }, leadingIcon = { Icon(Icons.Rounded.ContentCopy, null) },
@@ -406,10 +439,14 @@ private fun withMentions(text: String, names: List<String>, color: Color): Annot
  * reply carries its quote on top (tapped: the original). A line that mentions me stands out with the brand colour.
  */
 @Composable
-private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onMenu: () -> Unit, onQuote: (Long) -> Unit, onPerson: () -> Unit) {
+private fun ChatLine(
+    line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onMenu: () -> Unit, onQuote: (Long) -> Unit,
+    translation: LineTranslation? = null, onPerson: () -> Unit,
+) {
     val colors = chatColors()
     val mentioned = !line.fromMe && VoiceController.mentions(line.text, chat.myName)
-    val text = rememberLinked(withMentions(line.text, chat.names + chat.myName, Brand.PinkOnDark), colors.link, chat.onLink)
+    val shown = translation?.view?.text ?: line.text
+    val text = rememberLinked(withMentions(shown, chat.names + chat.myName, Brand.PinkOnDark), colors.link, chat.onLink)
     val card: @Composable () -> Unit = { MessageLinkCard(line.text, Modifier.padding(top = 2.dp, bottom = 4.dp), chat.onRequestSong, chat.onLink) }
     val press = Modifier.combinedClickable(interactionSource = null, indication = null, onLongClick = onMenu, onClick = {})
     val quote: @Composable () -> Unit = { line.reply?.let { r -> Quote(r, mine = r.senderId == chat.myId, onClick = { onQuote(r.id) }) } }
@@ -453,6 +490,7 @@ private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onM
                 }
                 quote()
                 card()
+                translation?.let { TranslationNote(it, Modifier.padding(bottom = 2.dp)) }
                 TextWithMeta(text, colors.text, meta = { BubbleMeta(line.at, mine = false, read = false) })
             }
         }

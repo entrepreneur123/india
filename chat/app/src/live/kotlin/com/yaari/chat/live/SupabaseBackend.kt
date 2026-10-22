@@ -8,6 +8,8 @@ import android.net.Uri
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
 import com.yaari.chat.AppLocale
+import com.yaari.chat.domain.TranslateKind
+import com.yaari.chat.domain.Translation
 import com.yaari.chat.BuildConfig
 import com.yaari.chat.data.AppForeground
 import com.yaari.chat.data.Backend
@@ -201,7 +203,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     @Serializable private data class ProfileRow(
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
-        val city: String = "India", val bio: String = "", @SerialName("photo_path") val photoPath: String? = null,
+        val city: String = "", val bio: String = "", @SerialName("photo_path") val photoPath: String? = null,
         val country: String? = null, val interests: List<String> = emptyList(), val photos: List<String> = emptyList(),
     )
     /** profile_extras (024): interests and the gallery of people I may see. */
@@ -284,6 +286,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("premium_until") val premiumUntil: String? = null, @SerialName("gender_until") val genderUntil: String? = null,
     )
     @Serializable private data class TokenRow(val url: String, val token: String)
+    @Serializable private data class TranslateRow(val text: String = "", val same: Boolean = false)
     // ---- 035_identity_manners.sql, functions/kyc ----
     @Serializable private data class KycStartRow(val url: String)
     @Serializable private data class KycCheckRow(val result: String? = null)
@@ -1268,6 +1271,40 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
     }
 
+    /**
+     * The edge function translate: the server reads the saved message itself (only one I may read), so the phone sends
+     * just its id. Errors come back as HTTP status plus a code in the body; the body's code wins (an outage's bare 503
+     * is not "switched off").
+     */
+    override suspend fun translate(kind: TranslateKind, id: Long, target: String): Translation {
+        val r = try {
+            withTimeoutOrNull(TRANSLATE_MS) {
+                client.functions.invoke("translate", body = buildJsonObject {
+                    put("kind", kind.code)
+                    put("id", id)
+                    put("target", target)
+                }).body<TranslateRow>()
+            } ?: throw BackendException("network")
+        } catch (e: RestException) {
+            val text = listOfNotNull(e.message, e.error, e.description).joinToString(" ")
+            throw BackendException(
+                TRANSLATE_CODES.firstOrNull { it in text } ?: when (e.statusCode) {
+                    401 -> "not_signed_in"
+                    404 -> "not_found"
+                    422 -> "cannot_translate"
+                    429 -> "slow_down"
+                    else -> "translate_failed"
+                },
+            )
+        } catch (e: IOException) {
+            throw BackendException("network")
+        } catch (e: kotlinx.serialization.SerializationException) {
+            throw BackendException("translate_failed")
+        }
+        if (!r.same && r.text.isBlank()) throw BackendException("translate_failed")
+        return Translation(r.text, r.same)
+    }
+
     /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host re-checks every minute. */
     private fun voiceSync(roomId: String, userId: String? = null, mute: Boolean = false) {
         background.launch {
@@ -1818,6 +1855,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val HEARTBEAT_MS = 20_000L
         /** link-meta reads the page for up to 6 s itself. */
         private const val LINK_META_MS = 9_000L
+        /** The translate function asks a model; a slow answer is given up on (the line stays as it is). */
+        private const val TRANSLATE_MS = 20_000L
+        private val TRANSLATE_CODES = listOf("translate_unavailable", "cannot_translate", "translate_failed", "slow_down", "not_found")
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
             "verify_required", "manner_low", "already_verified", "kyc_unavailable", "kyc_failed", "already_rated", "too_late",

@@ -465,7 +465,7 @@
     <string name="save">Lưu</string>
     <string name="ib_1">Món ăn đường phố ngon nhất bạn từng ăn là gì?</string>
     <string name="ib_2">Bộ phim nào bạn có thể xem đi xem lại?</string>
-    <string name="ib_3">Nếu ngày mai được đi bất cứ đâu ở Ấn Độ, bạn sẽ đi đâu?</string>
+    <string name="ib_3">Nếu ngày mai được đi bất cứ đâu trên thế giới, bạn sẽ đi đâu?</string>
     <string name="ib_4">Dạo này bài hát nào cứ văng vẳng trong đầu bạn?</string>
     <string name="ib_5">Trà hay cà phê? Hãy bảo vệ lựa chọn của bạn!</string>
     <string name="ib_6">Năm nay bạn muốn học thêm kỹ năng gì?</string>
@@ -612,6 +612,18 @@
     <string name="chat_reply">Trả lời</string>
     <string name="chat_copy">Sao chép</string>
     <string name="chat_copied">Đã sao chép</string>
+    <string name="translate">Dịch</string>
+    <string name="translate_show_original">Xem bản gốc</string>
+    <string name="translated_show_original">Đã dịch · Xem bản gốc</string>
+    <string name="translating">Đang dịch…</string>
+    <string name="translate_unavailable">Tính năng dịch chưa khả dụng</string>
+    <string name="translate_cannot">Không thể dịch tin nhắn này</string>
+    <string name="translate_failed">Không dịch được. Hãy thử lại.</string>
+    <string name="settings_translation">Dịch</string>
+    <string name="translate_auto">Tự động dịch tin nhắn</string>
+    <string name="translate_auto_sub">Tin nhắn bằng ngôn ngữ khác sẽ hiện bằng ngôn ngữ của bạn</string>
+    <string name="translate_to">Dịch sang</string>
+    <string name="translate_to_app">Ngôn ngữ ứng dụng (%1$s)</string>
     <string name="chat_replying_to">Trả lời %1$s</string>
     <string name="chat_cancel_reply">Hủy trả lời</string>
     <string name="chat_quote_photo">Ảnh</string>

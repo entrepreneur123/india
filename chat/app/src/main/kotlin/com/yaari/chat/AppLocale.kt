@@ -12,16 +12,51 @@ import java.util.Locale
 /**
  * The app's own language choice, for every Android version.
  * Android 13+: the system per-app language (LocaleManager), so the choice also shows in the phone's settings.
- * Android 7–12 (most low-end phones in our markets): saved in the app and applied to the activity's context.
+ * Android 7–12 (many low-end phones): saved in the app and applied to the activity's context.
  */
 object AppLocale {
-    /** BCP-47 tag to the language's own name; "" follows the phone. Same list as res/values-* and localeFilters. */
+    /**
+     * BCP-47 tag to the language's own name; "" follows the phone. The same languages as res/xml/locales_config.xml and
+     * androidResources.localeFilters. A language without its res/values-* strings yet shows in English (Android's
+     * fallback), so the list can be ahead of the translations.
+     */
     val languages: List<Pair<String, String>> = listOf(
         "en" to "English",
         "hi" to "हिन्दी",
         "bn" to "বাংলা",
+        "ur" to "اردو",
+        "pa" to "ਪੰਜਾਬੀ",
+        "mr" to "मराठी",
+        "gu" to "ગુજરાતી",
+        "ta" to "தமிழ்",
+        "te" to "తెలుగు",
+        "kn" to "ಕನ್ನಡ",
+        "ml" to "മലയാളം",
+        "ne" to "नेपाली",
         "pt-BR" to "Português (Brasil)",
+        "es" to "Español",
+        "fr" to "Français",
+        "de" to "Deutsch",
+        "it" to "Italiano",
+        "nl" to "Nederlands",
+        "pl" to "Polski",
+        "ro" to "Română",
+        "tr" to "Türkçe",
+        "ru" to "Русский",
+        "uk" to "Українська",
+        "ar" to "العربية",
+        "fa" to "فارسی",
+        "he" to "עברית",
+        "sw" to "Kiswahili",
         "vi" to "Tiếng Việt",
+        "th" to "ไทย",
+        "id" to "Bahasa Indonesia",
+        "ms" to "Bahasa Melayu",
+        "fil" to "Filipino",
+        "ja" to "日本語",
+        "ko" to "한국어",
+        "zh-Hans" to "简体中文",
+        "zh-Hant" to "繁體中文",
     )
 
     private const val PREFS = "yaari_settings"
@@ -74,6 +109,25 @@ object AppLocale {
         }
     }
 
-    /** The display name for [tag], or null for "follow the phone". */
-    fun nameOf(tag: String): String? = languages.firstOrNull { (t, _) -> t.equals(tag, ignoreCase = true) || tag.startsWith("$t-") }?.second
+    /** The display name for [tag], or null for "follow the phone" (and languages the app doesn't offer). */
+    fun nameOf(tag: String): String? = offered(tag)?.let { t -> languages.first { it.first == t }.second }
+
+    /**
+     * The offered tag [tag] stands for: old codes (iw, in, tl) and regions are folded in ("en-US" is "en", "zh-TW"
+     * "zh-Hant", "pt" "pt-BR"); null when it is none of ours. Only the first tag of a list counts.
+     */
+    fun offered(tag: String): String? {
+        val first = tag.substringBefore(',').trim().replace('_', '-')
+        if (first.isEmpty()) return null
+        val locale = Locale.forLanguageTag(first)
+        val code = when (val lang = locale.language.lowercase()) {
+            "iw" -> "he"
+            "in" -> "id"
+            "tl" -> "fil"
+            "pt" -> "pt-BR"
+            "zh" -> if (locale.script == "Hant" || (locale.script.isEmpty() && locale.country.uppercase() in setOf("TW", "HK", "MO"))) "zh-Hant" else "zh-Hans"
+            else -> lang
+        }
+        return languages.firstOrNull { it.first.equals(code, ignoreCase = true) }?.first
+    }
 }

@@ -469,7 +469,7 @@
     <string name="save">Salvar</string>
     <string name="ib_1">Qual foi a melhor comida de rua que você já comeu?</string>
     <string name="ib_2">Que filme você consegue ver de novo e de novo?</string>
-    <string name="ib_3">Se pudesse viajar para qualquer lugar da Índia amanhã, para onde iria?</string>
+    <string name="ib_3">Se pudesse viajar para qualquer lugar do mundo amanhã, para onde iria?</string>
     <string name="ib_4">Que música não sai da sua cabeça ultimamente?</string>
     <string name="ib_5">Chá ou café? Defenda sua resposta!</string>
     <string name="ib_6">Que habilidade você adoraria aprender este ano?</string>
@@ -616,6 +616,18 @@
     <string name="chat_reply">Responder</string>
     <string name="chat_copy">Copiar</string>
     <string name="chat_copied">Copiado</string>
+    <string name="translate">Traduzir</string>
+    <string name="translate_show_original">Ver original</string>
+    <string name="translated_show_original">Traduzido · Ver original</string>
+    <string name="translating">Traduzindo…</string>
+    <string name="translate_unavailable">A tradução ainda não está disponível</string>
+    <string name="translate_cannot">Esta mensagem não pode ser traduzida</string>
+    <string name="translate_failed">Não foi possível traduzir. Tente de novo.</string>
+    <string name="settings_translation">Tradução</string>
+    <string name="translate_auto">Traduzir conversas automaticamente</string>
+    <string name="translate_auto_sub">Mensagens em outros idiomas aparecem no seu</string>
+    <string name="translate_to">Traduzir para</string>
+    <string name="translate_to_app">Idioma do app (%1$s)</string>
     <string name="chat_replying_to">Respondendo a %1$s</string>
     <string name="chat_cancel_reply">Cancelar resposta</string>
     <string name="chat_quote_photo">Foto</string>

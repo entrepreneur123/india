@@ -38,7 +38,7 @@ import androidx.compose.material.icons.outlined.PresentToAll
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.StopScreenShare
+import androidx.compose.material.icons.automirrored.rounded.StopScreenShare
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -408,7 +408,7 @@ fun SharedPagePanel(stage: RoomStage, canStop: Boolean, onClose: () -> Unit, onS
             CircleIconButton(Icons.AutoMirrored.Rounded.OpenInNew, stringResource(R.string.link_open_browser), { openOutside(context, stage.url) }, size = 36.dp, iconSize = 20.dp)
             if (canStop) {
                 CircleIconButton(
-                    Icons.Rounded.StopScreenShare, stringResource(R.string.link_stop_sharing), onStop, size = 36.dp, iconSize = 20.dp,
+                    Icons.AutoMirrored.Rounded.StopScreenShare, stringResource(R.string.link_stop_sharing), onStop, size = 36.dp, iconSize = 20.dp,
                     tint = MaterialTheme.colorScheme.error,
                 )
             }

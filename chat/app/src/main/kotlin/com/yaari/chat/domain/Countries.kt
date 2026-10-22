@@ -20,9 +20,14 @@ object Countries {
         "SA" to "966", "AE" to "971", "QA" to "974", "NP" to "977", "CA" to "1",
     ).map { (iso, dial) -> Country(iso, dial) }
 
-    /** The phone's own region when we support it, otherwise India (the first launch market). */
-    fun default(region: String = Locale.getDefault().country): Country =
-        all.firstOrNull { it.iso == region.uppercase() } ?: all.first { it.iso == "IN" }
+    /**
+     * The first of [regions] we support (the SIM's country, the network's, then the phone's language region), else
+     * the United States (+1, first in the list). Only a pre-selection: the picker lists every country. No regions: the
+     * phone's language region.
+     */
+    fun default(vararg regions: String?): Country =
+        (if (regions.isEmpty()) arrayOf(Locale.getDefault().country) else regions)
+            .firstNotNullOfOrNull { r -> r?.takeIf { it.isNotBlank() }?.let { byIso(it.uppercase()) } } ?: all.first()
 
     fun byIso(iso: String) = all.firstOrNull { it.iso == iso }
 }

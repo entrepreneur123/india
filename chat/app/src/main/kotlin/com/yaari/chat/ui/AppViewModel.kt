@@ -26,6 +26,7 @@ import com.yaari.chat.data.DeepLink
 import com.yaari.chat.data.FirstRun
 import com.yaari.chat.data.LinkBus
 import com.yaari.chat.data.Push
+import com.yaari.chat.data.TranslatePrefs
 import com.yaari.chat.model.InboxItem
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
@@ -151,6 +152,8 @@ class AppViewModel(
     private val push: Push = Push.Off,
     /** Room links and tapped notifications waiting to be opened. */
     private val links: LinkBus = LinkBus.app,
+    /** Chat translation settings (Settings > Translation); in memory for tests. */
+    translatePrefs: TranslatePrefs = TranslatePrefs.Memory(),
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState())
@@ -165,6 +168,9 @@ class AppViewModel(
 
     /** Link cards in every chat (link-meta), remembered per address while the app runs. */
     val linkCards = LinkCards(backend, viewModelScope)
+
+    /** Chat lines in my language (edge function translate), remembered while the app runs. */
+    val translator = Translator(backend, viewModelScope, ::notice, translatePrefs, clock)
 
     /** Notifications, unread counts, interests, photos, invites and the first run. */
     val social = SocialController(backend, viewModelScope, ::notice, ::explain, photos, firstRun, push.enabled) { me ->
@@ -207,6 +213,12 @@ class AppViewModel(
         }
         watchReads()
         followLinks()
+        // Translations still on their way for a chat or room I left are dropped.
+        viewModelScope.launch {
+            combine(_state, voice.state) { s, v -> setOfNotNull(s.chat?.match?.id, s.dm?.recent?.matchId, v?.roomId) }
+                .distinctUntilChanged()
+                .collect(translator::retain)
+        }
         // The first friend: their messages and invites can now reach the phone (the permission is asked once).
         viewModelScope.launch {
             _state.map { s -> s.friends.any { it.state == FriendState.FRIENDS } }.distinctUntilChanged().collect { if (it) social.friendAdded() }
@@ -413,7 +425,7 @@ class AppViewModel(
         _state.update { it.copy(onboarding = it.onboarding.copy(busy = true, error = null)) }
         viewModelScope.launch {
             try {
-                val me = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim().ifEmpty { "India" }, d.bio.trim(), d.photoUri))
+                val me = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim(), d.bio.trim(), d.photoUri))
                 _state.update { it.copy(me = me, onboarding = Onboarding()) }
                 afterSignIn(newAccount = true)
             } catch (e: CancellationException) {

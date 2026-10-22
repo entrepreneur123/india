@@ -457,7 +457,7 @@
     <string name="save">सेव करें</string>
     <string name="ib_1">अब तक का सबसे बढ़िया स्ट्रीट फ़ूड कौन-सा खाया है?</string>
     <string name="ib_2">कौन-सी फ़िल्म आप बार-बार देख सकते हैं?</string>
-    <string name="ib_3">कल भारत में कहीं भी घूमने जा सकें, तो कहाँ जाएँगे?</string>
+    <string name="ib_3">कल दुनिया में कहीं भी घूमने जा सकें, तो कहाँ जाएँगे?</string>
     <string name="ib_4">आजकल कौन-सा गाना दिमाग़ से निकल ही नहीं रहा?</string>
     <string name="ib_5">चाय या कॉफ़ी? अपना जवाब साबित कीजिए!</string>
     <string name="ib_6">इस साल आप कौन-सा नया हुनर सीखना चाहेंगे?</string>
@@ -604,6 +604,18 @@
     <string name="chat_reply">जवाब दें</string>
     <string name="chat_copy">कॉपी करें</string>
     <string name="chat_copied">कॉपी हो गया</string>
+    <string name="translate">अनुवाद करें</string>
+    <string name="translate_show_original">मूल दिखाएँ</string>
+    <string name="translated_show_original">अनुवादित · मूल दिखाएँ</string>
+    <string name="translating">अनुवाद हो रहा है…</string>
+    <string name="translate_unavailable">अनुवाद अभी उपलब्ध नहीं है</string>
+    <string name="translate_cannot">इस मैसेज का अनुवाद नहीं हो सकता</string>
+    <string name="translate_failed">अनुवाद नहीं हो सका। फिर से कोशिश करें।</string>
+    <string name="settings_translation">अनुवाद</string>
+    <string name="translate_auto">चैट अपने-आप अनुवाद करें</string>
+    <string name="translate_auto_sub">दूसरी भाषाओं के मैसेज आपकी भाषा में दिखेंगे</string>
+    <string name="translate_to">इस भाषा में अनुवाद करें</string>
+    <string name="translate_to_app">ऐप की भाषा (%1$s)</string>
     <string name="chat_replying_to">%1$s को जवाब</string>
     <string name="chat_cancel_reply">जवाब रद्द करें</string>
     <string name="chat_quote_photo">फ़ोटो</string>
