@@ -129,6 +129,20 @@
 
 ---
 
+### 4-3. 본인인증(신분증 + 셀피) — Didit 계정이 생긴 뒤 (서버 쪽은 준비 완료)
+전화번호 1개 = 계정 1개는 이미 적용돼 있고, 이 단계는 **사람 1명 = 계정 1개**와 성별·나이·국가 위조 방지입니다.
+신분증 촬영 + 실물 셀피(라이브니스) + 얼굴 대조를 Didit의 호스팅 화면에서 진행합니다(220여 개국 신분증, 여권 지원).
+1. https://didit.me 가입 → Console에서 **Workflow** 생성: ID Verification + Liveness + Face Match 켜기 → Workflow ID 복사.
+2. Console → API & Webhooks → **API key** 복사. Webhook URL: `https://dgynsckrqgnpyyvqekzi.supabase.co/functions/v1/kyc`
+3. Supabase 대시보드 → Edge Functions → Secrets: `DIDIT_API_KEY`, `DIDIT_WORKFLOW_ID` 입력. (그 전까지 앱은 "곧 제공"으로 안내)
+4. 실제 몇 명이 인증해 본 뒤, 모든 기능을 인증한 사람만 쓰게 하려면 SQL Editor에서:
+   `update public.app_flags set require_verification = true where id = 1;`
+   (끄기: `false`. 켜면 미인증자는 둘러보기만 가능하고 매칭·방·글·댓글·친구 요청이 막힙니다.)
+- 서버가 보관하는 것: 성별, 생년월일, 국적·발급국, 문서번호의 비밀 해시(같은 신분증 재사용 차단용). 이름·사진은 보관하지 않음.
+- 개인정보처리방침(docs/privacy.html)에 "신분증 확인(처리 위탁: Didit)" 항목을 추가해야 합니다(DPDP 2023: 목적 명시·동의·최소 수집).
+- 인도에서 Aadhaar 번호로 인증을 강제하는 것은 법적으로 제한되므로, 여권·운전면허·PAN 등 다른 신분증도 받는 현재 방식을 유지하세요.
+- 테스트 계정 2개는 관리자 인증 처리됨(admin_verify).
+
 ## 5. 국가별 법적 필수 사항 (MVP 단계)
 
 ### 인도 (최우선)
