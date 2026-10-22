@@ -175,6 +175,13 @@ const hi: Dict = {
   'bubble.typing': '{name} लिख रहे हैं',
   'bubble.sent': 'भेजा गया',
   'bubble.read': 'पढ़ लिया',
+  'link.preview': 'लिंक: {title}, {site}',
+  'link.viewer': 'वेब पेज',
+  'link.reload': 'पेज फिर से लोड करें',
+  'link.openBrowser': 'ब्राउज़र में खोलें',
+  'link.close': 'पेज बंद करें',
+  'link.loading': 'पेज लोड हो रहा है…',
+  'link.noFrame': 'यह साइट दूसरे ऐप्स के अंदर दिखने की अनुमति नहीं देती। इसे अपने ब्राउज़र में खोलें।',
 
   'report.title': '{name} को रिपोर्ट करें',
   'report.desc': 'रिपोर्ट गुमनाम होती है। उन्हें पता नहीं चलेगा कि आपने की।',

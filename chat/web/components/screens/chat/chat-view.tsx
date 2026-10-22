@@ -20,6 +20,7 @@ import { retryImport } from '@/lib/retry-import'
 import { Composer } from './composer'
 import { ExitButton } from './exit-button'
 import { MessageBubble, TypingBubble } from './message-bubble'
+import { LinkOpenProvider, LinkPanel, LinkSheet, useWideScreen } from './link-viewer'
 import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
@@ -79,6 +80,10 @@ export function ChatView({
   const stickToBottom = useRef(true)
   const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
   const { st } = useSocialT()
+  // A link opened from the chat: a column beside it on wide screens, a tall sheet on phones.
+  const wide = useWideScreen()
+  const [viewUrl, setViewUrl] = useState<string | null>(null)
+  useEffect(() => setViewUrl(null), [matchId])
 
   // Messages that arrive while another tab is open count as unread for the bar, until the chat is shown again.
   const [unread, setUnread] = useState(0)
@@ -148,9 +153,10 @@ export function ChatView({
   }, [live, visible, chat.video])
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col bg-background">
+    <div className="relative flex min-h-0 flex-1 bg-background">
+      <LinkOpenProvider value={setViewUrl}>
       {/* While a call covers the chat, keyboard focus must not reach the chat behind it. */}
-      <div className="flex min-h-0 flex-1 flex-col" inert={live && visible && chat.video === 'accepted'}>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col" inert={live && visible && chat.video === 'accepted'}>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2 sm:px-5">
           {live && onMinimise ? (
             <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={st('chatbar.minimise')} title={st('chatbar.minimise')}>
@@ -285,6 +291,20 @@ export function ChatView({
           />
         )}
       </div>
+      </LinkOpenProvider>
+
+      {viewUrl && wide ? (
+        <LinkPanel
+          url={viewUrl}
+          onClose={() => setViewUrl(null)}
+          className="w-[min(44vw,560px)] shrink-0 border-l border-border"
+        />
+      ) : null}
+      {wide ? null : (
+        <LinkSheet open={!!viewUrl && visible} onClose={() => setViewUrl(null)}>
+          {viewUrl ? <LinkPanel url={viewUrl} onClose={() => setViewUrl(null)} /> : null}
+        </LinkSheet>
+      )}
 
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} partner={partner} matchId={matchId} onReported={onReported} />
 

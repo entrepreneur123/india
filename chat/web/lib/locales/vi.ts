@@ -175,6 +175,13 @@ const vi: Dict = {
   'bubble.typing': '{name} đang nhập',
   'bubble.sent': 'Đã gửi',
   'bubble.read': 'Đã xem',
+  'link.preview': 'Liên kết: {title}, {site}',
+  'link.viewer': 'Trang web',
+  'link.reload': 'Tải lại trang',
+  'link.openBrowser': 'Mở trong trình duyệt',
+  'link.close': 'Đóng trang',
+  'link.loading': 'Đang tải trang…',
+  'link.noFrame': 'Trang này không cho phép hiển thị bên trong ứng dụng khác. Hãy mở bằng trình duyệt.',
 
   'report.title': 'Báo cáo {name}',
   'report.desc': 'Báo cáo là ẩn danh. Họ sẽ không biết là bạn.',

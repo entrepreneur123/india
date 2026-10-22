@@ -27,6 +27,7 @@ import {
   type VoiceAction,
   type VoiceEvent,
   type KycDemoOutcome,
+  type LinkMeta,
 } from './backend'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
@@ -933,6 +934,21 @@ export class MockBackend implements Backend {
 
   async voiceAction(roomId: string, action: VoiceAction) {
     return (await this.voice()).act(roomId, action)
+  }
+
+  /** The demo's people don't read typing signals. */
+  voiceTyping(_roomId: string, _name: string) {}
+
+  /** The demo reaches no other site: a card from the address alone (shown with "Open in browser"). */
+  async linkMeta(url: string): Promise<LinkMeta> {
+    await wait(300)
+    let host = url
+    try {
+      host = new URL(url).hostname.replace(/^www\./, '')
+    } catch {
+      throw new BackendError('bad_request')
+    }
+    return { url, title: null, description: null, image: null, site: host, frameable: false }
   }
 
   async reportVoiceRoom(_roomId: string, _reason: ReportReason) {

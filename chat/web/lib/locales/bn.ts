@@ -175,6 +175,13 @@ const bn: Dict = {
   'bubble.typing': '{name} লিখছেন',
   'bubble.sent': 'পাঠানো হয়েছে',
   'bubble.read': 'পড়া হয়েছে',
+  'link.preview': 'লিংক: {title}, {site}',
+  'link.viewer': 'ওয়েব পেজ',
+  'link.reload': 'পেজ আবার লোড করুন',
+  'link.openBrowser': 'ব্রাউজারে খুলুন',
+  'link.close': 'পেজ বন্ধ করুন',
+  'link.loading': 'পেজ লোড হচ্ছে…',
+  'link.noFrame': 'এই সাইটটি অন্য অ্যাপের ভেতরে দেখানোর অনুমতি দেয় না। আপনার ব্রাউজারে খুলুন।',
 
   'report.title': '{name}-কে রিপোর্ট করুন',
   'report.desc': 'রিপোর্ট বেনামি। তারা জানবে না যে আপনি করেছেন।',

@@ -225,7 +225,10 @@ export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_ful
  */
 export type RoomKind = 'talk' | 'music'
 
-/** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
+/**
+ * Co-hosts (036) can invite, move and mute people, run the music and pin a page; they remove listeners and speakers
+ * (not the host, not another co-host). Only the host makes co-hosts and ends the room.
+ */
 export type VoiceRole = 'host' | 'cohost' | 'speaker' | 'listener'
 /** Who may take a seat: listeners raise a hand and the host invites them up, or anyone takes a free seat. */
 export type SpeakMode = 'approval' | 'open'
@@ -318,6 +321,29 @@ export interface VoiceRoom extends RoomRules {
   /** The room's 6-character code, for its host only. */
   code: string | null
   lang: string | null
+  /** 036: the web page the host or a co-host shows everyone next to the chat (null: none). */
+  stage: VoiceStage | null
+}
+
+/** A page pinned for the whole room (voice_share_link). The same page for everyone; scrolling is not shared. */
+export interface VoiceStage {
+  url: string
+  title: string | null
+  /** Who shared it: name and user id. */
+  by: string
+  byId: string
+  /** When, on this device's clock. */
+  at: number
+}
+
+/** A link's preview (edge function link-meta). `frameable`: the site lets other apps show it inside a frame. */
+export interface LinkMeta {
+  url: string
+  title: string | null
+  description: string | null
+  image: string | null
+  site: string | null
+  frameable: boolean
 }
 
 export interface NewVoiceRoom extends RoomRules {
@@ -401,6 +427,8 @@ export type VoiceEvent =
   | { type: 'idle' }
   /** Out of the room because I'm in a random chat now (the server leaves rooms for it): no message needed. */
   | { type: 'left' }
+  /** Someone in the room is writing in the chat (public 'vtyping-<room>' channel; nothing is stored). Never me. */
+  | { type: 'typing'; userId: string; name: string }
 
 export type VoiceAction =
   | { type: 'hand'; up: boolean }
@@ -415,10 +443,13 @@ export type VoiceAction =
   | { type: 'toAudience'; userId: string }
   | { type: 'mute'; userId: string }
   | { type: 'lock'; seat: number; locked: boolean }
+  /** 036: the host removes anyone; a co-host removes listeners and speakers only. */
+  | { type: 'kick'; userId: string }
+  /** 036: shows a web page (https) to the whole room next to the chat; null takes it down. */
+  | { type: 'shareLink'; url: string | null; title?: string | null }
   // host only
   | { type: 'cohost'; userId: string; on: boolean }
-  | { type: 'kick'; userId: string }
-  // music: anyone adds a song request and votes; the host (DJ) plays, removes and controls
+  // music: anyone adds a song request and votes; the host and co-hosts (036) play, remove, seek and control
   /** `title`: the video's real title (lib/youtube.ts videoTitle), empty when it couldn't be looked up. */
   | { type: 'addTrack'; videoId: string; title?: string }
   | { type: 'vote'; itemId: string; on: boolean }
@@ -428,6 +459,8 @@ export type VoiceAction =
   | { type: 'resume' }
   /** The most voted request plays. `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
   | { type: 'skip'; trackId?: string }
+  /** 036: jump to this position (ms) in the song for everyone; a paused song stays paused there. */
+  | { type: 'seek'; ms: number }
 
 export interface Match {
   id: string
@@ -622,6 +655,10 @@ export interface Backend {
   voicePolls(ids: number[]): Promise<VoicePoll[]>
   /** Throws BackendError('not_allowed') when my role may not do it. */
   voiceAction(roomId: string, action: VoiceAction): Promise<void>
+  /** Tells the room I'm writing (fire and forget; the screen sends it at most every few seconds). */
+  voiceTyping(roomId: string, name: string): void
+  /** A link's title, picture and whether it can be shown in a frame (edge function link-meta). */
+  linkMeta(url: string): Promise<LinkMeta>
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
   voiceStartAudio(roomId: string): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>

@@ -175,6 +175,13 @@ const ptBR: Dict = {
   'bubble.typing': '{name} está digitando',
   'bubble.sent': 'Enviada',
   'bubble.read': 'Lida',
+  'link.preview': 'Link: {title}, {site}',
+  'link.viewer': 'Página da web',
+  'link.reload': 'Recarregar página',
+  'link.openBrowser': 'Abrir no navegador',
+  'link.close': 'Fechar página',
+  'link.loading': 'Carregando a página…',
+  'link.noFrame': 'Este site não permite ser exibido dentro de outros apps. Abra no seu navegador.',
 
   'report.title': 'Denunciar {name}',
   'report.desc': 'As denúncias são anônimas. A pessoa não vai saber que foi você.',

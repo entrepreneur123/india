@@ -9,6 +9,7 @@ import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
+import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -21,7 +22,7 @@ import { cn } from '@/lib/utils'
 import { RoomPlayerProvider } from './room-player'
 import { VoiceRoomScreen } from './voice-room'
 import { LiveBars, SpeakingRing } from './voice-stage'
-import { memberOf, SPEAKING } from './voice-text'
+import { isMod, memberOf, SPEAKING } from './voice-text'
 
 /**
  * Audio levels arrive several times a second. They live outside React state: each seat subscribes to its own
@@ -81,6 +82,10 @@ export interface VoiceSession {
   /** Shown at once, then as the server counted it. */
   votePoll: (pollId: number, choice: number) => void
   closePoll: (pollId: number) => Promise<boolean>
+  /** People writing in the chat right now (user ids, in the room, never me), oldest first. */
+  typing: string[]
+  /** The text in my box changed: tells the room, at most every few seconds. */
+  notifyTyping: () => void
 }
 
 const REACTION_MS = 2600
@@ -107,6 +112,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   gone.current = onGone
   const tRef = useRef(t)
   tRef.current = t
+  /** Typing signals by user id (with when), and a tick to show them going stale. */
+  const typingSeen = useRef<TypingSeen>(new Map())
+  const [typingTick, setTypingTick] = useState(0)
 
   const addLines = useCallback((list: VoiceLine[]) => {
     setLines((prev) => {
@@ -137,6 +145,12 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'line':
           addLines([e.line])
+          // Their line is here: they're not typing it any more.
+          if ((e.line.kind === 'text' || e.line.kind === 'photo') && typingSeen.current.delete(e.line.sender.id)) setTypingTick((n) => n + 1)
+          break
+        case 'typing':
+          typingSeen.current.set(e.userId, { name: e.name, at: Date.now() })
+          setTypingTick((n) => n + 1)
           break
         case 'poll':
           dispatchPoll({ type: 'room', poll: e.poll })
@@ -191,6 +205,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => {
       alive = false
       timers.forEach(clearTimeout)
+      typingSeen.current.clear()
       unsubscribe()
       levels.set({})
       void backend.leaveVoice(roomId).catch(() => undefined)
@@ -198,6 +213,29 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [backend, roomId, addLines, levels, toast, ending])
 
   const me = room ? memberOf(room, room.meId) : null
+
+  // Who's typing: re-read when a signal arrives, the member list changes, or the oldest one goes stale.
+  const memberKey = room?.members.map((x) => x.profile.id).join(',') ?? ''
+  const [typing, setTyping] = useState<string[]>([])
+  useEffect(() => {
+    const now = Date.now()
+    for (const [id, x] of typingSeen.current) if (now - x.at > 60_000) typingSeen.current.delete(id) // forget old ones
+    const ids = typingIds(typingSeen.current, now, new Set(memberKey ? memberKey.split(',') : []), room?.meId ?? '')
+    setTyping((prev) => (prev.join(',') === ids.join(',') ? prev : ids))
+    const next = nextExpiry(typingSeen.current, now)
+    if (next === null) return
+    const id = setTimeout(() => setTypingTick((n) => n + 1), next - now + 20)
+    return () => clearTimeout(id)
+  }, [typingTick, memberKey, room?.meId])
+
+  const lastTypingSent = useRef(0)
+  const meName = me?.profile.name ?? ''
+  const notifyTyping = useCallback(() => {
+    const now = Date.now()
+    if (!meName || now - lastTypingSent.current < TYPING_SEND_MS) return
+    lastTypingSent.current = now
+    backend.voiceTyping(roomId, meName)
+  }, [backend, roomId, meName])
 
   // Poll lines show their votes: the ones not read yet are read (with my own vote) as they arrive; after the room
   // was read again following a gap, every open one is read again too.
@@ -353,7 +391,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
 
   return {
     room, me, lines, levels, reactions, audio, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
-    polls, createPoll, votePoll, closePoll,
+    polls, createPoll, votePoll, closePoll, typing, notifyTyping,
   }
 }
 
@@ -427,7 +465,7 @@ export function VoiceHost({
   })
 
   return (
-    <RoomPlayerProvider track={s.room?.track ?? null} isHost={isHost} shown={expanded} act={s.act}>
+    <RoomPlayerProvider track={s.room?.track ?? null} canControl={isMod(s.me)} shown={expanded} act={s.act}>
       <AnimatePresence>
         {expanded ? (
           <m.div

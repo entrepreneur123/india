@@ -6,6 +6,7 @@ import { Check, CheckCheck, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
+import { LinkPreview, LinkText } from './link-viewer'
 
 /**
  * Chat bubbles in the style people in India use every day: green (mine) / white (theirs) on a warm wallpaper,
@@ -38,12 +39,15 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
           <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
         ) : null}
         {message.text ? (
-          // User text is always rendered as text (React escapes it), never as HTML.
-          <p className={cn('relative text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}>
-            {message.text}
-            <MetaSpacer>{meta}</MetaSpacer>
-            <span className="absolute -bottom-0.5 right-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
-          </p>
+          // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
+          <>
+            <LinkPreview text={message.text} className={cn('mb-1 w-72 max-w-full', message.media && 'mx-1')} />
+            <p className={cn('relative text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}>
+              <LinkText text={message.text} />
+              <MetaSpacer>{meta}</MetaSpacer>
+              <span className="absolute -bottom-0.5 right-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
+            </p>
+          </>
         ) : null}
       </Bubble>
     </m.li>
@@ -132,27 +136,35 @@ export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message[
   )
 }
 
+/** Three dots rising one after another; still (dimmed) under reduced motion. */
+export function TypingDots({ className }: { className?: string }) {
+  return (
+    <span className={cn('inline-flex items-center gap-1', className)} aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="size-[7px] animate-typing-dot rounded-full bg-bubble-meta motion-reduce:animate-none motion-reduce:opacity-60"
+          style={{ animationDelay: `${i * 0.16}s` }}
+        />
+      ))}
+    </span>
+  )
+}
+
 export function TypingBubble({ name }: { name: string }) {
   const { t } = useI18n()
   return (
     <m.li
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.15 }}
-      className="mt-2 self-start"
+      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
+      className="mt-2 origin-bottom-left self-start"
       aria-live="polite"
     >
-      <Bubble mine={false} tail className="flex items-center gap-1.5 px-4 py-3">
+      <Bubble mine={false} tail className="flex h-9 items-center px-3.5">
         <span className="sr-only">{t('bubble.typing', { name })}</span>
-        {[0, 1, 2].map((i) => (
-          <span
-            key={i}
-            className="size-2 animate-pulse rounded-full bg-bubble-meta motion-reduce:animate-none"
-            style={{ animationDelay: `${i * 0.2}s` }}
-            aria-hidden
-          />
-        ))}
+        <TypingDots />
       </Bubble>
     </m.li>
   )

@@ -18,7 +18,8 @@ import { ReactionIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { cn } from '@/lib/utils'
-import { isMod, memberOf, roleLabel } from './voice-text'
+import { canManage, isMod, memberOf, roleLabel } from './voice-text'
+import { useRoomT } from './room-t'
 import { TrustBadge } from '@/components/trust/badge'
 
 export type SheetState =
@@ -103,6 +104,7 @@ export function PersonSheet({
   act: (a: VoiceAction) => Promise<boolean>
 }) {
   const { t } = useI18n()
+  const { rt } = useRoomT()
   const toast = useToast()
   const { openProfile } = useApp()
   const [reportOpen, setReportOpen] = useState(false)
@@ -120,6 +122,8 @@ export function PersonSheet({
   const self = target.profile.id === room.meId
   const mod = isMod(me) && !self && target.role !== 'host'
   const host = me?.role === 'host' && !self
+  // 036: the host moves and removes anyone else; a co-host only listeners and speakers (the server refuses the rest).
+  const manage = canManage(me, target)
   const run = async (a: VoiceAction, done?: string) => {
     const ok = await act(a)
     if (ok && done) toast.show(done, 'success')
@@ -166,11 +170,11 @@ export function PersonSheet({
               onClick={() => void run({ type: 'invite', userId: target.profile.id }, t('voice.invited', { name: target.profile.name }))}
             />
           ) : null}
-          {mod && target.seat !== null ? (
-            <>
-              {!target.muted ? <Row icon={<MicOff />} label={t('voice.muteThem')} onClick={() => void run({ type: 'mute', userId: target.profile.id })} /> : null}
-              <Row icon={<ArrowDownToLine />} label={t('voice.toAudience')} onClick={() => void run({ type: 'toAudience', userId: target.profile.id })} />
-            </>
+          {mod && target.seat !== null && !target.muted ? (
+            <Row icon={<MicOff />} label={t('voice.muteThem')} onClick={() => void run({ type: 'mute', userId: target.profile.id })} />
+          ) : null}
+          {manage && target.seat !== null ? (
+            <Row icon={<ArrowDownToLine />} label={rt('moveToListeners')} onClick={() => void run({ type: 'toAudience', userId: target.profile.id })} />
           ) : null}
           {host && target.role !== 'host' ? (
             <Row
@@ -179,7 +183,7 @@ export function PersonSheet({
               onClick={() => void run({ type: 'cohost', userId: target.profile.id, on: target.role !== 'cohost' })}
             />
           ) : null}
-          {host ? <Row icon={<UserX />} label={t('voice.kick')} danger onClick={() => setKickOpen(true)} /> : null}
+          {manage ? <Row icon={<UserX />} label={t('voice.kick')} danger onClick={() => setKickOpen(true)} /> : null}
           {self ? null : <Row icon={<Flag />} label={t('voice.report')} danger onClick={() => setReportOpen(true)} />}
         </div>
       </Modal>

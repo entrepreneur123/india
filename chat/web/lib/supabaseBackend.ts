@@ -46,7 +46,9 @@ import {
   type VoiceRoom,
   type VoiceRoomSummary,
   type VoiceSystemEvent,
+  type LinkMeta,
 } from './backend'
+import { safeUrl, shareable } from './links'
 import { retryImport } from './retry-import'
 import { parseReply } from './voice-chat'
 import { parsePoll, POLLS_PER_READ } from './voice-polls'
@@ -120,6 +122,8 @@ type VoiceStateRow = {
   lang?: string | null
   /** The room's change number (020); events carry the next ones. */
   seq?: number
+  /** 036: the page pinned for everyone (voice_share_link). */
+  stage?: { url: string; title: string | null; by: string; byId: string; at: number } | null
 }
 /** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
 type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number }
@@ -128,7 +132,7 @@ type VoiceChange = { seq?: number | null } & (
   | ({ t: 'm'; present: true } & VoiceMemberRow)
   | { t: 'm'; id: string; present: false }
   | ({ t: 'r'; ended: boolean } & Pick<VoiceStateRow, 'title' | 'category' | 'mode' | 'host' | 'locked' | 'music' | 'announcement'
-      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
+      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private' | 'stage'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
   | { t: 'v'; item: string; user: string; on: boolean; votes: number }
   /** 029: a poll changed (a vote, closed); `mine` is null. Numbered like the rest, nothing in the state. */
   | { t: 'p'; poll: unknown }
@@ -153,6 +157,8 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
       title: c.title, category: c.category, mode: c.mode, host: c.host, locked: c.locked, music: c.music,
       announcement: c.announcement, max: c.max, gender: c.gender, minAge: c.minAge, maxAge: c.maxAge, private: c.private,
       queue: c.queue.map((q) => ({ ...q, voted: voted.has(q.id) })),
+      // 037 sends the pinned page with every room change; an event without it leaves it as it was.
+      ...('stage' in c ? { stage: c.stage ?? null } : {}),
     })
   } else if (c.t === 'v') {
     const q = s.queue.find((x) => x.id === c.item)
@@ -177,6 +183,10 @@ type VoiceLive = {
   mic: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
+  /** Tells the room I'm writing (public vtyping-<room> channel). */
+  typing: (name: string) => void
+  /** After I pinned or took down a page: read the room now (everyone else gets the room-change broadcast, 037). */
+  staged: () => void
 }
 function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
@@ -1203,8 +1213,39 @@ export class SupabaseBackend implements Backend {
       case 'skip':
         await this.rpc('voice_skip', { ...room, p_current: a.trackId ?? live?.room?.track?.id ?? null })
         break
+      case 'seek':
+        await this.rpc('voice_seek', { ...room, p_ms: Math.max(0, Math.round(a.ms)) })
+        break
+      case 'shareLink': {
+        if (a.url !== null && !shareable(a.url)) throw new BackendError('bad_request')
+        const title = a.title?.trim().slice(0, 200) || null
+        await this.rpc('voice_share_link', { ...room, p_url: a.url, p_title: a.url === null ? null : title })
+        live?.staged()
+        return
+      }
     }
     live?.acted()
+  }
+
+  voiceTyping(roomId: string, name: string) {
+    this.voice.get(roomId)?.typing(name)
+  }
+
+  async linkMeta(url: string): Promise<LinkMeta> {
+    const target = safeUrl(url)
+    if (!target) throw new BackendError('bad_request')
+    const j = await this.invoke<Record<string, unknown>>('link-meta', { url: target })
+    const text = (v: unknown, n: number) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, n) : null)
+    const image = typeof j?.image === 'string' && j.image.startsWith('https://') ? safeUrl(j.image) : null
+    return {
+      // The page the link ended up at (after redirects), if it is still a web address; else the one asked for.
+      url: (typeof j?.url === 'string' && safeUrl(j.url)) || target,
+      title: text(j?.title, 200),
+      description: text(j?.description, 300),
+      image,
+      site: text(j?.site, 80),
+      frameable: j?.frameable === true,
+    }
   }
 
   /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host's client re-checks every minute. */
@@ -1509,6 +1550,21 @@ export class SupabaseBackend implements Backend {
       }
     }
 
+    // ---- typing (a public channel, like random chat's typing: nothing stored) ----
+    let typingChannel: RealtimeChannel | null = null
+    const openTyping = () => {
+      if (typingChannel || closed) return
+      const topic = `vtyping-${roomId}`
+      for (const c of this.client.getChannels()) if (c.topic === `realtime:${topic}`) void this.client.removeChannel(c)
+      typingChannel = this.client.channel(topic)
+        .on('broadcast', { event: 'typing' }, ({ payload }) => {
+          const id = typeof payload?.id === 'string' ? payload.id : ''
+          if (!id || id === me) return
+          emit({ type: 'typing', userId: id, name: typeof payload?.name === 'string' ? payload.name.slice(0, 40) : '' })
+        })
+        .subscribe()
+    }
+
     // ---- keeping up ----
     let channel: RealtimeChannel | null = null
     let healthy = false
@@ -1566,8 +1622,15 @@ export class SupabaseBackend implements Backend {
       joined: async (state, sent) => {
         joined = true
         openChannel()
+        openTyping()
         return apply(state, sent)
       },
+      typing: (name) => {
+        if (!joined || closed || over) return
+        void typingChannel?.send({ type: 'broadcast', event: 'typing', payload: { id: me, name } }).catch(() => undefined)
+      },
+      // The room-change broadcast tells everyone else (037); the sharer reads the room at once.
+      staged: () => refresh(),
     }
     this.voice.set(roomId, live)
 
@@ -1632,6 +1695,7 @@ export class SupabaseBackend implements Backend {
       stopAudio()
       if (this.voice.get(roomId) === live) this.voice.delete(roomId)
       if (channel) void this.client.removeChannel(channel)
+      if (typingChannel) void this.client.removeChannel(typingChannel)
     }
   }
 
@@ -1664,6 +1728,10 @@ export class SupabaseBackend implements Backend {
         startedAt: local(s.music.startedAt), pausedAt: s.music.pausedAt === null ? null : local(s.music.pausedAt),
       } : null,
       queue: s.queue.map((q) => ({ id: q.id, videoId: q.videoId, title: q.title, addedBy: q.by, votes: q.votes ?? 0, voted: !!q.voted })),
+      stage: s.stage && typeof s.stage.url === 'string' && shareable(s.stage.url) ? {
+        url: s.stage.url, title: s.stage.title || null, by: String(s.stage.by ?? ''), byId: String(s.stage.byId ?? ''),
+        at: local(Number(s.stage.at) || 0),
+      } : null,
     }
   }
 

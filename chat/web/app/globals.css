@@ -51,6 +51,7 @@
   --animate-eq: eq 0.9s ease-in-out infinite;
   --animate-heart-pop: heart-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4);
   --animate-heart-burst: heart-burst 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
 
   /* A like: the small heart jumps; a double tap on a photo: a big heart pops up and fades (Instagram). */
   @keyframes heart-pop {
@@ -72,6 +73,12 @@
   @keyframes eq {
     0%, 100% { transform: scaleY(0.35); }
     50% { transform: scaleY(1); }
+  }
+
+  /* "typing…": three dots that rise and brighten one after another (Instagram / KakaoTalk). */
+  @keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+    30% { transform: translateY(-3px); opacity: 1; }
   }
 
   @keyframes ping-soft {
@@ -215,6 +222,63 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/*
+ * The room player's sliders (song position, volume): a slim track filled up to --p in the room's colour (--k),
+ * a white thumb. Native <input type="range">, so keyboard and screen readers work as usual.
+ */
+.room-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  --fill: var(--k, var(--primary));
+}
+.room-range:disabled {
+  cursor: default;
+}
+.room-range::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--fill) var(--p, 0%), var(--muted) var(--p, 0%));
+}
+.room-range::-moz-range-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--muted);
+}
+.room-range::-moz-range-progress {
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--fill);
+}
+.room-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -5px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  transition: transform 0.12s ease-out;
+}
+.room-range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+.room-range:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+.room-range:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 9999px;
 }
 
 /*

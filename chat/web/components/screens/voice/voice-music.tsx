@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useId, useState, type CSSProperties } from 'react'
-import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, SkipForward, Trash2 } from 'lucide-react'
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react'
+import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, Settings, SkipForward, Trash2, Volume1, Volume2, VolumeX } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
 import { thumbnail, videoTitle, youTubeId } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
@@ -27,12 +27,12 @@ const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).
 
 /**
  * "Listen together" outside a music room: the video with its controls, or (hidden) a compact now-playing strip.
- * Hiding only shrinks it: the room's player (room-player.tsx) plays on either way.
+ * Hiding only shrinks it: the room's player (room-player.tsx) plays on either way. `canDJ`: the host or a co-host.
  */
 export function MusicPanel({
   track,
   queue,
-  isHost,
+  canDJ,
   open,
   onOpenChange,
   onQueue,
@@ -40,7 +40,7 @@ export function MusicPanel({
 }: {
   track: VoiceTrack
   queue: VoiceQueueItem[]
-  isHost: boolean
+  canDJ: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
   onQueue: () => void
@@ -51,16 +51,30 @@ export function MusicPanel({
   const player = useRoomPlayer()
   const title = track.title || player?.title || t('voice.ytVideo')
   const upNext = queue.length
-  const playPause = isHost ? (
+  const localPaused = !!player?.localPaused && !track.pausedAt
+  // The host and co-hosts pause the room; anyone else pauses their own screen (the room plays on).
+  const playPause = canDJ ? (
     <Button
       size="icon-sm"
       variant="ghost"
       onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
-      aria-label={track.pausedAt ? t('voice.resume') : t('voice.pause')}
+      aria-label={track.pausedAt ? rt('playAll') : rt('pauseAll')}
+      title={track.pausedAt ? rt('playAll') : rt('pauseAll')}
     >
       {track.pausedAt ? <Play className="size-4.5" aria-hidden /> : <Pause className="size-4.5" aria-hidden />}
     </Button>
+  ) : player && !track.pausedAt ? (
+    <Button
+      size="icon-sm"
+      variant="ghost"
+      onClick={localPaused ? player.play : player.pauseLocal}
+      aria-label={localPaused ? rt('playHere') : rt('pauseHere')}
+      title={localPaused ? rt('playHere') : rt('pauseHere')}
+    >
+      {localPaused ? <Play className="size-4.5" aria-hidden /> : <Pause className="size-4.5" aria-hidden />}
+    </Button>
   ) : null
+  const state = track.pausedAt ? t('voice.pausedByHost') : localPaused ? rt('pausedHere') : null
 
   if (!open)
     return (
@@ -72,7 +86,7 @@ export function MusicPanel({
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">{title}</span>
             <span className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
-              {track.pausedAt ? t('voice.pausedByHost') : (
+              {state ?? (
                 <>
                   <LiveBars className="shrink-0" /> {rt('playing')}
                 </>
@@ -80,7 +94,7 @@ export function MusicPanel({
             </span>
           </span>
         </button>
-        {player?.blocked && !track.pausedAt ? (
+        {player?.blocked && !track.pausedAt && !localPaused ? (
           <Button size="sm" variant="brand" onClick={player.play}>
             <Headphones className="size-4" aria-hidden /> {t('voice.tapToListen')}
           </Button>
@@ -103,15 +117,9 @@ export function MusicPanel({
             <span className="truncate text-sm font-semibold">{title}</span>
           </span>
           <span className="block truncate text-xs text-muted-foreground">
-            {track.pausedAt ? t('voice.pausedByHost') : t('voice.addedBy', { name: track.addedBy })}
+            {state ?? t('voice.addedBy', { name: track.addedBy })}
           </span>
         </span>
-        {playPause}
-        {isHost ? (
-          <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('voice.skip')}>
-            <SkipForward className="size-4.5" aria-hidden />
-          </Button>
-        ) : null}
         <Button size="sm" variant="ghost" onClick={onQueue} className="px-2.5" aria-label={t('voice.upNextN', { n: upNext })}>
           <ListMusic className="size-4.5" aria-hidden />
           <span className="tabular-nums">{upNext}</span>
@@ -120,7 +128,98 @@ export function MusicPanel({
           <ChevronUp className="size-4.5" aria-hidden />
         </Button>
       </div>
+      <PlayerControls track={track} act={act} small />
     </div>
+  )
+}
+
+/**
+ * Under the video: where the song is and what I can do with it. The host and co-hosts play, pause, skip and drag the
+ * song's position for everyone; anyone else sees the position, pauses on their own screen (play again: back where
+ * the room is now). Volume is everyone's own. Quality is YouTube's: its settings gear in the video.
+ */
+export function PlayerControls({ track, act, small, children }: { track: VoiceTrack; act: (a: VoiceAction) => Promise<boolean>; small?: boolean; children?: ReactNode }) {
+  const { t } = useI18n()
+  const { rt } = useRoomT()
+  const player = useRoomPlayer()
+  const can = !!player?.canControl
+  const localPaused = !!player?.localPaused && !track.pausedAt
+  const size = small ? 'icon-sm' : 'icon'
+  const icon = small ? 'size-4.5' : 'size-5'
+  return (
+    <div className="mt-2">
+      <SeekBar track={track} seconds={player?.seconds ?? 0} onSeek={can ? player?.seek : undefined} />
+      <div className="mt-1 flex items-center gap-1.5">
+        {can ? (
+          <>
+            <Button
+              size={size}
+              variant="secondary"
+              onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
+              aria-label={track.pausedAt ? rt('playAll') : rt('pauseAll')}
+              title={track.pausedAt ? rt('playAll') : rt('pauseAll')}
+            >
+              {track.pausedAt ? <Play className={cn(icon, 'fill-current')} aria-hidden /> : <Pause className={cn(icon, 'fill-current')} aria-hidden />}
+            </Button>
+            <Button size={size} variant="brand" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={rt('skipAll')} title={rt('skipAll')}>
+              <SkipForward className={cn(icon, 'fill-current')} aria-hidden />
+            </Button>
+          </>
+        ) : player ? (
+          <Button
+            size={size}
+            variant="secondary"
+            disabled={!!track.pausedAt}
+            onClick={localPaused ? player.play : player.pauseLocal}
+            aria-label={localPaused ? rt('playHere') : rt('pauseHere')}
+            title={track.pausedAt ? t('voice.pausedByHost') : localPaused ? rt('playHere') : rt('pauseHere')}
+          >
+            {localPaused || track.pausedAt ? <Play className={cn(icon, 'fill-current')} aria-hidden /> : <Pause className={cn(icon, 'fill-current')} aria-hidden />}
+          </Button>
+        ) : null}
+        {player ? <VolumeControl /> : null}
+        <span className="min-w-0 flex-1" />
+        {children}
+      </div>
+      <p className="mt-1.5 flex items-center gap-1.5 text-[11px] leading-snug text-muted-foreground">
+        <Settings className="size-3.5 shrink-0" aria-hidden />
+        {can ? rt('djNote') : rt('listenerNote')} {rt('quality')}
+      </p>
+    </div>
+  )
+}
+
+/** My own volume and mute (YouTube's own volume in the video works too; this one is kept for the next room). */
+function VolumeControl() {
+  const { rt } = useRoomT()
+  const player = useRoomPlayer()!
+  const level = player.muted ? 0 : player.volume
+  const Icon = level === 0 ? VolumeX : level < 50 ? Volume1 : Volume2
+  return (
+    <span className="flex items-center gap-0.5">
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        onClick={() => player.setMuted(!player.muted)}
+        aria-label={player.muted ? rt('unmute') : rt('mute')}
+        aria-pressed={player.muted}
+        title={player.muted ? rt('unmute') : rt('mute')}
+      >
+        <Icon className="size-4.5" aria-hidden />
+      </Button>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        step={1}
+        value={level}
+        onChange={(e) => player.setVolume(Number(e.target.value))}
+        aria-label={rt('volume')}
+        dir="ltr"
+        className="room-range w-20 sm:w-24"
+        style={{ '--p': `${level}%`, '--fill': 'var(--foreground)' } as CSSProperties}
+      />
+    </span>
   )
 }
 
@@ -131,23 +230,25 @@ export function MusicPanel({
 export function MusicHero({
   track,
   queue,
-  isHost,
+  canDJ,
   hostName,
   onQueue,
   act,
 }: {
   track: VoiceTrack | null
   queue: VoiceQueueItem[]
-  isHost: boolean
+  canDJ: boolean
   hostName: string
   onQueue: () => void
   act: (a: VoiceAction) => Promise<boolean>
 }) {
   const { t, num, plural } = useI18n()
+  const { rt } = useRoomT()
   const player = useRoomPlayer()
   const ordered = byVotes(queue)
   const title = track ? songOf(track.title) || player?.title || t('voice.ytVideo') : ''
   const artist = track ? artistOf(track.title) || player?.author || '' : ''
+  const localPaused = !!track && !!player?.localPaused && !track.pausedAt
 
   return (
     <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4" style={{ '--k': kindColor('music') } as CSSProperties}>
@@ -158,27 +259,18 @@ export function MusicHero({
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-lg leading-tight font-bold">{title}</h2>
               <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                {[artist, track.pausedAt ? t('voice.pausedByHost') : t('music.dj', { name: hostName })].filter(Boolean).join(' · ')}
+                {[artist, track.pausedAt ? t('voice.pausedByHost') : localPaused ? rt('pausedHere') : t('music.dj', { name: hostName })].filter(Boolean).join(' · ')}
               </p>
             </div>
-            {isHost ? (
-              <div className="flex shrink-0 items-center gap-1.5">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  onClick={() => void act({ type: track.pausedAt ? 'resume' : 'pause' })}
-                  aria-label={track.pausedAt ? t('voice.resume') : t('voice.pause')}
-                >
-                  {track.pausedAt ? <Play className="size-5 fill-current" aria-hidden /> : <Pause className="size-5 fill-current" aria-hidden />}
-                </Button>
-                <Button size="icon" variant="brand" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={t('music.next')} title={t('music.next')}>
-                  <SkipForward className="size-5 fill-current" aria-hidden />
-                </Button>
-              </div>
+            {player?.blocked && !track.pausedAt && !localPaused ? (
+              <Button size="sm" variant="brand" onClick={player.play} className="shrink-0">
+                <Headphones className="size-4" aria-hidden /> {t('voice.tapToListen')}
+              </Button>
             ) : null}
           </div>
-          <Progress track={track} seconds={player?.seconds ?? 0} />
-          <p className="mt-1 text-xs text-muted-foreground">{t('voice.addedBy', { name: track.addedBy })}</p>
+          <PlayerControls track={track} act={act}>
+            <span className="truncate text-xs text-muted-foreground max-sm:hidden">{t('voice.addedBy', { name: track.addedBy })}</span>
+          </PlayerControls>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] px-6 py-8 text-center ring-1 ring-[color-mix(in_srgb,var(--k)_28%,transparent)]">
@@ -188,7 +280,7 @@ export function MusicHero({
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('music.nothingBody')}</p>
           </div>
           <Button variant="brand" onClick={onQueue}>
-            <Plus className="size-4.5" aria-hidden /> {isHost ? t('music.add') : t('music.request')}
+            <Plus className="size-4.5" aria-hidden /> {canDJ ? t('music.add') : t('music.request')}
           </Button>
         </div>
       )}
@@ -221,22 +313,56 @@ export function MusicHero({
   )
 }
 
-/** Where the song is, as a bar and times (the length comes from the player once it has loaded). */
-function Progress({ track, seconds }: { track: VoiceTrack; seconds: number }) {
+/**
+ * Where the song is, as a bar and times (the length comes from the player once it has loaded). With `onSeek` (the
+ * host and co-hosts) the bar is a slider: dragging moves the song for everyone when it's let go.
+ */
+function SeekBar({ track, seconds, onSeek }: { track: VoiceTrack; seconds: number; onSeek?: (seconds: number) => void }) {
+  const { rt } = useRoomT()
   const [, tick] = useState(0)
+  const [drag, setDrag] = useState<number | null>(null)
   useEffect(() => {
     if (track.pausedAt) return
     const id = setInterval(() => tick((x) => x + 1), 1000)
     return () => clearInterval(id)
   }, [track.pausedAt])
+  // A new song (or the room moved meanwhile): a drag in progress for the old one is dropped.
+  useEffect(() => setDrag(null), [track.id])
   const at = seconds ? Math.min(position(track), seconds) : position(track)
+  const shown = drag ?? at
+  const pct = seconds ? Math.min(100, (shown / seconds) * 100) : 0
+  const commit = () => {
+    if (drag === null || !onSeek) return
+    onSeek(drag)
+    setDrag(null)
+  }
   return (
-    <div className="mt-2.5">
-      <div className="h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
-        <div className="h-full rounded-full bg-[var(--k)] transition-[width] duration-1000 ease-linear" style={{ width: seconds ? `${(at / seconds) * 100}%` : '0%' }} />
-      </div>
-      <div className="mt-1 flex justify-between text-[11px] text-muted-foreground tabular-nums" dir="ltr">
-        <span>{mmss(at)}</span>
+    <div style={{ '--p': `${pct}%` } as CSSProperties}>
+      {onSeek && seconds ? (
+        <input
+          type="range"
+          min={0}
+          max={Math.floor(seconds)}
+          step={1}
+          value={Math.floor(shown)}
+          onChange={(e) => setDrag(Number(e.target.value))}
+          onPointerUp={commit}
+          onKeyUp={commit}
+          onBlur={commit}
+          aria-label={rt('seekLabel')}
+          aria-valuetext={`${mmss(shown)} / ${mmss(seconds)}`}
+          dir="ltr"
+          className="room-range block w-full"
+        />
+      ) : (
+        <div className="py-[7.5px]" aria-hidden>
+          <div className="h-[5px] overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-[var(--k)] transition-[width] duration-1000 ease-linear" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+      )}
+      <div className="flex justify-between text-[11px] text-muted-foreground tabular-nums" dir="ltr">
+        <span>{mmss(shown)}</span>
         <span>{seconds ? mmss(seconds) : ''}</span>
       </div>
     </div>
@@ -269,14 +395,15 @@ export function QueueSheet({
   onClose,
   track,
   queue,
-  isHost,
+  canDJ,
   act,
 }: {
   open: boolean
   onClose: () => void
   track: VoiceTrack | null
   queue: VoiceQueueItem[]
-  isHost: boolean
+  /** The host or a co-host: what they add plays (or joins the queue); they play, remove and skip. */
+  canDJ: boolean
   act: (a: VoiceAction) => Promise<boolean>
 }) {
   const { t, plural } = useI18n()
@@ -311,7 +438,7 @@ export function QueueSheet({
     const title = await videoTitle(videoId)
     const ok = await act({ type: 'addTrack', videoId, title })
     setPending(null)
-    if (ok) toast.show(isHost ? t('voice.added') : t('voice.suggested'), 'success')
+    if (ok) toast.show(canDJ ? t('voice.added') : t('voice.suggested'), 'success')
     else {
       // Not added (the reason is in the toast): the link comes back, unless something new was typed meanwhile.
       setLink((now) => (now.trim() ? now : sent))
@@ -327,7 +454,7 @@ export function QueueSheet({
   ) : null
 
   return (
-    <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.musicTitle')} description={isHost ? t('voice.djDesc') : t('voice.suggestDesc')}>
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.musicTitle')} description={canDJ ? t('voice.djDesc') : t('voice.suggestDesc')}>
       <div className="flex flex-col gap-6 p-6 pt-4" style={{ '--k': kindColor('music') } as CSSProperties}>
         <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-l`} className="sr-only">
@@ -351,7 +478,7 @@ export function QueueSheet({
               className="h-11 min-w-0 flex-1"
             />
             <Button type="submit" variant="brand" className="h-11" loading={!!pending} disabled={!link.trim() || !!pending}>
-              {isHost ? t('voice.add') : t('music.request')}
+              {canDJ ? t('voice.add') : t('music.request')}
             </Button>
           </div>
           <p id={`${id}-h`} className={cn('text-xs leading-relaxed', error ? 'font-medium text-destructive' : 'text-muted-foreground')} role={error ? 'alert' : undefined}>
@@ -369,7 +496,7 @@ export function QueueSheet({
         <section className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-semibold">{t('voice.upNext')}</h3>
-            {isHost && ordered.length ? (
+            {canDJ && ordered.length ? (
               <Button size="sm" variant="secondary" onClick={() => void act({ type: 'skip', trackId: track?.id })}>
                 <SkipForward className="size-4" aria-hidden /> {t('music.next')}
               </Button>
@@ -389,7 +516,7 @@ export function QueueSheet({
                     title={q.title || t('voice.ytVideo')}
                     sub={`${t('voice.addedBy', { name: q.addedBy })} · ${plural(q.votes, 'music.votes.one', 'music.votes.other')}`}
                   >
-                    {isHost ? (
+                    {canDJ ? (
                       <>
                         <Button size="icon-sm" variant="ghost" onClick={() => void act({ type: 'removeItem', itemId: q.id })} aria-label={t('voice.remove')}>
                           <Trash2 className="size-4.5" aria-hidden />

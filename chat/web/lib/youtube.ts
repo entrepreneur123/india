@@ -53,6 +53,10 @@ export interface YTPlayer {
   getPlayerState(): number
   getVideoData(): { title?: string; author?: string }
   getDuration(): number
+  /** 0-100; this device only. */
+  setVolume(volume: number): void
+  mute(): void
+  unMute(): void
   destroy(): void
 }
 

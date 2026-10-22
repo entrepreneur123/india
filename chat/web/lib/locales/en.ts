@@ -178,6 +178,14 @@ const en = {
   'bubble.typing': '{name} is typing',
   'bubble.sent': 'Sent',
   'bubble.read': 'Read',
+  // links in chat (the viewer beside the chat)
+  'link.preview': 'Link: {title}, {site}',
+  'link.viewer': 'Web page',
+  'link.reload': 'Reload page',
+  'link.openBrowser': 'Open in browser',
+  'link.close': 'Close page',
+  'link.loading': 'Loading the page…',
+  'link.noFrame': 'This site doesn’t allow being shown inside other apps. Open it in your browser instead.',
 
   'report.title': 'Report {name}',
   'report.desc': 'Reports are anonymous. They won’t know it was you.',

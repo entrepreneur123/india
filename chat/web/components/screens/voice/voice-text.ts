@@ -35,3 +35,10 @@ export function roleLabel(m: VoiceMember, t: T) {
 
 export const memberOf = (room: VoiceRoom, userId: string) => room.members.find((m) => m.profile.id === userId) ?? null
 export const isMod = (m: VoiceMember | null) => m?.role === 'host' || m?.role === 'cohost'
+
+/**
+ * Whether `me` may move `target` off the stage or remove them from the room (036): the host anyone but themself,
+ * a co-host only listeners and speakers. The server checks the same; the sheet hides what it would refuse.
+ */
+export const canManage = (me: VoiceMember | null, target: VoiceMember) =>
+  !!me && me.profile.id !== target.profile.id && target.role !== 'host' && (me.role === 'host' || (me.role === 'cohost' && target.role !== 'cohost'))

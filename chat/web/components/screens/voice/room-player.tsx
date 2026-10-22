@@ -11,8 +11,13 @@ import { cn } from '@/lib/utils'
 /** Where the shared track is now, in seconds (the room stores when it started, not a position). */
 export const position = (tr: VoiceTrack) => Math.max(0, ((tr.pausedAt ?? Date.now()) - tr.startedAt) / 1000)
 const DRIFT_S = 2.5
+/** How often the player is checked against the room (a scrub in YouTube's own controls snaps back by then). */
+const SYNC_MS = 2000
+/** After my own seek for the room, the old position isn't forced back while the room's answer is on its way. */
+const SEEK_HOLD_MS = 3000
 /** A track that should play but hasn't started this long after the player is ready: the browser blocked it. */
 const BLOCKED_MS = 3000
+const VOLUME_KEY = 'yaari_room_volume'
 
 export interface RoomPlayer {
   /** failed: YouTube can't be reached; unavailable: this video won't play embedded (or here). */
@@ -23,8 +28,19 @@ export interface RoomPlayer {
   seconds: number
   /** Should be playing but the browser is holding it back until a tap (autoplay rules). */
   blocked: boolean
-  /** Starts it after that tap. */
+  /** Starts it after that tap; also ends my own pause (back in step with the room). */
   play: () => void
+  /** Paused on this screen only (my button, or YouTube's own controls); the room plays on. */
+  localPaused: boolean
+  pauseLocal: () => void
+  /** This device's volume, 0-100, and mute. */
+  volume: number
+  muted: boolean
+  setVolume: (volume: number) => void
+  setMuted: (muted: boolean) => void
+  /** The host and co-hosts: the song plays from here for everyone. */
+  canControl: boolean
+  seek: (seconds: number) => void
   /** A slot in the room screen shows the video there; with none, it plays on out of sight. */
   dock: (el: HTMLElement) => () => void
 }
@@ -33,21 +49,36 @@ const PlayerContext = createContext<RoomPlayer | null>(null)
 
 export const useRoomPlayer = () => useContext(PlayerContext)
 
+function savedVolume(): { volume: number; muted: boolean } {
+  try {
+    const v = JSON.parse(localStorage.getItem(VOLUME_KEY) ?? 'null') as { volume?: unknown; muted?: unknown } | null
+    const volume = typeof v?.volume === 'number' && v.volume >= 0 && v.volume <= 100 ? Math.round(v.volume) : 100
+    return { volume, muted: v?.muted === true }
+  } catch {
+    return { volume: 100, muted: false }
+  }
+}
+
 /**
  * "Listen together": the room's one YouTube player (youtube-nocookie.com). It lives as long as I'm in the room, not
  * as long as a screen shows it: the room minimised to its bar, the player hidden, another tab open, the music plays
  * on. The iframe sits in a box on <body> that follows the slot the room screen shows it in (moving an iframe in the
  * page would reload it); with no slot it stays rendered, out of sight, so the browser keeps it playing.
+ *
+ * The room's position is the host's and co-hosts' (`canControl`): their play, pause, seek and skip act for everyone.
+ * Everyone may pause on their own screen (resuming goes back to where the room is now), set their own volume, and
+ * pick a quality in YouTube's own settings menu in the video; a scrub in YouTube's own bar snaps back to the room.
  */
 export function RoomPlayerProvider({
   track,
-  isHost,
+  canControl,
   shown,
   act,
   children,
 }: {
   track: VoiceTrack | null
-  isHost: boolean
+  /** The host or a co-host. */
+  canControl: boolean
   /** The room is open full screen (a slot may be on screen). */
   shown: boolean
   act: (a: VoiceAction) => Promise<boolean>
@@ -59,8 +90,8 @@ export function RoomPlayerProvider({
   const loadedId = useRef<string | null>(null)
   const trackRef = useRef(track)
   trackRef.current = track
-  const hostNow = useRef(isHost)
-  hostNow.current = isHost
+  const canRef = useRef(canControl)
+  canRef.current = canControl
   const actRef = useRef(act)
   actRef.current = act
   const [status, setStatus] = useState<RoomPlayer['status']>('loading')
@@ -68,7 +99,34 @@ export function RoomPlayerProvider({
   const [playing, setPlaying] = useState(false)
   const [blocked, setBlocked] = useState(false)
   const [slot, setSlot] = useState<HTMLElement | null>(null)
+  const [localPaused, setLocalPausedState] = useState(false)
+  const localRef = useRef(false)
+  const setLocalPaused = useCallback((on: boolean) => {
+    localRef.current = on
+    setLocalPausedState(on)
+  }, [])
+  const [sound, setSound] = useState(savedVolume)
+  const soundRef = useRef(sound)
+  soundRef.current = sound
+  const seekHold = useRef(0)
   const on = !!track
+
+  /** Plays from where the room is now (or holds still there while the room is paused). */
+  const resync = useCallback((p: YTPlayer, tr: VoiceTrack) => {
+    p.seekTo(position(tr), true)
+    if (tr.pausedAt) p.pauseVideo()
+    else p.playVideo()
+  }, [])
+
+  const applySound = (p: YTPlayer) => {
+    try {
+      p.setVolume(soundRef.current.volume)
+      if (soundRef.current.muted) p.mute()
+      else p.unMute()
+    } catch {
+      /* an old player without these: its own controls still work */
+    }
+  }
 
   // One player while the room has a track; it goes when the music stops or I leave the room.
   useEffect(() => {
@@ -92,24 +150,39 @@ export function RoomPlayerProvider({
           videoId: tr.videoId,
           width: '100%',
           height: '100%',
-          playerVars: { autoplay: tr.pausedAt ? 0 : 1, start: Math.floor(position(tr)), playsinline: 1, rel: 0, origin: location.origin },
+          // YouTube's own controls stay: its settings menu is the only way to pick a quality (the IFrame API's
+          // setPlaybackQuality does nothing any more).
+          playerVars: {
+            autoplay: tr.pausedAt || localRef.current ? 0 : 1, start: Math.floor(position(tr)), playsinline: 1, rel: 0, origin: location.origin,
+          },
           events: {
             onReady: () => {
               if (!alive || !player) return
               playerRef.current = player
+              applySound(player)
               setStatus('ready')
               tell(player)
             },
             onStateChange: (e) => {
               if (!alive || !player) return
+              const now = trackRef.current
               setPlaying(e.data === YT_PLAYING || e.data === YT_BUFFERING)
               if (e.data === YT_PLAYING) {
                 setBlocked(false)
                 tell(player)
+                if (now?.pausedAt) {
+                  // The room is paused: YouTube's own play button doesn't start it on one screen.
+                  player.pauseVideo()
+                } else if (localRef.current && now) {
+                  // My own pause ended from YouTube's own button: back to where the room is.
+                  setLocalPaused(false)
+                  player.seekTo(position(now), true)
+                }
               }
-              // The host's player moves the room on (the server ignores a skip of a track that already changed).
-              const tr = trackRef.current
-              if (e.data === YT_ENDED && hostNow.current && tr) void actRef.current({ type: 'skip', trackId: tr.id })
+              // Paused while the room plays: by YouTube's own button (or the phone), so on this screen only.
+              if (e.data === YT_PAUSED && now && !now.pausedAt) setLocalPaused(true)
+              // A host's or co-host's player moves the room on (the server ignores a skip of a track that already changed).
+              if (e.data === YT_ENDED && canRef.current && now) void actRef.current({ type: 'skip', trackId: now.id })
             },
             onError: () => alive && setStatus('unavailable'),
           },
@@ -130,9 +203,10 @@ export function RoomPlayerProvider({
       }
       if (hostRef.current) hostRef.current.textContent = ''
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [on])
 
-  // Follow the room: a new track, the host pausing or resuming.
+  // Follow the room: a new track, a pause, a resume or a seek by the host or a co-host.
   useEffect(() => {
     const p = playerRef.current
     if (!p || status !== 'ready' || !track) return
@@ -140,33 +214,52 @@ export function RoomPlayerProvider({
       loadedId.current = track.videoId
       setMeta({ title: '', author: '', seconds: 0 })
       p.loadVideoById({ videoId: track.videoId, startSeconds: position(track) })
-      if (track.pausedAt) p.pauseVideo()
+      if (track.pausedAt || localRef.current) p.pauseVideo()
       return
     }
+    if (localRef.current) return // paused here: catches up when I resume
     if (Math.abs(p.getCurrentTime() - position(track)) > DRIFT_S) p.seekTo(position(track), true)
     if (track.pausedAt) p.pauseVideo()
     else if (p.getPlayerState() === YT_PAUSED) p.playVideo()
   }, [status, track?.videoId, track?.startedAt, track?.pausedAt, track])
 
-  // Stay in step with everyone while playing (a slow phone or a buffering pause drifts behind).
+  // Stay in step with everyone (a slow phone or a buffering pause drifts behind; a scrub in YouTube's own bar
+  // jumps away): back to the room's position. Not while paused here.
   useEffect(() => {
     if (status !== 'ready') return
     const id = setInterval(() => {
       const p = playerRef.current
       const tr = trackRef.current
-      if (p && tr && !tr.pausedAt && p.getPlayerState() === YT_PLAYING && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S)
+      if (!p || !tr || localRef.current || Date.now() < seekHold.current) return
+      const state = p.getPlayerState()
+      if (tr.pausedAt) {
+        if (state === YT_PLAYING) p.pauseVideo()
+        if (state === YT_PAUSED && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S) p.seekTo(position(tr), true)
+      } else if (state === YT_PLAYING && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S) {
         p.seekTo(position(tr), true)
-    }, 5000)
+      }
+    }, SYNC_MS)
     return () => clearInterval(id)
   }, [status])
 
-  // Ready, meant to play, still silent a moment later: the browser wants a tap first.
+  // Ready, meant to play, still silent a moment later: the browser wants a tap first (not when I paused it).
   const paused = !!track?.pausedAt
   useEffect(() => {
-    if (status !== 'ready' || paused || playing) return setBlocked(false)
+    if (status !== 'ready' || paused || playing || localPaused) return setBlocked(false)
     const id = setTimeout(() => setBlocked(true), BLOCKED_MS)
     return () => clearTimeout(id)
-  }, [status, paused, playing, track?.id])
+  }, [status, paused, playing, localPaused, track?.id])
+
+  // My volume, kept for the next room too.
+  useEffect(() => {
+    const p = playerRef.current
+    if (p && status === 'ready') applySound(p)
+    try {
+      localStorage.setItem(VOLUME_KEY, JSON.stringify(sound))
+    } catch {
+      /* private mode: it lasts for this visit */
+    }
+  }, [sound, status])
 
   // The box follows its slot every frame while one is on screen (the room's top scrolls, the stage opens and
   // closes): same place and size, clipped to whatever scrolls around it. Otherwise it waits out of sight.
@@ -216,14 +309,32 @@ export function RoomPlayerProvider({
   const play = useCallback(() => {
     const p = playerRef.current
     const tr = trackRef.current
-    if (!p || !tr) return
-    p.seekTo(position(tr), true)
-    p.playVideo()
+    setLocalPaused(false)
+    if (p && tr) resync(p, tr)
+  }, [resync, setLocalPaused])
+  const pauseLocal = useCallback(() => {
+    setLocalPaused(true)
+    playerRef.current?.pauseVideo()
+  }, [setLocalPaused])
+  const setVolume = useCallback((volume: number) => setSound({ volume: Math.max(0, Math.min(100, Math.round(volume))), muted: volume <= 0 }), [])
+  const setMuted = useCallback((muted: boolean) => setSound((s) => ({ volume: !muted && s.volume === 0 ? 50 : s.volume, muted })), [])
+  const seek = useCallback((seconds: number) => {
+    const tr = trackRef.current
+    if (!canRef.current || !tr) return
+    const at = Math.max(0, seconds)
+    seekHold.current = Date.now() + SEEK_HOLD_MS
+    playerRef.current?.seekTo(at, true) // at once here; everyone else follows the room's change
+    void actRef.current({ type: 'seek', ms: at * 1000 }).then((ok) => {
+      if (!ok) seekHold.current = 0 // refused: back in step with the room on the next check
+    })
   }, [])
 
   const api = useMemo<RoomPlayer>(
-    () => ({ status, ...meta, blocked, play, dock }),
-    [status, meta, blocked, play, dock],
+    () => ({
+      status, ...meta, blocked, play, localPaused, pauseLocal, volume: sound.volume, muted: sound.muted, setVolume, setMuted,
+      canControl, seek, dock,
+    }),
+    [status, meta, blocked, play, localPaused, pauseLocal, sound, setVolume, setMuted, canControl, seek, dock],
   )
 
   return (

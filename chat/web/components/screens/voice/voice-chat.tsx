@@ -14,12 +14,13 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { IcebreakerIcon, PollIcon, topicColor } from '@/components/ui/topic-icons'
-import { Bubble, MediaBubble, MetaSpacer } from '@/components/screens/chat/message-bubble'
+import { Bubble, MediaBubble, MetaSpacer, TypingDots } from '@/components/screens/chat/message-bubble'
+import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
 import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
-import { isMod, systemText } from './voice-text'
+import { isMod, memberOf, roleLabel, systemText } from './voice-text'
 
 /** A steady colour per person, like names in a group chat. */
 function nameColor(id: string) {
@@ -69,6 +70,18 @@ export function VoiceChat({
   const lastSystem = [...(lines ?? [])].reverse().find((l) => l.kind === 'system')
   const lastIcebreaker = [...(lines ?? [])].reverse().find((l) => l.kind === 'icebreaker')?.id
   const quiet = !!lines && !lines.some((l) => l.kind !== 'system')
+  const room = s.room
+
+  // The list gets shorter (the typing row, the phone's keyboard, the stage opening): the newest line stays in view.
+  useEffect(() => {
+    const el = listRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => {
+      if (stick.current) el.scrollTop = el.scrollHeight
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   useLayoutEffect(() => {
     const el = listRef.current
@@ -109,16 +122,21 @@ export function VoiceChat({
   const sent = (line: Sent, grouped: boolean) => {
     const meta = clock(line.at)
     const toMe = line.kind === 'text' && !line.fromMe ? mentionRanges(line.text, meName) : []
+    const sender = room ? memberOf(room, line.sender.id) : null
+    const role = sender ? roleLabel(sender, t) : null
     const name =
       line.fromMe || grouped ? null : (
-        <button
-          type="button"
-          onClick={() => onPerson(line.sender.id)}
-          className={cn('block max-w-full truncate text-[12.5px] leading-5 font-semibold hover:underline', line.kind === 'photo' && 'px-1.5')}
-          style={{ color: nameColor(line.sender.id) }}
-        >
-          {line.sender.name}
-        </button>
+        <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind === 'photo' && 'px-1.5')}>
+          <button
+            type="button"
+            onClick={() => onPerson(line.sender.id)}
+            className="block min-w-0 truncate text-[12.5px] leading-5 font-semibold hover:underline"
+            style={{ color: nameColor(line.sender.id) }}
+          >
+            {line.sender.name}
+          </button>
+          {role ? <RoleBadge role={sender!.role} label={role} /> : null}
+        </span>
       )
     return (
       <SwipeRow
@@ -151,9 +169,10 @@ export function VoiceChat({
           >
             {name}
             {line.reply ? <Quote reply={line.reply} rt={rt} meId={s.room?.meId} onShow={() => showOriginal(line.reply!.id)} /> : null}
+            <LinkPreview text={line.text} className="mb-1 w-64 max-w-full" />
             <p className="relative text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
               {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
-              {withMentions(line.text, toMe)}
+              <LinkText text={line.text} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
               <MetaSpacer>{meta}</MetaSpacer>
               <span className="absolute right-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
             </p>
@@ -229,6 +248,7 @@ export function VoiceChat({
           </li>
         ) : null}
       </ol>
+      <TypingRow ids={s.typing} s={s} />
       <AnimatePresence>
         {unseen > 0 ? (
           <m.button
@@ -238,7 +258,7 @@ export function VoiceChat({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-3 left-1/2 flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-e3"
+            className="absolute bottom-12 left-1/2 flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-e3"
           >
             <ArrowDown className="size-4" aria-hidden /> {t('voice.newMessages')}
           </m.button>
@@ -249,6 +269,68 @@ export function VoiceChat({
         {lastSystem?.kind === 'system' ? systemText(lastSystem, t) : ''}
       </p>
     </section>
+  )
+}
+
+/** The mention ranges that fall in one part of the text (from `offset`, `length` long), relative to that part. */
+function within(ranges: [number, number][], offset: number, length: number): [number, number][] {
+  return ranges.flatMap(([a, b]): [number, number][] => {
+    const from = Math.max(a, offset) - offset
+    const to = Math.min(b, offset + length) - offset
+    return to > from ? [[from, to]] : []
+  })
+}
+
+/** "Host" / "Co-host" next to a name in the chat. */
+function RoleBadge({ role, label }: { role: string; label: string }) {
+  return (
+    <span
+      className={cn(
+        'shrink-0 rounded-full px-1.5 py-px text-[9.5px] leading-tight font-bold tracking-wide uppercase',
+        role === 'host' ? 'bg-primary text-primary-foreground' : 'bg-primary-soft text-primary-text',
+      )}
+    >
+      {label}
+    </span>
+  )
+}
+
+/**
+ * "Asha is typing…" / "3 people are typing…" under the chat, with the three dots in a little bubble (Instagram,
+ * KakaoTalk). The names are the room's own (the member list), never what a signal claimed. Reserved height, so the
+ * chat doesn't jump when it comes and goes.
+ */
+function TypingRow({ ids, s }: { ids: string[]; s: VoiceSession }) {
+  const { num } = useI18n()
+  const { rt } = useRoomT()
+  const room = s.room
+  const people = room ? ids.flatMap((id) => memberOf(room, id) ?? []) : []
+  const text = people.length === 0 ? '' : people.length === 1 ? rt('typingOne', { name: people[0].profile.name }) : rt('typingMany', { n: num(people.length) })
+  return (
+    <div className="relative h-8 shrink-0 px-3" aria-live="polite" aria-atomic>
+      <AnimatePresence>
+        {people.length ? (
+          <m.div
+            key="typing"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ type: 'tween', duration: 0.16, ease: [0.2, 0, 0, 1] }}
+            className="flex h-full min-w-0 items-center gap-2"
+          >
+            <span className="flex shrink-0 -space-x-1.5" aria-hidden>
+              {people.slice(0, 3).map((p) => (
+                <Avatar key={p.profile.id} name={p.profile.name} src={p.profile.photoUrl} size={20} className="rounded-full ring-2 ring-background" />
+              ))}
+            </span>
+            <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-bl-sm bg-bubble-in px-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]" aria-hidden>
+              <TypingDots />
+            </span>
+            <span className="min-w-0 truncate text-xs text-muted-foreground">{text}</span>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
   )
 }
 
@@ -578,12 +660,15 @@ export function VoiceComposer({
   onIcebreaker,
   onPoll,
   onMenu,
+  onTyping,
   members,
   reply,
   onCancelReply,
   className,
 }: {
   onSend: (text: string) => Promise<boolean>
+  /** The text changed (tells the room I'm writing; the session sends it at most every few seconds). */
+  onTyping?: () => void
   /** Checks the photo on this device, then sends it; false when it wasn't sent. */
   onPhoto?: (photo: File) => Promise<boolean>
   /** Posts a question card. */
@@ -828,6 +913,7 @@ export function VoiceComposer({
           onChange={(e) => {
             setText(e.target.value)
             setCaret(e.target.selectionStart ?? e.target.value.length)
+            if (e.target.value.trim()) onTyping?.()
           }}
           onSelect={(e) => setCaret(e.currentTarget.selectionStart ?? 0)}
           onKeyDown={(e) => {

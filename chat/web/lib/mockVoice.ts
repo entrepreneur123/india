@@ -194,6 +194,7 @@ export class VoiceSim {
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: index === 8 && mode === 'approval' })),
       track: null,
       queue: [],
+      stage: null,
     }
     if (music) {
       room.track = this.track(music.playing, host.name, Date.now() - music.ago)
@@ -343,6 +344,7 @@ export class VoiceSim {
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: false })),
       track: null,
       queue: [],
+      stage: null,
     }
     const r = this.sim(room, [], true)
     this.rooms.set(id, r)
@@ -647,7 +649,11 @@ export class VoiceSim {
       const reply = roll < 0.2 && recent.length ? replyOf(pick(recent) as Extract<VoiceLine, { kind: 'text' }>) : null
       const toMe = !reply && roll < 0.28 && me && this.meMember(r)
       const text = reply ? pick(REPLIES) : toMe ? pick(TO_ME).replace('{me}', me.name) : this.chatLine(r.room.category, sender)
-      this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text, at: Date.now(), reply })
+      // They type for a moment first (the room's typing dots).
+      this.emit(r, { type: 'typing', userId: sender.id, name: sender.name })
+      this.later(r, 1800, () => {
+        if (r.room.members.some((m) => m.profile === sender)) this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text, at: Date.now(), reply })
+      })
     })
     // An open poll here gets votes from people in the room.
     this.every(r, 4000, 9000, () => {
@@ -816,7 +822,8 @@ export class VoiceSim {
         break
       }
       case 'toAudience':
-        need(isMod && !!target && target.seat !== null && target.role !== 'host')
+        // 036: a co-host moves listeners and speakers, not the host or another co-host.
+        need(isMod && !!target && target.seat !== null && target.role !== 'host' && (isHost || target.role !== 'cohost'))
         target!.seat = null
         if (target!.role === 'speaker') target!.role = 'listener'
         this.system(r, 'audience', target!.profile.name)
@@ -835,19 +842,19 @@ export class VoiceSim {
         if (a.on) this.system(r, 'cohost', target!.profile.name)
         break
       case 'kick':
-        need(isHost && !!target && target.role !== 'host')
+        need(isMod && !!target && target.role !== 'host' && (isHost || target.role !== 'cohost'))
         r.room.members = r.room.members.filter((m) => m !== target)
         this.system(r, 'removed', target!.profile.name)
         break
       case 'addTrack': {
         const title = a.title || (TRACKS[a.videoId]?.title ?? '')
-        if (isHost && !r.room.track) {
+        if (isMod && !r.room.track) {
           r.room.track = this.track(a.videoId, me.profile.name)
           this.system(r, 'track', me.profile.name, { title })
           break
         }
         if (r.room.queue.length >= 30) throw new BackendError('queue_full')
-        if (!isHost && r.room.queue.filter((q) => q.addedBy === me.profile.name).length >= 3) throw new BackendError('slow_down')
+        if (!isMod && r.room.queue.filter((q) => q.addedBy === me.profile.name).length >= 3) throw new BackendError('slow_down')
         const item: VoiceQueueItem = { id: uid(), videoId: a.videoId, title, addedBy: me.profile.name, votes: 0, voted: false }
         r.room.queue.push(item)
         // People in the room like it: a couple of votes arrive.
@@ -868,7 +875,7 @@ export class VoiceSim {
         break
       }
       case 'play': {
-        need(isHost)
+        need(isMod)
         const i = r.room.queue.findIndex((q) => q.id === a.itemId)
         need(i >= 0)
         const [item] = r.room.queue.splice(i, 1)
@@ -877,25 +884,36 @@ export class VoiceSim {
         break
       }
       case 'removeItem':
-        need(isHost)
+        need(isMod)
         r.room.queue = r.room.queue.filter((q) => q.id !== a.itemId)
         break
       case 'pause':
-        need(isHost && !!r.room.track && !r.room.track.pausedAt)
+        need(isMod && !!r.room.track && !r.room.track.pausedAt)
         r.room.track!.pausedAt = Date.now()
         break
       case 'resume': {
-        need(isHost && !!r.room.track?.pausedAt)
+        need(isMod && !!r.room.track?.pausedAt)
         const t = r.room.track!
         t.startedAt += Date.now() - t.pausedAt!
         t.pausedAt = null
         break
       }
       case 'skip':
-        need(isHost)
+        need(isMod)
         if (a.trackId && r.room.track?.id !== a.trackId) return // that track already moved on
         this.skip(r)
         return
+      case 'seek': {
+        const t = r.room.track
+        need(isMod && !!t && a.ms >= 0 && a.ms <= 86_400_000)
+        t!.startedAt = (t!.pausedAt ?? Date.now()) - a.ms
+        break
+      }
+      case 'shareLink':
+        need(isMod)
+        if (a.url !== null && !(a.url.startsWith('https://') && a.url.length <= 500)) throw new BackendError('bad_request')
+        r.room.stage = a.url === null ? null : { url: a.url, title: a.title?.trim() || null, by: me.profile.name, byId: me.profile.id, at: Date.now() }
+        break
     }
     this.changed(r)
   }
