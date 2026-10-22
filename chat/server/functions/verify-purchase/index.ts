@@ -84,7 +84,8 @@ Deno.serve(async (req) => {
 
   if (look || pass) {
     // Asked of Play every time (a retry too), so a purchase whose acknowledgement was lost still gets one: Play refunds
-    // unacknowledged purchases after 3 days. redeem_cosmetic is idempotent ('already' for the same person).
+    // unacknowledged purchases after 3 days. redeem_cosmetic and redeem_handle_pass are idempotent ('already' for the
+    // same person).
     const r = await fetch(`${api}/products/${product_id}/tokens/${tok}`, { headers: auth });
     if (!r.ok) return json(402, { error: `play_${r.status}` });
     const p = await r.json();

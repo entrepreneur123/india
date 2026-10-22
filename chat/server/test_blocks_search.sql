@@ -82,7 +82,7 @@ select pg_temp.check(public.redeem_handle_pass('eeeeeeee-0000-0000-0000-00000000
 
 -- Delete and sign up again with the same number: gender and birth date come back.
 select public.remember_ban('eeeeeeee-0000-0000-0000-000000004202');
-delete from auth.users where id = 'eeeeeeee-0000-0000-0000-000000004202';
+update auth.users set phone = null where id = 'eeeeeeee-0000-0000-0000-000000004202'; -- as if deleted: the number is free again
 insert into auth.users (id, aud, role, phone) values ('eeeeeeee-0000-0000-0000-000000004204', 'authenticated', 'authenticated', '919855574202');
 insert into public.profiles (id, name, gender, birth_date) values ('eeeeeeee-0000-0000-0000-000000004204', 'Ravi', 'female', '1980-05-05');
 select pg_temp.check((select gender = 'male' and birth_date = '1999-01-01' from public.profiles where id = 'eeeeeeee-0000-0000-0000-000000004204'), 'kept with the number');

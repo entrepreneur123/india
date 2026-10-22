@@ -2,7 +2,7 @@
 -- 2. Find people by ID: prefix search; a person found this way can be viewed and asked for friendship (can_view)
 --    for a day. At most 600 people found per hour, against scraping.
 -- 3. Gender and date of birth stay with the phone number: deleting the account and signing up again with the same
---    number gets them back (kept 1 year as a salted hash of the number). Country already comes from the number
+--    number gets them back (a salted hash of the number; used for a year after the deletion, older rows are ignored). Country already comes from the number
 --    (007) or the ID document (035); none of the three can be edited (no column grant).
 -- 4. ID changes: once every 30 days; sooner with a paid "ID change" (Play consumable handle_change, one per change).
 
@@ -85,7 +85,6 @@ create or replace function public.remember_ban(uid uuid) returns void language s
     from auth.users u join public.profiles p on p.id = u.id
    where u.id = uid and p.banned_until > now() and u.phone is not null
   on conflict (phone_hash) do update set banned_until = greatest(public.banned_phones.banned_until, excluded.banned_until);
-  delete from public.phone_identities where saved_at < now() - interval '1 year';
   insert into public.phone_identities (phone_hash, gender, birth_date)
   select public.phone_hash(u.phone), p.gender, p.birth_date
     from auth.users u join public.profiles p on p.id = u.id where u.id = uid and u.phone is not null
