@@ -205,8 +205,8 @@ object Flavor {
 
         // Adaptive stream: the receiver gets a resolution that fits its view and network.
         // Dynacast: layers nobody watches are not sent. Both matter on Indian mobile networks.
-        // Audio: LiveKit's call mode (MODE_IN_COMMUNICATION, so the phone's echo canceller runs), speaker unless a
-        // Bluetooth or wired headset is in; WebRTC echo cancellation, noise suppression and auto gain on.
+        // Audio: LiveKit's call mode (MODE_IN_COMMUNICATION), speaker unless a Bluetooth or wired headset is in;
+        // WebRTC's own echo cancellation and noise suppression (callAudio), auto gain on.
         // Video: front camera 720p, VP8 (hardware encoder on most phones, software otherwise) with simulcast layers.
         val room = remember(token) {
             LiveKit.create(

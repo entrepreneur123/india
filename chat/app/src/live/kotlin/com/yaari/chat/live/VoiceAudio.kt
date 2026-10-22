@@ -46,16 +46,16 @@ class VoiceAudio(private val context: Context, private val scope: CoroutineScope
         fun gone(removed: Boolean)
     }
 
-    // Call audio mode (MODE_IN_COMMUNICATION: the phone's echo canceller runs), speaker unless a headset is in, WebRTC
-    // echo cancellation / noise suppression / auto gain on. Speech: Opus mono capped at 24 kbps (a listener on 4G
-    // downloads one stream per speaker), DTX so silence costs nothing, RED so a lost packet is covered by the next.
+    // Call audio mode (MODE_IN_COMMUNICATION), speaker unless a headset is in, WebRTC echo cancellation / noise
+    // suppression / auto gain on (callAudio). Opus mono capped at 48 kbps, as in 1:1 calls (24 kbps sounded muffled
+    // next to Discord or X Spaces); DTX so silence costs nothing, RED so a lost packet is covered by the next.
     private val room: Room = LiveKit.create(
         context.applicationContext,
         options = RoomOptions(
             adaptiveStream = false,
             dynacast = false,
             audioTrackCaptureDefaults = LocalAudioTrackOptions(noiseSuppression = true, echoCancellation = true, autoGainControl = true),
-            audioTrackPublishDefaults = AudioTrackPublishDefaults(audioBitrate = AudioPresets.SPEECH.maxBitrate, dtx = true, red = true),
+            audioTrackPublishDefaults = AudioTrackPublishDefaults(audioBitrate = AudioPresets.MUSIC.maxBitrate, dtx = true, red = true),
         ),
         overrides = callAudio,
     )

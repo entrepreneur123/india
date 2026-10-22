@@ -47,9 +47,9 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     adaptiveStream: false,
     dynacast: false,
     audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-    // Speech: Opus mono capped at 24 kbps (a listener on 4G downloads one stream per speaker), DTX so silence costs
-    // nothing, RED so a lost packet is covered by the next one.
-    publishDefaults: { audioPreset: AudioPresets.speech, dtx: true, red: true, forceStereo: false },
+    // Opus mono capped at 48 kbps, as in 1:1 calls (24 kbps sounded muffled next to Discord or X Spaces); DTX so
+    // silence costs nothing (a listener downloads only the people talking), RED so a lost packet is covered by the next.
+    publishDefaults: { audioPreset: AudioPresets.music, dtx: true, red: true, forceStereo: false },
   })
   // createAudioAnalyser opens a new AudioContext per track. On iPhone/iPad that context (44.1 kHz next to WebRTC's
   // 48 kHz, and one per speaker) can make the whole room crackle or sound metallic, and on Android phones it opens a
