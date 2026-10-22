@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Erlaube Kamera und Mikrofon, um den Anruf zu starten</string>
+    <string name="connecting">Verbinde…</string>
+    <string name="waiting_video">Warte auf das Video von %1$s…</string>
+    <string name="reconnecting">Verbindung wird wiederhergestellt…</string>
+    <string name="call_failed">Der Anruf konnte nicht verbunden werden. Tippe auf Beenden und versuch es noch mal.</string>
+    <string name="video_checking">Sicherheitscheck…</string>
+    <string name="video_hidden_title">Video ausgeblendet</string>
+    <string name="video_hidden_body">Es zeigt möglicherweise Nacktheit, was nicht erlaubt ist. Wir haben unser Sicherheitsteam informiert.</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="call_dropped">Der Anruf ist abgebrochen. Tippe auf Beenden und versuch es noch mal.</string>
+    <string name="partner_lost">Die Verbindung von %1$s ist abgebrochen. Wir warten…</string>
+    <string name="partner_paused">Das Video von %1$s ist pausiert: das Netz ist zu langsam</string>
+    <string name="partner_cam_off">%1$s hat die Kamera ausgeschaltet</string>
+    <string name="partner_weak">Die Verbindung von %1$s ist schwach</string>
+    <string name="net_good">Deine Verbindung: stark</string>
+    <string name="net_ok">Deine Verbindung: okay</string>
+    <string name="net_poor">Deine Verbindung: schwach</string>
+    <string name="device_busy">Deine Kamera oder dein Mikrofon wird von einer anderen App genutzt</string>
+    <string name="cam_blocked">Kamera nicht erlaubt. Man kann dich trotzdem hören. Tippe, um die Einstellungen zu öffnen</string>
+</resources>

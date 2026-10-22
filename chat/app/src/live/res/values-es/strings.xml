@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Permite la cámara y el micrófono para iniciar la llamada</string>
+    <string name="connecting">Conectando…</string>
+    <string name="waiting_video">Esperando el video de %1$s…</string>
+    <string name="reconnecting">Reconectando…</string>
+    <string name="call_failed">No se pudo conectar la llamada. Toca Colgar e inténtalo de nuevo.</string>
+    <string name="video_checking">Control de seguridad…</string>
+    <string name="video_hidden_title">Video oculto</string>
+    <string name="video_hidden_body">Puede mostrar desnudos, algo que no está permitido. Avisamos a nuestro equipo de seguridad.</string>
+    <string name="open_settings">Abrir ajustes</string>
+    <string name="call_dropped">Se cortó la llamada. Toca Colgar e inténtalo de nuevo.</string>
+    <string name="partner_lost">Se cortó la conexión de %1$s. Esperando…</string>
+    <string name="partner_paused">El video de %1$s está en pausa: su red es muy lenta</string>
+    <string name="partner_cam_off">%1$s apagó su cámara</string>
+    <string name="partner_weak">La conexión de %1$s es débil</string>
+    <string name="net_good">Tu conexión: buena</string>
+    <string name="net_ok">Tu conexión: regular</string>
+    <string name="net_poor">Tu conexión: débil</string>
+    <string name="device_busy">Otra app está usando tu cámara o micrófono</string>
+    <string name="cam_blocked">Cámara no permitida. Aun así pueden oírte. Toca para abrir los ajustes</string>
+</resources>
