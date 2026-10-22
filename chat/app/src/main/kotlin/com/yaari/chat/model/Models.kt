@@ -52,6 +52,11 @@ data class Profile(
     val photos: List<ProfilePhoto> = emptyList(),
     /** Cover, colour, status, languages and prompts (033); empty when not loaded for this card. */
     val style: ProfileStyle = ProfileStyle(),
+    /**
+     * ID verified (035): known from feed and comment authors and my own profile; elsewhere the badge comes from a
+     * batched trust() lookup (see TrustController), so false here only means "not known from this card".
+     */
+    val verified: Boolean = false,
 )
 
 enum class MediaKind { IMAGE, VIDEO }

@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -124,6 +125,7 @@ class FeedScreensTest {
         shot("06_my_profile")
         compose.onNode(hasScrollAction()).performScrollToNode(hasText("Sinhagad", substring = true))
         shot("07_my_prompts")
+        compose.onNode(hasScrollAction()).performScrollToIndex(0) // the cover's button (0.12.0's cards push the prompts lower)
         compose.onAllNodes(hasText("Customise")).onFirst().performClick()
         waitFor("Profile colour")
         shot("08_editor")

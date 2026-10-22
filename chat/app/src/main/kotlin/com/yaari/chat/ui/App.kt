@@ -110,18 +110,25 @@ fun YaariApp(vm: AppViewModel, online: StateFlow<Boolean> = Connectivity.online)
             vm.consumeNotice()
         }
     }
-    Surface(Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize()) {
-            // Slim and informative only: every screen stays usable, and the requests retry by themselves.
-            // The banner takes the status bar area, so the screen below does not pad for it a second time.
-            if (!connected) OfflineBanner()
-            Box(Modifier.weight(1f).then(if (connected) Modifier else Modifier.consumeWindowInsets(WindowInsets.statusBars))) {
-                Screens(vm, s)
+    // Every name on screen can show its verified seal (one batched trust() lookup for all of them).
+    CompositionLocalProvider(LocalTrust provides vm.trust) {
+        Box(Modifier.fillMaxSize()) {
+            Surface(Modifier.fillMaxSize()) {
+                Column(Modifier.fillMaxSize()) {
+                    // Slim and informative only: every screen stays usable, and the requests retry by themselves.
+                    // The banner takes the status bar area, so the screen below does not pad for it a second time.
+                    if (!connected) OfflineBanner()
+                    Box(Modifier.weight(1f).then(if (connected) Modifier else Modifier.consumeWindowInsets(WindowInsets.statusBars))) {
+                        Screens(vm, s)
+                    }
+                }
             }
+            // "Verify your identity" over everything, the manners sheets.
+            s.me?.takeIf { !s.booting }?.let { me -> TrustLayer(vm, me) }
         }
+        s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
+        s.me?.takeIf { !s.booting }?.let { me -> SocialLayer(vm, me) }
     }
-    s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
-    s.me?.takeIf { !s.booting }?.let { me -> SocialLayer(vm, me) }
 }
 
 /**

@@ -514,10 +514,14 @@ private fun SeatPerson(member: VoiceMember, px: Dp, levels: State<Map<String, Fl
                 }
             }
         }
-        Text(
-            member.profile.name, Modifier.padding(top = 6.dp), maxLines = 1, overflow = TextOverflow.Ellipsis,
-            style = (if (wide) MaterialTheme.typography.titleSmall else MaterialTheme.typography.labelMedium).copy(fontWeight = FontWeight.SemiBold),
-        )
+        Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                member.profile.name, Modifier.weight(1f, fill = false), maxLines = 1, overflow = TextOverflow.Ellipsis,
+                style = (if (wide) MaterialTheme.typography.titleSmall else MaterialTheme.typography.labelMedium).copy(fontWeight = FontWeight.SemiBold),
+            )
+            // Everyone on the stage at once: one batched trust() lookup.
+            VerifiedMark(member.profile, Modifier.padding(start = 3.dp), size = if (wide) 15.dp else 12.dp)
+        }
         role?.let { RoleBadge(it) }
     }
 }

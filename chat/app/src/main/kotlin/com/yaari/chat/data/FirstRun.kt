@@ -5,13 +5,19 @@ import androidx.core.content.edit
 
 /**
  * First-run steps, each shown once on this phone: the interests question, the three-card tour, the notifications
- * permission (after the first friend). Kept in the app's settings, like the language on Android 12 and older.
+ * permission (after the first friend), the identity check after sign-up. Kept in the app's settings, like the language on Android 12 and older.
  */
 interface FirstRun {
     fun done(step: Step): Boolean
     fun mark(step: Step)
 
-    enum class Step(val key: String) { INTERESTS("interests_asked"), TOUR("tour_seen"), NOTIFICATIONS("notifications_asked") }
+    enum class Step(val key: String) {
+        INTERESTS("interests_asked"), TOUR("tour_seen"), NOTIFICATIONS("notifications_asked"),
+        /** The identity check offered after sign-up. */
+        VERIFY("verify_offered"),
+        /** The server said identity checks aren't open yet: the app stops inviting so loudly. */
+        KYC_SOON("kyc_coming_soon"),
+    }
 
     /** Everything already seen: nothing first-run shows (tests and previews). */
     object Seen : FirstRun {

@@ -26,6 +26,10 @@ import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.LikeState
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfileStyle
+import com.yaari.chat.model.KycResult
+import com.yaari.chat.model.MannerTag
+import com.yaari.chat.model.MyTrust
+import com.yaari.chat.model.Trust
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -257,4 +261,23 @@ interface Backend {
     suspend fun removeComment(commentId: Long)
     suspend fun reportPost(postId: String, reason: ReportReason)
     suspend fun reportComment(commentId: Long, reason: ReportReason)
+
+    // ---- Real identities and manners (035_identity_manners.sql, functions/kyc) ----
+
+    /**
+     * Starts an identity check (ID document + liveness selfie + face match, the provider's hosted page): returns the
+     * page to open. Refused with already_verified, slow_down (5 a day), kyc_unavailable (no provider yet), kyc_failed.
+     */
+    suspend fun kycStart(): String
+    /** Reads my latest check back from the provider and applies it; [KycResult.NONE] when I never started one. */
+    suspend fun kycCheck(): KycResult
+    /** My badges, whether verification is required, my latest attempt and the chats I rated today. */
+    suspend fun myTrust(): MyTrust
+    /** Badges of up to 100 people I may see (others are left out). */
+    suspend fun trust(userIds: List<String>): List<Trust>
+    /**
+     * Rates a random chat once after it ended (both wrote, within a day): [tags] up to [MannerTag.MAX], all good or all
+     * bad as [good]. Refused with not_found, not_allowed, too_late, already_rated, bad_request.
+     */
+    suspend fun rateChat(matchId: String, good: Boolean, tags: List<MannerTag>)
 }

@@ -124,6 +124,7 @@ private fun PersonLine(m: VoiceMember, onClick: () -> Unit, trailing: @Composabl
             Column(Modifier.padding(start = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(m.profile.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.sp), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+                    VerifiedMark(m.profile, size = 15.dp)
                     when (m.role) {
                         VoiceRole.HOST -> RoleBadge(stringResource(R.string.voice_host))
                         VoiceRole.COHOST -> RoleBadge(stringResource(R.string.voice_cohost))

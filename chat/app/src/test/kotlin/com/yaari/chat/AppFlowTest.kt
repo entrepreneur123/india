@@ -139,6 +139,10 @@ class AppFlowTest {
         waitFor("Leave this chat?")
         shot("10_exit_choice")
         compose.onNodeWithText("Back to lobby").performClick()
+        // Both wrote: how was it? (0.12.0 manners) Skipped here; TrustScreensTest rates.
+        waitFor("How was your chat with")
+        compose.onNodeWithText("Skip").performClick()
+        compose.waitUntil(5_000) { vm.trust.state.value.rating == null }
         waitFor("Meet someone new")
         assertNull(vm.state.value.chat)
 

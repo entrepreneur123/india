@@ -162,7 +162,10 @@ private fun RequestCard(p: Profile, modifier: Modifier, onOpen: () -> Unit, onAn
     ) {
         Avatar(p, 48.dp)
         Column(Modifier.weight(1f)) {
-            Text(p.nameAgeFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(p.nameAgeFlag(), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                VerifiedMark(p, Modifier.padding(start = 4.dp), size = 16.dp)
+            }
             Text(
                 p.genderCity(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
@@ -234,6 +237,7 @@ private fun PersonRow(
                     p.nameWithFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
                 )
+                VerifiedMark(p, Modifier.padding(start = 4.dp), size = 16.dp)
                 if (time != null && time > 0) {
                     Text(
                         "  " + DateUtils.getRelativeTimeSpanString(time, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE),

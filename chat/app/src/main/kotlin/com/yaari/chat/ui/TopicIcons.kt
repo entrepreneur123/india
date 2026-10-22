@@ -226,7 +226,24 @@ fun TopicChip(topic: Topic, label: String, modifier: Modifier = Modifier, height
 // ---- the app's own marks for the feed and profiles: an outline (off) and a two-tone fill (on), in any colour ----------
 
 /** Chrome marks drawn like the topic glyphs (24×24, two tones), coloured by the caller (nav colour, text colour). */
-enum class Mark { FEED, HEART, COMMENT, GLOBE, FRIENDS, PALETTE, SEND, IMAGE }
+enum class Mark {
+    FEED, HEART, COMMENT, GLOBE, FRIENDS, PALETTE, SEND, IMAGE,
+    // Identity and manners (035): the verified seal, the check's steps, the rating faces and the status marks.
+    VERIFIED, ID_CARD, SELFIE, LOCK, SHIELD, SMILE, FROWN, CLOCK, ALERT,
+}
+
+/** A rosette: a disc with eight scallops around it (the verified seal). */
+private fun seal(): String {
+    val sb = StringBuilder(circle(12f, 12f, 7.4f))
+    for (k in 0 until 8) {
+        val a = Math.toRadians(k * 45.0 + 22.5)
+        sb.append(circle(12f + 6.9f * Math.cos(a).toFloat(), 12f + 6.9f * Math.sin(a).toFloat(), 3.3f))
+    }
+    return sb.toString()
+}
+private val SEAL_PATH = seal()
+private const val SHIELD_PATH =
+    "M12 2.4l7.5 2.8c.6.2 1 .8 1 1.4v4.7c0 4.9-3.3 8.7-8.1 10.2-.3.1-.6.1-.8 0C6.8 20 3.5 16.2 3.5 11.3V6.6c0-.6.4-1.2 1-1.4z"
 
 private const val HEART_PATH =
     "M12 20.8c-.3 0-.6-.1-.85-.3C6.3 16.7 2.8 13.6 2.8 9.6c0-2.75 2.1-4.9 4.8-4.9 1.75 0 3.3.9 4.4 2.35C13.1 5.6 14.65 4.7 16.4 4.7c2.7 0 4.8 2.15 4.8 4.9 0 4-3.5 7.1-8.35 10.9-.25.2-.55.3-.85.3z"
@@ -271,6 +288,63 @@ private val MarkFilled: Map<Mark, List<Part>> = mapOf(
         Fill(rect(2.8f, 4.2f, 18.4f, 15.6f, 3.6f), Ink.M),
         Fill("M4.8 17.6l4.6-5.1 3 3 2.1-2.1 4.7 4.2z", Ink.L),
         Fill(circle(15.6f, 9f, 1.8f), Ink.L),
+    ),
+    // The seal with a light gleam and a white tick.
+    Mark.VERIFIED to listOf(
+        Fill(SEAL_PATH, Ink.M),
+        Turn(listOf(Fill(ellipse(8.2f, 7.6f, 2.1f, 1.15f), Ink.L)), -38f, 8.2f, 7.6f),
+        Line("M8.1 12.3l2.7 2.7 5.1-5.5", Ink.WHITE, 2.3f, roundJoin = true),
+    ),
+    // An ID card: the photo and three lines of text.
+    Mark.ID_CARD to listOf(
+        Fill(rect(2.2f, 4.6f, 19.6f, 14.8f, 3.2f), Ink.M),
+        Fill(rect(4.8f, 8.1f, 6.2f, 7.6f, 1.8f), Ink.L),
+        Fill(circle(7.9f, 10.6f, 1.4f), Ink.M),
+        Fill("M5.6 15.1c.3-1.5 1.2-2.3 2.3-2.3s2 .8 2.3 2.3z", Ink.M),
+        Fill(rect(12.8f, 8.6f, 6.6f, 1.8f, 0.9f), Ink.L),
+        Fill(rect(12.8f, 11.6f, 4.6f, 1.8f, 0.9f), Ink.L),
+        Fill(rect(12.8f, 14.6f, 5.6f, 1.8f, 0.9f), Ink.L),
+    ),
+    // A face in a camera's corner brackets: the liveness selfie.
+    Mark.SELFIE to listOf(
+        Line("M3.4 8.2V6.1a2.7 2.7 0 0 1 2.7-2.7h2.1M15.8 3.4h2.1a2.7 2.7 0 0 1 2.7 2.7v2.1M20.6 15.8v2.1a2.7 2.7 0 0 1-2.7 2.7h-2.1M8.2 20.6H6.1a2.7 2.7 0 0 1-2.7-2.7v-2.1", Ink.M, 2f, roundJoin = true),
+        Fill(circle(12f, 12f, 5.4f), Ink.L),
+        Fill(circle(10.1f, 11f, 0.85f), Ink.M), Fill(circle(13.9f, 11f, 0.85f), Ink.M),
+        Line("M9.9 13.5c1.2 1.1 3 1.1 4.2 0", Ink.M, 1.5f),
+    ),
+    Mark.LOCK to listOf(
+        Line("M8 10.6V8.1a4 4 0 0 1 8 0v2.5", Ink.L, 2.2f),
+        Fill(rect(4.6f, 10f, 14.8f, 11f, 3.2f), Ink.M),
+        Fill(circle(12f, 14.6f, 1.7f), Ink.L),
+        Fill(rect(11.25f, 15f, 1.5f, 3.2f, 0.75f), Ink.L),
+    ),
+    Mark.SHIELD to listOf(
+        Fill(SHIELD_PATH, Ink.M),
+        Turn(listOf(Fill(ellipse(8.3f, 6.9f, 2.3f, 1.1f), Ink.L)), -22f, 8.3f, 6.9f),
+        Line("M8.4 11.9l2.5 2.5 4.8-5", Ink.WHITE, 2.1f, roundJoin = true),
+    ),
+    Mark.SMILE to listOf(
+        Fill(circle(12f, 12f, 9.4f), Ink.M),
+        Turn(listOf(Fill(ellipse(7.6f, 6.9f, 2.2f, 1.2f), Ink.L)), -35f, 7.6f, 6.9f),
+        Fill(circle(8.9f, 10.2f, 1.3f), Ink.FACE), Fill(circle(15.1f, 10.2f, 1.3f), Ink.FACE),
+        Line("M7.9 13.8c2.3 2.8 5.9 2.8 8.2 0", Ink.FACE, 1.9f),
+    ),
+    Mark.FROWN to listOf(
+        Fill(circle(12f, 12f, 9.4f), Ink.M),
+        Turn(listOf(Fill(ellipse(7.6f, 6.9f, 2.2f, 1.2f), Ink.L)), -35f, 7.6f, 6.9f),
+        Fill(circle(8.9f, 10.2f, 1.3f), Ink.FACE), Fill(circle(15.1f, 10.2f, 1.3f), Ink.FACE),
+        Line("M8.4 16.8c2-2.3 5.2-2.3 7.2 0", Ink.FACE, 1.9f),
+    ),
+    Mark.CLOCK to listOf(
+        Fill(circle(12f, 12f, 9.4f), Ink.M),
+        Fill(circle(12f, 12f, 6.6f), Ink.L),
+        Line("M12 8v4.4l3 1.8", Ink.M, 2f, roundJoin = true),
+    ),
+    Mark.ALERT to listOf(
+        Fill(circle(12f, 12f, 9.4f), Ink.M),
+        Turn(listOf(Fill(ellipse(7.6f, 6.9f, 2.2f, 1.2f), Ink.L)), -35f, 7.6f, 6.9f),
+        Fill(rect(10.85f, 6.4f, 2.3f, 7.8f, 1.15f), Ink.WHITE),
+        Fill(circle(12f, 17.2f, 1.35f), Ink.WHITE),
     ),
 )
 

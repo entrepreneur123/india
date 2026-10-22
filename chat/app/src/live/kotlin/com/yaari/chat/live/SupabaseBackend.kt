@@ -76,6 +76,12 @@ import com.yaari.chat.model.ProfilePrompt
 import com.yaari.chat.model.ProfileStyle
 import com.yaari.chat.model.PromptQ
 import com.yaari.chat.model.SpokenLang
+import com.yaari.chat.model.KycAttempt
+import com.yaari.chat.model.KycResult
+import com.yaari.chat.model.MannerTag
+import com.yaari.chat.model.MyTrust
+import com.yaari.chat.model.TagCount
+import com.yaari.chat.model.Trust
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.addJsonObject
@@ -209,6 +215,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class AuthorRow(
         val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null,
         val country: String? = null, @SerialName("photo_path") val photoPath: String? = null, val accent: String? = null,
+        val verified: Boolean = false,
     )
     @Serializable private data class FeedPostRow(
         val id: String, val body: String = "", @SerialName("image_path") val imagePath: String? = null,
@@ -274,6 +281,18 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("premium_until") val premiumUntil: String? = null, @SerialName("gender_until") val genderUntil: String? = null,
     )
     @Serializable private data class TokenRow(val url: String, val token: String)
+    // ---- 035_identity_manners.sql, functions/kyc ----
+    @Serializable private data class KycStartRow(val url: String)
+    @Serializable private data class KycCheckRow(val result: String? = null)
+    @Serializable private data class TagRow(val tag: String, val n: Int = 0)
+    @Serializable private data class TrustRow(
+        val id: String, val verified: Boolean = false, val manner: Int = 50, val ratings: Int = 0, val tags: List<TagRow> = emptyList(),
+    )
+    @Serializable private data class KycRow(val status: String = "", val result: String? = null, val at: String? = null)
+    @Serializable private data class MyTrustRow(
+        val id: String, val verified: Boolean = false, val manner: Int = 50, val ratings: Int = 0, val tags: List<TagRow> = emptyList(),
+        val required: Boolean? = null, val kyc: KycRow? = null, val rated: List<String> = emptyList(),
+    )
 
     private val uid get() = client.auth.currentUserOrNull()?.id ?: throw BackendException("not_signed_in")
 
@@ -796,7 +815,47 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
 
     private fun author(a: AuthorRow) = card(VoiceCardRow(a.id, a.name, a.gender, a.age, a.city, null, a.photoPath, a.country))
-        .let { it.copy(style = ProfileStyle(accent = Accent.of(a.accent))) }
+        .let { it.copy(style = ProfileStyle(accent = Accent.of(a.accent)), verified = a.verified) }
+
+    // ---- real identities and manners (035) ----
+
+    /** The hosted identity check (Didit): the Edge Function makes the session and gives back its page. */
+    override suspend fun kycStart(): String = call {
+        client.functions.invoke("kyc", body = buildJsonObject { put("action", "start") }).body<KycStartRow>().url
+    }
+
+    /** The result is always read from the provider by the Edge Function (never trusted from the app). */
+    override suspend fun kycCheck(): KycResult = call {
+        val r = client.functions.invoke("kyc", body = buildJsonObject { put("action", "check") }).body<KycCheckRow>()
+        KycResult.of(r.result) ?: KycResult.PENDING
+    }
+
+    override suspend fun myTrust(): MyTrust = call {
+        val r = client.postgrest.rpc("my_trust").decodeAs<MyTrustRow>()
+        MyTrust(
+            Trust(r.id, r.verified, r.manner, r.ratings, tags(r.tags)), r.required == true,
+            r.kyc?.let { k -> KycAttempt(k.status, KycResult.of(k.result), k.at?.let { runCatching { ts(it).toEpochMilli() }.getOrNull() }) },
+            r.rated.toSet(),
+        )
+    }
+
+    override suspend fun trust(userIds: List<String>): List<Trust> = call {
+        val ids = userIds.distinct().take(100)
+        if (ids.isEmpty()) return@call emptyList()
+        client.postgrest.rpc("trust", buildJsonObject { putJsonArray("p_users") { ids.forEach { add(it) } } })
+            .decodeList<TrustRow>().map { Trust(it.id, it.verified, it.manner, it.ratings, tags(it.tags)) }
+    }
+
+    private fun tags(rows: List<TagRow>) = rows.mapNotNull { t -> MannerTag.of(t.tag)?.let { TagCount(it, t.n) } }
+
+    override suspend fun rateChat(matchId: String, good: Boolean, tags: List<MannerTag>) = call {
+        client.postgrest.rpc("rate_chat", buildJsonObject {
+            put("p_match", matchId)
+            put("p_good", good)
+            putJsonArray("p_tags") { tags.take(MannerTag.MAX).forEach { add(it.code) } }
+        })
+        Unit
+    }
 
     private fun toComment(r: CommentRow) = Comment(
         r.id, r.postId, r.body, ts(r.createdAt).toEpochMilli(), author(r.author), r.replyTo, r.replyName, r.mine, r.canRemove,
@@ -1702,6 +1761,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val HEARTBEAT_MS = 20_000L
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
+            "verify_required", "manner_low", "already_verified", "kyc_unavailable", "kyc_failed", "already_rated", "too_late",
             "not_signed_in", "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",

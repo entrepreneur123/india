@@ -178,6 +178,13 @@ class AppViewModel(
         },
     )
 
+    /** ID verification, everyone's badges, manners after a random chat (035). */
+    val trust = TrustController(
+        backend, viewModelScope, firstRun,
+        onVerified = { viewModelScope.launch { runCatching { backend.myProfile() }.getOrNull()?.let { me -> _state.update { it.copy(me = me) } } } },
+        notice = ::notice,
+    )
+
     private fun Profile.patchPost(id: String, change: (Post) -> Post) =
         if (posts.none { it.id == id }) this else copy(posts = posts.map { if (it.id == id) change(it) else it })
 
@@ -243,8 +250,10 @@ class AppViewModel(
         return d.messages.lastOrNull { !it.fromMe }?.let { d.recent.matchId to it.id }
     }
 
-    private suspend fun afterSignIn() {
+    /** [newAccount]: just signed up (the identity check is offered once). */
+    private suspend fun afterSignIn(newAccount: Boolean = false) {
         _state.value.me?.let(social::start)
+        if (newAccount) trust.afterSignUp() else trust.refreshMine()
         viewModelScope.launch { runCatching { push.register() } }
         refreshFriends()
         refreshEntitlements()
@@ -282,6 +291,7 @@ class AppViewModel(
         restorePurchases()
         viewModelScope.launch { refreshEntitlements() }
         social.refreshBadges()
+        trust.resumed() // back from the identity check's page: its result
     }
 
     private suspend fun refreshEntitlements() {
@@ -292,10 +302,17 @@ class AppViewModel(
         it.copy(entitlements = e, target = if (e.canChooseGender) it.target else Target.ANY)
     }
 
-    private fun notice(text: UiText) = _state.update { it.copy(notice = text) }
+    /** The refusals that open a screen or sheet instead ([explain]) never also show as a toast. */
+    private fun notice(text: UiText) {
+        if (text.id in SHOWN_ELSEWHERE) return
+        _state.update { it.copy(notice = text) }
+    }
 
     private fun explain(e: Throwable) = UiText(
         when ((e as? BackendException)?.code) {
+            // Verification required: the "Verify your identity" screen; manners too low for random chat: why.
+            "verify_required" -> R.string.verify_required_short.also { trust.required() }
+            "manner_low" -> R.string.manner_low_short.also { trust.showMannerLow() }
             "exit_locked" -> R.string.err_exit_locked
             "premium_required" -> R.string.err_premium
             "banned" -> R.string.err_banned
@@ -394,7 +411,7 @@ class AppViewModel(
             try {
                 val me = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim().ifEmpty { "India" }, d.bio.trim(), d.photoUri))
                 _state.update { it.copy(me = me, onboarding = Onboarding()) }
-                afterSignIn()
+                afterSignIn(newAccount = true)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -773,8 +790,12 @@ class AppViewModel(
             } finally {
                 leaving.remove(c.match.id)
             }
+            val ended = _state.value.chat?.takeIf { it.match.id == c.match.id } ?: c
             // Only the chat that was left closes, and only once: a late answer must not close (or restart) a newer one.
-            if (closeChat(c.match.id) && next) startMatching()
+            if (closeChat(c.match.id)) {
+                trust.chatEnded(ended) // how was it? (both wrote; once)
+                if (next) startMatching()
+            }
         }
     }
 
@@ -1063,6 +1084,7 @@ class AppViewModel(
         voice.close()
         social.reset()
         feed.reset()
+        trust.reset()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
@@ -1146,7 +1168,8 @@ class AppViewModel(
         const val GIVE_UP_MS = 60_000L
         private const val SIGNALS_RETRY_MS = 10_000L
         /** Rule refusals end the search at once; everything else except exit_locked is retried. */
-        private val STOP_CODES = setOf("premium_required", "banned", "no_profile", "not_signed_in", "bad_target")
+        private val STOP_CODES = setOf("premium_required", "banned", "no_profile", "not_signed_in", "bad_target", "verify_required", "manner_low")
+        private val SHOWN_ELSEWHERE = setOf(R.string.verify_required_short, R.string.manner_low_short)
 
         /** Pause before retry number [failures] (1, 2, ...): 2 s, 4 s, 8 s, then 10 s each. */
         fun retryMs(failures: Int): Long = when (failures) {

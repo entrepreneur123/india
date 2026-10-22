@@ -135,10 +135,13 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 ) {
                     Avatar(partner, 40.dp)
                     Column(Modifier.padding(start = 10.dp)) {
-                        Text(
-                            partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1, overflow = TextOverflow.Ellipsis,
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                partner.nameAgeFlag(), Modifier.weight(1f, fill = false), color = Color.White, style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            )
+                            VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (!chat.partnerLeft) {
                                 PresenceDot(6.dp)
@@ -338,7 +341,10 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, o
             ) {
                 Avatar(partner, 40.dp)
                 Column(Modifier.padding(start = 12.dp)) {
-                    Text(partner.nameWithFlag(), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(partner.nameWithFlag(), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
+                    }
                     Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
@@ -447,8 +453,25 @@ private fun MatchReveal(matchId: String, partner: Profile) {
                 }
                 Spacer(Modifier.size(24.dp))
                 Text(stringResource(R.string.matched_with), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.titleMedium)
-                Text(partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineMedium)
+                    VerifiedMark(partner, Modifier.padding(start = 8.dp), size = 26.dp)
+                }
                 Text(partner.genderCity(), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
+                // Who they are, checked: the ID badge and their manners (once rated).
+                val t = trustOf(partner)
+                Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (t?.verified == true || partner.verified) {
+                        Row(
+                            Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            MarkIcon(Mark.LOCK, Brand.PinkOnDark, size = 14.dp)
+                            Text(stringResource(R.string.id_verified), Modifier.padding(start = 6.dp), color = Color.White, style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                    MannerChip(t)
+                }
             }
         }
     }

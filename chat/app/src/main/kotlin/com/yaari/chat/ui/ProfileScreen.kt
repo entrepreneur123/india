@@ -42,7 +42,6 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.GridOn
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material.icons.outlined.AddBox
 import androidx.compose.material.icons.outlined.CameraAlt
@@ -105,6 +104,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                     me.name, style = MaterialTheme.typography.titleLarge, maxLines = 1,
                     overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
                 )
+                VerifiedMark(me, Modifier.padding(start = 6.dp), size = 20.dp)
                 if (s.premium) Icon(Icons.Rounded.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 8.dp).size(20.dp), tint = Brand.Pink)
             }
             CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -122,6 +122,10 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                 )
             }
             val social by vm.social.state.collectAsStateWithLifecycle()
+            val trust by vm.trust.state.collectAsStateWithLifecycle()
+            // Until verified: the invitation, prominent (or a quiet line while checking / before it opens).
+            VerifyCard(vm, Modifier.padding(top = 16.dp))
+            trust.mine?.let { MannerCard(it.trust, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp), mine = true) }
             Spacer(Modifier.height(16.dp))
             if (me.style.isEmpty) StyleNudge(onCustomize, Modifier.padding(bottom = 8.dp))
             PromptCards(me, Modifier.padding(bottom = 8.dp))
@@ -206,6 +210,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                     if (canMessage) SoftButton(stringResource(R.string.message), { vm.openDm(p.id) }, Modifier.weight(1f))
                 }
+                trustOf(p)?.let { MannerCard(it, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)) }
                 Spacer(Modifier.height(16.dp))
                 PromptCards(p, Modifier.padding(bottom = 8.dp))
                 InterestsSection(p, mine = false, onEdit = {}, shared = p.interests.intersect(s.me?.interests.orEmpty().toSet()))
@@ -266,8 +271,10 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(p.name, style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp))
-                Icon(Icons.Rounded.Verified, stringResource(R.string.phone_verified), Modifier.padding(start = 4.dp).size(16.dp), tint = Color(0xFF1A73E8))
+                VerifiedMark(p, Modifier.padding(start = 6.dp), size = 20.dp)
             }
+            // ID verified people: what the document says, locked.
+            IdentityLine(p, Modifier.padding(vertical = 4.dp))
             StatusLine(p, Modifier.padding(vertical = 2.dp))
             Text(
                 listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodyMedium,
@@ -462,10 +469,16 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onCusto
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(Icons.Outlined.Lock, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val fromId = isVerified(me)
+                    if (fromId) MarkIcon(Mark.VERIFIED, Brand.Pink, size = 22.dp)
+                    else Icon(Icons.Outlined.Lock, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     Column(Modifier.padding(start = 16.dp)) {
-                        Text("${stringResource(me.gender.label)} · ${me.age}", style = MaterialTheme.typography.bodyMedium)
-                        Text(stringResource(R.string.locked_fields), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        val country = me.country?.takeIf { fromId }?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
+                        Text(listOfNotNull(stringResource(me.gender.label), me.age.toString(), country).joinToString(" · "), style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            stringResource(if (fromId) R.string.locked_from_id else R.string.locked_fields),
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
             }

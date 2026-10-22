@@ -298,10 +298,13 @@ fun PostCard(vm: AppViewModel, s: UiState, post: Post, modifier: Modifier = Modi
             val open = { if (!mine) vm.openProfile(author) }
             AccentAvatar(author, 44.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = open), gap = MaterialTheme.colorScheme.surface)
             Column(Modifier.weight(1f).padding(horizontal = 12.dp).clickable(role = Role.Button, onClick = open)) {
-                Text(
-                    listOfNotNull(author.name + if (author.age > 0) ", ${author.age}" else "", flagOf(author.country).ifEmpty { null }).joinToString(" "),
-                    style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        listOfNotNull(author.name + if (author.age > 0) ", ${author.age}" else "", flagOf(author.country).ifEmpty { null }).joinToString(" "),
+                        Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                    VerifiedMark(author, Modifier.padding(start = 4.dp), size = 16.dp)
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(timeAgo(post.createdAt), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                     Text(" · ", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -609,6 +612,7 @@ private fun CommentRow(vm: AppViewModel, c: Comment, modifier: Modifier = Modifi
                     c.author.name, Modifier.weight(1f, fill = false).clickable(role = Role.Button, onClick = openAuthor),
                     style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 )
+                VerifiedMark(c.author, Modifier.padding(start = 4.dp), size = 14.dp)
                 Text("  " + timeAgo(c.at), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             }
             c.replyName?.let {

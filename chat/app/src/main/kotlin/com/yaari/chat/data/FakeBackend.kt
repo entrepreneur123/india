@@ -38,6 +38,12 @@ import com.yaari.chat.model.ProfilePrompt
 import com.yaari.chat.model.ProfileStyle
 import com.yaari.chat.model.PromptQ
 import com.yaari.chat.model.SpokenLang
+import com.yaari.chat.model.KycAttempt
+import com.yaari.chat.model.KycResult
+import com.yaari.chat.model.MannerTag
+import com.yaari.chat.model.MyTrust
+import com.yaari.chat.model.TagCount
+import com.yaari.chat.model.Trust
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.random.Random
@@ -72,7 +78,14 @@ open class FakeBackend(
         val messages = mutableListOf<Message>()
         val outgoing = Channel<Outgoing>(Channel.UNLIMITED)
         var ended = false
+        /** When it ended (rate_chat allows a day after). */
+        var endedAt: Long? = null
         var video = VideoStatus.NONE
+
+        fun end(at: Long) {
+            if (!ended) endedAt = at
+            ended = true
+        }
     }
 
     private val accounts = mutableMapOf<String, Profile?>() // phone -> profile (null until created)
@@ -118,9 +131,24 @@ open class FakeBackend(
     /** The demo people's style (cover, colour, status, languages, prompts). */
     private val styles = STYLES.toMutableMap()
 
+    // ---- identities and manners (035), as the server keeps them ----
+
+    /** The identity provider is set up (else kyc_unavailable, as the live server today). The demo shows the flow. */
+    var kycAvailable = true
+    /** What the next check finds (tests); the demo's checks pass. */
+    var kycOutcome = KycResult.VERIFIED
+    /** app_flags.require_verification: unverified people may look around but not match, join, post, comment or befriend. */
+    var requireVerification = false
+    private val kycStarts = mutableListOf<Long>()
+    private var kycLast: KycAttempt? = null
+
+    private class Rating(val matchId: String, val rater: String, val rated: String, val good: Boolean, val tags: List<MannerTag>, val at: Long)
+    private val ratings = mutableListOf<Rating>()
+
     init {
         notify(InboxKind.FRIEND_REQUEST, POOL.first { it.id == "p3" }, at = clock() - 3_600_000L)
         seedPosts()
+        seedRatings()
     }
 
     /** The demo's people posted over the last days; some posts are public (Discover), with likes and comments. */
@@ -152,8 +180,95 @@ open class FakeBackend(
         comment("p8-1", "p4", "Best gyoza in town, I believe it", ago = 7 * hour)
     }
 
+    /** As the server's post_json/comment_json: the author with the verified badge. */
     private fun personOf(id: String): Profile? =
-        phone?.let { accounts[it] }?.takeIf { it.id == id } ?: POOL.firstOrNull { it.id == id }?.let { it.copy(style = styles[it.id] ?: ProfileStyle(), posts = emptyList()) }
+        phone?.let { accounts[it] }?.takeIf { it.id == id }
+            ?: POOL.firstOrNull { it.id == id }?.let { it.copy(style = styles[it.id] ?: ProfileStyle(), posts = emptyList(), verified = it.id in VERIFIED) }
+
+    /** The demo's people have been rated by others over the last weeks (the score's 90 days). */
+    private fun seedRatings() {
+        val now = clock()
+        RATED.forEach { (id, seed) ->
+            val (good, bad, tags) = seed
+            repeat(good) { i ->
+                // Each good rating carries up to three of the person's tags, so their counts come out as listed.
+                val t = tags.filter { (_, n) -> i < n }.map { it.first }.take(MannerTag.MAX)
+                ratings += Rating("seed-$id-g$i", "seed-$i", id, true, t, now - (i + 1) * 7_200_000L)
+            }
+            repeat(bad) { i -> ratings += Rating("seed-$id-b$i", "seed-b$i", id, false, emptyList(), now - (i + 2) * 9_000_000L) }
+        }
+    }
+
+    private fun isVerified(id: String) = if (id == meId()) me().verified else id in VERIFIED
+
+    /** trust_json: the Bayesian score over 90 days (a bad rating weighs double), the top 3 good tags. */
+    private fun trustOf(id: String): Trust {
+        val recent = ratings.filter { it.rated == id && clock() - it.at < 90 * DAY }
+        val good = recent.count { it.good }
+        val bad = recent.size - good
+        val tags = recent.filter { it.good }.flatMap { it.tags }.groupingBy { it }.eachCount().entries
+            .sortedWith(compareByDescending<Map.Entry<MannerTag, Int>> { it.value }.thenBy { it.key.code }).take(3).map { TagCount(it.key, it.value) }
+        return Trust(id, isVerified(id), manner(good, bad), recent.size, tags)
+    }
+
+    /** The server's require_verified. */
+    private fun requireVerified() {
+        if (requireVerification && !me().verified) throw BackendException("verify_required")
+    }
+
+    /** Tests: others rate me [n] times (eight bad ratings and nothing else bring the score under 20). */
+    fun rateMe(good: Boolean, n: Int, tags: List<MannerTag> = emptyList()) {
+        val me = meId() ?: return
+        repeat(n) { ratings += Rating("test-${UUID.randomUUID()}", "tester", me, good, tags, clock()) }
+    }
+
+    override suspend fun kycStart(): String {
+        val me = me()
+        wait(400)
+        if (me.verified) throw BackendException("already_verified")
+        if (!kycAvailable) throw BackendException("kyc_unavailable")
+        kycStarts.removeAll { clock() - it >= DAY }
+        if (kycStarts.size >= 5) throw BackendException("slow_down")
+        kycStarts += clock()
+        kycLast = KycAttempt("Not Started", null, clock())
+        return KYC_URL
+    }
+
+    override suspend fun kycCheck(): KycResult {
+        me()
+        wait(500)
+        val last = kycLast ?: return KycResult.NONE
+        val result = kycOutcome
+        // kyc_apply: an approved document sets the badge (gender, birth date and country would come from it; the
+        // demo keeps what was entered at sign-up); someone under 18 is banned.
+        if (result == KycResult.VERIFIED) updateMe { it.copy(verified = true) }
+        kycLast = last.copy(status = if (result == KycResult.PENDING) "In Review" else "Decided", result = result)
+        return result
+    }
+
+    override suspend fun myTrust(): MyTrust {
+        val me = me()
+        return MyTrust(
+            trustOf(me.id), requireVerification, kycLast,
+            ratings.filter { it.rater == me.id && clock() - it.at < DAY }.mapTo(mutableSetOf()) { it.matchId },
+        )
+    }
+
+    override suspend fun trust(userIds: List<String>): List<Trust> {
+        me()
+        return userIds.take(100).distinct().filter { it !in blocked }.map(::trustOf)
+    }
+
+    override suspend fun rateChat(matchId: String, good: Boolean, tags: List<MannerTag>) {
+        val me = me()
+        val m = matches[matchId]?.takeIf { !it.dm } ?: throw BackendException("not_found")
+        if (m.endedAt?.let { clock() - it > DAY } == true) throw BackendException("too_late")
+        if (m.messages.none { it.fromMe } || m.messages.none { !it.fromMe }) throw BackendException("not_allowed")
+        val t = tags.distinct()
+        if (t.size > MannerTag.MAX || t.any { it.good != good }) throw BackendException("bad_request")
+        if (ratings.any { it.matchId == matchId && it.rater == me.id }) throw BackendException("already_rated")
+        ratings += Rating(matchId, me.id, m.partner.id, good, t, clock())
+    }
 
     private fun meId() = phone?.let { accounts[it] }?.id
 
@@ -314,10 +429,12 @@ open class FakeBackend(
 
     override suspend fun findMatch(target: Target): Match? {
         val me = me()
+        requireVerified()
+        if (trustOf(me.id).manner < Trust.MANNER_FLOOR) throw BackendException("manner_low")
         if (target.isPaid && !entitlements.canChooseGender) throw BackendException("premium_required")
         matches.values.filter { !it.ended }.forEach { m ->
             if (clock() - m.startedAt < ExitPolicy.lockMs(entitlements.premium)) throw BackendException("exit_locked")
-            m.ended = true
+            m.end(clock())
         }
         wait(random.nextLong(900, 2200))
         val partner = POOL.filter { target.accepts(it.gender) && it.id != me.id && it.id !in blocked && it.id != lastPartner }
@@ -347,7 +464,7 @@ open class FakeBackend(
                     emit(MatchEvent.Typing(false))
                     when {
                         !m.ended && roll < 6 && m.video == VideoStatus.NONE -> {
-                            m.ended = true
+                            m.end(clock())
                             emit(MatchEvent.PartnerLeft)
                         }
                         roll < 15 -> Unit
@@ -401,7 +518,7 @@ open class FakeBackend(
         val m = match(matchId)
         if (m.ended) return
         if (clock() - m.startedAt < ExitPolicy.lockMs(entitlements.premium)) throw BackendException("exit_locked")
-        m.ended = true
+        m.end(clock())
     }
 
     override suspend fun report(partnerId: String, reason: ReportReason, matchId: String?) = block(partnerId)
@@ -409,7 +526,7 @@ open class FakeBackend(
     override suspend fun block(userId: String) {
         blocked += userId
         friendships.remove(userId)
-        matches.values.filter { it.partner.id == userId }.forEach { it.ended = true }
+        matches.values.filter { it.partner.id == userId }.forEach { it.end(clock()) }
     }
 
     override suspend fun requestVideo(matchId: String) {
@@ -454,6 +571,7 @@ open class FakeBackend(
 
     override suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility): Post {
         val me = me()
+        requireVerified()
         if (posts.count { it.author == me.id && clock() - it.at < 86_400_000L } >= Post.PER_DAY) throw BackendException("slow_down")
         val p = FakePost(UUID.randomUUID().toString(), me.id, text, imageUri, clock(), visibility)
         posts += p
@@ -489,6 +607,7 @@ open class FakeBackend(
 
     override suspend fun requestFriend(userId: String): FriendState {
         me()
+        requireVerified()
         if (!visible(userId)) throw BackendException("not_allowed")
         val now = when (friendships[userId]) {
             FriendState.INCOMING, FriendState.FRIENDS -> FriendState.FRIENDS
@@ -521,8 +640,8 @@ open class FakeBackend(
     // ---- rooms (FakeVoice) ----
 
     override suspend fun voiceRooms(query: RoomQuery) = voice.list(query).filter { it.host.id !in blocked }
-    override suspend fun createVoiceRoom(room: NewVoiceRoom) = voice.create(room)
-    override suspend fun joinVoiceCode(code: String) = voice.joinCode(code)
+    override suspend fun createVoiceRoom(room: NewVoiceRoom) = requireVerified().let { voice.create(room) }
+    override suspend fun joinVoiceCode(code: String) = requireVerified().let { voice.joinCode(code) }
     override suspend fun updateVoiceRoom(roomId: String, title: String, announcement: String, lang: String?) =
         voice.settings(roomId, title, announcement, lang)
 
@@ -535,6 +654,7 @@ open class FakeBackend(
     }
 
     override suspend fun joinInvite(inboxId: Long): String {
+        requireVerified()
         val n = notes.firstOrNull { it.id == inboxId && it.kind == InboxKind.ROOM_INVITE && it.actor.id !in blocked }
             ?: throw BackendException("not_found")
         readNotes { it.id == inboxId }
@@ -670,6 +790,7 @@ open class FakeBackend(
 
     override suspend fun addComment(postId: String, body: String, replyTo: Long?): Comment {
         val me = me()
+        requireVerified()
         val text = body.trim()
         if (text.length !in 1..Comment.MAX) throw BackendException("bad_request")
         val p = visiblePost(postId)
@@ -704,7 +825,11 @@ open class FakeBackend(
         if (p.comments.first { it.id == commentId }.authorId == me.id) throw BackendException("not_found")
         postReports += "comment:$commentId" to reason
     }
-    override fun voiceSession(roomId: String) = voice.session(roomId)
+    /** voice_admit refuses unverified people when verification is required (the host of a new room is verified already). */
+    override fun voiceSession(roomId: String): Flow<com.yaari.chat.model.VoiceEvent> = flow {
+        requireVerified()
+        emitAll(voice.session(roomId))
+    }
     override suspend fun leaveVoice(roomId: String) = voice.leave(roomId)
     override suspend fun endVoice(roomId: String) = voice.endRoom(roomId)
     override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter {
@@ -730,6 +855,28 @@ open class FakeBackend(
 
     companion object {
         const val DEMO_OTP = "123456"
+        /** The demo's identity check: nothing to open, the check passes on return (see openVerification). */
+        const val KYC_URL = "demo://kyc"
+        private const val DAY = 86_400_000L
+
+        /** manner_refresh: starts at 50; a bad rating weighs double. */
+        fun manner(good: Int, bad: Int) = Math.round(100.0 * (good + 5) / (good + 2 * bad + 10)).toInt()
+
+        /** The demo's ID-verified people. */
+        private val VERIFIED = setOf("p1", "p3", "p4", "p5", "p6", "p7", "p9")
+
+        /** Ratings others gave them: (good, bad, good tags with how many ratings carry each). */
+        private val RATED: Map<String, Triple<Int, Int, List<Pair<MannerTag, Int>>>> = mapOf(
+            "p1" to Triple(24, 1, listOf(MannerTag.KIND to 12, MannerTag.FUNNY to 9, MannerTag.GOOD_LISTENER to 6)),
+            "p2" to Triple(3, 2, listOf(MannerTag.FUNNY to 2)),
+            "p3" to Triple(40, 0, listOf(MannerTag.RESPECTFUL to 22, MannerTag.KIND to 18, MannerTag.FUNNY to 11)),
+            "p5" to Triple(6, 1, listOf(MannerTag.INTERESTING to 4, MannerTag.KIND to 2)),
+            "p6" to Triple(10, 2, listOf(MannerTag.INTERESTING to 6, MannerTag.RESPECTFUL to 3)),
+            "p7" to Triple(1, 0, listOf(MannerTag.FUNNY to 1)),
+            "p8" to Triple(8, 0, listOf(MannerTag.GOOD_LISTENER to 5, MannerTag.KIND to 3)),
+            "p9" to Triple(5, 0, listOf(MannerTag.RESPECTFUL to 4)),
+            "p10" to Triple(12, 0, listOf(MannerTag.INTERESTING to 7, MannerTag.FUNNY to 4)),
+        )
         private const val PAGE = 20
         private const val COMMENTS_PER_MINUTE = 10
         /** Their first post is public (Discover); everyone else posts for friends only. */
