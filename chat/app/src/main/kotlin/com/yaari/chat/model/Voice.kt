@@ -6,7 +6,10 @@ import java.net.URI
 // Same shapes as the web (chat/web/lib/backend.ts); the server is chat/server/migrations/017_voice_rooms.sql and
 // 019_unified_rooms.sql: one kind of room, with the chat (text, icebreakers, photos, replies, polls), the stage and music.
 
-/** Co-hosts can invite, move and mute people; only the host makes co-hosts, removes people and ends the room. */
+/**
+ * Co-hosts invite, move and mute people, run the music, share a page and remove listeners and speakers; only the host
+ * makes co-hosts, removes co-hosts and ends the room.
+ */
 enum class VoiceRole(val code: String) {
     HOST("host"), COHOST("cohost"), SPEAKER("speaker"), LISTENER("listener");
 
@@ -31,6 +34,13 @@ data class VoiceMember(val profile: Profile, val role: VoiceRole, val seat: Int?
 }
 
 data class VoiceSeat(val index: Int, val locked: Boolean)
+
+/**
+ * A web page the host or a co-host pinned next to the chat for everyone (036: voice_share_link). Everyone loads the
+ * same page on their own phone (no synced scrolling). [at]: when it was shared (server ms), so a new share of the same
+ * page shows again for someone who closed it.
+ */
+data class RoomStage(val url: String, val title: String?, val by: String, val byId: String, val at: Long)
 
 /**
  * The shared track. Everyone plays the same YouTube video at the same position: [position] = now − startedAt (or
@@ -102,6 +112,8 @@ data class VoiceRoom(
     val code: String? = null,
     /** The language the room speaks ([RoomLang] tag), null when unknown. */
     val lang: String? = null,
+    /** The page shared with everyone, or null. */
+    val stage: RoomStage? = null,
 ) {
     fun member(userId: String) = members.firstOrNull { it.profile.id == userId }
     val me get() = member(meId)
@@ -117,6 +129,33 @@ data class VoiceRoom(
         val taken = members.mapNotNull { it.seat }.toSet()
         return (1 until SEATS).firstOrNull { it !in taken && !locked(it) }
     }
+
+    // ---- what I may do (036_room_powers.sql; the server checks again, these only hide what it would refuse) ----
+
+    /** Music for everyone (play, pause, seek, skip, play a request, remove one): the host or a co-host. */
+    val canDj get() = me?.isMod == true
+
+    /** Pin a page for everyone, or stop sharing it: the host or a co-host. */
+    val canShare get() = me?.isMod == true
+
+    /** Invite [target] up to speak: a host or co-host, someone else in the audience (never the host). */
+    fun canInvite(target: VoiceMember) = me?.isMod == true && target.profile.id != meId && target.seat == null && target.role != VoiceRole.HOST
+
+    /**
+     * Remove [target] from the room, or move them off the stage: the host anyone but themself; a co-host only
+     * listeners and speakers (not the host, not another co-host).
+     */
+    fun canModerate(target: VoiceMember): Boolean {
+        val mine = me?.role ?: return false
+        if (target.profile.id == meId || target.role == VoiceRole.HOST) return false
+        return mine == VoiceRole.HOST || (mine == VoiceRole.COHOST && target.role != VoiceRole.COHOST)
+    }
+
+    fun canKick(target: VoiceMember) = canModerate(target)
+    fun canMoveToAudience(target: VoiceMember) = target.seat != null && canModerate(target)
+
+    /** Make or remove co-hosts: the host only, anyone but themself. */
+    fun canSetCohost(target: VoiceMember) = me?.role == VoiceRole.HOST && target.profile.id != meId && target.role != VoiceRole.HOST
 
     /** Free, unlocked stage seats (1–8). */
     val freeSeats: Int get() {
@@ -266,6 +305,8 @@ sealed interface VoiceEvent {
     data class PollChanged(val poll: VoicePoll) : VoiceEvent
     data object Ended : VoiceEvent
     data object Removed : VoiceEvent
+    /** Someone in the room is typing in the chat (a public broadcast, vtyping-<room>: the sender's id and name). */
+    data class Typing(val userId: String, val name: String) : VoiceEvent
     /**
      * The server no longer lets me be here (the room filled while I was away, I was banned, the rules changed, ...):
      * [code] says why. Said once; the collector leaves the room with that reason.
@@ -289,7 +330,7 @@ sealed interface VoiceAction {
     // host only
     data class Cohost(val userId: String, val on: Boolean) : VoiceAction
     data class Kick(val userId: String) : VoiceAction
-    // music: anyone adds a song request and votes; the host (DJ) plays, removes and controls
+    // music: anyone adds a song request and votes; the host or a co-host (DJ) plays, removes and controls
     /** [title]: the video's real title (YouTube oEmbed), empty when it couldn't be looked up. */
     data class AddTrack(val videoId: String, val title: String = "") : VoiceAction
     data class Vote(val itemId: String, val on: Boolean) : VoiceAction
@@ -299,6 +340,10 @@ sealed interface VoiceAction {
     data object Resume : VoiceAction
     /** The most voted request plays. [trackId]: the track being skipped (a player that ended); nothing happens if another one already plays. */
     data class Skip(val trackId: String? = null) : VoiceAction
+    /** Host or co-host: the song jumps to [ms] for everyone (a paused song stays paused there). */
+    data class Seek(val ms: Long) : VoiceAction
+    /** Host or co-host: pins [url] (https, up to 500 characters) for everyone; null stops sharing. */
+    data class ShareLink(val url: String?, val title: String? = null) : VoiceAction
 }
 
 object YouTube {

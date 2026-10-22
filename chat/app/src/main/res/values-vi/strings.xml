@@ -843,4 +843,32 @@
     <plurals name="manner_ratings">
         <item quantity="other">%1$d lượt đánh giá</item>
     </plurals>
+    <!-- 0.13.0: room powers, typing, links -->
+    <string name="link_not_shareable">Chỉ có thể hiển thị trang https cho mọi người.</string>
+    <string name="link_shared">Giờ mọi người trong phòng đều thấy trang này</string>
+    <string name="link_viewer">Trang web</string>
+    <string name="link_reload">Tải lại</string>
+    <string name="link_open_browser">Mở trong trình duyệt</string>
+    <string name="link_share_hint">Mọi người trong phòng sẽ thấy trang này bên cạnh khung chat.</string>
+    <string name="link_share">Hiển thị cho mọi người</string>
+    <string name="link_shared_by">%1$s đã chia sẻ</string>
+    <string name="link_stop_sharing">Dừng chia sẻ</string>
+    <string name="link_close_for_me">Đóng với tôi</string>
+    <string name="link_open">Mở %1$s</string>
+    <string name="link_open_video">Mở video trên YouTube</string>
+    <string name="link_request_song">Yêu cầu bài này</string>
+    <string name="music_seek">Vị trí bài hát cho mọi người</string>
+    <string name="music_play_mine">Phát trên điện thoại của tôi</string>
+    <string name="music_pause_mine">Tạm dừng trên điện thoại của tôi</string>
+    <string name="music_unmute_mine">Bật tiếng nhạc trên điện thoại của tôi</string>
+    <string name="music_mute_mine">Tắt tiếng nhạc trên điện thoại của tôi</string>
+    <string name="music_volume">Âm lượng nhạc trên điện thoại của tôi</string>
+    <string name="music_paused_mine">Đã tạm dừng trên điện thoại của bạn. Phát để theo kịp phòng.</string>
+    <string name="room_typing_one">%1$s đang nhập…</string>
+    <string name="room_on_stage_n">Trên sân khấu · %1$d</string>
+    <string name="room_show_seats">Ghế</string>
+    <string name="room_hide_seats">Ẩn ghế</string>
+    <plurals name="room_typing_many">
+        <item quantity="other">%1$d người đang nhập…</item>
+    </plurals>
 </resources>

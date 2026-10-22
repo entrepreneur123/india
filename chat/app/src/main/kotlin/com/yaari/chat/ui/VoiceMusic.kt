@@ -25,6 +25,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
+import androidx.compose.material.icons.automirrored.rounded.VolumeOff
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
@@ -40,6 +42,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -88,7 +92,7 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun MusicPanel(
-    track: VoiceTrack, queue: List<VoiceQueueItem>, isHost: Boolean, listening: Boolean, open: Boolean, active: Boolean,
+    track: VoiceTrack, queue: List<VoiceQueueItem>, canDj: Boolean, listening: Boolean, open: Boolean, active: Boolean,
     onListen: (Boolean) -> Unit, onOpenChange: (Boolean) -> Unit, onQueue: () -> Unit, act: (VoiceAction) -> Unit,
 ) {
     val title = track.title.ifEmpty { stringResource(R.string.voice_yt_video) }
@@ -133,16 +137,9 @@ fun MusicPanel(
             }
             CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.voice_collapse), { onOpenChange(false) }, iconSize = 24.dp)
         }
-        // The controls on a line of their own, so the title keeps its room on a narrow phone.
+        // The controls on lines of their own, so the title keeps its room on a narrow phone.
+        MusicControls(track, canDj, act)
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            if (isHost) {
-                val paused = track.pausedAt != null
-                CircleIconButton(
-                    if (paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause, stringResource(if (paused) R.string.voice_resume else R.string.voice_pause),
-                    { act(if (paused) VoiceAction.Resume else VoiceAction.Pause) }, iconSize = 20.dp,
-                )
-                CircleIconButton(Icons.Rounded.SkipNext, stringResource(R.string.voice_skip), { act(VoiceAction.Skip(track.id)) }, iconSize = 20.dp)
-            }
             Row(
                 Modifier.heightIn(min = 48.dp).clip(CircleShape).tapTarget(stringResource(R.string.voice_up_next_n, upNext), onQueue).padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -207,13 +204,111 @@ private fun rememberPosition(track: VoiceTrack): Float {
 private fun mmss(seconds: Float) = "%d:%02d".format(java.util.Locale.ROOT, seconds.toInt() / 60, seconds.toInt() % 60)
 
 /**
+ * Under the room's player. The host and co-hosts (036) control the music for everyone: play / pause, a seek bar, skip.
+ * Everyone else sees where the song is (read-only), and controls only their own phone: pause / play (playing again
+ * puts it back in step with the room), mute and volume. There is no quality choice: YouTube's player no longer takes one.
+ */
+@Composable
+fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit, modifier: Modifier = Modifier, large: Boolean = false) {
+    val player = LocalRoomPlayer.current
+    val color = topicColor(Topic.MUSIC)
+    val seconds = player.duration
+    val at = rememberPosition(track).let { if (seconds > 0) minOf(it, seconds) else it }
+    // While dragging, and after letting go until the room's new position arrives (or 3 s pass).
+    var drag by remember(track.id) { mutableStateOf<Float?>(null) }
+    var held by remember(track.id) { mutableStateOf<Float?>(null) }
+    LaunchedEffect(track.startedAt, track.pausedAt) { held = null }
+    LaunchedEffect(held) {
+        if (held != null) {
+            delay(3_000)
+            held = null
+        }
+    }
+    val shown = drag ?: held ?: at
+    val paused = track.pausedAt != null
+    Column(modifier.fillMaxWidth()) {
+        if (canDj && seconds > 0) {
+            val label = stringResource(R.string.music_seek)
+            Slider(
+                shown.coerceIn(0f, seconds), { drag = it }, Modifier.fillMaxWidth().height(32.dp).semantics { contentDescription = label },
+                valueRange = 0f..seconds,
+                onValueChangeFinished = {
+                    drag?.let { v ->
+                        held = v
+                        act(VoiceAction.Seek((v * 1000).toLong()))
+                    }
+                    drag = null
+                },
+                colors = SliderDefaults.colors(thumbColor = color, activeTrackColor = color, inactiveTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+            )
+        } else {
+            Box(Modifier.padding(vertical = 13.dp).fillMaxWidth().height(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
+                if (seconds > 0) Box(Modifier.fillMaxWidth((shown / seconds).coerceIn(0f, 1f)).height(6.dp).clip(CircleShape).background(color))
+            }
+        }
+        Row(Modifier.fillMaxWidth()) {
+            Text(mmss(shown), Modifier.weight(1f), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
+            if (seconds > 0) Text(mmss(seconds), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
+        }
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            val big = if (large) 22.dp else 20.dp
+            if (canDj) {
+                CircleIconButton(
+                    if (paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause, stringResource(if (paused) R.string.voice_resume else R.string.voice_pause),
+                    { act(if (paused) VoiceAction.Resume else VoiceAction.Pause) }, background = MaterialTheme.colorScheme.surfaceContainerHigh, iconSize = big,
+                )
+                CircleIconButton(
+                    Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
+                    background = Brand.Pink, tint = Color.White, iconSize = big,
+                )
+            } else {
+                // My phone only. While the DJ has paused the room there is nothing to play.
+                val mine = player.localPaused
+                CircleIconButton(
+                    if (mine || paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
+                    stringResource(if (mine) R.string.music_play_mine else R.string.music_pause_mine),
+                    { player.localPaused = !mine }, background = MaterialTheme.colorScheme.surfaceContainerHigh, iconSize = big, enabled = !paused,
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            val muted = player.muted || player.volume == 0
+            CircleIconButton(
+                if (muted) Icons.AutoMirrored.Rounded.VolumeOff else Icons.AutoMirrored.Rounded.VolumeUp,
+                stringResource(if (muted) R.string.music_unmute_mine else R.string.music_mute_mine),
+                {
+                    if (muted) {
+                        player.muted = false
+                        if (player.volume == 0) player.volume = 60
+                    } else {
+                        player.muted = true
+                    }
+                },
+                iconSize = 20.dp,
+            )
+            val volumeLabel = stringResource(R.string.music_volume)
+            Slider(
+                if (player.muted) 0f else player.volume.toFloat(), { v -> player.volume = v.toInt(); player.muted = false },
+                Modifier.width(112.dp).height(32.dp).semantics { contentDescription = volumeLabel }, valueRange = 0f..100f,
+                colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.onSurface, activeTrackColor = MaterialTheme.colorScheme.onSurface, inactiveTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+            )
+        }
+        if (!canDj && player.localPaused && !paused) {
+            Text(
+                stringResource(R.string.music_paused_mine), style = MaterialTheme.typography.bodySmall, color = color,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        }
+    }
+}
+
+/**
  * A music room's hero: the shared player (the room's one player over its [PlayerSlot]; [active]: this screen is the
  * one shown) with the song, who added it and where it is, the host's controls (pause,
  * play the most voted next), and the song requests by vote. With nothing playing, the way to request the first.
  */
 @Composable
 fun MusicHero(
-    room: VoiceRoom, isHost: Boolean, adding: String?, active: Boolean, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit,
+    room: VoiceRoom, canDj: Boolean, adding: String?, active: Boolean, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit,
 ) {
     val color = topicColor(Topic.MUSIC)
     val track = room.track
@@ -222,7 +317,6 @@ fun MusicHero(
     val music = stringResource(R.string.voice_music_title)
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).semantics { contentDescription = music }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (track != null) {
-            val seconds = LocalRoomPlayer.current.duration
             Column {
                 PlayerSlot(track, Modifier.shadow(24.dp, RoundedCornerShape(16.dp), ambientColor = color, spotColor = color), active = active)
                 Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -240,27 +334,8 @@ fun MusicHero(
                             maxLines = 1, overflow = TextOverflow.Ellipsis,
                         )
                     }
-                    if (isHost) {
-                        val paused = track.pausedAt != null
-                        CircleIconButton(
-                            if (paused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause, stringResource(if (paused) R.string.voice_resume else R.string.voice_pause),
-                            { act(if (paused) VoiceAction.Resume else VoiceAction.Pause) }, background = MaterialTheme.colorScheme.surfaceContainerHigh, iconSize = 22.dp,
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        CircleIconButton(
-                            Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
-                            background = Brand.Pink, tint = Color.White, iconSize = 22.dp,
-                        )
-                    }
                 }
-                val at = rememberPosition(track).let { if (seconds > 0) minOf(it, seconds) else it }
-                Box(Modifier.padding(top = 10.dp).fillMaxWidth().height(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
-                    if (seconds > 0) Box(Modifier.fillMaxWidth(at / seconds).height(6.dp).clip(CircleShape).background(color))
-                }
-                Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
-                    Text(mmss(at), Modifier.weight(1f), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
-                    if (seconds > 0) Text(mmss(seconds), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta)
-                }
+                MusicControls(track, canDj, act, Modifier.padding(top = 4.dp), large = true)
                 Text(
                     stringResource(R.string.voice_added_by, track.addedBy), Modifier.padding(top = 2.dp),
                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -279,7 +354,7 @@ fun MusicHero(
                     color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
                 )
                 SoftButton(
-                    stringResource(if (isHost) R.string.music_add else R.string.music_request), onQueue, accent = true, height = 44.dp,
+                    stringResource(if (canDj) R.string.music_add else R.string.music_request), onQueue, accent = true, height = 44.dp,
                     leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
                 )
             }
@@ -345,7 +420,7 @@ private fun VoteButton(item: VoiceQueueItem, color: Color, onClick: () -> Unit) 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QueueSheet(
-    track: VoiceTrack?, queue: List<VoiceQueueItem>, isHost: Boolean, adding: String?, act: VoiceActor,
+    track: VoiceTrack?, queue: List<VoiceQueueItem>, canDj: Boolean, adding: String?, act: VoiceActor,
     addSong: (String, (Boolean) -> Unit) -> Unit, vote: (String, Boolean) -> Unit, onDismiss: () -> Unit,
 ) {
     var link by rememberSaveable { mutableStateOf("") }
@@ -357,7 +432,7 @@ fun QueueSheet(
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
-            SheetTitle(stringResource(R.string.voice_music_title), stringResource(if (isHost) R.string.voice_dj_desc else R.string.voice_suggest_desc), onDismiss)
+            SheetTitle(stringResource(R.string.voice_music_title), stringResource(if (canDj) R.string.voice_dj_desc else R.string.voice_suggest_desc), onDismiss)
             Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     link, { link = it; error = false }, Modifier.weight(1f), singleLine = true, isError = error,
@@ -368,7 +443,7 @@ fun QueueSheet(
                 )
                 Spacer(Modifier.size(8.dp))
                 SoftButton(
-                    stringResource(if (isHost) R.string.voice_add else R.string.music_request),
+                    stringResource(if (canDj) R.string.voice_add else R.string.music_request),
                     {
                         val id = YouTube.videoId(link)
                         if (id == null) {
@@ -395,7 +470,7 @@ fun QueueSheet(
             }
             Row(Modifier.padding(top = 20.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.voice_up_next), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-                if (isHost && ordered.isNotEmpty()) {
+                if (canDj && ordered.isNotEmpty()) {
                     SoftButton(
                         stringResource(R.string.music_next), { act(VoiceAction.Skip(track?.id), null) {} }, height = 36.dp,
                         leading = { Icon(Icons.Rounded.SkipNext, null, Modifier.size(18.dp)) },
@@ -413,7 +488,7 @@ fun QueueSheet(
                 adding?.let { AddingRow(it) }
                 ordered.forEach { q ->
                     TrackRow(q.videoId, q.title, requestSub(q)) {
-                        if (isHost) {
+                        if (canDj) {
                             CircleIconButton(Icons.Outlined.Delete, stringResource(R.string.voice_remove), { act(VoiceAction.RemoveItem(q.id), null) {} }, size = 36.dp, iconSize = 20.dp)
                             CircleIconButton(Icons.Rounded.PlayArrow, stringResource(R.string.voice_play_now), { act(VoiceAction.Play(q.id), null) {} }, size = 36.dp, iconSize = 20.dp)
                         }

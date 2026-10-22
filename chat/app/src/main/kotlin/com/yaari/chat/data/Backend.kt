@@ -20,6 +20,7 @@ import com.yaari.chat.model.VoiceRoomSummary
 import com.yaari.chat.model.Badges
 import com.yaari.chat.model.InboxItem
 import com.yaari.chat.model.Interest
+import com.yaari.chat.model.LinkPreview
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Comment
 import com.yaari.chat.model.FeedTab
@@ -211,8 +212,18 @@ interface Backend {
     suspend fun videoTitle(videoId: String): String
     /** Throws not_allowed when my role may not do it; mic_denied when the microphone can't be used. */
     suspend fun voiceAction(roomId: String, action: VoiceAction)
+    /**
+     * "I am typing" in the room's chat ([name]: mine, as the others show it). Arrives on their side as
+     * [VoiceEvent.Typing] while they follow the room. Best effort, never throws.
+     */
+    suspend fun sendVoiceTyping(roomId: String, name: String)
     /** Reported through its host (the report keeps what the host wrote in it). */
     suspend fun reportVoiceRoom(roomId: String, reason: ReportReason)
+
+    // ---- Links in chats (036: edge function link-meta) ----
+
+    /** A web page's title, description, image and site for its card in the chat; null when it can't be read. Never throws. */
+    suspend fun linkPreview(url: String): LinkPreview?
 
     // ---- Notifications and unread counts (023_notifications.sql) ----
 

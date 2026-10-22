@@ -100,7 +100,8 @@ data class ChatState(
     val partnerRead: Long = 0,
 )
 
-data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0)
+/** [partnerTyping]: their "typing" signal, for 4 s after the last one (the backend's events say when it stops). */
+data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0, val partnerTyping: Boolean = false)
 
 data class UiState(
     val booting: Boolean = true,
@@ -161,6 +162,9 @@ class AppViewModel(
 
     /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
     val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock, visible = foreground)
+
+    /** Link cards in every chat (link-meta), remembered per address while the app runs. */
+    val linkCards = LinkCards(backend, viewModelScope)
 
     /** Notifications, unread counts, interests, photos, invites and the first run. */
     val social = SocialController(backend, viewModelScope, ::notice, ::explain, photos, firstRun, push.enabled) { me ->
@@ -763,13 +767,19 @@ class AppViewModel(
     }
 
     private var lastTypingSentMs = Long.MIN_VALUE / 2
+    private var lastTypingTo: String? = null
 
-    /** Called on every keystroke; tells the other person at most every 3 s. */
+    /**
+     * Called on every keystroke; tells the other person at most every 3 s. A friend's thread open over a minimised
+     * random chat is the one being typed in.
+     */
     fun typing() {
-        val id = _state.value.chat?.match?.id ?: _state.value.dm?.recent?.matchId ?: return
+        val s = _state.value
+        val id = (if (s.dm != null && (s.chat == null || s.chatMinimised)) s.dm.recent.matchId else s.chat?.match?.id) ?: return
         val now = clock()
-        if (now - lastTypingSentMs < TYPING_EVERY_MS) return
+        if (id == lastTypingTo && now - lastTypingSentMs < TYPING_EVERY_MS) return
         lastTypingSentMs = now
+        lastTypingTo = id
         viewModelScope.launch { runCatching { backend.sendTyping(id) } }
     }
 
@@ -979,8 +989,11 @@ class AppViewModel(
                 backend.events(r.matchId, live = false, afterId = h?.maxOfOrNull { it.id })
                     .collect { e ->
                         when (e) {
-                            is MatchEvent.NewMessage -> updateDm(r.matchId) { merge(it, listOf(e.message)) }
+                            is MatchEvent.NewMessage -> updateDmState(r.matchId) {
+                                it.copy(messages = merge(it.messages, listOf(e.message)), partnerTyping = it.partnerTyping && e.message.fromMe)
+                            }
                             is MatchEvent.Read -> updateDmState(r.matchId) { it.copy(partnerRead = maxOf(it.partnerRead, e.upto)) }
+                            is MatchEvent.Typing -> updateDmState(r.matchId) { it.copy(partnerTyping = e.on) }
                             else -> Unit
                         }
                     }

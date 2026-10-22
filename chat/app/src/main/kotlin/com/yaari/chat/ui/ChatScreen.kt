@@ -328,7 +328,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
 
 /** Light header for friend messages (DMs): back, avatar, name with flag and a subtitle. */
 @Composable
-private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, onBack: () -> Unit) {
+private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, onBack: () -> Unit, typing: Boolean = false) {
     Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
             Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 12.dp),
@@ -345,7 +345,10 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, o
                         Text(partner.nameWithFlag(), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
                     }
-                    Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        subtitle, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        color = if (typing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }
@@ -359,8 +362,14 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
     SecureScreen()
     BackHandler { vm.closeDm() }
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
-        ChatBar(r.partner, r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) }, onBack = vm::closeDm)
-        Messages(dm.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), partnerRead = dm.partnerRead)
+        ChatBar(
+            r.partner, if (dm.partnerTyping) stringResource(R.string.typing) else r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) },
+            onBack = vm::closeDm, typing = dm.partnerTyping,
+        )
+        Messages(
+            dm.messages, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
+            partnerRead = dm.partnerRead,
+        )
         Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
     }
 }

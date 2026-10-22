@@ -14,6 +14,8 @@ import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.LinkPreview
+import com.yaari.chat.model.Links
 import com.yaari.chat.model.VoiceLine
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -846,6 +848,16 @@ open class FakeBackend(
     /** The demo's videos carry their titles; anything else is "YouTube video". */
     override suspend fun videoTitle(videoId: String) = FakeVoice.TRACKS[videoId]?.first.orEmpty()
     override suspend fun voiceAction(roomId: String, action: VoiceAction) = voice.act(roomId, action)
+    override suspend fun sendVoiceTyping(roomId: String, name: String) = Unit
+
+    /** The demo makes no network calls: a card from the address itself (a few known sites get a description). */
+    override suspend fun linkPreview(url: String): LinkPreview? {
+        if (!Links.isWeb(url)) return null
+        wait(250)
+        val host = Links.host(url)
+        val known = DEMO_SITES[host]
+        return LinkPreview(url, known?.first ?: host, known?.second, null, host)
+    }
 
     override suspend fun reportVoiceRoom(roomId: String, reason: ReportReason) {
         val host = voice.hostOf(roomId) ?: throw BackendException("not_found")
@@ -857,6 +869,13 @@ open class FakeBackend(
         const val DEMO_OTP = "123456"
         /** The demo's identity check: nothing to open, the check passes on return (see openVerification). */
         const val KYC_URL = "demo://kyc"
+        /** Link cards the demo knows without the network: host to (title, description). */
+        private val DEMO_SITES = mapOf(
+            "wikipedia.org" to ("Wikipedia" to "The free encyclopedia"),
+            "en.wikipedia.org" to ("Wikipedia" to "The free encyclopedia"),
+            "cricbuzz.com" to ("Cricbuzz" to "Live cricket scores and news"),
+            "yaari-web.vercel.app" to ("Yaari" to "Talk to new people across India"),
+        )
         private const val DAY = 86_400_000L
 
         /** manner_refresh: starts at 50; a bad rating weighs double. */

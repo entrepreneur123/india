@@ -45,6 +45,9 @@ import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.RoomRules
 import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.LinkPreview
+import com.yaari.chat.model.Links
+import com.yaari.chat.model.RoomStage
 import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
@@ -931,6 +934,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("created_at") val createdAt: String,
     )
     @Serializable private data class VoiceRevRow(val rev: Long = 0, @SerialName("ended_at") val endedAt: String? = null)
+    /** The edge function link-meta (036). */
+    @Serializable private data class LinkMetaRow(
+        val url: String? = null, val title: String? = null, val description: String? = null, val image: String? = null, val site: String? = null,
+        val frameable: Boolean = false,
+    )
     @Serializable private data class VoiceSeqRow(val seq: Long = 0)
 
     /**
@@ -942,6 +950,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     }
 
     private val voiceLive = ConcurrentHashMap<String, VoiceLive>()
+    /** The room's public typing channel (vtyping-<room>, as the web), while its session runs. */
+    private val voiceTyping = ConcurrentHashMap<String, RealtimeChannel>()
     private val serverClock = ServerClock()
 
     override suspend fun voiceRooms(query: RoomQuery): List<VoiceRoomSummary> = call {
@@ -1223,8 +1233,39 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             VoiceAction.Pause -> rpc("voice_pause")
             VoiceAction.Resume -> rpc("voice_resume")
             is VoiceAction.Skip -> rpc("voice_skip") { (action.trackId ?: live?.room?.track?.id)?.let { put("p_current", it) } }
+            is VoiceAction.Seek -> rpc("voice_seek") { put("p_ms", action.ms) }
+            is VoiceAction.ShareLink -> {
+                rpc("voice_share_link") { put("p_url", action.url); put("p_title", action.title?.take(200)) }
+                // 037: everyone gets the change over Broadcast; the sharer also reads the state back at once.
+                live?.refresh?.invoke()
+                return@call
+            }
         }
         live?.acted?.invoke() // its change arrives over Broadcast; fetched only while that is down
+    }
+
+    override suspend fun sendVoiceTyping(roomId: String, name: String) {
+        val ch = voiceTyping[roomId] ?: return
+        runCatching { ch.broadcast("typing", buildJsonObject { put("id", uid); put("name", name) }) }
+    }
+
+    /** link-meta (036): fetched by the server (only public https pages), so the phone never loads the page for a card. */
+    override suspend fun linkPreview(url: String): LinkPreview? {
+        if (!Links.isWeb(url) || url.length > Links.MAX_URL) return null
+        return try {
+            val r = withTimeoutOrNull(LINK_META_MS) {
+                client.functions.invoke("link-meta", body = buildJsonObject { put("url", url) }).body<LinkMetaRow>()
+            } ?: return null
+            LinkPreview(
+                url = r.url?.takeIf(Links::isWeb) ?: url, title = r.title?.trim()?.ifEmpty { null },
+                description = r.description?.trim()?.ifEmpty { null }, image = r.image?.takeIf { it.startsWith("https://") },
+                site = r.site?.trim()?.ifEmpty { null },
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /** Applies the room's state to LiveKit (edge function voice-sync). Fire and forget: the host re-checks every minute. */
@@ -1506,6 +1547,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             table = "voice_messages"
             filter("room_id", FilterOperator.EQ, roomId)
         }
+        // Typing in the chat: a public broadcast topic shared with the web app ({id, name}), nothing stored.
+        val typing = client.channel("vtyping-$roomId")
+        val typingEvents = typing.broadcastFlow<JsonObject>("typing")
         try {
             // Enter first: a refusal (ended, removed, blocked) fails the flow before anything else starts.
             val sent = System.currentTimeMillis()
@@ -1514,6 +1558,13 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             apply(state, sent)
 
             launch { changeEvents.collect { o -> VoiceChange.parse(json, o)?.let { onChange(it) } } }
+            launch {
+                typingEvents.collect { o ->
+                    val id = o["id"]?.jsonPrimitive?.contentOrNull ?: return@collect
+                    val name = o["name"]?.jsonPrimitive?.contentOrNull.orEmpty().take(60)
+                    if (id != me) send(VoiceEvent.Typing(id, name))
+                }
+            }
             launch {
                 for (x in render) {
                     delay(RENDER_MS)
@@ -1573,6 +1624,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             // A topic left over from a session that is still closing would take this one's messages with it.
             client.realtime.subscriptions[changes.topic]?.takeIf { it !== changes }?.let { runCatching { client.realtime.removeChannel(it) } }
             changes.subscribe()
+            client.realtime.subscriptions[typing.topic]?.takeIf { it !== typing }?.let { runCatching { client.realtime.removeChannel(it) } }
+            voiceTyping[roomId] = typing
+            typing.subscribe()
             while (true) {
                 withTimeoutOrNull(ChangeOrder.resyncMs(broadcastUp && linesUp)) { resync.receive() }
                 AppForeground.visible.awaitVisible()
@@ -1598,6 +1652,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 runCatching { client.realtime.removeChannel(channel) }
                 // Only while it is still this session's: a newer session for the same room may hold the topic now.
                 if (client.realtime.subscriptions[changes.topic] === changes) runCatching { client.realtime.removeChannel(changes) }
+                voiceTyping.remove(roomId, typing)
+                if (client.realtime.subscriptions[typing.topic] === typing) runCatching { client.realtime.removeChannel(typing) }
             }
         }
     }
@@ -1619,6 +1675,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 VoiceTrack(it.id, it.videoId, it.title, it.by, serverClock.toLocal(it.startedAt), it.pausedAt?.let(serverClock::toLocal))
             },
             queue = s.queue.map { VoiceQueueItem(it.id, it.videoId, it.title, it.by, it.votes, it.voted) },
+            stage = s.stage?.takeIf { Links.isWeb(it.url) }?.let { RoomStage(it.url, it.title, it.by, it.byId, it.at) },
         )
     }
 
@@ -1759,6 +1816,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val RENDER_MS = 60L
         private const val REJOIN_SETTLE_MS = 500L
         private const val HEARTBEAT_MS = 20_000L
+        /** link-meta reads the page for up to 6 s itself. */
+        private const val LINK_META_MS = 9_000L
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
             "verify_required", "manner_low", "already_verified", "kyc_unavailable", "kyc_failed", "already_rated", "too_late",

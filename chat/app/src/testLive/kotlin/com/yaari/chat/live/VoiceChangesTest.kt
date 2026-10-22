@@ -36,6 +36,16 @@ class VoiceChangesTest {
         assertEquals(listOf("h", "c", "a", "b"), seated.members.map { it.id })
     }
 
+    @Test fun theSharedPageComesWithTheRoomsChangesAndStaysWhenAnEventLacksIt() {
+        val base = """"t":"r","title":"Chai","category":"talk","mode":"hand","host":"h","locked":[],"music":null,"queue":[],"max":50,"private":false,"ended":false"""
+        val shared = change("""{$base,"stage":{"url":"https://example.com/a","title":"A","by":"Meera","byId":"h","at":77},"seq":5}""")!!
+        val s = state.apply(shared, "me")
+        assertEquals(VoiceStageRow("https://example.com/a", "A", "Meera", "h", 77), s.stage)
+        // An event from a server without the key (before 037) keeps it; an explicit null stops it.
+        assertEquals(s.stage, s.apply(change("""{$base,"seq":6}""")!!, "me").stage)
+        assertNull(s.apply(change("""{$base,"stage":null,"seq":7}""")!!, "me").stage)
+    }
+
     @Test fun aMemberGoing() {
         val gone = change("""{"t":"m","id":"a","present":false,"seq":5}""")!!
         assertEquals(listOf("h", "b"), state.apply(gone, "me").members.map { it.id })

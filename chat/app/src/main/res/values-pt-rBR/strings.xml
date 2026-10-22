@@ -849,4 +849,33 @@
         <item quantity="many">%1$d avaliações</item>
         <item quantity="other">%1$d avaliações</item>
     </plurals>
+    <!-- 0.13.0: room powers, typing, links -->
+    <string name="link_not_shareable">Só páginas https podem ser mostradas para todos.</string>
+    <string name="link_shared">Agora todos na sala veem a página</string>
+    <string name="link_viewer">Página da web</string>
+    <string name="link_reload">Recarregar</string>
+    <string name="link_open_browser">Abrir no navegador</string>
+    <string name="link_share_hint">Todos na sala veem esta página ao lado do chat.</string>
+    <string name="link_share">Mostrar para todos</string>
+    <string name="link_shared_by">Compartilhado por %1$s</string>
+    <string name="link_stop_sharing">Parar de compartilhar</string>
+    <string name="link_close_for_me">Fechar para mim</string>
+    <string name="link_open">Abrir %1$s</string>
+    <string name="link_open_video">Abrir o vídeo no YouTube</string>
+    <string name="link_request_song">Pedir esta música</string>
+    <string name="music_seek">Posição da música para todos</string>
+    <string name="music_play_mine">Tocar no meu celular</string>
+    <string name="music_pause_mine">Pausar no meu celular</string>
+    <string name="music_unmute_mine">Ativar o som da música no meu celular</string>
+    <string name="music_mute_mine">Silenciar a música no meu celular</string>
+    <string name="music_volume">Volume da música no meu celular</string>
+    <string name="music_paused_mine">Pausado no seu celular. Toque para acompanhar a sala.</string>
+    <string name="room_typing_one">%1$s está digitando…</string>
+    <string name="room_on_stage_n">No palco · %1$d</string>
+    <string name="room_show_seats">Lugares</string>
+    <string name="room_hide_seats">Ocultar lugares</string>
+    <plurals name="room_typing_many">
+        <item quantity="one">%1$d pessoa está digitando…</item>
+        <item quantity="other">%1$d pessoas estão digitando…</item>
+    </plurals>
 </resources>

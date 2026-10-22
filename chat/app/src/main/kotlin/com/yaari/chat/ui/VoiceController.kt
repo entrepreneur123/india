@@ -86,10 +86,22 @@ data class VoiceState(
     val photoBusy: Boolean = false,
     /** A song request whose title is being looked up (its video id). */
     val adding: String? = null,
+    /** People typing in the chat right now (user id, in the order they started); each goes 4 s after their last signal. */
+    val typing: List<String> = emptyList(),
+    /** The shared page I closed for myself (its [com.yaari.chat.model.RoomStage.at]); a new share shows again. */
+    val hiddenStage: Long? = null,
 ) {
     val me get() = room?.me
     val isHost get() = me?.role == VoiceRole.HOST
     val isMod get() = me?.isMod == true
+    /** Music for everyone: the host or a co-host (036). */
+    val canDj get() = room?.canDj == true
+
+    /** Who is typing, as the room lists them (never me; someone who left is not shown). */
+    val typers get() = room?.let { r -> typing.filter { it != r.meId }.mapNotNull { r.member(it)?.profile?.name } }.orEmpty()
+
+    /** The shared page, unless I closed it. */
+    val shownStage get() = room?.stage?.takeIf { it.at != hiddenStage }
     /** Raised hands a host or co-host should see. */
     val hands get() = if (isMod) room?.audience?.count { it.hand } ?: 0 else 0
 
@@ -132,6 +144,9 @@ class VoiceController(
 
     private var session: Job? = null
     private var listJob: Job? = null
+    /** Each typer's expiry (cancelled by a newer signal or their line). Only touched on the main thread. */
+    private val typingOff = mutableMapOf<String, Job>()
+    private var lastTypingSent = Long.MIN_VALUE / 2
     private var reactionSeq = 0L
 
     /**
@@ -268,7 +283,10 @@ class VoiceController(
                         }
                         is VoiceEvent.Levels -> _levels.value = e.levels
                         is VoiceEvent.Audio -> update(roomId) { it.copy(audio = e.audio) }
+                        is VoiceEvent.Typing -> onTyping(roomId, e.userId)
                         is VoiceEvent.Line -> {
+                            // Their line arrived: they stopped typing.
+                            (e.line as? VoiceLine.Text)?.let { if (!it.fromMe) stopTyping(roomId, it.sender.id) }
                             update(roomId) { it.copy(lines = merge(it.lines, listOf(e.line))) }
                             (e.line as? VoiceLine.Poll)?.let { launch { pollsFor(roomId, listOf(it)) } }
                         }
@@ -338,6 +356,55 @@ class VoiceController(
             update(roomId) { it.copy(lines = it.lines ?: emptyList()) }
         }
     }
+
+    // ---- typing ----
+
+    /** Someone else in the room is typing: shown until 4 s after their last signal or their line. */
+    private fun CoroutineScope.onTyping(roomId: String, userId: String) {
+        val room = _state.value?.takeIf { it.roomId == roomId }?.room ?: return
+        if (userId == room.meId || room.member(userId) == null) return
+        typingOff.remove(userId)?.cancel()
+        update(roomId) { s -> if (userId in s.typing) s else s.copy(typing = s.typing + userId) }
+        typingOff[userId] = launch {
+            delay(TYPING_SHOWN_MS)
+            typingOff.remove(userId)
+            update(roomId) { s -> s.copy(typing = s.typing - userId) }
+        }
+    }
+
+    private fun stopTyping(roomId: String, userId: String) {
+        typingOff.remove(userId)?.cancel()
+        update(roomId) { s -> if (userId in s.typing) s.copy(typing = s.typing - userId) else s }
+    }
+
+    /** Called on every keystroke in the room's composer; tells the room at most every 2.5 s. */
+    fun typing() {
+        val s = _state.value ?: return
+        val name = s.me?.profile?.name ?: return
+        val now = wallClock()
+        if (now - lastTypingSent in 0 until TYPING_EVERY_MS) return
+        lastTypingSent = now
+        scope.launch { runCatching { backend.sendVoiceTyping(s.roomId, name) } }
+    }
+
+    // ---- the shared page (036) ----
+
+    /**
+     * Host or co-host: pins [url] next to everyone's chat ([title]: the page's, when known). Only https pages the server
+     * accepts; anything else is said at once. [done] when it is shared.
+     */
+    fun shareLink(url: String, title: String?, done: () -> Unit = {}) {
+        val s = _state.value ?: return
+        if (s.room?.canShare != true) return notice(UiText(R.string.err_not_allowed))
+        if (!com.yaari.chat.model.Links.shareable(url)) return notice(UiText(R.string.link_not_shareable))
+        act(VoiceAction.ShareLink(url, title?.trim()?.take(200)?.ifEmpty { null }), UiText(R.string.link_shared)) { ok -> if (ok) done() }
+    }
+
+    /** Host or co-host: nobody sees the shared page any more. */
+    fun stopSharing() = act(VoiceAction.ShareLink(null))
+
+    /** Closes the shared page on my phone only (until something new is shared). */
+    fun hideStage() = _state.update { s -> s?.copy(hiddenStage = s.room?.stage?.at) }
 
     // ---- polls ----
 
@@ -473,6 +540,8 @@ class VoiceController(
         if (_state.value?.roomId != roomId) return
         val job = session
         session = null
+        typingOff.values.forEach { it.cancel() }
+        typingOff.clear()
         _state.value = null
         _levels.value = emptyMap()
         if (leave) scope.launch { runCatching { backend.leaveVoice(roomId) } }
@@ -690,7 +759,7 @@ class VoiceController(
         scope.launch {
             val title = backend.videoTitle(videoId)
             update(s.roomId) { it.copy(adding = null) }
-            act(VoiceAction.AddTrack(videoId, title), UiText(if (s.isHost) R.string.voice_added else R.string.voice_suggested), done)
+            act(VoiceAction.AddTrack(videoId, title), UiText(if (s.isMod) R.string.voice_added else R.string.voice_suggested), done)
         }
     }
 
@@ -747,6 +816,10 @@ class VoiceController(
         }
 
         const val REACTION_MS = 2_600L
+        /** Someone's "typing" shows this long after their last signal (as random chat). */
+        const val TYPING_SHOWN_MS = 4_000L
+        /** My typing signal goes out at most this often. */
+        const val TYPING_EVERY_MS = 2_500L
         const val MAX_REACTIONS = 12
         /** A long session keeps the latest lines (the server keeps none for long: rooms are not recorded). */
         const val MAX_LINES = 300

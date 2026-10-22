@@ -262,6 +262,23 @@ class AppViewModelTest {
         assertEquals(2, texts.size)
     }
 
+    @Test fun aFriendThreadShowsTheirTyping() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        now += 5_000
+        val partner = vm.state.value.chat!!.match.partner
+        vm.leave(next = false); advanceUntilIdle()
+        vm.openDm(partner.id)
+        advanceTimeBy(100); runCurrent()
+        assertFalse(vm.state.value.dm!!.partnerTyping)
+        vm.sendDm("still there?")
+        advanceTimeBy(300); runCurrent()
+        assertTrue("they type before answering", vm.state.value.dm!!.partnerTyping)
+        advanceTimeBy(5_000); runCurrent()
+        assertFalse(vm.state.value.dm!!.partnerTyping)
+        assertEquals(2, vm.state.value.dm!!.messages.size)
+    }
+
     @Test fun deletingTheAccountStartsOver() = runTest(dispatcher) {
         val vm = signedIn()
         matched(vm)

@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -94,6 +95,17 @@ class RoomPlayer {
         internal set
     var state by mutableStateOf(PlayerState.LOADING)
         internal set
+
+    // ---- what each person controls on their own phone (036: the room's play, pause and seek are the DJ's) ----
+
+    /** Paused on this phone only; playing again puts it back in step with the room. A new song plays again. */
+    var localPaused by mutableStateOf(false)
+    /** This phone's volume for the room's music, 0..100 (YouTube's scale). */
+    var volume by mutableIntStateOf(100)
+    var muted by mutableStateOf(false)
+
+    // Not offered: a quality choice. YouTube's IFrame API ignores setPlaybackQuality (it picks the quality from the
+    // player's size and the connection), and android-youtube-player has no way around that, so a menu would lie.
 }
 
 val LocalRoomPlayer = staticCompositionLocalOf { RoomPlayer() }
@@ -149,11 +161,13 @@ fun RoomPlayerHost(vm: AppViewModel) {
     LaunchedEffect(track.id) {
         player.duration = 0f
         player.state = PlayerState.LOADING
+        player.localPaused = false
     }
     val expanded = state.expanded
-    val host = state.isHost
+    val dj = state.canDj
     val trackId = track.id
-    val onEnded: (() -> Unit)? = if (host) ({ vm.voice.act(VoiceAction.Skip(trackId)) }) else null
+    // The host or a co-host moves the room on when the song ends (the server ignores a second skip of the same song).
+    val onEnded: (() -> Unit)? = if (dj) ({ vm.voice.act(VoiceAction.Skip(trackId)) }) else null
     Box(Modifier.fillMaxSize().onGloballyPositioned { origin = it.positionInWindow() }) {
         // Read while laying out and drawing (not composing): a slot that scrolls moves the player frame by frame.
         fun shown() = expanded && player.slot != null && (player.clip?.let { it.width > 0f && it.height > 0f } == true)
@@ -174,8 +188,13 @@ fun RoomPlayerHost(vm: AppViewModel) {
                 }.clip(RoundedCornerShape(16.dp)).background(Color.Black).testTag(PLAYER_TAG),
             ) {
                 if (LocalYouTubePlayer.current) {
-                    YouTubeView(track, onEnded, onDuration = { player.duration = it }) { player.state = it }
+                    YouTubeView(
+                        track, onEnded, player.localPaused, player.volume, player.muted, onDuration = { player.duration = it },
+                    ) { player.state = it }
                 }
+                // The video itself takes no touches: YouTube's own controls would pause or seek it out of step with the
+                // room. The room's controls (and this phone's pause and volume) are under the player.
+                Box(Modifier.fillMaxSize().blockTouches())
                 if (player.state != PlayerState.READY) PlayerStatus(track, player.state)
             }
         }
@@ -232,13 +251,17 @@ private fun PlayerStatus(track: VoiceTrack, state: PlayerState) {
  * open); leaving the room or stopping listening releases it.
  */
 @Composable
-private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (Float) -> Unit, onState: (PlayerState) -> Unit) {
+private fun YouTubeView(
+    track: VoiceTrack, onEnded: (() -> Unit)?, localPaused: Boolean, volume: Int, muted: Boolean,
+    onDuration: (Float) -> Unit, onState: (PlayerState) -> Unit,
+) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val current by rememberUpdatedState(track)
     val ended by rememberUpdatedState(onEnded)
     val report by rememberUpdatedState(onState)
     val duration by rememberUpdatedState(onDuration)
+    val holding by rememberUpdatedState(localPaused)
     var player by remember { mutableStateOf<YouTubePlayer?>(null) }
     var ready by remember { mutableStateOf(false) }
     var loadedId by remember { mutableStateOf<String?>(null) }
@@ -253,7 +276,7 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (
                 val t = current
                 val at = t.position(System.currentTimeMillis())
                 loadedId = t.videoId
-                if (t.pausedAt == null) youTubePlayer.loadVideo(t.videoId, at) else youTubePlayer.cueVideo(t.videoId, at)
+                if (t.pausedAt == null && !holding) youTubePlayer.loadVideo(t.videoId, at) else youTubePlayer.cueVideo(t.videoId, at)
                 player = youTubePlayer
                 ready = true
                 report(PlayerState.READY)
@@ -271,7 +294,8 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (
                 duration(duration)
             }
         }
-        val options = IFramePlayerOptions.Builder(context).controls(1).rel(0).ivLoadPolicy(3).build()
+        // No YouTube controls: play, pause and seek are the room's (the host's and co-hosts'), shown under the player.
+        val options = IFramePlayerOptions.Builder(context).controls(0).rel(0).ivLoadPolicy(3).fullscreen(0).build()
         view.initialize(listener, true, options)
         onDispose {
             lifecycle.removeObserver(view)
@@ -284,17 +308,24 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (
         delay(12_000)
         if (!ready) report(PlayerState.FAILED)
     }
-    // Follow the room: a new track, the host pausing or resuming.
-    LaunchedEffect(player, track.videoId, track.startedAt, track.pausedAt) {
+    // Follow the room: a new track, the DJ pausing, resuming or seeking; and my own pause (playing again re-syncs).
+    LaunchedEffect(player, track.videoId, track.startedAt, track.pausedAt, localPaused) {
         val p = player ?: return@LaunchedEffect
         val at = track.position(System.currentTimeMillis())
         if (loadedId != track.videoId) {
             loadedId = track.videoId
-            if (track.pausedAt == null) p.loadVideo(track.videoId, at) else p.cueVideo(track.videoId, at)
+            if (track.pausedAt == null && !localPaused) p.loadVideo(track.videoId, at) else p.cueVideo(track.videoId, at)
             return@LaunchedEffect
         }
+        if (localPaused) return@LaunchedEffect p.pause()
         VoiceController.seekTarget(tracker.currentSecond, track, System.currentTimeMillis())?.let(p::seekTo)
         if (track.pausedAt != null) p.pause() else if (tracker.state != PlayerConstants.PlayerState.PLAYING) p.play()
+    }
+    // This phone's volume (0..100) and mute.
+    LaunchedEffect(player, volume, muted) {
+        val p = player ?: return@LaunchedEffect
+        p.setVolume(volume.coerceIn(0, 100))
+        if (muted) p.mute() else p.unMute()
     }
     // Stay in step with everyone while playing (a slow phone or a buffering pause drifts behind).
     LaunchedEffect(player) {
@@ -302,7 +333,7 @@ private fun YouTubeView(track: VoiceTrack, onEnded: (() -> Unit)?, onDuration: (
         while (true) {
             delay(5_000)
             val t = current
-            if (t.pausedAt == null && tracker.state == PlayerConstants.PlayerState.PLAYING) {
+            if (t.pausedAt == null && !holding && tracker.state == PlayerConstants.PlayerState.PLAYING) {
                 VoiceController.seekTarget(tracker.currentSecond, t, System.currentTimeMillis())?.let(p::seekTo)
             }
         }

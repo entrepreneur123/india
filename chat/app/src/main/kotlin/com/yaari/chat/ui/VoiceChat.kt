@@ -123,7 +123,9 @@ import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceRole
 import com.yaari.chat.model.VoiceRoom
+import androidx.compose.ui.res.pluralStringResource
 import kotlinx.coroutines.launch
 
 // ---- A room's chat: bubbles, photos (blurred until tapped), icebreaker cards, system lines; and the composer ------
@@ -142,6 +144,14 @@ data class RoomChat(
     val onVote: (Long, Int) -> Unit = { _, _ -> },
     val onClosePoll: (Long) -> Unit = {},
     val canClose: (VoicePoll) -> Boolean = { false },
+    /** The host's and co-hosts' ids, for the badge by their name. */
+    val roles: Map<String, VoiceRole> = emptyMap(),
+    /** Who is typing right now (names, never mine). */
+    val typing: List<String> = emptyList(),
+    /** A link tapped in a line (null: the app's viewer as in any chat). The room passes one that offers sharing. */
+    val onLink: ((String) -> Unit)? = null,
+    /** A YouTube link's "Request this song". */
+    val onRequestSong: ((String) -> Unit)? = null,
 )
 
 /**
@@ -240,6 +250,13 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                     }
                 }
                 if (quiet && onIcebreaker != null) item(key = "invite") { IcebreakerInvite(onIcebreaker) }
+                item(key = "typing") {
+                    AnimatedVisibility(chat.typing.isNotEmpty(), enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                        var last by remember { mutableStateOf(chat.typing) }
+                        if (chat.typing.isNotEmpty()) last = chat.typing
+                        RoomTyping(last)
+                    }
+                }
             }
         }
         Text(
@@ -256,6 +273,24 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                 Text(stringResource(R.string.voice_new_messages), color = Color.White, style = MaterialTheme.typography.labelLarge)
             }
         }
+    }
+}
+
+/**
+ * "Asha is typing…" / "3 people are typing…" under the last line: three hopping dots in an incoming bubble (the random
+ * chat's own), with who it is.
+ */
+@Composable
+private fun RoomTyping(names: List<String>) {
+    val text = if (names.size == 1) stringResource(R.string.room_typing_one, names[0])
+    else pluralStringResource(R.plurals.room_typing_many, names.size, names.size)
+    Row(Modifier.fillMaxWidth().padding(top = 8.dp).semantics(mergeDescendants = true) { contentDescription = text }, verticalAlignment = Alignment.CenterVertically) {
+        Spacer(Modifier.width(30.dp))
+        TypingBubble()
+        Text(
+            text, Modifier.padding(start = 8.dp).weight(1f), style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -374,7 +409,8 @@ private fun withMentions(text: String, names: List<String>, color: Color): Annot
 private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onMenu: () -> Unit, onQuote: (Long) -> Unit, onPerson: () -> Unit) {
     val colors = chatColors()
     val mentioned = !line.fromMe && VoiceController.mentions(line.text, chat.myName)
-    val text = withMentions(line.text, chat.names + chat.myName, Brand.PinkOnDark)
+    val text = rememberLinked(withMentions(line.text, chat.names + chat.myName, Brand.PinkOnDark), colors.link, chat.onLink)
+    val card: @Composable () -> Unit = { MessageLinkCard(line.text, Modifier.padding(top = 2.dp, bottom = 4.dp), chat.onRequestSong, chat.onLink) }
     val press = Modifier.combinedClickable(interactionSource = null, indication = null, onLongClick = onMenu, onClick = {})
     val quote: @Composable () -> Unit = { line.reply?.let { r -> Quote(r, mine = r.senderId == chat.myId, onClick = { onQuote(r.id) }) } }
     if (line.fromMe) {
@@ -383,6 +419,7 @@ private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onM
                 BubbleShell(mine = true, tail = !grouped, modifier = press, padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp)) {
                     Column(Modifier.width(IntrinsicSize.Max)) {
                         quote()
+                        card()
                         TextWithMeta(text, colors.text, meta = { BubbleMeta(line.at, mine = false, read = false) })
                     }
                 }
@@ -404,8 +441,18 @@ private fun ChatLine(line: VoiceLine.Text, grouped: Boolean, chat: RoomChat, onM
         else Avatar(line.sender, 28.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onPerson))
         BubbleShell(mine = false, tail = !grouped, modifier = Modifier.padding(start = 2.dp).then(press), padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 5.dp)) {
             Column(Modifier.width(IntrinsicSize.Max)) {
-                if (!grouped) SenderName(line.sender.name, line.sender.id, onPerson)
+                if (!grouped) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SenderName(line.sender.name, line.sender.id, onPerson, Modifier.weight(1f, fill = false))
+                        when (chat.roles[line.sender.id]) {
+                            VoiceRole.HOST -> RoleBadge(stringResource(R.string.voice_host), Modifier.padding(start = 6.dp, bottom = 2.dp))
+                            VoiceRole.COHOST -> RoleBadge(stringResource(R.string.voice_cohost), Modifier.padding(start = 6.dp, bottom = 2.dp))
+                            else -> Unit
+                        }
+                    }
+                }
                 quote()
+                card()
                 TextWithMeta(text, colors.text, meta = { BubbleMeta(line.at, mine = false, read = false) })
             }
         }
@@ -565,7 +612,7 @@ private fun IcebreakerInvite(onPost: () -> Unit) {
 fun VoiceComposer(
     modifier: Modifier, photoBusy: Boolean, onPhoto: (String) -> Unit, onIcebreaker: () -> Unit,
     replyTo: VoiceReply? = null, myId: String = "", onCancelReply: () -> Unit = {}, people: List<Profile> = emptyList(),
-    onPoll: (() -> Unit)? = null, onSend: (String, () -> Unit) -> Unit,
+    onPoll: (() -> Unit)? = null, onTyping: () -> Unit = {}, onSend: (String, () -> Unit) -> Unit,
 ) {
     var field by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
     val text = field.text
@@ -651,7 +698,11 @@ fun VoiceComposer(
                     Text(hint, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 BasicTextField(
-                    field, { v -> field = if (v.text.length > VoiceRoom.MAX_TEXT) v.copy(text = v.text.take(VoiceRoom.MAX_TEXT)) else v },
+                    field, { v ->
+                        // A real edit (not the cursor moving) tells the room I'm typing (at most every 2.5 s).
+                        if (v.text != field.text && v.text.isNotBlank()) onTyping()
+                        field = if (v.text.length > VoiceRoom.MAX_TEXT) v.copy(text = v.text.take(VoiceRoom.MAX_TEXT)) else v
+                    },
                     Modifier.fillMaxWidth().focusRequester(focus).semantics { contentDescription = hint },
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                     cursorBrush = SolidColor(Brand.Pink), maxLines = 3,

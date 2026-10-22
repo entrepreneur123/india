@@ -182,12 +182,13 @@ class RoomSessionScreensTest {
         compose.waitUntil(5_000) { vm.voice.state.value?.room?.track != null }
         waitFor("Paused for you")
         assertFalse("no player before Listen", player())
-        click("Listen")
+        // The exact button: "Listening · N" (the listeners' block, always shown now) also contains "Listen".
+        compose.onAllNodes(hasText("Listen"))[0].performClick()
         compose.waitUntil(5_000) { vm.voice.state.value?.playing == true }
         compose.waitUntil(5_000) { player() }
         shot("06_music_open")
 
-        compose.onNode(hasContentDescription("Hide player")).performClick()
+        compose.onNode(hasContentDescription("Hide player")).performScrollTo().performClick()
         waitFor("Playing for you")
         assertEquals(false, vm.voice.state.value?.musicOpen)
         assertEquals(true, vm.voice.state.value?.playing)

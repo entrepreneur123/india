@@ -59,6 +59,8 @@ enum class Glyph(val color: Long) {
     ICEBREAKER(0xFF6E97FF),
     /** A room poll: answer bars. */
     POLL(0xFF22B8A6),
+    /** A web link: two chain links (link cards, the page shared in a room). */
+    LINK(0xFF4C9BF0),
 }
 
 fun VoiceReaction.glyph(): Glyph = when (this) {
@@ -163,6 +165,16 @@ private val GlyphParts: Map<Glyph, List<Part>> = mapOf(
         Fill("M10 3.4c.6 5.6 2.5 7.6 8.1 8.4-5.6.8-7.5 2.8-8.1 8.4-.6-5.6-2.5-7.6-8.1-8.4 5.6-.8 7.5-2.8 8.1-8.4z", Ink.M),
         Fill("M18.6 2.2c.28 1.75.95 2.5 2.7 2.8-1.75.3-2.42 1.05-2.7 2.8-.28-1.75-.95-2.5-2.7-2.8 1.75-.3 2.42-1.05 2.7-2.8z", Ink.L),
         Fill(circle(19.2f, 18.6f, 1.6f), Ink.L),
+    ),
+    // Two chain links at 45°: the near one in the full colour, the far one in the light tone.
+    Glyph.LINK to listOf(
+        Turn(
+            listOf(
+                Line(rect(10.6f, 8.4f, 11f, 7.2f, 3.6f), Ink.L, 2.5f, roundJoin = true),
+                Line(rect(2.4f, 8.4f, 11f, 7.2f, 3.6f), Ink.M, 2.5f, roundJoin = true),
+            ),
+            -45f, 12f, 12f,
+        ),
     ),
     Glyph.HAND to listOf(
         Turn(listOf(Fill(HAND, Ink.M)), tx = 1.6f),

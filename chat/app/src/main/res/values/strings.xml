@@ -348,7 +348,7 @@
     <string name="voice_view_profile">View profile</string>
     <string name="voice_invite_speak">Invite to speak</string>
     <string name="voice_invited">Invited %1$s to speak</string>
-    <string name="voice_to_audience">Move to audience</string>
+    <string name="voice_to_audience">Move to listeners</string>
     <string name="voice_leave_stage">Leave the stage</string>
     <string name="voice_mute_them">Mute mic</string>
     <string name="voice_make_cohost">Make co-host</string>
@@ -847,5 +847,34 @@
     <plurals name="manner_ratings">
         <item quantity="one">%1$d rating</item>
         <item quantity="other">%1$d ratings</item>
+    </plurals>
+    <!-- 0.13.0: room powers, typing, links -->
+    <string name="link_not_shareable">Only https pages can be shown to everyone.</string>
+    <string name="link_shared">Everyone in the room can see the page now</string>
+    <string name="link_viewer">Web page</string>
+    <string name="link_reload">Reload</string>
+    <string name="link_open_browser">Open in browser</string>
+    <string name="link_share_hint">Everyone in the room sees this page next to the chat.</string>
+    <string name="link_share">Show to everyone</string>
+    <string name="link_shared_by">Shared by %1$s</string>
+    <string name="link_stop_sharing">Stop sharing</string>
+    <string name="link_close_for_me">Close for me</string>
+    <string name="link_open">Open %1$s</string>
+    <string name="link_open_video">Open the video on YouTube</string>
+    <string name="link_request_song">Request this song</string>
+    <string name="music_seek">Song position for everyone</string>
+    <string name="music_play_mine">Play on my phone</string>
+    <string name="music_pause_mine">Pause on my phone</string>
+    <string name="music_unmute_mine">Unmute the music on my phone</string>
+    <string name="music_mute_mine">Mute the music on my phone</string>
+    <string name="music_volume">Music volume on my phone</string>
+    <string name="music_paused_mine">Paused on your phone. Play to catch up with the room.</string>
+    <string name="room_typing_one">%1$s is typing…</string>
+    <string name="room_on_stage_n">On stage · %1$d</string>
+    <string name="room_show_seats">Seats</string>
+    <string name="room_hide_seats">Hide seats</string>
+    <plurals name="room_typing_many">
+        <item quantity="one">%1$d person is typing…</item>
+        <item quantity="other">%1$d people are typing…</item>
     </plurals>
 </resources>

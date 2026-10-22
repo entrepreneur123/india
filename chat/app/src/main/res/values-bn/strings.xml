@@ -846,4 +846,33 @@
         <item quantity="one">%1$dটি রেটিং</item>
         <item quantity="other">%1$dটি রেটিং</item>
     </plurals>
+    <!-- 0.13.0: room powers, typing, links -->
+    <string name="link_not_shareable">সবাইকে শুধু https পেজ দেখানো যায়।</string>
+    <string name="link_shared">এখন রুমের সবাই পেজটি দেখতে পাচ্ছেন</string>
+    <string name="link_viewer">ওয়েব পেজ</string>
+    <string name="link_reload">আবার লোড করুন</string>
+    <string name="link_open_browser">ব্রাউজারে খুলুন</string>
+    <string name="link_share_hint">রুমের সবাই চ্যাটের পাশে এই পেজটি দেখবেন।</string>
+    <string name="link_share">সবাইকে দেখান</string>
+    <string name="link_shared_by">%1$s শেয়ার করেছেন</string>
+    <string name="link_stop_sharing">শেয়ার বন্ধ করুন</string>
+    <string name="link_close_for_me">আমার জন্য বন্ধ করুন</string>
+    <string name="link_open">%1$s খুলুন</string>
+    <string name="link_open_video">ভিডিওটি YouTube-এ খুলুন</string>
+    <string name="link_request_song">এই গানটি চান</string>
+    <string name="music_seek">সবার জন্য গানের অবস্থান</string>
+    <string name="music_play_mine">আমার ফোনে চালান</string>
+    <string name="music_pause_mine">আমার ফোনে থামান</string>
+    <string name="music_unmute_mine">আমার ফোনে গানের শব্দ চালু করুন</string>
+    <string name="music_mute_mine">আমার ফোনে গান মিউট করুন</string>
+    <string name="music_volume">আমার ফোনে গানের ভলিউম</string>
+    <string name="music_paused_mine">আপনার ফোনে থেমে আছে। রুমের সাথে মেলাতে চালান।</string>
+    <string name="room_typing_one">%1$s লিখছেন…</string>
+    <string name="room_on_stage_n">স্টেজে · %1$d</string>
+    <string name="room_show_seats">সিট</string>
+    <string name="room_hide_seats">সিট লুকান</string>
+    <plurals name="room_typing_many">
+        <item quantity="one">%1$d জন লিখছেন…</item>
+        <item quantity="other">%1$d জন লিখছেন…</item>
+    </plurals>
 </resources>

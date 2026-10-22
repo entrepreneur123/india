@@ -153,7 +153,7 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
         VoiceSheet.Requests -> RequestsSheet(room, act, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         is VoiceSheet.Audience -> AudienceSheet(room, sheet.inviteSeat, act, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         is VoiceSheet.Seat -> SeatSheet(room, sheet.seat, act, onInvite = { onSheet(VoiceSheet.Audience(it)) }, onClose = close)
-        VoiceSheet.Queue -> QueueSheet(room.track, room.queue, s.isHost, s.adding, act, vm.voice::addSong, vm.voice::vote, close)
+        VoiceSheet.Queue -> QueueSheet(room.track, room.queue, s.canDj, s.adding, act, vm.voice::addSong, vm.voice::vote, close)
         VoiceSheet.Settings -> SettingsSheet(room, onSave = { title, note, lang -> vm.voice.saveSettings(title, note, lang, close) }, onClose = close)
         VoiceSheet.Invite -> {
             val app by vm.state.collectAsStateWithLifecycle()
@@ -212,14 +212,17 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
     }
 }
 
-/** Tapping a person: their card, and the host's and co-hosts' tools (Clubhouse). */
+/**
+ * Tapping a person: their card, and the host's and co-hosts' tools (Clubhouse), only those the server would allow
+ * (036): host and co-hosts invite up, mute, move to the listeners and remove (a co-host only listeners and speakers);
+ * the host makes and removes co-hosts.
+ */
 @Composable
 private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, target: VoiceMember, act: VoiceActor, onClose: () -> Unit) {
     var kick by remember { mutableStateOf(false) }
     var report by remember { mutableStateOf(false) }
     val self = target.profile.id == room.meId
     val mod = me.isMod && !self && target.role != VoiceRole.HOST
-    val host = me.role == VoiceRole.HOST && !self
     val run = { a: VoiceAction, ok: UiText? -> act(a, ok) { done -> if (done) onClose() } }
     if (!kick && !report) {
         RoomSheet(onClose) {
@@ -253,22 +256,24 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
                 if (self && target.seat != null) {
                     SheetRow(Icons.Rounded.Download, stringResource(R.string.voice_leave_stage)) { run(VoiceAction.Unseat, null) }
                 }
-                if (mod && target.seat == null) {
+                if (room.canInvite(target)) {
                     SheetRow(Icons.Outlined.PersonAdd, stringResource(R.string.voice_invite_speak), enabled = room.freeSeats > 0) {
                         run(VoiceAction.Invite(target.profile.id), UiText(R.string.voice_invited, target.profile.name))
                     }
                 }
-                if (mod && target.seat != null) {
-                    if (!target.muted) SheetRow(Icons.Rounded.MicOff, stringResource(R.string.voice_mute_them)) { run(VoiceAction.Mute(target.profile.id), null) }
+                if (mod && target.seat != null && !target.muted) {
+                    SheetRow(Icons.Rounded.MicOff, stringResource(R.string.voice_mute_them)) { run(VoiceAction.Mute(target.profile.id), null) }
+                }
+                if (room.canMoveToAudience(target)) {
                     SheetRow(Icons.Rounded.Download, stringResource(R.string.voice_to_audience)) { run(VoiceAction.ToAudience(target.profile.id), null) }
                 }
-                if (host && target.role != VoiceRole.HOST) {
+                if (room.canSetCohost(target)) {
                     val co = target.role == VoiceRole.COHOST
                     SheetRow(if (co) Icons.Outlined.RemoveModerator else Icons.Outlined.Shield, stringResource(if (co) R.string.voice_remove_cohost else R.string.voice_make_cohost)) {
                         run(VoiceAction.Cohost(target.profile.id, !co), null)
                     }
                 }
-                if (host) SheetRow(Icons.Outlined.PersonOff, stringResource(R.string.voice_kick), danger = true) { kick = true }
+                if (room.canKick(target)) SheetRow(Icons.Outlined.PersonOff, stringResource(R.string.voice_kick), danger = true) { kick = true }
                 if (!self) SheetRow(Icons.Outlined.Flag, stringResource(R.string.voice_report), danger = true) { report = true }
             }
         }

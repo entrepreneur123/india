@@ -25,6 +25,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Yaari">
+        <!-- Safe Browsing in every WebView (the link viewer, the shared page in rooms, the YouTube player). -->
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing" android:value="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

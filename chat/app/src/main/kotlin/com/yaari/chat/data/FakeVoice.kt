@@ -4,7 +4,9 @@ import com.yaari.chat.model.CreatedVoiceRoom
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.Links
 import com.yaari.chat.model.RoomLang
+import com.yaari.chat.model.RoomStage
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RoomCategory
@@ -58,6 +60,8 @@ class FakeVoice(
         val rules: RoomRules, var announcement: String?, val code: String, var lang: String? = null,
     ) {
         var track: VoiceTrack? = null
+        /** The page shared with everyone (036). */
+        var stage: RoomStage? = null
         val queue = mutableListOf<VoiceQueueItem>()
         /** I came in with the code once (a private room then lets me back by its id). */
         var admitted = false
@@ -206,7 +210,7 @@ class FakeVoice(
         r.id, r.title, r.category, r.mode, r.hostId, runCatching { me().id }.getOrDefault(""),
         r.members.map { VoiceMember(it.profile, it.role, it.seat, it.muted, it.hand) },
         List(VoiceRoom.SEATS) { VoiceSeat(it, r.locked[it]) }, r.track, r.queue.toList(),
-        r.rules, r.announcement, if (r.mine) r.code else null, r.lang,
+        r.rules, r.announcement, if (r.mine) r.code else null, r.lang, r.stage,
     )
 
     private fun emit(r: SimRoom, e: VoiceEvent) = r.subs.toList().forEach { it(e) }
@@ -528,10 +532,14 @@ class FakeVoice(
             emit(r, VoiceEvent.Levels(levels))
         }
         every(scope, 3_500, 7_500) {
+            // They type for a moment first (the room's typing indicator), then the line arrives.
             val sender = pick(others(r)).profile
-            val line = VoiceLine.Text(lineSeq++, sender, false, chatLine(r.category, sender), clock())
-            r.lines += line
-            emit(r, VoiceEvent.Line(line))
+            emit(r, VoiceEvent.Typing(sender.id, sender.name))
+            later(r, 1_500) {
+                val line = VoiceLine.Text(lineSeq++, sender, false, chatLine(r.category, sender), clock())
+                r.lines += line
+                emit(r, VoiceEvent.Line(line))
+            }
         }
         every(scope, 2_500, 6_000) {
             val from = if (random.nextFloat() < 0.6f) others(r).filter { it.seat != null } else others(r)
@@ -698,7 +706,7 @@ class FakeVoice(
                 }
             }
             is VoiceAction.ToAudience -> {
-                need(isMod && target != null && target.seat != null && target.role != VoiceRole.HOST)
+                need(isMod && target != null && target.seat != null && moderates(me, target))
                 target!!.seat = null
                 if (target.role == VoiceRole.SPEAKER) target.role = VoiceRole.LISTENER
                 system(r, VoiceSystemEvent.AUDIENCE, target.profile.name)
@@ -717,18 +725,19 @@ class FakeVoice(
                 if (a.on) system(r, VoiceSystemEvent.COHOST, target.profile.name)
             }
             is VoiceAction.Kick -> {
-                need(isHost && target != null && target.role != VoiceRole.HOST)
+                // 036: the host removes anyone but themself; a co-host only listeners and speakers.
+                need(isMod && target != null && moderates(me, target))
                 r.members -= target!!
                 system(r, VoiceSystemEvent.REMOVED, target.profile.name)
             }
             is VoiceAction.AddTrack -> {
                 val title = a.title.ifEmpty { TRACKS[a.videoId]?.first.orEmpty() }
-                if (isHost && r.track == null) {
+                if (isMod && r.track == null) {
                     r.track = track(a.videoId, me.profile.name).copy(title = title)
                     system(r, VoiceSystemEvent.TRACK, me.profile.name, title = title)
                 } else {
                     if (r.queue.size >= 30) throw BackendException("queue_full")
-                    if (!isHost && r.queue.count { it.addedBy == me.profile.name } >= 3) throw BackendException("slow_down")
+                    if (!isMod && r.queue.count { it.addedBy == me.profile.name } >= 3) throw BackendException("slow_down")
                     val item = VoiceQueueItem(uid(), a.videoId, title, me.profile.name)
                     r.queue += item
                     // People in the room like it: a couple of votes arrive.
@@ -751,7 +760,7 @@ class FakeVoice(
                 r.queue[i] = q.copy(voted = a.on, votes = q.votes + if (a.on) 1 else -1)
             }
             is VoiceAction.Play -> {
-                need(isHost)
+                need(isMod)
                 val i = r.queue.indexOfFirst { it.id == a.itemId }
                 need(i >= 0)
                 val item = r.queue.removeAt(i)
@@ -759,28 +768,46 @@ class FakeVoice(
                 system(r, VoiceSystemEvent.TRACK, me.profile.name, title = item.title)
             }
             is VoiceAction.RemoveItem -> {
-                need(isHost)
+                need(isMod)
                 r.queue.removeAll { it.id == a.itemId }
             }
             VoiceAction.Pause -> {
                 val t = r.track
-                need(isHost && t != null && t.pausedAt == null)
+                need(isMod && t != null && t.pausedAt == null)
                 r.track = t!!.copy(pausedAt = clock())
             }
             VoiceAction.Resume -> {
                 val t = r.track
-                need(isHost && t?.pausedAt != null)
+                need(isMod && t?.pausedAt != null)
                 r.track = t!!.copy(startedAt = t.startedAt + clock() - t.pausedAt!!, pausedAt = null)
             }
             is VoiceAction.Skip -> {
-                need(isHost)
+                need(isMod)
                 if (a.trackId != null && r.track?.id != a.trackId) return // that track already moved on
                 skip(r)
                 return
             }
+            // 036: voice_seek. Paused songs stay paused at the new place.
+            is VoiceAction.Seek -> {
+                val t = r.track
+                need(isMod && t != null && a.ms in 0..86_400_000L)
+                val at = t!!.pausedAt ?: clock()
+                r.track = t.copy(startedAt = at - a.ms)
+            }
+            // 036: voice_share_link, the same checks as the server's.
+            is VoiceAction.ShareLink -> {
+                need(isMod)
+                val url = a.url
+                if (url != null && (!Links.shareable(url) || (a.title?.length ?: 0) > 200)) throw BackendException("bad_request")
+                r.stage = url?.let { RoomStage(it, a.title?.trim()?.ifEmpty { null }, me.profile.name, me.profile.id, clock()) }
+            }
         }
         changed(r)
     }
+
+    /** 036: the host acts on anyone but the host; a co-host only on listeners and speakers. */
+    private fun moderates(me: Member, target: Member) =
+        target.role != VoiceRole.HOST && (me.role == VoiceRole.HOST || (me.role == VoiceRole.COHOST && target.role != VoiceRole.COHOST))
 
     // ---- hooks for tests and screenshots (the ambient simulation is off there) ----
 
@@ -830,6 +857,28 @@ class FakeVoice(
         val p = polls[pollId] ?: return
         p.closed = true
         pollChanged(p)
+    }
+
+    /** Someone in the room types in the chat (the room's typing broadcast). */
+    fun typing(roomId: String, userId: String, name: String? = null) {
+        val r = rooms[roomId] ?: return
+        val who = r.members.firstOrNull { it.profile.id == userId }?.profile?.name ?: name ?: return
+        emit(r, VoiceEvent.Typing(userId, who))
+    }
+
+    /** The room's host gives me (or anyone) a role: co-host powers in someone else's room. */
+    fun setRole(roomId: String, userId: String, role: VoiceRole) {
+        val r = rooms[roomId] ?: return
+        r.members.firstOrNull { it.profile.id == userId }?.role = role
+        changed(r)
+    }
+
+    /** Someone else (the room's host) shares a page with everyone. */
+    fun shareFromHost(roomId: String, url: String?, title: String? = null) {
+        val r = rooms[roomId] ?: return
+        val host = r.members.firstOrNull { it.profile.id == r.hostId }?.profile ?: return
+        r.stage = url?.let { RoomStage(it, title, host.name, host.id, clock()) }
+        changed(r)
     }
 
     /** The room's host ends it (someone else's room). */

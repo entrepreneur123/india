@@ -196,7 +196,8 @@ private fun Screens(vm: AppViewModel, s: UiState) {
     // A room open full screen covers the screens: they are out of reach for TalkBack too (and the tests).
     val covered = voice?.expanded == true
     val player = remember { RoomPlayer() }
-    Box(Modifier.fillMaxSize()) {
+    val links = remember(vm) { LinkActions(vm.linkCards) }
+    CompositionLocalProvider(LocalLinks provides links) { Box(Modifier.fillMaxSize()) {
         AnimatedContent(
             top, if (covered) Modifier.clearAndSetSemantics { } else Modifier,
             transitionSpec = {
@@ -239,7 +240,9 @@ private fun Screens(vm: AppViewModel, s: UiState) {
             enter = slideInVertically(tween(320, easing = FastOutSlowInEasing)) { it / 3 } + fadeIn(tween(200)),
             exit = slideOutVertically(tween(260)) { it / 3 } + fadeOut(tween(200)),
         ) { lastViewed?.let { p -> ProfileScreen(vm, s.viewing ?: p, s) } }
-    }
+        // A link tapped in any chat: the in-app viewer over everything.
+        LinkViewerHost(links)
+    } }
 }
 
 private enum class Top { HOME, SEARCHING, CHAT, VIDEO, DM }

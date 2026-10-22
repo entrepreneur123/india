@@ -83,6 +83,8 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -236,49 +238,87 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
             room.announcement?.let { Announcement(it, topicColor(topic), onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
             AudioNotice(s)
             BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
-                val topMax = if (kind == RoomCategory.TALK) maxHeight * 0.45f else maxHeight * 0.62f
-                val stage: @Composable () -> Unit = {
-                    Column(Modifier.fillMaxWidth()) {
-                        StageStrip(room, levels, s.reactions, stageOpen, { stageOpen = !stageOpen }, person)
-                        AnimatedVisibility(stageOpen, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
-                            Column {
-                                Stage(room, levels, emptyList(), small = true, onPerson = person, onEmpty = { seat -> vm.voice.tapSeat(seat) { sheet = VoiceSheet.Seat(it) } })
-                                ListenersStrip(room, s.hands) { sheet = VoiceSheet.Audience() }
+                val shared = s.shownStage
+                // A tablet or a phone on its side: the room on the left, the chat beside it. A phone: the chat below.
+                val wide = maxWidth >= WIDE
+                val half = maxHeight * 0.5f
+                val topMax = when {
+                    shared != null -> maxHeight * 0.32f
+                    kind == RoomCategory.TALK -> maxHeight * 0.45f
+                    else -> maxHeight * 0.62f
+                }
+                val people: @Composable () -> Unit = {
+                    // The speakers ("On stage", their seats) and the listeners ("Listening"), each in its own block.
+                    StageSection(
+                        room, levels, s.reactions, stageOpen, { stageOpen = !stageOpen }, person,
+                        onEmpty = { seat -> vm.voice.tapSeat(seat) { sheet = VoiceSheet.Seat(it) } },
+                    )
+                    ListenersStrip(room, s.hands) { sheet = VoiceSheet.Audience() }
+                }
+                val top: @Composable () -> Unit = {
+                    when (kind) {
+                        RoomCategory.MUSIC -> {
+                            MusicHero(room, s.canDj, s.adding, active = s.expanded, onQueue = { sheet = VoiceSheet.Queue }, act = { a -> vm.voice.act(a) }, vote = vm.voice::vote)
+                            people()
+                        }
+                        RoomCategory.TALK -> {
+                            people()
+                            // Music in a talk room: the slim "listen" bar, the player, or the now-playing strip.
+                            room.track?.let { t ->
+                                MusicPanel(
+                                    t, room.queue, s.canDj, listening = s.listen, open = s.musicOpen, active = s.expanded,
+                                    onListen = vm.voice::listen, onOpenChange = vm.voice::musicPanel, onQueue = { sheet = VoiceSheet.Queue },
+                                ) { a -> vm.voice.act(a) }
                             }
                         }
                     }
                 }
-                Column(Modifier.fillMaxSize()) {
-                    Column(
-                        Modifier.fillMaxWidth().heightIn(max = topMax).verticalScroll(rememberScrollState()).padding(bottom = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        when (kind) {
-                            RoomCategory.MUSIC -> {
-                                MusicHero(room, s.isHost, s.adding, active = s.expanded, onQueue = { sheet = VoiceSheet.Queue }, act = { a -> vm.voice.act(a) }, vote = vm.voice::vote)
-                                stage()
-                            }
-                            RoomCategory.TALK -> {
-                                stage()
-                                // Music in a talk room: the slim "listen" bar, the player, or the now-playing strip.
-                                room.track?.let { t ->
-                                    MusicPanel(
-                                        t, room.queue, s.isHost, listening = s.listen, open = s.musicOpen, active = s.expanded,
-                                        onListen = vm.voice::listen, onOpenChange = vm.voice::musicPanel, onQueue = { sheet = VoiceSheet.Queue },
-                                    ) { a -> vm.voice.act(a) }
-                                }
-                            }
-                        }
-                    }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                val links = LocalLinks.current
+                val context = LocalContext.current
+                val chat: @Composable (Modifier) -> Unit = { m ->
                     VoiceChat(
-                        s.lines, Modifier.weight(1f), onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person,
+                        s.lines, m, onIcebreaker = if (kind == RoomCategory.TALK) vm.voice::icebreaker else null, onPerson = person,
                         chat = RoomChat(
                             myId = room.meId, myName = me.profile.name, polls = s.polls, names = room.members.map { it.profile.name },
                             onReply = vm.voice::reply,
                             onVote = vm.voice::votePoll, onClosePoll = vm.voice::closePoll, canClose = vm.voice::canClose,
+                            roles = room.members.filter { it.isMod }.associate { it.profile.id to it.role },
+                            typing = s.typers,
+                            // A page opened from the room's chat: the host and co-hosts may show it to everyone.
+                            onLink = { url ->
+                                if (YouTube.videoId(url) != null) openOutside(context, url)
+                                else links.open(url, share = if (room.canShare) { u, t -> vm.voice.shareLink(u, t) } else null)
+                            },
+                            onRequestSong = { id -> vm.voice.addSong(id) },
                         ),
                     )
+                }
+                val page: @Composable (Modifier) -> Unit = { m ->
+                    shared?.let { SharedPagePanel(it, room.canShare, onClose = vm.voice::hideStage, onStop = vm.voice::stopSharing, modifier = m) }
+                }
+                if (wide) {
+                    Row(Modifier.fillMaxSize()) {
+                        Column(Modifier.weight(1f).fillMaxHeight()) {
+                            Column(
+                                Modifier.fillMaxWidth().then(if (shared != null) Modifier.heightIn(max = half) else Modifier.weight(1f))
+                                    .verticalScroll(rememberScrollState()).padding(bottom = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                            ) { top() }
+                            if (shared != null) page(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp).fillMaxWidth().weight(1f))
+                        }
+                        VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        chat(Modifier.weight(1f).fillMaxHeight())
+                    }
+                } else {
+                    Column(Modifier.fillMaxSize()) {
+                        Column(
+                            Modifier.fillMaxWidth().heightIn(max = topMax).verticalScroll(rememberScrollState()).padding(bottom = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) { top() }
+                        if (shared != null) page(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp).fillMaxWidth().weight(1.1f))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        chat(Modifier.weight(1f))
+                    }
                 }
             }
             ControlBar(
@@ -375,15 +415,45 @@ private fun Announcement(text: String, color: Color, onEdit: (() -> Unit)?) {
     }
 }
 
-/** The people on the stage, small, with their speaking rings; or, with nobody there, why there's no sound. */
+/**
+ * The speakers' block: "On stage · N" and, folded, the people on the stage in a strip with their speaking rings (or,
+ * with nobody there, why there's no sound); unfolded, every seat (a host or co-host manages the empty ones from here).
+ */
 @Composable
-private fun StageStrip(
-    room: VoiceRoom, levels: State<Map<String, Float>>, reactions: List<FloatingReaction>, open: Boolean, onToggle: () -> Unit, onPerson: (String) -> Unit,
+private fun StageSection(
+    room: VoiceRoom, levels: State<Map<String, Float>>, reactions: List<FloatingReaction>, open: Boolean, onToggle: () -> Unit,
+    onPerson: (String) -> Unit, onEmpty: (Int) -> Unit,
 ) {
     val stage = room.members.filter { it.seat != null }.sortedBy { it.seat }
     val stageName = stringResource(R.string.voice_stage)
-    Box(Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))) {
-        Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+    Column(Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f))) {
+        val turn by animateFloatAsState(if (open) 180f else 0f, label = "chevron")
+        val seats = stringResource(if (open) R.string.room_hide_seats else R.string.room_show_seats)
+        Row(
+            Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable(role = Role.Button, onClickLabel = seats, onClick = onToggle)
+                .semantics { stateDescription = if (open) "expanded" else "collapsed" }.padding(start = 14.dp, end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Mic, null, Modifier.size(16.dp), tint = Brand.PinkOnDark)
+            Text(
+                stringResource(R.string.room_on_stage_n, stage.size), Modifier.padding(start = 6.dp).weight(1f).semantics { heading() },
+                style = MaterialTheme.typography.titleSmall, maxLines = 1,
+            )
+            Text(seats, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            Icon(Icons.Rounded.KeyboardArrowDown, null, Modifier.padding(start = 2.dp).size(18.dp).graphicsLayer { rotationZ = turn }, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        AnimatedVisibility(open, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+            Stage(room, levels, reactions, small = true, onPerson = onPerson, onEmpty = onEmpty)
+        }
+        if (!open) StageStrip(stage, levels, reactions, stageName, onPerson)
+    }
+}
+
+/** The people on the stage, small, with their speaking rings; or, with nobody there, why there's no sound. */
+@Composable
+private fun StageStrip(stage: List<VoiceMember>, levels: State<Map<String, Float>>, reactions: List<FloatingReaction>, stageName: String, onPerson: (String) -> Unit) {
+    Box(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             if (stage.isNotEmpty()) {
                 Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()).semantics { paneTitle = stageName }) {
                     stage.forEach { m -> Box(Modifier.width(68.dp)) { SeatPerson(m, 40.dp, levels, null) { onPerson(m.profile.id) } } }
@@ -399,22 +469,8 @@ private fun StageStrip(
                     )
                 }
             }
-            val turn by animateFloatAsState(if (open) 180f else 0f, label = "chevron")
-            Row(
-                Modifier.padding(start = 8.dp).height(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainer)
-                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
-                    .clickable(role = Role.Button, onClick = onToggle).semantics { stateDescription = if (open) "expanded" else "collapsed" }
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    if (stage.isNotEmpty()) stringResource(R.string.room_on_stage, stage.size) else stageName,
-                    style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
-                )
-                Icon(Icons.Rounded.KeyboardArrowDown, null, Modifier.padding(start = 2.dp).size(18.dp).graphicsLayer { rotationZ = turn })
-            }
         }
-        if (!open) ReactionLayer(reactions, Modifier.matchParentSize())
+        ReactionLayer(reactions, Modifier.matchParentSize())
     }
 }
 
@@ -616,16 +672,18 @@ private fun ReactionLayer(reactions: List<FloatingReaction>, modifier: Modifier)
     }
 }
 
+/** The listeners' block, apart from the stage: "Listening · N", their faces, raised hands; a tap lists them all. */
 @Composable
 private fun ListenersStrip(room: VoiceRoom, hands: Int, onClick: () -> Unit) {
     val audience = room.audience
     Row(
-        Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh).clickable(role = Role.Button, onClick = onClick)
+        Modifier.padding(horizontal = 12.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.5f)).clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(stringResource(R.string.voice_listening_n, audience.size), style = MaterialTheme.typography.titleSmall, maxLines = 1)
+        Icon(Icons.Outlined.Headphones, null, Modifier.padding(end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.voice_listening_n, audience.size), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleSmall, maxLines = 1)
         FaceStack(audience.take(7).map { it.profile }, 26.dp, MaterialTheme.colorScheme.background, Modifier.padding(start = 12.dp).weight(1f))
         if (hands > 0) {
             GlyphIcon(Glyph.HAND, size = 16.dp)
@@ -670,7 +728,7 @@ private fun ControlBar(
             onPhoto = vm.voice::sendPhoto, onIcebreaker = vm.voice::icebreaker,
             replyTo = s.replyTo, myId = room.meId, onCancelReply = vm.voice::cancelReply,
             people = room.members.filter { it.profile.id != room.meId }.map { it.profile },
-            onPoll = if (s.isMod) onPoll else null,
+            onPoll = if (s.isMod) onPoll else null, onTyping = vm.voice::typing,
         ) { text, failed -> vm.voice.send(text, failed) }
         Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
             RoundButton(stringResource(R.string.voice_react), onReactions) {
@@ -772,6 +830,9 @@ private fun EndDialog(busy: Boolean, onCancel: () -> Unit, onEnd: () -> Unit) {
         dismissButton = { TextButton(onCancel) { Text(stringResource(R.string.cancel)) } },
     )
 }
+
+/** From this width the chat sits beside the room instead of under it. */
+private val WIDE = 600.dp
 
 /** Between the round buttons of the control bar (a host has four, and the bar must fit a 393 dp phone). */
 private val BAR_GAP = 6.dp
