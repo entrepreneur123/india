@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Enums -->
     <string name="gender_male">남성</string>
     <string name="gender_female">여성</string>
@@ -186,10 +186,10 @@
     <string name="msg_now_friends">%1$s님과 친구가 됐어요</string>
     <string name="msg_request_sent">%1$s님에게 친구 요청을 보냈어요</string>
     <string name="err_not_found">더 이상 볼 수 없어요</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="other">게시물</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="other">친구</item>
     </plurals>
     <string name="age">나이</string>

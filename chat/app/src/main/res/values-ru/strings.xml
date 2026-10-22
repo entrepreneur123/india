@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="gender_male">Мужской</string>
     <string name="gender_female">Женский</string>
     <string name="gender_other">Другое</string>
@@ -168,13 +168,13 @@
     <string name="msg_now_friends">Вы и %1$s теперь друзья</string>
     <string name="msg_request_sent">Заявка в друзья отправлена: %1$s</string>
     <string name="err_not_found">Это больше недоступно</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">пост</item>
         <item quantity="few">поста</item>
         <item quantity="many">постов</item>
         <item quantity="other">поста</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">друг</item>
         <item quantity="few">друга</item>
         <item quantity="many">друзей</item>

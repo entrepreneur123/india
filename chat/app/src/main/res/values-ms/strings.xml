@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Enums -->
     <string name="gender_male">Lelaki</string>
@@ -187,11 +187,11 @@
     <string name="msg_now_friends">Anda dan %1$s kini berkawan</string>
     <string name="msg_request_sent">Permintaan rakan dihantar kepada %1$s</string>
     <string name="err_not_found">Ini tidak lagi tersedia</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">hantaran</item>
         <item quantity="other">hantaran</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">rakan</item>
         <item quantity="other">rakan</item>
     </plurals>

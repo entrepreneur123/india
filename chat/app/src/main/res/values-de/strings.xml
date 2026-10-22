@@ -167,11 +167,11 @@
     <string name="msg_now_friends">Du und %1$s seid jetzt Freunde</string>
     <string name="msg_request_sent">Freundschaftsanfrage an %1$s gesendet</string>
     <string name="err_not_found">Das ist nicht mehr verfügbar</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">Beitrag</item>
         <item quantity="other">Beiträge</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">Freund</item>
         <item quantity="other">Freunde</item>
     </plurals>

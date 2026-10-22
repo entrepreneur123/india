@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Enums -->
     <string name="gender_male">男性</string>
@@ -187,11 +187,11 @@
     <string name="msg_now_friends">%1$sさんと友だちになりました</string>
     <string name="msg_request_sent">%1$sさんに友だちリクエストを送信しました</string>
     <string name="err_not_found">これはもう利用できません</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">投稿</item>
         <item quantity="other">投稿</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">友だち</item>
         <item quantity="other">友だち</item>
     </plurals>

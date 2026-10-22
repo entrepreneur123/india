@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Zezwól na dostęp do kamery i mikrofonu, aby rozpocząć rozmowę</string>
+    <string name="connecting">Łączenie…</string>
+    <string name="waiting_video">Czekamy na wideo: %1$s…</string>
+    <string name="reconnecting">Ponowne łączenie…</string>
+    <string name="call_failed">Nie udało się połączyć. Dotknij Zakończ i spróbuj ponownie.</string>
+    <string name="video_checking">Kontrola bezpieczeństwa…</string>
+    <string name="video_hidden_title">Wideo ukryte</string>
+    <string name="video_hidden_body">Może zawierać nagość, która jest niedozwolona. Powiadomiliśmy nasz zespół ds. bezpieczeństwa.</string>
+    <string name="open_settings">Otwórz ustawienia</string>
+    <string name="call_dropped">Połączenie zostało przerwane. Dotknij Zakończ i spróbuj ponownie.</string>
+    <string name="partner_lost">%1$s traci połączenie. Czekamy…</string>
+    <string name="partner_paused">Wideo wstrzymane (%1$s): sieć jest zbyt wolna</string>
+    <string name="partner_cam_off">%1$s ma wyłączoną kamerę</string>
+    <string name="partner_weak">%1$s ma słabe połączenie</string>
+    <string name="net_good">Twoje połączenie: mocne</string>
+    <string name="net_ok">Twoje połączenie: średnie</string>
+    <string name="net_poor">Twoje połączenie: słabe</string>
+    <string name="device_busy">Kamera lub mikrofon są używane przez inną aplikację</string>
+    <string name="cam_blocked">Brak dostępu do kamery. Druga osoba wciąż Cię słyszy. Dotknij, aby otworzyć ustawienia</string>
+</resources>

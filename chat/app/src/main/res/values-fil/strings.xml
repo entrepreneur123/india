@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Enums -->
     <string name="gender_male">Lalaki</string>
@@ -187,11 +187,11 @@
     <string name="msg_now_friends">Magkaibigan na kayo ni %1$s</string>
     <string name="msg_request_sent">Naipadala ang friend request kay %1$s</string>
     <string name="err_not_found">Hindi na ito available</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">post</item>
         <item quantity="other">post</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">kaibigan</item>
         <item quantity="other">kaibigan</item>
     </plurals>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Permite accesul la cameră și microfon ca să pornești apelul</string>
+    <string name="connecting">Se conectează…</string>
+    <string name="waiting_video">Așteptăm video-ul lui %1$s…</string>
+    <string name="reconnecting">Se reconectează…</string>
+    <string name="call_failed">Apelul nu s-a putut conecta. Atinge Închide și încearcă din nou.</string>
+    <string name="video_checking">Verificare de siguranță…</string>
+    <string name="video_hidden_title">Video ascuns</string>
+    <string name="video_hidden_body">Poate conține nuditate, care nu e permisă. Am anunțat echipa noastră de siguranță.</string>
+    <string name="open_settings">Deschide setările</string>
+    <string name="call_dropped">Apelul a căzut. Atinge Închide și încearcă din nou.</string>
+    <string name="partner_lost">Conexiunea lui %1$s a căzut. Așteptăm…</string>
+    <string name="partner_paused">Video-ul lui %1$s e pe pauză: rețeaua e prea lentă</string>
+    <string name="partner_cam_off">%1$s și-a oprit camera</string>
+    <string name="partner_weak">Conexiunea lui %1$s e slabă</string>
+    <string name="net_good">Conexiunea ta: puternică</string>
+    <string name="net_ok">Conexiunea ta: acceptabilă</string>
+    <string name="net_poor">Conexiunea ta: slabă</string>
+    <string name="device_busy">Camera sau microfonul sunt folosite de altă aplicație</string>
+    <string name="cam_blocked">Camera nu e permisă. Te pot auzi în continuare. Atinge ca să deschizi setările</string>
+</resources>

@@ -167,12 +167,12 @@
     <string name="msg_now_friends">%1$s et vous êtes maintenant amis</string>
     <string name="msg_request_sent">Demande d’ami envoyée à %1$s</string>
     <string name="err_not_found">Ce contenu n’est plus disponible</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">publication</item>
         <item quantity="many">publications</item>
         <item quantity="other">publications</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">ami</item>
         <item quantity="many">amis</item>
         <item quantity="other">amis</item>

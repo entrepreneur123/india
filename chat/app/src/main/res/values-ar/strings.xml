@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="gender_male">ذكر</string>
     <string name="gender_female">أنثى</string>
     <string name="gender_other">آخر</string>
@@ -168,7 +168,7 @@
     <string name="msg_now_friends">أنت و%1$s أصبحتما صديقين</string>
     <string name="msg_request_sent">تم إرسال طلب صداقة إلى %1$s</string>
     <string name="err_not_found">هذا لم يعد متاحًا</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="zero">منشور</item>
         <item quantity="one">منشور</item>
         <item quantity="two">منشوران</item>
@@ -176,7 +176,7 @@
         <item quantity="many">منشورًا</item>
         <item quantity="other">منشور</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="zero">صديق</item>
         <item quantity="one">صديق</item>
         <item quantity="two">صديقان</item>
@@ -490,7 +490,7 @@
     <string name="ib_38">لو أمكنك العيش في أي عقد من الزمن، فأيّه ستختار؟</string>
     <string name="ib_39">ما الشيء الجديد الذي جرّبته مؤخرًا؟</string>
     <string name="ib_40">ما ذكراك المفضلة مع الأصدقاء؟</string>
-    <plurals name="music_votes">
+    <plurals name="music_votes" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا أصوات</item>
         <item quantity="one">صوت واحد</item>
         <item quantity="two">صوتان</item>
@@ -586,7 +586,7 @@
         <item quantity="many">أرسل لك %1$s %2$d رسالة</item>
         <item quantity="other">أرسل لك %1$s %2$d رسالة</item>
     </plurals>
-    <plurals name="online_count">
+    <plurals name="online_count" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا أحد متصل</item>
         <item quantity="one">شخص واحد متصل</item>
         <item quantity="two">شخصان متصلان</item>
@@ -653,7 +653,7 @@
     <string name="poll_e_bad_request">تحقق من السؤال (حتى 120 حرفًا) ومن 2 إلى 4 إجابات مختلفة (حتى 40 حرفًا لكل منها)</string>
     <string name="poll_e_slow_down">استطلاعات كثيرة. حاول مرة أخرى بعد بضع دقائق.</string>
     <string name="poll_e_not_allowed">يمكن للمضيف أو المضيف المشارك فقط فعل ذلك</string>
-    <plurals name="poll_votes">
+    <plurals name="poll_votes" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا أصوات</item>
         <item quantity="one">صوت واحد</item>
         <item quantity="two">صوتان</item>
@@ -751,7 +751,7 @@
     <string name="prompt_laugh">ما يضحكني…</string>
     <string name="prompt_goal">هذا العام أريد أن…</string>
     <string name="prompt_secret">شيء لا يعرفه إلا القليلون…</string>
-    <plurals name="post_likes">
+    <plurals name="post_likes" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا إعجابات</item>
         <item quantity="one">إعجاب واحد</item>
         <item quantity="two">إعجابان</item>
@@ -759,7 +759,7 @@
         <item quantity="many">%1$d إعجابًا</item>
         <item quantity="other">%1$d إعجاب</item>
     </plurals>
-    <plurals name="post_comments">
+    <plurals name="post_comments" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا تعليقات</item>
         <item quantity="one">تعليق واحد</item>
         <item quantity="two">تعليقان</item>
@@ -767,7 +767,7 @@
         <item quantity="many">%1$d تعليقًا</item>
         <item quantity="other">%1$d تعليق</item>
     </plurals>
-    <plurals name="post_view_comments">
+    <plurals name="post_view_comments" tools:ignore="ImpliedQuantity">
         <item quantity="zero">عرض التعليقات</item>
         <item quantity="one">عرض التعليق</item>
         <item quantity="two">عرض التعليقين</item>
@@ -865,7 +865,7 @@
     <string name="manner_low_title">الدردشة العشوائية متوقفة مؤقتًا</string>
     <string name="manner_low_body">قال عدة أشخاص إن الدردشات الأخيرة لم تكن مريحة، لذا تقييم سلوكك أقل من 20. الغرف وآخر الأخبار ما زالت متاحة. التقييمات الأقدم من 90 يومًا لا تُحتسب، والدردشات اللطيفة ترفع تقييمك من جديد.</string>
     <string name="manner_low_ok">فهمت</string>
-    <plurals name="manner_ratings">
+    <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا تقييمات</item>
         <item quantity="one">تقييم واحد</item>
         <item quantity="two">تقييمان</item>
@@ -897,7 +897,7 @@
     <string name="room_on_stage_n">على المسرح · %1$d</string>
     <string name="room_show_seats">المقاعد</string>
     <string name="room_hide_seats">إخفاء المقاعد</string>
-    <plurals name="room_typing_many">
+    <plurals name="room_typing_many" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا أحد يكتب</item>
         <item quantity="one">شخص واحد يكتب…</item>
         <item quantity="two">شخصان يكتبان…</item>

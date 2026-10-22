@@ -91,7 +91,9 @@ class TranslationsTest {
                     if ("other" !in items) problems += "$set/values-$locale: plurals '$key' has no 'other'"
                     val enPh = placeholders(enItems.getValue("other"))
                     items.forEach { (q, text) ->
-                        if (placeholders(text) != enPh) problems += "$set/values-$locale: plurals '$key' [$q] placeholders ${placeholders(text)} != $enPh"
+                        // zero/one/two name a single number, so a language may spell it out ("قلب واحد") instead.
+                        val spelledOut = q in setOf("zero", "one", "two") && placeholders(text).isEmpty()
+                        if (!spelledOut && placeholders(text) != enPh) problems += "$set/values-$locale: plurals '$key' [$q] placeholders ${placeholders(text)} != $enPh"
                     }
                 }
                 // No leftovers: a key the English file no longer has is dead weight (or a typo).

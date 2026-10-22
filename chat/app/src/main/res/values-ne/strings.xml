@@ -167,11 +167,11 @@
     <string name="msg_now_friends">तपाईं र %1$s अब साथी हुनुभयो</string>
     <string name="msg_request_sent">%1$s लाई साथी अनुरोध पठाइयो</string>
     <string name="err_not_found">यो अब उपलब्ध छैन</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">पोस्ट</item>
         <item quantity="other">पोस्ट</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="one">साथी</item>
         <item quantity="other">साथीहरू</item>
     </plurals>

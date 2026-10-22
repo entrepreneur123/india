@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Enums -->
     <string name="gender_male">男</string>
     <string name="gender_female">女</string>
@@ -186,10 +186,10 @@
     <string name="msg_now_friends">你和 %1$s 成为好友了</string>
     <string name="msg_request_sent">已向 %1$s 发送好友申请</string>
     <string name="err_not_found">内容已不存在</string>
-    <plurals name="posts_label">
+    <plurals name="posts_label" tools:ignore="ImpliedQuantity">
         <item quantity="other">动态</item>
     </plurals>
-    <plurals name="friends_label">
+    <plurals name="friends_label" tools:ignore="ImpliedQuantity">
         <item quantity="other">好友</item>
     </plurals>
     <string name="age">年龄</string>
