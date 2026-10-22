@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="allow_camera">Ruhusu kamera na maikrofoni ili kuanza simu</string>
+    <string name="connecting">Inaunganisha…</string>
+    <string name="waiting_video">Tunasubiri video ya %1$s…</string>
+    <string name="reconnecting">Inaunganisha upya…</string>
+    <string name="call_failed">Simu haikuunganishwa. Gusa Kata kisha ujaribu tena.</string>
+    <string name="video_checking">Ukaguzi wa usalama…</string>
+    <string name="video_hidden_title">Video imefichwa</string>
+    <string name="video_hidden_body">Huenda inaonyesha uchi, jambo ambalo haliruhusiwi. Tumeiarifu timu yetu ya usalama.</string>
+    <string name="open_settings">Fungua mipangilio</string>
+    <string name="call_dropped">Simu imekatika. Gusa Kata kisha ujaribu tena.</string>
+    <string name="partner_lost">Muunganisho wa %1$s umekatika. Tunamsubiri…</string>
+    <string name="partner_paused">Video ya %1$s imesimamishwa: mtandao wake ni wa polepole sana</string>
+    <string name="partner_cam_off">%1$s amezima kamera yake</string>
+    <string name="partner_weak">Muunganisho wa %1$s ni dhaifu</string>
+    <string name="net_good">Muunganisho wako: imara</string>
+    <string name="net_ok">Muunganisho wako: wastani</string>
+    <string name="net_poor">Muunganisho wako: dhaifu</string>
+    <string name="device_busy">Kamera au maikrofoni yako inatumiwa na programu nyingine</string>
+    <string name="cam_blocked">Kamera hairuhusiwi. Bado wanakusikia. Gusa ili kufungua mipangilio</string>
+</resources>

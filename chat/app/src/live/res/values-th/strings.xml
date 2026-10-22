@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="allow_camera">อนุญาตกล้องและไมโครโฟนเพื่อเริ่มโทร</string>
+    <string name="connecting">กำลังเชื่อมต่อ…</string>
+    <string name="waiting_video">กำลังรอวิดีโอของ %1$s…</string>
+    <string name="reconnecting">กำลังเชื่อมต่อใหม่…</string>
+    <string name="call_failed">เชื่อมต่อสายไม่ได้ แตะวางสายแล้วลองอีกครั้ง</string>
+    <string name="video_checking">กำลังตรวจความปลอดภัย…</string>
+    <string name="video_hidden_title">ซ่อนวิดีโอแล้ว</string>
+    <string name="video_hidden_body">วิดีโออาจมีภาพเปลือยซึ่งไม่อนุญาต เราแจ้งทีมความปลอดภัยแล้ว</string>
+    <string name="open_settings">เปิดการตั้งค่า</string>
+    <string name="call_dropped">สายหลุด แตะวางสายแล้วลองอีกครั้ง</string>
+    <string name="partner_lost">การเชื่อมต่อของ %1$s หลุด กำลังรอ…</string>
+    <string name="partner_paused">วิดีโอของ %1$s หยุดชั่วคราว: เน็ตช้าเกินไป</string>
+    <string name="partner_cam_off">%1$s ปิดกล้องแล้ว</string>
+    <string name="partner_weak">สัญญาณของ %1$s อ่อน</string>
+    <string name="net_good">การเชื่อมต่อของคุณ: ดี</string>
+    <string name="net_ok">การเชื่อมต่อของคุณ: พอใช้</string>
+    <string name="net_poor">การเชื่อมต่อของคุณ: อ่อน</string>
+    <string name="device_busy">กล้องหรือไมโครโฟนกำลังถูกใช้โดยแอปอื่น</string>
+    <string name="cam_blocked">ไม่ได้อนุญาตกล้อง อีกฝ่ายยังได้ยินเสียงคุณ แตะเพื่อเปิดการตั้งค่า</string>
+</resources>
