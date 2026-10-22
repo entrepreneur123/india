@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">통화를 시작하려면 카메라와 마이크를 허용해 주세요</string>
+    <string name="connecting">연결 중…</string>
+    <string name="waiting_video">%1$s님의 영상을 기다리는 중…</string>
+    <string name="reconnecting">다시 연결하는 중…</string>
+    <string name="call_failed">통화를 연결하지 못했어요. 종료를 누르고 다시 시도해 주세요.</string>
+    <string name="video_checking">안전 확인 중…</string>
+    <string name="video_hidden_title">영상이 숨겨졌어요</string>
+    <string name="video_hidden_body">허용되지 않는 노출이 포함됐을 수 있어요. 안전팀에 알렸어요.</string>
+    <string name="open_settings">설정 열기</string>
+    <string name="call_dropped">통화가 끊겼어요. 종료를 누르고 다시 시도해 주세요.</string>
+    <string name="partner_lost">%1$s님의 연결이 끊겼어요. 기다리는 중…</string>
+    <string name="partner_paused">%1$s님의 영상이 일시정지됐어요: 상대방 네트워크가 너무 느려요</string>
+    <string name="partner_cam_off">%1$s님이 카메라를 껐어요</string>
+    <string name="partner_weak">%1$s님의 연결이 약해요</string>
+    <string name="net_good">내 연결 상태: 좋음</string>
+    <string name="net_ok">내 연결 상태: 보통</string>
+    <string name="net_poor">내 연결 상태: 약함</string>
+    <string name="device_busy">다른 앱이 카메라나 마이크를 사용 중이에요</string>
+    <string name="cam_blocked">카메라가 허용되지 않았어요. 목소리는 계속 들려요. 탭해서 설정 열기</string>
+</resources>

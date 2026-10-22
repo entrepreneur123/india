@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">請允許使用相機和麥克風以開始通話</string>
+    <string name="connecting">正在連線…</string>
+    <string name="waiting_video">正在等待 %1$s 的影片…</string>
+    <string name="reconnecting">正在重新連線…</string>
+    <string name="call_failed">通話無法接通。請點「結束」後重試。</string>
+    <string name="video_checking">安全檢查中…</string>
+    <string name="video_hidden_title">影片已隱藏</string>
+    <string name="video_hidden_body">畫面可能包含不被允許的裸露內容。我們已通知安全團隊。</string>
+    <string name="open_settings">開啟設定</string>
+    <string name="call_dropped">通話已中斷。請點「結束」後重試。</string>
+    <string name="partner_lost">%1$s 的連線已斷開，正在等待對方…</string>
+    <string name="partner_paused">%1$s 的影片已暫停：對方網路太慢</string>
+    <string name="partner_cam_off">%1$s 關閉了相機</string>
+    <string name="partner_weak">%1$s 的網路訊號較弱</string>
+    <string name="net_good">你的網路：良好</string>
+    <string name="net_ok">你的網路：一般</string>
+    <string name="net_poor">你的網路：較差</string>
+    <string name="device_busy">相機或麥克風正被其他 App 佔用</string>
+    <string name="cam_blocked">未允許使用相機，對方仍能聽到你。輕觸開啟設定</string>
+</resources>
