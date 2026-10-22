@@ -158,7 +158,7 @@ export class FeedSim {
     if (!p) return null
     return {
       id: p.id, name: p.name, gender: p.gender, age: p.age, city: p.city || null, country: p.country ?? null, photoUrl: p.photoUrl ?? null,
-      accent: this.style(id).accent,
+      accent: this.style(id).accent, verified: !!p.verified,
     }
   }
 

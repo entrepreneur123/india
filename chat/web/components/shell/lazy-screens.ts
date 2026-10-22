@@ -23,6 +23,7 @@ const loaders = {
   voice: () => retryImport(() => import('@/components/screens/voice/voice-session')),
   panel: () => retryImport(() => import('./right-panel')),
   inbox: () => retryImport(() => import('@/components/social/inbox-sheet')),
+  verify: () => retryImport(() => import('@/components/trust/verify-sheet')),
 }
 
 /** Fetches every screen in the background, unless the user asked the browser to save data. */
@@ -53,3 +54,6 @@ export const InboxSheet = lazy(() => loaders.inbox().then((m) => ({ default: m.I
 const loadOnboarding = () => retryImport(() => import('@/components/social/onboarding'))
 export const Onboarding = lazy(() => loadOnboarding().then((m) => ({ default: m.Onboarding })))
 export const RightPanel = lazy(() => loaders.panel().then((m) => ({ default: m.RightPanel })))
+// Identity verification and the manner explanation (035): one chunk, opened from Me, a refusal or sign-up.
+export const VerifySheet = lazy(() => loaders.verify().then((m) => ({ default: m.VerifySheet })))
+export const MannerLowSheet = lazy(() => loaders.verify().then((m) => ({ default: m.MannerLowSheet })))

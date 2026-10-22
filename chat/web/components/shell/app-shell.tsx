@@ -7,7 +7,10 @@ import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
 import type { Entitlements, Profile } from '@/lib/backend'
 import { planLive } from '@/lib/live-session'
-import { AppContext, type AppState, type ChatBar, type RandomControl, type Tab, type Thread } from '@/components/app-state'
+import { AppContext, type AppState, type ChatBar, type KycInfo, type RandomControl, type Tab, type Thread, type VerifyWhy } from '@/components/app-state'
+import { onGate } from '@/lib/gate'
+import { errorCode } from '@/lib/format'
+import { kycOffCached, markKycOff, markVerifyAsked, rememberRequired, verifyAsked } from '@/components/trust/store'
 import { useI18n } from '@/components/i18n'
 import { NightContext } from '@/components/ui/modal'
 import { useSocialT } from '@/components/social/social-text'
@@ -34,6 +37,8 @@ import {
   VoiceHost,
   InboxSheet,
   Onboarding,
+  VerifySheet,
+  MannerLowSheet,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
@@ -98,6 +103,18 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [inboxUsed, setInboxUsed] = useState(false)
   const [onboarding, setOnboarding] = useState(() => onboardingDue(!!initialMe.interests?.length))
   const { mutate } = useSWRConfig()
+  // Identity and manners (035): my badge and score, whether checks are open, and the sheets they open.
+  const { data: trust } = useSWR('my_trust', () => backend.myTrust(), { revalidateOnFocus: false, dedupingInterval: 5_000 })
+  const refreshTrust = useCallback(() => void mutate('my_trust'), [mutate])
+  const [kyc, setKyc] = useState<KycInfo>(() => ({ avail: kycOffCached() ? 'off' : 'unknown', result: null }))
+  const [verify, setVerify] = useState<{ open: boolean; why: VerifyWhy }>({ open: false, why: 'me' })
+  const [verifyUsed, setVerifyUsed] = useState(false)
+  const [mannerLow, setMannerLow] = useState(false)
+  const [mannerLowUsed, setMannerLowUsed] = useState(false)
+  const openVerify = useCallback((why: VerifyWhy = 'me') => {
+    setVerifyUsed(true)
+    setVerify({ open: true, why })
+  }, [])
   const { st } = useSocialT()
   // One live session at a time (lib/live-session.ts): entering a room ends a random chat (a search just stops), and
   // starting a search leaves the room, each with a word. The server does the same, so either side may get there first.
@@ -152,6 +169,62 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       }),
     [backend, mutate],
   )
+
+  // 'verify_required' and 'manner_low' open their sheets instead of a message (components/ui/toast.tsx hands them over).
+  useEffect(
+    () =>
+      onGate((code) => {
+        void mutate('my_trust')
+        if (code === 'verify_required') return openVerify('gate')
+        setMannerLowUsed(true)
+        setMannerLow(true)
+      }),
+    [openVerify, mutate],
+  )
+
+  // Back from the identity check (/?kyc=done): read the result and show it; the address goes back to what it was.
+  useEffect(() => {
+    const q = new URLSearchParams(location.search)
+    if (q.get('kyc') !== 'done') return
+    q.delete('kyc')
+    const rest = q.toString()
+    history.replaceState(history.state, '', location.pathname + (rest ? `?${rest}` : '') + location.hash)
+    openVerify('return')
+  }, [openVerify])
+
+  // Unverified: are checks open yet, and how did my last one end? Asked once a start (the "coming soon" answer is
+  // believed for a while, so nobody is nagged about something they can't do).
+  const unverified = trust ? !trust.verified : false
+  useEffect(() => {
+    if (!unverified || kyc.avail !== 'unknown') return
+    let alive = true
+    backend.kycCheck().then(
+      (result) => alive && setKyc({ avail: 'on', result }),
+      (err) => {
+        if (!alive || errorCode(err) !== 'kyc_unavailable') return
+        markKycOff(true)
+        setKyc({ avail: 'off', result: null })
+      },
+    )
+    return () => {
+      alive = false
+    }
+  }, [backend, unverified, kyc.avail])
+  useEffect(() => {
+    if (trust) rememberRequired(trust.required)
+  }, [trust])
+
+  // Right after sign-up (once the first-run steps are done): the check, once per browser, or at every start while
+  // verification is required. Not while checks aren't open.
+  const asked = useRef(false)
+  useEffect(() => {
+    if (asked.current || onboarding || !trust || trust.verified || kyc.avail !== 'on') return
+    if (kyc.result === 'pending' || kyc.result === 'duplicate' || kyc.result === 'minor') return
+    if (!trust.required && verifyAsked()) return
+    asked.current = true
+    markVerifyAsked()
+    openVerify('signup')
+  }, [onboarding, trust, kyc, openVerify])
 
   // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes
   // (only while the tab is visible).
@@ -271,8 +344,13 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setInboxUsed(true)
         setInboxOpen(true)
       },
+      trust: trust ?? null,
+      refreshTrust,
+      kyc,
+      setKyc,
+      openVerify,
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
   const randomVisible = tab === 'random' && !thread
@@ -398,6 +476,20 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           <ScreenBoundary>
             <Suspense fallback={null}>
               <Onboarding onDone={() => setOnboarding(false)} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {verifyUsed ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <VerifySheet open={verify.open} why={verify.why} onClose={() => setVerify((v) => ({ ...v, open: false }))} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {mannerLowUsed ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <MannerLowSheet open={mannerLow} onClose={() => setMannerLow(false)} />
             </Suspense>
           </ScreenBoundary>
         ) : null}

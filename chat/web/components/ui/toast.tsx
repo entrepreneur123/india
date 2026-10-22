@@ -6,6 +6,7 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState, type
 import { CircleAlert as AlertCircle, CircleCheck as CheckCircle2, Info } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
+import { gate } from '@/lib/gate'
 import { OfflineBanner } from './offline-banner'
 
 type Tone = 'info' | 'success' | 'error'
@@ -35,7 +36,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setTimeout(() => setItems((list) => list.filter((t) => t.id !== id)), 3200)
   }, [])
 
-  const api = useMemo<ToastApi>(() => ({ show, error: (err) => show(errorText(err), 'error') }), [show, errorText])
+  const api = useMemo<ToastApi>(() => ({ show, error: (err) => void (gate(err) || show(errorText(err), 'error')) }), [show, errorText])
 
   return (
     <ToastContext.Provider value={api}>

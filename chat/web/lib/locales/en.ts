@@ -43,6 +43,9 @@ const en = {
 
   // sign-up
   'auth.badge': '18+ · phone-verified',
+  'auth.verifiedBadge': 'Get your verified badge: ID + selfie',
+  'auth.everyoneVerified': 'Everyone here is ID-verified',
+  'trust.verified': 'ID verified',
   'auth.headline': 'Start chatting with [the whole world.]',
   'auth.intro': 'Random 1:1 chats with people around the world. Text first, video only when you both say yes.',
   'auth.how1Title': 'Verify your number',
@@ -592,6 +595,8 @@ const en = {
   'error.bad_request': 'That didn’t work. Check what you entered and try again',
   'error.nude_photo': 'This photo looks like nudity, so it wasn’t sent',
   'error.sms_unavailable': 'We couldn’t send a code to this number right now. Please try again later',
+  'error.verify_required': 'Verify your identity to do this',
+  'error.manner_low': 'Random chat is paused because of your manner score',
   'error.generic': 'Something went wrong. Please try again',
 } as const
 

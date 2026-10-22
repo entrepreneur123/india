@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef } from 'react'
-import type { Badges, Entitlements, FeedPost, Profile } from '@/lib/backend'
+import type { Badges, Entitlements, FeedPost, KycResult, MyTrust, Profile } from '@/lib/backend'
 import type { Lang, T } from '@/lib/i18n'
 import type { RandomLive } from '@/lib/live-session'
 
@@ -29,6 +29,15 @@ export interface ChatBar {
   partner: Profile
   typing: boolean
   unread: number
+}
+
+/** Why the verification sheet opened: from Me, a 'verify_required' refusal, right after sign-up, or back from the check. */
+export type VerifyWhy = 'me' | 'gate' | 'signup' | 'return'
+
+/** Whether identity checks can be started ('off': no provider yet, so nobody is asked) and my latest result. */
+export interface KycInfo {
+  avail: 'unknown' | 'on' | 'off'
+  result: KycResult | null
 }
 
 export interface AppState {
@@ -75,6 +84,12 @@ export interface AppState {
   badges: Badges | null
   refreshBadges: () => void
   openInbox: () => void
+  /** My badge, manners and whether verification is required (null until the first answer). */
+  trust: MyTrust | null
+  refreshTrust: () => void
+  kyc: KycInfo
+  setKyc: (k: KycInfo) => void
+  openVerify: (why?: VerifyWhy) => void
 }
 
 export const AppContext = createContext<AppState | null>(null)

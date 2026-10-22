@@ -13,6 +13,7 @@ import { kindTopic } from '@/components/screens/rooms/room-text'
 import { TopicTile } from '@/components/ui/topic-icons'
 import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
+import { TrustBadge } from '@/components/trust/badge'
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
@@ -72,8 +73,10 @@ export function RightPanel({ className }: { className?: string }) {
                     >
                       <Avatar name={f.profile.name} src={f.profile.photoUrl} size={40} />
                       <span className="min-w-0">
-                        <span className="block truncate text-sm font-semibold">
-                          {f.profile.name} <span aria-hidden>{flagEmoji(f.profile.country)}</span>
+                        <span className="flex items-center gap-1 truncate text-sm font-semibold">
+                          <span className="truncate">{f.profile.name}</span>
+                          <TrustBadge userId={f.profile.id} size={14} />
+                          <span aria-hidden>{flagEmoji(f.profile.country)}</span>
                         </span>
                         <span className="block truncate text-xs text-muted-foreground">{f.profile.city}</span>
                       </span>

@@ -16,6 +16,9 @@ import {
   type InboxItem,
   type Interest,
   INTERESTS,
+  type KycResult,
+  type MyTrust,
+  type Trust,
   MAX_PHOTOS,
   type Gender,
   type Match,
@@ -47,6 +50,7 @@ import {
 import { retryImport } from './retry-import'
 import { parseReply } from './voice-chat'
 import { parsePoll, POLLS_PER_READ } from './voice-polls'
+import { parseKycResult, parseMyTrust, parseTrustList } from './trust'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
@@ -71,6 +75,7 @@ const CODES = [
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
+  'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
 ]
 
 type CardRow = {
@@ -1092,6 +1097,35 @@ export class SupabaseBackend implements Backend {
       ?? (await this.rpc<VoiceStateRow>('voice_state', { p_room: roomId })).host
     if (hostId === this.uid) throw new BackendError('not_allowed')
     await this.report(hostId, reason, null)
+  }
+
+  // ---- identity and manners (035) ----
+
+  async myTrust(): Promise<MyTrust> {
+    const t = parseMyTrust(await this.rpc<unknown>('my_trust'), time)
+    if (!t) throw new BackendError('network')
+    return t
+  }
+
+  async trust(userIds: string[]): Promise<Trust[]> {
+    const ids = [...new Set(userIds)].slice(0, 100)
+    if (!ids.length) return []
+    return parseTrustList(await this.rpc<unknown>('trust', { p_users: ids }))
+  }
+
+  async kycStart(returnUrl: string): Promise<string> {
+    const r = await this.invoke<{ url?: string }>('kyc', { action: 'start', returnUrl })
+    if (!r?.url) throw new BackendError('kyc_failed')
+    return r.url
+  }
+
+  async kycCheck(): Promise<KycResult> {
+    const r = await this.invoke<{ result?: string }>('kyc', { action: 'check' })
+    return parseKycResult(r?.result)
+  }
+
+  async rateChat(matchId: string, good: boolean, tags: string[]) {
+    await this.rpc('rate_chat', { p_match: matchId, p_good: good, p_tags: tags })
   }
 
   async voiceStartAudio(roomId: string) {

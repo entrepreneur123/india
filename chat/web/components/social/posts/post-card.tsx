@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import { useFeedT } from '../feed-text'
 import { AccentAvatar, accentStyle } from '../profile-bits'
 import { postStore, useLike, useLivePost } from './post-store'
+import { VerifiedMark } from '@/components/trust/badge'
 
 /** Text-only posts up to this long are set large on the author's colour (ShareChat-style). */
 const TILE_MAX = 140
@@ -78,6 +79,7 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
           <span className="min-w-0">
             <span className="flex items-center gap-1.5 text-[15px] leading-tight font-bold">
               <span className="truncate">{a.name}</span>
+              {a.verified ? <VerifiedMark size={16} /> : null}
               <span className="shrink-0 font-semibold text-muted-foreground">{a.age}</span>
               <span className="shrink-0" aria-hidden>
                 {flagEmoji(a.country)}

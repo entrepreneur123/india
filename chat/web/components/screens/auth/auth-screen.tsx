@@ -13,6 +13,8 @@ import { HeroPreview } from './hero-preview'
 import { PhoneStep } from './phone-step'
 import { OtpStep } from './otp-step'
 import { ProfileStep } from './profile-step'
+import { VerifiedMark } from '@/components/trust/mark'
+import { requiredCached } from '@/components/trust/required'
 
 type Step = 'phone' | 'otp' | 'profile'
 
@@ -40,6 +42,8 @@ export function AuthScreen({
   const { t } = useI18n()
   const [step, setStep] = useState<Step>(initialStep)
   const [phone, setPhone] = useState<{ digits: string; display: string } | null>(null)
+  // "Everyone here is ID-verified" only once the server has said verification is required (seen on this browser).
+  const [required] = useState(requiredCached)
 
   return (
     <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[1.1fr_1fr]">
@@ -52,9 +56,15 @@ export function AuthScreen({
         <div className="mt-10 grid gap-10 lg:my-auto 2xl:grid-cols-[1fr_minmax(0,380px)] 2xl:items-center">
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-4">
-              <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
-                {t('auth.badge')}
-              </span>
+              <div className="flex flex-wrap gap-2">
+                <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                  {t('auth.badge')}
+                </span>
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pr-3 pl-1.5 text-xs font-semibold text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-[color-mix(in_srgb,#ff3d68_30%,transparent)]">
+                  <VerifiedMark size={16} label={null} />
+                  {t(required ? 'auth.everyoneVerified' : 'auth.verifiedBadge')}
+                </span>
+              </div>
               <h1 className="text-[32px] leading-[1.15] font-bold tracking-tight text-balance sm:text-5xl">
                 <Rich text={t('auth.headline')} mark={(s) => <span className="text-primary-text">{s}</span>} />
               </h1>

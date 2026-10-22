@@ -26,7 +26,9 @@ import {
   type NewVoiceRoom,
   type VoiceAction,
   type VoiceEvent,
+  type KycDemoOutcome,
 } from './backend'
+import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
 
@@ -176,6 +178,22 @@ for (const p of PEOPLE) {
   p.photos = Array.from({ length: x.photos ?? 0 }, (_, i) => ({ id: `${p.id}_g${i}`, url: art(`${p.id}-gallery-${i}`) }))
 }
 
+// Verified demo people (035); their manners are in lib/mockTrust.ts.
+const VERIFIED = new Set(['u_ananya', 'u_kabir', 'u_sofia', 'u_yuki', 'u_amara', 'u_leila', 'u_arjun', 'u_chloe', 'u_riya'])
+for (const p of PEOPLE) p.verified = VERIFIED.has(p.id)
+
+/**
+ * Demo switches in the address (to try every state): ?demo_required=1 (verification required), ?demo_required=later
+ * (switched on while the app runs: my_trust still says no, the server already refuses), ?demo_kyc=off (no
+ * identity provider yet, like the live server today), ?demo_manner=12 (my manner score, with enough ratings).
+ */
+function demoFlags() {
+  const q = typeof location === 'undefined' ? new URLSearchParams() : new URLSearchParams(location.search)
+  const manner = Number(q.get('demo_manner'))
+  const req = q.get('demo_required')
+  return { required: req === '1', gated: req === '1' || req === 'later', kycOff: q.get('demo_kyc') === 'off', manner: q.has('demo_manner') && Number.isFinite(manner) ? manner : null }
+}
+
 const GREETINGS = [
   'hey! where are you from?',
   'hiii 👋 how’s your day going?',
@@ -236,6 +254,9 @@ export class MockBackend implements Backend {
   /** Posts, likes, comments and profile styles are simulated in their own chunk too (lib/mockFeed.ts). */
   private feed_: Promise<FeedSim> | null = null
   private feedSim: FeedSim | null = null
+  // identity and manners (035)
+  private flags = demoFlags()
+  private trust_: Promise<TrustSim> | null = null
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -310,6 +331,11 @@ export class MockBackend implements Backend {
 
   private requireMe() {
     if (!this.signedIn) throw new BackendError('not_allowed')
+  }
+
+  /** Like require_verified: when verification is required, unverified people can only look around. */
+  private gate() {
+    if (this.flags.gated && !this.me?.verified) throw new BackendError('verify_required')
   }
 
   private emit(m: MatchState, e: MatchEvent) {
@@ -419,6 +445,8 @@ export class MockBackend implements Backend {
 
   async findMatch(target: Target, _lang?: string) {
     this.requireMe()
+    this.gate()
+    if ((this.flags.manner ?? 50) < 20) throw new BackendError('manner_low') // MANNER_FLOOR (lib/trust.ts)
     if (target !== 'any' && !this.ent.premium && !this.ent.genderPass) throw new BackendError('premium_required')
     await wait(jitter(300, 700))
     if (this.searchTarget !== target) {
@@ -590,6 +618,7 @@ export class MockBackend implements Backend {
 
   async addPost(text: string, image: File | null, visibility: PostVisibility = 'friends'): Promise<FeedPost> {
     this.requireMe()
+    this.gate()
     if (!this.me) throw new BackendError('not_found')
     const sim = await this.feedChunk()
     if (this.me.posts.filter((x) => Date.now() - x.createdAt < DAY).length >= 20) throw new BackendError('slow_down')
@@ -656,6 +685,7 @@ export class MockBackend implements Backend {
   }
 
   async addComment(postId: string, text: string, replyTo?: number | null) {
+    this.gate()
     return (await this.feedChunk()).addComment(postId, text, replyTo ?? null)
   }
 
@@ -696,6 +726,7 @@ export class MockBackend implements Backend {
 
   async requestFriend(userId: string) {
     await wait(400)
+    this.gate()
     const current = this.friendMap.get(userId) ?? 'none'
     const next: FriendState = current === 'incoming' ? 'friends' : current === 'friends' ? 'friends' : 'requested'
     this.friendMap.set(userId, next)
@@ -830,10 +861,12 @@ export class MockBackend implements Backend {
   }
 
   async createVoiceRoom(r: NewVoiceRoom) {
+    this.gate()
     return (await this.voice()).create(r)
   }
 
   async joinVoice(roomId: string) {
+    this.gate()
     return (await this.voice()).join(roomId)
   }
 
@@ -908,4 +941,48 @@ export class MockBackend implements Backend {
 
   /** The demo has no real audio, so nothing is ever blocked. */
   async voiceStartAudio(_roomId: string) {}
+
+  // ---- identity and manners (simulated in their own chunk, lib/mockTrust.ts) ----
+
+  private trustSim() {
+    this.trust_ ??= import('./mockTrust').then(
+      (m) =>
+        new m.TrustSim({
+          flags: this.flags,
+          me: () => this.me,
+          verified: (id) => VERIFIED.has(id),
+          setMe: (p) => (this.me = p),
+          match: (id) => {
+            const m = this.matches.get(id)
+            return m ? { kind: m.kind, partnerId: m.partner.id, messages: m.messages } : null
+          },
+        }),
+    )
+    return this.trust_
+  }
+
+  async myTrust() {
+    return (await this.trustSim()).myTrust()
+  }
+
+  async trust(userIds: string[]) {
+    return (await this.trustSim()).trust(userIds)
+  }
+
+  async kycStart(_returnUrl: string) {
+    this.requireMe()
+    return (await this.trustSim()).kycStart()
+  }
+
+  async kycDemo(outcome: KycDemoOutcome) {
+    return (await this.trustSim()).kycDemo(outcome)
+  }
+
+  async kycCheck() {
+    return (await this.trustSim()).kycCheck()
+  }
+
+  async rateChat(matchId: string, good: boolean, tags: string[]) {
+    return (await this.trustSim()).rateChat(matchId, good, tags)
+  }
 }

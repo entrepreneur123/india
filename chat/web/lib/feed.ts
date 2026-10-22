@@ -40,6 +40,7 @@ export function parseAuthor(raw: unknown, sign: Signer): PostAuthor | null {
     country: str(raw.country),
     photoUrl: sign(str(raw.photo_path)),
     accent: ACCENT_IDS.has(raw.accent as string) ? (raw.accent as Accent) : null,
+    verified: raw.verified === true,
   }
 }
 

@@ -107,3 +107,22 @@ components/shell/       sidebar, bottom tabs, right panel, lazy screen loaders
 Exit lock 5 s (Plus 0.2 s), report & leave always allowed, gender filter and video requests are paid,
 flag from the verified phone number, profiles only visible to people you met. Purchases happen in the
 Android app (Google Play); Plus then works on the web for the same account.
+
+## Real identities and manners (035_identity_manners.sql)
+
+- **Verification** (`components/trust/verify-sheet.tsx`, lazy): ID + liveness selfie through the `kyc` Edge Function
+  (Didit's hosted page, in the same tab; it comes back to `/?kyc=done`, which is read with `kyc {action:'check'}` and
+  removed from the address). Every result has its own screen: pending, verified, declined, unreadable, duplicate ID,
+  under 18, and "coming soon" while the server has no provider (`kyc_unavailable`; then nobody is asked again for
+  12 h). Opened from the card on Me, right after sign-up (once per browser; at every start and without "Not now"
+  while `my_trust().required`), and by any `verify_required` refusal instead of a message (`lib/gate.ts`).
+- **Badge**: `components/trust/mark.tsx` (Yaari's own two-tone shield, never an emoji). Posts and comments carry
+  `verified`; everyone else's comes from `trust(ids)`, batched (one call per frame for a whole list, `useTrust`).
+  Profiles show "ID verified · gender · age · country" with a lock (those come from the ID and can't be changed).
+- **Manners**: after a random chat where both wrote, "How was your chat with …?" (Good / Not good, up to 3 words,
+  Submit or Skip; once per chat, `rate_chat`). Profiles and Me show the score on a gauge with its level and the top
+  kind words; under 3 ratings "New here". `manner_low` opens an explanation instead of a message. Pure rules in
+  `lib/trust.ts` (unit-tested).
+- **Demo switches** (in the address): `?demo_required=1` (verification required), `?demo_required=later` (switched
+  on while the app runs), `?demo_kyc=off` (no provider yet), `?demo_manner=12` (my score). The demo's check is
+  simulated in place (choose how it ends).

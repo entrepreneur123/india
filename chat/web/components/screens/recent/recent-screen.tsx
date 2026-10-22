@@ -20,6 +20,7 @@ import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { BellButton, CountBadge } from '@/components/social/bits'
 import { useSocialT } from '@/components/social/social-text'
 import { cn } from '@/lib/utils'
+import { TrustBadge } from '@/components/trust/badge'
 
 type Segment = 'friends' | 'matches'
 
@@ -131,8 +132,11 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
     <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left">
       <Avatar name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
-        <span className="block truncate text-[15px] font-semibold">
-          {p.name}, {p.age}
+        <span className="flex items-center gap-1.5 text-[15px] font-semibold">
+          <span className="truncate">
+            {p.name}, {p.age}
+          </span>
+          <TrustBadge userId={p.id} size={15} />
         </span>
         <span className="block truncate text-sm text-muted-foreground">{detail ?? p.city}</span>
       </span>

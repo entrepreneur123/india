@@ -59,6 +59,8 @@ export interface PostAuthor {
   country: string | null
   photoUrl: string | null
   accent: Accent | null
+  /** 035: the author's identity is verified (absent: an older server). */
+  verified?: boolean
 }
 
 /** A post as the feed reads it: with its author, counts and my like. */
@@ -102,7 +104,35 @@ export interface Profile {
   photos?: ProfilePhoto[]
   /** Cover, colour, status, languages and prompts (absent: not loaded for this card). */
   style?: ProfileStyle
+  /** 035: identity verified (absent: not known for this card; the screens ask trust()). */
+  verified?: boolean
 }
+
+// ---- real identities and manners (035_identity_manners.sql; parsing and levels in lib/trust.ts) ----
+
+/** The kyc function's answer: verified, still being checked, or why not. 'none': no check started. */
+export type KycResult = 'verified' | 'pending' | 'declined' | 'unreadable' | 'minor' | 'duplicate' | 'none'
+
+/** Someone's badge and manners: manner 0-100 (starts at 50), ratings in the last 90 days, top good tags. */
+export interface Trust {
+  id: string
+  verified: boolean
+  manner: number
+  ratings: number
+  tags: { tag: 'kind' | 'funny' | 'respectful' | 'good_listener' | 'interesting'; n: number }[]
+}
+
+export interface MyTrust extends Trust {
+  /** Verification is required to chat, enter rooms, post, comment and ask for friendship ('verify_required'). */
+  required: boolean
+  /** My latest check (null: never started). */
+  kyc: { status: string; result: KycResult | null; at: number } | null
+  /** Random chats (match ids) I rated in the last day. */
+  rated: string[]
+}
+
+/** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
+export type KycDemoOutcome = Exclude<KycResult, 'none'>
 
 /** Interest tags (024_discovery_profiles.sql has the same list); the apps translate them. */
 export const INTERESTS = [
@@ -456,6 +486,17 @@ export type BackendErrorCode =
   | 'bad_request'
   /** The photo looked like nudity on this device's check: it was not sent. */
   | 'nude_photo'
+  /** 035: verification is required for this (the verification sheet opens instead of a message). */
+  | 'verify_required'
+  /** 035: the manner score is below 20, so random chat is closed. */
+  | 'manner_low'
+  /** 035: the identity check has no provider yet (kyc 503). */
+  | 'kyc_unavailable'
+  | 'already_verified'
+  | 'kyc_failed'
+  /** 035 ratings: more than a day after the chat, or rated already. */
+  | 'too_late'
+  | 'already_rated'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -584,4 +625,20 @@ export interface Backend {
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
   voiceStartAudio(roomId: string): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
+  // ---- identity and manners (035) ----
+  myTrust(): Promise<MyTrust>
+  /** Badges and manners of these people (at most 100; people I may not see are left out). */
+  trust(userIds: string[]): Promise<Trust[]>
+  /**
+   * Starts an identity check; returns the hosted page to send the person to (it comes back to `returnUrl`). The demo
+   * returns a "demo:" address: the check is simulated in place (kycDemo). Errors: kyc_unavailable, already_verified,
+   * slow_down, kyc_failed.
+   */
+  kycStart(returnUrl: string): Promise<string>
+  /** The latest check's result (read again from the provider). */
+  kycCheck(): Promise<KycResult>
+  /** Demo only: how the simulated check ends. */
+  kycDemo?(outcome: KycDemoOutcome): Promise<void>
+  /** Once per random chat after it ends, when both wrote; `tags` from the chosen side (lib/trust.ts), at most 3. */
+  rateChat(matchId: string, good: boolean, tags: string[]): Promise<void>
 }

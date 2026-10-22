@@ -21,16 +21,25 @@ import { BellButton, InterestChips } from '@/components/social/bits'
 import { OnlineCount } from '@/components/social/online'
 import { useSocialT } from '@/components/social/social-text'
 import { retryImport } from '@/lib/retry-import'
+import { shouldAskRating } from '@/lib/trust'
+import { skippedRatings } from '@/components/trust/store'
+import type { RateTarget } from '@/components/trust/rating-sheet'
+import { TrustBadge } from '@/components/trust/badge'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
 const ChatView = lazy(() => loadChat().then((mod) => ({ default: mod.ChatView })))
+// The rating sheet (after a chat where both wrote) downloads with the chat too.
+const loadRating = () => retryImport(() => import('@/components/trust/rating-sheet'))
+const RateChatSheet = lazy(() => loadRating().then((mod) => ({ default: mod.RateChatSheet })))
 
 const POLL_MS = 2000
 /** A search in a background tab stops after this long (the server drops a queue spot after 20 s anyway). */
 const HIDDEN_CANCEL_MS = 60_000
 /** Errors that retrying can't fix; anything else (a weak network, a slow server) is retried. */
-const RULE_ERRORS = new Set(['premium_required', 'banned', 'no_profile', 'not_signed_in', 'bad_target', 'under_18', 'not_allowed'])
+const RULE_ERRORS = new Set([
+  'premium_required', 'banned', 'no_profile', 'not_signed_in', 'bad_target', 'under_18', 'not_allowed', 'verify_required', 'manner_low',
+])
 /** Waits between attempts while requests keep failing; the search gives up after a minute of failures. */
 const RETRY_MS = [2000, 4000, 8000, 10_000]
 const GIVE_UP_MS = 60_000
@@ -48,7 +57,26 @@ export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang } = useI18n()
-  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom } = useApp()
+  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom, trust } = useApp()
+  // Rating a chat that ended (035): who both wrote in, and the one being rated now.
+  const talked = useRef(new Map<string, boolean>())
+  const ratedHere = useRef(new Set<string>())
+  const [rate, setRate] = useState<RateTarget | null>(null)
+  const [rateUsed, setRateUsed] = useState(false)
+  const trustRef = useRef(trust)
+  trustRef.current = trust
+  const askRating = useCallback((m: Match) => {
+    const ask = shouldAskRating({
+      matchId: m.id,
+      bothWrote: talked.current.get(m.id) === true,
+      rated: [...ratedHere.current, ...(trustRef.current?.rated ?? [])],
+      skipped: skippedRatings(),
+    })
+    talked.current.delete(m.id)
+    if (!ask) return
+    setRateUsed(true)
+    setRate({ matchId: m.id, partner: m.partner })
+  }, [])
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
   const [match, setMatch] = useState<Live | null>(null)
@@ -80,6 +108,7 @@ export function RandomScreen({ active }: { active: boolean }) {
 
   const startMatching = useCallback(() => {
     void loadChat().catch(() => undefined)
+    void loadRating().catch(() => undefined)
     const g = ++generation.current
     searching.current = true
     setReconnecting(false)
@@ -237,13 +266,15 @@ export function RandomScreen({ active }: { active: boolean }) {
       leavingRef.current = false
       setLeaving(false)
     }
+    const ended_ = match
     closeChat()
+    askRating(ended_)
     if (next) startMatching()
   }
 
   // One live session at a time: the shell asks here before a room opens (lib/live-session.ts).
-  const now = useRef({ phase, match, cancelMatching, closeChat })
-  now.current = { phase, match, cancelMatching, closeChat }
+  const now = useRef({ phase, match, cancelMatching, closeChat, askRating })
+  now.current = { phase, match, cancelMatching, closeChat, askRating }
   useEffect(() => {
     registerRandom({
       live: () => {
@@ -266,6 +297,8 @@ export function RandomScreen({ active }: { active: boolean }) {
           }
         }
         now.current.closeChat()
+        // Ended from its bar: ask about it. A room opening (force) goes straight to the room.
+        if (!force) now.current.askRating(match)
         return true
       },
     })
@@ -361,6 +394,7 @@ export function RandomScreen({ active }: { active: boolean }) {
                   onReported={closeChat}
                   onMinimise={minimiseRandom}
                   onStatus={setStatus}
+                  onTalked={(both) => void talked.current.set(match.id, both)}
                 />
               </Suspense>
             </ScreenBoundary>
@@ -368,6 +402,18 @@ export function RandomScreen({ active }: { active: boolean }) {
           </m.div>
         ) : null}
       </AnimatePresence>
+
+      {rateUsed ? (
+        <Suspense fallback={null}>
+          <RateChatSheet
+            target={rate}
+            onClose={(rated) => {
+              if (rated && rate) ratedHere.current.add(rate.matchId)
+              setRate(null)
+            }}
+          />
+        </Suspense>
+      ) : null}
 
       <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title={t('leave.title')} night>
         <div className="flex flex-col gap-2.5 p-6 pt-4">
@@ -468,8 +514,9 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
           >
             <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
             <Avatar name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
-            <span className="text-xl font-bold">
+            <span className="flex items-center gap-1.5 text-xl font-bold">
               {partner.name}, {partner.age}
+              <TrustBadge userId={partner.id} size={20} />
             </span>
             {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}
             {shared.length ? (

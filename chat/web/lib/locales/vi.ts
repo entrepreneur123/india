@@ -41,6 +41,9 @@ const vi: Dict = {
   'panel.plusCta': 'Xem Yaari Plus',
 
   'auth.badge': '18+ · đã xác minh số điện thoại',
+  'auth.verifiedBadge': 'Nhận huy hiệu đã xác minh: giấy tờ + ảnh selfie',
+  'auth.everyoneVerified': 'Mọi người ở đây đều đã xác minh danh tính',
+  'trust.verified': 'Đã xác minh danh tính',
   'auth.headline': 'Bắt đầu trò chuyện với [cả thế giới.]',
   'auth.intro': 'Trò chuyện 1:1 ngẫu nhiên với mọi người khắp thế giới. Nhắn tin trước, gọi video chỉ khi cả hai đồng ý.',
   'auth.how1Title': 'Xác minh số điện thoại',
@@ -582,6 +585,8 @@ const vi: Dict = {
   'error.bad_request': 'Không thực hiện được. Hãy kiểm tra nội dung và thử lại',
   'error.nude_photo': 'Ảnh này có vẻ khỏa thân nên không được gửi',
   'error.sms_unavailable': 'Hiện chưa gửi được mã tới số này. Vui lòng thử lại sau',
+  'error.verify_required': 'Hãy xác minh danh tính để làm việc này',
+  'error.manner_low': 'Trò chuyện ngẫu nhiên đang tạm dừng vì điểm lịch sự của bạn',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',
 }
 

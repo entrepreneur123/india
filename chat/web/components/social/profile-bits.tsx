@@ -6,6 +6,7 @@ import { flagEmoji } from '@/lib/format'
 import { accentVars, EMPTY_STYLE, nativeName } from '@/lib/profile-style'
 import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { VerifiedMark } from '@/components/trust/badge'
 import { useFeedT } from './feed-text'
 
 // A profile made its own (033): the cover (or the accent's gradient), the name ring, the status, languages and
@@ -95,12 +96,18 @@ export function ProfileHero({
   coverSlot,
   statusSlot,
   badge,
+  verified,
+  facts,
   className,
 }: {
   profile: Profile
   coverSlot?: ReactNode
   statusSlot?: ReactNode
   badge?: ReactNode
+  /** The verified mark after the name (035). */
+  verified?: boolean
+  /** Under the name: the facts from the ID (components/trust/trust-cards.tsx IdentityFacts). */
+  facts?: ReactNode
   className?: string
 }) {
   const style = profile.style ?? EMPTY_STYLE
@@ -111,13 +118,17 @@ export function ProfileHero({
       </ProfileCover>
       <AccentAvatar name={profile.name} src={profile.photoUrl} size={104} accent={style.accent} ring="thick" className="-mt-16 shadow-e2" />
       <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
-        <span>
-          {profile.name}, {profile.age}
+        <span className="inline-flex items-center gap-1.5">
+          <span>
+            {profile.name}, {profile.age}
+          </span>
+          {verified ? <VerifiedMark size={24} /> : null}
         </span>
         <span aria-hidden>{flagEmoji(profile.country)}</span>
         {badge}
       </h2>
       {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
+      {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
       {style.status ? (
         <p
           className={cn(

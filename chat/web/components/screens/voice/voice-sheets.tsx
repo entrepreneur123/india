@@ -19,6 +19,7 @@ import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { cn } from '@/lib/utils'
 import { isMod, memberOf, roleLabel } from './voice-text'
+import { TrustBadge } from '@/components/trust/badge'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -65,6 +66,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate text-[15px] font-semibold">{m.profile.name}</span>
+          <TrustBadge userId={m.profile.id} size={15} />
           {role ? <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-[10px] font-bold text-primary-text">{role}</span> : null}
           {m.hand ? <ReactionIcon kind="hand" size={16} /> : null}
         </span>

@@ -16,6 +16,8 @@ import { PostGrid } from '@/components/screens/me/post-grid'
 import { InterestChips } from '@/components/social/bits'
 import { Gallery } from '@/components/social/gallery'
 import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
+import { useTrust } from '@/components/trust/badge'
+import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
 
 /**
  * Someone's profile: cover and colour, status, languages, prompts, photos and posts. The server shows people I have
@@ -39,7 +41,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
-  const { me, openThread } = useApp()
+  const { me, openThread, trust: myTrust } = useApp()
   const { t, plural } = useI18n()
   const isMe = userId === me.id
   const { data: profile, isLoading, error: loadError, mutate: reload } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
@@ -48,6 +50,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const [reportOpen, setReportOpen] = useState(false)
   const shown: Profile | null | undefined = isMe ? me : profile
   const state: FriendState = friends?.find((f) => f.profile.id === userId)?.state ?? 'none'
+  const theirTrust = useTrust(isMe ? null : userId)
+  const trust = isMe ? myTrust : theirTrust
 
   const act = async (action: () => Promise<unknown>, done?: string) => {
     setBusy(true)
@@ -100,6 +104,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
             <ProfileHero
               profile={shown}
               className="w-full"
+              verified={!!trust?.verified}
+              facts={trust ? <IdentityFacts profile={shown} verified={trust.verified} /> : null}
               coverSlot={
                 <button
                   type="button"
@@ -160,6 +166,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               </div>
             )}
           </div>
+          <MannerCard trust={trust} className="mx-4 mt-6" />
           {shown.style?.prompts.length ? <PromptCards prompts={shown.style.prompts} accent={shown.style.accent} className="mt-6 px-4" /> : null}
           {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-4" /> : null}
           <div className="mt-6 border-t border-border px-1 pt-1 pb-4">

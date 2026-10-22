@@ -22,6 +22,7 @@ import { ExitButton } from './exit-button'
 import { MessageBubble, TypingBubble } from './message-bubble'
 import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
+import { TrustBadge } from '@/components/trust/badge'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
@@ -42,6 +43,7 @@ export function ChatView({
   onReported,
   onMinimise,
   onStatus,
+  onTalked,
 }: {
   matchId: string
   partner: Profile
@@ -62,6 +64,8 @@ export function ChatView({
   onMinimise?: () => void
   /** Random only: what the chat's bar shows while another tab is open (typing, messages not seen yet). */
   onStatus?: (s: { typing: boolean; unread: number }) => void
+  /** Random only: whether both of us have written at least one line (then the chat can be rated when it ends). */
+  onTalked?: (both: boolean) => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -87,6 +91,12 @@ export function ChatView({
   const status = useRef(onStatus)
   status.current = onStatus
   useEffect(() => status.current?.({ typing: chat.typing, unread }), [chat.typing, unread])
+  const talked = useRef(onTalked)
+  talked.current = onTalked
+  const both = incoming > 0 && !!chat.messages?.some((x) => x.fromMe)
+  useEffect(() => {
+    talked.current?.(both)
+  }, [both])
 
   // Follow new messages unless the user scrolled up to read older ones.
   useLayoutEffect(() => {
@@ -167,7 +177,7 @@ export function ChatView({
             <Avatar name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                {partner.name}, {partner.age} <span aria-hidden>{flagEmoji(partner.country)}</span>
+                {partner.name}, {partner.age} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="block truncate text-xs text-muted-foreground">
                 {ended ? t('chat.left') : chat.typing ? <span className="text-primary-text">{t('chat.typing')}</span> : partner.city}

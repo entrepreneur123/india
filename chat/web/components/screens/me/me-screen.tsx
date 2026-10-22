@@ -19,6 +19,7 @@ import { InterestChips } from '@/components/social/bits'
 import { Gallery } from '@/components/social/gallery'
 import { InterestsSheet } from '@/components/social/interests-sheet'
 import { useSocialT } from '@/components/social/social-text'
+import { IdentityFacts, MannerCard, VerifyCard } from '@/components/trust/trust-cards'
 import { PhotoPicker } from './photo-picker'
 import { PostGrid } from './post-grid'
 
@@ -34,7 +35,8 @@ const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor
 
 export function MeScreen() {
   const backend = useBackend()
-  const { me, t, setTab, entitlements } = useApp()
+  const { me, t, setTab, entitlements, trust } = useApp()
+  const verified = !!trust?.verified
   const { data: friends } = useSWR('friends', () => backend.friends())
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
@@ -60,6 +62,8 @@ export function MeScreen() {
       <div className="mx-auto max-w-3xl px-3 pt-3 pb-10 sm:px-8 sm:pt-8">
         <ProfileHero
           profile={me}
+          verified={verified}
+          facts={verified ? <IdentityFacts profile={me} verified /> : null}
           badge={
             entitlements.premium ? (
               <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary-text">{t('me.plusBadge')}</span>
@@ -103,6 +107,8 @@ export function MeScreen() {
           <Stat label={ft('profile.likes')} value={likes} />
         </dl>
 
+        <VerifyCard className="mx-auto mt-5 max-w-xl" />
+
         <div className="mx-auto mt-5 flex max-w-md gap-2">
           <Button variant="outline" className="flex-1" onClick={() => setEditOpen(true)}>
             {t('me.edit')}
@@ -113,6 +119,7 @@ export function MeScreen() {
         </div>
 
         <section className="mt-8 flex flex-col gap-6">
+          <MannerCard trust={trust} className="mx-auto w-full max-w-xl" />
           {style.prompts.length ? (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3">

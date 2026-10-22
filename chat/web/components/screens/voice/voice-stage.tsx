@@ -10,6 +10,7 @@ import { ReactionIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 import { useLevel, type LevelStore, type Reaction } from './voice-session'
 import { roleLabel, SPEAKING } from './voice-text'
+import { TrustBadge } from '@/components/trust/badge'
 
 /** Three bars that bounce while a room is live (still under reduced motion). */
 export function LiveBars({ className }: { className?: string }) {
@@ -155,7 +156,10 @@ export function SeatPerson({
         </AnimatePresence>
       </span>
       <span className="flex max-w-full min-w-0 flex-col items-center">
-        <span className={cn('max-w-full truncate font-semibold leading-tight', wide ? 'text-sm' : 'text-xs')}>{member.profile.name}</span>
+        <span className={cn('flex max-w-full min-w-0 items-center gap-0.5 font-semibold leading-tight', wide ? 'text-sm' : 'text-xs')}>
+          <span className="truncate">{member.profile.name}</span>
+          <TrustBadge userId={member.profile.id} size={wide ? 14 : 12} />
+        </span>
         {role ? (
           <span className="mt-0.5 rounded-full bg-primary-soft px-1.5 py-px text-[10px] leading-tight font-bold whitespace-nowrap text-primary-text">{role}</span>
         ) : null}

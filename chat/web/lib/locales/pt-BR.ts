@@ -41,6 +41,9 @@ const ptBR: Dict = {
   'panel.plusCta': 'Ver o Yaari Plus',
 
   'auth.badge': '18+ · telefone verificado',
+  'auth.verifiedBadge': 'Ganhe seu selo de verificado: documento + selfie',
+  'auth.everyoneVerified': 'Todo mundo aqui tem identidade verificada',
+  'trust.verified': 'Identidade verificada',
   'auth.headline': 'Comece a conversar com [o mundo inteiro.]',
   'auth.intro': 'Chats 1:1 aleatórios com pessoas do mundo todo. Primeiro texto, vídeo só quando os dois aceitam.',
   'auth.how1Title': 'Confirme seu número',
@@ -582,6 +585,8 @@ const ptBR: Dict = {
   'error.bad_request': 'Não deu certo. Confira o que você digitou e tente de novo',
   'error.nude_photo': 'Esta foto parece ter nudez, por isso não foi enviada',
   'error.sms_unavailable': 'Não conseguimos enviar o código para este número agora. Tente mais tarde',
+  'error.verify_required': 'Verifique sua identidade para fazer isso',
+  'error.manner_low': 'O chat aleatório está pausado por causa da sua nota de educação',
   'error.generic': 'Algo deu errado. Tente de novo',
 }
 
