@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">કૉલ શરૂ કરવા માટે કૅમેરા અને માઇકને મંજૂરી આપો</string>
+    <string name="connecting">કનેક્ટ થઈ રહ્યું છે…</string>
+    <string name="waiting_video">%1$sના વીડિયોની રાહ…</string>
+    <string name="reconnecting">ફરી કનેક્ટ થઈ રહ્યું છે…</string>
+    <string name="call_failed">કૉલ કનેક્ટ થઈ શક્યો નહીં. પૂરું કરો પર ટૅપ કરીને ફરી પ્રયાસ કરો.</string>
+    <string name="video_checking">સલામતી તપાસ…</string>
+    <string name="video_hidden_title">વીડિયો છુપાવ્યો</string>
+    <string name="video_hidden_body">તેમાં નગ્નતા હોઈ શકે છે, જેની મંજૂરી નથી. અમે અમારી સેફ્ટી ટીમને જાણ કરી છે.</string>
+    <string name="open_settings">સેટિંગ ખોલો</string>
+    <string name="call_dropped">કૉલ કપાઈ ગયો. પૂરું કરો પર ટૅપ કરીને ફરી પ્રયાસ કરો.</string>
+    <string name="partner_lost">%1$sનું કનેક્શન તૂટી ગયું. તેમની રાહ જોઈએ છીએ…</string>
+    <string name="partner_paused">%1$sનો વીડિયો અટક્યો છે: તેમનું નેટવર્ક ખૂબ ધીમું છે</string>
+    <string name="partner_cam_off">%1$sએ પોતાનો કૅમેરા બંધ કર્યો</string>
+    <string name="partner_weak">%1$sનું કનેક્શન નબળું છે</string>
+    <string name="net_good">તમારું કનેક્શન: મજબૂત</string>
+    <string name="net_ok">તમારું કનેક્શન: ઠીક</string>
+    <string name="net_poor">તમારું કનેક્શન: નબળું</string>
+    <string name="device_busy">તમારો કૅમેરા કે માઇક બીજી ઍપ વાપરી રહી છે</string>
+    <string name="cam_blocked">કૅમેરાની મંજૂરી નથી. તેઓ હજુ પણ તમને સાંભળી શકે છે. સેટિંગ ખોલવા ટૅપ કરો</string>
+</resources>

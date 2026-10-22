@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">कॉल सुरू करण्यासाठी कॅमेरा आणि माइकला परवानगी द्या</string>
+    <string name="connecting">कनेक्ट होत आहे…</string>
+    <string name="waiting_video">%1$s च्या व्हिडिओची वाट पाहत आहोत…</string>
+    <string name="reconnecting">पुन्हा कनेक्ट होत आहे…</string>
+    <string name="call_failed">कॉल कनेक्ट होऊ शकला नाही. संपवा वर टॅप करून पुन्हा प्रयत्न करा.</string>
+    <string name="video_checking">सुरक्षा तपासणी…</string>
+    <string name="video_hidden_title">व्हिडिओ लपवला</string>
+    <string name="video_hidden_body">यात नग्नता असू शकते, ज्याला परवानगी नाही. आम्ही आमच्या सेफ्टी टीमला कळवले आहे.</string>
+    <string name="open_settings">सेटिंग्ज उघडा</string>
+    <string name="call_dropped">कॉल कट झाला. संपवा वर टॅप करून पुन्हा प्रयत्न करा.</string>
+    <string name="partner_lost">%1$s चे कनेक्शन तुटले. त्यांची वाट पाहत आहोत…</string>
+    <string name="partner_paused">%1$s चा व्हिडिओ थांबला आहे: त्यांचे नेटवर्क खूप स्लो आहे</string>
+    <string name="partner_cam_off">%1$s ने त्यांचा कॅमेरा बंद केला</string>
+    <string name="partner_weak">%1$s चे कनेक्शन कमकुवत आहे</string>
+    <string name="net_good">तुमचे कनेक्शन: चांगले</string>
+    <string name="net_ok">तुमचे कनेक्शन: ठीक</string>
+    <string name="net_poor">तुमचे कनेक्शन: कमकुवत</string>
+    <string name="device_busy">तुमचा कॅमेरा किंवा माइक दुसरे ॲप वापरत आहे</string>
+    <string name="cam_blocked">कॅमेऱ्याला परवानगी नाही. तरीही ते तुम्हाला ऐकू शकतात. सेटिंग्ज उघडण्यासाठी टॅप करा</string>
+</resources>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">کال شروع کرنے کے لیے کیمرا اور مائیک کی اجازت دیں</string>
+    <string name="connecting">جڑ رہے ہیں…</string>
+    <string name="waiting_video">%1$s کی ویڈیو کا انتظار…</string>
+    <string name="reconnecting">دوبارہ جڑ رہے ہیں…</string>
+    <string name="call_failed">کال نہیں جڑ سکی۔ ختم کریں پر ٹیپ کر کے دوبارہ کوشش کریں۔</string>
+    <string name="video_checking">حفاظتی جانچ…</string>
+    <string name="video_hidden_title">ویڈیو چھپا دی گئی</string>
+    <string name="video_hidden_body">اس میں عریانی ہو سکتی ہے، جس کی اجازت نہیں۔ ہم نے اپنی سیفٹی ٹیم کو بتا دیا ہے۔</string>
+    <string name="open_settings">سیٹنگز کھولیں</string>
+    <string name="call_dropped">کال کٹ گئی۔ ختم کریں پر ٹیپ کر کے دوبارہ کوشش کریں۔</string>
+    <string name="partner_lost">%1$s کا کنکشن ٹوٹ گیا۔ ان کا انتظار ہے…</string>
+    <string name="partner_paused">%1$s کی ویڈیو رکی ہوئی ہے: ان کا نیٹ ورک بہت سست ہے</string>
+    <string name="partner_cam_off">%1$s نے اپنا کیمرا بند کر دیا</string>
+    <string name="partner_weak">%1$s کا کنکشن کمزور ہے</string>
+    <string name="net_good">آپ کا کنکشن: مضبوط</string>
+    <string name="net_ok">آپ کا کنکشن: ٹھیک</string>
+    <string name="net_poor">آپ کا کنکشن: کمزور</string>
+    <string name="device_busy">آپ کا کیمرا یا مائیک کسی اور ایپ میں استعمال ہو رہا ہے</string>
+    <string name="cam_blocked">کیمرے کی اجازت نہیں۔ وہ پھر بھی آپ کو سن سکتے ہیں۔ سیٹنگز کھولنے کے لیے ٹیپ کریں</string>
+</resources>
