@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="allow_camera">اسمح بالكاميرا والميكروفون لبدء المكالمة</string>
+    <string name="connecting">جارٍ الاتصال…</string>
+    <string name="waiting_video">في انتظار فيديو %1$s…</string>
+    <string name="reconnecting">جارٍ إعادة الاتصال…</string>
+    <string name="call_failed">تعذّر الاتصال بالمكالمة. اضغط «إنهاء» وحاول مرة أخرى.</string>
+    <string name="video_checking">فحص الأمان…</string>
+    <string name="video_hidden_title">تم إخفاء الفيديو</string>
+    <string name="video_hidden_body">قد يحتوي على عري، وهذا غير مسموح. أبلغنا فريق الأمان لدينا.</string>
+    <string name="open_settings">فتح الإعدادات</string>
+    <string name="call_dropped">انقطعت المكالمة. اضغط «إنهاء» وحاول مرة أخرى.</string>
+    <string name="partner_lost">انقطع اتصال %1$s. في انتظاره…</string>
+    <string name="partner_paused">فيديو %1$s متوقف مؤقتًا: شبكته بطيئة جدًا</string>
+    <string name="partner_cam_off">أوقف %1$s الكاميرا</string>
+    <string name="partner_weak">اتصال %1$s ضعيف</string>
+    <string name="net_good">اتصالك: قوي</string>
+    <string name="net_ok">اتصالك: متوسط</string>
+    <string name="net_poor">اتصالك: ضعيف</string>
+    <string name="device_busy">الكاميرا أو الميكروفون قيد الاستخدام في تطبيق آخر</string>
+    <string name="cam_blocked">الكاميرا غير مسموح بها. ما زال بإمكانهم سماعك. اضغط لفتح الإعدادات</string>
+</resources>
