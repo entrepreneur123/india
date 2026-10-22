@@ -57,7 +57,8 @@ const en = {
   'id.invalid': 'Use 2 to 24 letters, numbers or symbols like _ . - (no spaces or emoji)',
   'id.reserved': 'This ID is reserved',
   'id.taken': '@{handle} is already taken',
-  'id.cooldown': 'You can change your ID again on {date}',
+  'id.cooldown': 'You can change your ID again on {date}, or sooner with an ID change from the Yaari app',
+  'id.cooldownPass': 'Changing it now uses 1 of your {n} ID changes (free again on {date})',
   'id.keptFree': 'That ID was taken just now, so yours is @{handle} for now. You can change it in Edit profile.',
 
   // profile details (the style editor without the old cover and colour)
@@ -79,6 +80,16 @@ const en = {
   'ended.add': 'Chat ended. Add {name} as a friend to keep talking.',
   'ended.waiting': 'Chat ended. Waiting for {name} to accept your friend request.',
   'ended.incoming': 'Chat ended. {name} wants to be friends: accept to keep talking.',
+  'find.title': 'Find by ID',
+  'find.placeholder': 'Search IDs',
+  'find.hint': 'Type an ID to find someone',
+  'find.none': 'No one with an ID starting with @{q}',
+  'find.failed': 'Couldn’t load. Try again.',
+  'blocks.title': 'Blocked accounts',
+  'blocks.note': 'They can’t find you, see your profile or message you. Unblocking doesn’t bring back old chats or friendships.',
+  'blocks.empty': 'You haven’t blocked anyone',
+  'blocks.unblock': 'Unblock',
+  'blocks.done': '{name} is unblocked',
 }
 
 export default en
