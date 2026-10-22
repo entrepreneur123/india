@@ -31,8 +31,10 @@ test('every app language maps back to itself, and only Arabic, Urdu, Persian and
   assert.equal(LANG_IDS.length, 36)
 })
 
-// Languages kept complete by hand; the others may lag (missing keys read in English at runtime).
-const COMPLETE = ['hi', 'bn', 'pt-BR', 'vi']
+// Every shipped language is complete (missing keys would read in English at runtime).
+const COMPLETE = LANG_IDS.filter((l) => l !== 'en')
+/** Extra plural forms a language may add next to English's `.one`/`.other` (Intl.PluralRules categories). */
+const PLURAL_EXTRA = /\.(zero|two|few|many)$/
 const SETS: [string, Record<string, string>, string][] = [
   ['lib/locales', en, '../locales'],
   ['room', roomEn, '../../components/screens/voice/locales'],
@@ -46,7 +48,7 @@ test('the fully kept languages have every English key, and no language file has 
     for (const lang of COMPLETE) {
       const dict = ((await import(`${dir}/${lang}.ts`)) as { default: Record<string, string> }).default
       const missing = Object.keys(source).filter((k) => !(k in dict))
-      const unknown = Object.keys(dict).filter((k) => !(k in source))
+      const unknown = Object.keys(dict).filter((k) => !(k in source) && !(PLURAL_EXTRA.test(k) && k.replace(PLURAL_EXTRA, '.other') in source))
       assert.deepEqual(missing, [], `${name}/${lang} misses keys`)
       assert.deepEqual(unknown, [], `${name}/${lang} has unknown keys`)
       // Placeholders survive translation.

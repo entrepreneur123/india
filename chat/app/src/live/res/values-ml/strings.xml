@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">കോൾ തുടങ്ങാൻ ക്യാമറയ്ക്കും മൈക്കിനും അനുമതി നൽകുക</string>
+    <string name="connecting">കണക്റ്റ് ചെയ്യുന്നു…</string>
+    <string name="waiting_video">%1$s-ന്റെ വീഡിയോയ്ക്കായി കാത്തിരിക്കുന്നു…</string>
+    <string name="reconnecting">വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു…</string>
+    <string name="call_failed">കോൾ കണക്റ്റ് ആയില്ല. അവസാനിപ്പിക്കുക ടാപ്പ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="video_checking">സുരക്ഷാ പരിശോധന…</string>
+    <string name="video_hidden_title">വീഡിയോ മറച്ചു</string>
+    <string name="video_hidden_body">ഇതിൽ നഗ്നത ഉണ്ടാകാം, അത് അനുവദനീയമല്ല. ഞങ്ങളുടെ സുരക്ഷാ ടീമിനെ അറിയിച്ചിട്ടുണ്ട്.</string>
+    <string name="open_settings">സെറ്റിംഗ്സ് തുറക്കുക</string>
+    <string name="call_dropped">കോൾ മുറിഞ്ഞു. അവസാനിപ്പിക്കുക ടാപ്പ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="partner_lost">%1$s-ന്റെ കണക്ഷൻ പോയി. കാത്തിരിക്കുന്നു…</string>
+    <string name="partner_paused">%1$s-ന്റെ വീഡിയോ നിർത്തിയിരിക്കുന്നു: അവരുടെ നെറ്റ്‌വർക്ക് വളരെ പതുക്കെയാണ്</string>
+    <string name="partner_cam_off">%1$s ക്യാമറ ഓഫ് ചെയ്തു</string>
+    <string name="partner_weak">%1$s-ന്റെ കണക്ഷൻ ദുർബലമാണ്</string>
+    <string name="net_good">നിങ്ങളുടെ കണക്ഷൻ: ശക്തം</string>
+    <string name="net_ok">നിങ്ങളുടെ കണക്ഷൻ: തരക്കേടില്ല</string>
+    <string name="net_poor">നിങ്ങളുടെ കണക്ഷൻ: ദുർബലം</string>
+    <string name="device_busy">നിങ്ങളുടെ ക്യാമറയോ മൈക്കോ മറ്റൊരു ആപ്പ് ഉപയോഗിക്കുന്നു</string>
+    <string name="cam_blocked">ക്യാമറയ്ക്ക് അനുമതിയില്ല. അവർക്ക് നിങ്ങളെ കേൾക്കാം. സെറ്റിംഗ്സ് തുറക്കാൻ ടാപ്പ് ചെയ്യുക</string>
+</resources>

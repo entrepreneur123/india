@@ -66,9 +66,9 @@ class AppLocaleTest {
         assertEquals("日本語", AppLocale.nameOf("ja,en"))
     }
 
-    /** A language without its own strings yet shows in English (Android's fallback). */
-    @Test fun untranslatedLanguageFallsBackToEnglish() {
+    /** Every offered language ships its own strings (TranslationsTest checks they are complete). */
+    @Test fun chosenLanguageShowsItsOwnStrings() {
         choose("ta")
-        assertEquals("Settings", AppLocale.wrap(app, sdk = 30).getString(R.string.settings))
+        assertEquals("செட்டிங்ஸ்", AppLocale.wrap(app, sdk = 30).getString(R.string.settings))
     }
 }
