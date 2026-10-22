@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Payagan ang camera at mikropono para masimulan ang tawag</string>
+    <string name="connecting">Kumokonekta…</string>
+    <string name="waiting_video">Hinihintay ang video ni %1$s…</string>
+    <string name="reconnecting">Kumokonekta ulit…</string>
+    <string name="call_failed">Hindi makonekta ang tawag. I-tap ang Tapusin at subukan ulit.</string>
+    <string name="video_checking">Safety check…</string>
+    <string name="video_hidden_title">Nakatago ang video</string>
+    <string name="video_hidden_body">Maaaring may nudity ito, na hindi pinapayagan. Naabisuhan na namin ang aming safety team.</string>
+    <string name="open_settings">Buksan ang settings</string>
+    <string name="call_dropped">Naputol ang tawag. I-tap ang Tapusin at subukan ulit.</string>
+    <string name="partner_lost">Naputol ang koneksyon ni %1$s. Hinihintay siya…</string>
+    <string name="partner_paused">Naka-pause ang video ni %1$s: masyadong mabagal ang network niya</string>
+    <string name="partner_cam_off">In-off ni %1$s ang camera niya</string>
+    <string name="partner_weak">Mahina ang koneksyon ni %1$s</string>
+    <string name="net_good">Koneksyon mo: malakas</string>
+    <string name="net_ok">Koneksyon mo: katamtaman</string>
+    <string name="net_poor">Koneksyon mo: mahina</string>
+    <string name="device_busy">Ginagamit ng ibang app ang camera o mikropono mo</string>
+    <string name="cam_blocked">Hindi pinapayagan ang camera. Naririnig ka pa rin nila. I-tap para buksan ang settings</string>
+</resources>

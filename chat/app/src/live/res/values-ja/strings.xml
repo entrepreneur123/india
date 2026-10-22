@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">通話を始めるにはカメラとマイクを許可してください</string>
+    <string name="connecting">接続中…</string>
+    <string name="waiting_video">%1$sさんのビデオを待っています…</string>
+    <string name="reconnecting">再接続中…</string>
+    <string name="call_failed">通話を接続できませんでした。「終了」をタップしてもう一度お試しください。</string>
+    <string name="video_checking">安全チェック中…</string>
+    <string name="video_hidden_title">ビデオを非表示にしました</string>
+    <string name="video_hidden_body">禁止されているヌードが含まれている可能性があります。安全チームに通知しました。</string>
+    <string name="open_settings">設定を開く</string>
+    <string name="call_dropped">通話が切れました。「終了」をタップしてもう一度お試しください。</string>
+    <string name="partner_lost">%1$sさんの接続が切れました。待っています…</string>
+    <string name="partner_paused">%1$sさんのビデオが一時停止中：相手の回線が遅すぎます</string>
+    <string name="partner_cam_off">%1$sさんがカメラをオフにしました</string>
+    <string name="partner_weak">%1$sさんの接続が不安定です</string>
+    <string name="net_good">あなたの接続：良好</string>
+    <string name="net_ok">あなたの接続：普通</string>
+    <string name="net_poor">あなたの接続：不安定</string>
+    <string name="device_busy">カメラまたはマイクが他のアプリで使用中です</string>
+    <string name="cam_blocked">カメラが許可されていません。声は相手に届いています。タップして設定を開く</string>
+</resources>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Izinkan kamera dan mikrofon untuk memulai panggilan</string>
+    <string name="connecting">Menyambungkan…</string>
+    <string name="waiting_video">Menunggu video %1$s…</string>
+    <string name="reconnecting">Menyambungkan ulang…</string>
+    <string name="call_failed">Panggilan gagal tersambung. Ketuk Akhiri dan coba lagi.</string>
+    <string name="video_checking">Pemeriksaan keamanan…</string>
+    <string name="video_hidden_title">Video disembunyikan</string>
+    <string name="video_hidden_body">Video ini mungkin menampilkan ketelanjangan, yang tidak diizinkan. Kami sudah memberi tahu tim keamanan kami.</string>
+    <string name="open_settings">Buka pengaturan</string>
+    <string name="call_dropped">Panggilan terputus. Ketuk Akhiri dan coba lagi.</string>
+    <string name="partner_lost">Koneksi %1$s terputus. Menunggu mereka…</string>
+    <string name="partner_paused">Video %1$s dijeda: jaringan mereka terlalu lambat</string>
+    <string name="partner_cam_off">%1$s mematikan kameranya</string>
+    <string name="partner_weak">Koneksi %1$s lemah</string>
+    <string name="net_good">Koneksimu: kuat</string>
+    <string name="net_ok">Koneksimu: lumayan</string>
+    <string name="net_poor">Koneksimu: lemah</string>
+    <string name="device_busy">Kamera atau mikrofonmu sedang dipakai aplikasi lain</string>
+    <string name="cam_blocked">Kamera tidak diizinkan. Mereka masih bisa mendengarmu. Ketuk untuk membuka pengaturan</string>
+</resources>

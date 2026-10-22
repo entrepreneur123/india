@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Benarkan kamera dan mikrofon untuk memulakan panggilan</string>
+    <string name="connecting">Menyambung…</string>
+    <string name="waiting_video">Menunggu video %1$s…</string>
+    <string name="reconnecting">Menyambung semula…</string>
+    <string name="call_failed">Panggilan tidak dapat disambungkan. Ketik Tamat dan cuba lagi.</string>
+    <string name="video_checking">Semakan keselamatan…</string>
+    <string name="video_hidden_title">Video disembunyikan</string>
+    <string name="video_hidden_body">Video ini mungkin menunjukkan kebogelan, yang tidak dibenarkan. Kami telah memaklumkan pasukan keselamatan kami.</string>
+    <string name="open_settings">Buka tetapan</string>
+    <string name="call_dropped">Panggilan terputus. Ketik Tamat dan cuba lagi.</string>
+    <string name="partner_lost">Sambungan %1$s terputus. Menunggu mereka…</string>
+    <string name="partner_paused">Video %1$s dijeda: rangkaian mereka terlalu perlahan</string>
+    <string name="partner_cam_off">%1$s mematikan kamera mereka</string>
+    <string name="partner_weak">Sambungan %1$s lemah</string>
+    <string name="net_good">Sambungan anda: kuat</string>
+    <string name="net_ok">Sambungan anda: sederhana</string>
+    <string name="net_poor">Sambungan anda: lemah</string>
+    <string name="device_busy">Kamera atau mikrofon anda sedang digunakan oleh aplikasi lain</string>
+    <string name="cam_blocked">Kamera tidak dibenarkan. Mereka masih boleh mendengar anda. Ketik untuk membuka tetapan</string>
+</resources>
