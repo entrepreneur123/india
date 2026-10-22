@@ -656,7 +656,7 @@
     <string name="visibility_friends">دوستان</string>
     <string name="visibility_friends_sub">دوستان و کسانی که با آن‌ها چت کرده‌اید</string>
     <string name="visibility_public">همه</string>
-    <string name="visibility_public_sub">همهٔ کاربران Yaari، در کاوش</string>
+    <string name="visibility_public_sub">هر کسی در Yaari که نمایه‌تان را باز کند</string>
     <string name="comments_title">کامنت‌ها</string>
     <string name="comments_add">کامنت بگذارید</string>
     <string name="comments_empty_title">هنوز کامنتی نیست</string>

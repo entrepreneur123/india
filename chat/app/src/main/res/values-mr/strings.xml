@@ -687,7 +687,7 @@
     <string name="visibility_friends">मित्र</string>
     <string name="visibility_friends_sub">मित्र आणि ज्यांच्याशी तुम्ही चॅट केले ते लोक</string>
     <string name="visibility_public">सर्वजण</string>
-    <string name="visibility_public_sub">Yaari वरील कोणीही, शोधा मध्ये</string>
+    <string name="visibility_public_sub">तुमची प्रोफाइल उघडणारे Yaari वरील कोणीही</string>
     <string name="comments_title">कमेंट</string>
     <string name="comments_add">कमेंट करा</string>
     <string name="comments_empty_title">अजून कमेंट नाहीत</string>

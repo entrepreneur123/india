@@ -683,7 +683,7 @@
     <string name="visibility_friends">Bạn bè</string>
     <string name="visibility_friends_sub">Bạn bè và những người bạn đã trò chuyện</string>
     <string name="visibility_public">Mọi người</string>
-    <string name="visibility_public_sub">Bất kỳ ai trên Yaari, trong Khám phá</string>
+    <string name="visibility_public_sub">Bất kỳ ai trên Yaari mở hồ sơ của bạn</string>
     <string name="comments_title">Bình luận</string>
     <string name="comments_add">Thêm bình luận</string>
     <string name="comments_empty_title">Chưa có bình luận</string>

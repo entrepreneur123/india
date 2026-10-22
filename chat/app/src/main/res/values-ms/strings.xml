@@ -687,7 +687,7 @@
     <string name="visibility_friends">Rakan</string>
     <string name="visibility_friends_sub">Rakan dan orang yang pernah bersembang dengan anda</string>
     <string name="visibility_public">Semua orang</string>
-    <string name="visibility_public_sub">Sesiapa di Yaari, dalam Teroka</string>
+    <string name="visibility_public_sub">Sesiapa di Yaari yang membuka profil anda</string>
     <string name="comments_title">Komen</string>
     <string name="comments_add">Tambah komen</string>
     <string name="comments_empty_title">Belum ada komen</string>

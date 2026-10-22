@@ -656,7 +656,7 @@
     <string name="visibility_friends">साथीहरू</string>
     <string name="visibility_friends_sub">साथी र तपाईंसँग च्याट गरेका मान्छे</string>
     <string name="visibility_public">सबैजना</string>
-    <string name="visibility_public_sub">Yaari मा जो कोही, खोज्नुहोस् मा</string>
+    <string name="visibility_public_sub">तपाईंको प्रोफाइल खोल्ने Yaari मा जो कोही</string>
     <string name="comments_title">कमेन्टहरू</string>
     <string name="comments_add">कमेन्ट थप्नुहोस्</string>
     <string name="comments_empty_title">अहिलेसम्म कुनै कमेन्ट छैन</string>

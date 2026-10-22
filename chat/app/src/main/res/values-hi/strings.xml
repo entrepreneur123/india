@@ -675,7 +675,7 @@
     <string name="visibility_friends">दोस्त</string>
     <string name="visibility_friends_sub">दोस्त और जिनसे आपने चैट की है</string>
     <string name="visibility_public">सभी</string>
-    <string name="visibility_public_sub">Yaari पर कोई भी, “खोजें” में भी</string>
+    <string name="visibility_public_sub">Yaari पर कोई भी, जो आपकी प्रोफ़ाइल खोले</string>
     <string name="comments_title">कमेंट</string>
     <string name="comments_add">कमेंट करें</string>
     <string name="comments_empty_title">अभी कोई कमेंट नहीं</string>

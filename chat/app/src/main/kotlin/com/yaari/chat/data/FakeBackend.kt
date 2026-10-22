@@ -164,7 +164,7 @@ open class FakeBackend(
         seedRatings()
     }
 
-    /** The demo's people posted over the last days; some posts are public (Discover), with likes and comments. */
+    /** The demo's people posted over the last days; some posts are public (anyone opening the profile), with likes and comments. */
     private fun seedPosts() {
         val now = clock()
         val hour = 3_600_000L
@@ -1077,7 +1077,7 @@ open class FakeBackend(
         )
         private const val PAGE = 20
         private const val COMMENTS_PER_MINUTE = 10
-        /** Their first post is public (Discover); everyone else posts for friends only. */
+        /** Their first post is public; everyone else posts for friends only. */
         private val PUBLIC_POSTERS = setOf("p1", "p2", "p5", "p6", "p7", "p8", "p11")
 
         /** Drawn pictures for the demo's posts (no network needed): see ui DemoArt. */

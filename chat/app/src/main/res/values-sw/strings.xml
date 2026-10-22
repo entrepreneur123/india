@@ -656,7 +656,7 @@
     <string name="visibility_friends">Marafiki</string>
     <string name="visibility_friends_sub">Marafiki na watu uliochat nao</string>
     <string name="visibility_public">Kila mtu</string>
-    <string name="visibility_public_sub">Yeyote kwenye Yaari, ndani ya Gundua</string>
+    <string name="visibility_public_sub">Yeyote kwenye Yaari atakayefungua wasifu wako</string>
     <string name="comments_title">Maoni</string>
     <string name="comments_add">Andika maoni</string>
     <string name="comments_empty_title">Bado hakuna maoni</string>

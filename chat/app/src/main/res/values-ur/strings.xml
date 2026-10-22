@@ -687,7 +687,7 @@
     <string name="visibility_friends">دوست</string>
     <string name="visibility_friends_sub">دوست اور وہ لوگ جن سے آپ نے چیٹ کی</string>
     <string name="visibility_public">سب</string>
-    <string name="visibility_public_sub">Yaari پر کوئی بھی، دریافت میں</string>
+    <string name="visibility_public_sub">Yaari پر کوئی بھی جو آپ کی پروفائل کھولے</string>
     <string name="comments_title">کمنٹس</string>
     <string name="comments_add">کمنٹ کریں</string>
     <string name="comments_empty_title">ابھی کوئی کمنٹ نہیں</string>

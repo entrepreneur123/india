@@ -681,7 +681,7 @@
     <string name="visibility_friends">الأصدقاء</string>
     <string name="visibility_friends_sub">الأصدقاء ومن دردشت معهم</string>
     <string name="visibility_public">الجميع</string>
-    <string name="visibility_public_sub">أي شخص على Yaari، في «استكشاف»</string>
+    <string name="visibility_public_sub">أي شخص على Yaari يفتح ملفك الشخصي</string>
     <string name="comments_title">التعليقات</string>
     <string name="comments_add">إضافة تعليق</string>
     <string name="comments_empty_title">لا تعليقات بعد</string>

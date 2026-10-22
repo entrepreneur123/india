@@ -668,7 +668,7 @@
     <string name="visibility_friends">ఫ్రెండ్స్</string>
     <string name="visibility_friends_sub">ఫ్రెండ్స్, మీరు చాట్ చేసినవాళ్లు</string>
     <string name="visibility_public">అందరూ</string>
-    <string name="visibility_public_sub">Yaariలో ఎవరైనా, డిస్కవర్‌లో</string>
+    <string name="visibility_public_sub">మీ ప్రొఫైల్ తెరిచే Yaariలో ఎవరైనా</string>
     <string name="comments_title">కామెంట్లు</string>
     <string name="comments_add">కామెంట్ యాడ్ చేయి</string>
     <string name="comments_empty_title">ఇంకా కామెంట్లు లేవు</string>

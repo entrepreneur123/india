@@ -687,7 +687,7 @@
     <string name="visibility_friends">友だち</string>
     <string name="visibility_friends_sub">友だちと、チャットしたことのある人</string>
     <string name="visibility_public">全員</string>
-    <string name="visibility_public_sub">Yaariの誰でも「発見」で見られます</string>
+    <string name="visibility_public_sub">あなたのプロフィールを開いたYaariの誰でも</string>
     <string name="comments_title">コメント</string>
     <string name="comments_add">コメントを追加</string>
     <string name="comments_empty_title">まだコメントはありません</string>

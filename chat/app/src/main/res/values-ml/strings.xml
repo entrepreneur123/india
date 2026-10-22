@@ -668,7 +668,7 @@
     <string name="visibility_friends">സുഹൃത്തുക്കൾ</string>
     <string name="visibility_friends_sub">സുഹൃത്തുക്കളും നിങ്ങൾ ചാറ്റ് ചെയ്തവരും</string>
     <string name="visibility_public">എല്ലാവരും</string>
-    <string name="visibility_public_sub">Yaari-യിലെ ആർക്കും, ഡിസ്കവറിൽ</string>
+    <string name="visibility_public_sub">നിങ്ങളുടെ പ്രൊഫൈൽ തുറക്കുന്ന Yaari-യിലെ ആർക്കും</string>
     <string name="comments_title">കമന്റുകൾ</string>
     <string name="comments_add">കമന്റ് ചേർക്കുക</string>
     <string name="comments_empty_title">ഇതുവരെ കമന്റുകളില്ല</string>

@@ -669,7 +669,7 @@
     <string name="visibility_friends">Amici</string>
     <string name="visibility_friends_sub">Amici e persone con cui hai chattato</string>
     <string name="visibility_public">Tutti</string>
-    <string name="visibility_public_sub">Chiunque su Yaari, in Scopri</string>
+    <string name="visibility_public_sub">Chiunque su Yaari apra il tuo profilo</string>
     <string name="comments_title">Commenti</string>
     <string name="comments_add">Aggiungi un commento</string>
     <string name="comments_empty_title">Ancora nessun commento</string>

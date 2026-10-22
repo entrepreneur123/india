@@ -680,7 +680,7 @@
     <string name="visibility_friends">친구</string>
     <string name="visibility_friends_sub">친구와 나와 채팅한 사람</string>
     <string name="visibility_public">전체 공개</string>
-    <string name="visibility_public_sub">둘러보기에서 Yaari의 누구나</string>
+    <string name="visibility_public_sub">내 프로필을 여는 Yaari의 누구나</string>
     <string name="comments_title">댓글</string>
     <string name="comments_add">댓글 달기</string>
     <string name="comments_empty_title">아직 댓글이 없어요</string>

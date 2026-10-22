@@ -687,7 +687,7 @@
     <string name="visibility_friends">Mga kaibigan</string>
     <string name="visibility_friends_sub">Mga kaibigan at mga naka-chat mo</string>
     <string name="visibility_public">Lahat</string>
-    <string name="visibility_public_sub">Kahit sino sa Yaari, sa Discover</string>
+    <string name="visibility_public_sub">Kahit sino sa Yaari na magbukas ng profile mo</string>
     <string name="comments_title">Mga Comment</string>
     <string name="comments_add">Mag-comment</string>
     <string name="comments_empty_title">Wala pang comment</string>

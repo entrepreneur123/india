@@ -687,7 +687,7 @@
     <string name="visibility_friends">Teman</string>
     <string name="visibility_friends_sub">Teman dan orang yang pernah chat denganmu</string>
     <string name="visibility_public">Semua orang</string>
-    <string name="visibility_public_sub">Siapa pun di Yaari, di Jelajahi</string>
+    <string name="visibility_public_sub">Siapa pun di Yaari yang membuka profilmu</string>
     <string name="comments_title">Komentar</string>
     <string name="comments_add">Tambahkan komentar</string>
     <string name="comments_empty_title">Belum ada komentar</string>

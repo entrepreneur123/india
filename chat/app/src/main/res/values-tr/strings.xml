@@ -657,7 +657,7 @@
     <string name="visibility_friends">Arkadaşlar</string>
     <string name="visibility_friends_sub">Arkadaşlar ve sohbet ettiğin kişiler</string>
     <string name="visibility_public">Herkes</string>
-    <string name="visibility_public_sub">Yaari’deki herkes, Keşfet’te</string>
+    <string name="visibility_public_sub">Yaari’de profilini açan herkes</string>
     <string name="comments_title">Yorumlar</string>
     <string name="comments_add">Yorum ekle</string>
     <string name="comments_empty_title">Henüz yorum yok</string>

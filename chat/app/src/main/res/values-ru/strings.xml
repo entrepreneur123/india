@@ -669,7 +669,7 @@
     <string name="visibility_friends">Друзья</string>
     <string name="visibility_friends_sub">Друзья и люди, с которыми вы общались</string>
     <string name="visibility_public">Все</string>
-    <string name="visibility_public_sub">Все в Yaari, в разделе «Интересное»</string>
+    <string name="visibility_public_sub">Все в Yaari, кто откроет ваш профиль</string>
     <string name="comments_title">Комментарии</string>
     <string name="comments_add">Добавить комментарий</string>
     <string name="comments_empty_title">Комментариев пока нет</string>

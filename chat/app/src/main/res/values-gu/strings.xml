@@ -687,7 +687,7 @@
     <string name="visibility_friends">મિત્રો</string>
     <string name="visibility_friends_sub">મિત્રો અને જેમની સાથે તમે ચેટ કરી છે તે લોકો</string>
     <string name="visibility_public">બધા</string>
-    <string name="visibility_public_sub">Yaari પર કોઈ પણ, શોધોમાં</string>
+    <string name="visibility_public_sub">Yaari પર જે કોઈ તમારી પ્રોફાઇલ ખોલે</string>
     <string name="comments_title">કમેન્ટ</string>
     <string name="comments_add">કમેન્ટ કરો</string>
     <string name="comments_empty_title">હજુ કોઈ કમેન્ટ નથી</string>

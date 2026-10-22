@@ -669,7 +669,7 @@
     <string name="visibility_friends">Vrienden</string>
     <string name="visibility_friends_sub">Vrienden en mensen met wie je hebt gechat</string>
     <string name="visibility_public">Iedereen</string>
-    <string name="visibility_public_sub">Iedereen op Yaari, in Ontdekken</string>
+    <string name="visibility_public_sub">Iedereen op Yaari die je profiel opent</string>
     <string name="comments_title">Reacties</string>
     <string name="comments_add">Reactie toevoegen</string>
     <string name="comments_empty_title">Nog geen reacties</string>

@@ -662,7 +662,7 @@
     <string name="visibility_friends">חברים</string>
     <string name="visibility_friends_sub">חברים ואנשים שצ׳וטטת איתם</string>
     <string name="visibility_public">כולם</string>
-    <string name="visibility_public_sub">כל מי שב-Yaari, ב״גילוי״</string>
+    <string name="visibility_public_sub">כל מי שב-Yaari ופותח את הפרופיל שלך</string>
     <string name="comments_title">תגובות</string>
     <string name="comments_add">הוספת תגובה</string>
     <string name="comments_empty_title">עוד אין תגובות</string>

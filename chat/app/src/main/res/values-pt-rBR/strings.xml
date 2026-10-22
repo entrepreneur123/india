@@ -687,7 +687,7 @@
     <string name="visibility_friends">Amigos</string>
     <string name="visibility_friends_sub">Amigos e pessoas com quem você conversou</string>
     <string name="visibility_public">Todos</string>
-    <string name="visibility_public_sub">Qualquer pessoa no Yaari, em Descobrir</string>
+    <string name="visibility_public_sub">Qualquer pessoa no Yaari que abrir seu perfil</string>
     <string name="comments_title">Comentários</string>
     <string name="comments_add">Comentar</string>
     <string name="comments_empty_title">Nenhum comentário ainda</string>

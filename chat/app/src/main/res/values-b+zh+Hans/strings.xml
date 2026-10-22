@@ -680,7 +680,7 @@
     <string name="visibility_friends">好友</string>
     <string name="visibility_friends_sub">好友和与你聊过天的人</string>
     <string name="visibility_public">所有人</string>
-    <string name="visibility_public_sub">Yaari 上的任何人，在“发现”中可见</string>
+    <string name="visibility_public_sub">Yaari 上打开你主页的任何人</string>
     <string name="comments_title">评论</string>
     <string name="comments_add">添加评论</string>
     <string name="comments_empty_title">还没有评论</string>

@@ -650,7 +650,7 @@
     <string name="visibility_friends">เพื่อน</string>
     <string name="visibility_friends_sub">เพื่อนและคนที่คุณเคยแชทด้วย</string>
     <string name="visibility_public">ทุกคน</string>
-    <string name="visibility_public_sub">ทุกคนบน Yaari ในหน้าสำรวจ</string>
+    <string name="visibility_public_sub">ทุกคนบน Yaari ที่เปิดโปรไฟล์ของคุณ</string>
     <string name="comments_title">คอมเมนต์</string>
     <string name="comments_add">เพิ่มคอมเมนต์</string>
     <string name="comments_empty_title">ยังไม่มีคอมเมนต์</string>

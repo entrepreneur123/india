@@ -685,7 +685,7 @@
     <string name="visibility_friends">বন্ধুরা</string>
     <string name="visibility_friends_sub">বন্ধুরা আর যাদের সঙ্গে চ্যাট করেছেন</string>
     <string name="visibility_public">সবাই</string>
-    <string name="visibility_public_sub">Yaari-তে যে কেউ, আবিষ্কারে</string>
+    <string name="visibility_public_sub">Yaari-তে যে কেউ আপনার প্রোফাইল খুললে</string>
     <string name="comments_title">কমেন্ট</string>
     <string name="comments_add">কমেন্ট করুন</string>
     <string name="comments_empty_title">এখনও কোনো কমেন্ট নেই</string>

@@ -675,7 +675,7 @@
     <string name="visibility_friends">Prieteni</string>
     <string name="visibility_friends_sub">Prieteni și oameni cu care ai vorbit</string>
     <string name="visibility_public">Toată lumea</string>
-    <string name="visibility_public_sub">Oricine pe Yaari, în Descoperă</string>
+    <string name="visibility_public_sub">Oricine de pe Yaari care îți deschide profilul</string>
     <string name="comments_title">Comentarii</string>
     <string name="comments_add">Adaugă un comentariu</string>
     <string name="comments_empty_title">Încă niciun comentariu</string>

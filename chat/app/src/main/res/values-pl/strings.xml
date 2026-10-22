@@ -681,7 +681,7 @@
     <string name="visibility_friends">Znajomi</string>
     <string name="visibility_friends_sub">Znajomi i osoby, z którymi czatujesz</string>
     <string name="visibility_public">Wszyscy</string>
-    <string name="visibility_public_sub">Każdy na Yaari, w Odkrywaj</string>
+    <string name="visibility_public_sub">Każdy na Yaari, kto otworzy twój profil</string>
     <string name="comments_title">Komentarze</string>
     <string name="comments_add">Dodaj komentarz</string>
     <string name="comments_empty_title">Brak komentarzy</string>

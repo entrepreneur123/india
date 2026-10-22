@@ -668,7 +668,7 @@
     <string name="visibility_friends">நண்பர்கள்</string>
     <string name="visibility_friends_sub">நண்பர்களும் நீங்கள் சாட் செய்தவர்களும்</string>
     <string name="visibility_public">எல்லோரும்</string>
-    <string name="visibility_public_sub">Yaari-இல் உள்ள யார் வேண்டுமானாலும், கண்டறி பகுதியில்</string>
+    <string name="visibility_public_sub">உங்கள் சுயவிவரத்தைத் திறக்கும் Yaari-இல் உள்ள யார் வேண்டுமானாலும்</string>
     <string name="comments_title">கமெண்ட்கள்</string>
     <string name="comments_add">கமெண்ட் சேர்</string>
     <string name="comments_empty_title">இன்னும் கமெண்ட்கள் இல்லை</string>

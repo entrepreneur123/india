@@ -656,7 +656,7 @@
     <string name="visibility_friends">Freunde</string>
     <string name="visibility_friends_sub">Freunde und Leute, mit denen du gechattet hast</string>
     <string name="visibility_public">Alle</string>
-    <string name="visibility_public_sub">Alle auf Yaari, unter Entdecken</string>
+    <string name="visibility_public_sub">Alle auf Yaari, die dein Profil öffnen</string>
     <string name="comments_title">Kommentare</string>
     <string name="comments_add">Kommentar hinzufügen</string>
     <string name="comments_empty_title">Noch keine Kommentare</string>
