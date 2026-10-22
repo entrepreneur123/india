@@ -22,7 +22,6 @@ const en = {
   'inbox.more': 'Show older',
   'unread.count': '{n} unread',
   'nav.newCount': '{n} new',
-  'nav.feed': 'Feed',
   'inbox.like.single': '{name} liked your post',
   'inbox.like.one': '{name} and 1 other liked your post',
   'inbox.like.other': '{name} and {n} others liked your post',

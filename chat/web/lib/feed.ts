@@ -1,10 +1,9 @@
-// Posts, likes, comments and the feed (033_profiles_feed.sql): reading the server's JSON, pages, my own likes on
-// screen and the comment thread order. No imports but types, so the unit tests run it directly (node --test).
+// Posts, likes and comments (033_profiles_feed.sql): reading the server's JSON, my own likes on screen and the
+// comment thread order. No imports but types, so the unit tests run it directly (node --test).
 import type { Accent, FeedPost, Gender, InboxKind, PostAuthor, PostComment, PostVisibility } from './backend'
 
 export const POST_MAX = 500
 export const COMMENT_MAX = 300
-export const FEED_PAGE = 20
 export const COMMENTS_PAGE = 50
 
 const ACCENT_IDS = new Set(['rose', 'violet', 'ocean', 'mint', 'sunset', 'gold', 'berry', 'slate'])
@@ -96,20 +95,6 @@ export function mediaPaths(rows: unknown[]): string[] {
 /** An inbox line's kind, or null for one this app doesn't know (a newer server): such lines are skipped. */
 export function inboxKind(kind: unknown): InboxKind | null {
   return typeof kind === 'string' && INBOX_KINDS.has(kind) ? (kind as InboxKind) : null
-}
-
-/** A next page after the ones shown: newest first, nothing twice (a post written meanwhile shifts the pages). */
-export function appendPage(shown: FeedPost[], page: FeedPost[]): FeedPost[] {
-  const ids = new Set(shown.map((p) => p.id))
-  return [...shown, ...page.filter((p) => !ids.has(p.id))]
-}
-
-/** The list re-read from the top: the fresh first page, then whatever older posts were already shown. */
-export function refreshTop(shown: FeedPost[], first: FeedPost[]): FeedPost[] {
-  if (!first.length) return []
-  const oldest = first[first.length - 1].createdAt
-  const ids = new Set(first.map((p) => p.id))
-  return [...first, ...shown.filter((p) => !ids.has(p.id) && p.createdAt < oldest)]
 }
 
 /** My like on screen at once (the server's answer then sets the real count). */

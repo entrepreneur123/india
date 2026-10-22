@@ -23,7 +23,6 @@ const fa: SocialDict = {
   'inbox.more': 'نمایش قدیمی‌ترها',
   'unread.count': '{n} نخوانده',
   'nav.newCount': '{n} جدید',
-  'nav.feed': 'فید',
   'inbox.like.single': '{name} پست شما را لایک کرد',
   'inbox.like.one': '{name} و ۱ نفر دیگر پست شما را لایک کردند',
   'inbox.like.other': '{name} و {n} نفر دیگر پست شما را لایک کردند',

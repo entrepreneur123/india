@@ -14,6 +14,7 @@ import { TopicTile } from '@/components/ui/topic-icons'
 import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
+import { LookName } from '@/components/looks/look-name'
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
@@ -78,7 +79,14 @@ export function RightPanel({ className }: { className?: string }) {
                           <TrustBadge userId={f.profile.id} size={14} />
                           <span aria-hidden>{flagEmoji(f.profile.country)}</span>
                         </span>
-                        <span className="block truncate text-xs text-muted-foreground">{f.profile.city}</span>
+                        <span className="flex min-w-0 text-xs">
+                          <LookName
+                            userId={f.profile.id}
+                            handle={f.profile.handle}
+                            className="font-semibold"
+                            fallback={<span className="truncate text-muted-foreground">{f.profile.city}</span>}
+                          />
+                        </span>
                       </span>
                     </button>
                     <CountBadge n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />

@@ -22,7 +22,6 @@ const pa: SocialDict = {
   'inbox.more': 'ਪੁਰਾਣੀਆਂ ਦਿਖਾਓ',
   'unread.count': '{n} ਅਣਪੜ੍ਹੇ',
   'nav.newCount': '{n} ਨਵੇਂ',
-  'nav.feed': 'ਫ਼ੀਡ',
   'inbox.like.single': '{name} ਨੇ ਤੁਹਾਡੀ ਪੋਸਟ ਲਾਈਕ ਕੀਤੀ',
   'inbox.like.one': '{name} ਅਤੇ 1 ਹੋਰ ਨੇ ਤੁਹਾਡੀ ਪੋਸਟ ਲਾਈਕ ਕੀਤੀ',
   'inbox.like.other': '{name} ਅਤੇ {n} ਹੋਰਾਂ ਨੇ ਤੁਹਾਡੀ ਪੋਸਟ ਲਾਈਕ ਕੀਤੀ',

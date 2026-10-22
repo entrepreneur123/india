@@ -7,11 +7,10 @@ import { likeLocally } from '@/lib/feed'
 import { useToast } from '@/components/ui/toast'
 
 // The posts on screen, by id: a like, a comment or a delete in one place (the post sheet) shows at once everywhere
-// else (the feed, a profile). The newest copy read from the server replaces what was there.
+// else (a profile's grid). The newest copy read from the server replaces what was there.
 const posts = new Map<string, FeedPost>()
 const gone = new Set<string>()
 const listeners = new Set<() => void>()
-const postedListeners = new Set<(p: FeedPost) => void>()
 let version = 0
 
 function emit() {
@@ -37,15 +36,10 @@ export const postStore = {
   },
   get: (id: string) => posts.get(id),
   isGone: (id: string) => gone.has(id),
-  /** A post I just wrote (the feed puts it on top). */
+  /** A post I just wrote. */
   posted(p: FeedPost) {
     posts.set(p.id, p)
     emit()
-    for (const l of postedListeners) l(p)
-  },
-  onPosted(l: (p: FeedPost) => void) {
-    postedListeners.add(l)
-    return () => void postedListeners.delete(l)
   },
 }
 

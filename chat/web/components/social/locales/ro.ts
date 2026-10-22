@@ -23,7 +23,6 @@ const ro: SocialDict = {
   'inbox.more': 'Arată mai vechi',
   'unread.count': '{n} necitite',
   'nav.newCount': '{n} noi',
-  'nav.feed': 'Feed',
   'inbox.like.single': 'Lui {name} i-a plăcut postarea ta',
   'inbox.like.one': 'Lui {name} și încă unei persoane le-a plăcut postarea ta',
   'inbox.like.other': 'Lui {name} și încă {n} le-a plăcut postarea ta',

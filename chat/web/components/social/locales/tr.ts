@@ -23,7 +23,6 @@ const tr: SocialDict = {
   'inbox.more': 'Daha eskileri göster',
   'unread.count': '{n} okunmamış',
   'nav.newCount': '{n} yeni',
-  'nav.feed': 'Akış',
   'inbox.like.single': '{name} gönderini beğendi',
   'inbox.like.one': '{name} ve 1 kişi daha gönderini beğendi',
   'inbox.like.other': '{name} ve {n} kişi daha gönderini beğendi',

@@ -22,7 +22,6 @@ const gu: SocialDict = {
   'inbox.more': 'જૂના બતાવો',
   'unread.count': '{n} ન વાંચેલા',
   'nav.newCount': '{n} નવા',
-  'nav.feed': 'ફીડ',
   'inbox.like.single': '{name}એ તમારી પોસ્ટ લાઇક કરી',
   'inbox.like.one': '{name} અને બીજા 1એ તમારી પોસ્ટ લાઇક કરી',
   'inbox.like.other': '{name} અને બીજા {n}એ તમારી પોસ્ટ લાઇક કરી',

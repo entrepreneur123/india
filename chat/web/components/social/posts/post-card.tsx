@@ -29,9 +29,9 @@ export const authorProfile = (a: FeedPost['author']): Profile => ({
 
 /**
  * One post: the author (tap: their profile), the text, the photo (double tap: like), the heart and comment counts
- * and a "..." menu (report, or delete my own). `onComments`: opens its comments; `flat`: inside the post sheet.
+ * and a "..." menu (report, or delete my own), at the top of the post sheet. `onComments`: goes to the comment box.
  */
-export function PostCard({ post: initial, onComments, flat, className }: { post: FeedPost; onComments?: (focus: boolean) => void; flat?: boolean; className?: string }) {
+export function PostCard({ post: initial, onComments }: { post: FeedPost; onComments: () => void }) {
   const post = useLivePost(initial)
   const { me, openProfile } = useApp()
   const { timeAgo, num } = useI18n()
@@ -69,7 +69,6 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
 
   return (
     <article
-      className={cn(!flat && 'overflow-hidden rounded-[28px] bg-card shadow-e1 ring-1 ring-border/70 night:ring-white/8', className)}
       style={accentStyle(a.accent)}
       aria-label={ft('post.by', { name: a.name })}
     >
@@ -159,26 +158,15 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
         </button>
         <button
           type="button"
-          onClick={() => onComments?.(true)}
-          disabled={!onComments}
+          onClick={onComments}
           aria-label={`${ft('post.comment')}, ${plural(post.comments, 'post.comments.one', 'post.comments.other')}`}
-          className="flex h-11 items-center gap-1.5 rounded-full px-2.5 text-sm font-bold text-foreground tabular-nums transition-colors duration-150 hover:bg-muted disabled:hover:bg-transparent"
+          className="flex h-11 items-center gap-1.5 rounded-full px-2.5 text-sm font-bold text-foreground tabular-nums transition-colors duration-150 hover:bg-muted"
         >
           <CommentIcon size={25} />
           {post.comments > 0 ? <span aria-hidden>{num(post.comments)}</span> : null}
         </button>
       </div>
-      {onComments && post.comments > 0 && !flat ? (
-        <button
-          type="button"
-          onClick={() => onComments(false)}
-          className="block px-4 pb-4 text-start text-sm font-semibold text-muted-foreground hover:text-foreground"
-        >
-          {plural(post.comments, 'post.viewComments.one', 'post.viewComments.other')}
-        </button>
-      ) : (
-        <span className="block h-2" aria-hidden />
-      )}
+      <span className="block h-2" aria-hidden />
 
       <PostMenu post={post} mine={mine} open={menuOpen} onClose={() => setMenuOpen(false)} />
     </article>

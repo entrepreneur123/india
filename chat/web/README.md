@@ -50,10 +50,14 @@ link/highlight and `{name}` placeholders can be React nodes via `<Rich>`.
 
 - First load fetches only React, the app shell, English and the screen that is needed. The demo never downloads
   supabase-js and the live site never downloads the demo (`lib/backend-context.tsx`, dynamic import).
-- Sign-up and the signed-in app are separate chunks; Rooms, Feed, Recent, Me, Settings, threads, profile sheet, post
-  sheet, paywall, room dialogs, the chat view and the call screen load on demand (prefetched on hover/pointer-down).
-  The feed's strings (`components/social/locales/feed/`), the post composer, the style editor and the live backend's
-  post/comment parsing (`lib/supabaseFeed.ts`) are their own chunks too; the demo's posts are `lib/mockFeed.ts`.
+- Sign-up and the signed-in app are separate chunks (the sign-up profile form too: it loads while the code is typed);
+  Rooms, Recent, Me, Settings, threads, profile sheet, post sheet, paywall, room dialogs, the chat view and the call
+  screen load on demand (prefetched on hover/pointer-down). The posts' strings (`components/social/locales/feed/`),
+  the post composer, the profile details editor, the Looks shop and the live backend's post/comment parsing
+  (`lib/supabaseFeed.ts`) are their own chunks too; the demo's posts are `lib/mockFeed.ts`, its looks
+  `lib/mockLooks.ts`.
+- ID fonts (`public/fonts/looks/`, `@font-face` in `app/globals.css`, `font-display: swap`, no preload) download only
+  when an @ID in that font is on screen.
   `livekit-client` loads only when a call is accepted.
 - Motion's animation code loads after the page `load` event; drag only inside the call screen.
 - The right panel (friends, live rooms) and its requests exist only on screens ≥ 1280 px.
@@ -101,6 +105,24 @@ components/i18n.tsx     language provider, useI18n(), <Rich>
 components/screens/     auth, random (lobby/matching/chat), rooms, recent, me, profile, settings, paywall
 components/shell/       sidebar, bottom tabs, right panel, lazy screen loaders
 ```
+
+## IDs and looks (040_handles_looks.sql, docs/LOOKS_SPEC.md)
+
+- **IDs**: every profile has an `@handle` (`Profile.handle`). Sign-up asks for one (prefilled from the name, checked
+  400 ms after typing with `handle_check`), Edit profile changes it (`set_handle`; once every 7 days, `shop().handle_next`
+  says when). The server's rules are mirrored in `lib/handle.ts` (unit-tested with the server's own examples); names
+  refuse fancy-font letters (`name_invalid`).
+- **Looks** (`components/looks/`): `<LookName>` draws an @ID in its colour and font with its badge; looks are read with
+  `looks(ids)`, batched like the trust badge (one call per frame, 2 min cache). Badges and frames (ring, wash, canvas
+  particles: ≤ 30, ≤ 30 fps, paused off screen, still with reduced motion) are drawn in code. The shop (Me → Looks)
+  shows prices and "Get it in the Yaari app" on the web (looks are bought on Android); the demo sells them at once.
+- **Rooms**: the header's count opens the People sheet (friend buttons), "Invite" opens the friends list, "Leave the
+  stage" sits next to the mic. The room and its chat share the screen by category (talk: chat first, music: player
+  first); phones drag a handle (snap 0/30/50/70 %, double tap), wide screens a splitter (keyboard ←/→), remembered in
+  `localStorage` (`yaari_room_split_<talk|music>_<phone|wide>`, `lib/room-split.ts`).
+- **Recent**: a thread whose random chat ended goes on only between friends; until then a friends bar replaces the
+  composer.
+- The Feed tab is gone; posts stay on profiles.
 
 ## Same rules as the app (enforced by the server)
 

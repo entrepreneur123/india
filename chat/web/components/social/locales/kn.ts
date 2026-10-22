@@ -22,7 +22,6 @@ const kn: SocialDict = {
   'inbox.more': 'ಹಳೆಯವು ತೋರಿಸಿ',
   'unread.count': '{n} ಓದದವು',
   'nav.newCount': '{n} ಹೊಸದು',
-  'nav.feed': 'ಫೀಡ್',
   'inbox.like.single': '{name} ನಿಮ್ಮ ಪೋಸ್ಟ್ ಲೈಕ್ ಮಾಡಿದ್ದಾರೆ',
   'inbox.like.one': '{name} ಮತ್ತು ಇನ್ನೊಬ್ಬರು ನಿಮ್ಮ ಪೋಸ್ಟ್ ಲೈಕ್ ಮಾಡಿದ್ದಾರೆ',
   'inbox.like.other': '{name} ಮತ್ತು ಇತರ {n} ಜನ ನಿಮ್ಮ ಪೋಸ್ಟ್ ಲೈಕ್ ಮಾಡಿದ್ದಾರೆ',

@@ -24,7 +24,6 @@ const he: SocialDict = {
   'inbox.more': 'הצגת ישנות יותר',
   'unread.count': '{n} שלא נקראו',
   'nav.newCount': '{n} חדשות',
-  'nav.feed': 'פיד',
   'inbox.like.single': '{name} אהב/ה את הפוסט שלך',
   'inbox.like.one': '{name} ועוד אחד/ת אהבו את הפוסט שלך',
   'inbox.like.two': '{name} ועוד {n} אהבו את הפוסט שלך',

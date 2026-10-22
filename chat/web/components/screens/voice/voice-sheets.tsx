@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -21,6 +21,9 @@ import { cn } from '@/lib/utils'
 import { canManage, isMod, memberOf, roleLabel } from './voice-text'
 import { useRoomT } from './room-t'
 import { TrustBadge } from '@/components/trust/badge'
+import { LookName } from '@/components/looks/look-name'
+import { useLooksT } from '@/components/looks/looks-text'
+import { FriendButton, useFriendship } from '@/components/social/friend-button'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -32,6 +35,7 @@ export type SheetState =
   | { kind: 'reportRoom' }
   | { kind: 'settings' }
   | { kind: 'invite' }
+  | { kind: 'people' }
   | null
 
 export const freeSeats = (room: VoiceRoom) => {
@@ -71,8 +75,17 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
           {role ? <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-[10px] font-bold text-primary-text">{role}</span> : null}
           {m.hand ? <ReactionIcon kind="hand" size={16} /> : null}
         </span>
-        <span className="block truncate text-xs text-muted-foreground">
-          {m.profile.age} · {m.profile.city} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
+        <span className="flex min-w-0 text-xs">
+          <LookName
+            userId={m.profile.id}
+            handle={m.profile.handle}
+            className="font-semibold"
+            fallback={
+              <span className="truncate text-muted-foreground">
+                {m.profile.age} · {m.profile.city} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
+              </span>
+            }
+          />
         </span>
       </span>
     </>
@@ -136,6 +149,7 @@ export function PersonSheet({
         <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-3 text-center">
           <Avatar name={target.profile.name} src={target.profile.photoUrl} size={72} />
           <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
+          <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">
             {target.profile.age} · {target.profile.city} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
           </p>
@@ -159,6 +173,7 @@ export function PersonSheet({
               }}
             />
           )}
+          {self ? null : <FriendRow userId={target.profile.id} name={target.profile.name} />}
           {self && target.seat !== null ? (
             <Row icon={<ArrowDownToLine />} label={t('voice.leaveStage')} onClick={() => void run({ type: 'unseat' })} />
           ) : null}
@@ -222,6 +237,74 @@ export function PersonSheet({
         matchId={null}
       />
     </>
+  )
+}
+
+/** Add friend in a room's person sheet (Accept when they asked me; withdraw a request I sent; nothing once friends). */
+function FriendRow({ userId, name }: { userId: string; name: string }) {
+  const { t } = useI18n()
+  const f = useFriendship(userId, name)
+  if (f.state === null || f.state === 'friends') return null
+  if (f.state === 'incoming') return <Row icon={<Check />} label={t('profile.acceptRequest')} disabled={f.busy} onClick={() => void f.accept()} />
+  if (f.state === 'requested') return <Row icon={<UserPlus />} label={t('profile.withdraw')} disabled={f.busy} onClick={() => void f.withdraw()} />
+  return <Row icon={<UserPlus />} label={t('profile.add')} disabled={f.busy} onClick={() => void f.add()} />
+}
+
+/**
+ * Everyone in the room (the header's count opens it): the stage first, by seat, then the listeners (raised hands
+ * first), with search. Each row has the person's @ID, their role and a friend button with the real state.
+ */
+export function PeopleSheet({ room, open, onClose, onPerson }: { room: VoiceRoom; open: boolean; onClose: () => void; onPerson: (id: string) => void }) {
+  const { t, num } = useI18n()
+  const { rt } = useRoomT()
+  const { lt } = useLooksT()
+  const id = useId()
+  const [query, setQuery] = useState('')
+  useEffect(() => {
+    if (open) setQuery('')
+  }, [open])
+  const q = query.trim().toLowerCase()
+  const match = (x: VoiceMember) => !q || x.profile.name.toLowerCase().includes(q) || x.profile.city.toLowerCase().includes(q)
+  const stage = room.members.filter((x) => x.seat !== null && match(x)).sort((a, b) => a.seat! - b.seat!)
+  const listeners = room.members.filter((x) => x.seat === null && match(x)).sort((a, b) => Number(b.hand) - Number(a.hand))
+  const groups = [
+    { key: 'stage', title: rt('onStage'), list: stage },
+    { key: 'listening', title: rt('listening'), list: listeners },
+  ].filter((g) => g.list.length)
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={`${lt('people.title')} · ${num(room.members.length)}`} className="md:h-[min(40rem,85dvh)]">
+      <div className="sticky top-0 z-10 bg-card px-6 pt-3 pb-2">
+        <label htmlFor={`${id}-q`} className="sr-only">
+          {t('voice.searchPeople')}
+        </label>
+        <div className="relative">
+          <Search className="pointer-events-none absolute top-1/2 inset-s-3.5 size-4.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <TextInput id={`${id}-q`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('voice.searchPeople')} className="h-11 ps-10" type="search" autoComplete="off" />
+        </div>
+      </div>
+      {groups.length === 0 ? (
+        <p className="px-6 py-8 text-center text-sm text-muted-foreground">{t('voice.noMatch')}</p>
+      ) : (
+        groups.map((g) => (
+          <section key={g.key} aria-labelledby={`${id}-${g.key}`} className="pb-3">
+            <h3 id={`${id}-${g.key}`} className="px-6 pt-2 pb-1 text-xs font-bold tracking-wider text-muted-foreground uppercase">
+              {g.title} · <span className="tabular-nums">{num(g.list.length)}</span>
+            </h3>
+            <ul>
+              {g.list.map((x) => (
+                <li key={x.profile.id}>
+                  <PersonLine
+                    m={x}
+                    onClick={() => onPerson(x.profile.id)}
+                    trailing={x.profile.id === room.meId ? null : <FriendButton userId={x.profile.id} name={x.profile.name} />}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      )}
+    </Modal>
   )
 }
 

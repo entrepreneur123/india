@@ -1,7 +1,7 @@
 // Profile style (033_profiles_feed.sql): the lists and limits the server checks, the accent palette, and the
 // clean-up of what the editor sends and what the server returns. No imports but types, so the unit tests run it
 // directly (node --test).
-import type { Accent, ProfilePhoto, ProfilePrompt, ProfileStyle, ProfileStyleInput, PromptQ, SpokenLang } from './backend'
+import type { Accent, ProfilePrompt, ProfileStyle, ProfileStyleInput, PromptQ, SpokenLang } from './backend'
 
 export const STATUS_MAX = 60
 export const LANGUAGES_MAX = 6
@@ -59,15 +59,11 @@ const Q_IDS = new Set<string>(PROMPT_QS)
 export const isAccent = (v: unknown): v is Accent => typeof v === 'string' && (ACCENTS as string[]).includes(v)
 
 /** profile_style's row (or the profiles columns) as the app keeps it; anything the app doesn't know is dropped. */
-export function parseStyle(
-  row: { accent?: unknown; status?: unknown; languages?: unknown; prompts?: unknown } | null | undefined,
-  cover: ProfilePhoto | null,
-): ProfileStyle {
+export function parseStyle(row: { accent?: unknown; status?: unknown; languages?: unknown; prompts?: unknown } | null | undefined): ProfileStyle {
   const langs = Array.isArray(row?.languages) ? row!.languages : []
   const prompts = Array.isArray(row?.prompts) ? row!.prompts : []
   const status = typeof row?.status === 'string' && row.status.trim() ? row.status.trim() : null
   return {
-    cover,
     accent: isAccent(row?.accent) ? row!.accent : null,
     status,
     languages: [...new Set(langs.filter((l): l is SpokenLang => typeof l === 'string' && LANG_IDS.has(l)))].slice(0, LANGUAGES_MAX),
@@ -78,7 +74,7 @@ export function parseStyle(
   }
 }
 
-export const EMPTY_STYLE: ProfileStyle = { cover: null, accent: null, status: null, languages: [], prompts: [] }
+export const EMPTY_STYLE: ProfileStyle = { accent: null, status: null, languages: [], prompts: [] }
 
 export type StyleProblem = 'status' | 'answer' | 'languages' | 'prompts' | null
 
@@ -102,7 +98,7 @@ export function styleInput(draft: ProfileStyleInput): { input: ProfileStyleInput
   else if (languages.length > LANGUAGES_MAX) problem = 'languages'
   else if (prompts.length > PROMPTS_MAX) problem = 'prompts'
   else if (prompts.some((p) => [...p.a].length > ANSWER_MAX)) problem = 'answer'
-  return { input: { coverId: draft.coverId || null, accent: isAccent(draft.accent) ? draft.accent : null, status, languages, prompts }, problem }
+  return { input: { status, languages, prompts }, problem }
 }
 
 /** The next question not answered yet (for "Add a prompt"), null when all are used or 3 are answered. */

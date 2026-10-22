@@ -22,7 +22,6 @@ const ta: SocialDict = {
   'inbox.more': 'பழையவற்றைக் காட்டு',
   'unread.count': '{n} படிக்காதவை',
   'nav.newCount': '{n} புதியவை',
-  'nav.feed': 'ஃபீட்',
   'inbox.like.single': '{name} உங்கள் போஸ்டை லைக் செய்தார்',
   'inbox.like.one': '{name} மற்றும் இன்னொருவர் உங்கள் போஸ்டை லைக் செய்தனர்',
   'inbox.like.other': '{name} மற்றும் {n} பேர் உங்கள் போஸ்டை லைக் செய்தனர்',

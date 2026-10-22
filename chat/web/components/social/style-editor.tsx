@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useId, useMemo, useState } from 'react'
-import { Check, ImagePlus, Plus, Trash2, X } from 'lucide-react'
-import { type Accent, BackendError, type ProfilePrompt, type PromptQ, type SpokenLang } from '@/lib/backend'
+import { useId, useMemo, useState } from 'react'
+import { Check, Plus, X } from 'lucide-react'
+import type { ProfilePrompt, PromptQ, SpokenLang } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { ACCENTS, ANSWER_MAX, EMPTY_STYLE, LANGUAGES_MAX, nextPrompt, PROMPT_QS, PROMPTS_MAX, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
-import { retryImport } from '@/lib/retry-import'
+import { ANSWER_MAX, EMPTY_STYLE, LANGUAGES_MAX, nextPrompt, PROMPT_QS, PROMPTS_MAX, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { TextArea, TextInput } from '@/components/ui/bits'
@@ -13,17 +12,18 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { useLooksT } from '@/components/looks/looks-text'
 import { useFeedT } from './feed-text'
-import { ACCENT_TEXT, AccentAvatar, accentStyle, ProfileCover } from './profile-bits'
+import { ACCENT_TEXT, accentStyle } from './profile-bits'
 
 /**
- * My profile's style: cover, colour, status, languages and up to 3 prompts, with a live preview on top. Saves the
- * whole style at once (set_profile_style takes all five).
+ * My profile details: status, languages and up to 3 prompts. Saves them all at once (set_profile_style). The cover
+ * photo and colour that were here are gone (040): frames, bought in the Looks shop, decorate profiles now.
  */
 export function StyleEditor({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { ft } = useFeedT()
+  const { lt } = useLooksT()
   return (
-    <Modal open={open} onClose={onClose} variant="sheet" title={ft('style.title')} description={ft('style.desc')} className="md:max-w-xl">
+    <Modal open={open} onClose={onClose} variant="sheet" title={lt('details.title')} description={lt('details.desc')} className="md:max-w-xl">
       {open ? <EditorBody onClose={onClose} /> : null}
     </Modal>
   )
@@ -37,59 +37,28 @@ function EditorBody({ onClose }: { onClose: () => void }) {
   const { ft } = useFeedT()
   const id = useId()
   const start = me.style ?? EMPTY_STYLE
-  const [accent, setAccent] = useState<Accent | null>(start.accent)
   const [status, setStatus] = useState(start.status ?? '')
   const [languages, setLanguages] = useState<SpokenLang[]>(start.languages)
   const [prompts, setPrompts] = useState<ProfilePrompt[]>(start.prompts.length ? start.prompts : [])
-  const [coverId, setCoverId] = useState<string | null>(start.cover?.id ?? null)
-  const [coverFile, setCoverFile] = useState<File | null>(null)
-  const [coverPreview, setCoverPreview] = useState<string | null>(null)
-  const [busy, setBusy] = useState<'check' | 'save' | null>(null)
-
-  useEffect(() => {
-    if (!coverFile) return setCoverPreview(null)
-    const url = URL.createObjectURL(coverFile)
-    setCoverPreview(url)
-    return () => URL.revokeObjectURL(url)
-  }, [coverFile])
-
-  const cover = coverPreview ? { id: 'new', url: coverPreview } : coverId && start.cover?.id === coverId ? start.cover : null
-
-  const pickCover = async (file: File | undefined) => {
-    if (!file) return
-    setBusy('check')
-    try {
-      // Checked on this device first, like every photo: a nude one is never uploaded.
-      const { classifyImage } = await retryImport(() => import('@/lib/nudity'))
-      if (await classifyImage(file)) {
-        toast.show(ft('style.coverNude'), 'error')
-        return
-      }
-      setCoverFile(file)
-    } catch (err) {
-      toast.error(err instanceof BackendError ? err : new BackendError('bad_media'))
-    } finally {
-      setBusy(null)
-    }
-  }
+  const [busy, setBusy] = useState(false)
 
   const used = useMemo(() => prompts.map((p) => p.q), [prompts])
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { input, problem } = styleInput({ coverId: coverFile ? null : coverId, accent, status, languages, prompts })
+    const { input, problem } = styleInput({ status, languages, prompts })
     if (problem === 'status') return toast.show(ft('style.problem.status'), 'error')
     if (problem === 'answer') return toast.show(ft('style.problem.answer'), 'error')
     if (problem === 'languages') return toast.show(ft('style.languagesMax'), 'error')
-    setBusy('save')
+    setBusy(true)
     try {
-      setMe(await backend.setProfileStyle(input, coverFile))
+      setMe(await backend.setProfileStyle(input))
       toast.show(ft('style.saved'), 'success')
       onClose()
     } catch (err) {
       toast.error(err)
     } finally {
-      setBusy(null)
+      setBusy(false)
     }
   }
 
@@ -97,83 +66,8 @@ function EditorBody({ onClose }: { onClose: () => void }) {
   const heading = 'text-sm font-bold'
 
   return (
-    <form onSubmit={(e) => void save(e)} className="flex flex-col" style={accentStyle(accent)}>
+    <form onSubmit={(e) => void save(e)} className="flex flex-col" style={accentStyle(null)}>
       <div className="flex flex-col gap-7 px-6 pt-4 pb-6">
-        {/* Live preview */}
-        <div className="flex flex-col items-center" aria-hidden>
-          <ProfileCover style={{ cover, accent }} className="h-28 w-full" />
-          <AccentAvatar name={me.name} src={me.photoUrl} size={72} accent={accent} ring="thick" className="-mt-11" />
-          <p className="mt-2 text-base font-bold">{me.name}</p>
-          {status.trim() ? (
-            <p className={cn('mt-1 max-w-xs truncate rounded-full bg-[color-mix(in_srgb,var(--acc-via)_12%,var(--card))] px-3 py-1 text-xs font-semibold', ACCENT_TEXT)}>
-              {status.trim()}
-            </p>
-          ) : null}
-        </div>
-
-        <section className={section}>
-          <h3 className={heading}>{ft('style.cover')}</h3>
-          <div className="flex flex-wrap items-center gap-2">
-            <label
-              htmlFor={`${id}-cover`}
-              aria-busy={busy === 'check'}
-              className={cn(
-                'inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-input bg-card px-5 text-sm font-semibold transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-muted',
-                busy === 'check' && 'pointer-events-none opacity-60',
-              )}
-            >
-              <ImagePlus className={cn('size-4.5', busy === 'check' && 'animate-pulse')} aria-hidden />
-              {busy === 'check' ? ft('compose.checking') : cover ? ft('style.coverChange') : ft('style.coverAdd')}
-              <input id={`${id}-cover`} type="file" accept="image/*" className="sr-only" disabled={!!busy} onChange={(e) => void pickCover(e.target.files?.[0])} />
-            </label>
-            {cover ? (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setCoverFile(null)
-                  setCoverId(null)
-                }}
-              >
-                <Trash2 className="size-4.5" aria-hidden /> {ft('style.coverRemove')}
-              </Button>
-            ) : null}
-          </div>
-          <p className="text-xs leading-relaxed text-muted-foreground">{ft('style.coverHint')}</p>
-        </section>
-
-        <section className={section}>
-          <h3 className={heading} id={`${id}-acc`}>
-            {ft('style.accent')}
-          </h3>
-          <div role="radiogroup" aria-labelledby={`${id}-acc`} className="grid grid-cols-5 gap-x-2 gap-y-3 sm:grid-cols-9">
-            {[null, ...ACCENTS].map((a) => {
-              const on = accent === a
-              return (
-                <button
-                  key={a ?? 'brand'}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setAccent(a)}
-                  className="group flex flex-col items-center gap-1.5 rounded-2xl py-1 text-[11px] font-semibold text-muted-foreground"
-                  style={accentStyle(a)}
-                >
-                  <span
-                    className={cn(
-                      'grid size-11 place-items-center rounded-full ring-offset-2 ring-offset-card transition-[box-shadow,transform] duration-150 group-hover:scale-105',
-                      on ? 'ring-2 ring-[var(--acc-via)]' : 'ring-0',
-                    )}
-                    style={{ background: 'linear-gradient(135deg, var(--acc-from), var(--acc-via) 55%, var(--acc-to))' }}
-                  >
-                    {on ? <Check className="size-5 text-white drop-shadow" strokeWidth={3} aria-hidden /> : null}
-                  </span>
-                  <span className={cn('max-w-full truncate', on && 'text-foreground')}>{ft(`accent.${a ?? 'brand'}`)}</span>
-                </button>
-              )
-            })}
-          </div>
-        </section>
-
         <section className={section}>
           <div className="flex items-center justify-between gap-2">
             <label htmlFor={`${id}-status`} className={heading}>
@@ -289,7 +183,7 @@ function EditorBody({ onClose }: { onClose: () => void }) {
         </section>
       </div>
       <div className="sticky bottom-0 border-t border-border bg-card px-6 py-4">
-        <Button type="submit" variant="brand" size="lg" className="w-full" loading={busy === 'save'} disabled={busy === 'check'}>
+        <Button type="submit" variant="brand" size="lg" className="w-full" loading={busy}>
           {t('common.save')}
         </Button>
       </div>

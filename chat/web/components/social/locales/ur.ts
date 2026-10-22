@@ -22,7 +22,6 @@ const ur: SocialDict = {
   'inbox.more': 'پرانے دکھائیں',
   'unread.count': '{n} بغیر پڑھے',
   'nav.newCount': '{n} نئے',
-  'nav.feed': 'فیڈ',
   'inbox.like.single': '{name} نے آپ کی پوسٹ لائک کی',
   'inbox.like.one': '{name} اور 1 اور نے آپ کی پوسٹ لائک کی',
   'inbox.like.other': '{name} اور {n} دوسروں نے آپ کی پوسٹ لائک کی',

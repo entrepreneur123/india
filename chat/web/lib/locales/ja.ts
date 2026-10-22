@@ -641,6 +641,13 @@ const ja: Dict = {
   'error.sms_unavailable': '現在この番号にコードを送信できません。しばらくしてからもう一度お試しください',
   'error.verify_required': 'この操作には本人確認が必要です',
   'error.manner_low': 'マナースコアが低いため、ランダムチャットが一時停止されています',
+  'error.handle_invalid': 'IDは2〜24文字の文字・数字・_ . - などの記号で、スペースや絵文字は使えません',
+  'error.handle_reserved': 'このIDは予約されています。別のIDを選んでください',
+  'error.handle_taken': 'このIDはすでに使われています。別のIDを選んでください',
+  'error.handle_cooldown': 'IDの変更は7日に1回までです',
+  'error.name_invalid': '名前は普通の文字で入力してください。装飾フォントの文字は使えません（絵文字はOK）',
+  'error.not_owned': 'このルックはまだ持っていません',
+  'error.chat_closed': 'このチャットは終了しました。話を続けるには友だちに追加してください',
   'error.generic': '問題が発生しました。もう一度お試しください',
 }
 

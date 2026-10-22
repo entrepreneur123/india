@@ -23,7 +23,6 @@ const ja: SocialDict = {
   'inbox.more': '以前のお知らせを表示',
   'unread.count': '未読{n}件',
   'nav.newCount': '新着{n}件',
-  'nav.feed': 'フィード',
   'inbox.like.single': '{name}さんがあなたの投稿にいいねしました',
   'inbox.like.one': '{name}さんと他1人があなたの投稿にいいねしました',
   'inbox.like.other': '{name}さんと他{n}人があなたの投稿にいいねしました',

@@ -22,7 +22,6 @@ const ptBR: SocialDict = {
   'inbox.more': 'Ver anteriores',
   'unread.count': '{n} não lidas',
   'nav.newCount': '{n} novas',
-  'nav.feed': 'Feed',
   'inbox.like.single': '{name} curtiu seu post',
   'inbox.like.one': '{name} e mais 1 pessoa curtiram seu post',
   'inbox.like.other': '{name} e mais {n} pessoas curtiram seu post',

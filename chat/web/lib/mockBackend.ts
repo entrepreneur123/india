@@ -7,7 +7,6 @@ import {
   MAX_PHOTOS,
   type RoomQuery,
   type Entitlements,
-  type FeedTab,
   type FeedPost,
   type PostVisibility,
   type ProfileStyleInput,
@@ -28,8 +27,10 @@ import {
   type VoiceEvent,
   type KycDemoOutcome,
   type LinkMeta,
+  type LookWear,
 } from './backend'
 import { COUNTRIES } from './countries'
+import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
@@ -39,6 +40,13 @@ function countryOfPhone(digits: string | null | undefined): string | null {
   if (!digits) return null
   const hits = COUNTRIES.filter((c) => digits.startsWith(c.dial)).sort((a, b) => b.dial.length - a.dial.length)
   return hits.length && hits.filter((c) => c.dial === hits[0].dial).length === 1 ? hits[0].iso : null
+}
+/** Like handle_make: the plain letters of the name and four steady digits ("ananya_4821"). */
+function freeHandle(name: string, seed: string) {
+  let h = 0
+  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) | 0
+  const base = name.toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 14).replace(/^[._]+|[._]+$/g, '')
+  return `${base.length >= 3 ? base : 'user'}_${String(Math.abs(h) % 10_000).padStart(4, '0')}`
 }
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
 const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)]
@@ -251,6 +259,8 @@ interface MatchState {
   listeners: Set<(e: MatchEvent) => void>
   video: VideoStatus
   kind: 'random' | 'thread'
+  /** Over (left, or a thread): 040, only friends write on. */
+  ended: boolean
   myCount: number
   greeted: boolean
   sentMedia: boolean
@@ -282,6 +292,8 @@ export class MockBackend implements Backend {
   // identity and manners (035)
   private flags = demoFlags()
   private trust_: Promise<TrustSim> | null = null
+  // IDs and looks (040)
+  private looks_: Promise<LookSim> | null = null
 
   constructor() {
     this.friendMap.set('u_sofia', 'friends')
@@ -348,7 +360,7 @@ export class MockBackend implements Backend {
     messages: Message[] = [],
   ): MatchState {
     return {
-      id, partner, startedAt, messages, kind,
+      id, partner, startedAt, messages, kind, ended: kind === 'thread',
       listeners: new Set(), video: 'none', myCount: 0,
       greeted: kind === 'thread', sentMedia: kind === 'thread', askedVideo: kind === 'thread', timers: [],
     }
@@ -434,6 +446,7 @@ export class MockBackend implements Backend {
     const m = now.getMonth() - born.getMonth()
     if (m < 0 || (m === 0 && now.getDate() < born.getDate())) age--
     if (Number.isNaN(age) || age < 18) throw new BackendError('under_18')
+    if (!(await import('./handle')).namePlain(p.name)) throw new BackendError('name_invalid')
     this.me = {
       id: 'u_me',
       name: p.name.trim(),
@@ -447,6 +460,7 @@ export class MockBackend implements Backend {
       posts: [],
       interests: [],
       photos: [],
+      handle: freeHandle(p.name, 'u_me'),
     }
     return { ...this.me }
   }
@@ -512,6 +526,7 @@ export class MockBackend implements Backend {
     const m = this.matches.get(matchId)
     if (!m) return () => {}
     m.listeners.add(on)
+    if (m.ended) queueMicrotask(() => on({ type: 'ended' }))
     if (!m.greeted) {
       m.greeted = true
       this.partnerSays(m, pick(GREETINGS), null, jitter(1800, 2600))
@@ -542,6 +557,7 @@ export class MockBackend implements Backend {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
     await wait(jitter(120, 260))
+    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('chat_closed')
     const msg: Message = {
       id: this.msgSeq++,
       fromMe: true,
@@ -582,6 +598,7 @@ export class MockBackend implements Backend {
     for (const t of m.timers) clearTimeout(t)
     m.timers = []
     m.listeners.clear()
+    m.ended = true
   }
 
   async report(_partnerId: string, _reason: ReportReason, _matchId: string | null) {
@@ -666,7 +683,7 @@ export class MockBackend implements Backend {
     this.me.posts = this.me.posts.filter((p) => p.id !== postId)
   }
 
-  // ---- posts, likes, comments, the feed ----
+  // ---- posts, likes, comments ----
 
   private feedChunk() {
     this.feed_ ??= import('./mockFeed').then(
@@ -675,7 +692,6 @@ export class MockBackend implements Backend {
           me: () => this.me,
           person: (id) => this.person(id),
           people: PEOPLE,
-          friends: () => [...this.friendMap].filter(([, st]) => st === 'friends').map(([id]) => id),
           close: (id) => this.friendMap.get(id) === 'friends' || this.threadByUser.has(id) || this.recentList.some((r) => r.partner.id === id),
           inbox: () => this.inboxItems,
           inboxChanged: () => this.inboxChanged(),
@@ -684,14 +700,10 @@ export class MockBackend implements Backend {
     return this.feed_
   }
 
-  async setProfileStyle(style: ProfileStyleInput, cover?: File | null) {
+  async setProfileStyle(style: ProfileStyleInput) {
     if (!this.me) throw new BackendError('not_found')
-    this.me = { ...this.me, style: await (await this.feedChunk()).setStyle(style, cover) }
+    this.me = { ...this.me, style: await (await this.feedChunk()).setStyle(style) }
     return (await this.myProfile())!
-  }
-
-  async feed(tab: FeedTab, before?: string) {
-    return (await this.feedChunk()).feed(tab, before)
   }
 
   async postsOf(userId: string, before?: string) {
@@ -730,6 +742,7 @@ export class MockBackend implements Backend {
   async updateProfile(name: string, city: string, bio: string, photo: File | null) {
     if (!this.me) throw new BackendError('not_found')
     await wait(700)
+    if (!(await import('./handle')).namePlain(name)) throw new BackendError('name_invalid')
     this.me = {
       ...this.me,
       name: name.trim(),
@@ -744,7 +757,7 @@ export class MockBackend implements Backend {
     await wait(550)
     const list: Friend[] = []
     for (const [id, state] of this.friendMap) {
-      const profile = this.person(id)
+      const profile = this.person(id) ?? this.voiceSim?.person(id)
       if (profile && state !== 'none') list.push({ profile, state, threadId: this.threadByUser.get(id) ?? null })
     }
     return list
@@ -1042,5 +1055,46 @@ export class MockBackend implements Backend {
 
   async rateChat(matchId: string, good: boolean, tags: string[]) {
     return (await this.trustSim()).rateChat(matchId, good, tags)
+  }
+
+  // ---- IDs and looks (simulated in their own chunk, lib/mockLooks.ts) ----
+
+  private lookSim() {
+    this.looks_ ??= import('./mockLooks').then(
+      (m) =>
+        new m.LookSim({
+          me: () => this.me,
+          setMe: (p) => (this.me = p),
+          handle: (id) => {
+            const p = this.person(id) ?? this.voiceSim?.person(id)
+            return p ? freeHandle(p.name, id) : null
+          },
+        }),
+    )
+    return this.looks_
+  }
+
+  async handleCheck(handle: string) {
+    return (await this.lookSim()).handleCheck(handle)
+  }
+
+  async setHandle(handle: string) {
+    return (await this.lookSim()).setHandle(handle)
+  }
+
+  async shop() {
+    return (await this.lookSim()).shop()
+  }
+
+  async equipLook(wear: LookWear) {
+    return (await this.lookSim()).equipLook(wear)
+  }
+
+  async looks(userIds: string[]) {
+    return (await this.lookSim()).looks(userIds)
+  }
+
+  async buyLook(itemId: string) {
+    return (await this.lookSim()).buy(itemId)
   }
 }

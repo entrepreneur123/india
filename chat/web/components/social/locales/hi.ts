@@ -22,7 +22,6 @@ const hi: SocialDict = {
   'inbox.more': 'पुरानी देखें',
   'unread.count': '{n} बिना पढ़े',
   'nav.newCount': '{n} नई',
-  'nav.feed': 'फ़ीड',
   'inbox.like.single': '{name} को आपकी पोस्ट पसंद आई',
   'inbox.like.one': '{name} और 1 अन्य को आपकी पोस्ट पसंद आई',
   'inbox.like.other': '{name} और {n} अन्य को आपकी पोस्ट पसंद आई',

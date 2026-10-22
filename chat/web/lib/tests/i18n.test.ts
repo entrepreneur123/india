@@ -6,6 +6,7 @@ import roomEn from '../../components/screens/voice/locales/en.ts'
 import socialEn from '../../components/social/locales/en.ts'
 import feedEn from '../../components/social/locales/feed/en.ts'
 import trustEn from '../../components/trust/locales/en.ts'
+import looksEn from '../../components/looks/locales/en.ts'
 
 test('the first browser language the app has is chosen, with regional and old codes mapped', () => {
   assert.equal(detectLang(['fr-CA', 'en-US']), 'fr')
@@ -41,6 +42,7 @@ const SETS: [string, Record<string, string>, string][] = [
   ['social', socialEn, '../../components/social/locales'],
   ['feed', feedEn, '../../components/social/locales/feed'],
   ['trust', trustEn, '../../components/trust/locales'],
+  ['looks', looksEn, '../../components/looks/locales'],
 ]
 
 test('the fully kept languages have every English key, and no language file has a key English lacks', async () => {

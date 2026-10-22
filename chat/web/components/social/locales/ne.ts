@@ -22,7 +22,6 @@ const ne: SocialDict = {
   'inbox.more': 'पुराना देखाउनुहोस्',
   'unread.count': '{n} नपढिएका',
   'nav.newCount': '{n} नयाँ',
-  'nav.feed': 'फिड',
   'inbox.like.single': '{name} लाई तपाईंको पोस्ट मन पर्‍यो',
   'inbox.like.one': '{name} र अर्को 1 जनालाई तपाईंको पोस्ट मन पर्‍यो',
   'inbox.like.other': '{name} र अरू {n} जनालाई तपाईंको पोस्ट मन पर्‍यो',

@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Info } from 'lucide-react'
 import type { Gender, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { ageFromBirthDate, maxBirthDate, minBirthDate } from '@/lib/format'
+import { ageFromBirthDate, errorCode, maxBirthDate, minBirthDate } from '@/lib/format'
+import { handleSpelling, namePlain, suggestHandle } from '@/lib/handle'
 import { COMMUNITY_RULES } from '@/lib/config'
 import { useI18n } from '@/components/i18n'
+import { HandleField, handleUsable, useHandleCheck } from '@/components/looks/handle-field'
+import { useLooksT } from '@/components/looks/looks-text'
 import { Button } from '@/components/ui/pressable'
 import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { useToast } from '@/components/ui/toast'
@@ -18,8 +21,14 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
+  const { lt } = useLooksT()
   const [photo, setPhoto] = useState<File | null>(null)
   const [name, setName] = useState('')
+  // The ID follows the name until it is typed in itself (the step comes after the code, so the person is signed in
+  // and the server can be asked while typing).
+  const [handle, setHandle] = useState('')
+  const [handleEdited, setHandleEdited] = useState(false)
+  const handleState = useHandleCheck(handle, null)
   const [gender, setGender] = useState<Gender | ''>('')
   const [birthDate, setBirthDate] = useState('')
   const [city, setCity] = useState('')
@@ -28,9 +37,20 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const [touched, setTouched] = useState(false)
   const [agreed, setAgreed] = useState(false)
 
+  useEffect(() => {
+    if (!handleEdited) setHandle(suggestHandle(name))
+  }, [name, handleEdited])
+  // The suggestion is someone else's already: offer it with a few digits instead.
+  useEffect(() => {
+    if (!handleEdited && handleState === 'taken') setHandle(suggestHandle(name, String(100 + Math.floor(Math.random() * 900))))
+  }, [handleState, handleEdited, name])
+
   const age = birthDate ? ageFromBirthDate(birthDate) : null
   const ageError = birthDate && (age === null || age < 18) ? t('pf.under18') : null
-  const valid = name.trim().length >= 1 && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
+  const plainName = namePlain(name)
+  // An empty ID keeps the free one the server gives; one being checked is judged by set_handle.
+  const handleOk = !handle.trim() || handleState === 'checking' || handleUsable(handleState)
+  const valid = name.trim().length >= 1 && plainName && handleOk && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -47,7 +67,18 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         bio: bio.trim(),
         photo,
       })
-      onCreated(p)
+      // The profile comes with a free ID (lisa_4821); then the chosen one. Taken meanwhile: the free one stays.
+      const wanted = handleSpelling(handle)
+      let mine = p.handle
+      if (wanted && wanted !== mine) {
+        try {
+          mine = await backend.setHandle(wanted)
+        } catch (err) {
+          if (errorCode(err) === 'handle_taken') toast.show(lt('id.keptFree', { handle: mine ?? '' }), 'info')
+          else toast.error(err)
+        }
+      }
+      onCreated({ ...p, handle: mine })
     } catch (err) {
       toast.error(err)
     } finally {
@@ -64,7 +95,11 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
 
       <PhotoPicker file={photo} onChange={setPhoto} name={name} />
 
-      <Field label={t('pf.name')} htmlFor="pf-name" error={touched && name.trim().length < 1 ? t('pf.nameError') : null}>
+      <Field
+        label={t('pf.name')}
+        htmlFor="pf-name"
+        error={!plainName ? t('error.name_invalid') : touched && name.trim().length < 1 ? t('pf.nameError') : null}
+      >
         <TextInput
           id="pf-name"
           value={name}
@@ -74,6 +109,16 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
           placeholder={t('pf.namePlaceholder')}
         />
       </Field>
+
+      <HandleField
+        id="pf-handle"
+        value={handle}
+        state={handleState}
+        onChange={(v) => {
+          setHandleEdited(true)
+          setHandle(v)
+        }}
+      />
 
       <div className="flex flex-col gap-1.5">
         <span id="pf-gender" className="text-sm font-semibold">

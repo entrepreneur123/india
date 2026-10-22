@@ -21,6 +21,7 @@ import { BellButton, CountBadge } from '@/components/social/bits'
 import { useSocialT } from '@/components/social/social-text'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
+import { LookName } from '@/components/looks/look-name'
 
 type Segment = 'friends' | 'matches'
 
@@ -138,6 +139,7 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
           </span>
           <TrustBadge userId={p.id} size={15} />
         </span>
+        <LookName userId={p.id} handle={p.handle} className="text-[13px] font-semibold" />
         <span className="block truncate text-sm text-muted-foreground">{detail ?? p.city}</span>
       </span>
     </button>

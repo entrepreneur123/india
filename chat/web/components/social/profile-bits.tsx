@@ -1,16 +1,20 @@
 'use client'
 
 import type { CSSProperties, ReactNode } from 'react'
-import type { Accent, Profile, ProfilePrompt, ProfileStyle, SpokenLang } from '@/lib/backend'
+import type { Accent, Profile, ProfilePrompt, SpokenLang } from '@/lib/backend'
 import { flagEmoji } from '@/lib/format'
 import { accentVars, EMPTY_STYLE, nativeName } from '@/lib/profile-style'
+import type { FrameId } from '@/lib/looks'
 import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { VerifiedMark } from '@/components/trust/badge'
+import { FrameAvatar, FrameCard } from '@/components/looks/frames'
+import { LookName, useLook } from '@/components/looks/look-name'
 import { useFeedT } from './feed-text'
 
-// A profile made its own (033): the cover (or the accent's gradient), the name ring, the status, languages and
-// prompt cards. Colours come from the accent as CSS variables (lib/profile-style.ts accentVars).
+// A profile made its own: the frame (040, a bought look) around the card and the photo, the name and the decorated
+// @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
+// variables (lib/profile-style.ts accentVars; the old per-profile colour is gone).
 
 /** The accent's variables for a subtree (`--acc-from/via/to/ink/night`). */
 export const accentStyle = (accent: Accent | null | undefined) => accentVars(accent) as CSSProperties
@@ -24,18 +28,16 @@ export function AccentAvatar({
   src,
   size,
   accent,
-  ring = 'thin',
   className,
 }: {
   name: string
   src?: string | null
   size: number
   accent: Accent | null | undefined
-  ring?: 'thin' | 'thick'
   className?: string
 }) {
-  const pad = ring === 'thick' ? Math.max(3, Math.round(size * 0.04)) : 2
-  const gap = ring === 'thick' ? Math.max(3, Math.round(size * 0.035)) : 2
+  const pad = 2
+  const gap = 2
   return (
     <span
       className={cn('relative inline-grid shrink-0 place-items-center rounded-full', className)}
@@ -54,46 +56,14 @@ export function AccentAvatar({
   )
 }
 
-/** The top of a profile: the cover photo, or the accent's gradient with soft shapes. */
-export function ProfileCover({
-  style,
-  className,
-  children,
-}: {
-  style: Pick<ProfileStyle, 'cover' | 'accent'>
-  className?: string
-  children?: ReactNode
-}) {
-  return (
-    <div
-      className={cn('relative overflow-hidden rounded-[28px]', className)}
-      style={{ ...accentStyle(style.accent), background: 'linear-gradient(135deg, var(--acc-from) 0%, var(--acc-via) 55%, var(--acc-to) 100%)' }}
-    >
-      {style.cover ? (
-        <>
-          <img src={style.cover.url} alt="" className="absolute inset-0 size-full object-cover" decoding="async" />
-          <span className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25" aria-hidden />
-        </>
-      ) : (
-        <span aria-hidden>
-          <span className="absolute -top-16 -inset-s-10 size-56 rounded-full bg-white/18" />
-          <span className="absolute -inset-e-12 -bottom-24 size-72 rounded-full bg-white/12" />
-          <span className="absolute top-6 inset-e-[22%] size-14 rounded-full bg-white/16" />
-          <span className="absolute bottom-5 inset-s-[30%] size-6 rounded-full bg-white/25" />
-        </span>
-      )}
-      {children}
-    </div>
-  )
-}
-
 /**
- * Cover, avatar in its ring, name, age and flag, city, status, bio and languages. `coverSlot`: buttons over the
- * cover (settings, close); `statusSlot`: shown when there is no status (my own "Add a status").
+ * The profile card in its frame: the photo in the frame's ring, name, age and flag, the decorated @ID, city, status,
+ * bio and languages. `slot`: buttons in the card's top corner (settings, close); `statusSlot`: shown when there is no
+ * status (my own "Add a status").
  */
 export function ProfileHero({
   profile,
-  coverSlot,
+  slot,
   statusSlot,
   badge,
   verified,
@@ -101,7 +71,7 @@ export function ProfileHero({
   className,
 }: {
   profile: Profile
-  coverSlot?: ReactNode
+  slot?: ReactNode
   statusSlot?: ReactNode
   badge?: ReactNode
   /** The verified mark after the name (035). */
@@ -111,39 +81,41 @@ export function ProfileHero({
   className?: string
 }) {
   const style = profile.style ?? EMPTY_STYLE
+  const frame = (useLook(profile.id)?.frame ?? null) as FrameId | null
   return (
-    <section className={cn('flex flex-col items-center text-center', className)} style={accentStyle(style.accent)}>
-      <ProfileCover style={style} className="h-36 w-full sm:h-48">
-        {coverSlot}
-      </ProfileCover>
-      <AccentAvatar name={profile.name} src={profile.photoUrl} size={104} accent={style.accent} ring="thick" className="-mt-16 shadow-e2" />
-      <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
-        <span className="inline-flex items-center gap-1.5">
-          <span>
-            {profile.name}, {profile.age}
+    <FrameCard frame={frame} className={className}>
+      {slot}
+      <section className="flex flex-col items-center px-2 pt-14 pb-6 text-center sm:pt-10" style={accentStyle(style.accent)}>
+        <FrameAvatar frame={frame} name={profile.name} src={profile.photoUrl} size={104} />
+        <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
+          <span className="inline-flex items-center gap-1.5">
+            <span>
+              {profile.name}, {profile.age}
+            </span>
+            {verified ? <VerifiedMark size={24} /> : null}
           </span>
-          {verified ? <VerifiedMark size={24} /> : null}
-        </span>
-        <span aria-hidden>{flagEmoji(profile.country)}</span>
-        {badge}
-      </h2>
-      {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
-      {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
-      {style.status ? (
-        <p
-          className={cn(
-            'mt-3 max-w-sm rounded-full bg-[color-mix(in_srgb,var(--acc-via)_12%,var(--card))] px-4 py-1.5 text-sm font-semibold text-balance',
-            ACCENT_TEXT,
-          )}
-        >
-          {style.status}
-        </p>
-      ) : (
-        statusSlot
-      )}
-      {profile.bio ? <p className="mt-3 max-w-md px-4 text-[15px] leading-relaxed text-pretty">{profile.bio}</p> : null}
-      <LanguageChips languages={style.languages} className="mt-3 justify-center px-4" />
-    </section>
+          <span aria-hidden>{flagEmoji(profile.country)}</span>
+          {badge}
+        </h2>
+        <LookName userId={profile.id} handle={profile.handle} className="mt-0.5 max-w-full px-4 text-base font-semibold" />
+        {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
+        {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
+        {style.status ? (
+          <p
+            className={cn(
+              'mt-3 max-w-sm rounded-full bg-[color-mix(in_srgb,var(--acc-via)_12%,var(--card))] px-4 py-1.5 text-sm font-semibold text-balance',
+              ACCENT_TEXT,
+            )}
+          >
+            {style.status}
+          </p>
+        ) : (
+          statusSlot
+        )}
+        {profile.bio ? <p className="mt-3 max-w-md px-4 text-[15px] leading-relaxed text-pretty">{profile.bio}</p> : null}
+        <LanguageChips languages={style.languages} className="mt-3 justify-center px-4" />
+      </section>
+    </FrameCard>
   )
 }
 

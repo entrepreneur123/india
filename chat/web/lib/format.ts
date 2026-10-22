@@ -39,6 +39,7 @@ const ERROR_CODES = new Set([
   'blocked', 'too_large', 'bad_media', 'video_not_configured', 'not_signed_in', 'room_closed', 'room_gender', 'nude_photo',
   'room_age', 'room_full', 'room_title', 'room_size', 'sms_unavailable', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'verify_required', 'manner_low',
+  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned', 'chat_closed',
 ])
 
 export function errorCode(err: unknown) {

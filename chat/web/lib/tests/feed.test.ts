@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import type { FeedPost, PostComment } from '../backend'
-import { appendPage, inboxKind, likeLine, likeLocally, mediaPaths, parseComment, parsePost, parseTime, refreshTop, threadComments } from '../feed.ts'
+import type { PostComment } from '../backend'
+import { inboxKind, likeLine, likeLocally, mediaPaths, parseComment, parsePost, parseTime, threadComments } from '../feed.ts'
 
 const sign = (p: string | null) => (p ? `https://cdn/${p}` : null)
 
@@ -10,11 +10,6 @@ const rawPost = (patch: Record<string, unknown> = {}) => ({
   likes: 3, comments: 1, liked: true,
   author: { id: 'u1', name: 'Ananya', gender: 'female', age: 23, city: 'Mumbai', country: 'IN', photo_path: null, accent: 'ocean' },
   ...patch,
-})
-
-const post = (id: string, at: number): FeedPost => ({
-  id, text: id, createdAt: at, cursor: String(at), visibility: 'friends', likes: 0, comments: 0, liked: false, imageUrl: null,
-  author: { id: 'u', name: 'U', gender: 'other', age: 20, city: null, country: null, photoUrl: null, accent: null },
 })
 
 test('parsePost reads the server JSON and keeps its own time text as the cursor', () => {
@@ -60,17 +55,6 @@ test('unknown inbox kinds are skipped', () => {
   assert.equal(inboxKind('post_comment'), 'post_comment')
   assert.equal(inboxKind('story_view'), null)
   assert.equal(inboxKind(undefined), null)
-})
-
-test('pages: nothing twice, a refresh keeps older posts already shown', () => {
-  const a = post('a', 5), b = post('b', 4), c = post('c', 3), d = post('d', 2)
-  assert.deepEqual(appendPage([a, b], [b, c]).map((p) => p.id), ['a', 'b', 'c'])
-  const n = post('n', 6)
-  assert.deepEqual(refreshTop([a, b, c, d], [n, a, b]).map((p) => p.id), ['n', 'a', 'b', 'c', 'd'])
-  // A shown post newer than the fresh page's oldest that is not in it was deleted meanwhile: it goes.
-  const x = post('x', 5.5)
-  assert.deepEqual(refreshTop([x, a, b], [n, a]).map((p) => p.id), ['n', 'a', 'b'])
-  assert.deepEqual(refreshTop([a], []), [])
 })
 
 test('likeLocally moves the count once', () => {

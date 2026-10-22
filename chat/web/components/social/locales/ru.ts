@@ -25,7 +25,6 @@ const ru: SocialDict = {
   'inbox.more': 'Показать более ранние',
   'unread.count': 'Непрочитанных: {n}',
   'nav.newCount': 'Новых: {n}',
-  'nav.feed': 'Лента',
   'inbox.like.single': '{name}: нравится ваш пост',
   'inbox.like.one': '{name} и ещё 1: нравится ваш пост',
   'inbox.like.other': '{name} и ещё {n}: нравится ваш пост',

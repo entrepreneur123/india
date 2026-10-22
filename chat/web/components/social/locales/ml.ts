@@ -22,7 +22,6 @@ const ml: SocialDict = {
   'inbox.more': 'പഴയവ കാണിക്കുക',
   'unread.count': '{n} വായിക്കാത്തവ',
   'nav.newCount': '{n} പുതിയത്',
-  'nav.feed': 'ഫീഡ്',
   'inbox.like.single': '{name} നിങ്ങളുടെ പോസ്റ്റ് ലൈക്ക് ചെയ്തു',
   'inbox.like.one': '{name}-ഉം മറ്റൊരാളും നിങ്ങളുടെ പോസ്റ്റ് ലൈക്ക് ചെയ്തു',
   'inbox.like.other': '{name}-ഉം മറ്റ് {n} പേരും നിങ്ങളുടെ പോസ്റ്റ് ലൈക്ക് ചെയ്തു',

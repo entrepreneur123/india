@@ -24,7 +24,6 @@ const pl: SocialDict = {
   'inbox.more': 'Pokaż starsze',
   'unread.count': 'Nieprzeczytane: {n}',
   'nav.newCount': 'Nowe: {n}',
-  'nav.feed': 'Feed',
   'inbox.like.single': '{name} lubi Twój post',
   'inbox.like.one': '{name} i 1 inna osoba lubią Twój post',
   'inbox.like.other': '{name} i inne osoby ({n}) lubią Twój post',

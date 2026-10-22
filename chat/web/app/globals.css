@@ -211,6 +211,65 @@
   }
 }
 
+/*
+ * ID fonts (040 looks, lib/looks.ts FONT_DESIGNS): Latin only, renamed OFL subsets (docs/font-licenses). Not preloaded:
+ * the browser fetches a file only when an ID in that font is on screen.
+ */
+@font-face {
+  font-family: 'Yaari Look Script';
+  src: url('/fonts/looks/look_script.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Retro';
+  src: url('/fonts/looks/look_retro.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Bold';
+  src: url('/fonts/looks/look_bold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Pixel';
+  src: url('/fonts/looks/look_pixel.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Round';
+  src: url('/fonts/looks/look_round.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Future';
+  src: url('/fonts/looks/look_future.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* Looks: the rainbow ID colour slides (its gradient repeats, so the loop has no seam), the fire frame flickers, the neon
+   frame's glow pulses. Reduced motion stops them (the rule at the end). */
+.look-rainbow {
+  background-size: 200% 100%;
+  animation: look-slide 6s linear infinite;
+}
+.look-flicker {
+  animation: look-flicker 0.6s ease-in-out infinite alternate;
+}
+.look-glow {
+  animation: look-glow 2s ease-in-out infinite alternate;
+}
+@keyframes look-slide {
+  to { background-position: 200% 0; }
+}
+@keyframes look-flicker {
+  from { opacity: 1; }
+  to { opacity: 0.8; }
+}
+@keyframes look-glow {
+  from { opacity: 0.35; }
+  to { opacity: 0.9; }
+}
+
 /* The logo is the one place the brand gradient appears. */
 @utility bg-brand {
   background-image: var(--brand-gradient);

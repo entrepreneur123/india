@@ -628,6 +628,13 @@ const nl: Dict = {
   'error.sms_unavailable': 'We kunnen nu geen code naar dit nummer sturen. Probeer het later opnieuw',
   'error.verify_required': 'Verifieer je identiteit om dit te doen',
   'error.manner_low': 'Random chat is gepauzeerd vanwege je gedragsscore',
+  'error.handle_invalid': 'Een ID heeft 2 tot 24 letters, cijfers of tekens als _ . -, zonder spaties of emoji',
+  'error.handle_reserved': 'Die ID is gereserveerd. Kies een andere',
+  'error.handle_taken': 'Die ID is al bezet. Kies een andere',
+  'error.handle_cooldown': 'Je kunt je ID eens per 7 dagen wijzigen',
+  'error.name_invalid': 'Schrijf je naam in gewone letters: letters uit sierlettertypen kunnen niet (emoji wel)',
+  'error.not_owned': 'Deze look is nog niet van jou',
+  'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',
   'error.generic': 'Er ging iets mis. Probeer het opnieuw',
 }
 

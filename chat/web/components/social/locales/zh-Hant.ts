@@ -23,7 +23,6 @@ const zhHant: SocialDict = {
   'inbox.more': '檢視更早的通知',
   'unread.count': '{n} 則未讀',
   'nav.newCount': '{n} 則新通知',
-  'nav.feed': '動態',
   'inbox.like.single': '{name} 對你的貼文按讚',
   'inbox.like.one': '{name} 和另外 1 人對你的貼文按讚',
   'inbox.like.other': '{name} 和另外 {n} 人對你的貼文按讚',

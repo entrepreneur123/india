@@ -631,6 +631,13 @@ const ro: Dict = {
   'error.sms_unavailable': 'Nu putem trimite acum un cod la acest număr. Încearcă din nou mai târziu',
   'error.verify_required': 'Verifică-ți identitatea ca să faci asta',
   'error.manner_low': 'Chatul aleatoriu e pe pauză din cauza scorului tău de comportament',
+  'error.handle_invalid': 'ID-urile au 2–24 de litere, cifre sau simboluri ca _ . -, fără spații sau emoji',
+  'error.handle_reserved': 'Acest ID e rezervat. Alege altul',
+  'error.handle_taken': 'Acest ID e deja luat. Alege altul',
+  'error.handle_cooldown': 'Îți poți schimba ID-ul o dată la 7 zile',
+  'error.name_invalid': 'Scrie-ți numele cu litere obișnuite: literele din fonturi decorative nu sunt permise (emoji da)',
+  'error.not_owned': 'Încă nu ai acest stil',
+  'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',
 }
 

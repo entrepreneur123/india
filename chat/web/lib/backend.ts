@@ -1,3 +1,5 @@
+import type { HandleCheck } from './handle'
+
 export type Gender = 'male' | 'female' | 'other'
 export type Target = 'any' | 'male' | 'female' // anything but 'any' is paid
 
@@ -13,7 +15,7 @@ export interface Post {
   liked?: boolean
 }
 
-// ---- profile style, likes, comments and the feed (033_profiles_feed.sql; lists and limits in lib/profile-style.ts) ----
+// ---- profile style, posts, likes and comments (033_profiles_feed.sql; lists and limits in lib/profile-style.ts) ----
 
 /** The profile's colour (null: the brand's). */
 export type Accent = 'rose' | 'violet' | 'ocean' | 'mint' | 'sunset' | 'gold' | 'berry' | 'slate'
@@ -28,8 +30,7 @@ export interface ProfilePrompt {
 }
 
 export interface ProfileStyle {
-  /** The cover photo above the profile (id = the stored file); null: the accent's gradient. */
-  cover: ProfilePhoto | null
+  /** 040: the server keeps no colour any more (frames are the decoration): null, the brand's. */
   accent: Accent | null
   /** A short line under the name (1-60), like WhatsApp's About. */
   status: string | null
@@ -37,10 +38,8 @@ export interface ProfileStyle {
   prompts: ProfilePrompt[]
 }
 
-/** What set_profile_style takes: the whole style every time. `coverId`: the stored cover to keep (null: none). */
+/** What set_profile_style takes: the whole style every time (040: the cover and colour are gone). */
 export interface ProfileStyleInput {
-  coverId: string | null
-  accent: Accent | null
   status: string | null
   languages: SpokenLang[]
   prompts: ProfilePrompt[]
@@ -48,7 +47,6 @@ export interface ProfileStyleInput {
 
 /** 'friends': friends and people I chatted with (the default); 'public': anyone, in Discover. */
 export type PostVisibility = 'friends' | 'public'
-export type FeedTab = 'friends' | 'discover'
 
 export interface PostAuthor {
   id: string
@@ -63,7 +61,7 @@ export interface PostAuthor {
   verified?: boolean
 }
 
-/** A post as the feed reads it: with its author, counts and my like. */
+/** A post as the server reads it out: with its author, counts and my like. */
 export interface FeedPost extends Post {
   visibility: PostVisibility
   likes: number
@@ -106,6 +104,8 @@ export interface Profile {
   style?: ProfileStyle
   /** 035: identity verified (absent: not known for this card; the screens ask trust()). */
   verified?: boolean
+  /** 040: the ID, shown as @handle (absent: not on this card; components/looks/look-name.tsx asks looks()). */
+  handle?: string
 }
 
 // ---- real identities and manners (035_identity_manners.sql; parsing and levels in lib/trust.ts) ----
@@ -129,6 +129,38 @@ export interface MyTrust extends Trust {
   kyc: { status: string; result: KycResult | null; at: number } | null
   /** Random chats (match ids) I rated in the last day. */
   rated: string[]
+}
+
+// ---- IDs and looks (040_handles_looks.sql; the catalogue and parsing in lib/looks.ts, the ID rules in lib/handle.ts) ----
+
+export type LookKind = 'badge' | 'color' | 'font' | 'frame'
+
+/** Someone's ID and what they wear (null: none of that kind). Item ids are the catalogue's (lib/looks.ts). */
+export interface Look {
+  id: string
+  handle: string
+  badge: string | null
+  color: string | null
+  font: string | null
+  frame: string | null
+}
+
+/** What I wear: one item of each kind at most. */
+export type LookWear = Pick<Look, LookKind>
+
+export interface ShopItem {
+  id: string
+  kind: LookKind
+  /** Google Play's local price is shown in the app; this is the fallback label. */
+  priceInr: number
+}
+
+export interface Shop {
+  items: ShopItem[]
+  owned: string[]
+  look: Look | null
+  /** When I may change my ID to another one again (null: now). */
+  handleNext: number | null
 }
 
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
@@ -475,6 +507,8 @@ export type MatchEvent =
   | { type: 'video'; status: VideoStatus }
   | { type: 'partner_left' }
   | { type: 'read'; upto: number } // the partner has read my messages up to this id
+  /** The chat has ended (either side). 040: after that only friends write on (threads show the friends bar). */
+  | { type: 'ended' }
 
 export interface Entitlements {
   premium: boolean
@@ -538,6 +572,17 @@ export type BackendErrorCode =
   | 'translate_failed'
   /** 038 translate: longer than 2000 characters. */
   | 'too_long'
+  /** 040 IDs: not an ID the server takes, kept for staff, someone else's, or changed less than 7 days ago. */
+  | 'handle_invalid'
+  | 'handle_reserved'
+  | 'handle_taken'
+  | 'handle_cooldown'
+  /** 040: a name with fancy-font letters (𝓛𝓲𝓼𝓪) or stacked accents. */
+  | 'name_invalid'
+  /** 040: wearing a look I don't own. */
+  | 'not_owned'
+  /** 040: a new line in a random chat that ended, between two people who aren't friends. */
+  | 'chat_closed'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -623,11 +668,10 @@ export interface Backend {
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
   addProfilePhoto(photo: File): Promise<Profile>
   removeProfilePhoto(id: string): Promise<Profile>
-  /** Sets the whole style. `cover`: a new cover photo (the screen has run classifyImage() on it first). */
-  setProfileStyle(style: ProfileStyleInput, cover?: File | null): Promise<Profile>
-  // ---- posts, likes, comments, the feed (033) ----
+  /** Sets the whole style: status, languages, prompts. */
+  setProfileStyle(style: ProfileStyleInput): Promise<Profile>
+  // ---- posts, likes, comments (033) ----
   /** Newest first; `before`: the last post's cursor, for the next page. */
-  feed(tab: FeedTab, before?: string): Promise<FeedPost[]>
   postsOf(userId: string, before?: string): Promise<FeedPost[]>
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
@@ -693,4 +737,17 @@ export interface Backend {
   translate(kind: 'chat' | 'room', id: number, target: string): Promise<{ text: string; same: boolean }>
   /** Once per random chat after it ends, when both wrote; `tags` from the chosen side (lib/trust.ts), at most 3. */
   rateChat(matchId: string, good: boolean, tags: string[]): Promise<void>
+  // ---- IDs and looks (040) ----
+  /** Whether I can take this ID (asked while typing, 400 ms after the last key). */
+  handleCheck(handle: string): Promise<HandleCheck>
+  /** Takes this ID; returns the stored spelling. Errors: handle_invalid, handle_reserved, handle_taken, handle_cooldown. */
+  setHandle(handle: string): Promise<string>
+  /** Everything for sale, what I own and wear, and when my ID can change again. */
+  shop(): Promise<Shop>
+  /** Wears these (null: none of that kind), all four at once. Errors: not_owned, bad_request. */
+  equipLook(wear: LookWear): Promise<Look>
+  /** IDs and looks of these people (at most 100; people I may not see are left out). */
+  looks(userIds: string[]): Promise<Look[]>
+  /** Demo only: owns the item at once (the live web has no payments; looks are bought in the Android app). */
+  buyLook?(itemId: string): Promise<void>
 }

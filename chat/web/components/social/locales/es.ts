@@ -23,7 +23,6 @@ const es: SocialDict = {
   'inbox.more': 'Ver anteriores',
   'unread.count': '{n} sin leer',
   'nav.newCount': '{n} nuevas',
-  'nav.feed': 'Feed',
   'inbox.like.single': 'A {name} le gustó tu publicación',
   'inbox.like.one': 'A {name} y a 1 persona más les gustó tu publicación',
   'inbox.like.many': 'A {name} y a {n} personas más les gustó tu publicación',

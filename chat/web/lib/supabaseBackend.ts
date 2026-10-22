@@ -7,7 +7,6 @@ import {
   type Entitlements,
   type Badges,
   type FeedPost,
-  type FeedTab,
   type PostComment,
   type PostVisibility,
   type ProfileStyleInput,
@@ -17,6 +16,9 @@ import {
   type Interest,
   INTERESTS,
   type KycResult,
+  type Look,
+  type LookWear,
+  type Shop,
   type MyTrust,
   type Trust,
   MAX_PHOTOS,
@@ -53,6 +55,8 @@ import { retryImport } from './retry-import'
 import { parseReply } from './voice-chat'
 import { parsePoll, POLLS_PER_READ } from './voice-polls'
 import { parseKycResult, parseMyTrust, parseTrustList } from './trust'
+import { parseLook, parseLooks, parseShop } from './looks'
+import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
@@ -79,15 +83,16 @@ const CODES = [
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
+  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
 ]
 
 type CardRow = {
   id: string; name: string; gender: string; age: number; city: string; bio: string
   photo_path: string | null; country: string | null
 }
-/** 033: cover, colour, status, languages, prompts (profiles columns, or profile_style rows). */
-type StyleRow = { cover_path: string | null; accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null } & StyleRow
+/** 033: colour, status, languages, prompts (profiles columns, or profile_style rows); 040 keeps the colour null. */
+type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string } & StyleRow
 type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
 /** inbox2 (033): inbox's lines plus the post a like or comment is about. */
 type InboxRow = {
@@ -376,14 +381,14 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, cover_path, accent, status, languages, prompts')
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle')
         .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
     if (error) fail(error)
     if (!data) return null
     const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
-    return { ...p, style: await this.toStyle(data) }
+    return { ...p, handle: data.handle, style: await this.toStyle(data) }
   }
 
   async createProfile(p: NewProfile) {
@@ -495,6 +500,7 @@ export class SupabaseBackend implements Backend {
     let lastVideo: VideoStatus | null = null
     let partnerRead = 0
     let leftSent = false
+    let endedSent = false
     const emit = (e: MatchEvent) => { if (!closed) on(e) }
     const partnerLeft = () => {
       if (leftSent) return
@@ -504,6 +510,10 @@ export class SupabaseBackend implements Backend {
     const onMatch = (m: MatchRow | null) => {
       if (m === null || (m.ended_at && m.ended_by !== me)) partnerLeft()
       if (!m) return
+      if (m.ended_at && !endedSent) {
+        endedSent = true
+        emit({ type: 'ended' })
+      }
       const read = (m.user_a === me ? m.read_b : m.read_a) ?? 0
       if (read > partnerRead) {
         partnerRead = read
@@ -695,7 +705,11 @@ export class SupabaseBackend implements Backend {
     const { data, error } = await this.client.from('messages')
       .insert({ match_id: matchId, body: text, media_path: path, media_kind: kind })
       .select('id, match_id, sender, body, media_path, media_kind, created_at').single<MessageRow>()
-    if (error) fail(error)
+    if (error) {
+      // 040: an ended random chat goes on only between friends; the policy refuses the rest (as a row-level violation).
+      if (codeOf(error.message ?? '') === 'blocked' && (await this.matchRow(matchId).catch(() => null))?.ended_at) throw new BackendError('chat_closed')
+      fail(error)
+    }
     track('chat_message_sent')
     return this.toMessage(data, this.uid)
   }
@@ -755,10 +769,8 @@ export class SupabaseBackend implements Backend {
     return styles?.[0] ? { ...withX, style: await this.toStyle(styles[0]) } : withX
   }
 
-  /** The style with its cover signed (a cover that can't be signed is shown as the gradient). */
   private async toStyle(row: StyleRow) {
-    const [url, { parseStyle }] = await Promise.all([row.cover_path ? this.signed(row.cover_path).catch(() => null) : null, this.social()])
-    return parseStyle(row, row.cover_path && url ? { id: row.cover_path, url } : null)
+    return (await this.social()).parseStyle(row)
   }
 
   /** Interests and gallery of people I may see (024). */
@@ -803,7 +815,7 @@ export class SupabaseBackend implements Backend {
     if (error) fail(error)
   }
 
-  // ---- posts, likes, comments, the feed (033) ----
+  // ---- posts, likes, comments (033) ----
 
   /** Signs every photo in the rows in one request, then reads them. */
   private async toPosts(rows: unknown): Promise<FeedPost[]> {
@@ -814,11 +826,6 @@ export class SupabaseBackend implements Backend {
   }
 
   private signedNow = (path: string | null) => (path ? this.signedUrls.get(path)?.url ?? null : null)
-
-  async feed(tab: FeedTab, before?: string): Promise<FeedPost[]> {
-    const { FEED_PAGE } = await this.social()
-    return this.toPosts(await this.rpc('feed', { p_tab: tab, p_before: before ?? null, p_limit: FEED_PAGE }))
-  }
 
   async postsOf(userId: string, before?: string): Promise<FeedPost[]> {
     return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
@@ -1013,10 +1020,10 @@ export class SupabaseBackend implements Backend {
     return this.mine()
   }
 
-  async setProfileStyle(style: ProfileStyleInput, cover?: File | null) {
-    const path = cover ? await this.upload(cover, 'cover') : style.coverId
+  async setProfileStyle(style: ProfileStyleInput) {
+    // The cover and colour are ignored since 040 (the function still takes them).
     await this.rpc('set_profile_style', {
-      p_cover_path: path, p_accent: style.accent, p_status: style.status, p_languages: style.languages, p_prompts: style.prompts,
+      p_cover_path: null, p_accent: null, p_status: style.status, p_languages: style.languages, p_prompts: style.prompts,
     })
     return this.mine()
   }
@@ -1137,6 +1144,36 @@ export class SupabaseBackend implements Backend {
 
   async rateChat(matchId: string, good: boolean, tags: string[]) {
     await this.rpc('rate_chat', { p_match: matchId, p_good: good, p_tags: tags })
+  }
+
+  // ---- IDs and looks (040) ----
+
+  // The server trims and composes (NFC) the ID itself; lib/handle.ts handleSpelling does the same on screen.
+  async handleCheck(handle: string): Promise<HandleCheck> {
+    const r = await this.rpc<string>('handle_check', { p_handle: handle })
+    return r === 'ok' || r === 'mine' || r === 'reserved' || r === 'taken' ? r : 'invalid'
+  }
+
+  async setHandle(handle: string) {
+    return this.rpc<string>('set_handle', { p_handle: handle })
+  }
+
+  async shop(): Promise<Shop> {
+    const s = parseShop(await this.rpc<unknown>('shop'), time)
+    if (!s) throw new BackendError('network')
+    return s
+  }
+
+  async equipLook(wear: LookWear): Promise<Look> {
+    const look = parseLook(await this.rpc<unknown>('equip_look', { p_badge: wear.badge, p_color: wear.color, p_font: wear.font, p_frame: wear.frame }))
+    if (!look) throw new BackendError('network')
+    return look
+  }
+
+  async looks(userIds: string[]): Promise<Look[]> {
+    const ids = [...new Set(userIds)].slice(0, 100)
+    if (!ids.length) return []
+    return parseLooks(await this.rpc<unknown>('looks', { p_users: ids }))
   }
 
   async voiceStartAudio(roomId: string) {
@@ -1828,7 +1865,7 @@ export class SupabaseBackend implements Backend {
   }
 
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
-  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms' | 'cover'): Promise<string> {
+  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms'): Promise<string> {
     const isVideo = file.type.startsWith('video/')
     let body: Blob = file
     let type = file.type

@@ -2,19 +2,24 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { EyeOff, Flag, ShieldCheck } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import type { TKey } from '@/lib/i18n'
 import { Rich, useI18n } from '@/components/i18n'
-import { Logo } from '@/components/ui/bits'
+import { Logo, Skeleton } from '@/components/ui/bits'
 import { LanguageSelect } from '@/components/language-select'
 import { HeroPreview } from './hero-preview'
 import { PhoneStep } from './phone-step'
 import { OtpStep } from './otp-step'
-import { ProfileStep } from './profile-step'
 import { VerifiedMark } from '@/components/trust/mark'
 import { requiredCached } from '@/components/trust/required'
+import { retryImport } from '@/lib/retry-import'
+
+// The profile form (with the ID's rules and strings) is its own chunk: fetched while the code is being typed, so
+// the first screen stays small.
+const loadProfileStep = () => retryImport(() => import('./profile-step'))
+const ProfileStep = lazy(() => loadProfileStep().then((mod) => ({ default: mod.ProfileStep })))
 
 type Step = 'phone' | 'otp' | 'profile'
 
@@ -115,6 +120,7 @@ export function AuthScreen({
                   onSent={(digits, display) => {
                     setPhone({ digits, display })
                     setStep('otp')
+                    void loadProfileStep().catch(() => undefined)
                   }}
                 />
               ) : step === 'otp' && phone ? (
@@ -129,7 +135,18 @@ export function AuthScreen({
                   }}
                 />
               ) : (
-                <ProfileStep onCreated={onComplete} />
+                <Suspense
+                  fallback={
+                    <div className="flex flex-col gap-5" aria-busy>
+                      <Skeleton className="h-8 w-56" />
+                      <Skeleton className="h-24 w-full rounded-2xl" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                    </div>
+                  }
+                >
+                  <ProfileStep onCreated={onComplete} />
+                </Suspense>
               )}
             </m.div>
           </AnimatePresence>

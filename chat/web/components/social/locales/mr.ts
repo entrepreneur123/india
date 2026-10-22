@@ -22,7 +22,6 @@ const mr: SocialDict = {
   'inbox.more': 'जुने दाखवा',
   'unread.count': '{n} न वाचलेले',
   'nav.newCount': '{n} नवीन',
-  'nav.feed': 'फीड',
   'inbox.like.single': '{name} ने तुमची पोस्ट लाइक केली',
   'inbox.like.one': '{name} आणि आणखी 1 जणाने तुमची पोस्ट लाइक केली',
   'inbox.like.other': '{name} आणि आणखी {n} जणांनी तुमची पोस्ट लाइक केली',

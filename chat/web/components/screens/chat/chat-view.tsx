@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, ChevronDown, Flag, Shuffle, Undo2, Video } from 'lucide-react'
+import { ArrowLeft, Check, ChevronDown, Clock, Flag, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -25,6 +25,9 @@ import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
 import { useFollowLines } from '@/components/translate'
+import { LookName } from '@/components/looks/look-name'
+import { useLooksT } from '@/components/looks/looks-text'
+import { useFriendship } from '@/components/social/friend-button'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
@@ -144,6 +147,9 @@ export function ChatView({
   }
 
   const ended = live && chat.partnerLeft
+  // 040: a thread whose chat ended goes on only between friends; until then a friends bar replaces the composer.
+  const friendship = useFriendship(partner.id, partner.name)
+  const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
 
   // A call never runs off screen (camera and mic would stay live with no controls), and an incoming
   // request brings the chat back to the front so it can be answered.
@@ -187,8 +193,14 @@ export function ChatView({
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
                 {partner.name}, {partner.age} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
-              <span className="block truncate text-xs text-muted-foreground">
-                {ended ? t('chat.left') : chat.typing ? <span className="text-primary-text">{t('chat.typing')}</span> : partner.city}
+              <span className="flex min-w-0 text-xs text-muted-foreground">
+                {ended ? (
+                  t('chat.left')
+                ) : chat.typing ? (
+                  <span className="text-primary-text">{t('chat.typing')}</span>
+                ) : (
+                  <LookName userId={partner.id} handle={partner.handle} className="font-semibold" fallback={<span className="truncate">{partner.city}</span>} />
+                )}
               </span>
             </span>
           </button>
@@ -284,6 +296,8 @@ export function ChatView({
               </Button>
             )}
           </div>
+        ) : gated ? (
+          <FriendsBar name={partner.name} f={friendship} />
         ) : (
           <Composer
             onSend={chat.send}
@@ -338,6 +352,34 @@ export function ChatView({
           </Suspense>
         ) : null}
       </AnimatePresence>
+    </div>
+  )
+}
+
+/**
+ * An ended random chat with someone who isn't a friend (040): the history stays, a new line needs friendship. The bar
+ * says so and holds the friend button; once they are friends the composer comes back.
+ */
+function FriendsBar({ name, f }: { name: string; f: ReturnType<typeof useFriendship> }) {
+  const { t } = useI18n()
+  const { lt } = useLooksT()
+  const text = f.state === 'requested' ? lt('ended.waiting', { name }) : f.state === 'incoming' ? lt('ended.incoming', { name }) : lt('ended.add', { name })
+  return (
+    <div className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-nowrap sm:px-5" role="status">
+      <p className="min-w-0 flex-1 basis-56 text-sm leading-snug text-muted-foreground">{text}</p>
+      {f.state === 'requested' ? (
+        <Button variant="secondary" loading={f.busy} onClick={() => void f.withdraw()} aria-label={lt('friend.withdraw', { name })} className="shrink-0">
+          <Clock className="size-4.5" aria-hidden /> {lt('friend.requested')}
+        </Button>
+      ) : f.state === 'incoming' ? (
+        <Button variant="brand" loading={f.busy} onClick={() => void f.accept()} className="shrink-0">
+          <Check className="size-4.5" aria-hidden /> {t('recent.accept')}
+        </Button>
+      ) : (
+        <Button variant="brand" loading={f.busy} onClick={() => void f.add()} className="shrink-0">
+          <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
+        </Button>
+      )}
     </div>
   )
 }

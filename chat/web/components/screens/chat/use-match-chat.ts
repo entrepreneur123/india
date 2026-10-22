@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Message, VideoStatus } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { errorCode } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
 
@@ -25,6 +26,8 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setVideoState(v)
   }, [])
   const [partnerLeft, setPartnerLeft] = useState(false)
+  /** Threads: the chat is over (040: only friends write on). */
+  const [ended, setEnded] = useState(false)
   const [partnerRead, setPartnerRead] = useState(0)
   const lastTypingSent = useRef(0)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -42,6 +45,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     setTyping(false)
     setVideo('none')
     setPartnerLeft(false)
+    setEnded(false)
     setPartnerRead(0)
 
     backend
@@ -82,6 +86,9 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           break
         case 'read':
           setPartnerRead((r) => Math.max(r, e.upto))
+          break
+        case 'ended':
+          if (!live) setEnded(true)
           break
         case 'partner_left':
           if (!live) break
@@ -124,12 +131,14 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
         append(msg)
         return true
       } catch (err) {
+        // The server refused a line in a chat that ended between non-friends: the friends bar takes the composer's place.
+        if (!live && errorCode(err) === 'chat_closed') setEnded(true)
         toast.error(err)
         return false
       }
     },
-    [backend, matchId, append, toast],
+    [backend, matchId, append, toast, live],
   )
 
-  return { messages, typing, video, setVideo, partnerLeft, partnerRead, send, notifyTyping }
+  return { messages, typing, video, setVideo, partnerLeft, ended, partnerRead, send, notifyTyping }
 }

@@ -23,7 +23,6 @@ const sw: SocialDict = {
   'inbox.more': 'Onyesha za zamani',
   'unread.count': '{n} hazijasomwa',
   'nav.newCount': '{n} mpya',
-  'nav.feed': 'Mlisho',
   'inbox.like.single': '{name} amependa chapisho lako',
   'inbox.like.one': '{name} na mwingine 1 wamependa chapisho lako',
   'inbox.like.other': '{name} na wengine {n} wamependa chapisho lako',

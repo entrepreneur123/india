@@ -22,7 +22,6 @@ const bn: SocialDict = {
   'inbox.more': 'পুরোনোগুলো দেখুন',
   'unread.count': '{n}টি না-পড়া',
   'nav.newCount': '{n}টি নতুন',
-  'nav.feed': 'ফিড',
   'inbox.like.single': '{name} আপনার পোস্ট পছন্দ করেছেন',
   'inbox.like.one': '{name} ও আরও ১ জন আপনার পোস্ট পছন্দ করেছেন',
   'inbox.like.other': '{name} ও আরও {n} জন আপনার পোস্ট পছন্দ করেছেন',

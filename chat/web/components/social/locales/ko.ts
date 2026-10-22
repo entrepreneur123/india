@@ -23,7 +23,6 @@ const ko: SocialDict = {
   'inbox.more': '이전 알림 보기',
   'unread.count': '읽지 않음 {n}개',
   'nav.newCount': '새 알림 {n}개',
-  'nav.feed': '피드',
   'inbox.like.single': '{name}님이 내 게시물을 좋아해요',
   'inbox.like.one': '{name}님 외 1명이 내 게시물을 좋아해요',
   'inbox.like.other': '{name}님 외 {n}명이 내 게시물을 좋아해요',

@@ -16,24 +16,24 @@ test('accentVars falls back to the brand', () => {
 })
 
 test('parseStyle drops what the app does not know', () => {
-  const s = parseStyle({ accent: 'neon', status: '  ', languages: ['hi', 'xx', 'hi', 'en'], prompts: [{ q: 'food', a: ' Vada pav ' }, { q: 'zodiac', a: 'Leo' }, { q: 'song', a: '' }, 'x'] }, null)
+  const s = parseStyle({ accent: 'neon', status: '  ', languages: ['hi', 'xx', 'hi', 'en'], prompts: [{ q: 'food', a: ' Vada pav ' }, { q: 'zodiac', a: 'Leo' }, { q: 'song', a: '' }, 'x'] })
   assert.equal(s.accent, null)
   assert.equal(s.status, null)
   assert.deepEqual(s.languages, ['hi', 'en'])
   assert.deepEqual(s.prompts, [{ q: 'food', a: 'Vada pav' }])
-  assert.deepEqual(parseStyle(null, null), { cover: null, accent: null, status: null, languages: [], prompts: [] })
+  assert.deepEqual(parseStyle(null), { accent: null, status: null, languages: [], prompts: [] })
 })
 
 test('styleInput cleans the draft and says what is wrong', () => {
-  const ok = styleInput({ coverId: '', accent: 'gold', status: '  hi there ', languages: ['en', 'en', 'bn'], prompts: [{ q: 'food', a: ' momos ' }, { q: 'food', a: 'again' }, { q: 'song', a: '   ' }] })
-  assert.deepEqual(ok.input, { coverId: null, accent: 'gold', status: 'hi there', languages: ['en', 'bn'], prompts: [{ q: 'food', a: 'momos' }] })
+  const ok = styleInput({ status: '  hi there ', languages: ['en', 'en', 'bn'], prompts: [{ q: 'food', a: ' momos ' }, { q: 'food', a: 'again' }, { q: 'song', a: '   ' }] })
+  assert.deepEqual(ok.input, { status: 'hi there', languages: ['en', 'bn'], prompts: [{ q: 'food', a: 'momos' }] })
   assert.equal(ok.problem, null)
-  assert.equal(styleInput({ coverId: null, accent: null, status: 'x'.repeat(61), languages: [], prompts: [] }).problem, 'status')
+  assert.equal(styleInput({ status: 'x'.repeat(61), languages: [], prompts: [] }).problem, 'status')
   // 60 characters of a script with combining marks still fits (counted as code points like the server's char_length).
-  assert.equal(styleInput({ coverId: null, accent: null, status: 'अ'.repeat(60), languages: [], prompts: [] }).problem, null)
-  assert.equal(styleInput({ coverId: null, accent: null, status: null, languages: ['en', 'hi', 'bn', 'ta', 'te', 'mr', 'gu'], prompts: [] }).problem, 'languages')
-  assert.equal(styleInput({ coverId: null, accent: null, status: null, languages: [], prompts: [{ q: 'goal', a: 'y'.repeat(121) }] }).problem, 'answer')
-  assert.equal(styleInput({ coverId: null, accent: null, status: null, languages: [], prompts: [{ q: 'goal', a: 'a' }, { q: 'food', a: 'b' }, { q: 'song', a: 'c' }, { q: 'talk', a: 'd' }] }).problem, 'prompts')
+  assert.equal(styleInput({ status: 'अ'.repeat(60), languages: [], prompts: [] }).problem, null)
+  assert.equal(styleInput({ status: null, languages: ['en', 'hi', 'bn', 'ta', 'te', 'mr', 'gu'], prompts: [] }).problem, 'languages')
+  assert.equal(styleInput({ status: null, languages: [], prompts: [{ q: 'goal', a: 'y'.repeat(121) }] }).problem, 'answer')
+  assert.equal(styleInput({ status: null, languages: [], prompts: [{ q: 'goal', a: 'a' }, { q: 'food', a: 'b' }, { q: 'song', a: 'c' }, { q: 'talk', a: 'd' }] }).problem, 'prompts')
 })
 
 test('nextPrompt and toggleLanguage', () => {

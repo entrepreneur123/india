@@ -1,0 +1,84 @@
+// IDs and looks (040), and what came with them: the room's People sheet and layout, the friends bar of an ended chat.
+// English: the source. Other languages use these keys (TypeScript refuses unknown ones); a key they leave out reads in English.
+const en = {
+  // the shop
+  'looks.title': 'Looks',
+  'looks.everyone': 'Everyone sees your look',
+  'looks.preview': 'Preview of your look',
+  'looks.tabs': 'Kinds of looks',
+  'looks.tab.badge': 'Badges',
+  'looks.tab.color': 'Colours',
+  'looks.tab.font': 'Fonts',
+  'looks.tab.frame': 'Frames',
+  'looks.none': 'None',
+  'looks.wear': 'Wear',
+  'looks.wearing': 'Wearing',
+  'looks.owned': 'Yours',
+  'looks.takeOff': 'Take it off',
+  'looks.buy': 'Buy for {price}',
+  'looks.bought': '{item} is yours',
+  'looks.saved': 'Your look is saved',
+  'looks.getInApp': 'Get it in the Yaari app',
+  'looks.appNote': 'Looks are bought in the Yaari app for Android. The ones you own can be worn here too.',
+  'looks.loadFailed': 'Couldn’t load the looks',
+  'item.badge_crown': 'Crown',
+  'item.badge_diamond': 'Diamond',
+  'item.badge_flame': 'Flame',
+  'item.badge_star': 'Star',
+  'item.badge_heart': 'Heart',
+  'item.badge_bolt': 'Bolt',
+  'item.color_gold': 'Gold',
+  'item.color_rose': 'Rose',
+  'item.color_ocean': 'Ocean',
+  'item.color_emerald': 'Emerald',
+  'item.color_violet': 'Violet',
+  'item.color_sunset': 'Sunset',
+  'item.color_aurora': 'Aurora',
+  'item.color_rainbow': 'Rainbow',
+  'item.font_script': 'Script',
+  'item.font_retro': 'Retro',
+  'item.font_bold': 'Bold',
+  'item.font_pixel': 'Pixel',
+  'item.font_round': 'Round',
+  'item.font_future': 'Future',
+  'item.frame_frost': 'Frozen',
+  'item.frame_fire': 'Blaze',
+  'item.frame_jewel': 'Jewels',
+  'item.frame_sand': 'Sandstorm',
+  'item.frame_neon': 'Neon',
+  'item.frame_sakura': 'Sakura',
+
+  // IDs
+  'id.label': 'ID',
+  'id.hint': 'Your own @ID, shown with your name everywhere. Letters, numbers and symbols like _ . - work.',
+  'id.checking': 'Checking…',
+  'id.ok': '@{handle} is free',
+  'id.mine': 'This is your ID',
+  'id.invalid': 'Use 2 to 24 letters, numbers or symbols like _ . - (no spaces or emoji)',
+  'id.reserved': 'This ID is reserved',
+  'id.taken': '@{handle} is already taken',
+  'id.cooldown': 'You can change your ID again on {date}',
+  'id.keptFree': 'That ID was taken just now, so yours is @{handle} for now. You can change it in Edit profile.',
+
+  // profile details (the style editor without the old cover and colour)
+  'details.title': 'Profile details',
+  'details.desc': 'Your status, the languages you speak and a few prompts.',
+
+  // friends
+  'friend.requested': 'Requested',
+  'friend.withdraw': 'Withdraw your request to {name}',
+
+  // a room: who's here, the layout
+  'people.title': 'People in this room',
+  'people.open': 'See everyone in this room',
+  'layout.resize': 'Resize the room and the chat',
+  'layout.resizeHint': 'Drag to resize. Double-tap to switch to the chat only.',
+  'layout.showRoom': 'Show the room',
+
+  // an ended random chat
+  'ended.add': 'Chat ended. Add {name} as a friend to keep talking.',
+  'ended.waiting': 'Chat ended. Waiting for {name} to accept your friend request.',
+  'ended.incoming': 'Chat ended. {name} wants to be friends: accept to keep talking.',
+}
+
+export default en

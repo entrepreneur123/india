@@ -23,7 +23,6 @@ const zhHans: SocialDict = {
   'inbox.more': '查看更早的通知',
   'unread.count': '{n} 条未读',
   'nav.newCount': '{n} 条新通知',
-  'nav.feed': '动态',
   'inbox.like.single': '{name} 赞了你的动态',
   'inbox.like.one': '{name} 和另外 1 人赞了你的动态',
   'inbox.like.other': '{name} 和另外 {n} 人赞了你的动态',

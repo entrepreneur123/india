@@ -22,7 +22,6 @@ const vi: SocialDict = {
   'inbox.more': 'Xem cũ hơn',
   'unread.count': '{n} chưa đọc',
   'nav.newCount': '{n} mới',
-  'nav.feed': 'Bảng tin',
   'inbox.like.single': '{name} đã thích bài viết của bạn',
   'inbox.like.one': '{name} và 1 người khác đã thích bài viết của bạn',
   'inbox.like.other': '{name} và {n} người khác đã thích bài viết của bạn',

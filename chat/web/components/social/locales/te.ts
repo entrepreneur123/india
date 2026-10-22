@@ -22,7 +22,6 @@ const te: SocialDict = {
   'inbox.more': 'పాతవి చూపించు',
   'unread.count': '{n} చదవనివి',
   'nav.newCount': '{n} కొత్తవి',
-  'nav.feed': 'ఫీడ్',
   'inbox.like.single': '{name} మీ పోస్ట్‌ను లైక్ చేశారు',
   'inbox.like.one': '{name}, మరొకరు మీ పోస్ట్‌ను లైక్ చేశారు',
   'inbox.like.other': '{name}, మరో {n} మంది మీ పోస్ట్‌ను లైక్ చేశారు',

@@ -641,6 +641,13 @@ const tr: Dict = {
   'error.sms_unavailable': 'Şu anda bu numaraya kod gönderemedik. Lütfen daha sonra tekrar dene',
   'error.verify_required': 'Bunu yapmak için kimliğini doğrula',
   'error.manner_low': 'Görgü puanın yüzünden rastgele sohbet duraklatıldı',
+  'error.handle_invalid': 'Kimlikler boşluk ve emoji olmadan 2 ile 24 arası harf, rakam ya da _ . - gibi işaretten oluşur',
+  'error.handle_reserved': 'Bu kimlik ayrılmış. Lütfen başka bir tane seç',
+  'error.handle_taken': 'Bu kimlik zaten alınmış. Lütfen başka bir tane seç',
+  'error.handle_cooldown': 'Kimliğini 7 günde bir değiştirebilirsin',
+  'error.name_invalid': 'Adını normal harflerle yaz: süslü yazı tipi harfleri kullanılamaz (emoji olur)',
+  'error.not_owned': 'Bu görünüme henüz sahip değilsin',
+  'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',
 }
 

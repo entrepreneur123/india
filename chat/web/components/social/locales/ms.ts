@@ -23,7 +23,6 @@ const ms: SocialDict = {
   'inbox.more': 'Tunjukkan yang lebih lama',
   'unread.count': '{n} belum dibaca',
   'nav.newCount': '{n} baharu',
-  'nav.feed': 'Suapan',
   'inbox.like.single': '{name} menyukai hantaran anda',
   'inbox.like.one': '{name} dan 1 orang lagi menyukai hantaran anda',
   'inbox.like.other': '{name} dan {n} orang lagi menyukai hantaran anda',

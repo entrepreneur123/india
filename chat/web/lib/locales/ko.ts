@@ -641,6 +641,13 @@ const ko: Dict = {
   'error.sms_unavailable': '지금은 이 번호로 코드를 보낼 수 없어요. 나중에 다시 시도해 주세요',
   'error.verify_required': '이 기능을 쓰려면 본인 인증이 필요해요',
   'error.manner_low': '매너 점수 때문에 랜덤 채팅이 일시 중지됐어요',
+  'error.handle_invalid': '아이디는 공백·이모지 없이 글자, 숫자 또는 _ . - 같은 기호로 2~24자여야 해요',
+  'error.handle_reserved': '예약된 아이디예요. 다른 아이디를 골라 주세요',
+  'error.handle_taken': '이미 사용 중인 아이디예요. 다른 아이디를 골라 주세요',
+  'error.handle_cooldown': '아이디는 7일에 한 번 바꿀 수 있어요',
+  'error.name_invalid': '이름은 일반 글자로 써 주세요. 꾸밈 폰트 글자는 쓸 수 없어요(이모지는 괜찮아요)',
+  'error.not_owned': '아직 이 룩을 보유하지 않았어요',
+  'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어가려면 친구로 추가하세요',
   'error.generic': '문제가 발생했어요. 다시 시도해 주세요',
 }
 

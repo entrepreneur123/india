@@ -641,6 +641,13 @@ const sw: Dict = {
   'error.sms_unavailable': 'Hatukuweza kutuma msimbo kwa namba hii kwa sasa. Tafadhali jaribu tena baadaye',
   'error.verify_required': 'Thibitisha utambulisho wako ili ufanye hivi',
   'error.manner_low': 'Chat ya bahati nasibu imesimamishwa kwa sababu ya alama yako ya tabia',
+  'error.handle_invalid': 'Kitambulisho ni herufi, namba au alama kama _ . - kati ya 2 na 24, bila nafasi wala emoji',
+  'error.handle_reserved': 'Kitambulisho hiki kimehifadhiwa. Tafadhali chagua kingine',
+  'error.handle_taken': 'Kitambulisho hiki kimeshachukuliwa. Tafadhali chagua kingine',
+  'error.handle_cooldown': 'Unaweza kubadilisha kitambulisho chako mara moja kila siku 7',
+  'error.name_invalid': 'Andika jina lako kwa herufi za kawaida: herufi za fonti za mapambo haziruhusiwi (emoji zinaruhusiwa)',
+  'error.not_owned': 'Bado huna mtindo huu',
+  'error.chat_closed': 'Gumzo hili limeisha. Mwongeze kama rafiki ili mendelee kuzungumza',
   'error.generic': 'Hitilafu imetokea. Tafadhali jaribu tena',
 }
 

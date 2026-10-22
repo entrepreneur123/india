@@ -23,7 +23,6 @@ const th: SocialDict = {
   'inbox.more': 'แสดงรายการเก่า',
   'unread.count': 'ยังไม่อ่าน {n}',
   'nav.newCount': 'ใหม่ {n}',
-  'nav.feed': 'ฟีด',
   'inbox.like.single': '{name} ถูกใจโพสต์ของคุณ',
   'inbox.like.one': '{name} และอีก 1 คนถูกใจโพสต์ของคุณ',
   'inbox.like.other': '{name} และอีก {n} คนถูกใจโพสต์ของคุณ',

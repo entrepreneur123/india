@@ -4,7 +4,6 @@ import {
   BackendError,
   type InboxItem,
   type FeedPost,
-  type FeedTab,
   type Post,
   type PostAuthor,
   type PostComment,
@@ -13,7 +12,7 @@ import {
   type ProfileStyle,
   type ProfileStyleInput,
 } from './backend'
-import { FEED_PAGE, COMMENTS_PAGE } from './feed'
+import { COMMENTS_PAGE } from './feed'
 import { EMPTY_STYLE, styleInput } from './profile-style'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
@@ -25,32 +24,32 @@ function hash(seed: string) {
   return Math.abs(n)
 }
 
-/** The demo people's covers are their accent's gradient; the rest is written here. */
-const STYLES: Record<string, Omit<ProfileStyle, 'cover'>> = {
+/** The demo people's status, languages and prompts (040: no colours any more; frames decorate, lib/mockLooks.ts). */
+const STYLES: Record<string, Omit<ProfileStyle, 'accent'>> = {
   u_ananya: {
-    accent: 'sunset', status: 'Chai, K-dramas and long walks by the sea', languages: ['hi', 'mr', 'en'],
+    status: 'Chai, K-dramas and long walks by the sea', languages: ['hi', 'mr', 'en'],
     prompts: [{ q: 'weekend', a: 'Marine Drive at sunset, then vada pav with my cousins' }, { q: 'song', a: 'Kesariya, still, after all this time' }],
   },
   u_kabir: {
-    accent: 'ocean', status: 'Designing things people actually use', languages: ['hi', 'pa', 'en'],
+    status: 'Designing things people actually use', languages: ['hi', 'pa', 'en'],
     prompts: [{ q: 'talk', a: 'you have opinions about fonts' }, { q: 'goal', a: 'Finally learn to bowl a proper leg spin' }],
   },
   u_sofia: {
-    accent: 'mint', status: 'Somewhere between the sea and the kitchen', languages: ['pt', 'en'],
+    status: 'Somewhere between the sea and the kitchen', languages: ['pt', 'en'],
     prompts: [{ q: 'food', a: 'My grandmother’s bacalhau. Nothing comes close.' }, { q: 'travel', a: 'Kerala backwaters, this winter' }, { q: 'laugh', a: 'Me, trying to surf' }],
   },
   u_yuki: {
-    accent: 'violet', status: 'Shooting film, one roll at a time', languages: ['en'],
+    status: 'Shooting film, one roll at a time', languages: ['en'],
     prompts: [{ q: 'secret', a: 'I have never once finished a bowl of ramen' }],
   },
   u_arjun: {
-    accent: 'slate', status: 'Debugging by day, open mics by night', languages: ['kn', 'ta', 'en', 'hi'],
+    status: 'Debugging by day, open mics by night', languages: ['kn', 'ta', 'en', 'hi'],
     prompts: [{ q: 'song', a: 'Anything by Prateek Kuhad on loop' }, { q: 'weekend', a: 'Sunrise ride to Nandi Hills' }],
   },
-  u_amara: { accent: 'gold', status: 'Building something big in Lagos', languages: ['en'], prompts: [{ q: 'goal', a: 'Ship our app to a million people' }] },
-  u_riya: { accent: 'berry', status: 'Drawing cats, mostly', languages: ['mr', 'hi', 'en'], prompts: [{ q: 'laugh', a: 'My cat judging my sketches' }] },
-  u_lucas: { accent: 'rose', status: 'Skate, code, açaí, repeat', languages: ['pt', 'en'], prompts: [] },
-  u_leila: { accent: null, status: 'Reading on the ferry', languages: ['en'], prompts: [{ q: 'food', a: 'Simit and tea on the Bosphorus' }] },
+  u_amara: { status: 'Building something big in Lagos', languages: ['en'], prompts: [{ q: 'goal', a: 'Ship our app to a million people' }] },
+  u_riya: { status: 'Drawing cats, mostly', languages: ['mr', 'hi', 'en'], prompts: [{ q: 'laugh', a: 'My cat judging my sketches' }] },
+  u_lucas: { status: 'Skate, code, açaí, repeat', languages: ['pt', 'en'], prompts: [] },
+  u_leila: { status: 'Reading on the ferry', languages: ['en'], prompts: [{ q: 'food', a: 'Simit and tea on the Bosphorus' }] },
 }
 
 /** Which demo posts anyone can see (Discover); the rest are friends-only. */
@@ -80,8 +79,6 @@ export interface FeedHost {
   me: () => Profile | null
   person: (id: string) => Profile | null
   people: Profile[]
-  /** Friends' ids. */
-  friends: () => string[]
   /** Friends and people I chatted with (who see my friends-only posts, and whose I see). */
   close: (id: string) => boolean
   /** The demo's inbox lines (likes and comments on my posts are added here) and its change signal. */
@@ -96,7 +93,7 @@ export class FeedSim {
   private timers: ReturnType<typeof setTimeout>[] = []
 
   constructor(private host: FeedHost) {
-    for (const [id, s] of Object.entries(STYLES)) this.styles.set(id, { ...s, cover: null })
+    for (const [id, s] of Object.entries(STYLES)) this.styles.set(id, { ...s, accent: null })
     const ids = host.people.map((p) => p.id)
     for (const person of host.people) {
       for (const p of person.posts) {
@@ -175,7 +172,7 @@ export class FeedSim {
     }
   }
 
-  private page(list: SimPost[], before?: string, limit = FEED_PAGE) {
+  private page(list: SimPost[], before: string | undefined, limit: number) {
     const until = before ? Date.parse(before) : Infinity
     return list.filter((s) => s.post.createdAt < until).slice(0, limit).flatMap((s) => this.view(s) ?? [])
   }
@@ -191,24 +188,11 @@ export class FeedSim {
     return this.styles.get(userId) ?? EMPTY_STYLE
   }
 
-  async setStyle(input: ProfileStyleInput, cover: File | null | undefined): Promise<ProfileStyle> {
+  async setStyle(input: ProfileStyleInput): Promise<ProfileStyle> {
     await wait(500)
     const { input: clean, problem } = styleInput(input)
     if (problem) throw new BackendError('bad_request')
-    const old = this.host.me()?.style?.cover ?? null
-    const coverPhoto = cover
-      ? { id: `u_me/cover/${this.seq++}.jpg`, url: URL.createObjectURL(cover) }
-      : clean.coverId && old?.id === clean.coverId ? old : null
-    return { cover: coverPhoto, accent: clean.accent, status: clean.status, languages: clean.languages, prompts: clean.prompts }
-  }
-
-  async feed(tab: FeedTab, before?: string) {
-    await wait(450)
-    const friends = new Set(this.host.friends())
-    const list = tab === 'friends'
-      ? this.posts.filter((s) => s.authorId === this.meId || friends.has(s.authorId))
-      : this.posts.filter((s) => s.visibility === 'public')
-    return this.page(list, before)
+    return { accent: null, status: clean.status, languages: clean.languages, prompts: clean.prompts }
   }
 
   /** A person's posts I may see (sync: the demo's profiles carry them). */

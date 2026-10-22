@@ -641,6 +641,13 @@ const ms: Dict = {
   'error.sms_unavailable': 'Kami tidak dapat menghantar kod ke nombor ini sekarang. Sila cuba lagi kemudian',
   'error.verify_required': 'Sahkan identiti anda untuk melakukan ini',
   'error.manner_low': 'Sembang rawak dijeda kerana skor adab anda',
+  'error.handle_invalid': 'ID terdiri daripada 2 hingga 24 huruf, nombor atau simbol seperti _ . -, tanpa ruang atau emoji',
+  'error.handle_reserved': 'ID itu dikhaskan. Sila pilih yang lain',
+  'error.handle_taken': 'ID itu sudah digunakan. Sila pilih yang lain',
+  'error.handle_cooldown': 'Anda boleh menukar ID sekali setiap 7 hari',
+  'error.name_invalid': 'Tulis nama anda dengan huruf biasa: huruf daripada fon hiasan tidak dibenarkan (emoji boleh)',
+  'error.not_owned': 'Anda belum memiliki gaya ini',
+  'error.chat_closed': 'Sembang ini sudah tamat. Tambah dia sebagai rakan untuk terus berbual',
   'error.generic': 'Ada sesuatu yang tidak kena. Sila cuba lagi',
 }
 

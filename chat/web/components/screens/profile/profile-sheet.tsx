@@ -20,7 +20,7 @@ import { useTrust } from '@/components/trust/badge'
 import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
 
 /**
- * Someone's profile: cover and colour, status, languages, prompts, photos and posts. The server shows people I have
+ * Someone's profile: the card in their frame with their @ID, status, languages, prompts, photos and posts. The server shows people I have
  * met, and anyone who posts publicly (033), never someone blocked.
  */
 export function ProfileSheet({
@@ -106,11 +106,11 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               className="w-full"
               verified={!!trust?.verified}
               facts={trust ? <IdentityFacts profile={shown} verified={trust.verified} /> : null}
-              coverSlot={
+              slot={
                 <button
                   type="button"
                   onClick={onClose}
-                  className="absolute top-3 inset-e-3 grid size-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition-colors hover:bg-black/45"
+                  className="absolute top-3 inset-e-3 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   aria-label={t('common.close')}
                 >
                   <X className="size-5" aria-hidden />

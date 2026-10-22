@@ -1,13 +1,18 @@
 'use client'
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
-import useSWR from 'swr'
-import { Palette, Plus, Settings } from 'lucide-react'
+import useSWR, { useSWRConfig } from 'swr'
+import { ChevronRight, Plus, Settings, Sparkles, UserPen } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
+import { errorCode } from '@/lib/format'
+import { handleSpelling, namePlain } from '@/lib/handle'
 import { EMPTY_STYLE } from '@/lib/profile-style'
 import { retryImport } from '@/lib/retry-import'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
+import { HandleField, handleUsable, useHandleCheck } from '@/components/looks/handle-field'
+import { lookKey } from '@/components/looks/look-name'
+import { useLooksT } from '@/components/looks/looks-text'
 import { Field, TextArea, TextInput } from '@/components/ui/bits'
 import { IcebreakerIcon } from '@/components/ui/topic-icons'
 import { useFeedT } from '@/components/social/feed-text'
@@ -27,11 +32,13 @@ const MAX_NAME = 30
 const MAX_CITY = 30
 const MAX_BIO = 150
 
-// The composer and the style editor download when first opened.
+// The composer, the profile details and the Looks shop download when first opened.
 const loadComposer = () => retryImport(() => import('@/components/social/posts/post-composer'))
 const PostComposer = lazy(() => loadComposer().then((m) => ({ default: m.PostComposer })))
 const loadStyle = () => retryImport(() => import('@/components/social/style-editor'))
 const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor })))
+const loadLooks = () => retryImport(() => import('@/components/looks/looks-sheet'))
+const LooksSheet = lazy(() => loadLooks().then((m) => ({ default: m.LooksSheet })))
 
 export function MeScreen() {
   const backend = useBackend()
@@ -41,10 +48,12 @@ export function MeScreen() {
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
-  const [used, setUsed] = useState({ post: false, style: false })
+  const [looksOpen, setLooksOpen] = useState(false)
+  const [used, setUsed] = useState({ post: false, style: false, looks: false })
   const [interestsOpen, setInterestsOpen] = useState(false)
   const { st } = useSocialT()
   const { ft } = useFeedT()
+  const { lt } = useLooksT()
   const friendCount = friends?.filter((f) => f.state === 'friends').length
   const style = me.style ?? EMPTY_STYLE
   const likes = me.posts.reduce((n, p) => n + (p.likes ?? 0), 0)
@@ -55,6 +64,10 @@ export function MeScreen() {
   const openStyle = () => {
     setUsed((u) => ({ ...u, style: true }))
     setStyleOpen(true)
+  }
+  const openLooks = () => {
+    setUsed((u) => ({ ...u, looks: true }))
+    setLooksOpen(true)
   }
 
   return (
@@ -69,23 +82,12 @@ export function MeScreen() {
               <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary-text">{t('me.plusBadge')}</span>
             ) : null
           }
-          coverSlot={
-            <div className="absolute top-3 inset-e-3 flex items-center gap-2">
-              <Button
-                size="sm"
-                className="bg-white/90 text-[#1f1f1f] shadow-e1 backdrop-blur hover:bg-white"
-                onClick={openStyle}
-                onPointerEnter={() => void loadStyle()}
-              >
-                <Palette className="size-4" aria-hidden /> {ft('style.button')}
+          slot={
+            <div className="absolute top-3 inset-e-3 z-10 flex items-center gap-2">
+              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={openLooks} onPointerEnter={() => void loadLooks()}>
+                <Sparkles className="size-4 text-primary-text" aria-hidden /> {lt('looks.title')}
               </Button>
-              <Button
-                size="icon-sm"
-                variant="glass"
-                className="bg-black/25 text-white ring-white/25 backdrop-blur md:hidden"
-                onClick={() => setTab('settings')}
-                aria-label={t('nav.settings')}
-              >
+              <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
                 <Settings className="size-5" aria-hidden />
               </Button>
             </div>
@@ -177,7 +179,18 @@ export function MeScreen() {
           />
         </section>
       </div>
-      <EditProfile open={editOpen} onClose={() => setEditOpen(false)} />
+      <EditProfile
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        onLooks={() => {
+          setEditOpen(false)
+          openLooks()
+        }}
+        onDetails={() => {
+          setEditOpen(false)
+          openStyle()
+        }}
+      />
       {used.post ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
@@ -186,6 +199,11 @@ export function MeScreen() {
       {used.style ? (
         <Suspense fallback={null}>
           <StyleEditor open={styleOpen} onClose={() => setStyleOpen(false)} />
+        </Suspense>
+      ) : null}
+      {used.looks ? (
+        <Suspense fallback={null}>
+          <LooksSheet open={looksOpen} onClose={() => setLooksOpen(false)} />
         </Suspense>
       ) : null}
       <InterestsSheet open={interestsOpen} onClose={() => setInterestsOpen(false)} />
@@ -203,35 +221,57 @@ function Stat({ label, value }: { label: string; value: number | undefined }) {
   )
 }
 
-function EditProfile({ open, onClose }: { open: boolean; onClose: () => void }) {
+function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void }) {
   const backend = useBackend()
   const toast = useToast()
+  const { mutate } = useSWRConfig()
   const { me, setMe } = useApp()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const { lt } = useLooksT()
   const id = useId()
   const [name, setName] = useState(me.name)
+  const [handle, setHandle] = useState(me.handle ?? '')
   const [city, setCity] = useState(me.city)
   const [bio, setBio] = useState(me.bio)
   const [photo, setPhoto] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
+  const handleState = useHandleCheck(handle, me.handle)
+  // When the ID can change to another one again (the app's free one can change at once).
+  const { data: shop } = useSWR(open ? 'shop' : null, () => backend.shop())
+  const next = shop?.handleNext && shop.handleNext > Date.now() ? shop.handleNext : null
 
   useEffect(() => {
     if (!open) return
     setName(me.name)
+    setHandle(me.handle ?? '')
     setCity(me.city)
     setBio(me.bio)
     setPhoto(null)
   }, [open, me])
 
+  const plainName = namePlain(name)
+  const wanted = handleSpelling(handle)
+  const handleChanged = !!wanted && wanted !== me.handle
+  // Another ID inside the 7 days can't be saved (a new spelling of the same one can).
+  const waiting = !!next && handleChanged && wanted.toLowerCase() !== me.handle?.toLowerCase()
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) return
+    if (!name.trim() || !plainName || waiting || (handleChanged && handleState !== 'checking' && !handleUsable(handleState))) return
     setBusy(true)
     try {
-      setMe(await backend.updateProfile(name.trim(), city.trim(), bio.trim(), photo))
+      let p = await backend.updateProfile(name.trim(), city.trim(), bio.trim(), photo)
+      setMe(p)
+      if (handleChanged) {
+        p = { ...p, handle: await backend.setHandle(wanted) }
+        setMe(p)
+        void mutate(lookKey(me.id))
+        void mutate('shop')
+      }
       toast.show(t('me.updated'), 'success')
       onClose()
     } catch (err) {
+      // The server's word on the ID (taken meanwhile, too soon) shows under the field too.
+      if (errorCode(err).startsWith('handle_')) void mutate('shop')
       toast.error(err)
     } finally {
       setBusy(false)
@@ -242,20 +282,54 @@ function EditProfile({ open, onClose }: { open: boolean; onClose: () => void }) 
     <Modal open={open} onClose={onClose} title={t('me.edit')} description={t('me.editDesc')}>
       <form onSubmit={(e) => void save(e)} className="flex flex-col gap-4 p-6 pt-5">
         <PhotoPicker file={photo} onChange={setPhoto} name={name} currentUrl={me.photoUrl} />
-        <Field label={t('pf.name')} htmlFor={`${id}-name`} trailing={<Count n={name.length} max={MAX_NAME} />}>
+        <Field
+          label={t('pf.name')}
+          htmlFor={`${id}-name`}
+          trailing={<Count n={name.length} max={MAX_NAME} />}
+          error={plainName ? null : t('error.name_invalid')}
+        >
           <TextInput id={`${id}-name`} value={name} maxLength={MAX_NAME} required onChange={(e) => setName(e.target.value)} />
         </Field>
+        <HandleField
+          id={`${id}-handle`}
+          value={handle}
+          onChange={setHandle}
+          state={handleChanged ? handleState : null}
+          note={next ? lt('id.cooldown', { date: new Date(next).toLocaleDateString(locale, { day: 'numeric', month: 'long' }) }) : undefined}
+          blocked={waiting}
+        />
         <Field label={t('me.city')} htmlFor={`${id}-city`}>
           <TextInput id={`${id}-city`} value={city} maxLength={MAX_CITY} onChange={(e) => setCity(e.target.value)} />
         </Field>
         <Field label={t('pf.bio')} htmlFor={`${id}-bio`} trailing={<Count n={bio.length} max={MAX_BIO} />}>
           <TextArea id={`${id}-bio`} value={bio} maxLength={MAX_BIO} onChange={(e) => setBio(e.target.value)} />
         </Field>
-        <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim()}>
+        <div className="-mx-2 flex flex-col">
+          <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
+          <MoreRow icon={<UserPen />} label={lt('details.title')} onClick={onDetails} />
+        </div>
+        <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>
           {t('common.save')}
         </Button>
       </form>
     </Modal>
+  )
+}
+
+/** A way on from Edit profile (to the Looks shop, to the profile details). */
+function MoreRow({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-12 items-center gap-3 rounded-xl px-2 text-start text-[15px] font-semibold transition-colors duration-150 hover:bg-muted"
+    >
+      <span className="shrink-0 text-muted-foreground [&>svg]:size-5" aria-hidden>
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      <ChevronRight className="size-4.5 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
+    </button>
   )
 }
 

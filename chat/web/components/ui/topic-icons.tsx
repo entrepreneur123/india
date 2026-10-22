@@ -308,17 +308,6 @@ export function BigHeart({ size = 96, className }: { size?: number; className?: 
   )
 }
 
-/** The Feed tab: a post card with a heart on it, drawn like the navigation's line icons (stroke, current colour). */
-export function FeedIcon({ className, strokeWidth = 2 }: { className?: string; strokeWidth?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden focusable="false" className={className}>
-      <path d="M7 3h10" />
-      <rect x="3.5" y="6" width="17" height="15" rx="4" />
-      <path d="M12 17.1c-2.2-1.5-3.4-2.7-3.4-4.1 0-1 .8-1.8 1.8-1.8.7 0 1.2.35 1.6.9.4-.55.9-.9 1.6-.9 1 0 1.8.8 1.8 1.8 0 1.4-1.2 2.6-3.4 4.1z" fill="currentColor" strokeWidth={Math.max(1, strokeWidth - 0.6)} />
-    </svg>
-  )
-}
-
 /** A post's audience, small: the globe (everyone) or two people (friends), in their topic colours. */
 export function AudienceIcon({ visibility, size = 14, className }: { visibility: 'public' | 'friends'; size?: number; className?: string }) {
   return <TopicIcon topic={visibility === 'public' ? 'globe' : 'friends'} size={size} className={className} />

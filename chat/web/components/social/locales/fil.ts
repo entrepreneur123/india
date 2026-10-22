@@ -23,7 +23,6 @@ const fil: SocialDict = {
   'inbox.more': 'Ipakita ang mas luma',
   'unread.count': '{n} hindi pa nababasa',
   'nav.newCount': '{n} bago',
-  'nav.feed': 'Feed',
   'inbox.like.single': 'Ni-like ni {name} ang post mo',
   'inbox.like.one': 'Ni-like ni {name} at ng 1 pa ang post mo',
   'inbox.like.other': 'Ni-like ni {name} at ng {n} iba pa ang post mo',

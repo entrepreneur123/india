@@ -25,7 +25,6 @@ const uk: SocialDict = {
   'inbox.more': 'Показати давніші',
   'unread.count': 'Непрочитаних: {n}',
   'nav.newCount': 'Нових: {n}',
-  'nav.feed': 'Стрічка',
   'inbox.like.single': '{name}: подобається ваш допис',
   'inbox.like.one': '{name} та ще 1: подобається ваш допис',
   'inbox.like.other': '{name} та ще {n}: подобається ваш допис',

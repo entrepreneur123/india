@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { isMod, memberOf, roleLabel, systemText } from './voice-text'
+import { LookName } from '@/components/looks/look-name'
 
 /** A steady colour per person, like names in a group chat. */
 function nameColor(id: string) {
@@ -263,14 +264,22 @@ function SentLine({
   const name =
     line.fromMe || grouped ? null : (
       <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind === 'photo' && 'px-1.5')}>
+        {/* The sender's decorated @ID (040); their name in its steady colour until the ID is known. */}
         <button
           type="button"
           onClick={() => onPerson(line.sender.id)}
-          dir="auto"
-          className="block min-w-0 truncate text-[12.5px] leading-5 font-semibold hover:underline"
-          style={{ color: nameColor(line.sender.id) }}
+          className="flex min-w-0 text-[12.5px] leading-5 font-semibold hover:underline"
         >
-          {line.sender.name}
+          <LookName
+            userId={line.sender.id}
+            handle={line.sender.handle}
+            fallback={
+              <span dir="auto" className="block min-w-0 truncate" style={{ color: nameColor(line.sender.id) }}>
+                {line.sender.name}
+              </span>
+            }
+          />
+          <span className="sr-only">, {line.sender.name}</span>
         </button>
         {role ? <RoleBadge role={sender!.role} label={role} /> : null}
       </span>

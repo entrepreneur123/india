@@ -29,7 +29,7 @@ export interface PostTarget {
   focus?: boolean
 }
 
-/** A post with its comments: from the feed's comment button, a profile's grid or a like / comment notification. */
+/** A post with its comments: from a profile's grid or a like / comment notification. */
 export function PostSheet({ target, onClose }: { target: PostTarget | null; onClose: () => void }) {
   return (
     <Modal open={target !== null} onClose={onClose} variant="sheet" hideHeader className="md:max-w-xl">
@@ -65,7 +65,7 @@ function PostBody({ target, onClose }: { target: PostTarget; onClose: () => void
       </div>
       {post ? (
         <>
-          <PostCard post={post} flat onComments={() => inputRef.current?.focus()} />
+          <PostCard post={post} onComments={() => inputRef.current?.focus()} />
           <div className="border-t border-border" />
           <Comments post={post} inputRef={inputRef} autoFocus={!!target.focus} />
         </>

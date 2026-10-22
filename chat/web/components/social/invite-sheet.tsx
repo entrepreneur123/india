@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Check, Link2 } from 'lucide-react'
+import { Check, ChevronRight, Link2 } from 'lucide-react'
 import type { VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { Avatar } from '@/components/ui/avatar'
@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { LookName } from '@/components/looks/look-name'
 import { useSocialT } from './social-text'
 
 /** The room's link: its code when it is private (the code lets people in), else its id. */
@@ -19,7 +20,7 @@ export const roomLink = (room: Pick<VoiceRoom, 'id' | 'code' | 'isPrivate'>) =>
 /** A private room's link needs its code, which only the host has. */
 export const canShareLink = (room: Pick<VoiceRoom, 'code' | 'isPrivate'>) => !room.isPrivate || !!room.code
 
-/** Invite friends into the room I'm in, and copy (or share) its link. */
+/** Invite friends into the room I'm in (the list comes first), or copy (or share) its link under it. */
 export function InviteSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
   const backend = useBackend()
   const toast = useToast()
@@ -64,15 +65,7 @@ export function InviteSheet({ room, open, onClose }: { room: VoiceRoom; open: bo
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={st('invite.title')} description={st('invite.desc')}>
-      <div className="flex flex-col gap-4 pt-2 pb-5">
-        {canShareLink(room) ? (
-          <div className="px-6">
-            <Button variant="outline" className="w-full" onClick={() => void copy()}>
-              <Link2 className="size-4.5" aria-hidden /> {st('invite.copyLink')}
-            </Button>
-            {room.isPrivate ? <p className="mt-2 text-xs text-muted-foreground">{st('invite.privateNote')}</p> : null}
-          </div>
-        ) : null}
+      <div className="flex flex-col pt-2 pb-4">
         <ul className="flex max-h-[50dvh] flex-col overflow-y-auto scrollbar-thin">
           {!list ? (
             Array.from({ length: 3 }, (_, i) => (
@@ -89,7 +82,10 @@ export function InviteSheet({ room, open, onClose }: { room: VoiceRoom; open: bo
               return (
                 <li key={f.profile.id} className="flex items-center gap-3 px-6 py-2">
                   <Avatar name={f.profile.name} src={f.profile.photoUrl} size={40} />
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{f.profile.name}</span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-[15px] font-semibold">{f.profile.name}</span>
+                    <LookName userId={f.profile.id} handle={f.profile.handle} className="text-xs font-semibold" />
+                  </span>
                   <Button
                     size="sm"
                     variant={done ? 'secondary' : 'brand'}
@@ -106,6 +102,20 @@ export function InviteSheet({ room, open, onClose }: { room: VoiceRoom; open: bo
             })
           )}
         </ul>
+        {canShareLink(room) ? (
+          <div className="mt-2 border-t border-border pt-2">
+            <button
+              type="button"
+              onClick={() => void copy()}
+              className="flex h-13 w-full items-center gap-4 px-6 text-start text-[15px] font-medium transition-colors duration-150 hover:bg-muted"
+            >
+              <Link2 className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="min-w-0 flex-1 truncate">{st('invite.copyLink')}</span>
+              <ChevronRight className="size-4.5 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
+            </button>
+            {room.isPrivate ? <p className="px-6 pb-1 text-xs text-muted-foreground">{st('invite.privateNote')}</p> : null}
+          </div>
+        ) : null}
       </div>
     </Modal>
   )

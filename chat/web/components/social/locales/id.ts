@@ -23,7 +23,6 @@ const id: SocialDict = {
   'inbox.more': 'Tampilkan yang lebih lama',
   'unread.count': '{n} belum dibaca',
   'nav.newCount': '{n} baru',
-  'nav.feed': 'Feed',
   'inbox.like.single': '{name} menyukai postinganmu',
   'inbox.like.one': '{name} dan 1 lainnya menyukai postinganmu',
   'inbox.like.other': '{name} dan {n} lainnya menyukai postinganmu',

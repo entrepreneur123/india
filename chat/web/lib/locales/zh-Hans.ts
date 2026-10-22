@@ -641,6 +641,13 @@ const zhHans: Dict = {
   'error.sms_unavailable': '暂时无法向此号码发送验证码，请稍后再试',
   'error.verify_required': '请先完成身份认证',
   'error.manner_low': '由于你的礼貌分过低，随机聊天已暂停',
+  'error.handle_invalid': 'ID 须为 2 到 24 个字母、数字或 _ . - 等符号，不能有空格或表情',
+  'error.handle_reserved': '此 ID 已被保留，请换一个',
+  'error.handle_taken': '此 ID 已被占用，请换一个',
+  'error.handle_cooldown': 'ID 每 7 天只能更改一次',
+  'error.name_invalid': '请用普通文字填写名字：不能使用花式字体的字母（可以用表情）',
+  'error.not_owned': '你还没有这个装扮',
+  'error.chat_closed': '此聊天已结束。添加对方为好友即可继续聊',
   'error.generic': '出了点问题，请重试',
 }
 

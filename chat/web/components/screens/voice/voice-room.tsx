@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { ChevronDown, ChevronRight, Copy, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, X } from 'lucide-react'
+import { ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
@@ -21,11 +21,13 @@ import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicHero, MusicPanel, QueueSheet } from './voice-music'
 import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
-import { AudienceSheet, OptionsSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
+import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
+import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
 import { ReactionLayer, SeatPerson, Stage } from './voice-stage'
 import { isMod, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
+import { useLooksT } from '@/components/looks/looks-text'
 
 // The poll form is its own chunk, fetched when a host or co-host first opens the composer's menu.
 const loadPollSheet = () => retryImport(() => import('./poll-sheet'))
@@ -43,19 +45,22 @@ const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
 
 /**
  * A room, full screen and always dark. Every room has the chat (text with replies, @mentions and links, icebreakers,
- * photos, polls), the stage and shared music; the category decides what comes first (the player in a music room).
+ * photos, polls), the stage and shared music; the category decides what comes first and how big it is: a talk room
+ * gives the chat most of the screen, a music room the player (room-split.tsx: people can change it).
  * The stage (seats, who's on it) and the listeners are two separate sections.
- *  - Phones: the music and the stage on top (it scrolls), the chat right under it on the same screen, the composer
- *    and the controls at the bottom. Links open in a tall sheet; a page shown to the room is a card to open.
- *  - Wide screens: the stage and music in the middle, the chat in a column on the right; a link, or the page shown to
- *    the room, opens in a column between them (under 1280 px it takes the middle's place while open).
+ *  - Phones: the music and the stage on top (it scrolls), a handle, the chat under it, the composer and the controls
+ *    at the bottom. Links open in a tall sheet; a page shown to the room is a card to open.
+ *  - Wide screens: the stage and music in the middle, the chat in a column at the end with a splitter between; a link,
+ *    or the page shown to the room, opens in a column between them (under 1280 px it takes the middle's place).
  */
 export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; onMinimise: () => void; onLeave: () => void }) {
   const { t, num, rtl } = useI18n()
   const { rt } = useRoomT()
   const toast = useToast()
   const { st: sst } = useSocialT()
+  const { lt } = useLooksT()
   const wide = useWideScreen()
+  const rootRef = useRef<HTMLDivElement>(null)
   const [sheet, setSheet] = useState<SheetState>(null)
   const [seatsOpen, setSeatsOpen] = useState(false)
   const [musicOpen, setMusicOpen] = useState(false)
@@ -67,6 +72,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const [, setClosedTick] = useState(0)
   const openLink = useCallback((url: string) => setViewer(url), [])
   const { room, me } = s
+  const split = useWideSplit(room?.category ?? 'talk', rootRef, wide && !!room)
 
   if (!room || !me)
     return (
@@ -100,7 +106,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const close = () => setSheet(null)
   const person = (userId: string) => setSheet({ kind: 'person', userId })
   const host = room.members.find((x) => x.profile.id === room.hostId)
-  const inviteLabel = sst('invite.title')
 
   // The page shown to the room, unless I closed it for myself; a link I opened myself goes over it.
   const stage = room.stage
@@ -199,7 +204,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       onPerson={person}
       onReply={setReplyTo}
       onIcebreaker={kind === 'talk' ? s.icebreaker : undefined}
-      className={cn('flex-1', !wide && 'border-t border-border pt-1')}
+      className={cn('flex-1', !wide && 'pt-1')}
     />
   )
   const composer = (
@@ -252,7 +257,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
   return (
     <LinkOpenProvider value={openLink}>
-      <div className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground" style={{ '--k': kindColor(kind) } as CSSProperties}>
+      <div ref={rootRef} className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground" style={{ '--k': kindColor(kind) } as CSSProperties}>
         {/* One soft glow in the room's category colour. */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(70%_70%_at_50%_0%,color-mix(in_srgb,var(--k)_24%,transparent),transparent)]" />
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
@@ -264,9 +269,16 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <h1 className="truncate text-base leading-tight font-bold">{room.title}</h1>
               <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <TopicChip topic={kindTopic(kind)} label={categoryLabel(kind, t)} className="h-6 text-[11px]" />
-                <span className="flex min-w-0 items-center gap-1 whitespace-nowrap tabular-nums">
+                <button
+                  type="button"
+                  onClick={() => setSheet({ kind: 'people' })}
+                  aria-haspopup="dialog"
+                  title={lt('people.open')}
+                  className="-my-1 flex h-7 min-w-0 items-center gap-1 rounded-full px-2 whitespace-nowrap tabular-nums transition-colors duration-150 hover:bg-muted hover:text-foreground"
+                >
                   <Users className="size-3.5 shrink-0" aria-hidden /> {t('rooms.here', { n: num(room.members.length), max: num(room.maxMembers) })}
-                </span>
+                  <span className="sr-only">. {lt('people.open')}</span>
+                </button>
               </p>
             </div>
             {stage && wide && !stageShown && !viewer ? (
@@ -274,19 +286,13 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
                 <ScreenShare className="size-5" aria-hidden />
               </Button>
             ) : null}
-            {room.code ? (
-              <button
-                type="button"
-                onClick={() => void copyCode()}
-                className="hidden h-9 items-center gap-1.5 rounded-full bg-muted px-3 font-mono text-[13px] font-bold tracking-widest transition-colors duration-150 hover:bg-input/60 sm:flex"
-                aria-label={t('room.copy', { code: room.code })}
-                dir="ltr"
-              >
-                {room.code} <Copy className="size-3.5" aria-hidden />
-              </button>
-            ) : null}
-            <Button size="icon" variant="ghost" onClick={() => setSheet({ kind: 'invite' })} aria-label={inviteLabel}>
-              <UserPlus className="size-5" aria-hidden />
+            <Button
+              variant="secondary"
+              onClick={() => setSheet({ kind: 'invite' })}
+              aria-label={sst('invite.title')}
+              className="size-10 shrink-0 px-0 sm:w-auto sm:px-4"
+            >
+              <UserPlus className="size-5 sm:size-4.5" aria-hidden /> <span className="max-sm:hidden">{sst('invite.button')}</span>
             </Button>
             <Button size="icon" variant="ghost" onClick={() => setSheet({ kind: 'options' })} aria-label={t('voice.more')}>
               <EllipsisVertical className="size-5" aria-hidden />
@@ -316,10 +322,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               ) : null}
             </div>
           ) : (
-            <>
-              <div className={cn('flex shrink-0 flex-col gap-2 overflow-y-auto pb-1 no-scrollbar', kind === 'music' ? 'max-h-[58%]' : 'max-h-[46%]')}>{top}</div>
-              {chat}
-            </>
+            <PhoneSplit key={kind} kind={kind} top={top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
           )}
 
           <ControlBar
@@ -337,8 +340,13 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           />
         </div>
 
+        {wide ? <WideSplitter split={split} box={rootRef} rtl={rtl} /> : null}
         {wide ? (
-          <aside className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-black/20 xl:w-[400px]" aria-label={t('voice.chat')}>
+          <aside
+            className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-black/20"
+            style={split.width ? { width: split.width } : undefined}
+            aria-label={t('voice.chat')}
+          >
             <h2 className="px-4 pt-4 pb-1 text-sm font-semibold">{t('voice.chat')}</h2>
             {chat}
             <div className="border-t border-border p-3 pt-2">{composer}</div>
@@ -373,7 +381,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           open={sheet?.kind === 'options'}
           onClose={close}
           isHost={isHost}
-          code={room.code}
+          code={room.isPrivate ? room.code : null}
           canShare={canShareLink(room)}
           onInvite={() => setSheet({ kind: 'invite' })}
           onShare={() => {
@@ -393,6 +401,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         />
         {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
         <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
+        <PeopleSheet room={room} open={sheet?.kind === 'people'} onClose={close} onPerson={person} />
         <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
         {pollUsed ? (
           <Suspense fallback={null}>
@@ -401,6 +410,34 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         ) : null}
       </div>
     </LinkOpenProvider>
+  )
+}
+
+/** Phones, chat only: the room folded to one line, the faces of the people on the stage; a tap brings it back. */
+function FoldedRoom({ room, onExpand }: { room: VoiceRoom; onExpand: () => void }) {
+  const { t } = useI18n()
+  const { lt } = useLooksT()
+  const onStage = room.members.filter((x) => x.seat !== null).sort((a, b) => a.seat! - b.seat!)
+  return (
+    <button
+      type="button"
+      onClick={onExpand}
+      className="mx-3 flex h-11 shrink-0 items-center gap-2 rounded-full bg-[color-mix(in_srgb,var(--k)_10%,var(--card))] ps-1.5 pe-3 text-start ring-1 ring-[color-mix(in_srgb,var(--k)_22%,transparent)] transition-colors duration-150 hover:bg-muted"
+    >
+      {onStage.length ? (
+        <span className="flex min-w-0 -space-x-2 overflow-hidden rtl:space-x-reverse" aria-label={t('voice.stage')} role="img">
+          {onStage.slice(0, 8).map((x) => (
+            <Avatar key={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={30} className="rounded-full ring-2 ring-background" />
+          ))}
+        </span>
+      ) : (
+        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-card/70 text-muted-foreground">
+          <MicOff className="size-4" aria-hidden />
+        </span>
+      )}
+      <span className="min-w-0 flex-1 truncate text-xs font-semibold text-muted-foreground">{lt('layout.showRoom')}</span>
+      <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+    </button>
   )
 }
 
@@ -728,6 +765,11 @@ function ControlBar({
           </Button>
         ) : null}
         <span className="flex-1" />
+        {onStage ? (
+          <Button variant="secondary" onClick={() => void s.act({ type: 'unseat' })} className="h-12 min-w-0 shrink px-4" title={t('voice.leaveStage')}>
+            <ArrowDownToLine className="size-5 shrink-0" aria-hidden /> <span className="truncate">{t('voice.leaveStage')}</span>
+          </Button>
+        ) : null}
         {onStage ? (
           <m.button
             type="button"

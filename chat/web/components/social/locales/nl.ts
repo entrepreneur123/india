@@ -22,7 +22,6 @@ const nl: SocialDict = {
   'inbox.more': 'Oudere tonen',
   'unread.count': '{n} ongelezen',
   'nav.newCount': '{n} nieuw',
-  'nav.feed': 'Feed',
   'inbox.like.single': '{name} vindt je post leuk',
   'inbox.like.one': '{name} en 1 ander vinden je post leuk',
   'inbox.like.other': '{name} en {n} anderen vinden je post leuk',

@@ -641,6 +641,13 @@ const fil: Dict = {
   'error.sms_unavailable': 'Hindi kami makapagpadala ng code sa number na ito ngayon. Subukan ulit mamaya',
   'error.verify_required': 'I-verify ang identity mo para magawa ito',
   'error.manner_low': 'Naka-pause ang random chat dahil sa manner score mo',
+  'error.handle_invalid': 'Ang ID ay 2 hanggang 24 na letra, numero o simbolong tulad ng _ . -, walang space o emoji',
+  'error.handle_reserved': 'Nakareserba ang ID na iyan. Pumili ng iba',
+  'error.handle_taken': 'May gumagamit na ng ID na iyan. Pumili ng iba',
+  'error.handle_cooldown': 'Puwede mong palitan ang ID mo isang beses kada 7 araw',
+  'error.name_invalid': 'Isulat ang pangalan mo sa karaniwang letra: hindi puwede ang mga letra ng fancy font (puwede ang emoji)',
+  'error.not_owned': 'Wala ka pang look na ito',
+  'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',
 }
 

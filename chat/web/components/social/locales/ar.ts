@@ -26,7 +26,6 @@ const ar: SocialDict = {
   'inbox.more': 'عرض الأقدم',
   'unread.count': '{n} غير مقروءة',
   'nav.newCount': '{n} جديدة',
-  'nav.feed': 'آخر الأخبار',
   'inbox.like.single': 'أُعجب {name} بمنشورك',
   'inbox.like.one': 'أُعجب {name} وشخص آخر بمنشورك',
   'inbox.like.other': 'أُعجب {name} و{n} آخرون بمنشورك',

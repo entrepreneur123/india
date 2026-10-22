@@ -24,7 +24,6 @@ import { BottomTabs, Sidebar } from './nav'
 import { RandomScreen } from '@/components/screens/random/random-screen'
 import type { PostTarget } from '@/components/social/posts/post-sheet'
 import {
-  FeedScreen,
   PostSheet,
   MeScreen,
   Paywall,
@@ -392,7 +391,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                     <ScreenBoundary key={tab}>
                       <Suspense fallback={<ScreenLoading />}>
                         {tab === 'rooms' ? <RoomsScreen /> : null}
-                        {tab === 'feed' ? <FeedScreen /> : null}
                         {tab === 'recent' ? <RecentScreen /> : null}
                         {tab === 'me' ? <MeScreen /> : null}
                         {tab === 'settings' ? <SettingsScreen /> : null}

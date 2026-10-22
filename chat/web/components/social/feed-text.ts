@@ -2,8 +2,8 @@ import { useI18n, useLocaleSet } from '@/components/i18n'
 import { fill, localeSet, pluralText, type LocaleDict, type Vars } from '@/lib/i18n'
 import en from './locales/feed/en'
 
-// Strings of the feed, posts, comments and profile style (033). Like the room chat's, they come with the screens
-// that use them (feed, profile, post), so neither the first screen nor the shell grows.
+// Strings of posts, comments and profile details (033). Like the room chat's, they come with the screens that use
+// them (profile, post), so neither the first screen nor the shell grows.
 export type FeedKey = keyof typeof en
 /** A language file: keys it leaves out are shown in English. */
 export type FeedDict = LocaleDict<FeedKey>
