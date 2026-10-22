@@ -93,6 +93,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
     var licenses by remember { mutableStateOf(false) }
     var language by remember { mutableStateOf(false) }
     var translateTo by remember { mutableStateOf(false) }
+    var blocked by remember { mutableStateOf(false) }
     val activity = LocalActivity.current
     val uri = LocalUriHandler.current
     val context = LocalContext.current
@@ -129,6 +130,8 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
             }
 
             Group(stringResource(R.string.safety)) {
+                Item(stringResource(R.string.blocked_accounts)) { blocked = true }
+                Line()
                 Item(stringResource(R.string.community_rules), expanded = rules) { rules = !rules }
                 AnimatedVisibility(rules) {
                     Column(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -170,6 +173,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
             }
         }
     }
+    if (blocked) BlockedSheet(vm) { blocked = false }
     if (language) {
         LanguageDialog(AppLocale.current(context), onDismiss = { language = false }) { tag ->
             language = false

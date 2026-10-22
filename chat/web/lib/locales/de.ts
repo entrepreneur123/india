@@ -631,7 +631,7 @@ const de: Dict = {
   'error.handle_invalid': 'IDs bestehen aus 2 bis 24 Buchstaben, Ziffern oder Zeichen wie _ . -, ohne Leerzeichen oder Emoji',
   'error.handle_reserved': 'Diese ID ist reserviert. Bitte wähle eine andere',
   'error.handle_taken': 'Diese ID ist schon vergeben. Bitte wähle eine andere',
-  'error.handle_cooldown': 'Du kannst deine ID einmal alle 7 Tage ändern',
+  'error.handle_cooldown': 'Du kannst deine ID einmal alle 30 Tage ändern',
   'error.name_invalid': 'Schreib deinen Namen in normalen Buchstaben: Buchstaben aus Zierschriften gehen nicht (Emoji schon)',
   'error.not_owned': 'Dieser Look gehört dir noch nicht',
   'error.chat_closed': 'Dieser Chat ist beendet. Füge die Person als Freund hinzu, um weiterzuschreiben',

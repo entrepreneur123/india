@@ -159,8 +159,10 @@ export interface Shop {
   items: ShopItem[]
   owned: string[]
   look: Look | null
-  /** When I may change my ID to another one again (null: now). */
+  /** When I may change my ID to another one again for free (null: now). */
   handleNext: number | null
+  /** Paid ID changes I have (042): each lets one change through before handleNext. */
+  handlePasses: number
 }
 
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
@@ -236,6 +238,14 @@ export interface RecentMatch {
 
 export type ReportReason = 'nudity' | 'minor' | 'harassment' | 'fake' | 'other'
 export type FriendState = 'none' | 'requested' | 'incoming' | 'friends'
+
+/** 042: someone found by ID, or on my block list. */
+export interface PersonRow {
+  id: string
+  handle: string
+  name: string
+  photoUrl: string | null
+}
 
 export interface Friend {
   profile: Profile
@@ -572,7 +582,7 @@ export type BackendErrorCode =
   | 'translate_failed'
   /** 038 translate: longer than 2000 characters. */
   | 'too_long'
-  /** 040 IDs: not an ID the server takes, kept for staff, someone else's, or changed less than 7 days ago. */
+  /** 040 IDs: not an ID the server takes, kept for staff, someone else's, or changed less than 30 days ago without a paid ID change. */
   | 'handle_invalid'
   | 'handle_reserved'
   | 'handle_taken'
@@ -641,6 +651,11 @@ export interface Backend {
   answerFriend(userId: string, accept: boolean): Promise<void>
   removeFriend(userId: string): Promise<void>
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
+  /** 042: people whose ID starts with q (@ and case ignored), up to 20; found people can be viewed for a day. */
+  searchHandles(q: string): Promise<PersonRow[]>
+  /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
+  blocks(): Promise<PersonRow[]>
+  unblock(userId: string): Promise<void>
   /** Live rooms, most people first; `query` narrows them on the server. */
   voiceRooms(query?: RoomQuery): Promise<VoiceRoomSummary[]>
   /** Opens a room with me as host, not on the stage yet (ending my previous one). */

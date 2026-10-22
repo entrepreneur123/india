@@ -34,6 +34,7 @@ import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.PersonRow
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
@@ -862,8 +863,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class ItemRow(val id: String, val kind: String, @SerialName("price_inr") val priceInr: Int)
     @Serializable private data class ShopRow(
         val items: List<ItemRow> = emptyList(), val owned: List<String> = emptyList(), val look: LookRow? = null,
-        @SerialName("handle_next") val handleNext: String? = null,
+        @SerialName("handle_next") val handleNext: String? = null, @SerialName("handle_passes") val handlePasses: Int = 0,
     )
+    @Serializable private data class PersonRowRaw(val id: String, val handle: String, val name: String, @SerialName("photo_path") val photoPath: String? = null)
 
     private fun toLook(r: LookRow) = Look(r.id, r.handle, r.badge, r.color, r.font, r.frame)
 
@@ -880,7 +882,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val r = client.postgrest.rpc("shop").decodeAs<ShopRow>()
         Shop(
             r.items.mapNotNull { i -> LookKind.of(i.kind)?.let { LookItem(i.id, it, i.priceInr) } }, r.owned.toSet(), r.look?.let(::toLook),
-            r.handleNext?.let { ts(it).toEpochMilli() },
+            r.handleNext?.let { ts(it).toEpochMilli() }, r.handlePasses,
         )
     }
 
@@ -899,6 +901,22 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val ids = userIds.distinct().take(100)
         if (ids.isEmpty()) return@call emptyList()
         client.postgrest.rpc("looks", buildJsonObject { putJsonArray("p_users") { ids.forEach { add(it) } } }).decodeList<LookRow>().map(::toLook)
+    }
+
+    override suspend fun searchHandles(query: String) = call {
+        people(client.postgrest.rpc("search_handles", buildJsonObject { put("p_q", query) }).decodeList<PersonRowRaw>())
+    }
+
+    override suspend fun blocks() = call { people(client.postgrest.rpc("my_blocks").decodeList<PersonRowRaw>()) }
+
+    override suspend fun unblock(userId: String) = call {
+        client.postgrest.rpc("unblock_user", buildJsonObject { put("p_user", userId) })
+        Unit
+    }
+
+    private suspend fun people(rows: List<PersonRowRaw>): List<PersonRow> {
+        signMany(rows.map { it.photoPath })
+        return rows.map { r -> PersonRow(r.id, r.handle, r.name, r.photoPath?.let { signedUrls[it]?.first }) }
     }
 
     private fun toComment(r: CommentRow) = Comment(

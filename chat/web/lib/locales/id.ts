@@ -644,7 +644,7 @@ const id: Dict = {
   'error.handle_invalid': 'ID terdiri dari 2 sampai 24 huruf, angka, atau simbol seperti _ . -, tanpa spasi atau emoji',
   'error.handle_reserved': 'ID itu dicadangkan. Pilih yang lain',
   'error.handle_taken': 'ID itu sudah dipakai. Pilih yang lain',
-  'error.handle_cooldown': 'Kamu bisa mengganti ID sekali tiap 7 hari',
+  'error.handle_cooldown': 'Kamu bisa mengganti ID sekali tiap 30 hari',
   'error.name_invalid': 'Tulis namamu dengan huruf biasa: huruf dari font hias tidak bisa dipakai (emoji boleh)',
   'error.not_owned': 'Kamu belum memiliki gaya ini',
   'error.chat_closed': 'Obrolan ini sudah berakhir. Tambahkan dia sebagai teman untuk lanjut ngobrol',

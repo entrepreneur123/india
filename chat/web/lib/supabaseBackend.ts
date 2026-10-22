@@ -11,6 +11,7 @@ import {
   type PostVisibility,
   type ProfileStyleInput,
   type Friend,
+  type PersonRow,
   type FriendState,
   type InboxItem,
   type Interest,
@@ -86,6 +87,7 @@ const CODES = [
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
 ]
 
+type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
 type CardRow = {
   id: string; name: string; gender: string; age: number; city: string; bio: string
   photo_path: string | null; country: string | null
@@ -908,6 +910,25 @@ export class SupabaseBackend implements Backend {
 
   async friendThread(userId: string) {
     return this.rpc<string>('friend_thread', { p_user: userId })
+  }
+
+  async searchHandles(q: string) {
+    return this.personRows(await this.rpc<PersonRowRaw[]>('search_handles', { p_q: q }))
+  }
+
+  async blocks() {
+    return this.personRows(await this.rpc<PersonRowRaw[]>('my_blocks'))
+  }
+
+  async unblock(userId: string) {
+    await this.rpc('unblock_user', { p_user: userId })
+  }
+
+  private async personRows(rows: PersonRowRaw[] | null): Promise<PersonRow[]> {
+    await this.signMany((rows ?? []).map((r) => r.photo_path))
+    return (rows ?? []).map((r) => ({
+      id: r.id, handle: r.handle, name: r.name, photoUrl: r.photo_path ? this.signedUrls.get(r.photo_path)?.url ?? null : null,
+    }))
   }
 
   // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----

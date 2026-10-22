@@ -630,7 +630,7 @@ const vi: Dict = {
   'error.handle_invalid': 'ID gồm 2 đến 24 chữ cái, chữ số hoặc ký hiệu như _ . -, không có khoảng trắng hay emoji',
   'error.handle_reserved': 'ID này đã được giữ trước. Hãy chọn ID khác',
   'error.handle_taken': 'ID này đã có người dùng. Hãy chọn ID khác',
-  'error.handle_cooldown': 'Bạn có thể đổi ID 7 ngày một lần',
+  'error.handle_cooldown': 'Bạn có thể đổi ID 30 ngày một lần',
   'error.name_invalid': 'Hãy viết tên bằng chữ cái thông thường: không dùng được chữ của phông cách điệu (emoji thì được)',
   'error.not_owned': 'Bạn chưa có phong cách này',
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',

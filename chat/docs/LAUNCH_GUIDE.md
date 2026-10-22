@@ -81,6 +81,22 @@
 8. **서명 키**: 지금 APK는 디버그 키 서명. Play에는 `./gradlew bundleLiveRelease`로 만든 AAB를 업로드 키로 서명해 올립니다(README "upload.properties").
 9. 국가: 인도 → 방글라데시 → 브라질 → 베트남 순으로 열기. 브라질은 2026-09-30부터 **Android 개발자 인증**(Play 밖 배포 포함) 시행.
 
+### 4-00. 실결제 켜기 — 순서대로 (2026-10-22 확인: 지금 서버는 `billing_not_configured` = 결제 꺼짐)
+앱의 결제 코드(Google Play Billing)와 서버 검증(`verify-purchase`)·환불 처리(`play-rtdn`)는 완성돼 있고, **아래 계정·설정만 없습니다.**
+1. **Play Console 결제 프로필(판매자 계정)** 만들기: Play Console → 설정 → 결제 프로필. 은행 계좌·세금 정보 입력. 이게 없으면 유료 상품을 만들 수 없습니다.
+2. **앱을 Play에 한 번 올리기**: `./gradlew bundleLiveRelease`로 만든 AAB를 업로드 키로 서명해 **내부 테스트** 트랙에 업로드(4번 8항). Play는 업로드된 앱에서만 결제가 됩니다(패키지 `com.yaari.chat`).
+3. **상품 만들기**(ID가 코드와 정확히 같아야 함):
+   - 구독 `yaari_premium_monthly`
+   - 인앱 상품 `gender_pass_24h` (앱이 소비 → 다시 구매 가능)
+   - 인앱 상품 `handle_change` — **아이디 변경권**(0.16): 30일이 안 지나도 아이디를 1번 바꿀 수 있음. 앱이 소비 → 다시 구매 가능. 제안가 ₹49
+   - 인앱 상품 꾸미기 26개(아래 4-0)
+4. **서비스 계정**: Google Cloud에서 서비스 계정 + JSON 키 생성 → Play Console → 사용자 및 권한 → 그 이메일 초대, 권한 **재무 데이터 보기 · 주문 및 구독 관리**. JSON 전체를 Supabase → Edge Functions → Secrets `GOOGLE_SERVICE_ACCOUNT_JSON`에 붙여넣기. (권한이 적용되기까지 몇 시간 이상 걸리는 경우가 있으니, 바로 안 되면 다음 날 다시 시험)
+5. **라이선스 테스트**: Play Console → 설정 → 라이선스 테스트에 테스트할 Gmail 추가 → 그 계정은 실제 돈이 안 나가는 테스트 카드로 결제됩니다. 내부 테스트 링크로 앱을 받아 구매 → 앱에 바로 반영되면 성공.
+6. **환불 자동 처리(RTDN)**: 아래 4-1.
+7. 확인: 서버가 켜졌는지는 제가 다시 호출해 `billing_not_configured`가 사라졌는지로 확인할 수 있습니다.
+
+참고: 웹사이트에는 결제가 없습니다(안드로이드 앱 안의 디지털 상품은 Play 결제를 써야 하는 정책). 웹 결제(Razorpay·UPI 등)는 원하시면 따로 붙일 수 있으나 별도 사업자·PG 계약이 필요합니다.
+
 ### 4-0. 꾸미기 상품 26개 등록 (0.15.0) — Play Console → 수익 창출 → 인앱 상품
 서버(마이그레이션 040·041, verify-purchase v11)는 준비 완료. **상품 ID가 아래와 정확히 같아야** 앱이 찾습니다. 종류는 "인앱 상품"(구독 아님), 한 번 사면 계속 보유(앱이 소비하지 않음). 가격은 아래가 제안가(₹)이며 Play에서 정한 가격이 앱에 그대로 표시됩니다.
 - 배지: `badge_crown` 99, `badge_diamond` 149, `badge_flame` 79, `badge_star` 79, `badge_heart` 79, `badge_bolt` 79

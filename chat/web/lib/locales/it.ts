@@ -631,7 +631,7 @@ const it: Dict = {
   'error.handle_invalid': 'Gli ID hanno da 2 a 24 lettere, numeri o simboli come _ . -, senza spazi né emoji',
   'error.handle_reserved': 'Questo ID è riservato. Scegline un altro',
   'error.handle_taken': 'Questo ID è già in uso. Scegline un altro',
-  'error.handle_cooldown': 'Puoi cambiare il tuo ID una volta ogni 7 giorni',
+  'error.handle_cooldown': 'Puoi cambiare il tuo ID una volta ogni 30 giorni',
   'error.name_invalid': 'Scrivi il tuo nome con lettere normali: le lettere di caratteri decorativi non sono ammesse (le emoji sì)',
   'error.not_owned': 'Non possiedi ancora questo look',
   'error.chat_closed': 'Questa chat è finita. Aggiungi la persona agli amici per continuare a parlare',

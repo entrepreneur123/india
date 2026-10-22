@@ -7,6 +7,7 @@ import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.PersonRow
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
@@ -423,6 +424,7 @@ open class FakeBackend(
             productId == Products.PREMIUM -> entitlements.copy(premium = true)
             productId == Products.GENDER_PASS -> entitlements.copy(genderPass = true)
             Cosmetic.of(productId) != null -> entitlements.also { grantLook(Cosmetic.of(productId)!!) }
+            productId == Products.HANDLE_CHANGE -> entitlements.also { handlePasses.merge(me().id, 1, Int::plus) }
             else -> throw BackendException("bad_request")
         }
         return entitlements
@@ -675,6 +677,7 @@ open class FakeBackend(
 
     /** When each account last chose a different ID (none: still the app-given one, which changes freely). */
     private val handleSetAt = mutableMapOf<String, Long>()
+    private val handlePasses = mutableMapOf<String, Int>()
     /** The looks each account owns, in the order they were bought. */
     private val owned = mutableMapOf<String, MutableList<String>>()
     /** What each account wears. */
@@ -724,7 +727,9 @@ open class FakeBackend(
         val respell = current.equals(h, ignoreCase = true)
         if (Handle.reserved(h) && !respell) throw BackendException("handle_reserved")
         if (holderOf(h).let { it != null && it != me.id }) throw BackendException("handle_taken")
-        if (!respell && handleSetAt[me.id]?.let { clock() - it < HANDLE_COOLDOWN_MS } == true) throw BackendException("handle_cooldown")
+        val paid = !respell && handleSetAt[me.id]?.let { clock() - it < HANDLE_COOLDOWN_MS } == true
+        if (paid && (handlePasses[me.id] ?: 0) < 1) throw BackendException("handle_cooldown")
+        if (paid) handlePasses.merge(me.id, -1, Int::plus)
         if (!respell) handleSetAt[me.id] = clock()
         updateMe { it.copy(handle = h) }
         return h
@@ -739,8 +744,23 @@ open class FakeBackend(
         val me = me()
         return Shop(
             Cosmetic.entries.map { LookItem(it.id, it.kind, PRICES.getValue(it.id)) }, owned[me.id].orEmpty().toSet(), myLook(),
-            handleSetAt[me.id]?.let { it + HANDLE_COOLDOWN_MS }?.takeIf { it > clock() },
+            handleSetAt[me.id]?.let { it + HANDLE_COOLDOWN_MS }?.takeIf { it > clock() }, handlePasses[me.id] ?: 0,
         )
+    }
+
+    private fun personRow(id: String) = personOf(id)?.let { p -> handleOf(id)?.let { PersonRow(id, it, p.name, p.photoUri) } }
+
+    override suspend fun searchHandles(query: String): List<PersonRow> {
+        val q = Handle.normalize(query.trim().removePrefix("@")).lowercase(Locale.ROOT)
+        if (q.isEmpty()) return emptyList()
+        return POOL.filter { it.id !in blocked }.mapNotNull { personRow(it.id) }
+            .filter { it.handle.lowercase(Locale.ROOT).startsWith(q) }.sortedBy { it.handle.lowercase(Locale.ROOT) }.take(20)
+    }
+
+    override suspend fun blocks(): List<PersonRow> = blocked.reversed().mapNotNull(::personRow)
+
+    override suspend fun unblock(userId: String) {
+        blocked -= userId
     }
 
     override suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look {
@@ -1091,8 +1111,8 @@ open class FakeBackend(
             "p10" to ProfileStyle(status = "Building something", languages = SpokenLang.of(listOf("hi", "en", "pa"))),
         )
 
-        /** A different ID once every 7 days (set_handle). */
-        private const val HANDLE_COOLDOWN_MS = 7 * DAY
+        /** A different ID once every 30 days, sooner with a paid ID change (set_handle). */
+        private const val HANDLE_COOLDOWN_MS = 30 * DAY
 
         /** The demo people's IDs. */
         private val HANDLES = mapOf(

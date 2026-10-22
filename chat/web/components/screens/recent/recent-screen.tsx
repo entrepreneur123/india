@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Flag, MessageCircle, UserMinus, X } from 'lucide-react'
+import { AtSign, Flag, MessageCircle, UserMinus, X } from 'lucide-react'
 import type { Friend, Profile, RecentMatch } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -22,6 +22,8 @@ import { useSocialT } from '@/components/social/social-text'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
+import { useLooksT } from '@/components/looks/looks-text'
+import { FindSheet } from '@/components/social/people-find'
 
 type Segment = 'friends' | 'matches'
 
@@ -29,6 +31,8 @@ export function RecentScreen() {
   const backend = useBackend()
   const { t, setTab } = useApp()
   const [segment, setSegment] = useState<Segment>('friends')
+  const [findOpen, setFindOpen] = useState(false)
+  const { lt } = useLooksT()
   const friends = useSWR('friends', () => backend.friends())
   const recents = useSWR('recents', () => backend.recents())
   const incoming = friends.data?.filter((f) => f.state === 'incoming').length ?? 0
@@ -41,8 +45,14 @@ export function RecentScreen() {
       <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('recent.title')}</h1>
-          <BellButton className="md:hidden" />
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="icon" onClick={() => setFindOpen(true)} aria-label={lt('find.title')}>
+              <AtSign className="size-5" aria-hidden />
+            </Button>
+            <BellButton className="md:hidden" />
+          </div>
         </div>
+        <FindSheet open={findOpen} onClose={() => setFindOpen(false)} />
         <Segmented
           className="w-full"
           size="lg"

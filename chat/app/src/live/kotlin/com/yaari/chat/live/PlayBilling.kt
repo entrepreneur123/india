@@ -73,7 +73,7 @@ class PlayBilling(app: Application) : Billing {
         val subs = client.queryProductDetails(query(listOf(Products.PREMIUM), BillingClient.ProductType.SUBS)).productDetailsList.orEmpty()
         // The pass and the looks are one-time products (the looks non-consumable: owned for good, never consumed).
         val inapp = client.queryProductDetails(
-            query(listOf(Products.GENDER_PASS) + Cosmetic.entries.map { it.id }, BillingClient.ProductType.INAPP),
+            query(listOf(Products.GENDER_PASS, Products.HANDLE_CHANGE) + Cosmetic.entries.map { it.id }, BillingClient.ProductType.INAPP),
         ).productDetailsList.orEmpty()
         return subs + inapp
     }
@@ -104,8 +104,8 @@ class PlayBilling(app: Application) : Billing {
     }
 
     override suspend fun finish(productId: String, token: String) {
-        // Subscriptions and looks are acknowledged by the server; only the one-time pass is consumed (bought again).
-        if (productId == Products.GENDER_PASS && ready()) {
+        // Subscriptions and looks are acknowledged by the server; only the passes are consumed (bought again).
+        if ((productId == Products.GENDER_PASS || productId == Products.HANDLE_CHANGE) && ready()) {
             client.consumePurchase(ConsumeParams.newBuilder().setPurchaseToken(token).build())
         }
     }

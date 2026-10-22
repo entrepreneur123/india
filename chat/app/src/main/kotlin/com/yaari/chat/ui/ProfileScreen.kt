@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Add
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -81,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.yaari.chat.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yaari.chat.data.Products
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
@@ -448,13 +450,20 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetai
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     val field by vm.looks.handle.collectAsStateWithLifecycle()
     val shop by vm.looks.shop.collectAsStateWithLifecycle()
-    // When the ID may change again (shop().handle_next): a different ID before then is refused (a new spelling isn't).
+    // When the ID may change again for free (shop().handle_next): a different ID before then takes a paid ID change
+    // (a new spelling doesn't).
     LaunchedEffect(Unit) { vm.looks.loadShop() }
     DisposableEffect(Unit) { onDispose { vm.looks.clearHandle() } }
     val next = shop.shop?.handleNext?.takeIf { it > System.currentTimeMillis() }
-    val waiting = next != null && !Handle.normalize(handle).equals(me.handle.orEmpty(), ignoreCase = true)
+    val passes = shop.shop?.handlePasses ?: 0
+    val waiting = next != null && passes < 1 && !Handle.normalize(handle).equals(me.handle.orEmpty(), ignoreCase = true)
     val problem = vm.looks.problem(field?.takeIf { it.text == handle })?.text()
-    val cooldown = next?.let { stringResource(R.string.handle_next, DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(it))) }
+    val cooldown = next?.let {
+        val date = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(it))
+        if (passes > 0) stringResource(R.string.handle_pass_use, passes, date) else stringResource(R.string.handle_next, date)
+    }
+    val activity = LocalActivity.current
+    val price = vm.state.collectAsStateWithLifecycle().value.prices[Products.HANDLE_CHANGE]
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().imePadding()) {
             EditorBar(stringResource(R.string.edit_profile), onDone, stringResource(R.string.done), name.isNotBlank() && problem == null && !waiting) {
@@ -467,6 +476,12 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetai
                 }
                 Field(name, { name = it.take(Validation.MAX_NAME) }, stringResource(R.string.name))
                 HandleInput(handle, { handle = it; vm.looks.checkHandle(it, me.handle) }, field, problem ?: cooldown?.takeIf { waiting }, note = cooldown)
+                if (waiting && activity != null) {
+                    SoftButton(
+                        listOfNotNull(stringResource(R.string.handle_pass_buy), price).joinToString(" · "),
+                        { vm.buyLook(activity, Products.HANDLE_CHANGE) }, accent = true, enabled = shop.busy == null,
+                    )
+                }
                 Field(city, { city = it.take(30) }, stringResource(R.string.city))
                 Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
                 EditorLink(stringResource(R.string.looks), stringResource(R.string.looks_sub), onLooks) {
@@ -484,7 +499,7 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetai
                     if (fromId) MarkIcon(Mark.VERIFIED, Brand.Pink, size = 22.dp)
                     else Icon(Icons.Outlined.Lock, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     Column(Modifier.padding(start = 16.dp)) {
-                        val country = me.country?.takeIf { fromId }?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
+                        val country = me.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
                         Text(listOfNotNull(stringResource(me.gender.label), me.age.toString(), country).joinToString(" · "), style = MaterialTheme.typography.bodyMedium)
                         Text(
                             stringResource(if (fromId) R.string.locked_from_id else R.string.locked_fields),

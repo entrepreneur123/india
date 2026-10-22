@@ -36,6 +36,7 @@ import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.PersonAddAlt
+import androidx.compose.material.icons.outlined.PersonSearch
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +45,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -75,7 +77,12 @@ fun RecentTab(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () 
     val unreadFriends = s.friends.count { it.state == FriendState.FRIENDS && b.unread(it.threadId) > 0 }
     val unreadMatches = s.recents.count { b.unread(it.matchId) > 0 }
     Column(Modifier.fillMaxSize()) {
-        TabHeader(stringResource(R.string.tab_recent), onSettings) { BellButton(b.inbox, vm.social::openInbox) }
+        var finding by rememberSaveable { mutableStateOf(false) }
+        TabHeader(stringResource(R.string.tab_recent), onSettings) {
+            CircleIconButton(Icons.Outlined.PersonSearch, stringResource(R.string.find_by_id), { finding = true }, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            BellButton(b.inbox, vm.social::openInbox)
+        }
+        if (finding) FindSheet(vm) { finding = false }
         BoxWithConstraints(
             Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),

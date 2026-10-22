@@ -643,7 +643,7 @@ const en = {
   'error.handle_invalid': 'IDs are 2 to 24 letters, numbers or symbols like _ . -, without spaces or emoji',
   'error.handle_reserved': 'That ID is reserved. Please choose another one',
   'error.handle_taken': 'That ID is already taken. Please choose another one',
-  'error.handle_cooldown': 'You can change your ID once every 7 days',
+  'error.handle_cooldown': 'You can change your ID once every 30 days',
   'error.name_invalid': 'Write your name in plain letters: fancy-font letters can’t be used (emoji are fine)',
   'error.not_owned': 'You don’t own this look yet',
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',

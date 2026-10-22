@@ -34,6 +34,7 @@ test('shop(): known items in catalogue order, what I own, my look and when my ID
       owned: ['badge_crown', 'hat_top'],
       look: { id: 'me', handle: 'me_1', badge: 'badge_crown', color: null, font: null, frame: null },
       handle_next: '2026-10-29T10:00:00Z',
+      handle_passes: 2,
     },
     at,
   )!
@@ -44,6 +45,7 @@ test('shop(): known items in catalogue order, what I own, my look and when my ID
   assert.deepEqual(shop.owned, ['badge_crown'])
   assert.equal(shop.look?.badge, 'badge_crown')
   assert.equal(shop.handleNext, Date.parse('2026-10-29T10:00:00Z'))
+  assert.equal(shop.handlePasses, 2)
   assert.equal(parseShop({ items: [], owned: [], look: null, handle_next: null }, at)!.handleNext, null)
   assert.equal(parseShop(null, at), null)
 })

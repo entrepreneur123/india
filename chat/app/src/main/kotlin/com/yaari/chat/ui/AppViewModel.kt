@@ -39,6 +39,7 @@ import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Cosmetic
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.PersonRow
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
@@ -315,7 +316,8 @@ class AppViewModel(
                 runCatching { backend.redeem(product, token) }.onSuccess { e ->
                     redeemedTokens += token
                     applyEntitlements(e)
-                    if (look) looks.loadShop() else runCatching { billing.finish(product, token) }
+                    if (!look) runCatching { billing.finish(product, token) }
+                    if (look || product == Products.HANDLE_CHANGE) looks.loadShop()
                 }
             }
         }
@@ -549,7 +551,9 @@ class AppViewModel(
                 }
                 backend.redeem(item, token)
                 redeemedTokens += token
-                notice(UiText(R.string.look_bought))
+                val look = Cosmetic.isLook(item)
+                if (!look) runCatching { billing.finish(item, token) } // an ID change is used up, then bought again
+                notice(UiText(if (look) R.string.look_bought else R.string.handle_pass_bought))
                 looks.loadShop()
             } catch (e: CancellationException) {
                 throw e
@@ -997,6 +1001,19 @@ class AppViewModel(
     }
 
     fun closeProfile() = _state.update { it.copy(viewing = null) }
+
+    // Finding people by ID and the block list (042): the sheets ask as they show them.
+    suspend fun findByHandle(query: String) = backend.searchHandles(query)
+    suspend fun blocks() = backend.blocks()
+
+    /** Someone found by ID: their card once it has loaded (found people may be viewed for a day). */
+    fun openProfile(p: PersonRow) = act { backend.profile(p.id)?.let { full -> _state.update { it.copy(viewing = full) } } }
+
+    fun unblock(p: PersonRow, done: (ok: Boolean) -> Unit) = viewModelScope.launch {
+        val ok = runCatching { backend.unblock(p.id) }.onFailure { notice(explain(it)) }.isSuccess
+        if (ok) notice(UiText(R.string.unblocked, p.name))
+        done(ok)
+    }
 
     /** Report from a profile or Recent: blocks and removes the person everywhere. */
     fun report(partnerId: String, reason: ReportReason) {

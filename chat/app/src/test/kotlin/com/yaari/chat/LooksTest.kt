@@ -6,6 +6,7 @@ import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.Entitlements
 import com.yaari.chat.data.FakeBackend
+import com.yaari.chat.data.Products
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.model.Cosmetic
 import com.yaari.chat.model.Gender
@@ -140,7 +141,7 @@ class LooksTest {
         refused("name_invalid") { fake.updateProfile("𝓐𝓼𝓱𝓪", "", "", null) }
     }
 
-    @Test fun editProfileChangesTheIdOnceAWeekButASpellingAnyTime() = runTest(dispatcher) {
+    @Test fun editProfileChangesTheIdOnceAMonthOrWithAPaidChangeButASpellingAnyTime() = runTest(dispatcher) {
         val vm = signedIn()
         val me = vm.state.value.me!!
         var saved = 0
@@ -148,20 +149,47 @@ class LooksTest {
         assertEquals("the free ID changes at once", "asha.pune", vm.state.value.me!!.handle)
         assertEquals("asha.pune", vm.looks.people.value[me.id]!!.handle)
         vm.looks.loadShop(); advanceUntilIdle()
-        assertEquals(now + 7 * 86_400_000L, vm.looks.shop.value.shop!!.handleNext)
+        assertEquals(now + 30 * 86_400_000L, vm.looks.shop.value.shop!!.handleNext)
         vm.saveProfile(me.name, me.city, me.bio, null, "Asha.Pune") { saved++ }; advanceUntilIdle()
         assertEquals("a new spelling is always fine", "Asha.Pune", vm.state.value.me!!.handle)
         vm.saveProfile("Asha R", me.city, me.bio, null, "asha.r") { saved++ }; advanceUntilIdle()
         assertEquals(UiText(R.string.err_handle_cooldown), vm.state.value.notice)
         assertEquals("nothing saved when the ID is refused", "Asha", vm.state.value.me!!.name)
         assertEquals(2, saved)
-        now += 7 * 86_400_000L
+        // A paid ID change lets one change through, and is used up.
+        vm.buyLook(Robolectric.buildActivity(android.app.Activity::class.java).get(), Products.HANDLE_CHANGE); advanceUntilIdle()
+        assertEquals(UiText(R.string.handle_pass_bought), vm.state.value.notice)
+        assertEquals(1, vm.looks.shop.value.shop!!.handlePasses)
         vm.saveProfile("Asha R", me.city, me.bio, null, "asha.r") { saved++ }; advanceUntilIdle()
         assertEquals("asha.r" to "Asha R", vm.state.value.me!!.handle to vm.state.value.me!!.name)
+        assertEquals(0, fake.shop().handlePasses)
+        refused("handle_cooldown") { fake.setHandle("asha.again") }
+        now += 30 * 86_400_000L
+        assertEquals("asha.again", fake.setHandle("asha.again"))
         // Empty or against the rules: said on the phone, nothing is sent.
         vm.saveProfile("Asha R", me.city, me.bio, null, "") { saved++ }; advanceUntilIdle()
         assertEquals(UiText(R.string.err_handle_invalid), vm.state.value.notice)
         assertEquals(3, saved)
+    }
+
+    // ---- finding people by ID, and the block list (042) ----
+
+    @Test fun peopleAreFoundByIdUntilBlockedAndComeBackWhenUnblocked() = runTest(dispatcher) {
+        val vm = signedIn()
+        assertEquals(listOf("priya.mumbai"), vm.findByHandle("@PRIYA").map { it.handle })
+        assertTrue(vm.findByHandle("  ").isEmpty())
+        val priya = vm.findByHandle("priya").single()
+        vm.openProfile(priya); advanceUntilIdle()
+        assertEquals(priya.id, vm.state.value.viewing?.id)
+        fake.block(priya.id)
+        assertTrue(vm.findByHandle("priya").isEmpty())
+        assertEquals(listOf(priya.id), vm.blocks().map { it.id })
+        var ok: Boolean? = null
+        vm.unblock(priya) { ok = it }; advanceUntilIdle()
+        assertEquals(true, ok)
+        assertEquals(UiText(R.string.unblocked, priya.name), vm.state.value.notice)
+        assertTrue(vm.blocks().isEmpty())
+        assertEquals(1, vm.findByHandle("priya").size)
     }
 
     // ---- looks: the shop, wearing, buying (FakeBackend keeps the server's rules) ----

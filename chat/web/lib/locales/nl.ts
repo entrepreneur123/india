@@ -631,7 +631,7 @@ const nl: Dict = {
   'error.handle_invalid': 'Een ID heeft 2 tot 24 letters, cijfers of tekens als _ . -, zonder spaties of emoji',
   'error.handle_reserved': 'Die ID is gereserveerd. Kies een andere',
   'error.handle_taken': 'Die ID is al bezet. Kies een andere',
-  'error.handle_cooldown': 'Je kunt je ID eens per 7 dagen wijzigen',
+  'error.handle_cooldown': 'Je kunt je ID eens per 30 dagen wijzigen',
   'error.name_invalid': 'Schrijf je naam in gewone letters: letters uit sierlettertypen kunnen niet (emoji wel)',
   'error.not_owned': 'Deze look is nog niet van jou',
   'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',

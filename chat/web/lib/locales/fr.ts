@@ -634,7 +634,7 @@ const fr: Dict = {
   'error.handle_invalid': 'Un identifiant compte 2 à 24 lettres, chiffres ou symboles comme _ . -, sans espace ni emoji',
   'error.handle_reserved': 'Cet identifiant est réservé. Choisissez-en un autre',
   'error.handle_taken': 'Cet identifiant est déjà pris. Choisissez-en un autre',
-  'error.handle_cooldown': 'Vous pouvez changer d’identifiant une fois tous les 7 jours',
+  'error.handle_cooldown': 'Vous pouvez changer d’identifiant une fois tous les 30 jours',
   'error.name_invalid': 'Écrivez votre nom en lettres normales : les lettres de polices fantaisie ne sont pas acceptées (les emoji si)',
   'error.not_owned': 'Vous ne possédez pas encore ce look',
   'error.chat_closed': 'Ce chat est terminé. Ajoutez cette personne en ami pour continuer à discuter',

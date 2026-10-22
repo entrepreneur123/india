@@ -637,7 +637,7 @@ const pl: Dict = {
   'error.handle_invalid': 'ID ma od 2 do 24 liter, cyfr lub znaków takich jak _ . -, bez spacji i emoji',
   'error.handle_reserved': 'To ID jest zarezerwowane. Wybierz inne',
   'error.handle_taken': 'To ID jest już zajęte. Wybierz inne',
-  'error.handle_cooldown': 'ID możesz zmieniać raz na 7 dni',
+  'error.handle_cooldown': 'ID możesz zmieniać raz na 30 dni',
   'error.name_invalid': 'Wpisz imię zwykłymi literami: litery z ozdobnych czcionek są niedozwolone (emoji tak)',
   'error.not_owned': 'Nie masz jeszcze tego dodatku',
   'error.chat_closed': 'Ten czat się zakończył. Dodaj tę osobę do znajomych, aby dalej rozmawiać',

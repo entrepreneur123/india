@@ -96,5 +96,6 @@ export function parseShop(raw: unknown, time: (ts: string) => number): Shop | nu
     owned: (Array.isArray(r.owned) ? r.owned : []).filter(isItem),
     look: parseLook(r.look),
     handleNext: Number.isFinite(next) ? next : null,
+    handlePasses: typeof r.handle_passes === 'number' ? r.handle_passes : 0,
   }
 }

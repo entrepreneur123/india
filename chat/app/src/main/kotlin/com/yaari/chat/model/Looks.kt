@@ -93,6 +93,9 @@ data class Look(
 
 /**
  * shop(): what is on sale (by kind, in the shop's order), what I own and wear, and [handleNext]: when my ID may change
- * again (epoch ms; null: now).
+ * again for free (epoch ms; null: now), and [handlePasses]: paid ID changes left for before then.
  */
-data class Shop(val items: List<LookItem>, val owned: Set<String>, val look: Look?, val handleNext: Long? = null)
+data class Shop(val items: List<LookItem>, val owned: Set<String>, val look: Look?, val handleNext: Long? = null, val handlePasses: Int = 0)
+
+/** Someone found by ID, or on my block list (042). */
+data class PersonRow(val id: String, val handle: String, val name: String, val photoUri: String?)

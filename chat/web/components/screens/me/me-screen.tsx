@@ -252,8 +252,9 @@ function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onC
   const plainName = namePlain(name)
   const wanted = handleSpelling(handle)
   const handleChanged = !!wanted && wanted !== me.handle
-  // Another ID inside the 7 days can't be saved (a new spelling of the same one can).
-  const waiting = !!next && handleChanged && wanted.toLowerCase() !== me.handle?.toLowerCase()
+  // Another ID inside the 30 days needs a paid ID change (a new spelling of the same one is free).
+  const passes = shop?.handlePasses ?? 0
+  const waiting = !!next && handleChanged && wanted.toLowerCase() !== me.handle?.toLowerCase() && passes < 1
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !plainName || waiting || (handleChanged && handleState !== 'checking' && !handleUsable(handleState))) return
@@ -295,7 +296,7 @@ function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onC
           value={handle}
           onChange={setHandle}
           state={handleChanged ? handleState : null}
-          note={next ? lt('id.cooldown', { date: new Date(next).toLocaleDateString(locale, { day: 'numeric', month: 'long' }) }) : undefined}
+          note={next ? lt(passes > 0 ? 'id.cooldownPass' : 'id.cooldown', { date: new Date(next).toLocaleDateString(locale, { day: 'numeric', month: 'long' }), n: passes }) : undefined}
           blocked={waiting}
         />
         <Field label={t('me.city')} htmlFor={`${id}-city`}>

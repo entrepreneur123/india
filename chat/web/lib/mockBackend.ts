@@ -11,6 +11,7 @@ import {
   type PostVisibility,
   type ProfileStyleInput,
   type Friend,
+  type PersonRow,
   type FriendState,
   type Match,
   type MatchEvent,
@@ -605,8 +606,37 @@ export class MockBackend implements Backend {
     await wait(500)
   }
 
-  async block(_userId: string) {
+  async block(userId: string) {
     await wait(300)
+    this.blocked.set(userId, Date.now())
+  }
+
+  /** Who I blocked, and when (newest first in blocks()). */
+  private blocked = new Map<string, number>()
+
+  private personRow(p: Profile): PersonRow {
+    return { id: p.id, handle: freeHandle(p.name, p.id), name: p.name, photoUrl: p.photoUrl ?? null }
+  }
+
+  async searchHandles(q: string) {
+    await wait(250)
+    const low = q.trim().replace(/^@/, '').toLowerCase()
+    if (!low) return []
+    return PEOPLE.filter((p) => !this.blocked.has(p.id)).map((p) => this.personRow(p))
+      .filter((r) => r.handle.startsWith(low)).sort((a, b) => (a.handle < b.handle ? -1 : 1)).slice(0, 20)
+  }
+
+  async blocks() {
+    await wait(250)
+    return [...this.blocked].sort((a, b) => b[1] - a[1]).flatMap(([id]) => {
+      const p = this.person(id)
+      return p ? [this.personRow(p)] : []
+    })
+  }
+
+  async unblock(userId: string) {
+    await wait(250)
+    this.blocked.delete(userId)
   }
 
   async requestVideo(matchId: string) {

@@ -644,7 +644,7 @@ const ko: Dict = {
   'error.handle_invalid': '아이디는 공백·이모지 없이 글자, 숫자 또는 _ . - 같은 기호로 2~24자여야 해요',
   'error.handle_reserved': '예약된 아이디예요. 다른 아이디를 골라 주세요',
   'error.handle_taken': '이미 사용 중인 아이디예요. 다른 아이디를 골라 주세요',
-  'error.handle_cooldown': '아이디는 7일에 한 번 바꿀 수 있어요',
+  'error.handle_cooldown': '아이디는 30일에 한 번 바꿀 수 있어요',
   'error.name_invalid': '이름은 일반 글자로 써 주세요. 꾸밈 폰트 글자는 쓸 수 없어요(이모지는 괜찮아요)',
   'error.not_owned': '아직 이 룩을 보유하지 않았어요',
   'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어가려면 친구로 추가하세요',

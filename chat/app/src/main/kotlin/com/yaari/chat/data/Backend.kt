@@ -5,6 +5,7 @@ import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
+import com.yaari.chat.model.PersonRow
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
@@ -71,6 +72,8 @@ class OrphanMatchException(val matchId: String) : Exception("orphan_match")
 object Products {
     const val PREMIUM = "yaari_premium_monthly"
     const val GENDER_PASS = "gender_pass_24h"
+    /** Consumable (042): one ID change before the free one 30 days after the last. */
+    const val HANDLE_CHANGE = "handle_change"
 }
 
 /**
@@ -309,7 +312,8 @@ interface Backend {
     suspend fun handleCheck(handle: String): HandleCheck
     /**
      * Makes [handle] my ID; returns the stored spelling. Refused with handle_invalid, handle_reserved, handle_taken and
-     * handle_cooldown (a different ID once every 7 days; the app-given one changes at once, a new spelling always).
+     * handle_cooldown (a different ID once every 30 days unless a paid ID change is left; the app-given one changes at
+     * once, a new spelling always).
      */
     suspend fun setHandle(handle: String): String
     /** Everything on sale, what I own and wear, and when my ID may change again. */
@@ -318,4 +322,12 @@ interface Backend {
     suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look
     /** IDs and looks of up to 100 people I may see (others are left out), as [trust]. */
     suspend fun looks(userIds: List<String>): List<Look>
+
+    // ---- finding people and blocks (042_blocks_search_locks.sql) ----
+
+    /** People whose ID starts with [query] (@ and case ignored), up to 20; found people can be viewed for a day. */
+    suspend fun searchHandles(query: String): List<PersonRow>
+    /** People I blocked, newest first. Unblocking doesn't bring back the friendship or old chats. */
+    suspend fun blocks(): List<PersonRow>
+    suspend fun unblock(userId: String)
 }

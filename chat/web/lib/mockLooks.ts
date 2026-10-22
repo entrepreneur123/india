@@ -5,7 +5,7 @@ import { handleProblem, handleSpelling, type HandleCheck } from './handle'
 import { isItem, kindOf, NO_WEAR, wearOf, type ItemId } from './looks'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
-const COOLDOWN_MS = 7 * 24 * 3_600_000
+const COOLDOWN_MS = 30 * 24 * 3_600_000
 
 /** cosmetic_items as the migration fills it. */
 const PRICES: [ItemId, number][] = [
@@ -107,7 +107,7 @@ export class LookSim {
   async shop(): Promise<Shop> {
     await wait(300)
     const items: ShopItem[] = PRICES.map(([id, priceInr]) => ({ id, kind: kindOf(id), priceInr }))
-    return { items, owned: [...this.owned], look: this.myLook(), handleNext: this.handleSetAt === null ? null : this.handleSetAt + COOLDOWN_MS }
+    return { items, owned: [...this.owned], look: this.myLook(), handleNext: this.handleSetAt === null ? null : this.handleSetAt + COOLDOWN_MS, handlePasses: 0 }
   }
 
   async equipLook(next: LookWear): Promise<Look> {

@@ -634,7 +634,7 @@ const ro: Dict = {
   'error.handle_invalid': 'ID-urile au 2–24 de litere, cifre sau simboluri ca _ . -, fără spații sau emoji',
   'error.handle_reserved': 'Acest ID e rezervat. Alege altul',
   'error.handle_taken': 'Acest ID e deja luat. Alege altul',
-  'error.handle_cooldown': 'Îți poți schimba ID-ul o dată la 7 zile',
+  'error.handle_cooldown': 'Îți poți schimba ID-ul o dată la 30 zile',
   'error.name_invalid': 'Scrie-ți numele cu litere obișnuite: literele din fonturi decorative nu sunt permise (emoji da)',
   'error.not_owned': 'Încă nu ai acest stil',
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',

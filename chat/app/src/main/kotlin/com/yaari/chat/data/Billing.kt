@@ -8,7 +8,7 @@ interface Billing {
     suspend fun prices(): Map<String, String>
     /** Shows the Play purchase sheet. Returns the purchase token, or null if cancelled. */
     suspend fun buy(activity: Activity, productId: String, accountId: String): String?
-    /** After the server granted it: consumes the gender pass so it can be bought again (looks are owned for good, never consumed). */
+    /** After the server granted it: consumes a pass (gender, ID change) so it can be bought again (looks are owned for good, never consumed). */
     suspend fun finish(productId: String, token: String)
     /** Active purchases (product id to token) to re-verify on start. */
     suspend fun ownedPurchases(): List<Pair<String, String>>
