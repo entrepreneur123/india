@@ -6,6 +6,8 @@ import { b64url } from "../_shared/jwt.ts";
 
 const PREMIUM = "yaari_premium_monthly"; // subscription: gender filter + video + 0.2 s skip
 const GENDER_PASS = "gender_pass_24h";    // one-time, consumable: gender filter for 24 h
+// Looks (040): one-time, non-consumable products named like their item (badge_crown, frame_fire...), owned for good.
+const LOOK = /^(badge|color|font|frame)_[a-z0-9]{2,20}$/;
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -43,7 +45,8 @@ Deno.serve(async (req) => {
   if (!user) return json(401, { error: "not_signed_in" });
 
   const { product_id, purchase_token } = await req.json().catch(() => ({}));
-  if (![PREMIUM, GENDER_PASS].includes(product_id) || typeof purchase_token !== "string") return json(400, { error: "bad_request" });
+  const look = typeof product_id === "string" && LOOK.test(product_id);
+  if ((![PREMIUM, GENDER_PASS].includes(product_id) && !look) || typeof purchase_token !== "string") return json(400, { error: "bad_request" });
 
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const access = await googleAccessToken(JSON.parse(saJson));
@@ -75,6 +78,23 @@ Deno.serve(async (req) => {
       await fetch(`${api}/subscriptions/${PREMIUM}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
     }
     return json(200, { premium_until: item.expiryTime });
+  }
+
+  if (look) {
+    // Asked of Play every time (a retry too), so a purchase whose acknowledgement was lost still gets one: Play refunds
+    // unacknowledged purchases after 3 days. redeem_cosmetic is idempotent ('already' for the same person).
+    const r = await fetch(`${api}/products/${product_id}/tokens/${tok}`, { headers: auth });
+    if (!r.ok) return json(402, { error: `play_${r.status}` });
+    const p = await r.json();
+    if (p.purchaseState !== 0) return json(402, { error: "not_purchased" });
+    if (p.obfuscatedExternalAccountId !== user.id) return json(403, { error: "wrong_account" });
+    const { data: result, error } = await admin.rpc("redeem_cosmetic", { p_user: user.id, p_item: product_id, p_token: purchase_token });
+    if (error) return json(error.message?.includes("bad_request") ? 400 : 500, { error: error.message?.includes("bad_request") ? "unknown_item" : "grant_failed" });
+    if (result === "other_account") return json(409, { error: "token_used_by_other_account" });
+    if (p.acknowledgementState === 0) {
+      await fetch(`${api}/products/${product_id}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
+    }
+    return json(200, { item: product_id, already_redeemed: result === "already" });
   }
 
   // Gender pass: one-time, redeemed once, then consumed by the app so it can be bought again.
