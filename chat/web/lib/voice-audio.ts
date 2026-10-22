@@ -2,6 +2,7 @@
 // the people on the stage; I send my microphone only while I'm on a seat and unmuted. Loaded only when a voice room
 // opens (the SDK is a separate chunk, shared with video calls).
 import {
+  AudioPresets,
   createAudioAnalyser,
   DisconnectReason,
   type LocalAudioTrack,
@@ -12,6 +13,7 @@ import {
   RoomEvent,
   Track,
 } from 'livekit-client'
+import { isAppleWebKit } from './rtc'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
 
@@ -45,7 +47,14 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     adaptiveStream: false,
     dynacast: false,
     audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    // Speech: Opus mono capped at 24 kbps (a listener on 4G downloads one stream per speaker), DTX so silence costs
+    // nothing, RED so a lost packet is covered by the next one.
+    publishDefaults: { audioPreset: AudioPresets.speech, dtx: true, red: true, forceStereo: false },
   })
+  // createAudioAnalyser opens a new AudioContext per track. On iPhone/iPad that context (44.1 kHz next to WebRTC's
+  // 48 kHz, and one per speaker) can make the whole room crackle or sound metallic, and on Android phones it opens a
+  // second audio stream beside the call's. There the rings use LiveKit's own speaker levels only.
+  const analysers = !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent)
   let leaving = false
   // Hidden <audio> elements, one per remote track; and an analyser per track for the speaking rings.
   const box = document.createElement('div')
@@ -56,7 +65,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   let timer: ReturnType<typeof setInterval> | undefined
 
   const meter = (sid: string, identity: string, track: RemoteAudioTrack | LocalAudioTrack) => {
-    if (meters.has(sid)) return
+    if (!analysers || meters.has(sid)) return
     try {
       const a = createAudioAnalyser(track, { cloneTrack: true })
       meters.set(sid, { identity, volume: a.calculateVolume, cleanup: a.cleanup })

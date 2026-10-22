@@ -13,6 +13,9 @@ import io.livekit.android.events.DisconnectReason
 import io.livekit.android.events.RoomEvent
 import io.livekit.android.events.collect
 import io.livekit.android.room.Room
+import io.livekit.android.room.participant.AudioPresets
+import io.livekit.android.room.participant.AudioTrackPublishDefaults
+import io.livekit.android.room.track.LocalAudioTrackOptions
 import io.livekit.android.room.participant.Participant
 import io.livekit.android.room.track.Track
 import kotlinx.coroutines.CancellationException
@@ -43,7 +46,18 @@ class VoiceAudio(private val context: Context, private val scope: CoroutineScope
         fun gone(removed: Boolean)
     }
 
-    private val room: Room = LiveKit.create(context.applicationContext, options = RoomOptions(adaptiveStream = false, dynacast = false))
+    // Call audio mode (MODE_IN_COMMUNICATION: the phone's echo canceller runs), speaker unless a headset is in, WebRTC
+    // echo cancellation / noise suppression / auto gain on. Speech: Opus mono capped at 24 kbps (a listener on 4G
+    // downloads one stream per speaker), DTX so silence costs nothing, RED so a lost packet is covered by the next.
+    private val room: Room = LiveKit.create(
+        context.applicationContext,
+        options = RoomOptions(
+            adaptiveStream = false,
+            dynacast = false,
+            audioTrackCaptureDefaults = LocalAudioTrackOptions(noiseSuppression = true, echoCancellation = true, autoGainControl = true),
+            audioTrackPublishDefaults = AudioTrackPublishDefaults(audioBitrate = AudioPresets.SPEECH.maxBitrate, dtx = true, red = true),
+        ),
+    )
     private var leaving = false
     private var released = false
     private var micWanted = false
@@ -51,7 +65,10 @@ class VoiceAudio(private val context: Context, private val scope: CoroutineScope
 
     private val focus = AudioManager.OnAudioFocusChangeListener { change ->
         when (change) {
-            AudioManager.AUDIOFOCUS_LOSS, AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+            // A phone call (or an alarm) takes the audio for a while and gives it back with AUDIOFOCUS_GAIN. A permanent
+            // loss (another app started playing music) is not followed by a GAIN, so muting then would leave the room
+            // silent for good: the room keeps playing, as WhatsApp and X Spaces do.
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 room.setSpeakerMute(true)
                 room.setMicrophoneMute(true)
                 ev.interrupted(true)

@@ -7,4 +7,15 @@
     <string name="video_checking">सुरक्षा जाँच…</string>
     <string name="video_hidden_title">वीडियो छिपाया गया</string>
     <string name="video_hidden_body">इसमें नग्नता हो सकती है, जिसकी अनुमति नहीं है। हमने अपनी सुरक्षा टीम को बता दिया है।</string>
+    <string name="open_settings">सेटिंग खोलें</string>
+    <string name="call_dropped">कॉल कट गई। कॉल काटें और फिर से कोशिश करें।</string>
+    <string name="partner_lost">%1$s का कनेक्शन टूट गया। इंतज़ार हो रहा है…</string>
+    <string name="partner_paused">%1$s का वीडियो रुका है: उनका नेटवर्क बहुत धीमा है</string>
+    <string name="partner_cam_off">%1$s ने अपना कैमरा बंद किया</string>
+    <string name="partner_weak">%1$s का कनेक्शन कमज़ोर है</string>
+    <string name="net_good">आपका कनेक्शन: अच्छा</string>
+    <string name="net_ok">आपका कनेक्शन: ठीक-ठाक</string>
+    <string name="net_poor">आपका कनेक्शन: कमज़ोर</string>
+    <string name="device_busy">आपका कैमरा या माइक किसी दूसरे ऐप में चल रहा है</string>
+    <string name="cam_blocked">कैमरे की अनुमति नहीं है। वे आपको अब भी सुन सकते हैं। सेटिंग खोलने के लिए टैप करें</string>
 </resources>

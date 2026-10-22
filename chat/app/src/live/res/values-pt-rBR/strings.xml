@@ -7,4 +7,15 @@
     <string name="video_checking">Verificação de segurança…</string>
     <string name="video_hidden_title">Vídeo oculto</string>
     <string name="video_hidden_body">Pode conter nudez, o que não é permitido. Avisamos nossa equipe de segurança.</string>
+    <string name="open_settings">Abrir configurações</string>
+    <string name="call_dropped">A chamada caiu. Toque em Encerrar e tente de novo.</string>
+    <string name="partner_lost">A conexão de %1$s caiu. Aguardando…</string>
+    <string name="partner_paused">O vídeo de %1$s está pausado: a rede dele está lenta demais</string>
+    <string name="partner_cam_off">%1$s desligou a câmera</string>
+    <string name="partner_weak">A conexão de %1$s está fraca</string>
+    <string name="net_good">Sua conexão: forte</string>
+    <string name="net_ok">Sua conexão: razoável</string>
+    <string name="net_poor">Sua conexão: fraca</string>
+    <string name="device_busy">Sua câmera ou microfone está em uso por outro app</string>
+    <string name="cam_blocked">Câmera não permitida. A pessoa ainda ouve você. Toque para abrir as configurações</string>
 </resources>

@@ -3,10 +3,11 @@
 import { LazyMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef, useState } from 'react'
-import { EyeOff, Mic, MicOff, PhoneOff, ShieldCheck, Video, VideoOff } from 'lucide-react'
+import { EyeOff, Mic, MicOff, PhoneOff, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import type { Call, CallState } from '@/lib/livekit'
+import type { Call, CallState, PartnerNotice } from '@/lib/livekit'
+import { deviceNotice, keepScreenOn, signalBars } from '@/lib/rtc'
 import { flagEmoji } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
@@ -31,6 +32,14 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
   const [camera, setCamera] = useState(true)
   // Nudity check on the partner's video (lib/nudity.ts): blurred until the first clean frame, hidden while flagged.
   const [shield, setShield] = useState<'checking' | 'clear' | 'hidden'>('checking')
+  // My connection (bars), my partner's (a notice instead of a frozen picture), their camera, and iOS autoplay.
+  const [quality, setQuality] = useState('unknown')
+  const [partnerState, setPartnerState] = useState<PartnerNotice>(null)
+  const [partnerCam, setPartnerCam] = useState(true)
+  const [needsTap, setNeedsTap] = useState(false)
+
+  // The screen stays on for the whole call, as in a phone call app.
+  useEffect(() => keepScreenOn(), [])
 
   useEffect(() => {
     let cancelled = false
@@ -74,7 +83,13 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
           token.url,
           token.token,
           { remote: remoteRef.current!, local: localRef.current!, audio: audioRef.current! },
-          (s) => !cancelled && setState(s),
+          {
+            state: (s) => !cancelled && setState(s),
+            quality: (q) => !cancelled && setQuality(q),
+            partner: (n) => !cancelled && setPartnerState(n),
+            partnerCamera: (on) => !cancelled && setPartnerCam(on),
+            blocked: (b) => !cancelled && setNeedsTap(b),
+          },
           abort.signal,
         )
         if (cancelled) {
@@ -82,11 +97,10 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
           return
         }
         callRef.current = call
-        if (call.devices === 'blocked') {
-          setCamera(false)
-          setMic(false)
-          toast.show(t('video.blocked'), 'error')
-        }
+        if (call.camera) setCamera(false)
+        if (call.mic) setMic(false)
+        const problem = deviceNotice(call.camera, call.mic)
+        if (problem) toast.show(t(`video.${problem}` as const), 'error')
       } catch (err) {
         if (cancelled) return
         toast.error(err)
@@ -106,12 +120,23 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
   const toggleMic = async () => {
     const next = !mic
     setMic(next)
-    await callRef.current?.setMic(next).catch(() => setMic(!next))
+    await callRef.current?.setMic(next).catch((e: Error) => {
+      setMic(!next)
+      showDeviceError(e, 'mic')
+    })
   }
   const toggleCamera = async () => {
     const next = !camera
     setCamera(next)
-    await callRef.current?.setCamera(next).catch(() => setCamera(!next))
+    await callRef.current?.setCamera(next).catch((e: Error) => {
+      setCamera(!next)
+      showDeviceError(e, 'camera')
+    })
+  }
+  const showDeviceError = (e: Error, kind: 'camera' | 'mic') => {
+    const p = (['denied', 'missing', 'busy', 'other'] as const).find((x) => x === e.message) ?? 'other'
+    const key = kind === 'camera' ? deviceNotice(p, null) : deviceNotice(null, p)
+    if (key) toast.show(t(`video.${key}` as const), 'error')
   }
 
   const status =
@@ -119,7 +144,13 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
     : state === 'reconnecting' ? t('video.reconnecting')
     : state === 'failed' ? t('video.failed')
     : state === 'demo' ? t('video.demo')
+    : partnerState === 'lost' ? t('video.partnerLost', { name: partner.name })
+    : partnerState === 'paused' ? t('video.partnerPaused', { name: partner.name })
     : null
+  const bars = state === 'connected' ? signalBars(quality) : null
+  const BarsIcon = bars === 3 ? SignalHigh : bars === 2 ? SignalMedium : bars === 1 ? SignalLow : SignalZero
+  // Their camera is off, or their picture stopped: show their photo, not a black or frozen frame.
+  const partnerHidden = state === 'connected' && (!partnerCam || partnerState === 'lost' || partnerState === 'paused')
 
   return (
     <LazyMotion features={loadDrag}>
@@ -133,7 +164,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
       role="dialog"
       aria-label={t('video.with', { name: partner.name })}
     >
-      {partner.photoUrl && state !== 'connected' ? (
+      {partner.photoUrl && (state !== 'connected' || partnerHidden) ? (
         <img src={partner.photoUrl} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl" />
       ) : null}
       <video
@@ -142,7 +173,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         playsInline
         className={cn(
           'absolute inset-0 size-full object-cover transition-[filter] duration-200',
-          state !== 'connected' && 'opacity-0',
+          (state !== 'connected' || partnerHidden) && 'opacity-0',
           shield !== 'clear' && 'scale-110 blur-3xl',
         )}
       />
@@ -158,9 +189,29 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
             <span className="size-1.5 animate-pulse rounded-full bg-online" aria-hidden /> {t('video.live')}
           </span>
         ) : null}
+        {bars !== null ? (
+          <span
+            className="flex items-center rounded-full bg-black/55 p-1.5"
+            role="img"
+            aria-label={t(bars >= 3 ? 'video.netGood' : bars === 2 ? 'video.netOk' : 'video.netPoor')}
+          >
+            <BarsIcon className="size-4" aria-hidden />
+          </span>
+        ) : null}
+        {state === 'connected' && partnerState === 'weak' ? (
+          <span className="rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold" role="status">
+            {t('video.partnerWeak', { name: partner.name })}
+          </span>
+        ) : null}
       </div>
 
-      {state === 'connected' && shield === 'hidden' ? (
+      {state === 'connected' && !partnerCam && !status ? (
+        <div className="absolute inset-0 grid place-items-center p-6">
+          <p className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-semibold" role="status">
+            <VideoOff className="size-4" aria-hidden /> {t('video.partnerCamOff', { name: partner.name })}
+          </p>
+        </div>
+      ) : state === 'connected' && shield === 'hidden' ? (
         <div className="absolute inset-0 grid place-items-center bg-black/50 p-6" role="alert">
           <div className="flex max-w-xs flex-col items-center gap-3 text-center">
             <span className="grid size-14 place-items-center rounded-full bg-white/15">
@@ -170,7 +221,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
             <p className="text-sm text-ink-foreground/80">{t('video.hiddenBody')}</p>
           </div>
         </div>
-      ) : state === 'connected' && shield === 'checking' ? (
+      ) : state === 'connected' && shield === 'checking' && !status ? (
         <div className="absolute inset-0 grid place-items-center p-6">
           <p className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-semibold" role="status">
             <ShieldCheck className="size-4" aria-hidden /> {t('video.checking')}
@@ -184,6 +235,16 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
             {status}
           </p>
         </div>
+      ) : null}
+
+      {needsTap && state === 'connected' ? (
+        <button
+          type="button"
+          onClick={() => void callRef.current?.startAudio().then(() => setNeedsTap(false)).catch(() => undefined)}
+          className="absolute inset-x-0 bottom-32 mx-auto flex w-fit items-center gap-2 rounded-full bg-ink-foreground px-5 py-3 text-sm font-semibold text-ink"
+        >
+          <Volume2 className="size-5" aria-hidden /> {t('video.tapToHear', { name: partner.name })}
+        </button>
       ) : null}
 
       <m.div

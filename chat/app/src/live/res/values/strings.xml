@@ -7,4 +7,15 @@
     <string name="video_checking">Safety check…</string>
     <string name="video_hidden_title">Video hidden</string>
     <string name="video_hidden_body">It may show nudity, which isn’t allowed. We’ve let our safety team know.</string>
+    <string name="open_settings">Open settings</string>
+    <string name="call_dropped">The call dropped. Tap End and try again.</string>
+    <string name="partner_lost">%1$s’s connection dropped. Waiting for them…</string>
+    <string name="partner_paused">%1$s’s video is paused: their network is too slow</string>
+    <string name="partner_cam_off">%1$s turned their camera off</string>
+    <string name="partner_weak">%1$s’s connection is weak</string>
+    <string name="net_good">Your connection: strong</string>
+    <string name="net_ok">Your connection: fair</string>
+    <string name="net_poor">Your connection: weak</string>
+    <string name="device_busy">Your camera or microphone is in use by another app</string>
+    <string name="cam_blocked">Camera not allowed. They can still hear you. Tap to open settings</string>
 </resources>
