@@ -119,7 +119,7 @@ export function LinkCard({ url, className }: { url: string; className?: string }
       onClick={click(url)}
       aria-label={t('link.preview', { site, title })}
       className={cn(
-        'mt-1 flex min-w-0 items-stretch overflow-hidden rounded-md bg-black/5 text-left transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12',
+        'mt-1 flex min-w-0 items-stretch overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12',
         className,
       )}
     >
@@ -203,7 +203,7 @@ export function LinkPanel({
 
   return (
     <section aria-label={t('link.viewer')} className={cn('flex min-h-0 flex-col bg-card text-card-foreground', className)}>
-      <header className="flex items-center gap-1 border-b border-border py-2 pr-2 pl-4">
+      <header className="flex items-center gap-1 border-b border-border py-2 pe-2 ps-4">
         <span className="min-w-0 flex-1">
           {label ? <span className="block truncate text-[11px] font-semibold text-primary-text">{label}</span> : null}
           <span className="block truncate text-sm leading-tight font-semibold">{title}</span>
@@ -248,7 +248,7 @@ export function LinkPanel({
           />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 overflow-y-auto p-6 text-center">
-            <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-muted/60 text-left ring-1 ring-border">
+            <div className="w-full max-w-sm overflow-hidden rounded-2xl bg-muted/60 text-start ring-1 ring-border">
               {meta?.image && imgOk ? (
                 <img src={meta.image} alt="" referrerPolicy="no-referrer" onError={() => setImgOk(false)} className="aspect-[1.91/1] w-full object-cover" />
               ) : (

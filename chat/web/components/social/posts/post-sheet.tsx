@@ -57,7 +57,7 @@ function PostBody({ target, onClose }: { target: PostTarget; onClose: () => void
         <button
           type="button"
           onClick={onClose}
-          className="-mr-2 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="-me-2 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('common.close')}
         >
           <X className="size-5" aria-hidden />
@@ -225,7 +225,7 @@ function Comments({ post, inputRef, autoFocus }: { post: FeedPost; inputRef: Rea
         className="sticky bottom-0 z-10 border-t border-border bg-card/95 px-3 pt-2 pb-3 backdrop-blur supports-[backdrop-filter]:bg-card/85"
       >
         {replyTo ? (
-          <div className="mb-2 flex items-center justify-between gap-2 rounded-full bg-muted py-1 pr-1 pl-4 text-xs font-semibold text-muted-foreground">
+          <div className="mb-2 flex items-center justify-between gap-2 rounded-full bg-muted py-1 pe-1 ps-4 text-xs font-semibold text-muted-foreground">
             <span className="truncate">{ft('comments.replyingTo', { name: replyTo.name })}</span>
             <button
               type="button"
@@ -239,7 +239,7 @@ function Comments({ post, inputRef, autoFocus }: { post: FeedPost; inputRef: Rea
         ) : null}
         <div className="flex items-end gap-2">
           <AccentAvatar name={me.name} src={me.photoUrl} size={34} accent={me.style?.accent} className="mb-0.5" />
-          <label className="flex min-h-11 min-w-0 flex-1 items-end rounded-3xl border border-input bg-card py-1 pr-1 pl-4 transition-[border-color,box-shadow] focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+          <label className="flex min-h-11 min-w-0 flex-1 items-end rounded-3xl border border-input bg-card py-1 pe-1 ps-4 transition-[border-color,box-shadow] focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
             <span className="sr-only">{ft('comments.label')}</span>
             <textarea
               ref={inputRef}
@@ -267,7 +267,7 @@ function Comments({ post, inputRef, autoFocus }: { post: FeedPost; inputRef: Rea
           </label>
         </div>
         {text.length > COMMENT_MAX - 40 ? (
-          <p className={cn('mt-1 text-right text-xs tabular-nums', text.length >= COMMENT_MAX ? 'text-destructive' : 'text-muted-foreground')}>
+          <p className={cn('mt-1 text-end text-xs tabular-nums', text.length >= COMMENT_MAX ? 'text-destructive' : 'text-muted-foreground')}>
             {text.length}/{COMMENT_MAX}
           </p>
         ) : null}
@@ -305,12 +305,12 @@ function CommentRow({
   const { ft } = useFeedT()
   const link = 'rounded-md px-1 py-0.5 text-xs font-bold text-muted-foreground transition-colors hover:text-foreground'
   return (
-    <li className={cn('flex gap-3 rounded-2xl px-2 py-2.5', depth === 1 && 'ml-11')}>
+    <li className={cn('flex gap-3 rounded-2xl px-2 py-2.5', depth === 1 && 'ms-11')}>
       <button type="button" onClick={() => openProfile(c.author.id)} className="shrink-0 self-start rounded-full" aria-label={c.author.name}>
         <AccentAvatar name={c.author.name} src={c.author.photoUrl} size={depth ? 28 : 34} accent={c.author.accent} />
       </button>
       <div className="min-w-0 flex-1">
-        <div className="rounded-2xl rounded-tl-md bg-muted px-3.5 py-2 night:bg-white/6">
+        <div className="rounded-2xl rounded-ss-md bg-muted px-3.5 py-2 night:bg-white/6">
           <p className="flex items-baseline gap-2 text-[13px]">
             <button type="button" onClick={() => openProfile(c.author.id)} className="inline-flex min-w-0 items-center gap-1 font-bold hover:underline">
               <span className="truncate">{c.author.name}</span>
@@ -323,7 +323,7 @@ function CommentRow({
           {c.replyName ? <p className="mt-0.5 text-xs font-semibold text-muted-foreground">{ft('comments.replyingTo', { name: c.replyName })}</p> : null}
           <p className="mt-0.5 text-[15px] leading-snug break-words whitespace-pre-wrap">{c.text}</p>
         </div>
-        <div className="mt-1 flex gap-2 pl-2">
+        <div className="mt-1 flex gap-2 ps-2">
           <button type="button" className={link} onClick={onReply}>
             {ft('comments.reply')}
           </button>

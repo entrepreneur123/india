@@ -133,7 +133,7 @@ export function SeatPerson({
         <Avatar name={member.profile.name} src={member.profile.photoUrl} size={px} className="transition-transform duration-150 group-active:scale-95" />
         {member.muted ? (
           <span
-            className="absolute -right-0.5 -bottom-0.5 grid place-items-center rounded-full bg-muted text-foreground ring-2 ring-background"
+            className="absolute -inset-e-0.5 -bottom-0.5 grid place-items-center rounded-full bg-muted text-foreground ring-2 ring-background"
             style={{ width: badge, height: badge }}
           >
             <MicOff style={{ width: badge * 0.56, height: badge * 0.56 }} aria-hidden />
@@ -143,7 +143,7 @@ export function SeatPerson({
           {reaction ? (
             <m.span
               key={reaction.key}
-              className="absolute -top-1 -right-1.5 grid place-items-center rounded-full bg-card shadow-e2 ring-2 ring-background"
+              className="absolute -top-1 -inset-e-1.5 grid place-items-center rounded-full bg-card shadow-e2 ring-2 ring-background"
               style={{ width: badge + 4, height: badge + 4 }}
               initial={{ opacity: 0, scale: 0.4 }}
               animate={{ opacity: 1, scale: 1 }}

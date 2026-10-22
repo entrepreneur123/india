@@ -24,6 +24,7 @@ import { LinkOpenProvider, LinkPanel, LinkSheet, useWideScreen } from './link-vi
 import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
+import { useFollowLines } from '@/components/translate'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
@@ -103,7 +104,8 @@ export function ChatView({
     talked.current?.(both)
   }, [both])
 
-  // Follow new messages unless the user scrolled up to read older ones.
+  // Follow new messages unless the user scrolled up to read older ones (also when a translation makes one taller).
+  useFollowLines(listRef, stickToBottom)
   useLayoutEffect(() => {
     const el = listRef.current
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight
@@ -178,7 +180,7 @@ export function ChatView({
           <button
             type="button"
             onClick={() => openProfile(partner.id, { matchId })}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pr-3 text-left transition-colors duration-150 hover:bg-muted"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted"
           >
             <Avatar name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
@@ -270,7 +272,7 @@ export function ChatView({
             {onEnd ? (
               <>
                 <Button variant="secondary" size="lg" onClick={() => onEnd(false)}>
-                  <Undo2 className="size-5" aria-hidden /> {t('leave.lobby')}
+                  <Undo2 className="size-5 rtl:-scale-x-100" aria-hidden /> {t('leave.lobby')}
                 </Button>
                 <Button variant="brand" size="lg" onClick={() => onEnd(true)} autoFocus>
                   <Shuffle className="size-5" aria-hidden /> {t('leave.next')}
@@ -297,7 +299,7 @@ export function ChatView({
         <LinkPanel
           url={viewUrl}
           onClose={() => setViewUrl(null)}
-          className="w-[min(44vw,560px)] shrink-0 border-l border-border"
+          className="w-[min(44vw,560px)] shrink-0 border-s border-border"
         />
       ) : null}
       {wide ? null : (

@@ -58,7 +58,7 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
       </span>
       {country ? (
         <span
-          className="absolute -right-0.5 -bottom-0.5 grid place-items-center rounded-full bg-card leading-none ring-2 ring-card"
+          className="absolute -inset-e-0.5 -bottom-0.5 grid place-items-center rounded-full bg-card leading-none ring-2 ring-card"
           style={{ width: badge, height: badge, fontSize: badge * 0.72 }}
           aria-hidden
         >
@@ -66,7 +66,7 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
         </span>
       ) : null}
       {online ? (
-        <span className="absolute top-0 right-0 flex size-3" aria-hidden>
+        <span className="absolute top-0 inset-e-0 flex size-3" aria-hidden>
           <span className="relative inline-flex size-3 rounded-full bg-online ring-2 ring-card" />
         </span>
       ) : null}

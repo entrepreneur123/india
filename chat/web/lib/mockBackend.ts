@@ -29,11 +29,17 @@ import {
   type KycDemoOutcome,
   type LinkMeta,
 } from './backend'
+import { COUNTRIES } from './countries'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+function countryOfPhone(digits: string | null | undefined): string | null {
+  if (!digits) return null
+  const hits = COUNTRIES.filter((c) => digits.startsWith(c.dial)).sort((a, b) => b.dial.length - a.dial.length)
+  return hits.length && hits.filter((c) => c.dial === hits[0].dial).length === 1 ? hits[0].iso : null
+}
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
 const pick = <T,>(list: T[]): T => list[Math.floor(Math.random() * list.length)]
 const uid = () => Math.random().toString(36).slice(2, 10)
@@ -195,6 +201,24 @@ function demoFlags() {
   return { required: req === '1', gated: req === '1' || req === 'later', kycOff: q.get('demo_kyc') === 'off', manner: q.has('demo_manner') && Number.isFinite(manner) ? manner : null }
 }
 
+/**
+ * The demo's translations into English (the live server translates anything into any language). Lines not here
+ * come back as "already in your language", so nothing extra is shown.
+ */
+const PHRASEBOOK: Record<string, string> = {
+  'jajaja Messi para siempre 🐐': 'hahaha Messi forever 🐐',
+  'né?! acordei às 5 só pra isso kkkk': 'right?! I woke up at 5 just for that lol',
+  'hola a todos, ¿qué tal? 👋': 'hi everyone, how’s it going? 👋',
+  'oi gente, tudo bem?': 'hey guys, all good?',
+  'みんなこんにちは！': 'hi everyone!',
+  'selam millet nasılsınız': 'hey folks, how are you all',
+  'Arijit ka koi bhi gaana, bas 🔥': 'any Arijit song, that’s all I need 🔥',
+  'volume ekdum perfect hai': 'the volume is absolutely perfect',
+  'Bumrah ka over lethal tha': 'Bumrah’s over was lethal',
+  'mera vote Goa ke liye': 'my vote goes to Goa',
+  'nice room yaar': 'nice room, mate',
+}
+
 const GREETINGS = [
   'hey! where are you from?',
   'hiii 👋 how’s your day going?',
@@ -269,7 +293,7 @@ export class MockBackend implements Backend {
 
     const seedRecents: [string, number, string][] = [
       ['u_leila', 3 * HOUR, 'have a great night!'],
-      ['u_mateo', 20 * HOUR, 'haha Messi forever'],
+      ['u_mateo', 20 * HOUR, 'jajaja Messi para siempre 🐐'],
       ['u_kabir', 2 * DAY, 'catch you later'],
     ]
     for (const [pid, ago, last] of seedRecents) {
@@ -290,7 +314,7 @@ export class MockBackend implements Backend {
     const sofiaAt = Date.now() - 12 * 60_000
     this.matches.set('t_sofia', this.newMatchState('t_sofia', sofia, 'thread', sofiaAt - DAY, [
       { id: this.msgSeq++, fromMe: true, text: 'that sunrise photo was unreal', at: sofiaAt - DAY },
-      { id: this.msgSeq++, fromMe: false, text: 'right?! I woke up at 5 for it', at: sofiaAt - 60_000 },
+      { id: this.msgSeq++, fromMe: false, text: 'né?! acordei às 5 só pra isso kkkk', at: sofiaAt - 60_000 },
       { id: this.msgSeq++, fromMe: false, text: 'are you coming to the music room tonight?', at: sofiaAt },
     ]))
     this.threadByUser.set('u_sofia', 't_sofia')
@@ -418,7 +442,8 @@ export class MockBackend implements Backend {
       city: p.city.trim(),
       bio: p.bio.trim(),
       photoUrl: p.photo ? URL.createObjectURL(p.photo) : null,
-      country: this.pendingPhone?.startsWith('91') ? 'IN' : null,
+      // The country of the number's calling code (the longest that matches; +1 numbers stay without a flag).
+      country: countryOfPhone(this.pendingPhone),
       posts: [],
       interests: [],
       photos: [],
@@ -940,6 +965,23 @@ export class MockBackend implements Backend {
   voiceTyping(_roomId: string, _name: string) {}
 
   /** The demo reaches no other site: a card from the address alone (shown with "Open in browser"). */
+  /** ?demo_translate=off: the server has no AI key yet (503); ?demo_translate=limit: the day's limit is used up. */
+  async translate(kind: 'chat' | 'room', id: number, target: string) {
+    await wait(jitter(350, 900))
+    const flag = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('demo_translate')
+    if (flag === 'off') throw new BackendError('translate_unavailable')
+    if (flag === 'limit') throw new BackendError('slow_down')
+    let text: string | null = null
+    if (kind === 'chat') {
+      for (const m of this.matches.values()) text ??= m.messages.find((x) => x.id === id)?.text ?? null
+    } else {
+      text = this.voiceSim?.lineText(id) ?? null
+    }
+    if (!text) throw new BackendError('not_found')
+    const english = target === 'en' ? PHRASEBOOK[text] : undefined
+    return english ? { text: english, same: false } : { text, same: true }
+  }
+
   async linkMeta(url: string): Promise<LinkMeta> {
     await wait(300)
     let host = url

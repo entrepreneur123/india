@@ -73,7 +73,7 @@ export function AdminConsole() {
         <span className="text-lg font-bold">Yaari</span>
         <span className="text-sm text-muted-foreground">운영 콘솔 · Moderation</span>
         {stage === 'ready' && client && (
-          <button className="ml-auto rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+          <button className="ms-auto rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
             onClick={() => void client.auth.signOut().then(check)}>로그아웃</button>
         )}
       </header>
@@ -213,7 +213,7 @@ function Reports({ client }: { client: SupabaseClient }) {
             {rows?.map((r) => (
               <li key={r.id}>
                 <button onClick={() => setOpen(r.id)} data-report={r.id}
-                  className={`flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left last:border-0 hover:bg-muted/60 ${open === r.id ? 'bg-primary-soft' : ''}`}>
+                  className={`flex w-full items-center gap-3 border-b border-border px-4 py-3 text-start last:border-0 hover:bg-muted/60 ${open === r.id ? 'bg-primary-soft' : ''}`}>
                   <Face url={r.reported?.photo_path ? photos[r.reported.photo_path] : undefined} name={r.reported?.name} />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
@@ -224,7 +224,7 @@ function Reports({ client }: { client: SupabaseClient }) {
                       {REASONS[r.reason] ?? r.reason} · 신고자 {r.reporter?.name ?? '—'} · 미검토 {r.open_against}건
                     </span>
                   </span>
-                  <span className="shrink-0 text-right text-xs text-muted-foreground">
+                  <span className="shrink-0 text-end text-xs text-muted-foreground">
                     {when(r.created_at)}
                     <span className="mt-1 block">
                       {r.reviewed ? <Badge>{OUTCOMES[r.outcome ?? ''] ?? '검토됨'}</Badge> : <Badge tone="blue">미검토</Badge>}
@@ -288,7 +288,7 @@ function Detail({ client, id, changed }: { client: SupabaseClient; id: number; c
         <h2 className="text-lg font-bold">신고 #{r.id}</h2>
         <Badge tone={r.reason === 'auto_nudity' ? 'red' : undefined}>{REASONS[r.reason] ?? r.reason}</Badge>
         {r.reviewed ? <Badge>{OUTCOMES[r.outcome ?? ''] ?? '검토됨'} · {r.reviewed_by ?? ''} {when(r.reviewed_at)}</Badge> : <Badge tone="blue">미검토</Badge>}
-        <span className="ml-auto text-xs text-muted-foreground">{when(r.created_at)}</span>
+        <span className="ms-auto text-xs text-muted-foreground">{when(r.created_at)}</span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -356,7 +356,7 @@ function Detail({ client, id, changed }: { client: SupabaseClient; id: number; c
             {r.history.map((h) => (
               <li key={h.id} className="flex gap-2 border-b border-border py-1.5 last:border-0">
                 <span className="text-muted-foreground">#{h.id}</span><span>{REASONS[h.reason] ?? h.reason}</span>
-                <span className="ml-auto text-xs text-muted-foreground">{when(h.created_at)} · {h.reviewed ? OUTCOMES[h.outcome ?? ''] ?? '검토됨' : '미검토'}</span>
+                <span className="ms-auto text-xs text-muted-foreground">{when(h.created_at)} · {h.reviewed ? OUTCOMES[h.outcome ?? ''] ?? '검토됨' : '미검토'}</span>
               </li>
             ))}
           </ul>
@@ -371,7 +371,7 @@ function Detail({ client, id, changed }: { client: SupabaseClient; id: number; c
                 <span>{ACTIONS[a.action] ?? a.action}</span>
                 <span className="text-muted-foreground">{a.by ?? ''}</span>
                 {a.detail?.note ? <span className="truncate text-muted-foreground">“{String(a.detail.note)}”</span> : null}
-                <span className="ml-auto text-xs text-muted-foreground">{when(a.at)}</span>
+                <span className="ms-auto text-xs text-muted-foreground">{when(a.at)}</span>
               </li>
             ))}
           </ul>
@@ -407,7 +407,7 @@ function DashboardView({ client }: { client: SupabaseClient }) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="사유별 신고">
           <table className="w-full text-sm">
-            <thead><tr className="text-left text-muted-foreground"><th className="py-1 font-normal">사유</th><th className="font-normal">24시간</th><th className="font-normal">7일</th></tr></thead>
+            <thead><tr className="text-start text-muted-foreground"><th className="py-1 font-normal">사유</th><th className="font-normal">24시간</th><th className="font-normal">7일</th></tr></thead>
             <tbody>
               {reasons.length === 0 && <tr><td className="py-2 text-muted-foreground" colSpan={3}>없음</td></tr>}
               {reasons.map((k) => (
@@ -421,7 +421,7 @@ function DashboardView({ client }: { client: SupabaseClient }) {
           <ul className="text-sm">
             {Object.keys(d.events_24h).length === 0 && <li className="text-muted-foreground">없음</li>}
             {Object.entries(d.events_24h).sort((a, b) => b[1] - a[1]).map(([k, n]) => (
-              <li key={k} className="flex border-t border-border py-1.5 first:border-0"><span>{k}</span><span className="ml-auto tabular-nums">{n}</span></li>
+              <li key={k} className="flex border-t border-border py-1.5 first:border-0"><span>{k}</span><span className="ms-auto tabular-nums">{n}</span></li>
             ))}
           </ul>
         </Panel>
@@ -432,7 +432,7 @@ function DashboardView({ client }: { client: SupabaseClient }) {
           {d.top_errors.map((e, i) => (
             <li key={i} className="border-t border-border py-2 first:border-0">
               <span className="flex gap-2"><span className="font-medium">{e.name}</span>
-                <span className="ml-auto shrink-0 text-xs text-muted-foreground">{e.n}회 · {e.users}명 · {e.platform ?? ''} {e.version ?? ''} · {when(e.last)}</span></span>
+                <span className="ms-auto shrink-0 text-xs text-muted-foreground">{e.n}회 · {e.users}명 · {e.platform ?? ''} {e.version ?? ''} · {when(e.last)}</span></span>
               <span className="block break-words text-muted-foreground">{e.message}</span>
             </li>
           ))}
@@ -444,7 +444,7 @@ function DashboardView({ client }: { client: SupabaseClient }) {
           {d.recent_actions.map((a, i) => (
             <li key={i} className="flex gap-2 border-t border-border py-1.5 first:border-0">
               <span>{ACTIONS[a.action] ?? a.action}</span><span className="text-muted-foreground">{a.target ?? ''}{a.report ? ` · 신고 #${a.report}` : ''}</span>
-              <span className="ml-auto text-xs text-muted-foreground">{a.by ?? ''} · {when(a.at)}</span>
+              <span className="ms-auto text-xs text-muted-foreground">{a.by ?? ''} · {when(a.at)}</span>
             </li>
           ))}
         </ul>

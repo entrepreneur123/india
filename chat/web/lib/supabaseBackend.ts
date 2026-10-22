@@ -73,6 +73,7 @@ const PARTNER_JOIN_TIMEOUT_MS = 12_000
 /** Random chats: after the partner's app disconnects, how long they have to come back. Same values as the app. */
 const PARTNER_GRACE_MS = 20_000
 const CODES = [
+  'translate_unavailable', 'cannot_translate', 'translate_failed', 'too_long',
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
@@ -920,7 +921,7 @@ export class SupabaseBackend implements Backend {
   async createVoiceRoom(r: NewVoiceRoom) {
     const room = await this.rpc<{ id: string; code: string }>('create_voice_room3', {
       p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
-      p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang,
+      p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang || null,
     })
     track('room_created')
     return room
@@ -1229,6 +1230,12 @@ export class SupabaseBackend implements Backend {
 
   voiceTyping(roomId: string, name: string) {
     this.voice.get(roomId)?.typing(name)
+  }
+
+  async translate(kind: 'chat' | 'room', id: number, target: string) {
+    const j = await this.invoke<{ text?: unknown; same?: unknown }>('translate', { kind, id, target })
+    if (typeof j?.text !== 'string') throw new BackendError('translate_failed')
+    return { text: j.text, same: j.same === true }
   }
 
   async linkMeta(url: string): Promise<LinkMeta> {

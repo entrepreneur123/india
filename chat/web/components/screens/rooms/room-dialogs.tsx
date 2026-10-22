@@ -11,7 +11,7 @@ import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { RoomLangSelect } from '@/components/social/room-lang'
+import { isRoomLang, RoomLangSelect } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
 import { CategoryPicker } from './topic-picker'
 
@@ -44,7 +44,8 @@ export function CreateRoomDialog({
   const { freeForRoom } = useApp()
   const id = useId()
   const [title, setTitle] = useState('')
-  const [lang, setLang] = useState<string>(appLang)
+  // A room is marked with one of the languages rooms can have; the app's own when it is one of them.
+  const [lang, setLang] = useState<string>(isRoomLang(appLang) ? appLang : '')
   const [category, setCategory] = useState<RoomKind>('talk')
   const [max, setMax] = useState(50)
   const [gender, setGender] = useState<Target>('any')
@@ -65,7 +66,7 @@ export function CreateRoomDialog({
     setMaxAge(100)
     setPrivate(false)
     setNote('')
-    setLang(appLang)
+    setLang(isRoomLang(appLang) ? appLang : '')
   }, [open, initialCategory, appLang])
 
   const submit = async (e: React.FormEvent) => {
@@ -115,7 +116,7 @@ export function CreateRoomDialog({
 
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm font-semibold">{st('rooms.lang')}</span>
-          <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} className="w-48" />
+          <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={lang ? undefined : '—'} className="w-48" />
         </div>
 
         <div className="flex items-center justify-between gap-4">

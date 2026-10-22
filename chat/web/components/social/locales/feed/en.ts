@@ -1,5 +1,5 @@
-// The feed, posts, comments and profile style (033). English: the source; every other language must have exactly
-// these keys (checked by TypeScript). Loaded only with the screens that use them (components/social/feed-text.ts).
+// The feed, posts, comments and profile style (033). English: the source; other languages use these keys (TypeScript
+// refuses unknown ones) and a key they leave out reads in English. Loaded only with the screens that use them (components/social/feed-text.ts).
 const en = {
   // the feed
   'feed.title': 'Feed',

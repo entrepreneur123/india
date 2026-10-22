@@ -132,7 +132,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
 
       <details className="rounded-xl border border-border px-4 py-3 text-sm">
         <summary className="cursor-pointer font-semibold">{t('pf.rules')}</summary>
-        <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-muted-foreground">
+        <ul className="mt-2 flex list-disc flex-col gap-1 ps-5 text-muted-foreground">
           {COMMUNITY_RULES.map((r) => (
             <li key={r}>{t(r)}</li>
           ))}

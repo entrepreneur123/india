@@ -93,7 +93,7 @@ export function PostComposer({ open, onClose }: { open: boolean; onClose: () => 
             <button
               type="button"
               onClick={() => setImage(null)}
-              className="absolute top-3 right-3 grid size-8 place-items-center rounded-full bg-black/60 text-white"
+              className="absolute top-3 inset-e-3 grid size-8 place-items-center rounded-full bg-black/60 text-white"
               aria-label={t('me.removePhoto')}
             >
               <X className="size-4" aria-hidden />

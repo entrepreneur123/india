@@ -78,8 +78,8 @@ export function MusicPanel({
 
   if (!open)
     return (
-      <div className="mx-3 flex h-14 items-center gap-1 rounded-2xl bg-[color-mix(in_srgb,var(--topic-music)_12%,var(--card))] pr-1.5 pl-2 ring-1 ring-[color-mix(in_srgb,var(--topic-music)_26%,transparent)] sm:mx-4">
-        <button type="button" onClick={() => onOpenChange(true)} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl py-1 pl-1 text-left">
+      <div className="mx-3 flex h-14 items-center gap-1 rounded-2xl bg-[color-mix(in_srgb,var(--topic-music)_12%,var(--card))] pe-1.5 ps-2 ring-1 ring-[color-mix(in_srgb,var(--topic-music)_26%,transparent)] sm:mx-4">
+        <button type="button" onClick={() => onOpenChange(true)} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl py-1 ps-1 text-start">
           <span className="relative grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
             <img src={thumbnail(track.videoId)} alt="" className="absolute inset-0 size-full object-cover" />
           </span>
@@ -111,7 +111,7 @@ export function MusicPanel({
     <div className="px-4">
       <PlayerSlot track={track} />
       <div className="mt-2 flex items-center gap-1">
-        <span className="min-w-0 flex-1 pr-1">
+        <span className="min-w-0 flex-1 pe-1">
           <span className="flex items-center gap-1.5">
             <TopicIcon topic="music" size={16} />
             <span className="truncate text-sm font-semibold">{title}</span>

@@ -18,7 +18,7 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
   const { partner, typing, unread } = bar
   return (
     <m.div
-      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:left-6 md:w-[24rem]"
+      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:inset-s-6 md:w-[24rem]"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
@@ -29,10 +29,10 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
       <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-primary-text/40">
         {/* The brand colour, washed in from the left (a room's bar uses its category's). */}
         <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,color-mix(in_srgb,var(--primary)_32%,transparent),transparent_70%)]" />
-        <button type="button" onClick={onOpen} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-left" aria-label={st('chatbar.open', { name: partner.name })}>
+        <button type="button" onClick={onOpen} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={st('chatbar.open', { name: partner.name })}>
           <span className="relative shrink-0">
             <Avatar name={partner.name} src={partner.photoUrl} size={42} />
-            {unread > 0 ? <span aria-hidden className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full bg-primary ring-2 ring-card" /> : null}
+            {unread > 0 ? <span aria-hidden className="absolute -top-0.5 -inset-e-0.5 size-3.5 rounded-full bg-primary ring-2 ring-card" /> : null}
           </span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold">{st('chatbar.with', { name: partner.name })}</span>

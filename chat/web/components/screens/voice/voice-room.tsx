@@ -51,7 +51,7 @@ const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
  *    the room, opens in a column between them (under 1280 px it takes the middle's place while open).
  */
 export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; onMinimise: () => void; onLeave: () => void }) {
-  const { t, num } = useI18n()
+  const { t, num, rtl } = useI18n()
   const { rt } = useRoomT()
   const toast = useToast()
   const { st: sst } = useSocialT()
@@ -292,7 +292,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <EllipsisVertical className="size-5" aria-hidden />
             </Button>
             <Button size="icon" variant="ghost" onClick={onLeave} aria-label={t('voice.leave')} className="text-destructive hover:text-destructive">
-              <LogOut className="size-5" aria-hidden />
+              <LogOut className="size-5 rtl:-scale-x-100" aria-hidden />
             </Button>
           </header>
           {room.announcement ? <Announcement text={room.announcement} onEdit={isHost ? () => setSheet({ kind: 'settings' }) : undefined} /> : null}
@@ -306,10 +306,10 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               {panelUrl ? (
                 <m.div
                   key="panel"
-                  initial={{ opacity: 0, x: 16 }}
+                  initial={{ opacity: 0, x: rtl ? -16 : 16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
-                  className="min-h-0 w-full shrink-0 overflow-hidden border-l border-border xl:w-[min(46%,560px)]"
+                  className="min-h-0 w-full shrink-0 overflow-hidden border-s border-border xl:w-[min(46%,560px)]"
                 >
                   {panel(panelUrl)}
                 </m.div>
@@ -338,7 +338,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         </div>
 
         {wide ? (
-          <aside className="relative flex w-[380px] shrink-0 flex-col border-l border-border bg-black/20 xl:w-[400px]" aria-label={t('voice.chat')}>
+          <aside className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-black/20 xl:w-[400px]" aria-label={t('voice.chat')}>
             <h2 className="px-4 pt-4 pb-1 text-sm font-semibold">{t('voice.chat')}</h2>
             {chat}
             <div className="border-t border-border p-3 pt-2">{composer}</div>
@@ -429,9 +429,9 @@ function StageCard({ stage, mine, closed, onOpen, onClose }: { stage: VoiceStage
       </button>
     )
   return (
-    <div className="mx-3 flex items-center gap-3 rounded-2xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] p-2 pl-3 ring-1 ring-[color-mix(in_srgb,var(--k)_30%,transparent)] sm:mx-4">
+    <div className="mx-3 flex items-center gap-3 rounded-2xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] p-2 ps-3 ring-1 ring-[color-mix(in_srgb,var(--k)_30%,transparent)] sm:mx-4">
       <TopicIcon topic="globe" size={26} />
-      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
+      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-start">
         <span className="block truncate text-[11px] font-semibold text-primary-text">{mine ? rt('sharedByYou') : rt('sharedBy', { name: stage.by })}</span>
         <span className="block truncate text-sm font-semibold">{stage.title || hostOf(stage.url)}</span>
       </button>
@@ -609,12 +609,12 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
           ) : null}
         </ul>
       ) : (
-        <button type="button" onClick={onAll} className="flex w-full items-center gap-2 py-1 text-left" aria-label={`${rt('listening')}: ${num(list.length)}. ${rt('seeAll')}`}>
+        <button type="button" onClick={onAll} className="flex w-full items-center gap-2 py-1 text-start" aria-label={`${rt('listening')}: ${num(list.length)}. ${rt('seeAll')}`}>
           <span className="flex min-w-0 -space-x-2 overflow-hidden" aria-hidden>
             {shown.map((x) => (
               <span key={x.profile.id} className="relative shrink-0">
                 <Avatar name={x.profile.name} src={x.profile.photoUrl} size={30} className="rounded-full ring-2 ring-background" />
-                {x.hand ? <ReactionIcon kind="hand" size={14} className="absolute -right-1 -bottom-1" /> : null}
+                {x.hand ? <ReactionIcon kind="hand" size={14} className="absolute -inset-e-1 -bottom-1" /> : null}
               </span>
             ))}
           </span>
@@ -633,7 +633,7 @@ function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }
     <button type="button" onClick={onClick} aria-label={[x.profile.name, role].filter(Boolean).join(', ')} className="group flex w-full min-w-0 flex-col items-center gap-1 rounded-2xl p-1">
       <span className="relative">
         <Avatar name={x.profile.name} src={x.profile.photoUrl} size={44} className="transition-transform duration-150 group-active:scale-95" />
-        {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -right-1 -bottom-1" /> : null}
+        {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -inset-e-1 -bottom-1" /> : null}
       </span>
       <span className="max-w-full truncate text-[11px] leading-tight font-medium">{x.profile.name.split(' ')[0]}</span>
       {role ? <span className="-mt-0.5 rounded-full bg-primary-soft px-1.5 text-[9.5px] leading-tight font-bold text-primary-text">{role}</span> : null}
@@ -652,7 +652,7 @@ function Announcement({ text, onEdit }: { text: string; onEdit?: () => void }) {
         {text}
       </p>
       {onEdit ? (
-        <button type="button" onClick={onEdit} aria-label={t('room.settings')} className="-my-1 -mr-1 grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground">
+        <button type="button" onClick={onEdit} aria-label={t('room.settings')} className="-my-1 -me-1 grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground">
           <Pencil className="size-3.5" aria-hidden />
         </button>
       ) : null}
@@ -722,7 +722,7 @@ function ControlBar({
         {mod && hands > 0 ? (
           <Button size="icon" variant="secondary" onClick={onRequests} aria-label={t('voice.requestsN', { n: num(hands) })}>
             <ReactionIcon kind="hand" size={22} />
-            <span className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground ring-2 ring-background tabular-nums">
+            <span className="absolute -top-1 -inset-e-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground ring-2 ring-background tabular-nums">
               {num(hands)}
             </span>
           </Button>
@@ -749,7 +749,7 @@ function ControlBar({
             onClick={onJoin}
             aria-pressed={joins ? undefined : me.hand}
             className={cn(
-              'flex h-12 shrink-0 items-center gap-2 rounded-full pr-5 pl-4 text-sm font-semibold transition-colors duration-150',
+              'flex h-12 shrink-0 items-center gap-2 rounded-full pe-5 ps-4 text-sm font-semibold transition-colors duration-150',
               me.hand && !joins ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-foreground text-background hover:opacity-90',
             )}
           >

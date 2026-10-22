@@ -530,6 +530,14 @@ export type BackendErrorCode =
   /** 035 ratings: more than a day after the chat, or rated already. */
   | 'too_late'
   | 'already_rated'
+  /** 038 translate: no AI key on the server yet (503). */
+  | 'translate_unavailable'
+  /** 038 translate: the model would not translate this line (422). */
+  | 'cannot_translate'
+  /** 038 translate: the model failed or timed out (502); trying again may work. */
+  | 'translate_failed'
+  /** 038 translate: longer than 2000 characters. */
+  | 'too_long'
 
 export class BackendError extends Error {
   constructor(public code: string) {
@@ -676,6 +684,13 @@ export interface Backend {
   kycCheck(): Promise<KycResult>
   /** Demo only: how the simulated check ends. */
   kycDemo?(outcome: KycDemoOutcome): Promise<void>
+  // ---- translation (038) ----
+  /**
+   * A saved line in `target` (lib/translate.ts TARGETS), slang and tone kept. `kind` 'chat' = random-chat and friend
+   * messages (Message.id), 'room' = a room's text line (VoiceLine.id). `same`: it already is in that language.
+   * Errors: translate_unavailable, slow_down (daily limit), not_found, cannot_translate, translate_failed, too_long.
+   */
+  translate(kind: 'chat' | 'room', id: number, target: string): Promise<{ text: string; same: boolean }>
   /** Once per random chat after it ends, when both wrote; `tags` from the chosen side (lib/trust.ts), at most 3. */
   rateChat(matchId: string, good: boolean, tags: string[]): Promise<void>
 }

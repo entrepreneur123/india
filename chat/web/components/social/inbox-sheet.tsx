@@ -230,21 +230,21 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
       <button type="button" onClick={() => openProfile(item.actor.id)} className="relative shrink-0 rounded-full" aria-label={name}>
         <Avatar name={name} src={item.actor.photoUrl} size={44} />
         {item.kind === 'room_invite' ? (
-          <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
+          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
             <Headphones className="size-3.5" aria-hidden />
           </span>
         ) : item.kind === 'post_like' ? (
-          <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">
+          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">
             <LikeIcon on size={18} />
           </span>
         ) : item.kind === 'post_comment' ? (
-          <span className="absolute -right-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
+          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
             <CommentIcon size={14} />
           </span>
         ) : null}
       </button>
       {post ? (
-        <button type="button" onClick={showPost} className="min-w-0 flex-1 rounded-lg text-left">
+        <button type="button" onClick={showPost} className="min-w-0 flex-1 rounded-lg text-start">
           <span className="block text-[14px] leading-snug">{text}</span>
           {post.text ? <span className="mt-0.5 block truncate text-xs text-muted-foreground">“{post.text}”</span> : null}
           <span className="mt-0.5 block text-xs text-muted-foreground">{timeAgo(item.at)}</span>
@@ -255,7 +255,7 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
           <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(item.at)}</p>
         </div>
       )}
-      <div className="ml-auto shrink-0">{action}</div>
+      <div className="ms-auto shrink-0">{action}</div>
     </li>
   )
 }

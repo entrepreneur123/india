@@ -39,7 +39,7 @@ export function AuthScreen({
   onPhoneVerified: (phone: string) => void
   onComplete: (p: Profile | null) => void
 }) {
-  const { t } = useI18n()
+  const { t, rtl } = useI18n()
   const [step, setStep] = useState<Step>(initialStep)
   const [phone, setPhone] = useState<{ digits: string; display: string } | null>(null)
   // "Everyone here is ID-verified" only once the server has said verification is required (seen on this browser).
@@ -60,7 +60,7 @@ export function AuthScreen({
                 <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
                   {t('auth.badge')}
                 </span>
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pr-3 pl-1.5 text-xs font-semibold text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-[color-mix(in_srgb,#ff3d68_30%,transparent)]">
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pe-3 ps-1.5 text-xs font-semibold text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-[color-mix(in_srgb,#ff3d68_30%,transparent)]">
                   <VerifiedMark size={16} label={null} />
                   {t(required ? 'auth.everyoneVerified' : 'auth.verifiedBadge')}
                 </span>
@@ -105,9 +105,9 @@ export function AuthScreen({
           <AnimatePresence mode="wait" initial={false}>
             <m.div
               key={step}
-              initial={{ opacity: 0, x: 12 }}
+              initial={{ opacity: 0, x: rtl ? -12 : 12 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
+              exit={{ opacity: 0, x: rtl ? 12 : -12 }}
               transition={{ type: 'tween', duration: 0.18, ease: [0.2, 0, 0, 1] }}
             >
               {step === 'phone' ? (

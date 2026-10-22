@@ -107,7 +107,7 @@ function RemoveButton({ id }: { id: string }) {
           setBusy(false)
         }
       }}
-      className="absolute top-1.5 right-1.5 grid size-7 place-items-center rounded-full bg-black/60 text-white transition-opacity duration-150 disabled:opacity-50"
+      className="absolute top-1.5 inset-e-1.5 grid size-7 place-items-center rounded-full bg-black/60 text-white transition-opacity duration-150 disabled:opacity-50"
       aria-label={st('photos.remove')}
     >
       <X className="size-4" aria-hidden />

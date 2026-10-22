@@ -167,7 +167,7 @@ export function FeedScreen() {
           type="button"
           onClick={openComposer}
           onPointerEnter={() => void loadComposer()}
-          className="mt-2 flex items-center gap-3 rounded-[28px] bg-card p-3 pr-4 text-left shadow-e1 ring-1 ring-border/70 transition-shadow duration-150 hover:shadow-e2"
+          className="mt-2 flex items-center gap-3 rounded-[28px] bg-card p-3 pe-4 text-start shadow-e1 ring-1 ring-border/70 transition-shadow duration-150 hover:shadow-e2"
         >
           <AccentAvatar name={me.name} src={me.photoUrl} size={40} accent={me.style?.accent} />
           <span className="min-w-0 flex-1 truncate rounded-full bg-muted px-4 py-2.5 text-[15px] text-muted-foreground">

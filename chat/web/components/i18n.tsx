@@ -6,11 +6,14 @@ import {
   EN,
   fill,
   intlLocale,
+  isRtl,
   loadDict,
+  pluralText,
   saveLang,
   savedLang,
   type Dict,
   type Lang,
+  type LocaleSet,
   type T,
   type TKey,
 } from '@/lib/i18n'
@@ -18,6 +21,8 @@ import { clockTime, compactNumber, errorKey, timeAgo } from '@/lib/format'
 
 export interface I18n {
   lang: Lang
+  /** Arabic, Urdu, Persian and Hebrew read right to left. */
+  rtl: boolean
   /** BCP 47 tag for Intl. */
   locale: string
   setLang: (lang: Lang) => void
@@ -58,7 +63,11 @@ export function I18nProvider({ children, fallback }: { children: ReactNode; fall
 
   const lang = state?.lang
   useEffect(() => {
-    if (lang) document.documentElement.lang = lang
+    if (!lang) return
+    const html = document.documentElement
+    html.lang = lang
+    // The whole layout mirrors (logical CSS: ms/me, ps/pe, inset-s/e, text-start; arrows flip with rtl:).
+    html.dir = isRtl(lang) ? 'rtl' : 'ltr'
   }, [lang])
 
   const setLang = useCallback((next: Lang) => {
@@ -77,10 +86,11 @@ export function I18nProvider({ children, fallback }: { children: ReactNode; fall
     const rules = new Intl.PluralRules(locale)
     return {
       lang: state.lang,
+      rtl: isRtl(state.lang),
       locale,
       setLang,
       t,
-      plural: (n, one, other) => t(rules.select(n) === 'one' ? one : other, { n: compactNumber(n, locale) }),
+      plural: (n, one, other) => fill(pluralText(dict, EN, rules.select(n), one, other), { n: compactNumber(n, locale) }),
       timeAgo: (at) => timeAgo(at, locale, t('time.now')),
       clock: (at) => clockTime(at, locale),
       num: (n) => compactNumber(n, locale),
@@ -90,6 +100,29 @@ export function I18nProvider({ children, fallback }: { children: ReactNode; fall
 
   if (!value) return <>{fallback}</>
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>
+}
+
+/**
+ * One set of strings (lib/i18n.ts `localeSet`) in the app's language: English at first, the language's own file
+ * once it has arrived (it is cached, so a screen opened later has it at once).
+ */
+export function useLocaleSet<D>(set: LocaleSet<D>): Partial<D> {
+  const { lang } = useI18n()
+  const [state, setState] = useState<{ lang: Lang; dict: Partial<D> }>(() => ({ lang, dict: set.peek(lang) ?? set.en }))
+  useEffect(() => {
+    const have = set.peek(lang)
+    if (have) return setState({ lang, dict: have })
+    let alive = true
+    set.load(lang).then(
+      (dict) => alive && setState({ lang, dict }),
+      () => undefined, // offline: English for now
+    )
+    return () => {
+      alive = false
+    }
+  }, [set, lang])
+  // A language switch shows English for a moment, never the previous language's strings.
+  return state.lang === lang ? state.dict : (set.peek(lang) ?? set.en)
 }
 
 export function useI18n(): I18n {

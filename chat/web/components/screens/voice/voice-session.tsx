@@ -514,7 +514,7 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
 
   return (
     <m.div
-      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:left-6 md:w-[24rem]"
+      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:inset-s-6 md:w-[24rem]"
       style={{ '--k': kindColor(room.category) } as CSSProperties}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -526,7 +526,7 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
       <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-[color-mix(in_srgb,var(--k)_45%,transparent)]">
         {/* The room's colour, washed in from the left. */}
         <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,color-mix(in_srgb,var(--k)_30%,transparent),transparent_70%)]" />
-        <button type="button" onClick={onExpand} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-left" aria-label={`${t('voice.expand')}: ${room.title}`}>
+        <button type="button" onClick={onExpand} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={`${t('voice.expand')}: ${room.title}`}>
           <span className="relative shrink-0">
             {face ? (
               <>
@@ -566,7 +566,7 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
           <ChevronUp className="size-5" aria-hidden />
         </Button>
         <Button size="icon" variant="ghost" onClick={onLeave} aria-label={t('voice.leave')} className={cn('relative text-destructive hover:text-destructive')}>
-          <LogOut className="size-5" aria-hidden />
+          <LogOut className="size-5 rtl:-scale-x-100" aria-hidden />
         </Button>
       </div>
     </m.div>

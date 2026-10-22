@@ -88,7 +88,10 @@ const LINES: Record<RoomKind, string[]> & { any: string[] } = {
     'How do you say “I’m bored” in Hindi?', 'is it “in the bus” or “on the bus”?', 'chai or coffee, final answer?',
     'Sunday plans anyone?', 'mera vote Goa ke liye', 'best street food in {city}?', 'haha same here',
   ],
-  any: ['hello everyone 👋', 'nice room yaar', 'hi from {city}!', 'first time in a voice room 😄', 'mic quality is great'],
+  any: [
+    'hello everyone 👋', 'nice room yaar', 'hi from {city}!', 'first time in a voice room 😄', 'mic quality is great',
+    'hola a todos, ¿qué tal? 👋', 'oi gente, tudo bem?', 'みんなこんにちは！', 'selam millet nasılsınız',
+  ],
 }
 
 const REACTIONS: VoiceReaction[] = ['heart', 'laugh', 'fire', 'clap', 'wow']
@@ -465,6 +468,15 @@ export class VoiceSim {
     this.emit(r, { type: 'ended' })
     this.stop(r)
     r.subs.clear()
+  }
+
+  /** A room text line's words (for the demo's translation), wherever it was said. */
+  lineText(id: number): string | null {
+    for (const r of this.rooms.values()) {
+      const line = r.lines.find((l) => l.id === id)
+      if (line) return line.kind === 'text' ? line.text : null
+    }
+    return null
   }
 
   async lines(roomId: string) {

@@ -76,10 +76,10 @@ export function ProfileCover({
         </>
       ) : (
         <span aria-hidden>
-          <span className="absolute -top-16 -left-10 size-56 rounded-full bg-white/18" />
-          <span className="absolute -right-12 -bottom-24 size-72 rounded-full bg-white/12" />
-          <span className="absolute top-6 right-[22%] size-14 rounded-full bg-white/16" />
-          <span className="absolute bottom-5 left-[30%] size-6 rounded-full bg-white/25" />
+          <span className="absolute -top-16 -inset-s-10 size-56 rounded-full bg-white/18" />
+          <span className="absolute -inset-e-12 -bottom-24 size-72 rounded-full bg-white/12" />
+          <span className="absolute top-6 inset-e-[22%] size-14 rounded-full bg-white/16" />
+          <span className="absolute bottom-5 inset-s-[30%] size-6 rounded-full bg-white/25" />
         </span>
       )}
       {children}
@@ -184,7 +184,7 @@ export function PromptCards({ prompts, accent, className }: { prompts: ProfilePr
         >
           <span
             aria-hidden
-            className="pointer-events-none absolute -top-14 -right-10 size-36 rounded-full"
+            className="pointer-events-none absolute -top-14 -inset-e-10 size-36 rounded-full"
             style={{ background: `radial-gradient(closest-side, color-mix(in srgb, var(--acc-${i % 2 ? 'from' : 'via'}) 32%, transparent), transparent)` }}
           />
           <p className={cn('relative text-[13px] font-bold', ACCENT_TEXT)}>{ft(`prompt.${p.q}`)}</p>

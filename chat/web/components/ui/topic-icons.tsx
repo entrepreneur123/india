@@ -261,7 +261,7 @@ export function TopicChip({ topic, label, className }: { topic: Topic; label: st
   return (
     <span
       className={cn(
-        'inline-flex h-7 max-w-full items-center gap-1.5 rounded-full bg-card pr-3 pl-2 text-[12px] font-semibold text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)] night:bg-[#26262c] night:shadow-none',
+        'inline-flex h-7 max-w-full items-center gap-1.5 rounded-full bg-card pe-3 ps-2 text-[12px] font-semibold text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)] night:bg-[#26262c] night:shadow-none',
         className,
       )}
     >

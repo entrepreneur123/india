@@ -74,7 +74,7 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
       aria-label={ft('post.by', { name: a.name })}
     >
       <header className="flex items-center gap-3 px-4 pt-4">
-        <button type="button" onClick={() => openProfile(a.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl text-left">
+        <button type="button" onClick={() => openProfile(a.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl text-start">
           <AccentAvatar name={a.name} src={a.photoUrl} size={40} accent={a.accent} />
           <span className="min-w-0">
             <span className="flex items-center gap-1.5 text-[15px] leading-tight font-bold">
@@ -96,7 +96,7 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
-          className="-mr-1 grid size-10 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+          className="-me-1 grid size-10 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
           aria-label={ft('post.menu')}
         >
           <Ellipsis className="size-5" aria-hidden />
@@ -109,8 +109,8 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
           style={{ background: 'linear-gradient(140deg, var(--acc-to) 0%, color-mix(in srgb, var(--acc-via) 70%, var(--acc-to)) 100%)' }}
           onPointerUp={onMediaTap}
         >
-          <span aria-hidden className="absolute -top-12 -left-8 size-40 rounded-full bg-white/10" />
-          <span aria-hidden className="absolute -right-10 -bottom-16 size-48 rounded-full bg-white/10" />
+          <span aria-hidden className="absolute -top-12 -inset-s-8 size-40 rounded-full bg-white/10" />
+          <span aria-hidden className="absolute -inset-e-10 -bottom-16 size-48 rounded-full bg-white/10" />
           <p className="relative text-[22px] leading-snug font-bold tracking-tight text-balance whitespace-pre-wrap text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.25)]">
             {post.text}
           </p>
@@ -172,7 +172,7 @@ export function PostCard({ post: initial, onComments, flat, className }: { post:
         <button
           type="button"
           onClick={() => onComments(false)}
-          className="block px-4 pb-4 text-left text-sm font-semibold text-muted-foreground hover:text-foreground"
+          className="block px-4 pb-4 text-start text-sm font-semibold text-muted-foreground hover:text-foreground"
         >
           {plural(post.comments, 'post.viewComments.one', 'post.viewComments.other')}
         </button>
@@ -223,7 +223,7 @@ function PostMenu({ post, mine, open, onClose }: { post: FeedPost; mine: boolean
       setBusy(false)
     }
   }
-  const row = 'flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left text-[15px] font-semibold transition-colors duration-150 hover:bg-muted'
+  const row = 'flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-start text-[15px] font-semibold transition-colors duration-150 hover:bg-muted'
   return (
     <>
       <Modal open={open} onClose={close} variant="sheet" hideHeader className="md:max-w-sm">

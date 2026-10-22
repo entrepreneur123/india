@@ -90,11 +90,15 @@
 :root {
   /*
    * Latin and Vietnamese: Plus Jakarta Sans (its Vietnamese face is in the CSS with a unicode-range, so it is
-   * fetched only when Vietnamese text is on screen). Devanagari and Bengali: the phone's or PC's own fonts
-   * (Noto on Android, Nirmala UI on Windows, the Sangam fonts on Apple), so Hindi and Bengali cost no download.
+   * fetched only when Vietnamese text is on screen). Every other script (Indic, Arabic, Hebrew, Cyrillic, Thai,
+   * Chinese, Japanese, Korean…) uses the phone's or PC's own fonts (Noto on Android, Segoe UI / Nirmala UI /
+   * Yu Gothic / Microsoft YaHei on Windows, the system fonts on Apple), so no language costs a download.
    */
   --font-stack: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans',
-    'Noto Sans Devanagari', 'Noto Sans Bengali', 'Nirmala UI', 'Kohinoor Devanagari', 'Bangla Sangam MN', sans-serif;
+    'Noto Sans Devanagari', 'Noto Sans Bengali', 'Nirmala UI', 'Kohinoor Devanagari', 'Bangla Sangam MN',
+    'Noto Sans Arabic', 'Noto Nastaliq Urdu', 'Noto Sans Hebrew', 'Noto Sans Thai', 'Geeza Pro',
+    'PingFang SC', 'PingFang TC', 'Hiragino Sans', 'Apple SD Gothic Neo', 'Microsoft YaHei', 'Microsoft JhengHei',
+    'Yu Gothic', 'Malgun Gothic', 'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', sans-serif;
 
   --background: #ffffff;
   --foreground: #1f1f1f;
@@ -116,7 +120,7 @@
   --accent-foreground: #ffffff;
   --destructive: #c5221f;
   --online: #1e8e3e;
-  /* Chats look like the messenger India already uses: warm wallpaper, green sent / white received bubbles. */
+  /* Chats look like the messenger most people already use: warm wallpaper, green sent / white received bubbles. */
   --chat-wall: #efeae2;
   --bubble-out: #d9fdd3;
   --bubble-in: #ffffff;

@@ -90,7 +90,7 @@ export function Composer({
               <button
                 type="button"
                 onClick={() => setFile(null)}
-                className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-foreground text-background"
+                className="absolute -top-2 -inset-e-2 grid size-6 place-items-center rounded-full bg-foreground text-background"
                 aria-label={t('composer.remove')}
               >
                 <X className="size-3.5" aria-hidden />

@@ -2,19 +2,72 @@
 
 import * as m from 'motion/react-m'
 import { useState, type ReactNode } from 'react'
-import { Check, CheckCheck, Eye } from 'lucide-react'
+import { Check, CheckCheck, Copy, Eye, Languages, Undo2 } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
+import { shownText, TranslateFooter, useLineTranslation, type LineTranslation } from '@/components/translate'
+import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
+import { MessageMenu, useMenuGesture, type MenuAction } from './message-menu'
+
+/** A line's Translate / Show original / Copy actions (the menu of a chat bubble or a room line). */
+export function useLineActions(tr: LineTranslation, text: string | null | undefined): MenuAction[] {
+  const { t } = useI18n()
+  const toast = useToast()
+  const out: MenuAction[] = []
+  if (tr.can) {
+    if (tr.showing) out.push({ icon: <Undo2 className="size-4.5 rtl:-scale-x-100" aria-hidden />, label: t('tr.showOriginal'), onClick: tr.showOriginal })
+    else if (tr.hidden) out.push({ icon: <Languages className="size-4.5" aria-hidden />, label: t('tr.showTranslation'), onClick: tr.showTranslation })
+    else out.push({ icon: <Languages className="size-4.5" aria-hidden />, label: t('tr.translate'), onClick: tr.translate })
+  }
+  if (text && typeof navigator !== 'undefined' && navigator.clipboard) {
+    out.push({
+      icon: <Copy className="size-4.5" aria-hidden />,
+      label: t('tr.copy'),
+      onClick: () =>
+        void navigator.clipboard.writeText(shownText(tr, text)).then(
+          () => toast.show(t('tr.copied'), 'success'),
+          () => undefined,
+        ),
+    })
+  }
+  return out
+}
+
+/** With a mouse: a small Translate button beside someone's bubble on hover (touch has the long-press menu). */
+export function HoverTranslate({ tr, className }: { tr: LineTranslation; className?: string }) {
+  const { t } = useI18n()
+  if (!tr.can || tr.showing || tr.hidden || tr.entry?.status === 'loading') return null
+  return (
+    <button
+      type="button"
+      onClick={tr.translate}
+      aria-label={t('tr.translate')}
+      title={t('tr.translate')}
+      className={cn(
+        'grid size-8 shrink-0 place-items-center self-center rounded-full text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:bg-muted hover:text-foreground focus-visible:opacity-100 pointer-coarse:hidden',
+        className,
+      )}
+    >
+      <Languages className="size-4" aria-hidden />
+    </button>
+  )
+}
 
 /**
- * Chat bubbles in the style people in India use every day: green (mine) / white (theirs) on a warm wallpaper,
- * a tail on the first bubble of a run, and the time with read ticks tucked into the bubble's corner.
+ * Chat bubbles in the familiar messenger style: green (mine) / white (theirs) on a warm wallpaper, a tail on the
+ * first bubble of a run, and the time with read ticks tucked into the bubble's corner. Someone else's text can be
+ * translated (by itself when it looks like another language, or from the long-press / right-click menu).
  */
 export function MessageBubble({ message, grouped, read }: { message: Message; grouped: boolean; read?: boolean }) {
   const { t, clock } = useI18n()
   const mine = message.fromMe
+  const tr = useLineTranslation('chat', message.id, message.text, mine)
+  const actions = useLineActions(tr, message.text)
+  const [menu, setMenu] = useState(false)
+  const gesture = useMenuGesture(actions.length ? () => setMenu(true) : null)
+  const text = message.text ? shownText(tr, message.text) : null
   const meta = (
     <>
       {clock(message.at)}
@@ -29,27 +82,40 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
   )
   return (
     <m.li
+      ref={tr.ref}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-      className={cn('flex max-w-[82%] md:max-w-[65%]', mine ? 'self-end' : 'self-start', grouped ? 'mt-0.5' : 'mt-2')}
+      className={cn(
+        'group relative flex max-w-[82%] gap-1 md:max-w-[65%] pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]',
+        mine ? 'self-end' : 'self-start',
+        grouped ? 'mt-0.5' : 'mt-2',
+      )}
+      {...gesture}
     >
       <Bubble mine={mine} tail={!grouped} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
         {message.media ? (
           <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
         ) : null}
-        {message.text ? (
+        {message.text && text ? (
           // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
           <>
             <LinkPreview text={message.text} className={cn('mb-1 w-72 max-w-full', message.media && 'mx-1')} />
-            <p className={cn('relative text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}>
-              <LinkText text={message.text} />
+            <p
+              dir="auto"
+              lang={tr.showing ? tr.target : undefined}
+              className={cn('relative text-start text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}
+            >
+              <LinkText text={text} />
               <MetaSpacer>{meta}</MetaSpacer>
-              <span className="absolute -bottom-0.5 right-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
+              <span className="absolute -bottom-0.5 inset-e-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
             </p>
+            <TranslateFooter tr={tr} className={cn(message.media && 'px-1.5')} />
           </>
         ) : null}
       </Bubble>
+      {mine ? null : <HoverTranslate tr={tr} />}
+      {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
   )
 }
@@ -61,7 +127,7 @@ export function Bubble({ mine, tail, className, children }: { mine: boolean; tai
       className={cn(
         'relative min-w-0 rounded-lg text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]',
         mine ? 'bg-bubble-out' : 'bg-bubble-in',
-        tail && (mine ? 'rounded-tr-none' : 'rounded-tl-none'),
+        tail && (mine ? 'rounded-se-none' : 'rounded-ss-none'),
         className,
       )}
     >
@@ -69,7 +135,8 @@ export function Bubble({ mine, tail, className, children }: { mine: boolean; tai
         <svg
           viewBox="0 0 8 13"
           aria-hidden
-          className={cn('absolute top-0 h-[13px] w-2', mine ? '-right-2 text-bubble-out' : '-left-2 text-bubble-in')}
+          // The tail sits on the bubble's outer top corner and mirrors with the layout (right to left).
+          className={cn('absolute top-0 h-[13px] w-2 rtl:-scale-x-100', mine ? '-inset-e-2 text-bubble-out' : '-inset-s-2 text-bubble-in')}
         >
           <path
             fill="currentColor"
@@ -85,7 +152,7 @@ export function Bubble({ mine, tail, className, children }: { mine: boolean; tai
 /** Invisible copy of the time that reserves room on the last line, so the real one never covers the text. */
 export function MetaSpacer({ children }: { children: ReactNode }) {
   return (
-    <span aria-hidden className="invisible ml-2 inline-flex items-center gap-0.5 align-bottom text-[11px] leading-none">
+    <span aria-hidden className="invisible ms-2 inline-flex items-center gap-0.5 align-bottom text-[11px] leading-none">
       {children}
     </span>
   )
@@ -128,7 +195,7 @@ export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message[
         </button>
       ) : null}
       {meta && revealed && media.kind === 'image' ? (
-        <span className="pointer-events-none absolute bottom-1 right-1.5 flex items-center gap-0.5 rounded-full bg-black/35 px-1.5 py-0.5 text-[11px] leading-none text-white">
+        <span className="pointer-events-none absolute bottom-1 inset-e-1.5 flex items-center gap-0.5 rounded-full bg-black/35 px-1.5 py-0.5 text-[11px] leading-none text-white">
           {meta}
         </span>
       ) : null}
@@ -159,7 +226,7 @@ export function TypingBubble({ name }: { name: string }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-      className="mt-2 origin-bottom-left self-start"
+      className="mt-2 origin-bottom-left self-start rtl:origin-bottom-right"
       aria-live="polite"
     >
       <Bubble mine={false} tail className="flex h-9 items-center px-3.5">

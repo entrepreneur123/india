@@ -72,7 +72,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="absolute top-4 inset-e-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label={t('common.close')}
         >
           <X className="size-5" aria-hidden />
@@ -110,7 +110,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                 <button
                   type="button"
                   onClick={onClose}
-                  className="absolute top-3 right-3 grid size-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition-colors hover:bg-black/45"
+                  className="absolute top-3 inset-e-3 grid size-9 place-items-center rounded-full bg-black/30 text-white backdrop-blur transition-colors hover:bg-black/45"
                   aria-label={t('common.close')}
                 >
                   <X className="size-5" aria-hidden />

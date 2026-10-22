@@ -46,7 +46,7 @@ function Row({ icon, label, onClick, danger, disabled }: { icon: ReactNode; labe
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'flex h-13 w-full items-center gap-4 px-6 text-left text-[15px] font-medium transition-colors duration-150 hover:bg-muted disabled:opacity-45 disabled:hover:bg-transparent',
+        'flex h-13 w-full items-center gap-4 px-6 text-start text-[15px] font-medium transition-colors duration-150 hover:bg-muted disabled:opacity-45 disabled:hover:bg-transparent',
         danger && 'text-destructive',
       )}
     >
@@ -80,7 +80,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
   return (
     <div className="flex items-center gap-3 px-6 py-2">
       {onClick ? (
-        <button type="button" onClick={onClick} className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-xl p-1 text-left hover:bg-muted">
+        <button type="button" onClick={onClick} className="-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-xl p-1 text-start hover:bg-muted">
           {body}
         </button>
       ) : (
@@ -309,8 +309,8 @@ export function AudienceSheet({
           {t('voice.searchPeople')}
         </label>
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <TextInput id={`${id}-q`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('voice.searchPeople')} className="h-11 pl-10" type="search" autoComplete="off" />
+          <Search className="pointer-events-none absolute top-1/2 inset-s-3.5 size-4.5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <TextInput id={`${id}-q`} value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('voice.searchPeople')} className="h-11 ps-10" type="search" autoComplete="off" />
         </div>
       </div>
       <ul className="pb-4">
@@ -508,7 +508,7 @@ export function ReportRoomSheet({ roomId, open, onClose }: { roomId: string; ope
                   setBusy(null)
                 }
               }}
-              className="flex w-full items-center gap-4 px-6 py-3 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60"
+              className="flex w-full items-center gap-4 px-6 py-3 text-start transition-colors duration-150 hover:bg-muted disabled:opacity-60"
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-[15px] font-semibold">{t(r.label)}</span>

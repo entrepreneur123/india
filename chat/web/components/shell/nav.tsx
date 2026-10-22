@@ -50,7 +50,7 @@ export function Sidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        'sticky top-0 h-dvh w-20 shrink-0 flex-col border-r border-border bg-background px-3 py-6 lg:w-64 lg:px-4',
+        'sticky top-0 h-dvh w-20 shrink-0 flex-col border-e border-border bg-background px-3 py-6 lg:w-64 lg:px-4',
         className,
       )}
       aria-label={t('nav.main')}
@@ -110,7 +110,7 @@ export function Sidebar({ className }: { className?: string }) {
             type="button"
             onClick={openPaywall}
             onPointerEnter={() => preloadScreen('paywall')}
-            className="hidden rounded-2xl border border-border p-4 text-left transition-colors duration-150 hover:bg-muted lg:block"
+            className="hidden rounded-2xl border border-border p-4 text-start transition-colors duration-150 hover:bg-muted lg:block"
           >
             <span className="block text-sm font-bold text-primary-text">{t('common.plus')}</span>
             <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{t('panel.plusTitle')}</span>
@@ -119,7 +119,7 @@ export function Sidebar({ className }: { className?: string }) {
         <button
           type="button"
           onClick={() => setTab('me')}
-          className="flex items-center justify-center gap-3 rounded-full p-1.5 text-left transition-colors duration-150 hover:bg-muted lg:justify-start lg:p-2"
+          className="flex items-center justify-center gap-3 rounded-full p-1.5 text-start transition-colors duration-150 hover:bg-muted lg:justify-start lg:p-2"
         >
           <Avatar name={me.name} src={me.photoUrl} size={36} />
           <span className="hidden min-w-0 lg:block">
@@ -171,7 +171,7 @@ export function BottomTabs({ hidden }: { hidden?: boolean }) {
               >
                 <Icon className="size-5" strokeWidth={active ? 2.4 : 2} aria-hidden />
                 {item.tab === 'recent' ? (
-                  <CountBadge n={recentCount(badges)} className="absolute -top-1 right-2 ring-2 ring-background" />
+                  <CountBadge n={recentCount(badges)} className="absolute -top-1 inset-e-2 ring-2 ring-background" />
                 ) : null}
               </span>
               {item.tab === 'recent' && recentCount(badges) ? (
@@ -191,7 +191,7 @@ function NavCount({ n, label }: { n: number; label?: string }) {
   if (n <= 0) return null
   return (
     <>
-      <CountBadge n={n} className="absolute top-1.5 right-3 z-10 ring-2 ring-background lg:static lg:ml-auto lg:ring-0" />
+      <CountBadge n={n} className="absolute top-1.5 inset-e-3 z-10 ring-2 ring-background lg:static lg:ms-auto lg:ring-0" />
       {label ? <span className="sr-only">{label}</span> : null}
     </>
   )

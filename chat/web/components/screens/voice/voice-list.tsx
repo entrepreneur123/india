@@ -111,7 +111,7 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
       aria-disabled={blocked}
       style={{ '--k': kindColor(room.category) } as CSSProperties}
       className={cn(
-        'relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-left transition-[box-shadow,background-color] duration-150',
+        'relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-start transition-[box-shadow,background-color] duration-150',
         blocked ? 'opacity-60' : 'hover:shadow-e2 active:bg-muted',
         here || room.mine ? 'border-[var(--k)]' : 'border-border',
       )}

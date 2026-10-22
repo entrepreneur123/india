@@ -240,7 +240,7 @@ function Intro({
         className="relative flex flex-col items-center overflow-hidden px-6 pt-7 pb-5 text-center"
         style={{ background: 'linear-gradient(180deg, color-mix(in srgb, #ff3d68 12%, var(--card)) 0%, var(--card) 100%)' }}
       >
-        <span aria-hidden className="pointer-events-none absolute -top-24 -left-16 size-56 rounded-full bg-[#ff7a45]/10 night:bg-white/4" />
+        <span aria-hidden className="pointer-events-none absolute -top-24 -inset-s-16 size-56 rounded-full bg-[#ff7a45]/10 night:bg-white/4" />
         <VerifyHero />
         <h2 className="mt-3 text-[24px] leading-tight font-extrabold tracking-tight text-balance">
           {tt(gate ? 'verify.gateTitle' : 'verify.title')}
@@ -252,7 +252,7 @@ function Intro({
           {steps.map((s, i) => (
             <li key={s.title} className={cn('flex items-center gap-3.5 px-4 py-3', i > 0 && 'border-t border-border/70')}>
               <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-card shadow-[0_1px_2px_rgb(0_0_0/0.06)] night:bg-white/8">{s.icon}</span>
-              <span className="min-w-0 text-left">
+              <span className="min-w-0 text-start">
                 <span className="block text-[15px] font-bold">{tt(s.title)}</span>
                 <span className="block text-[13px] leading-snug text-muted-foreground">{tt(s.body)}</span>
               </span>
@@ -265,14 +265,14 @@ function Intro({
             <span className="text-[13px] font-bold text-[#17804f] night:text-[#5fd39b]">{tt('verify.time')}</span>
           </li>
         </ol>
-        <div className="flex gap-3 rounded-3xl bg-[color-mix(in_srgb,#8e5cf7_8%,var(--card))] px-4 py-3.5 text-left ring-1 ring-[color-mix(in_srgb,#8e5cf7_20%,transparent)]">
+        <div className="flex gap-3 rounded-3xl bg-[color-mix(in_srgb,#8e5cf7_8%,var(--card))] px-4 py-3.5 text-start ring-1 ring-[color-mix(in_srgb,#8e5cf7_20%,transparent)]">
           <KeepIcon size={26} className="mt-0.5" />
           <span className="min-w-0">
             <span className="block text-sm font-bold">{tt('verify.keepTitle')}</span>
             <span className="block text-[13px] leading-snug text-muted-foreground">{tt('verify.keepBody')}</span>
           </span>
         </div>
-        <div className="flex gap-3 px-1 text-left">
+        <div className="flex gap-3 px-1 text-start">
           <VerifiedMark size={22} label={null} className="mt-0.5" />
           <span className="min-w-0">
             <span className="block text-sm font-bold">{tt('verify.whyTitle')}</span>
@@ -318,7 +318,7 @@ function DemoCheck({ onDone }: { onDone: (o: KycDemoOutcome) => Promise<void> })
       <span className="rounded-full bg-[#f7b500]/18 px-3 py-1 text-xs font-bold text-[#8a5a00] night:text-[#f9c43a]">{tt('verify.demoTitle')}</span>
       <div className="mt-5 flex w-full max-w-xs flex-col gap-2.5">
         {(['verify.demoScan', 'verify.demoFace'] as const).map((k, i) => (
-          <div key={k} className="flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 text-left">
+          <div key={k} className="flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 text-start">
             {i === 0 ? <IdCardIcon size={26} /> : <SelfieIcon size={26} />}
             <span className="min-w-0 flex-1 text-sm font-semibold">{tt(k)}</span>
             {step > i ? <VerifiedMark size={18} label={null} /> : step === i ? <LoaderCircle className="size-4.5 animate-spin text-muted-foreground" aria-hidden /> : null}
@@ -369,7 +369,7 @@ export function MannerLowSheet({ open, onClose }: { open: boolean; onClose: () =
         </div>
         <h2 className="mt-4 text-[22px] leading-tight font-extrabold tracking-tight text-balance">{tt('low.title')}</h2>
         <p className="mt-2 text-[15px] leading-relaxed text-pretty text-muted-foreground">{tt('low.body', { score })}</p>
-        <ul className="mt-4 flex w-full flex-col gap-2 text-left">
+        <ul className="mt-4 flex w-full flex-col gap-2 text-start">
           <li className="rounded-2xl bg-muted px-4 py-3 text-sm leading-snug">{tt('low.how')}</li>
           <li className="rounded-2xl bg-muted px-4 py-3 text-sm leading-snug">{tt('low.tips')}</li>
         </ul>

@@ -6,8 +6,10 @@ import { Baby, Check, ChevronRight, ExternalLink, FileText, Languages, LogOut, M
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
+import { TARGET_NAMES, TARGETS, type Target } from '@/lib/translate'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
+import { useTranslate } from '@/components/translate'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -21,6 +23,8 @@ export function SettingsScreen() {
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [targetOpen, setTargetOpen] = useState(false)
+  const tr = useTranslate()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [busy, setBusy] = useState<'out' | 'delete' | null>(null)
 
@@ -62,6 +66,24 @@ export function SettingsScreen() {
           <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
         </Group>
 
+        {tr?.available ? (
+          <Group title={t('settings.translation')}>
+            <Toggle
+              icon={Languages}
+              label={t('settings.autoTranslate')}
+              body={t('settings.autoTranslateBody')}
+              on={tr.autoSetting}
+              onChange={tr.setAuto}
+            />
+            <Item
+              icon={Languages}
+              label={t('settings.translateTo')}
+              value={tr.targetSetting ? TARGET_NAMES[tr.targetSetting] : t('settings.translateToApp', { name: TARGET_NAMES[tr.appTarget] })}
+              onClick={() => setTargetOpen(true)}
+            />
+          </Group>
+        ) : null}
+
         <Group title={t('settings.safety')}>
           <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
           <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />
@@ -94,7 +116,7 @@ export function SettingsScreen() {
                     setLangOpen(false)
                   }}
                   className={cn(
-                    'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors duration-150 hover:bg-muted',
+                    'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-150 hover:bg-muted',
                     on && 'bg-primary-soft hover:bg-primary-soft',
                   )}
                 >
@@ -111,6 +133,39 @@ export function SettingsScreen() {
           })}
         </ul>
       </Modal>
+
+      {tr ? (
+        <Modal open={targetOpen} onClose={() => setTargetOpen(false)} variant="sheet" title={t('settings.chooseTarget')}>
+          <ul className="flex flex-col p-3 pb-5" role="radiogroup" aria-label={t('settings.translateTo')}>
+            {([null, ...TARGETS] as (Target | null)[]).map((id) => {
+              const on = id === tr.targetSetting
+              return (
+                <li key={id ?? 'app'}>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    data-autofocus={on ? true : undefined}
+                    onClick={() => {
+                      tr.setTarget(id)
+                      setTargetOpen(false)
+                    }}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-150 hover:bg-muted',
+                      on && 'bg-primary-soft hover:bg-primary-soft',
+                    )}
+                  >
+                    <span lang={id ?? undefined} className={cn('min-w-0 flex-1 text-[15px] font-semibold', on && 'text-primary-text')} style={{ fontFamily: 'system-ui, sans-serif' }}>
+                      {id ? TARGET_NAMES[id] : t('settings.translateToApp', { name: TARGET_NAMES[tr.appTarget] })}
+                    </span>
+                    {on ? <Check className="size-5 shrink-0 text-primary-text" aria-hidden /> : null}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </Modal>
+      ) : null}
 
       <Modal open={rulesOpen} onClose={() => setRulesOpen(false)} title={t('settings.rules')}>
         <ol className="flex flex-col gap-3 p-6 pt-4">
@@ -160,6 +215,36 @@ function Icon({ icon: I, danger }: { icon: typeof Phone; danger?: boolean }) {
   )
 }
 
+/** An on/off setting (a switch), with a line of explanation under its label. */
+function Toggle({ icon, label, body, on, onChange }: { icon: typeof Phone; label: string; body?: string; on: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={() => onChange(!on)}
+      className="flex w-full items-center gap-3 px-3 py-3 text-start transition-colors duration-150 hover:bg-muted"
+    >
+      <Icon icon={icon} />
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="text-[15px] font-medium">{label}</span>
+        {body ? <span className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{body}</span> : null}
+      </span>
+      <span
+        aria-hidden
+        className={cn('relative h-6 w-10 shrink-0 rounded-full transition-colors duration-150', on ? 'bg-primary' : 'bg-input')}
+      >
+        <span
+          className={cn(
+            'absolute top-0.5 size-5 rounded-full bg-white shadow transition-[inset-inline-start] duration-150',
+            on ? 'inset-s-[1.125rem]' : 'inset-s-0.5',
+          )}
+        />
+      </span>
+    </button>
+  )
+}
+
 function Item({
   icon,
   label,
@@ -195,7 +280,7 @@ function Item({
       {onClick ? <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden /> : null}
     </>
   )
-  const cls = 'flex w-full items-center gap-3 px-3 py-3 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60'
+  const cls = 'flex w-full items-center gap-3 px-3 py-3 text-start transition-colors duration-150 hover:bg-muted disabled:opacity-60'
   if (href) {
     return (
       <a href={href} target={href.startsWith('mailto:') ? undefined : '_blank'} rel="noreferrer" className={cls}>

@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { INTERESTS_KEY, read, TOUR_KEY, write } from './first-run'
 import { InterestsSheet } from './interests-sheet'
+import { useI18n } from '@/components/i18n'
 import { useSocialT, type SocialKey } from './social-text'
 
 const CARDS: { icon: LucideIcon; title: SocialKey; body: SocialKey }[] = [
@@ -21,6 +22,7 @@ const CARDS: { icon: LucideIcon; title: SocialKey; body: SocialKey }[] = [
 export function Onboarding({ onDone }: { onDone: () => void }) {
   const { me } = useApp()
   const { st } = useSocialT()
+  const { rtl } = useI18n()
   const [step, setStep] = useState<'interests' | 'tour' | 'done'>(() =>
     !me.interests?.length && read(INTERESTS_KEY) === null ? 'interests' : read(TOUR_KEY) === null ? 'tour' : 'done',
   )
@@ -50,9 +52,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             <m.div
               key={card}
               className="flex flex-col items-center"
-              initial={{ opacity: 0, x: 16 }}
+              initial={{ opacity: 0, x: rtl ? -16 : 16 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -16 }}
+              exit={{ opacity: 0, x: rtl ? 16 : -16 }}
               transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
             >
               <span className="mt-6 grid size-20 place-items-center rounded-[26px] bg-primary-soft text-primary-text">

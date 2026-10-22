@@ -54,7 +54,7 @@ export function RecentScreen() {
               label: (
                 <>
                   {t('recent.friends')}
-                  <CountBadge n={incoming + unreadFriends} className="ml-1.5" />
+                  <CountBadge n={incoming + unreadFriends} className="ms-1.5" />
                 </>
               ),
             },
@@ -63,7 +63,7 @@ export function RecentScreen() {
               label: (
                 <>
                   {t('recent.matches')}
-                  <CountBadge n={unreadMatches} className="ml-1.5" />
+                  <CountBadge n={unreadMatches} className="ms-1.5" />
                 </>
               ),
             },
@@ -129,7 +129,7 @@ function Failed({ retry }: { retry: () => void }) {
 function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
   const { openProfile } = useApp()
   return (
-    <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left">
+    <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start">
       <Avatar name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
@@ -201,7 +201,7 @@ function FriendsList({
           {incoming.map((f) => (
             <Row key={f.profile.id} className="flex-wrap bg-muted sm:flex-nowrap">
               <Who p={f.profile} detail={t('recent.wants')} />
-              <div className="ml-auto flex gap-2">
+              <div className="ms-auto flex gap-2">
                 <Button
                   size="sm"
                   variant="outline"

@@ -70,7 +70,7 @@ export function MeScreen() {
             ) : null
           }
           coverSlot={
-            <div className="absolute top-3 right-3 flex items-center gap-2">
+            <div className="absolute top-3 inset-e-3 flex items-center gap-2">
               <Button
                 size="sm"
                 className="bg-white/90 text-[#1f1f1f] shadow-e1 backdrop-blur hover:bg-white"
@@ -124,7 +124,7 @@ export function MeScreen() {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-sm font-semibold">{ft('style.prompts')}</h2>
-                <Button size="sm" variant="ghost" className="-mr-3" onClick={openStyle}>
+                <Button size="sm" variant="ghost" className="-me-3" onClick={openStyle}>
                   {ft('style.promptsEdit')}
                 </Button>
               </div>
@@ -134,7 +134,7 @@ export function MeScreen() {
             <button
               type="button"
               onClick={openStyle}
-              className="flex items-center gap-4 rounded-3xl border border-dashed border-input p-4 text-left transition-colors duration-150 hover:bg-muted"
+              className="flex items-center gap-4 rounded-3xl border border-dashed border-input p-4 text-start transition-colors duration-150 hover:bg-muted"
             >
               <IcebreakerIcon size={36} />
               <span className="min-w-0">
@@ -147,7 +147,7 @@ export function MeScreen() {
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-semibold">{st('interests.label')}</h2>
               {me.interests?.length ? (
-                <Button size="sm" variant="ghost" className="-mr-3" onClick={() => setInterestsOpen(true)}>
+                <Button size="sm" variant="ghost" className="-me-3" onClick={() => setInterestsOpen(true)}>
                   {st('interests.edit')}
                 </Button>
               ) : null}
@@ -158,7 +158,7 @@ export function MeScreen() {
               <button
                 type="button"
                 onClick={() => setInterestsOpen(true)}
-                className="rounded-2xl border border-dashed border-input px-4 py-3 text-left text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+                className="rounded-2xl border border-dashed border-input px-4 py-3 text-start text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
               >
                 {st('interests.add')}
               </button>

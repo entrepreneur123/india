@@ -82,7 +82,7 @@ export function RoomsScreen() {
 
         <div className="flex gap-2 sm:gap-3" role="search">
           <label className="relative flex h-11 min-w-0 flex-1 items-center rounded-full border border-input bg-card transition-colors duration-150 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-            <Search className="pointer-events-none absolute left-3.5 size-4.5 text-muted-foreground" aria-hidden />
+            <Search className="pointer-events-none absolute inset-s-3.5 size-4.5 text-muted-foreground" aria-hidden />
             <span className="sr-only">{st('rooms.search')}</span>
             <input
               type="search"
@@ -90,13 +90,13 @@ export function RoomsScreen() {
               maxLength={40}
               onChange={(e) => setText(e.target.value)}
               placeholder={st('rooms.searchPlaceholder')}
-              className="h-full min-w-0 flex-1 rounded-full bg-transparent pr-10 pl-10 text-[15px] outline-none [&::-webkit-search-cancel-button]:hidden"
+              className="h-full min-w-0 flex-1 rounded-full bg-transparent pe-10 ps-10 text-[15px] outline-none [&::-webkit-search-cancel-button]:hidden"
             />
             {text ? (
               <button
                 type="button"
                 onClick={() => setText('')}
-                className="absolute right-1.5 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted"
+                className="absolute inset-e-1.5 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted"
                 aria-label={st('rooms.clear')}
               >
                 <X className="size-4" aria-hidden />

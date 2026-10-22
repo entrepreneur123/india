@@ -75,7 +75,7 @@ export function CountrySelect({ value, onChange }: { value: Country; onChange: (
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t('country.code', { name: nameOf(value), dial: value.dial })}
-        className="flex h-12 items-center gap-2 rounded-xl border border-input bg-card pr-3 pl-3.5 text-[15px] font-semibold transition-colors duration-150 hover:bg-muted focus-visible:border-primary"
+        className="flex h-12 items-center gap-2 rounded-xl border border-input bg-card pe-3 ps-3.5 text-[15px] font-semibold transition-colors duration-150 hover:bg-muted focus-visible:border-primary"
       >
         <span className="text-xl leading-none" aria-hidden>
           {flagEmoji(value.iso)}
@@ -90,7 +90,7 @@ export function CountrySelect({ value, onChange }: { value: Country; onChange: (
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-            className="absolute top-full left-0 z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-e3"
+            className="absolute top-full inset-s-0 z-30 mt-2 w-72 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-e3"
           >
             <div className="flex items-center gap-2 border-b border-border px-3.5">
               <Search className="size-4 text-muted-foreground" aria-hidden />

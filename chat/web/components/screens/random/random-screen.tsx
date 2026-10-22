@@ -331,7 +331,7 @@ export function RandomScreen({ active }: { active: boolean }) {
             aria-labelledby="lobby-title"
           >
             <Aurora />
-            <BellButton className="absolute top-3 right-3 md:hidden" />
+            <BellButton className="absolute top-3 inset-e-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
               <span className="rounded-full p-1 ring-2 ring-primary-text/60">
                 <Avatar name={me.name} src={me.photoUrl} size={128} />
@@ -421,7 +421,7 @@ export function RandomScreen({ active }: { active: boolean }) {
             <Shuffle className="size-5" aria-hidden /> {t('leave.next')}
           </Button>
           <Button variant="secondary" size="lg" disabled={leaving} onClick={() => void leave(false)}>
-            <Undo2 className="size-5" aria-hidden /> {t('leave.lobby')}
+            <Undo2 className="size-5 rtl:-scale-x-100" aria-hidden /> {t('leave.lobby')}
           </Button>
         </div>
       </Modal>

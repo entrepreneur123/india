@@ -1,4 +1,4 @@
-// English: the source. Every other language must have exactly these keys (checked by TypeScript).
+// English: the source. Other languages use these keys (TypeScript refuses unknown ones); a key they leave out reads in English.
 const en = {
   // notifications
   'inbox.title': 'Notifications',

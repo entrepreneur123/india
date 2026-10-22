@@ -31,7 +31,7 @@ export function Paywall({ open, onClose }: { open: boolean; onClose: () => void 
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
+          className="absolute top-4 inset-e-4 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
           aria-label={t('common.close')}
         >
           <X className="size-5" aria-hidden />
@@ -69,7 +69,7 @@ export function Paywall({ open, onClose }: { open: boolean; onClose: () => void 
                 aria-checked={active}
                 onClick={() => setPlan(p.id)}
                 className={cn(
-                  'relative flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-colors duration-150',
+                  'relative flex items-center gap-3.5 rounded-2xl border p-4 text-start transition-colors duration-150',
                   active ? 'border-primary bg-primary-soft' : 'border-input hover:bg-muted',
                 )}
               >
@@ -111,7 +111,7 @@ export function Paywall({ open, onClose }: { open: boolean; onClose: () => void 
                 <path d="M15 12l3.2 3.1-11.6 6.6c-.6.3-1.3.4-1.9.3z" fill="#4285f4" />
                 <path d="M18.2 8.9l2.7 1.6c1.1.6 1.1 2.4 0 3l-2.7 1.6L15 12z" fill="#fbbc04" />
               </svg>
-              <span className="flex flex-col text-left leading-tight">
+              <span className="flex flex-col text-start leading-tight">
                 <span className="text-[10px] font-semibold tracking-wide uppercase opacity-80">{t('plus.getItOn')}</span>
                 <span className="text-lg font-bold">Google Play</span>
               </span>

@@ -1,9 +1,22 @@
 import en from './locales/en'
+import { isLang, langOfTag, type Lang } from './lang-tags'
 
-export type Lang = 'en' | 'hi' | 'bn' | 'pt-BR' | 'vi'
+export { LANG_IDS, detectLang, isLang, isRtl, langOfTag, pluralText, type Lang } from './lang-tags'
+
 export type TKey = keyof typeof en
-/** A complete translation: TypeScript refuses a language file with a missing (or unknown) key. */
-export type Dict = Record<TKey, string>
+/**
+ * Extra plural forms a language may add next to English's "x.one" / "x.other" (Intl.PluralRules categories:
+ * Arabic has all of them, Russian and Polish "few" and "many"…). Without them "other" is used.
+ */
+export type PluralForms<K extends string> = K extends `${infer B}.one` ? `${B}.${'zero' | 'two' | 'few' | 'many'}` : never
+/**
+ * A language file. Keys it leaves out are shown in English, so a translation can be added (or lag behind new
+ * English strings) without breaking anything; a key English doesn't have is refused by TypeScript.
+ */
+export type LocaleDict<K extends string> = Partial<Record<K | PluralForms<K>, string>>
+export type Dict = LocaleDict<TKey>
+/** English: every key. */
+export type FullDict = Record<TKey, string>
 export type Vars = Record<string, string | number>
 export type T = (key: TKey, vars?: Vars) => string
 
@@ -12,28 +25,42 @@ export const LANGS: { id: Lang; native: string; english: string }[] = [
   { id: 'en', native: 'English', english: 'English' },
   { id: 'hi', native: 'हिन्दी', english: 'Hindi' },
   { id: 'bn', native: 'বাংলা', english: 'Bengali' },
-  { id: 'pt-BR', native: 'Português (Brasil)', english: 'Portuguese' },
+  { id: 'ur', native: 'اردو', english: 'Urdu' },
+  { id: 'pa', native: 'ਪੰਜਾਬੀ', english: 'Punjabi' },
+  { id: 'mr', native: 'मराठी', english: 'Marathi' },
+  { id: 'gu', native: 'ગુજરાતી', english: 'Gujarati' },
+  { id: 'ta', native: 'தமிழ்', english: 'Tamil' },
+  { id: 'te', native: 'తెలుగు', english: 'Telugu' },
+  { id: 'kn', native: 'ಕನ್ನಡ', english: 'Kannada' },
+  { id: 'ml', native: 'മലയാളം', english: 'Malayalam' },
+  { id: 'ne', native: 'नेपाली', english: 'Nepali' },
+  { id: 'pt-BR', native: 'Português (Brasil)', english: 'Portuguese (Brazil)' },
+  { id: 'es', native: 'Español', english: 'Spanish' },
+  { id: 'fr', native: 'Français', english: 'French' },
+  { id: 'de', native: 'Deutsch', english: 'German' },
+  { id: 'it', native: 'Italiano', english: 'Italian' },
+  { id: 'nl', native: 'Nederlands', english: 'Dutch' },
+  { id: 'pl', native: 'Polski', english: 'Polish' },
+  { id: 'ro', native: 'Română', english: 'Romanian' },
+  { id: 'tr', native: 'Türkçe', english: 'Turkish' },
+  { id: 'ru', native: 'Русский', english: 'Russian' },
+  { id: 'uk', native: 'Українська', english: 'Ukrainian' },
+  { id: 'ar', native: 'العربية', english: 'Arabic' },
+  { id: 'fa', native: 'فارسی', english: 'Persian' },
+  { id: 'he', native: 'עברית', english: 'Hebrew' },
+  { id: 'sw', native: 'Kiswahili', english: 'Swahili' },
   { id: 'vi', native: 'Tiếng Việt', english: 'Vietnamese' },
+  { id: 'th', native: 'ไทย', english: 'Thai' },
+  { id: 'id', native: 'Bahasa Indonesia', english: 'Indonesian' },
+  { id: 'ms', native: 'Bahasa Melayu', english: 'Malay' },
+  { id: 'fil', native: 'Filipino', english: 'Filipino' },
+  { id: 'ja', native: '日本語', english: 'Japanese' },
+  { id: 'ko', native: '한국어', english: 'Korean' },
+  { id: 'zh-Hans', native: '简体中文', english: 'Chinese (Simplified)' },
+  { id: 'zh-Hant', native: '繁體中文', english: 'Chinese (Traditional)' },
 ]
 
 export const STORAGE_KEY = 'yaari_lang'
-
-export function isLang(v: unknown): v is Lang {
-  return LANGS.some((l) => l.id === v)
-}
-
-/** First supported language in the browser's list: bn-BD/bn-IN → bn, pt-* → pt-BR, vi → vi, hi → hi, else en. */
-export function detectLang(list: readonly string[]): Lang {
-  for (const tag of list) {
-    const base = tag.toLowerCase().split('-')[0]
-    if (base === 'bn') return 'bn'
-    if (base === 'pt') return 'pt-BR'
-    if (base === 'vi') return 'vi'
-    if (base === 'hi') return 'hi'
-    if (base === 'en') return 'en'
-  }
-  return 'en'
-}
 
 export function savedLang(): Lang | null {
   try {
@@ -52,18 +79,62 @@ export function saveLang(lang: Lang) {
   }
 }
 
-export const EN: Dict = en
+export const EN: FullDict = en
 
-// English ships with the app; the others are separate chunks, downloaded only by people who use them.
-const LOADERS: Record<Exclude<Lang, 'en'>, () => Promise<Dict>> = {
-  hi: () => import('./locales/hi').then((m) => m.default),
-  bn: () => import('./locales/bn').then((m) => m.default),
-  'pt-BR': () => import('./locales/pt-BR').then((m) => m.default),
-  vi: () => import('./locales/vi').then((m) => m.default),
+/** A chunk that failed to download (offline), as opposed to a language file that doesn't exist yet. */
+function isNetworkError(err: unknown) {
+  const e = err as { name?: string; message?: string } | null
+  return e?.name === 'ChunkLoadError' || /chunk|failed to fetch|networkerror|load failed/i.test(e?.message ?? '')
 }
 
+/**
+ * One set of strings in every language: English ships with the code; each other language is its own chunk,
+ * downloaded only by people who use it. `load` is `(lang) => import(\`./locales/${lang}\`)` written next to the
+ * files, so a new language file is picked up by the bundler with nothing to register. A language without a file
+ * (or a key a file leaves out) reads in English.
+ */
+export interface LocaleSet<D> {
+  en: D
+  /** What is already here for this language (English until its file has arrived). */
+  peek(lang: Lang): Partial<D> | undefined
+  load(lang: Lang): Promise<Partial<D>>
+}
+
+export function localeSet<D>(english: D, load: (lang: string) => Promise<{ default?: Partial<D> }>): LocaleSet<D> {
+  const ready = new Map<Lang, Partial<D>>([['en', english]])
+  const pending = new Map<Lang, Promise<Partial<D>>>()
+  return {
+    en: english,
+    peek: (lang) => ready.get(lang),
+    load(lang) {
+      const have = ready.get(lang)
+      if (have) return Promise.resolve(have)
+      let p = pending.get(lang)
+      if (!p) {
+        p = load(lang).then(
+          (mod) => {
+            const dict = mod?.default ?? {}
+            ready.set(lang, dict)
+            return dict
+          },
+          (err) => {
+            pending.delete(lang)
+            if (isNetworkError(err)) throw err // offline: try again next time
+            ready.set(lang, {}) // no file for this language yet: English
+            return {}
+          },
+        )
+        pending.set(lang, p)
+      }
+      return p
+    },
+  }
+}
+
+export const APP_TEXT = localeSet<FullDict>(en, (lang) => import(`./locales/${lang}`))
+
 export function loadDict(lang: Lang): Promise<Dict> {
-  return lang === 'en' ? Promise.resolve(EN) : LOADERS[lang]()
+  return APP_TEXT.load(lang)
 }
 
 export function fill(text: string, vars?: Vars) {
@@ -71,19 +142,19 @@ export function fill(text: string, vars?: Vars) {
   return text.replace(/\{(\w+)\}/g, (all, name: string) => (name in vars ? String(vars[name]) : all))
 }
 
-/** The BCP 47 tag for Intl (dates, times, numbers). English keeps the browser's region (en-IN, en-GB…). */
-export function intlLocale(lang: Lang): string {
-  if (lang !== 'en') return lang
-  if (typeof navigator !== 'undefined') {
-    for (const raw of navigator.languages ?? []) {
-      if (!raw.toLowerCase().startsWith('en')) continue
-      try {
-        // Some systems report tags Intl rejects ("en-US@posix"): keep only valid ones.
-        return Intl.getCanonicalLocales(raw.split('@')[0])[0]
-      } catch {
-        /* try the next one */
-      }
+/**
+ * The BCP 47 tag for Intl (dates, times, numbers): the browser's own tag when it is the same language (en-GB,
+ * es-MX, ar-EG keep their region's formats), else the UI language itself.
+ */
+export function intlLocale(lang: Lang, browser: readonly string[] = typeof navigator !== 'undefined' ? navigator.languages ?? [] : []): string {
+  for (const raw of browser) {
+    if (langOfTag(raw) !== lang) continue
+    try {
+      // Some systems report tags Intl rejects ("en-US@posix"): keep only valid ones.
+      return Intl.getCanonicalLocales(raw.split('@')[0])[0]
+    } catch {
+      /* try the next one */
     }
   }
-  return 'en-IN'
+  return lang
 }

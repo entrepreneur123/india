@@ -38,7 +38,7 @@ export function BellButton({ className }: { className?: string }) {
       )}
     >
       <Bell className="size-5.5" strokeWidth={2} aria-hidden />
-      <CountBadge n={n} className="absolute -top-0.5 -right-0.5 ring-2 ring-background" />
+      <CountBadge n={n} className="absolute -top-0.5 -inset-e-0.5 ring-2 ring-background" />
     </button>
   )
 }

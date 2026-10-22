@@ -75,7 +75,7 @@ export function OtpStep({
       <button
         type="button"
         onClick={onBack}
-        className="-ml-2 flex w-fit items-center gap-1.5 rounded-full px-2 py-1 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:text-foreground"
+        className="-ms-2 flex w-fit items-center gap-1.5 rounded-full px-2 py-1 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:text-foreground"
       >
         <ArrowLeft className="size-4 rtl:rotate-180" aria-hidden />
         {t('otp.change')}

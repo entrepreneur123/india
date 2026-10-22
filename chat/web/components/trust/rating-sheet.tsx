@@ -97,7 +97,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
               style={on ? { background: `color-mix(in srgb, ${tone} 13%, var(--card))`, '--tw-ring-color': tone } as React.CSSProperties : undefined}
             >
               {on ? (
-                <span className="absolute top-2.5 right-2.5 grid size-5 place-items-center rounded-full text-white" style={{ background: tone }}>
+                <span className="absolute top-2.5 inset-e-2.5 grid size-5 place-items-center rounded-full text-white" style={{ background: tone }}>
                   <Check className="size-3.5" strokeWidth={3} aria-hidden />
                 </span>
               ) : null}
@@ -118,7 +118,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.18, ease: [0.2, 0, 0, 1] }}
           >
-            <div className="mt-5 flex items-baseline justify-between gap-3 text-left">
+            <div className="mt-5 flex items-baseline justify-between gap-3 text-start">
               <h3 className="text-sm font-bold">{tt(good ? 'rate.goodTags' : 'rate.badTags')}</h3>
               <span className="text-xs font-semibold text-muted-foreground tabular-nums">
                 {tags.length}/{MAX_RATING_TAGS} · {tt('rate.upTo')}
@@ -151,7 +151,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
                 )
               })}
             </ul>
-            {good === false ? <p className="mt-3 text-left text-xs leading-snug text-muted-foreground">{tt('rate.reportHint')}</p> : null}
+            {good === false ? <p className="mt-3 text-start text-xs leading-snug text-muted-foreground">{tt('rate.reportHint')}</p> : null}
           </m.div>
         ) : null}
       </AnimatePresence>

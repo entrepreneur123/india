@@ -12,6 +12,7 @@ import { onGate } from '@/lib/gate'
 import { errorCode } from '@/lib/format'
 import { kycOffCached, markKycOff, markVerifyAsked, rememberRequired, verifyAsked } from '@/components/trust/store'
 import { useI18n } from '@/components/i18n'
+import { TranslateProvider } from '@/components/translate'
 import { NightContext } from '@/components/ui/modal'
 import { useSocialT } from '@/components/social/social-text'
 import type { VoiceControl } from '@/components/screens/voice/voice-session'
@@ -81,7 +82,7 @@ export function AppShell(props: Props) {
 function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOut }: Props) {
   const backend = useBackend()
   const toast = useToast()
-  const { t, lang, setLang } = useI18n()
+  const { t, lang, setLang, rtl } = useI18n()
   const [me, setMe] = useState(initialMe)
   const [tab, setTabState] = useState<Tab>('random')
   const [thread, setThread] = useState<Thread | null>(null)
@@ -365,6 +366,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
 
   return (
     <AppContext.Provider value={state}>
+      <TranslateProvider>
       <NightContext.Provider value={night}>
         <div className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}>
           <div className="mx-auto flex max-w-[1520px]">
@@ -404,9 +406,9 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                   <m.div
                     key={thread.matchId}
                     className="absolute inset-0 z-20 flex flex-col bg-background"
-                    initial={{ opacity: 0, x: 24 }}
+                    initial={{ opacity: 0, x: rtl ? -24 : 24 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 24 }}
+                    exit={{ opacity: 0, x: rtl ? -24 : 24 }}
                     transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
                   >
                     <ScreenBoundary>
@@ -501,6 +503,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           </ScreenBoundary>
         ) : null}
       </NightContext.Provider>
+      </TranslateProvider>
     </AppContext.Provider>
   )
 }

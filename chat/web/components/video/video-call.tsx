@@ -253,7 +253,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         dragElastic={0.15}
         dragMomentum={false}
         whileDrag={{ scale: 1.02 }}
-        className="absolute top-20 right-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-muted shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
+        className="absolute top-20 inset-e-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-muted shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
         aria-label={t('video.yourCamera')}
       >
         <video ref={localRef} autoPlay playsInline muted className={cn('size-full -scale-x-100 object-cover', !camera && 'opacity-0')} />

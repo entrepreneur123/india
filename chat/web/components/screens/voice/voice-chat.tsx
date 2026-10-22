@@ -14,7 +14,9 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { IcebreakerIcon, PollIcon, topicColor } from '@/components/ui/topic-icons'
-import { Bubble, MediaBubble, MetaSpacer, TypingDots } from '@/components/screens/chat/message-bubble'
+import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, TypingDots, useLineActions } from '@/components/screens/chat/message-bubble'
+import { MessageMenu } from '@/components/screens/chat/message-menu'
+import { shownText, TranslateFooter, useFollowLines, useLineTranslation } from '@/components/translate'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
 import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
@@ -56,7 +58,7 @@ export function VoiceChat({
   onIcebreaker?: () => void
   className?: string
 }) {
-  const { t, clock } = useI18n()
+  const { t } = useI18n()
   const { rt } = useRoomT()
   const toast = useToast()
   const lines = s.lines
@@ -70,8 +72,9 @@ export function VoiceChat({
   const lastSystem = [...(lines ?? [])].reverse().find((l) => l.kind === 'system')
   const lastIcebreaker = [...(lines ?? [])].reverse().find((l) => l.kind === 'icebreaker')?.id
   const quiet = !!lines && !lines.some((l) => l.kind !== 'system')
-  const room = s.room
 
+  // A line's translation makes it taller: the newest line stays in view.
+  useFollowLines(listRef, stick)
   // The list gets shorter (the typing row, the phone's keyboard, the stage opening): the newest line stays in view.
   useEffect(() => {
     const el = listRef.current
@@ -117,69 +120,6 @@ export function VoiceChat({
     stick.current = false
     el.scrollIntoView({ block: 'center', behavior: 'smooth' })
     setFlash(id)
-  }
-
-  const sent = (line: Sent, grouped: boolean) => {
-    const meta = clock(line.at)
-    const toMe = line.kind === 'text' && !line.fromMe ? mentionRanges(line.text, meName) : []
-    const sender = room ? memberOf(room, line.sender.id) : null
-    const role = sender ? roleLabel(sender, t) : null
-    const name =
-      line.fromMe || grouped ? null : (
-        <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind === 'photo' && 'px-1.5')}>
-          <button
-            type="button"
-            onClick={() => onPerson(line.sender.id)}
-            className="block min-w-0 truncate text-[12.5px] leading-5 font-semibold hover:underline"
-            style={{ color: nameColor(line.sender.id) }}
-          >
-            {line.sender.name}
-          </button>
-          {role ? <RoleBadge role={sender!.role} label={role} /> : null}
-        </span>
-      )
-    return (
-      <SwipeRow
-        key={line.id}
-        line={line}
-        grouped={grouped}
-        flash={flash === line.id}
-        onReply={() => onReply(line)}
-        label={rt('replyTo', { name: line.sender.name })}
-      >
-        {line.fromMe ? null : grouped ? (
-          <span className="w-7 shrink-0" aria-hidden />
-        ) : (
-          <button type="button" onClick={() => onPerson(line.sender.id)} className="shrink-0 self-start rounded-full" aria-label={t('room.view', { name: line.sender.name })}>
-            <Avatar name={line.sender.name} src={line.sender.photoUrl} size={28} />
-          </button>
-        )}
-        {line.kind === 'photo' ? (
-          <Bubble mine={line.fromMe} tail={!grouped} className="p-1">
-            {name}
-            <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
-              <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={meta} />
-            </div>
-          </Bubble>
-        ) : (
-          <Bubble
-            mine={line.fromMe}
-            tail={!grouped}
-            className={cn('px-2.5 pt-1 pb-1.5', toMe.length && 'ring-2 ring-primary-text/70 ring-offset-0')}
-          >
-            {name}
-            {line.reply ? <Quote reply={line.reply} rt={rt} meId={s.room?.meId} onShow={() => showOriginal(line.reply!.id)} /> : null}
-            <LinkPreview text={line.text} className="mb-1 w-64 max-w-full" />
-            <p className="relative text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
-              {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
-              <LinkText text={line.text} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
-              <MetaSpacer>{meta}</MetaSpacer>
-              <span className="absolute right-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
-            </p>
-          </Bubble>
-        )}
-      </SwipeRow>
-    )
   }
 
   return (
@@ -236,7 +176,19 @@ export function VoiceChat({
                 case 'text':
                 case 'photo': {
                   const grouped = line.kind === 'text' && prev?.kind === 'text' && prev.sender.id === line.sender.id && !line.reply
-                  return sent(line, grouped)
+                  return (
+                    <SentLine
+                      key={line.id}
+                      line={line}
+                      grouped={grouped}
+                      flash={flash === line.id}
+                      s={s}
+                      meName={meName}
+                      onPerson={onPerson}
+                      onReply={onReply}
+                      onQuote={showOriginal}
+                    />
+                  )
                 }
                 default:
                   return null // a kind this app doesn't know yet
@@ -258,7 +210,7 @@ export function VoiceChat({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-12 left-1/2 flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-e3"
+            className="absolute bottom-12 inset-s-1/2 flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-e3"
           >
             <ArrowDown className="size-4" aria-hidden /> {t('voice.newMessages')}
           </m.button>
@@ -269,6 +221,114 @@ export function VoiceChat({
         {lastSystem?.kind === 'system' ? systemText(lastSystem, t) : ''}
       </p>
     </section>
+  )
+}
+
+/**
+ * Someone's text or photo in the room. Someone else's text can be translated: by itself when it looks like another
+ * language (on screen only), or from the line's menu (long press, right click) or the hover button.
+ */
+function SentLine({
+  line,
+  grouped,
+  flash,
+  s,
+  meName,
+  onPerson,
+  onReply,
+  onQuote,
+}: {
+  line: Sent
+  grouped: boolean
+  flash: boolean
+  s: VoiceSession
+  meName: string
+  onPerson: (userId: string) => void
+  onReply: (line: Quotable) => void
+  onQuote: (id: number) => void
+}) {
+  const { t, clock } = useI18n()
+  const { rt } = useRoomT()
+  const room = s.room
+  const said = line.kind === 'text' ? line.text : null
+  const tr = useLineTranslation('room', line.id, said, line.fromMe)
+  const actions = useLineActions(tr, said)
+  const [menu, setMenu] = useState(false)
+  const meta = clock(line.at)
+  const text = said === null ? null : shownText(tr, said)
+  const toMe = text !== null && !line.fromMe ? mentionRanges(text, meName) : []
+  const sender = room ? memberOf(room, line.sender.id) : null
+  const role = sender ? roleLabel(sender, t) : null
+  const replyLabel = rt('replyTo', { name: line.sender.name })
+  const name =
+    line.fromMe || grouped ? null : (
+      <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind === 'photo' && 'px-1.5')}>
+        <button
+          type="button"
+          onClick={() => onPerson(line.sender.id)}
+          dir="auto"
+          className="block min-w-0 truncate text-[12.5px] leading-5 font-semibold hover:underline"
+          style={{ color: nameColor(line.sender.id) }}
+        >
+          {line.sender.name}
+        </button>
+        {role ? <RoleBadge role={sender!.role} label={role} /> : null}
+      </span>
+    )
+  return (
+    <SwipeRow
+      line={line}
+      grouped={grouped}
+      flash={flash}
+      onReply={() => onReply(line)}
+      label={replyLabel}
+      lineRef={tr.ref}
+      onMenu={() => setMenu(true)}
+      extra={line.fromMe ? null : <HoverTranslate tr={tr} />}
+      menu={
+        menu ? (
+          <MessageMenu
+            actions={[{ icon: <Reply className="size-4.5 rtl:-scale-x-100" aria-hidden />, label: rt('reply'), onClick: () => onReply(line) }, ...actions]}
+            label={t('tr.actions')}
+            side={line.fromMe ? 'end' : 'start'}
+            onClose={() => setMenu(false)}
+          />
+        ) : null
+      }
+    >
+      {line.fromMe ? null : grouped ? (
+        <span className="w-7 shrink-0" aria-hidden />
+      ) : (
+        <button type="button" onClick={() => onPerson(line.sender.id)} className="shrink-0 self-start rounded-full" aria-label={t('room.view', { name: line.sender.name })}>
+          <Avatar name={line.sender.name} src={line.sender.photoUrl} size={28} />
+        </button>
+      )}
+      {line.kind === 'photo' ? (
+        <Bubble mine={line.fromMe} tail={!grouped} className="p-1">
+          {name}
+          <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
+            <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={meta} />
+          </div>
+        </Bubble>
+      ) : (
+        <Bubble
+          mine={line.fromMe}
+          tail={!grouped}
+          className={cn('px-2.5 pt-1 pb-1.5', toMe.length && 'ring-2 ring-primary-text/70 ring-offset-0')}
+        >
+          {name}
+          {line.reply ? <Quote reply={line.reply} rt={rt} meId={room?.meId} onShow={() => onQuote(line.reply!.id)} /> : null}
+          <LinkPreview text={line.text} className="mb-1 w-64 max-w-full" />
+          <p dir="auto" lang={tr.showing ? tr.target : undefined} className="relative text-start text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
+            {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
+            <LinkText text={text ?? ''} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
+            <MetaSpacer>{meta}</MetaSpacer>
+            <span className="absolute inset-e-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
+          </p>
+          <TranslateFooter tr={tr} />
+        </Bubble>
+      )}
+    </SwipeRow>
   )
 }
 
@@ -323,7 +383,7 @@ function TypingRow({ ids, s }: { ids: string[]; s: VoiceSession }) {
                 <Avatar key={p.profile.id} name={p.profile.name} src={p.profile.photoUrl} size={20} className="rounded-full ring-2 ring-background" />
               ))}
             </span>
-            <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-bl-sm bg-bubble-in px-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]" aria-hidden>
+            <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-es-sm bg-bubble-in px-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]" aria-hidden>
               <TypingDots />
             </span>
             <span className="min-w-0 truncate text-xs text-muted-foreground">{text}</span>
@@ -363,6 +423,10 @@ function SwipeRow({
   center,
   onReply,
   label,
+  lineRef,
+  onMenu,
+  menu,
+  extra,
   children,
 }: {
   line: Quotable
@@ -372,10 +436,17 @@ function SwipeRow({
   center?: boolean
   onReply: () => void
   label: string
+  lineRef?: (el: Element | null) => void
+  /** Long press / right click opens the line's menu (else a long press answers it). */
+  onMenu?: () => void
+  /** The open menu, if any. */
+  menu?: ReactNode
+  /** More hover buttons (mouse), after the reply one. */
+  extra?: ReactNode
   children: ReactNode
 }) {
   const [dx, setDx] = useState(0)
-  const start = useRef<{ x: number; y: number; timer: ReturnType<typeof setTimeout> } | null>(null)
+  const start = useRef<{ x: number; y: number; timer: ReturnType<typeof setTimeout>; rtl: boolean } | null>(null)
   const pressed = useRef(false)
   const end = () => {
     if (start.current) clearTimeout(start.current.timer)
@@ -386,6 +457,7 @@ function SwipeRow({
 
   return (
     <m.li
+      ref={lineRef}
       data-line={line.id}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
@@ -402,14 +474,16 @@ function SwipeRow({
           pressed.current = true
           start.current = null
           navigator.vibrate?.(12)
-          onReply()
+          if (onMenu) onMenu()
+          else onReply()
         }, PRESS_MS)
-        start.current = { x: e.clientX, y: e.clientY, timer }
+        start.current = { x: e.clientX, y: e.clientY, timer, rtl: getComputedStyle(e.currentTarget).direction === 'rtl' }
       }}
       onPointerMove={(e) => {
         const s = start.current
         if (!s) return
-        const x = e.clientX - s.x
+        // Swiping towards the line's end answers it: to the right, or to the left in a right-to-left layout.
+        const x = (e.clientX - s.x) * (s.rtl ? -1 : 1)
         const y = e.clientY - s.y
         if (Math.abs(x) > 6 || Math.abs(y) > 6) clearTimeout(s.timer)
         if (Math.abs(y) > Math.abs(x)) return
@@ -420,6 +494,17 @@ function SwipeRow({
         end()
       }}
       onPointerCancel={end}
+      onContextMenu={
+        onMenu
+          ? (e) => {
+              // Touch browsers send this on a long press too: the timer handles that.
+              if (pressed.current || start.current) return e.preventDefault()
+              if ((e.target as HTMLElement).closest('a') || window.getSelection()?.toString()) return
+              e.preventDefault()
+              onMenu()
+            }
+          : undefined
+      }
       onClickCapture={(e) => {
         // The tap that ends a long press is not also a tap on what's under it (a photo, a poll option).
         if (pressed.current) {
@@ -428,15 +513,15 @@ function SwipeRow({
           e.stopPropagation()
         }
       }}
-      style={dx ? { transform: `translateX(${dx}px)` } : undefined}
+      style={dx ? { transform: `translateX(${start.current?.rtl ? -dx : dx}px)` } : undefined}
     >
       {dx ? (
         <span
           aria-hidden
-          className="absolute top-1/2 -left-9 grid size-7 -translate-y-1/2 place-items-center rounded-full bg-muted text-foreground"
+          className="absolute top-1/2 -inset-s-9 grid size-7 -translate-y-1/2 place-items-center rounded-full bg-muted text-foreground"
           style={{ opacity: Math.min(1, dx / SWIPE_PX) }}
         >
-          <Reply className="size-4" />
+          <Reply className="size-4 rtl:-scale-x-100" />
         </span>
       ) : null}
       {children}
@@ -447,11 +532,13 @@ function SwipeRow({
         title={label}
         className={cn(
           'grid shrink-0 place-items-center self-center rounded-full text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:hidden',
-          center ? 'absolute -top-3 right-4 z-10 size-8 bg-card shadow-e2 ring-1 ring-border' : 'size-8 hover:bg-muted',
+          center ? 'absolute -top-3 inset-e-4 z-10 size-8 bg-card shadow-e2 ring-1 ring-border' : 'size-8 hover:bg-muted',
         )}
       >
-        <Reply className="size-4" aria-hidden />
+        <Reply className="size-4 rtl:-scale-x-100" aria-hidden />
       </button>
+      {extra}
+      {menu}
     </m.li>
   )
 }
@@ -464,7 +551,7 @@ function Quote({ reply, rt, meId, onShow }: { reply: VoiceReply; rt: RoomT; meId
       type="button"
       onClick={onShow}
       aria-label={`${rt('showOriginal')}: ${who}`}
-      className="relative mt-0.5 mb-1 flex w-full min-w-0 overflow-hidden rounded-md bg-black/5 text-left transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12"
+      className="relative mt-0.5 mb-1 flex w-full min-w-0 overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12"
       style={{ '--q': nameColor(reply.sender || reply.name) } as CSSProperties}
     >
       <span aria-hidden className="w-1 shrink-0 bg-[var(--q)]" />
@@ -521,11 +608,11 @@ function PollCard({
       style={POLL}
       className="relative w-full overflow-hidden rounded-3xl bg-[color-mix(in_srgb,var(--k)_13%,var(--card))] px-4 pt-3.5 pb-3 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-[color-mix(in_srgb,var(--k)_34%,transparent)]"
     >
-      <span aria-hidden className="pointer-events-none absolute -top-16 -right-12 size-40 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--k)_30%,transparent),transparent)]" />
+      <span aria-hidden className="pointer-events-none absolute -top-16 -inset-e-12 size-40 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--k)_30%,transparent),transparent)]" />
       <h3 className="relative flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-[var(--k)] uppercase">
         <PollIcon size={16} /> {rt('poll')}
         {poll?.closed ? (
-          <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10.5px] tracking-normal text-muted-foreground normal-case">{rt('closed')}</span>
+          <span className="ms-auto rounded-full bg-muted px-2 py-0.5 text-[10.5px] tracking-normal text-muted-foreground normal-case">{rt('closed')}</span>
         ) : null}
       </h3>
       <p id={`${id}-q`} className="relative mt-1.5 text-[16.5px] leading-snug font-semibold break-words text-foreground">
@@ -543,7 +630,7 @@ function PollCard({
                 aria-pressed={poll ? mine : undefined}
                 aria-label={results ? `${rt('result', { option: o, pct: num(pct[i]) })}, ${votes(poll!.counts[i] ?? 0)}${mine ? `, ${rt('yourVote')}` : ''}` : o}
                 className={cn(
-                  'relative flex min-h-11 w-full items-center gap-2 overflow-hidden rounded-2xl px-3.5 py-2 text-left text-sm font-semibold transition-[background-color,box-shadow] duration-150',
+                  'relative flex min-h-11 w-full items-center gap-2 overflow-hidden rounded-2xl px-3.5 py-2 text-start text-sm font-semibold transition-[background-color,box-shadow] duration-150',
                   mine ? 'bg-card ring-2 ring-[var(--k)]' : 'bg-card/80 ring-1 ring-border',
                   open && !mine && 'hover:bg-card hover:ring-[color-mix(in_srgb,var(--k)_60%,transparent)]',
                   !poll && 'animate-pulse',
@@ -552,7 +639,7 @@ function PollCard({
                 {results ? (
                   <span
                     aria-hidden
-                    className="absolute inset-y-0 left-0 rounded-2xl bg-[color-mix(in_srgb,var(--k)_24%,transparent)] transition-[width] duration-500 ease-out"
+                    className="absolute inset-y-0 inset-s-0 rounded-2xl bg-[color-mix(in_srgb,var(--k)_24%,transparent)] transition-[width] duration-500 ease-out"
                     style={{ width: `${pct[i]}%` }}
                   />
                 ) : null}
@@ -751,13 +838,13 @@ export function VoiceComposer({
             className="overflow-hidden"
           >
             <div
-              className="mb-2 flex items-center gap-2 overflow-hidden rounded-2xl bg-muted py-1.5 pr-1.5 pl-0"
+              className="mb-2 flex items-center gap-2 overflow-hidden rounded-2xl bg-muted py-1.5 pe-1.5 ps-0"
               style={{ '--q': nameColor(quoted.sender) } as CSSProperties}
               role="group"
               aria-label={rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
             >
-              <span aria-hidden className="ml-2 w-1 self-stretch rounded-full bg-[var(--q)]" />
-              <Reply className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span aria-hidden className="ms-2 w-1 self-stretch rounded-full bg-[var(--q)]" />
+              <Reply className="size-4 shrink-0 text-muted-foreground rtl:-scale-x-100" aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-xs font-semibold text-[var(--q)]">
                   {rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
@@ -791,7 +878,7 @@ export function VoiceComposer({
                   // Keep the caret where it is: choosing happens before the box would lose focus.
                   onPointerDown={(e) => e.preventDefault()}
                   onClick={() => choose(p)}
-                  className={cn('flex w-full items-center gap-2.5 px-3.5 py-1.5 text-left text-sm font-semibold transition-colors duration-100', i === pick ? 'bg-muted' : 'hover:bg-muted/70')}
+                  className={cn('flex w-full items-center gap-2.5 px-3.5 py-1.5 text-start text-sm font-semibold transition-colors duration-100', i === pick ? 'bg-muted' : 'hover:bg-muted/70')}
                 >
                   <Avatar name={p.name} src={p.photoUrl} size={28} />
                   <span className="truncate" style={{ color: nameColor(p.id) }}>
@@ -948,7 +1035,7 @@ export function VoiceComposer({
           aria-label={t('voice.send')}
           className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity duration-150 disabled:opacity-40"
         >
-          <SendHorizontal className="size-5" aria-hidden />
+          <SendHorizontal className="size-5 rtl:-scale-x-100" aria-hidden />
         </m.button>
       </form>
     </div>
@@ -961,7 +1048,7 @@ function MenuItem({ icon, label, onClick }: { icon: ReactNode; label: string; on
       type="button"
       role="menuitem"
       onClick={onClick}
-      className="flex h-11 items-center gap-3 rounded-xl px-3 text-left text-sm font-semibold transition-colors duration-150 hover:bg-muted"
+      className="flex h-11 items-center gap-3 rounded-xl px-3 text-start text-sm font-semibold transition-colors duration-150 hover:bg-muted"
     >
       <span className="grid size-8 place-items-center rounded-full bg-muted">{icon}</span>
       {label}

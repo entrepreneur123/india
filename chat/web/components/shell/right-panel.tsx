@@ -31,7 +31,7 @@ export function RightPanel({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        'sticky top-0 h-dvh w-80 shrink-0 flex-col gap-8 overflow-y-auto border-l border-border bg-background px-5 py-6 scrollbar-thin',
+        'sticky top-0 h-dvh w-80 shrink-0 flex-col gap-8 overflow-y-auto border-s border-border bg-background px-5 py-6 scrollbar-thin',
         className,
       )}
       aria-label={t('panel.activity')}
@@ -69,7 +69,7 @@ export function RightPanel({ className }: { className?: string }) {
                     <button
                       type="button"
                       onClick={() => openProfile(f.profile.id)}
-                      className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left"
+                      className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start"
                     >
                       <Avatar name={f.profile.name} src={f.profile.photoUrl} size={40} />
                       <span className="min-w-0">
@@ -117,7 +117,7 @@ export function RightPanel({ className }: { className?: string }) {
                     <button
                       type="button"
                       onClick={() => openVoice(r.id)}
-                      className="flex w-full items-center gap-3 rounded-xl p-2 text-left transition-colors duration-150 hover:bg-muted"
+                      className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors duration-150 hover:bg-muted"
                     >
                       <TopicTile topic={kindTopic(r.category)} size={40} />
                       <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.title}</span>

@@ -110,7 +110,7 @@ export function ReportSheet({
               disabled={busy !== null}
               onClick={() => void report(r.value)}
               className={cn(
-                'flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60',
+                'flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-start transition-colors duration-150 hover:bg-muted disabled:opacity-60',
                 busy === r.value && 'bg-muted',
               )}
             >
@@ -142,7 +142,7 @@ export function ReportSheet({
             type="button"
             disabled={busy !== null}
             onClick={() => setConfirmBlock(true)}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-left transition-colors duration-150 hover:bg-muted disabled:opacity-60"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-start transition-colors duration-150 hover:bg-muted disabled:opacity-60"
           >
             <Ban className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             <span className="flex min-w-0 flex-1 flex-col">

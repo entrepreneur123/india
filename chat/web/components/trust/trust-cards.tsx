@@ -47,7 +47,7 @@ export function IdentityFacts({ profile, verified, className }: { profile: Profi
   return (
     <p
       className={cn(
-        'inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-full bg-[color-mix(in_srgb,#ff3d68_9%,var(--card))] py-1.5 pr-3 pl-2 text-[13px] font-semibold ring-1 ring-[color-mix(in_srgb,#ff3d68_22%,transparent)]',
+        'inline-flex max-w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 rounded-full bg-[color-mix(in_srgb,#ff3d68_9%,var(--card))] py-1.5 pe-3 ps-2 text-[13px] font-semibold ring-1 ring-[color-mix(in_srgb,#ff3d68_22%,transparent)]',
         className,
       )}
     >
@@ -124,7 +124,7 @@ export function MannerCard({ trust, className }: { trust: Trust | null; classNam
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-16 -right-14 size-44 rounded-full"
+        className="pointer-events-none absolute -top-16 -inset-e-14 size-44 rounded-full"
         style={{ background: shown ? `radial-gradient(closest-side, color-mix(in srgb, ${color} 26%, transparent), transparent)` : undefined }}
       />
       <div className="relative flex items-center justify-between gap-3">
@@ -198,20 +198,20 @@ export function VerifyCard({ className }: { className?: string }) {
       <button
         type="button"
         onClick={() => openVerify('me')}
-        className={cn('flex w-full items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,#4c7cf0_10%,var(--card))] px-4 py-3.5 text-left ring-1 ring-[color-mix(in_srgb,#4c7cf0_25%,transparent)]', className)}
+        className={cn('flex w-full items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,#4c7cf0_10%,var(--card))] px-4 py-3.5 text-start ring-1 ring-[color-mix(in_srgb,#4c7cf0_25%,transparent)]', className)}
       >
         <ClockIcon size={34} color="#4c7cf0" />
         <span className="min-w-0 flex-1">
           <span className="block text-[15px] font-bold">{tt('card.pending')}</span>
           <span className="block text-sm text-muted-foreground">{tt('card.pendingBody')}</span>
         </span>
-        <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+        <ChevronRight className="size-5 text-muted-foreground rtl:rotate-180" aria-hidden />
       </button>
     )
   }
   if (result === 'duplicate' || result === 'minor') {
     return (
-      <button type="button" onClick={() => openVerify('me')} className={cn('w-full rounded-3xl bg-muted px-4 py-3 text-left', className)}>
+      <button type="button" onClick={() => openVerify('me')} className={cn('w-full rounded-3xl bg-muted px-4 py-3 text-start', className)}>
         <span className="block text-sm font-bold">{tt(result === 'duplicate' ? 'verify.duplicateTitle' : 'verify.minorTitle')}</span>
       </button>
     )
@@ -222,22 +222,22 @@ export function VerifyCard({ className }: { className?: string }) {
       type="button"
       onClick={() => openVerify('me')}
       className={cn(
-        'group relative flex w-full items-center gap-4 overflow-hidden rounded-[28px] px-5 py-5 text-left text-white shadow-e2 transition-shadow duration-150 hover:shadow-e3',
+        'group relative flex w-full items-center gap-4 overflow-hidden rounded-[28px] px-5 py-5 text-start text-white shadow-e2 transition-shadow duration-150 hover:shadow-e3',
         className,
       )}
       style={{ background: 'linear-gradient(125deg, #ff3d68 0%, #f2416b 38%, #ff7a45 100%)' }}
     >
-      <span aria-hidden className="pointer-events-none absolute -top-20 -right-10 size-56 rounded-full bg-white/14" />
-      <span aria-hidden className="pointer-events-none absolute -bottom-24 left-1/3 size-48 rounded-full bg-white/10" />
+      <span aria-hidden className="pointer-events-none absolute -top-20 -inset-e-10 size-56 rounded-full bg-white/14" />
+      <span aria-hidden className="pointer-events-none absolute -bottom-24 inset-s-1/3 size-48 rounded-full bg-white/10" />
       <span className="relative min-w-0 flex-1">
         <span className="block text-lg leading-tight font-extrabold tracking-tight">{tt(retry ? 'card.retry' : 'card.title')}</span>
         <span className="mt-1 block text-sm leading-snug text-white/90">{tt(retry ? 'card.retryBody' : 'card.body')}</span>
         <span className="mt-3 inline-flex h-9 items-center gap-1 rounded-full bg-white px-4 text-sm font-bold text-[#c8174a] shadow-e1 transition-transform duration-150 group-active:scale-95">
           {tt(retry ? 'verify.tryAgain' : 'card.cta')}
-          <ChevronRight className="size-4" aria-hidden />
+          <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
         </span>
       </span>
-      <span className="relative -my-2 -mr-2 grid place-items-center rounded-[24px] bg-white/95 p-1.5 shadow-e1">
+      <span className="relative -my-2 -me-2 grid place-items-center rounded-[24px] bg-white/95 p-1.5 shadow-e1">
         <VerifyHero size={104} />
       </span>
     </button>

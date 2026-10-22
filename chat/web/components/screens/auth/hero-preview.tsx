@@ -56,7 +56,7 @@ export function HeroPreview() {
               transition={{ type: 'tween', duration: 0.18, ease: [0.2, 0, 0, 1] }}
               className={cn(
                 'max-w-[82%] rounded-2xl px-3 py-2 text-[13px] leading-snug',
-                msg.from === 'a' ? 'self-end rounded-br-md bg-primary text-primary-foreground' : 'self-start rounded-bl-md bg-muted',
+                msg.from === 'a' ? 'self-end rounded-ee-md bg-primary text-primary-foreground' : 'self-start rounded-es-md bg-muted',
               )}
             >
               {t(msg.text)}
@@ -64,7 +64,7 @@ export function HeroPreview() {
           ))}
         </AnimatePresence>
         {typing ? (
-          <div className="flex gap-1 self-start rounded-2xl rounded-bl-md bg-muted px-3 py-2.5">
+          <div className="flex gap-1 self-start rounded-2xl rounded-es-md bg-muted px-3 py-2.5">
             {[0, 1, 2].map((d) => (
               <span key={d} className="size-1.5 animate-pulse rounded-full bg-muted-foreground" style={{ animationDelay: `${d * 0.2}s` }} />
             ))}

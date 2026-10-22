@@ -102,9 +102,9 @@ export class TrustSim {
 
   private apply(result: KycResult) {
     this.kyc = { ...this.kyc, result, at: Date.now(), pendingUntil: result === 'pending' ? Date.now() + 5000 : 0 }
-    // The document's facts replace what was typed at sign-up (here: the same gender and age, Indian nationality).
+    // The document's facts replace what was typed at sign-up (here: the same gender, age and country).
     const me = this.host.me()
-    if (result === 'verified' && me) this.host.setMe({ ...me, verified: true, country: 'IN' })
+    if (result === 'verified' && me) this.host.setMe({ ...me, verified: true })
   }
 
   async kycDemo(outcome: KycDemoOutcome) {
