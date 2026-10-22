@@ -57,6 +57,7 @@ class VoiceAudio(private val context: Context, private val scope: CoroutineScope
             audioTrackCaptureDefaults = LocalAudioTrackOptions(noiseSuppression = true, echoCancellation = true, autoGainControl = true),
             audioTrackPublishDefaults = AudioTrackPublishDefaults(audioBitrate = AudioPresets.SPEECH.maxBitrate, dtx = true, red = true),
         ),
+        overrides = callAudio,
     )
     private var leaving = false
     private var released = false

@@ -91,7 +91,8 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
 
   room
     .on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, p) => {
-      if (track.kind !== Track.Kind.Audio) return
+      // Once per track: a second <audio> for the same voice (the catch-up below can see it too) doubles it.
+      if (track.kind !== Track.Kind.Audio || track.attachedElements.length) return
       box.appendChild(track.attach())
       meter(pub.trackSid, p.identity, track as RemoteAudioTrack)
     })
@@ -150,7 +151,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   // Tracks published before I joined.
   room.remoteParticipants.forEach((p) =>
     p.audioTrackPublications.forEach((pub) => {
-      if (!pub.track) return
+      if (!pub.track || pub.track.attachedElements.length) return
       box.appendChild(pub.track.attach())
       meter(pub.trackSid, p.identity, pub.track as RemoteAudioTrack)
     }),
