@@ -55,7 +55,8 @@ const sw: LooksDict = {
   'id.invalid': 'Tumia herufi, namba au alama kama _ . - kati ya 2 na 24 (bila nafasi wala emoji)',
   'id.reserved': 'Kitambulisho hiki kimehifadhiwa',
   'id.taken': '@{handle} kimeshachukuliwa',
-  'id.cooldown': 'Unaweza kubadilisha kitambulisho chako tena tarehe {date}',
+  'id.cooldown': 'Unaweza kubadilisha kitambulisho chako tena tarehe {date}, au mapema zaidi kwa tiketi ya kubadilisha kitambulisho kutoka programu ya Yaari',
+  'id.cooldownPass': 'Ukibadilisha sasa, utatumia tiketi 1 kati ya {n} za kubadilisha kitambulisho (bure tena tarehe {date})',
   'id.keptFree': 'Kitambulisho hicho kimechukuliwa sasa hivi, kwa hiyo kwa sasa chako ni @{handle}. Unaweza kukibadilisha kwenye Hariri wasifu.',
 
   'details.title': 'Maelezo ya wasifu',
@@ -73,6 +74,16 @@ const sw: LooksDict = {
   'ended.add': 'Gumzo limeisha. Mwongeze {name} kama rafiki ili mendelee kuzungumza.',
   'ended.waiting': 'Gumzo limeisha. Tunasubiri {name} akubali ombi lako la urafiki.',
   'ended.incoming': 'Gumzo limeisha. {name} anataka kuwa rafiki yako: kubali ili mendelee kuzungumza.',
+  'find.title': 'Tafuta kwa kitambulisho',
+  'find.placeholder': 'Tafuta vitambulisho',
+  'find.hint': 'Andika kitambulisho ili umpate mtu',
+  'find.none': 'Hakuna mwenye kitambulisho kinachoanza na @{q}',
+  'find.failed': 'Imeshindwa kupakia. Jaribu tena.',
+  'blocks.title': 'Akaunti zilizozuiwa',
+  'blocks.note': 'Hawawezi kukupata, kuona wasifu wako wala kukutumia ujumbe. Kuondoa kizuizi hakurudishi gumzo au urafiki wa zamani.',
+  'blocks.empty': 'Hujamzuia mtu yeyote',
+  'blocks.unblock': 'Ondoa kizuizi',
+  'blocks.done': '{name} ameondolewa kizuizi',
 }
 
 export default sw

@@ -55,7 +55,8 @@ const ko: LooksDict = {
   'id.invalid': '글자, 숫자 또는 _ . - 같은 기호로 2~24자를 입력하세요(공백·이모지 불가)',
   'id.reserved': '예약된 아이디예요',
   'id.taken': '@{handle}은(는) 이미 사용 중이에요',
-  'id.cooldown': '{date}에 아이디를 다시 바꿀 수 있어요',
+  'id.cooldown': '{date}에 아이디를 다시 바꿀 수 있어요. Yaari 앱에서 아이디 변경권을 쓰면 더 일찍 바꿀 수 있어요',
+  'id.cooldownPass': '지금 바꾸면 아이디 변경권 {n}개 중 1개를 써요 ({date}부터 다시 무료)',
   'id.keptFree': '방금 다른 사람이 그 아이디를 가져가서, 지금은 아이디가 @{handle}이에요. 프로필 편집에서 바꿀 수 있어요.',
 
   'details.title': '프로필 상세',
@@ -73,6 +74,16 @@ const ko: LooksDict = {
   'ended.add': '채팅이 끝났어요. 대화를 이어가려면 {name}님을 친구로 추가하세요.',
   'ended.waiting': '채팅이 끝났어요. {name}님이 친구 요청을 수락하기를 기다리고 있어요.',
   'ended.incoming': '채팅이 끝났어요. {name}님이 친구가 되고 싶어 해요: 수락하면 대화를 이어갈 수 있어요.',
+  'find.title': '아이디로 찾기',
+  'find.placeholder': '아이디 검색',
+  'find.hint': '아이디를 입력해 사람을 찾아보세요',
+  'find.none': '@{q}(으)로 시작하는 아이디가 없어요',
+  'find.failed': '불러오지 못했어요. 다시 시도해 주세요.',
+  'blocks.title': '차단한 계정',
+  'blocks.note': '차단한 사람은 회원님을 찾거나 프로필을 보거나 메시지를 보낼 수 없어요. 차단을 해제해도 이전 채팅과 친구 관계는 돌아오지 않아요.',
+  'blocks.empty': '차단한 사람이 없어요',
+  'blocks.unblock': '차단 해제',
+  'blocks.done': '{name}님을 차단 해제했어요',
 }
 
 export default ko

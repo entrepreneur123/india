@@ -55,7 +55,8 @@ const de: LooksDict = {
   'id.invalid': 'Nutze 2 bis 24 Buchstaben, Ziffern oder Zeichen wie _ . - (ohne Leerzeichen oder Emoji)',
   'id.reserved': 'Diese ID ist reserviert',
   'id.taken': '@{handle} ist schon vergeben',
-  'id.cooldown': 'Du kannst deine ID am {date} wieder ändern',
+  'id.cooldown': 'Du kannst deine ID am {date} wieder ändern – oder früher mit einer ID-Änderung aus der Yaari-App',
+  'id.cooldownPass': 'Wenn du sie jetzt änderst, wird 1 deiner {n} ID-Änderungen verbraucht (ab {date} wieder kostenlos)',
   'id.keptFree': 'Diese ID wurde gerade vergeben, deshalb ist deine vorerst @{handle}. Du kannst sie unter Profil bearbeiten ändern.',
 
   'details.title': 'Profildetails',
@@ -73,6 +74,16 @@ const de: LooksDict = {
   'ended.add': 'Chat beendet. Füge {name} als Freund hinzu, um weiterzuschreiben.',
   'ended.waiting': 'Chat beendet. Warte darauf, dass {name} deine Freundschaftsanfrage annimmt.',
   'ended.incoming': 'Chat beendet. {name} möchte mit dir befreundet sein: Nimm an, um weiterzuschreiben.',
+  'find.title': 'Nach ID suchen',
+  'find.placeholder': 'IDs durchsuchen',
+  'find.hint': 'Gib eine ID ein, um jemanden zu finden',
+  'find.none': 'Niemand hat eine ID, die mit @{q} beginnt',
+  'find.failed': 'Laden fehlgeschlagen. Versuch es noch mal.',
+  'blocks.title': 'Blockierte Konten',
+  'blocks.note': 'Sie können dich nicht finden, dein Profil nicht sehen und dir nicht schreiben. Wenn du die Blockierung aufhebst, kommen alte Chats und Freundschaften nicht zurück.',
+  'blocks.empty': 'Du hast niemanden blockiert',
+  'blocks.unblock': 'Blockierung aufheben',
+  'blocks.done': '{name} ist nicht mehr blockiert',
 }
 
 export default de

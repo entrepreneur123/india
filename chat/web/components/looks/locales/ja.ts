@@ -55,7 +55,8 @@ const ja: LooksDict = {
   'id.invalid': '2〜24文字の文字・数字・_ . - などの記号を使ってください（スペースや絵文字は不可）',
   'id.reserved': 'このIDは予約されています',
   'id.taken': '@{handle} はすでに使われています',
-  'id.cooldown': 'IDは{date}に再び変更できます',
+  'id.cooldown': 'IDは{date}に再び変更できます。YaariアプリのID変更チケットを使えば、それより前に変更できます',
+  'id.cooldownPass': '今変更すると、ID変更チケット{n}枚のうち1枚を使います（{date}からは再び無料）',
   'id.keptFree': 'そのIDはたった今ほかの人に使われたため、ひとまずあなたのIDは @{handle} です。プロフィールを編集から変更できます。',
 
   'details.title': 'プロフィールの詳細',
@@ -73,6 +74,16 @@ const ja: LooksDict = {
   'ended.add': 'チャットは終了しました。話を続けるには{name}さんを友だちに追加してください。',
   'ended.waiting': 'チャットは終了しました。{name}さんが友だち申請を承認するのを待っています。',
   'ended.incoming': 'チャットは終了しました。{name}さんが友だちになりたがっています。承認すると話を続けられます。',
+  'find.title': 'IDで検索',
+  'find.placeholder': 'IDを検索',
+  'find.hint': 'IDを入力して相手を探しましょう',
+  'find.none': '@{q}で始まるIDのユーザーはいません',
+  'find.failed': '読み込めませんでした。もう一度お試しください。',
+  'blocks.title': 'ブロックしたアカウント',
+  'blocks.note': 'ブロックした相手は、あなたを検索したり、プロフィールを見たり、メッセージを送ったりできません。ブロックを解除しても、以前のチャットや友だち関係は元に戻りません。',
+  'blocks.empty': 'ブロックしている人はいません',
+  'blocks.unblock': 'ブロック解除',
+  'blocks.done': '{name}さんのブロックを解除しました',
 }
 
 export default ja

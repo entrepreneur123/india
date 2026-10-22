@@ -55,7 +55,8 @@ const ms: LooksDict = {
   'id.invalid': 'Gunakan 2 hingga 24 huruf, nombor atau simbol seperti _ . - (tanpa ruang atau emoji)',
   'id.reserved': 'ID ini dikhaskan',
   'id.taken': '@{handle} sudah digunakan',
-  'id.cooldown': 'Anda boleh menukar ID sekali lagi pada {date}',
+  'id.cooldown': 'Anda boleh menukar ID sekali lagi pada {date}, atau lebih awal dengan tiket tukar ID daripada aplikasi Yaari',
+  'id.cooldownPass': 'Menukarnya sekarang akan menggunakan 1 daripada {n} tiket tukar ID anda (percuma semula pada {date})',
   'id.keptFree': 'ID itu baru sahaja diambil orang, jadi buat masa ini ID anda @{handle}. Anda boleh menukarnya dalam Edit profil.',
 
   'details.title': 'Butiran profil',
@@ -73,6 +74,16 @@ const ms: LooksDict = {
   'ended.add': 'Sembang sudah tamat. Tambah {name} sebagai rakan untuk terus berbual.',
   'ended.waiting': 'Sembang sudah tamat. Menunggu {name} menerima permintaan rakan anda.',
   'ended.incoming': 'Sembang sudah tamat. {name} mahu berkawan: terima untuk terus berbual.',
+  'find.title': 'Cari melalui ID',
+  'find.placeholder': 'Cari ID',
+  'find.hint': 'Taip ID untuk mencari seseorang',
+  'find.none': 'Tiada sesiapa dengan ID bermula @{q}',
+  'find.failed': 'Tidak dapat dimuatkan. Cuba lagi.',
+  'blocks.title': 'Akaun yang disekat',
+  'blocks.note': 'Mereka tidak boleh mencari anda, melihat profil anda atau menghantar mesej kepada anda. Nyahsekat tidak memulihkan sembang atau persahabatan lama.',
+  'blocks.empty': 'Anda belum menyekat sesiapa',
+  'blocks.unblock': 'Nyahsekat',
+  'blocks.done': '{name} telah dinyahsekat',
 }
 
 export default ms

@@ -55,7 +55,8 @@ const ro: LooksDict = {
   'id.invalid': 'Folosește 2–24 de litere, cifre sau simboluri ca _ . - (fără spații sau emoji)',
   'id.reserved': 'Acest ID e rezervat',
   'id.taken': '@{handle} e deja luat',
-  'id.cooldown': 'Îți poți schimba din nou ID-ul pe {date}',
+  'id.cooldown': 'Îți poți schimba din nou ID-ul pe {date} sau mai devreme cu o schimbare de ID din aplicația Yaari',
+  'id.cooldownPass': 'Dacă îl schimbi acum, folosești 1 din cele {n} schimbări de ID ale tale (din nou gratuit pe {date})',
   'id.keptFree': 'ID-ul acela tocmai a fost luat, așa că deocamdată al tău e @{handle}. Îl poți schimba din Editează profilul.',
 
   'details.title': 'Detalii profil',
@@ -73,6 +74,16 @@ const ro: LooksDict = {
   'ended.add': 'Chatul s-a încheiat. Adaugă-l pe {name} ca prieten ca să vorbiți în continuare.',
   'ended.waiting': 'Chatul s-a încheiat. Așteptăm ca {name} să-ți accepte cererea de prietenie.',
   'ended.incoming': 'Chatul s-a încheiat. {name} vrea să fiți prieteni: acceptă ca să vorbiți în continuare.',
+  'find.title': 'Caută după ID',
+  'find.placeholder': 'Caută ID-uri',
+  'find.hint': 'Scrie un ID ca să găsești pe cineva',
+  'find.none': 'Nimeni nu are un ID care începe cu @{q}',
+  'find.failed': 'Nu s-a putut încărca. Încearcă din nou.',
+  'blocks.title': 'Conturi blocate',
+  'blocks.note': 'Nu te pot găsi, nu îți pot vedea profilul și nu îți pot trimite mesaje. Deblocarea nu aduce înapoi chaturile sau prieteniile vechi.',
+  'blocks.empty': 'Nu ai blocat pe nimeni',
+  'blocks.unblock': 'Deblochează',
+  'blocks.done': 'Ai deblocat persoana {name}',
 }
 
 export default ro

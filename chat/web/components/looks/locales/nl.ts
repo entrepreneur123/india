@@ -55,7 +55,8 @@ const nl: LooksDict = {
   'id.invalid': 'Gebruik 2 tot 24 letters, cijfers of tekens als _ . - (geen spaties of emoji)',
   'id.reserved': 'Deze ID is gereserveerd',
   'id.taken': '@{handle} is al bezet',
-  'id.cooldown': 'Je kunt je ID weer wijzigen op {date}',
+  'id.cooldown': 'Je kunt je ID weer wijzigen op {date}, of eerder met een ID-wijziging uit de Yaari-app',
+  'id.cooldownPass': 'Als je hem nu wijzigt, gebruik je 1 van je {n} ID-wijzigingen (weer gratis op {date})',
   'id.keptFree': 'Die ID werd net bezet, dus de jouwe is voorlopig @{handle}. Je kunt hem wijzigen bij Profiel bewerken.',
 
   'details.title': 'Profieldetails',
@@ -73,6 +74,16 @@ const nl: LooksDict = {
   'ended.add': 'De chat is afgelopen. Voeg {name} toe als vriend om verder te praten.',
   'ended.waiting': 'De chat is afgelopen. Wachten tot {name} je vriendschapsverzoek accepteert.',
   'ended.incoming': 'De chat is afgelopen. {name} wil vrienden worden: accepteer om verder te praten.',
+  'find.title': 'Zoeken op ID',
+  'find.placeholder': 'ID’s zoeken',
+  'find.hint': 'Typ een ID om iemand te vinden',
+  'find.none': 'Niemand heeft een ID die begint met @{q}',
+  'find.failed': 'Laden mislukt. Probeer het opnieuw.',
+  'blocks.title': 'Geblokkeerde accounts',
+  'blocks.note': 'Ze kunnen je niet vinden, je profiel niet zien en je geen berichten sturen. Deblokkeren brengt oude chats of vriendschappen niet terug.',
+  'blocks.empty': 'Je hebt niemand geblokkeerd',
+  'blocks.unblock': 'Deblokkeren',
+  'blocks.done': '{name} is gedeblokkeerd',
 }
 
 export default nl

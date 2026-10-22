@@ -55,7 +55,8 @@ const zhHans: LooksDict = {
   'id.invalid': '请使用 2 到 24 个字母、数字或 _ . - 等符号（不能有空格或表情）',
   'id.reserved': '此 ID 已被保留',
   'id.taken': '@{handle} 已被占用',
-  'id.cooldown': '你可以在 {date} 再次更改 ID',
+  'id.cooldown': '你可以在 {date} 再次更改 ID，或使用 Yaari App 中的 ID 更改券提前更改',
+  'id.cooldownPass': '现在更改将使用你 {n} 张 ID 更改券中的 1 张（{date} 起可再次免费更改）',
   'id.keptFree': '这个 ID 刚刚被别人用了，所以你暂时的 ID 是 @{handle}。可以在「编辑资料」中更改。',
 
   'details.title': '资料详情',
@@ -73,6 +74,16 @@ const zhHans: LooksDict = {
   'ended.add': '聊天已结束。添加 {name} 为好友即可继续聊。',
   'ended.waiting': '聊天已结束。正在等待 {name} 接受你的好友申请。',
   'ended.incoming': '聊天已结束。{name} 想加你为好友：接受即可继续聊。',
+  'find.title': '通过 ID 查找',
+  'find.placeholder': '搜索 ID',
+  'find.hint': '输入 ID 查找用户',
+  'find.none': '没有以 @{q} 开头的 ID',
+  'find.failed': '加载失败，请重试。',
+  'blocks.title': '已拉黑的账号',
+  'blocks.note': '对方无法找到你、查看你的资料或给你发消息。解除拉黑后，之前的聊天和好友关系不会恢复。',
+  'blocks.empty': '你还没有拉黑任何人',
+  'blocks.unblock': '解除拉黑',
+  'blocks.done': '已解除拉黑 {name}',
 }
 
 export default zhHans

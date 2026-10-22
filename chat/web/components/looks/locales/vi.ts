@@ -55,7 +55,8 @@ const vi: LooksDict = {
   'id.invalid': 'Dùng 2 đến 24 chữ cái, chữ số hoặc ký hiệu như _ . - (không có khoảng trắng hay emoji)',
   'id.reserved': 'ID này đã được giữ trước',
   'id.taken': '@{handle} đã có người dùng',
-  'id.cooldown': 'Bạn có thể đổi ID lần nữa vào {date}',
+  'id.cooldown': 'Bạn có thể đổi ID lần nữa vào {date}, hoặc sớm hơn bằng lượt đổi ID từ ứng dụng Yaari',
+  'id.cooldownPass': 'Đổi ngay bây giờ sẽ dùng 1 trong {n} lượt đổi ID của bạn (miễn phí lại vào {date})',
   'id.keptFree': 'ID đó vừa có người lấy, nên tạm thời ID của bạn là @{handle}. Bạn có thể đổi trong Sửa hồ sơ.',
 
   'details.title': 'Chi tiết hồ sơ',
@@ -73,6 +74,16 @@ const vi: LooksDict = {
   'ended.add': 'Cuộc trò chuyện đã kết thúc. Kết bạn với {name} để tiếp tục nói chuyện.',
   'ended.waiting': 'Cuộc trò chuyện đã kết thúc. Đang chờ {name} đồng ý lời mời kết bạn.',
   'ended.incoming': 'Cuộc trò chuyện đã kết thúc. {name} muốn kết bạn: đồng ý để tiếp tục nói chuyện.',
+  'find.title': 'Tìm theo ID',
+  'find.placeholder': 'Tìm ID',
+  'find.hint': 'Nhập ID để tìm ai đó',
+  'find.none': 'Không có ai có ID bắt đầu bằng @{q}',
+  'find.failed': 'Không tải được. Hãy thử lại.',
+  'blocks.title': 'Tài khoản đã chặn',
+  'blocks.note': 'Họ không thể tìm bạn, xem trang cá nhân hay nhắn tin cho bạn. Bỏ chặn không khôi phục các cuộc trò chuyện hay tình bạn cũ.',
+  'blocks.empty': 'Bạn chưa chặn ai',
+  'blocks.unblock': 'Bỏ chặn',
+  'blocks.done': 'Đã bỏ chặn {name}',
 }
 
 export default vi

@@ -55,7 +55,8 @@ const id: LooksDict = {
   'id.invalid': 'Gunakan 2 sampai 24 huruf, angka, atau simbol seperti _ . - (tanpa spasi atau emoji)',
   'id.reserved': 'ID ini dicadangkan',
   'id.taken': '@{handle} sudah dipakai',
-  'id.cooldown': 'Kamu bisa mengganti ID lagi pada {date}',
+  'id.cooldown': 'Kamu bisa mengganti ID lagi pada {date}, atau lebih cepat dengan tiket ganti ID dari aplikasi Yaari',
+  'id.cooldownPass': 'Kalau diganti sekarang, 1 dari {n} tiket ganti ID-mu akan terpakai (gratis lagi pada {date})',
   'id.keptFree': 'ID itu baru saja diambil orang, jadi untuk sementara ID-mu @{handle}. Kamu bisa menggantinya di Edit profil.',
 
   'details.title': 'Detail profil',
@@ -73,6 +74,16 @@ const id: LooksDict = {
   'ended.add': 'Obrolan sudah berakhir. Tambahkan {name} sebagai teman untuk lanjut ngobrol.',
   'ended.waiting': 'Obrolan sudah berakhir. Menunggu {name} menerima permintaan pertemananmu.',
   'ended.incoming': 'Obrolan sudah berakhir. {name} ingin berteman: terima untuk lanjut ngobrol.',
+  'find.title': 'Cari lewat ID',
+  'find.placeholder': 'Cari ID',
+  'find.hint': 'Ketik ID untuk menemukan seseorang',
+  'find.none': 'Tidak ada yang punya ID berawalan @{q}',
+  'find.failed': 'Gagal memuat. Coba lagi.',
+  'blocks.title': 'Akun yang diblokir',
+  'blocks.note': 'Mereka tidak bisa menemukanmu, melihat profilmu, atau mengirimimu pesan. Membuka blokir tidak mengembalikan chat atau pertemanan lama.',
+  'blocks.empty': 'Kamu belum memblokir siapa pun',
+  'blocks.unblock': 'Buka blokir',
+  'blocks.done': 'Blokir {name} sudah dibuka',
 }
 
 export default id

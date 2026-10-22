@@ -55,7 +55,8 @@ const fil: LooksDict = {
   'id.invalid': 'Gumamit ng 2 hanggang 24 na letra, numero o simbolong tulad ng _ . - (walang space o emoji)',
   'id.reserved': 'Nakareserba ang ID na ito',
   'id.taken': 'May gumagamit na ng @{handle}',
-  'id.cooldown': 'Puwede mong palitan ulit ang ID mo sa {date}',
+  'id.cooldown': 'Puwede mong palitan ulit ang ID mo sa {date}, o mas maaga gamit ang ID change mula sa Yaari app',
+  'id.cooldownPass': 'Kapag pinalitan mo ngayon, magagamit ang 1 sa {n} ID change mo (libre ulit sa {date})',
   'id.keptFree': 'Kakakuha lang ng iba sa ID na iyon, kaya @{handle} muna ang ID mo. Puwede mo itong palitan sa I-edit ang profile.',
 
   'details.title': 'Mga detalye ng profile',
@@ -73,6 +74,16 @@ const fil: LooksDict = {
   'ended.add': 'Tapos na ang chat. I-add si {name} bilang kaibigan para makapag-usap pa kayo.',
   'ended.waiting': 'Tapos na ang chat. Hinihintay na tanggapin ni {name} ang friend request mo.',
   'ended.incoming': 'Tapos na ang chat. Gustong makipagkaibigan ni {name}: tanggapin para makapag-usap pa kayo.',
+  'find.title': 'Hanapin gamit ang ID',
+  'find.placeholder': 'Maghanap ng ID',
+  'find.hint': 'Mag-type ng ID para makahanap ng tao',
+  'find.none': 'Walang may ID na nagsisimula sa @{q}',
+  'find.failed': 'Hindi ma-load. Subukan ulit.',
+  'blocks.title': 'Mga naka-block na account',
+  'blocks.note': 'Hindi ka nila mahahanap, hindi nila makikita ang profile mo at hindi ka nila mame-message. Hindi maibabalik ng pag-unblock ang mga dating chat o pagkakaibigan.',
+  'blocks.empty': 'Wala kang bina-block',
+  'blocks.unblock': 'I-unblock',
+  'blocks.done': 'Na-unblock si {name}',
 }
 
 export default fil

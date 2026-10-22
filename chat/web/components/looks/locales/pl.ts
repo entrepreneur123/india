@@ -55,7 +55,8 @@ const pl: LooksDict = {
   'id.invalid': 'Użyj od 2 do 24 liter, cyfr lub znaków takich jak _ . - (bez spacji i emoji)',
   'id.reserved': 'To ID jest zarezerwowane',
   'id.taken': '@{handle} jest już zajęte',
-  'id.cooldown': 'Ponownie zmienisz ID {date}',
+  'id.cooldown': 'Ponownie zmienisz ID {date} albo wcześniej dzięki zmianie ID z aplikacji Yaari',
+  'id.cooldownPass': 'Zmiana teraz zużyje 1 z Twoich zmian ID (dostępne: {n}; znowu za darmo {date})',
   'id.keptFree': 'To ID właśnie ktoś zajął, więc na razie Twoje to @{handle}. Możesz je zmienić w Edytuj profil.',
 
   'details.title': 'Szczegóły profilu',
@@ -73,6 +74,16 @@ const pl: LooksDict = {
   'ended.add': 'Czat się zakończył. Dodaj {name} do znajomych, aby dalej rozmawiać.',
   'ended.waiting': 'Czat się zakończył. Czekamy, aż {name} przyjmie Twoje zaproszenie do znajomych.',
   'ended.incoming': 'Czat się zakończył. {name} chce dodać Cię do znajomych: zaakceptuj, aby dalej rozmawiać.',
+  'find.title': 'Szukaj po ID',
+  'find.placeholder': 'Szukaj ID',
+  'find.hint': 'Wpisz ID, aby kogoś znaleźć',
+  'find.none': 'Nikt nie ma ID zaczynającego się od @{q}',
+  'find.failed': 'Nie udało się wczytać. Spróbuj ponownie.',
+  'blocks.title': 'Zablokowane konta',
+  'blocks.note': 'Nie mogą Cię znaleźć, zobaczyć Twojego profilu ani do Ciebie pisać. Odblokowanie nie przywraca dawnych czatów ani znajomości.',
+  'blocks.empty': 'Nikogo nie blokujesz',
+  'blocks.unblock': 'Odblokuj',
+  'blocks.done': 'Odblokowano: {name}',
 }
 
 export default pl

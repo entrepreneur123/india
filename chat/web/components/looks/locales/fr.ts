@@ -55,7 +55,8 @@ const fr: LooksDict = {
   'id.invalid': 'Utilisez 2 à 24 lettres, chiffres ou symboles comme _ . - (sans espace ni emoji)',
   'id.reserved': 'Cet identifiant est réservé',
   'id.taken': '@{handle} est déjà pris',
-  'id.cooldown': 'Vous pourrez changer d’identifiant à nouveau le {date}',
+  'id.cooldown': 'Vous pourrez changer d’identifiant à nouveau le {date}, ou plus tôt avec un changement d’identifiant depuis l’app Yaari',
+  'id.cooldownPass': 'Le changer maintenant utilise 1 de vos {n} changements d’identifiant (à nouveau gratuit le {date})',
   'id.keptFree': 'Cet identifiant vient d’être pris, le vôtre est donc @{handle} pour l’instant. Vous pouvez le changer dans Modifier le profil.',
 
   'details.title': 'Détails du profil',
@@ -73,6 +74,16 @@ const fr: LooksDict = {
   'ended.add': 'Le chat est terminé. Ajoutez {name} en ami pour continuer à discuter.',
   'ended.waiting': 'Le chat est terminé. En attente de l’acceptation de votre demande par {name}.',
   'ended.incoming': 'Le chat est terminé. {name} veut être votre ami : acceptez pour continuer à discuter.',
+  'find.title': 'Rechercher par identifiant',
+  'find.placeholder': 'Rechercher des identifiants',
+  'find.hint': 'Saisissez un identifiant pour trouver quelqu’un',
+  'find.none': 'Aucun identifiant ne commence par @{q}',
+  'find.failed': 'Échec du chargement. Réessayez.',
+  'blocks.title': 'Comptes bloqués',
+  'blocks.note': 'Ces personnes ne peuvent pas vous trouver, voir votre profil ni vous écrire. Débloquer ne rétablit pas les anciens chats ni les amitiés.',
+  'blocks.empty': 'Vous n’avez bloqué personne',
+  'blocks.unblock': 'Débloquer',
+  'blocks.done': '{name} est débloqué(e)',
 }
 
 export default fr

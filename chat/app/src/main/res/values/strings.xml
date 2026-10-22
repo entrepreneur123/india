@@ -888,7 +888,7 @@
     <string name="err_handle_invalid">Use 2–24 letters, numbers or symbols such as . _ - (no spaces, emoji or fancy letters, and only one alphabet).</string>
     <string name="err_handle_reserved">That ID is reserved. Try another one.</string>
     <string name="err_handle_taken">That ID is taken. Try another one.</string>
-    <string name="err_handle_cooldown">You can change your ID once every 7 days.</string>
+    <string name="err_handle_cooldown">You can change your ID once every 30 days.</string>
     <string name="err_name_invalid">Use plain letters in your name. Fancy-font letters aren’t allowed (emoji are fine).</string>
     <string name="err_not_owned">You don’t own that look yet.</string>
     <string name="looks">Looks</string>

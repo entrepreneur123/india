@@ -55,7 +55,8 @@ const ptBR: LooksDict = {
   'id.invalid': 'Use de 2 a 24 letras, números ou símbolos como _ . - (sem espaços nem emoji)',
   'id.reserved': 'Este ID é reservado',
   'id.taken': '@{handle} já está em uso',
-  'id.cooldown': 'Você poderá mudar seu ID de novo em {date}',
+  'id.cooldown': 'Você poderá mudar seu ID de novo em {date}, ou antes com uma troca de ID do app Yaari',
+  'id.cooldownPass': 'Mudar agora usa 1 das suas {n} trocas de ID (grátis de novo em {date})',
   'id.keptFree': 'Esse ID acabou de ser pego, então por enquanto o seu é @{handle}. Você pode mudar em Editar perfil.',
 
   'details.title': 'Detalhes do perfil',
@@ -73,6 +74,16 @@ const ptBR: LooksDict = {
   'ended.add': 'O chat terminou. Adicione {name} como amigo para continuar conversando.',
   'ended.waiting': 'O chat terminou. Esperando {name} aceitar sua solicitação de amizade.',
   'ended.incoming': 'O chat terminou. {name} quer ser seu amigo: aceite para continuar conversando.',
+  'find.title': 'Buscar por ID',
+  'find.placeholder': 'Buscar IDs',
+  'find.hint': 'Digite um ID para encontrar alguém',
+  'find.none': 'Ninguém tem um ID começando com @{q}',
+  'find.failed': 'Não foi possível carregar. Tente de novo.',
+  'blocks.title': 'Contas bloqueadas',
+  'blocks.note': 'Essas pessoas não podem te encontrar, ver seu perfil nem te mandar mensagem. Desbloquear não traz de volta conversas ou amizades antigas.',
+  'blocks.empty': 'Você não bloqueou ninguém',
+  'blocks.unblock': 'Desbloquear',
+  'blocks.done': 'Você desbloqueou {name}',
 }
 
 export default ptBR

@@ -55,7 +55,8 @@ const tr: LooksDict = {
   'id.invalid': '2 ile 24 arası harf, rakam ya da _ . - gibi işaret kullan (boşluk ya da emoji olmadan)',
   'id.reserved': 'Bu kimlik ayrılmış',
   'id.taken': '@{handle} zaten alınmış',
-  'id.cooldown': 'Kimliğini {date} tarihinde yeniden değiştirebilirsin',
+  'id.cooldown': 'Kimliğini {date} tarihinde yeniden değiştirebilirsin ya da Yaari uygulamasındaki kimlik değiştirme hakkıyla daha önce',
+  'id.cooldownPass': 'Şimdi değiştirirsen {n} kimlik değiştirme hakkından 1’i kullanılır ({date} tarihinde yeniden ücretsiz)',
   'id.keptFree': 'O kimlik az önce alındı, bu yüzden şimdilik seninki @{handle}. Profili düzenle bölümünden değiştirebilirsin.',
 
   'details.title': 'Profil ayrıntıları',
@@ -73,6 +74,16 @@ const tr: LooksDict = {
   'ended.add': 'Sohbet bitti. Konuşmaya devam etmek için {name} kişisini arkadaş olarak ekle.',
   'ended.waiting': 'Sohbet bitti. {name} kişisinin arkadaşlık isteğini kabul etmesi bekleniyor.',
   'ended.incoming': 'Sohbet bitti. {name} seninle arkadaş olmak istiyor: konuşmaya devam etmek için kabul et.',
+  'find.title': 'Kimlikle bul',
+  'find.placeholder': 'Kimlik ara',
+  'find.hint': 'Birini bulmak için kimlik yaz',
+  'find.none': '@{q} ile başlayan kimliği olan kimse yok',
+  'find.failed': 'Yüklenemedi. Tekrar dene.',
+  'blocks.title': 'Engellenen hesaplar',
+  'blocks.note': 'Seni bulamaz, profilini göremez ve sana mesaj atamazlar. Engeli kaldırmak eski sohbetleri veya arkadaşlıkları geri getirmez.',
+  'blocks.empty': 'Kimseyi engellemedin',
+  'blocks.unblock': 'Engeli kaldır',
+  'blocks.done': '{name} adlı kişinin engeli kaldırıldı',
 }
 
 export default tr

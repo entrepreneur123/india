@@ -55,7 +55,8 @@ const zhHant: LooksDict = {
   'id.invalid': '請使用 2 到 24 個字母、數字或 _ . - 等符號（不能有空格或表情符號）',
   'id.reserved': '此 ID 已被保留',
   'id.taken': '@{handle} 已有人使用',
-  'id.cooldown': '你可以在 {date} 再次變更 ID',
+  'id.cooldown': '你可以在 {date} 再次變更 ID，或使用 Yaari App 中的 ID 變更券提前變更',
+  'id.cooldownPass': '現在變更將使用你 {n} 張 ID 變更券中的 1 張（{date} 起可再次免費變更）',
   'id.keptFree': '這個 ID 剛剛被別人用了，所以你暫時的 ID 是 @{handle}。可以在「編輯資料」中變更。',
 
   'details.title': '個人資料詳情',
@@ -73,6 +74,16 @@ const zhHant: LooksDict = {
   'ended.add': '聊天已結束。將 {name} 加為好友就能繼續聊。',
   'ended.waiting': '聊天已結束。正在等待 {name} 接受你的好友邀請。',
   'ended.incoming': '聊天已結束。{name} 想加你為好友：接受就能繼續聊。',
+  'find.title': '透過 ID 尋找',
+  'find.placeholder': '搜尋 ID',
+  'find.hint': '輸入 ID 尋找用戶',
+  'find.none': '沒有以 @{q} 開頭的 ID',
+  'find.failed': '無法載入，請再試一次。',
+  'blocks.title': '已封鎖的帳號',
+  'blocks.note': '對方無法找到你、查看你的個人檔案或傳訊息給你。解除封鎖後，先前的聊天和好友關係不會恢復。',
+  'blocks.empty': '你還沒有封鎖任何人',
+  'blocks.unblock': '解除封鎖',
+  'blocks.done': '已解除封鎖 {name}',
 }
 
 export default zhHant
