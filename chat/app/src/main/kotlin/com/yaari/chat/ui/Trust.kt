@@ -109,7 +109,7 @@ private val GoodColor = Color(0xFF30A46C)
 private val BadColor = Color(0xFFE5484D)
 
 @Composable
-private fun isNightTheme() = MaterialTheme.colorScheme.background.luminance() < 0.5f
+internal fun isNightTheme() = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
 /** The verified seal: a pink rosette with a white tick. */
 @Composable

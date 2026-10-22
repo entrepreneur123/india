@@ -52,7 +52,7 @@ const fa: FeedDict = {
   'compose.friends': 'دوستان',
   'compose.everyone': 'همه',
   'compose.friendsHint': 'دوستانتان و کسانی که با آن‌ها چت کرده‌اید.',
-  'compose.everyoneHint': 'همهٔ کاربران yaari، در کاوش. آن‌ها می‌توانند پروفایلتان را هم ببینند و شما را اضافه کنند.',
+  'compose.everyoneHint': 'هر کسی در yaari که پروفایلتان را باز کند. آن‌ها می‌توانند شما را اضافه هم کنند.',
   'compose.checking': 'در حال بررسی عکس…',
   'compose.nude': 'این عکس به نظر برهنگی دارد، برای همین قابل انتشار نیست',
 

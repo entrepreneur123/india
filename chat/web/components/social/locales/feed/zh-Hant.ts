@@ -52,7 +52,7 @@ const zhHant: FeedDict = {
   'compose.friends': '好友',
   'compose.everyone': '所有人',
   'compose.friendsHint': '你的好友和與你聊過天的人。',
-  'compose.everyoneHint': 'yaari 上的任何人都能在「發現」中看到。他們也可以檢視你的個人頁面並加你好友。',
+  'compose.everyoneHint': 'yaari 上打開你個人頁面的任何人都能看到。他們也可以加你好友。',
   'compose.checking': '正在檢查照片…',
   'compose.nude': '這張照片疑似裸露內容，無法發佈',
 

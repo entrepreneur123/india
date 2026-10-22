@@ -52,7 +52,7 @@ const sw: FeedDict = {
   'compose.friends': 'Marafiki',
   'compose.everyone': 'Kila mtu',
   'compose.friendsHint': 'Marafiki zako na watu uliochat nao.',
-  'compose.everyoneHint': 'Yeyote kwenye yaari, ndani ya Gundua. Wanaweza pia kuona wasifu wako na kukuongeza.',
+  'compose.everyoneHint': 'Yeyote kwenye yaari anayefungua wasifu wako. Anaweza pia kukuongeza.',
   'compose.checking': 'Inakagua picha…',
   'compose.nude': 'Picha hii inaonekana kuwa ya uchi, kwa hiyo haiwezi kuchapishwa',
 

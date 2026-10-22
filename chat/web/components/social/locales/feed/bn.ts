@@ -48,7 +48,7 @@ const bn: FeedDict = {
   'compose.friends': 'বন্ধুরা',
   'compose.everyone': 'সবাই',
   'compose.friendsHint': 'আপনার বন্ধুরা আর যাদের সাথে চ্যাট করেছেন।',
-  'compose.everyoneHint': 'yaari-তে যে কেউ, আবিষ্কারে। তারা আপনার প্রোফাইলও দেখতে ও আপনাকে যোগ করতে পারবে।',
+  'compose.everyoneHint': 'yaari-তে যে কেউ আপনার প্রোফাইল খুললেই দেখতে পাবে। তারা আপনাকে যোগও করতে পারবে।',
   'compose.checking': 'ছবিটি পরীক্ষা করা হচ্ছে…',
   'compose.nude': 'ছবিটি নগ্নতার মতো দেখাচ্ছে, তাই এটি পোস্ট করা যাবে না',
 

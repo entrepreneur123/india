@@ -72,13 +72,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaari.chat.R
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
+import com.yaari.chat.domain.Handle
 import com.yaari.chat.domain.Validation
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Profile
+import kotlin.random.Random
 
 @Composable
 fun OnboardingScreen(vm: AppViewModel, state: Onboarding) {
@@ -237,6 +240,14 @@ private fun OtpBoxes(code: String, label: String, onChange: (String) -> Unit) {
 private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
     // Plain remember: a content:// grant from the photo picker does not survive process death anyway.
     var d by remember { mutableStateOf(ProfileDraft()) }
+    // The ID follows the name (a suggestion with 4 digits) until it is typed in itself; it is checked as it changes.
+    val number = remember { Random.nextInt(10_000) }
+    var ownHandle by remember { mutableStateOf(false) }
+    val field by vm.looks.handle.collectAsStateWithLifecycle()
+    fun handle(h: String) {
+        d = d.copy(handle = h)
+        vm.looks.checkHandle(h, null)
+    }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) d = d.copy(photoUri = uri.toString())
     }
@@ -264,7 +275,11 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
             Text(stringResource(R.string.create_profile_sub), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
         }
     }
-    Field(d.name, { d = d.copy(name = it.take(30)) }, stringResource(R.string.name))
+    Field(d.name, { name ->
+        d = d.copy(name = name.take(30))
+        if (!ownHandle) handle(if (name.isBlank()) "" else Handle.suggest(name, number))
+    }, stringResource(R.string.name))
+    HandleInput(d.handle, { ownHandle = true; handle(it) }, field, vm.looks.problem(field?.takeIf { it.text == d.handle })?.text())
     // Fixed after sign-up (the server enforces it too), so they sit together in their own panel.
     Panel {
         FieldLabel(stringResource(R.string.gender))

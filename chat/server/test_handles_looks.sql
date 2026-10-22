@@ -114,6 +114,8 @@ reset role;
 select pg_temp.check((public.play_revoke('tok-fire', 'refund')->>'product') = 'frame_fire', 'revoke');
 select pg_temp.check((select look_frame is null and look_badge = 'badge_crown' from public.profiles where id = 'eeeeeeee-0000-0000-0000-000000004001'), 'refund takes the frame off');
 select pg_temp.check(not exists (select 1 from public.user_cosmetics where item_id = 'frame_fire'), 'refund: not owned');
+select pg_temp.check(public.redeem_cosmetic('eeeeeeee-0000-0000-0000-000000004001', 'frame_fire', 'tok-fire') = 'revoked', 'a refunded token is not redeemed again (041)');
+select pg_temp.check(not exists (select 1 from public.user_cosmetics where item_id = 'frame_fire'), 'still not owned');
 
 -- ---- the free cover and colour are gone ----
 set local role authenticated;

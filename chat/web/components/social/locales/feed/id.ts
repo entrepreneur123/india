@@ -52,7 +52,7 @@ const id: FeedDict = {
   'compose.friends': 'Teman',
   'compose.everyone': 'Semua orang',
   'compose.friendsHint': 'Temanmu dan orang yang pernah chat denganmu.',
-  'compose.everyoneHint': 'Siapa pun di yaari, di Jelajahi. Mereka juga bisa melihat profilmu dan menambahkanmu.',
+  'compose.everyoneHint': 'Siapa pun di yaari yang membuka profilmu. Mereka juga bisa menambahkanmu.',
   'compose.checking': 'Memeriksa foto…',
   'compose.nude': 'Foto ini terlihat mengandung ketelanjangan, jadi tidak bisa diposting',
 

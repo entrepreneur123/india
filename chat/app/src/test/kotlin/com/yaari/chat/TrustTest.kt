@@ -317,11 +317,10 @@ class TrustTest {
         assertEquals(90, FakeBackend.manner(40, 0))
     }
 
-    @Test fun feedAuthorsCarryTheBadge() = runTest(dispatcher) {
+    @Test fun postAuthorsCarryTheBadge() = runTest(dispatcher) {
         signedIn()
-        val posts = backend.feed(com.yaari.chat.model.FeedTab.DISCOVER)
-        assertTrue(posts.first { it.author?.id == "p1" }.author!!.verified)
-        assertFalse(posts.first { it.author?.id == "p2" }.author!!.verified)
+        assertTrue(backend.post("p1-0")!!.author!!.verified)
+        assertFalse(backend.post("p2-0")!!.author!!.verified)
     }
 
     private suspend fun runTestTrust(id: String) = backend.trust(listOf(id)).single()

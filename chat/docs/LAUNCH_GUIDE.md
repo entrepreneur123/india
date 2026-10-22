@@ -81,6 +81,14 @@
 8. **서명 키**: 지금 APK는 디버그 키 서명. Play에는 `./gradlew bundleLiveRelease`로 만든 AAB를 업로드 키로 서명해 올립니다(README "upload.properties").
 9. 국가: 인도 → 방글라데시 → 브라질 → 베트남 순으로 열기. 브라질은 2026-09-30부터 **Android 개발자 인증**(Play 밖 배포 포함) 시행.
 
+### 4-0. 꾸미기 상품 26개 등록 (0.15.0) — Play Console → 수익 창출 → 인앱 상품
+서버(마이그레이션 040·041, verify-purchase v11)는 준비 완료. **상품 ID가 아래와 정확히 같아야** 앱이 찾습니다. 종류는 "인앱 상품"(구독 아님), 한 번 사면 계속 보유(앱이 소비하지 않음). 가격은 아래가 제안가(₹)이며 Play에서 정한 가격이 앱에 그대로 표시됩니다.
+- 배지: `badge_crown` 99, `badge_diamond` 149, `badge_flame` 79, `badge_star` 79, `badge_heart` 79, `badge_bolt` 79
+- 아이디 색: `color_gold` `color_rose` `color_ocean` `color_emerald` `color_violet` 각 49, `color_sunset` 99, `color_aurora` 99, `color_rainbow` 129
+- 아이디 글꼴: `font_script` `font_retro` `font_bold` `font_pixel` `font_round` `font_future` 각 69
+- 프로필 테두리: `frame_frost` 199, `frame_fire` 199, `frame_jewel` 249, `frame_sand` 199, `frame_neon` 149, `frame_sakura` 149
+- 테스트로 직접 주기(결제 없이): SQL Editor에서 운영자 계정으로 `select public.admin_grant_cosmetic('<사용자 uuid>', 'frame_fire');` (조치 기록에 남음). 웹은 결제가 없어 "앱에서 구매" 링크만 보이고, 산 꾸미기는 웹에서도 착용됩니다.
+
 ### 4-1. 환불·취소 자동 처리(RTDN) — Play Console이 생긴 뒤 (서버 쪽은 준비 완료, 비밀값만 넣으면 켜짐)
 
 환불되거나 취소된 구매는 즉시 Plus/성별 패스를 끝냅니다 (edge function `play-rtdn`, 마이그레이션 025).

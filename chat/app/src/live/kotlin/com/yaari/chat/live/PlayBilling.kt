@@ -18,6 +18,7 @@ import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchasesAsync
 import com.yaari.chat.data.Billing
 import com.yaari.chat.data.Products
+import com.yaari.chat.model.Cosmetic
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -66,12 +67,15 @@ class PlayBilling(app: Application) : Billing {
 
     private suspend fun details(): List<ProductDetails> {
         if (!ready()) return emptyList()
-        fun query(id: String, type: String) = QueryProductDetailsParams.newBuilder().setProductList(
-            listOf(QueryProductDetailsParams.Product.newBuilder().setProductId(id).setProductType(type).build()),
+        fun query(ids: List<String>, type: String) = QueryProductDetailsParams.newBuilder().setProductList(
+            ids.map { QueryProductDetailsParams.Product.newBuilder().setProductId(it).setProductType(type).build() },
         ).build()
-        val subs = client.queryProductDetails(query(Products.PREMIUM, BillingClient.ProductType.SUBS)).productDetailsList.orEmpty()
-        val pass = client.queryProductDetails(query(Products.GENDER_PASS, BillingClient.ProductType.INAPP)).productDetailsList.orEmpty()
-        return subs + pass
+        val subs = client.queryProductDetails(query(listOf(Products.PREMIUM), BillingClient.ProductType.SUBS)).productDetailsList.orEmpty()
+        // The pass and the looks are one-time products (the looks non-consumable: owned for good, never consumed).
+        val inapp = client.queryProductDetails(
+            query(listOf(Products.GENDER_PASS) + Cosmetic.entries.map { it.id }, BillingClient.ProductType.INAPP),
+        ).productDetailsList.orEmpty()
+        return subs + inapp
     }
 
     override suspend fun prices(): Map<String, String> = details().associate { d ->
@@ -100,13 +104,13 @@ class PlayBilling(app: Application) : Billing {
     }
 
     override suspend fun finish(productId: String, token: String) {
-        // Subscriptions are acknowledged by the server; the one-time pass is consumed so it can be bought again.
+        // Subscriptions and looks are acknowledged by the server; only the one-time pass is consumed (bought again).
         if (productId == Products.GENDER_PASS && ready()) {
             client.consumePurchase(ConsumeParams.newBuilder().setPurchaseToken(token).build())
         }
     }
 
-    /** Active subscriptions, unconsumed passes (paid but not yet redeemed) and late-arriving purchases. */
+    /** Active subscriptions, unconsumed passes (paid but not yet redeemed), owned looks and late-arriving purchases. */
     override suspend fun ownedPurchases(): List<Pair<String, String>> {
         val late = synchronized(unclaimed) { unclaimed.toList().also { unclaimed.clear() } }
         if (!ready()) return late.flatMap { p -> p.products.map { it to p.purchaseToken } }

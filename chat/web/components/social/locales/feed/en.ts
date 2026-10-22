@@ -50,7 +50,7 @@ const en = {
   'compose.friends': 'Friends',
   'compose.everyone': 'Everyone',
   'compose.friendsHint': 'Your friends and people you’ve chatted with.',
-  'compose.everyoneHint': 'Anyone on yaari, in Discover. They can also see your profile and add you.',
+  'compose.everyoneHint': 'Anyone on yaari who opens your profile. They can also add you.',
   'compose.checking': 'Checking the photo…',
   'compose.nude': 'This photo looks like nudity, so it can’t be posted',
 

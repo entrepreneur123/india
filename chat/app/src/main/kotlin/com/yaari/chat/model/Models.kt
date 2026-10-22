@@ -57,6 +57,8 @@ data class Profile(
      * batched trust() lookup (see TrustController), so false here only means "not known from this card".
      */
     val verified: Boolean = false,
+    /** The ID (040), shown as "@handle": known on my own profile; everyone else's comes from the batched looks() lookup. */
+    val handle: String? = null,
 )
 
 enum class MediaKind { IMAGE, VIDEO }

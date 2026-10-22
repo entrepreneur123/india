@@ -3,7 +3,6 @@ package com.yaari.chat.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -84,6 +83,7 @@ import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomRules
 import com.yaari.chat.model.VoiceRoom
 import com.yaari.chat.model.VoiceRoomSummary
+import androidx.compose.material.icons.outlined.PersonAddAlt
 
 // ---- Rooms: who may come in, the create sheet, the code sheet, the new room's code -----------------------------
 
@@ -357,39 +357,39 @@ fun copyCode(context: Context, code: String) {
     Toast.makeText(context, context.getString(R.string.code_copied), Toast.LENGTH_SHORT).show()
 }
 
-fun shareCode(context: Context, title: String, code: String) {
-    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_room_text, title, code))
-    runCatching { context.startActivity(Intent.createChooser(send, null)) }
-}
-
-/** Right after opening a private room: its code, big, to copy (tap) or share. */
+/** Right after opening a private room: Invite friends first, sharing the link second, and the code as a small line. */
 @Composable
-fun RoomCreatedDialog(title: String, code: String, onDone: () -> Unit) {
+fun RoomCreatedDialog(room: VoiceRoom, code: String, onInvite: () -> Unit, onDone: () -> Unit) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDone,
         title = { Text(stringResource(R.string.created_title)) },
         text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.created_text_private), style = MaterialTheme.typography.bodyMedium)
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.created_text_invite), style = MaterialTheme.typography.bodyMedium)
+                PrimaryButton(
+                    stringResource(R.string.invite_title), onInvite, height = 48.dp,
+                    leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(20.dp), tint = Color.White) },
+                )
+                SoftButton(
+                    stringResource(R.string.share_link), { shareRoomLink(context, room) }, Modifier.fillMaxWidth(), height = 48.dp, outlined = true,
+                    leading = { Icon(Icons.Rounded.Share, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurface) },
+                )
+                // The code is a small line now: friends are invited, everyone else gets the link.
                 val copy = stringResource(R.string.room_copy, code)
                 Row(
-                    Modifier.padding(top = 16.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                        .clickable(role = Role.Button) { copyCode(context, code) }.semantics(mergeDescendants = true) { contentDescription = copy }
-                        .padding(start = 22.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button) { copyCode(context, code) }
+                        .semantics(mergeDescendants = true) { contentDescription = copy }.padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(code, style = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 30.sp, letterSpacing = 6.sp, color = MaterialTheme.colorScheme.onSurface))
-                    Icon(Icons.Rounded.ContentCopy, null, Modifier.padding(start = 8.dp).size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        stringResource(R.string.room_code) + "  " + code, style = MaterialTheme.typography.bodyMedium.copy(letterSpacing = 1.sp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Icon(Icons.Rounded.ContentCopy, null, Modifier.padding(start = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         },
-        confirmButton = {
-            TextButton({ shareCode(context, title, code) }) {
-                Icon(Icons.Rounded.Share, null, Modifier.size(18.dp), tint = Brand.Pink)
-                Text(stringResource(R.string.share), Modifier.padding(start = 6.dp), color = Brand.Pink)
-            }
-        },
-        dismissButton = { TextButton(onDone) { Text(stringResource(R.string.done)) } },
+        confirmButton = { TextButton(onDone) { Text(stringResource(R.string.done)) } },
     )
 }

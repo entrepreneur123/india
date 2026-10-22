@@ -253,6 +253,7 @@ class AppViewModelTest {
         now += 5_000
         val partner = vm.state.value.chat!!.match.partner
         vm.leave(next = false); advanceUntilIdle()
+        vm.addFriend(partner); advanceUntilIdle() // an ended chat goes on between friends (040)
         vm.openDm(partner.id)
         advanceTimeBy(100); runCurrent()
         vm.sendDm("nice talking!")
@@ -268,6 +269,7 @@ class AppViewModelTest {
         now += 5_000
         val partner = vm.state.value.chat!!.match.partner
         vm.leave(next = false); advanceUntilIdle()
+        vm.addFriend(partner); advanceUntilIdle()
         vm.openDm(partner.id)
         advanceTimeBy(100); runCurrent()
         assertFalse(vm.state.value.dm!!.partnerTyping)
@@ -474,10 +476,10 @@ class AppViewModelTest {
         val vm = signedIn()
         val before = vm.state.value.me!!
         var closed = false
-        vm.saveProfile("  ", "", "", null) { closed = true }; advanceUntilIdle()
+        vm.saveProfile("  ", "", "", null, before.handle!!) { closed = true }; advanceUntilIdle()
         assertEquals(UiText(R.string.err_name), vm.state.value.notice)
         assertFalse(closed)
-        vm.saveProfile("Devraj", "Pune", "Hello world", null) { closed = true }; advanceUntilIdle()
+        vm.saveProfile("Devraj", "Pune", "Hello world", null, before.handle!!) { closed = true }; advanceUntilIdle()
         val after = vm.state.value.me!!
         assertTrue(closed)
         assertEquals("Devraj" to "Hello world", after.name to after.bio)

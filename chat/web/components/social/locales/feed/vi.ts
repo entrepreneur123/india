@@ -48,7 +48,7 @@ const vi: FeedDict = {
   'compose.friends': 'Bạn bè',
   'compose.everyone': 'Mọi người',
   'compose.friendsHint': 'Bạn bè của bạn và những người bạn đã trò chuyện.',
-  'compose.everyoneHint': 'Bất kỳ ai trên yaari, ở mục Khám phá. Họ cũng có thể xem hồ sơ và kết bạn với bạn.',
+  'compose.everyoneHint': 'Bất kỳ ai trên yaari mở hồ sơ của bạn. Họ cũng có thể kết bạn với bạn.',
   'compose.checking': 'Đang kiểm tra ảnh…',
   'compose.nude': 'Ảnh này có vẻ khỏa thân nên không thể đăng',
 

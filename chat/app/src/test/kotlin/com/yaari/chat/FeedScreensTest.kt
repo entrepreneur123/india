@@ -17,8 +17,6 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.Countries
-import com.yaari.chat.model.Accent
-import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfilePrompt
@@ -27,7 +25,6 @@ import com.yaari.chat.model.PromptQ
 import com.yaari.chat.model.SpokenLang
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
-import com.yaari.chat.ui.Tab
 import com.yaari.chat.ui.YaariApp
 import com.yaari.chat.ui.YaariTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +39,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
-/** 0.11.0 screens: the feed, a post's comments, decorated profiles and their editor, post notifications. */
+/** Posts on profiles (no Feed tab since 0.15), a post's comments, profile details and their editor, post notifications. */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = "w393dp-h852dp-xxhdpi")
@@ -74,35 +71,36 @@ class FeedScreensTest {
     }
 
     private val myStyle = ProfileStyle(
-        accent = Accent.VIOLET, status = "Collecting sunsets", languages = listOf(SpokenLang.HI, SpokenLang.EN, SpokenLang.MR),
+        status = "Collecting sunsets", languages = listOf(SpokenLang.HI, SpokenLang.EN, SpokenLang.MR),
         prompts = listOf(
             ProfilePrompt(PromptQ.WEEKEND, "Sinhagad at sunrise, then misal pav"),
             ProfilePrompt(PromptQ.TALK, "You send me songs I have never heard"),
         ),
     )
 
-    @Test fun friendsAndDiscover() {
+    @Test fun noFeedTabAndAPostFromAProfile() {
         val vm = signIn()
-        compose.runOnUiThread { vm.answerFriend(FakeBackend.POOL.first { it.id == "p3" }, true) }
-        compose.waitUntil(5_000) { vm.state.value.friends.isNotEmpty() }
-        compose.onNodeWithText("Feed").performClick()
-        waitFor("What’s on your mind?")
-        waitFor("Rehearsal day")
-        shot("01_friends")
-        compose.onNodeWithText("Discover").performClick()
+        compose.onNodeWithText("Rooms").assertExists()
+        assertTrue("no Feed tab", compose.onAllNodes(hasText("Feed")).fetchSemanticsNodes().isEmpty())
+        shot("01_tabs_without_feed")
+        // A public poster's profile, in their frame.
+        compose.runOnUiThread { vm.openProfile(FakeBackend.POOL.first { it.id == "p1" }) }
+        waitFor("Chai first, then everything else")
+        shot("02_their_profile_framed")
+        // One of their posts full screen (profiles go over posts: back to it first), liked.
+        val post = runBlocking { backend.post("p1-0")!! }
+        compose.runOnUiThread { vm.closeProfile(); vm.feed.openDetail(post) }
         waitFor("Marine Drive evenings")
-        shot("02_discover")
-        // A heart: outline to red, the count goes up.
         compose.onAllNodes(hasContentDescription("Like")).onFirst().performClick()
-        compose.waitUntil(5_000) { vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first().liked }
-        shot("03_liked")
+        compose.waitUntil(5_000) { vm.feed.state.value.detail!!.liked }
+        shot("03_post_liked")
     }
 
     @Test fun commentsSheet() {
         val vm = signIn()
-        compose.runOnUiThread { vm.selectTab(Tab.FEED); vm.feed.select(FeedTab.DISCOVER) }
-        waitFor("Marine Drive evenings")
-        compose.onNode(hasScrollAction()).performScrollToNode(hasText("View all 3 comments"))
+        val post = runBlocking { backend.post("p1-0")!! }
+        compose.runOnUiThread { vm.feed.openDetail(post) }
+        waitFor("View all 3 comments")
         compose.onAllNodes(hasText("View all 3 comments")).onFirst().performClick()
         waitFor("Golden hour hits different")
         shot("04_comments")
@@ -115,25 +113,28 @@ class FeedScreensTest {
         waitFor("Reply to Emma")
     }
 
-    @Test fun decoratedProfilesAndTheEditor() {
+    @Test fun profileDetailsAndTheirEditor() {
         val vm = signIn()
         runBlocking { backend.setProfileStyle(myStyle) }
-        compose.runOnUiThread { vm.social.removePhoto("none") } // reloads my profile with the style
-        compose.waitUntil(5_000) { vm.state.value.me?.style?.accent == Accent.VIOLET }
+        compose.runOnUiThread { vm.social.removePhoto("none") } // reloads my profile with the details
+        compose.waitUntil(5_000) { vm.state.value.me?.style?.status == "Collecting sunsets" }
         compose.onNodeWithText("Me").performClick()
         waitFor("Collecting sunsets")
         shot("06_my_profile")
         compose.onNode(hasScrollAction()).performScrollToNode(hasText("Sinhagad", substring = true))
         shot("07_my_prompts")
-        compose.onNode(hasScrollAction()).performScrollToIndex(0) // the cover's button (0.12.0's cards push the prompts lower)
-        compose.onAllNodes(hasText("Customise")).onFirst().performClick()
-        waitFor("Profile colour")
+        compose.onNode(hasScrollAction()).performScrollToIndex(0)
+        compose.onNodeWithText("Edit profile").performClick()
+        compose.onAllNodes(hasScrollAction()).onLast().performScrollToNode(hasText("Profile details"))
+        compose.onNodeWithText("Profile details").performClick()
+        waitFor("Languages I speak")
+        assertTrue("no cover or colour any more", compose.onAllNodes(hasText("Profile colour")).fetchSemanticsNodes().isEmpty())
         shot("08_editor")
-        compose.onNode(hasContentDescription("Ocean")).performClick()
+        compose.onNodeWithText("मराठी").performClick() // off
         compose.onNodeWithText("Save").performClick()
-        compose.waitUntil(5_000) { vm.state.value.me?.style?.accent == Accent.OCEAN }
+        compose.waitUntil(5_000) { vm.state.value.me?.style?.languages == listOf(SpokenLang.EN, SpokenLang.HI) }
         assertEquals(myStyle.prompts, vm.state.value.me!!.style.prompts)
-        // Someone else's: a public poster's sheet from Discover.
+        // Someone else's.
         compose.runOnUiThread { vm.openProfile(FakeBackend.POOL.first { it.id == "p1" }) }
         waitFor("Chai first, then everything else")
         shot("09_their_profile")
@@ -142,17 +143,18 @@ class FeedScreensTest {
     }
 
     @Test fun composerWithAudience() {
-        signIn()
-        compose.onNodeWithText("Feed").performClick()
-        waitFor("What’s on your mind?")
-        compose.onNodeWithText("What’s on your mind?").performClick()
+        val vm = signIn()
+        compose.onNodeWithText("Me").performClick()
+        waitFor("New post")
+        compose.onNodeWithText("New post").performClick()
         waitFor("Who can see this?")
         compose.onNodeWithText("Everyone").performClick()
         compose.onNode(hasSetTextAction()).performTextInput("Monsoon is here and so am I")
         shot("11_new_post")
         compose.onNodeWithText("Share").performClick()
-        waitFor("Monsoon is here and so am I")
-        shot("12_my_post_in_feed")
+        compose.waitUntil(5_000) { vm.state.value.me!!.posts.isNotEmpty() }
+        compose.onNode(hasScrollAction()).performScrollToNode(hasText("Monsoon is here and so am I"))
+        shot("12_my_post_on_my_profile")
     }
 
     @Test fun likeAndCommentNotifications() {

@@ -3,18 +3,7 @@ package com.yaari.chat.model
 import androidx.annotation.StringRes
 import com.yaari.chat.R
 
-// ---- Profiles people make their own, posts with likes and comments, the feed (server: 033_profiles_feed.sql) ----
-
-/** A profile's colour (profiles.accent): tints the cover, the header and the avatar ring. Null is Yaari's own pink. */
-enum class Accent(val code: String, @StringRes val label: Int) {
-    ROSE("rose", R.string.accent_rose), VIOLET("violet", R.string.accent_violet), OCEAN("ocean", R.string.accent_ocean),
-    MINT("mint", R.string.accent_mint), SUNSET("sunset", R.string.accent_sunset), GOLD("gold", R.string.accent_gold),
-    BERRY("berry", R.string.accent_berry), SLATE("slate", R.string.accent_slate);
-
-    companion object {
-        fun of(code: String?) = entries.firstOrNull { it.code == code }
-    }
-}
+// ---- Profile details, posts with likes and comments (server: 033_profiles_feed.sql) ----
 
 /** The languages a profile can list (profiles.languages), each in its own script: nobody needs them translated. */
 enum class SpokenLang(val code: String, val native: String) {
@@ -49,19 +38,13 @@ data class ProfilePrompt(val q: PromptQ, val answer: String) {
     }
 }
 
-/**
- * What a profile looks like beyond the basics. [cover]: the cover photo to show (a signed URL, or the demo's file);
- * [coverId]: where it is stored ("<id>/cover/<file>"), sent back unchanged when the cover stays.
- */
+/** A profile's details beyond the basics: a status line, the languages spoken and answered prompts. */
 data class ProfileStyle(
-    val cover: String? = null,
-    val coverId: String? = null,
-    val accent: Accent? = null,
     val status: String? = null,
     val languages: List<SpokenLang> = emptyList(),
     val prompts: List<ProfilePrompt> = emptyList(),
 ) {
-    val isEmpty get() = cover == null && accent == null && status.isNullOrBlank() && languages.isEmpty() && prompts.isEmpty()
+    val isEmpty get() = status.isNullOrBlank() && languages.isEmpty() && prompts.isEmpty()
 
     /** What the server accepts (it checks again): a status of 1–60, up to 6 languages, up to 3 different questions answered. */
     fun valid() = (status == null || status.trim().length in 1..MAX_STATUS) && languages.size <= SpokenLang.MAX &&
@@ -73,7 +56,7 @@ data class ProfileStyle(
     }
 }
 
-/** Who sees a post: friends and people I chatted with (the default), or everyone (and Discover). */
+/** Who sees a post: friends and people I chatted with (the default), or everyone. */
 enum class PostVisibility(val code: String) {
     FRIENDS("friends"), PUBLIC("public");
 
@@ -81,9 +64,6 @@ enum class PostVisibility(val code: String) {
         fun of(code: String?) = if (code == "public") PUBLIC else FRIENDS
     }
 }
-
-/** The feed's two lists. */
-enum class FeedTab(val code: String) { FRIENDS("friends"), DISCOVER("discover") }
 
 /** A heart's state after liking or unliking (post_like). */
 data class LikeState(val likes: Int, val liked: Boolean)

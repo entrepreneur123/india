@@ -48,7 +48,7 @@ const de: FeedDict = {
   'compose.friends': 'Freunde',
   'compose.everyone': 'Alle',
   'compose.friendsHint': 'Deine Freunde und Leute, mit denen du gechattet hast.',
-  'compose.everyoneHint': 'Alle auf yaari, unter Entdecken. Sie können auch dein Profil sehen und dich hinzufügen.',
+  'compose.everyoneHint': 'Alle auf yaari, die dein Profil öffnen. Sie können dich auch hinzufügen.',
   'compose.checking': 'Foto wird geprüft…',
   'compose.nude': 'Dieses Foto sieht nach Nacktheit aus und kann deshalb nicht gepostet werden',
 

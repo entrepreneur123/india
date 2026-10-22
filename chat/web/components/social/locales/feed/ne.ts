@@ -48,7 +48,7 @@ const ne: FeedDict = {
   'compose.friends': 'साथीहरू',
   'compose.everyone': 'सबैजना',
   'compose.friendsHint': 'तपाईंका साथी र तपाईंसँग च्याट गरेका मान्छे।',
-  'compose.everyoneHint': 'yaari मा जो कोही, खोज्नुहोस् मा। उनीहरूले तपाईंको प्रोफाइल हेर्न र तपाईंलाई थप्न पनि सक्छन्।',
+  'compose.everyoneHint': 'yaari मा तपाईंको प्रोफाइल खोल्ने जो कोही। उनीहरूले तपाईंलाई थप्न पनि सक्छन्।',
   'compose.checking': 'फोटो जाँच हुँदै…',
   'compose.nude': 'यो फोटोमा नग्नता देखिएकाले पोस्ट गर्न मिल्दैन',
 

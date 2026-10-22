@@ -112,8 +112,8 @@ fun YaariApp(vm: AppViewModel, online: StateFlow<Boolean> = Connectivity.online)
             vm.consumeNotice()
         }
     }
-    // Every name on screen can show its verified seal (one batched trust() lookup for all of them).
-    CompositionLocalProvider(LocalTrust provides vm.trust) {
+    // Every name on screen can show its verified seal and every @ID its look (one batched lookup each for all of them).
+    CompositionLocalProvider(LocalTrust provides vm.trust, LocalLooks provides vm.looks) {
         Box(Modifier.fillMaxSize()) {
             Surface(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
@@ -224,7 +224,7 @@ private fun Screens(vm: AppViewModel, s: UiState) {
                 // Keyed by match: a new chat never inherits the last one's draft, dialogs or exit sheet.
                 Top.CHAT -> s.chat?.let { c -> key(c.match.id) { ChatRoomScreen(vm, c, s.premium) } }
                 Top.SEARCHING -> MatchingScreen(vm, s)
-                Top.DM -> s.dm?.let { d -> DmScreen(vm, d) }
+                Top.DM -> s.dm?.let { d -> DmScreen(vm, d, s.dmClosed, s.friendState(d.recent.partner.id)) }
                 Top.HOME -> HomeScreen(vm, s)
             }
         }

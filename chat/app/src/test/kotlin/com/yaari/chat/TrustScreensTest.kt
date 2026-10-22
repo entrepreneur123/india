@@ -13,13 +13,11 @@ import com.github.takahirom.roborazzi.captureRoboImage
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.Countries
-import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.KycResult
 import com.yaari.chat.model.MannerTag
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
-import com.yaari.chat.ui.Tab
 import com.yaari.chat.ui.VerifyPhase
 import com.yaari.chat.ui.YaariApp
 import com.yaari.chat.ui.YaariTheme
@@ -112,12 +110,14 @@ class TrustScreensTest {
         shot("10_me_coming_soon")
     }
 
-    @Test fun badgesAndMannersOnProfilesAndTheFeed() {
+    @Test fun badgesAndMannersOnProfilesAndPosts() {
         val vm = signIn()
-        compose.runOnUiThread { vm.selectTab(Tab.FEED); vm.feed.select(FeedTab.DISCOVER) }
+        val post = kotlinx.coroutines.runBlocking { backend.post("p1-0")!! }
+        compose.runOnUiThread { vm.feed.openDetail(post) }
         waitFor("Marine Drive evenings")
         compose.waitUntil(5_000) { compose.onAllNodes(hasContentDescription("ID verified")).fetchSemanticsNodes().isNotEmpty() }
-        shot("11_feed_badges")
+        shot("11_post_badges")
+        compose.runOnUiThread { vm.feed.closeDetail() }
         compose.runOnUiThread { vm.openProfile(FakeBackend.POOL.first { it.id == "p1" }) }
         waitFor("ID verified · Female · 22 · India")
         waitFor("Great")
@@ -126,6 +126,11 @@ class TrustScreensTest {
         shot("13_their_manners")
         compose.runOnUiThread { vm.closeProfile(); vm.openProfile(FakeBackend.POOL.first { it.id == "p2" }) }
         waitFor("Lucas")
+        // Unverified and rated by few: the badge comes from the batched lookup (once the profile is on screen).
+        compose.waitUntil(5_000) {
+            org.robolectric.shadows.ShadowLooper.idleMainLooper(50, java.util.concurrent.TimeUnit.MILLISECONDS) // the batch's short pause
+            vm.trust.people.value.containsKey("p2")
+        }
         compose.onAllNodes(hasScrollAction()).onLast().performScrollToNode(hasText("Manners"))
         shot("14_unverified_profile")
     }

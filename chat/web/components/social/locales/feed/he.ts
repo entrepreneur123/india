@@ -54,7 +54,7 @@ const he: FeedDict = {
   'compose.friends': 'חברים',
   'compose.everyone': 'כולם',
   'compose.friendsHint': 'החברים שלך ואנשים שצ׳וטטת איתם.',
-  'compose.everyoneHint': 'כל מי שב-yaari, ב״גילוי״. הם גם יוכלו לראות את הפרופיל שלך ולהוסיף אותך.',
+  'compose.everyoneHint': 'כל מי שב-yaari שפותח את הפרופיל שלך. הם גם יוכלו להוסיף אותך.',
   'compose.checking': 'בודקים את התמונה…',
   'compose.nude': 'התמונה נראית כמו עירום, ולכן אי אפשר לפרסם אותה',
 

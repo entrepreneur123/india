@@ -5,12 +5,9 @@ import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.DeepLink
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
-import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.data.PushChannel
 import com.yaari.chat.data.PushMessage
 import com.yaari.chat.domain.Countries
-import com.yaari.chat.model.Accent
-import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.InboxKind
@@ -43,7 +40,7 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-/** 0.11.0: profile style, posts with hearts and comments, the feed, and their notifications (033_profiles_feed.sql). */
+/** Profile details, posts with hearts and comments on profiles, and their notifications (033_profiles_feed.sql; the feed went in 0.15). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class FeedTest {
     private val dispatcher = StandardTestDispatcher()
@@ -54,8 +51,8 @@ class FeedTest {
     @Before fun setUp() = Dispatchers.setMain(dispatcher)
     @After fun tearDown() = Dispatchers.resetMain()
 
-    private fun TestScope.signedIn(backend: Backend = fake, photos: PhotoCheck = PhotoCheck.None): AppViewModel {
-        val vm = AppViewModel(backend, DemoBilling(), today = { today }, photos = photos)
+    private fun TestScope.signedIn(backend: Backend = fake): AppViewModel {
+        val vm = AppViewModel(backend, DemoBilling(), today = { today })
         advanceUntilIdle()
         vm.requestOtp(Countries.byIso("IN")!!, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
@@ -64,34 +61,30 @@ class FeedTest {
         return vm
     }
 
-    // ---- the feed ----
+    /** A public post of the demo's Priya, as a profile's grid opens it. */
+    private suspend fun priyaPost() = fake.post("p1-0")!!
 
-    @Test fun discoverShowsPublicPostsNewestFirstWithAuthorsAndCounts() = runTest(dispatcher) {
-        val vm = signedIn()
-        vm.selectTab(Tab.FEED); advanceUntilIdle()
-        assertEquals("Friends: nobody yet", emptyList<Any>(), vm.feed.state.value.page(FeedTab.FRIENDS).posts)
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val posts = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!
-        assertTrue(posts.isNotEmpty())
-        assertTrue(posts.all { it.visibility == PostVisibility.PUBLIC && it.author != null })
-        assertEquals(posts.sortedByDescending { it.createdAt }, posts)
-        assertTrue("seeded hearts", posts.any { it.likes > 0 })
-        assertEquals(Accent.ROSE, posts.first { it.id == "p1-0" }.author!!.style.accent)
-        assertTrue(vm.feed.state.value.page(FeedTab.DISCOVER).end)
+    // ---- posts on profiles (the Feed tab is gone, 0.15) ----
+
+    @Test fun theFeedTabIsGone() {
+        assertEquals(listOf(Tab.ROOMS, Tab.RANDOM, Tab.RECENT, Tab.ME), Tab.entries)
     }
 
-    @Test fun friendsFeedHasMyAndMyFriendsPostsAndANewPostGoesOnTop() = runTest(dispatcher) {
+    @Test fun aPublicPostersGridHasTheirPostsNewestFirstWithCounts() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.answerFriend(FakeBackend.POOL.first { it.id == "p3" }, true); advanceUntilIdle()
-        vm.selectTab(Tab.FEED); advanceUntilIdle()
-        val before = vm.feed.state.value.page(FeedTab.FRIENDS).posts!!
-        assertTrue(before.isNotEmpty() && before.all { it.author?.id == "p3" })
-        vm.addPost("Hello feed", null, PostVisibility.PUBLIC); advanceUntilIdle()
-        assertEquals("Hello feed", vm.feed.state.value.page(FeedTab.FRIENDS).posts!!.first().text)
-        assertEquals("Hello feed", vm.state.value.me!!.posts.first().text)
+        vm.openProfile(FakeBackend.POOL.first { it.id == "p1" }); advanceUntilIdle()
+        val posts = vm.state.value.viewing!!.posts
+        assertTrue(posts.isNotEmpty())
+        assertEquals(posts.sortedByDescending { it.createdAt }, posts)
+        assertTrue("seeded hearts", posts.any { it.likes > 0 })
+    }
+
+    @Test fun aNewPostShowsOnMyProfileAtOnce() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.addPost("Hello profile", null, PostVisibility.PUBLIC); advanceUntilIdle()
+        assertEquals("Hello profile", vm.state.value.me!!.posts.first().text)
+        assertEquals(PostVisibility.PUBLIC, vm.state.value.me!!.posts.first().visibility)
         assertEquals(UiText(com.yaari.chat.R.string.msg_posted), vm.state.value.notice)
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        assertEquals("public: in Discover too", "Hello feed", vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first().text)
     }
 
     @Test fun twentyPostsADayThenSlowDown() = runTest(dispatcher) {
@@ -104,25 +97,24 @@ class FeedTest {
     }
 
     @Test fun pagesFollowTheOldestPostShown() = runTest(dispatcher) {
-        signedIn()
-        val all = mutableListOf<String>()
+        val vm = signedIn()
+        val me = vm.state.value.me!!.id
         repeat(25) { fake.addPost("p$it", null, PostVisibility.FRIENDS); now += 5_000_000L } // under 20 a day
-        val first = fake.feed(FeedTab.FRIENDS)
+        val first = fake.postsOf(me)
         assertEquals(20, first.size)
-        val second = fake.feed(FeedTab.FRIENDS, first.last())
+        val second = fake.postsOf(me, first.last())
         assertEquals(5, second.size)
-        all += (first + second).map { it.text }
-        assertEquals((24 downTo 0).map { "p$it" }, all)
+        assertEquals((24 downTo 0).map { "p$it" }, (first + second).map { it.text })
     }
 
     // ---- hearts ----
 
     @Test fun heartIsOptimisticAndTheServerSettlesIt() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val p = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == "p1-0" }
+        val p = priyaPost()
+        vm.feed.openDetail(p)
         vm.feed.toggleLike(p)
-        val now1 = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == p.id }
+        val now1 = vm.feed.state.value.detail!!
         assertTrue(now1.liked)
         assertEquals(p.likes + 1, now1.likes)
         advanceUntilIdle()
@@ -131,7 +123,7 @@ class FeedTest {
         assertEquals(p.likes + 1, fake.post(p.id)!!.likes)
         vm.feed.toggleLike(now1); advanceUntilIdle()
         assertFalse(fake.post(p.id)!!.liked)
-        assertEquals(p.likes, vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == p.id }.likes)
+        assertEquals(p.likes, vm.feed.state.value.detail!!.likes)
     }
 
     @Test fun aFailedHeartGoesBack() = runTest(dispatcher) {
@@ -139,10 +131,10 @@ class FeedTest {
             override suspend fun likePost(postId: String, on: Boolean): LikeState = throw BackendException("network")
         }
         val vm = signedIn(broken)
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val p = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first()
+        val p = broken.post("p1-0")!!
+        vm.feed.openDetail(p)
         vm.feed.toggleLike(p); advanceUntilIdle()
-        val back = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == p.id }
+        val back = vm.feed.state.value.detail!!
         assertEquals(p.liked, back.liked)
         assertEquals(p.likes, back.likes)
         assertEquals(UiText(com.yaari.chat.R.string.err_network), vm.state.value.notice)
@@ -152,8 +144,8 @@ class FeedTest {
 
     @Test fun commentsWithRepliesCountsAndRemoval() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val p = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == "p1-0" }
+        val p = priyaPost()
+        vm.feed.openDetail(p)
         vm.feed.openComments(p); advanceUntilIdle()
         val list = vm.feed.state.value.thread!!.comments!!
         assertEquals(3, list.size)
@@ -169,16 +161,15 @@ class FeedTest {
         assertEquals("Same here!", mine.body)
         assertEquals(list[0].id, mine.replyTo)
         assertTrue(mine.mine && mine.canRemove)
-        assertEquals(p.comments + 1, vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == p.id }.comments)
+        assertEquals(p.comments + 1, vm.feed.state.value.detail!!.comments)
         vm.feed.remove(mine); advanceUntilIdle()
         assertEquals(3, vm.feed.state.value.thread!!.comments!!.size)
-        assertEquals(p.comments, vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == p.id }.comments)
+        assertEquals(p.comments, vm.feed.state.value.detail!!.comments)
     }
 
     @Test fun tenCommentsAMinute() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        vm.feed.openComments(vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first()); advanceUntilIdle()
+        vm.feed.openComments(priyaPost()); advanceUntilIdle()
         repeat(10) { vm.feed.send("c$it"); advanceUntilIdle() }
         vm.feed.send("eleven"); advanceUntilIdle()
         assertEquals(UiText(com.yaari.chat.R.string.err_slow_down), vm.state.value.notice)
@@ -198,6 +189,7 @@ class FeedTest {
         assertEquals("one line per post", 3, likes.count)
         assertEquals("the newest liker", "p7", likes.actor.id)
         assertEquals(post.id, likes.post?.id)
+        // A post notification opens the post itself (full screen, with its comments).
         val comment = items.first { it.kind == InboxKind.POST_COMMENT }
         vm.inboxPost(comment); advanceUntilIdle()
         assertFalse(vm.social.state.value.inboxOpen)
@@ -213,20 +205,18 @@ class FeedTest {
     @Test fun deletingMyPostRemovesItEverywhere() = runTest(dispatcher) {
         val vm = signedIn()
         vm.addPost("Oops", null); advanceUntilIdle()
-        vm.selectTab(Tab.FEED); advanceUntilIdle()
-        val post = vm.feed.state.value.page(FeedTab.FRIENDS).posts!!.first()
+        val post = vm.state.value.me!!.posts.first()
         vm.feed.openDetail(post)
         vm.feed.delete(post); advanceUntilIdle()
         assertTrue(vm.state.value.me!!.posts.isEmpty())
-        assertTrue(vm.feed.state.value.page(FeedTab.FRIENDS).posts!!.isEmpty())
         assertNull(vm.feed.state.value.detail)
         assertEquals(UiText(com.yaari.chat.R.string.msg_post_deleted), vm.state.value.notice)
     }
 
     @Test fun reportingHidesThePostAndCommentAndKeepsTheReason() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val p = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == "p1-0" }
+        val p = priyaPost()
+        vm.feed.openDetail(p)
         vm.feed.openComments(p); advanceUntilIdle()
         val c = vm.feed.state.value.thread!!.comments!!.first()
         vm.feed.report(c, ReportReason.HARASSMENT); advanceUntilIdle()
@@ -234,14 +224,12 @@ class FeedTest {
         vm.feed.report(p, ReportReason.FAKE); advanceUntilIdle()
         assertEquals(listOf("comment:${c.id}" to ReportReason.HARASSMENT, "post:p1-0" to ReportReason.FAKE), fake.postReports)
         assertNull(vm.feed.state.value.thread)
-        vm.feed.refresh(); advanceUntilIdle()
-        assertFalse("stays hidden after a refresh", vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.any { it.id == "p1-0" })
+        assertNull(vm.feed.state.value.detail)
     }
 
-    @Test fun publicPostersCanBeOpenedAndBlockingClearsTheirPosts() = runTest(dispatcher) {
+    @Test fun publicPostersCanBeOpenedAndBlockingClearsThem() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.feed.select(FeedTab.DISCOVER); advanceUntilIdle()
-        val priya = vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.first { it.id == "p1-0" }.author!!
+        val priya = priyaPost().author!!
         vm.openProfile(priya); advanceUntilIdle()
         val p = vm.state.value.viewing!!
         assertEquals("Chai first, then everything else", p.style.status)
@@ -249,56 +237,47 @@ class FeedTest {
         assertEquals(listOf(SpokenLang.EN, SpokenLang.HI, SpokenLang.MR), p.style.languages)
         vm.addFriend(p); advanceUntilIdle()
         assertEquals("a public poster can be asked", FriendState.REQUESTED, vm.state.value.friendState(p.id))
+        vm.feed.openDetail(priyaPost())
         vm.block(p); advanceUntilIdle()
-        assertFalse(vm.feed.state.value.page(FeedTab.DISCOVER).posts!!.any { it.author?.id == p.id })
+        assertNull(vm.state.value.viewing)
+        assertNull(vm.feed.state.value.detail)
     }
 
-    // ---- profile style ----
+    // ---- profile details ----
 
-    @Test fun styleIsSavedWholeAndShownOnMyProfile() = runTest(dispatcher) {
+    @Test fun detailsAreSavedWholeAndShownOnMyProfile() = runTest(dispatcher) {
         val vm = signedIn()
         val style = ProfileStyle(
-            accent = Accent.OCEAN, status = "  Sunsets and chai ", languages = listOf(SpokenLang.HI, SpokenLang.EN),
+            status = "  Sunsets and chai ", languages = listOf(SpokenLang.HI, SpokenLang.EN),
             prompts = listOf(ProfilePrompt(PromptQ.FOOD, "Vada pav"), ProfilePrompt(PromptQ.GOAL, "Learn the guitar")),
         )
         var done = false
-        vm.social.saveStyle(style, "file:///cover.jpg") { done = true }; advanceUntilIdle()
+        vm.social.saveStyle(style) { done = true }; advanceUntilIdle()
         assertTrue(done)
         val me = vm.state.value.me!!.style
-        assertEquals(Accent.OCEAN, me.accent)
         assertEquals("Sunsets and chai", me.status)
-        assertEquals("file:///cover.jpg", me.cover)
+        assertEquals(listOf(SpokenLang.HI, SpokenLang.EN), me.languages)
         assertEquals(2, me.prompts.size)
-        // Removing the cover keeps the rest.
-        vm.social.saveStyle(me.copy(cover = null, coverId = null), null); advanceUntilIdle()
-        assertNull(vm.state.value.me!!.style.cover)
-        assertEquals(Accent.OCEAN, vm.state.value.me!!.style.accent)
+        assertEquals(UiText(com.yaari.chat.R.string.style_saved), vm.state.value.notice)
     }
 
-    @Test fun badStylesAndNudeCoversAreRefused() = runTest(dispatcher) {
-        val nude = object : PhotoCheck {
-            override suspend fun shrink(uri: String) = uri
-            override suspend fun nude(jpegUri: String) = true
-        }
-        val vm = signedIn(photos = nude)
-        vm.social.saveStyle(ProfileStyle(prompts = listOf(ProfilePrompt(PromptQ.FOOD, "a"), ProfilePrompt(PromptQ.FOOD, "b"))), null); advanceUntilIdle()
+    @Test fun badDetailsAreRefused() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.social.saveStyle(ProfileStyle(prompts = listOf(ProfilePrompt(PromptQ.FOOD, "a"), ProfilePrompt(PromptQ.FOOD, "b")))); advanceUntilIdle()
         assertEquals(UiText(com.yaari.chat.R.string.style_bad), vm.state.value.notice)
-        vm.social.saveStyle(ProfileStyle(languages = SpokenLang.entries.take(7)), null); advanceUntilIdle()
+        vm.social.saveStyle(ProfileStyle(languages = SpokenLang.entries.take(7))); advanceUntilIdle()
         assertEquals(UiText(com.yaari.chat.R.string.style_bad), vm.state.value.notice)
-        vm.social.saveStyle(ProfileStyle(accent = Accent.MINT), "file:///nude.jpg"); advanceUntilIdle()
-        assertEquals(UiText(com.yaari.chat.R.string.photos_nude), vm.state.value.notice)
-        assertNull("nothing saved", vm.state.value.me!!.style.accent)
+        assertTrue("nothing saved", vm.state.value.me!!.style.isEmpty)
         assertFalse(vm.social.state.value.savingStyle)
     }
 
     @Test fun styleRules() {
         assertTrue(ProfileStyle().valid())
+        assertTrue(ProfileStyle().isEmpty)
         assertFalse(ProfileStyle(status = "x".repeat(61)).valid())
         assertFalse(ProfileStyle(prompts = PromptQ.entries.take(4).map { ProfilePrompt(it, "a") }).valid())
         assertFalse(ProfileStyle(prompts = listOf(ProfilePrompt(PromptQ.SONG, " "))).valid())
         assertEquals(listOf(SpokenLang.EN, SpokenLang.VI), SpokenLang.of(listOf("vi", "xx", "en")))
-        assertEquals(Accent.SLATE, Accent.of("slate"))
-        assertNull(Accent.of("neon"))
         assertEquals(PostVisibility.FRIENDS, PostVisibility.of(null))
     }
 

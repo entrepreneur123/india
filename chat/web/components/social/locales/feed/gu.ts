@@ -45,7 +45,7 @@ const gu: FeedDict = {
   'compose.friends': 'મિત્રો',
   'compose.everyone': 'બધા',
   'compose.friendsHint': 'તમારા મિત્રો અને જેમની સાથે તમે ચેટ કરી છે તે લોકો.',
-  'compose.everyoneHint': 'yaari પર કોઈ પણ, શોધોમાં. તેઓ તમારી પ્રોફાઇલ પણ જોઈ શકે અને તમને ઍડ કરી શકે.',
+  'compose.everyoneHint': 'yaari પર તમારી પ્રોફાઇલ ખોલનાર કોઈ પણ. તેઓ તમને ઍડ પણ કરી શકે.',
   'compose.checking': 'ફોટો તપાસી રહ્યા છીએ…',
   'compose.nude': 'આ ફોટો નગ્નતાવાળો લાગે છે, તેથી પોસ્ટ કરી શકાતો નથી',
   'style.status': 'સ્ટેટસ',

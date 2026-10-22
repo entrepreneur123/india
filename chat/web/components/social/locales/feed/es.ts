@@ -50,7 +50,7 @@ const es: FeedDict = {
   'compose.friends': 'Amigos',
   'compose.everyone': 'Todos',
   'compose.friendsHint': 'Tus amigos y las personas con las que chateaste.',
-  'compose.everyoneHint': 'Cualquiera en yaari, en Descubrir. También podrán ver tu perfil y agregarte.',
+  'compose.everyoneHint': 'Cualquiera en yaari que abra tu perfil. También podrán agregarte.',
   'compose.checking': 'Revisando la foto…',
   'compose.nude': 'Esta foto parece contener desnudos, así que no se puede publicar',
 

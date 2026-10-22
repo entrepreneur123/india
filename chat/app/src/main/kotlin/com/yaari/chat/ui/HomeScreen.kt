@@ -88,7 +88,7 @@ import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.Target
 
-/** Signed-in home: five tabs (Rooms, Random, Feed, Recent, Me) and the screens they open full-screen. */
+/** Signed-in home: four tabs (Rooms, Random, Recent, Me) and the screens they open full-screen. */
 @Composable
 fun HomeScreen(vm: AppViewModel, s: UiState) {
     var screen by rememberSaveable { mutableStateOf(Sub.NONE) }
@@ -97,8 +97,9 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
     AnimatedContent(screen, transitionSpec = { pushPop(forward = targetState != Sub.NONE) }, label = "page") { p ->
         when (p) {
             Sub.SETTINGS -> SettingsScreen(vm, s, onBack = { screen = Sub.NONE }, onEditProfile = { screen = Sub.EDIT })
-            Sub.EDIT -> EditProfileScreen(vm, me, onDone = { screen = Sub.NONE }, onCustomize = { screen = Sub.STYLE })
+            Sub.EDIT -> EditProfileScreen(vm, me, onDone = { screen = Sub.NONE }, onDetails = { screen = Sub.STYLE }, onLooks = { screen = Sub.LOOKS })
             Sub.STYLE -> StyleEditorScreen(vm, me, onDone = { screen = Sub.NONE })
+            Sub.LOOKS -> LooksShopScreen(vm, s, me, onDone = { screen = Sub.NONE })
             Sub.NEW_POST -> NewPostScreen(onCancel = { screen = Sub.NONE }) { text, uri, visibility ->
                 vm.addPost(text, uri, visibility)
                 screen = Sub.NONE
@@ -122,11 +123,10 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
             when (tab) {
                 Tab.ROOMS -> RoomsTab(vm, onSettings = { open(Sub.SETTINGS) })
                 Tab.RANDOM -> RandomTab(vm, s, social.badges.inbox, onSettings = { open(Sub.SETTINGS) })
-                Tab.FEED -> FeedScreen(vm, s, social, onSettings = { open(Sub.SETTINGS) }, onNewPost = { open(Sub.NEW_POST) })
                 Tab.RECENT -> RecentTab(vm, s, social, onSettings = { open(Sub.SETTINGS) })
                 Tab.ME -> MyProfileTab(
                     vm, s, onSettings = { open(Sub.SETTINGS) }, onEdit = { open(Sub.EDIT) }, onNewPost = { open(Sub.NEW_POST) },
-                    onCustomize = { open(Sub.STYLE) },
+                    onDetails = { open(Sub.STYLE) }, onLooks = { open(Sub.LOOKS) },
                 )
             }
         }
@@ -149,9 +149,9 @@ fun pushPop(forward: Boolean): ContentTransform {
     }
 }
 
-private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, STYLE }
+private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, STYLE, LOOKS }
 
-// ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Feed · Recent · Me) with a tonal pill on the selected tab ----
+// ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Recent · Me) with a tonal pill on the selected tab ----
 
 @Composable
 private fun BottomBar(s: UiState, me: Profile, recentCount: Int, dark: Boolean, bg: Color, onSelect: (Tab) -> Unit) {
@@ -164,10 +164,6 @@ private fun BottomBar(s: UiState, me: Profile, recentCount: Int, dark: Boolean, 
             }
             NavItem(s.tab == Tab.RANDOM, dark, R.string.tab_random, onClick = { onSelect(Tab.RANDOM) }) { color ->
                 Icon(Icons.Rounded.Shuffle, null, Modifier.size(24.dp), tint = color)
-            }
-            // The feed: Yaari's own drawing, its outline until chosen.
-            NavItem(s.tab == Tab.FEED, dark, R.string.tab_feed, onClick = { onSelect(Tab.FEED) }) { color ->
-                MarkIcon(Mark.FEED, color, filled = s.tab == Tab.FEED, size = 24.dp)
             }
             NavItem(s.tab == Tab.RECENT, dark, R.string.tab_recent, badge = recentCount, onClick = { onSelect(Tab.RECENT) }) { color ->
                 Icon(if (s.tab == Tab.RECENT) Icons.Rounded.History else Icons.Outlined.History, null, Modifier.size(24.dp), tint = color)

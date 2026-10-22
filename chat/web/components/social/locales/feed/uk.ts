@@ -56,7 +56,7 @@ const uk: FeedDict = {
   'compose.friends': 'Друзі',
   'compose.everyone': 'Усі',
   'compose.friendsHint': 'Ваші друзі й люди, з якими ви спілкувалися.',
-  'compose.everyoneHint': 'Усі в yaari, у розділі «Цікаве». Вони також зможуть відкрити ваш профіль і додати вас.',
+  'compose.everyoneHint': 'Усі в yaari, хто відкриє ваш профіль. Вони також зможуть додати вас.',
   'compose.checking': 'Перевіряємо фото…',
   'compose.nude': 'Схоже, на фото оголеність, тому його не можна опублікувати',
 

@@ -48,7 +48,7 @@ const te: FeedDict = {
   'compose.friends': 'ఫ్రెండ్స్',
   'compose.everyone': 'అందరూ',
   'compose.friendsHint': 'మీ ఫ్రెండ్స్, మీరు చాట్ చేసినవాళ్లు.',
-  'compose.everyoneHint': 'yaariలో ఎవరైనా, డిస్కవర్‌లో. వాళ్లు మీ ప్రొఫైల్ చూసి మిమ్మల్ని యాడ్ కూడా చేయగలరు.',
+  'compose.everyoneHint': 'మీ ప్రొఫైల్ తెరిచే yaariలో ఎవరైనా. వాళ్లు మిమ్మల్ని యాడ్ కూడా చేయగలరు.',
   'compose.checking': 'ఫోటో చెక్ చేస్తోంది…',
   'compose.nude': 'ఈ ఫోటోలో నగ్నత్వం ఉన్నట్లు కనిపిస్తోంది, అందుకే పోస్ట్ చేయలేం',
 

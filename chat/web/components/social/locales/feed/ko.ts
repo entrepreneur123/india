@@ -52,7 +52,7 @@ const ko: FeedDict = {
   'compose.friends': '친구',
   'compose.everyone': '전체 공개',
   'compose.friendsHint': '친구와 나와 채팅한 사람',
-  'compose.everyoneHint': '둘러보기에서 yaari의 누구나 볼 수 있어요. 내 프로필을 보고 친구 추가도 할 수 있어요.',
+  'compose.everyoneHint': '내 프로필을 여는 yaari의 누구나 볼 수 있어요. 친구 추가도 할 수 있어요.',
   'compose.checking': '사진 확인 중…',
   'compose.nude': '노출 사진으로 보여서 게시할 수 없어요',
 

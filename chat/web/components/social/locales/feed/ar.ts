@@ -60,7 +60,7 @@ const ar: FeedDict = {
   'compose.friends': 'الأصدقاء',
   'compose.everyone': 'الجميع',
   'compose.friendsHint': 'أصدقاؤك ومن دردشت معهم.',
-  'compose.everyoneHint': 'أي شخص على yaari، في «استكشاف». يمكنهم أيضًا رؤية ملفك الشخصي وإضافتك.',
+  'compose.everyoneHint': 'أي شخص على yaari يفتح ملفك الشخصي. ويمكنهم أيضًا إضافتك.',
   'compose.checking': 'جارٍ فحص الصورة…',
   'compose.nude': 'يبدو أن هذه الصورة تحتوي على عري، لذلك لا يمكن نشرها',
 

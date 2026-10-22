@@ -75,6 +75,11 @@ import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceMember
 import com.yaari.chat.model.VoiceRole
 import com.yaari.chat.model.VoiceRoom
+import com.yaari.chat.model.FriendState
+import androidx.compose.material.icons.outlined.PersonAddAlt
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.heading
 
 /** A tap target with a spoken label (icon-only rows and buttons). */
 fun Modifier.tapTarget(label: String, onClick: () -> Unit) = clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label }
@@ -116,6 +121,7 @@ private fun SheetRow(icon: ImageVector, label: String, danger: Boolean = false, 
 private fun ageCity(m: VoiceMember) = listOf(m.profile.age.takeIf { it > 0 }?.toString(), m.profile.city.ifBlank { null }).filterNotNull().joinToString(" · ") +
     flagOf(m.profile.country).let { if (it.isEmpty()) "" else " $it" }
 
+/** A person in a room's lists: face, name, badges, and their decorated @ID (age and city until it is known). */
 @Composable
 private fun PersonLine(m: VoiceMember, onClick: () -> Unit, trailing: @Composable () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -132,7 +138,9 @@ private fun PersonLine(m: VoiceMember, onClick: () -> Unit, trailing: @Composabl
                     }
                     if (m.hand) GlyphIcon(Glyph.HAND, size = 16.dp)
                 }
-                Text(ageCity(m), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                LookName(m.profile.id, size = 12.sp) {
+                    Text(ageCity(m), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                }
             }
         }
         trailing()
@@ -160,18 +168,19 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
             val social by vm.social.state.collectAsStateWithLifecycle()
             InviteSheet(vm, room, app.acceptedFriends(), social, close)
         }
+        VoiceSheet.People -> PeopleSheet(vm, room, onPerson = { onSheet(VoiceSheet.Person(it)) }, onClose = close)
         VoiceSheet.Options -> RoomSheet(close) {
             Column(Modifier.padding(bottom = 16.dp)) {
                 Box(Modifier.padding(horizontal = 24.dp)) { SheetTitle(stringResource(R.string.voice_options), null, close) }
                 Spacer(Modifier.height(8.dp))
-                SheetRow(Icons.Outlined.PersonAdd, stringResource(R.string.invite_title)) { onSheet(VoiceSheet.Invite) }
                 if (!room.rules.isPrivate || room.code != null) {
                     SheetRow(Icons.Rounded.Link, stringResource(R.string.voice_share)) {
                         close()
                         copyLink(context, room)
                     }
                 }
-                room.code?.let { code ->
+                // The code is the host's, for a private room (friends are invited, others get the link).
+                room.code?.takeIf { s.isHost && room.rules.isPrivate }?.let { code ->
                     SheetRow(Icons.Rounded.ContentCopy, stringResource(R.string.room_copy, code)) {
                         close()
                         copyCode(context, code)
@@ -224,6 +233,8 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
     val self = target.profile.id == room.meId
     val mod = me.isMod && !self && target.role != VoiceRole.HOST
     val run = { a: VoiceAction, ok: UiText? -> act(a, ok) { done -> if (done) onClose() } }
+    val app by vm.state.collectAsStateWithLifecycle()
+    val friend = app.friendState(target.profile.id)
     if (!kick && !report) {
         RoomSheet(onClose) {
             Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
@@ -233,6 +244,7 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
                         if (self) "${target.profile.name} (${stringResource(R.string.voice_you)})" else target.profile.name,
                         Modifier.padding(top = 10.dp), style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center,
                     )
+                    LookName(target.profile.id, Modifier.padding(top = 2.dp), size = 15.sp)
                     Text(ageCity(target), Modifier.padding(top = 2.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                         when (target.role) {
@@ -253,6 +265,14 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
                 }
                 Spacer(Modifier.height(8.dp))
                 if (!self) SheetRow(Icons.Outlined.PersonOutline, stringResource(R.string.voice_view_profile)) { onClose(); vm.openProfile(target.profile) }
+                if (!self) {
+                    when (friend) {
+                        FriendState.NONE -> SheetRow(Icons.Outlined.PersonAddAlt, stringResource(R.string.add_friend)) { vm.addFriend(target.profile) }
+                        FriendState.INCOMING -> SheetRow(Icons.Outlined.PersonAddAlt, stringResource(R.string.accept_request)) { vm.answerFriend(target.profile, true) }
+                        FriendState.REQUESTED -> SheetRow(Icons.Rounded.Check, stringResource(R.string.requested), enabled = false) {}
+                        FriendState.FRIENDS -> Unit
+                    }
+                }
                 if (self && target.seat != null) {
                     SheetRow(Icons.Rounded.Download, stringResource(R.string.voice_leave_stage)) { run(VoiceAction.Unseat, null) }
                 }
@@ -297,6 +317,84 @@ private fun PersonSheet(vm: AppViewModel, room: VoiceRoom, me: VoiceMember, targ
             onClose()
             vm.report(target.profile.id, reason)
         }
+    }
+}
+
+/**
+ * Everyone in the room (the stage first, then the listeners), with search by name, city or ID. Each row: the face, the
+ * name and decorated @ID, the role, and the friend button as it stands; a tap opens their card in the room.
+ */
+@Composable
+private fun PeopleSheet(vm: AppViewModel, room: VoiceRoom, onPerson: (String) -> Unit, onClose: () -> Unit) {
+    val app by vm.state.collectAsStateWithLifecycle()
+    val looks by vm.looks.people.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { vm.reloadFriends() } // the buttons show where each friendship stands now
+    var query by remember { mutableStateOf("") }
+    val q = query.trim().lowercase()
+    fun shown(m: VoiceMember) = q.isEmpty() || listOfNotNull(m.profile.name, m.profile.city, looks[m.profile.id]?.handle).any { it.lowercase().contains(q) }
+    val stage = room.members.filter { it.seat != null }.sortedBy { it.seat }.filter(::shown)
+    val listeners = room.audience.filter(::shown)
+    RoomSheet(onClose) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
+            Box(Modifier.padding(horizontal = 24.dp)) {
+                SheetTitle(pluralStringResource(R.plurals.room_people_n, room.members.size, room.members.size), null, onClose)
+            }
+            OutlinedTextField(
+                query, { query = it }, Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp), singleLine = true,
+                placeholder = { Text(stringResource(R.string.voice_search_people)) },
+                leadingIcon = { Icon(Icons.Rounded.Search, null) }, shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, cursorColor = MaterialTheme.colorScheme.primary),
+            )
+            val row: @Composable (VoiceMember) -> Unit = { m ->
+                PersonLine(m, { onPerson(m.profile.id) }) {
+                    if (m.profile.id != room.meId) {
+                        FriendButton(
+                            app.friendState(m.profile.id), onAdd = { vm.addFriend(m.profile) }, onAccept = { vm.answerFriend(m.profile, true) },
+                            onWithdraw = { vm.removeFriend(m.profile) },
+                        )
+                    }
+                }
+            }
+            if (stage.isNotEmpty()) {
+                GroupTitle(stringResource(R.string.room_on_stage_n, stage.size))
+                stage.forEach { row(it) }
+            }
+            if (listeners.isNotEmpty()) {
+                GroupTitle(stringResource(R.string.voice_listening_n, listeners.size))
+                listeners.forEach { row(it) }
+            }
+            if (stage.isEmpty() && listeners.isEmpty()) {
+                Text(
+                    stringResource(R.string.voice_no_match), Modifier.fillMaxWidth().padding(24.dp), textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GroupTitle(text: String) {
+    Text(
+        text, Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 4.dp).semantics { heading() },
+        style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+/** Where a friendship stands, as a button: Add friend, Requested (a tap withdraws it, as on profiles), Accept, Friends. */
+@Composable
+private fun FriendButton(state: FriendState, onAdd: () -> Unit, onAccept: () -> Unit, onWithdraw: () -> Unit) {
+    when (state) {
+        FriendState.NONE -> SoftButton(
+            stringResource(R.string.add_friend), onAdd, accent = true, height = 36.dp,
+            leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(16.dp), tint = Color.White) },
+        )
+        FriendState.REQUESTED -> SoftButton(stringResource(R.string.requested), onWithdraw, height = 36.dp)
+        FriendState.INCOMING -> SoftButton(stringResource(R.string.accept), onAccept, accent = true, height = 36.dp)
+        FriendState.FRIENDS -> SoftButton(
+            stringResource(R.string.friends), {}, enabled = false, height = 36.dp,
+            leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Brand.Online) },
+        )
     }
 }
 

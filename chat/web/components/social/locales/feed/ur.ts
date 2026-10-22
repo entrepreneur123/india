@@ -45,7 +45,7 @@ const ur: FeedDict = {
   'compose.friends': 'دوست',
   'compose.everyone': 'سب',
   'compose.friendsHint': 'آپ کے دوست اور وہ لوگ جن سے آپ نے چیٹ کی۔',
-  'compose.everyoneHint': 'yaari پر کوئی بھی، دریافت میں۔ وہ آپ کی پروفائل بھی دیکھ سکتے ہیں اور آپ کو ایڈ کر سکتے ہیں۔',
+  'compose.everyoneHint': 'yaari پر آپ کی پروفائل کھولنے والا کوئی بھی۔ وہ آپ کو ایڈ بھی کر سکتے ہیں۔',
   'compose.checking': 'تصویر چیک ہو رہی ہے…',
   'compose.nude': 'یہ تصویر عریاں لگتی ہے، اس لیے پوسٹ نہیں ہو سکتی',
   'style.status': 'اسٹیٹس',

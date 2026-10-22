@@ -90,11 +90,22 @@ import com.yaari.chat.model.Post
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ReportReason
+import com.yaari.chat.model.Cosmetic
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import com.yaari.chat.domain.Handle
+import java.text.DateFormat
+import java.util.Date
+import com.yaari.chat.model.HandleCheck
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.rounded.CheckCircle
 
 // ---- My profile (the "Me" tab) -------------------------------------------------------------------
 
 @Composable
-fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit, onCustomize: () -> Unit) {
+fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit, onDetails: () -> Unit, onLooks: () -> Unit) {
     val me = s.me ?: return
     val friends = s.friends.count { it.state == FriendState.FRIENDS }
     Column(Modifier.fillMaxSize()) {
@@ -112,7 +123,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
         PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: me.copy(posts = emptyList()))) }) {
             ProfileHeader(
                 me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)),
-                onCustomize = onCustomize,
+                onLooks = onLooks,
             )
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
@@ -127,7 +138,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
             VerifyCard(vm, Modifier.padding(top = 16.dp))
             trust.mine?.let { MannerCard(it.trust, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp), mine = true) }
             Spacer(Modifier.height(16.dp))
-            if (me.style.isEmpty) StyleNudge(onCustomize, Modifier.padding(bottom = 8.dp))
+            if (me.style.isEmpty) StyleNudge(onDetails, Modifier.padding(bottom = 8.dp))
             PromptCards(me, Modifier.padding(bottom = 8.dp))
             InterestsSection(me, mine = true, onEdit = { vm.social.editInterests(true) })
             PhotosSection(me.photos, editable = true, busy = social.photoBusy, onAdd = { vm.social.addPhoto(it, me.photos.size) }, onRemove = vm.social::removePhoto)
@@ -236,29 +247,18 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
 // ---- Shared pieces -------------------------------------------------------------------------------
 
 /**
- * The cover (photo, or the profile's colour), the avatar in its accent ring over the cover's edge with the numbers
- * beside it, then the name, the status, details, bio and languages. [onCustomize]: mine, with the cover's button.
+ * The hero card, in the person's frame when they wear one: the photo in its ring with the numbers beside it, then the
+ * big plain name, the decorated @ID under it, the status, details, bio and languages. [onLooks]: mine, with the Looks
+ * button.
  */
 @Composable
-private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null, onCustomize: (() -> Unit)? = null) {
-    val cover = 148.dp
-    Column(Modifier.fillMaxWidth()) {
-        Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(top = 4.dp)) {
-            ProfileCover(p.style, Modifier.fillMaxWidth().height(cover)) {
-                if (onCustomize != null) {
-                    Row(
-                        Modifier.align(Alignment.TopEnd).padding(10.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.32f))
-                            .clickable(role = Role.Button, onClick = onCustomize).padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        MarkIcon(Mark.PALETTE, Color.White, size = 16.dp)
-                        Text(stringResource(R.string.customize_short), Modifier.padding(start = 6.dp), color = Color.White, style = MaterialTheme.typography.labelLarge)
-                    }
-                }
-            }
-            Row(Modifier.fillMaxWidth().padding(start = 12.dp, top = cover - 44.dp), verticalAlignment = Alignment.Bottom) {
-                AccentAvatar(p, 96.dp, ring = 3.dp)
-                Row(Modifier.weight(1f).padding(start = 8.dp, bottom = 2.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null, onLooks: (() -> Unit)? = null) {
+    val frame = Cosmetic.of(lookOf(p.id)?.frame)
+    FramedCard(frame, Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(top = 4.dp, bottom = 16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                FramedAvatar(p, 96.dp, frame)
+                Row(Modifier.weight(1f).padding(start = 8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                     stats.forEach { (n, label) ->
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             RollingNumber(n, MaterialTheme.typography.titleLarge)
@@ -267,12 +267,18 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
                     }
                 }
             }
-        }
-        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(p.name, style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp))
+            Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(p.name, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp))
                 VerifiedMark(p, Modifier.padding(start = 6.dp), size = 20.dp)
+                if (onLooks != null) {
+                    Spacer(Modifier.weight(1f))
+                    SoftButton(
+                        stringResource(R.string.looks), onLooks, Modifier.padding(start = 8.dp), height = 36.dp,
+                        leading = { Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(18.dp), tint = Brand.Pink) },
+                    )
+                }
             }
+            LookName(p.id, size = 15.sp)
             // ID verified people: what the document says, locked.
             IdentityLine(p, Modifier.padding(vertical = 4.dp))
             StatusLine(p, Modifier.padding(vertical = 2.dp))
@@ -283,7 +289,6 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
             if (p.bio.isNotBlank()) Text(p.bio, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
             LanguagesRow(p, Modifier.padding(top = 8.dp))
         }
-        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -432,18 +437,28 @@ private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEna
 }
 
 @Composable
-fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onCustomize: () -> Unit = {}) {
+fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetails: () -> Unit = {}, onLooks: () -> Unit = {}) {
     BackHandler(onBack = onDone)
     var name by rememberSaveable { mutableStateOf(me.name) }
+    var handle by rememberSaveable { mutableStateOf(me.handle.orEmpty()) }
     var city by rememberSaveable { mutableStateOf(me.city) }
     var bio by rememberSaveable { mutableStateOf(me.bio) }
     var photo by remember { mutableStateOf<String?>(null) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { if (it != null) photo = it.toString() }
     fun pick() = picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    val field by vm.looks.handle.collectAsStateWithLifecycle()
+    val shop by vm.looks.shop.collectAsStateWithLifecycle()
+    // When the ID may change again (shop().handle_next): a different ID before then is refused (a new spelling isn't).
+    LaunchedEffect(Unit) { vm.looks.loadShop() }
+    DisposableEffect(Unit) { onDispose { vm.looks.clearHandle() } }
+    val next = shop.shop?.handleNext?.takeIf { it > System.currentTimeMillis() }
+    val waiting = next != null && !Handle.normalize(handle).equals(me.handle.orEmpty(), ignoreCase = true)
+    val problem = vm.looks.problem(field?.takeIf { it.text == handle })?.text()
+    val cooldown = next?.let { stringResource(R.string.handle_next, DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(it))) }
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().imePadding()) {
-            EditorBar(stringResource(R.string.edit_profile), onDone, stringResource(R.string.done), name.isNotBlank()) {
-                vm.saveProfile(name, city, bio, photo, onDone)
+            EditorBar(stringResource(R.string.edit_profile), onDone, stringResource(R.string.done), name.isNotBlank() && problem == null && !waiting) {
+                vm.saveProfile(name, city, bio, photo, handle, onDone)
             }
             Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -451,18 +466,14 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onCusto
                     TextButton(::pick) { Text(stringResource(R.string.change_photo)) }
                 }
                 Field(name, { name = it.take(Validation.MAX_NAME) }, stringResource(R.string.name))
+                HandleInput(handle, { handle = it; vm.looks.checkHandle(it, me.handle) }, field, problem ?: cooldown?.takeIf { waiting }, note = cooldown)
                 Field(city, { city = it.take(30) }, stringResource(R.string.city))
                 Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
-                Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(accentColors(me.style.accent).start.copy(alpha = 0.10f))
-                        .clickable(role = Role.Button, onClick = onCustomize).padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    MarkIcon(Mark.PALETTE, accentColors(me.style.accent).ink, size = 22.dp)
-                    Column(Modifier.weight(1f).padding(start = 16.dp)) {
-                        Text(stringResource(R.string.customize_profile), style = MaterialTheme.typography.titleSmall)
-                        Text(stringResource(R.string.style_nudge), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
+                EditorLink(stringResource(R.string.looks), stringResource(R.string.looks_sub), onLooks) {
+                    Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(22.dp), tint = Brand.Pink)
+                }
+                EditorLink(stringResource(R.string.profile_details), stringResource(R.string.details_nudge), onDetails) {
+                    MarkIcon(Mark.PALETTE, accentColors().ink, size = 22.dp)
                 }
                 // Locked on the server too: gender and age can't be changed after sign-up.
                 Row(
@@ -484,6 +495,49 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onCusto
             }
         }
     }
+}
+
+/** A row in Edit profile that opens another editor: its mark, title and a line about it. */
+@Composable
+private fun EditorLink(title: String, sub: String, onClick: () -> Unit, mark: @Composable () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Brand.LogoPink.copy(alpha = 0.10f))
+            .clickable(role = Role.Button, onClick = onClick).padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        mark()
+        Column(Modifier.weight(1f).padding(start = 16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+/**
+ * The ID field: "@" before it, a spinner while the server checks it, a tick when it is free, and under it what is
+ * wrong ([problem]), else [note], else the rules.
+ */
+@Composable
+fun HandleInput(value: String, onChange: (String) -> Unit, field: HandleField?, problem: String?, note: String? = null) {
+    val free = field?.text == value && field.result in setOf(HandleCheck.OK, HandleCheck.MINE)
+    OutlinedTextField(
+        value, { onChange(it.take(Handle.MAX * 2)) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.handle_label)) },
+        prefix = { Text("@") }, singleLine = true, isError = problem != null, shape = RoundedCornerShape(12.dp),
+        textStyle = MaterialTheme.typography.bodyLarge,
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false, imeAction = ImeAction.Next),
+        trailingIcon = {
+            when {
+                field?.text == value && field.checking -> CircularProgressIndicator(Modifier.size(18.dp), color = Brand.Pink, strokeWidth = 2.dp)
+                free -> Icon(Icons.Rounded.CheckCircle, stringResource(R.string.handle_available), tint = Brand.Online)
+            }
+        },
+        supportingText = { Text(problem ?: note ?: stringResource(R.string.handle_hint)) },
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink,
+            focusedLabelColor = Brand.Pink, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = Brand.Pink, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        ),
+    )
 }
 
 @Composable

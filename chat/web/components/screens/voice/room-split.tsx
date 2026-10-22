@@ -113,7 +113,8 @@ export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: Re
       {shown === 0 && drag === null ? (
         strip(() => commit(fallback))
       ) : (
-        <div className="flex shrink-0 flex-col gap-2 overflow-y-auto pb-1 no-scrollbar" style={{ height: `${shown * 100}%` }}>
+        // Only as tall as what's in it (up to the share), so a big share leaves no empty band; exact while dragged.
+        <div className="flex shrink-0 flex-col gap-2 overflow-y-auto pb-1 no-scrollbar" style={drag === null ? { maxHeight: `${shown * 100}%` } : { height: `${shown * 100}%` }}>
           {top}
         </div>
       )}

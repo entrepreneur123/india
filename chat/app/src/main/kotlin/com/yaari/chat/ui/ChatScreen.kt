@@ -112,6 +112,9 @@ import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.Profile
 import kotlinx.coroutines.delay
+import com.yaari.chat.model.FriendState
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.outlined.PersonAddAlt
 
 /** The 1:1 random chat: always dark and immersive, like a camera view. */
 @Composable
@@ -161,11 +164,24 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                                 PresenceDot(6.dp)
                                 Spacer(Modifier.width(6.dp))
                             }
-                            Text(
-                                if (chat.partnerTyping) stringResource(R.string.typing) else stringResource(R.string.chat_subtitle, partner.city.ifBlank { stringResource(partner.gender.label) }),
-                                color = if (chat.partnerTyping) Brand.PinkOnDark else Color.White.copy(alpha = 0.7f),
-                                style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                            )
+                            // Their decorated @ID under the name ("typing…" while they type; where they are until the ID is known).
+                            if (chat.partnerTyping) {
+                                Text(stringResource(R.string.typing), color = Brand.PinkOnDark, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                            } else {
+                                val look = lookOf(partner.id)
+                                if (look != null && look.handle.isNotEmpty()) {
+                                    LookName(look, Modifier.weight(1f, fill = false), size = 12.sp)
+                                    Text(
+                                        " · " + stringResource(R.string.voice_view_profile), color = Color.White.copy(alpha = 0.7f),
+                                        style = MaterialTheme.typography.bodySmall, maxLines = 1,
+                                    )
+                                } else {
+                                    Text(
+                                        stringResource(R.string.chat_subtitle, partner.city.ifBlank { stringResource(partner.gender.label) }),
+                                        color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -370,8 +386,12 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, o
     }
 }
 
+/**
+ * A thread from Recent or Friends. [closed]: its chat ended and we aren't friends ([UiState.dmClosed]): the history
+ * stays, and instead of the composer a bar asks to become friends ([friend]: where that stands).
+ */
 @Composable
-fun DmScreen(vm: AppViewModel, dm: DmState) {
+fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState) {
     val r = dm.recent
     SecureScreen()
     BackHandler { vm.closeDm() }
@@ -384,7 +404,40 @@ fun DmScreen(vm: AppViewModel, dm: DmState) {
             dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
             partnerRead = dm.partnerRead,
         )
-        Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
+        if (closed) EndedBar(r.partner, friend, onAdd = { vm.addFriend(r.partner) }, onAccept = { vm.answerFriend(r.partner, true) })
+        else Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
+    }
+}
+
+/** Where the composer was: "Chat ended. Add … as a friend to keep talking." and the friend button's state. */
+@Composable
+private fun EndedBar(partner: Profile, friend: FriendState, onAdd: () -> Unit, onAccept: () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().background(chatColors().wall).navigationBarsPadding().padding(horizontal = 24.dp, vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(
+            stringResource(
+                when (friend) {
+                    FriendState.REQUESTED -> R.string.dm_waiting
+                    FriendState.INCOMING -> R.string.dm_incoming
+                    else -> R.string.dm_ended
+                },
+                partner.name,
+            ),
+            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+        )
+        when (friend) {
+            FriendState.REQUESTED -> SoftButton(
+                stringResource(R.string.requested), {}, enabled = false, height = 40.dp,
+                leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+            )
+            FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), onAccept, accent = true, height = 40.dp)
+            else -> SoftButton(
+                stringResource(R.string.add_friend), onAdd, accent = true, height = 40.dp,
+                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Color.White) },
+            )
+        }
     }
 }
 

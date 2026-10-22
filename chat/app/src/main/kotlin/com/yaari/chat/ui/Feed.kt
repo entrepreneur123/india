@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -21,7 +20,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -34,14 +32,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
@@ -51,13 +47,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,11 +61,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,7 +91,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -109,178 +99,25 @@ import com.yaari.chat.R
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Comment
-import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Post
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.Profile
 import kotlinx.coroutines.launch
 
-// ---- The feed: Friends and Discover, post cards with hearts and comments, one post full screen, the comments sheet --
-// Cards are big and rounded (Instagram's rhythm, ShareChat's colour): short text-only posts sit on their author's
-// accent gradient, photos from people who aren't my friends stay behind "Tap to view" (the chat's rule for others'
-// photos), and every mark is Yaari's own drawing.
+// ---- Posts: a post card with hearts and comments, one post full screen, the comments sheet --------------------------
+// Cards are big and rounded (Instagram's rhythm, ShareChat's colour): short text-only posts sit on Yaari's gradient,
+// photos from people who aren't my friends stay behind "Tap to view" (the chat's rule for others' photos), and every
+// mark is Yaari's own drawing.
 
 /** "4 min. ago" */
 fun timeAgo(at: Long): String =
     DateUtils.getRelativeTimeSpanString(at, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
 
-/** The Feed tab: a header with New post and the bell, Friends / Discover, then the cards. */
-@Composable
-fun FeedScreen(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () -> Unit, onNewPost: () -> Unit) {
-    val feed by vm.feed.state.collectAsStateWithLifecycle()
-    val me = s.me ?: return
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.tab_feed), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f).semantics { heading() })
-            NewPostButton(onNewPost)
-            BellButton(social.badges.inbox, vm.social::openInbox)
-            CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        PillTabs(
-            listOf(stringResource(R.string.friends), stringResource(R.string.feed_discover)), FeedTab.entries.indexOf(feed.tab),
-            Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-        ) { vm.feed.select(FeedTab.entries[it]) }
-        val page = feed.page()
-        val posts = page.posts
-        PullToRefreshBox(page.loading && posts != null, onRefresh = { vm.feed.refresh() }, Modifier.fillMaxSize()) {
-            when {
-                posts == null && page.failed -> FeedMessage(
-                    Mark.FEED, stringResource(R.string.feed_load_failed), stringResource(R.string.err_network),
-                    stringResource(R.string.common_try_again), { vm.feed.refresh() },
-                )
-                posts == null -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) { repeat(3) { SkeletonCard() } }
-                posts.isEmpty() -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                    ComposerCard(me, onNewPost)
-                    if (feed.tab == FeedTab.FRIENDS) {
-                        FeedMessage(
-                            Mark.FRIENDS, stringResource(R.string.feed_empty_friends_title), stringResource(R.string.feed_empty_friends),
-                            stringResource(R.string.feed_go_discover), { vm.feed.select(FeedTab.DISCOVER) },
-                        )
-                    } else {
-                        FeedMessage(
-                            Mark.GLOBE, stringResource(R.string.feed_empty_discover_title), stringResource(R.string.feed_empty_discover),
-                            stringResource(R.string.new_post), onNewPost,
-                        )
-                    }
-                }
-                else -> {
-                    val list = rememberLazyListState()
-                    val nearEnd by remember { derivedStateOf { list.layoutInfo.visibleItemsInfo.lastOrNull()?.index?.let { it >= list.layoutInfo.totalItemsCount - 4 } == true } }
-                    LaunchedEffect(nearEnd, posts.size) { if (nearEnd) vm.feed.loadMore() }
-                    LazyColumn(Modifier.fillMaxSize(), list, contentPadding = PaddingValues(bottom = 24.dp)) {
-                        item(key = "compose") { ComposerCard(me, onNewPost) }
-                        items(posts, key = { it.id }) { post -> PostCard(vm, s, post, Modifier.animateItem()) }
-                        item(key = "foot") {
-                            Box(Modifier.fillMaxWidth().padding(vertical = 20.dp), contentAlignment = Alignment.Center) {
-                                when {
-                                    page.loading -> CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp, color = Brand.Pink)
-                                    page.failed -> TextButton({ vm.feed.loadMore() }) { Text(stringResource(R.string.common_try_again)) }
-                                    page.end -> Text(stringResource(R.string.feed_end), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/** The brand "+" disc in headers: write a new post. */
-@Composable
-fun NewPostButton(onClick: () -> Unit) {
-    val interaction = remember { MutableInteractionSource() }
-    Box(
-        Modifier.size(48.dp).clip(CircleShape).clickable(interaction, indication = null, role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(Modifier.size(36.dp).pressScale(interaction, 0.92f).clip(CircleShape).background(Brand.logoGradient), contentAlignment = Alignment.Center) {
-            Icon(Icons.Rounded.Add, stringResource(R.string.new_post), Modifier.size(22.dp), tint = Color.White)
-        }
-    }
-}
-
-/** Two or more segments on a grey track, a white thumb sliding under the chosen one (as Recent's). */
-@Composable
-fun PillTabs(labels: List<String>, selected: Int, modifier: Modifier = Modifier, onSelect: (Int) -> Unit) {
-    BoxWithConstraints(modifier.fillMaxWidth().clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp)) {
-        val w = maxWidth / labels.size
-        val x by animateDpAsState(w * selected, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow), label = "seg")
-        Box(
-            Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(w).height(40.dp).clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
-        )
-        Row {
-            labels.forEachIndexed { i, label ->
-                Box(
-                    Modifier.weight(1f).height(40.dp).clip(CircleShape)
-                        .selectable(i == selected, remember { MutableInteractionSource() }, indication = null, role = Role.Tab) { onSelect(i) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        label, style = MaterialTheme.typography.labelLarge, maxLines = 1,
-                        color = if (i == selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-        }
-    }
-}
-
-/** "What's on your mind?" with my avatar: opens the composer. */
-@Composable
-private fun ComposerCard(me: Profile, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).clip(RoundedCornerShape(24.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainer).clickable(role = Role.Button, onClick = onClick).padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AccentAvatar(me, 44.dp, gap = MaterialTheme.colorScheme.surfaceContainer)
-        Text(
-            stringResource(R.string.feed_compose), Modifier.weight(1f).padding(horizontal = 12.dp),
-            style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
-        )
-        Box(Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surface), contentAlignment = Alignment.Center) {
-            MarkIcon(Mark.IMAGE, Color(0xFF22B8A6), size = 22.dp)
-        }
-    }
-}
-
-/** An empty or failed list: a tinted mark, the words and one action. */
-@Composable
-private fun FeedMessage(mark: Mark, title: String, body: String, action: String, onAction: () -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 40.dp, vertical = 40.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(72.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            MarkIcon(mark, Brand.Pink, size = 34.dp)
-        }
-        Text(title, Modifier.padding(top = 16.dp), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
-        Text(body, Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-        SoftButton(action, onAction, Modifier.padding(top = 20.dp), accent = true)
-    }
-}
-
-@Composable
-private fun SkeletonCard() {
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).clip(RoundedCornerShape(24.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp)).padding(12.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).clip(CircleShape).shimmer())
-            Column(Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Box(Modifier.width(140.dp).height(14.dp).clip(RoundedCornerShape(4.dp)).shimmer())
-                Box(Modifier.width(80.dp).height(12.dp).clip(RoundedCornerShape(4.dp)).shimmer())
-            }
-        }
-        Box(Modifier.padding(top = 12.dp).fillMaxWidth().aspectRatio(1.4f).clip(RoundedCornerShape(20.dp)).shimmer())
-    }
-}
-
 // ---- a post -----------------------------------------------------------------------------------------------------
 
 /**
- * A post as a card: author row (accent ring, name, age, flag, time, who sees it), the text, the photo (double tap
+ * A post as a card: author row (ringed photo, name, age, flag, time, who sees it), the text, the photo (double tap
  * likes it), hearts and comments, and the overflow (delete mine, report others').
  */
 @Composable
@@ -320,7 +157,7 @@ fun PostCard(vm: AppViewModel, s: UiState, post: Post, modifier: Modifier = Modi
         val text = post.text.trim()
         val tile = post.imageUri == null && text.length in 1..TILE_MAX
         when {
-            tile -> TextTile(text, author, onDoubleTap = { vm.feed.like(post) })
+            tile -> TextTile(text, onDoubleTap = { vm.feed.like(post) })
             text.isNotEmpty() -> Text(text, Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp), style = MaterialTheme.typography.bodyLarge)
         }
         post.imageUri?.let { uri -> PostPhoto(post, uri, trusted, onDoubleTap = { vm.feed.like(post) }) }
@@ -349,12 +186,12 @@ fun PostCard(vm: AppViewModel, s: UiState, post: Post, modifier: Modifier = Modi
     }
 }
 
-/** Short text-only posts: big white words on the author's gradient. */
+/** Short text-only posts: big white words on Yaari's gradient. */
 private const val TILE_MAX = 140
 
 @Composable
-private fun TextTile(text: String, author: Profile, onDoubleTap: () -> Unit) {
-    val colors = accentColors(author.style.accent)
+private fun TextTile(text: String, onDoubleTap: () -> Unit) {
+    val colors = accentColors()
     val pop = rememberHeartPop()
     Box(
         Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().heightIn(min = 180.dp).clip(RoundedCornerShape(22.dp)).background(colors.brush)
@@ -376,7 +213,7 @@ private fun PostPhoto(post: Post, uri: String, trusted: Boolean, onDoubleTap: ()
     var revealed by rememberSaveable(post.id) { mutableStateOf(trusted) }
     val pop = rememberHeartPop()
     val shown = revealed || trusted
-    val tint = accentColors(post.author?.style?.accent)
+    val tint = accentColors()
     Box(
         // Hidden, it is a short tinted panel (nothing of the photo is loaded); shown, a tall 4:5 frame.
         Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().aspectRatio(if (shown) 0.8f else 1.6f).clip(RoundedCornerShape(22.dp))
@@ -616,7 +453,7 @@ private fun CommentRow(vm: AppViewModel, c: Comment, modifier: Modifier = Modifi
                 Text("  " + timeAgo(c.at), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             }
             c.replyName?.let {
-                Text(stringResource(R.string.comment_in_reply, it), style = MaterialTheme.typography.bodySmall, color = accentColors(c.author.style.accent).ink)
+                Text(stringResource(R.string.comment_in_reply, it), style = MaterialTheme.typography.bodySmall, color = accentColors().ink)
             }
             Text(c.body, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -52,7 +52,7 @@ const ja: FeedDict = {
   'compose.friends': '友だち',
   'compose.everyone': '全員',
   'compose.friendsHint': '友だちと、チャットしたことのある人。',
-  'compose.everyoneHint': 'yaariの誰でも「発見」で見られます。プロフィールを見たり、あなたを追加したりすることもできます。',
+  'compose.everyoneHint': 'あなたのプロフィールを開いたyaariの誰でも見られます。あなたを追加することもできます。',
   'compose.checking': '写真を確認しています…',
   'compose.nude': 'この写真はヌードのように見えるため、投稿できません',
 

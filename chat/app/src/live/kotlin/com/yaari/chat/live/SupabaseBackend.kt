@@ -71,10 +71,13 @@ import com.yaari.chat.model.Interest
 import com.yaari.chat.model.ProfilePhoto
 import com.yaari.chat.model.RoomLang
 import com.yaari.chat.model.RoomQuery
-import com.yaari.chat.model.Accent
 import com.yaari.chat.model.Comment
-import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.HandleCheck
 import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.Look
+import com.yaari.chat.model.LookItem
+import com.yaari.chat.model.LookKind
+import com.yaari.chat.model.Shop
 import com.yaari.chat.model.PostRef
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfilePrompt
@@ -205,6 +208,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val id: String, val name: String, val gender: String, @SerialName("birth_date") val birthDate: String,
         val city: String = "", val bio: String = "", @SerialName("photo_path") val photoPath: String? = null,
         val country: String? = null, val interests: List<String> = emptyList(), val photos: List<String> = emptyList(),
+        val handle: String? = null,
     )
     /** profile_extras (024): interests and the gallery of people I may see. */
     @Serializable private data class ExtrasRow(val id: String, val interests: List<String>? = null, val photos: List<String>? = null)
@@ -219,8 +223,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class PostRefRow(val id: String, val body: String = "", @SerialName("image_path") val imagePath: String? = null)
     @Serializable private data class AuthorRow(
         val id: String, val name: String, val gender: String = "other", val age: Int = 0, val city: String? = null,
-        val country: String? = null, @SerialName("photo_path") val photoPath: String? = null, val accent: String? = null,
-        val verified: Boolean = false,
+        val country: String? = null, @SerialName("photo_path") val photoPath: String? = null, val verified: Boolean = false,
     )
     @Serializable private data class FeedPostRow(
         val id: String, val body: String = "", @SerialName("image_path") val imagePath: String? = null,
@@ -235,8 +238,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class LikeRow(val likes: Int = 0, val liked: Boolean = false)
     @Serializable private data class PromptRow(val q: String, val a: String = "")
     @Serializable private data class StyleRow(
-        val id: String, @SerialName("cover_path") val coverPath: String? = null, val accent: String? = null, val status: String? = null,
-        val languages: List<String>? = null, val prompts: List<PromptRow>? = null,
+        val id: String, val status: String? = null, val languages: List<String>? = null, val prompts: List<PromptRow>? = null,
     )
     @Serializable private data class BadgesRow(val inbox: Int = 0, val friends: Int = 0, val chats: Map<String, Int> = emptyMap())
     @Serializable private data class NewProfileRow(
@@ -340,16 +342,15 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             posts.await() to style.await()
         }
         val p = toProfile(CardRow(row.id, row.name, row.gender, age, row.city, row.bio, row.photoPath, row.country), posts)
-        withExtras(p.copy(style = style ?: p.style), row.interests, row.photos)
+        withExtras(p.copy(style = style ?: p.style, handle = row.handle), row.interests, row.photos)
     }
 
-    /** Cover (signed), colour, status, languages and prompts of someone I may see (profile_style); null if it can't be read. */
+    /** Status, languages and prompts of someone I may see (profile_style); null if it can't be read. */
     private suspend fun style(userId: String): ProfileStyle? = runCatching {
         val r = client.postgrest.rpc("profile_style", buildJsonObject { putJsonArray("p_users") { add(userId) } })
             .decodeList<StyleRow>().firstOrNull() ?: return@runCatching null
         ProfileStyle(
-            cover = r.coverPath?.let { signed(it) }, coverId = r.coverPath, accent = Accent.of(r.accent), status = r.status?.ifBlank { null },
-            languages = SpokenLang.of(r.languages),
+            status = r.status?.ifBlank { null }, languages = SpokenLang.of(r.languages),
             prompts = r.prompts.orEmpty().mapNotNull { q -> PromptQ.of(q.q)?.let { ProfilePrompt(it, q.a) } }.distinctBy { it.q }.take(ProfilePrompt.MAX),
         )
     }.getOrNull()
@@ -737,11 +738,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     // ---- profile style, likes, comments, the feed (033_profiles_feed.sql) ----
 
-    override suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String?): Profile = call {
-        val cover = newCoverJpeg?.let { upload(it.toUri(), "cover") } ?: style.coverId
+    override suspend fun setProfileStyle(style: ProfileStyle): Profile = call {
         client.postgrest.rpc("set_profile_style", buildJsonObject {
-            put("p_cover_path", cover)
-            put("p_accent", style.accent?.code)
+            // The free cover and colour are gone (040: the server ignores them); the function still takes both.
+            put("p_cover_path", null as String?)
+            put("p_accent", null as String?)
             put("p_status", style.status?.trim()?.ifEmpty { null })
             putJsonArray("p_languages") { style.languages.distinct().forEach { add(it.code) } }
             putJsonArray("p_prompts") {
@@ -749,16 +750,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             }
         })
         myProfile() ?: throw BackendException("network")
-    }
-
-    override suspend fun feed(tab: FeedTab, before: Post?): List<Post> = call {
-        toPosts(
-            client.postgrest.rpc("feed", buildJsonObject {
-                put("p_tab", tab.code)
-                put("p_before", before?.stamp)
-                put("p_limit", FEED_PAGE)
-            }).decodeList<FeedPostRow>(),
-        )
     }
 
     override suspend fun postsOf(userId: String, before: Post?): List<Post> = call { postsPage(userId, before, FEED_PAGE) }
@@ -820,8 +811,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
     }
 
-    private fun author(a: AuthorRow) = card(VoiceCardRow(a.id, a.name, a.gender, a.age, a.city, null, a.photoPath, a.country))
-        .let { it.copy(style = ProfileStyle(accent = Accent.of(a.accent)), verified = a.verified) }
+    private fun author(a: AuthorRow) = card(VoiceCardRow(a.id, a.name, a.gender, a.age, a.city, null, a.photoPath, a.country)).copy(verified = a.verified)
 
     // ---- real identities and manners (035) ----
 
@@ -861,6 +851,54 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             putJsonArray("p_tags") { tags.take(MannerTag.MAX).forEach { add(it.code) } }
         })
         Unit
+    }
+
+    // ---- IDs and looks (040_handles_looks.sql) ----
+
+    @Serializable private data class LookRow(
+        val id: String, val handle: String, val badge: String? = null, val color: String? = null, val font: String? = null,
+        val frame: String? = null,
+    )
+    @Serializable private data class ItemRow(val id: String, val kind: String, @SerialName("price_inr") val priceInr: Int)
+    @Serializable private data class ShopRow(
+        val items: List<ItemRow> = emptyList(), val owned: List<String> = emptyList(), val look: LookRow? = null,
+        @SerialName("handle_next") val handleNext: String? = null,
+    )
+
+    private fun toLook(r: LookRow) = Look(r.id, r.handle, r.badge, r.color, r.font, r.frame)
+
+    override suspend fun handleCheck(handle: String): HandleCheck = call {
+        val raw = client.postgrest.rpc("handle_check", buildJsonObject { put("p_handle", handle) }).data.trim()
+        HandleCheck.of(json.decodeFromString<String>(raw)) ?: throw BackendException("network")
+    }
+
+    override suspend fun setHandle(handle: String): String = call {
+        json.decodeFromString<String>(client.postgrest.rpc("set_handle", buildJsonObject { put("p_handle", handle) }).data.trim())
+    }
+
+    override suspend fun shop(): Shop = call {
+        val r = client.postgrest.rpc("shop").decodeAs<ShopRow>()
+        Shop(
+            r.items.mapNotNull { i -> LookKind.of(i.kind)?.let { LookItem(i.id, it, i.priceInr) } }, r.owned.toSet(), r.look?.let(::toLook),
+            r.handleNext?.let { ts(it).toEpochMilli() },
+        )
+    }
+
+    override suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look = call {
+        toLook(
+            client.postgrest.rpc("equip_look", buildJsonObject {
+                put("p_badge", badge)
+                put("p_color", color)
+                put("p_font", font)
+                put("p_frame", frame)
+            }).decodeAs<LookRow>(),
+        )
+    }
+
+    override suspend fun looks(userIds: List<String>): List<Look> = call {
+        val ids = userIds.distinct().take(100)
+        if (ids.isEmpty()) return@call emptyList()
+        client.postgrest.rpc("looks", buildJsonObject { putJsonArray("p_users") { ids.forEach { add(it) } } }).decodeList<LookRow>().map(::toLook)
     }
 
     private fun toComment(r: CommentRow) = Comment(
@@ -1860,6 +1898,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private val TRANSLATE_CODES = listOf("translate_unavailable", "cannot_translate", "translate_failed", "slow_down", "not_found")
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
+            "handle_invalid", "handle_reserved", "handle_taken", "handle_cooldown", "name_invalid", "not_owned",
             "verify_required", "manner_low", "already_verified", "kyc_unavailable", "kyc_failed", "already_rated", "too_late",
             "not_signed_in", "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",

@@ -46,7 +46,7 @@ data class SocialState(
     val invited: Map<String, Set<String>> = emptyMap(),
     val inviting: String? = null,
     val askNotifications: Boolean = false,
-    /** My profile's style is being saved (a new cover is checked on this phone first). */
+    /** My profile's details are being saved. */
     val savingStyle: Boolean = false,
 ) {
     val interestsShown get() = editingInterests || firstRun == FirstRunStep.INTERESTS
@@ -273,28 +273,14 @@ class SocialController(
         }
     }
 
-    /**
-     * Saves my profile's whole style ([style], as the editor shows it). [newCoverUri]: a picked cover, shrunk and checked
-     * for nudity on this phone first (a nude one is refused, nothing is saved). [done] runs once it is saved.
-     */
-    fun saveStyle(style: ProfileStyle, newCoverUri: String?, done: () -> Unit = {}) {
+    /** Saves my profile's details ([style], as the editor shows them) all at once; [done] runs once they are saved. */
+    fun saveStyle(style: ProfileStyle, done: () -> Unit = {}) {
         if (_state.value.savingStyle) return
         if (!style.valid()) return notice(UiText(R.string.style_bad))
         _state.update { it.copy(savingStyle = true) }
         scope.launch {
             try {
-                val jpeg = newCoverUri?.let { uri ->
-                    try {
-                        photos.shrink(uri).also { if (photos.nude(it)) return@launch notice(UiText(R.string.photos_nude)) }
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (e: BackendException) {
-                        return@launch notice(explain(e))
-                    } catch (_: Exception) {
-                        return@launch notice(UiText(R.string.err_network))
-                    }
-                }
-                onMe(backend.setProfileStyle(style, jpeg))
+                onMe(backend.setProfileStyle(style))
                 notice(UiText(R.string.style_saved))
                 done()
             } catch (e: CancellationException) {

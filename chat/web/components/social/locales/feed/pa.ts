@@ -45,7 +45,7 @@ const pa: FeedDict = {
   'compose.friends': 'ਦੋਸਤ',
   'compose.everyone': 'ਸਾਰੇ',
   'compose.friendsHint': 'ਤੁਹਾਡੇ ਦੋਸਤ ਅਤੇ ਉਹ ਲੋਕ ਜਿਨ੍ਹਾਂ ਨਾਲ ਤੁਸੀਂ ਚੈਟ ਕੀਤੀ।',
-  'compose.everyoneHint': 'yaari ’ਤੇ ਕੋਈ ਵੀ, ਖੋਜੋ ਵਿੱਚ। ਉਹ ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਵੀ ਦੇਖ ਸਕਦੇ ਹਨ ਅਤੇ ਤੁਹਾਨੂੰ ਐਡ ਕਰ ਸਕਦੇ ਹਨ।',
+  'compose.everyoneHint': 'yaari ’ਤੇ ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਖੋਲ੍ਹਣ ਵਾਲਾ ਕੋਈ ਵੀ। ਉਹ ਤੁਹਾਨੂੰ ਐਡ ਵੀ ਕਰ ਸਕਦੇ ਹਨ।',
   'compose.checking': 'ਫ਼ੋਟੋ ਚੈੱਕ ਹੋ ਰਹੀ ਹੈ…',
   'compose.nude': 'ਇਹ ਫ਼ੋਟੋ ਨਗਨ ਲੱਗਦੀ ਹੈ, ਇਸ ਲਈ ਪੋਸਟ ਨਹੀਂ ਹੋ ਸਕਦੀ',
   'style.status': 'ਸਟੇਟਸ',

@@ -50,7 +50,7 @@ const ro: FeedDict = {
   'compose.friends': 'Prieteni',
   'compose.everyone': 'Toată lumea',
   'compose.friendsHint': 'Prietenii tăi și oamenii cu care ai vorbit.',
-  'compose.everyoneHint': 'Oricine pe yaari, în Descoperă. Îți pot vedea și profilul și te pot adăuga.',
+  'compose.everyoneHint': 'Oricine pe yaari care îți deschide profilul. Te poate și adăuga.',
   'compose.checking': 'Se verifică poza…',
   'compose.nude': 'Poza pare să conțină nuditate, așa că nu poate fi publicată',
 

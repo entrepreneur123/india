@@ -31,10 +31,12 @@ import com.yaari.chat.model.InboxItem
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
 import com.yaari.chat.domain.ExitPolicy
+import com.yaari.chat.domain.Handle
 import com.yaari.chat.domain.Validation
 import com.yaari.chat.model.Friend
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
+import com.yaari.chat.model.Cosmetic
 import com.yaari.chat.model.Media
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.Profile
@@ -63,7 +65,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.time.LocalDate
 
-enum class Tab { ROOMS, RANDOM, FEED, RECENT, ME }
+enum class Tab { ROOMS, RANDOM, RECENT, ME }
 
 /** Why the Premium sheet opened; [reason] is shown above the offer. */
 enum class Paywall(@StringRes val reason: Int?) {
@@ -87,6 +89,8 @@ data class ProfileDraft(
     val bio: String = "",
     val photoUri: String? = null,
     val agreed: Boolean = false,
+    /** The ID asked for (empty: keep the free one the server gives). */
+    val handle: String = "",
 )
 
 data class ChatState(
@@ -120,6 +124,8 @@ data class UiState(
     val dm: DmState? = null,
     val recents: List<RecentMatch> = emptyList(),
     val friends: List<Friend> = emptyList(),
+    /** [friends] has been loaded once (until then nobody's friend state is known). */
+    val friendsLoaded: Boolean = false,
     val paywall: Paywall? = null,
     val notice: UiText? = null,
     /** The random chat is open but minimised to its bar over the tabs (still on; a tap brings it back). */
@@ -133,6 +139,13 @@ data class UiState(
 
     fun friendState(userId: String) = friends.firstOrNull { it.profile.id == userId }?.state ?: FriendState.NONE
     val incomingRequests get() = friends.count { it.state == FriendState.INCOMING }
+
+    /**
+     * The thread on screen can't go on (chat_open, 040): its chat has ended and we aren't friends. The live random chat
+     * (also reachable from Recent while minimised) is always open.
+     */
+    val dmClosed get() = dm != null && friendsLoaded && friendState(dm.recent.partner.id) != FriendState.FRIENDS &&
+        !(chat?.match?.id == dm.recent.matchId && !chat.partnerLeft)
 }
 
 class AppViewModel(
@@ -187,6 +200,9 @@ class AppViewModel(
             }
         },
     )
+
+    /** IDs and looks (040): everyone's decorated ID, my shop, the ID field's live check. */
+    val looks = LooksController(backend, viewModelScope, ::notice, ::explain)
 
     /** ID verification, everyone's badges, manners after a random chat (035). */
     val trust = TrustController(
@@ -282,17 +298,24 @@ class AppViewModel(
     /**
      * Purchases made offline, on another install, paid later (UPI "pending"), or whose server reply was
      * lost are verified by the server here; passes are consumed only after the server granted them.
+     * Looks stay in Play's list for good (never consumed): only one the server doesn't count as mine yet is sent.
      * Called at sign-in and whenever the app comes back to the foreground.
      */
     fun restorePurchases() {
         if (_state.value.me == null) return
         viewModelScope.launch {
-            runCatching { billing.ownedPurchases() }.getOrDefault(emptyList()).forEach { (product, token) ->
-                if (token in redeemedTokens) return@forEach
+            val purchases = runCatching { billing.ownedPurchases() }.getOrDefault(emptyList()).filter { it.second !in redeemedTokens }
+            val owned = if (purchases.any { Cosmetic.isLook(it.first) }) looks.owned() else emptySet()
+            purchases.forEach { (product, token) ->
+                val look = Cosmetic.isLook(product)
+                if (look && (owned == null || product in owned)) {
+                    if (owned != null) redeemedTokens += token
+                    return@forEach
+                }
                 runCatching { backend.redeem(product, token) }.onSuccess { e ->
                     redeemedTokens += token
                     applyEntitlements(e)
-                    runCatching { billing.finish(product, token) }
+                    if (look) looks.loadShop() else runCatching { billing.finish(product, token) }
                 }
             }
         }
@@ -306,6 +329,7 @@ class AppViewModel(
         if (_state.value.me == null) return
         restorePurchases()
         viewModelScope.launch { refreshEntitlements() }
+        if (_state.value.dm != null) viewModelScope.launch { refreshFriends() } // befriended meanwhile: the thread goes on
         social.refreshBadges()
         trust.resumed() // back from the identity check's page: its result
     }
@@ -351,6 +375,12 @@ class AppViewModel(
             "mic_denied" -> R.string.err_mic_denied
             "queue_full" -> R.string.err_queue_full
             "bad_media" -> R.string.err_bad_media
+            "handle_invalid" -> R.string.err_handle_invalid
+            "handle_reserved" -> R.string.err_handle_reserved
+            "handle_taken" -> R.string.err_handle_taken
+            "handle_cooldown" -> R.string.err_handle_cooldown
+            "name_invalid" -> R.string.err_name_invalid
+            "not_owned" -> R.string.err_not_owned
             else -> R.string.err_network
         },
     )
@@ -404,13 +434,23 @@ class AppViewModel(
 
     fun backToPhone() = _state.update { it.copy(onboarding = Onboarding()) }
 
+    /** What is wrong with the ID [handle] ([current]: mine), as far as the phone and the last check know; null: nothing. */
+    private fun handleProblem(handle: String, current: String?): UiText? {
+        val checked = looks.handle.value?.takeIf { Handle.normalize(it.text) == handle }?.result
+        return looks.problem(HandleField(handle, Handle.local(handle, current) ?: checked))
+    }
+
     fun createProfile(d: ProfileDraft) {
         val name = d.name.trim()
         val birth = Validation.birthDate(d.day, d.month, d.year)
         val age = birth?.let { Validation.age(it, today()) }
+        val handle = d.handle.takeIf { it.isNotBlank() }?.let(Handle::normalize)
+        val handleError = handle?.let { handleProblem(it, null) }
         val error = when {
             name.isEmpty() -> UiText(R.string.err_name)
             name.length > Validation.MAX_NAME -> UiText(R.string.err_name_long)
+            !Handle.plainName(Handle.normalize(name)) -> UiText(R.string.err_name_invalid)
+            handleError != null -> handleError
             d.gender == null -> UiText(R.string.err_gender)
             birth == null || age == null || age > Validation.MAX_AGE -> UiText(R.string.err_birth)
             age < Validation.MIN_AGE -> UiText(R.string.err_under_18)
@@ -425,7 +465,18 @@ class AppViewModel(
         _state.update { it.copy(onboarding = it.onboarding.copy(busy = true, error = null)) }
         viewModelScope.launch {
             try {
-                val me = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim(), d.bio.trim(), d.photoUri))
+                val made = backend.createProfile(NewProfile(name, d.gender!!, birth!!, d.city.trim(), d.bio.trim(), d.photoUri))
+                // The profile comes with a free ID; the chosen one is asked for now. Taken in between (or offline): the
+                // free one stays, and Edit profile can change it at once.
+                val me = if (handle == null || handle == made.handle) made else try {
+                    made.copy(handle = backend.setHandle(handle))
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    notice(UiText(R.string.handle_kept, made.handle.orEmpty()))
+                    made
+                }
+                looks.clearHandle()
                 _state.update { it.copy(me = me, onboarding = Onboarding()) }
                 afterSignIn(newAccount = true)
             } catch (e: CancellationException) {
@@ -446,7 +497,6 @@ class AppViewModel(
         when (tab) {
             Tab.RECENT -> { refreshRecents(); viewModelScope.launch { refreshFriends() }; social.refreshBadges() }
             Tab.ROOMS -> voice.refreshList()
-            Tab.FEED -> feed.opened()
             else -> Unit
         }
     }
@@ -479,6 +529,35 @@ class AppViewModel(
             if (productId == Products.PREMIUM) backend.track(Funnel.PLUS_PURCHASED)
             billing.finish(productId, token)
             _state.update { it.copy(paywall = null, notice = UiText(R.string.msg_purchase_done)) }
+        }
+    }
+
+    /**
+     * A look from the shop: Google Play's sheet, then the server's check (verify-purchase), which makes it mine for good
+     * (and worn, if it is the first of its kind). Never consumed.
+     */
+    fun buyLook(activity: Activity, item: String) {
+        val me = _state.value.me ?: return
+        if (looks.shop.value.busy != null) return
+        looks.buying(item)
+        viewModelScope.launch {
+            try {
+                val token = billing.buy(activity, item, me.id)
+                if (token == null) {
+                    restorePurchases() // a payment that completed outside the sheet is picked up here
+                    return@launch
+                }
+                backend.redeem(item, token)
+                redeemedTokens += token
+                notice(UiText(R.string.look_bought))
+                looks.loadShop()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(explain(e))
+            } finally {
+                looks.buying(null)
+            }
         }
     }
 
@@ -993,6 +1072,7 @@ class AppViewModel(
         // A room open full screen goes down to its bar: the chat would open under it, out of sight.
         voice.minimise()
         _state.update { it.copy(dm = DmState(r), viewing = null) }
+        viewModelScope.launch { refreshFriends() } // whether it goes on (dmClosed) depends on being friends now
         dmJob?.cancel()
         dmJob = viewModelScope.launch {
             val h = runCatching { backend.history(r.matchId) }.getOrNull()
@@ -1078,7 +1158,20 @@ class AppViewModel(
         val t = text.trim().take(MAX_TEXT)
         val dm = _state.value.dm ?: return
         if (t.isEmpty()) return
-        send(onFailed) { backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } } }
+        val partner = dm.recent.partner
+        viewModelScope.launch {
+            try {
+                backend.send(dm.recent.matchId, t, null).also { m -> updateDm(dm.recent.matchId) { merge(it, listOf(m)) } }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Refused by row-level security while we aren't friends: the chat ended (chat_open), not a block.
+                val ended = (e as? BackendException)?.code == "blocked" && _state.value.friendState(partner.id) != FriendState.FRIENDS
+                notice(if (ended) UiText(R.string.dm_ended, partner.name) else explain(e))
+                if (ended) refreshFriends()
+                onFailed()
+            }
+        }
     }
 
     private fun updateDm(matchId: String, change: (List<Message>) -> List<Message>) = updateDmState(matchId) { it.copy(messages = change(it.messages)) }
@@ -1110,37 +1203,51 @@ class AppViewModel(
         social.reset()
         feed.reset()
         trust.reset()
+        looks.reset()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
         _state.value = UiState(booting = false)
     }
 
-    /** Shares a post with friends or everyone; it shows on my profile and on top of the feed at once. */
+    /** Shares a post with friends or everyone; it shows on my profile at once. */
     fun addPost(text: String, imageUri: String?, visibility: PostVisibility = PostVisibility.FRIENDS) {
         val t = text.trim().take(Post.MAX_TEXT)
         if (t.isEmpty() && imageUri == null) return
         act {
             val post = backend.addPost(t, imageUri, visibility)
             _state.update { s -> s.copy(me = s.me?.let { it.copy(posts = listOf(post) + it.posts) }) }
-            _state.value.me?.let { me -> feed.added(post.copy(author = post.author ?: me.copy(posts = emptyList()))) }
             notice(UiText(R.string.msg_posted))
         }
     }
 
-    /** Edit my profile. Gender and birth date can't change (the server refuses too). */
-    fun saveProfile(name: String, city: String, bio: String, newPhotoUri: String?, done: () -> Unit) {
+    /**
+     * Edit my profile. Gender and birth date can't change (the server refuses too). A new ID ([handle]) is asked for
+     * first: when the server refuses it (taken, too soon), nothing is saved and it says why.
+     */
+    fun saveProfile(name: String, city: String, bio: String, newPhotoUri: String?, handle: String, done: () -> Unit) {
         val n = name.trim()
+        val current = _state.value.me?.handle
+        val h = Handle.normalize(handle)
+        val newHandle = h.takeIf { it != current }
         val error = when {
             n.isEmpty() -> UiText(R.string.err_name)
             n.length > Validation.MAX_NAME -> UiText(R.string.err_name_long)
+            !Handle.plainName(Handle.normalize(n)) -> UiText(R.string.err_name_invalid)
             bio.length > Validation.MAX_BIO -> UiText(R.string.err_bio_long)
+            newHandle != null -> handleProblem(newHandle, current)
             else -> null
         }
         if (error != null) return notice(error)
         act {
+            if (newHandle != null) {
+                val stored = backend.setHandle(newHandle)
+                _state.update { s -> s.copy(me = s.me?.copy(handle = stored)) }
+                _state.value.me?.let { looks.handleSet(it.id, stored) }
+            }
             val me = backend.updateProfile(n, city.trim().take(30), bio.trim(), newPhotoUri)
             _state.update { it.copy(me = me) }
+            looks.clearHandle()
             done()
         }
     }
@@ -1148,7 +1255,12 @@ class AppViewModel(
     // ---- Friends ----------------------------------------------------------------------------
 
     private suspend fun refreshFriends() {
-        runCatching { backend.friends() }.onSuccess { list -> _state.update { it.copy(friends = list) } }
+        runCatching { backend.friends() }.onSuccess { list -> _state.update { it.copy(friends = list, friendsLoaded = true) } }
+    }
+
+    /** The friend states shown (a room's People sheet) are asked again. */
+    fun reloadFriends() {
+        viewModelScope.launch { refreshFriends() }
     }
 
     /** Add friend, or accept their request. */

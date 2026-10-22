@@ -48,7 +48,7 @@ const nl: FeedDict = {
   'compose.friends': 'Vrienden',
   'compose.everyone': 'Iedereen',
   'compose.friendsHint': 'Je vrienden en mensen met wie je hebt gechat.',
-  'compose.everyoneHint': 'Iedereen op yaari, in Ontdekken. Ze kunnen ook je profiel zien en je toevoegen.',
+  'compose.everyoneHint': 'Iedereen op yaari die je profiel opent. Ze kunnen je ook toevoegen.',
   'compose.checking': 'Foto controleren…',
   'compose.nude': 'Deze foto lijkt naakt te bevatten, dus je kunt hem niet plaatsen',
 

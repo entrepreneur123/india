@@ -52,7 +52,7 @@ const tr: FeedDict = {
   'compose.friends': 'Arkadaşlar',
   'compose.everyone': 'Herkes',
   'compose.friendsHint': 'Arkadaşların ve sohbet ettiğin kişiler.',
-  'compose.everyoneHint': 'yaari’deki herkes, Keşfet’te. Profilini de görebilir ve seni ekleyebilirler.',
+  'compose.everyoneHint': 'Profilini açan yaari’deki herkes. Seni ekleyebilirler de.',
   'compose.checking': 'Fotoğraf kontrol ediliyor…',
   'compose.nude': 'Bu fotoğraf çıplaklık içeriyor gibi görünüyor, bu yüzden paylaşılamaz',
 

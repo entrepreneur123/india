@@ -480,7 +480,7 @@ private fun ChatLine(
             Column(Modifier.width(IntrinsicSize.Max)) {
                 if (!grouped) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        SenderName(line.sender.name, line.sender.id, onPerson, Modifier.weight(1f, fill = false))
+                        SenderName(line.sender.name, line.sender.id, onPerson, Modifier.weight(1f, fill = false), onMenu)
                         when (chat.roles[line.sender.id]) {
                             VoiceRole.HOST -> RoleBadge(stringResource(R.string.voice_host), Modifier.padding(start = 6.dp, bottom = 2.dp))
                             VoiceRole.COHOST -> RoleBadge(stringResource(R.string.voice_cohost), Modifier.padding(start = 6.dp, bottom = 2.dp))
@@ -528,13 +528,19 @@ private fun Quote(reply: VoiceReply, mine: Boolean, onClick: () -> Unit) {
     }
 }
 
+/**
+ * Who wrote a line: their decorated @ID (until it is known, the name in its chat colour). A long press on it is the
+ * line's own [onMenu]: its touch target reaches into the words below.
+ */
 @Composable
-private fun SenderName(name: String, id: String, onPerson: () -> Unit, modifier: Modifier = Modifier) {
-    Text(
-        name, modifier.clip(RoundedCornerShape(4.dp)).clickable(role = Role.Button, onClick = onPerson),
-        color = chatColors().names[nameColorIndex(id)], fontSize = 13.sp, lineHeight = 20.sp,
-        fontWeight = FontWeight.SemiBold, fontFamily = Jakarta, maxLines = 1, overflow = TextOverflow.Ellipsis,
-    )
+private fun SenderName(name: String, id: String, onPerson: () -> Unit, modifier: Modifier = Modifier, onMenu: (() -> Unit)? = null) {
+    val tap = modifier.clip(RoundedCornerShape(4.dp)).combinedClickable(role = Role.Button, onLongClick = onMenu, onClick = onPerson)
+    LookName(id, tap, size = 13.sp) {
+        Text(
+            name, tap, color = chatColors().names[nameColorIndex(id)], fontSize = 13.sp, lineHeight = 20.sp,
+            fontWeight = FontWeight.SemiBold, fontFamily = Jakarta, maxLines = 1, overflow = TextOverflow.Ellipsis,
+        )
+    }
 }
 
 /** A photo in the chat: someone else's stays blurred behind "Tap to view" until tapped (the chat's own pattern). */

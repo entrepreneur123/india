@@ -52,7 +52,7 @@ const pl: FeedDict = {
   'compose.friends': 'Znajomi',
   'compose.everyone': 'Wszyscy',
   'compose.friendsHint': 'Twoi znajomi i osoby, z którymi czatujesz.',
-  'compose.everyoneHint': 'Każdy na yaari, w Odkrywaj. Może też zobaczyć Twój profil i dodać Cię do znajomych.',
+  'compose.everyoneHint': 'Każdy na yaari, kto otworzy Twój profil. Może też dodać Cię do znajomych.',
   'compose.checking': 'Sprawdzanie zdjęcia…',
   'compose.nude': 'To zdjęcie wygląda na zawierające nagość, więc nie można go opublikować',
 

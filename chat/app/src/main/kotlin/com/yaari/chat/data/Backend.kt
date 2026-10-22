@@ -23,13 +23,15 @@ import com.yaari.chat.model.Interest
 import com.yaari.chat.model.LinkPreview
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Comment
-import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.HandleCheck
 import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.Look
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfileStyle
 import com.yaari.chat.model.KycResult
 import com.yaari.chat.model.MannerTag
 import com.yaari.chat.model.MyTrust
+import com.yaari.chat.model.Shop
 import com.yaari.chat.model.Trust
 import com.yaari.chat.domain.TranslateKind
 import com.yaari.chat.domain.Translation
@@ -84,6 +86,10 @@ interface Backend {
     suspend fun myProfile(): Profile?
     suspend fun createProfile(p: NewProfile): Profile
     suspend fun entitlements(): Entitlements
+    /**
+     * A Play purchase checked by the server (verify-purchase): Plus, the gender pass, or a look (owned for good; the
+     * first of its kind is worn at once). Returns my entitlements after it.
+     */
     suspend fun redeem(productId: String, purchaseToken: String): Entitlements
     suspend fun signOut()
     /** Permanently deletes the account, profile, posts, chats and media (Google Play requirement). */
@@ -259,17 +265,11 @@ interface Backend {
     suspend fun addProfilePhoto(jpegUri: String): Profile
     suspend fun removeProfilePhoto(id: String): Profile
 
-    // ---- Profile style, posts' likes and comments, the feed (033_profiles_feed.sql) ----
+    // ---- Profile details, posts' likes and comments (033_profiles_feed.sql) ----
 
-    /**
-     * Sets all of my profile's style at once (set_profile_style). [newCoverJpeg]: a picked cover already shrunk and
-     * checked on this phone ([PhotoCheck]), stored in my "cover" folder; null keeps [ProfileStyle.coverId] (null: no
-     * cover). bad_request when something is out of bounds. Returns my profile.
-     */
-    suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String? = null): Profile
-    /** Newest first, 20 at a time; [before]: the oldest post already shown. Friends: theirs and mine; Discover: public ones. */
-    suspend fun feed(tab: FeedTab, before: Post? = null): List<Post>
-    /** One person's posts I may see, newest first ([before] as in [feed]). */
+    /** Sets my profile's details (status, languages, prompts) at once (set_profile_style). bad_request when out of bounds. Returns my profile. */
+    suspend fun setProfileStyle(style: ProfileStyle): Profile
+    /** One person's posts I may see, newest first, 20 at a time; [before]: the oldest post already shown. */
     suspend fun postsOf(userId: String, before: Post? = null): List<Post>
     /** One post with its author and counts; null when it is gone or not for me. */
     suspend fun post(postId: String): Post?
@@ -302,4 +302,20 @@ interface Backend {
      * bad as [good]. Refused with not_found, not_allowed, too_late, already_rated, bad_request.
      */
     suspend fun rateChat(matchId: String, good: Boolean, tags: List<MannerTag>)
+
+    // ---- IDs and looks (040_handles_looks.sql) ----
+
+    /** Whether [handle] could be my ID (trimmed and NFC first, as set_handle does). Needs a session, not a profile. */
+    suspend fun handleCheck(handle: String): HandleCheck
+    /**
+     * Makes [handle] my ID; returns the stored spelling. Refused with handle_invalid, handle_reserved, handle_taken and
+     * handle_cooldown (a different ID once every 7 days; the app-given one changes at once, a new spelling always).
+     */
+    suspend fun setHandle(handle: String): String
+    /** Everything on sale, what I own and wear, and when my ID may change again. */
+    suspend fun shop(): Shop
+    /** Wears these, all four at once (null: none of that kind). Refused with not_owned, bad_request. */
+    suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look
+    /** IDs and looks of up to 100 people I may see (others are left out), as [trust]. */
+    suspend fun looks(userIds: List<String>): List<Look>
 }

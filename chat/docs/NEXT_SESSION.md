@@ -2,6 +2,13 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-22 0.15.0: 아이디·꾸미기·방 화면 (마이그레이션 040·041 적용 완료)
+- 설계와 디자인 수치: `docs/LOOKS_SPEC.md`. 서버 테스트: `server/test_handles_looks.sql`(롤백식, 실서버에서 통과).
+- 040: `profiles.handle`(대소문자 무시 유일, 2–24자, `handle_valid()` 허용 문자표 — 웹 `lib/handle.ts`·앱 `domain/Handle.kt`가 같은 표를 복사함, 바꿀 때 셋 다), 이름의 꾸밈 글꼴 문자 거부(`name_plain`), `cosmetic_items`(26개)·`user_cosmetics`·`profiles.look_*`, RPC `handle_check`·`set_handle`·`shop`·`equip_look`·`looks`·`admin_grant_cosmetic`, `redeem_cosmetic`(service_role 전용), `play_revoke`가 환불된 꾸미기를 벗기고 회수, 커버·색상 무시, 끝난 랜챗은 친구끼리만 새 메시지(`chat_open`, RLS).
+- 041: 환불된 토큰은 다시 지급하지 않음. verify-purchase v11(꾸미기 = 비소비형 인앱, Play 확인 후 지급·확인 처리).
+- 폰트 6개: Latin 부분집합, OFL에 따라 이름 변경(`Yaari Look *`), 라이선스 `docs/font-licenses/`. 웹 `public/fonts/looks`(루트 .gitignore의 `public/` 때문에 `git add -f`로 추가함).
+- 남은 일: Play Console에 상품 26개 등록(LAUNCH_GUIDE 4-0), 실기기에서 결제·드래그 확인.
+
 ## 2026-10-21 테스트 봇 500개 (마이그레이션 028, 출시 전에 반드시 제거)
 - 데이터베이스 안에만 있는 봇 500개(인도 440, 방글라데시·브라질·베트남 각 20; 전화번호는 실제로 있을 수 없는 번호, 소개 "Test bot").
   pg_cron `yaari-bots`가 10초마다 `bot_tick()` 실행(평균 0.06초):

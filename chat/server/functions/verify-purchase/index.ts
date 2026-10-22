@@ -91,6 +91,7 @@ Deno.serve(async (req) => {
     const { data: result, error } = await admin.rpc("redeem_cosmetic", { p_user: user.id, p_item: product_id, p_token: purchase_token });
     if (error) return json(error.message?.includes("bad_request") ? 400 : 500, { error: error.message?.includes("bad_request") ? "unknown_item" : "grant_failed" });
     if (result === "other_account") return json(409, { error: "token_used_by_other_account" });
+    if (result === "revoked") return json(402, { error: "refunded" });
     if (p.acknowledgementState === 0) {
       await fetch(`${api}/products/${product_id}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
     }

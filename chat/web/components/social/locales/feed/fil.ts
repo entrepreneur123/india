@@ -52,7 +52,7 @@ const fil: FeedDict = {
   'compose.friends': 'Mga kaibigan',
   'compose.everyone': 'Lahat',
   'compose.friendsHint': 'Ang mga kaibigan mo at ang mga naka-chat mo.',
-  'compose.everyoneHint': 'Kahit sino sa yaari, sa Discover. Makikita rin nila ang profile mo at puwede ka nilang i-add.',
+  'compose.everyoneHint': 'Kahit sino sa yaari na magbukas ng profile mo. Puwede ka rin nilang i-add.',
   'compose.checking': 'Sinusuri ang photo…',
   'compose.nude': 'Mukhang may nudity ang photo na ito, kaya hindi ito mapo-post',
 

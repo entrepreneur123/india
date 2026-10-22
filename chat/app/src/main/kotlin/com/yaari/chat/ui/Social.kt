@@ -112,6 +112,7 @@ import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ProfilePhoto
 import com.yaari.chat.model.RoomLang
 import com.yaari.chat.model.VoiceRoom
+import androidx.compose.material3.HorizontalDivider
 
 // ---- Notifications, interests, photos, invites and the first-run tour (as the web's components/social) ----------
 
@@ -527,7 +528,7 @@ fun shareRoomLink(context: Context, room: VoiceRoom) {
     }
 }
 
-/** Invite friends into the room I'm in (their Notifications), and share its link. */
+/** Invite friends into the room I'm in (their Notifications) first; sharing its link comes after, as a second way. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InviteSheet(vm: AppViewModel, room: VoiceRoom, friends: List<Profile>, s: SocialState, onClose: () -> Unit) {
@@ -542,19 +543,6 @@ fun InviteSheet(vm: AppViewModel, room: VoiceRoom, friends: List<Profile>, s: So
     ) {
         Column(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
             Box(Modifier.padding(horizontal = 24.dp)) { SheetTitle(stringResource(R.string.invite_title), stringResource(R.string.invite_desc), onClose) }
-            if (canLink) {
-                SoftButton(
-                    stringResource(R.string.invite_copy_link), { shareRoomLink(context, room) }, Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
-                    height = 48.dp, outlined = true,
-                    leading = { Icon(Icons.Rounded.Link, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurface) },
-                )
-                if (room.rules.isPrivate) {
-                    Text(
-                        stringResource(R.string.invite_private_note), Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
             if (list.isEmpty()) {
                 Text(
                     stringResource(R.string.invite_none), Modifier.fillMaxWidth().padding(24.dp).clip(RoundedCornerShape(16.dp))
@@ -567,10 +555,10 @@ fun InviteSheet(vm: AppViewModel, room: VoiceRoom, friends: List<Profile>, s: So
                         val done = f.id in sent
                         Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                             Avatar(f, 40.dp)
-                            Text(
-                                f.name, Modifier.weight(1f).padding(horizontal = 12.dp), style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.sp),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis,
-                            )
+                            Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                                Text(f.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.sp), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                LookName(f.id, size = 12.sp)
+                            }
                             SoftButton(
                                 stringResource(if (done) R.string.invite_sent else R.string.invite_button), { vm.social.invite(room.id, f) },
                                 accent = !done, enabled = !done && s.inviting == null, height = 36.dp,
@@ -578,6 +566,22 @@ fun InviteSheet(vm: AppViewModel, room: VoiceRoom, friends: List<Profile>, s: So
                             )
                         }
                     }
+                }
+            }
+            if (canLink) {
+                HorizontalDivider(Modifier.padding(top = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(role = Role.Button) { shareRoomLink(context, room) }.padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Rounded.Link, null, Modifier.size(22.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.invite_copy_link), Modifier.padding(start = 18.dp).weight(1f), style = MaterialTheme.typography.bodyLarge)
+                }
+                if (room.rules.isPrivate) {
+                    Text(
+                        stringResource(R.string.invite_private_note), Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }

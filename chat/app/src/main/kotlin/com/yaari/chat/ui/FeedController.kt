@@ -4,9 +4,7 @@ import com.yaari.chat.R
 import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.model.Comment
-import com.yaari.chat.model.FeedTab
 import com.yaari.chat.model.Post
-import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ReportReason
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -16,14 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-/** One of the feed's lists: null until loaded; [end] once a page came back short (nothing older). */
-data class FeedPage(
-    val posts: List<Post>? = null,
-    val loading: Boolean = false,
-    val failed: Boolean = false,
-    val end: Boolean = false,
-)
 
 /** The comments of [post], oldest first ([comments] null until loaded); [replyTo]: the comment my next one answers. */
 data class CommentThread(
@@ -36,22 +26,17 @@ data class CommentThread(
 )
 
 /**
- * The feed's state. [detail]: one post open full screen (from a profile's grid or Notifications); [thread]: the
- * comments sheet; [hidden]: posts I reported (gone from my lists); [opening]: a post being fetched by its id.
+ * Posts open on screen. [detail]: one post full screen (from a profile's grid or Notifications); [thread]: the comments
+ * sheet; [opening]: a post being fetched by its id.
  */
 data class FeedState(
-    val tab: FeedTab = FeedTab.FRIENDS,
-    val pages: Map<FeedTab, FeedPage> = emptyMap(),
     val detail: Post? = null,
     val thread: CommentThread? = null,
-    val hidden: Set<String> = emptySet(),
     val opening: Boolean = false,
-) {
-    fun page(t: FeedTab = tab) = pages[t] ?: FeedPage()
-}
+)
 
 /**
- * The feed (Friends / Discover), hearts and comments. Owned by [AppViewModel]; plain coroutines on its scope.
+ * One post full screen, hearts and comments. Owned by [AppViewModel]; plain coroutines on its scope.
  * Hearts are optimistic: the count changes at once and the server's answer settles it (a failure puts it back).
  * [onPost]: a post changed (its counts), so my profile and the open profile follow; [onRemoved]: it is gone.
  */
@@ -66,76 +51,20 @@ class FeedController(
     private val _state = MutableStateFlow(FeedState())
     val state: StateFlow<FeedState> = _state.asStateFlow()
 
-    private val loads = mutableMapOf<FeedTab, Job>()
     private var commentsJob: Job? = null
     /** The newest heart tap per post: an older answer arriving later doesn't overwrite it. */
     private val likeTaps = mutableMapOf<String, Int>()
 
     fun reset() {
-        loads.values.forEach { it.cancel() }
-        loads.clear()
         commentsJob?.cancel()
         likeTaps.clear()
         _state.value = FeedState()
-    }
-
-    // ---- the lists ----
-
-    /** The Feed tab came on screen: the chosen list loads (again: what is shown stays until the new page is in). */
-    fun opened() = refresh(_state.value.tab)
-
-    fun select(tab: FeedTab) {
-        _state.update { it.copy(tab = tab) }
-        if (!_state.value.page(tab).loading) refresh(tab)
-    }
-
-    fun refresh(tab: FeedTab = _state.value.tab) = load(tab, more = false)
-
-    /** The next page, when the list is scrolled near its end. */
-    fun loadMore(tab: FeedTab = _state.value.tab) {
-        val p = _state.value.page(tab)
-        if (p.loading || p.end || p.posts.isNullOrEmpty() || p.failed) return
-        load(tab, more = true)
-    }
-
-    private fun load(tab: FeedTab, more: Boolean) {
-        if (more && loads[tab]?.isActive == true) return
-        loads[tab]?.cancel()
-        setPage(tab) { it.copy(loading = true, failed = false) }
-        loads[tab] = scope.launch {
-            try {
-                val before = if (more) _state.value.page(tab).posts?.lastOrNull() else null
-                val hidden = _state.value.hidden
-                val all = backend.feed(tab, before)
-                val got = all.filterNot { it.id in hidden }
-                setPage(tab) { p ->
-                    val list = if (more) (p.posts.orEmpty() + got).distinctBy { it.id } else got
-                    p.copy(posts = list, loading = false, failed = false, end = all.size < PAGE)
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                setPage(tab) { it.copy(loading = false, failed = true) }
-            }
-        }
-    }
-
-    private fun setPage(tab: FeedTab, change: (FeedPage) -> FeedPage) =
-        _state.update { s -> s.copy(pages = s.pages + (tab to change(s.page(tab)))) }
-
-    /** What [AppViewModel.addPost] just shared: on top of Friends at once (and of Discover when it is public). */
-    fun added(post: Post) {
-        _state.update { s ->
-            val tabs = if (post.visibility == PostVisibility.PUBLIC) FeedTab.entries else listOf(FeedTab.FRIENDS)
-            s.copy(pages = s.pages.mapValues { (t, p) -> if (t in tabs && p.posts != null) p.copy(posts = listOf(post) + p.posts) else p })
-        }
     }
 
     /** Someone blocked or reported: their posts and comments leave what is on screen. */
     fun forget(userId: String) {
         _state.update { s ->
             s.copy(
-                pages = s.pages.mapValues { (_, p) -> p.copy(posts = p.posts?.filterNot { it.author?.id == userId }) },
                 detail = s.detail?.takeIf { it.author?.id != userId },
                 thread = s.thread?.let { t ->
                     if (t.post.author?.id == userId) null else t.copy(comments = t.comments?.filterNot { it.author.id == userId })
@@ -144,11 +73,10 @@ class FeedController(
         }
     }
 
-    /** Changes the post wherever it is shown: the lists, the open post, the comments sheet, and (through [onPost]) profiles. */
+    /** Changes the post wherever it is shown: the open post, the comments sheet, and (through [onPost]) profiles. */
     private fun patch(postId: String, change: (Post) -> Post) {
         _state.update { s ->
             s.copy(
-                pages = s.pages.mapValues { (_, p) -> p.copy(posts = p.posts?.map { if (it.id == postId) change(it) else it }) },
                 detail = s.detail?.let { if (it.id == postId) change(it) else it },
                 thread = s.thread?.let { t -> if (t.post.id == postId) t.copy(post = change(t.post)) else t },
             )
@@ -159,7 +87,6 @@ class FeedController(
     private fun drop(postId: String) {
         _state.update { s ->
             s.copy(
-                pages = s.pages.mapValues { (_, p) -> p.copy(posts = p.posts?.filterNot { it.id == postId }) },
                 detail = s.detail?.takeIf { it.id != postId },
                 thread = s.thread?.takeIf { it.post.id != postId },
             )
@@ -179,8 +106,7 @@ class FeedController(
 
     private fun current(post: Post): Post {
         val s = _state.value
-        return s.pages.values.firstNotNullOfOrNull { p -> p.posts?.firstOrNull { it.id == post.id } }
-            ?: s.detail?.takeIf { it.id == post.id } ?: s.thread?.post?.takeIf { it.id == post.id } ?: post
+        return s.detail?.takeIf { it.id == post.id } ?: s.thread?.post?.takeIf { it.id == post.id } ?: post
     }
 
     private fun setLike(post: Post, on: Boolean) {
@@ -228,7 +154,7 @@ class FeedController(
         }
     }
 
-    /** Mine only; it leaves the lists, my profile and anything open. */
+    /** Mine only; it leaves my profile and anything open. */
     fun delete(post: Post) {
         scope.launch {
             try {
@@ -243,12 +169,11 @@ class FeedController(
         }
     }
 
-    /** Sent to the safety team; the post leaves my lists. */
+    /** Sent to the safety team; the post leaves what is on screen. */
     fun report(post: Post, reason: ReportReason) {
         scope.launch {
             try {
                 backend.reportPost(post.id, reason)
-                _state.update { it.copy(hidden = it.hidden + post.id) }
                 drop(post.id)
                 notice(UiText(R.string.msg_post_reported))
             } catch (e: CancellationException) {
@@ -352,8 +277,7 @@ class FeedController(
         _state.update { s -> s.copy(thread = s.thread?.let { if (it.post.id == postId) change(it) else it }) }
 
     companion object {
-        /** The server's page sizes (feed / comments_list). */
-        const val PAGE = 20
+        /** The server's page size (comments_list). */
         const val COMMENTS_PAGE = 50
     }
 }

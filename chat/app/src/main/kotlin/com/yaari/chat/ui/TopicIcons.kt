@@ -235,11 +235,11 @@ fun TopicChip(topic: Topic, label: String, modifier: Modifier = Modifier, height
     }
 }
 
-// ---- the app's own marks for the feed and profiles: an outline (off) and a two-tone fill (on), in any colour ----------
+// ---- the app's own marks for posts and profiles: an outline (off) and a two-tone fill (on), in any colour -------------
 
 /** Chrome marks drawn like the topic glyphs (24×24, two tones), coloured by the caller (nav colour, text colour). */
 enum class Mark {
-    FEED, HEART, COMMENT, GLOBE, FRIENDS, PALETTE, SEND, IMAGE,
+    HEART, COMMENT, GLOBE, FRIENDS, PALETTE, SEND,
     // Identity and manners (035): the verified seal, the check's steps, the rating faces and the status marks.
     VERIFIED, ID_CARD, SELFIE, LOCK, SHIELD, SMILE, FROWN, CLOCK, ALERT,
 }
@@ -267,13 +267,6 @@ private const val PALETTE_PATH =
 private const val PLANE_PATH = "M3.4 11.1 19.6 3.6c.9-.4 1.8.5 1.4 1.4l-7.5 16.2c-.4.9-1.7.8-2-.1l-1.7-5.1-5.1-1.7c-.9-.3-1-1.6-.1-2z"
 
 private val MarkFilled: Map<Mark, List<Part>> = mapOf(
-    // Two cards, the front one a photo: the feed.
-    Mark.FEED to listOf(
-        Fill(rect(6.8f, 3f, 14.2f, 14.2f, 3.2f), Ink.L),
-        Fill(rect(3f, 6.8f, 14.2f, 14.2f, 3.2f), Ink.M),
-        Fill("M5.6 18.4l3.9-4.3 2.5 2.5 1.8-1.8 3.4 3.6z", Ink.L),
-        Fill(circle(8.6f, 10.8f, 1.5f), Ink.L),
-    ),
     Mark.HEART to listOf(
         Fill(HEART_PATH, Ink.M),
         Turn(listOf(Fill(ellipse(7.4f, 8.9f, 1.9f, 1.25f), Ink.L)), -40f, 7.4f, 8.9f),
@@ -296,11 +289,6 @@ private val MarkFilled: Map<Mark, List<Part>> = mapOf(
         Fill(circle(14.4f, 7.1f, 1.5f), Ink.L), Fill(circle(17.2f, 10.6f, 1.5f), Ink.L),
     ),
     Mark.SEND to listOf(Fill(PLANE_PATH, Ink.M), Line("M10.3 13.7 15 9", Ink.L, 1.6f)),
-    Mark.IMAGE to listOf(
-        Fill(rect(2.8f, 4.2f, 18.4f, 15.6f, 3.6f), Ink.M),
-        Fill("M4.8 17.6l4.6-5.1 3 3 2.1-2.1 4.7 4.2z", Ink.L),
-        Fill(circle(15.6f, 9f, 1.8f), Ink.L),
-    ),
     // The seal with a light gleam and a white tick.
     Mark.VERIFIED to listOf(
         Fill(SEAL_PATH, Ink.M),
@@ -361,12 +349,6 @@ private val MarkFilled: Map<Mark, List<Part>> = mapOf(
 )
 
 private val MarkOutline: Map<Mark, List<Part>> = mapOf(
-    Mark.FEED to listOf(
-        Line("M7.2 3.4h10.2a3.2 3.2 0 0 1 3.2 3.2v10.2", Ink.M, 1.8f, roundJoin = true),
-        Line(rect(3.4f, 7.2f, 13.6f, 13.6f, 3.2f), Ink.M, 1.8f, roundJoin = true),
-        Line("M6.4 17.6l3.2-3.5 2.2 2.2 1.6-1.6 2.4 2.6", Ink.M, 1.6f, roundJoin = true),
-        Fill(circle(8.6f, 11f, 1.3f), Ink.M),
-    ),
     Mark.HEART to listOf(Line(HEART_PATH, Ink.M, 1.9f, roundJoin = true)),
     Mark.COMMENT to listOf(Line(BUBBLE_PATH, Ink.M, 1.9f, roundJoin = true)),
     Mark.GLOBE to listOf(Line(circle(12f, 12f, 9.1f), Ink.M, 1.7f), Line(GLOBE_LINES, Ink.M, 1.5f)),

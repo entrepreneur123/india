@@ -45,7 +45,7 @@ export interface ProfileStyleInput {
   prompts: ProfilePrompt[]
 }
 
-/** 'friends': friends and people I chatted with (the default); 'public': anyone, in Discover. */
+/** 'friends': friends and people I chatted with (the default); 'public': anyone who opens the profile. */
 export type PostVisibility = 'friends' | 'public'
 
 export interface PostAuthor {

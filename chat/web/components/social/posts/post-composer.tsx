@@ -20,7 +20,7 @@ import { postStore } from './post-store'
 /** The last audience chosen, for the next post in this visit. */
 let lastAudience: PostVisibility = 'friends'
 
-/** A new post: a photo and/or text, for friends or for everyone (Discover). */
+/** A new post: a photo and/or text, for friends or for everyone who opens my profile. */
 export function PostComposer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const backend = useBackend()
   const toast = useToast()

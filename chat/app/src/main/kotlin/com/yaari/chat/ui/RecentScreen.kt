@@ -63,6 +63,8 @@ import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Badges
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.foundation.layout.widthIn
 import com.yaari.chat.model.Profile
 
 @Composable
@@ -166,10 +168,7 @@ private fun RequestCard(p: Profile, modifier: Modifier, onOpen: () -> Unit, onAn
                 Text(p.nameAgeFlag(), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 VerifiedMark(p, Modifier.padding(start = 4.dp), size = 16.dp)
             }
-            Text(
-                p.genderCity(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1, overflow = TextOverflow.Ellipsis,
-            )
+            SecondLine(p, p.genderCity(), MaterialTheme.typography.bodySmall)
         }
         SoftButton(stringResource(R.string.decline), { onAnswer(false) }, height = 36.dp, shape = CircleShape, outlined = true)
         SoftButton(stringResource(R.string.accept), { onAnswer(true) }, height = 36.dp, shape = CircleShape, accent = true)
@@ -245,15 +244,25 @@ private fun PersonRow(
                     )
                 }
             }
-            Text(
-                subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1, overflow = TextOverflow.Ellipsis,
-            )
+            SecondLine(p, subtitle, MaterialTheme.typography.bodyMedium)
         }
         if (unread > 0) {
             val label = stringResource(R.string.unread_count, unread)
             CountBadge(unread, Modifier.semantics { contentDescription = label })
         }
         Row(horizontalArrangement = Arrangement.spacedBy(0.dp), verticalAlignment = Alignment.CenterVertically) { actions() }
+    }
+}
+
+/** A person's second line in the lists: their decorated @ID (once known), then [text] (the last message, or details). */
+@Composable
+private fun SecondLine(p: Profile, text: String, style: TextStyle) {
+    val look = lookOf(p.id)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        if (look != null && look.handle.isNotEmpty()) {
+            LookName(look, Modifier.widthIn(max = 168.dp), size = style.fontSize)
+            Text(" · ", style = style, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Text(text, Modifier.weight(1f, fill = false), style = style, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }

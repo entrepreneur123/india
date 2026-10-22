@@ -1,10 +1,12 @@
 package com.yaari.chat
 
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
 import com.yaari.chat.data.DemoBilling
@@ -100,6 +102,10 @@ class RoomsScreensTest {
     @Test fun photoBlurredThenRevealed() {
         r.signIn()
         r.open("v-chai")
+        // The photo is a few lines up the chat (the talk room's top block takes about 30 % of the height).
+        compose.onAllNodes(hasScrollAction()).fetchSemanticsNodes().indices.firstNotNullOf { i ->
+            runCatching { compose.onAllNodes(hasScrollAction())[i].performScrollToNode(hasText("Tap to view")) }.getOrNull()
+        }
         r.waitFor("Tap to view")
         compose.onAllNodes(hasText("Tap to view"))[0].performScrollTo()
         r.shot("04_photo_blurred")

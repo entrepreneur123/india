@@ -30,10 +30,14 @@ import com.yaari.chat.model.InboxKind
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.ProfilePhoto
 import com.yaari.chat.model.RoomQuery
-import com.yaari.chat.model.Accent
 import com.yaari.chat.model.Comment
-import com.yaari.chat.model.FeedTab
+import com.yaari.chat.model.Cosmetic
+import com.yaari.chat.model.HandleCheck
 import com.yaari.chat.model.LikeState
+import com.yaari.chat.model.Look
+import com.yaari.chat.model.LookItem
+import com.yaari.chat.model.LookKind
+import com.yaari.chat.model.Shop
 import com.yaari.chat.model.PostRef
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfilePrompt
@@ -47,10 +51,12 @@ import com.yaari.chat.model.MyTrust
 import com.yaari.chat.model.TagCount
 import com.yaari.chat.model.Trust
 import com.yaari.chat.domain.ForeignText
+import com.yaari.chat.domain.Handle
 import com.yaari.chat.domain.TranslateKind
 import com.yaari.chat.domain.TranslateTargets
 import com.yaari.chat.domain.Translation
 import java.time.LocalDate
+import java.util.Locale
 import java.util.UUID
 import kotlin.random.Random
 
@@ -134,7 +140,7 @@ open class FakeBackend(
     private val reacted = mutableSetOf<String>()
     /** Reports of posts and comments ("post:<id>" / "comment:<id>" to the reason), for tests. */
     val postReports = mutableListOf<Pair<String, ReportReason>>()
-    /** The demo people's style (cover, colour, status, languages, prompts). */
+    /** The demo people's details (status, languages, prompts). */
     private val styles = STYLES.toMutableMap()
 
     // ---- identities and manners (035), as the server keeps them ----
@@ -402,7 +408,10 @@ open class FakeBackend(
         if (age < Validation.MIN_AGE) throw BackendException("under_18")
         val country = com.yaari.chat.domain.Countries.all.filter { ph.startsWith(it.dial) }.maxByOrNull { it.dial.length }
             ?.let { if (it.dial == "1") "US" else it.iso } // +1 is shared; the server does the same
-        val me = Profile("me-" + UUID.randomUUID(), p.name, p.gender, age, p.city, p.bio, p.photoUri, ph.hashCode(), country = country)
+        if (!Handle.plainName(Handle.normalize(p.name))) throw BackendException("name_invalid")
+        val me = Profile(
+            "me-" + UUID.randomUUID(), p.name, p.gender, age, p.city, p.bio, p.photoUri, ph.hashCode(), country = country, handle = freeHandle(p.name),
+        )
         accounts[ph] = me
         return me
     }
@@ -410,9 +419,10 @@ open class FakeBackend(
     override suspend fun entitlements() = entitlements
 
     override suspend fun redeem(productId: String, purchaseToken: String): Entitlements {
-        entitlements = when (productId) {
-            Products.PREMIUM -> entitlements.copy(premium = true)
-            Products.GENDER_PASS -> entitlements.copy(genderPass = true)
+        entitlements = when {
+            productId == Products.PREMIUM -> entitlements.copy(premium = true)
+            productId == Products.GENDER_PASS -> entitlements.copy(genderPass = true)
+            Cosmetic.of(productId) != null -> entitlements.also { grantLook(Cosmetic.of(productId)!!) }
             else -> throw BackendException("bad_request")
         }
         return entitlements
@@ -507,6 +517,9 @@ open class FakeBackend(
     override suspend fun send(matchId: String, text: String?, media: Media?): Message {
         val m = match(matchId)
         if (m.partner.id in blocked) throw BackendException("blocked")
+        // chat_open: an ended chat goes on only between friends (the server's row-level security, which the live
+        // backend reports as "blocked").
+        if (m.ended && friendships[m.partner.id] != FriendState.FRIENDS) throw BackendException("blocked")
         val msg = Message(nextId++, true, text, media, clock())
         m.messages += msg
         m.outgoing.trySend(Outgoing.Text(text)) // after the chat ends this is a DM; the partner still answers
@@ -570,10 +583,16 @@ open class FakeBackend(
         return POOL.firstOrNull { it.id == userId }?.let { it.copy(posts = postsBy(it.id), style = styles[it.id] ?: ProfileStyle()) }
     }
 
-    /** The server's can_view: chatted with, a friend or a request, or someone who posts publicly. */
+    /** The server's can_view: chatted with, a friend or a request, someone in a demo room, or who posts publicly. */
     private fun visible(userId: String) = userId !in blocked &&
-        (matches.values.any { it.partner.id == userId } || userId in friendships ||
+        (matches.values.any { it.partner.id == userId } || userId in friendships || voice.profileOf(userId) != null ||
             posts.any { it.author == userId && it.visibility == PostVisibility.PUBLIC })
+
+    /** People met in the demo's rooms, remembered once asked to be friends (they may leave the room). */
+    private val met = mutableMapOf<String, Profile>()
+
+    /** A demo person by id: the scripted pool, or someone met in a demo room. */
+    private fun personFor(id: String) = POOL.firstOrNull { it.id == id } ?: met[id] ?: voice.profileOf(id)
 
     override suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility): Post {
         val me = me()
@@ -592,6 +611,7 @@ open class FakeBackend(
     }
 
     override suspend fun updateProfile(name: String, city: String, bio: String, newPhotoUri: String?): Profile {
+        if (!Handle.plainName(Handle.normalize(name))) throw BackendException("name_invalid")
         wait(300)
         return updateMe { it.copy(name = name, city = city, bio = bio, photoUri = newPhotoUri ?: it.photoUri) }
     }
@@ -602,10 +622,10 @@ open class FakeBackend(
         me()
         friendships.entries.filter { it.value == FriendState.REQUESTED }.forEach { e ->
             e.setValue(FriendState.FRIENDS)
-            POOL.firstOrNull { it.id == e.key }?.let { notify(InboxKind.FRIEND_ACCEPT, it) }
+            personFor(e.key)?.let { notify(InboxKind.FRIEND_ACCEPT, it) }
         }
         return friendships.entries.reversed().filter { it.key !in blocked }.mapNotNull { (id, state) ->
-            POOL.firstOrNull { it.id == id }?.let { p ->
+            personFor(id)?.let { p ->
                 Friend(p, state, matches.entries.lastOrNull { it.value.partner.id == id }?.key)
             }
         }
@@ -615,6 +635,7 @@ open class FakeBackend(
         me()
         requireVerified()
         if (!visible(userId)) throw BackendException("not_allowed")
+        voice.profileOf(userId)?.let { met[userId] = it }
         val now = when (friendships[userId]) {
             FriendState.INCOMING, FriendState.FRIENDS -> FriendState.FRIENDS
             else -> FriendState.REQUESTED
@@ -622,6 +643,13 @@ open class FakeBackend(
         friendships[userId] = now
         if (now == FriendState.FRIENDS) readNotes { it.kind == InboxKind.FRIEND_REQUEST && it.actor.id == userId }
         return now
+    }
+
+    /** [userId] asks to be my friend (tests): the request waits for my answer, with its notification. */
+    fun asksToBeFriends(userId: String) {
+        val p = personFor(userId) ?: return
+        friendships[userId] = FriendState.INCOMING
+        notify(InboxKind.FRIEND_REQUEST, p)
     }
 
     override suspend fun answerFriend(userId: String, accept: Boolean) {
@@ -637,10 +665,118 @@ open class FakeBackend(
     override suspend fun friendThread(userId: String): String {
         if (friendships[userId] != FriendState.FRIENDS || userId in blocked) throw BackendException("not_allowed")
         matches.entries.lastOrNull { it.value.partner.id == userId }?.let { return it.key }
-        val partner = POOL.first { it.id == userId }
+        val partner = personFor(userId) ?: throw BackendException("not_found")
         val id = UUID.randomUUID().toString()
         matches[id] = FakeMatch(partner, clock(), dm = true).apply { ended = true }
         return id
+    }
+
+    // ---- IDs and looks (040), as the server keeps them ----
+
+    /** When each account last chose a different ID (none: still the app-given one, which changes freely). */
+    private val handleSetAt = mutableMapOf<String, Long>()
+    /** The looks each account owns, in the order they were bought. */
+    private val owned = mutableMapOf<String, MutableList<String>>()
+    /** What each account wears. */
+    private val worn = mutableMapOf<String, Look>()
+
+    /** handle_make: the plain letters of the name and 4 digits ("priya_4821"), or "user_…"; never one that is taken. */
+    private fun freeHandle(name: String): String {
+        var base = name.lowercase(Locale.ROOT).filter { it in 'a'..'z' || it in '0'..'9' || it == '.' || it == '_' }.take(14).trim('.', '_')
+        if (base.length < 3 || Handle.reserved(base)) base = "user"
+        val first = random.nextInt(10_000)
+        return (0 until 10_000).map { "${base}_" + ((first + it) % 10_000).toString().padStart(4, '0') }.first { holderOf(it) == null }
+    }
+
+    /** Who has [handle] (case-blind): an account, a demo person or someone in a demo room; null when it is free. */
+    private fun holderOf(handle: String): String? {
+        val low = handle.lowercase(Locale.ROOT)
+        accounts.values.filterNotNull().firstOrNull { it.handle?.lowercase(Locale.ROOT) == low }?.let { return it.id }
+        return HANDLES.entries.firstOrNull { it.value.lowercase(Locale.ROOT) == low }?.key
+    }
+
+    /** The ID of anyone the demo knows: an account, a demo person, or someone in a demo room (made from their name). */
+    private fun handleOf(id: String): String? = when {
+        id == meId() -> me().handle
+        id in HANDLES -> HANDLES[id]
+        else -> voice.profileOf(id)?.let { Handle.suggest(it.name, Math.floorMod(id.hashCode(), 10_000)) }
+    }
+
+    override suspend fun handleCheck(handle: String): HandleCheck {
+        val me = phone?.let { accounts[it] }
+        if (phone == null) throw BackendException("not_signed_in")
+        val h = Handle.normalize(handle)
+        return when {
+            !Handle.valid(h) -> HandleCheck.INVALID
+            me != null && me.handle == h -> HandleCheck.MINE
+            Handle.reserved(h) -> HandleCheck.RESERVED
+            holderOf(h).let { it != null && it != me?.id } -> HandleCheck.TAKEN
+            else -> HandleCheck.OK
+        }
+    }
+
+    override suspend fun setHandle(handle: String): String {
+        val me = phone?.let { accounts[it] } ?: throw BackendException(if (phone == null) "not_signed_in" else "no_profile")
+        val h = Handle.normalize(handle)
+        val current = me.handle.orEmpty()
+        if (!Handle.valid(h)) throw BackendException("handle_invalid")
+        if (current == h) return h
+        val respell = current.equals(h, ignoreCase = true)
+        if (Handle.reserved(h) && !respell) throw BackendException("handle_reserved")
+        if (holderOf(h).let { it != null && it != me.id }) throw BackendException("handle_taken")
+        if (!respell && handleSetAt[me.id]?.let { clock() - it < HANDLE_COOLDOWN_MS } == true) throw BackendException("handle_cooldown")
+        if (!respell) handleSetAt[me.id] = clock()
+        updateMe { it.copy(handle = h) }
+        return h
+    }
+
+    private fun myLook(): Look {
+        val me = me()
+        return (worn[me.id] ?: Look(me.id, "")).copy(handle = me.handle.orEmpty())
+    }
+
+    override suspend fun shop(): Shop {
+        val me = me()
+        return Shop(
+            Cosmetic.entries.map { LookItem(it.id, it.kind, PRICES.getValue(it.id)) }, owned[me.id].orEmpty().toSet(), myLook(),
+            handleSetAt[me.id]?.let { it + HANDLE_COOLDOWN_MS }?.takeIf { it > clock() },
+        )
+    }
+
+    override suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look {
+        val me = me()
+        val want = listOf(badge, color, font, frame).map { it?.ifEmpty { null } }
+        val mine = owned[me.id].orEmpty()
+        want.zip(LookKind.entries).forEach { (item, kind) ->
+            if (item == null) return@forEach
+            if (!item.startsWith(kind.code + "_")) throw BackendException("bad_request")
+            if (item !in mine) throw BackendException("not_owned")
+        }
+        worn[me.id] = Look(me.id, me.handle.orEmpty(), want[0], want[1], want[2], want[3])
+        return myLook()
+    }
+
+    /** About half of the people in the demo's rooms wear one of the demo looks too. */
+    private fun roomLook(id: String) = if (voice.profileOf(id) != null) DEMO_LOOKS.values.toList().getOrNull(Math.floorMod(id.hashCode(), 2 * DEMO_LOOKS.size)) else null
+
+    /** redeem_cosmetic: mine for good; the first of its kind is worn at once. */
+    private fun grantLook(item: Cosmetic) {
+        val me = me()
+        val list = owned.getOrPut(me.id) { mutableListOf() }
+        if (item.id in list) return
+        list += item.id
+        val now = myLook()
+        if (now.of(item.kind) == null) worn[me.id] = now.with(item.kind, item.id)
+    }
+
+    override suspend fun looks(userIds: List<String>): List<Look> {
+        me()
+        return userIds.take(100).distinct().filter { it !in blocked }.mapNotNull { id ->
+            when (id) {
+                meId() -> myLook()
+                else -> handleOf(id)?.let { h -> (DEMO_LOOKS[id] ?: roomLook(id) ?: Look(id, h)).copy(userId = id, handle = h) }
+            }
+        }
     }
 
     // ---- rooms (FakeVoice) ----
@@ -740,25 +876,14 @@ open class FakeBackend(
 
     override suspend fun removeProfilePhoto(id: String): Profile = updateMe { it.copy(photos = it.photos.filterNot { p -> p.id == id }) }
 
-    // ---- profile style, the feed, likes and comments (the server's 033 rules) ----
+    // ---- profile details, likes and comments (the server's 033 rules) ----
 
-    override suspend fun setProfileStyle(style: ProfileStyle, newCoverJpeg: String?): Profile {
+    override suspend fun setProfileStyle(style: ProfileStyle): Profile {
         val status = style.status?.trim()?.ifEmpty { null }
         val clean = style.copy(status = status, languages = style.languages.distinct(), prompts = style.prompts.map { it.copy(answer = it.answer.trim()) })
         if (!clean.valid()) throw BackendException("bad_request")
         wait(300)
-        val cover = newCoverJpeg ?: style.coverId
-        return updateMe { it.copy(style = clean.copy(cover = cover, coverId = cover)) }
-    }
-
-    override suspend fun feed(tab: FeedTab, before: Post?): List<Post> {
-        val me = me()
-        ambientReactions()
-        wait(400)
-        return when (tab) {
-            FeedTab.FRIENDS -> page(posts.filter { it.author == me.id || friendships[it.author] == FriendState.FRIENDS }, before)
-            FeedTab.DISCOVER -> page(posts.filter { it.visibility == PostVisibility.PUBLIC }, before)
-        }
+        return updateMe { it.copy(style = clean) }
     }
 
     override suspend fun postsOf(userId: String, before: Post?): List<Post> {
@@ -941,31 +1066,58 @@ open class FakeBackend(
         const val ART_HILLS = "demo://hills"
         const val ART_LIGHTS = "demo://lights"
 
-        /** The demo people's own style, so their profiles show the 033 features. */
+        /** The demo people's own details, so their profiles show the 033 features. */
         private val STYLES = mapOf(
             "p1" to ProfileStyle(
-                accent = Accent.ROSE, status = "Chai first, then everything else", languages = SpokenLang.of(listOf("en", "hi", "mr")),
+                status = "Chai first, then everything else", languages = SpokenLang.of(listOf("en", "hi", "mr")),
                 prompts = listOf(
                     ProfilePrompt(PromptQ.WEEKEND, "A long walk on Marine Drive, then pav bhaji at midnight"),
                     ProfilePrompt(PromptQ.SONG, "Kesariya. It has been on loop since forever"),
                     ProfilePrompt(PromptQ.TALK, "You have a book recommendation ready"),
                 ),
             ),
-            "p2" to ProfileStyle(accent = Accent.MINT, status = "Code by day, football by night", languages = SpokenLang.of(listOf("pt", "en"))),
+            "p2" to ProfileStyle(status = "Code by day, football by night", languages = SpokenLang.of(listOf("pt", "en"))),
             "p3" to ProfileStyle(
-                accent = Accent.VIOLET, status = "Dancing through the week", languages = SpokenLang.of(listOf("en", "kn", "hi")),
+                status = "Dancing through the week", languages = SpokenLang.of(listOf("en", "kn", "hi")),
                 prompts = listOf(ProfilePrompt(PromptQ.LAUGH, "Bruno chasing his own tail at 6 am")),
             ),
-            "p5" to ProfileStyle(accent = Accent.SUNSET, languages = SpokenLang.of(listOf("en", "pt"))),
+            "p5" to ProfileStyle(languages = SpokenLang.of(listOf("en", "pt"))),
             "p6" to ProfileStyle(
-                accent = Accent.OCEAN, status = "Chasing golden hour", languages = SpokenLang.of(listOf("hi", "en")),
+                status = "Chasing golden hour", languages = SpokenLang.of(listOf("hi", "en")),
                 prompts = listOf(ProfilePrompt(PromptQ.TRAVEL, "Spiti valley, camera fully charged")),
             ),
-            "p7" to ProfileStyle(accent = Accent.BERRY, status = "Vinyl collector"),
-            "p8" to ProfileStyle(
-                accent = Accent.GOLD, prompts = listOf(ProfilePrompt(PromptQ.FOOD, "A bowl of tonkotsu in a tiny Osaka alley")),
-            ),
-            "p10" to ProfileStyle(accent = Accent.SLATE, status = "Building something", languages = SpokenLang.of(listOf("hi", "en", "pa"))),
+            "p7" to ProfileStyle(status = "Vinyl collector"),
+            "p8" to ProfileStyle(prompts = listOf(ProfilePrompt(PromptQ.FOOD, "A bowl of tonkotsu in a tiny Osaka alley"))),
+            "p10" to ProfileStyle(status = "Building something", languages = SpokenLang.of(listOf("hi", "en", "pa"))),
+        )
+
+        /** A different ID once every 7 days (set_handle). */
+        private const val HANDLE_COOLDOWN_MS = 7 * DAY
+
+        /** The demo people's IDs. */
+        private val HANDLES = mapOf(
+            "p1" to "priya.mumbai", "p2" to "lucas_sp", "p3" to "ananya.dances", "p4" to "minjun", "p5" to "sofia.viaja",
+            "p6" to "vikram_clicks", "p7" to "emma_vinyl", "p8" to "kenji_ramen", "p9" to "aisha.poems", "p10" to "rohan_builds",
+            "p11" to "maria_sings", "p12" to "daniel.berlin",
+        )
+
+        /** What some of the demo people wear (the others have a plain ID). */
+        private val DEMO_LOOKS = mapOf(
+            "p1" to Look("p1", "", "badge_crown", "color_rose", "font_script", "frame_sakura"),
+            "p3" to Look("p3", "", "badge_diamond", "color_aurora", "font_round", "frame_frost"),
+            "p6" to Look("p6", "", "badge_bolt", "color_gold", "font_bold", "frame_fire"),
+            "p7" to Look("p7", "", "badge_heart", "color_violet", "font_retro", "frame_neon"),
+            "p8" to Look("p8", "", "badge_flame", "color_ocean", "font_pixel", "frame_jewel"),
+            "p10" to Look("p10", "", "badge_star", "color_rainbow", "font_future", "frame_sand"),
+        )
+
+        /** cosmetic_items' prices in rupees. */
+        private val PRICES = mapOf(
+            "badge_crown" to 99, "badge_diamond" to 149, "badge_flame" to 79, "badge_star" to 79, "badge_heart" to 79, "badge_bolt" to 79,
+            "color_gold" to 49, "color_rose" to 49, "color_ocean" to 49, "color_emerald" to 49, "color_violet" to 49,
+            "color_sunset" to 99, "color_aurora" to 99, "color_rainbow" to 129,
+            "font_script" to 69, "font_retro" to 69, "font_bold" to 69, "font_pixel" to 69, "font_round" to 69, "font_future" to 69,
+            "frame_frost" to 199, "frame_fire" to 199, "frame_jewel" to 249, "frame_sand" to 199, "frame_neon" to 149, "frame_sakura" to 149,
         )
 
         private val REPLIES = listOf(

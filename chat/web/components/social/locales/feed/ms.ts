@@ -52,7 +52,7 @@ const ms: FeedDict = {
   'compose.friends': 'Rakan',
   'compose.everyone': 'Semua orang',
   'compose.friendsHint': 'Rakan anda dan orang yang pernah bersembang dengan anda.',
-  'compose.everyoneHint': 'Sesiapa di yaari, dalam Teroka. Mereka juga boleh melihat profil anda dan menambah anda.',
+  'compose.everyoneHint': 'Sesiapa di yaari yang membuka profil anda. Mereka juga boleh menambah anda.',
   'compose.checking': 'Menyemak foto…',
   'compose.nude': 'Foto ini kelihatan seperti kebogelan, jadi ia tidak boleh dihantar',
 

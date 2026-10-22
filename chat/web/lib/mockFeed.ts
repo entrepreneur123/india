@@ -52,7 +52,7 @@ const STYLES: Record<string, Omit<ProfileStyle, 'accent'>> = {
   u_leila: { status: 'Reading on the ferry', languages: ['en'], prompts: [{ q: 'food', a: 'Simit and tea on the Bosphorus' }] },
 }
 
-/** Which demo posts anyone can see (Discover); the rest are friends-only. */
+/** Which demo posts anyone can see; the rest are friends-only. */
 const PUBLIC_POSTS = new Set([
   'p_ananya1', 'p_ananya3', 'p_kabir1', 'p_sofia1', 'p_sofia4', 'p_mateo1', 'p_yuki2', 'p_amara1', 'p_amara2',
   'p_lucas1', 'p_leila1', 'p_arjun2', 'p_chloe1', 'p_omar1', 'p_riya1', 'p_riya2',

@@ -52,7 +52,7 @@ const th: FeedDict = {
   'compose.friends': 'เพื่อน',
   'compose.everyone': 'ทุกคน',
   'compose.friendsHint': 'เพื่อนของคุณและคนที่คุณเคยแชทด้วย',
-  'compose.everyoneHint': 'ทุกคนบน yaari ในหน้าสำรวจ เขาจะเห็นโปรไฟล์และเพิ่มคุณได้ด้วย',
+  'compose.everyoneHint': 'ทุกคนบน yaari ที่เปิดโปรไฟล์ของคุณ และเพิ่มคุณเป็นเพื่อนได้ด้วย',
   'compose.checking': 'กำลังตรวจรูป…',
   'compose.nude': 'รูปนี้ดูเหมือนภาพเปลือย จึงโพสต์ไม่ได้',
 
