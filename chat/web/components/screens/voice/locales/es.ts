@@ -41,6 +41,7 @@ const es: RoomDict = {
   playAll: 'Reproducir para todos',
   pauseAll: 'Pausar para todos',
   skipAll: 'Siguiente canción para todos',
+  stopAll: 'Apagar la música para todos',
   seekLabel: 'Posición de la canción (la cambia para todos)',
   pauseHere: 'Pausar en mi pantalla',
   playHere: 'Volver a reproducir, sincronizado con la sala',

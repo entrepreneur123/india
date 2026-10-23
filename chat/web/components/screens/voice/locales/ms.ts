@@ -40,6 +40,7 @@ const ms: RoomDict = {
   playAll: 'Main untuk semua',
   pauseAll: 'Jeda untuk semua',
   skipAll: 'Lagu seterusnya untuk semua',
+  stopAll: 'Matikan muzik untuk semua',
   seekLabel: 'Kedudukan lagu (beralih untuk semua)',
   pauseHere: 'Jeda pada skrin saya',
   playHere: 'Main semula, seiring dengan bilik',

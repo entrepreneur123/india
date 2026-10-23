@@ -40,6 +40,7 @@ const ja: RoomDict = {
   playAll: '全員に再生',
   pauseAll: '全員の再生を一時停止',
   skipAll: '全員の曲を次へ',
+  stopAll: '全員の音楽を止める',
   seekLabel: '再生位置（全員に反映されます）',
   pauseHere: '自分の画面だけ一時停止',
   playHere: 'ルームに合わせて再生を再開',

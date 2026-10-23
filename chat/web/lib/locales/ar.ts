@@ -581,6 +581,8 @@ const ar: Dict = {
   'settings.planPass': 'تصريح الجنس لمدة 24 ساعة',
   'settings.planFree': 'مجانية',
   'settings.language': 'اللغة',
+  'settings.roomSounds': 'أصوات غرف الصوت',
+  'settings.roomSoundsBody': 'نغمة قصيرة عندما ينضم أحد إلى غرفة الصوت أو يغادرها.',
   'settings.chooseLanguage': 'اختر لغتك',
   'settings.safety': 'الأمان والشؤون القانونية',
   'settings.rules': 'قواعد المجتمع',

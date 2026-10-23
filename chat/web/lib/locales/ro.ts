@@ -562,6 +562,8 @@ const ro: Dict = {
   'settings.planPass': 'Permis de gen pentru 24 de ore',
   'settings.planFree': 'Gratuit',
   'settings.language': 'Limbă',
+  'settings.roomSounds': 'Sunete în camera vocală',
+  'settings.roomSoundsBody': 'Un sunet scurt când cineva intră sau iese dintr-o cameră vocală.',
   'settings.chooseLanguage': 'Alege limba',
   'settings.safety': 'Siguranță și informații legale',
   'settings.rules': 'Regulile comunității',

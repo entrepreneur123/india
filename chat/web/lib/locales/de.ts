@@ -559,6 +559,8 @@ const de: Dict = {
   'settings.planPass': '24-Stunden-Geschlechterpass',
   'settings.planFree': 'Kostenlos',
   'settings.language': 'Sprache',
+  'settings.roomSounds': 'Töne im Sprachraum',
+  'settings.roomSoundsBody': 'Ein kurzer Ton, wenn jemand einen Sprachraum betritt oder verlässt.',
   'settings.chooseLanguage': 'Wähle deine Sprache',
   'settings.safety': 'Sicherheit & Rechtliches',
   'settings.rules': 'Community-Regeln',

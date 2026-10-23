@@ -569,6 +569,8 @@ const fa: Dict = {
   'settings.planPass': 'پاس جنسیت ۲۴ ساعته',
   'settings.planFree': 'رایگان',
   'settings.language': 'زبان',
+  'settings.roomSounds': 'صداهای اتاق صوتی',
+  'settings.roomSoundsBody': 'وقتی کسی وارد اتاق صوتی می‌شود یا از آن بیرون می‌رود، صدای کوتاهی پخش می‌شود.',
   'settings.chooseLanguage': 'زبانتان را انتخاب کنید',
   'settings.safety': 'ایمنی و حقوقی',
   'settings.rules': 'قوانین جامعه',

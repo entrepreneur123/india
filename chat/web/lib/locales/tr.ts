@@ -569,6 +569,8 @@ const tr: Dict = {
   'settings.planPass': '24 saatlik cinsiyet geçişi',
   'settings.planFree': 'Ücretsiz',
   'settings.language': 'Dil',
+  'settings.roomSounds': 'Sesli oda sesleri',
+  'settings.roomSoundsBody': 'Biri sesli odaya girdiğinde veya çıktığında kısa bir ses çalar.',
   'settings.chooseLanguage': 'Dilini seç',
   'settings.safety': 'Güvenlik ve yasal',
   'settings.rules': 'Topluluk kuralları',

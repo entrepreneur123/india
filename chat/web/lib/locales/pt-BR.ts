@@ -559,6 +559,8 @@ const ptBR: Dict = {
   'settings.planPass': 'Passe de gênero de 24 horas',
   'settings.planFree': 'Grátis',
   'settings.language': 'Idioma',
+  'settings.roomSounds': 'Sons da sala de voz',
+  'settings.roomSoundsBody': 'Um som curto quando alguém entra ou sai de uma sala de voz.',
   'settings.chooseLanguage': 'Escolha seu idioma',
   'settings.safety': 'Segurança e jurídico',
   'settings.rules': 'Regras da comunidade',

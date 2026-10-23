@@ -41,6 +41,7 @@ const tr: RoomDict = {
   playAll: 'Herkes için çal',
   pauseAll: 'Herkes için duraklat',
   skipAll: 'Herkes için sonraki şarkı',
+  stopAll: 'Müziği herkes için kapat',
   seekLabel: 'Şarkı konumu (herkes için değişir)',
   pauseHere: 'Benim ekranımda duraklat',
   playHere: 'Odayla senkron tekrar çal',

@@ -559,6 +559,8 @@ const ta: Dict = {
   'settings.planPass': '24 மணி நேர பாலின பாஸ்',
   'settings.planFree': 'இலவசம்',
   'settings.language': 'மொழி',
+  'settings.roomSounds': 'வாய்ஸ் ரூம் ஒலிகள்',
+  'settings.roomSoundsBody': 'யாராவது வாய்ஸ் ரூமுக்கு வரும்போது அல்லது போகும்போது ஒரு சிறிய ஒலி கேட்கும்.',
   'settings.chooseLanguage': 'உங்கள் மொழியைத் தேர்ந்தெடுங்கள்',
   'settings.safety': 'பாதுகாப்பு & சட்டம்',
   'settings.rules': 'கம்யூனிட்டி விதிகள்',

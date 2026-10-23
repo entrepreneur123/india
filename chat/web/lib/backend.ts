@@ -535,6 +535,8 @@ export type VoiceAction =
   | { type: 'resume' }
   /** The most voted request plays. `trackId`: the track being skipped (a player that ended); nothing happens if another one already plays. */
   | { type: 'skip'; trackId?: string }
+  /** 054: the music off for everyone; the requests stay. */
+  | { type: 'stop' }
   /** 036: jump to this position (ms) in the song for everyone; a paused song stays paused there. */
   | { type: 'seek'; ms: number }
 

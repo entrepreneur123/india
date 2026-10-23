@@ -569,6 +569,8 @@ const zhHant: Dict = {
   'settings.planPass': '24 小時性別通行證',
   'settings.planFree': '免費',
   'settings.language': '語言',
+  'settings.roomSounds': '語音房提示音',
+  'settings.roomSoundsBody': '有人進入或離開語音房時會響起短促的提示音。',
   'settings.chooseLanguage': '選擇語言',
   'settings.safety': '安全與法律',
   'settings.rules': '社群規則',

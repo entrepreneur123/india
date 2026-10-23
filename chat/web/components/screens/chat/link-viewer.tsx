@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type MouseEvent, type R
 import { ExternalLink, LoaderCircle, RotateCw, X } from 'lucide-react'
 import { BackendError, type Backend, type LinkMeta } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { framable, hostOf, isYouTube, previewLink, splitLinks } from '@/lib/links'
+import { framable, hostOf, isYouTube, openBeside, previewLink, splitLinks } from '@/lib/links'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -70,10 +70,17 @@ const LINK_REL = 'noopener noreferrer nofollow'
  * A plain click on a page that can be framed opens the viewer; any other link, a middle click or a modifier key keeps
  * the browser's own new tab (no viewer that could only say "open it in your browser").
  */
+const plain = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
+
+/** A plain click on a link to a page shown outside the app: beside it on a computer (lib/links.ts openBeside). */
+export const besideClick = (url: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+  if (plain(e) && openBeside(url)) e.preventDefault()
+}
+
 function useOpener() {
   const open = useContext(OpenContext)
   return (url: string) => (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!open || !canFrame.has(url) || isYouTube(url) || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    if (!open || !canFrame.has(url) || isYouTube(url) || !plain(e)) return besideClick(url)(e)
     e.preventDefault()
     open(url)
   }
@@ -225,6 +232,7 @@ export function LinkPanel({
           href={url}
           target="_blank"
           rel={LINK_REL}
+          onClick={besideClick(url)}
           aria-label={t('link.openBrowser')}
           title={t('link.openBrowser')}
           className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
@@ -273,6 +281,7 @@ export function LinkPanel({
               href={url}
               target="_blank"
               rel={LINK_REL}
+              onClick={besideClick(url)}
               className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover"
             >
               <ExternalLink className="size-4.5" aria-hidden /> {t('link.openBrowser')}

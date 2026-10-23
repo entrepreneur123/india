@@ -569,6 +569,8 @@ const fil: Dict = {
   'settings.planPass': '24-oras na gender pass',
   'settings.planFree': 'Libre',
   'settings.language': 'Wika',
+  'settings.roomSounds': 'Mga tunog sa voice room',
+  'settings.roomSoundsBody': 'Maikling tunog kapag may pumasok o umalis sa voice room.',
   'settings.chooseLanguage': 'Piliin ang wika mo',
   'settings.safety': 'Kaligtasan at legal',
   'settings.rules': 'Mga patakaran ng komunidad',

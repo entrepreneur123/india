@@ -569,6 +569,8 @@ const ms: Dict = {
   'settings.planPass': 'Pas jantina 24 jam',
   'settings.planFree': 'Percuma',
   'settings.language': 'Bahasa',
+  'settings.roomSounds': 'Bunyi bilik suara',
+  'settings.roomSoundsBody': 'Bunyi pendek apabila seseorang masuk atau keluar dari bilik suara.',
   'settings.chooseLanguage': 'Pilih bahasa anda',
   'settings.safety': 'Keselamatan & undang-undang',
   'settings.rules': 'Peraturan komuniti',

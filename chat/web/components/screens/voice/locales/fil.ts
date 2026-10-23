@@ -40,6 +40,7 @@ const fil: RoomDict = {
   playAll: 'I-play para sa lahat',
   pauseAll: 'I-pause para sa lahat',
   skipAll: 'Susunod na kanta para sa lahat',
+  stopAll: 'Patayin ang music para sa lahat',
   seekLabel: 'Posisyon ng kanta (inililipat para sa lahat)',
   pauseHere: 'I-pause sa screen ko',
   playHere: 'I-play ulit, kasabay ng room',

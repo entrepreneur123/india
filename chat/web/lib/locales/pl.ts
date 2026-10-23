@@ -565,6 +565,8 @@ const pl: Dict = {
   'settings.planPass': 'Karnet płci na 24 godziny',
   'settings.planFree': 'Darmowy',
   'settings.language': 'Język',
+  'settings.roomSounds': 'Dźwięki pokoju głosowego',
+  'settings.roomSoundsBody': 'Krótki dźwięk, gdy ktoś wchodzi do pokoju głosowego lub z niego wychodzi.',
   'settings.chooseLanguage': 'Wybierz język',
   'settings.safety': 'Bezpieczeństwo i informacje prawne',
   'settings.rules': 'Zasady społeczności',

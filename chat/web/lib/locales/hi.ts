@@ -559,6 +559,8 @@ const hi: Dict = {
   'settings.planPass': '24 घंटे का जेंडर पास',
   'settings.planFree': 'फ़्री',
   'settings.language': 'भाषा',
+  'settings.roomSounds': 'वॉइस रूम साउंड',
+  'settings.roomSoundsBody': 'कोई वॉइस रूम में आए या जाए, तो एक छोटी-सी आवाज़ बजेगी।',
   'settings.chooseLanguage': 'अपनी भाषा चुनें',
   'settings.safety': 'सुरक्षा और क़ानूनी जानकारी',
   'settings.rules': 'कम्युनिटी नियम',

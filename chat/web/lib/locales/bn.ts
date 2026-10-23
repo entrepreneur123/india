@@ -559,6 +559,8 @@ const bn: Dict = {
   'settings.planPass': '২৪ ঘণ্টার জেন্ডার পাস',
   'settings.planFree': 'ফ্রি',
   'settings.language': 'ভাষা',
+  'settings.roomSounds': 'ভয়েস রুমের সাউন্ড',
+  'settings.roomSoundsBody': 'কেউ ভয়েস রুমে এলে বা চলে গেলে ছোট একটা শব্দ বাজবে।',
   'settings.chooseLanguage': 'আপনার ভাষা বেছে নিন',
   'settings.safety': 'নিরাপত্তা ও আইনি',
   'settings.rules': 'কমিউনিটি নিয়ম',

@@ -41,6 +41,7 @@ const ro: RoomDict = {
   playAll: 'Redă pentru toți',
   pauseAll: 'Pauză pentru toți',
   skipAll: 'Următoarea melodie pentru toți',
+  stopAll: 'Oprește muzica pentru toți',
   seekLabel: 'Poziția melodiei (se schimbă pentru toți)',
   pauseHere: 'Pauză pe ecranul meu',
   playHere: 'Redă din nou, în sincron cu camera',

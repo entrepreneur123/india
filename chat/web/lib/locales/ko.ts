@@ -569,6 +569,8 @@ const ko: Dict = {
   'settings.planPass': '24시간 성별 이용권',
   'settings.planFree': '무료',
   'settings.language': '언어',
+  'settings.roomSounds': '보이스룸 효과음',
+  'settings.roomSoundsBody': '보이스룸에 누가 들어오거나 나가면 짧은 알림음이 울려요.',
   'settings.chooseLanguage': '언어 선택',
   'settings.safety': '안전 및 법률',
   'settings.rules': '커뮤니티 규칙',

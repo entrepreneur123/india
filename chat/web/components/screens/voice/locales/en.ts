@@ -41,6 +41,7 @@ const en = {
   playAll: 'Play for everyone',
   pauseAll: 'Pause for everyone',
   skipAll: 'Next song for everyone',
+  stopAll: 'Turn music off for everyone',
   seekLabel: 'Song position (moves it for everyone)',
   pauseHere: 'Pause on my screen',
   playHere: 'Play again, in sync with the room',

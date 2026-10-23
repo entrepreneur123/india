@@ -562,6 +562,8 @@ const fr: Dict = {
   'settings.planPass': 'Pass genre 24 h',
   'settings.planFree': 'Gratuit',
   'settings.language': 'Langue',
+  'settings.roomSounds': 'Sons du salon vocal',
+  'settings.roomSoundsBody': 'Un petit son quand quelqu’un rejoint ou quitte un salon vocal.',
   'settings.chooseLanguage': 'Choisissez votre langue',
   'settings.safety': 'Sécurité et mentions légales',
   'settings.rules': 'Règles de la communauté',

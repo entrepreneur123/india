@@ -559,6 +559,8 @@ const it: Dict = {
   'settings.planPass': 'Pass genere 24 ore',
   'settings.planFree': 'Gratuito',
   'settings.language': 'Lingua',
+  'settings.roomSounds': 'Suoni della stanza vocale',
+  'settings.roomSoundsBody': 'Un breve suono quando qualcuno entra o esce da una stanza vocale.',
   'settings.chooseLanguage': 'Scegli la tua lingua',
   'settings.safety': 'Sicurezza e note legali',
   'settings.rules': 'Regole della community',

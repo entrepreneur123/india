@@ -11,6 +11,7 @@ import { retryImport } from '@/lib/retry-import'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
 import { nextHost } from '@/lib/voice-lost'
+import { crowdChange, playRoomSound } from '@/lib/room-sounds'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -241,6 +242,20 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     const id = setTimeout(() => setTypingTick((n) => n + 1), next - now + 20)
     return () => clearTimeout(id)
   }, [typingTick, memberKey, room?.meId])
+
+  // Chimes: I came in, I left, someone else came or went (rooms up to 50 people; a crowd would ring all the time).
+  const crowd = useRef<string[] | null>(null)
+  useEffect(() => {
+    if (!room) return
+    const ids = memberKey.split(',')
+    const before = crowd.current
+    crowd.current = ids
+    if (!before) return playRoomSound('join')
+    const change = ids.length <= 50 ? crowdChange(before, ids, room.meId) : null
+    if (change) playRoomSound(change)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [memberKey])
+  useEffect(() => () => void (crowd.current && playRoomSound('leave')), [])
 
   const lastTypingSent = useRef(0)
   const meName = me?.profile.name ?? ''

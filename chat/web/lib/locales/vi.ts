@@ -559,6 +559,8 @@ const vi: Dict = {
   'settings.planPass': 'Vé lọc giới tính 24 giờ',
   'settings.planFree': 'Miễn phí',
   'settings.language': 'Ngôn ngữ',
+  'settings.roomSounds': 'Âm thanh phòng thoại',
+  'settings.roomSoundsBody': 'Một tiếng chuông ngắn khi có người vào hoặc rời phòng thoại.',
   'settings.chooseLanguage': 'Chọn ngôn ngữ',
   'settings.safety': 'An toàn và pháp lý',
   'settings.rules': 'Quy tắc cộng đồng',

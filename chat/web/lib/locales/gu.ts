@@ -541,6 +541,8 @@ const gu: Dict = {
   'settings.planPass': '24 કલાકનો જેન્ડર પાસ',
   'settings.planFree': 'મફત',
   'settings.language': 'ભાષા',
+  'settings.roomSounds': 'વૉઇસ રૂમ અવાજ',
+  'settings.roomSoundsBody': 'કોઈ વૉઇસ રૂમમાં આવે કે જાય ત્યારે નાનો અવાજ વાગે છે.',
   'settings.chooseLanguage': 'તમારી ભાષા પસંદ કરો',
   'settings.safety': 'સલામતી અને કાનૂની',
   'settings.rules': 'કમ્યુનિટી નિયમો',

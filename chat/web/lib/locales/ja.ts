@@ -569,6 +569,8 @@ const ja: Dict = {
   'settings.planPass': '24時間性別パス',
   'settings.planFree': '無料',
   'settings.language': '言語',
+  'settings.roomSounds': 'ボイスルームの効果音',
+  'settings.roomSoundsBody': 'ボイスルームに誰かが入ったり出たりすると短い音が鳴ります。',
   'settings.chooseLanguage': '言語を選択',
   'settings.safety': '安全と法的情報',
   'settings.rules': 'コミュニティルール',

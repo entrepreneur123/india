@@ -40,6 +40,7 @@ const nl: RoomDict = {
   playAll: 'Voor iedereen afspelen',
   pauseAll: 'Voor iedereen pauzeren',
   skipAll: 'Volgend nummer voor iedereen',
+  stopAll: 'Muziek voor iedereen uitzetten',
   seekLabel: 'Positie in het nummer (verandert voor iedereen)',
   pauseHere: 'Pauzeren op mijn scherm',
   playHere: 'Weer afspelen, gelijk met de room',

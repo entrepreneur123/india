@@ -559,6 +559,8 @@ const nl: Dict = {
   'settings.planPass': 'Genderpas voor 24 uur',
   'settings.planFree': 'Gratis',
   'settings.language': 'Taal',
+  'settings.roomSounds': 'Geluiden in spraakruimte',
+  'settings.roomSoundsBody': 'Een kort geluid als iemand een spraakruimte binnenkomt of verlaat.',
   'settings.chooseLanguage': 'Kies je taal',
   'settings.safety': 'Veiligheid en juridisch',
   'settings.rules': 'Communityregels',

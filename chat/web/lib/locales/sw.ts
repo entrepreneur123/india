@@ -569,6 +569,8 @@ const sw: Dict = {
   'settings.planPass': 'Pasi ya jinsia ya saa 24',
   'settings.planFree': 'Bure',
   'settings.language': 'Lugha',
+  'settings.roomSounds': 'Sauti za chumba cha sauti',
+  'settings.roomSoundsBody': 'Mlio mfupi mtu anapoingia au kutoka kwenye chumba cha sauti.',
   'settings.chooseLanguage': 'Chagua lugha yako',
   'settings.safety': 'Usalama na sheria',
   'settings.rules': 'Kanuni za jumuiya',

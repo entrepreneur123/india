@@ -541,6 +541,8 @@ const pa: Dict = {
   'settings.planPass': '24 ਘੰਟਿਆਂ ਦਾ ਜੈਂਡਰ ਪਾਸ',
   'settings.planFree': 'ਮੁਫ਼ਤ',
   'settings.language': 'ਭਾਸ਼ਾ',
+  'settings.roomSounds': 'ਵੌਇਸ ਰੂਮ ਆਵਾਜ਼ਾਂ',
+  'settings.roomSoundsBody': 'ਕੋਈ ਵੌਇਸ ਰੂਮ ਵਿੱਚ ਆਵੇ ਜਾਂ ਜਾਵੇ ਤਾਂ ਛੋਟੀ ਜਿਹੀ ਆਵਾਜ਼ ਵੱਜਦੀ ਹੈ।',
   'settings.chooseLanguage': 'ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ',
   'settings.safety': 'ਸੁਰੱਖਿਆ ਅਤੇ ਕਾਨੂੰਨੀ',
   'settings.rules': 'ਕਮਿਊਨਿਟੀ ਨਿਯਮ',

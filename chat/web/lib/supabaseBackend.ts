@@ -1322,6 +1322,9 @@ export class SupabaseBackend implements Backend {
       case 'skip':
         await this.rpc('voice_skip', { ...room, p_current: a.trackId ?? live?.room?.track?.id ?? null })
         break
+      case 'stop':
+        await this.rpc('voice_stop', room)
+        break
       case 'seek':
         await this.rpc('voice_seek', { ...room, p_ms: Math.max(0, Math.round(a.ms)) })
         break

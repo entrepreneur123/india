@@ -559,6 +559,8 @@ const te: Dict = {
   'settings.planPass': '24 గంటల జెండర్ పాస్',
   'settings.planFree': 'ఉచితం',
   'settings.language': 'భాష',
+  'settings.roomSounds': 'వాయిస్ రూమ్ శబ్దాలు',
+  'settings.roomSoundsBody': 'ఎవరైనా వాయిస్ రూమ్‌లోకి వచ్చినా, వెళ్లినా చిన్న శబ్దం వస్తుంది.',
   'settings.chooseLanguage': 'మీ భాషను ఎంచుకోండి',
   'settings.safety': 'సేఫ్టీ & చట్టపరమైనవి',
   'settings.rules': 'కమ్యూనిటీ నియమాలు',

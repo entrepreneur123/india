@@ -569,6 +569,8 @@ const en = {
   'settings.planPass': '24-hour gender pass',
   'settings.planFree': 'Free',
   'settings.language': 'Language',
+  'settings.roomSounds': 'Voice room sounds',
+  'settings.roomSoundsBody': 'A short chime when someone joins or leaves a voice room.',
   'settings.chooseLanguage': 'Choose your language',
   'settings.safety': 'Safety & legal',
   'settings.rules': 'Community rules',

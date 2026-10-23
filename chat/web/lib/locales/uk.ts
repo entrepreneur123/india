@@ -575,6 +575,8 @@ const uk: Dict = {
   'settings.planPass': 'Пропуск за статтю на 24 години',
   'settings.planFree': 'Безкоштовний',
   'settings.language': 'Мова',
+  'settings.roomSounds': 'Звуки голосової кімнати',
+  'settings.roomSoundsBody': 'Короткий звук, коли хтось заходить до голосової кімнати або виходить із неї.',
   'settings.chooseLanguage': 'Виберіть мову',
   'settings.safety': 'Безпека та правова інформація',
   'settings.rules': 'Правила спільноти',

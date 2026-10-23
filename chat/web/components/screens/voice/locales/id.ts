@@ -40,6 +40,7 @@ const id: RoomDict = {
   playAll: 'Putar untuk semua',
   pauseAll: 'Jeda untuk semua',
   skipAll: 'Lagu berikutnya untuk semua',
+  stopAll: 'Matikan musik untuk semua',
   seekLabel: 'Posisi lagu (berubah untuk semua)',
   pauseHere: 'Jeda di layarku',
   playHere: 'Putar lagi, sinkron dengan room',

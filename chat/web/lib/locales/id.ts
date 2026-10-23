@@ -569,6 +569,8 @@ const id: Dict = {
   'settings.planPass': 'Pass gender 24 jam',
   'settings.planFree': 'Gratis',
   'settings.language': 'Bahasa',
+  'settings.roomSounds': 'Suara ruang suara',
+  'settings.roomSoundsBody': 'Bunyi singkat saat seseorang masuk atau keluar dari ruang suara.',
   'settings.chooseLanguage': 'Pilih bahasamu',
   'settings.safety': 'Keamanan & hukum',
   'settings.rules': 'Aturan komunitas',

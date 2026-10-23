@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react'
-import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, Settings, SkipForward, Trash2, Volume1, Volume2, VolumeX } from 'lucide-react'
+import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, Settings, SkipForward, Square, Trash2, Volume1, Volume2, VolumeX } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
 import { thumbnail, videoTitle, youTubeId } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
@@ -162,6 +162,9 @@ export function PlayerControls({ track, act, small, children }: { track: VoiceTr
             </Button>
             <Button size={size} variant="brand" onClick={() => void act({ type: 'skip', trackId: track.id })} aria-label={rt('skipAll')} title={rt('skipAll')}>
               <SkipForward className={cn(icon, 'fill-current')} aria-hidden />
+            </Button>
+            <Button size={size} variant="ghost" onClick={() => void act({ type: 'stop' })} aria-label={rt('stopAll')} title={rt('stopAll')}>
+              <Square className={cn(icon, 'fill-current')} aria-hidden />
             </Button>
           </>
         ) : player ? (

@@ -40,6 +40,7 @@ const vi: RoomDict = {
   playAll: 'Phát cho mọi người',
   pauseAll: 'Tạm dừng cho mọi người',
   skipAll: 'Bài tiếp theo cho mọi người',
+  stopAll: 'Tắt nhạc cho mọi người',
   seekLabel: 'Vị trí bài hát (thay đổi cho mọi người)',
   pauseHere: 'Tạm dừng trên màn hình của tôi',
   playHere: 'Phát lại, cùng nhịp với phòng',

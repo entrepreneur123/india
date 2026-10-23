@@ -41,6 +41,7 @@ const zhHant: RoomDict = {
   playAll: '為所有人播放',
   pauseAll: '為所有人暫停',
   skipAll: '為所有人切到下一首',
+  stopAll: '為所有人關閉音樂',
   seekLabel: '歌曲進度（會同步給所有人）',
   pauseHere: '僅在我的螢幕上暫停',
   playHere: '重新播放，與房間同步',

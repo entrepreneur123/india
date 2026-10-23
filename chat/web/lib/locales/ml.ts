@@ -559,6 +559,8 @@ const ml: Dict = {
   'settings.planPass': '24 മണിക്കൂർ ജെൻഡർ പാസ്',
   'settings.planFree': 'സൗജന്യം',
   'settings.language': 'ഭാഷ',
+  'settings.roomSounds': 'വോയ്സ് റൂം ശബ്ദങ്ങൾ',
+  'settings.roomSoundsBody': 'ആരെങ്കിലും വോയ്സ് റൂമിൽ വരുമ്പോഴോ പോകുമ്പോഴോ ഒരു ചെറിയ ശബ്ദം കേൾക്കും.',
   'settings.chooseLanguage': 'നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക',
   'settings.safety': 'സുരക്ഷയും നിയമവും',
   'settings.rules': 'കമ്മ്യൂണിറ്റി നിയമങ്ങൾ',

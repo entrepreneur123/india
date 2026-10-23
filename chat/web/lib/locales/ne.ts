@@ -559,6 +559,8 @@ const ne: Dict = {
   'settings.planPass': '२४ घण्टे जेन्डर पास',
   'settings.planFree': 'नि:शुल्क',
   'settings.language': 'भाषा',
+  'settings.roomSounds': 'भ्वाइस रुमका आवाज',
+  'settings.roomSoundsBody': 'कोही भ्वाइस रुममा आउँदा वा जाँदा छोटो आवाज बज्छ।',
   'settings.chooseLanguage': 'आफ्नो भाषा छान्नुहोस्',
   'settings.safety': 'सुरक्षा र कानुनी',
   'settings.rules': 'समुदायका नियम',

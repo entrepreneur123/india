@@ -569,6 +569,8 @@ const th: Dict = {
   'settings.planPass': 'พาสเลือกเพศ 24 ชั่วโมง',
   'settings.planFree': 'ฟรี',
   'settings.language': 'ภาษา',
+  'settings.roomSounds': 'เสียงในห้องเสียง',
+  'settings.roomSoundsBody': 'มีเสียงสั้น ๆ เมื่อมีคนเข้าหรือออกจากห้องเสียง',
   'settings.chooseLanguage': 'เลือกภาษา',
   'settings.safety': 'ความปลอดภัยและกฎหมาย',
   'settings.rules': 'กฎของชุมชน',

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicChip, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { categoryLabel, kindTopic } from '@/components/screens/rooms/room-text'
-import { LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
+import { besideClick, LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
 import { hostOf, shareable } from '@/lib/links'
 import { retryImport } from '@/lib/retry-import'
 import { cn } from '@/lib/utils'
@@ -476,7 +476,7 @@ function StageCard({ stage, mine, closed, onOpen, onStop, onClose }: {
         {children}
       </button>
     ) : (
-      <a href={stage.url} target="_blank" rel="noopener noreferrer nofollow" className={className}>
+      <a href={stage.url} target="_blank" rel="noopener noreferrer nofollow" onClick={besideClick(stage.url)} className={className}>
         {children}
       </a>
     )

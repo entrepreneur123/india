@@ -944,6 +944,10 @@ export class VoiceSim {
         if (a.trackId && r.room.track?.id !== a.trackId) return // that track already moved on
         this.skip(r)
         return
+      case 'stop':
+        need(isMod)
+        r.room.track = null
+        break
       case 'seek': {
         const t = r.room.track
         need(isMod && !!t && a.ms >= 0 && a.ms <= 86_400_000)

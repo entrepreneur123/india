@@ -40,6 +40,7 @@ const ptBR: RoomDict = {
   playAll: 'Tocar para todos',
   pauseAll: 'Pausar para todos',
   skipAll: 'Próxima música para todos',
+  stopAll: 'Desligar a música para todos',
   seekLabel: 'Posição da música (muda para todos)',
   pauseHere: 'Pausar só na minha tela',
   playHere: 'Tocar de novo, junto com a sala',

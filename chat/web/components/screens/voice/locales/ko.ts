@@ -41,6 +41,7 @@ const ko: RoomDict = {
   playAll: '모두에게 재생',
   pauseAll: '모두에게 일시정지',
   skipAll: '모두에게 다음 곡',
+  stopAll: '모두에게 음악 끄기',
   seekLabel: '재생 위치 (모두에게 적용돼요)',
   pauseHere: '내 화면에서만 일시정지',
   playHere: '방과 맞춰서 다시 재생',

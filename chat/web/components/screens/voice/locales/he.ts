@@ -41,6 +41,7 @@ const he: RoomDict = {
   playAll: 'השמעה לכולם',
   pauseAll: 'השהיה לכולם',
   skipAll: 'השיר הבא לכולם',
+  stopAll: 'כיבוי המוזיקה לכולם',
   seekLabel: 'מיקום בשיר (משתנה לכולם)',
   pauseHere: 'השהיה במסך שלי',
   playHere: 'להמשיך לנגן, בסנכרון עם החדר',

@@ -40,6 +40,7 @@ const sw: RoomDict = {
   playAll: 'Cheza kwa wote',
   pauseAll: 'Simamisha kwa wote',
   skipAll: 'Wimbo unaofuata kwa wote',
+  stopAll: 'Zima muziki kwa wote',
   seekLabel: 'Mahali kwenye wimbo (inabadilika kwa wote)',
   pauseHere: 'Simamisha kwenye skrini yangu',
   playHere: 'Cheza tena, sambamba na chumba',

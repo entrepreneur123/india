@@ -575,6 +575,8 @@ const ru: Dict = {
   'settings.planPass': 'Пропуск по полу на 24 часа',
   'settings.planFree': 'Бесплатный',
   'settings.language': 'Язык',
+  'settings.roomSounds': 'Звуки голосовой комнаты',
+  'settings.roomSoundsBody': 'Короткий звук, когда кто-то входит в голосовую комнату или выходит из неё.',
   'settings.chooseLanguage': 'Выберите язык',
   'settings.safety': 'Безопасность и правовая информация',
   'settings.rules': 'Правила сообщества',

@@ -572,6 +572,8 @@ const he: Dict = {
   'settings.planPass': 'כרטיס מגדר ל-24 שעות',
   'settings.planFree': 'חינם',
   'settings.language': 'שפה',
+  'settings.roomSounds': 'צלילי חדר קולי',
+  'settings.roomSoundsBody': 'צליל קצר כשמישהו מצטרף לחדר קולי או עוזב אותו.',
   'settings.chooseLanguage': 'בחירת שפה',
   'settings.safety': 'בטיחות ומידע משפטי',
   'settings.rules': 'כללי הקהילה',

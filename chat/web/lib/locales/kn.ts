@@ -559,6 +559,8 @@ const kn: Dict = {
   'settings.planPass': '24 ಗಂಟೆಯ ಜೆಂಡರ್ ಪಾಸ್',
   'settings.planFree': 'ಉಚಿತ',
   'settings.language': 'ಭಾಷೆ',
+  'settings.roomSounds': 'ವಾಯ್ಸ್ ರೂಮ್ ಶಬ್ದಗಳು',
+  'settings.roomSoundsBody': 'ಯಾರಾದರೂ ವಾಯ್ಸ್ ರೂಮ್‌ಗೆ ಬಂದಾಗ ಅಥವಾ ಹೋದಾಗ ಚಿಕ್ಕ ಶಬ್ದ ಕೇಳುತ್ತದೆ.',
   'settings.chooseLanguage': 'ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ',
   'settings.safety': 'ಸುರಕ್ಷತೆ ಮತ್ತು ಕಾನೂನು',
   'settings.rules': 'ಸಮುದಾಯ ನಿಯಮಗಳು',

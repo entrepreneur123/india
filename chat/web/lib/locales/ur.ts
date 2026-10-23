@@ -541,6 +541,8 @@ const ur: Dict = {
   'settings.planPass': '24 گھنٹے کا جینڈر پاس',
   'settings.planFree': 'مفت',
   'settings.language': 'زبان',
+  'settings.roomSounds': 'وائس روم کی آوازیں',
+  'settings.roomSoundsBody': 'کوئی وائس روم میں آئے یا جائے تو ایک چھوٹی سی آواز بجتی ہے۔',
   'settings.chooseLanguage': 'اپنی زبان چنیں',
   'settings.safety': 'حفاظت اور قانونی',
   'settings.rules': 'کمیونٹی کے اصول',

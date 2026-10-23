@@ -68,6 +68,19 @@ export function hostOf(url: string): string {
   }
 }
 
+/**
+ * On a computer, a page the viewer can't show opens in its own window over the right part of the screen, so the
+ * room or the chat stays in sight on the left (phones: false, and the link opens a tab as before). Opened from a
+ * tap, so popup blockers let it through; noopener: the page gets no handle on this app.
+ */
+export function openBeside(url: string): boolean {
+  if (!matchMedia('(pointer: fine) and (min-width: 1024px)').matches) return false
+  const s = screen as Screen & { availLeft?: number; availTop?: number }
+  const w = Math.round(Math.min(Math.max(s.availWidth * 0.45, 480), 1100))
+  window.open(url, '_blank', `popup,noopener,noreferrer,width=${w},height=${s.availHeight},left=${(s.availLeft ?? 0) + s.availWidth - w},top=${s.availTop ?? 0}`)
+  return true
+}
+
 /** What voice_share_link takes: https only, at most 500 characters. */
 export const shareable = (url: string) => url.startsWith('https://') && url.length <= 500 && safeUrl(url) !== null
 
