@@ -2,6 +2,11 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.4: 효과음 = 무대(음성채팅) 오르내림 + 방 들어오고 나감, 끝낸 방 목록에서 즉시 제거
+- 음: 들어옴 880→1175Hz, 나감 392→262Hz (웹 `lib/room-sounds.ts` JOIN/LEAVE, Android `RoomSounds.JOIN/LEAVE`). 내 입장·퇴장은 1.2초 제한 없이 항상.
+- 목록: 서버 `voice_list3`는 원래 끝난 방을 바로 뺌(ended_at 조인). 문제는 클라이언트 캐시: 웹은 SWR `voiceRooms` 키를 끝내자마자 지우고 나간 뒤 다시 읽음, Android는 `_list`에서 바로 빼고 leaveVoice 끝난 뒤 refreshList.
+- 남은 일: 다른 사람 화면의 방 목록은 최대 30초 뒤에 갱신(실시간 구독은 동접 부하 때문에 안 함).
+
 ## 2026-10-23 0.18.3: 음악 끄기·입장/퇴장 효과음·다른 사이트 옆에 띄우기 (마이그레이션 054 적용 완료)
 - 서버: 054 `voice_stop(room)` (voice_dj 확인, music만 null, queue 유지).
 - 효과음: 웹 `lib/room-sounds.ts`(WAV를 코드로 만들어 <audio>로 재생, Web Audio 안 씀: iPhone 잡음 방지), Android `data/RoomSounds.kt`(AudioTrack, USAGE_VOICE_COMMUNICATION_SIGNALLING). 설정 키: 웹 localStorage `yaari_room_sounds`, Android `yaari_settings/room_sounds`.
