@@ -15,6 +15,7 @@ const id: SocialDict = {
   'inbox.request': '{name} ingin berteman',
   'inbox.requestDone': '{name} mengirimimu permintaan pertemanan',
   'inbox.accept': '{name} menerima permintaan pertemananmu',
+  'inbox.call': '{name} meneleponmu',
   'inbox.invite': '{name} mengundangmu ke {room}',
   'inbox.inviteEnded': 'Room ini sudah berakhir',
   'inbox.join': 'Gabung',

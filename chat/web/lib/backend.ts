@@ -191,7 +191,8 @@ export interface ProfilePhoto {
 
 // ---- notifications (023_notifications.sql) ----
 
-export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite' | 'post_like' | 'post_comment'
+/** 'call' (053): a friend asked me for a call (read once it is answered, declined or over). */
+export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite' | 'post_like' | 'post_comment' | 'call'
 
 export interface InboxItem {
   id: number
@@ -210,6 +211,13 @@ export interface InboxItem {
   pending: boolean
   /** The post a like or comment is about (`text`: its first 80 characters). */
   post: { id: string; text: string; imageUrl: string | null } | null
+}
+
+/** A friend calling me right now (053): their thread, and a voice (`video` false) or a video call. */
+export interface IncomingCall {
+  matchId: string
+  caller: Profile
+  video: boolean
 }
 
 export interface Badges {
@@ -726,6 +734,8 @@ export interface Backend {
   badges(): Promise<Badges>
   /** Called whenever an inbox item of mine arrives or changes. Returns the stop function. */
   inboxSignals(on: () => void): () => void
+  /** A friend's call ringing for me now (an unread 'call' line whose thread still asks), else null. */
+  incomingCall(): Promise<IncomingCall | null>
   // ---- profile extras ----
   setInterests(tags: Interest[]): Promise<Profile>
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */

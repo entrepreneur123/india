@@ -15,6 +15,7 @@ const ro: SocialDict = {
   'inbox.request': '{name} vrea să fiți prieteni',
   'inbox.requestDone': '{name} ți-a trimis o cerere de prietenie',
   'inbox.accept': '{name} ți-a acceptat cererea de prietenie',
+  'inbox.call': '{name} te-a sunat',
   'inbox.invite': '{name} te-a invitat în {room}',
   'inbox.inviteEnded': 'Această cameră s-a închis',
   'inbox.join': 'Intră',

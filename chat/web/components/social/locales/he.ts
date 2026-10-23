@@ -16,6 +16,7 @@ const he: SocialDict = {
   'inbox.request': '{name} רוצה להיות חברים',
   'inbox.requestDone': '{name} שלח/ה לך בקשת חברות',
   'inbox.accept': '{name} אישר/ה את בקשת החברות שלך',
+  'inbox.call': 'שיחה מאת {name}',
   'inbox.invite': '{name} הזמין/ה אותך ל{room}',
   'inbox.inviteEnded': 'החדר הזה הסתיים',
   'inbox.join': 'הצטרפות',

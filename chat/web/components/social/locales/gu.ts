@@ -14,6 +14,7 @@ const gu: SocialDict = {
   'inbox.request': '{name} મિત્ર બનવા માંગે છે',
   'inbox.requestDone': '{name}એ તમને ફ્રેન્ડ રિક્વેસ્ટ મોકલી',
   'inbox.accept': '{name}એ તમારી ફ્રેન્ડ રિક્વેસ્ટ સ્વીકારી',
+  'inbox.call': '{name}એ તમને કૉલ કર્યો',
   'inbox.invite': '{name}એ તમને {room}માં બોલાવ્યા',
   'inbox.inviteEnded': 'આ રૂમ પૂરો થઈ ગયો છે',
   'inbox.join': 'જોડાઓ',

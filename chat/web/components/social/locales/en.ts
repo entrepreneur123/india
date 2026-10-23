@@ -14,6 +14,7 @@ const en = {
   'inbox.request': '{name} wants to be friends',
   'inbox.requestDone': '{name} sent you a friend request',
   'inbox.accept': '{name} accepted your friend request',
+  'inbox.call': '{name} called you',
   'inbox.invite': '{name} invited you to {room}',
   'inbox.inviteEnded': 'This room has ended',
   'inbox.join': 'Join',

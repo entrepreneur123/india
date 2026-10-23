@@ -281,7 +281,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     registerRandom({
       live: () => {
         const { phase, match } = now.current
-        return phase === 'chat' && match ? { phase: 'chat', partner: match.partner.name } : phase === 'matching' ? { phase: 'searching' } : { phase: 'idle' }
+        return phase === 'chat' && match ? { phase: 'chat', partner: match.partner.name, matchId: match.id } : phase === 'matching' ? { phase: 'searching' } : { phase: 'idle' }
       },
       cancelSearch: () => now.current.cancelMatching(),
       endChat: async (force) => {

@@ -14,6 +14,7 @@ const ur: SocialDict = {
   'inbox.request': '{name} دوست بننا چاہتے ہیں',
   'inbox.requestDone': '{name} نے آپ کو دوستی کی درخواست بھیجی',
   'inbox.accept': '{name} نے آپ کی دوستی کی درخواست قبول کر لی',
+  'inbox.call': '{name} نے آپ کو کال کی',
   'inbox.invite': '{name} نے آپ کو {room} میں بلایا',
   'inbox.inviteEnded': 'یہ روم ختم ہو چکا ہے',
   'inbox.join': 'شامل ہوں',

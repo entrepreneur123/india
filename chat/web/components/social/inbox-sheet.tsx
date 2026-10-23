@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Check, Headphones, MessageCircle, X } from 'lucide-react'
+import { Check, Headphones, MessageCircle, Phone, X } from 'lucide-react'
 import type { InboxItem } from '@/lib/backend'
 import { likeLine } from '@/lib/feed'
 import { useBackend } from '@/lib/backend-context'
@@ -19,8 +19,8 @@ import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
 /**
- * Notifications: friend requests and acceptances, friends' messages (one line per chat), room invites, and likes and
- * comments on my posts (one line per post). Opening it marks everything read; what was new stays highlighted until it
+ * Notifications: friend requests and acceptances, friends' messages (one line per chat), friends' calls, room invites,
+ * and likes and comments on my posts (one line per post). Opening it marks everything read; what was new stays highlighted until it
  * closes. Lines of a kind this app doesn't know never reach here (lib/feed.ts inboxKind).
  */
 export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -151,6 +151,9 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
     case 'room_invite':
       text = st('inbox.invite', { name, room: item.roomTitle ?? '' })
       break
+    case 'call':
+      text = st('inbox.call', { name })
+      break
     case 'post_like': {
       const line = likeLine(item.count)
       text = st(`inbox.like.${line.key}`, { name, n: line.others })
@@ -181,7 +184,7 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
         </Button>
       </div>
     )
-  } else if (item.kind === 'message' || item.kind === 'friend_accept') {
+  } else if (item.kind === 'message' || item.kind === 'friend_accept' || item.kind === 'call') {
     action = (
       <Button
         size="sm"
@@ -235,9 +238,9 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
     <li className={cn('flex flex-wrap items-center gap-3 px-4 py-2.5 sm:flex-nowrap sm:px-6', highlight && 'bg-primary-soft/40')}>
       <button type="button" onClick={() => openProfile(item.actor.id)} className="relative shrink-0 rounded-full" aria-label={name}>
         <Avatar name={name} src={item.actor.photoUrl} size={44} />
-        {item.kind === 'room_invite' ? (
-          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">
-            <Headphones className="size-3.5" aria-hidden />
+        {item.kind === 'room_invite' || item.kind === 'call' ? (
+          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary-strong text-primary-foreground ring-2 ring-card">
+            {item.kind === 'call' ? <Phone className="size-3.5" aria-hidden /> : <Headphones className="size-3.5" aria-hidden />}
           </span>
         ) : item.kind === 'post_like' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">

@@ -17,6 +17,7 @@ const uk: SocialDict = {
   'inbox.request': '{name} хоче дружити',
   'inbox.requestDone': '{name} надсилає вам запит у друзі',
   'inbox.accept': '{name} приймає ваш запит у друзі',
+  'inbox.call': 'Дзвінок від {name}',
   'inbox.invite': '{name} запрошує вас до кімнати {room}',
   'inbox.inviteEnded': 'Цю кімнату закрито',
   'inbox.join': 'Увійти',

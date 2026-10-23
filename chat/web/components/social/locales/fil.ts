@@ -15,6 +15,7 @@ const fil: SocialDict = {
   'inbox.request': 'Gustong makipagkaibigan ni {name}',
   'inbox.requestDone': 'Nagpadala sa iyo si {name} ng friend request',
   'inbox.accept': 'Tinanggap ni {name} ang friend request mo',
+  'inbox.call': 'Tumawag sa iyo si {name}',
   'inbox.invite': 'Inimbitahan ka ni {name} sa {room}',
   'inbox.inviteEnded': 'Natapos na ang room na ito',
   'inbox.join': 'Sumali',

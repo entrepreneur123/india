@@ -4,7 +4,7 @@
 // No imports, so the unit tests run it directly (node --test).
 
 /** Where the random tab is. */
-export type RandomLive = { phase: 'idle' } | { phase: 'searching' } | { phase: 'chat'; partner: string }
+export type RandomLive = { phase: 'idle' } | { phase: 'searching' } | { phase: 'chat'; partner: string; matchId?: string }
 
 export interface LiveNow {
   /** The room I'm in (open or minimised). */

@@ -14,6 +14,7 @@ const mr: SocialDict = {
   'inbox.request': '{name} ला मित्र व्हायचे आहे',
   'inbox.requestDone': '{name} ने तुम्हाला मैत्रीची विनंती पाठवली',
   'inbox.accept': '{name} ने तुमची मैत्रीची विनंती स्वीकारली',
+  'inbox.call': '{name} ने तुम्हाला कॉल केला',
   'inbox.invite': '{name} ने तुम्हाला {room} मध्ये बोलावले',
   'inbox.inviteEnded': 'ही रूम संपली आहे',
   'inbox.join': 'सामील व्हा',

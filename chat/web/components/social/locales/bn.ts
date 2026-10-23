@@ -14,6 +14,7 @@ const bn: SocialDict = {
   'inbox.request': '{name} আপনার বন্ধু হতে চান',
   'inbox.requestDone': '{name} আপনাকে বন্ধুত্বের অনুরোধ পাঠিয়েছিলেন',
   'inbox.accept': '{name} আপনার বন্ধুত্বের অনুরোধ গ্রহণ করেছেন',
+  'inbox.call': '{name} আপনাকে কল করেছিলেন',
   'inbox.invite': '{name} আপনাকে {room}-এ ডেকেছেন',
   'inbox.inviteEnded': 'এই রুম শেষ হয়ে গেছে',
   'inbox.join': 'যোগ দিন',

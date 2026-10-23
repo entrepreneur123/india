@@ -15,6 +15,7 @@ const zhHant: SocialDict = {
   'inbox.request': '{name} 想加你為好友',
   'inbox.requestDone': '{name} 向你傳送了好友申請',
   'inbox.accept': '{name} 接受了你的好友申請',
+  'inbox.call': '{name} 打過電話給你',
   'inbox.invite': '{name} 邀請你加入 {room}',
   'inbox.inviteEnded': '這個房間已結束',
   'inbox.join': '加入',

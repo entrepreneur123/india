@@ -14,6 +14,7 @@ const ml: SocialDict = {
   'inbox.request': '{name} സുഹൃത്താകാൻ ആഗ്രഹിക്കുന്നു',
   'inbox.requestDone': '{name} നിങ്ങൾക്ക് ഫ്രണ്ട് റിക്വസ്റ്റ് അയച്ചു',
   'inbox.accept': '{name} നിങ്ങളുടെ ഫ്രണ്ട് റിക്വസ്റ്റ് സ്വീകരിച്ചു',
+  'inbox.call': '{name} നിങ്ങളെ വിളിച്ചു',
   'inbox.invite': '{name} നിങ്ങളെ {room}-ലേക്ക് ക്ഷണിച്ചു',
   'inbox.inviteEnded': 'ഈ റൂം അവസാനിച്ചു',
   'inbox.join': 'ചേരുക',

@@ -15,6 +15,7 @@ const tr: SocialDict = {
   'inbox.request': '{name} arkadaş olmak istiyor',
   'inbox.requestDone': '{name} sana arkadaşlık isteği gönderdi',
   'inbox.accept': '{name} arkadaşlık isteğini kabul etti',
+  'inbox.call': '{name} seni aradı',
   'inbox.invite': '{name} seni {room} odasına davet etti',
   'inbox.inviteEnded': 'Bu oda kapandı',
   'inbox.join': 'Katıl',

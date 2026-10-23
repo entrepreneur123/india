@@ -14,6 +14,7 @@ const ptBR: SocialDict = {
   'inbox.request': '{name} quer ser seu amigo',
   'inbox.requestDone': '{name} enviou um pedido de amizade',
   'inbox.accept': '{name} aceitou seu pedido de amizade',
+  'inbox.call': '{name} ligou para você',
   'inbox.invite': '{name} convidou você para {room}',
   'inbox.inviteEnded': 'Esta sala já terminou',
   'inbox.join': 'Entrar',

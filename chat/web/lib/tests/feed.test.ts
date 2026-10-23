@@ -53,6 +53,7 @@ test('parseTime takes Postgres and ISO text', () => {
 test('unknown inbox kinds are skipped', () => {
   assert.equal(inboxKind('post_like'), 'post_like')
   assert.equal(inboxKind('post_comment'), 'post_comment')
+  assert.equal(inboxKind('call'), 'call')
   assert.equal(inboxKind('story_view'), null)
   assert.equal(inboxKind(undefined), null)
 })

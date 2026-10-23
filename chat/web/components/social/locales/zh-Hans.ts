@@ -15,6 +15,7 @@ const zhHans: SocialDict = {
   'inbox.request': '{name} 想加你为好友',
   'inbox.requestDone': '{name} 向你发送了好友申请',
   'inbox.accept': '{name} 接受了你的好友申请',
+  'inbox.call': '{name} 给你打过电话',
   'inbox.invite': '{name} 邀请你加入 {room}',
   'inbox.inviteEnded': '这个房间已结束',
   'inbox.join': '加入',

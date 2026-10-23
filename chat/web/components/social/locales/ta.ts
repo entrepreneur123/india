@@ -14,6 +14,7 @@ const ta: SocialDict = {
   'inbox.request': '{name} நண்பராக விரும்புகிறார்',
   'inbox.requestDone': '{name} உங்களுக்கு நட்புக் கோரிக்கை அனுப்பினார்',
   'inbox.accept': '{name} உங்கள் நட்புக் கோரிக்கையை ஏற்றார்',
+  'inbox.call': '{name} உங்களுக்கு கால் செய்தார்',
   'inbox.invite': '{name} உங்களை {room}-க்கு அழைத்தார்',
   'inbox.inviteEnded': 'இந்த ரூம் முடிந்துவிட்டது',
   'inbox.join': 'சேர்',

@@ -15,6 +15,7 @@ const ja: SocialDict = {
   'inbox.request': '{name}さんから友だちリクエストが届いています',
   'inbox.requestDone': '{name}さんから友だちリクエストが届きました',
   'inbox.accept': '{name}さんが友だちリクエストを承認しました',
+  'inbox.call': '{name}さんから着信がありました',
   'inbox.invite': '{name}さんから「{room}」への招待が届きました',
   'inbox.inviteEnded': 'このルームは終了しました',
   'inbox.join': '参加',

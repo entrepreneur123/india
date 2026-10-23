@@ -18,6 +18,7 @@ const ar: SocialDict = {
   'inbox.request': '{name} يريد أن يكون صديقك',
   'inbox.requestDone': 'أرسل لك {name} طلب صداقة',
   'inbox.accept': 'قبل {name} طلب صداقتك',
+  'inbox.call': 'مكالمة من {name}',
   'inbox.invite': 'دعاك {name} إلى {room}',
   'inbox.inviteEnded': 'انتهت هذه الغرفة',
   'inbox.join': 'انضمام',

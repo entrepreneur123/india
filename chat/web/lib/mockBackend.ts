@@ -3,6 +3,7 @@ import {
   BackendError,
   type Badges,
   type InboxItem,
+  type IncomingCall,
   type Interest,
   MAX_PHOTOS,
   type RoomQuery,
@@ -61,6 +62,8 @@ const DAY = 24 * HOUR
 
 const FREE_EXIT_LOCK_MS = 5000
 const PLUS_EXIT_LOCK_MS = 200
+/** The demo friend's call (Arjun, voice) rings this long after the app opens. */
+const DEMO_FRIEND_CALL_MS = 20_000
 
 
 // Demo pictures are drawn here as small SVGs (no third-party image hosts; works offline and under the CSP).
@@ -541,6 +544,7 @@ export class MockBackend implements Backend {
     if (!m) return () => {}
     m.listeners.add(on)
     if (m.ended) queueMicrotask(() => on({ type: 'ended' }))
+    if (m.video !== 'none') queueMicrotask(() => on({ type: 'video', status: m.video, camera: m.callVideo }))
     if (!m.greeted) {
       m.greeted = true
       this.partnerSays(m, pick(GREETINGS), null, jitter(1800, 2600))
@@ -701,6 +705,30 @@ export class MockBackend implements Backend {
   private setCall(m: MatchState, status: VideoStatus) {
     m.video = status
     this.emit(m, { type: 'video', status, camera: m.callVideo })
+    // Like the server (053): any change reads the call's line.
+    const ringing = this.inboxItems.filter((i) => i.kind === 'call' && i.matchId === m.id && !i.read)
+    for (const i of ringing) i.read = true
+    if (ringing.length) this.inboxChanged()
+  }
+
+  /** The demo: a friend calls me (voice) once, a little after the app opens; it rings out after 30 s. */
+  private async friendCalls() {
+    const m = this.matches.get(await this.friendThread('u_arjun'))
+    if (!m || m.video !== 'none') return
+    m.callVideo = false
+    this.setCall(m, 'requested_by_partner')
+    this.inboxItems.unshift({
+      id: Math.max(0, ...this.inboxItems.map((i) => i.id)) + 1, kind: 'call', actor: m.partner, at: Date.now(), read: false, count: 1,
+      matchId: m.id, roomId: null, roomTitle: null, roomOpen: false, pending: false, post: null,
+    })
+    this.inboxChanged()
+    this.schedule(m, 30_000, () => m.video === 'requested_by_partner' && this.setCall(m, 'none'))
+  }
+
+  async incomingCall(): Promise<IncomingCall | null> {
+    const item = this.inboxItems.find((i) => i.kind === 'call' && !i.read && i.matchId)
+    const m = item && this.matches.get(item.matchId!)
+    return m && m.video === 'requested_by_partner' ? { matchId: m.id, caller: m.partner, video: m.callVideo } : null
   }
 
   /** Like the server's call_open (052): an open chat, or a past one between friends. */
@@ -969,7 +997,12 @@ export class MockBackend implements Backend {
     }
   }
 
+  private friendCallArmed = false
   inboxSignals(on: () => void) {
+    if (!this.friendCallArmed && this.signedIn) {
+      this.friendCallArmed = true
+      setTimeout(() => void this.friendCalls(), DEMO_FRIEND_CALL_MS)
+    }
     this.inboxListeners.add(on)
     return () => void this.inboxListeners.delete(on)
   }

@@ -15,6 +15,7 @@ const fa: SocialDict = {
   'inbox.request': '{name} می‌خواهد با شما دوست شود',
   'inbox.requestDone': '{name} برایتان درخواست دوستی فرستاد',
   'inbox.accept': '{name} درخواست دوستی شما را پذیرفت',
+  'inbox.call': '{name} با شما تماس گرفت',
   'inbox.invite': '{name} شما را به {room} دعوت کرد',
   'inbox.inviteEnded': 'این روم تمام شده است',
   'inbox.join': 'پیوستن',

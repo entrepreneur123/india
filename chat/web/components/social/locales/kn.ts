@@ -14,6 +14,7 @@ const kn: SocialDict = {
   'inbox.request': '{name} ಸ್ನೇಹಿತರಾಗಲು ಬಯಸುತ್ತಾರೆ',
   'inbox.requestDone': '{name} ನಿಮಗೆ ಫ್ರೆಂಡ್ ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಿದ್ದಾರೆ',
   'inbox.accept': '{name} ನಿಮ್ಮ ಫ್ರೆಂಡ್ ರಿಕ್ವೆಸ್ಟ್ ಸ್ವೀಕರಿಸಿದ್ದಾರೆ',
+  'inbox.call': '{name} ನಿಮಗೆ ಕಾಲ್ ಮಾಡಿದ್ದರು',
   'inbox.invite': '{name} ನಿಮ್ಮನ್ನು {room} ಗೆ ಆಹ್ವಾನಿಸಿದ್ದಾರೆ',
   'inbox.inviteEnded': 'ಈ ರೂಮ್ ಮುಗಿದಿದೆ',
   'inbox.join': 'ಸೇರಿ',

@@ -15,6 +15,7 @@ const ko: SocialDict = {
   'inbox.request': '{name}님이 친구가 되고 싶어 해요',
   'inbox.requestDone': '{name}님이 친구 신청을 보냈어요',
   'inbox.accept': '{name}님이 친구 신청을 수락했어요',
+  'inbox.call': '{name}님이 전화했어요',
   'inbox.invite': '{name}님이 {room}에 초대했어요',
   'inbox.inviteEnded': '종료된 방이에요',
   'inbox.join': '참여',

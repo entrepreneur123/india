@@ -16,6 +16,7 @@ const pl: SocialDict = {
   'inbox.request': '{name} chce dodać Cię do znajomych',
   'inbox.requestDone': 'Zaproszenie do znajomych od: {name}',
   'inbox.accept': '{name} przyjmuje Twoje zaproszenie do znajomych',
+  'inbox.call': 'Połączenie od {name}',
   'inbox.invite': '{name} zaprasza Cię do pokoju {room}',
   'inbox.inviteEnded': 'Ten pokój się zakończył',
   'inbox.join': 'Dołącz',

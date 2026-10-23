@@ -14,6 +14,7 @@ import {
   type PersonRow,
   type FriendState,
   type InboxItem,
+  type IncomingCall,
   type Interest,
   INTERESTS,
   type KycResult,
@@ -1043,6 +1044,12 @@ export class SupabaseBackend implements Backend {
   async badges(): Promise<Badges> {
     const b = await this.rpc<{ inbox: number; friends: number; chats: Record<string, number> }>('my_badges')
     return { inbox: b.inbox ?? 0, friends: b.friends ?? 0, chats: b.chats ?? {} }
+  }
+
+  async incomingCall(): Promise<IncomingCall | null> {
+    const item = (await this.inbox()).find((i) => i.kind === 'call' && !i.read && i.matchId)
+    const m = item && (await this.matchRow(item.matchId!))
+    return m && this.videoOf(m, this.uid) === 'requested_by_partner' ? { matchId: m.id, caller: item.actor, video: m.call_video !== false } : null
   }
 
   inboxSignals(on: () => void): () => void {

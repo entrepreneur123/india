@@ -14,6 +14,7 @@ const ne: SocialDict = {
   'inbox.request': '{name} साथी बन्न चाहनुहुन्छ',
   'inbox.requestDone': '{name} ले तपाईंलाई साथी अनुरोध पठाउनुभयो',
   'inbox.accept': '{name} ले तपाईंको साथी अनुरोध स्वीकार गर्नुभयो',
+  'inbox.call': '{name} ले तपाईंलाई कल गर्नुभयो',
   'inbox.invite': '{name} ले तपाईंलाई {room} मा बोलाउनुभयो',
   'inbox.inviteEnded': 'यो रूम सकियो',
   'inbox.join': 'जोडिनुहोस्',

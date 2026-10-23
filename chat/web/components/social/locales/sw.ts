@@ -15,6 +15,7 @@ const sw: SocialDict = {
   'inbox.request': '{name} anataka kuwa rafiki yako',
   'inbox.requestDone': '{name} amekutumia ombi la urafiki',
   'inbox.accept': '{name} amekubali ombi lako la urafiki',
+  'inbox.call': '{name} alikupigia simu',
   'inbox.invite': '{name} amekualika kwenye {room}',
   'inbox.inviteEnded': 'Chumba hiki kimeisha',
   'inbox.join': 'Jiunge',

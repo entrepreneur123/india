@@ -15,7 +15,7 @@ import { useI18n } from '@/components/i18n'
 import { useSocialT } from '@/components/social/social-text'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
-import { Modal } from '@/components/ui/modal'
+import { CallRequestModal } from '@/components/video/incoming-call'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { retryImport } from '@/lib/retry-import'
@@ -341,29 +341,7 @@ export function ChatView({
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} partner={partner} matchId={matchId} onReported={onReported} />
       {contactsOpen ? <FriendContactsSheet open onClose={() => setContactsOpen(false)} userId={partner.id} name={partner.name} /> : null}
 
-      <Modal open={visible && chat.video === 'requested_by_partner'} onClose={() => void answerVideo(false)} hideHeader className="max-w-sm">
-        <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-6 text-center">
-          <span className="relative">
-            <span className="absolute inset-0 animate-ping-soft rounded-full border-2 border-primary-text" aria-hidden />
-            <Avatar name={partner.name} src={partner.photoUrl} size={88} />
-          </span>
-          <div>
-            <h2 className="flex items-center justify-center gap-2 text-lg font-semibold">
-              {chat.camera ? <Video className="size-5 shrink-0 text-primary-text" aria-hidden /> : <Phone className="size-5 shrink-0 text-primary-text" aria-hidden />}
-              {t(chat.camera ? 'chat.videoIncoming' : 'chat.voiceIncoming', { name: partner.name })}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t(chat.camera ? 'chat.videoIncomingBody' : 'chat.voiceIncomingBody')}</p>
-          </div>
-          <div className="flex w-full gap-3">
-            <Button variant="outline" size="lg" className="flex-1" onClick={() => void answerVideo(false)}>
-              {t('chat.decline')}
-            </Button>
-            <Button variant="brand" size="lg" className="flex-1" onClick={() => void answerVideo(true)} data-autofocus>
-              {t('chat.accept')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <CallRequestModal open={visible && chat.video === 'requested_by_partner'} partner={partner} video={chat.camera} onAnswer={(accept) => void answerVideo(accept)} />
 
       <AnimatePresence>
         {visible && chat.video === 'accepted' ? (

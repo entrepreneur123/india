@@ -14,6 +14,7 @@ const nl: SocialDict = {
   'inbox.request': '{name} wil vrienden worden',
   'inbox.requestDone': '{name} heeft je een vriendschapsverzoek gestuurd',
   'inbox.accept': '{name} heeft je vriendschapsverzoek geaccepteerd',
+  'inbox.call': '{name} heeft je gebeld',
   'inbox.invite': '{name} heeft je uitgenodigd voor {room}',
   'inbox.inviteEnded': 'Deze room is afgelopen',
   'inbox.join': 'Meedoen',

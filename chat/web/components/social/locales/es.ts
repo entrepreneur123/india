@@ -15,6 +15,7 @@ const es: SocialDict = {
   'inbox.request': '{name} quiere ser tu amigo',
   'inbox.requestDone': '{name} te envió una solicitud de amistad',
   'inbox.accept': '{name} aceptó tu solicitud de amistad',
+  'inbox.call': '{name} te llamó',
   'inbox.invite': '{name} te invitó a {room}',
   'inbox.inviteEnded': 'Esta sala ya terminó',
   'inbox.join': 'Entrar',

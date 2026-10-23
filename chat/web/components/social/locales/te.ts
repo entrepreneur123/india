@@ -14,6 +14,7 @@ const te: SocialDict = {
   'inbox.request': '{name} ఫ్రెండ్ అవ్వాలనుకుంటున్నారు',
   'inbox.requestDone': '{name} మీకు ఫ్రెండ్ రిక్వెస్ట్ పంపారు',
   'inbox.accept': '{name} మీ ఫ్రెండ్ రిక్వెస్ట్ యాక్సెప్ట్ చేశారు',
+  'inbox.call': '{name} మీకు కాల్ చేశారు',
   'inbox.invite': '{name} మిమ్మల్ని {room}కి ఆహ్వానించారు',
   'inbox.inviteEnded': 'ఈ రూమ్ ముగిసింది',
   'inbox.join': 'చేరు',

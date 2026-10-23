@@ -14,6 +14,7 @@ const pa: SocialDict = {
   'inbox.request': '{name} ਦੋਸਤ ਬਣਨਾ ਚਾਹੁੰਦੇ ਹਨ',
   'inbox.requestDone': '{name} ਨੇ ਤੁਹਾਨੂੰ ਦੋਸਤੀ ਦੀ ਬੇਨਤੀ ਭੇਜੀ',
   'inbox.accept': '{name} ਨੇ ਤੁਹਾਡੀ ਦੋਸਤੀ ਦੀ ਬੇਨਤੀ ਮੰਨ ਲਈ',
+  'inbox.call': '{name} ਨੇ ਤੁਹਾਨੂੰ ਕਾਲ ਕੀਤੀ',
   'inbox.invite': '{name} ਨੇ ਤੁਹਾਨੂੰ {room} ਵਿੱਚ ਬੁਲਾਇਆ',
   'inbox.inviteEnded': 'ਇਹ ਰੂਮ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ',
   'inbox.join': 'ਜੁੜੋ',

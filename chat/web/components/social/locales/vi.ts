@@ -14,6 +14,7 @@ const vi: SocialDict = {
   'inbox.request': '{name} muốn kết bạn với bạn',
   'inbox.requestDone': '{name} đã gửi lời mời kết bạn',
   'inbox.accept': '{name} đã chấp nhận lời mời kết bạn của bạn',
+  'inbox.call': '{name} đã gọi cho bạn',
   'inbox.invite': '{name} mời bạn vào {room}',
   'inbox.inviteEnded': 'Phòng này đã kết thúc',
   'inbox.join': 'Vào',

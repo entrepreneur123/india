@@ -41,6 +41,7 @@ import {
   LooksSheet,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
+import { IncomingCall } from '@/components/video/incoming-call'
 
 /** Tab change: a short fade (Material "fade through"). Going to Random (already drawn underneath) the tab goes at once. */
 const TAB_MOTION = {
@@ -502,6 +503,14 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
             </Suspense>
           </ScreenBoundary>
         ) : null}
+        <IncomingCall
+          // Their thread, or the random chat with them, on screen asks itself.
+          hidden={(id) => {
+            const r = randomCtl.current?.live()
+            return thread?.matchId === id || (r?.phase === 'chat' && r.matchId === id)
+          }}
+          onAccepted={(caller, matchId) => void openThread(caller, matchId)}
+        />
         {shop ? (
           <ScreenBoundary>
             <Suspense fallback={null}>

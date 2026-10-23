@@ -15,6 +15,7 @@ const th: SocialDict = {
   'inbox.request': '{name} อยากเป็นเพื่อนกับคุณ',
   'inbox.requestDone': '{name} ส่งคำขอเป็นเพื่อนถึงคุณ',
   'inbox.accept': '{name} รับคำขอเป็นเพื่อนของคุณแล้ว',
+  'inbox.call': '{name} โทรหาคุณ',
   'inbox.invite': '{name} เชิญคุณเข้า {room}',
   'inbox.inviteEnded': 'ห้องนี้จบแล้ว',
   'inbox.join': 'เข้าร่วม',

@@ -15,6 +15,7 @@ const ms: SocialDict = {
   'inbox.request': '{name} mahu berkawan',
   'inbox.requestDone': '{name} menghantar permintaan rakan kepada anda',
   'inbox.accept': '{name} menerima permintaan rakan anda',
+  'inbox.call': '{name} menelefon anda',
   'inbox.invite': '{name} menjemput anda ke {room}',
   'inbox.inviteEnded': 'Bilik ini telah tamat',
   'inbox.join': 'Sertai',
