@@ -437,6 +437,9 @@
     <string name="music_vote">Voter pour %1$s</string>
     <string name="music_unvote">Retirer votre vote pour %1$s</string>
     <string name="music_next">Lancer le plus voté</string>
+    <string name="music_stop_all">Couper la musique pour tous</string>
+    <string name="room_sounds">Sons du salon vocal</string>
+    <string name="room_sounds_body">Un petit son quand quelqu’un rejoint ou quitte un salon vocal.</string>
     <string name="music_nothing">Rien en lecture pour l’instant</string>
     <string name="music_nothing_body">Demandez un morceau avec un lien YouTube. Le plus voté passe ensuite.</string>
     <string name="music_no_requests">Aucune demande pour l’instant. Ajoutez la première.</string>

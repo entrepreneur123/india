@@ -460,6 +460,9 @@
     <string name="music_vote">%1$s کو ووٹ دیں</string>
     <string name="music_unvote">%1$s سے اپنا ووٹ واپس لیں</string>
     <string name="music_next">سب سے زیادہ ووٹ والا چلائیں</string>
+    <string name="music_stop_all">سب کے لیے موسیقی بند کریں</string>
+    <string name="room_sounds">وائس روم کی آوازیں</string>
+    <string name="room_sounds_body">کوئی وائس روم میں آئے یا جائے تو ایک چھوٹی سی آواز بجتی ہے۔</string>
     <string name="music_nothing">ابھی کچھ نہیں چل رہا</string>
     <string name="music_nothing_body">YouTube لنک سے گانے کی فرمائش کریں۔ سب سے زیادہ ووٹ والا اگلا چلے گا۔</string>
     <string name="music_no_requests">ابھی کوئی فرمائش نہیں۔ پہلی آپ کریں۔</string>

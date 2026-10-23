@@ -460,6 +460,9 @@
     <string name="music_vote">Undi %1$s</string>
     <string name="music_unvote">Tarik balik undi untuk %1$s</string>
     <string name="music_next">Mainkan yang paling banyak diundi</string>
+    <string name="music_stop_all">Matikan muzik untuk semua</string>
+    <string name="room_sounds">Bunyi bilik suara</string>
+    <string name="room_sounds_body">Bunyi pendek apabila seseorang masuk atau keluar dari bilik suara.</string>
     <string name="music_nothing">Belum ada yang dimainkan</string>
     <string name="music_nothing_body">Minta lagu dengan pautan YouTube. Yang paling banyak diundi dimainkan seterusnya.</string>
     <string name="music_no_requests">Belum ada permintaan. Tambah yang pertama.</string>

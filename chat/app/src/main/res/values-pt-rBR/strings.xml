@@ -461,6 +461,9 @@
     <string name="music_vote">Votar em %1$s</string>
     <string name="music_unvote">Tirar seu voto de %1$s</string>
     <string name="music_next">Tocar a mais votada</string>
+    <string name="music_stop_all">Desligar a música para todos</string>
+    <string name="room_sounds">Sons da sala de voz</string>
+    <string name="room_sounds_body">Um som curto quando alguém entra ou sai de uma sala de voz.</string>
     <string name="music_nothing">Nada tocando ainda</string>
     <string name="music_nothing_body">Peça uma música com um link do YouTube. A mais votada toca em seguida.</string>
     <string name="music_no_requests">Nenhum pedido ainda. Faça o primeiro.</string>

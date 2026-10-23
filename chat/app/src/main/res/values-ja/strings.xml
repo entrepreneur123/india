@@ -460,6 +460,9 @@
     <string name="music_vote">%1$sに投票</string>
     <string name="music_unvote">%1$sへの投票を取り消す</string>
     <string name="music_next">最多得票の曲を再生</string>
+    <string name="music_stop_all">全員の音楽を止める</string>
+    <string name="room_sounds">ボイスルームの効果音</string>
+    <string name="room_sounds_body">ボイスルームに誰かが入ったり出たりすると短い音が鳴ります。</string>
     <string name="music_nothing">まだ何も再生されていません</string>
     <string name="music_nothing_body">YouTubeのリンクで曲をリクエストしよう。最も票の多い曲が次に流れます。</string>
     <string name="music_no_requests">まだリクエストはありません。最初の1曲を追加しよう。</string>

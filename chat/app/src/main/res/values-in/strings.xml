@@ -460,6 +460,9 @@
     <string name="music_vote">Vote %1$s</string>
     <string name="music_unvote">Tarik vote untuk %1$s</string>
     <string name="music_next">Putar yang paling banyak vote</string>
+    <string name="music_stop_all">Matikan musik untuk semua</string>
+    <string name="room_sounds">Suara ruang suara</string>
+    <string name="room_sounds_body">Bunyi singkat saat seseorang masuk atau keluar dari ruang suara.</string>
     <string name="music_nothing">Belum ada yang diputar</string>
     <string name="music_nothing_body">Request lagu dengan link YouTube. Yang paling banyak vote diputar berikutnya.</string>
     <string name="music_no_requests">Belum ada request. Tambahkan yang pertama.</string>

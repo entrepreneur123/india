@@ -821,6 +821,10 @@ class FakeVoice(
                 skip(r)
                 return
             }
+            VoiceAction.Stop -> {
+                need(isMod)
+                r.track = null
+            }
             // 036: voice_seek. Paused songs stay paused at the new place.
             is VoiceAction.Seek -> {
                 val t = r.track
@@ -846,6 +850,13 @@ class FakeVoice(
     // ---- hooks for tests and screenshots (the ambient simulation is off there) ----
 
     /** [count] people in the audience raise a hand. */
+    /** Someone else (a listener) walks out. */
+    fun someoneLeaves(roomId: String) {
+        val r = rooms[roomId] ?: return
+        others(r).lastOrNull { it.seat == null }?.let { r.members.remove(it) }
+        changed(r)
+    }
+
     fun raiseHands(roomId: String, count: Int) {
         val r = rooms[roomId] ?: return
         others(r).filter { it.seat == null && !it.hand }.take(count).forEach { it.hand = true }

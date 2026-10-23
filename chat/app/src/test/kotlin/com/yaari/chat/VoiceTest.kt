@@ -1,5 +1,6 @@
 package com.yaari.chat
 
+import com.yaari.chat.data.RoomSounds
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.ServerClock
@@ -52,8 +53,8 @@ class VoiceTest {
     @Before fun setUp() = Dispatchers.setMain(dispatcher)
     @After fun tearDown() = Dispatchers.resetMain()
 
-    private fun TestScope.signedIn(name: String = "Dev"): AppViewModel {
-        val vm = AppViewModel(fake, DemoBilling(), clock = { now }, today = { today })
+    private fun TestScope.signedIn(name: String = "Dev", sounds: RoomSounds = RoomSounds.Memory()): AppViewModel {
+        val vm = AppViewModel(fake, DemoBilling(), clock = { now }, today = { today }, wallClock = { now }, roomSounds = sounds)
         advanceUntilIdle()
         vm.requestOtp(Countries.byIso("IN")!!, "9876543210"); advanceUntilIdle()
         vm.verifyOtp(FakeBackend.DEMO_OTP); advanceUntilIdle()
@@ -88,6 +89,44 @@ class VoiceTest {
         assertNull("the host starts off the stage", s.me!!.seat)
         assertEquals(s.roomId, vm.voice.list.value.rooms!!.first().id) // mine first
         assertTrue(vm.voice.list.value.rooms!!.first().mine)
+    }
+
+    @Test fun roomChimesWhenIComeInSomeoneLeavesAndILeaveAtMostOncePerGap() = runTest(dispatcher) {
+        val sounds = RoomSounds.Memory()
+        val vm = signedIn(sounds = sounds)
+        vm.voice.open("v-chai"); advanceUntilIdle()
+        assertEquals(listOf(true), sounds.played)
+        fake.voice.someoneLeaves("v-chai"); advanceUntilIdle()
+        assertEquals("too soon after the last one", listOf(true), sounds.played)
+        now += 2_000
+        fake.voice.someoneLeaves("v-chai"); advanceUntilIdle()
+        assertEquals(listOf(true, false), sounds.played)
+        sounds.on = false
+        now += 2_000
+        fake.voice.someoneLeaves("v-chai"); advanceUntilIdle()
+        assertEquals("off in Settings", listOf(true, false), sounds.played)
+        sounds.on = true
+        now += 2_000
+        vm.voice.leave(); advanceUntilIdle()
+        assertEquals(listOf(true, false, false), sounds.played)
+
+        // Over 50 people only my own coming and going chimes.
+        now += 2_000
+        vm.voice.open("v-cricket"); advanceUntilIdle()
+        now += 2_000
+        fake.voice.someoneLeaves("v-cricket"); advanceUntilIdle()
+        assertEquals(listOf(true, false, false, true), sounds.played)
+    }
+
+    @Test fun chimeSamplesAndCrowdChanges() {
+        val pcm = RoomSounds.chime(doubleArrayOf(660.0, 880.0))
+        assertEquals(Math.round(RoomSounds.RATE * 0.09).toInt() * 2, pcm.size)
+        val peak = pcm.maxOf { kotlin.math.abs(it.toInt()) }
+        assertTrue("$peak", peak in 1001 until 32_767 / 4)
+        assertEquals(true, RoomSounds.change(listOf("me", "a"), listOf("me", "a", "b"), "me"))
+        assertEquals(false, RoomSounds.change(listOf("me", "a", "b"), listOf("me", "b"), "me"))
+        assertEquals(null, RoomSounds.change(listOf("a"), listOf("a", "me"), "me"))
+        assertEquals(null, RoomSounds.change(listOf("me", "a"), listOf("a", "me"), "me"))
     }
 
     @Test fun listenerJoinsSeesChatAndLeaves() = runTest(dispatcher) {

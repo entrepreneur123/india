@@ -457,6 +457,9 @@
     <string name="music_vote">Bình chọn %1$s</string>
     <string name="music_unvote">Rút phiếu bình chọn %1$s</string>
     <string name="music_next">Phát bài nhiều phiếu nhất</string>
+    <string name="music_stop_all">Tắt nhạc cho mọi người</string>
+    <string name="room_sounds">Âm thanh phòng thoại</string>
+    <string name="room_sounds_body">Một tiếng chuông ngắn khi có người vào hoặc rời phòng thoại.</string>
     <string name="music_nothing">Chưa phát bài nào</string>
     <string name="music_nothing_body">Yêu cầu bài hát bằng liên kết YouTube. Bài nhiều phiếu nhất sẽ phát tiếp.</string>
     <string name="music_no_requests">Chưa có yêu cầu nào. Hãy là người đầu tiên.</string>

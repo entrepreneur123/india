@@ -435,6 +435,9 @@
     <string name="music_vote">%1$s लाई भोट दिनुहोस्</string>
     <string name="music_unvote">%1$s लाई दिएको भोट फिर्ता लिनुहोस्</string>
     <string name="music_next">सबैभन्दा धेरै भोट पाएको बजाउनुहोस्</string>
+    <string name="music_stop_all">सबैका लागि संगीत बन्द गर्नुहोस्</string>
+    <string name="room_sounds">भ्वाइस रुमका आवाज</string>
+    <string name="room_sounds_body">कोही भ्वाइस रुममा आउँदा वा जाँदा छोटो आवाज बज्छ।</string>
     <string name="music_nothing">अहिलेसम्म केही बजिरहेको छैन</string>
     <string name="music_nothing_body">YouTube लिंकसहित गीत माग्नुहोस्। सबैभन्दा धेरै भोट पाएको अर्को बज्छ।</string>
     <string name="music_no_requests">अहिलेसम्म कुनै माग छैन। पहिलो थप्नुहोस्।</string>

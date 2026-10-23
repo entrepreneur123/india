@@ -450,6 +450,9 @@
     <string name="music_vote">Zagłosuj na: %1$s</string>
     <string name="music_unvote">Cofnij głos na: %1$s</string>
     <string name="music_next">Puść najpopularniejszą</string>
+    <string name="music_stop_all">Wyłącz muzykę dla wszystkich</string>
+    <string name="room_sounds">Dźwięki pokoju głosowego</string>
+    <string name="room_sounds_body">Krótki dźwięk, gdy ktoś wchodzi do pokoju głosowego lub z niego wychodzi.</string>
     <string name="music_nothing">Jeszcze nic nie gra</string>
     <string name="music_nothing_body">Zaproponuj piosenkę linkiem z YouTube. Ta z największą liczbą głosów gra następna.</string>
     <string name="music_no_requests">Brak propozycji. Dodaj pierwszą.</string>

@@ -177,7 +177,7 @@ fun rememberLinked(text: AnnotatedString, color: Color, onLink: ((String) -> Uni
  */
 fun openRoomPage(context: Context, links: LinkActions, url: String, share: ((String, String?) -> Unit)?) {
     val (known, card) = links.cards?.cached(url) ?: (true to null)
-    if (known && card?.frameable != true) openInTab(context, url) else links.open(url, share)
+    if (known && card?.frameable != true) openInTab(context, url, beside = true) else links.open(url, share)
 }
 
 /** A tapped link: YouTube videos go to the phone (as before), every other page to the in-app viewer. */
@@ -417,7 +417,7 @@ fun SharedPagePanel(stage: RoomStage, canStop: Boolean, onClose: () -> Unit, onS
                 )
             }
             CircleIconButton(Icons.Rounded.Refresh, stringResource(R.string.link_reload), page::reload, size = 36.dp, iconSize = 20.dp)
-            CircleIconButton(Icons.AutoMirrored.Rounded.OpenInNew, stringResource(R.string.link_open_browser), { openOutside(context, stage.url) }, size = 36.dp, iconSize = 20.dp)
+            CircleIconButton(Icons.AutoMirrored.Rounded.OpenInNew, stringResource(R.string.link_open_browser), { openInTab(context, stage.url, beside = true) }, size = 36.dp, iconSize = 20.dp)
             if (canStop) {
                 CircleIconButton(
                     Icons.Rounded.Cancel, stringResource(R.string.link_stop_sharing), onStop, size = 36.dp, iconSize = 20.dp,

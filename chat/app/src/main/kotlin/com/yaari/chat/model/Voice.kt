@@ -360,6 +360,8 @@ sealed interface VoiceAction {
     data object Resume : VoiceAction
     /** The most voted request plays. [trackId]: the track being skipped (a player that ended); nothing happens if another one already plays. */
     data class Skip(val trackId: String? = null) : VoiceAction
+    /** Host or co-host (054): the music off for everyone; the requests stay. */
+    data object Stop : VoiceAction
     /** Host or co-host: the song jumps to [ms] for everyone (a paused song stays paused there). */
     data class Seek(val ms: Long) : VoiceAction
     /** Host or co-host: pins [url] (https, up to 500 characters) for everyone; null stops sharing. */

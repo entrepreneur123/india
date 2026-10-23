@@ -445,6 +445,9 @@
     <string name="music_vote">%1$sకి వోట్ వేయి</string>
     <string name="music_unvote">%1$sకి వేసిన వోట్ వెనక్కి తీసుకో</string>
     <string name="music_next">ఎక్కువ వోట్లు వచ్చినది ప్లే చేయి</string>
+    <string name="music_stop_all">అందరికీ సంగీతం ఆపండి</string>
+    <string name="room_sounds">వాయిస్ రూమ్ శబ్దాలు</string>
+    <string name="room_sounds_body">ఎవరైనా వాయిస్ రూమ్‌లోకి వచ్చినా, వెళ్లినా చిన్న శబ్దం వస్తుంది.</string>
     <string name="music_nothing">ఇంకా ఏదీ ప్లే అవ్వట్లేదు</string>
     <string name="music_nothing_body">YouTube లింక్‌తో పాట అడగండి. ఎక్కువ వోట్లు వచ్చినది తర్వాత ప్లే అవుతుంది.</string>
     <string name="music_no_requests">ఇంకా రిక్వెస్ట్‌లు లేవు. మొదటిది మీరే యాడ్ చేయండి.</string>

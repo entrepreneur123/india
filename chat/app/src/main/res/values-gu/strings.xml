@@ -460,6 +460,9 @@
     <string name="music_vote">%1$sને વોટ આપો</string>
     <string name="music_unvote">%1$s પરથી તમારો વોટ પાછો લો</string>
     <string name="music_next">સૌથી વધુ વોટવાળું વગાડો</string>
+    <string name="music_stop_all">બધા માટે મ્યુઝિક બંધ કરો</string>
+    <string name="room_sounds">વૉઇસ રૂમ અવાજ</string>
+    <string name="room_sounds_body">કોઈ વૉઇસ રૂમમાં આવે કે જાય ત્યારે નાનો અવાજ વાગે છે.</string>
     <string name="music_nothing">હજુ કંઈ વાગતું નથી</string>
     <string name="music_nothing_body">YouTube લિંકથી ગીતની ફરમાઇશ કરો. સૌથી વધુ વોટવાળું આગળ વાગશે.</string>
     <string name="music_no_requests">હજુ કોઈ ફરમાઇશ નથી. પહેલી તમે કરો.</string>

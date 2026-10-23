@@ -444,6 +444,9 @@
     <string name="music_vote">التصويت لـ %1$s</string>
     <string name="music_unvote">سحب تصويتك لـ %1$s</string>
     <string name="music_next">تشغيل الأكثر تصويتًا</string>
+    <string name="music_stop_all">إيقاف الموسيقى للجميع</string>
+    <string name="room_sounds">أصوات غرف الصوت</string>
+    <string name="room_sounds_body">نغمة قصيرة عندما ينضم أحد إلى غرفة الصوت أو يغادرها.</string>
     <string name="music_nothing">لا شيء قيد التشغيل بعد</string>
     <string name="music_nothing_body">اطلب أغنية برابط YouTube. الأكثر تصويتًا تُشغَّل تاليًا.</string>
     <string name="music_no_requests">لا طلبات بعد. أضف أول طلب.</string>

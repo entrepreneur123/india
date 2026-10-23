@@ -435,6 +435,9 @@
     <string name="music_vote">Für %1$s stimmen</string>
     <string name="music_unvote">Stimme für %1$s zurückziehen</string>
     <string name="music_next">Meistgewählten spielen</string>
+    <string name="music_stop_all">Musik für alle ausschalten</string>
+    <string name="room_sounds">Töne im Sprachraum</string>
+    <string name="room_sounds_body">Ein kurzer Ton, wenn jemand einen Sprachraum betritt oder verlässt.</string>
     <string name="music_nothing">Noch läuft nichts</string>
     <string name="music_nothing_body">Wünsch dir einen Song mit einem YouTube-Link. Der meistgewählte läuft als Nächstes.</string>
     <string name="music_no_requests">Noch keine Wünsche. Füge den ersten hinzu.</string>

@@ -433,6 +433,9 @@
     <string name="music_vote">โหวตให้ %1$s</string>
     <string name="music_unvote">ยกเลิกโหวตให้ %1$s</string>
     <string name="music_next">เล่นเพลงที่โหวตมากที่สุด</string>
+    <string name="music_stop_all">ปิดเพลงสำหรับทุกคน</string>
+    <string name="room_sounds">เสียงในห้องเสียง</string>
+    <string name="room_sounds_body">มีเสียงสั้น ๆ เมื่อมีคนเข้าหรือออกจากห้องเสียง</string>
     <string name="music_nothing">ยังไม่มีเพลงเล่น</string>
     <string name="music_nothing_body">ขอเพลงด้วยลิงก์ YouTube เพลงที่โหวตมากที่สุดจะเล่นต่อไป</string>
     <string name="music_no_requests">ยังไม่มีคำขอ เพิ่มเพลงแรกเลย</string>

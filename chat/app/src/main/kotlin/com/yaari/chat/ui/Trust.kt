@@ -1,7 +1,9 @@
 package com.yaari.chat.ui
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -354,14 +356,25 @@ fun TrustLayer(vm: AppViewModel, me: Profile) {
 
 /**
  * A page in a Chrome Custom Tab (the browser when there is none): the identity provider's, or a page a room can't show
- * to everyone. False when nothing can open it.
+ * to everyone. [beside]: a partial tab (Chrome 107+) over the lower 60% of the screen, or the right half on a wide
+ * one (Chrome 120+), with the room above or beside it still in sight and usable; other browsers open it full screen.
+ * False when nothing can open it.
  */
-fun openInTab(context: Context, url: String): Boolean {
+fun openInTab(context: Context, url: String, beside: Boolean = false): Boolean {
     val uri = url.toUri()
     return try {
-        CustomTabsIntent.Builder().setShowTitle(true)
+        val tab = CustomTabsIntent.Builder().setShowTitle(true)
             .setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder().setToolbarColor(Color.White.toArgb()).build())
-            .build().launchUrl(context, uri)
+        val activity = context.findActivity()
+        if (beside && activity != null) {
+            val screen = context.resources.displayMetrics
+            val intent = tab.setInitialActivityHeightPx((screen.heightPixels * 0.6).toInt())
+                .setInitialActivityWidthPx(screen.widthPixels / 2).setBackgroundInteractionEnabled(true).build().intent.setData(uri)
+            // A partial tab needs a session or a launch for a result; no result is read.
+            @Suppress("DEPRECATION") activity.startActivityForResult(intent, 0)
+        } else {
+            tab.build().launchUrl(context, uri)
+        }
         true
     } catch (_: ActivityNotFoundException) {
         try {
@@ -371,6 +384,12 @@ fun openInTab(context: Context, url: String): Boolean {
             false
         }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 private data class PhaseText(val mark: Mark, val color: Long, val title: Int, val body: Int)

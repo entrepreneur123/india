@@ -435,6 +435,9 @@
     <string name="music_vote">Pigia kura %1$s</string>
     <string name="music_unvote">Ondoa kura yako kwa %1$s</string>
     <string name="music_next">Cheza wenye kura nyingi</string>
+    <string name="music_stop_all">Zima muziki kwa wote</string>
+    <string name="room_sounds">Sauti za chumba cha sauti</string>
+    <string name="room_sounds_body">Mlio mfupi mtu anapoingia au kutoka kwenye chumba cha sauti.</string>
     <string name="music_nothing">Bado hakuna kinachocheza</string>
     <string name="music_nothing_body">Omba wimbo kwa kiungo cha YouTube. Wenye kura nyingi unacheza unaofuata.</string>
     <string name="music_no_requests">Bado hakuna maombi. Ongeza la kwanza.</string>

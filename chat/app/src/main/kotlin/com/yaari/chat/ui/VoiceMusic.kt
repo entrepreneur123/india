@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -261,6 +262,7 @@ fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit,
                     Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
                     background = Brand.Saffron, tint = Brand.OnSaffron, iconSize = big,
                 )
+                CircleIconButton(Icons.Rounded.Stop, stringResource(R.string.music_stop_all), { act(VoiceAction.Stop) }, iconSize = big)
             } else {
                 // My phone only. While the DJ has paused the room there is nothing to play.
                 val mine = player.localPaused

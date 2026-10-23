@@ -460,6 +460,9 @@
     <string name="music_vote">%1$s ला मत द्या</string>
     <string name="music_unvote">%1$s चे तुमचे मत मागे घ्या</string>
     <string name="music_next">सर्वाधिक मते मिळालेले वाजवा</string>
+    <string name="music_stop_all">सगळ्यांसाठी संगीत बंद करा</string>
+    <string name="room_sounds">व्हॉइस रूम आवाज</string>
+    <string name="room_sounds_body">कोणी व्हॉइस रूममध्ये आलं किंवा गेलं की छोटा आवाज वाजतो.</string>
     <string name="music_nothing">अजून काहीही वाजत नाही</string>
     <string name="music_nothing_body">YouTube लिंकने गाण्याची फर्माईश करा. सर्वाधिक मते मिळालेले पुढे वाजेल.</string>
     <string name="music_no_requests">अजून फर्माईश नाही. पहिली तुम्ही करा.</string>

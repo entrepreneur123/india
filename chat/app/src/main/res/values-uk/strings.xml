@@ -440,6 +440,9 @@
     <string name="music_vote">Голосувати за %1$s</string>
     <string name="music_unvote">Скасувати голос за %1$s</string>
     <string name="music_next">Увімкнути найпопулярнішу</string>
+    <string name="music_stop_all">Вимкнути музику для всіх</string>
+    <string name="room_sounds">Звуки голосової кімнати</string>
+    <string name="room_sounds_body">Короткий звук, коли хтось заходить до голосової кімнати або виходить із неї.</string>
     <string name="music_nothing">Поки нічого не грає</string>
     <string name="music_nothing_body">Замовте пісню за посиланням YouTube. Наступною грає та, за яку більше голосів.</string>
     <string name="music_no_requests">Замовлень поки немає. Додайте перше.</string>

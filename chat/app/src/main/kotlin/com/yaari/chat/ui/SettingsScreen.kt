@@ -121,6 +121,9 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 Item(stringResource(R.string.language), value = AppLocale.nameOf(langTag) ?: stringResource(R.string.language_system)) {
                     language = true
                 }
+                Line()
+                var sounds by remember { mutableStateOf(vm.voice.sounds.on) }
+                SwitchItem(stringResource(R.string.room_sounds), stringResource(R.string.room_sounds_body), sounds) { vm.voice.sounds.on = it; sounds = it }
             }
 
             // Chat translation: on by default; the automatic switch goes while the server has no translation yet.

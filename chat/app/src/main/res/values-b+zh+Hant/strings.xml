@@ -457,6 +457,9 @@
     <string name="music_vote">為《%1$s》投票</string>
     <string name="music_unvote">撤回對《%1$s》的投票</string>
     <string name="music_next">播放票數最高的</string>
+    <string name="music_stop_all">為所有人關閉音樂</string>
+    <string name="room_sounds">語音房提示音</string>
+    <string name="room_sounds_body">有人進入或離開語音房時會響起短促的提示音。</string>
     <string name="music_nothing">還沒有播放歌曲</string>
     <string name="music_nothing_body">用 YouTube 連結點歌，票數最高的歌曲下一首播放。</string>
     <string name="music_no_requests">還沒有人點歌，來點第一首吧。</string>

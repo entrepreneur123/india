@@ -446,6 +446,9 @@
     <string name="music_vote">Stem op %1$s</string>
     <string name="music_unvote">Stem op %1$s intrekken</string>
     <string name="music_next">Speel het populairste nummer</string>
+    <string name="music_stop_all">Muziek voor iedereen uitzetten</string>
+    <string name="room_sounds">Geluiden in spraakruimte</string>
+    <string name="room_sounds_body">Een kort geluid als iemand een spraakruimte binnenkomt of verlaat.</string>
     <string name="music_nothing">Er speelt nog niets</string>
     <string name="music_nothing_body">Vraag een nummer aan met een YouTube-link. Het nummer met de meeste stemmen speelt als volgende.</string>
     <string name="music_no_requests">Nog geen aanvragen. Voeg de eerste toe.</string>

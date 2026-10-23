@@ -5,6 +5,7 @@ import com.yaari.chat.data.Backend
 import com.yaari.chat.data.BackendException
 import com.yaari.chat.data.IN_RANDOM_CHAT
 import com.yaari.chat.data.PhotoCheck
+import com.yaari.chat.data.RoomSounds
 import com.yaari.chat.model.GenderRule
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.ReportReason
@@ -132,6 +133,8 @@ class VoiceController(
     private val random: Random = Random.Default,
     /** Wall clock (how often typing is sent). */
     private val wallClock: () -> Long = System::currentTimeMillis,
+    /** The join and leave chime (Settings turns it off). */
+    val sounds: RoomSounds = RoomSounds.Memory(),
 ) {
     private val _list = MutableStateFlow(VoiceListState())
     val list: StateFlow<VoiceListState> = _list.asStateFlow()
@@ -148,6 +151,15 @@ class VoiceController(
     private val typingOff = mutableMapOf<String, Job>()
     private var lastTypingSent = Long.MIN_VALUE / 2
     private var reactionSeq = 0L
+    private var lastChime = Long.MIN_VALUE / 2
+
+    /** At most one chime every 1.2 s, so a busy room doesn't keep ringing. */
+    private fun chime(join: Boolean) {
+        val now = wallClock()
+        if (!sounds.on || now - lastChime < CHIME_GAP_MS) return
+        lastChime = now
+        sounds.play(join)
+    }
 
     /**
      * Asked before entering another room (a card, a code, an invite, a link, a new room): one live session at a time,
@@ -494,8 +506,15 @@ class VoiceController(
     fun musicPanel(open: Boolean) = _state.update { it?.copy(musicOpen = open) }
 
     private fun onRoom(room: VoiceRoom) {
-        val before = _state.value?.takeIf { it.roomId == room.id }?.me
+        val prev = _state.value?.takeIf { it.roomId == room.id }?.room
+        val before = prev?.me
         update(room.id) { it.copy(room = room) }
+        // I came in; someone else came or went (rooms up to 50 people: a crowd would ring all the time).
+        val ids = room.members.map { it.profile.id }
+        when {
+            prev == null -> chime(true)
+            ids.size <= CHIME_MAX -> RoomSounds.change(prev.members.map { it.profile.id }, ids, room.meId)?.let(::chime)
+        }
         val now = room.me ?: return
         // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.
         if (before != null && before.seat == null && now.seat != null && now.role != VoiceRole.HOST) notice(UiText(R.string.voice_on_stage))
@@ -514,7 +533,8 @@ class VoiceController(
 
     /** Out of the room: stop following it, and tell the server unless it already let me go. */
     private fun gone(roomId: String, leave: Boolean) {
-        if (_state.value?.roomId != roomId) return
+        val s = _state.value?.takeIf { it.roomId == roomId } ?: return
+        if (s.room != null) chime(false)
         val job = session
         session = null
         typingOff.values.forEach { it.cancel() }
@@ -750,6 +770,9 @@ class VoiceController(
         const val MAX_MENTION = 30
         /** voice_polls_get takes up to 50 ids a call. */
         const val MAX_POLLS = 50
+        /** Others' comings and goings chime in rooms up to this size, at most one chime per gap. */
+        const val CHIME_MAX = 50
+        const val CHIME_GAP_MS = 1_200L
 
         /** A poll call's refusals, in the reader's language; null for the rest (network, ...). */
         fun pollError(e: Throwable): UiText? = when ((e as? BackendException)?.code) {

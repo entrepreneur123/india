@@ -460,6 +460,9 @@
     <string name="music_vote">Iboto ang %1$s</string>
     <string name="music_unvote">Bawiin ang boto mo para sa %1$s</string>
     <string name="music_next">I-play ang may pinakamaraming boto</string>
+    <string name="music_stop_all">Patayin ang music para sa lahat</string>
+    <string name="room_sounds">Mga tunog sa voice room</string>
+    <string name="room_sounds_body">Maikling tunog kapag may pumasok o umalis sa voice room.</string>
     <string name="music_nothing">Wala pang tumutugtog</string>
     <string name="music_nothing_body">Mag-request ng kanta gamit ang YouTube link. Ang may pinakamaraming boto ang susunod na tutugtog.</string>
     <string name="music_no_requests">Wala pang request. Idagdag ang una.</string>

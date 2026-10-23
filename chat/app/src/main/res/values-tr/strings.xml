@@ -436,6 +436,9 @@
     <string name="music_vote">%1$s için oy ver</string>
     <string name="music_unvote">%1$s için verdiğin oyu geri al</string>
     <string name="music_next">En çok oy alanı çal</string>
+    <string name="music_stop_all">Müziği herkes için kapat</string>
+    <string name="room_sounds">Sesli oda sesleri</string>
+    <string name="room_sounds_body">Biri sesli odaya girdiğinde veya çıktığında kısa bir ses çalar.</string>
     <string name="music_nothing">Henüz bir şey çalmıyor</string>
     <string name="music_nothing_body">Bir YouTube bağlantısıyla şarkı iste. En çok oy alan sıradaki çalar.</string>
     <string name="music_no_requests">Henüz istek yok. İlkini sen ekle.</string>

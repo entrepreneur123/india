@@ -445,6 +445,9 @@
     <string name="music_vote">%1$s ಗೆ ವೋಟ್ ಮಾಡಿ</string>
     <string name="music_unvote">%1$s ಗೆ ನೀಡಿದ ವೋಟ್ ಹಿಂಪಡೆಯಿರಿ</string>
     <string name="music_next">ಹೆಚ್ಚು ವೋಟ್ ಪಡೆದದ್ದನ್ನು ಪ್ಲೇ ಮಾಡಿ</string>
+    <string name="music_stop_all">ಎಲ್ಲರಿಗೂ ಸಂಗೀತ ಆಫ್ ಮಾಡಿ</string>
+    <string name="room_sounds">ವಾಯ್ಸ್ ರೂಮ್ ಶಬ್ದಗಳು</string>
+    <string name="room_sounds_body">ಯಾರಾದರೂ ವಾಯ್ಸ್ ರೂಮ್‌ಗೆ ಬಂದಾಗ ಅಥವಾ ಹೋದಾಗ ಚಿಕ್ಕ ಶಬ್ದ ಕೇಳುತ್ತದೆ.</string>
     <string name="music_nothing">ಇನ್ನೂ ಏನೂ ಪ್ಲೇ ಆಗುತ್ತಿಲ್ಲ</string>
     <string name="music_nothing_body">YouTube ಲಿಂಕ್‌ನಿಂದ ಹಾಡು ಕೇಳಿ. ಹೆಚ್ಚು ವೋಟ್ ಪಡೆದದ್ದು ಮುಂದೆ ಪ್ಲೇ ಆಗುತ್ತದೆ.</string>
     <string name="music_no_requests">ಇನ್ನೂ ರಿಕ್ವೆಸ್ಟ್‌ಗಳಿಲ್ಲ. ಮೊದಲನೆಯದನ್ನು ನೀವೇ ಸೇರಿಸಿ.</string>

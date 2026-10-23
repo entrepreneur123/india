@@ -449,6 +449,9 @@
     <string name="music_vote">%1$s को वोट दें</string>
     <string name="music_unvote">%1$s से अपना वोट हटाएँ</string>
     <string name="music_next">सबसे ज़्यादा वोट वाला चलाएँ</string>
+    <string name="music_stop_all">सबके लिए म्यूज़िक बंद करें</string>
+    <string name="room_sounds">वॉइस रूम साउंड</string>
+    <string name="room_sounds_body">कोई वॉइस रूम में आए या जाए, तो एक छोटी-सी आवाज़ बजेगी।</string>
     <string name="music_nothing">अभी कुछ नहीं चल रहा</string>
     <string name="music_nothing_body">YouTube लिंक से गाना माँगें। सबसे ज़्यादा वोट वाला अगला चलेगा।</string>
     <string name="music_no_requests">अभी कोई फ़रमाइश नहीं। पहली आप करें।</string>

@@ -26,6 +26,7 @@ import com.yaari.chat.data.DeepLink
 import com.yaari.chat.data.FirstRun
 import com.yaari.chat.data.LinkBus
 import com.yaari.chat.data.Push
+import com.yaari.chat.data.RoomSounds
 import com.yaari.chat.data.TranslatePrefs
 import com.yaari.chat.data.MatchPrefs
 import com.yaari.chat.model.MANNERS
@@ -194,6 +195,8 @@ class AppViewModel(
     translatePrefs: TranslatePrefs = TranslatePrefs.Memory(),
     /** The countries to meet in random chat; in memory for tests. */
     private val matchPrefs: MatchPrefs = MatchPrefs.Memory(),
+    /** The voice room's join and leave chime; silent in memory for tests. */
+    roomSounds: RoomSounds = RoomSounds.Memory(),
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UiState(countries = matchPrefs.countries))
@@ -204,7 +207,7 @@ class AppViewModel(
     private var dmJob: Job? = null
 
     /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
-    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock)
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock, sounds = roomSounds)
 
     /** Link cards in every chat (link-meta), remembered per address while the app runs. */
     val linkCards = LinkCards(backend, viewModelScope)

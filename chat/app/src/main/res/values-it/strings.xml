@@ -446,6 +446,9 @@
     <string name="music_vote">Vota %1$s</string>
     <string name="music_unvote">Ritira il voto per %1$s</string>
     <string name="music_next">Riproduci la più votata</string>
+    <string name="music_stop_all">Spegni la musica per tutti</string>
+    <string name="room_sounds">Suoni della stanza vocale</string>
+    <string name="room_sounds_body">Un breve suono quando qualcuno entra o esce da una stanza vocale.</string>
     <string name="music_nothing">Ancora niente in riproduzione</string>
     <string name="music_nothing_body">Richiedi una canzone con un link di YouTube. La più votata parte dopo.</string>
     <string name="music_no_requests">Ancora nessuna richiesta. Aggiungi la prima.</string>

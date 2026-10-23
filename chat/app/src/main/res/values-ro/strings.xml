@@ -448,6 +448,9 @@
     <string name="music_vote">Votează %1$s</string>
     <string name="music_unvote">Retrage votul pentru %1$s</string>
     <string name="music_next">Pune melodia cu cele mai multe voturi</string>
+    <string name="music_stop_all">Oprește muzica pentru toți</string>
+    <string name="room_sounds">Sunete în camera vocală</string>
+    <string name="room_sounds_body">Un sunet scurt când cineva intră sau iese dintr-o cameră vocală.</string>
     <string name="music_nothing">Încă nu se aude nimic</string>
     <string name="music_nothing_body">Cere o melodie cu un link de YouTube. Cea mai votată urmează.</string>
     <string name="music_no_requests">Încă nicio cerere. Adaugă tu prima.</string>

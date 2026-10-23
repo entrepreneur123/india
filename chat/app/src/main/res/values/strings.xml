@@ -461,6 +461,9 @@
     <string name="music_vote">Vote for %1$s</string>
     <string name="music_unvote">Take back your vote for %1$s</string>
     <string name="music_next">Play the most-voted song</string>
+    <string name="music_stop_all">Turn music off for everyone</string>
+    <string name="room_sounds">Voice room sounds</string>
+    <string name="room_sounds_body">A short chime when someone joins or leaves a voice room.</string>
     <string name="music_nothing">Nothing playing yet</string>
     <string name="music_nothing_body">Request a song with a YouTube link. The most-voted song plays next.</string>
     <string name="music_no_requests">No requests yet. Add the first one.</string>

@@ -437,6 +437,9 @@
     <string name="music_vote">הצבעה ל%1$s</string>
     <string name="music_unvote">ביטול ההצבעה ל%1$s</string>
     <string name="music_next">השמעת השיר עם הכי הרבה קולות</string>
+    <string name="music_stop_all">כיבוי המוזיקה לכולם</string>
+    <string name="room_sounds">צלילי חדר קולי</string>
+    <string name="room_sounds_body">צליל קצר כשמישהו מצטרף לחדר קולי או עוזב אותו.</string>
     <string name="music_nothing">עוד לא מתנגן כלום</string>
     <string name="music_nothing_body">מבקשים שיר עם קישור YouTube. השיר עם הכי הרבה קולות מתנגן הבא.</string>
     <string name="music_no_requests">עוד אין בקשות. אפשר להוסיף את הראשונה.</string>

@@ -1356,6 +1356,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             VoiceAction.Pause -> rpc("voice_pause")
             VoiceAction.Resume -> rpc("voice_resume")
             is VoiceAction.Skip -> rpc("voice_skip") { (action.trackId ?: live?.room?.track?.id)?.let { put("p_current", it) } }
+            VoiceAction.Stop -> rpc("voice_stop")
             is VoiceAction.Seek -> rpc("voice_seek") { put("p_ms", action.ms) }
             is VoiceAction.ShareLink -> {
                 rpc("voice_share_link") { put("p_url", action.url); put("p_title", action.title?.take(200)) }

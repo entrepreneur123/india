@@ -435,6 +435,9 @@
     <string name="music_vote">رأی به %1$s</string>
     <string name="music_unvote">پس گرفتن رأی برای %1$s</string>
     <string name="music_next">پخش پررأی‌ترین</string>
+    <string name="music_stop_all">خاموش کردن موسیقی برای همه</string>
+    <string name="room_sounds">صداهای اتاق صوتی</string>
+    <string name="room_sounds_body">وقتی کسی وارد اتاق صوتی می‌شود یا از آن بیرون می‌رود، صدای کوتاهی پخش می‌شود.</string>
     <string name="music_nothing">هنوز چیزی پخش نمی‌شود</string>
     <string name="music_nothing_body">با لینک YouTube آهنگ درخواست کنید. پررأی‌ترین، بعدی پخش می‌شود.</string>
     <string name="music_no_requests">هنوز درخواستی نیست. اولی را شما اضافه کنید.</string>

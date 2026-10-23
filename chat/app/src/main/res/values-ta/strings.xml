@@ -445,6 +445,9 @@
     <string name="music_vote">%1$s-க்கு வோட் போடு</string>
     <string name="music_unvote">%1$s-க்கான உங்கள் வோட்டைத் திரும்பப் பெறு</string>
     <string name="music_next">அதிக வோட் பெற்றதை ப்ளே செய்</string>
+    <string name="music_stop_all">எல்லோருக்கும் இசையை நிறுத்து</string>
+    <string name="room_sounds">வாய்ஸ் ரூம் ஒலிகள்</string>
+    <string name="room_sounds_body">யாராவது வாய்ஸ் ரூமுக்கு வரும்போது அல்லது போகும்போது ஒரு சிறிய ஒலி கேட்கும்.</string>
     <string name="music_nothing">இன்னும் எதுவும் ப்ளே ஆகவில்லை</string>
     <string name="music_nothing_body">YouTube லிங்க் மூலம் பாட்டு கேளுங்கள். அதிக வோட் பெற்றது அடுத்து ப்ளே ஆகும்.</string>
     <string name="music_no_requests">இன்னும் கோரிக்கைகள் இல்லை. முதல் பாட்டை நீங்களே சேருங்கள்.</string>

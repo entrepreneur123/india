@@ -457,6 +457,9 @@
     <string name="music_vote">%1$s에 투표</string>
     <string name="music_unvote">%1$s 투표 취소</string>
     <string name="music_next">최다 득표곡 재생</string>
+    <string name="music_stop_all">모두에게 음악 끄기</string>
+    <string name="room_sounds">보이스룸 효과음</string>
+    <string name="room_sounds_body">보이스룸에 누가 들어오거나 나가면 짧은 알림음이 울려요.</string>
     <string name="music_nothing">아직 재생 중인 곡이 없어요</string>
     <string name="music_nothing_body">YouTube 링크로 노래를 신청하세요. 가장 많은 표를 받은 곡이 다음에 재생돼요.</string>
     <string name="music_no_requests">아직 신청곡이 없어요. 첫 곡을 추가해 보세요.</string>
