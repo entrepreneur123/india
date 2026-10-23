@@ -2,6 +2,12 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.7: Android 효과음 최종 구조 (0.18.4–0.18.6 실기기 실패 정리)
+- LiveKit 2.29 AudioSwitchHandler(바이트코드 확인): MODE_IN_COMMUNICATION, AUDIOFOCUS_GAIN, USAGE_VOICE_COMMUNICATION, 별도 HandlerThread에서 비동기 전환. 무대가 비면 SupabaseBackend.show()가 RoomChanged 전에 stopAudio().
+- 실기기 결과: 0.18.4 SIGNALLING → 두 번째 참여 무음, 0.18.5 통화모드면 VOICE_COMMUNICATION → 내려갈 때 무음(일반 모드로 바뀌며 수화기), 0.18.6 MEDIA → 참여 때 무음(AOSP MediaFocusControl이 통화 중 USAGE_MEDIA/GAME 음소거).
+- 지금: 재생 순간 모드로 고름(통화 → VOICE_COMMUNICATION, 일반 → ASSISTANCE_SONIFICATION). 무대가 차거나 비는 변화·내 퇴장은 settling=true → 통화 모드면 풀릴 때까지 50ms 간격 최대 1.5초 대기. 테스트: VoiceTest(settling 전달), RoomSoundsDeviceTest(Robolectric: 모드별 usage, 대기).
+- 실기기 미확인.
+
 ## 2026-10-23 0.18.6: Android 효과음 = USAGE_MEDIA
 - 0.18.5(통화 모드면 USAGE_VOICE_COMMUNICATION)는 무대에서 내려갈 때 무음: 무대가 비면 LiveKit이 끊겨 통화 모드→일반으로 바뀌는 순간 재생돼 수화기로 감. 모드에 따라 고르지 않고 항상 미디어로.
 - 실기기 미확인(이 환경엔 에뮬레이터 없음). 다음 확인 순서: 방 입장 → 음성참여 → 내려가기 → 다시 참여 → 내려가기, 스피커·유선·블루투스 각각.

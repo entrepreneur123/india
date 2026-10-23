@@ -154,11 +154,11 @@ class VoiceController(
     private var lastChime = Long.MIN_VALUE / 2
 
     /** Others' chimes at most one every 1.2 s, so a busy room doesn't keep ringing; [mine] (I came in or left) always. */
-    private fun chime(join: Boolean, mine: Boolean = false) {
+    private fun chime(join: Boolean, mine: Boolean = false, settling: Boolean = false) {
         val now = wallClock()
         if (!sounds.on || (!mine && now - lastChime < CHIME_GAP_MS)) return
         lastChime = now
-        sounds.play(join)
+        sounds.play(join, settling)
     }
 
     /**
@@ -514,7 +514,9 @@ class VoiceController(
         fun crowd(r: VoiceRoom) = r.members.map { it.profile.id } to r.members.filter { it.onStage }.map { it.profile.id }
         when {
             prev == null -> chime(true, mine = true)
-            room.members.size <= CHIME_MAX -> RoomSounds.change(crowd(prev), crowd(room), room.meId)?.let { chime(it) }
+            // The stage filling or emptying opens or closes the room's voice connection (RoomSounds.Device waits for it).
+            room.members.size <= CHIME_MAX ->
+                RoomSounds.change(crowd(prev), crowd(room), room.meId)?.let { chime(it, settling = prev.stageLive != room.stageLive) }
         }
         val now = room.me ?: return
         // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.
@@ -535,7 +537,7 @@ class VoiceController(
     /** Out of the room: stop following it, and tell the server unless it already let me go. */
     private fun gone(roomId: String, leave: Boolean) {
         val s = _state.value?.takeIf { it.roomId == roomId } ?: return
-        if (s.room != null) chime(false, mine = true)
+        if (s.room != null) chime(false, mine = true, settling = true)
         val job = session
         session = null
         typingOff.values.forEach { it.cancel() }

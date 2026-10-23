@@ -3,7 +3,11 @@ package com.yaari.chat.data
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioTrack
+import android.os.Handler
+import android.os.Looper
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.edit
 import kotlin.math.PI
 import kotlin.math.min
@@ -14,46 +18,74 @@ import kotlin.math.sin
 /** A short chime when someone joins or leaves the voice room (me included); Settings turns it off. As the web's. */
 interface RoomSounds {
     var on: Boolean
-    fun play(join: Boolean)
+
+    /** [settling]: the room's voice connection is opening or closing right now (the stage filled or emptied, I left). */
+    fun play(join: Boolean, settling: Boolean = false)
 
     /** In memory (tests and previews): remembers what played. */
     class Memory(override var on: Boolean = true) : RoomSounds {
         val played = mutableListOf<Boolean>()
-        override fun play(join: Boolean) { played += join }
+        val settling = mutableListOf<Boolean>()
+        override fun play(join: Boolean, settling: Boolean) {
+            played += join
+            this.settling += settling
+        }
     }
 
     /**
-     * The phone: kept with the app's other settings. Played as media, the one kind of sound that is heard both in and
-     * out of the room's call mode. The voice connects only while someone is on the stage, so stepping on or off flips
-     * the phone between call mode and normal just as the chime starts: a call sound (USAGE_VOICE_COMMUNICATION) then
-     * lands on the earpiece in normal mode, and a signalling one (USAGE_VOICE_COMMUNICATION_SIGNALLING) went unheard
-     * in call mode. Media goes to the speaker or the headset in both.
+     * The phone, kept with the app's other settings. Which sound is heard depends on the phone's mode when it plays.
+     * The room's voice (LiveKit) holds call mode and the audio focus as a call (USAGE_VOICE_COMMUNICATION, AUDIOFOCUS_GAIN)
+     * only while someone is on the stage, and switches it on its own thread a moment after it connects or leaves:
+     * - call mode: played as the voices are (USAGE_VOICE_COMMUNICATION), on their speaker or headset at their volume.
+     *   Media is muted by the system during a call; a call sound in normal mode goes to the earpiece.
+     * - normal mode: an ordinary app sound (USAGE_ASSISTANCE_SONIFICATION) on the speaker; it keeps playing when the
+     *   phone goes into call mode under it.
+     * While the voice is closing ([settling] in call mode) the chime waits until call mode is over (up to 1.5 s), so a
+     * call sound never ends up on the earpiece.
      */
     class Device(context: Context) : RoomSounds {
         private val prefs = context.applicationContext.getSharedPreferences("yaari_settings", Context.MODE_PRIVATE)
+        private val audio = context.applicationContext.getSystemService(AudioManager::class.java)
+        private val main = Handler(Looper.getMainLooper())
         private val pcm = HashMap<Boolean, ShortArray>()
-        private var playing: AudioTrack? = null
+        /** The chime playing (or played last). */
+        @VisibleForTesting internal var playing: AudioTrack? = null
 
         override var on: Boolean
             get() = runCatching { prefs.getBoolean(KEY, true) }.getOrDefault(true)
             set(value) = prefs.edit { putBoolean(KEY, value) }
 
-        /**
-         * A new track for every chime: replaying a finished static track (stop, reloadStaticData, play) stays silent on
-         * some phones from the second time on. The one before is released here (it has long finished: 180 ms).
-         */
-        override fun play(join: Boolean) {
+        override fun play(join: Boolean, settling: Boolean) = playWhenSettled(join, if (settling) SETTLE_TRIES else 0)
+
+        private fun playWhenSettled(join: Boolean, tries: Int) {
+            val call = audio?.mode == AudioManager.MODE_IN_COMMUNICATION
+            if (call && tries > 0) {
+                main.postDelayed({ playWhenSettled(join, tries - 1) }, SETTLE_STEP_MS)
+                return
+            }
+            // A new track for every chime: a finished static track played again stays silent on some phones.
             runCatching {
                 playing?.release()
-                playing = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }).apply { play() }
+                val t = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }, call)
+                playing = t
+                t.play()
             }
         }
 
-        private fun track(pcm: ShortArray) = AudioTrack.Builder()
-            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+        private fun track(pcm: ShortArray, call: Boolean) = AudioTrack.Builder()
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(if (call) AudioAttributes.USAGE_VOICE_COMMUNICATION else AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build(),
+            )
             .setAudioFormat(AudioFormat.Builder().setSampleRate(RATE).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
             .setTransferMode(AudioTrack.MODE_STATIC).setBufferSizeInBytes(pcm.size * 2).build()
             .apply { write(pcm, 0, pcm.size) }
+
+        private companion object {
+            const val SETTLE_STEP_MS = 50L
+            const val SETTLE_TRIES = 30
+        }
     }
 
     companion object {

@@ -118,6 +118,27 @@ class VoiceTest {
         assertEquals(listOf(true, false, false, true), sounds.played)
     }
 
+    @Test fun joiningAndLeavingTheVoiceChimesEveryTimeAndWaitsForTheVoiceConnection() = runTest(dispatcher) {
+        val sounds = RoomSounds.Memory()
+        val vm = signedIn(sounds = sounds)
+        vm.voice.create(NewVoiceRoom("Sunday chai and gossip", RoomCategory.TALK)); advanceUntilIdle()
+        assertEquals(listOf(true), sounds.played)
+        // Alone on the stage: each step fills or empties it, so the room's voice connection opens or closes with it.
+        repeat(3) {
+            now += 2_000
+            vm.voice.joinVoice(); advanceUntilIdle()
+            now += 2_000
+            vm.voice.act(VoiceAction.Unseat); advanceUntilIdle()
+        }
+        assertEquals(listOf(true) + List(3) { listOf(true, false) }.flatten(), sounds.played)
+        assertEquals(listOf(false) + List(6) { true }, sounds.settling)
+        now += 2_000
+        vm.voice.leave(); advanceUntilIdle() // the host: asked first
+        vm.voice.end(); advanceUntilIdle()
+        assertEquals(false, sounds.played.last())
+        assertEquals(true, sounds.settling.last())
+    }
+
     @Test fun chimeSamplesAndCrowdChanges() {
         val pcm = RoomSounds.chime(doubleArrayOf(660.0, 880.0))
         assertEquals(Math.round(RoomSounds.RATE * 0.09).toInt() * 2, pcm.size)
