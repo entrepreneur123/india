@@ -2,6 +2,13 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.1: 방장 위임·로고 홈·언어 변경 버그·최근 삭제·보낸 신청·읽음 배지·VIP 노출 차단 (마이그레이션 048–049 적용 완료)
+- 서버: `hide_recents(uuid[])`(048, 다시 만나면 복귀), 049에서 VIP 실명이 새던 `voice_line/voice_react/voice_queue_add/voice_share_link/ludo_join/ludo_open/bot_context/my_blocks/push_payload/can_read_media`를 마스킹, `looks_like_vip`로 흉내 이름 차단. **profiles를 읽는 새 함수는 반드시 `profiles_seen`(사람별) 또는 `profiles_public`(방 전체)을 쓸 것.**
+- 웹 언어 변경 버그 원인: `components/ui/toast.tsx`의 toast 객체가 언어마다 새로 만들어져 보이스룸·랜챗 effect가 다시 돌며 leave를 호출. ref로 고정.
+- Android: `configChanges`에 `locale|layoutDirection` 추가(13+), 12 이하는 recreate지만 ViewModel 유지.
+- 용량 점검 `docs/CAPACITY.md`(무료 플랜 실시간 200명 한도), 스토어 문구 `docs/STORE_LISTING.md`.
+- 남은 일: VIP 성별은 서버 응답에 남아 있음(사장님 결정), 배지가 왕복 시간 동안 잠깐 다시 뜰 수 있음(낮음), 실서버·실기기 확인 안 함.
+
 ## 2026-10-23 0.18.0: 흰색+오렌지 브랜드·유료 채팅 배경·스티커·VIP 시크릿 (마이그레이션 046–047 적용 완료)
 - 브랜드: 흰 바탕 + 오렌지 `#EA6A00`(흰 글자 3.2:1), 작은 오렌지 글자는 `#B45309`. 라이트 전용(다크 모드 삭제), 어두운 곳은 영상통화 화면뿐. 로고 = 오렌지 사각형 + 흰 "y".
 - 상품(Play Console에 아직 미등록): `wall_*` 6종 ₹79, `sticker_*` 4팩 ₹49, `vip_anon` ₹299 (비소모성, verify-purchase LOOK 정규식에 포함). `handle_change`도 미등록.
