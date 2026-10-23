@@ -923,4 +923,20 @@
         <item quantity="one">ഇവിടെ %1$d ആൾ</item>
         <item quantity="other">ഇവിടെ %1$d പേർ</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">മെസഞ്ചർ കോൺടാക്റ്റുകൾ</string>
+    <string name="contacts_note">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന സുഹൃത്തുക്കൾക്ക് മാത്രമേ ഇവ കാണാനാകൂ.</string>
+    <string name="contacts_safety">വിശ്വാസമില്ലാത്തവരുമായി ഒരിക്കലും കോൺടാക്റ്റുകൾ പങ്കിടരുത്. Yaari ജീവനക്കാർ ഒരിക്കലും ഇവ ചോദിക്കില്ല.</string>
+    <string name="contacts_phone">ഫോൺ</string>
+    <string name="contacts_bad_number">6 മുതൽ 16 വരെ അക്കങ്ങൾ നൽകുക, ഉദാ. +91 98765 43210</string>
+    <string name="contacts_bad_handle">40 വരെ അക്ഷരങ്ങൾ, അക്കങ്ങൾ, ഡോട്ട്, ഡാഷ് അല്ലെങ്കിൽ അണ്ടർസ്കോർ ഉപയോഗിക്കുക</string>
+    <string name="contacts_saved">കോൺടാക്റ്റുകൾ സേവ് ചെയ്തു</string>
+    <string name="contacts_section">കോൺടാക്റ്റുകൾ</string>
+    <string name="contacts_hint">തുറക്കാൻ ടാപ്പ് ചെയ്യുക · പകർത്താൻ അമർത്തിപ്പിടിക്കുക</string>
+    <string name="contacts_none">%1$s ഇതുവരെ കോൺടാക്റ്റുകൾ പങ്കിട്ടിട്ടില്ല</string>
+    <string name="contacts_share">എന്റെ കോൺടാക്റ്റുകൾ %1$s-മായി പങ്കിടുക</string>
+    <string name="contacts_sharing">നിങ്ങളുടെ കോൺടാക്റ്റുകൾ %1$s-മായി പങ്കിടുന്നുണ്ട്</string>
+    <string name="contacts_stop">പങ്കിടൽ നിർത്തുക</string>
+    <string name="contacts_shared">%1$s-ന് ഇപ്പോൾ നിങ്ങളുടെ കോൺടാക്റ്റുകൾ കാണാം</string>
+    <string name="contacts_stopped">%1$s-മായുള്ള പങ്കിടൽ നിർത്തി</string>
 </resources>

@@ -114,6 +114,23 @@ const zhHant: SocialDict = {
   'chatbar.end': '結束聊天',
   'chatbar.live': '聊天進行中 · 輕觸開啟',
   'chatbar.minimise': '最小化聊天',
+  // messenger contacts
+  'contacts.title': '通訊軟體聯絡方式',
+  'contacts.note': '只有你選擇的好友才能看到。',
+  'contacts.safety': '切勿把聯絡方式告訴你不信任的人。Yaari 工作人員絕不會向你索取。',
+  'contacts.phone': '電話',
+  'contacts.badNumber': '請輸入 6 到 16 位數字，例如 +91 98765 43210',
+  'contacts.badHandle': '最多 40 個英文字母、數字、點、連字號或底線',
+  'contacts.saved': '聯絡方式已儲存',
+  'contacts.section': '聯絡方式',
+  'contacts.hint': '輕觸開啟 · 長按複製',
+  'contacts.none': '{name} 還沒有分享聯絡方式',
+  'contacts.share': '把我的聯絡方式分享給 {name}',
+  'contacts.sharing': '你正在向 {name} 分享聯絡方式',
+  'contacts.stop': '停止分享',
+  'contacts.sharedToast': '{name} 現在可以看到你的聯絡方式了',
+  'contacts.stoppedToast': '已停止向 {name} 分享',
+  'contacts.copied': '已複製',
 }
 
 export default zhHant

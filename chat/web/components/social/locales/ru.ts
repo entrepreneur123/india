@@ -118,6 +118,23 @@ const ru: SocialDict = {
   'chatbar.end': 'Завершить чат',
   'chatbar.live': 'Чат идёт · нажмите, чтобы открыть',
   'chatbar.minimise': 'Свернуть чат',
+  // messenger contacts
+  'contacts.title': 'Контакты в мессенджерах',
+  'contacts.note': 'Их видят только друзья, которых вы выберете.',
+  'contacts.safety': 'Никогда не делитесь контактами с теми, кому не доверяете. Сотрудники Yaari никогда их не попросят.',
+  'contacts.phone': 'Телефон',
+  'contacts.badNumber': 'Введите от 6 до 16 цифр, например +91 98765 43210',
+  'contacts.badHandle': 'До 40 латинских букв, цифр, точек, дефисов или подчёркиваний',
+  'contacts.saved': 'Контакты сохранены',
+  'contacts.section': 'Контакты',
+  'contacts.hint': 'Нажмите, чтобы открыть · удерживайте, чтобы скопировать',
+  'contacts.none': '{name} пока не делится контактами',
+  'contacts.share': 'Поделиться контактами: {name}',
+  'contacts.sharing': 'Вы делитесь контактами: {name}',
+  'contacts.stop': 'Перестать делиться',
+  'contacts.sharedToast': 'Теперь {name} видит ваши контакты',
+  'contacts.stoppedToast': 'Вы больше не делитесь: {name}',
+  'contacts.copied': 'Скопировано',
 }
 
 export default ru

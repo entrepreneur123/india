@@ -938,4 +938,20 @@
         <item quantity="many">Тут %1$d людей</item>
         <item quantity="other">Тут %1$d людини</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Контакти в месенджерах</string>
+    <string name="contacts_note">Їх бачать лише друзі, яких ви оберете.</string>
+    <string name="contacts_safety">Ніколи не діліться контактами з тими, кому не довіряєте. Працівники Yaari ніколи їх не попросять.</string>
+    <string name="contacts_phone">Телефон</string>
+    <string name="contacts_bad_number">Введіть від 6 до 16 цифр, наприклад +91 98765 43210</string>
+    <string name="contacts_bad_handle">До 40 латинських літер, цифр, крапок, дефісів або підкреслень</string>
+    <string name="contacts_saved">Контакти збережено</string>
+    <string name="contacts_section">Контакти</string>
+    <string name="contacts_hint">Торкніться, щоб відкрити · утримуйте, щоб скопіювати</string>
+    <string name="contacts_none">%1$s поки не ділиться контактами</string>
+    <string name="contacts_share">Поділитися контактами: %1$s</string>
+    <string name="contacts_sharing">Ви ділитеся контактами: %1$s</string>
+    <string name="contacts_stop">Припинити ділитися</string>
+    <string name="contacts_shared">Тепер %1$s бачить ваші контакти</string>
+    <string name="contacts_stopped">Ви більше не ділитеся: %1$s</string>
 </resources>

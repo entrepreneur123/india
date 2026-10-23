@@ -30,6 +30,7 @@ import {
   type LinkMeta,
   type LookWear,
 } from './backend'
+import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
 import { MANNER_FLOOR, MANNERS } from './trust'
 import type { LookSim } from './mockLooks'
@@ -612,6 +613,14 @@ export class MockBackend implements Backend {
   async block(userId: string) {
     await wait(300)
     this.blocked.set(userId, Date.now())
+    this.unfriend(userId)
+  }
+
+  /** Like the server: no longer friends (unfriended, blocked) ends contact sharing both ways. */
+  private unfriend(userId: string) {
+    this.friendMap.delete(userId)
+    this.sharedWith.delete(userId)
+    this.theirContacts.delete(userId)
   }
 
   /** Who I blocked, and when (newest first in blocks()). */
@@ -640,6 +649,43 @@ export class MockBackend implements Backend {
   async unblock(userId: string) {
     await wait(250)
     this.blocked.delete(userId)
+  }
+
+  // ---- messenger contacts (044): mine, and what demo friends show me (Sofia does, the others don't yet) ----
+  private myContactCard: Contacts = {}
+  private sharedWith = new Set<string>()
+  private theirContacts = new Map<string, Contacts>([['u_sofia', { whatsapp: '+5511987654321', instagram: 'sofia.lima', discord: 'sofi_l' }]])
+
+  async setContacts(contacts: Contacts) {
+    await wait(300)
+    const out: Contacts = {}
+    for (const [k, v] of Object.entries(contacts)) {
+      const app = k as ContactApp
+      if (!CONTACT_APPS.includes(app)) throw new BackendError('bad_request')
+      const clean = cleanContact(app, v ?? '')
+      if (clean === null) throw new BackendError('contact_invalid', app)
+      if (clean) out[app] = clean
+    }
+    this.myContactCard = out
+    return { ...out }
+  }
+
+  async myContacts() {
+    await wait(250)
+    return { contacts: { ...this.myContactCard }, sharedWith: [...this.sharedWith] }
+  }
+
+  async shareContacts(userId: string, on: boolean) {
+    await wait(300)
+    if (!on) this.sharedWith.delete(userId)
+    else if (this.friendMap.get(userId) !== 'friends') throw new BackendError('not_friends')
+    else this.sharedWith.add(userId)
+  }
+
+  async contactsOf(userId: string) {
+    await wait(250)
+    if (this.friendMap.get(userId) !== 'friends') return null
+    return { contacts: this.theirContacts.get(userId) ?? null, mineShared: this.sharedWith.has(userId) }
   }
 
   async requestVideo(matchId: string) {
@@ -817,7 +863,7 @@ export class MockBackend implements Backend {
 
   async removeFriend(userId: string) {
     await wait(400)
-    this.friendMap.delete(userId)
+    this.unfriend(userId)
   }
 
   async friendThread(userId: string) {

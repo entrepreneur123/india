@@ -113,6 +113,23 @@ const ms: SocialDict = {
   'chatbar.end': 'Tamatkan sembang',
   'chatbar.live': 'Sembang langsung · ketik untuk buka',
   'chatbar.minimise': 'Kecilkan sembang',
+  // messenger contacts
+  'contacts.title': 'Kenalan aplikasi mesej',
+  'contacts.note': 'Hanya rakan yang anda pilih boleh melihatnya.',
+  'contacts.safety': 'Jangan sekali-kali kongsi kenalan dengan orang yang anda tidak percaya. Kakitangan Yaari tidak akan memintanya.',
+  'contacts.phone': 'Telefon',
+  'contacts.badNumber': 'Masukkan 6 hingga 16 digit, contohnya +91 98765 43210',
+  'contacts.badHandle': 'Gunakan sehingga 40 huruf, nombor, titik, sengkang atau garis bawah',
+  'contacts.saved': 'Kenalan disimpan',
+  'contacts.section': 'Kenalan',
+  'contacts.hint': 'Ketik untuk buka · tekan lama untuk salin',
+  'contacts.none': '{name} belum berkongsi kenalan',
+  'contacts.share': 'Kongsi kenalan saya dengan {name}',
+  'contacts.sharing': 'Anda berkongsi kenalan dengan {name}',
+  'contacts.stop': 'Berhenti berkongsi',
+  'contacts.sharedToast': '{name} kini boleh melihat kenalan anda',
+  'contacts.stoppedToast': 'Berhenti berkongsi dengan {name}',
+  'contacts.copied': 'Disalin',
 }
 
 export default ms

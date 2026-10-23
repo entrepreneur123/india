@@ -114,6 +114,23 @@ const zhHans: SocialDict = {
   'chatbar.end': '结束聊天',
   'chatbar.live': '聊天进行中 · 点按打开',
   'chatbar.minimise': '最小化聊天',
+  // messenger contacts
+  'contacts.title': '聊天软件联系方式',
+  'contacts.note': '只有你选择的好友才能看到。',
+  'contacts.safety': '切勿把联系方式告诉你不信任的人。Yaari 工作人员绝不会向你索要。',
+  'contacts.phone': '电话',
+  'contacts.badNumber': '请输入 6 到 16 位数字，例如 +91 98765 43210',
+  'contacts.badHandle': '最多 40 个英文字母、数字、点、连字符或下划线',
+  'contacts.saved': '联系方式已保存',
+  'contacts.section': '联系方式',
+  'contacts.hint': '点按打开 · 长按复制',
+  'contacts.none': '{name} 还没有分享联系方式',
+  'contacts.share': '把我的联系方式分享给 {name}',
+  'contacts.sharing': '你正在向 {name} 分享联系方式',
+  'contacts.stop': '停止分享',
+  'contacts.sharedToast': '{name} 现在可以看到你的联系方式了',
+  'contacts.stoppedToast': '已停止向 {name} 分享',
+  'contacts.copied': '已复制',
 }
 
 export default zhHans

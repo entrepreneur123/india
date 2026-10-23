@@ -114,6 +114,23 @@ const tr: SocialDict = {
   'chatbar.end': 'Sohbeti bitir',
   'chatbar.live': 'Canlı sohbet · açmak için dokun',
   'chatbar.minimise': 'Sohbeti küçült',
+  // messenger contacts
+  'contacts.title': 'Mesajlaşma bağlantıları',
+  'contacts.note': 'Bunları yalnızca seçtiğin arkadaşlar görebilir.',
+  'contacts.safety': 'Bağlantılarını güvenmediğin kişilerle asla paylaşma. Yaari ekibi bunları asla istemez.',
+  'contacts.phone': 'Telefon',
+  'contacts.badNumber': '6 ile 16 rakam gir, örneğin +91 98765 43210',
+  'contacts.badHandle': 'En fazla 40 harf, rakam, nokta, tire veya alt çizgi kullan',
+  'contacts.saved': 'Bağlantılar kaydedildi',
+  'contacts.section': 'Bağlantılar',
+  'contacts.hint': 'Açmak için dokun · kopyalamak için basılı tut',
+  'contacts.none': '{name} henüz bağlantılarını paylaşmadı',
+  'contacts.share': 'Bağlantılarımı paylaş: {name}',
+  'contacts.sharing': 'Bağlantılarını paylaşıyorsun: {name}',
+  'contacts.stop': 'Paylaşmayı durdur',
+  'contacts.sharedToast': '{name} artık bağlantılarını görebilir',
+  'contacts.stoppedToast': 'Paylaşım durduruldu: {name}',
+  'contacts.copied': 'Kopyalandı',
 }
 
 export default tr

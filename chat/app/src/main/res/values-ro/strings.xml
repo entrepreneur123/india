@@ -937,4 +937,20 @@
         <item quantity="few">%1$d persoane aici</item>
         <item quantity="other">%1$d de persoane aici</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Contacte de mesagerie</string>
+    <string name="contacts_note">Doar prietenii pe care îi alegi le pot vedea.</string>
+    <string name="contacts_safety">Nu-ți împărtăși niciodată contactele cu oameni în care nu ai încredere. Echipa Yaari nu ți le va cere niciodată.</string>
+    <string name="contacts_phone">Telefon</string>
+    <string name="contacts_bad_number">Introdu între 6 și 16 cifre, de ex. +91 98765 43210</string>
+    <string name="contacts_bad_handle">Folosește până la 40 de litere, cifre, puncte, cratime sau liniuțe jos</string>
+    <string name="contacts_saved">Contacte salvate</string>
+    <string name="contacts_section">Contacte</string>
+    <string name="contacts_hint">Atinge pentru a deschide · ține apăsat pentru a copia</string>
+    <string name="contacts_none">%1$s nu și-a împărtășit încă contactele</string>
+    <string name="contacts_share">Împărtășește-mi contactele cu %1$s</string>
+    <string name="contacts_sharing">Îți împărtășești contactele cu %1$s</string>
+    <string name="contacts_stop">Oprește împărtășirea</string>
+    <string name="contacts_shared">%1$s îți poate vedea acum contactele</string>
+    <string name="contacts_stopped">Nu mai împărtășești cu %1$s</string>
 </resources>

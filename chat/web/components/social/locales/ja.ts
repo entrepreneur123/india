@@ -113,6 +113,23 @@ const ja: SocialDict = {
   'chatbar.end': 'チャットを終了',
   'chatbar.live': 'チャット中・タップして開く',
   'chatbar.minimise': 'チャットを最小化',
+  // messenger contacts
+  'contacts.title': 'メッセンジャーの連絡先',
+  'contacts.note': '選んだ友達だけが見られます。',
+  'contacts.safety': '信頼できない人には連絡先を教えないでください。Yaariのスタッフが連絡先を尋ねることはありません。',
+  'contacts.phone': '電話',
+  'contacts.badNumber': '6〜16桁の数字を入力してください（例: +91 98765 43210）',
+  'contacts.badHandle': '英字・数字・ドット・ハイフン・アンダースコアで40文字以内にしてください',
+  'contacts.saved': '連絡先を保存しました',
+  'contacts.section': '連絡先',
+  'contacts.hint': 'タップで開く・長押しでコピー',
+  'contacts.none': '{name}さんはまだ連絡先を共有していません',
+  'contacts.share': '{name}さんに連絡先を共有する',
+  'contacts.sharing': '{name}さんに連絡先を共有しています',
+  'contacts.stop': '共有をやめる',
+  'contacts.sharedToast': '{name}さんがあなたの連絡先を見られるようになりました',
+  'contacts.stoppedToast': '{name}さんへの共有をやめました',
+  'contacts.copied': 'コピーしました',
 }
 
 export default ja

@@ -41,6 +41,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ContactPhone
 import androidx.compose.material.icons.rounded.GridOn
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.WorkspacePremium
@@ -190,6 +191,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
     val state = s.friendState(p.id)
     val inChat = s.chat?.match?.partner?.id == p.id
     val canMessage = !inChat && (state == FriendState.FRIENDS || s.recents.any { it.partner.id == p.id })
+    var editingContacts by remember { mutableStateOf(false) }
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             Row(Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -223,6 +225,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                     if (canMessage) SoftButton(stringResource(R.string.message), { vm.openDm(p.id) }, Modifier.weight(1f))
                 }
+                if (state == FriendState.FRIENDS) FriendContactsSection(vm, p, onEdit = { editingContacts = true }, Modifier.padding(top = 8.dp))
                 trustOf(p)?.let { MannerCard(it, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)) }
                 Spacer(Modifier.height(16.dp))
                 PromptCards(p, Modifier.padding(bottom = 8.dp))
@@ -236,6 +239,10 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
         vm.report(p.id, reason)
     }
     if (blocking) BlockDialog(p, onDismiss = { blocking = false }) { blocking = false; vm.block(p) }
+    // Sharing with no contacts saved yet starts here; saving shares them.
+    if (editingContacts) {
+        ContactsEditorScreen(vm, onDone = { editingContacts = false }, onSaved = { if (it.isNotEmpty()) vm.contacts.share(p.id, p.name, true) })
+    }
     if (unfriend) {
         AlertDialog(
             onDismissRequest = { unfriend = false },
@@ -427,7 +434,7 @@ fun ReportDialog(onDismiss: () -> Unit, actions: List<String>, onConfirm: (reaso
 
 /** Top bar used by the full-screen editors: Cancel · Title · Done. */
 @Composable
-private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEnabled: Boolean, onDone: () -> Unit) {
+internal fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEnabled: Boolean, onDone: () -> Unit) {
     Column {
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onCancel) { Icon(Icons.Rounded.Close, stringResource(R.string.cancel)) }
@@ -439,7 +446,9 @@ private fun EditorBar(title: String, onCancel: () -> Unit, done: String, doneEna
 }
 
 @Composable
-fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetails: () -> Unit = {}, onLooks: () -> Unit = {}) {
+fun EditProfileScreen(
+    vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetails: () -> Unit = {}, onLooks: () -> Unit = {}, onContacts: () -> Unit = {},
+) {
     BackHandler(onBack = onDone)
     var name by rememberSaveable { mutableStateOf(me.name) }
     var handle by rememberSaveable { mutableStateOf(me.handle.orEmpty()) }
@@ -489,6 +498,9 @@ fun EditProfileScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit, onDetai
                 }
                 EditorLink(stringResource(R.string.profile_details), stringResource(R.string.details_nudge), onDetails) {
                     MarkIcon(Mark.PALETTE, accentColors().ink, size = 22.dp)
+                }
+                EditorLink(stringResource(R.string.contacts_title), stringResource(R.string.contacts_note), onContacts) {
+                    Icon(Icons.Rounded.ContactPhone, null, Modifier.size(22.dp), tint = Brand.Pink)
                 }
                 // Locked on the server too: gender and age can't be changed after sign-up.
                 Row(
@@ -558,14 +570,16 @@ fun HandleInput(value: String, onChange: (String) -> Unit, field: HandleField?, 
 @Composable
 fun Field(
     value: String, onChange: (String) -> Unit, label: String, modifier: Modifier = Modifier, single: Boolean = true, counter: String? = null,
-    keyboard: KeyboardOptions = KeyboardOptions.Default,
+    keyboard: KeyboardOptions = KeyboardOptions.Default, error: String? = null, placeholder: String? = null,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     OutlinedTextField(
         value, onChange, modifier.fillMaxWidth(), label = { Text(label) }, singleLine = single, minLines = if (single) 1 else 3,
         keyboardOptions = keyboard,
         shape = RoundedCornerShape(12.dp),
         textStyle = MaterialTheme.typography.bodyLarge,
-        supportingText = counter?.let { { Text(it, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End) } },
+        isError = error != null, leadingIcon = leading, placeholder = placeholder?.let { { Text(it) } },
+        supportingText = error?.let { { Text(it) } } ?: counter?.let { { Text(it, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End) } },
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink,
             focusedLabelColor = Brand.Pink, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,

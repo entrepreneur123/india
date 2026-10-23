@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { ChevronRight, Plus, Settings, Sparkles, UserPen } from 'lucide-react'
+import { BookUser, ChevronRight, Plus, Settings, Sparkles, UserPen } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { handleSpelling, namePlain } from '@/lib/handle'
@@ -21,6 +21,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { InterestChips } from '@/components/social/bits'
+import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
 import { InterestsSheet } from '@/components/social/interests-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -51,6 +52,7 @@ export function MeScreen() {
   const [looksOpen, setLooksOpen] = useState(false)
   const [used, setUsed] = useState({ post: false, style: false, looks: false })
   const [interestsOpen, setInterestsOpen] = useState(false)
+  const [contactsOpen, setContactsOpen] = useState(false)
   const { st } = useSocialT()
   const { ft } = useFeedT()
   const { lt } = useLooksT()
@@ -190,7 +192,12 @@ export function MeScreen() {
           setEditOpen(false)
           openStyle()
         }}
+        onContacts={() => {
+          setEditOpen(false)
+          setContactsOpen(true)
+        }}
       />
+      <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
       {used.post ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
@@ -221,13 +228,16 @@ function Stat({ label, value }: { label: string; value: number | undefined }) {
   )
 }
 
-function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void }) {
+function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
+  open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void; onContacts: () => void
+}) {
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
   const { me, setMe } = useApp()
   const { t, locale } = useI18n()
   const { lt } = useLooksT()
+  const { st } = useSocialT()
   const id = useId()
   const [name, setName] = useState(me.name)
   const [handle, setHandle] = useState(me.handle ?? '')
@@ -308,6 +318,7 @@ function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onC
         <div className="-mx-2 flex flex-col">
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
           <MoreRow icon={<UserPen />} label={lt('details.title')} onClick={onDetails} />
+          <MoreRow icon={<BookUser />} label={st('contacts.title')} note={st('contacts.note')} onClick={onContacts} />
         </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>
           {t('common.save')}
@@ -317,18 +328,21 @@ function EditProfile({ open, onClose, onLooks, onDetails }: { open: boolean; onC
   )
 }
 
-/** A way on from Edit profile (to the Looks shop, to the profile details). */
-function MoreRow({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+/** A way on from Edit profile (to the Looks shop, the profile details, my contacts). */
+function MoreRow({ icon, label, note, onClick }: { icon: React.ReactNode; label: string; note?: string; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex h-12 items-center gap-3 rounded-xl px-2 text-start text-[15px] font-semibold transition-colors duration-150 hover:bg-muted"
+      className="flex min-h-12 items-center gap-3 rounded-xl px-2 py-1.5 text-start text-[15px] font-semibold transition-colors duration-150 hover:bg-muted"
     >
       <span className="shrink-0 text-muted-foreground [&>svg]:size-5" aria-hidden>
         {icon}
       </span>
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate">{label}</span>
+        {note ? <span className="block text-xs font-normal text-muted-foreground">{note}</span> : null}
+      </span>
       <ChevronRight className="size-4.5 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
     </button>
   )

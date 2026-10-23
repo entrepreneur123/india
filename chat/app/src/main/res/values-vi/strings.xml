@@ -937,4 +937,20 @@
     <plurals name="room_people_n">
         <item quantity="other">%1$d người ở đây</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Liên hệ ứng dụng nhắn tin</string>
+    <string name="contacts_note">Chỉ những người bạn bạn chọn mới thấy được.</string>
+    <string name="contacts_safety">Đừng bao giờ chia sẻ liên hệ với người bạn không tin tưởng. Nhân viên Yaari sẽ không bao giờ hỏi những thông tin này.</string>
+    <string name="contacts_phone">Điện thoại</string>
+    <string name="contacts_bad_number">Nhập 6 đến 16 chữ số, ví dụ +91 98765 43210</string>
+    <string name="contacts_bad_handle">Dùng tối đa 40 chữ cái, số, dấu chấm, gạch ngang hoặc gạch dưới</string>
+    <string name="contacts_saved">Đã lưu liên hệ</string>
+    <string name="contacts_section">Liên hệ</string>
+    <string name="contacts_hint">Chạm để mở · nhấn giữ để sao chép</string>
+    <string name="contacts_none">%1$s chưa chia sẻ liên hệ</string>
+    <string name="contacts_share">Chia sẻ liên hệ của tôi với %1$s</string>
+    <string name="contacts_sharing">Bạn đang chia sẻ liên hệ với %1$s</string>
+    <string name="contacts_stop">Ngừng chia sẻ</string>
+    <string name="contacts_shared">%1$s giờ có thể thấy liên hệ của bạn</string>
+    <string name="contacts_stopped">Đã ngừng chia sẻ với %1$s</string>
 </resources>

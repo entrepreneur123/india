@@ -911,4 +911,20 @@
         <item quantity="one">%1$d نفر اینجاست</item>
         <item quantity="other">%1$d نفر اینجا هستند</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">راه‌های ارتباطی در پیام‌رسان‌ها</string>
+    <string name="contacts_note">فقط دوستانی که انتخاب می‌کنید این‌ها را می‌بینند.</string>
+    <string name="contacts_safety">هرگز راه‌های ارتباطی‌تان را با کسی که به او اعتماد ندارید به اشتراک نگذارید. کارکنان Yaari هرگز آن‌ها را از شما نمی‌خواهند.</string>
+    <string name="contacts_phone">تلفن</string>
+    <string name="contacts_bad_number">۶ تا ۱۶ رقم وارد کنید، مثل +91 98765 43210</string>
+    <string name="contacts_bad_handle">تا ۴۰ حرف لاتین، عدد، نقطه، خط تیره یا زیرخط</string>
+    <string name="contacts_saved">راه‌های ارتباطی ذخیره شد</string>
+    <string name="contacts_section">راه‌های ارتباطی</string>
+    <string name="contacts_hint">برای باز کردن بزنید · برای کپی نگه دارید</string>
+    <string name="contacts_none">%1$s هنوز راه‌های ارتباطی‌اش را به اشتراک نگذاشته</string>
+    <string name="contacts_share">اشتراک راه‌های ارتباطی‌ام با %1$s</string>
+    <string name="contacts_sharing">راه‌های ارتباطی‌تان را با %1$s به اشتراک گذاشته‌اید</string>
+    <string name="contacts_stop">توقف اشتراک</string>
+    <string name="contacts_shared">%1$s حالا راه‌های ارتباطی‌تان را می‌بیند</string>
+    <string name="contacts_stopped">اشتراک با %1$s متوقف شد</string>
 </resources>

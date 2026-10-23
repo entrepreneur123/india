@@ -109,6 +109,23 @@ const ro: SocialDict = {
   'chatbar.end': 'Încheie chatul',
   'chatbar.live': 'Chat live · atinge ca să deschizi',
   'chatbar.minimise': 'Minimizează chatul',
+  // messenger contacts
+  'contacts.title': 'Contacte de mesagerie',
+  'contacts.note': 'Doar prietenii pe care îi alegi le pot vedea.',
+  'contacts.safety': 'Nu-ți împărtăși niciodată contactele cu oameni în care nu ai încredere. Echipa Yaari nu ți le va cere niciodată.',
+  'contacts.phone': 'Telefon',
+  'contacts.badNumber': 'Introdu între 6 și 16 cifre, de ex. +91 98765 43210',
+  'contacts.badHandle': 'Folosește până la 40 de litere, cifre, puncte, cratime sau liniuțe jos',
+  'contacts.saved': 'Contacte salvate',
+  'contacts.section': 'Contacte',
+  'contacts.hint': 'Atinge pentru a deschide · ține apăsat pentru a copia',
+  'contacts.none': '{name} nu și-a împărtășit încă contactele',
+  'contacts.share': 'Împărtășește-mi contactele cu {name}',
+  'contacts.sharing': 'Îți împărtășești contactele cu {name}',
+  'contacts.stop': 'Oprește împărtășirea',
+  'contacts.sharedToast': '{name} îți poate vedea acum contactele',
+  'contacts.stoppedToast': 'Nu mai împărtășești cu {name}',
+  'contacts.copied': 'Copiat',
 }
 
 export default ro

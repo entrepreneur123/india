@@ -113,6 +113,23 @@ const fa: SocialDict = {
   'chatbar.end': 'پایان چت',
   'chatbar.live': 'چت زنده · برای باز کردن بزنید',
   'chatbar.minimise': 'کوچک کردن چت',
+  // messenger contacts
+  'contacts.title': 'راه‌های ارتباطی در پیام‌رسان‌ها',
+  'contacts.note': 'فقط دوستانی که انتخاب می‌کنید این‌ها را می‌بینند.',
+  'contacts.safety': 'هرگز راه‌های ارتباطی‌تان را با کسی که به او اعتماد ندارید به اشتراک نگذارید. کارکنان Yaari هرگز آن‌ها را از شما نمی‌خواهند.',
+  'contacts.phone': 'تلفن',
+  'contacts.badNumber': '۶ تا ۱۶ رقم وارد کنید، مثل +91 98765 43210',
+  'contacts.badHandle': 'تا ۴۰ حرف لاتین، عدد، نقطه، خط تیره یا زیرخط',
+  'contacts.saved': 'راه‌های ارتباطی ذخیره شد',
+  'contacts.section': 'راه‌های ارتباطی',
+  'contacts.hint': 'برای باز کردن بزنید · برای کپی نگه دارید',
+  'contacts.none': '{name} هنوز راه‌های ارتباطی‌اش را به اشتراک نگذاشته',
+  'contacts.share': 'اشتراک راه‌های ارتباطی‌ام با {name}',
+  'contacts.sharing': 'راه‌های ارتباطی‌تان را با {name} به اشتراک گذاشته‌اید',
+  'contacts.stop': 'توقف اشتراک',
+  'contacts.sharedToast': '{name} حالا راه‌های ارتباطی‌تان را می‌بیند',
+  'contacts.stoppedToast': 'اشتراک با {name} متوقف شد',
+  'contacts.copied': 'کپی شد',
 }
 
 export default fa

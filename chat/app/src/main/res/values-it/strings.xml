@@ -924,4 +924,20 @@
         <item quantity="one">%1$d persona qui</item>
         <item quantity="other">%1$d persone qui</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Contatti di messaggistica</string>
+    <string name="contacts_note">Solo gli amici che scegli possono vederli.</string>
+    <string name="contacts_safety">Non condividere mai i tuoi contatti con persone di cui non ti fidi. Lo staff di Yaari non te li chiederà mai.</string>
+    <string name="contacts_phone">Telefono</string>
+    <string name="contacts_bad_number">Inserisci da 6 a 16 cifre, ad es. +91 98765 43210</string>
+    <string name="contacts_bad_handle">Usa fino a 40 lettere, numeri, punti, trattini o trattini bassi</string>
+    <string name="contacts_saved">Contatti salvati</string>
+    <string name="contacts_section">Contatti</string>
+    <string name="contacts_hint">Tocca per aprire · tieni premuto per copiare</string>
+    <string name="contacts_none">%1$s non ha ancora condiviso i suoi contatti</string>
+    <string name="contacts_share">Condividi i miei contatti con %1$s</string>
+    <string name="contacts_sharing">Stai condividendo i tuoi contatti con %1$s</string>
+    <string name="contacts_stop">Smetti di condividere</string>
+    <string name="contacts_shared">Ora %1$s può vedere i tuoi contatti</string>
+    <string name="contacts_stopped">Non condividi più con %1$s</string>
 </resources>

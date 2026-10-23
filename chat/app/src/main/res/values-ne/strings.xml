@@ -911,4 +911,20 @@
         <item quantity="one">यहाँ %1$d जना</item>
         <item quantity="other">यहाँ %1$d जना</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">मेसेन्जर सम्पर्कहरू</string>
+    <string name="contacts_note">यी तपाईंले छानेका साथीहरूले मात्र हेर्न सक्छन्।</string>
+    <string name="contacts_safety">विश्वास नलागेका मानिसहरूसँग कहिल्यै सम्पर्क सेयर नगर्नुहोस्। Yaari का कर्मचारीले यी कहिल्यै माग्ने छैनन्।</string>
+    <string name="contacts_phone">फोन</string>
+    <string name="contacts_bad_number">६ देखि १६ अङ्क लेख्नुहोस्, जस्तै +91 98765 43210</string>
+    <string name="contacts_bad_handle">४० सम्म अक्षर, अङ्क, डट, ड्यास वा अन्डरस्कोर प्रयोग गर्नुहोस्</string>
+    <string name="contacts_saved">सम्पर्कहरू सेभ भए</string>
+    <string name="contacts_section">सम्पर्कहरू</string>
+    <string name="contacts_hint">खोल्न ट्याप गर्नुहोस् · कपी गर्न थिचिराख्नुहोस्</string>
+    <string name="contacts_none">%1$s ले अझै सम्पर्क सेयर गर्नुभएको छैन</string>
+    <string name="contacts_share">मेरा सम्पर्क %1$s सँग सेयर गर्नुहोस्</string>
+    <string name="contacts_sharing">तपाईं आफ्ना सम्पर्क %1$s सँग सेयर गर्दै हुनुहुन्छ</string>
+    <string name="contacts_stop">सेयर गर्न रोक्नुहोस्</string>
+    <string name="contacts_shared">%1$s ले अब तपाईंका सम्पर्क हेर्न सक्नुहुन्छ</string>
+    <string name="contacts_stopped">%1$s सँग सेयर गर्न रोकियो</string>
 </resources>

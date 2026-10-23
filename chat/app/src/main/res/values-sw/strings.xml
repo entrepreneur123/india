@@ -911,4 +911,20 @@
         <item quantity="one">Mtu %1$d yupo hapa</item>
         <item quantity="other">Watu %1$d wapo hapa</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Mawasiliano ya programu za ujumbe</string>
+    <string name="contacts_note">Ni marafiki unaowachagua tu wanaoweza kuyaona.</string>
+    <string name="contacts_safety">Usishiriki kamwe mawasiliano na watu usiowaamini. Wafanyakazi wa Yaari hawatayaomba kamwe.</string>
+    <string name="contacts_phone">Simu</string>
+    <string name="contacts_bad_number">Weka tarakimu 6 hadi 16, kama +91 98765 43210</string>
+    <string name="contacts_bad_handle">Tumia hadi herufi 40, namba, nukta, vistari au mistari ya chini</string>
+    <string name="contacts_saved">Mawasiliano yamehifadhiwa</string>
+    <string name="contacts_section">Mawasiliano</string>
+    <string name="contacts_hint">Gusa kufungua · bonyeza kwa muda kunakili</string>
+    <string name="contacts_none">%1$s bado hajashiriki mawasiliano</string>
+    <string name="contacts_share">Shiriki mawasiliano yangu na %1$s</string>
+    <string name="contacts_sharing">Unashiriki mawasiliano yako na %1$s</string>
+    <string name="contacts_stop">Acha kushiriki</string>
+    <string name="contacts_shared">%1$s sasa anaweza kuona mawasiliano yako</string>
+    <string name="contacts_stopped">Umeacha kushiriki na %1$s</string>
 </resources>

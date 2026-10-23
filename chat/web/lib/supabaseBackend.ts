@@ -57,6 +57,7 @@ import { parseReply } from './voice-chat'
 import { parsePoll, POLLS_PER_READ } from './voice-polls'
 import { parseKycResult, parseMyTrust, parseTrustList } from './trust'
 import { parseLook, parseLooks, parseShop } from './looks'
+import { CONTACT_APPS, type Contacts } from './contacts'
 import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
@@ -85,6 +86,7 @@ const CODES = [
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
+  'contact_invalid', 'not_friends',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
@@ -209,6 +211,13 @@ function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise
   return fetch(input, { ...init, signal })
 }
 
+/** Known apps with text values only (a newer server may keep more). */
+const contactsOnly = (c: unknown): Contacts =>
+  Object.fromEntries(CONTACT_APPS.flatMap((k) => {
+    const v = (c as Record<string, unknown> | null)?.[k]
+    return typeof v === 'string' && v ? [[k, v]] : []
+  }))
+
 /** Database and function errors carry the rule name in their text ("exit_locked", ...). */
 function codeOf(text: string): string {
   if (text.includes('row-level security')) return 'blocked'
@@ -217,7 +226,7 @@ function codeOf(text: string): string {
 
 function fail(error: { message?: string; details?: string | null; hint?: string | null } | null): never {
   const text = [error?.message, error?.details, error?.hint].filter(Boolean).join(' ')
-  throw new BackendError(codeOf(text))
+  throw new BackendError(codeOf(text), error?.details ?? undefined)
 }
 
 /** The chat's lines (reactions come over realtime only). */
@@ -922,6 +931,26 @@ export class SupabaseBackend implements Backend {
 
   async unblock(userId: string) {
     await this.rpc('unblock_user', { p_user: userId })
+  }
+
+  // ---- messenger contacts (044_friend_contacts.sql) ----
+
+  async setContacts(contacts: Contacts) {
+    return contactsOnly(await this.rpc('set_contacts', { p_contacts: contacts }))
+  }
+
+  async myContacts() {
+    const r = await this.rpc<{ contacts: unknown; shared_with: string[] | null }>('my_contacts')
+    return { contacts: contactsOnly(r.contacts), sharedWith: r.shared_with ?? [] }
+  }
+
+  async shareContacts(userId: string, on: boolean) {
+    await this.rpc('share_contacts', { p_user: userId, p_on: on })
+  }
+
+  async contactsOf(userId: string) {
+    const r = await this.rpc<{ contacts: unknown; mine_shared: boolean } | null>('contacts_of', { p_user: userId })
+    return r && { contacts: r.contacts ? contactsOnly(r.contacts) : null, mineShared: r.mine_shared }
   }
 
   private async personRows(rows: PersonRowRaw[] | null): Promise<PersonRow[]> {

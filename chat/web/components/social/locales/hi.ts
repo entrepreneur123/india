@@ -108,6 +108,23 @@ const hi: SocialDict = {
   'chatbar.end': 'चैट ख़त्म करें',
   'chatbar.live': 'लाइव चैट · खोलने के लिए टैप करें',
   'chatbar.minimise': 'चैट छोटी करें',
+  // messenger contacts
+  'contacts.title': 'मैसेंजर संपर्क',
+  'contacts.note': 'इन्हें सिर्फ़ वही दोस्त देख सकते हैं जिन्हें आप चुनें।',
+  'contacts.safety': 'जिन लोगों पर भरोसा न हो, उनसे संपर्क कभी शेयर न करें। Yaari की टीम कभी इन्हें नहीं माँगेगी।',
+  'contacts.phone': 'फ़ोन',
+  'contacts.badNumber': '6 से 16 अंक डालें, जैसे +91 98765 43210',
+  'contacts.badHandle': '40 तक अक्षर, अंक, डॉट, डैश या अंडरस्कोर इस्तेमाल करें',
+  'contacts.saved': 'संपर्क सेव हो गए',
+  'contacts.section': 'संपर्क',
+  'contacts.hint': 'खोलने के लिए टैप करें · कॉपी करने के लिए दबाकर रखें',
+  'contacts.none': '{name} ने अभी तक संपर्क शेयर नहीं किए हैं',
+  'contacts.share': 'अपने संपर्क {name} के साथ शेयर करें',
+  'contacts.sharing': 'आप अपने संपर्क {name} के साथ शेयर कर रहे हैं',
+  'contacts.stop': 'शेयर करना बंद करें',
+  'contacts.sharedToast': '{name} अब आपके संपर्क देख सकते हैं',
+  'contacts.stoppedToast': '{name} के साथ शेयर करना बंद किया',
+  'contacts.copied': 'कॉपी हो गया',
 }
 
 export default hi

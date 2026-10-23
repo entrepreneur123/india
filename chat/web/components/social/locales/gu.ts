@@ -102,6 +102,23 @@ const gu: SocialDict = {
   'chatbar.end': 'ચેટ પૂરી કરો',
   'chatbar.live': 'લાઇવ ચેટ · ખોલવા ટૅપ કરો',
   'chatbar.minimise': 'ચેટ નાની કરો',
+  // messenger contacts
+  'contacts.title': 'મેસેન્જર સંપર્કો',
+  'contacts.note': 'આ ફક્ત તમે પસંદ કરેલા મિત્રો જ જોઈ શકે છે.',
+  'contacts.safety': 'જેના પર ભરોસો ન હોય તેમની સાથે ક્યારેય સંપર્કો શેર ન કરો. Yaari ની ટીમ ક્યારેય તે માંગશે નહીં.',
+  'contacts.phone': 'ફોન',
+  'contacts.badNumber': '6 થી 16 અંક લખો, જેમ કે +91 98765 43210',
+  'contacts.badHandle': '40 સુધી અક્ષરો, અંકો, ડોટ, ડેશ અથવા અંડરસ્કોર વાપરો',
+  'contacts.saved': 'સંપર્કો સેવ થયા',
+  'contacts.section': 'સંપર્કો',
+  'contacts.hint': 'ખોલવા ટેપ કરો · કૉપિ કરવા દબાવી રાખો',
+  'contacts.none': '{name} એ હજી સંપર્કો શેર કર્યા નથી',
+  'contacts.share': 'મારા સંપર્કો {name} સાથે શેર કરો',
+  'contacts.sharing': 'તમે તમારા સંપર્કો {name} સાથે શેર કરી રહ્યા છો',
+  'contacts.stop': 'શેર કરવાનું બંધ કરો',
+  'contacts.sharedToast': '{name} હવે તમારા સંપર્કો જોઈ શકે છે',
+  'contacts.stoppedToast': '{name} સાથે શેર કરવાનું બંધ કર્યું',
+  'contacts.copied': 'કૉપિ થયું',
 }
 
 export default gu

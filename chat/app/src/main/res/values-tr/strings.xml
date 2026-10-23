@@ -912,4 +912,20 @@
         <item quantity="one">Burada %1$d kişi var</item>
         <item quantity="other">Burada %1$d kişi var</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Mesajlaşma bağlantıları</string>
+    <string name="contacts_note">Bunları yalnızca seçtiğin arkadaşlar görebilir.</string>
+    <string name="contacts_safety">Bağlantılarını güvenmediğin kişilerle asla paylaşma. Yaari ekibi bunları asla istemez.</string>
+    <string name="contacts_phone">Telefon</string>
+    <string name="contacts_bad_number">6 ile 16 rakam gir, örneğin +91 98765 43210</string>
+    <string name="contacts_bad_handle">En fazla 40 harf, rakam, nokta, tire veya alt çizgi kullan</string>
+    <string name="contacts_saved">Bağlantılar kaydedildi</string>
+    <string name="contacts_section">Bağlantılar</string>
+    <string name="contacts_hint">Açmak için dokun · kopyalamak için basılı tut</string>
+    <string name="contacts_none">%1$s henüz bağlantılarını paylaşmadı</string>
+    <string name="contacts_share">Bağlantılarımı paylaş: %1$s</string>
+    <string name="contacts_sharing">Bağlantılarını paylaşıyorsun: %1$s</string>
+    <string name="contacts_stop">Paylaşmayı durdur</string>
+    <string name="contacts_shared">%1$s artık bağlantılarını görebilir</string>
+    <string name="contacts_stopped">Paylaşım durduruldu: %1$s</string>
 </resources>

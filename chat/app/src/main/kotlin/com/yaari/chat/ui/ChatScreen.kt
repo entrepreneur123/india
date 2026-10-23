@@ -358,7 +358,9 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
 
 /** Light header for friend messages (DMs): back, avatar, name with flag and a subtitle. */
 @Composable
-private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, onBack: () -> Unit, typing: Boolean = false) {
+private fun ChatBar(
+    partner: Profile, subtitle: String, onProfile: () -> Unit, onBack: () -> Unit, typing: Boolean = false, actions: @Composable () -> Unit = {},
+) {
     Column(Modifier.background(MaterialTheme.colorScheme.background)) {
         Row(
             Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 12.dp),
@@ -381,6 +383,7 @@ private fun ChatBar(partner: Profile, subtitle: String, onProfile: () -> Unit, o
                     )
                 }
             }
+            actions()
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
     }
@@ -399,6 +402,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState
         ChatBar(
             r.partner, if (dm.partnerTyping) stringResource(R.string.typing) else r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) },
             onBack = vm::closeDm, typing = dm.partnerTyping,
+            actions = { if (friend == FriendState.FRIENDS) FriendContactsButton(vm, r.partner) },
         )
         Messages(
             dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,

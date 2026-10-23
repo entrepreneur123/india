@@ -27,7 +27,9 @@ import com.yaari.chat.data.OrphanMatchException
 import com.yaari.chat.data.PartnerWatch
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.data.VideoToken
+import com.yaari.chat.model.ContactApp
 import com.yaari.chat.model.Friend
+import com.yaari.chat.model.FriendContacts
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.GenderRule
@@ -74,6 +76,7 @@ import com.yaari.chat.model.RoomLang
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Comment
 import com.yaari.chat.model.HandleCheck
+import com.yaari.chat.model.MyContacts
 import com.yaari.chat.model.LikeState
 import com.yaari.chat.model.Look
 import com.yaari.chat.model.LookItem
@@ -108,6 +111,7 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.providers.builtin.OTP
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.exceptions.RestException
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.logging.LogLevel
@@ -151,6 +155,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.buildJsonObject
@@ -310,7 +315,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         block()
     } catch (e: RestException) {
         val text = listOfNotNull(e.message, e.error, e.description).joinToString(" ")
-        throw BackendException(if ("row-level security" in text) "blocked" else CODES.firstOrNull { it in text } ?: "network")
+        throw BackendException(
+            if ("row-level security" in text) "blocked" else CODES.firstOrNull { it in text } ?: "network",
+            ((e as? PostgrestRestException)?.details as? JsonPrimitive)?.contentOrNull,
+        )
     } catch (e: IOException) { // includes HttpRequestTimeoutException and supabase-kt's HttpRequestException
         throw BackendException("network")
     }
@@ -916,6 +924,33 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     override suspend fun unblock(userId: String) = call {
         client.postgrest.rpc("unblock_user", buildJsonObject { put("p_user", userId) })
         Unit
+    }
+
+    // ---- messenger contacts (044_friend_contacts.sql) ----
+
+    @Serializable private data class MyContactsRow(
+        val contacts: Map<String, String> = emptyMap(), @SerialName("shared_with") val sharedWith: List<String> = emptyList(),
+    )
+    @Serializable private data class ContactsOfRow(val contacts: Map<String, String>? = null, @SerialName("mine_shared") val mineShared: Boolean = false)
+
+    override suspend fun setContacts(contacts: Map<ContactApp, String>) = call {
+        val body = buildJsonObject { put("p_contacts", buildJsonObject { contacts.forEach { (app, v) -> put(app.code, v) } }) }
+        ContactApp.of(client.postgrest.rpc("set_contacts", body).decodeAs<Map<String, String>>())
+    }
+
+    override suspend fun myContacts() = call {
+        val r = client.postgrest.rpc("my_contacts").decodeAs<MyContactsRow>()
+        MyContacts(ContactApp.of(r.contacts), r.sharedWith.toSet())
+    }
+
+    override suspend fun shareContacts(userId: String, on: Boolean) = call {
+        client.postgrest.rpc("share_contacts", buildJsonObject { put("p_user", userId); put("p_on", on) })
+        Unit
+    }
+
+    override suspend fun contactsOf(userId: String) = call {
+        val raw = client.postgrest.rpc("contacts_of", buildJsonObject { put("p_user", userId) }).data.trim()
+        json.decodeFromString<ContactsOfRow?>(raw)?.let { r -> FriendContacts(r.contacts?.let(ContactApp::of), r.mineShared) }
     }
 
     private suspend fun people(rows: List<PersonRowRaw>): List<PersonRow> {
@@ -1926,7 +1961,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",
             "video_not_configured", "billing_not_configured", "already_redeemed", "wrong_account",
             "voice_removed", "mic_denied", "queue_full",
-            "stale", "not_your_turn", "seat_taken", "game_full", "need_players",
+            "stale", "not_your_turn", "seat_taken", "game_full", "need_players", "contact_invalid", "not_friends",
         )
     }
 }

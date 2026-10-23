@@ -944,4 +944,20 @@
         <item quantity="one">इथे %1$d व्यक्ती</item>
         <item quantity="other">इथे %1$d लोक</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">मेसेंजर संपर्क</string>
+    <string name="contacts_note">हे फक्त तुम्ही निवडलेले मित्रच पाहू शकतात.</string>
+    <string name="contacts_safety">ज्यांच्यावर विश्वास नाही त्यांच्याशी संपर्क कधीही शेअर करू नका. Yaari ची टीम ते कधीही मागणार नाही.</string>
+    <string name="contacts_phone">फोन</string>
+    <string name="contacts_bad_number">6 ते 16 अंक टाका, उदा. +91 98765 43210</string>
+    <string name="contacts_bad_handle">40 पर्यंत अक्षरे, अंक, डॉट, डॅश किंवा अंडरस्कोर वापरा</string>
+    <string name="contacts_saved">संपर्क सेव्ह झाले</string>
+    <string name="contacts_section">संपर्क</string>
+    <string name="contacts_hint">उघडण्यासाठी टॅप करा · कॉपी करण्यासाठी दाबून ठेवा</string>
+    <string name="contacts_none">%1$s यांनी अजून संपर्क शेअर केलेले नाहीत</string>
+    <string name="contacts_share">माझे संपर्क %1$s सोबत शेअर करा</string>
+    <string name="contacts_sharing">तुम्ही तुमचे संपर्क %1$s सोबत शेअर करत आहात</string>
+    <string name="contacts_stop">शेअर करणे थांबवा</string>
+    <string name="contacts_shared">%1$s आता तुमचे संपर्क पाहू शकतात</string>
+    <string name="contacts_stopped">%1$s सोबत शेअर करणे थांबवले</string>
 </resources>

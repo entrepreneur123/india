@@ -102,6 +102,23 @@ const pa: SocialDict = {
   'chatbar.end': 'ਚੈਟ ਖ਼ਤਮ ਕਰੋ',
   'chatbar.live': 'ਲਾਈਵ ਚੈਟ · ਖੋਲ੍ਹਣ ਲਈ ਟੈਪ ਕਰੋ',
   'chatbar.minimise': 'ਚੈਟ ਛੋਟੀ ਕਰੋ',
+  // messenger contacts
+  'contacts.title': 'ਮੈਸੇਂਜਰ ਸੰਪਰਕ',
+  'contacts.note': 'ਇਹਨਾਂ ਨੂੰ ਸਿਰਫ਼ ਉਹੀ ਦੋਸਤ ਦੇਖ ਸਕਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਚੁਣੋ।',
+  'contacts.safety': "ਜਿਨ੍ਹਾਂ ਲੋਕਾਂ 'ਤੇ ਭਰੋਸਾ ਨਾ ਹੋਵੇ, ਉਹਨਾਂ ਨਾਲ ਕਦੇ ਸੰਪਰਕ ਸ਼ੇਅਰ ਨਾ ਕਰੋ। Yaari ਦਾ ਸਟਾਫ਼ ਕਦੇ ਇਹ ਨਹੀਂ ਮੰਗੇਗਾ।",
+  'contacts.phone': 'ਫ਼ੋਨ',
+  'contacts.badNumber': '6 ਤੋਂ 16 ਅੰਕ ਲਿਖੋ, ਜਿਵੇਂ +91 98765 43210',
+  'contacts.badHandle': '40 ਤੱਕ ਅੱਖਰ, ਅੰਕ, ਡੌਟ, ਡੈਸ਼ ਜਾਂ ਅੰਡਰਸਕੋਰ ਵਰਤੋ',
+  'contacts.saved': 'ਸੰਪਰਕ ਸੇਵ ਹੋ ਗਏ',
+  'contacts.section': 'ਸੰਪਰਕ',
+  'contacts.hint': 'ਖੋਲ੍ਹਣ ਲਈ ਟੈਪ ਕਰੋ · ਕਾਪੀ ਕਰਨ ਲਈ ਦਬਾ ਕੇ ਰੱਖੋ',
+  'contacts.none': '{name} ਨੇ ਅਜੇ ਸੰਪਰਕ ਸ਼ੇਅਰ ਨਹੀਂ ਕੀਤੇ',
+  'contacts.share': 'ਆਪਣੇ ਸੰਪਰਕ {name} ਨਾਲ ਸ਼ੇਅਰ ਕਰੋ',
+  'contacts.sharing': 'ਤੁਸੀਂ ਆਪਣੇ ਸੰਪਰਕ {name} ਨਾਲ ਸ਼ੇਅਰ ਕਰ ਰਹੇ ਹੋ',
+  'contacts.stop': 'ਸ਼ੇਅਰ ਕਰਨਾ ਬੰਦ ਕਰੋ',
+  'contacts.sharedToast': '{name} ਹੁਣ ਤੁਹਾਡੇ ਸੰਪਰਕ ਦੇਖ ਸਕਦੇ ਹਨ',
+  'contacts.stoppedToast': '{name} ਨਾਲ ਸ਼ੇਅਰ ਕਰਨਾ ਬੰਦ ਕੀਤਾ',
+  'contacts.copied': 'ਕਾਪੀ ਹੋ ਗਿਆ',
 }
 
 export default pa

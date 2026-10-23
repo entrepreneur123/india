@@ -107,6 +107,23 @@ const kn: SocialDict = {
   'chatbar.end': 'ಚಾಟ್ ಮುಗಿಸಿ',
   'chatbar.live': 'ಲೈವ್ ಚಾಟ್ · ತೆರೆಯಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
   'chatbar.minimise': 'ಚಾಟ್ ಚಿಕ್ಕದಾಗಿಸಿ',
+  // messenger contacts
+  'contacts.title': 'ಮೆಸೆಂಜರ್ ಸಂಪರ್ಕಗಳು',
+  'contacts.note': 'ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಸ್ನೇಹಿತರು ಮಾತ್ರ ಇವನ್ನು ನೋಡಬಹುದು.',
+  'contacts.safety': 'ನಂಬಿಕೆ ಇಲ್ಲದವರೊಂದಿಗೆ ಸಂಪರ್ಕಗಳನ್ನು ಎಂದಿಗೂ ಹಂಚಿಕೊಳ್ಳಬೇಡಿ. Yaari ಸಿಬ್ಬಂದಿ ಇವನ್ನು ಎಂದಿಗೂ ಕೇಳುವುದಿಲ್ಲ.',
+  'contacts.phone': 'ಫೋನ್',
+  'contacts.badNumber': '6 ರಿಂದ 16 ಅಂಕೆಗಳನ್ನು ನಮೂದಿಸಿ, ಉದಾ. +91 98765 43210',
+  'contacts.badHandle': '40 ರವರೆಗೆ ಅಕ್ಷರಗಳು, ಅಂಕೆಗಳು, ಚುಕ್ಕೆ, ಡ್ಯಾಶ್ ಅಥವಾ ಅಂಡರ್‌ಸ್ಕೋರ್ ಬಳಸಿ',
+  'contacts.saved': 'ಸಂಪರ್ಕಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ',
+  'contacts.section': 'ಸಂಪರ್ಕಗಳು',
+  'contacts.hint': 'ತೆರೆಯಲು ಟ್ಯಾಪ್ ಮಾಡಿ · ನಕಲಿಸಲು ಒತ್ತಿ ಹಿಡಿಯಿರಿ',
+  'contacts.none': '{name} ಇನ್ನೂ ಸಂಪರ್ಕಗಳನ್ನು ಹಂಚಿಕೊಂಡಿಲ್ಲ',
+  'contacts.share': 'ನನ್ನ ಸಂಪರ್ಕಗಳನ್ನು {name} ಅವರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ',
+  'contacts.sharing': 'ನೀವು ನಿಮ್ಮ ಸಂಪರ್ಕಗಳನ್ನು {name} ಅವರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ',
+  'contacts.stop': 'ಹಂಚಿಕೆ ನಿಲ್ಲಿಸಿ',
+  'contacts.sharedToast': '{name} ಈಗ ನಿಮ್ಮ ಸಂಪರ್ಕಗಳನ್ನು ನೋಡಬಹುದು',
+  'contacts.stoppedToast': '{name} ಅವರೊಂದಿಗೆ ಹಂಚಿಕೆ ನಿಲ್ಲಿಸಲಾಗಿದೆ',
+  'contacts.copied': 'ನಕಲಿಸಲಾಗಿದೆ',
 }
 
 export default kn

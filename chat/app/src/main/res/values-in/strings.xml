@@ -944,4 +944,20 @@
         <item quantity="one">%1$d orang di sini</item>
         <item quantity="other">%1$d orang di sini</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Kontak messenger</string>
+    <string name="contacts_note">Hanya teman yang kamu pilih yang bisa melihatnya.</string>
+    <string name="contacts_safety">Jangan pernah membagikan kontak kepada orang yang tidak kamu percaya. Staf Yaari tidak akan pernah memintanya.</string>
+    <string name="contacts_phone">Telepon</string>
+    <string name="contacts_bad_number">Masukkan 6 sampai 16 digit, misalnya +91 98765 43210</string>
+    <string name="contacts_bad_handle">Gunakan maksimal 40 huruf, angka, titik, tanda hubung, atau garis bawah</string>
+    <string name="contacts_saved">Kontak disimpan</string>
+    <string name="contacts_section">Kontak</string>
+    <string name="contacts_hint">Ketuk untuk membuka · tekan lama untuk menyalin</string>
+    <string name="contacts_none">%1$s belum membagikan kontak</string>
+    <string name="contacts_share">Bagikan kontak saya ke %1$s</string>
+    <string name="contacts_sharing">Kamu membagikan kontakmu ke %1$s</string>
+    <string name="contacts_stop">Berhenti membagikan</string>
+    <string name="contacts_shared">%1$s sekarang bisa melihat kontakmu</string>
+    <string name="contacts_stopped">Berhenti membagikan ke %1$s</string>
 </resources>

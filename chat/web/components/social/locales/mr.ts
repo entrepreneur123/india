@@ -102,6 +102,23 @@ const mr: SocialDict = {
   'chatbar.end': 'चॅट संपवा',
   'chatbar.live': 'लाइव्ह चॅट · उघडण्यासाठी टॅप करा',
   'chatbar.minimise': 'चॅट लहान करा',
+  // messenger contacts
+  'contacts.title': 'मेसेंजर संपर्क',
+  'contacts.note': 'हे फक्त तुम्ही निवडलेले मित्रच पाहू शकतात.',
+  'contacts.safety': 'ज्यांच्यावर विश्वास नाही त्यांच्याशी संपर्क कधीही शेअर करू नका. Yaari ची टीम ते कधीही मागणार नाही.',
+  'contacts.phone': 'फोन',
+  'contacts.badNumber': '6 ते 16 अंक टाका, उदा. +91 98765 43210',
+  'contacts.badHandle': '40 पर्यंत अक्षरे, अंक, डॉट, डॅश किंवा अंडरस्कोर वापरा',
+  'contacts.saved': 'संपर्क सेव्ह झाले',
+  'contacts.section': 'संपर्क',
+  'contacts.hint': 'उघडण्यासाठी टॅप करा · कॉपी करण्यासाठी दाबून ठेवा',
+  'contacts.none': '{name} यांनी अजून संपर्क शेअर केलेले नाहीत',
+  'contacts.share': 'माझे संपर्क {name} सोबत शेअर करा',
+  'contacts.sharing': 'तुम्ही तुमचे संपर्क {name} सोबत शेअर करत आहात',
+  'contacts.stop': 'शेअर करणे थांबवा',
+  'contacts.sharedToast': '{name} आता तुमचे संपर्क पाहू शकतात',
+  'contacts.stoppedToast': '{name} सोबत शेअर करणे थांबवले',
+  'contacts.copied': 'कॉपी झाले',
 }
 
 export default mr

@@ -102,6 +102,23 @@ const ur: SocialDict = {
   'chatbar.end': 'چیٹ ختم کریں',
   'chatbar.live': 'لائیو چیٹ · کھولنے کے لیے ٹیپ کریں',
   'chatbar.minimise': 'چیٹ چھوٹی کریں',
+  // messenger contacts
+  'contacts.title': 'میسنجر رابطے',
+  'contacts.note': 'انہیں صرف وہی دوست دیکھ سکتے ہیں جنہیں آپ چنیں۔',
+  'contacts.safety': 'جن لوگوں پر بھروسہ نہ ہو، ان سے رابطے کبھی شیئر نہ کریں۔ Yaari کا عملہ کبھی یہ نہیں مانگے گا۔',
+  'contacts.phone': 'فون',
+  'contacts.badNumber': '6 سے 16 ہندسے لکھیں، جیسے +91 98765 43210',
+  'contacts.badHandle': '40 تک حروف، ہندسے، نقطے، ڈیش یا انڈر اسکور استعمال کریں',
+  'contacts.saved': 'رابطے محفوظ ہو گئے',
+  'contacts.section': 'رابطے',
+  'contacts.hint': 'کھولنے کے لیے ٹیپ کریں · کاپی کے لیے دبا کر رکھیں',
+  'contacts.none': '{name} نے ابھی تک رابطے شیئر نہیں کیے',
+  'contacts.share': 'اپنے رابطے {name} کے ساتھ شیئر کریں',
+  'contacts.sharing': 'آپ اپنے رابطے {name} کے ساتھ شیئر کر رہے ہیں',
+  'contacts.stop': 'شیئر کرنا بند کریں',
+  'contacts.sharedToast': '{name} اب آپ کے رابطے دیکھ سکتے ہیں',
+  'contacts.stoppedToast': '{name} کے ساتھ شیئر کرنا بند کر دیا',
+  'contacts.copied': 'کاپی ہو گیا',
 }
 
 export default ur

@@ -930,4 +930,20 @@
     <plurals name="room_people_n">
         <item quantity="other">%1$d 人在這裡</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">通訊軟體聯絡方式</string>
+    <string name="contacts_note">只有你選擇的好友才能看到。</string>
+    <string name="contacts_safety">切勿把聯絡方式告訴你不信任的人。Yaari 工作人員絕不會向你索取。</string>
+    <string name="contacts_phone">電話</string>
+    <string name="contacts_bad_number">請輸入 6 到 16 位數字，例如 +91 98765 43210</string>
+    <string name="contacts_bad_handle">最多 40 個英文字母、數字、點、連字號或底線</string>
+    <string name="contacts_saved">聯絡方式已儲存</string>
+    <string name="contacts_section">聯絡方式</string>
+    <string name="contacts_hint">輕觸開啟 · 長按複製</string>
+    <string name="contacts_none">%1$s 還沒有分享聯絡方式</string>
+    <string name="contacts_share">把我的聯絡方式分享給 %1$s</string>
+    <string name="contacts_sharing">你正在向 %1$s 分享聯絡方式</string>
+    <string name="contacts_stop">停止分享</string>
+    <string name="contacts_shared">%1$s 現在可以看到你的聯絡方式了</string>
+    <string name="contacts_stopped">已停止向 %1$s 分享</string>
 </resources>

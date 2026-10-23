@@ -1,3 +1,4 @@
+import type { Contacts } from './contacts'
 import type { HandleCheck } from './handle'
 
 export type Gender = 'male' | 'female' | 'other'
@@ -251,6 +252,18 @@ export interface Friend {
   profile: Profile
   state: FriendState
   threadId?: string | null
+}
+
+/** 044: the contacts I keep, and the friends I show them to. */
+export interface MyContacts {
+  contacts: Contacts
+  sharedWith: string[]
+}
+
+/** 044: a friend's side: their contacts when they show them to me (null: they don't), and whether I show mine. */
+export interface FriendContacts {
+  contacts: Contacts | null
+  mineShared: boolean
 }
 
 /** Topics the room glyphs are drawn for (components/ui/topic-icons.tsx). */
@@ -593,9 +606,13 @@ export type BackendErrorCode =
   | 'not_owned'
   /** 040: a new line in a random chat that ended, between two people who aren't friends. */
   | 'chat_closed'
+  /** 044: a contact the server won't keep (the error's detail names the app); sharing with someone who isn't a friend. */
+  | 'contact_invalid'
+  | 'not_friends'
 
 export class BackendError extends Error {
-  constructor(public code: string) {
+  /** `detail`: what the rule was about (contact_invalid: the app). */
+  constructor(public code: string, public detail?: string) {
     super(code)
     this.name = 'BackendError'
   }
@@ -659,6 +676,14 @@ export interface Backend {
   /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
   blocks(): Promise<PersonRow[]>
   unblock(userId: string): Promise<void>
+  // ---- messenger contacts (044) ----
+  /** Keeps these (empty ones dropped); returns them as stored. Errors: contact_invalid (detail: the app), bad_request. */
+  setContacts(contacts: Contacts): Promise<Contacts>
+  myContacts(): Promise<MyContacts>
+  /** Shows my contacts to a friend, or stops. Error: not_friends. Unfriending or blocking stops it both ways. */
+  shareContacts(userId: string, on: boolean): Promise<void>
+  /** Null when we aren't friends. */
+  contactsOf(userId: string): Promise<FriendContacts | null>
   /** Live rooms, most people first; `query` narrows them on the server. */
   voiceRooms(query?: RoomQuery): Promise<VoiceRoomSummary[]>
   /** Opens a room with me as host, not on the stage yet (ending my previous one). */

@@ -211,6 +211,9 @@ class AppViewModel(
     /** IDs and looks (040): everyone's decorated ID, my shop, the ID field's live check. */
     val looks = LooksController(backend, viewModelScope, ::notice, ::explain)
 
+    /** Messenger contacts friends exchange (044). */
+    val contacts = ContactsController(backend, viewModelScope, ::notice, ::explain)
+
     /** ID verification, everyone's badges, manners after a random chat (035). */
     val trust = TrustController(
         backend, viewModelScope, firstRun,
@@ -389,6 +392,7 @@ class AppViewModel(
             "handle_cooldown" -> R.string.err_handle_cooldown
             "name_invalid" -> R.string.err_name_invalid
             "not_owned" -> R.string.err_not_owned
+            "not_friends" -> R.string.err_not_allowed
             else -> R.string.err_network
         },
     )
@@ -1053,6 +1057,7 @@ class AppViewModel(
             } else {
                 backend.block(person.id)
             }
+            contacts.ended(person.id)
             forget(person.id, UiText(R.string.msg_blocked, person.name))
         }
     }
@@ -1233,6 +1238,7 @@ class AppViewModel(
         feed.reset()
         trust.reset()
         looks.reset()
+        contacts.reset()
         matchJob?.cancel()
         chatJob?.cancel()
         dmJob?.cancel()
@@ -1325,6 +1331,7 @@ class AppViewModel(
     /** Unfriend, or cancel a request I sent. */
     fun removeFriend(p: Profile) = act {
         backend.removeFriend(p.id)
+        contacts.ended(p.id)
         _state.update { s -> s.copy(friends = s.friends.filterNot { it.profile.id == p.id }) }
     }
 

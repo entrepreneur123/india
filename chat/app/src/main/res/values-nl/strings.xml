@@ -924,4 +924,20 @@
         <item quantity="one">%1$d persoon hier</item>
         <item quantity="other">%1$d mensen hier</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Messenger-contacten</string>
+    <string name="contacts_note">Alleen vrienden die jij kiest kunnen ze zien.</string>
+    <string name="contacts_safety">Deel je contacten nooit met mensen die je niet vertrouwt. Het Yaari-team vraagt er nooit om.</string>
+    <string name="contacts_phone">Telefoon</string>
+    <string name="contacts_bad_number">Vul 6 tot 16 cijfers in, zoals +91 98765 43210</string>
+    <string name="contacts_bad_handle">Gebruik maximaal 40 letters, cijfers, punten, streepjes of underscores</string>
+    <string name="contacts_saved">Contacten opgeslagen</string>
+    <string name="contacts_section">Contacten</string>
+    <string name="contacts_hint">Tik om te openen · houd vast om te kopiëren</string>
+    <string name="contacts_none">%1$s heeft nog geen contacten gedeeld</string>
+    <string name="contacts_share">Mijn contacten delen met %1$s</string>
+    <string name="contacts_sharing">Je deelt je contacten met %1$s</string>
+    <string name="contacts_stop">Stoppen met delen</string>
+    <string name="contacts_shared">%1$s kan nu je contacten zien</string>
+    <string name="contacts_stopped">Je deelt niet meer met %1$s</string>
 </resources>

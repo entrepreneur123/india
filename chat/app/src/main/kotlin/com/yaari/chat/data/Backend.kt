@@ -1,6 +1,8 @@
 package com.yaari.chat.data
 
+import com.yaari.chat.model.ContactApp
 import com.yaari.chat.model.Friend
+import com.yaari.chat.model.FriendContacts
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
@@ -25,6 +27,7 @@ import com.yaari.chat.model.LinkPreview
 import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Comment
 import com.yaari.chat.model.HandleCheck
+import com.yaari.chat.model.MyContacts
 import com.yaari.chat.model.LikeState
 import com.yaari.chat.model.Look
 import com.yaari.chat.model.PostVisibility
@@ -63,8 +66,11 @@ data class NewProfile(
 
 data class VideoToken(val url: String, val token: String)
 
-/** Server-side rule violations; [code] matches the database error (exit_locked, premium_required, banned, ...). */
-class BackendException(val code: String) : Exception(code)
+/**
+ * Server-side rule violations; [code] matches the database error (exit_locked, premium_required, banned, ...).
+ * [detail]: what the rule was about (contact_invalid: the app's code).
+ */
+class BackendException(val code: String, val detail: String? = null) : Exception(code)
 
 /** The server paired us ([matchId]) but the match can't be shown; the caller ends it once the exit lock allows. */
 class OrphanMatchException(val matchId: String) : Exception("orphan_match")
@@ -333,4 +339,14 @@ interface Backend {
     /** People I blocked, newest first. Unblocking doesn't bring back the friendship or old chats. */
     suspend fun blocks(): List<PersonRow>
     suspend fun unblock(userId: String)
+
+    // ---- messenger contacts (044_friend_contacts.sql) ----
+
+    /** Keeps these (empty ones dropped); returns them as stored. Refused with contact_invalid (detail: the app), bad_request. */
+    suspend fun setContacts(contacts: Map<ContactApp, String>): Map<ContactApp, String>
+    suspend fun myContacts(): MyContacts
+    /** Shows my contacts to a friend, or stops. Refused with not_friends. Unfriending or blocking stops it both ways. */
+    suspend fun shareContacts(userId: String, on: Boolean)
+    /** Null when we aren't friends. */
+    suspend fun contactsOf(userId: String): FriendContacts?
 }

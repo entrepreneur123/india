@@ -121,6 +121,23 @@ const ar: SocialDict = {
   'chatbar.end': 'إنهاء الدردشة',
   'chatbar.live': 'دردشة مباشرة · اضغط للفتح',
   'chatbar.minimise': 'تصغير الدردشة',
+  // messenger contacts
+  'contacts.title': 'جهات اتصال التطبيقات',
+  'contacts.note': 'لا يراها إلا الأصدقاء الذين تختارهم.',
+  'contacts.safety': 'لا تشارك جهات اتصالك أبدًا مع من لا تثق به. فريق Yaari لن يطلبها منك أبدًا.',
+  'contacts.phone': 'الهاتف',
+  'contacts.badNumber': 'أدخل من 6 إلى 16 رقمًا، مثل +91 98765 43210',
+  'contacts.badHandle': 'استخدم حتى 40 حرفًا لاتينيًا أو رقمًا أو نقطة أو شرطة أو شرطة سفلية',
+  'contacts.saved': 'تم حفظ جهات الاتصال',
+  'contacts.section': 'جهات الاتصال',
+  'contacts.hint': 'انقر للفتح · اضغط مطولًا للنسخ',
+  'contacts.none': 'لم يشارك {name} جهات اتصاله بعد',
+  'contacts.share': 'مشاركة جهات اتصالي مع {name}',
+  'contacts.sharing': 'أنت تشارك جهات اتصالك مع {name}',
+  'contacts.stop': 'إيقاف المشاركة',
+  'contacts.sharedToast': 'يمكن لـ{name} الآن رؤية جهات اتصالك',
+  'contacts.stoppedToast': 'أوقفت المشاركة مع {name}',
+  'contacts.copied': 'تم النسخ',
 }
 
 export default ar

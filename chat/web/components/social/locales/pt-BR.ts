@@ -108,6 +108,23 @@ const ptBR: SocialDict = {
   'chatbar.end': 'Encerrar chat',
   'chatbar.live': 'Chat ao vivo · toque para abrir',
   'chatbar.minimise': 'Minimizar chat',
+  // messenger contacts
+  'contacts.title': 'Contatos de mensageiros',
+  'contacts.note': 'Só os amigos que você escolher podem ver.',
+  'contacts.safety': 'Nunca compartilhe contatos com quem você não confia. A equipe do Yaari nunca vai pedir isso.',
+  'contacts.phone': 'Telefone',
+  'contacts.badNumber': 'Digite de 6 a 16 dígitos, como +91 98765 43210',
+  'contacts.badHandle': 'Use até 40 letras, números, pontos, hífens ou sublinhados',
+  'contacts.saved': 'Contatos salvos',
+  'contacts.section': 'Contatos',
+  'contacts.hint': 'Toque para abrir · toque e segure para copiar',
+  'contacts.none': '{name} ainda não compartilhou contatos',
+  'contacts.share': 'Compartilhar meus contatos com {name}',
+  'contacts.sharing': 'Você está compartilhando seus contatos com {name}',
+  'contacts.stop': 'Parar de compartilhar',
+  'contacts.sharedToast': '{name} agora pode ver seus contatos',
+  'contacts.stoppedToast': 'Você parou de compartilhar com {name}',
+  'contacts.copied': 'Copiado',
 }
 
 export default ptBR

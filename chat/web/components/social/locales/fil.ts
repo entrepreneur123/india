@@ -113,6 +113,23 @@ const fil: SocialDict = {
   'chatbar.end': 'Tapusin ang chat',
   'chatbar.live': 'Live chat · i-tap para buksan',
   'chatbar.minimise': 'I-minimize ang chat',
+  // messenger contacts
+  'contacts.title': 'Mga contact sa messenger',
+  'contacts.note': 'Ang mga kaibigang pipiliin mo lang ang makakakita nito.',
+  'contacts.safety': 'Huwag kailanman ibahagi ang contacts mo sa mga taong hindi mo pinagkakatiwalaan. Hindi kailanman hihingin ng Yaari staff ang mga ito.',
+  'contacts.phone': 'Telepono',
+  'contacts.badNumber': 'Maglagay ng 6 hanggang 16 na digit, gaya ng +91 98765 43210',
+  'contacts.badHandle': 'Hanggang 40 letra, numero, tuldok, gitling o underscore',
+  'contacts.saved': 'Na-save ang contacts',
+  'contacts.section': 'Contacts',
+  'contacts.hint': 'I-tap para buksan · pindutin nang matagal para kopyahin',
+  'contacts.none': 'Hindi pa nagbabahagi ng contacts si {name}',
+  'contacts.share': 'Ibahagi ang contacts ko kay {name}',
+  'contacts.sharing': 'Ibinabahagi mo ang contacts mo kay {name}',
+  'contacts.stop': 'Itigil ang pagbabahagi',
+  'contacts.sharedToast': 'Nakikita na ni {name} ang contacts mo',
+  'contacts.stoppedToast': 'Itinigil ang pagbabahagi kay {name}',
+  'contacts.copied': 'Nakopya',
 }
 
 export default fil

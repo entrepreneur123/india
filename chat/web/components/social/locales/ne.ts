@@ -107,6 +107,23 @@ const ne: SocialDict = {
   'chatbar.end': 'च्याट सक्नुहोस्',
   'chatbar.live': 'लाइभ च्याट · खोल्न ट्याप गर्नुहोस्',
   'chatbar.minimise': 'च्याट सानो बनाउनुहोस्',
+  // messenger contacts
+  'contacts.title': 'मेसेन्जर सम्पर्कहरू',
+  'contacts.note': 'यी तपाईंले छानेका साथीहरूले मात्र हेर्न सक्छन्।',
+  'contacts.safety': 'विश्वास नलागेका मानिसहरूसँग कहिल्यै सम्पर्क सेयर नगर्नुहोस्। Yaari का कर्मचारीले यी कहिल्यै माग्ने छैनन्।',
+  'contacts.phone': 'फोन',
+  'contacts.badNumber': '६ देखि १६ अङ्क लेख्नुहोस्, जस्तै +91 98765 43210',
+  'contacts.badHandle': '४० सम्म अक्षर, अङ्क, डट, ड्यास वा अन्डरस्कोर प्रयोग गर्नुहोस्',
+  'contacts.saved': 'सम्पर्कहरू सेभ भए',
+  'contacts.section': 'सम्पर्कहरू',
+  'contacts.hint': 'खोल्न ट्याप गर्नुहोस् · कपी गर्न थिचिराख्नुहोस्',
+  'contacts.none': '{name} ले अझै सम्पर्क सेयर गर्नुभएको छैन',
+  'contacts.share': 'मेरा सम्पर्क {name} सँग सेयर गर्नुहोस्',
+  'contacts.sharing': 'तपाईं आफ्ना सम्पर्क {name} सँग सेयर गर्दै हुनुहुन्छ',
+  'contacts.stop': 'सेयर गर्न रोक्नुहोस्',
+  'contacts.sharedToast': '{name} ले अब तपाईंका सम्पर्क हेर्न सक्नुहुन्छ',
+  'contacts.stoppedToast': '{name} सँग सेयर गर्न रोकियो',
+  'contacts.copied': 'कपी भयो',
 }
 
 export default ne

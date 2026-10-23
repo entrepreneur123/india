@@ -114,6 +114,23 @@ const ko: SocialDict = {
   'chatbar.end': '채팅 종료',
   'chatbar.live': '채팅 중 · 탭해서 열기',
   'chatbar.minimise': '채팅 최소화',
+  // messenger contacts
+  'contacts.title': '메신저 연락처',
+  'contacts.note': '내가 고른 친구만 볼 수 있어요.',
+  'contacts.safety': '믿을 수 없는 사람에게는 연락처를 알려 주지 마세요. Yaari 직원은 절대 연락처를 묻지 않아요.',
+  'contacts.phone': '전화',
+  'contacts.badNumber': '+91 98765 43210처럼 숫자 6~16자리를 입력하세요',
+  'contacts.badHandle': '영문, 숫자, 점, 하이픈, 밑줄로 40자까지 쓸 수 있어요',
+  'contacts.saved': '연락처를 저장했어요',
+  'contacts.section': '연락처',
+  'contacts.hint': '탭하면 열리고, 길게 누르면 복사돼요',
+  'contacts.none': '{name}님은 아직 연락처를 공유하지 않았어요',
+  'contacts.share': '{name}님에게 내 연락처 공유하기',
+  'contacts.sharing': '{name}님에게 내 연락처를 공유하고 있어요',
+  'contacts.stop': '공유 중지',
+  'contacts.sharedToast': '이제 {name}님이 내 연락처를 볼 수 있어요',
+  'contacts.stoppedToast': '{name}님에게 공유를 중지했어요',
+  'contacts.copied': '복사했어요',
 }
 
 export default ko

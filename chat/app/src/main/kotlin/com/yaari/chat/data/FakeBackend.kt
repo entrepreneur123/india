@@ -2,7 +2,9 @@ package com.yaari.chat.data
 
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.Validation
+import com.yaari.chat.model.ContactApp
 import com.yaari.chat.model.Friend
+import com.yaari.chat.model.FriendContacts
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.Media
@@ -35,6 +37,7 @@ import com.yaari.chat.model.RoomQuery
 import com.yaari.chat.model.Comment
 import com.yaari.chat.model.Cosmetic
 import com.yaari.chat.model.HandleCheck
+import com.yaari.chat.model.MyContacts
 import com.yaari.chat.model.LikeState
 import com.yaari.chat.model.Look
 import com.yaari.chat.model.LookItem
@@ -437,6 +440,8 @@ open class FakeBackend(
         accounts.remove(ph)
         matches.clear()
         friendships.clear()
+        myContactCard = emptyMap()
+        sharedWith.clear()
         entitlements = Entitlements()
         lastPartner = null
         phone = null
@@ -549,7 +554,7 @@ open class FakeBackend(
 
     override suspend fun block(userId: String) {
         blocked += userId
-        friendships.remove(userId)
+        unfriend(userId)
         matches.values.filter { it.partner.id == userId }.forEach { it.end(clock()) }
     }
 
@@ -664,7 +669,14 @@ open class FakeBackend(
     }
 
     override suspend fun removeFriend(userId: String) {
+        unfriend(userId)
+    }
+
+    /** As the server: no longer friends (unfriended, blocked) ends contact sharing both ways. */
+    private fun unfriend(userId: String) {
         friendships.remove(userId)
+        sharedWith -= userId
+        theirContacts.remove(userId)
     }
 
     override suspend fun friendThread(userId: String): String {
@@ -765,6 +777,37 @@ open class FakeBackend(
     override suspend fun unblock(userId: String) {
         blocked -= userId
     }
+
+    // ---- messenger contacts (044): mine, and what people show me (Ananya, who has asked to be friends, does) ----
+
+    private var myContactCard = emptyMap<ContactApp, String>()
+    private val sharedWith = mutableSetOf<String>()
+    private val theirContacts = mutableMapOf("p3" to mapOf(ContactApp.WHATSAPP to "+919812345678", ContactApp.INSTAGRAM to "ananya.dances", ContactApp.DISCORD to "ananya_d"))
+
+    override suspend fun setContacts(contacts: Map<ContactApp, String>): Map<ContactApp, String> {
+        me()
+        wait(300)
+        myContactCard = contacts.mapNotNull { (app, v) ->
+            when (val clean = app.clean(v)) {
+                null -> throw BackendException("contact_invalid", app.code)
+                "" -> null
+                else -> app to clean
+            }
+        }.toMap()
+        return myContactCard
+    }
+
+    override suspend fun myContacts() = MyContacts(myContactCard, sharedWith.toSet())
+
+    override suspend fun shareContacts(userId: String, on: Boolean) {
+        me()
+        if (!on) sharedWith -= userId
+        else if (friendships[userId] != FriendState.FRIENDS) throw BackendException("not_friends")
+        else sharedWith += userId
+    }
+
+    override suspend fun contactsOf(userId: String): FriendContacts? =
+        if (friendships[userId] != FriendState.FRIENDS) null else FriendContacts(theirContacts[userId], userId in sharedWith)
 
     override suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look {
         val me = me()

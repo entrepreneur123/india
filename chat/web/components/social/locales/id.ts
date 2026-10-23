@@ -113,6 +113,23 @@ const id: SocialDict = {
   'chatbar.end': 'Akhiri chat',
   'chatbar.live': 'Chat live · ketuk untuk membuka',
   'chatbar.minimise': 'Perkecil chat',
+  // messenger contacts
+  'contacts.title': 'Kontak messenger',
+  'contacts.note': 'Hanya teman yang kamu pilih yang bisa melihatnya.',
+  'contacts.safety': 'Jangan pernah membagikan kontak kepada orang yang tidak kamu percaya. Staf Yaari tidak akan pernah memintanya.',
+  'contacts.phone': 'Telepon',
+  'contacts.badNumber': 'Masukkan 6 sampai 16 digit, misalnya +91 98765 43210',
+  'contacts.badHandle': 'Gunakan maksimal 40 huruf, angka, titik, tanda hubung, atau garis bawah',
+  'contacts.saved': 'Kontak disimpan',
+  'contacts.section': 'Kontak',
+  'contacts.hint': 'Ketuk untuk membuka · tekan lama untuk menyalin',
+  'contacts.none': '{name} belum membagikan kontak',
+  'contacts.share': 'Bagikan kontak saya ke {name}',
+  'contacts.sharing': 'Kamu membagikan kontakmu ke {name}',
+  'contacts.stop': 'Berhenti membagikan',
+  'contacts.sharedToast': '{name} sekarang bisa melihat kontakmu',
+  'contacts.stoppedToast': 'Berhenti membagikan ke {name}',
+  'contacts.copied': 'Disalin',
 }
 
 export default id

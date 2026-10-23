@@ -99,7 +99,11 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
     AnimatedContent(screen, transitionSpec = { pushPop(forward = targetState != Sub.NONE) }, label = "page") { p ->
         when (p) {
             Sub.SETTINGS -> SettingsScreen(vm, s, onBack = { screen = Sub.NONE }, onEditProfile = { screen = Sub.EDIT })
-            Sub.EDIT -> EditProfileScreen(vm, me, onDone = { screen = Sub.NONE }, onDetails = { screen = Sub.STYLE }, onLooks = { screen = Sub.LOOKS })
+            Sub.EDIT -> EditProfileScreen(
+                vm, me, onDone = { screen = Sub.NONE }, onDetails = { screen = Sub.STYLE }, onLooks = { screen = Sub.LOOKS },
+                onContacts = { screen = Sub.CONTACTS },
+            )
+            Sub.CONTACTS -> ContactsEditorScreen(vm, onDone = { screen = Sub.EDIT })
             Sub.STYLE -> StyleEditorScreen(vm, me, onDone = { screen = Sub.NONE })
             Sub.LOOKS -> LooksShopScreen(vm, s, me, onDone = { screen = Sub.NONE })
             Sub.NEW_POST -> NewPostScreen(onCancel = { screen = Sub.NONE }) { text, uri, visibility ->
@@ -151,7 +155,7 @@ fun pushPop(forward: Boolean): ContentTransform {
     }
 }
 
-private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, STYLE, LOOKS }
+private enum class Sub { NONE, SETTINGS, EDIT, NEW_POST, STYLE, LOOKS, CONTACTS }
 
 // ---- Bottom bar: Material 3 navigation bar (Rooms · Random · Recent · Me) with a tonal pill on the selected tab ----
 

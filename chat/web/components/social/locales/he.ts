@@ -116,6 +116,23 @@ const he: SocialDict = {
   'chatbar.end': 'סיום הצ׳אט',
   'chatbar.live': 'צ׳אט חי · הקשה לפתיחה',
   'chatbar.minimise': 'מזעור הצ׳אט',
+  // messenger contacts
+  'contacts.title': 'אנשי קשר במסנג׳רים',
+  'contacts.note': 'רק חברים שתבחרו יוכלו לראות אותם.',
+  'contacts.safety': 'לעולם אל תשתפו פרטי קשר עם אנשים שאתם לא סומכים עליהם. צוות Yaari לעולם לא יבקש אותם.',
+  'contacts.phone': 'טלפון',
+  'contacts.badNumber': 'הזינו 6 עד 16 ספרות, למשל ‎+91 98765 43210',
+  'contacts.badHandle': 'עד 40 אותיות לטיניות, ספרות, נקודות, מקפים או קווים תחתונים',
+  'contacts.saved': 'פרטי הקשר נשמרו',
+  'contacts.section': 'פרטי קשר',
+  'contacts.hint': 'הקישו לפתיחה · לחיצה ארוכה להעתקה',
+  'contacts.none': '{name} עדיין לא שיתף/ה פרטי קשר',
+  'contacts.share': 'שיתוף פרטי הקשר שלי עם {name}',
+  'contacts.sharing': 'את/ה משתף/ת את פרטי הקשר שלך עם {name}',
+  'contacts.stop': 'הפסקת השיתוף',
+  'contacts.sharedToast': '{name} יכול/ה עכשיו לראות את פרטי הקשר שלך',
+  'contacts.stoppedToast': 'השיתוף עם {name} הופסק',
+  'contacts.copied': 'הועתק',
 }
 
 export default he

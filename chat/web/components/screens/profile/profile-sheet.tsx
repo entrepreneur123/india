@@ -14,6 +14,7 @@ import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { PostGrid } from '@/components/screens/me/post-grid'
 import { InterestChips } from '@/components/social/bits'
+import { FriendContacts } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
 import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
 import { useTrust } from '@/components/trust/badge'
@@ -166,6 +167,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               </div>
             )}
           </div>
+          {state === 'friends' ? <FriendContacts userId={userId} name={shown.name} className="mx-4 mt-6" /> : null}
           <MannerCard trust={trust} className="mx-4 mt-6" />
           {shown.style?.prompts.length ? <PromptCards prompts={shown.style.prompts} accent={shown.style.accent} className="mt-6 px-4" /> : null}
           {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-4" /> : null}

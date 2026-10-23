@@ -107,6 +107,23 @@ const it: SocialDict = {
   'chatbar.end': 'Chiudi chat',
   'chatbar.live': 'Chat live · tocca per aprire',
   'chatbar.minimise': 'Riduci chat',
+  // messenger contacts
+  'contacts.title': 'Contatti di messaggistica',
+  'contacts.note': 'Solo gli amici che scegli possono vederli.',
+  'contacts.safety': 'Non condividere mai i tuoi contatti con persone di cui non ti fidi. Lo staff di Yaari non te li chiederà mai.',
+  'contacts.phone': 'Telefono',
+  'contacts.badNumber': 'Inserisci da 6 a 16 cifre, ad es. +91 98765 43210',
+  'contacts.badHandle': 'Usa fino a 40 lettere, numeri, punti, trattini o trattini bassi',
+  'contacts.saved': 'Contatti salvati',
+  'contacts.section': 'Contatti',
+  'contacts.hint': 'Tocca per aprire · tieni premuto per copiare',
+  'contacts.none': '{name} non ha ancora condiviso i suoi contatti',
+  'contacts.share': 'Condividi i miei contatti con {name}',
+  'contacts.sharing': 'Stai condividendo i tuoi contatti con {name}',
+  'contacts.stop': 'Smetti di condividere',
+  'contacts.sharedToast': 'Ora {name} può vedere i tuoi contatti',
+  'contacts.stoppedToast': 'Non condividi più con {name}',
+  'contacts.copied': 'Copiato',
 }
 
 export default it

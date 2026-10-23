@@ -107,6 +107,23 @@ const nl: SocialDict = {
   'chatbar.end': 'Chat beëindigen',
   'chatbar.live': 'Live chat · tik om te openen',
   'chatbar.minimise': 'Chat minimaliseren',
+  // messenger contacts
+  'contacts.title': 'Messenger-contacten',
+  'contacts.note': 'Alleen vrienden die jij kiest kunnen ze zien.',
+  'contacts.safety': 'Deel je contacten nooit met mensen die je niet vertrouwt. Het Yaari-team vraagt er nooit om.',
+  'contacts.phone': 'Telefoon',
+  'contacts.badNumber': 'Vul 6 tot 16 cijfers in, zoals +91 98765 43210',
+  'contacts.badHandle': 'Gebruik maximaal 40 letters, cijfers, punten, streepjes of underscores',
+  'contacts.saved': 'Contacten opgeslagen',
+  'contacts.section': 'Contacten',
+  'contacts.hint': 'Tik om te openen · houd vast om te kopiëren',
+  'contacts.none': '{name} heeft nog geen contacten gedeeld',
+  'contacts.share': 'Mijn contacten delen met {name}',
+  'contacts.sharing': 'Je deelt je contacten met {name}',
+  'contacts.stop': 'Stoppen met delen',
+  'contacts.sharedToast': '{name} kan nu je contacten zien',
+  'contacts.stoppedToast': 'Je deelt niet meer met {name}',
+  'contacts.copied': 'Gekopieerd',
 }
 
 export default nl

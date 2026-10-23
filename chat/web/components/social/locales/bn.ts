@@ -108,6 +108,23 @@ const bn: SocialDict = {
   'chatbar.end': 'চ্যাট শেষ করুন',
   'chatbar.live': 'লাইভ চ্যাট · খুলতে ট্যাপ করুন',
   'chatbar.minimise': 'চ্যাট ছোট করুন',
+  // messenger contacts
+  'contacts.title': 'মেসেঞ্জার যোগাযোগ',
+  'contacts.note': 'শুধু আপনার বেছে নেওয়া বন্ধুরাই এগুলো দেখতে পাবে।',
+  'contacts.safety': 'যাদের বিশ্বাস করেন না, তাদের সাথে কখনো যোগাযোগ শেয়ার করবেন না। Yaari-র কর্মীরা কখনো এগুলো চাইবে না।',
+  'contacts.phone': 'ফোন',
+  'contacts.badNumber': '৬ থেকে ১৬টি অঙ্ক দিন, যেমন +91 98765 43210',
+  'contacts.badHandle': '৪০টি পর্যন্ত অক্ষর, সংখ্যা, ডট, ড্যাশ বা আন্ডারস্কোর ব্যবহার করুন',
+  'contacts.saved': 'যোগাযোগ সেভ হয়েছে',
+  'contacts.section': 'যোগাযোগ',
+  'contacts.hint': 'খুলতে ট্যাপ করুন · কপি করতে চেপে ধরুন',
+  'contacts.none': '{name} এখনো যোগাযোগ শেয়ার করেননি',
+  'contacts.share': '{name}-এর সাথে আমার যোগাযোগ শেয়ার করুন',
+  'contacts.sharing': 'আপনি {name}-এর সাথে আপনার যোগাযোগ শেয়ার করছেন',
+  'contacts.stop': 'শেয়ার বন্ধ করুন',
+  'contacts.sharedToast': '{name} এখন আপনার যোগাযোগ দেখতে পারবেন',
+  'contacts.stoppedToast': '{name}-এর সাথে শেয়ার বন্ধ করা হয়েছে',
+  'contacts.copied': 'কপি হয়েছে',
 }
 
 export default bn

@@ -113,6 +113,23 @@ const th: SocialDict = {
   'chatbar.end': 'จบแชท',
   'chatbar.live': 'แชทสด · แตะเพื่อเปิด',
   'chatbar.minimise': 'ย่อแชท',
+  // messenger contacts
+  'contacts.title': 'ช่องทางติดต่อในแอปแชท',
+  'contacts.note': 'เฉพาะเพื่อนที่คุณเลือกเท่านั้นที่เห็นได้',
+  'contacts.safety': 'อย่าแชร์ช่องทางติดต่อกับคนที่คุณไม่ไว้ใจ ทีมงาน Yaari จะไม่ขอข้อมูลนี้จากคุณเด็ดขาด',
+  'contacts.phone': 'โทรศัพท์',
+  'contacts.badNumber': 'ใส่ตัวเลข 6 ถึง 16 หลัก เช่น +91 98765 43210',
+  'contacts.badHandle': 'ใช้ตัวอักษรอังกฤษ ตัวเลข จุด ขีด หรือขีดล่างได้ไม่เกิน 40 ตัว',
+  'contacts.saved': 'บันทึกช่องทางติดต่อแล้ว',
+  'contacts.section': 'ช่องทางติดต่อ',
+  'contacts.hint': 'แตะเพื่อเปิด · กดค้างเพื่อคัดลอก',
+  'contacts.none': '{name} ยังไม่ได้แชร์ช่องทางติดต่อ',
+  'contacts.share': 'แชร์ช่องทางติดต่อของฉันกับ {name}',
+  'contacts.sharing': 'คุณกำลังแชร์ช่องทางติดต่อกับ {name}',
+  'contacts.stop': 'หยุดแชร์',
+  'contacts.sharedToast': 'ตอนนี้ {name} เห็นช่องทางติดต่อของคุณแล้ว',
+  'contacts.stoppedToast': 'หยุดแชร์กับ {name} แล้ว',
+  'contacts.copied': 'คัดลอกแล้ว',
 }
 
 export default th

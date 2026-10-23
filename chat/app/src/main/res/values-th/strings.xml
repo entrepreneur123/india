@@ -898,4 +898,20 @@
     <plurals name="room_people_n" tools:ignore="ImpliedQuantity">
         <item quantity="other">มี %1$d คนที่นี่</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">ช่องทางติดต่อในแอปแชท</string>
+    <string name="contacts_note">เฉพาะเพื่อนที่คุณเลือกเท่านั้นที่เห็นได้</string>
+    <string name="contacts_safety">อย่าแชร์ช่องทางติดต่อกับคนที่คุณไม่ไว้ใจ ทีมงาน Yaari จะไม่ขอข้อมูลนี้จากคุณเด็ดขาด</string>
+    <string name="contacts_phone">โทรศัพท์</string>
+    <string name="contacts_bad_number">ใส่ตัวเลข 6 ถึง 16 หลัก เช่น +91 98765 43210</string>
+    <string name="contacts_bad_handle">ใช้ตัวอักษรอังกฤษ ตัวเลข จุด ขีด หรือขีดล่างได้ไม่เกิน 40 ตัว</string>
+    <string name="contacts_saved">บันทึกช่องทางติดต่อแล้ว</string>
+    <string name="contacts_section">ช่องทางติดต่อ</string>
+    <string name="contacts_hint">แตะเพื่อเปิด · กดค้างเพื่อคัดลอก</string>
+    <string name="contacts_none">%1$s ยังไม่ได้แชร์ช่องทางติดต่อ</string>
+    <string name="contacts_share">แชร์ช่องทางติดต่อของฉันกับ %1$s</string>
+    <string name="contacts_sharing">คุณกำลังแชร์ช่องทางติดต่อกับ %1$s</string>
+    <string name="contacts_stop">หยุดแชร์</string>
+    <string name="contacts_shared">ตอนนี้ %1$s เห็นช่องทางติดต่อของคุณแล้ว</string>
+    <string name="contacts_stopped">หยุดแชร์กับ %1$s แล้ว</string>
 </resources>

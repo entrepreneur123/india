@@ -944,4 +944,20 @@
         <item quantity="one">%1$d tao rito</item>
         <item quantity="other">%1$d tao rito</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Mga contact sa messenger</string>
+    <string name="contacts_note">Ang mga kaibigang pipiliin mo lang ang makakakita nito.</string>
+    <string name="contacts_safety">Huwag kailanman ibahagi ang contacts mo sa mga taong hindi mo pinagkakatiwalaan. Hindi kailanman hihingin ng Yaari staff ang mga ito.</string>
+    <string name="contacts_phone">Telepono</string>
+    <string name="contacts_bad_number">Maglagay ng 6 hanggang 16 na digit, gaya ng +91 98765 43210</string>
+    <string name="contacts_bad_handle">Hanggang 40 letra, numero, tuldok, gitling o underscore</string>
+    <string name="contacts_saved">Na-save ang contacts</string>
+    <string name="contacts_section">Contacts</string>
+    <string name="contacts_hint">I-tap para buksan · pindutin nang matagal para kopyahin</string>
+    <string name="contacts_none">Hindi pa nagbabahagi ng contacts si %1$s</string>
+    <string name="contacts_share">Ibahagi ang contacts ko kay %1$s</string>
+    <string name="contacts_sharing">Ibinabahagi mo ang contacts mo kay %1$s</string>
+    <string name="contacts_stop">Itigil ang pagbabahagi</string>
+    <string name="contacts_shared">Nakikita na ni %1$s ang contacts mo</string>
+    <string name="contacts_stopped">Itinigil ang pagbabahagi kay %1$s</string>
 </resources>

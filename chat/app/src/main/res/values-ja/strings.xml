@@ -944,4 +944,20 @@
         <item quantity="one">%1$d人が参加中</item>
         <item quantity="other">%1$d人が参加中</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">メッセンジャーの連絡先</string>
+    <string name="contacts_note">選んだ友達だけが見られます。</string>
+    <string name="contacts_safety">信頼できない人には連絡先を教えないでください。Yaariのスタッフが連絡先を尋ねることはありません。</string>
+    <string name="contacts_phone">電話</string>
+    <string name="contacts_bad_number">6〜16桁の数字を入力してください（例: +91 98765 43210）</string>
+    <string name="contacts_bad_handle">英字・数字・ドット・ハイフン・アンダースコアで40文字以内にしてください</string>
+    <string name="contacts_saved">連絡先を保存しました</string>
+    <string name="contacts_section">連絡先</string>
+    <string name="contacts_hint">タップで開く・長押しでコピー</string>
+    <string name="contacts_none">%1$sさんはまだ連絡先を共有していません</string>
+    <string name="contacts_share">%1$sさんに連絡先を共有する</string>
+    <string name="contacts_sharing">%1$sさんに連絡先を共有しています</string>
+    <string name="contacts_stop">共有をやめる</string>
+    <string name="contacts_shared">%1$sさんがあなたの連絡先を見られるようになりました</string>
+    <string name="contacts_stopped">%1$sさんへの共有をやめました</string>
 </resources>

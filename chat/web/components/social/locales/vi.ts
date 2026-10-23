@@ -108,6 +108,23 @@ const vi: SocialDict = {
   'chatbar.end': 'Kết thúc trò chuyện',
   'chatbar.live': 'Đang trò chuyện · chạm để mở',
   'chatbar.minimise': 'Thu nhỏ trò chuyện',
+  // messenger contacts
+  'contacts.title': 'Liên hệ ứng dụng nhắn tin',
+  'contacts.note': 'Chỉ những người bạn bạn chọn mới thấy được.',
+  'contacts.safety': 'Đừng bao giờ chia sẻ liên hệ với người bạn không tin tưởng. Nhân viên Yaari sẽ không bao giờ hỏi những thông tin này.',
+  'contacts.phone': 'Điện thoại',
+  'contacts.badNumber': 'Nhập 6 đến 16 chữ số, ví dụ +91 98765 43210',
+  'contacts.badHandle': 'Dùng tối đa 40 chữ cái, số, dấu chấm, gạch ngang hoặc gạch dưới',
+  'contacts.saved': 'Đã lưu liên hệ',
+  'contacts.section': 'Liên hệ',
+  'contacts.hint': 'Chạm để mở · nhấn giữ để sao chép',
+  'contacts.none': '{name} chưa chia sẻ liên hệ',
+  'contacts.share': 'Chia sẻ liên hệ của tôi với {name}',
+  'contacts.sharing': 'Bạn đang chia sẻ liên hệ với {name}',
+  'contacts.stop': 'Ngừng chia sẻ',
+  'contacts.sharedToast': '{name} giờ có thể thấy liên hệ của bạn',
+  'contacts.stoppedToast': 'Đã ngừng chia sẻ với {name}',
+  'contacts.copied': 'Đã sao chép',
 }
 
 export default vi

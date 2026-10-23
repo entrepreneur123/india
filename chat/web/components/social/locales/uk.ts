@@ -118,6 +118,23 @@ const uk: SocialDict = {
   'chatbar.end': 'Завершити чат',
   'chatbar.live': 'Чат триває · натисніть, щоб відкрити',
   'chatbar.minimise': 'Згорнути чат',
+  // messenger contacts
+  'contacts.title': 'Контакти в месенджерах',
+  'contacts.note': 'Їх бачать лише друзі, яких ви оберете.',
+  'contacts.safety': 'Ніколи не діліться контактами з тими, кому не довіряєте. Працівники Yaari ніколи їх не попросять.',
+  'contacts.phone': 'Телефон',
+  'contacts.badNumber': 'Введіть від 6 до 16 цифр, наприклад +91 98765 43210',
+  'contacts.badHandle': 'До 40 латинських літер, цифр, крапок, дефісів або підкреслень',
+  'contacts.saved': 'Контакти збережено',
+  'contacts.section': 'Контакти',
+  'contacts.hint': 'Торкніться, щоб відкрити · утримуйте, щоб скопіювати',
+  'contacts.none': '{name} поки не ділиться контактами',
+  'contacts.share': 'Поділитися контактами: {name}',
+  'contacts.sharing': 'Ви ділитеся контактами: {name}',
+  'contacts.stop': 'Припинити ділитися',
+  'contacts.sharedToast': 'Тепер {name} бачить ваші контакти',
+  'contacts.stoppedToast': 'Ви більше не ділитеся: {name}',
+  'contacts.copied': 'Скопійовано',
 }
 
 export default uk

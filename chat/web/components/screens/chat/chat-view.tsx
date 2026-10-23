@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, Check, ChevronDown, Clock, Flag, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
+import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -28,6 +28,7 @@ import { useFollowLines } from '@/components/translate'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useFriendship } from '@/components/social/friend-button'
+import { FriendContactsSheet } from '@/components/social/contacts'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
@@ -79,6 +80,7 @@ export function ChatView({
   const live = mode === 'random'
   const chat = useMatchChat(matchId, partner.name, live)
   const [reportOpen, setReportOpen] = useState(false)
+  const [contactsOpen, setContactsOpen] = useState(false)
   const [videoBusy, setVideoBusy] = useState(false)
   const listRef = useRef<HTMLUListElement>(null)
   const stickToBottom = useRef(true)
@@ -204,6 +206,11 @@ export function ChatView({
               </span>
             </span>
           </button>
+          {!live && friendship.state === 'friends' ? (
+            <Button size="icon" variant="ghost" onClick={() => setContactsOpen(true)} aria-label={st('contacts.section')} title={st('contacts.section')}>
+              <BookUser className="size-5" aria-hidden />
+            </Button>
+          ) : null}
           <Button
             size="icon"
             variant="ghost"
@@ -323,6 +330,7 @@ export function ChatView({
       )}
 
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} partner={partner} matchId={matchId} onReported={onReported} />
+      {contactsOpen ? <FriendContactsSheet open onClose={() => setContactsOpen(false)} userId={partner.id} name={partner.name} /> : null}
 
       <Modal open={live && visible && chat.video === 'requested_by_partner'} onClose={() => void answerVideo(false)} hideHeader className="max-w-sm">
         <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-6 text-center">

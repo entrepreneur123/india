@@ -945,4 +945,20 @@
         <item quantity="one">%1$d person here</item>
         <item quantity="other">%1$d people here</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">Messenger contacts</string>
+    <string name="contacts_note">Only friends you choose can see these.</string>
+    <string name="contacts_safety">Never share contacts with people you don’t trust. Yaari staff will never ask for them.</string>
+    <string name="contacts_phone">Phone</string>
+    <string name="contacts_bad_number">Enter 6 to 16 digits, like +91 98765 43210</string>
+    <string name="contacts_bad_handle">Use up to 40 letters, numbers, dots, dashes or underscores</string>
+    <string name="contacts_saved">Contacts saved</string>
+    <string name="contacts_section">Contacts</string>
+    <string name="contacts_hint">Tap to open · long-press to copy</string>
+    <string name="contacts_none">%1$s hasn’t shared contacts yet</string>
+    <string name="contacts_share">Share my contacts with %1$s</string>
+    <string name="contacts_sharing">You’re sharing your contacts with %1$s</string>
+    <string name="contacts_stop">Stop sharing</string>
+    <string name="contacts_shared">%1$s can now see your contacts</string>
+    <string name="contacts_stopped">Stopped sharing with %1$s</string>
 </resources>

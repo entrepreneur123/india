@@ -924,4 +924,20 @@
         <item quantity="two">%1$d אנשים כאן</item>
         <item quantity="other">%1$d אנשים כאן</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">אנשי קשר במסנג׳רים</string>
+    <string name="contacts_note">רק חברים שתבחרו יוכלו לראות אותם.</string>
+    <string name="contacts_safety">לעולם אל תשתפו פרטי קשר עם אנשים שאתם לא סומכים עליהם. צוות Yaari לעולם לא יבקש אותם.</string>
+    <string name="contacts_phone">טלפון</string>
+    <string name="contacts_bad_number">הזינו 6 עד 16 ספרות, למשל ‎+91 98765 43210</string>
+    <string name="contacts_bad_handle">עד 40 אותיות לטיניות, ספרות, נקודות, מקפים או קווים תחתונים</string>
+    <string name="contacts_saved">פרטי הקשר נשמרו</string>
+    <string name="contacts_section">פרטי קשר</string>
+    <string name="contacts_hint">הקישו לפתיחה · לחיצה ארוכה להעתקה</string>
+    <string name="contacts_none">%1$s עדיין לא שיתף/ה פרטי קשר</string>
+    <string name="contacts_share">שיתוף פרטי הקשר שלי עם %1$s</string>
+    <string name="contacts_sharing">את/ה משתף/ת את פרטי הקשר שלך עם %1$s</string>
+    <string name="contacts_stop">הפסקת השיתוף</string>
+    <string name="contacts_shared">%1$s יכול/ה עכשיו לראות את פרטי הקשר שלך</string>
+    <string name="contacts_stopped">השיתוף עם %1$s הופסק</string>
 </resources>

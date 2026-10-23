@@ -113,6 +113,23 @@ const sw: SocialDict = {
   'chatbar.end': 'Maliza chat',
   'chatbar.live': 'Chat hai · gusa ili kufungua',
   'chatbar.minimise': 'Punguza chat',
+  // messenger contacts
+  'contacts.title': 'Mawasiliano ya programu za ujumbe',
+  'contacts.note': 'Ni marafiki unaowachagua tu wanaoweza kuyaona.',
+  'contacts.safety': 'Usishiriki kamwe mawasiliano na watu usiowaamini. Wafanyakazi wa Yaari hawatayaomba kamwe.',
+  'contacts.phone': 'Simu',
+  'contacts.badNumber': 'Weka tarakimu 6 hadi 16, kama +91 98765 43210',
+  'contacts.badHandle': 'Tumia hadi herufi 40, namba, nukta, vistari au mistari ya chini',
+  'contacts.saved': 'Mawasiliano yamehifadhiwa',
+  'contacts.section': 'Mawasiliano',
+  'contacts.hint': 'Gusa kufungua · bonyeza kwa muda kunakili',
+  'contacts.none': '{name} bado hajashiriki mawasiliano',
+  'contacts.share': 'Shiriki mawasiliano yangu na {name}',
+  'contacts.sharing': 'Unashiriki mawasiliano yako na {name}',
+  'contacts.stop': 'Acha kushiriki',
+  'contacts.sharedToast': '{name} sasa anaweza kuona mawasiliano yako',
+  'contacts.stoppedToast': 'Umeacha kushiriki na {name}',
+  'contacts.copied': 'Imenakiliwa',
 }
 
 export default sw

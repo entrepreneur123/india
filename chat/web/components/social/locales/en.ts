@@ -113,6 +113,23 @@ const en = {
   'chatbar.end': 'End chat',
   'chatbar.live': 'Live chat · tap to open',
   'chatbar.minimise': 'Minimise chat',
+  // messenger contacts friends exchange (app names are brands, never translated)
+  'contacts.title': 'Messenger contacts',
+  'contacts.note': 'Only friends you choose can see these.',
+  'contacts.safety': 'Never share contacts with people you don’t trust. Yaari staff will never ask for them.',
+  'contacts.phone': 'Phone',
+  'contacts.badNumber': 'Enter 6 to 16 digits, like +91 98765 43210',
+  'contacts.badHandle': 'Use up to 40 letters, numbers, dots, dashes or underscores',
+  'contacts.saved': 'Contacts saved',
+  'contacts.section': 'Contacts',
+  'contacts.hint': 'Tap to open · long-press to copy',
+  'contacts.none': '{name} hasn’t shared contacts yet',
+  'contacts.share': 'Share my contacts with {name}',
+  'contacts.sharing': 'You’re sharing your contacts with {name}',
+  'contacts.stop': 'Stop sharing',
+  'contacts.sharedToast': '{name} can now see your contacts',
+  'contacts.stoppedToast': 'Stopped sharing with {name}',
+  'contacts.copied': 'Copied',
 }
 
 export default en

@@ -107,6 +107,23 @@ const te: SocialDict = {
   'chatbar.end': 'చాట్ ముగించు',
   'chatbar.live': 'లైవ్ చాట్ · తెరవడానికి ట్యాప్ చేయండి',
   'chatbar.minimise': 'చాట్‌ని చిన్నది చేయి',
+  // messenger contacts
+  'contacts.title': 'మెసెంజర్ కాంటాక్ట్‌లు',
+  'contacts.note': 'మీరు ఎంచుకున్న స్నేహితులు మాత్రమే వీటిని చూడగలరు.',
+  'contacts.safety': 'నమ్మకం లేని వారితో కాంటాక్ట్‌లను ఎప్పుడూ షేర్ చేయకండి. Yaari సిబ్బంది వీటిని ఎప్పుడూ అడగరు.',
+  'contacts.phone': 'ఫోన్',
+  'contacts.badNumber': '6 నుండి 16 అంకెలు నమోదు చేయండి, ఉదా. +91 98765 43210',
+  'contacts.badHandle': '40 వరకు అక్షరాలు, అంకెలు, చుక్కలు, డ్యాష్‌లు లేదా అండర్‌స్కోర్‌లు వాడండి',
+  'contacts.saved': 'కాంటాక్ట్‌లు సేవ్ అయ్యాయి',
+  'contacts.section': 'కాంటాక్ట్‌లు',
+  'contacts.hint': 'తెరవడానికి నొక్కండి · కాపీ చేయడానికి నొక్కి పట్టుకోండి',
+  'contacts.none': '{name} ఇంకా కాంటాక్ట్‌లు షేర్ చేయలేదు',
+  'contacts.share': 'నా కాంటాక్ట్‌లను {name}తో షేర్ చేయి',
+  'contacts.sharing': 'మీరు మీ కాంటాక్ట్‌లను {name}తో షేర్ చేస్తున్నారు',
+  'contacts.stop': 'షేర్ చేయడం ఆపు',
+  'contacts.sharedToast': '{name} ఇప్పుడు మీ కాంటాక్ట్‌లను చూడగలరు',
+  'contacts.stoppedToast': '{name}తో షేర్ చేయడం ఆపేశారు',
+  'contacts.copied': 'కాపీ అయింది',
 }
 
 export default te

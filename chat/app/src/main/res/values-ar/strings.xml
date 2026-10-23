@@ -964,4 +964,20 @@
         <item quantity="many">%1$d شخصًا هنا</item>
         <item quantity="other">%1$d شخص هنا</item>
     </plurals>
+    <!-- messenger contacts (044); app names are brands, never translated -->
+    <string name="contacts_title">جهات اتصال التطبيقات</string>
+    <string name="contacts_note">لا يراها إلا الأصدقاء الذين تختارهم.</string>
+    <string name="contacts_safety">لا تشارك جهات اتصالك أبدًا مع من لا تثق به. فريق Yaari لن يطلبها منك أبدًا.</string>
+    <string name="contacts_phone">الهاتف</string>
+    <string name="contacts_bad_number">أدخل من 6 إلى 16 رقمًا، مثل +91 98765 43210</string>
+    <string name="contacts_bad_handle">استخدم حتى 40 حرفًا لاتينيًا أو رقمًا أو نقطة أو شرطة أو شرطة سفلية</string>
+    <string name="contacts_saved">تم حفظ جهات الاتصال</string>
+    <string name="contacts_section">جهات الاتصال</string>
+    <string name="contacts_hint">انقر للفتح · اضغط مطولًا للنسخ</string>
+    <string name="contacts_none">لم يشارك %1$s جهات اتصاله بعد</string>
+    <string name="contacts_share">مشاركة جهات اتصالي مع %1$s</string>
+    <string name="contacts_sharing">أنت تشارك جهات اتصالك مع %1$s</string>
+    <string name="contacts_stop">إيقاف المشاركة</string>
+    <string name="contacts_shared">يمكن لـ%1$s الآن رؤية جهات اتصالك</string>
+    <string name="contacts_stopped">أوقفت المشاركة مع %1$s</string>
 </resources>
