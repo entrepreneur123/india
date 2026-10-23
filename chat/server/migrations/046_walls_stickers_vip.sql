@@ -1,8 +1,8 @@
 -- Paid chat walls, sticker packs and the VIP incognito mode; no emoji in chats.
 -- 1. New Play products in the catalogue (same one-time, non-consumable flow as looks, 040): wall_* (my chat
 --    background, only I see it), sticker_* (a pack of 8 stickers I can send), vip_anon (incognito, below).
--- 2. Chats (random/DM messages and room lines) take no emoji from people; a sticker is a whole message ":st:<pack>/<1-8>:"
---    and needs the pack. Comments, bios and names keep emoji. Bots (no signed-in user) are not checked.
+-- 2. A sticker is a whole chat message ":st:<pack>/<1-8>:" and needs its pack (ordinary emoji stay free everywhere;
+--    stickers are the paid, richer kind). Bots (no signed-in user) are not checked.
 -- 3. Incognito: someone with vip_anon who turns it on is shown to everyone but friends as "VIP": no photo, no ID, no
 --    age (age 0, which the apps hide), city, bio, country, looks or badges; they can't be found by ID. Friend requests
 --    still work, and friends see everything. Room chat lines keep the name they were sent with, so there it stays "VIP"
@@ -56,7 +56,7 @@ do $$ begin
     'look_font = nullif(look_font, item), look_frame = nullif(look_frame, item), look_wall = nullif(look_wall, item), anon = anon and item <> ''vip_anon''');
 end $$;
 
--- ---- 2: no emoji in chats ----------------------------------------------------------------------------------------
+-- ---- 2: stickers in chats ----------------------------------------------------------------------------------------
 create or replace function public.has_emoji(p text) returns boolean language sql immutable set search_path = '' as $$
   select coalesce(p ~ '[\U0001F000-\U0001FAFF☀-➿⌀-⏿⬀-⯿️‍⃣]', false)
 $$;
@@ -64,12 +64,8 @@ $$;
 create or replace function public.chat_body_check(p_sender uuid, p_body text) returns void language plpgsql stable security definer set search_path = '' as $$
 declare st text[] := regexp_match(coalesce(p_body, ''), '^:st:([a-z0-9]{2,20})/([1-8]):$');
 begin
-  if auth.uid() is null then return; end if;
-  if st is not null then
-    if not public.owns(p_sender, 'sticker_' || st[1]) then raise exception 'sticker_not_owned' using errcode = 'P0001'; end if;
-  elsif public.has_emoji(p_body) then
-    raise exception 'emoji_not_allowed' using errcode = 'P0001';
-  end if;
+  if auth.uid() is null or st is null then return; end if;
+  if not public.owns(p_sender, 'sticker_' || st[1]) then raise exception 'sticker_not_owned' using errcode = 'P0001'; end if;
 end $$;
 revoke execute on function public.chat_body_check(uuid, text) from public, anon, authenticated;
 

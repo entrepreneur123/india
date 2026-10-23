@@ -1,4 +1,4 @@
--- Migration 046: no emoji in chats (stickers need their pack), walls and incognito need their purchase, and someone
+-- Migration 046: emoji are free in chats, stickers need their pack, walls and incognito need their purchase, and someone
 -- incognito is "VIP" to all but friends (and to everyone in rooms), and can't be found by ID. Rolled back.
 begin;
 set local statement_timeout = '30s';
@@ -25,11 +25,10 @@ insert into public.matches (id, user_a, user_b) values ('eeeeeeee-0000-0000-0000
 insert into public.friendships (requester, addressee, status) values ('eeeeeeee-0000-0000-0000-000000004601', 'eeeeeeee-0000-0000-0000-000000004603', 'accepted');
 
 set local role authenticated;
--- Chats: no emoji; stickers need the pack.
+-- Chats: emoji are fine; stickers need the pack.
 select pg_temp.act('eeeeeeee-0000-0000-0000-000000004601');
 insert into public.messages (match_id, body) values ('eeeeeeee-0000-0000-0000-0000000046aa', 'hello there');
-select pg_temp.fails($$ insert into public.messages (match_id, body) values ('eeeeeeee-0000-0000-0000-0000000046aa', 'hi 😀') $$, 'emoji_not_allowed');
-select pg_temp.fails($$ insert into public.messages (match_id, body) values ('eeeeeeee-0000-0000-0000-0000000046aa', 'love ❤️') $$, 'emoji_not_allowed');
+insert into public.messages (match_id, body) values ('eeeeeeee-0000-0000-0000-0000000046aa', 'hi 😀 ❤️');
 select pg_temp.fails($$ insert into public.messages (match_id, body) values ('eeeeeeee-0000-0000-0000-0000000046aa', ':st:chai/2:') $$, 'sticker_not_owned');
 reset role;
 insert into public.user_cosmetics (user_id, item_id) values ('eeeeeeee-0000-0000-0000-000000004601', 'sticker_chai');
