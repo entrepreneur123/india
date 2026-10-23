@@ -27,6 +27,7 @@ export const NightContext = createContext(false)
 const stack: symbol[] = []
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+const TYPING = 'textarea, input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit])'
 
 export function Modal({
   open,
@@ -56,7 +57,10 @@ export function Modal({
     const previouslyFocused = document.activeElement as HTMLElement | null
     const raf = requestAnimationFrame(() => {
       const panel = panelRef.current
-      const target = panel?.querySelector<HTMLElement>('[data-autofocus]') ?? panel?.querySelector<HTMLElement>(FOCUSABLE)
+      let target = panel?.querySelector<HTMLElement>('[data-autofocus]') ?? panel?.querySelector<HTMLElement>(FOCUSABLE)
+      // A text box gets the caret only when asked for on a computer: on a phone opening a sheet must not pop the
+      // keyboard, and a blinking caret in a field nobody tapped looks broken.
+      if (target?.matches(TYPING) && (matchMedia('(pointer: coarse)').matches || !target.hasAttribute('data-autofocus'))) target = null
       ;(target ?? panel)?.focus()
     })
     const onKey = (e: KeyboardEvent) => {
