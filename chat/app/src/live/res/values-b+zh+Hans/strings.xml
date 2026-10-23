@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">请允许使用摄像头和麦克风以开始通话</string>
+    <string name="connecting">正在连接…</string>
+    <string name="waiting_video">正在等待 %1$s 的视频…</string>
+    <string name="reconnecting">正在重新连接…</string>
+    <string name="call_failed">通话无法接通。请点“结束”后重试。</string>
+    <string name="video_checking">安全检查中…</string>
+    <string name="video_hidden_title">视频已隐藏</string>
+    <string name="video_hidden_body">画面可能包含不被允许的裸露内容。我们已通知安全团队。</string>
+    <string name="open_settings">打开设置</string>
+    <string name="call_dropped">通话已中断。请点“结束”后重试。</string>
+    <string name="partner_lost">%1$s 的连接已断开，正在等待对方…</string>
+    <string name="partner_paused">%1$s 的视频已暂停：对方网络太慢</string>
+    <string name="partner_cam_off">%1$s 关闭了摄像头</string>
+    <string name="partner_weak">%1$s 的网络信号较弱</string>
+    <string name="net_good">你的网络：良好</string>
+    <string name="net_ok">你的网络：一般</string>
+    <string name="net_poor">你的网络：较差</string>
+    <string name="device_busy">摄像头或麦克风正被其他应用占用</string>
+    <string name="cam_blocked">未允许使用摄像头，对方仍能听到你。点按打开设置</string>
+</resources>

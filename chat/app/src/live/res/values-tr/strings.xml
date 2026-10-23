@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="allow_camera">Aramayı başlatmak için kamera ve mikrofona izin ver</string>
+    <string name="connecting">Bağlanıyor…</string>
+    <string name="waiting_video">%1$s kişisinin görüntüsü bekleniyor…</string>
+    <string name="reconnecting">Yeniden bağlanıyor…</string>
+    <string name="call_failed">Arama bağlanamadı. Bitir’e dokun ve tekrar dene.</string>
+    <string name="video_checking">Güvenlik kontrolü…</string>
+    <string name="video_hidden_title">Görüntü gizlendi</string>
+    <string name="video_hidden_body">İzin verilmeyen çıplaklık içerebilir. Güvenlik ekibimize haber verdik.</string>
+    <string name="open_settings">Ayarları aç</string>
+    <string name="call_dropped">Arama koptu. Bitir’e dokun ve tekrar dene.</string>
+    <string name="partner_lost">%1$s kişisinin bağlantısı koptu. Bekleniyor…</string>
+    <string name="partner_paused">%1$s kişisinin görüntüsü duraklatıldı: ağı çok yavaş</string>
+    <string name="partner_cam_off">%1$s kamerasını kapattı</string>
+    <string name="partner_weak">%1$s kişisinin bağlantısı zayıf</string>
+    <string name="net_good">Bağlantın: güçlü</string>
+    <string name="net_ok">Bağlantın: orta</string>
+    <string name="net_poor">Bağlantın: zayıf</string>
+    <string name="device_busy">Kameran veya mikrofonun başka bir uygulama tarafından kullanılıyor</string>
+    <string name="cam_blocked">Kameraya izin verilmedi. Yine de seni duyabilirler. Ayarları açmak için dokun</string>
+</resources>

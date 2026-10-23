@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Autorisez la caméra et le micro pour lancer l’appel</string>
+    <string name="connecting">Connexion…</string>
+    <string name="waiting_video">En attente de la vidéo de %1$s…</string>
+    <string name="reconnecting">Reconnexion…</string>
+    <string name="call_failed">Impossible de connecter l’appel. Appuyez sur Raccrocher et réessayez.</string>
+    <string name="video_checking">Vérification de sécurité…</string>
+    <string name="video_hidden_title">Vidéo masquée</string>
+    <string name="video_hidden_body">Elle pourrait montrer de la nudité, ce qui est interdit. Nous avons prévenu notre équipe sécurité.</string>
+    <string name="open_settings">Ouvrir les paramètres</string>
+    <string name="call_dropped">L’appel a coupé. Appuyez sur Raccrocher et réessayez.</string>
+    <string name="partner_lost">La connexion de %1$s a coupé. En attente…</string>
+    <string name="partner_paused">La vidéo de %1$s est en pause : son réseau est trop lent</string>
+    <string name="partner_cam_off">%1$s a coupé sa caméra</string>
+    <string name="partner_weak">La connexion de %1$s est faible</string>
+    <string name="net_good">Votre connexion : bonne</string>
+    <string name="net_ok">Votre connexion : moyenne</string>
+    <string name="net_poor">Votre connexion : faible</string>
+    <string name="device_busy">Votre caméra ou votre micro est utilisé par une autre app</string>
+    <string name="cam_blocked">Caméra non autorisée. On peut quand même vous entendre. Appuyez pour ouvrir les paramètres</string>
+</resources>

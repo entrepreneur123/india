@@ -1,0 +1,399 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import useSWR, { useSWRConfig } from 'swr'
+import { Check, ExternalLink } from 'lucide-react'
+import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
+import { useBackend } from '@/lib/backend-context'
+import { CATALOGUE, ITEM_KINDS, kindOf, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type FrameId, type ItemId, type PackId } from '@/lib/looks'
+import { STICKERS } from '@/lib/stickers'
+import { wallVars } from '@/lib/walls'
+import { useApp } from '@/components/app-state'
+import { useI18n } from '@/components/i18n'
+import { StickerCard } from '@/components/screens/chat/stickers'
+import { Avatar } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/bits'
+import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/pressable'
+import { useToast } from '@/components/ui/toast'
+import { cn } from '@/lib/utils'
+import { FrameAvatar, FrameCard } from './frames'
+import { lookKey, LookText } from './look-name'
+import { useLooksT, type LooksKey } from './looks-text'
+import { useAnonSwitch, useShop } from './use-shop'
+
+/**
+ * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, a sticker pack, how strangers
+ * see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom. Looks: a tap tries one on
+ * ("None" first); what I own I wear (equip_look, one of each kind). Walls (046): set_wall, "None" is the plain one.
+ * Sticker packs are used from a chat's sticker button; VIP incognito is a switch (set_anon). Everything is bought in
+ * the Android app (Google Play); the demo sells at once.
+ */
+export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; onClose: () => void; tab?: ItemKind }) {
+  const { lt } = useLooksT()
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={lt('looks.title')} className="md:max-w-xl">
+      {open ? <ShopBody tab={tab} /> : null}
+    </Modal>
+  )
+}
+
+const itemName = (lt: (k: LooksKey) => string, id: ItemId) => lt(`item.${id}` as LooksKey)
+
+function ShopBody({ tab }: { tab: ItemKind }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { mutate } = useSWRConfig()
+  const { me } = useApp()
+  const { t, locale } = useI18n()
+  const { lt } = useLooksT()
+  const { data: shop, error, mutate: reload } = useShop(true)
+  const anon = useAnonSwitch()
+  const [kind, setKind] = useState<ItemKind>(tab)
+  /** What I wear now (the server's), and what I'm trying on over it. */
+  const [worn, setWorn] = useState<LookWear | null>(null)
+  const [trying, setTrying] = useState<LookWear>(NO_WEAR)
+  /** The wall and the sticker pack being looked at (undefined: my wall, the first pack). */
+  const [wallTry, setWallTry] = useState<ItemId | null | undefined>(undefined)
+  const [packTry, setPackTry] = useState<PackId>(CATALOGUE.sticker[0] as PackId)
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (!shop || worn) return
+    setWorn(wearOf(shop.look))
+    setTrying(wearOf(shop.look))
+  }, [shop, worn])
+
+  if (!shop || !worn) {
+    return error && !shop ? (
+      <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
+        <p className="font-semibold">{lt('looks.loadFailed')}</p>
+        <Button variant="outline" onClick={() => void reload()}>
+          {t('common.tryAgain')}
+        </Button>
+      </div>
+    ) : (
+      <div className="flex flex-col gap-4 px-6 pt-3 pb-6" aria-busy>
+        <Skeleton className="h-44 w-full rounded-[28px]" />
+        <Skeleton className="h-11 w-full rounded-full" />
+        <div className="grid grid-cols-3 gap-3">
+          {Array.from({ length: 6 }, (_, i) => (
+            <Skeleton key={i} className="h-28 rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const handle = shop.look?.handle ?? me.handle ?? ''
+  const owned = new Set<string>(shop.owned)
+  const price = (id: ItemId) => {
+    const inr = shop.items.find((i) => i.id === id)?.priceInr
+    return inr === undefined ? '' : new Intl.NumberFormat(locale, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(inr)
+  }
+  const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
+  const myWall = shop.wall as ItemId | null
+  const shownWall = wallTry === undefined ? myWall : wallTry
+  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : kind === 'wall' ? shownWall : kind === 'sticker' ? packTry : 'vip_anon'
+  const sale = new Set(shop.items.map((i) => i.id))
+  const list = CATALOGUE[kind].filter((id) => sale.has(id))
+  const choose = (id: ItemId | null) => (look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : id && setPackTry(id as PackId))
+
+  /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
+  const wear = async (id: ItemId | null) => {
+    if (!look) return
+    setBusy(true)
+    try {
+      const saved = await backend.equipLook(wearWith(worn, look, id))
+      setWorn(wearOf(saved))
+      setTrying((w) => ({ ...wearOf(saved), [look]: w[look] }))
+      await Promise.all([mutate(lookKey(me.id), saved, { revalidate: false }), mutate('shop', { ...shop, look: saved } satisfies Shop, { revalidate: false })])
+      toast.show(lt('looks.saved'), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const setWall = async (id: ItemId | null) => {
+    setBusy(true)
+    try {
+      await backend.setWall(id)
+      await mutate('shop', { ...shop, wall: id } satisfies Shop, { revalidate: false })
+      toast.show(lt('looks.saved'), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const buy = async (id: ItemId) => {
+    if (!backend.buyLook) return
+    setBusy(true)
+    try {
+      await backend.buyLook(id)
+      // The first item of a kind is worn at once (as after a purchase in the app).
+      const fresh = await reload()
+      const mine: Look | null = fresh?.look ?? null
+      setWorn(wearOf(mine))
+      if (mine) await mutate(lookKey(me.id), mine, { revalidate: false })
+      toast.show(lt('looks.bought', { item: itemName(lt, id) }), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const status = (id: ItemId) =>
+    (look ? worn[look] === id : myWall === id) ? lt(look ? 'looks.wearing' : 'wall.inUse') : owned.has(id) ? lt('looks.owned') : price(id)
+  const inUse = (label: string) => (
+    <Button variant="secondary" size="lg" className="w-full" disabled>
+      <Check className="size-4.5" aria-hidden /> {label}
+    </Button>
+  )
+
+  let action: React.ReactNode
+  if (tried === null) {
+    // "None": takes off what I wear of this kind (or my wall).
+    const on = look ? worn[look] : myWall
+    action = on ? (
+      <Button variant="outline" size="lg" className="w-full" loading={busy} onClick={() => void (look ? wear(null) : setWall(null))}>
+        {lt(look ? 'looks.takeOff' : 'wall.remove')}
+      </Button>
+    ) : (
+      inUse(lt(look ? 'looks.wearing' : 'wall.inUse'))
+    )
+  } else if (owned.has(tried)) {
+    if (kind === 'vip') {
+      action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
+    } else if (kind === 'sticker') {
+      action = inUse(lt('sticker.owned'))
+    } else if (kind === 'wall') {
+      action = myWall === tried ? inUse(lt('wall.inUse')) : (
+        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void setWall(tried)}>
+          {lt('wall.use')}
+        </Button>
+      )
+    } else {
+      action = worn[look!] === tried ? inUse(lt('looks.wearing')) : (
+        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void wear(tried)}>
+          {lt('looks.wear')}
+        </Button>
+      )
+    }
+  } else if (backend.buyLook) {
+    action = (
+      <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void buy(tried)}>
+        {lt('looks.buy', { price: price(tried) })}
+      </Button>
+    )
+  } else {
+    action = (
+      <div className="flex items-center gap-3">
+        <span className="shrink-0 text-lg font-bold tabular-nums">{price(tried)}</span>
+        <a
+          href={PLAY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover"
+        >
+          <span className="truncate">{lt('looks.getInApp')}</span>
+          <ExternalLink className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
+        </a>
+      </div>
+    )
+  }
+
+  /** What an item card shows: the look on my @ID (a framed photo for frames), a wall swatch, a pack's first stickers. */
+  const sample = (id: ItemId | null) =>
+    kind === 'frame' ? (
+      <FrameAvatar frame={id as FrameId | null} name={me.name} src={me.photoUrl} size={36} />
+    ) : kind === 'wall' ? (
+      <span className="block h-12 w-full rounded-xl bg-chat-wall ring-1 ring-border" style={wallVars(id)} />
+    ) : kind === 'sticker' ? (
+      <span className="flex gap-1">
+        {STICKERS[id as PackId].slice(0, 2).map((a, i) => (
+          <StickerCard key={i} pack={id!} art={a} size={40} />
+        ))}
+      </span>
+    ) : handle && look ? (
+      <LookText handle={handle} wear={wearWith(NO_WEAR, look, id)} className="text-sm font-semibold" />
+    ) : null
+
+  let preview: React.ReactNode
+  if (kind === 'wall') {
+    preview = <WallPreview wall={shownWall} />
+  } else if (kind === 'sticker') {
+    preview = (
+      <div className="grid w-full grid-cols-4 place-items-center gap-2.5 rounded-[28px] bg-muted p-4">
+        {STICKERS[packTry].map((a, i) => (
+          <StickerCard key={i} pack={packTry} art={a} size={68} />
+        ))}
+      </div>
+    )
+  } else if (kind === 'vip') {
+    preview = (
+      <div className="flex w-full flex-col gap-3">
+        <div className="grid grid-cols-2 gap-3">
+          <SeenAs label={lt('vip.strangers')} name="VIP" />
+          <SeenAs label={lt('vip.friends')} name={nameAge(me.name, me.age)} src={me.photoUrl} />
+        </div>
+        <p className="text-sm leading-relaxed text-muted-foreground">{lt('vip.what')}</p>
+      </div>
+    )
+  } else {
+    preview = (
+      <FrameCard frame={trying.frame as FrameId | null} className="w-full">
+        <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
+          <FrameAvatar frame={trying.frame as FrameId | null} name={me.name} src={me.photoUrl} size={72} />
+          <p className="mt-1 text-lg font-bold">{me.name}</p>
+          {handle ? <LookText handle={handle} wear={trying} className="text-[17px] font-semibold" /> : null}
+        </div>
+      </FrameCard>
+    )
+  }
+  const caption = look ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : kind === 'sticker' ? lt('sticker.count') : null
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-5 px-6 pt-3 pb-5">
+        <section aria-label={lt('looks.preview')} className="flex flex-col items-center gap-2">
+          {preview}
+          {caption ? <p className="text-xs font-medium text-muted-foreground">{caption}</p> : null}
+        </section>
+
+        <div role="radiogroup" aria-label={lt('looks.tabs')} className="-mx-6 flex gap-2 overflow-x-auto px-6 no-scrollbar">
+          {ITEM_KINDS.filter((k) => CATALOGUE[k].some((id) => sale.has(id))).map((k) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={k === kind}
+              onClick={() => setKind(k)}
+              className={cn(
+                'h-9 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors duration-150',
+                k === kind ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-muted text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {lt(`looks.tab.${k}`)}
+            </button>
+          ))}
+        </div>
+
+        {kind === 'vip' ? null : (
+          <ul role="radiogroup" aria-label={lt(`looks.tab.${kind}`)} className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
+            {kind === 'sticker' ? null : (
+              <li>
+                <ItemCard
+                  on={tried === null}
+                  label={lt('looks.none')}
+                  sub={(look ? worn[look] : myWall) === null ? lt(look ? 'looks.wearing' : 'wall.inUse') : ''}
+                  worn={(look ? worn[look] : myWall) === null}
+                  onClick={() => choose(null)}
+                >
+                  {kind === 'wall' || kind === 'frame' ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
+                </ItemCard>
+              </li>
+            )}
+            {list.map((id) => (
+              <li key={id}>
+                <ItemCard on={tried === id} label={itemName(lt, id)} sub={status(id)} worn={look ? worn[look] === id : myWall === id} onClick={() => choose(id)}>
+                  {sample(id)}
+                </ItemCard>
+              </li>
+            ))}
+          </ul>
+        )}
+        {backend.buyLook ? null : <p className="text-xs leading-relaxed text-muted-foreground">{lt('looks.appNote')}</p>}
+      </div>
+      <div className="sticky bottom-0 border-t border-border bg-card px-6 py-4">{action}</div>
+    </div>
+  )
+}
+
+/** One item: its preview on my @ID (a framed photo for frames), its name and whether I wear it, own it or its price. */
+function ItemCard({
+  on,
+  worn,
+  label,
+  sub,
+  onClick,
+  children,
+}: {
+  on: boolean
+  worn?: boolean
+  label: string
+  sub: string
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={on}
+      aria-label={sub ? `${label}, ${sub}` : label}
+      onClick={onClick}
+      className={cn(
+        'flex h-full w-full min-w-0 flex-col items-center gap-1.5 rounded-2xl border px-1.5 pt-3 pb-2 text-center transition-colors duration-150',
+        on ? 'border-primary-text bg-primary-soft' : 'border-border hover:bg-muted',
+      )}
+    >
+      <span className="grid h-14 w-full min-w-0 place-items-center px-1">{children}</span>
+      <span className="w-full truncate text-[13px] font-semibold">{label}</span>
+      <span className={cn('flex min-h-4 items-center gap-1 text-[11px] font-semibold tabular-nums', worn ? 'text-primary-text' : 'text-muted-foreground')}>
+        {worn ? <Check className="size-3" strokeWidth={3} aria-hidden /> : null}
+        {sub}
+      </span>
+    </button>
+  )
+}
+
+/** A chat on this wall (null: the plain one), the way only I will see it. */
+function WallPreview({ wall }: { wall: ItemId | null }) {
+  const bar = 'h-8 rounded-lg shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]'
+  return (
+    <div aria-hidden className="flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border" style={wallVars(wall)}>
+      <span className={cn(bar, 'w-1/2 self-start rounded-ss-none bg-bubble-in')} />
+      <span className={cn(bar, 'w-2/5 self-end rounded-se-none bg-bubble-out')} />
+      <span className={cn(bar, 'w-3/5 self-start rounded-ss-none bg-bubble-in')} />
+    </div>
+  )
+}
+
+/** VIP: one of the two cards of how I am seen (strangers, friends). */
+function SeenAs({ label, name, src }: { label: string; name: string; src?: string | null }) {
+  return (
+    <div className="flex min-w-0 flex-col items-center gap-2 rounded-3xl bg-muted px-3 pt-4 pb-3 text-center">
+      <Avatar name={name} src={src} size={56} />
+      <span className="w-full truncate text-[15px] font-bold">{name}</span>
+      <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{label}</span>
+    </div>
+  )
+}
+
+/** VIP incognito's switch (once owned). */
+function AnonSwitch({ on, busy, onChange }: { on: boolean; busy: boolean; onChange: (on: boolean) => void }) {
+  const { lt } = useLooksT()
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      disabled={busy}
+      onClick={() => onChange(!on)}
+      className="flex w-full items-center gap-3 rounded-2xl bg-muted px-4 py-3 text-start disabled:opacity-70"
+    >
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="text-[15px] font-semibold">{lt('vip.toggle')}</span>
+        <span className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{lt('vip.toggleBody')}</span>
+      </span>
+      <span aria-hidden className={cn('relative h-6 w-10 shrink-0 rounded-full transition-colors duration-150', on ? 'bg-primary' : 'bg-input')}>
+        <span className={cn('absolute top-0.5 size-5 rounded-full bg-white shadow transition-[inset-inline-start] duration-150', on ? 'inset-s-[1.125rem]' : 'inset-s-0.5')} />
+      </span>
+    </button>
+  )
+}

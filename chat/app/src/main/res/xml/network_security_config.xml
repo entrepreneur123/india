@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HTTPS only, system certificate authorities only (no user-installed CAs, so traffic can't be read by a
+     proxy certificate someone installed on the phone). Supabase, LiveKit and Google Play all use TLS. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">ಕಾಲ್ ಶುರುಮಾಡಲು ಕ್ಯಾಮೆರಾ ಮತ್ತು ಮೈಕ್‌ಗೆ ಅನುಮತಿ ನೀಡಿ</string>
+    <string name="connecting">ಸಂಪರ್ಕಿಸುತ್ತಿದೆ…</string>
+    <string name="waiting_video">%1$s ಅವರ ವೀಡಿಯೊಗಾಗಿ ಕಾಯುತ್ತಿದ್ದೇವೆ…</string>
+    <string name="reconnecting">ಮತ್ತೆ ಸಂಪರ್ಕಿಸುತ್ತಿದೆ…</string>
+    <string name="call_failed">ಕಾಲ್ ಸಂಪರ್ಕವಾಗಲಿಲ್ಲ. ಮುಗಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="video_checking">ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆ…</string>
+    <string name="video_hidden_title">ವೀಡಿಯೊ ಮರೆಮಾಡಲಾಗಿದೆ</string>
+    <string name="video_hidden_body">ಇದರಲ್ಲಿ ನಗ್ನತೆ ಇರಬಹುದು, ಅದಕ್ಕೆ ಅನುಮತಿ ಇಲ್ಲ. ನಮ್ಮ ಸುರಕ್ಷತಾ ತಂಡಕ್ಕೆ ತಿಳಿಸಿದ್ದೇವೆ.</string>
+    <string name="open_settings">ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಿರಿ</string>
+    <string name="call_dropped">ಕಾಲ್ ಕಡಿತವಾಯಿತು. ಮುಗಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="partner_lost">%1$s ಅವರ ಸಂಪರ್ಕ ಕಡಿತವಾಯಿತು. ಅವರಿಗಾಗಿ ಕಾಯುತ್ತಿದ್ದೇವೆ…</string>
+    <string name="partner_paused">%1$s ಅವರ ವೀಡಿಯೊ ನಿಂತಿದೆ: ಅವರ ನೆಟ್‌ವರ್ಕ್ ತುಂಬಾ ನಿಧಾನವಾಗಿದೆ</string>
+    <string name="partner_cam_off">%1$s ಕ್ಯಾಮೆರಾ ಆಫ್ ಮಾಡಿದರು</string>
+    <string name="partner_weak">%1$s ಅವರ ಸಂಪರ್ಕ ದುರ್ಬಲವಾಗಿದೆ</string>
+    <string name="net_good">ನಿಮ್ಮ ಸಂಪರ್ಕ: ಬಲವಾಗಿದೆ</string>
+    <string name="net_ok">ನಿಮ್ಮ ಸಂಪರ್ಕ: ಪರವಾಗಿಲ್ಲ</string>
+    <string name="net_poor">ನಿಮ್ಮ ಸಂಪರ್ಕ: ದುರ್ಬಲವಾಗಿದೆ</string>
+    <string name="device_busy">ನಿಮ್ಮ ಕ್ಯಾಮೆರಾ ಅಥವಾ ಮೈಕ್ ಅನ್ನು ಬೇರೆ ಆ್ಯಪ್ ಬಳಸುತ್ತಿದೆ</string>
+    <string name="cam_blocked">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿ ಇಲ್ಲ. ಅವರು ನಿಮ್ಮನ್ನು ಕೇಳಬಹುದು. ಸೆಟ್ಟಿಂಗ್ಸ್ ತೆರೆಯಲು ಟ್ಯಾಪ್ ಮಾಡಿ</string>
+</resources>

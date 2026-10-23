@@ -1,5 +1,7 @@
 # LottoDost (가칭): 인도 복권 결과 웹사이트 + 앱
 
+> 같은 저장소의 [`chat/`](chat/)에는 별도 프로젝트인 **Yaari 랜덤채팅 앱 프로토타입**이 있습니다(로또 앱과 코드·빌드 완전 분리).
+
 인도용 **복권 결과·당첨 확인 웹사이트와 Google Play 앱**입니다. 판매 기능은 없습니다.
 
 - Nagaland State Lottery(1 PM · 8 PM · Dear Laxmi), Sikkim 6 PM, **Kerala State Lottery(매일 3 PM, 범퍼)**, Dear·Punjab 범퍼·월간 추첨을 하루 타임라인 한 화면에 보여줍니다.

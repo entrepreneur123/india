@@ -1,0 +1,325 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme inline {
+  --font-sans: var(--font-stack);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-chat-wall: var(--chat-wall);
+  --color-bubble-out: var(--bubble-out);
+  --color-bubble-in: var(--bubble-in);
+  --color-bubble-text: var(--bubble-text);
+  --color-bubble-meta: var(--bubble-meta);
+  --color-tick-read: var(--tick-read);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-strong: var(--primary-strong);
+  --color-destructive: var(--destructive);
+  --color-online: var(--online);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-overlay: var(--overlay);
+
+  /* One radius scale: 8 controls · 12 inputs/rows · 16 cards · 20 large cards · 28 dialogs and sheets. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+
+  /* Material-like elevation: neutral, soft, never coloured. */
+  --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.08), 0 1px 3px 1px rgb(0 0 0 / 0.04);
+  --shadow-e2: 0 1px 2px rgb(0 0 0 / 0.1), 0 2px 6px 2px rgb(0 0 0 / 0.06);
+  --shadow-e3: 0 4px 8px 3px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.12);
+
+  --animate-ping-soft: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-eq: eq 0.9s ease-in-out infinite;
+  --animate-heart-pop: heart-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  --animate-heart-burst: heart-burst 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
+
+  /* A like: the small heart jumps; a double tap on a photo: a big heart pops up and fades (Instagram). */
+  @keyframes heart-pop {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.35) rotate(-8deg); }
+    60% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  @keyframes heart-burst {
+    0% { opacity: 0; transform: scale(0.2) rotate(-12deg); }
+    18% { opacity: 1; transform: scale(1.18) rotate(4deg); }
+    32% { transform: scale(0.94) rotate(0deg); }
+    46% { transform: scale(1.02); }
+    75% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9) translateY(-18px); }
+  }
+
+  /* "Live" equaliser bars on voice rooms. */
+  @keyframes eq {
+    0%, 100% { transform: scaleY(0.35); }
+    50% { transform: scaleY(1); }
+  }
+
+  /* "typing…": three dots that rise and brighten one after another (Instagram / KakaoTalk). */
+  @keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+    30% { transform: translateY(-3px); opacity: 1; }
+  }
+
+  @keyframes ping-soft {
+    0% { transform: scale(1); opacity: 0.5; }
+    80%, 100% { transform: scale(1.9); opacity: 0; }
+  }
+}
+
+:root {
+  /*
+   * Latin and Vietnamese: Plus Jakarta Sans (its Vietnamese face is in the CSS with a unicode-range, so it is
+   * fetched only when Vietnamese text is on screen). Every other script (Indic, Arabic, Hebrew, Cyrillic, Thai,
+   * Chinese, Japanese, Korean…) uses the phone's or PC's own fonts (Noto on Android, Segoe UI / Nirmala UI /
+   * Yu Gothic / Microsoft YaHei on Windows, the system fonts on Apple), so no language costs a download.
+   */
+  --font-stack: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans',
+    'Noto Sans Devanagari', 'Noto Sans Bengali', 'Nirmala UI', 'Kohinoor Devanagari', 'Bangla Sangam MN',
+    'Noto Sans Arabic', 'Noto Nastaliq Urdu', 'Noto Sans Hebrew', 'Noto Sans Thai', 'Geeza Pro',
+    'PingFang SC', 'PingFang TC', 'Hiragino Sans', 'Apple SD Gothic Neo', 'Microsoft YaHei', 'Microsoft JhengHei',
+    'Yu Gothic', 'Malgun Gothic', 'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', sans-serif;
+
+  /*
+   * White + orange, on one warm-grey (stone) ramp, light only. Orange #EA6A00 is a fill with white bold text on it
+   * (3.2:1, large-text AA) or a mark; as text on white it is the deep #B45309 (5.0:1; 4.5:1 on the #FFF1E0 tint).
+   * Ink #1C1917 on white is 17.5:1, muted #57534E 7.6:1.
+   */
+  --background: #ffffff;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --muted: #f5f5f4;
+  --muted-foreground: #57534e;
+  --border: #e7e5e4;
+  --input: #d6d3d1;
+  --ring: #b45309;
+  --brand: #ea6a00;
+  --primary: #ea6a00;
+  --primary-hover: #d45f00;
+  --primary-foreground: #ffffff;
+  --primary-text: #b45309;
+  --primary-soft: #fff1e0;
+  /* Orange under small white text (5.2:1); --primary (3.2:1) only under large or bold-large text and icons. */
+  --primary-strong: #c2410c;
+  --destructive: #c5221f;
+  --online: #1e8e3e;
+  /* Chats: a plain grey wall, orange-soft sent / white received bubbles. */
+  --chat-wall: #f5f5f4;
+  --bubble-out: #ffe8cc;
+  --bubble-in: #ffffff;
+  --bubble-text: #1c1917;
+  --bubble-meta: #57534e;
+  --tick-read: #b45309;
+  /* Only the video call (live video fills the screen) is dark: these are its surface and its text. */
+  --ink: #1c1917;
+  --ink-foreground: #f5f5f4;
+  --overlay: rgb(0 0 0 / 0.45);
+  /* Room topic glyphs (components/ui/topic-icons.tsx): one grey, never a colour per topic. */
+  --glyph: #57534e;
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  /* Hindi and Bengali: no negative tracking (it breaks the joined headline of the letters) and taller lines. */
+  :lang(hi) *,
+  :lang(bn) * {
+    letter-spacing: normal !important;
+  }
+  :lang(hi) body,
+  :lang(bn) body {
+    line-height: 1.6;
+  }
+  :lang(hi) h1,
+  :lang(hi) h2,
+  :lang(bn) h1,
+  :lang(bn) h2 {
+    line-height: 1.35;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0.55;
+    cursor: pointer;
+  }
+}
+
+/*
+ * ID fonts (040 looks, lib/looks.ts FONT_DESIGNS): Latin only, renamed OFL subsets (docs/font-licenses). Not preloaded:
+ * the browser fetches a file only when an ID in that font is on screen.
+ */
+@font-face {
+  font-family: 'Yaari Look Script';
+  src: url('/fonts/looks/look_script.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Retro';
+  src: url('/fonts/looks/look_retro.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Bold';
+  src: url('/fonts/looks/look_bold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Pixel';
+  src: url('/fonts/looks/look_pixel.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Round';
+  src: url('/fonts/looks/look_round.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yaari Look Future';
+  src: url('/fonts/looks/look_future.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* Looks: the rainbow ID colour slides (its gradient repeats, so the loop has no seam), the fire frame flickers, the neon
+   frame's glow pulses. Reduced motion stops them (the rule at the end). */
+.look-rainbow {
+  background-size: 200% 100%;
+  animation: look-slide 6s linear infinite;
+}
+.look-flicker {
+  animation: look-flicker 0.6s ease-in-out infinite alternate;
+}
+.look-glow {
+  animation: look-glow 2s ease-in-out infinite alternate;
+}
+@keyframes look-slide {
+  to { background-position: 200% 0; }
+}
+@keyframes look-flicker {
+  from { opacity: 1; }
+  to { opacity: 0.8; }
+}
+@keyframes look-glow {
+  from { opacity: 0.35; }
+  to { opacity: 0.9; }
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--input) transparent;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/*
+ * The room player's sliders (song position, volume): a slim track filled up to --p in the room's colour (--k),
+ * a white thumb. Native <input type="range">, so keyboard and screen readers work as usual.
+ */
+.room-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  --fill: var(--k, var(--primary));
+}
+.room-range:disabled {
+  cursor: default;
+}
+.room-range::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--fill) var(--p, 0%), var(--muted) var(--p, 0%));
+}
+.room-range::-moz-range-track {
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--muted);
+}
+.room-range::-moz-range-progress {
+  height: 5px;
+  border-radius: 9999px;
+  background: var(--fill);
+}
+.room-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  margin-top: -5px;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  transition: transform 0.12s ease-out;
+}
+.room-range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: 0;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+}
+.room-range:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+.room-range:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+
+/*
+ * The app frame never scrolls itself: with overflow hidden, focusing or revealing something inside it (a sheet
+ * giving focus back, a tray button) could still push the whole screen up. Clip where the browser supports it.
+ */
+@supports (overflow: clip) {
+  .app-frame {
+    overflow: clip;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

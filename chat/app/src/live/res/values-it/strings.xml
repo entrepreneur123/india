@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Consenti fotocamera e microfono per avviare la chiamata</string>
+    <string name="connecting">Connessione…</string>
+    <string name="waiting_video">In attesa del video di %1$s…</string>
+    <string name="reconnecting">Riconnessione…</string>
+    <string name="call_failed">Impossibile collegare la chiamata. Tocca Termina e riprova.</string>
+    <string name="video_checking">Controllo di sicurezza…</string>
+    <string name="video_hidden_title">Video nascosto</string>
+    <string name="video_hidden_body">Potrebbe mostrare nudità, che non è consentita. Abbiamo avvisato il nostro team di sicurezza.</string>
+    <string name="open_settings">Apri impostazioni</string>
+    <string name="call_dropped">La chiamata si è interrotta. Tocca Termina e riprova.</string>
+    <string name="partner_lost">La connessione di %1$s si è interrotta. In attesa…</string>
+    <string name="partner_paused">Il video di %1$s è in pausa: la sua rete è troppo lenta</string>
+    <string name="partner_cam_off">%1$s ha spento la fotocamera</string>
+    <string name="partner_weak">La connessione di %1$s è debole</string>
+    <string name="net_good">La tua connessione: ottima</string>
+    <string name="net_ok">La tua connessione: discreta</string>
+    <string name="net_poor">La tua connessione: debole</string>
+    <string name="device_busy">La fotocamera o il microfono sono usati da un’altra app</string>
+    <string name="cam_blocked">Fotocamera non consentita. Possono comunque sentirti. Tocca per aprire le impostazioni</string>
+</resources>

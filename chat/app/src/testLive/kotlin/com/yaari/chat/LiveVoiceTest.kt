@@ -1,0 +1,138 @@
+package com.yaari.chat
+
+import com.yaari.chat.data.BackendException
+import com.yaari.chat.data.NewProfile
+import com.yaari.chat.live.SupabaseBackend
+import com.yaari.chat.model.Gender
+import com.yaari.chat.model.NewVoiceRoom
+import com.yaari.chat.model.RoomCategory
+import com.yaari.chat.model.RoomRules
+import com.yaari.chat.model.VoiceAction
+import com.yaari.chat.model.VoiceEvent
+import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceRole
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
+import java.time.LocalDate
+
+/**
+ * Rooms against the real Supabase server (017_voice_rooms.sql, 019_unified_rooms.sql) with two QA users: create (private, with a code), list, join by code, chat,
+ * icebreakers, song requests, the stage, settings, leave, end. No audio here (no WebRTC on the JVM). Runs only when YAARI_QA_PASSWORD is set.
+ */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [35])
+class LiveVoiceTest {
+    private val password = System.getenv("YAARI_QA_PASSWORD")
+
+    private suspend fun user(email: String, name: String, gender: Gender): SupabaseBackend {
+        val b = SupabaseBackend(RuntimeEnvironment.getApplication(), persistSession = false)
+        b.signInWithEmailForTest(email, password)
+        if (b.myProfile() == null) b.createProfile(NewProfile(name, gender, LocalDate.of(1999, 1, 1), "Mumbai", "QA account", null))
+        return b
+    }
+
+    private fun code(block: suspend () -> Unit): String? = runBlocking {
+        try { block(); null } catch (e: BackendException) { e.code }
+    }
+
+    @Test fun createJoinChatLeaveAndEnd() = runBlocking {
+        assumeTrue("set YAARI_QA_PASSWORD to run against the live server", !password.isNullOrBlank())
+        val host = user("qa1@yaari.test", "QA Arjun", Gender.MALE)
+        val guest = user("qa2@yaari.test", "QA Priya", Gender.FEMALE)
+
+        assertEquals("room_title", code { host.createVoiceRoom(NewVoiceRoom("x", RoomCategory.TALK)) })
+        assertEquals("room_size", code { host.createVoiceRoom(NewVoiceRoom("QA size", RoomCategory.TALK, RoomRules(maxMembers = 201))) })
+        val made = host.createVoiceRoom(NewVoiceRoom("QA rooms test", RoomCategory.MUSIC, RoomRules(isPrivate = true), "QA announcement"))
+        val id = made.id
+        val mine = host.voiceRooms().first { it.id == id }
+        assertTrue(mine.mine)
+        assertEquals(made.code, mine.code)
+        assertTrue("private: not listed for others", guest.voiceRooms().none { it.id == id })
+
+        // The host is not on the stage when the room opens; the guest comes in with the code.
+        val asHost = withTimeout(15_000) { host.voiceSession(id).filterIsInstance<VoiceEvent.RoomChanged>().first() }.room
+        assertNull(asHost.me!!.seat)
+        assertEquals(VoiceRole.HOST, asHost.me!!.role)
+        assertEquals("QA announcement" to made.code, asHost.announcement to asHost.code)
+        assertEquals("not_found", code { guest.joinVoiceCode("ZZZZZZ") })
+        assertEquals(id, guest.joinVoiceCode(made.code.lowercase()))
+        val asGuest = withTimeout(15_000) { guest.voiceSession(id).filterIsInstance<VoiceEvent.RoomChanged>().first() }.room
+        assertNull(asGuest.me!!.seat)
+        assertNull("only the host sees the code", asGuest.code)
+
+        // Chat, an icebreaker (one every 20 s), song requests by vote.
+        val line = guest.sendVoice(id, "hello from the live rooms test")
+        assertTrue((line as VoiceLine.Text).fromMe)
+        assertTrue(guest.voiceIcebreaker(id) is VoiceLine.Icebreaker)
+        assertEquals("slow_down", code { host.voiceIcebreaker(id) })
+        assertTrue(host.voiceLines(id).any { it is VoiceLine.Text && it.text == "hello from the live rooms test" && !it.fromMe })
+        guest.voiceAction(id, VoiceAction.AddTrack("BddP6PYo2gs", guest.videoTitle("BddP6PYo2gs")))
+        // 029: a reply quotes the line; a poll (host only) is answered, changed, counted and closed.
+        val answer = host.sendVoice(id, "welcome!", replyTo = line.id) as VoiceLine.Text
+        assertEquals(line.id, answer.reply?.id)
+        assertEquals("hello from the live rooms test", answer.reply?.text)
+        assertEquals("not_allowed", code { guest.createVoicePoll(id, "Tea or coffee?", listOf("Tea", "Coffee")) })
+        assertEquals("bad_request", code { host.createVoicePoll(id, "Same?", listOf("Tea", "tea")) })
+        val poll = host.createVoicePoll(id, "Tea or coffee?", listOf("Tea", "Coffee")) as VoiceLine.Poll
+        assertEquals(listOf("Tea", "Coffee"), poll.options)
+        assertEquals(0, guest.voicePollVote(poll.pollId, 0).mine)
+        val changed = guest.voicePollVote(poll.pollId, 1)
+        assertEquals(listOf(0, 1), changed.counts)
+        assertEquals(1, changed.total)
+        assertTrue(host.closeVoicePoll(poll.pollId).closed)
+        assertEquals("poll_closed", code { guest.voicePollVote(poll.pollId, 0) })
+        assertEquals(1, guest.voicePolls(listOf(poll.pollId)).single().mine)
+
+        // Rules: a listener can't end; the host joins the voice on seat 0 and leaves it again.
+        assertEquals("not_allowed", code { guest.endVoice(id) })
+        host.voiceAction(id, VoiceAction.TakeSeat(0))
+        host.voiceAction(id, VoiceAction.Unseat)
+        host.updateVoiceRoom(id, "QA rooms test 2", "")
+
+        guest.leaveVoice(id)
+        host.endVoice(id)
+        assertEquals("room_closed", code { guest.voiceSession(id).first() })
+        assertTrue(host.voiceRooms().none { it.id == id })
+    }
+
+    /** 020: the guest's room follows the host's changes over Broadcast (each one applied, no full re-fetch needed). */
+    @Test fun changesArriveOverBroadcast() = runBlocking {
+        assumeTrue("set YAARI_QA_PASSWORD to run against the live server", !password.isNullOrBlank())
+        val host = user("qa1@yaari.test", "QA Arjun", Gender.MALE)
+        val guest = user("qa2@yaari.test", "QA Priya", Gender.FEMALE)
+        val id = host.createVoiceRoom(NewVoiceRoom("QA broadcast", RoomCategory.TALK)).id
+        try {
+            coroutineScope {
+                val hostSide = launch { host.voiceSession(id).collect { } }
+                val rooms = Channel<com.yaari.chat.model.VoiceRoom>(Channel.UNLIMITED)
+                val guestSide = launch { guest.voiceSession(id).filterIsInstance<VoiceEvent.RoomChanged>().collect { rooms.send(it.room) } }
+                withTimeout(15_000) { while (rooms.receive().members.none { it.profile.id == host.myProfile()!!.id }) Unit }
+                delay(3_000) // the private channel joins
+                host.updateVoiceRoom(id, "QA broadcast 2", "pinned")
+                withTimeout(10_000) { while (rooms.receive().let { it.title != "QA broadcast 2" || it.announcement != "pinned" }) Unit }
+                host.voiceAction(id, VoiceAction.TakeSeat(0))
+                withTimeout(10_000) { while (rooms.receive().members.none { it.role == VoiceRole.HOST && it.seat == 0 }) Unit }
+                guestSide.cancel()
+                hostSide.cancel()
+            }
+        } finally {
+            runCatching { guest.leaveVoice(id) }
+            runCatching { host.endVoice(id) }
+        }
+    }
+}

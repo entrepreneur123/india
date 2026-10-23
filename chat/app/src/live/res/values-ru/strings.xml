@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="allow_camera">Разрешите доступ к камере и микрофону, чтобы начать звонок</string>
+    <string name="connecting">Подключение…</string>
+    <string name="waiting_video">Ждём видео: %1$s…</string>
+    <string name="reconnecting">Переподключение…</string>
+    <string name="call_failed">Не удалось подключить звонок. Нажмите «Завершить» и попробуйте снова.</string>
+    <string name="video_checking">Проверка безопасности…</string>
+    <string name="video_hidden_title">Видео скрыто</string>
+    <string name="video_hidden_body">Возможно, в нём нагота, а это запрещено. Мы сообщили нашей команде безопасности.</string>
+    <string name="open_settings">Открыть настройки</string>
+    <string name="call_dropped">Звонок прервался. Нажмите «Завершить» и попробуйте снова.</string>
+    <string name="partner_lost">%1$s: соединение прервалось. Ждём…</string>
+    <string name="partner_paused">%1$s: видео на паузе — слишком медленная сеть</string>
+    <string name="partner_cam_off">%1$s: камера выключена</string>
+    <string name="partner_weak">%1$s: слабое соединение</string>
+    <string name="net_good">Ваше соединение: хорошее</string>
+    <string name="net_ok">Ваше соединение: среднее</string>
+    <string name="net_poor">Ваше соединение: слабое</string>
+    <string name="device_busy">Камера или микрофон заняты другим приложением</string>
+    <string name="cam_blocked">Нет доступа к камере. Вас всё равно слышно. Нажмите, чтобы открыть настройки</string>
+</resources>

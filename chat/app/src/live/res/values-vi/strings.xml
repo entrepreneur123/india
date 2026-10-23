@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">Cho phép camera và micro để bắt đầu cuộc gọi</string>
+    <string name="connecting">Đang kết nối…</string>
+    <string name="waiting_video">Đang chờ video của %1$s…</string>
+    <string name="reconnecting">Đang kết nối lại…</string>
+    <string name="call_failed">Không kết nối được cuộc gọi. Chạm Kết thúc và thử lại.</string>
+    <string name="video_checking">Đang kiểm tra an toàn…</string>
+    <string name="video_hidden_title">Đã ẩn video</string>
+    <string name="video_hidden_body">Video có thể chứa ảnh khỏa thân, điều không được phép. Chúng tôi đã báo cho đội an toàn.</string>
+    <string name="open_settings">Mở cài đặt</string>
+    <string name="call_dropped">Cuộc gọi bị ngắt. Chạm Kết thúc và thử lại.</string>
+    <string name="partner_lost">Kết nối của %1$s bị mất. Đang chờ…</string>
+    <string name="partner_paused">Video của %1$s tạm dừng: mạng của họ quá chậm</string>
+    <string name="partner_cam_off">%1$s đã tắt camera</string>
+    <string name="partner_weak">Kết nối của %1$s đang yếu</string>
+    <string name="net_good">Kết nối của bạn: mạnh</string>
+    <string name="net_ok">Kết nối của bạn: trung bình</string>
+    <string name="net_poor">Kết nối của bạn: yếu</string>
+    <string name="device_busy">Camera hoặc micro đang được ứng dụng khác dùng</string>
+    <string name="cam_blocked">Chưa cho phép camera. Họ vẫn nghe được bạn. Nhấn để mở cài đặt</string>
+</resources>

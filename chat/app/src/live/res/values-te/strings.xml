@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">కాల్ మొదలుపెట్టడానికి కెమెరా, మైక్‌కు అనుమతి ఇవ్వండి</string>
+    <string name="connecting">కనెక్ట్ అవుతోంది…</string>
+    <string name="waiting_video">%1$s వీడియో కోసం ఎదురుచూస్తున్నాం…</string>
+    <string name="reconnecting">మళ్లీ కనెక్ట్ అవుతోంది…</string>
+    <string name="call_failed">కాల్ కనెక్ట్ కాలేదు. ముగించు నొక్కి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="video_checking">సేఫ్టీ చెక్…</string>
+    <string name="video_hidden_title">వీడియో దాచబడింది</string>
+    <string name="video_hidden_body">ఇందులో నగ్నత్వం ఉండవచ్చు, అది అనుమతించబడదు. మా సేఫ్టీ టీమ్‌కు తెలియజేశాం.</string>
+    <string name="open_settings">సెట్టింగ్స్ తెరువు</string>
+    <string name="call_dropped">కాల్ కట్ అయింది. ముగించు నొక్కి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="partner_lost">%1$s కనెక్షన్ పోయింది. వాళ్ల కోసం ఎదురుచూస్తున్నాం…</string>
+    <string name="partner_paused">%1$s వీడియో ఆగింది: వాళ్ల నెట్‌వర్క్ చాలా నెమ్మదిగా ఉంది</string>
+    <string name="partner_cam_off">%1$s కెమెరా ఆఫ్ చేశారు</string>
+    <string name="partner_weak">%1$s కనెక్షన్ బలహీనంగా ఉంది</string>
+    <string name="net_good">మీ కనెక్షన్: బలంగా ఉంది</string>
+    <string name="net_ok">మీ కనెక్షన్: పర్వాలేదు</string>
+    <string name="net_poor">మీ కనెక్షన్: బలహీనంగా ఉంది</string>
+    <string name="device_busy">మీ కెమెరా లేదా మైక్‌ను వేరే యాప్ వాడుతోంది</string>
+    <string name="cam_blocked">కెమెరాకు అనుమతి లేదు. వాళ్లు మిమ్మల్ని వినగలరు. సెట్టింగ్స్ తెరవడానికి ట్యాప్ చేయండి</string>
+</resources>

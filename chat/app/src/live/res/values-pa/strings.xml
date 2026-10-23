@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">ਕਾਲ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
+    <string name="connecting">ਜੁੜ ਰਹੇ ਹਾਂ…</string>
+    <string name="waiting_video">%1$s ਦੀ ਵੀਡੀਓ ਦੀ ਉਡੀਕ…</string>
+    <string name="reconnecting">ਦੁਬਾਰਾ ਜੁੜ ਰਹੇ ਹਾਂ…</string>
+    <string name="call_failed">ਕਾਲ ਨਹੀਂ ਜੁੜ ਸਕੀ। ਖ਼ਤਮ ਕਰੋ ’ਤੇ ਟੈਪ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="video_checking">ਸੁਰੱਖਿਆ ਜਾਂਚ…</string>
+    <string name="video_hidden_title">ਵੀਡੀਓ ਲੁਕਾਈ ਗਈ</string>
+    <string name="video_hidden_body">ਇਸ ਵਿੱਚ ਨਗਨਤਾ ਹੋ ਸਕਦੀ ਹੈ, ਜਿਸਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ। ਅਸੀਂ ਆਪਣੀ ਸੇਫ਼ਟੀ ਟੀਮ ਨੂੰ ਦੱਸ ਦਿੱਤਾ ਹੈ।</string>
+    <string name="open_settings">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="call_dropped">ਕਾਲ ਕੱਟੀ ਗਈ। ਖ਼ਤਮ ਕਰੋ ’ਤੇ ਟੈਪ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="partner_lost">%1$s ਦਾ ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ। ਉਨ੍ਹਾਂ ਦੀ ਉਡੀਕ ਹੈ…</string>
+    <string name="partner_paused">%1$s ਦੀ ਵੀਡੀਓ ਰੁਕੀ ਹੋਈ ਹੈ: ਉਨ੍ਹਾਂ ਦਾ ਨੈੱਟਵਰਕ ਬਹੁਤ ਹੌਲੀ ਹੈ</string>
+    <string name="partner_cam_off">%1$s ਨੇ ਆਪਣਾ ਕੈਮਰਾ ਬੰਦ ਕਰ ਦਿੱਤਾ</string>
+    <string name="partner_weak">%1$s ਦਾ ਕਨੈਕਸ਼ਨ ਕਮਜ਼ੋਰ ਹੈ</string>
+    <string name="net_good">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ: ਮਜ਼ਬੂਤ</string>
+    <string name="net_ok">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ: ਠੀਕ-ਠਾਕ</string>
+    <string name="net_poor">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ: ਕਮਜ਼ੋਰ</string>
+    <string name="device_busy">ਤੁਹਾਡਾ ਕੈਮਰਾ ਜਾਂ ਮਾਈਕ ਕਿਸੇ ਹੋਰ ਐਪ ਵਿੱਚ ਚੱਲ ਰਿਹਾ ਹੈ</string>
+    <string name="cam_blocked">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ। ਉਹ ਫਿਰ ਵੀ ਤੁਹਾਨੂੰ ਸੁਣ ਸਕਦੇ ਹਨ। ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹਣ ਲਈ ਟੈਪ ਕਰੋ</string>
+</resources>

@@ -1,0 +1,87 @@
+import type { FeedDict } from '../../feed-text'
+
+const fil: FeedDict = {
+  // the feed
+  'feed.loadFailed': 'Hindi ma-load ang mga post',
+
+  // a post
+  'post.like': 'Like',
+  'post.likes.one': '{n} like',
+  'post.likes.other': '{n} like',
+  'post.comment': 'Comment',
+  'post.comments.one': '{n} comment',
+  'post.comments.other': '{n} comment',
+  'post.menu': 'Iba pang opsyon',
+  'post.report': 'I-report ang post',
+  'post.delete': 'I-delete ang post',
+  'post.deleteTitle': 'I-delete ang post na ito?',
+  'post.deleteBody': 'Aalisin ito para sa lahat, kasama ang mga like at comment nito.',
+  'post.deleted': 'Na-delete ang post',
+  'post.public': 'Lahat',
+  'post.friendsOnly': 'Mga kaibigan',
+  'post.by': 'Post ni {name}',
+  'post.photo': 'Photo ni {name}',
+  'post.readMore': 'higit pa',
+  'post.gone': 'Hindi available ang post na ito',
+  'post.goneBody': 'Na-delete na ito, o mga kaibigan lang ng nag-post ang makakakita.',
+  'post.reportTitle': 'I-report ang post na ito',
+  'post.reported': 'Salamat. Rerepasuhin namin ang post na ito.',
+  'post.viewProfile': 'Tingnan ang profile',
+
+  // comments
+  'comments.title': 'Mga Comment',
+  'comments.none': 'Wala pang comment',
+  'comments.noneBody': 'Simulan ang usapan.',
+  'comments.placeholder': 'Mag-comment…',
+  'comments.placeholderReply': 'Sagutin si {name}…',
+  'comments.label': 'Ang comment mo',
+  'comments.send': 'I-post',
+  'comments.reply': 'Sumagot',
+  'comments.replyingTo': 'Sumasagot kay {name}',
+  'comments.cancelReply': 'Kanselahin ang sagot',
+  'comments.remove': 'Alisin',
+  'comments.removed': 'Inalis ang comment',
+  'comments.report': 'I-report',
+  'comments.reportTitle': 'I-report ang comment na ito',
+  'comments.reported': 'Salamat. Rerepasuhin namin ang comment na ito.',
+  'comments.more': 'Ipakita ang iba pang comment',
+  'comments.loadFailed': 'Hindi ma-load ang mga comment',
+
+  // the composer
+  'compose.audience': 'Sino ang makakakita nito',
+  'compose.friends': 'Mga kaibigan',
+  'compose.everyone': 'Lahat',
+  'compose.friendsHint': 'Ang mga kaibigan mo at ang mga naka-chat mo.',
+  'compose.everyoneHint': 'Kahit sino sa yaari na magbukas ng profile mo. Puwede ka rin nilang i-add.',
+  'compose.checking': 'Sinusuri ang photo…',
+  'compose.nude': 'Mukhang may nudity ang photo na ito, kaya hindi ito mapo-post',
+
+  // profile style
+  'style.status': 'Status',
+  'style.statusPlaceholder': 'Ano ang vibe mo ngayon?',
+  'style.languages': 'Mga wikang sinasalita ko',
+  'style.languagesHint': 'Pumili ng hanggang 6.',
+  'style.languagesMax': 'Hanggang 6 na wika lang ang puwede mong piliin',
+  'style.prompts': 'Mga prompt',
+  'style.promptsHint': 'Sumagot ng hanggang 3. Madali nitong nabibigyan ng pambungad ang mga tao.',
+  'style.promptAdd': 'Magdagdag ng prompt',
+  'style.promptRemove': 'Alisin ang prompt na ito',
+  'style.promptQuestion': 'Tanong',
+  'style.promptAnswer': 'Ang sagot mo',
+  'style.saved': 'Na-update ang profile',
+  'style.problem.status': 'Hanggang 60 character ang status mo',
+  'style.problem.answer': 'Hanggang 120 character ang mga sagot',
+  'prompt.weekend': 'Ang perpekto kong weekend…',
+  'prompt.food': 'Pagkaing dadayuhin ko…',
+  'prompt.song': 'Kantang paulit-ulit kong pinapatugtog…',
+  'prompt.travel': 'Susunod na biyahe…',
+  'prompt.talk': 'Magkakasundo tayo kung…',
+  'prompt.laugh': 'Ang nagpapatawa sa akin…',
+  'prompt.goal': 'Ngayong taon gusto kong…',
+  'prompt.secret': 'Isang bagay na kakaunti lang ang nakakaalam…',
+
+  // a profile
+  'profile.speaks': 'Nagsasalita ng',
+}
+
+export default fil

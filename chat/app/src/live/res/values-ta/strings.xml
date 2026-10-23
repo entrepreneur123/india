@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">கால் தொடங்க கேமராவுக்கும் மைக்குக்கும் அனுமதி கொடுங்கள்</string>
+    <string name="connecting">இணைக்கிறது…</string>
+    <string name="waiting_video">%1$s-இன் வீடியோவுக்காகக் காத்திருக்கிறோம்…</string>
+    <string name="reconnecting">மீண்டும் இணைக்கிறது…</string>
+    <string name="call_failed">காலை இணைக்க முடியவில்லை. முடி என்பதைத் தட்டி மீண்டும் முயலுங்கள்.</string>
+    <string name="video_checking">பாதுகாப்புச் சோதனை…</string>
+    <string name="video_hidden_title">வீடியோ மறைக்கப்பட்டது</string>
+    <string name="video_hidden_body">இதில் நிர்வாணம் இருக்கலாம், அது அனுமதிக்கப்படாது. எங்கள் பாதுகாப்புக் குழுவுக்குத் தெரிவித்துள்ளோம்.</string>
+    <string name="open_settings">செட்டிங்ஸைத் திற</string>
+    <string name="call_dropped">கால் துண்டிக்கப்பட்டது. முடி என்பதைத் தட்டி மீண்டும் முயலுங்கள்.</string>
+    <string name="partner_lost">%1$s-இன் இணைப்பு துண்டிக்கப்பட்டது. காத்திருக்கிறோம்…</string>
+    <string name="partner_paused">%1$s-இன் வீடியோ நின்றுள்ளது: அவரது நெட்வொர்க் மிக மெதுவாக உள்ளது</string>
+    <string name="partner_cam_off">%1$s கேமராவை ஆஃப் செய்தார்</string>
+    <string name="partner_weak">%1$s-இன் இணைப்பு பலவீனமாக உள்ளது</string>
+    <string name="net_good">உங்கள் இணைப்பு: வலுவானது</string>
+    <string name="net_ok">உங்கள் இணைப்பு: பரவாயில்லை</string>
+    <string name="net_poor">உங்கள் இணைப்பு: பலவீனமானது</string>
+    <string name="device_busy">உங்கள் கேமரா அல்லது மைக்கை வேறு ஒரு ஆப் பயன்படுத்துகிறது</string>
+    <string name="cam_blocked">கேமராவுக்கு அனுமதி இல்லை. அவர் உங்களைக் கேட்க முடியும். செட்டிங்ஸைத் திறக்கத் தட்டுங்கள்</string>
+</resources>

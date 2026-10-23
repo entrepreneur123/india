@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">কল শুরু করতে ক্যামেরা ও মাইকের অনুমতি দিন</string>
+    <string name="connecting">সংযোগ হচ্ছে…</string>
+    <string name="waiting_video">%1$s-এর ভিডিওর অপেক্ষায়…</string>
+    <string name="reconnecting">আবার সংযোগ হচ্ছে…</string>
+    <string name="call_failed">কল সংযোগ করা গেল না। কল কাটুন চেপে আবার চেষ্টা করুন।</string>
+    <string name="video_checking">নিরাপত্তা যাচাই…</string>
+    <string name="video_hidden_title">ভিডিও লুকানো হয়েছে</string>
+    <string name="video_hidden_body">এতে নগ্নতা থাকতে পারে, যা অনুমোদিত নয়। আমরা আমাদের নিরাপত্তা টিমকে জানিয়েছি।</string>
+    <string name="open_settings">সেটিংস খুলুন</string>
+    <string name="call_dropped">কল কেটে গেছে। কল শেষ করে আবার চেষ্টা করুন।</string>
+    <string name="partner_lost">%1$s-এর সংযোগ বিচ্ছিন্ন হয়েছে। অপেক্ষা করা হচ্ছে…</string>
+    <string name="partner_paused">%1$s-এর ভিডিও থেমে আছে: তাদের নেটওয়ার্ক খুব ধীর</string>
+    <string name="partner_cam_off">%1$s ক্যামেরা বন্ধ করেছেন</string>
+    <string name="partner_weak">%1$s-এর সংযোগ দুর্বল</string>
+    <string name="net_good">আপনার সংযোগ: ভালো</string>
+    <string name="net_ok">আপনার সংযোগ: মোটামুটি</string>
+    <string name="net_poor">আপনার সংযোগ: দুর্বল</string>
+    <string name="device_busy">আপনার ক্যামেরা বা মাইক্রোফোন অন্য একটি অ্যাপ ব্যবহার করছে</string>
+    <string name="cam_blocked">ক্যামেরার অনুমতি নেই। তারা এখনও আপনাকে শুনতে পাবে। সেটিংস খুলতে ট্যাপ করুন</string>
+</resources>

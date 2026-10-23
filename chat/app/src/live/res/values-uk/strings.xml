@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="allow_camera">Дозвольте доступ до камери й мікрофона, щоб почати дзвінок</string>
+    <string name="connecting">Підключення…</string>
+    <string name="waiting_video">Чекаємо на відео: %1$s…</string>
+    <string name="reconnecting">Перепідключення…</string>
+    <string name="call_failed">Не вдалося підключити дзвінок. Натисніть «Завершити» і спробуйте ще раз.</string>
+    <string name="video_checking">Перевірка безпеки…</string>
+    <string name="video_hidden_title">Відео приховано</string>
+    <string name="video_hidden_body">Можливо, у ньому оголеність, а це заборонено. Ми повідомили нашу команду безпеки.</string>
+    <string name="open_settings">Відкрити налаштування</string>
+    <string name="call_dropped">Дзвінок перервався. Натисніть «Завершити» і спробуйте ще раз.</string>
+    <string name="partner_lost">%1$s: з’єднання перервалося. Чекаємо…</string>
+    <string name="partner_paused">%1$s: відео на паузі — надто повільна мережа</string>
+    <string name="partner_cam_off">%1$s: камеру вимкнено</string>
+    <string name="partner_weak">%1$s: слабке з’єднання</string>
+    <string name="net_good">Ваше з’єднання: добре</string>
+    <string name="net_ok">Ваше з’єднання: середнє</string>
+    <string name="net_poor">Ваше з’єднання: слабке</string>
+    <string name="device_busy">Камера або мікрофон зайняті іншим застосунком</string>
+    <string name="cam_blocked">Немає доступу до камери. Вас однаково чути. Натисніть, щоб відкрити налаштування</string>
+</resources>

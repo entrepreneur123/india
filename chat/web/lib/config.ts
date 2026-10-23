@@ -1,0 +1,25 @@
+// The policy pages are chat/docs/*.html, copied into this site at build time (scripts/copy-legal.mjs).
+// The grievance officer's real name and email must be filled in before launch (IT Rules 2021); see chat/README.md.
+export const PRIVACY_URL = '/privacy.html'
+export const TERMS_URL = '/terms.html'
+export const CHILD_SAFETY_URL = '/child-safety.html'
+export const SUPPORT_EMAIL = 'support@yaari.app'
+export const GRIEVANCE_OFFICER = {
+  name: 'Grievance Officer, Yaari',
+  email: 'grievance@yaari.app',
+}
+
+/** Set once the app is live on Google Play; until then the paywall says the Android app is coming. */
+export const PLAY_STORE_URL: string | null = null
+
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+
+/** Without server keys the site runs on the in-browser demo backend (any 6-digit code works). */
+export const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON_KEY
+
+export const FREE_EXIT_LOCK_MS = 5000
+export const PLUS_EXIT_LOCK_MS = 200
+
+/** The community rules, as dictionary keys (text in lib/locales/*). Same rules as the Android app. */
+export const COMMUNITY_RULES = ['rules.1', 'rules.2', 'rules.3', 'rules.4', 'rules.5'] as const

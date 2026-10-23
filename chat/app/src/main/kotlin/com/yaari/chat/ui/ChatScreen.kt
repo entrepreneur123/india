@@ -1,0 +1,736 @@
+package com.yaari.chat.ui
+
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Translate
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.LayoutDirection
+import com.yaari.chat.domain.TranslateKind
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.outlined.Flag
+import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.rounded.CallEnd
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Videocam
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.yaari.chat.R
+import com.yaari.chat.data.VideoStatus
+import com.yaari.chat.domain.Countries
+import com.yaari.chat.domain.ExitPolicy
+import com.yaari.chat.model.Media
+import com.yaari.chat.model.MediaKind
+import com.yaari.chat.model.Message
+import com.yaari.chat.model.Profile
+import com.yaari.chat.model.Stickers
+import kotlinx.coroutines.delay
+import com.yaari.chat.model.FriendState
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.outlined.PersonAddAlt
+
+/** The 1:1 random chat. */
+@Composable
+fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
+    SecureScreen()
+    val partner = chat.match.partner
+    var exitDialog by remember { mutableStateOf(false) }
+    var reportDialog by remember { mutableStateOf(false) }
+    var lockLeft by remember { mutableLongStateOf(vm.exitRemainingMs()) }
+    LaunchedEffect(chat.startedAtMs, premium, chat.partnerLeft) {
+        while (true) {
+            lockLeft = vm.exitRemainingMs()
+            if (lockLeft <= 0) break
+            delay(minOf(lockLeft, 100L))
+        }
+    }
+    BackHandler { if (lockLeft <= 0) exitDialog = true }
+
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
+        Column {
+            Row(
+                Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Down to the bar over the tabs (the chat stays on), as a voice room does.
+                CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.chat_minimise), vm::minimiseChat, tint = Brand.Muted)
+                // Normal exit: locked for 5 s (free) / 0.2 s (Plus) after the match starts.
+                ExitButton(lockLeft, ExitPolicy.lockMs(premium)) { exitDialog = true }
+                Row(
+                    Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).clickable(role = Role.Button) { vm.openProfile(partner) }.padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Avatar(partner, 40.dp)
+                    Column(Modifier.padding(start = 10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                partner.nameAgeFlag(), Modifier.weight(1f, fill = false), color = Brand.Text, style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            )
+                            VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (!chat.partnerLeft) {
+                                PresenceDot(6.dp)
+                                Spacer(Modifier.width(6.dp))
+                            }
+                            // Their decorated @ID under the name ("typing…" while they type; where they are until the ID is known).
+                            if (chat.partnerTyping) {
+                                Text(stringResource(R.string.typing), color = Brand.SaffronDeep, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                            } else {
+                                val look = lookOf(partner.id)
+                                if (look != null && look.handle.isNotEmpty()) {
+                                    LookName(look, Modifier.weight(1f, fill = false), size = 12.sp)
+                                    Text(
+                                        " · " + stringResource(R.string.voice_view_profile), color = Brand.Muted,
+                                        style = MaterialTheme.typography.bodySmall, maxLines = 1,
+                                    )
+                                } else {
+                                    Text(
+                                        stringResource(R.string.chat_subtitle, partner.city.ifBlank { partner.genderText() }),
+                                        color = Brand.Muted, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                // Report & leave is never locked.
+                CircleIconButton(
+                    Icons.Outlined.Flag, stringResource(R.string.report_and_leave), { reportDialog = true },
+                    tint = Brand.Muted,
+                )
+                // Block without reporting (also never locked).
+                PersonMenu(partner, onBlock = { vm.block(partner) }, onReport = null, tint = Brand.Muted)
+                CallButton(chat.video, enabled = !chat.partnerLeft, onCall = vm::requestCall, onCancel = vm::endVideo)
+            }
+            Box(Modifier.fillMaxWidth().height(1.dp).background(Brand.Line))
+        }
+        val country = partner.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
+        val wall = myWall()
+        Column(Modifier.weight(1f).chatWall(wall)) {
+        Messages(
+            chat.messages, chat.match.id, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping,
+            intro = country?.let { stringResource(R.string.matched_from, partner.name, it) }, partnerRead = chat.partnerRead,
+            ended = if (chat.partnerLeft) stringResource(R.string.partner_left, partner.name) else null, onWall = wall != null,
+        )
+        if (chat.partnerLeft) {
+            Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(Brand.Surface)
+                    .navigationBarsPadding().padding(horizontal = 20.dp, vertical = 18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                PrimaryButton(stringResource(R.string.next_match), { vm.leave(next = true) })
+                TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Brand.Text) }
+            }
+        } else {
+            Composer(onText = vm::sendText, onMedia = vm::sendMedia, onTyping = vm::typing, onWall = wall != null) {
+                StickerButton({ vm.sendText(it) {} })
+            }
+        }
+        }
+    }
+
+    MatchReveal(chat.match.id, partner)
+    if (exitDialog) {
+        AlertDialog(
+            onDismissRequest = { exitDialog = false },
+            title = { Text(stringResource(R.string.leave_title)) },
+            text = { Text(stringResource(R.string.leave_text, partner.name)) },
+            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.SaffronDeep) } },
+            dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Brand.Text) } },
+        )
+    }
+    if (reportDialog) {
+        ReportDialog(onDismiss = { reportDialog = false }, actions = listOf(stringResource(R.string.report_next), stringResource(R.string.report_lobby))) { reason, action ->
+            reportDialog = false
+            vm.reportAndLeave(reason, next = action == 0)
+        }
+    }
+    if (chat.video == VideoStatus.REQUESTED_BY_PARTNER && !chat.partnerLeft) {
+        IncomingCallSheet(partner, chat.callVideo, vm::answerVideo)
+    }
+}
+
+/**
+ * The X, inside a ring that empties while the exit lock runs; the seconds left show in the middle.
+ * Disabled until the lock is over (the server checks it again).
+ */
+@Composable
+private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
+    val locked = lockLeft > 0
+    val fraction = if (locked) lockLeft.toFloat() / lockMs.coerceAtLeast(1) else 0f
+    val interaction = remember { MutableInteractionSource() }
+    val fill by animateColorAsState(if (locked) Brand.Surface else Brand.Text, tween(200), label = "fill")
+    Box(
+        Modifier.size(48.dp).pressScale(interaction, 0.9f)
+            .clickable(interaction, indication = null, enabled = !locked, role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Canvas(Modifier.size(40.dp)) {
+            val w = 3.dp.toPx()
+            val inset = w / 2 + 1.5.dp.toPx()
+            val arc = Size(size.width - inset * 2, size.height - inset * 2)
+            drawCircle(Brand.Line, radius = arc.width / 2, style = Stroke(w))
+            if (fraction > 0f) {
+                drawArc(
+                    Brand.Saffron, -90f, 360f * fraction, false,
+                    topLeft = Offset(inset, inset), size = arc, style = Stroke(w, cap = StrokeCap.Round),
+                )
+            }
+        }
+        Box(Modifier.size(30.dp).clip(CircleShape).background(fill), contentAlignment = Alignment.Center) {
+            if (locked) {
+                Text("${(lockLeft + 999) / 1000}", color = Brand.Text, fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = Jakarta)
+            } else {
+                Icon(Icons.Rounded.Close, stringResource(R.string.leave), Modifier.size(17.dp), tint = Color.White)
+            }
+        }
+    }
+}
+
+/**
+ * Round brand-colour call button (calls are free): a tap offers a voice or a video call. A spinner while my call waits
+ * for an answer (a tap takes it back); off while the partner's call waits for mine.
+ */
+@Composable
+private fun CallButton(status: VideoStatus, enabled: Boolean, onCall: (video: Boolean) -> Unit, onCancel: () -> Unit) {
+    val calling = status == VideoStatus.REQUESTED_BY_ME
+    val on = enabled && status != VideoStatus.REQUESTED_BY_PARTNER
+    var menu by remember { mutableStateOf(false) }
+    val interaction = remember { MutableInteractionSource() }
+    val label = stringResource(if (calling) R.string.call_cancel else R.string.call)
+    Box {
+        Box(
+            Modifier.size(48.dp).pressScale(interaction, 0.88f)
+                .clickable(interaction, indication = null, enabled = on, role = Role.Button) { if (calling) onCancel() else menu = true }
+                .semantics { contentDescription = label },
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                Modifier.size(40.dp).alpha(if (on) 1f else 0.4f).clip(CircleShape).background(Brand.Saffron),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.OnSaffron, strokeWidth = 2.dp)
+                else Icon(Icons.Rounded.Call, null, Modifier.size(20.dp), tint = Brand.OnSaffron)
+            }
+        }
+        DropdownMenu(menu, { menu = false }) {
+            listOf(false to Icons.Rounded.Call, true to Icons.Rounded.Videocam).forEach { (video, icon) ->
+                DropdownMenuItem(
+                    { Text(stringResource(if (video) R.string.call_video else R.string.call_voice)) }, { menu = false; onCall(video) },
+                    leadingIcon = { Icon(icon, null, tint = MaterialTheme.colorScheme.primaryText) },
+                )
+            }
+        }
+    }
+}
+
+/** The partner asks for a call ([video] or voice): a sheet rises over the chat. It has to be answered (back does nothing). */
+@Composable
+internal fun IncomingCallSheet(partner: Profile, video: Boolean, onAnswer: (Boolean) -> Unit) {
+    BackHandler {}
+    val shown = remember { MutableTransitionState(false) }.apply { targetState = true }
+    Box(Modifier.fillMaxSize()) {
+        AnimatedVisibility(shown, enter = fadeIn(tween(200))) {
+            Box(
+                Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f))
+                    .clickable(remember { MutableInteractionSource() }, indication = null) {},
+            )
+        }
+        AnimatedVisibility(
+            shown, Modifier.align(Alignment.BottomCenter),
+            enter = slideInVertically(spring(dampingRatio = 0.85f, stiffness = 380f)) { it / 3 } + fadeIn(tween(200)),
+        ) {
+            Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(MaterialTheme.colorScheme.surface)
+                    .navigationBarsPadding().padding(horizontal = 24.dp).padding(top = 12.dp, bottom = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Box(Modifier.size(40.dp, 4.dp).clip(CircleShape).background(MaterialTheme.colorScheme.outline))
+                Spacer(Modifier.height(32.dp))
+                Box(Modifier.size(104.dp), contentAlignment = Alignment.Center) {
+                    Radar(104.dp, rings = 2, ringColor = Brand.Saffron.copy(alpha = 0.5f), stroke = 2.dp)
+                    Avatar(partner, 88.dp)
+                }
+                Spacer(Modifier.height(20.dp))
+                Text(
+                    stringResource(if (video) R.string.video_incoming_title else R.string.voice_incoming_title, partner.name), color = Brand.Text,
+                    style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(if (video) R.string.video_incoming_text else R.string.voice_incoming_text), color = Brand.Muted,
+                    style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 12.dp),
+                )
+                Spacer(Modifier.height(32.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    val interaction = remember { MutableInteractionSource() }
+                    Row(
+                        Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.97f).clip(CircleShape).background(Brand.Surface)
+                            .clickable(interaction, indication = null, role = Role.Button) { onAnswer(false) },
+                        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(Icons.Rounded.CallEnd, null, Modifier.size(19.dp), tint = Brand.Danger)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(R.string.decline), color = Brand.Text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    }
+                    PrimaryButton(
+                        stringResource(R.string.accept), { onAnswer(true) }, Modifier.weight(1f),
+                        leading = { Icon(if (video) Icons.Rounded.Videocam else Icons.Rounded.Call, null, Modifier.size(20.dp), tint = Brand.OnSaffron) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Light header for friend messages (DMs): back, avatar, name with flag and a subtitle. */
+@Composable
+private fun ChatBar(
+    partner: Profile, subtitle: String, onProfile: () -> Unit, onBack: () -> Unit, typing: Boolean = false, actions: @Composable () -> Unit = {},
+) {
+    Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+        Row(
+            Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            CircleIconButton(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back), onBack)
+            Row(
+                Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button, onClick = onProfile).padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Avatar(partner, 40.dp)
+                Column(Modifier.padding(start = 12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(partner.nameWithFlag(), Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
+                    }
+                    Text(
+                        subtitle, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        color = if (typing) MaterialTheme.colorScheme.primaryText else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            actions()
+        }
+        Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
+    }
+}
+
+/**
+ * A thread from Recent or Friends. [closed]: its chat ended and we aren't friends ([UiState.dmClosed]): the history
+ * stays, and instead of the composer a bar asks to become friends ([friend]: where that stands).
+ */
+@Composable
+fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState) {
+    val r = dm.recent
+    SecureScreen()
+    BackHandler { vm.closeDm() }
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
+        ChatBar(
+            r.partner, if (dm.partnerTyping) stringResource(R.string.typing) else r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) },
+            onBack = vm::closeDm, typing = dm.partnerTyping,
+            actions = {
+                if (friend == FriendState.FRIENDS) FriendContactsButton(vm, r.partner)
+                if (!closed) CallButton(dm.video, enabled = true, onCall = vm::requestCall, onCancel = vm::endVideo)
+            },
+        )
+        val wall = myWall()
+        Column(Modifier.weight(1f).chatWall(wall)) {
+            Messages(
+                dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
+                partnerRead = dm.partnerRead, onWall = wall != null,
+            )
+            if (closed) EndedBar(r.partner, friend, onAdd = { vm.addFriend(r.partner) }, onAccept = { vm.answerFriend(r.partner, true) })
+            else Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing, onWall = wall != null) { StickerButton({ vm.sendDm(it) {} }) }
+        }
+    }
+    if (dm.video == VideoStatus.REQUESTED_BY_PARTNER && !closed) IncomingCallSheet(r.partner, dm.callVideo, vm::answerVideo)
+}
+
+/** My chat wall (046; only I see it), from my shop (asked for once). */
+@Composable
+private fun myWall(): WallDesign? {
+    val looks = LocalLooks.current ?: return null
+    val ui by looks.shop.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { looks.ensureShop() }
+    return wallOf(ui.shop?.wall)
+}
+
+/** Where the composer was: "Chat ended. Add … as a friend to keep talking." and the friend button's state. */
+@Composable
+private fun EndedBar(partner: Profile, friend: FriendState, onAdd: () -> Unit, onAccept: () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().background(chatColors().wall).navigationBarsPadding().padding(horizontal = 24.dp, vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text(
+            stringResource(
+                when (friend) {
+                    FriendState.REQUESTED -> R.string.dm_waiting
+                    FriendState.INCOMING -> R.string.dm_incoming
+                    else -> R.string.dm_ended
+                },
+                partner.name,
+            ),
+            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
+        )
+        when (friend) {
+            FriendState.REQUESTED -> SoftButton(
+                stringResource(R.string.requested), {}, enabled = false, height = 40.dp,
+                leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+            )
+            FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), onAccept, accent = true, height = 40.dp)
+            else -> SoftButton(
+                stringResource(R.string.add_friend), onAdd, accent = true, height = 40.dp,
+                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
+            )
+        }
+    }
+}
+
+/**
+ * The conversation on the chat wallpaper. Runs of messages from one side sit 2 dp apart (only the first has a tail),
+ * 8 dp between runs. [partnerRead]: my messages up to this id show two blue ticks. [ended]: the "… left" note.
+ * [onWall]: over my chat wall (046), which the parent draws. A sticker is drawn as its card, with no menu.
+ */
+@Composable
+private fun Messages(
+    messages: List<Message>, chatId: String, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null,
+    partnerRead: Long = 0, ended: String? = null, onWall: Boolean = false,
+) {
+    val colors = chatColors()
+    val bg = if (onWall) Color.Transparent else colors.wall
+    val list = rememberLazyListState()
+    LaunchedEffect(messages.size, typing, ended) {
+        if (messages.isNotEmpty()) list.animateScrollToItem(maxOf(0, list.layoutInfo.totalItemsCount - 1))
+    }
+    if (messages.isEmpty() && !typing) {
+        Column(
+            modifier.fillMaxSize().background(bg).padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        ) {
+            intro?.let { ChatChip(it) }
+            // On a wall (some are dark) the hint sits on a chip, as the other notes do.
+            if (onWall) ChatChip(hint) else Text(hint, color = colors.meta, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            ended?.let { ChatChip(it, bold = true) }
+        }
+        return
+    }
+    LazyColumn(
+        modifier.fillMaxSize().background(bg), state = list,
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
+    ) {
+        intro?.let { item(key = "intro") { ChatChip(it, Modifier.padding(bottom = 6.dp)) } }
+        itemsIndexed(messages, key = { _, m -> m.id }) { i, m ->
+            val grouped = i > 0 && messages[i - 1].fromMe == m.fromMe
+            Box(
+                Modifier.animateItem().fillMaxWidth().padding(top = if (grouped) 2.dp else 8.dp),
+                contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart,
+            ) {
+                Box(Modifier.fillMaxWidth(0.82f), contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart) {
+                    val read = m.fromMe && m.id <= partnerRead
+                    val sticker = if (m.media == null) Stickers.of(m.text) else null
+                    if (sticker != null) {
+                        PopIn(m.fromMe) { StickerLine(sticker, m.fromMe) { BubbleMeta(m.at, m.fromMe, read) } }
+                    } else {
+                        val translation = lineTranslation(TranslateKind.CHAT, m.id, m.text?.takeIf { it.isNotEmpty() }, m.fromMe, chatId)
+                        PopIn(m.fromMe) {
+                            MessageMenu(m.text?.takeIf { it.isNotBlank() }, translation) {
+                                Bubble(m, tail = !grouped, read = read, translation = translation)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        item(key = "typing") {
+            AnimatedVisibility(typing, enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                Box(Modifier.padding(top = 8.dp)) { TypingBubble() }
+            }
+        }
+        ended?.let { item(key = "ended") { ChatChip(it, Modifier.padding(top = 20.dp), bold = true) } }
+    }
+}
+
+/**
+ * A message's long-press menu: Copy, and Translate or Show original for someone else's text (also as TalkBack
+ * actions). Media without a caption has no menu (its tap reveals it).
+ */
+@Composable
+internal fun MessageMenu(text: String?, translation: LineTranslation?, content: @Composable () -> Unit) {
+    if (text == null) {
+        content()
+        return
+    }
+    var menu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val copyLabel = stringResource(R.string.chat_copy)
+    val copied = stringResource(R.string.chat_copied)
+    val translateLabel = stringResource(R.string.translate)
+    val originalLabel = stringResource(R.string.translate_show_original)
+    val copy = {
+        context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText("Yaari", text))
+        Toast.makeText(context, copied, Toast.LENGTH_SHORT).show()
+    }
+    val t = translation
+    val canTranslate = t != null && t.view.canTranslate
+    val translated = t != null && t.view.translated
+    Box(
+        Modifier
+            .combinedClickable(interactionSource = null, indication = null, onLongClick = { menu = true }, onClick = {})
+            .semantics {
+                customActions = listOfNotNull(
+                    CustomAccessibilityAction(copyLabel) { copy(); true },
+                    if (canTranslate) CustomAccessibilityAction(translateLabel) { t?.translate?.invoke(); true } else null,
+                    if (translated) CustomAccessibilityAction(originalLabel) { t?.showOriginal?.invoke(); true } else null,
+                )
+            },
+    ) {
+        content()
+        DropdownMenu(menu, onDismissRequest = { menu = false }, shape = RoundedCornerShape(16.dp)) {
+            if (canTranslate) {
+                DropdownMenuItem(
+                    text = { Text(translateLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                    onClick = { menu = false; t?.translate?.invoke() },
+                )
+            }
+            if (translated) {
+                DropdownMenuItem(
+                    text = { Text(originalLabel) }, leadingIcon = { Icon(Icons.Rounded.Translate, null) },
+                    onClick = { menu = false; t?.showOriginal?.invoke() },
+                )
+            }
+            DropdownMenuItem(
+                text = { Text(copyLabel) }, leadingIcon = { Icon(Icons.Rounded.ContentCopy, null) },
+                onClick = { menu = false; copy() },
+            )
+        }
+    }
+}
+
+/** New bubbles settle in from their corner (scale .96, rise 8 dp, fade) in 180 ms. */
+@Composable
+internal fun PopIn(fromMe: Boolean, content: @Composable () -> Unit) {
+    // The corner is the bubble's side: the end for mine, which is the left in a right-to-left layout.
+    val endIsRight = LocalLayoutDirection.current == LayoutDirection.Ltr
+    val p = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { p.animateTo(1f, tween(180, easing = EaseOutQuint)) }
+    Box(
+        Modifier.graphicsLayer {
+            val v = p.value
+            scaleX = 0.96f + 0.04f * v; scaleY = 0.96f + 0.04f * v
+            translationY = (1f - v) * 8.dp.toPx()
+            alpha = v.coerceIn(0f, 1f)
+            transformOrigin = TransformOrigin(if (fromMe == endIsRight) 1f else 0f, 1f)
+        },
+    ) { content() }
+}
+
+/**
+ * The moment of a match: the partner's photo and name fade and settle in (300 ms), then the card fades into the chat.
+ * Plays once per match; it never blocks touches.
+ */
+@Composable
+private fun MatchReveal(matchId: String, partner: Profile) {
+    var shown by rememberSaveable(matchId) { mutableStateOf(true) }
+    // Timed on the frame clock (not delay), so it follows the animation scale and UI tests' virtual time.
+    LaunchedEffect(matchId) {
+        if (shown) Animatable(0f).animateTo(1f, tween(1300, easing = LinearEasing))
+        shown = false
+    }
+    AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(250))) {
+        val scale = remember { Animatable(0.92f) }
+        LaunchedEffect(Unit) { scale.animateTo(1f, tween(300, easing = EaseOutQuint)) }
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }) {
+                Box(Modifier.size(144.dp).brandRing(), contentAlignment = Alignment.Center) {
+                    Avatar(partner, 128.dp)
+                }
+                Spacer(Modifier.size(24.dp))
+                Text(stringResource(R.string.matched_with), color = Brand.Muted, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(partner.nameAgeFlag(), color = Brand.Text, style = MaterialTheme.typography.headlineMedium)
+                    VerifiedMark(partner, Modifier.padding(start = 8.dp), size = 26.dp)
+                }
+                Text(partner.genderCity(), color = Brand.Muted, style = MaterialTheme.typography.bodyMedium)
+                // Who they are, checked: the ID badge and their manners (once rated).
+                val t = trustOf(partner)
+                Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (t?.verified == true || partner.verified) {
+                        Row(
+                            Modifier.clip(CircleShape).background(Brand.SaffronSoft).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            MarkIcon(Mark.LOCK, Brand.SaffronDeep, size = 14.dp)
+                            Text(stringResource(R.string.id_verified), Modifier.padding(start = 6.dp), color = Brand.SaffronDeep, style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                    MannerChip(t)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Photo button, pill-shaped input and a round brand-colour send button, on the chat wallpaper.
+ * The field clears at once on send; [onText]'s second argument puts the text back if the message did not go out.
+ */
+@Composable
+fun Composer(
+    onText: (String, () -> Unit) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
+    onWall: Boolean = false, extra: (@Composable () -> Unit)? = null,
+) {
+    val colors = chatColors()
+    var text by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null && onMedia != null) {
+            val video = context.contentResolver.getType(uri)?.startsWith("video") == true
+            onMedia(Media(uri.toString(), if (video) MediaKind.VIDEO else MediaKind.IMAGE))
+        }
+    }
+    // Over a wall the row gets a light veil, so its icons stay clear on dark walls too.
+    Column(Modifier.fillMaxWidth().background(if (onWall) Color.White.copy(alpha = 0.8f) else colors.wall)) {
+        Row(
+            Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            if (onMedia != null) {
+                CircleIconButton(
+                    Icons.Outlined.Image, stringResource(R.string.send_media),
+                    { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) },
+                    tint = colors.meta,
+                )
+            }
+            extra?.invoke()
+            Box(
+                Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).shadow(1.dp, RoundedCornerShape(24.dp))
+                    .background(colors.incoming).padding(horizontal = 16.dp, vertical = 11.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                if (text.isEmpty()) {
+                    Text(
+                        hint ?: stringResource(R.string.message_hint), color = colors.meta,
+                        style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                BasicTextField(
+                    text, { text = it.take(maxLength); if (it.isNotBlank()) onTyping() }, Modifier.fillMaxWidth(),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.text),
+                    cursorBrush = SolidColor(Brand.Saffron), maxLines = 5,
+                )
+            }
+            Spacer(Modifier.size(8.dp))
+            val enabled = text.isNotBlank()
+            val interaction = remember { MutableInteractionSource() }
+            val tick = rememberTick()
+            val bg by animateColorAsState(if (enabled) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest, tween(150), label = "send")
+            Box(
+                Modifier.size(48.dp).pressScale(interaction).clip(CircleShape).background(bg)
+                    .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) {
+                        tick()
+                        val sent = text
+                        text = ""
+                        onText(sent) { if (text.isEmpty()) text = sent } // nothing typed meanwhile: restore it
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Brand.OnSaffron else MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+}

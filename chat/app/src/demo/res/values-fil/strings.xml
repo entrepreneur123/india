@@ -1,0 +1,4 @@
+<resources>
+    <!-- Different home-screen name, so the demo and the live app are never mixed up on one phone. -->
+    <string name="demo_video">Demo · totoong video sa live na build</string>
+</resources>

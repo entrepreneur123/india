@@ -1,0 +1,4 @@
+<resources>
+    <!-- Different home-screen name, so the demo and the live app are never mixed up on one phone. -->
+    <string name="demo_video">デモ・実際のビデオはライブ版で利用できます</string>
+</resources>

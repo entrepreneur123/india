@@ -1,0 +1,5 @@
+<resources>
+    <!-- Different home-screen name, so the demo and the live app are never mixed up on one phone. -->
+    <string name="app_name" translatable="false">Yaari Demo</string>
+    <string name="demo_video">Demo · real video in the live build</string>
+</resources>

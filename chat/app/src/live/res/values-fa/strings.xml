@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="allow_camera">برای شروع تماس به دوربین و میکروفون اجازه دهید</string>
+    <string name="connecting">در حال اتصال…</string>
+    <string name="waiting_video">منتظر ویدیوی %1$s…</string>
+    <string name="reconnecting">در حال اتصال دوباره…</string>
+    <string name="call_failed">تماس برقرار نشد. روی پایان بزنید و دوباره امتحان کنید.</string>
+    <string name="video_checking">بررسی ایمنی…</string>
+    <string name="video_hidden_title">ویدیو پنهان شد</string>
+    <string name="video_hidden_body">ممکن است برهنگی نشان دهد که مجاز نیست. به تیم ایمنی‌مان خبر داده‌ایم.</string>
+    <string name="open_settings">باز کردن تنظیمات</string>
+    <string name="call_dropped">تماس قطع شد. روی پایان بزنید و دوباره امتحان کنید.</string>
+    <string name="partner_lost">اتصال %1$s قطع شد. منتظرش هستیم…</string>
+    <string name="partner_paused">ویدیوی %1$s متوقف شده: اینترنتش خیلی کند است</string>
+    <string name="partner_cam_off">%1$s دوربینش را خاموش کرد</string>
+    <string name="partner_weak">اتصال %1$s ضعیف است</string>
+    <string name="net_good">اتصال شما: قوی</string>
+    <string name="net_ok">اتصال شما: متوسط</string>
+    <string name="net_poor">اتصال شما: ضعیف</string>
+    <string name="device_busy">دوربین یا میکروفون شما دست اپ دیگری است</string>
+    <string name="cam_blocked">دوربین مجاز نیست. هنوز صدایتان را می‌شنوند. برای باز کردن تنظیمات بزنید</string>
+</resources>

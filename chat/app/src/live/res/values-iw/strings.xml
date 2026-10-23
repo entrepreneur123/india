@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="allow_camera">כדי להתחיל את השיחה צריך לאשר מצלמה ומיקרופון</string>
+    <string name="connecting">מתחברים…</string>
+    <string name="waiting_video">מחכים לווידאו של %1$s…</string>
+    <string name="reconnecting">מתחברים מחדש…</string>
+    <string name="call_failed">השיחה לא התחברה. מקישים על ״סיום״ ומנסים שוב.</string>
+    <string name="video_checking">בדיקת בטיחות…</string>
+    <string name="video_hidden_title">הווידאו הוסתר</string>
+    <string name="video_hidden_body">ייתכן שהוא מציג עירום, וזה אסור. עדכנו את צוות הבטיחות שלנו.</string>
+    <string name="open_settings">פתיחת ההגדרות</string>
+    <string name="call_dropped">השיחה נותקה. מקישים על ״סיום״ ומנסים שוב.</string>
+    <string name="partner_lost">החיבור של %1$s נותק. מחכים…</string>
+    <string name="partner_paused">הווידאו של %1$s מושהה: הרשת שלו/ה איטית מדי</string>
+    <string name="partner_cam_off">%1$s כיבה/תה את המצלמה</string>
+    <string name="partner_weak">החיבור של %1$s חלש</string>
+    <string name="net_good">החיבור שלך: חזק</string>
+    <string name="net_ok">החיבור שלך: סביר</string>
+    <string name="net_poor">החיבור שלך: חלש</string>
+    <string name="device_busy">המצלמה או המיקרופון בשימוש של אפליקציה אחרת</string>
+    <string name="cam_blocked">המצלמה לא מאושרת. עדיין שומעים אותך. הקשה לפתיחת ההגדרות</string>
+</resources>

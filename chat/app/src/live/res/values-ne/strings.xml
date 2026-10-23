@@ -1,0 +1,21 @@
+<resources>
+    <string name="allow_camera">कल सुरु गर्न क्यामेरा र माइक्रोफोनको अनुमति दिनुहोस्</string>
+    <string name="connecting">जोडिँदै…</string>
+    <string name="waiting_video">%1$s को भिडियो पर्खँदै…</string>
+    <string name="reconnecting">फेरि जोडिँदै…</string>
+    <string name="call_failed">कल जोडिन सकेन। काट्नुहोस् थिचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="video_checking">सुरक्षा जाँच…</string>
+    <string name="video_hidden_title">भिडियो लुकाइयो</string>
+    <string name="video_hidden_body">यसमा नग्नता देखिन सक्छ, जुन अनुमति छैन। हामीले हाम्रो सुरक्षा टिमलाई जानकारी दिएका छौं।</string>
+    <string name="open_settings">सेटिङ खोल्नुहोस्</string>
+    <string name="call_dropped">कल काटियो। काट्नुहोस् थिचेर फेरि प्रयास गर्नुहोस्।</string>
+    <string name="partner_lost">%1$s को कनेक्सन टुट्यो। पर्खँदै…</string>
+    <string name="partner_paused">%1$s को भिडियो रोकिएको छ: उहाँको नेटवर्क धेरै ढिलो छ</string>
+    <string name="partner_cam_off">%1$s ले आफ्नो क्यामेरा बन्द गर्नुभयो</string>
+    <string name="partner_weak">%1$s को कनेक्सन कमजोर छ</string>
+    <string name="net_good">तपाईंको कनेक्सन: बलियो</string>
+    <string name="net_ok">तपाईंको कनेक्सन: ठिकै</string>
+    <string name="net_poor">तपाईंको कनेक्सन: कमजोर</string>
+    <string name="device_busy">तपाईंको क्यामेरा वा माइक्रोफोन अर्को एपले चलाइरहेको छ</string>
+    <string name="cam_blocked">क्यामेराको अनुमति छैन। उहाँले अझै पनि तपाईंलाई सुन्न सक्नुहुन्छ। सेटिङ खोल्न ट्याप गर्नुहोस्</string>
+</resources>
