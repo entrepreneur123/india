@@ -15,6 +15,7 @@ import com.yaari.chat.data.PushConfig
 import com.yaari.chat.data.PushRegistrar
 import com.yaari.chat.data.PushTokens
 import com.yaari.chat.domain.Countries
+import com.yaari.chat.model.Badges
 import com.yaari.chat.model.FriendState
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.InboxKind
@@ -30,8 +31,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -115,6 +119,47 @@ class SocialTest {
         assertEquals(thread, vm.state.value.dm?.recent?.matchId)
         vm.closeDm(); advanceUntilIdle()
         assertEquals("read on screen", 0, vm.social.state.value.badges.unread(thread))
+    }
+
+    /** A slow server: counts take 1 s, reads 2 s. A count asked before a read landed would bring its number back. */
+    private val slow = object : Backend by fake {
+        override suspend fun badges(): Badges = fake.badges().also { delay(1_000) }
+        override suspend fun markRead(matchId: String, upto: Long) = delay(2_000).also { fake.markRead(matchId, upto) }
+        override suspend fun markInboxRead(ids: List<Long>?) = delay(2_000).also { fake.markInboxRead(ids) }
+    }
+
+    @Test fun readingAChatClearsItsNumberAtOnceAndAStaleCountDoesNotBringItBack() = runTest(dispatcher) {
+        val vm = signedIn(slow)
+        vm.answerFriend(p3, true); advanceUntilIdle()
+        val thread = fake.friendThread("p3")
+        fake.partnerSays(thread, "hi!")
+        vm.social.refreshBadges(); advanceUntilIdle()
+        assertEquals(1, vm.social.state.value.badges.unread(thread))
+
+        vm.social.refreshBadges(); runCurrent() // asked before the read: still counts the message
+        vm.social.readChat(thread, Long.MAX_VALUE); runCurrent()
+        assertEquals("gone at once", 0, vm.social.state.value.badges.unread(thread))
+        assertEquals(0, vm.social.state.value.badges.recent)
+        advanceTimeBy(1_500); runCurrent()
+        assertEquals("the stale count is dropped", 0, vm.social.state.value.badges.unread(thread))
+        advanceUntilIdle()
+        assertEquals(0, vm.social.state.value.badges.unread(thread))
+        assertEquals("the counts asked after the read", fake.badges(), vm.social.state.value.badges)
+    }
+
+    @Test fun openingNotificationsClearsTheBellAtOnceAndForGood() = runTest(dispatcher) {
+        val vm = signedIn(slow)
+        assertEquals(1, vm.social.state.value.badges.inbox)
+        vm.social.refreshBadges(); runCurrent() // a poll on its way
+        vm.social.openInbox(); runCurrent()
+        assertEquals("gone at once", 0, vm.social.state.value.badges.inbox)
+        advanceTimeBy(1_500); runCurrent()
+        assertEquals(0, vm.social.state.value.badges.inbox)
+        vm.social.closeInbox()
+        vm.social.refreshBadges(); runCurrent() // asked while the read is still on its way
+        advanceUntilIdle()
+        assertEquals("still read after later counts", 0, vm.social.state.value.badges.inbox)
+        assertEquals(0, fake.badges().inbox)
     }
 
     @Test fun anInviteLetsMeIntoTheRoomAndAnEndedOneSaysSo() = runTest(dispatcher) {

@@ -28,8 +28,11 @@ enum class SpeakMode(val code: String) {
 }
 
 /** [seat]: 0 is the host's, 1–8 the stage, null in the audience. */
-/** [lost] (045): their connection dropped; the server takes them out 7 s later unless they come back. */
-data class VoiceMember(val profile: Profile, val role: VoiceRole, val seat: Int?, val muted: Boolean, val hand: Boolean, val lost: Boolean = false) {
+/** [lost] (045): their connection dropped; the server takes them out 7 s later unless they come back. [joinedAt]: server ms. */
+data class VoiceMember(
+    val profile: Profile, val role: VoiceRole, val seat: Int?, val muted: Boolean, val hand: Boolean, val lost: Boolean = false,
+    val joinedAt: Long? = null,
+) {
     val isMod get() = role == VoiceRole.HOST || role == VoiceRole.COHOST
     val onStage get() = seat != null
 }
@@ -130,6 +133,9 @@ data class VoiceRoom(
     val audience get() = members.filter { it.seat == null }
     fun bySeat(seat: Int) = members.firstOrNull { it.seat == seat }
     fun locked(seat: Int) = seats.getOrNull(seat)?.locked == true
+
+    /** Who takes over when the host leaves (voice_hand_over): the connected co-host who came in first; null ends the room. */
+    val nextHost get() = members.filter { it.role == VoiceRole.COHOST && !it.lost && it.profile.id != hostId }.minByOrNull { it.joinedAt ?: 0 }
 
     /** Someone is on the stage: only then is there audio (a room nobody speaks in is a chat room). */
     val stageLive get() = members.any { it.seat != null }

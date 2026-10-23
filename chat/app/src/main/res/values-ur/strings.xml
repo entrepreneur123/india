@@ -180,7 +180,6 @@
     <string name="friends_empty">رینڈم چیٹس یا رومز میں ملنے والے لوگوں کو ایڈ کریں۔</string>
     <string name="friend_requests">درخواستیں (%1$d)</string>
     <string name="friends_count">دوست (%1$d)</string>
-    <string name="requests_sent">بھیجی گئی درخواستیں</string>
     <string name="cancel_request">منسوخ کریں</string>
     <string name="recent_empty_title">ابھی کوئی چیٹ نہیں</string>
     <string name="requested">درخواست بھیجی</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">آپ کا</string>
     <string name="chat_sticker">اسٹیکر</string>
     <string name="err_sticker_not_owned">یہ بھیجنے کے لیے یہ اسٹیکر پیک لیں</string>
+    <string name="go_home">ہوم</string>
+    <string name="voice_hand_over_title">روم چھوڑیں؟</string>
+    <string name="voice_hand_over_body">%1$s ہوسٹ بن جائیں گے اور روم چلتا رہے گا۔</string>
+    <string name="voice_hand_over_leave">نکلیں — %1$s ہوسٹ بنیں گے</string>
+    <string name="recents_title">حالیہ چیٹس</string>
+    <string name="recents_note">چنیں کسے حالیہ سے ہٹانا ہے۔ دوبارہ ملنے پر ہی وہ واپس آئیں گے۔</string>
+    <string name="recents_none">کوئی حالیہ چیٹ نہیں</string>
+    <string name="recents_delete">ہٹائیں (%1$d)</string>
+    <string name="recents_delete_all">سب ہٹائیں</string>
+    <string name="recents_confirm">حالیہ سے ہٹائیں؟</string>
+    <string name="recents_confirm_body">دوبارہ ملنے پر ہی وہ واپس آئیں گے۔ دوست، دوست ہی رہیں گے۔</string>
+    <string name="recents_delete_confirm">ہٹائیں</string>
+    <string name="recents_deleted">حالیہ سے ہٹا دیا گیا</string>
+    <string name="sent_tab">بھیجی گئی</string>
+    <string name="sent_empty_title">کوئی درخواست باقی نہیں</string>
+    <string name="sent_empty">آپ کی بھیجی دوستی کی درخواستیں جواب ملنے تک یہاں رہتی ہیں۔</string>
 </resources>

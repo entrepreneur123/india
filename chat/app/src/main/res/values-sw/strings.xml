@@ -160,7 +160,6 @@
     <string name="friends_empty">Ongeza watu unaokutana nao kwenye chat za bahati nasibu au vyumbani.</string>
     <string name="friend_requests">Maombi (%1$d)</string>
     <string name="friends_count">Marafiki (%1$d)</string>
-    <string name="requests_sent">Maombi uliyotuma</string>
     <string name="cancel_request">Ghairi</string>
     <string name="recent_empty_title">Bado hakuna chat</string>
     <string name="requested">Ombi limetumwa</string>
@@ -965,4 +964,20 @@
     <string name="looks_owned">Ni yako</string>
     <string name="chat_sticker">Stika</string>
     <string name="err_sticker_not_owned">Pata kifurushi hiki cha stika ili kuituma</string>
+    <string name="go_home">Mwanzo</string>
+    <string name="voice_hand_over_title">Uondoke chumbani?</string>
+    <string name="voice_hand_over_body">%1$s atakuwa mwenyeji na chumba kitaendelea.</string>
+    <string name="voice_hand_over_leave">Ondoka — %1$s atakuwa mwenyeji</string>
+    <string name="recents_title">Mazungumzo ya karibuni</string>
+    <string name="recents_note">Chagua wa kuondoa kwenye Za karibuni. Watarudi tu mkikutana tena.</string>
+    <string name="recents_none">Hakuna mazungumzo ya karibuni</string>
+    <string name="recents_delete">Futa (%1$d)</string>
+    <string name="recents_delete_all">Futa zote</string>
+    <string name="recents_confirm">Ufute kwenye Za karibuni?</string>
+    <string name="recents_confirm_body">Watarudi tu mkikutana tena. Marafiki wanabaki marafiki.</string>
+    <string name="recents_delete_confirm">Futa</string>
+    <string name="recents_deleted">Imefutwa kwenye Za karibuni</string>
+    <string name="sent_tab">Uliyotuma</string>
+    <string name="sent_empty_title">Hakuna maombi yanayosubiri</string>
+    <string name="sent_empty">Maombi ya urafiki unayotuma yanasubiri hapa hadi yajibiwe.</string>
 </resources>

@@ -177,6 +177,30 @@ class AppViewModelTest {
         assertEquals(partner.id, vm.state.value.recents.first().partner.id) // newest first (the demo's VIP chat is older)
     }
 
+    @Test fun recentChatsComeOffMyListUntilWeMeetAgain() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        val partner = vm.state.value.chat!!.match.partner.id
+        now += 5_000
+        vm.leave(next = false); advanceUntilIdle()
+        val all = vm.state.value.recents.map { it.partner.id }
+        assertTrue(partner in all)
+        var ok: Boolean? = null
+        vm.hideRecents(listOf(partner)) { ok = it }; advanceUntilIdle()
+        assertEquals(true, ok)
+        assertEquals(all - partner, vm.state.value.recents.map { it.partner.id })
+        vm.hideRecents(all) {}; advanceUntilIdle()
+        assertTrue("delete all", vm.state.value.recents.isEmpty())
+        assertEquals("bad_request", (runCatching { backend.hideRecents(List(101) { "u$it" }) }.exceptionOrNull() as BackendException).code)
+
+        now += 1_000
+        matched(vm)
+        val again = vm.state.value.chat!!.match.partner.id
+        now += 5_000
+        vm.leave(next = false); advanceUntilIdle()
+        assertEquals("met again: back on the list", listOf(again), vm.state.value.recents.map { it.partner.id })
+    }
+
     @Test fun premiumExitUnlocksAfter200msAndNextSkipsLastPartner() = runTest(dispatcher) {
         backend.redeem(Products.PREMIUM, "p1")
         val vm = signedIn()

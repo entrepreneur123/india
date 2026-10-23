@@ -291,7 +291,7 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
             LookName(p.id, size = 15.sp)
             if (p.isVip) {
                 Text(
-                    stringResource(R.string.vip_seen), Modifier.padding(top = 6.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 14.dp, vertical = 6.dp),
+                    stringResource(R.string.vip_seen), Modifier.padding(top = 6.dp).clip(CircleShape).background(Brand.SaffronStrong).padding(horizontal = 14.dp, vertical = 6.dp),
                     color = Brand.OnSaffron, style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
                 )
             }

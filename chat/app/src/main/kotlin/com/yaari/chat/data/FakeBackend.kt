@@ -596,8 +596,18 @@ open class FakeBackend(
 
     override suspend fun recents(): List<RecentMatch> =
         matches.entries.reversed().filter { !it.value.dm }.distinctBy { it.value.partner.id }
-            .filter { it.value.partner.id !in blocked }
+            .filter { it.value.partner.id !in blocked && it.value.startedAt > (hiddenRecents[it.value.partner.id] ?: Long.MIN_VALUE) }
+            .take(RecentMatch.MAX)
             .map { (id, m) -> RecentMatch(id, m.partner, m.startedAt, m.messages.lastOrNull()?.let { it.text ?: "[media]" }) }
+
+    /** Partner id to when I took them off my recents (048: a chat after that brings them back). */
+    private val hiddenRecents = mutableMapOf<String, Long>()
+
+    override suspend fun hideRecents(userIds: List<String>) {
+        me()
+        if (userIds.size > RecentMatch.HIDE_MAX) throw BackendException("bad_request")
+        userIds.forEach { hiddenRecents[it] = clock() }
+    }
 
     override suspend fun profile(userId: String): Profile? {
         if (userId in blocked) return null

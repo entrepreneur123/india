@@ -169,7 +169,6 @@
     <string name="friends_empty">റാൻഡം ചാറ്റുകളിലോ റൂമുകളിലോ കണ്ടവരെ ചേർക്കൂ.</string>
     <string name="friend_requests">റിക്വസ്റ്റുകൾ (%1$d)</string>
     <string name="friends_count">സുഹൃത്തുക്കൾ (%1$d)</string>
-    <string name="requests_sent">അയച്ച റിക്വസ്റ്റുകൾ</string>
     <string name="cancel_request">റദ്ദാക്കുക</string>
     <string name="recent_empty_title">ഇതുവരെ ചാറ്റുകളില്ല</string>
     <string name="requested">റിക്വസ്റ്റ് അയച്ചു</string>
@@ -977,4 +976,20 @@
     <string name="looks_owned">നിങ്ങളുടേത്</string>
     <string name="chat_sticker">സ്റ്റിക്കർ</string>
     <string name="err_sticker_not_owned">ഇത് അയയ്ക്കാൻ ഈ സ്റ്റിക്കർ പാക്ക് നേടുക</string>
+    <string name="go_home">ഹോം</string>
+    <string name="voice_hand_over_title">റൂം വിട്ടുപോകണോ?</string>
+    <string name="voice_hand_over_body">%1$s ഹോസ്റ്റ് ആകും, റൂം തുടരും.</string>
+    <string name="voice_hand_over_leave">പോകുക — %1$s ഹോസ്റ്റ് ആകും</string>
+    <string name="recents_title">സമീപകാല ചാറ്റുകൾ</string>
+    <string name="recents_note">സമീപകാലത്തിൽ നിന്ന് ആരെ നീക്കണമെന്ന് തിരഞ്ഞെടുക്കുക. വീണ്ടും കണ്ടുമുട്ടിയാൽ മാത്രമേ അവർ തിരികെ വരൂ.</string>
+    <string name="recents_none">സമീപകാല ചാറ്റുകളില്ല</string>
+    <string name="recents_delete">ഇല്ലാതാക്കുക (%1$d)</string>
+    <string name="recents_delete_all">എല്ലാം ഇല്ലാതാക്കുക</string>
+    <string name="recents_confirm">സമീപകാലത്തിൽ നിന്ന് ഇല്ലാതാക്കണോ?</string>
+    <string name="recents_confirm_body">വീണ്ടും കണ്ടുമുട്ടിയാൽ മാത്രമേ അവർ തിരികെ വരൂ. സുഹൃത്തുക്കൾ സുഹൃത്തുക്കളായി തുടരും.</string>
+    <string name="recents_delete_confirm">ഇല്ലാതാക്കുക</string>
+    <string name="recents_deleted">സമീപകാലത്തിൽ നിന്ന് ഇല്ലാതാക്കി</string>
+    <string name="sent_tab">അയച്ചവ</string>
+    <string name="sent_empty_title">തീർപ്പാകാത്ത റിക്വസ്റ്റുകളില്ല</string>
+    <string name="sent_empty">നിങ്ങൾ അയച്ച ഫ്രണ്ട് റിക്വസ്റ്റുകൾ മറുപടി കിട്ടുംവരെ ഇവിടെ ഉണ്ടാകും.</string>
 </resources>

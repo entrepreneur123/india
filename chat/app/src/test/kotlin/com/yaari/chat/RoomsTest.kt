@@ -164,7 +164,7 @@ class RoomsTest {
         assertEquals(UiText(R.string.err_room_code_unknown), vm.notice())
         vm.voice.create(NewVoiceRoom("Secret", RoomCategory.MUSIC, RoomRules(isPrivate = true))); advanceUntilIdle()
         val code = vm.voice.list.value.created!!.code
-        vm.voice.close(); advanceUntilIdle()
+        vm.voice.minimise() // (leaving would end it: no co-host to take over)
         var done = false
         vm.voice.joinCode(code.lowercase()) { done = true }; advanceUntilIdle()
         assertTrue(done)

@@ -160,7 +160,6 @@
     <string name="friends_empty">آدم‌هایی را که در چت تصادفی یا روم‌ها می‌بینید اضافه کنید.</string>
     <string name="friend_requests">درخواست‌ها (%1$d)</string>
     <string name="friends_count">دوستان (%1$d)</string>
-    <string name="requests_sent">درخواست‌های ارسالی</string>
     <string name="cancel_request">لغو</string>
     <string name="recent_empty_title">هنوز چتی ندارید</string>
     <string name="requested">درخواست شد</string>
@@ -965,4 +964,20 @@
     <string name="looks_owned">مال شما</string>
     <string name="chat_sticker">استیکر</string>
     <string name="err_sticker_not_owned">برای فرستادن این استیکر، بسته‌اش را بگیرید</string>
+    <string name="go_home">خانه</string>
+    <string name="voice_hand_over_title">از روم خارج می‌شوید؟</string>
+    <string name="voice_hand_over_body">%1$s میزبان می‌شود و روم باز می‌ماند.</string>
+    <string name="voice_hand_over_leave">خروج — %1$s میزبان می‌شود</string>
+    <string name="recents_title">گفتگوهای اخیر</string>
+    <string name="recents_note">انتخاب کنید چه کسانی از اخیر حذف شوند. فقط اگر دوباره هم را ببینید برمی‌گردند.</string>
+    <string name="recents_none">گفتگوی اخیری نیست</string>
+    <string name="recents_delete">حذف (%1$d)</string>
+    <string name="recents_delete_all">حذف همه</string>
+    <string name="recents_confirm">از اخیر حذف شود؟</string>
+    <string name="recents_confirm_body">فقط اگر دوباره هم را ببینید برمی‌گردند. دوستان دوست می‌مانند.</string>
+    <string name="recents_delete_confirm">حذف</string>
+    <string name="recents_deleted">از اخیر حذف شد</string>
+    <string name="sent_tab">ارسالی</string>
+    <string name="sent_empty_title">درخواست در انتظاری نیست</string>
+    <string name="sent_empty">درخواست‌های دوستی که می‌فرستید تا پاسخ بگیرند اینجا می‌مانند.</string>
 </resources>

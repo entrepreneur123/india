@@ -161,7 +161,6 @@
     <string name="friends_empty">أضف الأشخاص الذين تقابلهم في الدردشات العشوائية أو الغرف.</string>
     <string name="friend_requests">الطلبات (%1$d)</string>
     <string name="friends_count">الأصدقاء (%1$d)</string>
-    <string name="requests_sent">الطلبات المرسلة</string>
     <string name="cancel_request">إلغاء</string>
     <string name="recent_empty_title">لا دردشات بعد</string>
     <string name="requested">تم الطلب</string>
@@ -1018,4 +1017,20 @@
     <string name="looks_owned">لديك</string>
     <string name="chat_sticker">ملصق</string>
     <string name="err_sticker_not_owned">احصل على حزمة الملصقات هذه لإرساله</string>
+    <string name="go_home">الرئيسية</string>
+    <string name="voice_hand_over_title">مغادرة الغرفة؟</string>
+    <string name="voice_hand_over_body">سيصبح %1$s المضيف وتبقى الغرفة مفتوحة.</string>
+    <string name="voice_hand_over_leave">مغادرة — سيصبح %1$s المضيف</string>
+    <string name="recents_title">المحادثات الأخيرة</string>
+    <string name="recents_note">اختر من تريد إزالته من الأخيرة. لن يعودوا إلا إذا التقيتم مجددًا.</string>
+    <string name="recents_none">لا محادثات أخيرة</string>
+    <string name="recents_delete">حذف (%1$d)</string>
+    <string name="recents_delete_all">حذف الكل</string>
+    <string name="recents_confirm">الحذف من الأخيرة؟</string>
+    <string name="recents_confirm_body">لن يعودوا إلا إذا التقيتم مجددًا. يبقى الأصدقاء أصدقاء.</string>
+    <string name="recents_delete_confirm">حذف</string>
+    <string name="recents_deleted">تم الحذف من الأخيرة</string>
+    <string name="sent_tab">المرسلة</string>
+    <string name="sent_empty_title">لا طلبات معلّقة</string>
+    <string name="sent_empty">طلبات الصداقة التي ترسلها تنتظر هنا حتى يُرد عليها.</string>
 </resources>

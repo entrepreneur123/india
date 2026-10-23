@@ -169,7 +169,6 @@
     <string name="friends_empty">रैंडम चैट या रूम में मिले लोगों को दोस्त बनाएँ।</string>
     <string name="friend_requests">रिक्वेस्ट (%1$d)</string>
     <string name="friends_count">दोस्त (%1$d)</string>
-    <string name="requests_sent">भेजी गई रिक्वेस्ट</string>
     <string name="cancel_request">रद्द करें</string>
     <string name="recent_empty_title">अभी कोई चैट नहीं</string>
     <string name="requested">रिक्वेस्ट भेजी</string>
@@ -986,4 +985,20 @@
     <string name="looks_owned">आपका</string>
     <string name="chat_sticker">स्टिकर</string>
     <string name="err_sticker_not_owned">यह स्टिकर भेजने के लिए इसका पैक लें</string>
+    <string name="go_home">होम</string>
+    <string name="voice_hand_over_title">रूम छोड़ें?</string>
+    <string name="voice_hand_over_body">%1$s होस्ट बन जाएँगे और रूम चलता रहेगा।</string>
+    <string name="voice_hand_over_leave">छोड़ें — %1$s होस्ट बनेंगे</string>
+    <string name="recents_title">हाल की चैट</string>
+    <string name="recents_note">चुनें किन्हें हाल के से हटाना है। दोबारा मिलने पर ही वे वापस आएँगे।</string>
+    <string name="recents_none">कोई हाल की चैट नहीं</string>
+    <string name="recents_delete">हटाएँ (%1$d)</string>
+    <string name="recents_delete_all">सब हटाएँ</string>
+    <string name="recents_confirm">हाल के से हटाएँ?</string>
+    <string name="recents_confirm_body">दोबारा मिलने पर ही वे वापस आएँगे। दोस्त, दोस्त ही रहेंगे।</string>
+    <string name="recents_delete_confirm">हटाएँ</string>
+    <string name="recents_deleted">हाल के से हटा दिया</string>
+    <string name="sent_tab">भेजी गई</string>
+    <string name="sent_empty_title">कोई रिक्वेस्ट बाकी नहीं</string>
+    <string name="sent_empty">आपकी भेजी दोस्ती रिक्वेस्ट जवाब मिलने तक यहाँ रहती हैं।</string>
 </resources>

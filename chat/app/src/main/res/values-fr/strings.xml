@@ -160,7 +160,6 @@
     <string name="friends_empty">Ajoutez les personnes rencontrées en chat aléatoire ou dans les salons.</string>
     <string name="friend_requests">Demandes (%1$d)</string>
     <string name="friends_count">Amis (%1$d)</string>
-    <string name="requests_sent">Demandes envoyées</string>
     <string name="cancel_request">Annuler</string>
     <string name="recent_empty_title">Pas encore de chats</string>
     <string name="requested">Demandé</string>
@@ -978,4 +977,20 @@
     <string name="looks_owned">À vous</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Obtenez ce pack de stickers pour l’envoyer</string>
+    <string name="go_home">Accueil</string>
+    <string name="voice_hand_over_title">Quitter le salon ?</string>
+    <string name="voice_hand_over_body">%1$s devient l’hôte et le salon reste ouvert.</string>
+    <string name="voice_hand_over_leave">Quitter — %1$s devient l’hôte</string>
+    <string name="recents_title">Discussions récentes</string>
+    <string name="recents_note">Choisissez qui retirer des Récents. Ces personnes ne reviennent que si vous vous retrouvez.</string>
+    <string name="recents_none">Aucune discussion récente</string>
+    <string name="recents_delete">Supprimer (%1$d)</string>
+    <string name="recents_delete_all">Tout supprimer</string>
+    <string name="recents_confirm">Supprimer des Récents ?</string>
+    <string name="recents_confirm_body">Elles ne reviennent que si vous vous retrouvez. Vos amis restent vos amis.</string>
+    <string name="recents_delete_confirm">Supprimer</string>
+    <string name="recents_deleted">Supprimé des Récents</string>
+    <string name="sent_tab">Envoyées</string>
+    <string name="sent_empty_title">Aucune demande en attente</string>
+    <string name="sent_empty">Les demandes d’amis que vous envoyez attendent ici jusqu’à leur réponse.</string>
 </resources>

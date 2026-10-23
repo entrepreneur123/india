@@ -180,7 +180,6 @@
     <string name="friends_empty">ਰੈਂਡਮ ਚੈਟਾਂ ਜਾਂ ਰੂਮਾਂ ਵਿੱਚ ਮਿਲਣ ਵਾਲੇ ਲੋਕਾਂ ਨੂੰ ਐਡ ਕਰੋ।</string>
     <string name="friend_requests">ਬੇਨਤੀਆਂ (%1$d)</string>
     <string name="friends_count">ਦੋਸਤ (%1$d)</string>
-    <string name="requests_sent">ਭੇਜੀਆਂ ਬੇਨਤੀਆਂ</string>
     <string name="cancel_request">ਰੱਦ ਕਰੋ</string>
     <string name="recent_empty_title">ਹਾਲੇ ਕੋਈ ਚੈਟ ਨਹੀਂ</string>
     <string name="requested">ਬੇਨਤੀ ਭੇਜੀ</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">ਤੁਹਾਡਾ</string>
     <string name="chat_sticker">ਸਟਿੱਕਰ</string>
     <string name="err_sticker_not_owned">ਇਹ ਭੇਜਣ ਲਈ ਇਹ ਸਟਿੱਕਰ ਪੈਕ ਲਓ</string>
+    <string name="go_home">ਹੋਮ</string>
+    <string name="voice_hand_over_title">ਰੂਮ ਛੱਡਣਾ ਹੈ?</string>
+    <string name="voice_hand_over_body">%1$s ਹੋਸਟ ਬਣ ਜਾਣਗੇ ਅਤੇ ਰੂਮ ਚੱਲਦਾ ਰਹੇਗਾ।</string>
+    <string name="voice_hand_over_leave">ਨਿਕਲੋ — %1$s ਹੋਸਟ ਬਣਨਗੇ</string>
+    <string name="recents_title">ਹਾਲੀਆ ਚੈਟਾਂ</string>
+    <string name="recents_note">ਚੁਣੋ ਕਿਨ੍ਹਾਂ ਨੂੰ ਹਾਲੀਆ ਤੋਂ ਹਟਾਉਣਾ ਹੈ। ਦੁਬਾਰਾ ਮਿਲਣ ’ਤੇ ਹੀ ਉਹ ਵਾਪਸ ਆਉਣਗੇ।</string>
+    <string name="recents_none">ਕੋਈ ਹਾਲੀਆ ਚੈਟ ਨਹੀਂ</string>
+    <string name="recents_delete">ਹਟਾਓ (%1$d)</string>
+    <string name="recents_delete_all">ਸਭ ਹਟਾਓ</string>
+    <string name="recents_confirm">ਹਾਲੀਆ ਤੋਂ ਹਟਾਉਣਾ ਹੈ?</string>
+    <string name="recents_confirm_body">ਦੁਬਾਰਾ ਮਿਲਣ ’ਤੇ ਹੀ ਉਹ ਵਾਪਸ ਆਉਣਗੇ। ਦੋਸਤ, ਦੋਸਤ ਹੀ ਰਹਿਣਗੇ।</string>
+    <string name="recents_delete_confirm">ਹਟਾਓ</string>
+    <string name="recents_deleted">ਹਾਲੀਆ ਤੋਂ ਹਟਾ ਦਿੱਤਾ</string>
+    <string name="sent_tab">ਭੇਜੀਆਂ</string>
+    <string name="sent_empty_title">ਕੋਈ ਬਕਾਇਆ ਬੇਨਤੀ ਨਹੀਂ</string>
+    <string name="sent_empty">ਤੁਹਾਡੀਆਂ ਭੇਜੀਆਂ ਦੋਸਤੀ ਬੇਨਤੀਆਂ ਜਵਾਬ ਮਿਲਣ ਤੱਕ ਇੱਥੇ ਰਹਿੰਦੀਆਂ ਹਨ।</string>
 </resources>

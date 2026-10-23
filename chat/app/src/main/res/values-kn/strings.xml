@@ -169,7 +169,6 @@
     <string name="friends_empty">ರ‍್ಯಾಂಡಮ್ ಚಾಟ್‌ಗಳು ಅಥವಾ ರೂಮ್‌ಗಳಲ್ಲಿ ಭೇಟಿಯಾದವರನ್ನು ಸೇರಿಸಿ.</string>
     <string name="friend_requests">ರಿಕ್ವೆಸ್ಟ್‌ಗಳು (%1$d)</string>
     <string name="friends_count">ಸ್ನೇಹಿತರು (%1$d)</string>
-    <string name="requests_sent">ಕಳುಹಿಸಿದ ರಿಕ್ವೆಸ್ಟ್‌ಗಳು</string>
     <string name="cancel_request">ರದ್ದುಮಾಡಿ</string>
     <string name="recent_empty_title">ಇನ್ನೂ ಚಾಟ್‌ಗಳಿಲ್ಲ</string>
     <string name="requested">ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಲಾಗಿದೆ</string>
@@ -977,4 +976,20 @@
     <string name="looks_owned">ನಿಮ್ಮದು</string>
     <string name="chat_sticker">ಸ್ಟಿಕರ್</string>
     <string name="err_sticker_not_owned">ಇದನ್ನು ಕಳುಹಿಸಲು ಈ ಸ್ಟಿಕರ್ ಪ್ಯಾಕ್ ಪಡೆಯಿರಿ</string>
+    <string name="go_home">ಹೋಮ್</string>
+    <string name="voice_hand_over_title">ರೂಮ್ ಬಿಟ್ಟು ಹೊರಡಬೇಕೇ?</string>
+    <string name="voice_hand_over_body">%1$s ಹೋಸ್ಟ್ ಆಗುತ್ತಾರೆ, ರೂಮ್ ಮುಂದುವರಿಯುತ್ತದೆ.</string>
+    <string name="voice_hand_over_leave">ಹೊರಡಿ — %1$s ಹೋಸ್ಟ್ ಆಗುತ್ತಾರೆ</string>
+    <string name="recents_title">ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳು</string>
+    <string name="recents_note">ಇತ್ತೀಚಿನವುಗಳಿಂದ ಯಾರನ್ನು ತೆಗೆಯಬೇಕು ಎಂದು ಆರಿಸಿ. ಮತ್ತೆ ಭೇಟಿಯಾದರೆ ಮಾತ್ರ ಅವರು ವಾಪಸ್ ಬರುತ್ತಾರೆ.</string>
+    <string name="recents_none">ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳಿಲ್ಲ</string>
+    <string name="recents_delete">ಅಳಿಸಿ (%1$d)</string>
+    <string name="recents_delete_all">ಎಲ್ಲವನ್ನೂ ಅಳಿಸಿ</string>
+    <string name="recents_confirm">ಇತ್ತೀಚಿನವುಗಳಿಂದ ಅಳಿಸಬೇಕೇ?</string>
+    <string name="recents_confirm_body">ಮತ್ತೆ ಭೇಟಿಯಾದರೆ ಮಾತ್ರ ಅವರು ವಾಪಸ್ ಬರುತ್ತಾರೆ. ಸ್ನೇಹಿತರು ಸ್ನೇಹಿತರಾಗಿಯೇ ಇರುತ್ತಾರೆ.</string>
+    <string name="recents_delete_confirm">ಅಳಿಸಿ</string>
+    <string name="recents_deleted">ಇತ್ತೀಚಿನವುಗಳಿಂದ ಅಳಿಸಲಾಗಿದೆ</string>
+    <string name="sent_tab">ಕಳುಹಿಸಿದವು</string>
+    <string name="sent_empty_title">ಬಾಕಿ ರಿಕ್ವೆಸ್ಟ್‌ಗಳಿಲ್ಲ</string>
+    <string name="sent_empty">ನೀವು ಕಳುಹಿಸಿದ ಫ್ರೆಂಡ್ ರಿಕ್ವೆಸ್ಟ್‌ಗಳು ಉತ್ತರ ಬರುವವರೆಗೆ ಇಲ್ಲಿರುತ್ತವೆ.</string>
 </resources>

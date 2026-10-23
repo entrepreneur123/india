@@ -179,7 +179,6 @@
     <string name="friends_empty">添加你在随机聊天或房间里遇到的人吧。</string>
     <string name="friend_requests">申请（%1$d）</string>
     <string name="friends_count">好友（%1$d）</string>
-    <string name="requests_sent">已发送的申请</string>
     <string name="cancel_request">取消</string>
     <string name="recent_empty_title">还没有聊天</string>
     <string name="requested">已申请</string>
@@ -984,4 +983,20 @@
     <string name="looks_owned">已拥有</string>
     <string name="chat_sticker">贴纸</string>
     <string name="err_sticker_not_owned">获取此贴纸包后才能发送</string>
+    <string name="go_home">首页</string>
+    <string name="voice_hand_over_title">要离开房间吗？</string>
+    <string name="voice_hand_over_body">%1$s 将成为房主，房间会继续开着。</string>
+    <string name="voice_hand_over_leave">离开 — %1$s 成为房主</string>
+    <string name="recents_title">最近聊天</string>
+    <string name="recents_note">选择要从“最近”中移除的人。只有再次相遇他们才会回来。</string>
+    <string name="recents_none">没有最近聊天</string>
+    <string name="recents_delete">删除（%1$d）</string>
+    <string name="recents_delete_all">全部删除</string>
+    <string name="recents_confirm">要从“最近”中删除吗？</string>
+    <string name="recents_confirm_body">只有再次相遇他们才会回来。好友仍是好友。</string>
+    <string name="recents_delete_confirm">删除</string>
+    <string name="recents_deleted">已从“最近”中删除</string>
+    <string name="sent_tab">已发送</string>
+    <string name="sent_empty_title">没有待处理的申请</string>
+    <string name="sent_empty">你发出的好友申请会在这里等待对方回复。</string>
 </resources>

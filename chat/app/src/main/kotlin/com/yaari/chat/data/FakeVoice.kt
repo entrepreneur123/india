@@ -382,8 +382,17 @@ class FakeVoice(
         val me = runCatching { me() }.getOrNull() ?: return
         if (r.ended) return
         wait(100)
-        if (r.mine) return // my own room stays live until I end it
+        // My own room, as the server's voice_hand_over: the co-host who came in first takes over, else it ends.
+        val heir = if (r.mine) snapshot(r).nextHost?.let { h -> r.members.first { it.profile.id == h.profile.id } } ?: return end(r) else null
         r.members.removeAll { it.profile.id == me.id }
+        if (heir != null) {
+            heir.role = VoiceRole.HOST
+            heir.seat = 0
+            heir.hand = false
+            r.hostId = heir.profile.id
+            r.mine = false
+            system(r, VoiceSystemEvent.HOST, heir.profile.name)
+        }
         changed(r)
     }
 

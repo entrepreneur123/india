@@ -180,7 +180,6 @@
     <string name="friends_empty">ランダムチャットやルームで出会った人を追加しよう。</string>
     <string name="friend_requests">リクエスト（%1$d）</string>
     <string name="friends_count">友だち（%1$d）</string>
-    <string name="requests_sent">送信したリクエスト</string>
     <string name="cancel_request">キャンセル</string>
     <string name="recent_empty_title">まだチャットがありません</string>
     <string name="requested">リクエスト済み</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">購入済み</string>
     <string name="chat_sticker">スタンプ</string>
     <string name="err_sticker_not_owned">このスタンプを送るにはパックの入手が必要です</string>
+    <string name="go_home">ホーム</string>
+    <string name="voice_hand_over_title">ルームから退出しますか？</string>
+    <string name="voice_hand_over_body">%1$sさんがホストになり、ルームは続きます。</string>
+    <string name="voice_hand_over_leave">退出 — %1$sさんがホストに</string>
+    <string name="recents_title">最近のチャット</string>
+    <string name="recents_note">最近から外す人を選んでください。また出会うまで表示されません。</string>
+    <string name="recents_none">最近のチャットはありません</string>
+    <string name="recents_delete">削除（%1$d）</string>
+    <string name="recents_delete_all">すべて削除</string>
+    <string name="recents_confirm">最近から削除しますか？</string>
+    <string name="recents_confirm_body">また出会うまで表示されません。友だちはそのままです。</string>
+    <string name="recents_delete_confirm">削除</string>
+    <string name="recents_deleted">最近から削除しました</string>
+    <string name="sent_tab">送信済み</string>
+    <string name="sent_empty_title">承認待ちのリクエストはありません</string>
+    <string name="sent_empty">送った友だちリクエストは、返事があるまでここに表示されます。</string>
 </resources>

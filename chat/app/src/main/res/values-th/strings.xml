@@ -160,7 +160,6 @@
     <string name="friends_empty">เพิ่มคนที่คุณเจอในแชทสุ่มหรือในห้อง</string>
     <string name="friend_requests">คำขอ (%1$d)</string>
     <string name="friends_count">เพื่อน (%1$d)</string>
-    <string name="requests_sent">คำขอที่ส่งไป</string>
     <string name="cancel_request">ยกเลิก</string>
     <string name="recent_empty_title">ยังไม่มีแชท</string>
     <string name="requested">ส่งคำขอแล้ว</string>
@@ -952,4 +951,20 @@
     <string name="looks_owned">ของคุณ</string>
     <string name="chat_sticker">สติกเกอร์</string>
     <string name="err_sticker_not_owned">รับแพ็กสติกเกอร์นี้ก่อนจึงจะส่งได้</string>
+    <string name="go_home">หน้าแรก</string>
+    <string name="voice_hand_over_title">ออกจากห้องไหม</string>
+    <string name="voice_hand_over_body">%1$s จะเป็นโฮสต์ และห้องจะยังเปิดอยู่</string>
+    <string name="voice_hand_over_leave">ออก — %1$s จะเป็นโฮสต์</string>
+    <string name="recents_title">แชทล่าสุด</string>
+    <string name="recents_note">เลือกคนที่จะลบออกจากล่าสุด พวกเขาจะกลับมาก็ต่อเมื่อคุณเจอกันอีก</string>
+    <string name="recents_none">ไม่มีแชทล่าสุด</string>
+    <string name="recents_delete">ลบ (%1$d)</string>
+    <string name="recents_delete_all">ลบทั้งหมด</string>
+    <string name="recents_confirm">ลบออกจากล่าสุดไหม</string>
+    <string name="recents_confirm_body">พวกเขาจะกลับมาก็ต่อเมื่อคุณเจอกันอีก เพื่อนยังเป็นเพื่อนเหมือนเดิม</string>
+    <string name="recents_delete_confirm">ลบ</string>
+    <string name="recents_deleted">ลบออกจากล่าสุดแล้ว</string>
+    <string name="sent_tab">ที่ส่งไป</string>
+    <string name="sent_empty_title">ไม่มีคำขอที่รออยู่</string>
+    <string name="sent_empty">คำขอเป็นเพื่อนที่คุณส่งจะรออยู่ที่นี่จนกว่าจะได้รับคำตอบ</string>
 </resources>

@@ -180,7 +180,6 @@
     <string name="friends_empty">રેન્ડમ ચેટ કે રૂમમાં મળેલા લોકોને ઍડ કરો.</string>
     <string name="friend_requests">રિક્વેસ્ટ (%1$d)</string>
     <string name="friends_count">મિત્રો (%1$d)</string>
-    <string name="requests_sent">મોકલેલી રિક્વેસ્ટ</string>
     <string name="cancel_request">રદ કરો</string>
     <string name="recent_empty_title">હજુ કોઈ ચેટ નથી</string>
     <string name="requested">રિક્વેસ્ટ મોકલી</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">તમારું</string>
     <string name="chat_sticker">સ્ટિકર</string>
     <string name="err_sticker_not_owned">આ મોકલવા માટે આ સ્ટિકર પેક લો</string>
+    <string name="go_home">હોમ</string>
+    <string name="voice_hand_over_title">રૂમ છોડવો છે?</string>
+    <string name="voice_hand_over_body">%1$s હોસ્ટ બનશે અને રૂમ ચાલુ રહેશે.</string>
+    <string name="voice_hand_over_leave">નીકળો — %1$s હોસ્ટ બનશે</string>
+    <string name="recents_title">તાજેતરની ચેટ</string>
+    <string name="recents_note">તાજેતરનામાંથી કોને દૂર કરવા તે પસંદ કરો. ફરી મળશો તો જ તેઓ પાછા આવશે.</string>
+    <string name="recents_none">કોઈ તાજેતરની ચેટ નથી</string>
+    <string name="recents_delete">કાઢો (%1$d)</string>
+    <string name="recents_delete_all">બધું કાઢો</string>
+    <string name="recents_confirm">તાજેતરનામાંથી કાઢવું છે?</string>
+    <string name="recents_confirm_body">ફરી મળશો તો જ તેઓ પાછા આવશે. મિત્રો મિત્રો જ રહેશે.</string>
+    <string name="recents_delete_confirm">કાઢો</string>
+    <string name="recents_deleted">તાજેતરનામાંથી કાઢી નાખ્યું</string>
+    <string name="sent_tab">મોકલેલી</string>
+    <string name="sent_empty_title">કોઈ બાકી રિક્વેસ્ટ નથી</string>
+    <string name="sent_empty">તમે મોકલેલી ફ્રેન્ડ રિક્વેસ્ટ જવાબ મળે ત્યાં સુધી અહીં રહે છે.</string>
 </resources>

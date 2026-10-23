@@ -73,6 +73,11 @@ class SocialController(
 
     private var badgesJob: Job? = null
     private var inboxJob: Job? = null
+    /** Reads on their way to the server, and a count of reads sent: counts asked before a read landed are stale. */
+    private var reading = 0
+    private var reads = 0
+    /** Stale counts were dropped since the last ones shown. */
+    private var dropped = false
 
     /** Signed in: the first run, if anything of it is still to see. */
     fun start(me: Profile) {
@@ -94,13 +99,49 @@ class SocialController(
 
     // ---- unread counts ----
 
-    /** The newest request wins; failures keep the last counts (the next poll tries again). */
+    /**
+     * The newest request wins; failures keep the last counts (the next poll tries again). Counts asked before a read
+     * of mine reached the server would bring its number back, so they are dropped (the read asks again once it lands).
+     * Notifications count as read while open.
+     */
     fun refreshBadges() {
         badgesJob?.cancel()
         badgesJob = scope.launch {
-            runCatching { backend.badges() }.onSuccess { b -> _state.update { it.copy(badges = b) } }
+            val asked = reads
+            runCatching { backend.badges() }.onSuccess { b ->
+                dropped = reading > 0 || asked != reads
+                if (!dropped) _state.update { it.copy(badges = if (it.inboxOpen) b.copy(inbox = 0) else b) }
+            }
         }
     }
+
+    /**
+     * A read: its number goes at once ([clear]), then [send] tells the server; the counts are asked again after it when
+     * a number went (what else it read: a chat's notification) or counts were dropped meanwhile.
+     */
+    private fun read(clear: (Badges) -> Badges, send: suspend () -> Unit) {
+        val before = _state.value.badges
+        _state.update { it.copy(badges = clear(it.badges)) }
+        val changed = _state.value.badges != before
+        reading++
+        reads++
+        scope.launch {
+            try {
+                send()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                Unit // not read on the server: the counts asked below bring the number back
+            } finally {
+                reading--
+                reads++
+            }
+            if (changed || dropped) refreshBadges()
+        }
+    }
+
+    /** The chat on screen read up to [upto] (mark_read): its number and the tab's go at once. */
+    fun readChat(matchId: String, upto: Long) = read({ it.copy(chats = it.chats - matchId) }) { backend.markRead(matchId, upto) }
 
     /**
      * Follows my notifications while collected (the screen collects it while signed in): every arrival refreshes the
@@ -125,9 +166,9 @@ class SocialController(
 
     // ---- Notifications ----
 
-    /** Opening marks everything read; what was new stays highlighted until it closes (as the web). */
+    /** Opening marks everything read (the bell's number goes at once); what was new stays highlighted until it closes (as the web). */
     fun openInbox() {
-        _state.update { it.copy(inboxOpen = true, fresh = null, inboxFailed = false) }
+        _state.update { it.copy(inboxOpen = true, fresh = null, inboxFailed = false, badges = it.badges.copy(inbox = 0)) }
         loadInbox()
     }
 
@@ -143,10 +184,8 @@ class SocialController(
                 _state.update { s ->
                     s.copy(inbox = items, inboxFailed = false, fresh = if (first && s.inboxOpen) unread.toSet() else s.fresh)
                 }
-                if (first && unread.isNotEmpty() && _state.value.inboxOpen) {
-                    runCatching { backend.markInboxRead() }
-                    refreshBadges()
-                }
+                // All of them, also those the first page doesn't show (the bell counts every unread one).
+                if (first && _state.value.inboxOpen) read({ it.copy(inbox = 0) }) { backend.markInboxRead() }
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {

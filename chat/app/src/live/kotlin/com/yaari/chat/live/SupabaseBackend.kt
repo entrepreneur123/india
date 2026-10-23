@@ -716,6 +716,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         }
     }
 
+    override suspend fun hideRecents(userIds: List<String>) = call {
+        client.postgrest.rpc("hide_recents", buildJsonObject { putJsonArray("p_users") { userIds.forEach { add(it) } } })
+        Unit
+    }
+
     override suspend fun profile(userId: String): Profile? = call {
         val c = client.postgrest.rpc("card", buildJsonObject { put("uid", userId) }).decodeList<CardRow>().firstOrNull()
             ?: return@call null
@@ -1639,7 +1644,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             // Gone longer than the server waits: a beat would bring me back in silently. Once the network answers, the
             // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
             val r = live.room
-            val keepsPlace = r?.hostId == me && r.members.none { it.role == VoiceRole.COHOST && !it.lost }
+            val keepsPlace = r?.hostId == me && r.nextHost == null
             if (VoiceLost.droppedOut(lastBeat, System.currentTimeMillis()) && !keepsPlace) {
                 try {
                     client.postgrest["voice_seq"].select { filter { eq("room_id", roomId) } }.decodeSingleOrNull<VoiceSeqRow>()
@@ -1845,7 +1850,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             members = s.members.map { m ->
                 VoiceMember(
                     card(VoiceCardRow(m.id, m.name, m.gender, m.age, m.city, m.bio, m.photoPath, m.country)),
-                    VoiceRole.of(m.role), m.seat, m.muted, m.hand, m.lost,
+                    VoiceRole.of(m.role), m.seat, m.muted, m.hand, m.lost, m.j,
                 )
             },
             rules = RoomRules(s.max, GenderRule.of(s.gender), s.minAge, s.maxAge, s.private),

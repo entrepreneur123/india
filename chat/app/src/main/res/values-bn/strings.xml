@@ -179,7 +179,6 @@
     <string name="friends_empty">র‍্যান্ডম চ্যাট বা রুমে যাদের সাথে দেখা হবে, তাদের বন্ধু করুন।</string>
     <string name="friend_requests">অনুরোধ (%1$d)</string>
     <string name="friends_count">বন্ধু (%1$d)</string>
-    <string name="requests_sent">পাঠানো অনুরোধ</string>
     <string name="cancel_request">বাতিল</string>
     <string name="recent_empty_title">এখনো কোনো চ্যাট নেই</string>
     <string name="requested">অনুরোধ পাঠানো</string>
@@ -996,4 +995,20 @@
     <string name="looks_owned">আপনার</string>
     <string name="chat_sticker">স্টিকার</string>
     <string name="err_sticker_not_owned">এটি পাঠাতে এই স্টিকার প্যাকটি নিন</string>
+    <string name="go_home">হোম</string>
+    <string name="voice_hand_over_title">রুম ছেড়ে যাবেন?</string>
+    <string name="voice_hand_over_body">%1$s হোস্ট হবেন, রুম চলতে থাকবে।</string>
+    <string name="voice_hand_over_leave">ছেড়ে যান — %1$s হোস্ট হবেন</string>
+    <string name="recents_title">সাম্প্রতিক চ্যাট</string>
+    <string name="recents_note">সাম্প্রতিক থেকে কাদের সরাবেন বেছে নিন। আবার দেখা হলে তবেই তারা ফিরে আসবে।</string>
+    <string name="recents_none">কোনো সাম্প্রতিক চ্যাট নেই</string>
+    <string name="recents_delete">মুছুন (%1$d)</string>
+    <string name="recents_delete_all">সব মুছুন</string>
+    <string name="recents_confirm">সাম্প্রতিক থেকে মুছবেন?</string>
+    <string name="recents_confirm_body">আবার দেখা হলে তবেই তারা ফিরে আসবে। বন্ধুরা বন্ধুই থাকবে।</string>
+    <string name="recents_delete_confirm">মুছুন</string>
+    <string name="recents_deleted">সাম্প্রতিক থেকে মুছে ফেলা হয়েছে</string>
+    <string name="sent_tab">পাঠানো</string>
+    <string name="sent_empty_title">কোনো অপেক্ষমাণ অনুরোধ নেই</string>
+    <string name="sent_empty">আপনার পাঠানো বন্ধুত্বের অনুরোধ উত্তর না পাওয়া পর্যন্ত এখানে থাকে।</string>
 </resources>

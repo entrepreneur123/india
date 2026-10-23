@@ -66,7 +66,7 @@ data class VoiceState(
     /** My connection dropped (heartbeats failing or realtime down): the room shows "Reconnecting…". */
     val offline: Boolean = false,
     val expanded: Boolean = true,
-    /** The host asked to leave: their room would carry on without them, so leaving ends it (after this confirm). */
+    /** The host asked to leave: the confirm hands the room to a co-host ([heir]) or ends it for everyone. */
     val confirmEnd: Boolean = false,
     val ending: Boolean = false,
     /** The polls of the chat's poll lines by id, as last counted ([VoicePoll.mine]: my answer, kept here). */
@@ -94,6 +94,8 @@ data class VoiceState(
     val me get() = room?.me
     val isHost get() = me?.role == VoiceRole.HOST
     val isMod get() = me?.isMod == true
+    /** Who takes over if I, the host, leave ([VoiceRoom.nextHost]); null: leaving ends the room. */
+    val heir get() = room?.takeIf { isHost }?.nextHost
     /** Music for everyone: the host or a co-host (036). */
     val canDj get() = room?.canDj == true
 
@@ -530,7 +532,7 @@ class VoiceController(
     fun minimise() = _state.update { it?.copy(expanded = false) }
     fun expand() = _state.update { it?.copy(expanded = true) }
 
-    /** "Leave": the host's room would carry on without them, so the host confirms ending it instead. */
+    /** "Leave": the host confirms first (hand the room to a co-host, or end it for everyone); anyone else just leaves. */
     fun leave() {
         val s = _state.value ?: return
         if (s.isHost) _state.update { it?.copy(confirmEnd = true, expanded = true) } else close()
@@ -538,7 +540,7 @@ class VoiceController(
 
     fun dismissEnd() = _state.update { it?.copy(confirmEnd = false) }
 
-    /** Leaves quietly (anyone, the host included: the server gives the host 2 minutes to come back). */
+    /** Leaves at once (leave_voice). For the host the server hands the room to a co-host ([VoiceState.heir]), else ends it. */
     fun close() {
         val s = _state.value ?: return
         gone(s.roomId, leave = true)

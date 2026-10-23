@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -97,6 +98,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
     var language by remember { mutableStateOf(false) }
     var translateTo by remember { mutableStateOf(false) }
     var blocked by remember { mutableStateOf(false) }
+    var recents by remember { mutableStateOf(false) }
     val activity = LocalActivity.current
     val uri = LocalUriHandler.current
     val context = LocalContext.current
@@ -115,7 +117,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                 Item(stringResource(R.string.edit_profile), onClick = onEditProfile)
                 Line()
                 // In-app language choice on every Android version (Android 13+ also shows it in the phone's settings).
-                val langTag = remember { AppLocale.current(context) }
+                val langTag = remember(LocalConfiguration.current) { AppLocale.current(context) } // the screen stays through a change
                 Item(stringResource(R.string.language), value = AppLocale.nameOf(langTag) ?: stringResource(R.string.language_system)) {
                     language = true
                 }
@@ -141,6 +143,8 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
                     Line()
                 }
                 Item(stringResource(R.string.blocked_accounts)) { blocked = true }
+                Line()
+                Item(stringResource(R.string.recents_title)) { recents = true }
                 Line()
                 Item(stringResource(R.string.community_rules), expanded = rules) { rules = !rules }
                 AnimatedVisibility(rules) {
@@ -184,6 +188,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
         }
     }
     if (blocked) BlockedSheet(vm) { blocked = false }
+    if (recents) RecentsSheet(vm, s.recents) { recents = false }
     if (language) {
         LanguageDialog(AppLocale.current(context), onDismiss = { language = false }) { tag ->
             language = false

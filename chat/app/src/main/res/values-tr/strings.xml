@@ -161,7 +161,6 @@
     <string name="friends_empty">Rastgele sohbetlerde veya odalarda tanıştığın kişileri ekle.</string>
     <string name="friend_requests">İstekler (%1$d)</string>
     <string name="friends_count">Arkadaşlar (%1$d)</string>
-    <string name="requests_sent">Gönderilen istekler</string>
     <string name="cancel_request">İptal</string>
     <string name="recent_empty_title">Henüz sohbet yok</string>
     <string name="requested">İstek gönderildi</string>
@@ -966,4 +965,20 @@
     <string name="looks_owned">Senin</string>
     <string name="chat_sticker">Çıkartma</string>
     <string name="err_sticker_not_owned">Bunu göndermek için bu çıkartma paketini al</string>
+    <string name="go_home">Ana sayfa</string>
+    <string name="voice_hand_over_title">Odadan ayrılmak mı?</string>
+    <string name="voice_hand_over_body">%1$s oda sahibi olur ve oda açık kalır.</string>
+    <string name="voice_hand_over_leave">Ayrıl — %1$s oda sahibi olur</string>
+    <string name="recents_title">Son sohbetler</string>
+    <string name="recents_note">Son listesinden kimleri kaldıracağını seç. Yalnızca tekrar karşılaşırsanız geri gelirler.</string>
+    <string name="recents_none">Son sohbet yok</string>
+    <string name="recents_delete">Sil (%1$d)</string>
+    <string name="recents_delete_all">Tümünü sil</string>
+    <string name="recents_confirm">Son listesinden silinsin mi?</string>
+    <string name="recents_confirm_body">Yalnızca tekrar karşılaşırsanız geri gelirler. Arkadaşlar arkadaş kalır.</string>
+    <string name="recents_delete_confirm">Sil</string>
+    <string name="recents_deleted">Son listesinden silindi</string>
+    <string name="sent_tab">Gönderilen</string>
+    <string name="sent_empty_title">Bekleyen istek yok</string>
+    <string name="sent_empty">Gönderdiğin arkadaşlık istekleri yanıtlanana kadar burada bekler.</string>
 </resources>

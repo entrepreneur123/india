@@ -180,7 +180,6 @@
     <string name="friends_empty">Tambah orang yang anda jumpa dalam sembang rawak atau bilik.</string>
     <string name="friend_requests">Permintaan (%1$d)</string>
     <string name="friends_count">Rakan (%1$d)</string>
-    <string name="requests_sent">Permintaan dihantar</string>
     <string name="cancel_request">Batal</string>
     <string name="recent_empty_title">Belum ada sembang</string>
     <string name="requested">Diminta</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">Milik anda</string>
     <string name="chat_sticker">Pelekat</string>
     <string name="err_sticker_not_owned">Dapatkan pek pelekat ini untuk menghantarnya</string>
+    <string name="go_home">Laman utama</string>
+    <string name="voice_hand_over_title">Keluar dari bilik?</string>
+    <string name="voice_hand_over_body">%1$s akan jadi hos dan bilik terus dibuka.</string>
+    <string name="voice_hand_over_leave">Keluar — %1$s jadi hos</string>
+    <string name="recents_title">Sembang terkini</string>
+    <string name="recents_note">Pilih siapa untuk dibuang daripada Terkini. Mereka hanya kembali jika anda berjumpa lagi.</string>
+    <string name="recents_none">Tiada sembang terkini</string>
+    <string name="recents_delete">Padam (%1$d)</string>
+    <string name="recents_delete_all">Padam semua</string>
+    <string name="recents_confirm">Padam daripada Terkini?</string>
+    <string name="recents_confirm_body">Mereka hanya kembali jika anda berjumpa lagi. Rakan tetap rakan.</string>
+    <string name="recents_delete_confirm">Padam</string>
+    <string name="recents_deleted">Dipadam daripada Terkini</string>
+    <string name="sent_tab">Dihantar</string>
+    <string name="sent_empty_title">Tiada permintaan tertunda</string>
+    <string name="sent_empty">Permintaan rakan yang anda hantar menunggu di sini sehingga dijawab.</string>
 </resources>

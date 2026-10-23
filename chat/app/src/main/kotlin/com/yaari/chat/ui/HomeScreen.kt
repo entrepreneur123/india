@@ -197,7 +197,7 @@ private fun RowScope.NavItem(
             if (badge > 0) {
                 Box(
                     Modifier.align(Alignment.TopEnd).offset(x = (-8).dp, y = (-2).dp).height(16.dp).widthIn(min = 16.dp)
-                        .clip(CircleShape).background(Brand.Saffron).padding(horizontal = 4.dp),
+                        .clip(CircleShape).background(Brand.SaffronStrong).padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center,
                 ) { Text(if (badge > 99) "99+" else "$badge", color = Brand.OnSaffron, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
             }
@@ -236,7 +236,8 @@ private fun RandomTab(vm: AppViewModel, s: UiState, inbox: Int, onSettings: () -
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Row(Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Wordmark(size = 24)
+                // The wordmark goes home (the Random tab), as on the web.
+                Wordmark(Modifier.clickable(onClickLabel = stringResource(R.string.go_home), role = Role.Button) { vm.selectTab(Tab.RANDOM) }, size = 24)
                 Spacer(Modifier.weight(1f))
                 PlanChip(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
                 BellButton(inbox, vm.social::openInbox, tint = Brand.Muted)

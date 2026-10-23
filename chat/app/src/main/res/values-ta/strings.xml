@@ -169,7 +169,6 @@
     <string name="friends_empty">ரேண்டம் சாட்களிலோ ரூம்களிலோ சந்திப்பவர்களைச் சேருங்கள்.</string>
     <string name="friend_requests">கோரிக்கைகள் (%1$d)</string>
     <string name="friends_count">நண்பர்கள் (%1$d)</string>
-    <string name="requests_sent">அனுப்பிய கோரிக்கைகள்</string>
     <string name="cancel_request">ரத்துசெய்</string>
     <string name="recent_empty_title">இன்னும் சாட்கள் இல்லை</string>
     <string name="requested">கோரிக்கை அனுப்பப்பட்டது</string>
@@ -977,4 +976,20 @@
     <string name="looks_owned">உங்களுடையது</string>
     <string name="chat_sticker">ஸ்டிக்கர்</string>
     <string name="err_sticker_not_owned">இதை அனுப்ப இந்த ஸ்டிக்கர் பேக்கைப் பெறுங்கள்</string>
+    <string name="go_home">முகப்பு</string>
+    <string name="voice_hand_over_title">ரூமை விட்டு வெளியேறவா?</string>
+    <string name="voice_hand_over_body">%1$s ஹோஸ்ட் ஆவார், ரூம் தொடரும்.</string>
+    <string name="voice_hand_over_leave">வெளியேறு — %1$s ஹோஸ்ட் ஆவார்</string>
+    <string name="recents_title">சமீபத்திய சாட்கள்</string>
+    <string name="recents_note">சமீபத்தியவையிலிருந்து யாரை நீக்க வேண்டும் என்று தேர்ந்தெடுங்கள். மீண்டும் சந்தித்தால் மட்டுமே அவர்கள் திரும்ப வருவார்கள்.</string>
+    <string name="recents_none">சமீபத்திய சாட்கள் இல்லை</string>
+    <string name="recents_delete">நீக்கு (%1$d)</string>
+    <string name="recents_delete_all">அனைத்தையும் நீக்கு</string>
+    <string name="recents_confirm">சமீபத்தியவையிலிருந்து நீக்கவா?</string>
+    <string name="recents_confirm_body">மீண்டும் சந்தித்தால் மட்டுமே அவர்கள் திரும்ப வருவார்கள். நண்பர்கள் நண்பர்களாகவே இருப்பார்கள்.</string>
+    <string name="recents_delete_confirm">நீக்கு</string>
+    <string name="recents_deleted">சமீபத்தியவையிலிருந்து நீக்கப்பட்டது</string>
+    <string name="sent_tab">அனுப்பியவை</string>
+    <string name="sent_empty_title">நிலுவையில் கோரிக்கைகள் இல்லை</string>
+    <string name="sent_empty">நீங்கள் அனுப்பிய நட்புக் கோரிக்கைகள் பதில் வரும் வரை இங்கே இருக்கும்.</string>
 </resources>

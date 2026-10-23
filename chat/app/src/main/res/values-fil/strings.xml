@@ -180,7 +180,6 @@
     <string name="friends_empty">I-add ang mga taong nakikilala mo sa random chat o sa mga room.</string>
     <string name="friend_requests">Mga request (%1$d)</string>
     <string name="friends_count">Mga kaibigan (%1$d)</string>
-    <string name="requests_sent">Mga ipinadalang request</string>
     <string name="cancel_request">Kanselahin</string>
     <string name="recent_empty_title">Wala pang chat</string>
     <string name="requested">Na-request</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">Sa iyo</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Kunin ang sticker pack na ito para maipadala ito</string>
+    <string name="go_home">Home</string>
+    <string name="voice_hand_over_title">Aalis sa room?</string>
+    <string name="voice_hand_over_body">Magiging host si %1$s at tuloy ang room.</string>
+    <string name="voice_hand_over_leave">Umalis — magiging host si %1$s</string>
+    <string name="recents_title">Mga kamakailang chat</string>
+    <string name="recents_note">Piliin kung sino ang aalisin sa Kamakailan. Babalik lang sila kung magkita kayo ulit.</string>
+    <string name="recents_none">Walang kamakailang chat</string>
+    <string name="recents_delete">Burahin (%1$d)</string>
+    <string name="recents_delete_all">Burahin lahat</string>
+    <string name="recents_confirm">Burahin sa Kamakailan?</string>
+    <string name="recents_confirm_body">Babalik lang sila kung magkita kayo ulit. Mananatiling kaibigan ang mga kaibigan.</string>
+    <string name="recents_delete_confirm">Burahin</string>
+    <string name="recents_deleted">Binura sa Kamakailan</string>
+    <string name="sent_tab">Naipadala</string>
+    <string name="sent_empty_title">Walang naghihintay na request</string>
+    <string name="sent_empty">Dito naghihintay ang mga friend request na ipinadala mo hanggang masagot.</string>
 </resources>

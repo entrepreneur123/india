@@ -72,6 +72,8 @@ import com.yaari.chat.model.nameAge
 object Brand {
     /** The brand orange: fills (bold [OnSaffron] text on it, 3.2:1, large-text AA) and marks. */
     val Saffron = Color(0xFFEA6A00)
+    /** The deeper orange under small white text (count badges, small pills, sticker captions): 5.2:1, AA. */
+    val SaffronStrong = Color(0xFFC2410C)
 
     /** Orange as text or small icons on white (5:1). */
     val SaffronDeep = Color(0xFFB45309)

@@ -193,7 +193,7 @@ fun VoiceSheets(vm: AppViewModel, s: VoiceState, room: VoiceRoom, sheet: VoiceSh
                 }
                 if (s.isHost) SheetRow(Icons.Outlined.Tune, stringResource(R.string.room_settings)) { onSheet(VoiceSheet.Settings) }
                 if (!s.isHost) SheetRow(Icons.Outlined.Flag, stringResource(R.string.voice_report_room)) { onSheet(VoiceSheet.ReportRoom) }
-                SheetRow(Icons.AutoMirrored.Rounded.Logout, stringResource(if (s.isHost) R.string.voice_end_confirm else R.string.voice_leave_quietly), danger = true) {
+                SheetRow(Icons.AutoMirrored.Rounded.Logout, stringResource(if (!s.isHost) R.string.voice_leave_quietly else if (s.heir == null) R.string.voice_end_confirm else R.string.voice_leave), danger = true) {
                     close()
                     vm.voice.leave()
                 }

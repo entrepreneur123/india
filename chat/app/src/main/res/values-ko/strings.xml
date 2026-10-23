@@ -179,7 +179,6 @@
     <string name="friends_empty">랜덤 채팅이나 방에서 만난 사람에게 친구 신청을 해 보세요.</string>
     <string name="friend_requests">받은 신청 (%1$d)</string>
     <string name="friends_count">친구 (%1$d)</string>
-    <string name="requests_sent">보낸 신청</string>
     <string name="cancel_request">취소</string>
     <string name="recent_empty_title">아직 채팅이 없어요</string>
     <string name="requested">신청함</string>
@@ -984,4 +983,20 @@
     <string name="looks_owned">보유 중</string>
     <string name="chat_sticker">스티커</string>
     <string name="err_sticker_not_owned">이 스티커 팩이 있어야 보낼 수 있어요</string>
+    <string name="go_home">홈</string>
+    <string name="voice_hand_over_title">방에서 나갈까요?</string>
+    <string name="voice_hand_over_body">%1$s님이 방장이 되고 방은 계속 열려 있어요.</string>
+    <string name="voice_hand_over_leave">나가기 — %1$s님이 방장이 돼요</string>
+    <string name="recents_title">최근 대화</string>
+    <string name="recents_note">최근 목록에서 지울 사람을 고르세요. 다시 만나야만 다시 보여요.</string>
+    <string name="recents_none">최근 대화가 없어요</string>
+    <string name="recents_delete">삭제 (%1$d)</string>
+    <string name="recents_delete_all">모두 삭제</string>
+    <string name="recents_confirm">최근 목록에서 삭제할까요?</string>
+    <string name="recents_confirm_body">다시 만나야만 다시 보여요. 친구는 그대로 친구예요.</string>
+    <string name="recents_delete_confirm">삭제</string>
+    <string name="recents_deleted">최근 목록에서 삭제했어요</string>
+    <string name="sent_tab">보낸 신청</string>
+    <string name="sent_empty_title">대기 중인 신청이 없어요</string>
+    <string name="sent_empty">보낸 친구 신청은 상대가 답할 때까지 여기에 있어요.</string>
 </resources>

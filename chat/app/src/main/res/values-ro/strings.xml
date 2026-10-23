@@ -169,7 +169,6 @@
     <string name="friends_empty">Adaugă oamenii pe care îi cunoști în chaturi aleatorii sau în camere.</string>
     <string name="friend_requests">Cereri (%1$d)</string>
     <string name="friends_count">Prieteni (%1$d)</string>
-    <string name="requests_sent">Cereri trimise</string>
     <string name="cancel_request">Anulează</string>
     <string name="recent_empty_title">Încă nu ai chaturi</string>
     <string name="requested">Cerere trimisă</string>
@@ -991,4 +990,20 @@
     <string name="looks_owned">Al tău</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Ia acest pachet de stickere ca să-l trimiți</string>
+    <string name="go_home">Acasă</string>
+    <string name="voice_hand_over_title">Ieși din cameră?</string>
+    <string name="voice_hand_over_body">%1$s devine gazda, iar camera rămâne deschisă.</string>
+    <string name="voice_hand_over_leave">Ieși — %1$s devine gazda</string>
+    <string name="recents_title">Chaturi recente</string>
+    <string name="recents_note">Alege pe cine scoți din Recente. Revin doar dacă vă întâlniți din nou.</string>
+    <string name="recents_none">Niciun chat recent</string>
+    <string name="recents_delete">Șterge (%1$d)</string>
+    <string name="recents_delete_all">Șterge tot</string>
+    <string name="recents_confirm">Ștergi din Recente?</string>
+    <string name="recents_confirm_body">Revin doar dacă vă întâlniți din nou. Prietenii rămân prieteni.</string>
+    <string name="recents_delete_confirm">Șterge</string>
+    <string name="recents_deleted">Șters din Recente</string>
+    <string name="sent_tab">Trimise</string>
+    <string name="sent_empty_title">Nicio cerere în așteptare</string>
+    <string name="sent_empty">Cererile de prietenie trimise de tine așteaptă aici până primesc răspuns.</string>
 </resources>

@@ -61,8 +61,8 @@ import com.yaari.chat.model.Stickers
 private class Tone(val card: Color, val ring: Color, val ringWidth: Dp, val cap: Color, val capText: Color)
 
 private val TONES = mapOf(
-    Cosmetic.STICKER_NAMASTE.id to Tone(Brand.SaffronSoft, Brand.Saffron.copy(alpha = 0.5f), 1.dp, Brand.Saffron, Brand.OnSaffron),
-    Cosmetic.STICKER_CHAI.id to Tone(Color.White, Brand.Saffron, 2.dp, Brand.Saffron, Brand.OnSaffron),
+    Cosmetic.STICKER_NAMASTE.id to Tone(Brand.SaffronSoft, Brand.Saffron.copy(alpha = 0.5f), 1.dp, Brand.SaffronStrong, Brand.OnSaffron),
+    Cosmetic.STICKER_CHAI.id to Tone(Color.White, Brand.Saffron, 2.dp, Brand.SaffronStrong, Brand.OnSaffron),
     Cosmetic.STICKER_CRICKET.id to Tone(Color.White, Brand.Line, 1.dp, Brand.SaffronDeep, Brand.OnSaffron),
     Cosmetic.STICKER_LOVE.id to Tone(Brand.Saffron, Color.Transparent, 0.dp, Color.White, Brand.SaffronDeep),
 )

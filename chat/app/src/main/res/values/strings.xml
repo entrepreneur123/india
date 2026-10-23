@@ -181,7 +181,6 @@
     <string name="friends_empty">Add people you meet in random chats or rooms.</string>
     <string name="friend_requests">Requests (%1$d)</string>
     <string name="friends_count">Friends (%1$d)</string>
-    <string name="requests_sent">Sent requests</string>
     <string name="cancel_request">Cancel</string>
     <string name="recent_empty_title">No chats yet</string>
     <string name="requested">Requested</string>
@@ -999,4 +998,20 @@
     <string name="looks_owned">Yours</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Get this sticker pack to send it</string>
+    <string name="go_home">Home</string>
+    <string name="voice_hand_over_title">Leave this room?</string>
+    <string name="voice_hand_over_body">%1$s becomes the host, and the room stays open.</string>
+    <string name="voice_hand_over_leave">Leave — %1$s becomes host</string>
+    <string name="recents_title">Recent chats</string>
+    <string name="recents_note">Pick people to remove from Recent. They come back only if you meet again.</string>
+    <string name="recents_none">No recent chats</string>
+    <string name="recents_delete">Delete (%1$d)</string>
+    <string name="recents_delete_all">Delete all</string>
+    <string name="recents_confirm">Delete from Recent?</string>
+    <string name="recents_confirm_body">They come back only if you meet again. Friends stay friends.</string>
+    <string name="recents_delete_confirm">Delete</string>
+    <string name="recents_deleted">Deleted from Recent</string>
+    <string name="sent_tab">Sent</string>
+    <string name="sent_empty_title">No pending requests</string>
+    <string name="sent_empty">Friend requests you send wait here until they’re answered.</string>
 </resources>

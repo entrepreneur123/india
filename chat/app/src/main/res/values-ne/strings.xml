@@ -160,7 +160,6 @@
     <string name="friends_empty">र्‍यान्डम च्याट वा रूममा भेटेका मान्छेलाई थप्नुहोस्।</string>
     <string name="friend_requests">अनुरोध (%1$d)</string>
     <string name="friends_count">साथीहरू (%1$d)</string>
-    <string name="requests_sent">पठाइएका अनुरोध</string>
     <string name="cancel_request">रद्द गर्नुहोस्</string>
     <string name="recent_empty_title">अहिलेसम्म कुनै च्याट छैन</string>
     <string name="requested">अनुरोध गरियो</string>
@@ -965,4 +964,20 @@
     <string name="looks_owned">तपाईंको</string>
     <string name="chat_sticker">स्टिकर</string>
     <string name="err_sticker_not_owned">यो पठाउन यो स्टिकर प्याक लिनुहोस्</string>
+    <string name="go_home">होम</string>
+    <string name="voice_hand_over_title">रूम छोड्ने?</string>
+    <string name="voice_hand_over_body">%1$s होस्ट बन्नुहुनेछ र रूम चलिरहनेछ।</string>
+    <string name="voice_hand_over_leave">छोड्नुहोस् — %1$s होस्ट बन्नुहुनेछ</string>
+    <string name="recents_title">हालैका च्याटहरू</string>
+    <string name="recents_note">हालैकाबाट कसलाई हटाउने छान्नुहोस्। फेरि भेटेपछि मात्र उनीहरू फर्कन्छन्।</string>
+    <string name="recents_none">हालैका कुनै च्याट छैनन्</string>
+    <string name="recents_delete">मेटाउनुहोस् (%1$d)</string>
+    <string name="recents_delete_all">सबै मेटाउनुहोस्</string>
+    <string name="recents_confirm">हालैकाबाट मेटाउने?</string>
+    <string name="recents_confirm_body">फेरि भेटेपछि मात्र उनीहरू फर्कन्छन्। साथीहरू साथी नै रहन्छन्।</string>
+    <string name="recents_delete_confirm">मेटाउनुहोस्</string>
+    <string name="recents_deleted">हालैकाबाट मेटाइयो</string>
+    <string name="sent_tab">पठाइएका</string>
+    <string name="sent_empty_title">कुनै बाँकी अनुरोध छैन</string>
+    <string name="sent_empty">तपाईंले पठाएका साथी अनुरोध जवाफ नआउन्जेल यहीँ रहन्छन्।</string>
 </resources>

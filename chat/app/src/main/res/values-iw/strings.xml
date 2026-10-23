@@ -160,7 +160,6 @@
     <string name="friends_empty">מוסיפים אנשים שפוגשים בצ׳אטים אקראיים או בחדרים.</string>
     <string name="friend_requests">בקשות (%1$d)</string>
     <string name="friends_count">חברים (%1$d)</string>
-    <string name="requests_sent">בקשות שנשלחו</string>
     <string name="cancel_request">ביטול</string>
     <string name="recent_empty_title">עוד אין צ׳אטים</string>
     <string name="requested">נשלחה בקשה</string>
@@ -978,4 +977,20 @@
     <string name="looks_owned">שלך</string>
     <string name="chat_sticker">מדבקה</string>
     <string name="err_sticker_not_owned">כדי לשלוח אותה צריך את חבילת המדבקות הזו</string>
+    <string name="go_home">בית</string>
+    <string name="voice_hand_over_title">לצאת מהחדר?</string>
+    <string name="voice_hand_over_body">%1$s יהיה המארח והחדר יישאר פתוח.</string>
+    <string name="voice_hand_over_leave">יציאה — %1$s יהיה המארח</string>
+    <string name="recents_title">צ׳אטים אחרונים</string>
+    <string name="recents_note">בחרו את מי להסיר מהאחרונים. הם יחזרו רק אם תיפגשו שוב.</string>
+    <string name="recents_none">אין צ׳אטים אחרונים</string>
+    <string name="recents_delete">מחיקה (%1$d)</string>
+    <string name="recents_delete_all">מחיקת הכול</string>
+    <string name="recents_confirm">למחוק מהאחרונים?</string>
+    <string name="recents_confirm_body">הם יחזרו רק אם תיפגשו שוב. חברים נשארים חברים.</string>
+    <string name="recents_delete_confirm">מחיקה</string>
+    <string name="recents_deleted">נמחק מהאחרונים</string>
+    <string name="sent_tab">נשלחו</string>
+    <string name="sent_empty_title">אין בקשות ממתינות</string>
+    <string name="sent_empty">בקשות החברות ששלחת ממתינות כאן עד שיענו עליהן.</string>
 </resources>

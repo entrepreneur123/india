@@ -71,7 +71,12 @@ object AppLocale {
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, "").orEmpty()
         }
 
-    /** Applies [tag] ("" = follow the phone). The screen is recreated in the new language. */
+    /**
+     * Applies [tag] ("" = follow the phone). Android 13+: a configuration change the activity handles itself (manifest
+     * configChanges locale|layoutDirection), so nothing on screen is rebuilt: a room, a random chat or a video call (its
+     * LiveKit connection lives in the composition) carry on. Android 12 and older: the activity is recreated; the
+     * app's state lives in AppViewModel, which survives that, so the room and the chat stay.
+     */
     fun set(activity: Activity, tag: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity.getSystemService(LocaleManager::class.java)?.applicationLocales =

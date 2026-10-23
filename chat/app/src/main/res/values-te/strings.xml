@@ -169,7 +169,6 @@
     <string name="friends_empty">రాండమ్ చాట్స్‌లో లేదా రూమ్‌లలో కలిసినవాళ్లను యాడ్ చేయండి.</string>
     <string name="friend_requests">రిక్వెస్ట్‌లు (%1$d)</string>
     <string name="friends_count">ఫ్రెండ్స్ (%1$d)</string>
-    <string name="requests_sent">పంపిన రిక్వెస్ట్‌లు</string>
     <string name="cancel_request">రద్దు చేయి</string>
     <string name="recent_empty_title">ఇంకా చాట్స్ లేవు</string>
     <string name="requested">రిక్వెస్ట్ పంపాం</string>
@@ -977,4 +976,20 @@
     <string name="looks_owned">మీది</string>
     <string name="chat_sticker">స్టిక్కర్</string>
     <string name="err_sticker_not_owned">దీన్ని పంపడానికి ఈ స్టిక్కర్ ప్యాక్ పొందండి</string>
+    <string name="go_home">హోమ్</string>
+    <string name="voice_hand_over_title">రూమ్ వదిలి వెళ్లాలా?</string>
+    <string name="voice_hand_over_body">%1$s హోస్ట్ అవుతారు, రూమ్ కొనసాగుతుంది.</string>
+    <string name="voice_hand_over_leave">వెళ్లిపో — %1$s హోస్ట్ అవుతారు</string>
+    <string name="recents_title">ఇటీవలి చాట్‌లు</string>
+    <string name="recents_note">ఇటీవలివి నుండి ఎవరిని తీసేయాలో ఎంచుకోండి. మళ్లీ కలిస్తేనే వారు తిరిగి వస్తారు.</string>
+    <string name="recents_none">ఇటీవలి చాట్‌లు లేవు</string>
+    <string name="recents_delete">తొలగించు (%1$d)</string>
+    <string name="recents_delete_all">అన్నీ తొలగించు</string>
+    <string name="recents_confirm">ఇటీవలివి నుండి తొలగించాలా?</string>
+    <string name="recents_confirm_body">మళ్లీ కలిస్తేనే వారు తిరిగి వస్తారు. ఫ్రెండ్స్ ఫ్రెండ్స్‌గానే ఉంటారు.</string>
+    <string name="recents_delete_confirm">తొలగించు</string>
+    <string name="recents_deleted">ఇటీవలివి నుండి తొలగించబడింది</string>
+    <string name="sent_tab">పంపినవి</string>
+    <string name="sent_empty_title">పెండింగ్ రిక్వెస్ట్‌లు లేవు</string>
+    <string name="sent_empty">మీరు పంపిన ఫ్రెండ్ రిక్వెస్ట్‌లు జవాబు వచ్చే వరకు ఇక్కడ ఉంటాయి.</string>
 </resources>

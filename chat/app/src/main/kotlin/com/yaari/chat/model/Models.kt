@@ -67,7 +67,14 @@ data class Media(val uri: String, val kind: MediaKind)
 
 data class Message(val id: Long, val fromMe: Boolean, val text: String? = null, val media: Media? = null, val at: Long)
 
-data class RecentMatch(val matchId: String, val partner: Profile, val metAt: Long, val lastText: String? = null)
+data class RecentMatch(val matchId: String, val partner: Profile, val metAt: Long, val lastText: String? = null) {
+    companion object {
+        /** recent_list keeps the latest 50. */
+        const val MAX = 50
+        /** hide_recents takes at most 100 people a call. */
+        const val HIDE_MAX = 100
+    }
+}
 
 enum class ReportReason(val code: String, @StringRes val label: Int) {
     NUDITY("nudity", R.string.reason_nudity),

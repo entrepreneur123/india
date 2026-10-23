@@ -179,7 +179,6 @@
     <string name="friends_empty">Adicione quem você conhecer nos chats aleatórios ou nas salas.</string>
     <string name="friend_requests">Pedidos (%1$d)</string>
     <string name="friends_count">Amigos (%1$d)</string>
-    <string name="requests_sent">Pedidos enviados</string>
     <string name="cancel_request">Cancelar</string>
     <string name="recent_empty_title">Nenhum chat ainda</string>
     <string name="requested">Pedido enviado</string>
@@ -999,4 +998,20 @@
     <string name="looks_owned">Seu</string>
     <string name="chat_sticker">Figurinha</string>
     <string name="err_sticker_not_owned">Pegue este pacote de figurinhas para enviá-la</string>
+    <string name="go_home">Início</string>
+    <string name="voice_hand_over_title">Sair da sala?</string>
+    <string name="voice_hand_over_body">%1$s vira anfitrião e a sala continua aberta.</string>
+    <string name="voice_hand_over_leave">Sair — %1$s vira anfitrião</string>
+    <string name="recents_title">Conversas recentes</string>
+    <string name="recents_note">Escolha quem tirar de Recentes. A pessoa só volta se vocês se encontrarem de novo.</string>
+    <string name="recents_none">Nenhuma conversa recente</string>
+    <string name="recents_delete">Apagar (%1$d)</string>
+    <string name="recents_delete_all">Apagar tudo</string>
+    <string name="recents_confirm">Apagar de Recentes?</string>
+    <string name="recents_confirm_body">Só voltam se vocês se encontrarem de novo. Amigos continuam amigos.</string>
+    <string name="recents_delete_confirm">Apagar</string>
+    <string name="recents_deleted">Apagado de Recentes</string>
+    <string name="sent_tab">Enviados</string>
+    <string name="sent_empty_title">Nenhum pedido pendente</string>
+    <string name="sent_empty">Os pedidos de amizade que você envia ficam aqui até serem respondidos.</string>
 </resources>

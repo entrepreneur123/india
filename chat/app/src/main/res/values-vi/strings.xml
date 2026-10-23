@@ -179,7 +179,6 @@
     <string name="friends_empty">Kết bạn với người bạn gặp khi chat ngẫu nhiên hoặc trong phòng.</string>
     <string name="friend_requests">Lời mời (%1$d)</string>
     <string name="friends_count">Bạn bè (%1$d)</string>
-    <string name="requests_sent">Lời mời đã gửi</string>
     <string name="cancel_request">Hủy</string>
     <string name="recent_empty_title">Chưa có cuộc trò chuyện</string>
     <string name="requested">Đã gửi lời mời</string>
@@ -991,4 +990,20 @@
     <string name="looks_owned">Của bạn</string>
     <string name="chat_sticker">Nhãn dán</string>
     <string name="err_sticker_not_owned">Mua gói nhãn dán này để gửi</string>
+    <string name="go_home">Trang chủ</string>
+    <string name="voice_hand_over_title">Rời phòng?</string>
+    <string name="voice_hand_over_body">%1$s sẽ làm chủ phòng và phòng vẫn tiếp tục.</string>
+    <string name="voice_hand_over_leave">Rời — %1$s làm chủ phòng</string>
+    <string name="recents_title">Cuộc trò chuyện gần đây</string>
+    <string name="recents_note">Chọn người cần xóa khỏi Gần đây. Họ chỉ quay lại nếu hai bạn gặp lại nhau.</string>
+    <string name="recents_none">Không có cuộc trò chuyện gần đây</string>
+    <string name="recents_delete">Xóa (%1$d)</string>
+    <string name="recents_delete_all">Xóa tất cả</string>
+    <string name="recents_confirm">Xóa khỏi Gần đây?</string>
+    <string name="recents_confirm_body">Họ chỉ quay lại nếu hai bạn gặp lại nhau. Bạn bè vẫn là bạn bè.</string>
+    <string name="recents_delete_confirm">Xóa</string>
+    <string name="recents_deleted">Đã xóa khỏi Gần đây</string>
+    <string name="sent_tab">Đã gửi</string>
+    <string name="sent_empty_title">Không có lời mời đang chờ</string>
+    <string name="sent_empty">Lời mời kết bạn bạn gửi sẽ nằm ở đây cho đến khi được trả lời.</string>
 </resources>

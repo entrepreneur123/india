@@ -160,7 +160,6 @@
     <string name="friends_empty">Füge Leute hinzu, die du in Zufallschats oder Räumen triffst.</string>
     <string name="friend_requests">Anfragen (%1$d)</string>
     <string name="friends_count">Freunde (%1$d)</string>
-    <string name="requests_sent">Gesendete Anfragen</string>
     <string name="cancel_request">Abbrechen</string>
     <string name="recent_empty_title">Noch keine Chats</string>
     <string name="requested">Angefragt</string>
@@ -965,4 +964,20 @@
     <string name="looks_owned">Deins</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Hol dir dieses Sticker-Paket, um ihn zu senden</string>
+    <string name="go_home">Start</string>
+    <string name="voice_hand_over_title">Raum verlassen?</string>
+    <string name="voice_hand_over_body">%1$s wird Host und der Raum bleibt offen.</string>
+    <string name="voice_hand_over_leave">Verlassen – %1$s wird Host</string>
+    <string name="recents_title">Letzte Chats</string>
+    <string name="recents_note">Wähle, wen du aus dem Verlauf entfernen willst. Die Personen kommen nur zurück, wenn ihr euch wieder trefft.</string>
+    <string name="recents_none">Keine letzten Chats</string>
+    <string name="recents_delete">Löschen (%1$d)</string>
+    <string name="recents_delete_all">Alle löschen</string>
+    <string name="recents_confirm">Aus dem Verlauf löschen?</string>
+    <string name="recents_confirm_body">Sie kommen nur zurück, wenn ihr euch wieder trefft. Freunde bleiben Freunde.</string>
+    <string name="recents_delete_confirm">Löschen</string>
+    <string name="recents_deleted">Aus dem Verlauf gelöscht</string>
+    <string name="sent_tab">Gesendet</string>
+    <string name="sent_empty_title">Keine offenen Anfragen</string>
+    <string name="sent_empty">Deine Freundschaftsanfragen warten hier, bis sie beantwortet sind.</string>
 </resources>

@@ -169,7 +169,6 @@
     <string name="friends_empty">Voeg mensen toe die je in random chats of rooms ontmoet.</string>
     <string name="friend_requests">Verzoeken (%1$d)</string>
     <string name="friends_count">Vrienden (%1$d)</string>
-    <string name="requests_sent">Verstuurde verzoeken</string>
     <string name="cancel_request">Annuleren</string>
     <string name="recent_empty_title">Nog geen chats</string>
     <string name="requested">Aangevraagd</string>
@@ -978,4 +977,20 @@
     <string name="looks_owned">Van jou</string>
     <string name="chat_sticker">Sticker</string>
     <string name="err_sticker_not_owned">Haal dit stickerpakket om hem te sturen</string>
+    <string name="go_home">Home</string>
+    <string name="voice_hand_over_title">Room verlaten?</string>
+    <string name="voice_hand_over_body">%1$s wordt de host en de room blijft open.</string>
+    <string name="voice_hand_over_leave">Verlaten — %1$s wordt host</string>
+    <string name="recents_title">Recente chats</string>
+    <string name="recents_note">Kies wie je uit Recent wilt halen. Ze komen alleen terug als jullie elkaar weer treffen.</string>
+    <string name="recents_none">Geen recente chats</string>
+    <string name="recents_delete">Verwijderen (%1$d)</string>
+    <string name="recents_delete_all">Alles verwijderen</string>
+    <string name="recents_confirm">Uit Recent verwijderen?</string>
+    <string name="recents_confirm_body">Ze komen alleen terug als jullie elkaar weer treffen. Vrienden blijven vrienden.</string>
+    <string name="recents_delete_confirm">Verwijderen</string>
+    <string name="recents_deleted">Uit Recent verwijderd</string>
+    <string name="sent_tab">Verstuurd</string>
+    <string name="sent_empty_title">Geen openstaande verzoeken</string>
+    <string name="sent_empty">Vriendschapsverzoeken die je stuurt, wachten hier tot ze beantwoord zijn.</string>
 </resources>

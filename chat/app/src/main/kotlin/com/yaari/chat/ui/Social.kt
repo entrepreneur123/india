@@ -121,7 +121,7 @@ import androidx.compose.material3.HorizontalDivider
 fun CountBadge(n: Int, modifier: Modifier = Modifier) {
     if (n <= 0) return
     Box(
-        modifier.height(18.dp).widthIn(min = 18.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
+        modifier.height(18.dp).widthIn(min = 18.dp).clip(CircleShape).background(Brand.SaffronStrong).padding(horizontal = 5.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(if (n > 99) "99+" else "$n", color = Brand.OnSaffron, fontSize = 11.sp, lineHeight = 13.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)

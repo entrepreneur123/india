@@ -180,7 +180,6 @@
     <string name="friends_empty">Tambahkan orang yang kamu temui di chat acak atau room.</string>
     <string name="friend_requests">Permintaan (%1$d)</string>
     <string name="friends_count">Teman (%1$d)</string>
-    <string name="requests_sent">Permintaan terkirim</string>
     <string name="cancel_request">Batal</string>
     <string name="recent_empty_title">Belum ada chat</string>
     <string name="requested">Diminta</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">Milikmu</string>
     <string name="chat_sticker">Stiker</string>
     <string name="err_sticker_not_owned">Dapatkan paket stiker ini untuk mengirimnya</string>
+    <string name="go_home">Beranda</string>
+    <string name="voice_hand_over_title">Keluar dari room?</string>
+    <string name="voice_hand_over_body">%1$s jadi host dan room tetap berjalan.</string>
+    <string name="voice_hand_over_leave">Keluar — %1$s jadi host</string>
+    <string name="recents_title">Chat terbaru</string>
+    <string name="recents_note">Pilih siapa yang dihapus dari Terbaru. Mereka hanya muncul lagi kalau kalian bertemu lagi.</string>
+    <string name="recents_none">Belum ada chat terbaru</string>
+    <string name="recents_delete">Hapus (%1$d)</string>
+    <string name="recents_delete_all">Hapus semua</string>
+    <string name="recents_confirm">Hapus dari Terbaru?</string>
+    <string name="recents_confirm_body">Mereka hanya muncul lagi kalau kalian bertemu lagi. Teman tetap teman.</string>
+    <string name="recents_delete_confirm">Hapus</string>
+    <string name="recents_deleted">Dihapus dari Terbaru</string>
+    <string name="sent_tab">Terkirim</string>
+    <string name="sent_empty_title">Tidak ada permintaan tertunda</string>
+    <string name="sent_empty">Permintaan pertemanan yang kamu kirim menunggu di sini sampai dijawab.</string>
 </resources>

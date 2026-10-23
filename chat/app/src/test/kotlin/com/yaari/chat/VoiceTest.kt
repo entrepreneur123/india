@@ -190,6 +190,33 @@ class VoiceTest {
         assertEquals(UiText(R.string.err_not_allowed), vm.notice())
     }
 
+    @Test fun theHostLeavingHandsTheRoomToTheFirstConnectedCohostElseEndsIt() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.voice.create(NewVoiceRoom("Chai", RoomCategory.TALK)); advanceUntilIdle()
+        val id = vm.voice.state.value!!.roomId
+        assertNull("no co-host: leaving ends the room", vm.voice.state.value!!.heir)
+        fake.voice.raiseHands(id, 2); runCurrent()
+        val (first, second) = vm.room!!.audience.filter { it.hand }.map { it.profile.id }
+        vm.voice.act(VoiceAction.Cohost(second, true)); advanceUntilIdle()
+        vm.voice.act(VoiceAction.Cohost(first, true)); advanceUntilIdle()
+        assertEquals("the one who came in first", first, vm.voice.state.value!!.heir?.profile?.id)
+        fake.voice.lose(id, first, back = false); runCurrent()
+        assertEquals("a dropped co-host is passed over", second, vm.voice.state.value!!.heir?.profile?.id)
+
+        vm.voice.leave()
+        assertTrue("the host confirms first", vm.voice.state.value!!.confirmEnd)
+        vm.voice.close(); advanceUntilIdle()
+        assertNull(vm.voice.state.value)
+        assertTrue("the room stays", fake.voice.isOpen(id))
+        assertEquals(second, fake.voice.hostOf(id))
+
+        // My next room has no co-host: leaving it ends it.
+        vm.voice.create(NewVoiceRoom("Solo", RoomCategory.TALK)); advanceUntilIdle()
+        val solo = vm.voice.state.value!!.roomId
+        vm.voice.close(); advanceUntilIdle()
+        assertFalse(fake.voice.isOpen(solo))
+    }
+
     @Test fun aFullStageRefusesAnotherSpeaker() = runTest(dispatcher) {
         val vm = signedIn()
         vm.voice.create(NewVoiceRoom("Full", RoomCategory.TALK)); advanceUntilIdle()

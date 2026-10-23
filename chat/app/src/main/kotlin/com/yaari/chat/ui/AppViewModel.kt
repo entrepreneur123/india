@@ -281,15 +281,15 @@ class AppViewModel(
     private fun watchReads() = viewModelScope.launch {
         combine(_state, foreground) { s, visible -> if (visible && s.viewing == null) s.newestIncoming() else null }
             .distinctUntilChanged()
-            .collect { read -> if (read != null) launch { runCatching { backend.markRead(read.first, read.second) } } }
+            .collect { read -> if (read != null) social.readChat(read.first, read.second) }
     }
 
-    /** (match id, id of the partner's newest message) of the chat on screen, or null. */
+    /** (match id, id of the partner's newest message) of the chat on screen (a friend's thread over a minimised random chat), or null. */
     private fun UiState.newestIncoming(): Pair<String, Long>? {
-        val c = chat
-        if (c != null) return c.messages.lastOrNull { !it.fromMe }?.let { c.match.id to it.id }
-        val d = dm ?: return null
-        return d.messages.lastOrNull { !it.fromMe }?.let { d.recent.matchId to it.id }
+        val d = dm?.takeIf { chat == null || chatMinimised }
+        if (d != null) return d.messages.lastOrNull { !it.fromMe }?.let { d.recent.matchId to it.id }
+        val c = chat ?: return null
+        return c.messages.lastOrNull { !it.fromMe }?.let { c.match.id to it.id }
     }
 
     /** [newAccount]: just signed up (the identity check is offered once). */
@@ -644,8 +644,8 @@ class AppViewModel(
     }
 
     /**
-     * Start chatting. From inside a room, the room is left first, as its Leave does (the host's ends), and that is
-     * said ("Left “…”"). A chat already on (minimised) just comes back.
+     * Start chatting. From inside a room, the room is left first, as its Leave does (the host's goes to a co-host, else
+     * ends), and that is said ("Left “…”"). A chat already on (minimised) just comes back.
      */
     fun startMatching() {
         val s = _state.value
@@ -653,7 +653,7 @@ class AppViewModel(
         if (s.me == null || s.searching) return
         voice.state.value?.let { room ->
             notice(UiText(R.string.live_left_room, room.room?.title.orEmpty()))
-            if (room.isHost) {
+            if (room.isHost && room.heir == null) {
                 searchAfterRoom = true
                 voice.end(quiet = true)
             } else {
@@ -1094,6 +1094,25 @@ class AppViewModel(
             val list = backend.recents()
             _state.update { it.copy(recents = list) }
         }
+    }
+
+    /** Settings › Recent chats: takes [ids] off my recents (hide_recents); [done] gets whether it worked. */
+    fun hideRecents(ids: List<String>, done: (Boolean) -> Unit) = viewModelScope.launch {
+        val ok = try {
+            backend.hideRecents(ids.distinct())
+            true
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            notice(explain(e))
+            false
+        }
+        if (ok) {
+            _state.update { s -> s.copy(recents = s.recents.filterNot { it.partner.id in ids }) }
+            notice(UiText(R.string.recents_deleted))
+            refreshRecents()
+        }
+        done(ok)
     }
 
     /** Message someone from Recent, or a friend (their chat, or a new private one the server opens). */

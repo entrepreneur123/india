@@ -161,7 +161,6 @@
     <string name="friends_empty">Добавляйте людей, с которыми познакомились в случайных чатах или комнатах.</string>
     <string name="friend_requests">Заявки (%1$d)</string>
     <string name="friends_count">Друзья (%1$d)</string>
-    <string name="requests_sent">Отправленные заявки</string>
     <string name="cancel_request">Отмена</string>
     <string name="recent_empty_title">Чатов пока нет</string>
     <string name="requested">Заявка отправлена</string>
@@ -992,4 +991,20 @@
     <string name="looks_owned">Ваше</string>
     <string name="chat_sticker">Стикер</string>
     <string name="err_sticker_not_owned">Получите этот набор стикеров, чтобы отправить его</string>
+    <string name="go_home">Главная</string>
+    <string name="voice_hand_over_title">Выйти из комнаты?</string>
+    <string name="voice_hand_over_body">%1$s станет хостом, а комната продолжит работать.</string>
+    <string name="voice_hand_over_leave">Выйти — хостом станет %1$s</string>
+    <string name="recents_title">Недавние чаты</string>
+    <string name="recents_note">Выберите, кого убрать из недавних. Они вернутся, только если вы снова встретитесь.</string>
+    <string name="recents_none">Недавних чатов нет</string>
+    <string name="recents_delete">Удалить (%1$d)</string>
+    <string name="recents_delete_all">Удалить все</string>
+    <string name="recents_confirm">Удалить из недавних?</string>
+    <string name="recents_confirm_body">Они вернутся, только если вы снова встретитесь. Друзья останутся друзьями.</string>
+    <string name="recents_delete_confirm">Удалить</string>
+    <string name="recents_deleted">Удалено из недавних</string>
+    <string name="sent_tab">Отправленные</string>
+    <string name="sent_empty_title">Нет ожидающих заявок</string>
+    <string name="sent_empty">Отправленные вами заявки в друзья ждут здесь ответа.</string>
 </resources>

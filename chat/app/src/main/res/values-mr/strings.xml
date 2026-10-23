@@ -180,7 +180,6 @@
     <string name="friends_empty">रँडम चॅट किंवा रूममध्ये भेटलेल्या लोकांना ॲड करा.</string>
     <string name="friend_requests">विनंत्या (%1$d)</string>
     <string name="friends_count">मित्र (%1$d)</string>
-    <string name="requests_sent">पाठवलेल्या विनंत्या</string>
     <string name="cancel_request">रद्द करा</string>
     <string name="recent_empty_title">अजून चॅट नाहीत</string>
     <string name="requested">विनंती पाठवली</string>
@@ -998,4 +997,20 @@
     <string name="looks_owned">तुमचा</string>
     <string name="chat_sticker">स्टिकर</string>
     <string name="err_sticker_not_owned">हे पाठवण्यासाठी हा स्टिकर पॅक घ्या</string>
+    <string name="go_home">होम</string>
+    <string name="voice_hand_over_title">रूम सोडायची?</string>
+    <string name="voice_hand_over_body">%1$s होस्ट होतील आणि रूम सुरू राहील.</string>
+    <string name="voice_hand_over_leave">बाहेर पडा — %1$s होस्ट होतील</string>
+    <string name="recents_title">अलीकडील चॅट</string>
+    <string name="recents_note">अलीकडील मधून कोणाला काढायचे ते निवडा. पुन्हा भेटल्यावरच ते परत येतील.</string>
+    <string name="recents_none">अलीकडील चॅट नाहीत</string>
+    <string name="recents_delete">हटवा (%1$d)</string>
+    <string name="recents_delete_all">सर्व हटवा</string>
+    <string name="recents_confirm">अलीकडील मधून हटवायचे?</string>
+    <string name="recents_confirm_body">पुन्हा भेटल्यावरच ते परत येतील. मित्र मित्रच राहतील.</string>
+    <string name="recents_delete_confirm">हटवा</string>
+    <string name="recents_deleted">अलीकडील मधून हटवले</string>
+    <string name="sent_tab">पाठवलेल्या</string>
+    <string name="sent_empty_title">प्रलंबित विनंती नाही</string>
+    <string name="sent_empty">तुम्ही पाठवलेल्या मैत्री विनंत्या उत्तर मिळेपर्यंत इथे राहतात.</string>
 </resources>

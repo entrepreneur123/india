@@ -376,7 +376,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
         }
         VoiceSheets(vm, s, room, sheet, actor, onSheet = { sheet = it })
         if (pollSheet && s.isMod) PollSheet(s.pollBusy, onDismiss = { pollSheet = false }) { q, o -> vm.voice.createPoll(q, o) { pollSheet = false } }
-        if (s.confirmEnd) EndDialog(s.ending, onCancel = vm.voice::dismissEnd, onEnd = vm.voice::end)
+        if (s.confirmEnd) EndDialog(s.heir?.profile?.name, s.ending, onCancel = vm.voice::dismissEnd, onLeave = vm.voice::close, onEnd = vm.voice::end)
         list.created?.let {
             RoomCreatedDialog(room, it.code, onInvite = { vm.voice.dismissCreated(); sheet = VoiceSheet.Invite }, onDone = vm.voice::dismissCreated)
         }
@@ -1014,7 +1014,7 @@ private fun ControlBar(
                     RoundButton(stringResource(R.string.voice_requests_n, s.hands), onRequests) { GlyphIcon(Glyph.HAND, size = 22.dp) }
                     Text(
                         "${s.hands}", Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp).clip(CircleShape).background(MaterialTheme.colorScheme.background)
-                            .padding(2.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
+                            .padding(2.dp).clip(CircleShape).background(Brand.SaffronStrong).padding(horizontal = 5.dp),
                         color = Brand.OnSaffron, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
                     )
                 }
@@ -1106,13 +1106,27 @@ private fun ReactionTray(modifier: Modifier, onReact: (VoiceReaction) -> Unit) {
 }
 
 @Composable
-private fun EndDialog(busy: Boolean, onCancel: () -> Unit, onEnd: () -> Unit) {
-    AlertDialog(
+private fun EndDialog(heir: String?, busy: Boolean, onCancel: () -> Unit, onLeave: () -> Unit, onEnd: () -> Unit) {
+    val end = @Composable { TextButton(onEnd, enabled = !busy) { Text(stringResource(R.string.voice_end_confirm), color = MaterialTheme.colorScheme.error) } }
+    val cancel = @Composable { TextButton(onCancel) { Text(stringResource(R.string.cancel)) } }
+    // With a co-host here, leaving hands them the room (the server's voice_hand_over); ending it is the second choice.
+    if (heir == null) AlertDialog(
         onDismissRequest = onCancel,
         title = { Text(stringResource(R.string.voice_end_title)) },
         text = { Text(stringResource(R.string.voice_end_body)) },
-        confirmButton = { TextButton(onEnd, enabled = !busy) { Text(stringResource(R.string.voice_end_confirm), color = MaterialTheme.colorScheme.error) } },
-        dismissButton = { TextButton(onCancel) { Text(stringResource(R.string.cancel)) } },
+        confirmButton = end,
+        dismissButton = cancel,
+    ) else AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text(stringResource(R.string.voice_hand_over_title)) },
+        text = { Text(stringResource(R.string.voice_hand_over_body, heir)) },
+        confirmButton = {
+            Column(horizontalAlignment = Alignment.End) {
+                TextButton(onLeave, enabled = !busy) { Text(stringResource(R.string.voice_hand_over_leave, heir), textAlign = TextAlign.End) }
+                end()
+                cancel()
+            }
+        },
     )
 }
 
@@ -1192,7 +1206,7 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
             Column(Modifier.padding(start = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Row(
-                        Modifier.clip(CircleShape).background(Brand.Saffron).padding(horizontal = 7.dp, vertical = 2.dp),
+                        Modifier.clip(CircleShape).background(Brand.SaffronStrong).padding(horizontal = 7.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         LiveBars(color = Brand.OnSaffron, height = 9.dp)

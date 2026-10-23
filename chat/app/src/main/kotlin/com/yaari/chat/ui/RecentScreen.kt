@@ -72,7 +72,7 @@ import com.yaari.chat.model.Stickers
 
 @Composable
 fun RecentTab(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () -> Unit) {
-    // 0 = Friends, 1 = Matches (people met in random chat)
+    // 0 = Friends, 1 = Matches (people met in random chat), 2 = Sent (my friend requests still waiting)
     var page by rememberSaveable { mutableIntStateOf(if (s.incomingRequests > 0 || s.recents.isEmpty()) 0 else 1) }
     val b = social.badges
     val unreadFriends = s.friends.count { it.state == FriendState.FRIENDS && b.unread(it.threadId) > 0 }
@@ -89,22 +89,29 @@ fun RecentTab(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () 
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp),
         ) {
             // A white thumb slides under the chosen segment.
-            val half = maxWidth / 2
-            val x by animateDpAsState(if (page == 0) 0.dp else half, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow), label = "seg")
+            val third = maxWidth / 3
+            val x by animateDpAsState(third * page, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessMediumLow), label = "seg")
             Box(
-                Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(half).height(40.dp)
+                Modifier.offset { IntOffset(x.roundToPx(), 0) }.width(third).height(40.dp)
                     .clip(CircleShape).background(MaterialTheme.colorScheme.surface)
                     .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
             )
             Row {
                 Segment(stringResource(R.string.friends), page == 0, Modifier.weight(1f), count = s.incomingRequests + unreadFriends) { page = 0 }
                 Segment(stringResource(R.string.recent_matches), page == 1, Modifier.weight(1f), count = unreadMatches) { page = 1 }
+                Segment(stringResource(R.string.sent_tab), page == 2, Modifier.weight(1f)) { page = 2 }
             }
         }
         AnimatedContent(page, transitionSpec = {
             val dir = if (targetState > initialState) 1 else -1
             (slideInHorizontally { it / 6 * dir } + fadeIn()) togetherWith (slideOutHorizontally { -it / 6 * dir } + fadeOut())
-        }, label = "page") { p -> if (p == 0) FriendsList(vm, s, b) else RecentList(vm, s, b) }
+        }, label = "page") { p ->
+            when (p) {
+                0 -> FriendsList(vm, s, b)
+                1 -> RecentList(vm, s, b)
+                else -> SentList(vm, s)
+            }
+        }
     }
 }
 
@@ -127,8 +134,7 @@ private fun Segment(text: String, selected: Boolean, modifier: Modifier, count: 
 private fun FriendsList(vm: AppViewModel, s: UiState, b: Badges) {
     val incoming = s.friends.filter { it.state == FriendState.INCOMING }
     val friends = s.friends.filter { it.state == FriendState.FRIENDS }
-    val sent = s.friends.filter { it.state == FriendState.REQUESTED }
-    if (s.friends.isEmpty()) {
+    if (incoming.isEmpty() && friends.isEmpty()) {
         EmptyState(Icons.Outlined.People, stringResource(R.string.friends_empty_title), stringResource(R.string.friends_empty))
         return
     }
@@ -151,12 +157,21 @@ private fun FriendsList(vm: AppViewModel, s: UiState, b: Badges) {
                 }
             }
         }
-        if (sent.isNotEmpty()) {
-            item { SectionLabel(stringResource(R.string.requests_sent)) }
-            items(sent, key = { "out-" + it.profile.id }) { f ->
-                PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.genderCity(), onOpen = { vm.openProfile(f.profile) }) {
-                    SoftButton(stringResource(R.string.cancel_request), { vm.removeFriend(f.profile) }, height = 36.dp, shape = CircleShape)
-                }
+    }
+}
+
+/** Friend requests I sent that wait for an answer (friend_list: requested); cancelling withdraws one (remove_friend). */
+@Composable
+private fun SentList(vm: AppViewModel, s: UiState) {
+    val sent = s.friends.filter { it.state == FriendState.REQUESTED }
+    if (sent.isEmpty()) {
+        EmptyState(Icons.Outlined.PersonAddAlt, stringResource(R.string.sent_empty_title), stringResource(R.string.sent_empty))
+        return
+    }
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(top = 8.dp, bottom = 24.dp)) {
+        items(sent, key = { it.profile.id }) { f ->
+            PersonRow(modifier = Modifier.animateItem(), p = f.profile, subtitle = f.profile.genderCity(), onOpen = { vm.openProfile(f.profile) }) {
+                SoftButton(stringResource(R.string.cancel_request), { vm.removeFriend(f.profile) }, height = 36.dp, shape = CircleShape)
             }
         }
     }

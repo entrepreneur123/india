@@ -169,7 +169,6 @@
     <string name="friends_empty">Dodawaj osoby poznane na czatach losowych lub w pokojach.</string>
     <string name="friend_requests">Zaproszenia (%1$d)</string>
     <string name="friends_count">Znajomi (%1$d)</string>
-    <string name="requests_sent">Wysłane zaproszenia</string>
     <string name="cancel_request">Anuluj</string>
     <string name="recent_empty_title">Nie masz jeszcze czatów</string>
     <string name="requested">Zaproszono</string>
@@ -1004,4 +1003,20 @@
     <string name="looks_owned">Twoje</string>
     <string name="chat_sticker">Naklejka</string>
     <string name="err_sticker_not_owned">Zdobądź ten pakiet naklejek, aby ją wysłać</string>
+    <string name="go_home">Start</string>
+    <string name="voice_hand_over_title">Wyjść z pokoju?</string>
+    <string name="voice_hand_over_body">%1$s zostanie hostem, a pokój będzie działał dalej.</string>
+    <string name="voice_hand_over_leave">Wyjdź — hostem zostanie %1$s</string>
+    <string name="recents_title">Ostatnie czaty</string>
+    <string name="recents_note">Wybierz, kogo usunąć z Ostatnich. Wrócą tylko, jeśli znowu się spotkacie.</string>
+    <string name="recents_none">Brak ostatnich czatów</string>
+    <string name="recents_delete">Usuń (%1$d)</string>
+    <string name="recents_delete_all">Usuń wszystko</string>
+    <string name="recents_confirm">Usunąć z Ostatnich?</string>
+    <string name="recents_confirm_body">Wrócą tylko, jeśli znowu się spotkacie. Znajomi zostają znajomymi.</string>
+    <string name="recents_delete_confirm">Usuń</string>
+    <string name="recents_deleted">Usunięto z Ostatnich</string>
+    <string name="sent_tab">Wysłane</string>
+    <string name="sent_empty_title">Brak oczekujących zaproszeń</string>
+    <string name="sent_empty">Wysłane przez Ciebie zaproszenia czekają tu na odpowiedź.</string>
 </resources>

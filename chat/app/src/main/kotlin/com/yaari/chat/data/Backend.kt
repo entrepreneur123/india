@@ -150,7 +150,10 @@ interface Backend {
      */
     suspend fun flagNudity(matchId: String)
 
+    /** The latest 50 people I met, newest first (recent_list). */
     suspend fun recents(): List<RecentMatch>
+    /** Takes people off my recents (048, at most [RecentMatch.HIDE_MAX] a call); they come back only if we meet again. */
+    suspend fun hideRecents(userIds: List<String>)
     /** Someone's profile with posts and style; null if not visible (never matched, not a public poster, or blocked). */
     suspend fun profile(userId: String): Profile?
     /** [visibility]: friends (the default) or everyone. 20 a day (slow_down). */

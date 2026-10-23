@@ -1,5 +1,16 @@
 package com.yaari.chat.ui
 
+import android.text.format.DateUtils
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import com.yaari.chat.model.RecentMatch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +51,7 @@ import com.yaari.chat.model.Profile
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 
-// Finding someone by @ID (042), and Settings' list of people I blocked.
+// Finding someone by @ID (042), and Settings' lists: people I blocked, my recent chats.
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -128,3 +139,65 @@ fun BlockedSheet(vm: AppViewModel, onClose: () -> Unit) {
         }
     }
 }
+
+/** Settings › Recent chats: takes people off my recents (048), some or all; they come back only if we meet again. */
+@Composable
+fun RecentsSheet(vm: AppViewModel, recents: List<RecentMatch>, onClose: () -> Unit) {
+    var picked by remember { mutableStateOf(emptySet<String>()) }
+    var confirm by remember { mutableStateOf<List<String>?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { vm.refreshRecents() }
+    PeopleSheet(stringResource(R.string.recents_title), stringResource(R.string.recents_note), onClose) {
+        if (recents.isEmpty()) Note(stringResource(R.string.recents_none))
+        else LazyColumn(Modifier.fillMaxWidth().heightIn(max = 420.dp).padding(top = 8.dp)) {
+            items(recents, key = { it.partner.id }) { r ->
+                val id = r.partner.id
+                val on = id in picked
+                Row(
+                    Modifier.fillMaxWidth().toggleable(on, role = Role.Checkbox) { picked = if (it) picked + id else picked - id }
+                        .background(if (on) MaterialTheme.colorScheme.primaryContainer else Color.Transparent).padding(horizontal = 24.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Avatar(r.partner, 44.dp)
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text(r.partner.nameWithFlag(), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            DateUtils.getRelativeTimeSpanString(r.metAt, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString(),
+                            style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1,
+                        )
+                    }
+                    Checkbox(on, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Brand.Saffron))
+                }
+            }
+        }
+        Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            SoftButton(
+                stringResource(R.string.recents_delete_all), { confirm = recents.map { it.partner.id } }, Modifier.weight(1f),
+                enabled = recents.isNotEmpty() && !busy, outlined = true,
+            )
+            SoftButton(
+                stringResource(R.string.recents_delete, picked.size), { confirm = picked.toList() }, Modifier.weight(1f),
+                accent = true, enabled = picked.isNotEmpty() && !busy,
+            )
+        }
+    }
+    confirm?.let { ids ->
+        AlertDialog(
+            onDismissRequest = { if (!busy) confirm = null },
+            title = { Text(stringResource(R.string.recents_confirm)) },
+            text = { Text(stringResource(R.string.recents_confirm_body)) },
+            confirmButton = {
+                TextButton({
+                    busy = true
+                    vm.hideRecents(ids) { ok ->
+                        busy = false
+                        confirm = null
+                        if (ok) picked = picked - ids.toSet()
+                    }
+                }, enabled = !busy) { Text(stringResource(R.string.recents_delete_confirm), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton({ confirm = null }, enabled = !busy) { Text(stringResource(R.string.cancel)) } },
+        )
+    }
+}
+
