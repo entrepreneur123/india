@@ -89,7 +89,6 @@ import com.yaari.chat.live.NudityModel
 import com.yaari.chat.live.PhotoModel
 import com.yaari.chat.live.PlayBilling
 import com.yaari.chat.live.SupabaseBackend
-import com.yaari.chat.live.callAudio
 import com.yaari.chat.model.Profile
 import com.yaari.chat.ui.Avatar
 import io.livekit.android.LiveKit
@@ -210,7 +209,7 @@ object Flavor {
         // Adaptive stream: the receiver gets a resolution that fits its view and network.
         // Dynacast: layers nobody watches are not sent. Both matter on Indian mobile networks.
         // Audio: LiveKit's call mode (MODE_IN_COMMUNICATION), speaker unless a Bluetooth or wired headset is in;
-        // WebRTC's own echo cancellation and noise suppression (callAudio), auto gain on.
+        // the phone's own echo canceller and noise suppressor (LiveKit's default on Android 10+), auto gain on.
         // Video: front camera 720p, VP8 (hardware encoder on most phones, software otherwise) with simulcast layers.
         val room = remember(token) {
             LiveKit.create(
@@ -225,7 +224,6 @@ object Flavor {
                         videoEncoding = VideoPreset169.H720.encoding, simulcast = true, videoCodec = VideoCodec.VP8.codecName,
                     ),
                 ),
-                overrides = callAudio,
             )
         }
         val remote = remember(room) { TextureViewRenderer(context).also { room.initVideoRenderer(it) } }

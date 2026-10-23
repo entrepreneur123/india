@@ -2,6 +2,10 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.8: 울림·메아리 = 0.14.2의 하드웨어 AEC 끄기, 효과음 연타
+- LiveKit 2.29 RTCModule(바이트코드): Android 10+(SDK≥29)에서 setUseHardwareAcousticEchoCanceler(true)·NoiseSuppressor(true), 입력 VOICE_COMMUNICATION이 기본. 0.14.2의 `CallAudio.kt`가 이걸 꺼 WebRTC 소프트웨어 AEC만 썼음 → 앱 밖 재생(방 유튜브, 효과음)을 못 지우고, 통화 모드 입력의 폰 처리와 겹침. 0.14.2 당시 실제 메아리 원인은 웹 이중 재생(같은 커밋에서 수정). `CallAudio.kt` 삭제로 기본값 복귀.
+- 효과음 연타: 내 무대 오르내림에도 1.2초 제한이 걸려 있었음 → 내 동작은 항상(웹·Android), Android는 기다리던 이전 효과음을 새 것이 대체. 테스트: VoiceTest.rapidly…, RoomSoundsDeviceTest.aNewerChime…, 웹 Playwright 0.3초 간격 8회 = 8회.
+
 ## 2026-10-23 0.18.7: Android 효과음 최종 구조 (0.18.4–0.18.6 실기기 실패 정리)
 - LiveKit 2.29 AudioSwitchHandler(바이트코드 확인): MODE_IN_COMMUNICATION, AUDIOFOCUS_GAIN, USAGE_VOICE_COMMUNICATION, 별도 HandlerThread에서 비동기 전환. 무대가 비면 SupabaseBackend.show()가 RoomChanged 전에 stopAudio().
 - 실기기 결과: 0.18.4 SIGNALLING → 두 번째 참여 무음, 0.18.5 통화모드면 VOICE_COMMUNICATION → 내려갈 때 무음(일반 모드로 바뀌며 수화기), 0.18.6 MEDIA → 참여 때 무음(AOSP MediaFocusControl이 통화 중 USAGE_MEDIA/GAME 음소거).
