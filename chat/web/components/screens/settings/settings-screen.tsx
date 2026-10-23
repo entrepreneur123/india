@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
@@ -13,6 +13,7 @@ import { useTranslate } from '@/components/translate'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useAnonSwitch, useShop } from '@/components/looks/use-shop'
 import { BlockedSheet } from '@/components/social/people-find'
+import { RecentsSheet } from './recents-sheet'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -30,6 +31,7 @@ export function SettingsScreen() {
   const tr = useTranslate()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [blocksOpen, setBlocksOpen] = useState(false)
+  const [recentsOpen, setRecentsOpen] = useState(false)
   const { lt } = useLooksT()
   const { data: shop } = useShop()
   const anon = useAnonSwitch()
@@ -96,6 +98,7 @@ export function SettingsScreen() {
             <Toggle icon={VenetianMask} label={lt('vip.toggle')} body={lt('vip.toggleBody')} on={shop.anon} onChange={(on) => !anon.busy && void anon.set(on)} />
           ) : null}
           <Item icon={Ban} label={lt('blocks.title')} onClick={() => setBlocksOpen(true)} />
+          <Item icon={History} label={t('settings.recents')} onClick={() => setRecentsOpen(true)} />
           <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
           <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />
           <Item icon={FileText} label={t('settings.terms')} href={TERMS_URL} />
@@ -179,6 +182,7 @@ export function SettingsScreen() {
       ) : null}
 
       <BlockedSheet open={blocksOpen} onClose={() => setBlocksOpen(false)} />
+      <RecentsSheet open={recentsOpen} onClose={() => setRecentsOpen(false)} />
 
       <Modal open={rulesOpen} onClose={() => setRulesOpen(false)} title={t('settings.rules')}>
         <ol className="flex flex-col gap-3 p-6 pt-4">

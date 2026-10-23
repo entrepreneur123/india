@@ -10,6 +10,7 @@ import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
+import { nextHost } from '@/lib/voice-lost'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -412,7 +413,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
 export interface VoiceControl {
   title: string
   isHost: boolean
-  /** Leaves exactly like the Leave button (the host's room ends), without asking. */
+  /** Leaves without asking: a co-host takes over the host's room, or with none it ends. */
   leave: () => Promise<boolean>
 }
 
@@ -447,6 +448,8 @@ export function VoiceHost({
   const [confirmEnd, setConfirmEnd] = useState(false)
   const [busy, setBusy] = useState(false)
   const isHost = s.me?.role === 'host'
+  // A co-host takes over when the host leaves (the server's voice_hand_over); with none, leaving ends the room.
+  const heir = isHost && s.room ? nextHost(s.room) : null
 
   /** `quiet`: the shell says it its own way (a random search took me out of my room). */
   const end = async (quiet = false) => {
@@ -466,12 +469,12 @@ export function VoiceHost({
       setConfirmEnd(false)
     }
   }
-  // The host's room would carry on without them, so the host's "leave" ends it (after a confirm).
+  // The host is asked first: hand the room to a co-host, or end it for everyone.
   const leave = () => (isHost ? setConfirmEnd(true) : onClose())
 
   const title = s.room?.title ?? ''
   useEffect(() => {
-    control.current = { title, isHost, leave: async () => (isHost ? end(true) : (onClose(), true)) }
+    control.current = { title, isHost, leave: async () => (isHost && !heir ? end(true) : (onClose(), true)) }
     return () => {
       control.current = null
     }
@@ -496,15 +499,34 @@ export function VoiceHost({
       <AnimatePresence>
         {!expanded && !pillHidden && s.room ? <VoicePill s={s} onExpand={onExpand} onLeave={leave} /> : null}
       </AnimatePresence>
-      <Modal open={confirmEnd} onClose={() => setConfirmEnd(false)} title={t('voice.endTitle')} description={t('voice.endBody')}>
-        <div className="flex gap-3 p-6 pt-5">
-          <Button variant="outline" className="flex-1" onClick={() => setConfirmEnd(false)}>
-            {t('common.cancel')}
-          </Button>
-          <Button variant="danger" className="flex-1" loading={busy} onClick={() => void end()}>
-            {t('voice.endConfirm')}
-          </Button>
-        </div>
+      <Modal
+        open={confirmEnd}
+        onClose={() => setConfirmEnd(false)}
+        title={heir ? t('voice.handOverTitle') : t('voice.endTitle')}
+        description={heir ? t('voice.handOverBody', { name: heir.profile.name }) : t('voice.endBody')}
+      >
+        {heir ? (
+          <div className="flex flex-col gap-2 p-6 pt-5">
+            <Button variant="brand" size="lg" disabled={busy} onClick={onClose}>
+              {t('voice.handOverLeave', { name: heir.profile.name })}
+            </Button>
+            <Button variant="outline" size="lg" className="text-destructive hover:text-destructive" loading={busy} onClick={() => void end()}>
+              {t('voice.endConfirm')}
+            </Button>
+            <Button variant="ghost" size="lg" onClick={() => setConfirmEnd(false)}>
+              {t('common.cancel')}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-3 p-6 pt-5">
+            <Button variant="outline" className="flex-1" onClick={() => setConfirmEnd(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button variant="danger" className="flex-1" loading={busy} onClick={() => void end()}>
+              {t('voice.endConfirm')}
+            </Button>
+          </div>
+        )}
       </Modal>
     </RoomPlayerProvider>
   )

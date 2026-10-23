@@ -46,14 +46,17 @@ export function Sidebar({ className }: { className?: string }) {
       )}
       aria-label={t('nav.main')}
     >
-      <div className="flex justify-center px-2 lg:justify-start">
-        <span className="lg:hidden">
-          <Logo compact />
-        </span>
-        <span className="hidden lg:inline-flex">
-          <Logo />
-        </span>
-      </div>
+      {/* The mark goes home (Random), out of any open chat, like the logo of any app. */}
+      <button
+        type="button"
+        onClick={() => setTab('random')}
+        aria-label={t('nav.home')}
+        title={t('nav.home')}
+        className="flex justify-center self-center rounded-xl p-1 transition-opacity duration-150 hover:opacity-80 lg:self-start"
+      >
+        <Logo compact className="lg:hidden" />
+        <Logo className="max-lg:hidden" />
+      </button>
       <nav className="mt-8 flex flex-col gap-1">
         {ITEMS.map((item) => {
           const active = tab === item.tab

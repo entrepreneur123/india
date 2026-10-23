@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { Check, Headphones, MessageCircle, X } from 'lucide-react'
 import type { InboxItem } from '@/lib/backend'
@@ -28,25 +28,29 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
   const { mutate } = useSWRConfig()
   const { st } = useSocialT()
   const { t } = useI18n()
-  const { data, error, mutate: reload } = useSWR(open ? 'inbox' : null, () => backend.inbox())
+  // Read here on each opening (below), never from what was cached at the last one: that list may predate the items
+  // the bell counts, and judging by it left them unread.
+  const { data, error, mutate: reload } = useSWR(open ? 'inbox' : null, () => backend.inbox(), { revalidateOnMount: false })
   // Unread when the sheet opened: they keep their highlight while it is open.
   const [fresh, setFresh] = useState<Set<number> | null>(null)
-  const marked = useRef(false)
 
   useEffect(() => {
-    if (!open) {
-      setFresh(null)
-      marked.current = false
-      return
+    if (!open) return setFresh(null)
+    let alive = true
+    // The bell has cleared already (the shell's openInbox); everything is marked read once the list, with what was
+    // new, has been read.
+    reload()
+      .then((list) => {
+        if (!list) return
+        if (alive) setFresh(new Set(list.filter((i) => !i.read).map((i) => i.id)))
+        return backend.markInboxRead()
+      })
+      .catch(() => undefined)
+      .finally(() => void mutate('badges'))
+    return () => {
+      alive = false
     }
-    if (!data || marked.current) return
-    marked.current = true
-    const unread = data.filter((i) => !i.read)
-    setFresh(new Set(unread.map((i) => i.id)))
-    if (unread.length) {
-      void backend.markInboxRead().then(() => mutate('badges'), () => undefined)
-    }
-  }, [open, data, backend, mutate])
+  }, [open, backend, mutate, reload])
 
   const isNew = (i: InboxItem) => fresh?.has(i.id) ?? !i.read
   const newer = data?.filter(isNew) ?? []

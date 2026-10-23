@@ -284,6 +284,8 @@ export class MockBackend implements Backend {
   private searchTarget: string | null = null
   private matches = new Map<string, MatchState>()
   private recentList: RecentMatch[] = []
+  /** People taken off my recents, and when (048): a later meeting brings them back. */
+  private recentHidden = new Map<string, number>()
   private friendMap = new Map<string, FriendState>()
   private threadByUser = new Map<string, string>()
   private msgSeq = 1
@@ -555,7 +557,7 @@ export class MockBackend implements Backend {
 
   sendTyping() {}
 
-  markRead(matchId: string) {
+  async markRead(matchId: string) {
     if (!this.unread.delete(matchId)) return
     for (const i of this.inboxItems) if (i.kind === 'message' && i.matchId === matchId) i.read = true
     this.inboxChanged()
@@ -732,7 +734,13 @@ export class MockBackend implements Backend {
 
   async recents() {
     await wait(600)
-    return [...this.recentList].sort((a, b) => b.metAt - a.metAt)
+    return this.recentList.filter((r) => (this.recentHidden.get(r.partner.id) ?? 0) <= r.metAt).sort((a, b) => b.metAt - a.metAt).slice(0, 50)
+  }
+
+  async hideRecents(userIds: string[]) {
+    if (userIds.length > 100) throw new BackendError('bad_request')
+    await wait(300)
+    for (const id of userIds) this.recentHidden.set(id, Date.now())
   }
 
   async profile(userId: string) {

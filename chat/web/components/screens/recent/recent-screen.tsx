@@ -27,7 +27,7 @@ import { FindSheet } from '@/components/social/people-find'
 import { nameAge } from '@/lib/looks'
 import { previewText } from '@/lib/stickers'
 
-type Segment = 'friends' | 'matches'
+type Segment = 'friends' | 'matches' | 'sent'
 
 export function RecentScreen() {
   const backend = useBackend()
@@ -80,12 +80,15 @@ export function RecentScreen() {
                 </>
               ),
             },
+            // Requests I sent that wait for an answer (withdrawn from here).
+            { value: 'sent', label: t('recent.sentTab') },
           ]}
         />
         <AnimatePresence mode="wait" initial={false}>
           <m.div key={segment} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
-            {segment === 'friends' ? (
+            {segment !== 'matches' ? (
               <FriendsList
+                sent={segment === 'sent'}
                 list={friends.data}
                 failed={!!friends.error}
                 retry={() => void friends.mutate()}
@@ -156,13 +159,16 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
   )
 }
 
+/** My friends and the requests waiting for me, or (`sent`) the requests I sent. */
 function FriendsList({
+  sent: sentView,
   list,
   failed,
   retry,
   refresh,
   onFind,
 }: {
+  sent: boolean
   list: Friend[] | undefined
   failed: boolean
   retry: () => void
@@ -191,11 +197,12 @@ function FriendsList({
     }
   }
 
-  const incoming = list.filter((f) => f.state === 'incoming')
-  const friends = list.filter((f) => f.state === 'friends')
-  const sent = list.filter((f) => f.state === 'requested')
+  const incoming = sentView ? [] : list.filter((f) => f.state === 'incoming')
+  const friends = sentView ? [] : list.filter((f) => f.state === 'friends')
+  const sent = sentView ? list.filter((f) => f.state === 'requested') : []
 
-  if (list.length === 0) {
+  if (sentView && !sent.length) return <EmptyState art="people" title={t('recent.noSent')} body={t('recent.noSentBody')} />
+  if (!sentView && !incoming.length && !friends.length) {
     return (
       <EmptyState
         art="people"

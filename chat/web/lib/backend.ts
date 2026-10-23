@@ -305,6 +305,8 @@ export interface VoiceMember {
   hand: boolean
   /** 045: their connection dropped; the server takes them out 7 s later unless they come back. */
   lost?: boolean
+  /** When they came in (server ms): the earliest co-host takes over from a host who leaves. */
+  joinedAt?: number
 }
 
 export interface VoiceSeat {
@@ -659,8 +661,8 @@ export interface Backend {
   subscribe(matchId: string, on: (e: MatchEvent) => void, opts?: { live?: boolean }): () => void
   history(matchId: string): Promise<Message[]>
   sendTyping(matchId: string): void
-  /** Tells the partner I've read their messages up to this id (the read ticks). Fire and forget. */
-  markRead(matchId: string, upto: number): void
+  /** Tells the partner I've read their messages up to this id (the read ticks); settles once the server has it. Never throws. */
+  markRead(matchId: string, upto: number): Promise<void>
   /** The call's nudity check hid the partner's video: files an automatic report for review. Never throws. */
   flagNudity(matchId: string): Promise<void>
   send(matchId: string, text: string | null, media: File | null): Promise<Message>
@@ -672,7 +674,10 @@ export interface Backend {
   answerVideo(matchId: string, accept: boolean): Promise<void>
   endVideo(matchId: string): Promise<void>
   videoToken(matchId: string): Promise<{ url: string; token: string } | null>
+  /** The latest 50 people I met (random chats), newest first. */
   recents(): Promise<RecentMatch[]>
+  /** 048: takes these people (at most 100) off my recents until we meet again. */
+  hideRecents(userIds: string[]): Promise<void>
   profile(userId: string): Promise<Profile | null>
   /** `visibility`: 'friends' unless given. At most 20 a day ('slow_down'). */
   addPost(text: string, image: File | null, visibility?: PostVisibility): Promise<FeedPost>

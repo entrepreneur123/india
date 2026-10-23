@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { Message, VideoStatus } from '@/lib/backend'
+import { useSWRConfig } from 'swr'
+import type { Badges, Message, VideoStatus } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
@@ -14,6 +15,7 @@ const TYPING_TIMEOUT_MS = 6000
 export function useMatchChat(matchId: string, partnerName: string, live: boolean) {
   const backend = useBackend()
   const toast = useToast()
+  const { mutate } = useSWRConfig()
   const { t } = useI18n()
   const tRef = useRef(t) // the language can change mid-chat without re-subscribing
   tRef.current = t
@@ -111,11 +113,17 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
   for (const m of messages ?? []) if (!m.fromMe) lastIncoming = m.id // sorted by id
   useEffect(() => {
     if (!lastIncoming) return
-    const mark = () => { if (document.visibilityState === 'visible') backend.markRead(matchId, lastIncoming) }
+    const mark = () => {
+      if (document.visibilityState !== 'visible') return
+      // This chat's count drops at once (the Recent tab with it); the server's counts are read again once it has
+      // the mark (it also marks the chat's notification read, so the bell follows).
+      void mutate('badges', (b?: Badges) => (b?.chats[matchId] ? { ...b, chats: { ...b.chats, [matchId]: 0 } } : b), { revalidate: false })
+      void backend.markRead(matchId, lastIncoming).then(() => mutate('badges'))
+    }
     mark()
     document.addEventListener('visibilitychange', mark)
     return () => document.removeEventListener('visibilitychange', mark)
-  }, [backend, matchId, lastIncoming])
+  }, [backend, matchId, lastIncoming, mutate])
 
   const notifyTyping = useCallback(() => {
     const now = Date.now()

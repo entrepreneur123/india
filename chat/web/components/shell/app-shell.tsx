@@ -5,7 +5,7 @@ import * as m from 'motion/react-m'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import type { Entitlements, ItemKind, Profile } from '@/lib/backend'
+import type { Badges, Entitlements, ItemKind, Profile } from '@/lib/backend'
 import { planLive } from '@/lib/live-session'
 import { AppContext, type AppState, type ChatBar, type KycInfo, type RandomControl, type Tab, type Thread, type VerifyWhy } from '@/components/app-state'
 import { onGate } from '@/lib/gate'
@@ -345,6 +345,8 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       openInbox: () => {
         setInboxUsed(true)
         setInboxOpen(true)
+        // Opening marks everything read (inbox-sheet.tsx): the bell clears at once, before its code has even loaded.
+        void mutate('badges', (b?: Badges) => b && { ...b, inbox: 0 }, { revalidate: false })
       },
       trust: trust ?? null,
       refreshTrust,
@@ -352,7 +354,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       setKyc,
       openVerify,
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
+    [me, phone, entitlements, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
   const randomVisible = tab === 'random' && !thread

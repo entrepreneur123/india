@@ -28,7 +28,11 @@ const ICONS = { info: Info, success: CheckCircle2, error: AlertCircle }
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<ToastItem[]>([])
   const seq = useRef(0)
+  // Read when an error is shown, not a dependency: a language switch must not hand out a new api (effects that
+  // depend on it would re-run, and a voice room's or a chat's cleanup would leave it).
   const { errorText } = useI18n()
+  const errorTextRef = useRef(errorText)
+  errorTextRef.current = errorText
 
   const show = useCallback((text: string, tone: Tone = 'info') => {
     const id = ++seq.current
@@ -36,7 +40,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setTimeout(() => setItems((list) => list.filter((t) => t.id !== id)), 3200)
   }, [])
 
-  const api = useMemo<ToastApi>(() => ({ show, error: (err) => void (gate(err) || show(errorText(err), 'error')) }), [show, errorText])
+  const api = useMemo<ToastApi>(() => ({ show, error: (err) => void (gate(err) || show(errorTextRef.current(err), 'error')) }), [show])
 
   return (
     <ToastContext.Provider value={api}>

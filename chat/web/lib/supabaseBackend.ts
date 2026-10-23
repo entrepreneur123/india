@@ -62,7 +62,7 @@ import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
-import { droppedOut, VOICE_BEAT_MS } from './voice-lost'
+import { droppedOut, nextHost, VOICE_BEAT_MS } from './voice-lost'
 
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
@@ -662,12 +662,11 @@ export class SupabaseBackend implements Backend {
     return hub
   }
 
-  markRead(matchId: string, upto: number) {
+  async markRead(matchId: string, upto: number) {
     if (upto <= (this.readSent.get(matchId) ?? 0)) return
     this.readSent.set(matchId, upto)
-    void this.client.rpc('mark_read', { p_match: matchId, p_upto: upto }).then(({ error }) => {
-      if (error && this.readSent.get(matchId) === upto) this.readSent.delete(matchId) // retried on the next call
-    })
+    const { error } = await this.client.rpc('mark_read', { p_match: matchId, p_upto: upto })
+    if (error && this.readSent.get(matchId) === upto) this.readSent.delete(matchId) // retried on the next call
   }
 
   async flagNudity(matchId: string) {
@@ -763,6 +762,10 @@ export class SupabaseBackend implements Backend {
     return Promise.all(rows.map(async (r) => ({
       matchId: r.match_id, partner: await this.toProfile(r, []), metAt: time(r.met_at), lastText: r.last_body,
     })))
+  }
+
+  async hideRecents(userIds: string[]) {
+    await this.rpc('hide_recents', { p_users: userIds })
   }
 
   async profile(userId: string) {
@@ -1755,7 +1758,7 @@ export class SupabaseBackend implements Backend {
       // Gone longer than the server waits: a beat would bring me back in silently. Once the network answers, the
       // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
       const r = live.room
-      const keepsPlace = r?.hostId === me && !r.members.some((m) => m.role === 'cohost' && !m.lost)
+      const keepsPlace = r?.hostId === me && !nextHost(r)
       if (droppedOut(lastBeat, Date.now()) && !keepsPlace) {
         const { error } = await this.client.from('voice_seq').select('seq').eq('room_id', roomId).maybeSingle()
         if (error || closed || over) return connection({ beat: true })
@@ -1849,7 +1852,7 @@ export class SupabaseBackend implements Backend {
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
       isPrivate: !!s.private, lang: appLang(s.lang),
       members: s.members.map((m) => ({
-        profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true,
+        profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true, joinedAt: m.j,
       })),
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: s.locked.includes(index) })),
       track: s.music ? {

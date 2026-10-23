@@ -24,6 +24,7 @@ import {
 } from './backend'
 import { quotable, replyOf } from './voice-chat'
 import { checkPoll, POLLS_PER_READ } from './voice-polls'
+import { nextHost } from './voice-lost'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
@@ -451,8 +452,16 @@ export class VoiceSim {
     const me = this.me()
     if (!r || !me || r.ended) return
     await wait(100)
-    if (r.mine) return // my own room stays live until I end it
     r.room.members = r.room.members.filter((m) => m.profile.id !== me.id)
+    if (r.room.hostId === me.id) {
+      // As the server (voice_hand_over): the first co-host still here takes over; with none the room ends.
+      const heir = nextHost(r.room)
+      if (!heir) return this.end(r)
+      Object.assign(heir, { role: 'host', seat: 0, hand: false })
+      r.room.hostId = heir.profile.id
+      r.mine = false
+      this.system(r, 'host', heir.profile.name)
+    }
     this.changed(r)
   }
 
