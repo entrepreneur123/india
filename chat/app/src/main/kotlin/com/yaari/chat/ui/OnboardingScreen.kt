@@ -49,6 +49,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -60,6 +61,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -152,26 +154,42 @@ private fun PhoneStep(vm: AppViewModel, state: Onboarding) {
     if (picking) CountrySheet(onDismiss = { picking = false }) { iso = it.iso; picking = false }
 }
 
+/**
+ * The countries with a search field: one tap picks one (sign-up). With [chosen], a multi-choice instead (the lobby's
+ * countries to meet): ticks in place of the dial codes, at most [max], and [top] / [bottom] around the list.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CountrySheet(onDismiss: () -> Unit, onPick: (Country) -> Unit) {
+internal fun CountrySheet(
+    onDismiss: () -> Unit, chosen: Set<String>? = null, max: Int = Int.MAX_VALUE,
+    top: @Composable () -> Unit = {}, bottom: @Composable () -> Unit = {}, onPick: (Country) -> Unit,
+) {
     var query by remember { mutableStateOf("") }
-    val sorted = remember { Countries.all.sortedBy { it.name() } }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+    // A to Z; in a multi-choice the ones already chosen first (they don't jump while ticking).
+    val sorted = remember { Countries.all.sortedBy { it.name() }.sortedByDescending { chosen?.contains(it.iso) == true } }
+    // A multi-choice opens fully, so its buttons under the list are on screen.
+    val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = chosen != null)
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.padding(horizontal = 16.dp)) {
+            top()
             Field(query, { query = it }, stringResource(R.string.search_country))
             LazyColumn(Modifier.fillMaxWidth().height(420.dp)) {
                 items(sorted.filter { query.isBlank() || it.name().contains(query.trim(), ignoreCase = true) || it.dial.startsWith(query.trim().removePrefix("+")) }) { c ->
+                    val on = chosen != null && c.iso in chosen
+                    val enabled = chosen == null || on || chosen.size < max
                     Row(
-                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { onPick(c) }.padding(vertical = 16.dp, horizontal = 8.dp),
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable(enabled) { onPick(c) }
+                            .alpha(if (enabled) 1f else 0.4f).padding(vertical = if (chosen == null) 16.dp else 4.dp, horizontal = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(c.flag, fontSize = 20.sp)
                         Text(c.name(), Modifier.weight(1f).padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
-                        Text("+${c.dial}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (chosen == null) Text("+${c.dial}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        else Checkbox(on, onCheckedChange = null, Modifier.padding(12.dp), colors = CheckboxDefaults.colors(checkedColor = Brand.Pink))
                     }
                 }
             }
+            bottom()
         }
     }
 }

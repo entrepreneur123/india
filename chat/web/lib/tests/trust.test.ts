@@ -6,6 +6,7 @@ import {
   checkRating,
   GOOD_TAGS,
   mannerLevel,
+  MANNERS,
   mannerShown,
   parseKycResult,
   parseMyTrust,
@@ -16,6 +17,11 @@ import {
   verifyState,
 } from '../trust.ts'
 import { parseAuthor, parseTime } from '../feed.ts'
+
+// The levels, tags and rating rules below stay tested so manners can come back by flipping MANNERS.
+test('manners are off for now (043): the server no longer closes random chat, the apps neither ask nor show', () => {
+  assert.equal(MANNERS, false)
+})
 
 test('manner levels: <20 needs work, 20-39 low, 40-69 good, 70-89 great, 90+ excellent', () => {
   const cases: [number, string][] = [

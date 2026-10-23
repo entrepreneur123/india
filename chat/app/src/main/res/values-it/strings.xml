@@ -151,6 +151,11 @@
     <string name="otp_title">Inserisci il codice</string>
     <string name="country">Paese</string>
     <string name="search_country">Cerca paese o prefisso</string>
+    <string name="meet_countries">Paesi</string>
+    <string name="meet_anywhere">Ovunque</string>
+    <string name="meet_countries_title">Scegli i paesi</string>
+    <string name="meet_countries_hint">Gratis · fino a %1$d paesi</string>
+    <string name="meet_countries_only">Solo persone di questi paesi</string>
     <string name="lobby_sub">Prima si scrive. Il video solo se lo volete entrambi.</string>
     <string name="get_plus">Ottieni Plus</string>
     <string name="plan_badge_plus">Plus</string>

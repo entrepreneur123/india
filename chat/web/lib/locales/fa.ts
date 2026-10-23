@@ -75,6 +75,12 @@ const fa: Dict = {
   'country.search': 'جستجوی کشور یا کد',
   'country.searchLabel': 'جستجوی کشور',
   'country.none': 'کشوری پیدا نشد',
+  'countries.label': 'کشورها',
+  'countries.anywhere': 'هر جا',
+  'countries.title': 'انتخاب کشورها',
+  'countries.hint': 'رایگان · تا {n} کشور',
+  'countries.done': 'تمام',
+  'countries.only': 'فقط افراد این کشورها',
 
   'otp.change': 'تغییر شماره',
   'otp.title': 'کد را وارد کنید',

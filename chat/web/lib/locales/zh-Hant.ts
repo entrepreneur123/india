@@ -75,6 +75,12 @@ const zhHant: Dict = {
   'country.search': '搜尋國家/地區或代碼',
   'country.searchLabel': '搜尋國家/地區',
   'country.none': '未找到國家/地區',
+  'countries.label': '國家',
+  'countries.anywhere': '不限',
+  'countries.title': '選擇國家',
+  'countries.hint': '免費 · 最多 {n} 個國家',
+  'countries.done': '完成',
+  'countries.only': '只配對這些國家的人',
 
   'otp.change': '更換手機號碼',
   'otp.title': '輸入驗證碼',

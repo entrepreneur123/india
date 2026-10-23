@@ -151,6 +151,11 @@
     <string name="otp_title">Introdu codul</string>
     <string name="country">Țară</string>
     <string name="search_country">Caută țara sau prefixul</string>
+    <string name="meet_countries">Țări</string>
+    <string name="meet_anywhere">Oriunde</string>
+    <string name="meet_countries_title">Alege țările</string>
+    <string name="meet_countries_hint">Gratuit · până la %1$d țări</string>
+    <string name="meet_countries_only">Doar oameni din aceste țări</string>
     <string name="lobby_sub">Mai întâi text. Video doar dacă amândoi vreți.</string>
     <string name="get_plus">Ia Plus</string>
     <string name="plan_badge_plus">Plus</string>

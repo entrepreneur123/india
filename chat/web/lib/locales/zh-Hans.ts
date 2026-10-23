@@ -75,6 +75,12 @@ const zhHans: Dict = {
   'country.search': '搜索国家/地区或代码',
   'country.searchLabel': '搜索国家/地区',
   'country.none': '未找到国家/地区',
+  'countries.label': '国家',
+  'countries.anywhere': '不限',
+  'countries.title': '选择国家',
+  'countries.hint': '免费 · 最多 {n} 个国家',
+  'countries.done': '完成',
+  'countries.only': '只匹配这些国家的人',
 
   'otp.change': '更换手机号',
   'otp.title': '输入验证码',

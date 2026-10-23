@@ -72,6 +72,12 @@ const hi: Dict = {
   'country.search': 'देश या कोड खोजें',
   'country.searchLabel': 'देश खोजें',
   'country.none': 'कोई देश नहीं मिला',
+  'countries.label': 'देश',
+  'countries.anywhere': 'कहीं भी',
+  'countries.title': 'देश चुनें',
+  'countries.hint': 'फ़्री · ज़्यादा से ज़्यादा {n} देश',
+  'countries.done': 'हो गया',
+  'countries.only': 'सिर्फ़ इन देशों के लोग',
 
   'otp.change': 'नंबर बदलें',
   'otp.title': 'कोड डालें',

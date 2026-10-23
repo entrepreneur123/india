@@ -72,6 +72,12 @@ const te: Dict = {
   'country.search': 'దేశం లేదా కోడ్ వెతకండి',
   'country.searchLabel': 'దేశం వెతుకు',
   'country.none': 'ఏ దేశమూ దొరకలేదు',
+  'countries.label': 'దేశాలు',
+  'countries.anywhere': 'ఎక్కడైనా',
+  'countries.title': 'దేశాలను ఎంచుకోండి',
+  'countries.hint': 'ఉచితం · గరిష్టంగా {n} దేశాలు',
+  'countries.done': 'పూర్తయింది',
+  'countries.only': 'ఈ దేశాల వారు మాత్రమే',
 
   'otp.change': 'నంబర్ మార్చు',
   'otp.title': 'కోడ్ ఎంటర్ చేయండి',

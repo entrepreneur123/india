@@ -72,6 +72,12 @@ const kn: Dict = {
   'country.search': 'ದೇಶ ಅಥವಾ ಕೋಡ್ ಹುಡುಕಿ',
   'country.searchLabel': 'ದೇಶ ಹುಡುಕಿ',
   'country.none': 'ಯಾವ ದೇಶವೂ ಸಿಗಲಿಲ್ಲ',
+  'countries.label': 'ದೇಶಗಳು',
+  'countries.anywhere': 'ಎಲ್ಲಿಯಾದರೂ',
+  'countries.title': 'ದೇಶಗಳನ್ನು ಆರಿಸಿ',
+  'countries.hint': 'ಉಚಿತ · ಗರಿಷ್ಠ {n} ದೇಶಗಳು',
+  'countries.done': 'ಮುಗಿದಿದೆ',
+  'countries.only': 'ಈ ದೇಶಗಳ ಜನರು ಮಾತ್ರ',
 
   'otp.change': 'ನಂಬರ್ ಬದಲಿಸಿ',
   'otp.title': 'ಕೋಡ್ ನಮೂದಿಸಿ',

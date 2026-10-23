@@ -75,6 +75,12 @@ const ja: Dict = {
   'country.search': '国名または番号で検索',
   'country.searchLabel': '国を検索',
   'country.none': '国が見つかりません',
+  'countries.label': '国',
+  'countries.anywhere': 'どこでも',
+  'countries.title': '国を選ぶ',
+  'countries.hint': '無料・最大{n}か国',
+  'countries.done': '完了',
+  'countries.only': '選んだ国の人だけを探しています',
 
   'otp.change': '電話番号を変更',
   'otp.title': 'コードを入力',

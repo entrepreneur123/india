@@ -10,7 +10,7 @@ import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 
 /** Country names in the user's language (Intl), with the English name as fallback and for search. */
-function useCountryNames() {
+export function useCountryNames() {
   const { locale } = useI18n()
   return useMemo(() => {
     let names: Intl.DisplayNames | null = null

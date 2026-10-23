@@ -7,6 +7,7 @@ import com.yaari.chat.data.Billing
 import com.yaari.chat.data.DemoBilling
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.data.Match
+import com.yaari.chat.data.MatchPrefs
 import com.yaari.chat.data.Products
 import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.domain.Countries
@@ -144,6 +145,21 @@ class AppViewModelTest {
         assertFalse("a gender pass is not Premium", withPass.state.value.premium)
         matched(withPass)
         assertEquals(Gender.FEMALE, withPass.state.value.chat!!.match.partner.gender)
+    }
+
+    @Test fun countriesToMeetAreFreeRememberedAndOnlyThoseMatch() = runTest(dispatcher) {
+        val prefs = MatchPrefs.Memory()
+        val vm = signedIn { AppViewModel(backend, DemoBilling(), clock = { now }, today = { today }, matchPrefs = prefs) }
+        vm.setCountries(listOf("JP", "KR", "JP") + Countries.all.map { it.iso }) // no repeats, at most 10
+        assertEquals(MatchPrefs.MAX, vm.state.value.countries.size)
+        assertEquals(listOf("JP", "KR"), vm.state.value.countries.take(2))
+        vm.setCountries(listOf("JP"))
+        assertNull("free: no paywall", vm.state.value.paywall)
+        assertEquals(listOf("JP"), prefs.countries)
+        assertEquals(listOf("JP"), AppViewModel(backend, DemoBilling(), matchPrefs = prefs).state.value.countries) // kept on this phone
+        assertNull("nobody from there: the search keeps going", backend.findMatch(Target.ANY, listOf("FR")))
+        matched(vm)
+        assertEquals("JP", vm.state.value.chat!!.match.partner.country)
     }
 
     @Test fun freeExitIsLockedForFiveSeconds() = runTest(dispatcher) {
@@ -366,7 +382,7 @@ class AppViewModelTest {
         val partner = FakeBackend.POOL.first()
         val left = mutableListOf<String>()
         val sameMatch = object : Backend by backend {
-            override suspend fun findMatch(target: Target): Match {
+            override suspend fun findMatch(target: Target, countries: List<String>): Match {
                 delay(900)
                 return Match("M", partner)
             }
@@ -391,10 +407,10 @@ class AppViewModelTest {
     @Test fun anOldSearchErrorDoesNotStopTheNewSearch() = runTest(dispatcher) {
         var calls = 0
         val flaky = object : Backend by backend {
-            override suspend fun findMatch(target: Target): Match? {
+            override suspend fun findMatch(target: Target, countries: List<String>): Match? {
                 delay(900)
                 if (++calls == 1) throw BackendException("network")
-                return backend.findMatch(target)
+                return backend.findMatch(target, countries)
             }
         }
         val vm = AppViewModel(flaky, DemoBilling(), clock = { now }, today = { today })
@@ -539,7 +555,7 @@ class AppViewModelTest {
         val visible = MutableStateFlow(true)
         var polls = 0
         val counting = object : Backend by backend {
-            override suspend fun findMatch(target: MatchTarget): Match? { polls++; return null }
+            override suspend fun findMatch(target: MatchTarget, countries: List<String>): Match? { polls++; return null }
         }
         val vm = signedIn { AppViewModel(counting, DemoBilling(), clock = { now }, today = { today }, foreground = visible) }
         vm.startMatching()

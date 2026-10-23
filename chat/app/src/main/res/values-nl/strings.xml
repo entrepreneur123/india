@@ -151,6 +151,11 @@
     <string name="otp_title">Voer de code in</string>
     <string name="country">Land</string>
     <string name="search_country">Zoek land of code</string>
+    <string name="meet_countries">Landen</string>
+    <string name="meet_anywhere">Overal</string>
+    <string name="meet_countries_title">Kies landen</string>
+    <string name="meet_countries_hint">Gratis · tot %1$d landen</string>
+    <string name="meet_countries_only">Alleen mensen uit deze landen</string>
     <string name="lobby_sub">Eerst tekst. Video alleen als jullie het allebei willen.</string>
     <string name="get_plus">Neem Plus</string>
     <string name="plan_badge_plus">Plus</string>

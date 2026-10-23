@@ -142,6 +142,11 @@
     <string name="otp_title">کد را وارد کنید</string>
     <string name="country">کشور</string>
     <string name="search_country">جستجوی کشور یا کد</string>
+    <string name="meet_countries">کشورها</string>
+    <string name="meet_anywhere">هر جا</string>
+    <string name="meet_countries_title">انتخاب کشورها</string>
+    <string name="meet_countries_hint">رایگان · تا %1$d کشور</string>
+    <string name="meet_countries_only">فقط افراد این کشورها</string>
     <string name="lobby_sub">اول پیام. تصویر فقط وقتی هر دو بخواهید.</string>
     <string name="get_plus">دریافت Plus</string>
     <string name="plan_badge_plus">Plus</string>

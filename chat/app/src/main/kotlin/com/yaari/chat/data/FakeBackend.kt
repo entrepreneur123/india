@@ -13,6 +13,7 @@ import com.yaari.chat.model.Profile
 import com.yaari.chat.model.RecentMatch
 import com.yaari.chat.model.ReportReason
 import com.yaari.chat.model.Target
+import com.yaari.chat.model.MANNERS
 import com.yaari.chat.model.NewVoiceRoom
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.LinkPreview
@@ -445,17 +446,19 @@ open class FakeBackend(
         phone = null
     }
 
-    override suspend fun findMatch(target: Target): Match? {
+    override suspend fun findMatch(target: Target, countries: List<String>): Match? {
         val me = me()
         requireVerified()
-        if (trustOf(me.id).manner < Trust.MANNER_FLOOR) throw BackendException("manner_low")
+        if (MANNERS && trustOf(me.id).manner < Trust.MANNER_FLOOR) throw BackendException("manner_low")
         if (target.isPaid && !entitlements.canChooseGender) throw BackendException("premium_required")
         matches.values.filter { !it.ended }.forEach { m ->
             if (clock() - m.startedAt < ExitPolicy.lockMs(entitlements.premium)) throw BackendException("exit_locked")
             m.end(clock())
         }
         wait(random.nextLong(900, 2200))
-        val partner = POOL.filter { target.accepts(it.gender) && it.id != me.id && it.id !in blocked && it.id != lastPartner }
+        val partner = POOL.filter {
+            target.accepts(it.gender) && (countries.isEmpty() || it.country in countries) && it.id != me.id && it.id !in blocked && it.id != lastPartner
+        }
             .randomOrNull(random) ?: return null
         val id = UUID.randomUUID().toString()
         matches[id] = FakeMatch(partner, clock())

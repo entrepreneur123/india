@@ -161,6 +161,11 @@
     <string name="otp_title">輸入驗證碼</string>
     <string name="country">國家/地區</string>
     <string name="search_country">搜尋國家/地區或代碼</string>
+    <string name="meet_countries">國家</string>
+    <string name="meet_anywhere">不限</string>
+    <string name="meet_countries_title">選擇國家</string>
+    <string name="meet_countries_hint">免費 · 最多 %1$d 個國家</string>
+    <string name="meet_countries_only">只配對這些國家的人</string>
     <string name="lobby_sub">先文字聊天。雙方都願意才開影片。</string>
     <string name="get_plus">開通 Plus</string>
     <string name="plan_badge_plus">Plus</string>

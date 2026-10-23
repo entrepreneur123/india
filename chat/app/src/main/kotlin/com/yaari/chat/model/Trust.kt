@@ -7,6 +7,12 @@ import com.yaari.chat.R
 // One person, one account: an ID document + liveness selfie verifies one account only; gender, date of birth and
 // country then come from the document and can't be changed. After a random chat both can rate each other once.
 
+/**
+ * Manners are off for now (043: the server no longer closes random chat for a low score). Scores, ratings and the
+ * manner_low sheet stay in the code but are neither asked for nor shown; set to true to bring them back.
+ */
+const val MANNERS = false
+
 /** A rating's tags: good ones are shown on profiles, bad ones only count (rate_chat's lists). */
 enum class MannerTag(val code: String, val good: Boolean, @StringRes val label: Int) {
     KIND("kind", true, R.string.tag_kind),

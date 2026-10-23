@@ -142,6 +142,7 @@ import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceLine
 import com.yaari.chat.model.VoiceMember
 import com.yaari.chat.model.VoiceReaction
+import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.VoiceRole
 import com.yaari.chat.model.VoiceRoom
 import com.yaari.chat.model.YouTube
@@ -806,6 +807,7 @@ private fun SeatPerson(member: VoiceMember, px: Dp, levels: State<Map<String, Fl
             )
             // Everyone on the stage at once: one batched trust() lookup.
             VerifiedMark(member.profile, Modifier.padding(start = 3.dp), size = if (wide) 15.dp else 12.dp)
+            if (member.role == VoiceRole.HOST) Text(flagOf(member.profile.country), Modifier.padding(start = 3.dp), fontSize = if (wide) 14.sp else 12.sp)
         }
         role?.let { RoleBadge(it) }
     }

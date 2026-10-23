@@ -612,8 +612,11 @@ export interface Backend {
   deleteAccount(): Promise<void>
   /** Phone number of the signed-in account, shown in Settings. */
   myPhone(): Promise<string | null>
-  /** Null = still queued; the UI calls again every 2 s. `lang` (the app language) is preferred in a partner. */
-  findMatch(target: Target, lang?: string): Promise<Match | null>
+  /**
+   * Null = still queued; the UI calls again every 2 s. `lang` (the app language) is preferred in a partner.
+   * `countries` (043, free): only people from these (ISO alpha-2, at most 10; empty = anywhere) whose own choice fits me.
+   */
+  findMatch(target: Target, lang?: string, countries?: readonly string[]): Promise<Match | null>
   cancelSearch(): Promise<void>
   /** While searching: called when the server pairs us, so the UI can ask again at once. Returns the stop function. */
   matchSignals(on: () => void): () => void

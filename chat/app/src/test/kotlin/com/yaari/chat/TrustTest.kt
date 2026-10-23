@@ -8,11 +8,13 @@ import com.yaari.chat.data.FirstRun
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.KycResult
+import com.yaari.chat.model.MANNERS
 import com.yaari.chat.model.MannerLevel
 import com.yaari.chat.model.MannerTag
 import com.yaari.chat.model.Target
 import com.yaari.chat.model.Trust
 import com.yaari.chat.ui.AppViewModel
+import com.yaari.chat.ui.ChatState
 import com.yaari.chat.ui.ProfileDraft
 import com.yaari.chat.ui.VerifyOrigin
 import com.yaari.chat.ui.VerifyPhase
@@ -58,8 +60,11 @@ class TrustTest {
         return vm
     }
 
-    /** A random chat where both wrote, then left normally. */
-    private fun TestScope.chatAndLeave(vm: AppViewModel, partnerWrites: Boolean = true): String {
+    /**
+     * A random chat where both wrote, then left normally. Manners are off (043): nothing asks for a rating; the chat as
+     * it ended is handed back so the rating rules can be checked on [com.yaari.chat.ui.TrustController.chatEnded].
+     */
+    private fun TestScope.chatAndLeave(vm: AppViewModel, partnerWrites: Boolean = true): ChatState {
         vm.startMatching()
         advanceTimeBy(5_000); runCurrent()
         val c = vm.state.value.chat ?: error("not matched")
@@ -74,10 +79,12 @@ class TrustTest {
             vm.sendText("Still there?")
             advanceUntilIdle()
         }
+        val ended = vm.state.value.chat!!
         vm.leave(next = false)
         advanceUntilIdle()
         assertNull(vm.state.value.chat)
-        return c.match.id
+        assertNull("manners are off: no rating sheet", vm.trust.state.value.rating)
+        return ended
     }
 
     // ---- verification ----
@@ -191,24 +198,24 @@ class TrustTest {
 
     // ---- manners ----
 
-    @Test fun mannerLowStopsTheSearchWithItsSheet() = runTest(dispatcher) {
+    @Test fun mannersAreOff() = assertFalse("043: turn back on in model/Trust.kt", MANNERS)
+
+    @Test fun aLowMannerScoreNoLongerStopsRandomChat() = runTest(dispatcher) {
         val vm = signedIn()
         backend.rateMe(good = false, n = 8)
-        assertEquals(19, FakeBackend.manner(0, 8))
+        assertEquals(19, FakeBackend.manner(0, 8)) // below the old floor (20)
         vm.startMatching()
         advanceTimeBy(5_000); runCurrent()
-        advanceUntilIdle()
-        assertFalse(vm.state.value.searching)
-        assertTrue(vm.trust.state.value.mannerLow)
-        assertNull(vm.state.value.notice)
-        assertEquals(19, vm.trust.state.value.mine!!.trust.manner)
-        vm.trust.dismissMannerLow()
+        assertNotNull("matched as usual", vm.state.value.chat)
         assertFalse(vm.trust.state.value.mannerLow)
+        assertNull(vm.state.value.notice)
     }
 
-    @Test fun afterARandomChatBothWroteInTheRatingIsAskedOnce() = runTest(dispatcher) {
+    @Test fun ratingAskedOnceWhenBothWroteForWhenMannersAreBack() = runTest(dispatcher) {
         val vm = signedIn()
-        val match = chatAndLeave(vm)
+        val c = chatAndLeave(vm)
+        val match = c.match.id
+        vm.trust.chatEnded(c) // what AppViewModel.leave does while MANNERS is on
         val r = vm.trust.state.value.rating ?: error("no rating sheet")
         assertEquals(match, r.matchId)
         val partner = r.partner.id
@@ -228,6 +235,8 @@ class TrustTest {
         assertTrue(match in vm.trust.state.value.mine!!.rated)
         val after = runTestTrust(partner)
         assertEquals(before.ratings + 1, after.ratings)
+        vm.trust.chatEnded(c)
+        assertNull("asked once", vm.trust.state.value.rating)
         // The server refuses a second rating of the same chat.
         try {
             backend.rateChat(match, true, emptyList()); fail()
@@ -241,27 +250,30 @@ class TrustTest {
         val quiet = FakeBackend(ControlledRandom(roll = 10), clock = { now }, today = { today }) // partners never answer (roll < 15)
         val vm2 = signedIn(server = quiet)
         vm2.startMatching(); advanceTimeBy(5_000); runCurrent()
-        val c = vm2.state.value.chat!!
         vm2.sendText("Hello?"); advanceUntilIdle()
         now += 10_000
+        val c = vm2.state.value.chat!!
         vm2.leave(next = false); advanceUntilIdle()
+        vm2.trust.chatEnded(c)
         assertNull("the partner never wrote", vm2.trust.state.value.rating)
         try {
             quiet.rateChat(c.match.id, true, emptyList()); fail()
         } catch (e: BackendException) {
             assertEquals("not_allowed", e.code)
         }
-        // Skipping closes the sheet.
-        chatAndLeave(vm)
+        // Skipping closes the sheet, and it isn't asked again.
+        val c2 = chatAndLeave(vm)
+        vm.trust.chatEnded(c2)
         assertNotNull(vm.trust.state.value.rating)
         vm.trust.skipRating()
+        assertNull(vm.trust.state.value.rating)
+        vm.trust.chatEnded(c2)
         assertNull(vm.trust.state.value.rating)
     }
 
     @Test fun ratingRulesAsTheServer() = runTest(dispatcher) {
         val vm = signedIn()
-        val match = chatAndLeave(vm)
-        vm.trust.skipRating()
+        val match = chatAndLeave(vm).match.id
         fun refused(code: String, block: suspend () -> Unit) = kotlinx.coroutines.runBlocking {
             try {
                 block(); fail("expected $code")

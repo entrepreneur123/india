@@ -3,6 +3,12 @@
 // types, so the unit tests run it directly (node --test).
 import type { KycResult, MyTrust, Trust } from './backend'
 
+/**
+ * Manners are off for now (043: the server no longer closes random chat for a low score). Scores, ratings and the
+ * manner_low sheet stay in the code but are neither asked for nor shown; set to true to bring them back.
+ */
+export const MANNERS = false
+
 /** Words a good rating can carry (the only ones ever shown to others). Same lists as rate_chat. */
 export const GOOD_TAGS = ['kind', 'funny', 'respectful', 'good_listener', 'interesting'] as const
 /** Words a bad rating can carry (never shown to anyone). */
@@ -13,7 +19,7 @@ export type RatingTag = GoodTag | BadTag
 export const MAX_RATING_TAGS = 3
 /** The score is shown once this many people have rated someone ("New here" before). */
 export const MIN_RATINGS_SHOWN = 3
-/** Below this random chat is closed (find_match2: 'manner_low'). */
+/** Below this random chat was closed (find_match2: 'manner_low'; off since 043). */
 export const MANNER_FLOOR = 20
 /** Everyone starts here. */
 export const MANNER_START = 50

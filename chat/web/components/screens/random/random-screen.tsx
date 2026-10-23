@@ -21,10 +21,11 @@ import { BellButton, InterestChips } from '@/components/social/bits'
 import { OnlineCount } from '@/components/social/online'
 import { useSocialT } from '@/components/social/social-text'
 import { retryImport } from '@/lib/retry-import'
-import { shouldAskRating } from '@/lib/trust'
+import { MANNERS, shouldAskRating } from '@/lib/trust'
 import { skippedRatings } from '@/components/trust/store'
 import type { RateTarget } from '@/components/trust/rating-sheet'
 import { TrustBadge } from '@/components/trust/badge'
+import { CountriesButton, flagsOf, saveCountries, savedCountries } from './country-picker'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
@@ -66,7 +67,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   const trustRef = useRef(trust)
   trustRef.current = trust
   const askRating = useCallback((m: Match) => {
-    const ask = shouldAskRating({
+    const ask = MANNERS && shouldAskRating({
       matchId: m.id,
       bothWrote: talked.current.get(m.id) === true,
       rated: [...ratedHere.current, ...(trustRef.current?.rated ?? [])],
@@ -79,6 +80,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   }, [])
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
+  const [countries, setCountries] = useState(savedCountries)
   const [match, setMatch] = useState<Live | null>(null)
   const [choiceOpen, setChoiceOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
@@ -108,7 +110,7 @@ export function RandomScreen({ active }: { active: boolean }) {
 
   const startMatching = useCallback(() => {
     void loadChat().catch(() => undefined)
-    void loadRating().catch(() => undefined)
+    if (MANNERS) void loadRating().catch(() => undefined)
     const g = ++generation.current
     searching.current = true
     setReconnecting(false)
@@ -123,7 +125,7 @@ export function RandomScreen({ active }: { active: boolean }) {
       clearTimeout(timer.current)
       let m: Match | null
       try {
-        m = await backend.findMatch(target, lang)
+        m = await backend.findMatch(target, lang, countries)
       } catch (err) {
         busy = false
         if (g !== generation.current) return
@@ -173,7 +175,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     endSignals()
     stopSignals.current = backend.matchSignals(() => void tick())
     void tick()
-  }, [backend, target, lang, openPaywall, toast, setTab, t])
+  }, [backend, target, lang, countries, openPaywall, toast, setTab, t])
 
   const cancelMatching = useCallback(() => {
     generation.current++
@@ -357,6 +359,13 @@ export function RandomScreen({ active }: { active: boolean }) {
                   else setTarget(v)
                 }}
               />
+              <CountriesButton
+                value={countries}
+                onChange={(c) => {
+                  setCountries(c)
+                  saveCountries(c)
+                }}
+              />
 
               <m.button
                 type="button"
@@ -378,11 +387,11 @@ export function RandomScreen({ active }: { active: boolean }) {
             </div>
           </m.section>
         ) : phase === 'matching' ? (
-          <Matching key="matching" target={target} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
+          <Matching key="matching" target={target} countries={countries} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
         ) : match ? (
           <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
             <ScreenBoundary>
-              <Suspense fallback={<Matching target={target} onCancel={() => undefined} />}>
+              <Suspense fallback={<Matching target={target} countries={countries} onCancel={() => undefined} />}>
                 <ChatView
                   matchId={match.id}
                   partner={match.partner}
@@ -440,11 +449,13 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
 
 function Matching({
   target,
+  countries,
   reconnecting = false,
   onCancel,
   active = false,
 }: {
   target: Target
+  countries: string[]
   reconnecting?: boolean
   onCancel: () => void
   active?: boolean
@@ -459,7 +470,7 @@ function Matching({
       aria-live="polite"
     >
       <span className="rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-        {t('matching.scope', { who })}
+        {countries.length ? `${who} · ${flagsOf(countries)}` : t('matching.scope', { who })}
       </span>
 
       <div className="relative mt-12 grid size-56 place-items-center">
@@ -472,7 +483,9 @@ function Matching({
       </div>
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
-      <p className="mt-2 h-5 text-sm text-muted-foreground">{reconnecting ? t('matching.reconnecting') : null}</p>
+      <p className="mt-2 h-5 text-sm text-muted-foreground">
+        {reconnecting ? t('matching.reconnecting') : countries.length ? t('countries.only') : null}
+      </p>
       {reconnecting ? null : <OnlineCount active={active} className="mt-1" />}
       <Button variant="outline" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>
         {t('matching.cancel')}

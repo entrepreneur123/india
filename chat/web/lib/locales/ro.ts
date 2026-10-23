@@ -73,6 +73,12 @@ const ro: Dict = {
   'country.search': 'Caută țara sau prefixul',
   'country.searchLabel': 'Caută țara',
   'country.none': 'Nu am găsit nicio țară',
+  'countries.label': 'Țări',
+  'countries.anywhere': 'Oriunde',
+  'countries.title': 'Alege țările',
+  'countries.hint': 'Gratuit · până la {n} țări',
+  'countries.done': 'Gata',
+  'countries.only': 'Doar oameni din aceste țări',
 
   'otp.change': 'Schimbă numărul',
   'otp.title': 'Introdu codul',

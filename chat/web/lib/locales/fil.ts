@@ -75,6 +75,12 @@ const fil: Dict = {
   'country.search': 'Maghanap ng bansa o code',
   'country.searchLabel': 'Maghanap ng bansa',
   'country.none': 'Walang nahanap na bansa',
+  'countries.label': 'Mga bansa',
+  'countries.anywhere': 'Kahit saan',
+  'countries.title': 'Pumili ng mga bansa',
+  'countries.hint': 'Libre · hanggang {n} bansa',
+  'countries.done': 'Tapos na',
+  'countries.only': 'Mga tao lang mula sa mga bansang ito',
 
   'otp.change': 'Palitan ang number',
   'otp.title': 'Ilagay ang code',

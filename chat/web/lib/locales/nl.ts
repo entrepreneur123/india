@@ -72,6 +72,12 @@ const nl: Dict = {
   'country.search': 'Zoek land of code',
   'country.searchLabel': 'Land zoeken',
   'country.none': 'Geen landen gevonden',
+  'countries.label': 'Landen',
+  'countries.anywhere': 'Overal',
+  'countries.title': 'Kies landen',
+  'countries.hint': 'Gratis · tot {n} landen',
+  'countries.done': 'Klaar',
+  'countries.only': 'Alleen mensen uit deze landen',
 
   'otp.change': 'Nummer wijzigen',
   'otp.title': 'Voer de code in',

@@ -4,7 +4,7 @@ import type { CSSProperties } from 'react'
 import { ChevronRight } from 'lucide-react'
 import type { Profile, Trust } from '@/lib/backend'
 import { flagEmoji } from '@/lib/format'
-import { LEVEL_COLORS, mannerLevel, mannerShown, type MannerLevel } from '@/lib/trust'
+import { LEVEL_COLORS, mannerLevel, MANNERS, mannerShown, type MannerLevel } from '@/lib/trust'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
@@ -103,11 +103,12 @@ const levelKey = (l: MannerLevel) => `manner.level.${l}` as TrustKey
 
 /**
  * Someone's manners: the gauge with the score and its level, and the good words people used most ("Kind ×12").
- * Under 3 ratings: "New here".
+ * Under 3 ratings: "New here". Nothing while manners are off (MANNERS).
  */
 export function MannerCard({ trust, className }: { trust: Trust | null; className?: string }) {
   const { num } = useI18n()
   const { tt, plural } = useTrustT()
+  if (!MANNERS) return null
   if (!trust) return <Skeleton className={cn('h-40 rounded-[28px]', className)} />
   const shown = mannerShown(trust.ratings)
   const level = mannerLevel(trust.manner)

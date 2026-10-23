@@ -162,6 +162,11 @@
     <string name="otp_title">کوڈ درج کریں</string>
     <string name="country">ملک</string>
     <string name="search_country">ملک یا کوڈ تلاش کریں</string>
+    <string name="meet_countries">ممالک</string>
+    <string name="meet_anywhere">کہیں بھی</string>
+    <string name="meet_countries_title">ممالک چنیں</string>
+    <string name="meet_countries_hint">مفت · زیادہ سے زیادہ %1$d ممالک</string>
+    <string name="meet_countries_only">صرف ان ممالک کے لوگ</string>
     <string name="lobby_sub">پہلے ٹیکسٹ۔ ویڈیو صرف تب جب دونوں چاہیں۔</string>
     <string name="get_plus">Plus لیں</string>
     <string name="plan_badge_plus">Plus</string>

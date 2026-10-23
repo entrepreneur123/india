@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yaari.chat.domain.flagOf
 import com.yaari.chat.R
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.VoiceRoomSummary
@@ -152,7 +153,7 @@ fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Mo
         Row(verticalAlignment = Alignment.CenterVertically) {
             Avatar(room.host, 20.dp)
             Text(
-                if (room.mine) stringResource(R.string.voice_your_room) + (room.code?.let { " · $it" } ?: "") else stringResource(R.string.voice_hosted_by, room.host.name),
+                if (room.mine) stringResource(R.string.voice_your_room) + (room.code?.let { " · $it" } ?: "") else stringResource(R.string.voice_hosted_by, room.host.name) + " " + flagOf(room.host.country),
                 Modifier.weight(1f).padding(start = 8.dp), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
             )

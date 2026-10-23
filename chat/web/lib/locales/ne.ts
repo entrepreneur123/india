@@ -72,6 +72,12 @@ const ne: Dict = {
   'country.search': 'देश वा कोड खोज्नुहोस्',
   'country.searchLabel': 'देश खोज्नुहोस्',
   'country.none': 'कुनै देश भेटिएन',
+  'countries.label': 'देशहरू',
+  'countries.anywhere': 'जहाँसुकै',
+  'countries.title': 'देशहरू छान्नुहोस्',
+  'countries.hint': 'निःशुल्क · बढीमा {n} देश',
+  'countries.done': 'भयो',
+  'countries.only': 'यी देशका मानिसहरू मात्र',
 
   'otp.change': 'नम्बर बदल्नुहोस्',
   'otp.title': 'कोड हाल्नुहोस्',

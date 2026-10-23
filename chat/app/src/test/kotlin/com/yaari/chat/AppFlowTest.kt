@@ -3,6 +3,7 @@ package com.yaari.chat
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -101,6 +102,25 @@ class AppFlowTest {
 
         // 3. Random tab; gender choice opens the paywall, then the 24 h gender pass
         shot("04_random")
+        // Countries to meet (free): pick two, see their flags, then back to anywhere.
+        compose.onNodeWithText("Countries").performClick()
+        waitFor("Choose countries")
+        val search = compose.onNode(hasSetTextAction())
+        search.performTextInput("Jap")
+        compose.onNodeWithText("Japan").performClick()
+        search.performTextClearance()
+        search.performTextInput("Kor")
+        compose.onNodeWithText("South Korea").performClick()
+        search.performTextClearance()
+        shot("04b_countries")
+        compose.onNodeWithText("Done").performClick()
+        compose.waitUntil(5_000) { vm.state.value.countries == listOf("JP", "KR") }
+        waitFor("🇯🇵 🇰🇷")
+        shot("04c_countries_chosen")
+        compose.onNodeWithText("Countries").performClick()
+        waitFor("Choose countries")
+        compose.onNodeWithText("Anywhere").performClick()
+        compose.waitUntil(5_000) { vm.state.value.countries.isEmpty() }
         compose.onNodeWithText("Women").performClick()
         waitFor("needs Plus")
         shot("05_paywall")
@@ -139,11 +159,9 @@ class AppFlowTest {
         waitFor("Leave this chat?")
         shot("10_exit_choice")
         compose.onNodeWithText("Back to lobby").performClick()
-        // Both wrote: how was it? (0.12.0 manners) Skipped here; TrustScreensTest rates.
-        waitFor("How was your chat with")
-        compose.onNodeWithText("Skip").performClick()
-        compose.waitUntil(5_000) { vm.trust.state.value.rating == null }
+        // Straight back to the lobby: manners are off (043), so no "how was it?" (TrustScreensTest covers the sheet).
         waitFor("Meet someone new")
+        assertNull(vm.trust.state.value.rating)
         assertNull(vm.state.value.chat)
 
         // 8. Recent: friends (with a request to accept) and matches

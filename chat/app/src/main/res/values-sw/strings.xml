@@ -142,6 +142,11 @@
     <string name="otp_title">Weka msimbo</string>
     <string name="country">Nchi</string>
     <string name="search_country">Tafuta nchi au msimbo</string>
+    <string name="meet_countries">Nchi</string>
+    <string name="meet_anywhere">Popote</string>
+    <string name="meet_countries_title">Chagua nchi</string>
+    <string name="meet_countries_hint">Bure · hadi nchi %1$d</string>
+    <string name="meet_countries_only">Watu wa nchi hizi tu</string>
     <string name="lobby_sub">Maandishi kwanza. Video pale tu nyote wawili mkitaka.</string>
     <string name="get_plus">Pata Plus</string>
     <string name="plan_badge_plus">Plus</string>

@@ -143,6 +143,11 @@
     <string name="otp_title">Kodu gir</string>
     <string name="country">Ülke</string>
     <string name="search_country">Ülke veya kod ara</string>
+    <string name="meet_countries">Ülkeler</string>
+    <string name="meet_anywhere">Her yer</string>
+    <string name="meet_countries_title">Ülke seç</string>
+    <string name="meet_countries_hint">Ücretsiz · en fazla %1$d ülke</string>
+    <string name="meet_countries_only">Yalnızca bu ülkelerden kişiler</string>
     <string name="lobby_sub">Önce yazışma. Görüntü sadece ikiniz de isterseniz.</string>
     <string name="get_plus">Plus al</string>
     <string name="plan_badge_plus">Plus</string>

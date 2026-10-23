@@ -74,6 +74,12 @@ const pl: Dict = {
   'country.search': 'Szukaj kraju lub numeru kierunkowego',
   'country.searchLabel': 'Szukaj kraju',
   'country.none': 'Nie znaleziono krajów',
+  'countries.label': 'Kraje',
+  'countries.anywhere': 'Gdziekolwiek',
+  'countries.title': 'Wybierz kraje',
+  'countries.hint': 'Za darmo · do {n} krajów',
+  'countries.done': 'Gotowe',
+  'countries.only': 'Tylko osoby z tych krajów',
 
   'otp.change': 'Zmień numer',
   'otp.title': 'Wpisz kod',

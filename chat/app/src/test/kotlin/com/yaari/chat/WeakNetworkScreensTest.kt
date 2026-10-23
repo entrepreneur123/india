@@ -44,8 +44,8 @@ class WeakNetworkScreensTest {
     private var searchDown = false
     private var sendDown = false
     private val flaky = object : Backend by fake {
-        override suspend fun findMatch(target: Target): Match? =
-            if (searchDown) throw BackendException("network") else fake.findMatch(target)
+        override suspend fun findMatch(target: Target, countries: List<String>): Match? =
+            if (searchDown) throw BackendException("network") else fake.findMatch(target, countries)
         override suspend fun send(matchId: String, text: String?, media: Media?): Message =
             if (sendDown) throw BackendException("network") else fake.send(matchId, text, media)
     }

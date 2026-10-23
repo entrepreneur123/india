@@ -32,7 +32,10 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.time.LocalDate
 
-/** 0.12.0 screens: verifying an identity, the seal next to names, manners on profiles, rating a chat, manner_low. */
+/**
+ * 0.12.0 screens: verifying an identity, the seal next to names, rating a chat. Manners are off (043): no scores on
+ * profiles, no manner_low sheet, no rating asked by itself (the sheet still works when handed a chat).
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35], qualifiers = "w393dp-h852dp-xxhdpi")
@@ -47,6 +50,9 @@ class TrustScreensTest {
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/trust_$name.png")
     }
+
+    private fun assertNone(text: String) =
+        assertTrue("\"$text\" is shown", compose.onAllNodes(hasText(text, substring = true)).fetchSemanticsNodes().isEmpty())
 
     private fun waitFor(text: String) =
         compose.waitUntil(5_000) { compose.onAllNodes(hasText(text, substring = true)).fetchSemanticsNodes().isNotEmpty() }
@@ -120,10 +126,10 @@ class TrustScreensTest {
         compose.runOnUiThread { vm.feed.closeDetail() }
         compose.runOnUiThread { vm.openProfile(FakeBackend.POOL.first { it.id == "p1" }) }
         waitFor("ID verified · Female · 22 · India")
-        waitFor("Great")
+        compose.waitUntil(5_000) { vm.trust.people.value.containsKey("p1") }
+        assertNone("Manners")
+        assertNone("Kind · 12")
         shot("12_their_profile")
-        compose.onAllNodes(hasScrollAction()).onLast().performScrollToNode(hasText("Kind · 12"))
-        shot("13_their_manners")
         compose.runOnUiThread { vm.closeProfile(); vm.openProfile(FakeBackend.POOL.first { it.id == "p2" }) }
         waitFor("Lucas")
         // Unverified and rated by few: the badge comes from the batched lookup (once the profile is on screen).
@@ -131,7 +137,7 @@ class TrustScreensTest {
             org.robolectric.shadows.ShadowLooper.idleMainLooper(50, java.util.concurrent.TimeUnit.MILLISECONDS) // the batch's short pause
             vm.trust.people.value.containsKey("p2")
         }
-        compose.onAllNodes(hasScrollAction()).onLast().performScrollToNode(hasText("Manners"))
+        assertNone("Manners")
         shot("14_unverified_profile")
     }
 
@@ -146,15 +152,21 @@ class TrustScreensTest {
         compose.mainClock.autoAdvance = false
         compose.runOnUiThread { vm.startMatching() }
         compose.waitUntil(5_000) { vm.state.value.chat != null }
-        // The reveal: the seal and "Great manners" (Priya, the first scripted partner).
+        // The reveal: the seal, no "Great manners" (Priya, the first scripted partner).
         compose.mainClock.advanceTimeBy(500)
+        assertNone("manners")
         shot("15_match_reveal")
         compose.mainClock.autoAdvance = true
         compose.runOnUiThread { vm.sendText("Hi! How is Mumbai today?") }
         compose.waitUntil(5_000) { vm.state.value.chat!!.messages.any { !it.fromMe } }
         shot("16_chat_header")
         now += 6_000
+        val ended = vm.state.value.chat!!
         compose.runOnUiThread { vm.leave(next = false) }
+        compose.waitUntil(5_000) { vm.state.value.chat == null }
+        assertNone("How was your chat with")
+        // The sheet itself, for when MANNERS is back on (AppViewModel.leave hands it the chat then).
+        compose.runOnUiThread { vm.trust.chatEnded(ended) }
         waitFor("How was your chat with")
         shot("17_rate_sheet")
         compose.onNodeWithText("Good").performClick()
@@ -173,17 +185,17 @@ class TrustScreensTest {
         assertTrue(vm.trust.state.value.mine!!.rated.isNotEmpty())
     }
 
-    @Test fun mannerLowSheet() {
+    @Test fun aLowMannerScoreShowsNothingAndRandomChatStaysOpen() {
         val vm = signIn()
         backend.rateMe(good = false, n = 10)
         backend.rateMe(good = true, n = 1, tags = listOf(MannerTag.FUNNY))
-        compose.runOnUiThread { vm.startMatching() }
-        waitFor("Random chat is paused")
-        shot("20_manner_low")
-        compose.onNodeWithText("Got it").performClick()
         compose.onNodeWithText("Me").performClick()
-        waitFor("Needs work")
-        compose.onAllNodes(hasScrollAction()).onLast().performScrollToNode(hasText("Needs work"))
-        shot("21_me_needs_work")
+        waitFor("Edit profile")
+        assertNone("Manners")
+        assertNone("Needs work")
+        shot("20_me_no_manners")
+        compose.runOnUiThread { vm.startMatching() }
+        compose.waitUntil(5_000) { vm.state.value.chat != null }
+        assertNone("Random chat is paused")
     }
 }

@@ -75,6 +75,12 @@ const tr: Dict = {
   'country.search': 'Ülke veya kod ara',
   'country.searchLabel': 'Ülke ara',
   'country.none': 'Ülke bulunamadı',
+  'countries.label': 'Ülkeler',
+  'countries.anywhere': 'Her yer',
+  'countries.title': 'Ülke seç',
+  'countries.hint': 'Ücretsiz · en fazla {n} ülke',
+  'countries.done': 'Tamam',
+  'countries.only': 'Yalnızca bu ülkelerden kişiler',
 
   'otp.change': 'Numarayı değiştir',
   'otp.title': 'Kodu gir',

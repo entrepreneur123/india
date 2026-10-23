@@ -432,11 +432,11 @@ export class SupabaseBackend implements Backend {
 
   // ---- matching & chat ----
 
-  async findMatch(target: Target, lang?: string): Promise<Match | null> {
+  async findMatch(target: Target, lang?: string, countries: readonly string[] = []): Promise<Match | null> {
     let id: string | null
     try {
       // The server prefers someone using the app in the same language for the first few seconds.
-      id = await this.rpc<string | null>('find_match2', { p_target: target, p_lang: lang ?? null })
+      id = await this.rpc<string | null>('find_match3', { p_target: target, p_lang: lang ?? null, p_countries: countries.length ? countries : null })
     } catch (e) {
       // A chat we just left (or abandoned) still holds the exit lock for a moment: keep waiting.
       if (e instanceof BackendError && e.code === 'exit_locked') return null

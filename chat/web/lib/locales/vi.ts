@@ -72,6 +72,12 @@ const vi: Dict = {
   'country.search': 'Tìm quốc gia hoặc mã',
   'country.searchLabel': 'Tìm quốc gia',
   'country.none': 'Không tìm thấy quốc gia',
+  'countries.label': 'Quốc gia',
+  'countries.anywhere': 'Bất kỳ đâu',
+  'countries.title': 'Chọn quốc gia',
+  'countries.hint': 'Miễn phí · tối đa {n} quốc gia',
+  'countries.done': 'Xong',
+  'countries.only': 'Chỉ người từ các quốc gia này',
 
   'otp.change': 'Đổi số',
   'otp.title': 'Nhập mã',

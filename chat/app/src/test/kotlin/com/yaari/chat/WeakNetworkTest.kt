@@ -81,7 +81,7 @@ class WeakNetworkTest {
         val attempts = mutableListOf<Long>()
         var now: () -> Long = { 0 }
         var failing = true
-        override suspend fun findMatch(target: Target): Match? {
+        override suspend fun findMatch(target: Target, countries: List<String>): Match? {
             attempts += now()
             if (failing) throw error()
             return null
@@ -116,9 +116,9 @@ class WeakNetworkTest {
     @Test fun aSearchThatRecoversFindsSomeoneAndClearsReconnecting() = runTest(dispatcher) {
         var calls = 0
         val flaky = object : Backend by fake {
-            override suspend fun findMatch(target: Target): Match? {
+            override suspend fun findMatch(target: Target, countries: List<String>): Match? {
                 if (++calls <= 3) throw BackendException("network") // a 5xx or timeout, mapped by the live backend
-                return fake.findMatch(target)
+                return fake.findMatch(target, countries)
             }
         }
         val vm = signedIn(flaky)
@@ -164,7 +164,7 @@ class WeakNetworkTest {
         val signals = MutableSharedFlow<Unit>()
         val polls = mutableListOf<Long>()
         val waiting = object : Backend by fake {
-            override suspend fun findMatch(target: Target): Match? { polls += currentTime; return null }
+            override suspend fun findMatch(target: Target, countries: List<String>): Match? { polls += currentTime; return null }
             override fun matchSignals(): Flow<Unit> = signals
         }
         val vm = signedIn(waiting)
@@ -293,7 +293,7 @@ class WeakNetworkTest {
         var searches = 0
         val spy = object : Backend by fake {
             override suspend fun leave(matchId: String) { delay(300); leaves += matchId; fake.leave(matchId) }
-            override suspend fun findMatch(target: Target): Match? { searches++; return fake.findMatch(target) }
+            override suspend fun findMatch(target: Target, countries: List<String>): Match? { searches++; return fake.findMatch(target, countries) }
         }
         val vm = signedIn(spy)
         vm.startMatching(); step(3_000)

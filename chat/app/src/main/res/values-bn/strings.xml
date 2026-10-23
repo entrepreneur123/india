@@ -161,6 +161,11 @@
     <string name="otp_title">কোডটি লিখুন</string>
     <string name="country">দেশ</string>
     <string name="search_country">দেশ বা কোড খুঁজুন</string>
+    <string name="meet_countries">দেশ</string>
+    <string name="meet_anywhere">যেকোনো জায়গা</string>
+    <string name="meet_countries_title">দেশ বাছুন</string>
+    <string name="meet_countries_hint">ফ্রি · সর্বোচ্চ %1$dটি দেশ</string>
+    <string name="meet_countries_only">শুধু এই দেশগুলোর মানুষ</string>
     <string name="lobby_sub">আগে টেক্সট। দুজনেই চাইলে তবেই ভিডিও।</string>
     <string name="get_plus">Plus নিন</string>
     <string name="plan_badge_plus">Plus</string>

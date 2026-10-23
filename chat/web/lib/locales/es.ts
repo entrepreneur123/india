@@ -73,6 +73,12 @@ const es: Dict = {
   'country.search': 'Busca un país o código',
   'country.searchLabel': 'Buscar país',
   'country.none': 'No se encontraron países',
+  'countries.label': 'Países',
+  'countries.anywhere': 'Cualquier lugar',
+  'countries.title': 'Elige países',
+  'countries.hint': 'Gratis · hasta {n} países',
+  'countries.done': 'Listo',
+  'countries.only': 'Solo personas de estos países',
 
   'otp.change': 'Cambiar número',
   'otp.title': 'Escribe el código',

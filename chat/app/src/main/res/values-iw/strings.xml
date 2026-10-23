@@ -142,6 +142,11 @@
     <string name="otp_title">מזינים את הקוד</string>
     <string name="country">מדינה</string>
     <string name="search_country">חיפוש מדינה או קידומת</string>
+    <string name="meet_countries">מדינות</string>
+    <string name="meet_anywhere">בכל מקום</string>
+    <string name="meet_countries_title">בחירת מדינות</string>
+    <string name="meet_countries_hint">חינם · עד %1$d מדינות</string>
+    <string name="meet_countries_only">רק אנשים מהמדינות האלה</string>
     <string name="lobby_sub">קודם טקסט. וידאו רק כששניכם רוצים.</string>
     <string name="get_plus">קבלת Plus</string>
     <string name="plan_badge_plus">Plus</string>

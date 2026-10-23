@@ -143,6 +143,11 @@
     <string name="otp_title">أدخل الرمز</string>
     <string name="country">الدولة</string>
     <string name="search_country">ابحث عن دولة أو رمز</string>
+    <string name="meet_countries">الدول</string>
+    <string name="meet_anywhere">أي مكان</string>
+    <string name="meet_countries_title">اختر الدول</string>
+    <string name="meet_countries_hint">مجانًا · حتى %1$d دول</string>
+    <string name="meet_countries_only">أشخاص من هذه الدول فقط</string>
     <string name="lobby_sub">الكتابة أولًا. الفيديو فقط عندما يريده كلاكما.</string>
     <string name="get_plus">احصل على Plus</string>
     <string name="plan_badge_plus">Plus</string>

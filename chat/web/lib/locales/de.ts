@@ -72,6 +72,12 @@ const de: Dict = {
   'country.search': 'Land oder Vorwahl suchen',
   'country.searchLabel': 'Land suchen',
   'country.none': 'Keine Länder gefunden',
+  'countries.label': 'Länder',
+  'countries.anywhere': 'Überall',
+  'countries.title': 'Länder wählen',
+  'countries.hint': 'Kostenlos · bis zu {n} Länder',
+  'countries.done': 'Fertig',
+  'countries.only': 'Nur Leute aus diesen Ländern',
 
   'otp.change': 'Nummer ändern',
   'otp.title': 'Code eingeben',

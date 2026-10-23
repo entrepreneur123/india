@@ -72,6 +72,12 @@ const ptBR: Dict = {
   'country.search': 'Buscar país ou código',
   'country.searchLabel': 'Buscar país',
   'country.none': 'Nenhum país encontrado',
+  'countries.label': 'Países',
+  'countries.anywhere': 'Qualquer lugar',
+  'countries.title': 'Escolha os países',
+  'countries.hint': 'Grátis · até {n} países',
+  'countries.done': 'Pronto',
+  'countries.only': 'Só pessoas destes países',
 
   'otp.change': 'Trocar número',
   'otp.title': 'Digite o código',

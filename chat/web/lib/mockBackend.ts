@@ -31,6 +31,7 @@ import {
   type LookWear,
 } from './backend'
 import { COUNTRIES } from './countries'
+import { MANNER_FLOOR, MANNERS } from './trust'
 import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
@@ -275,7 +276,7 @@ export class MockBackend implements Backend {
   private me: Profile | null = null
   private ent: Entitlements = { premium: false, genderPass: false }
   private searchPolls = 0
-  private searchTarget: Target | null = null
+  private searchTarget: string | null = null
   private matches = new Map<string, MatchState>()
   private recentList: RecentMatch[] = []
   private friendMap = new Map<string, FriendState>()
@@ -484,21 +485,23 @@ export class MockBackend implements Backend {
 
   /* ---------- random matching ---------- */
 
-  async findMatch(target: Target, _lang?: string) {
+  async findMatch(target: Target, _lang?: string, countries: readonly string[] = []) {
     this.requireMe()
     this.gate()
-    if ((this.flags.manner ?? 50) < 20) throw new BackendError('manner_low') // MANNER_FLOOR (lib/trust.ts)
+    if (MANNERS && (this.flags.manner ?? 50) < MANNER_FLOOR) throw new BackendError('manner_low')
     if (target !== 'any' && !this.ent.premium && !this.ent.genderPass) throw new BackendError('premium_required')
     await wait(jitter(300, 700))
-    if (this.searchTarget !== target) {
-      this.searchTarget = target
+    const key = `${target}:${countries.join()}`
+    if (this.searchTarget !== key) {
+      this.searchTarget = key
       this.searchPolls = 0
     }
     this.searchPolls++
     if (this.searchPolls < 2 + Math.floor(Math.random() * 2)) return null
     this.searchPolls = 0
     this.searchTarget = null
-    const pool = PEOPLE.filter((p) => target === 'any' || p.gender === target)
+    const pool = PEOPLE.filter((p) => (target === 'any' || p.gender === target) && (!countries.length || countries.includes(p.country ?? '')))
+    if (!pool.length) return null // nobody from those countries in the demo: keep searching
     const partner = pick(pool)
     const id = `m_${uid()}`
     this.matches.set(id, this.newMatchState(id, partner, 'random'))

@@ -91,6 +91,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yaari.chat.R
 import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.Countries
+import com.yaari.chat.model.MANNERS
 import com.yaari.chat.model.MannerLevel
 import com.yaari.chat.model.MannerTag
 import com.yaari.chat.model.Profile
@@ -223,10 +224,14 @@ private fun TagChip(text: String, color: Color, modifier: Modifier = Modifier) {
     )
 }
 
-/** Someone's manners: the gauge, the level, how many ratings, and their top kind words. [mine]: with the note. */
+/**
+ * Someone's manners: the gauge, the level, how many ratings, and their top kind words. [mine]: with the note. Nothing
+ * while manners are off ([MANNERS]).
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MannerCard(t: Trust, modifier: Modifier = Modifier, mine: Boolean = false) {
+    if (!MANNERS) return
     val level = t.level
     val tint = if (t.rated) Color(level.color) else MaterialTheme.colorScheme.onSurfaceVariant
     Column(
@@ -260,10 +265,10 @@ fun MannerCard(t: Trust, modifier: Modifier = Modifier, mine: Boolean = false) {
     }
 }
 
-/** "Great manners" for the match reveal (only once rated). */
+/** "Great manners" for the match reveal (only once rated, and while manners are on). */
 @Composable
 fun MannerChip(t: Trust?, modifier: Modifier = Modifier) {
-    if (t == null || !t.rated) return
+    if (!MANNERS || t == null || !t.rated) return
     val c = Color(t.level.color)
     Row(
         modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
@@ -349,7 +354,7 @@ fun TrustLayer(vm: AppViewModel, me: Profile) {
         exit = slideOutVertically(tween(260)) { it / 4 } + fadeOut(tween(200)),
     ) { last?.let { v -> VerifyScreen(vm, t.verify ?: v, me) } }
     t.rating?.let { RateChatSheet(vm, it) }
-    if (t.mannerLow) MannerLowSheet(vm, t.mine?.trust)
+    if (MANNERS && t.mannerLow) MannerLowSheet(vm, t.mine?.trust)
 }
 
 /** The provider's hosted page in a Chrome Custom Tab (the browser when there is none). False when nothing can open it. */

@@ -75,6 +75,12 @@ const ko: Dict = {
   'country.search': '국가 또는 코드 검색',
   'country.searchLabel': '국가 검색',
   'country.none': '국가를 찾을 수 없어요',
+  'countries.label': '국가',
+  'countries.anywhere': '어디든',
+  'countries.title': '국가 선택',
+  'countries.hint': '무료 · 최대 {n}개 국가',
+  'countries.done': '완료',
+  'countries.only': '선택한 국가의 사람만 만나요',
 
   'otp.change': '번호 변경',
   'otp.title': '인증번호를 입력해 주세요',

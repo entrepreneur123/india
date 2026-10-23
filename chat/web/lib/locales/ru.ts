@@ -77,6 +77,12 @@ const ru: Dict = {
   'country.search': 'Поиск страны или кода',
   'country.searchLabel': 'Поиск страны',
   'country.none': 'Страны не найдены',
+  'countries.label': 'Страны',
+  'countries.anywhere': 'Где угодно',
+  'countries.title': 'Выберите страны',
+  'countries.hint': 'Бесплатно · до {n} стран',
+  'countries.done': 'Готово',
+  'countries.only': 'Только люди из этих стран',
 
   'otp.change': 'Изменить номер',
   'otp.title': 'Введите код',

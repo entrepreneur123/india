@@ -142,6 +142,11 @@
     <string name="otp_title">ใส่รหัส</string>
     <string name="country">ประเทศ</string>
     <string name="search_country">ค้นหาประเทศหรือรหัส</string>
+    <string name="meet_countries">ประเทศ</string>
+    <string name="meet_anywhere">ที่ไหนก็ได้</string>
+    <string name="meet_countries_title">เลือกประเทศ</string>
+    <string name="meet_countries_hint">ฟรี · สูงสุด %1$d ประเทศ</string>
+    <string name="meet_countries_only">เฉพาะคนจากประเทศเหล่านี้</string>
     <string name="lobby_sub">พิมพ์คุยก่อน วิดีโอเฉพาะเมื่อทั้งคู่ต้องการ</string>
     <string name="get_plus">รับ Plus</string>
     <string name="plan_badge_plus">Plus</string>

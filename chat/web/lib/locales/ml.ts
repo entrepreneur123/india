@@ -72,6 +72,12 @@ const ml: Dict = {
   'country.search': 'രാജ്യമോ കോഡോ തിരയുക',
   'country.searchLabel': 'രാജ്യം തിരയുക',
   'country.none': 'രാജ്യങ്ങളൊന്നും കണ്ടെത്തിയില്ല',
+  'countries.label': 'രാജ്യങ്ങൾ',
+  'countries.anywhere': 'എവിടെയും',
+  'countries.title': 'രാജ്യങ്ങൾ തിരഞ്ഞെടുക്കുക',
+  'countries.hint': 'സൗജന്യം · പരമാവധി {n} രാജ്യങ്ങൾ',
+  'countries.done': 'കഴിഞ്ഞു',
+  'countries.only': 'ഈ രാജ്യങ്ങളിലെ ആളുകൾ മാത്രം',
 
   'otp.change': 'നമ്പർ മാറ്റുക',
   'otp.title': 'കോഡ് നൽകുക',

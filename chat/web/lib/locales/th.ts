@@ -75,6 +75,12 @@ const th: Dict = {
   'country.search': 'ค้นหาประเทศหรือรหัส',
   'country.searchLabel': 'ค้นหาประเทศ',
   'country.none': 'ไม่พบประเทศ',
+  'countries.label': 'ประเทศ',
+  'countries.anywhere': 'ที่ไหนก็ได้',
+  'countries.title': 'เลือกประเทศ',
+  'countries.hint': 'ฟรี · สูงสุด {n} ประเทศ',
+  'countries.done': 'เสร็จ',
+  'countries.only': 'เฉพาะคนจากประเทศเหล่านี้',
 
   'otp.change': 'เปลี่ยนเบอร์',
   'otp.title': 'ใส่รหัส',

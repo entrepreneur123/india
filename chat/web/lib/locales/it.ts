@@ -72,6 +72,12 @@ const it: Dict = {
   'country.search': 'Cerca paese o prefisso',
   'country.searchLabel': 'Cerca paese',
   'country.none': 'Nessun paese trovato',
+  'countries.label': 'Paesi',
+  'countries.anywhere': 'Ovunque',
+  'countries.title': 'Scegli i paesi',
+  'countries.hint': 'Gratis · fino a {n} paesi',
+  'countries.done': 'Fatto',
+  'countries.only': 'Solo persone di questi paesi',
 
   'otp.change': 'Cambia numero',
   'otp.title': 'Inserisci il codice',

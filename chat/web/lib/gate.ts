@@ -2,9 +2,10 @@
 // explains the manner score. The signed-in app listens (components/shell/app-shell.tsx); the toast hands these
 // over when someone is listening, and shows them as text otherwise (on the sign-up screens nobody is).
 import { BackendError } from './backend'
+import { MANNERS } from './trust'
 
 export type GateCode = 'verify_required' | 'manner_low'
-const CODES = new Set<string>(['verify_required', 'manner_low'])
+const CODES = new Set<string>(MANNERS ? ['verify_required', 'manner_low'] : ['verify_required'])
 const listeners = new Set<(code: GateCode) => void>()
 
 export function onGate(listener: (code: GateCode) => void) {

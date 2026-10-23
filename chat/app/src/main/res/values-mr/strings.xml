@@ -162,6 +162,11 @@
     <string name="otp_title">कोड टाका</string>
     <string name="country">देश</string>
     <string name="search_country">देश किंवा कोड शोधा</string>
+    <string name="meet_countries">देश</string>
+    <string name="meet_anywhere">कुठेही</string>
+    <string name="meet_countries_title">देश निवडा</string>
+    <string name="meet_countries_hint">मोफत · जास्तीत जास्त %1$d देश</string>
+    <string name="meet_countries_only">फक्त या देशांतील लोक</string>
     <string name="lobby_sub">आधी टेक्स्ट. व्हिडिओ फक्त तुम्हा दोघांना हवे असेल तेव्हा.</string>
     <string name="get_plus">Plus मिळवा</string>
     <string name="plan_badge_plus">Plus</string>

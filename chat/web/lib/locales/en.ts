@@ -74,6 +74,12 @@ const en = {
   'country.search': 'Search country or code',
   'country.searchLabel': 'Search country',
   'country.none': 'No countries found',
+  'countries.label': 'Countries',
+  'countries.anywhere': 'Anywhere',
+  'countries.title': 'Choose countries',
+  'countries.hint': 'Free · up to {n} countries',
+  'countries.done': 'Done',
+  'countries.only': 'Only people from these countries',
 
   'otp.change': 'Change number',
   'otp.title': 'Enter the code',

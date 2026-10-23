@@ -412,11 +412,15 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     // ---- matching & chat ----
 
-    /** find_match2 prefers a partner who uses the app in the same language for a few seconds, then anyone. */
-    override suspend fun findMatch(target: Target): Match? = call {
-        val raw = client.postgrest.rpc("find_match2", buildJsonObject {
+    /**
+     * find_match3 (043) prefers a partner who uses the app in the same language for a few seconds, then anyone; with
+     * [countries], only people from those whose own choice fits me (empty = anywhere).
+     */
+    override suspend fun findMatch(target: Target, countries: List<String>): Match? = call {
+        val raw = client.postgrest.rpc("find_match3", buildJsonObject {
             put("p_target", target.name.lowercase())
             put("p_lang", AppLocale.matchLanguage(app))
+            putJsonArray("p_countries") { countries.forEach { add(it) } }
         }).data.trim()
         if (raw == "null" || raw.isEmpty()) return@call null
         val id = json.decodeFromString<String>(raw)

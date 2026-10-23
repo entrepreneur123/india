@@ -75,6 +75,12 @@ const id: Dict = {
   'country.search': 'Cari negara atau kode',
   'country.searchLabel': 'Cari negara',
   'country.none': 'Negara tidak ditemukan',
+  'countries.label': 'Negara',
+  'countries.anywhere': 'Di mana saja',
+  'countries.title': 'Pilih negara',
+  'countries.hint': 'Gratis · hingga {n} negara',
+  'countries.done': 'Selesai',
+  'countries.only': 'Hanya orang dari negara-negara ini',
 
   'otp.change': 'Ganti nomor',
   'otp.title': 'Masukkan kode',

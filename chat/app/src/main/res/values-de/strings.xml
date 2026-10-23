@@ -142,6 +142,11 @@
     <string name="otp_title">Code eingeben</string>
     <string name="country">Land</string>
     <string name="search_country">Land oder Vorwahl suchen</string>
+    <string name="meet_countries">Länder</string>
+    <string name="meet_anywhere">Überall</string>
+    <string name="meet_countries_title">Länder wählen</string>
+    <string name="meet_countries_hint">Kostenlos · bis zu %1$d Länder</string>
+    <string name="meet_countries_only">Nur Leute aus diesen Ländern</string>
     <string name="lobby_sub">Erst Text. Video nur, wenn ihr beide wollt.</string>
     <string name="get_plus">Plus holen</string>
     <string name="plan_badge_plus">Plus</string>

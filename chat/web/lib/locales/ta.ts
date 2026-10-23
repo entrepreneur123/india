@@ -72,6 +72,12 @@ const ta: Dict = {
   'country.search': 'நாடு அல்லது கோடைத் தேடுங்கள்',
   'country.searchLabel': 'நாட்டைத் தேடு',
   'country.none': 'எந்த நாடும் கிடைக்கவில்லை',
+  'countries.label': 'நாடுகள்',
+  'countries.anywhere': 'எங்கும்',
+  'countries.title': 'நாடுகளைத் தேர்ந்தெடுக்கவும்',
+  'countries.hint': 'இலவசம் · அதிகபட்சம் {n} நாடுகள்',
+  'countries.done': 'முடிந்தது',
+  'countries.only': 'இந்த நாடுகளைச் சேர்ந்தவர்கள் மட்டும்',
 
   'otp.change': 'நம்பரை மாற்று',
   'otp.title': 'கோடை உள்ளிடுங்கள்',

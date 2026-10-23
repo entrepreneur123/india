@@ -162,6 +162,11 @@
     <string name="otp_title">ਕੋਡ ਦਰਜ ਕਰੋ</string>
     <string name="country">ਦੇਸ਼</string>
     <string name="search_country">ਦੇਸ਼ ਜਾਂ ਕੋਡ ਖੋਜੋ</string>
+    <string name="meet_countries">ਦੇਸ਼</string>
+    <string name="meet_anywhere">ਕਿਤੇ ਵੀ</string>
+    <string name="meet_countries_title">ਦੇਸ਼ ਚੁਣੋ</string>
+    <string name="meet_countries_hint">ਮੁਫ਼ਤ · ਵੱਧ ਤੋਂ ਵੱਧ %1$d ਦੇਸ਼</string>
+    <string name="meet_countries_only">ਸਿਰਫ਼ ਇਨ੍ਹਾਂ ਦੇਸ਼ਾਂ ਦੇ ਲੋਕ</string>
     <string name="lobby_sub">ਪਹਿਲਾਂ ਟੈਕਸਟ। ਵੀਡੀਓ ਸਿਰਫ਼ ਉਦੋਂ ਜਦੋਂ ਦੋਵੇਂ ਚਾਹੋ।</string>
     <string name="get_plus">Plus ਲਵੋ</string>
     <string name="plan_badge_plus">Plus</string>

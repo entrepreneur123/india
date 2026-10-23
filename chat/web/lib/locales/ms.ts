@@ -75,6 +75,12 @@ const ms: Dict = {
   'country.search': 'Cari negara atau kod',
   'country.searchLabel': 'Cari negara',
   'country.none': 'Tiada negara ditemui',
+  'countries.label': 'Negara',
+  'countries.anywhere': 'Di mana-mana',
+  'countries.title': 'Pilih negara',
+  'countries.hint': 'Percuma · sehingga {n} negara',
+  'countries.done': 'Siap',
+  'countries.only': 'Hanya orang dari negara-negara ini',
 
   'otp.change': 'Tukar nombor',
   'otp.title': 'Masukkan kod',

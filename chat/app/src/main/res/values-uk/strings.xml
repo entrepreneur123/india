@@ -143,6 +143,11 @@
     <string name="otp_title">Введіть код</string>
     <string name="country">Країна</string>
     <string name="search_country">Пошук країни або коду</string>
+    <string name="meet_countries">Країни</string>
+    <string name="meet_anywhere">Будь-де</string>
+    <string name="meet_countries_title">Виберіть країни</string>
+    <string name="meet_countries_hint">Безкоштовно · до %1$d країн</string>
+    <string name="meet_countries_only">Лише люди з цих країн</string>
     <string name="lobby_sub">Спочатку листування. Відео — лише якщо ви обоє хочете.</string>
     <string name="get_plus">Оформити Plus</string>
     <string name="plan_badge_plus">Plus</string>

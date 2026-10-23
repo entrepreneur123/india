@@ -77,6 +77,12 @@ const uk: Dict = {
   'country.search': 'Пошук країни або коду',
   'country.searchLabel': 'Пошук країни',
   'country.none': 'Країн не знайдено',
+  'countries.label': 'Країни',
+  'countries.anywhere': 'Будь-де',
+  'countries.title': 'Виберіть країни',
+  'countries.hint': 'Безкоштовно · до {n} країн',
+  'countries.done': 'Готово',
+  'countries.only': 'Лише люди з цих країн',
 
   'otp.change': 'Змінити номер',
   'otp.title': 'Введіть код',

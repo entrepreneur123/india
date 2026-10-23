@@ -163,6 +163,11 @@
     <string name="otp_title">Enter the code</string>
     <string name="country">Country</string>
     <string name="search_country">Search country or code</string>
+    <string name="meet_countries">Countries</string>
+    <string name="meet_anywhere">Anywhere</string>
+    <string name="meet_countries_title">Choose countries</string>
+    <string name="meet_countries_hint">Free · up to %1$d countries</string>
+    <string name="meet_countries_only">Only people from these countries</string>
     <string name="lobby_sub">Text first. Video only when you both want it.</string>
     <string name="get_plus">Get Plus</string>
     <string name="plan_badge_plus">Plus</string>

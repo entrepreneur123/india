@@ -79,6 +79,12 @@ const ar: Dict = {
   'country.search': 'ابحث عن دولة أو رمز',
   'country.searchLabel': 'البحث عن دولة',
   'country.none': 'لم يتم العثور على دول',
+  'countries.label': 'الدول',
+  'countries.anywhere': 'أي مكان',
+  'countries.title': 'اختر الدول',
+  'countries.hint': 'مجانًا · حتى {n} دول',
+  'countries.done': 'تم',
+  'countries.only': 'أشخاص من هذه الدول فقط',
 
   'otp.change': 'تغيير الرقم',
   'otp.title': 'أدخل الرمز',

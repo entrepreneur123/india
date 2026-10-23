@@ -100,8 +100,11 @@ interface Backend {
     /** A funnel step reached, for the team's diagnostics (log_events). Best effort, never throws; none in the demo. */
     fun track(step: Funnel) {}
 
-    /** One matching attempt. Null = queued; call again every couple of seconds. */
-    suspend fun findMatch(target: Target): Match?
+    /**
+     * One matching attempt. Null = queued; call again every couple of seconds. [countries] (043, free): only people
+     * from these (ISO codes, at most [MatchPrefs.MAX]; empty = anywhere) whose own choice fits me.
+     */
+    suspend fun findMatch(target: Target, countries: List<String> = emptyList()): Match?
     suspend fun cancelSearch()
     /**
      * Emits when the server may have just paired me (someone matched me while I was waiting), so the search polls at

@@ -76,6 +76,12 @@ const he: Dict = {
   'country.search': 'חיפוש מדינה או קידומת',
   'country.searchLabel': 'חיפוש מדינה',
   'country.none': 'לא נמצאו מדינות',
+  'countries.label': 'מדינות',
+  'countries.anywhere': 'בכל מקום',
+  'countries.title': 'בחירת מדינות',
+  'countries.hint': 'חינם · עד {n} מדינות',
+  'countries.done': 'סיום',
+  'countries.only': 'רק אנשים מהמדינות האלה',
 
   'otp.change': 'שינוי מספר',
   'otp.title': 'מזינים את הקוד',

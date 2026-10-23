@@ -72,6 +72,12 @@ const bn: Dict = {
   'country.search': 'দেশ বা কোড খুঁজুন',
   'country.searchLabel': 'দেশ খুঁজুন',
   'country.none': 'কোনো দেশ পাওয়া যায়নি',
+  'countries.label': 'দেশ',
+  'countries.anywhere': 'যেকোনো জায়গা',
+  'countries.title': 'দেশ বাছুন',
+  'countries.hint': 'ফ্রি · সর্বোচ্চ {n}টি দেশ',
+  'countries.done': 'হয়ে গেছে',
+  'countries.only': 'শুধু এই দেশগুলোর মানুষ',
 
   'otp.change': 'নম্বর বদলান',
   'otp.title': 'কোডটি লিখুন',

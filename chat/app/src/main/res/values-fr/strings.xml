@@ -142,6 +142,11 @@
     <string name="otp_title">Saisissez le code</string>
     <string name="country">Pays</string>
     <string name="search_country">Rechercher un pays ou un indicatif</string>
+    <string name="meet_countries">Pays</string>
+    <string name="meet_anywhere">Partout</string>
+    <string name="meet_countries_title">Choisir des pays</string>
+    <string name="meet_countries_hint">Gratuit · jusqu’à %1$d pays</string>
+    <string name="meet_countries_only">Uniquement des personnes de ces pays</string>
     <string name="lobby_sub">D’abord par écrit. La vidéo seulement si vous le voulez tous les deux.</string>
     <string name="get_plus">Obtenir Plus</string>
     <string name="plan_badge_plus">Plus</string>

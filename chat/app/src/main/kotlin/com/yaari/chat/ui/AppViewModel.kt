@@ -27,6 +27,8 @@ import com.yaari.chat.data.FirstRun
 import com.yaari.chat.data.LinkBus
 import com.yaari.chat.data.Push
 import com.yaari.chat.data.TranslatePrefs
+import com.yaari.chat.data.MatchPrefs
+import com.yaari.chat.model.MANNERS
 import com.yaari.chat.model.InboxItem
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.domain.Country
@@ -117,6 +119,8 @@ data class UiState(
     val prices: Map<String, String> = emptyMap(),
     val tab: Tab = Tab.RANDOM,
     val target: Target = Target.ANY,
+    /** The countries to meet (043, free; empty = anywhere), remembered on this phone. */
+    val countries: List<String> = emptyList(),
     val searching: Boolean = false,
     /** Searching, but the last attempt failed (weak or no network): the search keeps retrying. */
     val reconnecting: Boolean = false,
@@ -168,9 +172,11 @@ class AppViewModel(
     private val links: LinkBus = LinkBus.app,
     /** Chat translation settings (Settings > Translation); in memory for tests. */
     translatePrefs: TranslatePrefs = TranslatePrefs.Memory(),
+    /** The countries to meet in random chat; in memory for tests. */
+    private val matchPrefs: MatchPrefs = MatchPrefs.Memory(),
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UiState())
+    private val _state = MutableStateFlow(UiState(countries = matchPrefs.countries))
     val state: StateFlow<UiState> = _state.asStateFlow()
 
     private var matchJob: Job? = null
@@ -511,6 +517,12 @@ class AppViewModel(
         _state.update { it.copy(target = target) }
     }
 
+    fun setCountries(isos: List<String>) {
+        val c = isos.distinct().take(MatchPrefs.MAX)
+        matchPrefs.countries = c
+        _state.update { it.copy(countries = c) }
+    }
+
     fun showPaywall(reason: Paywall) = _state.update { it.copy(paywall = reason) }
 
     fun dismissPaywall() = _state.update { it.copy(paywall = null) }
@@ -669,7 +681,7 @@ class AppViewModel(
                     var failed: Exception? = null
                     // Not cancellable: if the server created a match, we must learn about it (see abandon()).
                     val m = try {
-                        withContext(NonCancellable) { backend.findMatch(s.target) }
+                        withContext(NonCancellable) { backend.findMatch(s.target, s.countries) }
                     } catch (e: OrphanMatchException) {
                         abandon(e.matchId) // paired, but the partner's profile couldn't load: end it and keep looking
                         null
@@ -898,7 +910,7 @@ class AppViewModel(
             val ended = _state.value.chat?.takeIf { it.match.id == c.match.id } ?: c
             // Only the chat that was left closes, and only once: a late answer must not close (or restart) a newer one.
             if (closeChat(c.match.id)) {
-                trust.chatEnded(ended) // how was it? (both wrote; once)
+                if (MANNERS) trust.chatEnded(ended) // how was it? (both wrote; once)
                 if (next) startMatching()
             }
         }

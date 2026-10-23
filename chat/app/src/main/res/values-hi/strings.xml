@@ -151,6 +151,11 @@
     <string name="otp_title">कोड डालें</string>
     <string name="country">देश</string>
     <string name="search_country">देश या कोड खोजें</string>
+    <string name="meet_countries">देश</string>
+    <string name="meet_anywhere">कहीं भी</string>
+    <string name="meet_countries_title">देश चुनें</string>
+    <string name="meet_countries_hint">फ़्री · ज़्यादा से ज़्यादा %1$d देश</string>
+    <string name="meet_countries_only">सिर्फ़ इन देशों के लोग</string>
     <string name="lobby_sub">पहले टेक्स्ट। वीडियो तभी, जब दोनों चाहें।</string>
     <string name="get_plus">Plus लें</string>
     <string name="plan_badge_plus">Plus</string>

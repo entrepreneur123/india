@@ -41,6 +41,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Public
@@ -78,6 +79,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yaari.chat.R
 import com.yaari.chat.data.AppForeground
+import com.yaari.chat.data.MatchPrefs
 import com.yaari.chat.data.awaitVisible
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.semantics
@@ -264,6 +266,8 @@ private fun RandomTab(vm: AppViewModel, s: UiState, inbox: Int, onSettings: () -
             }
             Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
                 TargetSelector(s.target, s.entitlements.canChooseGender, vm::setTarget)
+                Spacer(Modifier.height(8.dp))
+                CountriesChoice(s.countries, vm::setCountries)
                 Spacer(Modifier.height(16.dp))
                 PrimaryButton(
                     stringResource(R.string.start_chatting), vm::startMatching,
@@ -331,6 +335,49 @@ private fun TargetSelector(target: Target, unlocked: Boolean, onSelect: (Target)
     }
 }
 
+/** "🇰🇷 🇯🇵 +1": the first two flags of the countries to meet. */
+private fun flagsOf(isos: List<String>) = isos.take(2).joinToString(" ") { flagOf(it) } + if (isos.size > 2) " +${isos.size - 2}" else ""
+
+/** The countries to meet (043, free for everyone): "Countries · Anywhere" or their flags; a tap opens the picker. */
+@Composable
+private fun CountriesChoice(countries: List<String>, onChange: (List<String>) -> Unit) {
+    var open by rememberSaveable { mutableStateOf(false) }
+    val interaction = remember { MutableInteractionSource() }
+    Row(
+        Modifier.fillMaxWidth().height(48.dp).pressScale(interaction).clip(CircleShape).background(Color.White.copy(alpha = 0.08f))
+            .clickable(interaction, indication = null, role = Role.Button) { open = true }.padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Outlined.Public, null, Modifier.size(18.dp), tint = Color.White.copy(alpha = 0.7f))
+        Text(stringResource(R.string.meet_countries), Modifier.padding(start = 10.dp).weight(1f), color = Color.White, style = MaterialTheme.typography.labelLarge.copy(fontSize = 14.sp))
+        Text(
+            if (countries.isEmpty()) stringResource(R.string.meet_anywhere) else flagsOf(countries),
+            color = Color.White.copy(alpha = if (countries.isEmpty()) 0.7f else 1f), style = MaterialTheme.typography.labelLarge.copy(fontSize = if (countries.isEmpty()) 14.sp else 17.sp),
+        )
+        Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, Modifier.size(20.dp), tint = Color.White.copy(alpha = 0.7f))
+    }
+    if (open) {
+        var chosen by remember { mutableStateOf(countries) }
+        fun done(c: List<String>) { onChange(c); open = false }
+        CountrySheet(
+            onDismiss = { open = false }, chosen = chosen.toSet(), max = MatchPrefs.MAX,
+            top = {
+                Text(stringResource(R.string.meet_countries_title), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(R.string.meet_countries_hint, MatchPrefs.MAX), Modifier.padding(top = 2.dp, bottom = 12.dp),
+                    style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            bottom = {
+                Row(Modifier.padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SoftButton(stringResource(R.string.meet_anywhere), { done(emptyList()) }, Modifier.weight(1f), height = 52.dp)
+                    PrimaryButton(stringResource(R.string.done), { done(chosen) }, Modifier.weight(1f), height = 52.dp)
+                }
+            },
+        ) { c -> chosen = if (c.iso in chosen) chosen - c.iso else chosen + c.iso }
+    }
+}
+
 /** Flags circling the matching radar: the world is on the other side. */
 private val OrbitFlags = listOf("IN", "MX", "KR", "TR", "BR", "JP", "NG", "FR")
 
@@ -341,7 +388,7 @@ fun MatchingScreen(vm: AppViewModel, s: UiState) {
     Box(Modifier.fillMaxSize().background(Brand.Night).statusBarsPadding().navigationBarsPadding()) {
         Column(Modifier.fillMaxSize()) {
             Pill(
-                stringResource(R.string.looking_for, stringResource(s.target.label)),
+                stringResource(R.string.looking_for, stringResource(s.target.label)) + if (s.countries.isEmpty()) "" else " · " + flagsOf(s.countries),
                 Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp),
                 background = Color.White.copy(alpha = 0.07f), color = Color.White.copy(alpha = 0.8f),
                 leading = { Icon(Icons.Outlined.Public, null, Modifier.size(15.dp), tint = Color.White.copy(alpha = 0.8f)) },
@@ -370,7 +417,7 @@ fun MatchingScreen(vm: AppViewModel, s: UiState) {
                 Text(stringResource(R.string.finding), color = Color.White, style = MaterialTheme.typography.headlineSmall.copy(fontSize = 26.sp), textAlign = TextAlign.Center)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.matching_tip),
+                    stringResource(if (s.countries.isEmpty()) R.string.matching_tip else R.string.meet_countries_only),
                     color = Color.White.copy(alpha = 0.55f), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center,
                 )
                 // The last attempt failed (weak network); the search keeps going. Fixed height, so nothing jumps.

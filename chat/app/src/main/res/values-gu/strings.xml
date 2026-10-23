@@ -162,6 +162,11 @@
     <string name="otp_title">કોડ દાખલ કરો</string>
     <string name="country">દેશ</string>
     <string name="search_country">દેશ અથવા કોડ શોધો</string>
+    <string name="meet_countries">દેશો</string>
+    <string name="meet_anywhere">ક્યાંય પણ</string>
+    <string name="meet_countries_title">દેશો પસંદ કરો</string>
+    <string name="meet_countries_hint">મફત · વધુમાં વધુ %1$d દેશ</string>
+    <string name="meet_countries_only">ફક્ત આ દેશોના લોકો</string>
     <string name="lobby_sub">પહેલાં ટેક્સ્ટ. વીડિયો ફક્ત ત્યારે જ્યારે તમે બંને ઇચ્છો.</string>
     <string name="get_plus">Plus મેળવો</string>
     <string name="plan_badge_plus">Plus</string>

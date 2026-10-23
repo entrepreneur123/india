@@ -151,6 +151,11 @@
     <string name="otp_title">కోడ్ ఎంటర్ చేయండి</string>
     <string name="country">దేశం</string>
     <string name="search_country">దేశం లేదా కోడ్ వెతకండి</string>
+    <string name="meet_countries">దేశాలు</string>
+    <string name="meet_anywhere">ఎక్కడైనా</string>
+    <string name="meet_countries_title">దేశాలను ఎంచుకోండి</string>
+    <string name="meet_countries_hint">ఉచితం · గరిష్టంగా %1$d దేశాలు</string>
+    <string name="meet_countries_only">ఈ దేశాల వారు మాత్రమే</string>
     <string name="lobby_sub">ముందు టెక్స్ట్. ఇద్దరూ కోరుకుంటేనే వీడియో.</string>
     <string name="get_plus">Plus పొందండి</string>
     <string name="plan_badge_plus">Plus</string>

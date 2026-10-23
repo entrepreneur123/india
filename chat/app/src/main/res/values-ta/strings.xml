@@ -151,6 +151,11 @@
     <string name="otp_title">கோடை உள்ளிடுங்கள்</string>
     <string name="country">நாடு</string>
     <string name="search_country">நாடு அல்லது கோடைத் தேடுங்கள்</string>
+    <string name="meet_countries">நாடுகள்</string>
+    <string name="meet_anywhere">எங்கும்</string>
+    <string name="meet_countries_title">நாடுகளைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="meet_countries_hint">இலவசம் · அதிகபட்சம் %1$d நாடுகள்</string>
+    <string name="meet_countries_only">இந்த நாடுகளைச் சேர்ந்தவர்கள் மட்டும்</string>
     <string name="lobby_sub">முதலில் டெக்ஸ்ட். இருவரும் விரும்பினால் மட்டுமே வீடியோ.</string>
     <string name="get_plus">Plus பெறுங்கள்</string>
     <string name="plan_badge_plus">Plus</string>

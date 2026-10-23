@@ -16,6 +16,7 @@ import { TopicChip, TopicIcon } from '@/components/ui/topic-icons'
 import { categoryLabel, kindColor, kindTopic, refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
 import type { RoomFilter } from '@/components/screens/rooms/rooms-screen'
 import { cn } from '@/lib/utils'
+import { flagEmoji } from '@/lib/format'
 import { langName } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
 import { LiveBars } from './voice-stage'
@@ -173,6 +174,7 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
         <Avatar name={room.host.name} src={room.host.photoUrl} size={20} />
         <span className="min-w-0 flex-1 truncate">
           {room.mine ? t('voice.yourRoom') : t('voice.hostedBy', { name: room.host.name })}
+          {room.mine ? null : <span aria-hidden>{` ${flagEmoji(room.host.country)}`}</span>}
           {room.mine && room.code ? <span className="font-mono font-semibold tracking-wider" dir="ltr">{` · ${room.code}`}</span> : null}
         </span>
         <span className="flex shrink-0 items-center gap-1 tabular-nums">

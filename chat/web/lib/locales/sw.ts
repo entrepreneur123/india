@@ -75,6 +75,12 @@ const sw: Dict = {
   'country.search': 'Tafuta nchi au msimbo',
   'country.searchLabel': 'Tafuta nchi',
   'country.none': 'Hakuna nchi iliyopatikana',
+  'countries.label': 'Nchi',
+  'countries.anywhere': 'Popote',
+  'countries.title': 'Chagua nchi',
+  'countries.hint': 'Bure · hadi nchi {n}',
+  'countries.done': 'Tayari',
+  'countries.only': 'Watu wa nchi hizi tu',
 
   'otp.change': 'Badilisha namba',
   'otp.title': 'Weka msimbo',

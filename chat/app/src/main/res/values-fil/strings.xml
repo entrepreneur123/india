@@ -162,6 +162,11 @@
     <string name="otp_title">Ilagay ang code</string>
     <string name="country">Bansa</string>
     <string name="search_country">Maghanap ng bansa o code</string>
+    <string name="meet_countries">Mga bansa</string>
+    <string name="meet_anywhere">Kahit saan</string>
+    <string name="meet_countries_title">Pumili ng mga bansa</string>
+    <string name="meet_countries_hint">Libre · hanggang %1$d bansa</string>
+    <string name="meet_countries_only">Mga tao lang mula sa mga bansang ito</string>
     <string name="lobby_sub">Text muna. Video lang kapag pareho ninyong gusto.</string>
     <string name="get_plus">Kunin ang Plus</string>
     <string name="plan_badge_plus">Plus</string>
