@@ -2,6 +2,11 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.5: Android 효과음 두 번째부터 안 들리던 문제
+- 원인(추정, 실기기 미확인): 첫 무대 참여 뒤 LiveKit 때문에 폰이 통화 모드(MODE_IN_COMMUNICATION)로 남아, USAGE_VOICE_COMMUNICATION_SIGNALLING 소리가 수화기·무음 스트림으로 감. 또 정적 AudioTrack 재사용(stop+reloadStaticData+play)은 일부 기기에서 두 번째부터 무음.
+- 수정: 매번 새 AudioTrack, 통화 모드면 USAGE_VOICE_COMMUNICATION(보이스와 같은 경로·음량), 아니면 USAGE_ASSISTANCE_SONIFICATION.
+- 웹 데모(Chromium)에서는 3번 반복해도 매번 재생됨(play() 성공 확인).
+
 ## 2026-10-23 0.18.4: 효과음 = 무대(음성채팅) 오르내림 + 방 들어오고 나감, 끝낸 방 목록에서 즉시 제거
 - 음: 들어옴 880→1175Hz, 나감 392→262Hz (웹 `lib/room-sounds.ts` JOIN/LEAVE, Android `RoomSounds.JOIN/LEAVE`). 내 입장·퇴장은 1.2초 제한 없이 항상.
 - 목록: 서버 `voice_list3`는 원래 끝난 방을 바로 뺌(ended_at 조인). 문제는 클라이언트 캐시: 웹은 SWR `voiceRooms` 키를 끝내자마자 지우고 나간 뒤 다시 읽음, Android는 `_list`에서 바로 빼고 leaveVoice 끝난 뒤 refreshList.
