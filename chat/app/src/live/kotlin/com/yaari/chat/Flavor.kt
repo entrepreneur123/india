@@ -89,6 +89,7 @@ import com.yaari.chat.live.NudityModel
 import com.yaari.chat.live.PhotoModel
 import com.yaari.chat.live.PlayBilling
 import com.yaari.chat.live.SupabaseBackend
+import com.yaari.chat.live.VoiceGateProcessor
 import com.yaari.chat.model.Profile
 import com.yaari.chat.ui.Avatar
 import io.livekit.android.LiveKit
@@ -224,7 +225,7 @@ object Flavor {
                         videoEncoding = VideoPreset169.H720.encoding, simulcast = true, videoCodec = VideoCodec.VP8.codecName,
                     ),
                 ),
-            )
+            ).apply { audioProcessingController.setCapturePostProcessing(VoiceGateProcessor()) } // only while I talk
         }
         val remote = remember(room) { TextureViewRenderer(context).also { room.initVideoRenderer(it) } }
         // Only my own preview is mirrored, like a mirror; what my partner receives is not.

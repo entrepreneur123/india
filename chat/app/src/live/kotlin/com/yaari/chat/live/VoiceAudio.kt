@@ -58,7 +58,7 @@ class VoiceAudio(private val context: Context, private val scope: CoroutineScope
             audioTrackCaptureDefaults = LocalAudioTrackOptions(noiseSuppression = true, echoCancellation = true, autoGainControl = true),
             audioTrackPublishDefaults = AudioTrackPublishDefaults(audioBitrate = AudioPresets.MUSIC.maxBitrate, dtx = true, red = true),
         ),
-    )
+    ).apply { audioProcessingController.setCapturePostProcessing(VoiceGateProcessor()) } // only while I talk
     private var leaving = false
     private var released = false
     private var micWanted = false

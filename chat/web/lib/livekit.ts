@@ -16,6 +16,7 @@ import {
   Track,
   VideoPresets,
 } from 'livekit-client'
+import { gateMicrophone } from './voice-gate'
 import { type DeviceProblem, deviceProblem, partnerNotice, type Quality, videoCodecFor } from './rtc'
 
 export type CallState = 'connecting' | 'connected' | 'reconnecting' | 'failed'
@@ -76,6 +77,7 @@ export async function joinCall(
       forceStereo: false,
     },
   })
+  gateMicrophone(room)
   let leaving = false
   signal?.addEventListener('abort', () => {
     leaving = true

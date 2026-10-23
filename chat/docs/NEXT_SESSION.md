@@ -2,6 +2,11 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.19.0: 마이크 음성 게이트
+- Android `data/VoiceGate.kt`(10 ms 프레임, WebRTC float 16비트 스케일) + `live/VoiceGateProcessor.kt`(LiveKit capture post-processing, ByteBuffer는 nativeOrder로 읽기: webrtc-sdk external_audio_processing_factory.cc가 float*를 NewDirectByteBuffer로 넘김). VoiceAudio·1:1 통화 Room에 setCapturePostProcessing.
+- 웹 `public/voice-gate.js`(AudioWorklet) + `lib/voice-gate.ts`(LiveKit setProcessor, 트랙에 AudioContext 지정). PC만(아이폰·안드로이드 웹은 AudioContext 문제로 제외). 테스트: VoiceGateTest, voice-gate.test.ts, Chromium 가짜 마이크로 setProcessor 통과 확인.
+- 남은 일: 기준값(-40/-46 dBFS)은 실기기 소리로 조정 필요할 수 있음. 더 필요하면 LiveKit Krisp(무료 플랜 포함 여부 미확인) 또는 RNNoise.
+
 ## 2026-10-23 0.18.9: 채팅 속 유튜브 재생, 나간 사람 프로필
 - 웹 `link-viewer.tsx` VideoInline(youtube-nocookie embed, 탭 전엔 썸네일), 링크 텍스트 클릭은 같은 줄의 플레이어를 켬. Android `InlineVideo`(한 번에 하나) + VideoCard 안 YouTubePlayerView, openLink는 카드가 화면에 있으면 그 자리 재생, 없으면 폰으로. 테스트: InlineVideoTest, 웹 Playwright(팝업 없이 iframe 1개).
 - 방 채팅 이름·사진: 방에 있으면 방 카드, 나갔으면 프로필(웹 voice-room `person`, Android VoiceRoom `person` + `VoiceLine.senderOf`). 원인: PersonSheet가 현재 멤버만 보여 줌(`if (!target) return null` / "they left" 닫기).
