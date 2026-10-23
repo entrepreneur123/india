@@ -56,8 +56,9 @@ interface RoomSounds {
     companion object {
         const val RATE = 22_050
         private const val KEY = "room_sounds"
-        private val JOIN = doubleArrayOf(660.0, 880.0)
-        private val LEAVE = doubleArrayOf(700.0, 520.0)
+        /** In: two high notes going up (A5 → D6). Out: two low notes going down (G4 → C4). As the web's. */
+        val JOIN = doubleArrayOf(880.0, 1175.0)
+        val LEAVE = doubleArrayOf(392.0, 262.0)
 
         /** A soft two-note chime (16-bit mono): each note fades in fast and out slowly. The web's chimeWav samples. */
         fun chime(notes: DoubleArray, noteMs: Int = 90, gain: Double = 0.22): ShortArray {
@@ -69,13 +70,17 @@ interface RoomSounds {
             }
         }
 
-        /** Someone else came in (true), left (false), or nothing worth a sound (null). The web's crowdChange. */
-        fun change(before: List<String>, after: List<String>, meId: String): Boolean? {
-            val was = before.toSet()
-            val now = after.toSet()
+        /**
+         * Someone else came into the room or anyone (me too) came up on the stage (true); someone else left or anyone
+         * stepped off the stage (false); nothing worth a sound (null). [before]/[after]: everyone, and who is on the
+         * stage. The web's crowdChange.
+         */
+        fun change(before: Pair<List<String>, List<String>>, after: Pair<List<String>, List<String>>, meId: String): Boolean? {
+            val (was, wasUp) = before.first.toSet() to before.second.toSet()
+            val (now, up) = after.first.toSet() to after.second.toSet()
             return when {
-                after.any { it != meId && it !in was } -> true
-                before.any { it != meId && it !in now } -> false
+                after.first.any { it != meId && it !in was } || after.second.any { it !in wasUp } -> true
+                before.first.any { it != meId && it !in now } || before.second.any { it !in up } -> false
                 else -> null
             }
         }

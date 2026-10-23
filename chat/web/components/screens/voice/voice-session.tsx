@@ -4,14 +4,15 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import { BackendError, type VoiceAction, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
+import { mutate, type Key } from 'swr'
+import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
 import { nextHost } from '@/lib/voice-lost'
-import { crowdChange, playRoomSound } from '@/lib/room-sounds'
+import { crowdChange, playRoomSound, type Crowd } from '@/lib/room-sounds'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -49,6 +50,9 @@ export class LevelStore {
     return () => void this.subs.delete(f)
   }
 }
+
+/** The rooms list's SWR keys (all rooms, or a search). */
+const isRoomList = (k: Key) => k === 'voiceRooms' || (Array.isArray(k) && k[0] === 'voiceRooms')
 
 export const useLevel = (store: LevelStore, id: string) => useSyncExternalStore(store.subscribe, () => store.get(id), () => 0)
 export const useLoudest = (store: LevelStore) => useSyncExternalStore(store.subscribe, store.loudest, () => null)
@@ -223,7 +227,8 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
       typingSeen.current.clear()
       unsubscribe()
       levels.set({})
-      void backend.leaveVoice(roomId).catch(() => undefined)
+      // The list shows it at once: my room gone after I end it, one person fewer after I leave.
+      void backend.leaveVoice(roomId).catch(() => undefined).finally(() => void mutate(isRoomList))
     }
   }, [backend, roomId, addLines, levels, toast, ending])
 
@@ -243,19 +248,21 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => clearTimeout(id)
   }, [typingTick, memberKey, room?.meId])
 
-  // Chimes: I came in, I left, someone else came or went (rooms up to 50 people; a crowd would ring all the time).
-  const crowd = useRef<string[] | null>(null)
+  // Chimes: I came in or left; someone else came or went, or anyone stepped on or off the stage (rooms up to 50
+  // people; a crowd would ring all the time).
+  const stageKey = room?.members.flatMap((x) => (x.seat === null ? [] : [x.profile.id])).join(',') ?? ''
+  const crowd = useRef<Crowd | null>(null)
   useEffect(() => {
     if (!room) return
-    const ids = memberKey.split(',')
+    const now: Crowd = { all: memberKey.split(','), stage: stageKey ? stageKey.split(',') : [] }
     const before = crowd.current
-    crowd.current = ids
-    if (!before) return playRoomSound('join')
-    const change = ids.length <= 50 ? crowdChange(before, ids, room.meId) : null
+    crowd.current = now
+    if (!before) return playRoomSound('join', true)
+    const change = now.all.length <= 50 ? crowdChange(before, now, room.meId) : null
     if (change) playRoomSound(change)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [memberKey])
-  useEffect(() => () => void (crowd.current && playRoomSound('leave')), [])
+  }, [memberKey, stageKey])
+  useEffect(() => () => void (crowd.current && playRoomSound('leave', true)), [])
 
   const lastTypingSent = useRef(0)
   const meName = me?.profile.name ?? ''
@@ -472,6 +479,8 @@ export function VoiceHost({
     ending.current = true
     try {
       await backend.endVoice(roomId)
+      // Gone from the list at once (then the list is read again).
+      void mutate<VoiceRoomSummary[]>(isRoomList, (list) => list?.filter((r) => r.id !== roomId))
       if (!quiet) toast.show(t('voice.endedByYou'), 'success')
       onClose()
       return true

@@ -123,10 +123,16 @@ class VoiceTest {
         assertEquals(Math.round(RoomSounds.RATE * 0.09).toInt() * 2, pcm.size)
         val peak = pcm.maxOf { kotlin.math.abs(it.toInt()) }
         assertTrue("$peak", peak in 1001 until 32_767 / 4)
-        assertEquals(true, RoomSounds.change(listOf("me", "a"), listOf("me", "a", "b"), "me"))
-        assertEquals(false, RoomSounds.change(listOf("me", "a", "b"), listOf("me", "b"), "me"))
-        assertEquals(null, RoomSounds.change(listOf("a"), listOf("a", "me"), "me"))
-        assertEquals(null, RoomSounds.change(listOf("me", "a"), listOf("a", "me"), "me"))
+        fun c(all: List<String>, stage: List<String> = emptyList()) = all to stage
+        assertEquals(true, RoomSounds.change(c(listOf("me", "a")), c(listOf("me", "a", "b")), "me"))
+        assertEquals(false, RoomSounds.change(c(listOf("me", "a", "b")), c(listOf("me", "b")), "me"))
+        assertEquals(null, RoomSounds.change(c(listOf("a")), c(listOf("a", "me")), "me"))
+        assertEquals(null, RoomSounds.change(c(listOf("me", "a")), c(listOf("a", "me")), "me"))
+        // On and off the stage (the voice chat), me included.
+        assertEquals(true, RoomSounds.change(c(listOf("me", "a")), c(listOf("me", "a"), listOf("me")), "me"))
+        assertEquals(false, RoomSounds.change(c(listOf("me", "a"), listOf("a")), c(listOf("me", "a")), "me"))
+        // In is high, out is low: more than an octave apart.
+        assertTrue(RoomSounds.JOIN.min() > 2 * RoomSounds.LEAVE.max())
     }
 
     @Test fun listenerJoinsSeesChatAndLeaves() = runTest(dispatcher) {

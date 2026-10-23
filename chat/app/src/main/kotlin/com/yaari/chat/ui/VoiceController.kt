@@ -153,10 +153,10 @@ class VoiceController(
     private var reactionSeq = 0L
     private var lastChime = Long.MIN_VALUE / 2
 
-    /** At most one chime every 1.2 s, so a busy room doesn't keep ringing. */
-    private fun chime(join: Boolean) {
+    /** Others' chimes at most one every 1.2 s, so a busy room doesn't keep ringing; [mine] (I came in or left) always. */
+    private fun chime(join: Boolean, mine: Boolean = false) {
         val now = wallClock()
-        if (!sounds.on || now - lastChime < CHIME_GAP_MS) return
+        if (!sounds.on || (!mine && now - lastChime < CHIME_GAP_MS)) return
         lastChime = now
         sounds.play(join)
     }
@@ -509,11 +509,12 @@ class VoiceController(
         val prev = _state.value?.takeIf { it.roomId == room.id }?.room
         val before = prev?.me
         update(room.id) { it.copy(room = room) }
-        // I came in; someone else came or went (rooms up to 50 people: a crowd would ring all the time).
-        val ids = room.members.map { it.profile.id }
+        // I came in; someone else came or went, or anyone stepped on or off the stage (rooms up to 50 people: a crowd
+        // would ring all the time).
+        fun crowd(r: VoiceRoom) = r.members.map { it.profile.id } to r.members.filter { it.onStage }.map { it.profile.id }
         when {
-            prev == null -> chime(true)
-            ids.size <= CHIME_MAX -> RoomSounds.change(prev.members.map { it.profile.id }, ids, room.meId)?.let(::chime)
+            prev == null -> chime(true, mine = true)
+            room.members.size <= CHIME_MAX -> RoomSounds.change(crowd(prev), crowd(room), room.meId)?.let { chime(it) }
         }
         val now = room.me ?: return
         // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.
@@ -534,15 +535,15 @@ class VoiceController(
     /** Out of the room: stop following it, and tell the server unless it already let me go. */
     private fun gone(roomId: String, leave: Boolean) {
         val s = _state.value?.takeIf { it.roomId == roomId } ?: return
-        if (s.room != null) chime(false)
+        if (s.room != null) chime(false, mine = true)
         val job = session
         session = null
         typingOff.values.forEach { it.cancel() }
         typingOff.clear()
         _state.value = null
         _levels.value = emptyMap()
-        if (leave) scope.launch { runCatching { backend.leaveVoice(roomId) } }
-        refreshList()
+        // The list is read again once the server has let me go (one person fewer, or my ended room gone).
+        if (leave) scope.launch { runCatching { backend.leaveVoice(roomId) }; refreshList() } else refreshList()
         job?.cancel()
     }
 
@@ -574,6 +575,7 @@ class VoiceController(
         scope.launch {
             try {
                 backend.endVoice(s.roomId)
+                _list.update { l -> l.copy(rooms = l.rooms?.filterNot { it.id == s.roomId }) } // gone from the list at once
                 if (!quiet) notice(UiText(R.string.voice_ended_by_you))
                 gone(s.roomId, leave = false)
             } catch (e: CancellationException) {

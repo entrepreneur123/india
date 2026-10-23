@@ -24,12 +24,17 @@ export function chimeWav(notes: number[], noteMs = 90, gain = 0.22): Uint8Array 
   return out
 }
 
-/** What changed between two member lists: someone else came in, left, or nothing worth a sound. */
-export function crowdChange(before: readonly string[], after: readonly string[], meId: string): 'join' | 'leave' | null {
-  const was = new Set(before)
-  const now = new Set(after)
-  if (after.some((id) => id !== meId && !was.has(id))) return 'join'
-  if (before.some((id) => id !== meId && !now.has(id))) return 'leave'
+/** Who is in the room, and who of them is on the stage (talking in the voice chat). */
+export type Crowd = { all: readonly string[]; stage: readonly string[] }
+
+/**
+ * What changed worth a sound: someone else came into the room, or anyone (me too) came up on the stage → 'join';
+ * someone else left the room, or anyone stepped off the stage → 'leave'.
+ */
+export function crowdChange(before: Crowd, after: Crowd, meId: string): 'join' | 'leave' | null {
+  const was = new Set(before.all), now = new Set(after.all), wasUp = new Set(before.stage), up = new Set(after.stage)
+  if (after.all.some((id) => id !== meId && !was.has(id)) || after.stage.some((id) => !wasUp.has(id))) return 'join'
+  if (before.all.some((id) => id !== meId && !now.has(id)) || before.stage.some((id) => !up.has(id))) return 'leave'
   return null
 }
 
@@ -49,15 +54,22 @@ export function setRoomSounds(on: boolean) {
   }
 }
 
+/** In: two high notes going up (A5 → D6). Out: two low notes going down (G4 → C4). */
+export const JOIN = [880, 1175]
+export const LEAVE = [392, 262]
+
 const urls: Partial<Record<'join' | 'leave', string>> = {}
 let last = 0
 
-/** Plays the chime (at most one every 1.2 s, so a busy room doesn't keep ringing). A blocked autoplay is silent. */
-export function playRoomSound(kind: 'join' | 'leave') {
+/**
+ * Plays the chime: others' at most one every 1.2 s, so a busy room doesn't keep ringing; `mine` (I came in or left)
+ * always. A blocked autoplay is silent.
+ */
+export function playRoomSound(kind: 'join' | 'leave', mine = false) {
   const now = Date.now()
-  if (!roomSoundsOn() || now - last < 1200) return
+  if (!roomSoundsOn() || (!mine && now - last < 1200)) return
   last = now
-  urls[kind] ??= URL.createObjectURL(new Blob([chimeWav(kind === 'join' ? [660, 880] : [700, 520]) as BlobPart], { type: 'audio/wav' }))
+  urls[kind] ??= URL.createObjectURL(new Blob([chimeWav(kind === 'join' ? JOIN : LEAVE) as BlobPart], { type: 'audio/wav' }))
   const a = new Audio(urls[kind])
   a.volume = 0.6
   void a.play().catch(() => undefined)

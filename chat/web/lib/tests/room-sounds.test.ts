@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { chimeWav, crowdChange } from '../room-sounds.ts'
+import { chimeWav, crowdChange, JOIN, LEAVE } from '../room-sounds.ts'
 
 test('chime: a valid 16-bit mono WAV of the right length, never clipping', () => {
   const w = chimeWav([660, 880], 90)
@@ -16,10 +16,19 @@ test('chime: a valid 16-bit mono WAV of the right length, never clipping', () =>
   assert.ok(peak > 1000 && peak < 32_767 * 0.25, String(peak))
 })
 
-test('crowd: someone else in or out; my own coming and going, and no change, ring nothing here', () => {
-  assert.equal(crowdChange(['me', 'a'], ['me', 'a', 'b'], 'me'), 'join')
-  assert.equal(crowdChange(['me', 'a', 'b'], ['me', 'b'], 'me'), 'leave')
-  assert.equal(crowdChange(['a'], ['a', 'me'], 'me'), null)
-  assert.equal(crowdChange(['me', 'a'], ['a', 'me'], 'me'), null)
-  assert.equal(crowdChange(['me', 'a'], ['me', 'b'], 'me'), 'join')
+test('crowd: someone else in or out of the room, anyone on or off the stage; my own coming in rings nothing here', () => {
+  const c = (all: string[], stage: string[] = []) => ({ all, stage })
+  assert.equal(crowdChange(c(['me', 'a']), c(['me', 'a', 'b']), 'me'), 'join')
+  assert.equal(crowdChange(c(['me', 'a', 'b']), c(['me', 'b']), 'me'), 'leave')
+  assert.equal(crowdChange(c(['a']), c(['a', 'me']), 'me'), null)
+  assert.equal(crowdChange(c(['me', 'a']), c(['a', 'me']), 'me'), null)
+  assert.equal(crowdChange(c(['me', 'a']), c(['me', 'a'], ['a']), 'me'), 'join')
+  assert.equal(crowdChange(c(['me', 'a']), c(['me', 'a'], ['me']), 'me'), 'join')
+  assert.equal(crowdChange(c(['me', 'a'], ['me', 'a']), c(['me', 'a'], ['a']), 'me'), 'leave')
+  assert.equal(crowdChange(c(['me', 'a'], ['a']), c(['me'], []), 'me'), 'leave')
+})
+
+test('in is high, out is low: every note of the join chime is above every note of the leave chime', () => {
+  assert.ok(Math.min(...JOIN) > 2 * Math.max(...LEAVE)) // more than an octave apart
+  assert.ok(JOIN[1] > JOIN[0] && LEAVE[1] < LEAVE[0])
 })
