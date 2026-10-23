@@ -2,6 +2,13 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 웹 Krisp + 에코 원인 실측
+- 사장님 테스트 기기(엣지 함수 로그 user agent): iPad 크롬, 안드로이드 파이어폭스, 윈도우 엣지 — 앱이 아니라 브라우저.
+- 실서버 E2E(테스트 번호 919000000001/2, Playwright 두 브라우저, 가짜 마이크): 받는 쪽 audio 요소 1개·트랙 1개, 클릭이 1초마다 한 번씩만 → 앱 경로에는 에코 없음. 같은 방 두 기기의 에코는 소리 경로(옆 기기 스피커 → 말하는 쪽 마이크).
+- Krisp: LiveKit /settings가 {"enhancedNoiseCancellation":true}. `lib/voice-gate.ts` cleanMicrophone(KrispNoiseFilter useBVC, 동적 import), 실패·미지원이면 PC만 게이트. CSP: connect-src integrations.livekit.io, script-src blob:(vercel.json과 scripts/csp-hashes.mjs 둘 다; 없으면 "Unable to load a worklet's module").
+- 실측: 잡음 -54→-83 dBFS(speech_hiss.wav), 에코 복사본(0.7초 뒤 -10 dB)은 Krisp 전후 모두 약 -12 dB → Krisp는 같은 사람 목소리의 되돌아옴은 못 지움(Google Meet도 같은 방 여러 기기는 '마이크·스피커 합치기' 기능으로 따로 처리).
+- 남은 일: Android 앱에도 Krisp(io.livekit:krisp-noise-filter) 넣을지 결정, 같은 방 기기 감지(Meet식) 여부.
+
 ## 2026-10-23 0.19.0: 마이크 음성 게이트
 - Android `data/VoiceGate.kt`(10 ms 프레임, WebRTC float 16비트 스케일) + `live/VoiceGateProcessor.kt`(LiveKit capture post-processing, ByteBuffer는 nativeOrder로 읽기: webrtc-sdk external_audio_processing_factory.cc가 float*를 NewDirectByteBuffer로 넘김). VoiceAudio·1:1 통화 Room에 setCapturePostProcessing.
 - 웹 `public/voice-gate.js`(AudioWorklet) + `lib/voice-gate.ts`(LiveKit setProcessor, 트랙에 AudioContext 지정). PC만(아이폰·안드로이드 웹은 AudioContext 문제로 제외). 테스트: VoiceGateTest, voice-gate.test.ts, Chromium 가짜 마이크로 setProcessor 통과 확인.

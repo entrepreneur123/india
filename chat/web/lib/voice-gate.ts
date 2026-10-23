@@ -1,7 +1,7 @@
 import { RoomEvent, Track, type AudioProcessorOptions, type LocalAudioTrack, type LocalTrackPublication, type Room, type TrackProcessor } from 'livekit-client'
 import { isAppleWebKit } from './rtc'
 
-/** The gate on the audio thread (public/voice-gate.js), as a LiveKit processor of my microphone. */
+/** The fallback gate on the audio thread (public/voice-gate.js), as a LiveKit processor of my microphone. */
 export function gate(): TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> {
   let nodes: AudioNode[] = []
   const p: TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> = {
@@ -28,21 +28,23 @@ export function gate(): TrackProcessor<Track.Kind.Audio, AudioProcessorOptions> 
 }
 
 /**
- * My microphone in [room] goes out only while I'm talking (public/voice-gate.js; the Android app's VoiceGate.kt).
- * Computers only: an AudioContext next to the call crackles on iPhone and opens a second audio stream on Android
- * phones (voice-audio.ts). Where it can't run, the microphone goes out as before.
+ * My microphone in [room], cleaned as Discord's is: LiveKit's Krisp noise filter with background voice cancellation
+ * (on our LiveKit Cloud project: its /settings says enhancedNoiseCancellation). It keeps the voice of the person at the
+ * phone and drops noise, hiss and other voices, the room's own voices coming back from another phone's speaker among
+ * them. Loaded only when the microphone goes on. Where Krisp can't run, computers get the voice gate (sent only while
+ * I talk; public/voice-gate.js, the Android app's VoiceGate.kt); elsewhere the microphone goes out as before.
  */
-export function gateMicrophone(room: Room) {
-  if (isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) || /Android/i.test(navigator.userAgent) || !('AudioWorkletNode' in window)) return
-  let ctx: AudioContext | null = null
-  room
-    .on(RoomEvent.LocalTrackPublished, (pub: LocalTrackPublication) => {
-      if (pub.source !== Track.Source.Microphone || !pub.track) return
-      const track = pub.track as LocalAudioTrack
-      ctx ??= new AudioContext()
-      void ctx.resume()
-      track.setAudioContext(ctx)
-      void track.setProcessor(gate()).catch(() => undefined)
-    })
-    .on(RoomEvent.Disconnected, () => void ctx?.close())
+export function cleanMicrophone(room: Room) {
+  room.on(RoomEvent.LocalTrackPublished, async (pub: LocalTrackPublication) => {
+    if (pub.source !== Track.Source.Microphone || !pub.track) return
+    const track = pub.track as LocalAudioTrack
+    try {
+      const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter')
+      if (isKrispNoiseFilterSupported()) return await track.setProcessor(KrispNoiseFilter({ useBVC: true }))
+    } catch {
+      /* not loaded or refused: the gate below */
+    }
+    const computer = !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent)
+    if (computer && 'AudioWorkletNode' in window) await track.setProcessor(gate()).catch(() => undefined)
+  })
 }

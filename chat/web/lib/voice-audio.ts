@@ -14,7 +14,7 @@ import {
   Track,
 } from 'livekit-client'
 import { isAppleWebKit } from './rtc'
-import { gateMicrophone } from './voice-gate'
+import { cleanMicrophone } from './voice-gate'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
 
@@ -56,7 +56,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   // 48 kHz, and one per speaker) can make the whole room crackle or sound metallic, and on Android phones it opens a
   // second audio stream beside the call's. There the rings use LiveKit's own speaker levels only.
   const analysers = !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent)
-  gateMicrophone(room)
+  cleanMicrophone(room)
   let leaving = false
   // Hidden <audio> elements, one per remote track; and an analyser per track for the speaking rings.
   const box = document.createElement('div')
