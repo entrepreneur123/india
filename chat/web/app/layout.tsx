@@ -11,10 +11,18 @@ const jakarta = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
+// Search and link-preview text; the store listing (docs/STORE_LISTING.md) uses the same words.
+const description =
+  'Random video chat and random text chat with people around the world. Join live voice rooms, make foreign friends and share your moments. 18+.'
+
 export const metadata: Metadata = {
-  title: 'yaari — meet someone new, anywhere',
-  description:
-    'Random video and text chat with people around the world, live public rooms, and a profile to share your moments.',
+  metadataBase: new URL('https://yaari-web-indol.vercel.app'),
+  title: 'Yaari — Random Video Chat & Voice Rooms | Make Friends Worldwide',
+  description,
+  keywords: ['random video chat', 'random chat', 'video chat', 'voice rooms', 'make friends', 'foreign friends',
+    'talk to strangers', 'meet new people', 'social app', 'रैंडम वीडियो चैट', '랜덤 영상채팅', '해외 친구 만들기', 'ランダムビデオチャット'],
+  openGraph: { title: 'Yaari — Random Video Chat', description, siteName: 'Yaari', type: 'website' },
+  twitter: { card: 'summary', title: 'Yaari — Random Video Chat', description },
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
   },
