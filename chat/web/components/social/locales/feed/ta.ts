@@ -76,11 +76,6 @@ const ta: FeedDict = {
   'prompt.secret': 'சிலருக்கு மட்டுமே தெரிந்த விஷயம்…',
 
   'profile.speaks': 'பேசும் மொழிகள்',
-  'profile.addStatus': 'ஸ்டேட்டஸ் சேர்',
-  'profile.promptsEmpty': 'உங்களிடம் என்ன கேட்பது என்று மற்றவர்களுக்குத் தெரிய ஒரு ப்ராம்ப்டுக்குப் பதிலளியுங்கள்',
-  'profile.likes': 'பிடித்தவை',
-  'style.promptsEdit': 'ப்ராம்ப்ட்களை எடிட் செய்',
-  'profile.posts': 'போஸ்ட்கள்',
 }
 
 export default ta

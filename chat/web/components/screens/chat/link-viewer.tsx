@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type MouseEvent, type R
 import { ExternalLink, LoaderCircle, RotateCw, X } from 'lucide-react'
 import { BackendError, type Backend, type LinkMeta } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { hostOf, isYouTube, previewLink, splitLinks } from '@/lib/links'
+import { framable, hostOf, isYouTube, previewLink, splitLinks } from '@/lib/links'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -12,11 +12,16 @@ import { TopicIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 
 // Links in chat (room chat, threads, random chats): shown as links (never as HTML), a preview card under the line,
-// and a viewer beside the chat: the page itself when the site allows being framed, else its card and "Open in
-// browser". Previews come from the link-meta edge function, once per address while the app is open.
+// and, for a site that allows being framed, a viewer beside the chat; any other link opens in a new browser tab.
+// Previews come from the link-meta edge function, once per address while the app is open.
 
 const MAX_CACHED = 200
 const cache = new Map<string, Promise<LinkMeta | null>>()
+/** Addresses whose page the viewer can show, known once their preview has loaded (a click needs the answer at once). */
+const canFrame = new Set<string>()
+
+/** The viewer can show this page (lib/links.ts framable). */
+export const frames = (meta: LinkMeta | null) => !!meta?.frameable && framable(meta, location.origin) // no `location` before a preview
 
 function metaFor(backend: Backend, url: string): Promise<LinkMeta | null> {
   const hit = cache.get(url)
@@ -24,7 +29,10 @@ function metaFor(backend: Backend, url: string): Promise<LinkMeta | null> {
   // link-meta reads https pages only: an http link gets its card from the address alone, without asking.
   const p = !url.startsWith('https://')
     ? Promise.resolve(null)
-    : backend.linkMeta(url).catch((err: unknown) => {
+    : backend.linkMeta(url).then((meta) => {
+        if (frames(meta)) canFrame.add(url)
+        return meta
+      }).catch((err: unknown) => {
         // A refused address stays refused; anything else (offline, a slow site) is asked again next time.
         if (!(err instanceof BackendError && err.code === 'bad_request')) cache.delete(url)
         return null
@@ -48,7 +56,8 @@ export function useLinkMeta(url: string | null) {
     }
   }, [backend, url])
   const current = state.url === url
-  return { meta: current ? state.meta : null, loading: !!url && !(current && state.done), failed: current && state.done && !state.meta }
+  const meta = current ? state.meta : null
+  return { meta, loading: !!url && !(current && state.done), failed: current && state.done && !state.meta, frames: frames(meta) }
 }
 
 /** Opens a link in the viewer beside the chat (absent: links open in a new tab). */
@@ -57,11 +66,14 @@ export const LinkOpenProvider = OpenContext.Provider
 
 const LINK_REL = 'noopener noreferrer nofollow'
 
-/** A plain click opens the viewer; a middle click or a modifier key keeps the browser's own new tab. */
+/**
+ * A plain click on a page that can be framed opens the viewer; any other link, a middle click or a modifier key keeps
+ * the browser's own new tab (no viewer that could only say "open it in your browser").
+ */
 function useOpener() {
   const open = useContext(OpenContext)
   return (url: string) => (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!open || isYouTube(url) || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    if (!open || !canFrame.has(url) || isYouTube(url) || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
     e.preventDefault()
     open(url)
   }
@@ -142,9 +154,9 @@ export function LinkCard({ url, className }: { url: string; className?: string }
 }
 
 /**
- * The page beside the chat. Shown in a frame when the site allows it (sandboxed, no referrer); otherwise its card,
- * a word on why, and "Open in browser". `label` sits over the title ("Shared by Asha"); `actions` go in the header
- * (the room's "Show to everyone"); `footer` under the page (a note for the room).
+ * The page beside the chat, in a frame (sandboxed, no referrer). Only framable pages open here; should the frame
+ * still be refused (this app's own CSP), its card, a word on why, and "Open in browser". `label` sits over the title
+ * ("Shared by Asha"); `actions` go in the header (the room's "View together"); `footer` under the framed page.
  */
 export function LinkPanel({
   url,
@@ -191,15 +203,7 @@ export function LinkPanel({
     document.addEventListener('securitypolicyviolation', onViolation)
     return () => document.removeEventListener('securitypolicyviolation', onViolation)
   }, [src])
-  // Never this app itself in a frame (the sandbox would not hold a page of the same origin).
-  const sameOrigin = (() => {
-    try {
-      return new URL(src).origin === location.origin
-    } catch {
-      return true
-    }
-  })()
-  const framed = !!meta?.frameable && !cspBlocked && !sameOrigin
+  const framed = frames(meta) && !cspBlocked
 
   return (
     <section aria-label={t('link.viewer')} className={cn('flex min-h-0 flex-col bg-card text-card-foreground', className)}>
@@ -276,7 +280,7 @@ export function LinkPanel({
           </div>
         )}
       </div>
-      {footer}
+      {framed ? footer : null}
     </section>
   )
 }

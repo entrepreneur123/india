@@ -93,3 +93,16 @@ export function mentionMatches<T extends { name: string }>(people: T[], query: s
   const has = people.filter((p) => !starts.includes(p) && p.name.toLocaleLowerCase().includes(q))
   return [...starts, ...has].slice(0, max)
 }
+
+/**
+ * Room reactions are moments: one older than `maxMs` (replayed) is not shown. Ages are judged on the server's clock,
+ * the newest row time seen so far, never the device's: a computer whose clock runs fast would drop every reaction.
+ * Feed it every row time (`reaction` false for other rows); true = show the reaction.
+ */
+export function reactionClock(maxMs = 15_000) {
+  let newest = 0
+  return (at: number, reaction: boolean) => {
+    newest = Math.max(newest, at)
+    return reaction && newest - at < maxMs
+  }
+}

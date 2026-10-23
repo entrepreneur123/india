@@ -56,7 +56,6 @@ const te: SocialDict = {
   'interests.skip': 'ప్రస్తుతానికి స్కిప్',
   'interests.label': 'ఆసక్తులు',
   'interests.edit': 'ఆసక్తులు ఎడిట్ చేయి',
-  'interests.add': 'మీ ఆసక్తులు యాడ్ చేయండి',
   'interests.common': 'ఇద్దరికీ ఇష్టం',
   'interests.saved': 'ఆసక్తులు సేవ్ అయ్యాయి',
   'tag.music': 'మ్యూజిక్',

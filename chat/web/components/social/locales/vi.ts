@@ -56,7 +56,6 @@ const vi: SocialDict = {
   'interests.skip': 'Để sau',
   'interests.label': 'Sở thích',
   'interests.edit': 'Sửa sở thích',
-  'interests.add': 'Thêm sở thích của bạn',
   'interests.common': 'Hai bạn cùng thích',
   'interests.saved': 'Đã lưu sở thích',
   'tag.music': 'Âm nhạc',

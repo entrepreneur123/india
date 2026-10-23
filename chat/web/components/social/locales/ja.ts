@@ -60,7 +60,6 @@ const ja: SocialDict = {
   'interests.skip': '今はスキップ',
   'interests.label': '興味',
   'interests.edit': '興味を編集',
-  'interests.add': '興味を追加',
   'interests.common': '共通の好きなこと',
   'interests.saved': '興味を保存しました',
   'tag.music': '音楽',

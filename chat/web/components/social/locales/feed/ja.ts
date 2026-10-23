@@ -82,11 +82,6 @@ const ja: FeedDict = {
 
   // a profile
   'profile.speaks': '話せる言語',
-  'profile.addStatus': 'ステータスを追加',
-  'profile.promptsEmpty': '質問に答えて、話しかけるきっかけを作ろう',
-  'profile.likes': '好きなこと',
-  'style.promptsEdit': '質問を編集',
-  'profile.posts': '投稿',
 }
 
 export default ja

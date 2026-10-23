@@ -53,7 +53,6 @@ const pa: SocialDict = {
   'interests.skip': 'ਹਾਲੇ ਛੱਡੋ',
   'interests.label': 'ਰੁਚੀਆਂ',
   'interests.edit': 'ਰੁਚੀਆਂ ਐਡਿਟ ਕਰੋ',
-  'interests.add': 'ਆਪਣੀਆਂ ਰੁਚੀਆਂ ਜੋੜੋ',
   'interests.common': 'ਤੁਹਾਨੂੰ ਦੋਵਾਂ ਨੂੰ ਪਸੰਦ ਹੈ',
   'interests.saved': 'ਰੁਚੀਆਂ ਸੇਵ ਹੋ ਗਈਆਂ',
   'tag.music': 'ਸੰਗੀਤ',

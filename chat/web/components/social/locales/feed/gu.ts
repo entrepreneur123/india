@@ -71,11 +71,6 @@ const gu: FeedDict = {
   'prompt.goal': 'આ વર્ષે હું ઇચ્છું છું…',
   'prompt.secret': 'એવી વાત જે ઓછા લોકો જાણે છે…',
   'profile.speaks': 'બોલે છે',
-  'profile.addStatus': 'સ્ટેટસ ઉમેરો',
-  'profile.promptsEmpty': 'કોઈ સવાલનો જવાબ આપો, જેથી લોકોને ખબર પડે કે તમને શું પૂછવું',
-  'profile.likes': 'પસંદ',
-  'style.promptsEdit': 'સવાલો એડિટ કરો',
-  'profile.posts': 'પોસ્ટ',
 }
 
 export default gu

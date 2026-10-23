@@ -73,6 +73,7 @@ export function Stage({
   room,
   levels,
   reactions,
+  layer = true,
   size,
   canManage,
   onPerson,
@@ -81,6 +82,8 @@ export function Stage({
   room: VoiceRoom
   levels: LevelStore
   reactions: Reaction[]
+  /** False when the screen floats the reactions itself (wide rooms). */
+  layer?: boolean
   size: StageSize
   canManage: boolean
   onPerson: (userId: string) => void
@@ -113,7 +116,7 @@ export function Stage({
           )
         })}
       </ol>
-      <ReactionLayer reactions={reactions} />
+      {layer ? <ReactionLayer reactions={reactions} /> : null}
     </section>
   )
 }

@@ -59,13 +59,12 @@ export function AccentAvatar({
 
 /**
  * The profile card in its frame: the photo in the frame's ring, name, age and flag, the decorated @ID, city, status,
- * bio and languages. `slot`: buttons in the card's top corner (settings, close); `statusSlot`: shown when there is no
- * status (my own "Add a status").
+ * bio and languages. `slot`: buttons in the card's top corner (settings, close). The status is a quote in plain text, so
+ * it never reads as part of the ID check's chip above it.
  */
 export function ProfileHero({
   profile,
   slot,
-  statusSlot,
   badge,
   verified,
   facts,
@@ -73,7 +72,6 @@ export function ProfileHero({
 }: {
   profile: Profile
   slot?: ReactNode
-  statusSlot?: ReactNode
   badge?: ReactNode
   /** The verified mark after the name (035). */
   verified?: boolean
@@ -103,18 +101,7 @@ export function ProfileHero({
           <p className="mt-2 max-w-sm rounded-full bg-primary-strong px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
         ) : null}
         {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
-        {style.status ? (
-          <p
-            className={cn(
-              'mt-3 max-w-sm rounded-full bg-primary-soft px-4 py-1.5 text-sm font-semibold text-balance',
-              ACCENT_TEXT,
-            )}
-          >
-            {style.status}
-          </p>
-        ) : (
-          statusSlot
-        )}
+        {style.status ? <p className="mt-3 max-w-sm px-4 text-[15px] text-balance text-muted-foreground italic">“{style.status}”</p> : null}
         {profile.bio ? <p className="mt-3 max-w-md px-4 text-[15px] leading-relaxed text-pretty">{profile.bio}</p> : null}
         <LanguageChips languages={style.languages} className="mt-3 justify-center px-4" />
       </section>

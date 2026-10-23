@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
+import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
@@ -73,6 +73,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const openLink = useCallback((url: string) => setViewer(url), [])
   const { room, me } = s
   const split = useWideSplit(room?.category ?? 'talk', rootRef, wide && !!room)
+  // A shared page that can't be framed is only a card that opens in a new tab (older apps could share any page).
+  const stageFrames = useLinkMeta(room?.stage?.url ?? null).frames
 
   if (!room || !me)
     return (
@@ -110,7 +112,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   // The page shown to the room, unless I closed it for myself; a link I opened myself goes over it.
   const stage = room.stage
   const stageShown = !!stage && closedStage.get(room.id) !== stageKey(stage)
-  const panelUrl = viewer ?? (stageShown && wide ? stage!.url : null)
+  const panelUrl = viewer ?? (stageShown && wide && stageFrames ? stage!.url : null)
   const panelShared = !!stage && panelUrl === stage.url
   const closePanel = () => {
     if (viewer) setViewer(null)
@@ -181,8 +183,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
     ) : null
   // Phones: the page shown to the room is a card (the sheet would cover the chat); wide screens show it in its column.
   const stageCard =
-    stage && !wide ? (
-      <StageCard stage={stage} mine={stage.byId === room.meId} closed={!stageShown} onOpen={reopenStage} onClose={() => {
+    stage && (!wide || !stageFrames) ? (
+      <StageCard stage={stage} mine={stage.byId === room.meId} closed={!stageShown} onOpen={stageFrames ? reopenStage : null} onStop={mod && !stageFrames ? () => void shareLink(null) : undefined} onClose={() => {
         closedStage.set(room.id, stageKey(stage))
         setClosedTick((n) => n + 1)
       }} />
@@ -243,14 +245,14 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         mod ? (
           panelShared ? (
             <Button size="sm" variant="secondary" onClick={() => void shareLink(null)} className="shrink-0 px-3" aria-label={rt('stopSharing')}>
-              <ScreenShareOff className="size-4" aria-hidden /> <span className="max-sm:sr-only">{rt('stopSharing')}</span>
+              <EyeOff className="size-4" aria-hidden /> <span className="max-sm:sr-only">{rt('stopSharing')}</span>
             </Button>
           ) : shareable(url) ? (
             <ShowEveryone url={url} onShare={(title) => void shareLink(url, title)} />
           ) : null
         ) : null
       }
-      footer={panelShared || (mod && shareable(url)) ? <p className="border-t border-border px-4 py-2 text-[11.5px] leading-snug text-muted-foreground">{rt('sharedNote')}</p> : null}
+      footer={panelShared || mod ? <p className="border-t border-border px-4 py-2 text-[11.5px] leading-snug text-muted-foreground">{rt('sharedNote')}</p> : null}
       className={wide ? 'h-full' : undefined}
     />
   )
@@ -280,9 +282,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
                 </button>
               </p>
             </div>
-            {stage && wide && !stageShown && !viewer ? (
+            {stage && wide && stageFrames && !stageShown && !viewer ? (
               <Button size="icon" variant="ghost" onClick={reopenStage} aria-label={rt('sharedPage')} title={rt('sharedPage')} className="text-primary-text">
-                <ScreenShare className="size-5" aria-hidden />
+                <AppWindow className="size-5" aria-hidden />
               </Button>
             ) : null}
             <Button
@@ -309,7 +311,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           <AudioNotice s={s} />
 
           {wide ? (
-            <div className="flex min-h-0 flex-1">
+            // Reactions float over the whole middle (and the page beside it), not inside the stage that may be scrolled away.
+            <div className="relative flex min-h-0 flex-1">
               <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', panelUrl && 'max-xl:hidden')}>
                 <div className="mx-auto flex max-w-3xl flex-col gap-3 pt-2 pb-6">{top}</div>
               </div>
@@ -324,6 +327,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
                   {panel(panelUrl)}
                 </m.div>
               ) : null}
+              <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
             <PhoneSplit key={kind} kind={kind} top={top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
@@ -445,40 +449,65 @@ function FoldedRoom({ room, onExpand }: { room: VoiceRoom; onExpand: () => void 
   )
 }
 
-/** "Show to everyone": the page's title (from its preview) goes with it. */
+/** "View together": the page opens beside everyone's chat; its title (from its preview) goes with it. Framable pages only. */
 function ShowEveryone({ url, onShare }: { url: string; onShare: (title: string | null) => void }) {
   const { rt } = useRoomT()
-  const { meta } = useLinkMeta(url)
+  const { meta, frames } = useLinkMeta(url)
+  if (!frames) return null
   return (
     <Button size="sm" variant="brand" onClick={() => onShare(meta?.title ?? null)} className="shrink-0 px-3" aria-label={rt('showEveryone')}>
-      <ScreenShare className="size-4" aria-hidden /> <span className="max-sm:sr-only">{rt('showEveryone')}</span>
+      <Users className="size-4" aria-hidden /> <span className="max-sm:sr-only">{rt('showEveryone')}</span>
     </Button>
   )
 }
 
-/** Phones: the page the host or a co-host shows the room, as a card above the chat (it opens in the sheet). */
-function StageCard({ stage, mine, closed, onOpen, onClose }: { stage: VoiceStage; mine: boolean; closed: boolean; onOpen: () => void; onClose: () => void }) {
+/**
+ * The page the host or a co-host shows the room, as a card above the chat: on phones it opens in the sheet; a page
+ * that can't be framed (`onOpen` null) opens in a new tab, on any screen.
+ */
+function StageCard({ stage, mine, closed, onOpen, onStop, onClose }: {
+  stage: VoiceStage; mine: boolean; closed: boolean; onOpen: (() => void) | null; onStop?: () => void; onClose: () => void
+}) {
   const { rt } = useRoomT()
-  if (closed)
-    return (
-      <button
-        type="button"
-        onClick={onOpen}
-        className="mx-3 flex h-9 items-center gap-2 self-start rounded-full bg-muted/70 px-3 text-xs font-semibold text-primary-text transition-colors duration-150 hover:bg-muted sm:mx-4"
-      >
-        <ScreenShare className="size-4" aria-hidden /> {rt('sharedPage')}
+  // Opens the page: in the viewer, or (not framable) as a plain link to a new tab.
+  const open = (className: string, children: ReactNode) =>
+    onOpen ? (
+      <button type="button" onClick={onOpen} className={className}>
+        {children}
       </button>
+    ) : (
+      <a href={stage.url} target="_blank" rel="noopener noreferrer nofollow" className={className}>
+        {children}
+      </a>
+    )
+  if (closed)
+    return open(
+      'mx-3 flex h-9 items-center gap-2 self-start rounded-full bg-muted/70 px-3 text-xs font-semibold text-primary-text transition-colors duration-150 hover:bg-muted sm:mx-4',
+      <>
+        <AppWindow className="size-4" aria-hidden /> {rt('sharedPage')}
+      </>,
     )
   return (
     <div className="mx-3 flex items-center gap-3 rounded-2xl bg-card p-2 ps-3 ring-1 ring-border sm:mx-4">
       <TopicIcon topic="globe" size={26} />
-      <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-start">
-        <span className="block truncate text-[11px] font-semibold text-primary-text">{mine ? rt('sharedByYou') : rt('sharedBy', { name: stage.by })}</span>
-        <span className="block truncate text-sm font-semibold">{stage.title || hostOf(stage.url)}</span>
-      </button>
-      <Button size="sm" variant="secondary" onClick={onOpen} className="shrink-0 px-3">
-        {rt('openShared')}
-      </Button>
+      {open(
+        'min-w-0 flex-1 text-start',
+        <>
+          <span className="block truncate text-[11px] font-semibold text-primary-text">{mine ? rt('sharedByYou') : rt('sharedBy', { name: stage.by })}</span>
+          <span className="block truncate text-sm font-semibold">{stage.title || hostOf(stage.url)}</span>
+        </>,
+      )}
+      {open(
+        'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-muted px-3 text-sm font-semibold transition-colors duration-150 hover:bg-input/60',
+        <>
+          {onOpen ? null : <ExternalLink className="size-4" aria-hidden />} {rt('openShared')}
+        </>,
+      )}
+      {onStop ? (
+        <Button size="icon-sm" variant="ghost" onClick={onStop} aria-label={rt('stopSharing')} title={rt('stopSharing')}>
+          <EyeOff className="size-4" aria-hidden />
+        </Button>
+      ) : null}
       <Button size="icon-sm" variant="ghost" onClick={onClose} aria-label={rt('closeForMe')} title={rt('closeForMe')}>
         <X className="size-4" aria-hidden />
       </Button>
@@ -562,7 +591,7 @@ function StageSection({
             transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
             className="-mx-3 overflow-hidden sm:-mx-4"
           >
-            <Stage room={room} levels={s.levels} reactions={s.reactions} size={wide ? 'md' : 'sm'} canManage={mod} onPerson={onPerson} onEmpty={onEmpty} />
+            <Stage room={room} levels={s.levels} reactions={s.reactions} layer={!wide} size={wide ? 'md' : 'sm'} canManage={mod} onPerson={onPerson} onEmpty={onEmpty} />
           </m.div>
         ) : (
           <m.div key="row" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} className="relative">

@@ -90,11 +90,6 @@ const ar: FeedDict = {
 
   // a profile
   'profile.speaks': 'يتحدث',
-  'profile.addStatus': 'إضافة حالة',
-  'profile.promptsEmpty': 'أجب عن سؤال ليعرف الناس ماذا يسألونك',
-  'profile.likes': 'يحب',
-  'style.promptsEdit': 'تعديل الأسئلة',
-  'profile.posts': 'المنشورات',
 }
 
 export default ar

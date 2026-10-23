@@ -82,11 +82,6 @@ const tr: FeedDict = {
 
   // a profile
   'profile.speaks': 'Konuştuğu diller',
-  'profile.addStatus': 'Durum ekle',
-  'profile.promptsEmpty': 'İnsanlar sana ne soracağını bilsin diye bir soruyu yanıtla',
-  'profile.likes': 'Sevdikleri',
-  'style.promptsEdit': 'Soruları düzenle',
-  'profile.posts': 'Gönderiler',
 }
 
 export default tr

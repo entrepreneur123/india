@@ -76,11 +76,6 @@ const te: FeedDict = {
   'prompt.secret': 'కొద్దిమందికే తెలిసిన విషయం…',
 
   'profile.speaks': 'మాట్లాడే భాషలు',
-  'profile.addStatus': 'స్టేటస్ యాడ్ చేయి',
-  'profile.promptsEmpty': 'మిమ్మల్ని ఏం అడగాలో ఇతరులకు తెలిసేలా ఒక ప్రాంప్ట్‌కు జవాబివ్వండి',
-  'profile.likes': 'ఇష్టాలు',
-  'style.promptsEdit': 'ప్రాంప్ట్‌లు ఎడిట్ చేయి',
-  'profile.posts': 'పోస్ట్‌లు',
 }
 
 export default te

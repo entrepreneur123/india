@@ -76,11 +76,6 @@ const nl: FeedDict = {
   'prompt.secret': 'Iets wat weinig mensen weten…',
 
   'profile.speaks': 'Spreekt',
-  'profile.addStatus': 'Status toevoegen',
-  'profile.promptsEmpty': 'Beantwoord een vraag, zodat mensen weten wat ze je kunnen vragen',
-  'profile.likes': 'Houdt van',
-  'style.promptsEdit': 'Vragen bewerken',
-  'profile.posts': 'Posts',
 }
 
 export default nl

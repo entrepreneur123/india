@@ -86,11 +86,6 @@ const uk: FeedDict = {
 
   // a profile
   'profile.speaks': 'Мови',
-  'profile.addStatus': 'Додати статус',
-  'profile.promptsEmpty': 'Дайте відповідь на питання, щоб людям було про що вас запитати',
-  'profile.likes': 'Інтереси',
-  'style.promptsEdit': 'Змінити питання',
-  'profile.posts': 'Дописи',
 }
 
 export default uk

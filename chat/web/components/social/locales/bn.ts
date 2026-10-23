@@ -56,7 +56,6 @@ const bn: SocialDict = {
   'interests.skip': 'এখন নয়',
   'interests.label': 'পছন্দ',
   'interests.edit': 'পছন্দ বদলান',
-  'interests.add': 'আপনার পছন্দ যোগ করুন',
   'interests.common': 'আপনাদের দুজনেরই পছন্দ',
   'interests.saved': 'পছন্দ সেভ হয়েছে',
   'tag.music': 'গান',

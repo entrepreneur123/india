@@ -56,7 +56,6 @@ const ne: SocialDict = {
   'interests.skip': 'अहिलेलाई छोड्नुहोस्',
   'interests.label': 'रुचिहरू',
   'interests.edit': 'रुचि सम्पादन गर्नुहोस्',
-  'interests.add': 'आफ्ना रुचि थप्नुहोस्',
   'interests.common': 'तपाईं दुवैलाई मन पर्छ',
   'interests.saved': 'रुचि सेभ भयो',
   'tag.music': 'म्युजिक',

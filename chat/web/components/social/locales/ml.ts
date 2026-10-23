@@ -56,7 +56,6 @@ const ml: SocialDict = {
   'interests.skip': 'ഇപ്പോൾ സ്കിപ്പ് ചെയ്യുക',
   'interests.label': 'താൽപ്പര്യങ്ങൾ',
   'interests.edit': 'താൽപ്പര്യങ്ങൾ എഡിറ്റ് ചെയ്യുക',
-  'interests.add': 'നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ ചേർക്കൂ',
   'interests.common': 'രണ്ടുപേർക്കും ഇഷ്ടം',
   'interests.saved': 'താൽപ്പര്യങ്ങൾ സേവ് ചെയ്തു',
   'tag.music': 'മ്യൂസിക്',

@@ -70,3 +70,16 @@ export function hostOf(url: string): string {
 
 /** What voice_share_link takes: https only, at most 500 characters. */
 export const shareable = (url: string) => url.startsWith('https://') && url.length <= 500 && safeUrl(url) !== null
+
+/**
+ * The in-app viewer may show this page (else the link just opens in a new tab): the site lets other apps frame it
+ * (link-meta's `frameable`), and it is not this app itself (`here`: its origin; the sandbox would not hold it).
+ */
+export function framable(meta: { url: string; frameable: boolean } | null, here: string) {
+  if (!meta?.frameable) return false
+  try {
+    return new URL(meta.url).origin !== here
+  } catch {
+    return false
+  }
+}

@@ -540,7 +540,8 @@ export type VideoStatus = 'none' | 'requested_by_me' | 'requested_by_partner' | 
 export type MatchEvent =
   | { type: 'message'; message: Message }
   | { type: 'typing'; on: boolean }
-  | { type: 'video'; status: VideoStatus }
+  /** A call (051): `camera` false = a voice call (the camera starts off; either side can turn it on). */
+  | { type: 'video'; status: VideoStatus; camera: boolean }
   | { type: 'partner_left' }
   | { type: 'read'; upto: number } // the partner has read my messages up to this id
   /** The chat has ended (either side). 040: after that only friends write on (threads show the friends bar). */
@@ -670,7 +671,8 @@ export interface Backend {
   report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>
   /** Blocks without reporting: open chats with them end and neither side sees the other again. */
   block(userId: string): Promise<void>
-  requestVideo(matchId: string): Promise<void> // paid
+  /** Asks the other person for a call, free (051): `video` false = voice only. Random chats and friends' threads. */
+  requestCall(matchId: string, video: boolean): Promise<void>
   answerVideo(matchId: string, accept: boolean): Promise<void>
   endVideo(matchId: string): Promise<void>
   videoToken(matchId: string): Promise<{ url: string; token: string } | null>

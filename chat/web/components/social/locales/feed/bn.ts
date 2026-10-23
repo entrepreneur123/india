@@ -76,11 +76,6 @@ const bn: FeedDict = {
   'prompt.secret': 'যা খুব কম লোক জানে…',
 
   'profile.speaks': 'ভাষা',
-  'profile.addStatus': 'স্ট্যাটাস যোগ করুন',
-  'profile.promptsEmpty': 'একটা প্রশ্নের উত্তর দিন, যাতে মানুষ জানে আপনাকে কী জিজ্ঞেস করবে',
-  'profile.likes': 'লাইক',
-  'style.promptsEdit': 'প্রশ্ন বদলান',
-  'profile.posts': 'পোস্ট',
 }
 
 export default bn

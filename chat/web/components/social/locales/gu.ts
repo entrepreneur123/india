@@ -53,7 +53,6 @@ const gu: SocialDict = {
   'interests.skip': 'હમણાં નહીં',
   'interests.label': 'રુચિઓ',
   'interests.edit': 'રુચિઓ એડિટ કરો',
-  'interests.add': 'તમારી રુચિઓ ઉમેરો',
   'interests.common': 'તમને બંનેને ગમે છે',
   'interests.saved': 'રુચિઓ સેવ થઈ',
   'tag.music': 'મ્યુઝિક',

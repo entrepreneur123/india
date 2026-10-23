@@ -76,11 +76,6 @@ const hi: FeedDict = {
   'prompt.secret': 'जो बहुत कम लोग जानते हैं…',
 
   'profile.speaks': 'भाषाएँ',
-  'profile.addStatus': 'स्टेटस जोड़ें',
-  'profile.promptsEmpty': 'किसी सवाल का जवाब दें ताकि लोग जानें कि आपसे क्या पूछें',
-  'profile.likes': 'लाइक',
-  'style.promptsEdit': 'सवाल बदलें',
-  'profile.posts': 'पोस्ट',
 }
 
 export default hi

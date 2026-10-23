@@ -82,11 +82,6 @@ const zhHant: FeedDict = {
 
   // a profile
   'profile.speaks': '會說',
-  'profile.addStatus': '新增狀態',
-  'profile.promptsEmpty': '回答一個問答，讓別人知道可以問你什麼',
-  'profile.likes': '喜歡',
-  'style.promptsEdit': '編輯問答',
-  'profile.posts': '貼文',
 }
 
 export default zhHant

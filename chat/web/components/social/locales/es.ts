@@ -59,7 +59,6 @@ const es: SocialDict = {
   'interests.skip': 'Ahora no',
   'interests.label': 'Intereses',
   'interests.edit': 'Editar intereses',
-  'interests.add': 'Agrega tus intereses',
   'interests.common': 'A los dos les gusta',
   'interests.saved': 'Intereses guardados',
   'tag.music': 'Música',

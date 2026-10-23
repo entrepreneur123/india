@@ -76,11 +76,6 @@ const de: FeedDict = {
   'prompt.secret': 'Was nur wenige über mich wissen…',
 
   'profile.speaks': 'Spricht',
-  'profile.addStatus': 'Status hinzufügen',
-  'profile.promptsEmpty': 'Beantworte eine Frage, damit andere wissen, worauf sie dich ansprechen können',
-  'profile.likes': 'Mag',
-  'style.promptsEdit': 'Fragen bearbeiten',
-  'profile.posts': 'Beiträge',
 }
 
 export default de

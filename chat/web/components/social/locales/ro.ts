@@ -58,7 +58,6 @@ const ro: SocialDict = {
   'interests.skip': 'Sari peste deocamdată',
   'interests.label': 'Interese',
   'interests.edit': 'Editează interesele',
-  'interests.add': 'Adaugă-ți interesele',
   'interests.common': 'Vă place amândurora',
   'interests.saved': 'Interese salvate',
   'tag.music': 'Muzică',

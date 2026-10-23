@@ -53,7 +53,7 @@ import {
 } from './backend'
 import { safeUrl, shareable } from './links'
 import { retryImport } from './retry-import'
-import { parseReply } from './voice-chat'
+import { parseReply, reactionClock } from './voice-chat'
 import { parsePoll, POLLS_PER_READ } from './voice-polls'
 import { parseKycResult, parseMyTrust, parseTrustList } from './trust'
 import { parseLook, parseLooks, parseShop } from './looks'
@@ -110,7 +110,7 @@ type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string
 type FriendRow = CardRow & { state: string; match_id: string | null }
 type MatchRow = {
   id: string; user_a: string; user_b: string; ended_at: string | null; ended_by: string | null
-  video_status: string; video_requested_by: string | null; read_a: number | null; read_b: number | null
+  video_status: string; video_requested_by: string | null; call_video: boolean | null; read_a: number | null; read_b: number | null
 }
 type MessageRow = {
   id: number; match_id: string; sender: string; body: string | null
@@ -493,7 +493,7 @@ export class SupabaseBackend implements Backend {
   /** Null when the match is gone (the other person deleted their account). */
   private async matchRow(id: string): Promise<MatchRow | null> {
     const { data, error } = await this.client.from('matches')
-      .select('id, user_a, user_b, ended_at, ended_by, video_status, video_requested_by, read_a, read_b').eq('id', id).maybeSingle<MatchRow>()
+      .select('id, user_a, user_b, ended_at, ended_by, video_status, video_requested_by, call_video, read_a, read_b').eq('id', id).maybeSingle<MatchRow>()
     if (error) fail(error)
     return data
   }
@@ -510,7 +510,7 @@ export class SupabaseBackend implements Backend {
   subscribe(matchId: string, on: (e: MatchEvent) => void, opts: { live?: boolean } = {}): () => void {
     const me = this.uid
     let closed = false
-    let lastVideo: VideoStatus | null = null
+    let lastVideo = ''
     let partnerRead = 0
     let leftSent = false
     let endedSent = false
@@ -533,9 +533,10 @@ export class SupabaseBackend implements Backend {
         emit({ type: 'read', upto: read })
       }
       const v = this.videoOf(m, me)
-      if (v !== lastVideo) {
-        lastVideo = v
-        emit({ type: 'video', status: v })
+      const camera = m.call_video !== false
+      if (`${v}:${camera}` !== lastVideo) {
+        lastVideo = `${v}:${camera}`
+        emit({ type: 'video', status: v, camera })
       }
     }
 
@@ -738,8 +739,8 @@ export class SupabaseBackend implements Backend {
     await this.rpc('block_user', { p_user: userId })
   }
 
-  async requestVideo(matchId: string) {
-    await this.rpc('request_video', { p_match: matchId })
+  async requestCall(matchId: string, video: boolean) {
+    await this.rpc('request_call', { p_match: matchId, p_video: video })
   }
 
   async answerVideo(matchId: string, accept: boolean) {
@@ -1530,11 +1531,12 @@ export class SupabaseBackend implements Backend {
       this.noteNewest(`voice:${roomId}`, rows)
       for (const line of await this.toVoiceLines(rows)) emit({ type: 'line', line })
     }
+    const fresh = reactionClock()
     const onMessage = async (row: VoiceMessageRow) => {
+      const show = fresh(time(row.created_at), row.kind === 'reaction')
       if (row.kind === 'reaction') {
-        // A reaction is a moment: an old one (replayed after a reconnect) is not shown.
         const kind = row.payload?.kind
-        if (typeof kind === 'string' && Date.now() - time(row.created_at) < 15_000) {
+        if (typeof kind === 'string' && show) {
           emit({ type: 'reaction', userId: row.sender, kind: kind as VoiceReaction })
         }
         return

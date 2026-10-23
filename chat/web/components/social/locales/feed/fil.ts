@@ -82,11 +82,6 @@ const fil: FeedDict = {
 
   // a profile
   'profile.speaks': 'Nagsasalita ng',
-  'profile.addStatus': 'Magdagdag ng status',
-  'profile.promptsEmpty': 'Sumagot ng prompt para malaman ng mga tao kung ano ang itatanong sa iyo',
-  'profile.likes': 'Mga gusto',
-  'style.promptsEdit': 'I-edit ang mga prompt',
-  'profile.posts': 'Mga post',
 }
 
 export default fil

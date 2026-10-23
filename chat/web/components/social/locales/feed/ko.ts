@@ -82,11 +82,6 @@ const ko: FeedDict = {
 
   // a profile
   'profile.speaks': '쓰는 언어',
-  'profile.addStatus': '상태 메시지 추가',
-  'profile.promptsEmpty': '질문에 답해 두면 사람들이 말을 걸기 쉬워져요',
-  'profile.likes': '좋아하는 것',
-  'style.promptsEdit': '질문 편집',
-  'profile.posts': '게시물',
 }
 
 export default ko

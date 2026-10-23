@@ -52,6 +52,8 @@ export async function joinCall(
   ev: CallEvents,
   /** Aborting (the call screen closed) disconnects at once, even while still connecting. */
   signal?: AbortSignal,
+  /** False: a voice call, the camera starts off (it can be turned on later). */
+  video = true,
 ): Promise<Call> {
   if (signal?.aborted) throw new DOMException('call ended', 'AbortError')
   const room = new Room({
@@ -171,11 +173,12 @@ export async function joinCall(
   let camera: DeviceProblem | null = null
   let mic: DeviceProblem | null = null
   if (signal?.aborted) throw new DOMException('call ended', 'AbortError') // never turn the camera on for an ended call
-  if ((await enable(() => lp.enableCameraAndMicrophone())) !== null) {
+  if (!video) mic = await enable(() => lp.setMicrophoneEnabled(true))
+  else if ((await enable(() => lp.enableCameraAndMicrophone())) !== null) {
     mic = await enable(() => lp.setMicrophoneEnabled(true))
     camera = await enable(() => lp.setCameraEnabled(true))
   }
-  if (!camera) showSelf()
+  if (video && !camera) showSelf()
 
   const toggle = async (turn: () => Promise<unknown>) => {
     const problem = await enable(turn)

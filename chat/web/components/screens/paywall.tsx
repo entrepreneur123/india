@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Smartphone, Users, Video, X, Zap } from 'lucide-react'
+import { Check, Smartphone, Users, X, Zap } from 'lucide-react'
 import type { TKey } from '@/lib/i18n'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils'
 
 const BENEFITS: { icon: typeof Users; title: TKey; body: TKey }[] = [
   { icon: Users, title: 'plus.b1Title', body: 'plus.b1Body' },
-  { icon: Video, title: 'plus.b2Title', body: 'plus.b2Body' },
   { icon: Zap, title: 'plus.b3Title', body: 'plus.b3Body' },
 ]
 

@@ -82,11 +82,6 @@ const sw: FeedDict = {
 
   // a profile
   'profile.speaks': 'Anaongea',
-  'profile.addStatus': 'Ongeza hali',
-  'profile.promptsEmpty': 'Jibu swali la utangulizi ili watu wajue wakuulize nini',
-  'profile.likes': 'Anapenda',
-  'style.promptsEdit': 'Hariri maswali',
-  'profile.posts': 'Machapisho',
 }
 
 export default sw

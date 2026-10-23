@@ -64,7 +64,6 @@ const ru: SocialDict = {
   'interests.skip': 'Пропустить',
   'interests.label': 'Интересы',
   'interests.edit': 'Изменить интересы',
-  'interests.add': 'Добавьте интересы',
   'interests.common': 'Вам обоим нравится',
   'interests.saved': 'Интересы сохранены',
   'tag.music': 'Музыка',

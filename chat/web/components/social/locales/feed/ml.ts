@@ -76,11 +76,6 @@ const ml: FeedDict = {
   'prompt.secret': 'കുറച്ചുപേർക്ക് മാത്രം അറിയുന്ന കാര്യം…',
 
   'profile.speaks': 'സംസാരിക്കുന്ന ഭാഷകൾ',
-  'profile.addStatus': 'സ്റ്റാറ്റസ് ചേർക്കുക',
-  'profile.promptsEmpty': 'നിങ്ങളോട് എന്ത് ചോദിക്കണമെന്ന് ആളുകൾക്ക് അറിയാൻ ഒരു പ്രോംപ്റ്റിന് ഉത്തരം നൽകൂ',
-  'profile.likes': 'ഇഷ്ടങ്ങൾ',
-  'style.promptsEdit': 'പ്രോംപ്റ്റുകൾ എഡിറ്റ് ചെയ്യുക',
-  'profile.posts': 'പോസ്റ്റുകൾ',
 }
 
 export default ml

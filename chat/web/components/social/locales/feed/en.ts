@@ -80,11 +80,6 @@ const en = {
 
   // a profile
   'profile.speaks': 'Speaks',
-  'profile.addStatus': 'Add a status',
-  'profile.promptsEmpty': 'Answer a prompt so people know what to ask you',
-  'profile.likes': 'Likes',
-  'style.promptsEdit': 'Edit prompts',
-  'profile.posts': 'Posts',
 }
 
 export default en

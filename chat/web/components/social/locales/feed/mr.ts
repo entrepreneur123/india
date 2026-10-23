@@ -71,11 +71,6 @@ const mr: FeedDict = {
   'prompt.goal': 'या वर्षी मला हवे आहे…',
   'prompt.secret': 'फार कमी लोकांना माहीत असलेली गोष्ट…',
   'profile.speaks': 'बोलतात',
-  'profile.addStatus': 'स्टेटस जोडा',
-  'profile.promptsEmpty': 'एखाद्या प्रश्नाचे उत्तर द्या, म्हणजे लोकांना कळेल की तुम्हाला काय विचारायचे',
-  'profile.likes': 'आवडी',
-  'style.promptsEdit': 'प्रश्न एडिट करा',
-  'profile.posts': 'पोस्ट',
 }
 
 export default mr

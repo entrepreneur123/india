@@ -82,11 +82,6 @@ const zhHans: FeedDict = {
 
   // a profile
   'profile.speaks': '会说',
-  'profile.addStatus': '添加状态',
-  'profile.promptsEmpty': '回答一个问答，让别人知道可以问你什么',
-  'profile.likes': '喜欢',
-  'style.promptsEdit': '编辑问答',
-  'profile.posts': '动态',
 }
 
 export default zhHans

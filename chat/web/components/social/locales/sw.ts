@@ -60,7 +60,6 @@ const sw: SocialDict = {
   'interests.skip': 'Ruka kwa sasa',
   'interests.label': 'Mambo unayopenda',
   'interests.edit': 'Hariri mambo unayopenda',
-  'interests.add': 'Ongeza mambo unayopenda',
   'interests.common': 'Nyote mnapenda',
   'interests.saved': 'Mambo unayopenda yamehifadhiwa',
   'tag.music': 'Muziki',

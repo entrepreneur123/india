@@ -56,7 +56,6 @@ const hi: SocialDict = {
   'interests.skip': 'अभी नहीं',
   'interests.label': 'पसंद',
   'interests.edit': 'पसंद बदलें',
-  'interests.add': 'अपनी पसंद जोड़ें',
   'interests.common': 'आप दोनों को पसंद है',
   'interests.saved': 'पसंद सेव हो गई',
   'tag.music': 'म्यूज़िक',

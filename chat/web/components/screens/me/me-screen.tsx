@@ -2,11 +2,10 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { BookUser, ChevronRight, Plus, Settings, Sparkles, UserPen } from 'lucide-react'
+import { BookUser, ChevronRight, Plus, Settings, Sparkles, Tags, UserPen } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { handleSpelling, namePlain } from '@/lib/handle'
-import { EMPTY_STYLE } from '@/lib/profile-style'
 import { retryImport } from '@/lib/retry-import'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -14,20 +13,16 @@ import { HandleField, handleUsable, useHandleCheck } from '@/components/looks/ha
 import { lookKey } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { Field, TextArea, TextInput } from '@/components/ui/bits'
-import { IcebreakerIcon } from '@/components/ui/topic-icons'
-import { useFeedT } from '@/components/social/feed-text'
-import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { InterestChips } from '@/components/social/bits'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
 import { InterestsSheet } from '@/components/social/interests-sheet'
 import { useSocialT } from '@/components/social/social-text'
-import { IdentityFacts, MannerCard, VerifyCard } from '@/components/trust/trust-cards'
+import { VerifyCard } from '@/components/trust/trust-cards'
+import { ProfileContent } from '@/components/screens/profile/profile-sheet'
 import { PhotoPicker } from './photo-picker'
-import { PostGrid } from './post-grid'
 
 const MAX_NAME = 30
 const MAX_CITY = 30
@@ -39,23 +34,16 @@ const PostComposer = lazy(() => loadComposer().then((m) => ({ default: m.PostCom
 const loadStyle = () => retryImport(() => import('@/components/social/style-editor'))
 const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor })))
 
+/** My profile exactly as others see it (ProfileContent), with my buttons; every change happens in Edit profile. */
 export function MeScreen() {
-  const backend = useBackend()
   const { me, t, setTab, entitlements, trust, openShop } = useApp()
-  const verified = !!trust?.verified
-  const { data: friends } = useSWR('friends', () => backend.friends())
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
   const [used, setUsed] = useState({ post: false, style: false })
   const [interestsOpen, setInterestsOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
-  const { st } = useSocialT()
-  const { ft } = useFeedT()
   const { lt } = useLooksT()
-  const friendCount = friends?.filter((f) => f.state === 'friends').length
-  const style = me.style ?? EMPTY_STYLE
-  const likes = me.posts.reduce((n, p) => n + (p.likes ?? 0), 0)
   const openPost = () => {
     setUsed((u) => ({ ...u, post: true }))
     setPostOpen(true)
@@ -64,14 +52,17 @@ export function MeScreen() {
     setUsed((u) => ({ ...u, style: true }))
     setStyleOpen(true)
   }
+  const from = (open: () => void) => () => {
+    setEditOpen(false)
+    open()
+  }
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
-      <div className="mx-auto max-w-3xl px-3 pt-3 pb-10 sm:px-8 sm:pt-8">
-        <ProfileHero
+      <div className="mx-auto max-w-xl pt-3 pb-10 sm:pt-8">
+        <ProfileContent
           profile={me}
-          verified={verified}
-          facts={verified ? <IdentityFacts profile={me} verified /> : null}
+          trust={trust}
           badge={
             entitlements.premium ? (
               <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary-text">{t('me.plusBadge')}</span>
@@ -82,113 +73,31 @@ export function MeScreen() {
               <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => openShop()}>
                 <Sparkles className="size-4 text-primary-text" aria-hidden /> {lt('looks.title')}
               </Button>
+              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => setEditOpen(true)}>
+                <UserPen className="size-4" aria-hidden /> {t('me.edit')}
+              </Button>
               <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
                 <Settings className="size-5" aria-hidden />
               </Button>
             </div>
           }
-          statusSlot={
-            <button
-              type="button"
-              onClick={openStyle}
-              className="mt-3 rounded-full border border-dashed border-input px-4 py-1.5 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
-            >
-              {ft('profile.addStatus')}
-            </button>
+          actions={
+            <Button variant="brand" className="flex-1" onClick={openPost} onPointerEnter={() => void loadComposer()}>
+              <Plus className="size-4.5" aria-hidden /> {t('me.newPost')}
+            </Button>
           }
-        />
-
-        <dl className="mx-auto mt-5 grid max-w-sm grid-cols-3 text-center">
-          <Stat label={t('me.posts')} value={me.posts.length} />
-          <Stat label={t('me.friends')} value={friendCount} />
-          <Stat label={ft('profile.likes')} value={likes} />
-        </dl>
-
-        <VerifyCard className="mx-auto mt-5 max-w-xl" />
-
-        <div className="mx-auto mt-5 flex max-w-md gap-2">
-          <Button variant="outline" className="flex-1" onClick={() => setEditOpen(true)}>
-            {t('me.edit')}
-          </Button>
-          <Button variant="brand" className="flex-1" onClick={openPost} onPointerEnter={() => void loadComposer()}>
-            <Plus className="size-4.5" aria-hidden /> {t('me.newPost')}
-          </Button>
-        </div>
-
-        <section className="mt-8 flex flex-col gap-6">
-          <MannerCard trust={trust} className="mx-auto w-full max-w-xl" />
-          {style.prompts.length ? (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-sm font-semibold">{ft('style.prompts')}</h2>
-                <Button size="sm" variant="ghost" className="-me-3" onClick={openStyle}>
-                  {ft('style.promptsEdit')}
-                </Button>
-              </div>
-              <PromptCards prompts={style.prompts} accent={style.accent} className="sm:grid-cols-2" />
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={openStyle}
-              className="flex items-center gap-4 rounded-3xl border border-dashed border-input p-4 text-start transition-colors duration-150 hover:bg-muted"
-            >
-              <IcebreakerIcon size={36} />
-              <span className="min-w-0">
-                <span className="block text-[15px] font-bold">{ft('style.promptAdd')}</span>
-                <span className="block text-sm text-muted-foreground">{ft('profile.promptsEmpty')}</span>
-              </span>
-            </button>
-          )}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-semibold">{st('interests.label')}</h2>
-              {me.interests?.length ? (
-                <Button size="sm" variant="ghost" className="-me-3" onClick={() => setInterestsOpen(true)}>
-                  {st('interests.edit')}
-                </Button>
-              ) : null}
-            </div>
-            {me.interests?.length ? (
-              <InterestChips tags={me.interests} />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setInterestsOpen(true)}
-                className="rounded-2xl border border-dashed border-input px-4 py-3 text-start text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
-              >
-                {st('interests.add')}
-              </button>
-            )}
-          </div>
-          <Gallery photos={me.photos ?? []} owner={me.name} editable />
-        </section>
-
-        <section className="mt-8 flex flex-col gap-3 border-t border-border pt-6">
-          <h2 className="text-sm font-semibold">{ft('profile.posts')}</h2>
-          <PostGrid
-            posts={me.posts}
-            owner={me.name}
-            accent={style.accent}
-            emptyAction={<Button variant="brand" onClick={openPost}>{t('me.firstPost')}</Button>}
-          />
-        </section>
+          emptyPosts={<Button variant="brand" onClick={openPost}>{t('me.firstPost')}</Button>}
+        >
+          <VerifyCard className="mx-4 mt-6 w-[calc(100%-2rem)]" />
+        </ProfileContent>
       </div>
       <EditProfile
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        onLooks={() => {
-          setEditOpen(false)
-          openShop()
-        }}
-        onDetails={() => {
-          setEditOpen(false)
-          openStyle()
-        }}
-        onContacts={() => {
-          setEditOpen(false)
-          setContactsOpen(true)
-        }}
+        onLooks={from(openShop)}
+        onDetails={from(openStyle)}
+        onInterests={from(() => setInterestsOpen(true))}
+        onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
       {used.post ? (
@@ -206,18 +115,9 @@ export function MeScreen() {
   )
 }
 
-function Stat({ label, value }: { label: string; value: number | undefined }) {
-  const { num } = useI18n()
-  return (
-    <div className="flex flex-col-reverse">
-      <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-xl font-bold tabular-nums">{value === undefined ? '–' : num(value)}</dd>
-    </div>
-  )
-}
-
-function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
-  open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void; onContacts: () => void
+/** Everything about my profile: the photo, name, @ID, city and bio here; photos too; the rest one tap on. */
+function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContacts }: {
+  open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void; onInterests: () => void; onContacts: () => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -225,7 +125,7 @@ function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
   const { me, setMe } = useApp()
   const { t, locale } = useI18n()
   const { lt } = useLooksT()
-  const { st } = useSocialT()
+  const { st, tag } = useSocialT()
   const id = useId()
   const [name, setName] = useState(me.name)
   const [handle, setHandle] = useState(me.handle ?? '')
@@ -238,6 +138,7 @@ function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
   const { data: shop } = useSWR(open ? 'shop' : null, () => backend.shop())
   const next = shop?.handleNext && shop.handleNext > Date.now() ? shop.handleNext : null
 
+  // Filled in when the sheet opens only: adding a photo below changes `me` and must not undo typing.
   useEffect(() => {
     if (!open) return
     setName(me.name)
@@ -245,7 +146,8 @@ function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
     setCity(me.city)
     setBio(me.bio)
     setPhoto(null)
-  }, [open, me])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   const plainName = namePlain(name)
   const wanted = handleSpelling(handle)
@@ -303,9 +205,11 @@ function EditProfile({ open, onClose, onLooks, onDetails, onContacts }: {
         <Field label={t('pf.bio')} htmlFor={`${id}-bio`} trailing={<Count n={bio.length} max={MAX_BIO} />}>
           <TextArea id={`${id}-bio`} value={bio} maxLength={MAX_BIO} onChange={(e) => setBio(e.target.value)} />
         </Field>
+        <Gallery photos={me.photos ?? []} owner={me.name} editable />
         <div className="-mx-2 flex flex-col">
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
-          <MoreRow icon={<UserPen />} label={lt('details.title')} onClick={onDetails} />
+          <MoreRow icon={<UserPen />} label={lt('details.title')} note={lt('details.desc')} onClick={onDetails} />
+          <MoreRow icon={<Tags />} label={st('interests.edit')} note={me.interests?.map(tag).join(', ') || undefined} onClick={onInterests} />
           <MoreRow icon={<BookUser />} label={st('contacts.title')} note={st('contacts.note')} onClick={onContacts} />
         </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>

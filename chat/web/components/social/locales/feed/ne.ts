@@ -76,11 +76,6 @@ const ne: FeedDict = {
   'prompt.secret': 'थोरैलाई मात्र थाहा भएको कुरा…',
 
   'profile.speaks': 'बोल्ने भाषा',
-  'profile.addStatus': 'स्टाटस थप्नुहोस्',
-  'profile.promptsEmpty': 'मानिसलाई तपाईंसँग के सोध्ने थाहा होस् भनेर एउटा प्रश्नको जवाफ दिनुहोस्',
-  'profile.likes': 'मन पर्ने',
-  'style.promptsEdit': 'प्रश्न सम्पादन गर्नुहोस्',
-  'profile.posts': 'पोस्टहरू',
 }
 
 export default ne

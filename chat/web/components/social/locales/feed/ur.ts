@@ -71,11 +71,6 @@ const ur: FeedDict = {
   'prompt.goal': 'اس سال میں چاہتا/چاہتی ہوں…',
   'prompt.secret': 'ایک بات جو کم لوگ جانتے ہیں…',
   'profile.speaks': 'بولتے ہیں',
-  'profile.addStatus': 'اسٹیٹس شامل کریں',
-  'profile.promptsEmpty': 'کسی سوال کا جواب دیں تاکہ لوگ جانیں کہ آپ سے کیا پوچھیں',
-  'profile.likes': 'پسند',
-  'style.promptsEdit': 'سوالات ایڈٹ کریں',
-  'profile.posts': 'پوسٹس',
 }
 
 export default ur

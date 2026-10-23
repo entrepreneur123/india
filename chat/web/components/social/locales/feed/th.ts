@@ -82,11 +82,6 @@ const th: FeedDict = {
 
   // a profile
   'profile.speaks': 'พูดภาษา',
-  'profile.addStatus': 'เพิ่มสถานะ',
-  'profile.promptsEmpty': 'ตอบคำถามชวนคุย คนอื่นจะได้รู้ว่าควรถามอะไรคุณ',
-  'profile.likes': 'ชอบ',
-  'style.promptsEdit': 'แก้ไขคำถาม',
-  'profile.posts': 'โพสต์',
 }
 
 export default th

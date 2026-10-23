@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import type { Profile } from '../backend'
-import { insertMention, mentionMatches, mentionQuery, mentionRanges, mentions, parseReply, replyOf, type Quotable } from '../voice-chat.ts'
+import { insertMention, mentionMatches, mentionQuery, mentionRanges, mentions, parseReply, reactionClock, replyOf, type Quotable } from '../voice-chat.ts'
 
 const sender = { id: 'u2', name: 'Rohan B.' } as Profile
 
@@ -44,4 +44,13 @@ test('typing "@" offers people; picking one puts "@Name " in', () => {
   const people = [{ name: 'Priya' }, { name: 'Rohan' }, { name: 'Aarohi' }]
   assert.deepEqual(mentionMatches(people, 'ro').map((p) => p.name), ['Rohan', 'Aarohi'])
   assert.equal(mentionMatches(people, '').length, 3)
+})
+
+test('reactions are judged on the server clock: a device clock running fast does not drop them', () => {
+  const fresh = reactionClock(15_000)
+  const t0 = Date.parse('2026-10-23T10:00:00Z') // far behind this machine's clock, like a computer running fast
+  assert.equal(fresh(t0, true), true)
+  assert.equal(fresh(t0 + 1_000, false), false) // a chat line: not a reaction, only moves the clock
+  assert.equal(fresh(t0 + 20_000, true), true)
+  assert.equal(fresh(t0 + 2_000, true), false) // replayed: 18 s older than the newest row
 })

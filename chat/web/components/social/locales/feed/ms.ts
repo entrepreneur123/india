@@ -82,11 +82,6 @@ const ms: FeedDict = {
 
   // a profile
   'profile.speaks': 'Bertutur',
-  'profile.addStatus': 'Tambah status',
-  'profile.promptsEmpty': 'Jawab satu soalan supaya orang tahu apa yang hendak ditanya kepada anda',
-  'profile.likes': 'Suka',
-  'style.promptsEdit': 'Edit soalan',
-  'profile.posts': 'Hantaran',
 }
 
 export default ms

@@ -265,6 +265,8 @@ interface MatchState {
   messages: Message[]
   listeners: Set<(e: MatchEvent) => void>
   video: VideoStatus
+  /** The call asked for (or on) is a video call; false: voice only. */
+  callVideo: boolean
   kind: 'random' | 'thread'
   /** Over (left, or a thread): 040, only friends write on. */
   ended: boolean
@@ -371,7 +373,7 @@ export class MockBackend implements Backend {
   ): MatchState {
     return {
       id, partner, startedAt, messages, kind, ended: kind === 'thread',
-      listeners: new Set(), video: 'none', myCount: 0,
+      listeners: new Set(), video: 'none', callVideo: true, myCount: 0,
       greeted: kind === 'thread', sentMedia: kind === 'thread', askedVideo: kind === 'thread', timers: [],
     }
   }
@@ -590,11 +592,11 @@ export class MockBackend implements Backend {
       })
     } else if (m.myCount === 3 && !m.askedVideo && m.video === 'none') {
       m.askedVideo = true
-      this.partnerSays(m, 'wanna switch to video?')
+      this.partnerSays(m, 'can I call you? voice is fine')
       this.schedule(m, 3200, () => {
         if (m.video !== 'none') return
-        m.video = 'requested_by_partner'
-        this.emit(m, { type: 'video', status: m.video })
+        m.callVideo = false
+        this.setCall(m, 'requested_by_partner')
       })
     } else {
       this.partnerSays(m, this.replyFor(msg.text ?? '', m.partner))
@@ -696,25 +698,31 @@ export class MockBackend implements Backend {
     return { contacts: this.theirContacts.get(userId) ?? null, mineShared: this.sharedWith.has(userId) }
   }
 
-  async requestVideo(matchId: string) {
+  private setCall(m: MatchState, status: VideoStatus) {
+    m.video = status
+    this.emit(m, { type: 'video', status, camera: m.callVideo })
+  }
+
+  /** Like the server's call_open (052): an open chat, or a past one between friends. */
+  private callable(matchId: string) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
-    if (!this.ent.premium) throw new BackendError('premium_required')
+    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('not_allowed')
+    return m
+  }
+
+  async requestCall(matchId: string, video: boolean) {
+    const m = this.callable(matchId)
     await wait(300)
-    m.video = 'requested_by_me'
-    this.emit(m, { type: 'video', status: m.video })
-    this.schedule(m, 2400, () => {
-      m.video = 'accepted'
-      this.emit(m, { type: 'video', status: m.video })
-    })
+    m.callVideo = video
+    this.setCall(m, 'requested_by_me')
+    this.schedule(m, 2400, () => this.setCall(m, 'accepted'))
   }
 
   async answerVideo(matchId: string, accept: boolean) {
-    const m = this.matches.get(matchId)
-    if (!m) throw new BackendError('not_found')
+    const m = this.callable(matchId)
     await wait(300)
-    m.video = accept ? 'accepted' : 'declined'
-    this.emit(m, { type: 'video', status: m.video })
+    this.setCall(m, accept ? 'accepted' : 'declined')
     if (!accept) m.video = 'none'
   }
 
@@ -722,8 +730,7 @@ export class MockBackend implements Backend {
     const m = this.matches.get(matchId)
     if (!m) return
     await wait(200)
-    m.video = 'none'
-    this.emit(m, { type: 'video', status: 'none' })
+    this.setCall(m, 'none')
   }
 
   async videoToken(_matchId: string) {

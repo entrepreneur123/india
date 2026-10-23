@@ -76,11 +76,6 @@ const it: FeedDict = {
   'prompt.secret': 'Una cosa che sanno in pochi…',
 
   'profile.speaks': 'Parla',
-  'profile.addStatus': 'Aggiungi uno stato',
-  'profile.promptsEmpty': 'Rispondi a una domanda così le persone sanno cosa chiederti',
-  'profile.likes': 'Gli piace',
-  'style.promptsEdit': 'Modifica domande',
-  'profile.posts': 'Post',
 }
 
 export default it

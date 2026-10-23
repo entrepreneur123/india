@@ -11,7 +11,7 @@ import { useI18n } from '@/components/i18n'
 const TYPING_THROTTLE_MS = 2000
 const TYPING_TIMEOUT_MS = 6000
 
-/** `live` = an open random match; threads (friends, past matches) only carry messages and typing. */
+/** `live` = an open random match; threads (friends, past matches) carry messages, typing and calls. */
 export function useMatchChat(matchId: string, partnerName: string, live: boolean) {
   const backend = useBackend()
   const toast = useToast()
@@ -27,6 +27,8 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     videoRef.current = v
     setVideoState(v)
   }, [])
+  /** The call asked for (or on) is a video call; false: voice. */
+  const [camera, setCamera] = useState(true)
   const [partnerLeft, setPartnerLeft] = useState(false)
   /** Threads: the chat is over (040: only friends write on). */
   const [ended, setEnded] = useState(false)
@@ -79,10 +81,10 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
           if (e.on) typingTimer.current = setTimeout(() => setTyping(false), TYPING_TIMEOUT_MS)
           break
         case 'video':
-          if (!live) break
+          setCamera(e.camera)
           // Only a refusal of my own pending request is news; an old "declined" from the first sync is not.
           if (e.status === 'declined' && videoRef.current === 'requested_by_me') {
-            toast.show(tRef.current('chat.declined', { name: partnerName }))
+            toast.show(tRef.current(e.camera ? 'chat.declined' : 'chat.voiceDeclined', { name: partnerName }))
           }
           setVideo(e.status === 'declined' ? 'none' : e.status)
           break
@@ -148,5 +150,5 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     [backend, matchId, append, toast, live],
   )
 
-  return { messages, typing, video, setVideo, partnerLeft, ended, partnerRead, send, notifyTyping }
+  return { messages, typing, video, setVideo, camera, setCamera, partnerLeft, ended, partnerRead, send, notifyTyping }
 }

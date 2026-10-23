@@ -76,11 +76,6 @@ const vi: FeedDict = {
   'prompt.secret': 'Điều ít người biết về tôi…',
 
   'profile.speaks': 'Nói',
-  'profile.addStatus': 'Thêm trạng thái',
-  'profile.promptsEmpty': 'Trả lời một câu hỏi để mọi người biết nên hỏi bạn điều gì',
-  'profile.likes': 'Lượt thích',
-  'style.promptsEdit': 'Sửa câu hỏi',
-  'profile.posts': 'Bài viết',
 }
 
 export default vi

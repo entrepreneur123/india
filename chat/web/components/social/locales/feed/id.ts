@@ -82,11 +82,6 @@ const id: FeedDict = {
 
   // a profile
   'profile.speaks': 'Berbicara',
-  'profile.addStatus': 'Tambah status',
-  'profile.promptsEmpty': 'Jawab satu pertanyaan supaya orang tahu mau tanya apa ke kamu',
-  'profile.likes': 'Suka',
-  'style.promptsEdit': 'Edit pertanyaan',
-  'profile.posts': 'Postingan',
 }
 
 export default id

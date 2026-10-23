@@ -82,11 +82,6 @@ const fa: FeedDict = {
 
   // a profile
   'profile.speaks': 'زبان‌ها',
-  'profile.addStatus': 'افزودن وضعیت',
-  'profile.promptsEmpty': 'به یک سؤال جواب دهید تا بقیه بدانند چه از شما بپرسند',
-  'profile.likes': 'علاقه‌ها',
-  'style.promptsEdit': 'ویرایش سؤال‌ها',
-  'profile.posts': 'پست‌ها',
 }
 
 export default fa

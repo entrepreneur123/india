@@ -53,7 +53,6 @@ const ur: SocialDict = {
   'interests.skip': 'ابھی چھوڑ دیں',
   'interests.label': 'دلچسپیاں',
   'interests.edit': 'دلچسپیاں ایڈٹ کریں',
-  'interests.add': 'اپنی دلچسپیاں شامل کریں',
   'interests.common': 'آپ دونوں کو پسند ہے',
   'interests.saved': 'دلچسپیاں محفوظ ہو گئیں',
   'tag.music': 'میوزک',

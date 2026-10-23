@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { hostOf, previewLink, safeUrl, shareable, splitLinks } from '../links.ts'
+import { framable, hostOf, previewLink, safeUrl, shareable, splitLinks } from '../links.ts'
 import { nextExpiry, typingIds, TYPING_TTL_MS, type TypingSeen } from '../typing.ts'
 
 test('links are found in text and the parts join back into it', () => {
@@ -53,4 +53,13 @@ test('typing: never me, only people present, only fresh signals, oldest first', 
   assert.deepEqual(typingIds(seen, now, new Set(['me', 'a', 'b', 'old']), 'me'), ['a', 'b'])
   assert.equal(nextExpiry(seen, now), now - 1000 + TYPING_TTL_MS)
   assert.equal(nextExpiry(new Map(), now), null)
+})
+
+test('only a page that allows frames, and is not this app, opens in the viewer', () => {
+  const here = 'https://yaari.app'
+  assert.equal(framable({ url: 'https://en.wikipedia.org/wiki/Delhi', frameable: true }, here), true)
+  assert.equal(framable({ url: 'https://instagram.com/p/1', frameable: false }, here), false)
+  assert.equal(framable({ url: 'https://yaari.app/r/abc', frameable: true }, here), false)
+  assert.equal(framable({ url: 'not a url', frameable: true }, here), false)
+  assert.equal(framable(null, here), false)
 })

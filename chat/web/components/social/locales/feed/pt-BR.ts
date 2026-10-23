@@ -76,11 +76,6 @@ const ptBR: FeedDict = {
   'prompt.secret': 'Algo que pouca gente sabe…',
 
   'profile.speaks': 'Fala',
-  'profile.addStatus': 'Adicionar status',
-  'profile.promptsEmpty': 'Responda a uma pergunta para as pessoas saberem o que perguntar a você',
-  'profile.likes': 'Curtidas',
-  'style.promptsEdit': 'Editar perguntas',
-  'profile.posts': 'Posts',
 }
 
 export default ptBR

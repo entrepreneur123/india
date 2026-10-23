@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { Check, Flag, MessageCircle, UserPlus, X } from 'lucide-react'
-import type { FriendState, Profile } from '@/lib/backend'
+import type { FriendState, Interest, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -44,7 +44,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const toast = useToast()
   const { mutate } = useSWRConfig()
   const { me, openThread, trust: myTrust } = useApp()
-  const { t, plural } = useI18n()
+  const { t } = useI18n()
   const isMe = userId === me.id
   const { data: profile, isLoading, error: loadError, mutate: reload } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
   const { data: friends, mutate: refreshFriends } = useSWR('friends', () => backend.friends())
@@ -102,80 +102,64 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center px-3 pt-3 text-center">
-            <ProfileHero
-              profile={shown}
-              className="w-full"
-              verified={!!trust?.verified}
-              // Incognito (046) hides the ID check too: no "not verified" for someone who may well be.
-              facts={trust && !isVip(shown) ? <IdentityFacts profile={shown} verified={trust.verified} /> : null}
-              slot={
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="absolute top-3 inset-e-3 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                  aria-label={t('common.close')}
-                >
-                  <X className="size-5" aria-hidden />
-                </button>
-              }
-            />
-            {shown.interests?.length ? (
-              <InterestChips
-                tags={shown.interests}
-                shared={isMe ? undefined : shown.interests.filter((i) => me.interests?.includes(i))}
-                className="mt-3 justify-center px-3"
-              />
-            ) : null}
-            <p className="mt-3 text-sm text-muted-foreground">{plural(shown.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
-
-            {isMe ? null : (
-              <div className="mt-5 flex w-full max-w-sm gap-2">
-                {state === 'friends' ? (
-                  <Button variant="brand" className="flex-1" onClick={() => openThread(shown)}>
-                    <MessageCircle className="size-4.5" aria-hidden /> {t('profile.message')}
+          <ProfileContent
+            profile={shown}
+            trust={trust}
+            shared={isMe ? undefined : shown.interests?.filter((i) => me.interests?.includes(i))}
+            slot={
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-3 inset-e-3 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label={t('common.close')}
+              >
+                <X className="size-5" aria-hidden />
+              </button>
+            }
+            actions={
+              isMe ? null : (
+                <>
+                  {state === 'friends' ? (
+                    <Button variant="brand" className="flex-1" onClick={() => openThread(shown)}>
+                      <MessageCircle className="size-4.5" aria-hidden /> {t('profile.message')}
+                    </Button>
+                  ) : state === 'incoming' ? (
+                    <Button
+                      variant="brand"
+                      className="flex-1"
+                      loading={busy}
+                      onClick={() => void act(() => backend.answerFriend(userId, true), t('recent.nowFriends', { name: shown.name }))}
+                    >
+                      <Check className="size-4.5" aria-hidden /> {t('profile.acceptRequest')}
+                    </Button>
+                  ) : state === 'requested' ? (
+                    <Button variant="outline" className="flex-1" loading={busy} onClick={() => void act(() => backend.removeFriend(userId))}>
+                      {t('profile.withdraw')}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="brand"
+                      className="flex-1"
+                      loading={busy}
+                      onClick={() =>
+                        void act(async () => {
+                          const s = await backend.requestFriend(userId)
+                          toast.show(s === 'friends' ? t('recent.nowFriends', { name: shown.name }) : t('profile.requestSent'), 'success')
+                        })
+                      }
+                    >
+                      <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
+                    </Button>
+                  )}
+                  <Button variant="outline" size="icon" onClick={() => setReportOpen(true)} aria-label={t('chat.report', { name: shown.name })}>
+                    <Flag className="size-4.5" aria-hidden />
                   </Button>
-                ) : state === 'incoming' ? (
-                  <Button
-                    variant="brand"
-                    className="flex-1"
-                    loading={busy}
-                    onClick={() => void act(() => backend.answerFriend(userId, true), t('recent.nowFriends', { name: shown.name }))}
-                  >
-                    <Check className="size-4.5" aria-hidden /> {t('profile.acceptRequest')}
-                  </Button>
-                ) : state === 'requested' ? (
-                  <Button variant="outline" className="flex-1" loading={busy} onClick={() => void act(() => backend.removeFriend(userId))}>
-                    {t('profile.withdraw')}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="brand"
-                    className="flex-1"
-                    loading={busy}
-                    onClick={() =>
-                      void act(async () => {
-                        const s = await backend.requestFriend(userId)
-                        toast.show(s === 'friends' ? t('recent.nowFriends', { name: shown.name }) : t('profile.requestSent'), 'success')
-                      })
-                    }
-                  >
-                    <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
-                  </Button>
-                )}
-                <Button variant="outline" size="icon" onClick={() => setReportOpen(true)} aria-label={t('chat.report', { name: shown.name })}>
-                  <Flag className="size-4.5" aria-hidden />
-                </Button>
-              </div>
-            )}
-          </div>
-          {state === 'friends' ? <FriendContacts userId={userId} name={shown.name} className="mx-4 mt-6" /> : null}
-          <MannerCard trust={trust} className="mx-4 mt-6" />
-          {shown.style?.prompts.length ? <PromptCards prompts={shown.style.prompts} accent={shown.style.accent} className="mt-6 px-4" /> : null}
-          {shown.photos?.length ? <Gallery photos={shown.photos} owner={shown.name} className="mt-6 px-4" /> : null}
-          <div className="mt-6 border-t border-border px-1 pt-1 pb-4">
-            <PostGrid posts={shown.posts} owner={shown.name} accent={shown.style?.accent} />
-          </div>
+                </>
+              )
+            }
+          >
+            {state === 'friends' ? <FriendContacts userId={userId} name={shown.name} className="mx-4 mt-6" /> : null}
+          </ProfileContent>
           {isMe ? null : (
             <ReportSheet
               open={reportOpen}
@@ -192,5 +176,59 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
         </>
       )}
     </div>
+  )
+}
+
+/**
+ * A profile as everyone sees it, mine included (the Me tab adds its own buttons): the card in its frame, interests,
+ * the posts count, `actions` (a row under it), `children` (after the row), the manners card, prompts, photos and
+ * posts. Empty parts are left out.
+ */
+export function ProfileContent({
+  profile,
+  trust,
+  slot,
+  badge,
+  shared,
+  actions,
+  emptyPosts,
+  children,
+}: {
+  profile: Profile
+  trust: Trust | null
+  slot: ReactNode
+  badge?: ReactNode
+  /** Interests we both have (marked). */
+  shared?: Interest[]
+  actions?: ReactNode
+  /** The empty posts grid's button (mine: "Share your first post"). */
+  emptyPosts?: ReactNode
+  children?: ReactNode
+}) {
+  const { plural } = useI18n()
+  return (
+    <>
+      <div className="flex flex-col items-center px-3 pt-3 text-center">
+        <ProfileHero
+          profile={profile}
+          className="w-full"
+          verified={!!trust?.verified}
+          // Incognito (046) hides the ID check too: no "not verified" for someone who may well be.
+          facts={trust && !isVip(profile) ? <IdentityFacts profile={profile} verified={trust.verified} /> : null}
+          badge={badge}
+          slot={slot}
+        />
+        {profile.interests?.length ? <InterestChips tags={profile.interests} shared={shared} className="mt-3 justify-center px-3" /> : null}
+        <p className="mt-3 text-sm text-muted-foreground">{plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
+        {actions ? <div className="mt-5 flex w-full max-w-sm gap-2">{actions}</div> : null}
+      </div>
+      {children}
+      <MannerCard trust={trust} className="mx-4 mt-6" />
+      {profile.style?.prompts.length ? <PromptCards prompts={profile.style.prompts} accent={profile.style.accent} className="mt-6 px-4" /> : null}
+      {profile.photos?.length ? <Gallery photos={profile.photos} owner={profile.name} className="mt-6 px-4" /> : null}
+      <div className="mt-6 border-t border-border px-1 pt-1 pb-4">
+        <PostGrid posts={profile.posts} owner={profile.name} accent={profile.style?.accent} emptyAction={emptyPosts} />
+      </div>
+    </>
   )
 }

@@ -84,11 +84,6 @@ const he: FeedDict = {
 
   // a profile
   'profile.speaks': 'מדבר/ת',
-  'profile.addStatus': 'הוספת סטטוס',
-  'profile.promptsEmpty': 'עונים על שאלת פתיחה כדי שאנשים יֵדעו מה לשאול אותך',
-  'profile.likes': 'אוהב/ת',
-  'style.promptsEdit': 'עריכת שאלות פתיחה',
-  'profile.posts': 'פוסטים',
 }
 
 export default he

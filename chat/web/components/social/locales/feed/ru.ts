@@ -86,11 +86,6 @@ const ru: FeedDict = {
 
   // a profile
   'profile.speaks': 'Языки',
-  'profile.addStatus': 'Добавить статус',
-  'profile.promptsEmpty': 'Ответьте на вопрос, чтобы людям было о чём вас спросить',
-  'profile.likes': 'Интересы',
-  'style.promptsEdit': 'Изменить вопросы',
-  'profile.posts': 'Посты',
 }
 
 export default ru

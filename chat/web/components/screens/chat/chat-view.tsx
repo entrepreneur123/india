@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
+import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -38,8 +38,8 @@ import { FriendContactsSheet } from '@/components/social/contacts'
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
 
 /**
- * One conversation. `random` is a live random match (exit lock, video, partner-left); `thread` is a message
- * thread with a friend or someone met before (the server keeps those as closed chats: text only, no video).
+ * One conversation. `random` is a live random match (exit lock, partner-left); `thread` is a message thread with a
+ * friend or someone met before. Both can call (free, 051): voice or video, in a random chat and between friends.
  */
 export function ChatView({
   matchId,
@@ -80,12 +80,12 @@ export function ChatView({
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { entitlements, openPaywall, openProfile, setTab } = useApp()
+  const { entitlements, openProfile, setTab } = useApp()
   const live = mode === 'random'
   const chat = useMatchChat(matchId, partner.name, live)
   const [reportOpen, setReportOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
-  const [videoBusy, setVideoBusy] = useState(false)
+  const [callBusy, setCallBusy] = useState(false)
   const listRef = useRef<HTMLUListElement>(null)
   const stickToBottom = useRef(true)
   const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
@@ -122,20 +122,17 @@ export function ChatView({
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight
   }, [chat.messages, chat.typing])
 
-  const requestVideo = async () => {
-    if (!entitlements.premium) {
-      openPaywall()
-      return
-    }
+  const requestCall = async (video: boolean) => {
     if (chat.partnerLeft || chat.video === 'requested_by_me' || chat.video === 'accepted') return
-    setVideoBusy(true)
+    setCallBusy(true)
     try {
-      await backend.requestVideo(matchId)
+      await backend.requestCall(matchId, video)
+      chat.setCamera(video)
       chat.setVideo('requested_by_me')
     } catch (err) {
       toast.error(err)
     } finally {
-      setVideoBusy(false)
+      setCallBusy(false)
     }
   }
 
@@ -158,6 +155,18 @@ export function ChatView({
   // 040: a thread whose chat ended goes on only between friends; until then a friends bar replaces the composer.
   const friendship = useFriendship(partner.id, partner.name)
   const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
+  // Calls: a random chat until it ends; a thread between friends (the server's call_open, 052).
+  const callable = live ? !ended : friendship.state === 'friends'
+
+  // Closing the chat (a thread) ends its call or my request, so neither is left standing on the server.
+  const callNow = useRef(chat.video)
+  callNow.current = chat.video
+  useEffect(
+    () => () => {
+      if (callNow.current === 'accepted' || callNow.current === 'requested_by_me') void backend.endVideo(matchId).catch(() => undefined)
+    },
+    [backend, matchId],
+  )
 
   // A call never runs off screen (camera and mic would stay live with no controls), and an incoming
   // request brings the chat back to the front so it can be answered.
@@ -172,7 +181,7 @@ export function ChatView({
     <div className="relative flex min-h-0 flex-1 bg-background">
       <LinkOpenProvider value={setViewUrl}>
       {/* While a call covers the chat, keyboard focus must not reach the chat behind it. */}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col" inert={live && visible && chat.video === 'accepted'}>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col" inert={visible && chat.video === 'accepted'}>
         <header className="flex items-center gap-2 border-b border-border px-3 py-2 sm:px-5">
           {live && onMinimise ? (
             <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={st('chatbar.minimise')} title={st('chatbar.minimise')}>
@@ -226,22 +235,11 @@ export function ChatView({
           >
             <Flag className="size-5" aria-hidden />
           </Button>
-          {live ? (
-            <Button
-              size="icon"
-              variant="brand"
-              onClick={() => void requestVideo()}
-              loading={videoBusy}
-              disabled={ended || chat.video === 'requested_by_me'}
-              aria-label={entitlements.premium ? t('chat.videoRequest') : t('chat.videoPlus')}
-            >
-              <Video className="size-5" aria-hidden />
-            </Button>
-          ) : null}
+          {callable ? <CallButton busy={callBusy} disabled={chat.video === 'requested_by_me'} onCall={(video) => void requestCall(video)} /> : null}
         </header>
 
         <AnimatePresence>
-          {live && chat.video === 'requested_by_me' ? (
+          {chat.video === 'requested_by_me' ? (
             <m.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
@@ -251,7 +249,7 @@ export function ChatView({
             >
               <p className="flex items-center justify-center gap-2 bg-primary-soft px-4 py-2 text-center text-xs font-semibold text-primary-text">
                 <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-primary-text" aria-hidden />
-                {t('chat.videoWaiting', { name: partner.name })}
+                {t(chat.camera ? 'chat.videoWaiting' : 'chat.voiceWaiting', { name: partner.name })}
               </p>
             </m.div>
           ) : null}
@@ -343,15 +341,18 @@ export function ChatView({
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} partner={partner} matchId={matchId} onReported={onReported} />
       {contactsOpen ? <FriendContactsSheet open onClose={() => setContactsOpen(false)} userId={partner.id} name={partner.name} /> : null}
 
-      <Modal open={live && visible && chat.video === 'requested_by_partner'} onClose={() => void answerVideo(false)} hideHeader className="max-w-sm">
+      <Modal open={visible && chat.video === 'requested_by_partner'} onClose={() => void answerVideo(false)} hideHeader className="max-w-sm">
         <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-6 text-center">
           <span className="relative">
             <span className="absolute inset-0 animate-ping-soft rounded-full border-2 border-primary-text" aria-hidden />
             <Avatar name={partner.name} src={partner.photoUrl} size={88} />
           </span>
           <div>
-            <h2 className="text-lg font-semibold">{t('chat.videoIncoming', { name: partner.name })}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{t('chat.videoIncomingBody')}</p>
+            <h2 className="flex items-center justify-center gap-2 text-lg font-semibold">
+              {chat.camera ? <Video className="size-5 shrink-0 text-primary-text" aria-hidden /> : <Phone className="size-5 shrink-0 text-primary-text" aria-hidden />}
+              {t(chat.camera ? 'chat.videoIncoming' : 'chat.voiceIncoming', { name: partner.name })}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t(chat.camera ? 'chat.videoIncomingBody' : 'chat.voiceIncomingBody')}</p>
           </div>
           <div className="flex w-full gap-3">
             <Button variant="outline" size="lg" className="flex-1" onClick={() => void answerVideo(false)}>
@@ -365,9 +366,9 @@ export function ChatView({
       </Modal>
 
       <AnimatePresence>
-        {live && visible && chat.video === 'accepted' ? (
+        {visible && chat.video === 'accepted' ? (
           <Suspense key="call" fallback={null}>
-            <VideoCall matchId={matchId} partner={partner} onEnd={endVideo} />
+            <VideoCall matchId={matchId} partner={partner} video={chat.camera} onEnd={endVideo} />
           </Suspense>
         ) : null}
       </AnimatePresence>
@@ -399,6 +400,62 @@ function FriendsBar({ name, f }: { name: string; f: ReturnType<typeof useFriends
           <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
         </Button>
       )}
+    </div>
+  )
+}
+
+/** The call button: a small choice of a voice or a video call (free, 051). */
+function CallButton({ busy, disabled, onCall }: { busy: boolean; disabled: boolean; onCall: (video: boolean) => void }) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const away = (e: PointerEvent) => !ref.current?.contains(e.target as Node) && setOpen(false)
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('pointerdown', away)
+    document.addEventListener('keydown', esc)
+    return () => {
+      document.removeEventListener('pointerdown', away)
+      document.removeEventListener('keydown', esc)
+    }
+  }, [open])
+  return (
+    <div ref={ref} className="relative">
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={() => setOpen((o) => !o)}
+        loading={busy}
+        disabled={disabled}
+        aria-label={t('chat.call')}
+        title={t('chat.call')}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="text-primary-text"
+      >
+        <Phone className="size-5" aria-hidden />
+      </Button>
+      {open ? (
+        <div role="menu" className="absolute top-full inset-e-0 z-20 mt-1 flex w-48 flex-col rounded-2xl bg-card p-1.5 shadow-e3 ring-1 ring-border">
+          {([false, true] as const).map((video) => (
+            <button
+              key={String(video)}
+              type="button"
+              role="menuitem"
+              autoFocus={!video}
+              onClick={() => {
+                setOpen(false)
+                onCall(video)
+              }}
+              className="flex h-11 items-center gap-3 rounded-xl px-3 text-start text-[15px] font-semibold transition-colors duration-150 hover:bg-muted"
+            >
+              {video ? <Video className="size-5 text-primary-text" aria-hidden /> : <Phone className="size-5 text-primary-text" aria-hidden />}
+              {t(video ? 'chat.videoCall' : 'chat.voiceCall')}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }

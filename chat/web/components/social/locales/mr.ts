@@ -53,7 +53,6 @@ const mr: SocialDict = {
   'interests.skip': 'आत्ता नको',
   'interests.label': 'आवडी',
   'interests.edit': 'आवडी एडिट करा',
-  'interests.add': 'तुमच्या आवडी जोडा',
   'interests.common': 'तुम्हा दोघांना आवडते',
   'interests.saved': 'आवडी सेव्ह झाल्या',
   'tag.music': 'संगीत',

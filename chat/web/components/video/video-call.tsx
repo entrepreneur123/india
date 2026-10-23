@@ -3,7 +3,7 @@
 import { LazyMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef, useState } from 'react'
-import { EyeOff, Mic, MicOff, PhoneOff, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
+import { EyeOff, Mic, MicOff, Phone, PhoneOff, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import type { Call, CallState, PartnerNotice } from '@/lib/livekit'
@@ -14,12 +14,16 @@ import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 import { retryImport } from '@/lib/retry-import'
 import { nameAge } from '@/lib/looks'
+import { Avatar } from '@/components/ui/avatar'
 
 /** Drag for the self-view: only the call screen needs it, so it downloads with the call. */
 const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
 
-/** Full-screen call over the chat. Real video through LiveKit; the demo backend has no token and shows a preview. */
-export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partner: Profile; onEnd: () => void }) {
+/**
+ * Full-screen call over the chat. Real video through LiveKit; the demo backend has no token and shows a preview.
+ * `video` false: a voice call, both cameras start off (either can be turned on; the nudity check covers it then).
+ */
+export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string; partner: Profile; video: boolean; onEnd: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
@@ -30,13 +34,13 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
   const callRef = useRef<Call | null>(null)
   const [state, setState] = useState<CallState | 'demo'>('connecting')
   const [mic, setMic] = useState(true)
-  const [camera, setCamera] = useState(true)
+  const [camera, setCamera] = useState(video)
   // Nudity check on the partner's video (lib/nudity.ts): blurred until the first clean frame, hidden while flagged.
   const [shield, setShield] = useState<'checking' | 'clear' | 'hidden'>('checking')
   // My connection (bars), my partner's (a notice instead of a frozen picture), their camera, and iOS autoplay.
   const [quality, setQuality] = useState('unknown')
   const [partnerState, setPartnerState] = useState<PartnerNotice>(null)
-  const [partnerCam, setPartnerCam] = useState(true)
+  const [partnerCam, setPartnerCam] = useState(video)
   const [needsTap, setNeedsTap] = useState(false)
 
   // The screen stays on for the whole call, as in a phone call app.
@@ -92,6 +96,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
             blocked: (b) => !cancelled && setNeedsTap(b),
           },
           abort.signal,
+          video,
         )
         if (cancelled) {
           void call.disconnect()
@@ -163,7 +168,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       role="dialog"
-      aria-label={t('video.with', { name: partner.name })}
+      aria-label={video ? t('video.with', { name: partner.name }) : `${t('chat.voiceCall')} · ${partner.name}`}
     >
       {partner.photoUrl && (state !== 'connected' || partnerHidden) ? (
         <img src={partner.photoUrl} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-2xl" />
@@ -206,7 +211,17 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         ) : null}
       </div>
 
-      {state === 'connected' && !partnerCam && !status ? (
+      {(state === 'connected' || state === 'demo') && !partnerCam && !video ? (
+        // A voice call: their photo up top, as a phone call shows it (a status still fits in the middle).
+        <div className="absolute inset-x-0 top-[18%] flex justify-center p-6">
+          <span className="flex flex-col items-center gap-3">
+            <Avatar name={partner.name} src={partner.photoUrl} size={128} className="rounded-full ring-4 ring-ink-foreground/15" />
+            <span className="flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-xs font-semibold">
+              <Phone className="size-3.5" aria-hidden /> {t('chat.voiceCall')}
+            </span>
+          </span>
+        </div>
+      ) : state === 'connected' && !partnerCam && !status ? (
         <div className="absolute inset-0 grid place-items-center p-6">
           <p className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-semibold" role="status">
             <VideoOff className="size-4" aria-hidden /> {t('video.partnerCamOff', { name: partner.name })}
@@ -248,7 +263,9 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         </button>
       ) : null}
 
+      {/* My picture once my camera is on (a voice call starts without it). */}
       <m.div
+        hidden={!video && !camera}
         drag
         dragConstraints={stageRef}
         dragElastic={0.15}

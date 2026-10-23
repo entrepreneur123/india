@@ -60,7 +60,6 @@ const zhHans: SocialDict = {
   'interests.skip': '暂时跳过',
   'interests.label': '兴趣',
   'interests.edit': '编辑兴趣',
-  'interests.add': '添加兴趣',
   'interests.common': '你们都喜欢',
   'interests.saved': '兴趣已保存',
   'tag.music': '音乐',

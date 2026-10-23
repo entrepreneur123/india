@@ -80,11 +80,6 @@ const pl: FeedDict = {
   'prompt.secret': 'Coś, o czym mało kto wie…',
 
   'profile.speaks': 'Mówi w językach',
-  'profile.addStatus': 'Dodaj status',
-  'profile.promptsEmpty': 'Odpowiedz na pytanie, żeby inni wiedzieli, o co Cię zapytać',
-  'profile.likes': 'Lubi',
-  'style.promptsEdit': 'Edytuj pytania',
-  'profile.posts': 'Posty',
 }
 
 export default pl

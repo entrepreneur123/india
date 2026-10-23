@@ -78,11 +78,6 @@ const ro: FeedDict = {
   'prompt.secret': 'Ceva ce știu puțini…',
 
   'profile.speaks': 'Vorbește',
-  'profile.addStatus': 'Adaugă un status',
-  'profile.promptsEmpty': 'Răspunde la o întrebare, ca oamenii să știe ce să te întrebe',
-  'profile.likes': 'Îi place',
-  'style.promptsEdit': 'Editează întrebările',
-  'profile.posts': 'Postări',
 }
 
 export default ro

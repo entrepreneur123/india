@@ -76,11 +76,6 @@ const kn: FeedDict = {
   'prompt.secret': 'ಕೆಲವರಿಗೆ ಮಾತ್ರ ತಿಳಿದಿರುವ ವಿಷಯ…',
 
   'profile.speaks': 'ಮಾತನಾಡುವ ಭಾಷೆಗಳು',
-  'profile.addStatus': 'ಸ್ಟೇಟಸ್ ಸೇರಿಸಿ',
-  'profile.promptsEmpty': 'ನಿಮ್ಮನ್ನು ಏನು ಕೇಳಬೇಕೆಂದು ಜನರಿಗೆ ತಿಳಿಯಲು ಒಂದು ಪ್ರಾಂಪ್ಟ್‌ಗೆ ಉತ್ತರಿಸಿ',
-  'profile.likes': 'ಇಷ್ಟಗಳು',
-  'style.promptsEdit': 'ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ',
-  'profile.posts': 'ಪೋಸ್ಟ್‌ಗಳು',
 }
 
 export default kn
