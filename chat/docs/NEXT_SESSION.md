@@ -2,6 +2,11 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.2: 무료 통화·친구 전화 수신·같이 보기·내 프로필·읽음 숫자 (마이그레이션 050–053 적용 완료)
+- 서버: 050 `my_badges`는 열 수 있는 대화만(최근 50 + 친구 DM). 051 `request_call(match, video)` 무료, `matches.call_video`. 052 `call_open`(열린 채팅 또는 친구, 차단 제외)을 request_call·respond_video·video-token(v10)에 적용. 053 친구 통화 요청 → 'call' 알림(응답·종료 시 읽음).
+- 앱 전체 수신 창: 웹 `components/video/incoming-call.tsx`, Android `SocialController.checkRing`.
+- 남은 일: 앱이 꺼져 있을 때 전체화면 전화 수신(full-screen intent·벨소리) 없음, Android 통화 서비스 타입(mediaPlayback vs phoneCall) Play 정책 확인 필요, 실기기·실서버 통화 미확인, 화면공유는 사장님 결정 대기(비용).
+
 ## 2026-10-23 0.18.1: 방장 위임·로고 홈·언어 변경 버그·최근 삭제·보낸 신청·읽음 배지·VIP 노출 차단 (마이그레이션 048–049 적용 완료)
 - 서버: `hide_recents(uuid[])`(048, 다시 만나면 복귀), 049에서 VIP 실명이 새던 `voice_line/voice_react/voice_queue_add/voice_share_link/ludo_join/ludo_open/bot_context/my_blocks/push_payload/can_read_media`를 마스킹, `looks_like_vip`로 흉내 이름 차단. **profiles를 읽는 새 함수는 반드시 `profiles_seen`(사람별) 또는 `profiles_public`(방 전체)을 쓸 것.**
 - 웹 언어 변경 버그 원인: `components/ui/toast.tsx`의 toast 객체가 언어마다 새로 만들어져 보이스룸·랜챗 effect가 다시 돌며 leave를 호출. ref로 고정.
