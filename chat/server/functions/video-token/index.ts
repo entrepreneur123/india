@@ -20,9 +20,10 @@ Deno.serve(async (req) => {
   const { match_id } = await req.json().catch(() => ({}));
   if (typeof match_id !== "string") return json(400, { error: "bad_request" });
 
-  // RLS returns the row only to the two participants.
-  const { data: m } = await supabase.from("matches").select("id, ended_at, video_status").eq("id", match_id).maybeSingle();
-  if (!m || m.ended_at || m.video_status !== "accepted") return json(403, { error: "not_allowed" });
+  // RLS returns the row only to the two participants; call_open: the chat is open, or the two are friends (052).
+  const { data: m } = await supabase.from("matches").select("id, video_status").eq("id", match_id).maybeSingle();
+  const { data: open } = await supabase.rpc("call_open", { p_match: match_id });
+  if (!m || open !== true || m.video_status !== "accepted") return json(403, { error: "not_allowed" });
 
   const token = await livekitToken(apiKey, apiSecret, match_id, user.id);
   return json(200, { url, token });
