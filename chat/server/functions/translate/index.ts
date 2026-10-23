@@ -91,6 +91,8 @@ Deno.serve(async (req) => {
     return json(200, same ? { text, same: true } : { text: out, same: false });
   } catch (e) {
     console.error("translate:", (e as Error).message);
-    return json(502, { error: "translate_failed" });
+    // Our side (key, permission, no credit): the apps go quiet for a while instead of failing line by line.
+    const ours = e instanceof Anthropic.AuthenticationError || e instanceof Anthropic.PermissionDeniedError || e instanceof Anthropic.BadRequestError;
+    return json(ours ? 503 : 502, { error: ours ? "translate_unavailable" : "translate_failed" });
   }
 });
