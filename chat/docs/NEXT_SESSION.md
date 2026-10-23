@@ -2,6 +2,12 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.17.0: 국가 선택 랜챗·메신저 교환·매너 끄기·보이스룸 연결 끊김 (마이그레이션 043–045 적용 완료)
+- 서버 테스트(롤백): `server/test_countries.sql`, `test_friend_contacts.sql`, `test_voice_lost.sql`.
+- 번역(`translate` 함수)은 Anthropic API 크레딧 부족으로 실패 중이었음(로그: credit balance too low). 크레딧 충전 필요. 이제 그런 경우 503 translate_unavailable로 앱이 조용히 자동번역을 멈춤.
+- 남은 일: 웹의 "백그라운드 30분 퇴장"은 그대로(안드로이드만 삭제), Android 국가 선택 목록은 가입용 약 50개국뿐(웹은 전체), 실기기 테스트(Doze·화면 꺼짐 3초 하트비트) 미확인.
+- next 16.4.2로 올림(16.4.0 보안 권고로 빌드가 멈췄음).
+
 ## 2026-10-23 0.16.0: 차단 목록·아이디 검색·아이디 30일/변경권·신상 잠금·문구 검수 (마이그레이션 042 적용 완료)
 - 서버: `042_blocks_search_locks.sql`(실서버에는 042a–h로 나눠 적용; 빈 "042_blocks_search_locks" 기록 하나는 내용 없음). 테스트 `server/test_blocks_search.sql`(롤백) 통과. verify-purchase v12(`handle_change`).
 - 남은 일: `phone_identities` 1년 지난 행 지우기(지금은 읽을 때 무시만 함) — 삭제문이 MCP 확인 대기에 걸려 보류, 사장님 승인 후 pg_cron 정리 작업에 추가.
