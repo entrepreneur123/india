@@ -284,6 +284,14 @@ sealed interface VoiceLine {
     val id: Long
     val at: Long
 
+    /** Who wrote it (a text, photo or poll), if that's [userId]. */
+    fun senderOf(userId: String): Profile? = when (this) {
+        is Text -> sender
+        is Photo -> sender
+        is Poll -> sender
+        else -> null
+    }?.takeIf { it.id == userId }
+
     /** [reply]: the line it answers, as quoted when it was sent. */
     data class Text(
         override val id: Long, val sender: Profile, val fromMe: Boolean, val text: String, override val at: Long,

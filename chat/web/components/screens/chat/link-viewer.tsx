@@ -1,10 +1,11 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type MouseEvent, type ReactNode } from 'react'
-import { ExternalLink, LoaderCircle, RotateCw, X } from 'lucide-react'
+import { ExternalLink, LoaderCircle, Play, RotateCw, X } from 'lucide-react'
 import { BackendError, type Backend, type LinkMeta } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { framable, hostOf, isYouTube, openBeside, previewLink, splitLinks } from '@/lib/links'
+import { framable, hostOf, openBeside, previewLink, splitLinks } from '@/lib/links'
+import { thumbnail, youTubeId } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -80,7 +81,14 @@ export const besideClick = (url: string) => (e: MouseEvent<HTMLAnchorElement>) =
 function useOpener() {
   const open = useContext(OpenContext)
   return (url: string) => (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!open || !canFrame.has(url) || isYouTube(url) || !plain(e)) return besideClick(url)(e)
+    const video = youTubeId(url)
+    // A YouTube link plays its video under it, in the same line (VideoInline); already playing, it stays as it is.
+    const player = video && plain(e) ? e.currentTarget.closest('p')?.parentElement?.querySelector(`[data-video="${video}"]`) : null
+    if (player) {
+      e.preventDefault()
+      return player.querySelector('button')?.click()
+    }
+    if (!open || !canFrame.has(url) || video || !plain(e)) return besideClick(url)(e)
     e.preventDefault()
     open(url)
   }
@@ -116,10 +124,41 @@ export function LinkText({ text, decorate }: { text: string; decorate?: (part: s
   )
 }
 
-/** The preview of the first link in a line (none for YouTube links, or a line without links). */
+/** Under a line's text: its first YouTube video, played right here; else a preview of its first link. */
 export function LinkPreview({ text, className }: { text: string; className?: string }) {
+  const video = splitLinks(text).map((p) => (p.kind === 'link' ? youTubeId(p.url) : null)).find(Boolean)
+  if (video) return <VideoInline id={video} className={className} />
   const url = previewLink(text)
   return url ? <LinkCard url={url} className={className} /> : null
+}
+
+/**
+ * A YouTube video in a chat line (youtube-nocookie.com): its picture until tapped (or its link is), then the player,
+ * which plays on while the chat is open, like background music.
+ */
+function VideoInline({ id, className }: { id: string; className?: string }) {
+  const { t } = useI18n()
+  const [on, setOn] = useState(false)
+  return (
+    <span data-video={id} className={cn('relative block aspect-video overflow-hidden rounded-md bg-black', className)}>
+      {on ? (
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0`}
+          title={t('voice.ytVideo')}
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+          className="absolute inset-0 size-full"
+        />
+      ) : (
+        <button type="button" onClick={() => setOn(true)} aria-label={t('voice.ytVideo')} className="absolute inset-0 grid place-items-center">
+          <img src={thumbnail(id)} alt="" loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" />
+          <span className="relative grid size-12 place-items-center rounded-full bg-black/60 text-white">
+            <Play className="size-6 translate-x-0.5 fill-current" aria-hidden />
+          </span>
+        </button>
+      )}
+    </span>
+  )
 }
 
 /** A compact card: the page's picture, title and site. While it loads, the address stands in. */

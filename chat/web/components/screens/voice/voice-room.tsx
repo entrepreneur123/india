@@ -4,6 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
+import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
@@ -24,7 +25,7 @@ import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
 import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage } from './voice-stage'
-import { isMod, REACTIONS, roleLabel } from './voice-text'
+import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
 import { useLooksT } from '@/components/looks/looks-text'
@@ -59,6 +60,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const toast = useToast()
   const { st: sst } = useSocialT()
   const { lt } = useLooksT()
+  const { openProfile } = useApp()
   const wide = useWideScreen()
   const rootRef = useRef<HTMLDivElement>(null)
   const [sheet, setSheet] = useState<SheetState>(null)
@@ -106,7 +108,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const audience = room.members.filter((x) => x.seat === null)
   const hands = mod ? audience.filter((x) => x.hand).length : 0
   const close = () => setSheet(null)
-  const person = (userId: string) => setSheet({ kind: 'person', userId })
+  // Someone in the room: their room card (stage, mute, report). Someone whose line is still in the chat after they
+  // left: their profile.
+  const person = (userId: string) => (memberOf(room, userId) ? setSheet({ kind: 'person', userId }) : openProfile(userId))
   const host = room.members.find((x) => x.profile.id === room.hostId)
 
   // The page shown to the room, unless I closed it for myself; a link I opened myself goes over it.

@@ -258,7 +258,12 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
         }
         var barHeight by remember { mutableIntStateOf(0) }
         var tray by remember { mutableStateOf(false) }
-        val person: (String) -> Unit = { sheet = VoiceSheet.Person(it) }
+        // Someone in the room: their room card (stage, mute, report). Someone whose line is still in the chat after they
+        // left: their profile.
+        val person: (String) -> Unit = { id ->
+            if (room.member(id) != null) sheet = VoiceSheet.Person(id)
+            else s.lines?.firstNotNullOfOrNull { l -> l.senderOf(id) }?.let(vm::openProfile)
+        }
         val kind = room.category
         BoxWithConstraints(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().imePadding()) {
             // A tablet or a phone on its side: the room on the left, the chat beside it. A phone: the chat below.
@@ -315,7 +320,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                                 typing = s.typers,
                                 // A page opened from the room's chat: the host and co-hosts may open it together.
                                 onLink = { url ->
-                                    if (YouTube.videoId(url) != null) openOutside(context, url)
+                                    if (YouTube.videoId(url) != null) openLink(context, links, url)
                                     else openRoomPage(context, links, url, share = if (room.canShare) { u, t -> vm.voice.shareLink(u, t) } else null)
                                 },
                                 onRequestSong = { id -> vm.voice.addSong(id) },

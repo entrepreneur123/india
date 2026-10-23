@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.view.View
-import android.widget.TextView
 import android.webkit.GeolocationPermissions
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
@@ -17,6 +16,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,16 +35,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -79,7 +80,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil3.compose.AsyncImage
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yaari.chat.R
 import com.yaari.chat.data.Backend
 import com.yaari.chat.model.LinkPreview
@@ -180,9 +186,20 @@ fun openRoomPage(context: Context, links: LinkActions, url: String, share: ((Str
     if (known && card?.frameable != true) openInTab(context, url, beside = true) else links.open(url, share)
 }
 
-/** A tapped link: YouTube videos go to the phone (as before), every other page to the in-app viewer. */
+/**
+ * A tapped link: a YouTube video plays in its card under the link (as the web's); one with no card on screen goes to
+ * the phone. Every other page opens in the in-app viewer.
+ */
 fun openLink(context: Context, links: LinkActions, url: String) {
-    if (YouTube.videoId(url) != null) openOutside(context, url) else links.open(url)
+    val video = YouTube.videoId(url) ?: return links.open(url)
+    if (video in InlineVideo.shown) InlineVideo.playing = video else openOutside(context, url)
+}
+
+/** The YouTube video playing under its link in a chat: one at a time, on until another one plays or the chat closes. */
+object InlineVideo {
+    var playing by mutableStateOf<String?>(null)
+    /** Videos with a card on screen (once per card). */
+    internal val shown = mutableListOf<String>()
 }
 
 /**
@@ -455,7 +472,7 @@ fun MessageLinkCard(text: String, modifier: Modifier = Modifier, onRequest: ((St
     val page = remember(found) { found.firstOrNull { YouTube.videoId(it.url) == null }?.url }
     when {
         page != null -> PageCard(page, links, modifier, outside = onLink != null) { (onLink ?: { u: String -> links.open(u) })(page) }
-        video != null -> VideoCard(video, modifier, onRequest) { openOutside(context, "https://youtu.be/$video") }
+        video != null -> VideoCard(video, modifier, onRequest)
     }
 }
 
@@ -496,17 +513,25 @@ private fun PageCard(url: String, links: LinkActions, modifier: Modifier, outsid
 }
 
 @Composable
-private fun VideoCard(videoId: String, modifier: Modifier, onRequest: ((String) -> Unit)?, onOpen: () -> Unit) {
+private fun VideoCard(videoId: String, modifier: Modifier, onRequest: ((String) -> Unit)?) {
     val label = stringResource(R.string.link_open_video)
+    DisposableEffect(videoId) {
+        InlineVideo.shown += videoId
+        onDispose { InlineVideo.shown -= videoId }
+    }
     Column(modifier.width(260.dp).clip(RoundedCornerShape(10.dp)).background(Color.Black.copy(alpha = 0.14f))) {
-        Box(
-            Modifier.fillMaxWidth().height(146.dp).background(Color.Black).clickable(role = Role.Button, onClick = onOpen)
-                .semantics { contentDescription = label },
-            contentAlignment = Alignment.Center,
-        ) {
-            AsyncImage(YouTube.thumbnail(videoId), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-            Box(Modifier.size(44.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.6f)), contentAlignment = Alignment.Center) {
-                Icon(Icons.Rounded.PlayArrow, null, Modifier.size(26.dp), tint = Color.White)
+        if (InlineVideo.playing == videoId) {
+            VideoPlayer(videoId, Modifier.fillMaxWidth().height(146.dp))
+        } else {
+            Box(
+                Modifier.fillMaxWidth().height(146.dp).background(Color.Black).clickable(role = Role.Button) { InlineVideo.playing = videoId }
+                    .semantics { contentDescription = label },
+                contentAlignment = Alignment.Center,
+            ) {
+                AsyncImage(YouTube.thumbnail(videoId), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                Box(Modifier.size(44.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.6f)), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.PlayArrow, null, Modifier.size(26.dp), tint = Color.White)
+                }
             }
         }
         if (onRequest != null) {
@@ -519,4 +544,27 @@ private fun VideoCard(videoId: String, modifier: Modifier, onRequest: ((String) 
             }
         }
     }
+}
+
+/** YouTube's own player with its controls, playing [videoId] from the start; it pauses while the app is in the background. */
+@Composable
+private fun VideoPlayer(videoId: String, modifier: Modifier) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    AndroidView(
+        factory = { c ->
+            YouTubePlayerView(c).apply {
+                enableAutomaticInitialization = false
+                lifecycle.addObserver(this)
+                val play = object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) = youTubePlayer.loadVideo(videoId, 0f)
+                }
+                initialize(play, true, IFramePlayerOptions.Builder(c).controls(1).rel(0).ivLoadPolicy(3).build())
+            }
+        },
+        modifier = modifier,
+        onRelease = {
+            lifecycle.removeObserver(it)
+            it.release()
+        },
+    )
 }

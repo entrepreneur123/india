@@ -2,6 +2,10 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.9: 채팅 속 유튜브 재생, 나간 사람 프로필
+- 웹 `link-viewer.tsx` VideoInline(youtube-nocookie embed, 탭 전엔 썸네일), 링크 텍스트 클릭은 같은 줄의 플레이어를 켬. Android `InlineVideo`(한 번에 하나) + VideoCard 안 YouTubePlayerView, openLink는 카드가 화면에 있으면 그 자리 재생, 없으면 폰으로. 테스트: InlineVideoTest, 웹 Playwright(팝업 없이 iframe 1개).
+- 방 채팅 이름·사진: 방에 있으면 방 카드, 나갔으면 프로필(웹 voice-room `person`, Android VoiceRoom `person` + `VoiceLine.senderOf`). 원인: PersonSheet가 현재 멤버만 보여 줌(`if (!target) return null` / "they left" 닫기).
+
 ## 2026-10-23 0.18.8: 울림·메아리 = 0.14.2의 하드웨어 AEC 끄기, 효과음 연타
 - LiveKit 2.29 RTCModule(바이트코드): Android 10+(SDK≥29)에서 setUseHardwareAcousticEchoCanceler(true)·NoiseSuppressor(true), 입력 VOICE_COMMUNICATION이 기본. 0.14.2의 `CallAudio.kt`가 이걸 꺼 WebRTC 소프트웨어 AEC만 썼음 → 앱 밖 재생(방 유튜브, 효과음)을 못 지우고, 통화 모드 입력의 폰 처리와 겹침. 0.14.2 당시 실제 메아리 원인은 웹 이중 재생(같은 커밋에서 수정). `CallAudio.kt` 삭제로 기본값 복귀.
 - 효과음 연타: 내 무대 오르내림에도 1.2초 제한이 걸려 있었음 → 내 동작은 항상(웹·Android), Android는 기다리던 이전 효과음을 새 것이 대체. 테스트: VoiceTest.rapidly…, RoomSoundsDeviceTest.aNewerChime…, 웹 Playwright 0.3초 간격 8회 = 8회.
