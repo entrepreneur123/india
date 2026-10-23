@@ -2,6 +2,12 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.16.0: 차단 목록·아이디 검색·아이디 30일/변경권·신상 잠금·문구 검수 (마이그레이션 042 적용 완료)
+- 서버: `042_blocks_search_locks.sql`(실서버에는 042a–h로 나눠 적용; 빈 "042_blocks_search_locks" 기록 하나는 내용 없음). 테스트 `server/test_blocks_search.sql`(롤백) 통과. verify-purchase v12(`handle_change`).
+- 남은 일: `phone_identities` 1년 지난 행 지우기(지금은 읽을 때 무시만 함) — 삭제문이 MCP 확인 대기에 걸려 보류, 사장님 승인 후 pg_cron 정리 작업에 추가.
+- Play 상품 `handle_change`(소모성) 등록 필요. 실결제 순서는 LAUNCH_GUIDE 4-00.
+- 번역: 35개 언어 새 문구 추가, hi/ko/ja/en 검수 완료. 다른 언어는 원어민 검수 권장. 영어 원문이 약간 바뀐 `pass_buy`, `reason_harassment`, `voice.sys.audience`는 다른 언어가 옛 영어 기준.
+
 ## 2026-10-22 0.15.0: 아이디·꾸미기·방 화면 (마이그레이션 040·041 적용 완료)
 - 설계와 디자인 수치: `docs/LOOKS_SPEC.md`. 서버 테스트: `server/test_handles_looks.sql`(롤백식, 실서버에서 통과).
 - 040: `profiles.handle`(대소문자 무시 유일, 2–24자, `handle_valid()` 허용 문자표 — 웹 `lib/handle.ts`·앱 `domain/Handle.kt`가 같은 표를 복사함, 바꿀 때 셋 다), 이름의 꾸밈 글꼴 문자 거부(`name_plain`), `cosmetic_items`(26개)·`user_cosmetics`·`profiles.look_*`, RPC `handle_check`·`set_handle`·`shop`·`equip_look`·`looks`·`admin_grant_cosmetic`, `redeem_cosmetic`(service_role 전용), `play_revoke`가 환불된 꾸미기를 벗기고 회수, 커버·색상 무시, 끝난 랜챗은 친구끼리만 새 메시지(`chat_open`, RLS).
