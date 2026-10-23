@@ -139,7 +139,7 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
         // Or the random chat, minimised the same way (only one of the two is ever on).
         VoicePill(vm, Modifier.background(bg))
         ChatBar(vm, s, Modifier.background(bg))
-        BottomBar(s, me, maxOf(social.badges.recent, s.incomingRequests), bg, vm::selectTab)
+        BottomBar(s, me, social.badges.recent, bg, vm::selectTab)
     }
 }
 

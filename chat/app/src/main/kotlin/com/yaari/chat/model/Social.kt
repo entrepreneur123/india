@@ -62,8 +62,11 @@ data class InboxItem(
 
 /** Unread counts (my_badges): Notifications, friend requests waiting for me, and unread messages per chat (match id). */
 data class Badges(val inbox: Int = 0, val friends: Int = 0, val chats: Map<String, Int> = emptyMap()) {
-    /** The Recent tab's number: chats with unread messages, and friend requests waiting for me (as the web). */
-    val recent get() = chats.values.count { it > 0 } + friends
+    /**
+     * The Recent tab's number: chats with unread messages (as the web). Friend requests are not in it: they are in the
+     * bell, which clears when opened, and on the Friends segment; a number that only an answer clears looked stuck.
+     */
+    val recent get() = chats.values.count { it > 0 }
 
     fun unread(matchId: String?) = matchId?.let { chats[it] } ?: 0
 }

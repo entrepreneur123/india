@@ -19,10 +19,12 @@ interface NavItem {
   icon: ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>
 }
 
-/** The Recent tab's number: chats with unread messages, and friend requests waiting for me. */
+/**
+ * The Recent tab's number: chats with unread messages. Friend requests are not in it: they are in the bell, which
+ * clears when opened, and on the Friends list; a number that only an answer clears looked stuck.
+ */
 export function recentCount(b: Badges | null) {
-  if (!b) return 0
-  return Object.values(b.chats).filter((n) => n > 0).length + b.friends
+  return b ? Object.values(b.chats).filter((n) => n > 0).length : 0
 }
 
 // Settings is in the sidebar only (phones reach it from Me).

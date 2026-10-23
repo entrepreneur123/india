@@ -81,7 +81,7 @@ class SocialTest {
         val b = vm.social.state.value.badges
         assertEquals(1, b.inbox)
         assertEquals(1, b.friends)
-        assertEquals("Recent counts requests and unread chats", 1, b.recent)
+        assertEquals("Recent counts unread chats only; the request is in the bell", 0, b.recent)
 
         vm.social.openInbox(); advanceUntilIdle()
         val s = vm.social.state.value
