@@ -10,7 +10,6 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
-import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 import { PlayerSlot, position, useRoomPlayer } from './room-player'
 import { useRoomT } from './room-t'
@@ -78,7 +77,7 @@ export function MusicPanel({
 
   if (!open)
     return (
-      <div className="mx-3 flex h-14 items-center gap-1 rounded-2xl bg-[color-mix(in_srgb,var(--topic-music)_12%,var(--card))] pe-1.5 ps-2 ring-1 ring-[color-mix(in_srgb,var(--topic-music)_26%,transparent)] sm:mx-4">
+      <div className="mx-3 flex h-14 items-center gap-1 rounded-2xl bg-card pe-1.5 ps-2 ring-1 ring-border sm:mx-4">
         <button type="button" onClick={() => onOpenChange(true)} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl py-1 ps-1 text-start">
           <span className="relative grid h-10 w-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-muted">
             <img src={thumbnail(track.videoId)} alt="" className="absolute inset-0 size-full object-cover" />
@@ -251,10 +250,10 @@ export function MusicHero({
   const localPaused = !!track && !!player?.localPaused && !track.pausedAt
 
   return (
-    <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4" style={{ '--k': kindColor('music') } as CSSProperties}>
+    <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4">
       {track ? (
         <div>
-          <PlayerSlot track={track} className="shadow-[0_18px_40px_-18px_color-mix(in_srgb,var(--k)_70%,transparent)]" />
+          <PlayerSlot track={track} className="shadow-e2" />
           <div className="mt-3 flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-lg leading-tight font-bold">{title}</h2>
@@ -273,7 +272,7 @@ export function MusicHero({
           </PlayerControls>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] px-6 py-8 text-center ring-1 ring-[color-mix(in_srgb,var(--k)_28%,transparent)]">
+        <div className="flex flex-col items-center gap-3 rounded-3xl bg-card px-6 py-8 text-center ring-1 ring-border">
           <TopicIcon topic="music" size={52} />
           <div>
             <h2 className="text-lg font-bold">{t('music.nothing')}</h2>
@@ -357,7 +356,7 @@ function SeekBar({ track, seconds, onSeek }: { track: VoiceTrack; seconds: numbe
       ) : (
         <div className="py-[7.5px]" aria-hidden>
           <div className="h-[5px] overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-[var(--k)] transition-[width] duration-1000 ease-linear" style={{ width: `${pct}%` }} />
+            <div className="h-full rounded-full bg-primary transition-[width] duration-1000 ease-linear" style={{ width: `${pct}%` }} />
           </div>
         </div>
       )}
@@ -381,7 +380,7 @@ export function VoteButton({ item, act }: { item: VoiceQueueItem; act: (a: Voice
       aria-label={item.voted ? t('music.unvote', { title }) : t('music.vote', { title })}
       className={cn(
         'flex h-9 min-w-14 items-center justify-center gap-1 rounded-full px-3 text-sm font-bold tabular-nums transition-colors duration-150',
-        item.voted ? 'bg-[var(--k,var(--primary))] text-white' : 'bg-card text-foreground ring-1 ring-border hover:bg-muted',
+        item.voted ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground ring-1 ring-border hover:bg-muted',
       )}
     >
       <ChevronUp className="size-4.5" strokeWidth={2.6} aria-hidden /> {num(item.votes)}
@@ -455,7 +454,7 @@ export function QueueSheet({
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.musicTitle')} description={canDJ ? t('voice.djDesc') : t('voice.suggestDesc')}>
-      <div className="flex flex-col gap-6 p-6 pt-4" style={{ '--k': kindColor('music') } as CSSProperties}>
+      <div className="flex flex-col gap-6 p-6 pt-4">
         <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-1.5">
           <label htmlFor={`${id}-l`} className="sr-only">
             {t('voice.pasteLink')}

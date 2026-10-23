@@ -39,7 +39,7 @@ export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Po
             ) : (
               <span
                 className="grid size-full place-items-center p-3 text-center text-sm font-bold text-white"
-                style={{ background: 'linear-gradient(140deg, var(--acc-to), color-mix(in srgb, var(--acc-via) 70%, var(--acc-to)))' }}
+                style={{ background: 'var(--acc-to)' }}
               >
                 <span className="line-clamp-4">{p.text}</span>
               </span>

@@ -1,5 +1,9 @@
 <resources>
+    <!-- The two brand colours (ui/Components.kt Brand): the launcher icon, the notification tint, the window behind the first frame. -->
+    <color name="brand_black">#FF111111</color>
+    <color name="brand_saffron">#FFFF8A00</color>
+
     <style name="Theme.Yaari" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowBackground">@color/brand_black</item>
     </style>
 </resources>

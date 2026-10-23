@@ -10,7 +10,6 @@ import { errorCode, flagEmoji } from '@/lib/format'
 import { onPageVisibility, pageHidden } from '@/lib/visibility'
 import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Aurora } from '@/components/ui/ambient'
 import { Avatar } from '@/components/ui/avatar'
 import { Segmented } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -332,10 +331,9 @@ export function RandomScreen({ active }: { active: boolean }) {
             {...fade}
             aria-labelledby="lobby-title"
           >
-            <Aurora />
             <BellButton className="absolute top-3 inset-e-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
-              <span className="rounded-full p-1 ring-2 ring-primary-text/60">
+              <span className="rounded-full p-1 ring-2 ring-primary">
                 <Avatar name={me.name} src={me.photoUrl} size={128} />
               </span>
               <p className="mt-5 text-lg font-semibold">
@@ -477,7 +475,7 @@ function Matching({
         {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50" aria-hidden />
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50 [animation-delay:1.2s]" aria-hidden />
-        <span className="relative rounded-full p-1 ring-2 ring-primary-text/60">
+        <span className="relative rounded-full p-1 ring-2 ring-primary">
           <Avatar name={me.name} src={me.photoUrl} size={112} />
         </span>
       </div>

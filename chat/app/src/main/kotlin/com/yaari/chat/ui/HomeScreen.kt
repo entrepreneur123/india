@@ -206,9 +206,9 @@ private fun RowScope.NavItem(
             if (badge > 0) {
                 Box(
                     Modifier.align(Alignment.TopEnd).offset(x = (-8).dp, y = (-2).dp).height(16.dp).widthIn(min = 16.dp)
-                        .clip(CircleShape).background(Brand.Pink).padding(horizontal = 4.dp),
+                        .clip(CircleShape).background(Brand.Saffron).padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center,
-                ) { Text(if (badge > 99) "99+" else "$badge", color = Color.White, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
+                ) { Text(if (badge > 99) "99+" else "$badge", color = Brand.Black, fontSize = 10.sp, lineHeight = 12.sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta) }
             }
         }
         val newCount = if (badge > 0) stringResource(R.string.nav_new_count, badge) else null
@@ -244,7 +244,7 @@ fun TabHeader(title: String, onSettings: () -> Unit, modifier: Modifier = Modifi
 @Composable
 private fun RandomTab(vm: AppViewModel, s: UiState, inbox: Int, onSettings: () -> Unit) {
     val me = s.me ?: return
-    Box(Modifier.fillMaxSize().aurora()) {
+    Box(Modifier.fillMaxSize().background(Brand.Night)) {
         Column(Modifier.fillMaxSize().statusBarsPadding()) {
             Row(Modifier.fillMaxWidth().height(64.dp).padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Wordmark(size = 24)
@@ -275,7 +275,7 @@ private fun RandomTab(vm: AppViewModel, s: UiState, inbox: Int, onSettings: () -
                 Spacer(Modifier.height(16.dp))
                 PrimaryButton(
                     stringResource(R.string.start_chatting), vm::startMatching,
-                    leading = { Icon(Icons.Rounded.Shuffle, null, Modifier.size(20.dp), tint = Color.White) },
+                    leading = { Icon(Icons.Rounded.Shuffle, null, Modifier.size(20.dp), tint = Brand.Black) },
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
@@ -298,7 +298,7 @@ private fun PlanChip(s: UiState, onClick: () -> Unit) {
             Modifier.height(32.dp).clip(CircleShape).border(1.dp, Color.White.copy(alpha = 0.24f), CircleShape).padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.PinkOnDark, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.WorkspacePremium, null, tint = Brand.Saffron, modifier = Modifier.size(16.dp))
             Text(
                 stringResource(if (premium) R.string.plan_badge_plus else R.string.get_plus), color = Color.White,
                 style = MaterialTheme.typography.labelLarge,
@@ -437,7 +437,7 @@ fun MatchingScreen(vm: AppViewModel, s: UiState) {
                 Box(Modifier.height(28.dp), contentAlignment = Alignment.BottomCenter) {
                     androidx.compose.animation.AnimatedVisibility(s.reconnecting, enter = fadeIn(tween(200)), exit = fadeOut(tween(200))) {
                         Text(
-                            stringResource(R.string.matching_reconnecting), color = Brand.PinkOnDark,
+                            stringResource(R.string.matching_reconnecting), color = Brand.Saffron,
                             style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center,
                         )
                     }

@@ -16,13 +16,13 @@ import { useFeedT } from './feed-text'
 // @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
 // variables (lib/profile-style.ts accentVars; the old per-profile colour is gone).
 
-/** The accent's variables for a subtree (`--acc-from/via/to/ink/night`). */
+/** The accent's variables for a subtree (`--acc-via/to/ink/night`). */
 export const accentStyle = (accent: Accent | null | undefined) => accentVars(accent) as CSSProperties
 
 /** Text in the accent: the deep tone on light screens, the light one at night. */
 export const ACCENT_TEXT = 'text-[var(--acc-ink)] night:text-[var(--acc-night)]'
 
-/** An avatar inside a ring of the person's accent gradient (like a story ring). */
+/** An avatar inside a thin ring of the person's accent (like a story ring). */
 export function AccentAvatar({
   name,
   src,
@@ -46,7 +46,7 @@ export function AccentAvatar({
         width: size + 2 * (pad + gap),
         height: size + 2 * (pad + gap),
         padding: pad,
-        background: 'conic-gradient(from 210deg, var(--acc-from), var(--acc-via), var(--acc-to), var(--acc-from))',
+        background: 'var(--acc-via)',
       }}
     >
       <span className="grid place-items-center rounded-full bg-card" style={{ padding: gap }}>
@@ -103,7 +103,7 @@ export function ProfileHero({
         {style.status ? (
           <p
             className={cn(
-              'mt-3 max-w-sm rounded-full bg-[color-mix(in_srgb,var(--acc-via)_12%,var(--card))] px-4 py-1.5 text-sm font-semibold text-balance',
+              'mt-3 max-w-sm rounded-full bg-primary-soft px-4 py-1.5 text-sm font-semibold text-balance',
               ACCENT_TEXT,
             )}
           >
@@ -130,10 +130,7 @@ export function LanguageChips({ languages, className }: { languages: SpokenLang[
           <li
             key={l}
             lang={l}
-            className={cn(
-              'rounded-full border border-[color-mix(in_srgb,var(--acc-via)_35%,transparent)] px-2.5 py-0.5 text-xs font-semibold',
-              ACCENT_TEXT,
-            )}
+            className="rounded-full border border-border px-2.5 py-0.5 text-xs font-semibold"
           >
             {nativeName(l)}
           </li>
@@ -143,24 +140,16 @@ export function LanguageChips({ languages, className }: { languages: SpokenLang[
   )
 }
 
-/** Answered prompts as cards tinted with the accent (Hinge-like). */
+/** Answered prompts as plain cards, the question in the accent (Hinge-like). */
 export function PromptCards({ prompts, accent, className }: { prompts: ProfilePrompt[]; accent: Accent | null | undefined; className?: string }) {
   const { ft } = useFeedT()
   if (!prompts.length) return null
   return (
     <ul className={cn('grid gap-3', className)} style={accentStyle(accent)}>
-      {prompts.map((p, i) => (
-        <li
-          key={p.q}
-          className="relative overflow-hidden rounded-3xl bg-[color-mix(in_srgb,var(--acc-via)_9%,var(--card))] px-5 pt-4 pb-5 ring-1 ring-[color-mix(in_srgb,var(--acc-via)_22%,transparent)]"
-        >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -top-14 -inset-e-10 size-36 rounded-full"
-            style={{ background: `radial-gradient(closest-side, color-mix(in srgb, var(--acc-${i % 2 ? 'from' : 'via'}) 32%, transparent), transparent)` }}
-          />
-          <p className={cn('relative text-[13px] font-bold', ACCENT_TEXT)}>{ft(`prompt.${p.q}`)}</p>
-          <p className="relative mt-1.5 text-lg leading-snug font-bold tracking-tight text-pretty">{p.a}</p>
+      {prompts.map((p) => (
+        <li key={p.q} className="rounded-3xl bg-card px-5 pt-4 pb-5 ring-1 ring-border">
+          <p className={cn('text-[13px] font-bold', ACCENT_TEXT)}>{ft(`prompt.${p.q}`)}</p>
+          <p className="mt-1.5 text-lg leading-snug font-bold tracking-tight text-pretty">{p.a}</p>
         </li>
       ))}
     </ul>

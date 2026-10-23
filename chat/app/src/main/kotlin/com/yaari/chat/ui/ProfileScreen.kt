@@ -119,11 +119,11 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                     overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false),
                 )
                 VerifiedMark(me, Modifier.padding(start = 6.dp), size = 20.dp)
-                if (s.premium) Icon(Icons.Rounded.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 8.dp).size(20.dp), tint = Brand.Pink)
+                if (s.premium) Icon(Icons.Rounded.WorkspacePremium, stringResource(R.string.plan_premium), Modifier.padding(start = 8.dp).size(20.dp), tint = Brand.Saffron)
             }
             CircleIconButton(Icons.Outlined.Settings, stringResource(R.string.settings), onSettings, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        PostGrid(me.posts, me.colorSeed, emptyMine = onNewPost, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: me.copy(posts = emptyList()))) }) {
+        PostGrid(me.posts, emptyMine = onNewPost, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: me.copy(posts = emptyList()))) }) {
             ProfileHeader(
                 me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)),
                 onLooks = onLooks,
@@ -132,7 +132,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
                 SoftButton(
                     stringResource(R.string.new_post), onNewPost, Modifier.weight(1f), accent = true,
-                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.Black) },
                 )
             }
             val social by vm.social.state.collectAsStateWithLifecycle()
@@ -167,12 +167,12 @@ private fun PlusBanner(s: UiState, onClick: () -> Unit) {
             Text(stringResource(if (s.entitlements.genderPass) R.string.plan_pass else R.string.premium_title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
             Text(
                 stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f), maxLines = 2,
+                color = MaterialTheme.colorScheme.onPrimaryContainer, maxLines = 2,
             )
         }
         Text(
-            stringResource(R.string.upgrade), color = Color.White, style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 16.dp, vertical = 8.dp),
+            stringResource(R.string.upgrade), color = Brand.Black, style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 16.dp, vertical = 8.dp),
         )
     }
 }
@@ -206,7 +206,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                     }
                 }
             }
-            PostGrid(p.posts, p.colorSeed, emptyMine = null, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: p.copy(posts = emptyList()))) }) {
+            PostGrid(p.posts, emptyMine = null, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: p.copy(posts = emptyList()))) }) {
                 val country = p.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
                 ProfileHeader(
                     p,
@@ -283,7 +283,7 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
                     Spacer(Modifier.weight(1f))
                     SoftButton(
                         stringResource(R.string.looks), onLooks, Modifier.padding(start = 8.dp), height = 36.dp,
-                        leading = { Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(18.dp), tint = Brand.Pink) },
+                        leading = { Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(18.dp), tint = Brand.Saffron) },
                     )
                 }
             }
@@ -303,7 +303,7 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
 
 /** Header content, a grid icon bar, then the 3-column grid; tapping a post opens it full screen ([onOpen]). */
 @Composable
-private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, onOpen: (Post) -> Unit, header: @Composable () -> Unit) {
+private fun PostGrid(posts: List<Post>, emptyMine: (() -> Unit)?, onOpen: (Post) -> Unit, header: @Composable () -> Unit) {
     LazyVerticalGrid(GridCells.Fixed(3), Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(2.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
         item(span = { GridItemSpan(maxLineSpan) }) { Column { header() } }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -326,15 +326,15 @@ private fun PostGrid(posts: List<Post>, seed: Int, emptyMine: (() -> Unit)?, onO
                 }
             }
         }
-        items(posts, key = { it.id }) { post -> PostTile(post, seed) { onOpen(post) } }
+        items(posts, key = { it.id }) { post -> PostTile(post) { onOpen(post) } }
     }
 }
 
 @Composable
-private fun PostTile(post: Post, seed: Int, onClick: () -> Unit) {
+private fun PostTile(post: Post, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Box(
-        Modifier.aspectRatio(1f).background(seedColor(seed + post.id.hashCode()))
+        Modifier.aspectRatio(1f).background(Brand.Black)
             .clickable(interaction, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -494,13 +494,13 @@ fun EditProfileScreen(
                 Field(city, { city = it.take(30) }, stringResource(R.string.city))
                 Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
                 EditorLink(stringResource(R.string.looks), stringResource(R.string.looks_sub), onLooks) {
-                    Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(22.dp), tint = Brand.Pink)
+                    Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(22.dp), tint = Brand.Saffron)
                 }
                 EditorLink(stringResource(R.string.profile_details), stringResource(R.string.details_nudge), onDetails) {
-                    MarkIcon(Mark.PALETTE, accentColors().ink, size = 22.dp)
+                    MarkIcon(Mark.PALETTE, MaterialTheme.colorScheme.primaryText, size = 22.dp)
                 }
                 EditorLink(stringResource(R.string.contacts_title), stringResource(R.string.contacts_note), onContacts) {
-                    Icon(Icons.Rounded.ContactPhone, null, Modifier.size(22.dp), tint = Brand.Pink)
+                    Icon(Icons.Rounded.ContactPhone, null, Modifier.size(22.dp), tint = Brand.Saffron)
                 }
                 // Locked on the server too: gender and age can't be changed after sign-up.
                 Row(
@@ -508,7 +508,7 @@ fun EditProfileScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     val fromId = isVerified(me)
-                    if (fromId) MarkIcon(Mark.VERIFIED, Brand.Pink, size = 22.dp)
+                    if (fromId) MarkIcon(Mark.VERIFIED, Brand.Saffron, size = 22.dp)
                     else Icon(Icons.Outlined.Lock, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     Column(Modifier.padding(start = 16.dp)) {
                         val country = me.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
@@ -528,7 +528,7 @@ fun EditProfileScreen(
 @Composable
 private fun EditorLink(title: String, sub: String, onClick: () -> Unit, mark: @Composable () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Brand.LogoPink.copy(alpha = 0.10f))
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(role = Role.Button, onClick = onClick).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -554,15 +554,15 @@ fun HandleInput(value: String, onChange: (String) -> Unit, field: HandleField?, 
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrectEnabled = false, imeAction = ImeAction.Next),
         trailingIcon = {
             when {
-                field?.text == value && field.checking -> CircularProgressIndicator(Modifier.size(18.dp), color = Brand.Pink, strokeWidth = 2.dp)
+                field?.text == value && field.checking -> CircularProgressIndicator(Modifier.size(18.dp), color = Brand.Saffron, strokeWidth = 2.dp)
                 free -> Icon(Icons.Rounded.CheckCircle, stringResource(R.string.handle_available), tint = Brand.Online)
             }
         },
         supportingText = { Text(problem ?: note ?: stringResource(R.string.handle_hint)) },
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink,
-            focusedLabelColor = Brand.Pink, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            cursorColor = Brand.Pink, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Saffron,
+            focusedLabelColor = MaterialTheme.colorScheme.primaryText, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = Brand.Saffron, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }
@@ -581,9 +581,9 @@ fun Field(
         isError = error != null, leadingIcon = leading, placeholder = placeholder?.let { { Text(it) } },
         supportingText = error?.let { { Text(it) } } ?: counter?.let { { Text(it, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.End) } },
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink,
-            focusedLabelColor = Brand.Pink, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            cursorColor = Brand.Pink, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Saffron,
+            focusedLabelColor = MaterialTheme.colorScheme.primaryText, unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = Brand.Saffron, focusedContainerColor = MaterialTheme.colorScheme.surface, unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }

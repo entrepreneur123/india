@@ -1,11 +1,10 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import type { RoomKind } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { TopicIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
-import { CATEGORIES, categoryBody, categoryLabel, kindColor, kindTopic } from './room-text'
+import { CATEGORIES, categoryBody, categoryLabel, kindTopic } from './room-text'
 
 /** The two categories as chips, and what the chosen one is like underneath. */
 export function CategoryPicker({ labelledBy, value, onChange }: { labelledBy: string; value: RoomKind; onChange: (c: RoomKind) => void }) {
@@ -22,12 +21,11 @@ export function CategoryPicker({ labelledBy, value, onChange }: { labelledBy: st
               role="radio"
               aria-checked={on}
               onClick={() => onChange(c)}
-              style={{ '--k': kindColor(c) } as CSSProperties}
               className={cn(
                 'flex h-[4.5rem] min-w-0 flex-col items-center justify-center gap-1 rounded-2xl px-2 text-sm font-semibold transition-[background-color,box-shadow] duration-150',
                 on
-                  ? 'bg-[color-mix(in_srgb,var(--k)_14%,var(--card))] text-foreground ring-2 ring-[var(--k)]'
-                  : 'bg-card text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)] ring-1 ring-border hover:bg-muted night:bg-muted night:shadow-none',
+                  ? 'bg-primary-soft text-foreground ring-2 ring-primary'
+                  : 'bg-card text-foreground ring-1 ring-border hover:bg-muted',
               )}
             >
               <TopicIcon topic={kindTopic(c)} size={26} />

@@ -48,10 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -71,38 +68,25 @@ import com.yaari.chat.model.PromptQ
 import com.yaari.chat.model.SpokenLang
 
 // ---- A profile's details (033): status, languages and prompts --------------------------------------------------------
-// Tinted with Yaari's own pink to orange, which stays readable in both themes. Profiles are decorated by the frames
+// Saffron marks and labels on plain neutral cards (no gradients), readable in both themes. Profiles are decorated by the frames
 // people buy (Looks.kt); the free cover and colour went with 0.15.
 
-/** A two-stop gradient and the ink for text and small marks on the app's background. */
-data class AccentColors(val start: Color, val end: Color, val ink: Color) {
-    val brush get() = Brush.linearGradient(listOf(start, end))
-}
-
-/** Yaari's pink to orange; the ink is lighter at night so it stays readable. */
-@Composable
-fun accentColors(): AccentColors {
-    val night = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    return AccentColors(Brand.LogoPink, Brand.LogoOrange, if (night) lerp(Brand.LogoPink, Color.White, 0.35f) else Brand.Pink)
-}
-
-/** The avatar inside a gradient ring (the gradient, a gap in the background colour, then the photo). */
+/** The avatar inside a saffron ring (the ring, a gap in the background colour, then the photo). */
 @Composable
 fun AccentAvatar(p: Profile, size: Dp, modifier: Modifier = Modifier, gap: Color = MaterialTheme.colorScheme.background, ring: Dp = 2.5.dp) {
-    Box(modifier.size(size).clip(CircleShape).background(accentColors().brush).padding(ring).clip(CircleShape).background(gap).padding(ring), contentAlignment = Alignment.Center) {
+    Box(modifier.size(size).clip(CircleShape).background(Brand.Saffron).padding(ring).clip(CircleShape).background(gap).padding(ring), contentAlignment = Alignment.Center) {
         Avatar(p, size - ring * 4)
     }
 }
 
-/** The status under the name: a small gradient dot and the line, in the ink. */
+/** The status under the name: a small saffron dot and the line, in saffron text. */
 @Composable
 fun StatusLine(p: Profile, modifier: Modifier = Modifier) {
     val status = p.style.status?.takeIf { it.isNotBlank() } ?: return
-    val colors = accentColors()
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(colors.brush))
+        Box(Modifier.size(8.dp).clip(CircleShape).background(Brand.Saffron))
         Text(
-            status, Modifier.padding(start = 8.dp), color = colors.ink, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            status, Modifier.padding(start = 8.dp), color = MaterialTheme.colorScheme.primaryText, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             maxLines = 2, overflow = TextOverflow.Ellipsis,
         )
     }
@@ -113,35 +97,33 @@ fun StatusLine(p: Profile, modifier: Modifier = Modifier) {
 @Composable
 fun LanguagesRow(p: Profile, modifier: Modifier = Modifier) {
     val langs = p.style.languages.takeIf { it.isNotEmpty() } ?: return
-    val ink = accentColors().ink
     val label = stringResource(R.string.profile_languages)
     Row(modifier.semantics(mergeDescendants = true) { contentDescription = label + ": " + langs.joinToString { it.native } }, verticalAlignment = Alignment.Top) {
-        MarkIcon(Mark.GLOBE, ink, Modifier.padding(top = 6.dp), size = 18.dp)
+        MarkIcon(Mark.GLOBE, MaterialTheme.colorScheme.onSurfaceVariant, Modifier.padding(top = 6.dp), size = 18.dp)
         FlowRow(Modifier.padding(start = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             langs.forEach { l ->
                 Text(
-                    l.native, Modifier.clip(CircleShape).background(ink.copy(alpha = 0.10f)).padding(horizontal = 12.dp, vertical = 5.dp),
-                    style = MaterialTheme.typography.labelLarge, color = ink,
+                    l.native, Modifier.clip(CircleShape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape).padding(horizontal = 12.dp, vertical = 5.dp),
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
         }
     }
 }
 
-/** Answered prompts as big tinted cards: the question small in the ink, the answer large (Hinge style). */
+/** Answered prompts as big plain cards: the question small in saffron, the answer large (Hinge style). */
 @Composable
 fun PromptCards(p: Profile, modifier: Modifier = Modifier) {
     val prompts = p.style.prompts.takeIf { it.isNotEmpty() } ?: return
-    val colors = accentColors()
     Column(modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         prompts.forEach { pr ->
             Column(
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(MaterialTheme.colorScheme.surfaceContainer)
-                    .background(Brush.linearGradient(listOf(colors.start.copy(alpha = 0.16f), colors.end.copy(alpha = 0.08f))))
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
                     .semantics(mergeDescendants = true) {}
                     .padding(horizontal = 20.dp, vertical = 18.dp),
             ) {
-                Text(stringResource(pr.q.label), style = MaterialTheme.typography.labelLarge, color = colors.ink)
+                Text(stringResource(pr.q.label), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primaryText)
                 Text(
                     pr.answer, Modifier.padding(top = 6.dp),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 27.sp, fontWeight = FontWeight.SemiBold),
@@ -154,15 +136,14 @@ fun PromptCards(p: Profile, modifier: Modifier = Modifier) {
 /** On my profile while no details are filled in yet: what can be added, and a way in. */
 @Composable
 fun StyleNudge(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = accentColors()
     Row(
         modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(24.dp))
-            .border(1.5.dp, colors.brush, RoundedCornerShape(24.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
             .clickable(role = Role.Button, onClick = onClick).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(44.dp).clip(CircleShape).background(colors.start.copy(alpha = 0.12f)), contentAlignment = Alignment.Center) {
-            MarkIcon(Mark.PALETTE, colors.ink, size = 24.dp)
+        Box(Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            MarkIcon(Mark.PALETTE, MaterialTheme.colorScheme.primaryText, size = 24.dp)
         }
         Column(Modifier.weight(1f).padding(start = 14.dp)) {
             Text(stringResource(R.string.details_nudge_title), style = MaterialTheme.typography.titleSmall)
@@ -235,15 +216,14 @@ fun StyleEditorScreen(vm: AppViewModel, me: Profile, onDone: () -> Unit) {
                 }
                 Section(stringResource(R.string.style_prompts), stringResource(R.string.style_prompts_hint, ProfilePrompt.MAX)) {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val colors = accentColors()
                         prompts.forEachIndexed { i, d ->
                             Column(
                                 Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp))
-                                    .background(Brush.linearGradient(listOf(colors.start.copy(alpha = 0.12f), colors.end.copy(alpha = 0.06f))))
+                                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp))
                                     .padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 12.dp),
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    QuestionPicker(d.q, used = prompts.map { it.q }.toSet() - d.q, color = colors.ink, modifier = Modifier.weight(1f)) { d.q = it }
+                                    QuestionPicker(d.q, used = prompts.map { it.q }.toSet() - d.q, color = MaterialTheme.colorScheme.primaryText, modifier = Modifier.weight(1f)) { d.q = it }
                                     IconButton({ prompts.removeAt(i) }) { Icon(Icons.Rounded.Close, stringResource(R.string.style_prompt_remove), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                                 }
                                 Field(
@@ -287,16 +267,16 @@ private fun Section(title: String, hint: String? = null, content: @Composable ()
 private fun ToggleChip(text: String, on: Boolean, enabled: Boolean, onToggle: () -> Unit) {
     Row(
         Modifier.height(40.dp).clip(CircleShape)
-            .then(if (on) Modifier.background(Brand.Pink) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape))
+            .then(if (on) Modifier.background(Brand.Saffron) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape))
             .toggleable(on, enabled = enabled, role = Role.Checkbox) { onToggle() }
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Color.White)
+        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.Black)
         Text(
             text, style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
             color = when {
-                on -> Color.White
+                on -> Brand.Black
                 !enabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 else -> MaterialTheme.colorScheme.onSurface
             },

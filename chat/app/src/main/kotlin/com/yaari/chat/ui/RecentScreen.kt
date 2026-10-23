@@ -220,7 +220,7 @@ private fun FriendAction(state: FriendState, onAdd: () -> Unit) {
 @Composable
 private fun SectionLabel(text: String) {
     Text(
-        text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
+        text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primaryText,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp),
     )
 }

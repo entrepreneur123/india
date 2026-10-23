@@ -57,12 +57,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'tween', duration: 0.18, ease: [0.2, 0, 0, 1] }}
-                className="pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-xl bg-[#303034] py-3 pe-5 ps-4 text-sm font-medium text-white shadow-e3"
+                className="pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-xl bg-[#262626] py-3 pe-5 ps-4 text-sm font-medium text-white shadow-e3"
               >
                 <Icon
                   className={cn(
                     'size-4.5 shrink-0',
-                    t.tone === 'error' && 'text-[#ff8fa8]',
+                    t.tone === 'error' && 'text-[#f28b82]',
                     t.tone === 'success' && 'text-[#81c995]',
                     t.tone === 'info' && 'text-white/70',
                   )}

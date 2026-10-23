@@ -1,17 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-/** A very light, static brand tint behind the random-chat lobby (no blur, no animation: cheap on any phone). */
-export function Aurora({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn('pointer-events-none absolute inset-0', className)}
-      style={{ background: 'radial-gradient(60% 45% at 50% 0%, rgb(255 61 104 / 0.10), transparent 70%)' }}
-      aria-hidden
-    />
-  )
-}
-
 type Art = 'chat' | 'people' | 'posts' | 'rooms' | 'feed' | 'discover' | 'comments'
 
 /** Simple two-tone line art in the brand colour, like empty states in Google apps. */

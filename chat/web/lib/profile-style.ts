@@ -11,25 +11,26 @@ export const ANSWER_MAX = 120
 export const ACCENTS: Accent[] = ['rose', 'violet', 'ocean', 'mint', 'sunset', 'gold', 'berry', 'slate']
 
 /**
- * Each accent: a gradient (`from` → `to`, the cover's fallback and the name ring), a deep tone for text and icons on
- * light cards (`ink`, ≥ 4.5:1 on white) and a light one for night screens (`night`). `null` is the brand's own.
+ * Each accent: the ring colour (`via`), a dark fill under white text (`to`, text posts), a deep tone for text and
+ * icons on light cards (`ink`, ≥ 4.5:1 on white) and a light one for night screens (`night`). `null` is the brand's
+ * own: saffron, black text-post tiles.
  */
-export const ACCENT_COLORS: Record<Accent | 'brand', { from: string; via: string; to: string; ink: string; night: string }> = {
-  brand: { from: '#ff7a45', via: '#ff3d68', to: '#d81b60', ink: '#c8174a', night: '#ff6b8b' },
-  rose: { from: '#ff9a9e', via: '#f43f5e', to: '#be123c', ink: '#be123c', night: '#fb7185' },
-  violet: { from: '#c4b5fd', via: '#8b5cf6', to: '#5b21b6', ink: '#6d28d9', night: '#a78bfa' },
-  ocean: { from: '#67e8f9', via: '#3b82f6', to: '#1e40af', ink: '#1d4ed8', night: '#60a5fa' },
-  mint: { from: '#a7f3d0', via: '#10b981', to: '#047857', ink: '#047857', night: '#34d399' },
-  sunset: { from: '#fde68a', via: '#fb923c', to: '#e11d48', ink: '#c2410c', night: '#fb923c' },
-  gold: { from: '#fef08a', via: '#f59e0b', to: '#b45309', ink: '#a16207', night: '#fbbf24' },
-  berry: { from: '#f9a8d4', via: '#db2777', to: '#831843', ink: '#9d174d', night: '#f472b6' },
-  slate: { from: '#cbd5e1', via: '#64748b', to: '#1e293b', ink: '#334155', night: '#94a3b8' },
+export const ACCENT_COLORS: Record<Accent | 'brand', { via: string; to: string; ink: string; night: string }> = {
+  brand: { via: '#ff8a00', to: '#111111', ink: '#b45309', night: '#ff8a00' },
+  rose: { via: '#f43f5e', to: '#be123c', ink: '#be123c', night: '#fb7185' },
+  violet: { via: '#8b5cf6', to: '#5b21b6', ink: '#6d28d9', night: '#a78bfa' },
+  ocean: { via: '#3b82f6', to: '#1e40af', ink: '#1d4ed8', night: '#60a5fa' },
+  mint: { via: '#10b981', to: '#047857', ink: '#047857', night: '#34d399' },
+  sunset: { via: '#fb923c', to: '#e11d48', ink: '#c2410c', night: '#fb923c' },
+  gold: { via: '#f59e0b', to: '#b45309', ink: '#a16207', night: '#fbbf24' },
+  berry: { via: '#db2777', to: '#831843', ink: '#9d174d', night: '#f472b6' },
+  slate: { via: '#64748b', to: '#1e293b', ink: '#334155', night: '#94a3b8' },
 }
 
-/** CSS variables for an accent: --acc-from/via/to (gradient), --acc-ink (text on light), --acc-night (text at night). */
+/** CSS variables for an accent: --acc-via/to, --acc-ink (text on light), --acc-night (text at night). */
 export function accentVars(accent: Accent | null | undefined): Record<string, string> {
   const c = ACCENT_COLORS[accent && accent in ACCENT_COLORS ? accent : 'brand']
-  return { '--acc-from': c.from, '--acc-via': c.via, '--acc-to': c.to, '--acc-ink': c.ink, '--acc-night': c.night }
+  return { '--acc-via': c.via, '--acc-to': c.to, '--acc-ink': c.ink, '--acc-night': c.night }
 }
 
 /** Spoken languages, written in their own script (shown as is in every app language). */

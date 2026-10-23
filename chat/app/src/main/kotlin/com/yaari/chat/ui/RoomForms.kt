@@ -45,7 +45,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -135,15 +134,13 @@ fun CategoryPicker(value: RoomCategory, onChange: (RoomCategory) -> Unit) {
         Row(Modifier.fillMaxWidth().selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RoomCategory.entries.forEach { c ->
                 val on = value == c
-                val color = topicColor(c.topic())
                 val shape = RoundedCornerShape(16.dp)
                 Column(
                     Modifier.weight(1f).height(72.dp)
-                        .then(if (!on && !night) Modifier.shadow(1.dp, shape) else Modifier)
-                        .clip(shape)
+                                                .clip(shape)
                         .background(if (night && !on) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surface)
-                        .then(if (on) Modifier.background(color.copy(alpha = 0.14f)) else Modifier)
-                        .border(if (on) 2.dp else 1.dp, if (on) color else MaterialTheme.colorScheme.outlineVariant, shape)
+                        .then(if (on) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
+                        .border(if (on) 2.dp else 1.dp, if (on) Brand.Saffron else MaterialTheme.colorScheme.outlineVariant, shape)
                         .selectable(on, role = Role.RadioButton) { onChange(c) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
                 ) {
@@ -299,7 +296,7 @@ fun CreateRoomSheet(busy: Boolean, initial: RoomCategory?, onDismiss: () -> Unit
                     }
                     Text(stringResource(R.string.create_private_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                Switch(private, null, colors = SwitchDefaults.colors(checkedTrackColor = Brand.Pink, checkedThumbColor = Color.White))
+                Switch(private, null)
             }
             Spacer(Modifier.height(22.dp))
             PrimaryButton(
@@ -313,7 +310,7 @@ fun CreateRoomSheet(busy: Boolean, initial: RoomCategory?, onDismiss: () -> Unit
 
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink, cursorColor = Brand.Pink,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Saffron, cursorColor = Brand.Saffron,
 )
 
 /** Six characters, shown big and spaced like a ticket number. */
@@ -340,7 +337,7 @@ fun JoinCodeSheet(busy: Boolean, onDismiss: () -> Unit, onJoin: (String) -> Unit
                 keyboardActions = KeyboardActions(onGo = { if (ready) onJoin(code) }),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant, focusedBorderColor = MaterialTheme.colorScheme.onSurface,
-                    focusedLabelColor = MaterialTheme.colorScheme.onSurface, cursorColor = Brand.Pink,
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurface, cursorColor = Brand.Saffron,
                 ),
             )
             Spacer(Modifier.height(24.dp))
@@ -369,7 +366,7 @@ fun RoomCreatedDialog(room: VoiceRoom, code: String, onInvite: () -> Unit, onDon
                 Text(stringResource(R.string.created_text_invite), style = MaterialTheme.typography.bodyMedium)
                 PrimaryButton(
                     stringResource(R.string.invite_title), onInvite, height = 48.dp,
-                    leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(20.dp), tint = Color.White) },
+                    leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(20.dp), tint = Brand.Black) },
                 )
                 SoftButton(
                     stringResource(R.string.share_link), { shareRoomLink(context, room) }, Modifier.fillMaxWidth(), height = 48.dp, outlined = true,

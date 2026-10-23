@@ -3,8 +3,8 @@ import type { RoomCategory, VoiceReaction } from '@/lib/backend'
 import { cn } from '@/lib/utils'
 
 // Yaari's own glyphs for room topics and reactions (no emoji: they render differently on every phone and look
-// cheap next to the rest of the UI). 24×24, solid rounded shapes in two tones: the topic colour (var(--c)) and a
-// light tint of it (var(--cl)) for the secondary part. Colours are CSS variables (globals.css), lighter at night.
+// cheap next to the rest of the UI). 24×24, solid rounded shapes in two tones: the main colour (var(--c)) and a
+// light tint of it (var(--cl)) for the secondary part. Topics are one grey (--glyph), reactions saffron, likes red.
 
 /** A room category, plus the built-in rooms that have no category of their own. */
 export type Topic = RoomCategory | 'globe' | 'memes'
@@ -62,7 +62,7 @@ const TOPIC_GLYPHS: Record<Topic, ReactNode> = {
     <>
       <path d="M10 5.8A3.3 3.3 0 0 1 13.3 2.5h5.4A3.3 3.3 0 0 1 22 5.8v3.4a3.3 3.3 0 0 1-2 3.03v1.86c0 .5-.6.77-.98.44L16.6 12.5h-3.3A3.3 3.3 0 0 1 10 9.2z" fill={L} />
       <path d="M2 11.3A3.3 3.3 0 0 1 5.3 8h7.4a3.3 3.3 0 0 1 3.3 3.3v4.4a3.3 3.3 0 0 1-3.3 3.3H8.6l-3.62 2.88c-.38.3-.98.03-.98-.46v-2.73a3.3 3.3 0 0 1-2-3.03z" fill={M} />
-      <path d="M6.1 16.6 9 10.8l2.9 5.8M7.15 14.6h3.7" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.1 16.6 9 10.8l2.9 5.8M7.15 14.6h3.7" fill="none" stroke="var(--card)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </>
   ),
   music: (
@@ -173,17 +173,8 @@ const REACTION_GLYPHS: Record<VoiceReaction | 'hand', ReactNode> = {
   ),
 }
 
-const REACTION_COLORS: Record<VoiceReaction | 'hand', string> = {
-  heart: '#F2416B',
-  laugh: '#F7B500',
-  fire: '#FF6A2B',
-  clap: '#F59E0B',
-  wow: '#8E5CF7',
-  hand: '#F59E0B',
-}
-
-/** The topic's colour, for tinted tiles and chips. */
-export const topicColor = (topic: Topic) => `var(--topic-${topic})`
+const HEART = '#F2416B'
+const reactionColor = (kind: VoiceReaction | 'hand') => (kind === 'heart' ? HEART : 'var(--brand)')
 
 function Glyph({ color, size, className, children }: { color: string; size: number; className?: string; children: ReactNode }) {
   return (
@@ -203,7 +194,7 @@ function Glyph({ color, size, className, children }: { color: string; size: numb
 
 export function TopicIcon({ topic, size = 20, className }: { topic: Topic; size?: number; className?: string }) {
   return (
-    <Glyph color={topicColor(topic)} size={size} className={className}>
+    <Glyph color="var(--glyph)" size={size} className={className}>
       {TOPIC_GLYPHS[topic]}
     </Glyph>
   )
@@ -211,16 +202,16 @@ export function TopicIcon({ topic, size = 20, className }: { topic: Topic; size?
 
 export function ReactionIcon({ kind, size = 24, className }: { kind: VoiceReaction | 'hand'; size?: number; className?: string }) {
   return (
-    <Glyph color={REACTION_COLORS[kind]} size={size} className={className}>
+    <Glyph color={reactionColor(kind)} size={size} className={className}>
       {REACTION_GLYPHS[kind]}
     </Glyph>
   )
 }
 
-/** The icebreaker card's glyph: a speech bubble with a question mark, in the talk colour. */
+/** The icebreaker card's glyph: a speech bubble with a question mark, in saffron. */
 export function IcebreakerIcon({ size = 20, className }: { size?: number; className?: string }) {
   return (
-    <Glyph color={topicColor('chat')} size={size} className={className}>
+    <Glyph color="var(--brand)" size={size} className={className}>
       <path
         d="M2.5 6.5A3.5 3.5 0 0 1 6 3h12a3.5 3.5 0 0 1 3.5 3.5v7A3.5 3.5 0 0 1 18 17h-6.2l-4.3 3.4c-.66.52-1.62.05-1.62-.79V17H6a3.5 3.5 0 0 1-3.5-3.5z"
         fill={M}
@@ -231,10 +222,10 @@ export function IcebreakerIcon({ size = 20, className }: { size?: number; classN
   )
 }
 
-/** A room poll's glyph: a card with three result bars, in the study violet (the poll cards' colour). */
+/** A room poll's glyph: a card with three result bars, in saffron. */
 export function PollIcon({ size = 20, className }: { size?: number; className?: string }) {
   return (
-    <Glyph color={topicColor('study')} size={size} className={className}>
+    <Glyph color="var(--brand)" size={size} className={className}>
       <rect x="2.5" y="3" width="19" height="18" rx="4.2" fill={L} />
       <rect x="5.6" y="6.6" width="12.8" height="2.8" rx="1.4" fill={M} />
       <rect x="5.6" y="10.6" width="8.4" height="2.8" rx="1.4" fill={M} />
@@ -243,12 +234,12 @@ export function PollIcon({ size = 20, className }: { size?: number; className?: 
   )
 }
 
-/** The leading tile of a room: the glyph in full colour on a light wash of it (never a loud colour block). */
+/** The leading tile of a room: the grey glyph on a grey disc. */
 export function TopicTile({ topic, size = 44, className }: { topic: Topic; size?: number; className?: string }) {
   return (
     <span
-      className={cn('grid shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--t)_12%,var(--card))] night:bg-[color-mix(in_srgb,var(--t)_18%,var(--card))]', className)}
-      style={{ width: size, height: size, '--t': topicColor(topic) } as CSSProperties}
+      className={cn('grid shrink-0 place-items-center rounded-full bg-muted', className)}
+      style={{ width: size, height: size }}
       aria-hidden
     >
       <TopicIcon topic={topic} size={Math.round(size * 0.52)} />
@@ -256,12 +247,12 @@ export function TopicTile({ topic, size = 44, className }: { topic: Topic; size?
   )
 }
 
-/** A white rounded chip with the glyph and its label (Naver Map style category chips). */
+/** A rounded chip with the glyph and its label (Naver Map style category chips). */
 export function TopicChip({ topic, label, className }: { topic: Topic; label: string; className?: string }) {
   return (
     <span
       className={cn(
-        'inline-flex h-7 max-w-full items-center gap-1.5 rounded-full bg-card pe-3 ps-2 text-[12px] font-semibold text-foreground shadow-[0_1px_3px_rgb(0_0_0/0.12)] night:bg-[#26262c] night:shadow-none',
+        'inline-flex h-7 max-w-full items-center gap-1.5 rounded-full bg-card pe-3 ps-2 text-[12px] font-semibold text-foreground ring-1 ring-border',
         className,
       )}
     >
@@ -300,7 +291,7 @@ export function CommentIcon({ size = 26, className }: { size?: number; className
 /** The big heart that pops over a photo on a double tap (Instagram): two tones on a soft shadow. */
 export function BigHeart({ size = 96, className }: { size?: number; className?: string }) {
   return (
-    <Glyph color={REACTION_COLORS.heart} size={size} className={cn('drop-shadow-[0_6px_18px_rgb(0_0_0/0.35)]', className)}>
+    <Glyph color={HEART} size={size} className={cn('drop-shadow-[0_6px_18px_rgb(0_0_0/0.35)]', className)}>
       <path d={HEART_PATH} fill="#fff" />
       <path d={HEART_PATH} fill={M} transform="translate(12 12.4) scale(.86) translate(-12 -12.4)" />
       <ellipse cx="7.9" cy="9.2" rx="1.7" ry="1.1" transform="rotate(-40 7.9 9.2)" fill={L} />
@@ -308,7 +299,7 @@ export function BigHeart({ size = 96, className }: { size?: number; className?: 
   )
 }
 
-/** A post's audience, small: the globe (everyone) or two people (friends), in their topic colours. */
+/** A post's audience, small: the globe (everyone) or two people (friends). */
 export function AudienceIcon({ visibility, size = 14, className }: { visibility: 'public' | 'friends'; size?: number; className?: string }) {
   return <TopicIcon topic={visibility === 'public' ? 'globe' : 'friends'} size={size} className={className} />
 }

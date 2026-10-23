@@ -27,7 +27,7 @@ export function OfflineBanner() {
       role="status"
       className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[60] flex justify-center px-4 md:bottom-6"
     >
-      <p className="flex items-center gap-2 rounded-full bg-[#303034] px-4 py-2 text-center text-xs font-semibold text-white shadow-e2">
+      <p className="flex items-center gap-2 rounded-full bg-[#262626] px-4 py-2 text-center text-xs font-semibold text-white shadow-e2">
         <WifiOff className="size-3.5 shrink-0" aria-hidden />
         {t('net.offline')}
       </p>

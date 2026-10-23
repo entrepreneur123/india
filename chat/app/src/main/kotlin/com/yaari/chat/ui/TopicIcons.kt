@@ -2,6 +2,7 @@ package com.yaari.chat.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -16,13 +17,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.graphics.vector.group
@@ -37,7 +36,7 @@ import com.yaari.chat.model.VoiceReaction
 
 // Yaari's own glyphs for room topics and reactions (no emoji anywhere in the UI chrome: they render differently on
 // every phone). A port of the web's components/ui/topic-icons.tsx with the same 24×24 paths: solid rounded shapes
-// in two tones, the topic colour (M) and a light tint of it (L, 42 % colour on white). Colours are lighter at night.
+// in two tones, the main colour (M) and a light tint of it (L, 42 % colour on white). Topics are grey, the rest saffron.
 
 /** A room's glyph: talk or music. */
 enum class Topic { CHAT, MUSIC }
@@ -48,19 +47,13 @@ fun RoomCategory.topic(): Topic = when (this) {
     RoomCategory.MUSIC -> Topic.MUSIC
 }
 
-// The web's --topic-* colours (app/globals.css), day and night.
-private val TopicDay = mapOf(Topic.CHAT to 0xFF4C7CF0, Topic.MUSIC to 0xFFE2558A)
-private val TopicNight = mapOf(Topic.CHAT to 0xFF6E97FF, Topic.MUSIC to 0xFFEE77A4)
-
-/** Reaction glyphs (and the raised hand, the icebreaker card) have one colour in both themes. */
-enum class Glyph(val color: Long) {
-    HEART(0xFFF2416B), LAUGH(0xFFF7B500), FIRE(0xFFFF6A2B), CLAP(0xFFF59E0B), WOW(0xFF8E5CF7), HAND(0xFFF59E0B),
-    /** In the talk colour (rooms are always dark: its night shade). */
-    ICEBREAKER(0xFF6E97FF),
+/** Reaction glyphs (and the raised hand, the icebreaker card): saffron, but the heart is red. */
+enum class Glyph(val color: Long = 0xFFFF8A00) {
+    HEART(0xFFF2416B), LAUGH, FIRE, CLAP, WOW, HAND, ICEBREAKER,
     /** A room poll: answer bars. */
-    POLL(0xFF22B8A6),
+    POLL,
     /** A web link: two chain links (link cards, the page shared in a room). */
-    LINK(0xFF4C9BF0),
+    LINK,
 }
 
 fun VoiceReaction.glyph(): Glyph = when (this) {
@@ -71,16 +64,10 @@ fun VoiceReaction.glyph(): Glyph = when (this) {
     VoiceReaction.WOW -> Glyph.WOW
 }
 
-@Composable
-private fun isNight() = MaterialTheme.colorScheme.background.luminance() < 0.5f
-
-/** The topic's colour, for tinted tiles and chips. */
-@Composable
-fun topicColor(topic: Topic): Color = Color((if (isNight()) TopicNight else TopicDay).getValue(topic))
 
 // ---- the drawings ------------------------------------------------------------------------------
 
-private enum class Ink { M, L, FACE, WHITE }
+private enum class Ink { M, L, FACE, WHITE, BLACK }
 
 private sealed interface Part
 private class Fill(val d: String, val ink: Ink) : Part
@@ -190,7 +177,7 @@ internal fun lightTone(c: Color) = lerp(Color.White, c, 0.42f)
 private fun faceInk(c: Color) = lerp(Color(0xFF3D2400), c, 0.30f)
 
 private fun build(name: String, parts: List<Part>, color: Color): ImageVector {
-    val inks = mapOf(Ink.M to color, Ink.L to lightTone(color), Ink.FACE to faceInk(color), Ink.WHITE to Color.White)
+    val inks = mapOf(Ink.M to color, Ink.L to lightTone(color), Ink.FACE to faceInk(color), Ink.WHITE to Color.White, Ink.BLACK to Brand.Black)
     fun ImageVector.Builder.add(list: List<Part>) {
         for (p in list) when (p) {
             is Fill -> addPath(addPathNodes(p.d), fill = SolidColor(inks.getValue(p.ink)))
@@ -206,7 +193,7 @@ private fun build(name: String, parts: List<Part>, color: Color): ImageVector {
 
 @Composable
 fun TopicIcon(topic: Topic, modifier: Modifier = Modifier, size: Dp = 20.dp) {
-    val color = topicColor(topic)
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
     val vector = remember(topic, color) { build("topic_${topic.name}", TopicParts.getValue(topic), color) }
     Image(rememberVectorPainter(vector), null, modifier.size(size))
 }
@@ -217,14 +204,12 @@ fun GlyphIcon(glyph: Glyph, modifier: Modifier = Modifier, size: Dp = 24.dp) {
     Image(rememberVectorPainter(vector), null, modifier.size(size))
 }
 
-/** A white rounded chip with the glyph and its label (Naver Map style category chips). */
+/** A rounded chip with the grey glyph and its label, outlined (Naver Map style category chips). */
 @Composable
 fun TopicChip(topic: Topic, label: String, modifier: Modifier = Modifier, height: Dp = 28.dp) {
-    val night = isNight()
     Row(
-        modifier.height(height)
-            .then(if (night) Modifier else Modifier.shadow(1.5.dp, CircleShape, ambientColor = Color.Black.copy(alpha = 0.2f), spotColor = Color.Black.copy(alpha = 0.2f)))
-            .clip(CircleShape).background(if (night) Brand.Ink3 else Color.White).padding(start = 8.dp, end = 12.dp),
+        modifier.height(height).clip(CircleShape).background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape).padding(start = 8.dp, end = 12.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         TopicIcon(topic, size = 16.dp)
@@ -289,11 +274,10 @@ private val MarkFilled: Map<Mark, List<Part>> = mapOf(
         Fill(circle(14.4f, 7.1f, 1.5f), Ink.L), Fill(circle(17.2f, 10.6f, 1.5f), Ink.L),
     ),
     Mark.SEND to listOf(Fill(PLANE_PATH, Ink.M), Line("M10.3 13.7 15 9", Ink.L, 1.6f)),
-    // The seal with a light gleam and a white tick.
+    // The flat seal with a black tick (8:1 on saffron).
     Mark.VERIFIED to listOf(
         Fill(SEAL_PATH, Ink.M),
-        Turn(listOf(Fill(ellipse(8.2f, 7.6f, 2.1f, 1.15f), Ink.L)), -38f, 8.2f, 7.6f),
-        Line("M8.1 12.3l2.7 2.7 5.1-5.5", Ink.WHITE, 2.3f, roundJoin = true),
+        Line("M8.1 12.3l2.7 2.7 5.1-5.5", Ink.BLACK, 2.3f, roundJoin = true),
     ),
     // An ID card: the photo and three lines of text.
     Mark.ID_CARD to listOf(

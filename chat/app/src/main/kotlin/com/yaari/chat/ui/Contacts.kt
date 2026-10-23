@@ -77,7 +77,7 @@ private fun ContactApp.label() = brand ?: stringResource(R.string.contacts_phone
 
 @Composable
 private fun AppBadge(app: ContactApp) {
-    val (bg, fg) = BRAND[app]?.let { Color(it.first) to Color(it.second) } ?: (Brand.Pink to Color.White)
+    val (bg, fg) = BRAND[app]?.let { Color(it.first) to Color(it.second) } ?: (Brand.Saffron to Brand.Black)
     Box(Modifier.size(32.dp).background(bg, CircleShape), contentAlignment = Alignment.Center) {
         if (app.brand == null) Icon(Icons.Rounded.Phone, null, Modifier.size(18.dp), tint = fg)
         else Text(app.brand.take(1), color = fg, style = MaterialTheme.typography.titleSmall)
@@ -104,7 +104,7 @@ fun ContactsEditorScreen(vm: AppViewModel, onDone: () -> Unit, onSaved: (Map<Con
                     Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(16.dp)).padding(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Icon(Icons.Rounded.Shield, null, Modifier.size(20.dp), tint = Brand.Pink)
+                    Icon(Icons.Rounded.Shield, null, Modifier.size(20.dp), tint = Brand.Saffron)
                     Text(stringResource(R.string.contacts_safety), style = MaterialTheme.typography.bodyMedium)
                 }
                 Spacer(Modifier.size(4.dp))

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -63,69 +65,70 @@ import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
 
 // ---- Design tokens ------------------------------------------------------------------------------
-// Calm, Material 3 style: white surfaces and Google-grey neutrals for the social screens, a flat near-black
-// for anything camera-like (random chat, video), and ONE flat brand colour for primary actions.
-// The pink -> orange gradient survives only in the wordmark. Spacing follows an 8 dp grid (4 dp for fine steps).
+// Two brand colours, saffron and black, on one warm-grey (stone) ramp, like the web (app/globals.css): white surfaces
+// for the social screens, a flat black for anything camera-like (random chat, video, rooms). Saffron is a fill with
+// black on it, or a mark; as text on light screens it is [Brand.SaffronDeep]. No gradients. 8 dp grid (4 dp fine steps).
 
 object Brand {
-    /** The action colour: white text on it is 4.65:1 (WCAG AA). */
-    val Pink = Color(0xFFE11D58)
+    /** The brand colour: fills (black text on it, 8.4:1), marks, and text or icons on the dark screens (8:1 on [Night]). */
+    val Saffron = Color(0xFFFF8A00)
 
-    /** Lighter pink for text and icons on the dark screens (6.6:1 on [Night]). */
-    val PinkOnDark = Color(0xFFFF7A99)
+    /** Saffron as text on light screens (5:1 on white). */
+    val SaffronDeep = Color(0xFFB45309)
 
-    /** Soft pink for tonal containers (selected tab pill, feature cards). */
-    val PinkContainer = Color(0xFFFFE6EC)
-    val OnPinkContainer = Color(0xFF7A0B2E)
+    /** Soft saffron for tonal containers (selected tab pill, feature cards); its dark-screen counterpart. */
+    val SaffronSoft = Color(0xFFFFF1E0)
+    val SaffronNight = Color(0xFF2A1A06)
 
-    /** The logo's own colours (the wordmark is the only gradient left in the app). */
-    val LogoPink = Color(0xFFFF3D68)
-    val LogoOrange = Color(0xFFFF7A45)
-    val logoGradient = Brush.linearGradient(listOf(LogoPink, LogoOrange))
+    /** The second brand colour: text and icons on saffron, the dark screens' ground. */
+    val Black = Color(0xFF111111)
 
     /** Flat fill for primary actions, as a brush for the places that paint with one. */
-    val fill: Brush = SolidColor(Pink)
+    val fill: Brush = SolidColor(Saffron)
 
     val Online = Color(0xFF1E9E54)
     val Danger = Color(0xFFD93025)
 
-    /** Ink: the random-chat and video screens are always this dark, like a camera view. */
-    val Night = Color(0xFF111114)
-    val Ink2 = Color(0xFF1C1C21)
-    val Ink3 = Color(0xFF26262C)
+    /** The random-chat, video and room screens are always this dark, like a camera view. */
+    val Night = Black
+    val Ink2 = Color(0xFF1A1A1A)
+    val Ink3 = Color(0xFF242424)
 
-    /** Light neutrals (Google grey). Muted text is 6:1 on white. */
-    val Text = Color(0xFF1F1F1F)
-    val Muted = Color(0xFF5F6368)
-    val Line = Color(0xFFE8EAED)
-    val Surface = Color(0xFFF1F3F4)
+    /** Light neutrals (stone). Muted text is 7.7:1 on white. */
+    val Text = Black
+    val Muted = Color(0xFF57534E)
+    val Line = Color(0xFFE7E5E4)
+    val Surface = Color(0xFFF5F5F4)
 }
 
+/** Saffron as text or a small mark: the deep shade on light screens, saffron itself on dark ones (like the web's --primary-text). */
+val ColorScheme.primaryText get() = if (background.luminance() < 0.5f) Brand.Saffron else Brand.SaffronDeep
+
 private val Light = lightColorScheme(
-    primary = Brand.Pink, onPrimary = Color.White,
-    primaryContainer = Brand.PinkContainer, onPrimaryContainer = Brand.OnPinkContainer,
+    primary = Brand.Saffron, onPrimary = Brand.Black,
+    primaryContainer = Brand.SaffronSoft, onPrimaryContainer = Brand.SaffronDeep,
     secondary = Brand.Text, onSecondary = Color.White,
-    secondaryContainer = Brand.PinkContainer, onSecondaryContainer = Brand.OnPinkContainer,
+    secondaryContainer = Brand.SaffronSoft, onSecondaryContainer = Brand.SaffronDeep,
     background = Color.White, onBackground = Brand.Text,
     surface = Color.White, onSurface = Brand.Text,
     surfaceVariant = Brand.Surface, onSurfaceVariant = Brand.Muted,
-    surfaceContainer = Color(0xFFF8F9FA), surfaceContainerHigh = Brand.Surface, surfaceContainerLow = Color(0xFFFAFAFB),
-    surfaceContainerLowest = Color.White, surfaceContainerHighest = Color(0xFFE8EAED),
-    outline = Color(0xFFDADCE0), outlineVariant = Brand.Line,
+    surfaceContainer = Color(0xFFFAFAF9), surfaceContainerHigh = Brand.Surface, surfaceContainerLow = Color(0xFFFAFAF9),
+    surfaceContainerLowest = Color.White, surfaceContainerHighest = Brand.Line,
+    outline = Color(0xFFD6D3D1), outlineVariant = Brand.Line,
     error = Brand.Danger,
 )
 
 private val Dark = darkColorScheme(
-    primary = Brand.PinkOnDark, onPrimary = Color(0xFF3F0016),
-    primaryContainer = Color(0xFF5C1027), onPrimaryContainer = Color(0xFFFFD9E1),
-    secondary = Color(0xFFE8EAED), onSecondary = Brand.Night,
-    secondaryContainer = Color(0xFF34343B), onSecondaryContainer = Color(0xFFE8EAED),
-    background = Brand.Night, onBackground = Color(0xFFE8EAED),
-    surface = Brand.Night, onSurface = Color(0xFFE8EAED),
-    surfaceVariant = Brand.Ink3, onSurfaceVariant = Color(0xFFA8ABB0),
-    surfaceContainer = Brand.Ink2, surfaceContainerHigh = Color(0xFF232328), surfaceContainerLow = Color(0xFF16161A),
-    surfaceContainerLowest = Brand.Night, surfaceContainerHighest = Color(0xFF2D2D33),
-    outline = Color(0xFF45454C), outlineVariant = Color(0xFF2A2A30),
+    primary = Brand.Saffron, onPrimary = Brand.Black,
+    primaryContainer = Brand.SaffronNight, onPrimaryContainer = Brand.Saffron,
+    secondary = Color(0xFFE7E5E4), onSecondary = Brand.Night,
+    secondaryContainer = Brand.SaffronNight, onSecondaryContainer = Brand.Saffron,
+    background = Brand.Night, onBackground = Color(0xFFF5F5F4),
+    surface = Brand.Night, onSurface = Color(0xFFF5F5F4),
+    surfaceVariant = Brand.Ink3, onSurfaceVariant = Color(0xFFA8A29E),
+    surfaceContainer = Brand.Ink2, surfaceContainerHigh = Color(0xFF242424), surfaceContainerLow = Color(0xFF161616),
+    surfaceContainerLowest = Brand.Night, surfaceContainerHighest = Color(0xFF2E2E2E),
+    outline = Color(0xFF44403C), outlineVariant = Color(0xFF292524),
     error = Color(0xFFF28B82),
 )
 
@@ -180,11 +183,11 @@ fun NightTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = Dark, typography = AppType, shapes = AppShapes, content = content)
 }
 
-/** The lowercase brand wordmark: the logo gradient, or plain [color]. */
+/** The lowercase brand wordmark: saffron on the dark screens, black on light ones, or plain [color]. */
 @Composable
 fun Wordmark(modifier: Modifier = Modifier, size: Int = 26, color: Color? = null) {
-    val base = TextStyle(fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.03 * size).sp)
-    Text("yaari", modifier, style = if (color == null) base.copy(brush = Brand.logoGradient) else base.copy(color = color))
+    val ink = color ?: if (isNightTheme()) Brand.Saffron else Brand.Black
+    Text("yaari", modifier, style = TextStyle(color = ink, fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.03 * size).sp))
 }
 
 /** The main call to action: a full-width, flat brand-colour pill with a Material ripple. */
@@ -195,16 +198,16 @@ fun PrimaryButton(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val tick = rememberTick()
-    val bg by animateColorAsState(if (enabled) Brand.Pink else MaterialTheme.colorScheme.surfaceContainerHighest, label = "bg")
+    val bg by animateColorAsState(if (enabled) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest, label = "bg")
     Box(
         modifier.fillMaxWidth().height(height).pressScale(interaction).clip(shape).background(bg)
-            .clickable(interaction, indication = ripple(color = Color.White), enabled = enabled, role = Role.Button) { tick(); onClick() },
+            .clickable(interaction, indication = ripple(color = Brand.Black), enabled = enabled, role = Role.Button) { tick(); onClick() },
         contentAlignment = Alignment.Center,
     ) {
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             leading?.invoke()
             Text(
-                text, color = if (enabled) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                text, color = if (enabled) Brand.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp, lineHeight = 24.sp), maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
         }
@@ -220,7 +223,7 @@ fun SoftButton(
     val interaction = remember { MutableInteractionSource() }
     val bg by animateColorAsState(
         when {
-            accent -> Brand.Pink
+            accent -> Brand.Saffron
             outlined -> MaterialTheme.colorScheme.surface
             else -> MaterialTheme.colorScheme.surfaceContainerHigh
         },
@@ -238,7 +241,7 @@ fun SoftButton(
         leading?.invoke()
         Text(
             text, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
-            color = if (accent) Color.White else MaterialTheme.colorScheme.onSurface,
+            color = if (accent) Brand.Black else MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -277,24 +280,20 @@ fun CircleIconButton(
     }
 }
 
-private val AvatarColors = listOf(0xFFE57373, 0xFF5C8DEB, 0xFF3FA97A, 0xFFE0A23B, 0xFF9575CD, 0xFF3BAFB8, 0xFFE97BA8)
-
-fun seedColor(seed: Int) = Color(AvatarColors[Math.floorMod(seed, AvatarColors.size)])
-
-/** Photo, or the first letter on a soft colour. [ring] draws a thin brand ring with a gap (own profile). */
+/** Photo, or the first letter on one neutral grey (no colour per person). [ring] draws a thin saffron ring with a gap (own profile). */
 @Composable
 fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, gap: Color = MaterialTheme.colorScheme.background) {
     val inner = if (ring) size - 8.dp else size
     Box(
-        modifier.size(size).then(if (ring) Modifier.clip(CircleShape).background(Brand.Pink).padding(2.dp).clip(CircleShape).background(gap) else Modifier),
+        modifier.size(size).then(if (ring) Modifier.clip(CircleShape).background(Brand.Saffron).padding(2.dp).clip(CircleShape).background(gap) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.size(inner).clip(CircleShape).background(seedColor(p.colorSeed)), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(inner).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
             if (p.photoUri != null) {
                 // Coil decodes to the avatar's own size (it reads the bounded constraints), never the full photo.
                 AsyncImage(p.photoUri, contentDescription = p.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             } else {
-                Text(p.name.take(1).uppercase(), color = Color.White, fontSize = (inner.value * 0.42f).sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta)
+                Text(p.name.take(1).uppercase(), color = MaterialTheme.colorScheme.onSurface, fontSize = (inner.value * 0.42f).sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta)
             }
         }
     }

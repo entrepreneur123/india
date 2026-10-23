@@ -109,7 +109,7 @@ fun LooksShopScreen(vm: AppViewModel, s: UiState, me: Profile, onDone: () -> Uni
                                     SoftButton(stringResource(R.string.common_try_again), vm.looks::loadShop, Modifier.padding(top = 12.dp), outlined = true)
                                 }
                             } else {
-                                CircularProgressIndicator(Modifier.size(28.dp), color = Brand.Pink, strokeWidth = 2.dp)
+                                CircularProgressIndicator(Modifier.size(28.dp), color = Brand.Saffron, strokeWidth = 2.dp)
                             }
                         }
                     }
@@ -175,7 +175,7 @@ private fun ItemCard(name: String, look: Look, me: Profile, kind: LookKind, trie
     val shape = RoundedCornerShape(20.dp)
     Column(
         Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainer)
-            .border(if (tried) 2.dp else 1.dp, if (tried) Brand.Pink else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(if (tried) 2.dp else 1.dp, if (tried) Brand.Saffron else MaterialTheme.colorScheme.outlineVariant, shape)
             .selectable(tried, role = Role.RadioButton, onClick = onTry).padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -198,7 +198,7 @@ private fun ItemCard(name: String, look: Look, me: Profile, kind: LookKind, trie
 @Composable
 private fun WearButton(wearing: Boolean, busy: Boolean, onWear: () -> Unit) {
     if (busy) {
-        Box(Modifier.height(36.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(20.dp), color = Brand.Pink, strokeWidth = 2.dp) }
+        Box(Modifier.height(36.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(20.dp), color = Brand.Saffron, strokeWidth = 2.dp) }
     } else if (wearing) {
         SoftButton(
             stringResource(R.string.looks_wearing), {}, height = 36.dp, enabled = false,
@@ -213,7 +213,7 @@ private fun WearButton(wearing: Boolean, busy: Boolean, onWear: () -> Unit) {
 @Composable
 private fun PriceButton(item: LookItem, price: String?, busy: Boolean, enabled: Boolean, onBuy: () -> Unit) {
     if (busy) {
-        Box(Modifier.height(36.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(20.dp), color = Brand.Pink, strokeWidth = 2.dp) }
+        Box(Modifier.height(36.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator(Modifier.size(20.dp), color = Brand.Saffron, strokeWidth = 2.dp) }
     } else {
         SoftButton(price ?: "₹${item.priceInr}", onBuy, height = 36.dp, accent = true, enabled = enabled)
     }

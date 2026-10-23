@@ -236,11 +236,7 @@ function Intro({
   ]
   return (
     <div className="flex flex-col">
-      <div
-        className="relative flex flex-col items-center overflow-hidden px-6 pt-7 pb-5 text-center"
-        style={{ background: 'linear-gradient(180deg, color-mix(in srgb, #ff3d68 12%, var(--card)) 0%, var(--card) 100%)' }}
-      >
-        <span aria-hidden className="pointer-events-none absolute -top-24 -inset-s-16 size-56 rounded-full bg-[#ff7a45]/10 night:bg-white/4" />
+      <div className="flex flex-col items-center px-6 pt-7 pb-5 text-center">
         <VerifyHero />
         <h2 className="mt-3 text-[24px] leading-tight font-extrabold tracking-tight text-balance">
           {tt(gate ? 'verify.gateTitle' : 'verify.title')}
@@ -262,10 +258,10 @@ function Intro({
             <span className="grid size-11 shrink-0 place-items-center">
               <ClockIcon size={24} />
             </span>
-            <span className="text-[13px] font-bold text-[#17804f] night:text-[#5fd39b]">{tt('verify.time')}</span>
+            <span className="text-[13px] font-bold text-primary-text">{tt('verify.time')}</span>
           </li>
         </ol>
-        <div className="flex gap-3 rounded-3xl bg-[color-mix(in_srgb,#8e5cf7_8%,var(--card))] px-4 py-3.5 text-start ring-1 ring-[color-mix(in_srgb,#8e5cf7_20%,transparent)]">
+        <div className="flex gap-3 rounded-3xl bg-card px-4 py-3.5 text-start ring-1 ring-border">
           <KeepIcon size={26} className="mt-0.5" />
           <span className="min-w-0">
             <span className="block text-sm font-bold">{tt('verify.keepTitle')}</span>
@@ -315,7 +311,7 @@ function DemoCheck({ onDone }: { onDone: (o: KycDemoOutcome) => Promise<void> })
   }, [])
   return (
     <div className="flex flex-col items-center px-6 pt-7 pb-6 text-center">
-      <span className="rounded-full bg-[#f7b500]/18 px-3 py-1 text-xs font-bold text-[#8a5a00] night:text-[#f9c43a]">{tt('verify.demoTitle')}</span>
+      <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary-text">{tt('verify.demoTitle')}</span>
       <div className="mt-5 flex w-full max-w-xs flex-col gap-2.5">
         {(['verify.demoScan', 'verify.demoFace'] as const).map((k, i) => (
           <div key={k} className="flex items-center gap-3 rounded-2xl bg-muted px-4 py-3 text-start">

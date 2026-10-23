@@ -238,7 +238,7 @@ private fun PlusCard(s: UiState, onClick: () -> Unit) {
                     s.entitlements.genderPass -> stringResource(R.string.plan_pass)
                     else -> stringResource(R.string.premium_summary, ExitPolicy.PREMIUM_LOCK_MS / 1000.0)
                 },
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer, style = MaterialTheme.typography.bodySmall,
             )
         }
         if (!premium) Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -251,7 +251,7 @@ private fun Group(title: String?, content: @Composable ColumnScope.() -> Unit) {
         title?.let {
             Text(
                 it, Modifier.padding(start = 16.dp, bottom = 8.dp),
-                style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primaryText,
             )
         }
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surface), content = content)

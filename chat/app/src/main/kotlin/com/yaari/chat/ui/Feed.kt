@@ -191,10 +191,9 @@ private const val TILE_MAX = 140
 
 @Composable
 private fun TextTile(text: String, onDoubleTap: () -> Unit) {
-    val colors = accentColors()
     val pop = rememberHeartPop()
     Box(
-        Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().heightIn(min = 180.dp).clip(RoundedCornerShape(22.dp)).background(colors.brush)
+        Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().heightIn(min = 180.dp).clip(RoundedCornerShape(22.dp)).background(Brand.Black)
             .pointerInput(Unit) { detectTapGestures(onDoubleTap = { onDoubleTap(); pop.play() }) }
             .padding(horizontal = 24.dp, vertical = 28.dp),
         contentAlignment = Alignment.Center,
@@ -213,12 +212,10 @@ private fun PostPhoto(post: Post, uri: String, trusted: Boolean, onDoubleTap: ()
     var revealed by rememberSaveable(post.id) { mutableStateOf(trusted) }
     val pop = rememberHeartPop()
     val shown = revealed || trusted
-    val tint = accentColors()
     Box(
         // Hidden, it is a short tinted panel (nothing of the photo is loaded); shown, a tall 4:5 frame.
         Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().aspectRatio(if (shown) 0.8f else 1.6f).clip(RoundedCornerShape(22.dp))
-            .background(if (shown) MaterialTheme.colorScheme.surfaceContainerHigh else Color(0xFF2E2E34))
-            .then(if (shown) Modifier else Modifier.background(Brush.linearGradient(listOf(tint.start.copy(alpha = 0.45f), tint.end.copy(alpha = 0.25f))))),
+            .background(if (shown) MaterialTheme.colorScheme.surfaceContainerHigh else Brand.Ink3),
         contentAlignment = Alignment.Center,
     ) {
         if (shown) {
@@ -405,7 +402,7 @@ private fun CommentsSheet(vm: AppViewModel, s: UiState, t: CommentThread) {
                     }
                     list.isEmpty() -> Column(Modifier.fillMaxWidth().padding(top = 40.dp, start = 32.dp, end = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(Modifier.size(64.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-                            MarkIcon(Mark.COMMENT, Brand.Pink, size = 30.dp)
+                            MarkIcon(Mark.COMMENT, Brand.Saffron, size = 30.dp)
                         }
                         Text(stringResource(R.string.comments_empty_title), Modifier.padding(top = 14.dp), style = MaterialTheme.typography.titleMedium)
                         Text(stringResource(R.string.comments_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
@@ -453,7 +450,7 @@ private fun CommentRow(vm: AppViewModel, c: Comment, modifier: Modifier = Modifi
                 Text("  " + timeAgo(c.at), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
             }
             c.replyName?.let {
-                Text(stringResource(R.string.comment_in_reply, it), style = MaterialTheme.typography.bodySmall, color = accentColors().ink)
+                Text(stringResource(R.string.comment_in_reply, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primaryText)
             }
             Text(c.body, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 2.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -506,7 +503,7 @@ private fun CommentComposer(me: Profile, t: CommentThread, onSend: (String, () -
             BasicTextField(
                 text, { text = it.take(Comment.MAX) }, Modifier.fillMaxWidth().semantics { contentDescription = hint },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface), maxLines = 4,
-                cursorBrush = SolidColor(Brand.Pink), keyboardOptions = KeyboardOptions.Default,
+                cursorBrush = SolidColor(Brand.Saffron), keyboardOptions = KeyboardOptions.Default,
             )
         }
         val interaction = remember { MutableInteractionSource() }
@@ -519,10 +516,10 @@ private fun CommentComposer(me: Profile, t: CommentThread, onSend: (String, () -
         ) {
             Box(
                 Modifier.size(40.dp).pressScale(interaction, 0.9f).clip(CircleShape)
-                    .background(if (can) Brand.Pink else MaterialTheme.colorScheme.surfaceContainerHighest),
+                    .background(if (can) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest),
                 contentAlignment = Alignment.Center,
             ) {
-                MarkIcon(Mark.SEND, if (can) Color.White else MaterialTheme.colorScheme.onSurfaceVariant, size = 20.dp)
+                MarkIcon(Mark.SEND, if (can) Brand.Black else MaterialTheme.colorScheme.onSurfaceVariant, size = 20.dp)
             }
         }
     }
@@ -544,10 +541,10 @@ fun VisibilityChooser(value: PostVisibility, onChange: (PostVisibility) -> Unit)
                 val shape = RoundedCornerShape(20.dp)
                 Column(
                     Modifier.weight(1f).clip(shape)
-                        .then(if (on) Modifier.background(Brand.Pink.copy(alpha = 0.07f)).border(2.dp, Brand.Pink, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, shape))
+                        .then(if (on) Modifier.background(Brand.Saffron.copy(alpha = 0.07f)).border(2.dp, Brand.Saffron, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, shape))
                         .selectable(on, role = Role.RadioButton) { onChange(v) }.padding(14.dp),
                 ) {
-                    MarkIcon(if (v == PostVisibility.PUBLIC) Mark.GLOBE else Mark.FRIENDS, if (on) Brand.Pink else MaterialTheme.colorScheme.onSurfaceVariant, size = 26.dp)
+                    MarkIcon(if (v == PostVisibility.PUBLIC) Mark.GLOBE else Mark.FRIENDS, if (on) Brand.Saffron else MaterialTheme.colorScheme.onSurfaceVariant, size = 26.dp)
                     Text(stringResource(title), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleSmall)
                     Text(stringResource(sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }

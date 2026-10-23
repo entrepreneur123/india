@@ -269,7 +269,7 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
                         Wordmark(size = 28, color = MaterialTheme.colorScheme.onSurface)
                         Text(
                             " " + stringResource(R.string.premium),
-                            style = TextStyle(color = Brand.Pink, fontSize = 28.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.8).sp),
+                            style = TextStyle(color = MaterialTheme.colorScheme.primaryText, fontSize = 28.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.8).sp),
                         )
                     }
                     Text(
@@ -327,16 +327,16 @@ private fun PlanCard(title: String, sub: String, price: String?, selected: Boole
     val shape = RoundedCornerShape(16.dp)
     Row(
         Modifier.fillMaxWidth().pressScale(interaction, 0.98f).clip(shape)
-            .then(if (selected) Modifier.background(Brand.Pink.copy(alpha = 0.06f)).border(2.dp, Brand.Pink, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, shape))
+            .then(if (selected) Modifier.background(Brand.Saffron.copy(alpha = 0.06f)).border(2.dp, Brand.Saffron, shape) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, shape))
             .selectable(selected, interactionSource = interaction, indication = null, role = Role.RadioButton, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             Modifier.size(24.dp).clip(CircleShape)
-                .then(if (selected) Modifier.background(Brand.Pink) else Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)),
+                .then(if (selected) Modifier.background(Brand.Saffron) else Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)),
             contentAlignment = Alignment.Center,
-        ) { if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(Color.White)) }
+        ) { if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(Brand.Black)) }
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

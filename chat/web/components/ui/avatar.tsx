@@ -13,15 +13,6 @@ interface AvatarProps {
   className?: string
 }
 
-// Letter avatars pick one of these by name; each keeps white text at ≥ 4.5:1.
-const TONES = ['#c8174a', '#1a73e8', '#188038', '#a142f4', '#c5221f', '#007b83', '#b06000', '#5f6368']
-
-function tone(name: string) {
-  let h = 0
-  for (const ch of name) h = (h * 31 + ch.codePointAt(0)!) | 0
-  return TONES[Math.abs(h) % TONES.length]
-}
-
 export function Avatar({ name, src, size = 40, country, online, className }: AvatarProps) {
   const [failed, setFailed] = useState<string | null>(null) // the src that failed; a new photo gets a new try
   const initials = [...name.trim()]
@@ -33,7 +24,7 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
 
   return (
     <span className={cn('relative inline-flex shrink-0', className)} style={{ width: size, height: size }}>
-      <span className="block size-full overflow-hidden rounded-full" style={showImage ? undefined : { background: tone(name) }}>
+      <span className="block size-full overflow-hidden rounded-full bg-border">
         {showImage ? (
           <img
             src={src}
@@ -48,7 +39,7 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
           />
         ) : (
           <span
-            className="grid size-full place-items-center font-semibold text-white"
+            className="grid size-full place-items-center font-semibold text-foreground"
             style={{ fontSize: Math.max(11, size * 0.42) }}
             aria-hidden
           >

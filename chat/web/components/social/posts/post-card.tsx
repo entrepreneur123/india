@@ -105,12 +105,10 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
       {tile ? (
         <div
           className="relative mx-3 mt-3 grid min-h-48 touch-manipulation place-items-center overflow-hidden rounded-3xl px-7 py-10 text-center select-none"
-          style={{ background: 'linear-gradient(140deg, var(--acc-to) 0%, color-mix(in srgb, var(--acc-via) 70%, var(--acc-to)) 100%)' }}
+          style={{ background: 'var(--acc-to)' }}
           onPointerUp={onMediaTap}
         >
-          <span aria-hidden className="absolute -top-12 -inset-s-8 size-40 rounded-full bg-white/10" />
-          <span aria-hidden className="absolute -inset-e-10 -bottom-16 size-48 rounded-full bg-white/10" />
-          <p className="relative text-[22px] leading-snug font-bold tracking-tight text-balance whitespace-pre-wrap text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.25)]">
+          <p className="relative text-[22px] leading-snug font-bold tracking-tight text-balance whitespace-pre-wrap text-white">
             {post.text}
           </p>
           <Burst n={burst} />

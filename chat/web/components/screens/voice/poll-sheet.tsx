@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useId, useState, type CSSProperties } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Plus, X } from 'lucide-react'
 import { checkPoll, POLL_MAX_OPTIONS, POLL_MIN_OPTIONS, POLL_OPTION_MAX, POLL_QUESTION_MAX, repeatedOptions } from '@/lib/voice-polls'
 import { useI18n } from '@/components/i18n'
 import { Field, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
-import { PollIcon, topicColor } from '@/components/ui/topic-icons'
+import { PollIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 import { useRoomT } from './room-t'
 
@@ -53,7 +53,7 @@ export function PollSheet({
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={rt('pollNew')} description={rt('pollDesc')}>
-      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-5 p-6 pt-4" style={{ '--k': topicColor('study') } as CSSProperties}>
+      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-5 p-6 pt-4">
         <Field
           label={rt('question')}
           htmlFor={`${id}-q`}
@@ -78,7 +78,7 @@ export function PollSheet({
             <div key={i} className="flex items-center gap-2">
               <span
                 aria-hidden
-                className="grid size-7 shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--k)_16%,transparent)] text-xs font-bold text-[var(--k)] tabular-nums"
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-primary-soft text-xs font-bold text-primary-text tabular-nums"
               >
                 {num(i + 1)}
               </span>
@@ -108,7 +108,7 @@ export function PollSheet({
             </div>
           ))}
           {options.length < POLL_MAX_OPTIONS ? (
-            <Button variant="ghost" size="sm" className="self-start text-[var(--k)]" onClick={() => setOptions((list) => [...list, ''])}>
+            <Button variant="ghost" size="sm" className="self-start text-primary-text" onClick={() => setOptions((list) => [...list, ''])}>
               <Plus className="size-4" aria-hidden /> {rt('addOption')}
             </Button>
           ) : null}

@@ -113,7 +113,7 @@ fun MusicPanel(
             }
             SoftButton(
                 stringResource(R.string.voice_listen), { onListen(true) }, accent = true, height = 36.dp,
-                leading = { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp), tint = Color.White) },
+                leading = { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp), tint = Brand.Black) },
             )
         }
         return
@@ -162,7 +162,7 @@ fun MusicPanel(
  */
 @Composable
 private fun NowPlayingStrip(track: VoiceTrack, title: String, onExpand: () -> Unit) {
-    val color = topicColor(Topic.MUSIC)
+    val color = Brand.Saffron
     val shape = RoundedCornerShape(18.dp)
     val expand = stringResource(R.string.voice_show_player)
     Row(
@@ -211,7 +211,7 @@ private fun mmss(seconds: Float) = "%d:%02d".format(java.util.Locale.ROOT, secon
 @Composable
 fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit, modifier: Modifier = Modifier, large: Boolean = false) {
     val player = LocalRoomPlayer.current
-    val color = topicColor(Topic.MUSIC)
+    val color = Brand.Saffron
     val seconds = player.duration
     val at = rememberPosition(track).let { if (seconds > 0) minOf(it, seconds) else it }
     // While dragging, and after letting go until the room's new position arrives (or 3 s pass).
@@ -259,7 +259,7 @@ fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit,
                 )
                 CircleIconButton(
                     Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
-                    background = Brand.Pink, tint = Color.White, iconSize = big,
+                    background = Brand.Saffron, tint = Brand.Black, iconSize = big,
                 )
             } else {
                 // My phone only. While the DJ has paused the room there is nothing to play.
@@ -310,7 +310,7 @@ fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit,
 fun MusicHero(
     room: VoiceRoom, canDj: Boolean, adding: String?, active: Boolean, onQueue: () -> Unit, act: (VoiceAction) -> Unit, vote: (String, Boolean) -> Unit,
 ) {
-    val color = topicColor(Topic.MUSIC)
+    val color = Brand.Saffron
     val track = room.track
     val ordered = room.queue.byVotes()
     val hostName = room.member(room.hostId)?.profile?.name.orEmpty()
@@ -318,7 +318,7 @@ fun MusicHero(
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).semantics { contentDescription = music }, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (track != null) {
             Column {
-                PlayerSlot(track, Modifier.shadow(24.dp, RoundedCornerShape(16.dp), ambientColor = color, spotColor = color), active = active)
+                PlayerSlot(track, Modifier.shadow(24.dp, RoundedCornerShape(16.dp)), active = active)
                 Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(
@@ -355,7 +355,7 @@ fun MusicHero(
                 )
                 SoftButton(
                     stringResource(if (canDj) R.string.music_add else R.string.music_request), onQueue, accent = true, height = 44.dp,
-                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Color.White) },
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.Black) },
                 )
             }
         }
@@ -410,7 +410,7 @@ private fun VoteButton(item: VoiceQueueItem, color: Color, onClick: () -> Unit) 
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
     ) {
-        val tint = if (item.voted) Color.White else MaterialTheme.colorScheme.onSurface
+        val tint = if (item.voted) Brand.Black else MaterialTheme.colorScheme.onSurface
         Icon(Icons.Rounded.KeyboardArrowUp, null, Modifier.size(20.dp), tint = tint)
         Text("${item.votes}", color = tint, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
     }
@@ -426,7 +426,7 @@ fun QueueSheet(
     var link by rememberSaveable { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
     val ordered = queue.byVotes()
-    val color = topicColor(Topic.MUSIC)
+    val color = Brand.Saffron
     ModalBottomSheet(
         onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp), containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -518,7 +518,7 @@ private fun TrackRow(videoId: String, title: String, sub: String, playing: Boole
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
             Text(
                 title.ifEmpty { stringResource(R.string.voice_yt_video) }, style = MaterialTheme.typography.titleSmall, maxLines = 1,
-                overflow = TextOverflow.Ellipsis, color = if (playing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                overflow = TextOverflow.Ellipsis, color = if (playing) MaterialTheme.colorScheme.primaryText else MaterialTheme.colorScheme.onSurface,
             )
             Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }

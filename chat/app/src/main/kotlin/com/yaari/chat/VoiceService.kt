@@ -64,6 +64,7 @@ class VoiceService : Service() {
         else PendingIntent.getService(this, 3, Intent(this, VoiceService::class.java).setAction(ACTION_LEAVE), immutable)
         val notification = NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_voice)
+            .setColor(getColor(R.color.brand_saffron))
             .setContentTitle(title.ifEmpty { getString(R.string.voice_notif_text) })
             .setContentText(getString(if (host) R.string.voice_notif_text_host else R.string.voice_notif_text))
             .setContentIntent(open)

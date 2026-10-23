@@ -222,7 +222,7 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                 items(3) { Box(Modifier.padding(top = 8.dp).size(200.dp, 40.dp).clip(RoundedCornerShape(8.dp)).shimmer()) }
             } else {
                 itemsIndexed(lines, key = { _, l -> l.id }) { i, line ->
-                    val glow by animateColorAsState(if (lit == line.id) Brand.Pink.copy(alpha = 0.22f) else Color.Transparent, tween(300), label = "lit")
+                    val glow by animateColorAsState(if (lit == line.id) Brand.Saffron.copy(alpha = 0.22f) else Color.Transparent, tween(300), label = "lit")
                     Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(glow)) {
                         when (line) {
                             is VoiceLine.System -> Box(Modifier.fillMaxWidth().padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
@@ -272,12 +272,12 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
         )
         AnimatedVisibility(unseen > 0, Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp), enter = fadeIn() + scaleIn(initialScale = 0.9f), exit = fadeOut() + scaleOut()) {
             Row(
-                Modifier.height(36.dp).clip(CircleShape).background(Brand.Pink)
+                Modifier.height(36.dp).clip(CircleShape).background(Brand.Saffron)
                     .clickable(role = Role.Button) { scope.launch { list.animateScrollToItem(count) } }.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Icon(Icons.Rounded.ArrowDownward, null, Modifier.size(16.dp), tint = Color.White)
-                Text(stringResource(R.string.voice_new_messages), color = Color.White, style = MaterialTheme.typography.labelLarge)
+                Icon(Icons.Rounded.ArrowDownward, null, Modifier.size(16.dp), tint = Brand.Black)
+                Text(stringResource(R.string.voice_new_messages), color = Brand.Black, style = MaterialTheme.typography.labelLarge)
             }
         }
     }
@@ -446,7 +446,7 @@ private fun ChatLine(
     val colors = chatColors()
     val mentioned = !line.fromMe && VoiceController.mentions(line.text, chat.myName)
     val shown = translation?.view?.text ?: line.text
-    val text = rememberLinked(withMentions(shown, chat.names + chat.myName, Brand.PinkOnDark), colors.link, chat.onLink)
+    val text = rememberLinked(withMentions(shown, chat.names + chat.myName, Brand.Saffron), colors.text, chat.onLink)
     val card: @Composable () -> Unit = { MessageLinkCard(line.text, Modifier.padding(top = 2.dp, bottom = 4.dp), chat.onRequestSong, chat.onLink) }
     val press = Modifier.combinedClickable(interactionSource = null, indication = null, onLongClick = onMenu, onClick = {})
     val quote: @Composable () -> Unit = { line.reply?.let { r -> Quote(r, mine = r.senderId == chat.myId, onClick = { onQuote(r.id) }) } }
@@ -467,8 +467,8 @@ private fun ChatLine(
     val mentionsYou = stringResource(R.string.chat_mentions_you)
     Row(
         Modifier.fillMaxWidth(0.88f).then(
-            if (mentioned) Modifier.clip(RoundedCornerShape(14.dp)).background(Brand.Pink.copy(alpha = 0.12f))
-                .border(1.dp, Brand.Pink.copy(alpha = 0.35f), RoundedCornerShape(14.dp)).padding(4.dp)
+            if (mentioned) Modifier.clip(RoundedCornerShape(14.dp)).background(Brand.Saffron.copy(alpha = 0.12f))
+                .border(1.dp, Brand.Saffron.copy(alpha = 0.35f), RoundedCornerShape(14.dp)).padding(4.dp)
                 .semantics { stateDescription = mentionsYou }
             else Modifier,
         ),
@@ -500,7 +500,7 @@ private fun ChatLine(
 /** The line a reply answers, inside the bubble: a coloured edge, who wrote it, and the text (a photo, a poll). */
 @Composable
 private fun Quote(reply: VoiceReply, mine: Boolean, onClick: () -> Unit) {
-    val color = chatColors().names[nameColorIndex(reply.senderId)]
+    val color = chatColors().name
     val name = if (mine) stringResource(R.string.chat_quote_you) else reply.name
     val body = when (reply.kind) {
         VoiceReply.Kind.PHOTO -> stringResource(R.string.chat_quote_photo)
@@ -537,7 +537,7 @@ private fun SenderName(name: String, id: String, onPerson: () -> Unit, modifier:
     val tap = modifier.clip(RoundedCornerShape(4.dp)).combinedClickable(role = Role.Button, onLongClick = onMenu, onClick = onPerson)
     LookName(id, tap, size = 13.sp) {
         Text(
-            name, tap, color = chatColors().names[nameColorIndex(id)], fontSize = 13.sp, lineHeight = 20.sp,
+            name, tap, color = chatColors().name, fontSize = 13.sp, lineHeight = 20.sp,
             fontWeight = FontWeight.SemiBold, fontFamily = Jakarta, maxLines = 1, overflow = TextOverflow.Ellipsis,
         )
     }
@@ -749,16 +749,16 @@ fun VoiceComposer(
                     },
                     Modifier.fillMaxWidth().focusRequester(focus).semantics { contentDescription = hint },
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                    cursorBrush = SolidColor(Brand.Pink), maxLines = 3,
+                    cursorBrush = SolidColor(Brand.Saffron), maxLines = 3,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
                 )
             }
             Spacer(Modifier.width(8.dp))
             Box(
-                Modifier.size(44.dp).graphicsLayer { alpha = if (can) 1f else 0.4f }.clip(CircleShape).background(Brand.Pink)
+                Modifier.size(44.dp).graphicsLayer { alpha = if (can) 1f else 0.4f }.clip(CircleShape).background(Brand.Saffron)
                     .clickable(enabled = can, role = Role.Button) { send() },
                 contentAlignment = Alignment.Center,
-            ) { Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.voice_send), Modifier.size(20.dp), tint = Color.White) }
+            ) { Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.voice_send), Modifier.size(20.dp), tint = Brand.Black) }
         }
     }
 }
@@ -769,7 +769,7 @@ private const val MENTION_ROWS = 4
 /** The line I'm answering, above the composer: who wrote it and what, and the cross to answer nothing. */
 @Composable
 private fun QuoteBar(reply: VoiceReply, mine: Boolean, onCancel: () -> Unit) {
-    val color = chatColors().names[nameColorIndex(reply.senderId)]
+    val color = chatColors().name
     val name = if (mine) stringResource(R.string.chat_quote_you) else reply.name
     val shape = RoundedCornerShape(16.dp)
     Row(

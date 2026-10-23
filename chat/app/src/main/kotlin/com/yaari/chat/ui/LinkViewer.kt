@@ -364,12 +364,12 @@ fun LinkViewerHost(links: LinkActions) {
                     )
                     SoftButton(
                         stringResource(R.string.link_share), { share(open.url, page.title); links.close() }, accent = true, height = 36.dp,
-                        leading = { Icon(Icons.Outlined.PresentToAll, null, Modifier.size(18.dp), tint = Color.White) },
+                        leading = { Icon(Icons.Outlined.PresentToAll, null, Modifier.size(18.dp), tint = Brand.Black) },
                     )
                 }
             }
             if (page.progress < 1f) {
-                LinearProgressIndicator({ page.progress.coerceIn(0.05f, 1f) }, Modifier.fillMaxWidth().height(2.dp), color = Brand.Pink)
+                LinearProgressIndicator({ page.progress.coerceIn(0.05f, 1f) }, Modifier.fillMaxWidth().height(2.dp), color = Brand.Saffron)
             } else {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
@@ -415,7 +415,7 @@ fun SharedPagePanel(stage: RoomStage, canStop: Boolean, onClose: () -> Unit, onS
             CircleIconButton(Icons.Rounded.Close, stringResource(R.string.link_close_for_me), onClose, size = 36.dp, iconSize = 20.dp)
         }
         if (page.progress < 1f) {
-            LinearProgressIndicator({ page.progress.coerceIn(0.05f, 1f) }, Modifier.fillMaxWidth().height(2.dp), color = Brand.Pink)
+            LinearProgressIndicator({ page.progress.coerceIn(0.05f, 1f) }, Modifier.fillMaxWidth().height(2.dp), color = Brand.Saffron)
         }
         if (LocalYouTubePlayer.current) {
             SafeWebView(stage.url, page, Modifier.fillMaxWidth().weight(1f).background(Color.White))

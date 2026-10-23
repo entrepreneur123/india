@@ -93,7 +93,7 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
                             )
                             PrimaryButton(
                                 stringResource(R.string.rooms_create), { sheet = RoomSheet.CREATE }, Modifier.weight(1.1f), height = 48.dp,
-                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Color.White) },
+                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Brand.Black) },
                             )
                         }
                     }
@@ -134,7 +134,7 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
                             EmptyState(Icons.Rounded.SearchOff, stringResource(R.string.rooms_no_match), stringResource(R.string.rooms_no_match_body))
                             PrimaryButton(
                                 stringResource(R.string.rooms_create), { sheet = RoomSheet.CREATE }, height = 48.dp,
-                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Color.White) },
+                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Brand.Black) },
                             )
                         }
                     }
@@ -143,7 +143,7 @@ fun RoomsTab(vm: AppViewModel, onSettings: () -> Unit) {
                             EmptyState(Icons.Rounded.GraphicEq, stringResource(R.string.rooms_none_title), stringResource(R.string.rooms_none_body))
                             PrimaryButton(
                                 stringResource(R.string.rooms_create), { sheet = RoomSheet.CREATE }, height = 48.dp,
-                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Color.White) },
+                                leading = { Icon(Icons.Rounded.Add, null, Modifier.size(20.dp), tint = Brand.Black) },
                             )
                         }
                     }
@@ -185,7 +185,7 @@ private fun RoomSearch(query: RoomQuery, onSearch: (RoomQuery) -> Unit) {
             shape = CircleShape, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { onSearch(query.copy(text = text.trim())) }),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Pink, cursorColor = Brand.Pink,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline, focusedBorderColor = Brand.Saffron, cursorColor = Brand.Saffron,
             ),
         )
         LanguageSelect(query.lang, { onSearch(query.copy(lang = it, text = text.trim())) }, Modifier.weight(1f), anyLabel = stringResource(R.string.rooms_any_lang), height = 52.dp)

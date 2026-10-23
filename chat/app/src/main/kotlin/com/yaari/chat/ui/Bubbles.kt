@@ -58,45 +58,33 @@ import com.yaari.chat.R
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
 import java.util.Date
-import kotlin.math.abs
 
 // ---- Chat look ----------------------------------------------------------------------------------
-// The messenger look people everywhere use every day: green (mine) / white (theirs) bubbles on a warm wallpaper, a tail on
+// The messenger look people everywhere use every day: saffron-soft (mine) / white (theirs) bubbles on a plain grey wall, a tail on
 // the first bubble of a run, the time and read ticks tucked into the bubble's corner. Same tokens as the web
 // (chat/web/app/globals.css).
 
 @Immutable
 class ChatColors(
     val wall: Color, val out: Color, val incoming: Color, val text: Color, val meta: Color, val tick: Color,
-    val shadow: Color, val names: List<Color>,
-    /** Links in messages. */
-    val link: Color,
+    val shadow: Color,
+    /** Names in room chats: one brand colour for everyone. */
+    val name: Color,
 )
 
 private val LightChat = ChatColors(
-    wall = Color(0xFFEFEAE2), out = Color(0xFFD9FDD3), incoming = Color.White, text = Color(0xFF111B21),
-    meta = Color(0xFF667781), tick = Color(0xFF53BDEB), shadow = Color(0xFF0B141A).copy(alpha = 0.13f),
-    names = listOf(0xFF1F7AEC, 0xFFC2410C, 0xFF7C3AED, 0xFF0F766E, 0xFFBE185D, 0xFF15803D, 0xFFA16207, 0xFF4338CA).map { Color(it) },
-    link = Color(0xFF027EB5),
+    wall = Brand.Surface, out = Color(0xFFFFE8CC), incoming = Color.White, text = Brand.Black,
+    meta = Brand.Muted, tick = Brand.SaffronDeep, shadow = Color.Black.copy(alpha = 0.10f), name = Brand.SaffronDeep,
 )
 
 private val DarkChat = ChatColors(
-    wall = Color(0xFF0B141A), out = Color(0xFF005C4B), incoming = Color(0xFF202C33), text = Color(0xFFE9EDEF),
-    meta = Color(0xFFE9EDEF).copy(alpha = 0.6f), tick = Color(0xFF53BDEB), shadow = Color.Black.copy(alpha = 0.13f),
-    names = listOf(0xFF6BB2FF, 0xFFFF9B6B, 0xFFB69CFF, 0xFF4FD1C5, 0xFFFF7EB6, 0xFF6FDC8C, 0xFFF6C453, 0xFFA5B4FC).map { Color(it) },
-    link = Color(0xFF53BDEB),
+    wall = Brand.Night, out = Brand.SaffronNight, incoming = Brand.Ink3, text = Color(0xFFF5F5F4),
+    meta = Color(0xFFF5F5F4).copy(alpha = 0.6f), tick = Brand.Saffron, shadow = Color.Black.copy(alpha = 0.13f), name = Brand.Saffron,
 )
 
 /** Follows the screen's theme: the system setting, or always dark on the random chat ([NightTheme]). */
 @Composable
 fun chatColors() = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) DarkChat else LightChat
-
-/** A steady colour per person, like names in a group chat (the web's nameColor: h = h * 31 + char, wrapping). */
-fun nameColorIndex(id: String): Int {
-    var h = 0
-    for (c in id) h = h * 31 + c.code
-    return (abs(h.toLong()) % 8).toInt()
-}
 
 private val TailWidth = 8.dp
 private val Radius = 8.dp
@@ -253,7 +241,7 @@ fun Bubble(
                         !revealed -> Column(
                             Modifier.size(176.dp, 220.dp)
                                 // Nothing of the photo is loaded until it is tapped: a flat neutral panel stands in for it.
-                                .background(Color(0xFF2E2E34))
+                                .background(Brand.Ink3)
                                 .clickable(role = Role.Button) { revealed = true },
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
@@ -295,7 +283,7 @@ fun Bubble(
                 MessageLinkCard(original!!, Modifier.padding(bottom = 4.dp))
                 translation?.let { TranslationNote(it, Modifier.padding(bottom = 2.dp)) }
                 TextWithMeta(
-                    rememberLinked(AnnotatedString(text), colors.link), colors.text, meta = { BubbleMeta(m.at, mine, read) },
+                    rememberLinked(AnnotatedString(text), colors.text), colors.text, meta = { BubbleMeta(m.at, mine, read) },
                     modifier = if (media != null) Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 1.dp) else Modifier,
                 )
             }

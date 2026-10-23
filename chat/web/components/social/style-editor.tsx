@@ -102,7 +102,7 @@ function EditorBody({ onClose }: { onClose: () => void }) {
                     className={cn(
                       'inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors duration-150',
                       on
-                        ? cn('border-transparent bg-[color-mix(in_srgb,var(--acc-via)_14%,var(--card))]', ACCENT_TEXT)
+                        ? cn('border-transparent bg-primary-soft', ACCENT_TEXT)
                         : 'border-input text-foreground hover:bg-muted',
                     )}
                   >
@@ -126,7 +126,7 @@ function EditorBody({ onClose }: { onClose: () => void }) {
             {prompts.map((p, i) => (
               <li
                 key={i}
-                className="relative flex flex-col gap-2 rounded-3xl bg-[color-mix(in_srgb,var(--acc-via)_8%,var(--card))] p-4 ring-1 ring-[color-mix(in_srgb,var(--acc-via)_22%,transparent)]"
+                className="relative flex flex-col gap-2 rounded-3xl bg-card p-4 ring-1 ring-border"
               >
                 <div className="flex items-center gap-2">
                   <label className="sr-only" htmlFor={`${id}-q${i}`}>

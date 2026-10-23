@@ -65,7 +65,7 @@ export function AuthScreen({
                 <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
                   {t('auth.badge')}
                 </span>
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pe-3 ps-1.5 text-xs font-semibold text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)] ring-1 ring-[color-mix(in_srgb,#ff3d68_30%,transparent)]">
+                <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pe-3 ps-1.5 text-xs font-semibold text-foreground ring-1 ring-border">
                   <VerifiedMark size={16} label={null} />
                   {t(required ? 'auth.everyoneVerified' : 'auth.verifiedBadge')}
                 </span>

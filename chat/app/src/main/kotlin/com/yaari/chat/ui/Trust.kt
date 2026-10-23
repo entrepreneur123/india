@@ -112,11 +112,11 @@ private val BadColor = Color(0xFFE5484D)
 @Composable
 internal fun isNightTheme() = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-/** The verified seal: a pink rosette with a white tick. */
+/** The verified seal: a saffron rosette with a black tick. */
 @Composable
 fun VerifiedBadge(modifier: Modifier = Modifier, size: Dp = 16.dp) {
     val label = stringResource(R.string.id_verified)
-    MarkIcon(Mark.VERIFIED, Brand.Pink, modifier.semantics { contentDescription = label }, size = size)
+    MarkIcon(Mark.VERIFIED, Brand.Saffron, modifier.semantics { contentDescription = label }, size = size)
 }
 
 /** [p]'s badges: what the card knows, else the batched lookup (asked for while shown). Null when unknown. */
@@ -147,13 +147,13 @@ fun IdentityLine(p: Profile, modifier: Modifier = Modifier) {
     if (!isVerified(p)) return
     val country = p.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
     val parts = listOfNotNull(stringResource(R.string.id_verified), stringResource(p.gender.label), p.age.takeIf { it > 0 }?.toString(), country)
-    val ink = if (isNightTheme()) Brand.PinkOnDark else Brand.OnPinkContainer
+    val ink = MaterialTheme.colorScheme.primaryText
     Row(
-        modifier.clip(CircleShape).background(if (isNightTheme()) Brand.Pink.copy(alpha = 0.18f) else Brand.PinkContainer)
+        modifier.clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer)
             .padding(start = 8.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        MarkIcon(Mark.LOCK, if (isNightTheme()) Brand.PinkOnDark else Brand.Pink, size = 14.dp)
+        MarkIcon(Mark.LOCK, ink, size = 14.dp)
         Text(
             parts.joinToString(" · "), Modifier.padding(start = 6.dp), color = ink,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis,
@@ -298,7 +298,7 @@ fun VerifyCard(vm: AppViewModel, modifier: Modifier = Modifier) {
                 .clickable(role = Role.Button) { vm.trust.open() }.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            MarkIcon(Mark.CLOCK, if (pending) Color(0xFF0090FF) else MaterialTheme.colorScheme.onSurfaceVariant, size = 22.dp)
+            MarkIcon(Mark.CLOCK, if (pending) Brand.Saffron else MaterialTheme.colorScheme.onSurfaceVariant, size = 22.dp)
             Text(
                 stringResource(if (pending) R.string.verify_card_pending else R.string.verify_card_soon), Modifier.padding(start = 12.dp),
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -309,27 +309,23 @@ fun VerifyCard(vm: AppViewModel, modifier: Modifier = Modifier) {
     val night = isNightTheme()
     Row(
         modifier.fillMaxWidth().padding(horizontal = 16.dp).pressScale(interaction).clip(RoundedCornerShape(24.dp))
-            .background(
-                Brush.linearGradient(
-                    if (night) listOf(Color(0xFF3A0F22), Color(0xFF2A1630)) else listOf(Color(0xFFFFE3EA), Color(0xFFFFF1E6)),
-                ),
-            )
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(interaction, indication = ripple(), role = Role.Button) { vm.trust.open() }.padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(56.dp).clip(CircleShape).background(if (night) Color.White.copy(alpha = 0.08f) else Color.White), contentAlignment = Alignment.Center) {
-            MarkIcon(Mark.VERIFIED, Brand.Pink, size = 34.dp)
+            MarkIcon(Mark.VERIFIED, Brand.Saffron, size = 34.dp)
         }
         Column(Modifier.padding(start = 16.dp).weight(1f)) {
-            Text(stringResource(R.string.verify_card_title), style = MaterialTheme.typography.titleMedium, color = if (night) Color.White else Brand.OnPinkContainer)
+            Text(stringResource(R.string.verify_card_title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 stringResource(R.string.verify_card_body), style = MaterialTheme.typography.bodySmall,
-                color = if (night) Color.White.copy(alpha = 0.75f) else Brand.OnPinkContainer.copy(alpha = 0.8f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Text(
-            stringResource(R.string.verify_card_action), Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 16.dp, vertical = 8.dp),
-            color = Color.White, style = MaterialTheme.typography.labelLarge,
+            stringResource(R.string.verify_card_action), Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 16.dp, vertical = 8.dp),
+            color = Brand.Black, style = MaterialTheme.typography.labelLarge,
         )
     }
 }
@@ -380,14 +376,14 @@ private data class PhaseText(val mark: Mark, val color: Long, val title: Int, va
 
 private fun phaseText(p: VerifyPhase): PhaseText? = when (p) {
     VerifyPhase.START, VerifyPhase.OPENING -> null
-    VerifyPhase.WAITING -> PhaseText(Mark.SELFIE, 0xFF0090FF, R.string.verify_waiting_title, R.string.verify_waiting_body)
-    VerifyPhase.CHECKING, VerifyPhase.PENDING -> PhaseText(Mark.CLOCK, 0xFF0090FF, R.string.verify_pending_title, R.string.verify_pending_body)
-    VerifyPhase.VERIFIED -> PhaseText(Mark.VERIFIED, 0xFFE11D58, R.string.verify_done_title, R.string.verify_done_body)
+    VerifyPhase.WAITING -> PhaseText(Mark.SELFIE, 0xFFFF8A00, R.string.verify_waiting_title, R.string.verify_waiting_body)
+    VerifyPhase.CHECKING, VerifyPhase.PENDING -> PhaseText(Mark.CLOCK, 0xFFFF8A00, R.string.verify_pending_title, R.string.verify_pending_body)
+    VerifyPhase.VERIFIED -> PhaseText(Mark.VERIFIED, 0xFFFF8A00, R.string.verify_done_title, R.string.verify_done_body)
     VerifyPhase.DECLINED -> PhaseText(Mark.ALERT, 0xFFE5484D, R.string.verify_declined_title, R.string.verify_declined_body)
     VerifyPhase.UNREADABLE -> PhaseText(Mark.ID_CARD, 0xFFF76B15, R.string.verify_unreadable_title, R.string.verify_unreadable_body)
     VerifyPhase.DUPLICATE -> PhaseText(Mark.ID_CARD, 0xFFE5484D, R.string.verify_duplicate_title, R.string.verify_duplicate_body)
     VerifyPhase.MINOR -> PhaseText(Mark.ALERT, 0xFFE5484D, R.string.verify_minor_title, R.string.verify_minor_body)
-    VerifyPhase.UNAVAILABLE -> PhaseText(Mark.CLOCK, 0xFF8E4EC6, R.string.verify_soon_title, R.string.verify_soon_body)
+    VerifyPhase.UNAVAILABLE -> PhaseText(Mark.CLOCK, 0xFF78716C, R.string.verify_soon_title, R.string.verify_soon_body)
     VerifyPhase.LIMIT -> PhaseText(Mark.CLOCK, 0xFFF76B15, R.string.verify_limit_title, R.string.verify_limit_body)
     VerifyPhase.ERROR -> PhaseText(Mark.ALERT, 0xFFF76B15, R.string.verify_error_title, R.string.verify_error_body)
 }
@@ -426,23 +422,23 @@ fun VerifyScreen(vm: AppViewModel, v: VerifyUi, me: Profile) {
                 if (v.required && v.phase != VerifyPhase.VERIFIED) {
                     Text(
                         stringResource(R.string.verify_required_note), Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodySmall,
-                        color = Brand.Pink, textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.primaryText, textAlign = TextAlign.Center,
                     )
                 }
                 if (explaining) {
                     Spacer(Modifier.height(24.dp))
                     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Step(1, Mark.ID_CARD, Color(0xFF0090FF), R.string.verify_step_id, R.string.verify_step_id_body)
-                        Step(2, Mark.SELFIE, Color(0xFF8E4EC6), R.string.verify_step_selfie, R.string.verify_step_selfie_body)
-                        Step(3, Mark.VERIFIED, Brand.Pink, R.string.verify_step_badge, R.string.verify_step_badge_body)
+                        Step(1, Mark.ID_CARD, R.string.verify_step_id, R.string.verify_step_id_body)
+                        Step(2, Mark.SELFIE, R.string.verify_step_selfie, R.string.verify_step_selfie_body)
+                        Step(3, Mark.VERIFIED, R.string.verify_step_badge, R.string.verify_step_badge_body)
                     }
                 }
                 if (v.phase != VerifyPhase.VERIFIED && v.phase != VerifyPhase.MINOR) {
                     Spacer(Modifier.height(16.dp))
-                    InfoCard(Mark.LOCK, GoodColor, R.string.verify_kept_title, R.string.verify_kept_body)
+                    InfoCard(Mark.LOCK, R.string.verify_kept_title, R.string.verify_kept_body)
                     if (explaining) {
                         Spacer(Modifier.height(10.dp))
-                        InfoCard(Mark.SHIELD, Brand.Pink, R.string.verify_why_title, R.string.verify_why_body)
+                        InfoCard(Mark.SHIELD, R.string.verify_why_title, R.string.verify_why_body)
                     }
                 }
                 Spacer(Modifier.height(24.dp))
@@ -485,24 +481,24 @@ private fun VerifyActions(vm: AppViewModel, v: VerifyUi, closable: Boolean) {
 private fun VerifyHero(text: PhaseText?) {
     val night = isNightTheme()
     Box(Modifier.size(156.dp), contentAlignment = Alignment.Center) {
-        val halo = if (text == null) Brand.Pink else Color(text.color)
+        val halo = if (text == null) Brand.Saffron else Color(text.color)
         Box(
             Modifier.size(148.dp).clip(CircleShape)
-                .background(Brush.radialGradient(listOf(halo.copy(alpha = if (night) 0.30f else 0.20f), halo.copy(alpha = 0.04f)))),
+                .background(halo.copy(alpha = if (night) 0.20f else 0.12f)),
         )
         if (text == null) {
             Box(Modifier.size(156.dp)) {
                 Box(
                     Modifier.align(Alignment.Center).offset(x = (-14).dp, y = (-6).dp).size(92.dp).clip(RoundedCornerShape(28.dp))
-                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, Brand.Pink.copy(alpha = 0.12f), RoundedCornerShape(28.dp)),
+                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(28.dp)),
                     contentAlignment = Alignment.Center,
-                ) { MarkIcon(Mark.ID_CARD, Color(0xFF0090FF), size = 64.dp) }
+                ) { MarkIcon(Mark.ID_CARD, MaterialTheme.colorScheme.onSurface, size = 64.dp) }
                 Box(
                     Modifier.align(Alignment.Center).offset(x = 34.dp, y = 30.dp).size(60.dp).clip(CircleShape)
-                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, Brand.Pink.copy(alpha = 0.12f), CircleShape),
+                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
                     contentAlignment = Alignment.Center,
-                ) { MarkIcon(Mark.SELFIE, Color(0xFF8E4EC6), size = 38.dp) }
-                MarkIcon(Mark.VERIFIED, Brand.Pink, Modifier.align(Alignment.Center).offset(x = 30.dp, y = (-38).dp), size = 40.dp)
+                ) { MarkIcon(Mark.SELFIE, Brand.Saffron, size = 38.dp) }
+                MarkIcon(Mark.VERIFIED, Brand.Saffron, Modifier.align(Alignment.Center).offset(x = 30.dp, y = (-38).dp), size = 40.dp)
             }
         } else {
             Box(
@@ -514,13 +510,13 @@ private fun VerifyHero(text: PhaseText?) {
 }
 
 @Composable
-private fun Step(n: Int, mark: Mark, color: Color, title: Int, body: Int) {
+private fun Step(n: Int, mark: Mark, title: Int, body: Int) {
     Row(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.surfaceContainer).padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(48.dp).clip(RoundedCornerShape(16.dp)).background(color.copy(alpha = 0.12f)), contentAlignment = Alignment.Center) {
-            MarkIcon(mark, color, size = 28.dp)
+        Box(Modifier.size(48.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            MarkIcon(mark, Brand.Saffron, size = 28.dp)
         }
         Column(Modifier.padding(start = 14.dp).weight(1f)) {
             Text("$n. ${stringResource(title)}", style = MaterialTheme.typography.titleSmall)
@@ -530,12 +526,12 @@ private fun Step(n: Int, mark: Mark, color: Color, title: Int, body: Int) {
 }
 
 @Composable
-private fun InfoCard(mark: Mark, color: Color, title: Int, body: Int) {
+private fun InfoCard(mark: Mark, title: Int, body: Int) {
     Row(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)).padding(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        MarkIcon(mark, color, size = 24.dp)
+        MarkIcon(mark, Brand.Saffron, size = 24.dp)
         Column(Modifier.padding(start = 14.dp).weight(1f)) {
             Text(stringResource(title), style = MaterialTheme.typography.titleSmall)
             Text(stringResource(body), Modifier.padding(top = 2.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

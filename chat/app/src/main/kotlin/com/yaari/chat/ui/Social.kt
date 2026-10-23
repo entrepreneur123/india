@@ -121,10 +121,10 @@ import androidx.compose.material3.HorizontalDivider
 fun CountBadge(n: Int, modifier: Modifier = Modifier) {
     if (n <= 0) return
     Box(
-        modifier.height(18.dp).widthIn(min = 18.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 5.dp),
+        modifier.height(18.dp).widthIn(min = 18.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(if (n > 99) "99+" else "$n", color = Color.White, fontSize = 11.sp, lineHeight = 13.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)
+        Text(if (n > 99) "99+" else "$n", color = Brand.Black, fontSize = 11.sp, lineHeight = 13.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)
     }
 }
 
@@ -220,7 +220,7 @@ fun inboxText(i: InboxItem): String {
 private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: Long?) {
     val working = busy == i.id
     Row(
-        Modifier.fillMaxWidth().then(if (highlight) Modifier.background(Brand.Pink.copy(alpha = 0.06f)) else Modifier)
+        Modifier.fillMaxWidth().then(if (highlight) Modifier.background(Brand.Saffron.copy(alpha = 0.06f)) else Modifier)
             .clickable(role = Role.Button) {
                 if (i.post != null) vm.inboxPost(i) else { vm.social.closeInbox(); vm.openProfile(i.actor) }
             }
@@ -232,17 +232,17 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
             if (i.kind == InboxKind.ROOM_INVITE) {
                 Box(
                     Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp).size(22.dp).clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape).background(Brand.Pink),
+                        .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape).background(Brand.Saffron),
                     contentAlignment = Alignment.Center,
-                ) { Icon(Icons.Rounded.Headphones, null, Modifier.size(12.dp), tint = Color.White) }
+                ) { Icon(Icons.Rounded.Headphones, null, Modifier.size(12.dp), tint = Brand.Black) }
             }
             if (i.kind == InboxKind.POST_LIKE || i.kind == InboxKind.POST_COMMENT) {
                 Box(
                     Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp).size(22.dp).clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape)
-                        .background(if (i.kind == InboxKind.POST_LIKE) Color(0xFFF2416B) else Color(0xFF4C7CF0)),
+                        .background(if (i.kind == InboxKind.POST_LIKE) Color(Glyph.HEART.color) else Brand.Saffron),
                     contentAlignment = Alignment.Center,
-                ) { MarkIcon(if (i.kind == InboxKind.POST_LIKE) Mark.HEART else Mark.COMMENT, Color.White, size = 12.dp) }
+                ) { MarkIcon(if (i.kind == InboxKind.POST_LIKE) Mark.HEART else Mark.COMMENT, if (i.kind == InboxKind.POST_LIKE) Color.White else Brand.Black, size = 12.dp) }
             }
         }
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
@@ -260,7 +260,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                 )
                 SoftButton(
                     stringResource(R.string.accept), { vm.inboxAnswer(i, true) }, accent = true, enabled = !working, height = 36.dp,
-                    leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Color.White) },
+                    leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Brand.Black) },
                 )
             }
             i.kind == InboxKind.MESSAGE || i.kind == InboxKind.FRIEND_ACCEPT -> SoftButton(
@@ -280,7 +280,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
 private fun PostThumb(post: PostRef, onClick: () -> Unit) {
     val label = stringResource(R.string.inbox_view_post)
     Box(
-        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Brand.logoGradient)
+        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Brand.Black)
             .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
@@ -300,9 +300,9 @@ fun InterestChips(tags: List<Interest>, modifier: Modifier = Modifier, shared: S
             val on = t in shared
             Text(
                 stringResource(t.label),
-                Modifier.clip(CircleShape).background(if (on) Brand.Pink.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceContainerHigh)
+                Modifier.clip(CircleShape).background(if (on) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh)
                     .padding(horizontal = 12.dp, vertical = 6.dp),
-                style = MaterialTheme.typography.labelLarge, color = if (on) Brand.Pink else MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelLarge, color = if (on) MaterialTheme.colorScheme.primaryText else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -335,12 +335,12 @@ fun InterestsSheet(vm: AppViewModel, me: Profile, s: SocialState) {
                     val full = !on && picked.size >= Interest.MAX
                     Row(
                         Modifier.height(44.dp).clip(CircleShape)
-                            .then(if (on) Modifier.background(Brand.Pink) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape))
+                            .then(if (on) Modifier.background(Brand.Saffron) else Modifier.border(1.dp, MaterialTheme.colorScheme.outline, CircleShape))
                             .toggleable(on, enabled = !full, role = Role.Checkbox) { picked = if (on) picked - t.code else picked + t.code }
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Color.White)
+                        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.Black)
                         Text(
                             stringResource(t.label), style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
                             color = when {
@@ -389,7 +389,7 @@ fun InterestsSection(p: Profile, mine: Boolean, onEdit: () -> Unit, shared: Set<
         if (!mine && shared.isNotEmpty()) {
             Text(
                 stringResource(R.string.interests_common), Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodySmall,
-                color = Brand.Pink,
+                color = MaterialTheme.colorScheme.primaryText,
             )
         }
     }
@@ -634,7 +634,7 @@ fun TourDialog(vm: AppViewModel, card: Int) {
                     repeat(SocialController.TOUR_CARDS) { i ->
                         Box(
                             Modifier.height(6.dp).width(if (i == card) 20.dp else 6.dp).clip(CircleShape)
-                                .background(if (i == card) Brand.Pink else MaterialTheme.colorScheme.outlineVariant),
+                                .background(if (i == card) Brand.Saffron else MaterialTheme.colorScheme.outlineVariant),
                         )
                     }
                 }

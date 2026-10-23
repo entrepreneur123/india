@@ -21,13 +21,12 @@
   --color-tick-read: var(--tick-read);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-brand: var(--brand);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-text: var(--primary-text);
   --color-primary-soft: var(--primary-soft);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-online: var(--online);
   --color-ink: var(--ink);
@@ -100,74 +99,65 @@
     'PingFang SC', 'PingFang TC', 'Hiragino Sans', 'Apple SD Gothic Neo', 'Microsoft YaHei', 'Microsoft JhengHei',
     'Yu Gothic', 'Malgun Gothic', 'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Noto Sans CJK KR', sans-serif;
 
+  /*
+   * Two brand colours: saffron #FF8A00 and black #111111, on one warm-grey (stone) ramp. Saffron is a fill (with
+   * black text on it, 8:1) or a mark; as text on light screens it is the deep #B45309 (5:1 on white).
+   */
   --background: #ffffff;
-  --foreground: #1f1f1f;
+  --foreground: #111111;
   --card: #ffffff;
-  --card-foreground: #1f1f1f;
-  --muted: #f1f3f4;
-  --muted-foreground: #5f6368;
-  --border: #e3e3e8;
-  --input: #c9cbd0;
-  --ring: #c8174a;
-  /* Brand #FF3D68 is used as-is on the logo; fills and text use deeper tones so text keeps ≥ 4.5:1. */
-  --brand: #ff3d68;
-  --primary: #dc1e52;
-  --primary-hover: #c8174a;
-  --primary-foreground: #ffffff;
-  --primary-text: #c8174a;
-  --primary-soft: #fdecef;
-  --accent: #c8174a;
-  --accent-foreground: #ffffff;
+  --card-foreground: #111111;
+  --muted: #f5f5f4;
+  --muted-foreground: #57534e;
+  --border: #e7e5e4;
+  --input: #d6d3d1;
+  --ring: #b45309;
+  --brand: #ff8a00;
+  --primary: #ff8a00;
+  --primary-hover: #f07c00;
+  --primary-foreground: #111111;
+  --primary-text: #b45309;
+  --primary-soft: #fff1e0;
   --destructive: #c5221f;
   --online: #1e8e3e;
-  /* Chats look like the messenger most people already use: warm wallpaper, green sent / white received bubbles. */
-  --chat-wall: #efeae2;
-  --bubble-out: #d9fdd3;
+  /* Chats: a plain grey wall, saffron-soft sent / white received bubbles. */
+  --chat-wall: #f5f5f4;
+  --bubble-out: #ffe8cc;
   --bubble-in: #ffffff;
-  --bubble-text: #111b21;
-  --bubble-meta: #667781;
-  --tick-read: #53bdeb;
-  --name-0: #1f7aec; --name-1: #c2410c; --name-2: #7c3aed; --name-3: #0f766e;
-  --name-4: #be185d; --name-5: #15803d; --name-6: #a16207; --name-7: #4338ca;
-  --ink: #111114;
-  --ink-foreground: #f6f5f8;
+  --bubble-text: #111111;
+  --bubble-meta: #57534e;
+  --tick-read: #b45309;
+  --ink: #111111;
+  --ink-foreground: #f5f5f4;
   --overlay: rgb(0 0 0 / 0.45);
-  --brand-gradient: linear-gradient(135deg, #ff3d68 0%, #ff7a45 100%);
-  /* Room topics: the colour of each topic glyph (components/ui/topic-icons.tsx). */
-  --topic-chat: #4c7cf0; --topic-globe: #4c7cf0; --topic-friends: #f2994a; --topic-language: #22a06b;
-  --topic-music: #e2558a; --topic-movies: #7b61ff; --topic-gaming: #0fa3b1; --topic-sports: #f5a623;
-  --topic-study: #8e5cf7; --topic-travel: #0ea5e9; --topic-night: #5b6cff; --topic-memes: #f7b500;
+  /* Room topic glyphs (components/ui/topic-icons.tsx): one grey, never a colour per topic. */
+  --glyph: #57534e;
   color-scheme: light;
 }
 
 .theme-night {
-  --background: #111114;
-  --foreground: #f1f1f4;
-  --card: #1c1c21;
-  --card-foreground: #f1f1f4;
-  --muted: #26262c;
-  --muted-foreground: #a8a8b3;
+  --background: #111111;
+  --foreground: #f5f5f4;
+  --card: #1a1a1a;
+  --card-foreground: #f5f5f4;
+  --muted: #242424;
+  --muted-foreground: #a8a29e;
   --border: rgb(255 255 255 / 0.1);
   --input: rgb(255 255 255 / 0.22);
-  --ring: #ff6b8b;
-  --primary-hover: #e0245a;
-  --primary-text: #ff6b8b;
-  --primary-soft: rgb(255 107 139 / 0.14);
-  --accent: #ff6b8b;
+  --ring: #ff8a00;
+  --primary-hover: #ff9e33;
+  --primary-text: #ff8a00;
+  --primary-soft: #2a1a06;
   --destructive: #f28b82;
   --online: #34c759;
-  --chat-wall: #0b141a;
-  --bubble-out: #005c4b;
-  --bubble-in: #202c33;
-  --bubble-text: #e9edef;
-  --bubble-meta: rgb(233 237 239 / 0.6);
-  --tick-read: #53bdeb;
-  --name-0: #6bb2ff; --name-1: #ff9b6b; --name-2: #b69cff; --name-3: #4fd1c5;
-  --name-4: #ff7eb6; --name-5: #6fdc8c; --name-6: #f6c453; --name-7: #a5b4fc;
+  --chat-wall: #111111;
+  --bubble-out: #2a1a06;
+  --bubble-in: #242424;
+  --bubble-text: #f5f5f4;
+  --bubble-meta: rgb(245 245 244 / 0.6);
+  --tick-read: #ff8a00;
   --overlay: rgb(0 0 0 / 0.65);
-  --topic-chat: #6e97ff; --topic-globe: #6e97ff; --topic-friends: #f6ae6b; --topic-language: #3dbe86;
-  --topic-music: #ee77a4; --topic-movies: #9683ff; --topic-gaming: #2ec0cc; --topic-sports: #f8b94a;
-  --topic-study: #a47cfa; --topic-travel: #38bdf8; --topic-night: #7d8bff; --topic-memes: #f9c43a;
+  --glyph: #a8a29e;
   color-scheme: dark;
 }
 
@@ -268,11 +258,6 @@
 @keyframes look-glow {
   from { opacity: 0.35; }
   to { opacity: 0.9; }
-}
-
-/* The logo is the one place the brand gradient appears. */
-@utility bg-brand {
-  background-image: var(--brand-gradient);
 }
 
 @utility scrollbar-thin {

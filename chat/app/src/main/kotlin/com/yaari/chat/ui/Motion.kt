@@ -46,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -168,21 +167,6 @@ fun RollingNumber(value: Int, style: TextStyle, color: Color = Color.Unspecified
 }
 
 /**
- * The dark screens' backdrop: flat ink with one very faint, static brand tint at the top.
- * Static on purpose: no per-frame drawing, so it costs nothing on low-end GPUs and batteries.
- */
-fun Modifier.aurora(): Modifier = drawWithCache {
-    val tint = Brush.radialGradient(
-        listOf(Brand.LogoPink.copy(alpha = 0.10f), Color.Transparent),
-        center = Offset(size.width * 0.5f, 0f), radius = size.width * 0.9f,
-    )
-    onDrawBehind {
-        drawRect(Brand.Night)
-        drawRect(tint)
-    }
-}
-
-/**
  * Green dot with a halo that swells and fades every 2 s: someone or something is live.
  * The halo draws outside the dot's own [size], so it never shifts the layout.
  */
@@ -204,7 +188,7 @@ fun PresenceDot(size: Dp = 7.dp, color: Color = Brand.Online) {
  * Rings that grow from 35 % to 155 % of [diameter] and fade (the matching radar). [ringColor] strokes, [fill] tints.
  */
 @Composable
-fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs: Int = 3000, ringColor: Color = Brand.PinkOnDark.copy(alpha = 0.35f), fill: Color = Color.Transparent, stroke: Dp = 1.dp) {
+fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs: Int = 3000, ringColor: Color = Brand.Saffron.copy(alpha = 0.35f), fill: Color = Color.Transparent, stroke: Dp = 1.dp) {
     val phase by rememberLoop(periodMs, still = 0.4f)
     Canvas(modifier.requiredSize(diameter)) {
         val base = diameter.toPx() / 2
@@ -220,7 +204,7 @@ fun Radar(diameter: Dp, modifier: Modifier = Modifier, rings: Int = 3, periodMs:
 }
 
 /** A thin, flat brand ring around an avatar (the lobby, the match reveal). */
-fun Modifier.brandRing(width: Dp = 2.dp, color: Color = Brand.PinkOnDark): Modifier = drawBehind {
+fun Modifier.brandRing(width: Dp = 2.dp, color: Color = Brand.Saffron): Modifier = drawBehind {
     drawCircle(color, radius = size.minDimension / 2 - width.toPx() / 2, style = Stroke(width.toPx()))
 }
 

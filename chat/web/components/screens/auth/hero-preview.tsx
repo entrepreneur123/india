@@ -37,7 +37,7 @@ export function HeroPreview() {
   return (
     <div className="mx-auto w-full max-w-[360px] rounded-[28px] bg-card p-4 shadow-e2" aria-hidden>
       <div className="flex items-center gap-2.5 border-b border-border pb-3">
-        <span className="grid size-8 place-items-center rounded-full bg-[#1a73e8] text-sm font-semibold text-white">S</span>
+        <span className="grid size-8 place-items-center rounded-full bg-border text-sm font-semibold text-foreground">S</span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold">Sofia, 24 {flagEmoji('PT')}</p>
           <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

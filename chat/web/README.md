@@ -5,8 +5,9 @@ The web version of Yaari. It uses the **same Supabase server and the same rules*
 
 - Next.js 16 (static export) + Tailwind CSS 4 + Motion (`LazyMotion` + `m`).
 - PC: sidebar · content · right panel (friends, live rooms). Phone browser: Material-style bottom navigation.
-- Calm, Google-like look: one flat brand colour (`#DC1E52` fills, `#C8174A` text; the `#FF3D68` gradient only on
-  the logo), neutral elevation, one radius scale, short 100–200 ms motion. Random chat stays dark and flat.
+- Two brand colours, saffron `#FF8A00` (fills with black text; `#B45309` as text on light) and black `#111111`, on
+  one stone-grey ramp; no gradients, neutral elevation, one radius scale, short 100–200 ms motion. Random chat, chats
+  and rooms are black with saffron accents.
   `prefers-reduced-motion` turns animation off. Text contrast ≥ 4.5:1 in both themes.
 
 ## Run

@@ -1,6 +1,5 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import useSWR from 'swr'
 import { Lock, Plus, Users } from 'lucide-react'
 import type { RoomQuery, VoiceRoomSummary } from '@/lib/backend'
@@ -13,7 +12,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { TopicChip, TopicIcon } from '@/components/ui/topic-icons'
-import { categoryLabel, kindColor, kindTopic, refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
+import { categoryLabel, kindTopic, refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
 import type { RoomFilter } from '@/components/screens/rooms/rooms-screen'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
@@ -110,15 +109,12 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
       type="button"
       onClick={onOpen}
       aria-disabled={blocked}
-      style={{ '--k': kindColor(room.category) } as CSSProperties}
       className={cn(
         'relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-start transition-[box-shadow,background-color] duration-150',
         blocked ? 'opacity-60' : 'hover:shadow-e2 active:bg-muted',
-        here || room.mine ? 'border-[var(--k)]' : 'border-border',
+        here || room.mine ? 'border-primary' : 'border-border',
       )}
     >
-      {/* The category's colour, as a thin band along the top. */}
-      <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-[var(--k)] opacity-80" />
       <span className="flex w-full items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-1.5">
           <TopicChip topic={kindTopic(room.category)} label={categoryLabel(room.category, t)} />

@@ -185,7 +185,7 @@ internal fun CountrySheet(
                         Text(c.flag, fontSize = 20.sp)
                         Text(c.name(), Modifier.weight(1f).padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
                         if (chosen == null) Text("+${c.dial}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        else Checkbox(on, onCheckedChange = null, Modifier.padding(12.dp), colors = CheckboxDefaults.colors(checkedColor = Brand.Pink))
+                        else Checkbox(on, onCheckedChange = null, Modifier.padding(12.dp), colors = CheckboxDefaults.colors(checkedColor = Brand.Saffron))
                     }
                 }
             }
@@ -208,7 +208,7 @@ private fun OtpStep(vm: AppViewModel, state: Onboarding) {
     OtpBoxes(code, stringResource(R.string.otp_label)) { if (it.length <= 6 && it.all(Char::isDigit)) code = it }
     Text(stringResource(R.string.demo_otp, FakeBackend.DEMO_OTP), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(
-        stringResource(R.string.change_number), color = Brand.Pink, style = MaterialTheme.typography.labelLarge,
+        stringResource(R.string.change_number), color = MaterialTheme.colorScheme.primaryText, style = MaterialTheme.typography.labelLarge,
         modifier = Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button) { vm.backToPhone() }.padding(vertical = 14.dp),
     )
     Spacer(Modifier.height(8.dp))
@@ -230,7 +230,7 @@ private fun OtpBoxes(code: String, label: String, onChange: (String) -> Unit) {
                     val focused = i == code.length
                     val border by animateColorAsState(
                         when {
-                            focused -> Brand.Pink
+                            focused -> Brand.Saffron
                             else -> MaterialTheme.colorScheme.outline
                         },
                         label = "otp",
@@ -245,7 +245,7 @@ private fun OtpBoxes(code: String, label: String, onChange: (String) -> Unit) {
                         if (digit != null) Text("$digit", style = MaterialTheme.typography.headlineSmall)
                         else if (focused) {
                             val blink by rememberLoop(1000, from = 1f, to = 0f, still = 1f)
-                            Box(Modifier.size(2.dp, 28.dp).clip(CircleShape).background(Brand.Pink.copy(alpha = if (blink > 0.5f) 1f else 0f)))
+                            Box(Modifier.size(2.dp, 28.dp).clip(CircleShape).background(Brand.Saffron.copy(alpha = if (blink > 0.5f) 1f else 0f)))
                         }
                     }
                 }
@@ -308,7 +308,7 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
                 val interaction = remember { MutableInteractionSource() }
                 Box(
                     Modifier.weight(1f).height(48.dp).clip(CircleShape).background(bg)
-                        .border(1.dp, if (selected) Brand.Pink else MaterialTheme.colorScheme.outline, CircleShape)
+                        .border(1.dp, if (selected) Brand.Saffron else MaterialTheme.colorScheme.outline, CircleShape)
                         .clickable(interaction, indication = ripple(), role = Role.RadioButton) { d = d.copy(gender = g) },
                     contentAlignment = Alignment.Center,
                 ) {
@@ -341,7 +341,7 @@ private fun ProfileStep(vm: AppViewModel, busy: Boolean) {
         Modifier.clip(RoundedCornerShape(12.dp)).toggleable(d.agreed, role = Role.Checkbox) { d = d.copy(agreed = it) }.padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Checkbox(d.agreed, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Brand.Pink))
+        Checkbox(d.agreed, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Brand.Saffron))
         Text(stringResource(R.string.consent), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(start = 8.dp))
     }
     PrimaryButton(stringResource(R.string.start), { vm.createProfile(d) }, enabled = !busy)

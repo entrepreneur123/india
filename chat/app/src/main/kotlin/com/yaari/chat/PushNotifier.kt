@@ -65,6 +65,7 @@ object PushNotifier {
         )
         return NotificationCompat.Builder(context, m.channel.id)
             .setSmallIcon(R.drawable.ic_stat_chat)
+            .setColor(context.getColor(R.color.brand_saffron))
             .setContentTitle(text(context, m))
             .setContentIntent(open)
             .setAutoCancel(true)

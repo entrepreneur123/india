@@ -94,15 +94,13 @@ fun FaceStack(people: List<Profile>, size: Dp, ring: Color, modifier: Modifier =
 fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(20.dp)
-    val color = topicColor(room.category.topic())
     val live = room.speakers.isNotEmpty()
     val blocked = room.refusal != null && !here
     val highlight = here || room.mine
     Column(
         modifier.fillMaxWidth().alpha(if (blocked) 0.6f else 1f).pressScale(interaction).clip(shape).background(MaterialTheme.colorScheme.surface)
-            .border(if (highlight) 1.5.dp else 1.dp, if (highlight) color else MaterialTheme.colorScheme.outlineVariant, shape)
+            .border(if (highlight) 1.5.dp else 1.dp, if (highlight) Brand.Saffron else MaterialTheme.colorScheme.outlineVariant, shape)
             .clickable(interaction, indication = ripple(), role = Role.Button, onClick = onClick)
-            .drawBehind { drawRect(color.copy(alpha = 0.8f), size = Size(size.width, 4.dp.toPx())) }
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -118,7 +116,7 @@ fun VoiceRoomCard(room: VoiceRoomSummary, here: Boolean, modifier: Modifier = Mo
                 LiveBars()
                 Text(
                     stringResource(if (here) R.string.voice_in_room else R.string.voice_live), Modifier.padding(start = 6.dp),
-                    color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primaryText, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold,
                 )
             }
         }

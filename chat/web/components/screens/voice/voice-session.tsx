@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
 import { BackendError, type VoiceAction, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
@@ -17,7 +17,6 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { TopicIcon } from '@/components/ui/topic-icons'
-import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 import { RoomPlayerProvider } from './room-player'
 import { useRoomT } from './room-t'
@@ -529,7 +528,6 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
   return (
     <m.div
       className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:inset-s-6 md:w-[24rem]"
-      style={{ '--k': kindColor(room.category) } as CSSProperties}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
@@ -537,9 +535,8 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
       role="region"
       aria-label={t('voice.pill', { title: room.title })}
     >
-      <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-[color-mix(in_srgb,var(--k)_45%,transparent)]">
+      <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-border">
         {/* The room's colour, washed in from the left. */}
-        <span aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,color-mix(in_srgb,var(--k)_30%,transparent),transparent_70%)]" />
         <button type="button" onClick={onExpand} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={`${t('voice.expand')}: ${room.title}`}>
           <span className="relative shrink-0">
             {face ? (

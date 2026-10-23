@@ -166,7 +166,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                             }
                             // Their decorated @ID under the name ("typing…" while they type; where they are until the ID is known).
                             if (chat.partnerTyping) {
-                                Text(stringResource(R.string.typing), color = Brand.PinkOnDark, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                Text(stringResource(R.string.typing), color = Brand.Saffron, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                             } else {
                                 val look = lookOf(partner.id)
                                 if (look != null && look.handle.isNotEmpty()) {
@@ -226,7 +226,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
             containerColor = Brand.Ink2,
             title = { Text(stringResource(R.string.leave_title)) },
             text = { Text(stringResource(R.string.leave_text, partner.name)) },
-            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.PinkOnDark) } },
+            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.Saffron) } },
             dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) } },
         )
     }
@@ -263,7 +263,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
             drawCircle(Color.White.copy(alpha = 0.12f), radius = arc.width / 2, style = Stroke(w))
             if (fraction > 0f) {
                 drawArc(
-                    Brand.PinkOnDark, -90f, 360f * fraction, false,
+                    Brand.Saffron, -90f, 360f * fraction, false,
                     topLeft = Offset(inset, inset), size = arc, style = Stroke(w, cap = StrokeCap.Round),
                 )
             }
@@ -288,11 +288,11 @@ private fun VideoButton(calling: Boolean, enabled: Boolean, onClick: () -> Unit)
         contentAlignment = Alignment.Center,
     ) {
         Box(
-            Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.Pink),
+            Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.Saffron),
             contentAlignment = Alignment.Center,
         ) {
-            if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
-            else Icon(Icons.Rounded.Videocam, stringResource(R.string.video), Modifier.size(20.dp), tint = Color.White)
+            if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.Black, strokeWidth = 2.dp)
+            else Icon(Icons.Rounded.Videocam, stringResource(R.string.video), Modifier.size(20.dp), tint = Brand.Black)
         }
     }
 }
@@ -321,7 +321,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                 Box(Modifier.size(40.dp, 4.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)))
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.size(104.dp), contentAlignment = Alignment.Center) {
-                    Radar(104.dp, rings = 2, ringColor = Brand.PinkOnDark.copy(alpha = 0.5f), stroke = 2.dp)
+                    Radar(104.dp, rings = 2, ringColor = Brand.Saffron.copy(alpha = 0.5f), stroke = 2.dp)
                     Avatar(partner, 88.dp)
                 }
                 Spacer(Modifier.height(20.dp))
@@ -348,7 +348,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                     }
                     PrimaryButton(
                         stringResource(R.string.accept), { onAnswer(true) }, Modifier.weight(1f),
-                        leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Color.White) },
+                        leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Brand.Black) },
                     )
                 }
             }
@@ -379,7 +379,7 @@ private fun ChatBar(
                     }
                     Text(
                         subtitle, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
-                        color = if (typing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (typing) MaterialTheme.colorScheme.primaryText else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
@@ -439,7 +439,7 @@ private fun EndedBar(partner: Profile, friend: FriendState, onAdd: () -> Unit, o
             FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), onAccept, accent = true, height = 40.dp)
             else -> SoftButton(
                 stringResource(R.string.add_friend), onAdd, accent = true, height = 40.dp,
-                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Color.White) },
+                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Brand.Black) },
             )
         }
     }
@@ -589,7 +589,7 @@ private fun MatchReveal(matchId: String, partner: Profile) {
     AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(250))) {
         val scale = remember { Animatable(0.92f) }
         LaunchedEffect(Unit) { scale.animateTo(1f, tween(300, easing = EaseOutQuint)) }
-        Box(Modifier.fillMaxSize().aurora(), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(Brand.Night), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }) {
                 Box(Modifier.size(144.dp).brandRing(), contentAlignment = Alignment.Center) {
                     Avatar(partner, 128.dp)
@@ -609,7 +609,7 @@ private fun MatchReveal(matchId: String, partner: Profile) {
                             Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MarkIcon(Mark.LOCK, Brand.PinkOnDark, size = 14.dp)
+                            MarkIcon(Mark.LOCK, Brand.Saffron, size = 14.dp)
                             Text(stringResource(R.string.id_verified), Modifier.padding(start = 6.dp), color = Color.White, style = MaterialTheme.typography.labelMedium)
                         }
                     }
@@ -664,14 +664,14 @@ fun Composer(
                 BasicTextField(
                     text, { text = it.take(maxLength); if (it.isNotBlank()) onTyping() }, Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.text),
-                    cursorBrush = SolidColor(Brand.Pink), maxLines = 5,
+                    cursorBrush = SolidColor(Brand.Saffron), maxLines = 5,
                 )
             }
             Spacer(Modifier.size(8.dp))
             val enabled = text.isNotBlank()
             val interaction = remember { MutableInteractionSource() }
             val tick = rememberTick()
-            val bg by animateColorAsState(if (enabled) Brand.Pink else MaterialTheme.colorScheme.surfaceContainerHighest, tween(150), label = "send")
+            val bg by animateColorAsState(if (enabled) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest, tween(150), label = "send")
             Box(
                 Modifier.size(48.dp).pressScale(interaction).clip(CircleShape).background(bg)
                     .clickable(interaction, indication = null, enabled = enabled, role = Role.Button) {
@@ -682,7 +682,7 @@ fun Composer(
                     },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Color.White else MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Brand.Black else MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

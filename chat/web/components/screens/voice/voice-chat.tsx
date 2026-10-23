@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowDown, Check, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
 import type { TKey } from '@/lib/i18n'
@@ -13,24 +13,17 @@ import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { IcebreakerIcon, PollIcon, topicColor } from '@/components/ui/topic-icons'
+import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
 import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, TypingDots, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
 import { shownText, TranslateFooter, useFollowLines, useLineTranslation } from '@/components/translate'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
-import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { isMod, memberOf, roleLabel, systemText } from './voice-text'
 import { LookName } from '@/components/looks/look-name'
 
-/** A steady colour per person, like names in a group chat. */
-function nameColor(id: string) {
-  let h = 0
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
-  return `var(--name-${Math.abs(h) % 8})`
-}
 
 type Sent = Extract<VoiceLine, { kind: 'text' | 'photo' }>
 
@@ -274,7 +267,7 @@ function SentLine({
             userId={line.sender.id}
             handle={line.sender.handle}
             fallback={
-              <span dir="auto" className="block min-w-0 truncate" style={{ color: nameColor(line.sender.id) }}>
+              <span dir="auto" className="block min-w-0 truncate text-primary-text">
                 {line.sender.name}
               </span>
             }
@@ -561,11 +554,10 @@ function Quote({ reply, rt, meId, onShow }: { reply: VoiceReply; rt: RoomT; meId
       onClick={onShow}
       aria-label={`${rt('showOriginal')}: ${who}`}
       className="relative mt-0.5 mb-1 flex w-full min-w-0 overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12"
-      style={{ '--q': nameColor(reply.sender || reply.name) } as CSSProperties}
     >
-      <span aria-hidden className="w-1 shrink-0 bg-[var(--q)]" />
+      <span aria-hidden className="w-1 shrink-0 bg-primary" />
       <span className="min-w-0 flex-1 px-2 py-1">
-        <span className="block truncate text-[12px] leading-4 font-semibold text-[var(--q)]">{who}</span>
+        <span className="block truncate text-[12px] leading-4 font-semibold text-primary-text">{who}</span>
         <QuoteText reply={reply} rt={rt} />
       </span>
     </button>
@@ -581,7 +573,6 @@ function QuoteText({ reply, rt }: { reply: VoiceReply; rt: RoomT }) {
   )
 }
 
-const POLL = { '--k': topicColor('study') } as CSSProperties
 
 /**
  * A poll in the chat: the question and its options. Before I vote, the options are buttons; once I have (or it has
@@ -614,11 +605,9 @@ function PollCard({
   return (
     <article
       aria-labelledby={`${id}-q`}
-      style={POLL}
-      className="relative w-full overflow-hidden rounded-3xl bg-[color-mix(in_srgb,var(--k)_13%,var(--card))] px-4 pt-3.5 pb-3 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-[color-mix(in_srgb,var(--k)_34%,transparent)]"
+      className="relative w-full overflow-hidden rounded-3xl bg-card px-4 pt-3.5 pb-3 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-border"
     >
-      <span aria-hidden className="pointer-events-none absolute -top-16 -inset-e-12 size-40 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--k)_30%,transparent),transparent)]" />
-      <h3 className="relative flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-[var(--k)] uppercase">
+      <h3 className="relative flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-primary-text uppercase">
         <PollIcon size={16} /> {rt('poll')}
         {poll?.closed ? (
           <span className="ms-auto rounded-full bg-muted px-2 py-0.5 text-[10.5px] tracking-normal text-muted-foreground normal-case">{rt('closed')}</span>
@@ -640,15 +629,15 @@ function PollCard({
                 aria-label={results ? `${rt('result', { option: o, pct: num(pct[i]) })}, ${votes(poll!.counts[i] ?? 0)}${mine ? `, ${rt('yourVote')}` : ''}` : o}
                 className={cn(
                   'relative flex min-h-11 w-full items-center gap-2 overflow-hidden rounded-2xl px-3.5 py-2 text-start text-sm font-semibold transition-[background-color,box-shadow] duration-150',
-                  mine ? 'bg-card ring-2 ring-[var(--k)]' : 'bg-card/80 ring-1 ring-border',
-                  open && !mine && 'hover:bg-card hover:ring-[color-mix(in_srgb,var(--k)_60%,transparent)]',
+                  mine ? 'bg-card ring-2 ring-primary' : 'bg-card/80 ring-1 ring-border',
+                  open && !mine && 'hover:bg-card hover:ring-primary',
                   !poll && 'animate-pulse',
                 )}
               >
                 {results ? (
                   <span
                     aria-hidden
-                    className="absolute inset-y-0 inset-s-0 rounded-2xl bg-[color-mix(in_srgb,var(--k)_24%,transparent)] transition-[width] duration-500 ease-out"
+                    className="absolute inset-y-0 inset-s-0 rounded-2xl bg-[color-mix(in_srgb,var(--primary)_24%,transparent)] transition-[width] duration-500 ease-out"
                     style={{ width: `${pct[i]}%` }}
                   />
                 ) : null}
@@ -656,7 +645,7 @@ function PollCard({
                   aria-hidden
                   className={cn(
                     'relative grid size-5 shrink-0 place-items-center rounded-full ring-2',
-                    mine ? 'bg-[var(--k)] text-white ring-[var(--k)]' : 'ring-[color-mix(in_srgb,var(--k)_45%,transparent)]',
+                    mine ? 'bg-primary text-primary-foreground ring-primary' : 'ring-border',
                   )}
                 >
                   {mine ? <Check className="size-3.5" strokeWidth={3} /> : null}
@@ -684,7 +673,7 @@ function PollCard({
               if (await onClose()) toast.show(rt('ended'), 'success')
               setClosing(false)
             }}
-            className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-[var(--k)] transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--k)_12%,transparent)] disabled:opacity-60"
+            className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-primary-text transition-colors duration-150 hover:bg-primary-soft disabled:opacity-60"
           >
             {closing ? <LoaderCircle className="size-3.5 animate-spin" aria-hidden /> : null}
             {rt('end')}
@@ -695,7 +684,6 @@ function PollCard({
   )
 }
 
-const TALK = { '--k': kindColor('talk') } as CSSProperties
 
 /** A conversation starter, shown as a card in the talk colour (not a bubble): the question in my language. */
 function IcebreakerCard({ line, onAnother }: { line: Extract<VoiceLine, { kind: 'icebreaker' }>; onAnother?: () => void }) {
@@ -706,20 +694,19 @@ function IcebreakerCard({ line, onAnother }: { line: Extract<VoiceLine, { kind: 
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 420, damping: 30 }}
       className="my-2.5 w-full max-w-sm self-center"
-      style={TALK}
     >
       <article
         aria-label={t('ib.button')}
-        className="relative overflow-hidden rounded-2xl bg-[color-mix(in_srgb,var(--k)_13%,var(--card))] px-4 pt-3 pb-3.5 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-[color-mix(in_srgb,var(--k)_32%,transparent)]"
+        className="relative overflow-hidden rounded-2xl bg-card px-4 pt-3 pb-3.5 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-border"
       >
-        <h3 className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-[var(--k)] uppercase">
+        <h3 className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-primary-text uppercase">
           <IcebreakerIcon size={16} /> {t('ib.button')}
         </h3>
         <p className="relative mt-1.5 text-[16.5px] leading-snug font-semibold text-foreground">{t(`ib.${line.prompt}` as TKey)}</p>
         <div className="relative mt-2.5 flex items-center justify-between gap-3">
           <span className="min-w-0 truncate text-xs text-muted-foreground">{line.fromMe ? t('ib.byYou') : t('ib.by', { name: line.name })}</span>
           {onAnother ? (
-            <button type="button" onClick={onAnother} className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-[var(--k)] transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--k)_12%,transparent)]">
+            <button type="button" onClick={onAnother} className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-primary-text transition-colors duration-150 hover:bg-primary-soft">
               {t('ib.another')}
             </button>
           ) : null}
@@ -733,7 +720,7 @@ function IcebreakerCard({ line, onAnother }: { line: Extract<VoiceLine, { kind: 
 function IcebreakerInvite({ onPost }: { onPost: () => void }) {
   const { t } = useI18n()
   return (
-    <div className="flex flex-col items-center gap-3 rounded-3xl bg-[color-mix(in_srgb,var(--k)_9%,transparent)] px-6 py-6 text-center" style={TALK}>
+    <div className="flex flex-col items-center gap-3 rounded-3xl bg-primary-soft px-6 py-6 text-center">
       <IcebreakerIcon size={44} />
       <div>
         <p className="text-base font-bold">{t('ib.emptyTitle')}</p>
@@ -848,14 +835,13 @@ export function VoiceComposer({
           >
             <div
               className="mb-2 flex items-center gap-2 overflow-hidden rounded-2xl bg-muted py-1.5 pe-1.5 ps-0"
-              style={{ '--q': nameColor(quoted.sender) } as CSSProperties}
               role="group"
               aria-label={rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
             >
-              <span aria-hidden className="ms-2 w-1 self-stretch rounded-full bg-[var(--q)]" />
+              <span aria-hidden className="ms-2 w-1 self-stretch rounded-full bg-primary" />
               <Reply className="size-4 shrink-0 text-muted-foreground rtl:-scale-x-100" aria-hidden />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-semibold text-[var(--q)]">
+                <span className="block truncate text-xs font-semibold text-primary-text">
                   {rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
                 </span>
                 <span className="block truncate text-[13px] text-muted-foreground">
@@ -890,7 +876,7 @@ export function VoiceComposer({
                   className={cn('flex w-full items-center gap-2.5 px-3.5 py-1.5 text-start text-sm font-semibold transition-colors duration-100', i === pick ? 'bg-muted' : 'hover:bg-muted/70')}
                 >
                   <Avatar name={p.name} src={p.photoUrl} size={28} />
-                  <span className="truncate" style={{ color: nameColor(p.id) }}>
+                  <span className="truncate text-primary-text">
                     {p.name}
                   </span>
                 </button>
@@ -963,7 +949,7 @@ export function VoiceComposer({
                   className="absolute bottom-full left-0 z-20 mb-2 flex w-52 origin-bottom-left flex-col gap-0.5 rounded-2xl bg-card p-1.5 shadow-e3 ring-1 ring-border rtl:right-0 rtl:left-auto"
                 >
                   {onPhoto ? (
-                    <MenuItem icon={<ImagePlus className="size-5 text-[var(--topic-travel)]" aria-hidden />} label={t('photo.send')} onClick={photo} />
+                    <MenuItem icon={<ImagePlus className="size-5 text-muted-foreground" aria-hidden />} label={t('photo.send')} onClick={photo} />
                   ) : null}
                   <MenuItem
                     icon={<PollIcon size={22} />}

@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicChip, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
-import { categoryLabel, kindColor, kindTopic } from '@/components/screens/rooms/room-text'
+import { categoryLabel, kindTopic } from '@/components/screens/rooms/room-text'
 import { LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
 import { hostOf, shareable } from '@/lib/links'
 import { retryImport } from '@/lib/retry-import'
@@ -257,9 +257,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
   return (
     <LinkOpenProvider value={openLink}>
-      <div ref={rootRef} className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground" style={{ '--k': kindColor(kind) } as CSSProperties}>
+      <div ref={rootRef} className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground">
         {/* One soft glow in the room's category colour. */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(70%_70%_at_50%_0%,color-mix(in_srgb,var(--k)_24%,transparent),transparent)]" />
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
           <header className="flex items-center gap-1 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 sm:px-4">
             <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={t('voice.minimise')}>
@@ -427,7 +426,7 @@ function FoldedRoom({ room, onExpand }: { room: VoiceRoom; onExpand: () => void 
     <button
       type="button"
       onClick={onExpand}
-      className="mx-3 flex h-11 shrink-0 items-center gap-2 rounded-full bg-[color-mix(in_srgb,var(--k)_10%,var(--card))] ps-1.5 pe-3 text-start ring-1 ring-[color-mix(in_srgb,var(--k)_22%,transparent)] transition-colors duration-150 hover:bg-muted"
+      className="mx-3 flex h-11 shrink-0 items-center gap-2 rounded-full bg-card ps-1.5 pe-3 text-start ring-1 ring-border transition-colors duration-150 hover:bg-muted"
     >
       {onStage.length ? (
         <span className="flex min-w-0 -space-x-2 overflow-hidden rtl:space-x-reverse" aria-label={t('voice.stage')} role="img">
@@ -471,7 +470,7 @@ function StageCard({ stage, mine, closed, onOpen, onClose }: { stage: VoiceStage
       </button>
     )
   return (
-    <div className="mx-3 flex items-center gap-3 rounded-2xl bg-[color-mix(in_srgb,var(--k)_12%,var(--card))] p-2 ps-3 ring-1 ring-[color-mix(in_srgb,var(--k)_30%,transparent)] sm:mx-4">
+    <div className="mx-3 flex items-center gap-3 rounded-2xl bg-card p-2 ps-3 ring-1 ring-border sm:mx-4">
       <TopicIcon topic="globe" size={26} />
       <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-start">
         <span className="block truncate text-[11px] font-semibold text-primary-text">{mine ? rt('sharedByYou') : rt('sharedBy', { name: stage.by })}</span>
@@ -493,7 +492,7 @@ function SectionTitle({ icon, label, count, trailing, id }: { icon: ReactNode; l
   return (
     <div className="flex min-h-9 items-center gap-2">
       <h2 id={id} className="flex min-w-0 flex-1 items-center gap-2 text-[12px] font-bold tracking-wider text-muted-foreground uppercase">
-        <span className="shrink-0 text-[var(--k)] [&>svg]:size-4" aria-hidden>
+        <span className="shrink-0 text-primary-text [&>svg]:size-4" aria-hidden>
           {icon}
         </span>
         <span className="truncate">{label}</span>
@@ -532,7 +531,7 @@ function StageSection({
   return (
     <section
       aria-labelledby={id}
-      className="relative mx-3 rounded-3xl bg-[color-mix(in_srgb,var(--k)_7%,var(--card))] px-3 pt-2 pb-2 ring-1 ring-[color-mix(in_srgb,var(--k)_18%,transparent)] sm:mx-4 sm:px-4"
+      className="relative mx-3 rounded-3xl bg-card px-3 pt-2 pb-2 ring-1 ring-border sm:mx-4 sm:px-4"
     >
       <SectionTitle
         id={id}
@@ -690,8 +689,8 @@ function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }
 function Announcement({ text, onEdit }: { text: string; onEdit?: () => void }) {
   const { t } = useI18n()
   return (
-    <div className="mx-3 mb-2 flex items-start gap-2 rounded-xl bg-[color-mix(in_srgb,var(--k)_14%,transparent)] px-3 py-2 ring-1 ring-[color-mix(in_srgb,var(--k)_26%,transparent)] sm:mx-4">
-      <Pin className="mt-0.5 size-3.5 shrink-0 text-[var(--k)]" aria-hidden />
+    <div className="mx-3 mb-2 flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2 ring-1 ring-border sm:mx-4">
+      <Pin className="mt-0.5 size-3.5 shrink-0 text-primary-text" aria-hidden />
       <p className="line-clamp-3 min-w-0 flex-1 text-[13px] leading-snug break-words">
         <span className="sr-only">{t('room.announcement')}: </span>
         {text}

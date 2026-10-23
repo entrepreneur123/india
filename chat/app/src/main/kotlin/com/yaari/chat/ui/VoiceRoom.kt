@@ -251,13 +251,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
     val list by vm.voice.list.collectAsStateWithLifecycle()
     val actor: VoiceActor = { a, ok, done -> vm.voice.act(a, ok, done) }
     val topic = room?.category?.topic() ?: Topic.CHAT
-    val glow = topicColor(topic).copy(alpha = 0.24f)
-    Box(
-        Modifier.fillMaxSize().blockTouches().background(MaterialTheme.colorScheme.background).drawBehind {
-            // One soft glow in the room's category colour.
-            drawRect(Brush.radialGradient(listOf(glow, Color.Transparent), Offset(size.width / 2, 0f), size.width * 0.75f))
-        },
-    ) {
+    Box(Modifier.fillMaxSize().blockTouches().background(MaterialTheme.colorScheme.background)) {
         if (room == null || me == null) {
             Joining(vm.voice::minimise)
             return@Box
@@ -274,7 +268,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                     room, wide, onMinimise = vm.voice::minimise, onPeople = { sheet = VoiceSheet.People }, onInvite = { sheet = VoiceSheet.Invite },
                     onMore = { sheet = VoiceSheet.Options }, onLeave = vm.voice::leave,
                 )
-                room.announcement?.let { Announcement(it, topicColor(topic), onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
+                room.announcement?.let { Announcement(it, Brand.Saffron, onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
                 if (s.offline) OfflineBanner()
                 AudioNotice(s)
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
@@ -504,7 +498,7 @@ private fun StageSection(
                 .semantics { stateDescription = if (open) "expanded" else "collapsed" }.padding(start = 14.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Rounded.Mic, null, Modifier.size(16.dp), tint = Brand.PinkOnDark)
+            Icon(Icons.Rounded.Mic, null, Modifier.size(16.dp), tint = Brand.Saffron)
             Text(
                 stringResource(R.string.room_on_stage_n, stage.size), Modifier.padding(start = 6.dp).weight(1f).semantics { heading() },
                 style = MaterialTheme.typography.titleSmall, maxLines = 1,
@@ -734,7 +728,7 @@ private fun FoldedStage(room: VoiceRoom, levels: State<Map<String, Float>>, onOp
             .clickable(role = Role.Button, onClickLabel = stringResource(R.string.room_show_room), onClick = onOpen).padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Rounded.Mic, null, Modifier.size(16.dp), tint = Brand.PinkOnDark)
+        Icon(Icons.Rounded.Mic, null, Modifier.size(16.dp), tint = Brand.Saffron)
         Row(Modifier.padding(start = 8.dp).weight(1f).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
             if (stage.isEmpty()) {
                 Text(stringResource(R.string.room_stage_empty), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
@@ -863,7 +857,7 @@ fun LostLabel(modifier: Modifier = Modifier) = Text(
 fun RoleBadge(text: String, modifier: Modifier = Modifier) {
     Text(
         text, modifier.padding(top = 2.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer).padding(horizontal = 6.dp, vertical = 1.dp),
-        color = MaterialTheme.colorScheme.primary, fontSize = 10.sp, lineHeight = 14.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
+        color = MaterialTheme.colorScheme.primaryText, fontSize = 10.sp, lineHeight = 14.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
     )
 }
 
@@ -965,7 +959,7 @@ private fun ListenersStrip(room: VoiceRoom, hands: Int, onClick: () -> Unit) {
         FaceStack(shown.map { it.profile }, 26.dp, MaterialTheme.colorScheme.background, Modifier.padding(start = 12.dp).weight(1f), dim = shown.filter { it.lost }.map { it.profile.id }.toSet())
         if (hands > 0) {
             GlyphIcon(Glyph.HAND, size = 16.dp)
-            Text("$hands", Modifier.padding(start = 4.dp, end = 8.dp), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            Text("$hands", Modifier.padding(start = 4.dp, end = 8.dp), color = MaterialTheme.colorScheme.primaryText, style = MaterialTheme.typography.labelLarge)
         }
         Icon(Icons.AutoMirrored.Rounded.ArrowForwardIos, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
@@ -1020,8 +1014,8 @@ private fun ControlBar(
                     RoundButton(stringResource(R.string.voice_requests_n, s.hands), onRequests) { GlyphIcon(Glyph.HAND, size = 22.dp) }
                     Text(
                         "${s.hands}", Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp).clip(CircleShape).background(MaterialTheme.colorScheme.background)
-                            .padding(2.dp).clip(CircleShape).background(Brand.Pink).padding(horizontal = 5.dp),
-                        color = Color.White, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
+                            .padding(2.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
+                        color = Brand.Black, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
                     )
                 }
             }
@@ -1040,7 +1034,7 @@ private fun ControlBar(
                     Text(stringResource(R.string.voice_leave_stage), style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Spacer(Modifier.width(8.dp))
-                val bg by animateColorAsState(if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink, label = "mic")
+                val bg by animateColorAsState(if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Saffron, label = "mic")
                 val interaction = remember { MutableInteractionSource() }
                 Box(
                     Modifier.size(56.dp).pressScale(interaction, 0.94f).clip(CircleShape).background(bg)
@@ -1049,7 +1043,7 @@ private fun ControlBar(
                 ) {
                     Icon(
                         if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
-                        Modifier.size(26.dp), tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Color.White,
+                        Modifier.size(26.dp), tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.Black,
                     )
                 }
             } else {
@@ -1165,7 +1159,6 @@ fun VoicePill(vm: AppViewModel, modifier: Modifier = Modifier) {
 @Composable
 private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<String, Float>>) {
     val room = state.room
-    val color = topicColor(room?.category?.topic() ?: Topic.CHAT)
     val loudest by remember { derivedStateOf { VoiceController.loudest(levels.value) } }
     val speaker = loudest?.let { room?.member(it) }
     val face = speaker ?: room?.member(room.hostId)
@@ -1177,9 +1170,8 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
     val shape = RoundedCornerShape(22.dp)
     Row(
         Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).semantics { paneTitle = region }.fillMaxWidth()
-            .shadow(10.dp, shape, ambientColor = color, spotColor = color).clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceContainer).background(color.copy(alpha = 0.16f))
-            .border(1.dp, color.copy(alpha = 0.38f), shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
+            .shadow(10.dp, shape).clip(shape).background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
@@ -1192,7 +1184,7 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
                     SpeakingRing(levels, face.profile.id, 44.dp)
                     Avatar(face.profile, 44.dp)
                 } else {
-                    Box(Modifier.size(44.dp).clip(CircleShape).background(color.copy(alpha = 0.3f)), contentAlignment = Alignment.Center) {
+                    Box(Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh), contentAlignment = Alignment.Center) {
                         TopicIcon(room?.category?.topic() ?: Topic.CHAT, size = 24.dp)
                     }
                 }
@@ -1200,12 +1192,12 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
             Column(Modifier.padding(start = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Row(
-                        Modifier.clip(CircleShape).background(Brand.Pink).padding(horizontal = 7.dp, vertical = 2.dp),
+                        Modifier.clip(CircleShape).background(Brand.Saffron).padding(horizontal = 7.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        LiveBars(color = Color.White, height = 9.dp)
+                        LiveBars(color = Brand.Black, height = 9.dp)
                         Text(
-                            stringResource(R.string.voice_bar_live).uppercase(), color = Color.White, fontSize = 10.sp, lineHeight = 13.sp,
+                            stringResource(R.string.voice_bar_live).uppercase(), color = Brand.Black, fontSize = 10.sp, lineHeight = 13.sp,
                             fontWeight = FontWeight.Bold, letterSpacing = 0.6.sp, fontFamily = Jakarta,
                         )
                     }
@@ -1230,8 +1222,8 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
         if (me?.seat != null) {
             CircleIconButton(
                 if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
-                { mic(me.muted) }, background = if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Pink,
-                tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Color.White,
+                { mic(me.muted) }, background = if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Saffron,
+                tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.Black,
             )
         }
         CircleIconButton(
@@ -1258,15 +1250,14 @@ fun ChatBar(vm: AppViewModel, s: UiState, modifier: Modifier = Modifier) {
     ) {
         val c = chat ?: last ?: return@AnimatedVisibility
         val partner = c.match.partner
-        val color = Brand.PinkOnDark
+        val color = Brand.Saffron
         val shape = RoundedCornerShape(22.dp)
         val open = stringResource(R.string.chat_open)
         RoomTheme {
             Row(
                 Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).fillMaxWidth()
-                    .shadow(10.dp, shape, ambientColor = color, spotColor = color).clip(shape)
-                    .background(MaterialTheme.colorScheme.surfaceContainer).background(color.copy(alpha = 0.14f))
-                    .border(1.dp, color.copy(alpha = 0.38f), shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
+                    .shadow(10.dp, shape).clip(shape).background(MaterialTheme.colorScheme.surfaceContainer)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape).padding(start = 6.dp, end = 2.dp, top = 6.dp, bottom = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
@@ -1279,7 +1270,7 @@ fun ChatBar(vm: AppViewModel, s: UiState, modifier: Modifier = Modifier) {
                         if (s.chatUnread) {
                             Box(
                                 Modifier.align(Alignment.TopEnd).size(14.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainer)
-                                    .padding(2.dp).clip(CircleShape).background(Brand.Pink),
+                                    .padding(2.dp).clip(CircleShape).background(Brand.Saffron),
                             )
                         }
                     }
