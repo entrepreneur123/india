@@ -641,6 +641,8 @@ const hi: Dict = {
   'error.not_owned': 'यह लुक अभी आपके पास नहीं है',
   'error.chat_closed': 'यह चैट ख़त्म हो चुकी है। बात जारी रखने के लिए उन्हें दोस्त बनाएँ',
   'error.generic': 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें',
+  'chat.sticker': 'स्टिकर',
+  'error.sticker_not_owned': 'यह स्टिकर भेजने के लिए इसका पैक लें',
 }
 
 export default hi

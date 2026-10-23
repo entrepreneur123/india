@@ -641,6 +641,8 @@ const ptBR: Dict = {
   'error.not_owned': 'Você ainda não tem este visual',
   'error.chat_closed': 'Este chat terminou. Adicione a pessoa como amigo para continuar conversando',
   'error.generic': 'Algo deu errado. Tente de novo',
+  'chat.sticker': 'Figurinha',
+  'error.sticker_not_owned': 'Pegue este pacote de figurinhas para enviá-la',
 }
 
 export default ptBR

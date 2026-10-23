@@ -642,6 +642,8 @@ const nl: Dict = {
   'error.not_owned': 'Deze look is nog niet van jou',
   'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',
   'error.generic': 'Er ging iets mis. Probeer het opnieuw',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Haal dit stickerpakket om hem te sturen',
 }
 
 export default nl

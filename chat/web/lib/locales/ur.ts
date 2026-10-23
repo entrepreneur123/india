@@ -620,6 +620,8 @@ const ur: Dict = {
   'error.not_owned': 'یہ لُک ابھی آپ کے پاس نہیں ہے',
   'error.chat_closed': 'یہ چیٹ ختم ہو چکی ہے۔ بات جاری رکھنے کے لیے انہیں دوست بنائیں',
   'error.generic': 'کچھ غلط ہو گیا۔ براہِ کرم دوبارہ کوشش کریں',
+  'chat.sticker': 'اسٹیکر',
+  'error.sticker_not_owned': 'یہ بھیجنے کے لیے یہ اسٹیکر پیک لیں',
 }
 
 export default ur

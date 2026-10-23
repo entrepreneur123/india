@@ -5,7 +5,7 @@ import * as m from 'motion/react-m'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import type { Entitlements, Profile } from '@/lib/backend'
+import type { Entitlements, ItemKind, Profile } from '@/lib/backend'
 import { planLive } from '@/lib/live-session'
 import { AppContext, type AppState, type ChatBar, type KycInfo, type RandomControl, type Tab, type Thread, type VerifyWhy } from '@/components/app-state'
 import { onGate } from '@/lib/gate'
@@ -39,6 +39,7 @@ import {
   Onboarding,
   VerifySheet,
   MannerLowSheet,
+  LooksSheet,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
@@ -89,6 +90,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [paywallOpen, setPaywallOpen] = useState(false)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
   const [paywallUsed, setPaywallUsed] = useState(false)
+  const [shop, setShop] = useState<{ open: boolean; tab: ItemKind } | null>(null)
   const [profileUsed, setProfileUsed] = useState(false)
   const [postTarget, setPostTarget] = useState<PostTarget | null>(null)
   const [postUsed, setPostUsed] = useState(false)
@@ -318,6 +320,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
         setPaywallUsed(true)
         setPaywallOpen(true)
       },
+      openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
       openVoice,
       freeForRoom,
@@ -497,6 +500,13 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           <ScreenBoundary>
             <Suspense fallback={null}>
               <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
+        {shop ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <LooksSheet open={shop.open} tab={shop.tab} onClose={() => setShop({ ...shop, open: false })} />
             </Suspense>
           </ScreenBoundary>
         ) : null}

@@ -642,6 +642,8 @@ const ne: Dict = {
   'error.not_owned': 'यो लुक अझै तपाईंसँग छैन',
   'error.chat_closed': 'यो च्याट सकिइसक्यो। कुरा जारी राख्न उहाँलाई साथी बनाउनुहोस्',
   'error.generic': 'केही गडबड भयो। कृपया फेरि प्रयास गर्नुहोस्',
+  'chat.sticker': 'स्टिकर',
+  'error.sticker_not_owned': 'यो पठाउन यो स्टिकर प्याक लिनुहोस्',
 }
 
 export default ne

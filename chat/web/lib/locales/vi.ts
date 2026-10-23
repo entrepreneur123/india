@@ -641,6 +641,8 @@ const vi: Dict = {
   'error.not_owned': 'Bạn chưa có phong cách này',
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',
+  'chat.sticker': 'Nhãn dán',
+  'error.sticker_not_owned': 'Mua gói nhãn dán này để gửi',
 }
 
 export default vi

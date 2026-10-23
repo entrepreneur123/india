@@ -135,6 +135,8 @@ export interface MyTrust extends Trust {
 // ---- IDs and looks (040_handles_looks.sql; the catalogue and parsing in lib/looks.ts, the ID rules in lib/handle.ts) ----
 
 export type LookKind = 'badge' | 'color' | 'font' | 'frame'
+/** Everything the shop sells: the looks, and (046) chat walls, sticker packs and VIP incognito. */
+export type ItemKind = LookKind | 'wall' | 'sticker' | 'vip'
 
 /** Someone's ID and what they wear (null: none of that kind). Item ids are the catalogue's (lib/looks.ts). */
 export interface Look {
@@ -151,7 +153,7 @@ export type LookWear = Pick<Look, LookKind>
 
 export interface ShopItem {
   id: string
-  kind: LookKind
+  kind: ItemKind
   /** Google Play's local price is shown in the app; this is the fallback label. */
   priceInr: number
 }
@@ -164,6 +166,9 @@ export interface Shop {
   handleNext: number | null
   /** Paid ID changes I have (042): each lets one change through before handleNext. */
   handlePasses: number
+  /** 046: my chat wall (null: the plain one) and whether VIP incognito is on. */
+  wall: string | null
+  anon: boolean
 }
 
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
@@ -608,8 +613,10 @@ export type BackendErrorCode =
   | 'handle_cooldown'
   /** 040: a name with fancy-font letters (𝓛𝓲𝓼𝓪) or stacked accents. */
   | 'name_invalid'
-  /** 040: wearing a look I don't own. */
+  /** 040: wearing a look I don't own (046: also a wall or incognito). */
   | 'not_owned'
+  /** 046: a sticker from a pack I don't own. */
+  | 'sticker_not_owned'
   /** 040: a new line in a random chat that ended, between two people who aren't friends. */
   | 'chat_closed'
   /** 044: a contact the server won't keep (the error's detail names the app); sharing with someone who isn't a friend. */
@@ -795,6 +802,10 @@ export interface Backend {
   shop(): Promise<Shop>
   /** Wears these (null: none of that kind), all four at once. Errors: not_owned, bad_request. */
   equipLook(wear: LookWear): Promise<Look>
+  /** 046: my chat wall (null: none). Errors: not_owned. */
+  setWall(itemId: string | null): Promise<void>
+  /** 046: VIP incognito on or off. Errors: not_owned. */
+  setAnon(on: boolean): Promise<void>
   /** IDs and looks of these people (at most 100; people I may not see are left out). */
   looks(userIds: string[]): Promise<Look[]>
   /** Demo only: owns the item at once (the live web has no payments; looks are bought in the Android app). */

@@ -3,6 +3,7 @@
 import { BackendError, type Look, type LookWear, type Profile, type Shop, type ShopItem } from './backend'
 import { handleProblem, handleSpelling, type HandleCheck } from './handle'
 import { isItem, kindOf, NO_WEAR, wearOf, type ItemId } from './looks'
+import { stickerOf } from './stickers'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const COOLDOWN_MS = 30 * 24 * 3_600_000
@@ -14,6 +15,9 @@ const PRICES: [ItemId, number][] = [
   ['color_sunset', 99], ['color_aurora', 99], ['color_rainbow', 129],
   ['font_script', 69], ['font_retro', 69], ['font_bold', 69], ['font_pixel', 69], ['font_round', 69], ['font_future', 69],
   ['frame_frost', 199], ['frame_fire', 199], ['frame_jewel', 249], ['frame_sand', 199], ['frame_neon', 149], ['frame_sakura', 149],
+  ['wall_saffron', 79], ['wall_midnight', 79], ['wall_paisley', 79], ['wall_mehndi', 79], ['wall_stars', 79], ['wall_waves', 79],
+  ['sticker_namaste', 49], ['sticker_chai', 49], ['sticker_cricket', 49], ['sticker_love', 49],
+  ['vip_anon', 299],
 ]
 
 /** The demo people who wear something (everyone else shows a plain @ID). */
@@ -54,6 +58,8 @@ export interface LookHost {
 export class LookSim {
   private owned = new Set<ItemId>()
   private wear: LookWear = NO_WEAR
+  private wall: ItemId | null = null
+  private anon = false
   /** When I last chose an ID myself (null: the free one the app gave). */
   private handleSetAt: number | null = null
 
@@ -107,7 +113,28 @@ export class LookSim {
   async shop(): Promise<Shop> {
     await wait(300)
     const items: ShopItem[] = PRICES.map(([id, priceInr]) => ({ id, kind: kindOf(id), priceInr }))
-    return { items, owned: [...this.owned], look: this.myLook(), handleNext: this.handleSetAt === null ? null : this.handleSetAt + COOLDOWN_MS, handlePasses: 0 }
+    return {
+      items, owned: [...this.owned], look: this.myLook(), handleNext: this.handleSetAt === null ? null : this.handleSetAt + COOLDOWN_MS,
+      handlePasses: 0, wall: this.wall, anon: this.anon,
+    }
+  }
+
+  async setWall(id: string | null) {
+    await wait(250)
+    if (id !== null && (!isItem(id) || kindOf(id) !== 'wall' || !this.owned.has(id))) throw new BackendError('not_owned')
+    this.wall = id
+  }
+
+  async setAnon(on: boolean) {
+    await wait(250)
+    if (on && !this.owned.has('vip_anon')) throw new BackendError('not_owned')
+    this.anon = on
+  }
+
+  /** Like chat_body_check: a sticker needs its pack. */
+  checkBody(text: string | null) {
+    const st = stickerOf(text)
+    if (st && !this.owned.has(st.pack as ItemId)) throw new BackendError('sticker_not_owned')
   }
 
   async equipLook(next: LookWear): Promise<Look> {
@@ -124,14 +151,14 @@ export class LookSim {
     return look
   }
 
-  /** Like redeem_cosmetic: owned for good, and the first item of a kind is worn at once. */
+  /** Like redeem_cosmetic: owned for good, and the first look of a kind is worn at once (walls are chosen by hand). */
   async buy(id: string) {
     await wait(600)
     if (!isItem(id)) throw new BackendError('bad_request')
     if (this.owned.has(id)) return
     this.owned.add(id)
     const kind = kindOf(id)
-    if (!this.wear[kind]) this.wear = { ...this.wear, [kind]: id }
+    if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
   }
 
   async looks(ids: string[]): Promise<Look[]> {

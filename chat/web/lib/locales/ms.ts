@@ -655,6 +655,8 @@ const ms: Dict = {
   'error.not_owned': 'Anda belum memiliki gaya ini',
   'error.chat_closed': 'Sembang ini sudah tamat. Tambah dia sebagai rakan untuk terus berbual',
   'error.generic': 'Ada sesuatu yang tidak kena. Sila cuba lagi',
+  'chat.sticker': 'Pelekat',
+  'error.sticker_not_owned': 'Dapatkan pek pelekat ini untuk menghantarnya',
 }
 
 export default ms

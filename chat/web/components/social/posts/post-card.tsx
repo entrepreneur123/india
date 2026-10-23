@@ -79,7 +79,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
             <span className="flex items-center gap-1.5 text-[15px] leading-tight font-bold">
               <span className="truncate">{a.name}</span>
               {a.verified ? <VerifiedMark size={16} /> : null}
-              <span className="shrink-0 font-semibold text-muted-foreground">{a.age}</span>
+              {a.age > 0 ? <span className="shrink-0 font-semibold text-muted-foreground">{a.age}</span> : null}
               <span className="shrink-0" aria-hidden>
                 {flagEmoji(a.country)}
               </span>

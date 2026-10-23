@@ -645,6 +645,8 @@ const es: Dict = {
   'error.not_owned': 'Todavía no tienes este estilo',
   'error.chat_closed': 'Este chat terminó. Agrégale como amigo para seguir hablando',
   'error.generic': 'Algo salió mal. Inténtalo de nuevo',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Consigue este pack de stickers para enviarlo',
 }
 
 export default es

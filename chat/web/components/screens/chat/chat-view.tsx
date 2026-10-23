@@ -7,6 +7,8 @@ import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Shuffle, Undo2, U
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
+import { nameAge } from '@/lib/looks'
+import { wallVars } from '@/lib/walls'
 import { FREE_EXIT_LOCK_MS, PLUS_EXIT_LOCK_MS } from '@/lib/config'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -17,6 +19,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { retryImport } from '@/lib/retry-import'
+import { cn } from '@/lib/utils'
 import { Composer } from './composer'
 import { ExitButton } from './exit-button'
 import { MessageBubble, TypingBubble } from './message-bubble'
@@ -27,6 +30,8 @@ import { TrustBadge } from '@/components/trust/badge'
 import { useFollowLines } from '@/components/translate'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
+import { useShop } from '@/components/looks/use-shop'
+import { StickerButton } from './stickers'
 import { useFriendship } from '@/components/social/friend-button'
 import { FriendContactsSheet } from '@/components/social/contacts'
 
@@ -86,6 +91,8 @@ export function ChatView({
   const stickToBottom = useRef(true)
   const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
   const { st } = useSocialT()
+  // 046: my chat wall, behind the messages and the text box (only I see it).
+  const wall = wallVars(useShop().data?.wall)
   // A link opened from the chat: a column beside it on wide screens, a tall sheet on phones.
   const wide = useWideScreen()
   const [viewUrl, setViewUrl] = useState<string | null>(null)
@@ -193,7 +200,7 @@ export function ChatView({
             <Avatar name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                {partner.name}, {partner.age} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+                {nameAge(partner.name, partner.age)} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (
@@ -251,13 +258,14 @@ export function ChatView({
           ) : null}
         </AnimatePresence>
 
+        <div className={cn('flex min-h-0 flex-1 flex-col', wall ? 'chat-wall-art' : 'bg-chat-wall')} style={wall}>
         <ul
           ref={listRef}
           onScroll={(e) => {
             const el = e.currentTarget
             stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
           }}
-          className="flex w-full min-h-0 flex-1 flex-col overflow-y-auto bg-chat-wall px-[max(1.25rem,calc((100%-48rem)/2))] py-3 scrollbar-thin"
+          className="flex w-full min-h-0 flex-1 flex-col overflow-y-auto px-[max(1.25rem,calc((100%-48rem)/2))] py-3 scrollbar-thin"
           aria-label={t('chat.conversation', { name: partner.name })}
         >
           {live ? (
@@ -287,7 +295,7 @@ export function ChatView({
         </ul>
 
         {ended ? (
-          <div className="flex justify-center gap-3 border-t border-border px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex justify-center gap-3 border-t border-border bg-background px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             {onEnd ? (
               <>
                 <Button variant="secondary" size="lg" onClick={() => onEnd(false)}>
@@ -311,8 +319,12 @@ export function ChatView({
             onTyping={chat.notifyTyping}
             allowMedia={live}
             placeholder={live ? t('chat.placeholder') : t('chat.messageTo', { name: partner.name })}
+            extra={<StickerButton onSend={(body) => chat.send(body, null)} />}
+            // Over a wall the box's row gets a light veil, so its icons stay clear on dark walls too.
+            className={wall ? 'bg-background/80 backdrop-blur-sm' : undefined}
           />
         )}
+        </div>
       </div>
       </LinkOpenProvider>
 
@@ -373,7 +385,7 @@ function FriendsBar({ name, f }: { name: string; f: ReturnType<typeof useFriends
   const { lt } = useLooksT()
   const text = f.state === 'requested' ? lt('ended.waiting', { name }) : f.state === 'incoming' ? lt('ended.incoming', { name }) : lt('ended.add', { name })
   return (
-    <div className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-nowrap sm:px-5" role="status">
+    <div className="flex flex-wrap items-center gap-3 border-t border-border bg-background px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-nowrap sm:px-5" role="status">
       <p className="min-w-0 flex-1 basis-56 text-sm leading-snug text-muted-foreground">{text}</p>
       {f.state === 'requested' ? (
         <Button variant="secondary" loading={f.busy} onClick={() => void f.withdraw()} aria-label={lt('friend.withdraw', { name })} className="shrink-0">

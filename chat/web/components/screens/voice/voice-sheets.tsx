@@ -25,6 +25,7 @@ import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
+import { ageCity } from '@/lib/looks'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -87,7 +88,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
             className="font-semibold"
             fallback={
               <span className="truncate text-muted-foreground">
-                {m.profile.age} · {m.profile.city} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
+                {ageCity(m.profile)} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
               </span>
             }
           />}
@@ -156,7 +157,7 @@ export function PersonSheet({
           <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
           <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">
-            {target.profile.age} · {target.profile.city} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
+            {ageCity(target.profile)} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
           </p>
           <p className="flex flex-wrap justify-center gap-1.5">
             {roleLabel(target, t) ? (

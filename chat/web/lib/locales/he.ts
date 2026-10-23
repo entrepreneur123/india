@@ -658,6 +658,8 @@ const he: Dict = {
   'error.not_owned': 'הסגנון הזה עדיין לא שלך',
   'error.chat_closed': 'הצ׳אט הזה הסתיים. כדי להמשיך לדבר, מוסיפים כחבר',
   'error.generic': 'משהו השתבש. אפשר לנסות שוב',
+  'chat.sticker': 'מדבקה',
+  'error.sticker_not_owned': 'כדי לשלוח אותה צריך את חבילת המדבקות הזו',
 }
 
 export default he

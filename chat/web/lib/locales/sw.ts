@@ -655,6 +655,8 @@ const sw: Dict = {
   'error.not_owned': 'Bado huna mtindo huu',
   'error.chat_closed': 'Gumzo hili limeisha. Mwongeze kama rafiki ili mendelee kuzungumza',
   'error.generic': 'Hitilafu imetokea. Tafadhali jaribu tena',
+  'chat.sticker': 'Stika',
+  'error.sticker_not_owned': 'Pata kifurushi hiki cha stika ili kuituma',
 }
 
 export default sw

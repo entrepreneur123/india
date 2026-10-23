@@ -655,6 +655,8 @@ const zhHant: Dict = {
   'error.not_owned': '你還沒有這個裝扮',
   'error.chat_closed': '此聊天已結束。將對方加為好友就能繼續聊',
   'error.generic': '出了點問題，請重試',
+  'chat.sticker': '貼圖',
+  'error.sticker_not_owned': '取得這組貼圖後才能傳送',
 }
 
 export default zhHant

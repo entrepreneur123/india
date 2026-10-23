@@ -655,6 +655,8 @@ const ja: Dict = {
   'error.not_owned': 'この着せかえはまだ持っていません',
   'error.chat_closed': 'このチャットは終了しました。話を続けるには友だちに追加してください',
   'error.generic': '問題が発生しました。もう一度お試しください',
+  'chat.sticker': 'スタンプ',
+  'error.sticker_not_owned': 'このスタンプを送るにはパックの入手が必要です',
 }
 
 export default ja

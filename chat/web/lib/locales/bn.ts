@@ -641,6 +641,8 @@ const bn: Dict = {
   'error.not_owned': 'এই লুক এখনো আপনার নেই',
   'error.chat_closed': 'এই চ্যাট শেষ হয়ে গেছে। কথা চালিয়ে যেতে তাকে বন্ধু হিসেবে যোগ করুন',
   'error.generic': 'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন',
+  'chat.sticker': 'স্টিকার',
+  'error.sticker_not_owned': 'এটি পাঠাতে এই স্টিকার প্যাকটি নিন',
 }
 
 export default bn

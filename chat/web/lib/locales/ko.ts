@@ -655,6 +655,8 @@ const ko: Dict = {
   'error.not_owned': '아직 갖고 있지 않은 꾸미기 아이템이에요',
   'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어 가려면 친구로 추가해 주세요',
   'error.generic': '문제가 생겼어요. 다시 시도해 주세요',
+  'chat.sticker': '스티커',
+  'error.sticker_not_owned': '이 스티커 팩이 있어야 보낼 수 있어요',
 }
 
 export default ko

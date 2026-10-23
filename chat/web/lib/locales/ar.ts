@@ -667,6 +667,8 @@ const ar: Dict = {
   'error.not_owned': 'لا تملك هذا المظهر بعد',
   'error.chat_closed': 'انتهت هذه الدردشة. أضف هذا الشخص صديقًا لتواصلا الحديث',
   'error.generic': 'حدث خطأ ما. يُرجى المحاولة مرة أخرى',
+  'chat.sticker': 'ملصق',
+  'error.sticker_not_owned': 'احصل على حزمة الملصقات هذه لإرساله',
 }
 
 export default ar

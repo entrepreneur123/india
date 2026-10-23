@@ -642,6 +642,8 @@ const kn: Dict = {
   'error.not_owned': 'ಈ ಲುಕ್ ಇನ್ನೂ ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲ',
   'error.chat_closed': 'ಈ ಚಾಟ್ ಮುಗಿದಿದೆ. ಮಾತು ಮುಂದುವರಿಸಲು ಅವರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸಿ',
   'error.generic': 'ಏನೋ ತಪ್ಪಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+  'chat.sticker': 'ಸ್ಟಿಕರ್',
+  'error.sticker_not_owned': 'ಇದನ್ನು ಕಳುಹಿಸಲು ಈ ಸ್ಟಿಕರ್ ಪ್ಯಾಕ್ ಪಡೆಯಿರಿ',
 }
 
 export default kn

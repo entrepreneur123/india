@@ -655,6 +655,8 @@ const th: Dict = {
   'error.not_owned': 'คุณยังไม่มีลุคนี้',
   'error.chat_closed': 'แชทนี้จบแล้ว เพิ่มเขาเป็นเพื่อนเพื่อคุยต่อ',
   'error.generic': 'เกิดข้อผิดพลาด โปรดลองอีกครั้ง',
+  'chat.sticker': 'สติกเกอร์',
+  'error.sticker_not_owned': 'รับแพ็กสติกเกอร์นี้ก่อนจึงจะส่งได้',
 }
 
 export default th

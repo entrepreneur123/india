@@ -620,6 +620,8 @@ const mr: Dict = {
   'error.not_owned': 'हा लूक अजून तुमच्याकडे नाही',
   'error.chat_closed': 'ही चॅट संपली आहे. बोलणे सुरू ठेवण्यासाठी त्यांना मित्र बनवा',
   'error.generic': 'काहीतरी चुकले. कृपया पुन्हा प्रयत्न करा',
+  'chat.sticker': 'स्टिकर',
+  'error.sticker_not_owned': 'हे पाठवण्यासाठी हा स्टिकर पॅक घ्या',
 }
 
 export default mr

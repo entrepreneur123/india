@@ -620,6 +620,8 @@ const gu: Dict = {
   'error.not_owned': 'આ લુક હજી તમારી પાસે નથી',
   'error.chat_closed': 'આ ચેટ પૂરી થઈ ગઈ છે. વાત ચાલુ રાખવા તેમને મિત્ર બનાવો',
   'error.generic': 'કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો',
+  'chat.sticker': 'સ્ટિકર',
+  'error.sticker_not_owned': 'આ મોકલવા માટે આ સ્ટિકર પેક લો',
 }
 
 export default gu

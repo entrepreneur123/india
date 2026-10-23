@@ -349,3 +349,11 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* A chat wall (lib/walls.ts): its light and night backgrounds come in as --wall / --wall-n. */
+.chat-wall-art {
+  background: var(--wall);
+}
+.theme-night .chat-wall-art {
+  background: var(--wall-n);
+}

@@ -19,6 +19,7 @@ import { Gallery } from '@/components/social/gallery'
 import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
 import { useTrust } from '@/components/trust/badge'
 import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
+import { isVip } from '@/lib/looks'
 
 /**
  * Someone's profile: the card in their frame with their @ID, status, languages, prompts, photos and posts. The server shows people I have
@@ -106,7 +107,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               profile={shown}
               className="w-full"
               verified={!!trust?.verified}
-              facts={trust ? <IdentityFacts profile={shown} verified={trust.verified} /> : null}
+              // Incognito (046) hides the ID check too: no "not verified" for someone who may well be.
+              facts={trust && !isVip(shown) ? <IdentityFacts profile={shown} verified={trust.verified} /> : null}
               slot={
                 <button
                   type="button"

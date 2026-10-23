@@ -86,7 +86,8 @@ const CODES = [
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
-  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
+  // sticker_not_owned before not_owned: the first code the message contains wins.
+  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'sticker_not_owned', 'not_owned',
   'contact_invalid', 'not_friends',
 ]
 
@@ -1219,6 +1220,14 @@ export class SupabaseBackend implements Backend {
     const look = parseLook(await this.rpc<unknown>('equip_look', { p_badge: wear.badge, p_color: wear.color, p_font: wear.font, p_frame: wear.frame }))
     if (!look) throw new BackendError('network')
     return look
+  }
+
+  async setWall(itemId: string | null) {
+    await this.rpc('set_wall', { p_item: itemId })
+  }
+
+  async setAnon(on: boolean) {
+    await this.rpc('set_anon', { p_on: on })
   }
 
   async looks(userIds: string[]): Promise<Look[]> {

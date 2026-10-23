@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
+import { isVip } from '@/lib/looks'
 
 interface AvatarProps {
   name: string
@@ -37,6 +38,15 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
             draggable={false}
             onError={() => setFailed(src)}
           />
+        ) : isVip({ name, photoUrl: src }) ? (
+          // 046: someone in VIP incognito (no photo for strangers): the mark in the brand colour.
+          <span
+            className="grid size-full place-items-center bg-primary font-extrabold tracking-tight text-primary-foreground"
+            style={{ fontSize: Math.max(9, size * 0.3) }}
+            aria-hidden
+          >
+            VIP
+          </span>
         ) : (
           <span
             className="grid size-full place-items-center font-semibold text-foreground"

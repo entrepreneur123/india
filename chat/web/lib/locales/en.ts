@@ -153,6 +153,7 @@ const en = {
   'exit.lockedIn': 'Leave chat (available in {s} s)',
 
   'chat.left': 'Left the chat',
+  'chat.sticker': 'Sticker',
   'chat.typing': 'typing…',
   'chat.report': 'Report {name}',
   'chat.videoRequest': 'Request a video call',
@@ -653,6 +654,7 @@ const en = {
   'error.name_invalid': 'Use plain letters in your name. Fancy-font letters aren’t allowed (emoji are fine)',
   'error.not_owned': 'You don’t own this look yet',
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',
+  'error.sticker_not_owned': 'Get this sticker pack to send it',
   'error.generic': 'Something went wrong. Please try again',
 } as const
 

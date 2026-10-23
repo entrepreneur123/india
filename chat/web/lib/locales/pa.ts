@@ -620,6 +620,8 @@ const pa: Dict = {
   'error.not_owned': 'ਇਹ ਲੁੱਕ ਹਾਲੇ ਤੁਹਾਡੇ ਕੋਲ ਨਹੀਂ ਹੈ',
   'error.chat_closed': 'ਇਹ ਚੈਟ ਖ਼ਤਮ ਹੋ ਚੁੱਕੀ ਹੈ। ਗੱਲ ਜਾਰੀ ਰੱਖਣ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੋਸਤ ਬਣਾਓ',
   'error.generic': 'ਕੁਝ ਗ਼ਲਤ ਹੋ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ',
+  'chat.sticker': 'ਸਟਿੱਕਰ',
+  'error.sticker_not_owned': 'ਇਹ ਭੇਜਣ ਲਈ ਇਹ ਸਟਿੱਕਰ ਪੈਕ ਲਓ',
 }
 
 export default pa

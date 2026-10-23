@@ -655,6 +655,8 @@ const tr: Dict = {
   'error.not_owned': 'Bu görünüme henüz sahip değilsin',
   'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',
+  'chat.sticker': 'Çıkartma',
+  'error.sticker_not_owned': 'Bunu göndermek için bu çıkartma paketini al',
 }
 
 export default tr

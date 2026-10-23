@@ -655,6 +655,8 @@ const fil: Dict = {
   'error.not_owned': 'Wala ka pang look na ito',
   'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Kunin ang sticker pack na ito para maipadala ito',
 }
 
 export default fil

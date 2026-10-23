@@ -14,7 +14,9 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
-import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, TypingDots, useLineActions } from '@/components/screens/chat/message-bubble'
+import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, StickerLine, TypingDots, useLineActions } from '@/components/screens/chat/message-bubble'
+import { StickerButton } from '@/components/screens/chat/stickers'
+import { previewText, stickerOf } from '@/lib/stickers'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
 import { shownText, TranslateFooter, useFollowLines, useLineTranslation } from '@/components/translate'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
@@ -244,7 +246,8 @@ function SentLine({
   const { t, clock } = useI18n()
   const { rt } = useRoomT()
   const room = s.room
-  const said = line.kind === 'text' ? line.text : null
+  const sticker = line.kind === 'text' ? stickerOf(line.text) : null
+  const said = line.kind === 'text' && !sticker ? line.text : null
   const tr = useLineTranslation('room', line.id, said, line.fromMe)
   const actions = useLineActions(tr, said)
   const [menu, setMenu] = useState(false)
@@ -305,7 +308,21 @@ function SentLine({
           <Avatar name={line.sender.name} src={line.sender.photoUrl} size={28} />
         </button>
       )}
-      {line.kind === 'photo' ? (
+      {sticker && line.kind === 'text' ? (
+        <StickerLine
+          pack={sticker.pack}
+          art={sticker.art}
+          mine={line.fromMe}
+          meta={meta}
+          size={104}
+          head={name || line.reply ? (
+            <Bubble mine={line.fromMe} tail={false} className="max-w-full px-2.5 pt-1 pb-1.5">
+              {name}
+              {line.reply ? <Quote reply={line.reply} rt={rt} meId={room?.meId} onShow={() => onQuote(line.reply!.id)} /> : null}
+            </Bubble>
+          ) : null}
+        />
+      ) : line.kind === 'photo' ? (
         <Bubble mine={line.fromMe} tail={!grouped} className="p-1">
           {name}
           <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
@@ -565,10 +582,11 @@ function Quote({ reply, rt, meId, onShow }: { reply: VoiceReply; rt: RoomT; meId
 }
 
 function QuoteText({ reply, rt }: { reply: VoiceReply; rt: RoomT }) {
+  const { t } = useI18n()
   return (
     <span className="flex min-w-0 items-center gap-1 text-[12.5px] leading-4 text-bubble-meta">
       {reply.kind === 'photo' ? <ImagePlus className="size-3.5 shrink-0" aria-hidden /> : reply.kind === 'poll' ? <PollIcon size={14} /> : null}
-      <span className="line-clamp-2 break-words">{reply.kind === 'photo' ? rt('photo') : reply.kind === 'poll' ? `${rt('poll')}: ${reply.text ?? ''}` : reply.text}</span>
+      <span className="line-clamp-2 break-words">{reply.kind === 'photo' ? rt('photo') : reply.kind === 'poll' ? `${rt('poll')}: ${reply.text ?? ''}` : previewText(reply.text ?? '', t('chat.sticker'))}</span>
     </span>
   )
 }
@@ -845,7 +863,7 @@ export function VoiceComposer({
                   {rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
                 </span>
                 <span className="block truncate text-[13px] text-muted-foreground">
-                  {quoted.kind === 'photo' ? rt('photo') : quoted.kind === 'poll' ? `${rt('poll')}: ${quoted.text ?? ''}` : quoted.text}
+                  {quoted.kind === 'photo' ? rt('photo') : quoted.kind === 'poll' ? `${rt('poll')}: ${quoted.text ?? ''}` : previewText(quoted.text ?? '', t('chat.sticker'))}
                 </span>
               </span>
               <button
@@ -985,6 +1003,7 @@ export function VoiceComposer({
             <IcebreakerIcon size={24} />
           </button>
         ) : null}
+        <StickerButton onSend={onSend} className="bg-muted text-foreground hover:bg-input/60" />
         <label htmlFor={id} className="sr-only">
           {t('voice.chatPlaceholder')}
         </label>

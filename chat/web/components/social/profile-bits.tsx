@@ -4,13 +4,14 @@ import type { CSSProperties, ReactNode } from 'react'
 import type { Accent, Profile, ProfilePrompt, SpokenLang } from '@/lib/backend'
 import { flagEmoji } from '@/lib/format'
 import { accentVars, EMPTY_STYLE, nativeName } from '@/lib/profile-style'
-import type { FrameId } from '@/lib/looks'
+import { isVip, nameAge, type FrameId } from '@/lib/looks'
 import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { VerifiedMark } from '@/components/trust/badge'
 import { FrameAvatar, FrameCard } from '@/components/looks/frames'
 import { LookName, useLook } from '@/components/looks/look-name'
 import { useFeedT } from './feed-text'
+import { useLooksT } from '@/components/looks/looks-text'
 
 // A profile made its own: the frame (040, a bought look) around the card and the photo, the name and the decorated
 // @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
@@ -82,6 +83,7 @@ export function ProfileHero({
 }) {
   const style = profile.style ?? EMPTY_STYLE
   const frame = (useLook(profile.id)?.frame ?? null) as FrameId | null
+  const { lt } = useLooksT()
   return (
     <FrameCard frame={frame} className={className}>
       {slot}
@@ -89,9 +91,7 @@ export function ProfileHero({
         <FrameAvatar frame={frame} name={profile.name} src={profile.photoUrl} size={104} />
         <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
           <span className="inline-flex items-center gap-1.5">
-            <span>
-              {profile.name}, {profile.age}
-            </span>
+            <span>{nameAge(profile.name, profile.age)}</span>
             {verified ? <VerifiedMark size={24} /> : null}
           </span>
           <span aria-hidden>{flagEmoji(profile.country)}</span>
@@ -99,6 +99,9 @@ export function ProfileHero({
         </h2>
         <LookName userId={profile.id} handle={profile.handle} className="mt-0.5 max-w-full px-4 text-base font-semibold" />
         {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
+        {isVip(profile) ? (
+          <p className="mt-2 max-w-sm rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
+        ) : null}
         {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
         {style.status ? (
           <p

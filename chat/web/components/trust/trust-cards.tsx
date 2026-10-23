@@ -43,7 +43,7 @@ export function IdentityFacts({ profile, verified, className }: { profile: Profi
     return <p className={cn('text-xs font-semibold text-muted-foreground', className)}>{tt('facts.notVerified')}</p>
   }
   const gender = profile.gender === 'female' ? t('pf.woman') : profile.gender === 'male' ? t('pf.man') : t('pf.other')
-  const parts = [gender, tt('facts.age', { n: profile.age }), profile.country ? `${flagEmoji(profile.country)} ${country(profile.country)}` : null].filter(Boolean)
+  const parts = [gender, profile.age > 0 ? tt('facts.age', { n: profile.age }) : null, profile.country ? `${flagEmoji(profile.country)} ${country(profile.country)}` : null].filter(Boolean)
   return (
     <p
       className={cn(

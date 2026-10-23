@@ -24,6 +24,8 @@ import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FindSheet } from '@/components/social/people-find'
+import { nameAge } from '@/lib/looks'
+import { previewText } from '@/lib/stickers'
 
 type Segment = 'friends' | 'matches'
 
@@ -144,9 +146,7 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
       <Avatar name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
-          <span className="truncate">
-            {p.name}, {p.age}
-          </span>
+          <span className="truncate">{nameAge(p.name, p.age)}</span>
           <TrustBadge userId={p.id} size={15} />
         </span>
         <LookName userId={p.id} handle={p.handle} className="text-[13px] font-semibold" />
@@ -347,7 +347,7 @@ function MatchesList({
                 detail={
                   <>
                     <span aria-hidden>{flagEmoji(r.partner.country)} </span>
-                    {r.lastText ? `${r.lastText} · ` : ''}
+                    {r.lastText ? `${previewText(r.lastText, t('chat.sticker'))} · ` : ''}
                     {timeAgo(r.metAt)}
                   </>
                 }

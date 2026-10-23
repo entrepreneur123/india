@@ -33,6 +33,7 @@ import {
 import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
 import { MANNER_FLOOR, MANNERS } from './trust'
+import { isVip } from './looks'
 import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
@@ -175,6 +176,8 @@ const PEOPLE: Profile[] = [
     photoUrl: null,
     posts: [post('riya1', 'Sketchbook page 42', 1 * DAY), post('riya2', 'Monsoon in the ghats', 9 * DAY)],
   },
+  // 046: someone in VIP incognito, as the server shows them to a stranger.
+  { id: 'u_vip', name: 'VIP', gender: 'female', age: 0, city: '', country: null, bio: '', photoUrl: null, posts: [] },
 ]
 
 // Interests and a second photo for some demo people (024).
@@ -311,6 +314,7 @@ export class MockBackend implements Backend {
       ['u_leila', 3 * HOUR, 'have a great night!'],
       ['u_mateo', 20 * HOUR, 'jajaja Messi para siempre 🐐'],
       ['u_kabir', 2 * DAY, 'catch you later'],
+      ['u_vip', 3 * DAY, ':st:namaste/1:'],
     ]
     for (const [pid, ago, last] of seedRecents) {
       const partner = this.person(pid)!
@@ -564,6 +568,7 @@ export class MockBackend implements Backend {
     if (!m) throw new BackendError('not_found')
     await wait(jitter(120, 260))
     if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('chat_closed')
+    if (text?.startsWith(':st:')) (await this.lookSim()).checkBody(text)
     const msg: Message = {
       id: this.msgSeq++,
       fromMe: true,
@@ -635,7 +640,7 @@ export class MockBackend implements Backend {
     await wait(250)
     const low = q.trim().replace(/^@/, '').toLowerCase()
     if (!low) return []
-    return PEOPLE.filter((p) => !this.blocked.has(p.id)).map((p) => this.personRow(p))
+    return PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p)).map((p) => this.personRow(p))
       .filter((r) => r.handle.startsWith(low)).sort((a, b) => (a.handle < b.handle ? -1 : 1)).slice(0, 20)
   }
 
@@ -1031,6 +1036,7 @@ export class MockBackend implements Backend {
   }
 
   async sendVoice(roomId: string, text: string, replyTo?: number | null) {
+    if (text.startsWith(':st:')) (await this.lookSim()).checkBody(text)
     return (await this.voice()).send(roomId, text, replyTo ?? null)
   }
 
@@ -1164,7 +1170,7 @@ export class MockBackend implements Backend {
           setMe: (p) => (this.me = p),
           handle: (id) => {
             const p = this.person(id) ?? this.voiceSim?.person(id)
-            return p ? freeHandle(p.name, id) : null
+            return p && !isVip(p) ? freeHandle(p.name, id) : null
           },
         }),
     )
@@ -1185,6 +1191,14 @@ export class MockBackend implements Backend {
 
   async equipLook(wear: LookWear) {
     return (await this.lookSim()).equipLook(wear)
+  }
+
+  async setWall(itemId: string | null) {
+    return (await this.lookSim()).setWall(itemId)
+  }
+
+  async setAnon(on: boolean) {
+    return (await this.lookSim()).setAnon(on)
   }
 
   async looks(userIds: string[]) {

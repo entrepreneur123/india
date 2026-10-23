@@ -645,6 +645,8 @@ const ro: Dict = {
   'error.not_owned': 'Încă nu ai acest stil',
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Ia acest pachet de stickere ca să-l trimiți',
 }
 
 export default ro

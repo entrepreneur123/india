@@ -655,6 +655,8 @@ const id: Dict = {
   'error.not_owned': 'Kamu belum memiliki gaya ini',
   'error.chat_closed': 'Obrolan ini sudah berakhir. Tambahkan dia sebagai teman untuk lanjut ngobrol',
   'error.generic': 'Terjadi kesalahan. Coba lagi',
+  'chat.sticker': 'Stiker',
+  'error.sticker_not_owned': 'Dapatkan paket stiker ini untuk mengirimnya',
 }
 
 export default id

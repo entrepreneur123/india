@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 import { retryImport } from '@/lib/retry-import'
+import { nameAge } from '@/lib/looks'
 
 /** Drag for the self-view: only the call screen needs it, so it downloads with the call. */
 const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
@@ -182,7 +183,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
 
       <div className="absolute inset-x-0 top-0 flex items-center gap-3 p-5">
         <span className="rounded-full bg-black/55 px-3.5 py-1.5 text-sm font-semibold">
-          {partner.name}, {partner.age} <span aria-hidden>{flagEmoji(partner.country)}</span>
+          {nameAge(partner.name, partner.age)} <span aria-hidden>{flagEmoji(partner.country)}</span>
         </span>
         {state === 'connected' ? (
           <span className="flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold">

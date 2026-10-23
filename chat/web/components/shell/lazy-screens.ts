@@ -23,6 +23,7 @@ const loaders = {
   panel: () => retryImport(() => import('./right-panel')),
   inbox: () => retryImport(() => import('@/components/social/inbox-sheet')),
   verify: () => retryImport(() => import('@/components/trust/verify-sheet')),
+  looks: () => retryImport(() => import('@/components/looks/looks-sheet')),
 }
 
 /** Fetches every screen in the background, unless the user asked the browser to save data. */
@@ -55,3 +56,5 @@ export const RightPanel = lazy(() => loaders.panel().then((m) => ({ default: m.R
 // Identity verification and the manner explanation (035): one chunk, opened from Me, a refusal or sign-up.
 export const VerifySheet = lazy(() => loaders.verify().then((m) => ({ default: m.VerifySheet })))
 export const MannerLowSheet = lazy(() => loaders.verify().then((m) => ({ default: m.MannerLowSheet })))
+/** The Looks shop: opened from Me, a chat's stickers and Settings. */
+export const LooksSheet = lazy(() => loaders.looks().then((m) => ({ default: m.LooksSheet })))

@@ -33,24 +33,21 @@ const MAX_NAME = 30
 const MAX_CITY = 30
 const MAX_BIO = 150
 
-// The composer, the profile details and the Looks shop download when first opened.
+// The composer and the profile details download when first opened (the Looks shop is the shell's, openShop).
 const loadComposer = () => retryImport(() => import('@/components/social/posts/post-composer'))
 const PostComposer = lazy(() => loadComposer().then((m) => ({ default: m.PostComposer })))
 const loadStyle = () => retryImport(() => import('@/components/social/style-editor'))
 const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor })))
-const loadLooks = () => retryImport(() => import('@/components/looks/looks-sheet'))
-const LooksSheet = lazy(() => loadLooks().then((m) => ({ default: m.LooksSheet })))
 
 export function MeScreen() {
   const backend = useBackend()
-  const { me, t, setTab, entitlements, trust } = useApp()
+  const { me, t, setTab, entitlements, trust, openShop } = useApp()
   const verified = !!trust?.verified
   const { data: friends } = useSWR('friends', () => backend.friends())
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
-  const [looksOpen, setLooksOpen] = useState(false)
-  const [used, setUsed] = useState({ post: false, style: false, looks: false })
+  const [used, setUsed] = useState({ post: false, style: false })
   const [interestsOpen, setInterestsOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
   const { st } = useSocialT()
@@ -67,10 +64,6 @@ export function MeScreen() {
     setUsed((u) => ({ ...u, style: true }))
     setStyleOpen(true)
   }
-  const openLooks = () => {
-    setUsed((u) => ({ ...u, looks: true }))
-    setLooksOpen(true)
-  }
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
@@ -86,7 +79,7 @@ export function MeScreen() {
           }
           slot={
             <div className="absolute top-3 inset-e-3 z-10 flex items-center gap-2">
-              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={openLooks} onPointerEnter={() => void loadLooks()}>
+              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => openShop()}>
                 <Sparkles className="size-4 text-primary-text" aria-hidden /> {lt('looks.title')}
               </Button>
               <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
@@ -186,7 +179,7 @@ export function MeScreen() {
         onClose={() => setEditOpen(false)}
         onLooks={() => {
           setEditOpen(false)
-          openLooks()
+          openShop()
         }}
         onDetails={() => {
           setEditOpen(false)
@@ -206,11 +199,6 @@ export function MeScreen() {
       {used.style ? (
         <Suspense fallback={null}>
           <StyleEditor open={styleOpen} onClose={() => setStyleOpen(false)} />
-        </Suspense>
-      ) : null}
-      {used.looks ? (
-        <Suspense fallback={null}>
-          <LooksSheet open={looksOpen} onClose={() => setLooksOpen(false)} />
         </Suspense>
       ) : null}
       <InterestsSheet open={interestsOpen} onClose={() => setInterestsOpen(false)} />

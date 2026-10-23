@@ -655,6 +655,8 @@ const zhHans: Dict = {
   'error.not_owned': '你还没有这个装扮',
   'error.chat_closed': '此聊天已结束。添加对方为好友即可继续聊',
   'error.generic': '出了点问题，请重试',
+  'chat.sticker': '贴纸',
+  'error.sticker_not_owned': '获取此贴纸包后才能发送',
 }
 
 export default zhHans

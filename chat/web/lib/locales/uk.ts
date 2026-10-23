@@ -661,6 +661,8 @@ const uk: Dict = {
   'error.not_owned': 'У вас ще немає цього образу',
   'error.chat_closed': 'Цей чат завершено. Додайте співрозмовника в друзі, щоб і далі спілкуватися',
   'error.generic': 'Щось пішло не так. Спробуйте ще раз',
+  'chat.sticker': 'Стікер',
+  'error.sticker_not_owned': 'Отримайте цей набір стікерів, щоб надіслати його',
 }
 
 export default uk

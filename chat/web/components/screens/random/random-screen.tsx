@@ -25,6 +25,7 @@ import { skippedRatings } from '@/components/trust/store'
 import type { RateTarget } from '@/components/trust/rating-sheet'
 import { TrustBadge } from '@/components/trust/badge'
 import { CountriesButton, flagsOf, saveCountries, savedCountries } from './country-picker'
+import { nameAge } from '@/lib/looks'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
@@ -526,7 +527,7 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
             <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
             <Avatar name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
             <span className="flex items-center gap-1.5 text-xl font-bold">
-              {partner.name}, {partner.age}
+              {nameAge(partner.name, partner.age)}
               <TrustBadge userId={partner.id} size={20} />
             </span>
             {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}

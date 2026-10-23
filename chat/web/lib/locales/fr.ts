@@ -645,6 +645,8 @@ const fr: Dict = {
   'error.not_owned': 'Vous ne possédez pas encore ce look',
   'error.chat_closed': 'Ce chat est terminé. Ajoutez cette personne en ami pour continuer à discuter',
   'error.generic': 'Un problème est survenu. Veuillez réessayer',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Obtenez ce pack de stickers pour l’envoyer',
 }
 
 export default fr

@@ -7,9 +7,11 @@ import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { shownText, TranslateFooter, useLineTranslation, type LineTranslation } from '@/components/translate'
 import { useToast } from '@/components/ui/toast'
+import { stickerOf, type StickerArt } from '@/lib/stickers'
 import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
 import { MessageMenu, useMenuGesture, type MenuAction } from './message-menu'
+import { StickerCard } from './stickers'
 
 /** A line's Translate / Show original / Copy actions (the menu of a chat bubble or a room line). */
 export function useLineActions(tr: LineTranslation, text: string | null | undefined): MenuAction[] {
@@ -63,8 +65,10 @@ export function HoverTranslate({ tr, className }: { tr: LineTranslation; classNa
 export function MessageBubble({ message, grouped, read }: { message: Message; grouped: boolean; read?: boolean }) {
   const { t, clock } = useI18n()
   const mine = message.fromMe
-  const tr = useLineTranslation('chat', message.id, message.text, mine)
-  const actions = useLineActions(tr, message.text)
+  const sticker = message.media ? null : stickerOf(message.text)
+  // A sticker is no text: nothing to translate or copy.
+  const tr = useLineTranslation('chat', message.id, sticker ? null : message.text, mine)
+  const actions = useLineActions(tr, sticker ? null : message.text)
   const [menu, setMenu] = useState(false)
   const gesture = useMenuGesture(actions.length ? () => setMenu(true) : null)
   const text = message.text ? shownText(tr, message.text) : null
@@ -93,6 +97,9 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
       )}
       {...gesture}
     >
+      {sticker ? (
+        <StickerLine pack={sticker.pack} art={sticker.art} mine={mine} meta={meta} />
+      ) : (
       <Bubble mine={mine} tail={!grouped} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
         {message.media ? (
           <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
@@ -114,9 +121,26 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
           </>
         ) : null}
       </Bubble>
+      )}
       {mine ? null : <HoverTranslate tr={tr} />}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
+  )
+}
+
+/**
+ * A sticker message (046): the card itself, no bubble, with the time (and ticks) in a small pill under it. `head`: a
+ * room line's sender and quote above it.
+ */
+export function StickerLine({ pack, art, mine, meta, head, size }: { pack: string; art: StickerArt | null; mine: boolean; meta: ReactNode; head?: ReactNode; size?: number }) {
+  return (
+    <div className={cn('flex min-w-0 flex-col gap-1', mine ? 'items-end' : 'items-start')}>
+      {head}
+      <StickerCard pack={pack} art={art} size={size} />
+      <span className="flex items-center gap-0.5 rounded-full bg-bubble-in/85 px-1.5 py-0.5 text-[11px] leading-none text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
+        {meta}
+      </span>
+    </div>
   )
 }
 

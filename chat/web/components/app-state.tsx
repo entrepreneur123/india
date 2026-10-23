@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef } from 'react'
-import type { Badges, Entitlements, FeedPost, KycResult, MyTrust, Profile } from '@/lib/backend'
+import type { Badges, Entitlements, FeedPost, ItemKind, KycResult, MyTrust, Profile } from '@/lib/backend'
 import type { Lang, T } from '@/lib/i18n'
 import type { RandomLive } from '@/lib/live-session'
 
@@ -53,6 +53,8 @@ export interface AppState {
   t: T
   openProfile: (userId: string, opts?: { matchId?: string | null }) => void
   openPaywall: () => void
+  /** The Looks shop (walls, stickers and VIP too, 046), on this tab. */
+  openShop: (tab?: ItemKind) => void
   /** A post with its comments, over whatever is on screen. `initial`: shown while it is read again; `focus`: the comment box. */
   openPost: (postId: string, opts?: { initial?: FeedPost | null; focus?: boolean }) => void
   openThread: (partner: Profile, matchId?: string) => void

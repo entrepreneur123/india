@@ -648,6 +648,8 @@ const pl: Dict = {
   'error.not_owned': 'Nie masz jeszcze tego dodatku',
   'error.chat_closed': 'Ten czat się zakończył. Dodaj tę osobę do znajomych, aby dalej rozmawiać',
   'error.generic': 'Coś poszło nie tak. Spróbuj ponownie',
+  'chat.sticker': 'Naklejka',
+  'error.sticker_not_owned': 'Zdobądź ten pakiet naklejek, aby ją wysłać',
 }
 
 export default pl

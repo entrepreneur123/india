@@ -642,6 +642,8 @@ const de: Dict = {
   'error.not_owned': 'Dieser Look gehört dir noch nicht',
   'error.chat_closed': 'Dieser Chat ist beendet. Füge die Person als Freund hinzu, um weiterzuschreiben',
   'error.generic': 'Etwas ist schiefgelaufen. Bitte versuch es noch mal',
+  'chat.sticker': 'Sticker',
+  'error.sticker_not_owned': 'Hol dir dieses Sticker-Paket, um ihn zu senden',
 }
 
 export default de

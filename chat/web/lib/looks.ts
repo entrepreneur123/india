@@ -1,28 +1,40 @@
 // Looks (040_handles_looks.sql): the catalogue the apps can draw, the ID colours and fonts, and the reading of shop()
 // and looks(). The same ids, colours and fonts as the Android app (docs/LOOKS_SPEC.md); badges and frames are drawn in
-// components/looks/. No imports but types, so the unit tests run it directly (node --test).
-import type { Look, LookKind, LookWear, Shop, ShopItem } from './backend'
+// components/looks/, chat walls in lib/walls.ts and stickers in lib/stickers.ts (046). No imports but types, so the
+// unit tests run it directly (node --test).
+import type { ItemKind, Look, LookKind, LookWear, Shop, ShopItem } from './backend'
 
 /** In the shop's order (cosmetic_items.sort). */
 export const BADGES = ['badge_crown', 'badge_diamond', 'badge_flame', 'badge_star', 'badge_heart', 'badge_bolt'] as const
 export const COLORS = ['color_gold', 'color_rose', 'color_ocean', 'color_emerald', 'color_violet', 'color_sunset', 'color_aurora', 'color_rainbow'] as const
 export const FONTS = ['font_script', 'font_retro', 'font_bold', 'font_pixel', 'font_round', 'font_future'] as const
 export const FRAMES = ['frame_frost', 'frame_fire', 'frame_jewel', 'frame_sand', 'frame_neon', 'frame_sakura'] as const
+/** 046: my chat background (only I see it), sticker packs I can send, the incognito mode. */
+export const WALLS = ['wall_saffron', 'wall_midnight', 'wall_paisley', 'wall_mehndi', 'wall_stars', 'wall_waves'] as const
+export const STICKER_PACKS = ['sticker_namaste', 'sticker_chai', 'sticker_cricket', 'sticker_love'] as const
+export const VIP_ITEMS = ['vip_anon'] as const
 
 export type BadgeId = (typeof BADGES)[number]
 export type ColorId = (typeof COLORS)[number]
 export type FontId = (typeof FONTS)[number]
 export type FrameId = (typeof FRAMES)[number]
-export type ItemId = BadgeId | ColorId | FontId | FrameId
+export type WallId = (typeof WALLS)[number]
+export type PackId = (typeof STICKER_PACKS)[number]
+export type ItemId = BadgeId | ColorId | FontId | FrameId | WallId | PackId | (typeof VIP_ITEMS)[number]
 
 export const LOOK_KINDS: LookKind[] = ['badge', 'color', 'font', 'frame']
-export const CATALOGUE: Record<LookKind, readonly ItemId[]> = { badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES }
-const KNOWN = new Set<string>([...BADGES, ...COLORS, ...FONTS, ...FRAMES])
+/** The shop's tabs, in order. */
+export const ITEM_KINDS: ItemKind[] = [...LOOK_KINDS, 'wall', 'sticker', 'vip']
+export const CATALOGUE: Record<ItemKind, readonly ItemId[]> = {
+  badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES, wall: WALLS, sticker: STICKER_PACKS, vip: VIP_ITEMS,
+}
+const ORDER: string[] = Object.values(CATALOGUE).flat()
+const KNOWN = new Set(ORDER)
 
 /** An item this app can draw (a newer server may sell more: those are left out until the app knows them). */
 export const isItem = (id: unknown): id is ItemId => typeof id === 'string' && KNOWN.has(id)
 /** The kind is the id's first word (badge_crown → badge), as the server checks. */
-export const kindOf = (id: ItemId): LookKind => id.slice(0, id.indexOf('_')) as LookKind
+export const kindOf = (id: ItemId): ItemKind => id.slice(0, id.indexOf('_')) as ItemKind
 
 /**
  * ID colours: one tone for light screens and one for night screens, or a horizontal gradient (the same in both);
@@ -65,7 +77,7 @@ export const wearOf = (look: Pick<Look, LookKind> | null | undefined): LookWear 
 /** The wear with this item on (or, with null, nothing of that kind). */
 export const wearWith = (wear: LookWear, kind: LookKind, id: ItemId | null): LookWear => ({ ...wear, [kind]: id })
 
-const item = (v: unknown, kind: LookKind) => (isItem(v) && kindOf(v) === kind ? v : null)
+const item = (v: unknown, kind: ItemKind) => (isItem(v) && kindOf(v) === kind ? v : null)
 
 /** One look_json() row; null when it isn't one. Items of the wrong kind or unknown to this app are left off. */
 export function parseLook(raw: unknown): Look | null {
@@ -88,8 +100,7 @@ export function parseShop(raw: unknown, time: (ts: string) => number): Shop | nu
     if (!i || !isItem(i.id) || i.kind !== kindOf(i.id) || typeof i.price_inr !== 'number') return []
     return [{ id: i.id, kind: kindOf(i.id), priceInr: i.price_inr }]
   })
-  const order = [...BADGES, ...COLORS, ...FONTS, ...FRAMES] as string[]
-  items.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
+  items.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id))
   const next = typeof r.handle_next === 'string' ? time(r.handle_next) : NaN
   return {
     items,
@@ -97,5 +108,18 @@ export function parseShop(raw: unknown, time: (ts: string) => number): Shop | nu
     look: parseLook(r.look),
     handleNext: Number.isFinite(next) ? next : null,
     handlePasses: typeof r.handle_passes === 'number' ? r.handle_passes : 0,
+    wall: item(r.wall, 'wall'),
+    anon: r.anon === true,
   }
 }
+
+/**
+ * 046 incognito: how the server shows someone in VIP mode to strangers (name "VIP", age 0, no photo, no ID). A room
+ * line's sender carries no age, so there the name and the missing photo tell.
+ */
+export const isVip = (p: { name: string; age?: number; photoUrl?: string | null }) => p.name === 'VIP' && !p.age && !p.photoUrl
+
+/** "Name, 24", or only the name when the age is hidden (0: VIP incognito). */
+export const nameAge = (name: string, age: number) => (age > 0 ? `${name}, ${age}` : name)
+/** "24 · Pune", leaving out a hidden age and an empty city. */
+export const ageCity = (p: { age: number; city?: string | null }) => [p.age > 0 ? p.age : '', p.city].filter(Boolean).join(' · ')

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
@@ -11,6 +11,7 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useTranslate } from '@/components/translate'
 import { useLooksT } from '@/components/looks/looks-text'
+import { useAnonSwitch, useShop } from '@/components/looks/use-shop'
 import { BlockedSheet } from '@/components/social/people-find'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -30,6 +31,8 @@ export function SettingsScreen() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [blocksOpen, setBlocksOpen] = useState(false)
   const { lt } = useLooksT()
+  const { data: shop } = useShop()
+  const anon = useAnonSwitch()
   const [busy, setBusy] = useState<'out' | 'delete' | null>(null)
 
   const signOut = async () => {
@@ -89,6 +92,9 @@ export function SettingsScreen() {
         ) : null}
 
         <Group title={t('settings.safety')}>
+          {shop?.owned.includes('vip_anon') ? (
+            <Toggle icon={VenetianMask} label={lt('vip.toggle')} body={lt('vip.toggleBody')} on={shop.anon} onChange={(on) => !anon.busy && void anon.set(on)} />
+          ) : null}
           <Item icon={Ban} label={lt('blocks.title')} onClick={() => setBlocksOpen(true)} />
           <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
           <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />

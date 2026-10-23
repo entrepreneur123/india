@@ -655,6 +655,8 @@ const fa: Dict = {
   'error.not_owned': 'هنوز این ظاهر را ندارید',
   'error.chat_closed': 'این گفت‌وگو تمام شده است. برای ادامهٔ صحبت، او را دوست خود کنید',
   'error.generic': 'مشکلی پیش آمد. لطفاً دوباره امتحان کنید',
+  'chat.sticker': 'استیکر',
+  'error.sticker_not_owned': 'برای فرستادن این استیکر، بسته‌اش را بگیرید',
 }
 
 export default fa
