@@ -49,5 +49,14 @@ class RoomSoundsDeviceTest {
         ShadowLooper.idleMainLooper(1_600, TimeUnit.MILLISECONDS)
         assertEquals(AudioAttributes.USAGE_VOICE_COMMUNICATION, usage)
     }
-}
 
+    @Test fun aNewerChimeReplacesOneStillWaiting() {
+        audio.mode = AudioManager.MODE_IN_COMMUNICATION
+        sounds.play(join = false, settling = true) // stepped off: waits for the voice to close
+        audio.mode = AudioManager.MODE_NORMAL
+        sounds.play(join = true) // straight back on: plays now
+        val joined = sounds.playing!!
+        ShadowLooper.idleMainLooper(2_000, TimeUnit.MILLISECONDS)
+        assertEquals("the stale leave chime never plays after the newer one", joined, sounds.playing)
+    }
+}

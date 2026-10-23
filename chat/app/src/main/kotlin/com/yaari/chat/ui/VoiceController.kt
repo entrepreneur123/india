@@ -153,7 +153,7 @@ class VoiceController(
     private var reactionSeq = 0L
     private var lastChime = Long.MIN_VALUE / 2
 
-    /** Others' chimes at most one every 1.2 s, so a busy room doesn't keep ringing; [mine] (I came in or left) always. */
+    /** Others' chimes at most one every 1.2 s, so a busy room doesn't keep ringing; [mine] (my own steps) always. */
     private fun chime(join: Boolean, mine: Boolean = false, settling: Boolean = false) {
         val now = wallClock()
         if (!sounds.on || (!mine && now - lastChime < CHIME_GAP_MS)) return
@@ -516,7 +516,10 @@ class VoiceController(
             prev == null -> chime(true, mine = true)
             // The stage filling or emptying opens or closes the room's voice connection (RoomSounds.Device waits for it).
             room.members.size <= CHIME_MAX ->
-                RoomSounds.change(crowd(prev), crowd(room), room.meId)?.let { chime(it, settling = prev.stageLive != room.stageLive) }
+                RoomSounds.change(crowd(prev), crowd(room), room.meId)?.let {
+                    // My own step on or off the stage always chimes, however fast I tap.
+                    chime(it, mine = (prev.me?.seat != null) != (room.me?.seat != null), settling = prev.stageLive != room.stageLive)
+                }
         }
         val now = room.me ?: return
         // Coming up on the stage (invited, or a raised hand accepted) is worth a word: the mic starts muted.

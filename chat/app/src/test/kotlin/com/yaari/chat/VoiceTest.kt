@@ -139,6 +139,18 @@ class VoiceTest {
         assertEquals(true, sounds.settling.last())
     }
 
+    @Test fun rapidlyJoiningAndLeavingTheVoiceChimesEveryTime() = runTest(dispatcher) {
+        val sounds = RoomSounds.Memory()
+        val vm = signedIn(sounds = sounds)
+        vm.voice.create(NewVoiceRoom("Sunday chai and gossip", RoomCategory.TALK)); advanceUntilIdle()
+        // No time passes between taps: my own steps on and off the stage are never held back by the 1.2 s gap.
+        repeat(5) {
+            vm.voice.joinVoice(); advanceUntilIdle()
+            vm.voice.act(VoiceAction.Unseat); advanceUntilIdle()
+        }
+        assertEquals(listOf(true) + List(5) { listOf(true, false) }.flatten(), sounds.played)
+    }
+
     @Test fun chimeSamplesAndCrowdChanges() {
         val pcm = RoomSounds.chime(doubleArrayOf(660.0, 880.0))
         assertEquals(Math.round(RoomSounds.RATE * 0.09).toInt() * 2, pcm.size)

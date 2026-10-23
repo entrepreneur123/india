@@ -55,20 +55,29 @@ interface RoomSounds {
             get() = runCatching { prefs.getBoolean(KEY, true) }.getOrDefault(true)
             set(value) = prefs.edit { putBoolean(KEY, value) }
 
-        override fun play(join: Boolean, settling: Boolean) = playWhenSettled(join, if (settling) SETTLE_TRIES else 0)
+        /** A chime still waiting for the voice to close; a newer one replaces it (only the latest step sounds late). */
+        private var waiting: Runnable? = null
+
+        override fun play(join: Boolean, settling: Boolean) {
+            waiting?.let(main::removeCallbacks)
+            waiting = null
+            playWhenSettled(join, if (settling) SETTLE_TRIES else 0)
+        }
 
         private fun playWhenSettled(join: Boolean, tries: Int) {
             val call = audio?.mode == AudioManager.MODE_IN_COMMUNICATION
             if (call && tries > 0) {
-                main.postDelayed({ playWhenSettled(join, tries - 1) }, SETTLE_STEP_MS)
+                waiting = Runnable { playWhenSettled(join, tries - 1) }.also { main.postDelayed(it, SETTLE_STEP_MS) }
                 return
             }
-            // A new track for every chime: a finished static track played again stays silent on some phones.
+            waiting = null
+            // A new track for every chime (a finished static track played again stays silent on some phones), freed
+            // once it has played; chimes in quick succession each play out in full.
             runCatching {
-                playing?.release()
                 val t = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }, call)
                 playing = t
                 t.play()
+                main.postDelayed(t::release, RELEASE_MS)
             }
         }
 
@@ -85,6 +94,8 @@ interface RoomSounds {
         private companion object {
             const val SETTLE_STEP_MS = 50L
             const val SETTLE_TRIES = 30
+            /** Well after the 180 ms chime has played. */
+            const val RELEASE_MS = 1_000L
         }
     }
 

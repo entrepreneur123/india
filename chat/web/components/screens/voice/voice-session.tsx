@@ -259,7 +259,8 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     crowd.current = now
     if (!before) return playRoomSound('join', true)
     const change = now.all.length <= 50 ? crowdChange(before, now, room.meId) : null
-    if (change) playRoomSound(change)
+    // My own step on or off the stage always chimes, however fast I tap.
+    if (change) playRoomSound(change, before.stage.includes(room.meId) !== now.stage.includes(room.meId))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memberKey, stageKey])
   useEffect(() => () => void (crowd.current && playRoomSound('leave', true)), [])

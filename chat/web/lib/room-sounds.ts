@@ -62,7 +62,7 @@ const urls: Partial<Record<'join' | 'leave', string>> = {}
 let last = 0
 
 /**
- * Plays the chime: others' at most one every 1.2 s, so a busy room doesn't keep ringing; `mine` (I came in or left)
+ * Plays the chime: others' at most one every 1.2 s, so a busy room doesn't keep ringing; `mine` (my own steps)
  * always. A blocked autoplay is silent.
  */
 export function playRoomSound(kind: 'join' | 'leave', mine = false) {
