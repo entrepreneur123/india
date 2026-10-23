@@ -2,6 +2,13 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.0: 흰색+오렌지 브랜드·유료 채팅 배경·스티커·VIP 시크릿 (마이그레이션 046–047 적용 완료)
+- 브랜드: 흰 바탕 + 오렌지 `#EA6A00`(흰 글자 3.2:1), 작은 오렌지 글자는 `#B45309`. 라이트 전용(다크 모드 삭제), 어두운 곳은 영상통화 화면뿐. 로고 = 오렌지 사각형 + 흰 "y".
+- 상품(Play Console에 아직 미등록): `wall_*` 6종 ₹79, `sticker_*` 4팩 ₹49, `vip_anon` ₹299 (비소모성, verify-purchase LOOK 정규식에 포함). `handle_change`도 미등록.
+- 스티커 메시지 본문 `:st:<팩>/<1-8>:`, 팩 미보유면 서버가 `sticker_not_owned`. 일반 이모지는 자유. 스티커 이모지는 Android 7(Unicode 9) 이하만 사용.
+- VIP: 친구가 아니면 이름 "VIP", 나이 0, 사진·아이디·국가·소개 없음(서버 뷰 `profiles_seen`/`profiles_public`, profiles에 열을 추가하면 두 뷰에도 추가). 앱은 성별도 숨김(서버 응답에는 성별이 남아 있음). 이름 "VIP"는 예약(047).
+- 서버 테스트(롤백): `server/test_walls_stickers_vip.sql`. 실서버에서 구매→적용·스티커 거부는 앱으로 직접 눌러보지 않음(데모·SQL 테스트만).
+
 ## 2026-10-23 0.17.0: 국가 선택 랜챗·메신저 교환·매너 끄기·보이스룸 연결 끊김 (마이그레이션 043–045 적용 완료)
 - 서버 테스트(롤백): `server/test_countries.sql`, `test_friend_contacts.sql`, `test_voice_lost.sql`.
 - 번역(`translate` 함수)은 Anthropic API 크레딧 부족으로 실패 중이었음(로그: credit balance too low). 크레딧 충전 필요. 이제 그런 경우 503 translate_unavailable로 앱이 조용히 자동번역을 멈춤.
