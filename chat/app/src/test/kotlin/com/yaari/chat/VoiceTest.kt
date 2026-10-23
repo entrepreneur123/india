@@ -368,7 +368,7 @@ class VoiceTest {
         assertEquals(UiText(R.string.voice_sys_host, "Asha"), VoiceController.systemText(line(VoiceSystemEvent.HOST)))
         assertEquals(UiText(R.string.voice_sys_removed, "Asha"), VoiceController.systemText(line(VoiceSystemEvent.REMOVED)))
         assertEquals(UiText(R.string.voice_sys_track, "Asha", "Tum Hi Ho"), VoiceController.systemText(line(VoiceSystemEvent.TRACK, title = "Tum Hi Ho")))
-        // A pasted link has no title: "played YouTube video".
+        // A pasted link has no title: "played a YouTube video".
         assertEquals(UiText(R.string.voice_sys_track_video, "Asha"), VoiceController.systemText(line(VoiceSystemEvent.TRACK, title = "")))
     }
 

@@ -104,8 +104,8 @@ class AppFlowTest {
         compose.onNodeWithText("Women").performClick()
         waitFor("needs Plus")
         shot("05_paywall")
-        compose.onNodeWithText("24-hour pass").performClick() // choose the plan, then buy it
-        compose.onNodeWithText("Only gender choice", substring = true).performClick()
+        compose.onNodeWithText("24-hour gender pass").performClick() // choose the plan, then buy it
+        compose.onNodeWithText("Gender pass ·", substring = true).performClick()
         waitFor("Meet someone new")
         compose.onNodeWithText("Women").performClick()
         compose.waitUntil(5_000) { vm.state.value.target == Target.FEMALE }
@@ -128,7 +128,7 @@ class AppFlowTest {
 
         // 6. Incoming video call (the partner asks), declined
         send("video call?")
-        waitFor("wants to video call")
+        waitFor("wants a video call")
         shot("09_incoming_video")
         compose.onNodeWithText("Decline").performClick()
 
@@ -193,7 +193,7 @@ class AppFlowTest {
         compose.onNodeWithContentDescription("Report and leave").performClick()
         waitFor("Report this person")
         shot("17_report")
-        compose.onNodeWithText("Report & lobby").performClick()
+        compose.onNodeWithText("Report & back to lobby").performClick()
         waitFor("Meet someone new")
         assertNull(vm.state.value.chat)
 
@@ -219,7 +219,7 @@ class AppFlowTest {
 
         // 13. Settings: rules, grievance officer, account deletion (Google Play requirement)
         compose.onNodeWithContentDescription("Settings").performClick()
-        waitFor("Grievance Officer")
+        waitFor("Grievance officer")
         shot("21_settings")
         compose.onNodeWithText("Delete account").performScrollTo().performClick()
         waitFor("Delete your account?")

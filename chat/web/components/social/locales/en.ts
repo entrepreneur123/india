@@ -49,7 +49,7 @@ const en = {
   'invite.copyLink': 'Copy room link',
   'invite.copied': 'Link copied',
   'invite.privateNote': 'This room is private: anyone with the link can come in.',
-  'invite.shareText': 'Join me in “{room}” on yaari',
+  'invite.shareText': 'Join me in “{room}” on Yaari',
 
   // interests
   'interests.title': 'What are you into?',
@@ -93,7 +93,7 @@ const en = {
   'photos.view': 'Photo {n} of {total}',
 
   // first-run tour
-  'tour.label': 'Welcome to yaari',
+  'tour.label': 'Welcome to Yaari',
   'tour.skip': 'Skip',
   'tour.next': 'Next',
   'tour.done': 'Get started',
