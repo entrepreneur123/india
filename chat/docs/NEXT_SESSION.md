@@ -2,6 +2,12 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.3: 음악 끄기·입장/퇴장 효과음·다른 사이트 옆에 띄우기 (마이그레이션 054 적용 완료)
+- 서버: 054 `voice_stop(room)` (voice_dj 확인, music만 null, queue 유지).
+- 효과음: 웹 `lib/room-sounds.ts`(WAV를 코드로 만들어 <audio>로 재생, Web Audio 안 씀: iPhone 잡음 방지), Android `data/RoomSounds.kt`(AudioTrack, USAGE_VOICE_COMMUNICATION_SIGNALLING). 설정 키: 웹 localStorage `yaari_room_sounds`, Android `yaari_settings/room_sounds`.
+- 옆에 띄우기: 웹 `openBeside`(lib/links.ts, PC에서만 popup 창, noopener), Android `openInTab(beside = true)`(Partial Custom Tab, startActivityForResult, 배경 조작 허용).
+- 확인 안 됨: 실기기 효과음 음량·경로, Partial Custom Tab(Chrome 외 브라우저는 전체 화면), Document Picture-in-Picture(방을 떠 있는 창으로)는 Chrome 데스크톱만 돼서 보류.
+
 ## 2026-10-23 0.18.2: 무료 통화·친구 전화 수신·같이 보기·내 프로필·읽음 숫자 (마이그레이션 050–053 적용 완료)
 - 서버: 050 `my_badges`는 열 수 있는 대화만(최근 50 + 친구 DM). 051 `request_call(match, video)` 무료, `matches.call_video`. 052 `call_open`(열린 채팅 또는 친구, 차단 제외)을 request_call·respond_video·video-token(v10)에 적용. 053 친구 통화 요청 → 'call' 알림(응답·종료 시 읽음).
 - 앱 전체 수신 창: 웹 `components/video/incoming-call.tsx`, Android `SocialController.checkRing`.
