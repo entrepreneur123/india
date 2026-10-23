@@ -3,7 +3,6 @@ package com.yaari.chat.data
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
-import android.media.AudioManager
 import android.media.AudioTrack
 import androidx.core.content.edit
 import kotlin.math.PI
@@ -24,13 +23,14 @@ interface RoomSounds {
     }
 
     /**
-     * The phone: kept with the app's other settings. While the room's voice is connected (the phone in call mode) the
-     * chime plays as the voices do, on their output and at their volume; signalling or sonification sounds can then
-     * go to the earpiece or a muted stream. Otherwise it plays as an ordinary app sound.
+     * The phone: kept with the app's other settings. Played as media, the one kind of sound that is heard both in and
+     * out of the room's call mode. The voice connects only while someone is on the stage, so stepping on or off flips
+     * the phone between call mode and normal just as the chime starts: a call sound (USAGE_VOICE_COMMUNICATION) then
+     * lands on the earpiece in normal mode, and a signalling one (USAGE_VOICE_COMMUNICATION_SIGNALLING) went unheard
+     * in call mode. Media goes to the speaker or the headset in both.
      */
     class Device(context: Context) : RoomSounds {
         private val prefs = context.applicationContext.getSharedPreferences("yaari_settings", Context.MODE_PRIVATE)
-        private val audio = context.applicationContext.getSystemService(AudioManager::class.java)
         private val pcm = HashMap<Boolean, ShortArray>()
         private var playing: AudioTrack? = null
 
@@ -45,17 +45,12 @@ interface RoomSounds {
         override fun play(join: Boolean) {
             runCatching {
                 playing?.release()
-                val call = audio?.mode == AudioManager.MODE_IN_COMMUNICATION
-                playing = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }, call).apply { play() }
+                playing = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }).apply { play() }
             }
         }
 
-        private fun track(pcm: ShortArray, call: Boolean) = AudioTrack.Builder()
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(if (call) AudioAttributes.USAGE_VOICE_COMMUNICATION else AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build(),
-            )
+        private fun track(pcm: ShortArray) = AudioTrack.Builder()
+            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
             .setAudioFormat(AudioFormat.Builder().setSampleRate(RATE).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
             .setTransferMode(AudioTrack.MODE_STATIC).setBufferSizeInBytes(pcm.size * 2).build()
             .apply { write(pcm, 0, pcm.size) }

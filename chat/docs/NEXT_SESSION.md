@@ -2,6 +2,10 @@
 
 출시 순서·비용·국가별 규칙·사장님 할 일은 **`chat/docs/LAUNCH_GUIDE.md`** 에 모두 있습니다. 이 파일은 개발 상태만 적습니다.
 
+## 2026-10-23 0.18.6: Android 효과음 = USAGE_MEDIA
+- 0.18.5(통화 모드면 USAGE_VOICE_COMMUNICATION)는 무대에서 내려갈 때 무음: 무대가 비면 LiveKit이 끊겨 통화 모드→일반으로 바뀌는 순간 재생돼 수화기로 감. 모드에 따라 고르지 않고 항상 미디어로.
+- 실기기 미확인(이 환경엔 에뮬레이터 없음). 다음 확인 순서: 방 입장 → 음성참여 → 내려가기 → 다시 참여 → 내려가기, 스피커·유선·블루투스 각각.
+
 ## 2026-10-23 0.18.5: Android 효과음 두 번째부터 안 들리던 문제
 - 원인(추정, 실기기 미확인): 첫 무대 참여 뒤 LiveKit 때문에 폰이 통화 모드(MODE_IN_COMMUNICATION)로 남아, USAGE_VOICE_COMMUNICATION_SIGNALLING 소리가 수화기·무음 스트림으로 감. 또 정적 AudioTrack 재사용(stop+reloadStaticData+play)은 일부 기기에서 두 번째부터 무음.
 - 수정: 매번 새 AudioTrack, 통화 모드면 USAGE_VOICE_COMMUNICATION(보이스와 같은 경로·음량), 아니면 USAGE_ASSISTANCE_SONIFICATION.
