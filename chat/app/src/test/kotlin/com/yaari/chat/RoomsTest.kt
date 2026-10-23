@@ -291,9 +291,9 @@ class RoomsTest {
     @Test fun photoVerdictLooksAtTheWholePictureThenItsCentre() = runTest(dispatcher) {
         fun scores(porn: Float, hentai: Float) = FloatArray(Nsfw.CLASSES).also { it[Nsfw.PORN] = porn; it[Nsfw.HENTAI] = hentai }
         var centreLooked = false
-        assertTrue(Nsfw.isNudePhoto({ scores(0.5f, 0.2f) }, { centreLooked = true; scores(0f, 0f) }))
+        assertTrue(Nsfw.isNudePhoto({ scores(0.6f, 0.3f) }, { centreLooked = true; scores(0f, 0f) }))
         assertFalse("clean whole picture: the centre is looked at too", centreLooked)
-        assertTrue(Nsfw.isNudePhoto({ scores(0.1f, 0f) }, { scores(0.7f, 0f) }))
+        assertTrue(Nsfw.isNudePhoto({ scores(0.1f, 0f) }, { scores(0.9f, 0f) }))
         assertFalse(Nsfw.isNudePhoto({ scores(0.3f, 0.2f) }, { scores(0.4f, 0.1f) }))
         // ARGB pixels become RGB in [0, 1].
         val out = ByteBuffer.allocateDirect(2 * 3 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()

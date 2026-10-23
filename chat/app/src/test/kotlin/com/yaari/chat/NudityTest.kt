@@ -32,21 +32,23 @@ class NudityTest {
     @Test fun timingsMatchTheWeb() {
         assertEquals(1200L, NUDITY_SAMPLE_MS)
         assertEquals(8000L, NUDITY_START_BLUR_MS)
-        assertEquals(2, NudityVerdicts.HIDE_AFTER)
+        assertEquals(3, NudityVerdicts.HIDE_AFTER)
         assertEquals(4, NudityVerdicts.SHOW_AFTER)
     }
 
     @Test fun pornPlusHentaiOfAtLeast60PercentIsNude() {
         // Drawing, Hentai, Neutral, Porn, Sexy
-        assertTrue(Nsfw.isNude(floatArrayOf(0.1f, 0.3f, 0f, 0.3f, 0.3f)))
+        assertTrue(Nsfw.isNude(floatArrayOf(0f, 0.4f, 0f, 0.45f, 0.15f)))
+        assertFalse("a face filling the frame (0.6-0.8) is not nude", Nsfw.isNude(floatArrayOf(0f, 0.1f, 0.1f, 0.6f, 0.2f)))
         assertTrue(Nsfw.isNude(floatArrayOf(0f, 0f, 0f, 0.95f, 0.05f)))
         assertFalse(Nsfw.isNude(floatArrayOf(0f, 0.29f, 0.11f, 0.3f, 0.3f)))
         assertFalse("swimwear / a bare chest alone is not nude", Nsfw.isNude(floatArrayOf(0f, 0f, 0.01f, 0.01f, 0.98f)))
         assertFalse(Nsfw.isNude(floatArrayOf(0.05f, 0f, 0.95f, 0f, 0f)))
     }
 
-    @Test fun hiddenAfterTwoNudeSamplesInARow() {
+    @Test fun hiddenAfterThreeNudeSamplesInARow() {
         val v = NudityVerdicts()
+        assertNull(v.add(true))
         assertNull(v.add(true))
         assertEquals(true, v.add(true))
         assertNull("already hidden", v.add(true))
@@ -65,12 +67,13 @@ class NudityTest {
 
     @Test fun shownAgainAfterFourCleanSamples() {
         val v = NudityVerdicts()
-        v.add(true); v.add(true)
+        v.add(true); v.add(true); v.add(true)
         repeat(3) { assertNull(v.add(false)) }
         assertNull("a nude sample restarts the count", v.add(true))
         repeat(3) { assertNull(v.add(false)) }
         assertEquals(false, v.add(false))
         assertEquals(false, v.hidden)
+        assertNull(v.add(true))
         assertNull(v.add(true))
         assertEquals("hidden again", true, v.add(true))
     }
@@ -144,22 +147,22 @@ class NudityTest {
     }
 
     @Test fun nudityHidesAndFourCleanFramesShowAgain() = runTest {
-        watch(listOf(true, true, false, false, false, false))
-        wait(1_299)
-        assertEquals("one nude frame is not enough", emptyList<Pair<Long, Shield>>(), shields)
+        watch(listOf(true, true, true, false, false, false, false))
+        wait(2_549)
+        assertEquals("two nude frames are not enough", emptyList<Pair<Long, Shield>>(), shields)
         wait(1)
-        assertEquals(listOf(1300L to Shield.HIDDEN), shields)
-        wait(3 * 1300)
+        assertEquals(listOf(2550L to Shield.HIDDEN), shields)
+        wait(3 * 1250)
         assertEquals("3 clean frames are not enough", 1, shields.size)
-        wait(1300)
-        assertEquals(listOf(1300L to Shield.HIDDEN, 6300L to Shield.CLEAR), shields)
+        wait(1250)
+        assertEquals(listOf(2550L to Shield.HIDDEN, 7550L to Shield.CLEAR), shields)
     }
 
     @Test fun hiddenEvenAfterTheStartBlurTimedOut() = runTest {
-        watch(List(7) { null } + listOf(true, true))
+        watch(List(7) { null } + listOf(true, true, true))
         wait(NUDITY_START_BLUR_MS)
         assertEquals(listOf(NUDITY_START_BLUR_MS to Shield.CLEAR), shields)
-        wait(3_000)
+        wait(4_500)
         assertEquals(Shield.HIDDEN, shields.last().second)
     }
 
@@ -184,8 +187,8 @@ class NudityTest {
                 now = { testScheduler.currentTime },
             )
         }
-        wait(3 * 1200)
-        assertEquals(listOf(2400L to Shield.HIDDEN), shields)
+        wait(4 * 1200)
+        assertEquals(listOf(3600L to Shield.HIDDEN), shields)
     }
 
     // ---- frame to model input (the real model needs Android's native TFLite library, not on the JVM) ----

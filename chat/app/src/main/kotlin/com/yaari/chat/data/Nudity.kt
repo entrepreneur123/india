@@ -11,8 +11,9 @@ import java.nio.FloatBuffer
 // On-device nudity check for the partner's video in a call, the same as the web (web/lib/nudity.ts): the nsfwjs
 // MobileNetV2 (224 px) runs on the phone (live flavor: TensorFlow Lite, live/assets); frames never leave it.
 //
-// A frame is "nude" when Porn + Hentai >= 0.6 ("Sexy" alone, e.g. swimwear or a bare chest, is not). The video is
-// hidden after 2 nude frames in a row and shown again after 4 clean ones, so one odd frame doesn't flicker it.
+// A frame is "nude" when Porn + Hentai >= 0.85 ("Sexy" alone, e.g. swimwear or a bare chest, is not; a face filling
+// the frame often scores 0.6-0.8, so lower thresholds hid ordinary close-ups). The video is
+// hidden after 3 nude frames in a row and shown again after 4 clean ones, so one odd frame doesn't flicker it.
 
 /** What the call screen does with the partner's video: blurred while [CHECKING], shown when [CLEAR], covered when [HIDDEN]. */
 enum class Shield { CHECKING, CLEAR, HIDDEN }
@@ -24,7 +25,7 @@ object Nsfw {
     const val CLASSES = 5
     const val HENTAI = 1
     const val PORN = 3
-    const val NUDE_SCORE = 0.6f
+    const val NUDE_SCORE = 0.85f
 
     fun isNude(probabilities: FloatArray): Boolean = probabilities[HENTAI] + probabilities[PORN] >= NUDE_SCORE
 
@@ -109,7 +110,7 @@ class NudityVerdicts {
     }
 
     companion object {
-        const val HIDE_AFTER = 2
+        const val HIDE_AFTER = 3
         const val SHOW_AFTER = 4
     }
 }

@@ -2,12 +2,13 @@
 // is sent to a room. Frames and photos never leave the phone for it. Loaded only when needed; the model files come
 // from this site (scripts/nsfw-model.mjs).
 //
-// A frame is "nude" when Porn + Hentai >= 0.6 ("Sexy" alone, e.g. swimwear or a bare chest, is not). The video is
-// hidden after 2 nude frames in a row and shown again after 4 clean ones, so one odd frame doesn't flicker it.
+// A frame is "nude" when Porn + Hentai >= 0.85 ("Sexy" alone, e.g. swimwear or a bare chest, is not; a face filling
+// the frame often scores 0.6-0.8, so lower thresholds hid ordinary close-ups). The video is
+// hidden after 3 nude frames in a row and shown again after 4 clean ones, so one odd frame doesn't flicker it.
 
 const SAMPLE_MS = 1200
-const NUDE_SCORE = 0.6
-const HIDE_AFTER = 2
+const NUDE_SCORE = 0.85
+const HIDE_AFTER = 3
 const SHOW_AFTER = 4
 
 let webgl: boolean | null = null
