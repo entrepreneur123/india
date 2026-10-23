@@ -3,6 +3,7 @@ package com.yaari.chat.data
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioTrack
 import androidx.core.content.edit
 import kotlin.math.PI
@@ -23,29 +24,36 @@ interface RoomSounds {
     }
 
     /**
-     * The phone: kept with the app's other settings, played as in-call signalling so it mixes with the room's
-     * voices on the call's own output (speaker, earpiece or headset) instead of opening a separate media stream.
+     * The phone: kept with the app's other settings. While the room's voice is connected (the phone in call mode) the
+     * chime plays as the voices do, on their output and at their volume; signalling or sonification sounds can then
+     * go to the earpiece or a muted stream. Otherwise it plays as an ordinary app sound.
      */
     class Device(context: Context) : RoomSounds {
         private val prefs = context.applicationContext.getSharedPreferences("yaari_settings", Context.MODE_PRIVATE)
-        private val tracks = HashMap<Boolean, AudioTrack>()
+        private val audio = context.applicationContext.getSystemService(AudioManager::class.java)
+        private val pcm = HashMap<Boolean, ShortArray>()
+        private var playing: AudioTrack? = null
 
         override var on: Boolean
             get() = runCatching { prefs.getBoolean(KEY, true) }.getOrDefault(true)
             set(value) = prefs.edit { putBoolean(KEY, value) }
 
+        /**
+         * A new track for every chime: replaying a finished static track (stop, reloadStaticData, play) stays silent on
+         * some phones from the second time on. The one before is released here (it has long finished: 180 ms).
+         */
         override fun play(join: Boolean) {
             runCatching {
-                val t = tracks.getOrPut(join) { track(chime(if (join) JOIN else LEAVE)) }
-                t.stop()
-                t.reloadStaticData()
-                t.play()
+                playing?.release()
+                val call = audio?.mode == AudioManager.MODE_IN_COMMUNICATION
+                playing = track(pcm.getOrPut(join) { chime(if (join) JOIN else LEAVE) }, call).apply { play() }
             }
         }
 
-        private fun track(pcm: ShortArray) = AudioTrack.Builder()
+        private fun track(pcm: ShortArray, call: Boolean) = AudioTrack.Builder()
             .setAudioAttributes(
-                AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING)
+                AudioAttributes.Builder()
+                    .setUsage(if (call) AudioAttributes.USAGE_VOICE_COMMUNICATION else AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build(),
             )
             .setAudioFormat(AudioFormat.Builder().setSampleRate(RATE).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())
