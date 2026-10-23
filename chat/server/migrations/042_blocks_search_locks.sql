@@ -203,3 +203,6 @@ begin
   end if;
   return jsonb_build_object('found', true, 'user', owner, 'product', coalesce(pu.product_id, 'yaari_premium_monthly'));
 end $$;
+
+-- Kept for a year after the deletion, then removed (daily at 03:23 UTC).
+select cron.schedule('yaari-phone-identities', '23 3 * * *', $$delete from public.phone_identities where saved_at < now() - interval '1 year'$$);
