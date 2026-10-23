@@ -666,7 +666,7 @@
     <string name="post_report">पोस्ट रिपोर्ट करें</string>
     <string name="post_delete">पोस्ट हटाएँ</string>
     <string name="post_delete_title">यह पोस्ट हटाएँ?</string>
-    <string name="post_delete_text">यह अपने लाइक और कमेंट के साथ आपकी प्रोफ़ाइल और फ़ीड से हट जाएगी।</string>
+    <string name="post_delete_text">यह अपने लाइक और कमेंट के साथ आपकी प्रोफ़ाइल से हट जाएगी।</string>
     <string name="msg_post_deleted">पोस्ट हटा दी गई</string>
     <string name="msg_post_reported">धन्यवाद। हम इस पोस्ट की जाँच करेंगे।</string>
     <string name="msg_comment_reported">धन्यवाद। हम इस कमेंट की जाँच करेंगे।</string>
@@ -817,7 +817,7 @@
     <string name="rate_thanks">धन्यवाद। इससे Yaari अच्छा बना रहता है।</string>
     <string name="manner_low_short">आपके लिए रैंडम चैट रुकी हुई है</string>
     <string name="manner_low_title">रैंडम चैट रुकी हुई है</string>
-    <string name="manner_low_body">कई लोगों ने कहा कि हाल की चैट अच्छी नहीं लगीं, इसलिए आपका मैनर स्कोर 20 से नीचे है। रूम और फ़ीड अब भी खुले हैं। 90 दिन से पुरानी रेटिंग गिनी नहीं जातीं, और अच्छी चैट से स्कोर फिर बढ़ता है।</string>
+    <string name="manner_low_body">कई लोगों ने कहा कि हाल की चैट अच्छी नहीं लगीं, इसलिए आपका मैनर स्कोर 20 से नीचे है। रूम और पोस्ट अब भी चालू हैं। 90 दिन से पुरानी रेटिंग गिनी नहीं जातीं, और अच्छी चैट से स्कोर फिर बढ़ता है।</string>
     <string name="manner_low_ok">ठीक है</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d रेटिंग</item>

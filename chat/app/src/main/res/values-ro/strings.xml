@@ -666,7 +666,7 @@
     <string name="post_report">Raportează postarea</string>
     <string name="post_delete">Șterge postarea</string>
     <string name="post_delete_title">Ștergi această postare?</string>
-    <string name="post_delete_text">Dispare de pe profilul tău și din feed, cu tot cu aprecieri și comentarii.</string>
+    <string name="post_delete_text">Dispare de pe profilul tău, cu tot cu aprecieri și comentarii.</string>
     <string name="msg_post_deleted">Postare ștearsă</string>
     <string name="msg_post_reported">Mulțumim că ne-ai spus. Ne uităm la această postare.</string>
     <string name="msg_comment_reported">Mulțumim că ne-ai spus. Ne uităm la acest comentariu.</string>
@@ -820,7 +820,7 @@
     <string name="rate_thanks">Mulțumim. Așa rămâne Yaari un loc plăcut.</string>
     <string name="manner_low_short">Chatul aleatoriu e pe pauză pentru tine</string>
     <string name="manner_low_title">Chatul aleatoriu e pe pauză</string>
-    <string name="manner_low_body">Mai multe persoane au spus că chaturile recente nu au fost plăcute, așa că scorul tău de comportament e sub 20. Camerele și feedul rămân deschise. Evaluările mai vechi de 90 de zile nu mai contează, iar chaturile plăcute îl ridică la loc.</string>
+    <string name="manner_low_body">Mai multe persoane au spus că chaturile recente nu au fost plăcute, așa că scorul tău de comportament e sub 20. Camerele și postările funcționează în continuare. Evaluările mai vechi de 90 de zile nu mai contează, iar chaturile plăcute îl ridică la loc.</string>
     <string name="manner_low_ok">Am înțeles</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d evaluare</item>

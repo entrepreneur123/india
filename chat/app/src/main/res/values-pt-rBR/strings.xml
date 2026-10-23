@@ -678,7 +678,7 @@
     <string name="post_report">Denunciar publicação</string>
     <string name="post_delete">Excluir publicação</string>
     <string name="post_delete_title">Excluir esta publicação?</string>
-    <string name="post_delete_text">Ela some do seu perfil e do feed, com as curtidas e os comentários.</string>
+    <string name="post_delete_text">Ela some do seu perfil, com as curtidas e os comentários.</string>
     <string name="msg_post_deleted">Publicação excluída</string>
     <string name="msg_post_reported">Obrigado por avisar. Vamos analisar esta publicação.</string>
     <string name="msg_comment_reported">Obrigado por avisar. Vamos analisar este comentário.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">Obrigado. Isso mantém o Yaari gentil.</string>
     <string name="manner_low_short">O chat aleatório está pausado para você</string>
     <string name="manner_low_title">Chat aleatório pausado</string>
-    <string name="manner_low_body">Várias pessoas disseram que os chats recentes não foram bons, então sua nota de educação está abaixo de 20. Salas e o feed continuam abertos. Avaliações com mais de 90 dias deixam de contar, e chats gentis fazem a nota subir.</string>
+    <string name="manner_low_body">Várias pessoas disseram que os chats recentes não foram bons, então sua nota de educação está abaixo de 20. Salas e publicações continuam funcionando. Avaliações com mais de 90 dias deixam de contar, e chats gentis fazem a nota subir.</string>
     <string name="manner_low_ok">Entendi</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d avaliação</item>

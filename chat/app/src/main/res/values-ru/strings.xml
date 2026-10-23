@@ -660,7 +660,7 @@
     <string name="post_report">Пожаловаться на пост</string>
     <string name="post_delete">Удалить пост</string>
     <string name="post_delete_title">Удалить этот пост?</string>
-    <string name="post_delete_text">Он исчезнет из вашего профиля и ленты вместе с лайками и комментариями.</string>
+    <string name="post_delete_text">Он исчезнет из вашего профиля вместе с лайками и комментариями.</string>
     <string name="msg_post_deleted">Пост удалён</string>
     <string name="msg_post_reported">Спасибо, что сообщили. Мы проверим этот пост.</string>
     <string name="msg_comment_reported">Спасибо, что сообщили. Мы проверим этот комментарий.</string>
@@ -818,7 +818,7 @@
     <string name="rate_thanks">Спасибо. Так Yaari остаётся дружелюбным.</string>
     <string name="manner_low_short">Случайный чат для вас приостановлен</string>
     <string name="manner_low_title">Случайный чат приостановлен</string>
-    <string name="manner_low_body">Несколько человек сказали, что недавние чаты были неприятными, поэтому ваш рейтинг манер ниже 20. Комнаты и лента по-прежнему открыты. Оценки старше 90 дней перестают учитываться, а вежливые чаты поднимают рейтинг.</string>
+    <string name="manner_low_body">Несколько человек сказали, что недавние чаты были неприятными, поэтому ваш рейтинг манер ниже 20. Комнаты и посты по-прежнему работают. Оценки старше 90 дней перестают учитываться, а вежливые чаты поднимают рейтинг.</string>
     <string name="manner_low_ok">Понятно</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d оценка</item>

@@ -672,7 +672,7 @@
     <string name="post_report">الإبلاغ عن المنشور</string>
     <string name="post_delete">حذف المنشور</string>
     <string name="post_delete_title">حذف هذا المنشور؟</string>
-    <string name="post_delete_text">سيختفي من ملفك الشخصي ومن آخر الأخبار، مع إعجاباته وتعليقاته.</string>
+    <string name="post_delete_text">سيختفي من ملفك الشخصي، مع إعجاباته وتعليقاته.</string>
     <string name="msg_post_deleted">تم حذف المنشور</string>
     <string name="msg_post_reported">شكرًا لإبلاغنا. سنراجع هذا المنشور.</string>
     <string name="msg_comment_reported">شكرًا لإبلاغنا. سنراجع هذا التعليق.</string>
@@ -838,7 +838,7 @@
     <string name="rate_thanks">شكرًا. هذا يحافظ على لطف Yaari.</string>
     <string name="manner_low_short">الدردشة العشوائية متوقفة مؤقتًا لك</string>
     <string name="manner_low_title">الدردشة العشوائية متوقفة مؤقتًا</string>
-    <string name="manner_low_body">قال عدة أشخاص إن الدردشات الأخيرة لم تكن مريحة، لذا تقييم سلوكك أقل من 20. الغرف وآخر الأخبار ما زالت متاحة. التقييمات الأقدم من 90 يومًا لا تُحتسب، والدردشات اللطيفة ترفع تقييمك من جديد.</string>
+    <string name="manner_low_body">قال عدة أشخاص إن الدردشات الأخيرة لم تكن مريحة، لذا تقييم سلوكك أقل من 20. الغرف والمنشورات ما زالت متاحة. التقييمات الأقدم من 90 يومًا لا تُحتسب، والدردشات اللطيفة ترفع تقييمك من جديد.</string>
     <string name="manner_low_ok">فهمت</string>
     <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="zero">لا تقييمات</item>

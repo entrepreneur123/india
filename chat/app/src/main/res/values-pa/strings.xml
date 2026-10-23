@@ -678,7 +678,7 @@
     <string name="post_report">ਪੋਸਟ ਰਿਪੋਰਟ ਕਰੋ</string>
     <string name="post_delete">ਪੋਸਟ ਡਿਲੀਟ ਕਰੋ</string>
     <string name="post_delete_title">ਇਹ ਪੋਸਟ ਡਿਲੀਟ ਕਰਨੀ ਹੈ?</string>
-    <string name="post_delete_text">ਇਹ ਆਪਣੇ ਲਾਈਕਾਂ ਅਤੇ ਕਮੈਂਟਾਂ ਸਮੇਤ ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਅਤੇ ਫ਼ੀਡ ਤੋਂ ਗ਼ਾਇਬ ਹੋ ਜਾਵੇਗੀ।</string>
+    <string name="post_delete_text">ਇਹ ਆਪਣੇ ਲਾਈਕਾਂ ਅਤੇ ਕਮੈਂਟਾਂ ਸਮੇਤ ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਤੋਂ ਗ਼ਾਇਬ ਹੋ ਜਾਵੇਗੀ।</string>
     <string name="msg_post_deleted">ਪੋਸਟ ਡਿਲੀਟ ਹੋ ਗਈ</string>
     <string name="msg_post_reported">ਦੱਸਣ ਲਈ ਧੰਨਵਾਦ। ਅਸੀਂ ਇਸ ਪੋਸਟ ਨੂੰ ਦੇਖਾਂਗੇ।</string>
     <string name="msg_comment_reported">ਦੱਸਣ ਲਈ ਧੰਨਵਾਦ। ਅਸੀਂ ਇਸ ਕਮੈਂਟ ਨੂੰ ਦੇਖਾਂਗੇ।</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">ਧੰਨਵਾਦ। ਇਸ ਨਾਲ Yaari ਚੰਗਾ ਰਹਿੰਦਾ ਹੈ।</string>
     <string name="manner_low_short">ਤੁਹਾਡੇ ਲਈ ਰੈਂਡਮ ਚੈਟ ਰੁਕੀ ਹੋਈ ਹੈ</string>
     <string name="manner_low_title">ਰੈਂਡਮ ਚੈਟ ਰੁਕੀ ਹੋਈ ਹੈ</string>
-    <string name="manner_low_body">ਕਈ ਲੋਕਾਂ ਨੇ ਕਿਹਾ ਕਿ ਹਾਲੀਆ ਚੈਟਾਂ ਚੰਗੀਆਂ ਨਹੀਂ ਲੱਗੀਆਂ, ਇਸ ਲਈ ਤੁਹਾਡਾ ਮੈਨਰ ਸਕੋਰ 20 ਤੋਂ ਘੱਟ ਹੈ। ਰੂਮ ਅਤੇ ਫ਼ੀਡ ਹਾਲੇ ਵੀ ਖੁੱਲ੍ਹੇ ਹਨ। 90 ਦਿਨਾਂ ਤੋਂ ਪੁਰਾਣੀਆਂ ਰੇਟਿੰਗਾਂ ਗਿਣੀਆਂ ਨਹੀਂ ਜਾਂਦੀਆਂ, ਅਤੇ ਚੰਗੀਆਂ ਚੈਟਾਂ ਸਕੋਰ ਵਾਪਸ ਉੱਪਰ ਲੈ ਆਉਂਦੀਆਂ ਹਨ।</string>
+    <string name="manner_low_body">ਕਈ ਲੋਕਾਂ ਨੇ ਕਿਹਾ ਕਿ ਹਾਲੀਆ ਚੈਟਾਂ ਚੰਗੀਆਂ ਨਹੀਂ ਲੱਗੀਆਂ, ਇਸ ਲਈ ਤੁਹਾਡਾ ਮੈਨਰ ਸਕੋਰ 20 ਤੋਂ ਘੱਟ ਹੈ। ਰੂਮ ਅਤੇ ਪੋਸਟਾਂ ਹਾਲੇ ਵੀ ਚੱਲਦੀਆਂ ਹਨ। 90 ਦਿਨਾਂ ਤੋਂ ਪੁਰਾਣੀਆਂ ਰੇਟਿੰਗਾਂ ਗਿਣੀਆਂ ਨਹੀਂ ਜਾਂਦੀਆਂ, ਅਤੇ ਚੰਗੀਆਂ ਚੈਟਾਂ ਸਕੋਰ ਵਾਪਸ ਉੱਪਰ ਲੈ ਆਉਂਦੀਆਂ ਹਨ।</string>
     <string name="manner_low_ok">ਸਮਝ ਗਏ</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d ਰੇਟਿੰਗ</item>

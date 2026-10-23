@@ -676,7 +676,7 @@
     <string name="post_report">পোস্ট রিপোর্ট করুন</string>
     <string name="post_delete">পোস্ট মুছুন</string>
     <string name="post_delete_title">এই পোস্টটি মুছবেন?</string>
-    <string name="post_delete_text">এটি লাইক ও কমেন্টসহ আপনার প্রোফাইল আর ফিড থেকে সরে যাবে।</string>
+    <string name="post_delete_text">এটি লাইক ও কমেন্টসহ আপনার প্রোফাইল থেকে সরে যাবে।</string>
     <string name="msg_post_deleted">পোস্ট মুছে ফেলা হয়েছে</string>
     <string name="msg_post_reported">জানানোর জন্য ধন্যবাদ। আমরা পোস্টটি দেখব।</string>
     <string name="msg_comment_reported">জানানোর জন্য ধন্যবাদ। আমরা কমেন্টটি দেখব।</string>
@@ -827,7 +827,7 @@
     <string name="rate_thanks">ধন্যবাদ। এতে Yaari ভালো থাকে।</string>
     <string name="manner_low_short">আপনার জন্য র‍্যান্ডম চ্যাট বন্ধ আছে</string>
     <string name="manner_low_title">র‍্যান্ডম চ্যাট বন্ধ আছে</string>
-    <string name="manner_low_body">কয়েকজন বলেছেন সাম্প্রতিক চ্যাট ভালো লাগেনি, তাই আপনার আচরণ স্কোর ২০-এর নিচে। রুম আর ফিড এখনো খোলা। ৯০ দিনের পুরোনো রেটিং আর গোনা হয় না, আর ভালো চ্যাটে স্কোর আবার বাড়ে।</string>
+    <string name="manner_low_body">কয়েকজন বলেছেন সাম্প্রতিক চ্যাট ভালো লাগেনি, তাই আপনার আচরণ স্কোর ২০-এর নিচে। রুম আর পোস্ট এখনো চালু আছে। ৯০ দিনের পুরোনো রেটিং আর গোনা হয় না, আর ভালো চ্যাটে স্কোর আবার বাড়ে।</string>
     <string name="manner_low_ok">বুঝেছি</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$dটি রেটিং</item>

@@ -671,7 +671,7 @@
     <string name="post_report">檢舉貼文</string>
     <string name="post_delete">刪除貼文</string>
     <string name="post_delete_title">要刪除這則貼文嗎？</string>
-    <string name="post_delete_text">它會連同按讚和留言一起從你的個人頁面和動態中消失。</string>
+    <string name="post_delete_text">它會連同按讚和留言一起從你的個人頁面中消失。</string>
     <string name="msg_post_deleted">貼文已刪除</string>
     <string name="msg_post_reported">感謝回報，我們會檢視這則貼文。</string>
     <string name="msg_comment_reported">感謝回報，我們會檢視這則留言。</string>
@@ -818,7 +818,7 @@
     <string name="rate_thanks">謝謝，這能讓 Yaari 保持友善。</string>
     <string name="manner_low_short">你的隨機聊天已暫停</string>
     <string name="manner_low_title">隨機聊天已暫停</string>
-    <string name="manner_low_body">好幾個人表示最近和你的聊天體驗不好，所以你的禮貌分低於 20。房間和動態仍可使用。超過 90 天的評價不再計入，友善的聊天也會讓分數回升。</string>
+    <string name="manner_low_body">好幾個人表示最近和你的聊天體驗不好，所以你的禮貌分低於 20。房間和貼文仍可使用。超過 90 天的評價不再計入，友善的聊天也會讓分數回升。</string>
     <string name="manner_low_ok">知道了</string>
     <plurals name="manner_ratings">
         <item quantity="other">%1$d 次評價</item>

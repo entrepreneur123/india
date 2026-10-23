@@ -647,7 +647,7 @@
     <string name="post_report">Ripoti chapisho</string>
     <string name="post_delete">Futa chapisho</string>
     <string name="post_delete_title">Ufute chapisho hili?</string>
-    <string name="post_delete_text">Litatoweka kwenye wasifu wako na mlisho, pamoja na likes na maoni yake.</string>
+    <string name="post_delete_text">Litatoweka kwenye wasifu wako, pamoja na likes na maoni yake.</string>
     <string name="msg_post_deleted">Chapisho limefutwa</string>
     <string name="msg_post_reported">Asante kwa kutujulisha. Tutaliangalia chapisho hili.</string>
     <string name="msg_comment_reported">Asante kwa kutujulisha. Tutayaangalia maoni haya.</string>
@@ -797,7 +797,7 @@
     <string name="rate_thanks">Asante. Hivyo ndivyo Yaari inabaki mahali pazuri.</string>
     <string name="manner_low_short">Chat ya bahati nasibu imesimamishwa kwako</string>
     <string name="manner_low_title">Chat ya bahati nasibu imesimamishwa</string>
-    <string name="manner_low_body">Watu kadhaa wamesema chat za karibuni hazikuwa nzuri, kwa hiyo alama yako ya tabia iko chini ya 20. Vyumba na mlisho bado viko wazi. Alama za zaidi ya siku 90 zinaacha kuhesabiwa, na chat nzuri zinaipandisha tena.</string>
+    <string name="manner_low_body">Watu kadhaa wamesema chat za karibuni hazikuwa nzuri, kwa hiyo alama yako ya tabia iko chini ya 20. Vyumba na machapisho bado yanafanya kazi. Alama za zaidi ya siku 90 zinaacha kuhesabiwa, na chat nzuri zinaipandisha tena.</string>
     <string name="manner_low_ok">Nimeelewa</string>
     <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="one">Alama %1$d</item>

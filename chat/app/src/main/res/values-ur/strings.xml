@@ -678,7 +678,7 @@
     <string name="post_report">پوسٹ رپورٹ کریں</string>
     <string name="post_delete">پوسٹ ڈیلیٹ کریں</string>
     <string name="post_delete_title">یہ پوسٹ ڈیلیٹ کریں؟</string>
-    <string name="post_delete_text">یہ اپنے لائکس اور کمنٹس سمیت آپ کی پروفائل اور فیڈ سے غائب ہو جائے گی۔</string>
+    <string name="post_delete_text">یہ اپنے لائکس اور کمنٹس سمیت آپ کی پروفائل سے غائب ہو جائے گی۔</string>
     <string name="msg_post_deleted">پوسٹ ڈیلیٹ ہو گئی</string>
     <string name="msg_post_reported">بتانے کا شکریہ۔ ہم اس پوسٹ کو دیکھیں گے۔</string>
     <string name="msg_comment_reported">بتانے کا شکریہ۔ ہم اس کمنٹ کو دیکھیں گے۔</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">شکریہ۔ اس سے Yaari اچھا رہتا ہے۔</string>
     <string name="manner_low_short">آپ کے لیے رینڈم چیٹ رکی ہوئی ہے</string>
     <string name="manner_low_title">رینڈم چیٹ رکی ہوئی ہے</string>
-    <string name="manner_low_body">کئی لوگوں نے کہا کہ حالیہ چیٹس اچھی نہیں لگیں، اس لیے آپ کا اخلاق اسکور 20 سے کم ہے۔ رومز اور فیڈ اب بھی کھلے ہیں۔ 90 دن سے پرانی ریٹنگز گنی نہیں جاتیں، اور اچھی چیٹس اسکور واپس اوپر لے آتی ہیں۔</string>
+    <string name="manner_low_body">کئی لوگوں نے کہا کہ حالیہ چیٹس اچھی نہیں لگیں، اس لیے آپ کا اخلاق اسکور 20 سے کم ہے۔ رومز اور پوسٹس اب بھی چل رہی ہیں۔ 90 دن سے پرانی ریٹنگز گنی نہیں جاتیں، اور اچھی چیٹس اسکور واپس اوپر لے آتی ہیں۔</string>
     <string name="manner_low_ok">سمجھ گیا</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d ریٹنگ</item>

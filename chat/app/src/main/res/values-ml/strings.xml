@@ -659,7 +659,7 @@
     <string name="post_report">പോസ്റ്റ് റിപ്പോർട്ട് ചെയ്യുക</string>
     <string name="post_delete">പോസ്റ്റ് ഡിലീറ്റ് ചെയ്യുക</string>
     <string name="post_delete_title">ഈ പോസ്റ്റ് ഡിലീറ്റ് ചെയ്യണോ?</string>
-    <string name="post_delete_text">ലൈക്കുകളും കമന്റുകളും സഹിതം നിങ്ങളുടെ പ്രൊഫൈലിൽ നിന്നും ഫീഡിൽ നിന്നും ഇത് മാഞ്ഞുപോകും.</string>
+    <string name="post_delete_text">ലൈക്കുകളും കമന്റുകളും സഹിതം നിങ്ങളുടെ പ്രൊഫൈലിൽ നിന്ന് ഇത് മാഞ്ഞുപോകും.</string>
     <string name="msg_post_deleted">പോസ്റ്റ് ഡിലീറ്റ് ചെയ്തു</string>
     <string name="msg_post_reported">അറിയിച്ചതിന് നന്ദി. ഈ പോസ്റ്റ് ഞങ്ങൾ നോക്കും.</string>
     <string name="msg_comment_reported">അറിയിച്ചതിന് നന്ദി. ഈ കമന്റ് ഞങ്ങൾ നോക്കും.</string>
@@ -809,7 +809,7 @@
     <string name="rate_thanks">നന്ദി. ഇത് Yaari നല്ല ഇടമായി നിലനിർത്തും.</string>
     <string name="manner_low_short">നിങ്ങൾക്ക് റാൻഡം ചാറ്റ് താൽക്കാലികമായി നിർത്തി</string>
     <string name="manner_low_title">റാൻഡം ചാറ്റ് താൽക്കാലികമായി നിർത്തി</string>
-    <string name="manner_low_body">സമീപകാല ചാറ്റുകൾ നല്ലതായിരുന്നില്ലെന്ന് പലരും പറഞ്ഞതിനാൽ നിങ്ങളുടെ മാനേഴ്സ് സ്കോർ 20-ൽ താഴെയാണ്. റൂമുകളും ഫീഡും ഇപ്പോഴും തുറന്നിരിക്കുന്നു. 90 ദിവസത്തിലേറെ പഴക്കമുള്ള റേറ്റിംഗുകൾ കണക്കാക്കില്ല, നല്ല ചാറ്റുകൾ സ്കോർ വീണ്ടും ഉയർത്തും.</string>
+    <string name="manner_low_body">സമീപകാല ചാറ്റുകൾ നല്ലതായിരുന്നില്ലെന്ന് പലരും പറഞ്ഞതിനാൽ നിങ്ങളുടെ മാനേഴ്സ് സ്കോർ 20-ൽ താഴെയാണ്. റൂമുകളും പോസ്റ്റുകളും ഇപ്പോഴും പ്രവർത്തിക്കുന്നു. 90 ദിവസത്തിലേറെ പഴക്കമുള്ള റേറ്റിംഗുകൾ കണക്കാക്കില്ല, നല്ല ചാറ്റുകൾ സ്കോർ വീണ്ടും ഉയർത്തും.</string>
     <string name="manner_low_ok">മനസ്സിലായി</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d റേറ്റിംഗ്</item>

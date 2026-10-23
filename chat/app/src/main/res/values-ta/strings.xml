@@ -659,7 +659,7 @@
     <string name="post_report">போஸ்டை ரிப்போர்ட் செய்</string>
     <string name="post_delete">போஸ்டை நீக்கு</string>
     <string name="post_delete_title">இந்த போஸ்டை நீக்கவா?</string>
-    <string name="post_delete_text">அதன் லைக்குகள், கமெண்ட்களுடன் உங்கள் ப்ரொஃபைலிலிருந்தும் ஃபீடிலிருந்தும் மறைந்துவிடும்.</string>
+    <string name="post_delete_text">அதன் லைக்குகள், கமெண்ட்களுடன் உங்கள் ப்ரொஃபைலிலிருந்து மறைந்துவிடும்.</string>
     <string name="msg_post_deleted">போஸ்ட் நீக்கப்பட்டது</string>
     <string name="msg_post_reported">தெரிவித்ததற்கு நன்றி. இந்த போஸ்டை நாங்கள் பார்ப்போம்.</string>
     <string name="msg_comment_reported">தெரிவித்ததற்கு நன்றி. இந்த கமெண்டை நாங்கள் பார்ப்போம்.</string>
@@ -809,7 +809,7 @@
     <string name="rate_thanks">நன்றி. இது Yaari-ஐ அன்பான இடமாக வைத்திருக்கும்.</string>
     <string name="manner_low_short">உங்களுக்கு ரேண்டம் சாட் நிறுத்தப்பட்டுள்ளது</string>
     <string name="manner_low_title">ரேண்டம் சாட் நிறுத்தப்பட்டுள்ளது</string>
-    <string name="manner_low_body">சமீபத்திய சாட்கள் நன்றாக இல்லை என்று பலர் கூறியதால், உங்கள் மேனர் ஸ்கோர் 20-க்குக் கீழ் உள்ளது. ரூம்களும் ஃபீடும் இன்னும் திறந்திருக்கின்றன. 90 நாட்களுக்கு மேலான மதிப்பீடுகள் கணக்கில் வராது, அன்பான சாட்கள் ஸ்கோரை மீண்டும் உயர்த்தும்.</string>
+    <string name="manner_low_body">சமீபத்திய சாட்கள் நன்றாக இல்லை என்று பலர் கூறியதால், உங்கள் மேனர் ஸ்கோர் 20-க்குக் கீழ் உள்ளது. ரூம்களும் போஸ்ட்களும் இன்னும் செயல்படுகின்றன. 90 நாட்களுக்கு மேலான மதிப்பீடுகள் கணக்கில் வராது, அன்பான சாட்கள் ஸ்கோரை மீண்டும் உயர்த்தும்.</string>
     <string name="manner_low_ok">புரிந்தது</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d மதிப்பீடு</item>

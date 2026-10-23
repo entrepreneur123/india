@@ -647,7 +647,7 @@
     <string name="post_report">Beitrag melden</string>
     <string name="post_delete">Beitrag löschen</string>
     <string name="post_delete_title">Diesen Beitrag löschen?</string>
-    <string name="post_delete_text">Er verschwindet aus deinem Profil und dem Feed, samt Likes und Kommentaren.</string>
+    <string name="post_delete_text">Er verschwindet aus deinem Profil, samt Likes und Kommentaren.</string>
     <string name="msg_post_deleted">Beitrag gelöscht</string>
     <string name="msg_post_reported">Danke für den Hinweis. Wir sehen uns diesen Beitrag an.</string>
     <string name="msg_comment_reported">Danke für den Hinweis. Wir sehen uns diesen Kommentar an.</string>
@@ -797,7 +797,7 @@
     <string name="rate_thanks">Danke. So bleibt Yaari freundlich.</string>
     <string name="manner_low_short">Der Zufallschat ist für dich pausiert</string>
     <string name="manner_low_title">Der Zufallschat ist pausiert</string>
-    <string name="manner_low_body">Mehrere Leute fanden ihre letzten Chats nicht angenehm, daher liegt dein Manieren-Score unter 20. Räume und der Feed sind weiter offen. Bewertungen, die älter als 90 Tage sind, zählen nicht mehr, und nette Chats bringen ihn wieder nach oben.</string>
+    <string name="manner_low_body">Mehrere Leute fanden ihre letzten Chats nicht angenehm, daher liegt dein Manieren-Score unter 20. Räume und Beiträge funktionieren weiterhin. Bewertungen, die älter als 90 Tage sind, zählen nicht mehr, und nette Chats bringen ihn wieder nach oben.</string>
     <string name="manner_low_ok">Verstanden</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d Bewertung</item>

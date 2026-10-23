@@ -678,7 +678,7 @@
     <string name="post_report">પોસ્ટ રિપોર્ટ કરો</string>
     <string name="post_delete">પોસ્ટ ડિલીટ કરો</string>
     <string name="post_delete_title">આ પોસ્ટ ડિલીટ કરવી છે?</string>
-    <string name="post_delete_text">તે તેની લાઇક અને કમેન્ટ સાથે તમારી પ્રોફાઇલ અને ફીડમાંથી ગાયબ થઈ જશે.</string>
+    <string name="post_delete_text">તે તેની લાઇક અને કમેન્ટ સાથે તમારી પ્રોફાઇલમાંથી ગાયબ થઈ જશે.</string>
     <string name="msg_post_deleted">પોસ્ટ ડિલીટ થઈ</string>
     <string name="msg_post_reported">જણાવવા બદલ આભાર. અમે આ પોસ્ટ જોઈશું.</string>
     <string name="msg_comment_reported">જણાવવા બદલ આભાર. અમે આ કમેન્ટ જોઈશું.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">આભાર. તેનાથી Yaari સારું રહે છે.</string>
     <string name="manner_low_short">તમારા માટે રેન્ડમ ચેટ અટકાવવામાં આવી છે</string>
     <string name="manner_low_title">રેન્ડમ ચેટ અટકાવવામાં આવી છે</string>
-    <string name="manner_low_body">ઘણા લોકોએ કહ્યું કે તાજેતરની ચેટ સારી ન લાગી, તેથી તમારો મેનર સ્કોર 20 થી ઓછો છે. રૂમ અને ફીડ હજુ પણ ખુલ્લા છે. 90 દિવસથી જૂની રેટિંગ ગણાતી નથી, અને સારી ચેટ સ્કોરને ફરી ઉપર લાવે છે.</string>
+    <string name="manner_low_body">ઘણા લોકોએ કહ્યું કે તાજેતરની ચેટ સારી ન લાગી, તેથી તમારો મેનર સ્કોર 20 થી ઓછો છે. રૂમ અને પોસ્ટ હજુ પણ ચાલુ છે. 90 દિવસથી જૂની રેટિંગ ગણાતી નથી, અને સારી ચેટ સ્કોરને ફરી ઉપર લાવે છે.</string>
     <string name="manner_low_ok">સમજાયું</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d રેટિંગ</item>

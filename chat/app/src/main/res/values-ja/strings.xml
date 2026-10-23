@@ -678,7 +678,7 @@
     <string name="post_report">投稿を通報</string>
     <string name="post_delete">投稿を削除</string>
     <string name="post_delete_title">この投稿を削除しますか？</string>
-    <string name="post_delete_text">いいねやコメントも含めて、プロフィールとフィードから消えます。</string>
+    <string name="post_delete_text">いいねやコメントも含めて、プロフィールから消えます。</string>
     <string name="msg_post_deleted">投稿を削除しました</string>
     <string name="msg_post_reported">通報ありがとうございます。この投稿を確認します。</string>
     <string name="msg_comment_reported">通報ありがとうございます。このコメントを確認します。</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">ありがとうございます。いただいた評価はYaariをより良くするために役立てます。</string>
     <string name="manner_low_short">ランダムチャットが一時停止されています</string>
     <string name="manner_low_title">ランダムチャットは一時停止中です</string>
-    <string name="manner_low_body">最近のチャットが不快だったという評価が複数あったため、マナースコアが20を下回りました。ルームとフィードは引き続き使えます。90日より前の評価はカウントされなくなり、気持ちのいいチャットを重ねればスコアは回復します。</string>
+    <string name="manner_low_body">最近のチャットが不快だったという評価が複数あったため、マナースコアが20を下回りました。ルームと投稿は引き続き使えます。90日より前の評価はカウントされなくなり、気持ちのいいチャットを重ねればスコアは回復します。</string>
     <string name="manner_low_ok">わかりました</string>
     <plurals name="manner_ratings">
         <item quantity="one">評価%1$d件</item>

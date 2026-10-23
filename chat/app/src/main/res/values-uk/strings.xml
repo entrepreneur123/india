@@ -660,7 +660,7 @@
     <string name="post_report">Поскаржитися на допис</string>
     <string name="post_delete">Видалити допис</string>
     <string name="post_delete_title">Видалити цей допис?</string>
-    <string name="post_delete_text">Він зникне з вашого профілю й стрічки разом із вподобаннями й коментарями.</string>
+    <string name="post_delete_text">Він зникне з вашого профілю разом із вподобаннями й коментарями.</string>
     <string name="msg_post_deleted">Допис видалено</string>
     <string name="msg_post_reported">Дякуємо, що повідомили. Ми перевіримо цей допис.</string>
     <string name="msg_comment_reported">Дякуємо, що повідомили. Ми перевіримо цей коментар.</string>
@@ -818,7 +818,7 @@
     <string name="rate_thanks">Дякуємо. Так Yaari залишається доброзичливим.</string>
     <string name="manner_low_short">Випадковий чат для вас призупинено</string>
     <string name="manner_low_title">Випадковий чат призупинено</string>
-    <string name="manner_low_body">Кілька людей сказали, що нещодавні чати були неприємними, тому ваш рейтинг манер нижче 20. Кімнати й стрічка досі відкриті. Оцінки, старші за 90 днів, перестають враховуватися, а ввічливі чати піднімають рейтинг.</string>
+    <string name="manner_low_body">Кілька людей сказали, що нещодавні чати були неприємними, тому ваш рейтинг манер нижче 20. Кімнати й дописи досі працюють. Оцінки, старші за 90 днів, перестають враховуватися, а ввічливі чати піднімають рейтинг.</string>
     <string name="manner_low_ok">Зрозуміло</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d оцінка</item>

@@ -674,7 +674,7 @@
     <string name="post_report">Báo cáo bài đăng</string>
     <string name="post_delete">Xóa bài đăng</string>
     <string name="post_delete_title">Xóa bài đăng này?</string>
-    <string name="post_delete_text">Bài đăng sẽ biến mất khỏi hồ sơ và bảng tin, cùng lượt thích và bình luận.</string>
+    <string name="post_delete_text">Bài đăng sẽ biến mất khỏi hồ sơ, cùng lượt thích và bình luận.</string>
     <string name="msg_post_deleted">Đã xóa bài đăng</string>
     <string name="msg_post_reported">Cảm ơn bạn đã báo. Chúng tôi sẽ xem xét bài đăng này.</string>
     <string name="msg_comment_reported">Cảm ơn bạn đã báo. Chúng tôi sẽ xem xét bình luận này.</string>
@@ -825,7 +825,7 @@
     <string name="rate_thanks">Cảm ơn. Điều đó giúp Yaari luôn tử tế.</string>
     <string name="manner_low_short">Trò chuyện ngẫu nhiên đang tạm dừng với bạn</string>
     <string name="manner_low_title">Trò chuyện ngẫu nhiên tạm dừng</string>
-    <string name="manner_low_body">Nhiều người cho biết các cuộc trò chuyện gần đây không dễ chịu, nên điểm cư xử của bạn dưới 20. Phòng và bảng tin vẫn mở. Đánh giá cũ hơn 90 ngày không còn tính, và những cuộc trò chuyện tử tế sẽ kéo điểm lên.</string>
+    <string name="manner_low_body">Nhiều người cho biết các cuộc trò chuyện gần đây không dễ chịu, nên điểm cư xử của bạn dưới 20. Phòng và bài viết vẫn hoạt động. Đánh giá cũ hơn 90 ngày không còn tính, và những cuộc trò chuyện tử tế sẽ kéo điểm lên.</string>
     <string name="manner_low_ok">Đã hiểu</string>
     <plurals name="manner_ratings">
         <item quantity="other">%1$d lượt đánh giá</item>

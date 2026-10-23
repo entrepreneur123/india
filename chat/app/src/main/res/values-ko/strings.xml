@@ -671,7 +671,7 @@
     <string name="post_report">게시물 신고</string>
     <string name="post_delete">게시물 삭제</string>
     <string name="post_delete_title">이 게시물을 삭제할까요?</string>
-    <string name="post_delete_text">좋아요와 댓글을 포함해 프로필과 피드에서 사라져요.</string>
+    <string name="post_delete_text">좋아요와 댓글을 포함해 프로필에서 사라져요.</string>
     <string name="msg_post_deleted">게시물을 삭제했어요</string>
     <string name="msg_post_reported">신고해 주셔서 감사해요. 이 게시물을 검토할게요.</string>
     <string name="msg_comment_reported">신고해 주셔서 감사해요. 이 댓글을 검토할게요.</string>
@@ -818,7 +818,7 @@
     <string name="rate_thanks">감사해요. 덕분에 Yaari가 따뜻해져요.</string>
     <string name="manner_low_short">랜덤 채팅이 일시 중지됐어요</string>
     <string name="manner_low_title">랜덤 채팅 일시 중지</string>
-    <string name="manner_low_body">최근 채팅이 불편했다는 평가가 여러 번 있어서 매너 점수가 20점 아래로 내려갔어요. 방과 피드는 계속 이용할 수 있어요. 90일이 지난 평가는 반영되지 않고, 좋은 채팅을 하면 점수가 다시 올라가요.</string>
+    <string name="manner_low_body">최근 채팅이 불편했다는 평가가 여러 번 있어서 매너 점수가 20점 아래로 내려갔어요. 방과 게시물은 계속 이용할 수 있어요. 90일이 지난 평가는 반영되지 않고, 좋은 채팅을 하면 점수가 다시 올라가요.</string>
     <string name="manner_low_ok">알겠어요</string>
     <plurals name="manner_ratings">
         <item quantity="other">평가 %1$d개</item>

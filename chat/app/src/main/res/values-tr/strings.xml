@@ -648,7 +648,7 @@
     <string name="post_report">Gönderiyi şikâyet et</string>
     <string name="post_delete">Gönderiyi sil</string>
     <string name="post_delete_title">Bu gönderi silinsin mi?</string>
-    <string name="post_delete_text">Beğenileri ve yorumlarıyla birlikte profilinden ve akıştan kaybolur.</string>
+    <string name="post_delete_text">Beğenileri ve yorumlarıyla birlikte profilinden kaybolur.</string>
     <string name="msg_post_deleted">Gönderi silindi</string>
     <string name="msg_post_reported">Bize bildirdiğin için teşekkürler. Bu gönderiye bakacağız.</string>
     <string name="msg_comment_reported">Bize bildirdiğin için teşekkürler. Bu yoruma bakacağız.</string>
@@ -798,7 +798,7 @@
     <string name="rate_thanks">Teşekkürler. Bu, Yaari’yi nazik tutar.</string>
     <string name="manner_low_short">Rastgele sohbet senin için duraklatıldı</string>
     <string name="manner_low_title">Rastgele sohbet duraklatıldı</string>
-    <string name="manner_low_body">Birkaç kişi son sohbetlerden iyi hissetmediğini söyledi, bu yüzden görgü puanın 20’nin altında. Odalar ve akış hâlâ açık. 90 günden eski değerlendirmeler sayılmaz ve nazik sohbetler puanını yeniden yükseltir.</string>
+    <string name="manner_low_body">Birkaç kişi son sohbetlerden iyi hissetmediğini söyledi, bu yüzden görgü puanın 20’nin altında. Odalar ve gönderiler hâlâ çalışıyor. 90 günden eski değerlendirmeler sayılmaz ve nazik sohbetler puanını yeniden yükseltir.</string>
     <string name="manner_low_ok">Anladım</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d değerlendirme</item>

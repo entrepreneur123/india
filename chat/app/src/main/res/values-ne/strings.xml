@@ -647,7 +647,7 @@
     <string name="post_report">पोस्ट रिपोर्ट गर्नुहोस्</string>
     <string name="post_delete">पोस्ट मेटाउनुहोस्</string>
     <string name="post_delete_title">यो पोस्ट मेटाउने?</string>
-    <string name="post_delete_text">यो लाइक र कमेन्टसहित तपाईंको प्रोफाइल र फिडबाट हराउँछ।</string>
+    <string name="post_delete_text">यो लाइक र कमेन्टसहित तपाईंको प्रोफाइलबाट हराउँछ।</string>
     <string name="msg_post_deleted">पोस्ट मेटाइयो</string>
     <string name="msg_post_reported">जानकारी दिनुभएकोमा धन्यवाद। हामी यो पोस्ट हेर्नेछौं।</string>
     <string name="msg_comment_reported">जानकारी दिनुभएकोमा धन्यवाद। हामी यो कमेन्ट हेर्नेछौं।</string>
@@ -797,7 +797,7 @@
     <string name="rate_thanks">धन्यवाद। यसले Yaari लाई राम्रो राख्छ।</string>
     <string name="manner_low_short">तपाईंका लागि र्‍यान्डम च्याट रोकिएको छ</string>
     <string name="manner_low_title">र्‍यान्डम च्याट रोकिएको छ</string>
-    <string name="manner_low_body">धेरै जनाले हालैका च्याट राम्रो नलागेको बताएकाले तपाईंको व्यवहार स्कोर 20 भन्दा कम छ। रूम र फिड भने खुला छन्। 90 दिनभन्दा पुराना रेटिङ गनिँदैनन्, र राम्रा च्याटले स्कोर फेरि बढाउँछन्।</string>
+    <string name="manner_low_body">धेरै जनाले हालैका च्याट राम्रो नलागेको बताएकाले तपाईंको व्यवहार स्कोर 20 भन्दा कम छ। रूम र पोस्ट भने चलिरहेका छन्। 90 दिनभन्दा पुराना रेटिङ गनिँदैनन्, र राम्रा च्याटले स्कोर फेरि बढाउँछन्।</string>
     <string name="manner_low_ok">बुझें</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d रेटिङ</item>

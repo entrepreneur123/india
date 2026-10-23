@@ -660,7 +660,7 @@
     <string name="post_report">Post melden</string>
     <string name="post_delete">Post verwijderen</string>
     <string name="post_delete_title">Deze post verwijderen?</string>
-    <string name="post_delete_text">Hij verdwijnt van je profiel en uit de feed, samen met de likes en reacties.</string>
+    <string name="post_delete_text">Hij verdwijnt van je profiel, samen met de likes en reacties.</string>
     <string name="msg_post_deleted">Post verwijderd</string>
     <string name="msg_post_reported">Bedankt voor je melding. We bekijken deze post.</string>
     <string name="msg_comment_reported">Bedankt voor je melding. We bekijken deze reactie.</string>
@@ -810,7 +810,7 @@
     <string name="rate_thanks">Bedankt. Zo blijft Yaari vriendelijk.</string>
     <string name="manner_low_short">Random chat is voor jou gepauzeerd</string>
     <string name="manner_low_title">Random chat is gepauzeerd</string>
-    <string name="manner_low_body">Meerdere mensen gaven aan dat recente chats niet goed voelden, dus je gedragsscore is lager dan 20. Rooms en de feed blijven open. Beoordelingen ouder dan 90 dagen tellen niet meer mee, en vriendelijke chats brengen je score weer omhoog.</string>
+    <string name="manner_low_body">Meerdere mensen gaven aan dat recente chats niet goed voelden, dus je gedragsscore is lager dan 20. Rooms en posts blijven werken. Beoordelingen ouder dan 90 dagen tellen niet meer mee, en vriendelijke chats brengen je score weer omhoog.</string>
     <string name="manner_low_ok">Begrepen</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d beoordeling</item>

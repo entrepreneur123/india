@@ -647,7 +647,7 @@
     <string name="post_report">گزارش پست</string>
     <string name="post_delete">حذف پست</string>
     <string name="post_delete_title">این پست حذف شود؟</string>
-    <string name="post_delete_text">از پروفایل شما و فید، همراه با لایک‌ها و کامنت‌هایش، حذف می‌شود.</string>
+    <string name="post_delete_text">از پروفایل شما، همراه با لایک‌ها و کامنت‌هایش، حذف می‌شود.</string>
     <string name="msg_post_deleted">پست حذف شد</string>
     <string name="msg_post_reported">ممنون که خبر دادید. این پست را بررسی می‌کنیم.</string>
     <string name="msg_comment_reported">ممنون که خبر دادید. این کامنت را بررسی می‌کنیم.</string>
@@ -797,7 +797,7 @@
     <string name="rate_thanks">ممنون. این‌طوری Yaari جای خوبی می‌ماند.</string>
     <string name="manner_low_short">چت تصادفی برای شما متوقف شده است</string>
     <string name="manner_low_title">چت تصادفی متوقف شده است</string>
-    <string name="manner_low_body">چند نفر گفته‌اند چت‌های اخیرشان حس خوبی نداشته، برای همین امتیاز رفتار شما زیر ۲۰ است. روم‌ها و فید هنوز باز هستند. امتیازهای قدیمی‌تر از ۹۰ روز دیگر حساب نمی‌شوند و چت‌های خوب امتیازتان را بالا می‌برند.</string>
+    <string name="manner_low_body">چند نفر گفته‌اند چت‌های اخیرشان حس خوبی نداشته، برای همین امتیاز رفتار شما زیر ۲۰ است. روم‌ها و پست‌ها هنوز کار می‌کنند. امتیازهای قدیمی‌تر از ۹۰ روز دیگر حساب نمی‌شوند و چت‌های خوب امتیازتان را بالا می‌برند.</string>
     <string name="manner_low_ok">فهمیدم</string>
     <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="one">%1$d امتیاز</item>

@@ -653,7 +653,7 @@
     <string name="post_report">Signaler la publication</string>
     <string name="post_delete">Supprimer la publication</string>
     <string name="post_delete_title">Supprimer cette publication ?</string>
-    <string name="post_delete_text">Elle disparaît de votre profil et du fil, avec ses j’aime et ses commentaires.</string>
+    <string name="post_delete_text">Elle disparaît de votre profil, avec ses j’aime et ses commentaires.</string>
     <string name="msg_post_deleted">Publication supprimée</string>
     <string name="msg_post_reported">Merci de nous avoir prévenus. Nous allons examiner cette publication.</string>
     <string name="msg_comment_reported">Merci de nous avoir prévenus. Nous allons examiner ce commentaire.</string>
@@ -807,7 +807,7 @@
     <string name="rate_thanks">Merci. Ça aide à garder Yaari bienveillant.</string>
     <string name="manner_low_short">Le chat aléatoire est en pause pour vous</string>
     <string name="manner_low_title">Le chat aléatoire est en pause</string>
-    <string name="manner_low_body">Plusieurs personnes ont trouvé que leurs derniers chats ne s’étaient pas bien passés, votre score de savoir-vivre est donc inférieur à 20. Les salons et le fil restent accessibles. Les notes de plus de 90 jours ne comptent plus, et les chats bienveillants font remonter votre score.</string>
+    <string name="manner_low_body">Plusieurs personnes ont trouvé que leurs derniers chats ne s’étaient pas bien passés, votre score de savoir-vivre est donc inférieur à 20. Les salons et les publications restent accessibles. Les notes de plus de 90 jours ne comptent plus, et les chats bienveillants font remonter votre score.</string>
     <string name="manner_low_ok">Compris</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d note</item>

@@ -659,7 +659,7 @@
     <string name="post_report">పోస్ట్‌ను రిపోర్ట్ చేయి</string>
     <string name="post_delete">పోస్ట్ డిలీట్ చేయి</string>
     <string name="post_delete_title">ఈ పోస్ట్ డిలీట్ చేయాలా?</string>
-    <string name="post_delete_text">దాని లైక్‌లు, కామెంట్లతో సహా మీ ప్రొఫైల్, ఫీడ్ నుంచి మాయమవుతుంది.</string>
+    <string name="post_delete_text">దాని లైక్‌లు, కామెంట్లతో సహా మీ ప్రొఫైల్ నుంచి మాయమవుతుంది.</string>
     <string name="msg_post_deleted">పోస్ట్ డిలీట్ అయింది</string>
     <string name="msg_post_reported">చెప్పినందుకు ధన్యవాదాలు. ఈ పోస్ట్‌ను మేం చూస్తాం.</string>
     <string name="msg_comment_reported">చెప్పినందుకు ధన్యవాదాలు. ఈ కామెంట్‌ను మేం చూస్తాం.</string>
@@ -809,7 +809,7 @@
     <string name="rate_thanks">ధన్యవాదాలు. ఇది Yaariని మంచిగా ఉంచుతుంది.</string>
     <string name="manner_low_short">మీకు రాండమ్ చాట్ ఆపబడింది</string>
     <string name="manner_low_title">రాండమ్ చాట్ ఆపబడింది</string>
-    <string name="manner_low_body">ఇటీవలి చాట్స్ బాగా లేవని చాలామంది చెప్పారు, అందుకే మీ మ్యానర్ స్కోర్ 20 కంటే తక్కువ ఉంది. రూమ్‌లు, ఫీడ్ ఇంకా ఓపెన్‌గా ఉన్నాయి. 90 రోజుల కంటే పాత రేటింగ్‌లు లెక్కలోకి రావు, మంచి చాట్స్ స్కోర్‌ను మళ్లీ పెంచుతాయి.</string>
+    <string name="manner_low_body">ఇటీవలి చాట్స్ బాగా లేవని చాలామంది చెప్పారు, అందుకే మీ మ్యానర్ స్కోర్ 20 కంటే తక్కువ ఉంది. రూమ్‌లు, పోస్ట్‌లు ఇంకా పనిచేస్తాయి. 90 రోజుల కంటే పాత రేటింగ్‌లు లెక్కలోకి రావు, మంచి చాట్స్ స్కోర్‌ను మళ్లీ పెంచుతాయి.</string>
     <string name="manner_low_ok">అర్థమైంది</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d రేటింగ్</item>

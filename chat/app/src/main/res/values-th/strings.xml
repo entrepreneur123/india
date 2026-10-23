@@ -641,7 +641,7 @@
     <string name="post_report">รายงานโพสต์</string>
     <string name="post_delete">ลบโพสต์</string>
     <string name="post_delete_title">ลบโพสต์นี้ไหม</string>
-    <string name="post_delete_text">โพสต์จะหายไปจากโปรไฟล์และฟีดของคุณ พร้อมไลก์และคอมเมนต์</string>
+    <string name="post_delete_text">โพสต์จะหายไปจากโปรไฟล์ของคุณ พร้อมไลก์และคอมเมนต์</string>
     <string name="msg_post_deleted">ลบโพสต์แล้ว</string>
     <string name="msg_post_reported">ขอบคุณที่แจ้งเรา เราจะตรวจสอบโพสต์นี้</string>
     <string name="msg_comment_reported">ขอบคุณที่แจ้งเรา เราจะตรวจสอบคอมเมนต์นี้</string>
@@ -787,7 +787,7 @@
     <string name="rate_thanks">ขอบคุณ แบบนี้ Yaari ถึงน่าคุย</string>
     <string name="manner_low_short">แชทสุ่มถูกระงับชั่วคราวสำหรับคุณ</string>
     <string name="manner_low_title">แชทสุ่มถูกระงับชั่วคราว</string>
-    <string name="manner_low_body">มีหลายคนบอกว่าแชทล่าสุดรู้สึกไม่ดี คะแนนมารยาทของคุณจึงต่ำกว่า 20 ห้องและฟีดยังใช้ได้ คะแนนที่เก่ากว่า 90 วันจะไม่นับ และแชทดีๆ จะช่วยให้คะแนนกลับมา</string>
+    <string name="manner_low_body">มีหลายคนบอกว่าแชทล่าสุดรู้สึกไม่ดี คะแนนมารยาทของคุณจึงต่ำกว่า 20 ห้องและโพสต์ยังใช้ได้ คะแนนที่เก่ากว่า 90 วันจะไม่นับ และแชทดีๆ จะช่วยให้คะแนนกลับมา</string>
     <string name="manner_low_ok">เข้าใจแล้ว</string>
     <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="other">%1$d คะแนน</item>

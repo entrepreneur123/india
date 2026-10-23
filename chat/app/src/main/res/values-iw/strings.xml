@@ -653,7 +653,7 @@
     <string name="post_report">דיווח על הפוסט</string>
     <string name="post_delete">מחיקת הפוסט</string>
     <string name="post_delete_title">למחוק את הפוסט?</string>
-    <string name="post_delete_text">הוא ייעלם מהפרופיל שלך ומהפיד, יחד עם הלייקים והתגובות שלו.</string>
+    <string name="post_delete_text">הוא ייעלם מהפרופיל שלך, יחד עם הלייקים והתגובות שלו.</string>
     <string name="msg_post_deleted">הפוסט נמחק</string>
     <string name="msg_post_reported">תודה שסיפרת לנו. נבדוק את הפוסט הזה.</string>
     <string name="msg_comment_reported">תודה שסיפרת לנו. נבדוק את התגובה הזו.</string>
@@ -807,7 +807,7 @@
     <string name="rate_thanks">תודה. ככה Yaari נשארת נעימה.</string>
     <string name="manner_low_short">הצ׳אט האקראי מושהה בשבילך</string>
     <string name="manner_low_title">הצ׳אט האקראי מושהה</string>
-    <string name="manner_low_body">כמה אנשים אמרו שהצ׳אטים האחרונים לא הרגישו טוב, ולכן ציון ההתנהגות שלך מתחת ל-20. החדרים והפיד עדיין פתוחים. דירוגים בני יותר מ-90 יום מפסיקים להיספר, וצ׳אטים נעימים מעלים את הציון בחזרה.</string>
+    <string name="manner_low_body">כמה אנשים אמרו שהצ׳אטים האחרונים לא הרגישו טוב, ולכן ציון ההתנהגות שלך מתחת ל-20. החדרים והפוסטים עדיין פועלים. דירוגים בני יותר מ-90 יום מפסיקים להיספר, וצ׳אטים נעימים מעלים את הציון בחזרה.</string>
     <string name="manner_low_ok">הבנתי</string>
     <plurals name="manner_ratings" tools:ignore="ImpliedQuantity">
         <item quantity="one">%1$d דירוג</item>

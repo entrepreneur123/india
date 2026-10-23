@@ -671,7 +671,7 @@
     <string name="post_report">举报动态</string>
     <string name="post_delete">删除动态</string>
     <string name="post_delete_title">要删除这条动态吗？</string>
-    <string name="post_delete_text">它会连同点赞和评论一起从你的主页和动态中消失。</string>
+    <string name="post_delete_text">它会连同点赞和评论一起从你的主页中消失。</string>
     <string name="msg_post_deleted">动态已删除</string>
     <string name="msg_post_reported">感谢反馈，我们会查看这条动态。</string>
     <string name="msg_comment_reported">感谢反馈，我们会查看这条评论。</string>

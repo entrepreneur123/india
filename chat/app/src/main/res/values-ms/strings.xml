@@ -678,7 +678,7 @@
     <string name="post_report">Laporkan hantaran</string>
     <string name="post_delete">Padam hantaran</string>
     <string name="post_delete_title">Padam hantaran ini?</string>
-    <string name="post_delete_text">Ia hilang daripada profil anda dan suapan, bersama suka dan komennya.</string>
+    <string name="post_delete_text">Ia hilang daripada profil anda, bersama suka dan komennya.</string>
     <string name="msg_post_deleted">Hantaran dipadam</string>
     <string name="msg_post_reported">Terima kasih kerana memaklumkan. Kami akan meneliti hantaran ini.</string>
     <string name="msg_comment_reported">Terima kasih kerana memaklumkan. Kami akan meneliti komen ini.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">Terima kasih. Itu membantu Yaari kekal mesra.</string>
     <string name="manner_low_short">Sembang rawak dijeda untuk anda</string>
     <string name="manner_low_title">Sembang rawak dijeda</string>
-    <string name="manner_low_body">Beberapa orang berkata sembang baru-baru ini tidak menyenangkan, jadi skor adab anda di bawah 20. Bilik dan suapan masih dibuka. Penilaian lebih lama daripada 90 hari tidak lagi dikira, dan sembang yang mesra akan menaikkannya semula.</string>
+    <string name="manner_low_body">Beberapa orang berkata sembang baru-baru ini tidak menyenangkan, jadi skor adab anda di bawah 20. Bilik dan hantaran masih berfungsi. Penilaian lebih lama daripada 90 hari tidak lagi dikira, dan sembang yang mesra akan menaikkannya semula.</string>
     <string name="manner_low_ok">Faham</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d penilaian</item>

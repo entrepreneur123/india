@@ -678,7 +678,7 @@
     <string name="post_report">I-report ang post</string>
     <string name="post_delete">I-delete ang post</string>
     <string name="post_delete_title">I-delete ang post na ito?</string>
-    <string name="post_delete_text">Mawawala ito sa profile mo at sa feed, kasama ang mga like at comment nito.</string>
+    <string name="post_delete_text">Mawawala ito sa profile mo, kasama ang mga like at comment nito.</string>
     <string name="msg_post_deleted">Na-delete ang post</string>
     <string name="msg_post_reported">Salamat sa pagsabi sa amin. Titingnan namin ang post na ito.</string>
     <string name="msg_comment_reported">Salamat sa pagsabi sa amin. Titingnan namin ang comment na ito.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">Salamat. Napapanatili nitong mabait ang Yaari.</string>
     <string name="manner_low_short">Naka-pause ang random chat para sa iyo</string>
     <string name="manner_low_title">Naka-pause ang random chat</string>
-    <string name="manner_low_body">Sinabi ng ilang tao na hindi naging maganda ang mga kamakailang chat, kaya mas mababa sa 20 ang manner score mo. Bukas pa rin ang mga room at ang feed. Hindi na binibilang ang mga rating na lampas 90 araw, at maibabalik ito ng mababait na chat.</string>
+    <string name="manner_low_body">Sinabi ng ilang tao na hindi naging maganda ang mga kamakailang chat, kaya mas mababa sa 20 ang manner score mo. Gumagana pa rin ang mga room at post. Hindi na binibilang ang mga rating na lampas 90 araw, at maibabalik ito ng mababait na chat.</string>
     <string name="manner_low_ok">Sige</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d rating</item>

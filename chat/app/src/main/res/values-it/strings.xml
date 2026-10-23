@@ -660,7 +660,7 @@
     <string name="post_report">Segnala post</string>
     <string name="post_delete">Elimina post</string>
     <string name="post_delete_title">Eliminare questo post?</string>
-    <string name="post_delete_text">Sparisce dal tuo profilo e dal feed, insieme ai Mi piace e ai commenti.</string>
+    <string name="post_delete_text">Sparisce dal tuo profilo, insieme ai Mi piace e ai commenti.</string>
     <string name="msg_post_deleted">Post eliminato</string>
     <string name="msg_post_reported">Grazie per la segnalazione. Controlleremo questo post.</string>
     <string name="msg_comment_reported">Grazie per la segnalazione. Controlleremo questo commento.</string>
@@ -810,7 +810,7 @@
     <string name="rate_thanks">Grazie. Così Yaari resta un posto gentile.</string>
     <string name="manner_low_short">La chat random è in pausa per te</string>
     <string name="manner_low_title">La chat random è in pausa</string>
-    <string name="manner_low_body">Diverse persone hanno detto che le chat recenti non sono state piacevoli, quindi il tuo punteggio di comportamento è sotto 20. Stanze e feed restano aperti. Le valutazioni più vecchie di 90 giorni smettono di contare, e le chat gentili lo fanno risalire.</string>
+    <string name="manner_low_body">Diverse persone hanno detto che le chat recenti non sono state piacevoli, quindi il tuo punteggio di comportamento è sotto 20. Stanze e post continuano a funzionare. Le valutazioni più vecchie di 90 giorni smettono di contare, e le chat gentili lo fanno risalire.</string>
     <string name="manner_low_ok">Ho capito</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d valutazione</item>

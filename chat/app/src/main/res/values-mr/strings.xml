@@ -678,7 +678,7 @@
     <string name="post_report">पोस्ट रिपोर्ट करा</string>
     <string name="post_delete">पोस्ट डिलीट करा</string>
     <string name="post_delete_title">ही पोस्ट डिलीट करायची?</string>
-    <string name="post_delete_text">ती तिच्या लाइक आणि कमेंटसह तुमच्या प्रोफाइल आणि फीडमधून गायब होईल.</string>
+    <string name="post_delete_text">ती तिच्या लाइक आणि कमेंटसह तुमच्या प्रोफाइलमधून गायब होईल.</string>
     <string name="msg_post_deleted">पोस्ट डिलीट झाली</string>
     <string name="msg_post_reported">कळवल्याबद्दल धन्यवाद. आम्ही ही पोस्ट पाहू.</string>
     <string name="msg_comment_reported">कळवल्याबद्दल धन्यवाद. आम्ही ही कमेंट पाहू.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">धन्यवाद. यामुळे Yaari चांगले राहते.</string>
     <string name="manner_low_short">तुमच्यासाठी रँडम चॅट थांबवला आहे</string>
     <string name="manner_low_title">रँडम चॅट थांबवला आहे</string>
-    <string name="manner_low_body">अनेक लोकांनी सांगितले की अलीकडचे चॅट चांगले वाटले नाहीत, म्हणून तुमचा मॅनर स्कोअर 20 पेक्षा कमी आहे. रूम्स आणि फीड अजूनही खुले आहेत. 90 दिवसांपेक्षा जुन्या रेटिंग मोजल्या जात नाहीत, आणि चांगले चॅट स्कोअर पुन्हा वर आणतात.</string>
+    <string name="manner_low_body">अनेक लोकांनी सांगितले की अलीकडचे चॅट चांगले वाटले नाहीत, म्हणून तुमचा मॅनर स्कोअर 20 पेक्षा कमी आहे. रूम्स आणि पोस्ट अजूनही सुरू आहेत. 90 दिवसांपेक्षा जुन्या रेटिंग मोजल्या जात नाहीत, आणि चांगले चॅट स्कोअर पुन्हा वर आणतात.</string>
     <string name="manner_low_ok">समजले</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d रेटिंग</item>

@@ -672,7 +672,7 @@
     <string name="post_report">Zgłoś post</string>
     <string name="post_delete">Usuń post</string>
     <string name="post_delete_title">Usunąć ten post?</string>
-    <string name="post_delete_text">Zniknie z Twojego profilu i z feedu, razem z polubieniami i komentarzami.</string>
+    <string name="post_delete_text">Zniknie z Twojego profilu, razem z polubieniami i komentarzami.</string>
     <string name="msg_post_deleted">Post usunięty</string>
     <string name="msg_post_reported">Dzięki za zgłoszenie. Przyjrzymy się temu postowi.</string>
     <string name="msg_comment_reported">Dzięki za zgłoszenie. Przyjrzymy się temu komentarzowi.</string>
@@ -830,7 +830,7 @@
     <string name="rate_thanks">Dzięki. Dzięki temu na Yaari jest miło.</string>
     <string name="manner_low_short">Czat losowy jest dla Ciebie wstrzymany</string>
     <string name="manner_low_title">Czat losowy jest wstrzymany</string>
-    <string name="manner_low_body">Kilka osób uznało, że ostatnie czaty nie były w porządku, więc Twoja ocena kultury rozmowy spadła poniżej 20. Pokoje i feed są nadal dostępne. Oceny starsze niż 90 dni przestają się liczyć, a miłe czaty podnoszą wynik.</string>
+    <string name="manner_low_body">Kilka osób uznało, że ostatnie czaty nie były w porządku, więc Twoja ocena kultury rozmowy spadła poniżej 20. Pokoje i posty są nadal dostępne. Oceny starsze niż 90 dni przestają się liczyć, a miłe czaty podnoszą wynik.</string>
     <string name="manner_low_ok">Rozumiem</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d ocena</item>

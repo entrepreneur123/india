@@ -678,7 +678,7 @@
     <string name="post_report">Laporkan postingan</string>
     <string name="post_delete">Hapus postingan</string>
     <string name="post_delete_title">Hapus postingan ini?</string>
-    <string name="post_delete_text">Postingan ini hilang dari profilmu dan feed, beserta suka dan komentarnya.</string>
+    <string name="post_delete_text">Postingan ini hilang dari profilmu, beserta suka dan komentarnya.</string>
     <string name="msg_post_deleted">Postingan dihapus</string>
     <string name="msg_post_reported">Terima kasih sudah memberi tahu. Kami akan memeriksa postingan ini.</string>
     <string name="msg_comment_reported">Terima kasih sudah memberi tahu. Kami akan memeriksa komentar ini.</string>
@@ -829,7 +829,7 @@
     <string name="rate_thanks">Terima kasih. Ini menjaga Yaari tetap ramah.</string>
     <string name="manner_low_short">Chat acak dijeda untukmu</string>
     <string name="manner_low_title">Chat acak dijeda</string>
-    <string name="manner_low_body">Beberapa orang merasa chat terakhir kurang menyenangkan, jadi skor sopan santunmu di bawah 20. Room dan feed tetap terbuka. Penilaian yang lebih dari 90 hari tidak dihitung lagi, dan chat yang ramah akan menaikkannya kembali.</string>
+    <string name="manner_low_body">Beberapa orang merasa chat terakhir kurang menyenangkan, jadi skor sopan santunmu di bawah 20. Room dan postingan tetap bisa digunakan. Penilaian yang lebih dari 90 hari tidak dihitung lagi, dan chat yang ramah akan menaikkannya kembali.</string>
     <string name="manner_low_ok">Mengerti</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d penilaian</item>

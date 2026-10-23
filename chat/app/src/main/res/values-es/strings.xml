@@ -653,7 +653,7 @@
     <string name="post_report">Denunciar publicación</string>
     <string name="post_delete">Eliminar publicación</string>
     <string name="post_delete_title">¿Eliminar esta publicación?</string>
-    <string name="post_delete_text">Desaparecerá de tu perfil y del feed, con sus me gusta y comentarios.</string>
+    <string name="post_delete_text">Desaparecerá de tu perfil, con sus me gusta y comentarios.</string>
     <string name="msg_post_deleted">Publicación eliminada</string>
     <string name="msg_post_reported">Gracias por avisarnos. Revisaremos esta publicación.</string>
     <string name="msg_comment_reported">Gracias por avisarnos. Revisaremos este comentario.</string>
@@ -807,7 +807,7 @@
     <string name="rate_thanks">Gracias. Así Yaari sigue siendo amable.</string>
     <string name="manner_low_short">El chat aleatorio está en pausa para ti</string>
     <string name="manner_low_title">El chat aleatorio está en pausa</string>
-    <string name="manner_low_body">Varias personas dijeron que sus chats recientes contigo no se sintieron bien, así que tu puntuación de modales está por debajo de 20. Las salas y el feed siguen abiertos. Las calificaciones de hace más de 90 días dejan de contar, y los chats amables la hacen subir.</string>
+    <string name="manner_low_body">Varias personas dijeron que sus chats recientes contigo no se sintieron bien, así que tu puntuación de modales está por debajo de 20. Las salas y las publicaciones siguen funcionando. Las calificaciones de hace más de 90 días dejan de contar, y los chats amables la hacen subir.</string>
     <string name="manner_low_ok">Entendido</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d calificación</item>

@@ -659,7 +659,7 @@
     <string name="post_report">ಪೋಸ್ಟ್ ರಿಪೋರ್ಟ್ ಮಾಡಿ</string>
     <string name="post_delete">ಪೋಸ್ಟ್ ಅಳಿಸಿ</string>
     <string name="post_delete_title">ಈ ಪೋಸ್ಟ್ ಅಳಿಸಬೇಕೇ?</string>
-    <string name="post_delete_text">ಅದರ ಲೈಕ್ ಮತ್ತು ಕಾಮೆಂಟ್‌ಗಳ ಜೊತೆಗೆ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಫೀಡ್‌ನಿಂದ ಮಾಯವಾಗುತ್ತದೆ.</string>
+    <string name="post_delete_text">ಅದರ ಲೈಕ್ ಮತ್ತು ಕಾಮೆಂಟ್‌ಗಳ ಜೊತೆಗೆ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಮಾಯವಾಗುತ್ತದೆ.</string>
     <string name="msg_post_deleted">ಪೋಸ್ಟ್ ಅಳಿಸಲಾಗಿದೆ</string>
     <string name="msg_post_reported">ತಿಳಿಸಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದ. ಈ ಪೋಸ್ಟ್ ಅನ್ನು ನಾವು ನೋಡುತ್ತೇವೆ.</string>
     <string name="msg_comment_reported">ತಿಳಿಸಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದ. ಈ ಕಾಮೆಂಟ್ ಅನ್ನು ನಾವು ನೋಡುತ್ತೇವೆ.</string>
@@ -809,7 +809,7 @@
     <string name="rate_thanks">ಧನ್ಯವಾದ. ಇದು Yaari ಯನ್ನು ಒಳ್ಳೆಯ ಜಾಗವಾಗಿಡುತ್ತದೆ.</string>
     <string name="manner_low_short">ನಿಮಗೆ ರ‍್ಯಾಂಡಮ್ ಚಾಟ್ ತಡೆಹಿಡಿಯಲಾಗಿದೆ</string>
     <string name="manner_low_title">ರ‍್ಯಾಂಡಮ್ ಚಾಟ್ ತಡೆಹಿಡಿಯಲಾಗಿದೆ</string>
-    <string name="manner_low_body">ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳು ಚೆನ್ನಾಗಿರಲಿಲ್ಲ ಎಂದು ಹಲವರು ಹೇಳಿದ್ದರಿಂದ, ನಿಮ್ಮ ಮ್ಯಾನರ್ ಸ್ಕೋರ್ 20 ಕ್ಕಿಂತ ಕಡಿಮೆ ಇದೆ. ರೂಮ್‌ಗಳು ಮತ್ತು ಫೀಡ್ ಇನ್ನೂ ತೆರೆದಿವೆ. 90 ದಿನಗಳಿಗಿಂತ ಹಳೆಯ ರೇಟಿಂಗ್‌ಗಳು ಲೆಕ್ಕಕ್ಕೆ ಬರುವುದಿಲ್ಲ, ಮತ್ತು ಒಳ್ಳೆಯ ಚಾಟ್‌ಗಳು ಸ್ಕೋರ್ ಅನ್ನು ಮತ್ತೆ ಹೆಚ್ಚಿಸುತ್ತವೆ.</string>
+    <string name="manner_low_body">ಇತ್ತೀಚಿನ ಚಾಟ್‌ಗಳು ಚೆನ್ನಾಗಿರಲಿಲ್ಲ ಎಂದು ಹಲವರು ಹೇಳಿದ್ದರಿಂದ, ನಿಮ್ಮ ಮ್ಯಾನರ್ ಸ್ಕೋರ್ 20 ಕ್ಕಿಂತ ಕಡಿಮೆ ಇದೆ. ರೂಮ್‌ಗಳು ಮತ್ತು ಪೋಸ್ಟ್‌ಗಳು ಇನ್ನೂ ಕೆಲಸ ಮಾಡುತ್ತವೆ. 90 ದಿನಗಳಿಗಿಂತ ಹಳೆಯ ರೇಟಿಂಗ್‌ಗಳು ಲೆಕ್ಕಕ್ಕೆ ಬರುವುದಿಲ್ಲ, ಮತ್ತು ಒಳ್ಳೆಯ ಚಾಟ್‌ಗಳು ಸ್ಕೋರ್ ಅನ್ನು ಮತ್ತೆ ಹೆಚ್ಚಿಸುತ್ತವೆ.</string>
     <string name="manner_low_ok">ಅರ್ಥವಾಯಿತು</string>
     <plurals name="manner_ratings">
         <item quantity="one">%1$d ರೇಟಿಂಗ್</item>
