@@ -100,7 +100,7 @@ export function ProfileHero({
         <LookName userId={profile.id} handle={profile.handle} className="mt-0.5 max-w-full px-4 text-base font-semibold" />
         {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
         {isVip(profile) ? (
-          <p className="mt-2 max-w-sm rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
+          <p className="mt-2 max-w-sm rounded-full bg-primary-strong px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
         ) : null}
         {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
         {style.status ? (

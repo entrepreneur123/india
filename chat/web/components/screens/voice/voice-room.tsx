@@ -766,7 +766,7 @@ function ControlBar({
         {mod && hands > 0 ? (
           <Button size="icon" variant="secondary" onClick={onRequests} aria-label={t('voice.requestsN', { n: num(hands) })}>
             <ReactionIcon kind="hand" size={22} />
-            <span className="absolute -top-1 -inset-e-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground ring-2 ring-background tabular-nums">
+            <span className="absolute -top-1 -inset-e-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary-strong px-1 text-[11px] font-bold text-primary-foreground ring-2 ring-background tabular-nums">
               {num(hands)}
             </span>
           </Button>

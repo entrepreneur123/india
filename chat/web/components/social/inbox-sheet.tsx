@@ -42,7 +42,9 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
     reload()
       .then((list) => {
         if (!list) return
-        if (alive) setFresh(new Set(list.filter((i) => !i.read).map((i) => i.id)))
+        // Closed before the list came, or nothing new: nothing is marked read.
+        if (!alive || list.every((i) => i.read)) return
+        setFresh(new Set(list.filter((i) => !i.read).map((i) => i.id)))
         return backend.markInboxRead()
       })
       .catch(() => undefined)

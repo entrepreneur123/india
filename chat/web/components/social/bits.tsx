@@ -12,7 +12,7 @@ export function CountBadge({ n, className }: { n: number; className?: string }) 
   return (
     <span
       className={cn(
-        'inline-grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[11px] leading-none font-bold text-primary-foreground tabular-nums',
+        'inline-grid h-5 min-w-5 place-items-center rounded-full bg-primary-strong px-1.5 text-[11px] leading-none font-bold text-primary-foreground tabular-nums',
         className,
       )}
       aria-hidden

@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils'
 
 /** Each pack's card, in the theme's brand colours. */
 const TONES: Record<string, { card: string; cap: string }> = {
-  sticker_namaste: { card: 'bg-primary-soft ring-1 ring-primary/50', cap: 'bg-primary text-primary-foreground' },
-  sticker_chai: { card: 'bg-card ring-2 ring-primary', cap: 'bg-primary text-primary-foreground' },
+  sticker_namaste: { card: 'bg-primary-soft ring-1 ring-primary/50', cap: 'bg-primary-strong text-primary-foreground' },
+  sticker_chai: { card: 'bg-card ring-2 ring-primary', cap: 'bg-primary-strong text-primary-foreground' },
   sticker_cricket: { card: 'bg-card ring-1 ring-border', cap: 'bg-foreground text-background' },
   sticker_love: { card: 'bg-primary', cap: 'bg-background text-primary-text' },
 }

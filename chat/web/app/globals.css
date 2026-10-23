@@ -25,6 +25,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-text: var(--primary-text);
   --color-primary-soft: var(--primary-soft);
+  --color-primary-strong: var(--primary-strong);
   --color-destructive: var(--destructive);
   --color-online: var(--online);
   --color-ink: var(--ink);
@@ -117,6 +118,8 @@
   --primary-foreground: #ffffff;
   --primary-text: #b45309;
   --primary-soft: #fff1e0;
+  /* Orange under small white text (5.2:1); --primary (3.2:1) only under large or bold-large text and icons. */
+  --primary-strong: #c2410c;
   --destructive: #c5221f;
   --online: #1e8e3e;
   /* Chats: a plain grey wall, orange-soft sent / white received bubbles. */

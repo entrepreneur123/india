@@ -570,7 +570,7 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
           </span>
           <span className="min-w-0">
             <span className="flex items-center gap-2">
-              <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] leading-none font-bold tracking-wide text-primary-foreground uppercase">
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary-strong px-1.5 py-0.5 text-[10px] leading-none font-bold tracking-wide text-primary-foreground uppercase">
                 <LiveBars className="h-2.5 [&>span]:bg-primary-foreground" /> {t('voice.live')}
               </span>
               <span className="truncate text-sm font-bold">{room.title}</span>
