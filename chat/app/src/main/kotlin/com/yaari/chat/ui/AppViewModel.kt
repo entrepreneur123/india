@@ -392,6 +392,7 @@ class AppViewModel(
             "handle_cooldown" -> R.string.err_handle_cooldown
             "name_invalid" -> R.string.err_name_invalid
             "not_owned" -> R.string.err_not_owned
+            "sticker_not_owned" -> R.string.err_sticker_not_owned
             "not_friends" -> R.string.err_not_allowed
             else -> R.string.err_network
         },
@@ -567,9 +568,15 @@ class AppViewModel(
                 }
                 backend.redeem(item, token)
                 redeemedTokens += token
-                val look = Cosmetic.isLook(item)
-                if (!look) runCatching { billing.finish(item, token) } // an ID change is used up, then bought again
-                notice(UiText(if (look) R.string.look_bought else R.string.handle_pass_bought))
+                val bought = Cosmetic.of(item)
+                if (bought == null) runCatching { billing.finish(item, token) } // an ID change is used up, then bought again
+                notice(
+                    when {
+                        bought == null -> UiText(R.string.handle_pass_bought)
+                        bought.kind.wearable -> UiText(R.string.look_bought)
+                        else -> UiText(R.string.item_bought, UiText(bought.label))
+                    },
+                )
                 looks.loadShop()
             } catch (e: CancellationException) {
                 throw e

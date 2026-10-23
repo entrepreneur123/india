@@ -76,6 +76,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -111,6 +112,7 @@ import com.yaari.chat.model.Media
 import com.yaari.chat.model.MediaKind
 import com.yaari.chat.model.Message
 import com.yaari.chat.model.Profile
+import com.yaari.chat.model.Stickers
 import kotlinx.coroutines.delay
 import com.yaari.chat.model.FriendState
 import androidx.compose.material.icons.rounded.Check
@@ -174,7 +176,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                                     )
                                 } else {
                                     Text(
-                                        stringResource(R.string.chat_subtitle, partner.city.ifBlank { stringResource(partner.gender.label) }),
+                                        stringResource(R.string.chat_subtitle, partner.city.ifBlank { partner.genderText() }),
                                         color = Brand.Muted, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
                                     )
                                 }
@@ -197,10 +199,12 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
             Box(Modifier.fillMaxWidth().height(1.dp).background(Brand.Line))
         }
         val country = partner.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
+        val wall = myWall()
+        Column(Modifier.weight(1f).chatWall(wall)) {
         Messages(
             chat.messages, chat.match.id, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, partner.name), typing = chat.partnerTyping,
             intro = country?.let { stringResource(R.string.matched_from, partner.name, it) }, partnerRead = chat.partnerRead,
-            ended = if (chat.partnerLeft) stringResource(R.string.partner_left, partner.name) else null,
+            ended = if (chat.partnerLeft) stringResource(R.string.partner_left, partner.name) else null, onWall = wall != null,
         )
         if (chat.partnerLeft) {
             Column(
@@ -212,7 +216,10 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Brand.Text) }
             }
         } else {
-            Composer(onText = vm::sendText, onMedia = vm::sendMedia, onTyping = vm::typing)
+            Composer(onText = vm::sendText, onMedia = vm::sendMedia, onTyping = vm::typing, onWall = wall != null) {
+                StickerButton({ vm.sendText(it) {} })
+            }
+        }
         }
     }
 
@@ -400,13 +407,25 @@ fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState
             onBack = vm::closeDm, typing = dm.partnerTyping,
             actions = { if (friend == FriendState.FRIENDS) FriendContactsButton(vm, r.partner) },
         )
-        Messages(
-            dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
-            partnerRead = dm.partnerRead,
-        )
-        if (closed) EndedBar(r.partner, friend, onAdd = { vm.addFriend(r.partner) }, onAccept = { vm.answerFriend(r.partner, true) })
-        else Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing)
+        val wall = myWall()
+        Column(Modifier.weight(1f).chatWall(wall)) {
+            Messages(
+                dm.messages, r.matchId, Modifier.weight(1f), hint = stringResource(R.string.say_hi_to, r.partner.name), typing = dm.partnerTyping,
+                partnerRead = dm.partnerRead, onWall = wall != null,
+            )
+            if (closed) EndedBar(r.partner, friend, onAdd = { vm.addFriend(r.partner) }, onAccept = { vm.answerFriend(r.partner, true) })
+            else Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing, onWall = wall != null) { StickerButton({ vm.sendDm(it) {} }) }
+        }
     }
+}
+
+/** My chat wall (046; only I see it), from my shop (asked for once). */
+@Composable
+private fun myWall(): WallDesign? {
+    val looks = LocalLooks.current ?: return null
+    val ui by looks.shop.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { looks.ensureShop() }
+    return wallOf(ui.shop?.wall)
 }
 
 /** Where the composer was: "Chat ended. Add … as a friend to keep talking." and the friend button's state. */
@@ -444,30 +463,33 @@ private fun EndedBar(partner: Profile, friend: FriendState, onAdd: () -> Unit, o
 /**
  * The conversation on the chat wallpaper. Runs of messages from one side sit 2 dp apart (only the first has a tail),
  * 8 dp between runs. [partnerRead]: my messages up to this id show two blue ticks. [ended]: the "… left" note.
+ * [onWall]: over my chat wall (046), which the parent draws. A sticker is drawn as its card, with no menu.
  */
 @Composable
 private fun Messages(
     messages: List<Message>, chatId: String, modifier: Modifier, hint: String, typing: Boolean = false, intro: String? = null,
-    partnerRead: Long = 0, ended: String? = null,
+    partnerRead: Long = 0, ended: String? = null, onWall: Boolean = false,
 ) {
     val colors = chatColors()
+    val bg = if (onWall) Color.Transparent else colors.wall
     val list = rememberLazyListState()
     LaunchedEffect(messages.size, typing, ended) {
         if (messages.isNotEmpty()) list.animateScrollToItem(maxOf(0, list.layoutInfo.totalItemsCount - 1))
     }
     if (messages.isEmpty() && !typing) {
         Column(
-            modifier.fillMaxSize().background(colors.wall).padding(24.dp),
+            modifier.fillMaxSize().background(bg).padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
         ) {
             intro?.let { ChatChip(it) }
-            Text(hint, color = colors.meta, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+            // On a wall (some are dark) the hint sits on a chip, as the other notes do.
+            if (onWall) ChatChip(hint) else Text(hint, color = colors.meta, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
             ended?.let { ChatChip(it, bold = true) }
         }
         return
     }
     LazyColumn(
-        modifier.fillMaxSize().background(colors.wall), state = list,
+        modifier.fillMaxSize().background(bg), state = list,
         contentPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
     ) {
         intro?.let { item(key = "intro") { ChatChip(it, Modifier.padding(bottom = 6.dp)) } }
@@ -478,10 +500,16 @@ private fun Messages(
                 contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart,
             ) {
                 Box(Modifier.fillMaxWidth(0.82f), contentAlignment = if (m.fromMe) Alignment.CenterEnd else Alignment.CenterStart) {
-                    val translation = lineTranslation(TranslateKind.CHAT, m.id, m.text?.takeIf { it.isNotEmpty() }, m.fromMe, chatId)
-                    PopIn(m.fromMe) {
-                        MessageMenu(m.text?.takeIf { it.isNotBlank() }, translation) {
-                            Bubble(m, tail = !grouped, read = m.fromMe && m.id <= partnerRead, translation = translation)
+                    val read = m.fromMe && m.id <= partnerRead
+                    val sticker = if (m.media == null) Stickers.of(m.text) else null
+                    if (sticker != null) {
+                        PopIn(m.fromMe) { StickerLine(sticker, m.fromMe) { BubbleMeta(m.at, m.fromMe, read) } }
+                    } else {
+                        val translation = lineTranslation(TranslateKind.CHAT, m.id, m.text?.takeIf { it.isNotEmpty() }, m.fromMe, chatId)
+                        PopIn(m.fromMe) {
+                            MessageMenu(m.text?.takeIf { it.isNotBlank() }, translation) {
+                                Bubble(m, tail = !grouped, read = read, translation = translation)
+                            }
                         }
                     }
                 }
@@ -623,6 +651,7 @@ private fun MatchReveal(matchId: String, partner: Profile) {
 @Composable
 fun Composer(
     onText: (String, () -> Unit) -> Unit, onMedia: ((Media) -> Unit)?, onTyping: () -> Unit, maxLength: Int = AppViewModel.MAX_TEXT, hint: String? = null,
+    onWall: Boolean = false, extra: (@Composable () -> Unit)? = null,
 ) {
     val colors = chatColors()
     var text by rememberSaveable { mutableStateOf("") }
@@ -633,7 +662,8 @@ fun Composer(
             onMedia(Media(uri.toString(), if (video) MediaKind.VIDEO else MediaKind.IMAGE))
         }
     }
-    Column(Modifier.fillMaxWidth().background(colors.wall)) {
+    // Over a wall the row gets a light veil, so its icons stay clear on dark walls too.
+    Column(Modifier.fillMaxWidth().background(if (onWall) Color.White.copy(alpha = 0.8f) else colors.wall)) {
         Row(
             Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 8.dp),
             verticalAlignment = Alignment.Bottom,
@@ -645,6 +675,7 @@ fun Composer(
                     tint = colors.meta,
                 )
             }
+            extra?.invoke()
             Box(
                 Modifier.weight(1f).padding(vertical = 2.dp).heightIn(min = 44.dp).shadow(1.dp, RoundedCornerShape(24.dp))
                     .background(colors.incoming).padding(horizontal = 16.dp, vertical = 11.dp),

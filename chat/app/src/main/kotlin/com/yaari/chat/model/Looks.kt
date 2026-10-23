@@ -16,8 +16,12 @@ enum class HandleCheck(val code: String) {
     }
 }
 
+/** What the shop sells: the four looks people wear, and (046) chat walls, sticker packs and VIP incognito. */
 enum class LookKind(val code: String) {
-    BADGE("badge"), COLOR("color"), FONT("font"), FRAME("frame");
+    BADGE("badge"), COLOR("color"), FONT("font"), FRAME("frame"), WALL("wall"), STICKER("sticker"), VIP("vip");
+
+    /** Worn on my ID or profile, seen by everyone (equip_look). */
+    val wearable get() = ordinal <= FRAME.ordinal
 
     companion object {
         fun of(code: String?) = entries.firstOrNull { it.code == code }
@@ -55,15 +59,26 @@ enum class Cosmetic(val id: String, val kind: LookKind, @StringRes val label: In
     FRAME_JEWEL("frame_jewel", LookKind.FRAME, R.string.look_frame_jewel),
     FRAME_SAND("frame_sand", LookKind.FRAME, R.string.look_frame_sand),
     FRAME_NEON("frame_neon", LookKind.FRAME, R.string.look_frame_neon),
-    FRAME_SAKURA("frame_sakura", LookKind.FRAME, R.string.look_frame_sakura);
+    FRAME_SAKURA("frame_sakura", LookKind.FRAME, R.string.look_frame_sakura),
+    WALL_SAFFRON("wall_saffron", LookKind.WALL, R.string.look_wall_saffron),
+    WALL_MIDNIGHT("wall_midnight", LookKind.WALL, R.string.look_wall_midnight),
+    WALL_PAISLEY("wall_paisley", LookKind.WALL, R.string.look_wall_paisley),
+    WALL_MEHNDI("wall_mehndi", LookKind.WALL, R.string.look_wall_mehndi),
+    WALL_STARS("wall_stars", LookKind.WALL, R.string.look_wall_stars),
+    WALL_WAVES("wall_waves", LookKind.WALL, R.string.look_wall_waves),
+    STICKER_NAMASTE("sticker_namaste", LookKind.STICKER, R.string.look_sticker_namaste),
+    STICKER_CHAI("sticker_chai", LookKind.STICKER, R.string.look_sticker_chai),
+    STICKER_CRICKET("sticker_cricket", LookKind.STICKER, R.string.look_sticker_cricket),
+    STICKER_LOVE("sticker_love", LookKind.STICKER, R.string.look_sticker_love),
+    VIP_ANON("vip_anon", LookKind.VIP, R.string.look_vip_anon);
 
     companion object {
         fun of(id: String?) = entries.firstOrNull { it.id == id }
 
-        /** A look's product id (verify-purchase's rule), as opposed to Plus and the gender pass. */
+        /** A shop item's product id (verify-purchase's rule; never consumed), as opposed to Plus and the passes. */
         fun isLook(productId: String) = LOOK_ID.matches(productId)
 
-        private val LOOK_ID = Regex("^(badge|color|font|frame)_[a-z0-9]{2,20}$")
+        private val LOOK_ID = Regex("^(badge|color|font|frame|wall|sticker|vip)_[a-z0-9]{2,20}$")
     }
 }
 
@@ -80,6 +95,7 @@ data class Look(
         LookKind.COLOR -> color
         LookKind.FONT -> font
         LookKind.FRAME -> frame
+        else -> null
     }
 
     /** The same look with [item] (null: none) worn for [kind]. */
@@ -88,14 +104,31 @@ data class Look(
         LookKind.COLOR -> copy(color = item)
         LookKind.FONT -> copy(font = item)
         LookKind.FRAME -> copy(frame = item)
+        else -> this
     }
 }
 
 /**
  * shop(): what is on sale (by kind, in the shop's order), what I own and wear, and [handleNext]: when my ID may change
- * again for free (epoch ms; null: now), and [handlePasses]: paid ID changes left for before then.
+ * again for free (epoch ms; null: now), and [handlePasses]: paid ID changes left for before then. 046: [wall], my chat
+ * background (null: the plain one; only I see it), and [anon]: VIP incognito is on.
  */
-data class Shop(val items: List<LookItem>, val owned: Set<String>, val look: Look?, val handleNext: Long? = null, val handlePasses: Int = 0)
+data class Shop(
+    val items: List<LookItem>, val owned: Set<String>, val look: Look?, val handleNext: Long? = null, val handlePasses: Int = 0,
+    val wall: String? = null, val anon: Boolean = false,
+)
+
+// ---- VIP incognito (046): how the server shows someone in it to strangers: "VIP", age 0, no photo, ID or country ----
+
+const val VIP_NAME = "VIP"
+
+/** Someone shown in VIP incognito (a room line's sender has no age: there the name and the missing photo tell). */
+fun isVip(name: String, age: Int, photo: String?) = name == VIP_NAME && age <= 0 && photo == null
+
+val Profile.isVip get() = isVip(name, age, photoUri)
+
+/** "Priya, 24", or only the name when the age is hidden (0: VIP incognito). */
+fun nameAge(name: String, age: Int) = if (age > 0) "$name, $age" else name
 
 /** Someone found by ID, or on my block list (042). */
 data class PersonRow(val id: String, val handle: String, val name: String, val photoUri: String?)

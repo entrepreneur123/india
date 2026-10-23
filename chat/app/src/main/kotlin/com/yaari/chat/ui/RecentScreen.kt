@@ -68,6 +68,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.foundation.layout.widthIn
 import com.yaari.chat.model.Profile
+import com.yaari.chat.model.Stickers
 
 @Composable
 fun RecentTab(vm: AppViewModel, s: UiState, social: SocialState, onSettings: () -> Unit) {
@@ -192,7 +193,7 @@ private fun RecentList(vm: AppViewModel, s: UiState, b: Badges) {
         items(s.recents, key = { it.partner.id }) { r ->
             val state = s.friendState(r.partner.id)
             PersonRow(
-                modifier = Modifier.animateItem(), p = r.partner, subtitle = r.lastText ?: r.partner.genderCity(), time = r.metAt,
+                modifier = Modifier.animateItem(), p = r.partner, subtitle = r.lastText?.let { Stickers.preview(it, stringResource(R.string.chat_sticker)) } ?: r.partner.genderCity(), time = r.metAt,
                 unread = b.unread(r.matchId),
                 onOpen = { vm.openDm(r.partner.id) }, onAvatar = { vm.openProfile(r.partner) },
             ) {

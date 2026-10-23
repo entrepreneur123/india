@@ -60,6 +60,9 @@ import coil3.compose.AsyncImage
 import com.yaari.chat.R
 import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
+import com.yaari.chat.model.VIP_NAME
+import com.yaari.chat.model.isVip
+import com.yaari.chat.model.nameAge
 
 // ---- Design tokens ------------------------------------------------------------------------------
 // White and orange, like the web (app/globals.css): white surfaces everywhere, orange as the one brand colour, on
@@ -254,7 +257,10 @@ fun CircleIconButton(
     }
 }
 
-/** Photo, or the first letter on one neutral grey (no colour per person). [ring] draws a thin saffron ring with a gap (own profile). */
+/**
+ * Photo, or the first letter on one neutral grey (no colour per person); someone in VIP incognito (046): "VIP" in white
+ * on orange. [ring] draws a thin saffron ring with a gap (own profile).
+ */
 @Composable
 fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = false, gap: Color = MaterialTheme.colorScheme.background) {
     val inner = if (ring) size - 8.dp else size
@@ -266,6 +272,10 @@ fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = 
             if (p.photoUri != null) {
                 // Coil decodes to the avatar's own size (it reads the bounded constraints), never the full photo.
                 AsyncImage(p.photoUri, contentDescription = p.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            } else if (p.isVip) {
+                Box(Modifier.fillMaxSize().background(Brand.Saffron), contentAlignment = Alignment.Center) {
+                    Text(VIP_NAME, color = Brand.OnSaffron, fontSize = maxOf(9f, inner.value * 0.3f).sp, fontWeight = FontWeight.ExtraBold, fontFamily = Jakarta)
+                }
             } else {
                 Text(p.name.take(1).uppercase(), color = MaterialTheme.colorScheme.onSurface, fontSize = (inner.value * 0.42f).sp, fontWeight = FontWeight.SemiBold, fontFamily = Jakarta)
             }
@@ -276,15 +286,19 @@ fun Avatar(p: Profile, size: Dp, modifier: Modifier = Modifier, ring: Boolean = 
 /** "Priya 🇮🇳" */
 fun Profile.nameWithFlag() = flagOf(country).let { if (it.isEmpty()) name else "$name $it" }
 
-/** "Priya, 22 🇮🇳", the mockup's way of naming someone you meet. */
-fun Profile.nameAgeFlag() = flagOf(country).let { if (it.isEmpty()) "$name, $age" else "$name, $age $it" }
+/** "Priya, 22 🇮🇳", the mockup's way of naming someone you meet (no age for someone in VIP incognito). */
+fun Profile.nameAgeFlag() = flagOf(country).let { if (it.isEmpty()) nameAge(name, age) else "${nameAge(name, age)} $it" }
 
 @Composable
-fun Profile.subtitle() = listOf(age.toString(), stringResource(gender.label), city).filter { it.isNotBlank() }.joinToString(" · ")
+fun Profile.subtitle() = listOf(if (age > 0) age.toString() else "", genderText(), city).filter { it.isNotBlank() }.joinToString(" · ")
+
+/** Nothing for someone in VIP incognito: strangers learn nothing about them. */
+@Composable
+fun Profile.genderText() = if (isVip) "" else stringResource(gender.label)
 
 /** "Female · Mumbai" */
 @Composable
-fun Profile.genderCity() = listOf(stringResource(gender.label), city).filter { it.isNotBlank() }.joinToString(" · ")
+fun Profile.genderCity() = listOf(genderText(), city).filter { it.isNotBlank() }.joinToString(" · ")
 
 /** Opens the phone's video player (signed https URL for received videos, content:// for our own). */
 internal fun playVideo(context: Context, uri: String) {

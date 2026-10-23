@@ -174,7 +174,7 @@ class AppViewModelTest {
         val partner = vm.state.value.chat!!.match.partner
         vm.leave(next = false); advanceUntilIdle()
         assertNull(vm.state.value.chat)
-        assertEquals(partner.id, vm.state.value.recents.single().partner.id)
+        assertEquals(partner.id, vm.state.value.recents.first().partner.id) // newest first (the demo's VIP chat is older)
     }
 
     @Test fun premiumExitUnlocksAfter200msAndNextSkipsLastPartner() = runTest(dispatcher) {

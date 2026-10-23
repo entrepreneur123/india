@@ -44,6 +44,10 @@ class LooksController(
     private val _shop = MutableStateFlow(ShopUi())
     val shop: StateFlow<ShopUi> = _shop.asStateFlow()
 
+    /** The shop opened over everything (from a chat's stickers) on this tab; null: not open. */
+    private val _shopOver = MutableStateFlow<LookKind?>(null)
+    val shopOver: StateFlow<LookKind?> = _shopOver.asStateFlow()
+
     private val _handle = MutableStateFlow<HandleField?>(null)
     val handle: StateFlow<HandleField?> = _handle.asStateFlow()
 
@@ -61,6 +65,7 @@ class LooksController(
         loadedAt.clear()
         _people.value = emptyMap()
         _shop.value = ShopUi()
+        _shopOver.value = null
         _handle.value = null
     }
 
@@ -127,6 +132,19 @@ class LooksController(
         }
     }
 
+    /** The chats (wall, stickers) and Settings need my shop: asked once, unless known or on its way. */
+    fun ensureShop() {
+        if (_shop.value.shop == null && shopJob?.isActive != true) loadShop()
+    }
+
+    fun openShop(tab: LookKind) {
+        _shopOver.value = tab
+    }
+
+    fun closeShop() {
+        _shopOver.value = null
+    }
+
     /** The item I own or could buy, tried in the preview (null: none of that kind). */
     fun tryOn(kind: LookKind, item: String?) = _shop.update { s -> s.copy(trying = s.trying?.with(kind, item)) }
 
@@ -142,6 +160,31 @@ class LooksController(
                 val look = backend.equipLook(next.badge, next.color, next.font, next.frame)
                 _shop.update { u -> u.copy(shop = u.shop?.copy(look = look), trying = u.trying?.with(kind, item)) }
                 mine(look)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                notice(explain(e))
+            } finally {
+                _shop.update { it.copy(busy = null) }
+            }
+        }
+    }
+
+    /** 046: my chat wall (null: the plain one). */
+    fun setWall(item: String?) = change(item ?: LookKind.WALL.code, UiText(R.string.looks_saved), { backend.setWall(item) }) { it.copy(wall = item) }
+
+    /** 046: VIP incognito on or off. */
+    fun setAnon(on: Boolean) = change(LookKind.VIP.code, UiText(if (on) R.string.vip_on else R.string.vip_off), { backend.setAnon(on) }) { it.copy(anon = on) }
+
+    /** One change to my shop at a time ([busy]); the copy here follows when the server took it, and says so. */
+    private fun change(busy: String, done: UiText, call: suspend () -> Unit, apply: (Shop) -> Shop) {
+        if (_shop.value.busy != null) return
+        _shop.update { it.copy(busy = busy) }
+        scope.launch {
+            try {
+                call()
+                _shop.update { u -> u.copy(shop = u.shop?.let(apply)) }
+                notice(done)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

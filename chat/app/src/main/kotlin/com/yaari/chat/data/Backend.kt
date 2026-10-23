@@ -329,6 +329,10 @@ interface Backend {
     suspend fun shop(): Shop
     /** Wears these, all four at once (null: none of that kind). Refused with not_owned, bad_request. */
     suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look
+    /** 046: my chat wall (null: none; only I see it). Refused with not_owned. */
+    suspend fun setWall(item: String?)
+    /** 046: VIP incognito on or off. Refused with not_owned. */
+    suspend fun setAnon(on: Boolean)
     /** IDs and looks of up to 100 people I may see (others are left out), as [trust]. */
     suspend fun looks(userIds: List<String>): List<Look>
 

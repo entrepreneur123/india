@@ -877,6 +877,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
     @Serializable private data class ShopRow(
         val items: List<ItemRow> = emptyList(), val owned: List<String> = emptyList(), val look: LookRow? = null,
         @SerialName("handle_next") val handleNext: String? = null, @SerialName("handle_passes") val handlePasses: Int = 0,
+        val wall: String? = null, val anon: Boolean = false,
     )
     @Serializable private data class PersonRowRaw(val id: String, val handle: String, val name: String, @SerialName("photo_path") val photoPath: String? = null)
 
@@ -895,8 +896,18 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         val r = client.postgrest.rpc("shop").decodeAs<ShopRow>()
         Shop(
             r.items.mapNotNull { i -> LookKind.of(i.kind)?.let { LookItem(i.id, it, i.priceInr) } }, r.owned.toSet(), r.look?.let(::toLook),
-            r.handleNext?.let { ts(it).toEpochMilli() }, r.handlePasses,
+            r.handleNext?.let { ts(it).toEpochMilli() }, r.handlePasses, r.wall, r.anon,
         )
+    }
+
+    override suspend fun setWall(item: String?) = call {
+        client.postgrest.rpc("set_wall", buildJsonObject { put("p_item", item) })
+        Unit
+    }
+
+    override suspend fun setAnon(on: Boolean) = call {
+        client.postgrest.rpc("set_anon", buildJsonObject { put("p_on", on) })
+        Unit
     }
 
     override suspend fun equipLook(badge: String?, color: String?, font: String?, frame: String?): Look = call {
@@ -1991,7 +2002,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private val TRANSLATE_CODES = listOf("translate_unavailable", "cannot_translate", "translate_failed", "slow_down", "not_found")
         // Most specific first: a message is matched by the first code it contains.
         private val CODES = listOf(
-            "handle_invalid", "handle_reserved", "handle_taken", "handle_cooldown", "name_invalid", "not_owned",
+            "handle_invalid", "handle_reserved", "handle_taken", "handle_cooldown", "name_invalid", "sticker_not_owned", "not_owned",
             "verify_required", "manner_low", "already_verified", "kyc_unavailable", "kyc_failed", "already_rated", "too_late",
             "not_signed_in", "room_closed", "room_gender", "room_age", "room_full", "room_title", "room_size", "bad_request",
             "exit_locked", "premium_required", "banned", "under_18", "slow_down", "not_allowed", "not_found",

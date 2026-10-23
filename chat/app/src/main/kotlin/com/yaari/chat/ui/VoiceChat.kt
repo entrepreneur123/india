@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.IntOffset
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.VoicePoll
 import com.yaari.chat.model.VoiceReply
+import com.yaari.chat.model.Stickers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.drop
 import kotlin.math.roundToInt
@@ -236,7 +237,8 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                             is VoiceLine.Text -> {
                                 val prev = lines.getOrNull(i - 1)
                                 val grouped = prev is VoiceLine.Text && prev.sender.id == line.sender.id && line.reply == null
-                                val translation = lineTranslation(TranslateKind.ROOM, line.id, line.text, line.fromMe, chat.roomId)
+                                // A sticker (046) is no text: nothing to translate or copy.
+                                val translation = lineTranslation(TranslateKind.ROOM, line.id, line.text.takeIf { Stickers.of(it) == null }, line.fromMe, chat.roomId)
                                 Replyable(line, chat.onReply, translation) { menu ->
                                     Box(Modifier.padding(top = if (grouped) 2.dp else 8.dp)) {
                                         ChatLine(line, grouped, chat, menu, onQuote = jump, translation = translation) { onPerson(line.sender.id) }
@@ -391,7 +393,7 @@ private fun Replyable(
                         onClick = { menu = false; translation?.showOriginal?.invoke() },
                     )
                 }
-                if (line is VoiceLine.Text) {
+                if (line is VoiceLine.Text && Stickers.of(line.text) == null) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.chat_copy)) }, leadingIcon = { Icon(Icons.Rounded.ContentCopy, null) },
                         onClick = {
@@ -444,12 +446,34 @@ private fun ChatLine(
     translation: LineTranslation? = null, onPerson: () -> Unit,
 ) {
     val colors = chatColors()
+    val press = Modifier.combinedClickable(interactionSource = null, indication = null, onLongClick = onMenu, onClick = {})
+    val quote: @Composable () -> Unit = { line.reply?.let { r -> Quote(r, mine = r.senderId == chat.myId, onClick = { onQuote(r.id) }) } }
+    Stickers.of(line.text)?.let { sticker ->
+        // A sticker: the card with no bubble; the sender's name and a quote above it, on a small bubble of their own.
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = if (line.fromMe) Arrangement.End else Arrangement.Start, verticalAlignment = Alignment.Top) {
+            if (!line.fromMe) {
+                if (grouped) Spacer(Modifier.width(28.dp))
+                else Avatar(line.sender, 28.dp, Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onPerson))
+            }
+            Column(Modifier.padding(start = 2.dp).then(press), horizontalAlignment = if (line.fromMe) Alignment.End else Alignment.Start) {
+                val name = !line.fromMe && !grouped
+                if (name || line.reply != null) {
+                    BubbleShell(line.fromMe, tail = false, Modifier.padding(bottom = 4.dp), padding = Modifier.padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 5.dp)) {
+                        Column(Modifier.width(IntrinsicSize.Max)) {
+                            if (name) SenderName(line.sender.name, line.sender.id, onPerson, onMenu = onMenu)
+                            quote()
+                        }
+                    }
+                }
+                StickerLine(sticker, line.fromMe, size = 104.dp) { BubbleMeta(line.at, mine = false, read = false) }
+            }
+        }
+        return
+    }
     val mentioned = !line.fromMe && VoiceController.mentions(line.text, chat.myName)
     val shown = translation?.view?.text ?: line.text
     val text = rememberLinked(withMentions(shown, chat.names + chat.myName, Brand.Saffron), colors.text, chat.onLink)
     val card: @Composable () -> Unit = { MessageLinkCard(line.text, Modifier.padding(top = 2.dp, bottom = 4.dp), chat.onRequestSong, chat.onLink) }
-    val press = Modifier.combinedClickable(interactionSource = null, indication = null, onLongClick = onMenu, onClick = {})
-    val quote: @Composable () -> Unit = { line.reply?.let { r -> Quote(r, mine = r.senderId == chat.myId, onClick = { onQuote(r.id) }) } }
     if (line.fromMe) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
             Box(Modifier.fillMaxWidth(0.88f), contentAlignment = Alignment.CenterEnd) {
@@ -505,7 +529,7 @@ private fun Quote(reply: VoiceReply, mine: Boolean, onClick: () -> Unit) {
     val body = when (reply.kind) {
         VoiceReply.Kind.PHOTO -> stringResource(R.string.chat_quote_photo)
         VoiceReply.Kind.POLL -> stringResource(R.string.chat_quote_poll, reply.text.orEmpty())
-        VoiceReply.Kind.TEXT -> reply.text.orEmpty()
+        VoiceReply.Kind.TEXT -> Stickers.preview(reply.text.orEmpty(), stringResource(R.string.chat_sticker))
     }
     val label = stringResource(R.string.chat_quote_of, name, body)
     Row(
@@ -731,7 +755,8 @@ fun VoiceComposer(
                     .clickable(role = Role.Button, onClick = onIcebreaker).semantics { contentDescription = ib },
                 contentAlignment = Alignment.Center,
             ) { GlyphIcon(Glyph.ICEBREAKER, size = 24.dp) }
-            Spacer(Modifier.width(8.dp))
+            StickerButton({ onSend(it) {} }, background = MaterialTheme.colorScheme.surfaceContainerHigh, tint = MaterialTheme.colorScheme.onSurface, size = 44.dp)
+            Spacer(Modifier.width(4.dp))
             Box(
                 Modifier.weight(1f).heightIn(min = 44.dp).clip(RoundedCornerShape(22.dp)).background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -787,7 +812,7 @@ private fun QuoteBar(reply: VoiceReply, mine: Boolean, onCancel: () -> Unit) {
                 when (reply.kind) {
                     VoiceReply.Kind.PHOTO -> stringResource(R.string.chat_quote_photo)
                     VoiceReply.Kind.POLL -> stringResource(R.string.chat_quote_poll, reply.text.orEmpty())
-                    VoiceReply.Kind.TEXT -> reply.text.orEmpty()
+                    VoiceReply.Kind.TEXT -> Stickers.preview(reply.text.orEmpty(), stringResource(R.string.chat_sticker))
                 },
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis,
             )

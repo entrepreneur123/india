@@ -43,6 +43,8 @@ import androidx.compose.material3.ripple
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.yaari.chat.Flavor
 import com.yaari.chat.R
+import com.yaari.chat.model.Cosmetic
 import com.yaari.chat.domain.ExitPolicy
 import com.yaari.chat.domain.TranslateTargets
 
@@ -122,7 +125,7 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
             val tr = vm.translator
             Group(stringResource(R.string.settings_translation)) {
                 if (tr.available) {
-                    SwitchItem(stringResource(R.string.translate_auto), stringResource(R.string.translate_auto_sub), tr.auto, tr::switchAuto)
+                    SwitchItem(stringResource(R.string.translate_auto), stringResource(R.string.translate_auto_sub), tr.auto, onChange = tr::switchAuto)
                     Line()
                 }
                 val targetName = TranslateTargets.names[tr.target].orEmpty()
@@ -130,6 +133,13 @@ fun SettingsScreen(vm: AppViewModel, s: UiState, onBack: () -> Unit, onEditProfi
             }
 
             Group(stringResource(R.string.safety)) {
+                // VIP incognito (046), once bought: the same switch as in the shop.
+                val shop by vm.looks.shop.collectAsStateWithLifecycle()
+                LaunchedEffect(Unit) { vm.looks.ensureShop() }
+                shop.shop?.takeIf { Cosmetic.VIP_ANON.id in it.owned }?.let { mine ->
+                    SwitchItem(stringResource(R.string.vip_toggle), stringResource(R.string.vip_toggle_body), mine.anon, enabled = shop.busy == null, onChange = vm.looks::setAnon)
+                    Line()
+                }
                 Item(stringResource(R.string.blocked_accounts)) { blocked = true }
                 Line()
                 Item(stringResource(R.string.community_rules), expanded = rules) { rules = !rules }
@@ -326,9 +336,9 @@ private fun LanguageDialog(current: String, onDismiss: () -> Unit, onPick: (Stri
 
 /** On and off with a switch; the whole row toggles it. */
 @Composable
-private fun SwitchItem(label: String, sub: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+fun SwitchItem(label: String, sub: String?, checked: Boolean, modifier: Modifier = Modifier, enabled: Boolean = true, onChange: (Boolean) -> Unit) {
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 56.dp).toggleable(checked, role = Role.Switch, onValueChange = onChange)
+        modifier.fillMaxWidth().heightIn(min = 56.dp).toggleable(checked, enabled = enabled, role = Role.Switch, onValueChange = onChange)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

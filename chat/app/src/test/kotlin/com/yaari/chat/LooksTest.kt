@@ -198,7 +198,7 @@ class LooksTest {
         signedIn()
         val shop = fake.shop()
         assertEquals(Cosmetic.entries.map { it.id }, shop.items.map { it.id })
-        assertEquals(26, shop.items.size)
+        assertEquals(37, shop.items.size)
         assertEquals(129, shop.items.first { it.id == "color_rainbow" }.priceInr)
         assertTrue(shop.owned.isEmpty())
         assertEquals(Look(shop.look!!.userId, shop.look.handle), shop.look)

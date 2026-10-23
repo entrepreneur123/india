@@ -245,6 +245,8 @@ private fun Screens(vm: AppViewModel, s: UiState) {
             enter = slideInVertically(tween(320, easing = FastOutSlowInEasing)) { it / 3 } + fadeIn(tween(200)),
             exit = slideOutVertically(tween(260)) { it / 3 } + fadeOut(tween(200)),
         ) { lastViewed?.let { p -> ProfileScreen(vm, s.viewing ?: p, s) } }
+        // The shop opened from a chat's stickers (a pack to get): over the chat, which stays as it was.
+        vm.looks.shopOver.collectAsStateWithLifecycle().value?.let { tab -> key(tab) { LooksShopScreen(vm, s, me, tab, onDone = vm.looks::closeShop) } }
         // A link tapped in any chat: the in-app viewer over everything.
         LinkViewerHost(links)
     } }

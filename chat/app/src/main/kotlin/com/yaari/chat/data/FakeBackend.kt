@@ -43,6 +43,8 @@ import com.yaari.chat.model.Look
 import com.yaari.chat.model.LookItem
 import com.yaari.chat.model.LookKind
 import com.yaari.chat.model.Shop
+import com.yaari.chat.model.Stickers
+import com.yaari.chat.model.VIP_NAME
 import com.yaari.chat.model.PostRef
 import com.yaari.chat.model.PostVisibility
 import com.yaari.chat.model.ProfilePrompt
@@ -166,6 +168,17 @@ open class FakeBackend(
         notify(InboxKind.FRIEND_REQUEST, POOL.first { it.id == "p3" }, at = clock() - 3_600_000L)
         seedPosts()
         seedRatings()
+        seedVip()
+    }
+
+    /** 046: someone in VIP incognito I chatted with three days ago, who sent a sticker (as a stranger sees them). */
+    private fun seedVip() {
+        val at = clock() - 3 * DAY
+        matches["m-vip"] = FakeMatch(VIP, at).apply {
+            end(at + 600_000L)
+            messages += Message(nextId++, false, Stickers.body(Cosmetic.STICKER_NAMASTE, 1), null, at + 60_000L)
+            readUpto["m-vip"] = messages.last().id // seen back then
+        }
     }
 
     /** The demo's people posted over the last days; some posts are public (anyone opening the profile), with likes and comments. */
@@ -530,6 +543,7 @@ open class FakeBackend(
         // chat_open: an ended chat goes on only between friends (the server's row-level security, which the live
         // backend reports as "blocked").
         if (m.ended && friendships[m.partner.id] != FriendState.FRIENDS) throw BackendException("blocked")
+        checkSticker(text)
         val msg = Message(nextId++, true, text, media, clock())
         m.messages += msg
         m.outgoing.trySend(Outgoing.Text(text)) // after the chat ends this is a DM; the partner still answers
@@ -590,7 +604,7 @@ open class FakeBackend(
         if (userId == phone?.let { accounts[it] }?.id) return me()
         voice.profileOf(userId)?.let { return it } // people met in a voice room
         if (!visible(userId)) return null
-        return POOL.firstOrNull { it.id == userId }?.let { it.copy(posts = postsBy(it.id), style = styles[it.id] ?: ProfileStyle()) }
+        return (POOL.firstOrNull { it.id == userId } ?: VIP.takeIf { it.id == userId })?.let { it.copy(posts = postsBy(it.id), style = styles[it.id] ?: ProfileStyle()) }
     }
 
     /** The server's can_view: chatted with, a friend or a request, someone in a demo room, or who posts publicly. */
@@ -602,7 +616,7 @@ open class FakeBackend(
     private val met = mutableMapOf<String, Profile>()
 
     /** A demo person by id: the scripted pool, or someone met in a demo room. */
-    private fun personFor(id: String) = POOL.firstOrNull { it.id == id } ?: met[id] ?: voice.profileOf(id)
+    private fun personFor(id: String) = POOL.firstOrNull { it.id == id } ?: VIP.takeIf { it.id == id } ?: met[id] ?: voice.profileOf(id)
 
     override suspend fun addPost(text: String, imageUri: String?, visibility: PostVisibility): Post {
         val me = me()
@@ -760,7 +774,33 @@ open class FakeBackend(
         return Shop(
             Cosmetic.entries.map { LookItem(it.id, it.kind, PRICES.getValue(it.id)) }, owned[me.id].orEmpty().toSet(), myLook(),
             handleSetAt[me.id]?.let { it + HANDLE_COOLDOWN_MS }?.takeIf { it > clock() }, handlePasses[me.id] ?: 0,
+            walls[me.id], me.id in anon,
         )
+    }
+
+    /** 046: each account's chat wall, and who is in VIP incognito. */
+    private val walls = mutableMapOf<String, String>()
+    private val anon = mutableSetOf<String>()
+
+    private fun owns(item: String) = item in owned[me().id].orEmpty()
+
+    override suspend fun setWall(item: String?) {
+        val me = me()
+        if (item == null) walls -= me.id
+        else if (!item.startsWith("wall_") || !owns(item)) throw BackendException("not_owned")
+        else walls[me.id] = item
+    }
+
+    override suspend fun setAnon(on: Boolean) {
+        val me = me()
+        if (on && !owns(Cosmetic.VIP_ANON.id)) throw BackendException("not_owned")
+        if (on) anon += me.id else anon -= me.id
+    }
+
+    /** chat_body_check: a sticker needs its pack (ordinary text never does). */
+    private fun checkSticker(text: String?) {
+        val st = Stickers.of(text) ?: return
+        if (!owns(st.pack)) throw BackendException("sticker_not_owned")
     }
 
     private fun personRow(id: String) = personOf(id)?.let { p -> handleOf(id)?.let { PersonRow(id, it, p.name, p.photoUri) } }
@@ -825,7 +865,7 @@ open class FakeBackend(
     /** About half of the people in the demo's rooms wear one of the demo looks too. */
     private fun roomLook(id: String) = if (voice.profileOf(id) != null) DEMO_LOOKS.values.toList().getOrNull(Math.floorMod(id.hashCode(), 2 * DEMO_LOOKS.size)) else null
 
-    /** redeem_cosmetic: mine for good; the first of its kind is worn at once. */
+    /** redeem_cosmetic: mine for good; the first look of its kind is worn at once (walls are chosen by hand). */
     private fun grantLook(item: Cosmetic) {
         val me = me()
         val list = owned.getOrPut(me.id) { mutableListOf() }
@@ -1032,7 +1072,7 @@ open class FakeBackend(
     override suspend fun voiceLines(roomId: String) = voice.lines(roomId).filter {
         (it !is VoiceLine.Text || it.sender.id !in blocked) && (it !is VoiceLine.Photo || it.sender.id !in blocked)
     }
-    override suspend fun sendVoice(roomId: String, text: String, replyTo: Long?) = voice.send(roomId, text, replyTo)
+    override suspend fun sendVoice(roomId: String, text: String, replyTo: Long?) = checkSticker(text).let { voice.send(roomId, text, replyTo) }
     /** The demo keeps the photo on the phone: the line shows it from where it is. */
     override suspend fun sendVoicePhoto(roomId: String, jpegUri: String) = voice.photo(roomId, jpegUri)
     override suspend fun voiceIcebreaker(roomId: String) = voice.icebreaker(roomId)
@@ -1184,7 +1224,12 @@ open class FakeBackend(
             "color_sunset" to 99, "color_aurora" to 99, "color_rainbow" to 129,
             "font_script" to 69, "font_retro" to 69, "font_bold" to 69, "font_pixel" to 69, "font_round" to 69, "font_future" to 69,
             "frame_frost" to 199, "frame_fire" to 199, "frame_jewel" to 249, "frame_sand" to 199, "frame_neon" to 149, "frame_sakura" to 149,
+            "wall_saffron" to 79, "wall_midnight" to 79, "wall_paisley" to 79, "wall_mehndi" to 79, "wall_stars" to 79, "wall_waves" to 79,
+            "sticker_namaste" to 49, "sticker_chai" to 49, "sticker_cricket" to 49, "sticker_love" to 49, "vip_anon" to 299,
         )
+
+        /** 046: someone in VIP incognito, as the server shows them to a stranger. */
+        val VIP = Profile("p-vip", VIP_NAME, Gender.FEMALE, 0, "", "")
 
         private val REPLIES = listOf(
             "Hii 😊", "Where are you from?", "Haha nice", "What do you do?", "Same here!",
