@@ -146,7 +146,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
           aria-label={`${ft('post.like')}, ${plural(post.likes, 'post.likes.one', 'post.likes.other')}`}
           className={cn(
             'flex h-11 items-center gap-1.5 rounded-full px-2.5 text-sm font-bold tabular-nums transition-colors duration-150 hover:bg-muted',
-            post.liked ? 'text-[#d61f4f] night:text-[#ff6b8b]' : 'text-foreground',
+            post.liked ? 'text-[#d61f4f]' : 'text-foreground',
           )}
         >
           <span key={pop} className={cn('grid', pop > 0 && 'animate-heart-pop')}>

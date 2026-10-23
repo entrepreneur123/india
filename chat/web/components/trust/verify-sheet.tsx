@@ -244,10 +244,10 @@ function Intro({
         <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-pretty text-muted-foreground">{tt(gate ? 'verify.gateBody' : 'verify.lead')}</p>
       </div>
       <div className="flex flex-col gap-3 px-5 pb-6">
-        <ol className="overflow-hidden rounded-3xl bg-muted/70 night:bg-white/5">
+        <ol className="overflow-hidden rounded-3xl bg-muted/70">
           {steps.map((s, i) => (
             <li key={s.title} className={cn('flex items-center gap-3.5 px-4 py-3', i > 0 && 'border-t border-border/70')}>
-              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-card shadow-[0_1px_2px_rgb(0_0_0/0.06)] night:bg-white/8">{s.icon}</span>
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-card shadow-[0_1px_2px_rgb(0_0_0/0.06)]">{s.icon}</span>
               <span className="min-w-0 text-start">
                 <span className="block text-[15px] font-bold">{tt(s.title)}</span>
                 <span className="block text-[13px] leading-snug text-muted-foreground">{tt(s.body)}</span>

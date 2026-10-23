@@ -37,16 +37,16 @@ export const isItem = (id: unknown): id is ItemId => typeof id === 'string' && K
 export const kindOf = (id: ItemId): ItemKind => id.slice(0, id.indexOf('_')) as ItemKind
 
 /**
- * ID colours: one tone for light screens and one for night screens, or a horizontal gradient (the same in both);
- * the rainbow slides slowly (6 s, still with reduced motion).
+ * ID colours: one tone (≥ 4.5:1 on white) or a horizontal gradient; the rainbow slides slowly (6 s, still with
+ * reduced motion).
  */
-export type ColorDesign = { light: string; dark: string } | { stops: string[]; slide?: boolean }
+export type ColorDesign = string | { stops: string[]; slide?: boolean }
 export const COLOR_DESIGNS: Record<ColorId, ColorDesign> = {
-  color_gold: { light: '#A87400', dark: '#FFD54A' },
-  color_rose: { light: '#C2185B', dark: '#FF8AB3' },
-  color_ocean: { light: '#0277BD', dark: '#4FC3F7' },
-  color_emerald: { light: '#00796B', dark: '#4DD0A8' },
-  color_violet: { light: '#6A1B9A', dark: '#CE93D8' },
+  color_gold: '#A87400',
+  color_rose: '#C2185B',
+  color_ocean: '#0277BD',
+  color_emerald: '#00796B',
+  color_violet: '#6A1B9A',
   color_sunset: { stops: ['#FF6A3D', '#FF2E8B', '#A63DFF'] },
   color_aurora: { stops: ['#00C9A7', '#3D8BFF', '#B44DFF'] },
   color_rainbow: { stops: ['#FF4D4D', '#FFA53D', '#F5D300', '#34C759', '#3DB8FF', '#9B5CFF'], slide: true },

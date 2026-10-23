@@ -17,11 +17,11 @@ import { useLooksT } from '@/components/looks/looks-text'
 // @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
 // variables (lib/profile-style.ts accentVars; the old per-profile colour is gone).
 
-/** The accent's variables for a subtree (`--acc-via/to/ink/night`). */
+/** The accent's variables for a subtree (`--acc-via/to/ink`). */
 export const accentStyle = (accent: Accent | null | undefined) => accentVars(accent) as CSSProperties
 
-/** Text in the accent: the deep tone on light screens, the light one at night. */
-export const ACCENT_TEXT = 'text-[var(--acc-ink)] night:text-[var(--acc-night)]'
+/** Text in the accent: its deep tone. */
+export const ACCENT_TEXT = 'text-[var(--acc-ink)]'
 
 /** An avatar inside a thin ring of the person's accent (like a story ring). */
 export function AccentAvatar({

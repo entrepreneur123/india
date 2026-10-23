@@ -1,13 +1,8 @@
-// Chat walls (046): my background behind the messages of my chats (only I see it). Each is a CSS background for light
-// and for night screens: a gradient, most with a faint pattern tile (inline SVG) over it. Kept quiet enough that the
-// bubbles (white / soft saffron, or grey / dark saffron at night) stay easy to read. No imports but types (node --test).
+// Chat walls (046): my background behind the messages of my chats (only I see it). Each is a CSS background: a
+// gradient, most with a faint pattern tile (inline SVG) over it. Kept quiet enough that the bubbles (white / soft
+// orange) stay easy to read. No imports but types (node --test).
 import type { CSSProperties } from 'react'
 import type { WallId } from './looks'
-
-export interface WallDesign {
-  light: string
-  dark: string
-}
 
 /** A pattern tile as a CSS image: the SVG's markup inside a w×h box. */
 const tile = (w: number, h: number, body: string) =>
@@ -43,39 +38,21 @@ const waves = (c: string, o: number) =>
     `<g fill='none' stroke='${c}' stroke-opacity='${o}' stroke-width='1.6' stroke-linecap='round'><path d='M0 14q15-10 30 0t30 0 30 0 30 0'/><path d='M-30 38q15-10 30 0t30 0 30 0 30 0 30 0'/></g>`,
   )
 
-export const WALL_DESIGNS: Record<WallId, WallDesign> = {
-  wall_saffron: {
-    light: `radial-gradient(120% 70% at 85% 0%, #FFD08A 0%, transparent 60%), linear-gradient(170deg, #FFF1DE 0%, #FFD9A6 100%)`,
-    dark: `radial-gradient(120% 70% at 85% 0%, #5A2E00 0%, transparent 60%), linear-gradient(170deg, #1C1208 0%, #3A1F04 100%)`,
-  },
-  wall_midnight: {
-    light: `radial-gradient(60% 40% at 82% 8%, rgb(255 138 0 / 0.28) 0%, transparent 70%), linear-gradient(180deg, #1B2140 0%, #343A66 100%)`,
-    dark: `radial-gradient(60% 40% at 82% 8%, rgb(255 138 0 / 0.18) 0%, transparent 70%), linear-gradient(180deg, #0A0D1E 0%, #1C2140 100%)`,
-  },
-  wall_paisley: {
-    light: `${paisley('#C2620A', 0.3)}, linear-gradient(180deg, #FFF8EE 0%, #FBE9D2 100%)`,
-    dark: `${paisley('#FF8A00', 0.16)}, linear-gradient(180deg, #17120D 0%, #221A11 100%)`,
-  },
-  wall_mehndi: {
-    light: `${mehndi('#8A4B1F', 0.26)}, linear-gradient(180deg, #F7EAD7 0%, #EFD9BC 100%)`,
-    dark: `${mehndi('#C9783A', 0.18)}, linear-gradient(180deg, #1C130C 0%, #261A10 100%)`,
-  },
-  wall_stars: {
-    light: `${stars(0.75)}, radial-gradient(90% 60% at 50% 0%, #3E3A7A 0%, transparent 70%), linear-gradient(180deg, #1A1B44 0%, #2C2559 100%)`,
-    dark: `${stars(0.55)}, radial-gradient(90% 60% at 50% 0%, #26245A 0%, transparent 70%), linear-gradient(180deg, #08091E 0%, #15122E 100%)`,
-  },
-  wall_waves: {
-    light: `${waves('#3D97A3', 0.28)}, linear-gradient(180deg, #EEF8F8 0%, #D5ECEE 100%)`,
-    dark: `${waves('#3FA6B3', 0.16)}, linear-gradient(180deg, #0B1719 0%, #102226 100%)`,
-  },
+export const WALL_DESIGNS: Record<WallId, string> = {
+  wall_saffron: `radial-gradient(120% 70% at 85% 0%, #FFD08A 0%, transparent 60%), linear-gradient(170deg, #FFF1DE 0%, #FFD9A6 100%)`,
+  wall_midnight: `radial-gradient(60% 40% at 82% 8%, rgb(234 106 0 / 0.28) 0%, transparent 70%), linear-gradient(180deg, #1B2140 0%, #343A66 100%)`,
+  wall_paisley: `${paisley('#C2620A', 0.3)}, linear-gradient(180deg, #FFF8EE 0%, #FBE9D2 100%)`,
+  wall_mehndi: `${mehndi('#8A4B1F', 0.26)}, linear-gradient(180deg, #F7EAD7 0%, #EFD9BC 100%)`,
+  wall_stars: `${stars(0.75)}, radial-gradient(90% 60% at 50% 0%, #3E3A7A 0%, transparent 70%), linear-gradient(180deg, #1A1B44 0%, #2C2559 100%)`,
+  wall_waves: `${waves('#3D97A3', 0.28)}, linear-gradient(180deg, #EEF8F8 0%, #D5ECEE 100%)`,
 }
 
 /** A wall this app can draw, or null (none, or one a newer server sells). */
-export const wallOf = (id: unknown): WallDesign | null =>
+export const wallOf = (id: unknown): string | null =>
   typeof id === 'string' && Object.hasOwn(WALL_DESIGNS, id) ? WALL_DESIGNS[id as WallId] : null
 
-/** The CSS variables a wall is drawn from (with the `chat-wall-art` class); undefined for none. */
+/** A wall's inline style (over the plain `bg-chat-wall`); undefined for none. */
 export function wallVars(id: unknown): CSSProperties | undefined {
   const w = wallOf(id)
-  return w ? ({ '--wall': w.light, '--wall-n': w.dark } as CSSProperties) : undefined
+  return w ? { background: w } : undefined
 }

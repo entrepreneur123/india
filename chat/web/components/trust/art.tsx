@@ -23,8 +23,8 @@ function Glyph({ color, size, className, children }: { color: string; size: numb
   )
 }
 
-const BRAND = '#ff8a00'
-const BRAND_DEEP = '#e67a00'
+const BRAND = '#ea6a00'
+const BRAND_DEEP = '#c2410c'
 
 /** An ID card: the card, a photo and two lines. */
 export function IdCardIcon({ size = 24, color = BRAND, className }: { size?: number; color?: string; className?: string }) {
@@ -109,7 +109,7 @@ export function ChatFeelIcon({ good, size = 40, className }: { good: boolean; si
 
 /**
  * The verification sheet's picture: an ID card leaning back, a selfie frame and the verified shield in front, on a
- * soft blob of saffron. `tone` changes the shield for results that aren't a pass.
+ * soft blob of orange. `tone` changes the shield for results that aren't a pass.
  */
 export function VerifyHero({ tone = 'brand', size = 168, className }: { tone?: 'brand' | 'ok' | 'warn' | 'stop' | 'wait'; size?: number; className?: string }) {
   const shield = { brand: [BRAND, BRAND_DEEP], ok: ['#2fbf71', '#17894c'], warn: ['#f5a623', '#c77700'], stop: ['#ef5350', '#b3261e'], wait: ['#a8a29e', '#78716c'] }[tone]
@@ -121,13 +121,13 @@ export function VerifyHero({ tone = 'brand', size = 168, className }: { tone?: '
           <stop offset="1" stopColor="#ffe8cc" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <ellipse cx="84" cy="66" rx="80" ry="60" fill="url(#vh-blob)" className="night:opacity-20" />
+      <ellipse cx="84" cy="66" rx="80" ry="60" fill="url(#vh-blob)" />
       <circle cx="30" cy="26" r="5" fill="#ffd199" />
       <circle cx="146" cy="96" r="4" fill="#d6d3d1" />
       <path d="M140 20c1 4.4 2.6 6 7 7-4.4 1-6 2.6-7 7-1-4.4-2.6-6-7-7 4.4-1 6-2.6 7-7z" fill={BRAND} />
       <g transform="rotate(-9 70 62)">
-        <rect x="22" y="34" width="92" height="60" rx="12" fill="#111111" />
-        <rect x="22" y="34" width="92" height="15" rx="7.5" fill="#2e2e2e" />
+        <rect x="22" y="34" width="92" height="60" rx="12" fill="#57534e" />
+        <rect x="22" y="34" width="92" height="15" rx="7.5" fill="#78716c" />
         <circle cx="47" cy="68" r="11" fill="#a8a29e" />
         <path d="M33 88c2.2-7 7.5-10.4 14-10.4S58.8 81 61 88" fill="#a8a29e" />
         <rect x="68" y="60" width="34" height="6" rx="3" fill="#a8a29e" />
@@ -151,7 +151,7 @@ export function VerifyHero({ tone = 'brand', size = 168, className }: { tone?: '
             <circle cx="38.6" cy="28.4" r="3" fill="#fff" opacity=".6" />
           </>
         ) : (
-          <path d="M20.4 28.8l6.8 6.7 13-14.2" fill="none" stroke={tone === 'brand' ? '#111111' : '#fff'} strokeWidth="5.4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M20.4 28.8l6.8 6.7 13-14.2" fill="none" stroke="#fff" strokeWidth="5.4" strokeLinecap="round" strokeLinejoin="round" />
         )}
       </g>
     </svg>

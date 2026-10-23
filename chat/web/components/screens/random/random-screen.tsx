@@ -423,7 +423,7 @@ export function RandomScreen({ active }: { active: boolean }) {
         </Suspense>
       ) : null}
 
-      <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title={t('leave.title')} night>
+      <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title={t('leave.title')}>
         <div className="flex flex-col gap-2.5 p-6 pt-4">
           <Button variant="brand" size="lg" loading={leaving} onClick={() => void leave(true)} data-autofocus>
             <Shuffle className="size-5" aria-hidden /> {t('leave.next')}

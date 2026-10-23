@@ -38,7 +38,7 @@ export function mannerLevel(score: number): MannerLevel {
 /** Whether the score means something yet (enough ratings), so it is shown. */
 export const mannerShown = (ratings: number) => ratings >= MIN_RATINGS_SHOWN
 
-/** Each level's colour (the gauge, the label). Picked to read on white and on the night background. */
+/** Each level's colour (the gauge, the label). Picked to read on white. */
 export const LEVEL_COLORS: Record<MannerLevel, string> = {
   needs_work: '#e5484d',
   low: '#f2711c',

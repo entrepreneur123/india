@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 // Yaari's own glyphs for room topics and reactions (no emoji: they render differently on every phone and look
 // cheap next to the rest of the UI). 24×24, solid rounded shapes in two tones: the main colour (var(--c)) and a
-// light tint of it (var(--cl)) for the secondary part. Topics are one grey (--glyph), reactions saffron, likes red.
+// light tint of it (var(--cl)) for the secondary part. Topics are one grey (--glyph), reactions orange, likes red.
 
 /** A room category, plus the built-in rooms that have no category of their own. */
 export type Topic = RoomCategory | 'globe' | 'memes'
@@ -200,15 +200,15 @@ export function TopicIcon({ topic, size = 20, className }: { topic: Topic; size?
   )
 }
 
-export function ReactionIcon({ kind, size = 24, className }: { kind: VoiceReaction | 'hand'; size?: number; className?: string }) {
+export function ReactionIcon({ kind, size = 24, color, className }: { kind: VoiceReaction | 'hand'; size?: number; color?: string; className?: string }) {
   return (
-    <Glyph color={reactionColor(kind)} size={size} className={className}>
+    <Glyph color={color ?? reactionColor(kind)} size={size} className={className}>
       {REACTION_GLYPHS[kind]}
     </Glyph>
   )
 }
 
-/** The icebreaker card's glyph: a speech bubble with a question mark, in saffron. */
+/** The icebreaker card's glyph: a speech bubble with a question mark, in orange. */
 export function IcebreakerIcon({ size = 20, className }: { size?: number; className?: string }) {
   return (
     <Glyph color="var(--brand)" size={size} className={className}>
@@ -222,7 +222,7 @@ export function IcebreakerIcon({ size = 20, className }: { size?: number; classN
   )
 }
 
-/** A room poll's glyph: a card with three result bars, in saffron. */
+/** A room poll's glyph: a card with three result bars, in orange. */
 export function PollIcon({ size = 20, className }: { size?: number; className?: string }) {
   return (
     <Glyph color="var(--brand)" size={size} className={className}>

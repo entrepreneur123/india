@@ -56,12 +56,10 @@ export function useLook(userId: string | null | undefined): Look | null {
   return data ?? null
 }
 
-/** The CSS of an ID colour: a tone per theme (light / night screens) or a gradient through the letters. */
-function colorStyle(id: ColorId): { className: string; style: CSSProperties } {
+/** The CSS of an ID colour: one tone or a gradient through the letters. */
+function colorStyle(id: ColorId): { className?: string; style: CSSProperties } {
   const d = COLOR_DESIGNS[id]
-  if ('light' in d) {
-    return { className: 'text-[var(--lc)] night:text-[var(--lc-n)]', style: { '--lc': d.light, '--lc-n': d.dark } as CSSProperties }
-  }
+  if (typeof d === 'string') return { style: { color: d } }
   // The rainbow repeats its first colour at the end so its slide loops without a seam.
   const stops = d.slide ? [...d.stops, d.stops[0]] : d.stops
   return {

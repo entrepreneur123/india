@@ -17,18 +17,18 @@ export function PresenceDot({ className, label }: { className?: string; label?: 
   )
 }
 
-/** The app mark: a saffron lowercase "y" (two strokes) on a black rounded square. Same path as public/icon.svg. */
+/** The app mark: a white lowercase "y" (two strokes) on an orange rounded square. Same path as public/icon.svg. */
 const Y_MARK = 'M6.5 5 12 14.6M17.5 5 9.5 19'
 
 export function Logo({ className, compact }: { className?: string; compact?: boolean }) {
   return (
     <span className={cn('inline-flex items-center gap-2', className)} dir="ltr">
-      <span className="grid size-8 place-items-center rounded-[10px] bg-ink night:ring-1 night:ring-border">
-        <svg viewBox="0 0 24 24" className="size-5 text-brand" aria-hidden>
+      <span className="grid size-8 place-items-center rounded-[10px] bg-brand">
+        <svg viewBox="0 0 24 24" className="size-5 text-white" aria-hidden>
           <path d={Y_MARK} fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
         </svg>
       </span>
-      {compact ? <span className="sr-only">yaari</span> : <span className="text-xl font-extrabold tracking-tight">yaari</span>}
+      {compact ? <span className="sr-only">yaari</span> : <span className="text-xl font-extrabold tracking-tight text-brand">yaari</span>}
     </span>
   )
 }
@@ -76,7 +76,7 @@ export function Segmented<T extends string>({
           >
             <span
               className={cn(
-                'absolute inset-0 rounded-full bg-card shadow-e1 transition-opacity duration-150 night:bg-[#333333]',
+                'absolute inset-0 rounded-full bg-card shadow-e1 transition-opacity duration-150',
                 active ? 'opacity-100' : 'opacity-0',
               )}
               aria-hidden

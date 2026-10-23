@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { createContext, useContext, useEffect, useId, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -18,10 +18,7 @@ interface ModalProps {
   className?: string
   hideHeader?: boolean
   dismissible?: boolean
-  night?: boolean
 }
-
-export const NightContext = createContext(false)
 
 /** Open modals, newest last: Esc and the focus trap belong to the top one only (a post opened from a profile). */
 const stack: symbol[] = []
@@ -39,11 +36,8 @@ export function Modal({
   className,
   hideHeader,
   dismissible = true,
-  night,
 }: ModalProps) {
   const { t } = useI18n()
-  const inheritedNight = useContext(NightContext)
-  const isNight = night ?? inheritedNight
   const titleId = useId()
   const descId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
@@ -106,7 +100,6 @@ export function Modal({
           className={cn(
             'fixed inset-0 z-50 flex justify-center',
             isSheet ? 'items-end md:items-center' : 'items-center p-4',
-            isNight && 'theme-night',
           )}
         >
           <m.div

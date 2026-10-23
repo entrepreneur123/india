@@ -163,7 +163,7 @@ export function MannerCard({ trust, className }: { trust: Trust | null; classNam
           {trust.tags.map((x) => (
             <li
               key={x.tag}
-              className="rounded-full bg-card px-3 py-1 text-xs font-bold shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-[color-mix(in_srgb,var(--lv)_30%,transparent)] night:bg-white/8"
+              className="rounded-full bg-card px-3 py-1 text-xs font-bold shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-[color-mix(in_srgb,var(--lv)_30%,transparent)]"
             >
               {tt('manner.tagCount', { tag: tt(`tag.${x.tag}` as TrustKey), n: num(x.n) })}
             </li>
@@ -223,13 +223,13 @@ export function VerifyCard({ className }: { className?: string }) {
       type="button"
       onClick={() => openVerify('me')}
       className={cn(
-        'group relative flex w-full items-center gap-4 overflow-hidden rounded-[28px] bg-ink px-5 py-5 text-start text-white night:ring-1 night:ring-border',
+        'group relative flex w-full items-center gap-4 overflow-hidden rounded-[28px] bg-primary-soft px-5 py-5 text-start',
         className,
       )}
     >
       <span className="relative min-w-0 flex-1">
         <span className="block text-lg leading-tight font-extrabold tracking-tight">{tt(retry ? 'card.retry' : 'card.title')}</span>
-        <span className="mt-1 block text-sm leading-snug text-white/80">{tt(retry ? 'card.retryBody' : 'card.body')}</span>
+        <span className="mt-1 block text-sm leading-snug text-muted-foreground">{tt(retry ? 'card.retryBody' : 'card.body')}</span>
         <span className="mt-3 inline-flex h-9 items-center gap-1 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-transform duration-150 group-active:scale-95">
           {tt(retry ? 'verify.tryAgain' : 'card.cta')}
           <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />

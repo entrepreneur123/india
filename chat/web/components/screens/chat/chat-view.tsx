@@ -19,7 +19,6 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { retryImport } from '@/lib/retry-import'
-import { cn } from '@/lib/utils'
 import { Composer } from './composer'
 import { ExitButton } from './exit-button'
 import { MessageBubble, TypingBubble } from './message-bubble'
@@ -258,7 +257,7 @@ export function ChatView({
           ) : null}
         </AnimatePresence>
 
-        <div className={cn('flex min-h-0 flex-1 flex-col', wall ? 'chat-wall-art' : 'bg-chat-wall')} style={wall}>
+        <div className="flex min-h-0 flex-1 flex-col bg-chat-wall" style={wall}>
         <ul
           ref={listRef}
           onScroll={(e) => {

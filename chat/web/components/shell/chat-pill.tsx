@@ -18,7 +18,7 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
   const { partner, typing, unread } = bar
   return (
     <m.div
-      className="theme-night absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:inset-s-6 md:w-[24rem]"
+      className="absolute inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 md:inset-x-auto md:bottom-6 md:inset-s-6 md:w-[24rem]"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}

@@ -570,7 +570,7 @@ function Quote({ reply, rt, meId, onShow }: { reply: VoiceReply; rt: RoomT; meId
       type="button"
       onClick={onShow}
       aria-label={`${rt('showOriginal')}: ${who}`}
-      className="relative mt-0.5 mb-1 flex w-full min-w-0 overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12"
+      className="relative mt-0.5 mb-1 flex w-full min-w-0 overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10"
     >
       <span aria-hidden className="w-1 shrink-0 bg-primary" />
       <span className="min-w-0 flex-1 px-2 py-1">

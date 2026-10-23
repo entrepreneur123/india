@@ -13,19 +13,19 @@ import { cn } from '@/lib/utils'
 interface FrameDesign {
   /** The ring's gradient (diagonal across the card, around the photo). */
   ring: string[]
-  /** The wash at the top of the card, on light and on night screens. */
-  wash: [light: string, dark: string]
+  /** The wash at the top of the card. */
+  wash: string
   /** Round gems on the ring (jewels). */
   gems?: string[]
 }
 
 const FRAME_DESIGNS: Record<FrameId, FrameDesign> = {
-  frame_frost: { ring: ['#E3F6FF', '#8FD3FF', '#4AA8FF'], wash: ['#DFF4FF', '#0B2A44'] },
-  frame_fire: { ring: ['#FFD54A', '#FF6A00', '#D50000'], wash: ['#FFF1E6', '#2A0D05'] },
-  frame_jewel: { ring: ['#FFE8A3', '#D4A017', '#FFE8A3'], wash: ['#FFF8E1', '#2A2208'], gems: ['#E0115F', '#0F52BA', '#50C878'] },
-  frame_sand: { ring: ['#F4D9A6', '#C99A5B', '#8B5E34'], wash: ['#FFF6E6', '#2B1E0E'] },
-  frame_neon: { ring: ['#00F0FF', '#FF00E5'], wash: ['#E9FDFF', '#100A24'] },
-  frame_sakura: { ring: ['#FFD1E1', '#FF8AB3'], wash: ['#FFF0F5', '#2A1220'] },
+  frame_frost: { ring: ['#E3F6FF', '#8FD3FF', '#4AA8FF'], wash: '#DFF4FF' },
+  frame_fire: { ring: ['#FFD54A', '#FF6A00', '#D50000'], wash: '#FFF1E6' },
+  frame_jewel: { ring: ['#FFE8A3', '#D4A017', '#FFE8A3'], wash: '#FFF8E1', gems: ['#E0115F', '#0F52BA', '#50C878'] },
+  frame_sand: { ring: ['#F4D9A6', '#C99A5B', '#8B5E34'], wash: '#FFF6E6' },
+  frame_neon: { ring: ['#00F0FF', '#FF00E5'], wash: '#E9FDFF' },
+  frame_sakura: { ring: ['#FFD1E1', '#FF8AB3'], wash: '#FFF0F5' },
 }
 
 const ringImage = (d: FrameDesign) => `linear-gradient(135deg, ${d.ring.join(', ')})`
@@ -76,8 +76,8 @@ export function FrameCard({ frame, still, className, children }: { frame: FrameI
           <>
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 [--w:var(--fw)] night:[--w:var(--fw-n)]"
-              style={{ '--fw': d.wash[0], '--fw-n': d.wash[1], backgroundImage: 'linear-gradient(to bottom, var(--w), transparent 60%)' } as CSSProperties}
+              className="pointer-events-none absolute inset-0"
+              style={{ backgroundImage: `linear-gradient(to bottom, ${d.wash}, transparent 60%)` }}
             />
             <FrameParticles frame={frame} still={still} />
           </>

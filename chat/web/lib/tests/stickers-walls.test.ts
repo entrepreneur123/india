@@ -34,12 +34,12 @@ test('lists and quotes show a sticker as its emoji and a label', () => {
   assert.equal(previewText('see you :)', 'Sticker'), 'see you :)')
 })
 
-test('walls: every wall the shop sells is drawn for light and night screens; unknown ones are none', () => {
+test('walls: every wall the shop sells is drawn; unknown ones are none', () => {
   assert.deepEqual(Object.keys(WALL_DESIGNS).sort(), [...WALLS].sort())
   for (const id of WALLS) {
     const w = wallOf(id)!
-    assert.ok(w.light && w.dark && w.light !== w.dark, id)
-    assert.deepEqual(wallVars(id), { '--wall': w.light, '--wall-n': w.dark })
+    assert.ok(w, id)
+    assert.deepEqual(wallVars(id), { background: w })
   }
   for (const id of [null, undefined, 'wall_disco', 'toString', 42]) {
     assert.equal(wallOf(id), null, String(id))

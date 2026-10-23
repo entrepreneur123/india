@@ -212,7 +212,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     kind === 'frame' ? (
       <FrameAvatar frame={id as FrameId | null} name={me.name} src={me.photoUrl} size={36} />
     ) : kind === 'wall' ? (
-      <span className={cn('block h-12 w-full rounded-xl ring-1 ring-border', id ? 'chat-wall-art' : 'bg-chat-wall')} style={wallVars(id)} />
+      <span className="block h-12 w-full rounded-xl bg-chat-wall ring-1 ring-border" style={wallVars(id)} />
     ) : kind === 'sticker' ? (
       <span className="flex gap-1">
         {STICKERS[id as PackId].slice(0, 2).map((a, i) => (
@@ -275,7 +275,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
               onClick={() => setKind(k)}
               className={cn(
                 'h-9 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors duration-150',
-                k === kind ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground hover:text-foreground',
+                k === kind ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-muted text-muted-foreground hover:text-foreground',
               )}
             >
               {lt(`looks.tab.${k}`)}
@@ -356,7 +356,7 @@ function ItemCard({
 function WallPreview({ wall }: { wall: ItemId | null }) {
   const bar = 'h-8 rounded-lg shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]'
   return (
-    <div aria-hidden className={cn('flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] p-4 ring-1 ring-border', wall ? 'chat-wall-art' : 'bg-chat-wall')} style={wallVars(wall)}>
+    <div aria-hidden className="flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border" style={wallVars(wall)}>
       <span className={cn(bar, 'w-1/2 self-start rounded-ss-none bg-bubble-in')} />
       <span className={cn(bar, 'w-2/5 self-end rounded-se-none bg-bubble-out')} />
       <span className={cn(bar, 'w-3/5 self-start rounded-ss-none bg-bubble-in')} />

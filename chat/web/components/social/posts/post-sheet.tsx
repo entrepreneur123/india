@@ -310,7 +310,7 @@ function CommentRow({
         <AccentAvatar name={c.author.name} src={c.author.photoUrl} size={depth ? 28 : 34} accent={c.author.accent} />
       </button>
       <div className="min-w-0 flex-1">
-        <div className="rounded-2xl rounded-ss-md bg-muted px-3.5 py-2 night:bg-white/6">
+        <div className="rounded-2xl rounded-ss-md bg-muted px-3.5 py-2">
           <p className="flex items-baseline gap-2 text-[13px]">
             <button type="button" onClick={() => openProfile(c.author.id)} className="inline-flex min-w-0 items-center gap-1 font-bold hover:underline">
               <span className="truncate">{c.author.name}</span>

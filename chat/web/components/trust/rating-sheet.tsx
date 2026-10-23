@@ -92,7 +92,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
               onClick={() => setGood(g)}
               className={cn(
                 'relative flex flex-col items-center gap-2 rounded-[24px] px-3 pt-4 pb-3.5 ring-2 transition-[background-color,box-shadow,transform] duration-150 active:scale-[.98]',
-                on ? 'shadow-e2' : 'ring-transparent bg-muted hover:bg-input/40 night:bg-white/6',
+                on ? 'shadow-e2' : 'ring-transparent bg-muted hover:bg-input/40',
               )}
               style={on ? { background: `color-mix(in srgb, ${tone} 13%, var(--card))`, '--tw-ring-color': tone } as React.CSSProperties : undefined}
             >
@@ -141,7 +141,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
                           ? good
                             ? 'bg-[#22a35a] text-white ring-[#22a35a]'
                             : 'bg-[#e5484d] text-white ring-[#e5484d]'
-                          : 'bg-card ring-input hover:bg-muted night:bg-white/5',
+                          : 'bg-card ring-input hover:bg-muted',
                       )}
                     >
                       {on ? <Check className="size-4" strokeWidth={2.6} aria-hidden /> : null}

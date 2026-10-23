@@ -144,7 +144,7 @@ function Root() {
       {boot.stage === 'loading' ? (
         <Splash key="splash" label={t('common.loading')} />
       ) : boot.stage === 'offline' ? (
-        <div key="offline" className={`theme-night grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground ${fade}`}>
+        <div key="offline" className={`grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground ${fade}`}>
           <div className="flex flex-col items-center gap-4">
             <Logo />
             <h1 className="text-xl font-bold">{t('boot.offlineTitle')}</h1>

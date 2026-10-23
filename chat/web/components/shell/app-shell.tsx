@@ -13,7 +13,6 @@ import { errorCode } from '@/lib/format'
 import { kycOffCached, markKycOff, markVerifyAsked, rememberRequired, verifyAsked } from '@/components/trust/store'
 import { useI18n } from '@/components/i18n'
 import { TranslateProvider } from '@/components/translate'
-import { NightContext } from '@/components/ui/modal'
 import { useSocialT } from '@/components/social/social-text'
 import type { VoiceControl } from '@/components/screens/voice/voice-session'
 import { useToast } from '@/components/ui/toast'
@@ -43,7 +42,7 @@ import {
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 
-/** Tab change: a short fade (Material "fade through"). Going to Random the light screen goes at once. */
+/** Tab change: a short fade (Material "fade through"). Going to Random (already drawn underneath) the tab goes at once. */
 const TAB_MOTION = {
   enter: { opacity: 0 },
   shown: { opacity: 1, transition: { duration: 0.15, ease: [0.2, 0, 0, 1] as const } },
@@ -358,7 +357,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
 
   const randomVisible = tab === 'random' && !thread
   const voiceOpen = !!voice?.expanded
-  const night = randomVisible || thread !== null || voiceOpen
   const busyScreen = (randomVisible && immersive) || thread !== null
   const hideTabs = busyScreen || voiceOpen
   // The room's bar sits above the navigation (phones) or in the corner (wide screens): screens keep room for it.
@@ -369,8 +367,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   return (
     <AppContext.Provider value={state}>
       <TranslateProvider>
-      <NightContext.Provider value={night}>
-        <div className={cn('min-h-dvh bg-background text-foreground', night && 'theme-night')}>
+        <div className="min-h-dvh bg-background text-foreground">
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
             <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
@@ -510,7 +507,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
             </Suspense>
           </ScreenBoundary>
         ) : null}
-      </NightContext.Provider>
       </TranslateProvider>
     </AppContext.Provider>
   )

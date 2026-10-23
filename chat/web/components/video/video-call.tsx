@@ -157,7 +157,7 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
     <LazyMotion features={loadDrag}>
     <m.div
       ref={stageRef}
-      className="theme-night absolute inset-0 z-30 overflow-hidden bg-ink text-ink-foreground"
+      className="absolute inset-0 z-30 overflow-hidden bg-ink text-ink-foreground"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -254,12 +254,12 @@ export function VideoCall({ matchId, partner, onEnd }: { matchId: string; partne
         dragElastic={0.15}
         dragMomentum={false}
         whileDrag={{ scale: 1.02 }}
-        className="absolute top-20 inset-e-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-muted shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
+        className="absolute top-20 inset-e-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-white/10 shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
         aria-label={t('video.yourCamera')}
       >
         <video ref={localRef} autoPlay playsInline muted className={cn('size-full -scale-x-100 object-cover', !camera && 'opacity-0')} />
         {!camera || state === 'demo' ? (
-          <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-muted-foreground">
+          <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-ink-foreground/70">
             {camera ? t('video.yourCamera') : t('video.cameraOff')}
           </div>
         ) : null}

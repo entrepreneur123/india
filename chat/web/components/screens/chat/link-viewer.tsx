@@ -119,11 +119,11 @@ export function LinkCard({ url, className }: { url: string; className?: string }
       onClick={click(url)}
       aria-label={t('link.preview', { site, title })}
       className={cn(
-        'mt-1 flex min-w-0 items-stretch overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10 night:bg-white/8 night:hover:bg-white/12',
+        'mt-1 flex min-w-0 items-stretch overflow-hidden rounded-md bg-black/5 text-start transition-colors duration-150 hover:bg-black/10',
         className,
       )}
     >
-      <span className="relative grid w-16 shrink-0 place-items-center bg-black/5 night:bg-white/5">
+      <span className="relative grid w-16 shrink-0 place-items-center bg-black/5">
         {meta?.image && imgOk ? (
           <img src={meta.image} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setImgOk(false)} className="absolute inset-0 size-full object-cover" />
         ) : loading ? (
@@ -282,9 +282,9 @@ export function LinkPanel({
 }
 
 /** Phones: the viewer as a tall sheet over the chat. */
-export function LinkSheet({ open, onClose, night, children }: { open: boolean; onClose: () => void; night?: boolean; children: ReactNode }) {
+export function LinkSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
   return (
-    <Modal open={open} onClose={onClose} variant="sheet" hideHeader night={night} className="h-[90dvh] md:h-[85dvh] md:max-w-2xl">
+    <Modal open={open} onClose={onClose} variant="sheet" hideHeader className="h-[90dvh] md:h-[85dvh] md:max-w-2xl">
       <div className="flex h-full min-h-0 flex-col [&>section]:flex-1">{children}</div>
     </Modal>
   )

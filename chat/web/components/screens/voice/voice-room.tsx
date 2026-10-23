@@ -44,7 +44,7 @@ const closedStage = new Map<string, string>()
 const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
 
 /**
- * A room, full screen and always dark. Every room has the chat (text with replies, @mentions and links, icebreakers,
+ * A room, full screen. Every room has the chat (text with replies, @mentions and links, icebreakers,
  * photos, polls), the stage and shared music; the category decides what comes first and how big it is: a talk room
  * gives the chat most of the screen, a music room the player (room-split.tsx: people can change it).
  * The stage (seats, who's on it) and the listeners are two separate sections.
@@ -76,7 +76,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
   if (!room || !me)
     return (
-      <div className="theme-night relative flex min-h-0 flex-1 flex-col bg-background text-foreground" aria-busy>
+      <div className="relative flex min-h-0 flex-1 flex-col bg-background text-foreground" aria-busy>
         <header className="flex items-center gap-2 px-2 py-2">
           <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={t('voice.minimise')}>
             <ChevronDown className="size-6" aria-hidden />
@@ -257,7 +257,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
   return (
     <LinkOpenProvider value={openLink}>
-      <div ref={rootRef} className="theme-night relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground">
+      <div ref={rootRef} className="relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground">
         {/* One soft glow in the room's category colour. */}
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
           <header className="flex items-center gap-1 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 sm:px-4">
@@ -347,7 +347,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         {wide ? <WideSplitter split={split} box={rootRef} rtl={rtl} /> : null}
         {wide ? (
           <aside
-            className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-black/20"
+            className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-muted/50"
             style={split.width ? { width: split.width } : undefined}
             aria-label={t('voice.chat')}
           >
@@ -358,7 +358,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         ) : null}
 
         {wide ? null : (
-          <LinkSheet open={!!viewer} onClose={() => setViewer(null)} night>
+          <LinkSheet open={!!viewer} onClose={() => setViewer(null)}>
             {viewer ? panel(viewer) : null}
           </LinkSheet>
         )}
@@ -799,10 +799,10 @@ function ControlBar({
             aria-pressed={joins ? undefined : me.hand}
             className={cn(
               'flex h-12 shrink-0 items-center gap-2 rounded-full pe-5 ps-4 text-sm font-semibold transition-colors duration-150',
-              me.hand && !joins ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-foreground text-background hover:opacity-90',
+              me.hand && !joins ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-primary font-bold text-primary-foreground hover:bg-primary-hover',
             )}
           >
-            {joins ? <Mic className="size-5" aria-hidden /> : <ReactionIcon kind="hand" size={20} className={cn(me.hand && 'motion-safe:animate-pulse')} />}
+            {joins ? <Mic className="size-5" aria-hidden /> : <ReactionIcon kind="hand" size={20} color={me.hand ? undefined : '#fff'} className={cn(me.hand && 'motion-safe:animate-pulse')} />}
             {joins ? t('room.joinVoice') : me.hand ? t('voice.handRaised') : t('voice.raiseHand')}
           </m.button>
         )}
