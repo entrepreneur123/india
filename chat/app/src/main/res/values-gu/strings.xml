@@ -307,7 +307,9 @@
     <string name="voice_ended">હોસ્ટે આ રૂમ બંધ કર્યો</string>
     <string name="voice_ended_by_you">રૂમ બંધ થયો</string>
     <string name="voice_removed">તમને આ રૂમમાંથી દૂર કરવામાં આવ્યા</string>
-    <string name="voice_idle_left">બેકગ્રાઉન્ડમાં 30 મિનિટ પછી તમે રૂમમાંથી નીકળી ગયા</string>
+    <string name="voice_lost">કનેક્શન તૂટ્યું</string>
+    <string name="voice_reconnecting">કનેક્શન તૂટ્યું · ફરી જોડાઈ રહ્યું છે…</string>
+    <string name="voice_lost_left">કનેક્શન તૂટવાથી તમે રૂમમાંથી બહાર થઈ ગયા</string>
     <string name="voice_joining">જોડાઈ રહ્યા છીએ…</string>
     <string name="voice_safety">સારી રીતે વાત કરો. રૂમ રેકોર્ડ થતા નથી. રિપોર્ટ કરવા માટે વ્યક્તિ પર ટૅપ કરો.</string>
     <string name="voice_stage">સ્ટેજ</string>

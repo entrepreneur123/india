@@ -69,6 +69,9 @@ const vi: RoomDict = {
   sharedPage: 'Trang được chia sẻ',
   openShared: 'Mở',
   httpsOnly: 'Chỉ có thể hiện trang bảo mật (https) cho phòng',
+  lost: 'Mất kết nối',
+  reconnecting: 'Mất kết nối · Đang kết nối lại…',
+  lostLeft: 'Bạn bị mất kết nối và đã rời phòng',
 }
 
 export default vi

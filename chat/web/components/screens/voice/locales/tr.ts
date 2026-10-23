@@ -70,6 +70,9 @@ const tr: RoomDict = {
   sharedPage: 'Paylaşılan sayfa',
   openShared: 'Aç',
   httpsOnly: 'Odaya sadece güvenli (https) sayfalar gösterilebilir',
+  lost: 'Bağlantı koptu',
+  reconnecting: 'Bağlantı koptu · Yeniden bağlanılıyor…',
+  lostLeft: 'Bağlantın koptuğu için odadan çıktın',
 }
 
 export default tr

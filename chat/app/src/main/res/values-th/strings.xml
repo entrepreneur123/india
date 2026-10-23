@@ -281,7 +281,9 @@
     <string name="voice_ended">โฮสต์ปิดห้องนี้แล้ว</string>
     <string name="voice_ended_by_you">ปิดห้องแล้ว</string>
     <string name="voice_removed">คุณถูกนำออกจากห้องนี้</string>
-    <string name="voice_idle_left">คุณออกจากห้องหลังอยู่เบื้องหลัง 30 นาที</string>
+    <string name="voice_lost">การเชื่อมต่อหลุด</string>
+    <string name="voice_reconnecting">การเชื่อมต่อหลุด · กำลังเชื่อมต่อใหม่…</string>
+    <string name="voice_lost_left">การเชื่อมต่อหลุด คุณจึงออกจากห้องแล้ว</string>
     <string name="voice_joining">กำลังเข้าร่วม…</string>
     <string name="voice_safety">คุยกันดีๆ ห้องไม่มีการบันทึก แตะที่คนเพื่อรายงาน</string>
     <string name="voice_stage">เวที</string>

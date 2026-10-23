@@ -306,7 +306,9 @@
     <string name="voice_ended">হোস্ট রুমটি বন্ধ করেছেন</string>
     <string name="voice_ended_by_you">রুম বন্ধ হয়েছে</string>
     <string name="voice_removed">আপনাকে এই রুম থেকে সরানো হয়েছে</string>
-    <string name="voice_idle_left">৩০ মিনিট ব্যাকগ্রাউন্ডে থাকার পর আপনি রুম থেকে বেরিয়ে গেছেন</string>
+    <string name="voice_lost">সংযোগ বিচ্ছিন্ন</string>
+    <string name="voice_reconnecting">সংযোগ বিচ্ছিন্ন · আবার যুক্ত হচ্ছে…</string>
+    <string name="voice_lost_left">সংযোগ বিচ্ছিন্ন হওয়ায় আপনি রুম থেকে বেরিয়ে গেছেন</string>
     <string name="voice_joining">যোগ দেওয়া হচ্ছে…</string>
     <string name="voice_safety">ভদ্র থাকুন। রুম রেকর্ড হয় না। রিপোর্ট করতে কারও ওপর ট্যাপ করুন।</string>
     <string name="voice_stage">স্টেজ</string>

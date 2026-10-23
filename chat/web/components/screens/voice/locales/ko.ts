@@ -70,6 +70,9 @@ const ko: RoomDict = {
   sharedPage: '공유된 페이지',
   openShared: '열기',
   httpsOnly: '보안(https) 페이지만 방에 보여 줄 수 있어요',
+  lost: '연결 끊김',
+  reconnecting: '연결이 끊어졌어요 · 다시 연결 중…',
+  lostLeft: '연결이 끊겨 방에서 나왔어요',
 }
 
 export default ko

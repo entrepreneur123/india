@@ -70,6 +70,9 @@ const zhHant: RoomDict = {
   sharedPage: '分享的頁面',
   openShared: '開啟',
   httpsOnly: '只有安全（https）頁面才能展示給房間',
+  lost: '連線已中斷',
+  reconnecting: '連線已中斷 · 正在重新連線…',
+  lostLeft: '連線已中斷，你已離開房間',
 }
 
 export default zhHant

@@ -69,6 +69,9 @@ const gu: RoomDict = {
   'sharedPage': 'શેર કરેલું પેજ',
   'openShared': 'ખોલો',
   'httpsOnly': 'ફક્ત સુરક્ષિત (https) પેજ રૂમને બતાવી શકાય છે',
+  'lost': 'કનેક્શન તૂટ્યું',
+  'reconnecting': 'કનેક્શન તૂટ્યું · ફરી જોડાઈ રહ્યું છે…',
+  'lostLeft': 'કનેક્શન તૂટવાથી તમે રૂમમાંથી બહાર થઈ ગયા',
 }
 
 export default gu

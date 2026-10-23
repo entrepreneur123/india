@@ -56,6 +56,7 @@ import com.yaari.chat.model.RoomStage
 import com.yaari.chat.model.VoiceAudioState
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceLost
 import com.yaari.chat.model.VoiceMember
 import com.yaari.chat.model.VoicePoll
 import com.yaari.chat.model.VoiceReply
@@ -1418,8 +1419,9 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
      * (020: a member, the room's settings and music, a vote, each numbered), applied here; the full state is fetched
      * again only on a gap in the numbers, a reconnect, or when the heartbeat says the room is further on. Without
      * Broadcast (its channel can't join) the room's `rev` is compared instead, as before 020. Chat lines and
-     * reactions come over realtime. A heartbeat every 20 s, also in the background (the foreground service keeps the
-     * room alive there); a re-sync every 45 s while realtime is up, every 10 s while it isn't, only while on screen.
+     * reactions come over realtime. A heartbeat every 3 s, also in the background (the foreground service keeps the
+     * room alive there); failing beats or a dropped Broadcast connection show as [VoiceEvent.Connection], and back after
+     * more than 13 s the server has taken me out: [VoiceEvent.Dropped] instead of re-entering. A re-sync every 45 s while realtime is up, every 10 s while it isn't, only while on screen.
      * Any refusal from the server about my being here ends the session with its reason ([roomRefusal]).
      */
     override fun voiceSession(roomId: String): Flow<VoiceEvent> = channelFlow {
@@ -1611,16 +1613,48 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             mic = { on -> mic(on) },
         )
 
+        // ---- my connection (045): a beat every 3 s; the server shows me lost after 6 s and takes me out 7 s later ----
+        var lastBeat = System.currentTimeMillis()
+        var beatDown = false
+        var realtimeDown = false
+        var shownLost = false
+        suspend fun connection() {
+            val lost = beatDown || realtimeDown
+            if (lost != shownLost) send(VoiceEvent.Connection(lost).also { shownLost = lost })
+        }
+
         suspend fun heartbeat() {
             if (over) return
+            // Gone longer than the server waits: a beat would bring me back in silently. Once the network answers, the
+            // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
+            val r = live.room
+            val keepsPlace = r?.hostId == me && r.members.none { it.role == VoiceRole.COHOST && !it.lost }
+            if (VoiceLost.droppedOut(lastBeat, System.currentTimeMillis()) && !keepsPlace) {
+                try {
+                    client.postgrest["voice_seq"].select { filter { eq("room_id", roomId) } }.decodeSingleOrNull<VoiceSeqRow>()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    beatDown = true
+                    return connection()
+                }
+                return finish(VoiceEvent.Dropped)
+            }
             try {
-                call { client.postgrest.rpc("voice_heartbeat2", buildJsonObject { put("p_room", roomId) }).data.trim().toLongOrNull() }?.let(::serverAt)
+                call { client.postgrest.rpc("voice_heartbeat3", buildJsonObject { put("p_room", roomId) }).data.trim().toLongOrNull() }?.let(::serverAt)
+                lastBeat = System.currentTimeMillis()
+                beatDown = false
+                connection()
                 // The host re-checks LiveKit against the room every minute (anyone a sync missed).
-                if (++beats % 3 == 0 && live.room?.hostId == me) voiceSync(roomId)
+                if (++beats % 20 == 0 && live.room?.hostId == me) voiceSync(roomId)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 failed(e)
+                if (!over) {
+                    beatDown = true
+                    connection()
+                }
             }
         }
 
@@ -1687,6 +1721,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             val sent = System.currentTimeMillis()
             val state = call { client.postgrest.rpc("join_voice", buildJsonObject { put("p_room", roomId) }).decodeAs<VoiceStateRow>() }
             telemetry.track(Funnel.ROOM_JOINED)
+            lastBeat = System.currentTimeMillis()
             apply(state, sent)
 
             launch { changeEvents.collect { o -> VoiceChange.parse(json, o)?.let { onChange(it) } } }
@@ -1723,11 +1758,11 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                     fetchState()
                 }
             }
-            // Heartbeat every 20 s, also in the background (the foreground service keeps the room alive there):
-            // the server lets go of anyone not seen for 90 s.
+            // Heartbeat every 3 s, also in the background (the foreground service keeps the room alive there; this runs on
+            // the app's scope, not the screen's): the server shows anyone 6 s without one as lost, out 7 s later.
             launch {
                 while (true) {
-                    delay(HEARTBEAT_MS)
+                    delay(VoiceLost.BEAT_MS)
                     heartbeat()
                 }
             }
@@ -1746,6 +1781,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
                 var wasUp = false
                 changes.joined().collect { up ->
                     broadcastUp = up
+                    realtimeDown = wasUp && !up
+                    connection()
                     // Back after a drop: changes may have been missed while away.
                     if (up && wasUp) refresh.trySend(Unit)
                     if (up || wasUp) resync.trySend(Unit)
@@ -1797,7 +1834,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             members = s.members.map { m ->
                 VoiceMember(
                     card(VoiceCardRow(m.id, m.name, m.gender, m.age, m.city, m.bio, m.photoPath, m.country)),
-                    VoiceRole.of(m.role), m.seat, m.muted, m.hand,
+                    VoiceRole.of(m.role), m.seat, m.muted, m.hand, m.lost,
                 )
             },
             rules = RoomRules(s.max, GenderRule.of(s.gender), s.minAge, s.maxAge, s.private),
@@ -1947,7 +1984,6 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         private const val RESYNC_MS = 10_000L
         private const val RENDER_MS = 60L
         private const val REJOIN_SETTLE_MS = 500L
-        private const val HEARTBEAT_MS = 20_000L
         /** link-meta reads the page for up to 6 s itself. */
         private const val LINK_META_MS = 9_000L
         /** The translate function asks a model; a slow answer is given up on (the line stays as it is). */

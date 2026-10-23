@@ -62,6 +62,7 @@ import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
+import { droppedOut, VOICE_BEAT_MS } from './voice-lost'
 
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
@@ -136,7 +137,7 @@ type VoiceStateRow = {
   stage?: { url: string; title: string | null; by: string; byId: string; at: number } | null
 }
 /** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
-type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number }
+type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number; lost?: boolean }
 /** One change in a room, over Broadcast (020). `seq` null: sent without a number, the client re-checks. */
 type VoiceChange = { seq?: number | null } & (
   | ({ t: 'm'; present: true } & VoiceMemberRow)
@@ -1351,10 +1352,11 @@ export class SupabaseBackend implements Backend {
   /**
    * Follows a voice room. Once I'm in: one full state, then every change itself over a private Broadcast topic
    * (020: a member, the room's settings and music, a vote, each numbered), applied here; the full state is fetched
-   * again only on a gap in the numbers, a reconnect, or when the heartbeat (every 20 s, also in the background:
+   * again only on a gap in the numbers, a reconnect, or when the heartbeat (every 3 s, also in the background:
    * people keep listening, as on X Spaces) says the room is further on. Chat and reactions come over realtime too.
    * A re-sync runs every 45 s while the realtime connection is up, every 10 s while it isn't, and when the tab is
-   * shown. A listener whose tab stays hidden for 30 minutes leaves. LiveKit audio while someone is on the stage.
+   * shown. A listener whose tab stays hidden for 30 minutes leaves. Failing beats or a dropped realtime connection
+   * show as 'connection'; back after more than 13 s, the server has taken me out and the room closes ('dropped'). LiveKit audio while someone is on the stage.
    */
   subscribeVoice(roomId: string, on: (e: VoiceEvent) => void): () => void {
     const me = this.uid
@@ -1694,6 +1696,7 @@ export class SupabaseBackend implements Backend {
             healthy = up
             nextResync()
           }
+          if (wasUp) connection({ realtime: !up })
           if (!up) return
           // Back after a drop: changes may have been missed while away.
           if (wasUp) refresh()
@@ -1715,6 +1718,7 @@ export class SupabaseBackend implements Backend {
       },
       joined: async (state, sent) => {
         joined = true
+        lastBeat = Date.now()
         openChannel()
         openTyping()
         return apply(state, sent)
@@ -1728,17 +1732,38 @@ export class SupabaseBackend implements Backend {
     }
     this.voice.set(roomId, live)
 
+    // ---- my connection (045): beats every 3 s; the server shows me lost after 6 s and takes me out 7 s later ----
+    let lastBeat = Date.now()
+    const down = { beat: false, realtime: false }
+    let shownLost = false
+    const connection = (patch: Partial<typeof down>) => {
+      Object.assign(down, patch)
+      const lost = down.beat || down.realtime
+      if (lost !== shownLost) emit({ type: 'connection', lost: (shownLost = lost) })
+    }
     const heartbeat = async () => {
       if (!joined || closed || over) return
+      // Gone longer than the server waits: a beat would bring me back in silently. Once the network answers, the
+      // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
+      const r = live.room
+      const keepsPlace = r?.hostId === me && !r.members.some((m) => m.role === 'cohost' && !m.lost)
+      if (droppedOut(lastBeat, Date.now()) && !keepsPlace) {
+        const { error } = await this.client.from('voice_seq').select('seq').eq('room_id', roomId).maybeSingle()
+        if (error || closed || over) return connection({ beat: true })
+        return finish({ type: 'dropped' }) // the room screen closes and leaves, to be sure
+      }
       try {
-        serverAt(await this.rpc<number>('voice_heartbeat2', { p_room: roomId }))
+        serverAt(await this.rpc<number>('voice_heartbeat3', { p_room: roomId }))
+        lastBeat = Date.now()
+        connection({ beat: false })
         // The host re-checks LiveKit against the room every minute (anyone a sync missed).
-        if (++beats % 3 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
+        if (++beats % 20 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
       } catch (err) {
         failed(err)
+        if (!over) connection({ beat: true })
       }
     }
-    const beatTimer = setInterval(() => void heartbeat(), 20_000)
+    const beatTimer = setInterval(() => void heartbeat(), VOICE_BEAT_MS)
     nextResync()
 
     // A listener who left the tab in the background for 30 minutes has gone: leave (the count, the battery).
@@ -1755,6 +1780,7 @@ export class SupabaseBackend implements Backend {
       if (visible) {
         idleCheck() // timers sleep in a background tab: check on the way back too
         hiddenAt = 0
+        void heartbeat() // at once: a frozen tab may have been away longer than the server waits
         resync()
       } else {
         hiddenAt = Date.now()
@@ -1814,7 +1840,7 @@ export class SupabaseBackend implements Backend {
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
       isPrivate: !!s.private, lang: appLang(s.lang),
       members: s.members.map((m) => ({
-        profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand,
+        profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true,
       })),
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: s.locked.includes(index) })),
       track: s.music ? {

@@ -307,7 +307,9 @@
     <string name="voice_ended">Hos telah menamatkan bilik ini</string>
     <string name="voice_ended_by_you">Bilik ditamatkan</string>
     <string name="voice_removed">Anda telah dikeluarkan dari bilik ini</string>
-    <string name="voice_idle_left">Anda keluar dari bilik selepas 30 minit di latar belakang</string>
+    <string name="voice_lost">Sambungan terputus</string>
+    <string name="voice_reconnecting">Sambungan terputus · Menyambung semula…</string>
+    <string name="voice_lost_left">Sambungan anda terputus dan anda telah keluar dari bilik</string>
     <string name="voice_joining">Menyertai…</string>
     <string name="voice_safety">Berbaik-baiklah. Bilik tidak dirakam. Ketik seseorang untuk melapor.</string>
     <string name="voice_stage">Pentas</string>

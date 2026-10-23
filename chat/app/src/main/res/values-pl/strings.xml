@@ -298,7 +298,9 @@
     <string name="voice_ended">Host zakończył ten pokój</string>
     <string name="voice_ended_by_you">Pokój zakończony</string>
     <string name="voice_removed">Usunięto Cię z tego pokoju</string>
-    <string name="voice_idle_left">Opuszczono pokój po 30 minutach w tle</string>
+    <string name="voice_lost">Brak połączenia</string>
+    <string name="voice_reconnecting">Brak połączenia · Łączenie ponownie…</string>
+    <string name="voice_lost_left">Utracono połączenie i opuszczono pokój</string>
     <string name="voice_joining">Dołączanie…</string>
     <string name="voice_safety">Bądźmy dla siebie mili. Pokoje nie są nagrywane. Dotknij osoby, aby ją zgłosić.</string>
     <string name="voice_stage">Scena</string>

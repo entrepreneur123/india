@@ -74,6 +74,9 @@ const ar: RoomDict = {
   sharedPage: 'صفحة مشتركة',
   openShared: 'فتح',
   httpsOnly: 'يمكن عرض الصفحات الآمنة (https) فقط للغرفة',
+  lost: 'انقطع الاتصال',
+  reconnecting: 'انقطع الاتصال · جارٍ إعادة الاتصال…',
+  lostLeft: 'انقطع اتصالك فخرجت من الغرفة',
 }
 
 export default ar

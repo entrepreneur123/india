@@ -69,6 +69,9 @@ const mr: RoomDict = {
   'sharedPage': 'शेअर केलेले पेज',
   'openShared': 'उघडा',
   'httpsOnly': 'फक्त सुरक्षित (https) पेज रूमला दाखवता येतात',
+  'lost': 'कनेक्शन तुटले',
+  'reconnecting': 'कनेक्शन तुटले · पुन्हा जोडत आहे…',
+  'lostLeft': 'कनेक्शन तुटल्याने तुम्ही रूममधून बाहेर पडलात',
 }
 
 export default mr

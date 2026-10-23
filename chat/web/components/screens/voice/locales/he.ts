@@ -70,6 +70,9 @@ const he: RoomDict = {
   sharedPage: 'דף משותף',
   openShared: 'פתיחה',
   httpsOnly: 'אפשר להציג לחדר רק דפים מאובטחים (https)',
+  lost: 'החיבור נותק',
+  reconnecting: 'החיבור נותק · מתחבר מחדש…',
+  lostLeft: 'החיבור שלך נותק ויצאת מהחדר',
 }
 
 export default he

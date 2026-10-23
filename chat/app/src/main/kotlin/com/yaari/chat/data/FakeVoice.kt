@@ -15,6 +15,7 @@ import com.yaari.chat.model.SpeakMode
 import com.yaari.chat.model.VoiceAction
 import com.yaari.chat.model.VoiceEvent
 import com.yaari.chat.model.VoiceLine
+import com.yaari.chat.model.VoiceLost
 import com.yaari.chat.model.VoiceMember
 import com.yaari.chat.model.VoicePoll
 import com.yaari.chat.model.VoiceReply
@@ -52,7 +53,7 @@ class FakeVoice(
     private val wait: suspend (Long) -> Unit,
     private val ambient: Boolean,
 ) {
-    private class Member(val profile: Profile, var role: VoiceRole, var seat: Int?, var muted: Boolean, var hand: Boolean)
+    private class Member(val profile: Profile, var role: VoiceRole, var seat: Int?, var muted: Boolean, var hand: Boolean, var lost: Boolean = false)
 
     private class SimRoom(
         val id: String, var title: String, val category: RoomCategory, val mode: SpeakMode, var hostId: String,
@@ -208,7 +209,7 @@ class FakeVoice(
 
     private fun snapshot(r: SimRoom) = VoiceRoom(
         r.id, r.title, r.category, r.mode, r.hostId, runCatching { me().id }.getOrDefault(""),
-        r.members.map { VoiceMember(it.profile, it.role, it.seat, it.muted, it.hand) },
+        r.members.map { VoiceMember(it.profile, it.role, it.seat, it.muted, it.hand, it.lost) },
         List(VoiceRoom.SEATS) { VoiceSeat(it, r.locked[it]) }, r.track, r.queue.toList(),
         r.rules, r.announcement, if (r.mine) r.code else null, r.lang, r.stage,
     )
@@ -516,7 +517,7 @@ class FakeVoice(
     private fun start(r: SimRoom, scope: CoroutineScope) {
         // Who is talking: one or two unmuted people on the stage, changing every few seconds.
         val rotate = {
-            val stage = others(r).filter { it.seat != null && !it.muted }.shuffled(random)
+            val stage = others(r).filter { it.seat != null && !it.muted && !it.lost }.shuffled(random)
             r.talkers = stage.take(if (random.nextFloat() < 0.3f) 2 else 1).map { it.profile.id }.toSet()
             if (random.nextFloat() < 0.15f) r.talkers = emptySet() // a pause in the conversation
         }
@@ -562,6 +563,11 @@ class FakeVoice(
             }
             changed(r)
         }
+        // Now and then someone on the stage loses their connection (045): back within the 7 s, or out of the room.
+        every(scope, 25_000, 40_000) {
+            val m = others(r).filter { it.seat != null && it.role != VoiceRole.HOST && !it.lost }.takeIf { it.isNotEmpty() }?.let(::pick)
+            if (m != null) lose(r, m, back = random.nextFloat() < 0.6f, backMs = jitter(2_500, 6_000))
+        }
         // Open rooms: now and then someone takes a free seat.
         if (r.mode == SpeakMode.OPEN && !r.mine) {
             every(scope, 14_000, 24_000) {
@@ -594,6 +600,22 @@ class FakeVoice(
                 val seconds = t?.let { TRACKS[it.videoId]?.second } ?: 0
                 if (t != null && seconds > 0 && t.pausedAt == null && clock() - t.startedAt > seconds * 1000L) skip(r)
             }
+        }
+    }
+
+    /** [m]'s connection drops: shown as lost, then back after [backMs] or out of the room after the server's 7 s. */
+    private fun lose(r: SimRoom, m: Member, back: Boolean, backMs: Long = 3_000) {
+        m.lost = true
+        r.talkers -= m.profile.id
+        changed(r)
+        later(r, if (back) backMs else LOST_OUT_MS) {
+            if (m !in r.members) return@later
+            if (back) m.lost = false
+            else {
+                r.members -= m
+                system(r, VoiceSystemEvent.LEFT, m.profile.name)
+            }
+            changed(r)
         }
     }
 
@@ -905,8 +927,30 @@ class FakeVoice(
         emit(r, VoiceEvent.Refused(code))
     }
 
+    /** Someone's connection drops ([back]: they're back 3 s later; else out after 7 s). */
+    fun lose(roomId: String, userId: String, back: Boolean) {
+        val r = rooms[roomId] ?: return
+        r.members.firstOrNull { it.profile.id == userId }?.let { lose(r, it, back) }
+    }
+
+    /** My own connection drops ([VoiceEvent.Connection]), as failing heartbeats would show it. */
+    fun dropMe(roomId: String) {
+        rooms[roomId]?.let { emit(it, VoiceEvent.Connection(lost = true)) }
+    }
+
+    /** My connection is back after [awayMs]: a short gap carries on; past [VoiceLost.GONE_MS] the server had taken me out. */
+    fun backAfter(roomId: String, awayMs: Long) {
+        val r = rooms[roomId] ?: return
+        if (!VoiceLost.droppedOut(0, awayMs)) return emit(r, VoiceEvent.Connection(lost = false))
+        val me = runCatching { me().id }.getOrNull() ?: return
+        r.members.removeAll { it.profile.id == me }
+        emit(r, VoiceEvent.Dropped)
+    }
+
     companion object {
         private const val LEVEL_MS = 150L
+        /** A lost connection takes them out of the room this long after it shows (the server's 7 s). */
+        private const val LOST_OUT_MS = 7_000L
         /** One icebreaker per room every 20 s (the server's rule). */
         const val ICEBREAKER_MS = 20_000L
         private const val CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"

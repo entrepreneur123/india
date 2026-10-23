@@ -292,7 +292,9 @@
     <string name="voice_ended">أنهى المضيف هذه الغرفة</string>
     <string name="voice_ended_by_you">انتهت الغرفة</string>
     <string name="voice_removed">تمت إزالتك من هذه الغرفة</string>
-    <string name="voice_idle_left">غادرت الغرفة بعد 30 دقيقة في الخلفية</string>
+    <string name="voice_lost">انقطع الاتصال</string>
+    <string name="voice_reconnecting">انقطع الاتصال · جارٍ إعادة الاتصال…</string>
+    <string name="voice_lost_left">انقطع اتصالك فخرجت من الغرفة</string>
     <string name="voice_joining">جارٍ الانضمام…</string>
     <string name="voice_safety">كن لطيفًا. الغرف لا تُسجَّل. اضغط على أي شخص للإبلاغ عنه.</string>
     <string name="voice_stage">المسرح</string>

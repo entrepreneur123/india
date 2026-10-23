@@ -105,6 +105,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -271,6 +275,7 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                     onMore = { sheet = VoiceSheet.Options }, onLeave = vm.voice::leave,
                 )
                 room.announcement?.let { Announcement(it, topicColor(topic), onEdit = if (s.isHost) ({ sheet = VoiceSheet.Settings }) else null) }
+                if (s.offline) OfflineBanner()
                 AudioNotice(s)
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
                     val height = maxHeight
@@ -539,6 +544,35 @@ private fun StageStrip(stage: List<VoiceMember>, levels: State<Map<String, Float
     }
 }
 
+/** My connection dropped (heartbeats failing or realtime down): a slim line until it is back. */
+@Composable
+private fun OfflineBanner() {
+    Row(
+        Modifier.padding(horizontal = 12.dp, vertical = 4.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.error.copy(alpha = 0.15f)).padding(horizontal = 12.dp, vertical = 6.dp)
+            .semantics { liveRegion = LiveRegionMode.Polite },
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Rounded.WifiOff, null, Modifier.size(14.dp), tint = MaterialTheme.colorScheme.error)
+        Text(
+            stringResource(R.string.voice_reconnecting), Modifier.padding(start = 6.dp), color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/** A face whose connection dropped (045) is dimmed with this badge; the server takes them out 7 s later unless they're back. */
+const val LOST_ALPHA = 0.4f
+
+@Composable
+fun LostBadge(size: Dp, modifier: Modifier = Modifier) {
+    Box(
+        modifier.size(size).clip(CircleShape).background(MaterialTheme.colorScheme.background).padding(2.dp).clip(CircleShape)
+            .background(MaterialTheme.colorScheme.error),
+        contentAlignment = Alignment.Center,
+    ) { Icon(Icons.Rounded.WifiOff, null, Modifier.size(size * 0.5f), tint = MaterialTheme.colorScheme.onError) }
+}
+
 /** Only when the audio needs a word: reconnecting, can't connect, or paused for a phone call. */
 @Composable
 private fun AudioNotice(s: VoiceState) {
@@ -766,7 +800,12 @@ private fun roleLabel(m: VoiceMember) = when (m.role) {
 @Composable
 private fun SeatPerson(member: VoiceMember, px: Dp, levels: State<Map<String, Float>>, reaction: FloatingReaction?, wide: Boolean = false, onClick: () -> Unit) {
     val role = roleLabel(member)
-    val label = listOfNotNull(member.profile.name, role, if (member.muted) stringResource(R.string.voice_mic_off) else null).joinToString(", ")
+    val state = when {
+        member.lost -> stringResource(R.string.voice_lost)
+        member.muted -> stringResource(R.string.voice_mic_off)
+        else -> null
+    }
+    val label = listOfNotNull(member.profile.name, role, state).joinToString(", ")
     val badge = maxOf(18.dp, px * 0.34f)
     val interaction = remember { MutableInteractionSource() }
     Column(
@@ -777,8 +816,9 @@ private fun SeatPerson(member: VoiceMember, px: Dp, levels: State<Map<String, Fl
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(Modifier.size(px)) {
-            SpeakingRing(levels, member.profile.id, px)
-            Avatar(member.profile, px, Modifier.pressScale(interaction, 0.95f))
+            if (!member.lost) SpeakingRing(levels, member.profile.id, px)
+            Avatar(member.profile, px, Modifier.pressScale(interaction, 0.95f).alpha(if (member.lost) LOST_ALPHA else 1f))
+            if (member.lost) LostBadge(badge, Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp))
             if (member.muted) {
                 Box(
                     Modifier.align(Alignment.BottomEnd).offset(2.dp, 2.dp).size(badge).clip(CircleShape)
@@ -809,9 +849,15 @@ private fun SeatPerson(member: VoiceMember, px: Dp, levels: State<Map<String, Fl
             VerifiedMark(member.profile, Modifier.padding(start = 3.dp), size = if (wide) 15.dp else 12.dp)
             if (member.role == VoiceRole.HOST) Text(flagOf(member.profile.country), Modifier.padding(start = 3.dp), fontSize = if (wide) 14.sp else 12.sp)
         }
-        role?.let { RoleBadge(it) }
+        if (member.lost) LostLabel() else role?.let { RoleBadge(it) }
     }
 }
+
+@Composable
+fun LostLabel(modifier: Modifier = Modifier) = Text(
+    stringResource(R.string.voice_lost), modifier.padding(top = 2.dp), color = MaterialTheme.colorScheme.error, fontSize = 10.sp, lineHeight = 14.sp,
+    fontWeight = FontWeight.Bold, fontFamily = Jakarta, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
+)
 
 @Composable
 fun RoleBadge(text: String, modifier: Modifier = Modifier) {
@@ -915,7 +961,8 @@ private fun ListenersStrip(room: VoiceRoom, hands: Int, onClick: () -> Unit) {
     ) {
         Icon(Icons.Outlined.Headphones, null, Modifier.padding(end = 6.dp).size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(stringResource(R.string.voice_listening_n, audience.size), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleSmall, maxLines = 1)
-        FaceStack(audience.take(7).map { it.profile }, 26.dp, MaterialTheme.colorScheme.background, Modifier.padding(start = 12.dp).weight(1f))
+        val shown = audience.take(7)
+        FaceStack(shown.map { it.profile }, 26.dp, MaterialTheme.colorScheme.background, Modifier.padding(start = 12.dp).weight(1f), dim = shown.filter { it.lost }.map { it.profile.id }.toSet())
         if (hands > 0) {
             GlyphIcon(Glyph.HAND, size = 16.dp)
             Text("$hands", Modifier.padding(start = 4.dp, end = 8.dp), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)

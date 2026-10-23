@@ -69,6 +69,9 @@ const fil: RoomDict = {
   sharedPage: 'Ibinahaging page',
   openShared: 'Buksan',
   httpsOnly: 'Mga secure (https) na page lang ang puwedeng ipakita sa room',
+  lost: 'Nawala ang koneksyon',
+  reconnecting: 'Nawala ang koneksyon · Kumokonekta ulit…',
+  lostLeft: 'Nawala ang koneksyon mo kaya umalis ka sa room',
 }
 
 export default fil

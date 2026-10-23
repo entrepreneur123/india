@@ -46,6 +46,14 @@ class VoiceChangesTest {
         assertNull(s.apply(change("""{$base,"stage":null,"seq":7}""")!!, "me").stage)
     }
 
+    @Test fun aLostConnectionComesWithTheMember() {
+        val base = """{"t":"m","id":"a","present":true,"role":"speaker","seat":2,"muted":false,"hand":false,"name":"A","seq":5"""
+        val lost = state.apply(change("$base,\"lost\":true}")!!, "me")
+        assertEquals(true, lost.members.first { it.id == "a" }.lost)
+        // Back (or a server before 045, without the key): not lost.
+        assertEquals(false, lost.apply(change(base.replace("\"seq\":5", "\"seq\":6") + "}")!!, "me").members.first { it.id == "a" }.lost)
+    }
+
     @Test fun aMemberGoing() {
         val gone = change("""{"t":"m","id":"a","present":false,"seq":5}""")!!
         assertEquals(listOf("h", "b"), state.apply(gone, "me").members.map { it.id })

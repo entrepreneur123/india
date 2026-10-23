@@ -304,7 +304,9 @@
     <string name="voice_ended">Chủ phòng đã kết thúc phòng</string>
     <string name="voice_ended_by_you">Đã kết thúc phòng</string>
     <string name="voice_removed">Bạn đã bị mời ra khỏi phòng</string>
-    <string name="voice_idle_left">Bạn đã rời phòng sau 30 phút chạy nền</string>
+    <string name="voice_lost">Mất kết nối</string>
+    <string name="voice_reconnecting">Mất kết nối · Đang kết nối lại…</string>
+    <string name="voice_lost_left">Bạn bị mất kết nối và đã rời phòng</string>
     <string name="voice_joining">Đang vào…</string>
     <string name="voice_safety">Hãy tử tế. Phòng không ghi âm. Chạm vào một người để báo cáo.</string>
     <string name="voice_stage">Sân khấu</string>

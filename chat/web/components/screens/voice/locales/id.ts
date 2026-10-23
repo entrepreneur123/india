@@ -69,6 +69,9 @@ const id: RoomDict = {
   sharedPage: 'Halaman yang dibagikan',
   openShared: 'Buka',
   httpsOnly: 'Hanya halaman aman (https) yang bisa ditampilkan ke room',
+  lost: 'Koneksi terputus',
+  reconnecting: 'Koneksi terputus · Menyambungkan ulang…',
+  lostLeft: 'Koneksimu terputus dan kamu keluar dari room',
 }
 
 export default id

@@ -69,6 +69,9 @@ const fa: RoomDict = {
   sharedPage: 'صفحهٔ اشتراکی',
   openShared: 'باز کردن',
   httpsOnly: 'فقط صفحه‌های امن (https) را می‌شود به روم نشان داد',
+  lost: 'اتصال قطع شد',
+  reconnecting: 'اتصال قطع شد · در حال اتصال دوباره…',
+  lostLeft: 'اتصالتان قطع شد و از روم خارج شدید',
 }
 
 export default fa

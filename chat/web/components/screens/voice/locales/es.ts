@@ -70,6 +70,9 @@ const es: RoomDict = {
   sharedPage: 'Página compartida',
   openShared: 'Abrir',
   httpsOnly: 'Solo se pueden mostrar a la sala páginas seguras (https)',
+  lost: 'Sin conexión',
+  reconnecting: 'Sin conexión · Reconectando…',
+  lostLeft: 'Perdiste la conexión y saliste de la sala',
 }
 
 export default es

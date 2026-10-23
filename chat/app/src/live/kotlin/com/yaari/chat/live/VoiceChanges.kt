@@ -30,6 +30,8 @@ import kotlinx.serialization.json.longOrNull
     @SerialName("photo_path") val photoPath: String? = null, val country: String? = null,
     val role: String, val seat: Int? = null, val muted: Boolean = true, val hand: Boolean = false,
     val ha: Long? = null, val j: Long? = null,
+    /** 045: their connection dropped (out of the room 7 s later unless they come back). */
+    val lost: Boolean = false,
 )
 
 /** voice_state(): the room, the people present with their cards, the server clock (ms) and the room's change number. */

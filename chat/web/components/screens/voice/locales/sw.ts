@@ -69,6 +69,9 @@ const sw: RoomDict = {
   sharedPage: 'Ukurasa ulioshirikiwa',
   openShared: 'Fungua',
   httpsOnly: 'Kurasa salama (https) pekee ndizo zinaweza kuonyeshwa kwa chumba',
+  lost: 'Muunganisho umekatika',
+  reconnecting: 'Muunganisho umekatika · Inaunganisha tena…',
+  lostLeft: 'Muunganisho wako ulikatika, ukatoka chumbani',
 }
 
 export default sw

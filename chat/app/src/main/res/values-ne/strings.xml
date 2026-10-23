@@ -283,7 +283,9 @@
     <string name="voice_ended">होस्टले यो रूम बन्द गर्नुभयो</string>
     <string name="voice_ended_by_you">रूम बन्द भयो</string>
     <string name="voice_removed">तपाईंलाई यो रूमबाट हटाइयो</string>
-    <string name="voice_idle_left">ब्याकग्राउन्डमा ३० मिनेट भएपछि तपाईं रूमबाट निस्कनुभयो</string>
+    <string name="voice_lost">जडान टुट्यो</string>
+    <string name="voice_reconnecting">जडान टुट्यो · फेरि जोडिँदै…</string>
+    <string name="voice_lost_left">जडान टुटेकाले तपाईं रूमबाट बाहिरिनुभयो</string>
     <string name="voice_joining">जोडिँदै…</string>
     <string name="voice_safety">राम्रोसँग बोल्नुहोस्। रूम रेकर्ड हुँदैनन्। रिपोर्ट गर्न व्यक्तिमा ट्याप गर्नुहोस्।</string>
     <string name="voice_stage">स्टेज</string>

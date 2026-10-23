@@ -293,7 +293,9 @@
     <string name="voice_ended">ഹോസ്റ്റ് ഈ റൂം അവസാനിപ്പിച്ചു</string>
     <string name="voice_ended_by_you">റൂം അവസാനിച്ചു</string>
     <string name="voice_removed">നിങ്ങളെ ഈ റൂമിൽ നിന്ന് നീക്കം ചെയ്തു</string>
-    <string name="voice_idle_left">ബാക്ക്ഗ്രൗണ്ടിൽ 30 മിനിറ്റ് ആയതിനാൽ നിങ്ങൾ റൂമിൽ നിന്ന് പുറത്തായി</string>
+    <string name="voice_lost">കണക്ഷൻ പോയി</string>
+    <string name="voice_reconnecting">കണക്ഷൻ പോയി · വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു…</string>
+    <string name="voice_lost_left">കണക്ഷൻ നഷ്ടമായതിനാൽ നിങ്ങൾ റൂമിൽ നിന്ന് പുറത്തായി</string>
     <string name="voice_joining">ചേരുന്നു…</string>
     <string name="voice_safety">മാന്യമായി പെരുമാറൂ. റൂമുകൾ റെക്കോർഡ് ചെയ്യുന്നില്ല. റിപ്പോർട്ട് ചെയ്യാൻ ഒരാളെ ടാപ്പ് ചെയ്യൂ.</string>
     <string name="voice_stage">സ്റ്റേജ്</string>

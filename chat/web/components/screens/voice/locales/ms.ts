@@ -69,6 +69,9 @@ const ms: RoomDict = {
   sharedPage: 'Halaman dikongsi',
   openShared: 'Buka',
   httpsOnly: 'Hanya halaman selamat (https) boleh ditunjukkan kepada bilik',
+  lost: 'Sambungan terputus',
+  reconnecting: 'Sambungan terputus · Menyambung semula…',
+  lostLeft: 'Sambungan anda terputus dan anda telah keluar dari bilik',
 }
 
 export default ms

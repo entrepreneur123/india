@@ -307,7 +307,9 @@
     <string name="voice_ended">ਹੋਸਟ ਨੇ ਇਹ ਰੂਮ ਖ਼ਤਮ ਕਰ ਦਿੱਤਾ</string>
     <string name="voice_ended_by_you">ਰੂਮ ਖ਼ਤਮ ਹੋ ਗਿਆ</string>
     <string name="voice_removed">ਤੁਹਾਨੂੰ ਇਸ ਰੂਮ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ</string>
-    <string name="voice_idle_left">ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ 30 ਮਿੰਟ ਬਾਅਦ ਤੁਸੀਂ ਰੂਮ ਤੋਂ ਨਿਕਲ ਗਏ</string>
+    <string name="voice_lost">ਕਨੈਕਸ਼ਨ ਟੁੱਟਿਆ</string>
+    <string name="voice_reconnecting">ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ · ਮੁੜ ਜੁੜ ਰਹੇ ਹਾਂ…</string>
+    <string name="voice_lost_left">ਕਨੈਕਸ਼ਨ ਟੁੱਟਣ ਕਾਰਨ ਤੁਸੀਂ ਰੂਮ ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ</string>
     <string name="voice_joining">ਜੁੜ ਰਹੇ ਹਾਂ…</string>
     <string name="voice_safety">ਚੰਗੀ ਤਰ੍ਹਾਂ ਗੱਲ ਕਰੋ। ਰੂਮ ਰਿਕਾਰਡ ਨਹੀਂ ਹੁੰਦੇ। ਰਿਪੋਰਟ ਕਰਨ ਲਈ ਕਿਸੇ ਵਿਅਕਤੀ ’ਤੇ ਟੈਪ ਕਰੋ।</string>
     <string name="voice_stage">ਸਟੇਜ</string>

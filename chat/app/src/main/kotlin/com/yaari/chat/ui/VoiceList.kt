@@ -70,9 +70,13 @@ fun LiveBars(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorSc
 
 /** Overlapping faces (the stage of a room, the audience strip). */
 @Composable
-fun FaceStack(people: List<Profile>, size: Dp, ring: Color, modifier: Modifier = Modifier) {
+fun FaceStack(people: List<Profile>, size: Dp, ring: Color, modifier: Modifier = Modifier, dim: Set<String> = emptySet()) {
     Layout(
-        content = { people.forEach { p -> Box(Modifier.size(size).clip(CircleShape).background(ring).padding(2.dp)) { Avatar(p, size - 4.dp) } } },
+        content = {
+            people.forEach { p ->
+                Box(Modifier.size(size).clip(CircleShape).background(ring).padding(2.dp)) { Avatar(p, size - 4.dp, Modifier.alpha(if (p.id in dim) LOST_ALPHA else 1f)) }
+            }
+        },
         modifier = modifier,
     ) { measurables, constraints ->
         val placeables = measurables.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }

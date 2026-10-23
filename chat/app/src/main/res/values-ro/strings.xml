@@ -296,7 +296,9 @@
     <string name="voice_ended">Gazda a închis această cameră</string>
     <string name="voice_ended_by_you">Camera s-a închis</string>
     <string name="voice_removed">Nu mai faci parte din această cameră</string>
-    <string name="voice_idle_left">Ai ieșit din cameră după 30 de minute în fundal</string>
+    <string name="voice_lost">Conexiune pierdută</string>
+    <string name="voice_reconnecting">Conexiune pierdută · Se reconectează…</string>
+    <string name="voice_lost_left">Ai pierdut conexiunea și ai ieșit din cameră</string>
     <string name="voice_joining">Se intră…</string>
     <string name="voice_safety">Fii de treabă. Camerele nu sunt înregistrate. Atinge o persoană ca s-o raportezi.</string>
     <string name="voice_stage">Scenă</string>

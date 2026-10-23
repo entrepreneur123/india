@@ -20,6 +20,7 @@ import { TopicIcon } from '@/components/ui/topic-icons'
 import { kindColor } from '@/components/screens/rooms/room-text'
 import { cn } from '@/lib/utils'
 import { RoomPlayerProvider } from './room-player'
+import { useRoomT } from './room-t'
 import { VoiceRoomScreen } from './voice-room'
 import { LiveBars, SpeakingRing } from './voice-stage'
 import { isMod, memberOf, SPEAKING } from './voice-text'
@@ -67,6 +68,8 @@ export interface VoiceSession {
   reactions: Reaction[]
   /** The live audio (null in the demo, or before it starts). */
   audio: VoiceAudioState | null
+  /** My connection dropped (beats failing or realtime down): the room shows "Reconnecting…". */
+  offline: boolean
   act: (a: VoiceAction) => Promise<boolean>
   /** `replyTo`: the line this one answers. */
   send: (text: string, replyTo?: number | null) => Promise<boolean>
@@ -98,6 +101,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [lines, setLines] = useState<VoiceLine[] | null>(null)
   const [reactions, setReactions] = useState<Reaction[]>([])
   const [audio, setAudio] = useState<VoiceAudioState | null>(null)
+  const [offline, setOffline] = useState(false)
   const [polls, dispatch] = useReducer(pollsReducer, {})
   const pollsRef = useRef(polls)
   pollsRef.current = polls
@@ -112,6 +116,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   gone.current = onGone
   const tRef = useRef(t)
   tRef.current = t
+  const { rt } = useRoomT()
+  const rtRef = useRef(rt)
+  rtRef.current = rt
   /** Typing signals by user id (with when), and a tick to show them going stale. */
   const typingSeen = useRef<TypingSeen>(new Map())
   const [typingTick, setTypingTick] = useState(0)
@@ -142,6 +149,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'audio':
           setAudio(e.audio)
+          break
+        case 'connection':
+          setOffline(e.lost)
           break
         case 'line':
           addLines([e.line])
@@ -182,6 +192,10 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'idle':
           toast.show(tRef.current('voice.idleLeft'), 'info')
+          gone.current()
+          break
+        case 'dropped':
+          toast.show(rtRef.current('lostLeft'), 'info')
           gone.current()
           break
         case 'left':
@@ -390,7 +404,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [needsTap, startAudio])
 
   return {
-    room, me, lines, levels, reactions, audio, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
+    room, me, lines, levels, reactions, audio, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
     polls, createPoll, votePoll, closePoll, typing, notifyTyping,
   }
 }

@@ -307,7 +307,9 @@
     <string name="voice_ended">होस्टने ही रूम बंद केली</string>
     <string name="voice_ended_by_you">रूम बंद झाली</string>
     <string name="voice_removed">तुम्हाला या रूममधून काढले गेले</string>
-    <string name="voice_idle_left">बॅकग्राउंडमध्ये 30 मिनिटांनंतर तुम्ही रूममधून बाहेर पडलात</string>
+    <string name="voice_lost">कनेक्शन तुटले</string>
+    <string name="voice_reconnecting">कनेक्शन तुटले · पुन्हा जोडत आहे…</string>
+    <string name="voice_lost_left">कनेक्शन तुटल्याने तुम्ही रूममधून बाहेर पडलात</string>
     <string name="voice_joining">सामील होत आहे…</string>
     <string name="voice_safety">चांगले वागा. रूम्स रेकॉर्ड होत नाहीत. रिपोर्ट करण्यासाठी व्यक्तीवर टॅप करा.</string>
     <string name="voice_stage">स्टेज</string>

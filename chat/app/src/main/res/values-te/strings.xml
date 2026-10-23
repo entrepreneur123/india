@@ -293,7 +293,9 @@
     <string name="voice_ended">హోస్ట్ ఈ రూమ్‌ను ముగించారు</string>
     <string name="voice_ended_by_you">రూమ్ ముగిసింది</string>
     <string name="voice_removed">మిమ్మల్ని ఈ రూమ్ నుంచి తొలగించారు</string>
-    <string name="voice_idle_left">బ్యాక్‌గ్రౌండ్‌లో 30 నిమిషాలు ఉన్నందున మీరు రూమ్ నుంచి వెళ్లిపోయారు</string>
+    <string name="voice_lost">కనెక్షన్ పోయింది</string>
+    <string name="voice_reconnecting">కనెక్షన్ పోయింది · మళ్లీ కనెక్ట్ అవుతోంది…</string>
+    <string name="voice_lost_left">కనెక్షన్ పోవడంతో మీరు రూమ్ నుండి బయటకు వచ్చారు</string>
     <string name="voice_joining">చేరుతోంది…</string>
     <string name="voice_safety">మర్యాదగా ఉండండి. రూమ్‌లు రికార్డ్ చేయబడవు. రిపోర్ట్ చేయడానికి ఒక వ్యక్తిని ట్యాప్ చేయండి.</string>
     <string name="voice_stage">స్టేజ్</string>

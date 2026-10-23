@@ -184,7 +184,7 @@ class AppViewModel(
     private var dmJob: Job? = null
 
     /** Rooms: the list on the Rooms tab and the room I'm in (full screen or minimised to the pill). */
-    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock, visible = foreground)
+    val voice = VoiceController(backend, viewModelScope, ::notice, ::explain, photos, wallClock = wallClock)
 
     /** Link cards in every chat (link-meta), remembered per address while the app runs. */
     val linkCards = LinkCards(backend, viewModelScope)

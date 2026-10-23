@@ -283,7 +283,9 @@
     <string name="voice_ended">Der Host hat den Raum beendet</string>
     <string name="voice_ended_by_you">Raum beendet</string>
     <string name="voice_removed">Du wurdest aus dem Raum entfernt</string>
-    <string name="voice_idle_left">Du hast den Raum nach 30 Minuten im Hintergrund verlassen</string>
+    <string name="voice_lost">Verbindung weg</string>
+    <string name="voice_reconnecting">Verbindung unterbrochen · Wird neu verbunden…</string>
+    <string name="voice_lost_left">Deine Verbindung ist abgebrochen, du hast den Raum verlassen</string>
     <string name="voice_joining">Trete bei…</string>
     <string name="voice_safety">Sei nett. Räume werden nicht aufgezeichnet. Tippe auf eine Person, um sie zu melden.</string>
     <string name="voice_stage">Bühne</string>

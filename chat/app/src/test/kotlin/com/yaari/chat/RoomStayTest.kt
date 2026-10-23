@@ -5,15 +5,13 @@ import com.yaari.chat.data.FakeBackend
 import com.yaari.chat.domain.Countries
 import com.yaari.chat.model.Gender
 import com.yaari.chat.model.GenderRule
-import com.yaari.chat.model.NewVoiceRoom
-import com.yaari.chat.model.RoomCategory
 import com.yaari.chat.model.RoomRules
+import com.yaari.chat.model.VoiceLost
 import com.yaari.chat.ui.AppViewModel
 import com.yaari.chat.ui.ProfileDraft
 import com.yaari.chat.ui.Tab
 import com.yaari.chat.ui.UiText
 import com.yaari.chat.ui.VoiceController
-import com.yaari.chat.ui.VoiceController.Companion.IDLE_LEAVE_MS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-/** Staying in a room: the server's refusals (heartbeat, re-entry) and leaving after 30 minutes in the background. */
+/** Staying in a room: the server's refusals (heartbeat, re-entry), the background (no idle leave), lost connections (045). */
 @OptIn(ExperimentalCoroutinesApi::class)
 class RoomStayTest {
     private val dispatcher = StandardTestDispatcher()
@@ -95,49 +93,59 @@ class RoomStayTest {
         assertEquals(UiText(R.string.err_not_allowed), VoiceController.refusedText("something_new", null))
     }
 
-    @Test fun aListenerLeavesAfterThirtyMinutesInTheBackground() = runTest(dispatcher) {
+    @Test fun listenersStayInTheBackgroundForHours() = runTest(dispatcher) {
         val vm = signedIn()
         vm.voice.open("v-cricket"); advanceUntilIdle()
         assertNull(vm.voice.state.value!!.me!!.seat)
-
-        // Back after 29 minutes: still in; the count starts again next time.
-        background(IDLE_LEAVE_MS - 60_000)
+        // The screen off for three hours (the foreground service keeps the room playing): still in, nothing said.
+        background(3 * 60 * 60_000L)
+        assertEquals("v-cricket", vm.voice.state.value?.roomId)
         visible.value = true; runCurrent()
-        assertNotNull(vm.voice.state.value)
-        background(IDLE_LEAVE_MS - 1)
-        assertNotNull(vm.voice.state.value)
-        advanceTimeBy(1); runCurrent()
-        assertNull(vm.voice.state.value)
-        assertEquals(UiText(R.string.voice_idle_left), vm.notice())
+        assertEquals("v-cricket", vm.voice.state.value?.roomId)
+        assertNull(vm.notice())
     }
 
-    @Test fun aSleepingPhoneLeavesOnTheWayBack() = runTest(dispatcher) {
+    @Test fun aShortDropShowsReconnectingAndCarriesOn() = runTest(dispatcher) {
         val vm = signedIn()
         vm.voice.open("v-cricket"); advanceUntilIdle()
-        visible.value = false; runCurrent()
-        // The timer was held back (the phone slept), but the wall clock says 31 minutes went by.
-        wall += IDLE_LEAVE_MS + 60_000
-        advanceTimeBy(60_000); runCurrent()
-        assertNotNull(vm.voice.state.value)
-        visible.value = true; runCurrent()
-        assertNull(vm.voice.state.value)
-        assertEquals(UiText(R.string.voice_idle_left), vm.notice())
+        fake.voice.dropMe("v-cricket"); runCurrent()
+        assertEquals(true, vm.voice.state.value?.offline)
+        fake.voice.backAfter("v-cricket", VoiceLost.GONE_MS); runCurrent()
+        assertEquals(false, vm.voice.state.value?.offline)
+        assertEquals("v-cricket", vm.voice.state.value?.roomId)
     }
 
-    @Test fun theHostAndTheStageAreNeverSentAway() = runTest(dispatcher) {
+    @Test fun backAfterMoreThanThirteenSecondsTheRoomClosesWithANotice() = runTest(dispatcher) {
         val vm = signedIn()
-        vm.voice.open("v-lofi"); advanceUntilIdle()
-        vm.voice.tapSeat(5) { error("listeners don't manage seats") }; advanceUntilIdle()
-        assertEquals(5, vm.voice.state.value!!.me!!.seat)
-        background(2 * IDLE_LEAVE_MS)
-        visible.value = true; runCurrent()
-        assertEquals("v-lofi", vm.voice.state.value?.roomId)
-        vm.voice.close(); advanceUntilIdle()
+        vm.voice.open("v-cricket"); advanceUntilIdle()
+        val me = vm.voice.state.value!!.room!!.meId
+        fake.voice.dropMe("v-cricket"); runCurrent()
+        fake.voice.backAfter("v-cricket", VoiceLost.GONE_MS + 1); advanceUntilIdle()
+        assertNull(vm.voice.state.value)
+        assertEquals(UiText(R.string.voice_lost_left), vm.notice())
+        assertEquals(false, fake.voice.isIn("v-cricket", me))
+    }
 
-        vm.voice.create(NewVoiceRoom("Late night", RoomCategory.TALK)); advanceUntilIdle()
-        assertEquals(true, vm.voice.state.value?.isHost)
-        background(2 * IDLE_LEAVE_MS)
-        visible.value = true; runCurrent()
-        assertEquals(true, vm.voice.state.value?.isHost)
+    @Test fun someoneElsesLostConnectionShowsThenEndsOrComesBack() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.voice.open("v-cricket"); advanceUntilIdle()
+        fun member(id: String) = vm.voice.state.value!!.room!!.members.firstOrNull { it.profile.id == id }
+        val (a, b) = vm.voice.state.value!!.room!!.members.filter { it.seat != null && it.seat != 0 }.take(2).map { it.profile.id }
+        fake.voice.lose("v-cricket", a, back = false)
+        fake.voice.lose("v-cricket", b, back = true); runCurrent()
+        assertEquals(true, member(a)?.lost)
+        assertEquals(true, member(b)?.lost)
+        advanceTimeBy(3_001); runCurrent()
+        assertEquals(false, member(b)?.lost)
+        assertEquals(true, member(a)?.lost)
+        advanceTimeBy(4_000); runCurrent()
+        assertNull(member(a))
+    }
+
+    @Test fun theThirteenSecondRule() {
+        assertEquals(3_000L, VoiceLost.BEAT_MS)
+        assertEquals(false, VoiceLost.droppedOut(1_000, 1_000 + VoiceLost.BEAT_MS))
+        assertEquals(false, VoiceLost.droppedOut(1_000, 14_000))
+        assertEquals(true, VoiceLost.droppedOut(1_000, 14_001))
     }
 }

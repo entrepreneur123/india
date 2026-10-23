@@ -294,7 +294,9 @@
     <string name="voice_ended">L’host ha chiuso questa stanza</string>
     <string name="voice_ended_by_you">Stanza chiusa</string>
     <string name="voice_removed">Ti hanno rimosso da questa stanza</string>
-    <string name="voice_idle_left">Hai lasciato la stanza dopo 30 minuti in background</string>
+    <string name="voice_lost">Connessione persa</string>
+    <string name="voice_reconnecting">Connessione persa · Riconnessione…</string>
+    <string name="voice_lost_left">Hai perso la connessione e sei uscito dalla stanza</string>
     <string name="voice_joining">Accesso in corso…</string>
     <string name="voice_safety">Sii gentile. Le stanze non vengono registrate. Tocca una persona per segnalarla.</string>
     <string name="voice_stage">Palco</string>

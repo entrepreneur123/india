@@ -54,6 +54,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -126,7 +127,10 @@ private fun ageCity(m: VoiceMember) = listOf(m.profile.age.takeIf { it > 0 }?.to
 private fun PersonLine(m: VoiceMember, onClick: () -> Unit, trailing: @Composable () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(1f).clip(RoundedCornerShape(12.dp)).clickable(role = Role.Button, onClick = onClick).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            Avatar(m.profile, 40.dp)
+            Box {
+                Avatar(m.profile, 40.dp, Modifier.alpha(if (m.lost) LOST_ALPHA else 1f))
+                if (m.lost) LostBadge(18.dp, Modifier.align(Alignment.TopEnd).offset(3.dp, (-3).dp))
+            }
             Column(Modifier.padding(start = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(m.profile.name, style = MaterialTheme.typography.titleSmall.copy(fontSize = 15.sp), maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
@@ -138,7 +142,8 @@ private fun PersonLine(m: VoiceMember, onClick: () -> Unit, trailing: @Composabl
                     }
                     if (m.hand) GlyphIcon(Glyph.HAND, size = 16.dp)
                 }
-                LookName(m.profile.id, size = 12.sp) {
+                if (m.lost) LostLabel()
+                else LookName(m.profile.id, size = 12.sp) {
                     Text(ageCity(m), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                 }
             }

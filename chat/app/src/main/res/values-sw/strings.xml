@@ -283,7 +283,9 @@
     <string name="voice_ended">Mwenyeji amefunga chumba hiki</string>
     <string name="voice_ended_by_you">Chumba kimefungwa</string>
     <string name="voice_removed">Umeondolewa kwenye chumba hiki</string>
-    <string name="voice_idle_left">Umeondoka kwenye chumba baada ya dakika 30 chinichini</string>
+    <string name="voice_lost">Muunganisho umekatika</string>
+    <string name="voice_reconnecting">Muunganisho umekatika · Inaunganisha tena…</string>
+    <string name="voice_lost_left">Muunganisho wako ulikatika, ukatoka chumbani</string>
     <string name="voice_joining">Inajiunga…</string>
     <string name="voice_safety">Kuwa mwema. Vyumba havirekodiwi. Gusa mtu ili kumripoti.</string>
     <string name="voice_stage">Jukwaa</string>

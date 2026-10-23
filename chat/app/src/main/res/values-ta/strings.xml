@@ -293,7 +293,9 @@
     <string name="voice_ended">ஹோஸ்ட் இந்த ரூமை முடித்துவிட்டார்</string>
     <string name="voice_ended_by_you">ரூம் முடிந்தது</string>
     <string name="voice_removed">இந்த ரூமிலிருந்து நீங்கள் நீக்கப்பட்டீர்கள்</string>
-    <string name="voice_idle_left">பின்னணியில் 30 நிமிடங்கள் இருந்ததால் ரூமிலிருந்து வெளியேறினீர்கள்</string>
+    <string name="voice_lost">இணைப்பு துண்டிப்பு</string>
+    <string name="voice_reconnecting">இணைப்பு துண்டிக்கப்பட்டது · மீண்டும் இணைக்கிறது…</string>
+    <string name="voice_lost_left">இணைப்பு துண்டிக்கப்பட்டதால் ரூமிலிருந்து வெளியேறினீர்கள்</string>
     <string name="voice_joining">சேர்கிறது…</string>
     <string name="voice_safety">அன்பாக இருங்கள். ரூம்கள் ரெக்கார்டு செய்யப்படாது. ரிப்போர்ட் செய்ய ஒருவரைத் தட்டுங்கள்.</string>
     <string name="voice_stage">ஸ்டேஜ்</string>

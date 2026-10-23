@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, X } from 'lucide-react'
+import { ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, Headphones, LogOut, Mic, MicOff, Pencil, Pin, ScreenShare, ScreenShareOff, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
@@ -23,7 +23,7 @@ import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
-import { ReactionLayer, SeatPerson, Stage } from './voice-stage'
+import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage } from './voice-stage'
 import { isMod, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -302,6 +302,11 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             </Button>
           </header>
           {room.announcement ? <Announcement text={room.announcement} onEdit={isHost ? () => setSheet({ kind: 'settings' }) : undefined} /> : null}
+          {s.offline ? (
+            <p role="status" className="mx-3 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-destructive/15 px-3 py-1.5 text-xs font-semibold text-destructive sm:mx-4">
+              <WifiOff className="size-3.5 shrink-0" aria-hidden /> {rt('reconnecting')}
+            </p>
+          ) : null}
           <AudioNotice s={s} />
 
           {wide ? (
@@ -650,7 +655,8 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
           <span className="flex min-w-0 -space-x-2 overflow-hidden" aria-hidden>
             {shown.map((x) => (
               <span key={x.profile.id} className="relative shrink-0">
-                <Avatar name={x.profile.name} src={x.profile.photoUrl} size={30} className="rounded-full ring-2 ring-background" />
+                <Avatar name={x.profile.name} src={x.profile.photoUrl} size={30} className={cn('rounded-full ring-2 ring-background', x.lost && LOST_FACE)} />
+                {x.lost ? <LostBadge size={14} className="-top-1 -inset-e-1" /> : null}
                 {x.hand ? <ReactionIcon kind="hand" size={14} className="absolute -inset-e-1 -bottom-1" /> : null}
               </span>
             ))}
@@ -665,15 +671,17 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
 /** One listener on wide screens: the face, the first name, a hand or the host / co-host badge. */
 function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }) {
   const { t } = useI18n()
+  const { rt } = useRoomT()
   const role = roleLabel(x, t)
   return (
-    <button type="button" onClick={onClick} aria-label={[x.profile.name, role].filter(Boolean).join(', ')} className="group flex w-full min-w-0 flex-col items-center gap-1 rounded-2xl p-1">
+    <button type="button" onClick={onClick} aria-label={[x.profile.name, role, x.lost ? rt('lost') : null].filter(Boolean).join(', ')} className="group flex w-full min-w-0 flex-col items-center gap-1 rounded-2xl p-1">
       <span className="relative">
-        <Avatar name={x.profile.name} src={x.profile.photoUrl} size={44} className="transition-transform duration-150 group-active:scale-95" />
+        <Avatar name={x.profile.name} src={x.profile.photoUrl} size={44} className={cn('transition-transform duration-150 group-active:scale-95', x.lost && LOST_FACE)} />
+        {x.lost ? <LostBadge size={18} /> : null}
         {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -inset-e-1 -bottom-1" /> : null}
       </span>
       <span className="max-w-full truncate text-[11px] leading-tight font-medium">{x.profile.name.split(' ')[0]}</span>
-      {role ? <span className="-mt-0.5 rounded-full bg-primary-soft px-1.5 text-[9.5px] leading-tight font-bold text-primary-text">{role}</span> : null}
+      {x.lost ? <span className="-mt-0.5 max-w-full truncate text-[9.5px] leading-tight font-bold text-destructive">{rt('lost')}</span> : role ? <span className="-mt-0.5 rounded-full bg-primary-soft px-1.5 text-[9.5px] leading-tight font-bold text-primary-text">{role}</span> : null}
     </button>
   )
 }

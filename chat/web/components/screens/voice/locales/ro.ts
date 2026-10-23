@@ -70,6 +70,9 @@ const ro: RoomDict = {
   sharedPage: 'Pagină partajată',
   openShared: 'Deschide',
   httpsOnly: 'În cameră se pot afișa doar pagini sigure (https)',
+  lost: 'Conexiune pierdută',
+  reconnecting: 'Conexiune pierdută · Se reconectează…',
+  lostLeft: 'Ai pierdut conexiunea și ai ieșit din cameră',
 }
 
 export default ro

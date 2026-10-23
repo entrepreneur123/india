@@ -285,7 +285,9 @@
     <string name="voice_ended">L’hôte a fermé ce salon</string>
     <string name="voice_ended_by_you">Salon fermé</string>
     <string name="voice_removed">Vous avez été retiré de ce salon</string>
-    <string name="voice_idle_left">Vous avez quitté le salon après 30 minutes en arrière-plan</string>
+    <string name="voice_lost">Connexion perdue</string>
+    <string name="voice_reconnecting">Connexion perdue · Reconnexion…</string>
+    <string name="voice_lost_left">Connexion perdue : vous avez quitté le salon</string>
     <string name="voice_joining">Connexion…</string>
     <string name="voice_safety">Soyez bienveillant. Les salons ne sont pas enregistrés. Appuyez sur une personne pour la signaler.</string>
     <string name="voice_stage">Scène</string>

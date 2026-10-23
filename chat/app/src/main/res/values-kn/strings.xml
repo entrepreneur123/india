@@ -293,7 +293,9 @@
     <string name="voice_ended">ಹೋಸ್ಟ್ ಈ ರೂಮ್ ಮುಗಿಸಿದರು</string>
     <string name="voice_ended_by_you">ರೂಮ್ ಮುಗಿಯಿತು</string>
     <string name="voice_removed">ನಿಮ್ಮನ್ನು ಈ ರೂಮ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</string>
-    <string name="voice_idle_left">ಹಿನ್ನೆಲೆಯಲ್ಲಿ 30 ನಿಮಿಷ ಇದ್ದುದರಿಂದ ನೀವು ರೂಮ್‌ನಿಂದ ಹೊರಬಂದಿರಿ</string>
+    <string name="voice_lost">ಸಂಪರ್ಕ ಕಡಿತ</string>
+    <string name="voice_reconnecting">ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ · ಮರುಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="voice_lost_left">ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡು ನೀವು ರೂಮ್‌ನಿಂದ ಹೊರಬಂದಿದ್ದೀರಿ</string>
     <string name="voice_joining">ಸೇರುತ್ತಿದೆ…</string>
     <string name="voice_safety">ಸೌಜನ್ಯದಿಂದಿರಿ. ರೂಮ್‌ಗಳನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ರಿಪೋರ್ಟ್ ಮಾಡಲು ವ್ಯಕ್ತಿಯನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</string>
     <string name="voice_stage">ಸ್ಟೇಜ್</string>

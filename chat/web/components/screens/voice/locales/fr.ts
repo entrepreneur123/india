@@ -70,6 +70,9 @@ const fr: RoomDict = {
   sharedPage: 'Page partagée',
   openShared: 'Ouvrir',
   httpsOnly: 'Seules les pages sécurisées (https) peuvent être montrées au salon',
+  lost: 'Connexion perdue',
+  reconnecting: 'Connexion perdue · Reconnexion…',
+  lostLeft: 'Connexion perdue : vous avez quitté le salon',
 }
 
 export default fr

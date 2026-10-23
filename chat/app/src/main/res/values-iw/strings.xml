@@ -285,7 +285,9 @@
     <string name="voice_ended">המארח/ת סיים/ה את החדר</string>
     <string name="voice_ended_by_you">החדר הסתיים</string>
     <string name="voice_removed">הוצאת מהחדר הזה</string>
-    <string name="voice_idle_left">יצאת מהחדר אחרי 30 דקות ברקע</string>
+    <string name="voice_lost">החיבור נותק</string>
+    <string name="voice_reconnecting">החיבור נותק · מתחבר מחדש…</string>
+    <string name="voice_lost_left">החיבור שלך נותק ויצאת מהחדר</string>
     <string name="voice_joining">מצטרפים…</string>
     <string name="voice_safety">נחמדים כאן. החדרים לא מוקלטים. כדי לדווח, מקישים על אדם.</string>
     <string name="voice_stage">במה</string>

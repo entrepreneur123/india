@@ -69,6 +69,9 @@ const ja: RoomDict = {
   sharedPage: '共有ページ',
   openShared: '開く',
   httpsOnly: 'ルームに表示できるのは安全な（https）ページだけです',
+  lost: '接続切れ',
+  reconnecting: '接続が切れました · 再接続しています…',
+  lostLeft: '接続が切れたため、ルームから退出しました',
 }
 
 export default ja

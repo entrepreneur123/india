@@ -69,6 +69,9 @@ const ptBR: RoomDict = {
   sharedPage: 'Página compartilhada',
   openShared: 'Abrir',
   httpsOnly: 'Só páginas seguras (https) podem ser mostradas para a sala',
+  lost: 'Sem conexão',
+  reconnecting: 'Sem conexão · Reconectando…',
+  lostLeft: 'Sua conexão caiu e você saiu da sala',
 }
 
 export default ptBR

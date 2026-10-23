@@ -72,6 +72,9 @@ const ru: RoomDict = {
   sharedPage: 'Общая страница',
   openShared: 'Открыть',
   httpsOnly: 'Комнате можно показывать только защищённые (https) страницы',
+  lost: 'Нет связи',
+  reconnecting: 'Связь потеряна · Переподключение…',
+  lostLeft: 'Связь прервалась, и вы вышли из комнаты',
 }
 
 export default ru

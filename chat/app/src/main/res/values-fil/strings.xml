@@ -307,7 +307,9 @@
     <string name="voice_ended">Tinapos ng host ang room na ito</string>
     <string name="voice_ended_by_you">Natapos ang room</string>
     <string name="voice_removed">Inalis ka sa room na ito</string>
-    <string name="voice_idle_left">Umalis ka sa room pagkatapos ng 30 minuto sa background</string>
+    <string name="voice_lost">Nawala ang koneksyon</string>
+    <string name="voice_reconnecting">Nawala ang koneksyon · Kumokonekta ulit…</string>
+    <string name="voice_lost_left">Nawala ang koneksyon mo kaya umalis ka sa room</string>
     <string name="voice_joining">Sumasali…</string>
     <string name="voice_safety">Maging mabait. Hindi nire-record ang mga room. I-tap ang isang tao para mag-report.</string>
     <string name="voice_stage">Stage</string>

@@ -28,9 +28,19 @@ enum class SpeakMode(val code: String) {
 }
 
 /** [seat]: 0 is the host's, 1–8 the stage, null in the audience. */
-data class VoiceMember(val profile: Profile, val role: VoiceRole, val seat: Int?, val muted: Boolean, val hand: Boolean) {
+/** [lost] (045): their connection dropped; the server takes them out 7 s later unless they come back. */
+data class VoiceMember(val profile: Profile, val role: VoiceRole, val seat: Int?, val muted: Boolean, val hand: Boolean, val lost: Boolean = false) {
     val isMod get() = role == VoiceRole.HOST || role == VoiceRole.COHOST
     val onStage get() = seat != null
+}
+
+/** 045: in a room I beat every 3 s; after 6 s without one the server shows me as lost, 7 s later it takes me out. */
+object VoiceLost {
+    const val BEAT_MS = 3_000L
+    const val GONE_MS = 13_000L
+
+    /** Back after a gap this long, the server has already taken me out: close the room instead of re-entering silently. */
+    fun droppedOut(lastBeat: Long, now: Long) = now - lastBeat > GONE_MS
 }
 
 data class VoiceSeat(val index: Int, val locked: Boolean)
@@ -305,6 +315,10 @@ sealed interface VoiceEvent {
     data class PollChanged(val poll: VoicePoll) : VoiceEvent
     data object Ended : VoiceEvent
     data object Removed : VoiceEvent
+    /** My own connection: heartbeats failing or realtime down (true) and back (false). */
+    data class Connection(val lost: Boolean) : VoiceEvent
+    /** Back after more than [VoiceLost.GONE_MS] away: the server had already taken me out, so the room closes. */
+    data object Dropped : VoiceEvent
     /** Someone in the room is typing in the chat (a public broadcast, vtyping-<room>: the sender's id and name). */
     data class Typing(val userId: String, val name: String) : VoiceEvent
     /**

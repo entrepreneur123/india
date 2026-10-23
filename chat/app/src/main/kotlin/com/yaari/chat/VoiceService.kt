@@ -145,7 +145,7 @@ class VoiceService : Service() {
             // Only while there is something to keep alive: the room's audio (someone is on the stage) or its music
             // playing. A room nobody talks or plays music in is a chat room: no service, no notification.
             // Collected here rather than read in composition: Compose stops recomposing while the app is in the
-            // background, and leaving there (the notification's button, 30 minutes idle) must stop the service at once.
+            // background, and leaving there (the notification's Leave button) must stop the service at once.
             LaunchedEffect(vm) {
                 vm.voice.state
                     .map { v -> v?.takeIf { it.keepAlive }?.let { Shown(it.roomId, it.room?.title.orEmpty(), it.isHost, it.me?.seat != null, it.me?.muted != false) } }

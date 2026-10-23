@@ -70,6 +70,9 @@ const zhHans: RoomDict = {
   sharedPage: '分享的页面',
   openShared: '打开',
   httpsOnly: '只有安全（https）页面才能展示给房间',
+  lost: '连接已断开',
+  reconnecting: '连接已断开 · 正在重新连接…',
+  lostLeft: '连接已断开，你已离开房间',
 }
 
 export default zhHans

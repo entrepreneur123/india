@@ -285,7 +285,9 @@
     <string name="voice_ended">El anfitrión cerró esta sala</string>
     <string name="voice_ended_by_you">Sala cerrada</string>
     <string name="voice_removed">Te sacaron de esta sala</string>
-    <string name="voice_idle_left">Saliste de la sala tras 30 minutos en segundo plano</string>
+    <string name="voice_lost">Sin conexión</string>
+    <string name="voice_reconnecting">Sin conexión · Reconectando…</string>
+    <string name="voice_lost_left">Perdiste la conexión y saliste de la sala</string>
     <string name="voice_joining">Entrando…</string>
     <string name="voice_safety">Sé amable. Las salas no se graban. Toca a una persona para denunciarla.</string>
     <string name="voice_stage">Escenario</string>

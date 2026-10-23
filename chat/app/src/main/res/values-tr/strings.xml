@@ -284,7 +284,9 @@
     <string name="voice_ended">Oda sahibi bu odayı kapattı</string>
     <string name="voice_ended_by_you">Oda kapatıldı</string>
     <string name="voice_removed">Bu odadan çıkarıldın</string>
-    <string name="voice_idle_left">Arka planda 30 dakika kaldıktan sonra odadan ayrıldın</string>
+    <string name="voice_lost">Bağlantı koptu</string>
+    <string name="voice_reconnecting">Bağlantı koptu · Yeniden bağlanılıyor…</string>
+    <string name="voice_lost_left">Bağlantın koptuğu için odadan çıktın</string>
     <string name="voice_joining">Katılınıyor…</string>
     <string name="voice_safety">Nazik ol. Odalar kaydedilmez. Şikâyet etmek için bir kişiye dokun.</string>
     <string name="voice_stage">Sahne</string>

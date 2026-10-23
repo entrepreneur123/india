@@ -117,6 +117,23 @@ class VoiceScreensTest {
         compose.waitUntil(5_000) { vm.voice.state.value == null }
     }
 
+    @Test fun lostConnections() {
+        signIn()
+        open("v-cricket")
+        waitFor("Raise hand")
+        val lost = vm.voice.state.value!!.room!!.members.first { it.seat == 2 }.profile.id
+        compose.runOnUiThread {
+            backend.voice.lose("v-cricket", lost, back = false)
+            backend.voice.dropMe("v-cricket")
+        }
+        waitFor("Connection lost · Reconnecting…")
+        compose.waitUntil(5_000) { vm.voice.state.value!!.room!!.members.first { it.profile.id == lost }.lost }
+        shot("voice_08_lost")
+        compose.onNode(hasText("/120 here", substring = true)).performClick()
+        waitFor("Search people")
+        screen("voice_09_lost_people")
+    }
+
     @Test fun musicAndChat() {
         signIn()
         open("v-bolly")

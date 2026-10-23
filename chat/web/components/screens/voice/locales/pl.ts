@@ -71,6 +71,9 @@ const pl: RoomDict = {
   sharedPage: 'Udostępniona strona',
   openShared: 'Otwórz',
   httpsOnly: 'W pokoju można pokazywać tylko bezpieczne strony (https)',
+  lost: 'Brak połączenia',
+  reconnecting: 'Brak połączenia · Łączenie ponownie…',
+  lostLeft: 'Utracono połączenie i opuszczono pokój',
 }
 
 export default pl

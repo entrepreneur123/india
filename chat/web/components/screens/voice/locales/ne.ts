@@ -69,6 +69,9 @@ const ne: RoomDict = {
   sharedPage: 'सेयर गरिएको पेज',
   openShared: 'खोल्नुहोस्',
   httpsOnly: 'सुरक्षित (https) पेज मात्र रूमलाई देखाउन सकिन्छ',
+  lost: 'जडान टुट्यो',
+  reconnecting: 'जडान टुट्यो · फेरि जोडिँदै…',
+  lostLeft: 'जडान टुटेकाले तपाईं रूमबाट बाहिरिनुभयो',
 }
 
 export default ne

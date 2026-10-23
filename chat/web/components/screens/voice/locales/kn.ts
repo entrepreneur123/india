@@ -69,6 +69,9 @@ const kn: RoomDict = {
   sharedPage: 'ಹಂಚಿಕೊಂಡ ಪುಟ',
   openShared: 'ತೆರೆಯಿರಿ',
   httpsOnly: 'ಸುರಕ್ಷಿತ (https) ಪುಟಗಳನ್ನು ಮಾತ್ರ ರೂಮ್‌ಗೆ ತೋರಿಸಬಹುದು',
+  lost: 'ಸಂಪರ್ಕ ಕಡಿತ',
+  reconnecting: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ · ಮರುಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…',
+  lostLeft: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡು ನೀವು ರೂಮ್‌ನಿಂದ ಹೊರಬಂದಿದ್ದೀರಿ',
 }
 
 export default kn

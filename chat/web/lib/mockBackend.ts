@@ -37,6 +37,7 @@ import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
+import { droppedOut } from './voice-lost'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 function countryOfPhone(digits: string | null | undefined): string | null {
@@ -1006,9 +1007,26 @@ export class MockBackend implements Backend {
     void this.voice().then((sim) => {
       if (!closed) stop = sim.subscribe(roomId, on)
     })
+    // My own connection, as the real backend shows it: the browser going offline, and back (the 13 s rule).
+    let offAt = 0
+    const offline = () => {
+      offAt = Date.now()
+      on({ type: 'connection', lost: true })
+    }
+    const online = () => {
+      if (!offAt) return
+      const gone = droppedOut(offAt, Date.now())
+      offAt = 0
+      if (!gone) return on({ type: 'connection', lost: false })
+      on({ type: 'dropped' }) // the room screen closes and leaves
+    }
+    window.addEventListener('offline', offline)
+    window.addEventListener('online', online)
     return () => {
       closed = true
       stop?.()
+      window.removeEventListener('offline', offline)
+      window.removeEventListener('online', online)
     }
   }
 

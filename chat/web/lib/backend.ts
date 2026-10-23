@@ -298,6 +298,8 @@ export interface VoiceMember {
   seat: number | null
   muted: boolean
   hand: boolean
+  /** 045: their connection dropped; the server takes them out 7 s later unless they come back. */
+  lost?: boolean
 }
 
 export interface VoiceSeat {
@@ -480,6 +482,10 @@ export type VoiceEvent =
   | { type: 'refused'; code: string }
   /** Left on my own after 30 minutes in the background as a listener. */
   | { type: 'idle' }
+  /** My own connection: heartbeats failing or realtime down (true) and back (false). */
+  | { type: 'connection'; lost: boolean }
+  /** Back after more than 13 s away: the server had already taken me out, so the room closes. */
+  | { type: 'dropped' }
   /** Out of the room because I'm in a random chat now (the server leaves rooms for it): no message needed. */
   | { type: 'left' }
   /** Someone in the room is writing in the chat (public 'vtyping-<room>' channel; nothing is stored). Never me. */

@@ -288,7 +288,9 @@
     <string name="voice_ended">Хост закрыл эту комнату</string>
     <string name="voice_ended_by_you">Комната закрыта</string>
     <string name="voice_removed">Вас удалили из этой комнаты</string>
-    <string name="voice_idle_left">Вы вышли из комнаты после 30 минут в фоне</string>
+    <string name="voice_lost">Нет связи</string>
+    <string name="voice_reconnecting">Связь потеряна · Переподключение…</string>
+    <string name="voice_lost_left">Связь прервалась, и вы вышли из комнаты</string>
     <string name="voice_joining">Подключаемся…</string>
     <string name="voice_safety">Будьте вежливы. Комнаты не записываются. Нажмите на человека, чтобы пожаловаться.</string>
     <string name="voice_stage">Сцена</string>

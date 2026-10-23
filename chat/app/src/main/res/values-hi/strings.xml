@@ -296,7 +296,9 @@
     <string name="voice_ended">होस्ट ने यह रूम बंद कर दिया</string>
     <string name="voice_ended_by_you">रूम बंद हो गया</string>
     <string name="voice_removed">आपको इस रूम से हटा दिया गया</string>
-    <string name="voice_idle_left">30 मिनट बैकग्राउंड में रहने के बाद आप रूम से बाहर हो गए</string>
+    <string name="voice_lost">कनेक्शन टूटा</string>
+    <string name="voice_reconnecting">कनेक्शन टूट गया · फिर से जुड़ रहे हैं…</string>
+    <string name="voice_lost_left">कनेक्शन टूटने से आप रूम से बाहर हो गए</string>
     <string name="voice_joining">जुड़ रहे हैं…</string>
     <string name="voice_safety">अच्छे से पेश आएँ। रूम रिकॉर्ड नहीं होते। रिपोर्ट करने के लिए उस व्यक्ति पर टैप करें।</string>
     <string name="voice_stage">स्टेज</string>

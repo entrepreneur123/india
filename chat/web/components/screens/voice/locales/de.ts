@@ -69,6 +69,9 @@ const de: RoomDict = {
   sharedPage: 'Geteilte Seite',
   openShared: 'Öffnen',
   httpsOnly: 'Nur sichere Seiten (https) können dem Raum gezeigt werden',
+  lost: 'Verbindung weg',
+  reconnecting: 'Verbindung unterbrochen · Wird neu verbunden…',
+  lostLeft: 'Deine Verbindung ist abgebrochen, du hast den Raum verlassen',
 }
 
 export default de

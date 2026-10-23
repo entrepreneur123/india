@@ -69,6 +69,9 @@ const ur: RoomDict = {
   'sharedPage': 'شیئر کیا گیا پیج',
   'openShared': 'کھولیں',
   'httpsOnly': 'صرف محفوظ (https) پیجز روم کو دکھائے جا سکتے ہیں',
+  'lost': 'کنکشن ٹوٹ گیا',
+  'reconnecting': 'کنکشن ٹوٹ گیا · دوبارہ جڑ رہے ہیں…',
+  'lostLeft': 'کنکشن ٹوٹنے کی وجہ سے آپ روم سے باہر ہو گئے',
 }
 
 export default ur

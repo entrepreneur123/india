@@ -307,7 +307,9 @@
     <string name="voice_ended">Host mengakhiri room ini</string>
     <string name="voice_ended_by_you">Room diakhiri</string>
     <string name="voice_removed">Kamu dikeluarkan dari room ini</string>
-    <string name="voice_idle_left">Kamu keluar dari room setelah 30 menit di latar belakang</string>
+    <string name="voice_lost">Koneksi terputus</string>
+    <string name="voice_reconnecting">Koneksi terputus · Menyambungkan ulang…</string>
+    <string name="voice_lost_left">Koneksimu terputus dan kamu keluar dari room</string>
     <string name="voice_joining">Bergabung…</string>
     <string name="voice_safety">Bersikap baik ya. Room tidak direkam. Ketuk seseorang untuk melapor.</string>
     <string name="voice_stage">Panggung</string>

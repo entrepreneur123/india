@@ -69,6 +69,9 @@ const it: RoomDict = {
   sharedPage: 'Pagina condivisa',
   openShared: 'Apri',
   httpsOnly: 'Alla stanza si possono mostrare solo pagine sicure (https)',
+  lost: 'Connessione persa',
+  reconnecting: 'Connessione persa · Riconnessione…',
+  lostLeft: 'Hai perso la connessione e sei uscito dalla stanza',
 }
 
 export default it

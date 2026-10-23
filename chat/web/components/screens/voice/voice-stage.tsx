@@ -2,7 +2,7 @@
 
 import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as m from 'motion/react-m'
-import { Lock, MicOff, Plus } from 'lucide-react'
+import { Lock, MicOff, Plus, WifiOff } from 'lucide-react'
 import { VOICE_SEATS, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
 import { useLevel, type LevelStore, type Reaction } from './voice-session'
 import { roleLabel, SPEAKING } from './voice-text'
+import { useRoomT } from './room-t'
 import { TrustBadge } from '@/components/trust/badge'
 
 /** Three bars that bounce while a room is live (still under reduced motion). */
@@ -47,6 +48,20 @@ export function SpeakingRing({ store, id }: { store: LevelStore; id: string }) {
         style={{ opacity: on ? (reduce ? 1 : 0.55 + level * 0.45) : 0, transform: reduce ? undefined : `scale(${on ? 1 + level * 0.05 : 0.96})` }}
       />
     </>
+  )
+}
+
+/** A face whose connection dropped (045) is dimmed with this badge; the server takes them out 7 s later unless they're back. */
+export const LOST_FACE = 'opacity-40 grayscale'
+export function LostBadge({ size, className }: { size: number; className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn('absolute -top-0.5 -inset-e-0.5 grid place-items-center rounded-full bg-destructive text-background ring-2 ring-background', className)}
+      style={{ width: size, height: size }}
+    >
+      <WifiOff style={{ width: size * 0.58, height: size * 0.58 }} />
+    </span>
   )
 }
 
@@ -119,8 +134,9 @@ export function SeatPerson({
   wide?: boolean
 }) {
   const { t } = useI18n()
+  const { rt } = useRoomT()
   const role = roleLabel(member, t)
-  const label = [member.profile.name, role, member.muted ? t('voice.micOff') : null].filter(Boolean).join(', ')
+  const label = [member.profile.name, role, member.lost ? rt('lost') : member.muted ? t('voice.micOff') : null].filter(Boolean).join(', ')
   const badge = Math.max(18, Math.round(px * 0.34))
   return (
     <button
@@ -130,8 +146,9 @@ export function SeatPerson({
       className={cn('group flex min-w-0 flex-col items-center gap-1.5 rounded-2xl p-1 outline-offset-0', wide ? 'w-32' : 'w-full')}
     >
       <span className="relative" style={{ width: px, height: px }}>
-        <SpeakingRing store={levels} id={member.profile.id} />
-        <Avatar name={member.profile.name} src={member.profile.photoUrl} size={px} className="transition-transform duration-150 group-active:scale-95" />
+        {member.lost ? null : <SpeakingRing store={levels} id={member.profile.id} />}
+        <Avatar name={member.profile.name} src={member.profile.photoUrl} size={px} className={cn('transition-transform duration-150 group-active:scale-95', member.lost && LOST_FACE)} />
+        {member.lost ? <LostBadge size={badge} /> : null}
         {member.muted ? (
           <span
             className="absolute -inset-e-0.5 -bottom-0.5 grid place-items-center rounded-full bg-muted text-foreground ring-2 ring-background"
@@ -162,7 +179,9 @@ export function SeatPerson({
           <TrustBadge userId={member.profile.id} size={wide ? 14 : 12} />
           {member.role === 'host' && member.profile.country ? <span aria-hidden className="ms-0.5">{flagEmoji(member.profile.country)}</span> : null}
         </span>
-        {role ? (
+        {member.lost ? (
+          <span className="mt-0.5 text-[10px] leading-tight font-bold whitespace-nowrap text-destructive">{rt('lost')}</span>
+        ) : role ? (
           <span className="mt-0.5 rounded-full bg-primary-soft px-1.5 py-px text-[10px] leading-tight font-bold whitespace-nowrap text-primary-text">{role}</span>
         ) : null}
       </span>

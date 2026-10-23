@@ -308,7 +308,9 @@
     <string name="voice_ended">The host ended this room</string>
     <string name="voice_ended_by_you">Room ended</string>
     <string name="voice_removed">You were removed from this room</string>
-    <string name="voice_idle_left">You left the room after 30 minutes in the background</string>
+    <string name="voice_lost">Connection lost</string>
+    <string name="voice_reconnecting">Connection lost · Reconnecting…</string>
+    <string name="voice_lost_left">You lost connection and left the room</string>
     <string name="voice_joining">Joining…</string>
     <string name="voice_safety">Be kind. Rooms are not recorded. Tap a person to report.</string>
     <string name="voice_stage">Stage</string>

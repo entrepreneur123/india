@@ -69,6 +69,9 @@ const bn: RoomDict = {
   sharedPage: 'শেয়ার করা পেজ',
   openShared: 'খুলুন',
   httpsOnly: 'রুমে শুধু নিরাপদ (https) পেজ দেখানো যায়',
+  lost: 'সংযোগ বিচ্ছিন্ন',
+  reconnecting: 'সংযোগ বিচ্ছিন্ন · আবার যুক্ত হচ্ছে…',
+  lostLeft: 'সংযোগ বিচ্ছিন্ন হওয়ায় আপনি রুম থেকে বেরিয়ে গেছেন',
 }
 
 export default bn

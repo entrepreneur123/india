@@ -20,6 +20,7 @@ import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { cn } from '@/lib/utils'
 import { canManage, isMod, memberOf, roleLabel } from './voice-text'
 import { useRoomT } from './room-t'
+import { LOST_FACE, LostBadge } from './voice-stage'
 import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
@@ -64,10 +65,14 @@ function Row({ icon, label, onClick, danger, disabled }: { icon: ReactNode; labe
 
 function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: ReactNode; onClick?: () => void }) {
   const { t } = useI18n()
+  const { rt } = useRoomT()
   const role = roleLabel(m, t)
   const body = (
     <>
-      <Avatar name={m.profile.name} src={m.profile.photoUrl} size={40} />
+      <span className="relative shrink-0">
+        <Avatar name={m.profile.name} src={m.profile.photoUrl} size={40} className={cn(m.lost && LOST_FACE)} />
+        {m.lost ? <LostBadge size={18} /> : null}
+      </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
           <span className="truncate text-[15px] font-semibold">{m.profile.name}</span>
@@ -76,7 +81,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
           {m.hand ? <ReactionIcon kind="hand" size={16} /> : null}
         </span>
         <span className="flex min-w-0 text-xs">
-          <LookName
+          {m.lost ? <span className="truncate font-semibold text-destructive">{rt('lost')}</span> : <LookName
             userId={m.profile.id}
             handle={m.profile.handle}
             className="font-semibold"
@@ -85,7 +90,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
                 {m.profile.age} · {m.profile.city} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
               </span>
             }
-          />
+          />}
         </span>
       </span>
     </>

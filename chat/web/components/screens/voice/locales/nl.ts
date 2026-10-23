@@ -69,6 +69,9 @@ const nl: RoomDict = {
   sharedPage: 'Gedeelde pagina',
   openShared: 'Openen',
   httpsOnly: 'Alleen beveiligde (https) pagina’s kunnen aan de room worden getoond',
+  lost: 'Verbinding weg',
+  reconnecting: 'Verbinding verbroken · Opnieuw verbinden…',
+  lostLeft: 'Je verbinding viel weg en je hebt de room verlaten',
 }
 
 export default nl

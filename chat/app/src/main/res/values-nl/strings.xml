@@ -294,7 +294,9 @@
     <string name="voice_ended">De host heeft deze room beëindigd</string>
     <string name="voice_ended_by_you">Room beëindigd</string>
     <string name="voice_removed">Je bent uit deze room verwijderd</string>
-    <string name="voice_idle_left">Je hebt de room verlaten na 30 minuten op de achtergrond</string>
+    <string name="voice_lost">Verbinding weg</string>
+    <string name="voice_reconnecting">Verbinding verbroken · Opnieuw verbinden…</string>
+    <string name="voice_lost_left">Je verbinding viel weg en je hebt de room verlaten</string>
     <string name="voice_joining">Binnenkomen…</string>
     <string name="voice_safety">Wees aardig. Rooms worden niet opgenomen. Tik op iemand om te melden.</string>
     <string name="voice_stage">Podium</string>

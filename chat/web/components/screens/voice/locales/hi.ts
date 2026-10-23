@@ -69,6 +69,9 @@ const hi: RoomDict = {
   sharedPage: 'शेयर किया पेज',
   openShared: 'खोलें',
   httpsOnly: 'रूम को सिर्फ़ सुरक्षित (https) पेज दिखाए जा सकते हैं',
+  lost: 'कनेक्शन टूटा',
+  reconnecting: 'कनेक्शन टूट गया · फिर से जुड़ रहे हैं…',
+  lostLeft: 'कनेक्शन टूटने से आप रूम से बाहर हो गए',
 }
 
 export default hi

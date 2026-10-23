@@ -304,7 +304,9 @@
     <string name="voice_ended">房主已关闭这个房间</string>
     <string name="voice_ended_by_you">房间已关闭</string>
     <string name="voice_removed">你已被移出这个房间</string>
-    <string name="voice_idle_left">你在后台停留了 30 分钟，已自动离开房间</string>
+    <string name="voice_lost">连接已断开</string>
+    <string name="voice_reconnecting">连接已断开 · 正在重新连接…</string>
+    <string name="voice_lost_left">连接已断开，你已离开房间</string>
     <string name="voice_joining">正在加入…</string>
     <string name="voice_safety">请友善交流。房间不会录音。点按某人即可举报。</string>
     <string name="voice_stage">麦上</string>

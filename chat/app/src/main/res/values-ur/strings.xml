@@ -307,7 +307,9 @@
     <string name="voice_ended">ہوسٹ نے یہ روم ختم کر دیا</string>
     <string name="voice_ended_by_you">روم ختم ہو گیا</string>
     <string name="voice_removed">آپ کو اس روم سے نکال دیا گیا</string>
-    <string name="voice_idle_left">بیک گراؤنڈ میں 30 منٹ کے بعد آپ روم سے نکل گئے</string>
+    <string name="voice_lost">کنکشن ٹوٹ گیا</string>
+    <string name="voice_reconnecting">کنکشن ٹوٹ گیا · دوبارہ جڑ رہے ہیں…</string>
+    <string name="voice_lost_left">کنکشن ٹوٹنے کی وجہ سے آپ روم سے باہر ہو گئے</string>
     <string name="voice_joining">شامل ہو رہے ہیں…</string>
     <string name="voice_safety">اچھے سے بات کریں۔ رومز ریکارڈ نہیں ہوتے۔ رپورٹ کرنے کے لیے کسی شخص پر ٹیپ کریں۔</string>
     <string name="voice_stage">اسٹیج</string>

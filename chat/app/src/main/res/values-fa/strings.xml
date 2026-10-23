@@ -283,7 +283,9 @@
     <string name="voice_ended">میزبان این روم را تمام کرد</string>
     <string name="voice_ended_by_you">روم تمام شد</string>
     <string name="voice_removed">شما از این روم بیرون شدید</string>
-    <string name="voice_idle_left">بعد از ۳۰ دقیقه در پس‌زمینه، از روم خارج شدید</string>
+    <string name="voice_lost">اتصال قطع شد</string>
+    <string name="voice_reconnecting">اتصال قطع شد · در حال اتصال دوباره…</string>
+    <string name="voice_lost_left">اتصالتان قطع شد و از روم خارج شدید</string>
     <string name="voice_joining">در حال پیوستن…</string>
     <string name="voice_safety">مهربان باشید. روم‌ها ضبط نمی‌شوند. برای گزارش، روی یک نفر بزنید.</string>
     <string name="voice_stage">استیج</string>

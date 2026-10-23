@@ -633,7 +633,7 @@ export class VoiceSim {
   private start(r: SimRoom) {
     // Who is talking: one or two unmuted people on the stage, changing every few seconds.
     const rotate = () => {
-      const stage = this.others(r).filter((m) => m.seat !== null && !m.muted)
+      const stage = this.others(r).filter((m) => m.seat !== null && !m.muted && !m.lost)
       r.talkers = new Set(
         stage.sort(() => Math.random() - 0.5).slice(0, Math.random() < 0.3 ? 2 : 1).map((m) => m.profile.id),
       )
@@ -693,6 +693,26 @@ export class VoiceSim {
       }
       this.changed(r)
     })
+    // Now and then someone on the stage loses their connection (045): back within the 7 s, or out of the room.
+    const drop = () => {
+      const m = pick(this.others(r).filter((x) => x.seat !== null && x.role !== 'host' && !x.lost))
+      if (!m) return
+      m.lost = true
+      r.talkers.delete(m.profile.id)
+      this.changed(r)
+      const back = Math.random() < 0.6
+      this.later(r, back ? jitter(2500, 6000) : 7000, () => {
+        if (!r.room.members.includes(m)) return
+        if (back) m.lost = false
+        else {
+          r.room.members = r.room.members.filter((x) => x !== m)
+          this.system(r, 'left', m.profile.name)
+        }
+        this.changed(r)
+      })
+    }
+    this.later(r, 5000, drop)
+    this.every(r, 25000, 40000, drop)
     // Open rooms: now and then someone takes a free seat.
     if (r.room.mode === 'open' && !r.mine) {
       this.every(r, 14000, 24000, () => {

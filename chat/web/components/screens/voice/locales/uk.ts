@@ -72,6 +72,9 @@ const uk: RoomDict = {
   sharedPage: 'Спільна сторінка',
   openShared: 'Відкрити',
   httpsOnly: 'Кімнаті можна показувати лише захищені (https) сторінки',
+  lost: 'Немає зв’язку',
+  reconnecting: 'Зв’язок втрачено · Перепідключення…',
+  lostLeft: 'Зв’язок обірвався, і ви вийшли з кімнати',
 }
 
 export default uk

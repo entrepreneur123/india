@@ -69,6 +69,9 @@ const te: RoomDict = {
   sharedPage: 'షేర్ చేసిన పేజీ',
   openShared: 'తెరువు',
   httpsOnly: 'సురక్షితమైన (https) పేజీలను మాత్రమే రూమ్‌కు చూపించగలం',
+  lost: 'కనెక్షన్ పోయింది',
+  reconnecting: 'కనెక్షన్ పోయింది · మళ్లీ కనెక్ట్ అవుతోంది…',
+  lostLeft: 'కనెక్షన్ పోవడంతో మీరు రూమ్ నుండి బయటకు వచ్చారు',
 }
 
 export default te

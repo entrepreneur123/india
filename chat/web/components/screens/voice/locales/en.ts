@@ -70,6 +70,9 @@ const en = {
   sharedPage: 'Shared page',
   openShared: 'Open',
   httpsOnly: 'Only secure (https) pages can be shown to the room',
+  lost: 'Connection lost',
+  reconnecting: 'Connection lost · Reconnecting…',
+  lostLeft: 'You lost connection and left the room',
 }
 
 export default en

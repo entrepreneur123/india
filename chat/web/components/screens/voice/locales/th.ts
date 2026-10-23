@@ -69,6 +69,9 @@ const th: RoomDict = {
   sharedPage: 'หน้าที่แชร์',
   openShared: 'เปิด',
   httpsOnly: 'แสดงให้ห้องเห็นได้เฉพาะหน้าที่ปลอดภัย (https)',
+  lost: 'การเชื่อมต่อหลุด',
+  reconnecting: 'การเชื่อมต่อหลุด · กำลังเชื่อมต่อใหม่…',
+  lostLeft: 'การเชื่อมต่อหลุด คุณจึงออกจากห้องแล้ว',
 }
 
 export default th

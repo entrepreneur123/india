@@ -69,6 +69,9 @@ const ml: RoomDict = {
   sharedPage: 'ഷെയർ ചെയ്ത പേജ്',
   openShared: 'തുറക്കുക',
   httpsOnly: 'സുരക്ഷിതമായ (https) പേജുകൾ മാത്രമേ റൂമിന് കാണിക്കാനാകൂ',
+  lost: 'കണക്ഷൻ പോയി',
+  reconnecting: 'കണക്ഷൻ പോയി · വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു…',
+  lostLeft: 'കണക്ഷൻ നഷ്ടമായതിനാൽ നിങ്ങൾ റൂമിൽ നിന്ന് പുറത്തായി',
 }
 
 export default ml

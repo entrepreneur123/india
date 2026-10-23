@@ -307,7 +307,9 @@
     <string name="voice_ended">ホストがこのルームを終了しました</string>
     <string name="voice_ended_by_you">ルームを終了しました</string>
     <string name="voice_removed">このルームから退出させられました</string>
-    <string name="voice_idle_left">バックグラウンドで30分経過したため、ルームを退出しました</string>
+    <string name="voice_lost">接続切れ</string>
+    <string name="voice_reconnecting">接続が切れました · 再接続しています…</string>
+    <string name="voice_lost_left">接続が切れたため、ルームから退出しました</string>
     <string name="voice_joining">参加中…</string>
     <string name="voice_safety">思いやりを大切に。ルームは録音されません。通報するには相手をタップしてください。</string>
     <string name="voice_stage">ステージ</string>

@@ -304,7 +304,9 @@
     <string name="voice_ended">방장이 방을 종료했어요</string>
     <string name="voice_ended_by_you">방을 종료했어요</string>
     <string name="voice_removed">이 방에서 내보내졌어요</string>
-    <string name="voice_idle_left">백그라운드에서 30분이 지나 방에서 나갔어요</string>
+    <string name="voice_lost">연결 끊김</string>
+    <string name="voice_reconnecting">연결이 끊어졌어요 · 다시 연결 중…</string>
+    <string name="voice_lost_left">연결이 끊겨 방에서 나왔어요</string>
     <string name="voice_joining">참여하는 중…</string>
     <string name="voice_safety">서로 배려해 주세요. 방은 녹음되지 않아요. 사람을 탭하면 신고할 수 있어요.</string>
     <string name="voice_stage">무대</string>

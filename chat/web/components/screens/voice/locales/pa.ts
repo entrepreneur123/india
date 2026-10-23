@@ -69,6 +69,9 @@ const pa: RoomDict = {
   'sharedPage': 'ਸ਼ੇਅਰ ਕੀਤਾ ਪੇਜ',
   'openShared': 'ਖੋਲ੍ਹੋ',
   'httpsOnly': 'ਸਿਰਫ਼ ਸੁਰੱਖਿਅਤ (https) ਪੇਜ ਰੂਮ ਨੂੰ ਦਿਖਾਏ ਜਾ ਸਕਦੇ ਹਨ',
+  'lost': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟਿਆ',
+  'reconnecting': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ · ਮੁੜ ਜੁੜ ਰਹੇ ਹਾਂ…',
+  'lostLeft': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟਣ ਕਾਰਨ ਤੁਸੀਂ ਰੂਮ ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ',
 }
 
 export default pa
