@@ -78,6 +78,7 @@ import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.Link
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.PanTool
 import androidx.compose.material.icons.rounded.MicOff
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.CallEnd
@@ -179,7 +180,7 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.material.icons.rounded.VerticalAlignBottom
 
-// ---- A voice room: full screen and always dark (party rooms are a night-time thing, and the stage reads better) ---
+// ---- A voice room: full screen, white like the rest of the app ---------------------------------------------------
 // Stage on top, chat below, controls at the bottom; the web's components/screens/voice/*.
 
 /**
@@ -205,11 +206,10 @@ fun VoiceLayer(vm: AppViewModel) {
     }
 }
 
-/** The room's colours: always dark, with light text by default (the room has no Surface of its own). */
+/** The room's text colour by default (the room has no Surface of its own). */
 @Composable
-fun RoomTheme(content: @Composable () -> Unit) = NightTheme {
+fun RoomTheme(content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface, content = content)
-}
 
 /** The room's link (/r/<id>, or /r/<code> for a private room): the app opens it when installed, else the web app. */
 internal fun copyLink(context: Context, room: VoiceRoom) {
@@ -233,7 +233,7 @@ sealed interface VoiceSheet {
 }
 
 /**
- * A room, full screen and always dark. Every room has the chat (text, replies, icebreakers, photos, polls), the stage
+ * A room, full screen. Every room has the chat (text, replies, icebreakers, photos, polls), the stage
  * and shared music; the category decides what comes first (as the web's voice-room.tsx):
  *  - talk: the chat, under a slim strip of the people on the stage;
  *  - music: the shared player with the song requests by vote.
@@ -1015,7 +1015,7 @@ private fun ControlBar(
                     Text(
                         "${s.hands}", Modifier.align(Alignment.TopEnd).offset(2.dp, (-2).dp).clip(CircleShape).background(MaterialTheme.colorScheme.background)
                             .padding(2.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
-                        color = Brand.Black, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
+                        color = Brand.OnSaffron, fontSize = 11.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta,
                     )
                 }
             }
@@ -1043,7 +1043,7 @@ private fun ControlBar(
                 ) {
                     Icon(
                         if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
-                        Modifier.size(26.dp), tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.Black,
+                        Modifier.size(26.dp), tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.OnSaffron,
                     )
                 }
             } else {
@@ -1053,17 +1053,17 @@ private fun ControlBar(
                 val raised = me.hand && !joins
                 Row(
                     Modifier.height(48.dp).pressScale(interaction, 0.96f).clip(CircleShape)
-                        .background(if (raised) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.onSurface)
+                        .background(if (raised) MaterialTheme.colorScheme.primaryContainer else Brand.Saffron)
                         .then(if (raised) Modifier.border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape) else Modifier)
                         .clickable(interaction, indication = ripple(), role = Role.Button, onClick = vm.voice::joinVoice)
                         .padding(start = 14.dp, end = 18.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    if (joins) Icon(Icons.Rounded.Mic, null, Modifier.size(20.dp), tint = MaterialTheme.colorScheme.background)
-                    else GlyphIcon(Glyph.HAND, size = 20.dp)
+                    if (raised) GlyphIcon(Glyph.HAND, size = 20.dp)
+                    else Icon(if (joins) Icons.Rounded.Mic else Icons.Rounded.PanTool, null, Modifier.size(20.dp), tint = Brand.OnSaffron)
                     Text(
                         stringResource(if (joins) R.string.room_join_voice else if (raised) R.string.voice_hand_raised else R.string.voice_raise_hand),
-                        color = if (raised) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background,
+                        color = if (raised) MaterialTheme.colorScheme.primaryText else Brand.OnSaffron,
                         style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp), maxLines = 1,
                     )
                 }
@@ -1195,9 +1195,9 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
                         Modifier.clip(CircleShape).background(Brand.Saffron).padding(horizontal = 7.dp, vertical = 2.dp),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        LiveBars(color = Brand.Black, height = 9.dp)
+                        LiveBars(color = Brand.OnSaffron, height = 9.dp)
                         Text(
-                            stringResource(R.string.voice_bar_live).uppercase(), color = Brand.Black, fontSize = 10.sp, lineHeight = 13.sp,
+                            stringResource(R.string.voice_bar_live).uppercase(), color = Brand.OnSaffron, fontSize = 10.sp, lineHeight = 13.sp,
                             fontWeight = FontWeight.Bold, letterSpacing = 0.6.sp, fontFamily = Jakarta,
                         )
                     }
@@ -1223,7 +1223,7 @@ private fun RoomBar(vm: AppViewModel, state: VoiceState, levels: State<Map<Strin
             CircleIconButton(
                 if (me.muted) Icons.Rounded.MicOff else Icons.Rounded.Mic, stringResource(if (me.muted) R.string.voice_unmute else R.string.voice_mute),
                 { mic(me.muted) }, background = if (me.muted) MaterialTheme.colorScheme.surfaceContainerHighest else Brand.Saffron,
-                tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.Black,
+                tint = if (me.muted) MaterialTheme.colorScheme.onSurface else Brand.OnSaffron,
             )
         }
         CircleIconButton(

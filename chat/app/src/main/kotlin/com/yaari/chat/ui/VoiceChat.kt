@@ -134,7 +134,7 @@ import kotlinx.coroutines.launch
 
 // ---- A room's chat: bubbles, photos (blurred until tapped), icebreaker cards, system lines; and the composer ------
 
-/** The talk colour (rooms are always dark: its night shade), for icebreaker cards. */
+/** The talk colour, for icebreaker cards. */
 private val TalkColor = Color(Glyph.ICEBREAKER.color)
 
 /** What the room's chat needs besides its lines: my name (mentions), the polls' counts, and what lines can do. */
@@ -276,8 +276,8 @@ fun VoiceChat(lines: List<VoiceLine>?, modifier: Modifier, onIcebreaker: (() -> 
                     .clickable(role = Role.Button) { scope.launch { list.animateScrollToItem(count) } }.padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Icon(Icons.Rounded.ArrowDownward, null, Modifier.size(16.dp), tint = Brand.Black)
-                Text(stringResource(R.string.voice_new_messages), color = Brand.Black, style = MaterialTheme.typography.labelLarge)
+                Icon(Icons.Rounded.ArrowDownward, null, Modifier.size(16.dp), tint = Brand.OnSaffron)
+                Text(stringResource(R.string.voice_new_messages), color = Brand.OnSaffron, style = MaterialTheme.typography.labelLarge)
             }
         }
     }
@@ -510,7 +510,7 @@ private fun Quote(reply: VoiceReply, mine: Boolean, onClick: () -> Unit) {
     val label = stringResource(R.string.chat_quote_of, name, body)
     Row(
         Modifier.padding(top = 2.dp, bottom = 4.dp).fillMaxWidth().widthIn(min = 120.dp).height(IntrinsicSize.Min).clip(RoundedCornerShape(8.dp))
-            .background(Color.Black.copy(alpha = 0.18f)).clickable(role = Role.Button, onClick = onClick)
+            .background(Color.Black.copy(alpha = 0.06f)).clickable(role = Role.Button, onClick = onClick)
             .semantics(mergeDescendants = true) { contentDescription = label },
     ) {
         Box(Modifier.width(4.dp).fillMaxHeight().background(color))
@@ -602,7 +602,7 @@ private fun IcebreakerCard(line: VoiceLine.Icebreaker, onAnother: (() -> Unit)?)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 GlyphIcon(Glyph.ICEBREAKER, size = 16.dp)
                 Text(
-                    title.uppercase(), Modifier.padding(start = 6.dp), color = TalkColor, fontSize = 11.sp, lineHeight = 14.sp,
+                    title.uppercase(), Modifier.padding(start = 6.dp), color = Brand.SaffronDeep, fontSize = 11.sp, lineHeight = 14.sp,
                     fontWeight = FontWeight.Bold, letterSpacing = 1.sp, fontFamily = Jakarta,
                 )
             }
@@ -619,7 +619,7 @@ private fun IcebreakerCard(line: VoiceLine.Icebreaker, onAnother: (() -> Unit)?)
                     Text(
                         stringResource(R.string.ib_another), Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onAnother)
                             .padding(horizontal = 10.dp, vertical = 8.dp),
-                        color = TalkColor, style = MaterialTheme.typography.labelLarge,
+                        color = Brand.SaffronDeep, style = MaterialTheme.typography.labelLarge,
                     )
                 }
             }
@@ -758,7 +758,7 @@ fun VoiceComposer(
                 Modifier.size(44.dp).graphicsLayer { alpha = if (can) 1f else 0.4f }.clip(CircleShape).background(Brand.Saffron)
                     .clickable(enabled = can, role = Role.Button) { send() },
                 contentAlignment = Alignment.Center,
-            ) { Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.voice_send), Modifier.size(20.dp), tint = Brand.Black) }
+            ) { Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.voice_send), Modifier.size(20.dp), tint = Brand.OnSaffron) }
         }
     }
 }

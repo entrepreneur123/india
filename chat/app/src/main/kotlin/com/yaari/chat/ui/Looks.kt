@@ -92,17 +92,17 @@ fun lookOf(userId: String): Look? {
 
 // ---- the @ID ----------------------------------------------------------------------------------------------------
 
-/** An ID colour: one colour per theme, or a horizontal gradient for both. */
-private class IdColor(val light: Color, val dark: Color, val gradient: List<Color>? = null)
+/** An ID colour: one colour (readable on white), or a horizontal gradient. */
+private class IdColor(val color: Color, val gradient: List<Color>? = null)
 
-private fun gradient(vararg c: Long) = c.map(::Color).let { IdColor(it.first(), it.first(), it) }
+private fun gradient(vararg c: Long) = c.map(::Color).let { IdColor(it.first(), it) }
 
 private val ID_COLORS = mapOf(
-    Cosmetic.COLOR_GOLD to IdColor(Color(0xFFA87400), Color(0xFFFFD54A)),
-    Cosmetic.COLOR_ROSE to IdColor(Color(0xFFC2185B), Color(0xFFFF8AB3)),
-    Cosmetic.COLOR_OCEAN to IdColor(Color(0xFF0277BD), Color(0xFF4FC3F7)),
-    Cosmetic.COLOR_EMERALD to IdColor(Color(0xFF00796B), Color(0xFF4DD0A8)),
-    Cosmetic.COLOR_VIOLET to IdColor(Color(0xFF6A1B9A), Color(0xFFCE93D8)),
+    Cosmetic.COLOR_GOLD to IdColor(Color(0xFFA87400)),
+    Cosmetic.COLOR_ROSE to IdColor(Color(0xFFC2185B)),
+    Cosmetic.COLOR_OCEAN to IdColor(Color(0xFF0277BD)),
+    Cosmetic.COLOR_EMERALD to IdColor(Color(0xFF00796B)),
+    Cosmetic.COLOR_VIOLET to IdColor(Color(0xFF6A1B9A)),
     Cosmetic.COLOR_SUNSET to gradient(0xFFFF6A3D, 0xFFFF2E8B, 0xFFA63DFF),
     Cosmetic.COLOR_AURORA to gradient(0xFF00C9A7, 0xFF3D8BFF, 0xFFB44DFF),
     Cosmetic.COLOR_RAINBOW to gradient(0xFFFF4D4D, 0xFFFFA53D, 0xFFF5D300, 0xFF34C759, 0xFF3DB8FF, 0xFF9B5CFF),
@@ -152,7 +152,6 @@ fun LookName(look: Look, modifier: Modifier = Modifier, size: TextUnit = 14.sp) 
         fontFamily = font?.let(ID_FONTS::get) ?: Jakarta, fontSize = textSize, lineHeight = size * 1.3f,
         fontWeight = if (font == null) FontWeight.SemiBold else FontWeight.Normal,
     )
-    val night = isNightTheme()
     val style = when {
         color == null -> base.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
         look.color == Cosmetic.COLOR_RAINBOW.id -> {
@@ -160,7 +159,7 @@ fun LookName(look: Look, modifier: Modifier = Modifier, size: TextUnit = 14.sp) 
             base.copy(brush = SlidingGradient(color.gradient!!, phase))
         }
         color.gradient != null -> base.copy(brush = Brush.horizontalGradient(color.gradient))
-        else -> base.copy(color = if (night) color.dark else color.light)
+        else -> base.copy(color = color.color)
     }
     val text = "@" + look.handle
     val described = badge?.let { "$text, " + stringResource(it.label) } ?: text
@@ -275,16 +274,16 @@ private fun DrawScope.drawBadge(badge: Cosmetic, line: Float) {
 
 // ---- frames ------------------------------------------------------------------------------------------------------
 
-/** A frame's ring gradient and the wash at the top of the card (light theme / dark theme). */
-private class FrameDesign(val ring: List<Color>, val washLight: Color, val washDark: Color)
+/** A frame's ring gradient and the wash at the top of the card. */
+private class FrameDesign(val ring: List<Color>, val wash: Color)
 
 private val FRAMES = mapOf(
-    Cosmetic.FRAME_FROST to FrameDesign(listOf(Color(0xFFE3F6FF), Color(0xFF8FD3FF), Color(0xFF4AA8FF)), Color(0xFFDFF4FF), Color(0xFF0B2A44)),
-    Cosmetic.FRAME_FIRE to FrameDesign(listOf(Color(0xFFFFD54A), Color(0xFFFF6A00), Color(0xFFD50000)), Color(0xFFFFF1E6), Color(0xFF2A0D05)),
-    Cosmetic.FRAME_JEWEL to FrameDesign(listOf(Color(0xFFFFE8A3), Color(0xFFD4A017), Color(0xFFFFE8A3)), Color(0xFFFFF8E1), Color(0xFF2A2208)),
-    Cosmetic.FRAME_SAND to FrameDesign(listOf(Color(0xFFF4D9A6), Color(0xFFC99A5B), Color(0xFF8B5E34)), Color(0xFFFFF6E6), Color(0xFF2B1E0E)),
-    Cosmetic.FRAME_NEON to FrameDesign(listOf(Color(0xFF00F0FF), Color(0xFFFF00E5)), Color(0xFFE9FDFF), Color(0xFF100A24)),
-    Cosmetic.FRAME_SAKURA to FrameDesign(listOf(Color(0xFFFFD1E1), Color(0xFFFF8AB3)), Color(0xFFFFF0F5), Color(0xFF2A1220)),
+    Cosmetic.FRAME_FROST to FrameDesign(listOf(Color(0xFFE3F6FF), Color(0xFF8FD3FF), Color(0xFF4AA8FF)), Color(0xFFDFF4FF)),
+    Cosmetic.FRAME_FIRE to FrameDesign(listOf(Color(0xFFFFD54A), Color(0xFFFF6A00), Color(0xFFD50000)), Color(0xFFFFF1E6)),
+    Cosmetic.FRAME_JEWEL to FrameDesign(listOf(Color(0xFFFFE8A3), Color(0xFFD4A017), Color(0xFFFFE8A3)), Color(0xFFFFF8E1)),
+    Cosmetic.FRAME_SAND to FrameDesign(listOf(Color(0xFFF4D9A6), Color(0xFFC99A5B), Color(0xFF8B5E34)), Color(0xFFFFF6E6)),
+    Cosmetic.FRAME_NEON to FrameDesign(listOf(Color(0xFF00F0FF), Color(0xFFFF00E5)), Color(0xFFE9FDFF)),
+    Cosmetic.FRAME_SAKURA to FrameDesign(listOf(Color(0xFFFFD1E1), Color(0xFFFF8AB3)), Color(0xFFFFF0F5)),
 )
 
 private val GEMS = listOf(Color(0xFFE0115F), Color(0xFF0F52BA), Color(0xFF50C878))
@@ -330,19 +329,17 @@ private const val STILL_AT = 7.3f
 @Composable
 fun FramedCard(frame: Cosmetic?, modifier: Modifier = Modifier, radius: Dp = 28.dp, content: @Composable BoxScope.() -> Unit) {
     val design = frame?.let(FRAMES::get)
-    val night = isNightTheme()
     val shape = RoundedCornerShape(radius)
     Box(modifier.clip(shape).background(MaterialTheme.colorScheme.surfaceContainerLow)) {
         if (design != null) {
-            val wash = if (night) design.washDark else design.washLight
             var onScreen by remember { mutableStateOf(false) }
             val reduced = LocalReducedMotion.current
             val clock = rememberFrameClock(onScreen && !reduced)
             Canvas(
                 Modifier.matchParentSize().onGloballyPositioned { c -> onScreen = c.boundsInWindow().let { it.width > 0f && it.height > 0f } },
             ) {
-                drawRect(Brush.verticalGradient(0f to wash, 0.6f to Color.Transparent))
-                drawParticles(frame, clock.value, night)
+                drawRect(Brush.verticalGradient(0f to design.wash, 0.6f to Color.Transparent))
+                drawParticles(frame, clock.value)
             }
             content()
             Canvas(Modifier.matchParentSize()) { drawRing(frame, design, clock.value, radius.toPx()) }
@@ -391,7 +388,7 @@ private fun rnd(i: Int, k: Int): Float {
 /** [x] wrapped into 0..[m]. */
 private fun wrap(x: Float, m: Float) = ((x % m) + m) % m
 
-private fun DrawScope.drawParticles(frame: Cosmetic, t: Float, night: Boolean) {
+private fun DrawScope.drawParticles(frame: Cosmetic, t: Float) {
     val w = size.width
     val h = size.height
     val dp = 1.dp.toPx()
@@ -424,7 +421,7 @@ private fun DrawScope.drawParticles(frame: Cosmetic, t: Float, night: Boolean) {
             val c = Offset(rnd(i, 1) * w, rnd(i, 2) * h)
             drawPath(
                 sparkle(c.x, c.y, (2f + 4f * rnd(i, 3)) * dp * (0.3f + 0.7f * twinkle)),
-                if (night) Color(0xFFFFE8A3) else Color(0xFFD4A017), alpha = 0.3f + 0.6f * twinkle,
+                Color(0xFFD4A017), alpha = 0.3f + 0.6f * twinkle,
             )
         }
         // 30 grains (1–3 px) blowing left to right with a wave, and 3 faint streaks.

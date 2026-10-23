@@ -157,13 +157,13 @@ private fun SocialLayer(vm: AppViewModel, me: Profile) {
 @Composable
 private fun OfflineBanner() {
     Row(
-        Modifier.fillMaxWidth().background(Brand.Ink2).statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp)
+        Modifier.fillMaxWidth().background(Brand.SaffronSoft).statusBarsPadding().padding(horizontal = 16.dp, vertical = 6.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Rounded.CloudOff, null, Modifier.size(16.dp), tint = Color.White.copy(alpha = 0.8f))
+        Icon(Icons.Rounded.CloudOff, null, Modifier.size(16.dp), tint = Brand.Text)
         Text(
-            stringResource(R.string.offline_banner), Modifier.padding(start = 8.dp), color = Color.White,
+            stringResource(R.string.offline_banner), Modifier.padding(start = 8.dp), color = Brand.Text,
             style = MaterialTheme.typography.labelMedium, maxLines = 2, textAlign = TextAlign.Center,
         )
     }
@@ -336,7 +336,7 @@ private fun PlanCard(title: String, sub: String, price: String?, selected: Boole
             Modifier.size(24.dp).clip(CircleShape)
                 .then(if (selected) Modifier.background(Brand.Saffron) else Modifier.border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)),
             contentAlignment = Alignment.Center,
-        ) { if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(Brand.Black)) }
+        ) { if (selected) Box(Modifier.size(10.dp).clip(CircleShape).background(Brand.OnSaffron)) }
         Column(Modifier.weight(1f).padding(start = 16.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

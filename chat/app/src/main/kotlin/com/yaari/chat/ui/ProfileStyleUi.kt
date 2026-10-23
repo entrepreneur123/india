@@ -68,7 +68,7 @@ import com.yaari.chat.model.PromptQ
 import com.yaari.chat.model.SpokenLang
 
 // ---- A profile's details (033): status, languages and prompts --------------------------------------------------------
-// Saffron marks and labels on plain neutral cards (no gradients), readable in both themes. Profiles are decorated by the frames
+// Orange marks and labels on plain white and neutral cards (no gradients). Profiles are decorated by the frames
 // people buy (Looks.kt); the free cover and colour went with 0.15.
 
 /** The avatar inside a saffron ring (the ring, a gap in the background colour, then the photo). */
@@ -272,11 +272,11 @@ private fun ToggleChip(text: String, on: Boolean, enabled: Boolean, onToggle: ()
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.Black)
+        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.OnSaffron)
         Text(
             text, style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
             color = when {
-                on -> Brand.Black
+                on -> Brand.OnSaffron
                 !enabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                 else -> MaterialTheme.colorScheme.onSurface
             },

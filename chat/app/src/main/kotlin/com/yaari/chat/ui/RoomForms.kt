@@ -59,7 +59,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -129,17 +128,14 @@ private fun SheetLabel(text: String, modifier: Modifier = Modifier, trailing: St
 /** Talk and Music as two chips, and what the chosen one is like underneath. */
 @Composable
 fun CategoryPicker(value: RoomCategory, onChange: (RoomCategory) -> Unit) {
-    val night = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Column {
         Row(Modifier.fillMaxWidth().selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RoomCategory.entries.forEach { c ->
                 val on = value == c
                 val shape = RoundedCornerShape(16.dp)
                 Column(
-                    Modifier.weight(1f).height(72.dp)
-                                                .clip(shape)
-                        .background(if (night && !on) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.surface)
-                        .then(if (on) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
+                    Modifier.weight(1f).height(72.dp).clip(shape)
+                        .background(if (on) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)
                         .border(if (on) 2.dp else 1.dp, if (on) Brand.Saffron else MaterialTheme.colorScheme.outlineVariant, shape)
                         .selectable(on, role = Role.RadioButton) { onChange(c) },
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
@@ -162,7 +158,6 @@ fun CategoryPicker(value: RoomCategory, onChange: (RoomCategory) -> Unit) {
 /** Equal options in a tinted track; the chosen one sits on a raised card. */
 @Composable
 fun <T> Segmented(options: List<Pair<T, String>>, selected: T, modifier: Modifier = Modifier, label: String? = null, onSelect: (T) -> Unit) {
-    val night = MaterialTheme.colorScheme.background.luminance() < 0.5f
     Row(
         modifier.fillMaxWidth().height(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(4.dp)
             .selectableGroup().then(if (label != null) Modifier.semantics { contentDescription = label } else Modifier),
@@ -174,7 +169,7 @@ fun <T> Segmented(options: List<Pair<T, String>>, selected: T, modifier: Modifie
                 Modifier.weight(1f).height(40.dp)
                     .then(if (on) Modifier.shadow(1.dp, CircleShape) else Modifier)
                     .clip(CircleShape)
-                    .then(if (on) Modifier.background(if (night) MaterialTheme.colorScheme.surfaceContainerHighest else MaterialTheme.colorScheme.surface) else Modifier)
+                    .then(if (on) Modifier.background(MaterialTheme.colorScheme.surface) else Modifier)
                     .selectable(on, role = Role.Tab) { onSelect(value) },
                 contentAlignment = Alignment.Center,
             ) {
@@ -366,7 +361,7 @@ fun RoomCreatedDialog(room: VoiceRoom, code: String, onInvite: () -> Unit, onDon
                 Text(stringResource(R.string.created_text_invite), style = MaterialTheme.typography.bodyMedium)
                 PrimaryButton(
                     stringResource(R.string.invite_title), onInvite, height = 48.dp,
-                    leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(20.dp), tint = Brand.Black) },
+                    leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(20.dp), tint = Brand.OnSaffron) },
                 )
                 SoftButton(
                     stringResource(R.string.share_link), { shareRoomLink(context, room) }, Modifier.fillMaxWidth(), height = 48.dp, outlined = true,

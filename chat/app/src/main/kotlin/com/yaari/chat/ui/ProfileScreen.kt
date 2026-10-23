@@ -132,7 +132,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
                 SoftButton(
                     stringResource(R.string.new_post), onNewPost, Modifier.weight(1f), accent = true,
-                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.Black) },
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                 )
             }
             val social by vm.social.state.collectAsStateWithLifecycle()
@@ -171,7 +171,7 @@ private fun PlusBanner(s: UiState, onClick: () -> Unit) {
             )
         }
         Text(
-            stringResource(R.string.upgrade), color = Brand.Black, style = MaterialTheme.typography.labelLarge,
+            stringResource(R.string.upgrade), color = Brand.OnSaffron, style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 16.dp, vertical = 8.dp),
         )
     }
@@ -334,7 +334,7 @@ private fun PostGrid(posts: List<Post>, emptyMine: (() -> Unit)?, onOpen: (Post)
 private fun PostTile(post: Post, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     Box(
-        Modifier.aspectRatio(1f).background(Brand.Black)
+        Modifier.aspectRatio(1f).background(Brand.SaffronSoft)
             .clickable(interaction, indication = null, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -342,13 +342,13 @@ private fun PostTile(post: Post, onClick: () -> Unit) {
             PostImage(post.imageUri, post.text.ifEmpty { null }, Modifier.fillMaxSize())
         } else {
             Text(
-                post.text, color = Color.White, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
+                post.text, color = Brand.Text, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
                 modifier = Modifier.padding(8.dp), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium,
             )
         }
         if (post.likes > 0 || post.comments > 0) {
             Row(
-                Modifier.align(Alignment.BottomStart).padding(6.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.38f))
+                Modifier.align(Alignment.BottomStart).padding(6.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.5f))
                     .padding(horizontal = 7.dp, vertical = 3.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {

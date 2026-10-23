@@ -72,7 +72,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
@@ -109,10 +108,7 @@ val LocalTrust = staticCompositionLocalOf<TrustController?> { null }
 private val GoodColor = Color(0xFF30A46C)
 private val BadColor = Color(0xFFE5484D)
 
-@Composable
-internal fun isNightTheme() = MaterialTheme.colorScheme.background.luminance() < 0.5f
-
-/** The verified seal: a saffron rosette with a black tick. */
+/** The verified seal: an orange rosette with a white tick. */
 @Composable
 fun VerifiedBadge(modifier: Modifier = Modifier, size: Dp = 16.dp) {
     val label = stringResource(R.string.id_verified)
@@ -218,8 +214,8 @@ fun MannerGauge(score: Int, rated: Boolean, modifier: Modifier = Modifier, size:
 @Composable
 private fun TagChip(text: String, color: Color, modifier: Modifier = Modifier) {
     Text(
-        text, modifier.clip(CircleShape).background(color.copy(alpha = if (isNightTheme()) 0.22f else 0.12f)).padding(horizontal = 12.dp, vertical = 6.dp),
-        color = if (isNightTheme()) lightTone(color) else color.copy(alpha = 1f).let { androidx.compose.ui.graphics.lerp(it, Color.Black, 0.25f) },
+        text, modifier.clip(CircleShape).background(color.copy(alpha = 0.12f)).padding(horizontal = 12.dp, vertical = 6.dp),
+        color = androidx.compose.ui.graphics.lerp(color.copy(alpha = 1f), Color.Black, 0.25f),
         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1,
     )
 }
@@ -236,7 +232,7 @@ fun MannerCard(t: Trust, modifier: Modifier = Modifier, mine: Boolean = false) {
     val tint = if (t.rated) Color(level.color) else MaterialTheme.colorScheme.onSurfaceVariant
     Column(
         modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp))
-            .background(Brush.linearGradient(listOf(tint.copy(alpha = if (isNightTheme()) 0.16f else 0.10f), tint.copy(alpha = 0.03f))))
+            .background(Brush.linearGradient(listOf(tint.copy(alpha = 0.10f), tint.copy(alpha = 0.03f))))
             .border(1.dp, tint.copy(alpha = 0.16f), RoundedCornerShape(24.dp)).padding(16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -306,14 +302,13 @@ fun VerifyCard(vm: AppViewModel, modifier: Modifier = Modifier) {
         }
         return
     }
-    val night = isNightTheme()
     Row(
         modifier.fillMaxWidth().padding(horizontal = 16.dp).pressScale(interaction).clip(RoundedCornerShape(24.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
             .clickable(interaction, indication = ripple(), role = Role.Button) { vm.trust.open() }.padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(56.dp).clip(CircleShape).background(if (night) Color.White.copy(alpha = 0.08f) else Color.White), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(56.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
             MarkIcon(Mark.VERIFIED, Brand.Saffron, size = 34.dp)
         }
         Column(Modifier.padding(start = 16.dp).weight(1f)) {
@@ -325,7 +320,7 @@ fun VerifyCard(vm: AppViewModel, modifier: Modifier = Modifier) {
         }
         Text(
             stringResource(R.string.verify_card_action), Modifier.padding(start = 8.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 16.dp, vertical = 8.dp),
-            color = Brand.Black, style = MaterialTheme.typography.labelLarge,
+            color = Brand.OnSaffron, style = MaterialTheme.typography.labelLarge,
         )
     }
 }
@@ -376,9 +371,9 @@ private data class PhaseText(val mark: Mark, val color: Long, val title: Int, va
 
 private fun phaseText(p: VerifyPhase): PhaseText? = when (p) {
     VerifyPhase.START, VerifyPhase.OPENING -> null
-    VerifyPhase.WAITING -> PhaseText(Mark.SELFIE, 0xFFFF8A00, R.string.verify_waiting_title, R.string.verify_waiting_body)
-    VerifyPhase.CHECKING, VerifyPhase.PENDING -> PhaseText(Mark.CLOCK, 0xFFFF8A00, R.string.verify_pending_title, R.string.verify_pending_body)
-    VerifyPhase.VERIFIED -> PhaseText(Mark.VERIFIED, 0xFFFF8A00, R.string.verify_done_title, R.string.verify_done_body)
+    VerifyPhase.WAITING -> PhaseText(Mark.SELFIE, 0xFFEA6A00, R.string.verify_waiting_title, R.string.verify_waiting_body)
+    VerifyPhase.CHECKING, VerifyPhase.PENDING -> PhaseText(Mark.CLOCK, 0xFFEA6A00, R.string.verify_pending_title, R.string.verify_pending_body)
+    VerifyPhase.VERIFIED -> PhaseText(Mark.VERIFIED, 0xFFEA6A00, R.string.verify_done_title, R.string.verify_done_body)
     VerifyPhase.DECLINED -> PhaseText(Mark.ALERT, 0xFFE5484D, R.string.verify_declined_title, R.string.verify_declined_body)
     VerifyPhase.UNREADABLE -> PhaseText(Mark.ID_CARD, 0xFFF76B15, R.string.verify_unreadable_title, R.string.verify_unreadable_body)
     VerifyPhase.DUPLICATE -> PhaseText(Mark.ID_CARD, 0xFFE5484D, R.string.verify_duplicate_title, R.string.verify_duplicate_body)
@@ -479,30 +474,29 @@ private fun VerifyActions(vm: AppViewModel, v: VerifyUi, closable: Boolean) {
 /** The big illustration: the ID card and the selfie with the seal (start), or the state's own mark on a halo. */
 @Composable
 private fun VerifyHero(text: PhaseText?) {
-    val night = isNightTheme()
     Box(Modifier.size(156.dp), contentAlignment = Alignment.Center) {
         val halo = if (text == null) Brand.Saffron else Color(text.color)
         Box(
             Modifier.size(148.dp).clip(CircleShape)
-                .background(halo.copy(alpha = if (night) 0.20f else 0.12f)),
+                .background(halo.copy(alpha = 0.12f)),
         )
         if (text == null) {
             Box(Modifier.size(156.dp)) {
                 Box(
                     Modifier.align(Alignment.Center).offset(x = (-14).dp, y = (-6).dp).size(92.dp).clip(RoundedCornerShape(28.dp))
-                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(28.dp)),
+                        .background(Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(28.dp)),
                     contentAlignment = Alignment.Center,
                 ) { MarkIcon(Mark.ID_CARD, MaterialTheme.colorScheme.onSurface, size = 64.dp) }
                 Box(
                     Modifier.align(Alignment.Center).offset(x = 34.dp, y = 30.dp).size(60.dp).clip(CircleShape)
-                        .background(if (night) Brand.Ink3 else Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                        .background(Color.White).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) { MarkIcon(Mark.SELFIE, Brand.Saffron, size = 38.dp) }
                 MarkIcon(Mark.VERIFIED, Brand.Saffron, Modifier.align(Alignment.Center).offset(x = 30.dp, y = (-38).dp), size = 40.dp)
             }
         } else {
             Box(
-                Modifier.size(104.dp).clip(CircleShape).background(if (night) Brand.Ink3 else Color.White),
+                Modifier.size(104.dp).clip(CircleShape).background(Color.White),
                 contentAlignment = Alignment.Center,
             ) { MarkIcon(text.mark, Color(text.color), size = 64.dp) }
         }

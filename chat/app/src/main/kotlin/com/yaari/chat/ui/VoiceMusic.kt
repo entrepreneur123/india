@@ -113,7 +113,7 @@ fun MusicPanel(
             }
             SoftButton(
                 stringResource(R.string.voice_listen), { onListen(true) }, accent = true, height = 36.dp,
-                leading = { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp), tint = Brand.Black) },
+                leading = { Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
             )
         }
         return
@@ -180,7 +180,7 @@ private fun NowPlayingStrip(track: VoiceTrack, title: String, onExpand: () -> Un
             Text(YouTube.songOf(title), style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(
                 stringResource(if (track.pausedAt != null) R.string.voice_paused_by_host else R.string.music_playing_for_you),
-                style = MaterialTheme.typography.bodySmall, color = color, maxLines = 1,
+                style = MaterialTheme.typography.bodySmall, color = Brand.SaffronDeep, maxLines = 1,
             )
         }
         CircleIconButton(Icons.Rounded.KeyboardArrowUp, expand, onExpand, iconSize = 22.dp)
@@ -259,7 +259,7 @@ fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit,
                 )
                 CircleIconButton(
                     Icons.Rounded.SkipNext, stringResource(R.string.music_next), { act(VoiceAction.Skip(track.id)) },
-                    background = Brand.Saffron, tint = Brand.Black, iconSize = big,
+                    background = Brand.Saffron, tint = Brand.OnSaffron, iconSize = big,
                 )
             } else {
                 // My phone only. While the DJ has paused the room there is nothing to play.
@@ -294,7 +294,7 @@ fun MusicControls(track: VoiceTrack, canDj: Boolean, act: (VoiceAction) -> Unit,
         }
         if (!canDj && player.localPaused && !paused) {
             Text(
-                stringResource(R.string.music_paused_mine), style = MaterialTheme.typography.bodySmall, color = color,
+                stringResource(R.string.music_paused_mine), style = MaterialTheme.typography.bodySmall, color = Brand.SaffronDeep,
                 modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
         }
@@ -355,7 +355,7 @@ fun MusicHero(
                 )
                 SoftButton(
                     stringResource(if (canDj) R.string.music_add else R.string.music_request), onQueue, accent = true, height = 44.dp,
-                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.Black) },
+                    leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                 )
             }
         }
@@ -410,7 +410,7 @@ private fun VoteButton(item: VoiceQueueItem, color: Color, onClick: () -> Unit) 
             .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
     ) {
-        val tint = if (item.voted) Brand.Black else MaterialTheme.colorScheme.onSurface
+        val tint = if (item.voted) Brand.OnSaffron else MaterialTheme.colorScheme.onSurface
         Icon(Icons.Rounded.KeyboardArrowUp, null, Modifier.size(20.dp), tint = tint)
         Text("${item.votes}", color = tint, style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
     }

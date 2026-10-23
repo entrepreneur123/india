@@ -48,7 +48,7 @@ fun RoomCategory.topic(): Topic = when (this) {
 }
 
 /** Reaction glyphs (and the raised hand, the icebreaker card): saffron, but the heart is red. */
-enum class Glyph(val color: Long = 0xFFFF8A00) {
+enum class Glyph(val color: Long = 0xFFEA6A00) {
     HEART(0xFFF2416B), LAUGH, FIRE, CLAP, WOW, HAND, ICEBREAKER,
     /** A room poll: answer bars. */
     POLL,
@@ -67,7 +67,7 @@ fun VoiceReaction.glyph(): Glyph = when (this) {
 
 // ---- the drawings ------------------------------------------------------------------------------
 
-private enum class Ink { M, L, FACE, WHITE, BLACK }
+private enum class Ink { M, L, FACE, WHITE }
 
 private sealed interface Part
 private class Fill(val d: String, val ink: Ink) : Part
@@ -171,13 +171,13 @@ private val GlyphParts: Map<Glyph, List<Part>> = mapOf(
 )
 
 /** The light second tone: 42 % of the colour on white (CSS color-mix in sRGB). */
-internal fun lightTone(c: Color) = lerp(Color.White, c, 0.42f)
+private fun lightTone(c: Color) = lerp(Color.White, c, 0.42f)
 
 /** Eyes and mouth on a face: 30 % of the colour on a dark brown. */
 private fun faceInk(c: Color) = lerp(Color(0xFF3D2400), c, 0.30f)
 
 private fun build(name: String, parts: List<Part>, color: Color): ImageVector {
-    val inks = mapOf(Ink.M to color, Ink.L to lightTone(color), Ink.FACE to faceInk(color), Ink.WHITE to Color.White, Ink.BLACK to Brand.Black)
+    val inks = mapOf(Ink.M to color, Ink.L to lightTone(color), Ink.FACE to faceInk(color), Ink.WHITE to Color.White)
     fun ImageVector.Builder.add(list: List<Part>) {
         for (p in list) when (p) {
             is Fill -> addPath(addPathNodes(p.d), fill = SolidColor(inks.getValue(p.ink)))
@@ -274,10 +274,10 @@ private val MarkFilled: Map<Mark, List<Part>> = mapOf(
         Fill(circle(14.4f, 7.1f, 1.5f), Ink.L), Fill(circle(17.2f, 10.6f, 1.5f), Ink.L),
     ),
     Mark.SEND to listOf(Fill(PLANE_PATH, Ink.M), Line("M10.3 13.7 15 9", Ink.L, 1.6f)),
-    // The flat seal with a black tick (8:1 on saffron).
+    // The flat seal with a white tick.
     Mark.VERIFIED to listOf(
         Fill(SEAL_PATH, Ink.M),
-        Line("M8.1 12.3l2.7 2.7 5.1-5.5", Ink.BLACK, 2.3f, roundJoin = true),
+        Line("M8.1 12.3l2.7 2.7 5.1-5.5", Ink.WHITE, 2.3f, roundJoin = true),
     ),
     // An ID card: the photo and three lines of text.
     Mark.ID_CARD to listOf(

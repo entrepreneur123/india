@@ -124,7 +124,7 @@ fun CountBadge(n: Int, modifier: Modifier = Modifier) {
         modifier.height(18.dp).widthIn(min = 18.dp).clip(CircleShape).background(Brand.Saffron).padding(horizontal = 5.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(if (n > 99) "99+" else "$n", color = Brand.Black, fontSize = 11.sp, lineHeight = 13.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)
+        Text(if (n > 99) "99+" else "$n", color = Brand.OnSaffron, fontSize = 11.sp, lineHeight = 13.sp, fontWeight = FontWeight.Bold, fontFamily = Jakarta)
     }
 }
 
@@ -234,7 +234,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                     Modifier.align(Alignment.BottomEnd).offset(x = 4.dp, y = 4.dp).size(22.dp).clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape).background(Brand.Saffron),
                     contentAlignment = Alignment.Center,
-                ) { Icon(Icons.Rounded.Headphones, null, Modifier.size(12.dp), tint = Brand.Black) }
+                ) { Icon(Icons.Rounded.Headphones, null, Modifier.size(12.dp), tint = Brand.OnSaffron) }
             }
             if (i.kind == InboxKind.POST_LIKE || i.kind == InboxKind.POST_COMMENT) {
                 Box(
@@ -242,7 +242,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                         .background(MaterialTheme.colorScheme.surface).padding(2.dp).clip(CircleShape)
                         .background(if (i.kind == InboxKind.POST_LIKE) Color(Glyph.HEART.color) else Brand.Saffron),
                     contentAlignment = Alignment.Center,
-                ) { MarkIcon(if (i.kind == InboxKind.POST_LIKE) Mark.HEART else Mark.COMMENT, if (i.kind == InboxKind.POST_LIKE) Color.White else Brand.Black, size = 12.dp) }
+                ) { MarkIcon(if (i.kind == InboxKind.POST_LIKE) Mark.HEART else Mark.COMMENT, if (i.kind == InboxKind.POST_LIKE) Color.White else Brand.OnSaffron, size = 12.dp) }
             }
         }
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
@@ -260,7 +260,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                 )
                 SoftButton(
                     stringResource(R.string.accept), { vm.inboxAnswer(i, true) }, accent = true, enabled = !working, height = 36.dp,
-                    leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Brand.Black) },
+                    leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Brand.OnSaffron) },
                 )
             }
             i.kind == InboxKind.MESSAGE || i.kind == InboxKind.FRIEND_ACCEPT -> SoftButton(
@@ -280,12 +280,12 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
 private fun PostThumb(post: PostRef, onClick: () -> Unit) {
     val label = stringResource(R.string.inbox_view_post)
     Box(
-        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Brand.Black)
+        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(Brand.SaffronSoft)
             .clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
     ) {
         if (post.imageUri != null) PostImage(post.imageUri, null, Modifier.fillMaxSize())
-        else Text(post.body, Modifier.padding(4.dp), color = Color.White, fontSize = 8.sp, lineHeight = 10.sp, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        else Text(post.body, Modifier.padding(4.dp), color = Brand.Text, fontSize = 8.sp, lineHeight = 10.sp, maxLines = 4, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
     }
 }
 
@@ -340,11 +340,11 @@ fun InterestsSheet(vm: AppViewModel, me: Profile, s: SocialState) {
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.Black)
+                        if (on) Icon(Icons.Rounded.Check, null, Modifier.padding(end = 6.dp).size(16.dp), tint = Brand.OnSaffron)
                         Text(
                             stringResource(t.label), style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
                             color = when {
-                                on -> Color.White
+                                on -> Brand.OnSaffron
                                 full -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                                 else -> MaterialTheme.colorScheme.onSurface
                             },

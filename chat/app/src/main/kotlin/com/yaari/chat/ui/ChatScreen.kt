@@ -116,12 +116,9 @@ import com.yaari.chat.model.FriendState
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.outlined.PersonAddAlt
 
-/** The 1:1 random chat: always dark and immersive, like a camera view. */
+/** The 1:1 random chat. */
 @Composable
-fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) = NightTheme { RandomChat(vm, chat, premium) }
-
-@Composable
-private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
+fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     SecureScreen()
     val partner = chat.match.partner
     var exitDialog by remember { mutableStateOf(false) }
@@ -136,14 +133,14 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     }
     BackHandler { if (lockLeft <= 0) exitDialog = true }
 
-    Column(Modifier.fillMaxSize().background(Brand.Night).imePadding()) {
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).imePadding()) {
         Column {
             Row(
                 Modifier.fillMaxWidth().statusBarsPadding().height(64.dp).padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // Down to the bar over the tabs (the chat stays on), as a voice room does.
-                CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.chat_minimise), vm::minimiseChat, tint = Color.White.copy(alpha = 0.85f))
+                CircleIconButton(Icons.Rounded.KeyboardArrowDown, stringResource(R.string.chat_minimise), vm::minimiseChat, tint = Brand.Muted)
                 // Normal exit: locked for 5 s (free) / 0.2 s (Plus) after the match starts.
                 ExitButton(lockLeft, ExitPolicy.lockMs(premium)) { exitDialog = true }
                 Row(
@@ -154,7 +151,7 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                     Column(Modifier.padding(start = 10.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                partner.nameAgeFlag(), Modifier.weight(1f, fill = false), color = Color.White, style = MaterialTheme.typography.titleMedium,
+                                partner.nameAgeFlag(), Modifier.weight(1f, fill = false), color = Brand.Text, style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1, overflow = TextOverflow.Ellipsis,
                             )
                             VerifiedMark(partner, Modifier.padding(start = 4.dp), size = 16.dp)
@@ -166,19 +163,19 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                             }
                             // Their decorated @ID under the name ("typing…" while they type; where they are until the ID is known).
                             if (chat.partnerTyping) {
-                                Text(stringResource(R.string.typing), color = Brand.Saffron, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                                Text(stringResource(R.string.typing), color = Brand.SaffronDeep, style = MaterialTheme.typography.bodySmall, maxLines = 1)
                             } else {
                                 val look = lookOf(partner.id)
                                 if (look != null && look.handle.isNotEmpty()) {
                                     LookName(look, Modifier.weight(1f, fill = false), size = 12.sp)
                                     Text(
-                                        " · " + stringResource(R.string.voice_view_profile), color = Color.White.copy(alpha = 0.7f),
+                                        " · " + stringResource(R.string.voice_view_profile), color = Brand.Muted,
                                         style = MaterialTheme.typography.bodySmall, maxLines = 1,
                                     )
                                 } else {
                                     Text(
                                         stringResource(R.string.chat_subtitle, partner.city.ifBlank { stringResource(partner.gender.label) }),
-                                        color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                        color = Brand.Muted, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             }
@@ -188,16 +185,16 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 // Report & leave is never locked.
                 CircleIconButton(
                     Icons.Outlined.Flag, stringResource(R.string.report_and_leave), { reportDialog = true },
-                    tint = Color.White.copy(alpha = 0.8f),
+                    tint = Brand.Muted,
                 )
                 // Block without reporting (also never locked).
-                PersonMenu(partner, onBlock = { vm.block(partner) }, onReport = null, tint = Color.White.copy(alpha = 0.8f))
+                PersonMenu(partner, onBlock = { vm.block(partner) }, onReport = null, tint = Brand.Muted)
                 VideoButton(
                     calling = chat.video == VideoStatus.REQUESTED_BY_ME,
                     enabled = !chat.partnerLeft && chat.video !in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER),
                 ) { vm.requestVideo() }
             }
-            Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = 0.06f)))
+            Box(Modifier.fillMaxWidth().height(1.dp).background(Brand.Line))
         }
         val country = partner.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
         Messages(
@@ -207,12 +204,12 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
         )
         if (chat.partnerLeft) {
             Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(Brand.Ink2)
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(Brand.Surface)
                     .navigationBarsPadding().padding(horizontal = 20.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 PrimaryButton(stringResource(R.string.next_match), { vm.leave(next = true) })
-                TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) }
+                TextButton({ vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Brand.Text) }
             }
         } else {
             Composer(onText = vm::sendText, onMedia = vm::sendMedia, onTyping = vm::typing)
@@ -223,11 +220,10 @@ private fun RandomChat(vm: AppViewModel, chat: ChatState, premium: Boolean) {
     if (exitDialog) {
         AlertDialog(
             onDismissRequest = { exitDialog = false },
-            containerColor = Brand.Ink2,
             title = { Text(stringResource(R.string.leave_title)) },
             text = { Text(stringResource(R.string.leave_text, partner.name)) },
-            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.Saffron) } },
-            dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Color.White) } },
+            confirmButton = { TextButton({ exitDialog = false; vm.leave(next = true) }) { Text(stringResource(R.string.next_match), color = Brand.SaffronDeep) } },
+            dismissButton = { TextButton({ exitDialog = false; vm.leave(next = false) }) { Text(stringResource(R.string.back_to_lobby), color = Brand.Text) } },
         )
     }
     if (reportDialog) {
@@ -250,7 +246,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
     val locked = lockLeft > 0
     val fraction = if (locked) lockLeft.toFloat() / lockMs.coerceAtLeast(1) else 0f
     val interaction = remember { MutableInteractionSource() }
-    val fill by animateColorAsState(if (locked) Color.White.copy(alpha = 0.06f) else Color.White, tween(200), label = "fill")
+    val fill by animateColorAsState(if (locked) Brand.Surface else Brand.Text, tween(200), label = "fill")
     Box(
         Modifier.size(48.dp).pressScale(interaction, 0.9f)
             .clickable(interaction, indication = null, enabled = !locked, role = Role.Button, onClick = onClick),
@@ -260,7 +256,7 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
             val w = 3.dp.toPx()
             val inset = w / 2 + 1.5.dp.toPx()
             val arc = Size(size.width - inset * 2, size.height - inset * 2)
-            drawCircle(Color.White.copy(alpha = 0.12f), radius = arc.width / 2, style = Stroke(w))
+            drawCircle(Brand.Line, radius = arc.width / 2, style = Stroke(w))
             if (fraction > 0f) {
                 drawArc(
                     Brand.Saffron, -90f, 360f * fraction, false,
@@ -270,9 +266,9 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
         }
         Box(Modifier.size(30.dp).clip(CircleShape).background(fill), contentAlignment = Alignment.Center) {
             if (locked) {
-                Text("${(lockLeft + 999) / 1000}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = Jakarta)
+                Text("${(lockLeft + 999) / 1000}", color = Brand.Text, fontWeight = FontWeight.Bold, fontSize = 13.sp, fontFamily = Jakarta)
             } else {
-                Icon(Icons.Rounded.Close, stringResource(R.string.leave), Modifier.size(17.dp), tint = Brand.Night)
+                Icon(Icons.Rounded.Close, stringResource(R.string.leave), Modifier.size(17.dp), tint = Color.White)
             }
         }
     }
@@ -291,13 +287,13 @@ private fun VideoButton(calling: Boolean, enabled: Boolean, onClick: () -> Unit)
             Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.Saffron),
             contentAlignment = Alignment.Center,
         ) {
-            if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.Black, strokeWidth = 2.dp)
-            else Icon(Icons.Rounded.Videocam, stringResource(R.string.video), Modifier.size(20.dp), tint = Brand.Black)
+            if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.OnSaffron, strokeWidth = 2.dp)
+            else Icon(Icons.Rounded.Videocam, stringResource(R.string.video), Modifier.size(20.dp), tint = Brand.OnSaffron)
         }
     }
 }
 
-/** The partner asks for video: a dark sheet rises over the chat. It has to be answered (back does nothing). */
+/** The partner asks for video: a sheet rises over the chat. It has to be answered (back does nothing). */
 @Composable
 private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
     BackHandler {}
@@ -305,7 +301,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
     Box(Modifier.fillMaxSize()) {
         AnimatedVisibility(shown, enter = fadeIn(tween(200))) {
             Box(
-                Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f))
+                Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f))
                     .clickable(remember { MutableInteractionSource() }, indication = null) {},
             )
         }
@@ -314,11 +310,11 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
             enter = slideInVertically(spring(dampingRatio = 0.85f, stiffness = 380f)) { it / 3 } + fadeIn(tween(200)),
         ) {
             Column(
-                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(Brand.Ink2)
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)).background(MaterialTheme.colorScheme.surface)
                     .navigationBarsPadding().padding(horizontal = 24.dp).padding(top = 12.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(Modifier.size(40.dp, 4.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)))
+                Box(Modifier.size(40.dp, 4.dp).clip(CircleShape).background(MaterialTheme.colorScheme.outline))
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.size(104.dp), contentAlignment = Alignment.Center) {
                     Radar(104.dp, rings = 2, ringColor = Brand.Saffron.copy(alpha = 0.5f), stroke = 2.dp)
@@ -326,29 +322,29 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                 }
                 Spacer(Modifier.height(20.dp))
                 Text(
-                    stringResource(R.string.video_incoming_title, partner.name), color = Color.White,
+                    stringResource(R.string.video_incoming_title, partner.name), color = Brand.Text,
                     style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.video_incoming_text), color = Color.White.copy(alpha = 0.6f),
+                    stringResource(R.string.video_incoming_text), color = Brand.Muted,
                     style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 12.dp),
                 )
                 Spacer(Modifier.height(32.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     val interaction = remember { MutableInteractionSource() }
                     Row(
-                        Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.97f).clip(CircleShape).background(Color.White.copy(alpha = 0.08f))
+                        Modifier.weight(1f).height(56.dp).pressScale(interaction, 0.97f).clip(CircleShape).background(Brand.Surface)
                             .clickable(interaction, indication = null, role = Role.Button) { onAnswer(false) },
                         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Rounded.CallEnd, null, Modifier.size(19.dp), tint = Color.White)
+                        Icon(Icons.Rounded.CallEnd, null, Modifier.size(19.dp), tint = Brand.Danger)
                         Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.decline), color = Color.White, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.decline), color = Brand.Text, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     }
                     PrimaryButton(
                         stringResource(R.string.accept), { onAnswer(true) }, Modifier.weight(1f),
-                        leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Brand.Black) },
+                        leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Brand.OnSaffron) },
                     )
                 }
             }
@@ -439,7 +435,7 @@ private fun EndedBar(partner: Profile, friend: FriendState, onAdd: () -> Unit, o
             FriendState.INCOMING -> SoftButton(stringResource(R.string.accept_request), onAccept, accent = true, height = 40.dp)
             else -> SoftButton(
                 stringResource(R.string.add_friend), onAdd, accent = true, height = 40.dp,
-                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Brand.Black) },
+                leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
             )
         }
     }
@@ -589,28 +585,28 @@ private fun MatchReveal(matchId: String, partner: Profile) {
     AnimatedVisibility(shown, enter = fadeIn(tween(1)), exit = fadeOut(tween(250))) {
         val scale = remember { Animatable(0.92f) }
         LaunchedEffect(Unit) { scale.animateTo(1f, tween(300, easing = EaseOutQuint)) }
-        Box(Modifier.fillMaxSize().background(Brand.Night), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.graphicsLayer { scaleX = scale.value; scaleY = scale.value }) {
                 Box(Modifier.size(144.dp).brandRing(), contentAlignment = Alignment.Center) {
                     Avatar(partner, 128.dp)
                 }
                 Spacer(Modifier.size(24.dp))
-                Text(stringResource(R.string.matched_with), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.matched_with), color = Brand.Muted, style = MaterialTheme.typography.titleMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(partner.nameAgeFlag(), color = Color.White, style = MaterialTheme.typography.headlineMedium)
+                    Text(partner.nameAgeFlag(), color = Brand.Text, style = MaterialTheme.typography.headlineMedium)
                     VerifiedMark(partner, Modifier.padding(start = 8.dp), size = 26.dp)
                 }
-                Text(partner.genderCity(), color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodyMedium)
+                Text(partner.genderCity(), color = Brand.Muted, style = MaterialTheme.typography.bodyMedium)
                 // Who they are, checked: the ID badge and their manners (once rated).
                 val t = trustOf(partner)
                 Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (t?.verified == true || partner.verified) {
                         Row(
-                            Modifier.clip(CircleShape).background(Color.White.copy(alpha = 0.12f)).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+                            Modifier.clip(CircleShape).background(Brand.SaffronSoft).padding(start = 6.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            MarkIcon(Mark.LOCK, Brand.Saffron, size = 14.dp)
-                            Text(stringResource(R.string.id_verified), Modifier.padding(start = 6.dp), color = Color.White, style = MaterialTheme.typography.labelMedium)
+                            MarkIcon(Mark.LOCK, Brand.SaffronDeep, size = 14.dp)
+                            Text(stringResource(R.string.id_verified), Modifier.padding(start = 6.dp), color = Brand.SaffronDeep, style = MaterialTheme.typography.labelMedium)
                         }
                     }
                     MannerChip(t)
@@ -621,8 +617,7 @@ private fun MatchReveal(matchId: String, partner: Profile) {
 }
 
 /**
- * Photo button, pill-shaped input and a round brand-colour send button, on the chat wallpaper. Follows the screen's
- * colours (light or dark).
+ * Photo button, pill-shaped input and a round brand-colour send button, on the chat wallpaper.
  * The field clears at once on send; [onText]'s second argument puts the text back if the message did not go out.
  */
 @Composable
@@ -682,7 +677,7 @@ fun Composer(
                     },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Brand.Black else MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.AutoMirrored.Rounded.Send, stringResource(R.string.send), Modifier.size(20.dp), tint = if (enabled) Brand.OnSaffron else MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

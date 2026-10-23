@@ -88,8 +88,9 @@ class LooksScreensTest {
 
     @Test fun aFramedProfile() = framedProfile("03_profile_framed_light")
 
+    // The app is light only: system dark mode changes nothing.
     @Config(qualifiers = "+night")
-    @Test fun aFramedProfileAtNight() = framedProfile("04_profile_framed_dark")
+    @Test fun aFramedProfileAtNight() = framedProfile("04_profile_framed_system_dark")
 
     private fun framedProfile(name: String) {
         signIn()

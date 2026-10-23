@@ -174,7 +174,7 @@ private fun PollOption(text: String, index: Int, poll: VoicePoll, results: Boole
                 Spacer(Modifier.size(10.dp))
             } else if (mine) {
                 Box(Modifier.size(20.dp).clip(CircleShape).background(PollColor), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.Check, null, Modifier.size(14.dp), tint = Brand.Black)
+                    Icon(Icons.Rounded.Check, null, Modifier.size(14.dp), tint = Brand.OnSaffron)
                 }
                 Spacer(Modifier.size(10.dp))
             }

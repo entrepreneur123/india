@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The app mark: a saffron lowercase "y" (two strokes) on a black rounded square, as the web's icon.svg. Android 8+ uses
+<!-- The app mark: a white lowercase "y" (two strokes) on an orange rounded square, as the web's icon.svg. Android 8+ uses
      drawable-v26/ic_launcher.xml (adaptive) instead. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="48dp" android:height="48dp"
     android:viewportWidth="48" android:viewportHeight="48">
-    <path android:fillColor="@color/brand_black" android:pathData="M12,2h24a10,10 0,0 1,10 10v24a10,10 0,0 1,-10 10H12A10,10 0,0 1,2 36V12A10,10 0,0 1,12 2z"/>
-    <path android:strokeColor="@color/brand_saffron" android:strokeWidth="4.2" android:strokeLineCap="round"
+    <path android:fillColor="@color/brand_saffron" android:pathData="M12,2h24a10,10 0,0 1,10 10v24a10,10 0,0 1,-10 10H12A10,10 0,0 1,2 36V12A10,10 0,0 1,12 2z"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="4.2" android:strokeLineCap="round"
         android:pathData="M15.75,13.5L24,27.9M32.25,13.5L20.25,34.5"/>
 </vector>

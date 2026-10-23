@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -45,7 +43,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -65,23 +62,22 @@ import com.yaari.chat.domain.flagOf
 import com.yaari.chat.model.Profile
 
 // ---- Design tokens ------------------------------------------------------------------------------
-// Two brand colours, saffron and black, on one warm-grey (stone) ramp, like the web (app/globals.css): white surfaces
-// for the social screens, a flat black for anything camera-like (random chat, video, rooms). Saffron is a fill with
-// black on it, or a mark; as text on light screens it is [Brand.SaffronDeep]. No gradients. 8 dp grid (4 dp fine steps).
+// White and orange, like the web (app/globals.css): white surfaces everywhere, orange as the one brand colour, on
+// one warm-grey (stone) ramp for ink and lines. Orange is a fill with white on it, or a mark; as small text it is
+// [Brand.SaffronDeep]. Only live video stays dark. Light only. No gradients. 8 dp grid (4 dp fine steps).
 
 object Brand {
-    /** The brand colour: fills (black text on it, 8.4:1), marks, and text or icons on the dark screens (8:1 on [Night]). */
-    val Saffron = Color(0xFFFF8A00)
+    /** The brand orange: fills (bold [OnSaffron] text on it, 3.2:1, large-text AA) and marks. */
+    val Saffron = Color(0xFFEA6A00)
 
-    /** Saffron as text on light screens (5:1 on white). */
+    /** Orange as text or small icons on white (5:1). */
     val SaffronDeep = Color(0xFFB45309)
 
-    /** Soft saffron for tonal containers (selected tab pill, feature cards); its dark-screen counterpart. */
+    /** Soft orange for tonal containers (selected tab pill, feature cards, my chat bubbles). */
     val SaffronSoft = Color(0xFFFFF1E0)
-    val SaffronNight = Color(0xFF2A1A06)
 
-    /** The second brand colour: text and icons on saffron, the dark screens' ground. */
-    val Black = Color(0xFF111111)
+    /** Text and icons on an orange fill. */
+    val OnSaffron = Color.White
 
     /** Flat fill for primary actions, as a brush for the places that paint with one. */
     val fill: Brush = SolidColor(Saffron)
@@ -89,23 +85,21 @@ object Brand {
     val Online = Color(0xFF1E9E54)
     val Danger = Color(0xFFD93025)
 
-    /** The random-chat, video and room screens are always this dark, like a camera view. */
-    val Night = Black
-    val Ink2 = Color(0xFF1A1A1A)
-    val Ink3 = Color(0xFF242424)
-
-    /** Light neutrals (stone). Muted text is 7.7:1 on white. */
-    val Text = Black
+    /** Ink and neutrals (stone): text 17.5:1 on white, muted text 7.6:1. */
+    val Text = Color(0xFF1C1917)
     val Muted = Color(0xFF57534E)
     val Line = Color(0xFFE7E5E4)
     val Surface = Color(0xFFF5F5F4)
+
+    /** Live video fills the screen behind the call controls. */
+    val Video = Color(0xFF0C0A09)
 }
 
-/** Saffron as text or a small mark: the deep shade on light screens, saffron itself on dark ones (like the web's --primary-text). */
-val ColorScheme.primaryText get() = if (background.luminance() < 0.5f) Brand.Saffron else Brand.SaffronDeep
+/** Orange as text or a small mark (like the web's --primary-text). */
+val ColorScheme.primaryText get() = Brand.SaffronDeep
 
 private val Light = lightColorScheme(
-    primary = Brand.Saffron, onPrimary = Brand.Black,
+    primary = Brand.Saffron, onPrimary = Brand.OnSaffron,
     primaryContainer = Brand.SaffronSoft, onPrimaryContainer = Brand.SaffronDeep,
     secondary = Brand.Text, onSecondary = Color.White,
     secondaryContainer = Brand.SaffronSoft, onSecondaryContainer = Brand.SaffronDeep,
@@ -116,20 +110,6 @@ private val Light = lightColorScheme(
     surfaceContainerLowest = Color.White, surfaceContainerHighest = Brand.Line,
     outline = Color(0xFFD6D3D1), outlineVariant = Brand.Line,
     error = Brand.Danger,
-)
-
-private val Dark = darkColorScheme(
-    primary = Brand.Saffron, onPrimary = Brand.Black,
-    primaryContainer = Brand.SaffronNight, onPrimaryContainer = Brand.Saffron,
-    secondary = Color(0xFFE7E5E4), onSecondary = Brand.Night,
-    secondaryContainer = Brand.SaffronNight, onSecondaryContainer = Brand.Saffron,
-    background = Brand.Night, onBackground = Color(0xFFF5F5F4),
-    surface = Brand.Night, onSurface = Color(0xFFF5F5F4),
-    surfaceVariant = Brand.Ink3, onSurfaceVariant = Color(0xFFA8A29E),
-    surfaceContainer = Brand.Ink2, surfaceContainerHigh = Color(0xFF242424), surfaceContainerLow = Color(0xFF161616),
-    surfaceContainerLowest = Brand.Night, surfaceContainerHighest = Color(0xFF2E2E2E),
-    outline = Color(0xFF44403C), outlineVariant = Color(0xFF292524),
-    error = Color(0xFFF28B82),
 )
 
 /**
@@ -173,20 +153,14 @@ private val AppShapes = Shapes(
 @Composable
 fun YaariTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(LocalReducedMotion provides rememberReducedMotion()) {
-        MaterialTheme(colorScheme = if (isSystemInDarkTheme()) Dark else Light, typography = AppType, shapes = AppShapes, content = content)
+        MaterialTheme(colorScheme = Light, typography = AppType, shapes = AppShapes, content = content)
     }
 }
 
-/** The camera-like screens (random chat, video, incoming call) are dark whatever the system theme is. */
-@Composable
-fun NightTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = Dark, typography = AppType, shapes = AppShapes, content = content)
-}
-
-/** The lowercase brand wordmark: saffron on the dark screens, black on light ones, or plain [color]. */
+/** The lowercase brand wordmark: orange (the deep shade below 24 sp, where it is small text), or plain [color]. */
 @Composable
 fun Wordmark(modifier: Modifier = Modifier, size: Int = 26, color: Color? = null) {
-    val ink = color ?: if (isNightTheme()) Brand.Saffron else Brand.Black
+    val ink = color ?: if (size < 24) Brand.SaffronDeep else Brand.Saffron
     Text("yaari", modifier, style = TextStyle(color = ink, fontSize = size.sp, fontFamily = Jakarta, fontWeight = FontWeight.Bold, letterSpacing = (-0.03 * size).sp))
 }
 
@@ -201,14 +175,14 @@ fun PrimaryButton(
     val bg by animateColorAsState(if (enabled) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest, label = "bg")
     Box(
         modifier.fillMaxWidth().height(height).pressScale(interaction).clip(shape).background(bg)
-            .clickable(interaction, indication = ripple(color = Brand.Black), enabled = enabled, role = Role.Button) { tick(); onClick() },
+            .clickable(interaction, indication = ripple(color = Brand.OnSaffron), enabled = enabled, role = Role.Button) { tick(); onClick() },
         contentAlignment = Alignment.Center,
     ) {
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             leading?.invoke()
             Text(
-                text, color = if (enabled) Brand.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp, lineHeight = 24.sp), maxLines = 1, overflow = TextOverflow.Ellipsis,
+                text, color = if (enabled) Brand.OnSaffron else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold), maxLines = 1, overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -241,7 +215,7 @@ fun SoftButton(
         leading?.invoke()
         Text(
             text, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
-            color = if (accent) Brand.Black else MaterialTheme.colorScheme.onSurface,
+            color = if (accent) Brand.OnSaffron else MaterialTheme.colorScheme.onSurface,
         )
     }
 }

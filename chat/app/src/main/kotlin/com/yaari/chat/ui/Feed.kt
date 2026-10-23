@@ -186,20 +186,20 @@ fun PostCard(vm: AppViewModel, s: UiState, post: Post, modifier: Modifier = Modi
     }
 }
 
-/** Short text-only posts: big white words on Yaari's gradient. */
+/** Short text-only posts: big bold white words on the brand orange (large text, 3.2:1). */
 private const val TILE_MAX = 140
 
 @Composable
 private fun TextTile(text: String, onDoubleTap: () -> Unit) {
     val pop = rememberHeartPop()
     Box(
-        Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().heightIn(min = 180.dp).clip(RoundedCornerShape(22.dp)).background(Brand.Black)
+        Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().heightIn(min = 180.dp).clip(RoundedCornerShape(22.dp)).background(Brand.Saffron)
             .pointerInput(Unit) { detectTapGestures(onDoubleTap = { onDoubleTap(); pop.play() }) }
             .padding(horizontal = 24.dp, vertical = 28.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text, color = Color.White, textAlign = TextAlign.Center,
+            text, color = Brand.OnSaffron, textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineSmall.copy(fontSize = if (text.length < 60) 26.sp else 21.sp, lineHeight = if (text.length < 60) 34.sp else 29.sp, fontWeight = FontWeight.Bold),
         )
         pop.Overlay()
@@ -215,7 +215,7 @@ private fun PostPhoto(post: Post, uri: String, trusted: Boolean, onDoubleTap: ()
     Box(
         // Hidden, it is a short tinted panel (nothing of the photo is loaded); shown, a tall 4:5 frame.
         Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp).fillMaxWidth().aspectRatio(if (shown) 0.8f else 1.6f).clip(RoundedCornerShape(22.dp))
-            .background(if (shown) MaterialTheme.colorScheme.surfaceContainerHigh else Brand.Ink3),
+            .background(if (shown) MaterialTheme.colorScheme.surfaceContainerHigh else Brand.Surface),
         contentAlignment = Alignment.Center,
     ) {
         if (shown) {
@@ -227,11 +227,11 @@ private fun PostPhoto(post: Post, uri: String, trusted: Boolean, onDoubleTap: ()
                 Modifier.fillMaxSize().clickable(role = Role.Button) { revealed = true },
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
             ) {
-                Box(Modifier.size(56.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.16f)), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Outlined.Visibility, null, tint = Color.White, modifier = Modifier.size(26.dp))
+                Box(Modifier.size(56.dp).clip(CircleShape).background(Brand.Line), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Outlined.Visibility, null, tint = Brand.Text, modifier = Modifier.size(26.dp))
                 }
-                Text(stringResource(R.string.tap_to_view), Modifier.padding(top = 10.dp), color = Color.White, style = MaterialTheme.typography.titleSmall)
-                Text(stringResource(R.string.photo), color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.tap_to_view), Modifier.padding(top = 10.dp), color = Brand.Text, style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.photo), color = Brand.Muted, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -519,7 +519,7 @@ private fun CommentComposer(me: Profile, t: CommentThread, onSend: (String, () -
                     .background(if (can) Brand.Saffron else MaterialTheme.colorScheme.surfaceContainerHighest),
                 contentAlignment = Alignment.Center,
             ) {
-                MarkIcon(Mark.SEND, if (can) Brand.Black else MaterialTheme.colorScheme.onSurfaceVariant, size = 20.dp)
+                MarkIcon(Mark.SEND, if (can) Brand.OnSaffron else MaterialTheme.colorScheme.onSurfaceVariant, size = 20.dp)
             }
         }
     }

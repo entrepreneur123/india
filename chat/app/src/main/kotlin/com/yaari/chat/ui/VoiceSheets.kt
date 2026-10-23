@@ -392,7 +392,7 @@ private fun FriendButton(state: FriendState, onAdd: () -> Unit, onAccept: () -> 
     when (state) {
         FriendState.NONE -> SoftButton(
             stringResource(R.string.add_friend), onAdd, accent = true, height = 36.dp,
-            leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(16.dp), tint = Brand.Black) },
+            leading = { Icon(Icons.Outlined.PersonAddAlt, null, Modifier.size(16.dp), tint = Brand.OnSaffron) },
         )
         FriendState.REQUESTED -> SoftButton(stringResource(R.string.requested), onWithdraw, height = 36.dp)
         FriendState.INCOMING -> SoftButton(stringResource(R.string.accept), onAccept, accent = true, height = 36.dp)
@@ -429,7 +429,7 @@ private fun RequestsSheet(room: VoiceRoom, act: VoiceActor, onPerson: (String) -
                     SoftButton(
                         stringResource(R.string.voice_accept), { act(VoiceAction.Answer(m.profile.id, true), null) {} },
                         Modifier.semantics { contentDescription = label }, accent = true, enabled = !full,
-                        leading = { Icon(Icons.Rounded.Mic, null, Modifier.size(18.dp), tint = Brand.Black) },
+                        leading = { Icon(Icons.Rounded.Mic, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                     )
                 }
             }

@@ -77,7 +77,7 @@ private fun ContactApp.label() = brand ?: stringResource(R.string.contacts_phone
 
 @Composable
 private fun AppBadge(app: ContactApp) {
-    val (bg, fg) = BRAND[app]?.let { Color(it.first) to Color(it.second) } ?: (Brand.Saffron to Brand.Black)
+    val (bg, fg) = BRAND[app]?.let { Color(it.first) to Color(it.second) } ?: (Brand.Saffron to Brand.OnSaffron)
     Box(Modifier.size(32.dp).background(bg, CircleShape), contentAlignment = Alignment.Center) {
         if (app.brand == null) Icon(Icons.Rounded.Phone, null, Modifier.size(18.dp), tint = fg)
         else Text(app.brand.take(1), color = fg, style = MaterialTheme.typography.titleSmall)

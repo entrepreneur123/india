@@ -364,7 +364,7 @@ fun LinkViewerHost(links: LinkActions) {
                     )
                     SoftButton(
                         stringResource(R.string.link_share), { share(open.url, page.title); links.close() }, accent = true, height = 36.dp,
-                        leading = { Icon(Icons.Outlined.PresentToAll, null, Modifier.size(18.dp), tint = Brand.Black) },
+                        leading = { Icon(Icons.Outlined.PresentToAll, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                     )
                 }
             }

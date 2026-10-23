@@ -38,7 +38,6 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
@@ -60,9 +59,9 @@ import com.yaari.chat.model.Message
 import java.util.Date
 
 // ---- Chat look ----------------------------------------------------------------------------------
-// The messenger look people everywhere use every day: saffron-soft (mine) / white (theirs) bubbles on a plain grey wall, a tail on
-// the first bubble of a run, the time and read ticks tucked into the bubble's corner. Same tokens as the web
-// (chat/web/app/globals.css).
+// The messenger look people everywhere use every day: soft orange (mine) / light stone (theirs) bubbles with dark text on
+// a white wall, a tail on the first bubble of a run, the time and read ticks tucked into the bubble's corner. Same
+// tokens as the web (chat/web/app/globals.css).
 
 @Immutable
 class ChatColors(
@@ -72,19 +71,12 @@ class ChatColors(
     val name: Color,
 )
 
-private val LightChat = ChatColors(
-    wall = Brand.Surface, out = Color(0xFFFFE8CC), incoming = Color.White, text = Brand.Black,
-    meta = Brand.Muted, tick = Brand.SaffronDeep, shadow = Color.Black.copy(alpha = 0.10f), name = Brand.SaffronDeep,
+private val Chat = ChatColors(
+    wall = Color.White, out = Color(0xFFFFE8CC), incoming = Brand.Surface, text = Brand.Text,
+    meta = Brand.Muted, tick = Brand.SaffronDeep, shadow = Color.Black.copy(alpha = 0.08f), name = Brand.SaffronDeep,
 )
 
-private val DarkChat = ChatColors(
-    wall = Brand.Night, out = Brand.SaffronNight, incoming = Brand.Ink3, text = Color(0xFFF5F5F4),
-    meta = Color(0xFFF5F5F4).copy(alpha = 0.6f), tick = Brand.Saffron, shadow = Color.Black.copy(alpha = 0.13f), name = Brand.Saffron,
-)
-
-/** Follows the screen's theme: the system setting, or always dark on the random chat ([NightTheme]). */
-@Composable
-fun chatColors() = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) DarkChat else LightChat
+fun chatColors() = Chat
 
 private val TailWidth = 8.dp
 private val Radius = 8.dp
@@ -241,21 +233,21 @@ fun Bubble(
                         !revealed -> Column(
                             Modifier.size(176.dp, 220.dp)
                                 // Nothing of the photo is loaded until it is tapped: a flat neutral panel stands in for it.
-                                .background(Brand.Ink3)
+                                .background(Brand.Line)
                                 .clickable(role = Role.Button) { revealed = true },
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Box(Modifier.size(48.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.16f)), contentAlignment = Alignment.Center) {
-                                Icon(Icons.Outlined.Visibility, null, tint = Color.White, modifier = Modifier.size(24.dp))
+                            Box(Modifier.size(48.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+                                Icon(Icons.Outlined.Visibility, null, tint = Brand.Text, modifier = Modifier.size(24.dp))
                             }
                             Text(
-                                stringResource(R.string.tap_to_view), color = Color.White,
+                                stringResource(R.string.tap_to_view), color = Brand.Text,
                                 style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp),
                             )
                             Text(
                                 stringResource(if (media.kind == MediaKind.VIDEO) R.string.video else R.string.photo),
-                                color = Color.White.copy(alpha = 0.75f), style = MaterialTheme.typography.bodySmall,
+                                color = Brand.Muted, style = MaterialTheme.typography.bodySmall,
                             )
                         }
                         media.kind == MediaKind.IMAGE && image != null -> image()

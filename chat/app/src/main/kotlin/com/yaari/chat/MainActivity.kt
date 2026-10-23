@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -23,7 +24,9 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) = super.attachBaseContext(AppLocale.wrap(newBase))
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        // The app is always white: dark status and navigation icons, whatever the system theme.
+        val light = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+        enableEdgeToEdge(light, light)
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             VoiceService.handle(intent)
