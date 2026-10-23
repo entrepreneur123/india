@@ -74,7 +74,6 @@ enum class Tab { ROOMS, RANDOM, RECENT, ME }
 enum class Paywall(@StringRes val reason: Int?) {
     GENERAL(null),
     GENDER(R.string.premium_needed_gender),
-    VIDEO(R.string.premium_needed_video),
 }
 
 /** [phone] is the full international number in digits once entered ("919876543210"). */
@@ -104,12 +103,23 @@ data class ChatState(
     val partnerTyping: Boolean = false,
     val partnerLeft: Boolean = false,
     val video: VideoStatus = VideoStatus.NONE,
+    /** The call asked for (or on) is a video call; false: voice only, the camera off until turned on. */
+    val callVideo: Boolean = true,
     /** The partner has read my messages up to this id (double blue tick). */
     val partnerRead: Long = 0,
 )
 
-/** [partnerTyping]: their "typing" signal, for 4 s after the last one (the backend's events say when it stops). */
-data class DmState(val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0, val partnerTyping: Boolean = false)
+/**
+ * [partnerTyping]: their "typing" signal, for 4 s after the last one (the backend's events say when it stops). [video],
+ * [callVideo]: a call in the thread, as in [ChatState].
+ */
+data class DmState(
+    val recent: RecentMatch, val messages: List<Message> = emptyList(), val partnerRead: Long = 0, val partnerTyping: Boolean = false,
+    val video: VideoStatus = VideoStatus.NONE, val callVideo: Boolean = true,
+)
+
+/** A call that was accepted: in [matchId] with [partner]; [video] false: it began as a voice call. */
+data class Call(val matchId: String, val partner: Profile, val video: Boolean)
 
 data class UiState(
     val booting: Boolean = true,
@@ -151,6 +161,16 @@ data class UiState(
      */
     val dmClosed get() = dm != null && friendsLoaded && friendState(dm.recent.partner.id) != FriendState.FRIENDS &&
         !(chat?.match?.id == dm.recent.matchId && !chat.partnerLeft)
+
+    /** The chat on screen: a friend's thread over a minimised random chat (or with none), else the random chat. */
+    val shownMatch get() = if (dm != null && (chat == null || chatMinimised)) dm.recent.matchId else chat?.match?.id
+
+    /** The call on, once accepted: the random chat's, else the friend thread's. */
+    val call get() = chat?.takeIf { it.video == VideoStatus.ACCEPTED && !it.partnerLeft }?.let { Call(it.match.id, it.match.partner, it.callVideo) }
+        ?: dm?.takeIf { it.video == VideoStatus.ACCEPTED }?.let { Call(it.recent.matchId, it.recent.partner, it.callVideo) }
+
+    /** The call's state in the chat or thread [matchId]. */
+    fun callIn(matchId: String) = chat?.takeIf { it.match.id == matchId }?.video ?: dm?.takeIf { it.recent.matchId == matchId }?.video
 }
 
 class AppViewModel(
@@ -269,6 +289,7 @@ class AppViewModel(
                     VoiceBus.Request.OPEN -> voice.expand()
                     VoiceBus.Request.LEAVE -> voice.close()
                     VoiceBus.Request.END -> voice.leave()
+                    VoiceBus.Request.END_CALL -> endVideo()
                 }
             }
         }
@@ -835,12 +856,15 @@ class AppViewModel(
             MatchEvent.PartnerLeft -> c.copy(partnerLeft = true, partnerTyping = false, video = VideoStatus.NONE)
             is MatchEvent.Read -> c.copy(partnerRead = maxOf(c.partnerRead, e.upto))
             is MatchEvent.Video -> {
-                if (e.status == VideoStatus.DECLINED && c.video == VideoStatus.REQUESTED_BY_ME) {
-                    notice(UiText(R.string.msg_declined, c.match.partner.name))
-                }
-                c.copy(video = e.status)
+                declined(c.video, e, c.match.partner)
+                c.copy(video = e.status, callVideo = e.video)
             }
         }
+    }
+
+    /** My call [was] asked for and [e] says the partner declined it. */
+    private fun declined(was: VideoStatus, e: MatchEvent.Video, partner: Profile) {
+        if (e.status == VideoStatus.DECLINED && was == VideoStatus.REQUESTED_BY_ME) notice(UiText(R.string.msg_declined, partner.name))
     }
 
     private fun updateChat(matchId: String, change: (ChatState) -> ChatState) = _state.update {
@@ -892,8 +916,7 @@ class AppViewModel(
      * random chat is the one being typed in.
      */
     fun typing() {
-        val s = _state.value
-        val id = (if (s.dm != null && (s.chat == null || s.chatMinimised)) s.dm.recent.matchId else s.chat?.match?.id) ?: return
+        val id = _state.value.shownMatch ?: return
         val now = clock()
         if (id == lastTypingTo && now - lastTypingSentMs < TYPING_EVERY_MS) return
         lastTypingSentMs = now
@@ -959,38 +982,45 @@ class AppViewModel(
         return true
     }
 
-    fun requestVideo() {
+    /** A [video] or voice call (free) in the chat on screen: the random chat, or a friend's thread that goes on. */
+    fun requestCall(video: Boolean) {
         val s = _state.value
-        val c = s.chat ?: return
-        if (!s.premium) {
-            showPaywall(Paywall.VIDEO)
-            return
-        }
-        if (c.partnerLeft || c.video in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.ACCEPTED)) return
+        val id = s.shownMatch ?: return
+        val over = s.chat?.takeIf { it.match.id == id }?.partnerLeft ?: s.dmClosed
+        if (over || s.callIn(id) in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER, VideoStatus.ACCEPTED)) return
         act {
-            backend.requestVideo(c.match.id)
-            updateChat(c.match.id) { it.copy(video = VideoStatus.REQUESTED_BY_ME) }
+            backend.requestCall(id, video)
+            setCall(id, VideoStatus.REQUESTED_BY_ME, video)
         }
     }
 
+    /** The partner's call asked for in the chat on screen. */
     fun answerVideo(accept: Boolean) {
-        val c = _state.value.chat ?: return
+        val id = _state.value.shownMatch ?: return
         act {
-            backend.answerVideo(c.match.id, accept)
-            updateChat(c.match.id) { it.copy(video = if (accept) VideoStatus.ACCEPTED else VideoStatus.NONE) }
+            backend.answerVideo(id, accept)
+            setCall(id, if (accept) VideoStatus.ACCEPTED else VideoStatus.NONE)
         }
     }
 
+    /** Ends the call, or takes back my call request in the chat on screen. */
     fun endVideo() {
-        val c = _state.value.chat ?: return
-        updateChat(c.match.id) { it.copy(video = VideoStatus.NONE) }
-        act { backend.endVideo(c.match.id) }
+        val s = _state.value
+        val id = s.call?.matchId ?: s.shownMatch?.takeIf { s.callIn(it) == VideoStatus.REQUESTED_BY_ME } ?: return
+        setCall(id, VideoStatus.NONE)
+        act { backend.endVideo(id) }
+    }
+
+    /** The call's state in the random chat and the friend's thread showing [matchId] (the same chat may be both). */
+    private fun setCall(matchId: String, status: VideoStatus, video: Boolean? = null) {
+        updateChat(matchId) { it.copy(video = status, callVideo = video ?: it.callVideo) }
+        updateDmState(matchId) { it.copy(video = status, callVideo = video ?: it.callVideo) }
     }
 
     suspend fun videoToken(): VideoToken? {
-        val c = _state.value.chat ?: return null
+        val id = _state.value.call?.matchId ?: return null
         return try {
-            backend.videoToken(c.match.id)
+            backend.videoToken(id)
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -1001,10 +1031,10 @@ class AppViewModel(
 
     /** The nudity check hid the partner's video (the call screen asks once per call). Best effort, no notice. */
     fun flagNudity() {
-        val c = _state.value.chat ?: return
+        val id = _state.value.call?.matchId ?: return
         viewModelScope.launch {
             try {
-                backend.flagNudity(c.match.id)
+                backend.flagNudity(id)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -1146,6 +1176,10 @@ class AppViewModel(
                             }
                             is MatchEvent.Read -> updateDmState(r.matchId) { it.copy(partnerRead = maxOf(it.partnerRead, e.upto)) }
                             is MatchEvent.Typing -> updateDmState(r.matchId) { it.copy(partnerTyping = e.on) }
+                            is MatchEvent.Video -> updateDmState(r.matchId) {
+                                declined(it.video, e, it.recent.partner)
+                                it.copy(video = e.status, callVideo = e.video)
+                            }
                             else -> Unit
                         }
                     }
@@ -1175,6 +1209,21 @@ class AppViewModel(
         if (accept) notice(UiText(R.string.msg_now_friends, item.actor.name))
         social.loadInbox()
         social.refreshBadges()
+    }
+
+    /**
+     * A friend's call ringing anywhere in the app ([SocialState.ring]): accepting opens their thread with the call on
+     * (the call screen comes up); declining says no. Either way the server reads its notification.
+     */
+    fun answerRing(accept: Boolean) {
+        val ring = social.state.value.ring ?: return
+        val id = ring.item.matchId ?: return
+        social.clearRing()
+        if (accept) openThread(RecentMatch(id, ring.item.actor, 0))
+        act {
+            backend.answerVideo(id, accept)
+            if (accept) setCall(id, VideoStatus.ACCEPTED, ring.video)
+        }
     }
 
     fun inboxJoin(item: InboxItem) = voice.guard(item.roomId) { social.joinInvite(item, voice::openNow) }

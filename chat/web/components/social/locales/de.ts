@@ -57,7 +57,6 @@ const de: SocialDict = {
   'interests.skip': 'Später',
   'interests.label': 'Interessen',
   'interests.edit': 'Interessen bearbeiten',
-  'interests.common': 'Ihr mögt beide',
   'interests.saved': 'Interessen gespeichert',
   'tag.music': 'Musik',
   'tag.movies': 'Filme',

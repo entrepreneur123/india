@@ -52,7 +52,7 @@
     <string name="err_network">Tatizo la mtandao. Tafadhali jaribu tena.</string>
     <string name="msg_purchase_done">Ununuzi umekamilika. Furahia!</string>
     <string name="msg_connection_lost">Muunganisho umekatika. Anza chat mpya kama jumbe zitaacha kufika.</string>
-    <string name="msg_declined">%1$s amekataa simu ya video</string>
+    <string name="msg_declined">%1$s amekataa simu</string>
     <string name="msg_reported_long">Ameripotiwa na kuzuiwa. Hamtalinganishwa tena.</string>
     <string name="msg_reported">Ameripotiwa na kuzuiwa.</string>
     <string name="msg_deleted">Akaunti na data yako vimefutwa.</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">Anza kuchat</string>
     <string name="lobby_rules">Kuwa mwema. Uchi, unyanyasaji au watoto = kufungiwa kabisa.\nUnaweza kuripoti na kuondoka papo hapo wakati wowote.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Chagua jinsia · Simu za video · Ruka baada ya sekunde %1$s</string>
+    <string name="premium_summary">Chagua jinsia · Ruka baada ya sekunde %1$s</string>
     <string name="finding">Tunakutafutia mtu…</string>
     <string name="looking_for">Unatafuta: %1$s</string>
     <string name="cancel">Ghairi</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">Bure</string>
     <string name="upgrade">Pandisha daraja</string>
     <string name="premium_needed_gender">Kuchagua unayekutana naye kunahitaji Plus.</string>
-    <string name="premium_needed_video">Simu za video zinahitaji Plus.</string>
     <string name="premium_benefit_gender">Chagua kukutana na wanaume au wanawake</string>
-    <string name="premium_benefit_video">Simu za video (mtu mwingine lazima akubali)</string>
     <string name="premium_benefit_skip">Ruka kwa mtu anayefuata baada ya sekunde %1$s badala ya %2$s</string>
     <string name="premium_buy">Pata Plus · %1$s</string>
     <string name="premium_buy_default">kila mwezi</string>
@@ -204,7 +202,7 @@
     <string name="create_profile_sub">Hivi ndivyo watu watakavyokufahamu.</string>
     <string name="premium_tagline">Kutana na yule hasa unayetaka kukutana naye.</string>
     <string name="plan_monthly">Kila mwezi</string>
-    <string name="plan_monthly_sub">Kuchagua jinsia, simu za video na kuruka haraka</string>
+    <string name="plan_monthly_sub">Kuchagua jinsia na kuruka haraka</string>
     <string name="plan_pass_title">Pasi ya saa 24</string>
     <string name="plan_pass_sub">Kuchagua jinsia pekee, kwa saa 24</string>
     <string name="delete_sub">Inafuta kabisa wasifu, machapisho na chat zako</string>
@@ -530,7 +528,6 @@
     <string name="interests_label">Mambo unayopenda</string>
     <string name="interests_edit">Hariri mambo unayopenda</string>
     <string name="interests_add">Ongeza mambo unayopenda</string>
-    <string name="interests_common">Nyote mnapenda</string>
     <string name="interests_saved">Mambo unayopenda yamehifadhiwa</string>
     <string name="tag_music">Muziki</string>
     <string name="tag_movies">Filamu</string>
@@ -815,7 +812,7 @@
     <string name="link_reload">Pakia upya</string>
     <string name="link_open_browser">Fungua kwenye kivinjari</string>
     <string name="link_share_hint">Kila mtu chumbani anaona ukurasa huu kando ya chat.</string>
-    <string name="link_share">Onyesha kila mtu</string>
+    <string name="link_share">Tazameni pamoja</string>
     <string name="link_shared_by">Imeshirikiwa na %1$s</string>
     <string name="link_stop_sharing">Acha kushiriki</string>
     <string name="link_close_for_me">Funga kwangu</string>
@@ -897,7 +894,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Maelezo ya wasifu</string>
-    <string name="details_nudge_title">Waambie watu zaidi kukuhusu</string>
     <string name="details_nudge">Ongeza hali, lugha unazozungumza na maswali machache.</string>
     <string name="room_people">Watu</string>
     <string name="room_resize">Badilisha ukubwa wa gumzo</string>
@@ -980,4 +976,14 @@
     <string name="sent_tab">Uliyotuma</string>
     <string name="sent_empty_title">Hakuna maombi yanayosubiri</string>
     <string name="sent_empty">Maombi ya urafiki unayotuma yanasubiri hapa hadi yajibiwe.</string>
+    <string name="call">Piga simu</string>
+    <string name="call_voice">Simu ya sauti</string>
+    <string name="call_video">Simu ya video</string>
+    <string name="call_cancel">Ghairi simu</string>
+    <string name="voice_incoming_title">%1$s anataka simu ya sauti</string>
+    <string name="voice_incoming_text">Sauti yako pekee ndiyo husikika. Unaweza kuwasha kamera wakati wa simu.</string>
+    <string name="call_notif_text">Uko kwenye simu · gusa ili kurudi</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s amekupigia simu</string>
+    <string name="push_channel_calls">Simu</string>
 </resources>

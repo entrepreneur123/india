@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-/** Requests from the "In a voice room" notification to the app (VoiceService → AppViewModel). */
+/** Requests from the "In a voice room" (or "On a call") notification to the app (VoiceService → AppViewModel). */
 object VoiceBus {
     enum class Request {
         /** Bring the room up full screen. */
@@ -13,6 +13,8 @@ object VoiceBus {
         LEAVE,
         /** The host's "Leave": show the room with its "End for everyone?" confirm. */
         END,
+        /** "End" on the "On a call" notification. */
+        END_CALL,
     }
 
     private val _requests = MutableSharedFlow<Request>(extraBufferCapacity = 4)

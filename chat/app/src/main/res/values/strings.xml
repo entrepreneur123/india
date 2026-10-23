@@ -59,7 +59,7 @@
     <string name="err_network">Connection problem. Check your internet and try again.</string>
     <string name="msg_purchase_done">Purchase complete. Enjoy!</string>
     <string name="msg_connection_lost">Connection lost. Start a new chat if messages stop.</string>
-    <string name="msg_declined">%1$s declined the video call</string>
+    <string name="msg_declined">%1$s declined the call</string>
     <string name="msg_reported_long">Reported and blocked. You won’t be matched again.</string>
     <string name="msg_reported">Reported and blocked.</string>
     <string name="msg_deleted">Your account and data were deleted.</string>
@@ -72,7 +72,7 @@
     <string name="start_chatting">Start chatting</string>
     <string name="lobby_rules">Be kind. Nudity, harassment or minors = permanent ban.\nYou can always report &amp; leave instantly.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Gender filter · Video calls · Skip in %1$s s</string>
+    <string name="premium_summary">Gender filter · Skip in %1$s s</string>
     <string name="finding">Finding someone for you…</string>
     <string name="looking_for">Looking for: %1$s</string>
     <string name="cancel">Cancel</string>
@@ -85,9 +85,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">Choosing who you meet needs Plus.</string>
-    <string name="premium_needed_video">Video calls need Plus.</string>
     <string name="premium_benefit_gender">Choose to meet men or women</string>
-    <string name="premium_benefit_video">Video calls (the other person must accept)</string>
     <string name="premium_benefit_skip">Skip to the next person after %1$s s instead of %2$s s</string>
     <string name="premium_buy">Get Plus · %1$s</string>
     <string name="premium_buy_default">monthly</string>
@@ -227,7 +225,7 @@
     <string name="create_profile_sub">This is how people will meet you.</string>
     <string name="premium_tagline">Meet exactly who you want to meet.</string>
     <string name="plan_monthly">Monthly</string>
-    <string name="plan_monthly_sub">Gender filter, video calls and quick skip</string>
+    <string name="plan_monthly_sub">Gender filter and quick skip</string>
     <string name="plan_pass_title">24-hour gender pass</string>
     <string name="plan_pass_sub">Gender filter only, for 24 hours</string>
     <string name="delete_sub">Permanently removes your profile, posts and chats</string>
@@ -558,7 +556,6 @@
     <string name="interests_label">Interests</string>
     <string name="interests_edit">Edit interests</string>
     <string name="interests_add">Add your interests</string>
-    <string name="interests_common">You both like</string>
     <string name="interests_saved">Interests saved</string>
     <string name="tag_music">Music</string>
     <string name="tag_movies">Movies</string>
@@ -849,7 +846,7 @@
     <string name="link_reload">Reload</string>
     <string name="link_open_browser">Open in browser</string>
     <string name="link_share_hint">Everyone in the room sees this page next to the chat.</string>
-    <string name="link_share">Show to everyone</string>
+    <string name="link_share">Open together</string>
     <string name="link_shared_by">Shared by %1$s</string>
     <string name="link_stop_sharing">Stop sharing</string>
     <string name="link_close_for_me">Close for me</string>
@@ -931,7 +928,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Profile details</string>
-    <string name="details_nudge_title">Tell people more about you</string>
     <string name="details_nudge">Add a status, the languages you speak and a few prompts.</string>
     <string name="room_people">People</string>
     <string name="room_resize">Resize the chat</string>
@@ -1014,4 +1010,14 @@
     <string name="sent_tab">Sent</string>
     <string name="sent_empty_title">No pending requests</string>
     <string name="sent_empty">Friend requests you send wait here until they’re answered.</string>
+    <string name="call">Call</string>
+    <string name="call_voice">Voice call</string>
+    <string name="call_video">Video call</string>
+    <string name="call_cancel">Cancel call</string>
+    <string name="voice_incoming_title">%1$s wants a voice call</string>
+    <string name="voice_incoming_text">Only your voice is shared. You can turn your camera on during the call.</string>
+    <string name="call_notif_text">On a call · tap to go back</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s called you</string>
+    <string name="push_channel_calls">Calls</string>
 </resources>

@@ -58,7 +58,7 @@
     <string name="err_network">نیٹ ورک کا مسئلہ۔ براہِ کرم دوبارہ کوشش کریں۔</string>
     <string name="msg_purchase_done">خریداری مکمل۔ مزے کریں!</string>
     <string name="msg_connection_lost">کنکشن ٹوٹ گیا۔ اگر میسجز رک جائیں تو نئی چیٹ شروع کریں۔</string>
-    <string name="msg_declined">%1$s نے ویڈیو کال سے انکار کر دیا</string>
+    <string name="msg_declined">%1$s نے کال سے انکار کر دیا</string>
     <string name="msg_reported_long">رپورٹ اور بلاک کر دیا۔ آپ کا دوبارہ میچ نہیں ہوگا۔</string>
     <string name="msg_reported">رپورٹ اور بلاک کر دیا۔</string>
     <string name="msg_deleted">آپ کا اکاؤنٹ اور ڈیٹا ڈیلیٹ کر دیا گیا۔</string>
@@ -71,7 +71,7 @@
     <string name="start_chatting">چیٹ شروع کریں</string>
     <string name="lobby_rules">اچھے سے بات کریں۔ عریانی، ہراسانی یا نابالغ = مستقل پابندی۔\nآپ ہمیشہ فوراً رپورٹ کر کے نکل سکتے ہیں۔</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">جنس چنیں · ویڈیو کالز · %1$s سیکنڈ میں اسکپ</string>
+    <string name="premium_summary">جنس چنیں · %1$s سیکنڈ میں اسکپ</string>
     <string name="finding">آپ کے لیے کسی کو ڈھونڈ رہے ہیں…</string>
     <string name="looking_for">تلاش: %1$s</string>
     <string name="cancel">منسوخ کریں</string>
@@ -84,9 +84,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">کس سے ملنا ہے یہ چننے کے لیے Plus چاہیے۔</string>
-    <string name="premium_needed_video">ویڈیو کالز کے لیے Plus چاہیے۔</string>
     <string name="premium_benefit_gender">مردوں یا خواتین سے ملنا چنیں</string>
-    <string name="premium_benefit_video">ویڈیو کالز (دوسرے شخص کا قبول کرنا ضروری ہے)</string>
     <string name="premium_benefit_skip">%2$s سیکنڈ کے بجائے %1$s سیکنڈ بعد اگلے شخص پر جائیں</string>
     <string name="premium_buy">Plus لیں · %1$s</string>
     <string name="premium_buy_default">ماہانہ</string>
@@ -226,7 +224,7 @@
     <string name="create_profile_sub">لوگ آپ سے اسی طرح ملیں گے۔</string>
     <string name="premium_tagline">بالکل اسی سے ملیں جس سے آپ ملنا چاہتے ہیں۔</string>
     <string name="plan_monthly">ماہانہ</string>
-    <string name="plan_monthly_sub">جنس کا انتخاب، ویڈیو کالز اور فوری اسکپ</string>
+    <string name="plan_monthly_sub">جنس کا انتخاب اور فوری اسکپ</string>
     <string name="plan_pass_title">24 گھنٹے کا پاس</string>
     <string name="plan_pass_sub">صرف جنس کا انتخاب، 24 گھنٹوں کے لیے</string>
     <string name="delete_sub">آپ کی پروفائل، پوسٹس اور چیٹس ہمیشہ کے لیے ہٹا دیتا ہے</string>
@@ -557,7 +555,6 @@
     <string name="interests_label">دلچسپیاں</string>
     <string name="interests_edit">دلچسپیاں ایڈٹ کریں</string>
     <string name="interests_add">اپنی دلچسپیاں شامل کریں</string>
-    <string name="interests_common">آپ دونوں کو پسند ہے</string>
     <string name="interests_saved">دلچسپیاں محفوظ ہو گئیں</string>
     <string name="tag_music">میوزک</string>
     <string name="tag_movies">فلمیں</string>
@@ -848,7 +845,7 @@
     <string name="link_reload">دوبارہ لوڈ کریں</string>
     <string name="link_open_browser">براؤزر میں کھولیں</string>
     <string name="link_share_hint">روم میں ہر کوئی یہ پیج چیٹ کے ساتھ دیکھتا ہے۔</string>
-    <string name="link_share">سب کو دکھائیں</string>
+    <string name="link_share">ساتھ دیکھیں</string>
     <string name="link_shared_by">%1$s نے شیئر کیا</string>
     <string name="link_stop_sharing">شیئر کرنا بند کریں</string>
     <string name="link_close_for_me">میرے لیے بند کریں</string>
@@ -930,7 +927,6 @@
     <string name="look_frame_neon">نیون</string>
     <string name="look_frame_sakura">ساکورا</string>
     <string name="profile_details">پروفائل کی تفصیلات</string>
-    <string name="details_nudge_title">لوگوں کو اپنے بارے میں مزید بتائیں</string>
     <string name="details_nudge">ایک اسٹیٹس، آپ کون سی زبانیں بولتے ہیں اور چند سوالات شامل کریں۔</string>
     <string name="room_people">لوگ</string>
     <string name="room_resize">چیٹ کا سائز بدلیں</string>
@@ -1013,4 +1009,14 @@
     <string name="sent_tab">بھیجی گئی</string>
     <string name="sent_empty_title">کوئی درخواست باقی نہیں</string>
     <string name="sent_empty">آپ کی بھیجی دوستی کی درخواستیں جواب ملنے تک یہاں رہتی ہیں۔</string>
+    <string name="call">کال</string>
+    <string name="call_voice">وائس کال</string>
+    <string name="call_video">ویڈیو کال</string>
+    <string name="call_cancel">کال منسوخ کریں</string>
+    <string name="voice_incoming_title">%1$s وائس کال کرنا چاہتے ہیں</string>
+    <string name="voice_incoming_text">صرف آپ کی آواز جائے گی۔ کال کے دوران آپ کیمرا آن کر سکتے ہیں۔</string>
+    <string name="call_notif_text">کال جاری ہے · واپس جانے کے لیے ٹیپ کریں</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s نے آپ کو کال کی</string>
+    <string name="push_channel_calls">کالز</string>
 </resources>

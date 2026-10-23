@@ -52,7 +52,7 @@
     <string name="err_network">בעיית רשת. אפשר לנסות שוב.</string>
     <string name="msg_purchase_done">הרכישה הושלמה. תיהנו!</string>
     <string name="msg_connection_lost">החיבור נותק. אם ההודעות מפסיקות, אפשר להתחיל צ׳אט חדש.</string>
-    <string name="msg_declined">%1$s דחה/תה את שיחת הווידאו</string>
+    <string name="msg_declined">%1$s דחה/תה את השיחה</string>
     <string name="msg_reported_long">דווח ונחסם. לא תותאמו שוב.</string>
     <string name="msg_reported">דווח ונחסם.</string>
     <string name="msg_deleted">החשבון והנתונים שלך נמחקו.</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">מתחילים לצ׳וטט</string>
     <string name="lobby_rules">נחמדים כאן. עירום, הטרדה או קטינים = חסימה לצמיתות.\nתמיד אפשר לדווח ולצאת מיד.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">בחירת מגדר · שיחות וידאו · דילוג אחרי %1$s שנ׳</string>
+    <string name="premium_summary">בחירת מגדר · דילוג אחרי %1$s שנ׳</string>
     <string name="finding">מחפשים לך מישהו…</string>
     <string name="looking_for">מחפשים: %1$s</string>
     <string name="cancel">ביטול</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">חינם</string>
     <string name="upgrade">שדרוג</string>
     <string name="premium_needed_gender">כדי לבחור את מי פוגשים צריך Plus.</string>
-    <string name="premium_needed_video">לשיחות וידאו צריך Plus.</string>
     <string name="premium_benefit_gender">בחירה לפגוש גברים או נשים</string>
-    <string name="premium_benefit_video">שיחות וידאו (הצד השני צריך לאשר)</string>
     <string name="premium_benefit_skip">דילוג לאדם הבא אחרי %1$s שנ׳ במקום %2$s שנ׳</string>
     <string name="premium_buy">קבלת Plus · %1$s</string>
     <string name="premium_buy_default">חודשי</string>
@@ -206,7 +204,7 @@
     <string name="create_profile_sub">ככה אנשים יכירו אותך.</string>
     <string name="premium_tagline">פוגשים בדיוק את מי שרוצים.</string>
     <string name="plan_monthly">חודשי</string>
-    <string name="plan_monthly_sub">בחירת מגדר, שיחות וידאו ודילוג מהיר</string>
+    <string name="plan_monthly_sub">בחירת מגדר ודילוג מהיר</string>
     <string name="plan_pass_title">כרטיס ל-24 שעות</string>
     <string name="plan_pass_sub">רק בחירת מגדר, ל-24 שעות</string>
     <string name="delete_sub">מוחק לצמיתות את הפרופיל, הפוסטים והצ׳אטים שלך</string>
@@ -533,7 +531,6 @@
     <string name="interests_label">תחומי עניין</string>
     <string name="interests_edit">עריכת תחומי עניין</string>
     <string name="interests_add">הוספת תחומי עניין</string>
-    <string name="interests_common">שניכם אוהבים</string>
     <string name="interests_saved">תחומי העניין נשמרו</string>
     <string name="tag_music">מוזיקה</string>
     <string name="tag_movies">סרטים</string>
@@ -826,7 +823,7 @@
     <string name="link_reload">טעינה מחדש</string>
     <string name="link_open_browser">פתיחה בדפדפן</string>
     <string name="link_share_hint">כל מי שבחדר רואה את הדף הזה ליד הצ׳אט.</string>
-    <string name="link_share">הצגה לכולם</string>
+    <string name="link_share">צפייה משותפת</string>
     <string name="link_shared_by">שותף על ידי %1$s</string>
     <string name="link_stop_sharing">הפסקת השיתוף</string>
     <string name="link_close_for_me">סגירה אצלי</string>
@@ -909,7 +906,6 @@
     <string name="look_frame_neon">ניאון</string>
     <string name="look_frame_sakura">סאקורה</string>
     <string name="profile_details">פרטי הפרופיל</string>
-    <string name="details_nudge_title">כדאי לספר עוד על עצמך</string>
     <string name="details_nudge">אפשר להוסיף סטטוס, את השפות שמדברים וכמה שאלות פתיחה.</string>
     <string name="room_people">אנשים</string>
     <string name="room_resize">שינוי גודל הצ׳אט</string>
@@ -993,4 +989,14 @@
     <string name="sent_tab">נשלחו</string>
     <string name="sent_empty_title">אין בקשות ממתינות</string>
     <string name="sent_empty">בקשות החברות ששלחת ממתינות כאן עד שיענו עליהן.</string>
+    <string name="call">שיחה</string>
+    <string name="call_voice">שיחה קולית</string>
+    <string name="call_video">שיחת וידאו</string>
+    <string name="call_cancel">ביטול השיחה</string>
+    <string name="voice_incoming_title">%1$s רוצה שיחה קולית</string>
+    <string name="voice_incoming_text">רק הקול שלך עובר. אפשר להדליק את המצלמה במהלך השיחה.</string>
+    <string name="call_notif_text">בשיחה · אפשר להקיש כדי לחזור</string>
+    <string name="profile_status_quote">„%1$s”</string>
+    <string name="inbox_call">שיחה מ־%1$s</string>
+    <string name="push_channel_calls">שיחות</string>
 </resources>

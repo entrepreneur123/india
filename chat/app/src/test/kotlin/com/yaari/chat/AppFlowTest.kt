@@ -192,7 +192,7 @@ class AppFlowTest {
         compose.runOnUiThread { vm.voice.close() }
         compose.waitUntil(5_000) { vm.voice.state.value == null }
 
-        // 10. Buy Plus from the profile tab, then a video call the partner accepts
+        // 10. Buy Plus from the profile tab, then a video call (free) the partner accepts
         tab("Me")
         compose.onNodeWithText("Upgrade").performScrollTo().performClick()
         compose.onNodeWithText("Get Plus ·", substring = true).performClick()
@@ -200,7 +200,8 @@ class AppFlowTest {
         tab("Random")
         compose.onNodeWithText("Start chatting").performClick()
         waitFor("View profile")
-        compose.onNodeWithContentDescription("Video").performClick()
+        compose.onNodeWithContentDescription("Call").performClick()
+        compose.onNodeWithText("Video call").performClick()
         compose.waitUntil(5_000) { vm.state.value.chat?.video == VideoStatus.ACCEPTED }
         waitForIcon("End")
         shot("16_video")

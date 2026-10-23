@@ -58,7 +58,7 @@
     <string name="err_network">ネットワークに問題があります。もう一度お試しください。</string>
     <string name="msg_purchase_done">購入が完了しました。お楽しみください！</string>
     <string name="msg_connection_lost">接続が切れました。メッセージが届かない場合は新しいチャットを始めてください。</string>
-    <string name="msg_declined">%1$sさんがビデオ通話を拒否しました</string>
+    <string name="msg_declined">%1$sさんが通話を拒否しました</string>
     <string name="msg_reported_long">通報してブロックしました。今後マッチすることはありません。</string>
     <string name="msg_reported">通報してブロックしました。</string>
     <string name="msg_deleted">アカウントとデータを削除しました。</string>
@@ -71,7 +71,7 @@
     <string name="start_chatting">チャットを始める</string>
     <string name="lobby_rules">思いやりを大切に。ヌード、嫌がらせ、未成年の利用は永久停止の対象です。\nいつでもすぐに通報・退出できます。</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">性別を選択・ビデオ通話・%1$s秒でスキップ</string>
+    <string name="premium_summary">性別を選択・%1$s秒でスキップ</string>
     <string name="finding">相手を探しています…</string>
     <string name="looking_for">探している相手：%1$s</string>
     <string name="cancel">キャンセル</string>
@@ -84,9 +84,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">出会う相手を選ぶにはPlusが必要です。</string>
-    <string name="premium_needed_video">ビデオ通話にはPlusが必要です。</string>
     <string name="premium_benefit_gender">男性または女性を選んで出会える</string>
-    <string name="premium_benefit_video">ビデオ通話（相手の承諾が必要）</string>
     <string name="premium_benefit_skip">%2$s秒待たずに、%1$s秒で次の人へスキップ</string>
     <string name="premium_buy">Plusに登録・%1$s</string>
     <string name="premium_buy_default">月額</string>
@@ -226,7 +224,7 @@
     <string name="create_profile_sub">相手が最初に目にするプロフィールです。</string>
     <string name="premium_tagline">会いたい人に、ちゃんと会える。</string>
     <string name="plan_monthly">月額</string>
-    <string name="plan_monthly_sub">性別選択、ビデオ通話、クイックスキップ</string>
+    <string name="plan_monthly_sub">性別選択、クイックスキップ</string>
     <string name="plan_pass_title">24時間パス</string>
     <string name="plan_pass_sub">24時間、性別選択のみ</string>
     <string name="delete_sub">プロフィール、投稿、チャットを完全に削除します</string>
@@ -557,7 +555,6 @@
     <string name="interests_label">興味</string>
     <string name="interests_edit">興味を編集</string>
     <string name="interests_add">興味を追加</string>
-    <string name="interests_common">共通の好きなこと</string>
     <string name="interests_saved">興味を保存しました</string>
     <string name="tag_music">音楽</string>
     <string name="tag_movies">映画</string>
@@ -848,7 +845,7 @@
     <string name="link_reload">再読み込み</string>
     <string name="link_open_browser">ブラウザで開く</string>
     <string name="link_share_hint">ルームの全員に、チャットの横でこのページが表示されます。</string>
-    <string name="link_share">全員に表示</string>
+    <string name="link_share">一緒に見る</string>
     <string name="link_shared_by">%1$sさんが共有</string>
     <string name="link_stop_sharing">共有を停止</string>
     <string name="link_close_for_me">自分だけ閉じる</string>
@@ -930,7 +927,6 @@
     <string name="look_frame_neon">ネオン</string>
     <string name="look_frame_sakura">桜</string>
     <string name="profile_details">プロフィールの詳細</string>
-    <string name="details_nudge_title">自分のことをもっと伝えよう</string>
     <string name="details_nudge">ステータス、話せる言語、プロフィール質問を追加しましょう。</string>
     <string name="room_people">参加者</string>
     <string name="room_resize">チャットのサイズを変更</string>
@@ -1013,4 +1009,14 @@
     <string name="sent_tab">送信済み</string>
     <string name="sent_empty_title">承認待ちのリクエストはありません</string>
     <string name="sent_empty">送った友だちリクエストは、返事があるまでここに表示されます。</string>
+    <string name="call">通話</string>
+    <string name="call_voice">音声通話</string>
+    <string name="call_video">ビデオ通話</string>
+    <string name="call_cancel">通話をキャンセル</string>
+    <string name="voice_incoming_title">%1$sさんが音声通話を希望しています</string>
+    <string name="voice_incoming_text">相手に届くのは声だけです。通話中にカメラをオンにすることもできます。</string>
+    <string name="call_notif_text">通話中・タップで戻る</string>
+    <string name="profile_status_quote">「%1$s」</string>
+    <string name="inbox_call">%1$sさんから着信がありました</string>
+    <string name="push_channel_calls">通話</string>
 </resources>

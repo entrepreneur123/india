@@ -54,7 +54,7 @@
     <string name="err_network">Problemă de rețea. Încearcă din nou.</string>
     <string name="msg_purchase_done">Achiziție reușită. Distracție plăcută!</string>
     <string name="msg_connection_lost">Conexiunea s-a pierdut. Dacă mesajele nu mai vin, începe un chat nou.</string>
-    <string name="msg_declined">%1$s a refuzat apelul video</string>
+    <string name="msg_declined">%1$s a refuzat apelul</string>
     <string name="msg_reported_long">Raportat și blocat. Nu veți mai fi potriviți.</string>
     <string name="msg_reported">Raportat și blocat.</string>
     <string name="msg_deleted">Contul și datele tale au fost șterse.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">Începe să vorbești</string>
     <string name="lobby_rules">Fii de treabă. Nuditate, hărțuire sau minori = interdicție permanentă.\nPoți oricând să raportezi și să ieși instant.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Alegi genul · Apeluri video · Treci mai departe în %1$s s</string>
+    <string name="premium_summary">Alegi genul · Treci mai departe în %1$s s</string>
     <string name="finding">Căutăm pe cineva pentru tine…</string>
     <string name="looking_for">Cauți: %1$s</string>
     <string name="cancel">Anulează</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">Treci la Plus</string>
 
     <string name="premium_needed_gender">Ca să alegi pe cine cunoști, ai nevoie de Plus.</string>
-    <string name="premium_needed_video">Pentru apeluri video ai nevoie de Plus.</string>
     <string name="premium_benefit_gender">Alege dacă vrei să cunoști bărbați sau femei</string>
-    <string name="premium_benefit_video">Apeluri video (cealaltă persoană trebuie să accepte)</string>
     <string name="premium_benefit_skip">Treci la următoarea persoană după %1$s s în loc de %2$s s</string>
     <string name="premium_buy">Ia Plus · %1$s</string>
     <string name="premium_buy_default">lunar</string>
@@ -216,7 +214,7 @@
     <string name="create_profile_sub">Așa te vor cunoaște oamenii.</string>
     <string name="premium_tagline">Cunoaște exact pe cine vrei.</string>
     <string name="plan_monthly">Lunar</string>
-    <string name="plan_monthly_sub">Alegerea genului, apeluri video și trecere rapidă</string>
+    <string name="plan_monthly_sub">Alegerea genului și trecere rapidă</string>
     <string name="plan_pass_title">Permis de 24 de ore</string>
     <string name="plan_pass_sub">Doar alegerea genului, timp de 24 de ore</string>
     <string name="delete_sub">Elimină definitiv profilul, postările și chaturile</string>
@@ -545,7 +543,6 @@
     <string name="interests_label">Interese</string>
     <string name="interests_edit">Editează interesele</string>
     <string name="interests_add">Adaugă-ți interesele</string>
-    <string name="interests_common">Vă place amândurora</string>
     <string name="interests_saved">Interese salvate</string>
     <string name="tag_music">Muzică</string>
     <string name="tag_movies">Filme</string>
@@ -839,7 +836,7 @@
     <string name="link_reload">Reîncarcă</string>
     <string name="link_open_browser">Deschide în browser</string>
     <string name="link_share_hint">Toți din cameră văd această pagină lângă chat.</string>
-    <string name="link_share">Arată tuturor</string>
+    <string name="link_share">Vedeți împreună</string>
     <string name="link_shared_by">Partajată de %1$s</string>
     <string name="link_stop_sharing">Oprește partajarea</string>
     <string name="link_close_for_me">Închide pentru mine</string>
@@ -922,7 +919,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Detaliile profilului</string>
-    <string name="details_nudge_title">Spune mai multe despre tine</string>
     <string name="details_nudge">Adaugă un status, limbile pe care le vorbești și câteva întrebări.</string>
     <string name="room_people">Persoane</string>
     <string name="room_resize">Redimensionează chatul</string>
@@ -1006,4 +1002,14 @@
     <string name="sent_tab">Trimise</string>
     <string name="sent_empty_title">Nicio cerere în așteptare</string>
     <string name="sent_empty">Cererile de prietenie trimise de tine așteaptă aici până primesc răspuns.</string>
+    <string name="call">Sună</string>
+    <string name="call_voice">Apel vocal</string>
+    <string name="call_video">Apel video</string>
+    <string name="call_cancel">Anulează apelul</string>
+    <string name="voice_incoming_title">%1$s vrea un apel vocal</string>
+    <string name="voice_incoming_text">Se aude doar vocea ta. Poți porni camera în timpul apelului.</string>
+    <string name="call_notif_text">În apel · atinge ca să revii</string>
+    <string name="profile_status_quote">„%1$s”</string>
+    <string name="inbox_call">%1$s te-a sunat</string>
+    <string name="push_channel_calls">Apeluri</string>
 </resources>

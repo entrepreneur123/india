@@ -115,7 +115,7 @@ class SocialScreensTest {
         }
         // The profile on screen is the one from sign-up; reload it with the extras.
         compose.runOnUiThread { vm.social.removePhoto("none") }
-        waitFor("Edit interests")
+        waitFor("Cricket") // my profile shows them as others see it (editing is in Edit profile)
         shot("gallery")
     }
 

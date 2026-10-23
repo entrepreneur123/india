@@ -54,7 +54,7 @@
     <string name="err_network">Problem z siecią. Spróbuj ponownie.</string>
     <string name="msg_purchase_done">Zakup zakończony. Miłej zabawy!</string>
     <string name="msg_connection_lost">Utracono połączenie. Jeśli wiadomości przestaną przychodzić, zacznij nowy czat.</string>
-    <string name="msg_declined">%1$s odrzuca rozmowę wideo</string>
+    <string name="msg_declined">%1$s odrzuca połączenie</string>
     <string name="msg_reported_long">Zgłoszono i zablokowano. Nie zostaniecie ponownie połączeni.</string>
     <string name="msg_reported">Zgłoszono i zablokowano.</string>
     <string name="msg_deleted">Twoje konto i dane zostały usunięte.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">Zacznij czatować</string>
     <string name="lobby_rules">Bądźmy dla siebie mili. Nagość, nękanie lub nieletni = stała blokada.\nZawsze możesz od razu zgłosić i wyjść.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Wybór płci · Rozmowy wideo · Pomijanie w %1$s s</string>
+    <string name="premium_summary">Wybór płci · Pomijanie w %1$s s</string>
     <string name="finding">Szukamy kogoś dla Ciebie…</string>
     <string name="looking_for">Szukasz: %1$s</string>
     <string name="cancel">Anuluj</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">Ulepsz</string>
 
     <string name="premium_needed_gender">Wybór, kogo poznajesz, wymaga Plus.</string>
-    <string name="premium_needed_video">Rozmowy wideo wymagają Plus.</string>
     <string name="premium_benefit_gender">Wybierz, czy chcesz poznawać mężczyzn, czy kobiety</string>
-    <string name="premium_benefit_video">Rozmowy wideo (druga osoba musi się zgodzić)</string>
     <string name="premium_benefit_skip">Przejdź do następnej osoby po %1$s s zamiast po %2$s s</string>
     <string name="premium_buy">Kup Plus · %1$s</string>
     <string name="premium_buy_default">miesięcznie</string>
@@ -218,7 +216,7 @@
     <string name="create_profile_sub">Tak poznają Cię inni.</string>
     <string name="premium_tagline">Poznawaj dokładnie tych, których chcesz.</string>
     <string name="plan_monthly">Miesięczny</string>
-    <string name="plan_monthly_sub">Wybór płci, rozmowy wideo i szybkie pomijanie</string>
+    <string name="plan_monthly_sub">Wybór płci i szybkie pomijanie</string>
     <string name="plan_pass_title">Karnet na 24 godziny</string>
     <string name="plan_pass_sub">Tylko wybór płci, przez 24 godziny</string>
     <string name="delete_sub">Trwale usuwa Twój profil, posty i czaty</string>
@@ -548,7 +546,6 @@
     <string name="interests_label">Zainteresowania</string>
     <string name="interests_edit">Edytuj zainteresowania</string>
     <string name="interests_add">Dodaj zainteresowania</string>
-    <string name="interests_common">Oboje lubicie</string>
     <string name="interests_saved">Zainteresowania zapisane</string>
     <string name="tag_music">Muzyka</string>
     <string name="tag_movies">Filmy</string>
@@ -850,7 +847,7 @@
     <string name="link_reload">Odśwież</string>
     <string name="link_open_browser">Otwórz w przeglądarce</string>
     <string name="link_share_hint">Wszyscy w pokoju widzą tę stronę obok czatu.</string>
-    <string name="link_share">Pokaż wszystkim</string>
+    <string name="link_share">Oglądajcie razem</string>
     <string name="link_shared_by">Udostępnia: %1$s</string>
     <string name="link_stop_sharing">Przestań udostępniać</string>
     <string name="link_close_for_me">Zamknij u mnie</string>
@@ -934,7 +931,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Szczegóły profilu</string>
-    <string name="details_nudge_title">Powiedz więcej o sobie</string>
     <string name="details_nudge">Dodaj status, języki, którymi mówisz, i kilka pytań.</string>
     <string name="room_people">Osoby</string>
     <string name="room_resize">Zmień rozmiar czatu</string>
@@ -1019,4 +1015,14 @@
     <string name="sent_tab">Wysłane</string>
     <string name="sent_empty_title">Brak oczekujących zaproszeń</string>
     <string name="sent_empty">Wysłane przez Ciebie zaproszenia czekają tu na odpowiedź.</string>
+    <string name="call">Zadzwoń</string>
+    <string name="call_voice">Rozmowa głosowa</string>
+    <string name="call_video">Rozmowa wideo</string>
+    <string name="call_cancel">Anuluj połączenie</string>
+    <string name="voice_incoming_title">%1$s chce porozmawiać głosowo</string>
+    <string name="voice_incoming_text">Przesyłany jest tylko Twój głos. W trakcie rozmowy możesz włączyć kamerę.</string>
+    <string name="call_notif_text">Trwa rozmowa · dotknij, aby wrócić</string>
+    <string name="profile_status_quote">„%1$s”</string>
+    <string name="inbox_call">Połączenie od %1$s</string>
+    <string name="push_channel_calls">Połączenia</string>
 </resources>

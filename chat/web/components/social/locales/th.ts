@@ -61,7 +61,6 @@ const th: SocialDict = {
   'interests.skip': 'ข้ามไปก่อน',
   'interests.label': 'ความสนใจ',
   'interests.edit': 'แก้ไขความสนใจ',
-  'interests.common': 'คุณทั้งคู่ชอบ',
   'interests.saved': 'บันทึกความสนใจแล้ว',
   'tag.music': 'เพลง',
   'tag.movies': 'หนัง',

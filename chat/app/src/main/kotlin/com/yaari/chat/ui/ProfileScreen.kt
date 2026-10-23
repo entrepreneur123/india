@@ -108,8 +108,9 @@ import androidx.compose.material.icons.rounded.CheckCircle
 
 // ---- My profile (the "Me" tab) -------------------------------------------------------------------
 
+/** My profile as others see it (empty parts left out), with "Edit profile": everything is changed there. */
 @Composable
-fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit, onDetails: () -> Unit, onLooks: () -> Unit) {
+fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: () -> Unit, onNewPost: () -> Unit) {
     val me = s.me ?: return
     val friends = s.friends.count { it.state == FriendState.FRIENDS }
     Column(Modifier.fillMaxSize()) {
@@ -127,7 +128,7 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
         PostGrid(me.posts, emptyMine = onNewPost, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: me.copy(posts = emptyList()))) }) {
             ProfileHeader(
                 me, stats = listOf(me.posts.size to pluralLabel(R.plurals.posts_label, me.posts.size), friends to pluralLabel(R.plurals.friends_label, friends)),
-                onLooks = onLooks,
+                extra = countryLine(me),
             )
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SoftButton(stringResource(R.string.edit_profile), onEdit, Modifier.weight(1f))
@@ -136,16 +137,14 @@ fun MyProfileTab(vm: AppViewModel, s: UiState, onSettings: () -> Unit, onEdit: (
                     leading = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                 )
             }
-            val social by vm.social.state.collectAsStateWithLifecycle()
             val trust by vm.trust.state.collectAsStateWithLifecycle()
             // Until verified: the invitation, prominent (or a quiet line while checking / before it opens).
             VerifyCard(vm, Modifier.padding(top = 16.dp))
             trust.mine?.let { MannerCard(it.trust, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp), mine = true) }
             Spacer(Modifier.height(16.dp))
-            if (me.style.isEmpty) StyleNudge(onDetails, Modifier.padding(bottom = 8.dp))
             PromptCards(me, Modifier.padding(bottom = 8.dp))
-            InterestsSection(me, mine = true, onEdit = { vm.social.editInterests(true) })
-            PhotosSection(me.photos, editable = true, busy = social.photoBusy, onAdd = { vm.social.addPhoto(it, me.photos.size) }, onRemove = vm.social::removePhoto)
+            InterestsSection(me)
+            PhotosSection(me.photos, editable = false)
             if (!s.premium) PlusBanner(s, onClick = { vm.showPaywall(Paywall.GENERAL) })
         }
     }
@@ -208,14 +207,13 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                 }
             }
             PostGrid(p.posts, emptyMine = null, onOpen = { vm.feed.openDetail(it.copy(author = it.author ?: p.copy(posts = emptyList()))) }) {
-                val country = p.country?.let { iso -> Countries.byIso(iso)?.name() ?: iso }
                 ProfileHeader(
                     p,
                     stats = listOfNotNull(
                         p.posts.size to pluralLabel(R.plurals.posts_label, p.posts.size),
                         (p.age to stringResource(R.string.age)).takeIf { p.age > 0 }, // 0: hidden (VIP incognito)
                     ),
-                    extra = country?.let { "${flagOf(p.country)} $it" },
+                    extra = countryLine(p),
                 )
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     when (state) {
@@ -230,7 +228,7 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
                 trustOf(p)?.let { MannerCard(it, Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)) }
                 Spacer(Modifier.height(16.dp))
                 PromptCards(p, Modifier.padding(bottom = 8.dp))
-                InterestsSection(p, mine = false, onEdit = {}, shared = p.interests.intersect(s.me?.interests.orEmpty().toSet()))
+                InterestsSection(p)
                 PhotosSection(p.photos, editable = false)
             }
         }
@@ -256,13 +254,16 @@ fun ProfileScreen(vm: AppViewModel, p: Profile, s: UiState) {
 
 // ---- Shared pieces -------------------------------------------------------------------------------
 
+/** "🇮🇳 India" for the header, or null. */
+@Composable
+private fun countryLine(p: Profile) = p.country?.let { iso -> "${flagOf(iso)} ${Countries.byIso(iso)?.name() ?: iso}" }
+
 /**
  * The hero card, in the person's frame when they wear one: the photo in its ring with the numbers beside it, then the
- * big plain name, the decorated @ID under it, the status, details, bio and languages. [onLooks]: mine, with the Looks
- * button.
+ * big plain name, the decorated @ID under it, the status, details, bio and languages.
  */
 @Composable
-private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null, onLooks: (() -> Unit)? = null) {
+private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: String? = null) {
     val frame = Cosmetic.of(lookOf(p.id)?.frame)
     FramedCard(frame, Modifier.fillMaxWidth().padding(horizontal = 12.dp).padding(top = 4.dp, bottom = 16.dp)) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -280,13 +281,6 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
             Row(Modifier.padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(p.name, Modifier.weight(1f, fill = false), style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp))
                 VerifiedMark(p, Modifier.padding(start = 6.dp), size = 20.dp)
-                if (onLooks != null) {
-                    Spacer(Modifier.weight(1f))
-                    SoftButton(
-                        stringResource(R.string.looks), onLooks, Modifier.padding(start = 8.dp), height = 36.dp,
-                        leading = { Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(18.dp), tint = Brand.Saffron) },
-                    )
-                }
             }
             LookName(p.id, size = 15.sp)
             if (p.isVip) {
@@ -297,7 +291,7 @@ private fun ProfileHeader(p: Profile, stats: List<Pair<Int, String>>, extra: Str
             }
             // ID verified people: what the document says, locked.
             IdentityLine(p, Modifier.padding(vertical = 4.dp))
-            StatusLine(p, Modifier.padding(vertical = 2.dp))
+            StatusLine(p, Modifier.padding(top = 4.dp, bottom = 2.dp))
             Text(
                 listOfNotNull(p.subtitle(), extra).joinToString(" · "), style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -480,6 +474,7 @@ fun EditProfileScreen(
     }
     val activity = LocalActivity.current
     val price = vm.state.collectAsStateWithLifecycle().value.prices[Products.HANDLE_CHANGE]
+    val social by vm.social.state.collectAsStateWithLifecycle()
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize().imePadding()) {
             EditorBar(stringResource(R.string.edit_profile), onDone, stringResource(R.string.done), name.isNotBlank() && problem == null && !waiting) {
@@ -500,6 +495,12 @@ fun EditProfileScreen(
                 }
                 Field(city, { city = it.take(30) }, stringResource(R.string.city))
                 Field(bio, { bio = it.take(Validation.MAX_BIO) }, stringResource(R.string.bio), single = false, counter = "${bio.length}/${Validation.MAX_BIO}")
+                // Interests and photos are saved as they change (not with Done).
+                InterestsSection(me, inset = 0.dp, onEdit = { vm.social.editInterests(true) })
+                PhotosSection(
+                    me.photos, editable = true, busy = social.photoBusy, inset = 0.dp,
+                    onAdd = { vm.social.addPhoto(it, me.photos.size) }, onRemove = vm.social::removePhoto,
+                )
                 EditorLink(stringResource(R.string.looks), stringResource(R.string.looks_sub), onLooks) {
                     Icon(Icons.Rounded.AutoAwesome, null, Modifier.size(22.dp), tint = Brand.Saffron)
                 }

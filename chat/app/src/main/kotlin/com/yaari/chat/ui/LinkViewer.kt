@@ -34,11 +34,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
-import androidx.compose.material.icons.outlined.PresentToAll
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.automirrored.rounded.StopScreenShare
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -168,6 +168,16 @@ fun rememberLinked(text: AnnotatedString, color: Color, onLink: ((String) -> Uni
     val context = LocalContext.current
     val tap by rememberUpdatedState(onLink ?: { url: String -> openLink(context, links, url) })
     return remember(text, color) { linkify(text, color) { tap(it) } }
+}
+
+/**
+ * A page tapped in a room's chat. One that other sites may frame ([LinkPreview.frameable]) opens in the viewer, where a
+ * host or co-host can open it together ([share]); any other in a Custom Tab, since the room (the web app among it)
+ * couldn't show it. Before its card is known it opens in the viewer, which offers "Open together" once it is.
+ */
+fun openRoomPage(context: Context, links: LinkActions, url: String, share: ((String, String?) -> Unit)?) {
+    val (known, card) = links.cards?.cached(url) ?: (true to null)
+    if (known && card?.frameable != true) openInTab(context, url) else links.open(url, share)
 }
 
 /** A tapped link: YouTube videos go to the phone (as before), every other page to the in-app viewer. */
@@ -326,13 +336,15 @@ fun SafeWebView(url: String, page: WebPage, modifier: Modifier = Modifier) {
 
 /**
  * The in-app viewer, over everything while a link is open: the page with a toolbar (close, the title and site,
- * reload, open in the browser), and for a room's host or co-host "Show to everyone".
+ * reload, open in the browser), and for a room's host or co-host "Open together" (pages a room can show).
  */
 @Composable
 fun LinkViewerHost(links: LinkActions) {
     val open = links.shown ?: return
     val context = LocalContext.current
     val page = remember(open.url) { WebPage() }
+    val cards = links.cards
+    val card by produceState(cards?.cached(open.url)?.second, open.url, cards) { if (cards != null) value = cards.get(open.url) }
     Dialog(onDismissRequest = links::close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         val title = page.title ?: Links.host(open.url)
         val pane = stringResource(R.string.link_viewer)
@@ -356,7 +368,7 @@ fun LinkViewerHost(links: LinkActions) {
                 CircleIconButton(Icons.AutoMirrored.Rounded.OpenInNew, stringResource(R.string.link_open_browser), { openOutside(context, open.url) })
             }
             val share = open.share
-            if (share != null && Links.shareable(open.url)) {
+            if (share != null && Links.shareable(open.url) && card?.frameable == true) {
                 Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         stringResource(R.string.link_share_hint), Modifier.weight(1f).padding(end = 8.dp),
@@ -364,7 +376,7 @@ fun LinkViewerHost(links: LinkActions) {
                     )
                     SoftButton(
                         stringResource(R.string.link_share), { share(open.url, page.title); links.close() }, accent = true, height = 36.dp,
-                        leading = { Icon(Icons.Outlined.PresentToAll, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
+                        leading = { Icon(Icons.Outlined.Groups, null, Modifier.size(18.dp), tint = Brand.OnSaffron) },
                     )
                 }
             }
@@ -408,7 +420,7 @@ fun SharedPagePanel(stage: RoomStage, canStop: Boolean, onClose: () -> Unit, onS
             CircleIconButton(Icons.AutoMirrored.Rounded.OpenInNew, stringResource(R.string.link_open_browser), { openOutside(context, stage.url) }, size = 36.dp, iconSize = 20.dp)
             if (canStop) {
                 CircleIconButton(
-                    Icons.AutoMirrored.Rounded.StopScreenShare, stringResource(R.string.link_stop_sharing), onStop, size = 36.dp, iconSize = 20.dp,
+                    Icons.Rounded.Cancel, stringResource(R.string.link_stop_sharing), onStop, size = 36.dp, iconSize = 20.dp,
                     tint = MaterialTheme.colorScheme.error,
                 )
             }
@@ -431,6 +443,7 @@ fun SharedPagePanel(stage: RoomStage, canStop: Boolean, onClose: () -> Unit, onS
 /**
  * The card under a message with a link: a YouTube video's thumbnail (a tap opens it on the phone; in a room, [onRequest]
  * adds it to Up next), or a web page's site, title, description and image from link-meta (a tap opens the viewer).
+ * [onLink]: a room's chat, where a page the room can't show together opens outside the app (marked on its card).
  */
 @Composable
 fun MessageLinkCard(text: String, modifier: Modifier = Modifier, onRequest: ((String) -> Unit)? = null, onLink: ((String) -> Unit)? = null) {
@@ -441,13 +454,13 @@ fun MessageLinkCard(text: String, modifier: Modifier = Modifier, onRequest: ((St
     val video = remember(found) { found.firstNotNullOfOrNull { YouTube.videoId(it.url) } }
     val page = remember(found) { found.firstOrNull { YouTube.videoId(it.url) == null }?.url }
     when {
-        page != null -> PageCard(page, links, modifier) { (onLink ?: { u: String -> links.open(u) })(page) }
+        page != null -> PageCard(page, links, modifier, outside = onLink != null) { (onLink ?: { u: String -> links.open(u) })(page) }
         video != null -> VideoCard(video, modifier, onRequest) { openOutside(context, "https://youtu.be/$video") }
     }
 }
 
 @Composable
-private fun PageCard(url: String, links: LinkActions, modifier: Modifier, onOpen: () -> Unit) {
+private fun PageCard(url: String, links: LinkActions, modifier: Modifier, outside: Boolean, onOpen: () -> Unit) {
     val cards = links.cards
     val preview by produceState(cards?.cached(url)?.second, url, cards) {
         if (cards != null) value = cards.get(url)
@@ -475,6 +488,9 @@ private fun PageCard(url: String, links: LinkActions, modifier: Modifier, onOpen
             p?.description?.let {
                 Text(it, color = chatColors().meta, fontSize = 12.sp, lineHeight = 16.sp, fontFamily = Jakarta, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
+        }
+        if (outside && p != null && !p.frameable) {
+            Icon(Icons.AutoMirrored.Rounded.OpenInNew, null, Modifier.padding(start = 8.dp).size(18.dp), tint = chatColors().meta)
         }
     }
 }

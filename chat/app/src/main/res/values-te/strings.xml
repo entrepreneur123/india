@@ -54,7 +54,7 @@
     <string name="err_network">నెట్‌వర్క్ సమస్య. దయచేసి మళ్లీ ప్రయత్నించండి.</string>
     <string name="msg_purchase_done">కొనుగోలు పూర్తయింది. ఎంజాయ్ చేయండి!</string>
     <string name="msg_connection_lost">కనెక్షన్ పోయింది. మెసేజ్‌లు ఆగిపోతే కొత్త చాట్ మొదలుపెట్టండి.</string>
-    <string name="msg_declined">%1$s వీడియో కాల్‌ను తిరస్కరించారు</string>
+    <string name="msg_declined">%1$s కాల్‌ను తిరస్కరించారు</string>
     <string name="msg_reported_long">రిపోర్ట్ చేసి బ్లాక్ చేశాం. మళ్లీ మ్యాచ్ అవ్వరు.</string>
     <string name="msg_reported">రిపోర్ట్ చేసి బ్లాక్ చేశాం.</string>
     <string name="msg_deleted">మీ అకౌంట్, డేటా డిలీట్ అయ్యాయి.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">చాట్ మొదలుపెట్టు</string>
     <string name="lobby_rules">మర్యాదగా ఉండండి. నగ్నత్వం, వేధింపులు లేదా మైనర్లు = శాశ్వత నిషేధం.\nఎప్పుడైనా వెంటనే రిపోర్ట్ చేసి వెళ్లిపోవచ్చు.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">జెండర్ ఎంపిక · వీడియో కాల్స్ · %1$s సె.లో స్కిప్</string>
+    <string name="premium_summary">జెండర్ ఎంపిక · %1$s సె.లో స్కిప్</string>
     <string name="finding">మీ కోసం ఎవరినో వెతుకుతున్నాం…</string>
     <string name="looking_for">వెతుకుతున్నది: %1$s</string>
     <string name="cancel">రద్దు చేయి</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">అప్‌గ్రేడ్</string>
 
     <string name="premium_needed_gender">ఎవరిని కలవాలో ఎంచుకోవడానికి Plus కావాలి.</string>
-    <string name="premium_needed_video">వీడియో కాల్స్‌కు Plus కావాలి.</string>
     <string name="premium_benefit_gender">పురుషులను లేదా మహిళలను కలవడానికి ఎంచుకోండి</string>
-    <string name="premium_benefit_video">వీడియో కాల్స్ (అవతలి వ్యక్తి యాక్సెప్ట్ చేయాలి)</string>
     <string name="premium_benefit_skip">%2$s సె.కు బదులు %1$s సె.లో తర్వాతి వ్యక్తికి స్కిప్</string>
     <string name="premium_buy">Plus పొందండి · %1$s</string>
     <string name="premium_buy_default">నెలవారీ</string>
@@ -214,7 +212,7 @@
     <string name="create_profile_sub">ఇతరులు మిమ్మల్ని ఇలాగే కలుస్తారు.</string>
     <string name="premium_tagline">మీరు కోరుకున్నవాళ్లనే కలవండి.</string>
     <string name="plan_monthly">నెలవారీ</string>
-    <string name="plan_monthly_sub">జెండర్ ఎంపిక, వీడియో కాల్స్, క్విక్ స్కిప్</string>
+    <string name="plan_monthly_sub">జెండర్ ఎంపిక, క్విక్ స్కిప్</string>
     <string name="plan_pass_title">24 గంటల పాస్</string>
     <string name="plan_pass_sub">జెండర్ ఎంపిక మాత్రమే, 24 గంటలు</string>
     <string name="delete_sub">మీ ప్రొఫైల్, పోస్ట్‌లు, చాట్స్‌ను శాశ్వతంగా తొలగిస్తుంది</string>
@@ -541,7 +539,6 @@
     <string name="interests_label">ఆసక్తులు</string>
     <string name="interests_edit">ఆసక్తులు ఎడిట్ చేయి</string>
     <string name="interests_add">మీ ఆసక్తులు యాడ్ చేయండి</string>
-    <string name="interests_common">ఇద్దరికీ ఇష్టం</string>
     <string name="interests_saved">ఆసక్తులు సేవ్ అయ్యాయి</string>
     <string name="tag_music">మ్యూజిక్</string>
     <string name="tag_movies">సినిమాలు</string>
@@ -827,7 +824,7 @@
     <string name="link_reload">రీలోడ్</string>
     <string name="link_open_browser">బ్రౌజర్‌లో తెరువు</string>
     <string name="link_share_hint">రూమ్‌లోని అందరూ ఈ పేజీని చాట్ పక్కన చూస్తారు.</string>
-    <string name="link_share">అందరికీ చూపించు</string>
+    <string name="link_share">కలిసి చూడండి</string>
     <string name="link_shared_by">%1$s షేర్ చేశారు</string>
     <string name="link_stop_sharing">షేర్ చేయడం ఆపు</string>
     <string name="link_close_for_me">నాకు మాత్రమే మూసివేయి</string>
@@ -909,7 +906,6 @@
     <string name="look_frame_neon">నియాన్</string>
     <string name="look_frame_sakura">సకురా</string>
     <string name="profile_details">ప్రొఫైల్ వివరాలు</string>
-    <string name="details_nudge_title">మీ గురించి ఇంకా చెప్పండి</string>
     <string name="details_nudge">ఒక స్టేటస్, మీరు మాట్లాడే భాషలు, కొన్ని ప్రాంప్ట్‌లు జోడించండి.</string>
     <string name="room_people">వ్యక్తులు</string>
     <string name="room_resize">చాట్ సైజ్ మార్చు</string>
@@ -992,4 +988,14 @@
     <string name="sent_tab">పంపినవి</string>
     <string name="sent_empty_title">పెండింగ్ రిక్వెస్ట్‌లు లేవు</string>
     <string name="sent_empty">మీరు పంపిన ఫ్రెండ్ రిక్వెస్ట్‌లు జవాబు వచ్చే వరకు ఇక్కడ ఉంటాయి.</string>
+    <string name="call">కాల్</string>
+    <string name="call_voice">వాయిస్ కాల్</string>
+    <string name="call_video">వీడియో కాల్</string>
+    <string name="call_cancel">కాల్ రద్దు చేయి</string>
+    <string name="voice_incoming_title">%1$s వాయిస్ కాల్ చేయాలనుకుంటున్నారు</string>
+    <string name="voice_incoming_text">మీ గొంతు మాత్రమే వెళ్తుంది. కాల్ మధ్యలో కెమెరా ఆన్ చేయవచ్చు.</string>
+    <string name="call_notif_text">కాల్‌లో ఉన్నారు · తిరిగి వెళ్లడానికి ట్యాప్ చేయండి</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s మీకు కాల్ చేశారు</string>
+    <string name="push_channel_calls">కాల్స్</string>
 </resources>

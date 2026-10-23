@@ -67,6 +67,8 @@ import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.rounded.CallEnd
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Videocam
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -191,10 +193,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
                 )
                 // Block without reporting (also never locked).
                 PersonMenu(partner, onBlock = { vm.block(partner) }, onReport = null, tint = Brand.Muted)
-                VideoButton(
-                    calling = chat.video == VideoStatus.REQUESTED_BY_ME,
-                    enabled = !chat.partnerLeft && chat.video !in setOf(VideoStatus.REQUESTED_BY_ME, VideoStatus.REQUESTED_BY_PARTNER),
-                ) { vm.requestVideo() }
+                CallButton(chat.video, enabled = !chat.partnerLeft, onCall = vm::requestCall, onCancel = vm::endVideo)
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(Brand.Line))
         }
@@ -240,7 +239,7 @@ fun ChatRoomScreen(vm: AppViewModel, chat: ChatState, premium: Boolean) {
         }
     }
     if (chat.video == VideoStatus.REQUESTED_BY_PARTNER && !chat.partnerLeft) {
-        IncomingVideoSheet(partner, vm::answerVideo)
+        IncomingCallSheet(partner, chat.callVideo, vm::answerVideo)
     }
 }
 
@@ -281,28 +280,46 @@ private fun ExitButton(lockLeft: Long, lockMs: Long, onClick: () -> Unit) {
     }
 }
 
-/** Round brand-colour camera button; a spinner while our request waits for an answer. */
+/**
+ * Round brand-colour call button (calls are free): a tap offers a voice or a video call. A spinner while my call waits
+ * for an answer (a tap takes it back); off while the partner's call waits for mine.
+ */
 @Composable
-private fun VideoButton(calling: Boolean, enabled: Boolean, onClick: () -> Unit) {
+private fun CallButton(status: VideoStatus, enabled: Boolean, onCall: (video: Boolean) -> Unit, onCancel: () -> Unit) {
+    val calling = status == VideoStatus.REQUESTED_BY_ME
+    val on = enabled && status != VideoStatus.REQUESTED_BY_PARTNER
+    var menu by remember { mutableStateOf(false) }
     val interaction = remember { MutableInteractionSource() }
-    Box(
-        Modifier.size(48.dp).pressScale(interaction, 0.88f)
-            .clickable(interaction, indication = null, enabled = enabled, role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
+    val label = stringResource(if (calling) R.string.call_cancel else R.string.call)
+    Box {
         Box(
-            Modifier.size(40.dp).alpha(if (enabled || calling) 1f else 0.4f).clip(CircleShape).background(Brand.Saffron),
+            Modifier.size(48.dp).pressScale(interaction, 0.88f)
+                .clickable(interaction, indication = null, enabled = on, role = Role.Button) { if (calling) onCancel() else menu = true }
+                .semantics { contentDescription = label },
             contentAlignment = Alignment.Center,
         ) {
-            if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.OnSaffron, strokeWidth = 2.dp)
-            else Icon(Icons.Rounded.Videocam, stringResource(R.string.video), Modifier.size(20.dp), tint = Brand.OnSaffron)
+            Box(
+                Modifier.size(40.dp).alpha(if (on) 1f else 0.4f).clip(CircleShape).background(Brand.Saffron),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (calling) CircularProgressIndicator(Modifier.size(18.dp), color = Brand.OnSaffron, strokeWidth = 2.dp)
+                else Icon(Icons.Rounded.Call, null, Modifier.size(20.dp), tint = Brand.OnSaffron)
+            }
+        }
+        DropdownMenu(menu, { menu = false }) {
+            listOf(false to Icons.Rounded.Call, true to Icons.Rounded.Videocam).forEach { (video, icon) ->
+                DropdownMenuItem(
+                    { Text(stringResource(if (video) R.string.call_video else R.string.call_voice)) }, { menu = false; onCall(video) },
+                    leadingIcon = { Icon(icon, null, tint = MaterialTheme.colorScheme.primaryText) },
+                )
+            }
         }
     }
 }
 
-/** The partner asks for video: a sheet rises over the chat. It has to be answered (back does nothing). */
+/** The partner asks for a call ([video] or voice): a sheet rises over the chat. It has to be answered (back does nothing). */
 @Composable
-private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
+internal fun IncomingCallSheet(partner: Profile, video: Boolean, onAnswer: (Boolean) -> Unit) {
     BackHandler {}
     val shown = remember { MutableTransitionState(false) }.apply { targetState = true }
     Box(Modifier.fillMaxSize()) {
@@ -329,12 +346,12 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                 }
                 Spacer(Modifier.height(20.dp))
                 Text(
-                    stringResource(R.string.video_incoming_title, partner.name), color = Brand.Text,
+                    stringResource(if (video) R.string.video_incoming_title else R.string.voice_incoming_title, partner.name), color = Brand.Text,
                     style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.video_incoming_text), color = Brand.Muted,
+                    stringResource(if (video) R.string.video_incoming_text else R.string.voice_incoming_text), color = Brand.Muted,
                     style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 12.dp),
                 )
                 Spacer(Modifier.height(32.dp))
@@ -351,7 +368,7 @@ private fun IncomingVideoSheet(partner: Profile, onAnswer: (Boolean) -> Unit) {
                     }
                     PrimaryButton(
                         stringResource(R.string.accept), { onAnswer(true) }, Modifier.weight(1f),
-                        leading = { Icon(Icons.Rounded.Videocam, null, Modifier.size(20.dp), tint = Brand.OnSaffron) },
+                        leading = { Icon(if (video) Icons.Rounded.Videocam else Icons.Rounded.Call, null, Modifier.size(20.dp), tint = Brand.OnSaffron) },
                     )
                 }
             }
@@ -405,7 +422,10 @@ fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState
         ChatBar(
             r.partner, if (dm.partnerTyping) stringResource(R.string.typing) else r.partner.subtitle(), onProfile = { vm.openProfile(r.partner) },
             onBack = vm::closeDm, typing = dm.partnerTyping,
-            actions = { if (friend == FriendState.FRIENDS) FriendContactsButton(vm, r.partner) },
+            actions = {
+                if (friend == FriendState.FRIENDS) FriendContactsButton(vm, r.partner)
+                if (!closed) CallButton(dm.video, enabled = true, onCall = vm::requestCall, onCancel = vm::endVideo)
+            },
         )
         val wall = myWall()
         Column(Modifier.weight(1f).chatWall(wall)) {
@@ -417,6 +437,7 @@ fun DmScreen(vm: AppViewModel, dm: DmState, closed: Boolean, friend: FriendState
             else Composer(onText = vm::sendDm, onMedia = null, onTyping = vm::typing, onWall = wall != null) { StickerButton({ vm.sendDm(it) {} }) }
         }
     }
+    if (dm.video == VideoStatus.REQUESTED_BY_PARTNER && !closed) IncomingCallSheet(r.partner, dm.callVideo, vm::answerVideo)
 }
 
 /** My chat wall (046; only I see it), from my shop (asked for once). */

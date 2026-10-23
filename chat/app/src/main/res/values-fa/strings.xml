@@ -52,7 +52,7 @@
     <string name="err_network">مشکل شبکه. لطفاً دوباره امتحان کنید.</string>
     <string name="msg_purchase_done">خرید انجام شد. لذت ببرید!</string>
     <string name="msg_connection_lost">اتصال قطع شد. اگر پیام‌ها نمی‌رسند، چت جدیدی شروع کنید.</string>
-    <string name="msg_declined">%1$s تماس تصویری را رد کرد</string>
+    <string name="msg_declined">%1$s تماس را رد کرد</string>
     <string name="msg_reported_long">گزارش و مسدود شد. دیگر با هم جور نمی‌شوید.</string>
     <string name="msg_reported">گزارش و مسدود شد.</string>
     <string name="msg_deleted">حساب و اطلاعات شما حذف شد.</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">شروع چت</string>
     <string name="lobby_rules">مهربان باشید. برهنگی، آزار یا افراد زیر سن قانونی = مسدود شدن دائمی.\nهمیشه می‌توانید فوری گزارش دهید و بروید.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">انتخاب جنسیت · تماس تصویری · رد شدن در %1$s ثانیه</string>
+    <string name="premium_summary">انتخاب جنسیت · رد شدن در %1$s ثانیه</string>
     <string name="finding">در حال پیدا کردن یک نفر برای شما…</string>
     <string name="looking_for">دنبال: %1$s</string>
     <string name="cancel">لغو</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">رایگان</string>
     <string name="upgrade">ارتقا</string>
     <string name="premium_needed_gender">انتخاب اینکه با چه کسی آشنا شوید به Plus نیاز دارد.</string>
-    <string name="premium_needed_video">تماس تصویری به Plus نیاز دارد.</string>
     <string name="premium_benefit_gender">انتخاب آشنایی با مردها یا زن‌ها</string>
-    <string name="premium_benefit_video">تماس تصویری (طرف مقابل باید بپذیرد)</string>
     <string name="premium_benefit_skip">رد شدن به نفر بعدی بعد از %1$s ثانیه به‌جای %2$s ثانیه</string>
     <string name="premium_buy">دریافت Plus · %1$s</string>
     <string name="premium_buy_default">ماهانه</string>
@@ -204,7 +202,7 @@
     <string name="create_profile_sub">آدم‌ها شما را این‌طوری می‌شناسند.</string>
     <string name="premium_tagline">دقیقاً با کسی آشنا شوید که می‌خواهید.</string>
     <string name="plan_monthly">ماهانه</string>
-    <string name="plan_monthly_sub">انتخاب جنسیت، تماس تصویری و رد شدن سریع</string>
+    <string name="plan_monthly_sub">انتخاب جنسیت و رد شدن سریع</string>
     <string name="plan_pass_title">پاس ۲۴ ساعته</string>
     <string name="plan_pass_sub">فقط انتخاب جنسیت، به مدت ۲۴ ساعت</string>
     <string name="delete_sub">پروفایل، پست‌ها و چت‌هایتان را برای همیشه حذف می‌کند</string>
@@ -530,7 +528,6 @@
     <string name="interests_label">علاقه‌مندی‌ها</string>
     <string name="interests_edit">ویرایش علاقه‌مندی‌ها</string>
     <string name="interests_add">علاقه‌مندی‌هایتان را اضافه کنید</string>
-    <string name="interests_common">هر دو دوست دارید</string>
     <string name="interests_saved">علاقه‌مندی‌ها ذخیره شد</string>
     <string name="tag_music">موسیقی</string>
     <string name="tag_movies">فیلم</string>
@@ -815,7 +812,7 @@
     <string name="link_reload">بارگذاری دوباره</string>
     <string name="link_open_browser">باز کردن در مرورگر</string>
     <string name="link_share_hint">همهٔ افراد روم این صفحه را کنار چت می‌بینند.</string>
-    <string name="link_share">نمایش به همه</string>
+    <string name="link_share">با هم دیدن</string>
     <string name="link_shared_by">اشتراک‌گذاری‌شده توسط %1$s</string>
     <string name="link_stop_sharing">توقف اشتراک</string>
     <string name="link_close_for_me">بستن برای من</string>
@@ -897,7 +894,6 @@
     <string name="look_frame_neon">نئون</string>
     <string name="look_frame_sakura">ساکورا</string>
     <string name="profile_details">جزئیات پروفایل</string>
-    <string name="details_nudge_title">بیشتر از خودتان بگویید</string>
     <string name="details_nudge">یک وضعیت، زبان‌هایی که صحبت می‌کنید و چند سؤال اضافه کنید.</string>
     <string name="room_people">افراد</string>
     <string name="room_resize">تغییر اندازهٔ گفتگو</string>
@@ -980,4 +976,14 @@
     <string name="sent_tab">ارسالی</string>
     <string name="sent_empty_title">درخواست در انتظاری نیست</string>
     <string name="sent_empty">درخواست‌های دوستی که می‌فرستید تا پاسخ بگیرند اینجا می‌مانند.</string>
+    <string name="call">تماس</string>
+    <string name="call_voice">تماس صوتی</string>
+    <string name="call_video">تماس تصویری</string>
+    <string name="call_cancel">لغو تماس</string>
+    <string name="voice_incoming_title">%1$s می‌خواهد تماس صوتی بگیرد</string>
+    <string name="voice_incoming_text">فقط صدای شما فرستاده می‌شود. وسط تماس می‌توانید دوربین را روشن کنید.</string>
+    <string name="call_notif_text">در تماس · برای برگشتن بزنید</string>
+    <string name="profile_status_quote">«%1$s»</string>
+    <string name="inbox_call">%1$s با شما تماس گرفت</string>
+    <string name="push_channel_calls">تماس‌ها</string>
 </resources>

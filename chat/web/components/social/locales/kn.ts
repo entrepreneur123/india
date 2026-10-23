@@ -57,7 +57,6 @@ const kn: SocialDict = {
   'interests.skip': 'ಸದ್ಯಕ್ಕೆ ಸ್ಕಿಪ್',
   'interests.label': 'ಆಸಕ್ತಿಗಳು',
   'interests.edit': 'ಆಸಕ್ತಿಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ',
-  'interests.common': 'ಇಬ್ಬರಿಗೂ ಇಷ್ಟ',
   'interests.saved': 'ಆಸಕ್ತಿಗಳು ಸೇವ್ ಆಯಿತು',
   'tag.music': 'ಮ್ಯೂಸಿಕ್',
   'tag.movies': 'ಸಿನಿಮಾ',

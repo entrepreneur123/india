@@ -74,9 +74,11 @@ class LiveServerTest {
         assertEquals("QA Arjun", mb.partner.name)
         assertTrue(mb.partner.age >= 18)
 
-        // Within 5 s of matching the server refuses to let a free user leave; video needs Premium.
+        // Within 5 s of matching the server refuses to let a free user leave; calls are free (051), one ask at a time.
         assertEquals("exit_locked", code { a.leave(ma.id) })
-        assertEquals("premium_required", code { a.requestVideo(ma.id) })
+        a.requestCall(ma.id, video = false)
+        assertEquals("not_allowed", code { a.requestCall(ma.id, video = true) })
+        a.endVideo(ma.id)
 
         // Realtime: A receives B's message, and B sees A typing.
         val incoming = async { withTimeout(15_000) { a.events(ma.id, live = false).filterIsInstance<MatchEvent.NewMessage>().first { !it.message.fromMe } } }

@@ -57,7 +57,6 @@ const ptBR: SocialDict = {
   'interests.skip': 'Agora não',
   'interests.label': 'Interesses',
   'interests.edit': 'Editar interesses',
-  'interests.common': 'Vocês dois curtem',
   'interests.saved': 'Interesses salvos',
   'tag.music': 'Música',
   'tag.movies': 'Filmes',

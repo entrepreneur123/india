@@ -29,6 +29,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -255,36 +256,103 @@ class AppViewModelTest {
         assertTrue("new chat starts empty", vm.state.value.chat!!.messages.isEmpty())
     }
 
-    @Test fun videoNeedsPremiumAndAcceptance() = runTest(dispatcher) {
-        val vm = signedIn()
+    @Test fun callsAreFreeAndAVoiceCallStartsWithTheCameraOff() = runTest(dispatcher) {
+        val vm = signedIn() // no Plus
         matched(vm)
-        vm.requestVideo(); advanceUntilIdle()
-        assertEquals(VideoStatus.NONE, vm.state.value.chat!!.video)
-        assertNotNull(vm.state.value.paywall)
-        assertEquals("premium_required", (runCatching { backend.requestVideo(vm.state.value.chat!!.match.id) }.exceptionOrNull() as BackendException).code)
-    }
-
-    @Test fun premiumVideoCallIsAccepted() = runTest(dispatcher) {
-        backend.redeem(Products.PREMIUM, "p1")
-        val vm = signedIn()
-        matched(vm)
-        vm.requestVideo()
+        vm.requestCall(video = false)
         advanceTimeBy(100); runCurrent()
+        assertNull(vm.state.value.paywall)
         assertEquals(VideoStatus.REQUESTED_BY_ME, vm.state.value.chat!!.video)
+        assertFalse(vm.state.value.chat!!.callVideo)
         advanceTimeBy(5_000); runCurrent()
-        assertEquals(VideoStatus.ACCEPTED, vm.state.value.chat!!.video)
+        val call = vm.state.value.call!!
+        assertEquals(vm.state.value.chat!!.match.id, call.matchId)
+        assertFalse("a voice call", call.video)
         vm.endVideo(); advanceTimeBy(100); runCurrent()
         assertEquals(VideoStatus.NONE, vm.state.value.chat!!.video)
+        assertNull(vm.state.value.call)
     }
 
-    @Test fun incomingVideoCallCanBeAccepted() = runTest(dispatcher) {
-        val vm = signedIn() // free users can accept; only asking needs Premium
+    @Test fun myCallRequestCanBeTakenBack() = runTest(dispatcher) {
+        val vm = signedIn()
         matched(vm)
-        vm.sendText("can we do a video call?")
+        vm.requestCall(video = true); advanceTimeBy(100); runCurrent()
+        vm.endVideo(); advanceTimeBy(5_000); runCurrent()
+        assertEquals("the partner's late answer finds nothing to accept", VideoStatus.NONE, vm.state.value.chat!!.video)
+    }
+
+    @Test fun incomingCallSaysVoiceOrVideoAndCanBeAccepted() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        vm.sendText("can you call me?")
         advanceTimeBy(5_000); runCurrent()
         assertEquals(VideoStatus.REQUESTED_BY_PARTNER, vm.state.value.chat!!.video)
+        assertFalse("asked for a voice call", vm.state.value.chat!!.callVideo)
         vm.answerVideo(true); advanceTimeBy(100); runCurrent()
         assertEquals(VideoStatus.ACCEPTED, vm.state.value.chat!!.video)
+        assertFalse(vm.state.value.call!!.video)
+    }
+
+    @Test fun friendsCallInTheirThread() = runTest(dispatcher) {
+        val vm = signedIn()
+        val p3 = FakeBackend.POOL.first { it.id == "p3" }
+        vm.answerFriend(p3, true); advanceUntilIdle()
+        vm.openDm("p3"); advanceUntilIdle()
+        vm.requestCall(video = true); advanceTimeBy(100); runCurrent()
+        assertEquals(VideoStatus.REQUESTED_BY_ME, vm.state.value.dm!!.video)
+        advanceTimeBy(5_000); runCurrent()
+        val call = vm.state.value.call!!
+        assertEquals("p3", call.partner.id)
+        assertTrue(call.video)
+        vm.endVideo(); advanceTimeBy(100); runCurrent()
+        assertNull(vm.state.value.call)
+    }
+
+    @Test fun aFriendsCallRingsAnywhereAndAcceptingOpensTheirThreadWithTheCallOn() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.answerFriend(FakeBackend.POOL.first { it.id == "p3" }, true); advanceUntilIdle()
+        val following = launch { vm.social.follow() }
+        backend.friendCalls("p3", video = false); advanceUntilIdle()
+        val ring = vm.social.state.value.ring!!
+        assertEquals("p3", ring.item.actor.id)
+        assertFalse("a voice call", ring.video)
+        vm.answerRing(true); advanceUntilIdle()
+        assertNull(vm.social.state.value.ring)
+        assertEquals(ring.item.matchId, vm.state.value.dm!!.recent.matchId)
+        assertEquals("p3", vm.state.value.call!!.partner.id)
+        assertFalse(vm.state.value.call!!.video)
+        vm.endVideo(); advanceUntilIdle()
+        assertNull(vm.state.value.call)
+        following.cancel()
+    }
+
+    @Test fun aRingStopsWhenDeclinedOrTakenBack() = runTest(dispatcher) {
+        val vm = signedIn()
+        vm.answerFriend(FakeBackend.POOL.first { it.id == "p3" }, true); advanceUntilIdle()
+        val following = launch { vm.social.follow() }
+        backend.friendCalls("p3", video = true); advanceUntilIdle()
+        assertTrue(vm.social.state.value.ring!!.video)
+        vm.answerRing(false); advanceUntilIdle()
+        assertNull(vm.social.state.value.ring)
+        assertNull("declined: no thread opened", vm.state.value.dm)
+
+        backend.friendCalls("p3", video = true); advanceUntilIdle()
+        val id = vm.social.state.value.ring!!.item.matchId!!
+        backend.endVideo(id); advanceUntilIdle() // the caller gave up: its notification is read
+        assertNull(vm.social.state.value.ring)
+        following.cancel()
+    }
+
+    @Test fun callsFollowCallOpenOnTheServer() = runTest(dispatcher) {
+        val vm = signedIn()
+        matched(vm)
+        val id = vm.state.value.chat!!.match.id
+        val partner = vm.state.value.chat!!.match.partner
+        now += 10_000
+        backend.leave(id) // ended, and not friends: no call
+        assertEquals("not_allowed", (runCatching { backend.requestCall(id, true) }.exceptionOrNull() as BackendException).code)
+        backend.block(partner.id)
+        assertEquals("not_allowed", (runCatching { backend.requestCall(id, false) }.exceptionOrNull() as BackendException).code)
     }
 
     @Test fun messageSomeoneFromRecent() = runTest(dispatcher) {

@@ -53,7 +53,7 @@
     <string name="err_network">Проблема с сетью. Попробуйте снова.</string>
     <string name="msg_purchase_done">Покупка завершена. Приятного общения!</string>
     <string name="msg_connection_lost">Соединение потеряно. Если сообщения не приходят, начните новый чат.</string>
-    <string name="msg_declined">%1$s отклоняет видеозвонок</string>
+    <string name="msg_declined">%1$s отклоняет звонок</string>
     <string name="msg_reported_long">Жалоба отправлена, человек заблокирован. Вы больше не совпадёте.</string>
     <string name="msg_reported">Жалоба отправлена, человек заблокирован.</string>
     <string name="msg_deleted">Ваш аккаунт и данные удалены.</string>
@@ -64,7 +64,7 @@
     <string name="start_chatting">Начать общение</string>
     <string name="lobby_rules">Будьте вежливы. Нагота, оскорбления или несовершеннолетние = бессрочная блокировка.\nПожаловаться и уйти можно мгновенно в любой момент.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Выбор пола · Видеозвонки · Пропуск за %1$s с</string>
+    <string name="premium_summary">Выбор пола · Пропуск за %1$s с</string>
     <string name="finding">Ищем для вас собеседника…</string>
     <string name="looking_for">Ищем: %1$s</string>
     <string name="cancel">Отмена</string>
@@ -75,9 +75,7 @@
     <string name="plan_free">Бесплатный</string>
     <string name="upgrade">Улучшить</string>
     <string name="premium_needed_gender">Чтобы выбирать, с кем знакомиться, нужен Plus.</string>
-    <string name="premium_needed_video">Для видеозвонков нужен Plus.</string>
     <string name="premium_benefit_gender">Знакомьтесь только с мужчинами или только с женщинами</string>
-    <string name="premium_benefit_video">Видеозвонки (собеседник должен согласиться)</string>
     <string name="premium_benefit_skip">Переход к следующему собеседнику через %1$s с вместо %2$s с</string>
     <string name="premium_buy">Оформить Plus · %1$s</string>
     <string name="premium_buy_default">в месяц</string>
@@ -209,7 +207,7 @@
     <string name="create_profile_sub">Так вас увидят новые знакомые.</string>
     <string name="premium_tagline">Знакомьтесь именно с теми, с кем хотите.</string>
     <string name="plan_monthly">На месяц</string>
-    <string name="plan_monthly_sub">Выбор пола, видеозвонки и быстрый пропуск</string>
+    <string name="plan_monthly_sub">Выбор пола и быстрый пропуск</string>
     <string name="plan_pass_title">Пропуск на 24 часа</string>
     <string name="plan_pass_sub">Только выбор пола, на 24 часа</string>
     <string name="delete_sub">Навсегда удаляет ваш профиль, посты и чаты</string>
@@ -537,7 +535,6 @@
     <string name="interests_label">Интересы</string>
     <string name="interests_edit">Изменить интересы</string>
     <string name="interests_add">Добавьте интересы</string>
-    <string name="interests_common">Вам обоим нравится</string>
     <string name="interests_saved">Интересы сохранены</string>
     <string name="tag_music">Музыка</string>
     <string name="tag_movies">Кино</string>
@@ -838,7 +835,7 @@
     <string name="link_reload">Обновить</string>
     <string name="link_open_browser">Открыть в браузере</string>
     <string name="link_share_hint">Все в комнате видят эту страницу рядом с чатом.</string>
-    <string name="link_share">Показать всем</string>
+    <string name="link_share">Смотреть вместе</string>
     <string name="link_shared_by">Показывает %1$s</string>
     <string name="link_stop_sharing">Перестать показывать</string>
     <string name="link_close_for_me">Закрыть у меня</string>
@@ -922,7 +919,6 @@
     <string name="look_frame_neon">Неон</string>
     <string name="look_frame_sakura">Сакура</string>
     <string name="profile_details">Подробности профиля</string>
-    <string name="details_nudge_title">Расскажите о себе больше</string>
     <string name="details_nudge">Добавьте статус, языки, на которых говорите, и несколько вопросов.</string>
     <string name="room_people">Люди</string>
     <string name="room_resize">Изменить размер чата</string>
@@ -1007,4 +1003,14 @@
     <string name="sent_tab">Отправленные</string>
     <string name="sent_empty_title">Нет ожидающих заявок</string>
     <string name="sent_empty">Отправленные вами заявки в друзья ждут здесь ответа.</string>
+    <string name="call">Позвонить</string>
+    <string name="call_voice">Аудиозвонок</string>
+    <string name="call_video">Видеозвонок</string>
+    <string name="call_cancel">Отменить звонок</string>
+    <string name="voice_incoming_title">%1$s предлагает аудиозвонок</string>
+    <string name="voice_incoming_text">Передаётся только ваш голос. Во время звонка можно включить камеру.</string>
+    <string name="call_notif_text">Идёт звонок · нажмите, чтобы вернуться</string>
+    <string name="profile_status_quote">«%1$s»</string>
+    <string name="inbox_call">Звонок от %1$s</string>
+    <string name="push_channel_calls">Звонки</string>
 </resources>

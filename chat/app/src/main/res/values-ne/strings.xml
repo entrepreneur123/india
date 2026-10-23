@@ -52,7 +52,7 @@
     <string name="err_network">नेटवर्कमा समस्या। कृपया फेरि प्रयास गर्नुहोस्।</string>
     <string name="msg_purchase_done">खरिद पूरा भयो। रमाइलो गर्नुहोस्!</string>
     <string name="msg_connection_lost">कनेक्सन टुट्यो। मेसेज आउन छाडे भने नयाँ च्याट सुरु गर्नुहोस्।</string>
-    <string name="msg_declined">%1$s ले भिडियो कल अस्वीकार गर्नुभयो</string>
+    <string name="msg_declined">%1$s ले कल अस्वीकार गर्नुभयो</string>
     <string name="msg_reported_long">रिपोर्ट र ब्लक गरियो। तपाईंहरू फेरि म्याच हुनुहुने छैन।</string>
     <string name="msg_reported">रिपोर्ट र ब्लक गरियो।</string>
     <string name="msg_deleted">तपाईंको अकाउन्ट र डेटा मेटाइयो।</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">च्याट सुरु गर्नुहोस्</string>
     <string name="lobby_rules">राम्रोसँग बोल्नुहोस्। नग्नता, दुर्व्यवहार वा नाबालक = स्थायी प्रतिबन्ध।\nतपाईं जहिले पनि तुरुन्तै रिपोर्ट गरेर निस्कन सक्नुहुन्छ।</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">लिङ्ग छान्नुहोस् · भिडियो कल · %1$s सेकेन्डमा स्किप</string>
+    <string name="premium_summary">लिङ्ग छान्नुहोस् · %1$s सेकेन्डमा स्किप</string>
     <string name="finding">तपाईंका लागि कसैलाई खोज्दै…</string>
     <string name="looking_for">खोज्दै: %1$s</string>
     <string name="cancel">रद्द गर्नुहोस्</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">नि:शुल्क</string>
     <string name="upgrade">अपग्रेड गर्नुहोस्</string>
     <string name="premium_needed_gender">कसलाई भेट्ने छान्न Plus चाहिन्छ।</string>
-    <string name="premium_needed_video">भिडियो कलका लागि Plus चाहिन्छ।</string>
     <string name="premium_benefit_gender">पुरुष वा महिलालाई भेट्ने छान्नुहोस्</string>
-    <string name="premium_benefit_video">भिडियो कल (अर्को व्यक्तिले स्वीकार गर्नुपर्छ)</string>
     <string name="premium_benefit_skip">%2$s सेकेन्डको सट्टा %1$s सेकेन्डमै अर्को व्यक्तिमा जानुहोस्</string>
     <string name="premium_buy">Plus लिनुहोस् · %1$s</string>
     <string name="premium_buy_default">मासिक</string>
@@ -204,7 +202,7 @@
     <string name="create_profile_sub">मानिसहरूले तपाईंलाई यसरी चिन्नेछन्।</string>
     <string name="premium_tagline">जसलाई भेट्न चाहनुहुन्छ, उसैलाई भेट्नुहोस्।</string>
     <string name="plan_monthly">मासिक</string>
-    <string name="plan_monthly_sub">लिङ्ग छनोट, भिडियो कल र छिटो स्किप</string>
+    <string name="plan_monthly_sub">लिङ्ग छनोट र छिटो स्किप</string>
     <string name="plan_pass_title">२४ घण्टे पास</string>
     <string name="plan_pass_sub">२४ घण्टाका लागि लिङ्ग छनोट मात्र</string>
     <string name="delete_sub">तपाईंको प्रोफाइल, पोस्ट र च्याट स्थायी रूपमा हटाउँछ</string>
@@ -530,7 +528,6 @@
     <string name="interests_label">रुचिहरू</string>
     <string name="interests_edit">रुचि सम्पादन गर्नुहोस्</string>
     <string name="interests_add">आफ्ना रुचि थप्नुहोस्</string>
-    <string name="interests_common">तपाईं दुवैलाई मन पर्छ</string>
     <string name="interests_saved">रुचि सेभ भयो</string>
     <string name="tag_music">म्युजिक</string>
     <string name="tag_movies">फिल्म</string>
@@ -815,7 +812,7 @@
     <string name="link_reload">रिलोड</string>
     <string name="link_open_browser">ब्राउजरमा खोल्नुहोस्</string>
     <string name="link_share_hint">रूमका सबैले यो पेज च्याटको छेउमा देख्छन्।</string>
-    <string name="link_share">सबैलाई देखाउनुहोस्</string>
+    <string name="link_share">सँगै हेर्नुहोस्</string>
     <string name="link_shared_by">%1$s ले सेयर गर्नुभयो</string>
     <string name="link_stop_sharing">सेयर गर्न रोक्नुहोस्</string>
     <string name="link_close_for_me">मेरा लागि बन्द गर्नुहोस्</string>
@@ -897,7 +894,6 @@
     <string name="look_frame_neon">नियोन</string>
     <string name="look_frame_sakura">साकुरा</string>
     <string name="profile_details">प्रोफाइल विवरण</string>
-    <string name="details_nudge_title">आफ्नोबारे अझ बताउनुहोस्</string>
     <string name="details_nudge">एउटा स्टाटस, तपाईंले बोल्ने भाषाहरू र केही प्रश्नहरू थप्नुहोस्।</string>
     <string name="room_people">मानिसहरू</string>
     <string name="room_resize">च्याटको आकार बदल्नुहोस्</string>
@@ -980,4 +976,14 @@
     <string name="sent_tab">पठाइएका</string>
     <string name="sent_empty_title">कुनै बाँकी अनुरोध छैन</string>
     <string name="sent_empty">तपाईंले पठाएका साथी अनुरोध जवाफ नआउन्जेल यहीँ रहन्छन्।</string>
+    <string name="call">कल</string>
+    <string name="call_voice">भ्वाइस कल</string>
+    <string name="call_video">भिडियो कल</string>
+    <string name="call_cancel">कल रद्द गर्नुहोस्</string>
+    <string name="voice_incoming_title">%1$s भ्वाइस कल गर्न चाहनुहुन्छ</string>
+    <string name="voice_incoming_text">तपाईंको आवाज मात्र जान्छ। कलको बेला क्यामेरा खोल्न सक्नुहुन्छ।</string>
+    <string name="call_notif_text">कलमा हुनुहुन्छ · फर्कन ट्याप गर्नुहोस्</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s ले तपाईंलाई कल गर्नुभयो</string>
+    <string name="push_channel_calls">कलहरू</string>
 </resources>

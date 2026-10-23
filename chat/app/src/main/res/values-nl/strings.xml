@@ -54,7 +54,7 @@
     <string name="err_network">Netwerkprobleem. Probeer het opnieuw.</string>
     <string name="msg_purchase_done">Aankoop voltooid. Veel plezier!</string>
     <string name="msg_connection_lost">Verbinding verbroken. Start een nieuwe chat als berichten niet meer doorkomen.</string>
-    <string name="msg_declined">%1$s heeft het videogesprek geweigerd</string>
+    <string name="msg_declined">%1$s heeft het gesprek geweigerd</string>
     <string name="msg_reported_long">Gemeld en geblokkeerd. Jullie worden niet opnieuw gematcht.</string>
     <string name="msg_reported">Gemeld en geblokkeerd.</string>
     <string name="msg_deleted">Je account en gegevens zijn verwijderd.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">Begin met chatten</string>
     <string name="lobby_rules">Wees aardig. Naakt, intimidatie of minderjarigen = permanente ban.\nJe kunt altijd direct melden en weggaan.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Kies gender · Videogesprekken · Overslaan in %1$s s</string>
+    <string name="premium_summary">Kies gender · Overslaan in %1$s s</string>
     <string name="finding">We zoeken iemand voor je…</string>
     <string name="looking_for">Op zoek naar: %1$s</string>
     <string name="cancel">Annuleren</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">Upgraden</string>
 
     <string name="premium_needed_gender">Kiezen wie je ontmoet kan met Plus.</string>
-    <string name="premium_needed_video">Videogesprekken kunnen met Plus.</string>
     <string name="premium_benefit_gender">Kies of je mannen of vrouwen ontmoet</string>
-    <string name="premium_benefit_video">Videogesprekken (de ander moet accepteren)</string>
     <string name="premium_benefit_skip">Ga na %1$s s door naar de volgende in plaats van na %2$s s</string>
     <string name="premium_buy">Neem Plus · %1$s</string>
     <string name="premium_buy_default">maandelijks</string>
@@ -214,7 +212,7 @@
     <string name="create_profile_sub">Zo leren mensen je kennen.</string>
     <string name="premium_tagline">Ontmoet precies wie jij wilt ontmoeten.</string>
     <string name="plan_monthly">Maandelijks</string>
-    <string name="plan_monthly_sub">Genderkeuze, videogesprekken en snel overslaan</string>
+    <string name="plan_monthly_sub">Genderkeuze en snel overslaan</string>
     <string name="plan_pass_title">Pas voor 24 uur</string>
     <string name="plan_pass_sub">Alleen genderkeuze, voor 24 uur</string>
     <string name="delete_sub">Verwijdert je profiel, posts en chats voorgoed</string>
@@ -542,7 +540,6 @@
     <string name="interests_label">Interesses</string>
     <string name="interests_edit">Interesses bewerken</string>
     <string name="interests_add">Voeg je interesses toe</string>
-    <string name="interests_common">Jullie houden allebei van</string>
     <string name="interests_saved">Interesses opgeslagen</string>
     <string name="tag_music">Muziek</string>
     <string name="tag_movies">Films</string>
@@ -828,7 +825,7 @@
     <string name="link_reload">Vernieuwen</string>
     <string name="link_open_browser">Openen in browser</string>
     <string name="link_share_hint">Iedereen in de room ziet deze pagina naast de chat.</string>
-    <string name="link_share">Aan iedereen tonen</string>
+    <string name="link_share">Samen bekijken</string>
     <string name="link_shared_by">Gedeeld door %1$s</string>
     <string name="link_stop_sharing">Stoppen met delen</string>
     <string name="link_close_for_me">Sluiten voor mij</string>
@@ -910,7 +907,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Profielgegevens</string>
-    <string name="details_nudge_title">Vertel meer over jezelf</string>
     <string name="details_nudge">Voeg een status, de talen die je spreekt en een paar vragen toe.</string>
     <string name="room_people">Mensen</string>
     <string name="room_resize">Chatgrootte aanpassen</string>
@@ -993,4 +989,14 @@
     <string name="sent_tab">Verstuurd</string>
     <string name="sent_empty_title">Geen openstaande verzoeken</string>
     <string name="sent_empty">Vriendschapsverzoeken die je stuurt, wachten hier tot ze beantwoord zijn.</string>
+    <string name="call">Bellen</string>
+    <string name="call_voice">Spraakgesprek</string>
+    <string name="call_video">Videogesprek</string>
+    <string name="call_cancel">Gesprek annuleren</string>
+    <string name="voice_incoming_title">%1$s wil bellen</string>
+    <string name="voice_incoming_text">Alleen je stem wordt gedeeld. Je kunt je camera tijdens het gesprek aanzetten.</string>
+    <string name="call_notif_text">In gesprek · tik om terug te gaan</string>
+    <string name="profile_status_quote">‘%1$s’</string>
+    <string name="inbox_call">%1$s heeft je gebeld</string>
+    <string name="push_channel_calls">Gesprekken</string>
 </resources>

@@ -100,6 +100,8 @@ open class FakeBackend(
         /** When it ended (rate_chat allows a day after). */
         var endedAt: Long? = null
         var video = VideoStatus.NONE
+        /** The call asked for is a video call (false: voice only). */
+        var callVideo = true
 
         fun end(at: Long) {
             if (!ended) endedAt = at
@@ -373,7 +375,7 @@ open class FakeBackend(
             !it.read && it.kind == kind && when (kind) {
                 InboxKind.MESSAGE -> it.matchId == matchId
                 InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT -> it.actor.id == actor.id
-                InboxKind.ROOM_INVITE, InboxKind.POST_LIKE, InboxKind.POST_COMMENT -> false
+                InboxKind.ROOM_INVITE, InboxKind.POST_LIKE, InboxKind.POST_COMMENT, InboxKind.CALL -> false
             }
         }
         if (open != null) {
@@ -386,6 +388,23 @@ open class FakeBackend(
         }
         noteSignals.tryEmit(Unit)
     }
+
+    /** My friend [userId] calls me (053): their thread asks for a [video] or voice call, and it rings in the app. */
+    suspend fun friendCalls(userId: String, video: Boolean) {
+        val m = match(friendThread(userId))
+        m.video = VideoStatus.REQUESTED_BY_PARTNER
+        m.callVideo = video
+        callNote(m)
+    }
+
+    /** As the server's notify_call: any change reads the ringing note; a friend's new ask leaves a fresh one. */
+    private fun callNote(m: FakeMatch) {
+        val id = matches.entries.first { it.value === m }.key
+        readNotes { it.kind == InboxKind.CALL && it.matchId == id }
+        if (m.video == VideoStatus.REQUESTED_BY_PARTNER && friendships[m.partner.id] == FriendState.FRIENDS) notify(InboxKind.CALL, m.partner, id)
+    }
+
+    override suspend fun callAsked(matchId: String): Boolean? = match(matchId).takeIf { it.video == VideoStatus.REQUESTED_BY_PARTNER }?.callVideo
 
     /** The partner of [matchId] writes while I'm not looking (tests, screenshots): unread until I read it. */
     fun partnerSays(matchId: String, text: String) {
@@ -500,6 +519,7 @@ open class FakeBackend(
                     emit(MatchEvent.Typing(true))
                     wait(random.nextLong(700, 1800))
                     val roll = random.nextInt(100)
+                    val said = out.text.orEmpty().lowercase()
                     emit(MatchEvent.Typing(false))
                     when {
                         !m.ended && roll < 6 && m.video == VideoStatus.NONE -> {
@@ -507,9 +527,11 @@ open class FakeBackend(
                             emit(MatchEvent.PartnerLeft)
                         }
                         roll < 15 -> Unit
-                        !m.ended && out.text?.contains("video", ignoreCase = true) == true && m.video == VideoStatus.NONE -> {
-                            m.video = VideoStatus.REQUESTED_BY_PARTNER // partner is Premium and asks for a call
-                            emit(MatchEvent.Video(m.video))
+                        callOpen(m) && m.video == VideoStatus.NONE && ("video" in said || "call" in said) -> {
+                            m.video = VideoStatus.REQUESTED_BY_PARTNER // the partner asks for a call ("video" in it: a video call)
+                            m.callVideo = "video" in said
+                            callNote(m)
+                            emit(MatchEvent.Video(m.video, m.callVideo))
                         }
                         else -> {
                             val text = if (out.text?.contains('?') == true) ANSWERS.random(random) else REPLIES.random(random)
@@ -522,9 +544,9 @@ open class FakeBackend(
                 }
                 Outgoing.VideoRequest -> {
                     wait(random.nextLong(1500, 3000))
-                    if (m.ended || m.video != VideoStatus.REQUESTED_BY_ME) continue
+                    if (!callOpen(m) || m.video != VideoStatus.REQUESTED_BY_ME) continue
                     m.video = if (random.nextInt(100) < 70) VideoStatus.ACCEPTED else VideoStatus.DECLINED
-                    emit(MatchEvent.Video(m.video))
+                    emit(MatchEvent.Video(m.video, m.callVideo))
                 }
             }
         }
@@ -572,22 +594,28 @@ open class FakeBackend(
         matches.values.filter { it.partner.id == userId }.forEach { it.end(clock()) }
     }
 
-    override suspend fun requestVideo(matchId: String) {
-        if (!entitlements.premium) throw BackendException("premium_required")
+    /** call_open (052): the chat is still on, or we are friends; never with someone blocked. */
+    private fun callOpen(m: FakeMatch) = m.partner.id !in blocked && (!m.ended || friendships[m.partner.id] == FriendState.FRIENDS)
+
+    override suspend fun requestCall(matchId: String, video: Boolean) {
         val m = match(matchId)
-        if (m.ended || m.video !in setOf(VideoStatus.NONE, VideoStatus.DECLINED)) throw BackendException("not_allowed")
+        if (!callOpen(m) || m.video !in setOf(VideoStatus.NONE, VideoStatus.DECLINED)) throw BackendException("not_allowed")
         m.video = VideoStatus.REQUESTED_BY_ME
+        m.callVideo = video
         m.outgoing.trySend(Outgoing.VideoRequest)
     }
 
     override suspend fun answerVideo(matchId: String, accept: Boolean) {
         val m = match(matchId)
-        if (m.video != VideoStatus.REQUESTED_BY_PARTNER) throw BackendException("not_allowed")
+        if (!callOpen(m) || m.video != VideoStatus.REQUESTED_BY_PARTNER) throw BackendException("not_allowed")
         m.video = if (accept) VideoStatus.ACCEPTED else VideoStatus.DECLINED
+        callNote(m)
     }
 
     override suspend fun endVideo(matchId: String) {
-        match(matchId).video = VideoStatus.NONE
+        val m = match(matchId)
+        m.video = VideoStatus.NONE
+        callNote(m)
     }
 
     override suspend fun videoToken(matchId: String): VideoToken? = null
@@ -1101,7 +1129,7 @@ open class FakeBackend(
         wait(250)
         val host = Links.host(url)
         val known = DEMO_SITES[host]
-        return LinkPreview(url, known?.first ?: host, known?.second, null, host)
+        return LinkPreview(url, known?.first ?: host, known?.second, null, host, frameable = host in DEMO_FRAMEABLE)
     }
 
     /**
@@ -1137,6 +1165,8 @@ open class FakeBackend(
             "cricbuzz.com" to ("Cricbuzz" to "Live cricket scores and news"),
             "yaari-web.vercel.app" to ("Yaari" to "Make friends around the world"),
         )
+        /** Sites whose pages may be framed (the others refuse, as most real sites do). */
+        private val DEMO_FRAMEABLE = setOf("wikipedia.org", "en.wikipedia.org", "yaari-web.vercel.app")
         private const val DAY = 86_400_000L
 
         /** The demo people's romanised Hindi, as the live translator would put it (English, Hindi). */

@@ -57,7 +57,7 @@
     <string name="err_network">নেটওয়ার্কে সমস্যা। আবার চেষ্টা করুন।</string>
     <string name="msg_purchase_done">কেনা হয়ে গেছে। উপভোগ করুন!</string>
     <string name="msg_connection_lost">সংযোগ বিচ্ছিন্ন। মেসেজ না এলে নতুন চ্যাট শুরু করুন।</string>
-    <string name="msg_declined">%1$s ভিডিও কল ফিরিয়ে দিয়েছেন</string>
+    <string name="msg_declined">%1$s কল ফিরিয়ে দিয়েছেন</string>
     <string name="msg_reported_long">রিপোর্ট ও ব্লক করা হয়েছে। আর ম্যাচ হবে না।</string>
     <string name="msg_reported">রিপোর্ট ও ব্লক করা হয়েছে।</string>
     <string name="msg_deleted">আপনার অ্যাকাউন্ট ও ডেটা মুছে ফেলা হয়েছে।</string>
@@ -70,7 +70,7 @@
     <string name="start_chatting">চ্যাট শুরু করুন</string>
     <string name="lobby_rules">ভদ্র থাকুন। নগ্নতা, হয়রানি বা নাবালক = চিরতরে নিষিদ্ধ।\nযেকোনো সময় রিপোর্ট করে সাথে সাথে বের হতে পারেন।</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">লিঙ্গ বাছাই · ভিডিও কল · %1$s সেকেন্ডে স্কিপ</string>
+    <string name="premium_summary">লিঙ্গ বাছাই · %1$s সেকেন্ডে স্কিপ</string>
     <string name="finding">আপনার জন্য কাউকে খুঁজছি…</string>
     <string name="looking_for">খুঁজছি: %1$s</string>
     <string name="cancel">বাতিল</string>
@@ -83,9 +83,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">কার সাথে দেখা হবে বাছতে Plus লাগবে।</string>
-    <string name="premium_needed_video">ভিডিও কলের জন্য Plus লাগবে।</string>
     <string name="premium_benefit_gender">ছেলে বা মেয়ে বেছে নিন</string>
-    <string name="premium_benefit_video">ভিডিও কল (অন্যজনকে রাজি হতে হবে)</string>
     <string name="premium_benefit_skip">%2$s সেকেন্ডের বদলে %1$s সেকেন্ডেই পরের জনের কাছে যান</string>
     <string name="premium_buy">Plus নিন · %1$s</string>
     <string name="premium_buy_default">মাসিক</string>
@@ -225,7 +223,7 @@
     <string name="create_profile_sub">এভাবেই মানুষ আপনাকে চিনবে।</string>
     <string name="premium_tagline">ঠিক যাকে চান, তার সাথেই দেখা করুন।</string>
     <string name="plan_monthly">মাসিক</string>
-    <string name="plan_monthly_sub">লিঙ্গ বাছাই, ভিডিও কল ও দ্রুত স্কিপ</string>
+    <string name="plan_monthly_sub">লিঙ্গ বাছাই ও দ্রুত স্কিপ</string>
     <string name="plan_pass_title">২৪ ঘণ্টার পাস</string>
     <string name="plan_pass_sub">২৪ ঘণ্টার জন্য শুধু লিঙ্গ বাছাই</string>
     <string name="delete_sub">আপনার প্রোফাইল, পোস্ট ও চ্যাট চিরতরে মুছে দেয়</string>
@@ -556,7 +554,6 @@
     <string name="interests_label">পছন্দ</string>
     <string name="interests_edit">পছন্দ বদলান</string>
     <string name="interests_add">আপনার পছন্দ যোগ করুন</string>
-    <string name="interests_common">আপনাদের দুজনেরই পছন্দ</string>
     <string name="interests_saved">পছন্দ সেভ হয়েছে</string>
     <string name="tag_music">গান</string>
     <string name="tag_movies">সিনেমা</string>
@@ -846,7 +843,7 @@
     <string name="link_reload">আবার লোড করুন</string>
     <string name="link_open_browser">ব্রাউজারে খুলুন</string>
     <string name="link_share_hint">রুমের সবাই চ্যাটের পাশে এই পেজটি দেখবেন।</string>
-    <string name="link_share">সবাইকে দেখান</string>
+    <string name="link_share">একসাথে দেখুন</string>
     <string name="link_shared_by">%1$s শেয়ার করেছেন</string>
     <string name="link_stop_sharing">শেয়ার বন্ধ করুন</string>
     <string name="link_close_for_me">আমার জন্য বন্ধ করুন</string>
@@ -928,7 +925,6 @@
     <string name="look_frame_neon">নিয়ন</string>
     <string name="look_frame_sakura">সাকুরা</string>
     <string name="profile_details">প্রোফাইলের তথ্য</string>
-    <string name="details_nudge_title">নিজের সম্পর্কে আরও জানান</string>
     <string name="details_nudge">একটা স্ট্যাটাস, আপনি কোন ভাষায় কথা বলেন আর কয়েকটা প্রশ্ন-উত্তর যোগ করুন।</string>
     <string name="room_people">লোকজন</string>
     <string name="room_resize">চ্যাটের আকার বদলান</string>
@@ -1011,4 +1007,14 @@
     <string name="sent_tab">পাঠানো</string>
     <string name="sent_empty_title">কোনো অপেক্ষমাণ অনুরোধ নেই</string>
     <string name="sent_empty">আপনার পাঠানো বন্ধুত্বের অনুরোধ উত্তর না পাওয়া পর্যন্ত এখানে থাকে।</string>
+    <string name="call">কল</string>
+    <string name="call_voice">ভয়েস কল</string>
+    <string name="call_video">ভিডিও কল</string>
+    <string name="call_cancel">কল বাতিল করুন</string>
+    <string name="voice_incoming_title">%1$s ভয়েস কল করতে চান</string>
+    <string name="voice_incoming_text">শুধু আপনার কণ্ঠ যাবে। কলের মধ্যে ক্যামেরা চালু করতে পারবেন।</string>
+    <string name="call_notif_text">কল চলছে · ফিরতে ট্যাপ করুন</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s আপনাকে কল করেছেন</string>
+    <string name="push_channel_calls">কল</string>
 </resources>

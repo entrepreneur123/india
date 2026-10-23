@@ -213,6 +213,7 @@ fun inboxText(i: InboxItem): String {
         InboxKind.POST_LIKE ->
             if (i.count > 1) pluralStringResource(R.plurals.inbox_post_likes, i.count - 1, name, i.count - 1) else stringResource(R.string.inbox_post_like, name)
         InboxKind.POST_COMMENT -> stringResource(R.string.inbox_post_comment, name)
+        InboxKind.CALL -> stringResource(R.string.inbox_call, name)
     }
 }
 
@@ -222,7 +223,11 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
     Row(
         Modifier.fillMaxWidth().then(if (highlight) Modifier.background(Brand.Saffron.copy(alpha = 0.06f)) else Modifier)
             .clickable(role = Role.Button) {
-                if (i.post != null) vm.inboxPost(i) else { vm.social.closeInbox(); vm.openProfile(i.actor) }
+                when {
+                    i.post != null -> vm.inboxPost(i)
+                    i.kind == InboxKind.CALL -> vm.inboxChat(i)
+                    else -> { vm.social.closeInbox(); vm.openProfile(i.actor) }
+                }
             }
             .padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -263,7 +268,7 @@ private fun InboxRow(vm: AppViewModel, i: InboxItem, highlight: Boolean, busy: L
                     leading = { Icon(Icons.Rounded.Check, null, Modifier.size(16.dp), tint = Brand.OnSaffron) },
                 )
             }
-            i.kind == InboxKind.MESSAGE || i.kind == InboxKind.FRIEND_ACCEPT -> SoftButton(
+            i.kind == InboxKind.MESSAGE || i.kind == InboxKind.FRIEND_ACCEPT || i.kind == InboxKind.CALL -> SoftButton(
                 stringResource(if (i.kind == InboxKind.MESSAGE) R.string.inbox_reply else R.string.message), { vm.inboxChat(i) },
                 enabled = !working, height = 36.dp,
                 leading = { Icon(Icons.AutoMirrored.Outlined.Chat, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface) },
@@ -291,18 +296,16 @@ private fun PostThumb(post: PostRef, onClick: () -> Unit) {
 
 // ---- interests ----
 
-/** Interest chips; [shared] ones are highlighted ("You both like"). */
+/** Interest chips. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun InterestChips(tags: List<Interest>, modifier: Modifier = Modifier, shared: Set<Interest> = emptySet()) {
+fun InterestChips(tags: List<Interest>, modifier: Modifier = Modifier) {
     FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         tags.forEach { t ->
-            val on = t in shared
             Text(
                 stringResource(t.label),
-                Modifier.clip(CircleShape).background(if (on) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                style = MaterialTheme.typography.labelLarge, color = if (on) MaterialTheme.colorScheme.primaryText else MaterialTheme.colorScheme.onSurfaceVariant,
+                Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHigh).padding(horizontal = 12.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -370,14 +373,14 @@ fun InterestsSheet(vm: AppViewModel, me: Profile, s: SocialState) {
     }
 }
 
-/** Interests on a profile: mine with "Edit interests" (or a prompt to add them), someone else's with what we share. */
+/** Interests on a profile (none: left out); in Edit profile ([onEdit]) with "Edit interests" or a prompt to add them. */
 @Composable
-fun InterestsSection(p: Profile, mine: Boolean, onEdit: () -> Unit, shared: Set<Interest> = emptySet()) {
-    if (!mine && p.interests.isEmpty()) return
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+fun InterestsSection(p: Profile, inset: Dp = 16.dp, onEdit: (() -> Unit)? = null) {
+    if (onEdit == null && p.interests.isEmpty()) return
+    Column(Modifier.fillMaxWidth().padding(horizontal = inset, vertical = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.interests_label), Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-            if (mine) {
+            if (onEdit != null) {
                 Text(
                     stringResource(if (p.interests.isEmpty()) R.string.interests_add else R.string.interests_edit),
                     Modifier.clip(CircleShape).clickable(role = Role.Button, onClick = onEdit).padding(horizontal = 8.dp, vertical = 12.dp),
@@ -385,13 +388,7 @@ fun InterestsSection(p: Profile, mine: Boolean, onEdit: () -> Unit, shared: Set<
                 )
             }
         }
-        if (p.interests.isNotEmpty()) InterestChips(p.interests, Modifier.padding(top = 4.dp), shared)
-        if (!mine && shared.isNotEmpty()) {
-            Text(
-                stringResource(R.string.interests_common), Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primaryText,
-            )
-        }
+        if (p.interests.isNotEmpty()) InterestChips(p.interests, Modifier.padding(top = 4.dp))
     }
 }
 
@@ -402,11 +399,13 @@ fun InterestsSection(p: Profile, mine: Boolean, onEdit: () -> Unit, shared: Set<
  * and a remove button on each; tapping a photo opens it full screen.
  */
 @Composable
-fun PhotosSection(photos: List<ProfilePhoto>, editable: Boolean, busy: Boolean = false, onAdd: (String) -> Unit = {}, onRemove: (String) -> Unit = {}) {
+fun PhotosSection(
+    photos: List<ProfilePhoto>, editable: Boolean, busy: Boolean = false, inset: Dp = 16.dp, onAdd: (String) -> Unit = {}, onRemove: (String) -> Unit = {},
+) {
     if (!editable && photos.isEmpty()) return
     var open by remember { mutableStateOf<Int?>(null) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> uri?.let { onAdd(it.toString()) } }
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = inset, vertical = 8.dp)) {
         Text(stringResource(R.string.photos_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             photos.forEachIndexed { i, p ->

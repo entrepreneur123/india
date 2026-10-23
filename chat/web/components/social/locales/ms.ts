@@ -61,7 +61,6 @@ const ms: SocialDict = {
   'interests.skip': 'Langkau dahulu',
   'interests.label': 'Minat',
   'interests.edit': 'Edit minat',
-  'interests.common': 'Anda berdua suka',
   'interests.saved': 'Minat disimpan',
   'tag.music': 'Muzik',
   'tag.movies': 'Filem',

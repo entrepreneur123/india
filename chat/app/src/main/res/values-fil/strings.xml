@@ -58,7 +58,7 @@
     <string name="err_network">May problema sa network. Subukan ulit.</string>
     <string name="msg_purchase_done">Tapos na ang pagbili. Enjoy!</string>
     <string name="msg_connection_lost">Naputol ang koneksyon. Magsimula ng bagong chat kung huminto ang mga message.</string>
-    <string name="msg_declined">Tinanggihan ni %1$s ang video call</string>
+    <string name="msg_declined">Tinanggihan ni %1$s ang tawag</string>
     <string name="msg_reported_long">Na-report at na-block. Hindi na kayo ima-match ulit.</string>
     <string name="msg_reported">Na-report at na-block.</string>
     <string name="msg_deleted">Na-delete ang account at data mo.</string>
@@ -71,7 +71,7 @@
     <string name="start_chatting">Simulang mag-chat</string>
     <string name="lobby_rules">Maging mabait. Nudity, harassment o menor de edad = permanenteng ban.\nPuwede kang mag-report at umalis agad anumang oras.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Pumili ng gender · Video call · Skip sa %1$s s</string>
+    <string name="premium_summary">Pumili ng gender · Skip sa %1$s s</string>
     <string name="finding">Naghahanap ng makakausap mo…</string>
     <string name="looking_for">Hinahanap: %1$s</string>
     <string name="cancel">Kanselahin</string>
@@ -84,9 +84,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">Kailangan ng Plus para pumili kung sino ang makikilala mo.</string>
-    <string name="premium_needed_video">Kailangan ng Plus para sa video call.</string>
     <string name="premium_benefit_gender">Piliing makilala ang lalaki o babae</string>
-    <string name="premium_benefit_video">Video call (kailangang tanggapin ng kausap)</string>
     <string name="premium_benefit_skip">Mag-skip sa susunod na tao pagkatapos ng %1$s s sa halip na %2$s s</string>
     <string name="premium_buy">Kunin ang Plus · %1$s</string>
     <string name="premium_buy_default">buwanan</string>
@@ -226,7 +224,7 @@
     <string name="create_profile_sub">Ganito ka makikilala ng mga tao.</string>
     <string name="premium_tagline">Makilala mismo ang gusto mong makilala.</string>
     <string name="plan_monthly">Buwanan</string>
-    <string name="plan_monthly_sub">Pagpili ng gender, video call at mabilis na skip</string>
+    <string name="plan_monthly_sub">Pagpili ng gender at mabilis na skip</string>
     <string name="plan_pass_title">24-oras na pass</string>
     <string name="plan_pass_sub">Pagpili ng gender lang, sa loob ng 24 oras</string>
     <string name="delete_sub">Permanenteng inaalis ang profile, mga post at chat mo</string>
@@ -557,7 +555,6 @@
     <string name="interests_label">Mga hilig</string>
     <string name="interests_edit">I-edit ang mga hilig</string>
     <string name="interests_add">Idagdag ang mga hilig mo</string>
-    <string name="interests_common">Pareho ninyong gusto</string>
     <string name="interests_saved">Na-save ang mga hilig</string>
     <string name="tag_music">Music</string>
     <string name="tag_movies">Pelikula</string>
@@ -848,7 +845,7 @@
     <string name="link_reload">I-reload</string>
     <string name="link_open_browser">Buksan sa browser</string>
     <string name="link_share_hint">Nakikita ng lahat sa room ang page na ito sa tabi ng chat.</string>
-    <string name="link_share">Ipakita sa lahat</string>
+    <string name="link_share">Sabay na tingnan</string>
     <string name="link_shared_by">Ibinahagi ni %1$s</string>
     <string name="link_stop_sharing">Itigil ang pag-share</string>
     <string name="link_close_for_me">Isara para sa akin</string>
@@ -930,7 +927,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Mga detalye ng profile</string>
-    <string name="details_nudge_title">Magkuwento pa tungkol sa iyo</string>
     <string name="details_nudge">Magdagdag ng status, mga wikang sinasalita mo at ilang prompt.</string>
     <string name="room_people">Mga tao</string>
     <string name="room_resize">Baguhin ang laki ng chat</string>
@@ -1013,4 +1009,14 @@
     <string name="sent_tab">Naipadala</string>
     <string name="sent_empty_title">Walang naghihintay na request</string>
     <string name="sent_empty">Dito naghihintay ang mga friend request na ipinadala mo hanggang masagot.</string>
+    <string name="call">Tumawag</string>
+    <string name="call_voice">Voice call</string>
+    <string name="call_video">Video call</string>
+    <string name="call_cancel">Kanselahin ang tawag</string>
+    <string name="voice_incoming_title">Gustong mag-voice call ni %1$s</string>
+    <string name="voice_incoming_text">Boses mo lang ang maririnig. Puwede mong buksan ang camera habang nasa tawag.</string>
+    <string name="call_notif_text">Nasa tawag · i-tap para bumalik</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">Tinawagan ka ni %1$s</string>
+    <string name="push_channel_calls">Mga tawag</string>
 </resources>

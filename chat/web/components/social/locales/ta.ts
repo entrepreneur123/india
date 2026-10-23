@@ -57,7 +57,6 @@ const ta: SocialDict = {
   'interests.skip': 'இப்போதைக்கு ஸ்கிப்',
   'interests.label': 'ஆர்வங்கள்',
   'interests.edit': 'ஆர்வங்களை எடிட் செய்',
-  'interests.common': 'இருவருக்கும் பிடித்தவை',
   'interests.saved': 'ஆர்வங்கள் சேமிக்கப்பட்டன',
   'tag.music': 'மியூசிக்',
   'tag.movies': 'சினிமா',

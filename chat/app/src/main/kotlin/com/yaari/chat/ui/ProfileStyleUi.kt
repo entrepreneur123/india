@@ -54,6 +54,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -79,17 +80,17 @@ fun AccentAvatar(p: Profile, size: Dp, modifier: Modifier = Modifier, gap: Color
     }
 }
 
-/** The status under the name: a small saffron dot and the line, in saffron text. */
+/**
+ * The status under the name, in quotation marks: italic and muted, so it reads as their own words and stays apart from
+ * the ID-verified chip above it.
+ */
 @Composable
 fun StatusLine(p: Profile, modifier: Modifier = Modifier) {
-    val status = p.style.status?.takeIf { it.isNotBlank() } ?: return
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(Brand.Saffron))
-        Text(
-            status, Modifier.padding(start = 8.dp), color = MaterialTheme.colorScheme.primaryText, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            maxLines = 2, overflow = TextOverflow.Ellipsis,
-        )
-    }
+    val status = p.style.status?.trim()?.takeIf { it.isNotEmpty() } ?: return
+    Text(
+        stringResource(R.string.profile_status_quote, status), modifier, color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic), maxLines = 2, overflow = TextOverflow.Ellipsis,
+    )
 }
 
 /** The languages someone speaks, by their own names, with a globe. */
@@ -129,25 +130,6 @@ fun PromptCards(p: Profile, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, lineHeight = 27.sp, fontWeight = FontWeight.SemiBold),
                 )
             }
-        }
-    }
-}
-
-/** On my profile while no details are filled in yet: what can be added, and a way in. */
-@Composable
-fun StyleNudge(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier.fillMaxWidth().padding(horizontal = 16.dp).clip(RoundedCornerShape(24.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
-            .clickable(role = Role.Button, onClick = onClick).padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.size(44.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            MarkIcon(Mark.PALETTE, MaterialTheme.colorScheme.primaryText, size = 24.dp)
-        }
-        Column(Modifier.weight(1f).padding(start = 14.dp)) {
-            Text(stringResource(R.string.details_nudge_title), style = MaterialTheme.typography.titleSmall)
-            Text(stringResource(R.string.details_nudge), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

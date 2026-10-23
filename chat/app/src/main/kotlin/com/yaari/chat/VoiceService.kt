@@ -25,32 +25,34 @@ import androidx.core.content.ContextCompat
 import com.yaari.chat.data.VoiceBus
 import com.yaari.chat.ui.AppViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 
 /**
  * Keeps a room's audio or music alive while the room is minimised or the app is in the background (as X Spaces does): a
  * foreground service of type mediaPlayback (the room's audio), plus microphone while I may talk, with the ongoing
  * "In a voice room · Leave" notification. It holds no state of its own: the room lives in [AppViewModel]; the service
- * only follows it ([Follow]) and passes the notification's buttons back through [VoiceBus].
+ * only follows it ([Follow]) and passes the notification's buttons back through [VoiceBus]. A 1:1 call does the same
+ * ("On a call · End"), so a voice call goes on with the screen off; it comes first while both are on.
  */
 class VoiceService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_LEAVE -> {
-                VoiceBus.send(VoiceBus.Request.LEAVE)
+            ACTION_LEAVE, ACTION_END_CALL -> {
+                VoiceBus.send(if (intent.action == ACTION_LEAVE) VoiceBus.Request.LEAVE else VoiceBus.Request.END_CALL)
                 return START_NOT_STICKY
             }
             ACTION_SHOW -> show(
                 intent.getStringExtra(EXTRA_TITLE).orEmpty(), intent.getBooleanExtra(EXTRA_HOST, false), intent.getBooleanExtra(EXTRA_MIC, false),
+                intent.getBooleanExtra(EXTRA_CALL, false),
             )
         }
         // Not restarted after the process dies: the room went with it.
         return START_NOT_STICKY
     }
 
-    private fun show(title: String, host: Boolean, mic: Boolean) {
+    private fun show(title: String, host: Boolean, mic: Boolean, call: Boolean) {
         val manager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             manager?.createNotificationChannel(
@@ -58,15 +60,17 @@ class VoiceService : Service() {
             )
         }
         val immutable = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        val open = PendingIntent.getActivity(this, 1, activityIntent(this, end = false), immutable)
+        // A call: the app as it was (the call screen is on top); a room: the room brought up.
+        val open = PendingIntent.getActivity(this, if (call) 4 else 1, activityIntent(this, end = false).apply { if (call) action = null }, immutable)
         // A listener leaves from here; the host's room would end, so the host gets the room with its confirm instead.
         val leave = if (host) PendingIntent.getActivity(this, 2, activityIntent(this, end = true), immutable)
-        else PendingIntent.getService(this, 3, Intent(this, VoiceService::class.java).setAction(ACTION_LEAVE), immutable)
+        else PendingIntent.getService(this, 3, Intent(this, VoiceService::class.java).setAction(if (call) ACTION_END_CALL else ACTION_LEAVE), immutable)
+        val text = getString(if (call) R.string.call_notif_text else if (host) R.string.voice_notif_text_host else R.string.voice_notif_text)
         val notification = NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_stat_voice)
             .setColor(getColor(R.color.brand_saffron))
             .setContentTitle(title.ifEmpty { getString(R.string.voice_notif_text) })
-            .setContentText(getString(if (host) R.string.voice_notif_text_host else R.string.voice_notif_text))
+            .setContentText(text)
             .setContentIntent(open)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -74,7 +78,7 @@ class VoiceService : Service() {
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .addAction(0, getString(if (host) R.string.voice_end_confirm else R.string.voice_leave), leave)
+            .addAction(0, getString(if (call) R.string.end else if (host) R.string.voice_end_confirm else R.string.voice_leave), leave)
             .build()
         val playback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK else 0
         val microphone = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE else 0
@@ -93,6 +97,8 @@ class VoiceService : Service() {
         private const val NOTIFICATION_ID = 7
         private const val ACTION_SHOW = "com.yaari.chat.voice.SHOW"
         private const val ACTION_LEAVE = "com.yaari.chat.voice.LEAVE"
+        private const val ACTION_END_CALL = "com.yaari.chat.voice.END_CALL"
+        private const val EXTRA_CALL = "call"
         private const val EXTRA_TITLE = "title"
         private const val EXTRA_HOST = "host"
         private const val EXTRA_MIC = "mic"
@@ -110,9 +116,9 @@ class VoiceService : Service() {
             VoiceBus.send(if (intent.getBooleanExtra(EXTRA_END, false)) VoiceBus.Request.END else VoiceBus.Request.OPEN)
         }
 
-        private fun start(context: Context, title: String, host: Boolean, mic: Boolean) {
+        private fun start(context: Context, n: Shown) {
             val intent = Intent(context, VoiceService::class.java).setAction(ACTION_SHOW)
-                .putExtra(EXTRA_TITLE, title).putExtra(EXTRA_HOST, host).putExtra(EXTRA_MIC, mic)
+                .putExtra(EXTRA_TITLE, n.title).putExtra(EXTRA_HOST, n.host).putExtra(EXTRA_MIC, n.onStage).putExtra(EXTRA_CALL, n.call)
             // Starting from the background is refused on Android 12+; the room started in the foreground anyway.
             runCatching { ContextCompat.startForegroundService(context, intent) }
         }
@@ -124,7 +130,9 @@ class VoiceService : Service() {
         private var askedNotifications = false
 
         /** What the notification shows; a change restarts it ([muted]: unmuting adds the microphone type). */
-        private data class Shown(val roomId: String, val title: String, val host: Boolean, val onStage: Boolean, val muted: Boolean)
+        private data class Shown(
+            val roomId: String, val title: String, val host: Boolean, val onStage: Boolean, val muted: Boolean, val call: Boolean = false,
+        )
 
         /**
          * Runs the service while I'm in a voice room and keeps its notification up to date. Asks once (per app run) for
@@ -148,11 +156,18 @@ class VoiceService : Service() {
             // Collected here rather than read in composition: Compose stops recomposing while the app is in the
             // background, and leaving there (the notification's Leave button) must stop the service at once.
             LaunchedEffect(vm) {
-                vm.voice.state
-                    .map { v -> v?.takeIf { it.keepAlive }?.let { Shown(it.roomId, it.room?.title.orEmpty(), it.isHost, it.me?.seat != null, it.me?.muted != false) } }
+                combine(vm.state, vm.voice.state) { s, v ->
+                    // A call talks from the start; the microphone type joins once its permission is there (best effort:
+                    // on the next state change).
+                    s.call?.let {
+                        val mic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                        Shown(it.matchId, it.partner.name, host = false, onStage = true, muted = !mic, call = true)
+                    }
+                        ?: v?.takeIf { it.keepAlive }?.let { Shown(it.roomId, it.room?.title.orEmpty(), it.isHost, it.me?.seat != null, it.me?.muted != false) }
+                }
                     .distinctUntilChanged()
                     // Unmuting (right after the microphone permission was granted) adds the microphone type.
-                    .collect { n -> if (n == null) stop(context) else start(context, n.title, n.host, n.onStage) }
+                    .collect { n -> if (n == null) stop(context) else start(context, n) }
             }
             DisposableEffect(Unit) { onDispose { stop(context) } }
         }

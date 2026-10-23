@@ -65,7 +65,6 @@ const uk: SocialDict = {
   'interests.skip': 'Пропустити',
   'interests.label': 'Інтереси',
   'interests.edit': 'Змінити інтереси',
-  'interests.common': 'Вам обом подобається',
   'interests.saved': 'Інтереси збережено',
   'tag.music': 'Музика',
   'tag.movies': 'Кіно',

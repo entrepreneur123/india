@@ -58,7 +58,7 @@
     <string name="err_network">Masalah jaringan. Coba lagi.</string>
     <string name="msg_purchase_done">Pembelian berhasil. Selamat menikmati!</string>
     <string name="msg_connection_lost">Koneksi terputus. Mulai chat baru kalau pesan berhenti masuk.</string>
-    <string name="msg_declined">%1$s menolak video call</string>
+    <string name="msg_declined">%1$s menolak panggilan</string>
     <string name="msg_reported_long">Dilaporkan dan diblokir. Kalian tidak akan dicocokkan lagi.</string>
     <string name="msg_reported">Dilaporkan dan diblokir.</string>
     <string name="msg_deleted">Akun dan datamu sudah dihapus.</string>
@@ -71,7 +71,7 @@
     <string name="start_chatting">Mulai ngobrol</string>
     <string name="lobby_rules">Bersikap baik ya. Ketelanjangan, pelecehan, atau anak di bawah umur = blokir permanen.\nKamu selalu bisa melapor &amp; keluar seketika.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Pilih gender · Video call · Skip dalam %1$s dtk</string>
+    <string name="premium_summary">Pilih gender · Skip dalam %1$s dtk</string>
     <string name="finding">Mencarikan seseorang untukmu…</string>
     <string name="looking_for">Mencari: %1$s</string>
     <string name="cancel">Batal</string>
@@ -84,9 +84,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">Memilih siapa yang kamu temui butuh Plus.</string>
-    <string name="premium_needed_video">Video call butuh Plus.</string>
     <string name="premium_benefit_gender">Pilih untuk bertemu laki-laki atau perempuan</string>
-    <string name="premium_benefit_video">Video call (orang lain harus menerima)</string>
     <string name="premium_benefit_skip">Skip ke orang berikutnya setelah %1$s dtk, bukan %2$s dtk</string>
     <string name="premium_buy">Dapatkan Plus · %1$s</string>
     <string name="premium_buy_default">bulanan</string>
@@ -226,7 +224,7 @@
     <string name="create_profile_sub">Begini orang akan mengenalmu.</string>
     <string name="premium_tagline">Temui orang yang benar-benar ingin kamu temui.</string>
     <string name="plan_monthly">Bulanan</string>
-    <string name="plan_monthly_sub">Pilihan gender, video call, dan skip cepat</string>
+    <string name="plan_monthly_sub">Pilihan gender dan skip cepat</string>
     <string name="plan_pass_title">Pass 24 jam</string>
     <string name="plan_pass_sub">Hanya pilihan gender, selama 24 jam</string>
     <string name="delete_sub">Menghapus profil, postingan, dan chat-mu secara permanen</string>
@@ -557,7 +555,6 @@
     <string name="interests_label">Minat</string>
     <string name="interests_edit">Edit minat</string>
     <string name="interests_add">Tambahkan minatmu</string>
-    <string name="interests_common">Kalian sama-sama suka</string>
     <string name="interests_saved">Minat disimpan</string>
     <string name="tag_music">Musik</string>
     <string name="tag_movies">Film</string>
@@ -848,7 +845,7 @@
     <string name="link_reload">Muat ulang</string>
     <string name="link_open_browser">Buka di browser</string>
     <string name="link_share_hint">Semua orang di room melihat halaman ini di samping chat.</string>
-    <string name="link_share">Tampilkan ke semua</string>
+    <string name="link_share">Lihat bareng</string>
     <string name="link_shared_by">Dibagikan oleh %1$s</string>
     <string name="link_stop_sharing">Berhenti berbagi</string>
     <string name="link_close_for_me">Tutup untukku</string>
@@ -930,7 +927,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Detail profil</string>
-    <string name="details_nudge_title">Ceritakan lebih banyak tentang dirimu</string>
     <string name="details_nudge">Tambahkan status, bahasa yang kamu kuasai, dan beberapa pertanyaan.</string>
     <string name="room_people">Orang</string>
     <string name="room_resize">Ubah ukuran chat</string>
@@ -1013,4 +1009,14 @@
     <string name="sent_tab">Terkirim</string>
     <string name="sent_empty_title">Tidak ada permintaan tertunda</string>
     <string name="sent_empty">Permintaan pertemanan yang kamu kirim menunggu di sini sampai dijawab.</string>
+    <string name="call">Telepon</string>
+    <string name="call_voice">Panggilan suara</string>
+    <string name="call_video">Video call</string>
+    <string name="call_cancel">Batalkan panggilan</string>
+    <string name="voice_incoming_title">%1$s mengajak panggilan suara</string>
+    <string name="voice_incoming_text">Hanya suaramu yang terkirim. Kamu bisa menyalakan kamera selama panggilan.</string>
+    <string name="call_notif_text">Sedang dalam panggilan · ketuk untuk kembali</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s meneleponmu</string>
+    <string name="push_channel_calls">Panggilan</string>
 </resources>

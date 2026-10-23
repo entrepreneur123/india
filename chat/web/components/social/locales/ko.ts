@@ -61,7 +61,6 @@ const ko: SocialDict = {
   'interests.skip': '나중에 하기',
   'interests.label': '관심사',
   'interests.edit': '관심사 편집',
-  'interests.common': '둘 다 좋아하는 것',
   'interests.saved': '관심사를 저장했어요',
   'tag.music': '음악',
   'tag.movies': '영화',

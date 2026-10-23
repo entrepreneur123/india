@@ -331,11 +331,15 @@ fun VerifyCard(vm: AppViewModel, modifier: Modifier = Modifier) {
 fun TrustLayer(vm: AppViewModel, me: Profile) {
     val t by vm.trust.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val failed = stringResource(R.string.verify_error_body)
     LaunchedEffect(t.launch) {
         val url = t.launch ?: return@LaunchedEffect
         vm.trust.opened()
         // The demo has no provider: its check passes straight away.
-        if (url == FakeBackend.KYC_URL) vm.trust.check() else if (!openVerification(context, url)) vm.trust.check()
+        if (url == FakeBackend.KYC_URL) vm.trust.check() else if (!openInTab(context, url)) {
+            Toast.makeText(context, failed, Toast.LENGTH_SHORT).show()
+            vm.trust.check()
+        }
     }
     var last by remember { mutableStateOf(t.verify) }
     t.verify?.let { last = it }
@@ -348,8 +352,11 @@ fun TrustLayer(vm: AppViewModel, me: Profile) {
     if (MANNERS && t.mannerLow) MannerLowSheet(vm, t.mine?.trust)
 }
 
-/** The provider's hosted page in a Chrome Custom Tab (the browser when there is none). False when nothing can open it. */
-fun openVerification(context: Context, url: String): Boolean {
+/**
+ * A page in a Chrome Custom Tab (the browser when there is none): the identity provider's, or a page a room can't show
+ * to everyone. False when nothing can open it.
+ */
+fun openInTab(context: Context, url: String): Boolean {
     val uri = url.toUri()
     return try {
         CustomTabsIntent.Builder().setShowTitle(true)
@@ -361,7 +368,6 @@ fun openVerification(context: Context, url: String): Boolean {
             context.startActivity(Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             true
         } catch (_: ActivityNotFoundException) {
-            Toast.makeText(context, context.getString(R.string.verify_error_body), Toast.LENGTH_SHORT).show()
             false
         }
     }

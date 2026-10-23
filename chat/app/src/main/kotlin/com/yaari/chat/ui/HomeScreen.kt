@@ -104,8 +104,8 @@ fun HomeScreen(vm: AppViewModel, s: UiState) {
                 onContacts = { screen = Sub.CONTACTS },
             )
             Sub.CONTACTS -> ContactsEditorScreen(vm, onDone = { screen = Sub.EDIT })
-            Sub.STYLE -> StyleEditorScreen(vm, me, onDone = { screen = Sub.NONE })
-            Sub.LOOKS -> LooksShopScreen(vm, s, me, onDone = { screen = Sub.NONE })
+            Sub.STYLE -> StyleEditorScreen(vm, me, onDone = { screen = Sub.EDIT })
+            Sub.LOOKS -> LooksShopScreen(vm, s, me, onDone = { screen = Sub.EDIT })
             Sub.NEW_POST -> NewPostScreen(onCancel = { screen = Sub.NONE }) { text, uri, visibility ->
                 vm.addPost(text, uri, visibility)
                 screen = Sub.NONE
@@ -131,7 +131,6 @@ private fun Tabs(vm: AppViewModel, s: UiState, me: Profile, open: (Sub) -> Unit)
                 Tab.RECENT -> RecentTab(vm, s, social, onSettings = { open(Sub.SETTINGS) })
                 Tab.ME -> MyProfileTab(
                     vm, s, onSettings = { open(Sub.SETTINGS) }, onEdit = { open(Sub.EDIT) }, onNewPost = { open(Sub.NEW_POST) },
-                    onDetails = { open(Sub.STYLE) }, onLooks = { open(Sub.LOOKS) },
                 )
             }
         }

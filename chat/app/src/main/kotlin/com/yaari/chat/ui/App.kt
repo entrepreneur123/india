@@ -73,7 +73,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Group
-import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -97,7 +96,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import com.yaari.chat.data.Products
-import com.yaari.chat.data.VideoStatus
 import com.yaari.chat.domain.ExitPolicy
 
 /** [online]: false shows the offline banner above everything (see [Connectivity]). */
@@ -127,6 +125,7 @@ fun YaariApp(vm: AppViewModel, online: StateFlow<Boolean> = Connectivity.online)
             }
             // "Verify your identity" over everything, the manners sheets.
             s.me?.takeIf { !s.booting }?.let { me -> TrustLayer(vm, me) }
+            Ringing(vm, s)
         }
         s.paywall?.let { reason -> PaywallSheet(vm, reason, s.prices) }
         s.me?.takeIf { !s.booting }?.let { me -> SocialLayer(vm, me) }
@@ -152,6 +151,18 @@ private fun SocialLayer(vm: AppViewModel, me: Profile) {
     if (social.interestsShown) InterestsSheet(vm, me, social)
     else if (social.firstRun == FirstRunStep.TOUR) TourDialog(vm, social.tourCard)
     NotificationsPermission(social.askNotifications, vm.social::notificationsAsked)
+}
+
+/**
+ * A friend calling (053) rings over any screen, but not over a call, nor over their own chat (which asks itself).
+ * It goes when the call stops waiting: answered here or elsewhere, or taken back.
+ */
+@Composable
+private fun Ringing(vm: AppViewModel, s: UiState) {
+    val ring = vm.social.state.collectAsStateWithLifecycle().value.ring ?: return
+    val id = ring.item.matchId
+    if (s.me == null || s.call != null || id == s.shownMatch || id == s.chat?.match?.id) return
+    key(ring.item.id) { IncomingCallSheet(ring.item.actor, ring.video, vm::answerRing) }
 }
 
 @Composable
@@ -187,7 +198,7 @@ private fun Screens(vm: AppViewModel, s: UiState) {
     val chat = s.chat
     val dm = s.dm
     val top = when {
-        chat?.video == VideoStatus.ACCEPTED && !chat.partnerLeft -> Top.VIDEO
+        s.call != null -> Top.VIDEO
         // Minimised, the chat is the bar over the tabs (still on).
         chat != null && !s.chatMinimised -> Top.CHAT
         s.searching -> Top.SEARCHING
@@ -220,7 +231,8 @@ private fun Screens(vm: AppViewModel, s: UiState) {
         ) { t ->
             // Each branch reads the latest state; during an exit animation it may already be gone.
             when (t) {
-                Top.VIDEO -> s.chat?.let { c -> VideoCallScreen(vm, c.match.partner, me) }
+                // Keyed by match: a new call starts with its own camera and timer.
+                Top.VIDEO -> s.call?.let { c -> key(c.matchId) { VideoCallScreen(vm, c, me) } }
                 // Keyed by match: a new chat never inherits the last one's draft, dialogs or exit sheet.
                 Top.CHAT -> s.chat?.let { c -> key(c.match.id) { ChatRoomScreen(vm, c, s.premium) } }
                 Top.SEARCHING -> MatchingScreen(vm, s)
@@ -284,7 +296,6 @@ private fun PaywallSheet(vm: AppViewModel, paywall: Paywall, prices: Map<String,
             Spacer(Modifier.height(24.dp))
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Benefit(Icons.Rounded.Group, stringResource(R.string.premium_benefit_gender))
-                Benefit(Icons.Rounded.Videocam, stringResource(R.string.premium_benefit_video))
                 Benefit(Icons.Rounded.Bolt, stringResource(R.string.premium_benefit_skip, ExitPolicy.PREMIUM_LOCK_MS / 1000.0, ExitPolicy.FREE_LOCK_MS / 1000))
             }
             Spacer(Modifier.height(24.dp))

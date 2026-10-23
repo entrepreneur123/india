@@ -40,7 +40,9 @@ enum class InboxKind(val code: String) {
     /** Likes on my post: one line per post until read, [InboxItem.count] people (the newest is the actor). */
     POST_LIKE("post_like"),
     /** Comments on my post, folded the same way. */
-    POST_COMMENT("post_comment");
+    POST_COMMENT("post_comment"),
+    /** A friend asks for a call (053): unread while it rings; answered, declined or ended, it is read. */
+    CALL("call");
 
     companion object {
         fun of(code: String?) = entries.firstOrNull { it.code == code }

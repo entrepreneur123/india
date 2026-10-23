@@ -16,7 +16,7 @@ data class PushConfig(val appId: String, val apiKey: String, val projectId: Stri
 }
 
 /** The notification channels (the server's `channel`); Android 13+ lets people mute each one. */
-enum class PushChannel(val id: String) { MESSAGES("messages"), SOCIAL("social"), ROOMS("rooms") }
+enum class PushChannel(val id: String) { MESSAGES("messages"), SOCIAL("social"), ROOMS("rooms"), CALLS("calls") }
 
 /**
  * One push (server: functions/push, data only): the kind, ids and the sender's name, never message text. The app
@@ -30,11 +30,12 @@ data class PushMessage(
         InboxKind.MESSAGE -> PushChannel.MESSAGES
         InboxKind.FRIEND_REQUEST, InboxKind.FRIEND_ACCEPT, InboxKind.POST_LIKE, InboxKind.POST_COMMENT -> PushChannel.SOCIAL
         InboxKind.ROOM_INVITE -> PushChannel.ROOMS
+        InboxKind.CALL -> PushChannel.CALLS
     }
 
-    /** Where tapping it goes: the chat, the room (through the invite), else Notifications (likes and comments: the post is there). */
+    /** Where tapping it goes: the chat (a call: where it rings), the room (through the invite), else Notifications (likes and comments: the post is there). */
     val link: DeepLink get() = when {
-        kind == InboxKind.MESSAGE && matchId != null -> DeepLink.Thread(matchId, actorId, actorName)
+        (kind == InboxKind.MESSAGE || kind == InboxKind.CALL) && matchId != null -> DeepLink.Thread(matchId, actorId, actorName)
         kind == InboxKind.ROOM_INVITE && inboxId != null && roomId != null -> DeepLink.Invite(inboxId, roomId)
         else -> DeepLink.Inbox
     }

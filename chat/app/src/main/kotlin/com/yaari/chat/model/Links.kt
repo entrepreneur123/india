@@ -3,8 +3,9 @@ package com.yaari.chat.model
 import java.net.URI
 
 /** A web page's card in the chat (edge function link-meta, 036). Any part may be missing. */
+/** [frameable]: the page lets other sites show it in a frame (link-meta), so a room can open it together (the web shows it beside the chat). */
 data class LinkPreview(
-    val url: String, val title: String?, val description: String?, val image: String?, val site: String?,
+    val url: String, val title: String?, val description: String?, val image: String?, val site: String?, val frameable: Boolean = false,
 )
 
 /** A link found in a message: where it is in the text and the address it opens. */

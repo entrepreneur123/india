@@ -54,7 +54,7 @@
     <string name="err_network">நெட்வொர்க் பிரச்சனை. மீண்டும் முயலுங்கள்.</string>
     <string name="msg_purchase_done">வாங்குதல் முடிந்தது. மகிழுங்கள்!</string>
     <string name="msg_connection_lost">இணைப்பு துண்டிக்கப்பட்டது. மெசேஜ்கள் வரவில்லையென்றால் புதிய சாட் தொடங்குங்கள்.</string>
-    <string name="msg_declined">%1$s வீடியோ காலை நிராகரித்தார்</string>
+    <string name="msg_declined">%1$s காலை நிராகரித்தார்</string>
     <string name="msg_reported_long">ரிப்போர்ட் செய்து பிளாக் செய்யப்பட்டது. மீண்டும் மேட்ச் ஆக மாட்டீர்கள்.</string>
     <string name="msg_reported">ரிப்போர்ட் செய்து பிளாக் செய்யப்பட்டது.</string>
     <string name="msg_deleted">உங்கள் அக்கவுண்டும் தரவும் நீக்கப்பட்டன.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">சாட் செய்யத் தொடங்கு</string>
     <string name="lobby_rules">அன்பாக இருங்கள். நிர்வாணம், தொல்லை அல்லது சிறார்கள் = நிரந்தரத் தடை.\nஎப்போது வேண்டுமானாலும் உடனே ரிப்போர்ட் செய்து வெளியேறலாம்.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">பாலினம் தேர்வு · வீடியோ கால் · %1$s வி-இல் ஸ்கிப்</string>
+    <string name="premium_summary">பாலினம் தேர்வு · %1$s வி-இல் ஸ்கிப்</string>
     <string name="finding">உங்களுக்காக ஒருவரைத் தேடுகிறோம்…</string>
     <string name="looking_for">தேடுவது: %1$s</string>
     <string name="cancel">ரத்துசெய்</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">அப்கிரேடு</string>
 
     <string name="premium_needed_gender">யாரைச் சந்திப்பது எனத் தேர்ந்தெடுக்க Plus தேவை.</string>
-    <string name="premium_needed_video">வீடியோ காலுக்கு Plus தேவை.</string>
     <string name="premium_benefit_gender">ஆண்களையோ பெண்களையோ சந்திக்கத் தேர்ந்தெடுங்கள்</string>
-    <string name="premium_benefit_video">வீடியோ கால் (மற்றவர் ஏற்க வேண்டும்)</string>
     <string name="premium_benefit_skip">%2$s வி-க்குப் பதிலாக %1$s வி-இல் அடுத்தவருக்கு ஸ்கிப்</string>
     <string name="premium_buy">Plus பெறுங்கள் · %1$s</string>
     <string name="premium_buy_default">மாதாந்திரம்</string>
@@ -214,7 +212,7 @@
     <string name="create_profile_sub">மற்றவர்கள் உங்களை இப்படித்தான் சந்திப்பார்கள்.</string>
     <string name="premium_tagline">நீங்கள் விரும்புபவரையே சந்தியுங்கள்.</string>
     <string name="plan_monthly">மாதாந்திரம்</string>
-    <string name="plan_monthly_sub">பாலினம் தேர்வு, வீடியோ கால், விரைவு ஸ்கிப்</string>
+    <string name="plan_monthly_sub">பாலினம் தேர்வு, விரைவு ஸ்கிப்</string>
     <string name="plan_pass_title">24 மணி நேர பாஸ்</string>
     <string name="plan_pass_sub">பாலினம் தேர்வு மட்டும், 24 மணி நேரத்திற்கு</string>
     <string name="delete_sub">உங்கள் ப்ரொஃபைல், போஸ்ட்கள், சாட்களை நிரந்தரமாக நீக்கும்</string>
@@ -541,7 +539,6 @@
     <string name="interests_label">ஆர்வங்கள்</string>
     <string name="interests_edit">ஆர்வங்களை எடிட் செய்</string>
     <string name="interests_add">உங்கள் ஆர்வங்களைச் சேருங்கள்</string>
-    <string name="interests_common">இருவருக்கும் பிடித்தவை</string>
     <string name="interests_saved">ஆர்வங்கள் சேமிக்கப்பட்டன</string>
     <string name="tag_music">மியூசிக்</string>
     <string name="tag_movies">சினிமா</string>
@@ -827,7 +824,7 @@
     <string name="link_reload">ரீலோட்</string>
     <string name="link_open_browser">பிரவுசரில் திற</string>
     <string name="link_share_hint">ரூமில் உள்ள எல்லோரும் இந்தப் பக்கத்தை சாட்டுக்கு அருகில் பார்க்கிறார்கள்.</string>
-    <string name="link_share">எல்லோருக்கும் காட்டு</string>
+    <string name="link_share">சேர்ந்து பாருங்கள்</string>
     <string name="link_shared_by">%1$s பகிர்ந்தது</string>
     <string name="link_stop_sharing">பகிர்வதை நிறுத்து</string>
     <string name="link_close_for_me">எனக்கு மட்டும் மூடு</string>
@@ -909,7 +906,6 @@
     <string name="look_frame_neon">நியான்</string>
     <string name="look_frame_sakura">சகுரா</string>
     <string name="profile_details">ப்ரொஃபைல் விவரங்கள்</string>
-    <string name="details_nudge_title">உங்களைப் பற்றி இன்னும் சொல்லுங்கள்</string>
     <string name="details_nudge">ஒரு ஸ்டேட்டஸ், நீங்கள் பேசும் மொழிகள், சில ப்ராம்ப்ட்களைச் சேர்க்கவும்.</string>
     <string name="room_people">நபர்கள்</string>
     <string name="room_resize">சாட்டின் அளவை மாற்று</string>
@@ -992,4 +988,14 @@
     <string name="sent_tab">அனுப்பியவை</string>
     <string name="sent_empty_title">நிலுவையில் கோரிக்கைகள் இல்லை</string>
     <string name="sent_empty">நீங்கள் அனுப்பிய நட்புக் கோரிக்கைகள் பதில் வரும் வரை இங்கே இருக்கும்.</string>
+    <string name="call">கால்</string>
+    <string name="call_voice">வாய்ஸ் கால்</string>
+    <string name="call_video">வீடியோ கால்</string>
+    <string name="call_cancel">காலை ரத்துசெய்</string>
+    <string name="voice_incoming_title">%1$s வாய்ஸ் காலில் பேச விரும்புகிறார்</string>
+    <string name="voice_incoming_text">உங்கள் குரல் மட்டுமே போகும். காலின்போது கேமராவை ஆன் செய்யலாம்.</string>
+    <string name="call_notif_text">காலில் இருக்கிறீர்கள் · திரும்ப தட்டவும்</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s உங்களை அழைத்தார்</string>
+    <string name="push_channel_calls">அழைப்புகள்</string>
 </resources>

@@ -313,10 +313,10 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                                 onVote = vm.voice::votePoll, onClosePoll = vm.voice::closePoll, canClose = vm.voice::canClose,
                                 roles = room.members.filter { it.isMod }.associate { it.profile.id to it.role },
                                 typing = s.typers,
-                                // A page opened from the room's chat: the host and co-hosts may show it to everyone.
+                                // A page opened from the room's chat: the host and co-hosts may open it together.
                                 onLink = { url ->
                                     if (YouTube.videoId(url) != null) openOutside(context, url)
-                                    else links.open(url, share = if (room.canShare) { u, t -> vm.voice.shareLink(u, t) } else null)
+                                    else openRoomPage(context, links, url, share = if (room.canShare) { u, t -> vm.voice.shareLink(u, t) } else null)
                                 },
                                 onRequestSong = { id -> vm.voice.addSong(id) },
                             ),
@@ -359,6 +359,9 @@ fun VoiceRoomScreen(vm: AppViewModel, s: VoiceState) {
                             chat(Modifier.weight(1f))
                         }
                     }
+                    // Over the whole room, not inside the stage's clipped card (where a folded stage cut them off at once):
+                    // they rise from just above the controls, on phones and wide screens alike.
+                    ReactionLayer(s.reactions, Modifier.matchParentSize())
                 }
                 ControlBar(
                     vm, s, me, Modifier.onSizeChanged { barHeight = it.height },
@@ -509,32 +512,29 @@ private fun StageSection(
         AnimatedVisibility(open, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
             Stage(room, levels, reactions, small = true, onPerson = onPerson, onEmpty = onEmpty)
         }
-        if (!open) StageStrip(stage, levels, reactions, stageName, onPerson)
+        if (!open) StageStrip(stage, levels, stageName, onPerson)
     }
 }
 
 /** The people on the stage, small, with their speaking rings; or, with nobody there, why there's no sound. */
 @Composable
-private fun StageStrip(stage: List<VoiceMember>, levels: State<Map<String, Float>>, reactions: List<FloatingReaction>, stageName: String, onPerson: (String) -> Unit) {
-    Box(Modifier.fillMaxWidth()) {
-        Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (stage.isNotEmpty()) {
-                Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()).semantics { paneTitle = stageName }) {
-                    stage.forEach { m -> Box(Modifier.width(68.dp)) { SeatPerson(m, 40.dp, levels, null) { onPerson(m.profile.id) } } }
+private fun StageStrip(stage: List<VoiceMember>, levels: State<Map<String, Float>>, stageName: String, onPerson: (String) -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (stage.isNotEmpty()) {
+            Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()).semantics { paneTitle = stageName }) {
+                stage.forEach { m -> Box(Modifier.width(68.dp)) { SeatPerson(m, 40.dp, levels, null) { onPerson(m.profile.id) } } }
+            }
+        } else {
+            Row(Modifier.weight(1f).padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
+                    Icon(Icons.Rounded.MicOff, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-            } else {
-                Row(Modifier.weight(1f).padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Rounded.MicOff, null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Text(
-                        stringResource(R.string.room_stage_empty), Modifier.padding(start = 10.dp), fontSize = 12.sp, lineHeight = 16.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta,
-                    )
-                }
+                Text(
+                    stringResource(R.string.room_stage_empty), Modifier.padding(start = 10.dp), fontSize = 12.sp, lineHeight = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, fontFamily = Jakarta,
+                )
             }
         }
-        ReactionLayer(reactions, Modifier.matchParentSize())
     }
 }
 
@@ -780,7 +780,6 @@ private fun Stage(
                 }
             }
         }
-        ReactionLayer(reactions, Modifier.matchParentSize())
     }
 }
 
@@ -911,12 +910,16 @@ private fun EmptySeat(seat: Int, px: Dp, locked: Boolean, onClick: () -> Unit) {
     }
 }
 
-/** Reactions float up over the stage (X Spaces); with animations off they only fade in and out in place. */
+/**
+ * Reactions float up over the room (X Spaces), up to half its height; with animations off they only fade in and out in
+ * place. It takes no touches.
+ */
 @Composable
 private fun ReactionLayer(reactions: List<FloatingReaction>, modifier: Modifier) {
     val reduce = LocalReducedMotion.current
     BoxWithConstraints(modifier) {
         val width = maxWidth
+        val top = (maxHeight * 0.5f).coerceIn(80.dp, 320.dp).value
         reactions.forEach { r ->
             key(r.key) {
                 val t = remember { Animatable(0f) }
@@ -927,7 +930,7 @@ private fun ReactionLayer(reactions: List<FloatingReaction>, modifier: Modifier)
                     p > 0.8f -> (1f - p) / 0.2f
                     else -> 1f
                 }
-                val rise = if (reduce) 0f else 220f * FastOutSlowInEasing.transform(p)
+                val rise = if (reduce) 0f else top * FastOutSlowInEasing.transform(p)
                 val scale = if (reduce) 1f else when {
                     p < 0.15f -> 0.6f + (p / 0.15f) * 0.55f
                     p < 0.7f -> 1.15f - ((p - 0.15f) / 0.55f) * 0.15f

@@ -68,7 +68,6 @@ const ar: SocialDict = {
   'interests.skip': 'تخطٍّ الآن',
   'interests.label': 'الاهتمامات',
   'interests.edit': 'تعديل الاهتمامات',
-  'interests.common': 'كلاكما يحب',
   'interests.saved': 'تم حفظ الاهتمامات',
   'tag.music': 'موسيقى',
   'tag.movies': 'أفلام',

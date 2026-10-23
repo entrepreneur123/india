@@ -54,7 +54,7 @@
     <string name="err_network">Problema di rete. Riprova.</string>
     <string name="msg_purchase_done">Acquisto completato. Buon divertimento!</string>
     <string name="msg_connection_lost">Connessione persa. Se i messaggi non arrivano, inizia una nuova chat.</string>
-    <string name="msg_declined">%1$s ha rifiutato la videochiamata</string>
+    <string name="msg_declined">%1$s ha rifiutato la chiamata</string>
     <string name="msg_reported_long">Segnalato e bloccato. Non verrete più abbinati.</string>
     <string name="msg_reported">Segnalato e bloccato.</string>
     <string name="msg_deleted">Il tuo account e i tuoi dati sono stati eliminati.</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">Inizia a chattare</string>
     <string name="lobby_rules">Sii gentile. Nudità, molestie o minori = ban permanente.\nPuoi sempre segnalare e uscire all’istante.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Scegli il genere · Videochiamate · Salta in %1$s s</string>
+    <string name="premium_summary">Scegli il genere · Salta in %1$s s</string>
     <string name="finding">Cerchiamo qualcuno per te…</string>
     <string name="looking_for">Cerchi: %1$s</string>
     <string name="cancel">Annulla</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">Passa a Plus</string>
 
     <string name="premium_needed_gender">Per scegliere chi incontrare serve Plus.</string>
-    <string name="premium_needed_video">Per le videochiamate serve Plus.</string>
     <string name="premium_benefit_gender">Scegli se incontrare uomini o donne</string>
-    <string name="premium_benefit_video">Videochiamate (l’altra persona deve accettare)</string>
     <string name="premium_benefit_skip">Passa alla persona successiva dopo %1$s s invece di %2$s s</string>
     <string name="premium_buy">Ottieni Plus · %1$s</string>
     <string name="premium_buy_default">mensile</string>
@@ -214,7 +212,7 @@
     <string name="create_profile_sub">È così che le persone ti conosceranno.</string>
     <string name="premium_tagline">Incontra proprio chi vuoi incontrare.</string>
     <string name="plan_monthly">Mensile</string>
-    <string name="plan_monthly_sub">Scelta del genere, videochiamate e salto rapido</string>
+    <string name="plan_monthly_sub">Scelta del genere e salto rapido</string>
     <string name="plan_pass_title">Pass 24 ore</string>
     <string name="plan_pass_sub">Solo scelta del genere, per 24 ore</string>
     <string name="delete_sub">Rimuove per sempre profilo, post e chat</string>
@@ -542,7 +540,6 @@
     <string name="interests_label">Interessi</string>
     <string name="interests_edit">Modifica interessi</string>
     <string name="interests_add">Aggiungi i tuoi interessi</string>
-    <string name="interests_common">Piace a entrambi</string>
     <string name="interests_saved">Interessi salvati</string>
     <string name="tag_music">Musica</string>
     <string name="tag_movies">Film</string>
@@ -828,7 +825,7 @@
     <string name="link_reload">Ricarica</string>
     <string name="link_open_browser">Apri nel browser</string>
     <string name="link_share_hint">Tutti nella stanza vedono questa pagina accanto alla chat.</string>
-    <string name="link_share">Mostra a tutti</string>
+    <string name="link_share">Guarda insieme</string>
     <string name="link_shared_by">Condivisa da %1$s</string>
     <string name="link_stop_sharing">Interrompi condivisione</string>
     <string name="link_close_for_me">Chiudi per me</string>
@@ -910,7 +907,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Dettagli del profilo</string>
-    <string name="details_nudge_title">Racconta qualcosa di più su di te</string>
     <string name="details_nudge">Aggiungi uno stato, le lingue che parli e qualche domanda.</string>
     <string name="room_people">Persone</string>
     <string name="room_resize">Ridimensiona la chat</string>
@@ -993,4 +989,14 @@
     <string name="sent_tab">Inviate</string>
     <string name="sent_empty_title">Nessuna richiesta in attesa</string>
     <string name="sent_empty">Le richieste di amicizia che invii restano qui finché non ricevono risposta.</string>
+    <string name="call">Chiama</string>
+    <string name="call_voice">Chiamata vocale</string>
+    <string name="call_video">Videochiamata</string>
+    <string name="call_cancel">Annulla chiamata</string>
+    <string name="voice_incoming_title">%1$s vuole fare una chiamata vocale</string>
+    <string name="voice_incoming_text">Si sente solo la tua voce. Puoi accendere la fotocamera durante la chiamata.</string>
+    <string name="call_notif_text">In chiamata · tocca per tornare</string>
+    <string name="profile_status_quote">«%1$s»</string>
+    <string name="inbox_call">%1$s ti ha chiamato</string>
+    <string name="push_channel_calls">Chiamate</string>
 </resources>

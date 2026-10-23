@@ -69,6 +69,8 @@ class PaidScreensTest {
 
     private fun openShop(tab: String) {
         compose.runOnUiThread { vm.selectTab(Tab.ME) }
+        waitFor("Edit profile")
+        click("Edit profile") // Looks are in Edit profile
         waitFor("Looks")
         click("Looks")
         waitFor("Everyone sees your look")

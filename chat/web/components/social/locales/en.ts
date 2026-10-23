@@ -60,7 +60,6 @@ const en = {
   'interests.skip': 'Skip for now',
   'interests.label': 'Interests',
   'interests.edit': 'Edit interests',
-  'interests.common': 'You both like',
   'interests.saved': 'Interests saved',
   'tag.music': 'Music',
   'tag.movies': 'Movies',

@@ -61,7 +61,6 @@ const fa: SocialDict = {
   'interests.skip': 'فعلاً رد شو',
   'interests.label': 'علاقه‌مندی‌ها',
   'interests.edit': 'ویرایش علاقه‌مندی‌ها',
-  'interests.common': 'هر دو دوست دارید',
   'interests.saved': 'علاقه‌مندی‌ها ذخیره شد',
   'tag.music': 'موسیقی',
   'tag.movies': 'فیلم',

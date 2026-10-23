@@ -61,7 +61,6 @@ const tr: SocialDict = {
   'interests.skip': 'Şimdilik geç',
   'interests.label': 'İlgi alanları',
   'interests.edit': 'İlgi alanlarını düzenle',
-  'interests.common': 'İkiniz de seviyorsunuz',
   'interests.saved': 'İlgi alanları kaydedildi',
   'tag.music': 'Müzik',
   'tag.movies': 'Filmler',

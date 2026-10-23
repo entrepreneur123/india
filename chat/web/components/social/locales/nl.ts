@@ -57,7 +57,6 @@ const nl: SocialDict = {
   'interests.skip': 'Nu overslaan',
   'interests.label': 'Interesses',
   'interests.edit': 'Interesses bewerken',
-  'interests.common': 'Jullie houden allebei van',
   'interests.saved': 'Interesses opgeslagen',
   'tag.music': 'Muziek',
   'tag.movies': 'Films',

@@ -56,16 +56,18 @@ import kotlinx.coroutines.delay
 
 /**
  * Full-bleed video with soft top and bottom scrims, name and timer up top, three round controls below. The one dark
- * screen: white controls on dark scrims, over the video.
+ * screen: white controls on dark scrims, over the video. A voice call ([Call.video] false) is the same screen with my
+ * camera off until I turn it on.
  */
 @Composable
-fun VideoCallScreen(vm: AppViewModel, partner: Profile, me: Profile) {
+fun VideoCallScreen(vm: AppViewModel, call: Call, me: Profile) {
+    val partner = call.partner
     SecureScreen()
     LightSystemIcons()
     BackHandler(onBack = vm::endVideo)
     var seconds by remember { mutableIntStateOf(0) }
     var mic by remember { mutableStateOf(true) }
-    var cam by remember { mutableStateOf(true) }
+    var cam by remember { mutableStateOf(call.video) }
     var token by remember { mutableStateOf<VideoToken?>(null) }
     LaunchedEffect(Unit) { token = vm.videoToken() }
     LaunchedEffect(Unit) { while (true) { delay(1000); seconds++ } }

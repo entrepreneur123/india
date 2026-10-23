@@ -58,7 +58,7 @@
     <string name="err_network">ਨੈੱਟਵਰਕ ਦੀ ਸਮੱਸਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
     <string name="msg_purchase_done">ਖ਼ਰੀਦ ਪੂਰੀ ਹੋਈ। ਮਜ਼ੇ ਕਰੋ!</string>
     <string name="msg_connection_lost">ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ। ਜੇ ਮੈਸੇਜ ਰੁਕ ਜਾਣ ਤਾਂ ਨਵੀਂ ਚੈਟ ਸ਼ੁਰੂ ਕਰੋ।</string>
-    <string name="msg_declined">%1$s ਨੇ ਵੀਡੀਓ ਕਾਲ ਤੋਂ ਨਾਂਹ ਕਰ ਦਿੱਤੀ</string>
+    <string name="msg_declined">%1$s ਨੇ ਕਾਲ ਤੋਂ ਨਾਂਹ ਕਰ ਦਿੱਤੀ</string>
     <string name="msg_reported_long">ਰਿਪੋਰਟ ਅਤੇ ਬਲੌਕ ਕਰ ਦਿੱਤਾ। ਤੁਹਾਡਾ ਦੁਬਾਰਾ ਮੈਚ ਨਹੀਂ ਹੋਵੇਗਾ।</string>
     <string name="msg_reported">ਰਿਪੋਰਟ ਅਤੇ ਬਲੌਕ ਕਰ ਦਿੱਤਾ।</string>
     <string name="msg_deleted">ਤੁਹਾਡਾ ਖਾਤਾ ਅਤੇ ਡਾਟਾ ਡਿਲੀਟ ਕਰ ਦਿੱਤਾ ਗਿਆ।</string>
@@ -71,7 +71,7 @@
     <string name="start_chatting">ਚੈਟ ਸ਼ੁਰੂ ਕਰੋ</string>
     <string name="lobby_rules">ਚੰਗੀ ਤਰ੍ਹਾਂ ਗੱਲ ਕਰੋ। ਨਗਨਤਾ, ਤੰਗ-ਪਰੇਸ਼ਾਨੀ ਜਾਂ ਨਾਬਾਲਗ = ਪੱਕੀ ਪਾਬੰਦੀ।\nਤੁਸੀਂ ਹਮੇਸ਼ਾ ਤੁਰੰਤ ਰਿਪੋਰਟ ਕਰਕੇ ਨਿਕਲ ਸਕਦੇ ਹੋ।</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">ਲਿੰਗ ਚੁਣੋ · ਵੀਡੀਓ ਕਾਲਾਂ · %1$s ਸਕਿੰਟ ਵਿੱਚ ਸਕਿੱਪ</string>
+    <string name="premium_summary">ਲਿੰਗ ਚੁਣੋ · %1$s ਸਕਿੰਟ ਵਿੱਚ ਸਕਿੱਪ</string>
     <string name="finding">ਤੁਹਾਡੇ ਲਈ ਕਿਸੇ ਨੂੰ ਲੱਭ ਰਹੇ ਹਾਂ…</string>
     <string name="looking_for">ਲੱਭ ਰਹੇ ਹਾਂ: %1$s</string>
     <string name="cancel">ਰੱਦ ਕਰੋ</string>
@@ -84,9 +84,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">ਕਿਸ ਨੂੰ ਮਿਲਣਾ ਹੈ ਇਹ ਚੁਣਨ ਲਈ Plus ਚਾਹੀਦਾ ਹੈ।</string>
-    <string name="premium_needed_video">ਵੀਡੀਓ ਕਾਲਾਂ ਲਈ Plus ਚਾਹੀਦਾ ਹੈ।</string>
     <string name="premium_benefit_gender">ਮਰਦਾਂ ਜਾਂ ਔਰਤਾਂ ਨੂੰ ਮਿਲਣਾ ਚੁਣੋ</string>
-    <string name="premium_benefit_video">ਵੀਡੀਓ ਕਾਲਾਂ (ਦੂਜੇ ਵਿਅਕਤੀ ਦਾ ਮੰਨਣਾ ਜ਼ਰੂਰੀ ਹੈ)</string>
     <string name="premium_benefit_skip">%2$s ਸਕਿੰਟ ਦੀ ਬਜਾਏ %1$s ਸਕਿੰਟ ਬਾਅਦ ਅਗਲੇ ਵਿਅਕਤੀ ’ਤੇ ਜਾਓ</string>
     <string name="premium_buy">Plus ਲਵੋ · %1$s</string>
     <string name="premium_buy_default">ਮਹੀਨਾਵਾਰ</string>
@@ -226,7 +224,7 @@
     <string name="create_profile_sub">ਲੋਕ ਤੁਹਾਨੂੰ ਇਸੇ ਤਰ੍ਹਾਂ ਮਿਲਣਗੇ।</string>
     <string name="premium_tagline">ਬਿਲਕੁਲ ਉਸੇ ਨੂੰ ਮਿਲੋ ਜਿਸ ਨੂੰ ਤੁਸੀਂ ਮਿਲਣਾ ਚਾਹੁੰਦੇ ਹੋ।</string>
     <string name="plan_monthly">ਮਹੀਨਾਵਾਰ</string>
-    <string name="plan_monthly_sub">ਲਿੰਗ ਦੀ ਚੋਣ, ਵੀਡੀਓ ਕਾਲਾਂ ਅਤੇ ਛੇਤੀ ਸਕਿੱਪ</string>
+    <string name="plan_monthly_sub">ਲਿੰਗ ਦੀ ਚੋਣ ਅਤੇ ਛੇਤੀ ਸਕਿੱਪ</string>
     <string name="plan_pass_title">24 ਘੰਟਿਆਂ ਦਾ ਪਾਸ</string>
     <string name="plan_pass_sub">ਸਿਰਫ਼ ਲਿੰਗ ਦੀ ਚੋਣ, 24 ਘੰਟਿਆਂ ਲਈ</string>
     <string name="delete_sub">ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ, ਪੋਸਟਾਂ ਅਤੇ ਚੈਟਾਂ ਹਮੇਸ਼ਾ ਲਈ ਹਟਾ ਦਿੰਦਾ ਹੈ</string>
@@ -557,7 +555,6 @@
     <string name="interests_label">ਰੁਚੀਆਂ</string>
     <string name="interests_edit">ਰੁਚੀਆਂ ਐਡਿਟ ਕਰੋ</string>
     <string name="interests_add">ਆਪਣੀਆਂ ਰੁਚੀਆਂ ਜੋੜੋ</string>
-    <string name="interests_common">ਤੁਹਾਨੂੰ ਦੋਵਾਂ ਨੂੰ ਪਸੰਦ ਹੈ</string>
     <string name="interests_saved">ਰੁਚੀਆਂ ਸੇਵ ਹੋ ਗਈਆਂ</string>
     <string name="tag_music">ਸੰਗੀਤ</string>
     <string name="tag_movies">ਫ਼ਿਲਮਾਂ</string>
@@ -848,7 +845,7 @@
     <string name="link_reload">ਦੁਬਾਰਾ ਲੋਡ ਕਰੋ</string>
     <string name="link_open_browser">ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</string>
     <string name="link_share_hint">ਰੂਮ ਵਿੱਚ ਹਰ ਕੋਈ ਇਹ ਪੇਜ ਚੈਟ ਦੇ ਨਾਲ ਦੇਖਦਾ ਹੈ।</string>
-    <string name="link_share">ਸਭ ਨੂੰ ਦਿਖਾਓ</string>
+    <string name="link_share">ਇਕੱਠੇ ਦੇਖੋ</string>
     <string name="link_shared_by">%1$s ਨੇ ਸ਼ੇਅਰ ਕੀਤਾ</string>
     <string name="link_stop_sharing">ਸ਼ੇਅਰ ਕਰਨਾ ਬੰਦ ਕਰੋ</string>
     <string name="link_close_for_me">ਮੇਰੇ ਲਈ ਬੰਦ ਕਰੋ</string>
@@ -930,7 +927,6 @@
     <string name="look_frame_neon">ਨੀਔਨ</string>
     <string name="look_frame_sakura">ਸਾਕੁਰਾ</string>
     <string name="profile_details">ਪ੍ਰੋਫ਼ਾਈਲ ਦੀ ਜਾਣਕਾਰੀ</string>
-    <string name="details_nudge_title">ਲੋਕਾਂ ਨੂੰ ਆਪਣੇ ਬਾਰੇ ਹੋਰ ਦੱਸੋ</string>
     <string name="details_nudge">ਇੱਕ ਸਟੇਟਸ, ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਭਾਸ਼ਾਵਾਂ ਬੋਲਦੇ ਹੋ ਅਤੇ ਕੁਝ ਸਵਾਲ ਜੋੜੋ।</string>
     <string name="room_people">ਲੋਕ</string>
     <string name="room_resize">ਚੈਟ ਦਾ ਆਕਾਰ ਬਦਲੋ</string>
@@ -1013,4 +1009,14 @@
     <string name="sent_tab">ਭੇਜੀਆਂ</string>
     <string name="sent_empty_title">ਕੋਈ ਬਕਾਇਆ ਬੇਨਤੀ ਨਹੀਂ</string>
     <string name="sent_empty">ਤੁਹਾਡੀਆਂ ਭੇਜੀਆਂ ਦੋਸਤੀ ਬੇਨਤੀਆਂ ਜਵਾਬ ਮਿਲਣ ਤੱਕ ਇੱਥੇ ਰਹਿੰਦੀਆਂ ਹਨ।</string>
+    <string name="call">ਕਾਲ</string>
+    <string name="call_voice">ਵੌਇਸ ਕਾਲ</string>
+    <string name="call_video">ਵੀਡੀਓ ਕਾਲ</string>
+    <string name="call_cancel">ਕਾਲ ਰੱਦ ਕਰੋ</string>
+    <string name="voice_incoming_title">%1$s ਵੌਇਸ ਕਾਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹਨ</string>
+    <string name="voice_incoming_text">ਸਿਰਫ਼ ਤੁਹਾਡੀ ਆਵਾਜ਼ ਜਾਵੇਗੀ। ਕਾਲ ਦੌਰਾਨ ਤੁਸੀਂ ਕੈਮਰਾ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</string>
+    <string name="call_notif_text">ਕਾਲ ਚੱਲ ਰਹੀ ਹੈ · ਵਾਪਸ ਜਾਣ ਲਈ ਟੈਪ ਕਰੋ</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s ਨੇ ਤੁਹਾਨੂੰ ਕਾਲ ਕੀਤੀ</string>
+    <string name="push_channel_calls">ਕਾਲਾਂ</string>
 </resources>

@@ -61,7 +61,6 @@ const fil: SocialDict = {
   'interests.skip': 'Laktawan muna',
   'interests.label': 'Mga hilig',
   'interests.edit': 'I-edit ang mga hilig',
-  'interests.common': 'Pareho ninyong gusto',
   'interests.saved': 'Na-save ang mga hilig',
   'tag.music': 'Music',
   'tag.movies': 'Pelikula',

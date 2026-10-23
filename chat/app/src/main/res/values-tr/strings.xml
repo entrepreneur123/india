@@ -53,7 +53,7 @@
     <string name="err_network">Ağ sorunu. Lütfen tekrar dene.</string>
     <string name="msg_purchase_done">Satın alma tamamlandı. Keyfini çıkar!</string>
     <string name="msg_connection_lost">Bağlantı koptu. Mesajlar gelmezse yeni bir sohbet başlat.</string>
-    <string name="msg_declined">%1$s görüntülü aramayı reddetti</string>
+    <string name="msg_declined">%1$s aramayı reddetti</string>
     <string name="msg_reported_long">Şikâyet edildi ve engellendi. Bir daha eşleşmeyeceksiniz.</string>
     <string name="msg_reported">Şikâyet edildi ve engellendi.</string>
     <string name="msg_deleted">Hesabın ve verilerin silindi.</string>
@@ -64,7 +64,7 @@
     <string name="start_chatting">Sohbete başla</string>
     <string name="lobby_rules">Nazik ol. Çıplaklık, taciz veya reşit olmayanlar = kalıcı yasak.\nİstediğin an şikâyet edip anında ayrılabilirsin.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Cinsiyet seçimi · Görüntülü arama · %1$s sn’de geç</string>
+    <string name="premium_summary">Cinsiyet seçimi · %1$s sn’de geç</string>
     <string name="finding">Senin için biri aranıyor…</string>
     <string name="looking_for">Aranan: %1$s</string>
     <string name="cancel">İptal</string>
@@ -75,9 +75,7 @@
     <string name="plan_free">Ücretsiz</string>
     <string name="upgrade">Yükselt</string>
     <string name="premium_needed_gender">Kiminle tanışacağını seçmek için Plus gerekir.</string>
-    <string name="premium_needed_video">Görüntülü arama için Plus gerekir.</string>
     <string name="premium_benefit_gender">Erkeklerle ya da kadınlarla tanışmayı seç</string>
-    <string name="premium_benefit_video">Görüntülü arama (karşı tarafın kabul etmesi gerekir)</string>
     <string name="premium_benefit_skip">%2$s sn yerine %1$s sn sonra sıradaki kişiye geç</string>
     <string name="premium_buy">Plus al · %1$s</string>
     <string name="premium_buy_default">aylık</string>
@@ -205,7 +203,7 @@
     <string name="create_profile_sub">İnsanlar seninle böyle tanışacak.</string>
     <string name="premium_tagline">Tam olarak tanışmak istediğin kişilerle tanış.</string>
     <string name="plan_monthly">Aylık</string>
-    <string name="plan_monthly_sub">Cinsiyet seçimi, görüntülü arama ve hızlı geçme</string>
+    <string name="plan_monthly_sub">Cinsiyet seçimi ve hızlı geçme</string>
     <string name="plan_pass_title">24 saatlik geçiş</string>
     <string name="plan_pass_sub">24 saat boyunca sadece cinsiyet seçimi</string>
     <string name="delete_sub">Profilini, gönderilerini ve sohbetlerini kalıcı olarak siler</string>
@@ -531,7 +529,6 @@
     <string name="interests_label">İlgi alanları</string>
     <string name="interests_edit">İlgi alanlarını düzenle</string>
     <string name="interests_add">İlgi alanlarını ekle</string>
-    <string name="interests_common">İkiniz de seviyorsunuz</string>
     <string name="interests_saved">İlgi alanları kaydedildi</string>
     <string name="tag_music">Müzik</string>
     <string name="tag_movies">Filmler</string>
@@ -816,7 +813,7 @@
     <string name="link_reload">Yenile</string>
     <string name="link_open_browser">Tarayıcıda aç</string>
     <string name="link_share_hint">Odadaki herkes bu sayfayı sohbetin yanında görür.</string>
-    <string name="link_share">Herkese göster</string>
+    <string name="link_share">Birlikte izle</string>
     <string name="link_shared_by">Paylaşan: %1$s</string>
     <string name="link_stop_sharing">Paylaşımı durdur</string>
     <string name="link_close_for_me">Benim için kapat</string>
@@ -898,7 +895,6 @@
     <string name="look_frame_neon">Neon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Profil ayrıntıları</string>
-    <string name="details_nudge_title">Kendinden biraz daha bahset</string>
     <string name="details_nudge">Bir durum, konuştuğun diller ve birkaç soru ekle.</string>
     <string name="room_people">Kişiler</string>
     <string name="room_resize">Sohbetin boyutunu değiştir</string>
@@ -981,4 +977,14 @@
     <string name="sent_tab">Gönderilen</string>
     <string name="sent_empty_title">Bekleyen istek yok</string>
     <string name="sent_empty">Gönderdiğin arkadaşlık istekleri yanıtlanana kadar burada bekler.</string>
+    <string name="call">Ara</string>
+    <string name="call_voice">Sesli arama</string>
+    <string name="call_video">Görüntülü arama</string>
+    <string name="call_cancel">Aramayı iptal et</string>
+    <string name="voice_incoming_title">%1$s sesli arama yapmak istiyor</string>
+    <string name="voice_incoming_text">Sadece sesin iletilir. Arama sırasında kameranı açabilirsin.</string>
+    <string name="call_notif_text">Aramadasın · geri dönmek için dokun</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s seni aradı</string>
+    <string name="push_channel_calls">Aramalar</string>
 </resources>

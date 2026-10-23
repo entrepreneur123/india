@@ -61,6 +61,9 @@ class PushTest {
         assertEquals(PushChannel.SOCIAL, request.channel)
         assertEquals(DeepLink.Inbox, request.link)
         assertEquals(PushChannel.SOCIAL, PushMessage.parse(data("kind" to "friend_accept"))!!.channel)
+        val call = PushMessage.parse(data("kind" to "call", "match" to "m-1"))!!
+        assertEquals(PushChannel.CALLS, call.channel)
+        assertEquals("a friend's call opens where it rings", DeepLink.Thread("m-1", "u-1", "Sofia"), call.link)
         assertNull("unknown kind", PushMessage.parse(data("kind" to "promo")))
         assertNull("no name", PushMessage.parse(data("kind" to "message") + ("actor_name" to " ")))
         assertEquals("missing n is one", 1, PushMessage.parse(data("kind" to "message"))!!.count)
@@ -73,6 +76,7 @@ class PushTest {
         assertEquals("Sofia sent you a message", text("kind" to "message", "match" to "m"))
         assertEquals("Sofia wants to be friends", text("kind" to "friend_request"))
         assertEquals("Sofia accepted your friend request", text("kind" to "friend_accept"))
+        assertEquals("Sofia called you", text("kind" to "call", "match" to "m"))
         assertEquals("Sofia invited you to a room", text("kind" to "room_invite", "room" to "v-chai"))
     }
 

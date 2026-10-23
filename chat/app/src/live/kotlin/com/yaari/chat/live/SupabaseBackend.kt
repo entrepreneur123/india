@@ -279,6 +279,8 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         @SerialName("ended_at") val endedAt: String? = null, @SerialName("ended_by") val endedBy: String? = null,
         @SerialName("video_status") val videoStatus: String = "none",
         @SerialName("video_requested_by") val videoRequestedBy: String? = null,
+        // false: a voice call (051).
+        @SerialName("call_video") val callVideo: Boolean = true,
         // The last message id each side has read (015_read_receipts.sql).
         @SerialName("read_a") val readA: Long? = null, @SerialName("read_b") val readB: Long? = null,
     )
@@ -498,7 +500,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
 
     override fun events(matchId: String, live: Boolean, afterId: Long?): Flow<MatchEvent> = channelFlow {
         val me = uid
-        var lastVideo: VideoStatus? = null
+        var lastVideo: MatchEvent.Video? = null
         var partnerRead = 0L
         var leftSent = false
         suspend fun partnerLeft() {
@@ -510,10 +512,10 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         suspend fun onMatch(m: MatchRow?) {
             if (m == null) return partnerLeft() // deleted: treat as the partner leaving
             if (m.endedAt != null && m.endedBy != me) partnerLeft()
-            val v = videoOf(m, me)
+            val v = MatchEvent.Video(videoOf(m, me), m.callVideo)
             if (v != lastVideo) {
                 lastVideo = v
-                send(MatchEvent.Video(v))
+                send(v)
             }
             val read = (if (m.userA == me) m.readB else m.readA) ?: 0L
             if (read > partnerRead) {
@@ -679,11 +681,17 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
         Unit
     }
 
-    override suspend fun requestVideo(matchId: String) = call { client.postgrest.rpc("request_video", buildJsonObject { put("p_match", matchId) }); Unit }
+    override suspend fun requestCall(matchId: String, video: Boolean) = call {
+        client.postgrest.rpc("request_call", buildJsonObject { put("p_match", matchId); put("p_video", video) }); Unit
+    }
 
     override suspend fun answerVideo(matchId: String, accept: Boolean) = call {
         client.postgrest.rpc("respond_video", buildJsonObject { put("p_match", matchId); put("p_accept", accept) })
         Unit
+    }
+
+    override suspend fun callAsked(matchId: String): Boolean? = call {
+        matchRow(matchId)?.takeIf { videoOf(it, uid) == VideoStatus.REQUESTED_BY_PARTNER }?.callVideo
     }
 
     override suspend fun endVideo(matchId: String) = call { client.postgrest.rpc("end_video", buildJsonObject { put("p_match", matchId) }); Unit }
@@ -1374,7 +1382,7 @@ class SupabaseBackend(private val app: Application, persistSession: Boolean = tr
             LinkPreview(
                 url = r.url?.takeIf(Links::isWeb) ?: url, title = r.title?.trim()?.ifEmpty { null },
                 description = r.description?.trim()?.ifEmpty { null }, image = r.image?.takeIf { it.startsWith("https://") },
-                site = r.site?.trim()?.ifEmpty { null },
+                site = r.site?.trim()?.ifEmpty { null }, frameable = r.frameable,
             )
         } catch (e: CancellationException) {
             throw e

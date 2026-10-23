@@ -57,7 +57,7 @@
     <string name="err_network">연결에 문제가 있어요. 다시 시도해 주세요.</string>
     <string name="msg_purchase_done">구매가 완료됐어요. 즐겨 보세요!</string>
     <string name="msg_connection_lost">연결이 끊겼어요. 메시지가 오지 않으면 새 채팅을 시작해 주세요.</string>
-    <string name="msg_declined">%1$s님이 영상 통화를 거절했어요</string>
+    <string name="msg_declined">%1$s님이 통화를 거절했어요</string>
     <string name="msg_reported_long">신고하고 차단했어요. 다시 매칭되지 않아요.</string>
     <string name="msg_reported">신고하고 차단했어요.</string>
     <string name="msg_deleted">계정과 데이터가 삭제됐어요.</string>
@@ -70,7 +70,7 @@
     <string name="start_chatting">채팅 시작하기</string>
     <string name="lobby_rules">매너를 지켜 주세요. 노출, 괴롭힘, 미성년자 이용은 영구 정지돼요.\n언제든 바로 신고하고 나갈 수 있어요.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">성별 선택 · 영상 통화 · %1$s초 만에 넘기기</string>
+    <string name="premium_summary">성별 선택 · %1$s초 만에 넘기기</string>
     <string name="finding">상대를 찾는 중…</string>
     <string name="looking_for">찾는 상대: %1$s</string>
     <string name="cancel">취소</string>
@@ -83,9 +83,7 @@
 
     <!-- Paywall -->
     <string name="premium_needed_gender">만날 사람을 고르려면 Plus가 필요해요.</string>
-    <string name="premium_needed_video">영상 통화를 하려면 Plus가 필요해요.</string>
     <string name="premium_benefit_gender">남성 또는 여성만 골라서 만나기</string>
-    <string name="premium_benefit_video">영상 통화 (상대방이 수락해야 해요)</string>
     <string name="premium_benefit_skip">%2$s초 대신 %1$s초 만에 다음 사람으로 넘기기</string>
     <string name="premium_buy">Plus 시작하기 · %1$s</string>
     <string name="premium_buy_default">월간</string>
@@ -223,7 +221,7 @@
     <string name="create_profile_sub">사람들이 나를 처음 만날 때 보는 모습이에요.</string>
     <string name="premium_tagline">만나고 싶은 사람을 정확하게 만나요.</string>
     <string name="plan_monthly">월간</string>
-    <string name="plan_monthly_sub">성별 선택, 영상 통화, 빠른 넘기기</string>
+    <string name="plan_monthly_sub">성별 선택, 빠른 넘기기</string>
     <string name="plan_pass_title">24시간 성별 이용권</string>
     <string name="plan_pass_sub">24시간 동안 성별 선택만</string>
     <string name="delete_sub">프로필, 게시물, 채팅을 영구적으로 삭제해요</string>
@@ -553,7 +551,6 @@
     <string name="interests_label">관심사</string>
     <string name="interests_edit">관심사 편집</string>
     <string name="interests_add">관심사 추가</string>
-    <string name="interests_common">둘 다 좋아하는 것</string>
     <string name="interests_saved">관심사를 저장했어요</string>
     <string name="tag_music">음악</string>
     <string name="tag_movies">영화</string>
@@ -836,7 +833,7 @@
     <string name="link_reload">새로고침</string>
     <string name="link_open_browser">브라우저에서 열기</string>
     <string name="link_share_hint">방에 있는 모두가 채팅 옆에서 이 페이지를 봐요.</string>
-    <string name="link_share">모두에게 보여 주기</string>
+    <string name="link_share">같이 보기</string>
     <string name="link_shared_by">%1$s님이 공유함</string>
     <string name="link_stop_sharing">공유 중지</string>
     <string name="link_close_for_me">나만 닫기</string>
@@ -917,7 +914,6 @@
     <string name="look_frame_neon">네온</string>
     <string name="look_frame_sakura">벚꽃</string>
     <string name="profile_details">프로필 세부 정보</string>
-    <string name="details_nudge_title">나를 더 소개해 보세요</string>
     <string name="details_nudge">상태 메시지, 쓰는 언어, 질문 카드를 추가해 보세요.</string>
     <string name="room_people">참여자</string>
     <string name="room_resize">채팅 크기 조절</string>
@@ -999,4 +995,14 @@
     <string name="sent_tab">보낸 신청</string>
     <string name="sent_empty_title">대기 중인 신청이 없어요</string>
     <string name="sent_empty">보낸 친구 신청은 상대가 답할 때까지 여기에 있어요.</string>
+    <string name="call">통화</string>
+    <string name="call_voice">음성 통화</string>
+    <string name="call_video">영상 통화</string>
+    <string name="call_cancel">통화 취소</string>
+    <string name="voice_incoming_title">%1$s님이 음성 통화를 원해요</string>
+    <string name="voice_incoming_text">목소리만 전달돼요. 통화 중에 카메라를 켤 수 있어요.</string>
+    <string name="call_notif_text">통화 중 · 눌러서 돌아가기</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s님이 전화했어요</string>
+    <string name="push_channel_calls">통화</string>
 </resources>

@@ -52,7 +52,7 @@
     <string name="err_network">เครือข่ายมีปัญหา โปรดลองอีกครั้ง</string>
     <string name="msg_purchase_done">ซื้อสำเร็จแล้ว ขอให้สนุก!</string>
     <string name="msg_connection_lost">การเชื่อมต่อหลุด ถ้าข้อความไม่มา ให้เริ่มแชทใหม่</string>
-    <string name="msg_declined">%1$s ปฏิเสธวิดีโอคอล</string>
+    <string name="msg_declined">%1$s ปฏิเสธสาย</string>
     <string name="msg_reported_long">รายงานและบล็อกแล้ว คุณจะไม่ถูกจับคู่กันอีก</string>
     <string name="msg_reported">รายงานและบล็อกแล้ว</string>
     <string name="msg_deleted">ลบบัญชีและข้อมูลของคุณแล้ว</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">เริ่มแชท</string>
     <string name="lobby_rules">คุยกันดีๆ ภาพเปลือย การคุกคาม หรือผู้เยาว์ = โดนแบนถาวร\nรายงานและออกได้ทันทีทุกเมื่อ</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">เลือกเพศ · วิดีโอคอล · ข้ามได้ใน %1$s วิ</string>
+    <string name="premium_summary">เลือกเพศ · ข้ามได้ใน %1$s วิ</string>
     <string name="finding">กำลังหาคนคุยให้คุณ…</string>
     <string name="looking_for">กำลังหา: %1$s</string>
     <string name="cancel">ยกเลิก</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">ฟรี</string>
     <string name="upgrade">อัปเกรด</string>
     <string name="premium_needed_gender">การเลือกว่าจะเจอใครต้องใช้ Plus</string>
-    <string name="premium_needed_video">วิดีโอคอลต้องใช้ Plus</string>
     <string name="premium_benefit_gender">เลือกเจอผู้ชายหรือผู้หญิง</string>
-    <string name="premium_benefit_video">วิดีโอคอล (อีกฝ่ายต้องรับสาย)</string>
     <string name="premium_benefit_skip">ข้ามไปคนถัดไปได้หลัง %1$s วิ แทนที่จะเป็น %2$s วิ</string>
     <string name="premium_buy">รับ Plus · %1$s</string>
     <string name="premium_buy_default">รายเดือน</string>
@@ -202,7 +200,7 @@
     <string name="create_profile_sub">นี่คือสิ่งที่คนอื่นจะเห็นเมื่อเจอคุณ</string>
     <string name="premium_tagline">เจอคนที่คุณอยากเจอจริงๆ</string>
     <string name="plan_monthly">รายเดือน</string>
-    <string name="plan_monthly_sub">เลือกเพศ วิดีโอคอล และข้ามได้เร็ว</string>
+    <string name="plan_monthly_sub">เลือกเพศ และข้ามได้เร็ว</string>
     <string name="plan_pass_title">พาส 24 ชั่วโมง</string>
     <string name="plan_pass_sub">เลือกเพศอย่างเดียว 24 ชั่วโมง</string>
     <string name="delete_sub">ลบโปรไฟล์ โพสต์ และแชทของคุณอย่างถาวร</string>
@@ -527,7 +525,6 @@
     <string name="interests_label">ความสนใจ</string>
     <string name="interests_edit">แก้ไขความสนใจ</string>
     <string name="interests_add">เพิ่มความสนใจ</string>
-    <string name="interests_common">คุณทั้งคู่ชอบ</string>
     <string name="interests_saved">บันทึกความสนใจแล้ว</string>
     <string name="tag_music">เพลง</string>
     <string name="tag_movies">หนัง</string>
@@ -804,7 +801,7 @@
     <string name="link_reload">โหลดใหม่</string>
     <string name="link_open_browser">เปิดในเบราว์เซอร์</string>
     <string name="link_share_hint">ทุกคนในห้องจะเห็นหน้านี้ข้างแชท</string>
-    <string name="link_share">แสดงให้ทุกคนเห็น</string>
+    <string name="link_share">ดูด้วยกัน</string>
     <string name="link_shared_by">แชร์โดย %1$s</string>
     <string name="link_stop_sharing">หยุดแชร์</string>
     <string name="link_close_for_me">ปิดเฉพาะฉัน</string>
@@ -885,7 +882,6 @@
     <string name="look_frame_neon">นีออน</string>
     <string name="look_frame_sakura">ซากุระ</string>
     <string name="profile_details">รายละเอียดโปรไฟล์</string>
-    <string name="details_nudge_title">เล่าเรื่องของคุณเพิ่มอีกหน่อย</string>
     <string name="details_nudge">เพิ่มสถานะ ภาษาที่คุณพูด และคำถามชวนคุยสักสองสามข้อ</string>
     <string name="room_people">ผู้คน</string>
     <string name="room_resize">ปรับขนาดแชท</string>
@@ -967,4 +963,14 @@
     <string name="sent_tab">ที่ส่งไป</string>
     <string name="sent_empty_title">ไม่มีคำขอที่รออยู่</string>
     <string name="sent_empty">คำขอเป็นเพื่อนที่คุณส่งจะรออยู่ที่นี่จนกว่าจะได้รับคำตอบ</string>
+    <string name="call">โทร</string>
+    <string name="call_voice">โทรด้วยเสียง</string>
+    <string name="call_video">วิดีโอคอล</string>
+    <string name="call_cancel">ยกเลิกการโทร</string>
+    <string name="voice_incoming_title">%1$s อยากโทรคุยด้วยเสียง</string>
+    <string name="voice_incoming_text">ส่งไปแค่เสียงของคุณ เปิดกล้องระหว่างสายได้</string>
+    <string name="call_notif_text">อยู่ในสาย · แตะเพื่อกลับ</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s โทรหาคุณ</string>
+    <string name="push_channel_calls">การโทร</string>
 </resources>

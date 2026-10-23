@@ -64,7 +64,6 @@ const he: SocialDict = {
   'interests.skip': 'דילוג בינתיים',
   'interests.label': 'תחומי עניין',
   'interests.edit': 'עריכת תחומי עניין',
-  'interests.common': 'שניכם אוהבים',
   'interests.saved': 'תחומי העניין נשמרו',
   'tag.music': 'מוזיקה',
   'tag.movies': 'סרטים',

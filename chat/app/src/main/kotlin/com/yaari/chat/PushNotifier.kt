@@ -32,6 +32,7 @@ object PushNotifier {
             if (m.count > 1) context.resources.getQuantityString(R.plurals.inbox_post_likes, m.count - 1, m.actorName, m.count - 1)
             else context.getString(R.string.inbox_post_like, m.actorName)
         InboxKind.POST_COMMENT -> context.getString(R.string.inbox_post_comment, m.actorName)
+        InboxKind.CALL -> context.getString(R.string.inbox_call, m.actorName)
     }
 
     fun channelName(context: Context, c: PushChannel) = context.getString(
@@ -39,6 +40,7 @@ object PushNotifier {
             PushChannel.MESSAGES -> R.string.push_channel_messages
             PushChannel.SOCIAL -> R.string.push_channel_social
             PushChannel.ROOMS -> R.string.push_channel_rooms
+            PushChannel.CALLS -> R.string.push_channel_calls
         },
     )
 
@@ -69,7 +71,13 @@ object PushNotifier {
             .setContentTitle(text(context, m))
             .setContentIntent(open)
             .setAutoCancel(true)
-            .setCategory(if (m.kind == InboxKind.MESSAGE) NotificationCompat.CATEGORY_MESSAGE else NotificationCompat.CATEGORY_SOCIAL)
+            .setCategory(
+                when (m.kind) {
+                    InboxKind.MESSAGE -> NotificationCompat.CATEGORY_MESSAGE
+                    InboxKind.CALL -> NotificationCompat.CATEGORY_CALL
+                    else -> NotificationCompat.CATEGORY_SOCIAL
+                },
+            )
             .setPriority(if (m.channel == PushChannel.SOCIAL) NotificationCompat.PRIORITY_DEFAULT else NotificationCompat.PRIORITY_HIGH)
             // The lock screen shows that something came, not from whom.
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)

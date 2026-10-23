@@ -154,14 +154,18 @@ object Flavor {
             view.keepScreenOn = true
             onDispose { view.keepScreenOn = false }
         }
-        // Microphone is needed for the call; the camera is optional (they can still hear me without it).
+        // Microphone is needed for the call; the camera is optional (they can still hear me without it), and asked for
+        // only once it is wanted (a voice call starts with it off).
         var micOk by remember { mutableStateOf(has(context, Manifest.permission.RECORD_AUDIO)) }
         var camOk by remember { mutableStateOf(has(context, Manifest.permission.CAMERA)) }
         val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             micOk = has(context, Manifest.permission.RECORD_AUDIO)
             camOk = has(context, Manifest.permission.CAMERA)
         }
-        LaunchedEffect(Unit) { if (!micOk || !camOk) ask.launch(PERMISSIONS) }
+        LaunchedEffect(cam) {
+            val wanted = if (cam) PERMISSIONS else arrayOf(Manifest.permission.RECORD_AUDIO)
+            if (wanted.any { !has(context, it) }) ask.launch(wanted)
+        }
         // In the background Android takes the camera away (a frozen frame for my partner): it is turned off until I'm
         // back. Coming back from Settings also re-reads the permissions.
         val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
@@ -238,6 +242,8 @@ object Flavor {
         var partnerQuality by remember { mutableStateOf(Signal.UNKNOWN) }
         var partnerPaused by remember { mutableStateOf(false) }
         var partnerLeft by remember { mutableStateOf(false) }
+        // In the call, with or without a picture (a voice call has none until they turn their camera on).
+        var partnerHere by remember { mutableStateOf(false) }
         var partnerCam by remember { mutableStateOf(true) }
         // Nudity check on the partner's video (data/Nudity.kt): blurred from their first frame until the first clean
         // check (at most 8 s), covered while flagged. Starts with their video, so a late camera is checked too.
@@ -251,12 +257,15 @@ object Flavor {
             launch {
                 room.events.collect { e ->
                     when (e) {
-                        is RoomEvent.TrackSubscribed -> (e.track as? VideoTrack)?.let {
-                            it.addRenderer(remote)
-                            it.addRenderer(frames)
-                            remoteOn = true
-                            partnerVideo = true
-                            partnerCam = !e.publication.muted
+                        is RoomEvent.TrackSubscribed -> {
+                            partnerHere = true
+                            (e.track as? VideoTrack)?.let {
+                                it.addRenderer(remote)
+                                it.addRenderer(frames)
+                                remoteOn = true
+                                partnerVideo = true
+                                partnerCam = !e.publication.muted
+                            }
                         }
                         is RoomEvent.TrackUnsubscribed -> (e.track as? VideoTrack)?.let {
                             it.removeRenderer(frames)
@@ -273,6 +282,7 @@ object Flavor {
                         is RoomEvent.ParticipantDisconnected -> partnerLeft = true
                         is RoomEvent.ParticipantConnected -> {
                             partnerLeft = false
+                            partnerHere = true
                             partnerQuality = e.participant.connectionQuality.signal()
                         }
                         is RoomEvent.Reconnecting -> reconnecting = true
@@ -290,6 +300,7 @@ object Flavor {
             try {
                 room.connect(token.url, token.token)
                 connected = true
+                if (room.remoteParticipants.isNotEmpty()) partnerHere = true
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -378,7 +389,8 @@ object Flavor {
             if (!remoteOn) {
                 Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                     Avatar(partner, 140.dp)
-                    Text(stringResource(R.string.waiting_video, partner.name), color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
+                    // Once they are in, a voice call is just their face (no "waiting" while there is no picture to wait for).
+                    if (!partnerHere) Text(stringResource(R.string.waiting_video, partner.name), color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(top = 12.dp))
                 }
             }
             // One status in the middle, most serious first.

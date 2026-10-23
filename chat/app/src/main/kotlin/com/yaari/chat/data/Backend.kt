@@ -49,7 +49,8 @@ enum class VideoStatus { NONE, REQUESTED_BY_ME, REQUESTED_BY_PARTNER, ACCEPTED, 
 sealed interface MatchEvent {
     data class NewMessage(val message: Message) : MatchEvent
     data class Typing(val on: Boolean) : MatchEvent
-    data class Video(val status: VideoStatus) : MatchEvent
+    /** [video]: the call asked for is a video call (false: voice only, camera off at first; 051 call_video). */
+    data class Video(val status: VideoStatus, val video: Boolean = true) : MatchEvent
     data object PartnerLeft : MatchEvent
     /** The partner has read my messages up to and including id [upto] (only ever grows). */
     data class Read(val upto: Long) : MatchEvent
@@ -139,9 +140,15 @@ interface Backend {
      */
     suspend fun block(userId: String)
 
-    suspend fun requestVideo(matchId: String)
+    /**
+     * Asks for a call (free, 051): [video] or voice only. Allowed while the chat is open or between friends (052
+     * call_open), never when blocked.
+     */
+    suspend fun requestCall(matchId: String, video: Boolean)
     suspend fun answerVideo(matchId: String, accept: Boolean)
     suspend fun endVideo(matchId: String)
+    /** The call [matchId]'s partner is asking me for: true video, false voice; null when none is (053's ring). */
+    suspend fun callAsked(matchId: String): Boolean?
     /** Null when the build has no real video (demo). */
     suspend fun videoToken(matchId: String): VideoToken?
     /**

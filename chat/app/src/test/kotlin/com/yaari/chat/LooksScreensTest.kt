@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -72,8 +73,10 @@ class LooksScreensTest {
     @Test fun theShopTriesBuysAndWears() {
         signIn()
         compose.runOnUiThread { vm.selectTab(Tab.ME) }
+        waitFor("Edit profile")
+        click("Edit profile") // Looks are in Edit profile
         waitFor("Looks")
-        click("Looks")
+        compose.onNode(hasText("Looks")).performScrollTo().performClick()
         waitFor("Everyone sees your look")
         waitFor("Crown")
         shot("01_shop_badges")

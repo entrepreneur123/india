@@ -18,7 +18,6 @@ import { useToast } from '@/components/ui/toast'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { BellButton, InterestChips } from '@/components/social/bits'
 import { OnlineCount } from '@/components/social/online'
-import { useSocialT } from '@/components/social/social-text'
 import { retryImport } from '@/lib/retry-import'
 import { MANNERS, shouldAskRating } from '@/lib/trust'
 import { skippedRatings } from '@/components/trust/store'
@@ -496,9 +495,6 @@ function Matching({
 /** The partner's card shows over the new chat for a moment, then gets out of the way. */
 function MatchReveal({ partner }: { partner: Match['partner'] }) {
   const { t } = useI18n()
-  const { me } = useApp()
-  const { st } = useSocialT()
-  const shared = (partner.interests ?? []).filter((i) => me.interests?.includes(i))
   const [show, setShow] = useState(true)
   useEffect(() => {
     const id = setTimeout(() => setShow(false), 1500)
@@ -531,12 +527,7 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
               <TrustBadge userId={partner.id} size={20} />
             </span>
             {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}
-            {shared.length ? (
-              <span className="flex flex-col items-center gap-2">
-                <span className="text-xs font-semibold text-muted-foreground">{st('interests.common')}</span>
-                <InterestChips tags={shared} shared={shared} className="justify-center" />
-              </span>
-            ) : partner.interests?.length ? (
+            {partner.interests?.length ? (
               <InterestChips tags={partner.interests.slice(0, 3)} className="justify-center" />
             ) : null}
           </m.span>

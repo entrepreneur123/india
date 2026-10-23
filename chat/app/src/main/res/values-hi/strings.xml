@@ -54,7 +54,7 @@
     <string name="err_network">नेटवर्क की समस्या। फिर से कोशिश करें।</string>
     <string name="msg_purchase_done">ख़रीदारी पूरी हो गई। मज़े करें!</string>
     <string name="msg_connection_lost">कनेक्शन टूट गया। मैसेज रुक जाएँ तो नई चैट शुरू करें।</string>
-    <string name="msg_declined">%1$s ने वीडियो कॉल मना कर दी</string>
+    <string name="msg_declined">%1$s ने कॉल मना कर दी</string>
     <string name="msg_reported_long">रिपोर्ट और ब्लॉक कर दिया। यह व्यक्ति आपको दोबारा नहीं मिलेगा।</string>
     <string name="msg_reported">रिपोर्ट और ब्लॉक कर दिया।</string>
     <string name="msg_deleted">आपका अकाउंट और डेटा डिलीट कर दिया गया।</string>
@@ -66,7 +66,7 @@
     <string name="start_chatting">चैट शुरू करें</string>
     <string name="lobby_rules">अच्छे से बात करें। नग्नता, उत्पीड़न या 18 से कम उम्र = हमेशा के लिए बैन।\nआप कभी भी तुरंत रिपोर्ट करके निकल सकते हैं।</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">जेंडर फ़िल्टर · वीडियो कॉल · %1$s सेकंड में स्किप</string>
+    <string name="premium_summary">जेंडर फ़िल्टर · %1$s सेकंड में स्किप</string>
     <string name="finding">आपके लिए किसी को ढूँढ रहे हैं…</string>
     <string name="looking_for">ढूँढ रहे हैं: %1$s</string>
     <string name="cancel">रद्द करें</string>
@@ -78,9 +78,7 @@
     <string name="upgrade">अपग्रेड करें</string>
 
     <string name="premium_needed_gender">किससे मिलना है यह चुनने के लिए Plus चाहिए।</string>
-    <string name="premium_needed_video">वीडियो कॉल के लिए Plus चाहिए।</string>
     <string name="premium_benefit_gender">चुनें कि महिलाओं से मिलें या पुरुषों से</string>
-    <string name="premium_benefit_video">वीडियो कॉल (सामने वाले को मानना होगा)</string>
     <string name="premium_benefit_skip">अगले व्यक्ति पर %2$s की जगह %1$s सेकंड में जाएँ</string>
     <string name="premium_buy">Plus लें · %1$s</string>
     <string name="premium_buy_default">हर महीने</string>
@@ -215,7 +213,7 @@
     <string name="create_profile_sub">लोग आपसे इसी तरह मिलेंगे।</string>
     <string name="premium_tagline">जिससे मिलना चाहें, उसी से मिलें।</string>
     <string name="plan_monthly">मासिक</string>
-    <string name="plan_monthly_sub">जेंडर फ़िल्टर, वीडियो कॉल और तुरंत स्किप</string>
+    <string name="plan_monthly_sub">जेंडर फ़िल्टर और तुरंत स्किप</string>
     <string name="plan_pass_title">24 घंटे का पास</string>
     <string name="plan_pass_sub">सिर्फ़ जेंडर फ़िल्टर, 24 घंटे के लिए</string>
     <string name="delete_sub">आपकी प्रोफ़ाइल, पोस्ट और चैट हमेशा के लिए डिलीट हो जाएँगी</string>
@@ -546,7 +544,6 @@
     <string name="interests_label">पसंद</string>
     <string name="interests_edit">पसंद बदलें</string>
     <string name="interests_add">अपनी पसंद जोड़ें</string>
-    <string name="interests_common">आप दोनों को पसंद है</string>
     <string name="interests_saved">पसंद सेव हो गई</string>
     <string name="tag_music">म्यूज़िक</string>
     <string name="tag_movies">फ़िल्में</string>
@@ -836,7 +833,7 @@
     <string name="link_reload">फिर से लोड करें</string>
     <string name="link_open_browser">ब्राउज़र में खोलें</string>
     <string name="link_share_hint">रूम में सबको यह पेज चैट के बगल में दिखेगा।</string>
-    <string name="link_share">सबको दिखाएँ</string>
+    <string name="link_share">साथ में देखें</string>
     <string name="link_shared_by">%1$s ने शेयर किया</string>
     <string name="link_stop_sharing">शेयर करना बंद करें</string>
     <string name="link_close_for_me">मेरे लिए बंद करें</string>
@@ -918,7 +915,6 @@
     <string name="look_frame_neon">नियॉन</string>
     <string name="look_frame_sakura">साकुरा</string>
     <string name="profile_details">प्रोफ़ाइल की जानकारी</string>
-    <string name="details_nudge_title">लोगों को अपने बारे में और बताएँ</string>
     <string name="details_nudge">स्टेटस, आप कौन-सी भाषाएँ बोलते हैं और कुछ सवाल-जवाब जोड़ें।</string>
     <string name="room_people">लोग</string>
     <string name="room_resize">चैट का आकार बदलें</string>
@@ -1001,4 +997,14 @@
     <string name="sent_tab">भेजी गई</string>
     <string name="sent_empty_title">कोई रिक्वेस्ट बाकी नहीं</string>
     <string name="sent_empty">आपकी भेजी दोस्ती रिक्वेस्ट जवाब मिलने तक यहाँ रहती हैं।</string>
+    <string name="call">कॉल</string>
+    <string name="call_voice">वॉइस कॉल</string>
+    <string name="call_video">वीडियो कॉल</string>
+    <string name="call_cancel">कॉल रद्द करें</string>
+    <string name="voice_incoming_title">%1$s वॉइस कॉल करना चाहते हैं</string>
+    <string name="voice_incoming_text">सिर्फ़ आपकी आवाज़ जाएगी। कॉल के दौरान आप कैमरा चालू कर सकते हैं।</string>
+    <string name="call_notif_text">कॉल चल रही है · वापस जाने के लिए टैप करें</string>
+    <string name="profile_status_quote">“%1$s”</string>
+    <string name="inbox_call">%1$s ने आपको कॉल किया</string>
+    <string name="push_channel_calls">कॉल</string>
 </resources>

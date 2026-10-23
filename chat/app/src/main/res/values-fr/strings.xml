@@ -52,7 +52,7 @@
     <string name="err_network">Problème de réseau. Veuillez réessayer.</string>
     <string name="msg_purchase_done">Achat effectué. Profitez-en !</string>
     <string name="msg_connection_lost">Connexion perdue. Lancez un nouveau chat si les messages ne passent plus.</string>
-    <string name="msg_declined">%1$s a refusé l’appel vidéo</string>
+    <string name="msg_declined">%1$s a refusé l’appel</string>
     <string name="msg_reported_long">Signalé et bloqué. Vous ne serez plus mis en relation.</string>
     <string name="msg_reported">Signalé et bloqué.</string>
     <string name="msg_deleted">Votre compte et vos données ont été supprimés.</string>
@@ -63,7 +63,7 @@
     <string name="start_chatting">Commencer à discuter</string>
     <string name="lobby_rules">Soyez bienveillant. Nudité, harcèlement ou mineurs = bannissement définitif.\nVous pouvez toujours signaler &amp; partir instantanément.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">Choix du genre · Appels vidéo · Passer en %1$s s</string>
+    <string name="premium_summary">Choix du genre · Passer en %1$s s</string>
     <string name="finding">On cherche quelqu’un pour vous…</string>
     <string name="looking_for">Recherche : %1$s</string>
     <string name="cancel">Annuler</string>
@@ -74,9 +74,7 @@
     <string name="plan_free">Gratuit</string>
     <string name="upgrade">Passer à Plus</string>
     <string name="premium_needed_gender">Choisir qui vous rencontrez nécessite Plus.</string>
-    <string name="premium_needed_video">Les appels vidéo nécessitent Plus.</string>
     <string name="premium_benefit_gender">Choisissez de rencontrer des hommes ou des femmes</string>
-    <string name="premium_benefit_video">Appels vidéo (l’autre personne doit accepter)</string>
     <string name="premium_benefit_skip">Passez à la personne suivante après %1$s s au lieu de %2$s s</string>
     <string name="premium_buy">Obtenir Plus · %1$s</string>
     <string name="premium_buy_default">par mois</string>
@@ -206,7 +204,7 @@
     <string name="create_profile_sub">C’est ainsi que les gens vous découvriront.</string>
     <string name="premium_tagline">Rencontrez exactement qui vous voulez.</string>
     <string name="plan_monthly">Mensuel</string>
-    <string name="plan_monthly_sub">Choix du genre, appels vidéo et passage rapide</string>
+    <string name="plan_monthly_sub">Choix du genre et passage rapide</string>
     <string name="plan_pass_title">Pass 24 h</string>
     <string name="plan_pass_sub">Choix du genre uniquement, pendant 24 heures</string>
     <string name="delete_sub">Supprime définitivement votre profil, vos publications et vos chats</string>
@@ -533,7 +531,6 @@
     <string name="interests_label">Centres d’intérêt</string>
     <string name="interests_edit">Modifier les centres d’intérêt</string>
     <string name="interests_add">Ajoutez vos centres d’intérêt</string>
-    <string name="interests_common">Vous aimez tous les deux</string>
     <string name="interests_saved">Centres d’intérêt enregistrés</string>
     <string name="tag_music">Musique</string>
     <string name="tag_movies">Films</string>
@@ -826,7 +823,7 @@
     <string name="link_reload">Recharger</string>
     <string name="link_open_browser">Ouvrir dans le navigateur</string>
     <string name="link_share_hint">Tout le monde dans le salon voit cette page à côté du chat.</string>
-    <string name="link_share">Montrer à tous</string>
+    <string name="link_share">Regarder ensemble</string>
     <string name="link_shared_by">Partagé par %1$s</string>
     <string name="link_stop_sharing">Arrêter le partage</string>
     <string name="link_close_for_me">Fermer pour moi</string>
@@ -909,7 +906,6 @@
     <string name="look_frame_neon">Néon</string>
     <string name="look_frame_sakura">Sakura</string>
     <string name="profile_details">Détails du profil</string>
-    <string name="details_nudge_title">Parlez un peu plus de vous</string>
     <string name="details_nudge">Ajoutez un statut, les langues que vous parlez et quelques questions.</string>
     <string name="room_people">Personnes</string>
     <string name="room_resize">Redimensionner le chat</string>
@@ -993,4 +989,14 @@
     <string name="sent_tab">Envoyées</string>
     <string name="sent_empty_title">Aucune demande en attente</string>
     <string name="sent_empty">Les demandes d’amis que vous envoyez attendent ici jusqu’à leur réponse.</string>
+    <string name="call">Appeler</string>
+    <string name="call_voice">Appel vocal</string>
+    <string name="call_video">Appel vidéo</string>
+    <string name="call_cancel">Annuler l’appel</string>
+    <string name="voice_incoming_title">%1$s veut passer un appel vocal</string>
+    <string name="voice_incoming_text">Seule votre voix est transmise. Vous pouvez allumer votre caméra pendant l’appel.</string>
+    <string name="call_notif_text">En appel · touchez pour revenir</string>
+    <string name="profile_status_quote">« %1$s »</string>
+    <string name="inbox_call">%1$s vous a appelé</string>
+    <string name="push_channel_calls">Appels</string>
 </resources>

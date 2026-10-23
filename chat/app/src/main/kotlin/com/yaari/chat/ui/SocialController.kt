@@ -7,6 +7,7 @@ import com.yaari.chat.data.FirstRun
 import com.yaari.chat.data.PhotoCheck
 import com.yaari.chat.model.Badges
 import com.yaari.chat.model.InboxItem
+import com.yaari.chat.model.InboxKind
 import com.yaari.chat.model.Interest
 import com.yaari.chat.model.Profile
 import com.yaari.chat.model.ProfilePhoto
@@ -19,6 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
+/** A friend's call ringing ([InboxKind.CALL], unread): [video] or voice. */
+data class Ring(val item: InboxItem, val video: Boolean)
 
 /** What the first run shows now: the interests question, then the tour (each once). */
 enum class FirstRunStep { INTERESTS, TOUR }
@@ -48,6 +52,8 @@ data class SocialState(
     val askNotifications: Boolean = false,
     /** My profile's details are being saved. */
     val savingStyle: Boolean = false,
+    /** A friend calling me now, wherever I am in the app. */
+    val ring: Ring? = null,
 ) {
     val interestsShown get() = editingInterests || firstRun == FirstRunStep.INTERESTS
     fun isNew(i: InboxItem) = fresh?.contains(i.id) ?: !i.read
@@ -73,6 +79,7 @@ class SocialController(
 
     private var badgesJob: Job? = null
     private var inboxJob: Job? = null
+    private var ringJob: Job? = null
     /** Reads on their way to the server, and a count of reads sent: counts asked before a read landed are stale. */
     private var reading = 0
     private var reads = 0
@@ -88,6 +95,7 @@ class SocialController(
     fun reset() {
         badgesJob?.cancel()
         inboxJob?.cancel()
+        ringJob?.cancel()
         _state.value = SocialState()
     }
 
@@ -151,6 +159,7 @@ class SocialController(
         try {
             backend.inboxSignals().collect {
                 refreshBadges()
+                checkRing()
                 if (_state.value.inboxOpen) loadInbox()
             }
         } catch (e: CancellationException) {
@@ -158,6 +167,28 @@ class SocialController(
         } catch (_: Exception) {
             Unit
         }
+    }
+
+    /**
+     * Whether a friend is calling: the newest unread call notification whose call still waits for me (053). Every
+     * change to my notifications asks again, so an answered, declined or ended call stops ringing. A failed look keeps
+     * what rings now.
+     */
+    private fun checkRing() {
+        ringJob?.cancel()
+        ringJob = scope.launch {
+            val ring = runCatching {
+                backend.inbox().firstOrNull { it.kind == InboxKind.CALL && !it.read && it.matchId != null }
+                    ?.let { item -> backend.callAsked(item.matchId!!)?.let { Ring(item, it) } }
+            }.getOrElse { if (it is CancellationException) throw it else return@launch }
+            _state.update { it.copy(ring = ring) }
+        }
+    }
+
+    /** The ring was answered here (the server reads its notification). */
+    fun clearRing() {
+        ringJob?.cancel()
+        _state.update { it.copy(ring = null) }
     }
 
     fun refreshOnline() {

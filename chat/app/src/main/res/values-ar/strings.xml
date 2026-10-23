@@ -53,7 +53,7 @@
     <string name="err_network">مشكلة في الشبكة. يُرجى المحاولة مرة أخرى.</string>
     <string name="msg_purchase_done">اكتمل الشراء. استمتع!</string>
     <string name="msg_connection_lost">انقطع الاتصال. ابدأ دردشة جديدة إذا توقفت الرسائل.</string>
-    <string name="msg_declined">رفض %1$s مكالمة الفيديو</string>
+    <string name="msg_declined">رفض %1$s المكالمة</string>
     <string name="msg_reported_long">تم الإبلاغ والحظر. لن تتوافقا مجددًا.</string>
     <string name="msg_reported">تم الإبلاغ والحظر.</string>
     <string name="msg_deleted">تم حذف حسابك وبياناتك.</string>
@@ -64,7 +64,7 @@
     <string name="start_chatting">ابدأ الدردشة</string>
     <string name="lobby_rules">كن لطيفًا. العري أو التحرش أو القاصرون = حظر دائم.\nيمكنك دائمًا الإبلاغ والمغادرة فورًا.</string>
     <string name="premium_title">Yaari Plus</string>
-    <string name="premium_summary">اختيار الجنس · مكالمات الفيديو · التخطي خلال %1$s ث</string>
+    <string name="premium_summary">اختيار الجنس · التخطي خلال %1$s ث</string>
     <string name="finding">جارٍ البحث عن شخص لك…</string>
     <string name="looking_for">البحث عن: %1$s</string>
     <string name="cancel">إلغاء</string>
@@ -75,9 +75,7 @@
     <string name="plan_free">مجانية</string>
     <string name="upgrade">ترقية</string>
     <string name="premium_needed_gender">اختيار من تقابل يتطلب Plus.</string>
-    <string name="premium_needed_video">مكالمات الفيديو تتطلب Plus.</string>
     <string name="premium_benefit_gender">اختر مقابلة رجال أو نساء</string>
-    <string name="premium_benefit_video">مكالمات الفيديو (يجب أن يقبل الطرف الآخر)</string>
     <string name="premium_benefit_skip">انتقل إلى الشخص التالي بعد %1$s ث بدلًا من %2$s ث</string>
     <string name="premium_buy">احصل على Plus · %1$s</string>
     <string name="premium_buy_default">شهريًا</string>
@@ -213,7 +211,7 @@
     <string name="create_profile_sub">هكذا سيتعرّف عليك الناس.</string>
     <string name="premium_tagline">قابل بالضبط من تريد مقابلته.</string>
     <string name="plan_monthly">شهري</string>
-    <string name="plan_monthly_sub">اختيار الجنس ومكالمات الفيديو والتخطي السريع</string>
+    <string name="plan_monthly_sub">اختيار الجنس والتخطي السريع</string>
     <string name="plan_pass_title">تصريح 24 ساعة</string>
     <string name="plan_pass_sub">اختيار الجنس فقط، لمدة 24 ساعة</string>
     <string name="delete_sub">يحذف ملفك الشخصي ومنشوراتك ودردشاتك نهائيًا</string>
@@ -543,7 +541,6 @@
     <string name="interests_label">الاهتمامات</string>
     <string name="interests_edit">تعديل الاهتمامات</string>
     <string name="interests_add">أضف اهتماماتك</string>
-    <string name="interests_common">كلاكما يحب</string>
     <string name="interests_saved">تم حفظ الاهتمامات</string>
     <string name="tag_music">موسيقى</string>
     <string name="tag_movies">أفلام</string>
@@ -860,7 +857,7 @@
     <string name="link_reload">إعادة التحميل</string>
     <string name="link_open_browser">فتح في المتصفح</string>
     <string name="link_share_hint">يرى كل من في الغرفة هذه الصفحة بجانب الدردشة.</string>
-    <string name="link_share">عرض للجميع</string>
+    <string name="link_share">مشاهدة معًا</string>
     <string name="link_shared_by">شاركها %1$s</string>
     <string name="link_stop_sharing">إيقاف المشاركة</string>
     <string name="link_close_for_me">إغلاق عندي</string>
@@ -946,7 +943,6 @@
     <string name="look_frame_neon">نيون</string>
     <string name="look_frame_sakura">ساكورا</string>
     <string name="profile_details">تفاصيل الملف الشخصي</string>
-    <string name="details_nudge_title">أخبر الناس المزيد عنك</string>
     <string name="details_nudge">أضف حالة واللغات التي تتحدثها وبعض الأسئلة.</string>
     <string name="room_people">الأشخاص</string>
     <string name="room_resize">تغيير حجم الدردشة</string>
@@ -1033,4 +1029,14 @@
     <string name="sent_tab">المرسلة</string>
     <string name="sent_empty_title">لا طلبات معلّقة</string>
     <string name="sent_empty">طلبات الصداقة التي ترسلها تنتظر هنا حتى يُرد عليها.</string>
+    <string name="call">اتصال</string>
+    <string name="call_voice">مكالمة صوتية</string>
+    <string name="call_video">مكالمة فيديو</string>
+    <string name="call_cancel">إلغاء المكالمة</string>
+    <string name="voice_incoming_title">%1$s يريد مكالمة صوتية</string>
+    <string name="voice_incoming_text">يُنقل صوتك فقط. يمكنك تشغيل الكاميرا أثناء المكالمة.</string>
+    <string name="call_notif_text">في مكالمة · اضغط للعودة</string>
+    <string name="profile_status_quote">«%1$s»</string>
+    <string name="inbox_call">اتصل بك %1$s</string>
+    <string name="push_channel_calls">المكالمات</string>
 </resources>
