@@ -1,11 +1,10 @@
 {
-  "_comment": "Remote config served as v2/config.json. Lets us move hosting (e.g. put a Cloudflare custom domain first), announce outages or force updates without shipping a new APK. Mirror order = measured reachability from Indian ISPs (18-10-2026); lottodost.pages.dev (Cloudflare) added 19-10-2026, lottodost.com (same Cloudflare site, own domain) 25-10-2026; github.io stays first because push waits for it.",
+  "_comment": "Remote config served as v2/config.json. Lets us move hosting (e.g. put a Cloudflare custom domain first), announce outages or force updates without shipping a new APK. Mirror order = measured reachability from Indian ISPs (18-10-2026); lottodost.pages.dev (Cloudflare) added 19-10-2026, lottodost.com (same Cloudflare site, own domain) 25-10-2026, replacing lottodost.pages.dev, which now redirects there; github.io stays first because push waits for it.",
   "minVersionCode": 1,
   "latestVersionCode": 1,
   "mirrors": [
     "https://entrepreneur123.github.io/india/v2/",
     "https://lottodost.com/v2/",
-    "https://lottodost.pages.dev/v2/",
     "https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v2/",
     "https://raw.githubusercontent.com/entrepreneur123/india/data/v2/"
   ],
