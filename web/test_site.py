@@ -215,7 +215,7 @@ def test_draw_time_pages_rank_before_the_result_exists(tmp_path, monkeypatch):
     assert '<link rel="canonical" href="https://example.in/night-8pm/">' in night
     assert "data-wait" not in night and night.count("<tr>") >= 2   # the result and its last days
     bn = (out / "bn/morning-1pm/index.html").read_text()
-    assert "লটারি সংবাদ মর্নিং রেজাল্ট আজ 18.10.2026" in bn
+    assert "লটারি সংবাদ আজকের মর্নিং রেজাল্ট 18.10.2026" in bn
     home = (out / "index.html").read_text()
     for p in ("/morning-1pm/", "/day-6pm/", "/night-8pm/", "/kerala/"):
         assert f'href="{p}"' in home
