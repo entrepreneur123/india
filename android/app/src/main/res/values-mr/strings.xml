@@ -113,6 +113,8 @@
     <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेऱ्याची परवानगी हवी. हवे तर गॅलरीतून फोटोही निवडू शकता.</string>
     <string name="cancel">रद्द करा</string>
     <string name="pick_photo">फोटो निवडा</string>
+    <string name="torch_on">टॉर्च सुरू करा</string>
+    <string name="torch_off">टॉर्च बंद करा</string>
 
     <string name="tickets_title">माझी तिकिटे</string>
     <string name="tickets_hint">सेव्ह केलेली तिकिटे निकाल येताच आपोआप तपासली जातात.</string>

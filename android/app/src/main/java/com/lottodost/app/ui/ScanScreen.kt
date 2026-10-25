@@ -6,10 +6,14 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import android.util.Size
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
@@ -54,6 +58,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.lottodost.app.R
+import com.lottodost.app.domain.ScanConsensus
 import com.lottodost.app.domain.TicketParser
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -80,6 +85,9 @@ fun ScanScreen(onClose: () -> Unit, onText: (String) -> Unit) {
     var photoError by remember { mutableStateOf(false) }
     var link by remember { mutableStateOf<QrPayload.Link?>(null) }
     var codeWithoutTicket by remember { mutableStateOf(false) }
+    var camera by remember { mutableStateOf<Camera?>(null) }
+    var torch by remember { mutableStateOf(false) }
+    val consensus = remember { ScanConsensus() }
 
     /** A code was read: a ticket number is used at once; a link waits for the user; anything else is reported. */
     fun onCode(raw: String) {
@@ -109,8 +117,9 @@ fun ScanScreen(onClose: () -> Unit, onText: (String) -> Unit) {
         if (granted) {
             CameraPreview(
                 onFrameText = { text ->
-                    if (!done.get() && TicketParser.fromOcr(text).tickets.isNotEmpty() && done.compareAndSet(false, true)) onText(text)
+                    if (!done.get()) consensus.offer(text)?.let { if (done.compareAndSet(false, true)) onText(it) }
                 },
+                onCamera = { camera = it },
                 onCode = { raw -> if (!done.get()) onCode(raw) },
                 recognizer = recognizer, barcodes = barcodes,
             )
@@ -143,6 +152,12 @@ fun ScanScreen(onClose: () -> Unit, onText: (String) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             OutlinedButton(onClick = onClose, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel), color = Color.White) }
+            // Shop counters and evening light: the flash makes small printed digits readable.
+            camera?.takeIf { it.cameraInfo.hasFlashUnit() }?.let { cam ->
+                OutlinedButton(onClick = { torch = !torch; cam.cameraControl.enableTorch(torch) }, modifier = Modifier.weight(1f)) {
+                    Text(stringResource(if (torch) R.string.torch_off else R.string.torch_on), color = Color.White)
+                }
+            }
             Button(onClick = {
                 photoError = false
                 pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -156,6 +171,7 @@ fun ScanScreen(onClose: () -> Unit, onText: (String) -> Unit) {
 private fun CameraPreview(
     onFrameText: (String) -> Unit,
     onCode: (String) -> Unit,
+    onCamera: (Camera) -> Unit,
     recognizer: com.google.mlkit.vision.text.TextRecognizer,
     barcodes: BarcodeScanner,
 ) {
@@ -173,7 +189,10 @@ private fun CameraPreview(
             providerFuture.addListener({
                 val provider = providerFuture.get()
                 val preview = Preview.Builder().build().also { it.surfaceProvider = view.surfaceProvider }
+                // 720p for reading: the default 640x480 leaves a ticket number only a few pixels tall.
                 val analysis = ImageAnalysis.Builder()
+                    .setResolutionSelector(ResolutionSelector.Builder().setResolutionStrategy(
+                        ResolutionStrategy(Size(1280, 720), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)).build())
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                 analysis.setAnalyzer(executor) { proxy ->
@@ -190,7 +209,7 @@ private fun CameraPreview(
                     }
                 }
                 provider.unbindAll()
-                provider.bindToLifecycle(owner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis)
+                onCamera(provider.bindToLifecycle(owner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis))
             }, ContextCompat.getMainExecutor(ctx))
             view
         },

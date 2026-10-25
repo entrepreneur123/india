@@ -113,6 +113,8 @@
     <string name="scan_need_camera">ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਚਾਹੋ ਤਾਂ ਗੈਲਰੀ ਤੋਂ ਫ਼ੋਟੋ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ।</string>
     <string name="cancel">ਰੱਦ ਕਰੋ</string>
     <string name="pick_photo">ਫ਼ੋਟੋ ਚੁਣੋ</string>
+    <string name="torch_on">ਟਾਰਚ ਜਗਾਓ</string>
+    <string name="torch_off">ਟਾਰਚ ਬੰਦ ਕਰੋ</string>
 
     <string name="tickets_title">ਮੇਰੀਆਂ ਟਿਕਟਾਂ</string>
     <string name="tickets_hint">ਸੇਵ ਕੀਤੀਆਂ ਟਿਕਟਾਂ ਨਤੀਜਾ ਆਉਂਦੇ ਹੀ ਆਪਣੇ-ਆਪ ਚੈੱਕ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</string>

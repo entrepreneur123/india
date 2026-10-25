@@ -113,6 +113,8 @@
     <string name="scan_need_camera">স্ক্যান করতে ক্যামেরার অনুমতি লাগবে। চাইলে গ্যালারি থেকে ছবিও বেছে নিতে পারেন।</string>
     <string name="cancel">বাতিল</string>
     <string name="pick_photo">ছবি বেছে নিন</string>
+    <string name="torch_on">টর্চ জ্বালান</string>
+    <string name="torch_off">টর্চ নেভান</string>
 
     <string name="tickets_title">আমার টিকিট</string>
     <string name="tickets_hint">সেভ করা টিকিট রেজাল্ট বেরোলেই নিজে থেকে চেক হয়ে যায়।</string>

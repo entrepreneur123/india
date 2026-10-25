@@ -169,6 +169,12 @@ class MatcherTest {
         assertTrue(TicketParser.fromOcr("SOME TEXT KG 709965").tickets.isEmpty())
     }
 
+    @Test fun ocrReadsLaxmiTicketsWithoutTakingTheDate() {
+        val text = "NAGALAND STATE LOTTERIES\nDEAR LAXMI WEEKLY\nDraw on 22 10 2026 at 8 PM\n12 3456"
+        assertEquals(listOf("12 3456"), TicketParser.fromOcr(text).tickets.map { it.display() })
+        assertTrue(TicketParser.fromOcr("NOTICE 12 3456").tickets.isEmpty())
+    }
+
     @Test fun ocrFindsTheNumberInANoisyDearTicket() {
         // Typical camera text: wrapped lines, logo letters, prize text full of other numbers.
         val text = "NAGALAND STATE LOTTERIES\nDEAR\nPARROT\nWEDNESDAY WEEKLY LOTTERY\n1st Prize Rs 1 Crore\n" +

@@ -113,6 +113,8 @@
     <string name="scan_need_camera">स्क्यान गर्न क्यामेराको अनुमति चाहिन्छ। चाहनुहुन्छ भने ग्यालरीबाट फोटो पनि छान्न सक्नुहुन्छ।</string>
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="pick_photo">फोटो छान्नुहोस्</string>
+    <string name="torch_on">टर्च बाल्नुहोस्</string>
+    <string name="torch_off">टर्च निभाउनुहोस्</string>
 
     <string name="tickets_title">मेरा टिकट</string>
     <string name="tickets_hint">सेभ गरिएका टिकट नतिजा आउनेबित्तिकै आफैं जाँचिन्छन्।</string>
