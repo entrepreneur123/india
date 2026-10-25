@@ -414,7 +414,8 @@ class Site:
 <meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
 <link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png"><link rel="manifest" href="{self.path_prefix}/manifest.webmanifest">
+<meta name="robots" content="max-image-preview:large">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
 {ads_head}{ld_html}
@@ -781,6 +782,7 @@ class Site:
         title = w["kl_title"].format(d=d0, g=game(latest["name"])) if latest else w["kl_h1"]
         desc = w["kl_desc"].format(d=d0, g=game(latest["name"]), n=latest["tiers"][0]["numbers"][0]) if latest else w["kl_schedule"]
         self.write(out, lang, "/kerala/", self.page(lang, "/kerala/", title, desc, body, data=kl[:7],
+                                                    image=self.og_images.get(latest["id"], "") if latest else "",
                                                     crumbs=[(w["home"], "/"), (w["kl_tab"], "/kerala/")], tab="kerala",
                                                     wait=f"{self.today}_KL" if not today_done else "",
                                                     modified=self.updated if today_done else None), key="kerala", lastmod=self.stamp)
@@ -878,6 +880,7 @@ class Site:
         latest = today_d or (mine[0] if mine else None)
         self.write(out, lang, path, self.page(lang, path, w["slot_title"].format(w=word, d=d0, t=t), desc, body,
                                               data=[latest] if latest else [], tab="results",
+                                              image=self.og_images.get(latest["id"], "") if latest else "",
                                               crumbs=[(w["home"], "/"), (f"{word} {t}", path)],
                                               wait=f"{self.today}_{slot}" if not today_d and not no_dear else "",
                                               modified=self.updated if today_d else None), key=f"slot:{slot}",

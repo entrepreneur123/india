@@ -79,6 +79,9 @@ def test_site_icon_for_search_results(tmp_path, monkeypatch):
     for f in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
         assert (out / f).stat().st_size > 0, f
     assert '"logo": "https://example.in/icon-512.png"' in home
+    assert 'href="/india/manifest.webmanifest"' in home and 'content="max-image-preview:large"' in home
+    m = json.loads((out / "manifest.webmanifest").read_text())   # "Add to Home screen" in Chrome / Samsung Internet
+    assert m["start_url"] == "./" and {i["sizes"] for i in m["icons"]} == {"192x192", "512x512"}
 
 
 def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
