@@ -170,6 +170,11 @@ jobs:
                 || echo "::warning::Cloudflare deploy failed"
             fi
           }
+          # Until the custom domain answers, keep pointing search engines at the address that works.
+          if [ "$SITE_URL" = "https://lottodost.com" ] && ! curl -fsS -o /dev/null --max-time 15 https://lottodost.com/v2/config.json; then
+            echo "::warning::lottodost.com does not answer yet; site keeps github.io as its address"
+            SITE_URL=https://entrepreneur123.github.io/india
+          fi
           args="--out ../public --backfill-days ${{ steps.mode.outputs.backfill }}"
           if [ "${{ steps.mode.outputs.deep }}" = "true" ]; then args="$args --deep"; fi
           if [ "${{ steps.mode.outputs.ocr }}" != "true" ]; then args="$args --no-ocr"; fi
