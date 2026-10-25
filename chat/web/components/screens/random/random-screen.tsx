@@ -24,7 +24,9 @@ import { skippedRatings } from '@/components/trust/store'
 import type { RateTarget } from '@/components/trust/rating-sheet'
 import { TrustBadge } from '@/components/trust/badge'
 import { CountriesButton, flagsOf, saveCountries, savedCountries } from './country-picker'
-import { nameAge } from '@/lib/looks'
+import { nameAge, type FrameId } from '@/lib/looks'
+import { FrameAvatar } from '@/components/looks/frames'
+import { useLook } from '@/components/looks/look-name'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
@@ -58,6 +60,8 @@ export function RandomScreen({ active }: { active: boolean }) {
   const toast = useToast()
   const { t, lang } = useI18n()
   const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom, trust } = useApp()
+  // Only a bought frame goes round my photo (no default ring: frames are a look you buy).
+  const myFrame = (useLook(me?.id)?.frame ?? null) as FrameId | null
   // Rating a chat that ended (035): who both wrote in, and the one being rated now.
   const talked = useRef(new Map<string, boolean>())
   const ratedHere = useRef(new Set<string>())
@@ -333,9 +337,7 @@ export function RandomScreen({ active }: { active: boolean }) {
           >
             <BellButton className="absolute top-3 inset-e-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
-              <span className="rounded-full p-1 ring-2 ring-primary">
-                <Avatar name={me.name} src={me.photoUrl} size={128} />
-              </span>
+              <FrameAvatar frame={myFrame} name={me.name} src={me.photoUrl} size={128} />
               <p className="mt-5 text-lg font-semibold">
                 {me.name}, {me.age} <span aria-hidden>{flagEmoji(me.country)}</span>
               </p>
@@ -459,6 +461,7 @@ function Matching({
   active?: boolean
 }) {
   const { me } = useApp()
+  const myFrame = (useLook(me?.id)?.frame ?? null) as FrameId | null
   const { t } = useI18n()
   const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
   return (
@@ -475,9 +478,7 @@ function Matching({
         {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50" aria-hidden />
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50 [animation-delay:1.2s]" aria-hidden />
-        <span className="relative rounded-full p-1 ring-2 ring-primary">
-          <Avatar name={me.name} src={me.photoUrl} size={112} />
-        </span>
+        <FrameAvatar frame={myFrame} name={me.name} src={me.photoUrl} size={112} className="relative" />
       </div>
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>

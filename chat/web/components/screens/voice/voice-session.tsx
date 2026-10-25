@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
-import { mutate, type Key } from 'swr'
+import { useSWRConfig, type Key } from 'swr'
 import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
@@ -100,6 +100,7 @@ const REACTION_MS = 2600
 
 function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefObject<boolean>): VoiceSession {
   const backend = useBackend()
+  const { mutate } = useSWRConfig()
   const toast = useToast()
   const { t } = useI18n()
   const [room, setRoom] = useState<VoiceRoom | null>(null)
@@ -230,7 +231,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
       // The list shows it at once: my room gone after I end it, one person fewer after I leave.
       void backend.leaveVoice(roomId).catch(() => undefined).finally(() => void mutate(isRoomList))
     }
-  }, [backend, roomId, addLines, levels, toast, ending])
+  }, [backend, roomId, addLines, levels, toast, ending]) // not mutate: it is a new function on renders, and a re-run here leaves the room (a host's leave ends it)
 
   const me = room ? memberOf(room, room.meId) : null
 
@@ -464,6 +465,7 @@ export function VoiceHost({
   onClose: () => void
 }) {
   const backend = useBackend()
+  const { mutate } = useSWRConfig()
   const toast = useToast()
   const { t } = useI18n()
   const ending = useRef(false)
