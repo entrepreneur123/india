@@ -73,6 +73,8 @@ object TicketParser {
 
     private val OCR_D5 = Regex("""(?<![0-9A-Z])([0-9OIlSZBGT|]{2})\s?([A-Z0-9])\s?([0-9OIlSZBGTDQ|]{5})(?![0-9])""")
     private val OCR_B6 = Regex("""(?<![0-9A-Z])([A-Z])\s?([0-9OIlSZBGTDQ|]{6})(?![0-9])""")
+    // Kerala: two series letters and six digits ("KG 709965"), on tickets that say KERALA.
+    private val OCR_KL = Regex("""(?<![0-9A-Z])([A-Z]{2})\s?([0-9OIlSZBGTDQ|]{6})(?![0-9])""")
     private val OCR_DATE = Regex("""(?<!\d)(\d{1,2})[./-](\d{1,2})[./-](\d{2}|\d{4})(?!\d)""")
 
     data class OcrResult(val tickets: List<Ticket>, val date: String?, val words: Set<String>)
@@ -95,6 +97,12 @@ object TicketParser {
         // Bumper tickets ("A 801021") look like any letter+number, so only trust them on bumper tickets.
         if ("BUMPER" in upper || "MONTHLY" in upper) {
             for (m in OCR_B6.findAll(upper)) {
+                val digits = digitsOf(m.groupValues[2])
+                if (digits.all { it in '0'..'9' }) tickets += Ticket(m.groupValues[1], digits)
+            }
+        }
+        if ("KERALA" in upper) {
+            for (m in OCR_KL.findAll(upper)) {
                 val digits = digitsOf(m.groupValues[2])
                 if (digits.all { it in '0'..'9' }) tickets += Ticket(m.groupValues[1], digits)
             }
