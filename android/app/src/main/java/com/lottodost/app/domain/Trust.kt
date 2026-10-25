@@ -9,7 +9,7 @@ import java.net.URI
  */
 object Trust {
     private val MIRROR_HOSTS = setOf(
-        "entrepreneur123.github.io", "lottodost.pages.dev", "cdn.jsdelivr.net", "raw.githubusercontent.com",
+        "lottodost.com", "www.lottodost.com", "entrepreneur123.github.io", "lottodost.pages.dev", "cdn.jsdelivr.net", "raw.githubusercontent.com",
     )
     private val LINK_HOSTS = MIRROR_HOSTS + setOf(
         "nagalandlotteries.com", "lotterysambad.com", "play.google.com", "youtube.com", "youtu.be",

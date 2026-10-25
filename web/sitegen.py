@@ -1053,7 +1053,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", type=pathlib.Path, required=True, help="folder containing v2/")
     ap.add_argument("--out", type=pathlib.Path, required=True)
-    ap.add_argument("--base-url", default=os.environ.get("SITE_URL", "https://entrepreneur123.github.io/india"))
+    ap.add_argument("--base-url", default=os.environ.get("SITE_URL", "https://lottodost.com"))
     ap.add_argument("--link-prefix", default=None,
                     help='path the copy is served under, if not base-url\'s ("" for a mirror at a host root)')
     a = ap.parse_args(argv)
