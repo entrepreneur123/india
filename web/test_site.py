@@ -33,16 +33,34 @@ def test_draw_page_is_readable_without_javascript(tmp_path, monkeypatch):
     assert "<title>Lottery Sambad Morning 1 PM Result 18.10.2026 – Dear Wish Sunday</title>" in page
     assert "74D 70698" in page and "15172" in page          # 1st prize and a 2nd-prize number in the HTML itself
     assert '<link rel="canonical" href="https://example.in/result/18-10-2026/1pm/">' in page
-    assert 'hreflang="bn" href="https://example.in/bn/result/18-10-2026/1pm/"' in page
+    assert 'hreflang="bn-IN" href="https://example.in/bn/result/18-10-2026/1pm/"' in page   # for readers in India
+    assert '<meta property="og:locale" content="en_IN">' in page
     assert "adsbygoogle" not in page                        # no ad code until an AdSense id is configured
 
 
 def test_languages_and_home(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     bn = (out / "bn/index.html").read_text()
-    assert '<html lang="bn">' in bn and "নাগাল্যান্ড" in bn and "37K 90889" in bn
+    assert '<html lang="bn-IN">' in bn and "নাগাল্যান্ড" in bn and "37K 90889" in bn
     hi = (out / "hi/result/18-10-2026/index.html").read_text()
     assert "डियर लॉटरी रिज़ल्ट 18.10.2026" in hi
+
+
+def test_ticket_checker_comes_before_the_results(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    for f in ("index.html", "result/18-10-2026/index.html", "morning-1pm/index.html", "kerala/index.html"):
+        page = (out / f).read_text()
+        assert 0 < page.index('id="check"') < page.index('class="slip'), f
+    draw = (out / "result/18-10-2026/1pm/index.html").read_text()
+    assert draw.index('class="sheet"') < draw.index('id="check"') < draw.index('class="share"') < draw.index('class="card"')
+    assert "t.me/" not in (out / "index.html").read_text()   # no Telegram channel link (sharing a result stays)
+
+
+def test_home_names_the_site_for_google(tmp_path, monkeypatch):
+    home = (build(tmp_path, monkeypatch) / "index.html").read_text()
+    site = next(json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>', home)
+                if '"WebSite"' in x)
+    assert site["name"] == "LottoDost" and site["url"] == "https://example.in/" and site["inLanguage"] == "en-IN"
 
 
 def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
@@ -50,6 +68,7 @@ def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
     locs = re.findall(r"<loc>([^<]+)</loc>", (out / "sitemap.xml").read_text())
     assert len(locs) == len(set(locs))
     assert "https://example.in/bn/result/18-10-2026/8pm/" in locs
+    assert 'hreflang="hi-IN" href="https://example.in/hi/"' in (out / "sitemap.xml").read_text()
     assert (out / "robots.txt").read_text().endswith("Sitemap: https://example.in/sitemap.xml\n")
     assert not (out / "ads.txt").exists()
 

@@ -28,6 +28,8 @@ import guides  # web/guides.py: tax, claim and scam guides
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RES = ROOT / "android/app/src/main/res"
 LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "/hi")}
+# Every page is for readers in India: language + region in hreflang, lang and og:locale.
+REGION = {"en": "en-IN", "bn": "bn-IN", "hi": "hi-IN"}
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 WEEKLY = [("NL1PM", "13:00", "1pm"), ("SK6PM", "18:00", "6pm"), ("NL8PM", "20:00", "8pm")]
 SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}
@@ -70,7 +72,6 @@ WEB = {
         "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland Lottery Sambad.",
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
-        "telegram": "Get every result the moment it is out on our Telegram channel",
         "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
         "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM, Result Chart",
         "kl_desc": "Kerala lottery result {d}: {g}, 1st prize {n}. All prizes, ticket checker and the official result link.",
@@ -109,7 +110,6 @@ WEB = {
         "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড লটারি সংবাদ নামেও খোঁজা হয়।",
         "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
         "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
-        "telegram": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে পেতে আমাদের Telegram চ্যানেলে যোগ দিন",
         "check_hint_kl": "পুরো নম্বর লিখুন (যেমন MM 289707) বা শুধু শেষ 4টি সংখ্যা।", "kl_tab": "কেরালা", "kl_h1": "কেরালা লটারি আজকের রেজাল্ট",
         "kl_title": "কেরালা লটারি রেজাল্ট আজ {d} – {g} দুপুর 3টা",
         "kl_desc": "কেরালা লটারি রেজাল্ট {d}: {g}, প্রথম পুরস্কার {n}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্টের লিংক।",
@@ -148,7 +148,6 @@ WEB = {
         "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड लॉटरी संबाद नाम से भी खोजा जाता है।",
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
         "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
-        "telegram": "रिज़ल्ट आते ही पाने के लिए हमारे Telegram चैनल से जुड़ें",
         "check_hint_kl": "पूरा नंबर लिखें (जैसे MM 289707) या सिर्फ़ आख़िरी 4 अंक।", "kl_tab": "केरल", "kl_h1": "केरल लॉटरी आज का रिज़ल्ट",
         "kl_title": "केरल लॉटरी रिज़ल्ट आज {d} – {g} 3 PM",
         "kl_desc": "केरल लॉटरी रिज़ल्ट {d}: {g}, पहला इनाम {n}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट का लिंक।",
@@ -284,8 +283,6 @@ class Site:
         self.ad_slot = os.environ.get("ADSENSE_SLOT", "").strip()
         cfg = json.loads((data / "v2/config.json").read_text()) if (data / "v2/config.json").exists() else {}
         self.live_url = cfg.get("liveDrawUrl") or "https://www.nagalandlotteries.com/livedraw/index.php"
-        chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
-        self.telegram = f"https://t.me/{chat[1:]}" if re.fullmatch(r"@[A-Za-z0-9_]{5,32}", chat) else ""
         self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
@@ -339,7 +336,7 @@ class Site:
         w, s = WEB[lang], self.s[lang]
         alt = ""
         if alternates:
-            alt = "".join(f'<link rel="alternate" hreflang="{l}" href="{esc(self.abs(l, path))}">' for l in LANGS)
+            alt = "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, path))}">' for l in LANGS)
             alt += f'<link rel="alternate" hreflang="x-default" href="{esc(self.abs("en", path))}">'
         ads_head = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={esc(self.adsense)}" '
                     f'crossorigin="anonymous"></script>') if self.adsense else ""
@@ -349,6 +346,11 @@ class Site:
         if crumbs:
             ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
                 {"@type": "ListItem", "position": i + 1, "name": n, "item": self.abs(lang, p)} for i, (n, p) in enumerate(crumbs)]})
+        if path == "/":  # the name Google shows for the site, and who publishes it
+            ld.append({"@context": "https://schema.org", "@type": "WebSite", "name": "LottoDost",
+                       "alternateName": ["Lotto Dost", "LottoDost Lottery Result"], "url": self.abs(lang, "/"),
+                       "inLanguage": REGION[lang], "publisher": {"@type": "Organization", "name": "LottoDost",
+                                                                 "url": self.abs("en", "/"), "email": CONTACT}})
         if modified:  # a real freshness signal: when these numbers last changed
             ld.append({"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path),
                        "dateModified": modified.isoformat(timespec="minutes")})
@@ -359,7 +361,7 @@ class Site:
                   if image else "")
         nav_lang = lang if alternates else "en"
         langs_nav = "".join(
-            f'<a href="{esc(self.url(l, path))}" hreflang="{l}" lang="{l}"{" aria-current=\"true\"" if l == lang else ""}>'
+            f'<a href="{esc(self.url(l, path))}" hreflang="{REGION[l]}" lang="{REGION[l]}"{" aria-current=\"true\"" if l == lang else ""}>'
             f'{ {"en": "EN", "bn": "বাংলা", "hi": "हिन्दी"}[l] }</a>' for l in LANGS) if alternates else ""
         check_href = "#check" if 'id="check"' in body else self.url(nav_lang, "/") + "#check"
         tabs = [("results", s["tab_results"], self.url(nav_lang, "/")), ("kerala", w["kl_tab"], self.url(nav_lang, "/kerala/")),
@@ -378,7 +380,7 @@ class Site:
                 f'<a href="{self.url("en", "/disclaimer/")}">{esc(w["disclaimer"])}</a><a href="{self.path_prefix}/privacy.html">{esc(w["privacy"])}</a></p>'
                 f'<p>{esc(s["disclaimer_body"])}</p><p>{esc(s["source_note"])}</p>')
         return f"""<!doctype html>
-<html lang="{lang}">
+<html lang="{REGION[lang]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -387,7 +389,7 @@ class Site:
 <link rel="canonical" href="{esc(self.abs(lang, path))}">
 {alt}
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
-<meta property="og:type" content="website"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
+<meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
@@ -536,11 +538,6 @@ class Site:
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false"><button>{esc(s["history_search"])}</button></form>'
                 f'<div id="histRes" aria-live="polite"></div></section>')
 
-    def telegram_cta(self, lang: str) -> str:
-        if not self.telegram:
-            return ""
-        return f'<p class="btns"><a class="btn tgc" rel="noopener" href="{esc(self.telegram)}">{esc(WEB[lang]["telegram"])} →</a></p>'
-
     def og_image(self, out: pathlib.Path, d: dict) -> str:
         """A 1200x630 card with the 1st prize for WhatsApp/Telegram/Facebook previews. Our own rendering of
         the published numbers (facts), not a copy of anyone's sheet. Skipped when Pillow is missing."""
@@ -648,10 +645,9 @@ class Site:
             up = next((u for u in self.index.get("upcoming", []) if u["date"] >= self.today), None)
             body = (f'<div class="intro"><h1>{esc(w["home_h1"])} <span class="d">{esc(d0)}</span></h1>'
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
-                    + self.chips(lang, latest) + self.hub_links(lang)
+                    + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
-                    + self.day_cards(lang, latest) + self.telegram_cta(lang) + self.ad() + self.checker(lang)
-                    + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
+                    + self.day_cards(lang, latest) + self.ad() + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
                                                  crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home", lastmod=self.stamp)
@@ -664,8 +660,8 @@ class Site:
                 if i > 0:
                     nav.append(f'<a class="btn" href="{self.url(lang, self.day_path(self.dates[i - 1]))}">{esc(w["next"])} →</a>')
                 draws = [d for d in self.ordered(self.days[date]) if d.get("tiers")]
-                body = (f'<div class="intro"><h1>{esc(w["day_h1"].format(d=dd))}</h1></div>' + self.chips(lang, date)
-                        + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>' + self.checker(lang))
+                body = (f'<div class="intro"><h1>{esc(w["day_h1"].format(d=dd))}</h1></div>' + self.checker(lang) + self.chips(lang, date)
+                        + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>')
                 self.write(out, lang, self.day_path(date),
                            self.page(lang, self.day_path(date), w["day_title"].format(d=dd),
                                      w["home_desc"].format(d=dd, list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
@@ -689,8 +685,8 @@ class Site:
                     desc = w["kl_desc"].format(d=dd, g=g, n=first) if kl else w["draw_desc"].format(g=g, d=dd, t=t, n=first)
                     sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
                                    f'<b>{esc(short_time(x["time"]))}</b>{esc(game(x["name"]).replace("Dear ", ""))}</a>' for x in draws)
-                    body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d) + self.share(lang, d)
-                            + self.checker(lang, s["find_in_result"], kerala=kl)
+                    body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d)
+                            + self.checker(lang, s["find_in_result"], kerala=kl) + self.share(lang, d)
                             + (f'<p class="hint">{esc(s["kerala_source_note"])}</p>' if kl else "")
                             + f'<section class="card">{self.tiers(lang, d, ads=True)}</section>' + self.source_buttons(lang, d)
                             + f'<nav class="chips" aria-label="{esc(w["all_of_day"].format(d=dd))}">{sibs}</nav>'
@@ -755,7 +751,7 @@ class Site:
         table = self.recent_table(lang, kl[:30], w["kl_recent"])
         d0 = ddmmyyyy(latest["date"]) if latest else ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["kl_h1"])} <span class="d">{esc(d0)}</span></h1>'
-                f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + cards + self.ad() + self.checker(lang, kerala=True) + table
+                f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + self.checker(lang, kerala=True) + cards + self.ad() + table
                 + f'<p class="hint">{esc(s["kerala_source_note"])}</p>' + self.history(lang))
         title = w["kl_title"].format(d=d0, g=game(latest["name"])) if latest else w["kl_h1"]
         desc = w["kl_desc"].format(d=d0, g=game(latest["name"]), n=latest["tiers"][0]["numbers"][0]) if latest else w["kl_schedule"]
@@ -825,8 +821,8 @@ class Site:
             cards += self.slip(lang, mine[0]) if mine else ""   # the last result, for those checking yesterday's ticket
         d0 = ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["slot_h1"].format(w=word, t=t))} <span class="d">{esc(d0)}</span></h1>'
-                f'<p class="hint">{esc(w["a_time"])}</p></div>' + self.hub_links(lang, path) + cards + self.telegram_cta(lang)
-                + self.ad() + self.checker(lang) + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word))
+                f'<p class="hint">{esc(w["a_time"])}</p></div>' + self.checker(lang) + self.hub_links(lang, path) + cards
+                + self.ad() + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word))
                 + self.history(lang) + self.app_promo(lang) + self.faq(lang))
         desc = (w["slot_desc"].format(t=t, w=word, d=d0, n=today_d["tiers"][0]["numbers"][0]) if today_d
                 else w["slot_desc_wait"].format(t=t, w=word, d=d0))
@@ -883,7 +879,7 @@ class Site:
                 if key.startswith("page:") and lang != "en":
                     continue
                 links = "" if key.startswith("page:") else "".join(
-                    f'<xhtml:link rel="alternate" hreflang="{l}" href="{esc(u)}"/>' for l, u in alts.items())
+                    f'<xhtml:link rel="alternate" hreflang="{REGION[l]}" href="{esc(u)}"/>' for l, u in alts.items())
                 mod = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""   # when the numbers last changed
                 urls.append(f"<url><loc>{esc(loc)}</loc>{mod}{links}</url>")
         (out / "sitemap.xml").write_text(
@@ -958,7 +954,7 @@ h2.sub{font-size:1.1rem;margin:22px 0 4px}.faq{margin:24px 0 8px}.faq h2{font-si
 th,td{padding:10px 6px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}th:first-child{padding-left:14px}td:last-child{padding-right:12px}thead th{border-top:0;background:var(--soft);color:var(--mut);font-size:.8rem}
 tbody th a{color:var(--fg);font-weight:700;text-decoration:none}tbody th small{display:block;color:var(--mut);font-weight:400}
 td a{color:var(--red);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums;font-size:.86rem}tbody th small{font-size:.75rem}
-.hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}.tgc{background:#2481cc;color:#fff;border:0}
+.hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}
 #dateForm{display:flex;align-items:center;gap:8px;padding:12px}#dateForm input{flex:1 1 10rem;font-size:1.05rem;letter-spacing:0;text-transform:none}
 .foot{color:var(--mut);font-size:.8rem;padding:28px 0 36px;margin-top:24px;border-top:1px solid var(--line)}.foot p{margin:0 0 8px}
 .foot .links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.88rem}.ad{margin:16px 0;min-height:100px}
