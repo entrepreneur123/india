@@ -62,7 +62,7 @@ jobs:
       PIPELINE_PACE: "1"
       # Website: public address, ad and analytics ids (repository Variables; all optional).
       SITE_URL: ${{ vars.SITE_URL || 'https://lottodost.com' }}
-      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT || 'ca-pub-6960795569881478' }}   # AdSense publisher id (public)
       ADSENSE_SLOT: ${{ vars.ADSENSE_SLOT }}
       PLAY_URL: ${{ vars.PLAY_URL }}
       CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
