@@ -15,11 +15,13 @@ import urllib.request
 
 KEY = "02718a8e3becab6dcf865cf1b74d00dd"
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
-SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm"}
+SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}  # as web/sitegen.py
+# The fixed pages that show each draw's latest result (web/sitegen.py HUB and /kerala/).
+HUB = {"NL1PM": "/morning-1pm/", "SK6PM": "/day-6pm/", "NL8PM": "/night-8pm/", "KL": "/kerala/"}
 
 
 def fresh_urls(site_url: str, today_feed: dict, today: dt.date) -> list[str]:
-    """Home and day pages plus every draw page of today and yesterday, in the three languages."""
+    """Home, draw-time hubs and day pages plus every draw page of today and yesterday, in the three languages."""
     base = site_url.rstrip("/")
     paths = ["/"]
     for d in today_feed.get("draws", []):
@@ -28,7 +30,8 @@ def fresh_urls(site_url: str, today_feed: dict, today: dt.date) -> list[str]:
         y, m, dd = d["date"].split("-")
         day = f"/result/{dd}-{m}-{y}/"
         slug = SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
-        for p in (day, f"{day}{slug}/"):
+        hubs = (HUB[d["slot"]], "/yesterday/") if d["slot"] in HUB and d["date"] == today.isoformat() else ()
+        for p in (day, f"{day}{slug}/", *hubs):
             if p not in paths:
                 paths.append(p)
     return [f"{base}{lang}{p}" for p in paths for lang in ("", "/bn", "/hi")]

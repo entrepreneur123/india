@@ -13,7 +13,14 @@ def test_fresh_urls_cover_languages_days_and_draws():
     assert "https://example.in/" in urls and "https://example.in/bn/" in urls
     assert "https://example.in/hi/result/19-10-2026/1pm/" in urls
     assert not any("laxmi" in u or "17-10-2026" in u for u in urls)  # PDF-only and old draws are not new pages
-    assert len(urls) == len(set(urls)) == 9
+    assert "https://example.in/morning-1pm/" in urls and "https://example.in/hi/yesterday/" in urls  # pages that changed
+    assert len(urls) == len(set(urls)) == 15
+
+
+def test_kerala_draw_page_url_matches_the_site():
+    feed = {"draws": [{"id": "2026-10-19_KL", "slot": "KL", "date": "2026-10-19", "tiers": [{}]}]}
+    urls = indexnow.fresh_urls("https://example.in", feed, dt.date(2026, 10, 19))
+    assert "https://example.in/result/19-10-2026/kerala/" in urls and "https://example.in/kerala/" in urls
 
 
 def test_body_points_to_key_file_on_the_same_host():

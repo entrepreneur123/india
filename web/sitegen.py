@@ -27,6 +27,7 @@ import guides  # web/guides.py: tax, claim and scam guides
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RES = ROOT / "android/app/src/main/res"
+STATIC = ROOT / "web/static"
 LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "/hi")}
 # Every page is for readers in India: language + region in hreflang, lang and og:locale.
 REGION = {"en": "en-IN", "bn": "bn-IN", "hi": "hi-IN"}
@@ -42,17 +43,22 @@ CONTACT = "yechan750745@gmail.com"
 # Page-level texts. {d} = 19.10.2026, {t} = 1 PM, {g} = game name, {s} = state, {n} = 1st prize.
 WEB = {
     "en": {
-        "home_title": "Lottery Sambad Result Today {d} – Dear Lottery 1 PM, 6 PM, 8 PM",
+        "home_title": "Lottery Sambad Result Today {d} – Dear Nagaland State Lottery 1 PM, 6 PM, 8 PM",
         "home_h1": "Lottery Sambad Result Today",
-        "home_desc": "Dear lottery result {d}: {list}. Full prize list, ticket checker and official result links.",
+        "home_desc": "Lottery Sambad (লটারি সংবাদ) today result {d} ({s}): {list}. Nagaland State Lottery Dear morning 1 PM, day 6 PM, night 8 PM – all prizes, ticket checker and live draw.",
+        "day_desc": "Lottery Sambad result {d} ({s}): {list}. All prizes of the Dear 1 PM, 6 PM and 8 PM Nagaland State Lottery draws, with a ticket checker.",
+        "yday": "Yesterday", "yday_h1": "Lottery Sambad Yesterday Result",
+        "yday_title": "Lottery Sambad Yesterday Result {d} – Dear 1 PM, 6 PM, 8 PM and Kerala",
+        "yday_desc": "Yesterday's lottery result {d} ({s}): {list}. Dear Nagaland State Lottery 1 PM, 6 PM, 8 PM and Kerala lottery – all prizes and a ticket checker.",
+        "yday_week": "1st prizes – last 7 days",
         "day_title": "Lottery Sambad Result {d} – Dear Lottery 1 PM, 6 PM, 8 PM",
         "day_h1": "Lottery Sambad Result {d}",
         "draw_title": "Lottery Sambad {w} {t} Result {d} – {g}",
         "draw_title_special": "Dear Lottery Result {d} {t} – {g} | {s} State Lottery",
         "slot_title": "Lottery Sambad {w} Result Today {d} – Dear {t}", "slot_h1": "Lottery Sambad {w} {t} Result",
-        "slot_desc": "Dear {t} ({w}) result {d}: 1st prize {n}. Full prize list, ticket checker and every {w} result of the last 30 days.",
+        "slot_desc": "Nagaland State Lottery Dear {t} ({w}) result {d}: 1st prize {n}. Full prize list, ticket checker and every {w} result of the last 30 days.",
         "slot_desc_wait": "Dear {t} ({w}) result {d} comes about 10 minutes after the draw and this page updates by itself. {w} results of the last 30 days.",
-        "slot_recent": "{w} results – last 30 days", "slot_all": "All {w} {t} results",
+        "slot_recent": "{t} result chart – last 30 days", "slot_all": "All {w} {t} results",
         "draw_desc": "{g} result {d} {t}: 1st prize {n}. All prize numbers and a ticket checker.",
         "awaited": "awaited", "result_of": "Result of {d}", "all_of_day": "All results of {d}",
         "old_title": "Lottery Sambad Old Result – Dear Lottery 1 PM, 6 PM, 8 PM, All Dates", "old_h1": "Old results",
@@ -69,7 +75,7 @@ WEB = {
         "about": "About", "contact": "Contact", "disclaimer": "Disclaimer", "privacy": "Privacy policy",
         "about_body": "LottoDost publishes Dear lottery results within minutes of each draw. Numbers are read from the published result sheet, checked for completeness and compared with the official Nagaland gazette when it is released. We are not a government website, we are not affiliated with Lottery Sambad or any lottery department, and we do not sell tickets.",
         "contact_body": "Questions, corrections or removal requests: {e}. We usually reply within two working days.",
-        "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland Lottery Sambad.",
+        "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland State Lottery, Dhankesari and লটারি সংবাদ.",
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
         "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
@@ -82,7 +88,12 @@ WEB = {
     "bn": {
         "home_title": "লটারি সংবাদ রেজাল্ট আজ {d} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",
         "home_h1": "লটারি সংবাদ আজকের রেজাল্ট",
-        "home_desc": "ডিয়ার লটারি রেজাল্ট {d}: {list}। পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্টের লিংক।",
+        "home_desc": "লটারি সংবাদ আজকের রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা – সব পুরস্কার, টিকিট চেক আর লাইভ ড্র।",
+        "day_desc": "লটারি সংবাদ রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার 1টা, 6টা, 8টার সব পুরস্কার আর টিকিট চেক।",
+        "yday": "গতকাল", "yday_h1": "লটারি সংবাদ গতকালের রেজাল্ট",
+        "yday_title": "লটারি সংবাদ গতকালের রেজাল্ট {d} – ডিয়ার 1টা, 6টা, 8টা আর কেরালা",
+        "yday_desc": "গতকালের লটারি রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার 1টা, 6টা, 8টা আর কেরালা লটারি – সব পুরস্কার আর টিকিট চেক।",
+        "yday_week": "প্রথম পুরস্কার – গত 7 দিন",
         "day_title": "লটারি সংবাদ রেজাল্ট {d} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",
         "day_h1": "লটারি সংবাদ রেজাল্ট {d}",
         "draw_title": "লটারি সংবাদ {w} {t} রেজাল্ট {d} – {g}",
@@ -90,7 +101,7 @@ WEB = {
         "slot_title": "লটারি সংবাদ {w} রেজাল্ট আজ {d} – ডিয়ার {t}", "slot_h1": "লটারি সংবাদ {w} {t} রেজাল্ট",
         "slot_desc": "ডিয়ার {t} ({w}) রেজাল্ট {d}: প্রথম পুরস্কার {n}। পুরো পুরস্কারের তালিকা, টিকিট চেক আর গত 30 দিনের সব {w} রেজাল্ট।",
         "slot_desc_wait": "ডিয়ার {t} ({w}) রেজাল্ট {d} ড্রয়ের প্রায় 10 মিনিট পরে আসে, পেজটি নিজে থেকেই আপডেট হয়। গত 30 দিনের {w} রেজাল্ট।",
-        "slot_recent": "{w} রেজাল্ট – গত 30 দিন", "slot_all": "সব {w} {t} রেজাল্ট",
+        "slot_recent": "{t} রেজাল্ট চার্ট – গত 30 দিন", "slot_all": "সব {w} {t} রেজাল্ট",
         "draw_desc": "{g} রেজাল্ট {d} {t}: প্রথম পুরস্কার {n}। সব পুরস্কারের নম্বর আর টিকিট চেক।",
         "awaited": "রেজাল্টের অপেক্ষা", "result_of": "{d}-এর রেজাল্ট", "all_of_day": "{d}-এর সব রেজাল্ট",
         "old_title": "লটারি সংবাদ পুরোনো রেজাল্ট – ডিয়ার লটারি সব তারিখ", "old_h1": "পুরোনো রেজাল্ট",
@@ -107,7 +118,7 @@ WEB = {
         "about": "আমাদের কথা", "contact": "যোগাযোগ", "disclaimer": "দায়মুক্তি", "privacy": "প্রাইভেসি পলিসি",
         "about_body": "LottoDost প্রতিটি ড্রয়ের কয়েক মিনিটের মধ্যে ডিয়ার লটারির রেজাল্ট দেয়। নম্বরগুলো প্রকাশিত রেজাল্ট শিট থেকে পড়া হয়, সব ঠিক আছে কি না দেখা হয়, আর নাগাল্যান্ডের সরকারি গেজেট বেরোলে তার সঙ্গে মেলানো হয়। এটি সরকারি ওয়েবসাইট নয়, লটারি সংবাদ বা কোনো লটারি দপ্তরের সঙ্গে আমাদের সম্পর্ক নেই, আর আমরা টিকিট বিক্রি করি না।",
         "contact_body": "প্রশ্ন, সংশোধন বা কিছু সরানোর অনুরোধ: {e}। সাধারণত দুই কাজের দিনের মধ্যে উত্তর দিই।",
-        "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড লটারি সংবাদ নামেও খোঁজা হয়।",
+        "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড স্টেট লটারি, ধনকেশরী নামেও খোঁজা হয়।",
         "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
         "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
         "check_hint_kl": "পুরো নম্বর লিখুন (যেমন MM 289707) বা শুধু শেষ 4টি সংখ্যা।", "kl_tab": "কেরালা", "kl_h1": "কেরালা লটারি আজকের রেজাল্ট",
@@ -120,7 +131,12 @@ WEB = {
     "hi": {
         "home_title": "लॉटरी संबाद रिज़ल्ट आज {d} – डियर लॉटरी 1 PM, 6 PM, 8 PM",
         "home_h1": "लॉटरी संबाद आज का रिज़ल्ट",
-        "home_desc": "डियर लॉटरी रिज़ल्ट {d}: {list}। पूरी इनाम लिस्ट, टिकट चेक और सरकारी रिज़ल्ट के लिंक।",
+        "home_desc": "लॉटरी संबाद आज का रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM – सारे इनाम, टिकट चेक और लाइव ड्रॉ।",
+        "day_desc": "लॉटरी संबाद रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM के सारे इनाम और टिकट चेक।",
+        "yday": "कल", "yday_h1": "लॉटरी संबाद कल का रिज़ल्ट",
+        "yday_title": "लॉटरी संबाद कल का रिज़ल्ट {d} – डियर 1 PM, 6 PM, 8 PM और केरल",
+        "yday_desc": "कल का लॉटरी रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM और केरल लॉटरी – सारे इनाम और टिकट चेक।",
+        "yday_week": "पहला इनाम – पिछले 7 दिन",
         "day_title": "लॉटरी संबाद रिज़ल्ट {d} – डियर लॉटरी 1 PM, 6 PM, 8 PM",
         "day_h1": "लॉटरी संबाद रिज़ल्ट {d}",
         "draw_title": "लॉटरी संबाद {w} {t} रिज़ल्ट {d} – {g}",
@@ -128,7 +144,7 @@ WEB = {
         "slot_title": "लॉटरी संबाद {w} रिज़ल्ट आज {d} – डियर {t}", "slot_h1": "लॉटरी संबाद {w} {t} रिज़ल्ट",
         "slot_desc": "डियर {t} ({w}) रिज़ल्ट {d}: पहला इनाम {n}। पूरी इनाम लिस्ट, टिकट चेक और पिछले 30 दिनों के सभी {w} रिज़ल्ट।",
         "slot_desc_wait": "डियर {t} ({w}) रिज़ल्ट {d} ड्रॉ के लगभग 10 मिनट बाद आता है और यह पेज अपने-आप अपडेट होता है। पिछले 30 दिनों के {w} रिज़ल्ट।",
-        "slot_recent": "{w} रिज़ल्ट – पिछले 30 दिन", "slot_all": "सभी {w} {t} रिज़ल्ट",
+        "slot_recent": "{t} रिज़ल्ट चार्ट – पिछले 30 दिन", "slot_all": "सभी {w} {t} रिज़ल्ट",
         "draw_desc": "{g} रिज़ल्ट {d} {t}: पहला इनाम {n}। सारे इनाम के नंबर और टिकट चेक।",
         "awaited": "रिज़ल्ट का इंतज़ार", "result_of": "{d} का रिज़ल्ट", "all_of_day": "{d} के सारे रिज़ल्ट",
         "old_title": "लॉटरी संबाद पुराने रिज़ल्ट – डियर लॉटरी सभी तारीख़ें", "old_h1": "पुराने रिज़ल्ट",
@@ -145,7 +161,7 @@ WEB = {
         "about": "हमारे बारे में", "contact": "संपर्क", "disclaimer": "अस्वीकरण", "privacy": "प्राइवेसी पॉलिसी",
         "about_body": "LottoDost हर ड्रॉ के कुछ ही मिनट में डियर लॉटरी का रिज़ल्ट देता है। नंबर प्रकाशित रिज़ल्ट शीट से पढ़े जाते हैं, पूरे हैं या नहीं यह जाँचा जाता है, और नागालैंड का सरकारी गज़ट आने पर उससे मिलाया जाता है। यह सरकारी वेबसाइट नहीं है, लॉटरी संबाद या किसी लॉटरी विभाग से हमारा कोई संबंध नहीं है, और हम टिकट नहीं बेचते।",
         "contact_body": "सवाल, सुधार या कुछ हटवाने के लिए: {e}। आमतौर पर दो कामकाजी दिनों में जवाब देते हैं।",
-        "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड लॉटरी संबाद नाम से भी खोजा जाता है।",
+        "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड स्टेट लॉटरी, धनकेसरी नाम से भी खोजा जाता है।",
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
         "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
         "check_hint_kl": "पूरा नंबर लिखें (जैसे MM 289707) या सिर्फ़ आख़िरी 4 अंक।", "kl_tab": "केरल", "kl_h1": "केरल लॉटरी आज का रिज़ल्ट",
@@ -214,6 +230,11 @@ def rupees(n: int) -> str:
 def time12(hhmm: str) -> str:
     h, m = (int(x) for x in hhmm.split(":"))
     return f"{h % 12 or 12}:{m:02d} {'PM' if h >= 12 else 'AM'}"
+
+
+def ddmmyy(iso: str) -> str:  # "25/10/26", as people type dates into search
+    y, m, d = iso.split("-")
+    return f"{d}/{m}/{y[2:]}"
 
 
 def short_time(hhmm: str) -> str:  # "1 PM" as people search it
@@ -350,7 +371,8 @@ class Site:
             ld.append({"@context": "https://schema.org", "@type": "WebSite", "name": "LottoDost",
                        "alternateName": ["Lotto Dost", "LottoDost Lottery Result"], "url": self.abs(lang, "/"),
                        "inLanguage": REGION[lang], "publisher": {"@type": "Organization", "name": "LottoDost",
-                                                                 "url": self.abs("en", "/"), "email": CONTACT}})
+                                                                 "url": self.abs("en", "/"), "email": CONTACT,
+                                                                 "logo": self.abs("en", "/icon-512.png")}})
         if modified:  # a real freshness signal: when these numbers last changed
             ld.append({"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path),
                        "dateModified": modified.isoformat(timespec="minutes")})
@@ -391,6 +413,8 @@ class Site:
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
+<link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
 {ads_head}{ld_html}
@@ -648,7 +672,7 @@ class Site:
                     + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
                     + self.day_cards(lang, latest) + self.ad() + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
-            self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, list=summary),
+            self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, s=ddmmyy(latest), list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
                                                  crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home", lastmod=self.stamp)
             # one page per day and per draw
@@ -664,7 +688,7 @@ class Site:
                         + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>')
                 self.write(out, lang, self.day_path(date),
                            self.page(lang, self.day_path(date), w["day_title"].format(d=dd),
-                                     w["home_desc"].format(d=dd, list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
+                                     w["day_desc"].format(d=dd, s=ddmmyy(date), list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
                                                                                   for d in draws)) if draws else w["day_title"].format(d=dd),
                                      body, data=draws, live=date == self.today,
                                      crumbs=[(w["home"], "/"), (dd, self.day_path(date))], tab="results",
@@ -703,6 +727,7 @@ class Site:
             self.guide_pages(out, lang)
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
+            self.yesterday_hub(out, lang)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
             months = sorted({x[:7] for x in self.dates}, reverse=True)
             self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
@@ -803,9 +828,33 @@ class Site:
         """The four daily results by the names people search them by (Morning, Day, Night, Kerala)."""
         s, w = self.s[lang], WEB[lang]
         items = [(HUB[sl], s[TAG[sl]], short_time(t)) for sl, t, _ in WEEKLY] + [("/kerala/", w["kl_tab"], "3 PM")]
+        yd = self.yesterday()
+        if yd:
+            items.append(("/yesterday/", w["yday"], f"{yd[8:]}.{yd[5:7]}"))
         a = "".join(f'<a class="chip"{" aria-current=\"page\"" if p == current else ""} href="{self.url(lang, p)}"><b>{esc(t)}</b>{esc(n)}</a>'
                     for p, n, t in items)
         return f'<nav class="chips hubs" aria-label="{esc(s["tab_results"])}">{a}</nav>'
+
+    def yesterday(self) -> str:
+        """The last day before today with results ("lottery sambad yesterday" is searched every day)."""
+        return next((x for x in self.dates if x < self.today), "")
+
+    def yesterday_hub(self, out: pathlib.Path, lang: str) -> None:
+        """/yesterday/: a fixed address for yesterday's results, with the 1st prizes of the week before."""
+        yd = self.yesterday()
+        if not yd:
+            return
+        w, path, dd = WEB[lang], "/yesterday/", ddmmyyyy(yd)
+        draws = [d for d in self.ordered(self.days[yd]) if d.get("tiers")]
+        week = [x for x in self.dates if x < self.today][:7]
+        body = (f'<div class="intro"><h1>{esc(w["yday_h1"])} <span class="d">{esc(dd)}</span></h1></div>'
+                + self.checker(lang) + self.hub_links(lang, path) + self.day_cards(lang, yd)
+                + f'<p class="pn"><a class="btn" href="{self.url(lang, self.day_path(yd))}">{esc(w["all_of_day"].format(d=dd))}</a></p>'
+                + self.ad() + f'<h2 class="sub">{esc(w["yday_week"])}</h2>' + self.archive(lang, week) + self.faq(lang))
+        summary = ", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}' for d in draws)
+        self.write(out, lang, path, self.page(lang, path, w["yday_title"].format(d=dd), w["yday_desc"].format(d=dd, s=ddmmyy(yd), list=summary),
+                                              body, data=draws, tab="results", crumbs=[(w["home"], "/"), (w["yday"], path)]),
+                   key="yesterday", lastmod=self.stamp)
 
     def slot_hub(self, out: pathlib.Path, lang: str, slot: str, time: str) -> None:
         """/morning-1pm/ etc.: today's result of one daily draw (or the countdown to it) and its last 30 days."""
@@ -822,7 +871,7 @@ class Site:
         d0 = ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["slot_h1"].format(w=word, t=t))} <span class="d">{esc(d0)}</span></h1>'
                 f'<p class="hint">{esc(w["a_time"])}</p></div>' + self.checker(lang) + self.hub_links(lang, path) + cards
-                + self.ad() + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word))
+                + self.ad() + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word, t=t))
                 + self.history(lang) + self.app_promo(lang) + self.faq(lang))
         desc = (w["slot_desc"].format(t=t, w=word, d=d0, n=today_d["tiers"][0]["numbers"][0]) if today_d
                 else w["slot_desc_wait"].format(t=t, w=word, d=d0))
@@ -873,6 +922,9 @@ class Site:
     def assets(self, out: pathlib.Path):
         (out / "assets").mkdir(parents=True, exist_ok=True)
         (out / "assets/site.js").write_text(JS, encoding="utf-8")
+        for f in STATIC.iterdir():  # site icons (web/static: favicon.svg is the source of the PNGs)
+            if not (out / f.name).exists() or (out / f.name).read_bytes() != f.read_bytes():
+                (out / f.name).write_bytes(f.read_bytes())
         urls = []
         for key, alts, lastmod in self.pages:
             for lang, loc in alts.items():

@@ -43,7 +43,7 @@ def test_languages_and_home(tmp_path, monkeypatch):
     bn = (out / "bn/index.html").read_text()
     assert '<html lang="bn-IN">' in bn and "নাগাল্যান্ড" in bn and "37K 90889" in bn
     hi = (out / "hi/result/18-10-2026/index.html").read_text()
-    assert "डियर लॉटरी रिज़ल्ट 18.10.2026" in hi
+    assert "लॉटरी संबाद रिज़ल्ट 18.10.2026 (18/10/26)" in hi   # dates as people type them too
 
 
 def test_ticket_checker_comes_before_the_results(tmp_path, monkeypatch):
@@ -61,6 +61,24 @@ def test_home_names_the_site_for_google(tmp_path, monkeypatch):
     site = next(json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>', home)
                 if '"WebSite"' in x)
     assert site["name"] == "LottoDost" and site["url"] == "https://example.in/" and site["inLanguage"] == "en-IN"
+
+
+def test_yesterday_page_has_a_fixed_address(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    page = (out / "yesterday/index.html").read_text()
+    assert "<title>Lottery Sambad Yesterday Result 17.10.2026 – Dear 1 PM, 6 PM, 8 PM and Kerala</title>" in page
+    assert 'class="slip' in page and 'id="check"' in page and "/result/17-10-2026/" in page
+    assert 'href="/yesterday/"' in (out / "index.html").read_text()        # linked from the home page
+    assert "https://example.in/hi/yesterday/" in (out / "sitemap.xml").read_text()
+
+
+def test_site_icon_for_search_results(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch, link_prefix="/india")
+    home = (out / "index.html").read_text()
+    assert '<link rel="icon" href="/india/favicon.ico" sizes="48x48">' in home and 'href="/india/apple-touch-icon.png"' in home
+    for f in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
+        assert (out / f).stat().st_size > 0, f
+    assert '"logo": "https://example.in/icon-512.png"' in home
 
 
 def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
