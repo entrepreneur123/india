@@ -693,6 +693,8 @@ const ms: Dict = {
   'settings.dmEveryoneBody': 'Mati: hanya rakan boleh menghantar mesej',
   'error.too_many_posts': 'Anda boleh ada maksimum 50 siaran. Padam satu untuk siar semula.',
   'explore.country': 'Negara',
+  'pf.photoRequired': 'Tambah foto profil untuk bermula',
+  'video.flip': 'Tukar kamera',
 }
 
 export default ms

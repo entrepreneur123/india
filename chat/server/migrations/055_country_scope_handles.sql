@@ -5,11 +5,13 @@
 --    "N online" count is the count of my country. Friendships made before stay.
 -- 2. Age by country: adult_age() is the age of majority where Google Play's "block minors" (random chat apps, policy of
 --    2026-08-26) needs more than 18: South Korea 19 (Civil Act art. 4). Checked at sign-up, after the phone's country is
---    known (set_country is folded into check_adult: triggers run by name and profiles_adult came before profiles_country).
+--    known (check_adult now finds the country itself: triggers run by name and profiles_adult came before profiles_country).
 -- 3. IDs exactly like Instagram's: lower-case a-z, digits, "." and "_", 2-30 long, no "." at either end, no "..".
 --    Typed capitals are lowered (handle_check, set_handle). All 505 existing IDs already fit (checked 2026-10-25).
 -- 4. No free fonts: bio, status and prompt answers get name_plain() like names (fancy-font letters are a look you buy).
--- 5. find_match and find_match2 (wrappers no app calls; both apps use find_match3) are dropped.
+-- 5. Nothing is dropped here (a drop needs the owner's confirmation in the database tool): the unused find_match /
+--    find_match2, queue.want, app_stats.online and set_country go in 063. profiles_handle_check keeps its free-ID
+--    patterns; handle_valid itself is the new rule.
 
 -- 1. Same country --------------------------------------------------------------------------------------------------
 
@@ -104,9 +106,6 @@ begin
   return mid;
 end $$;
 
-drop function if exists public.find_match2(text, text);
-drop function if exists public.find_match(text);
-alter table public.queue drop column if exists want;
 
 create or replace function public.bot_match_people() returns void
 language plpgsql security definer set search_path = '' as $$
@@ -236,7 +235,6 @@ begin
   end if;
   return coalesce((s.by_country ->> (select x.country from public.profiles x where x.id = auth.uid()))::int, 0);
 end $$;
-alter table public.app_stats drop column if exists online;
 
 -- 2. Age by country ------------------------------------------------------------------------------------------------
 
@@ -263,8 +261,6 @@ begin
   if carried is not null then new.banned_until := carried; end if;
   return new;
 end $$;
-drop trigger if exists profiles_country on public.profiles;
-drop function if exists public.set_country();
 
 -- 3. Instagram IDs -------------------------------------------------------------------------------------------------
 
@@ -286,8 +282,6 @@ begin
   return 'user_' || left(replace(gen_random_uuid()::text, '-', ''), 24);
 end $$;
 
-alter table public.profiles drop constraint if exists profiles_handle_check;
-alter table public.profiles add constraint profiles_handle_check check (public.handle_valid(handle));
 
 create or replace function public.handle_check(p_handle text) returns text
 language plpgsql stable security definer set search_path = '' as $$
@@ -339,6 +333,5 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists profiles_name_plain on public.profiles;
-create trigger profiles_name_plain before insert or update of name, bio, status, prompts on public.profiles
+create or replace trigger profiles_name_plain before insert or update of name, bio, status, prompts on public.profiles
   for each row execute function public.profile_name_guard();

@@ -693,6 +693,8 @@ const tr: Dict = {
   'settings.dmEveryoneBody': 'Kapalıysa yalnızca arkadaşların mesaj atabilir',
   'error.too_many_posts': 'En fazla 50 gönderin olabilir. Yeniden paylaşmak için birini sil.',
   'explore.country': 'Ülke',
+  'pf.photoRequired': 'Başlamak için bir profil fotoğrafı ekle',
+  'video.flip': 'Kamerayı değiştir',
 }
 
 export default tr

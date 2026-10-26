@@ -683,6 +683,8 @@ const es: Dict = {
   'settings.dmEveryoneBody': 'Desactivado: solo tus amigos pueden escribirte',
   'error.too_many_posts': 'Puedes tener hasta 50 publicaciones. Borra una para publicar otra.',
   'explore.country': 'País',
+  'pf.photoRequired': 'Añade una foto de perfil para empezar',
+  'video.flip': 'Cambiar cámara',
 }
 
 export default es

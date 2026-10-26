@@ -680,6 +680,8 @@ const ne: Dict = {
   'settings.dmEveryoneBody': 'बन्द भए साथीहरूले मात्र सन्देश पठाउन सक्छन्',
   'error.too_many_posts': 'बढीमा ५० पोस्ट राख्न सकिन्छ। फेरि पोस्ट गर्न एउटा मेटाउनुहोस्।',
   'explore.country': 'देश',
+  'pf.photoRequired': 'सुरु गर्न प्रोफाइल फोटो थप्नुहोस्',
+  'video.flip': 'क्यामेरा बदल्नुहोस्',
 }
 
 export default ne

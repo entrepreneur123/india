@@ -679,6 +679,8 @@ const bn: Dict = {
   'settings.dmEveryoneBody': 'বন্ধ থাকলে শুধু বন্ধুরা মেসেজ করতে পারবে',
   'error.too_many_posts': 'সর্বোচ্চ ৫০টি পোস্ট রাখা যায়। আবার পোস্ট করতে একটি মুছুন।',
   'explore.country': 'দেশ',
+  'pf.photoRequired': 'শুরু করতে একটি প্রোফাইল ছবি যোগ করুন',
+  'video.flip': 'ক্যামেরা বদলান',
 }
 
 export default bn

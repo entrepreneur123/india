@@ -679,6 +679,8 @@ const hi: Dict = {
   'settings.dmEveryoneBody': 'बंद होने पर सिर्फ़ दोस्त मैसेज कर सकते हैं',
   'error.too_many_posts': 'आप ज़्यादा से ज़्यादा 50 पोस्ट रख सकते हैं। फिर से पोस्ट करने के लिए एक हटाएँ।',
   'explore.country': 'देश',
+  'pf.photoRequired': 'शुरू करने के लिए प्रोफ़ाइल फ़ोटो जोड़ें',
+  'video.flip': 'कैमरा बदलें',
 }
 
 export default hi

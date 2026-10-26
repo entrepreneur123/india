@@ -4,6 +4,7 @@ import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
+import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -168,6 +169,10 @@ export function ChatView({
   }
 
   const ended = live && chat.partnerLeft
+  // The partner left: a sound with the red line, so it is noticed (the owner, 2026-10-26).
+  useEffect(() => {
+    if (ended) playRoomSound('leave', true)
+  }, [ended])
   // 040: a thread whose chat ended goes on only between friends; until then a friends bar replaces the composer.
   const friendship = useFriendship(partner.id, partner.name)
   const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
@@ -299,7 +304,7 @@ export function ChatView({
           )}
           <AnimatePresence>{chat.typing ? <TypingBubble key="typing" name={partner.name} /> : null}</AnimatePresence>
           {ended ? (
-            <li className="mx-auto mt-6 rounded-lg bg-bubble-in px-4 py-2 text-xs font-semibold text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
+            <li role="alert" className="mx-auto mt-6 rounded-xl bg-destructive/10 px-4 py-2.5 text-sm font-bold text-destructive ring-1 ring-destructive/30">
               {t('chat.partnerLeft', { name: partner.name })}
             </li>
           ) : null}

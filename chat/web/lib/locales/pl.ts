@@ -686,6 +686,8 @@ const pl: Dict = {
   'settings.dmEveryoneBody': 'Wyłączone: piszą do ciebie tylko znajomi',
   'error.too_many_posts': 'Możesz mieć maksymalnie 50 postów. Usuń jeden, aby dodać nowy.',
   'explore.country': 'Kraj',
+  'pf.photoRequired': 'Dodaj zdjęcie profilowe, aby zacząć',
+  'video.flip': 'Przełącz aparat',
 }
 
 export default pl

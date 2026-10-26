@@ -705,6 +705,8 @@ const ar: Dict = {
   'settings.dmEveryoneBody': 'عند الإيقاف يراسلك الأصدقاء فقط',
   'error.too_many_posts': 'يمكنك نشر 50 منشورًا كحد أقصى. احذف واحدًا لتنشر مجددًا.',
   'explore.country': 'الدولة',
+  'pf.photoRequired': 'أضف صورة للملف الشخصي لتبدأ',
+  'video.flip': 'تبديل الكاميرا',
 }
 
 export default ar

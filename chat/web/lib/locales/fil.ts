@@ -693,6 +693,8 @@ const fil: Dict = {
   'settings.dmEveryoneBody': 'Kapag naka-off, mga kaibigan lang ang makakapag-message sa iyo',
   'error.too_many_posts': 'Hanggang 50 post lang ang puwede. Magbura ng isa para makapag-post ulit.',
   'explore.country': 'Bansa',
+  'pf.photoRequired': 'Magdagdag ng profile photo para makapagsimula',
+  'video.flip': 'Palitan ang camera',
 }
 
 export default fil

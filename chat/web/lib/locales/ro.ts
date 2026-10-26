@@ -683,6 +683,8 @@ const ro: Dict = {
   'settings.dmEveryoneBody': 'Dezactivat: doar prietenii îți pot scrie',
   'error.too_many_posts': 'Poți avea cel mult 50 de postări. Șterge una ca să postezi din nou.',
   'explore.country': 'Țară',
+  'pf.photoRequired': 'Adaugă o poză de profil ca să începi',
+  'video.flip': 'Schimbă camera',
 }
 
 export default ro

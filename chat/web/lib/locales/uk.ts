@@ -699,6 +699,8 @@ const uk: Dict = {
   'settings.dmEveryoneBody': 'Вимкнено: писати вам можуть лише друзі',
   'error.too_many_posts': 'Можна мати щонайбільше 50 дописів. Видаліть один, щоб опублікувати знову.',
   'explore.country': 'Країна',
+  'pf.photoRequired': 'Додайте фото профілю, щоб почати',
+  'video.flip': 'Змінити камеру',
 }
 
 export default uk

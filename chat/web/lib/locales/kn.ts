@@ -680,6 +680,8 @@ const kn: Dict = {
   'settings.dmEveryoneBody': 'ಆಫ್ ಆಗಿದ್ದರೆ ಸ್ನೇಹಿತರು ಮಾತ್ರ ಸಂದೇಶ ಕಳುಹಿಸಬಹುದು',
   'error.too_many_posts': 'ಗರಿಷ್ಠ 50 ಪೋಸ್ಟ್‌ಗಳನ್ನು ಇಡಬಹುದು. ಮತ್ತೆ ಪೋಸ್ಟ್ ಮಾಡಲು ಒಂದನ್ನು ಅಳಿಸಿ.',
   'explore.country': 'ದೇಶ',
+  'pf.photoRequired': 'ಪ್ರಾರಂಭಿಸಲು ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಸೇರಿಸಿ',
+  'video.flip': 'ಕ್ಯಾಮೆರಾ ಬದಲಿಸಿ',
 }
 
 export default kn

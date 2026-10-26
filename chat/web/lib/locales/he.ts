@@ -696,6 +696,8 @@ const he: Dict = {
   'settings.dmEveryoneBody': 'כשכבוי, רק חברים יכולים לשלוח לך הודעה',
   'error.too_many_posts': 'אפשר עד 50 פוסטים. מחקו אחד כדי לפרסם שוב.',
   'explore.country': 'מדינה',
+  'pf.photoRequired': 'כדי להתחיל צריך להוסיף תמונת פרופיל',
+  'video.flip': 'החלפת מצלמה',
 }
 
 export default he

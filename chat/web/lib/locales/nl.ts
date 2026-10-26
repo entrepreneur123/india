@@ -680,6 +680,8 @@ const nl: Dict = {
   'settings.dmEveryoneBody': 'Uit: alleen vrienden kunnen je berichten',
   'error.too_many_posts': 'Je kunt maximaal 50 posts hebben. Verwijder er een om opnieuw te posten.',
   'explore.country': 'Land',
+  'pf.photoRequired': 'Voeg een profielfoto toe om te beginnen',
+  'video.flip': 'Wissel camera',
 }
 
 export default nl

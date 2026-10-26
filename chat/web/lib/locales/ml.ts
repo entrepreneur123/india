@@ -680,6 +680,8 @@ const ml: Dict = {
   'settings.dmEveryoneBody': 'ഓഫ് ആണെങ്കിൽ സുഹൃത്തുക്കൾക്ക് മാത്രം സന്ദേശം അയയ്ക്കാം',
   'error.too_many_posts': 'പരമാവധി 50 പോസ്റ്റുകൾ വയ്ക്കാം. വീണ്ടും പോസ്റ്റ് ചെയ്യാൻ ഒന്ന് ഇല്ലാതാക്കുക.',
   'explore.country': 'രാജ്യം',
+  'pf.photoRequired': 'തുടങ്ങാൻ ഒരു പ്രൊഫൈൽ ഫോട്ടോ ചേർക്കുക',
+  'video.flip': 'ക്യാമറ മാറ്റുക',
 }
 
 export default ml

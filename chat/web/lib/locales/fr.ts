@@ -683,6 +683,8 @@ const fr: Dict = {
   'settings.dmEveryoneBody': 'Désactivé : seuls tes amis peuvent t’écrire',
   'error.too_many_posts': 'Tu peux avoir jusqu’à 50 publications. Supprimes-en une pour publier à nouveau.',
   'explore.country': 'Pays',
+  'pf.photoRequired': 'Ajoute une photo de profil pour commencer',
+  'video.flip': 'Changer de caméra',
 }
 
 export default fr

@@ -680,6 +680,8 @@ const de: Dict = {
   'settings.dmEveryoneBody': 'Aus: Nur Freunde können dir schreiben',
   'error.too_many_posts': 'Du kannst bis zu 50 Beiträge haben. Lösche einen, um wieder zu posten.',
   'explore.country': 'Land',
+  'pf.photoRequired': 'Füge ein Profilfoto hinzu, um zu starten',
+  'video.flip': 'Kamera wechseln',
 }
 
 export default de

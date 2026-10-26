@@ -693,6 +693,8 @@ const zhHant: Dict = {
   'settings.dmEveryoneBody': '關閉後只有好友能傳訊息給你',
   'error.too_many_posts': '最多只能發佈50則貼文。刪除一則後再發佈。',
   'explore.country': '國家',
+  'pf.photoRequired': '請先設定大頭貼才能開始',
+  'video.flip': '切換鏡頭',
 }
 
 export default zhHant

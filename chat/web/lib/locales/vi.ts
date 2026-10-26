@@ -679,6 +679,8 @@ const vi: Dict = {
   'settings.dmEveryoneBody': 'Tắt: chỉ bạn bè mới nhắn tin cho bạn được',
   'error.too_many_posts': 'Bạn chỉ có tối đa 50 bài đăng. Xóa một bài để đăng lại.',
   'explore.country': 'Quốc gia',
+  'pf.photoRequired': 'Hãy thêm ảnh đại diện để bắt đầu',
+  'video.flip': 'Đổi camera',
 }
 
 export default vi

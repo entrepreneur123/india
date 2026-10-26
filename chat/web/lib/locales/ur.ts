@@ -658,6 +658,8 @@ const ur: Dict = {
   'settings.dmEveryoneBody': 'بند ہو تو صرف دوست پیغام بھیج سکتے ہیں',
   'error.too_many_posts': 'آپ زیادہ سے زیادہ 50 پوسٹس رکھ سکتے ہیں۔ دوبارہ پوسٹ کرنے کے لیے ایک حذف کریں۔',
   'explore.country': 'ملک',
+  'pf.photoRequired': 'شروع کرنے کے لیے پروفائل تصویر شامل کریں',
+  'video.flip': 'کیمرا بدلیں',
 }
 
 export default ur

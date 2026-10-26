@@ -7,6 +7,7 @@
 // on 443 stays available for networks that block UDP.
 import {
   AudioPresets,
+  type LocalVideoTrack,
   type Participant,
   type RemoteParticipant,
   type RemoteTrack,
@@ -41,6 +42,8 @@ export interface Call {
   /** Throws a DeviceProblem string when the device cannot be turned on. */
   setMic(on: boolean): Promise<void>
   setCamera(on: boolean): Promise<void>
+  /** Front ↔ back camera (phones and tablets); says which one is on now. */
+  flipCamera(): Promise<'user' | 'environment'>
   /** Call from a tap: lets a browser that blocked autoplay play the partner's sound. */
   startAudio(): Promise<void>
   disconnect(): Promise<void>
@@ -161,6 +164,7 @@ export async function joinCall(
   ev.blocked(!room.canPlaybackAudio)
 
   const lp = room.localParticipant
+  let facing: 'user' | 'environment' = 'user'
   const showSelf = () => lp.getTrackPublication(Track.Source.Camera)?.videoTrack?.attach(els.local)
   const enable = async (turnOn: () => Promise<unknown>): Promise<DeviceProblem | null> => {
     try {
@@ -193,6 +197,12 @@ export async function joinCall(
     setCamera: async (on) => {
       await toggle(() => lp.setCameraEnabled(on))
       if (on) showSelf()
+    },
+    flipCamera: async () => {
+      facing = facing === 'user' ? 'environment' : 'user'
+      const track = lp.getTrackPublication(Track.Source.Camera)?.videoTrack as LocalVideoTrack | undefined
+      await track?.restartTrack({ facingMode: facing, resolution: VideoPresets.h720.resolution })
+      return facing
     },
     startAudio: () => room.startAudio(),
     disconnect: async () => { leaving = true; await room.disconnect() },

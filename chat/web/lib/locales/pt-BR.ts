@@ -679,6 +679,8 @@ const ptBR: Dict = {
   'settings.dmEveryoneBody': 'Desligado: só amigos podem te mandar mensagem',
   'error.too_many_posts': 'Você pode ter até 50 posts. Apague um para postar de novo.',
   'explore.country': 'País',
+  'pf.photoRequired': 'Adicione uma foto de perfil para começar',
+  'video.flip': 'Trocar câmera',
 }
 
 export default ptBR

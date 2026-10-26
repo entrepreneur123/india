@@ -680,6 +680,8 @@ const te: Dict = {
   'settings.dmEveryoneBody': 'ఆఫ్ చేస్తే స్నేహితులు మాత్రమే మెసేజ్ చేయగలరు',
   'error.too_many_posts': 'గరిష్ఠంగా 50 పోస్ట్‌లు ఉంచవచ్చు. మళ్లీ పోస్ట్ చేయడానికి ఒకటి తొలగించండి.',
   'explore.country': 'దేశం',
+  'pf.photoRequired': 'ప్రారంభించడానికి ప్రొఫైల్ ఫోటో జోడించండి',
+  'video.flip': 'కెమెరా మార్చండి',
 }
 
 export default te

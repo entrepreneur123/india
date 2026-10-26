@@ -693,6 +693,8 @@ const th: Dict = {
   'settings.dmEveryoneBody': 'ปิด: เฉพาะเพื่อนที่ส่งข้อความหาคุณได้',
   'error.too_many_posts': 'มีโพสต์ได้สูงสุด 50 โพสต์ ลบหนึ่งโพสต์เพื่อโพสต์ใหม่',
   'explore.country': 'ประเทศ',
+  'pf.photoRequired': 'เพิ่มรูปโปรไฟล์เพื่อเริ่มใช้งาน',
+  'video.flip': 'สลับกล้อง',
 }
 
 export default th

@@ -49,7 +49,8 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const plainName = namePlain(name)
   // An empty ID keeps the free one the server gives; one being checked is judged by set_handle.
   const handleOk = !handle.trim() || handleState === 'checking' || handleUsable(handleState)
-  const valid = name.trim().length >= 1 && plainName && handleOk && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
+  // A profile photo is required to start (the owner, 2026-10-26).
+  const valid = photo !== null && name.trim().length >= 1 && plainName && handleOk && gender !== '' && age !== null && age >= 18 && age <= 100 && agreed
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -91,7 +92,14 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         <p className="text-sm leading-relaxed text-muted-foreground">{t('pf.body')}</p>
       </div>
 
-      <PhotoPicker file={photo} onChange={setPhoto} name={name} />
+      <div className="flex flex-col gap-1.5">
+        <PhotoPicker file={photo} onChange={setPhoto} name={name} />
+        {touched && !photo ? (
+          <p role="alert" className="text-sm font-medium text-destructive">
+            {t('pf.photoRequired')}
+          </p>
+        ) : null}
+      </div>
 
       <Field
         label={t('pf.name')}

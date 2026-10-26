@@ -693,6 +693,8 @@ const ja: Dict = {
   'settings.dmEveryoneBody': 'オフにすると友達だけがメッセージを送れます',
   'error.too_many_posts': '投稿は最大50件までです。もう一度投稿するには1件削除してください。',
   'explore.country': '国',
+  'pf.photoRequired': '始めるにはプロフィール写真を設定してください',
+  'video.flip': 'カメラを切り替え',
 }
 
 export default ja

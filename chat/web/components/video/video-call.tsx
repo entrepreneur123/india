@@ -3,7 +3,7 @@
 import { LazyMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef, useState } from 'react'
-import { EyeOff, Mic, MicOff, Phone, PhoneOff, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
+import { EyeOff, Mic, MicOff, Phone, PhoneOff, SwitchCamera, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import type { Call, CallState, PartnerNotice } from '@/lib/livekit'
@@ -35,6 +35,12 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
   const [state, setState] = useState<CallState | 'demo'>('connecting')
   const [mic, setMic] = useState(true)
   const [camera, setCamera] = useState(video)
+  // Front or back camera; the flip button shows only on devices with more than one camera.
+  const [facing, setFacing] = useState<'user' | 'environment'>('user')
+  const [cameras, setCameras] = useState(0)
+  useEffect(() => {
+    navigator.mediaDevices?.enumerateDevices().then((d) => setCameras(d.filter((x) => x.kind === 'videoinput').length), () => undefined)
+  }, [camera])
   // Nudity check on the partner's video (lib/nudity.ts): blurred until the first clean frame, hidden while flagged.
   const [shield, setShield] = useState<'checking' | 'clear' | 'hidden'>('checking')
   // My connection (bars), my partner's (a notice instead of a frozen picture), their camera, and iOS autoplay.
@@ -138,6 +144,10 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
       setCamera(!next)
       showDeviceError(e, 'camera')
     })
+  }
+  const flipCamera = async () => {
+    const now = await callRef.current?.flipCamera().catch(() => null)
+    if (now) setFacing(now)
   }
   const showDeviceError = (e: Error, kind: 'camera' | 'mic') => {
     const p = (['denied', 'missing', 'busy', 'other'] as const).find((x) => x === e.message) ?? 'other'
@@ -274,7 +284,7 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
         className="absolute top-20 inset-e-5 h-44 w-32 cursor-grab overflow-hidden rounded-3xl bg-white/10 shadow-e3 ring-1 ring-ink-foreground/15 active:cursor-grabbing sm:h-56 sm:w-40"
         aria-label={t('video.yourCamera')}
       >
-        <video ref={localRef} autoPlay playsInline muted className={cn('size-full -scale-x-100 object-cover', !camera && 'opacity-0')} />
+        <video ref={localRef} autoPlay playsInline muted className={cn('size-full object-cover', facing === 'user' && '-scale-x-100', !camera && 'opacity-0')} />
         {!camera || state === 'demo' ? (
           <div className="absolute inset-0 grid place-items-center text-xs font-semibold text-ink-foreground/70">
             {camera ? t('video.yourCamera') : t('video.cameraOff')}
@@ -289,6 +299,11 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
         <CallButton label={camera ? t('video.camOff') : t('video.camOn')} onClick={() => void toggleCamera()} active={!camera}>
           {camera ? <Video className="size-6" aria-hidden /> : <VideoOff className="size-6" aria-hidden />}
         </CallButton>
+        {camera && cameras > 1 ? (
+          <CallButton label={t('video.flip')} onClick={() => void flipCamera()}>
+            <SwitchCamera className="size-6" aria-hidden />
+          </CallButton>
+        ) : null}
         <CallButton label={t('video.end')} onClick={onEnd} danger autoFocus>
           <PhoneOff className="size-6" aria-hidden />
         </CallButton>

@@ -699,6 +699,8 @@ const ru: Dict = {
   'settings.dmEveryoneBody': 'Выключено: писать вам могут только друзья',
   'error.too_many_posts': 'Можно иметь не больше 50 постов. Удалите один, чтобы опубликовать снова.',
   'explore.country': 'Страна',
+  'pf.photoRequired': 'Добавьте фото профиля, чтобы начать',
+  'video.flip': 'Сменить камеру',
 }
 
 export default ru

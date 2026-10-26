@@ -658,6 +658,8 @@ const mr: Dict = {
   'settings.dmEveryoneBody': 'बंद असल्यास फक्त मित्र मेसेज करू शकतात',
   'error.too_many_posts': 'जास्तीत जास्त 50 पोस्ट ठेवता येतात. पुन्हा पोस्ट करण्यासाठी एक हटवा.',
   'explore.country': 'देश',
+  'pf.photoRequired': 'सुरू करण्यासाठी प्रोफाइल फोटो जोडा',
+  'video.flip': 'कॅमेरा बदला',
 }
 
 export default mr

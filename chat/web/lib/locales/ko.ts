@@ -693,6 +693,8 @@ const ko: Dict = {
   'settings.dmEveryoneBody': '끄면 친구만 메시지를 보낼 수 있어요',
   'error.too_many_posts': '게시물은 최대 50개까지 올릴 수 있어요. 하나를 지우고 다시 올려 주세요.',
   'explore.country': '국가',
+  'pf.photoRequired': '프로필 사진을 설정해야 시작할 수 있어요',
+  'video.flip': '카메라 전환',
 }
 
 export default ko

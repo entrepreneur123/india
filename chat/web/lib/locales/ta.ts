@@ -680,6 +680,8 @@ const ta: Dict = {
   'settings.dmEveryoneBody': 'அணைத்தால் நண்பர்கள் மட்டுமே செய்தி அனுப்பலாம்',
   'error.too_many_posts': 'அதிகபட்சம் 50 பதிவுகள் வைக்கலாம். மீண்டும் பதிவிட ஒன்றை நீக்குங்கள்.',
   'explore.country': 'நாடு',
+  'pf.photoRequired': 'தொடங்க சுயவிவரப் படத்தைச் சேர்க்கவும்',
+  'video.flip': 'கேமராவை மாற்று',
 }
 
 export default ta

@@ -693,6 +693,8 @@ const id: Dict = {
   'settings.dmEveryoneBody': 'Mati: hanya teman yang bisa mengirim pesan',
   'error.too_many_posts': 'Kamu bisa punya maksimal 50 postingan. Hapus satu untuk posting lagi.',
   'explore.country': 'Negara',
+  'pf.photoRequired': 'Tambahkan foto profil untuk mulai',
+  'video.flip': 'Ganti kamera',
 }
 
 export default id

@@ -692,6 +692,8 @@ const en = {
   'settings.dmEveryoneBody': 'Off: only friends can message you',
   'error.too_many_posts': 'You can have up to 50 posts. Delete one to post again.',
   'explore.country': 'Country',
+  'pf.photoRequired': 'Add a profile photo to start',
+  'video.flip': 'Switch camera',
 } as const
 
 export default en

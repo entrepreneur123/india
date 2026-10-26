@@ -693,6 +693,8 @@ const zhHans: Dict = {
   'settings.dmEveryoneBody': '关闭后只有好友能给你发消息',
   'error.too_many_posts': '最多只能发布50条帖子。删除一条后再发布。',
   'explore.country': '国家',
+  'pf.photoRequired': '请先设置头像才能开始',
+  'video.flip': '切换摄像头',
 }
 
 export default zhHans

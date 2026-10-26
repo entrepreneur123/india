@@ -658,6 +658,8 @@ const pa: Dict = {
   'settings.dmEveryoneBody': 'ਬੰਦ ਹੋਣ ਤੇ ਸਿਰਫ਼ ਦੋਸਤ ਮੈਸੇਜ ਕਰ ਸਕਦੇ ਹਨ',
   'error.too_many_posts': 'ਤੁਸੀਂ ਵੱਧ ਤੋਂ ਵੱਧ 50 ਪੋਸਟਾਂ ਰੱਖ ਸਕਦੇ ਹੋ। ਮੁੜ ਪੋਸਟ ਕਰਨ ਲਈ ਇੱਕ ਮਿਟਾਓ।',
   'explore.country': 'ਦੇਸ਼',
+  'pf.photoRequired': 'ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪ੍ਰੋਫ਼ਾਈਲ ਫ਼ੋਟੋ ਜੋੜੋ',
+  'video.flip': 'ਕੈਮਰਾ ਬਦਲੋ',
 }
 
 export default pa

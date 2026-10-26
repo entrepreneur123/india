@@ -658,6 +658,8 @@ const gu: Dict = {
   'settings.dmEveryoneBody': 'બંધ હોય તો ફક્ત મિત્રો મેસેજ કરી શકે',
   'error.too_many_posts': 'તમે વધુમાં વધુ 50 પોસ્ટ રાખી શકો. ફરી પોસ્ટ કરવા એક કાઢી નાખો.',
   'explore.country': 'દેશ',
+  'pf.photoRequired': 'શરૂ કરવા માટે પ્રોફાઇલ ફોટો ઉમેરો',
+  'video.flip': 'કૅમેરા બદલો',
 }
 
 export default gu

@@ -693,6 +693,8 @@ const fa: Dict = {
   'settings.dmEveryoneBody': 'اگر خاموش باشد فقط دوستان می‌توانند پیام بدهند',
   'error.too_many_posts': 'حداکثر ۵۰ پست می‌توانید داشته باشید. برای پست دوباره یکی را حذف کنید.',
   'explore.country': 'کشور',
+  'pf.photoRequired': 'برای شروع یک عکس پروفایل اضافه کن',
+  'video.flip': 'تعویض دوربین',
 }
 
 export default fa

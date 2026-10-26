@@ -693,6 +693,8 @@ const sw: Dict = {
   'settings.dmEveryoneBody': 'Ikizimwa, marafiki pekee wanaweza kukutumia ujumbe',
   'error.too_many_posts': 'Unaweza kuwa na machapisho 50 tu. Futa moja ili uchapishe tena.',
   'explore.country': 'Nchi',
+  'pf.photoRequired': 'Ongeza picha ya wasifu ili uanze',
+  'video.flip': 'Badilisha kamera',
 }
 
 export default sw
