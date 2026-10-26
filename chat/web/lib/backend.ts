@@ -317,6 +317,25 @@ export interface PersonRow {
   photoUrl: string | null
 }
 
+/** 069: a group chat's lines: messages, and the server's notes ('created' / 'added': names, 'renamed': the title). */
+export type GroupLineKind = 'text' | 'created' | 'added' | 'left' | 'renamed'
+export interface GroupLine {
+  id: number
+  senderId: string | null
+  kind: GroupLineKind
+  body: string
+  at: number
+}
+/** 48: a group chat among friends (069). */
+export interface GroupChat {
+  id: string
+  title: string
+  members: Profile[]
+  last: Pick<GroupLine, 'kind' | 'body' | 'senderId'> | null
+  lastAt: number
+  unread: number
+}
+
 export interface Friend {
   profile: Profile
   state: FriendState
@@ -459,6 +478,10 @@ export interface VoiceRoom extends RoomRules {
   lang: string | null
   /** 036: the web page the host or a co-host shows everyone next to the chat (null: none). */
   stage: VoiceStage | null
+  /** 068 (46): false — a chat-only room (no stage, nobody talks); chosen when it's made. */
+  voice: boolean
+  /** 068 (45): the wall the host or a co-host dressed the room in (one they own), or null. */
+  theme: string | null
 }
 
 /** A page pinned for the whole room (voice_share_link). The same page for everyone; scrolling is not shared. */
@@ -484,6 +507,8 @@ export interface LinkMeta {
 
 export interface NewVoiceRoom extends RoomRules {
   title: string
+  /** 46: false makes a chat-only room. */
+  voice: boolean
   announcement: string
   /** The language the room speaks (the app language by default). */
   lang: string
@@ -810,6 +835,23 @@ export interface Backend {
   setRoomPassword(roomId: string, password: string | null): Promise<void>
   /** 064, the host or a co-host: the room's pinned notice (empty removes it); the chat says who pinned a new one. */
   setRoomNotice(roomId: string, text: string): Promise<void>
+  /** 45: the host or a co-host dresses the room in one of their walls (null: plain). Errors: not_owned, not_allowed. */
+  setRoomTheme(roomId: string, itemId: string | null): Promise<void>
+
+  // ---- 48 group chats among friends (069) ----
+  /** My groups, latest first. */
+  groups(): Promise<GroupChat[]>
+  /** Friends only (others are left out; none left: not_friends). Returns the group's id. */
+  createGroup(title: string, memberIds: string[]): Promise<string>
+  /** 50 lines at a time, oldest first; `before`: older than this line. */
+  groupHistory(groupId: string, before?: number): Promise<GroupLine[]>
+  sendGroup(groupId: string, text: string): Promise<GroupLine>
+  readGroup(groupId: string, upto: number): Promise<void>
+  addToGroup(groupId: string, memberIds: string[]): Promise<void>
+  renameGroup(groupId: string, title: string): Promise<void>
+  leaveGroup(groupId: string): Promise<void>
+  /** New lines in these groups as they're written (mine too). Returns the unsubscribe. */
+  watchGroups(groupIds: string[], onLine: (groupId: string, line: GroupLine) => void): () => void
   /** Tells a friend about the room I'm in (their inbox, and a push when phones get them). */
   inviteToRoom(roomId: string, userId: string): Promise<void>
   /** Opens an invite: lets me into the room even when it is private; returns its id (then joinVoice). */

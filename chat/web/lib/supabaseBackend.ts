@@ -12,6 +12,9 @@ import {
   type Friend,
   type FriendActivity,
   type GiftCheck,
+  type GroupChat,
+  type GroupLine,
+  type GroupLineKind,
   type Presence,
   type PersonRow,
   type FriendState,
@@ -143,6 +146,9 @@ type VoiceStateRow = {
   seq?: number
   /** 036: the page pinned for everyone (voice_share_link). */
   stage?: { url: string; title: string | null; by: string; byId: string; at: number } | null
+  /** 068: chat-only (false) and the room's wall. */
+  voice?: boolean
+  theme?: string | null
 }
 /** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
 type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number; lost?: boolean }
@@ -151,7 +157,7 @@ type VoiceChange = { seq?: number | null } & (
   | ({ t: 'm'; present: true } & VoiceMemberRow)
   | { t: 'm'; id: string; present: false }
   | ({ t: 'r'; ended: boolean } & Pick<VoiceStateRow, 'title' | 'category' | 'mode' | 'host' | 'locked' | 'music' | 'announcement'
-      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private' | 'stage'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
+      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private' | 'stage' | 'theme'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
   | { t: 'v'; item: string; user: string; on: boolean; votes: number }
   /** 029: a poll changed (a vote, closed); `mine` is null. Numbered like the rest, nothing in the state. */
   | { t: 'p'; poll: unknown }
@@ -178,6 +184,7 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
       queue: c.queue.map((q) => ({ ...q, voted: voted.has(q.id) })),
       // 037 sends the pinned page with every room change; an event without it leaves it as it was.
       ...('stage' in c ? { stage: c.stage ?? null } : {}),
+      ...('theme' in c ? { theme: c.theme ?? null } : {}),
     })
   } else if (c.t === 'v') {
     const q = s.queue.find((x) => x.id === c.item)
@@ -242,6 +249,11 @@ function fail(error: { message?: string; details?: string | null; hint?: string 
   const text = [error?.message, error?.details, error?.hint].filter(Boolean).join(' ')
   throw new BackendError(codeOf(text), error?.details ?? undefined)
 }
+
+type GroupRow = { id: number; sender: string | null; kind: string; body: string; created_at: string }
+const GROUP_KINDS: GroupLineKind[] = ['text', 'created', 'added', 'left', 'renamed']
+const groupKind = (k: string): GroupLineKind => (GROUP_KINDS.includes(k as GroupLineKind) ? (k as GroupLineKind) : 'text')
+const toGroupLine = (r: GroupRow): GroupLine => ({ id: Number(r.id), senderId: r.sender, kind: groupKind(r.kind), body: r.body, at: time(r.created_at) })
 
 /** The chat's lines (reactions come over realtime only). */
 const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo', 'poll']
@@ -1045,6 +1057,8 @@ export class SupabaseBackend implements Backend {
     const room = await this.rpc<{ id: string; code: string }>('create_voice_room3', {
       p_title: r.title, p_category: 'talk', p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
       p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang || null,
+      // Sent only for a chat-only room, so a server before 068 still makes ordinary rooms.
+      ...(r.voice ? {} : { p_voice: false }),
     })
     track('room_created')
     return room
@@ -1078,6 +1092,66 @@ export class SupabaseBackend implements Backend {
   async setRoomNotice(roomId: string, text: string) {
     await this.rpc('voice_notice', { p_room: roomId, p_text: text })
     this.voice.get(roomId)?.acted()
+  }
+
+  async setRoomTheme(roomId: string, itemId: string | null) {
+    await this.rpc('voice_set_theme', { p_room: roomId, p_item: itemId })
+    this.voice.get(roomId)?.acted()
+  }
+
+  // ---- 48 group chats (069) ----
+
+  async groups(): Promise<GroupChat[]> {
+    type Row = { id: string; title: string; members: CardRow[] | null; last_kind: string | null; last_body: string | null; last_sender: string | null; last_at: string; unread: number }
+    const rows = (await this.rpc<Row[] | null>('group_list')) ?? []
+    await this.signMany(rows.flatMap((r) => (r.members ?? []).map((m) => m.photo_path)))
+    return rows.map((r) => ({
+      id: r.id, title: r.title, members: (r.members ?? []).map((m) => this.cardProfile(m)), lastAt: time(r.last_at), unread: r.unread,
+      last: r.last_kind ? { kind: groupKind(r.last_kind), body: r.last_body ?? '', senderId: r.last_sender } : null,
+    }))
+  }
+
+  async createGroup(title: string, memberIds: string[]) {
+    return (await this.rpc<string>('group_create', { p_title: title, p_members: memberIds }))!
+  }
+
+  async groupHistory(groupId: string, before?: number) {
+    const rows = (await this.rpc<GroupRow[] | null>('group_history', { p_group: groupId, p_before: before ?? null })) ?? []
+    return rows.map(toGroupLine).reverse()
+  }
+
+  async sendGroup(groupId: string, text: string): Promise<GroupLine> {
+    const id = await this.rpc<number>('group_send', { p_group: groupId, p_body: text })
+    return { id: id!, senderId: this.uid, kind: 'text', body: text.trim(), at: Date.now() }
+  }
+
+  async readGroup(groupId: string, upto: number) {
+    await this.rpc('group_read', { p_group: groupId, p_upto: upto })
+  }
+
+  async addToGroup(groupId: string, memberIds: string[]) {
+    await this.rpc('group_add', { p_group: groupId, p_members: memberIds })
+  }
+
+  async renameGroup(groupId: string, title: string) {
+    await this.rpc('group_rename', { p_group: groupId, p_title: title })
+  }
+
+  async leaveGroup(groupId: string) {
+    await this.rpc('group_leave', { p_group: groupId })
+  }
+
+  watchGroups(groupIds: string[], onLine: (groupId: string, line: GroupLine) => void) {
+    if (!groupIds.length) return () => undefined
+    // One channel for all my groups (Postgres Changes, members-only by RLS); at most 100 ids in an `in` filter.
+    const channel = this.client.channel(`groups-${crypto.randomUUID()}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages', filter: `group_id=in.(${groupIds.slice(0, 100).join(',')})` },
+        (p) => {
+          const r = p.new as GroupRow & { group_id: string }
+          onLine(r.group_id, toGroupLine(r))
+        })
+      .subscribe()
+    return () => void this.client.removeChannel(channel)
   }
 
   async inviteToRoom(roomId: string, userId: string) {
@@ -2029,7 +2103,7 @@ export class SupabaseBackend implements Backend {
       id: s.id, title: s.title, mode: s.mode === 'open' ? 'open' : 'approval',
       hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null, password: s.password ?? null,
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
-      isPrivate: !!s.private, lang: appLang(s.lang),
+      isPrivate: !!s.private, lang: appLang(s.lang), voice: s.voice !== false, theme: s.theme ?? null,
       members: s.members.map((m) => ({
         profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true, joinedAt: m.j,
       })),

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Lock, Minus, Plus } from 'lucide-react'
+import { Lock, MessageSquareText, Minus, Plus } from 'lucide-react'
 import type { NewVoiceRoom, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
@@ -50,6 +50,7 @@ export function CreateRoomDialog({
   const [minAge, setMinAge] = useState(18)
   const [maxAge, setMaxAge] = useState(100)
   const [isPrivate, setPrivate] = useState(false)
+  const [chatOnly, setChatOnly] = useState(false)
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
   const valid = title.trim().length >= 2 && title.trim().length <= MAX_TITLE && minAge <= maxAge
@@ -62,6 +63,7 @@ export function CreateRoomDialog({
     setMinAge(18)
     setMaxAge(100)
     setPrivate(false)
+    setChatOnly(false)
     setNote('')
     setLang(isRoomLang(appLang) ? appLang : '')
   }, [open, appLang])
@@ -73,7 +75,7 @@ export function CreateRoomDialog({
     if (!(await freeForRoom())) return
     setBusy(true)
     const room: NewVoiceRoom = {
-      title: title.trim(), maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang,
+      title: title.trim(), maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang, voice: !chatOnly,
     }
     try {
       const made = await backend.createVoiceRoom(room)
@@ -174,6 +176,17 @@ export function CreateRoomDialog({
             className="min-h-20"
           />
         </Field>
+
+        {/* 46: a room for typing only — no stage, no voice or video. */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4">
+          <input type="checkbox" checked={chatOnly} onChange={(e) => setChatOnly(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" />
+          <span className="text-sm leading-relaxed">
+            <span className="flex items-center gap-1.5 font-semibold">
+              <MessageSquareText className="size-3.5" aria-hidden /> {t('create.chatOnly')}
+            </span>
+            <span className="text-muted-foreground">{t('create.chatOnlyBody')}</span>
+          </span>
+        </label>
 
         <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4">
           <input type="checkbox" checked={isPrivate} onChange={(e) => setPrivate(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-primary" />

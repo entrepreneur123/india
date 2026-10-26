@@ -683,6 +683,11 @@ const ne: Dict = {
   'voice.soundOn': "कोठाको आवाज खोल्नुहोस्",
   'voice.soundOff': "कोठाको आवाज बन्द गर्नुहोस्",
   'voice.soundIsOff': "आवाज बन्द",
+  'create.chatOnly': "च्याट मात्र",
+  'create.chatOnlyBody': "आवाज वा भिडियो छैन: सबै लेखेर कुरा गर्छन्",
+  'room.theme': "कोठा सजाउनुहोस्",
+  'room.themeHint': "कोठामा सबैले देख्छन्। किनेको पृष्ठभूमि प्रयोग गर्नुहोस् वा Looks बाट लिनुहोस्।",
+  'room.themeSaved': "कोठा अद्यावधिक भयो",
 }
 
 export default ne

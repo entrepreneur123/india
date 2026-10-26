@@ -683,6 +683,11 @@ const nl: Dict = {
   'voice.soundOn': "Geluid van de ruimte aanzetten",
   'voice.soundOff': "Geluid van de ruimte uitzetten",
   'voice.soundIsOff': "Geluid uit",
+  'create.chatOnly': "Alleen chat",
+  'create.chatOnlyBody': "Geen spraak of video: iedereen typt alleen",
+  'room.theme': "Ruimte aankleden",
+  'room.themeHint': "Iedereen in de ruimte ziet het. Gebruik een gekochte achtergrond of haal er een in Looks.",
+  'room.themeSaved': "Ruimte bijgewerkt",
 }
 
 export default nl

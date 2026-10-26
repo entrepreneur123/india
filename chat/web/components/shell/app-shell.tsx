@@ -32,6 +32,7 @@ import {
   RoomsScreen,
   SettingsScreen,
   ThreadScreen,
+  GroupScreen,
   VoiceHost,
   InboxSheet,
   Onboarding,
@@ -86,6 +87,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const [me, setMe] = useState(initialMe)
   const [tab, setTabState] = useState<Tab>('random')
   const [thread, setThread] = useState<Thread | null>(null)
+  const [group, setGroup] = useState<string | null>(null)
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
   const [shop, setShop] = useState<{ open: boolean; tab: ItemKind } | null>(null)
@@ -162,6 +164,15 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const refreshBadges = useCallback(() => void mutate('badges'), [mutate])
   // My friends, read once at start on every screen size: rooms show a VIP friend as they are (35, supabaseBackend).
   useSWR('friends', () => backend.friends(), { revalidateOnFocus: false })
+  // 48: my groups, read at start and again whenever a line arrives in one of them (Realtime, no polling); their
+  // unread counts join the Recent tab's.
+  const { data: groups } = useSWR('groups', () => backend.groups(), { revalidateOnFocus: false })
+  const groupIds = groups?.map((g) => g.id).join(',') ?? ''
+  useEffect(() => (groupIds ? backend.watchGroups(groupIds.split(','), () => void mutate('groups')) : undefined), [backend, groupIds, mutate])
+  const allBadges = useMemo(
+    () => (badges && groups?.length ? { ...badges, chats: { ...badges.chats, ...Object.fromEntries(groups.map((g) => [`g:${g.id}`, g.unread])) } } : badges),
+    [badges, groups],
+  )
   useEffect(
     () =>
       backend.inboxSignals(() => {
@@ -261,6 +272,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const setTab = useCallback(
     (next: Tab) => {
       setThread(null)
+      setGroup(null)
       setTabState(next)
       if (next !== 'random') lastTab.current = next
       minimiseVoice()
@@ -305,6 +317,12 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       },
       openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
+      openGroup: (groupId) => {
+        setProfileTarget(null)
+        setThread(null)
+        setGroup(groupId)
+        minimiseVoice()
+      },
       openVoice,
       askRoomKey: (id, kind) => setRoomKey({ id, kind }),
       freeForRoom,
@@ -315,7 +333,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       voiceRoomId: voice?.id ?? null,
       myPresence,
       setImmersive,
-      randomVisible: tab === 'random' && thread === null,
+      randomVisible: tab === 'random' && thread === null && group === null,
       reported: (id) => {
         setThread((th) => (th?.partner.id === id ? null : th))
         setProfileTarget(null)
@@ -326,7 +344,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
         return () => void reportListeners.delete(l)
       },
       signedOut: onSignedOut,
-      badges: badges ?? null,
+      badges: allBadges ?? null,
       refreshBadges,
       openInbox: () => {
         setInboxUsed(true)
@@ -340,16 +358,16 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       setKyc,
       openVerify,
     }),
-    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, myPresence, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
+    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, group, minimiseVoice, reportListeners, voice?.id, myPresence, allBadges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
-  const randomVisible = tab === 'random' && !thread
+  const randomVisible = tab === 'random' && !thread && !group
   const voiceOpen = !!voice?.expanded
-  const busyScreen = (randomVisible && immersive) || thread !== null
+  const busyScreen = (randomVisible && immersive) || thread !== null || group !== null
   const hideTabs = busyScreen || voiceOpen
   // The room's bar sits above the navigation (phones) or in the corner (wide screens): screens keep room for it.
   // One bar at a time: the room's, or (a room and a random chat never run together) the random chat's.
-  const chatPill = !!chatBar && !voice && !randomVisible && !thread
+  const chatPill = !!chatBar && !voice && !randomVisible && !thread && !group
   const pillShown = (!!voice && !voice.expanded && !busyScreen) || chatPill
 
   return (
@@ -364,7 +382,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                 <RandomScreen active={randomVisible} />
               </div>
               <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
-                {!randomVisible && !thread ? (
+                {!randomVisible && !thread && !group ? (
                   <m.div
                     key={tab}
                     custom={randomVisible}
@@ -406,6 +424,24 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                             refreshBadges() // what was read there
                           }}
                         />
+                      </Suspense>
+                    </ScreenBoundary>
+                  </m.div>
+                ) : null}
+              </AnimatePresence>
+              <AnimatePresence>
+                {group ? (
+                  <m.div
+                    key={group}
+                    className="absolute inset-0 z-20 flex flex-col bg-background"
+                    initial={{ opacity: 0, x: rtl ? -24 : 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: rtl ? -24 : 24 }}
+                    transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
+                  >
+                    <ScreenBoundary>
+                      <Suspense fallback={<ScreenLoading />}>
+                        <GroupScreen groupId={group} onClose={() => setGroup(null)} />
                       </Suspense>
                     </ScreenBoundary>
                   </m.div>

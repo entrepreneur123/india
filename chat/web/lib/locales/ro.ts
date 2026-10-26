@@ -685,6 +685,11 @@ const ro: Dict = {
   'voice.soundOn': "Pornește sunetul camerei",
   'voice.soundOff': "Oprește sunetul camerei",
   'voice.soundIsOff': "Sunet oprit",
+  'create.chatOnly': "Doar chat",
+  'create.chatOnlyBody': "Fără voce sau video: toți doar scriu",
+  'room.theme': "Decorează camera",
+  'room.themeHint': "Toți din cameră îl văd. Folosește un fundal cumpărat sau ia unul din Looks.",
+  'room.themeSaved': "Cameră actualizată",
 }
 
 export default ro

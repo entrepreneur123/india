@@ -696,6 +696,11 @@ const tr: Dict = {
   'voice.soundOn': "Oda sesini aç",
   'voice.soundOff': "Oda sesini kapat",
   'voice.soundIsOff': "Ses kapalı",
+  'create.chatOnly': "Yalnızca sohbet",
+  'create.chatOnlyBody': "Ses ve görüntü yok: herkes sadece yazar",
+  'room.theme': "Odayı süsle",
+  'room.themeHint': "Odadaki herkes görür. Aldığın bir arka planı kullan ya da Looks'tan al.",
+  'room.themeSaved': "Oda güncellendi",
 }
 
 export default tr

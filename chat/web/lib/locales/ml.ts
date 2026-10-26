@@ -683,6 +683,11 @@ const ml: Dict = {
   'voice.soundOn': "റൂമിന്റെ ശബ്ദം ഓണാക്കുക",
   'voice.soundOff': "റൂമിന്റെ ശബ്ദം ഓഫാക്കുക",
   'voice.soundIsOff': "ശബ്ദം ഓഫ്",
+  'create.chatOnly': "ചാറ്റ് മാത്രം",
+  'create.chatOnlyBody': "ശബ്ദമോ വീഡിയോയോ ഇല്ല: എല്ലാവരും ടൈപ്പ് ചെയ്യും",
+  'room.theme': "റൂം അലങ്കരിക്കുക",
+  'room.themeHint': "റൂമിലെ എല്ലാവർക്കും കാണാം. വാങ്ങിയ പശ്ചാത്തലം ഉപയോഗിക്കുക, അല്ലെങ്കിൽ Looks-ൽ നിന്ന് നേടുക.",
+  'room.themeSaved': "റൂം പുതുക്കി",
 }
 
 export default ml

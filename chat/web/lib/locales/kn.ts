@@ -683,6 +683,11 @@ const kn: Dict = {
   'voice.soundOn': "ರೂಮ್ ಧ್ವನಿ ಆನ್ ಮಾಡಿ",
   'voice.soundOff': "ರೂಮ್ ಧ್ವನಿ ಆಫ್ ಮಾಡಿ",
   'voice.soundIsOff': "ಧ್ವನಿ ಆಫ್",
+  'create.chatOnly': "ಚಾಟ್ ಮಾತ್ರ",
+  'create.chatOnlyBody': "ಧ್ವನಿ ಅಥವಾ ವಿಡಿಯೋ ಇಲ್ಲ: ಎಲ್ಲರೂ ಬರೆಯುತ್ತಾರೆ",
+  'room.theme': "ರೂಮ್ ಅಲಂಕರಿಸಿ",
+  'room.themeHint': "ರೂಮ್‌ನ ಎಲ್ಲರಿಗೂ ಕಾಣುತ್ತದೆ. ಖರೀದಿಸಿದ ಹಿನ್ನೆಲೆ ಬಳಸಿ ಅಥವಾ Looks ನಲ್ಲಿ ಪಡೆಯಿರಿ.",
+  'room.themeSaved': "ರೂಮ್ ನವೀಕರಿಸಲಾಗಿದೆ",
 }
 
 export default kn

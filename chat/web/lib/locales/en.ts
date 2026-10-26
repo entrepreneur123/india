@@ -695,6 +695,11 @@ const en = {
   'voice.soundOn': "Turn the room’s sound on",
   'voice.soundOff': "Turn the room’s sound off",
   'voice.soundIsOff': "Sound off",
+  'create.chatOnly': "Chat only",
+  'create.chatOnlyBody': "No voice or video: everyone just types",
+  'room.theme': "Decorate the room",
+  'room.themeHint': "Everyone in the room sees it. Use a background you bought, or get one in Looks.",
+  'room.themeSaved': "Room updated",
 } as const
 
 export default en

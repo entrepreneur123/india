@@ -661,6 +661,11 @@ const pa: Dict = {
   'voice.soundOn': "ਰੂਮ ਦੀ ਆਵਾਜ਼ ਚਾਲੂ ਕਰੋ",
   'voice.soundOff': "ਰੂਮ ਦੀ ਆਵਾਜ਼ ਬੰਦ ਕਰੋ",
   'voice.soundIsOff': "ਆਵਾਜ਼ ਬੰਦ",
+  'create.chatOnly': "ਸਿਰਫ਼ ਚੈਟ",
+  'create.chatOnlyBody': "ਆਵਾਜ਼ ਜਾਂ ਵੀਡੀਓ ਨਹੀਂ: ਸਭ ਸਿਰਫ਼ ਲਿਖਦੇ ਹਨ",
+  'room.theme': "ਰੂਮ ਸਜਾਓ",
+  'room.themeHint': "ਰੂਮ ਵਿੱਚ ਸਭ ਦੇਖਦੇ ਹਨ। ਖਰੀਦਿਆ ਬੈਕਗ੍ਰਾਊਂਡ ਵਰਤੋ ਜਾਂ Looks ਤੋਂ ਲਓ।",
+  'room.themeSaved': "ਰੂਮ ਅੱਪਡੇਟ ਹੋ ਗਿਆ",
 }
 
 export default pa

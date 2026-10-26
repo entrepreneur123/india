@@ -683,6 +683,11 @@ const ta: Dict = {
   'voice.soundOn': "அறை ஒலியை இயக்கு",
   'voice.soundOff': "அறை ஒலியை அணை",
   'voice.soundIsOff': "ஒலி அணைப்பு",
+  'create.chatOnly': "அரட்டை மட்டும்",
+  'create.chatOnlyBody': "குரலோ வீடியோவோ இல்லை: எல்லோரும் தட்டச்சு மட்டும்",
+  'room.theme': "அறையை அலங்கரி",
+  'room.themeHint': "அறையில் உள்ள அனைவரும் பார்ப்பார்கள். வாங்கிய பின்னணியைப் பயன்படுத்துங்கள் அல்லது Looks இல் பெறுங்கள்.",
+  'room.themeSaved': "அறை புதுப்பிக்கப்பட்டது",
 }
 
 export default ta

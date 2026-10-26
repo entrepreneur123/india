@@ -685,6 +685,11 @@ const es: Dict = {
   'voice.soundOn': "Activar el sonido de la sala",
   'voice.soundOff': "Silenciar la sala",
   'voice.soundIsOff': "Sin sonido",
+  'create.chatOnly': "Solo chat",
+  'create.chatOnlyBody': "Sin voz ni vídeo: todos solo escriben",
+  'room.theme': "Decorar la sala",
+  'room.themeHint': "Todos en la sala lo ven. Usa un fondo que compraste o consigue uno en Looks.",
+  'room.themeSaved': "Sala actualizada",
 }
 
 export default es

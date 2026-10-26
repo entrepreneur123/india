@@ -696,6 +696,11 @@ const zhHans: Dict = {
   'voice.soundOn': "打开房间声音",
   'voice.soundOff': "关闭房间声音",
   'voice.soundIsOff': "声音已关",
+  'create.chatOnly': "仅文字聊天",
+  'create.chatOnlyBody': "没有语音和视频，大家只打字聊天",
+  'room.theme': "装饰房间",
+  'room.themeHint': "房间里的所有人都能看到。使用已购买的背景，或去造型商店获取。",
+  'room.themeSaved': "房间已更新",
 }
 
 export default zhHans

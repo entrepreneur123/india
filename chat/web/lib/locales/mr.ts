@@ -661,6 +661,11 @@ const mr: Dict = {
   'voice.soundOn': "रूमचा आवाज सुरू करा",
   'voice.soundOff': "रूमचा आवाज बंद करा",
   'voice.soundIsOff': "आवाज बंद",
+  'create.chatOnly': "फक्त चॅट",
+  'create.chatOnlyBody': "आवाज किंवा व्हिडिओ नाही: सगळे फक्त लिहून बोलतात",
+  'room.theme': "रूम सजवा",
+  'room.themeHint': "रूममधील सर्वांना दिसते. विकत घेतलेली पार्श्वभूमी वापरा किंवा Looks मधून घ्या.",
+  'room.themeSaved': "रूम अपडेट झाली",
 }
 
 export default mr

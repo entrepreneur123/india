@@ -696,6 +696,11 @@ const sw: Dict = {
   'voice.soundOn': "Washa sauti ya chumba",
   'voice.soundOff': "Zima sauti ya chumba",
   'voice.soundIsOff': "Sauti imezimwa",
+  'create.chatOnly': "Gumzo tu",
+  'create.chatOnlyBody': "Hakuna sauti wala video: wote wanaandika tu",
+  'room.theme': "Pamba chumba",
+  'room.themeHint': "Kila mtu chumbani anaiona. Tumia mandhari uliyonunua, au pata moja kwenye Looks.",
+  'room.themeSaved': "Chumba kimesasishwa",
 }
 
 export default sw

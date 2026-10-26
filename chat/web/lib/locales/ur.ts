@@ -661,6 +661,11 @@ const ur: Dict = {
   'voice.soundOn': "روم کی آواز چالو کریں",
   'voice.soundOff': "روم کی آواز بند کریں",
   'voice.soundIsOff': "آواز بند",
+  'create.chatOnly': "صرف چیٹ",
+  'create.chatOnlyBody': "آواز یا ویڈیو نہیں: سب صرف لکھتے ہیں",
+  'room.theme': "روم سجائیں",
+  'room.themeHint': "روم میں سب دیکھتے ہیں۔ خریدا ہوا بیک گراؤنڈ لگائیں یا Looks سے لیں۔",
+  'room.themeSaved': "روم اپ ڈیٹ ہو گیا",
 }
 
 export default ur

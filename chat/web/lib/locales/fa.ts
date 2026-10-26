@@ -696,6 +696,11 @@ const fa: Dict = {
   'voice.soundOn': "روشن کردن صدای اتاق",
   'voice.soundOff': "خاموش کردن صدای اتاق",
   'voice.soundIsOff': "صدا خاموش",
+  'create.chatOnly': "فقط گفتگو",
+  'create.chatOnlyBody': "بدون صدا و تصویر: همه فقط می‌نویسند",
+  'room.theme': "تزئین اتاق",
+  'room.themeHint': "همه در اتاق آن را می‌بینند. از پس‌زمینه‌ای که خریده‌اید استفاده کنید یا از Looks بگیرید.",
+  'room.themeSaved': "اتاق به‌روز شد",
 }
 
 export default fa

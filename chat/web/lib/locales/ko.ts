@@ -696,6 +696,11 @@ const ko: Dict = {
   'voice.soundOn': "소리 켜기",
   'voice.soundOff': "소리 끄기",
   'voice.soundIsOff': "소리 꺼짐",
+  'create.chatOnly': "채팅만",
+  'create.chatOnlyBody': "보이스·화상 없이 모두 글로만 대화해요",
+  'room.theme': "방 꾸미기",
+  'room.themeHint': "방에 있는 모두에게 보여요. 산 배경을 쓰거나 꾸미기 상점에서 구매하세요.",
+  'room.themeSaved': "방을 꾸몄어요",
 }
 
 export default ko

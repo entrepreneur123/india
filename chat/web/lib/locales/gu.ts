@@ -661,6 +661,11 @@ const gu: Dict = {
   'voice.soundOn': "રૂમનો અવાજ ચાલુ કરો",
   'voice.soundOff': "રૂમનો અવાજ બંધ કરો",
   'voice.soundIsOff': "અવાજ બંધ",
+  'create.chatOnly': "ફક્ત ચેટ",
+  'create.chatOnlyBody': "અવાજ કે વિડિયો નહીં: બધા ફક્ત લખે છે",
+  'room.theme': "રૂમ સજાવો",
+  'room.themeHint': "રૂમમાં બધા જુએ છે. ખરીદેલું બેકગ્રાઉન્ડ વાપરો અથવા Looks માંથી લો.",
+  'room.themeSaved': "રૂમ અપડેટ થયો",
 }
 
 export default gu

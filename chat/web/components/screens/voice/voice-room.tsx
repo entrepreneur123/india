@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, Volume2, VolumeX, WifiOff, X } from 'lucide-react'
+import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, MessageSquareText, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, Volume2, VolumeX, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
@@ -22,7 +22,7 @@ import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicPanel, QueueSheet } from './voice-music'
 import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
-import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
+import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, ThemeSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
 import { FocusVideo, LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
@@ -30,6 +30,7 @@ import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-
 import { useSocialT } from '@/components/social/social-text'
 import { useLooksT } from '@/components/looks/looks-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { Wall } from '@/components/looks/wall'
 
 // The poll form is its own chunk, fetched when a host or co-host first opens the composer's menu.
 const loadPollSheet = () => retryImport(() => import('./poll-sheet'))
@@ -208,9 +209,10 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       }} />
     ) : null
 
+  // 46: a chat-only room has no stage; the people here and the music stay.
   const top: ReactNode = (
     <>
-      {stageSection}
+      {room.voice ? stageSection : null}
       {musicBar}
       {listeners}
       {stageCard}
@@ -329,7 +331,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
           {wide ? (
             // Reactions float over the whole middle (and the page beside it), not inside the stage that may be scrolled away.
-            <div className="relative flex min-h-0 flex-1">
+            <div className="relative isolate flex min-h-0 flex-1">
+              {/* 45: the room's wall, if the host or a co-host chose one, behind the stage. */}
+              <Wall id={room.theme} />
               {/* The stage stays mounted under a big camera or a page, so going back is instant. */}
               <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', (big || panelUrl) && 'hidden')}>
                 <div className="mx-auto flex max-w-3xl flex-col gap-3 pt-2 pb-6">{top}</div>
@@ -348,7 +352,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
-            <PhoneSplit top={big ?? top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+            <PhoneSplit top={big ?? (room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top)} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
           )}
 
           <ControlBar
@@ -420,6 +424,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           }}
           onSettings={() => setSheet({ kind: 'settings' })}
           onNotice={mod ? () => setSheet({ kind: 'notice' }) : undefined}
+          onTheme={mod ? () => setSheet({ kind: 'theme' }) : undefined}
           onReport={() => setSheet({ kind: 'reportRoom' })}
           onLeave={() => {
             close()
@@ -428,6 +433,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         />
         {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
         {mod ? <NoticeSheet room={room} open={sheet?.kind === 'notice'} onClose={close} /> : null}
+        {mod ? <ThemeSheet room={room} open={sheet?.kind === 'theme'} onClose={close} /> : null}
         <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
         <PeopleSheet room={room} open={sheet?.kind === 'people'} onClose={close} onPerson={person} />
         <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
@@ -658,11 +664,11 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
   const shown = list.slice(0, max)
   const more = list.length - shown.length
   return (
-    <section aria-labelledby={id} className="mx-3 rounded-3xl bg-muted/40 px-3 pt-2 pb-2.5 sm:mx-4 sm:px-4">
+    <section aria-labelledby={id} className={cn('mx-3 rounded-3xl px-3 pt-2 pb-2.5 sm:mx-4 sm:px-4', room.theme ? 'bg-card/90 backdrop-blur-sm' : 'bg-muted/40')}>
       <SectionTitle
         id={id}
-        icon={<Headphones />}
-        label={rt('listening')}
+        icon={room.voice ? <Headphones /> : <Users />}
+        label={rt(room.voice ? 'listening' : 'people')}
         count={list.length}
         trailing={
           <span className="flex shrink-0 items-center gap-1">
@@ -844,63 +850,72 @@ function ControlBar({
           </Button>
         ) : null}
         <span className="flex-1" />
-        {/* 46: I come in hearing nothing; this turns the room's voices on (and off again). */}
-        <Button
-          variant={s.sound ? 'secondary' : 'outline'}
-          onClick={() => s.setSound(!s.sound)}
-          aria-pressed={s.sound}
-          aria-label={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
-          title={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
-          className={cn('h-12 shrink-0 gap-1.5 px-3.5', !s.sound && 'text-muted-foreground')}
-        >
-          {s.sound ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
-          {s.sound ? null : <span className="max-sm:sr-only">{t('voice.soundIsOff')}</span>}
-        </Button>
-        {onStage ? (
-          <Button
-            size="icon"
-            variant={camOn ? 'brand' : 'secondary'}
-            onClick={() => void s.act({ type: 'camera', on: !camOn })}
-            aria-label={t(camOn ? 'video.camOff' : 'video.camOn')}
-            aria-pressed={camOn}
-            title={t(camOn ? 'video.camOff' : 'video.camOn')}
-          >
-            {camOn ? <Video className="size-5" aria-hidden /> : <VideoOff className="size-5" aria-hidden />}
-          </Button>
-        ) : null}
-        {onStage ? (
-          <Button variant="secondary" onClick={() => void s.act({ type: 'unseat' })} className="h-12 min-w-0 shrink px-4" title={t('voice.leaveStage')}>
-            <ArrowDownToLine className="size-5 shrink-0" aria-hidden /> <span className="truncate">{t('voice.leaveStage')}</span>
-          </Button>
-        ) : null}
-        {onStage ? (
-          <m.button
-            type="button"
-            whileTap={{ scale: 0.94 }}
-            onClick={() => void s.act({ type: 'mic', on: me.muted })}
-            aria-label={me.muted ? t('voice.unmute') : t('voice.mute')}
-            aria-pressed={!me.muted}
-            className={cn(
-              'grid size-14 shrink-0 place-items-center rounded-full transition-colors duration-150',
-              me.muted ? 'bg-muted text-foreground hover:bg-input/60' : 'bg-primary text-primary-foreground hover:bg-primary-hover',
+        {room.voice ? (
+          <>
+            {/* 46: I come in hearing nothing; this turns the room's voices on (and off again). */}
+            <Button
+              variant={s.sound ? 'secondary' : 'outline'}
+              onClick={() => s.setSound(!s.sound)}
+              aria-pressed={s.sound}
+              aria-label={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
+              title={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
+              className={cn('h-12 shrink-0 gap-1.5 px-3.5', !s.sound && 'text-muted-foreground')}
+            >
+              {s.sound ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
+              {s.sound ? null : <span className="max-sm:sr-only">{t('voice.soundIsOff')}</span>}
+            </Button>
+            {onStage ? (
+              <Button
+                size="icon"
+                variant={camOn ? 'brand' : 'secondary'}
+                onClick={() => void s.act({ type: 'camera', on: !camOn })}
+                aria-label={t(camOn ? 'video.camOff' : 'video.camOn')}
+                aria-pressed={camOn}
+                title={t(camOn ? 'video.camOff' : 'video.camOn')}
+              >
+                {camOn ? <Video className="size-5" aria-hidden /> : <VideoOff className="size-5" aria-hidden />}
+              </Button>
+            ) : null}
+            {onStage ? (
+              <Button variant="secondary" onClick={() => void s.act({ type: 'unseat' })} className="h-12 min-w-0 shrink px-4" title={t('voice.leaveStage')}>
+                <ArrowDownToLine className="size-5 shrink-0" aria-hidden /> <span className="truncate">{t('voice.leaveStage')}</span>
+              </Button>
+            ) : null}
+            {onStage ? (
+              <m.button
+                type="button"
+                whileTap={{ scale: 0.94 }}
+                onClick={() => void s.act({ type: 'mic', on: me.muted })}
+                aria-label={me.muted ? t('voice.unmute') : t('voice.mute')}
+                aria-pressed={!me.muted}
+                className={cn(
+                  'grid size-14 shrink-0 place-items-center rounded-full transition-colors duration-150',
+                  me.muted ? 'bg-muted text-foreground hover:bg-input/60' : 'bg-primary text-primary-foreground hover:bg-primary-hover',
+                )}
+              >
+                {me.muted ? <MicOff className="size-6" aria-hidden /> : <Mic className="size-6" aria-hidden />}
+              </m.button>
+            ) : (
+              <m.button
+                type="button"
+                whileTap={{ scale: 0.96 }}
+                onClick={onJoin}
+                aria-pressed={joins ? undefined : me.hand}
+                className={cn(
+                  'flex h-12 shrink-0 items-center gap-2 rounded-full pe-5 ps-4 text-sm font-semibold transition-colors duration-150',
+                  me.hand && !joins ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-primary font-bold text-primary-foreground hover:bg-primary-hover',
+                )}
+              >
+                {joins ? <Mic className="size-5" aria-hidden /> : <ReactionIcon kind="hand" size={20} color={me.hand ? undefined : '#fff'} className={cn(me.hand && 'motion-safe:animate-pulse')} />}
+                {joins ? t('room.joinVoice') : me.hand ? t('voice.handRaised') : t('voice.raiseHand')}
+              </m.button>
             )}
-          >
-            {me.muted ? <MicOff className="size-6" aria-hidden /> : <Mic className="size-6" aria-hidden />}
-          </m.button>
+          </>
         ) : (
-          <m.button
-            type="button"
-            whileTap={{ scale: 0.96 }}
-            onClick={onJoin}
-            aria-pressed={joins ? undefined : me.hand}
-            className={cn(
-              'flex h-12 shrink-0 items-center gap-2 rounded-full pe-5 ps-4 text-sm font-semibold transition-colors duration-150',
-              me.hand && !joins ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-primary font-bold text-primary-foreground hover:bg-primary-hover',
-            )}
-          >
-            {joins ? <Mic className="size-5" aria-hidden /> : <ReactionIcon kind="hand" size={20} color={me.hand ? undefined : '#fff'} className={cn(me.hand && 'motion-safe:animate-pulse')} />}
-            {joins ? t('room.joinVoice') : me.hand ? t('voice.handRaised') : t('voice.raiseHand')}
-          </m.button>
+          // 46: a chat-only room: nothing to join, only the chat.
+          <span className="inline-flex h-10 items-center gap-1.5 rounded-full bg-muted px-3.5 text-xs font-semibold text-muted-foreground">
+            <MessageSquareText className="size-4" aria-hidden /> {t('create.chatOnly')}
+          </span>
         )}
       </div>
     </div>

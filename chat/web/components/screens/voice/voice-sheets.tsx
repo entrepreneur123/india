@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -24,7 +24,9 @@ import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
-import { ageText } from '@/lib/looks'
+import { ageText, WALLS, type ItemId } from '@/lib/looks'
+import { useShop } from '@/components/looks/use-shop'
+import { Wall } from '@/components/looks/wall'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
 export type SheetState =
@@ -37,6 +39,7 @@ export type SheetState =
   | { kind: 'reportRoom' }
   | { kind: 'settings' }
   | { kind: 'notice' }
+  | { kind: 'theme' }
   | { kind: 'invite' }
   | { kind: 'people' }
   | null
@@ -475,6 +478,7 @@ export function OptionsSheet({
   onCopyCode,
   onSettings,
   onNotice,
+  onTheme,
   onReport,
   onLeave,
 }: {
@@ -491,6 +495,8 @@ export function OptionsSheet({
   onSettings: () => void
   /** The host or a co-host: the room's notice. */
   onNotice?: () => void
+  /** The host or a co-host: the room's wall (45). */
+  onTheme?: () => void
   onReport: () => void
   onLeave: () => void
 }) {
@@ -503,6 +509,7 @@ export function OptionsSheet({
         {canShare ? <Row icon={<Link2 />} label={t('voice.share')} onClick={onShare} /> : null}
         {code ? <Row icon={<Copy />} label={t('room.copy', { code })} onClick={onCopyCode} /> : null}
         {onNotice ? <Row icon={<Pin />} label={t('room.announcement')} onClick={onNotice} /> : null}
+        {onTheme ? <Row icon={<Paintbrush />} label={t('room.theme')} onClick={onTheme} /> : null}
         {isHost ? <Row icon={<Settings2 />} label={t('room.settings')} onClick={onSettings} /> : null}
         {isHost ? null : <Row icon={<Flag />} label={t('voice.reportRoom')} onClick={onReport} />}
         <Row icon={<LogOut />} label={isHost ? t('voice.endConfirm') : t('voice.leaveQuietly')} danger onClick={onLeave} />
@@ -575,6 +582,71 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
 }
 
 /** The host or a co-host (27): the notice pinned at the top of the room; saving a new one tells the chat. */
+/**
+ * 45: the host or a co-host dresses the room in one of the walls they bought (everyone in the room sees it). Walls
+ * they don't have yet open the Looks shop.
+ */
+export function ThemeSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { t } = useI18n()
+  const { lt } = useLooksT()
+  const { openShop } = useApp()
+  const { data: shop } = useShop(open)
+  const [busy, setBusy] = useState<string | null>(null)
+  const owned = new Set<string>(shop?.owned ?? [])
+  const set = async (id: ItemId | null) => {
+    if (id && !owned.has(id)) {
+      onClose()
+      return openShop('wall')
+    }
+    setBusy(id ?? 'none')
+    try {
+      await backend.setRoomTheme(room.id, id)
+      toast.show(t('room.themeSaved'), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(null)
+    }
+  }
+  const tile = (id: ItemId | null, label: string) => {
+    const on = (room.theme ?? null) === id
+    return (
+      <li key={id ?? 'none'}>
+        <button
+          type="button"
+          aria-pressed={on}
+          disabled={!!busy || !shop}
+          onClick={() => void set(id)}
+          className={cn('flex w-full flex-col gap-1.5 rounded-2xl p-1.5 text-start ring-1 transition-shadow disabled:opacity-60', on ? 'ring-2 ring-primary' : 'ring-border hover:shadow-e1')}
+        >
+          <span className="relative isolate block h-16 w-full overflow-hidden rounded-xl bg-chat-wall">
+            <Wall id={id} />
+            {id && shop && !owned.has(id) ? (
+              <span className="absolute inset-0 grid place-items-center bg-black/35 text-white">
+                <Lock className="size-4" aria-hidden />
+              </span>
+            ) : null}
+          </span>
+          <span className="flex items-center gap-1 px-1 text-xs font-semibold">
+            {on ? <Check className="size-3.5 shrink-0 text-primary-text" strokeWidth={3} aria-hidden /> : null}
+            <span className="truncate">{label}</span>
+          </span>
+        </button>
+      </li>
+    )
+  }
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('room.theme')} description={t('room.themeHint')}>
+      <ul className="grid grid-cols-3 gap-2.5 p-5 pt-3 sm:grid-cols-4">
+        {tile(null, lt('looks.none'))}
+        {WALLS.map((id) => tile(id, lt(`item.${id}`)))}
+      </ul>
+    </Modal>
+  )
+}
+
 export function NoticeSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
   const backend = useBackend()
   const toast = useToast()

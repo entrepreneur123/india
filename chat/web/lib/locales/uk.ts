@@ -700,6 +700,11 @@ const uk: Dict = {
   'voice.soundOn': "Увімкнути звук кімнати",
   'voice.soundOff': "Вимкнути звук кімнати",
   'voice.soundIsOff': "Звук вимк.",
+  'create.chatOnly': "Лише чат",
+  'create.chatOnlyBody': "Без голосу й відео: усі лише пишуть",
+  'room.theme': "Оформити кімнату",
+  'room.themeHint': "Це бачать усі в кімнаті. Виберіть куплений фон або отримайте його в Looks.",
+  'room.themeSaved': "Кімнату оновлено",
 }
 
 export default uk

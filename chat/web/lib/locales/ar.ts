@@ -704,6 +704,11 @@ const ar: Dict = {
   'voice.soundOn': "تشغيل صوت الغرفة",
   'voice.soundOff': "إيقاف صوت الغرفة",
   'voice.soundIsOff': "الصوت متوقف",
+  'create.chatOnly': "دردشة فقط",
+  'create.chatOnlyBody': "بلا صوت أو فيديو: الجميع يكتب فقط",
+  'room.theme': "تزيين الغرفة",
+  'room.themeHint': "يراها الجميع في الغرفة. استخدم خلفية اشتريتها أو احصل على واحدة من Looks.",
+  'room.themeSaved': "تم تحديث الغرفة",
 }
 
 export default ar

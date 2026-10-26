@@ -682,6 +682,11 @@ const hi: Dict = {
   'voice.soundOn': "रूम की आवाज़ चालू करें",
   'voice.soundOff': "रूम की आवाज़ बंद करें",
   'voice.soundIsOff': "आवाज़ बंद",
+  'create.chatOnly': "सिर्फ़ चैट",
+  'create.chatOnlyBody': "आवाज़ या वीडियो नहीं: सब बस लिखकर बात करते हैं",
+  'room.theme': "रूम सजाएँ",
+  'room.themeHint': "रूम में सब इसे देखते हैं। खरीदा हुआ बैकग्राउंड लगाएँ या Looks से लें।",
+  'room.themeSaved': "रूम अपडेट हो गया",
 }
 
 export default hi

@@ -687,6 +687,11 @@ const pl: Dict = {
   'voice.soundOn': "Włącz dźwięk pokoju",
   'voice.soundOff': "Wyłącz dźwięk pokoju",
   'voice.soundIsOff': "Dźwięk wył.",
+  'create.chatOnly': "Tylko czat",
+  'create.chatOnlyBody': "Bez głosu i wideo: wszyscy tylko piszą",
+  'room.theme': "Udekoruj pokój",
+  'room.themeHint': "Widzą to wszyscy w pokoju. Użyj kupionego tła albo zdobądź je w Looks.",
+  'room.themeSaved': "Pokój zaktualizowany",
 }
 
 export default pl

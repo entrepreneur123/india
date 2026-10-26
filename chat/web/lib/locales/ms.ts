@@ -696,6 +696,11 @@ const ms: Dict = {
   'voice.soundOn': "Hidupkan bunyi bilik",
   'voice.soundOff': "Matikan bunyi bilik",
   'voice.soundIsOff': "Bunyi dimatikan",
+  'create.chatOnly': "Sembang sahaja",
+  'create.chatOnlyBody': "Tiada suara atau video: semua hanya menaip",
+  'room.theme': "Hias bilik",
+  'room.themeHint': "Semua dalam bilik nampak. Guna latar yang dibeli, atau dapatkan di Looks.",
+  'room.themeSaved': "Bilik dikemas kini",
 }
 
 export default ms

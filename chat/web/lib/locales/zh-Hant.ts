@@ -696,6 +696,11 @@ const zhHant: Dict = {
   'voice.soundOn': "開啟房間聲音",
   'voice.soundOff': "關閉房間聲音",
   'voice.soundIsOff': "聲音已關",
+  'create.chatOnly': "僅文字聊天",
+  'create.chatOnlyBody': "沒有語音和視訊，大家只打字聊天",
+  'room.theme': "裝飾房間",
+  'room.themeHint': "房間裡的所有人都看得到。使用已購買的背景，或到造型商店取得。",
+  'room.themeSaved': "房間已更新",
 }
 
 export default zhHant

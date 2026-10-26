@@ -696,6 +696,11 @@ const ja: Dict = {
   'voice.soundOn': "ルームの音をオン",
   'voice.soundOff': "ルームの音をオフ",
   'voice.soundIsOff': "音オフ",
+  'create.chatOnly': "チャットのみ",
+  'create.chatOnlyBody': "音声・ビデオなし、文字だけで話します",
+  'room.theme': "ルームを飾る",
+  'room.themeHint': "ルームの全員に表示されます。購入した背景を使うか、ルックスで手に入れましょう。",
+  'room.themeSaved': "ルームを更新しました",
 }
 
 export default ja

@@ -682,6 +682,11 @@ const bn: Dict = {
   'voice.soundOn': "রুমের শব্দ চালু করুন",
   'voice.soundOff': "রুমের শব্দ বন্ধ করুন",
   'voice.soundIsOff': "শব্দ বন্ধ",
+  'create.chatOnly': "শুধু চ্যাট",
+  'create.chatOnlyBody': "ভয়েস বা ভিডিও নেই: সবাই শুধু লিখে কথা বলে",
+  'room.theme': "রুম সাজান",
+  'room.themeHint': "রুমের সবাই দেখবে। কেনা ব্যাকগ্রাউন্ড ব্যবহার করুন, বা Looks থেকে নিন।",
+  'room.themeSaved': "রুম আপডেট হয়েছে",
 }
 
 export default bn

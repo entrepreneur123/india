@@ -55,6 +55,8 @@ export interface AppState {
   /** A post with its comments, over whatever is on screen. `initial`: shown while it is read again; `focus`: the comment box. */
   openPost: (postId: string, opts?: { initial?: FeedPost | null; focus?: boolean }) => void
   openThread: (partner: Profile, matchId?: string) => void
+  /** 48: a group chat, full screen like a thread. */
+  openGroup: (groupId: string) => void
   /**
    * Enters a voice room full screen (leaving the one I'm in, if another). A random chat in progress ends (with a
    * word); a search just stops.

@@ -698,6 +698,11 @@ const he: Dict = {
   'voice.soundOn': "להפעיל את קול החדר",
   'voice.soundOff': "להשתיק את החדר",
   'voice.soundIsOff': "הקול כבוי",
+  'create.chatOnly': "צ׳אט בלבד",
+  'create.chatOnlyBody': "בלי קול ווידאו: כולם רק כותבים",
+  'room.theme': "עיצוב החדר",
+  'room.themeHint': "כולם בחדר רואים. השתמשו ברקע שקניתם או קבלו אחד ב־Looks.",
+  'room.themeSaved': "החדר עודכן",
 }
 
 export default he

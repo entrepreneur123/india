@@ -696,6 +696,11 @@ const fil: Dict = {
   'voice.soundOn': "I-on ang tunog ng room",
   'voice.soundOff': "I-off ang tunog ng room",
   'voice.soundIsOff': "Naka-off ang tunog",
+  'create.chatOnly': "Chat lang",
+  'create.chatOnlyBody': "Walang boses o video: nagta-type lang lahat",
+  'room.theme': "Palamutian ang room",
+  'room.themeHint': "Makikita ng lahat sa room. Gamitin ang background na binili mo, o kumuha sa Looks.",
+  'room.themeSaved': "Na-update ang room",
 }
 
 export default fil

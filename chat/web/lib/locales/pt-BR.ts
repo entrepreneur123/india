@@ -682,6 +682,11 @@ const ptBR: Dict = {
   'voice.soundOn': "Ativar o som da sala",
   'voice.soundOff': "Desativar o som da sala",
   'voice.soundIsOff': "Som desligado",
+  'create.chatOnly': "Só chat",
+  'create.chatOnlyBody': "Sem voz nem vídeo: todo mundo só digita",
+  'room.theme': "Decorar a sala",
+  'room.themeHint': "Todos na sala veem. Use um fundo que você comprou ou pegue um em Looks.",
+  'room.themeSaved': "Sala atualizada",
 }
 
 export default ptBR

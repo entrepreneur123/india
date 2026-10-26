@@ -205,6 +205,8 @@ export class VoiceSim {
       track: null,
       queue: [],
       stage: null,
+      voice: true,
+      theme: null,
     }
     if (music) {
       room.track = this.track(music.playing, host.name, Date.now() - music.ago)
@@ -376,6 +378,8 @@ export class VoiceSim {
       track: null,
       queue: [],
       stage: null,
+      voice: n.voice,
+      theme: null,
     }
     const r = this.sim(room, [], true)
     this.rooms.set(id, r)
@@ -447,6 +451,16 @@ export class VoiceSim {
     if (notice === r.room.announcement) return
     r.room.announcement = notice
     if (notice) this.system(r, 'notice', me.profile.name)
+    this.changed(r)
+  }
+
+  /** 45: like voice_set_theme (ownership is checked by the caller, which knows the shop). */
+  async theme(roomId: string, itemId: string | null) {
+    const r = this.get(roomId)
+    const me = this.meMember(r)
+    if (!me || (me.role !== 'host' && me.role !== 'cohost')) throw new BackendError('not_allowed')
+    await wait(200)
+    r.room.theme = itemId
     this.changed(r)
   }
 
@@ -787,8 +801,8 @@ export class VoiceSim {
         this.changed(r)
       })
     }
-    // Hosting: hands go up in the audience, so the requests queue has something in it.
-    if (r.mine) {
+    // Hosting: hands go up in the audience, so the requests queue has something in it (not in a chat-only room, 068).
+    if (r.mine && r.room.voice) {
       const raise = () => {
         const audience = this.others(r).filter((m) => m.seat === null && !m.hand)
         if (!audience.length || r.handsRaised >= 4) return
@@ -838,6 +852,8 @@ export class VoiceSim {
       if (!ok) throw new BackendError('not_allowed')
     }
 
+    // A chat-only room (068): nobody takes a seat or raises a hand.
+    if (!r.room.voice && (a.type === 'hand' || a.type === 'seat' || a.type === 'invite')) throw new BackendError('not_allowed')
     switch (a.type) {
       case 'hand': {
         need(me.seat === null)

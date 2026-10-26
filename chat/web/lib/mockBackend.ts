@@ -1,4 +1,6 @@
 import {
+  type GroupChat,
+  type GroupLine,
   type Backend,
   BackendError,
   type Badges,
@@ -930,7 +932,6 @@ export class MockBackend implements Backend {
     return list
   }
 
-  /** The demo friends' presence (one of each) and their status messages with when they changed. */
   /** What the demo friends are doing (the rest are offline). */
   private presence: Record<string, FriendActivity['presence']> = { u_sofia: 'online', u_arjun: 'room', u_riya: 'matching', u_omar: 'chat' }
 
@@ -1207,6 +1208,136 @@ export class MockBackend implements Backend {
 
   async setRoomNotice(roomId: string, text: string) {
     return (await this.voice()).notice(roomId, text)
+  }
+
+  // ---- 48 group chats (069): one demo group to start with; someone answers a moment after I write ----
+  private groupList: { id: string; title: string; members: string[]; lines: GroupLine[]; read: number }[] | null = null
+  private groupWatchers = new Set<(groupId: string, line: GroupLine) => void>()
+  private groupSeq = 100
+
+  private demoGroups() {
+    if (!this.groupList) {
+      const me = this.me?.id ?? 'me'
+      const t0 = Date.now() - 3 * HOUR
+      const line = (senderId: string | null, kind: GroupLine['kind'], body: string, ago: number): GroupLine => ({ id: ++this.groupSeq, senderId, kind, body, at: t0 + ago })
+      this.groupList = [{
+        id: 'g_weekend', title: 'Weekend plans', members: [me, 'u_sofia', 'u_arjun', 'u_riya'], read: 0,
+        lines: [
+          line('u_arjun', 'created', 'Sofia, Riya, Lisa', 0),
+          line('u_arjun', 'text', 'Movie on Saturday?', 60_000),
+          line('u_sofia', 'text', 'Yes!! which one', 120_000),
+          line('u_riya', 'text', 'Anything but horror pls', 180_000),
+        ],
+      }]
+    }
+    return this.groupList
+  }
+
+  private groupOf(groupId: string) {
+    const g = this.demoGroups().find((x) => x.id === groupId)
+    if (!g || !g.members.includes(this.me?.id ?? 'me')) throw new BackendError('not_allowed')
+    return g
+  }
+
+  private groupPost(g: { id: string; lines: GroupLine[] }, line: Omit<GroupLine, 'id' | 'at'>) {
+    const full = { ...line, id: ++this.groupSeq, at: Date.now() }
+    g.lines.push(full)
+    for (const f of this.groupWatchers) f(g.id, full)
+    return full
+  }
+
+  async groups(): Promise<GroupChat[]> {
+    await wait(250)
+    const me = this.me?.id ?? 'me'
+    return this.demoGroups()
+      .filter((g) => g.members.includes(me))
+      .map((g) => {
+        const last = g.lines[g.lines.length - 1]
+        return {
+          id: g.id, title: g.title, members: g.members.flatMap((id) => (id === me ? (this.me ? [this.me] : []) : this.person(id) ?? [])),
+          last: last ? { kind: last.kind, body: last.body, senderId: last.senderId } : null, lastAt: last?.at ?? 0,
+          unread: g.lines.filter((l) => l.id > g.read && l.senderId !== me).length,
+        }
+      })
+      .sort((a, b) => b.lastAt - a.lastAt)
+  }
+
+  async createGroup(title: string, memberIds: string[]) {
+    await wait(300)
+    const me = this.me?.id ?? 'me'
+    const t = title.trim()
+    if (!t || t.length > 40 || !memberIds.length) throw new BackendError('bad_request')
+    const ok = memberIds.filter((id) => this.friendMap.get(id) === 'friends')
+    if (!ok.length) throw new BackendError('not_friends')
+    const g = { id: `g_${++this.groupSeq}`, title: t, members: [me, ...ok], lines: [] as GroupLine[], read: 0 }
+    this.demoGroups().unshift(g)
+    this.groupPost(g, { senderId: me, kind: 'created', body: ok.map((id) => this.person(id)?.name ?? '').join(', ') })
+    return g.id
+  }
+
+  async groupHistory(groupId: string, before?: number) {
+    await wait(200)
+    const lines = this.groupOf(groupId).lines.filter((l) => before === undefined || l.id < before)
+    return lines.slice(-50)
+  }
+
+  async sendGroup(groupId: string, text: string) {
+    const g = this.groupOf(groupId)
+    const body = text.trim()
+    if (!body || body.length > 2000) throw new BackendError('bad_request')
+    await wait(150)
+    const line = this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'text', body })
+    const others = g.members.filter((id) => id !== this.me?.id)
+    if (others.length) {
+      setTimeout(() => {
+        if (this.demoGroups().includes(g)) this.groupPost(g, { senderId: others[g.lines.length % others.length], kind: 'text', body: ['haha 😂', 'true!', 'I’m in', 'wait what', 'sounds good 👍'][g.lines.length % 5] })
+      }, 2200)
+    }
+    return line
+  }
+
+  async readGroup(groupId: string, upto: number) {
+    const g = this.groupOf(groupId)
+    g.read = Math.max(g.read, upto)
+  }
+
+  async addToGroup(groupId: string, memberIds: string[]) {
+    const g = this.groupOf(groupId)
+    await wait(250)
+    const add = memberIds.filter((id) => this.friendMap.get(id) === 'friends' && !g.members.includes(id))
+    if (!add.length) return
+    if (g.members.length + add.length > 50) throw new BackendError('room_full')
+    g.members.push(...add)
+    this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'added', body: add.map((id) => this.person(id)?.name ?? '').join(', ') })
+  }
+
+  async renameGroup(groupId: string, title: string) {
+    const g = this.groupOf(groupId)
+    const t = title.trim()
+    if (!t || t.length > 40) throw new BackendError('bad_request')
+    await wait(200)
+    if (t === g.title) return
+    g.title = t
+    this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'renamed', body: t })
+  }
+
+  async leaveGroup(groupId: string) {
+    const g = this.groupOf(groupId)
+    await wait(200)
+    g.members = g.members.filter((id) => id !== this.me?.id)
+    if (!g.members.length) this.groupList = this.demoGroups().filter((x) => x !== g)
+    else this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'left', body: this.me?.name ?? '' })
+  }
+
+  watchGroups(groupIds: string[], onLine: (groupId: string, line: GroupLine) => void) {
+    const f = (groupId: string, line: GroupLine) => groupIds.includes(groupId) && onLine(groupId, line)
+    this.groupWatchers.add(f)
+    return () => void this.groupWatchers.delete(f)
+  }
+
+  async setRoomTheme(roomId: string, itemId: string | null) {
+    if (itemId && !(await (await this.lookSim()).shop()).owned.includes(itemId as never)) throw new BackendError('not_owned')
+    return (await this.voice()).theme(roomId, itemId)
   }
 
   async sendVoicePhoto(roomId: string, photo: File) {

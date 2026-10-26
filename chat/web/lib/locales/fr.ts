@@ -685,6 +685,11 @@ const fr: Dict = {
   'voice.soundOn': "Activer le son du salon",
   'voice.soundOff': "Couper le son du salon",
   'voice.soundIsOff': "Son coupé",
+  'create.chatOnly': "Discussion seulement",
+  'create.chatOnlyBody': "Ni voix ni vidéo : tout le monde écrit",
+  'room.theme': "Décorer le salon",
+  'room.themeHint': "Tout le salon le voit. Utilise un fond acheté ou prends-en un dans Looks.",
+  'room.themeSaved': "Salon mis à jour",
 }
 
 export default fr

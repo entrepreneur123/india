@@ -683,6 +683,11 @@ const te: Dict = {
   'voice.soundOn': "రూమ్ సౌండ్ ఆన్ చేయండి",
   'voice.soundOff': "రూమ్ సౌండ్ ఆఫ్ చేయండి",
   'voice.soundIsOff': "సౌండ్ ఆఫ్",
+  'create.chatOnly': "చాట్ మాత్రమే",
+  'create.chatOnlyBody': "వాయిస్ లేదా వీడియో లేదు: అందరూ టైప్ మాత్రమే",
+  'room.theme': "రూమ్‌ను అలంకరించండి",
+  'room.themeHint': "రూమ్‌లోని అందరికీ కనిపిస్తుంది. కొన్న నేపథ్యం వాడండి లేదా Looks‌లో పొందండి.",
+  'room.themeSaved': "రూమ్ అప్‌డేట్ అయింది",
 }
 
 export default te

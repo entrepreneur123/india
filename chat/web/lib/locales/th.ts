@@ -696,6 +696,11 @@ const th: Dict = {
   'voice.soundOn': "เปิดเสียงห้อง",
   'voice.soundOff': "ปิดเสียงห้อง",
   'voice.soundIsOff': "ปิดเสียงอยู่",
+  'create.chatOnly': "แชทอย่างเดียว",
+  'create.chatOnlyBody': "ไม่มีเสียงหรือวิดีโอ ทุกคนพิมพ์คุยกัน",
+  'room.theme': "ตกแต่งห้อง",
+  'room.themeHint': "ทุกคนในห้องจะเห็น ใช้พื้นหลังที่ซื้อไว้ หรือซื้อใหม่ใน Looks",
+  'room.themeSaved': "อัปเดตห้องแล้ว",
 }
 
 export default th

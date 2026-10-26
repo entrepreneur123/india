@@ -25,17 +25,23 @@ import { useLooksT } from '@/components/looks/looks-text'
 import { FindSheet } from '@/components/social/people-find'
 import { nameAge } from '@/lib/looks'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { GroupList, useGroups } from './groups'
 
-type Segment = 'friends' | 'matches' | 'sent'
+type Segment = 'friends' | 'matches' | 'groups' | 'sent'
+/** The segment shown last: back from a thread or a group, the list is where I left it. */
+let lastSegment: Segment = 'friends'
 
 export function RecentScreen() {
   const backend = useBackend()
   const { t, setTab } = useApp()
-  const [segment, setSegment] = useState<Segment>('friends')
+  const [segment, setSegmentState] = useState<Segment>(lastSegment)
+  const setSegment = (s: Segment) => setSegmentState((lastSegment = s))
   const [findOpen, setFindOpen] = useState(false)
   const { lt } = useLooksT()
   const friends = useSWR('friends', () => backend.friends())
   const recents = useSWR('recents', () => backend.recents())
+  const groups = useGroups()
+  const { st } = useSocialT()
   const incoming = friends.data?.filter((f) => f.state === 'incoming').length ?? 0
   const { badges } = useApp()
   const unreadMatches = recents.data?.filter((r) => (badges?.chats[r.matchId] ?? 0) > 0).length ?? 0
@@ -79,13 +85,25 @@ export function RecentScreen() {
                 </>
               ),
             },
+            // 48: group chats among friends.
+            {
+              value: 'groups',
+              label: (
+                <>
+                  {st('group.tab')}
+                  <CountBadge n={groups.data?.filter((g) => g.unread > 0).length ?? 0} className="ms-1.5" />
+                </>
+              ),
+            },
             // Requests I sent that wait for an answer (withdrawn from here).
             { value: 'sent', label: t('recent.sentTab') },
           ]}
         />
         <AnimatePresence mode="wait" initial={false}>
           <m.div key={segment} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
-            {segment !== 'matches' ? (
+            {segment === 'groups' ? (
+              <GroupList />
+            ) : segment !== 'matches' ? (
               <FriendsList
                 sent={segment === 'sent'}
                 list={friends.data}

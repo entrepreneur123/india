@@ -696,6 +696,11 @@ const id: Dict = {
   'voice.soundOn': "Nyalakan suara room",
   'voice.soundOff': "Matikan suara room",
   'voice.soundIsOff': "Suara mati",
+  'create.chatOnly': "Chat saja",
+  'create.chatOnlyBody': "Tanpa suara atau video: semua cukup mengetik",
+  'room.theme': "Hias room",
+  'room.themeHint': "Semua orang di room melihatnya. Pakai latar yang kamu beli, atau dapatkan di Looks.",
+  'room.themeSaved': "Room diperbarui",
 }
 
 export default id

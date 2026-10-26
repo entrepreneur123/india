@@ -682,6 +682,11 @@ const vi: Dict = {
   'voice.soundOn': "Bật âm thanh phòng",
   'voice.soundOff': "Tắt âm thanh phòng",
   'voice.soundIsOff': "Đã tắt tiếng",
+  'create.chatOnly': "Chỉ nhắn tin",
+  'create.chatOnlyBody': "Không thoại hay video: mọi người chỉ nhắn tin",
+  'room.theme': "Trang trí phòng",
+  'room.themeHint': "Mọi người trong phòng đều thấy. Dùng nền bạn đã mua, hoặc mua trong Looks.",
+  'room.themeSaved': "Đã cập nhật phòng",
 }
 
 export default vi

@@ -683,6 +683,11 @@ const de: Dict = {
   'voice.soundOn': "Ton im Raum einschalten",
   'voice.soundOff': "Ton im Raum ausschalten",
   'voice.soundIsOff': "Ton aus",
+  'create.chatOnly': "Nur Chat",
+  'create.chatOnlyBody': "Ohne Sprache und Video: Alle schreiben nur",
+  'room.theme': "Raum gestalten",
+  'room.themeHint': "Alle im Raum sehen es. Nutze einen gekauften Hintergrund oder hol dir einen unter Looks.",
+  'room.themeSaved': "Raum aktualisiert",
 }
 
 export default de

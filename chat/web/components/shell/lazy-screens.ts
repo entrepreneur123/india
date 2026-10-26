@@ -16,6 +16,7 @@ const loaders = {
   me: () => retryImport(() => import('@/components/screens/me/me-screen')),
   settings: () => retryImport(() => import('@/components/screens/settings/settings-screen')),
   thread: () => retryImport(() => import('@/components/screens/random/thread-screen')),
+  group: () => retryImport(() => import('@/components/screens/recent/group-screen')),
   profile: () => retryImport(() => import('@/components/screens/profile/profile-sheet')),
   chat: () => retryImport(() => import('@/components/screens/chat/chat-view')),
   roomDialogs: () => retryImport(() => import('@/components/screens/rooms/room-dialogs')),
@@ -46,6 +47,7 @@ export const ExploreScreen = lazy(() => loaders.explore().then((m) => ({ default
 export const MeScreen = lazy(() => loaders.me().then((m) => ({ default: m.MeScreen })))
 export const SettingsScreen = lazy(() => loaders.settings().then((m) => ({ default: m.SettingsScreen })))
 export const ThreadScreen = lazy(() => loaders.thread().then((m) => ({ default: m.ThreadScreen })))
+export const GroupScreen = lazy(() => loaders.group().then((m) => ({ default: m.GroupScreen })))
 export const ProfileSheet = lazy(() => loaders.profile().then((m) => ({ default: m.ProfileSheet })))
 export const VoiceHost = lazy(() => loaders.voice().then((m) => ({ default: m.VoiceHost })))
 /** The friends / rooms column exists only on wide screens, so phones never download it. */
