@@ -344,7 +344,7 @@ const nl: Dict = {
   'create.youngest': 'Jongste',
   'create.oldest': 'Oudste',
   'create.private': 'Privéroom',
-  'create.privateBody': 'Verborgen in de lijst. Mensen komen erin met de roomcode die jij deelt.',
+  'create.privateBody': 'Zichtbaar in de lijst, maar alleen wie de gedeelde ruimtecode heeft kan erin.',
   'create.submit': 'Room maken',
   'join.title': 'Voer een roomcode in',
   'join.desc': 'Vraag de host om de code van 6 tekens.',
@@ -641,8 +641,8 @@ const nl: Dict = {
   'create.countryHint': 'Het land van een ruimte is het land van de host. Mensen uit elk land kunnen hem vinden.',
   'rooms.options': 'Zoekopties',
   'rooms.allCountries': 'Alle landen',
-  'rooms.noLocked': 'Geen ruimtes met wachtwoord',
-  'rooms.showLocked': 'Ruimtes met wachtwoord tonen',
+  'rooms.noLocked': 'Geen vergrendelde ruimtes',
+  'rooms.showLocked': 'Vergrendelde ruimtes tonen (wachtwoord of privé)',
   'rooms.countriesChosen': '{n} gekozen',
   'rooms.apply': 'Ruimtes tonen',
   'notice.edit': 'Mededeling bewerken',
@@ -659,6 +659,7 @@ const nl: Dict = {
   'rooms.locked': 'Wachtwoord',
   'room.password': 'Wachtwoord van de ruimte (optioneel)',
   'room.passwordHint': '4–12 tekens. Wie buiten is heeft het nodig om binnen te komen; een nieuw wachtwoord vraagt het opnieuw.',
+  'join.wrong': 'Verkeerde code. Vraag het na bij de host.',
 }
 
 export default nl

@@ -348,7 +348,7 @@ const pl: Dict = {
   'create.youngest': 'Od',
   'create.oldest': 'Do',
   'create.private': 'Pokój prywatny',
-  'create.privateBody': 'Ukryty na liście. Wchodzi się kodem pokoju, który udostępnisz.',
+  'create.privateBody': 'Widoczny na liście, ale wejdą tylko osoby z kodem pokoju, który udostępnisz.',
   'create.submit': 'Utwórz pokój',
   'join.title': 'Wpisz kod pokoju',
   'join.desc': 'Poproś hosta o 6-znakowy kod.',
@@ -647,8 +647,8 @@ const pl: Dict = {
   'create.countryHint': 'Kraj pokoju to kraj jego gospodarza. Mogą go znaleźć ludzie z każdego kraju.',
   'rooms.options': 'Opcje wyszukiwania',
   'rooms.allCountries': 'Wszystkie kraje',
-  'rooms.noLocked': 'Bez pokoi z hasłem',
-  'rooms.showLocked': 'Pokazuj pokoje z hasłem',
+  'rooms.noLocked': 'Bez zamkniętych pokoi',
+  'rooms.showLocked': 'Pokazuj zamknięte pokoje (hasło lub prywatne)',
   'rooms.countriesChosen': 'Wybrano: {n}',
   'rooms.apply': 'Pokaż pokoje',
   'notice.edit': 'Edytuj ogłoszenie',
@@ -665,6 +665,7 @@ const pl: Dict = {
   'rooms.locked': 'Hasło',
   'room.password': 'Hasło pokoju (opcjonalnie)',
   'room.passwordHint': '4–12 znaków. Potrzebują go osoby z zewnątrz; nowe hasło zapyta je ponownie.',
+  'join.wrong': 'Zły kod. Sprawdź go u gospodarza.',
 }
 
 export default pl

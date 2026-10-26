@@ -975,7 +975,7 @@ export class MockBackend implements Backend {
           (!text || r.title.toLocaleLowerCase().includes(text)) &&
           (!query.lang || r.lang === query.lang) &&
           (!countries.length || countries.includes(r.host.country ?? '')) &&
-          (query.locked !== false || r.refusal !== 'room_password'),
+          (query.locked !== false || (r.refusal !== 'room_password' && r.refusal !== 'room_private')),
       )
       .sort((a, b) => Number(b.mine) - Number(a.mine) || mine(b) - mine(a))
   }

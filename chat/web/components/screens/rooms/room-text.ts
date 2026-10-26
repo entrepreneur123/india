@@ -24,6 +24,8 @@ export function refusalLabel(r: RoomRules & { refusal: RoomRefusal | null }, t: 
       return t('rooms.closed')
     case 'room_password':
       return t('rooms.locked')
+    case 'room_private':
+      return t('rooms.private')
     default:
       return t('rooms.unavailable')
   }

@@ -330,7 +330,7 @@ const ur: Dict = {
   'create.youngest': 'کم سے کم',
   'create.oldest': 'زیادہ سے زیادہ',
   'create.private': 'پرائیویٹ روم',
-  'create.privateBody': 'فہرست میں نظر نہیں آئے گا۔ لوگ آپ کے شیئر کیے گئے روم کوڈ سے شامل ہوں گے۔',
+  'create.privateBody': 'فہرست میں نظر آئے گا، مگر صرف وہی آ سکیں گے جن کے پاس آپ کا شیئر کیا روم کوڈ ہے۔',
   'create.submit': 'روم بنائیں',
   'join.title': 'روم کوڈ درج کریں',
   'join.desc': 'ہوسٹ سے 6 حروف والا کوڈ مانگیں۔',
@@ -619,8 +619,8 @@ const ur: Dict = {
   'create.countryHint': 'روم کا ملک اس کے ہوسٹ کا ملک ہوتا ہے۔ ہر ملک کے لوگ اسے ڈھونڈ سکتے ہیں۔',
   'rooms.options': 'تلاش کے اختیارات',
   'rooms.allCountries': 'تمام ممالک',
-  'rooms.noLocked': 'پاس ورڈ والے روم نہیں',
-  'rooms.showLocked': 'پاس ورڈ والے روم بھی دکھائیں',
+  'rooms.noLocked': 'لاک روم نہیں',
+  'rooms.showLocked': 'لاک روم بھی دکھائیں (پاس ورڈ یا پرائیویٹ)',
   'rooms.countriesChosen': '{n} منتخب',
   'rooms.apply': 'روم دکھائیں',
   'notice.edit': 'نوٹس بدلیں',
@@ -637,6 +637,7 @@ const ur: Dict = {
   'rooms.locked': 'پاس ورڈ',
   'room.password': 'روم پاس ورڈ (اختیاری)',
   'room.passwordHint': '4–12 حروف۔ باہر کے لوگوں کو آنے کے لیے اس کی ضرورت ہوگی؛ نیا پاس ورڈ دوبارہ پوچھے گا۔',
+  'join.wrong': 'غلط کوڈ۔ ہوسٹ سے پوچھ کر دیکھیں۔',
 }
 
 export default ur

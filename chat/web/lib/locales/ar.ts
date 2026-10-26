@@ -358,7 +358,7 @@ const ar: Dict = {
   'create.youngest': 'الأصغر',
   'create.oldest': 'الأكبر',
   'create.private': 'غرفة خاصة',
-  'create.privateBody': 'مخفية من القائمة. ينضم الناس برمز الغرفة الذي تشاركه.',
+  'create.privateBody': 'تظهر في القائمة، لكن لا يدخلها إلا من لديه رمز الغرفة الذي تشاركه.',
   'create.submit': 'إنشاء الغرفة',
   'join.title': 'أدخل رمز غرفة',
   'join.desc': 'اطلب من المضيف الرمز المكوّن من 6 خانات.',
@@ -666,8 +666,8 @@ const ar: Dict = {
   'create.countryHint': 'دولة الغرفة هي دولة مضيفها. يمكن للناس من كل الدول العثور عليها.',
   'rooms.options': 'خيارات البحث',
   'rooms.allCountries': 'كل الدول',
-  'rooms.noLocked': 'بدون غرف بكلمة مرور',
-  'rooms.showLocked': 'إظهار الغرف ذات كلمة المرور',
+  'rooms.noLocked': 'بدون غرف مقفلة',
+  'rooms.showLocked': 'إظهار الغرف المقفلة (بكلمة مرور أو خاصة)',
   'rooms.countriesChosen': '{n} محددة',
   'rooms.apply': 'عرض الغرف',
   'notice.edit': 'تعديل الإعلان',
@@ -684,6 +684,7 @@ const ar: Dict = {
   'rooms.locked': 'كلمة مرور',
   'room.password': 'كلمة مرور الغرفة (اختياري)',
   'room.passwordHint': 'من 4 إلى 12 حرفًا. يحتاجها من في الخارج للدخول؛ وكلمة جديدة تطلبها منهم مجددًا.',
+  'join.wrong': 'رمز خاطئ. تحقّق منه مع المضيف.',
 }
 
 export default ar

@@ -345,7 +345,7 @@ const bn: Dict = {
   'create.youngest': 'সর্বনিম্ন',
   'create.oldest': 'সর্বোচ্চ',
   'create.private': 'প্রাইভেট রুম',
-  'create.privateBody': 'তালিকায় দেখাবে না। আপনার শেয়ার করা কোড দিয়ে ঢোকা যাবে।',
+  'create.privateBody': 'তালিকায় দেখা যাবে, কিন্তু আপনার শেয়ার করা রুম কোড যাদের কাছে আছে শুধু তারাই ঢুকতে পারবে।',
   'create.submit': 'রুম বানান',
   'join.title': 'রুম কোড দিন',
   'join.desc': 'হোস্টের কাছ থেকে ৬ অক্ষরের কোডটি নিন।',
@@ -640,8 +640,8 @@ const bn: Dict = {
   'create.countryHint': 'রুমের দেশ তার হোস্টের দেশ। সব দেশের মানুষ এটি খুঁজে পাবে।',
   'rooms.options': 'খোঁজের বিকল্প',
   'rooms.allCountries': 'সব দেশ',
-  'rooms.noLocked': 'পাসওয়ার্ড রুম বাদ',
-  'rooms.showLocked': 'পাসওয়ার্ড রুমও দেখান',
+  'rooms.noLocked': 'লক করা রুম বাদ',
+  'rooms.showLocked': 'লক করা রুমও দেখান (পাসওয়ার্ড বা প্রাইভেট)',
   'rooms.countriesChosen': '{n}টি বাছাই',
   'rooms.apply': 'রুম দেখান',
   'notice.edit': 'নোটিশ বদলান',
@@ -658,6 +658,7 @@ const bn: Dict = {
   'rooms.locked': 'পাসওয়ার্ড',
   'room.password': 'রুম পাসওয়ার্ড (ঐচ্ছিক)',
   'room.passwordHint': '৪–১২ অক্ষর। বাইরের লোকদের ঢুকতে এটি লাগবে; নতুনটি আবার জিজ্ঞেস করবে।',
+  'join.wrong': 'ভুল কোড। হোস্টের কাছে আবার দেখে নিন।',
 }
 
 export default bn

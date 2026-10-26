@@ -346,7 +346,7 @@ const es: Dict = {
   'create.youngest': 'Edad mínima',
   'create.oldest': 'Edad máxima',
   'create.private': 'Sala privada',
-  'create.privateBody': 'Oculta de la lista. Se entra con el código de sala que compartas.',
+  'create.privateBody': 'Aparece en la lista, pero solo entra quien tenga el código de sala que compartas.',
   'create.submit': 'Crear sala',
   'join.title': 'Ingresa un código de sala',
   'join.desc': 'Pídele al anfitrión el código de 6 caracteres.',
@@ -644,8 +644,8 @@ const es: Dict = {
   'create.countryHint': 'El país de una sala es el de su anfitrión. Gente de cualquier país puede encontrarla.',
   'rooms.options': 'Opciones de búsqueda',
   'rooms.allCountries': 'Todos los países',
-  'rooms.noLocked': 'Sin salas con contraseña',
-  'rooms.showLocked': 'Mostrar salas con contraseña',
+  'rooms.noLocked': 'Sin salas cerradas',
+  'rooms.showLocked': 'Mostrar salas cerradas (con contraseña o privadas)',
   'rooms.countriesChosen': '{n} elegidos',
   'rooms.apply': 'Ver salas',
   'notice.edit': 'Editar aviso',
@@ -662,6 +662,7 @@ const es: Dict = {
   'rooms.locked': 'Contraseña',
   'room.password': 'Contraseña de la sala (opcional)',
   'room.passwordHint': 'De 4 a 12 caracteres. Quien está fuera la necesita para entrar; una nueva se la vuelve a pedir.',
+  'join.wrong': 'Código incorrecto. Compruébalo con el anfitrión.',
 }
 
 export default es

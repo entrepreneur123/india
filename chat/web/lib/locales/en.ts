@@ -349,7 +349,7 @@ const en = {
   'create.youngest': 'Youngest',
   'create.oldest': 'Oldest',
   'create.private': 'Private room',
-  'create.privateBody': 'Hidden from the list. People join with the room code you share.',
+  'create.privateBody': 'Shown in the list, but only people with the room code you share can come in.',
   'create.submit': 'Create room',
   'join.title': 'Enter a room code',
   'join.desc': 'Ask the host for the 6-character code.',
@@ -653,8 +653,8 @@ const en = {
   'create.countryHint': 'A room is its host’s country. People from every country can find it.',
   'rooms.options': 'Search options',
   'rooms.allCountries': 'All countries',
-  'rooms.noLocked': 'No password rooms',
-  'rooms.showLocked': 'Show rooms with a password',
+  'rooms.noLocked': 'No locked rooms',
+  'rooms.showLocked': 'Show locked rooms (password or private)',
   'rooms.countriesChosen': '{n} chosen',
   'rooms.apply': 'Show rooms',
   'notice.edit': 'Edit notice',
@@ -671,6 +671,7 @@ const en = {
   'rooms.locked': 'Password',
   'room.password': 'Room password (optional)',
   'room.passwordHint': '4–12 characters. People outside need it to come in; a new one asks them again.',
+  'join.wrong': 'Wrong code. Check it with the host.',
 } as const
 
 export default en

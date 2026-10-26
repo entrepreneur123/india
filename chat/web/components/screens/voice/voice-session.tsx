@@ -128,9 +128,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
-  const { askRoomPassword } = useApp()
-  const askPassword = useRef(askRoomPassword)
-  askPassword.current = askRoomPassword
+  const { askRoomKey } = useApp()
+  const askKey = useRef(askRoomKey)
+  askKey.current = askRoomKey
   const tRef = useRef(t)
   tRef.current = t
   const { rt } = useRoomT()
@@ -233,7 +233,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
       } catch (err) {
         if (!alive) return
         const code = errorCode(err)
-        if (code === 'room_password') askPassword.current(roomId)
+        if (code === 'room_password') askKey.current(roomId, 'password')
         else if (code !== 'in_random_chat') toast.error(err) // a random chat has me now: nothing to say
         gone.current()
       }

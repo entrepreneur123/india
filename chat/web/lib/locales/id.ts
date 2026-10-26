@@ -350,7 +350,7 @@ const id: Dict = {
   'create.youngest': 'Termuda',
   'create.oldest': 'Tertua',
   'create.private': 'Room privat',
-  'create.privateBody': 'Tidak muncul di daftar. Orang gabung dengan kode room yang kamu bagikan.',
+  'create.privateBody': 'Muncul di daftar, tapi hanya yang punya kode ruang yang kamu bagikan bisa masuk.',
   'create.submit': 'Buat room',
   'join.title': 'Masukkan kode room',
   'join.desc': 'Minta kode 6 karakter ke host.',
@@ -654,8 +654,8 @@ const id: Dict = {
   'create.countryHint': 'Negara ruang adalah negara host-nya. Orang dari semua negara bisa menemukannya.',
   'rooms.options': 'Opsi pencarian',
   'rooms.allCountries': 'Semua negara',
-  'rooms.noLocked': 'Tanpa ruang berkata sandi',
-  'rooms.showLocked': 'Tampilkan ruang berkata sandi',
+  'rooms.noLocked': 'Tanpa ruang terkunci',
+  'rooms.showLocked': 'Tampilkan ruang terkunci (kata sandi atau privat)',
   'rooms.countriesChosen': '{n} dipilih',
   'rooms.apply': 'Tampilkan ruang',
   'notice.edit': 'Edit pengumuman',
@@ -672,6 +672,7 @@ const id: Dict = {
   'rooms.locked': 'Kata sandi',
   'room.password': 'Kata sandi ruang (opsional)',
   'room.passwordHint': '4–12 karakter. Orang di luar perlu ini untuk masuk; yang baru akan ditanyakan lagi.',
+  'join.wrong': 'Kode salah. Cek lagi ke host.',
 }
 
 export default id

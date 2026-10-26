@@ -344,7 +344,7 @@ const it: Dict = {
   'create.youngest': 'Minima',
   'create.oldest': 'Massima',
   'create.private': 'Stanza privata',
-  'create.privateBody': 'Non compare nell’elenco. Si entra con il codice stanza che condividi.',
+  'create.privateBody': 'Visibile nella lista, ma entra solo chi ha il codice della stanza che condividi.',
   'create.submit': 'Crea stanza',
   'join.title': 'Inserisci un codice stanza',
   'join.desc': 'Chiedi all’host il codice di 6 caratteri.',
@@ -641,8 +641,8 @@ const it: Dict = {
   'create.countryHint': 'Il paese di una stanza è quello del suo host. Persone di ogni paese possono trovarla.',
   'rooms.options': 'Opzioni di ricerca',
   'rooms.allCountries': 'Tutti i paesi',
-  'rooms.noLocked': 'Niente stanze con password',
-  'rooms.showLocked': 'Mostra le stanze con password',
+  'rooms.noLocked': 'Niente stanze chiuse',
+  'rooms.showLocked': 'Mostra le stanze chiuse (password o private)',
   'rooms.countriesChosen': '{n} scelti',
   'rooms.apply': 'Mostra stanze',
   'notice.edit': 'Modifica avviso',
@@ -659,6 +659,7 @@ const it: Dict = {
   'rooms.locked': 'Password',
   'room.password': 'Password della stanza (facoltativa)',
   'room.passwordHint': '4–12 caratteri. Chi è fuori ne ha bisogno per entrare; una nuova la richiede di nuovo.',
+  'join.wrong': 'Codice errato. Verificalo con l’host.',
 }
 
 export default it

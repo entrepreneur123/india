@@ -345,7 +345,7 @@ const hi: Dict = {
   'create.youngest': 'कम से कम उम्र',
   'create.oldest': 'ज़्यादा से ज़्यादा उम्र',
   'create.private': 'प्राइवेट रूम',
-  'create.privateBody': 'लिस्ट में नहीं दिखेगा। लोग आपके शेयर किए कोड से जुड़ेंगे।',
+  'create.privateBody': 'लिस्ट में दिखेगा, पर सिर्फ़ वही आ पाएँगे जिनके पास आपका शेयर किया रूम कोड है।',
   'create.submit': 'रूम बनाएँ',
   'join.title': 'रूम कोड डालें',
   'join.desc': 'होस्ट से 6 अक्षरों का कोड माँगें।',
@@ -640,8 +640,8 @@ const hi: Dict = {
   'create.countryHint': 'रूम का देश उसके होस्ट का देश होता है। हर देश के लोग इसे ढूँढ सकते हैं।',
   'rooms.options': 'खोज विकल्प',
   'rooms.allCountries': 'सभी देश',
-  'rooms.noLocked': 'पासवर्ड वाले रूम नहीं',
-  'rooms.showLocked': 'पासवर्ड वाले रूम भी दिखाएँ',
+  'rooms.noLocked': 'लॉक रूम नहीं',
+  'rooms.showLocked': 'लॉक रूम भी दिखाएँ (पासवर्ड या प्राइवेट)',
   'rooms.countriesChosen': '{n} चुने',
   'rooms.apply': 'रूम दिखाएँ',
   'notice.edit': 'सूचना बदलें',
@@ -658,6 +658,7 @@ const hi: Dict = {
   'rooms.locked': 'पासवर्ड',
   'room.password': 'रूम पासवर्ड (वैकल्पिक)',
   'room.passwordHint': '4–12 अक्षर। बाहर के लोगों को आने के लिए इसकी ज़रूरत होगी; नया पासवर्ड फिर से पूछेगा।',
+  'join.wrong': 'गलत कोड। होस्ट से पूछकर देखें।',
 }
 
 export default hi

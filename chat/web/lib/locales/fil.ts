@@ -350,7 +350,7 @@ const fil: Dict = {
   'create.youngest': 'Pinakabata',
   'create.oldest': 'Pinakamatanda',
   'create.private': 'Private na room',
-  'create.privateBody': 'Nakatago sa listahan. Sasali ang mga tao gamit ang room code na ibabahagi mo.',
+  'create.privateBody': 'Makikita sa listahan, pero ang may room code lang na ibinahagi mo ang makakapasok.',
   'create.submit': 'Gumawa ng room',
   'join.title': 'Ilagay ang room code',
   'join.desc': 'Hingin sa host ang 6-character na code.',
@@ -654,8 +654,8 @@ const fil: Dict = {
   'create.countryHint': 'Ang bansa ng room ay bansa ng host nito. Mahahanap ito ng mga tao mula sa kahit anong bansa.',
   'rooms.options': 'Mga opsyon sa paghahanap',
   'rooms.allCountries': 'Lahat ng bansa',
-  'rooms.noLocked': 'Walang room na may password',
-  'rooms.showLocked': 'Ipakita ang mga room na may password',
+  'rooms.noLocked': 'Walang naka-lock na room',
+  'rooms.showLocked': 'Ipakita ang mga naka-lock na room (password o private)',
   'rooms.countriesChosen': '{n} ang napili',
   'rooms.apply': 'Ipakita ang mga room',
   'notice.edit': 'I-edit ang paalala',
@@ -672,6 +672,7 @@ const fil: Dict = {
   'rooms.locked': 'Password',
   'room.password': 'Password ng room (opsyonal)',
   'room.passwordHint': '4–12 character. Kailangan ito ng mga nasa labas para makapasok; itatanong ulit kapag bago.',
+  'join.wrong': 'Maling code. Itanong ulit sa host.',
 }
 
 export default fil

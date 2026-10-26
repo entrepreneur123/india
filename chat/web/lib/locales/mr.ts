@@ -330,7 +330,7 @@ const mr: Dict = {
   'create.youngest': 'किमान',
   'create.oldest': 'कमाल',
   'create.private': 'प्रायव्हेट रूम',
-  'create.privateBody': 'यादीत दिसणार नाही. तुम्ही शेअर केलेल्या रूम कोडने लोक सामील होतील.',
+  'create.privateBody': 'यादीत दिसेल, पण तुम्ही शेअर केलेला रूम कोड असलेलेच आत येऊ शकतील.',
   'create.submit': 'रूम तयार करा',
   'join.title': 'रूम कोड टाका',
   'join.desc': 'होस्टकडे 6 अक्षरी कोड मागा.',
@@ -619,8 +619,8 @@ const mr: Dict = {
   'create.countryHint': 'रूमचा देश म्हणजे त्याच्या होस्टचा देश. प्रत्येक देशातील लोक तो शोधू शकतात.',
   'rooms.options': 'शोध पर्याय',
   'rooms.allCountries': 'सर्व देश',
-  'rooms.noLocked': 'पासवर्ड रूम नाहीत',
-  'rooms.showLocked': 'पासवर्ड रूमही दाखवा',
+  'rooms.noLocked': 'लॉक रूम नाहीत',
+  'rooms.showLocked': 'लॉक रूमही दाखवा (पासवर्ड किंवा खाजगी)',
   'rooms.countriesChosen': '{n} निवडले',
   'rooms.apply': 'रूम दाखवा',
   'notice.edit': 'सूचना बदला',
@@ -637,6 +637,7 @@ const mr: Dict = {
   'rooms.locked': 'पासवर्ड',
   'room.password': 'रूम पासवर्ड (ऐच्छिक)',
   'room.passwordHint': '4–12 अक्षरे. बाहेरच्या लोकांना आत येण्यासाठी तो लागेल; नवा पासवर्ड पुन्हा विचारेल.',
+  'join.wrong': 'चुकीचा कोड. होस्टकडून खात्री करा.',
 }
 
 export default mr

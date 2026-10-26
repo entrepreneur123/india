@@ -350,7 +350,7 @@ const th: Dict = {
   'create.youngest': 'อายุน้อยสุด',
   'create.oldest': 'อายุมากสุด',
   'create.private': 'ห้องส่วนตัว',
-  'create.privateBody': 'ไม่แสดงในรายการ คนจะเข้าได้ด้วยรหัสห้องที่คุณแชร์',
+  'create.privateBody': 'แสดงในรายการ แต่เข้าได้เฉพาะคนที่มีรหัสห้องที่คุณแชร์',
   'create.submit': 'สร้างห้อง',
   'join.title': 'ใส่รหัสห้อง',
   'join.desc': 'ขอรหัส 6 ตัวจากโฮสต์',
@@ -654,8 +654,8 @@ const th: Dict = {
   'create.countryHint': 'ประเทศของห้องคือประเทศของเจ้าของห้อง คนจากทุกประเทศหาเจอได้',
   'rooms.options': 'ตัวเลือกการค้นหา',
   'rooms.allCountries': 'ทุกประเทศ',
-  'rooms.noLocked': 'ไม่รวมห้องที่มีรหัส',
-  'rooms.showLocked': 'แสดงห้องที่มีรหัสด้วย',
+  'rooms.noLocked': 'ไม่รวมห้องที่ล็อก',
+  'rooms.showLocked': 'แสดงห้องที่ล็อกด้วย (รหัสผ่านหรือส่วนตัว)',
   'rooms.countriesChosen': 'เลือก {n} ประเทศ',
   'rooms.apply': 'ดูห้อง',
   'notice.edit': 'แก้ไขประกาศ',
@@ -672,6 +672,7 @@ const th: Dict = {
   'rooms.locked': 'รหัสผ่าน',
   'room.password': 'รหัสผ่านห้อง (ไม่บังคับ)',
   'room.passwordHint': '4–12 ตัวอักษร คนข้างนอกต้องใช้เพื่อเข้า ถ้าเปลี่ยนใหม่จะถามอีกครั้ง',
+  'join.wrong': 'รหัสไม่ถูกต้อง ลองถามเจ้าของห้อง',
 }
 
 export default th

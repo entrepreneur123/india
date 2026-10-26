@@ -330,7 +330,7 @@ const pa: Dict = {
   'create.youngest': 'ਘੱਟੋ-ਘੱਟ',
   'create.oldest': 'ਵੱਧ ਤੋਂ ਵੱਧ',
   'create.private': 'ਪ੍ਰਾਈਵੇਟ ਰੂਮ',
-  'create.privateBody': 'ਸੂਚੀ ਵਿੱਚ ਨਹੀਂ ਦਿਸੇਗਾ। ਲੋਕ ਤੁਹਾਡੇ ਸ਼ੇਅਰ ਕੀਤੇ ਰੂਮ ਕੋਡ ਨਾਲ ਜੁੜਨਗੇ।',
+  'create.privateBody': 'ਸੂਚੀ ਵਿੱਚ ਦਿਖੇਗਾ, ਪਰ ਸਿਰਫ਼ ਉਹੀ ਆ ਸਕਣਗੇ ਜਿਨ੍ਹਾਂ ਕੋਲ ਤੁਹਾਡਾ ਸਾਂਝਾ ਕੀਤਾ ਰੂਮ ਕੋਡ ਹੈ।',
   'create.submit': 'ਰੂਮ ਬਣਾਓ',
   'join.title': 'ਰੂਮ ਕੋਡ ਦਰਜ ਕਰੋ',
   'join.desc': 'ਹੋਸਟ ਤੋਂ 6 ਅੱਖਰਾਂ ਵਾਲਾ ਕੋਡ ਮੰਗੋ।',
@@ -619,8 +619,8 @@ const pa: Dict = {
   'create.countryHint': 'ਰੂਮ ਦਾ ਦੇਸ਼ ਉਸਦੇ ਹੋਸਟ ਦਾ ਦੇਸ਼ ਹੁੰਦਾ ਹੈ। ਹਰ ਦੇਸ਼ ਦੇ ਲੋਕ ਇਸਨੂੰ ਲੱਭ ਸਕਦੇ ਹਨ।',
   'rooms.options': 'ਖੋਜ ਵਿਕਲਪ',
   'rooms.allCountries': 'ਸਾਰੇ ਦੇਸ਼',
-  'rooms.noLocked': 'ਪਾਸਵਰਡ ਵਾਲੇ ਰੂਮ ਨਹੀਂ',
-  'rooms.showLocked': 'ਪਾਸਵਰਡ ਵਾਲੇ ਰੂਮ ਵੀ ਦਿਖਾਓ',
+  'rooms.noLocked': 'ਲੌਕ ਰੂਮ ਨਹੀਂ',
+  'rooms.showLocked': 'ਲੌਕ ਰੂਮ ਵੀ ਦਿਖਾਓ (ਪਾਸਵਰਡ ਜਾਂ ਪ੍ਰਾਈਵੇਟ)',
   'rooms.countriesChosen': '{n} ਚੁਣੇ',
   'rooms.apply': 'ਰੂਮ ਦਿਖਾਓ',
   'notice.edit': 'ਨੋਟਿਸ ਬਦਲੋ',
@@ -637,6 +637,7 @@ const pa: Dict = {
   'rooms.locked': 'ਪਾਸਵਰਡ',
   'room.password': 'ਰੂਮ ਪਾਸਵਰਡ (ਵਿਕਲਪਿਕ)',
   'room.passwordHint': '4–12 ਅੱਖਰ। ਬਾਹਰਲੇ ਲੋਕਾਂ ਨੂੰ ਆਉਣ ਲਈ ਇਹ ਚਾਹੀਦਾ ਹੈ; ਨਵਾਂ ਪਾਸਵਰਡ ਫਿਰ ਪੁੱਛੇਗਾ।',
+  'join.wrong': 'ਗਲਤ ਕੋਡ। ਹੋਸਟ ਤੋਂ ਪੁੱਛ ਕੇ ਦੇਖੋ।',
 }
 
 export default pa

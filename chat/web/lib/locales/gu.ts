@@ -330,7 +330,7 @@ const gu: Dict = {
   'create.youngest': 'ઓછામાં ઓછી',
   'create.oldest': 'વધુમાં વધુ',
   'create.private': 'પ્રાઇવેટ રૂમ',
-  'create.privateBody': 'યાદીમાં દેખાશે નહીં. તમે શેર કરેલા રૂમ કોડથી લોકો જોડાશે.',
+  'create.privateBody': 'યાદીમાં દેખાશે, પણ તમે શેર કરેલો રૂમ કોડ જેમની પાસે છે તે જ આવી શકશે.',
   'create.submit': 'રૂમ બનાવો',
   'join.title': 'રૂમ કોડ દાખલ કરો',
   'join.desc': 'હોસ્ટ પાસે 6 અક્ષરનો કોડ માંગો.',
@@ -619,8 +619,8 @@ const gu: Dict = {
   'create.countryHint': 'રૂમનો દેશ તેના હોસ્ટનો દેશ છે. દરેક દેશના લોકો તેને શોધી શકે છે.',
   'rooms.options': 'શોધ વિકલ્પો',
   'rooms.allCountries': 'બધા દેશ',
-  'rooms.noLocked': 'પાસવર્ડ રૂમ નહીં',
-  'rooms.showLocked': 'પાસવર્ડ રૂમ પણ બતાવો',
+  'rooms.noLocked': 'લૉક રૂમ નહીં',
+  'rooms.showLocked': 'લૉક રૂમ પણ બતાવો (પાસવર્ડ કે ખાનગી)',
   'rooms.countriesChosen': '{n} પસંદ',
   'rooms.apply': 'રૂમ બતાવો',
   'notice.edit': 'સૂચના બદલો',
@@ -637,6 +637,7 @@ const gu: Dict = {
   'rooms.locked': 'પાસવર્ડ',
   'room.password': 'રૂમ પાસવર્ડ (વૈકલ્પિક)',
   'room.passwordHint': '4–12 અક્ષર. બહારના લોકોને આવવા માટે તે જોઈશે; નવો પાસવર્ડ ફરી પૂછશે.',
+  'join.wrong': 'ખોટો કોડ. હોસ્ટ પાસેથી ચકાસો.',
 }
 
 export default gu

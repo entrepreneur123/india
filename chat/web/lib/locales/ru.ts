@@ -354,7 +354,7 @@ const ru: Dict = {
   'create.youngest': 'От',
   'create.oldest': 'До',
   'create.private': 'Приватная комната',
-  'create.privateBody': 'Скрыта из списка. Войти можно по коду комнаты, которым вы поделитесь.',
+  'create.privateBody': 'Видна в списке, но войти могут только те, у кого есть код комнаты, которым вы поделились.',
   'create.submit': 'Создать комнату',
   'join.title': 'Введите код комнаты',
   'join.desc': 'Попросите у хоста код из 6 символов.',
@@ -660,8 +660,8 @@ const ru: Dict = {
   'create.countryHint': 'Страна комнаты — страна её хоста. Её могут найти люди из любой страны.',
   'rooms.options': 'Параметры поиска',
   'rooms.allCountries': 'Все страны',
-  'rooms.noLocked': 'Без комнат с паролем',
-  'rooms.showLocked': 'Показывать комнаты с паролем',
+  'rooms.noLocked': 'Без закрытых комнат',
+  'rooms.showLocked': 'Показывать закрытые комнаты (с паролем или приватные)',
   'rooms.countriesChosen': 'Выбрано: {n}',
   'rooms.apply': 'Показать комнаты',
   'notice.edit': 'Изменить объявление',
@@ -678,6 +678,7 @@ const ru: Dict = {
   'rooms.locked': 'Пароль',
   'room.password': 'Пароль комнаты (необязательно)',
   'room.passwordHint': '4–12 символов. Он нужен тем, кто снаружи; новый пароль спросят снова.',
+  'join.wrong': 'Неверный код. Уточните у хоста.',
 }
 
 export default ru

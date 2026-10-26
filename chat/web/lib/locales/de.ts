@@ -344,7 +344,7 @@ const de: Dict = {
   'create.youngest': 'Mindestalter',
   'create.oldest': 'Höchstalter',
   'create.private': 'Privater Raum',
-  'create.privateBody': 'Nicht in der Liste sichtbar. Man tritt mit dem Raumcode bei, den du teilst.',
+  'create.privateBody': 'In der Liste sichtbar, aber nur wer den geteilten Raumcode hat, kommt rein.',
   'create.submit': 'Raum erstellen',
   'join.title': 'Raumcode eingeben',
   'join.desc': 'Frag den Host nach dem 6-stelligen Code.',
@@ -641,8 +641,8 @@ const de: Dict = {
   'create.countryHint': 'Das Land eines Raums ist das Land seines Hosts. Leute aus allen Ländern können ihn finden.',
   'rooms.options': 'Suchoptionen',
   'rooms.allCountries': 'Alle Länder',
-  'rooms.noLocked': 'Keine Räume mit Passwort',
-  'rooms.showLocked': 'Räume mit Passwort zeigen',
+  'rooms.noLocked': 'Keine gesperrten Räume',
+  'rooms.showLocked': 'Gesperrte Räume zeigen (Passwort oder privat)',
   'rooms.countriesChosen': '{n} gewählt',
   'rooms.apply': 'Räume zeigen',
   'notice.edit': 'Hinweis bearbeiten',
@@ -659,6 +659,7 @@ const de: Dict = {
   'rooms.locked': 'Passwort',
   'room.password': 'Raum-Passwort (optional)',
   'room.passwordHint': '4–12 Zeichen. Wer draußen ist, braucht es zum Reinkommen; ein neues fragt erneut.',
+  'join.wrong': 'Falscher Code. Frag beim Host nach.',
 }
 
 export default de

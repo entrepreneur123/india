@@ -350,7 +350,7 @@ const tr: Dict = {
   'create.youngest': 'En genç',
   'create.oldest': 'En büyük',
   'create.private': 'Özel oda',
-  'create.privateBody': 'Listede görünmez. İnsanlar paylaştığın oda koduyla katılır.',
+  'create.privateBody': 'Listede görünür ama yalnızca paylaştığın oda kodunu bilenler girebilir.',
   'create.submit': 'Oda oluştur',
   'join.title': 'Oda kodunu gir',
   'join.desc': 'Oda sahibinden 6 karakterlik kodu iste.',
@@ -654,8 +654,8 @@ const tr: Dict = {
   'create.countryHint': 'Odanın ülkesi sahibinin ülkesidir. Her ülkeden insanlar onu bulabilir.',
   'rooms.options': 'Arama seçenekleri',
   'rooms.allCountries': 'Tüm ülkeler',
-  'rooms.noLocked': 'Şifreli odalar yok',
-  'rooms.showLocked': 'Şifreli odaları da göster',
+  'rooms.noLocked': 'Kilitli oda yok',
+  'rooms.showLocked': 'Kilitli odaları da göster (şifreli veya özel)',
   'rooms.countriesChosen': '{n} seçili',
   'rooms.apply': 'Odaları göster',
   'notice.edit': 'Duyuruyu düzenle',
@@ -672,6 +672,7 @@ const tr: Dict = {
   'rooms.locked': 'Şifre',
   'room.password': 'Oda şifresi (isteğe bağlı)',
   'room.passwordHint': '4–12 karakter. Dışarıdakiler girmek için buna ihtiyaç duyar; yenisi tekrar sorar.',
+  'join.wrong': 'Kod yanlış. Oda sahibine sor.',
 }
 
 export default tr

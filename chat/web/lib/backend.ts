@@ -332,7 +332,7 @@ export interface FriendContacts {
 /** Topics the room glyphs are drawn for (components/ui/topic-icons.tsx). */
 export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' | 'gaming' | 'sports' | 'study' | 'travel' | 'night'
 /** Why I can't enter a room (null/absent = I can). */
-export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed' | 'room_password'
+export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed' | 'room_password' | 'room_private'
 
 // ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos, polls), a
 // stage of seats with an audience and shared music. No categories (28): a room is its host's country. ----

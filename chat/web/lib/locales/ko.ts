@@ -350,7 +350,7 @@ const ko: Dict = {
   'create.youngest': '최소',
   'create.oldest': '최대',
   'create.private': '비공개 방',
-  'create.privateBody': '목록에 표시되지 않아요. 내가 공유한 방 코드로만 들어올 수 있어요.',
+  'create.privateBody': '목록에는 보이지만, 내가 공유한 방 코드를 아는 사람만 들어올 수 있어요.',
   'create.submit': '방 만들기',
   'join.title': '방 코드 입력',
   'join.desc': '방장에게 6자리 코드를 물어보세요.',
@@ -654,8 +654,8 @@ const ko: Dict = {
   'create.countryHint': '방의 국가는 방장의 국가예요. 모든 나라 사람이 찾을 수 있어요.',
   'rooms.options': '검색 옵션',
   'rooms.allCountries': '모든 국가',
-  'rooms.noLocked': '비밀번호 방 제외',
-  'rooms.showLocked': '비밀번호 방도 보기',
+  'rooms.noLocked': '잠긴 방 제외',
+  'rooms.showLocked': '잠긴 방도 보기 (비밀번호·비공개)',
   'rooms.countriesChosen': '{n}개 선택',
   'rooms.apply': '방 보기',
   'notice.edit': '공지 수정',
@@ -672,6 +672,7 @@ const ko: Dict = {
   'rooms.locked': '비밀번호',
   'room.password': '방 비밀번호 (선택)',
   'room.passwordHint': '4~12자. 밖에 있는 사람은 비밀번호를 입력해야 들어올 수 있어요. 바꾸면 다시 물어봐요.',
+  'join.wrong': '코드가 틀렸어요. 방장에게 확인해 보세요.',
 }
 
 export default ko

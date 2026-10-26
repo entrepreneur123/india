@@ -58,5 +58,6 @@ export const VerifySheet = lazy(() => loaders.verify().then((m) => ({ default: m
 export const MannerLowSheet = lazy(() => loaders.verify().then((m) => ({ default: m.MannerLowSheet })))
 /** The Looks shop: opened from Me and Settings. */
 export const LooksSheet = lazy(() => loaders.looks().then((m) => ({ default: m.LooksSheet })))
-/** A room's password prompt (058), from the list, a link or an invite. */
+/** A locked room's password (058) or code (065) prompt, from the list or a link. */
 export const RoomPasswordDialog = lazy(() => loaders.roomDialogs().then((m) => ({ default: m.RoomPasswordDialog })))
+export const JoinCodeDialog = lazy(() => loaders.roomDialogs().then((m) => ({ default: m.JoinCodeDialog })))

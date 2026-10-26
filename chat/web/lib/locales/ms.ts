@@ -350,7 +350,7 @@ const ms: Dict = {
   'create.youngest': 'Paling muda',
   'create.oldest': 'Paling tua',
   'create.private': 'Bilik peribadi',
-  'create.privateBody': 'Tersembunyi daripada senarai. Orang menyertai dengan kod bilik yang anda kongsi.',
+  'create.privateBody': 'Dipaparkan dalam senarai, tetapi hanya mereka yang ada kod bilik yang anda kongsi boleh masuk.',
   'create.submit': 'Cipta bilik',
   'join.title': 'Masukkan kod bilik',
   'join.desc': 'Minta kod 6 aksara daripada hos.',
@@ -654,8 +654,8 @@ const ms: Dict = {
   'create.countryHint': 'Negara bilik ialah negara hosnya. Orang dari semua negara boleh menemuinya.',
   'rooms.options': 'Pilihan carian',
   'rooms.allCountries': 'Semua negara',
-  'rooms.noLocked': 'Tanpa bilik berkata laluan',
-  'rooms.showLocked': 'Tunjukkan bilik berkata laluan',
+  'rooms.noLocked': 'Tanpa bilik berkunci',
+  'rooms.showLocked': 'Tunjukkan bilik berkunci (kata laluan atau peribadi)',
   'rooms.countriesChosen': '{n} dipilih',
   'rooms.apply': 'Tunjukkan bilik',
   'notice.edit': 'Edit notis',
@@ -672,6 +672,7 @@ const ms: Dict = {
   'rooms.locked': 'Kata laluan',
   'room.password': 'Kata laluan bilik (pilihan)',
   'room.passwordHint': '4–12 aksara. Orang di luar perlukannya untuk masuk; yang baharu akan ditanya semula.',
+  'join.wrong': 'Kod salah. Semak dengan hos.',
 }
 
 export default ms

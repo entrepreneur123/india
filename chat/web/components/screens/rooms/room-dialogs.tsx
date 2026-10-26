@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { Lock, Minus, Plus } from 'lucide-react'
 import type { NewVoiceRoom, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { errorCode } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
@@ -216,10 +217,13 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
   const { mutate } = useSWRConfig()
   const id = useId()
   const [code, setCode] = useState('')
+  const [wrong, setWrong] = useState(false)
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (open) setCode('')
+    if (!open) return
+    setCode('')
+    setWrong(false)
   }, [open])
 
   const submit = async (e: React.FormEvent) => {
@@ -231,7 +235,8 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
       void mutate('voiceRooms')
       onJoined(roomId)
     } catch (err) {
-      toast.error(err)
+      if (errorCode(err) === 'not_found') setWrong(true) // no room has this code (the miss still counts on the server)
+      else toast.error(err)
     } finally {
       setBusy(false)
     }
@@ -246,7 +251,11 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
         <input
           id={`${id}-c`}
           value={code}
-          onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+          onChange={(e) => {
+            setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))
+            setWrong(false)
+          }}
+          aria-invalid={wrong}
           placeholder="ABC123"
           autoComplete="off"
           autoCapitalize="characters"
@@ -255,6 +264,7 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
           dir="ltr"
           className="h-16 w-full rounded-xl border border-input bg-card text-center font-mono text-3xl font-bold tracking-[0.4em] focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
         />
+        {wrong ? <p className="-mt-2 text-sm text-destructive">{t('join.wrong')}</p> : null}
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={code.length !== 6}>
           {t('join.submit')}
         </Button>

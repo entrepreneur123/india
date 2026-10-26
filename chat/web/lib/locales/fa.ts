@@ -350,7 +350,7 @@ const fa: Dict = {
   'create.youngest': 'کمترین سن',
   'create.oldest': 'بیشترین سن',
   'create.private': 'روم خصوصی',
-  'create.privateBody': 'در فهرست نشان داده نمی‌شود. افراد با کد رومی که شما می‌فرستید وارد می‌شوند.',
+  'create.privateBody': 'در فهرست دیده می‌شود، اما فقط کسانی که کد اتاقی را که شما می‌دهید دارند وارد می‌شوند.',
   'create.submit': 'ساخت روم',
   'join.title': 'کد روم را وارد کنید',
   'join.desc': 'کد ۶ کاراکتری را از میزبان بگیرید.',
@@ -654,8 +654,8 @@ const fa: Dict = {
   'create.countryHint': 'کشور اتاق کشور میزبان آن است. مردم همه کشورها می‌توانند آن را پیدا کنند.',
   'rooms.options': 'گزینه‌های جستجو',
   'rooms.allCountries': 'همه کشورها',
-  'rooms.noLocked': 'بدون اتاق‌های رمزدار',
-  'rooms.showLocked': 'اتاق‌های رمزدار هم نشان داده شود',
+  'rooms.noLocked': 'بدون اتاق‌های قفل',
+  'rooms.showLocked': 'نمایش اتاق‌های قفل (رمزدار یا خصوصی)',
   'rooms.countriesChosen': '{n} انتخاب‌شده',
   'rooms.apply': 'نمایش اتاق‌ها',
   'notice.edit': 'ویرایش اطلاعیه',
@@ -672,6 +672,7 @@ const fa: Dict = {
   'rooms.locked': 'رمز',
   'room.password': 'رمز اتاق (اختیاری)',
   'room.passwordHint': '۴ تا ۱۲ نویسه. افراد بیرون برای ورود به آن نیاز دارند؛ رمز تازه دوباره پرسیده می‌شود.',
+  'join.wrong': 'کد اشتباه است. از میزبان بپرسید.',
 }
 
 export default fa

@@ -350,7 +350,7 @@ const ja: Dict = {
   'create.youngest': '下限',
   'create.oldest': '上限',
   'create.private': 'プライベートルーム',
-  'create.privateBody': '一覧には表示されません。共有したルームコードで参加してもらえます。',
+  'create.privateBody': '一覧には表示されますが、共有したルームコードを知っている人だけが入れます。',
   'create.submit': 'ルームを作成',
   'join.title': 'ルームコードを入力',
   'join.desc': 'ホストに6文字のコードを聞いてください。',
@@ -654,8 +654,8 @@ const ja: Dict = {
   'create.countryHint': 'ルームの国はホストの国です。どの国の人も見つけられます。',
   'rooms.options': '検索オプション',
   'rooms.allCountries': 'すべての国',
-  'rooms.noLocked': 'パスワード付きを除く',
-  'rooms.showLocked': 'パスワード付きのルームも表示',
+  'rooms.noLocked': '鍵付きのルームを除く',
+  'rooms.showLocked': '鍵付きのルームも表示（パスワード・非公開）',
   'rooms.countriesChosen': '{n}件選択',
   'rooms.apply': 'ルームを表示',
   'notice.edit': 'お知らせを編集',
@@ -672,6 +672,7 @@ const ja: Dict = {
   'rooms.locked': 'パスワード',
   'room.password': 'ルームのパスワード（任意）',
   'room.passwordHint': '4〜12文字。外の人が入るのに必要です。変えるともう一度聞かれます。',
+  'join.wrong': 'コードが違います。ホストに確認してください。',
 }
 
 export default ja

@@ -352,7 +352,7 @@ const he: Dict = {
   'create.youngest': 'הכי צעיר',
   'create.oldest': 'הכי מבוגר',
   'create.private': 'חדר פרטי',
-  'create.privateBody': 'מוסתר מהרשימה. מצטרפים עם קוד החדר ששולחים.',
+  'create.privateBody': 'מופיע ברשימה, אבל רק מי שיש לו את קוד החדר שתשתפו יכול להיכנס.',
   'create.submit': 'יצירת חדר',
   'join.title': 'הזנת קוד חדר',
   'join.desc': 'מבקשים מהמארח/ת את הקוד בן 6 התווים.',
@@ -657,8 +657,8 @@ const he: Dict = {
   'create.countryHint': 'המדינה של חדר היא המדינה של המארח שלו. אנשים מכל המדינות יכולים למצוא אותו.',
   'rooms.options': 'אפשרויות חיפוש',
   'rooms.allCountries': 'כל המדינות',
-  'rooms.noLocked': 'בלי חדרים עם סיסמה',
-  'rooms.showLocked': 'להציג גם חדרים עם סיסמה',
+  'rooms.noLocked': 'בלי חדרים נעולים',
+  'rooms.showLocked': 'להציג חדרים נעולים (סיסמה או פרטיים)',
   'rooms.countriesChosen': '{n} נבחרו',
   'rooms.apply': 'הצגת חדרים',
   'notice.edit': 'עריכת ההודעה',
@@ -675,6 +675,7 @@ const he: Dict = {
   'rooms.locked': 'סיסמה',
   'room.password': 'סיסמת חדר (לא חובה)',
   'room.passwordHint': '4–12 תווים. מי שבחוץ צריך אותה כדי להיכנס; סיסמה חדשה תישאל שוב.',
+  'join.wrong': 'קוד שגוי. כדאי לבדוק מול המארח.',
 }
 
 export default he

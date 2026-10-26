@@ -344,7 +344,7 @@ const kn: Dict = {
   'create.youngest': 'ಕನಿಷ್ಠ ವಯಸ್ಸು',
   'create.oldest': 'ಗರಿಷ್ಠ ವಯಸ್ಸು',
   'create.private': 'ಖಾಸಗಿ ರೂಮ್',
-  'create.privateBody': 'ಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣಿಸುವುದಿಲ್ಲ. ನೀವು ಹಂಚಿಕೊಳ್ಳುವ ರೂಮ್ ಕೋಡ್‌ನಿಂದ ಮಾತ್ರ ಜನರು ಸೇರಬಹುದು.',
+  'create.privateBody': 'ಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣುತ್ತದೆ, ಆದರೆ ನೀವು ಹಂಚಿದ ರೂಮ್ ಕೋಡ್ ಇರುವವರು ಮಾತ್ರ ಒಳಗೆ ಬರಬಹುದು.',
   'create.submit': 'ರೂಮ್ ರಚಿಸಿ',
   'join.title': 'ರೂಮ್ ಕೋಡ್ ನಮೂದಿಸಿ',
   'join.desc': '6 ಅಕ್ಷರದ ಕೋಡ್‌ಗಾಗಿ ಹೋಸ್ಟ್ ಅನ್ನು ಕೇಳಿ.',
@@ -641,8 +641,8 @@ const kn: Dict = {
   'create.countryHint': 'ರೂಮ್‌ನ ದೇಶ ಅದರ ಹೋಸ್ಟ್‌ನ ದೇಶ. ಎಲ್ಲ ದೇಶದವರೂ ಅದನ್ನು ಹುಡುಕಬಹುದು.',
   'rooms.options': 'ಹುಡುಕಾಟ ಆಯ್ಕೆಗಳು',
   'rooms.allCountries': 'ಎಲ್ಲ ದೇಶಗಳು',
-  'rooms.noLocked': 'ಪಾಸ್‌ವರ್ಡ್ ರೂಮ್‌ಗಳು ಬೇಡ',
-  'rooms.showLocked': 'ಪಾಸ್‌ವರ್ಡ್ ರೂಮ್‌ಗಳನ್ನೂ ತೋರಿಸಿ',
+  'rooms.noLocked': 'ಲಾಕ್ ರೂಮ್‌ಗಳು ಬೇಡ',
+  'rooms.showLocked': 'ಲಾಕ್ ರೂಮ್‌ಗಳನ್ನೂ ತೋರಿಸಿ (ಪಾಸ್‌ವರ್ಡ್ ಅಥವಾ ಖಾಸಗಿ)',
   'rooms.countriesChosen': '{n} ಆಯ್ಕೆ',
   'rooms.apply': 'ರೂಮ್‌ಗಳನ್ನು ತೋರಿಸಿ',
   'notice.edit': 'ಸೂಚನೆ ಬದಲಿಸಿ',
@@ -659,6 +659,7 @@ const kn: Dict = {
   'rooms.locked': 'ಪಾಸ್‌ವರ್ಡ್',
   'room.password': 'ರೂಮ್ ಪಾಸ್‌ವರ್ಡ್ (ಐಚ್ಛಿಕ)',
   'room.passwordHint': '4–12 ಅಕ್ಷರಗಳು. ಹೊರಗಿನವರು ಬರಲು ಇದು ಬೇಕು; ಹೊಸದು ಮತ್ತೆ ಕೇಳುತ್ತದೆ.',
+  'join.wrong': 'ತಪ್ಪು ಕೋಡ್. ಹೋಸ್ಟ್ ಬಳಿ ಪರಿಶೀಲಿಸಿ.',
 }
 
 export default kn

@@ -345,7 +345,7 @@ const ptBR: Dict = {
   'create.youngest': 'Mínima',
   'create.oldest': 'Máxima',
   'create.private': 'Sala privada',
-  'create.privateBody': 'Não aparece na lista. Entra quem tiver o código que você compartilhar.',
+  'create.privateBody': 'Aparece na lista, mas só entra quem tiver o código da sala que você compartilhar.',
   'create.submit': 'Criar sala',
   'join.title': 'Digite o código da sala',
   'join.desc': 'Peça o código de 6 caracteres para quem criou a sala.',
@@ -640,8 +640,8 @@ const ptBR: Dict = {
   'create.countryHint': 'O país de uma sala é o do anfitrião. Gente de qualquer país pode encontrá-la.',
   'rooms.options': 'Opções de busca',
   'rooms.allCountries': 'Todos os países',
-  'rooms.noLocked': 'Sem salas com senha',
-  'rooms.showLocked': 'Mostrar salas com senha',
+  'rooms.noLocked': 'Sem salas trancadas',
+  'rooms.showLocked': 'Mostrar salas trancadas (com senha ou privadas)',
   'rooms.countriesChosen': '{n} escolhidos',
   'rooms.apply': 'Ver salas',
   'notice.edit': 'Editar aviso',
@@ -658,6 +658,7 @@ const ptBR: Dict = {
   'rooms.locked': 'Senha',
   'room.password': 'Senha da sala (opcional)',
   'room.passwordHint': 'De 4 a 12 caracteres. Quem está fora precisa dela para entrar; uma nova pede de novo.',
+  'join.wrong': 'Código errado. Confira com o anfitrião.',
 }
 
 export default ptBR

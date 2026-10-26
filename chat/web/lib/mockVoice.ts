@@ -154,7 +154,7 @@ export class VoiceSim {
     this.seed('v-chai', 'Chai pe charcha', 'approval', 'Meera', 0, 14, undefined, undefined, 'Be kind. No phone numbers in the chat.')
     this.seed('v-cricket', 'Cricket talk: IND vs AUS', 'approval', 'Vikram', 6, 48)
     this.seed('v-adda', 'Adda: Kolkata evenings', 'open', 'Arnab', 4, 12)
-    this.seed('v-lofi', 'Lo-fi study together', 'open', 'Kavya', 2, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [], votes: [] })
+    this.seed('v-lofi', 'Lo-fi study together', 'open', 'Kavya', 2, 17, { playing: 'lTRiuFIWV54', ago: 480_000, queue: [], votes: [] }, { ...ANYONE, isPrivate: true })
     this.seed('v-gym', 'Gym bros: fitness talk', 'open', 'Harsh', 2, 6, undefined, { ...ANYONE, maxMembers: 30, genderRule: 'male', minAge: 18, maxAge: 30 })
     // The cricket room has a poll on, with votes coming in, and a reply in its chat.
     const cricket = this.rooms.get('v-cricket')!
@@ -240,6 +240,7 @@ export class VoiceSim {
     if (rm.genderRule !== 'any' && me.gender !== rm.genderRule) return 'room_gender'
     if (me.age < rm.minAge || me.age > rm.maxAge) return 'room_age'
     if (!this.meMember(r) && rm.members.length >= rm.maxMembers) return 'room_full'
+    if (rm.isPrivate && !this.meMember(r) && !r.admitted) return 'room_private'
     if (rm.password && !this.meMember(r) && !r.unlocked && !r.admitted) return 'room_password'
     return null
   }
@@ -322,7 +323,7 @@ export class VoiceSim {
     await wait(450)
     const me = this.me()
     return [...this.rooms.values()]
-      .filter((r) => !r.ended && (!r.room.isPrivate || r.mine || r.admitted))
+      .filter((r) => !r.ended)
       .sort((a, b) => Number(b.mine) - Number(a.mine) || b.room.members.length - a.room.members.length)
       .map((r): VoiceRoomSummary => {
         const { room, mine } = r

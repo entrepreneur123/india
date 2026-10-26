@@ -345,7 +345,7 @@ const vi: Dict = {
   'create.youngest': 'Thấp nhất',
   'create.oldest': 'Cao nhất',
   'create.private': 'Phòng riêng tư',
-  'create.privateBody': 'Không hiện trong danh sách. Mọi người vào bằng mã bạn chia sẻ.',
+  'create.privateBody': 'Hiện trong danh sách, nhưng chỉ ai có mã phòng bạn chia sẻ mới vào được.',
   'create.submit': 'Tạo phòng',
   'join.title': 'Nhập mã phòng',
   'join.desc': 'Hỏi chủ phòng mã gồm 6 ký tự.',
@@ -640,8 +640,8 @@ const vi: Dict = {
   'create.countryHint': 'Quốc gia của phòng là quốc gia của chủ phòng. Người ở mọi quốc gia đều tìm được.',
   'rooms.options': 'Tùy chọn tìm kiếm',
   'rooms.allCountries': 'Mọi quốc gia',
-  'rooms.noLocked': 'Không có phòng mật khẩu',
-  'rooms.showLocked': 'Hiện cả phòng có mật khẩu',
+  'rooms.noLocked': 'Không có phòng đã khóa',
+  'rooms.showLocked': 'Hiện cả phòng đã khóa (mật khẩu hoặc riêng tư)',
   'rooms.countriesChosen': 'Đã chọn {n}',
   'rooms.apply': 'Xem phòng',
   'notice.edit': 'Sửa thông báo',
@@ -658,6 +658,7 @@ const vi: Dict = {
   'rooms.locked': 'Mật khẩu',
   'room.password': 'Mật khẩu phòng (không bắt buộc)',
   'room.passwordHint': '4–12 ký tự. Người bên ngoài cần nó để vào; mật khẩu mới sẽ hỏi lại.',
+  'join.wrong': 'Sai mã. Hãy hỏi lại chủ phòng.',
 }
 
 export default vi

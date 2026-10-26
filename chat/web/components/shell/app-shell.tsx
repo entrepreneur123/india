@@ -39,6 +39,7 @@ import {
   MannerLowSheet,
   LooksSheet,
   RoomPasswordDialog,
+  JoinCodeDialog,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 import { IncomingCall } from '@/components/video/incoming-call'
@@ -88,7 +89,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
   const [shop, setShop] = useState<{ open: boolean; tab: ItemKind } | null>(null)
-  const [pwRoom, setPwRoom] = useState<{ id: string | null } | null>(null)
+  const [roomKey, setRoomKey] = useState<{ id: string | null; kind: 'password' | 'code' } | null>(null)
   const [profileUsed, setProfileUsed] = useState(false)
   const [postTarget, setPostTarget] = useState<PostTarget | null>(null)
   const [postUsed, setPostUsed] = useState(false)
@@ -301,7 +302,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
       openVoice,
-      askRoomPassword: (id) => setPwRoom({ id }),
+      askRoomKey: (id, kind) => setRoomKey({ id, kind }),
       freeForRoom,
       freeForRandom,
       registerRandom,
@@ -490,14 +491,22 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
             </Suspense>
           </ScreenBoundary>
         ) : null}
-        {pwRoom ? (
+        {roomKey ? (
           <ScreenBoundary>
             <Suspense fallback={null}>
               <RoomPasswordDialog
-                roomId={pwRoom.id}
-                onClose={() => setPwRoom({ id: null })}
+                roomId={roomKey.kind === 'password' ? roomKey.id : null}
+                onClose={() => setRoomKey({ ...roomKey, id: null })}
                 onUnlocked={(id) => {
-                  setPwRoom({ id: null })
+                  setRoomKey({ ...roomKey, id: null })
+                  openVoice(id)
+                }}
+              />
+              <JoinCodeDialog
+                open={roomKey.kind === 'code' && roomKey.id !== null}
+                onClose={() => setRoomKey({ ...roomKey, id: null })}
+                onJoined={(id) => {
+                  setRoomKey({ ...roomKey, id: null })
                   openVoice(id)
                 }}
               />

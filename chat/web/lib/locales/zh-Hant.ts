@@ -350,7 +350,7 @@ const zhHant: Dict = {
   'create.youngest': '最小',
   'create.oldest': '最大',
   'create.private': '私密房間',
-  'create.privateBody': '不會顯示在列表中。別人需要用你分享的房間號加入。',
+  'create.privateBody': '會顯示在列表裡，但只有知道你分享的房間碼的人才能進入。',
   'create.submit': '建立房間',
   'join.title': '輸入房間號',
   'join.desc': '向房主要 6 位房間號。',
@@ -654,8 +654,8 @@ const zhHant: Dict = {
   'create.countryHint': '房間的國家就是房主的國家。所有國家的人都能找到它。',
   'rooms.options': '搜尋選項',
   'rooms.allCountries': '所有國家',
-  'rooms.noLocked': '不含密碼房間',
-  'rooms.showLocked': '也顯示有密碼的房間',
+  'rooms.noLocked': '不含上鎖房間',
+  'rooms.showLocked': '也顯示上鎖的房間（密碼或私密）',
   'rooms.countriesChosen': '已選 {n} 個',
   'rooms.apply': '查看房間',
   'notice.edit': '編輯公告',
@@ -672,6 +672,7 @@ const zhHant: Dict = {
   'rooms.locked': '密碼',
   'room.password': '房間密碼（選填）',
   'room.passwordHint': '4–12 個字元。外面的人需要它才能進入；改了新密碼會再次詢問。',
+  'join.wrong': '房間碼不對，請向房主確認。',
 }
 
 export default zhHant

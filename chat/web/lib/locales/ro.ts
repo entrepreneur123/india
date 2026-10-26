@@ -346,7 +346,7 @@ const ro: Dict = {
   'create.youngest': 'Minimă',
   'create.oldest': 'Maximă',
   'create.private': 'Cameră privată',
-  'create.privateBody': 'Ascunsă din listă. Se intră cu codul camerei pe care îl dai tu.',
+  'create.privateBody': 'Apare în listă, dar intră doar cei care au codul camerei pe care îl dai.',
   'create.submit': 'Creează camera',
   'join.title': 'Introdu un cod de cameră',
   'join.desc': 'Cere-i gazdei codul de 6 caractere.',
@@ -644,8 +644,8 @@ const ro: Dict = {
   'create.countryHint': 'Țara camerei e țara gazdei ei. Oameni din orice țară o pot găsi.',
   'rooms.options': 'Opțiuni de căutare',
   'rooms.allCountries': 'Toate țările',
-  'rooms.noLocked': 'Fără camere cu parolă',
-  'rooms.showLocked': 'Arată și camerele cu parolă',
+  'rooms.noLocked': 'Fără camere închise',
+  'rooms.showLocked': 'Arată și camerele închise (cu parolă sau private)',
   'rooms.countriesChosen': '{n} alese',
   'rooms.apply': 'Arată camerele',
   'notice.edit': 'Editează anunțul',
@@ -662,6 +662,7 @@ const ro: Dict = {
   'rooms.locked': 'Parolă',
   'room.password': 'Parola camerei (opțional)',
   'room.passwordHint': '4–12 caractere. Cei din afară au nevoie de ea ca să intre; una nouă îi întreabă din nou.',
+  'join.wrong': 'Cod greșit. Verifică-l cu gazda.',
 }
 
 export default ro

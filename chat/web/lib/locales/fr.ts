@@ -346,7 +346,7 @@ const fr: Dict = {
   'create.youngest': 'Âge min.',
   'create.oldest': 'Âge max.',
   'create.private': 'Salon privé',
-  'create.privateBody': 'Masqué de la liste. On entre avec le code du salon que vous partagez.',
+  'create.privateBody': 'Visible dans la liste, mais seules les personnes avec le code du salon que tu partages peuvent entrer.',
   'create.submit': 'Créer le salon',
   'join.title': 'Saisissez un code de salon',
   'join.desc': 'Demandez à l’hôte le code à 6 caractères.',
@@ -644,8 +644,8 @@ const fr: Dict = {
   'create.countryHint': 'Le pays d’un salon est celui de son hôte. Des gens de tous les pays peuvent le trouver.',
   'rooms.options': 'Options de recherche',
   'rooms.allCountries': 'Tous les pays',
-  'rooms.noLocked': 'Sans salons à mot de passe',
-  'rooms.showLocked': 'Afficher les salons à mot de passe',
+  'rooms.noLocked': 'Sans salons verrouillés',
+  'rooms.showLocked': 'Afficher les salons verrouillés (mot de passe ou privés)',
   'rooms.countriesChosen': '{n} choisis',
   'rooms.apply': 'Voir les salons',
   'notice.edit': 'Modifier l’annonce',
@@ -662,6 +662,7 @@ const fr: Dict = {
   'rooms.locked': 'Mot de passe',
   'room.password': 'Mot de passe du salon (facultatif)',
   'room.passwordHint': '4 à 12 caractères. Les personnes à l’extérieur en ont besoin pour entrer ; un nouveau le redemande.',
+  'join.wrong': 'Code incorrect. Vérifie-le auprès de l’hôte.',
 }
 
 export default fr

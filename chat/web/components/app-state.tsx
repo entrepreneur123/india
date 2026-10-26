@@ -60,8 +60,8 @@ export interface AppState {
    * word); a search just stops.
    */
   openVoice: (roomId: string) => void
-  /** A room with a password (058): asks for it, then openVoice. */
-  askRoomPassword: (roomId: string) => void
+  /** A locked room: asks for its password (058) or, for a private room, its code (065), then openVoice. */
+  askRoomKey: (roomId: string, kind: 'password' | 'code') => void
   /** Before making a room: ends a random chat or search, as openVoice does. */
   freeForRoom: () => Promise<boolean>
   /** Before a random search: leaves my room (the host's ends, as Leave does); false if that failed. */

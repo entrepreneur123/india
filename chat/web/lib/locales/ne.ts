@@ -344,7 +344,7 @@ const ne: Dict = {
   'create.youngest': 'न्यूनतम उमेर',
   'create.oldest': 'अधिकतम उमेर',
   'create.private': 'निजी रूम',
-  'create.privateBody': 'सूचीमा देखिँदैन। तपाईंले सेयर गरेको रूम कोडबाट मानिस जोडिन्छन्।',
+  'create.privateBody': 'सूचीमा देखिन्छ, तर तपाईंले सेयर गरेको रुम कोड भएकाहरू मात्र भित्र आउन सक्छन्।',
   'create.submit': 'रूम बनाउनुहोस्',
   'join.title': 'रूम कोड हाल्नुहोस्',
   'join.desc': 'होस्टसँग ६ अक्षरको कोड माग्नुहोस्।',
@@ -641,8 +641,8 @@ const ne: Dict = {
   'create.countryHint': 'रुमको देश त्यसको होस्टको देश हो। सबै देशका मानिसले यो भेट्टाउन सक्छन्।',
   'rooms.options': 'खोज विकल्प',
   'rooms.allCountries': 'सबै देश',
-  'rooms.noLocked': 'पासवर्ड रुम नदेखाउनुहोस्',
-  'rooms.showLocked': 'पासवर्ड रुम पनि देखाउनुहोस्',
+  'rooms.noLocked': 'लक गरिएका रुम नदेखाउनुहोस्',
+  'rooms.showLocked': 'लक गरिएका रुम पनि देखाउनुहोस् (पासवर्ड वा निजी)',
   'rooms.countriesChosen': '{n} छानियो',
   'rooms.apply': 'रुम देखाउनुहोस्',
   'notice.edit': 'सूचना सम्पादन',
@@ -659,6 +659,7 @@ const ne: Dict = {
   'rooms.locked': 'पासवर्ड',
   'room.password': 'रुम पासवर्ड (ऐच्छिक)',
   'room.passwordHint': '४–१२ अक्षर। बाहिरका मानिसलाई भित्र आउन यो चाहिन्छ; नयाँले फेरि सोध्छ।',
+  'join.wrong': 'गलत कोड। होस्टसँग जाँच गर्नुहोस्।',
 }
 
 export default ne

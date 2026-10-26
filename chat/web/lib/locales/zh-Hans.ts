@@ -350,7 +350,7 @@ const zhHans: Dict = {
   'create.youngest': '最小',
   'create.oldest': '最大',
   'create.private': '私密房间',
-  'create.privateBody': '不会显示在列表中。别人需要用你分享的房间号加入。',
+  'create.privateBody': '会显示在列表里，但只有知道你分享的房间码的人才能进入。',
   'create.submit': '创建房间',
   'join.title': '输入房间号',
   'join.desc': '向房主要 6 位房间号。',
@@ -654,8 +654,8 @@ const zhHans: Dict = {
   'create.countryHint': '房间的国家就是房主的国家。所有国家的人都能找到它。',
   'rooms.options': '搜索选项',
   'rooms.allCountries': '所有国家',
-  'rooms.noLocked': '不含密码房间',
-  'rooms.showLocked': '也显示有密码的房间',
+  'rooms.noLocked': '不含上锁房间',
+  'rooms.showLocked': '也显示上锁的房间（密码或私密）',
   'rooms.countriesChosen': '已选 {n} 个',
   'rooms.apply': '查看房间',
   'notice.edit': '编辑公告',
@@ -672,6 +672,7 @@ const zhHans: Dict = {
   'rooms.locked': '密码',
   'room.password': '房间密码（可选）',
   'room.passwordHint': '4–12 个字符。外面的人需要它才能进入；改了新密码会再次询问。',
+  'join.wrong': '房间码不对，请向房主确认。',
 }
 
 export default zhHans

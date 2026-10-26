@@ -25,7 +25,7 @@ export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCrea
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { openVoice, voiceRoomId, askRoomPassword } = useApp()
+  const { openVoice, voiceRoomId, askRoomKey } = useApp()
   const { st } = useSocialT()
   const searching = !!(query.text || query.lang || query.countries?.length || query.locked === false)
   // Without a search this is the same list (and request) as the right panel's.
@@ -48,7 +48,11 @@ export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCrea
 
   // A room I can't enter says why instead of failing on the server.
   const open = (r: VoiceRoomSummary) =>
-    r.id === voiceRoomId || !r.refusal ? openVoice(r.id) : r.refusal === 'room_password' ? askRoomPassword(r.id) : toast.show(t(`error.${r.refusal}` as const), 'info')
+    r.id === voiceRoomId || !r.refusal
+      ? openVoice(r.id)
+      : r.refusal === 'room_password' || r.refusal === 'room_private'
+        ? askRoomKey(r.id, r.refusal === 'room_private' ? 'code' : 'password')
+        : toast.show(t(`error.${r.refusal}` as const), 'info')
 
   return (
     <section aria-labelledby="voice-live" className="flex flex-col gap-3">
@@ -102,8 +106,8 @@ export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCrea
 function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolean; onOpen: () => void }) {
   const { t, num } = useI18n()
   const live = room.speakers.length > 0
-  // A password isn't a no: the card opens the password prompt (058).
-  const locked = room.refusal === 'room_password' && !here
+  // A password or a private room's code isn't a no: the card opens the prompt (058, 065).
+  const locked = (room.refusal === 'room_password' || room.refusal === 'room_private') && !here
   const blocked = !!room.refusal && !locked && !here
   // The rule that keeps me out is shown once, in red, not again among the others.
   const conditions = roomConditions(room, t, false).filter((c) => !blocked || c !== refusalLabel(room, t))
@@ -121,7 +125,7 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
       <span className="flex w-full items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-1.5">
           <RoomCountry iso={room.host.country} />
-          {room.isPrivate || locked ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t(locked ? 'rooms.locked' : 'rooms.private')} /> : null}
+          {room.isPrivate || locked ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t(room.isPrivate ? 'rooms.private' : 'rooms.locked')} /> : null}
           {langName(room.lang) ? (
             <span lang={room.lang ?? undefined} className="truncate rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
               {langName(room.lang)}

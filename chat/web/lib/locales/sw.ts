@@ -350,7 +350,7 @@ const sw: Dict = {
   'create.youngest': 'Mdogo zaidi',
   'create.oldest': 'Mkubwa zaidi',
   'create.private': 'Chumba binafsi',
-  'create.privateBody': 'Hakionekani kwenye orodha. Watu hujiunga kwa msimbo wa chumba unaoutuma.',
+  'create.privateBody': 'Kinaonekana kwenye orodha, lakini wanaoingia ni wale tu wenye msimbo wa chumba unaoushiriki.',
   'create.submit': 'Unda chumba',
   'join.title': 'Weka msimbo wa chumba',
   'join.desc': 'Muombe mwenyeji msimbo wa herufi 6.',
@@ -654,8 +654,8 @@ const sw: Dict = {
   'create.countryHint': 'Nchi ya chumba ni nchi ya mwenyeji wake. Watu wa kila nchi wanaweza kukipata.',
   'rooms.options': 'Chaguo za utafutaji',
   'rooms.allCountries': 'Nchi zote',
-  'rooms.noLocked': 'Bila vyumba vya nenosiri',
-  'rooms.showLocked': 'Onyesha vyumba vya nenosiri',
+  'rooms.noLocked': 'Bila vyumba vilivyofungwa',
+  'rooms.showLocked': 'Onyesha vyumba vilivyofungwa (nenosiri au binafsi)',
   'rooms.countriesChosen': '{n} zimechaguliwa',
   'rooms.apply': 'Onyesha vyumba',
   'notice.edit': 'Hariri tangazo',
@@ -672,6 +672,7 @@ const sw: Dict = {
   'rooms.locked': 'Nenosiri',
   'room.password': 'Nenosiri la chumba (si lazima)',
   'room.passwordHint': 'Herufi 4–12. Walio nje wanalihitaji ili kuingia; jipya litaulizwa tena.',
+  'join.wrong': 'Msimbo si sahihi. Thibitisha na mwenyeji.',
 }
 
 export default sw
