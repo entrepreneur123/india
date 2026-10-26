@@ -682,6 +682,17 @@ const fil: Dict = {
   'notes.title': 'Mga note ng kaibigan',
   'notes.mine': 'Note mo',
   'notes.add': 'Mag-iwan ng note…',
+  'settings.hideOnline': "Itago ang online status",
+  'settings.hideOnlineBody': "Makikita ka ng mga kaibigan na offline at hindi ka nila matatawagan",
+  'presence.hidden': "Lumalabas na offline",
+  'chat.callOffline': "Offline si {name}. Puwede kang tumawag kapag online na siya.",
+  'photo.save': "I-save",
+  'photo.saved': "Na-save ang larawan",
+  'photo.saveFailed': "Hindi ma-save ang larawan",
+  'photo.zoomIn': "Mag-zoom in",
+  'photo.zoomOut': "Mag-zoom out",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Susunod",
 }
 
 export default fil

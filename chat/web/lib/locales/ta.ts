@@ -669,6 +669,17 @@ const ta: Dict = {
   'notes.title': 'நண்பர்களின் குறிப்புகள்',
   'notes.mine': 'உங்கள் குறிப்பு',
   'notes.add': 'குறிப்பு எழுதுங்கள்…',
+  'settings.hideOnline': "ஆன்லைன் நிலையை மறை",
+  'settings.hideOnlineBody': "நண்பர்களுக்கு நீங்கள் ஆஃப்லைனாகத் தெரிவீர்கள், அழைக்க முடியாது",
+  'presence.hidden': "ஆஃப்லைனாகத் தெரிகிறீர்கள்",
+  'chat.callOffline': "{name} ஆஃப்லைனில் உள்ளார். ஆன்லைனில் இருக்கும்போது அழைக்கலாம்.",
+  'photo.save': "சேமி",
+  'photo.saved': "படம் சேமிக்கப்பட்டது",
+  'photo.saveFailed': "படத்தைச் சேமிக்க முடியவில்லை",
+  'photo.zoomIn': "பெரிதாக்கு",
+  'photo.zoomOut': "சிறிதாக்கு",
+  'photo.count': "{n} / {total}",
+  'photo.next': "அடுத்து",
 }
 
 export default ta

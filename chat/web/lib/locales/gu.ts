@@ -647,6 +647,17 @@ const gu: Dict = {
   'notes.title': 'મિત્રોની નોંધ',
   'notes.mine': 'તમારી નોંધ',
   'notes.add': 'નોંધ લખો…',
+  'settings.hideOnline': "ઓનલાઇન સ્ટેટસ છુપાવો",
+  'settings.hideOnlineBody': "મિત્રોને તમે ઓફલાઇન દેખાશો અને તેઓ કૉલ નહીં કરી શકે",
+  'presence.hidden': "ઓફલાઇન દેખાઓ છો",
+  'chat.callOffline': "{name} ઓફલાઇન છે. ઓનલાઇન થાય ત્યારે કૉલ કરી શકશો.",
+  'photo.save': "સેવ કરો",
+  'photo.saved': "ફોટો સેવ થયો",
+  'photo.saveFailed': "ફોટો સેવ થઈ શક્યો નહીં",
+  'photo.zoomIn': "ઝૂમ ઇન",
+  'photo.zoomOut': "ઝૂમ આઉટ",
+  'photo.count': "{n} / {total}",
+  'photo.next': "આગળ",
 }
 
 export default gu

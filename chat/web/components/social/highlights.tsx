@@ -11,6 +11,7 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Field, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
@@ -134,6 +135,7 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
   const { t } = useI18n()
   const { st } = useSocialT()
   const [i, setI] = useState(0)
+  const [large, setLarge] = useState<number | null>(null)
   const drag = useRef<number | null>(null)
   useEffect(() => setI(0), [highlight])
   const photos = highlight?.photos ?? []
@@ -148,14 +150,17 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
             src={photo.url}
             alt={label}
             draggable={false}
-            className="max-h-[70dvh] w-full touch-pan-y rounded-2xl bg-muted object-contain select-none"
+            className="max-h-[70dvh] w-full cursor-zoom-in touch-pan-y rounded-2xl bg-muted object-contain select-none"
             onPointerDown={(e) => (drag.current = e.clientX)}
             onPointerUp={(e) => {
               const dx = drag.current === null ? 0 : e.clientX - drag.current
               drag.current = null
               if (Math.abs(dx) > 40) go((dx < 0) !== (document.dir === 'rtl') ? 1 : -1)
+              // 39: a tap opens it on the whole screen (zoom, save).
+              else if (Math.abs(dx) < 8) setLarge(i)
             }}
           />
+          <PhotoViewer photos={photos.map((p) => p.url)} index={large} onIndex={(n) => (setLarge(n), n !== null && setI(n))} label={highlight?.title} />
           <div className="mt-3 flex items-center justify-center gap-3">
             {photos.length > 1 ? (
               <>

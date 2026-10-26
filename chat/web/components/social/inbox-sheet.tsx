@@ -304,7 +304,7 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
           </span>
         ) : item.kind === 'post_like' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">
-            <LikeIcon on size={18} />
+            <LikeIcon on size={18} className="text-[#d61f4f]" />
           </span>
         ) : item.kind === 'gift' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary-strong text-primary-foreground ring-2 ring-card">

@@ -669,6 +669,17 @@ const kn: Dict = {
   'notes.title': 'ಸ್ನೇಹಿತರ ಟಿಪ್ಪಣಿಗಳು',
   'notes.mine': 'ನಿಮ್ಮ ಟಿಪ್ಪಣಿ',
   'notes.add': 'ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ…',
+  'settings.hideOnline': "ಆನ್‌ಲೈನ್ ಸ್ಥಿತಿ ಮರೆಮಾಡಿ",
+  'settings.hideOnlineBody': "ಸ್ನೇಹಿತರಿಗೆ ನೀವು ಆಫ್‌ಲೈನ್ ಆಗಿ ಕಾಣುತ್ತೀರಿ, ಕರೆ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ",
+  'presence.hidden': "ಆಫ್‌ಲೈನ್ ಆಗಿ ಕಾಣುತ್ತಿದ್ದೀರಿ",
+  'chat.callOffline': "{name} ಆಫ್‌ಲೈನ್ ಆಗಿದ್ದಾರೆ. ಆನ್‌ಲೈನ್ ಆದಾಗ ಕರೆ ಮಾಡಬಹುದು.",
+  'photo.save': "ಉಳಿಸಿ",
+  'photo.saved': "ಫೋಟೋ ಉಳಿಸಲಾಗಿದೆ",
+  'photo.saveFailed': "ಫೋಟೋ ಉಳಿಸಲಾಗಲಿಲ್ಲ",
+  'photo.zoomIn': "ದೊಡ್ಡದಾಗಿಸಿ",
+  'photo.zoomOut': "ಚಿಕ್ಕದಾಗಿಸಿ",
+  'photo.count': "{n} / {total}",
+  'photo.next': "ಮುಂದೆ",
 }
 
 export default kn

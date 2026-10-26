@@ -682,6 +682,17 @@ const zhHant: Dict = {
   'notes.title': '好友便條',
   'notes.mine': '你的便條',
   'notes.add': '寫個便條…',
+  'settings.hideOnline': "隱藏上線狀態",
+  'settings.hideOnlineBody': "好友會看到你離線，也無法打給你",
+  'presence.hidden': "顯示為離線",
+  'chat.callOffline': "{name} 目前離線，上線時才能通話。",
+  'photo.save': "儲存",
+  'photo.saved': "照片已儲存",
+  'photo.saveFailed': "無法儲存照片",
+  'photo.zoomIn': "放大",
+  'photo.zoomOut': "縮小",
+  'photo.count': "{n} / {total}",
+  'photo.next': "下一張",
 }
 
 export default zhHant

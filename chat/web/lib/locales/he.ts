@@ -684,6 +684,17 @@ const he: Dict = {
   'notes.title': 'הפתקים של החברים',
   'notes.mine': 'הפתק שלך',
   'notes.add': 'לכתוב פתק…',
+  'settings.hideOnline': "הסתרת סטטוס מקוון",
+  'settings.hideOnlineBody': "חברים רואים אותך לא מחובר ולא יכולים להתקשר",
+  'presence.hidden': "מוצג כלא מחובר",
+  'chat.callOffline': "{name} לא מחובר/ת. אפשר להתקשר כשיתחברו.",
+  'photo.save': "שמירה",
+  'photo.saved': "התמונה נשמרה",
+  'photo.saveFailed': "לא ניתן לשמור את התמונה",
+  'photo.zoomIn': "הגדלה",
+  'photo.zoomOut': "הקטנה",
+  'photo.count': "{n} / {total}",
+  'photo.next': "הבא",
 }
 
 export default he

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
@@ -79,6 +79,13 @@ export function SettingsScreen() {
             body={t('settings.dmEveryoneBody')}
             on={!!me?.dmEveryone}
             onChange={(on) => void backend.setDmEveryone(on).then(setMe, toast.error)}
+          />
+          <Toggle
+            icon={EyeOff}
+            label={t('settings.hideOnline')}
+            body={t('settings.hideOnlineBody')}
+            on={!!me?.hideOnline}
+            onChange={(on) => void backend.setHideOnline(on).then(setMe, toast.error)}
           />
           {shop?.owned.includes('vip_anon') ? (
             <Toggle icon={VenetianMask} label={lt('vip.toggle')} body={lt('vip.toggleBody')} on={shop.anon} onChange={(on) => !anon.busy && void anon.set(on)} />

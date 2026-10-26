@@ -1,14 +1,12 @@
 'use client'
 
 import { useId, useState } from 'react'
-import { ChevronLeft, ChevronRight, ImagePlus, X } from 'lucide-react'
+import { ImagePlus, X } from 'lucide-react'
 import { BackendError, MAX_PHOTOS, type ProfilePhoto } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { retryImport } from '@/lib/retry-import'
 import { useApp } from '@/components/app-state'
-import { useI18n } from '@/components/i18n'
-import { Modal } from '@/components/ui/modal'
-import { Button } from '@/components/ui/pressable'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
@@ -42,7 +40,7 @@ export function Gallery({ photos, owner, editable, className }: { photos: Profil
         ) : null}
       </ul>
       {editable ? <p className="text-xs leading-relaxed text-muted-foreground">{st('photos.hint')}</p> : null}
-      <Viewer photos={photos} owner={owner} index={shown} onIndex={setShown} />
+      <PhotoViewer photos={photos.map((p) => p.url)} index={shown} onIndex={setShown} label={owner} />
     </section>
   )
 }
@@ -112,31 +110,5 @@ function RemoveButton({ id }: { id: string }) {
     >
       <X className="size-4" aria-hidden />
     </button>
-  )
-}
-
-function Viewer({ photos, owner, index, onIndex }: { photos: ProfilePhoto[]; owner: string; index: number | null; onIndex: (i: number | null) => void }) {
-  const { t } = useI18n()
-  const { st } = useSocialT()
-  const i = index ?? 0
-  const photo = photos[i]
-  return (
-    <Modal open={index !== null && !!photo} onClose={() => onIndex(null)} title={owner} description={st('photos.view', { n: i + 1, total: photos.length })} className="md:max-w-2xl">
-      {photo ? (
-        <div className="relative px-4 pb-4">
-          <img src={photo.url} alt={st('photos.view', { n: i + 1, total: photos.length })} className="max-h-[70dvh] w-full rounded-2xl bg-muted object-contain" />
-          {photos.length > 1 ? (
-            <div className="mt-3 flex justify-center gap-3">
-              <Button size="icon" variant="secondary" disabled={i === 0} onClick={() => onIndex(i - 1)} aria-label={t('common.back')}>
-                <ChevronLeft className="size-5 rtl:rotate-180" aria-hidden />
-              </Button>
-              <Button size="icon" variant="secondary" disabled={i === photos.length - 1} onClick={() => onIndex(i + 1)} aria-label={st('tour.next')}>
-                <ChevronRight className="size-5 rtl:rotate-180" aria-hidden />
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </Modal>
   )
 }

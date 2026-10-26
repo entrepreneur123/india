@@ -47,7 +47,7 @@ export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Po
             <span className="absolute inset-0 bg-black/0 transition-colors duration-150 group-hover:bg-black/15" aria-hidden />
             {p.likes ? (
               <span className="absolute bottom-1.5 inset-s-1.5 flex items-center gap-1 rounded-full bg-black/45 py-0.5 pe-2 ps-1 text-[11px] font-bold text-white tabular-nums" aria-hidden>
-                <LikeIcon on size={14} />
+                <LikeIcon on size={14} className="text-[#ff4d6d]" />
                 {num(p.likes)}
               </span>
             ) : null}

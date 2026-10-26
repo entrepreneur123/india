@@ -13,6 +13,7 @@ import { LookName, useLook } from '@/components/looks/look-name'
 import { Avatar, useCycle } from '@/components/ui/avatar'
 import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
@@ -225,6 +226,21 @@ function CardPhoto({ userId, src }: { userId: string; src: string }) {
   ))
 }
 
+/** A feed item's photos side by side; a tap opens one large (39). */
+function FeedPhotos({ photos, label }: { photos: string[]; label: string }) {
+  const [large, setLarge] = useState<number | null>(null)
+  return (
+    <div className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', photos.length > 1 && 'gap-1')}>
+      {photos.map((u, i) => (
+        <button key={u} type="button" onClick={() => setLarge(i)} className="w-full shrink-0 cursor-zoom-in snap-center">
+          <img src={u} alt="" className="aspect-square w-full bg-muted object-cover" loading="lazy" />
+        </button>
+      ))}
+      <PhotoViewer photos={photos} index={large} onIndex={setLarge} label={label} />
+    </div>
+  )
+}
+
 function Feed({ items }: { items: FeedItem[] | undefined }) {
   const { openProfile } = useApp()
   const { t, timeAgo } = useI18n()
@@ -241,13 +257,7 @@ function Feed({ items }: { items: FeedItem[] | undefined }) {
               <span className="text-xs text-muted-foreground">{timeAgo(Date.parse(it.at))}</span>
             </span>
           </button>
-          {it.photos.length ? (
-            <div className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', it.photos.length > 1 && 'gap-1')}>
-              {it.photos.map((u) => (
-                <img key={u} src={u} alt="" className="aspect-square w-full shrink-0 snap-center bg-muted object-cover" loading="lazy" />
-              ))}
-            </div>
-          ) : null}
+          {it.photos.length ? <FeedPhotos photos={it.photos} label={it.user.name} /> : null}
           {it.text ? <p className={cn('px-3 py-3 text-sm', it.kind === 'highlight' && 'font-semibold')}>{it.text}</p> : null}
         </li>
       ))}

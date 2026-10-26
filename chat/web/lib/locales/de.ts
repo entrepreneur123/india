@@ -669,6 +669,17 @@ const de: Dict = {
   'notes.title': 'Notizen von Freunden',
   'notes.mine': 'Deine Notiz',
   'notes.add': 'Notiz hinterlassen…',
+  'settings.hideOnline': "Online-Status verbergen",
+  'settings.hideOnlineBody': "Freunde sehen dich offline und können dich nicht anrufen",
+  'presence.hidden': "Als offline angezeigt",
+  'chat.callOffline': "{name} ist offline. Du kannst anrufen, sobald die Person online ist.",
+  'photo.save': "Speichern",
+  'photo.saved': "Foto gespeichert",
+  'photo.saveFailed': "Foto konnte nicht gespeichert werden",
+  'photo.zoomIn': "Vergrößern",
+  'photo.zoomOut': "Verkleinern",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Weiter",
 }
 
 export default de

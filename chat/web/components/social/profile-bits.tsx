@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties, ReactNode } from 'react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
 import type { Accent, Profile, ProfilePrompt, SpokenLang } from '@/lib/backend'
 import { flagEmoji } from '@/lib/format'
 import { accentVars, EMPTY_STYLE, nativeName } from '@/lib/profile-style'
@@ -13,6 +13,7 @@ import { LookName, useLook } from '@/components/looks/look-name'
 import { useFeedT } from './feed-text'
 import { useLooksT } from '@/components/looks/looks-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 
 // A profile made its own: the frame (040, a bought look) around the card and the photo, the name and the decorated
 // @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
@@ -86,11 +87,21 @@ export function ProfileHero({
   const style = profile.style ?? EMPTY_STYLE
   const frame = (useLook(profile.id)?.frame ?? null) as FrameId | null
   const { lt } = useLooksT()
+  // 39: the photo opens large (with the extra photos after it), to zoom or save.
+  const [shown, setShown] = useState<number | null>(null)
+  const photos = profile.photoUrl ? [profile.photoUrl, ...(profile.photos ?? []).map((p) => p.url)] : []
   return (
     <FrameCard frame={frame} className={className}>
       {slot}
       <section className="flex flex-col items-center px-2 pt-14 pb-6 text-center sm:pt-10" style={accentStyle(style.accent)}>
-        <FrameAvatar frame={frame} userId={profile.id} name={profile.name} src={profile.photoUrl} size={104} />
+        {photos.length ? (
+          <button type="button" onClick={() => setShown(0)} className="rounded-full" aria-label={profile.name}>
+            <FrameAvatar frame={frame} userId={profile.id} name={profile.name} src={profile.photoUrl} size={104} />
+          </button>
+        ) : (
+          <FrameAvatar frame={frame} userId={profile.id} name={profile.name} src={profile.photoUrl} size={104} />
+        )}
+        <PhotoViewer photos={photos} index={shown} onIndex={setShown} label={profile.name} />
         <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
           <span className="inline-flex items-center gap-1.5">
             <span className={cn(isVip(profile) && 'vip-gold text-3xl italic')}>{nameAge(profile.name, profile.age)}</span>

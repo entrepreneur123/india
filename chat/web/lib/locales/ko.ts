@@ -682,6 +682,17 @@ const ko: Dict = {
   'notes.title': '친구 상태메시지',
   'notes.mine': '내 상태메시지',
   'notes.add': '상태메시지 남기기…',
+  'settings.hideOnline': "온라인 상태 숨기기",
+  'settings.hideOnlineBody': "친구에게 오프라인으로 보이고, 전화도 받지 않아요",
+  'presence.hidden': "오프라인으로 표시 중",
+  'chat.callOffline': "{name}님이 오프라인이에요. 온라인일 때 전화할 수 있어요.",
+  'photo.save': "저장",
+  'photo.saved': "사진을 저장했어요",
+  'photo.saveFailed': "사진을 저장하지 못했어요",
+  'photo.zoomIn': "확대",
+  'photo.zoomOut': "축소",
+  'photo.count': "{n} / {total}",
+  'photo.next': "다음",
 }
 
 export default ko

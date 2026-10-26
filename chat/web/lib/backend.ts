@@ -91,6 +91,8 @@ export interface Profile {
   id: string
   /** Mine only (059): people who aren't my friends may message me. */
   dmEveryone?: boolean
+  /** Mine only (067): friends see me offline and can't call me; I'm left out of Explore's online list. */
+  hideOnline?: boolean
   /** Mine only: the main photo's file, so it can be picked for the photo gradient (062). */
   photoPath?: string | null
   name: string
@@ -156,6 +158,8 @@ export interface Look {
   effect?: string | null
   /** 062: the look of their chat bubbles ('bubble_…'), or none. */
   bubble?: string | null
+  /** 067: their chat wall, which their partner in a random chat may use for that chat (36). */
+  wall?: string | null
 }
 
 /** What I wear: one item of each kind at most. */
@@ -645,6 +649,8 @@ export type BackendErrorCode =
   | 'under_18'
   | 'slow_down'
   | 'not_allowed'
+  /** 067: a call to a friend who isn't online (or hides it). */
+  | 'offline'
   | 'not_found'
   | 'network'
   | 'blocked'
@@ -774,6 +780,7 @@ export interface Backend {
   likeProfile(userId: string, on: boolean): Promise<void>
   /** Messages from anyone (true) or friends only (false, the default). */
   setDmEveryone(on: boolean): Promise<Profile>
+  setHideOnline(on: boolean): Promise<Profile>
   /** 062: the photos (file ids: photoPath or photos[].id) of my photo gradient, 2–4; null turns it off. */
   setCycle(paths: string[] | null): Promise<void>
   /** 062: the photo effect or chat bubble I wear (an owned item of that kind), or none. */

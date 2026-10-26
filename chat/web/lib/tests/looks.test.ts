@@ -2,10 +2,10 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { ageText, BUBBLE_DESIGNS, bubbleOf, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
 
-test('the catalogue: 26 looks (040), walls and VIP (046), the photo gradient, effects and bubbles (062), each id starting with its kind', () => {
+test('the catalogue: 26 looks (040), walls (046, redrawn 067) and VIP (046), the photo gradient, effects and bubbles (062), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
-  assert.equal(all.length, 42)
-  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length, CATALOGUE.bubble.length], [6, 1, 1, 2, 6])
+  assert.equal(all.length, 44)
+  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length, CATALOGUE.bubble.length], [8, 1, 1, 2, 6])
   for (const [kind, ids] of Object.entries(CATALOGUE)) for (const id of ids) assert.equal(kindOf(id), kind)
   for (const id of CATALOGUE.color) assert.ok(id in COLOR_DESIGNS, id)
   for (const id of CATALOGUE.font) assert.ok(id in FONT_DESIGNS, id)
@@ -30,6 +30,10 @@ test('bubbles: every one is drawn, text readable (4.5:1) on each colour of it; u
   for (const id of [null, undefined, 'bubble_disco', 'toString', 42]) assert.equal(bubbleOf(id), null, String(id))
   assert.equal(parseLook({ id: 'u1', handle: 'a1', bubble: 'bubble_gold' })?.bubble, 'bubble_gold')
   assert.equal(parseLook({ id: 'u1', handle: 'a1', bubble: 'effect_prism' })?.bubble, undefined)
+  // 067: their wall (a partner in a random chat may use it); a wall this app can't draw, or not a wall, is none.
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', wall: 'wall_neon' })?.wall, 'wall_neon')
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', wall: 'wall_saffron' })?.wall, undefined)
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', wall: 'bubble_gold' })?.wall, undefined)
 })
 
 test('looks(): items this app can’t draw, or of the wrong kind, are left off; rows without an ID are skipped', () => {
@@ -52,14 +56,14 @@ test('shop(): known items in catalogue order, what I own, my look and when my ID
         { id: 'badge_crown', kind: 'badge', price_inr: 99 },
         { id: 'badge_new', kind: 'badge', price_inr: 10 },
         { id: 'color_gold', kind: 'font', price_inr: 49 },
-        { id: 'wall_stars', kind: 'wall', price_inr: 79 },
+        { id: 'wall_galaxy', kind: 'wall', price_inr: 79 },
         { id: 'vip_anon', kind: 'vip', price_inr: 299 },
       ],
-      owned: ['badge_crown', 'hat_top', 'wall_stars'],
+      owned: ['badge_crown', 'hat_top', 'wall_galaxy'],
       look: { id: 'me', handle: 'me_1', badge: 'badge_crown', color: null, font: null, frame: null },
       handle_next: '2026-10-29T10:00:00Z',
       handle_passes: 2,
-      wall: 'wall_stars',
+      wall: 'wall_galaxy',
       anon: true,
     },
     at,
@@ -67,11 +71,11 @@ test('shop(): known items in catalogue order, what I own, my look and when my ID
   assert.deepEqual(shop.items, [
     { id: 'badge_crown', kind: 'badge', priceInr: 99 },
     { id: 'frame_fire', kind: 'frame', priceInr: 199 },
-    { id: 'wall_stars', kind: 'wall', priceInr: 79 },
+    { id: 'wall_galaxy', kind: 'wall', priceInr: 79 },
     { id: 'vip_anon', kind: 'vip', priceInr: 299 },
   ])
-  assert.deepEqual(shop.owned, ['badge_crown', 'wall_stars'])
-  assert.equal(shop.wall, 'wall_stars')
+  assert.deepEqual(shop.owned, ['badge_crown', 'wall_galaxy'])
+  assert.equal(shop.wall, 'wall_galaxy')
   assert.equal(shop.anon, true)
   assert.equal(shop.look?.badge, 'badge_crown')
   assert.equal(shop.handleNext, Date.parse('2026-10-29T10:00:00Z'))

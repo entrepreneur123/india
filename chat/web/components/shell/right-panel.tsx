@@ -81,12 +81,13 @@ export function RightPanel({ className }: { className?: string }) {
       <section aria-labelledby="panel-friends" className="flex flex-col gap-2">
         {/* Me first, as in League of Legends: what my friends see I'm doing. */}
         <div className="flex items-center gap-3 rounded-2xl bg-muted/70 p-2.5">
-          <PresenceAvatar presence={myPresence} label={t(LABEL[myPresence])}>
+          {/* Hiding my status (settings): friends see me offline, so my dot is the one they see. */}
+          <PresenceAvatar presence={me.hideOnline ? 'offline' : myPresence} label={t(me.hideOnline ? 'presence.hidden' : LABEL[myPresence])}>
             <UserAvatar userId={me.id} name={me.name} src={me.photoUrl} size={40} />
           </PresenceAvatar>
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold">{me.name}</span>
-            <PresenceText presence={myPresence} />
+            {me.hideOnline ? <span className="block truncate text-xs font-medium text-muted-foreground">{t('presence.hidden')}</span> : <PresenceText presence={myPresence} />}
           </span>
         </div>
         <h2 id="panel-friends" className="mt-2 flex items-center justify-between px-2 text-sm font-semibold">

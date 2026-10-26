@@ -668,6 +668,17 @@ const hi: Dict = {
   'notes.title': 'दोस्तों के नोट्स',
   'notes.mine': 'आपका नोट',
   'notes.add': 'नोट लिखें…',
+  'settings.hideOnline': "ऑनलाइन स्टेटस छिपाएँ",
+  'settings.hideOnlineBody': "दोस्तों को आप ऑफ़लाइन दिखेंगे और वे कॉल नहीं कर पाएँगे",
+  'presence.hidden': "ऑफ़लाइन दिख रहे हैं",
+  'chat.callOffline': "{name} ऑफ़लाइन हैं। ऑनलाइन होने पर कॉल कर सकते हैं।",
+  'photo.save': "सेव करें",
+  'photo.saved': "फ़ोटो सेव हो गई",
+  'photo.saveFailed': "फ़ोटो सेव नहीं हो सकी",
+  'photo.zoomIn': "ज़ूम इन",
+  'photo.zoomOut': "ज़ूम आउट",
+  'photo.count': "{n} / {total}",
+  'photo.next': "अगला",
 }
 
 export default hi

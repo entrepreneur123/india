@@ -647,6 +647,17 @@ const mr: Dict = {
   'notes.title': 'मित्रांच्या नोट्स',
   'notes.mine': 'तुमची नोट',
   'notes.add': 'नोट लिहा…',
+  'settings.hideOnline': "ऑनलाइन स्टेटस लपवा",
+  'settings.hideOnlineBody': "मित्रांना तुम्ही ऑफलाइन दिसाल आणि ते कॉल करू शकणार नाहीत",
+  'presence.hidden': "ऑफलाइन दिसत आहात",
+  'chat.callOffline': "{name} ऑफलाइन आहेत. ऑनलाइन असताना कॉल करू शकता.",
+  'photo.save': "सेव्ह करा",
+  'photo.saved': "फोटो सेव्ह झाला",
+  'photo.saveFailed': "फोटो सेव्ह करता आला नाही",
+  'photo.zoomIn': "झूम इन",
+  'photo.zoomOut': "झूम आउट",
+  'photo.count': "{n} / {total}",
+  'photo.next': "पुढे",
 }
 
 export default mr

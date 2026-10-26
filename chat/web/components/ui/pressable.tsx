@@ -6,12 +6,14 @@ import { forwardRef } from 'react'
 import { LoaderCircle as Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type Variant = 'brand' | 'solid' | 'secondary' | 'outline' | 'ghost' | 'danger'
+type Variant = 'brand' | 'premium' | 'solid' | 'secondary' | 'outline' | 'ghost' | 'danger'
 type Size = 'sm' | 'md' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg'
 
 // Flat fills; hover darkens and lifts by one elevation step (Material filled/tonal buttons).
 const variants: Record<Variant, string> = {
   brand: 'bg-primary font-bold text-primary-foreground hover:bg-primary-hover hover:shadow-e1',
+  /** 42: buying — saffron with a sweep of light (globals.css .shine-button). */
+  premium: 'shine-button font-bold text-white',
   solid: 'bg-foreground text-background hover:opacity-90',
   secondary: 'bg-muted text-foreground hover:bg-input/60',
   outline: 'border border-input bg-card text-foreground hover:bg-muted',

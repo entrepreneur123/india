@@ -3,14 +3,15 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video } from 'lucide-react'
+import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video, Wallpaper } from 'lucide-react'
 import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
+import useSWR from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import { flagEmoji } from '@/lib/format'
+import { errorCode, flagEmoji } from '@/lib/format'
 import { isVip, nameAge } from '@/lib/looks'
 import { cn } from '@/lib/utils'
-import { wallVars } from '@/lib/walls'
+import { wallOf } from '@/lib/walls'
 import { EXIT_LOCK_MS as lockMs } from '@/lib/config'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -31,6 +32,7 @@ import { LookName, useLook } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useShop } from '@/components/looks/use-shop'
 import { VipReveal } from '@/components/looks/vip-reveal'
+import { Wall } from '@/components/looks/wall'
 import { useFriendship } from '@/components/social/friend-button'
 import { FriendContactsSheet } from '@/components/social/contacts'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -91,7 +93,8 @@ export function ChatView({
   const partner = chat.partner ?? opened
   // Each side's chat bubble (062), as both of us see it.
   const mySkin = useLook(me.id)?.bubble
-  const theirSkin = useLook(partner.id)?.bubble
+  const theirLook = useLook(partner.id)
+  const theirSkin = theirLook?.bubble
   const [reportOpen, setReportOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
   const [callBusy, setCallBusy] = useState(false)
@@ -111,8 +114,14 @@ export function ChatView({
     return true
   }
   const { st } = useSocialT()
-  // 046: my chat wall, behind the messages and the text box (only I see it).
-  const wall = wallVars(useShop().data?.wall)
+  const { lt } = useLooksT()
+  // 046: my chat wall (moving since 067), behind the messages and the text box. 36: in a random chat I may use my
+  // partner's wall instead, for this chat only.
+  const myWall = wallOf(useShop().data?.wall)
+  const theirWall = live ? wallOf(theirLook?.wall) : null
+  const [theirsOn, setTheirsOn] = useState(false)
+  useEffect(() => setTheirsOn(false), [matchId])
+  const wall = theirsOn && theirWall ? theirWall : myWall
   // A link opened from the chat: a column beside it on wide screens, a tall sheet on phones.
   const wide = useWideScreen()
   const [viewUrl, setViewUrl] = useState<string | null>(null)
@@ -150,7 +159,8 @@ export function ChatView({
       chat.setCamera(video)
       chat.setVideo('requested_by_me')
     } catch (err) {
-      toast.error(err)
+      if (errorCode(err) === 'offline') toast.show(t('chat.callOffline', { name: partner.name }))
+      else toast.error(err)
     } finally {
       setCallBusy(false)
     }
@@ -181,6 +191,9 @@ export function ChatView({
   const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
   // Calls: a random chat until it ends; a thread between friends (the server's call_open, 052).
   const callable = live ? !ended : friendship.state === 'friends'
+  // 40: a friend is called only while online (the panel's presence, same request); the server refuses it too.
+  const { data: activity } = useSWR(callable && !live ? 'friend-activity' : null, () => backend.friendActivity(), { refreshInterval: 20_000, refreshWhenHidden: false })
+  const offline = callable && !live && !!activity && !activity.some((a) => a.id === partner.id && a.presence !== 'offline')
 
   // Closing the chat (a thread) ends its call or my request, so neither is left standing on the server.
   const callNow = useRef(chat.video)
@@ -259,7 +272,14 @@ export function ChatView({
           >
             <Flag className="size-5" aria-hidden />
           </Button>
-          {callable ? <CallButton busy={callBusy} disabled={chat.video === 'requested_by_me'} onCall={(video) => void requestCall(video)} /> : null}
+          {callable ? (
+            <CallButton
+              busy={callBusy}
+              disabled={chat.video === 'requested_by_me'}
+              offline={offline ? t('chat.callOffline', { name: partner.name }) : null}
+              onCall={(video) => void requestCall(video)}
+            />
+          ) : null}
         </header>
         {live ? <VipReveal /> : null}
 
@@ -280,7 +300,21 @@ export function ChatView({
           ) : null}
         </AnimatePresence>
 
-        <div className="flex min-h-0 flex-1 flex-col bg-chat-wall" style={wall}>
+        <div className="relative isolate flex min-h-0 flex-1 flex-col bg-chat-wall">
+        <Wall id={wall} />
+        {theirWall && theirWall !== myWall ? (
+          <div className="flex shrink-0 justify-center px-4 pt-2">
+            <button
+              type="button"
+              aria-pressed={theirsOn}
+              onClick={() => setTheirsOn((on) => !on)}
+              className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-full bg-background/85 px-3.5 text-xs font-semibold shadow-e1 ring-1 ring-border backdrop-blur-sm transition-colors hover:bg-background"
+            >
+              <Wallpaper className="size-3.5 shrink-0 text-primary-text" aria-hidden />
+              <span className="truncate">{theirsOn ? lt('wall.useMine') : lt('wall.useTheirs', { name: partner.name })}</span>
+            </button>
+          </div>
+        ) : null}
         <ul
           ref={listRef}
           onScroll={(e) => {
@@ -411,8 +445,9 @@ function FriendsBar({ name, f }: { name: string; f: ReturnType<typeof useFriends
 }
 
 /** The call button: a small choice of a voice or a video call (free, 051). */
-function CallButton({ busy, disabled, onCall }: { busy: boolean; disabled: boolean; onCall: (video: boolean) => void }) {
+function CallButton({ busy, disabled, offline, onCall }: { busy: boolean; disabled: boolean; offline: string | null; onCall: (video: boolean) => void }) {
   const { t } = useI18n()
+  const toast = useToast()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -431,14 +466,15 @@ function CallButton({ busy, disabled, onCall }: { busy: boolean; disabled: boole
       <Button
         size="icon"
         variant="ghost"
-        onClick={() => setOpen((o) => !o)}
+        // Offline: greyed out, and a tap says why instead of opening the menu.
+        onClick={() => (offline ? toast.show(offline) : setOpen((o) => !o))}
         loading={busy}
         disabled={disabled}
-        aria-label={t('chat.call')}
-        title={t('chat.call')}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        className="text-primary-text"
+        aria-label={offline ? `${t('chat.call')} · ${offline}` : t('chat.call')}
+        title={offline ?? t('chat.call')}
+        aria-haspopup={offline ? undefined : 'menu'}
+        aria-expanded={offline ? undefined : open}
+        className={offline ? 'text-muted-foreground/60' : 'text-primary-text'}
       >
         <Phone className="size-5" aria-hidden />
       </Button>

@@ -682,6 +682,17 @@ const th: Dict = {
   'notes.title': 'โน้ตของเพื่อน',
   'notes.mine': 'โน้ตของคุณ',
   'notes.add': 'เขียนโน้ต…',
+  'settings.hideOnline': "ซ่อนสถานะออนไลน์",
+  'settings.hideOnlineBody': "เพื่อนจะเห็นคุณออฟไลน์และโทรหาคุณไม่ได้",
+  'presence.hidden': "แสดงเป็นออฟไลน์",
+  'chat.callOffline': "{name} ออฟไลน์อยู่ โทรได้เมื่อออนไลน์",
+  'photo.save': "บันทึก",
+  'photo.saved': "บันทึกรูปแล้ว",
+  'photo.saveFailed': "บันทึกรูปไม่ได้",
+  'photo.zoomIn': "ซูมเข้า",
+  'photo.zoomOut': "ซูมออก",
+  'photo.count': "{n} / {total}",
+  'photo.next': "ถัดไป",
 }
 
 export default th

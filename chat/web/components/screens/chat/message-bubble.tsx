@@ -7,6 +7,7 @@ import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { bubbleOf } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
@@ -165,6 +166,7 @@ export function MetaSpacer({ children }: { children: ReactNode }) {
 export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message['media']>; mine: boolean; meta: ReactNode | null }) {
   const { t } = useI18n()
   const [revealed, setRevealed] = useState(mine)
+  const [large, setLarge] = useState<number | null>(null)
   return (
     <div className="relative overflow-hidden rounded-md bg-black/5">
       {media.kind === 'video' ? (
@@ -176,13 +178,18 @@ export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message[
           className={cn('block max-h-80 w-64 object-cover transition-[filter] duration-300', !revealed && 'scale-110 blur-2xl')}
         />
       ) : (
-        <img
-          src={media.url}
-          alt={revealed ? t('bubble.photo') : t('bubble.hidden')}
-          crossOrigin="anonymous"
-          decoding="async"
-          className={cn('block max-h-80 w-64 object-cover transition-[filter,transform] duration-300', !revealed && 'scale-110 blur-2xl')}
-        />
+        <>
+          {/* 39: once shown, a tap opens it large (zoom, save). */}
+          <img
+            src={media.url}
+            alt={revealed ? t('bubble.photo') : t('bubble.hidden')}
+            crossOrigin="anonymous"
+            decoding="async"
+            onClick={revealed ? () => setLarge(0) : undefined}
+            className={cn('block max-h-80 w-64 object-cover transition-[filter,transform] duration-300', revealed ? 'cursor-zoom-in' : 'scale-110 blur-2xl')}
+          />
+          <PhotoViewer photos={[media.url]} index={large} onIndex={setLarge} label={t('bubble.photo')} />
+        </>
       )}
       {!revealed ? (
         <button

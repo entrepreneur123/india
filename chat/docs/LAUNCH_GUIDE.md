@@ -77,7 +77,7 @@
 4. **아동안전 표준**: 공개 웹페이지 링크 + CSAM 대응 담당자 연락처 등록.
 5. **데이터 보안 양식**: 수집 항목 = 전화번호, 생년월일, 성별, 사진·동영상, 메시지, 기기 ID(없으면 제외), 구매 기록. 공유 = 없음(처리 위탁: Supabase·LiveKit·Twilio). 전송 중 암호화 = 예. 삭제 요청 = 예(앱 + 웹 링크).
 6. **계정 삭제 웹 링크**, **개인정보처리방침 URL** 등록.
-7. 상품 2개: 구독 `yaari_premium_monthly`, 소모성 `gender_pass_24h`. 서비스 계정 키를 Supabase Secret `GOOGLE_SERVICE_ACCOUNT_JSON`에 입력(README 참고).
+7. 상품: 아래 4-00 3항의 목록 전부(구독 1, 소모성 2, 꾸미기 44, 선물용). 서비스 계정 키를 Supabase Secret `GOOGLE_SERVICE_ACCOUNT_JSON`에 입력(README 참고).
 8. **서명 키**: 지금 APK는 디버그 키 서명. Play에는 `./gradlew bundleLiveRelease`로 만든 AAB를 업로드 키로 서명해 올립니다(README "upload.properties").
 9. 국가: 인도 → 방글라데시 → 브라질 → 베트남 순으로 열기. 브라질은 2026-09-30부터 **Android 개발자 인증**(Play 밖 배포 포함) 시행.
 
@@ -89,7 +89,8 @@
    - 구독 `yaari_premium_monthly`
    - 인앱 상품 `gender_pass_24h` (앱이 소비 → 다시 구매 가능)
    - 인앱 상품 `handle_change` — **아이디 변경권**(0.16): 30일이 안 지나도 아이디를 1번 바꿀 수 있음. 앱이 소비 → 다시 구매 가능. 제안가 ₹49
-   - 인앱 상품 꾸미기 26개(아래 4-0)
+   - 인앱 상품 꾸미기 44개(아래 4-0)
+   - 선물용 인앱 상품 `gift_<꾸미기 ID>`(예: `gift_frame_fire`) — **소모성**(앱이 소비 → 여러 번 선물 가능). 친구에게 꾸미기를 선물할 때 쓰며, 앱(안드로이드)에 선물 기능을 옮긴 뒤 만들면 됩니다(066).
 4. **서비스 계정**: Google Cloud에서 서비스 계정 + JSON 키 생성 → Play Console → 사용자 및 권한 → 그 이메일 초대, 권한 **재무 데이터 보기 · 주문 및 구독 관리**. JSON 전체를 Supabase → Edge Functions → Secrets `GOOGLE_SERVICE_ACCOUNT_JSON`에 붙여넣기. (권한이 적용되기까지 몇 시간 이상 걸리는 경우가 있으니, 바로 안 되면 다음 날 다시 시험)
 5. **라이선스 테스트**: Play Console → 설정 → 라이선스 테스트에 테스트할 Gmail 추가 → 그 계정은 실제 돈이 안 나가는 테스트 카드로 결제됩니다. 내부 테스트 링크로 앱을 받아 구매 → 앱에 바로 반영되면 성공.
 6. **환불 자동 처리(RTDN)**: 아래 4-1.
@@ -97,12 +98,15 @@
 
 참고: 웹사이트에는 결제가 없습니다(안드로이드 앱 안의 디지털 상품은 Play 결제를 써야 하는 정책). 웹 결제(Razorpay·UPI 등)는 원하시면 따로 붙일 수 있으나 별도 사업자·PG 계약이 필요합니다.
 
-### 4-0. 꾸미기 상품 26개 등록 (0.15.0) — Play Console → 수익 창출 → 인앱 상품
+### 4-0. 꾸미기 상품 44개 등록 (040·046·062·067) — Play Console → 수익 창출 → 인앱 상품
 서버(마이그레이션 040·041, verify-purchase v11)는 준비 완료. **상품 ID가 아래와 정확히 같아야** 앱이 찾습니다. 종류는 "인앱 상품"(구독 아님), 한 번 사면 계속 보유(앱이 소비하지 않음). 가격은 아래가 제안가(₹)이며 Play에서 정한 가격이 앱에 그대로 표시됩니다.
 - 배지: `badge_crown` 99, `badge_diamond` 149, `badge_flame` 79, `badge_star` 79, `badge_heart` 79, `badge_bolt` 79
 - 아이디 색: `color_gold` `color_rose` `color_ocean` `color_emerald` `color_violet` 각 49, `color_sunset` 99, `color_aurora` 99, `color_rainbow` 129
 - 아이디 글꼴: `font_script` `font_retro` `font_bold` `font_pixel` `font_round` `font_future` 각 69
 - 프로필 테두리: `frame_frost` 199, `frame_fire` 199, `frame_jewel` 249, `frame_sand` 199, `frame_neon` 149, `frame_sakura` 149
+- 채팅 배경(067, 움직이는 배경): `wall_aurora` `wall_neon` `wall_sakura` `wall_galaxy` `wall_ocean` `wall_lava` `wall_rain` `wall_diya` 각 79
+- VIP 모드 `vip_anon` 299, 사진 그라데이션 `cycle_photos` 199, 사진 효과 `effect_aurora` `effect_prism` 각 249
+- 말풍선: `bubble_peach` `bubble_ocean` `bubble_mint` 각 99, `bubble_galaxy` `bubble_gold` `bubble_neon` 각 149
 - 테스트로 직접 주기(결제 없이): SQL Editor에서 운영자 계정으로 `select public.admin_grant_cosmetic('<사용자 uuid>', 'frame_fire');` (조치 기록에 남음). 웹은 결제가 없어 "앱에서 구매" 링크만 보이고, 산 꾸미기는 웹에서도 착용됩니다.
 
 ### 4-1. 환불·취소 자동 처리(RTDN) — Play Console이 생긴 뒤 (서버 쪽은 준비 완료, 비밀값만 넣으면 켜짐)

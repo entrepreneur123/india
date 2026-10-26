@@ -682,6 +682,17 @@ const tr: Dict = {
   'notes.title': 'Arkadaşların notları',
   'notes.mine': 'Notun',
   'notes.add': 'Not bırak…',
+  'settings.hideOnline': "Çevrimiçi durumunu gizle",
+  'settings.hideOnlineBody': "Arkadaşların seni çevrimdışı görür ve arayamaz",
+  'presence.hidden': "Çevrimdışı görünüyorsun",
+  'chat.callOffline': "{name} çevrimdışı. Çevrimiçi olunca arayabilirsin.",
+  'photo.save': "Kaydet",
+  'photo.saved': "Fotoğraf kaydedildi",
+  'photo.saveFailed': "Fotoğraf kaydedilemedi",
+  'photo.zoomIn': "Yakınlaştır",
+  'photo.zoomOut': "Uzaklaştır",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Sonraki",
 }
 
 export default tr

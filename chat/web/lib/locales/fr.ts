@@ -671,6 +671,17 @@ const fr: Dict = {
   'notes.title': 'Notes des amis',
   'notes.mine': 'Ta note',
   'notes.add': 'Laisse une note…',
+  'settings.hideOnline': "Masquer le statut en ligne",
+  'settings.hideOnlineBody': "Tes amis te voient hors ligne et ne peuvent pas t’appeler",
+  'presence.hidden': "Affiché hors ligne",
+  'chat.callOffline': "{name} est hors ligne. Tu pourras appeler quand la personne sera en ligne.",
+  'photo.save': "Enregistrer",
+  'photo.saved': "Photo enregistrée",
+  'photo.saveFailed': "Impossible d’enregistrer la photo",
+  'photo.zoomIn': "Zoom avant",
+  'photo.zoomOut': "Zoom arrière",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Suivant",
 }
 
 export default fr

@@ -55,7 +55,7 @@ export function GiftSheet({ item, name, price, onClose }: { item: ItemId | null;
                     <Check className="size-3.5" aria-hidden /> {lt('gift.has')}
                   </span>
                 ) : check === 'ok' && backend.giftLook ? (
-                  <Button size="sm" variant="brand" loading={busy === f.profile.id} disabled={busy !== null} onClick={() => void give(f.profile.id, f.profile.name)}>
+                  <Button size="sm" variant="premium" loading={busy === f.profile.id} disabled={busy !== null} onClick={() => void give(f.profile.id, f.profile.name)}>
                     <Gift className="size-4" aria-hidden /> {lt('gift.give')}
                   </Button>
                 ) : check === 'ok' ? (
@@ -63,7 +63,7 @@ export function GiftSheet({ item, name, price, onClose }: { item: ItemId | null;
                     href={PLAY_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+                    className="shine-button relative inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-bold text-white"
                   >
                     {lt('gift.inApp')} <ExternalLink className="size-3.5 rtl:-scale-x-100" aria-hidden />
                   </a>

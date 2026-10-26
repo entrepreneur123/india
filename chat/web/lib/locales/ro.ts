@@ -671,6 +671,17 @@ const ro: Dict = {
   'notes.title': 'Notițele prietenilor',
   'notes.mine': 'Notița ta',
   'notes.add': 'Lasă o notiță…',
+  'settings.hideOnline': "Ascunde starea online",
+  'settings.hideOnlineBody': "Prietenii te văd offline și nu te pot suna",
+  'presence.hidden': "Apari offline",
+  'chat.callOffline': "{name} este offline. Poți suna când e online.",
+  'photo.save': "Salvează",
+  'photo.saved': "Poză salvată",
+  'photo.saveFailed': "Poza nu a putut fi salvată",
+  'photo.zoomIn': "Mărește",
+  'photo.zoomOut': "Micșorează",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Următoarea",
 }
 
 export default ro

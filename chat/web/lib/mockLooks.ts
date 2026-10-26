@@ -14,7 +14,7 @@ const PRICES: [ItemId, number][] = [
   ['color_sunset', 99], ['color_aurora', 99], ['color_rainbow', 129],
   ['font_script', 69], ['font_retro', 69], ['font_bold', 69], ['font_pixel', 69], ['font_round', 69], ['font_future', 69],
   ['frame_frost', 199], ['frame_fire', 199], ['frame_jewel', 249], ['frame_sand', 199], ['frame_neon', 149], ['frame_sakura', 149],
-  ['wall_saffron', 79], ['wall_midnight', 79], ['wall_paisley', 79], ['wall_mehndi', 79], ['wall_stars', 79], ['wall_waves', 79],
+  ['wall_aurora', 79], ['wall_neon', 79], ['wall_sakura', 79], ['wall_galaxy', 79], ['wall_ocean', 79], ['wall_lava', 79], ['wall_rain', 79], ['wall_diya', 79],
   ['vip_anon', 299],
   ['cycle_photos', 199],
   ['effect_aurora', 249],
@@ -24,6 +24,11 @@ const PRICES: [ItemId, number][] = [
 
 /** The demo people's chat bubbles (062). */
 const BUBBLED: Record<string, ItemId> = { u_sofia: 'bubble_peach', u_arjun: 'bubble_neon', u_yuki: 'bubble_galaxy' }
+/** The demo people's chat walls (067: a partner in a random chat may use theirs). */
+const WALLED: Record<string, ItemId> = {
+  u_sofia: 'wall_sakura', u_arjun: 'wall_neon', u_yuki: 'wall_galaxy', u_mateo: 'wall_lava', u_amara: 'wall_diya', u_kabir: 'wall_rain',
+  u_ananya: 'wall_aurora', u_lucas: 'wall_ocean',
+}
 
 /** The demo people who wear something (everyone else shows a plain @ID). */
 const WORN: Record<string, Partial<LookWear>> = {
@@ -90,7 +95,7 @@ export class LookSim {
 
   private myLook(): Look | null {
     const me = this.host.me()
-    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}), ...this.worn } : null
+    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}), ...this.worn, wall: this.wall } : null
   }
 
   async handleCheck(raw: string): Promise<HandleCheck> {
@@ -188,7 +193,7 @@ export class LookSim {
   /** Whether a demo person wears this look (they own it). */
   wears(id: string, item: string) {
     const wear = id.startsWith('v_') ? roomWear(id) : { ...NO_WEAR, ...WORN[id] }
-    return Object.values(wear).includes(item as ItemId) || BUBBLED[id] === item
+    return Object.values(wear).includes(item as ItemId) || BUBBLED[id] === item || WALLED[id] === item
   }
 
   async looks(ids: string[]): Promise<Look[]> {
@@ -199,7 +204,7 @@ export class LookSim {
       const handle = this.handleOf(id)
       if (!handle) return []
       const wear = id.startsWith('v_') ? roomWear(id) : { ...NO_WEAR, ...WORN[id] }
-      const look: Look = { id, handle, ...wear, bubble: BUBBLED[id] ?? null }
+      const look: Look = { id, handle, ...wear, bubble: BUBBLED[id] ?? null, wall: WALLED[id] ?? null }
       return [look]
     })
   }

@@ -668,6 +668,17 @@ const bn: Dict = {
   'notes.title': 'বন্ধুদের নোট',
   'notes.mine': 'আপনার নোট',
   'notes.add': 'নোট লিখুন…',
+  'settings.hideOnline': "অনলাইন স্ট্যাটাস লুকান",
+  'settings.hideOnlineBody': "বন্ধুরা আপনাকে অফলাইন দেখবে এবং কল করতে পারবে না",
+  'presence.hidden': "অফলাইন দেখাচ্ছে",
+  'chat.callOffline': "{name} অফলাইনে আছেন। অনলাইনে এলে কল করতে পারবেন।",
+  'photo.save': "সেভ করুন",
+  'photo.saved': "ছবি সেভ হয়েছে",
+  'photo.saveFailed': "ছবি সেভ করা যায়নি",
+  'photo.zoomIn': "জুম ইন",
+  'photo.zoomOut': "জুম আউট",
+  'photo.count': "{n} / {total}",
+  'photo.next': "পরবর্তী",
 }
 
 export default bn

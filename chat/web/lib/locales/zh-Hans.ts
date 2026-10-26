@@ -682,6 +682,17 @@ const zhHans: Dict = {
   'notes.title': '好友便签',
   'notes.mine': '你的便签',
   'notes.add': '写个便签…',
+  'settings.hideOnline': "隐藏在线状态",
+  'settings.hideOnlineBody': "好友会看到你离线，也无法给你打电话",
+  'presence.hidden': "显示为离线",
+  'chat.callOffline': "{name} 当前离线，在线时才能通话。",
+  'photo.save': "保存",
+  'photo.saved': "照片已保存",
+  'photo.saveFailed': "无法保存照片",
+  'photo.zoomIn': "放大",
+  'photo.zoomOut': "缩小",
+  'photo.count': "{n} / {total}",
+  'photo.next': "下一张",
 }
 
 export default zhHans

@@ -647,6 +647,17 @@ const ur: Dict = {
   'notes.title': 'دوستوں کے نوٹس',
   'notes.mine': 'آپ کا نوٹ',
   'notes.add': 'نوٹ لکھیں…',
+  'settings.hideOnline': "آن لائن اسٹیٹس چھپائیں",
+  'settings.hideOnlineBody': "دوستوں کو آپ آف لائن نظر آئیں گے اور وہ کال نہیں کر سکیں گے",
+  'presence.hidden': "آف لائن نظر آ رہے ہیں",
+  'chat.callOffline': "{name} آف لائن ہیں۔ آن لائن ہونے پر کال کر سکتے ہیں۔",
+  'photo.save': "محفوظ کریں",
+  'photo.saved': "تصویر محفوظ ہو گئی",
+  'photo.saveFailed': "تصویر محفوظ نہیں ہو سکی",
+  'photo.zoomIn': "زوم ان",
+  'photo.zoomOut': "زوم آؤٹ",
+  'photo.count': "{n} / {total}",
+  'photo.next': "اگلا",
 }
 
 export default ur

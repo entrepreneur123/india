@@ -686,6 +686,17 @@ const ru: Dict = {
   'notes.title': 'Заметки друзей',
   'notes.mine': 'Ваша заметка',
   'notes.add': 'Оставьте заметку…',
+  'settings.hideOnline': "Скрыть статус «в сети»",
+  'settings.hideOnlineBody': "Друзья видят вас не в сети и не могут позвонить",
+  'presence.hidden': "Вы видны как не в сети",
+  'chat.callOffline': "{name} не в сети. Позвонить можно, когда будет онлайн.",
+  'photo.save': "Сохранить",
+  'photo.saved': "Фото сохранено",
+  'photo.saveFailed': "Не удалось сохранить фото",
+  'photo.zoomIn': "Увеличить",
+  'photo.zoomOut': "Уменьшить",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Далее",
 }
 
 export default ru

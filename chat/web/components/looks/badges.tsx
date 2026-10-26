@@ -20,11 +20,12 @@ const sparkle = (x: number, y: number, r: number) =>
 
 const HEART = 'M12 21.2C6.2 16.9 2.6 13.4 2.6 9.1 2.6 6.2 4.9 4 7.7 4c1.8 0 3.3.9 4.3 2.3C13 4.9 14.5 4 16.3 4c2.8 0 5.1 2.2 5.1 5.1 0 4.3-3.6 7.8-9.4 12.1z'
 
-/** A vertical gradient (top → bottom) under its own id. */
-function Vertical({ id, from, to }: { id: string; from: string; to: string }) {
+/** A vertical gradient (top → bottom) under its own id; a middle stop makes it read as polished metal or a gem (42). */
+function Vertical({ id, from, mid, to }: { id: string; from: string; mid: string; to: string }) {
   return (
     <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stopColor={from} />
+      <stop offset="0.55" stopColor={mid} />
       <stop offset="1" stopColor={to} />
     </linearGradient>
   )
@@ -57,18 +58,20 @@ export function LookBadge({ id, className }: { id: BadgeId; className?: string }
       {id === 'badge_crown' ? (
         <>
           <defs>
-            <Vertical id={g} from="#FFE27A" to="#F2A900" />
+            <Vertical id={g} from="#FFF3B0" mid="#F5C542" to="#B7791F" />
           </defs>
-          <path d="M3 8.5l4.6 4.8L12 4.6l4.4 8.7L21 8.5l-1.6 8.4H4.6z" fill={`url(#${g})`} stroke="#B8860B" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <rect x="4.4" y="16.6" width="15.2" height="3.6" rx="1" fill={`url(#${g})`} stroke="#B8860B" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <circle cx="3" cy="8.2" r="1.7" fill="#1E88E5" />
-          <circle cx="12" cy="4.2" r="1.9" fill="#E53935" />
-          <circle cx="21" cy="8.2" r="1.7" fill="#1E88E5" />
+          <path d="M3 8.5l4.6 4.8L12 4.6l4.4 8.7L21 8.5l-1.6 8.4H4.6z" fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          <rect x="4.4" y="16.6" width="15.2" height="3.6" rx="1" fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          {/* Pearls on the points, one ruby on the band. */}
+          <circle cx="3" cy="8.2" r="1.5" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <circle cx="12" cy="4.2" r="1.7" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <circle cx="21" cy="8.2" r="1.5" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <path d="M12 16.9l1.3 1.5-1.3 1.5-1.3-1.5z" fill="#E11D48" />
         </>
       ) : id === 'badge_diamond' ? (
         <>
           <defs>
-            <Vertical id={g} from="#B9F3FF" to="#2BA8E0" />
+            <Vertical id={g} from="#E6FAFF" mid="#7DD3FC" to="#2563EB" />
           </defs>
           {/* Table (the flat top), crown (down to the girdle) and pavilion (down to the point). */}
           <path d="M7 4h10l4.5 5.2L12 21.2 2.5 9.2z" fill={`url(#${g})`} />
@@ -80,8 +83,9 @@ export function LookBadge({ id, className }: { id: BadgeId; className?: string }
           <defs>
             {/* Bottom → top. */}
             <linearGradient id={g} x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0" stopColor="#FF3D00" />
-              <stop offset="1" stopColor="#FFB300" />
+              <stop offset="0" stopColor="#C62828" />
+              <stop offset="0.5" stopColor="#FF6D00" />
+              <stop offset="1" stopColor="#FFD54F" />
             </linearGradient>
           </defs>
           <path d="M12 1.8c.6 3.4 3.1 5.2 4.7 7.6 1.3 1.9 2 3.6 2 5.6 0 4-3 7.2-6.7 7.2S5.3 19 5.3 15c0-2.6 1.2-4.8 3-6.4.1 1.6.7 2.8 1.8 3.5-.2-3.6.6-7.2 1.9-10.3z" fill={`url(#${g})`} />
@@ -90,25 +94,27 @@ export function LookBadge({ id, className }: { id: BadgeId; className?: string }
       ) : id === 'badge_star' ? (
         <>
           <defs>
-            <Vertical id={g} from="#FFE082" to="#FFB300" />
+            <Vertical id={g} from="#FFF3B0" mid="#F5C542" to="#B7791F" />
           </defs>
-          <polygon points={STAR} fill={`url(#${g})`} />
+          <polygon points={STAR} fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          {/* A bevel: the inner star lighter. */}
+          <polygon points={STAR} fill="#FFF8D6" fillOpacity=".45" transform="translate(12 13) scale(.48) translate(-12 -13)" />
           <path d={sparkle(20.2, 3.6, 2.6)} fill="#fff" />
         </>
       ) : id === 'badge_heart' ? (
         <>
           <defs>
-            <Vertical id={g} from="#FF8AB3" to="#E91E63" />
+            <Vertical id={g} from="#FF8FB1" mid="#E11D48" to="#9F1239" />
           </defs>
-          <path d={HEART} fill={`url(#${g})`} />
+          <path d={HEART} fill={`url(#${g})`} stroke="#7F1234" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           <path d="M5.2 10.4c-.3-2.1 1-3.9 2.9-4.1" fill="none" stroke="#fff" strokeOpacity=".4" strokeWidth="1.8" strokeLinecap="round" />
         </>
       ) : (
         <>
           <defs>
-            <Vertical id={g} from="#FFF176" to="#FBC02D" />
+            <Vertical id={g} from="#FFF59D" mid="#FFC107" to="#E65100" />
           </defs>
-          <path d="M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z" fill={`url(#${g})`} stroke="#8D6E00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          <path d="M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z" fill={`url(#${g})`} stroke="#8A4B00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </>
       )}
       <g clipPath={`url(#${g}c)`}>

@@ -682,6 +682,17 @@ const sw: Dict = {
   'notes.title': 'Vidokezo vya marafiki',
   'notes.mine': 'Kidokezo chako',
   'notes.add': 'Andika kidokezo…',
+  'settings.hideOnline': "Ficha hali ya mtandaoni",
+  'settings.hideOnlineBody': "Marafiki wanakuona nje ya mtandao na hawawezi kukupigia",
+  'presence.hidden': "Unaonekana nje ya mtandao",
+  'chat.callOffline': "{name} yuko nje ya mtandao. Unaweza kupiga akiwa mtandaoni.",
+  'photo.save': "Hifadhi",
+  'photo.saved': "Picha imehifadhiwa",
+  'photo.saveFailed': "Imeshindwa kuhifadhi picha",
+  'photo.zoomIn': "Kuza",
+  'photo.zoomOut': "Punguza",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Inayofuata",
 }
 
 export default sw

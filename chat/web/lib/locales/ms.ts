@@ -682,6 +682,17 @@ const ms: Dict = {
   'notes.title': 'Nota rakan',
   'notes.mine': 'Nota anda',
   'notes.add': 'Tulis nota…',
+  'settings.hideOnline': "Sembunyikan status dalam talian",
+  'settings.hideOnlineBody': "Rakan melihat anda di luar talian dan tidak boleh memanggil",
+  'presence.hidden': "Kelihatan di luar talian",
+  'chat.callOffline': "{name} di luar talian. Anda boleh memanggil apabila dia dalam talian.",
+  'photo.save': "Simpan",
+  'photo.saved': "Foto disimpan",
+  'photo.saveFailed': "Tidak dapat menyimpan foto",
+  'photo.zoomIn': "Zum masuk",
+  'photo.zoomOut': "Zum keluar",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Seterusnya",
 }
 
 export default ms

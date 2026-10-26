@@ -93,7 +93,7 @@ const CODES = [
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
-  'contact_invalid', 'not_friends', 'too_many_posts',
+  'contact_invalid', 'not_friends', 'too_many_posts', 'offline',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
@@ -103,7 +103,7 @@ type CardRow = {
 }
 /** 033: colour, status, languages, prompts (profiles columns, or profile_style rows); 040 keeps the colour null. */
 type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string; dm_from: string } & StyleRow
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string; dm_from: string; hide_online: boolean } & StyleRow
 type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
 /** inbox2 (033): inbox's lines plus the post a like or comment is about. */
 type InboxRow = {
@@ -402,14 +402,14 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle, dm_from')
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle, dm_from, hide_online')
         .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
     if (error) fail(error)
     if (!data) return null
     const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
-    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone', photoPath: data.photo_path }
+    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone', hideOnline: data.hide_online, photoPath: data.photo_path }
   }
 
   async createProfile(p: NewProfile) {
@@ -1007,6 +1007,11 @@ export class SupabaseBackend implements Backend {
 
   async setDmEveryone(on: boolean) {
     await this.rpc('set_dm_from', { p_value: on ? 'everyone' : 'friends' })
+    return this.mine()
+  }
+
+  async setHideOnline(on: boolean) {
+    await this.rpc('set_hide_online', { p_on: on })
     return this.mine()
   }
 

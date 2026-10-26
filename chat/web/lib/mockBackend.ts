@@ -724,6 +724,8 @@ export class MockBackend implements Backend {
 
   async requestCall(matchId: string, video: boolean) {
     const m = this.callable(matchId)
+    // Like request_call (067): a friends' thread calls only someone online.
+    if (m.ended && !this.presence[m.partner.id]) throw new BackendError('offline')
     await wait(300)
     m.callVideo = video
     this.setCall(m, 'requested_by_me')
@@ -911,6 +913,13 @@ export class MockBackend implements Backend {
     return { ...this.me }
   }
 
+  async setHideOnline(on: boolean) {
+    if (!this.me) throw new BackendError('not_found')
+    await wait(200)
+    this.me = { ...this.me, hideOnline: on }
+    return { ...this.me }
+  }
+
   async friends() {
     await wait(550)
     const list: Friend[] = []
@@ -922,9 +931,12 @@ export class MockBackend implements Backend {
   }
 
   /** The demo friends' presence (one of each) and their status messages with when they changed. */
+  /** What the demo friends are doing (the rest are offline). */
+  private presence: Record<string, FriendActivity['presence']> = { u_sofia: 'online', u_arjun: 'room', u_riya: 'matching', u_omar: 'chat' }
+
   async friendActivity(): Promise<FriendActivity[]> {
     const feed = await this.feedChunk()
-    const presence: Record<string, FriendActivity['presence']> = { u_sofia: 'online', u_arjun: 'room', u_riya: 'matching', u_omar: 'chat' }
+    const presence = this.presence
     const changed: Record<string, number> = { u_riya: 20 * 60_000, u_arjun: 2 * HOUR, u_sofia: 5 * HOUR, u_yuki: 2 * DAY }
     return [...this.friendMap].flatMap(([id, state]) => {
       if (state !== 'friends') return []

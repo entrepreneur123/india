@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Check, ExternalLink, Gift } from 'lucide-react'
+import { Award, Check, CircleDashed, Crown, ExternalLink, Gift, Images, MessageCircle, Palette, Sparkles, Type, Wallpaper, type LucideIcon } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { CATALOGUE, ITEM_KINDS, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type BadgeId, type FrameId, type ItemId } from '@/lib/looks'
-import { wallVars } from '@/lib/walls'
+import { CATALOGUE, ITEM_KINDS, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, rarityOf, wearOf, wearWith, type BadgeId, type FrameId, type ItemId, type Rarity } from '@/lib/looks'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Bubble } from '@/components/screens/chat/message-bubble'
@@ -21,6 +20,7 @@ import { FrameAvatar, FrameCard } from './frames'
 import { lookKey, LookText } from './look-name'
 import { useLooksT, type LooksKey } from './looks-text'
 import { GiftSheet } from './gift-sheet'
+import { Wall } from './wall'
 import { useAnonSwitch, useShop } from './use-shop'
 
 /**
@@ -40,6 +40,16 @@ export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; on
 }
 
 const itemName = (lt: (k: LooksKey) => string, id: ItemId) => lt(`item.${id}` as LooksKey)
+
+const TAB_ICON: Record<ItemKind, LucideIcon> = {
+  badge: Award, color: Palette, font: Type, frame: CircleDashed, effect: Sparkles, bubble: MessageCircle, cycle: Images, wall: Wallpaper, vip: Crown,
+}
+/** 42: each rarity's tile and its chip (legendary also gets the gold beam round the border). */
+const RARITY: Record<Rarity, { tile: string; chip: string }> = {
+  rare: { tile: 'bg-linear-to-b from-sky-50 to-card ring-sky-200', chip: 'bg-sky-100 text-sky-800' },
+  epic: { tile: 'bg-linear-to-b from-violet-50 to-card ring-violet-200', chip: 'bg-violet-100 text-violet-800' },
+  legendary: { tile: 'rarity-beam bg-linear-to-b from-amber-50 to-card ring-amber-200', chip: 'bg-linear-to-r from-amber-200 to-yellow-100 text-amber-900' },
+}
 
 function ShopBody({ tab }: { tab: ItemKind }) {
   const backend = useBackend()
@@ -91,8 +101,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
 
   const handle = shop.look?.handle ?? me.handle ?? ''
   const owned = new Set<string>(shop.owned)
+  const inrOf = (id: ItemId) => shop.items.find((i) => i.id === id)?.priceInr
   const price = (id: ItemId) => {
-    const inr = shop.items.find((i) => i.id === id)?.priceInr
+    const inr = inrOf(id)
     return inr === undefined ? '' : new Intl.NumberFormat(locale, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(inr)
   }
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
@@ -237,7 +248,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     }
   } else if (backend.buyLook) {
     action = (
-      <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void buy(tried)}>
+      <Button variant="premium" size="lg" className="w-full" loading={busy} onClick={() => void buy(tried)}>
         {lt('looks.buy', { price: price(tried) })}
       </Button>
     )
@@ -249,7 +260,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
           href={PLAY_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 text-[15px] font-semibold text-primary-foreground transition-colors duration-150 hover:bg-primary-hover"
+          className="shine-button relative inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[15px] font-bold text-white"
         >
           <span className="truncate">{lt('looks.getInApp')}</span>
           <ExternalLink className="size-4 shrink-0 rtl:-scale-x-100" aria-hidden />
@@ -263,7 +274,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     kind === 'frame' ? (
       <FrameAvatar frame={id as FrameId | null} name={me.name} src={me.photoUrl} size={36} />
     ) : kind === 'wall' ? (
-      <span className="block h-12 w-full rounded-xl bg-chat-wall ring-1 ring-border" style={wallVars(id)} />
+      <span className="relative isolate block h-12 w-full overflow-hidden rounded-xl bg-chat-wall ring-1 ring-border">
+        <Wall id={id} />
+      </span>
     ) : kind === 'bubble' ? (
       <Bubble mine tail={false} skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
         {me.name}
@@ -279,10 +292,10 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   let preview: React.ReactNode
   if (kind === 'effect') {
     preview = (
-      <div className="flex w-full flex-col items-center gap-3 rounded-[28px] bg-linear-to-b from-muted to-card px-4 pt-7 pb-5 ring-1 ring-border">
+      <div className="flex w-full flex-col items-center gap-3 px-4 pt-5 pb-1 text-white">
         <Avatar name={me.name} src={me.photoUrl} effect={shownExtra} size={104} />
         <p className="mt-2 text-lg font-bold">{me.name}</p>
-        <p className="max-w-xs text-center text-sm leading-relaxed text-muted-foreground">{lt('effect.what')}</p>
+        <p className="max-w-xs text-center text-sm leading-relaxed text-white/70">{lt('effect.what')}</p>
       </div>
     )
   } else if (kind === 'wall') {
@@ -302,12 +315,12 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   } else if (kind === 'cycle') {
     const urls = myPhotos.filter((x) => picked.includes(x.id)).map((x) => x.url)
     preview = (
-      <div className="flex w-full flex-col items-center gap-3">
+      <div className="flex w-full flex-col items-center gap-3 pt-2 text-white">
         <Avatar name={me.name} src={me.photoUrl} srcs={urls.length >= 2 ? urls : myPhotos.slice(0, 4).map((x) => x.url)} size={96} />
-        <p className="text-center text-sm leading-relaxed text-muted-foreground">{lt('cycle.what')}</p>
+        <p className="text-center text-sm leading-relaxed text-white/70">{lt('cycle.what')}</p>
         {owned.has('cycle_photos') ? (
           myPhotos.length < 2 ? (
-            <p className="text-sm font-medium text-destructive">{lt('cycle.needPhotos')}</p>
+            <p className="text-sm font-medium text-red-300">{lt('cycle.needPhotos')}</p>
           ) : (
             <>
               <p className="text-sm font-semibold">{lt('cycle.pick')}</p>
@@ -321,7 +334,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                         aria-pressed={on}
                         disabled={!on && picked.length >= 4}
                         onClick={() => setCyclePick(on ? picked.filter((y) => y !== x.id) : [...picked, x.id])}
-                        className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-transparent')}
+                        className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-white/15')}
                       >
                         <img src={x.url} alt="" className="size-full object-cover" />
                         {on ? (
@@ -341,12 +354,25 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     )
   } else if (kind === 'vip') {
     preview = (
-      <div className="flex w-full flex-col gap-3">
+      <div className="flex w-full flex-col gap-4 pt-1 text-white">
+        <p className="flex items-center gap-2">
+          <Crown className="size-5 text-[#f5d27a]" aria-hidden />
+          <span className="vip-gold text-2xl font-bold tracking-wide">VIP</span>
+        </p>
         <div className="grid grid-cols-2 gap-3">
           <SeenAs label={lt('vip.strangers')} name="VIP" />
           <SeenAs label={lt('vip.friends')} name={nameAge(me.name, me.age)} src={me.photoUrl} />
         </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{lt('vip.what')}</p>
+        <ul className="flex flex-col gap-2.5">
+          {(['vip.b1', 'vip.b2', 'vip.b3'] as const).map((k) => (
+            <li key={k} className="flex items-start gap-2.5 text-sm leading-snug text-white/85">
+              <span className="mt-px grid size-5 shrink-0 place-items-center rounded-full text-[#f5d27a] ring-1 ring-[#f5d27a]/50" aria-hidden>
+                <Check className="size-3" strokeWidth={3} />
+              </span>
+              {lt(k)}
+            </li>
+          ))}
+        </ul>
       </div>
     )
   } else {
@@ -365,27 +391,36 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-5 px-6 pt-3 pb-5">
-        <section aria-label={lt('looks.preview')} className="flex flex-col items-center gap-2">
+        {/* 42: the try-on on a dark stage (VIP: black and gold), like a store's showcase. */}
+        <section
+          aria-label={lt('looks.preview')}
+          className={cn('flex flex-col items-center gap-3 rounded-[32px] p-4', kind === 'vip' ? 'vip-showcase' : 'premium-stage')}
+        >
           {preview}
-          {caption ? <p className="text-xs font-medium text-muted-foreground">{caption}</p> : null}
+          {caption ? <p className="text-center text-xs font-medium text-white/70">{caption}</p> : null}
         </section>
 
         <div role="radiogroup" aria-label={lt('looks.tabs')} className="-mx-6 flex gap-2 overflow-x-auto px-6 no-scrollbar">
-          {ITEM_KINDS.filter((k) => CATALOGUE[k].some((id) => sale.has(id))).map((k) => (
-            <button
-              key={k}
-              type="button"
-              role="radio"
-              aria-checked={k === kind}
-              onClick={() => setKind(k)}
-              className={cn(
-                'h-9 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors duration-150',
-                k === kind ? 'bg-primary-soft text-primary-text ring-1 ring-primary-text/50' : 'bg-muted text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {lt(`looks.tab.${k}`)}
-            </button>
-          ))}
+          {ITEM_KINDS.filter((k) => CATALOGUE[k].some((id) => sale.has(id))).map((k) => {
+            const Icon = TAB_ICON[k]
+            return (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={k === kind}
+                onClick={() => setKind(k)}
+                className={cn(
+                  'inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold transition-colors duration-150',
+                  k === kind ? 'bg-foreground text-background shadow-e1' : 'bg-muted text-muted-foreground hover:text-foreground',
+                  k === 'vip' && k !== kind && 'text-amber-800',
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+                {lt(`looks.tab.${k}`)}
+              </button>
+            )
+          })}
         </div>
 
         {kind === 'vip' || kind === 'cycle' ? null : (
@@ -403,7 +438,14 @@ function ShopBody({ tab }: { tab: ItemKind }) {
             </li>
             {list.map((id) => (
               <li key={id}>
-                <ItemCard on={tried === id} label={itemName(lt, id)} sub={status(id)} worn={look ? worn[look] === id : single?.mine === id} onClick={() => choose(id)}>
+                <ItemCard
+                  on={tried === id}
+                  label={itemName(lt, id)}
+                  sub={status(id)}
+                  worn={look ? worn[look] === id : single?.mine === id}
+                  rarity={rarityOf(inrOf(id) ?? 0)}
+                  onClick={() => choose(id)}
+                >
                   {sample(id)}
                 </ItemCard>
               </li>
@@ -425,12 +467,16 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   )
 }
 
-/** One item: its preview on my @ID (a framed photo for frames), its name and whether I wear it, own it or its price. */
+/**
+ * One item: its rarity (42, from the price), its preview on my @ID (a framed photo for frames), its name, and whether I
+ * wear it, own it or its price.
+ */
 function ItemCard({
   on,
   worn,
   label,
   sub,
+  rarity,
   onClick,
   children,
 }: {
@@ -438,24 +484,30 @@ function ItemCard({
   worn?: boolean
   label: string
   sub: string
+  rarity?: Rarity
   onClick: () => void
   children: React.ReactNode
 }) {
+  const { lt } = useLooksT()
   return (
     <button
       type="button"
       role="radio"
       aria-checked={on}
-      aria-label={sub ? `${label}, ${sub}` : label}
+      aria-label={[label, rarity && lt(`rarity.${rarity}`), sub].filter(Boolean).join(', ')}
       onClick={onClick}
       className={cn(
-        'flex h-full w-full min-w-0 flex-col items-center gap-1.5 rounded-2xl border px-1.5 pt-3 pb-2 text-center transition-colors duration-150',
-        on ? 'border-primary-text bg-primary-soft' : 'border-border hover:bg-muted',
+        'relative flex h-full w-full min-w-0 flex-col items-center gap-1 rounded-2xl px-1.5 pt-2 pb-2 text-center ring-1 transition-[box-shadow,translate] duration-150',
+        rarity ? RARITY[rarity].tile : 'bg-card ring-border',
+        on ? 'shadow-e2 ring-2 ring-primary -translate-y-0.5' : 'hover:-translate-y-0.5 hover:shadow-e1',
       )}
     >
+      <span aria-hidden className={cn('h-4 self-start rounded-full px-1.5 text-[9px] leading-4 font-bold tracking-wider uppercase', rarity && RARITY[rarity].chip)}>
+        {rarity ? lt(`rarity.${rarity}`) : null}
+      </span>
       <span className="grid h-14 w-full min-w-0 place-items-center px-1">{children}</span>
       <span className="w-full truncate text-[13px] font-semibold">{label}</span>
-      <span className={cn('flex min-h-4 items-center gap-1 text-[11px] font-semibold tabular-nums', worn ? 'text-primary-text' : 'text-muted-foreground')}>
+      <span className={cn('flex min-h-4 items-center gap-1 text-[11px] font-bold tabular-nums', worn ? 'text-primary-text' : 'text-foreground/80')}>
         {worn ? <Check className="size-3" strokeWidth={3} aria-hidden /> : null}
         {sub}
       </span>
@@ -467,7 +519,8 @@ function ItemCard({
 function WallPreview({ wall }: { wall: ItemId | null }) {
   const bar = 'h-8 rounded-lg shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]'
   return (
-    <div aria-hidden className="flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border" style={wallVars(wall)}>
+    <div aria-hidden className="relative isolate flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border">
+      <Wall id={wall} />
       <span className={cn(bar, 'w-1/2 self-start rounded-ss-none bg-bubble-in')} />
       <span className={cn(bar, 'w-2/5 self-end rounded-se-none bg-bubble-out')} />
       <span className={cn(bar, 'w-3/5 self-start rounded-ss-none bg-bubble-in')} />
@@ -478,10 +531,10 @@ function WallPreview({ wall }: { wall: ItemId | null }) {
 /** VIP: one of the two cards of how I am seen (strangers, friends). */
 function SeenAs({ label, name, src }: { label: string; name: string; src?: string | null }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-2 rounded-3xl bg-muted px-3 pt-4 pb-3 text-center">
+    <div className="flex min-w-0 flex-col items-center gap-2 rounded-3xl bg-white/[0.06] px-3 pt-4 pb-3 text-center ring-1 ring-white/10">
       <Avatar name={name} src={src} size={56} />
-      <span className="w-full truncate text-[15px] font-bold">{name}</span>
-      <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">{label}</span>
+      <span className="w-full truncate text-[15px] font-bold text-white">{name}</span>
+      <span className="text-[11px] font-semibold tracking-wide text-white/55 uppercase">{label}</span>
     </div>
   )
 }

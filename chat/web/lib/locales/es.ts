@@ -671,6 +671,17 @@ const es: Dict = {
   'notes.title': 'Notas de amigos',
   'notes.mine': 'Tu nota',
   'notes.add': 'Deja una nota…',
+  'settings.hideOnline': "Ocultar estado en línea",
+  'settings.hideOnlineBody': "Tus amigos te ven desconectado y no pueden llamarte",
+  'presence.hidden': "Apareces desconectado",
+  'chat.callOffline': "{name} está desconectado. Puedes llamar cuando esté en línea.",
+  'photo.save': "Guardar",
+  'photo.saved': "Foto guardada",
+  'photo.saveFailed': "No se pudo guardar la foto",
+  'photo.zoomIn': "Acercar",
+  'photo.zoomOut': "Alejar",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Siguiente",
 }
 
 export default es

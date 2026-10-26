@@ -669,6 +669,17 @@ const it: Dict = {
   'notes.title': 'Note degli amici',
   'notes.mine': 'La tua nota',
   'notes.add': 'Lascia una nota…',
+  'settings.hideOnline': "Nascondi stato online",
+  'settings.hideOnlineBody': "Gli amici ti vedono offline e non possono chiamarti",
+  'presence.hidden': "Appari offline",
+  'chat.callOffline': "{name} è offline. Puoi chiamare quando sarà online.",
+  'photo.save': "Salva",
+  'photo.saved': "Foto salvata",
+  'photo.saveFailed': "Impossibile salvare la foto",
+  'photo.zoomIn': "Ingrandisci",
+  'photo.zoomOut': "Riduci",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Avanti",
 }
 
 export default it

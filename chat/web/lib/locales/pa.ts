@@ -647,6 +647,17 @@ const pa: Dict = {
   'notes.title': 'ਦੋਸਤਾਂ ਦੇ ਨੋਟ',
   'notes.mine': 'ਤੁਹਾਡਾ ਨੋਟ',
   'notes.add': 'ਨੋਟ ਲਿਖੋ…',
+  'settings.hideOnline': "ਔਨਲਾਈਨ ਸਟੇਟਸ ਲੁਕਾਓ",
+  'settings.hideOnlineBody': "ਦੋਸਤਾਂ ਨੂੰ ਤੁਸੀਂ ਔਫਲਾਈਨ ਦਿਖੋਗੇ ਅਤੇ ਉਹ ਕਾਲ ਨਹੀਂ ਕਰ ਸਕਣਗੇ",
+  'presence.hidden': "ਔਫਲਾਈਨ ਦਿਖ ਰਹੇ ਹੋ",
+  'chat.callOffline': "{name} ਔਫਲਾਈਨ ਹਨ। ਔਨਲਾਈਨ ਹੋਣ ਤੇ ਕਾਲ ਕਰ ਸਕਦੇ ਹੋ।",
+  'photo.save': "ਸੇਵ ਕਰੋ",
+  'photo.saved': "ਫੋਟੋ ਸੇਵ ਹੋ ਗਈ",
+  'photo.saveFailed': "ਫੋਟੋ ਸੇਵ ਨਹੀਂ ਹੋ ਸਕੀ",
+  'photo.zoomIn': "ਜ਼ੂਮ ਇਨ",
+  'photo.zoomOut': "ਜ਼ੂਮ ਆਊਟ",
+  'photo.count': "{n} / {total}",
+  'photo.next': "ਅਗਲਾ",
 }
 
 export default pa

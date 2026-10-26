@@ -669,6 +669,17 @@ const ml: Dict = {
   'notes.title': 'സുഹൃത്തുക്കളുടെ കുറിപ്പുകൾ',
   'notes.mine': 'നിങ്ങളുടെ കുറിപ്പ്',
   'notes.add': 'കുറിപ്പ് എഴുതൂ…',
+  'settings.hideOnline': "ഓൺലൈൻ സ്റ്റാറ്റസ് മറയ്ക്കുക",
+  'settings.hideOnlineBody': "സുഹൃത്തുക്കൾക്ക് നിങ്ങൾ ഓഫ്‌ലൈനായി കാണും, വിളിക്കാനാവില്ല",
+  'presence.hidden': "ഓഫ്‌ലൈനായി കാണിക്കുന്നു",
+  'chat.callOffline': "{name} ഓഫ്‌ലൈനാണ്. ഓൺലൈനാകുമ്പോൾ വിളിക്കാം.",
+  'photo.save': "സേവ് ചെയ്യുക",
+  'photo.saved': "ഫോട്ടോ സേവ് ചെയ്തു",
+  'photo.saveFailed': "ഫോട്ടോ സേവ് ചെയ്യാനായില്ല",
+  'photo.zoomIn': "വലുതാക്കുക",
+  'photo.zoomOut': "ചെറുതാക്കുക",
+  'photo.count': "{n} / {total}",
+  'photo.next': "അടുത്തത്",
 }
 
 export default ml

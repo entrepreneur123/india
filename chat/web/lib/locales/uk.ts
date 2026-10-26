@@ -686,6 +686,17 @@ const uk: Dict = {
   'notes.title': 'Нотатки друзів',
   'notes.mine': 'Ваша нотатка',
   'notes.add': 'Залиште нотатку…',
+  'settings.hideOnline': "Приховати статус «у мережі»",
+  'settings.hideOnlineBody': "Друзі бачать вас не в мережі й не можуть подзвонити",
+  'presence.hidden': "Ви видні як не в мережі",
+  'chat.callOffline': "{name} не в мережі. Подзвонити можна, коли буде онлайн.",
+  'photo.save': "Зберегти",
+  'photo.saved': "Фото збережено",
+  'photo.saveFailed': "Не вдалося зберегти фото",
+  'photo.zoomIn': "Збільшити",
+  'photo.zoomOut': "Зменшити",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Далі",
 }
 
 export default uk

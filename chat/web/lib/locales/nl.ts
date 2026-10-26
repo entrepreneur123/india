@@ -669,6 +669,17 @@ const nl: Dict = {
   'notes.title': 'Notities van vrienden',
   'notes.mine': 'Jouw notitie',
   'notes.add': 'Laat een notitie achter…',
+  'settings.hideOnline': "Onlinestatus verbergen",
+  'settings.hideOnlineBody': "Vrienden zien je offline en kunnen je niet bellen",
+  'presence.hidden': "Je lijkt offline",
+  'chat.callOffline': "{name} is offline. Je kunt bellen zodra die online is.",
+  'photo.save': "Opslaan",
+  'photo.saved': "Foto opgeslagen",
+  'photo.saveFailed': "Foto kon niet worden opgeslagen",
+  'photo.zoomIn': "Inzoomen",
+  'photo.zoomOut': "Uitzoomen",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Volgende",
 }
 
 export default nl

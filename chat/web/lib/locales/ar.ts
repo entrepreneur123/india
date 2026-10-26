@@ -690,6 +690,17 @@ const ar: Dict = {
   'notes.title': 'ملاحظات الأصدقاء',
   'notes.mine': 'ملاحظتك',
   'notes.add': 'اكتب ملاحظة…',
+  'settings.hideOnline': "إخفاء حالة الاتصال",
+  'settings.hideOnlineBody': "يراك الأصدقاء غير متصل ولا يمكنهم الاتصال بك",
+  'presence.hidden': "تظهر غير متصل",
+  'chat.callOffline': "{name} غير متصل. يمكنك الاتصال عندما يكون متصلاً.",
+  'photo.save': "حفظ",
+  'photo.saved': "تم حفظ الصورة",
+  'photo.saveFailed': "تعذّر حفظ الصورة",
+  'photo.zoomIn': "تكبير",
+  'photo.zoomOut': "تصغير",
+  'photo.count': "{n} / {total}",
+  'photo.next': "التالي",
 }
 
 export default ar

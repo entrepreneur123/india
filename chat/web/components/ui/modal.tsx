@@ -14,7 +14,8 @@ interface ModalProps {
   title?: ReactNode
   description?: ReactNode
   children: ReactNode
-  variant?: 'dialog' | 'sheet'
+  /** 'full': the whole screen, black (the photo viewer). */
+  variant?: 'dialog' | 'sheet' | 'full'
   className?: string
   hideHeader?: boolean
   dismissible?: boolean
@@ -99,7 +100,7 @@ export function Modal({
         <div
           className={cn(
             'fixed inset-0 z-50 flex justify-center',
-            isSheet ? 'items-end md:items-center' : 'items-center p-4',
+            isSheet ? 'items-end md:items-center' : variant === 'full' ? 'items-stretch' : 'items-center p-4',
           )}
         >
           <m.div
@@ -126,7 +127,9 @@ export function Modal({
               'relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden bg-card text-card-foreground shadow-e3 outline-none',
               isSheet
                 ? 'rounded-t-[28px] pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-[28px]'
-                : 'max-w-md rounded-[28px]',
+                : variant === 'full'
+                  ? 'max-h-none bg-black text-white'
+                  : 'max-w-md rounded-[28px]',
               className,
             )}
           >

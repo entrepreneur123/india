@@ -682,6 +682,17 @@ const ja: Dict = {
   'notes.title': '友達のノート',
   'notes.mine': 'あなたのノート',
   'notes.add': 'ノートを書く…',
+  'settings.hideOnline': "オンライン状態を隠す",
+  'settings.hideOnlineBody': "友達にはオフラインと表示され、通話もできません",
+  'presence.hidden': "オフライン表示中",
+  'chat.callOffline': "{name}さんはオフラインです。オンラインのときに通話できます。",
+  'photo.save': "保存",
+  'photo.saved': "写真を保存しました",
+  'photo.saveFailed': "写真を保存できませんでした",
+  'photo.zoomIn': "拡大",
+  'photo.zoomOut': "縮小",
+  'photo.count': "{n} / {total}",
+  'photo.next': "次へ",
 }
 
 export default ja

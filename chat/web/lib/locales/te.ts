@@ -669,6 +669,17 @@ const te: Dict = {
   'notes.title': 'స్నేహితుల నోట్స్',
   'notes.mine': 'మీ నోట్',
   'notes.add': 'నోట్ రాయండి…',
+  'settings.hideOnline': "ఆన్‌లైన్ స్థితిని దాచండి",
+  'settings.hideOnlineBody': "స్నేహితులకు మీరు ఆఫ్‌లైన్‌గా కనిపిస్తారు, కాల్ చేయలేరు",
+  'presence.hidden': "ఆఫ్‌లైన్‌గా కనిపిస్తున్నారు",
+  'chat.callOffline': "{name} ఆఫ్‌లైన్‌లో ఉన్నారు. ఆన్‌లైన్‌లో ఉన్నప్పుడు కాల్ చేయవచ్చు.",
+  'photo.save': "సేవ్ చేయండి",
+  'photo.saved': "ఫోటో సేవ్ అయింది",
+  'photo.saveFailed': "ఫోటోను సేవ్ చేయలేకపోయాం",
+  'photo.zoomIn': "జూమ్ ఇన్",
+  'photo.zoomOut': "జూమ్ అవుట్",
+  'photo.count': "{n} / {total}",
+  'photo.next': "తదుపరి",
 }
 
 export default te

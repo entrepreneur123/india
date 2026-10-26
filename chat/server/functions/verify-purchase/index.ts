@@ -2,7 +2,7 @@
 // Secrets: GOOGLE_SERVICE_ACCOUNT_JSON (service account with Play Console "View financial data" + "Manage orders"),
 //          PLAY_PACKAGE_NAME (default com.yaari.chat).
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { b64url } from "../_shared/jwt.ts";
+import { googleAccessToken, serviceAccount } from "../_shared/google.ts";
 
 const PREMIUM = "yaari_premium_monthly"; // subscription: gender filter + video + 0.2 s skip
 const GENDER_PASS = "gender_pass_24h";    // one-time, consumable: gender filter for 24 h
@@ -13,26 +13,6 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
-
-async function googleAccessToken(sa: { client_email: string; private_key: string }) {
-  const now = Math.floor(Date.now() / 1000);
-  const enc = (o: unknown) => b64url(new TextEncoder().encode(JSON.stringify(o)));
-  const unsigned = `${enc({ alg: "RS256", typ: "JWT" })}.${enc({
-    iss: sa.client_email, scope: "https://www.googleapis.com/auth/androidpublisher",
-    aud: "https://oauth2.googleapis.com/token", iat: now, exp: now + 3600,
-  })}`;
-  const pem = sa.private_key.replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
-  const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
-  const key = await crypto.subtle.importKey("pkcs8", der, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]);
-  const sig = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", key, new TextEncoder().encode(unsigned)));
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: `${unsigned}.${b64url(sig)}` }),
-  });
-  if (!res.ok) throw new Error(`google_auth_${res.status}`);
-  return (await res.json()).access_token as string;
-}
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
@@ -59,7 +39,14 @@ Deno.serve(async (req) => {
   if ((![PREMIUM, GENDER_PASS].includes(product_id) && !look && !pass) || typeof purchase_token !== "string") return json(400, { error: "bad_request" });
 
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const access = await googleAccessToken(JSON.parse(saJson));
+  // The shared helper (play-rtdn and push use it too): a broken secret answers 503, not a crash.
+  let access: string;
+  try {
+    access = await googleAccessToken(serviceAccount(saJson), "https://www.googleapis.com/auth/androidpublisher");
+  } catch (e) {
+    console.error("verify-purchase google auth", (e as Error).message);
+    return json(503, { error: "billing_not_configured" });
+  }
   const api = `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${pkg}/purchases`;
   const auth = { Authorization: `Bearer ${access}` };
   const tok = encodeURIComponent(purchase_token);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Ellipsis, Flag, Trash2, UserRound } from 'lucide-react'
 import type { FeedPost, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
@@ -8,6 +8,7 @@ import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { AudienceIcon, BigHeart, CommentIcon, LikeIcon } from '@/components/ui/topic-icons'
@@ -42,6 +43,10 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
   const [burst, setBurst] = useState(0)
   const [pop, setPop] = useState(0)
   const lastTap = useRef<{ at: number; x: number; y: number } | null>(null)
+  // 39: one tap on the photo opens it large (zoom, save) — once it's clear it wasn't the first of a double tap (a like).
+  const [large, setLarge] = useState<number | null>(null)
+  const opening = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(opening.current), [])
   if (!post) return null
   const a = post.author
   const mine = a.id === me.id
@@ -53,10 +58,11 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
     void like(post, on)
   }
   // Instagram: two taps on the photo like it (never unlike), with a big heart.
-  const onMediaTap = (e: React.PointerEvent) => {
+  const onMediaTap = (e: React.PointerEvent, photo = false) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return
     const now = performance.now()
     const prev = lastTap.current
+    clearTimeout(opening.current)
     if (prev && now - prev.at < 320 && Math.hypot(e.clientX - prev.x, e.clientY - prev.y) < 40) {
       lastTap.current = null
       setBurst((n) => n + 1)
@@ -65,6 +71,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
       return
     }
     lastTap.current = { at: now, x: e.clientX, y: e.clientY }
+    if (photo) opening.current = setTimeout(() => setLarge(0), 320)
   }
 
   return (
@@ -125,7 +132,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
       ) : null}
 
       {post.imageUrl ? (
-        <div className="relative mt-3 touch-manipulation overflow-hidden bg-muted select-none sm:mx-3 sm:rounded-3xl" onPointerUp={onMediaTap}>
+        <div className="relative mt-3 cursor-zoom-in touch-manipulation overflow-hidden bg-muted select-none sm:mx-3 sm:rounded-3xl" onPointerUp={(e) => onMediaTap(e, true)}>
           <img
             src={post.imageUrl}
             alt={ft('post.photo', { name: a.name })}
@@ -135,6 +142,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
             draggable={false}
           />
           <Burst n={burst} />
+          <PhotoViewer photos={[post.imageUrl]} index={large} onIndex={setLarge} label={a.name} />
         </div>
       ) : null}
 

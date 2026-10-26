@@ -682,6 +682,17 @@ const fa: Dict = {
   'notes.title': 'یادداشت دوستان',
   'notes.mine': 'یادداشت شما',
   'notes.add': 'یادداشت بنویسید…',
+  'settings.hideOnline': "پنهان کردن وضعیت آنلاین",
+  'settings.hideOnlineBody': "دوستان شما را آفلاین می‌بینند و نمی‌توانند تماس بگیرند",
+  'presence.hidden': "آفلاین نمایش داده می‌شوید",
+  'chat.callOffline': "{name} آفلاین است. وقتی آنلاین شد می‌توانید تماس بگیرید.",
+  'photo.save': "ذخیره",
+  'photo.saved': "عکس ذخیره شد",
+  'photo.saveFailed': "ذخیره عکس ممکن نشد",
+  'photo.zoomIn': "بزرگ‌نمایی",
+  'photo.zoomOut': "کوچک‌نمایی",
+  'photo.count': "{n} / {total}",
+  'photo.next': "بعدی",
 }
 
 export default fa

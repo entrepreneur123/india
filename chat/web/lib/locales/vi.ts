@@ -668,6 +668,17 @@ const vi: Dict = {
   'notes.title': 'Ghi chú của bạn bè',
   'notes.mine': 'Ghi chú của bạn',
   'notes.add': 'Viết ghi chú…',
+  'settings.hideOnline': "Ẩn trạng thái trực tuyến",
+  'settings.hideOnlineBody': "Bạn bè thấy bạn ngoại tuyến và không thể gọi",
+  'presence.hidden': "Đang hiện ngoại tuyến",
+  'chat.callOffline': "{name} đang ngoại tuyến. Bạn có thể gọi khi họ trực tuyến.",
+  'photo.save': "Lưu",
+  'photo.saved': "Đã lưu ảnh",
+  'photo.saveFailed': "Không lưu được ảnh",
+  'photo.zoomIn': "Phóng to",
+  'photo.zoomOut': "Thu nhỏ",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Tiếp",
 }
 
 export default vi

@@ -669,6 +669,17 @@ const ne: Dict = {
   'notes.title': 'साथीहरूका नोट',
   'notes.mine': 'तपाईंको नोट',
   'notes.add': 'नोट लेख्नुहोस्…',
+  'settings.hideOnline': "अनलाइन स्थिति लुकाउनुहोस्",
+  'settings.hideOnlineBody': "साथीहरूले तपाईंलाई अफलाइन देख्छन् र कल गर्न सक्दैनन्",
+  'presence.hidden': "अफलाइन देखिँदै",
+  'chat.callOffline': "{name} अफलाइन हुनुहुन्छ। अनलाइन हुँदा कल गर्न सक्नुहुन्छ।",
+  'photo.save': "सेभ गर्नुहोस्",
+  'photo.saved': "फोटो सेभ भयो",
+  'photo.saveFailed': "फोटो सेभ गर्न सकिएन",
+  'photo.zoomIn': "जुम इन",
+  'photo.zoomOut': "जुम आउट",
+  'photo.count': "{n} / {total}",
+  'photo.next': "अर्को",
 }
 
 export default ne

@@ -681,6 +681,17 @@ const en = {
   'notes.title': 'Friends’ notes',
   'notes.mine': 'Your note',
   'notes.add': 'Share a note…',
+  'settings.hideOnline': "Hide online status",
+  'settings.hideOnlineBody': "Friends see you as offline and can’t call you",
+  'presence.hidden': "Appearing offline",
+  'chat.callOffline': "{name} is offline. You can call when they’re online.",
+  'photo.save': "Save",
+  'photo.saved': "Photo saved",
+  'photo.saveFailed': "Couldn’t save the photo",
+  'photo.zoomIn': "Zoom in",
+  'photo.zoomOut': "Zoom out",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Next",
 } as const
 
 export default en

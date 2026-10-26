@@ -668,6 +668,17 @@ const ptBR: Dict = {
   'notes.title': 'Notas dos amigos',
   'notes.mine': 'Sua nota',
   'notes.add': 'Deixe uma nota…',
+  'settings.hideOnline': "Ocultar status online",
+  'settings.hideOnlineBody': "Amigos veem você offline e não podem ligar",
+  'presence.hidden': "Aparecendo offline",
+  'chat.callOffline': "{name} está offline. Você pode ligar quando estiver online.",
+  'photo.save': "Salvar",
+  'photo.saved': "Foto salva",
+  'photo.saveFailed': "Não foi possível salvar a foto",
+  'photo.zoomIn': "Ampliar",
+  'photo.zoomOut': "Reduzir",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Próxima",
 }
 
 export default ptBR

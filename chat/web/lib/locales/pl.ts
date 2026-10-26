@@ -673,6 +673,17 @@ const pl: Dict = {
   'notes.title': 'Notatki znajomych',
   'notes.mine': 'Twoja notatka',
   'notes.add': 'Napisz notatkę…',
+  'settings.hideOnline': "Ukryj status online",
+  'settings.hideOnlineBody': "Znajomi widzą cię offline i nie mogą zadzwonić",
+  'presence.hidden': "Widoczny jako offline",
+  'chat.callOffline': "{name} jest offline. Możesz zadzwonić, gdy będzie online.",
+  'photo.save': "Zapisz",
+  'photo.saved': "Zapisano zdjęcie",
+  'photo.saveFailed': "Nie udało się zapisać zdjęcia",
+  'photo.zoomIn': "Powiększ",
+  'photo.zoomOut': "Pomniejsz",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Dalej",
 }
 
 export default pl

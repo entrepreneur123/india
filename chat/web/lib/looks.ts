@@ -10,7 +10,7 @@ export const COLORS = ['color_gold', 'color_rose', 'color_ocean', 'color_emerald
 export const FONTS = ['font_script', 'font_retro', 'font_bold', 'font_pixel', 'font_round', 'font_future'] as const
 export const FRAMES = ['frame_frost', 'frame_fire', 'frame_jewel', 'frame_sand', 'frame_neon', 'frame_sakura'] as const
 /** 046: my chat background (only I see it), the incognito mode. */
-export const WALLS = ['wall_saffron', 'wall_midnight', 'wall_paisley', 'wall_mehndi', 'wall_stars', 'wall_waves'] as const
+export const WALLS = ['wall_aurora', 'wall_neon', 'wall_sakura', 'wall_galaxy', 'wall_ocean', 'wall_lava', 'wall_rain', 'wall_diya'] as const
 export const VIP_ITEMS = ['vip_anon'] as const
 /** 062: the profile photo gradient. */
 export const CYCLE_ITEMS = ['cycle_photos'] as const
@@ -95,6 +95,10 @@ export const FONT_DESIGNS: Record<FontId, { family: string; scale: number }> = {
 }
 
 /** Where looks are bought (the web has no payments). */
+/** 42: an item's rarity in the shop, read from its price so the two never disagree: rare under ₹99, epic under ₹199. */
+export type Rarity = 'rare' | 'epic' | 'legendary'
+export const rarityOf = (inr: number): Rarity => (inr >= 199 ? 'legendary' : inr >= 99 ? 'epic' : 'rare')
+
 export const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yaari.chat'
 
 export const NO_WEAR: LookWear = { badge: null, color: null, font: null, frame: null }
@@ -119,6 +123,7 @@ export function parseLook(raw: unknown): Look | null {
     ...(cycle.length >= 2 ? { cycle } : {}),
     ...(isItem(r.effect) && kindOf(r.effect) === 'effect' ? { effect: r.effect } : {}),
     ...(isItem(r.bubble) && kindOf(r.bubble) === 'bubble' ? { bubble: r.bubble } : {}),
+    ...(isItem(r.wall) && kindOf(r.wall) === 'wall' ? { wall: r.wall } : {}),
   }
 }
 

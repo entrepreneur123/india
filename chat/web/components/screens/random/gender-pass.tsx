@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { Users } from 'lucide-react'
+import { Clock, Users } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
@@ -42,13 +42,19 @@ export function GenderPassSheet({ open, onClose, onGot }: { open: boolean; onClo
   }
   return (
     <Modal open={open} onClose={onClose} title={t('pass.title')} className="max-w-sm">
-      <div className="flex flex-col items-center gap-3 p-6 pt-2 text-center">
-        <span className="grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary-text" aria-hidden>
-          <Users className="size-7" />
-        </span>
-        <p className="text-[15px] leading-relaxed text-muted-foreground">{t('pass.body')}</p>
+      <div className="flex flex-col items-center gap-4 p-6 pt-2 text-center">
+        {/* 42: the shop's dark stage — the two choices it opens, and the 24 hours. */}
+        <div className="premium-stage flex w-full flex-col items-center gap-3 rounded-[28px] px-4 pt-6 pb-5 text-white">
+          <span className="grid size-16 place-items-center rounded-2xl bg-linear-to-br from-[#ff8a1f] to-[#c2410c] shadow-[0_10px_30px_-8px_rgb(234_106_0/0.8)]" aria-hidden>
+            <Users className="size-8" />
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-wide ring-1 ring-white/15">
+            <Clock className="size-3.5" aria-hidden /> 24h
+          </span>
+          <p className="text-[15px] leading-relaxed font-medium text-white/85">{t('pass.body')}</p>
+        </div>
         {backend.buyGenderPass ? (
-          <Button variant="brand" size="lg" className="mt-2 w-full" onClick={() => void buy()} loading={busy}>
+          <Button variant="premium" size="lg" className="w-full" onClick={() => void buy()} loading={busy}>
             {t('pass.get')}
           </Button>
         ) : (

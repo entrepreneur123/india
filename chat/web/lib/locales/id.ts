@@ -682,6 +682,17 @@ const id: Dict = {
   'notes.title': 'Catatan teman',
   'notes.mine': 'Catatanmu',
   'notes.add': 'Tulis catatan…',
+  'settings.hideOnline': "Sembunyikan status online",
+  'settings.hideOnlineBody': "Teman melihatmu offline dan tidak bisa menelepon",
+  'presence.hidden': "Tampil offline",
+  'chat.callOffline': "{name} sedang offline. Kamu bisa menelepon saat dia online.",
+  'photo.save': "Simpan",
+  'photo.saved': "Foto disimpan",
+  'photo.saveFailed': "Foto tidak bisa disimpan",
+  'photo.zoomIn': "Perbesar",
+  'photo.zoomOut': "Perkecil",
+  'photo.count': "{n} / {total}",
+  'photo.next': "Berikutnya",
 }
 
 export default id

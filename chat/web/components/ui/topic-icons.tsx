@@ -272,10 +272,10 @@ const BUBBLE_PATH =
  * (two tones, in the heart's red), an outline in the text colour when off; the comment is always an outline.
  */
 export function LikeIcon({ on, size = 26, className }: { on: boolean; size?: number; className?: string }) {
-  if (on) return <ReactionIcon kind="heart" size={size} className={className} />
+  // 41: liked is one flat colour (the button's red), no highlight — clean, like Instagram.
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false" className={cn('shrink-0', className)}>
-      <path d={HEART_PATH} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
+      <path d={HEART_PATH} fill={on ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -288,14 +288,12 @@ export function CommentIcon({ size = 26, className }: { size?: number; className
   )
 }
 
-/** The big heart that pops over a photo on a double tap (Instagram): two tones on a soft shadow. */
+/** The big heart over a photo on a double tap: plain white on a soft shadow, as Instagram does it (41). */
 export function BigHeart({ size = 96, className }: { size?: number; className?: string }) {
   return (
-    <Glyph color={HEART} size={size} className={cn('drop-shadow-[0_6px_18px_rgb(0_0_0/0.35)]', className)}>
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden focusable="false" className={cn('shrink-0 drop-shadow-[0_4px_14px_rgb(0_0_0/0.3)]', className)}>
       <path d={HEART_PATH} fill="#fff" />
-      <path d={HEART_PATH} fill={M} transform="translate(12 12.4) scale(.86) translate(-12 -12.4)" />
-      <ellipse cx="7.9" cy="9.2" rx="1.7" ry="1.1" transform="rotate(-40 7.9 9.2)" fill={L} />
-    </Glyph>
+    </svg>
   )
 }
 
