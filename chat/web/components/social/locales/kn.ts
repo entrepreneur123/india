@@ -123,6 +123,14 @@ const kn: SocialDict = {
   'contacts.sharedToast': '{name} ಈಗ ನಿಮ್ಮ ಸಂಪರ್ಕಗಳನ್ನು ನೋಡಬಹುದು',
   'contacts.stoppedToast': '{name} ಅವರೊಂದಿಗೆ ಹಂಚಿಕೆ ನಿಲ್ಲಿಸಲಾಗಿದೆ',
   'contacts.copied': 'ನಕಲಿಸಲಾಗಿದೆ',
+  'hl.title': 'ಹೈಲೈಟ್ಸ್',
+  'hl.new': 'ಹೊಸದು',
+  'hl.name': 'ಶೀರ್ಷಿಕೆ',
+  'hl.add': 'ಫೋಟೋ ಸೇರಿಸಿ',
+  'hl.save': 'ಉಳಿಸಿ',
+  'hl.delete': 'ಅಳಿಸಿ',
+  'hl.edit': 'ಬದಲಿಸಿ',
+  'hl.plain': 'ಸಾಮಾನ್ಯ ಅಕ್ಷರಗಳಲ್ಲಿ ಬರೆಯಿರಿ (ಫ್ಯಾನ್ಸಿ ಫಾಂಟ್ ಬೇಡ)',
 }
 
 export default kn

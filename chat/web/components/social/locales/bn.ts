@@ -124,6 +124,14 @@ const bn: SocialDict = {
   'contacts.sharedToast': '{name} এখন আপনার যোগাযোগ দেখতে পারবেন',
   'contacts.stoppedToast': '{name}-এর সাথে শেয়ার বন্ধ করা হয়েছে',
   'contacts.copied': 'কপি হয়েছে',
+  'hl.title': 'হাইলাইটস',
+  'hl.new': 'নতুন',
+  'hl.name': 'শিরোনাম',
+  'hl.add': 'ছবি যোগ করুন',
+  'hl.save': 'সেভ করুন',
+  'hl.delete': 'মুছুন',
+  'hl.edit': 'এডিট',
+  'hl.plain': 'সাধারণ অক্ষরে লিখুন (ফ্যান্সি ফন্ট নয়)',
 }
 
 export default bn

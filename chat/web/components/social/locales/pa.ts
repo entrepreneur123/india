@@ -118,6 +118,14 @@ const pa: SocialDict = {
   'contacts.sharedToast': '{name} ਹੁਣ ਤੁਹਾਡੇ ਸੰਪਰਕ ਦੇਖ ਸਕਦੇ ਹਨ',
   'contacts.stoppedToast': '{name} ਨਾਲ ਸ਼ੇਅਰ ਕਰਨਾ ਬੰਦ ਕੀਤਾ',
   'contacts.copied': 'ਕਾਪੀ ਹੋ ਗਿਆ',
+  'hl.title': 'ਹਾਈਲਾਈਟਸ',
+  'hl.new': 'ਨਵਾਂ',
+  'hl.name': 'ਸਿਰਲੇਖ',
+  'hl.add': 'ਫ਼ੋਟੋਆਂ ਜੋੜੋ',
+  'hl.save': 'ਸੇਵ ਕਰੋ',
+  'hl.delete': 'ਮਿਟਾਓ',
+  'hl.edit': 'ਬਦਲੋ',
+  'hl.plain': 'ਸਾਧਾਰਨ ਅੱਖਰਾਂ ਵਿੱਚ ਲਿਖੋ (ਫੈਂਸੀ ਫੌਂਟ ਨਹੀਂ)',
 }
 
 export default pa

@@ -130,6 +130,14 @@ const ko: SocialDict = {
   'contacts.sharedToast': '이제 {name}님이 내 연락처를 볼 수 있어요',
   'contacts.stoppedToast': '{name}님에게 공유를 중지했어요',
   'contacts.copied': '복사했어요',
+  'hl.title': '하이라이트',
+  'hl.new': '새로 만들기',
+  'hl.name': '제목',
+  'hl.add': '사진 추가',
+  'hl.save': '저장',
+  'hl.delete': '삭제',
+  'hl.edit': '편집',
+  'hl.plain': '일반 글자로 써 주세요 (꾸밈 글꼴 불가)',
 }
 
 export default ko

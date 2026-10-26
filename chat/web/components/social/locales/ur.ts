@@ -118,6 +118,14 @@ const ur: SocialDict = {
   'contacts.sharedToast': '{name} اب آپ کے رابطے دیکھ سکتے ہیں',
   'contacts.stoppedToast': '{name} کے ساتھ شیئر کرنا بند کر دیا',
   'contacts.copied': 'کاپی ہو گیا',
+  'hl.title': 'ہائی لائٹس',
+  'hl.new': 'نیا',
+  'hl.name': 'عنوان',
+  'hl.add': 'تصاویر شامل کریں',
+  'hl.save': 'محفوظ کریں',
+  'hl.delete': 'حذف کریں',
+  'hl.edit': 'ترمیم',
+  'hl.plain': 'سادہ حروف میں لکھیں (فینسی فونٹ نہیں)',
 }
 
 export default ur

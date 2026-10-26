@@ -124,6 +124,14 @@ const hi: SocialDict = {
   'contacts.sharedToast': '{name} अब आपके संपर्क देख सकते हैं',
   'contacts.stoppedToast': '{name} के साथ शेयर करना बंद किया',
   'contacts.copied': 'कॉपी हो गया',
+  'hl.title': 'हाइलाइट्स',
+  'hl.new': 'नया',
+  'hl.name': 'शीर्षक',
+  'hl.add': 'फ़ोटो जोड़ें',
+  'hl.save': 'सेव करें',
+  'hl.delete': 'हटाएँ',
+  'hl.edit': 'बदलें',
+  'hl.plain': 'सामान्य अक्षरों में लिखें (फैंसी फ़ॉन्ट नहीं)',
 }
 
 export default hi

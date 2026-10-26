@@ -129,6 +129,14 @@ const en = {
   'contacts.sharedToast': '{name} can now see your contacts',
   'contacts.stoppedToast': 'Stopped sharing with {name}',
   'contacts.copied': 'Copied',
+  'hl.title': 'Highlights',
+  'hl.new': 'New',
+  'hl.name': 'Title',
+  'hl.add': 'Add photos',
+  'hl.save': 'Save',
+  'hl.delete': 'Delete',
+  'hl.edit': 'Edit',
+  'hl.plain': 'Use plain letters (no fancy fonts)',
 }
 
 export default en

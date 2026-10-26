@@ -129,6 +129,14 @@ const fil: SocialDict = {
   'contacts.sharedToast': 'Nakikita na ni {name} ang contacts mo',
   'contacts.stoppedToast': 'Itinigil ang pagbabahagi kay {name}',
   'contacts.copied': 'Nakopya',
+  'hl.title': 'Highlights',
+  'hl.new': 'Bago',
+  'hl.name': 'Pamagat',
+  'hl.add': 'Magdagdag ng mga larawan',
+  'hl.save': 'I-save',
+  'hl.delete': 'Burahin',
+  'hl.edit': 'I-edit',
+  'hl.plain': 'Gumamit ng karaniwang letra (walang fancy font)',
 }
 
 export default fil

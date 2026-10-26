@@ -123,6 +123,14 @@ const ne: SocialDict = {
   'contacts.sharedToast': '{name} ले अब तपाईंका सम्पर्क हेर्न सक्नुहुन्छ',
   'contacts.stoppedToast': '{name} सँग सेयर गर्न रोकियो',
   'contacts.copied': 'कपी भयो',
+  'hl.title': 'हाइलाइटहरू',
+  'hl.new': 'नयाँ',
+  'hl.name': 'शीर्षक',
+  'hl.add': 'फोटो थप्नुहोस्',
+  'hl.save': 'सेभ गर्नुहोस्',
+  'hl.delete': 'मेटाउनुहोस्',
+  'hl.edit': 'सम्पादन',
+  'hl.plain': 'साधारण अक्षरमा लेख्नुहोस् (फेन्सी फन्ट होइन)',
 }
 
 export default ne

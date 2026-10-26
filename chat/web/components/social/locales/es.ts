@@ -126,6 +126,14 @@ const es: SocialDict = {
   'contacts.sharedToast': '{name} ya puede ver tus contactos',
   'contacts.stoppedToast': 'Dejaste de compartir con {name}',
   'contacts.copied': 'Copiado',
+  'hl.title': 'Destacadas',
+  'hl.new': 'Nueva',
+  'hl.name': 'Título',
+  'hl.add': 'Añadir fotos',
+  'hl.save': 'Guardar',
+  'hl.delete': 'Eliminar',
+  'hl.edit': 'Editar',
+  'hl.plain': 'Usa letras normales (sin fuentes decorativas)',
 }
 
 export default es

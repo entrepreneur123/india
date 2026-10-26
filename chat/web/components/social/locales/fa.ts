@@ -129,6 +129,14 @@ const fa: SocialDict = {
   'contacts.sharedToast': '{name} حالا راه‌های ارتباطی‌تان را می‌بیند',
   'contacts.stoppedToast': 'اشتراک با {name} متوقف شد',
   'contacts.copied': 'کپی شد',
+  'hl.title': 'هایلایت‌ها',
+  'hl.new': 'جدید',
+  'hl.name': 'عنوان',
+  'hl.add': 'افزودن عکس',
+  'hl.save': 'ذخیره',
+  'hl.delete': 'حذف',
+  'hl.edit': 'ویرایش',
+  'hl.plain': 'با حروف ساده بنویسید (بدون فونت فانتزی)',
 }
 
 export default fa

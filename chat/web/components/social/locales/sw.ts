@@ -129,6 +129,14 @@ const sw: SocialDict = {
   'contacts.sharedToast': '{name} sasa anaweza kuona mawasiliano yako',
   'contacts.stoppedToast': 'Umeacha kushiriki na {name}',
   'contacts.copied': 'Imenakiliwa',
+  'hl.title': 'Vivutio',
+  'hl.new': 'Mpya',
+  'hl.name': 'Kichwa',
+  'hl.add': 'Ongeza picha',
+  'hl.save': 'Hifadhi',
+  'hl.delete': 'Futa',
+  'hl.edit': 'Hariri',
+  'hl.plain': 'Tumia herufi za kawaida (si fonti za mapambo)',
 }
 
 export default sw

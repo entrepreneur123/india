@@ -137,6 +137,14 @@ const ar: SocialDict = {
   'contacts.sharedToast': 'يمكن لـ{name} الآن رؤية جهات اتصالك',
   'contacts.stoppedToast': 'أوقفت المشاركة مع {name}',
   'contacts.copied': 'تم النسخ',
+  'hl.title': 'اللقطات المميزة',
+  'hl.new': 'جديد',
+  'hl.name': 'العنوان',
+  'hl.add': 'إضافة صور',
+  'hl.save': 'حفظ',
+  'hl.delete': 'حذف',
+  'hl.edit': 'تعديل',
+  'hl.plain': 'اكتب بأحرف عادية (بدون خطوط مزخرفة)',
 }
 
 export default ar

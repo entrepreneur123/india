@@ -123,6 +123,14 @@ const te: SocialDict = {
   'contacts.sharedToast': '{name} ఇప్పుడు మీ కాంటాక్ట్‌లను చూడగలరు',
   'contacts.stoppedToast': '{name}తో షేర్ చేయడం ఆపేశారు',
   'contacts.copied': 'కాపీ అయింది',
+  'hl.title': 'హైలైట్స్',
+  'hl.new': 'కొత్తది',
+  'hl.name': 'శీర్షిక',
+  'hl.add': 'ఫోటోలు జోడించండి',
+  'hl.save': 'సేవ్ చేయండి',
+  'hl.delete': 'తొలగించండి',
+  'hl.edit': 'మార్చండి',
+  'hl.plain': 'సాధారణ అక్షరాల్లో రాయండి (ఫ్యాన్సీ ఫాంట్ వద్దు)',
 }
 
 export default te

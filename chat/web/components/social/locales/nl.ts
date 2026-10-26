@@ -123,6 +123,14 @@ const nl: SocialDict = {
   'contacts.sharedToast': '{name} kan nu je contacten zien',
   'contacts.stoppedToast': 'Je deelt niet meer met {name}',
   'contacts.copied': 'Gekopieerd',
+  'hl.title': 'Hoogtepunten',
+  'hl.new': 'Nieuw',
+  'hl.name': 'Titel',
+  'hl.add': 'Foto’s toevoegen',
+  'hl.save': 'Opslaan',
+  'hl.delete': 'Verwijderen',
+  'hl.edit': 'Bewerken',
+  'hl.plain': 'Gebruik gewone letters (geen sierlettertypes)',
 }
 
 export default nl

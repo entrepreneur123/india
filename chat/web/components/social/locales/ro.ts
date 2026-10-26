@@ -125,6 +125,14 @@ const ro: SocialDict = {
   'contacts.sharedToast': '{name} îți poate vedea acum contactele',
   'contacts.stoppedToast': 'Nu mai împărtășești cu {name}',
   'contacts.copied': 'Copiat',
+  'hl.title': 'Evidențieri',
+  'hl.new': 'Nou',
+  'hl.name': 'Titlu',
+  'hl.add': 'Adaugă fotografii',
+  'hl.save': 'Salvează',
+  'hl.delete': 'Șterge',
+  'hl.edit': 'Editează',
+  'hl.plain': 'Folosește litere obișnuite (fără fonturi decorative)',
 }
 
 export default ro

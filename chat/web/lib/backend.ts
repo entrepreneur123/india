@@ -189,6 +189,16 @@ export interface ProfilePhoto {
   url: string
 }
 
+/** 057: a titled album on the profile (up to MAX_HIGHLIGHTS, each 1–MAX_HIGHLIGHT_PHOTOS photos). */
+export interface Highlight {
+  id: string
+  title: string
+  photos: ProfilePhoto[]
+}
+export const MAX_HIGHLIGHTS = 10
+export const MAX_HIGHLIGHT_PHOTOS = 10
+export const HIGHLIGHT_TITLE_MAX = 20
+
 // ---- notifications (023_notifications.sql) ----
 
 /** 'call' (053): a friend asked me for a call (read once it is answered, declined or over). */
@@ -743,6 +753,10 @@ export interface Backend {
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
   addProfilePhoto(photo: File): Promise<Profile>
   removeProfilePhoto(id: string): Promise<Profile>
+  highlights(userId: string): Promise<Highlight[]>
+  /** `id` null: a new one. `keep`: photo ids already in it, in order; `add`: new photos (checked for nudity before). */
+  saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }): Promise<void>
+  deleteHighlight(id: string): Promise<void>
   /** Sets the whole style: status, languages, prompts. */
   setProfileStyle(style: ProfileStyleInput): Promise<Profile>
   // ---- posts, likes, comments (033) ----

@@ -129,6 +129,14 @@ const ja: SocialDict = {
   'contacts.sharedToast': '{name}さんがあなたの連絡先を見られるようになりました',
   'contacts.stoppedToast': '{name}さんへの共有をやめました',
   'contacts.copied': 'コピーしました',
+  'hl.title': 'ハイライト',
+  'hl.new': '新規',
+  'hl.name': 'タイトル',
+  'hl.add': '写真を追加',
+  'hl.save': '保存',
+  'hl.delete': '削除',
+  'hl.edit': '編集',
+  'hl.plain': '普通の文字で書いてください（装飾フォント不可）',
 }
 
 export default ja

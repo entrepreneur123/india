@@ -17,6 +17,7 @@ import { InterestChips } from '@/components/social/bits'
 import { FriendContacts } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
 import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
+import { Highlights } from '@/components/social/highlights'
 import { useTrust } from '@/components/trust/badge'
 import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
 import { isVip } from '@/lib/looks'
@@ -222,6 +223,7 @@ export function ProfileContent({
         <p className="mt-3 text-sm text-muted-foreground">{plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
         {actions ? <div className="mt-5 flex w-full max-w-sm gap-2">{actions}</div> : null}
       </div>
+      <Highlights userId={profile.id} owner={profile.name} className="mt-6" />
       {children}
       <MannerCard trust={trust} className="mx-4 mt-6" />
       {profile.style?.prompts.length ? <PromptCards prompts={profile.style.prompts} accent={profile.style.accent} className="mt-6 px-4" /> : null}

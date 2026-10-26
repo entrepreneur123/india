@@ -129,6 +129,14 @@ const id: SocialDict = {
   'contacts.sharedToast': '{name} sekarang bisa melihat kontakmu',
   'contacts.stoppedToast': 'Berhenti membagikan ke {name}',
   'contacts.copied': 'Disalin',
+  'hl.title': 'Sorotan',
+  'hl.new': 'Baru',
+  'hl.name': 'Judul',
+  'hl.add': 'Tambah foto',
+  'hl.save': 'Simpan',
+  'hl.delete': 'Hapus',
+  'hl.edit': 'Edit',
+  'hl.plain': 'Gunakan huruf biasa (tanpa font hias)',
 }
 
 export default id

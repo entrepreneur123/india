@@ -132,6 +132,14 @@ const he: SocialDict = {
   'contacts.sharedToast': '{name} יכול/ה עכשיו לראות את פרטי הקשר שלך',
   'contacts.stoppedToast': 'השיתוף עם {name} הופסק',
   'contacts.copied': 'הועתק',
+  'hl.title': 'הדגשות',
+  'hl.new': 'חדש',
+  'hl.name': 'כותרת',
+  'hl.add': 'הוספת תמונות',
+  'hl.save': 'שמירה',
+  'hl.delete': 'מחיקה',
+  'hl.edit': 'עריכה',
+  'hl.plain': 'כתבו באותיות רגילות (בלי גופנים מעוצבים)',
 }
 
 export default he

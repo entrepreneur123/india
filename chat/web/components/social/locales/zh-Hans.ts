@@ -130,6 +130,14 @@ const zhHans: SocialDict = {
   'contacts.sharedToast': '{name} 现在可以看到你的联系方式了',
   'contacts.stoppedToast': '已停止向 {name} 分享',
   'contacts.copied': '已复制',
+  'hl.title': '精选',
+  'hl.new': '新建',
+  'hl.name': '标题',
+  'hl.add': '添加照片',
+  'hl.save': '保存',
+  'hl.delete': '删除',
+  'hl.edit': '编辑',
+  'hl.plain': '请使用普通文字（不能用花式字体）',
 }
 
 export default zhHans

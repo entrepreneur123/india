@@ -24,6 +24,7 @@ import {
   type MyTrust,
   type Trust,
   MAX_PHOTOS,
+  type Highlight,
   type Gender,
   type Match,
   type MatchEvent,
@@ -1081,6 +1082,27 @@ export class SupabaseBackend implements Backend {
     const now = await this.mine()
     await this.rpc('set_photos', { p_paths: (now.photos ?? []).map((p) => p.id).filter((x) => x !== id) })
     return this.mine()
+  }
+
+  async highlights(userId: string): Promise<Highlight[]> {
+    const rows = (await this.rpc<{ id: number; title: string; photos: string[] }[] | null>('highlights_of', { p_user: userId })) ?? []
+    await this.signMany(rows.flatMap((r) => r.photos))
+    return rows.map((r) => ({
+      id: String(r.id), title: r.title,
+      photos: r.photos.flatMap((id) => {
+        const url = this.signedUrls.get(id)?.url
+        return url ? [{ id, url }] : []
+      }),
+    }))
+  }
+
+  async saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }) {
+    const added = await Promise.all(h.add.map((f) => this.upload(f, 'avatar')))
+    await this.rpc('save_highlight', { p_id: h.id === null ? null : Number(h.id), p_title: h.title, p_photos: [...h.keep, ...added] })
+  }
+
+  async deleteHighlight(id: string) {
+    await this.rpc('delete_highlight', { p_id: Number(id) })
   }
 
   async setProfileStyle(style: ProfileStyleInput) {

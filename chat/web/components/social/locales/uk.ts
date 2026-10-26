@@ -134,6 +134,14 @@ const uk: SocialDict = {
   'contacts.sharedToast': 'Тепер {name} бачить ваші контакти',
   'contacts.stoppedToast': 'Ви більше не ділитеся: {name}',
   'contacts.copied': 'Скопійовано',
+  'hl.title': 'Актуальне',
+  'hl.new': 'Нове',
+  'hl.name': 'Назва',
+  'hl.add': 'Додати фото',
+  'hl.save': 'Зберегти',
+  'hl.delete': 'Видалити',
+  'hl.edit': 'Редагувати',
+  'hl.plain': 'Пишіть звичайними літерами (без декоративних шрифтів)',
 }
 
 export default uk

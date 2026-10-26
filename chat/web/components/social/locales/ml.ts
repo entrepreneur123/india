@@ -123,6 +123,14 @@ const ml: SocialDict = {
   'contacts.sharedToast': '{name}-ന് ഇപ്പോൾ നിങ്ങളുടെ കോൺടാക്റ്റുകൾ കാണാം',
   'contacts.stoppedToast': '{name}-മായുള്ള പങ്കിടൽ നിർത്തി',
   'contacts.copied': 'പകർത്തി',
+  'hl.title': 'ഹൈലൈറ്റുകൾ',
+  'hl.new': 'പുതിയത്',
+  'hl.name': 'തലക്കെട്ട്',
+  'hl.add': 'ഫോട്ടോകൾ ചേർക്കുക',
+  'hl.save': 'സേവ് ചെയ്യുക',
+  'hl.delete': 'ഇല്ലാതാക്കുക',
+  'hl.edit': 'മാറ്റുക',
+  'hl.plain': 'സാധാരണ അക്ഷരങ്ങളിൽ എഴുതുക (ഫാൻസി ഫോണ്ട് വേണ്ട)',
 }
 
 export default ml

@@ -124,6 +124,14 @@ const ptBR: SocialDict = {
   'contacts.sharedToast': '{name} agora pode ver seus contatos',
   'contacts.stoppedToast': 'Você parou de compartilhar com {name}',
   'contacts.copied': 'Copiado',
+  'hl.title': 'Destaques',
+  'hl.new': 'Novo',
+  'hl.name': 'Título',
+  'hl.add': 'Adicionar fotos',
+  'hl.save': 'Salvar',
+  'hl.delete': 'Excluir',
+  'hl.edit': 'Editar',
+  'hl.plain': 'Use letras normais (sem fontes decorativas)',
 }
 
 export default ptBR

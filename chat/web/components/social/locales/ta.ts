@@ -123,6 +123,14 @@ const ta: SocialDict = {
   'contacts.sharedToast': '{name} இப்போது உங்கள் தொடர்புகளைப் பார்க்கலாம்',
   'contacts.stoppedToast': '{name} உடன் பகிர்வது நிறுத்தப்பட்டது',
   'contacts.copied': 'நகலெடுக்கப்பட்டது',
+  'hl.title': 'ஹைலைட்ஸ்',
+  'hl.new': 'புதியது',
+  'hl.name': 'தலைப்பு',
+  'hl.add': 'படங்களைச் சேர்',
+  'hl.save': 'சேமி',
+  'hl.delete': 'நீக்கு',
+  'hl.edit': 'திருத்து',
+  'hl.plain': 'சாதாரண எழுத்துகளில் எழுதுங்கள் (ஃபேன்சி எழுத்துரு வேண்டாம்)',
 }
 
 export default ta

@@ -118,6 +118,14 @@ const mr: SocialDict = {
   'contacts.sharedToast': '{name} आता तुमचे संपर्क पाहू शकतात',
   'contacts.stoppedToast': '{name} सोबत शेअर करणे थांबवले',
   'contacts.copied': 'कॉपी झाले',
+  'hl.title': 'हायलाइट्स',
+  'hl.new': 'नवीन',
+  'hl.name': 'शीर्षक',
+  'hl.add': 'फोटो जोडा',
+  'hl.save': 'सेव्ह करा',
+  'hl.delete': 'हटवा',
+  'hl.edit': 'बदला',
+  'hl.plain': 'साध्या अक्षरांत लिहा (फॅन्सी फॉन्ट नको)',
 }
 
 export default mr

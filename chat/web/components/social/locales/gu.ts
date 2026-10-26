@@ -118,6 +118,14 @@ const gu: SocialDict = {
   'contacts.sharedToast': '{name} હવે તમારા સંપર્કો જોઈ શકે છે',
   'contacts.stoppedToast': '{name} સાથે શેર કરવાનું બંધ કર્યું',
   'contacts.copied': 'કૉપિ થયું',
+  'hl.title': 'હાઇલાઇટ્સ',
+  'hl.new': 'નવું',
+  'hl.name': 'શીર્ષક',
+  'hl.add': 'ફોટા ઉમેરો',
+  'hl.save': 'સેવ કરો',
+  'hl.delete': 'કાઢી નાખો',
+  'hl.edit': 'બદલો',
+  'hl.plain': 'સાદા અક્ષરોમાં લખો (ફેન્સી ફોન્ટ નહીં)',
 }
 
 export default gu

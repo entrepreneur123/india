@@ -130,6 +130,14 @@ const tr: SocialDict = {
   'contacts.sharedToast': '{name} artık bağlantılarını görebilir',
   'contacts.stoppedToast': 'Paylaşım durduruldu: {name}',
   'contacts.copied': 'Kopyalandı',
+  'hl.title': 'Öne Çıkanlar',
+  'hl.new': 'Yeni',
+  'hl.name': 'Başlık',
+  'hl.add': 'Fotoğraf ekle',
+  'hl.save': 'Kaydet',
+  'hl.delete': 'Sil',
+  'hl.edit': 'Düzenle',
+  'hl.plain': 'Normal harfler kullan (süslü yazı tipi olmaz)',
 }
 
 export default tr

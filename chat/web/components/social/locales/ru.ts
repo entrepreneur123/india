@@ -134,6 +134,14 @@ const ru: SocialDict = {
   'contacts.sharedToast': 'Теперь {name} видит ваши контакты',
   'contacts.stoppedToast': 'Вы больше не делитесь: {name}',
   'contacts.copied': 'Скопировано',
+  'hl.title': 'Актуальное',
+  'hl.new': 'Новое',
+  'hl.name': 'Название',
+  'hl.add': 'Добавить фото',
+  'hl.save': 'Сохранить',
+  'hl.delete': 'Удалить',
+  'hl.edit': 'Изменить',
+  'hl.plain': 'Пишите обычными буквами (без декоративных шрифтов)',
 }
 
 export default ru

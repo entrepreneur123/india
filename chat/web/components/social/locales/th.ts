@@ -129,6 +129,14 @@ const th: SocialDict = {
   'contacts.sharedToast': 'ตอนนี้ {name} เห็นช่องทางติดต่อของคุณแล้ว',
   'contacts.stoppedToast': 'หยุดแชร์กับ {name} แล้ว',
   'contacts.copied': 'คัดลอกแล้ว',
+  'hl.title': 'ไฮไลต์',
+  'hl.new': 'สร้างใหม่',
+  'hl.name': 'ชื่อ',
+  'hl.add': 'เพิ่มรูปภาพ',
+  'hl.save': 'บันทึก',
+  'hl.delete': 'ลบ',
+  'hl.edit': 'แก้ไข',
+  'hl.plain': 'ใช้ตัวอักษรธรรมดา (ห้ามใช้ฟอนต์ตกแต่ง)',
 }
 
 export default th

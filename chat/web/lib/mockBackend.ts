@@ -6,6 +6,8 @@ import {
   type IncomingCall,
   type Interest,
   MAX_PHOTOS,
+  MAX_HIGHLIGHTS,
+  type Highlight,
   type RoomQuery,
   type Entitlements,
   type FeedPost,
@@ -1023,6 +1025,28 @@ export class MockBackend implements Backend {
     await wait(600)
     this.me = { ...this.me, photos: [...photos, { id: `me_${uid()}`, url: URL.createObjectURL(photo) }] }
     return { ...this.me }
+  }
+
+  private myHighlights: Highlight[] = []
+
+  async highlights(userId: string) {
+    await wait(200)
+    return userId === this.me?.id ? this.myHighlights.map((h) => ({ ...h })) : []
+  }
+
+  async saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }) {
+    await wait(500)
+    const old = this.myHighlights.find((x) => x.id === h.id)
+    if (h.id !== null && !old) throw new BackendError('not_found')
+    if (h.id === null && this.myHighlights.length >= MAX_HIGHLIGHTS) throw new BackendError('not_allowed')
+    const photos = [...(old?.photos ?? []).filter((p) => h.keep.includes(p.id)), ...h.add.map((f) => ({ id: `hl_${uid()}`, url: URL.createObjectURL(f) }))]
+    const next = { id: h.id ?? `hl_${uid()}`, title: h.title.trim(), photos }
+    this.myHighlights = old ? this.myHighlights.map((x) => (x === old ? next : x)) : [...this.myHighlights, next]
+  }
+
+  async deleteHighlight(id: string) {
+    await wait(200)
+    this.myHighlights = this.myHighlights.filter((x) => x.id !== id)
   }
 
   async removeProfilePhoto(id: string) {

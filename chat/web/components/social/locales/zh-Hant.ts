@@ -130,6 +130,14 @@ const zhHant: SocialDict = {
   'contacts.sharedToast': '{name} 現在可以看到你的聯絡方式了',
   'contacts.stoppedToast': '已停止向 {name} 分享',
   'contacts.copied': '已複製',
+  'hl.title': '精選',
+  'hl.new': '新增',
+  'hl.name': '標題',
+  'hl.add': '新增照片',
+  'hl.save': '儲存',
+  'hl.delete': '刪除',
+  'hl.edit': '編輯',
+  'hl.plain': '請使用一般文字（不能用花式字體）',
 }
 
 export default zhHant

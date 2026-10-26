@@ -129,6 +129,14 @@ const ms: SocialDict = {
   'contacts.sharedToast': '{name} kini boleh melihat kenalan anda',
   'contacts.stoppedToast': 'Berhenti berkongsi dengan {name}',
   'contacts.copied': 'Disalin',
+  'hl.title': 'Sorotan',
+  'hl.new': 'Baharu',
+  'hl.name': 'Tajuk',
+  'hl.add': 'Tambah foto',
+  'hl.save': 'Simpan',
+  'hl.delete': 'Padam',
+  'hl.edit': 'Edit',
+  'hl.plain': 'Guna huruf biasa (tiada fon hiasan)',
 }
 
 export default ms
