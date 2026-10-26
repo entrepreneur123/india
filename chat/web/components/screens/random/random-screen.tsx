@@ -400,6 +400,7 @@ export function RandomScreen({ active }: { active: boolean }) {
                   startedAt={match.startedAt}
                   onExit={() => setChoiceOpen(true)}
                   onEnd={(next) => void leave(next, true)}
+                  onLeave={(next) => void leave(next)}
                   onReported={closeChat}
                   onMinimise={minimiseRandom}
                   onStatus={setStatus}

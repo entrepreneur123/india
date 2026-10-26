@@ -49,6 +49,7 @@ export function ChatView({
   startedAt,
   onExit,
   onEnd,
+  onLeave,
   onClose,
   onReported,
   onMinimise,
@@ -66,6 +67,8 @@ export function ChatView({
   onExit?: () => void
   /** Random only, after the partner left: straight to the next person (`true`) or back to the lobby. */
   onEnd?: (next: boolean) => void
+  /** Random only: "/n" (next person) or "/r" (lobby) typed in the chat; the exit lock still applies. */
+  onLeave?: (next: boolean) => void
   /** Thread only: back arrow. */
   onClose?: () => void
   /** The person was reported (and blocked); the chat is over. */
@@ -89,6 +92,19 @@ export function ChatView({
   const listRef = useRef<HTMLUListElement>(null)
   const stickToBottom = useRef(true)
   const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
+  // "/n" = next, "/r" = lobby (random chats): never sent as a message; inside the exit lock only the lock's notice.
+  const send = async (text: string | null, media: File | null) => {
+    const cmd = mode === 'random' && !media ? text?.trim().toLowerCase() : null
+    if (cmd !== '/n' && cmd !== '/r') return chat.send(text, media)
+    if (!chat.partnerLeft && Date.now() - (startedAt ?? 0) < lockMs) {
+      toast.show(t('error.exit_locked'))
+      return false
+    }
+    // After the partner left there is nothing to leave on the server.
+    const go = chat.partnerLeft ? onEnd : onLeave
+    go?.(cmd === '/n')
+    return true
+  }
   const { st } = useSocialT()
   // 046: my chat wall, behind the messages and the text box (only I see it).
   const wall = wallVars(useShop().data?.wall)
@@ -312,7 +328,7 @@ export function ChatView({
           <FriendsBar name={partner.name} f={friendship} />
         ) : (
           <Composer
-            onSend={chat.send}
+            onSend={send}
             onTyping={chat.notifyTyping}
             allowMedia={live}
             placeholder={live ? t('chat.placeholder') : t('chat.messageTo', { name: partner.name })}
