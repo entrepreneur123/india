@@ -1,6 +1,6 @@
 -- The owner, 2026-10-25:
--- 1. One country per person: random chat, rooms, ID search and friend requests only reach people of the same country
---    (profiles.country: the verified phone number's, or the identity document's). The "countries to meet" choice of
+-- 1. One country per person for random chat and rooms (profiles.country: the verified phone number's, or the identity
+--    document's). Explore, ID search, friend requests and messages reach every country (the owner, 2026-10-26). The "countries to meet" choice of
 --    043 is gone (find_match3 ignores p_countries, queue.want dropped); bots too only match their own country. The
 --    "N online" count is the count of my country. Friendships made before stay.
 -- 2. Age by country: adult_age() is the age of majority where Google Play's "block minors" (random chat apps, policy of
@@ -213,53 +213,6 @@ begin
     from v
    order by v.host = me desc, v.members desc, v.created_at desc
    limit 100;
-end $$;
-
-create or replace function public.request_friend(p_user uuid) returns text
-language plpgsql security definer set search_path = '' as $$
-declare me uuid := auth.uid();
-begin
-  if me is null or p_user = me then raise exception 'bad_request' using errcode = 'P0001'; end if;
-  perform pg_advisory_xact_lock(hashtext('friend:' || me::text));
-  perform public.require_verified(me);
-  if not public.can_view(p_user)
-     or (select a.country from public.profiles a where a.id = me) is distinct from (select b.country from public.profiles b where b.id = p_user) then
-    raise exception 'not_allowed' using errcode = 'P0001';
-  end if;
-  if public.are_friends(me, p_user) then return 'friends'; end if;
-  update public.friendships set status = 'accepted' where requester = p_user and addressee = me;
-  if found then return 'friends'; end if;
-  if (select count(*) from public.friendships f where f.requester = me and f.status = 'pending'
-        and f.created_at > now() - interval '1 day') >= 50 then
-    raise exception 'slow_down' using errcode = 'P0001';
-  end if;
-  insert into public.friendships (requester, addressee) values (me, p_user) on conflict do nothing;
-  return 'requested';
-end $$;
-
-create or replace function public.search_handles(p_q text)
-returns table (id uuid, handle text, name text, photo_path text, country text, look jsonb)
-language plpgsql security definer set search_path = '' as $$
-declare me uuid := auth.uid();
-  q text := lower(normalize(ltrim(btrim(coalesce(p_q, '')), '@'), NFC));
-begin
-  if me is null then raise exception 'not_signed_in' using errcode = 'P0001'; end if;
-  if q = '' or char_length(q) > 30 then return; end if;
-  if (select count(*) from public.handle_lookups l where l.viewer = me and l.at > now() - interval '1 hour') >= 600 then
-    raise exception 'slow_down' using errcode = 'P0001';
-  end if;
-  return query
-    with hit as (
-      select p.id, p.handle, p.name, p.photo_path, p.country, public.look_json(p) as look from public.profiles p
-       where lower(p.handle) collate "C" like replace(replace(replace(q, '\', '\\'), '%', '\%'), '_', '\_') || '%'
-         and p.country = (select x.country from public.profiles x where x.id = me)
-         and p.id <> me and not p.anon and (p.banned_until is null or p.banned_until < now()) and not public.is_blocked(me, p.id)
-       order by lower(p.handle) collate "C" limit 20
-    ), seen as (
-      insert into public.handle_lookups (viewer, other) select me, h.id from hit h
-      on conflict (viewer, other) do update set at = now()
-    )
-    select h.id, h.handle, h.name, h.photo_path, h.country, h.look from hit h order by lower(h.handle) collate "C";
 end $$;
 
 -- "N online" = people of my country seen in the last minute (app, queue or a room), counted every 10 s for all.
