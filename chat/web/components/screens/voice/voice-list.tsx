@@ -105,7 +105,8 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
   // A password isn't a no: the card opens the password prompt (058).
   const locked = room.refusal === 'room_password' && !here
   const blocked = !!room.refusal && !locked && !here
-  const conditions = roomConditions(room, t, false)
+  // The rule that keeps me out is shown once, in red, not again among the others.
+  const conditions = roomConditions(room, t, false).filter((c) => !blocked || c !== refusalLabel(room, t))
   return (
     <button
       type="button"

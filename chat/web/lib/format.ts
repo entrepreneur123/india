@@ -30,8 +30,12 @@ export function clockTime(at: number, locale: string) {
   return new Date(at).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
 }
 
+/**
+ * Counts: whole below 100,000 ("2,400"), short above ("1.2L", "250万"). Short thousands read wrongly in places: newer
+ * browsers write 2,400 as "2.4T" in Indian English, which looks like trillions.
+ */
 export function compactNumber(n: number, locale: string) {
-  return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+  return new Intl.NumberFormat(locale, Math.abs(n) < 100_000 ? undefined : { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 }
 
 const ERROR_CODES = new Set([
