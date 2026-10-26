@@ -1,6 +1,6 @@
 -- The owner, 2026-10-25:
 -- 1. One country per person for random chat and rooms (profiles.country: the verified phone number's, or the identity
---    document's). Explore, ID search, friend requests and messages reach every country (the owner, 2026-10-26). The "countries to meet" choice of
+--    document's). Explore, ID search, friend requests, messages and rooms (28) reach every country (the owner, 2026-10-26). The "countries to meet" choice of
 --    043 is gone (queue.want dropped): random chat is my country or everyone (below); bots follow the same rule. The
 --    "N online" count is the count of my country. Friendships made before stay.
 -- 2. Age by country: adult_age() is the age of majority where Google Play's "block minors" (random chat apps, policy of
@@ -9,7 +9,9 @@
 -- 3. IDs exactly like Instagram's: lower-case a-z, digits, "." and "_", 2-30 long, no "." at either end, no "..".
 --    Typed capitals are lowered (handle_check, set_handle). All 505 existing IDs already fit (checked 2026-10-25).
 -- 4. No free fonts: bio, status and prompt answers get name_plain() like names (fancy-font letters are a look you buy).
--- 5. Nothing is dropped here (a drop needs the owner's confirmation in the database tool): the unused find_match /
+-- 5. Meeting again (30, the owner, 2026-10-26): the last partner only after both waited 5 seconds (was 10), and anyone
+--    met before (my last 200 chats) comes after everyone new who is searching at the same time.
+-- 6. Nothing is dropped here (a drop needs the owner's confirmation in the database tool): the unused find_match /
 --    find_match2, queue.want, app_stats.online and set_country go in 063. profiles_handle_check keeps its free-ID
 --    patterns; handle_valid itself is the new rule.
 
@@ -33,7 +35,7 @@ declare
   want_global boolean := coalesce(cardinality(p_countries), 0) = 0;
   m public.matches;
   mid uuid;
-  last_partner uuid;
+  met uuid[];
   partner uuid;
 begin
   if me is null then raise exception 'not_signed_in' using errcode = 'P0001'; end if;
@@ -62,8 +64,12 @@ begin
     update public.matches set ended_at = now(), ended_by = me, video_status = 'none' where id = m.id;
   end loop;
 
-  select case when x.user_a = me then x.user_b else x.user_a end into last_partner
-    from public.matches x where me in (x.user_a, x.user_b) order by x.created_at desc limit 1;
+  -- The people of my last 200 chats, newest first (30, the owner: they come after everyone new; met[1] is the last one).
+  select array_agg(t.p order by t.at desc) into met from (
+    (select x.user_b as p, x.created_at as at from public.matches x where x.user_a = me order by x.created_at desc limit 200)
+    union all
+    (select x.user_a, x.created_at from public.matches x where x.user_b = me order by x.created_at desc limit 200)
+  ) t;
 
   insert into public.queue as q (user_id, gender, target, lang, interests, country, global)
   values (me, my_gender, p_target, my_lang, my_tags, my_country, want_global)
@@ -91,11 +97,12 @@ begin
      and (q.target = 'any' or q.target = my_gender)
      and not exists (select 1 from public.blocks b where b.blocker = me and b.blocked = q.user_id)
      and not exists (select 1 from public.blocks b where b.blocker = q.user_id and b.blocked = me)
-     and (q.user_id is distinct from last_partner
-          or (my_since < now() - interval '10 seconds' and q.joined_at < now() - interval '10 seconds'))
+     and (q.user_id is distinct from met[1]
+          or (my_since < now() - interval '5 seconds' and q.joined_at < now() - interval '5 seconds'))
      and (my_lang is null or q.lang is null or q.lang = my_lang
           or my_since < now() - interval '8 seconds' or q.joined_at < now() - interval '8 seconds')
-   order by (q.lang is not distinct from my_lang) desc,
+   order by coalesce(q.user_id = any(met), false),
+            (q.lang is not distinct from my_lang) desc,
             (coalesce(q.interests && my_tags, false) or q.joined_at < now() - interval '10 seconds') desc,
             q.joined_at
    limit 1
@@ -142,36 +149,21 @@ begin
   end loop;
 end $$;
 
--- Rooms: a room is its host's country. Entering one of another country (code, link, invite) is 'not_allowed'.
-create or replace function public.voice_refusal(r public.voice_rooms, me uuid, p_here boolean) returns text
-language plpgsql stable security definer set search_path = '' as $$
-declare p public.profiles; my_age int;
-begin
- if r.host = me then return null; end if;
- if r.ended_at is not null then return 'room_closed'; end if;
- if public.is_blocked(me, r.host) then return 'not_allowed'; end if;
- select * into p from public.profiles x where x.id = me;
- if (select h.country from public.profiles h where h.id = r.host) is distinct from p.country then return 'not_allowed'; end if;
- my_age := extract(year from age(p.birth_date))::int;
- if r.gender_rule <> 'any' and p.gender is distinct from r.gender_rule then return 'room_gender'; end if;
- if my_age < r.min_age or my_age > r.max_age then return 'room_age'; end if;
- if not p_here and (select count(*) from public.voice_members m where m.room_id = r.id and m.user_id <> me
- and m.left_at is null and not m.kicked and m.seen_at > now() - interval '90 seconds') >= r.max_members then
- return 'room_full';
- end if;
- return null;
-end $$;
-
-create or replace function public.voice_list3(p_query text default null, p_lang text default null, p_category text default null)
+-- Rooms (28, the owner, 2026-10-26): no categories, every room is its host's country (the host card's, so it follows a
+-- new host) and anyone may enter any country's room. voice_list4 lists them: my country's first; p_countries (null or
+-- empty = all) keeps only those countries; p_locked false leaves out rooms with a password (058) I'm not in.
+-- voice_list3 stays for installed apps (everything, as before).
+create or replace function public.voice_list4(p_query text default null, p_lang text default null, p_countries text[] default null,
+  p_locked boolean default true)
 returns table (id text, title text, category text, mine boolean, host jsonb, speakers jsonb, listeners int, members int,
   now_playing text, game text, max_members int, gender_rule text, min_age int, max_age int, is_private boolean,
   announcement text, code text, refusal text, lang text)
 language plpgsql security definer set search_path = '' as $$
 #variable_conflict use_column
 declare me uuid := auth.uid(); q text := nullif(btrim(coalesce(p_query, '')), ''); l text := public.voice_lang(p_lang);
-  cat text := case when p_category in ('talk', 'music', 'games') then p_category end;
+  cs text[] := nullif(p_countries, '{}');
 begin
-  if char_length(q) > 40 then raise exception 'bad_request' using errcode = 'P0001'; end if;
+  if char_length(q) > 40 or cardinality(cs) > 300 then raise exception 'bad_request' using errcode = 'P0001'; end if;
   if (select c.at from public.voice_list_cache c where c.id = 1) < now() - interval '5 seconds'
      and pg_try_advisory_xact_lock(hashtext('voice_list_refresh')) then
     perform public.voice_list_refresh();
@@ -193,13 +185,13 @@ begin
     select c.*, coalesce(k.present and (k.fresh or c.host = me), false) as here, k.seat as my_seat, coalesce(k.fresh, false) as my_fresh,
            coalesce(k.present, false) as inside
       from c join public.voice_rooms r on r.id = c.id and r.ended_at is null
-      join public.profiles h on h.id = c.host and h.country = (select p.country from p)
       left join k on k.room_id = c.id
      where not coalesce(k.kicked, false)
        and (not c.is_private or c.host = me or k.room_id is not null)
        and (q is null or strpos(lower(c.title), lower(q)) > 0)
        and (l is null or c.lang = l)
-       and (cat is null or c.category = cat)
+       and (cs is null or c.host_card->>'country' = any (cs))
+       and (coalesce(p_locked, true) or not coalesce(c.locked, false) or c.host = me or k.present)
        and not exists (select 1 from public.blocks b where b.blocker = me and b.blocked = c.host)
        and not exists (select 1 from public.blocks b where b.blocker = c.host and b.blocked = me)
   )
@@ -216,9 +208,19 @@ begin
          end,
          v.lang
     from v
-   order by v.host = me desc, v.members desc, v.created_at desc
+   order by v.host = me desc, v.host_card->>'country' is not distinct from (select p.country from p) desc, v.members desc, v.created_at desc
    limit 100;
 end $$;
+
+create or replace function public.voice_list3(p_query text default null, p_lang text default null, p_category text default null)
+returns table (id text, title text, category text, mine boolean, host jsonb, speakers jsonb, listeners int, members int,
+  now_playing text, game text, max_members int, gender_rule text, min_age int, max_age int, is_private boolean,
+  announcement text, code text, refusal text, lang text)
+language sql security definer set search_path = '' as $$
+  select * from public.voice_list4(p_query, p_lang)
+$$;
+revoke execute on function public.voice_list4(text, text, text[], boolean) from public, anon;
+grant execute on function public.voice_list4(text, text, text[], boolean) to authenticated;
 
 -- "N online" = people of my country seen in the last minute (app, queue or a room), counted every 10 s for all.
 alter table public.app_stats add column if not exists by_country jsonb not null default '{}';

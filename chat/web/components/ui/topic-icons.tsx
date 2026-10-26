@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 // cheap next to the rest of the UI). 24×24, solid rounded shapes in two tones: the main colour (var(--c)) and a
 // light tint of it (var(--cl)) for the secondary part. Topics are one grey (--glyph), reactions orange, likes red.
 
-/** A room category, plus the built-in rooms that have no category of their own. */
+/** The glyphs of rooms and the built-in rooms that have no topic of their own. */
 export type Topic = RoomCategory | 'globe' | 'memes'
 
 const M = 'var(--c)'
@@ -247,7 +247,7 @@ export function TopicTile({ topic, size = 44, className }: { topic: Topic; size?
   )
 }
 
-/** A rounded chip with the glyph and its label (Naver Map style category chips). */
+/** A rounded chip with the glyph and its label (Naver Map style chips). */
 export function TopicChip({ topic, label, className }: { topic: Topic; label: string; className?: string }) {
   return (
     <span

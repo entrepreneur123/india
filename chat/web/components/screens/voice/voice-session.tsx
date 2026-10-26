@@ -13,7 +13,7 @@ import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/l
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
 import { nextHost } from '@/lib/voice-lost'
 import { crowdChange, playRoomSound, type Crowd } from '@/lib/room-sounds'
-import { useReported } from '@/components/app-state'
+import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -128,6 +128,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
+  const { askRoomPassword } = useApp()
+  const askPassword = useRef(askRoomPassword)
+  askPassword.current = askRoomPassword
   const tRef = useRef(t)
   tRef.current = t
   const { rt } = useRoomT()
@@ -229,7 +232,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         if (alive) addLines(history)
       } catch (err) {
         if (!alive) return
-        if (errorCode(err) !== 'in_random_chat') toast.error(err) // a random chat has me now: nothing to say
+        const code = errorCode(err)
+        if (code === 'room_password') askPassword.current(roomId)
+        else if (code !== 'in_random_chat') toast.error(err) // a random chat has me now: nothing to say
         gone.current()
       }
     })()

@@ -2,30 +2,26 @@
 
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { KeyRound, Plus, Search, X } from 'lucide-react'
-import type { RoomKind } from '@/lib/backend'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Segmented } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { TopicIcon } from '@/components/ui/topic-icons'
 import { VoiceRooms } from '@/components/screens/voice/voice-list'
 import { retryImport } from '@/lib/retry-import'
 import { RoomLangSelect } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
-import { CATEGORIES, categoryLabel, kindTopic } from './room-text'
+import { RoomFiltersButton, type RoomFilters } from './room-filters'
 
 // The create / enter-code forms download when first opened.
 const loadDialogs = () => retryImport(() => import('./room-dialogs'))
 const CreateRoomDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.CreateRoomDialog })))
 const JoinCodeDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.JoinCodeDialog })))
 
-export type RoomFilter = RoomKind | 'all'
-/** The last filters, for coming back to the tab in this visit. */
-let lastFilter: RoomFilter = 'all'
+/** The last search, for coming back to the tab in this visit. */
 let lastSearch = { text: '', lang: '' }
+let lastFilters: RoomFilters = { countries: [], locked: true }
 
-/** One kind of room: every room has chat, voice and music; its category (talk or music) sets the layout. */
+/** One kind of room (chat, voice and music); the search narrows by title, language, countries and passwords. */
 export function RoomsScreen() {
   const toast = useToast()
   const { t } = useI18n()
@@ -33,7 +29,7 @@ export function RoomsScreen() {
   const [createOpen, setCreateOpen] = useState(false)
   const [codeOpen, setCodeOpen] = useState(false)
   const [dialogsUsed, setDialogsUsed] = useState(false)
-  const [filter, setFilterState] = useState<RoomFilter>(lastFilter)
+  const [filters, setFiltersState] = useState(lastFilters)
   const { st } = useSocialT()
   const [text, setText] = useState(lastSearch.text)
   const [lang, setLang] = useState(lastSearch.lang)
@@ -46,9 +42,9 @@ export function RoomsScreen() {
     }, 300)
     return () => clearTimeout(id)
   }, [text, lang])
-  const setFilter = (f: RoomFilter) => {
-    lastFilter = f
-    setFilterState(f)
+  const setFilters = (f: RoomFilters) => {
+    lastFilters = f
+    setFiltersState(f)
   }
   const openCreate = () => {
     setDialogsUsed(true)
@@ -106,34 +102,14 @@ export function RoomsScreen() {
           <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={st('rooms.anyLang')} className="w-36 shrink-0 sm:w-56" />
         </div>
 
-        <div id="rooms-kind">
-          <Segmented
-            className="w-full sm:w-[28rem]"
-            label={t('rooms.filter')}
-            value={filter}
-            onChange={setFilter}
-            options={[
-              { value: 'all', label: t('rooms.all') },
-              ...CATEGORIES.map((c) => ({
-                value: c,
-                label: (
-                  <span className="flex min-w-0 items-center gap-1.5">
-                    <TopicIcon topic={kindTopic(c)} size={16} className="max-sm:hidden" />
-                    <span className="truncate">{categoryLabel(c, t)}</span>
-                  </span>
-                ),
-              })),
-            ]}
-          />
-        </div>
+        <RoomFiltersButton value={filters} onChange={setFilters} />
 
-        <VoiceRooms filter={filter} query={query} onCreate={openCreate} />
+        <VoiceRooms query={{ ...query, ...filters }} onCreate={openCreate} />
       </div>
       {dialogsUsed ? (
         <Suspense fallback={null}>
           <CreateRoomDialog
             open={createOpen}
-            initialCategory={filter === 'all' ? undefined : filter}
             onClose={() => setCreateOpen(false)}
             onCreated={(id, code, isPrivate) => {
               setCreateOpen(false)

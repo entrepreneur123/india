@@ -26,7 +26,6 @@ import { LinkOpenProvider, LinkPanel, LinkSheet, useWideScreen } from './link-vi
 import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
-import { useFollowLines } from '@/components/translate'
 import { LookName, useLook } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useShop } from '@/components/looks/use-shop'
@@ -133,8 +132,7 @@ export function ChatView({
     talked.current?.(both)
   }, [both])
 
-  // Follow new messages unless the user scrolled up to read older ones (also when a translation makes one taller).
-  useFollowLines(listRef, stickToBottom)
+  // Follow new messages unless the user scrolled up to read older ones.
   useLayoutEffect(() => {
     const el = listRef.current
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight

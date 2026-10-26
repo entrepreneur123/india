@@ -1,4 +1,4 @@
-// Pure language-tag helpers (no imports), shared by lib/i18n.ts and lib/translate.ts and unit-tested directly.
+// Pure language-tag helpers (no imports), used by lib/i18n.ts and unit-tested directly.
 
 /** The app's UI languages (BCP 47). A language works as soon as its file `lib/locales/<id>.ts` exists. */
 export const LANG_IDS = [

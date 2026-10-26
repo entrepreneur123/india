@@ -249,10 +249,15 @@ export interface Badges {
   chats: Record<string, number>
 }
 
-/** Room search: title words, the room's language (an app language) and its category; empty = everything. */
+/**
+ * Room search (28): title words, the room's language (an app language), the hosts' countries (empty = every country)
+ * and whether rooms with a password show; empty = everything.
+ */
 export interface RoomQuery {
   text?: string
   lang?: string | null
+  countries?: string[]
+  locked?: boolean
 }
 
 export interface Message {
@@ -327,16 +332,10 @@ export interface FriendContacts {
 /** Topics the room glyphs are drawn for (components/ui/topic-icons.tsx). */
 export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' | 'gaming' | 'sports' | 'study' | 'travel' | 'night'
 /** Why I can't enter a room (null/absent = I can). */
-export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed'
+export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed' | 'room_password'
 
 // ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos, polls), a
-// stage of seats with an audience and shared music; its category sets the layout and one signature feature. ----
-
-/**
- * Talk: chat first, icebreakers. Music: the player first, song requests by vote. Games are gone (029): the server
- * makes 'games' a talk room, and the apps read any category they don't know as talk.
- */
-export type RoomKind = 'talk' | 'music'
+// stage of seats with an audience and shared music. No categories (28): a room is its host's country. ----
 
 /**
  * Co-hosts (036) can invite, move and mute people, run the music and pin a page; they remove listeners and speakers
@@ -405,7 +404,6 @@ export interface RoomRules {
 export interface VoiceRoomSummary extends RoomRules {
   id: string
   title: string
-  category: RoomKind
   host: Profile
   /** Up to 4 people on the stage, the host first (empty: a chat-only room right now). */
   speakers: Profile[]
@@ -425,7 +423,6 @@ export interface VoiceRoomSummary extends RoomRules {
 export interface VoiceRoom extends RoomRules {
   id: string
   title: string
-  category: RoomKind
   mode: SpeakMode
   hostId: string
   meId: string
@@ -433,10 +430,12 @@ export interface VoiceRoom extends RoomRules {
   seats: VoiceSeat[]
   track: VoiceTrack | null
   queue: VoiceQueueItem[]
-  /** Pinned at the top by the host. */
+  /** The notice the host or a co-host pinned at the top (27). */
   announcement: string | null
   /** The room's 6-character code, for its host only. */
   code: string | null
+  /** 058: the room's password, for its host only (null: none). */
+  password: string | null
   lang: string | null
   /** 036: the web page the host or a co-host shows everyone next to the chat (null: none). */
   stage: VoiceStage | null
@@ -465,7 +464,6 @@ export interface LinkMeta {
 
 export interface NewVoiceRoom extends RoomRules {
   title: string
-  category: RoomKind
   announcement: string
   /** The language the room speaks (the app language by default). */
   lang: string
@@ -474,7 +472,7 @@ export interface NewVoiceRoom extends RoomRules {
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
 export type VoiceReaction = 'heart' | 'laugh' | 'fire' | 'clap' | 'wow'
 
-export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed'
+export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed' | 'notice'
 
 /**
  * The line a reply answers, as the server copied it into the reply (029): shown without looking it up, also when the
@@ -640,6 +638,8 @@ export type BackendErrorCode =
   | 'room_gender'
   | 'room_age'
   | 'room_full'
+  /** 058: the room has a password I haven't given yet (unlockRoom). */
+  | 'room_password'
   | 'room_title'
   | 'room_size'
   | 'voice_removed'
@@ -665,14 +665,6 @@ export type BackendErrorCode =
   /** 035 ratings: more than a day after the chat, or rated already. */
   | 'too_late'
   | 'already_rated'
-  /** 038 translate: no AI key on the server yet (503). */
-  | 'translate_unavailable'
-  /** 038 translate: the model would not translate this line (422). */
-  | 'cannot_translate'
-  /** 038 translate: the model failed or timed out (502); trying again may work. */
-  | 'translate_failed'
-  /** 038 translate: longer than 2000 characters. */
-  | 'too_long'
   /** 040 IDs: not an ID the server takes, kept for staff, someone else's, or changed less than 30 days ago without a paid ID change. */
   | 'handle_invalid'
   | 'handle_reserved'
@@ -783,8 +775,14 @@ export interface Backend {
   createVoiceRoom(r: NewVoiceRoom): Promise<{ id: string; code: string }>
   /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
   joinVoiceCode(code: string): Promise<string>
-  /** Host only: the title, the pinned announcement (empty removes it) and the language. */
-  updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }): Promise<void>
+  /** Host only: the title and the language. */
+  updateVoiceRoom(roomId: string, patch: { title: string; lang?: string }): Promise<void>
+  /** 058: gives a room's password; true lets me in from then on. Errors: room_closed, slow_down (10 misses in 10 minutes). */
+  unlockRoom(roomId: string, password: string): Promise<boolean>
+  /** 058, host only: the room's password (4-12 characters; null removes it). A new one asks everyone outside again. */
+  setRoomPassword(roomId: string, password: string | null): Promise<void>
+  /** 064, the host or a co-host: the room's pinned notice (empty removes it); the chat says who pinned a new one. */
+  setRoomNotice(roomId: string, text: string): Promise<void>
   /** Tells a friend about the room I'm in (their inbox, and a push when phones get them). */
   inviteToRoom(roomId: string, userId: string): Promise<void>
   /** Opens an invite: lets me into the room even when it is private; returns its id (then joinVoice). */
@@ -870,13 +868,6 @@ export interface Backend {
   kycCheck(): Promise<KycResult>
   /** Demo only: how the simulated check ends. */
   kycDemo?(outcome: KycDemoOutcome): Promise<void>
-  // ---- translation (038) ----
-  /**
-   * A saved line in `target` (lib/translate.ts TARGETS), slang and tone kept. `kind` 'chat' = random-chat and friend
-   * messages (Message.id), 'room' = a room's text line (VoiceLine.id). `same`: it already is in that language.
-   * Errors: translate_unavailable, slow_down (daily limit), not_found, cannot_translate, translate_failed, too_long.
-   */
-  translate(kind: 'chat' | 'room', id: number, target: string): Promise<{ text: string; same: boolean }>
   /** Once per random chat after it ends, when both wrote; `tags` from the chosen side (lib/trust.ts), at most 3. */
   rateChat(matchId: string, good: boolean, tags: string[]): Promise<void>
   // ---- IDs and looks (040) ----
@@ -896,4 +887,8 @@ export interface Backend {
   looks(userIds: string[]): Promise<Look[]>
   /** Demo only: owns the item at once (the live web has no payments; looks are bought in the Android app). */
   buyLook?(itemId: string): Promise<void>
+  /** 002 + 26: until when (ms) I may choose women or men (the 24-hour gender pass, like Azar's paid filter), or null. */
+  genderPass(): Promise<number | null>
+  /** Demo only: a pass at once (the live web has no payments; the pass is bought in the Android app). */
+  buyGenderPass?(): Promise<void>
 }

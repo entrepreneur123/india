@@ -3,7 +3,7 @@
 import { useEffect, useId, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { Lock, Minus, Plus } from 'lucide-react'
-import type { NewVoiceRoom, RoomKind, Target } from '@/lib/backend'
+import type { NewVoiceRoom, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { isRoomLang, RoomLangSelect } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
-import { CategoryPicker } from './topic-picker'
+import { RoomCountry } from './room-country'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
 const MAX_TITLE = 40
@@ -24,15 +24,13 @@ const MAX_SIZE = 200
 const stepUp = (n: number) => Math.min(MAX_SIZE, n < 10 ? n + 1 : n < 50 ? n + 5 : n + 10)
 const stepDown = (n: number) => Math.max(MIN_SIZE, n <= 10 ? n - 1 : n <= 50 ? n - 5 : n - 10)
 
-/** A new room: its name, category, who may come in and an optional pinned announcement. */
+/** A new room: its name, who may come in and an optional pinned notice; its country is the host's (28). */
 export function CreateRoomDialog({
   open,
-  initialCategory,
   onClose,
   onCreated,
 }: {
   open: boolean
-  initialCategory?: RoomKind
   onClose: () => void
   onCreated: (id: string, code: string, isPrivate: boolean) => void
 }) {
@@ -41,12 +39,11 @@ export function CreateRoomDialog({
   const { t, lang: appLang } = useI18n()
   const { st } = useSocialT()
   const { mutate } = useSWRConfig()
-  const { freeForRoom } = useApp()
+  const { freeForRoom, me } = useApp()
   const id = useId()
   const [title, setTitle] = useState('')
   // A room is marked with one of the languages rooms can have; the app's own when it is one of them.
   const [lang, setLang] = useState<string>(isRoomLang(appLang) ? appLang : '')
-  const [category, setCategory] = useState<RoomKind>('talk')
   const [max, setMax] = useState(50)
   const [gender, setGender] = useState<Target>('any')
   const [minAge, setMinAge] = useState(18)
@@ -59,7 +56,6 @@ export function CreateRoomDialog({
   useEffect(() => {
     if (!open) return
     setTitle('')
-    setCategory(initialCategory ?? 'talk')
     setMax(50)
     setGender('any')
     setMinAge(18)
@@ -67,7 +63,7 @@ export function CreateRoomDialog({
     setPrivate(false)
     setNote('')
     setLang(isRoomLang(appLang) ? appLang : '')
-  }, [open, initialCategory, appLang])
+  }, [open, appLang])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,7 +72,7 @@ export function CreateRoomDialog({
     if (!(await freeForRoom())) return
     setBusy(true)
     const room: NewVoiceRoom = {
-      title: title.trim(), category, maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang,
+      title: title.trim(), maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang,
     }
     try {
       const made = await backend.createVoiceRoom(room)
@@ -107,11 +103,12 @@ export function CreateRoomDialog({
           />
         </Field>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-semibold" id={`${id}-cat`}>
-            {t('create.category')}
-          </span>
-          <CategoryPicker labelledBy={`${id}-cat`} value={category} onChange={setCategory} />
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-sm font-semibold">{t('create.country')}</span>
+            <RoomCountry iso={me?.country} />
+          </div>
+          <p className="text-xs leading-relaxed text-muted-foreground">{t('create.countryHint')}</p>
         </div>
 
         <div className="flex items-center justify-between gap-4">
@@ -260,6 +257,57 @@ export function JoinCodeDialog({ open, onClose, onJoined }: { open: boolean; onC
         />
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={code.length !== 6}>
           {t('join.submit')}
+        </Button>
+      </form>
+    </Modal>
+  )
+}
+
+/** A room with a password (058): asked once; the right one lets me in from then on (from the list, a link or an invite). */
+export function RoomPasswordDialog({ roomId, onClose, onUnlocked }: { roomId: string | null; onClose: () => void; onUnlocked: (id: string) => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { t } = useI18n()
+  const id = useId()
+  const [pw, setPw] = useState('')
+  const [wrong, setWrong] = useState(false)
+  const [busy, setBusy] = useState(false)
+  useEffect(() => {
+    setPw('')
+    setWrong(false)
+  }, [roomId])
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!roomId || !pw.trim() || busy) return
+    setBusy(true)
+    try {
+      if (await backend.unlockRoom(roomId, pw)) onUnlocked(roomId)
+      else setWrong(true)
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Modal open={roomId !== null} onClose={onClose} title={t('pw.title')} description={t('pw.desc')}>
+      <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-4 p-6 pt-4">
+        <Field label={t('pw.label')} htmlFor={`${id}-p`} hint={wrong ? <span className="text-destructive">{t('pw.wrong')}</span> : undefined}>
+          <TextInput
+            id={`${id}-p`}
+            value={pw}
+            maxLength={12}
+            autoComplete="off"
+            aria-invalid={wrong}
+            onChange={(e) => {
+              setPw(e.target.value)
+              setWrong(false)
+            }}
+            data-autofocus
+          />
+        </Field>
+        <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!pw.trim()}>
+          {t('pw.enter')}
         </Button>
       </form>
     </Modal>

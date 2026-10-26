@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from 'react'
-import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Plus, Settings, SkipForward, Square, Trash2, Volume1, Volume2, VolumeX } from 'lucide-react'
+import { ChevronDown, ChevronUp, Headphones, ListMusic, LoaderCircle, Pause, Play, Settings, SkipForward, Square, Trash2, Volume1, Volume2, VolumeX } from 'lucide-react'
 import type { VoiceAction, VoiceQueueItem, VoiceTrack } from '@/lib/backend'
 import { thumbnail, videoTitle, youTubeId } from '@/lib/youtube'
 import { useI18n } from '@/components/i18n'
@@ -19,13 +19,10 @@ import { LiveBars } from './voice-stage'
 export const byVotes = (queue: VoiceQueueItem[]) =>
   queue.map((q, i) => [q, i] as const).sort((a, b) => b[0].votes - a[0].votes || a[1] - b[1]).map(([q]) => q)
 
-/** "Song – Film · Artist" titles carry the artist after the last " · ": shown as the song, then its artist. */
-const songOf = (title: string) => (title.includes(' · ') ? title.slice(0, title.lastIndexOf(' · ')) : title)
-const artistOf = (title: string) => (title.includes(' · ') ? title.slice(title.lastIndexOf(' · ') + 3) : '')
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
 /**
- * "Listen together" outside a music room: the video with its controls, or (hidden) a compact now-playing strip.
+ * "Listen together": the video with its controls, or (hidden) a compact now-playing strip.
  * Hiding only shrinks it: the room's player (room-player.tsx) plays on either way. `canDJ`: the host or a co-host.
  */
 export function MusicPanel({
@@ -222,96 +219,6 @@ function VolumeControl() {
         style={{ '--p': `${level}%`, '--fill': 'var(--foreground)' } as CSSProperties}
       />
     </span>
-  )
-}
-
-/**
- * The music room's hero: the shared player big, the song, its progress and the DJ, and the requests by vote under it.
- * With nothing playing, an invitation to request the first song.
- */
-export function MusicHero({
-  track,
-  queue,
-  canDJ,
-  hostName,
-  onQueue,
-  act,
-}: {
-  track: VoiceTrack | null
-  queue: VoiceQueueItem[]
-  canDJ: boolean
-  hostName: string
-  onQueue: () => void
-  act: (a: VoiceAction) => Promise<boolean>
-}) {
-  const { t, num, plural } = useI18n()
-  const { rt } = useRoomT()
-  const player = useRoomPlayer()
-  const ordered = byVotes(queue)
-  const title = track ? songOf(track.title) || player?.title || t('voice.ytVideo') : ''
-  const artist = track ? artistOf(track.title) || player?.author || '' : ''
-  const localPaused = !!track && !!player?.localPaused && !track.pausedAt
-
-  return (
-    <section aria-label={t('voice.musicTitle')} className="flex flex-col gap-3 px-4">
-      {track ? (
-        <div>
-          <PlayerSlot track={track} className="shadow-e2" />
-          <div className="mt-3 flex items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <h2 className="truncate text-lg leading-tight font-bold">{title}</h2>
-              <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                {[artist, track.pausedAt ? t('voice.pausedByHost') : localPaused ? rt('pausedHere') : t('music.dj', { name: hostName })].filter(Boolean).join(' · ')}
-              </p>
-            </div>
-            {player?.blocked && !track.pausedAt && !localPaused ? (
-              <Button size="sm" variant="brand" onClick={player.play} className="shrink-0">
-                <Headphones className="size-4" aria-hidden /> {t('voice.tapToListen')}
-              </Button>
-            ) : null}
-          </div>
-          <PlayerControls track={track} act={act}>
-            <span className="truncate text-xs text-muted-foreground max-sm:hidden">{t('voice.addedBy', { name: track.addedBy })}</span>
-          </PlayerControls>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center gap-3 rounded-3xl bg-card px-6 py-8 text-center ring-1 ring-border">
-          <TopicIcon topic="music" size={52} />
-          <div>
-            <h2 className="text-lg font-bold">{t('music.nothing')}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('music.nothingBody')}</p>
-          </div>
-          <Button variant="brand" onClick={onQueue}>
-            <Plus className="size-4.5" aria-hidden /> {canDJ ? t('music.add') : t('music.request')}
-          </Button>
-        </div>
-      )}
-
-      <div className="rounded-2xl bg-muted/50 p-3">
-        <div className="flex items-center justify-between gap-2 pb-1">
-          <h3 className="flex min-w-0 items-baseline gap-2 text-sm font-semibold whitespace-nowrap">
-            {t('voice.upNext')}
-            <span className="truncate text-xs font-normal text-muted-foreground max-sm:hidden">{t('music.mostVoted')}</span>
-          </h3>
-          <Button size="sm" variant="ghost" onClick={onQueue} className="shrink-0 px-2.5" aria-label={`${t('music.request')} · ${num(queue.length)}`}>
-            <ListMusic className="size-4.5" aria-hidden /> {t('music.request')}
-          </Button>
-        </div>
-        {ordered.length === 0 ? (
-          <p className="py-2 text-sm text-muted-foreground">{t('music.noRequests')}</p>
-        ) : (
-          <ol className="flex flex-col">
-            {ordered.slice(0, 3).map((q) => (
-              <li key={q.id}>
-                <TrackRow videoId={q.videoId} title={songOf(q.title) || t('voice.ytVideo')} sub={`${t('voice.addedBy', { name: q.addedBy })} · ${plural(q.votes, 'music.votes.one', 'music.votes.other')}`}>
-                  <VoteButton item={q} act={act} />
-                </TrackRow>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-    </section>
   )
 }
 

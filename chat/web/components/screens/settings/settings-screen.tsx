@@ -7,10 +7,8 @@ import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
 import { roomSoundsOn, setRoomSounds } from '@/lib/room-sounds'
-import { TARGET_NAMES, TARGETS, type Target } from '@/lib/translate'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { useTranslate } from '@/components/translate'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useAnonSwitch, useShop } from '@/components/looks/use-shop'
 import { BlockedSheet } from '@/components/social/people-find'
@@ -28,8 +26,6 @@ export function SettingsScreen() {
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
-  const [targetOpen, setTargetOpen] = useState(false)
-  const tr = useTranslate()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [blocksOpen, setBlocksOpen] = useState(false)
   const [recentsOpen, setRecentsOpen] = useState(false)
@@ -75,24 +71,6 @@ export function SettingsScreen() {
           <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
           <Toggle icon={Volume2} label={t('settings.roomSounds')} body={t('settings.roomSoundsBody')} on={sounds} onChange={(on) => (setRoomSounds(on), setSounds(on))} />
         </Group>
-
-        {tr?.available ? (
-          <Group title={t('settings.translation')}>
-            <Toggle
-              icon={Languages}
-              label={t('settings.autoTranslate')}
-              body={t('settings.autoTranslateBody')}
-              on={tr.autoSetting}
-              onChange={tr.setAuto}
-            />
-            <Item
-              icon={Languages}
-              label={t('settings.translateTo')}
-              value={tr.targetSetting ? TARGET_NAMES[tr.targetSetting] : t('settings.translateToApp', { name: TARGET_NAMES[tr.appTarget] })}
-              onClick={() => setTargetOpen(true)}
-            />
-          </Group>
-        ) : null}
 
         <Group title={t('settings.safety')}>
           <Toggle
@@ -155,39 +133,6 @@ export function SettingsScreen() {
           })}
         </ul>
       </Modal>
-
-      {tr ? (
-        <Modal open={targetOpen} onClose={() => setTargetOpen(false)} variant="sheet" title={t('settings.chooseTarget')}>
-          <ul className="flex flex-col p-3 pb-5" role="radiogroup" aria-label={t('settings.translateTo')}>
-            {([null, ...TARGETS] as (Target | null)[]).map((id) => {
-              const on = id === tr.targetSetting
-              return (
-                <li key={id ?? 'app'}>
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={on}
-                    data-autofocus={on ? true : undefined}
-                    onClick={() => {
-                      tr.setTarget(id)
-                      setTargetOpen(false)
-                    }}
-                    className={cn(
-                      'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-150 hover:bg-muted',
-                      on && 'bg-primary-soft hover:bg-primary-soft',
-                    )}
-                  >
-                    <span lang={id ?? undefined} className={cn('min-w-0 flex-1 text-[15px] font-semibold', on && 'text-primary-text')} style={{ fontFamily: 'system-ui, sans-serif' }}>
-                      {id ? TARGET_NAMES[id] : t('settings.translateToApp', { name: TARGET_NAMES[tr.appTarget] })}
-                    </span>
-                    {on ? <Check className="size-5 shrink-0 text-primary-text" aria-hidden /> : null}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </Modal>
-      ) : null}
 
       <BlockedSheet open={blocksOpen} onClose={() => setBlocksOpen(false)} />
       <RecentsSheet open={recentsOpen} onClose={() => setRecentsOpen(false)} />

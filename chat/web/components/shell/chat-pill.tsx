@@ -27,7 +27,7 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
       aria-label={st('chatbar.label', { name: partner.name })}
     >
       <div className="relative flex items-center gap-1 overflow-hidden rounded-[22px] bg-card p-2 text-foreground shadow-e3 ring-1 ring-primary-text/40">
-        {/* The brand colour, washed in from the left (a room's bar uses its category's). */}
+        {/* The brand colour, washed in from the left. */}
         <button type="button" onClick={onOpen} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={st('chatbar.open', { name: partner.name })}>
           <span className="relative shrink-0">
             <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={42} />

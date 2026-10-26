@@ -13,9 +13,8 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
-import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
+import { Bubble, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
-import { shownText, TranslateFooter, useFollowLines, useLineTranslation } from '@/components/translate'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
 import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
@@ -67,8 +66,6 @@ export function VoiceChat({
   const lastIcebreaker = [...(lines ?? [])].reverse().find((l) => l.kind === 'icebreaker')?.id
   const quiet = !!lines && !lines.some((l) => l.kind !== 'system')
 
-  // A line's translation makes it taller: the newest line stays in view.
-  useFollowLines(listRef, stick)
   // The list gets shorter (the typing row, the phone's keyboard, the stage opening): the newest line stays in view.
   useEffect(() => {
     const el = listRef.current
@@ -218,10 +215,7 @@ export function VoiceChat({
   )
 }
 
-/**
- * Someone's text or photo in the room. Someone else's text can be translated: by itself when it looks like another
- * language (on screen only), or from the line's menu (long press, right click) or the hover button.
- */
+/** Someone's text or photo in the room; its menu (long press, right click) replies or copies. */
 function SentLine({
   line,
   grouped,
@@ -244,13 +238,11 @@ function SentLine({
   const { t, clock } = useI18n()
   const { rt } = useRoomT()
   const room = s.room
-  const said = line.kind === 'text' ? line.text : null
+  const text = line.kind === 'text' ? line.text : null
   const skin = useLook(line.sender.id)?.bubble
-  const tr = useLineTranslation('room', line.id, said, line.fromMe)
-  const actions = useLineActions(tr, said)
+  const actions = useLineActions(text)
   const [menu, setMenu] = useState(false)
   const meta = clock(line.at)
-  const text = said === null ? null : shownText(tr, said)
   const toMe = text !== null && !line.fromMe ? mentionRanges(text, meName) : []
   const sender = room ? memberOf(room, line.sender.id) : null
   const role = sender ? roleLabel(sender, t) : null
@@ -285,9 +277,7 @@ function SentLine({
       flash={flash}
       onReply={() => onReply(line)}
       label={replyLabel}
-      lineRef={tr.ref}
       onMenu={() => setMenu(true)}
-      extra={line.fromMe ? null : <HoverTranslate tr={tr} />}
       menu={
         menu ? (
           <MessageMenu
@@ -323,14 +313,13 @@ function SentLine({
           {name}
           {line.reply ? <Quote reply={line.reply} rt={rt} meId={room?.meId} onShow={() => onQuote(line.reply!.id)} /> : null}
           <LinkPreview text={line.text} className="mb-1 w-64 max-w-full" />
-          <p dir="auto" lang={tr.showing ? tr.target : undefined} className="relative text-start text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
+          <p dir="auto" className="relative text-start text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
             {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
             <LinkText text={fold(text ?? '')} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
             <MetaSpacer>{meta}</MetaSpacer>
             <span className="absolute inset-e-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
           </p>
           <SeeAll text={text ?? ''} />
-          <TranslateFooter tr={tr} />
         </Bubble>
       )}
     </SwipeRow>
@@ -428,10 +417,8 @@ function SwipeRow({
   center,
   onReply,
   label,
-  lineRef,
   onMenu,
   menu,
-  extra,
   children,
 }: {
   line: Quotable
@@ -441,13 +428,10 @@ function SwipeRow({
   center?: boolean
   onReply: () => void
   label: string
-  lineRef?: (el: Element | null) => void
   /** Long press / right click opens the line's menu (else a long press answers it). */
   onMenu?: () => void
   /** The open menu, if any. */
   menu?: ReactNode
-  /** More hover buttons (mouse), after the reply one. */
-  extra?: ReactNode
   children: ReactNode
 }) {
   const [dx, setDx] = useState(0)
@@ -462,7 +446,6 @@ function SwipeRow({
 
   return (
     <m.li
-      ref={lineRef}
       data-line={line.id}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
@@ -542,7 +525,6 @@ function SwipeRow({
       >
         <Reply className="size-4 rtl:-scale-x-100" aria-hidden />
       </button>
-      {extra}
       {menu}
     </m.li>
   )

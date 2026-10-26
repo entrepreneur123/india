@@ -6,8 +6,9 @@
 -- (061's rule). Prices are placeholders until the owner sets them.
 -- Chat bubbles (21): 'bubble_*', the look of my chat bubbles that everyone sees (random chats, messages, rooms); one
 -- worn at a time (profiles.look_bubble). set_worn(kind, item) wears an effect or a bubble (null takes it off).
--- No more Yaari Plus or stickers (23): every paid thing is a single item. Choosing women/men is free for everyone
--- (can_choose_gender), the exit lock is 5 s for everyone, sticker packs leave the shop (rows stay for old purchases).
+-- No more Yaari Plus or stickers (23): every paid thing is a single item. Choosing women/men stays paid like Azar's
+-- (26): the 24-hour gender pass of 002 (can_choose_gender unchanged), the exit lock is 5 s for everyone, sticker packs
+-- leave the shop (rows stay for old purchases).
 -- A refund also takes off an effect, a bubble or the photo gradient. Room lines go up to 1000 characters (22).
 
 alter table public.cosmetic_items drop constraint if exists cosmetic_items_id_check;
@@ -121,10 +122,7 @@ do $$ begin
     'look_wall = nullif(look_wall, item), anon = anon and item <> ''vip_anon'', look_effect = nullif(look_effect, item), look_bubble = nullif(look_bubble, item), cycle_photos = case when item = ''cycle_photos'' then null else cycle_photos end');
 end $$;
 
--- No Plus (23): everyone may choose women or men, everyone waits the same 5 s before leaving a random chat.
-create or replace function public.can_choose_gender(uid uuid) returns boolean language sql stable security definer set search_path = '' as $$
-  select true
-$$;
+-- No Plus (23): everyone waits the same 5 s before leaving a random chat.
 create or replace function public.exit_lock() returns interval language sql stable security definer set search_path = '' as $$
   select interval '5 seconds'
 $$;

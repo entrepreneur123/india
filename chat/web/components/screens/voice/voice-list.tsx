@@ -10,9 +10,9 @@ import { EmptyState } from '@/components/ui/ambient'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { TopicChip, TopicIcon } from '@/components/ui/topic-icons'
-import { categoryLabel, kindTopic, refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
-import type { RoomFilter } from '@/components/screens/rooms/rooms-screen'
+import { TopicIcon } from '@/components/ui/topic-icons'
+import { refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
+import { RoomCountry } from '@/components/screens/rooms/room-country'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
 import { langName } from '@/components/social/room-lang'
@@ -20,22 +20,21 @@ import { useSocialT } from '@/components/social/social-text'
 import { LiveBars } from './voice-stage'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
-/** The live rooms on the Rooms tab (and its filter by category). */
-export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilter; query?: RoomQuery; onCreate: () => void }) {
+/** The live rooms on the Rooms tab, narrowed by its search. */
+export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCreate: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { openVoice, voiceRoomId } = useApp()
+  const { openVoice, voiceRoomId, askRoomPassword } = useApp()
   const { st } = useSocialT()
-  const searching = !!(query.text || query.lang)
+  const searching = !!(query.text || query.lang || query.countries?.length || query.locked === false)
   // Without a search this is the same list (and request) as the right panel's.
-  const key = searching ? ['voiceRooms', query.text ?? '', query.lang ?? ''] : 'voiceRooms'
+  const key = searching ? ['voiceRooms', query.text ?? '', query.lang ?? '', query.countries?.join() ?? '', query.locked ?? true] : 'voiceRooms'
   const { data: rooms, error, mutate } = useSWR(key, () => backend.voiceRooms(searching ? query : undefined), {
     keepPreviousData: true,
     // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.
     refreshInterval: 30_000, refreshWhenHidden: false, focusThrottleInterval: 30_000, dedupingInterval: 5_000,
   })
-  const shown = rooms?.filter((r) => filter === 'all' || r.category === filter)
 
   if (error && !rooms)
     return (
@@ -48,7 +47,8 @@ export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilte
     )
 
   // A room I can't enter says why instead of failing on the server.
-  const open = (r: VoiceRoomSummary) => (r.refusal && r.id !== voiceRoomId ? toast.show(t(`error.${r.refusal}` as const), 'info') : openVoice(r.id))
+  const open = (r: VoiceRoomSummary) =>
+    r.id === voiceRoomId || !r.refusal ? openVoice(r.id) : r.refusal === 'room_password' ? askRoomPassword(r.id) : toast.show(t(`error.${r.refusal}` as const), 'info')
 
   return (
     <section aria-labelledby="voice-live" className="flex flex-col gap-3">
@@ -58,13 +58,13 @@ export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilte
         </h2>
         <span className="text-xs text-muted-foreground">{t('voice.liveHint')}</span>
       </div>
-      {!shown ? (
+      {!rooms ? (
         <div className="grid gap-3 sm:grid-cols-2" aria-busy>
           {Array.from({ length: 4 }, (_, i) => (
             <Skeleton key={i} className="h-52 rounded-2xl" />
           ))}
         </div>
-      ) : shown.length === 0 && searching ? (
+      ) : rooms.length === 0 && searching ? (
         <EmptyState
           art="rooms"
           title={st('rooms.noMatch')}
@@ -75,7 +75,7 @@ export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilte
             </Button>
           }
         />
-      ) : shown.length === 0 ? (
+      ) : rooms.length === 0 ? (
         <EmptyState
           art="rooms"
           title={t('rooms.noneTitle')}
@@ -88,7 +88,7 @@ export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilte
         />
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
-          {shown.map((r) => (
+          {rooms.map((r) => (
             <li key={r.id}>
               <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => open(r)} />
             </li>
@@ -102,7 +102,9 @@ export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilte
 function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolean; onOpen: () => void }) {
   const { t, num } = useI18n()
   const live = room.speakers.length > 0
-  const blocked = !!room.refusal && !here
+  // A password isn't a no: the card opens the password prompt (058).
+  const locked = room.refusal === 'room_password' && !here
+  const blocked = !!room.refusal && !locked && !here
   const conditions = roomConditions(room, t, false)
   return (
     <button
@@ -117,8 +119,8 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
     >
       <span className="flex w-full items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-1.5">
-          <TopicChip topic={kindTopic(room.category)} label={categoryLabel(room.category, t)} />
-          {room.isPrivate ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t('rooms.private')} /> : null}
+          <RoomCountry iso={room.host.country} />
+          {room.isPrivate || locked ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t(locked ? 'rooms.locked' : 'rooms.private')} /> : null}
           {langName(room.lang) ? (
             <span lang={room.lang ?? undefined} className="truncate rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
               {langName(room.lang)}

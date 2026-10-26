@@ -8,8 +8,6 @@ import { useI18n } from '@/components/i18n'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { flagEmoji } from '@/lib/format'
-import { kindTopic } from '@/components/screens/rooms/room-text'
-import { TopicTile } from '@/components/ui/topic-icons'
 import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
@@ -126,7 +124,9 @@ export function RightPanel({ className }: { className?: string }) {
                       onClick={() => openVoice(r.id)}
                       className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors duration-150 hover:bg-muted"
                     >
-                      <TopicTile topic={kindTopic(r.category)} size={40} />
+                      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-xl" aria-hidden>
+                        {flagEmoji(r.host.country) || '🌐'}
+                      </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.title}</span>
                       <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                         <PresenceDot />

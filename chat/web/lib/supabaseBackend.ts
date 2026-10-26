@@ -37,7 +37,6 @@ import {
   type Profile,
   type RecentMatch,
   type ReportReason,
-  type RoomKind,
   type RoomQuery,
   type RoomRefusal,
   type NewVoiceRoom,
@@ -85,10 +84,9 @@ const PARTNER_JOIN_TIMEOUT_MS = 12_000
 /** Random chats: after the partner's app disconnects, how long they have to come back. Same values as the app. */
 const PARTNER_GRACE_MS = 20_000
 const CODES = [
-  'translate_unavailable', 'cannot_translate', 'translate_failed', 'too_long',
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
-  'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
+  'room_closed', 'room_gender', 'room_age', 'room_full', 'room_password', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
@@ -134,6 +132,7 @@ type VoiceStateRow = {
   queue: { id: string; videoId: string; title: string; by: string; votes: number; voted: boolean }[]
   members: VoiceMemberRow[]
   announcement: string | null; max: number; gender: string; minAge: number; maxAge: number; private: boolean; code: string | null
+  password?: string | null
   /** 027: the room's language. */
   lang?: string | null
   /** The room's change number (020); events carry the next ones. */
@@ -196,6 +195,8 @@ type VoiceLive = {
   refresh: () => void
   /** After my own action: its change arrives over realtime; fetch only while that connection is down. */
   acted: () => void
+  /** What room changes don't carry (the language, the host's password): set here after my change so it stays. */
+  keep: (p: Pick<VoiceStateRow, 'lang' | 'password'>) => void
   mic: (on: boolean) => Promise<void>
   camera: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
@@ -244,8 +245,6 @@ const appLang = (l: string | null | undefined) => (l === 'pt-br' ? 'pt-BR' : l ?
 const interestsOf = (tags: string[] | null | undefined): Interest[] =>
   (tags ?? []).filter((x): x is Interest => (INTERESTS as readonly string[]).includes(x))
 
-/** A room's category; anything but music is a talk room (rooms from before 019, and 'games' from older apps). */
-const kind = (c: string): RoomKind => (c === 'music' ? 'music' : 'talk')
 
 function gender(g: string): Gender {
   return g === 'male' || g === 'female' ? g : 'other'
@@ -995,10 +994,12 @@ export class SupabaseBackend implements Backend {
   // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
 
   async voiceRooms(query: RoomQuery = {}): Promise<VoiceRoomSummary[]> {
-    const rows = await this.rpc<VoiceListRow[]>('voice_list3', { p_query: query.text?.trim() || null, p_lang: query.lang ?? null })
+    const rows = await this.rpc<VoiceListRow[]>('voice_list4', {
+      p_query: query.text?.trim() || null, p_lang: query.lang ?? null, p_countries: query.countries?.length ? query.countries : null, p_locked: query.locked ?? true,
+    })
     await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
     return rows.filter((r) => r.host).map((r) => ({
-      id: r.id, title: r.title, category: kind(r.category), host: this.cardProfile(r.host),
+      id: r.id, title: r.title, host: this.cardProfile(r.host),
       speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners, members: r.members,
       nowPlaying: r.now_playing || null,
       announcement: r.announcement, mine: r.mine, code: r.code, refusal: (r.refusal as RoomRefusal | null) ?? null,
@@ -1009,7 +1010,7 @@ export class SupabaseBackend implements Backend {
 
   async createVoiceRoom(r: NewVoiceRoom) {
     const room = await this.rpc<{ id: string; code: string }>('create_voice_room3', {
-      p_title: r.title, p_category: r.category, p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
+      p_title: r.title, p_category: 'talk', p_max: r.maxMembers, p_gender: r.genderRule, p_min_age: r.minAge,
       p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang || null,
     })
     track('room_created')
@@ -1023,12 +1024,27 @@ export class SupabaseBackend implements Backend {
     return id
   }
 
-  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }) {
-    await this.rpc('voice_settings2', { p_room: roomId, p_title: patch.title, p_announcement: patch.announcement, p_lang: patch.lang ?? null })
+  async updateVoiceRoom(roomId: string, patch: { title: string; lang?: string }) {
+    // No notice here (null keeps it, 064): it has its own call.
+    await this.rpc('voice_settings2', { p_room: roomId, p_title: patch.title, p_announcement: null, p_lang: patch.lang ?? null })
     // The language is not part of the room's change events: keep the open room's copy current.
     const live = this.voice.get(roomId)
-    if (live?.room && patch.lang) live.room.lang = patch.lang
+    if (patch.lang) live?.keep({ lang: patch.lang })
     live?.acted()
+  }
+
+  async unlockRoom(roomId: string, password: string) {
+    return (await this.rpc<boolean>('voice_unlock', { p_room: roomId, p_password: password })) === true
+  }
+
+  async setRoomPassword(roomId: string, password: string | null) {
+    await this.rpc('voice_set_password', { p_room: roomId, p_password: password })
+    this.voice.get(roomId)?.keep({ password })
+  }
+
+  async setRoomNotice(roomId: string, text: string) {
+    await this.rpc('voice_notice', { p_room: roomId, p_text: text })
+    this.voice.get(roomId)?.acted()
   }
 
   async inviteToRoom(roomId: string, userId: string) {
@@ -1287,6 +1303,12 @@ export class SupabaseBackend implements Backend {
     await this.rpc('set_anon', { p_on: on })
   }
 
+  async genderPass() {
+    const row = (await this.rpc<{ premium_until: string | null; gender_until: string | null }[]>('my_entitlements'))?.[0]
+    const until = Math.max(...[row?.premium_until, row?.gender_until].map((t) => (t ? time(t) : 0)))
+    return until > Date.now() ? until : null
+  }
+
   async looks(userIds: string[]): Promise<Look[]> {
     const ids = [...new Set(userIds)].slice(0, 100)
     if (!ids.length) return []
@@ -1407,12 +1429,6 @@ export class SupabaseBackend implements Backend {
 
   voiceTyping(roomId: string, name: string) {
     this.voice.get(roomId)?.typing(name)
-  }
-
-  async translate(kind: 'chat' | 'room', id: number, target: string) {
-    const j = await this.invoke<{ text?: unknown; same?: unknown }>('translate', { kind, id, target })
-    if (typeof j?.text !== 'string') throw new BackendError('translate_failed')
-    return { text: j.text, same: j.same === true }
   }
 
   async linkMeta(url: string): Promise<LinkMeta> {
@@ -1829,6 +1845,11 @@ export class SupabaseBackend implements Backend {
       acted: () => {
         if (!healthy) refresh()
       },
+      keep: (p) => {
+        if (!base) return
+        Object.assign(base, p)
+        void show(base)
+      },
       mic,
       camera,
       startAudio: async () => {
@@ -1954,8 +1975,8 @@ export class SupabaseBackend implements Backend {
     await this.signMany(s.members.map((m) => m.photo_path))
     const local = (ms: number) => ms - this.clockOffset // server time → this device's clock
     return {
-      id: s.id, title: s.title, category: kind(s.category), mode: s.mode === 'open' ? 'open' : 'approval',
-      hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null,
+      id: s.id, title: s.title, mode: s.mode === 'open' ? 'open' : 'approval',
+      hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null, password: s.password ?? null,
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
       isPrivate: !!s.private, lang: appLang(s.lang),
       members: s.members.map((m) => ({

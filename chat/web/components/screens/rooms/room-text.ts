@@ -1,15 +1,5 @@
-import type { RoomKind, RoomRefusal, RoomRules } from '@/lib/backend'
+import type { RoomRefusal, RoomRules } from '@/lib/backend'
 import type { T } from '@/lib/i18n'
-import type { Topic } from '@/components/ui/topic-icons'
-
-export const CATEGORIES: RoomKind[] = ['talk', 'music']
-
-/** The glyph each category is drawn with. */
-export const kindTopic = (k: RoomKind): Topic => (k === 'music' ? 'music' : 'chat')
-
-// Anything but music reads as talk (an older room can still say 'games' for a moment).
-export const categoryLabel = (k: RoomKind, t: T) => t(k === 'music' ? 'cat.music' : 'cat.talk')
-export const categoryBody = (k: RoomKind, t: T) => t(k === 'music' ? 'cat.musicBody' : 'cat.talkBody')
 
 /** Short labels for who may come in, e.g. ["Women only", "Ages 20–30", "Private"]. */
 export function roomConditions(r: RoomRules, t: T, withPrivate = true): string[] {
@@ -32,6 +22,8 @@ export function refusalLabel(r: RoomRules & { refusal: RoomRefusal | null }, t: 
       return t('rooms.outsideAge')
     case 'room_closed':
       return t('rooms.closed')
+    case 'room_password':
+      return t('rooms.locked')
     default:
       return t('rooms.unavailable')
   }

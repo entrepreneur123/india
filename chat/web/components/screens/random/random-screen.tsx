@@ -25,6 +25,7 @@ import { TrustBadge } from '@/components/trust/badge'
 import { COUNTRIES } from '@/lib/countries'
 import { useCountryNames } from '@/components/screens/auth/country-select'
 import { saveGlobal, savedGlobal } from './scope'
+import { GenderPassSheet, useGenderPass } from './gender-pass'
 import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
 import { useLook } from '@/components/looks/look-name'
@@ -60,7 +61,7 @@ const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity
 export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t, lang } = useI18n()
+  const { t, lang, clock } = useI18n()
   const { me, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom, trust } = useApp()
   // Only a bought frame goes round my photo (no default ring: frames are a look you buy).
   const myFrame = (useLook(me?.id)?.frame ?? null) as FrameId | null
@@ -85,6 +86,12 @@ export function RandomScreen({ active }: { active: boolean }) {
   }, [])
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
+  // 26: women or men only with a gender pass; back to everyone when it runs out.
+  const pass = useGenderPass()
+  const [passOpen, setPassOpen] = useState(false)
+  useEffect(() => {
+    if (!pass.until) setTarget('any')
+  }, [pass.until])
   const [global, setGlobal] = useState(savedGlobal)
   // 055: my country only, or everyone (an empty list). The server never pairs a my-country search with a foreigner.
   const nameOf = useCountryNames()
@@ -148,7 +155,10 @@ export function RandomScreen({ active }: { active: boolean }) {
         endSignals()
         setReconnecting(false)
         setPhase('lobby')
-        toast.error(err)
+        if (code === 'premium_required') {
+          setPassOpen(true) // the pass ran out on the server first
+          void pass.mutate()
+        } else toast.error(err)
         return
       }
       busy = false
@@ -180,7 +190,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     endSignals()
     stopSignals.current = backend.matchSignals(() => void tick())
     void tick()
-  }, [backend, target, lang, countries, toast, setTab, t])
+  }, [backend, target, lang, countries, toast, setTab, t, pass.mutate])
 
   const cancelMatching = useCallback(() => {
     generation.current++
@@ -321,10 +331,10 @@ export function RandomScreen({ active }: { active: boolean }) {
   /** Start from the lobby: out of my room first (after a confirm), then the search. */
   const start = () => void freeForRandom().then((ok) => ok && startMatching())
 
-  const gender: { value: Target; label: string }[] = [
+  const gender: { value: Target; label: string; locked?: boolean }[] = [
     { value: 'any', label: t('lobby.everyone') },
-    { value: 'female', label: t('lobby.women') },
-    { value: 'male', label: t('lobby.men') },
+    { value: 'female', label: t('lobby.women'), locked: !pass.until },
+    { value: 'male', label: t('lobby.men'), locked: !pass.until },
   ]
 
   return (
@@ -353,10 +363,12 @@ export function RandomScreen({ active }: { active: boolean }) {
                 className="mt-8 w-full"
                 size="lg"
                 label={t('lobby.who')}
+                lockedLabel={t('pass.title')}
                 value={target}
                 options={gender}
-                onChange={setTarget}
+                onChange={(v) => (v === 'any' || pass.until ? setTarget(v) : setPassOpen(true))}
               />
+              {pass.until ? <p className="mt-2 text-xs text-muted-foreground">{t('pass.on', { time: clock(pass.until) })}</p> : null}
               {myCountry ? (
                 <Segmented
                   className="mt-3 w-full"
@@ -430,6 +442,8 @@ export function RandomScreen({ active }: { active: boolean }) {
           />
         </Suspense>
       ) : null}
+
+      <GenderPassSheet open={passOpen} onClose={() => setPassOpen(false)} onGot={() => void pass.mutate()} />
 
       <Modal open={choiceOpen} onClose={() => setChoiceOpen(false)} variant="sheet" title={t('leave.title')}>
         <div className="flex flex-col gap-2.5 p-6 pt-4">

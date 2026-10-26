@@ -2,10 +2,9 @@
 
 import * as m from 'motion/react-m'
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import { Check, CheckCheck, ChevronRight, Copy, Eye, Languages, Undo2 } from 'lucide-react'
+import { Check, CheckCheck, ChevronRight, Copy, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
-import { shownText, TranslateFooter, useLineTranslation, type LineTranslation } from '@/components/translate'
 import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
 import { bubbleOf } from '@/lib/looks'
@@ -13,63 +12,31 @@ import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
 import { MessageMenu, useMenuGesture, type MenuAction } from './message-menu'
 
-/** A line's Translate / Show original / Copy actions (the menu of a chat bubble or a room line). */
-export function useLineActions(tr: LineTranslation, text: string | null | undefined): MenuAction[] {
+/** A line's Copy action (the menu of a chat bubble or a room line). */
+export function useLineActions(text: string | null | undefined): MenuAction[] {
   const { t } = useI18n()
   const toast = useToast()
-  const out: MenuAction[] = []
-  if (tr.can) {
-    if (tr.showing) out.push({ icon: <Undo2 className="size-4.5 rtl:-scale-x-100" aria-hidden />, label: t('tr.showOriginal'), onClick: tr.showOriginal })
-    else if (tr.hidden) out.push({ icon: <Languages className="size-4.5" aria-hidden />, label: t('tr.showTranslation'), onClick: tr.showTranslation })
-    else out.push({ icon: <Languages className="size-4.5" aria-hidden />, label: t('tr.translate'), onClick: tr.translate })
-  }
-  if (text && typeof navigator !== 'undefined' && navigator.clipboard) {
-    out.push({
+  if (!text || typeof navigator === 'undefined' || !navigator.clipboard) return []
+  return [
+    {
       icon: <Copy className="size-4.5" aria-hidden />,
       label: t('tr.copy'),
-      onClick: () =>
-        void navigator.clipboard.writeText(shownText(tr, text)).then(
-          () => toast.show(t('tr.copied'), 'success'),
-          () => undefined,
-        ),
-    })
-  }
-  return out
-}
-
-/** With a mouse: a small Translate button beside someone's bubble on hover (touch has the long-press menu). */
-export function HoverTranslate({ tr, className }: { tr: LineTranslation; className?: string }) {
-  const { t } = useI18n()
-  if (!tr.can || tr.showing || tr.hidden || tr.entry?.status === 'loading') return null
-  return (
-    <button
-      type="button"
-      onClick={tr.translate}
-      aria-label={t('tr.translate')}
-      title={t('tr.translate')}
-      className={cn(
-        'grid size-8 shrink-0 place-items-center self-center rounded-full text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:bg-muted hover:text-foreground focus-visible:opacity-100 pointer-coarse:hidden',
-        className,
-      )}
-    >
-      <Languages className="size-4" aria-hidden />
-    </button>
-  )
+      onClick: () => void navigator.clipboard.writeText(text).then(() => toast.show(t('tr.copied'), 'success'), () => undefined),
+    },
+  ]
 }
 
 /**
  * Chat bubbles in the familiar messenger style: green (mine) / white (theirs) on a warm wallpaper, a tail on the
- * first bubble of a run, and the time with read ticks tucked into the bubble's corner. Someone else's text can be
- * translated (by itself when it looks like another language, or from the long-press / right-click menu).
+ * first bubble of a run, and the time with read ticks tucked into the bubble's corner; long press / right click
+ * opens the line's menu.
  */
 export function MessageBubble({ message, grouped, read, skin }: { message: Message; grouped: boolean; read?: boolean; skin?: string | null }) {
   const { t, clock } = useI18n()
   const mine = message.fromMe
-  const tr = useLineTranslation('chat', message.id, message.text, mine)
-  const actions = useLineActions(tr, message.text)
+  const actions = useLineActions(message.text)
   const [menu, setMenu] = useState(false)
   const gesture = useMenuGesture(actions.length ? () => setMenu(true) : null)
-  const text = message.text ? shownText(tr, message.text) : null
   const meta = (
     <>
       {clock(message.at)}
@@ -84,12 +51,11 @@ export function MessageBubble({ message, grouped, read, skin }: { message: Messa
   )
   return (
     <m.li
-      ref={tr.ref}
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
       className={cn(
-        'group relative flex max-w-[82%] gap-1 md:max-w-[65%] pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]',
+        'relative flex max-w-[82%] gap-1 md:max-w-[65%] pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]',
         mine ? 'self-end' : 'self-start',
         grouped ? 'mt-0.5' : 'mt-2',
       )}
@@ -99,25 +65,22 @@ export function MessageBubble({ message, grouped, read, skin }: { message: Messa
         {message.media ? (
           <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
         ) : null}
-        {message.text && text ? (
+        {message.text ? (
           // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
           <>
             <LinkPreview text={message.text} className={cn('mb-1 w-72 max-w-full', message.media && 'mx-1')} />
             <p
               dir="auto"
-              lang={tr.showing ? tr.target : undefined}
               className={cn('relative text-start text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}
             >
-              <LinkText text={fold(text)} />
+              <LinkText text={fold(message.text)} />
               <MetaSpacer>{meta}</MetaSpacer>
               <span className="absolute -bottom-0.5 inset-e-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
             </p>
-            <SeeAll text={text} className={cn(message.media && 'mx-1.5')} />
-            <TranslateFooter tr={tr} className={cn(message.media && 'px-1.5')} />
+            <SeeAll text={message.text} className={cn(message.media && 'mx-1.5')} />
           </>
         ) : null}
       </Bubble>
-      {mine ? null : <HoverTranslate tr={tr} />}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
   )

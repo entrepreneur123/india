@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type RefObject } from 'react'
-import type { RoomKind } from '@/lib/backend'
 import {
   clampShare,
   clampWidth,
@@ -49,11 +48,10 @@ const DRAG_PX = 4
  * room more, up gives the chat more; it settles on chat only, 30 %, 50 % or 70 %. Chat only folds the room to
  * `strip` (given the way back). A double tap switches between chat only and the room's default.
  */
-export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: ReactNode; strip: (expand: () => void) => ReactNode; chat: ReactNode }) {
+export function PhoneSplit({ top, strip, chat }: { top: ReactNode; strip: (expand: () => void) => ReactNode; chat: ReactNode }) {
   const { lt } = useLooksT()
-  const key = splitKey(kind, 'phone')
-  const fallback = PHONE_DEFAULT[kind]
-  const [share, setShare] = useState(() => readShare(stored(key)) ?? fallback)
+  const key = splitKey('phone')
+  const [share, setShare] = useState(() => readShare(stored(key)) ?? PHONE_DEFAULT)
   const [drag, setDrag] = useState<number | null>(null)
   const box = useRef<HTMLDivElement>(null)
   const press = useRef<{ y: number; moved: boolean } | null>(null)
@@ -66,7 +64,7 @@ export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: Re
     },
     [key],
   )
-  const toggle = () => commit(share === 0 ? fallback : 0)
+  const toggle = () => commit(share === 0 ? PHONE_DEFAULT : 0)
   const shown = drag ?? share
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
@@ -101,7 +99,7 @@ export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: Re
       : e.key === 'ArrowUp' ? stepSnap(share, -1)
       : e.key === 'Home' ? 0
       : e.key === 'End' ? PHONE_MAX
-      : e.key === 'Enter' ? (share === 0 ? fallback : 0)
+      : e.key === 'Enter' ? (share === 0 ? PHONE_DEFAULT : 0)
       : null
     if (next === null) return
     e.preventDefault()
@@ -111,7 +109,7 @@ export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: Re
   return (
     <div ref={box} className="flex min-h-0 flex-1 flex-col">
       {shown === 0 && drag === null ? (
-        strip(() => commit(fallback))
+        strip(() => commit(PHONE_DEFAULT))
       ) : (
         // Only as tall as what's in it (up to the share), so a big share leaves no empty band; exact while dragged.
         <div className="flex shrink-0 flex-col gap-2 overflow-y-auto pb-1 no-scrollbar" style={drag === null ? { maxHeight: `${shown * 100}%` } : { height: `${shown * 100}%` }}>
@@ -151,9 +149,9 @@ export function PhoneSplit({ kind, top, strip, chat }: { kind: RoomKind; top: Re
   )
 }
 
-/** Wide screens: the chat column's width (kept per category), measured against the room's width in `box`. */
-export function useWideSplit(kind: RoomKind, box: RefObject<HTMLElement | null>, on: boolean) {
-  const key = splitKey(kind, 'wide')
+/** Wide screens: the chat column's width, measured against the room's width in `box`. */
+export function useWideSplit(box: RefObject<HTMLElement | null>, on: boolean) {
+  const key = splitKey('wide')
   const [total, setTotal] = useState(0)
   const [chosen, setChosen] = useState<number | null>(() => readWidth(stored(key)))
 
@@ -166,7 +164,7 @@ export function useWideSplit(kind: RoomKind, box: RefObject<HTMLElement | null>,
     return () => watch.disconnect()
   }, [box, on])
 
-  const width = total ? clampWidth(chosen ?? wideDefault(kind, total), total) : null
+  const width = total ? clampWidth(chosen ?? wideDefault(total), total) : null
   const set = useCallback(
     (px: number, save: boolean) => {
       const next = clampWidth(px, total)

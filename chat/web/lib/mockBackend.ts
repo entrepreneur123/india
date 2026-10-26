@@ -11,6 +11,7 @@ import {
   type ExploreKind,
   type FeedItem,
   type RoomQuery,
+  type VoiceRoomSummary,
   type FeedPost,
   type PostVisibility,
   type ProfileStyleInput,
@@ -219,24 +220,6 @@ function demoFlags() {
   const manner = Number(q.get('demo_manner'))
   const req = q.get('demo_required')
   return { required: req === '1', gated: req === '1' || req === 'later', kycOff: q.get('demo_kyc') === 'off', manner: q.has('demo_manner') && Number.isFinite(manner) ? manner : null }
-}
-
-/**
- * The demo's translations into English (the live server translates anything into any language). Lines not here
- * come back as "already in your language", so nothing extra is shown.
- */
-const PHRASEBOOK: Record<string, string> = {
-  'jajaja Messi para siempre 🐐': 'hahaha Messi forever 🐐',
-  'né?! acordei às 5 só pra isso kkkk': 'right?! I woke up at 5 just for that lol',
-  'hola a todos, ¿qué tal? 👋': 'hi everyone, how’s it going? 👋',
-  'oi gente, tudo bem?': 'hey guys, all good?',
-  'みんなこんにちは！': 'hi everyone!',
-  'selam millet nasılsınız': 'hey folks, how are you all',
-  'Arijit ka koi bhi gaana, bas 🔥': 'any Arijit song, that’s all I need 🔥',
-  'volume ekdum perfect hai': 'the volume is absolutely perfect',
-  'Bumrah ka over lethal tha': 'Bumrah’s over was lethal',
-  'mera vote Goa ke liye': 'my vote goes to Goa',
-  'nice room yaar': 'nice room, mate',
 }
 
 const GREETINGS = [
@@ -499,6 +482,7 @@ export class MockBackend implements Backend {
     this.requireMe()
     this.gate()
     if (MANNERS && (this.flags.manner ?? 50) < MANNER_FLOOR) throw new BackendError('manner_low')
+    if (target !== 'any' && !(this.passUntil > Date.now())) throw new BackendError('premium_required')
     await wait(jitter(300, 700))
     const key = `${target}:${countries.join()}`
     if (this.searchTarget !== key) {
@@ -982,9 +966,18 @@ export class MockBackend implements Backend {
 
   async voiceRooms(query: RoomQuery = {}) {
     const text = query.text?.trim().toLocaleLowerCase() ?? ''
-    return (await (await this.voice()).list()).filter(
-      (r) => (!text || r.title.toLocaleLowerCase().includes(text)) && (!query.lang || r.lang === query.lang),
-    )
+    const countries = query.countries ?? []
+    const mine = (r: VoiceRoomSummary) => Number(r.host.country === this.me?.country)
+    // As voice_list4: mine first, then my country's rooms (a stable sort keeps the rest in order).
+    return (await (await this.voice()).list())
+      .filter(
+        (r) =>
+          (!text || r.title.toLocaleLowerCase().includes(text)) &&
+          (!query.lang || r.lang === query.lang) &&
+          (!countries.length || countries.includes(r.host.country ?? '')) &&
+          (query.locked !== false || r.refusal !== 'room_password'),
+      )
+      .sort((a, b) => Number(b.mine) - Number(a.mine) || mine(b) - mine(a))
   }
 
   async inviteToRoom(roomId: string, userId: string) {
@@ -1152,8 +1145,20 @@ export class MockBackend implements Backend {
     return (await this.voice()).joinCode(code)
   }
 
-  async updateVoiceRoom(roomId: string, patch: { title: string; announcement: string; lang?: string }) {
+  async updateVoiceRoom(roomId: string, patch: { title: string; lang?: string }) {
     return (await this.voice()).settings(roomId, patch)
+  }
+
+  async unlockRoom(roomId: string, password: string) {
+    return (await this.voice()).unlock(roomId, password)
+  }
+
+  async setRoomPassword(roomId: string, password: string | null) {
+    return (await this.voice()).setPassword(roomId, password)
+  }
+
+  async setRoomNotice(roomId: string, text: string) {
+    return (await this.voice()).notice(roomId, text)
   }
 
   async sendVoicePhoto(roomId: string, photo: File) {
@@ -1189,23 +1194,6 @@ export class MockBackend implements Backend {
   voiceTyping(_roomId: string, _name: string) {}
 
   /** The demo reaches no other site: a card from the address alone (shown with "Open in browser"). */
-  /** ?demo_translate=off: the server has no AI key yet (503); ?demo_translate=limit: the day's limit is used up. */
-  async translate(kind: 'chat' | 'room', id: number, target: string) {
-    await wait(jitter(350, 900))
-    const flag = typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('demo_translate')
-    if (flag === 'off') throw new BackendError('translate_unavailable')
-    if (flag === 'limit') throw new BackendError('slow_down')
-    let text: string | null = null
-    if (kind === 'chat') {
-      for (const m of this.matches.values()) text ??= m.messages.find((x) => x.id === id)?.text ?? null
-    } else {
-      text = this.voiceSim?.lineText(id) ?? null
-    }
-    if (!text) throw new BackendError('not_found')
-    const english = target === 'en' ? PHRASEBOOK[text] : undefined
-    return english ? { text: english, same: false } : { text, same: true }
-  }
-
   async linkMeta(url: string): Promise<LinkMeta> {
     await wait(300)
     let host = url
@@ -1323,5 +1311,18 @@ export class MockBackend implements Backend {
 
   async buyLook(itemId: string) {
     return (await this.lookSim()).buy(itemId)
+  }
+
+  /** The demo's gender pass (none at first; ?demo_pass gives one). */
+  private passUntil = typeof location !== 'undefined' && new URLSearchParams(location.search).has('demo_pass') ? Date.now() + DAY : 0
+
+  async genderPass() {
+    await wait(150)
+    return this.passUntil > Date.now() ? this.passUntil : null
+  }
+
+  async buyGenderPass() {
+    await wait(600)
+    this.passUntil = Math.max(Date.now(), this.passUntil) + DAY
   }
 }

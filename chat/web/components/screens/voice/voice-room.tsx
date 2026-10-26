@@ -2,15 +2,15 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
-import { ReactionIcon, TopicChip, TopicIcon } from '@/components/ui/topic-icons'
+import { ReactionIcon, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
-import { categoryLabel, kindTopic } from '@/components/screens/rooms/room-text'
+import { RoomCountry } from '@/components/screens/rooms/room-country'
 import { besideClick, LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
 import { hostOf, shareable } from '@/lib/links'
 import { retryImport } from '@/lib/retry-import'
@@ -18,10 +18,10 @@ import { cn } from '@/lib/utils'
 import { VOICE_SEATS, type VoiceMember, type VoiceRoom, type VoiceStage } from '@/lib/backend'
 import type { Quotable } from '@/lib/voice-chat'
 import { VoiceChat, VoiceComposer } from './voice-chat'
-import { MusicHero, MusicPanel, QueueSheet } from './voice-music'
+import { MusicPanel, QueueSheet } from './voice-music'
 import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
-import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
+import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
 import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
@@ -46,8 +46,7 @@ const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
 
 /**
  * A room, full screen. Every room has the chat (text with replies, @mentions and links, icebreakers,
- * photos, polls), the stage and shared music; the category decides what comes first and how big it is: a talk room
- * gives the chat most of the screen, a music room the player (room-split.tsx: people can change it).
+ * photos, polls), the stage and shared music (room-split.tsx: people choose how the screen is shared).
  * The stage (seats, who's on it) and the listeners are two separate sections.
  *  - Phones: the music and the stage on top (it scrolls), a handle, the chat under it, the composer and the controls
  *    at the bottom. Links open in a tall sheet; a page shown to the room is a card to open.
@@ -74,7 +73,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const [, setClosedTick] = useState(0)
   const openLink = useCallback((url: string) => setViewer(url), [])
   const { room, me } = s
-  const split = useWideSplit(room?.category ?? 'talk', rootRef, wide && !!room)
+  const split = useWideSplit(rootRef, wide && !!room)
   // A shared page that can't be framed is only a card that opens in a new tab (older apps could share any page).
   const stageFrames = useLinkMeta(room?.stage?.url ?? null).frames
 
@@ -102,7 +101,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       </div>
     )
 
-  const kind = room.category
   const isHost = me.role === 'host'
   const mod = isMod(me)
   const audience = room.members.filter((x) => x.seat === null)
@@ -180,9 +178,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   )
   const listeners = <Listeners room={room} wide={wide} hands={hands} onAll={() => setSheet({ kind: 'audience' })} onPerson={person} />
 
-  // Music outside a music room: the slim "listen" bar (the player opens on a tap).
+  // Music: the slim "listen" bar (the player opens on a tap).
   const musicBar =
-    room.track && kind !== 'music' ? (
+    room.track ? (
       <MusicPanel track={room.track} queue={room.queue} canDJ={mod} open={musicOpen} onOpenChange={setMusicOpen} onQueue={() => setSheet({ kind: 'queue' })} act={s.act} />
     ) : null
   // Phones: the page shown to the room is a card (the sheet would cover the chat); wide screens show it in its column.
@@ -196,7 +194,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
   const top: ReactNode = (
     <>
-      {kind === 'music' ? <MusicHero track={room.track} queue={room.queue} canDJ={mod} hostName={host?.profile.name ?? ''} onQueue={() => setSheet({ kind: 'queue' })} act={s.act} /> : null}
       {stageSection}
       {musicBar}
       {listeners}
@@ -209,7 +206,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       s={s}
       onPerson={person}
       onReply={setReplyTo}
-      onIcebreaker={kind === 'talk' ? s.icebreaker : undefined}
+      onIcebreaker={s.icebreaker}
       className={cn('flex-1', !wide && 'pt-1')}
     />
   )
@@ -264,7 +261,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   return (
     <LinkOpenProvider value={openLink}>
       <div ref={rootRef} className="relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground">
-        {/* One soft glow in the room's category colour. */}
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
           <header className="flex items-center gap-1 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 sm:px-4">
             <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={t('voice.minimise')}>
@@ -273,7 +269,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             <div className="min-w-0 flex-1 px-1">
               <h1 className="truncate text-base leading-tight font-bold">{room.title}</h1>
               <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <TopicChip topic={kindTopic(kind)} label={categoryLabel(kind, t)} className="h-6 text-[11px]" />
+                <RoomCountry iso={host?.profile.country} className="h-6 text-[11px]" />
                 <button
                   type="button"
                   onClick={() => setSheet({ kind: 'people' })}
@@ -306,7 +302,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <LogOut className="size-5 rtl:-scale-x-100" aria-hidden />
             </Button>
           </header>
-          {room.announcement ? <Announcement text={room.announcement} onEdit={isHost ? () => setSheet({ kind: 'settings' }) : undefined} /> : null}
+          {room.announcement ? <Announcement key={room.announcement} text={room.announcement} onEdit={mod ? () => setSheet({ kind: 'notice' }) : undefined} /> : null}
           {s.offline ? (
             <p role="status" className="mx-3 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-destructive/15 px-3 py-1.5 text-xs font-semibold text-destructive sm:mx-4">
               <WifiOff className="size-3.5 shrink-0" aria-hidden /> {rt('reconnecting')}
@@ -334,7 +330,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
-            <PhoneSplit key={kind} kind={kind} top={top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+            <PhoneSplit top={top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
           )}
 
           <ControlBar
@@ -405,6 +401,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             void copyCode()
           }}
           onSettings={() => setSheet({ kind: 'settings' })}
+          onNotice={mod ? () => setSheet({ kind: 'notice' }) : undefined}
           onReport={() => setSheet({ kind: 'reportRoom' })}
           onLeave={() => {
             close()
@@ -412,6 +409,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           }}
         />
         {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
+        {mod ? <NoticeSheet room={room} open={sheet?.kind === 'notice'} onClose={close} /> : null}
         <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
         <PeopleSheet room={room} open={sheet?.kind === 'people'} onClose={close} onPerson={person} />
         <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />
@@ -719,25 +717,43 @@ function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }
   )
 }
 
-/** The host's announcement, pinned under the header (the host edits it from here). */
+/**
+ * The room's notice (27), pinned under the header: two lines, a tap opens the rest (KakaoTalk); the host and co-hosts
+ * edit it from here.
+ */
 function Announcement({ text, onEdit }: { text: string; onEdit?: () => void }) {
   const { t } = useI18n()
+  const ref = useRef<HTMLParagraphElement>(null)
+  const [open, setOpen] = useState(false)
+  const [long, setLong] = useState(false)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (el && !open) setLong(el.scrollHeight > el.clientHeight + 1)
+  }, [open, text])
   return (
     <div className="mx-3 mb-2 flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2 ring-1 ring-border sm:mx-4">
       <Pin className="mt-0.5 size-3.5 shrink-0 text-primary-text" aria-hidden />
-      <p className="line-clamp-3 min-w-0 flex-1 text-[13px] leading-snug break-words">
-        <span className="sr-only">{t('room.announcement')}: </span>
-        {text}
-      </p>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        disabled={!long && !open}
+        aria-expanded={long || open ? open : undefined}
+        className="flex min-w-0 flex-1 items-start gap-1 text-start disabled:cursor-default"
+      >
+        <p ref={ref} dir="auto" className={cn('min-w-0 flex-1 text-[13px] leading-snug break-words whitespace-pre-wrap', !open && 'line-clamp-2')}>
+          <span className="sr-only">{t('room.announcement')}: </span>
+          {text}
+        </p>
+        {long || open ? <ChevronDown className={cn('mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-150', open && 'rotate-180')} aria-hidden /> : null}
+      </button>
       {onEdit ? (
-        <button type="button" onClick={onEdit} aria-label={t('room.settings')} className="-my-1 -me-1 grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground">
+        <button type="button" onClick={onEdit} aria-label={t('notice.edit')} className="-my-1 -me-1 grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground">
           <Pencil className="size-3.5" aria-hidden />
         </button>
       ) : null}
     </div>
   )
 }
-
 
 /** Only when the audio needs something: a tap (autoplay rules), or it is reconnecting / can't connect. */
 function AudioNotice({ s }: { s: VoiceSession }) {

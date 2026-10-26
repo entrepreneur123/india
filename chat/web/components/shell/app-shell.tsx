@@ -12,7 +12,6 @@ import { onGate } from '@/lib/gate'
 import { errorCode } from '@/lib/format'
 import { kycOffCached, markKycOff, markVerifyAsked, rememberRequired, verifyAsked } from '@/components/trust/store'
 import { useI18n } from '@/components/i18n'
-import { TranslateProvider } from '@/components/translate'
 import { useSocialT } from '@/components/social/social-text'
 import type { VoiceControl } from '@/components/screens/voice/voice-session'
 import { useToast } from '@/components/ui/toast'
@@ -39,6 +38,7 @@ import {
   VerifySheet,
   MannerLowSheet,
   LooksSheet,
+  RoomPasswordDialog,
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 import { IncomingCall } from '@/components/video/incoming-call'
@@ -88,6 +88,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
   const [shop, setShop] = useState<{ open: boolean; tab: ItemKind } | null>(null)
+  const [pwRoom, setPwRoom] = useState<{ id: string | null } | null>(null)
   const [profileUsed, setProfileUsed] = useState(false)
   const [postTarget, setPostTarget] = useState<PostTarget | null>(null)
   const [postUsed, setPostUsed] = useState(false)
@@ -300,6 +301,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
       openVoice,
+      askRoomPassword: (id) => setPwRoom({ id }),
       freeForRoom,
       freeForRandom,
       registerRandom,
@@ -346,7 +348,6 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
 
   return (
     <AppContext.Provider value={state}>
-      <TranslateProvider>
         <div className="min-h-dvh bg-background text-foreground">
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
@@ -489,7 +490,20 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
             </Suspense>
           </ScreenBoundary>
         ) : null}
-      </TranslateProvider>
+        {pwRoom ? (
+          <ScreenBoundary>
+            <Suspense fallback={null}>
+              <RoomPasswordDialog
+                roomId={pwRoom.id}
+                onClose={() => setPwRoom({ id: null })}
+                onUnlocked={(id) => {
+                  setPwRoom({ id: null })
+                  openVoice(id)
+                }}
+              />
+            </Suspense>
+          </ScreenBoundary>
+        ) : null}
     </AppContext.Provider>
   )
 }

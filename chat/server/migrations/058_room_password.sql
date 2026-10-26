@@ -120,4 +120,6 @@ language sql security definer set search_path = '' as $$
      limit 1000) x), '[]')
    where id = 1
 $$;
--- voice_list3's 'room_password' refusal is in 055 (with the same-country rule), applied right after.
+-- The list's 'room_password' refusal is in 055 (voice_list4), applied right after.
+revoke execute on function public.voice_set_password(text, text), public.voice_unlock(text, text) from public, anon;
+grant execute on function public.voice_set_password(text, text), public.voice_unlock(text, text) to authenticated;

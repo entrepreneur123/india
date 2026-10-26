@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
@@ -36,6 +36,7 @@ export type SheetState =
   | { kind: 'options' }
   | { kind: 'reportRoom' }
   | { kind: 'settings' }
+  | { kind: 'notice' }
   | { kind: 'invite' }
   | { kind: 'people' }
   | null
@@ -473,6 +474,7 @@ export function OptionsSheet({
   onShare,
   onCopyCode,
   onSettings,
+  onNotice,
   onReport,
   onLeave,
 }: {
@@ -487,6 +489,8 @@ export function OptionsSheet({
   onShare: () => void
   onCopyCode: () => void
   onSettings: () => void
+  /** The host or a co-host: the room's notice. */
+  onNotice?: () => void
   onReport: () => void
   onLeave: () => void
 }) {
@@ -498,6 +502,7 @@ export function OptionsSheet({
         <Row icon={<UserPlus />} label={st('invite.title')} onClick={onInvite} />
         {canShare ? <Row icon={<Link2 />} label={t('voice.share')} onClick={onShare} /> : null}
         {code ? <Row icon={<Copy />} label={t('room.copy', { code })} onClick={onCopyCode} /> : null}
+        {onNotice ? <Row icon={<Pin />} label={t('room.announcement')} onClick={onNotice} /> : null}
         {isHost ? <Row icon={<Settings2 />} label={t('room.settings')} onClick={onSettings} /> : null}
         {isHost ? null : <Row icon={<Flag />} label={t('voice.reportRoom')} onClick={onReport} />}
         <Row icon={<LogOut />} label={isHost ? t('voice.endConfirm') : t('voice.leaveQuietly')} danger onClick={onLeave} />
@@ -513,31 +518,33 @@ const ROOM_REASONS: { value: ReportReason; label: TKey; detail: TKey }[] = [
   { value: 'other', label: 'report.other', detail: 'report.otherDetail' },
 ]
 
-/** Host: the room's title and its pinned announcement. */
+/** Host: the room's title, language and password (the notice has its own sheet). */
 export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
   const id = useId()
   const [title, setTitle] = useState(room.title)
-  const [note, setNote] = useState(room.announcement ?? '')
   const [lang, setLang] = useState(room.lang ?? '')
+  const [pw, setPw] = useState(room.password ?? '')
   const { st } = useSocialT()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
     if (!open) return
     setTitle(room.title)
-    setNote(room.announcement ?? '')
     setLang(room.lang ?? '')
+    setPw(room.password ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
-  const valid = title.trim().length >= 2 && title.trim().length <= 40
+  const newPw = pw.trim()
+  const valid = title.trim().length >= 2 && title.trim().length <= 40 && (!newPw || newPw.length >= 4)
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
     setBusy(true)
     try {
-      await backend.updateVoiceRoom(room.id, { title: title.trim(), announcement: note.trim(), lang: lang || undefined })
+      await backend.updateVoiceRoom(room.id, { title: title.trim(), lang: lang || undefined })
+      if (newPw !== (room.password ?? '')) await backend.setRoomPassword(room.id, newPw || null)
       toast.show(t('room.saved'), 'success')
       onClose()
     } catch (err) {
@@ -552,21 +559,65 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
         <Field label={t('create.name')} htmlFor={`${id}-t`} trailing={<span className="text-xs tabular-nums text-muted-foreground">{title.length}/40</span>}>
           <TextInput id={`${id}-t`} value={title} maxLength={40} onChange={(e) => setTitle(e.target.value)} data-autofocus />
         </Field>
-        <Field
-          label={t('create.announcement')}
-          htmlFor={`${id}-n`}
-          hint={t('create.announcementHint')}
-          trailing={<span className="text-xs tabular-nums text-muted-foreground">{note.length}/200</span>}
-        >
-          <TextArea id={`${id}-n`} value={note} maxLength={200} rows={3} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} />
-        </Field>
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm font-semibold">{st('rooms.lang')}</span>
           <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={lang ? undefined : '—'} className="w-48" />
         </div>
+        <Field label={t('room.password')} htmlFor={`${id}-p`} hint={t('room.passwordHint')}>
+          <TextInput id={`${id}-p`} value={pw} maxLength={12} autoComplete="off" placeholder="••••" onChange={(e) => setPw(e.target.value)} />
+        </Field>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!valid}>
           {t('common.save')}
         </Button>
+      </form>
+    </Modal>
+  )
+}
+
+/** The host or a co-host (27): the notice pinned at the top of the room; saving a new one tells the chat. */
+export function NoticeSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { t } = useI18n()
+  const id = useId()
+  const [note, setNote] = useState('')
+  const [busy, setBusy] = useState<'save' | 'remove' | null>(null)
+  useEffect(() => {
+    if (open) setNote(room.announcement ?? '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+  const save = async (text: string) => {
+    setBusy(text ? 'save' : 'remove')
+    try {
+      await backend.setRoomNotice(room.id, text)
+      toast.show(t(text ? 'notice.saved' : 'notice.removed'), 'success')
+      onClose()
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(null)
+    }
+  }
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={t('room.announcement')} description={t('create.announcementHint')}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (note.trim() && !busy) void save(note.trim())
+        }}
+        className="flex flex-col gap-4 p-6 pt-4"
+      >
+        <Field label={t('room.announcement')} htmlFor={`${id}-n`} trailing={<span className="text-xs tabular-nums text-muted-foreground">{note.length}/200</span>}>
+          <TextArea id={`${id}-n`} value={note} maxLength={200} rows={4} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} data-autofocus />
+        </Field>
+        <Button type="submit" variant="brand" size="lg" loading={busy === 'save'} disabled={!note.trim() || note.trim() === room.announcement || !!busy}>
+          {t('common.save')}
+        </Button>
+        {room.announcement ? (
+          <Button variant="ghost" size="lg" className="text-destructive hover:text-destructive" loading={busy === 'remove'} disabled={!!busy} onClick={() => void save('')}>
+            {t('notice.remove')}
+          </Button>
+        ) : null}
       </form>
     </Modal>
   )
