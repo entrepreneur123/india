@@ -29,6 +29,7 @@ import {
   prefetchScreens,
   ProfileSheet,
   RecentScreen,
+  ExploreScreen,
   RightPanel,
   RoomsScreen,
   SettingsScreen,
@@ -395,6 +396,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
                       <Suspense fallback={<ScreenLoading />}>
                         {tab === 'rooms' ? <RoomsScreen /> : null}
                         {tab === 'recent' ? <RecentScreen /> : null}
+                        {tab === 'explore' ? <ExploreScreen /> : null}
                         {tab === 'me' ? <MeScreen /> : null}
                         {tab === 'settings' ? <SettingsScreen /> : null}
                       </Suspense>

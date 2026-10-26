@@ -2,7 +2,7 @@
 
 import * as m from 'motion/react-m'
 import type { ComponentType } from 'react'
-import { Bell, MessagesSquare, Settings, Shuffle, UserRound, Users } from 'lucide-react'
+import { Bell, Compass, MessagesSquare, Settings, Shuffle, UserRound, Users } from 'lucide-react'
 import { useApp, type Tab } from '@/components/app-state'
 import type { TKey } from '@/lib/i18n'
 import { Avatar } from '@/components/ui/avatar'
@@ -30,6 +30,7 @@ export function recentCount(b: Badges | null) {
 // Settings is in the sidebar only (phones reach it from Me).
 const ITEMS: NavItem[] = [
   { tab: 'rooms', label: 'nav.rooms', icon: MessagesSquare },
+  { tab: 'explore', label: 'nav.explore', icon: Compass },
   { tab: 'random', label: 'nav.random', icon: Shuffle },
   { tab: 'recent', label: 'nav.recent', icon: Users },
   { tab: 'me', label: 'nav.me', icon: UserRound },

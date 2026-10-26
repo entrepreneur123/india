@@ -89,6 +89,8 @@ export interface PostComment {
 
 export interface Profile {
   id: string
+  /** Mine only (059): people who aren't my friends may message me. */
+  dmEveryone?: boolean
   name: string
   gender: Gender
   age: number
@@ -262,6 +264,31 @@ export interface RecentMatch {
 
 export type ReportReason = 'nudity' | 'minor' | 'harassment' | 'fake' | 'other'
 export type FriendState = 'none' | 'requested' | 'incoming' | 'friends'
+
+/** 059 Explore: 'recommend' 50 at random, 'online', 'likes' / 'friends' rankings (count), 'liked' (whom I liked). */
+export type ExploreKind = 'recommend' | 'online' | 'likes' | 'friends' | 'liked'
+export interface ExplorePerson extends PersonRow {
+  age: number
+  country: string | null
+  /** Rankings: the profile likes or friends. */
+  count: number | null
+}
+/** A friend's post or highlight in the Explore feed. */
+export interface FeedItem {
+  kind: 'post' | 'highlight'
+  id: string
+  user: PersonRow
+  text: string
+  photos: string[]
+  at: string
+}
+/** A profile's likes and friends, whether I like it and whether I may message it. */
+export interface ProfileSocial {
+  likes: number
+  friends: number
+  liked: boolean
+  canMessage: boolean
+}
 
 /** 042: someone found by ID, or on my block list. */
 export interface PersonRow {
@@ -636,6 +663,7 @@ export type BackendErrorCode =
   | 'handle_cooldown'
   /** 040: a name with fancy-font letters (𝓛𝓲𝓼𝓪) or stacked accents. */
   | 'name_invalid'
+  | 'too_many_posts'
   /** 040: wearing a look I don't own (046: also a wall or incognito). */
   | 'not_owned'
   /** 046: a sticker from a pack I don't own. */
@@ -713,6 +741,13 @@ export interface Backend {
   friendThread(userId: string): Promise<string> // a matchId to open the chat in
   /** 042: people whose ID starts with q (@ and case ignored), up to 20; found people can be viewed for a day. */
   searchHandles(q: string): Promise<PersonRow[]>
+  /** `country` (ISO 2) null: mine. */
+  explorePeople(kind: ExploreKind, country?: string | null): Promise<ExplorePerson[]>
+  exploreFeed(): Promise<FeedItem[]>
+  profileSocial(userId: string): Promise<ProfileSocial>
+  likeProfile(userId: string, on: boolean): Promise<void>
+  /** Messages from anyone (true) or friends only (false, the default). */
+  setDmEveryone(on: boolean): Promise<Profile>
   /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
   blocks(): Promise<PersonRow[]>
   unblock(userId: string): Promise<void>

@@ -12,6 +12,7 @@ const loaders = {
   rooms: () => retryImport(() => import('@/components/screens/rooms/rooms-screen')),
   post: () => retryImport(() => import('@/components/social/posts/post-sheet')),
   recent: () => retryImport(() => import('@/components/screens/recent/recent-screen')),
+  explore: () => retryImport(() => import('@/components/screens/explore/explore-screen')),
   me: () => retryImport(() => import('@/components/screens/me/me-screen')),
   settings: () => retryImport(() => import('@/components/screens/settings/settings-screen')),
   thread: () => retryImport(() => import('@/components/screens/random/thread-screen')),
@@ -42,6 +43,7 @@ export function preloadScreen(name: keyof typeof loaders | Tab) {
 export const RoomsScreen = lazy(() => loaders.rooms().then((m) => ({ default: m.RoomsScreen })))
 export const PostSheet = lazy(() => loaders.post().then((m) => ({ default: m.PostSheet })))
 export const RecentScreen = lazy(() => loaders.recent().then((m) => ({ default: m.RecentScreen })))
+export const ExploreScreen = lazy(() => loaders.explore().then((m) => ({ default: m.ExploreScreen })))
 export const MeScreen = lazy(() => loaders.me().then((m) => ({ default: m.MeScreen })))
 export const SettingsScreen = lazy(() => loaders.settings().then((m) => ({ default: m.SettingsScreen })))
 export const ThreadScreen = lazy(() => loaders.thread().then((m) => ({ default: m.ThreadScreen })))

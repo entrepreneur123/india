@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Check, Flag, MessageCircle, UserPlus, X } from 'lucide-react'
+import { Check, Flag, Heart, MessageCircle, UserPlus, X } from 'lucide-react'
 import type { FriendState, Interest, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -21,6 +21,9 @@ import { Highlights } from '@/components/social/highlights'
 import { useTrust } from '@/components/trust/badge'
 import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
 import { isVip } from '@/lib/looks'
+import { cn } from '@/lib/utils'
+
+const socialKey = (userId: string) => ['social', userId]
 
 /**
  * Someone's profile: the card in their frame with their @ID, status, languages, prompts, photos and posts. The server shows people I have
@@ -51,6 +54,19 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const { data: friends, mutate: refreshFriends } = useSWR('friends', () => backend.friends())
   const [busy, setBusy] = useState(false)
   const [reportOpen, setReportOpen] = useState(false)
+  const social = useSWR(isMe ? null : socialKey(userId), () => backend.profileSocial(userId))
+  const like = async () => {
+    const was = social.data
+    if (!was) return
+    // Shown at once, then as the server has it.
+    await social.mutate({ ...was, liked: !was.liked, likes: was.likes + (was.liked ? -1 : 1) }, { revalidate: false })
+    try {
+      await backend.likeProfile(userId, !was.liked)
+    } catch (err) {
+      toast.error(err)
+    }
+    void social.mutate()
+  }
   const shown: Profile | null | undefined = isMe ? me : profile
   const state: FriendState = friends?.find((f) => f.profile.id === userId)?.state ?? 'none'
   const theirTrust = useTrust(isMe ? null : userId)
@@ -120,6 +136,11 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
             actions={
               isMe ? null : (
                 <>
+                  {state !== 'friends' && social.data?.canMessage ? (
+                    <Button variant="outline" size="icon" onClick={() => openThread(shown)} aria-label={t('profile.message')}>
+                      <MessageCircle className="size-4.5" aria-hidden />
+                    </Button>
+                  ) : null}
                   {state === 'friends' ? (
                     <Button variant="brand" className="flex-1" onClick={() => openThread(shown)}>
                       <MessageCircle className="size-4.5" aria-hidden /> {t('profile.message')}
@@ -152,6 +173,16 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                       <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
                     </Button>
                   )}
+                  <Button
+                    variant={social.data?.liked ? 'brand' : 'outline'}
+                    size="icon"
+                    disabled={!social.data}
+                    onClick={() => void like()}
+                    aria-label={social.data?.liked ? t('profile.liked') : t('profile.like')}
+                    aria-pressed={!!social.data?.liked}
+                  >
+                    <Heart className={cn('size-4.5', social.data?.liked && 'fill-current')} aria-hidden />
+                  </Button>
                   <Button variant="outline" size="icon" onClick={() => setReportOpen(true)} aria-label={t('chat.report', { name: shown.name })}>
                     <Flag className="size-4.5" aria-hidden />
                   </Button>
@@ -206,7 +237,9 @@ export function ProfileContent({
   emptyPosts?: ReactNode
   children?: ReactNode
 }) {
-  const { plural } = useI18n()
+  const { plural, t, num } = useI18n()
+  const backend = useBackend()
+  const { data: social } = useSWR(socialKey(profile.id), () => backend.profileSocial(profile.id))
   return (
     <>
       <div className="flex flex-col items-center px-3 pt-3 text-center">
@@ -220,7 +253,10 @@ export function ProfileContent({
           slot={slot}
         />
         {profile.interests?.length ? <InterestChips tags={profile.interests} shared={shared} className="mt-3 justify-center px-3" /> : null}
-        <p className="mt-3 text-sm text-muted-foreground">{plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}</p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}
+          {social ? ` · ${t('profile.likes')} ${num(social.likes)} · ${t('profile.friends')} ${num(social.friends)}` : null}
+        </p>
         {actions ? <div className="mt-5 flex w-full max-w-sm gap-2">{actions}</div> : null}
       </div>
       <Highlights userId={profile.id} owner={profile.name} className="mt-6" />

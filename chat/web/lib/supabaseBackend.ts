@@ -25,6 +25,10 @@ import {
   type Trust,
   MAX_PHOTOS,
   type Highlight,
+  type ExploreKind,
+  type ExplorePerson,
+  type FeedItem,
+  type ProfileSocial,
   type Gender,
   type Match,
   type MatchEvent,
@@ -90,7 +94,7 @@ const CODES = [
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   // sticker_not_owned before not_owned: the first code the message contains wins.
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'sticker_not_owned', 'not_owned',
-  'contact_invalid', 'not_friends',
+  'contact_invalid', 'not_friends', 'too_many_posts',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
@@ -100,7 +104,7 @@ type CardRow = {
 }
 /** 033: colour, status, languages, prompts (profiles columns, or profile_style rows); 040 keeps the colour null. */
 type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string } & StyleRow
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string; dm_from: string } & StyleRow
 type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
 /** inbox2 (033): inbox's lines plus the post a like or comment is about. */
 type InboxRow = {
@@ -396,14 +400,14 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle')
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle, dm_from')
         .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
     if (error) fail(error)
     if (!data) return null
     const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
-    return { ...p, handle: data.handle, style: await this.toStyle(data) }
+    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone' }
   }
 
   async createProfile(p: NewProfile) {
@@ -959,6 +963,37 @@ export class SupabaseBackend implements Backend {
   async contactsOf(userId: string) {
     const r = await this.rpc<{ contacts: unknown; mine_shared: boolean } | null>('contacts_of', { p_user: userId })
     return r && { contacts: r.contacts ? contactsOnly(r.contacts) : null, mineShared: r.mine_shared }
+  }
+
+  async explorePeople(kind: ExploreKind, country?: string | null): Promise<ExplorePerson[]> {
+    const rows = (await this.rpc<(PersonRowRaw & { age: number; country: string | null; n: number | null })[] | null>('explore_people', { p_kind: kind, p_country: country ?? null })) ?? []
+    const people = await this.personRows(rows)
+    return people.map((p, i) => ({ ...p, age: rows[i].age, country: rows[i].country, count: rows[i].n }))
+  }
+
+  async exploreFeed(): Promise<FeedItem[]> {
+    type Row = { kind: 'post' | 'highlight'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string }
+    const rows = (await this.rpc<Row[] | null>('explore_feed')) ?? []
+    await this.signMany(rows.flatMap((r) => r.photos))
+    const users = await this.personRows(rows.map((r) => ({ id: r.user_id, handle: r.handle, name: r.name, photo_path: r.photo_path })))
+    return rows.map((r, i) => ({
+      kind: r.kind, id: r.item, user: users[i], text: r.body ?? '', at: r.at,
+      photos: r.photos.flatMap((x) => this.signedUrls.get(x)?.url ?? []),
+    }))
+  }
+
+  async profileSocial(userId: string): Promise<ProfileSocial> {
+    const r = (await this.rpc<{ likes: number; friends: number; liked: boolean; can_message: boolean }[] | null>('profile_social', { p_user: userId }))?.[0]
+    return { likes: r?.likes ?? 0, friends: r?.friends ?? 0, liked: !!r?.liked, canMessage: !!r?.can_message }
+  }
+
+  async likeProfile(userId: string, on: boolean) {
+    await this.rpc('like_profile', { p_user: userId, p_on: on })
+  }
+
+  async setDmEveryone(on: boolean) {
+    await this.rpc('set_dm_from', { p_value: on ? 'everyone' : 'friends' })
+    return this.mine()
   }
 
   private async personRows(rows: PersonRowRaw[] | null): Promise<PersonRow[]> {

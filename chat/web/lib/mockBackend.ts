@@ -8,6 +8,8 @@ import {
   MAX_PHOTOS,
   MAX_HIGHLIGHTS,
   type Highlight,
+  type ExploreKind,
+  type FeedItem,
   type RoomQuery,
   type Entitlements,
   type FeedPost,
@@ -880,6 +882,50 @@ export class MockBackend implements Backend {
       bio: bio.trim(),
       photoUrl: photo ? URL.createObjectURL(photo) : this.me.photoUrl,
     }
+    return { ...this.me }
+  }
+
+  private likedIds = new Set<string>()
+
+  async explorePeople(kind: ExploreKind, country?: string | null) {
+    await wait(300)
+    const c = country ?? this.me?.country ?? null
+    let list = PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p) && (kind === 'liked' ? this.likedIds.has(p.id) : !c || p.country === c))
+    if (kind === 'recommend') list = [...list].sort(() => Math.random() - 0.5)
+    if (kind === 'online') list = list.filter((_, i) => i % 2 === 0)
+    // Rankings: a steady made-up count per person, highest first.
+    const count = (id: string) => (kind === 'likes' || kind === 'friends' ? [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 97 : null)
+    return list
+      .map((p) => ({ ...this.personRow(p), age: p.age, country: p.country ?? null, count: count(p.id) }))
+      .sort((a, b) => (b.count ?? 0) - (a.count ?? 0))
+      .slice(0, 50)
+  }
+
+  async exploreFeed(): Promise<FeedItem[]> {
+    await wait(300)
+    return [...this.friendMap]
+      .filter(([, s]) => s === 'friends')
+      .flatMap(([id], i) => {
+        const p = this.person(id)
+        return p?.photoUrl ? [{ kind: 'post' as const, id: `f_${id}`, user: this.personRow(p), text: p.bio, photos: [p.photoUrl], at: new Date(Date.now() - i * 3_600_000).toISOString() }] : []
+      })
+  }
+
+  async profileSocial(userId: string) {
+    await wait(150)
+    return { likes: (this.likedIds.has(userId) ? 1 : 0) + 12, friends: 8, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id }
+  }
+
+  async likeProfile(userId: string, on: boolean) {
+    await wait(150)
+    if (on) this.likedIds.add(userId)
+    else this.likedIds.delete(userId)
+  }
+
+  async setDmEveryone(on: boolean) {
+    if (!this.me) throw new BackendError('not_found')
+    await wait(200)
+    this.me = { ...this.me, dmEveryone: on }
     return { ...this.me }
   }
 

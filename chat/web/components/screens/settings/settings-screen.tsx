@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
@@ -24,7 +24,7 @@ export function SettingsScreen() {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang, setLang } = useI18n()
-  const { entitlements, openPaywall, signedOut, phone } = useApp()
+  const { entitlements, openPaywall, signedOut, phone, me, setMe } = useApp()
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
@@ -97,6 +97,13 @@ export function SettingsScreen() {
         ) : null}
 
         <Group title={t('settings.safety')}>
+          <Toggle
+            icon={MessageCircle}
+            label={t('settings.dmEveryone')}
+            body={t('settings.dmEveryoneBody')}
+            on={!!me?.dmEveryone}
+            onChange={(on) => void backend.setDmEveryone(on).then(setMe, toast.error)}
+          />
           {shop?.owned.includes('vip_anon') ? (
             <Toggle icon={VenetianMask} label={lt('vip.toggle')} body={lt('vip.toggleBody')} on={shop.anon} onChange={(on) => !anon.busy && void anon.set(on)} />
           ) : null}

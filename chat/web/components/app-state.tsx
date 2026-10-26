@@ -5,7 +5,7 @@ import type { Badges, Entitlements, FeedPost, ItemKind, KycResult, MyTrust, Prof
 import type { Lang, T } from '@/lib/i18n'
 import type { RandomLive } from '@/lib/live-session'
 
-export type Tab = 'rooms' | 'random' | 'recent' | 'me' | 'settings'
+export type Tab = 'rooms' | 'explore' | 'random' | 'recent' | 'me' | 'settings'
 
 export interface Thread {
   matchId: string
