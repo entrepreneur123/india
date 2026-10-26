@@ -1,5 +1,5 @@
 -- Room passwords (the owner, 2026-10-26): a room the host gives a password (4-12 characters) stays in the list with a
--- lock ('room_password' in voice_list3). voice_unlock(room, password) checks it (10 misses in 10 minutes = slow_down,
+-- lock ('room_password' in the list, 055). voice_unlock(room, password) checks it (10 misses in 10 minutes = slow_down,
 -- shared with room codes) and lets that person in from then on; join_voice refuses 'room_password' until then. People
 -- already in, the host, invites and room codes don't need it. Only the host sees and changes it (voice_set_password;
 -- null removes it, a new password asks everyone outside again). Hidden rooms are the private ones (019).
