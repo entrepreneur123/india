@@ -39,8 +39,6 @@ const ms: SocialDict = {
   'rooms.anyLang': 'Semua bahasa',
   'rooms.noMatch': 'Tiada bilik yang sepadan',
   'rooms.noMatchBody': 'Cuba perkataan atau bahasa lain, atau mulakan bilik anda sendiri.',
-  'online.one': '{n} orang dalam talian',
-  'online.other': '{n} orang dalam talian',
 
   // invites and links
   'invite.title': 'Jemput rakan',
@@ -144,6 +142,9 @@ const ms: SocialDict = {
   'inbox.reactions': 'Suka & komen',
   'inbox.gift': '{name} menghantar hadiah kepada anda: {item}',
   'inbox.giftOpen': 'Lihat',
+  'crowd.calm': "Status pelayan: Lancar",
+  'crowd.normal': "Status pelayan: Biasa",
+  'crowd.busy': "Status pelayan: Sesak",
 }
 
 export default ms

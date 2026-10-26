@@ -74,6 +74,8 @@ const es: RoomDict = {
   lost: 'Sin conexión',
   reconnecting: 'Sin conexión · Reconectando…',
   lostLeft: 'Perdiste la conexión y saliste de la sala',
+  videoBig: 'Ver a {name} en grande',
+  videoSmall: 'Volver a la sala',
 }
 
 export default es

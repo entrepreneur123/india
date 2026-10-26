@@ -74,6 +74,8 @@ const he: RoomDict = {
   lost: 'החיבור נותק',
   reconnecting: 'החיבור נותק · מתחבר מחדש…',
   lostLeft: 'החיבור שלך נותק ויצאת מהחדר',
+  videoBig: 'להגדיל את {name}',
+  videoSmall: 'חזרה לחדר',
 }
 
 export default he

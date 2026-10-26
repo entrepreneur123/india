@@ -24,7 +24,7 @@ import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
-import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
+import { FocusVideo, LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -52,7 +52,8 @@ const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
  *  - Phones: the music and the stage on top (it scrolls), a handle, the chat under it, the composer and the controls
  *    at the bottom. Links open in a tall sheet; a page shown to the room is a card to open.
  *  - Wide screens: the stage and music in the middle, the chat in a column at the end with a splitter between; a link,
- *    or the page shown to the room, opens in a column between them (under 1280 px it takes the middle's place).
+ *    or the page shown to the room, takes the middle's place while it's open (44: the stage isn't needed then).
+ *  - A camera on the stage can be made big (47, like Discord): it takes the middle's place (phones: the top's).
  */
 export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; onMinimise: () => void; onLeave: () => void }) {
   const { t, num, rtl } = useI18n()
@@ -72,7 +73,13 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   /** A link I opened from the chat. */
   const [viewer, setViewer] = useState<string | null>(null)
   const [, setClosedTick] = useState(0)
-  const openLink = useCallback((url: string) => setViewer(url), [])
+  /** 47: whose camera fills the main area (until it's made small, or the camera goes off). */
+  const [focus, setFocus] = useState<string | null>(null)
+  const openLink = useCallback((url: string) => {
+    setFocus(null)
+    setViewer(url)
+  }, [])
+  const unfocus = useCallback(() => setFocus(null), [])
   const { room, me } = s
   const split = useWideSplit(rootRef, wide && !!room)
   // A shared page that can't be framed is only a card that opens in a new tab (older apps could share any page).
@@ -175,8 +182,16 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       onToggle={() => setSeatsOpen((o) => !o)}
       onPerson={person}
       onEmpty={(seat) => void emptySeat(seat)}
+      onExpand={(id) => {
+        setViewer(null)
+        setFocus(id)
+      }}
     />
   )
+  const focused = focus ? room.members.find((x) => x.profile.id === focus && x.seat !== null) : undefined
+  const big = focused && s.videos[focused.profile.id] ? (
+    <FocusVideo member={focused} video={s.videos[focused.profile.id]} levels={s.levels} onClose={unfocus} className={wide ? 'min-h-0 flex-1' : 'aspect-video w-full'} />
+  ) : null
   const listeners = <Listeners room={room} wide={wide} hands={hands} onAll={() => setSheet({ kind: 'audience' })} onPerson={person} />
 
   // Music: the slim "listen" bar (the player opens on a tap).
@@ -315,24 +330,25 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           {wide ? (
             // Reactions float over the whole middle (and the page beside it), not inside the stage that may be scrolled away.
             <div className="relative flex min-h-0 flex-1">
-              <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', panelUrl && 'max-xl:hidden')}>
+              {/* The stage stays mounted under a big camera or a page, so going back is instant. */}
+              <div className={cn('min-h-0 min-w-0 flex-1 overflow-y-auto scrollbar-thin', (big || panelUrl) && 'hidden')}>
                 <div className="mx-auto flex max-w-3xl flex-col gap-3 pt-2 pb-6">{top}</div>
               </div>
-              {panelUrl ? (
+              {big ?? (panelUrl ? (
                 <m.div
                   key="panel"
                   initial={{ opacity: 0, x: rtl ? -16 : 16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
-                  className="min-h-0 w-full shrink-0 overflow-hidden border-s border-border xl:w-[min(46%,560px)]"
+                  className="min-h-0 min-w-0 flex-1 overflow-hidden"
                 >
                   {panel(panelUrl)}
                 </m.div>
-              ) : null}
+              ) : null)}
               <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
-            <PhoneSplit top={top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+            <PhoneSplit top={big ?? top} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
           )}
 
           <ControlBar
@@ -547,6 +563,7 @@ function StageSection({
   onToggle,
   onPerson,
   onEmpty,
+  onExpand,
 }: {
   s: VoiceSession
   wide: boolean
@@ -554,6 +571,7 @@ function StageSection({
   onToggle: () => void
   onPerson: (userId: string) => void
   onEmpty: (seat: number) => void
+  onExpand: (userId: string) => void
 }) {
   const { t } = useI18n()
   const { rt } = useRoomT()
@@ -585,7 +603,7 @@ function StageSection({
           )
         }
       />
-      <VideoGrid room={room} videos={s.videos} levels={s.levels} onPerson={onPerson} />
+      <VideoGrid room={room} videos={s.videos} levels={s.levels} onPerson={onPerson} onExpand={onExpand} />
       <AnimatePresence initial={false} mode="wait">
         {open ? (
           <m.div

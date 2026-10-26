@@ -37,8 +37,6 @@ const ta: SocialDict = {
   'rooms.anyLang': 'எல்லா மொழிகளும்',
   'rooms.noMatch': 'பொருந்தும் ரூம்கள் இல்லை',
   'rooms.noMatchBody': 'வேறு சொல் அல்லது மொழியில் தேடுங்கள், அல்லது உங்கள் சொந்த ரூமைத் தொடங்குங்கள்.',
-  'online.one': '{n} பேர் ஆன்லைனில்',
-  'online.other': '{n} பேர் ஆன்லைனில்',
 
   'invite.title': 'நண்பர்களை அழையுங்கள்',
   'invite.desc': 'அவர்களுக்கு அறிவிப்பு வரும், ஒரே தட்டில் சேரலாம்.',
@@ -138,6 +136,9 @@ const ta: SocialDict = {
   'inbox.reactions': 'லைக் & கருத்து',
   'inbox.gift': '{name} உங்களுக்குப் பரிசு அனுப்பினார்: {item}',
   'inbox.giftOpen': 'பார்',
+  'crowd.calm': "சேவையக நிலை: சீரானது",
+  'crowd.normal': "சேவையக நிலை: இயல்பு",
+  'crowd.busy': "சேவையக நிலை: நெரிசல்",
 }
 
 export default ta

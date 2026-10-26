@@ -74,6 +74,8 @@ const ro: RoomDict = {
   lost: 'Conexiune pierdută',
   reconnecting: 'Conexiune pierdută · Se reconectează…',
   lostLeft: 'Ai pierdut conexiunea și ai ieșit din cameră',
+  videoBig: 'Mărește-l pe {name}',
+  videoSmall: 'Înapoi la cameră',
 }
 
 export default ro

@@ -37,8 +37,6 @@ const bn: SocialDict = {
   'rooms.anyLang': 'সব ভাষা',
   'rooms.noMatch': 'কোনো রুম মেলেনি',
   'rooms.noMatchBody': 'অন্য শব্দ বা ভাষা দিয়ে চেষ্টা করুন, বা নিজের রুম শুরু করুন।',
-  'online.one': '{n} জন অনলাইনে',
-  'online.other': '{n} জন অনলাইনে',
 
   'invite.title': 'বন্ধুদের ডাকুন',
   'invite.desc': 'তাঁরা একটি নোটিফিকেশন পাবেন আর এক ট্যাপে যোগ দিতে পারবেন।',
@@ -139,6 +137,9 @@ const bn: SocialDict = {
   'inbox.reactions': 'লাইক ও কমেন্ট',
   'inbox.gift': '{name} আপনাকে উপহার পাঠিয়েছেন: {item}',
   'inbox.giftOpen': 'দেখুন',
+  'crowd.calm': "সার্ভার অবস্থা: মসৃণ",
+  'crowd.normal': "সার্ভার অবস্থা: স্বাভাবিক",
+  'crowd.busy': "সার্ভার অবস্থা: ভিড়",
 }
 
 export default bn

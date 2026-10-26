@@ -39,8 +39,6 @@ const tr: SocialDict = {
   'rooms.anyLang': 'Tüm diller',
   'rooms.noMatch': 'Eşleşen oda yok',
   'rooms.noMatchBody': 'Başka bir kelime veya dil dene ya da kendi odanı aç.',
-  'online.one': '{n} kişi çevrimiçi',
-  'online.other': '{n} kişi çevrimiçi',
 
   // invites and links
   'invite.title': 'Arkadaşlarını davet et',
@@ -145,6 +143,9 @@ const tr: SocialDict = {
   'inbox.reactions': 'Beğeni ve yorumlar',
   'inbox.gift': '{name} sana hediye gönderdi: {item}',
   'inbox.giftOpen': 'Gör',
+  'crowd.calm': "Sunucu durumu: Akıcı",
+  'crowd.normal': "Sunucu durumu: Normal",
+  'crowd.busy': "Sunucu durumu: Yoğun",
 }
 
 export default tr

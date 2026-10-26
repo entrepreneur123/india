@@ -74,6 +74,8 @@ const tr: RoomDict = {
   lost: 'Bağlantı koptu',
   reconnecting: 'Bağlantı koptu · Yeniden bağlanılıyor…',
   lostLeft: 'Bağlantın koptuğu için odadan çıktın',
+  videoBig: '{name} kişisini büyüt',
+  videoSmall: 'Odaya dön',
 }
 
 export default tr

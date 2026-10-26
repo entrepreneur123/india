@@ -73,6 +73,8 @@ const vi: RoomDict = {
   lost: 'Mất kết nối',
   reconnecting: 'Mất kết nối · Đang kết nối lại…',
   lostLeft: 'Bạn bị mất kết nối và đã rời phòng',
+  videoBig: 'Phóng to {name}',
+  videoSmall: 'Quay lại phòng',
 }
 
 export default vi

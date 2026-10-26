@@ -37,8 +37,6 @@ const te: SocialDict = {
   'rooms.anyLang': 'అన్ని భాషలు',
   'rooms.noMatch': 'సరిపోయే రూమ్‌లు లేవు',
   'rooms.noMatchBody': 'వేరే పదం లేదా భాష ట్రై చేయండి, లేదా మీ సొంత రూమ్ మొదలుపెట్టండి.',
-  'online.one': '{n} వ్యక్తి ఆన్‌లైన్‌లో',
-  'online.other': '{n} మంది ఆన్‌లైన్‌లో',
 
   'invite.title': 'ఫ్రెండ్స్‌ని ఆహ్వానించండి',
   'invite.desc': 'వాళ్లకు నోటిఫికేషన్ వస్తుంది, ఒక్క ట్యాప్‌తో చేరవచ్చు.',
@@ -138,6 +136,9 @@ const te: SocialDict = {
   'inbox.reactions': 'లైక్‌లు & కామెంట్‌లు',
   'inbox.gift': '{name} మీకు బహుమతి పంపారు: {item}',
   'inbox.giftOpen': 'చూడండి',
+  'crowd.calm': "సర్వర్ స్థితి: సాఫీగా",
+  'crowd.normal': "సర్వర్ స్థితి: సాధారణం",
+  'crowd.busy': "సర్వర్ స్థితి: రద్దీ",
 }
 
 export default te

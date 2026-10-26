@@ -37,8 +37,6 @@ const ptBR: SocialDict = {
   'rooms.anyLang': 'Todos os idiomas',
   'rooms.noMatch': 'Nenhuma sala encontrada',
   'rooms.noMatchBody': 'Tente outra palavra ou idioma, ou abra sua própria sala.',
-  'online.one': '{n} pessoa online',
-  'online.other': '{n} pessoas online',
 
   'invite.title': 'Convidar amigos',
   'invite.desc': 'Eles recebem uma notificação e entram com um toque.',
@@ -139,6 +137,9 @@ const ptBR: SocialDict = {
   'inbox.reactions': 'Curtidas e comentários',
   'inbox.gift': '{name} te enviou um presente: {item}',
   'inbox.giftOpen': 'Ver',
+  'crowd.calm': "Status do servidor: Tranquilo",
+  'crowd.normal': "Status do servidor: Normal",
+  'crowd.busy': "Status do servidor: Lotado",
 }
 
 export default ptBR

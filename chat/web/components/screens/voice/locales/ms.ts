@@ -73,6 +73,8 @@ const ms: RoomDict = {
   lost: 'Sambungan terputus',
   reconnecting: 'Sambungan terputus · Menyambung semula…',
   lostLeft: 'Sambungan anda terputus dan anda telah keluar dari bilik',
+  videoBig: 'Besarkan {name}',
+  videoSmall: 'Kembali ke bilik',
 }
 
 export default ms

@@ -41,9 +41,6 @@ const he: SocialDict = {
   'rooms.anyLang': 'כל השפות',
   'rooms.noMatch': 'אין חדרים מתאימים',
   'rooms.noMatchBody': 'אפשר לנסות מילה או שפה אחרת, או לפתוח חדר משלך.',
-  'online.one': '{n} מחובר/ת',
-  'online.two': '{n} מחוברים',
-  'online.other': '{n} מחוברים',
 
   // invites and links
   'invite.title': 'הזמנת חברים',
@@ -147,6 +144,9 @@ const he: SocialDict = {
   'inbox.reactions': 'לייקים ותגובות',
   'inbox.gift': '{name} שלח/ה לך מתנה: {item}',
   'inbox.giftOpen': 'לצפייה',
+  'crowd.calm': "מצב השרת: חלק",
+  'crowd.normal': "מצב השרת: רגיל",
+  'crowd.busy': "מצב השרת: עמוס",
 }
 
 export default he

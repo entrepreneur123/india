@@ -36,8 +36,6 @@ const pa: SocialDict = {
   'rooms.anyLang': 'ਸਾਰੀਆਂ ਭਾਸ਼ਾਵਾਂ',
   'rooms.noMatch': 'ਕੋਈ ਰੂਮ ਨਹੀਂ ਮਿਲਿਆ',
   'rooms.noMatchBody': 'ਕੋਈ ਹੋਰ ਸ਼ਬਦ ਜਾਂ ਭਾਸ਼ਾ ਅਜ਼ਮਾਓ, ਜਾਂ ਆਪਣਾ ਰੂਮ ਸ਼ੁਰੂ ਕਰੋ।',
-  'online.one': '{n} ਵਿਅਕਤੀ ਔਨਲਾਈਨ',
-  'online.other': '{n} ਲੋਕ ਔਨਲਾਈਨ',
   'invite.title': 'ਦੋਸਤਾਂ ਨੂੰ ਬੁਲਾਓ',
   'invite.desc': 'ਉਨ੍ਹਾਂ ਨੂੰ ਸੂਚਨਾ ਮਿਲੇਗੀ ਅਤੇ ਉਹ ਇੱਕ ਟੈਪ ਨਾਲ ਜੁੜ ਸਕਣਗੇ।',
   'invite.button': 'ਬੁਲਾਓ',
@@ -133,6 +131,9 @@ const pa: SocialDict = {
   'inbox.reactions': 'ਲਾਈਕ ਅਤੇ ਕਮੈਂਟ',
   'inbox.gift': '{name} ਨੇ ਤੁਹਾਨੂੰ ਤੋਹਫ਼ਾ ਭੇਜਿਆ: {item}',
   'inbox.giftOpen': 'ਵੇਖੋ',
+  'crowd.calm': "ਸਰਵਰ ਸਥਿਤੀ: ਸੁਚਾਰੂ",
+  'crowd.normal': "ਸਰਵਰ ਸਥਿਤੀ: ਆਮ",
+  'crowd.busy': "ਸਰਵਰ ਸਥਿਤੀ: ਭੀੜ",
 }
 
 export default pa

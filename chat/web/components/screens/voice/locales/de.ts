@@ -73,6 +73,8 @@ const de: RoomDict = {
   lost: 'Verbindung weg',
   reconnecting: 'Verbindung unterbrochen · Wird neu verbunden…',
   lostLeft: 'Deine Verbindung ist abgebrochen, du hast den Raum verlassen',
+  videoBig: '{name} groß anzeigen',
+  videoSmall: 'Zurück zum Raum',
 }
 
 export default de

@@ -39,8 +39,6 @@ const zhHans: SocialDict = {
   'rooms.anyLang': '所有语言',
   'rooms.noMatch': '没有匹配的房间',
   'rooms.noMatchBody': '换个关键词或语言试试，或者自己开一个房间。',
-  'online.one': '{n} 人在线',
-  'online.other': '{n} 人在线',
 
   // invites and links
   'invite.title': '邀请好友',
@@ -145,6 +143,9 @@ const zhHans: SocialDict = {
   'inbox.reactions': '点赞和评论',
   'inbox.gift': '{name} 送了你一份礼物：{item}',
   'inbox.giftOpen': '查看',
+  'crowd.calm': "服务器状态：流畅",
+  'crowd.normal': "服务器状态：正常",
+  'crowd.busy': "服务器状态：拥挤",
 }
 
 export default zhHans

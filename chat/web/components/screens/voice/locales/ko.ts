@@ -74,6 +74,8 @@ const ko: RoomDict = {
   lost: '연결 끊김',
   reconnecting: '연결이 끊어졌어요 · 다시 연결 중…',
   lostLeft: '연결이 끊겨 방에서 나왔어요',
+  videoBig: '{name}님 화면 크게 보기',
+  videoSmall: '방 화면으로 돌아가기',
 }
 
 export default ko

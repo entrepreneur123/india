@@ -36,8 +36,6 @@ const gu: SocialDict = {
   'rooms.anyLang': 'બધી ભાષાઓ',
   'rooms.noMatch': 'કોઈ રૂમ મળ્યો નહીં',
   'rooms.noMatchBody': 'બીજો શબ્દ કે ભાષા અજમાવો, અથવા તમારો પોતાનો રૂમ શરૂ કરો.',
-  'online.one': '{n} વ્યક્તિ ઑનલાઇન',
-  'online.other': '{n} લોકો ઑનલાઇન',
   'invite.title': 'મિત્રોને બોલાવો',
   'invite.desc': 'તેમને નોટિફિકેશન મળશે અને તેઓ એક ટૅપમાં જોડાઈ શકશે.',
   'invite.button': 'બોલાવો',
@@ -133,6 +131,9 @@ const gu: SocialDict = {
   'inbox.reactions': 'લાઇક અને કમેન્ટ',
   'inbox.gift': '{name} એ તમને ભેટ મોકલી: {item}',
   'inbox.giftOpen': 'જુઓ',
+  'crowd.calm': "સર્વર સ્થિતિ: સરળ",
+  'crowd.normal': "સર્વર સ્થિતિ: સામાન્ય",
+  'crowd.busy': "સર્વર સ્થિતિ: ભીડ",
 }
 
 export default gu

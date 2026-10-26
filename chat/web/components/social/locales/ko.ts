@@ -39,8 +39,6 @@ const ko: SocialDict = {
   'rooms.anyLang': '모든 언어',
   'rooms.noMatch': '일치하는 방이 없어요',
   'rooms.noMatchBody': '다른 단어나 언어로 찾아보거나 직접 방을 열어 보세요.',
-  'online.one': '{n}명 접속 중',
-  'online.other': '{n}명 접속 중',
 
   // invites and links
   'invite.title': '친구 초대',
@@ -145,6 +143,9 @@ const ko: SocialDict = {
   'inbox.reactions': '좋아요·댓글',
   'inbox.gift': '{name}님이 선물을 보냈어요: {item}',
   'inbox.giftOpen': '보기',
+  'crowd.calm': "접속 상태: 쾌적",
+  'crowd.normal': "접속 상태: 보통",
+  'crowd.busy': "접속 상태: 혼잡",
 }
 
 export default ko

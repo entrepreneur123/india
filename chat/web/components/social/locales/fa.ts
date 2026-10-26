@@ -39,8 +39,6 @@ const fa: SocialDict = {
   'rooms.anyLang': 'همهٔ زبان‌ها',
   'rooms.noMatch': 'رومی پیدا نشد',
   'rooms.noMatchBody': 'کلمه یا زبان دیگری را امتحان کنید، یا روم خودتان را راه بیندازید.',
-  'online.one': '{n} نفر آنلاین',
-  'online.other': '{n} نفر آنلاین',
 
   // invites and links
   'invite.title': 'دعوت از دوستان',
@@ -144,6 +142,9 @@ const fa: SocialDict = {
   'inbox.reactions': 'لایک و نظر',
   'inbox.gift': '{name} برایتان هدیه فرستاد: {item}',
   'inbox.giftOpen': 'دیدن',
+  'crowd.calm': "وضعیت سرور: روان",
+  'crowd.normal': "وضعیت سرور: عادی",
+  'crowd.busy': "وضعیت سرور: شلوغ",
 }
 
 export default fa

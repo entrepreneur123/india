@@ -37,8 +37,6 @@ const vi: SocialDict = {
   'rooms.anyLang': 'Mọi ngôn ngữ',
   'rooms.noMatch': 'Không có phòng phù hợp',
   'rooms.noMatchBody': 'Thử từ khác hoặc ngôn ngữ khác, hoặc tự mở phòng của bạn.',
-  'online.one': '{n} người đang trực tuyến',
-  'online.other': '{n} người đang trực tuyến',
 
   'invite.title': 'Mời bạn bè',
   'invite.desc': 'Họ sẽ nhận được thông báo và vào phòng chỉ với một chạm.',
@@ -139,6 +137,9 @@ const vi: SocialDict = {
   'inbox.reactions': 'Thích & bình luận',
   'inbox.gift': '{name} đã tặng bạn: {item}',
   'inbox.giftOpen': 'Xem',
+  'crowd.calm': "Trạng thái máy chủ: Mượt",
+  'crowd.normal': "Trạng thái máy chủ: Bình thường",
+  'crowd.busy': "Trạng thái máy chủ: Đông",
 }
 
 export default vi

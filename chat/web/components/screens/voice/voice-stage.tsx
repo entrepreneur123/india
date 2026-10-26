@@ -3,7 +3,7 @@
 import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef } from 'react'
-import { Lock, MicOff, Plus, WifiOff } from 'lucide-react'
+import { Lock, Maximize2, MicOff, Minimize2, Plus, WifiOff } from 'lucide-react'
 import { VOICE_SEATS, type VoiceMember, type VoiceRoom, type VoiceVideo } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { ReactionIcon } from '@/components/ui/topic-icons'
@@ -68,9 +68,22 @@ export function LostBadge({ size, className }: { size: number; className?: strin
 
 /**
  * The cameras on the stage (24), above the seats: one tile, or three across (eight seats fit in three rows); a tile lights up while its
- * person talks and opens their profile. My own is mirrored, as in a mirror.
+ * person talks and opens their profile; its corner button (47) makes it big in the room's main area, like Discord. My
+ * own is mirrored, as in a mirror.
  */
-export function VideoGrid({ room, videos, levels, onPerson }: { room: VoiceRoom; videos: Record<string, VoiceVideo>; levels: LevelStore; onPerson: (userId: string) => void }) {
+export function VideoGrid({
+  room,
+  videos,
+  levels,
+  onPerson,
+  onExpand,
+}: {
+  room: VoiceRoom
+  videos: Record<string, VoiceVideo>
+  levels: LevelStore
+  onPerson: (userId: string) => void
+  onExpand: (userId: string) => void
+}) {
   const { t } = useI18n()
   const people = room.members.filter((x) => x.seat !== null && videos[x.profile.id]).sort((a, b) => a.seat! - b.seat!)
   if (!people.length) return null
@@ -78,35 +91,81 @@ export function VideoGrid({ room, videos, levels, onPerson }: { room: VoiceRoom;
     <ul aria-label={t('voice.stage')} className={cn('mx-auto grid w-full gap-1.5 px-1 pt-2 pb-1', people.length === 1 ? 'max-w-56' : people.length === 2 ? 'max-w-md grid-cols-2' : 'max-w-lg grid-cols-3')}>
       {people.map((x) => (
         <li key={x.profile.id}>
-          <VideoTile member={x} video={videos[x.profile.id]} levels={levels} onClick={() => onPerson(x.profile.id)} />
+          <VideoTile member={x} video={videos[x.profile.id]} levels={levels} onClick={() => onPerson(x.profile.id)} onExpand={() => onExpand(x.profile.id)} />
         </li>
       ))}
     </ul>
   )
 }
 
-function VideoTile({ member, video, levels, onClick }: { member: VoiceMember; video: VoiceVideo; levels: LevelStore; onClick: () => void }) {
+/** A camera's picture in a <video> (sound comes from the room's audio, so the picture stays muted). */
+function useVideo(video: VoiceVideo) {
   const ref = useRef<HTMLVideoElement>(null)
-  const talking = useLevel(levels, member.profile.id) > SPEAKING
   useEffect(() => {
     const el = ref.current!
     video.attach(el)
     return () => video.detach(el)
   }, [video])
+  return ref
+}
+
+/** The name (and a muted mic) over a picture's corner. */
+function NameChip({ member, className }: { member: VoiceMember; className?: string }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={member.profile.name}
-      className={cn('relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black ring-2 transition-shadow duration-150', talking ? 'ring-primary-text' : 'ring-transparent')}
-    >
-      {/* Sound comes from the room's audio; the picture stays muted. */}
-      <video ref={ref} autoPlay playsInline muted className={cn('size-full object-cover', video.mine && '-scale-x-100')} />
-      <span className="absolute start-1.5 bottom-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-xs font-semibold text-white">
-        <span className="truncate">{member.profile.name}</span>
-        {member.muted ? <MicOff className="size-3.5 shrink-0" aria-hidden /> : null}
-      </span>
-    </button>
+    <span className={cn('absolute start-1.5 bottom-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-xs font-semibold text-white', className)}>
+      <span className="truncate">{member.profile.name}</span>
+      {member.muted ? <MicOff className="size-3.5 shrink-0" aria-hidden /> : null}
+    </span>
+  )
+}
+
+function VideoTile({ member, video, levels, onClick, onExpand }: { member: VoiceMember; video: VoiceVideo; levels: LevelStore; onClick: () => void; onExpand: () => void }) {
+  const { rt } = useRoomT()
+  const ref = useVideo(video)
+  const talking = useLevel(levels, member.profile.id) > SPEAKING
+  return (
+    <div className={cn('relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black ring-2 transition-shadow duration-150', talking ? 'ring-primary-text' : 'ring-transparent')}>
+      <button type="button" onClick={onClick} aria-label={member.profile.name} className="block size-full">
+        <video ref={ref} autoPlay playsInline muted className={cn('size-full object-cover', video.mine && '-scale-x-100')} />
+      </button>
+      <NameChip member={member} />
+      <button
+        type="button"
+        onClick={onExpand}
+        aria-label={rt('videoBig', { name: member.profile.name })}
+        title={rt('videoBig', { name: member.profile.name })}
+        className="absolute top-1.5 inset-e-1.5 grid size-8 place-items-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75"
+      >
+        <Maximize2 className="size-4" aria-hidden />
+      </button>
+    </div>
+  )
+}
+
+/** 47: one camera filling the room's main area (the chat stays beside it); its button, or Esc, makes it small again. */
+export function FocusVideo({ member, video, levels, onClose, className }: { member: VoiceMember; video: VoiceVideo; levels: LevelStore; onClose: () => void; className?: string }) {
+  const { rt } = useRoomT()
+  const ref = useVideo(video)
+  const talking = useLevel(levels, member.profile.id) > SPEAKING
+  useEffect(() => {
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && !document.querySelector('[role=dialog]') && onClose()
+    document.addEventListener('keydown', esc)
+    return () => document.removeEventListener('keydown', esc)
+  }, [onClose])
+  return (
+    <div className={cn('relative overflow-hidden bg-black ring-2 ring-inset transition-shadow duration-150', talking ? 'ring-primary-text' : 'ring-transparent', className)}>
+      <video ref={ref} autoPlay playsInline muted className={cn('size-full object-contain', video.mine && '-scale-x-100')} />
+      <NameChip member={member} className="start-3 bottom-3 px-3 py-1 text-sm" />
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label={rt('videoSmall')}
+        title={rt('videoSmall')}
+        className="absolute top-3 inset-e-3 grid size-10 place-items-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/75"
+      >
+        <Minimize2 className="size-5" aria-hidden />
+      </button>
+    </div>
   )
 }
 

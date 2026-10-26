@@ -39,9 +39,6 @@ const es: SocialDict = {
   'rooms.anyLang': 'Todos los idiomas',
   'rooms.noMatch': 'Ninguna sala coincide',
   'rooms.noMatchBody': 'Prueba con otra palabra u otro idioma, o crea tu propia sala.',
-  'online.one': '{n} persona en línea',
-  'online.many': '{n} personas en línea',
-  'online.other': '{n} personas en línea',
 
   'invite.title': 'Invitar amigos',
   'invite.desc': 'Reciben una notificación y pueden entrar con un toque.',
@@ -141,6 +138,9 @@ const es: SocialDict = {
   'inbox.reactions': 'Me gusta y comentarios',
   'inbox.gift': '{name} te envió un regalo: {item}',
   'inbox.giftOpen': 'Ver',
+  'crowd.calm': "Estado del servidor: Fluido",
+  'crowd.normal': "Estado del servidor: Normal",
+  'crowd.busy': "Estado del servidor: Saturado",
 }
 
 export default es

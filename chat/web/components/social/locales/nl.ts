@@ -37,8 +37,6 @@ const nl: SocialDict = {
   'rooms.anyLang': 'Alle talen',
   'rooms.noMatch': 'Geen rooms gevonden',
   'rooms.noMatchBody': 'Probeer een ander woord of een andere taal, of start je eigen room.',
-  'online.one': '{n} persoon online',
-  'online.other': '{n} mensen online',
 
   'invite.title': 'Vrienden uitnodigen',
   'invite.desc': 'Ze krijgen een melding en kunnen met één tik meedoen.',
@@ -138,6 +136,9 @@ const nl: SocialDict = {
   'inbox.reactions': 'Likes en reacties',
   'inbox.gift': '{name} stuurde je een cadeau: {item}',
   'inbox.giftOpen': 'Bekijk',
+  'crowd.calm': "Serverstatus: Soepel",
+  'crowd.normal': "Serverstatus: Normaal",
+  'crowd.busy': "Serverstatus: Druk",
 }
 
 export default nl

@@ -37,8 +37,6 @@ const ne: SocialDict = {
   'rooms.anyLang': 'सबै भाषा',
   'rooms.noMatch': 'कुनै रूम मिलेन',
   'rooms.noMatchBody': 'अर्को शब्द वा भाषा प्रयास गर्नुहोस्, वा आफ्नै रूम सुरु गर्नुहोस्।',
-  'online.one': '{n} जना अनलाइन',
-  'online.other': '{n} जना अनलाइन',
 
   'invite.title': 'साथीलाई बोलाउनुहोस्',
   'invite.desc': 'उनीहरूले सूचना पाउँछन् र एकै ट्यापमा जोडिन सक्छन्।',
@@ -138,6 +136,9 @@ const ne: SocialDict = {
   'inbox.reactions': 'लाइक र कमेन्ट',
   'inbox.gift': '{name} ले तपाईंलाई उपहार पठाउनुभयो: {item}',
   'inbox.giftOpen': 'हेर्नुहोस्',
+  'crowd.calm': "सर्भर स्थिति: सहज",
+  'crowd.normal': "सर्भर स्थिति: सामान्य",
+  'crowd.busy': "सर्भर स्थिति: भीड",
 }
 
 export default ne

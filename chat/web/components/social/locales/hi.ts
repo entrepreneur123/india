@@ -37,8 +37,6 @@ const hi: SocialDict = {
   'rooms.anyLang': 'सभी भाषाएँ',
   'rooms.noMatch': 'कोई रूम नहीं मिला',
   'rooms.noMatchBody': 'कोई और शब्द या भाषा आज़माएँ, या अपना रूम शुरू करें।',
-  'online.one': '{n} व्यक्ति ऑनलाइन',
-  'online.other': '{n} लोग ऑनलाइन',
 
   'invite.title': 'दोस्तों को बुलाएँ',
   'invite.desc': 'उन्हें सूचना मिलेगी और वे एक टैप में जुड़ सकेंगे।',
@@ -139,6 +137,9 @@ const hi: SocialDict = {
   'inbox.reactions': 'लाइक और कमेंट',
   'inbox.gift': '{name} ने आपको तोहफ़ा भेजा: {item}',
   'inbox.giftOpen': 'देखें',
+  'crowd.calm': "सर्वर स्थिति: सुचारु",
+  'crowd.normal': "सर्वर स्थिति: सामान्य",
+  'crowd.busy': "सर्वर स्थिति: भीड़",
 }
 
 export default hi

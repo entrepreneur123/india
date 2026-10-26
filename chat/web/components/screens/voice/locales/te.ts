@@ -73,6 +73,8 @@ const te: RoomDict = {
   lost: 'కనెక్షన్ పోయింది',
   reconnecting: 'కనెక్షన్ పోయింది · మళ్లీ కనెక్ట్ అవుతోంది…',
   lostLeft: 'కనెక్షన్ పోవడంతో మీరు రూమ్ నుండి బయటకు వచ్చారు',
+  videoBig: '{name}ను పెద్దగా చూపించు',
+  videoSmall: 'రూమ్‌కి తిరిగి',
 }
 
 export default te

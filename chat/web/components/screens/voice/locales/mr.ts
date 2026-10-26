@@ -73,6 +73,8 @@ const mr: RoomDict = {
   'lost': 'कनेक्शन तुटले',
   'reconnecting': 'कनेक्शन तुटले · पुन्हा जोडत आहे…',
   'lostLeft': 'कनेक्शन तुटल्याने तुम्ही रूममधून बाहेर पडलात',
+  videoBig: '{name} ला मोठे करा',
+  videoSmall: 'रूमवर परत',
 }
 
 export default mr

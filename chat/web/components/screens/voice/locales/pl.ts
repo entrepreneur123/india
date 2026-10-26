@@ -75,6 +75,8 @@ const pl: RoomDict = {
   lost: 'Brak połączenia',
   reconnecting: 'Brak połączenia · Łączenie ponownie…',
   lostLeft: 'Utracono połączenie i opuszczono pokój',
+  videoBig: 'Powiększ {name}',
+  videoSmall: 'Wróć do pokoju',
 }
 
 export default pl

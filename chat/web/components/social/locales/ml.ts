@@ -37,8 +37,6 @@ const ml: SocialDict = {
   'rooms.anyLang': 'എല്ലാ ഭാഷകളും',
   'rooms.noMatch': 'പൊരുത്തപ്പെടുന്ന റൂമുകളില്ല',
   'rooms.noMatchBody': 'മറ്റൊരു വാക്കോ ഭാഷയോ നോക്കൂ, അല്ലെങ്കിൽ സ്വന്തം റൂം തുടങ്ങൂ.',
-  'online.one': '{n} ആൾ ഓൺലൈനിൽ',
-  'online.other': '{n} പേർ ഓൺലൈനിൽ',
 
   'invite.title': 'സുഹൃത്തുക്കളെ ക്ഷണിക്കൂ',
   'invite.desc': 'അവർക്ക് നോട്ടിഫിക്കേഷൻ ലഭിക്കും, ഒറ്റ ടാപ്പിൽ ചേരാം.',
@@ -138,6 +136,9 @@ const ml: SocialDict = {
   'inbox.reactions': 'ലൈക്കും കമന്റും',
   'inbox.gift': '{name} നിങ്ങൾക്ക് സമ്മാനം അയച്ചു: {item}',
   'inbox.giftOpen': 'കാണുക',
+  'crowd.calm': "സെർവർ നില: സുഗമം",
+  'crowd.normal': "സെർവർ നില: സാധാരണ",
+  'crowd.busy': "സെർവർ നില: തിരക്ക്",
 }
 
 export default ml

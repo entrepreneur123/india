@@ -2,22 +2,25 @@
 
 import useSWR from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import { PresenceDot } from '@/components/ui/bits'
+import { crowdOf } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
-/** "N people online": the server's count (at most 10 s old), asked every 15 s while shown. */
+/** 43: how busy the app is (lib/format crowdOf), never the head count. The server's count (at most 10 s old), every 15 s. */
+const DOT = { calm: 'bg-online', normal: 'bg-amber-500', busy: 'bg-destructive' } as const
+
 export function OnlineCount({ active, className }: { active: boolean; className?: string }) {
   const backend = useBackend()
-  const { plural } = useSocialT()
+  const { st } = useSocialT()
   const { data } = useSWR(active ? 'online' : null, () => backend.onlineCount(), {
     refreshInterval: 15_000, refreshWhenHidden: false, dedupingInterval: 10_000,
   })
-  if (!data) return <span className={cn('h-5', className)} aria-hidden />
+  if (data === undefined) return <span className={cn('h-5', className)} aria-hidden />
+  const crowd = crowdOf(data)
   return (
     <span className={cn('inline-flex h-5 items-center gap-2 text-sm font-medium text-muted-foreground', className)}>
-      <PresenceDot />
-      <span className="tabular-nums">{plural(data, 'online.one', 'online.other')}</span>
+      <span className={cn('size-2 rounded-full', DOT[crowd])} aria-hidden />
+      {st(`crowd.${crowd}`)}
     </span>
   )
 }

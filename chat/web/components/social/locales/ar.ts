@@ -42,12 +42,6 @@ const ar: SocialDict = {
   'rooms.anyLang': 'كل اللغات',
   'rooms.noMatch': 'لا توجد غرف مطابقة',
   'rooms.noMatchBody': 'جرّب كلمة أو لغة أخرى، أو ابدأ غرفتك الخاصة.',
-  'online.zero': 'لا أحد متصل',
-  'online.one': 'متصل الآن: {n}',
-  'online.two': 'شخصان متصلان',
-  'online.few': '{n} أشخاص متصلون',
-  'online.many': '{n} شخصًا متصلًا',
-  'online.other': '{n} شخص متصل',
 
   // invites and links
   'invite.title': 'دعوة الأصدقاء',
@@ -152,6 +146,9 @@ const ar: SocialDict = {
   'inbox.reactions': 'الإعجابات والتعليقات',
   'inbox.gift': 'أرسل لك {name} هدية: {item}',
   'inbox.giftOpen': 'عرض',
+  'crowd.calm': "حالة الخادم: سلسة",
+  'crowd.normal': "حالة الخادم: عادية",
+  'crowd.busy': "حالة الخادم: مزدحمة",
 }
 
 export default ar

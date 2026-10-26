@@ -37,8 +37,6 @@ const kn: SocialDict = {
   'rooms.anyLang': 'ಎಲ್ಲಾ ಭಾಷೆಗಳು',
   'rooms.noMatch': 'ಹೊಂದುವ ರೂಮ್‌ಗಳಿಲ್ಲ',
   'rooms.noMatchBody': 'ಬೇರೆ ಪದ ಅಥವಾ ಭಾಷೆ ಪ್ರಯತ್ನಿಸಿ, ಅಥವಾ ನಿಮ್ಮದೇ ರೂಮ್ ಶುರುಮಾಡಿ.',
-  'online.one': '{n} ವ್ಯಕ್ತಿ ಆನ್‌ಲೈನ್',
-  'online.other': '{n} ಜನ ಆನ್‌ಲೈನ್',
 
   'invite.title': 'ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ',
   'invite.desc': 'ಅವರಿಗೆ ನೋಟಿಫಿಕೇಶನ್ ಬರುತ್ತದೆ ಮತ್ತು ಒಂದೇ ಟ್ಯಾಪ್‌ನಲ್ಲಿ ಸೇರಬಹುದು.',
@@ -138,6 +136,9 @@ const kn: SocialDict = {
   'inbox.reactions': 'ಲೈಕ್ & ಕಾಮೆಂಟ್',
   'inbox.gift': '{name} ನಿಮಗೆ ಉಡುಗೊರೆ ಕಳುಹಿಸಿದ್ದಾರೆ: {item}',
   'inbox.giftOpen': 'ನೋಡಿ',
+  'crowd.calm': "ಸರ್ವರ್ ಸ್ಥಿತಿ: ಸುಗಮ",
+  'crowd.normal': "ಸರ್ವರ್ ಸ್ಥಿತಿ: ಸಾಮಾನ್ಯ",
+  'crowd.busy': "ಸರ್ವರ್ ಸ್ಥಿತಿ: ಜನಸಂದಣಿ",
 }
 
 export default kn

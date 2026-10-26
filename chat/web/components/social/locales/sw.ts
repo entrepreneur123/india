@@ -39,8 +39,6 @@ const sw: SocialDict = {
   'rooms.anyLang': 'Lugha zote',
   'rooms.noMatch': 'Hakuna chumba kinacholingana',
   'rooms.noMatchBody': 'Jaribu neno au lugha nyingine, au anzisha chumba chako.',
-  'online.one': 'Mtu {n} yuko mtandaoni',
-  'online.other': 'Watu {n} wako mtandaoni',
 
   // invites and links
   'invite.title': 'Alika marafiki',
@@ -144,6 +142,9 @@ const sw: SocialDict = {
   'inbox.reactions': 'Likes na maoni',
   'inbox.gift': '{name} amekutumia zawadi: {item}',
   'inbox.giftOpen': 'Tazama',
+  'crowd.calm': "Hali ya seva: Shwari",
+  'crowd.normal': "Hali ya seva: Kawaida",
+  'crowd.busy': "Hali ya seva: Msongamano",
 }
 
 export default sw

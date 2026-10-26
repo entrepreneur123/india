@@ -106,3 +106,9 @@ export function phoneDigits(dial: string, input: string): string | null {
   const full = dial + digits
   return digits.length >= 6 && full.length <= 15 ? full : null
 }
+
+/**
+ * 43: how busy the app is instead of how many are on (a small number early on reads as a small app): under 5,000
+ * people online 'calm', 5,000–10,000 'normal', above 10,000 'busy'.
+ */
+export const crowdOf = (n: number) => (n < 5_000 ? 'calm' : n <= 10_000 ? 'normal' : 'busy')

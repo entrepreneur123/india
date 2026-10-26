@@ -74,6 +74,8 @@ const zhHant: RoomDict = {
   lost: '連線已中斷',
   reconnecting: '連線已中斷 · 正在重新連線…',
   lostLeft: '連線已中斷，你已離開房間',
+  videoBig: '放大 {name}',
+  videoSmall: '返回房間',
 }
 
 export default zhHant

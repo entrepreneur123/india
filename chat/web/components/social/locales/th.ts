@@ -39,8 +39,6 @@ const th: SocialDict = {
   'rooms.anyLang': 'ทุกภาษา',
   'rooms.noMatch': 'ไม่พบห้องที่ตรงกัน',
   'rooms.noMatchBody': 'ลองคำหรือภาษาอื่น หรือเปิดห้องของคุณเอง',
-  'online.one': 'ออนไลน์ {n} คน',
-  'online.other': 'ออนไลน์ {n} คน',
 
   // invites and links
   'invite.title': 'ชวนเพื่อน',
@@ -144,6 +142,9 @@ const th: SocialDict = {
   'inbox.reactions': 'ถูกใจและความคิดเห็น',
   'inbox.gift': '{name} ส่งของขวัญให้คุณ: {item}',
   'inbox.giftOpen': 'ดู',
+  'crowd.calm': "สถานะเซิร์ฟเวอร์: ลื่นไหล",
+  'crowd.normal': "สถานะเซิร์ฟเวอร์: ปกติ",
+  'crowd.busy': "สถานะเซิร์ฟเวอร์: หนาแน่น",
 }
 
 export default th

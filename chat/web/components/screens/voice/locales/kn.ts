@@ -73,6 +73,8 @@ const kn: RoomDict = {
   lost: 'ಸಂಪರ್ಕ ಕಡಿತ',
   reconnecting: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ · ಮರುಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…',
   lostLeft: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡು ನೀವು ರೂಮ್‌ನಿಂದ ಹೊರಬಂದಿದ್ದೀರಿ',
+  videoBig: '{name} ಅವರನ್ನು ದೊಡ್ಡದಾಗಿ ನೋಡಿ',
+  videoSmall: 'ರೂಮ್‌ಗೆ ಹಿಂತಿರುಗಿ',
 }
 
 export default kn

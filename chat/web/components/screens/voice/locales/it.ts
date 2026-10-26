@@ -73,6 +73,8 @@ const it: RoomDict = {
   lost: 'Connessione persa',
   reconnecting: 'Connessione persa · Riconnessione…',
   lostLeft: 'Hai perso la connessione e sei uscito dalla stanza',
+  videoBig: 'Ingrandisci {name}',
+  videoSmall: 'Torna alla stanza',
 }
 
 export default it

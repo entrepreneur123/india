@@ -39,8 +39,6 @@ const fil: SocialDict = {
   'rooms.anyLang': 'Lahat ng wika',
   'rooms.noMatch': 'Walang tugmang room',
   'rooms.noMatchBody': 'Subukan ang ibang salita o wika, o magsimula ng sarili mong room.',
-  'online.one': '{n} tao ang online',
-  'online.other': '{n} tao ang online',
 
   // invites and links
   'invite.title': 'Mag-imbita ng kaibigan',
@@ -144,6 +142,9 @@ const fil: SocialDict = {
   'inbox.reactions': 'Like at komento',
   'inbox.gift': 'Pinadalhan ka ni {name} ng regalo: {item}',
   'inbox.giftOpen': 'Tingnan',
+  'crowd.calm': "Status ng server: Maayos",
+  'crowd.normal': "Status ng server: Normal",
+  'crowd.busy': "Status ng server: Siksikan",
 }
 
 export default fil

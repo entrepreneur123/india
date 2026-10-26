@@ -73,6 +73,8 @@ const id: RoomDict = {
   lost: 'Koneksi terputus',
   reconnecting: 'Koneksi terputus · Menyambungkan ulang…',
   lostLeft: 'Koneksimu terputus dan kamu keluar dari room',
+  videoBig: 'Perbesar {name}',
+  videoSmall: 'Kembali ke room',
 }
 
 export default id

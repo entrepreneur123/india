@@ -39,8 +39,6 @@ const zhHant: SocialDict = {
   'rooms.anyLang': '所有語言',
   'rooms.noMatch': '沒有符合的房間',
   'rooms.noMatchBody': '換個關鍵字或語言試試，或者自己開一個房間。',
-  'online.one': '{n} 人在線上',
-  'online.other': '{n} 人在線上',
 
   // invites and links
   'invite.title': '邀請好友',
@@ -145,6 +143,9 @@ const zhHant: SocialDict = {
   'inbox.reactions': '按讚和留言',
   'inbox.gift': '{name} 送了你一份禮物：{item}',
   'inbox.giftOpen': '查看',
+  'crowd.calm': "伺服器狀態：流暢",
+  'crowd.normal': "伺服器狀態：正常",
+  'crowd.busy': "伺服器狀態：擁擠",
 }
 
 export default zhHant

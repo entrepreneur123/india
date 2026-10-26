@@ -41,10 +41,6 @@ const uk: SocialDict = {
   'rooms.anyLang': 'Усі мови',
   'rooms.noMatch': 'Відповідних кімнат немає',
   'rooms.noMatchBody': 'Спробуйте інше слово чи мову або відкрийте свою кімнату.',
-  'online.one': '{n} людина онлайн',
-  'online.few': '{n} людини онлайн',
-  'online.many': '{n} людей онлайн',
-  'online.other': '{n} людини онлайн',
 
   // invites and links
   'invite.title': 'Запросити друзів',
@@ -149,6 +145,9 @@ const uk: SocialDict = {
   'inbox.reactions': 'Вподобання й коментарі',
   'inbox.gift': '{name} надсилає вам подарунок: {item}',
   'inbox.giftOpen': 'Переглянути',
+  'crowd.calm': "Стан сервера: вільно",
+  'crowd.normal': "Стан сервера: нормально",
+  'crowd.busy': "Стан сервера: перевантажено",
 }
 
 export default uk

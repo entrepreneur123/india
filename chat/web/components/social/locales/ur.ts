@@ -36,8 +36,6 @@ const ur: SocialDict = {
   'rooms.anyLang': 'تمام زبانیں',
   'rooms.noMatch': 'کوئی روم نہیں ملا',
   'rooms.noMatchBody': 'کوئی اور لفظ یا زبان آزمائیں، یا اپنا روم شروع کریں۔',
-  'online.one': '{n} شخص آن لائن',
-  'online.other': '{n} لوگ آن لائن',
   'invite.title': 'دوستوں کو بلائیں',
   'invite.desc': 'انہیں نوٹیفکیشن ملے گا اور وہ ایک ٹیپ میں شامل ہو سکیں گے۔',
   'invite.button': 'بلائیں',
@@ -133,6 +131,9 @@ const ur: SocialDict = {
   'inbox.reactions': 'لائکس اور تبصرے',
   'inbox.gift': '{name} نے آپ کو تحفہ بھیجا: {item}',
   'inbox.giftOpen': 'دیکھیں',
+  'crowd.calm': "سرور کی حالت: ہموار",
+  'crowd.normal': "سرور کی حالت: عام",
+  'crowd.busy': "سرور کی حالت: رش",
 }
 
 export default ur

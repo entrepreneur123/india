@@ -73,6 +73,8 @@ const sw: RoomDict = {
   lost: 'Muunganisho umekatika',
   reconnecting: 'Muunganisho umekatika · Inaunganisha tena…',
   lostLeft: 'Muunganisho wako ulikatika, ukatoka chumbani',
+  videoBig: 'Mkuze {name}',
+  videoSmall: 'Rudi kwenye chumba',
 }
 
 export default sw

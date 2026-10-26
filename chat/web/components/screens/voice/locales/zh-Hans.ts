@@ -74,6 +74,8 @@ const zhHans: RoomDict = {
   lost: '连接已断开',
   reconnecting: '连接已断开 · 正在重新连接…',
   lostLeft: '连接已断开，你已离开房间',
+  videoBig: '放大 {name}',
+  videoSmall: '返回房间',
 }
 
 export default zhHans

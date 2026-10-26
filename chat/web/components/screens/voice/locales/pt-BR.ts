@@ -73,6 +73,8 @@ const ptBR: RoomDict = {
   lost: 'Sem conexão',
   reconnecting: 'Sem conexão · Reconectando…',
   lostLeft: 'Sua conexão caiu e você saiu da sala',
+  videoBig: 'Ampliar {name}',
+  videoSmall: 'Voltar à sala',
 }
 
 export default ptBR

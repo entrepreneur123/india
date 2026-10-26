@@ -38,8 +38,6 @@ const en = {
   'rooms.anyLang': 'All languages',
   'rooms.noMatch': 'No rooms match',
   'rooms.noMatchBody': 'Try another word or language, or start your own room.',
-  'online.one': '{n} person online',
-  'online.other': '{n} people online',
 
   // invites and links
   'invite.title': 'Invite friends',
@@ -144,6 +142,9 @@ const en = {
   'inbox.reactions': 'Likes & comments',
   'inbox.gift': '{name} sent you a gift: {item}',
   'inbox.giftOpen': 'See it',
+  'crowd.calm': "Server status: Smooth",
+  'crowd.normal': "Server status: Normal",
+  'crowd.busy': "Server status: Crowded",
 }
 
 export default en

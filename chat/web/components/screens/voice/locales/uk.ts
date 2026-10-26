@@ -76,6 +76,8 @@ const uk: RoomDict = {
   lost: 'Немає зв’язку',
   reconnecting: 'Зв’язок втрачено · Перепідключення…',
   lostLeft: 'Зв’язок обірвався, і ви вийшли з кімнати',
+  videoBig: 'Показати {name} великим',
+  videoSmall: 'Повернутися до кімнати',
 }
 
 export default uk

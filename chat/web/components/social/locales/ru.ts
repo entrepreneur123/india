@@ -41,10 +41,6 @@ const ru: SocialDict = {
   'rooms.anyLang': 'Все языки',
   'rooms.noMatch': 'Подходящих комнат нет',
   'rooms.noMatchBody': 'Попробуйте другое слово или язык либо откройте свою комнату.',
-  'online.one': '{n} человек онлайн',
-  'online.few': '{n} человека онлайн',
-  'online.many': '{n} человек онлайн',
-  'online.other': '{n} человека онлайн',
 
   // invites and links
   'invite.title': 'Пригласить друзей',
@@ -149,6 +145,9 @@ const ru: SocialDict = {
   'inbox.reactions': 'Лайки и комментарии',
   'inbox.gift': '{name} отправляет вам подарок: {item}',
   'inbox.giftOpen': 'Посмотреть',
+  'crowd.calm': "Состояние сервера: свободно",
+  'crowd.normal': "Состояние сервера: нормально",
+  'crowd.busy': "Состояние сервера: перегружен",
 }
 
 export default ru

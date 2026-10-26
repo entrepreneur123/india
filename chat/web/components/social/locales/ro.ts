@@ -38,9 +38,6 @@ const ro: SocialDict = {
   'rooms.anyLang': 'Toate limbile',
   'rooms.noMatch': 'Nicio cameră găsită',
   'rooms.noMatchBody': 'Încearcă alt cuvânt sau altă limbă, sau deschide propria cameră.',
-  'online.one': '{n} persoană online',
-  'online.few': '{n} persoane online',
-  'online.other': '{n} de persoane online',
 
   'invite.title': 'Invită prieteni',
   'invite.desc': 'Primesc o notificare și pot intra dintr-o atingere.',
@@ -140,6 +137,9 @@ const ro: SocialDict = {
   'inbox.reactions': 'Aprecieri și comentarii',
   'inbox.gift': '{name} ți-a trimis un cadou: {item}',
   'inbox.giftOpen': 'Vezi',
+  'crowd.calm': "Starea serverului: Fluent",
+  'crowd.normal': "Starea serverului: Normal",
+  'crowd.busy': "Starea serverului: Aglomerat",
 }
 
 export default ro

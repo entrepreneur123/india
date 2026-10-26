@@ -74,6 +74,8 @@ const en = {
   lost: 'Connection lost',
   reconnecting: 'Connection lost · Reconnecting…',
   lostLeft: 'You lost connection and left the room',
+  videoBig: 'Make {name} big',
+  videoSmall: 'Back to the room',
 }
 
 export default en

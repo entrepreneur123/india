@@ -39,8 +39,6 @@ const ja: SocialDict = {
   'rooms.anyLang': 'すべての言語',
   'rooms.noMatch': '一致するルームがありません',
   'rooms.noMatchBody': '別のキーワードや言語を試すか、自分でルームを始めよう。',
-  'online.one': '{n}人がオンライン',
-  'online.other': '{n}人がオンライン',
 
   // invites and links
   'invite.title': '友だちを招待',
@@ -144,6 +142,9 @@ const ja: SocialDict = {
   'inbox.reactions': 'いいね・コメント',
   'inbox.gift': '{name}さんからギフトが届きました：{item}',
   'inbox.giftOpen': '見る',
+  'crowd.calm': "接続状況：快適",
+  'crowd.normal': "接続状況：普通",
+  'crowd.busy': "接続状況：混雑",
 }
 
 export default ja

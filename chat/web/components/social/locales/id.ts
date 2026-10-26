@@ -39,8 +39,6 @@ const id: SocialDict = {
   'rooms.anyLang': 'Semua bahasa',
   'rooms.noMatch': 'Tidak ada room yang cocok',
   'rooms.noMatchBody': 'Coba kata atau bahasa lain, atau buat room sendiri.',
-  'online.one': '{n} orang online',
-  'online.other': '{n} orang online',
 
   // invites and links
   'invite.title': 'Undang teman',
@@ -144,6 +142,9 @@ const id: SocialDict = {
   'inbox.reactions': 'Suka & komentar',
   'inbox.gift': '{name} mengirimimu hadiah: {item}',
   'inbox.giftOpen': 'Lihat',
+  'crowd.calm': "Status server: Lancar",
+  'crowd.normal': "Status server: Normal",
+  'crowd.busy': "Status server: Padat",
 }
 
 export default id

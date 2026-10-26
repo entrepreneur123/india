@@ -73,6 +73,8 @@ const ml: RoomDict = {
   lost: 'കണക്ഷൻ പോയി',
   reconnecting: 'കണക്ഷൻ പോയി · വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു…',
   lostLeft: 'കണക്ഷൻ നഷ്ടമായതിനാൽ നിങ്ങൾ റൂമിൽ നിന്ന് പുറത്തായി',
+  videoBig: '{name}-നെ വലുതാക്കുക',
+  videoSmall: 'റൂമിലേക്ക് മടങ്ങുക',
 }
 
 export default ml

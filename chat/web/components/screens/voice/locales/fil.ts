@@ -73,6 +73,8 @@ const fil: RoomDict = {
   lost: 'Nawala ang koneksyon',
   reconnecting: 'Nawala ang koneksyon · Kumokonekta ulit…',
   lostLeft: 'Nawala ang koneksyon mo kaya umalis ka sa room',
+  videoBig: 'Palakihin si {name}',
+  videoSmall: 'Bumalik sa room',
 }
 
 export default fil
