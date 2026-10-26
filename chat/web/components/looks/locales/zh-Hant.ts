@@ -116,6 +116,12 @@ const zhHant: LooksDict = {
   'vip.on': '已開啟隱身模式',
   'vip.off': '已關閉隱身模式',
   'vip.seen': 'VIP 隱身 · 好友可看到完整個人檔案',
+  'looks.tab.cycle': '照片漸變',
+  'item.cycle_photos': '照片漸變',
+  'cycle.what': '頭像出現的所有地方，都會每2秒在你的2–4張照片之間漸變切換',
+  'cycle.pick': '請選擇2到4張照片',
+  'cycle.needPhotos': '請先在個人檔案中新增至少2張照片',
+  'cycle.save': '儲存',
 }
 
 export default zhHant

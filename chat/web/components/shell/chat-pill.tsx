@@ -4,9 +4,9 @@ import * as m from 'motion/react-m'
 import { ChevronUp, X } from 'lucide-react'
 import type { ChatBar } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/pressable'
 import { useSocialT } from '@/components/social/social-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /**
  * The random chat while I'm on another tab: who, whether they're typing or wrote meanwhile; a tap opens the chat
@@ -30,7 +30,7 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
         {/* The brand colour, washed in from the left (a room's bar uses its category's). */}
         <button type="button" onClick={onOpen} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={st('chatbar.open', { name: partner.name })}>
           <span className="relative shrink-0">
-            <Avatar name={partner.name} src={partner.photoUrl} size={42} />
+            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={42} />
             {unread > 0 ? <span aria-hidden className="absolute -top-0.5 -inset-e-0.5 size-3.5 rounded-full bg-primary ring-2 ring-card" /> : null}
           </span>
           <span className="min-w-0">

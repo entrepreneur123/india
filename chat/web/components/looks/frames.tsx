@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { Avatar } from '@/components/ui/avatar'
 import type { FrameId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
+import { UserAvatar } from './user-avatar'
 
 // Profile frames (040): they replace the free cover photo and colour. A frame draws (a) a 3 px gradient ring around the
 // profile card, (b) a 3 px ring around the big photo, (c) a soft wash at the top of the card and (d) a light particle
@@ -90,14 +91,14 @@ export function FrameCard({ frame, still, className, children }: { frame: FrameI
 }
 
 /** The big photo in the frame's ring (3 px, then a thin gap in the card's colour), or plain without a frame. */
-export function FrameAvatar({ frame, name, src, size, className }: { frame: FrameId | null; name: string; src?: string | null; size: number; className?: string }) {
+export function FrameAvatar({ frame, userId, name, src, size, className }: { frame: FrameId | null; userId?: string; name: string; src?: string | null; size: number; className?: string }) {
   const d = frame ? FRAME_DESIGNS[frame] : null
   const outer = size + 2 * (3 + (d ? 3 : 0))
   return (
     <span className={cn('relative inline-grid shrink-0 place-items-center rounded-full', !d && 'shadow-e2', className)} style={{ width: outer, height: outer, padding: d ? 3 : 0 }}>
       {frame ? <Ring frame={frame} /> : null}
       <span className="relative grid place-items-center rounded-full bg-card p-[3px]">
-        <Avatar name={name} src={src} size={size} />
+        {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} /> : <Avatar name={name} src={src} size={size} />}
       </span>
       {d?.gems
         ? Array.from({ length: 8 }, (_, i) => {

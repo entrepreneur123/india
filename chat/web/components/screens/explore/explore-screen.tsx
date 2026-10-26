@@ -9,11 +9,12 @@ import { COUNTRIES } from '@/lib/countries'
 import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { LookName } from '@/components/looks/look-name'
-import { Avatar } from '@/components/ui/avatar'
+import { LookName, useLook } from '@/components/looks/look-name'
+import { Avatar, useCycle } from '@/components/ui/avatar'
 import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { cn } from '@/lib/utils'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
@@ -150,7 +151,7 @@ function PersonLine({ p, onOpen }: { p: PersonRow; onOpen: () => void }) {
   return (
     <li>
       <button type="button" onClick={onOpen} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-start transition-colors hover:bg-muted">
-        <Avatar name={p.name} src={p.photoUrl} size={44} />
+        <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
         <span className="flex min-w-0 flex-col">
           <LookName userId={p.id} handle={p.handle} className="truncate text-[15px] font-semibold" />
           <span className="truncate text-sm text-muted-foreground">{p.name}</span>
@@ -172,7 +173,7 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
           <button type="button" onClick={() => openProfile(p.id)} className="group flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-start transition-shadow hover:shadow-e2">
             <span className="relative block aspect-square bg-muted">
               {p.photoUrl ? (
-                <img src={p.photoUrl} alt="" className="size-full object-cover" loading="lazy" />
+                <CardPhoto userId={p.id} src={p.photoUrl} />
               ) : (
                 <span className="grid size-full place-items-center">
                   <Avatar name={p.name} size={72} />
@@ -201,6 +202,21 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
   )
 }
 
+/** A card's square photo, with the person's photo gradient (062) fading through it. */
+function CardPhoto({ userId, src }: { userId: string; src: string }) {
+  const photos = useLook(userId)?.cycle ?? [src]
+  const at = useCycle(photos.length)
+  return photos.map((u, i) => (
+    <img
+      key={u}
+      src={u}
+      alt=""
+      loading="lazy"
+      className={cn('absolute inset-0 size-full object-cover transition-opacity duration-700 motion-reduce:transition-none', i === at ? 'opacity-100' : 'opacity-0')}
+    />
+  ))
+}
+
 function Feed({ items }: { items: FeedItem[] | undefined }) {
   const { openProfile } = useApp()
   const { t, timeAgo } = useI18n()
@@ -211,7 +227,7 @@ function Feed({ items }: { items: FeedItem[] | undefined }) {
       {items.map((it) => (
         <li key={`${it.kind}:${it.id}`} className="overflow-hidden rounded-2xl border border-border bg-card">
           <button type="button" onClick={() => openProfile(it.user.id)} className="flex w-full items-center gap-3 p-3 text-start">
-            <Avatar name={it.user.name} src={it.user.photoUrl} size={36} />
+            <UserAvatar userId={it.user.id} name={it.user.name} src={it.user.photoUrl} size={36} />
             <span className="flex min-w-0 flex-col">
               <span className="truncate text-sm font-semibold">{it.user.name}</span>
               <span className="text-xs text-muted-foreground">{timeAgo(Date.parse(it.at))}</span>

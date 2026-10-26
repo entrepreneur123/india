@@ -74,7 +74,7 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
     >
       <header className="flex items-center gap-3 px-4 pt-4">
         <button type="button" onClick={() => openProfile(a.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl text-start">
-          <AccentAvatar name={a.name} src={a.photoUrl} size={40} accent={a.accent} />
+          <AccentAvatar userId={a.id} name={a.name} src={a.photoUrl} size={40} accent={a.accent} />
           <span className="min-w-0">
             <span className="flex items-center gap-1.5 text-[15px] leading-tight font-bold">
               <span className="truncate">{a.name}</span>

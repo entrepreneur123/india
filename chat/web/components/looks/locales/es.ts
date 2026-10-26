@@ -116,6 +116,12 @@ const es: LooksDict = {
   'vip.on': 'Incógnito activado',
   'vip.off': 'Incógnito desactivado',
   'vip.seen': 'VIP incógnito · sus amigos ven el perfil completo',
+  'looks.tab.cycle': 'Degradado de fotos',
+  'item.cycle_photos': 'Degradado de fotos',
+  'cycle.what': 'Tu foto de perfil se funde entre 2–4 de tus fotos cada 2 segundos, donde sea que aparezca',
+  'cycle.pick': 'Elige de 2 a 4 fotos',
+  'cycle.needPhotos': 'Primero añade al menos 2 fotos a tu perfil',
+  'cycle.save': 'Guardar',
 }
 
 export default es

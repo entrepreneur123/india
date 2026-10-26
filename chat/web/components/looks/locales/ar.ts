@@ -116,6 +116,12 @@ const ar: LooksDict = {
   'vip.on': 'تم تشغيل وضع التخفي',
   'vip.off': 'تم إيقاف وضع التخفي',
   'vip.seen': 'VIP متخفٍّ · يرى الأصدقاء الملف الشخصي كاملًا',
+  'looks.tab.cycle': 'تدرّج الصور',
+  'item.cycle_photos': 'تدرّج الصور',
+  'cycle.what': 'تتبدّل صورة ملفك تدريجيًا بين 2 إلى 4 من صورك كل ثانيتين، أينما ظهرت',
+  'cycle.pick': 'اختر من 2 إلى 4 صور',
+  'cycle.needPhotos': 'أضف صورتين على الأقل إلى ملفك أولًا',
+  'cycle.save': 'حفظ',
 }
 
 export default ar

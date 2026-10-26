@@ -9,7 +9,6 @@ import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { CommentIcon, LikeIcon } from '@/components/ui/topic-icons'
 import { Modal } from '@/components/ui/modal'
@@ -17,6 +16,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** The sheet's sections (the owner, 2026-10-26): invites, friends' messages, friend requests, likes and comments. */
 type Section = 'all' | 'invites' | 'messages' | 'friends' | 'reactions'
@@ -276,7 +276,7 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
   return (
     <li className={cn('flex flex-wrap items-center gap-3 px-4 py-2.5 sm:flex-nowrap sm:px-6', highlight && 'bg-primary-soft/40')}>
       <button type="button" onClick={() => openProfile(item.actor.id)} className="relative shrink-0 rounded-full" aria-label={name}>
-        <Avatar name={name} src={item.actor.photoUrl} size={44} />
+        <UserAvatar userId={item.actor.id} name={name} src={item.actor.photoUrl} size={44} />
         {item.kind === 'room_invite' || item.kind === 'call' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary-strong text-primary-foreground ring-2 ring-card">
             {item.kind === 'call' ? <Phone className="size-3.5" aria-hidden /> : <Headphones className="size-3.5" aria-hidden />}

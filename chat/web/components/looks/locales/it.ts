@@ -116,6 +116,12 @@ const it: LooksDict = {
   'vip.on': 'Incognito attivo',
   'vip.off': 'Incognito disattivato',
   'vip.seen': 'VIP in incognito · gli amici vedono tutto il profilo',
+  'looks.tab.cycle': 'Sfumatura foto',
+  'item.cycle_photos': 'Sfumatura foto',
+  'cycle.what': 'La tua foto profilo sfuma tra 2–4 delle tue foto ogni 2 secondi, ovunque appaia',
+  'cycle.pick': 'Scegli da 2 a 4 foto',
+  'cycle.needPhotos': 'Prima aggiungi almeno 2 foto al profilo',
+  'cycle.save': 'Salva',
 }
 
 export default it

@@ -14,7 +14,7 @@ import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
 import { retryImport } from '@/lib/retry-import'
 import { nameAge } from '@/lib/looks'
-import { Avatar } from '@/components/ui/avatar'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** Drag for the self-view: only the call screen needs it, so it downloads with the call. */
 const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
@@ -215,7 +215,7 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
         // A voice call: their photo up top, as a phone call shows it (a status still fits in the middle).
         <div className="absolute inset-x-0 top-[18%] flex justify-center p-6">
           <span className="flex flex-col items-center gap-3">
-            <Avatar name={partner.name} src={partner.photoUrl} size={128} className="rounded-full ring-4 ring-ink-foreground/15" />
+            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={128} className="rounded-full ring-4 ring-ink-foreground/15" />
             <span className="flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 text-xs font-semibold">
               <Phone className="size-3.5" aria-hidden /> {t('chat.voiceCall')}
             </span>

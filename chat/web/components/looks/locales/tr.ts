@@ -116,6 +116,12 @@ const tr: LooksDict = {
   'vip.on': 'Gizli mod açık',
   'vip.off': 'Gizli mod kapalı',
   'vip.seen': 'VIP gizli mod · arkadaşlar profilin tamamını görür',
+  'looks.tab.cycle': 'Fotoğraf geçişi',
+  'item.cycle_photos': 'Fotoğraf geçişi',
+  'cycle.what': 'Profil fotoğrafın göründüğü her yerde 2 saniyede bir 2–4 fotoğrafın arasında yumuşakça geçer',
+  'cycle.pick': '2 ila 4 fotoğraf seç',
+  'cycle.needPhotos': 'Önce profiline en az 2 fotoğraf ekle',
+  'cycle.save': 'Kaydet',
 }
 
 export default tr

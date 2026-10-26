@@ -2,10 +2,10 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { ageText, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
 
-test('the catalogue: 26 looks (040) and 11 walls, sticker packs and VIP (046), each id starting with its kind', () => {
+test('the catalogue: 26 looks (040), 11 walls, sticker packs and VIP (046), the photo gradient (062), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
-  assert.equal(all.length, 37)
-  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.sticker.length, CATALOGUE.vip.length], [6, 4, 1])
+  assert.equal(all.length, 38)
+  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.sticker.length, CATALOGUE.vip.length, CATALOGUE.cycle.length], [6, 4, 1, 1])
   for (const [kind, ids] of Object.entries(CATALOGUE)) for (const id of ids) assert.equal(kindOf(id), kind)
   for (const id of CATALOGUE.color) assert.ok(id in COLOR_DESIGNS, id)
   for (const id of CATALOGUE.font) assert.ok(id in FONT_DESIGNS, id)
@@ -17,6 +17,9 @@ test('the catalogue: 26 looks (040) and 11 walls, sticker packs and VIP (046), e
 test('looks(): items this app can’t draw, or of the wrong kind, are left off; rows without an ID are skipped', () => {
   const look = parseLook({ id: 'u1', handle: 'lisa_4821', badge: 'badge_crown', color: 'badge_star', font: 'font_comic', frame: 'frame_fire' })
   assert.deepEqual(look, { id: 'u1', handle: 'lisa_4821', badge: 'badge_crown', color: null, font: null, frame: 'frame_fire' })
+  // 062: a photo gradient needs 2–4 photos; anything else is no gradient.
+  assert.deepEqual(parseLook({ id: 'u1', handle: 'a1', cycle: ['p1', 'p2', 'p3', 'p4', 'p5'] })?.cycle, ['p1', 'p2', 'p3', 'p4'])
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', cycle: ['p1'] })?.cycle, undefined)
   assert.equal(parseLook({ id: 'u2', handle: '' }), null)
   assert.deepEqual(parseLooks([{ id: 'u3', handle: 'x_1' }, null, 'nope']).map((l) => l.id), ['u3'])
   assert.deepEqual(parseLooks(null), [])

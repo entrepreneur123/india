@@ -116,6 +116,12 @@ const pl: LooksDict = {
   'vip.on': 'Incognito włączone',
   'vip.off': 'Incognito wyłączone',
   'vip.seen': 'VIP incognito · znajomi widzą cały profil',
+  'looks.tab.cycle': 'Przenikanie zdjęć',
+  'item.cycle_photos': 'Przenikanie zdjęć',
+  'cycle.what': 'Twoje zdjęcie profilowe co 2 sekundy płynnie przechodzi przez 2–4 twoje zdjęcia, wszędzie gdzie się pojawia',
+  'cycle.pick': 'Wybierz od 2 do 4 zdjęć',
+  'cycle.needPhotos': 'Najpierw dodaj do profilu co najmniej 2 zdjęcia',
+  'cycle.save': 'Zapisz',
 }
 
 export default pl

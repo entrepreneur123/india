@@ -116,6 +116,12 @@ const sw: LooksDict = {
   'vip.on': 'Hali fiche imewashwa',
   'vip.off': 'Hali fiche imezimwa',
   'vip.seen': 'VIP fiche · marafiki wanaona wasifu wote',
+  'looks.tab.cycle': 'Mchanganyiko wa picha',
+  'item.cycle_photos': 'Mchanganyiko wa picha',
+  'cycle.what': 'Picha yako ya wasifu hubadilika polepole kati ya picha zako 2–4 kila sekunde 2, popote inapoonekana',
+  'cycle.pick': 'Chagua picha 2 hadi 4',
+  'cycle.needPhotos': 'Kwanza ongeza angalau picha 2 kwenye wasifu wako',
+  'cycle.save': 'Hifadhi',
 }
 
 export default sw

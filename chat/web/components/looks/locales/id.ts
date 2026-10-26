@@ -116,6 +116,12 @@ const id: LooksDict = {
   'vip.on': 'Incognito aktif',
   'vip.off': 'Incognito nonaktif',
   'vip.seen': 'VIP Incognito · teman melihat profil lengkapnya',
+  'looks.tab.cycle': 'Gradien foto',
+  'item.cycle_photos': 'Gradien foto',
+  'cycle.what': 'Foto profilmu berganti perlahan di antara 2–4 fotomu setiap 2 detik, di mana pun tampil',
+  'cycle.pick': 'Pilih 2 sampai 4 foto',
+  'cycle.needPhotos': 'Tambahkan dulu minimal 2 foto ke profilmu',
+  'cycle.save': 'Simpan',
 }
 
 export default id

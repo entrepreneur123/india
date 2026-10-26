@@ -7,7 +7,6 @@ import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -19,6 +18,7 @@ import { flagEmoji } from '@/lib/format'
 import { langName } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
 import { LiveBars } from './voice-stage'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** The live rooms on the Rooms tab (and its filter by category). */
 export function VoiceRooms({ filter, query = {}, onCreate }: { filter: RoomFilter; query?: RoomQuery; onCreate: () => void }) {
@@ -136,7 +136,7 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
         <span className="flex min-w-0 items-center gap-2.5">
           <span className="flex shrink-0 -space-x-2" aria-hidden>
             {room.speakers.map((p) => (
-              <Avatar key={p.id} name={p.name} src={p.photoUrl} size={30} className="rounded-full ring-2 ring-card" />
+              <UserAvatar key={p.id} userId={p.id} name={p.name} src={p.photoUrl} size={30} className="rounded-full ring-2 ring-card" />
             ))}
           </span>
           <span className="min-w-0 truncate text-sm text-muted-foreground">{room.speakers.map((p) => p.name).join(', ')}</span>
@@ -167,7 +167,7 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
         </span>
       ) : null}
       <span className="mt-auto flex w-full items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
-        <Avatar name={room.host.name} src={room.host.photoUrl} size={20} />
+        <UserAvatar userId={room.host.id} name={room.host.name} src={room.host.photoUrl} size={20} />
         <span className="min-w-0 flex-1 truncate">
           {room.mine ? t('voice.yourRoom') : t('voice.hostedBy', { name: room.host.name })}
           {room.mine ? null : <span aria-hidden>{` ${flagEmoji(room.host.country)}`}</span>}

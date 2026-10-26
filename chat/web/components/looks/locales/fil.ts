@@ -116,6 +116,12 @@ const fil: LooksDict = {
   'vip.on': 'Naka-on ang incognito',
   'vip.off': 'Naka-off ang incognito',
   'vip.seen': 'VIP incognito · nakikita ng friends ang buong profile',
+  'looks.tab.cycle': 'Photo gradient',
+  'item.cycle_photos': 'Photo gradient',
+  'cycle.what': 'Dahan-dahang nagpapalit ang profile photo mo sa 2–4 mong litrato kada 2 segundo, saanman ito lumabas',
+  'cycle.pick': 'Pumili ng 2 hanggang 4 na litrato',
+  'cycle.needPhotos': 'Magdagdag muna ng kahit 2 litrato sa profile mo',
+  'cycle.save': 'I-save',
 }
 
 export default fil

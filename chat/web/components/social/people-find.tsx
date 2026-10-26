@@ -8,18 +8,18 @@ import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // Finding someone by @ID (042), and Settings' list of people I blocked.
 
 function PersonLine({ p, children, onOpen }: { p: PersonRow; children?: React.ReactNode; onOpen?: () => void }) {
   const body = (
     <>
-      <Avatar name={p.name} src={p.photoUrl} size={44} />
+      <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
       <span className="flex min-w-0 flex-1 flex-col">
         <LookName userId={p.id} handle={p.handle} className="truncate text-[15px] font-semibold" />
         <span className="truncate text-sm text-muted-foreground">{p.name}</span>

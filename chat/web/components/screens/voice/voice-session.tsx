@@ -15,7 +15,6 @@ import { nextHost } from '@/lib/voice-lost'
 import { crowdChange, playRoomSound, type Crowd } from '@/lib/room-sounds'
 import { useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -26,6 +25,7 @@ import { useRoomT } from './room-t'
 import { VoiceRoomScreen } from './voice-room'
 import { LiveBars, SpeakingRing } from './voice-stage'
 import { isMod, memberOf, SPEAKING } from './voice-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /**
  * Audio levels arrive several times a second. They live outside React state: each seat subscribes to its own
@@ -591,7 +591,7 @@ function VoicePill({ s, onExpand, onLeave }: { s: VoiceSession; onExpand: () => 
             {face ? (
               <>
                 <SpeakingRing store={s.levels} id={face.profile.id} />
-                <Avatar name={face.profile.name} src={face.profile.photoUrl} size={42} />
+                <UserAvatar userId={face.profile.id} name={face.profile.name} src={face.profile.photoUrl} size={42} />
               </>
             ) : null}
           </span>

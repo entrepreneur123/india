@@ -122,6 +122,12 @@ const en = {
   'blocks.empty': 'You haven’t blocked anyone',
   'blocks.unblock': 'Unblock',
   'blocks.done': '{name} is unblocked',
+  'looks.tab.cycle': 'Photo gradient',
+  'item.cycle_photos': 'Photo gradient',
+  'cycle.what': 'Your profile photo fades through 2–4 of your photos, every 2 seconds, wherever it shows',
+  'cycle.pick': 'Pick 2 to 4 photos',
+  'cycle.needPhotos': 'Add at least 2 photos to your profile first',
+  'cycle.save': 'Save',
 }
 
 export default en

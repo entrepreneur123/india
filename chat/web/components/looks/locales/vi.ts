@@ -116,6 +116,12 @@ const vi: LooksDict = {
   'vip.on': 'Đã bật ẩn danh',
   'vip.off': 'Đã tắt ẩn danh',
   'vip.seen': 'VIP ẩn danh · bạn bè thấy toàn bộ hồ sơ',
+  'looks.tab.cycle': 'Ảnh chuyển màu',
+  'item.cycle_photos': 'Ảnh chuyển màu',
+  'cycle.what': 'Ảnh đại diện của bạn chuyển dần giữa 2–4 ảnh mỗi 2 giây, ở mọi nơi nó hiện',
+  'cycle.pick': 'Chọn từ 2 đến 4 ảnh',
+  'cycle.needPhotos': 'Hãy thêm ít nhất 2 ảnh vào hồ sơ trước',
+  'cycle.save': 'Lưu',
 }
 
 export default vi

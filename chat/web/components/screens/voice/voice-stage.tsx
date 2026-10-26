@@ -5,7 +5,6 @@ import * as m from 'motion/react-m'
 import { Lock, MicOff, Plus, WifiOff } from 'lucide-react'
 import { VOICE_SEATS, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { ReactionIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
@@ -13,6 +12,7 @@ import { useLevel, type LevelStore, type Reaction } from './voice-session'
 import { roleLabel, SPEAKING } from './voice-text'
 import { useRoomT } from './room-t'
 import { TrustBadge } from '@/components/trust/badge'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** Three bars that bounce while a room is live (still under reduced motion). */
 export function LiveBars({ className }: { className?: string }) {
@@ -150,7 +150,7 @@ export function SeatPerson({
     >
       <span className="relative" style={{ width: px, height: px }}>
         {member.lost ? null : <SpeakingRing store={levels} id={member.profile.id} />}
-        <Avatar name={member.profile.name} src={member.profile.photoUrl} size={px} className={cn('transition-transform duration-150 group-active:scale-95', member.lost && LOST_FACE)} />
+        <UserAvatar userId={member.profile.id} name={member.profile.name} src={member.profile.photoUrl} size={px} className={cn('transition-transform duration-150 group-active:scale-95', member.lost && LOST_FACE)} />
         {member.lost ? <LostBadge size={badge} /> : null}
         {member.muted ? (
           <span

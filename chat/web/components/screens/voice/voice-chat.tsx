@@ -9,7 +9,6 @@ import type { TKey } from '@/lib/i18n'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
 import { pollPercents } from '@/lib/voice-polls'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -25,6 +24,7 @@ import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { isMod, memberOf, roleLabel, systemText } from './voice-text'
 import { LookName } from '@/components/looks/look-name'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 
 type Sent = Extract<VoiceLine, { kind: 'text' | 'photo' }>
@@ -305,7 +305,7 @@ function SentLine({
         <span className="w-7 shrink-0" aria-hidden />
       ) : (
         <button type="button" onClick={() => onPerson(line.sender.id)} className="shrink-0 self-start rounded-full" aria-label={t('room.view', { name: line.sender.name })}>
-          <Avatar name={line.sender.name} src={line.sender.photoUrl} size={28} />
+          <UserAvatar userId={line.sender.id} name={line.sender.name} src={line.sender.photoUrl} size={28} />
         </button>
       )}
       {sticker && line.kind === 'text' ? (
@@ -399,7 +399,7 @@ function TypingRow({ ids, s }: { ids: string[]; s: VoiceSession }) {
           >
             <span className="flex shrink-0 -space-x-1.5" aria-hidden>
               {people.slice(0, 3).map((p) => (
-                <Avatar key={p.profile.id} name={p.profile.name} src={p.profile.photoUrl} size={20} className="rounded-full ring-2 ring-background" />
+                <UserAvatar key={p.profile.id} userId={p.profile.id} name={p.profile.name} src={p.profile.photoUrl} size={20} className="rounded-full ring-2 ring-background" />
               ))}
             </span>
             <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-es-sm bg-bubble-in px-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]" aria-hidden>
@@ -893,7 +893,7 @@ export function VoiceComposer({
                   onClick={() => choose(p)}
                   className={cn('flex w-full items-center gap-2.5 px-3.5 py-1.5 text-start text-sm font-semibold transition-colors duration-100', i === pick ? 'bg-muted' : 'hover:bg-muted/70')}
                 >
-                  <Avatar name={p.name} src={p.photoUrl} size={28} />
+                  <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={28} />
                   <span className="truncate text-primary-text">
                     {p.name}
                   </span>

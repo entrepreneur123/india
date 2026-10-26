@@ -5,7 +5,7 @@ import type { ComponentType } from 'react'
 import { Bell, Compass, MessagesSquare, Settings, Shuffle, UserRound, Users } from 'lucide-react'
 import { useApp, type Tab } from '@/components/app-state'
 import type { TKey } from '@/lib/i18n'
-import { Avatar } from '@/components/ui/avatar'
+import { UserAvatar } from '@/components/looks/user-avatar'
 import { Logo } from '@/components/ui/bits'
 import { CountBadge } from '@/components/social/bits'
 import { useSocialT } from '@/components/social/social-text'
@@ -118,7 +118,7 @@ export function Sidebar({ className }: { className?: string }) {
           onClick={() => setTab('me')}
           className="flex items-center justify-center gap-3 rounded-full p-1.5 text-start transition-colors duration-150 hover:bg-muted lg:justify-start lg:p-2"
         >
-          <Avatar name={me.name} src={me.photoUrl} size={36} />
+          <UserAvatar userId={me.id} name={me.name} src={me.photoUrl} size={36} />
           <span className="hidden min-w-0 lg:block">
             <span className="block truncate text-sm font-semibold">{me.name}</span>
             <span className="block truncate text-xs text-muted-foreground">

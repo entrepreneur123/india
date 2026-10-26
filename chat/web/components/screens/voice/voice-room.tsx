@@ -6,7 +6,6 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNod
 import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicChip, TopicIcon } from '@/components/ui/topic-icons'
@@ -29,6 +28,7 @@ import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
 import { useLooksT } from '@/components/looks/looks-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // The poll form is its own chunk, fetched when a host or co-host first opens the composer's menu.
 const loadPollSheet = () => retryImport(() => import('./poll-sheet'))
@@ -439,7 +439,7 @@ function FoldedRoom({ room, onExpand }: { room: VoiceRoom; onExpand: () => void 
       {onStage.length ? (
         <span className="flex min-w-0 -space-x-2 overflow-hidden rtl:space-x-reverse" aria-label={t('voice.stage')} role="img">
           {onStage.slice(0, 8).map((x) => (
-            <Avatar key={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={30} className="rounded-full ring-2 ring-background" />
+            <UserAvatar key={x.profile.id} userId={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={30} className="rounded-full ring-2 ring-background" />
           ))}
         </span>
       ) : (
@@ -687,7 +687,7 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
           <span className="flex min-w-0 -space-x-2 overflow-hidden" aria-hidden>
             {shown.map((x) => (
               <span key={x.profile.id} className="relative shrink-0">
-                <Avatar name={x.profile.name} src={x.profile.photoUrl} size={30} className={cn('rounded-full ring-2 ring-background', x.lost && LOST_FACE)} />
+                <UserAvatar userId={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={30} className={cn('rounded-full ring-2 ring-background', x.lost && LOST_FACE)} />
                 {x.lost ? <LostBadge size={14} className="-top-1 -inset-e-1" /> : null}
                 {x.hand ? <ReactionIcon kind="hand" size={14} className="absolute -inset-e-1 -bottom-1" /> : null}
               </span>
@@ -708,7 +708,7 @@ function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }
   return (
     <button type="button" onClick={onClick} aria-label={[x.profile.name, role, x.lost ? rt('lost') : null].filter(Boolean).join(', ')} className="group flex w-full min-w-0 flex-col items-center gap-1 rounded-2xl p-1">
       <span className="relative">
-        <Avatar name={x.profile.name} src={x.profile.photoUrl} size={44} className={cn('transition-transform duration-150 group-active:scale-95', x.lost && LOST_FACE)} />
+        <UserAvatar userId={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={44} className={cn('transition-transform duration-150 group-active:scale-95', x.lost && LOST_FACE)} />
         {x.lost ? <LostBadge size={18} /> : null}
         {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -inset-e-1 -bottom-1" /> : null}
       </span>

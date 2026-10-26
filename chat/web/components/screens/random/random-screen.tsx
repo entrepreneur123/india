@@ -10,7 +10,6 @@ import { errorCode, flagEmoji } from '@/lib/format'
 import { onPageVisibility, pageHidden } from '@/lib/visibility'
 import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Segmented } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -27,6 +26,7 @@ import { CountriesButton, flagsOf, saveCountries, savedCountries } from './count
 import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
 import { useLook } from '@/components/looks/look-name'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
@@ -337,7 +337,7 @@ export function RandomScreen({ active }: { active: boolean }) {
           >
             <BellButton className="absolute top-3 inset-e-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
-              <FrameAvatar frame={myFrame} name={me.name} src={me.photoUrl} size={128} />
+              <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={128} />
               <p className="mt-5 text-lg font-semibold">
                 {me.name}, {me.age} <span aria-hidden>{flagEmoji(me.country)}</span>
               </p>
@@ -479,7 +479,7 @@ function Matching({
         {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50" aria-hidden />
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50 [animation-delay:1.2s]" aria-hidden />
-        <FrameAvatar frame={myFrame} name={me.name} src={me.photoUrl} size={112} className="relative" />
+        <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={112} className="relative" />
       </div>
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
@@ -523,7 +523,7 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
             transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
           >
             <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
-            <Avatar name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
+            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
             <span className="flex items-center gap-1.5 text-xl font-bold">
               {nameAge(partner.name, partner.age)}
               <TrustBadge userId={partner.id} size={20} />

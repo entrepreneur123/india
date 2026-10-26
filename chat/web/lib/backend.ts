@@ -91,6 +91,8 @@ export interface Profile {
   id: string
   /** Mine only (059): people who aren't my friends may message me. */
   dmEveryone?: boolean
+  /** Mine only: the main photo's file, so it can be picked for the photo gradient (062). */
+  photoPath?: string | null
   name: string
   gender: Gender
   age: number
@@ -138,7 +140,7 @@ export interface MyTrust extends Trust {
 
 export type LookKind = 'badge' | 'color' | 'font' | 'frame'
 /** Everything the shop sells: the looks, and (046) chat walls, sticker packs and VIP incognito. */
-export type ItemKind = LookKind | 'wall' | 'sticker' | 'vip'
+export type ItemKind = LookKind | 'wall' | 'sticker' | 'vip' | 'cycle'
 
 /** Someone's ID and what they wear (null: none of that kind). Item ids are the catalogue's (lib/looks.ts). */
 export interface Look {
@@ -148,6 +150,8 @@ export interface Look {
   color: string | null
   font: string | null
   frame: string | null
+  /** 062: 2–4 photos that fade one into the next wherever this person's photo shows (a look bought once). */
+  cycle?: string[]
 }
 
 /** What I wear: one item of each kind at most. */
@@ -748,6 +752,8 @@ export interface Backend {
   likeProfile(userId: string, on: boolean): Promise<void>
   /** Messages from anyone (true) or friends only (false, the default). */
   setDmEveryone(on: boolean): Promise<Profile>
+  /** 062: the photos (file ids: photoPath or photos[].id) of my photo gradient, 2–4; null turns it off. */
+  setCycle(paths: string[] | null): Promise<void>
   /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
   blocks(): Promise<PersonRow[]>
   unblock(userId: string): Promise<void>

@@ -116,6 +116,12 @@ const zhHans: LooksDict = {
   'vip.on': '已开启隐身模式',
   'vip.off': '已关闭隐身模式',
   'vip.seen': 'VIP 隐身 · 好友可看到完整资料',
+  'looks.tab.cycle': '照片渐变',
+  'item.cycle_photos': '照片渐变',
+  'cycle.what': '头像出现的所有地方，都会每2秒在你的2–4张照片之间渐变切换',
+  'cycle.pick': '请选择2到4张照片',
+  'cycle.needPhotos': '请先在个人资料中添加至少2张照片',
+  'cycle.save': '保存',
 }
 
 export default zhHans

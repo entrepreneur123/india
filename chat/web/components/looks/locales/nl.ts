@@ -116,6 +116,12 @@ const nl: LooksDict = {
   'vip.on': 'Incognito staat aan',
   'vip.off': 'Incognito staat uit',
   'vip.seen': 'VIP-incognito · vrienden zien het hele profiel',
+  'looks.tab.cycle': 'Fotoverloop',
+  'item.cycle_photos': 'Fotoverloop',
+  'cycle.what': 'Je profielfoto vloeit elke 2 seconden over in 2–4 van je foto’s, overal waar hij te zien is',
+  'cycle.pick': 'Kies 2 tot 4 foto’s',
+  'cycle.needPhotos': 'Voeg eerst minstens 2 foto’s aan je profiel toe',
+  'cycle.save': 'Opslaan',
 }
 
 export default nl

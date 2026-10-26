@@ -307,7 +307,7 @@ function CommentRow({
   return (
     <li className={cn('flex gap-3 rounded-2xl px-2 py-2.5', depth === 1 && 'ms-11')}>
       <button type="button" onClick={() => openProfile(c.author.id)} className="shrink-0 self-start rounded-full" aria-label={c.author.name}>
-        <AccentAvatar name={c.author.name} src={c.author.photoUrl} size={depth ? 28 : 34} accent={c.author.accent} />
+        <AccentAvatar userId={c.author.id} name={c.author.name} src={c.author.photoUrl} size={depth ? 28 : 34} accent={c.author.accent} />
       </button>
       <div className="min-w-0 flex-1">
         <div className="rounded-2xl rounded-ss-md bg-muted px-3.5 py-2">

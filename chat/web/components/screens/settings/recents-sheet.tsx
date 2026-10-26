@@ -5,12 +5,12 @@ import useSWR from 'swr'
 import { Check } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** Settings › Recent chats: takes people off my recents (048), some or all. They come back only if we meet again. */
 export function RecentsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -72,7 +72,7 @@ export function RecentsSheet({ open, onClose }: { open: boolean; onClose: () => 
                       onClick={() => toggle(r.partner.id)}
                       className={cn('flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition-colors duration-150 hover:bg-muted', on && 'bg-primary-soft hover:bg-primary-soft')}
                     >
-                      <Avatar name={r.partner.name} src={r.partner.photoUrl} size={44} />
+                      <UserAvatar userId={r.partner.id} name={r.partner.name} src={r.partner.photoUrl} size={44} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[15px] font-semibold">{r.partner.name}</span>
                         <span className="block truncate text-sm text-muted-foreground">{timeAgo(r.metAt)}</span>

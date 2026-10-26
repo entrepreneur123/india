@@ -116,6 +116,12 @@ const ko: LooksDict = {
   'vip.on': '시크릿 모드를 켰어요',
   'vip.off': '시크릿 모드를 껐어요',
   'vip.seen': 'VIP 시크릿 모드 · 친구에게는 프로필이 모두 보여요',
+  'looks.tab.cycle': '프로필 그라데이션',
+  'item.cycle_photos': '프로필 그라데이션',
+  'cycle.what': '내 사진 2~4장이 2초마다 스르륵 바뀌며, 내 프로필 사진이 보이는 모든 곳에 적용돼요',
+  'cycle.pick': '사진을 2~4장 골라 주세요',
+  'cycle.needPhotos': '먼저 프로필에 사진을 2장 이상 올려 주세요',
+  'cycle.save': '저장',
 }
 
 export default ko

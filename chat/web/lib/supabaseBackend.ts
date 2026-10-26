@@ -407,7 +407,7 @@ export class SupabaseBackend implements Backend {
     if (error) fail(error)
     if (!data) return null
     const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
-    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone' }
+    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone', photoPath: data.photo_path }
   }
 
   async createProfile(p: NewProfile) {
@@ -1281,13 +1281,13 @@ export class SupabaseBackend implements Backend {
   async shop(): Promise<Shop> {
     const s = parseShop(await this.rpc<unknown>('shop'), time)
     if (!s) throw new BackendError('network')
-    return s
+    return { ...s, look: await this.signLook(s.look) }
   }
 
   async equipLook(wear: LookWear): Promise<Look> {
     const look = parseLook(await this.rpc<unknown>('equip_look', { p_badge: wear.badge, p_color: wear.color, p_font: wear.font, p_frame: wear.frame }))
     if (!look) throw new BackendError('network')
-    return look
+    return this.signLook(look)
   }
 
   async setWall(itemId: string | null) {
@@ -1301,7 +1301,19 @@ export class SupabaseBackend implements Backend {
   async looks(userIds: string[]): Promise<Look[]> {
     const ids = [...new Set(userIds)].slice(0, 100)
     if (!ids.length) return []
-    return parseLooks(await this.rpc<unknown>('looks', { p_users: ids }))
+    return Promise.all(parseLooks(await this.rpc<unknown>('looks', { p_users: ids })).map((l) => this.signLook(l)))
+  }
+
+  /** A look's photo gradient as photos (the server gives file paths). */
+  private async signLook<T extends Look | null>(l: T): Promise<T> {
+    if (!l?.cycle) return l
+    await this.signMany(l.cycle)
+    const cycle = l.cycle.flatMap((p) => this.signedUrls.get(p)?.url ?? [])
+    return { ...l, cycle: cycle.length >= 2 ? cycle : undefined }
+  }
+
+  async setCycle(paths: string[] | null) {
+    await this.rpc('set_cycle', { p_paths: paths })
   }
 
   async voiceStartAudio(roomId: string) {

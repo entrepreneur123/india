@@ -13,7 +13,6 @@ import { FREE_EXIT_LOCK_MS, PLUS_EXIT_LOCK_MS } from '@/lib/config'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useSocialT } from '@/components/social/social-text'
-import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { CallRequestModal } from '@/components/video/incoming-call'
 import { Button } from '@/components/ui/pressable'
@@ -33,6 +32,7 @@ import { useShop } from '@/components/looks/use-shop'
 import { StickerButton } from './stickers'
 import { useFriendship } from '@/components/social/friend-button'
 import { FriendContactsSheet } from '@/components/social/contacts'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // The call screen (and, inside it, the LiveKit SDK) downloads only when a call is accepted.
 const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-call')).then((mod) => ({ default: mod.VideoCall })))
@@ -221,7 +221,7 @@ export function ChatView({
             onClick={() => openProfile(partner.id, { matchId })}
             className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted"
           >
-            <Avatar name={partner.name} src={partner.photoUrl} size={40} />
+            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
                 {nameAge(partner.name, partner.age)} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>

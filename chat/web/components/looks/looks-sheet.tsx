@@ -57,6 +57,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [wallTry, setWallTry] = useState<ItemId | null | undefined>(undefined)
   const [packTry, setPackTry] = useState<PackId>(CATALOGUE.sticker[0] as PackId)
   const [busy, setBusy] = useState(false)
+  const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
 
   useEffect(() => {
     if (!shop || worn) return
@@ -94,7 +95,22 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
   const myWall = shop.wall as ItemId | null
   const shownWall = wallTry === undefined ? myWall : wallTry
-  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : kind === 'wall' ? shownWall : kind === 'sticker' ? packTry : 'vip_anon'
+  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : kind === 'wall' ? shownWall : kind === 'sticker' ? packTry : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
+  // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
+  const myPhotos = [...(me.photoPath && me.photoUrl ? [{ id: me.photoPath, url: me.photoUrl }] : []), ...(me.photos ?? [])]
+  const picked = cyclePick ?? myPhotos.filter((x) => shop.look?.cycle?.includes(x.url)).map((x) => x.id)
+  const saveCycle = async () => {
+    setBusy(true)
+    try {
+      await backend.setCycle(picked.length ? picked : null)
+      await Promise.all([mutate(lookKey(me.id)), reload()])
+      toast.show(lt('looks.saved'), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
   const sale = new Set(shop.items.map((i) => i.id))
   const list = CATALOGUE[kind].filter((id) => sale.has(id))
   const choose = (id: ItemId | null) => (look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : id && setPackTry(id as PackId))
@@ -167,7 +183,13 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       inUse(lt(look ? 'looks.wearing' : 'wall.inUse'))
     )
   } else if (owned.has(tried)) {
-    if (kind === 'vip') {
+    if (kind === 'cycle') {
+      action = (
+        <Button variant="brand" size="lg" className="w-full" loading={busy} disabled={picked.length === 1} onClick={() => void saveCycle()}>
+          {lt('cycle.save')}
+        </Button>
+      )
+    } else if (kind === 'vip') {
       action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
     } else if (kind === 'sticker') {
       action = inUse(lt('sticker.owned'))
@@ -234,6 +256,46 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         ))}
       </div>
     )
+  } else if (kind === 'cycle') {
+    const urls = myPhotos.filter((x) => picked.includes(x.id)).map((x) => x.url)
+    preview = (
+      <div className="flex w-full flex-col items-center gap-3">
+        <Avatar name={me.name} src={me.photoUrl} srcs={urls.length >= 2 ? urls : myPhotos.slice(0, 4).map((x) => x.url)} size={96} />
+        <p className="text-center text-sm leading-relaxed text-muted-foreground">{lt('cycle.what')}</p>
+        {owned.has('cycle_photos') ? (
+          myPhotos.length < 2 ? (
+            <p className="text-sm font-medium text-destructive">{lt('cycle.needPhotos')}</p>
+          ) : (
+            <>
+              <p className="text-sm font-semibold">{lt('cycle.pick')}</p>
+              <ul className="flex flex-wrap justify-center gap-2">
+                {myPhotos.map((x) => {
+                  const on = picked.includes(x.id)
+                  return (
+                    <li key={x.id}>
+                      <button
+                        type="button"
+                        aria-pressed={on}
+                        disabled={!on && picked.length >= 4}
+                        onClick={() => setCyclePick(on ? picked.filter((y) => y !== x.id) : [...picked, x.id])}
+                        className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-transparent')}
+                      >
+                        <img src={x.url} alt="" className="size-full object-cover" />
+                        {on ? (
+                          <span className="absolute top-1 inset-e-1 grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                            {picked.indexOf(x.id) + 1}
+                          </span>
+                        ) : null}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </>
+          )
+        ) : null}
+      </div>
+    )
   } else if (kind === 'vip') {
     preview = (
       <div className="flex w-full flex-col gap-3">
@@ -248,7 +310,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     preview = (
       <FrameCard frame={trying.frame as FrameId | null} className="w-full">
         <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
-          <FrameAvatar frame={trying.frame as FrameId | null} name={me.name} src={me.photoUrl} size={72} />
+          <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
           <p className="mt-1 text-lg font-bold">{me.name}</p>
           {handle ? <LookText handle={handle} wear={trying} className="text-[17px] font-semibold" /> : null}
         </div>
@@ -283,7 +345,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
           ))}
         </div>
 
-        {kind === 'vip' ? null : (
+        {kind === 'vip' || kind === 'cycle' ? null : (
           <ul role="radiogroup" aria-label={lt(`looks.tab.${kind}`)} className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
             {kind === 'sticker' ? null : (
               <li>

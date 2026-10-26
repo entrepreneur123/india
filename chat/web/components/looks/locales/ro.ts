@@ -116,6 +116,12 @@ const ro: LooksDict = {
   'vip.on': 'Incognito activat',
   'vip.off': 'Incognito dezactivat',
   'vip.seen': 'VIP incognito · prietenii văd tot profilul',
+  'looks.tab.cycle': 'Gradient de poze',
+  'item.cycle_photos': 'Gradient de poze',
+  'cycle.what': 'Poza ta de profil trece lin prin 2–4 dintre pozele tale la fiecare 2 secunde, oriunde apare',
+  'cycle.pick': 'Alege între 2 și 4 poze',
+  'cycle.needPhotos': 'Mai întâi adaugă cel puțin 2 poze în profil',
+  'cycle.save': 'Salvează',
 }
 
 export default ro

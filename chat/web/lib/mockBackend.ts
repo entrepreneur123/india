@@ -474,6 +474,7 @@ export class MockBackend implements Backend {
       city: p.city.trim(),
       bio: p.bio.trim(),
       photoUrl: p.photo ? URL.createObjectURL(p.photo) : null,
+      photoPath: p.photo ? 'me_main' : null,
       // The country of the number's calling code (the longest that matches; +1 numbers stay without a flag).
       country: countryOfPhone(this.pendingPhone),
       posts: [],
@@ -881,6 +882,7 @@ export class MockBackend implements Backend {
       city: city.trim(),
       bio: bio.trim(),
       photoUrl: photo ? URL.createObjectURL(photo) : this.me.photoUrl,
+      photoPath: photo ? 'me_main' : this.me.photoPath,
     }
     return { ...this.me }
   }
@@ -1313,6 +1315,10 @@ export class MockBackend implements Backend {
 
   async setWall(itemId: string | null) {
     return (await this.lookSim()).setWall(itemId)
+  }
+
+  async setCycle(paths: string[] | null) {
+    return (await this.lookSim()).setCycle(paths)
   }
 
   async setAnon(on: boolean) {

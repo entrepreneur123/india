@@ -5,10 +5,10 @@ import { Phone, Video } from 'lucide-react'
 import type { IncomingCall as Ringing, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** "Asha wants a voice call": their photo, the kind of call, Decline and Accept. In a chat, and app-wide for friends. */
 export function CallRequestModal({ open, partner, video, busy, onAnswer }: {
@@ -21,7 +21,7 @@ export function CallRequestModal({ open, partner, video, busy, onAnswer }: {
       <div className="flex flex-col items-center gap-4 px-6 pt-8 pb-6 text-center">
         <span className="relative">
           <span className="absolute inset-0 animate-ping-soft rounded-full border-2 border-primary-text" aria-hidden />
-          <Avatar name={partner.name} src={partner.photoUrl} size={88} />
+          <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={88} />
         </span>
         <div>
           <h2 className="flex items-center justify-center gap-2 text-lg font-semibold">

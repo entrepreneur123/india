@@ -18,6 +18,7 @@ const PRICES: [ItemId, number][] = [
   ['wall_saffron', 79], ['wall_midnight', 79], ['wall_paisley', 79], ['wall_mehndi', 79], ['wall_stars', 79], ['wall_waves', 79],
   ['sticker_namaste', 49], ['sticker_chai', 49], ['sticker_cricket', 49], ['sticker_love', 49],
   ['vip_anon', 299],
+  ['cycle_photos', 199],
 ]
 
 /** The demo people who wear something (everyone else shows a plain @ID). */
@@ -60,6 +61,8 @@ export class LookSim {
   private wear: LookWear = NO_WEAR
   private wall: ItemId | null = null
   private anon = false
+  /** The photo gradient's photos (urls). */
+  private cycle: string[] = []
   /** When I last chose an ID myself (null: the free one the app gave). */
   private handleSetAt: number | null = null
 
@@ -81,7 +84,7 @@ export class LookSim {
 
   private myLook(): Look | null {
     const me = this.host.me()
-    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear } : null
+    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}) } : null
   }
 
   async handleCheck(raw: string): Promise<HandleCheck> {
@@ -129,6 +132,19 @@ export class LookSim {
     await wait(250)
     if (on && !this.owned.has('vip_anon')) throw new BackendError('not_owned')
     this.anon = on
+  }
+
+  /** Like set_cycle: 2–4 of my photos (photoPath or a gallery photo's id), or none. */
+  async setCycle(paths: string[] | null) {
+    await wait(250)
+    const me = this.host.me()
+    if (!me) throw new BackendError('not_found')
+    if (!paths?.length) return void (this.cycle = [])
+    if (!this.owned.has('cycle_photos')) throw new BackendError('not_owned')
+    const url = (p: string) => (p === me.photoPath ? me.photoUrl : me.photos?.find((x) => x.id === p)?.url)
+    const urls = [...new Set(paths)].map(url)
+    if (urls.length < 2 || urls.length > 4 || urls.some((u) => !u)) throw new BackendError('bad_request')
+    this.cycle = urls as string[]
   }
 
   /** Like chat_body_check: a sticker needs its pack. */

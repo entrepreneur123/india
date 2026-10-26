@@ -116,6 +116,12 @@ const ja: LooksDict = {
   'vip.on': 'シークレットモードをオンにしました',
   'vip.off': 'シークレットモードをオフにしました',
   'vip.seen': 'VIPシークレット · 友だちにはプロフィールがすべて見えます',
+  'looks.tab.cycle': 'フォトグラデーション',
+  'item.cycle_photos': 'フォトグラデーション',
+  'cycle.what': 'プロフィール写真が表示されるすべての場所で、2〜4枚の写真が2秒ごとにふわっと切り替わります',
+  'cycle.pick': '写真を2〜4枚選んでください',
+  'cycle.needPhotos': '先にプロフィールに写真を2枚以上追加してください',
+  'cycle.save': '保存',
 }
 
 export default ja

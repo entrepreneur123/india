@@ -12,6 +12,7 @@ import { FrameAvatar, FrameCard } from '@/components/looks/frames'
 import { LookName, useLook } from '@/components/looks/look-name'
 import { useFeedT } from './feed-text'
 import { useLooksT } from '@/components/looks/looks-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 // A profile made its own: the frame (040, a bought look) around the card and the photo, the name and the decorated
 // @ID, the status, languages and prompt cards (033). The status, languages and prompts use the brand's colours as CSS
@@ -25,12 +26,15 @@ export const ACCENT_TEXT = 'text-[var(--acc-ink)]'
 
 /** An avatar inside a thin ring of the person's accent (like a story ring). */
 export function AccentAvatar({
+  userId,
   name,
   src,
   size,
   accent,
   className,
 }: {
+  /** Shows their photo gradient (062). */
+  userId?: string
   name: string
   src?: string | null
   size: number
@@ -51,7 +55,7 @@ export function AccentAvatar({
       }}
     >
       <span className="grid place-items-center rounded-full bg-card" style={{ padding: gap }}>
-        <Avatar name={name} src={src} size={size} />
+        {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} /> : <Avatar name={name} src={src} size={size} />}
       </span>
     </span>
   )
@@ -86,7 +90,7 @@ export function ProfileHero({
     <FrameCard frame={frame} className={className}>
       {slot}
       <section className="flex flex-col items-center px-2 pt-14 pb-6 text-center sm:pt-10" style={accentStyle(style.accent)}>
-        <FrameAvatar frame={frame} name={profile.name} src={profile.photoUrl} size={104} />
+        <FrameAvatar frame={frame} userId={profile.id} name={profile.name} src={profile.photoUrl} size={104} />
         <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
           <span className="inline-flex items-center gap-1.5">
             <span>{nameAge(profile.name, profile.age)}</span>

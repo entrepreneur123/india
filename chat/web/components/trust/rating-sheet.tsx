@@ -10,7 +10,6 @@ import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { BAD_TAGS, GOOD_TAGS, MAX_RATING_TAGS, toggleTag, type RatingTag } from '@/lib/trust'
 import { useApp } from '@/components/app-state'
-import { Avatar } from '@/components/ui/avatar'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -18,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { ChatFeelIcon } from './art'
 import { skipRating } from './store'
 import { useTrustT, type TrustKey } from './trust-text'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 export interface RateTarget {
   matchId: string
@@ -75,7 +75,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
 
   return (
     <div className="flex flex-col items-center px-6 pt-7 pb-6 text-center" aria-label={tt('rate.label')}>
-      <Avatar name={target.partner.name} src={target.partner.photoUrl} size={64} />
+      <UserAvatar userId={target.partner.id} name={target.partner.name} src={target.partner.photoUrl} size={64} />
       <h2 className="mt-3 text-[22px] leading-tight font-extrabold tracking-tight text-balance">{tt('rate.title', { name: target.partner.name })}</h2>
       <p className="mt-1.5 text-sm text-muted-foreground">{tt('rate.body')}</p>
 

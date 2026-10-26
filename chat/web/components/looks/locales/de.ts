@@ -116,6 +116,12 @@ const de: LooksDict = {
   'vip.on': 'Inkognito ist an',
   'vip.off': 'Inkognito ist aus',
   'vip.seen': 'VIP-Inkognito · Freunde sehen das ganze Profil',
+  'looks.tab.cycle': 'Foto-Verlauf',
+  'item.cycle_photos': 'Foto-Verlauf',
+  'cycle.what': 'Dein Profilbild blendet alle 2 Sekunden durch 2–4 deiner Fotos, überall wo es erscheint',
+  'cycle.pick': 'Wähle 2 bis 4 Fotos',
+  'cycle.needPhotos': 'Füge zuerst mindestens 2 Fotos zu deinem Profil hinzu',
+  'cycle.save': 'Speichern',
 }
 
 export default de

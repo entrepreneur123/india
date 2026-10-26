@@ -11,7 +11,6 @@ import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
-import { Avatar } from '@/components/ui/avatar'
 import { Segmented, Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -26,6 +25,7 @@ import { useLooksT } from '@/components/looks/looks-text'
 import { FindSheet } from '@/components/social/people-find'
 import { nameAge } from '@/lib/looks'
 import { previewText } from '@/lib/stickers'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 type Segment = 'friends' | 'matches' | 'sent'
 
@@ -146,7 +146,7 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
   const { openProfile } = useApp()
   return (
     <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start">
-      <Avatar name={p.name} src={p.photoUrl} size={48} country={p.country} />
+      <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
           <span className="truncate">{nameAge(p.name, p.age)}</span>

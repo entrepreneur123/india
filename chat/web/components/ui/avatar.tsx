@@ -1,20 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
 import { isVip } from '@/lib/looks'
 
-interface AvatarProps {
+// One 2-second clock for every photo gradient on screen (062): they change together and only one timer runs, only
+// while one is shown.
+const ticks = new Set<() => void>()
+let tick = 0
+let timer: ReturnType<typeof setInterval> | null = null
+const subscribe = (f: () => void) => {
+  ticks.add(f)
+  timer ??= setInterval(() => {
+    tick++
+    ticks.forEach((g) => g())
+  }, 2000)
+  return () => {
+    ticks.delete(f)
+    if (!ticks.size && timer) {
+      clearInterval(timer)
+      timer = null
+    }
+  }
+}
+const noTick = () => () => undefined
+/** Which of `n` gradient photos shows now (0 when there is nothing to cycle). */
+export const useCycle = (n: number) => useSyncExternalStore(n >= 2 ? subscribe : noTick, () => (n >= 2 ? tick % n : 0), () => 0)
+
+export interface AvatarProps {
   name: string
   src?: string | null
+  /** A photo gradient (062): 2–4 photos fading one into the next every 2 seconds, shown instead of `src`. */
+  srcs?: string[]
   size?: number
   country?: string | null
   online?: boolean
   className?: string
 }
 
-export function Avatar({ name, src, size = 40, country, online, className }: AvatarProps) {
+export function Avatar({ name, src, srcs, size = 40, country, online, className }: AvatarProps) {
   const [failed, setFailed] = useState<string | null>(null) // the src that failed; a new photo gets a new try
   const initials = [...name.trim()]
     .slice(0, 1)
@@ -22,11 +47,29 @@ export function Avatar({ name, src, size = 40, country, online, className }: Ava
     .toUpperCase()
   const showImage = src && failed !== src
   const badge = Math.max(14, Math.round(size * 0.36))
+  const cycling = !!srcs && srcs.length >= 2
+  const at = useCycle(cycling ? srcs.length : 0)
 
   return (
     <span className={cn('relative inline-flex shrink-0', className)} style={{ width: size, height: size }}>
-      <span className="block size-full overflow-hidden rounded-full bg-border">
-        {showImage ? (
+      <span className="relative block size-full overflow-hidden rounded-full bg-border">
+        {cycling ? (
+          srcs.map((u, i) => (
+            <img
+              key={u}
+              src={u}
+              alt=""
+              width={size}
+              height={size}
+              className={cn(
+                'absolute inset-0 size-full bg-muted object-cover transition-opacity duration-700 ease-in-out motion-reduce:transition-none',
+                i === at ? 'opacity-100' : 'opacity-0',
+              )}
+              decoding="async"
+              draggable={false}
+            />
+          ))
+        ) : showImage ? (
           <img
             src={src}
             alt=""

@@ -116,6 +116,12 @@ const ms: LooksDict = {
   'vip.on': 'Inkognito dihidupkan',
   'vip.off': 'Inkognito dimatikan',
   'vip.seen': 'VIP Inkognito · rakan nampak profil penuh',
+  'looks.tab.cycle': 'Gradien foto',
+  'item.cycle_photos': 'Gradien foto',
+  'cycle.what': 'Foto profil anda bertukar perlahan antara 2–4 foto anda setiap 2 saat, di mana-mana ia dipaparkan',
+  'cycle.pick': 'Pilih 2 hingga 4 foto',
+  'cycle.needPhotos': 'Tambah sekurang-kurangnya 2 foto pada profil dahulu',
+  'cycle.save': 'Simpan',
 }
 
 export default ms

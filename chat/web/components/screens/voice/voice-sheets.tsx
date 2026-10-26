@@ -8,7 +8,6 @@ import { flagEmoji } from '@/lib/format'
 import type { TKey } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { Field, TextArea, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -26,6 +25,7 @@ import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
 import { ageText } from '@/lib/looks'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -71,7 +71,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
   const body = (
     <>
       <span className="relative shrink-0">
-        <Avatar name={m.profile.name} src={m.profile.photoUrl} size={40} className={cn(m.lost && LOST_FACE)} />
+        <UserAvatar userId={m.profile.id} name={m.profile.name} src={m.profile.photoUrl} size={40} className={cn(m.lost && LOST_FACE)} />
         {m.lost ? <LostBadge size={18} /> : null}
       </span>
       <span className="min-w-0 flex-1">
@@ -153,7 +153,7 @@ export function PersonSheet({
     <>
       <Modal open={!!userId && !reportOpen && !kickOpen} onClose={onClose} variant="sheet" hideHeader>
         <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-3 text-center">
-          <Avatar name={target.profile.name} src={target.profile.photoUrl} size={72} />
+          <UserAvatar userId={target.profile.id} name={target.profile.name} src={target.profile.photoUrl} size={72} />
           <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
           <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">

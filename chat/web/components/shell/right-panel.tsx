@@ -5,7 +5,6 @@ import { MessageCircle } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Avatar } from '@/components/ui/avatar'
 import { PresenceDot, Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { flagEmoji } from '@/lib/format'
@@ -15,6 +14,7 @@ import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
@@ -72,7 +72,7 @@ export function RightPanel({ className }: { className?: string }) {
                       onClick={() => openProfile(f.profile.id)}
                       className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start"
                     >
-                      <Avatar name={f.profile.name} src={f.profile.photoUrl} size={40} />
+                      <UserAvatar userId={f.profile.id} name={f.profile.name} src={f.profile.photoUrl} size={40} />
                       <span className="min-w-0">
                         <span className="flex items-center gap-1 truncate text-sm font-semibold">
                           <span className="truncate">{f.profile.name}</span>
