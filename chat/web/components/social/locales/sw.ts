@@ -137,6 +137,11 @@ const sw: SocialDict = {
   'hl.delete': 'Futa',
   'hl.edit': 'Hariri',
   'hl.plain': 'Tumia herufi za kawaida (si fonti za mapambo)',
+  'inbox.all': 'Zote',
+  'inbox.invites': 'Mialiko',
+  'inbox.messages': 'Ujumbe',
+  'inbox.friends': 'Marafiki',
+  'inbox.reactions': 'Likes na maoni',
 }
 
 export default sw

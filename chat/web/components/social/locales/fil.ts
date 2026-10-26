@@ -137,6 +137,11 @@ const fil: SocialDict = {
   'hl.delete': 'Burahin',
   'hl.edit': 'I-edit',
   'hl.plain': 'Gumamit ng karaniwang letra (walang fancy font)',
+  'inbox.all': 'Lahat',
+  'inbox.invites': 'Imbitasyon',
+  'inbox.messages': 'Mensahe',
+  'inbox.friends': 'Kaibigan',
+  'inbox.reactions': 'Like at komento',
 }
 
 export default fil

@@ -137,6 +137,11 @@ const id: SocialDict = {
   'hl.delete': 'Hapus',
   'hl.edit': 'Edit',
   'hl.plain': 'Gunakan huruf biasa (tanpa font hias)',
+  'inbox.all': 'Semua',
+  'inbox.invites': 'Undangan',
+  'inbox.messages': 'Pesan',
+  'inbox.friends': 'Teman',
+  'inbox.reactions': 'Suka & komentar',
 }
 
 export default id

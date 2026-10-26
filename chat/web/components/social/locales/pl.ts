@@ -135,6 +135,11 @@ const pl: SocialDict = {
   'hl.delete': 'Usuń',
   'hl.edit': 'Edytuj',
   'hl.plain': 'Użyj zwykłych liter (bez ozdobnych czcionek)',
+  'inbox.all': 'Wszystko',
+  'inbox.invites': 'Zaproszenia',
+  'inbox.messages': 'Wiadomości',
+  'inbox.friends': 'Znajomi',
+  'inbox.reactions': 'Polubienia i komentarze',
 }
 
 export default pl

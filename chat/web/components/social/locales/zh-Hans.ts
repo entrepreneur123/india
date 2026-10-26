@@ -138,6 +138,11 @@ const zhHans: SocialDict = {
   'hl.delete': '删除',
   'hl.edit': '编辑',
   'hl.plain': '请使用普通文字（不能用花式字体）',
+  'inbox.all': '全部',
+  'inbox.invites': '邀请',
+  'inbox.messages': '消息',
+  'inbox.friends': '好友',
+  'inbox.reactions': '点赞和评论',
 }
 
 export default zhHans

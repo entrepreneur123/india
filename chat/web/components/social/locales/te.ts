@@ -131,6 +131,11 @@ const te: SocialDict = {
   'hl.delete': 'తొలగించండి',
   'hl.edit': 'మార్చండి',
   'hl.plain': 'సాధారణ అక్షరాల్లో రాయండి (ఫ్యాన్సీ ఫాంట్ వద్దు)',
+  'inbox.all': 'అన్నీ',
+  'inbox.invites': 'ఆహ్వానాలు',
+  'inbox.messages': 'మెసేజ్‌లు',
+  'inbox.friends': 'స్నేహితులు',
+  'inbox.reactions': 'లైక్‌లు & కామెంట్‌లు',
 }
 
 export default te

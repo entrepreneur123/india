@@ -126,6 +126,11 @@ const mr: SocialDict = {
   'hl.delete': 'हटवा',
   'hl.edit': 'बदला',
   'hl.plain': 'साध्या अक्षरांत लिहा (फॅन्सी फॉन्ट नको)',
+  'inbox.all': 'सर्व',
+  'inbox.invites': 'आमंत्रणे',
+  'inbox.messages': 'मेसेज',
+  'inbox.friends': 'मित्र',
+  'inbox.reactions': 'लाइक आणि कमेंट',
 }
 
 export default mr

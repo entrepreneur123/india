@@ -137,6 +137,11 @@ const th: SocialDict = {
   'hl.delete': 'ลบ',
   'hl.edit': 'แก้ไข',
   'hl.plain': 'ใช้ตัวอักษรธรรมดา (ห้ามใช้ฟอนต์ตกแต่ง)',
+  'inbox.all': 'ทั้งหมด',
+  'inbox.invites': 'คำเชิญ',
+  'inbox.messages': 'ข้อความ',
+  'inbox.friends': 'เพื่อน',
+  'inbox.reactions': 'ถูกใจและความคิดเห็น',
 }
 
 export default th

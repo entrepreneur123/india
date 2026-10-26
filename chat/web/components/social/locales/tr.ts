@@ -138,6 +138,11 @@ const tr: SocialDict = {
   'hl.delete': 'Sil',
   'hl.edit': 'Düzenle',
   'hl.plain': 'Normal harfler kullan (süslü yazı tipi olmaz)',
+  'inbox.all': 'Tümü',
+  'inbox.invites': 'Davetler',
+  'inbox.messages': 'Mesajlar',
+  'inbox.friends': 'Arkadaşlar',
+  'inbox.reactions': 'Beğeni ve yorumlar',
 }
 
 export default tr

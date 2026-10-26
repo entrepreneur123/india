@@ -132,6 +132,11 @@ const vi: SocialDict = {
   'hl.delete': 'Xóa',
   'hl.edit': 'Sửa',
   'hl.plain': 'Dùng chữ thường (không dùng phông cách điệu)',
+  'inbox.all': 'Tất cả',
+  'inbox.invites': 'Lời mời',
+  'inbox.messages': 'Tin nhắn',
+  'inbox.friends': 'Bạn bè',
+  'inbox.reactions': 'Thích & bình luận',
 }
 
 export default vi

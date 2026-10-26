@@ -134,6 +134,11 @@ const es: SocialDict = {
   'hl.delete': 'Eliminar',
   'hl.edit': 'Editar',
   'hl.plain': 'Usa letras normales (sin fuentes decorativas)',
+  'inbox.all': 'Todo',
+  'inbox.invites': 'Invitaciones',
+  'inbox.messages': 'Mensajes',
+  'inbox.friends': 'Amigos',
+  'inbox.reactions': 'Me gusta y comentarios',
 }
 
 export default es

@@ -131,6 +131,11 @@ const ta: SocialDict = {
   'hl.delete': 'நீக்கு',
   'hl.edit': 'திருத்து',
   'hl.plain': 'சாதாரண எழுத்துகளில் எழுதுங்கள் (ஃபேன்சி எழுத்துரு வேண்டாம்)',
+  'inbox.all': 'அனைத்தும்',
+  'inbox.invites': 'அழைப்புகள்',
+  'inbox.messages': 'செய்திகள்',
+  'inbox.friends': 'நண்பர்கள்',
+  'inbox.reactions': 'லைக் & கருத்து',
 }
 
 export default ta

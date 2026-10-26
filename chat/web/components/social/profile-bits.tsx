@@ -58,7 +58,7 @@ export function AccentAvatar({
 }
 
 /**
- * The profile card in its frame: the photo in the frame's ring, name, age and flag, the decorated @ID, city, status,
+ * The profile card in its frame: the photo in the frame's ring, name, age and flag, the decorated @ID, status,
  * bio and languages. `slot`: buttons in the card's top corner (settings, close). The status is a quote in plain text, so
  * it never reads as part of the ID check's chip above it.
  */
@@ -96,7 +96,6 @@ export function ProfileHero({
           {badge}
         </h2>
         <LookName userId={profile.id} handle={profile.handle} className="mt-0.5 max-w-full px-4 text-base font-semibold" />
-        {profile.city ? <p className="text-sm text-muted-foreground">{profile.city}</p> : null}
         {isVip(profile) ? (
           <p className="mt-2 max-w-sm rounded-full bg-primary-strong px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
         ) : null}

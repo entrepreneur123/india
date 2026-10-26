@@ -132,6 +132,11 @@ const ptBR: SocialDict = {
   'hl.delete': 'Excluir',
   'hl.edit': 'Editar',
   'hl.plain': 'Use letras normais (sem fontes decorativas)',
+  'inbox.all': 'Tudo',
+  'inbox.invites': 'Convites',
+  'inbox.messages': 'Mensagens',
+  'inbox.friends': 'Amigos',
+  'inbox.reactions': 'Curtidas e comentários',
 }
 
 export default ptBR

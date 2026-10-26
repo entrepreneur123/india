@@ -126,6 +126,11 @@ const ur: SocialDict = {
   'hl.delete': 'حذف کریں',
   'hl.edit': 'ترمیم',
   'hl.plain': 'سادہ حروف میں لکھیں (فینسی فونٹ نہیں)',
+  'inbox.all': 'سب',
+  'inbox.invites': 'دعوتیں',
+  'inbox.messages': 'پیغامات',
+  'inbox.friends': 'دوست',
+  'inbox.reactions': 'لائکس اور تبصرے',
 }
 
 export default ur

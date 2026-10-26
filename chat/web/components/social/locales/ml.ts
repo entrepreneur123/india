@@ -131,6 +131,11 @@ const ml: SocialDict = {
   'hl.delete': 'ഇല്ലാതാക്കുക',
   'hl.edit': 'മാറ്റുക',
   'hl.plain': 'സാധാരണ അക്ഷരങ്ങളിൽ എഴുതുക (ഫാൻസി ഫോണ്ട് വേണ്ട)',
+  'inbox.all': 'എല്ലാം',
+  'inbox.invites': 'ക്ഷണങ്ങൾ',
+  'inbox.messages': 'സന്ദേശങ്ങൾ',
+  'inbox.friends': 'സുഹൃത്തുക്കൾ',
+  'inbox.reactions': 'ലൈക്കും കമന്റും',
 }
 
 export default ml

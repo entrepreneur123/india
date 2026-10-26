@@ -138,6 +138,11 @@ const ko: SocialDict = {
   'hl.delete': '삭제',
   'hl.edit': '편집',
   'hl.plain': '일반 글자로 써 주세요 (꾸밈 글꼴 불가)',
+  'inbox.all': '전체',
+  'inbox.invites': '초대',
+  'inbox.messages': '메시지',
+  'inbox.friends': '친구 신청',
+  'inbox.reactions': '좋아요·댓글',
 }
 
 export default ko

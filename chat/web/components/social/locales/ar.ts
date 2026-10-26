@@ -145,6 +145,11 @@ const ar: SocialDict = {
   'hl.delete': 'حذف',
   'hl.edit': 'تعديل',
   'hl.plain': 'اكتب بأحرف عادية (بدون خطوط مزخرفة)',
+  'inbox.all': 'الكل',
+  'inbox.invites': 'الدعوات',
+  'inbox.messages': 'الرسائل',
+  'inbox.friends': 'الأصدقاء',
+  'inbox.reactions': 'الإعجابات والتعليقات',
 }
 
 export default ar

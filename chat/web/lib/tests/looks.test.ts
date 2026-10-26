@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { ageCity, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
+import { ageText, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
 
 test('the catalogue: 26 looks (040) and 11 walls, sticker packs and VIP (046), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
@@ -77,7 +77,6 @@ test('VIP incognito: a masked stranger is "VIP" with no age and no photo; a hidd
   assert.equal(isVip({ name: 'Priya', age: 0 }), false)
   assert.equal(nameAge('Priya', 24), 'Priya, 24')
   assert.equal(nameAge('VIP', 0), 'VIP')
-  assert.equal(ageCity({ age: 24, city: 'Pune' }), '24 · Pune')
-  assert.equal(ageCity({ age: 0, city: '' }), '')
-  assert.equal(ageCity({ age: 0, city: 'Pune' }), 'Pune')
+  assert.equal(ageText({ age: 24 }), '24')
+  assert.equal(ageText({ age: 0 }), '')
 })

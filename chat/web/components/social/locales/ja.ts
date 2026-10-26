@@ -137,6 +137,11 @@ const ja: SocialDict = {
   'hl.delete': '削除',
   'hl.edit': '編集',
   'hl.plain': '普通の文字で書いてください（装飾フォント不可）',
+  'inbox.all': 'すべて',
+  'inbox.invites': '招待',
+  'inbox.messages': 'メッセージ',
+  'inbox.friends': '友達',
+  'inbox.reactions': 'いいね・コメント',
 }
 
 export default ja

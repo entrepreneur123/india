@@ -153,7 +153,7 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
           <TrustBadge userId={p.id} size={15} />
         </span>
         <LookName userId={p.id} handle={p.handle} className="text-[13px] font-semibold" />
-        <span className="block truncate text-sm text-muted-foreground">{detail ?? p.city}</span>
+        <span className="block truncate text-sm text-muted-foreground">{detail}</span>
       </span>
     </button>
   )

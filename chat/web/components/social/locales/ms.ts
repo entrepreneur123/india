@@ -137,6 +137,11 @@ const ms: SocialDict = {
   'hl.delete': 'Padam',
   'hl.edit': 'Edit',
   'hl.plain': 'Guna huruf biasa (tiada fon hiasan)',
+  'inbox.all': 'Semua',
+  'inbox.invites': 'Jemputan',
+  'inbox.messages': 'Mesej',
+  'inbox.friends': 'Rakan',
+  'inbox.reactions': 'Suka & komen',
 }
 
 export default ms

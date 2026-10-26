@@ -25,7 +25,6 @@ import { ProfileContent } from '@/components/screens/profile/profile-sheet'
 import { PhotoPicker } from './photo-picker'
 
 const MAX_NAME = 30
-const MAX_CITY = 30
 const MAX_BIO = 150
 
 // The composer and the profile details download when first opened (the Looks shop is the shell's, openShop).
@@ -115,7 +114,7 @@ export function MeScreen() {
   )
 }
 
-/** Everything about my profile: the photo, name, @ID, city and bio here; photos too; the rest one tap on. */
+/** Everything about my profile: the photo, name, @ID and bio here; photos too; the rest one tap on. */
 function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContacts }: {
   open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void; onInterests: () => void; onContacts: () => void
 }) {
@@ -129,7 +128,6 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
   const id = useId()
   const [name, setName] = useState(me.name)
   const [handle, setHandle] = useState(me.handle ?? '')
-  const [city, setCity] = useState(me.city)
   const [bio, setBio] = useState(me.bio)
   const [photo, setPhoto] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
@@ -143,7 +141,6 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
     if (!open) return
     setName(me.name)
     setHandle(me.handle ?? '')
-    setCity(me.city)
     setBio(me.bio)
     setPhoto(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,7 +157,7 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
     if (!name.trim() || !plainName || waiting || (handleChanged && handleState !== 'checking' && !handleUsable(handleState))) return
     setBusy(true)
     try {
-      let p = await backend.updateProfile(name.trim(), city.trim(), bio.trim(), photo)
+      let p = await backend.updateProfile(name.trim(), '', bio.trim(), photo)
       setMe(p)
       if (handleChanged) {
         p = { ...p, handle: await backend.setHandle(wanted) }
@@ -199,9 +196,6 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
           note={next ? lt(passes > 0 ? 'id.cooldownPass' : 'id.cooldown', { date: new Date(next).toLocaleDateString(locale, { day: 'numeric', month: 'long' }), n: passes }) : undefined}
           blocked={waiting}
         />
-        <Field label={t('me.city')} htmlFor={`${id}-city`}>
-          <TextInput id={`${id}-city`} value={city} maxLength={MAX_CITY} onChange={(e) => setCity(e.target.value)} />
-        </Field>
         <Field label={t('pf.bio')} htmlFor={`${id}-bio`} trailing={<Count n={bio.length} max={MAX_BIO} />}>
           <TextArea id={`${id}-bio`} value={bio} maxLength={MAX_BIO} onChange={(e) => setBio(e.target.value)} />
         </Field>

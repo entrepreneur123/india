@@ -126,6 +126,11 @@ const gu: SocialDict = {
   'hl.delete': 'કાઢી નાખો',
   'hl.edit': 'બદલો',
   'hl.plain': 'સાદા અક્ષરોમાં લખો (ફેન્સી ફોન્ટ નહીં)',
+  'inbox.all': 'બધા',
+  'inbox.invites': 'આમંત્રણ',
+  'inbox.messages': 'મેસેજ',
+  'inbox.friends': 'મિત્રો',
+  'inbox.reactions': 'લાઇક અને કમેન્ટ',
 }
 
 export default gu

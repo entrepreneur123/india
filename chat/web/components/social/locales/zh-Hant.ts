@@ -138,6 +138,11 @@ const zhHant: SocialDict = {
   'hl.delete': '刪除',
   'hl.edit': '編輯',
   'hl.plain': '請使用一般文字（不能用花式字體）',
+  'inbox.all': '全部',
+  'inbox.invites': '邀請',
+  'inbox.messages': '訊息',
+  'inbox.friends': '好友',
+  'inbox.reactions': '按讚和留言',
 }
 
 export default zhHant

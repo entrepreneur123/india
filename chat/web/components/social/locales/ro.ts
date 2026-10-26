@@ -133,6 +133,11 @@ const ro: SocialDict = {
   'hl.delete': 'Șterge',
   'hl.edit': 'Editează',
   'hl.plain': 'Folosește litere obișnuite (fără fonturi decorative)',
+  'inbox.all': 'Toate',
+  'inbox.invites': 'Invitații',
+  'inbox.messages': 'Mesaje',
+  'inbox.friends': 'Prieteni',
+  'inbox.reactions': 'Aprecieri și comentarii',
 }
 
 export default ro

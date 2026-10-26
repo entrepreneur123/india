@@ -131,6 +131,11 @@ const ne: SocialDict = {
   'hl.delete': 'मेटाउनुहोस्',
   'hl.edit': 'सम्पादन',
   'hl.plain': 'साधारण अक्षरमा लेख्नुहोस् (फेन्सी फन्ट होइन)',
+  'inbox.all': 'सबै',
+  'inbox.invites': 'निम्तो',
+  'inbox.messages': 'सन्देश',
+  'inbox.friends': 'साथी',
+  'inbox.reactions': 'लाइक र कमेन्ट',
 }
 
 export default ne

@@ -84,7 +84,6 @@ export function RightPanel({ className }: { className?: string }) {
                             userId={f.profile.id}
                             handle={f.profile.handle}
                             className="font-semibold"
-                            fallback={<span className="truncate text-muted-foreground">{f.profile.city}</span>}
                           />
                         </span>
                       </span>

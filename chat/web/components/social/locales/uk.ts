@@ -142,6 +142,11 @@ const uk: SocialDict = {
   'hl.delete': 'Видалити',
   'hl.edit': 'Редагувати',
   'hl.plain': 'Пишіть звичайними літерами (без декоративних шрифтів)',
+  'inbox.all': 'Усі',
+  'inbox.invites': 'Запрошення',
+  'inbox.messages': 'Повідомлення',
+  'inbox.friends': 'Друзі',
+  'inbox.reactions': 'Вподобання й коментарі',
 }
 
 export default uk

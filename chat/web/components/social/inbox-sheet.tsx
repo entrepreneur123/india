@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { Check, Headphones, MessageCircle, Phone, X } from 'lucide-react'
-import type { InboxItem } from '@/lib/backend'
+import type { InboxItem, InboxKind } from '@/lib/backend'
 import { likeLine } from '@/lib/feed'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -17,6 +17,13 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
+
+/** The sheet's sections (the owner, 2026-10-26): invites, friends' messages, friend requests, likes and comments. */
+type Section = 'all' | 'invites' | 'messages' | 'friends' | 'reactions'
+const SECTION_OF: Record<InboxKind, Exclude<Section, 'all'>> = {
+  room_invite: 'invites', call: 'invites', message: 'messages', friend_request: 'friends', friend_accept: 'friends',
+  post_like: 'reactions', post_comment: 'reactions',
+}
 
 /**
  * Notifications: friend requests and acceptances, friends' messages (one line per chat), friends' calls, room invites,
@@ -33,9 +40,14 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
   const { data, error, mutate: reload } = useSWR(open ? 'inbox' : null, () => backend.inbox(), { revalidateOnMount: false })
   // Unread when the sheet opened: they keep their highlight while it is open.
   const [fresh, setFresh] = useState<Set<number> | null>(null)
+  const [section, setSection] = useState<Section>('all')
 
   useEffect(() => {
-    if (!open) return setFresh(null)
+    if (!open) {
+      setFresh(null)
+      setSection('all')
+      return
+    }
     let alive = true
     // The bell has cleared already (the shell's openInbox); everything is marked read once the list, with what was
     // new, has been read.
@@ -55,11 +67,38 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
   }, [open, backend, mutate, reload])
 
   const isNew = (i: InboxItem) => fresh?.has(i.id) ?? !i.read
-  const newer = data?.filter(isNew) ?? []
-  const older = data?.filter((i) => !isNew(i)) ?? []
+  const shown = data?.filter((i) => section === 'all' || SECTION_OF[i.kind] === section) ?? []
+  const newer = shown.filter(isNew)
+  const older = shown.filter((i) => !isNew(i))
+  // A dot on the sections with something new.
+  const label = (s: Section, text: string) => (
+    <span className="relative">
+      {text}
+      {s !== 'all' && data?.some((i) => SECTION_OF[i.kind] === s && isNew(i)) ? (
+        <span className="absolute -top-0.5 -end-2 size-1.5 rounded-full bg-primary" aria-hidden />
+      ) : null}
+    </span>
+  )
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={st('inbox.title')} className="md:max-w-lg">
+      <div role="tablist" aria-label={st('inbox.title')} className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-2">
+        {(['all', 'invites', 'messages', 'friends', 'reactions'] as const).map((x) => (
+          <button
+            key={x}
+            type="button"
+            role="tab"
+            aria-selected={section === x}
+            onClick={() => setSection(x)}
+            className={cn(
+              'shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium whitespace-nowrap transition-colors',
+              section === x ? 'border-primary bg-primary-soft text-primary-text' : 'border-border text-muted-foreground hover:bg-muted',
+            )}
+          >
+            {label(x, st(`inbox.${x}`))}
+          </button>
+        ))}
+      </div>
       <div className="max-h-[70dvh] overflow-y-auto pb-4 scrollbar-thin">
         {!data ? (
           error ? (
@@ -82,8 +121,8 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
               ))}
             </ul>
           )
-        ) : data.length === 0 ? (
-          <EmptyState art="people" title={st('inbox.empty')} body={st('inbox.emptyBody')} className="py-10" />
+        ) : shown.length === 0 ? (
+          <EmptyState art="people" title={st('inbox.empty')} body={section === 'all' ? st('inbox.emptyBody') : undefined} className="py-10" />
         ) : (
           <>
             {newer.length ? <Group title={st('inbox.new')} items={newer} highlight onDone={onClose} /> : null}

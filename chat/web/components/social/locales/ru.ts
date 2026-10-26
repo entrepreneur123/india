@@ -142,6 +142,11 @@ const ru: SocialDict = {
   'hl.delete': 'Удалить',
   'hl.edit': 'Изменить',
   'hl.plain': 'Пишите обычными буквами (без декоративных шрифтов)',
+  'inbox.all': 'Все',
+  'inbox.invites': 'Приглашения',
+  'inbox.messages': 'Сообщения',
+  'inbox.friends': 'Друзья',
+  'inbox.reactions': 'Лайки и комментарии',
 }
 
 export default ru

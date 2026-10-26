@@ -232,7 +232,7 @@ export function ChatView({
                 ) : chat.typing ? (
                   <span className="text-primary-text">{t('chat.typing')}</span>
                 ) : (
-                  <LookName userId={partner.id} handle={partner.handle} className="font-semibold" fallback={<span className="truncate">{partner.city}</span>} />
+                  <LookName userId={partner.id} handle={partner.handle} className="font-semibold" />
                 )}
               </span>
             </span>
@@ -283,9 +283,7 @@ export function ChatView({
         >
           {live ? (
             <li className="mx-auto mb-2 max-w-xs rounded-lg bg-bubble-in px-3 py-1.5 text-center text-xs leading-relaxed text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
-              {partner.city
-                ? t('chat.introCity', { name: partner.name, city: partner.city })
-                : t('chat.intro', { name: partner.name })}
+              {t('chat.intro', { name: partner.name })}
             </li>
           ) : null}
           {chat.messages === null ? (

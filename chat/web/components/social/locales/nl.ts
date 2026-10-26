@@ -131,6 +131,11 @@ const nl: SocialDict = {
   'hl.delete': 'Verwijderen',
   'hl.edit': 'Bewerken',
   'hl.plain': 'Gebruik gewone letters (geen sierlettertypes)',
+  'inbox.all': 'Alles',
+  'inbox.invites': 'Uitnodigingen',
+  'inbox.messages': 'Berichten',
+  'inbox.friends': 'Vrienden',
+  'inbox.reactions': 'Likes en reacties',
 }
 
 export default nl

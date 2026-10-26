@@ -25,7 +25,7 @@ import { TrustBadge } from '@/components/trust/badge'
 import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
-import { ageCity } from '@/lib/looks'
+import { ageText } from '@/lib/looks'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -88,7 +88,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
             className="font-semibold"
             fallback={
               <span className="truncate text-muted-foreground">
-                {ageCity(m.profile)} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
+                {ageText(m.profile)} <span aria-hidden>{flagEmoji(m.profile.country)}</span>
               </span>
             }
           />}
@@ -157,7 +157,7 @@ export function PersonSheet({
           <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
           <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">
-            {ageCity(target.profile)} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
+            {ageText(target.profile)} <span aria-hidden>{flagEmoji(target.profile.country)}</span>
           </p>
           <p className="flex flex-wrap justify-center gap-1.5">
             {roleLabel(target, t) ? (
@@ -270,7 +270,7 @@ export function PeopleSheet({ room, open, onClose, onPerson }: { room: VoiceRoom
     if (open) setQuery('')
   }, [open])
   const q = query.trim().toLowerCase()
-  const match = (x: VoiceMember) => !q || x.profile.name.toLowerCase().includes(q) || x.profile.city.toLowerCase().includes(q)
+  const match = (x: VoiceMember) => !q || x.profile.name.toLowerCase().includes(q)
   const stage = room.members.filter((x) => x.seat !== null && match(x)).sort((a, b) => a.seat! - b.seat!)
   const listeners = room.members.filter((x) => x.seat === null && match(x)).sort((a, b) => Number(b.hand) - Number(a.hand))
   const groups = [
@@ -381,7 +381,7 @@ export function AudienceSheet({
   }, [open])
   const audience = room.members.filter((x) => x.seat === null)
   const q = query.trim().toLowerCase()
-  const shown = (q ? audience.filter((x) => x.profile.name.toLowerCase().includes(q) || x.profile.city.toLowerCase().includes(q)) : audience)
+  const shown = (q ? audience.filter((x) => x.profile.name.toLowerCase().includes(q)) : audience)
     // raised hands first, then me, then everyone else
     .sort((a, b) => Number(b.hand) - Number(a.hand) || Number(b.profile.id === room.meId) - Number(a.profile.id === room.meId))
   const inviting = inviteSeat !== undefined

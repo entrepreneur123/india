@@ -137,6 +137,11 @@ const fa: SocialDict = {
   'hl.delete': 'حذف',
   'hl.edit': 'ویرایش',
   'hl.plain': 'با حروف ساده بنویسید (بدون فونت فانتزی)',
+  'inbox.all': 'همه',
+  'inbox.invites': 'دعوت‌ها',
+  'inbox.messages': 'پیام‌ها',
+  'inbox.friends': 'دوستان',
+  'inbox.reactions': 'لایک و نظر',
 }
 
 export default fa

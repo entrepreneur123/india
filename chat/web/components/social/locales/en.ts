@@ -137,6 +137,11 @@ const en = {
   'hl.delete': 'Delete',
   'hl.edit': 'Edit',
   'hl.plain': 'Use plain letters (no fancy fonts)',
+  'inbox.all': 'All',
+  'inbox.invites': 'Invites',
+  'inbox.messages': 'Messages',
+  'inbox.friends': 'Friends',
+  'inbox.reactions': 'Likes & comments',
 }
 
 export default en

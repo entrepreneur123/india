@@ -126,6 +126,11 @@ const pa: SocialDict = {
   'hl.delete': 'ਮਿਟਾਓ',
   'hl.edit': 'ਬਦਲੋ',
   'hl.plain': 'ਸਾਧਾਰਨ ਅੱਖਰਾਂ ਵਿੱਚ ਲਿਖੋ (ਫੈਂਸੀ ਫੌਂਟ ਨਹੀਂ)',
+  'inbox.all': 'ਸਾਰੇ',
+  'inbox.invites': 'ਸੱਦੇ',
+  'inbox.messages': 'ਮੈਸੇਜ',
+  'inbox.friends': 'ਦੋਸਤ',
+  'inbox.reactions': 'ਲਾਈਕ ਅਤੇ ਕਮੈਂਟ',
 }
 
 export default pa

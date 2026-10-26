@@ -131,6 +131,11 @@ const kn: SocialDict = {
   'hl.delete': 'ಅಳಿಸಿ',
   'hl.edit': 'ಬದಲಿಸಿ',
   'hl.plain': 'ಸಾಮಾನ್ಯ ಅಕ್ಷರಗಳಲ್ಲಿ ಬರೆಯಿರಿ (ಫ್ಯಾನ್ಸಿ ಫಾಂಟ್ ಬೇಡ)',
+  'inbox.all': 'ಎಲ್ಲಾ',
+  'inbox.invites': 'ಆಹ್ವಾನಗಳು',
+  'inbox.messages': 'ಸಂದೇಶಗಳು',
+  'inbox.friends': 'ಸ್ನೇಹಿತರು',
+  'inbox.reactions': 'ಲೈಕ್ & ಕಾಮೆಂಟ್',
 }
 
 export default kn

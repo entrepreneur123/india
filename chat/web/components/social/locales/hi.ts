@@ -132,6 +132,11 @@ const hi: SocialDict = {
   'hl.delete': 'हटाएँ',
   'hl.edit': 'बदलें',
   'hl.plain': 'सामान्य अक्षरों में लिखें (फैंसी फ़ॉन्ट नहीं)',
+  'inbox.all': 'सभी',
+  'inbox.invites': 'निमंत्रण',
+  'inbox.messages': 'मैसेज',
+  'inbox.friends': 'दोस्त',
+  'inbox.reactions': 'लाइक और कमेंट',
 }
 
 export default hi

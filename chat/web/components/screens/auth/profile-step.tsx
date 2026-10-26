@@ -31,7 +31,6 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const handleState = useHandleCheck(handle, null)
   const [gender, setGender] = useState<Gender | ''>('')
   const [birthDate, setBirthDate] = useState('')
-  const [city, setCity] = useState('')
   const [bio, setBio] = useState('')
   const [busy, setBusy] = useState(false)
   const [touched, setTouched] = useState(false)
@@ -62,8 +61,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         name: name.trim(),
         gender,
         birthDate,
-        // No city typed: leave it empty rather than guess a country (users come from India, Bangladesh, Brazil…).
-        city: city.trim(),
+        city: '', // country only (the owner, 2026-10-26)
         bio: bio.trim(),
         photo,
       })
@@ -156,16 +154,6 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         {t('pf.fixed')}
       </p>
 
-      <Field label={t('pf.city')} htmlFor="pf-city">
-        <TextInput
-          id="pf-city"
-          value={city}
-          maxLength={30}
-          onChange={(e) => setCity(e.target.value)}
-          autoComplete="address-level2"
-          placeholder={t('pf.cityPlaceholder')}
-        />
-      </Field>
 
       <Field
         label={t('pf.bio')}

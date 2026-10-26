@@ -140,6 +140,11 @@ const he: SocialDict = {
   'hl.delete': 'מחיקה',
   'hl.edit': 'עריכה',
   'hl.plain': 'כתבו באותיות רגילות (בלי גופנים מעוצבים)',
+  'inbox.all': 'הכול',
+  'inbox.invites': 'הזמנות',
+  'inbox.messages': 'הודעות',
+  'inbox.friends': 'חברים',
+  'inbox.reactions': 'לייקים ותגובות',
 }
 
 export default he

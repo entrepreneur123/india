@@ -132,6 +132,11 @@ const bn: SocialDict = {
   'hl.delete': 'মুছুন',
   'hl.edit': 'এডিট',
   'hl.plain': 'সাধারণ অক্ষরে লিখুন (ফ্যান্সি ফন্ট নয়)',
+  'inbox.all': 'সব',
+  'inbox.invites': 'আমন্ত্রণ',
+  'inbox.messages': 'মেসেজ',
+  'inbox.friends': 'বন্ধু',
+  'inbox.reactions': 'লাইক ও কমেন্ট',
 }
 
 export default bn

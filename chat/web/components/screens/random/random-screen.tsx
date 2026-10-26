@@ -528,7 +528,6 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
               {nameAge(partner.name, partner.age)}
               <TrustBadge userId={partner.id} size={20} />
             </span>
-            {partner.city ? <span className="-mt-3 text-sm text-muted-foreground">{partner.city}</span> : null}
             {partner.interests?.length ? (
               <InterestChips tags={partner.interests.slice(0, 3)} className="justify-center" />
             ) : null}
