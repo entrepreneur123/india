@@ -122,6 +122,10 @@ const gu: LooksDict = {
   'cycle.pick': '2 થી 4 ફોટા પસંદ કરો',
   'cycle.needPhotos': 'પહેલાં પ્રોફાઇલમાં ઓછામાં ઓછા 2 ફોટા ઉમેરો',
   'cycle.save': 'સેવ કરો',
+  'looks.tab.effect': 'ફોટો ઇફેક્ટ',
+  'item.effect_aurora': 'ઓરોરા',
+  'item.effect_prism': 'પ્રિઝમ',
+  'effect.what': 'તમારા પ્રોફાઇલ ફોટા પર પ્રકાશ ફરે છે, જ્યાં પણ દેખાય',
 }
 
 export default gu

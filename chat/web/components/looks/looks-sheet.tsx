@@ -5,7 +5,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { Check, ExternalLink } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { CATALOGUE, ITEM_KINDS, kindOf, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type FrameId, type ItemId, type PackId } from '@/lib/looks'
+import { CATALOGUE, ITEM_KINDS, kindOf, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type BadgeId, type FrameId, type ItemId, type PackId } from '@/lib/looks'
 import { STICKERS } from '@/lib/stickers'
 import { wallVars } from '@/lib/walls'
 import { useApp } from '@/components/app-state'
@@ -17,6 +17,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { LookBadge } from './badges'
 import { FrameAvatar, FrameCard } from './frames'
 import { lookKey, LookText } from './look-name'
 import { useLooksT, type LooksKey } from './looks-text'
@@ -58,6 +59,8 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [packTry, setPackTry] = useState<PackId>(CATALOGUE.sticker[0] as PackId)
   const [busy, setBusy] = useState(false)
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
+  /** The photo effect being looked at (undefined: the one I wear). */
+  const [effectTry, setEffectTry] = useState<ItemId | null | undefined>(undefined)
 
   useEffect(() => {
     if (!shop || worn) return
@@ -95,7 +98,11 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
   const myWall = shop.wall as ItemId | null
   const shownWall = wallTry === undefined ? myWall : wallTry
-  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : kind === 'wall' ? shownWall : kind === 'sticker' ? packTry : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
+  const myEffect = (shop.look?.effect ?? null) as ItemId | null
+  const shownEffect = effectTry === undefined ? myEffect : effectTry
+  // Kinds where one item (or none) is in use, chosen here: walls and photo effects.
+  const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : kind === 'effect' ? { mine: myEffect, shown: shownEffect } : null
+  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : single ? single.shown : kind === 'sticker' ? packTry : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
   // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
   const myPhotos = [...(me.photoPath && me.photoUrl ? [{ id: me.photoPath, url: me.photoUrl }] : []), ...(me.photos ?? [])]
   const picked = cyclePick ?? myPhotos.filter((x) => shop.look?.cycle?.includes(x.url)).map((x) => x.id)
@@ -113,7 +120,24 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   }
   const sale = new Set(shop.items.map((i) => i.id))
   const list = CATALOGUE[kind].filter((id) => sale.has(id))
-  const choose = (id: ItemId | null) => (look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : id && setPackTry(id as PackId))
+  const choose = (id: ItemId | null) =>
+    look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : kind === 'effect' ? setEffectTry(id) : id && setPackTry(id as PackId)
+  const saveEffect = async (id: ItemId | null) => {
+    setBusy(true)
+    try {
+      await backend.setEffect(id)
+      await Promise.all([mutate(lookKey(me.id)), reload()])
+      setEffectTry(undefined)
+      toast.show(lt('looks.saved'), 'success')
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+  /** Takes off what is in use of this kind ("None"). */
+  const takeOff = () => (look ? wear(null) : kind === 'effect' ? saveEffect(null) : setWall(null))
+  const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
   /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
   const wear = async (id: ItemId | null) => {
@@ -163,8 +187,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     }
   }
 
-  const status = (id: ItemId) =>
-    (look ? worn[look] === id : myWall === id) ? lt(look ? 'looks.wearing' : 'wall.inUse') : owned.has(id) ? lt('looks.owned') : price(id)
+  const status = (id: ItemId) => ((look ? worn[look] === id : single?.mine === id) ? usingLabel : owned.has(id) ? lt('looks.owned') : price(id))
   const inUse = (label: string) => (
     <Button variant="secondary" size="lg" className="w-full" disabled>
       <Check className="size-4.5" aria-hidden /> {label}
@@ -174,13 +197,13 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   let action: React.ReactNode
   if (tried === null) {
     // "None": takes off what I wear of this kind (or my wall).
-    const on = look ? worn[look] : myWall
+    const on = look ? worn[look] : single?.mine
     action = on ? (
-      <Button variant="outline" size="lg" className="w-full" loading={busy} onClick={() => void (look ? wear(null) : setWall(null))}>
-        {lt(look ? 'looks.takeOff' : 'wall.remove')}
+      <Button variant="outline" size="lg" className="w-full" loading={busy} onClick={() => void takeOff()}>
+        {lt(kind === 'wall' ? 'wall.remove' : 'looks.takeOff')}
       </Button>
     ) : (
-      inUse(lt(look ? 'looks.wearing' : 'wall.inUse'))
+      inUse(usingLabel)
     )
   } else if (owned.has(tried)) {
     if (kind === 'cycle') {
@@ -193,6 +216,12 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
     } else if (kind === 'sticker') {
       action = inUse(lt('sticker.owned'))
+    } else if (kind === 'effect') {
+      action = myEffect === tried ? inUse(lt('looks.wearing')) : (
+        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void saveEffect(tried)}>
+          {lt('looks.wear')}
+        </Button>
+      )
     } else if (kind === 'wall') {
       action = myWall === tried ? inUse(lt('wall.inUse')) : (
         <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void setWall(tried)}>
@@ -241,12 +270,24 @@ function ShopBody({ tab }: { tab: ItemKind }) {
           <StickerCard key={i} pack={id!} art={a} size={40} />
         ))}
       </span>
+    ) : kind === 'effect' ? (
+      <Avatar name={me.name} src={me.photoUrl} effect={id} size={40} />
+    ) : kind === 'badge' && id ? (
+      <LookBadge id={id as BadgeId} className="size-10" />
     ) : handle && look ? (
       <LookText handle={handle} wear={wearWith(NO_WEAR, look, id)} className="text-sm font-semibold" />
     ) : null
 
   let preview: React.ReactNode
-  if (kind === 'wall') {
+  if (kind === 'effect') {
+    preview = (
+      <div className="flex w-full flex-col items-center gap-3 rounded-[28px] bg-linear-to-b from-muted to-card px-4 pt-7 pb-5 ring-1 ring-border">
+        <Avatar name={me.name} src={me.photoUrl} effect={shownEffect} size={104} />
+        <p className="mt-2 text-lg font-bold">{me.name}</p>
+        <p className="max-w-xs text-center text-sm leading-relaxed text-muted-foreground">{lt('effect.what')}</p>
+      </div>
+    )
+  } else if (kind === 'wall') {
     preview = <WallPreview wall={shownWall} />
   } else if (kind === 'sticker') {
     preview = (
@@ -317,7 +358,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       </FrameCard>
     )
   }
-  const caption = look ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : kind === 'sticker' ? lt('sticker.count') : null
+  const caption = look || kind === 'effect' ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : kind === 'sticker' ? lt('sticker.count') : null
 
   return (
     <div className="flex flex-col">
@@ -352,11 +393,11 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                 <ItemCard
                   on={tried === null}
                   label={lt('looks.none')}
-                  sub={(look ? worn[look] : myWall) === null ? lt(look ? 'looks.wearing' : 'wall.inUse') : ''}
-                  worn={(look ? worn[look] : myWall) === null}
+                  sub={(look ? worn[look] : single?.mine) === null ? usingLabel : ''}
+                  worn={(look ? worn[look] : single?.mine) === null}
                   onClick={() => choose(null)}
                 >
-                  {kind === 'wall' || kind === 'frame' ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
+                  {kind === 'wall' || kind === 'frame' || kind === 'effect' ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
                 </ItemCard>
               </li>
             )}

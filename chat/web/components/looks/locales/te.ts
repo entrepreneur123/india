@@ -122,6 +122,10 @@ const te: LooksDict = {
   'cycle.pick': '2 నుంచి 4 ఫోటోలు ఎంచుకోండి',
   'cycle.needPhotos': 'ముందుగా ప్రొఫైల్‌లో కనీసం 2 ఫోటోలు జోడించండి',
   'cycle.save': 'సేవ్ చేయండి',
+  'looks.tab.effect': 'ఫోటో ఎఫెక్ట్స్',
+  'item.effect_aurora': 'అరోరా',
+  'item.effect_prism': 'ప్రిజం',
+  'effect.what': 'మీ ప్రొఫైల్ ఫోటోపై వెలుగు కదులుతుంది, అది ఎక్కడ కనిపించినా',
 }
 
 export default te

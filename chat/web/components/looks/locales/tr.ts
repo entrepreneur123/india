@@ -122,6 +122,10 @@ const tr: LooksDict = {
   'cycle.pick': '2 ila 4 fotoğraf seç',
   'cycle.needPhotos': 'Önce profiline en az 2 fotoğraf ekle',
   'cycle.save': 'Kaydet',
+  'looks.tab.effect': 'Fotoğraf efektleri',
+  'item.effect_aurora': 'Kutup ışığı',
+  'item.effect_prism': 'Prizma',
+  'effect.what': 'Profil fotoğrafının üzerinde ışık dolaşır, göründüğü her yerde',
 }
 
 export default tr

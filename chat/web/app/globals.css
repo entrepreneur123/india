@@ -234,6 +234,77 @@
   to { opacity: 0.9; }
 }
 
+/* Looks, redone (the owner, 2026-10-26): a turning conic ring (the angle is animated through a registered property, so
+   the same rule turns round photos and the rectangular profile card), a light glint travelling the other way, and the
+   frames' own decorations; the photo effects (aurora, prism) move over the photo itself. */
+@property --look-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.look-turn {
+  animation: look-turn 7s linear infinite;
+}
+.look-turn-fast {
+  animation: look-turn 3.2s linear infinite reverse;
+}
+@keyframes look-turn {
+  to { --look-a: 360deg; }
+}
+.look-spin {
+  animation: look-spin 14s linear infinite;
+}
+@keyframes look-spin {
+  to { transform: rotate(360deg); }
+}
+.look-twinkle {
+  animation: look-twinkle 2.4s ease-in-out infinite;
+}
+@keyframes look-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.75); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+.look-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: look-flame 0.9s ease-in-out infinite alternate;
+}
+@keyframes look-flame {
+  from { transform: scaleY(0.75) scaleX(0.95); opacity: 0.8; }
+  to { transform: scaleY(1.15) scaleX(1.05); opacity: 1; }
+}
+.look-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: look-sway 3.6s ease-in-out infinite alternate;
+}
+@keyframes look-sway {
+  from { transform: rotate(-14deg) translateY(-1px); }
+  to { transform: rotate(14deg) translateY(1px); }
+}
+.look-aurora {
+  background-size: 300% 300%;
+  animation: look-aurora 9s ease-in-out infinite alternate;
+}
+@keyframes look-aurora {
+  0% { background-position: 0% 30%; }
+  50% { background-position: 100% 60%; }
+  100% { background-position: 40% 100%; }
+}
+.look-prism {
+  animation: look-prism 6s linear infinite;
+}
+@keyframes look-prism {
+  to { --look-a: 360deg; filter: hue-rotate(360deg); }
+}
+.look-sheen {
+  animation: look-sheen 3.4s ease-in-out infinite;
+}
+@keyframes look-sheen {
+  0%, 55% { transform: translateX(-130%) skewX(-18deg); }
+  85%, 100% { transform: translateX(130%) skewX(-18deg); }
+}
+
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--input) transparent;

@@ -2,6 +2,7 @@
 
 import { useId } from 'react'
 import type { BadgeId } from '@/lib/looks'
+import { cn } from '@/lib/utils'
 
 // The badges worn beside an @ID (040), drawn here like the Android app's (docs/LOOKS_SPEC.md): the same shapes and
 // colours, no image files. 24 × 24 units, drawn at the ID's font size; strokes stay 1 px at any size.
@@ -29,10 +30,30 @@ function Vertical({ id, from, to }: { id: string; from: string; to: string }) {
   )
 }
 
+/** Each badge's outline: the gloss band that sweeps across it stays inside. */
+const OUTLINE: Record<BadgeId, string> = {
+  badge_crown: 'M3 8.5l4.6 4.8L12 4.6l4.4 8.7L21 8.5l-1.6 8.4H4.6zM4.4 16.6h15.2v3.6H4.4z',
+  badge_diamond: 'M7 4h10l4.5 5.2L12 21.2 2.5 9.2z',
+  badge_flame: 'M12 1.8c.6 3.4 3.1 5.2 4.7 7.6 1.3 1.9 2 3.6 2 5.6 0 4-3 7.2-6.7 7.2S5.3 19 5.3 15c0-2.6 1.2-4.8 3-6.4.1 1.6.7 2.8 1.8 3.5-.2-3.6.6-7.2 1.9-10.3z',
+  badge_star: `M${STAR.replace(/ /g, 'L')}Z`,
+  badge_heart: HEART,
+  badge_bolt: 'M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z',
+}
+
 export function LookBadge({ id, className }: { id: BadgeId; className?: string }) {
   const g = useId().replace(/:/g, '')
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden focusable="false">
+    <svg viewBox="0 0 24 24" className={cn('overflow-visible drop-shadow-[0_1px_1px_rgb(0_0_0/0.22)]', className)} aria-hidden focusable="false">
+      <defs>
+        <clipPath id={`${g}c`}>
+          <path d={OUTLINE[id]} />
+        </clipPath>
+        <linearGradient id={`${g}s`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="0.85" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
       {id === 'badge_crown' ? (
         <>
           <defs>
@@ -90,6 +111,9 @@ export function LookBadge({ id, className }: { id: BadgeId; className?: string }
           <path d="M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z" fill={`url(#${g})`} stroke="#8D6E00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         </>
       )}
+      <g clipPath={`url(#${g}c)`}>
+        <rect className="look-sheen" x="2" y="-2" width="8" height="28" fill={`url(#${g}s)`} />
+      </g>
     </svg>
   )
 }

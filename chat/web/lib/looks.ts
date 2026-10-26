@@ -15,6 +15,9 @@ export const STICKER_PACKS = ['sticker_namaste', 'sticker_chai', 'sticker_cricke
 export const VIP_ITEMS = ['vip_anon'] as const
 /** 062: the profile photo gradient. */
 export const CYCLE_ITEMS = ['cycle_photos'] as const
+/** 062: light moving over the profile photo. */
+export const EFFECTS = ['effect_aurora', 'effect_prism'] as const
+export type EffectId = (typeof EFFECTS)[number]
 
 export type BadgeId = (typeof BADGES)[number]
 export type ColorId = (typeof COLORS)[number]
@@ -22,13 +25,13 @@ export type FontId = (typeof FONTS)[number]
 export type FrameId = (typeof FRAMES)[number]
 export type WallId = (typeof WALLS)[number]
 export type PackId = (typeof STICKER_PACKS)[number]
-export type ItemId = BadgeId | ColorId | FontId | FrameId | WallId | PackId | (typeof VIP_ITEMS)[number] | (typeof CYCLE_ITEMS)[number]
+export type ItemId = BadgeId | ColorId | FontId | FrameId | WallId | PackId | (typeof VIP_ITEMS)[number] | (typeof CYCLE_ITEMS)[number] | EffectId
 
 export const LOOK_KINDS: LookKind[] = ['badge', 'color', 'font', 'frame']
 /** The shop's tabs, in order. */
-export const ITEM_KINDS: ItemKind[] = [...LOOK_KINDS, 'cycle', 'wall', 'sticker', 'vip']
+export const ITEM_KINDS: ItemKind[] = [...LOOK_KINDS, 'effect', 'cycle', 'wall', 'sticker', 'vip']
 export const CATALOGUE: Record<ItemKind, readonly ItemId[]> = {
-  badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES, wall: WALLS, sticker: STICKER_PACKS, vip: VIP_ITEMS, cycle: CYCLE_ITEMS,
+  badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES, wall: WALLS, sticker: STICKER_PACKS, vip: VIP_ITEMS, cycle: CYCLE_ITEMS, effect: EFFECTS,
 }
 const ORDER: string[] = Object.values(CATALOGUE).flat()
 const KNOWN = new Set(ORDER)
@@ -90,6 +93,7 @@ export function parseLook(raw: unknown): Look | null {
   return {
     id: r.id, handle: r.handle, badge: item(r.badge, 'badge'), color: item(r.color, 'color'), font: item(r.font, 'font'), frame: item(r.frame, 'frame'),
     ...(cycle.length >= 2 ? { cycle } : {}),
+    ...(isItem(r.effect) && kindOf(r.effect) === 'effect' ? { effect: r.effect } : {}),
   }
 }
 

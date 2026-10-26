@@ -122,6 +122,10 @@ const ro: LooksDict = {
   'cycle.pick': 'Alege între 2 și 4 poze',
   'cycle.needPhotos': 'Mai întâi adaugă cel puțin 2 poze în profil',
   'cycle.save': 'Salvează',
+  'looks.tab.effect': 'Efecte foto',
+  'item.effect_aurora': 'Auroră',
+  'item.effect_prism': 'Prismă',
+  'effect.what': 'Lumina se mișcă peste poza ta de profil, oriunde apare',
 }
 
 export default ro

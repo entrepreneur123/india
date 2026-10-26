@@ -122,6 +122,10 @@ const ur: LooksDict = {
   'cycle.pick': '2 سے 4 تصاویر منتخب کریں',
   'cycle.needPhotos': 'پہلے اپنی پروفائل میں کم از کم 2 تصاویر شامل کریں',
   'cycle.save': 'محفوظ کریں',
+  'looks.tab.effect': 'فوٹو ایفیکٹس',
+  'item.effect_aurora': 'اورورا',
+  'item.effect_prism': 'پرزم',
+  'effect.what': 'آپ کی پروفائل تصویر پر روشنی چلتی ہے، جہاں بھی دکھے',
 }
 
 export default ur

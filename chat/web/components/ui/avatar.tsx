@@ -28,18 +28,26 @@ const noTick = () => () => undefined
 /** Which of `n` gradient photos shows now (0 when there is nothing to cycle). */
 export const useCycle = (n: number) => useSyncExternalStore(n >= 2 ? subscribe : noTick, () => (n >= 2 ? tick % n : 0), () => 0)
 
+/** The photo effects' light: aurora drifts through greens, blues and violets; prism turns a rainbow round. */
+const EFFECT_LIGHT: Record<string, { light: string; motion: string }> = {
+  effect_aurora: { light: 'linear-gradient(120deg, #00FFA3, #00C2FF, #7A5CFF, #FF4FD8, #00E0FF, #00FFA3)', motion: 'look-aurora' },
+  effect_prism: { light: 'conic-gradient(from var(--look-a), #FF3B3B, #FFB800, #3BFF6E, #00C2FF, #8B5CFF, #FF3BD1, #FF3B3B)', motion: 'look-prism' },
+}
+
 export interface AvatarProps {
   name: string
   src?: string | null
   /** A photo gradient (062): 2–4 photos fading one into the next every 2 seconds, shown instead of `src`. */
   srcs?: string[]
+  /** A photo effect (062): light moving over the photo, with a glow of the same colours around it. */
+  effect?: string | null
   size?: number
   country?: string | null
   online?: boolean
   className?: string
 }
 
-export function Avatar({ name, src, srcs, size = 40, country, online, className }: AvatarProps) {
+export function Avatar({ name, src, srcs, effect, size = 40, country, online, className }: AvatarProps) {
   const [failed, setFailed] = useState<string | null>(null) // the src that failed; a new photo gets a new try
   const initials = [...name.trim()]
     .slice(0, 1)
@@ -47,11 +55,15 @@ export function Avatar({ name, src, srcs, size = 40, country, online, className 
     .toUpperCase()
   const showImage = src && failed !== src
   const badge = Math.max(14, Math.round(size * 0.36))
+  const fx = effect ? EFFECT_LIGHT[effect] : undefined
   const cycling = !!srcs && srcs.length >= 2
   const at = useCycle(cycling ? srcs.length : 0)
 
   return (
     <span className={cn('relative inline-flex shrink-0', className)} style={{ width: size, height: size }}>
+      {fx ? (
+        <span aria-hidden className={cn('pointer-events-none absolute -inset-[10%] rounded-full opacity-70', fx.motion)} style={{ backgroundImage: fx.light, filter: `blur(${Math.max(3, size * 0.1)}px)` }} />
+      ) : null}
       <span className="relative block size-full overflow-hidden rounded-full bg-border">
         {cycling ? (
           srcs.map((u, i) => (
@@ -99,6 +111,13 @@ export function Avatar({ name, src, srcs, size = 40, country, online, className 
             {initials}
           </span>
         )}
+        {fx ? (
+          <>
+            <span aria-hidden className={cn('pointer-events-none absolute inset-0 opacity-60 mix-blend-soft-light', fx.motion)} style={{ backgroundImage: fx.light }} />
+            <span aria-hidden className={cn('pointer-events-none absolute inset-0 mix-blend-screen', fx.motion)} style={{ backgroundImage: fx.light, opacity: 0.22 }} />
+            <span aria-hidden className="look-sheen pointer-events-none absolute inset-y-0 -left-1/4 w-1/2 bg-linear-to-r from-transparent via-white/45 to-transparent" />
+          </>
+        ) : null}
       </span>
       {country ? (
         <span

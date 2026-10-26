@@ -122,6 +122,10 @@ const hi: LooksDict = {
   'cycle.pick': '2 से 4 फ़ोटो चुनें',
   'cycle.needPhotos': 'पहले अपनी प्रोफ़ाइल में कम से कम 2 फ़ोटो जोड़ें',
   'cycle.save': 'सेव करें',
+  'looks.tab.effect': 'फ़ोटो इफ़ेक्ट',
+  'item.effect_aurora': 'ऑरोरा',
+  'item.effect_prism': 'प्रिज़्म',
+  'effect.what': 'आपकी प्रोफ़ाइल फ़ोटो पर रोशनी चलती है, जहाँ भी वह दिखे',
 }
 
 export default hi

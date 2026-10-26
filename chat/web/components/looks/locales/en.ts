@@ -128,6 +128,10 @@ const en = {
   'cycle.pick': 'Pick 2 to 4 photos',
   'cycle.needPhotos': 'Add at least 2 photos to your profile first',
   'cycle.save': 'Save',
+  'looks.tab.effect': 'Photo effects',
+  'item.effect_aurora': 'Aurora',
+  'item.effect_prism': 'Prism',
+  'effect.what': 'Light moves over your profile photo, wherever it shows',
 }
 
 export default en

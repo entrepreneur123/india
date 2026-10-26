@@ -1321,6 +1321,10 @@ export class MockBackend implements Backend {
     return (await this.lookSim()).setCycle(paths)
   }
 
+  async setEffect(itemId: string | null) {
+    return (await this.lookSim()).setEffect(itemId)
+  }
+
   async setAnon(on: boolean) {
     return (await this.lookSim()).setAnon(on)
   }

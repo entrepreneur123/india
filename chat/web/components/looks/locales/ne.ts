@@ -122,6 +122,10 @@ const ne: LooksDict = {
   'cycle.pick': '२ देखि ४ फोटो छान्नुहोस्',
   'cycle.needPhotos': 'पहिले प्रोफाइलमा कम्तीमा २ फोटो थप्नुहोस्',
   'cycle.save': 'सेभ गर्नुहोस्',
+  'looks.tab.effect': 'फोटो इफेक्ट',
+  'item.effect_aurora': 'अरोरा',
+  'item.effect_prism': 'प्रिज्म',
+  'effect.what': 'तपाईंको प्रोफाइल फोटोमाथि उज्यालो चल्छ, जहाँ देखिए पनि',
 }
 
 export default ne

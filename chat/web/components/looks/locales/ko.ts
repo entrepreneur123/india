@@ -122,6 +122,10 @@ const ko: LooksDict = {
   'cycle.pick': '사진을 2~4장 골라 주세요',
   'cycle.needPhotos': '먼저 프로필에 사진을 2장 이상 올려 주세요',
   'cycle.save': '저장',
+  'looks.tab.effect': '프로필 효과',
+  'item.effect_aurora': '오로라',
+  'item.effect_prism': '프리즘',
+  'effect.what': '내 프로필 사진 위로 빛이 움직이며 빛나요. 사진이 보이는 모든 곳에 적용돼요',
 }
 
 export default ko

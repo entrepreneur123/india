@@ -122,6 +122,10 @@ const mr: LooksDict = {
   'cycle.pick': '2 ते 4 फोटो निवडा',
   'cycle.needPhotos': 'आधी प्रोफाइलमध्ये किमान 2 फोटो जोडा',
   'cycle.save': 'सेव्ह करा',
+  'looks.tab.effect': 'फोटो इफेक्ट',
+  'item.effect_aurora': 'ऑरोरा',
+  'item.effect_prism': 'प्रिझम',
+  'effect.what': 'तुमच्या प्रोफाइल फोटोवर प्रकाश फिरतो, तो जिथे दिसेल तिथे',
 }
 
 export default mr

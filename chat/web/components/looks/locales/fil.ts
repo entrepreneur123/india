@@ -122,6 +122,10 @@ const fil: LooksDict = {
   'cycle.pick': 'Pumili ng 2 hanggang 4 na litrato',
   'cycle.needPhotos': 'Magdagdag muna ng kahit 2 litrato sa profile mo',
   'cycle.save': 'I-save',
+  'looks.tab.effect': 'Mga photo effect',
+  'item.effect_aurora': 'Aurora',
+  'item.effect_prism': 'Prism',
+  'effect.what': 'May gumagalaw na liwanag sa profile photo mo, saanman ito lumabas',
 }
 
 export default fil

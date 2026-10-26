@@ -122,6 +122,10 @@ const bn: LooksDict = {
   'cycle.pick': '২ থেকে ৪টি ছবি বেছে নিন',
   'cycle.needPhotos': 'আগে প্রোফাইলে অন্তত ২টি ছবি যোগ করুন',
   'cycle.save': 'সেভ করুন',
+  'looks.tab.effect': 'ফটো ইফেক্ট',
+  'item.effect_aurora': 'অরোরা',
+  'item.effect_prism': 'প্রিজম',
+  'effect.what': 'আপনার প্রোফাইল ছবির ওপর আলো চলে, যেখানেই দেখা যাক',
 }
 
 export default bn

@@ -122,6 +122,10 @@ const sw: LooksDict = {
   'cycle.pick': 'Chagua picha 2 hadi 4',
   'cycle.needPhotos': 'Kwanza ongeza angalau picha 2 kwenye wasifu wako',
   'cycle.save': 'Hifadhi',
+  'looks.tab.effect': 'Athari za picha',
+  'item.effect_aurora': 'Aurora',
+  'item.effect_prism': 'Prizimu',
+  'effect.what': 'Mwanga unasogea juu ya picha yako ya wasifu, popote inapoonekana',
 }
 
 export default sw

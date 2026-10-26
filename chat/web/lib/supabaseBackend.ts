@@ -1312,6 +1312,10 @@ export class SupabaseBackend implements Backend {
     return { ...l, cycle: cycle.length >= 2 ? cycle : undefined }
   }
 
+  async setEffect(itemId: string | null) {
+    await this.rpc('set_effect', { p_item: itemId })
+  }
+
   async setCycle(paths: string[] | null) {
     await this.rpc('set_cycle', { p_paths: paths })
   }

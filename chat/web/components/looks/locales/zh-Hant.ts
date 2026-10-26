@@ -122,6 +122,10 @@ const zhHant: LooksDict = {
   'cycle.pick': '請選擇2到4張照片',
   'cycle.needPhotos': '請先在個人檔案中新增至少2張照片',
   'cycle.save': '儲存',
+  'looks.tab.effect': '頭像特效',
+  'item.effect_aurora': '極光',
+  'item.effect_prism': '稜鏡',
+  'effect.what': '頭像上會有流動的光芒，頭像出現的地方都會顯示',
 }
 
 export default zhHant

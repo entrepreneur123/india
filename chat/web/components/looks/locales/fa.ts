@@ -122,6 +122,10 @@ const fa: LooksDict = {
   'cycle.pick': '۲ تا ۴ عکس انتخاب کن',
   'cycle.needPhotos': 'اول دست‌کم ۲ عکس به پروفایلت اضافه کن',
   'cycle.save': 'ذخیره',
+  'looks.tab.effect': 'افکت عکس',
+  'item.effect_aurora': 'شفق',
+  'item.effect_prism': 'منشور',
+  'effect.what': 'نور روی عکس پروفایلت حرکت می‌کند، هر جا که نشان داده شود',
 }
 
 export default fa

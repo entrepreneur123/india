@@ -122,6 +122,10 @@ const de: LooksDict = {
   'cycle.pick': 'Wähle 2 bis 4 Fotos',
   'cycle.needPhotos': 'Füge zuerst mindestens 2 Fotos zu deinem Profil hinzu',
   'cycle.save': 'Speichern',
+  'looks.tab.effect': 'Foto-Effekte',
+  'item.effect_aurora': 'Polarlicht',
+  'item.effect_prism': 'Prisma',
+  'effect.what': 'Licht wandert über dein Profilbild, überall wo es erscheint',
 }
 
 export default de

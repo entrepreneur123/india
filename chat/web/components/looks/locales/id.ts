@@ -122,6 +122,10 @@ const id: LooksDict = {
   'cycle.pick': 'Pilih 2 sampai 4 foto',
   'cycle.needPhotos': 'Tambahkan dulu minimal 2 foto ke profilmu',
   'cycle.save': 'Simpan',
+  'looks.tab.effect': 'Efek foto',
+  'item.effect_aurora': 'Aurora',
+  'item.effect_prism': 'Prisma',
+  'effect.what': 'Cahaya bergerak di atas foto profilmu, di mana pun tampil',
 }
 
 export default id

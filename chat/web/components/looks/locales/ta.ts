@@ -122,6 +122,10 @@ const ta: LooksDict = {
   'cycle.pick': '2 முதல் 4 படங்களைத் தேர்ந்தெடுக்கவும்',
   'cycle.needPhotos': 'முதலில் சுயவிவரத்தில் குறைந்தது 2 படங்களைச் சேர்க்கவும்',
   'cycle.save': 'சேமி',
+  'looks.tab.effect': 'புகைப்பட எஃபெக்ட்',
+  'item.effect_aurora': 'அரோரா',
+  'item.effect_prism': 'ப்ரிஸம்',
+  'effect.what': 'உங்கள் சுயவிவரப் படத்தின் மேல் ஒளி நகரும், அது எங்கு தெரிந்தாலும்',
 }
 
 export default ta

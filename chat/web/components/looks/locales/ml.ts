@@ -122,6 +122,10 @@ const ml: LooksDict = {
   'cycle.pick': '2 മുതൽ 4 ഫോട്ടോകൾ തിരഞ്ഞെടുക്കുക',
   'cycle.needPhotos': 'ആദ്യം പ്രൊഫൈലിൽ കുറഞ്ഞത് 2 ഫോട്ടോകൾ ചേർക്കുക',
   'cycle.save': 'സേവ് ചെയ്യുക',
+  'looks.tab.effect': 'ഫോട്ടോ എഫക്ടുകൾ',
+  'item.effect_aurora': 'അറോറ',
+  'item.effect_prism': 'പ്രിസം',
+  'effect.what': 'നിങ്ങളുടെ പ്രൊഫൈൽ ഫോട്ടോയ്ക്ക് മുകളിൽ വെളിച്ചം നീങ്ങും, അത് എവിടെ കാണിച്ചാലും',
 }
 
 export default ml

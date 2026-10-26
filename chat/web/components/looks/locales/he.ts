@@ -122,6 +122,10 @@ const he: LooksDict = {
   'cycle.pick': 'בחרו 2 עד 4 תמונות',
   'cycle.needPhotos': 'קודם הוסיפו לפחות 2 תמונות לפרופיל',
   'cycle.save': 'שמירה',
+  'looks.tab.effect': 'אפקטים לתמונה',
+  'item.effect_aurora': 'זוהר',
+  'item.effect_prism': 'פריזמה',
+  'effect.what': 'אור נע על תמונת הפרופיל שלך, בכל מקום שהיא מופיעה',
 }
 
 export default he

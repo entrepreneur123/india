@@ -19,6 +19,8 @@ const PRICES: [ItemId, number][] = [
   ['sticker_namaste', 49], ['sticker_chai', 49], ['sticker_cricket', 49], ['sticker_love', 49],
   ['vip_anon', 299],
   ['cycle_photos', 199],
+  ['effect_aurora', 249],
+  ['effect_prism', 249],
 ]
 
 /** The demo people who wear something (everyone else shows a plain @ID). */
@@ -63,6 +65,7 @@ export class LookSim {
   private anon = false
   /** The photo gradient's photos (urls). */
   private cycle: string[] = []
+  private effect: ItemId | null = null
   /** When I last chose an ID myself (null: the free one the app gave). */
   private handleSetAt: number | null = null
 
@@ -84,7 +87,7 @@ export class LookSim {
 
   private myLook(): Look | null {
     const me = this.host.me()
-    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}) } : null
+    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}), effect: this.effect } : null
   }
 
   async handleCheck(raw: string): Promise<HandleCheck> {
@@ -134,6 +137,13 @@ export class LookSim {
     this.anon = on
   }
 
+  /** Like set_effect: an owned photo effect, or none. */
+  async setEffect(id: string | null) {
+    await wait(250)
+    if (id !== null && (!isItem(id) || kindOf(id) !== 'effect' || !this.owned.has(id))) throw new BackendError('not_owned')
+    this.effect = id as ItemId | null
+  }
+
   /** Like set_cycle: 2–4 of my photos (photoPath or a gallery photo's id), or none. */
   async setCycle(paths: string[] | null) {
     await wait(250)
@@ -175,6 +185,7 @@ export class LookSim {
     this.owned.add(id)
     const kind = kindOf(id)
     if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
+    if (kind === 'effect' && !this.effect) this.effect = id
   }
 
   async looks(ids: string[]): Promise<Look[]> {

@@ -4,8 +4,8 @@ import { ageText, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf,
 
 test('the catalogue: 26 looks (040), 11 walls, sticker packs and VIP (046), the photo gradient (062), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
-  assert.equal(all.length, 38)
-  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.sticker.length, CATALOGUE.vip.length, CATALOGUE.cycle.length], [6, 4, 1, 1])
+  assert.equal(all.length, 40)
+  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.sticker.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length], [6, 4, 1, 1, 2])
   for (const [kind, ids] of Object.entries(CATALOGUE)) for (const id of ids) assert.equal(kindOf(id), kind)
   for (const id of CATALOGUE.color) assert.ok(id in COLOR_DESIGNS, id)
   for (const id of CATALOGUE.font) assert.ok(id in FONT_DESIGNS, id)

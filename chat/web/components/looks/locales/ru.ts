@@ -122,6 +122,10 @@ const ru: LooksDict = {
   'cycle.pick': 'Выберите от 2 до 4 фото',
   'cycle.needPhotos': 'Сначала добавьте в профиль хотя бы 2 фото',
   'cycle.save': 'Сохранить',
+  'looks.tab.effect': 'Эффекты фото',
+  'item.effect_aurora': 'Сияние',
+  'item.effect_prism': 'Призма',
+  'effect.what': 'По фото профиля скользит свет — везде, где оно показывается',
 }
 
 export default ru

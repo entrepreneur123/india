@@ -122,6 +122,10 @@ const uk: LooksDict = {
   'cycle.pick': 'Виберіть від 2 до 4 фото',
   'cycle.needPhotos': 'Спершу додайте до профілю щонайменше 2 фото',
   'cycle.save': 'Зберегти',
+  'looks.tab.effect': 'Ефекти фото',
+  'item.effect_aurora': 'Сяйво',
+  'item.effect_prism': 'Призма',
+  'effect.what': 'По фото профілю ковзає світло — всюди, де воно показується',
 }
 
 export default uk

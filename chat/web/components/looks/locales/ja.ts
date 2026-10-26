@@ -122,6 +122,10 @@ const ja: LooksDict = {
   'cycle.pick': '写真を2〜4枚選んでください',
   'cycle.needPhotos': '先にプロフィールに写真を2枚以上追加してください',
   'cycle.save': '保存',
+  'looks.tab.effect': 'フォトエフェクト',
+  'item.effect_aurora': 'オーロラ',
+  'item.effect_prism': 'プリズム',
+  'effect.what': 'プロフィール写真の上を光が動いて輝きます。写真が表示されるすべての場所で',
 }
 
 export default ja

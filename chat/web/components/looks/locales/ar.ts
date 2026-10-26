@@ -122,6 +122,10 @@ const ar: LooksDict = {
   'cycle.pick': 'اختر من 2 إلى 4 صور',
   'cycle.needPhotos': 'أضف صورتين على الأقل إلى ملفك أولًا',
   'cycle.save': 'حفظ',
+  'looks.tab.effect': 'تأثيرات الصورة',
+  'item.effect_aurora': 'الشفق',
+  'item.effect_prism': 'المنشور',
+  'effect.what': 'يتحرك الضوء فوق صورة ملفك أينما ظهرت',
 }
 
 export default ar

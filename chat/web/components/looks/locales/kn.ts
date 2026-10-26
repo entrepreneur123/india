@@ -122,6 +122,10 @@ const kn: LooksDict = {
   'cycle.pick': '2 ರಿಂದ 4 ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ',
   'cycle.needPhotos': 'ಮೊದಲು ಪ್ರೊಫೈಲ್‌ಗೆ ಕನಿಷ್ಠ 2 ಫೋಟೋ ಸೇರಿಸಿ',
   'cycle.save': 'ಉಳಿಸಿ',
+  'looks.tab.effect': 'ಫೋಟೋ ಎಫೆಕ್ಟ್',
+  'item.effect_aurora': 'ಅರೋರಾ',
+  'item.effect_prism': 'ಪ್ರಿಸಂ',
+  'effect.what': 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಮೇಲೆ ಬೆಳಕು ಚಲಿಸುತ್ತದೆ, ಅದು ಎಲ್ಲಿ ಕಂಡರೂ',
 }
 
 export default kn

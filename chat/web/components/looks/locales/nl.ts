@@ -122,6 +122,10 @@ const nl: LooksDict = {
   'cycle.pick': 'Kies 2 tot 4 foto’s',
   'cycle.needPhotos': 'Voeg eerst minstens 2 foto’s aan je profiel toe',
   'cycle.save': 'Opslaan',
+  'looks.tab.effect': 'Foto-effecten',
+  'item.effect_aurora': 'Noorderlicht',
+  'item.effect_prism': 'Prisma',
+  'effect.what': 'Licht beweegt over je profielfoto, overal waar hij te zien is',
 }
 
 export default nl

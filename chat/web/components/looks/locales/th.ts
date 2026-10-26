@@ -122,6 +122,10 @@ const th: LooksDict = {
   'cycle.pick': 'เลือก 2 ถึง 4 รูป',
   'cycle.needPhotos': 'เพิ่มรูปในโปรไฟล์อย่างน้อย 2 รูปก่อน',
   'cycle.save': 'บันทึก',
+  'looks.tab.effect': 'เอฟเฟกต์รูป',
+  'item.effect_aurora': 'ออโรรา',
+  'item.effect_prism': 'ปริซึม',
+  'effect.what': 'แสงเคลื่อนไหวบนรูปโปรไฟล์ของคุณ ในทุกที่ที่แสดง',
 }
 
 export default th

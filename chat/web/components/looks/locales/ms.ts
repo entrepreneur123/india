@@ -122,6 +122,10 @@ const ms: LooksDict = {
   'cycle.pick': 'Pilih 2 hingga 4 foto',
   'cycle.needPhotos': 'Tambah sekurang-kurangnya 2 foto pada profil dahulu',
   'cycle.save': 'Simpan',
+  'looks.tab.effect': 'Kesan foto',
+  'item.effect_aurora': 'Aurora',
+  'item.effect_prism': 'Prisma',
+  'effect.what': 'Cahaya bergerak di atas foto profil anda, di mana-mana ia dipaparkan',
 }
 
 export default ms

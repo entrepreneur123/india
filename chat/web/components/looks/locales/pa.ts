@@ -122,6 +122,10 @@ const pa: LooksDict = {
   'cycle.pick': '2 ਤੋਂ 4 ਫ਼ੋਟੋਆਂ ਚੁਣੋ',
   'cycle.needPhotos': 'ਪਹਿਲਾਂ ਆਪਣੀ ਪ੍ਰੋਫ਼ਾਈਲ ਵਿੱਚ ਘੱਟੋ-ਘੱਟ 2 ਫ਼ੋਟੋਆਂ ਜੋੜੋ',
   'cycle.save': 'ਸੇਵ ਕਰੋ',
+  'looks.tab.effect': 'ਫ਼ੋਟੋ ਇਫ਼ੈਕਟ',
+  'item.effect_aurora': 'ਔਰੋਰਾ',
+  'item.effect_prism': 'ਪ੍ਰਿਜ਼ਮ',
+  'effect.what': 'ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਫ਼ੋਟੋ ਉੱਤੇ ਰੋਸ਼ਨੀ ਚੱਲਦੀ ਹੈ, ਜਿੱਥੇ ਵੀ ਦਿਖੇ',
 }
 
 export default pa

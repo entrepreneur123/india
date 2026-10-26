@@ -3,7 +3,8 @@
 import { Avatar, type AvatarProps } from '@/components/ui/avatar'
 import { useLook } from './look-name'
 
-/** Someone's photo with their photo gradient when they have one (062): what every screen shows for a person. */
+/** Someone's photo with their photo gradient and photo effect when they have them (062): what every screen shows for a person. */
 export function UserAvatar({ userId, ...props }: AvatarProps & { userId: string }) {
-  return <Avatar {...props} srcs={useLook(userId)?.cycle} />
+  const look = useLook(userId)
+  return <Avatar {...props} srcs={look?.cycle} effect={look?.effect} />
 }

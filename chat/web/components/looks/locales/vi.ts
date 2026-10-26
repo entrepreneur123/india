@@ -122,6 +122,10 @@ const vi: LooksDict = {
   'cycle.pick': 'Chọn từ 2 đến 4 ảnh',
   'cycle.needPhotos': 'Hãy thêm ít nhất 2 ảnh vào hồ sơ trước',
   'cycle.save': 'Lưu',
+  'looks.tab.effect': 'Hiệu ứng ảnh',
+  'item.effect_aurora': 'Cực quang',
+  'item.effect_prism': 'Lăng kính',
+  'effect.what': 'Ánh sáng lướt trên ảnh đại diện của bạn, ở mọi nơi nó hiện',
 }
 
 export default vi

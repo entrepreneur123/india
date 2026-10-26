@@ -122,6 +122,10 @@ const zhHans: LooksDict = {
   'cycle.pick': '请选择2到4张照片',
   'cycle.needPhotos': '请先在个人资料中添加至少2张照片',
   'cycle.save': '保存',
+  'looks.tab.effect': '头像特效',
+  'item.effect_aurora': '极光',
+  'item.effect_prism': '棱镜',
+  'effect.what': '头像上会有流动的光芒，头像出现的地方都会显示',
 }
 
 export default zhHans

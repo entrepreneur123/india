@@ -1,67 +1,51 @@
 'use client'
 
-import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { Avatar } from '@/components/ui/avatar'
 import type { FrameId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from './user-avatar'
 
-// Profile frames (040): they replace the free cover photo and colour. A frame draws (a) a 3 px gradient ring around the
-// profile card, (b) a 3 px ring around the big photo, (c) a soft wash at the top of the card and (d) a light particle
-// animation behind the card's content (≤ 30 particles at ≤ 30 fps, paused off screen and in a background tab; still
-// with reduced motion). The same designs as the Android app (docs/LOOKS_SPEC.md).
+// Profile frames (040, redrawn 2026-10-26): a turning conic ring with a travelling glint and a soft glow, around the
+// profile card and the big photo; around the photo each frame adds its own decorations (snowflakes, flames, faceted
+// gems, drifting sand, a neon orbit, petals); the card gets a wash at the top and light particles behind its content
+// (≤ 30 particles at ≤ 30 fps, paused off screen and in a background tab). Reduced motion stills them.
 
 interface FrameDesign {
-  /** The ring's gradient (diagonal across the card, around the photo). */
+  /** The ring's colours, turning round (a conic gradient; the first colour closes the circle). */
   ring: string[]
   /** The wash at the top of the card. */
   wash: string
-  /** Round gems on the ring (jewels). */
-  gems?: string[]
 }
 
 const FRAME_DESIGNS: Record<FrameId, FrameDesign> = {
-  frame_frost: { ring: ['#E3F6FF', '#8FD3FF', '#4AA8FF'], wash: '#DFF4FF' },
-  frame_fire: { ring: ['#FFD54A', '#FF6A00', '#D50000'], wash: '#FFF1E6' },
-  frame_jewel: { ring: ['#FFE8A3', '#D4A017', '#FFE8A3'], wash: '#FFF8E1', gems: ['#E0115F', '#0F52BA', '#50C878'] },
-  frame_sand: { ring: ['#F4D9A6', '#C99A5B', '#8B5E34'], wash: '#FFF6E6' },
-  frame_neon: { ring: ['#00F0FF', '#FF00E5'], wash: '#E9FDFF' },
-  frame_sakura: { ring: ['#FFD1E1', '#FF8AB3'], wash: '#FFF0F5' },
+  frame_frost: { ring: ['#FFFFFF', '#BFEAFF', '#5CB8FF', '#2F7DE1', '#A9E2FF', '#FFFFFF', '#7CC8FF'], wash: '#DFF4FF' },
+  frame_fire: { ring: ['#FFE66D', '#FF9A1F', '#FF4D00', '#C10000', '#FF6A00', '#FFD23F', '#FF3D00'], wash: '#FFF1E6' },
+  frame_jewel: { ring: ['#FFF6CF', '#E8C252', '#9C7414', '#FFE9A1', '#C9971C', '#FFF3C4', '#8A6510'], wash: '#FFF8E1' },
+  frame_sand: { ring: ['#FBE7C2', '#D9AE6C', '#9A6635', '#E9C792', '#7A4B24', '#F2D5A0'], wash: '#FFF6E6' },
+  frame_neon: { ring: ['#00F0FF', '#7A5CFF', '#FF00E5', '#FF4FA3', '#00F0FF', '#00FFA3'], wash: '#E9FDFF' },
+  frame_sakura: { ring: ['#FFE7EF', '#FFB3CC', '#FF7AA8', '#FFD6E4', '#FF92B8', '#FFF0F5'], wash: '#FFF0F5' },
 }
 
-const ringImage = (d: FrameDesign) => `linear-gradient(135deg, ${d.ring.join(', ')})`
-/** The fire ring flickers (opacity 0.8–1, 0.6 s); the neon glows (blur 8 px, pulsing over 2 s). In app/globals.css. */
-const ringMotion = (frame: FrameId) => (frame === 'frame_fire' ? 'look-flicker' : undefined)
+const conic = (d: FrameDesign) => `conic-gradient(from var(--look-a), ${d.ring.join(', ')}, ${d.ring[0]})`
+/** A light glint travelling round the ring the other way. */
+const GLINT = 'conic-gradient(from var(--look-a), transparent 0deg 290deg, rgb(255 255 255 / 0.95) 325deg, transparent 360deg)'
 
-/** The ring itself, under the content (and the neon's glow under the ring). */
-function Ring({ frame }: { frame: FrameId }) {
+/** The turning ring with its glint (under the content), and a soft glow of the same colours behind it. */
+function Ring({ frame, glow }: { frame: FrameId; glow: number }) {
   const d = FRAME_DESIGNS[frame]
   return (
     <>
-      {frame === 'frame_neon' ? (
-        <span aria-hidden className="look-glow pointer-events-none absolute inset-0 rounded-[inherit] blur-[8px]" style={{ backgroundImage: ringImage(d) }} />
-      ) : null}
-      <span aria-hidden className={cn('pointer-events-none absolute inset-0 rounded-[inherit]', ringMotion(frame))} style={{ backgroundImage: ringImage(d) }} />
+      <span
+        aria-hidden
+        className="look-turn pointer-events-none absolute -inset-1 rounded-[inherit]"
+        style={{ backgroundImage: conic(d), filter: `blur(${glow}px)`, opacity: frame === 'frame_neon' ? 0.95 : 0.6 }}
+      />
+      <span aria-hidden className="look-turn pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: conic(d) }} />
+      <span aria-hidden className="look-turn-fast pointer-events-none absolute inset-0 rounded-[inherit]" style={{ backgroundImage: GLINT }} />
     </>
   )
 }
-
-/** A gem: a round stone with a highlight, set in a thin gold rim. */
-function Gem({ color, style }: { color: string; style: CSSProperties }) {
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute z-10 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-1 ring-[#B8860B]"
-      style={{ ...style, background: `radial-gradient(circle at 35% 30%, #fff 0 14%, ${color} 46%, color-mix(in srgb, ${color} 70%, #000))` }}
-    />
-  )
-}
-
-/** Where the 8 gems sit on a card's ring (on its middle line, 1.5 px in). */
-const CARD_GEMS: CSSProperties[] = [
-  { left: '25%', top: 1.5 }, { left: '75%', top: 1.5 }, { left: 'calc(100% - 1.5px)', top: '35%' }, { left: 'calc(100% - 1.5px)', top: '70%' },
-  { left: '75%', top: 'calc(100% - 1.5px)' }, { left: '25%', top: 'calc(100% - 1.5px)' }, { left: 1.5, top: '70%' }, { left: 1.5, top: '35%' },
-]
 
 /**
  * A profile card in a frame: the ring, the wash and the particles behind `children`. Without a frame, a plain card.
@@ -71,7 +55,7 @@ export function FrameCard({ frame, still, className, children }: { frame: FrameI
   const d = frame ? FRAME_DESIGNS[frame] : null
   return (
     <div className={cn('relative rounded-[28px]', d ? 'p-[3px]' : 'ring-1 ring-border', className)}>
-      {frame ? <Ring frame={frame} /> : null}
+      {frame ? <Ring frame={frame} glow={10} /> : null}
       <div className={cn('relative isolate h-full overflow-hidden bg-card', d ? 'rounded-[25px]' : 'rounded-[28px]')}>
         {frame && d ? (
           <>
@@ -85,29 +69,118 @@ export function FrameCard({ frame, still, className, children }: { frame: FrameI
         ) : null}
         <div className="relative">{children}</div>
       </div>
-      {d?.gems ? CARD_GEMS.map((style, i) => <Gem key={i} color={d.gems![i % d.gems!.length]} style={style} />) : null}
     </div>
   )
 }
 
-/** The big photo in the frame's ring (3 px, then a thin gap in the card's colour), or plain without a frame. */
+/**
+ * The big photo in its frame: a glow, the turning ring with its glint, a thin gap in the card's colour, the photo, and
+ * the frame's own decorations around it (snowflakes, flames, gems, drifting sand, a neon orbit, petals). The frame
+ * takes the same room as before; its glow and decorations spill over the edge. Plain without a frame.
+ */
 export function FrameAvatar({ frame, userId, name, src, size, className }: { frame: FrameId | null; userId?: string; name: string; src?: string | null; size: number; className?: string }) {
-  const d = frame ? FRAME_DESIGNS[frame] : null
-  const outer = size + 2 * (3 + (d ? 3 : 0))
+  const ring = frame ? Math.max(3, Math.round(size * 0.05)) : 0
+  const gap = frame ? Math.max(2, Math.round(size * 0.025)) : 3
+  const outer = size + 2 * (ring + gap)
   return (
-    <span className={cn('relative inline-grid shrink-0 place-items-center rounded-full', !d && 'shadow-e2', className)} style={{ width: outer, height: outer, padding: d ? 3 : 0 }}>
-      {frame ? <Ring frame={frame} /> : null}
-      <span className="relative grid place-items-center rounded-full bg-card p-[3px]">
+    <span className={cn('relative inline-grid shrink-0 place-items-center rounded-full', !frame && 'shadow-e2', className)} style={{ width: outer, height: outer }}>
+      {frame ? <Ring frame={frame} glow={Math.max(4, size * 0.07)} /> : null}
+      <span className="relative grid place-items-center rounded-full bg-card" style={{ padding: gap, margin: ring }}>
         {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} /> : <Avatar name={name} src={src} size={size} />}
       </span>
-      {d?.gems
-        ? Array.from({ length: 8 }, (_, i) => {
-            const a = (Math.PI / 4) * i - Math.PI / 2
-            const r = outer / 2 - 1.5
-            return <Gem key={i} color={d.gems![i % d.gems!.length]} style={{ left: outer / 2 + r * Math.cos(a), top: outer / 2 + r * Math.sin(a) }} />
-          })
-        : null}
+      {frame ? <Decor frame={frame} ring={ring} outer={outer} /> : null}
     </span>
+  )
+}
+
+/** Points round a circle of radius `r` (viewBox units) around (50, 50), the first at `start` degrees. */
+const around = (n: number, r: number, start = -90) =>
+  Array.from({ length: n }, (_, i) => {
+    const deg = start + (360 / n) * i
+    const a = (deg * Math.PI) / 180
+    return { x: 50 + r * Math.cos(a), y: 50 + r * Math.sin(a), deg, i }
+  })
+const delay = (i: number, step: number) => ({ animationDelay: `${-i * step}s` })
+
+/** The decorations, drawn in a 100 × 100 box that reaches 16 % past the frame on every side. */
+function Decor({ frame, ring, outer }: { frame: FrameId; ring: number; outer: number }) {
+  const g = useId().replace(/:/g, '')
+  const spill = outer * 0.16
+  const box = outer + 2 * spill
+  const r = ((outer / 2 - ring / 2) / box) * 100 // the ring's middle line
+  const unit = 100 / box // one CSS pixel in viewBox units
+  const s = Math.max(outer * 0.07, 3) * unit // a decoration's size, ~7 % of the frame
+  return (
+    <svg aria-hidden viewBox="0 0 100 100" className="pointer-events-none absolute overflow-visible" style={{ inset: -spill }}>
+      <defs>
+        <linearGradient id={`${g}f`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stopColor="#FF3D00" />
+          <stop offset="0.6" stopColor="#FF9A1F" />
+          <stop offset="1" stopColor="#FFE66D" />
+        </linearGradient>
+        <radialGradient id={`${g}p`} cx="0.4" cy="0.35" r="0.8">
+          <stop offset="0" stopColor="#FFF5F8" />
+          <stop offset="1" stopColor="#FF8DB5" />
+        </radialGradient>
+        <filter id={`${g}b`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation={s * 0.12} />
+        </filter>
+      </defs>
+      {frame === 'frame_frost'
+        ? around(6, r, -75).map(({ x, y, i }) => (
+            <g key={i} transform={`translate(${x} ${y})`}>
+              <g className="look-twinkle" style={{ ...delay(i, 0.4), transformBox: 'fill-box', transformOrigin: 'center' }}>
+                {[0, 60, 120].map((rot) => (
+                  <path key={rot} d={`M0 ${-s} V${s} M${-s * 0.3} ${-s * 0.7} L0 ${-s * 0.45} L${s * 0.3} ${-s * 0.7} M${-s * 0.3} ${s * 0.7} L0 ${s * 0.45} L${s * 0.3} ${s * 0.7}`}
+                    transform={`rotate(${rot})`} stroke="#fff" strokeWidth={s * 0.16} strokeLinecap="round" fill="none" style={{ filter: 'drop-shadow(0 0 1.5px #5CB8FF)' }} />
+                ))}
+              </g>
+            </g>
+          ))
+        : frame === 'frame_fire'
+          ? around(12, r + s * 0.15).map(({ x, y, deg, i }) => (
+              <g key={i} transform={`translate(${x} ${y}) rotate(${deg + 90})`}>
+                <path className="look-flame" style={delay(i, 0.17)} fill={`url(#${g}f)`}
+                  d={`M0 0 C${-s * 0.55} ${-s * 0.5} ${-s * 0.35} ${-s * 1.2} 0 ${-s * 1.7} C${s * 0.35} ${-s * 1.2} ${s * 0.55} ${-s * 0.5} 0 0Z`} />
+              </g>
+            ))
+          : frame === 'frame_jewel'
+            ? around(8, r).map(({ x, y, i }) => {
+                const c = ['#E0115F', '#0F52BA', '#1FA463', '#9B30FF'][i % 4]
+                const k = s * 0.75
+                return (
+                  <g key={i} transform={`translate(${x} ${y})`}>
+                    <polygon points={`0,${-k} ${k * 0.8},${-k * 0.25} ${k * 0.5},${k * 0.85} ${-k * 0.5},${k * 0.85} ${-k * 0.8},${-k * 0.25}`} fill={c} stroke="#B8860B" strokeWidth={k * 0.14} strokeLinejoin="round" />
+                    <polygon points={`0,${-k} ${k * 0.8},${-k * 0.25} 0,${-k * 0.05} ${-k * 0.8},${-k * 0.25}`} fill="#fff" opacity="0.45" />
+                    <path className="look-twinkle" style={{ ...delay(i, 0.3), transformBox: 'fill-box', transformOrigin: 'center' }} fill="#fff"
+                      d={`M${k * 0.55} ${-k * 0.95} l${k * 0.12} ${k * 0.28} l${k * 0.28} ${k * 0.12} l${-k * 0.28} ${k * 0.12} l${-k * 0.12} ${k * 0.28} l${-k * 0.12} ${-k * 0.28} l${-k * 0.28} ${-k * 0.12} l${k * 0.28} ${-k * 0.12}z`} />
+                  </g>
+                )
+              })
+            : frame === 'frame_sand'
+              ? (
+                  <g className="look-spin" style={{ transformBox: 'view-box', transformOrigin: '50% 50%' }}>
+                    {around(18, r, -90).map(({ i, deg }) => {
+                      const rr = r + ((i * 37) % 7) * unit * outer * 0.012 - outer * 0.03 * unit
+                      const a = ((deg + (i % 3) * 7) * Math.PI) / 180
+                      return <circle key={i} cx={50 + rr * Math.cos(a)} cy={50 + rr * Math.sin(a)} r={s * (0.12 + (i % 4) * 0.06)} fill={['#F2D5A0', '#C99A5B', '#8B5E34'][i % 3]} opacity={0.5 + (i % 3) * 0.2} />
+                    })}
+                  </g>
+                )
+              : frame === 'frame_neon'
+                ? (
+                    <g className="look-spin" style={{ transformBox: 'view-box', transformOrigin: '50% 50%', animationDuration: '6s' }}>
+                      <circle cx="50" cy="50" r={r + s * 0.65} fill="none" stroke="#00F0FF" strokeWidth={s * 0.14} strokeDasharray={`${s * 1.6} ${s * 2.4}`} strokeLinecap="round" filter={`url(#${g}b)`} />
+                      <circle cx="50" cy="50" r={r + s * 0.65} fill="none" stroke="#FF00E5" strokeWidth={s * 0.1} strokeDasharray={`${s * 0.8} ${s * 3.2}`} strokeDashoffset={s * 2} strokeLinecap="round" />
+                    </g>
+                  )
+                : around(6, r + s * 0.2, -60).map(({ x, y, deg, i }) => (
+                    <g key={i} transform={`translate(${x} ${y}) rotate(${deg + 90})`}>
+                      <path className="look-sway" style={delay(i, 0.6)} fill={`url(#${g}p)`} stroke="#FF6FA3" strokeWidth={s * 0.05}
+                        d={`M0 ${s * 0.6} C${-s * 0.75} ${s * 0.1} ${-s * 0.55} ${-s * 0.75} ${-s * 0.1} ${-s * 0.7} L0 ${-s * 0.45} L${s * 0.1} ${-s * 0.7} C${s * 0.55} ${-s * 0.75} ${s * 0.75} ${s * 0.1} 0 ${s * 0.6}Z`} />
+                    </g>
+                  ))}
+    </svg>
   )
 }
 
