@@ -125,6 +125,16 @@ const ta: LooksDict = {
   'item.bubble_gold': 'தங்கம்',
   'item.bubble_neon': 'நியான்',
   'bubble.what': 'அனைவரும் உங்கள் செய்திகளை இந்த பபிளில் காண்பார்கள்',
+  'gift.button': 'நண்பருக்குப் பரிசளி',
+  'gift.title': '{item} பரிசளி',
+  'gift.desc': '{price} · இது உங்கள் நண்பருக்குக் கிடைக்கும், உங்களுக்கு அல்ல.',
+  'gift.noFriends': 'பரிசு அனுப்ப நண்பர்களைச் சேருங்கள்.',
+  'gift.has': 'ஏற்கனவே உள்ளது',
+  'gift.give': 'பரிசளி',
+  'gift.inApp': 'ஆப்பில்',
+  'gift.sent': '{name}-க்கு {item} அனுப்பப்பட்டது 🎁',
+  'vip.hidden': 'VIP இயக்கத்தில் · நீங்கள் யார் என்று அவர்களுக்குத் தெரியாது',
+  'vip.reveal': 'VIP-ஐ அணை',
 }
 
 export default ta

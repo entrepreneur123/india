@@ -33,8 +33,6 @@ const ms: Dict = {
   'panel.activity': 'Aktiviti',
   'panel.friends': 'Rakan anda',
   'panel.rooms': 'Bilik langsung',
-  'panel.friendCount.one': '{n} rakan',
-  'panel.friendCount.other': '{n} rakan',
   'panel.noFriends': 'Rakan yang anda tambah daripada sembang akan muncul di sini.',
   'panel.message': 'Mesej {name}',
 
@@ -673,6 +671,17 @@ const ms: Dict = {
   'room.password': 'Kata laluan bilik (pilihan)',
   'room.passwordHint': '4–12 aksara. Orang di luar perlukannya untuk masuk; yang baharu akan ditanya semula.',
   'join.wrong': 'Kod salah. Semak dengan hos.',
+  'presence.online': 'Dalam talian',
+  'presence.matching': 'Mencari padanan',
+  'presence.chat': 'Dalam sembang rawak',
+  'presence.room': 'Dalam bilik',
+  'presence.offline': 'Luar talian',
+  'panel.onlineCount': '{n} dalam talian',
+  'panel.offlineCount': 'Luar talian · {n}',
+  'panel.noneOnline': 'Tiada rakan dalam talian sekarang',
+  'notes.title': 'Nota rakan',
+  'notes.mine': 'Nota anda',
+  'notes.add': 'Tulis nota…',
 }
 
 export default ms

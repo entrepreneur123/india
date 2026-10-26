@@ -125,6 +125,16 @@ const te: LooksDict = {
   'item.bubble_gold': 'బంగారం',
   'item.bubble_neon': 'నియాన్',
   'bubble.what': 'అందరూ మీ సందేశాలను ఈ బబుల్‌లో చూస్తారు',
+  'gift.button': 'స్నేహితుడికి బహుమతి',
+  'gift.title': '{item} బహుమతిగా ఇవ్వండి',
+  'gift.desc': '{price} · ఇది మీ స్నేహితుడికి వస్తుంది, మీకు కాదు.',
+  'gift.noFriends': 'బహుమతులు పంపడానికి స్నేహితులను చేర్చండి.',
+  'gift.has': 'ఇప్పటికే ఉంది',
+  'gift.give': 'బహుమతి ఇవ్వండి',
+  'gift.inApp': 'యాప్‌లో',
+  'gift.sent': '{name}కి {item} పంపారు 🎁',
+  'vip.hidden': 'VIP ఆన్ · మీరు ఎవరో వారికి తెలియదు',
+  'vip.reveal': 'VIP ఆఫ్ చేయండి',
 }
 
 export default te

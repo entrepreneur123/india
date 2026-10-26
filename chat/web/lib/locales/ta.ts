@@ -31,8 +31,6 @@ const ta: Dict = {
   'panel.activity': 'செயல்பாடு',
   'panel.friends': 'உங்கள் நண்பர்கள்',
   'panel.rooms': 'லைவ் ரூம்கள்',
-  'panel.friendCount.one': '{n} நண்பர்',
-  'panel.friendCount.other': '{n} நண்பர்கள்',
   'panel.noFriends': 'சாட்டில் இருந்து நீங்கள் சேர்க்கும் நண்பர்கள் இங்கே தெரிவார்கள்.',
   'panel.message': '{name}-க்கு மெசேஜ் செய்',
 
@@ -660,6 +658,17 @@ const ta: Dict = {
   'room.password': 'அறை கடவுச்சொல் (விருப்பம்)',
   'room.passwordHint': '4–12 எழுத்துகள். வெளியே உள்ளவர்கள் உள்ளே வர இது தேவை; புதியது மீண்டும் கேட்கும்.',
   'join.wrong': 'தவறான குறியீடு. ஹோஸ்ட்டிடம் சரிபாருங்கள்.',
+  'presence.online': 'ஆன்லைன்',
+  'presence.matching': 'மேட்ச் தேடுகிறார்',
+  'presence.chat': 'ரேண்டம் சாட்டில்',
+  'presence.room': 'அறையில்',
+  'presence.offline': 'ஆஃப்லைன்',
+  'panel.onlineCount': '{n} ஆன்லைன்',
+  'panel.offlineCount': 'ஆஃப்லைன் · {n}',
+  'panel.noneOnline': 'இப்போது நண்பர்கள் யாரும் ஆன்லைனில் இல்லை',
+  'notes.title': 'நண்பர்களின் குறிப்புகள்',
+  'notes.mine': 'உங்கள் குறிப்பு',
+  'notes.add': 'குறிப்பு எழுதுங்கள்…',
 }
 
 export default ta

@@ -136,6 +136,8 @@ const ml: SocialDict = {
   'inbox.messages': 'സന്ദേശങ്ങൾ',
   'inbox.friends': 'സുഹൃത്തുക്കൾ',
   'inbox.reactions': 'ലൈക്കും കമന്റും',
+  'inbox.gift': '{name} നിങ്ങൾക്ക് സമ്മാനം അയച്ചു: {item}',
+  'inbox.giftOpen': 'കാണുക',
 }
 
 export default ml

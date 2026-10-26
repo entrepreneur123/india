@@ -125,6 +125,16 @@ const fa: LooksDict = {
   'item.bubble_gold': 'طلایی',
   'item.bubble_neon': 'نئون',
   'bubble.what': 'همه پیام‌های شما را در این حباب می‌بینند',
+  'gift.button': 'هدیه به دوست',
+  'gift.title': 'هدیه دادن {item}',
+  'gift.desc': '{price} · دوستتان آن را می‌گیرد، نه شما.',
+  'gift.noFriends': 'برای هدیه دادن دوست اضافه کنید.',
+  'gift.has': 'دارد',
+  'gift.give': 'هدیه',
+  'gift.inApp': 'در اپ',
+  'gift.sent': '{item} برای {name} فرستاده شد 🎁',
+  'vip.hidden': 'VIP روشن · نمی‌دانند شما کیستید',
+  'vip.reveal': 'خاموش کردن VIP',
 }
 
 export default fa

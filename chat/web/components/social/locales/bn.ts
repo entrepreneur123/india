@@ -137,6 +137,8 @@ const bn: SocialDict = {
   'inbox.messages': 'মেসেজ',
   'inbox.friends': 'বন্ধু',
   'inbox.reactions': 'লাইক ও কমেন্ট',
+  'inbox.gift': '{name} আপনাকে উপহার পাঠিয়েছেন: {item}',
+  'inbox.giftOpen': 'দেখুন',
 }
 
 export default bn

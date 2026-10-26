@@ -143,6 +143,8 @@ const zhHans: SocialDict = {
   'inbox.messages': '消息',
   'inbox.friends': '好友',
   'inbox.reactions': '点赞和评论',
+  'inbox.gift': '{name} 送了你一份礼物：{item}',
+  'inbox.giftOpen': '查看',
 }
 
 export default zhHans

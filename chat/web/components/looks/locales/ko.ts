@@ -125,6 +125,16 @@ const ko: LooksDict = {
   'item.bubble_gold': '골드',
   'item.bubble_neon': '네온',
   'bubble.what': '모두가 내 메시지를 이 말풍선으로 봐요',
+  'gift.button': '친구에게 선물하기',
+  'gift.title': '{item} 선물하기',
+  'gift.desc': '{price} · 내가 아니라 친구가 받아요.',
+  'gift.noFriends': '친구를 추가하면 선물할 수 있어요.',
+  'gift.has': '보유 중',
+  'gift.give': '선물',
+  'gift.inApp': '앱에서',
+  'gift.sent': '{name}님에게 {item}을(를) 보냈어요 🎁',
+  'vip.hidden': 'VIP 모드 · 상대는 내가 누군지 몰라요',
+  'vip.reveal': 'VIP 해제',
 }
 
 export default ko

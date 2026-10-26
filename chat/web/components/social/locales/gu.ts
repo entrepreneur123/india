@@ -131,6 +131,8 @@ const gu: SocialDict = {
   'inbox.messages': 'મેસેજ',
   'inbox.friends': 'મિત્રો',
   'inbox.reactions': 'લાઇક અને કમેન્ટ',
+  'inbox.gift': '{name} એ તમને ભેટ મોકલી: {item}',
+  'inbox.giftOpen': 'જુઓ',
 }
 
 export default gu

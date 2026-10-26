@@ -9,6 +9,7 @@ const GENDER_PASS = "gender_pass_24h";    // one-time, consumable: gender filter
 // Looks (040) and walls, sticker packs, incognito (046): one-time, non-consumable products named like their item, owned for good.
 const LOOK = /^(badge|color|font|frame|wall|vip|cycle|effect|bubble)_[a-z0-9]{2,20}$/;
 const HANDLE_PASS = "handle_change";        // consumable (042): one ID change before the 30 days are up
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
@@ -45,8 +46,15 @@ Deno.serve(async (req) => {
   const { data: { user } } = await userClient.auth.getUser();
   if (!user) return json(401, { error: "not_signed_in" });
 
-  const { product_id, purchase_token } = await req.json().catch(() => ({}));
-  const look = typeof product_id === "string" && LOOK.test(product_id);
+  const { product_id, purchase_token, gift_to } = await req.json().catch(() => ({}));
+  // A look bought for a friend (066): its own consumable product "gift_<item>" (Play won't sell a product twice to one
+  // account, and the buyer may own the item themselves), granted to the friend; the app consumes it after the 200.
+  const gift = typeof product_id === "string" && product_id.startsWith("gift_");
+  const item = gift ? product_id.slice(5) : product_id;
+  const look = typeof item === "string" && LOOK.test(item);
+  if (gift !== (gift_to !== undefined && gift_to !== null) || (gift && (!look || typeof gift_to !== "string" || !UUID.test(gift_to)))) {
+    return json(400, { error: "bad_request" });
+  }
   const pass = product_id === HANDLE_PASS;
   if ((![PREMIUM, GENDER_PASS].includes(product_id) && !look && !pass) || typeof purchase_token !== "string") return json(400, { error: "bad_request" });
 
@@ -58,7 +66,8 @@ Deno.serve(async (req) => {
 
   // A token belongs to the first account that redeems it.
   const { data: seen } = await admin.from("purchases").select("user_id").eq("token", purchase_token).maybeSingle();
-  if (seen && seen.user_id !== user.id) return json(409, { error: "token_used_by_other_account" });
+  // (A gift's token is kept under the friend it went to; redeem_gift checks that the giver is the same.)
+  if (seen && seen.user_id !== user.id && !gift) return json(409, { error: "token_used_by_other_account" });
 
   const { data: ent } = await admin.from("subscriptions").select("gender_until").eq("user_id", user.id).maybeSingle();
 
@@ -93,15 +102,19 @@ Deno.serve(async (req) => {
     if (p.obfuscatedExternalAccountId !== user.id) return json(403, { error: "wrong_account" });
     const { data: result, error } = pass
       ? await admin.rpc("redeem_handle_pass", { p_user: user.id, p_token: purchase_token })
-      : await admin.rpc("redeem_cosmetic", { p_user: user.id, p_item: product_id, p_token: purchase_token });
+      : gift_to
+        ? await admin.rpc("redeem_gift", { p_from: user.id, p_to: gift_to, p_item: item, p_token: purchase_token })
+        : await admin.rpc("redeem_cosmetic", { p_user: user.id, p_item: product_id, p_token: purchase_token });
     if (error) return json(error.message?.includes("bad_request") ? 400 : 500, { error: error.message?.includes("bad_request") ? "unknown_item" : "grant_failed" });
     if (result === "other_account") return json(409, { error: "token_used_by_other_account" });
+    // Not acknowledged, so Play refunds it within 3 days: the friend can't get it (no longer friends, or has it already).
+    if (result === "not_friends" || result === "owned" || result === "bad_item") return json(409, { error: `gift_${result}` });
     if (result === "revoked") return json(402, { error: "refunded" });
     if (p.acknowledgementState === 0) {
       await fetch(`${api}/products/${product_id}/tokens/${tok}:acknowledge`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: "{}" });
     }
-    // A pass is consumed by the app after this 200 so it can be bought again; a look is owned for good.
-    return json(200, { item: product_id, already_redeemed: result === "already" });
+    // A pass or a gift is consumed by the app after this 200 so it can be bought again; a look is owned for good.
+    return json(200, { item, already_redeemed: result === "already" });
   }
 
   // Gender pass: one-time, redeemed once, then consumed by the app so it can be bought again.

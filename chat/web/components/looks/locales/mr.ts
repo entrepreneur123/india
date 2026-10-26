@@ -125,6 +125,16 @@ const mr: LooksDict = {
   'item.bubble_gold': 'सोनेरी',
   'item.bubble_neon': 'निऑन',
   'bubble.what': 'सर्वजण तुमचे मेसेज या बबलमध्ये पाहतील',
+  'gift.button': 'मित्राला भेट द्या',
+  'gift.title': '{item} भेट द्या',
+  'gift.desc': '{price} · हे तुमच्या मित्राला मिळेल, तुम्हाला नाही.',
+  'gift.noFriends': 'भेट पाठवण्यासाठी मित्र जोडा.',
+  'gift.has': 'आधीच आहे',
+  'gift.give': 'भेट द्या',
+  'gift.inApp': 'ॲपमध्ये',
+  'gift.sent': '{name} यांना {item} पाठवले 🎁',
+  'vip.hidden': 'VIP सुरू · तुम्ही कोण हे त्यांना कळत नाही',
+  'vip.reveal': 'VIP बंद करा',
 }
 
 export default mr

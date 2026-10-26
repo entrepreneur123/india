@@ -31,9 +31,6 @@ const ro: Dict = {
   'panel.activity': 'Activitate',
   'panel.friends': 'Prietenii tăi',
   'panel.rooms': 'Camere live',
-  'panel.friendCount.one': '{n} prieten',
-  'panel.friendCount.few': '{n} prieteni',
-  'panel.friendCount.other': '{n} de prieteni',
   'panel.noFriends': 'Prietenii pe care îi adaugi din chaturi vor apărea aici.',
   'panel.message': 'Scrie-i lui {name}',
 
@@ -663,6 +660,17 @@ const ro: Dict = {
   'room.password': 'Parola camerei (opțional)',
   'room.passwordHint': '4–12 caractere. Cei din afară au nevoie de ea ca să intre; una nouă îi întreabă din nou.',
   'join.wrong': 'Cod greșit. Verifică-l cu gazda.',
+  'presence.online': 'Online',
+  'presence.matching': 'Caută o potrivire',
+  'presence.chat': 'Într-un chat aleator',
+  'presence.room': 'Într-o cameră',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Niciun prieten online acum',
+  'notes.title': 'Notițele prietenilor',
+  'notes.mine': 'Notița ta',
+  'notes.add': 'Lasă o notiță…',
 }
 
 export default ro

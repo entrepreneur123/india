@@ -33,8 +33,6 @@ const sw: Dict = {
   'panel.activity': 'Shughuli',
   'panel.friends': 'Marafiki zako',
   'panel.rooms': 'Vyumba vilivyo hewani',
-  'panel.friendCount.one': 'Rafiki {n}',
-  'panel.friendCount.other': 'Marafiki {n}',
   'panel.noFriends': 'Marafiki unaowaongeza kutoka kwenye chat wataonekana hapa.',
   'panel.message': 'Mtumie {name} ujumbe',
 
@@ -673,6 +671,17 @@ const sw: Dict = {
   'room.password': 'Nenosiri la chumba (si lazima)',
   'room.passwordHint': 'Herufi 4–12. Walio nje wanalihitaji ili kuingia; jipya litaulizwa tena.',
   'join.wrong': 'Msimbo si sahihi. Thibitisha na mwenyeji.',
+  'presence.online': 'Mtandaoni',
+  'presence.matching': 'Anatafuta mtu',
+  'presence.chat': 'Kwenye gumzo la nasibu',
+  'presence.room': 'Chumbani',
+  'presence.offline': 'Nje ya mtandao',
+  'panel.onlineCount': '{n} mtandaoni',
+  'panel.offlineCount': 'Nje ya mtandao · {n}',
+  'panel.noneOnline': 'Hakuna rafiki mtandaoni sasa',
+  'notes.title': 'Vidokezo vya marafiki',
+  'notes.mine': 'Kidokezo chako',
+  'notes.add': 'Andika kidokezo…',
 }
 
 export default sw

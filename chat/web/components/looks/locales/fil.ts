@@ -125,6 +125,16 @@ const fil: LooksDict = {
   'item.bubble_gold': 'Ginto',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Makikita ng lahat ang mga mensahe mo sa bubble na ito',
+  'gift.button': 'Iregalo sa kaibigan',
+  'gift.title': 'Iregalo ang {item}',
+  'gift.desc': '{price} · Ang kaibigan mo ang makakatanggap, hindi ikaw.',
+  'gift.noFriends': 'Magdagdag ng kaibigan para makapagregalo.',
+  'gift.has': 'Mayroon na',
+  'gift.give': 'Iregalo',
+  'gift.inApp': 'Sa app',
+  'gift.sent': 'Naipadala ang {item} kay {name} 🎁',
+  'vip.hidden': 'Naka-on ang VIP · hindi nila alam kung sino ka',
+  'vip.reveal': 'I-off ang VIP',
 }
 
 export default fil

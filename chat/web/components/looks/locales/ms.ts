@@ -125,6 +125,16 @@ const ms: LooksDict = {
   'item.bubble_gold': 'Emas',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Semua orang melihat mesej anda dalam gelembung ini',
+  'gift.button': 'Hadiahkan kepada rakan',
+  'gift.title': 'Hadiahkan {item}',
+  'gift.desc': '{price} · Rakan anda yang dapat, bukan anda.',
+  'gift.noFriends': 'Tambah rakan untuk menghantar hadiah.',
+  'gift.has': 'Sudah ada',
+  'gift.give': 'Hadiahkan',
+  'gift.inApp': 'Dalam aplikasi',
+  'gift.sent': '{item} dihantar kepada {name} 🎁',
+  'vip.hidden': 'VIP aktif · mereka tidak tahu siapa anda',
+  'vip.reveal': 'Matikan VIP',
 }
 
 export default ms

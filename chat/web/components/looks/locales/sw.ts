@@ -125,6 +125,16 @@ const sw: LooksDict = {
   'item.bubble_gold': 'Dhahabu',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Kila mtu anaona ujumbe wako katika kiputo hiki',
+  'gift.button': 'Mpe rafiki zawadi',
+  'gift.title': 'Toa {item} kama zawadi',
+  'gift.desc': '{price} · Rafiki yako ndiye anapata, si wewe.',
+  'gift.noFriends': 'Ongeza marafiki ili kutuma zawadi.',
+  'gift.has': 'Anayo',
+  'gift.give': 'Toa zawadi',
+  'gift.inApp': 'Kwenye programu',
+  'gift.sent': '{item} imetumwa kwa {name} 🎁',
+  'vip.hidden': 'VIP imewashwa · hawajui wewe ni nani',
+  'vip.reveal': 'Zima VIP',
 }
 
 export default sw

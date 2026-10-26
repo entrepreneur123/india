@@ -125,6 +125,16 @@ const tr: LooksDict = {
   'item.bubble_gold': 'Altın',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Herkes mesajlarını bu balonda görür',
+  'gift.button': 'Arkadaşına hediye et',
+  'gift.title': '{item} hediye et',
+  'gift.desc': '{price} · Sen değil, arkadaşın alır.',
+  'gift.noFriends': 'Hediye göndermek için arkadaş ekle.',
+  'gift.has': 'Onda var',
+  'gift.give': 'Hediye et',
+  'gift.inApp': 'Uygulamada',
+  'gift.sent': '{item}, {name} kişisine gönderildi 🎁',
+  'vip.hidden': 'VIP açık · kim olduğunu bilmiyorlar',
+  'vip.reveal': 'VIP’yi kapat',
 }
 
 export default tr

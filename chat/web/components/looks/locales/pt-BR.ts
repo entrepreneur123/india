@@ -125,6 +125,16 @@ const ptBR: LooksDict = {
   'item.bubble_gold': 'Ouro',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Todos veem suas mensagens neste balão',
+  'gift.button': 'Presentear um amigo',
+  'gift.title': 'Presentear {item}',
+  'gift.desc': '{price} · Quem recebe é seu amigo, não você.',
+  'gift.noFriends': 'Adicione amigos para enviar presentes.',
+  'gift.has': 'Já tem',
+  'gift.give': 'Presentear',
+  'gift.inApp': 'No app',
+  'gift.sent': '{item} enviado para {name} 🎁',
+  'vip.hidden': 'VIP ativo · não sabem quem você é',
+  'vip.reveal': 'Desativar VIP',
 }
 
 export default ptBR

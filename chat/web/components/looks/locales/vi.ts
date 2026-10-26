@@ -125,6 +125,16 @@ const vi: LooksDict = {
   'item.bubble_gold': 'Vàng',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Mọi người thấy tin nhắn của bạn trong bong bóng này',
+  'gift.button': 'Tặng bạn bè',
+  'gift.title': 'Tặng {item}',
+  'gift.desc': '{price} · Bạn bè nhận, không phải bạn.',
+  'gift.noFriends': 'Thêm bạn bè để gửi quà.',
+  'gift.has': 'Đã có',
+  'gift.give': 'Tặng',
+  'gift.inApp': 'Trong ứng dụng',
+  'gift.sent': 'Đã gửi {item} cho {name} 🎁',
+  'vip.hidden': 'VIP đang bật · họ không biết bạn là ai',
+  'vip.reveal': 'Tắt VIP',
 }
 
 export default vi

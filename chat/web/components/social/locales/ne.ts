@@ -136,6 +136,8 @@ const ne: SocialDict = {
   'inbox.messages': 'सन्देश',
   'inbox.friends': 'साथी',
   'inbox.reactions': 'लाइक र कमेन्ट',
+  'inbox.gift': '{name} ले तपाईंलाई उपहार पठाउनुभयो: {item}',
+  'inbox.giftOpen': 'हेर्नुहोस्',
 }
 
 export default ne

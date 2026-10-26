@@ -136,6 +136,8 @@ const ta: SocialDict = {
   'inbox.messages': 'செய்திகள்',
   'inbox.friends': 'நண்பர்கள்',
   'inbox.reactions': 'லைக் & கருத்து',
+  'inbox.gift': '{name} உங்களுக்குப் பரிசு அனுப்பினார்: {item}',
+  'inbox.giftOpen': 'பார்',
 }
 
 export default ta

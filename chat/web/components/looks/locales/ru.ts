@@ -125,6 +125,16 @@ const ru: LooksDict = {
   'item.bubble_gold': 'Золото',
   'item.bubble_neon': 'Неон',
   'bubble.what': 'Все видят ваши сообщения в этом облачке',
+  'gift.button': 'Подарить другу',
+  'gift.title': 'Подарить «{item}»',
+  'gift.desc': '{price} · Получит друг, а не вы.',
+  'gift.noFriends': 'Добавьте друзей, чтобы дарить подарки.',
+  'gift.has': 'Уже есть',
+  'gift.give': 'Подарить',
+  'gift.inApp': 'В приложении',
+  'gift.sent': '«{item}» отправлено: {name} 🎁',
+  'vip.hidden': 'VIP включён · вас не узнают',
+  'vip.reveal': 'Выключить VIP',
 }
 
 export default ru

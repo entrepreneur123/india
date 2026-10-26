@@ -125,6 +125,16 @@ const ml: LooksDict = {
   'item.bubble_gold': 'സ്വർണം',
   'item.bubble_neon': 'നിയോൺ',
   'bubble.what': 'എല്ലാവരും നിങ്ങളുടെ സന്ദേശങ്ങൾ ഈ ബബിളിൽ കാണും',
+  'gift.button': 'സുഹൃത്തിന് സമ്മാനം',
+  'gift.title': '{item} സമ്മാനിക്കുക',
+  'gift.desc': '{price} · ഇത് സുഹൃത്തിനാണ് ലഭിക്കുക, നിങ്ങൾക്കല്ല.',
+  'gift.noFriends': 'സമ്മാനം അയയ്ക്കാൻ സുഹൃത്തുക്കളെ ചേർക്കൂ.',
+  'gift.has': 'ഇതിനകം ഉണ്ട്',
+  'gift.give': 'സമ്മാനിക്കുക',
+  'gift.inApp': 'ആപ്പിൽ',
+  'gift.sent': '{name}-ന് {item} അയച്ചു 🎁',
+  'vip.hidden': 'VIP ഓൺ · നിങ്ങൾ ആരെന്ന് അവർക്കറിയില്ല',
+  'vip.reveal': 'VIP ഓഫാക്കുക',
 }
 
 export default ml

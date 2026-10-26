@@ -131,6 +131,8 @@ const pa: SocialDict = {
   'inbox.messages': 'ਮੈਸੇਜ',
   'inbox.friends': 'ਦੋਸਤ',
   'inbox.reactions': 'ਲਾਈਕ ਅਤੇ ਕਮੈਂਟ',
+  'inbox.gift': '{name} ਨੇ ਤੁਹਾਨੂੰ ਤੋਹਫ਼ਾ ਭੇਜਿਆ: {item}',
+  'inbox.giftOpen': 'ਵੇਖੋ',
 }
 
 export default pa

@@ -211,8 +211,8 @@ export const HIGHLIGHT_TITLE_MAX = 20
 
 // ---- notifications (023_notifications.sql) ----
 
-/** 'call' (053): a friend asked me for a call (read once it is answered, declined or over). */
-export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite' | 'post_like' | 'post_comment' | 'call'
+/** 'call' (053): a friend asked me for a call (read once it is answered, declined or over). 'gift' (066): a look from a friend. */
+export type InboxKind = 'message' | 'friend_request' | 'friend_accept' | 'room_invite' | 'post_like' | 'post_comment' | 'call' | 'gift'
 
 export interface InboxItem {
   id: number
@@ -231,6 +231,8 @@ export interface InboxItem {
   pending: boolean
   /** The post a like or comment is about (`text`: its first 80 characters). */
   post: { id: string; text: string; imageUrl: string | null } | null
+  /** A gift's look (066). */
+  item?: string | null
 }
 
 /** A friend calling me right now (053): their thread, and a voice (`video` false) or a video call. */
@@ -316,6 +318,20 @@ export interface Friend {
   state: FriendState
   threadId?: string | null
 }
+
+/** 066: what a friend is doing now (League of Legends' friend list): app closed, idle, searching, in a random chat or a room. */
+export type Presence = 'offline' | 'online' | 'matching' | 'chat' | 'room'
+
+/** 066: a friend's presence and status message, with when it last changed (ms; null: never or none). */
+export interface FriendActivity {
+  id: string
+  presence: Presence
+  status: string | null
+  statusAt: number | null
+}
+
+/** 066 gift_check: whether a friend can get this look ('owned': they have it; 'not_friends'; 'bad_item'). */
+export type GiftCheck = 'ok' | 'owned' | 'not_friends' | 'bad_item'
 
 /** 044: the contacts I keep, and the friends I show them to. */
 export interface MyContacts {
@@ -608,6 +624,8 @@ export type MatchEvent =
   | { type: 'video'; status: VideoStatus; camera: boolean }
   | { type: 'partner_left' }
   | { type: 'read'; upto: number } // the partner has read my messages up to this id
+  /** 35: the partner turned VIP off or on: their card as I may see it now. */
+  | { type: 'partner'; partner: Profile }
   /** The chat has ended (either side). 040: after that only friends write on (threads show the friends bar). */
   | { type: 'ended' }
 
@@ -741,6 +759,8 @@ export interface Backend {
   deletePost(postId: string): Promise<void>
   updateProfile(name: string, city: string, bio: string, photo: File | null): Promise<Profile>
   friends(): Promise<Friend[]>
+  /** 066: my friends' presence and status messages. */
+  friendActivity(): Promise<FriendActivity[]>
   requestFriend(userId: string): Promise<FriendState>
   answerFriend(userId: string, accept: boolean): Promise<void>
   removeFriend(userId: string): Promise<void>
@@ -887,6 +907,10 @@ export interface Backend {
   looks(userIds: string[]): Promise<Look[]>
   /** Demo only: owns the item at once (the live web has no payments; looks are bought in the Android app). */
   buyLook?(itemId: string): Promise<void>
+  /** 066: before a gift is bought, whether this friend can get it. */
+  giftCheck(friendId: string, itemId: string): Promise<GiftCheck>
+  /** Demo only: the friend gets the look at once (gifts are bought in the Android app). */
+  giftLook?(friendId: string, itemId: string): Promise<void>
   /** 002 + 26: until when (ms) I may choose women or men (the 24-hour gender pass, like Azar's paid filter), or null. */
   genderPass(): Promise<number | null>
   /** Demo only: a pass at once (the live web has no payments; the pass is bought in the Android app). */

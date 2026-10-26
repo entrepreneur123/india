@@ -32,8 +32,6 @@ const en = {
   'panel.activity': 'Activity',
   'panel.friends': 'Your friends',
   'panel.rooms': 'Live rooms',
-  'panel.friendCount.one': '{n} friend',
-  'panel.friendCount.other': '{n} friends',
   'panel.noFriends': 'Friends you add from chats will show up here.',
   'panel.message': 'Message {name}',
 
@@ -672,6 +670,17 @@ const en = {
   'room.password': 'Room password (optional)',
   'room.passwordHint': '4–12 characters. People outside need it to come in; a new one asks them again.',
   'join.wrong': 'Wrong code. Check it with the host.',
+  'presence.online': 'Online',
+  'presence.matching': 'Looking for a match',
+  'presence.chat': 'In a random chat',
+  'presence.room': 'In a room',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'No friends online right now',
+  'notes.title': 'Friends’ notes',
+  'notes.mine': 'Your note',
+  'notes.add': 'Share a note…',
 } as const
 
 export default en

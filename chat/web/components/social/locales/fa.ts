@@ -142,6 +142,8 @@ const fa: SocialDict = {
   'inbox.messages': 'پیام‌ها',
   'inbox.friends': 'دوستان',
   'inbox.reactions': 'لایک و نظر',
+  'inbox.gift': '{name} برایتان هدیه فرستاد: {item}',
+  'inbox.giftOpen': 'دیدن',
 }
 
 export default fa

@@ -142,6 +142,8 @@ const id: SocialDict = {
   'inbox.messages': 'Pesan',
   'inbox.friends': 'Teman',
   'inbox.reactions': 'Suka & komentar',
+  'inbox.gift': '{name} mengirimimu hadiah: {item}',
+  'inbox.giftOpen': 'Lihat',
 }
 
 export default id

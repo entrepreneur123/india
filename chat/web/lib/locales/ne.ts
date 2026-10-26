@@ -31,8 +31,6 @@ const ne: Dict = {
   'panel.activity': 'गतिविधि',
   'panel.friends': 'तपाईंका साथीहरू',
   'panel.rooms': 'लाइभ रूम',
-  'panel.friendCount.one': '{n} साथी',
-  'panel.friendCount.other': '{n} साथीहरू',
   'panel.noFriends': 'च्याटबाट थपेका साथीहरू यहाँ देखिनेछन्।',
   'panel.message': '{name} लाई मेसेज गर्नुहोस्',
 
@@ -660,6 +658,17 @@ const ne: Dict = {
   'room.password': 'रुम पासवर्ड (ऐच्छिक)',
   'room.passwordHint': '४–१२ अक्षर। बाहिरका मानिसलाई भित्र आउन यो चाहिन्छ; नयाँले फेरि सोध्छ।',
   'join.wrong': 'गलत कोड। होस्टसँग जाँच गर्नुहोस्।',
+  'presence.online': 'अनलाइन',
+  'presence.matching': 'म्याच खोज्दै',
+  'presence.chat': 'र्‍यान्डम च्याटमा',
+  'presence.room': 'रुममा',
+  'presence.offline': 'अफलाइन',
+  'panel.onlineCount': '{n} अनलाइन',
+  'panel.offlineCount': 'अफलाइन · {n}',
+  'panel.noneOnline': 'अहिले कुनै साथी अनलाइन छैन',
+  'notes.title': 'साथीहरूका नोट',
+  'notes.mine': 'तपाईंको नोट',
+  'notes.add': 'नोट लेख्नुहोस्…',
 }
 
 export default ne

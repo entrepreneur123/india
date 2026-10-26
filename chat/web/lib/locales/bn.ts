@@ -31,8 +31,6 @@ const bn: Dict = {
   'panel.activity': 'কার্যকলাপ',
   'panel.friends': 'আপনার বন্ধুরা',
   'panel.rooms': 'লাইভ রুম',
-  'panel.friendCount.one': '{n} জন বন্ধু',
-  'panel.friendCount.other': '{n} জন বন্ধু',
   'panel.noFriends': 'চ্যাট থেকে যোগ করা বন্ধুরা এখানে দেখা যাবে।',
   'panel.message': '{name}-কে মেসেজ করুন',
 
@@ -659,6 +657,17 @@ const bn: Dict = {
   'room.password': 'রুম পাসওয়ার্ড (ঐচ্ছিক)',
   'room.passwordHint': '৪–১২ অক্ষর। বাইরের লোকদের ঢুকতে এটি লাগবে; নতুনটি আবার জিজ্ঞেস করবে।',
   'join.wrong': 'ভুল কোড। হোস্টের কাছে আবার দেখে নিন।',
+  'presence.online': 'অনলাইন',
+  'presence.matching': 'ম্যাচ খুঁজছে',
+  'presence.chat': 'র‍্যান্ডম চ্যাটে',
+  'presence.room': 'রুমে',
+  'presence.offline': 'অফলাইন',
+  'panel.onlineCount': '{n} জন অনলাইন',
+  'panel.offlineCount': 'অফলাইন · {n}',
+  'panel.noneOnline': 'এখন কোনো বন্ধু অনলাইনে নেই',
+  'notes.title': 'বন্ধুদের নোট',
+  'notes.mine': 'আপনার নোট',
+  'notes.add': 'নোট লিখুন…',
 }
 
 export default bn

@@ -125,6 +125,16 @@ const ne: LooksDict = {
   'item.bubble_gold': 'सुनौलो',
   'item.bubble_neon': 'नियोन',
   'bubble.what': 'सबैले तपाईंका सन्देश यही बबलमा देख्छन्',
+  'gift.button': 'साथीलाई उपहार',
+  'gift.title': '{item} उपहार दिनुहोस्',
+  'gift.desc': '{price} · यो तपाईंको साथीले पाउनुहुन्छ, तपाईंले होइन।',
+  'gift.noFriends': 'उपहार पठाउन साथी थप्नुहोस्।',
+  'gift.has': 'पहिले नै छ',
+  'gift.give': 'उपहार दिनुहोस्',
+  'gift.inApp': 'एपमा',
+  'gift.sent': '{name} लाई {item} पठाइयो 🎁',
+  'vip.hidden': 'VIP सक्रिय · तपाईं को हो उनीहरूलाई थाहा छैन',
+  'vip.reveal': 'VIP बन्द गर्नुहोस्',
 }
 
 export default ne

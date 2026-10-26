@@ -137,6 +137,8 @@ const hi: SocialDict = {
   'inbox.messages': 'मैसेज',
   'inbox.friends': 'दोस्त',
   'inbox.reactions': 'लाइक और कमेंट',
+  'inbox.gift': '{name} ने आपको तोहफ़ा भेजा: {item}',
+  'inbox.giftOpen': 'देखें',
 }
 
 export default hi

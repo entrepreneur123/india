@@ -33,10 +33,6 @@ const ru: Dict = {
   'panel.activity': 'Активность',
   'panel.friends': 'Ваши друзья',
   'panel.rooms': 'Комнаты в эфире',
-  'panel.friendCount.one': '{n} друг',
-  'panel.friendCount.few': '{n} друга',
-  'panel.friendCount.many': '{n} друзей',
-  'panel.friendCount.other': '{n} друга',
   'panel.noFriends': 'Здесь появятся друзья, которых вы добавите из чатов.',
   'panel.message': 'Написать: {name}',
 
@@ -679,6 +675,17 @@ const ru: Dict = {
   'room.password': 'Пароль комнаты (необязательно)',
   'room.passwordHint': '4–12 символов. Он нужен тем, кто снаружи; новый пароль спросят снова.',
   'join.wrong': 'Неверный код. Уточните у хоста.',
+  'presence.online': 'В сети',
+  'presence.matching': 'Ищет собеседника',
+  'presence.chat': 'В случайном чате',
+  'presence.room': 'В комнате',
+  'presence.offline': 'Не в сети',
+  'panel.onlineCount': 'В сети: {n}',
+  'panel.offlineCount': 'Не в сети · {n}',
+  'panel.noneOnline': 'Сейчас никого из друзей нет в сети',
+  'notes.title': 'Заметки друзей',
+  'notes.mine': 'Ваша заметка',
+  'notes.add': 'Оставьте заметку…',
 }
 
 export default ru

@@ -29,8 +29,6 @@ const mr: Dict = {
   'panel.activity': 'ॲक्टिव्हिटी',
   'panel.friends': 'तुमचे मित्र',
   'panel.rooms': 'लाइव्ह रूम्स',
-  'panel.friendCount.one': '{n} मित्र',
-  'panel.friendCount.other': '{n} मित्र',
   'panel.noFriends': 'चॅटमधून तुम्ही जोडलेले मित्र इथे दिसतील.',
   'panel.message': '{name} ला मेसेज करा',
   'auth.badge': '18+ · फोन व्हेरिफाइड',
@@ -638,6 +636,17 @@ const mr: Dict = {
   'room.password': 'रूम पासवर्ड (ऐच्छिक)',
   'room.passwordHint': '4–12 अक्षरे. बाहेरच्या लोकांना आत येण्यासाठी तो लागेल; नवा पासवर्ड पुन्हा विचारेल.',
   'join.wrong': 'चुकीचा कोड. होस्टकडून खात्री करा.',
+  'presence.online': 'ऑनलाइन',
+  'presence.matching': 'मॅच शोधत आहे',
+  'presence.chat': 'रँडम चॅटमध्ये',
+  'presence.room': 'रूममध्ये',
+  'presence.offline': 'ऑफलाइन',
+  'panel.onlineCount': '{n} ऑनलाइन',
+  'panel.offlineCount': 'ऑफलाइन · {n}',
+  'panel.noneOnline': 'सध्या कोणताही मित्र ऑनलाइन नाही',
+  'notes.title': 'मित्रांच्या नोट्स',
+  'notes.mine': 'तुमची नोट',
+  'notes.add': 'नोट लिहा…',
 }
 
 export default mr

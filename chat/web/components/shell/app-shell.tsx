@@ -160,6 +160,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     refreshInterval: 30_000, refreshWhenHidden: false, dedupingInterval: 2_000, focusThrottleInterval: 10_000,
   })
   const refreshBadges = useCallback(() => void mutate('badges'), [mutate])
+  // My friends, read once at start on every screen size: rooms show a VIP friend as they are (35, supabaseBackend).
+  useSWR('friends', () => backend.friends(), { revalidateOnFocus: false })
   useEffect(
     () =>
       backend.inboxSignals(() => {
@@ -281,6 +283,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     [backend, toast, minimiseVoice],
   )
 
+  // Only what changes the panel's line (not the chat bar's typing and unread counts).
+  const myPresence: AppState['myPresence'] = voice ? 'room' : chatBar ? 'chat' : immersive ? 'matching' : 'online'
   const state = useMemo<AppState>(
     () => ({
       me,
@@ -309,6 +313,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       setChatBar,
       minimiseRandom,
       voiceRoomId: voice?.id ?? null,
+      myPresence,
       setImmersive,
       randomVisible: tab === 'random' && thread === null,
       reported: (id) => {
@@ -335,7 +340,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       setKyc,
       openVerify,
     }),
-    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
+    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, myPresence, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
   const randomVisible = tab === 'random' && !thread

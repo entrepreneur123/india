@@ -31,8 +31,6 @@ const ml: Dict = {
   'panel.activity': 'ആക്റ്റിവിറ്റി',
   'panel.friends': 'നിങ്ങളുടെ സുഹൃത്തുക്കൾ',
   'panel.rooms': 'ലൈവ് റൂമുകൾ',
-  'panel.friendCount.one': '{n} സുഹൃത്ത്',
-  'panel.friendCount.other': '{n} സുഹൃത്തുക്കൾ',
   'panel.noFriends': 'ചാറ്റുകളിൽ നിന്ന് നിങ്ങൾ ചേർക്കുന്ന സുഹൃത്തുക്കൾ ഇവിടെ കാണാം.',
   'panel.message': '{name}-ന് മെസേജ് അയയ്ക്കുക',
 
@@ -660,6 +658,17 @@ const ml: Dict = {
   'room.password': 'റൂം പാസ്‌വേഡ് (ഓപ്ഷണൽ)',
   'room.passwordHint': '4–12 അക്ഷരങ്ങൾ. പുറത്തുള്ളവർക്ക് കയറാൻ ഇത് വേണം; പുതിയത് വീണ്ടും ചോദിക്കും.',
   'join.wrong': 'തെറ്റായ കോഡ്. ഹോസ്റ്റിനോട് ചോദിച്ച് ഉറപ്പാക്കൂ.',
+  'presence.online': 'ഓൺലൈൻ',
+  'presence.matching': 'മാച്ച് തിരയുന്നു',
+  'presence.chat': 'റാൻഡം ചാറ്റിൽ',
+  'presence.room': 'റൂമിൽ',
+  'presence.offline': 'ഓഫ്‌ലൈൻ',
+  'panel.onlineCount': '{n} ഓൺലൈൻ',
+  'panel.offlineCount': 'ഓഫ്‌ലൈൻ · {n}',
+  'panel.noneOnline': 'ഇപ്പോൾ സുഹൃത്തുക്കളാരും ഓൺലൈനിലില്ല',
+  'notes.title': 'സുഹൃത്തുക്കളുടെ കുറിപ്പുകൾ',
+  'notes.mine': 'നിങ്ങളുടെ കുറിപ്പ്',
+  'notes.add': 'കുറിപ്പ് എഴുതൂ…',
 }
 
 export default ml

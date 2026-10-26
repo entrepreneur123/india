@@ -125,6 +125,16 @@ const ro: LooksDict = {
   'item.bubble_gold': 'Auriu',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Toată lumea îți vede mesajele în această bulă',
+  'gift.button': 'Dăruiește unui prieten',
+  'gift.title': 'Dăruiește {item}',
+  'gift.desc': '{price} · Îl primește prietenul tău, nu tu.',
+  'gift.noFriends': 'Adaugă prieteni ca să trimiți cadouri.',
+  'gift.has': 'Îl are',
+  'gift.give': 'Dăruiește',
+  'gift.inApp': 'În aplicație',
+  'gift.sent': '{item} trimis lui {name} 🎁',
+  'vip.hidden': 'VIP activ · nu știu cine ești',
+  'vip.reveal': 'Oprește VIP',
 }
 
 export default ro

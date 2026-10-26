@@ -131,6 +131,16 @@ const en = {
   'item.bubble_gold': 'Gold',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Everyone sees your messages in this bubble',
+  'gift.button': 'Gift to a friend',
+  'gift.title': 'Gift {item}',
+  'gift.desc': '{price} · Your friend gets it, not you.',
+  'gift.noFriends': 'Add friends to send gifts.',
+  'gift.has': 'Has it',
+  'gift.give': 'Gift',
+  'gift.inApp': 'In the app',
+  'gift.sent': '{item} sent to {name} 🎁',
+  'vip.hidden': 'VIP on · they can’t see who you are',
+  'vip.reveal': 'Turn off VIP',
 }
 
 export default en

@@ -8,7 +8,8 @@ import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
-import { nameAge } from '@/lib/looks'
+import { isVip, nameAge } from '@/lib/looks'
+import { cn } from '@/lib/utils'
 import { wallVars } from '@/lib/walls'
 import { EXIT_LOCK_MS as lockMs } from '@/lib/config'
 import { useApp } from '@/components/app-state'
@@ -29,6 +30,7 @@ import { TrustBadge } from '@/components/trust/badge'
 import { LookName, useLook } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useShop } from '@/components/looks/use-shop'
+import { VipReveal } from '@/components/looks/vip-reveal'
 import { useFriendship } from '@/components/social/friend-button'
 import { FriendContactsSheet } from '@/components/social/contacts'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -42,7 +44,7 @@ const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-
  */
 export function ChatView({
   matchId,
-  partner,
+  partner: opened,
   mode,
   visible = true,
   startedAt,
@@ -83,11 +85,13 @@ export function ChatView({
   const toast = useToast()
   const { t } = useI18n()
   const { me, openProfile, setTab } = useApp()
+  const live = mode === 'random'
+  const chat = useMatchChat(matchId, opened.name, live)
+  // Their card as I may see it now (35: they may turn VIP off or on during the chat).
+  const partner = chat.partner ?? opened
   // Each side's chat bubble (062), as both of us see it.
   const mySkin = useLook(me.id)?.bubble
   const theirSkin = useLook(partner.id)?.bubble
-  const live = mode === 'random'
-  const chat = useMatchChat(matchId, partner.name, live)
   const [reportOpen, setReportOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
   const [callBusy, setCallBusy] = useState(false)
@@ -228,7 +232,7 @@ export function ChatView({
             <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                {nameAge(partner.name, partner.age)} <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+                <span className={cn(isVip(partner) && 'vip-gold italic')}>{nameAge(partner.name, partner.age)}</span> <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (
@@ -257,6 +261,7 @@ export function ChatView({
           </Button>
           {callable ? <CallButton busy={callBusy} disabled={chat.video === 'requested_by_me'} onCall={(video) => void requestCall(video)} /> : null}
         </header>
+        {live ? <VipReveal /> : null}
 
         <AnimatePresence>
           {chat.video === 'requested_by_me' ? (

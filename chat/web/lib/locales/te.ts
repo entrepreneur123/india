@@ -31,8 +31,6 @@ const te: Dict = {
   'panel.activity': 'యాక్టివిటీ',
   'panel.friends': 'మీ ఫ్రెండ్స్',
   'panel.rooms': 'లైవ్ రూమ్‌లు',
-  'panel.friendCount.one': '{n} ఫ్రెండ్',
-  'panel.friendCount.other': '{n} ఫ్రెండ్స్',
   'panel.noFriends': 'చాట్స్ నుంచి మీరు యాడ్ చేసే ఫ్రెండ్స్ ఇక్కడ కనిపిస్తారు.',
   'panel.message': '{name}కి మెసేజ్ చేయి',
 
@@ -660,6 +658,17 @@ const te: Dict = {
   'room.password': 'రూమ్ పాస్‌వర్డ్ (ఐచ్ఛికం)',
   'room.passwordHint': '4–12 అక్షరాలు. బయటి వారు రావడానికి ఇది కావాలి; కొత్తది మళ్లీ అడుగుతుంది.',
   'join.wrong': 'తప్పు కోడ్. హోస్ట్‌ను అడిగి చూడండి.',
+  'presence.online': 'ఆన్‌లైన్',
+  'presence.matching': 'మ్యాచ్ కోసం వెతుకుతున్నారు',
+  'presence.chat': 'రాండమ్ చాట్‌లో',
+  'presence.room': 'రూమ్‌లో',
+  'presence.offline': 'ఆఫ్‌లైన్',
+  'panel.onlineCount': '{n} ఆన్‌లైన్',
+  'panel.offlineCount': 'ఆఫ్‌లైన్ · {n}',
+  'panel.noneOnline': 'ఇప్పుడు ఏ స్నేహితుడూ ఆన్‌లైన్‌లో లేరు',
+  'notes.title': 'స్నేహితుల నోట్స్',
+  'notes.mine': 'మీ నోట్',
+  'notes.add': 'నోట్ రాయండి…',
 }
 
 export default te

@@ -137,6 +137,8 @@ const vi: SocialDict = {
   'inbox.messages': 'Tin nhắn',
   'inbox.friends': 'Bạn bè',
   'inbox.reactions': 'Thích & bình luận',
+  'inbox.gift': '{name} đã tặng bạn: {item}',
+  'inbox.giftOpen': 'Xem',
 }
 
 export default vi

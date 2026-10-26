@@ -125,6 +125,16 @@ const ur: LooksDict = {
   'item.bubble_gold': 'سنہرا',
   'item.bubble_neon': 'نیون',
   'bubble.what': 'سب آپ کے پیغامات اسی ببل میں دیکھیں گے',
+  'gift.button': 'دوست کو تحفہ دیں',
+  'gift.title': '{item} تحفے میں دیں',
+  'gift.desc': '{price} · یہ آپ کے دوست کو ملے گا، آپ کو نہیں۔',
+  'gift.noFriends': 'تحفے بھیجنے کے لیے دوست شامل کریں۔',
+  'gift.has': 'پہلے سے ہے',
+  'gift.give': 'تحفہ دیں',
+  'gift.inApp': 'ایپ میں',
+  'gift.sent': '{name} کو {item} بھیج دیا 🎁',
+  'vip.hidden': 'VIP آن · وہ نہیں جانتے آپ کون ہیں',
+  'vip.reveal': 'VIP بند کریں',
 }
 
 export default ur

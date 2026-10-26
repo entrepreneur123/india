@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef } from 'react'
-import type { Badges, FeedPost, ItemKind, KycResult, MyTrust, Profile } from '@/lib/backend'
+import type { Badges, FeedPost, ItemKind, KycResult, MyTrust, Presence, Profile } from '@/lib/backend'
 import type { Lang, T } from '@/lib/i18n'
 import type { RandomLive } from '@/lib/live-session'
 
@@ -74,6 +74,8 @@ export interface AppState {
   minimiseRandom: () => void
   /** The voice room I'm in, open or minimised. */
   voiceRoomId: string | null
+  /** 31: what I'm doing now, for my own line in the friends panel (friends see it from the server). */
+  myPresence: Exclude<Presence, 'offline'>
   setImmersive: (on: boolean) => void
   /** The random screen is on screen (its tab is selected and no thread covers it). */
   randomVisible: boolean

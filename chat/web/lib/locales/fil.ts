@@ -33,8 +33,6 @@ const fil: Dict = {
   'panel.activity': 'Aktibidad',
   'panel.friends': 'Mga kaibigan mo',
   'panel.rooms': 'Mga live room',
-  'panel.friendCount.one': '{n} kaibigan',
-  'panel.friendCount.other': '{n} kaibigan',
   'panel.noFriends': 'Lalabas dito ang mga kaibigang ina-add mo mula sa mga chat.',
   'panel.message': 'I-message si {name}',
 
@@ -673,6 +671,17 @@ const fil: Dict = {
   'room.password': 'Password ng room (opsyonal)',
   'room.passwordHint': '4–12 character. Kailangan ito ng mga nasa labas para makapasok; itatanong ulit kapag bago.',
   'join.wrong': 'Maling code. Itanong ulit sa host.',
+  'presence.online': 'Online',
+  'presence.matching': 'Naghahanap ng kausap',
+  'presence.chat': 'Nasa random chat',
+  'presence.room': 'Nasa room',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Walang kaibigang online ngayon',
+  'notes.title': 'Mga note ng kaibigan',
+  'notes.mine': 'Note mo',
+  'notes.add': 'Mag-iwan ng note…',
 }
 
 export default fil

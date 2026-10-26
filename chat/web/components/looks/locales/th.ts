@@ -125,6 +125,16 @@ const th: LooksDict = {
   'item.bubble_gold': 'ทอง',
   'item.bubble_neon': 'นีออน',
   'bubble.what': 'ทุกคนจะเห็นข้อความของคุณในบับเบิลนี้',
+  'gift.button': 'ให้เป็นของขวัญเพื่อน',
+  'gift.title': 'ให้ {item} เป็นของขวัญ',
+  'gift.desc': '{price} · เพื่อนได้รับ ไม่ใช่คุณ',
+  'gift.noFriends': 'เพิ่มเพื่อนเพื่อส่งของขวัญ',
+  'gift.has': 'มีแล้ว',
+  'gift.give': 'ให้ของขวัญ',
+  'gift.inApp': 'ในแอป',
+  'gift.sent': 'ส่ง {item} ให้ {name} แล้ว 🎁',
+  'vip.hidden': 'เปิด VIP อยู่ · เขาไม่รู้ว่าคุณคือใคร',
+  'vip.reveal': 'ปิด VIP',
 }
 
 export default th

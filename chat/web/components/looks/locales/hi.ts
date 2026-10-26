@@ -125,6 +125,16 @@ const hi: LooksDict = {
   'item.bubble_gold': 'गोल्ड',
   'item.bubble_neon': 'नियॉन',
   'bubble.what': 'सब आपके मैसेज इसी बबल में देखेंगे',
+  'gift.button': 'दोस्त को तोहफ़ा दें',
+  'gift.title': '{item} तोहफ़े में दें',
+  'gift.desc': '{price} · यह आपके दोस्त को मिलेगा, आपको नहीं।',
+  'gift.noFriends': 'तोहफ़े भेजने के लिए दोस्त जोड़ें।',
+  'gift.has': 'पहले से है',
+  'gift.give': 'तोहफ़ा दें',
+  'gift.inApp': 'ऐप में',
+  'gift.sent': '{name} को {item} भेजा 🎁',
+  'vip.hidden': 'VIP चालू · वे नहीं जानते आप कौन हैं',
+  'vip.reveal': 'VIP बंद करें',
 }
 
 export default hi

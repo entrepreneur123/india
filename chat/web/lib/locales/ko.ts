@@ -33,8 +33,6 @@ const ko: Dict = {
   'panel.activity': '활동',
   'panel.friends': '내 친구',
   'panel.rooms': '라이브 방',
-  'panel.friendCount.one': '친구 {n}명',
-  'panel.friendCount.other': '친구 {n}명',
   'panel.noFriends': '채팅에서 추가한 친구가 여기에 표시돼요.',
   'panel.message': '{name}님에게 메시지 보내기',
 
@@ -673,6 +671,17 @@ const ko: Dict = {
   'room.password': '방 비밀번호 (선택)',
   'room.passwordHint': '4~12자. 밖에 있는 사람은 비밀번호를 입력해야 들어올 수 있어요. 바꾸면 다시 물어봐요.',
   'join.wrong': '코드가 틀렸어요. 방장에게 확인해 보세요.',
+  'presence.online': '온라인',
+  'presence.matching': '매칭 찾는 중',
+  'presence.chat': '랜챗 중',
+  'presence.room': '방에 있음',
+  'presence.offline': '오프라인',
+  'panel.onlineCount': '{n}명 온라인',
+  'panel.offlineCount': '오프라인 · {n}',
+  'panel.noneOnline': '지금 온라인인 친구가 없어요',
+  'notes.title': '친구 상태메시지',
+  'notes.mine': '내 상태메시지',
+  'notes.add': '상태메시지 남기기…',
 }
 
 export default ko

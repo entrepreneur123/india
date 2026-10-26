@@ -136,6 +136,8 @@ const te: SocialDict = {
   'inbox.messages': 'మెసేజ్‌లు',
   'inbox.friends': 'స్నేహితులు',
   'inbox.reactions': 'లైక్‌లు & కామెంట్‌లు',
+  'inbox.gift': '{name} మీకు బహుమతి పంపారు: {item}',
+  'inbox.giftOpen': 'చూడండి',
 }
 
 export default te

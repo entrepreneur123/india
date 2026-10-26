@@ -33,8 +33,6 @@ const th: Dict = {
   'panel.activity': 'กิจกรรม',
   'panel.friends': 'เพื่อนของคุณ',
   'panel.rooms': 'ห้องที่กำลังไลฟ์',
-  'panel.friendCount.one': 'เพื่อน {n} คน',
-  'panel.friendCount.other': 'เพื่อน {n} คน',
   'panel.noFriends': 'เพื่อนที่คุณเพิ่มจากแชทจะแสดงที่นี่',
   'panel.message': 'ส่งข้อความถึง {name}',
 
@@ -673,6 +671,17 @@ const th: Dict = {
   'room.password': 'รหัสผ่านห้อง (ไม่บังคับ)',
   'room.passwordHint': '4–12 ตัวอักษร คนข้างนอกต้องใช้เพื่อเข้า ถ้าเปลี่ยนใหม่จะถามอีกครั้ง',
   'join.wrong': 'รหัสไม่ถูกต้อง ลองถามเจ้าของห้อง',
+  'presence.online': 'ออนไลน์',
+  'presence.matching': 'กำลังหาคู่คุย',
+  'presence.chat': 'อยู่ในแชตสุ่ม',
+  'presence.room': 'อยู่ในห้อง',
+  'presence.offline': 'ออฟไลน์',
+  'panel.onlineCount': 'ออนไลน์ {n} คน',
+  'panel.offlineCount': 'ออฟไลน์ · {n}',
+  'panel.noneOnline': 'ตอนนี้ไม่มีเพื่อนออนไลน์',
+  'notes.title': 'โน้ตของเพื่อน',
+  'notes.mine': 'โน้ตของคุณ',
+  'notes.add': 'เขียนโน้ต…',
 }
 
 export default th

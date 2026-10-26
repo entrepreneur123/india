@@ -2,6 +2,7 @@
 
 import * as m from 'motion/react-m'
 import type { ComponentType } from 'react'
+import { useSWRConfig } from 'swr'
 import { Bell, Compass, MessagesSquare, Settings, Shuffle, UserRound, Users } from 'lucide-react'
 import { useApp, type Tab } from '@/components/app-state'
 import type { TKey } from '@/lib/i18n'
@@ -41,6 +42,7 @@ export function Sidebar({ className }: { className?: string }) {
   const { tab, setTab, t, me, badges, openInbox } = useApp()
   const { st } = useSocialT()
   const inboxCount = badges?.inbox ?? 0
+  const { mutate } = useSWRConfig()
   return (
     <aside
       className={cn(
@@ -49,10 +51,14 @@ export function Sidebar({ className }: { className?: string }) {
       )}
       aria-label={t('nav.main')}
     >
-      {/* The mark goes home (Random), out of any open chat, like the logo of any app. */}
+      {/* The mark goes home (Random), out of any open chat, and reads everything shown again (34), like the logo of any
+          app. Not a page reload: a room or a random chat in progress stays connected. */}
       <button
         type="button"
-        onClick={() => setTab('random')}
+        onClick={() => {
+          setTab('random')
+          void mutate(() => true)
+        }}
         aria-label={t('nav.home')}
         title={t('nav.home')}
         className="flex justify-center self-center rounded-xl p-1 transition-opacity duration-150 hover:opacity-80 lg:self-start"

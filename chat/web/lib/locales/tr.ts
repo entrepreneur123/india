@@ -33,8 +33,6 @@ const tr: Dict = {
   'panel.activity': 'Etkinlik',
   'panel.friends': 'Arkadaşların',
   'panel.rooms': 'Canlı odalar',
-  'panel.friendCount.one': '{n} arkadaş',
-  'panel.friendCount.other': '{n} arkadaş',
   'panel.noFriends': 'Sohbetlerden eklediğin arkadaşlar burada görünür.',
   'panel.message': '{name} kişisine mesaj gönder',
 
@@ -673,6 +671,17 @@ const tr: Dict = {
   'room.password': 'Oda şifresi (isteğe bağlı)',
   'room.passwordHint': '4–12 karakter. Dışarıdakiler girmek için buna ihtiyaç duyar; yenisi tekrar sorar.',
   'join.wrong': 'Kod yanlış. Oda sahibine sor.',
+  'presence.online': 'Çevrimiçi',
+  'presence.matching': 'Eşleşme arıyor',
+  'presence.chat': 'Rastgele sohbette',
+  'presence.room': 'Bir odada',
+  'presence.offline': 'Çevrimdışı',
+  'panel.onlineCount': '{n} çevrimiçi',
+  'panel.offlineCount': 'Çevrimdışı · {n}',
+  'panel.noneOnline': 'Şu an çevrimiçi arkadaş yok',
+  'notes.title': 'Arkadaşların notları',
+  'notes.mine': 'Notun',
+  'notes.add': 'Not bırak…',
 }
 
 export default tr

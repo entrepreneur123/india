@@ -33,8 +33,6 @@ const zhHans: Dict = {
   'panel.activity': '动态',
   'panel.friends': '我的好友',
   'panel.rooms': '直播房间',
-  'panel.friendCount.one': '{n} 位好友',
-  'panel.friendCount.other': '{n} 位好友',
   'panel.noFriends': '你在聊天中添加的好友会显示在这里。',
   'panel.message': '给 {name} 发消息',
 
@@ -673,6 +671,17 @@ const zhHans: Dict = {
   'room.password': '房间密码（可选）',
   'room.passwordHint': '4–12 个字符。外面的人需要它才能进入；改了新密码会再次询问。',
   'join.wrong': '房间码不对，请向房主确认。',
+  'presence.online': '在线',
+  'presence.matching': '正在匹配',
+  'presence.chat': '正在随机聊天',
+  'presence.room': '在房间里',
+  'presence.offline': '离线',
+  'panel.onlineCount': '{n} 人在线',
+  'panel.offlineCount': '离线 · {n}',
+  'panel.noneOnline': '现在没有好友在线',
+  'notes.title': '好友便签',
+  'notes.mine': '你的便签',
+  'notes.add': '写个便签…',
 }
 
 export default zhHans

@@ -33,9 +33,6 @@ const he: Dict = {
   'panel.activity': 'פעילות',
   'panel.friends': 'החברים שלך',
   'panel.rooms': 'חדרים בשידור חי',
-  'panel.friendCount.one': '{n} חבר',
-  'panel.friendCount.two': '{n} חברים',
-  'panel.friendCount.other': '{n} חברים',
   'panel.noFriends': 'חברים שמוסיפים מהצ׳אטים יופיעו כאן.',
   'panel.message': 'הודעה ל{name}',
 
@@ -676,6 +673,17 @@ const he: Dict = {
   'room.password': 'סיסמת חדר (לא חובה)',
   'room.passwordHint': '4–12 תווים. מי שבחוץ צריך אותה כדי להיכנס; סיסמה חדשה תישאל שוב.',
   'join.wrong': 'קוד שגוי. כדאי לבדוק מול המארח.',
+  'presence.online': 'מחובר/ת',
+  'presence.matching': 'מחפש/ת התאמה',
+  'presence.chat': 'בצ׳אט אקראי',
+  'presence.room': 'בחדר',
+  'presence.offline': 'לא מחובר/ת',
+  'panel.onlineCount': '{n} מחוברים',
+  'panel.offlineCount': 'לא מחוברים · {n}',
+  'panel.noneOnline': 'אין חברים מחוברים כרגע',
+  'notes.title': 'הפתקים של החברים',
+  'notes.mine': 'הפתק שלך',
+  'notes.add': 'לכתוב פתק…',
 }
 
 export default he

@@ -136,6 +136,8 @@ const nl: SocialDict = {
   'inbox.messages': 'Berichten',
   'inbox.friends': 'Vrienden',
   'inbox.reactions': 'Likes en reacties',
+  'inbox.gift': '{name} stuurde je een cadeau: {item}',
+  'inbox.giftOpen': 'Bekijk',
 }
 
 export default nl

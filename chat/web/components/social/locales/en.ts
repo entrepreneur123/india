@@ -142,6 +142,8 @@ const en = {
   'inbox.messages': 'Messages',
   'inbox.friends': 'Friends',
   'inbox.reactions': 'Likes & comments',
+  'inbox.gift': '{name} sent you a gift: {item}',
+  'inbox.giftOpen': 'See it',
 }
 
 export default en

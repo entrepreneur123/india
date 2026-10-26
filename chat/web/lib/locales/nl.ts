@@ -31,8 +31,6 @@ const nl: Dict = {
   'panel.activity': 'Activiteit',
   'panel.friends': 'Je vrienden',
   'panel.rooms': 'Live rooms',
-  'panel.friendCount.one': '{n} vriend',
-  'panel.friendCount.other': '{n} vrienden',
   'panel.noFriends': 'Vrienden die je vanuit chats toevoegt, verschijnen hier.',
   'panel.message': 'Bericht aan {name}',
 
@@ -660,6 +658,17 @@ const nl: Dict = {
   'room.password': 'Wachtwoord van de ruimte (optioneel)',
   'room.passwordHint': '4–12 tekens. Wie buiten is heeft het nodig om binnen te komen; een nieuw wachtwoord vraagt het opnieuw.',
   'join.wrong': 'Verkeerde code. Vraag het na bij de host.',
+  'presence.online': 'Online',
+  'presence.matching': 'Zoekt een match',
+  'presence.chat': 'In een willekeurige chat',
+  'presence.room': 'In een ruimte',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Er is nu geen vriend online',
+  'notes.title': 'Notities van vrienden',
+  'notes.mine': 'Jouw notitie',
+  'notes.add': 'Laat een notitie achter…',
 }
 
 export default nl

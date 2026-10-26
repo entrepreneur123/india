@@ -16,6 +16,8 @@ import {
   type PostVisibility,
   type ProfileStyleInput,
   type Friend,
+  type FriendActivity,
+  type GiftCheck,
   type PersonRow,
   type FriendState,
   type Match,
@@ -38,7 +40,7 @@ import {
 import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
 import { MANNER_FLOOR, MANNERS } from './trust'
-import { isVip } from './looks'
+import { isItem, isVip } from './looks'
 import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
@@ -297,6 +299,8 @@ export class MockBackend implements Backend {
     this.friendMap.set('u_sofia', 'friends')
     this.friendMap.set('u_arjun', 'friends')
     this.friendMap.set('u_yuki', 'friends')
+    this.friendMap.set('u_riya', 'friends')
+    this.friendMap.set('u_omar', 'friends')
     this.friendMap.set('u_amara', 'incoming')
     this.friendMap.set('u_lucas', 'incoming')
     this.friendMap.set('u_chloe', 'requested')
@@ -335,6 +339,7 @@ export class MockBackend implements Backend {
       roomTitle: null, roomOpen: false, pending: false, post: null, ...extra,
     })
     this.inboxItems = [
+      item(6, 'gift', 'u_sofia', 2 * 60_000, { item: 'bubble_peach' }),
       item(5, 'room_invite', 'u_arjun', 4 * 60_000, { roomId: 'v-chai', roomTitle: 'Chai pe charcha', roomOpen: true }),
       item(4, 'message', 'u_sofia', 12 * 60_000, { matchId: 't_sofia', count: 2 }),
       item(3, 'friend_request', 'u_amara', HOUR, { pending: true }),
@@ -888,7 +893,9 @@ export class MockBackend implements Backend {
 
   async profileSocial(userId: string) {
     await wait(150)
-    return { likes: (this.likedIds.has(userId) ? 1 : 0) + 12, friends: 8, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id }
+    // As profile_social (066): someone in VIP takes messages from friends only.
+    const vip = (p: Profile | null) => !!p && isVip(p) && this.friendMap.get(p.id) !== 'friends'
+    return { likes: (this.likedIds.has(userId) ? 1 : 0) + 12, friends: 8, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id && !vip(this.person(userId)) }
   }
 
   async likeProfile(userId: string, on: boolean) {
@@ -912,6 +919,35 @@ export class MockBackend implements Backend {
       if (profile && state !== 'none') list.push({ profile, state, threadId: this.threadByUser.get(id) ?? null })
     }
     return list
+  }
+
+  /** The demo friends' presence (one of each) and their status messages with when they changed. */
+  async friendActivity(): Promise<FriendActivity[]> {
+    const feed = await this.feedChunk()
+    const presence: Record<string, FriendActivity['presence']> = { u_sofia: 'online', u_arjun: 'room', u_riya: 'matching', u_omar: 'chat' }
+    const changed: Record<string, number> = { u_riya: 20 * 60_000, u_arjun: 2 * HOUR, u_sofia: 5 * HOUR, u_yuki: 2 * DAY }
+    return [...this.friendMap].flatMap(([id, state]) => {
+      if (state !== 'friends') return []
+      const status = feed.style(id).status || null
+      return [{ id, presence: presence[id] ?? 'offline', status, statusAt: status && changed[id] ? Date.now() - changed[id] : null }]
+    })
+  }
+
+  /** Who has what among the demo friends (what they wear, and gifts sent here). */
+  private gifted = new Set<string>()
+
+  async giftCheck(friendId: string, itemId: string): Promise<GiftCheck> {
+    await wait(250)
+    if (!isItem(itemId)) return 'bad_item'
+    if (this.friendMap.get(friendId) !== 'friends') return 'not_friends'
+    return this.gifted.has(`${friendId}:${itemId}`) || (await this.lookSim()).wears(friendId, itemId) ? 'owned' : 'ok'
+  }
+
+  async giftLook(friendId: string, itemId: string) {
+    const check = await this.giftCheck(friendId, itemId)
+    if (check !== 'ok') throw new BackendError('not_allowed')
+    await wait(500)
+    this.gifted.add(`${friendId}:${itemId}`)
   }
 
   async requestFriend(userId: string) {

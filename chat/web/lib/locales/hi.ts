@@ -31,8 +31,6 @@ const hi: Dict = {
   'panel.activity': 'ऐक्टिविटी',
   'panel.friends': 'आपके दोस्त',
   'panel.rooms': 'लाइव रूम',
-  'panel.friendCount.one': '{n} दोस्त',
-  'panel.friendCount.other': '{n} दोस्त',
   'panel.noFriends': 'चैट से जोड़े गए दोस्त यहाँ दिखेंगे।',
   'panel.message': '{name} को मैसेज करें',
 
@@ -659,6 +657,17 @@ const hi: Dict = {
   'room.password': 'रूम पासवर्ड (वैकल्पिक)',
   'room.passwordHint': '4–12 अक्षर। बाहर के लोगों को आने के लिए इसकी ज़रूरत होगी; नया पासवर्ड फिर से पूछेगा।',
   'join.wrong': 'गलत कोड। होस्ट से पूछकर देखें।',
+  'presence.online': 'ऑनलाइन',
+  'presence.matching': 'मैच ढूँढ रहे हैं',
+  'presence.chat': 'रैंडम चैट में',
+  'presence.room': 'रूम में',
+  'presence.offline': 'ऑफ़लाइन',
+  'panel.onlineCount': '{n} ऑनलाइन',
+  'panel.offlineCount': 'ऑफ़लाइन · {n}',
+  'panel.noneOnline': 'अभी कोई दोस्त ऑनलाइन नहीं',
+  'notes.title': 'दोस्तों के नोट्स',
+  'notes.mine': 'आपका नोट',
+  'notes.add': 'नोट लिखें…',
 }
 
 export default hi

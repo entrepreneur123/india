@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Check, Headphones, MessageCircle, Phone, X } from 'lucide-react'
+import { Check, Gift, Headphones, MessageCircle, Phone, X } from 'lucide-react'
 import type { InboxItem, InboxKind } from '@/lib/backend'
 import { likeLine } from '@/lib/feed'
+import { isItem, kindOf } from '@/lib/looks'
+import { useLooksT } from '@/components/looks/looks-text'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -22,7 +24,7 @@ import { UserAvatar } from '@/components/looks/user-avatar'
 type Section = 'all' | 'invites' | 'messages' | 'friends' | 'reactions'
 const SECTION_OF: Record<InboxKind, Exclude<Section, 'all'>> = {
   room_invite: 'invites', call: 'invites', message: 'messages', friend_request: 'friends', friend_accept: 'friends',
-  post_like: 'reactions', post_comment: 'reactions',
+  post_like: 'reactions', post_comment: 'reactions', gift: 'friends',
 }
 
 /**
@@ -153,7 +155,8 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
   const { mutate } = useSWRConfig()
   const { t, timeAgo } = useI18n()
   const { st, plural } = useSocialT()
-  const { openProfile, openThread, openVoice, openPost } = useApp()
+  const { openProfile, openThread, openVoice, openPost, openShop } = useApp()
+  const { lt } = useLooksT()
   const [busy, setBusy] = useState(false)
   const name = item.actor.name
 
@@ -200,6 +203,9 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
     }
     case 'post_comment':
       text = item.count > 1 ? st('inbox.comment.other', { name, n: item.count - 1 }) : st('inbox.comment.single', { name })
+      break
+    case 'gift':
+      text = st('inbox.gift', { name, item: item.item && isItem(item.item) ? lt(`item.${item.item}`) : '' })
       break
     default:
       return null
@@ -252,6 +258,21 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
         )}
       </button>
     )
+  } else if (item.kind === 'gift' && item.item && isItem(item.item)) {
+    // To the shop's tab of that kind, where the gift is mine to wear.
+    const kind = kindOf(item.item)
+    action = (
+      <Button
+        size="sm"
+        variant="brand"
+        onClick={() => {
+          onDone()
+          openShop(kind)
+        }}
+      >
+        <Gift className="size-4" aria-hidden /> {st('inbox.giftOpen')}
+      </Button>
+    )
   } else if (item.kind === 'room_invite') {
     action = item.roomOpen ? (
       <Button
@@ -284,6 +305,10 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
         ) : item.kind === 'post_like' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-card ring-2 ring-card">
             <LikeIcon on size={18} />
+          </span>
+        ) : item.kind === 'gift' ? (
+          <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary-strong text-primary-foreground ring-2 ring-card">
+            <Gift className="size-3.5" aria-hidden />
           </span>
         ) : item.kind === 'post_comment' ? (
           <span className="absolute -inset-e-1 -bottom-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-card">

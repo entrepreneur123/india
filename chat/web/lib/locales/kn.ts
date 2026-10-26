@@ -31,8 +31,6 @@ const kn: Dict = {
   'panel.activity': 'ಚಟುವಟಿಕೆ',
   'panel.friends': 'ನಿಮ್ಮ ಸ್ನೇಹಿತರು',
   'panel.rooms': 'ಲೈವ್ ರೂಮ್‌ಗಳು',
-  'panel.friendCount.one': '{n} ಸ್ನೇಹಿತ',
-  'panel.friendCount.other': '{n} ಸ್ನೇಹಿತರು',
   'panel.noFriends': 'ಚಾಟ್‌ಗಳಿಂದ ನೀವು ಸೇರಿಸುವ ಸ್ನೇಹಿತರು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತಾರೆ.',
   'panel.message': '{name} ಗೆ ಮೆಸೇಜ್ ಮಾಡಿ',
 
@@ -660,6 +658,17 @@ const kn: Dict = {
   'room.password': 'ರೂಮ್ ಪಾಸ್‌ವರ್ಡ್ (ಐಚ್ಛಿಕ)',
   'room.passwordHint': '4–12 ಅಕ್ಷರಗಳು. ಹೊರಗಿನವರು ಬರಲು ಇದು ಬೇಕು; ಹೊಸದು ಮತ್ತೆ ಕೇಳುತ್ತದೆ.',
   'join.wrong': 'ತಪ್ಪು ಕೋಡ್. ಹೋಸ್ಟ್ ಬಳಿ ಪರಿಶೀಲಿಸಿ.',
+  'presence.online': 'ಆನ್‌ಲೈನ್',
+  'presence.matching': 'ಮ್ಯಾಚ್ ಹುಡುಕುತ್ತಿದ್ದಾರೆ',
+  'presence.chat': 'ರ‍್ಯಾಂಡಮ್ ಚಾಟ್‌ನಲ್ಲಿ',
+  'presence.room': 'ರೂಮ್‌ನಲ್ಲಿ',
+  'presence.offline': 'ಆಫ್‌ಲೈನ್',
+  'panel.onlineCount': '{n} ಆನ್‌ಲೈನ್',
+  'panel.offlineCount': 'ಆಫ್‌ಲೈನ್ · {n}',
+  'panel.noneOnline': 'ಈಗ ಯಾವ ಸ್ನೇಹಿತರೂ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿಲ್ಲ',
+  'notes.title': 'ಸ್ನೇಹಿತರ ಟಿಪ್ಪಣಿಗಳು',
+  'notes.mine': 'ನಿಮ್ಮ ಟಿಪ್ಪಣಿ',
+  'notes.add': 'ಟಿಪ್ಪಣಿ ಬರೆಯಿರಿ…',
 }
 
 export default kn

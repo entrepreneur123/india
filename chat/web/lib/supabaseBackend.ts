@@ -10,6 +10,9 @@ import {
   type PostVisibility,
   type ProfileStyleInput,
   type Friend,
+  type FriendActivity,
+  type GiftCheck,
+  type Presence,
   type PersonRow,
   type FriendState,
   type InboxItem,
@@ -107,6 +110,7 @@ type InboxRow = {
   id: number; kind: string; n: number; created_at: string; read_at: string | null; match_id: string | null; room_id: string | null
   room_title: string | null; room_open: boolean; pending: boolean; actor: CardRow
   post: { id: string; body: string | null; image_path: string | null } | null
+  item?: string | null
 }
 type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string | null }
 type FriendRow = CardRow & { state: string; match_id: string | null }
@@ -285,7 +289,7 @@ async function compressImage(file: File): Promise<Blob> {
   )
 }
 
-type TypingListener = { typing: (from: string) => void; presence: (connected: boolean, partnerHere: boolean) => void }
+type TypingListener = { typing: (from: string) => void; presence: (connected: boolean, partnerHere: boolean) => void; profile: () => void }
 type TypingHub = {
   channel: RealtimeChannel
   listeners: Set<TypingListener>
@@ -605,6 +609,11 @@ export class SupabaseBackend implements Backend {
         typingOff = setTimeout(() => emit({ type: 'typing', on: false }), 4_000)
       },
       presence: onPresence,
+      // 35: they turned VIP off or on; what I may see of them is asked again (the server decides).
+      profile: async () => {
+        const rows = await this.rpc<CardRow[]>('match_card', { p_match: matchId }).catch(() => [])
+        if (rows[0] && !closed) emit({ type: 'partner', partner: await this.toProfile(rows[0], []) })
+      },
     }
     const hub = this.typingHub(matchId)
     hub.listeners.add(listener)
@@ -643,6 +652,7 @@ export class SupabaseBackend implements Backend {
     const tell = () => hub.listeners.forEach((l) => l.presence(hub.connected, hub.partnerHere))
     hub.channel
       .on('broadcast', { event: 'typing' }, ({ payload }) => hub.listeners.forEach((l) => l.typing(String(payload?.from ?? ''))))
+      .on('broadcast', { event: 'profile' }, () => hub.listeners.forEach((l) => void l.profile()))
       .on('presence', { event: 'sync' }, () => {
         hub.partnerHere = Object.keys(hub.channel.presenceState()).some((key) => key !== me)
         if (hub.partnerHere) hub.presenceSeen = true
@@ -897,11 +907,27 @@ export class SupabaseBackend implements Backend {
 
   async friends(): Promise<Friend[]> {
     const rows = await this.rpc<FriendRow[]>('friend_list')
-    return Promise.all(rows.map(async (f) => ({
+    const list = await Promise.all(rows.map(async (f) => ({
       profile: await this.toProfile(f, []),
       state: (f.state === 'friends' ? 'friends' : f.state === 'requested' ? 'requested' : 'incoming') as FriendState,
       threadId: f.match_id,
     })))
+    this.friendCards = new Map(list.filter((f) => f.state === 'friends').map((f) => [f.profile.id, f.profile]))
+    return list
+  }
+
+  async friendActivity(): Promise<FriendActivity[]> {
+    const rows = await this.rpc<{ id: string; presence: string; status: string | null; status_at: string | null }[]>('friend_activity')
+    const kinds: Presence[] = ['offline', 'online', 'matching', 'chat', 'room']
+    return rows.map((r) => ({
+      id: r.id, presence: kinds.includes(r.presence as Presence) ? (r.presence as Presence) : 'online',
+      status: r.status, statusAt: r.status_at ? time(r.status_at) : null,
+    }))
+  }
+
+  async giftCheck(friendId: string, itemId: string) {
+    const r = await this.rpc<string>('gift_check', { p_to: friendId, p_item: itemId })
+    return (['ok', 'owned', 'not_friends'].includes(r) ? r : 'bad_item') as GiftCheck
   }
 
   async requestFriend(userId: string): Promise<FriendState> {
@@ -1074,6 +1100,7 @@ export class SupabaseBackend implements Backend {
       return [{
         id: r.id, kind, actor: this.cardProfile(r.actor), at: time(r.created_at), read: r.read_at !== null,
         count: r.n, matchId: r.match_id, roomId: r.room_id, roomTitle: r.room_title, roomOpen: r.room_open, pending: r.pending, post,
+        item: r.item ?? null,
       }]
     })
   }
@@ -1301,6 +1328,8 @@ export class SupabaseBackend implements Backend {
 
   async setAnon(on: boolean) {
     await this.rpc('set_anon', { p_on: on })
+    // The people of my open chats read my card again (rooms hear it from the server, 066).
+    for (const hub of this.typing.values()) void hub.channel.send({ type: 'broadcast', event: 'profile', payload: {} }).catch(() => undefined)
   }
 
   async genderPass() {
@@ -2033,8 +2062,17 @@ export class SupabaseBackend implements Backend {
     })
   }
 
+  /**
+   * My friends as friend_list shows them (35: friends always see someone's real profile, VIP or not). Rooms send
+   * everyone the same cards, VIP ones masked: a friend's card is shown from here instead.
+   */
+  private friendCards = new Map<string, Profile>()
+  private unmasked = (c: CardRow) => (c.name === 'VIP' && !c.photo_path ? this.friendCards.get(c.id) : undefined)
+
   /** A card from a voice room; the photo comes from signMany (one request for the whole room), else the initial. */
   private cardProfile(c: CardRow): Profile {
+    const friend = this.unmasked(c)
+    if (friend) return friend
     const hit = c.photo_path ? this.signedUrls.get(c.photo_path) : undefined
     return {
       id: c.id, name: c.name, gender: gender(c.gender), age: c.age, city: c.city, bio: c.bio,
@@ -2056,6 +2094,8 @@ export class SupabaseBackend implements Backend {
   // ---- mapping & media ----
 
   private async toProfile(c: CardRow, posts: Post[]): Promise<Profile> {
+    const friend = this.unmasked(c)
+    if (friend) return { ...friend, posts }
     return {
       id: c.id, name: c.name, gender: gender(c.gender), age: c.age, city: c.city, bio: c.bio,
       photoUrl: c.photo_path ? await this.signed(c.photo_path).catch(() => null) : null, country: c.country, posts,

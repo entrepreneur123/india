@@ -143,6 +143,8 @@ const ko: SocialDict = {
   'inbox.messages': '메시지',
   'inbox.friends': '친구 신청',
   'inbox.reactions': '좋아요·댓글',
+  'inbox.gift': '{name}님이 선물을 보냈어요: {item}',
+  'inbox.giftOpen': '보기',
 }
 
 export default ko

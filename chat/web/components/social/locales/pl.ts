@@ -140,6 +140,8 @@ const pl: SocialDict = {
   'inbox.messages': 'Wiadomości',
   'inbox.friends': 'Znajomi',
   'inbox.reactions': 'Polubienia i komentarze',
+  'inbox.gift': '{name} wysyła ci prezent: {item}',
+  'inbox.giftOpen': 'Zobacz',
 }
 
 export default pl

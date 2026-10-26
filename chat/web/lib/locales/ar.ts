@@ -33,12 +33,6 @@ const ar: Dict = {
   'panel.activity': 'النشاط',
   'panel.friends': 'أصدقاؤك',
   'panel.rooms': 'غرف مباشرة',
-  'panel.friendCount.zero': 'لا أصدقاء',
-  'panel.friendCount.one': '{n} صديق',
-  'panel.friendCount.two': 'صديقان',
-  'panel.friendCount.few': '{n} أصدقاء',
-  'panel.friendCount.many': '{n} صديقًا',
-  'panel.friendCount.other': '{n} صديق',
   'panel.noFriends': 'سيظهر هنا الأصدقاء الذين تضيفهم من الدردشات.',
   'panel.message': 'مراسلة {name}',
 
@@ -685,6 +679,17 @@ const ar: Dict = {
   'room.password': 'كلمة مرور الغرفة (اختياري)',
   'room.passwordHint': 'من 4 إلى 12 حرفًا. يحتاجها من في الخارج للدخول؛ وكلمة جديدة تطلبها منهم مجددًا.',
   'join.wrong': 'رمز خاطئ. تحقّق منه مع المضيف.',
+  'presence.online': 'متصل',
+  'presence.matching': 'يبحث عن مطابقة',
+  'presence.chat': 'في دردشة عشوائية',
+  'presence.room': 'في غرفة',
+  'presence.offline': 'غير متصل',
+  'panel.onlineCount': '{n} متصل',
+  'panel.offlineCount': 'غير متصل · {n}',
+  'panel.noneOnline': 'لا يوجد أصدقاء متصلون الآن',
+  'notes.title': 'ملاحظات الأصدقاء',
+  'notes.mine': 'ملاحظتك',
+  'notes.add': 'اكتب ملاحظة…',
 }
 
 export default ar

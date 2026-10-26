@@ -143,6 +143,8 @@ const tr: SocialDict = {
   'inbox.messages': 'Mesajlar',
   'inbox.friends': 'Arkadaşlar',
   'inbox.reactions': 'Beğeni ve yorumlar',
+  'inbox.gift': '{name} sana hediye gönderdi: {item}',
+  'inbox.giftOpen': 'Gör',
 }
 
 export default tr

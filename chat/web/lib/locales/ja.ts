@@ -33,8 +33,6 @@ const ja: Dict = {
   'panel.activity': 'アクティビティ',
   'panel.friends': '友だち',
   'panel.rooms': 'ライブ中のルーム',
-  'panel.friendCount.one': '友だち{n}人',
-  'panel.friendCount.other': '友だち{n}人',
   'panel.noFriends': 'チャットから追加した友だちがここに表示されます。',
   'panel.message': '{name}さんにメッセージ',
 
@@ -673,6 +671,17 @@ const ja: Dict = {
   'room.password': 'ルームのパスワード（任意）',
   'room.passwordHint': '4〜12文字。外の人が入るのに必要です。変えるともう一度聞かれます。',
   'join.wrong': 'コードが違います。ホストに確認してください。',
+  'presence.online': 'オンライン',
+  'presence.matching': 'マッチを探し中',
+  'presence.chat': 'ランダムチャット中',
+  'presence.room': 'ルームにいます',
+  'presence.offline': 'オフライン',
+  'panel.onlineCount': '{n}人オンライン',
+  'panel.offlineCount': 'オフライン · {n}',
+  'panel.noneOnline': '今オンラインの友達はいません',
+  'notes.title': '友達のノート',
+  'notes.mine': 'あなたのノート',
+  'notes.add': 'ノートを書く…',
 }
 
 export default ja

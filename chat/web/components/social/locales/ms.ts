@@ -142,6 +142,8 @@ const ms: SocialDict = {
   'inbox.messages': 'Mesej',
   'inbox.friends': 'Rakan',
   'inbox.reactions': 'Suka & komen',
+  'inbox.gift': '{name} menghantar hadiah kepada anda: {item}',
+  'inbox.giftOpen': 'Lihat',
 }
 
 export default ms

@@ -147,6 +147,8 @@ const ru: SocialDict = {
   'inbox.messages': 'Сообщения',
   'inbox.friends': 'Друзья',
   'inbox.reactions': 'Лайки и комментарии',
+  'inbox.gift': '{name} отправляет вам подарок: {item}',
+  'inbox.giftOpen': 'Посмотреть',
 }
 
 export default ru

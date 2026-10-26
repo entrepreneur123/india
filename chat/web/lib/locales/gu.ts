@@ -29,8 +29,6 @@ const gu: Dict = {
   'panel.activity': 'પ્રવૃત્તિ',
   'panel.friends': 'તમારા મિત્રો',
   'panel.rooms': 'લાઇવ રૂમ',
-  'panel.friendCount.one': '{n} મિત્ર',
-  'panel.friendCount.other': '{n} મિત્રો',
   'panel.noFriends': 'ચેટમાંથી તમે ઉમેરેલા મિત્રો અહીં દેખાશે.',
   'panel.message': '{name}ને મેસેજ કરો',
   'auth.badge': '18+ · ફોન વેરિફાઇડ',
@@ -638,6 +636,17 @@ const gu: Dict = {
   'room.password': 'રૂમ પાસવર્ડ (વૈકલ્પિક)',
   'room.passwordHint': '4–12 અક્ષર. બહારના લોકોને આવવા માટે તે જોઈશે; નવો પાસવર્ડ ફરી પૂછશે.',
   'join.wrong': 'ખોટો કોડ. હોસ્ટ પાસેથી ચકાસો.',
+  'presence.online': 'ઑનલાઇન',
+  'presence.matching': 'મૅચ શોધી રહ્યા છે',
+  'presence.chat': 'રેન્ડમ ચૅટમાં',
+  'presence.room': 'રૂમમાં',
+  'presence.offline': 'ઑફલાઇન',
+  'panel.onlineCount': '{n} ઑનલાઇન',
+  'panel.offlineCount': 'ઑફલાઇન · {n}',
+  'panel.noneOnline': 'હમણાં કોઈ મિત્ર ઑનલાઇન નથી',
+  'notes.title': 'મિત્રોની નોંધ',
+  'notes.mine': 'તમારી નોંધ',
+  'notes.add': 'નોંધ લખો…',
 }
 
 export default gu

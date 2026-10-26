@@ -125,6 +125,16 @@ const id: LooksDict = {
   'item.bubble_gold': 'Emas',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Semua orang melihat pesanmu dalam gelembung ini',
+  'gift.button': 'Hadiahkan ke teman',
+  'gift.title': 'Hadiahkan {item}',
+  'gift.desc': '{price} · Temanmu yang dapat, bukan kamu.',
+  'gift.noFriends': 'Tambahkan teman untuk kirim hadiah.',
+  'gift.has': 'Sudah punya',
+  'gift.give': 'Hadiahkan',
+  'gift.inApp': 'Di aplikasi',
+  'gift.sent': '{item} dikirim ke {name} 🎁',
+  'vip.hidden': 'VIP aktif · mereka tak tahu siapa kamu',
+  'vip.reveal': 'Matikan VIP',
 }
 
 export default id

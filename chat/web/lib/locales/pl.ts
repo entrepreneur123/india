@@ -31,10 +31,6 @@ const pl: Dict = {
   'panel.activity': 'Aktywność',
   'panel.friends': 'Twoi znajomi',
   'panel.rooms': 'Pokoje na żywo',
-  'panel.friendCount.one': '{n} znajomy',
-  'panel.friendCount.few': '{n} znajomych',
-  'panel.friendCount.many': '{n} znajomych',
-  'panel.friendCount.other': '{n} znajomych',
   'panel.noFriends': 'Tutaj pojawią się znajomi, których dodasz z czatów.',
   'panel.message': 'Napisz do: {name}',
 
@@ -666,6 +662,17 @@ const pl: Dict = {
   'room.password': 'Hasło pokoju (opcjonalnie)',
   'room.passwordHint': '4–12 znaków. Potrzebują go osoby z zewnątrz; nowe hasło zapyta je ponownie.',
   'join.wrong': 'Zły kod. Sprawdź go u gospodarza.',
+  'presence.online': 'Online',
+  'presence.matching': 'Szuka rozmówcy',
+  'presence.chat': 'Na losowym czacie',
+  'presence.room': 'W pokoju',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Teraz żaden znajomy nie jest online',
+  'notes.title': 'Notatki znajomych',
+  'notes.mine': 'Twoja notatka',
+  'notes.add': 'Napisz notatkę…',
 }
 
 export default pl

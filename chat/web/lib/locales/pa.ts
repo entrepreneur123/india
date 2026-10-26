@@ -29,8 +29,6 @@ const pa: Dict = {
   'panel.activity': 'ਗਤੀਵਿਧੀ',
   'panel.friends': 'ਤੁਹਾਡੇ ਦੋਸਤ',
   'panel.rooms': 'ਲਾਈਵ ਰੂਮ',
-  'panel.friendCount.one': '{n} ਦੋਸਤ',
-  'panel.friendCount.other': '{n} ਦੋਸਤ',
   'panel.noFriends': 'ਚੈਟਾਂ ਤੋਂ ਜਿਹੜੇ ਦੋਸਤ ਤੁਸੀਂ ਜੋੜੋਗੇ, ਉਹ ਇੱਥੇ ਦਿਸਣਗੇ।',
   'panel.message': '{name} ਨੂੰ ਮੈਸੇਜ ਕਰੋ',
   'auth.badge': '18+ · ਫ਼ੋਨ ਨਾਲ ਵੈਰੀਫ਼ਾਈ',
@@ -638,6 +636,17 @@ const pa: Dict = {
   'room.password': 'ਰੂਮ ਪਾਸਵਰਡ (ਵਿਕਲਪਿਕ)',
   'room.passwordHint': '4–12 ਅੱਖਰ। ਬਾਹਰਲੇ ਲੋਕਾਂ ਨੂੰ ਆਉਣ ਲਈ ਇਹ ਚਾਹੀਦਾ ਹੈ; ਨਵਾਂ ਪਾਸਵਰਡ ਫਿਰ ਪੁੱਛੇਗਾ।',
   'join.wrong': 'ਗਲਤ ਕੋਡ। ਹੋਸਟ ਤੋਂ ਪੁੱਛ ਕੇ ਦੇਖੋ।',
+  'presence.online': 'ਆਨਲਾਈਨ',
+  'presence.matching': 'ਮੈਚ ਲੱਭ ਰਹੇ ਹਨ',
+  'presence.chat': 'ਰੈਂਡਮ ਚੈਟ ਵਿੱਚ',
+  'presence.room': 'ਰੂਮ ਵਿੱਚ',
+  'presence.offline': 'ਆਫ਼ਲਾਈਨ',
+  'panel.onlineCount': '{n} ਆਨਲਾਈਨ',
+  'panel.offlineCount': 'ਆਫ਼ਲਾਈਨ · {n}',
+  'panel.noneOnline': 'ਹੁਣ ਕੋਈ ਦੋਸਤ ਆਨਲਾਈਨ ਨਹੀਂ',
+  'notes.title': 'ਦੋਸਤਾਂ ਦੇ ਨੋਟ',
+  'notes.mine': 'ਤੁਹਾਡਾ ਨੋਟ',
+  'notes.add': 'ਨੋਟ ਲਿਖੋ…',
 }
 
 export default pa

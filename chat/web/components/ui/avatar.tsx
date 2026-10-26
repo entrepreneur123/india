@@ -94,13 +94,12 @@ export function Avatar({ name, src, srcs, effect, size = 40, country, online, cl
             onError={() => setFailed(src)}
           />
         ) : isVip({ name, photoUrl: src }) ? (
-          // 046: someone in VIP incognito (no photo for strangers): the mark in the brand colour.
-          <span
-            className="grid size-full place-items-center bg-primary font-extrabold tracking-tight text-primary-foreground"
-            style={{ fontSize: Math.max(9, size * 0.3) }}
-            aria-hidden
-          >
-            VIP
+          // 046 + 35: someone in VIP incognito (no photo for strangers): black, a gold serif mark, light passing over.
+          <span className="vip-face relative grid size-full place-items-center overflow-hidden" aria-hidden>
+            <span className="vip-gold font-bold italic tracking-wide" style={{ fontSize: Math.max(9, size * 0.32) }}>
+              VIP
+            </span>
+            <span className="look-sheen pointer-events-none absolute inset-y-0 -left-1/4 w-1/2 bg-linear-to-r from-transparent via-white/20 to-transparent" />
           </span>
         ) : (
           <span

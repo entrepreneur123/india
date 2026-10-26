@@ -33,8 +33,6 @@ const fa: Dict = {
   'panel.activity': 'فعالیت',
   'panel.friends': 'دوستان شما',
   'panel.rooms': 'روم‌های زنده',
-  'panel.friendCount.one': '{n} دوست',
-  'panel.friendCount.other': '{n} دوست',
   'panel.noFriends': 'دوستانی که از چت‌ها اضافه می‌کنید اینجا نشان داده می‌شوند.',
   'panel.message': 'پیام به {name}',
 
@@ -673,6 +671,17 @@ const fa: Dict = {
   'room.password': 'رمز اتاق (اختیاری)',
   'room.passwordHint': '۴ تا ۱۲ نویسه. افراد بیرون برای ورود به آن نیاز دارند؛ رمز تازه دوباره پرسیده می‌شود.',
   'join.wrong': 'کد اشتباه است. از میزبان بپرسید.',
+  'presence.online': 'آنلاین',
+  'presence.matching': 'در جستجوی هم‌صحبت',
+  'presence.chat': 'در چت تصادفی',
+  'presence.room': 'در اتاق',
+  'presence.offline': 'آفلاین',
+  'panel.onlineCount': '{n} آنلاین',
+  'panel.offlineCount': 'آفلاین · {n}',
+  'panel.noneOnline': 'الان هیچ دوستی آنلاین نیست',
+  'notes.title': 'یادداشت دوستان',
+  'notes.mine': 'یادداشت شما',
+  'notes.add': 'یادداشت بنویسید…',
 }
 
 export default fa

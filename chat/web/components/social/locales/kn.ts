@@ -136,6 +136,8 @@ const kn: SocialDict = {
   'inbox.messages': 'ಸಂದೇಶಗಳು',
   'inbox.friends': 'ಸ್ನೇಹಿತರು',
   'inbox.reactions': 'ಲೈಕ್ & ಕಾಮೆಂಟ್',
+  'inbox.gift': '{name} ನಿಮಗೆ ಉಡುಗೊರೆ ಕಳುಹಿಸಿದ್ದಾರೆ: {item}',
+  'inbox.giftOpen': 'ನೋಡಿ',
 }
 
 export default kn

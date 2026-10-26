@@ -125,6 +125,16 @@ const gu: LooksDict = {
   'item.bubble_gold': 'સોનેરી',
   'item.bubble_neon': 'નિયોન',
   'bubble.what': 'બધા તમારા મેસેજ આ બબલમાં જોશે',
+  'gift.button': 'મિત્રને ભેટ આપો',
+  'gift.title': '{item} ભેટ આપો',
+  'gift.desc': '{price} · તે તમારા મિત્રને મળશે, તમને નહીં.',
+  'gift.noFriends': 'ભેટ મોકલવા મિત્રો ઉમેરો.',
+  'gift.has': 'પહેલેથી છે',
+  'gift.give': 'ભેટ આપો',
+  'gift.inApp': 'ઍપમાં',
+  'gift.sent': '{name} ને {item} મોકલી 🎁',
+  'vip.hidden': 'VIP ચાલુ · તમે કોણ છો તે તેઓ જાણતા નથી',
+  'vip.reveal': 'VIP બંધ કરો',
 }
 
 export default gu

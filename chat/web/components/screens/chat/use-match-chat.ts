@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import type { Badges, Message, VideoStatus } from '@/lib/backend'
+import type { Badges, Message, Profile, VideoStatus } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
@@ -33,6 +33,8 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
   /** Threads: the chat is over (040: only friends write on). */
   const [ended, setEnded] = useState(false)
   const [partnerRead, setPartnerRead] = useState(0)
+  /** 35: the partner's card after they turned VIP off or on (null: as the chat opened with). */
+  const [partner, setPartner] = useState<Profile | null>(null)
   const lastTypingSent = useRef(0)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -94,6 +96,9 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
         case 'ended':
           if (!live) setEnded(true)
           break
+        case 'partner':
+          setPartner(e.partner)
+          break
         case 'partner_left':
           if (!live) break
           setPartnerLeft(true)
@@ -150,5 +155,5 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     [backend, matchId, append, toast, live],
   )
 
-  return { messages, typing, video, setVideo, camera, setCamera, partnerLeft, ended, partnerRead, send, notifyTyping }
+  return { messages, typing, video, setVideo, camera, setCamera, partnerLeft, ended, partnerRead, partner, send, notifyTyping }
 }

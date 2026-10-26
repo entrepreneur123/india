@@ -125,6 +125,16 @@ const kn: LooksDict = {
   'item.bubble_gold': 'ಚಿನ್ನ',
   'item.bubble_neon': 'ನಿಯಾನ್',
   'bubble.what': 'ಎಲ್ಲರೂ ನಿಮ್ಮ ಸಂದೇಶಗಳನ್ನು ಈ ಬಬಲ್‌ನಲ್ಲಿ ನೋಡುತ್ತಾರೆ',
+  'gift.button': 'ಸ್ನೇಹಿತರಿಗೆ ಉಡುಗೊರೆ',
+  'gift.title': '{item} ಉಡುಗೊರೆ ನೀಡಿ',
+  'gift.desc': '{price} · ಇದು ನಿಮ್ಮ ಸ್ನೇಹಿತರಿಗೆ ಸಿಗುತ್ತದೆ, ನಿಮಗಲ್ಲ.',
+  'gift.noFriends': 'ಉಡುಗೊರೆ ಕಳುಹಿಸಲು ಸ್ನೇಹಿತರನ್ನು ಸೇರಿಸಿ.',
+  'gift.has': 'ಈಗಾಗಲೇ ಇದೆ',
+  'gift.give': 'ಉಡುಗೊರೆ ನೀಡಿ',
+  'gift.inApp': 'ಆ್ಯಪ್‌ನಲ್ಲಿ',
+  'gift.sent': '{name} ಅವರಿಗೆ {item} ಕಳುಹಿಸಲಾಗಿದೆ 🎁',
+  'vip.hidden': 'VIP ಆನ್ · ನೀವು ಯಾರು ಎಂದು ಅವರಿಗೆ ತಿಳಿದಿಲ್ಲ',
+  'vip.reveal': 'VIP ಆಫ್ ಮಾಡಿ',
 }
 
 export default kn

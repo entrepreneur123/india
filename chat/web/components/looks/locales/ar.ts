@@ -125,6 +125,16 @@ const ar: LooksDict = {
   'item.bubble_gold': 'ذهبي',
   'item.bubble_neon': 'نيون',
   'bubble.what': 'يرى الجميع رسائلك في هذه الفقاعة',
+  'gift.button': 'إهداء لصديق',
+  'gift.title': 'إهداء {item}',
+  'gift.desc': '{price} · يحصل عليها صديقك، لا أنت.',
+  'gift.noFriends': 'أضف أصدقاء لإرسال الهدايا.',
+  'gift.has': 'يملكها',
+  'gift.give': 'إهداء',
+  'gift.inApp': 'في التطبيق',
+  'gift.sent': 'تم إرسال {item} إلى {name} 🎁',
+  'vip.hidden': 'VIP مفعّل · لا يعرفون من أنت',
+  'vip.reveal': 'إيقاف VIP',
 }
 
 export default ar

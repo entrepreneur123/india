@@ -145,6 +145,8 @@ const he: SocialDict = {
   'inbox.messages': 'הודעות',
   'inbox.friends': 'חברים',
   'inbox.reactions': 'לייקים ותגובות',
+  'inbox.gift': '{name} שלח/ה לך מתנה: {item}',
+  'inbox.giftOpen': 'לצפייה',
 }
 
 export default he

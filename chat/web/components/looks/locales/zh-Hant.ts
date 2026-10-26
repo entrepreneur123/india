@@ -125,6 +125,16 @@ const zhHant: LooksDict = {
   'item.bubble_gold': '鎏金',
   'item.bubble_neon': '霓虹',
   'bubble.what': '所有人都會看到你的訊息顯示在這個氣泡裡',
+  'gift.button': '送給好友',
+  'gift.title': '贈送{item}',
+  'gift.desc': '{price} · 由好友獲得，而不是你。',
+  'gift.noFriends': '加好友後才能送禮物。',
+  'gift.has': '已擁有',
+  'gift.give': '贈送',
+  'gift.inApp': '在 App 中',
+  'gift.sent': '已將{item}送給 {name} 🎁',
+  'vip.hidden': 'VIP 已開啟 · 對方不知道你是誰',
+  'vip.reveal': '關閉 VIP',
 }
 
 export default zhHant

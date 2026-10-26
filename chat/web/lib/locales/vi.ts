@@ -31,8 +31,6 @@ const vi: Dict = {
   'panel.activity': 'Hoạt động',
   'panel.friends': 'Bạn bè của bạn',
   'panel.rooms': 'Phòng đang hoạt động',
-  'panel.friendCount.one': '{n} người bạn',
-  'panel.friendCount.other': '{n} người bạn',
   'panel.noFriends': 'Bạn bè bạn thêm từ các cuộc trò chuyện sẽ hiện ở đây.',
   'panel.message': 'Nhắn tin cho {name}',
 
@@ -659,6 +657,17 @@ const vi: Dict = {
   'room.password': 'Mật khẩu phòng (không bắt buộc)',
   'room.passwordHint': '4–12 ký tự. Người bên ngoài cần nó để vào; mật khẩu mới sẽ hỏi lại.',
   'join.wrong': 'Sai mã. Hãy hỏi lại chủ phòng.',
+  'presence.online': 'Trực tuyến',
+  'presence.matching': 'Đang tìm người',
+  'presence.chat': 'Đang chat ngẫu nhiên',
+  'presence.room': 'Đang ở phòng',
+  'presence.offline': 'Ngoại tuyến',
+  'panel.onlineCount': '{n} trực tuyến',
+  'panel.offlineCount': 'Ngoại tuyến · {n}',
+  'panel.noneOnline': 'Hiện không có bạn nào trực tuyến',
+  'notes.title': 'Ghi chú của bạn bè',
+  'notes.mine': 'Ghi chú của bạn',
+  'notes.add': 'Viết ghi chú…',
 }
 
 export default vi

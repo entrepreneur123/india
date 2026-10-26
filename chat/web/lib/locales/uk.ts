@@ -33,10 +33,6 @@ const uk: Dict = {
   'panel.activity': 'Активність',
   'panel.friends': 'Ваші друзі',
   'panel.rooms': 'Кімнати в ефірі',
-  'panel.friendCount.one': '{n} друг',
-  'panel.friendCount.few': '{n} друзі',
-  'panel.friendCount.many': '{n} друзів',
-  'panel.friendCount.other': '{n} друга',
   'panel.noFriends': 'Тут з’являться друзі, яких ви додасте з чатів.',
   'panel.message': 'Написати: {name}',
 
@@ -679,6 +675,17 @@ const uk: Dict = {
   'room.password': 'Пароль кімнати (необов’язково)',
   'room.passwordHint': '4–12 символів. Він потрібен тим, хто ззовні; новий пароль спитають знову.',
   'join.wrong': 'Неправильний код. Уточніть у хоста.',
+  'presence.online': 'У мережі',
+  'presence.matching': 'Шукає співрозмовника',
+  'presence.chat': 'У випадковому чаті',
+  'presence.room': 'У кімнаті',
+  'presence.offline': 'Не в мережі',
+  'panel.onlineCount': 'У мережі: {n}',
+  'panel.offlineCount': 'Не в мережі · {n}',
+  'panel.noneOnline': 'Зараз нікого з друзів немає в мережі',
+  'notes.title': 'Нотатки друзів',
+  'notes.mine': 'Ваша нотатка',
+  'notes.add': 'Залиште нотатку…',
 }
 
 export default uk

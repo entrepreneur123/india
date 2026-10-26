@@ -125,6 +125,16 @@ const uk: LooksDict = {
   'item.bubble_gold': 'Золото',
   'item.bubble_neon': 'Неон',
   'bubble.what': 'Усі бачать ваші повідомлення в цій хмаринці',
+  'gift.button': 'Подарувати другові',
+  'gift.title': 'Подарувати «{item}»',
+  'gift.desc': '{price} · Отримає друг, а не ви.',
+  'gift.noFriends': 'Додайте друзів, щоб дарувати подарунки.',
+  'gift.has': 'Уже має',
+  'gift.give': 'Подарувати',
+  'gift.inApp': 'У застосунку',
+  'gift.sent': '«{item}» надіслано: {name} 🎁',
+  'vip.hidden': 'VIP увімкнено · вас не впізнають',
+  'vip.reveal': 'Вимкнути VIP',
 }
 
 export default uk

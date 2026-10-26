@@ -61,7 +61,8 @@ export interface LookHost {
 }
 
 export class LookSim {
-  private owned = new Set<ItemId>()
+  /** The demo's gift from Sofia (the inbox says so) is already mine. */
+  private owned = new Set<ItemId>(['bubble_peach'])
   private wear: LookWear = NO_WEAR
   private wall: ItemId | null = null
   private anon = false
@@ -182,6 +183,12 @@ export class LookSim {
     const kind = kindOf(id)
     if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
     if ((kind === 'effect' || kind === 'bubble') && !this.worn[kind]) this.worn = { ...this.worn, [kind]: id }
+  }
+
+  /** Whether a demo person wears this look (they own it). */
+  wears(id: string, item: string) {
+    const wear = id.startsWith('v_') ? roomWear(id) : { ...NO_WEAR, ...WORN[id] }
+    return Object.values(wear).includes(item as ItemId) || BUBBLED[id] === item
   }
 
   async looks(ids: string[]): Promise<Look[]> {

@@ -142,6 +142,8 @@ const ja: SocialDict = {
   'inbox.messages': 'メッセージ',
   'inbox.friends': '友達',
   'inbox.reactions': 'いいね・コメント',
+  'inbox.gift': '{name}さんからギフトが届きました：{item}',
+  'inbox.giftOpen': '見る',
 }
 
 export default ja

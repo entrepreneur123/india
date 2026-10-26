@@ -137,6 +137,8 @@ const ptBR: SocialDict = {
   'inbox.messages': 'Mensagens',
   'inbox.friends': 'Amigos',
   'inbox.reactions': 'Curtidas e comentários',
+  'inbox.gift': '{name} te enviou um presente: {item}',
+  'inbox.giftOpen': 'Ver',
 }
 
 export default ptBR

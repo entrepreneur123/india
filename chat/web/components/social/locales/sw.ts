@@ -142,6 +142,8 @@ const sw: SocialDict = {
   'inbox.messages': 'Ujumbe',
   'inbox.friends': 'Marafiki',
   'inbox.reactions': 'Likes na maoni',
+  'inbox.gift': '{name} amekutumia zawadi: {item}',
+  'inbox.giftOpen': 'Tazama',
 }
 
 export default sw

@@ -125,6 +125,16 @@ const bn: LooksDict = {
   'item.bubble_gold': 'সোনালি',
   'item.bubble_neon': 'নিয়ন',
   'bubble.what': 'সবাই আপনার মেসেজ এই বাবলে দেখবে',
+  'gift.button': 'বন্ধুকে উপহার দিন',
+  'gift.title': '{item} উপহার দিন',
+  'gift.desc': '{price} · এটি আপনার বন্ধু পাবে, আপনি নন।',
+  'gift.noFriends': 'উপহার পাঠাতে বন্ধু যোগ করুন।',
+  'gift.has': 'আছে',
+  'gift.give': 'উপহার দিন',
+  'gift.inApp': 'অ্যাপে',
+  'gift.sent': '{name}-কে {item} পাঠানো হয়েছে 🎁',
+  'vip.hidden': 'VIP চালু · তারা জানে না আপনি কে',
+  'vip.reveal': 'VIP বন্ধ করুন',
 }
 
 export default bn

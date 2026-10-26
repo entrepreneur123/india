@@ -31,8 +31,6 @@ const ptBR: Dict = {
   'panel.activity': 'Atividade',
   'panel.friends': 'Seus amigos',
   'panel.rooms': 'Salas ao vivo',
-  'panel.friendCount.one': '{n} amigo',
-  'panel.friendCount.other': '{n} amigos',
   'panel.noFriends': 'Os amigos que você adicionar nos chats aparecem aqui.',
   'panel.message': 'Mandar mensagem para {name}',
 
@@ -659,6 +657,17 @@ const ptBR: Dict = {
   'room.password': 'Senha da sala (opcional)',
   'room.passwordHint': 'De 4 a 12 caracteres. Quem está fora precisa dela para entrar; uma nova pede de novo.',
   'join.wrong': 'Código errado. Confira com o anfitrião.',
+  'presence.online': 'Online',
+  'presence.matching': 'Procurando alguém',
+  'presence.chat': 'Em um chat aleatório',
+  'presence.room': 'Em uma sala',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Nenhum amigo online agora',
+  'notes.title': 'Notas dos amigos',
+  'notes.mine': 'Sua nota',
+  'notes.add': 'Deixe uma nota…',
 }
 
 export default ptBR

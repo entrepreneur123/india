@@ -7,7 +7,7 @@ export const COMMENT_MAX = 300
 export const COMMENTS_PAGE = 50
 
 const ACCENT_IDS = new Set(['rose', 'violet', 'ocean', 'mint', 'sunset', 'gold', 'berry', 'slate'])
-const INBOX_KINDS = new Set<string>(['message', 'friend_request', 'friend_accept', 'room_invite', 'post_like', 'post_comment', 'call'])
+const INBOX_KINDS = new Set<string>(['message', 'friend_request', 'friend_accept', 'room_invite', 'post_like', 'post_comment', 'call', 'gift'])
 
 /** Postgres time text ("2026-10-19 12:41:01.00537+00") as ms; older Safari needs strict ISO first. */
 export function parseTime(ts: string): number {

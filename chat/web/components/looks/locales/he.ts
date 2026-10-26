@@ -125,6 +125,16 @@ const he: LooksDict = {
   'item.bubble_gold': 'זהב',
   'item.bubble_neon': 'ניאון',
   'bubble.what': 'כולם רואים את ההודעות שלך בבועה הזו',
+  'gift.button': 'מתנה לחבר/ה',
+  'gift.title': 'לתת את {item} במתנה',
+  'gift.desc': '{price} · החבר/ה מקבל/ת את זה, לא את/ה.',
+  'gift.noFriends': 'כדי לשלוח מתנות צריך להוסיף חברים.',
+  'gift.has': 'כבר יש',
+  'gift.give': 'במתנה',
+  'gift.inApp': 'באפליקציה',
+  'gift.sent': '{item} נשלח ל{name} 🎁',
+  'vip.hidden': 'VIP פעיל · לא יודעים מי את/ה',
+  'vip.reveal': 'לכבות VIP',
 }
 
 export default he

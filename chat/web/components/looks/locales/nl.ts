@@ -125,6 +125,16 @@ const nl: LooksDict = {
   'item.bubble_gold': 'Goud',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Iedereen ziet je berichten in deze ballon',
+  'gift.button': 'Cadeau voor een vriend',
+  'gift.title': '{item} cadeau doen',
+  'gift.desc': '{price} · Je vriend krijgt het, niet jij.',
+  'gift.noFriends': 'Voeg vrienden toe om cadeaus te sturen.',
+  'gift.has': 'Heeft het al',
+  'gift.give': 'Cadeau doen',
+  'gift.inApp': 'In de app',
+  'gift.sent': '{item} naar {name} gestuurd 🎁',
+  'vip.hidden': 'VIP aan · ze weten niet wie je bent',
+  'vip.reveal': 'VIP uitzetten',
 }
 
 export default nl

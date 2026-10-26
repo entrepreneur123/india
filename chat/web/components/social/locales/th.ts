@@ -142,6 +142,8 @@ const th: SocialDict = {
   'inbox.messages': 'ข้อความ',
   'inbox.friends': 'เพื่อน',
   'inbox.reactions': 'ถูกใจและความคิดเห็น',
+  'inbox.gift': '{name} ส่งของขวัญให้คุณ: {item}',
+  'inbox.giftOpen': 'ดู',
 }
 
 export default th

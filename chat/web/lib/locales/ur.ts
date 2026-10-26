@@ -29,8 +29,6 @@ const ur: Dict = {
   'panel.activity': 'سرگرمی',
   'panel.friends': 'آپ کے دوست',
   'panel.rooms': 'لائیو رومز',
-  'panel.friendCount.one': '{n} دوست',
-  'panel.friendCount.other': '{n} دوست',
   'panel.noFriends': 'چیٹس سے جن دوستوں کو آپ شامل کریں گے، وہ یہاں نظر آئیں گے۔',
   'panel.message': '{name} کو میسج کریں',
   'auth.badge': '18+ · فون سے تصدیق شدہ',
@@ -638,6 +636,17 @@ const ur: Dict = {
   'room.password': 'روم پاس ورڈ (اختیاری)',
   'room.passwordHint': '4–12 حروف۔ باہر کے لوگوں کو آنے کے لیے اس کی ضرورت ہوگی؛ نیا پاس ورڈ دوبارہ پوچھے گا۔',
   'join.wrong': 'غلط کوڈ۔ ہوسٹ سے پوچھ کر دیکھیں۔',
+  'presence.online': 'آن لائن',
+  'presence.matching': 'میچ ڈھونڈ رہے ہیں',
+  'presence.chat': 'رینڈم چیٹ میں',
+  'presence.room': 'روم میں',
+  'presence.offline': 'آف لائن',
+  'panel.onlineCount': '{n} آن لائن',
+  'panel.offlineCount': 'آف لائن · {n}',
+  'panel.noneOnline': 'ابھی کوئی دوست آن لائن نہیں',
+  'notes.title': 'دوستوں کے نوٹس',
+  'notes.mine': 'آپ کا نوٹ',
+  'notes.add': 'نوٹ لکھیں…',
 }
 
 export default ur

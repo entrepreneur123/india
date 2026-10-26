@@ -125,6 +125,16 @@ const pa: LooksDict = {
   'item.bubble_gold': 'ਸੁਨਹਿਰੀ',
   'item.bubble_neon': 'ਨਿਓਨ',
   'bubble.what': 'ਸਭ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਇਸ ਬਬਲ ਵਿੱਚ ਵੇਖਣਗੇ',
+  'gift.button': 'ਦੋਸਤ ਨੂੰ ਤੋਹਫ਼ਾ ਦਿਓ',
+  'gift.title': '{item} ਤੋਹਫ਼ੇ ਵਿੱਚ ਦਿਓ',
+  'gift.desc': '{price} · ਇਹ ਤੁਹਾਡੇ ਦੋਸਤ ਨੂੰ ਮਿਲੇਗਾ, ਤੁਹਾਨੂੰ ਨਹੀਂ।',
+  'gift.noFriends': 'ਤੋਹਫ਼ੇ ਭੇਜਣ ਲਈ ਦੋਸਤ ਜੋੜੋ।',
+  'gift.has': 'ਪਹਿਲਾਂ ਹੀ ਹੈ',
+  'gift.give': 'ਤੋਹਫ਼ਾ ਦਿਓ',
+  'gift.inApp': 'ਐਪ ਵਿੱਚ',
+  'gift.sent': '{name} ਨੂੰ {item} ਭੇਜਿਆ 🎁',
+  'vip.hidden': 'VIP ਚਾਲੂ · ਉਹ ਨਹੀਂ ਜਾਣਦੇ ਤੁਸੀਂ ਕੌਣ ਹੋ',
+  'vip.reveal': 'VIP ਬੰਦ ਕਰੋ',
 }
 
 export default pa

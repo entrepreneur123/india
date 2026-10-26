@@ -15,6 +15,7 @@ import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { FriendNotes } from './friend-notes'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
@@ -139,7 +140,14 @@ export function ExploreScreen() {
                 ) : null}
               </div>
             ) : null}
-            {section === 'feed' ? <Feed items={feed.data} /> : <People list={people.data} ranked={section === 'ranking'} rank={rank} />}
+            {section === 'feed' ? (
+              <>
+                <FriendNotes />
+                <Feed items={feed.data} />
+              </>
+            ) : (
+              <People list={people.data} ranked={section === 'ranking'} rank={rank} />
+            )}
           </>
         )}
       </div>

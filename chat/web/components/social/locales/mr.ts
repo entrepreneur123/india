@@ -131,6 +131,8 @@ const mr: SocialDict = {
   'inbox.messages': 'मेसेज',
   'inbox.friends': 'मित्र',
   'inbox.reactions': 'लाइक आणि कमेंट',
+  'inbox.gift': '{name} यांनी तुम्हाला भेट पाठवली: {item}',
+  'inbox.giftOpen': 'पाहा',
 }
 
 export default mr

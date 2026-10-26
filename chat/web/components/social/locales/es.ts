@@ -139,6 +139,8 @@ const es: SocialDict = {
   'inbox.messages': 'Mensajes',
   'inbox.friends': 'Amigos',
   'inbox.reactions': 'Me gusta y comentarios',
+  'inbox.gift': '{name} te envió un regalo: {item}',
+  'inbox.giftOpen': 'Ver',
 }
 
 export default es

@@ -93,7 +93,7 @@ export function ProfileHero({
         <FrameAvatar frame={frame} userId={profile.id} name={profile.name} src={profile.photoUrl} size={104} />
         <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
           <span className="inline-flex items-center gap-1.5">
-            <span>{nameAge(profile.name, profile.age)}</span>
+            <span className={cn(isVip(profile) && 'vip-gold text-3xl italic')}>{nameAge(profile.name, profile.age)}</span>
             {verified ? <VerifiedMark size={24} /> : null}
           </span>
           <span aria-hidden>{flagEmoji(profile.country)}</span>
@@ -101,7 +101,7 @@ export function ProfileHero({
         </h2>
         <LookName userId={profile.id} handle={profile.handle} className="mt-0.5 max-w-full px-4 text-base font-semibold" />
         {isVip(profile) ? (
-          <p className="mt-2 max-w-sm rounded-full bg-primary-strong px-3.5 py-1.5 text-xs font-semibold text-balance text-primary-foreground">{lt('vip.seen')}</p>
+          <p className="vip-strip mt-2 max-w-sm rounded-full px-3.5 py-1.5 text-xs font-semibold text-balance text-[#f5d27a]">{lt('vip.seen')}</p>
         ) : null}
         {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
         {style.status ? <p className="mt-3 max-w-sm px-4 text-[15px] text-balance text-muted-foreground italic">“{style.status}”</p> : null}

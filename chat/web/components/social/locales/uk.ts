@@ -147,6 +147,8 @@ const uk: SocialDict = {
   'inbox.messages': 'Повідомлення',
   'inbox.friends': 'Друзі',
   'inbox.reactions': 'Вподобання й коментарі',
+  'inbox.gift': '{name} надсилає вам подарунок: {item}',
+  'inbox.giftOpen': 'Переглянути',
 }
 
 export default uk

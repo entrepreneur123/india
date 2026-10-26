@@ -142,6 +142,8 @@ const fil: SocialDict = {
   'inbox.messages': 'Mensahe',
   'inbox.friends': 'Kaibigan',
   'inbox.reactions': 'Like at komento',
+  'inbox.gift': 'Pinadalhan ka ni {name} ng regalo: {item}',
+  'inbox.giftOpen': 'Tingnan',
 }
 
 export default fil

@@ -125,6 +125,16 @@ const ja: LooksDict = {
   'item.bubble_gold': 'ゴールド',
   'item.bubble_neon': 'ネオン',
   'bubble.what': 'みんなにあなたのメッセージがこの吹き出しで表示されます',
+  'gift.button': '友達にプレゼント',
+  'gift.title': '{item}をプレゼント',
+  'gift.desc': '{price} · 受け取るのは友達で、あなたではありません。',
+  'gift.noFriends': 'プレゼントを贈るには友達を追加してください。',
+  'gift.has': '所持済み',
+  'gift.give': '贈る',
+  'gift.inApp': 'アプリで',
+  'gift.sent': '{name}さんに{item}を贈りました 🎁',
+  'vip.hidden': 'VIPオン · 相手はあなたが誰か分かりません',
+  'vip.reveal': 'VIPをオフにする',
 }
 
 export default ja

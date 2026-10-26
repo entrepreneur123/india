@@ -131,6 +131,8 @@ const ur: SocialDict = {
   'inbox.messages': 'پیغامات',
   'inbox.friends': 'دوست',
   'inbox.reactions': 'لائکس اور تبصرے',
+  'inbox.gift': '{name} نے آپ کو تحفہ بھیجا: {item}',
+  'inbox.giftOpen': 'دیکھیں',
 }
 
 export default ur

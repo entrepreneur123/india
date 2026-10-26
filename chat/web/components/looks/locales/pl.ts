@@ -125,6 +125,16 @@ const pl: LooksDict = {
   'item.bubble_gold': 'Złoto',
   'item.bubble_neon': 'Neon',
   'bubble.what': 'Wszyscy widzą twoje wiadomości w tym dymku',
+  'gift.button': 'Podaruj znajomemu',
+  'gift.title': 'Podaruj: {item}',
+  'gift.desc': '{price} · Dostanie to znajomy, nie ty.',
+  'gift.noFriends': 'Dodaj znajomych, by wysyłać prezenty.',
+  'gift.has': 'Ma to',
+  'gift.give': 'Podaruj',
+  'gift.inApp': 'W aplikacji',
+  'gift.sent': 'Wysłano {item} do: {name} 🎁',
+  'vip.hidden': 'VIP włączony · nie wiedzą, kim jesteś',
+  'vip.reveal': 'Wyłącz VIP',
 }
 
 export default pl

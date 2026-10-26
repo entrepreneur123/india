@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Check, ExternalLink } from 'lucide-react'
+import { Check, ExternalLink, Gift } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { CATALOGUE, ITEM_KINDS, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type BadgeId, type FrameId, type ItemId } from '@/lib/looks'
@@ -20,6 +20,7 @@ import { LookBadge } from './badges'
 import { FrameAvatar, FrameCard } from './frames'
 import { lookKey, LookText } from './look-name'
 import { useLooksT, type LooksKey } from './looks-text'
+import { GiftSheet } from './gift-sheet'
 import { useAnonSwitch, useShop } from './use-shop'
 
 /**
@@ -56,6 +57,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   /** The wall being looked at (undefined: my wall). */
   const [wallTry, setWallTry] = useState<ItemId | null | undefined>(undefined)
   const [busy, setBusy] = useState(false)
+  const [gift, setGift] = useState<ItemId | null>(null)
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
   /** The photo effect and bubble being looked at (missing: the one I wear). */
   const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
@@ -410,7 +412,15 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         )}
         {backend.buyLook ? null : <p className="text-xs leading-relaxed text-muted-foreground">{lt('looks.appNote')}</p>}
       </div>
-      <div className="sticky bottom-0 border-t border-border bg-card px-6 py-4">{action}</div>
+      <div className="sticky bottom-0 flex flex-col gap-2 border-t border-border bg-card px-6 py-4">
+        {action}
+        {tried !== null ? (
+          <Button variant="ghost" className="w-full" onClick={() => setGift(tried)}>
+            <Gift className="size-4.5" aria-hidden /> {lt('gift.button')}
+          </Button>
+        ) : null}
+      </div>
+      <GiftSheet item={gift} name={gift ? itemName(lt, gift) : ''} price={gift ? price(gift) : ''} onClose={() => setGift(null)} />
     </div>
   )
 }

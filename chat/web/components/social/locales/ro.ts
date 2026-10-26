@@ -138,6 +138,8 @@ const ro: SocialDict = {
   'inbox.messages': 'Mesaje',
   'inbox.friends': 'Prieteni',
   'inbox.reactions': 'Aprecieri și comentarii',
+  'inbox.gift': '{name} ți-a trimis un cadou: {item}',
+  'inbox.giftOpen': 'Vezi',
 }
 
 export default ro

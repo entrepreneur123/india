@@ -150,6 +150,8 @@ const ar: SocialDict = {
   'inbox.messages': 'الرسائل',
   'inbox.friends': 'الأصدقاء',
   'inbox.reactions': 'الإعجابات والتعليقات',
+  'inbox.gift': 'أرسل لك {name} هدية: {item}',
+  'inbox.giftOpen': 'عرض',
 }
 
 export default ar

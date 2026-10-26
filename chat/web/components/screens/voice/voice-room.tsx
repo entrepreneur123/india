@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/pressable'
 import { ReactionIcon, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { RoomCountry } from '@/components/screens/rooms/room-country'
+import { VipReveal } from '@/components/looks/vip-reveal'
 import { besideClick, LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
 import { hostOf, shareable } from '@/lib/links'
 import { retryImport } from '@/lib/retry-import'
@@ -302,6 +303,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <LogOut className="size-5 rtl:-scale-x-100" aria-hidden />
             </Button>
           </header>
+          <VipReveal className="mx-3 mb-2 rounded-xl sm:mx-4" />
           {room.announcement ? <Announcement key={room.announcement} text={room.announcement} onEdit={mod ? () => setSheet({ kind: 'notice' }) : undefined} /> : null}
           {s.offline ? (
             <p role="status" className="mx-3 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-destructive/15 px-3 py-1.5 text-xs font-semibold text-destructive sm:mx-4">

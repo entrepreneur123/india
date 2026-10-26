@@ -33,8 +33,6 @@ const zhHant: Dict = {
   'panel.activity': '動態',
   'panel.friends': '我的好友',
   'panel.rooms': '直播房間',
-  'panel.friendCount.one': '{n} 位好友',
-  'panel.friendCount.other': '{n} 位好友',
   'panel.noFriends': '你在聊天中新增的好友會顯示在這裡。',
   'panel.message': '給 {name} 發訊息',
 
@@ -673,6 +671,17 @@ const zhHant: Dict = {
   'room.password': '房間密碼（選填）',
   'room.passwordHint': '4–12 個字元。外面的人需要它才能進入；改了新密碼會再次詢問。',
   'join.wrong': '房間碼不對，請向房主確認。',
+  'presence.online': '在線',
+  'presence.matching': '正在配對',
+  'presence.chat': '正在隨機聊天',
+  'presence.room': '在房間裡',
+  'presence.offline': '離線',
+  'panel.onlineCount': '{n} 人在線',
+  'panel.offlineCount': '離線 · {n}',
+  'panel.noneOnline': '現在沒有好友在線',
+  'notes.title': '好友便條',
+  'notes.mine': '你的便條',
+  'notes.add': '寫個便條…',
 }
 
 export default zhHant

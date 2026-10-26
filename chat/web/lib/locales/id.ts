@@ -33,8 +33,6 @@ const id: Dict = {
   'panel.activity': 'Aktivitas',
   'panel.friends': 'Teman kamu',
   'panel.rooms': 'Room live',
-  'panel.friendCount.one': '{n} teman',
-  'panel.friendCount.other': '{n} teman',
   'panel.noFriends': 'Teman yang kamu tambahkan dari chat akan muncul di sini.',
   'panel.message': 'Kirim pesan ke {name}',
 
@@ -673,6 +671,17 @@ const id: Dict = {
   'room.password': 'Kata sandi ruang (opsional)',
   'room.passwordHint': '4–12 karakter. Orang di luar perlu ini untuk masuk; yang baru akan ditanyakan lagi.',
   'join.wrong': 'Kode salah. Cek lagi ke host.',
+  'presence.online': 'Online',
+  'presence.matching': 'Mencari teman',
+  'presence.chat': 'Di chat acak',
+  'presence.room': 'Di ruang',
+  'presence.offline': 'Offline',
+  'panel.onlineCount': '{n} online',
+  'panel.offlineCount': 'Offline · {n}',
+  'panel.noneOnline': 'Tidak ada teman yang online sekarang',
+  'notes.title': 'Catatan teman',
+  'notes.mine': 'Catatanmu',
+  'notes.add': 'Tulis catatan…',
 }
 
 export default id
