@@ -85,9 +85,8 @@ const zhHans: LooksDict = {
   'blocks.unblock': '解除拉黑',
   'blocks.done': '已解除拉黑 {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': '聊天背景',
-  'looks.tab.sticker': '贴纸',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': '藏红花',
   'item.wall_midnight': '午夜',
@@ -95,19 +94,11 @@ const zhHans: LooksDict = {
   'item.wall_mehndi': '海娜',
   'item.wall_stars': '星空',
   'item.wall_waves': '波浪',
-  'item.sticker_namaste': '合十问好',
-  'item.sticker_chai': '奶茶时光',
-  'item.sticker_cricket': '板球',
-  'item.sticker_love': '爱心',
   'item.vip_anon': 'VIP 隐身',
   'wall.onlyYou': '你的聊天背景，只有你能看到',
   'wall.use': '使用此背景',
   'wall.inUse': '使用中',
   'wall.remove': '移除背景',
-  'sticker.count': '8 张贴纸',
-  'sticker.owned': '已拥有：可在任意聊天中发送',
-  'sticker.locked': '获取此贴纸包后即可发送这些贴纸',
-  'sticker.getPack': '获取贴纸包',
   'vip.strangers': '陌生人看到',
   'vip.friends': '好友看到',
   'vip.what': '在随机聊天、房间和搜索中，非好友只能看到“VIP”：看不到照片、ID、年龄、国家和简介。好友仍能看到全部信息，好友请求也照常可用。',
@@ -126,6 +117,14 @@ const zhHans: LooksDict = {
   'item.effect_aurora': '极光',
   'item.effect_prism': '棱镜',
   'effect.what': '头像上会有流动的光芒，头像出现的地方都会显示',
+  'looks.tab.bubble': '聊天气泡',
+  'item.bubble_peach': '蜜桃',
+  'item.bubble_ocean': '海洋',
+  'item.bubble_mint': '薄荷',
+  'item.bubble_galaxy': '星河',
+  'item.bubble_gold': '鎏金',
+  'item.bubble_neon': '霓虹',
+  'bubble.what': '所有人都会看到你的消息显示在这个气泡里',
 }
 
 export default zhHans

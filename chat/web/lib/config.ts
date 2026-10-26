@@ -9,17 +9,14 @@ export const GRIEVANCE_OFFICER = {
   email: 'grievance@yaari.app',
 }
 
-/** Set once the app is live on Google Play; until then the paywall says the Android app is coming. */
-export const PLAY_STORE_URL: string | null = null
-
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
 /** Without server keys the site runs on the in-browser demo backend (any 6-digit code works). */
 export const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON_KEY
 
-export const FREE_EXIT_LOCK_MS = 5000
-export const PLUS_EXIT_LOCK_MS = 200
+/** A random chat can be left 5 s after it starts (the server's exit_lock()). */
+export const EXIT_LOCK_MS = 5000
 
 /** The community rules, as dictionary keys (text in lib/locales/*). Same rules as the Android app. */
 export const COMMUNITY_RULES = ['rules.1', 'rules.2', 'rules.3', 'rules.4', 'rules.5'] as const

@@ -35,7 +35,7 @@ const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor
 
 /** My profile exactly as others see it (ProfileContent), with my buttons; every change happens in Edit profile. */
 export function MeScreen() {
-  const { me, t, setTab, entitlements, trust, openShop } = useApp()
+  const { me, t, setTab, trust, openShop } = useApp()
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
@@ -62,11 +62,6 @@ export function MeScreen() {
         <ProfileContent
           profile={me}
           trust={trust}
-          badge={
-            entitlements.premium ? (
-              <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-primary-text">{t('me.plusBadge')}</span>
-            ) : null
-          }
           slot={
             <div className="absolute top-3 inset-e-3 z-10 flex items-center gap-2">
               <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => openShop()}>

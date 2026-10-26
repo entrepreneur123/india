@@ -85,9 +85,8 @@ const fil: LooksDict = {
   'blocks.unblock': 'I-unblock',
   'blocks.done': 'Na-unblock si {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Mga wall',
-  'looks.tab.sticker': 'Mga sticker',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Saffron',
   'item.wall_midnight': 'Hatinggabi',
@@ -95,19 +94,11 @@ const fil: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Mabituing gabi',
   'item.wall_waves': 'Alon',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Chai time',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Love',
   'item.vip_anon': 'VIP incognito',
   'wall.onlyYou': 'Background ng mga chat mo. Ikaw lang ang nakakakita',
   'wall.use': 'Gamitin ang wall na ito',
   'wall.inUse': 'Gamit',
   'wall.remove': 'Alisin ang wall',
-  'sticker.count': '8 sticker',
-  'sticker.owned': 'Iyo na: ipadala mula sa kahit anong chat',
-  'sticker.locked': 'Kunin ang pack na ito para maipadala ang mga sticker na ito',
-  'sticker.getPack': 'Kunin ang pack',
   'vip.strangers': 'Nakikita ng di-kilala',
   'vip.friends': 'Nakikita ng friends',
   'vip.what': 'Sa random chat, rooms at search, “VIP” lang ang nakikita ng hindi mo friend: walang photo, ID, edad, bansa o bio. Nakikita pa rin ng friends mo ang lahat, at gumagana pa rin ang friend requests.',
@@ -126,6 +117,14 @@ const fil: LooksDict = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prism',
   'effect.what': 'May gumagalaw na liwanag sa profile photo mo, saanman ito lumabas',
+  'looks.tab.bubble': 'Mga chat bubble',
+  'item.bubble_peach': 'Peach',
+  'item.bubble_ocean': 'Karagatan',
+  'item.bubble_mint': 'Mint',
+  'item.bubble_galaxy': 'Galaxy',
+  'item.bubble_gold': 'Ginto',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Makikita ng lahat ang mga mensahe mo sa bubble na ito',
 }
 
 export default fil

@@ -1,17 +1,35 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { ageText, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
+import { ageText, BUBBLE_DESIGNS, bubbleOf, CATALOGUE, COLOR_DESIGNS, FONT_DESIGNS, isItem, isVip, kindOf, nameAge, NO_WEAR, parseLook, parseLooks, parseShop, wearOf, wearWith } from '../looks.ts'
 
-test('the catalogue: 26 looks (040), 11 walls, sticker packs and VIP (046), the photo gradient (062), each id starting with its kind', () => {
+test('the catalogue: 26 looks (040), walls and VIP (046), the photo gradient, effects and bubbles (062), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
-  assert.equal(all.length, 40)
-  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.sticker.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length], [6, 4, 1, 1, 2])
+  assert.equal(all.length, 42)
+  assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length, CATALOGUE.bubble.length], [6, 1, 1, 2, 6])
   for (const [kind, ids] of Object.entries(CATALOGUE)) for (const id of ids) assert.equal(kindOf(id), kind)
   for (const id of CATALOGUE.color) assert.ok(id in COLOR_DESIGNS, id)
   for (const id of CATALOGUE.font) assert.ok(id in FONT_DESIGNS, id)
   assert.equal(FONT_DESIGNS.font_pixel.scale, 0.8)
   assert.equal(isItem('badge_crown'), true)
   assert.equal(isItem('badge_unicorn'), false)
+})
+
+test('bubbles: every one is drawn, text readable (4.5:1) on each colour of it; unknown ones are none', () => {
+  const lum = (hex: string) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  }
+  const ratio = (a: string, b: string) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05)
+  assert.deepEqual(Object.keys(BUBBLE_DESIGNS).sort(), [...CATALOGUE.bubble].sort())
+  for (const [id, d] of Object.entries(BUBBLE_DESIGNS)) {
+    // The base gradient is the last layer; the stars and the gold sweep sit above it.
+    const stops = d.bg.slice(d.bg.lastIndexOf('linear-gradient')).match(/#[0-9A-F]{6}/gi)!
+    assert.ok(stops.length >= 2 && stops[0] === d.top, id)
+    for (const c of stops) assert.ok(ratio(d.text, c) >= 4.5, `${id} ${d.text} on ${c}: ${ratio(d.text, c).toFixed(2)}`)
+  }
+  for (const id of [null, undefined, 'bubble_disco', 'toString', 42]) assert.equal(bubbleOf(id), null, String(id))
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', bubble: 'bubble_gold' })?.bubble, 'bubble_gold')
+  assert.equal(parseLook({ id: 'u1', handle: 'a1', bubble: 'effect_prism' })?.bubble, undefined)
 })
 
 test('looks(): items this app can’t draw, or of the wrong kind, are left off; rows without an ID are skipped', () => {

@@ -85,9 +85,8 @@ const ja: LooksDict = {
   'blocks.unblock': 'ブロック解除',
   'blocks.done': '{name}さんのブロックを解除しました',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': '壁紙',
-  'looks.tab.sticker': 'スタンプ',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'サフラン',
   'item.wall_midnight': 'ミッドナイト',
@@ -95,19 +94,11 @@ const ja: LooksDict = {
   'item.wall_mehndi': 'メヘンディ',
   'item.wall_stars': '星空',
   'item.wall_waves': 'さざなみ',
-  'item.sticker_namaste': 'ナマステ',
-  'item.sticker_chai': 'チャイタイム',
-  'item.sticker_cricket': 'クリケット',
-  'item.sticker_love': 'ラブ',
   'item.vip_anon': 'VIPシークレット',
   'wall.onlyYou': 'トークの背景です。見えるのはあなただけ',
   'wall.use': 'この壁紙にする',
   'wall.inUse': '使用中',
   'wall.remove': '壁紙を外す',
-  'sticker.count': 'スタンプ8個',
-  'sticker.owned': '購入済み：どのトークからも送れます',
-  'sticker.locked': 'このパックを入手するとスタンプを送れます',
-  'sticker.getPack': 'パックを入手',
   'vip.strangers': '知らない人には',
   'vip.friends': '友だちには',
   'vip.what': 'ランダムチャット、ルーム、検索では、友だち以外には「VIP」とだけ表示されます。写真・ID・年齢・国・自己紹介は見えません。友だちにはすべて表示され、友だちリクエストもこれまでどおり使えます。',
@@ -126,6 +117,14 @@ const ja: LooksDict = {
   'item.effect_aurora': 'オーロラ',
   'item.effect_prism': 'プリズム',
   'effect.what': 'プロフィール写真の上を光が動いて輝きます。写真が表示されるすべての場所で',
+  'looks.tab.bubble': '吹き出し',
+  'item.bubble_peach': 'ピーチ',
+  'item.bubble_ocean': 'オーシャン',
+  'item.bubble_mint': 'ミント',
+  'item.bubble_galaxy': 'ギャラクシー',
+  'item.bubble_gold': 'ゴールド',
+  'item.bubble_neon': 'ネオン',
+  'bubble.what': 'みんなにあなたのメッセージがこの吹き出しで表示されます',
 }
 
 export default ja

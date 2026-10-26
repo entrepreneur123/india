@@ -18,7 +18,6 @@ const ko: Dict = {
   'net.offline': '인터넷 연결이 없어요. 다시 연결하는 중…',
   'error.screenTitle': '화면을 불러오지 못했어요',
   'common.loading': 'yaari 불러오는 중',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': '지금 yaari에 연결할 수 없어요',
   'boot.offlineBody': '인터넷 연결을 확인한 다음 다시 시도해 주세요.',
@@ -31,7 +30,6 @@ const ko: Dict = {
   'nav.me': '나',
   'nav.settings': '설정',
   'nav.home': '홈',
-  'nav.freePlan': '무료 플랜',
   'panel.activity': '활동',
   'panel.friends': '내 친구',
   'panel.rooms': '라이브 방',
@@ -39,9 +37,6 @@ const ko: Dict = {
   'panel.friendCount.other': '친구 {n}명',
   'panel.noFriends': '채팅에서 추가한 친구가 여기에 표시돼요.',
   'panel.message': '{name}님에게 메시지 보내기',
-  'panel.plusTitle': '만날 사람을 직접 골라 보세요',
-  'panel.plusBody': 'Yaari Plus로 성별 선택과 빠른 넘기기를 쓸 수 있어요.',
-  'panel.plusCta': 'Yaari Plus 보기',
 
   // sign-up
   'auth.badge': '18+ · 전화번호 인증',
@@ -78,10 +73,6 @@ const ko: Dict = {
   'country.none': '국가를 찾을 수 없어요',
   'countries.label': '국가',
   'countries.anywhere': '어디든',
-  'countries.title': '국가 선택',
-  'countries.hint': '무료 · 최대 {n}개 국가',
-  'countries.done': '완료',
-  'countries.only': '선택한 국가의 사람만 만나요',
 
   'otp.change': '번호 변경',
   'otp.title': '인증번호를 입력해 주세요',
@@ -529,7 +520,6 @@ const ko: Dict = {
   // me & profiles
   'me.edit': '프로필 편집',
   'me.newPost': '새 게시물',
-  'me.plusBadge': 'Plus',
   'me.firstPost': '첫 게시물을 공유해 보세요',
   'me.editDesc': '성별과 생년월일은 바꿀 수 없어요.',
   'me.updated': '프로필을 업데이트했어요',
@@ -561,9 +551,6 @@ const ko: Dict = {
   'settings.account': '계정',
   'settings.phone': '전화번호',
   'settings.verified': '인증됨',
-  'settings.plan': '플랜',
-  'settings.planPass': '24시간 성별 이용권',
-  'settings.planFree': '무료',
   'settings.language': '언어',
   'settings.roomSounds': '보이스룸 효과음',
   'settings.roomSoundsBody': '보이스룸에 누가 들어오거나 나가면 짧은 알림음이 울려요.',
@@ -617,20 +604,6 @@ const ko: Dict = {
   'tr.same': '이미 내 언어로 된 메시지예요',
 
   // Yaari Plus
-  'plus.tagline': '모든 대화를 더 내 마음대로.',
-  'plus.b1Title': '만날 사람 고르기',
-  'plus.b1Body': '여성 또는 남성만 골라서 매칭해요.',
-  'plus.b3Title': '0.2초 넘기기',
-  'plus.b3Body': '5초 기다리지 않고 바로 채팅을 나가요.',
-  'plus.plans': '플랜',
-  'plus.monthly': '월간',
-  'plus.monthlyNote': 'Plus 기능 전체 · 매월 자동 갱신, Google Play에서 언제든 해지 가능',
-  'plus.pass': '24시간 성별 이용권',
-  'plus.passNote': '하루 동안 성별 선택 · 1회 구매',
-  'plus.getApp': 'Android 앱에서 구매할 수 있어요',
-  'plus.getAppBody': '구매는 앱에서 해요. 같은 계정이라면 여기서도 Plus를 쓸 수 있어요.',
-  'plus.getItOn': '다운로드하기',
-  'plus.soon': 'Android 앱이 곧 Google Play에 출시돼요.',
 
   // time & errors
   'time.now': '방금',
@@ -670,8 +643,6 @@ const ko: Dict = {
   'error.not_owned': '아직 갖고 있지 않은 꾸미기 아이템이에요',
   'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어 가려면 친구로 추가해 주세요',
   'error.generic': '문제가 생겼어요. 다시 시도해 주세요',
-  'chat.sticker': '스티커',
-  'error.sticker_not_owned': '이 스티커 팩이 있어야 보낼 수 있어요',
   'nav.explore': '탐색',
   'explore.search': '아이디나 이름으로 검색',
   'explore.feed': '피드',
@@ -695,6 +666,8 @@ const ko: Dict = {
   'explore.country': '국가',
   'pf.photoRequired': '프로필 사진을 설정해야 시작할 수 있어요',
   'video.flip': '카메라 전환',
+  'chat.seeAll': '전체보기',
+  'voice.cameraNude': '노출로 보여 카메라가 꺼졌어요',
 }
 
 export default ko

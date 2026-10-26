@@ -18,7 +18,6 @@ const zhHans: Dict = {
   'net.offline': '没有网络，正在重新连接…',
   'error.screenTitle': '此页面无法加载',
   'common.loading': '正在加载 yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': '暂时连不上 yaari',
   'boot.offlineBody': '请检查网络连接，然后重试。',
@@ -31,7 +30,6 @@ const zhHans: Dict = {
   'nav.me': '我',
   'nav.settings': '设置',
   'nav.home': '首页',
-  'nav.freePlan': '免费版',
   'panel.activity': '动态',
   'panel.friends': '我的好友',
   'panel.rooms': '直播房间',
@@ -39,9 +37,6 @@ const zhHans: Dict = {
   'panel.friendCount.other': '{n} 位好友',
   'panel.noFriends': '你在聊天中添加的好友会显示在这里。',
   'panel.message': '给 {name} 发消息',
-  'panel.plusTitle': '想见谁，你来选',
-  'panel.plusBody': '开通 Yaari Plus，享受性别筛选和秒速跳过。',
-  'panel.plusCta': '了解 Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · 手机号已验证',
@@ -78,10 +73,6 @@ const zhHans: Dict = {
   'country.none': '未找到国家/地区',
   'countries.label': '国家',
   'countries.anywhere': '不限',
-  'countries.title': '选择国家',
-  'countries.hint': '免费 · 最多 {n} 个国家',
-  'countries.done': '完成',
-  'countries.only': '只匹配这些国家的人',
 
   'otp.change': '更换手机号',
   'otp.title': '输入验证码',
@@ -529,7 +520,6 @@ const zhHans: Dict = {
   // me & profiles
   'me.edit': '编辑资料',
   'me.newPost': '发布动态',
-  'me.plusBadge': 'Plus',
   'me.firstPost': '发布你的第一条动态',
   'me.editDesc': '性别和出生日期无法修改。',
   'me.updated': '资料已更新',
@@ -561,9 +551,6 @@ const zhHans: Dict = {
   'settings.account': '账号',
   'settings.phone': '手机号',
   'settings.verified': '已验证',
-  'settings.plan': '套餐',
-  'settings.planPass': '24 小时性别通行证',
-  'settings.planFree': '免费',
   'settings.language': '语言',
   'settings.roomSounds': '语音房提示音',
   'settings.roomSoundsBody': '有人进入或离开语音房时会响起短促的提示音。',
@@ -617,20 +604,6 @@ const zhHans: Dict = {
   'tr.same': '这条消息已经是你的语言了',
 
   // Yaari Plus
-  'plus.tagline': '每一次聊天，都由你掌控。',
-  'plus.b1Title': '想见谁，你来选',
-  'plus.b1Body': '随机匹配时可筛选女生或男生。',
-  'plus.b3Title': '0.2 秒跳过',
-  'plus.b3Body': '无需等待 5 秒，立刻离开聊天。',
-  'plus.plans': '套餐',
-  'plus.monthly': '包月',
-  'plus.monthlyNote': '全部 Plus 功能 · 按月自动续订，可随时在 Google Play 取消',
-  'plus.pass': '24 小时性别通行证',
-  'plus.passNote': '一天内可使用性别筛选 · 一次性购买',
-  'plus.getApp': '请在 Android 应用中购买。',
-  'plus.getAppBody': '购买需在应用内完成。之后使用同一账号，在这里也能享受 Plus。',
-  'plus.getItOn': '下载于',
-  'plus.soon': 'Android 应用即将上架 Google Play。',
 
   // time & errors
   'time.now': '刚刚',
@@ -670,8 +643,6 @@ const zhHans: Dict = {
   'error.not_owned': '你还没有这个装扮',
   'error.chat_closed': '此聊天已结束。添加对方为好友即可继续聊',
   'error.generic': '出了点问题，请重试',
-  'chat.sticker': '贴纸',
-  'error.sticker_not_owned': '获取此贴纸包后才能发送',
   'nav.explore': '探索',
   'explore.search': '按 ID 或名字搜索',
   'explore.feed': '动态',
@@ -695,6 +666,8 @@ const zhHans: Dict = {
   'explore.country': '国家',
   'pf.photoRequired': '请先设置头像才能开始',
   'video.flip': '切换摄像头',
+  'chat.seeAll': '查看全部',
+  'voice.cameraNude': '画面疑似裸露，你的摄像头已关闭',
 }
 
 export default zhHans

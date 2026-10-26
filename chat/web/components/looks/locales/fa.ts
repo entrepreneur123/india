@@ -85,9 +85,8 @@ const fa: LooksDict = {
   'blocks.unblock': 'رفع مسدودیت',
   'blocks.done': '{name} از مسدودی خارج شد',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'پس‌زمینه‌ها',
-  'looks.tab.sticker': 'استیکرها',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'زعفرانی',
   'item.wall_midnight': 'نیمه‌شب',
@@ -95,19 +94,11 @@ const fa: LooksDict = {
   'item.wall_mehndi': 'حنا',
   'item.wall_stars': 'شب پرستاره',
   'item.wall_waves': 'موج‌ها',
-  'item.sticker_namaste': 'نمسته',
-  'item.sticker_chai': 'وقت چای',
-  'item.sticker_cricket': 'کریکت',
-  'item.sticker_love': 'عشق',
   'item.vip_anon': 'VIP ناشناس',
   'wall.onlyYou': 'پس‌زمینهٔ چت‌های شما. فقط خودتان آن را می‌بینید',
   'wall.use': 'استفاده از این پس‌زمینه',
   'wall.inUse': 'در حال استفاده',
   'wall.remove': 'حذف پس‌زمینه',
-  'sticker.count': '۸ استیکر',
-  'sticker.owned': 'مال شماست: از هر چتی بفرستید',
-  'sticker.locked': 'برای فرستادن این استیکرها این بسته را بگیرید',
-  'sticker.getPack': 'گرفتن بسته',
   'vip.strangers': 'غریبه‌ها می‌بینند',
   'vip.friends': 'دوستان می‌بینند',
   'vip.what': 'در چت تصادفی، اتاق‌ها و جستجو، کسانی که دوست شما نیستند فقط «VIP» می‌بینند: بدون عکس، ID، سن، کشور یا بیو. دوستانتان همچنان همه‌چیز را می‌بینند و درخواست دوستی هم مثل قبل کار می‌کند.',
@@ -126,6 +117,14 @@ const fa: LooksDict = {
   'item.effect_aurora': 'شفق',
   'item.effect_prism': 'منشور',
   'effect.what': 'نور روی عکس پروفایلت حرکت می‌کند، هر جا که نشان داده شود',
+  'looks.tab.bubble': 'حباب‌های گفتگو',
+  'item.bubble_peach': 'هلویی',
+  'item.bubble_ocean': 'اقیانوس',
+  'item.bubble_mint': 'نعنایی',
+  'item.bubble_galaxy': 'کهکشان',
+  'item.bubble_gold': 'طلایی',
+  'item.bubble_neon': 'نئون',
+  'bubble.what': 'همه پیام‌های شما را در این حباب می‌بینند',
 }
 
 export default fa

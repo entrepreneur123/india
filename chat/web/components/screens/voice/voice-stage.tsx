@@ -2,8 +2,9 @@
 
 import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as m from 'motion/react-m'
+import { useEffect, useRef } from 'react'
 import { Lock, MicOff, Plus, WifiOff } from 'lucide-react'
-import { VOICE_SEATS, type VoiceMember, type VoiceRoom } from '@/lib/backend'
+import { VOICE_SEATS, type VoiceMember, type VoiceRoom, type VoiceVideo } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { ReactionIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
@@ -62,6 +63,50 @@ export function LostBadge({ size, className }: { size: number; className?: strin
     >
       <WifiOff style={{ width: size * 0.58, height: size * 0.58 }} />
     </span>
+  )
+}
+
+/**
+ * The cameras on the stage (24), above the seats: one tile, or three across (eight seats fit in three rows); a tile lights up while its
+ * person talks and opens their profile. My own is mirrored, as in a mirror.
+ */
+export function VideoGrid({ room, videos, levels, onPerson }: { room: VoiceRoom; videos: Record<string, VoiceVideo>; levels: LevelStore; onPerson: (userId: string) => void }) {
+  const { t } = useI18n()
+  const people = room.members.filter((x) => x.seat !== null && videos[x.profile.id]).sort((a, b) => a.seat! - b.seat!)
+  if (!people.length) return null
+  return (
+    <ul aria-label={t('voice.stage')} className={cn('mx-auto grid w-full gap-1.5 px-1 pt-2 pb-1', people.length === 1 ? 'max-w-56' : people.length === 2 ? 'max-w-md grid-cols-2' : 'max-w-lg grid-cols-3')}>
+      {people.map((x) => (
+        <li key={x.profile.id}>
+          <VideoTile member={x} video={videos[x.profile.id]} levels={levels} onClick={() => onPerson(x.profile.id)} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function VideoTile({ member, video, levels, onClick }: { member: VoiceMember; video: VoiceVideo; levels: LevelStore; onClick: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  const talking = useLevel(levels, member.profile.id) > SPEAKING
+  useEffect(() => {
+    const el = ref.current!
+    video.attach(el)
+    return () => video.detach(el)
+  }, [video])
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={member.profile.name}
+      className={cn('relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-black ring-2 transition-shadow duration-150', talking ? 'ring-primary-text' : 'ring-transparent')}
+    >
+      {/* Sound comes from the room's audio; the picture stays muted. */}
+      <video ref={ref} autoPlay playsInline muted className={cn('size-full object-cover', video.mine && '-scale-x-100')} />
+      <span className="absolute start-1.5 bottom-1.5 flex max-w-[calc(100%-0.75rem)] items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-xs font-semibold text-white">
+        <span className="truncate">{member.profile.name}</span>
+        {member.muted ? <MicOff className="size-3.5 shrink-0" aria-hidden /> : null}
+      </span>
+    </button>
   )
 }
 

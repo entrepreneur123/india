@@ -1,6 +1,7 @@
 // Live audio for a voice room: LiveKit room "voice-<id>" (token from the voice-token edge function). Everyone hears
-// the people on the stage; I send my microphone only while I'm on a seat and unmuted. Loaded only when a voice room
-// opens (the SDK is a separate chunk, shared with video calls).
+// the people on the stage; I send my microphone only while I'm on a seat and unmuted. People on a seat may also turn
+// their camera on (24): 360p with a 180p layer, and each viewer gets the layer its tile needs (adaptive stream).
+// Loaded only when a voice room opens (the SDK is a separate chunk, shared with video calls).
 import {
   AudioPresets,
   createAudioAnalyser,
@@ -12,8 +13,11 @@ import {
   Room,
   RoomEvent,
   Track,
+  VideoPresets,
+  type VideoTrack,
 } from 'livekit-client'
-import { isAppleWebKit } from './rtc'
+import type { VoiceVideo } from './backend'
+import { deviceProblem, isAppleWebKit, videoCodecFor } from './rtc'
 import { cleanMicrophone } from './voice-gate'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
@@ -28,6 +32,8 @@ export interface VoiceAudioEvents {
   permissions(canPublish: boolean): void
   /** A host muted my microphone on the server. */
   micMutedByServer(): void
+  /** The cameras that are on now, by user id (mine too). */
+  videos(videos: Record<string, VoiceVideo>): void
   /** Disconnected for good: removed from the room, the room ended, or the connection was lost. */
   gone(removed: boolean): void
 }
@@ -36,6 +42,8 @@ export interface VoiceAudio {
   readonly canPublish: boolean
   /** Throws 'mic_denied' (no permission or no microphone) or 'not_allowed' (not on a seat yet). */
   setMic(on: boolean): Promise<void>
+  /** Throws a DeviceProblem ('denied', 'missing', 'busy', 'other') or 'not_allowed' (not on a seat). */
+  setCamera(on: boolean): Promise<void>
   startAudio(): Promise<void>
   disconnect(): Promise<void>
 }
@@ -45,12 +53,18 @@ const LEVEL_MS = 100
 export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioEvents, signal: AbortSignal): Promise<VoiceAudio> {
   if (signal.aborted) throw new DOMException('left', 'AbortError')
   const room = new Room({
-    adaptiveStream: false,
-    dynacast: false,
+    // Video only: each tile gets the layer its size needs, and nobody encodes a layer nobody watches.
+    adaptiveStream: true,
+    dynacast: true,
     audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    videoCaptureDefaults: { resolution: VideoPresets.h360.resolution, facingMode: 'user' },
     // Opus mono capped at 48 kbps, as in 1:1 calls (24 kbps sounded muffled next to Discord or X Spaces); DTX so
     // silence costs nothing (a listener downloads only the people talking), RED so a lost packet is covered by the next.
-    publishDefaults: { audioPreset: AudioPresets.music, dtx: true, red: true, forceStereo: false },
+    publishDefaults: {
+      audioPreset: AudioPresets.music, dtx: true, red: true, forceStereo: false,
+      videoCodec: videoCodecFor(navigator.userAgent, navigator.maxTouchPoints), simulcast: true,
+      videoEncoding: VideoPresets.h360.encoding, videoSimulcastLayers: [VideoPresets.h180],
+    },
   })
   // createAudioAnalyser opens a new AudioContext per track. On iPhone/iPad that context (44.1 kHz next to WebRTC's
   // 48 kHz, and one per speaker) can make the whole room crackle or sound metallic, and on Android phones it opens a
@@ -63,6 +77,22 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   box.hidden = true
   document.body.appendChild(box)
   const meters = new Map<string, { identity: string; volume: () => number; cleanup: () => Promise<void> }>()
+  // The cameras on now: everyone's unmuted camera track (mine mirrored, like a mirror).
+  const emitVideos = () => {
+    const out: Record<string, VoiceVideo> = {}
+    const all: Participant[] = [room.localParticipant, ...room.remoteParticipants.values()]
+    for (const p of all) {
+      const pub = p.getTrackPublication(Track.Source.Camera)
+      const track = pub?.track as VideoTrack | undefined
+      if (!track || pub!.isMuted) continue
+      out[p.identity] = {
+        mine: p === room.localParticipant,
+        attach: (el) => void track.attach(el),
+        detach: (el) => void track.detach(el),
+      }
+    }
+    ev.videos(out)
+  }
   let micWanted = false
   let timer: ReturnType<typeof setInterval> | undefined
 
@@ -93,24 +123,33 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
 
   room
     .on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, p) => {
+      if (track.kind === Track.Kind.Video) return emitVideos()
       // Once per track: a second <audio> for the same voice (the catch-up below can see it too) doubles it.
       if (track.kind !== Track.Kind.Audio || track.attachedElements.length) return
       box.appendChild(track.attach())
       meter(pub.trackSid, p.identity, track as RemoteAudioTrack)
     })
     .on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub) => {
+      if (track.kind === Track.Kind.Video) return emitVideos() // the tiles detach their own <video>
       track.detach().forEach((el) => el.remove())
       unmeter(pub.trackSid)
     })
     .on(RoomEvent.LocalTrackPublished, (pub) => {
       if (pub.track && pub.kind === Track.Kind.Audio) meter(pub.trackSid, room.localParticipant.identity, pub.track as LocalAudioTrack)
+      if (pub.kind === Track.Kind.Video) emitVideos()
     })
-    .on(RoomEvent.LocalTrackUnpublished, (pub) => unmeter(pub.trackSid))
+    .on(RoomEvent.LocalTrackUnpublished, (pub) => {
+      unmeter(pub.trackSid)
+      if (pub.kind === Track.Kind.Video) emitVideos()
+    })
+    .on(RoomEvent.TrackUnmuted, (pub) => pub.kind === Track.Kind.Video && emitVideos())
+    .on(RoomEvent.ParticipantDisconnected, emitVideos)
     .on(RoomEvent.AudioPlaybackStatusChanged, () => ev.blocked(!room.canPlaybackAudio))
     .on(RoomEvent.ParticipantPermissionsChanged, (_prev, p: Participant) => {
       if (p === room.localParticipant) ev.permissions(!!p.permissions?.canPublish)
     })
     .on(RoomEvent.TrackMuted, (pub, p: Participant) => {
+      if (pub.kind === Track.Kind.Video) return emitVideos()
       // My own mute arrives here too; only a mute while I wanted to talk (the server's) is news.
       if (p !== room.localParticipant || pub.source !== Track.Source.Microphone || !micWanted) return
       micWanted = false
@@ -160,6 +199,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   )
   ev.status('connected')
   ev.blocked(!room.canPlaybackAudio)
+  emitVideos()
 
   return {
     get canPublish() {
@@ -178,6 +218,16 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
           throw new Error('mic_denied')
         }
         throw new Error('not_allowed')
+      }
+    },
+    setCamera: async (on) => {
+      if (on && !room.localParticipant.permissions?.canPublish) throw new Error('not_allowed')
+      try {
+        await room.localParticipant.setCameraEnabled(on)
+      } catch (e) {
+        throw new Error(deviceProblem(e))
+      } finally {
+        emitVideos()
       }
     },
     startAudio: () => room.startAudio(),

@@ -18,7 +18,6 @@ const fa: Dict = {
   'net.offline': 'اینترنت قطع است. در حال اتصال دوباره…',
   'error.screenTitle': 'این صفحه باز نشد',
   'common.loading': 'در حال بارگذاری yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'فعلاً به yaari دسترسی نداریم',
   'boot.offlineBody': 'اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.',
@@ -31,7 +30,6 @@ const fa: Dict = {
   'nav.me': 'من',
   'nav.settings': 'تنظیمات',
   'nav.home': 'خانه',
-  'nav.freePlan': 'طرح رایگان',
   'panel.activity': 'فعالیت',
   'panel.friends': 'دوستان شما',
   'panel.rooms': 'روم‌های زنده',
@@ -39,9 +37,6 @@ const fa: Dict = {
   'panel.friendCount.other': '{n} دوست',
   'panel.noFriends': 'دوستانی که از چت‌ها اضافه می‌کنید اینجا نشان داده می‌شوند.',
   'panel.message': 'پیام به {name}',
-  'panel.plusTitle': 'خودتان انتخاب کنید با چه کسی آشنا شوید',
-  'panel.plusBody': 'فیلتر جنسیت و رد شدن فوری با Yaari Plus.',
-  'panel.plusCta': 'دیدن Yaari Plus',
 
   // sign-up
   'auth.badge': '۱۸+ · شماره تأییدشده',
@@ -78,10 +73,6 @@ const fa: Dict = {
   'country.none': 'کشوری پیدا نشد',
   'countries.label': 'کشورها',
   'countries.anywhere': 'هر جا',
-  'countries.title': 'انتخاب کشورها',
-  'countries.hint': 'رایگان · تا {n} کشور',
-  'countries.done': 'تمام',
-  'countries.only': 'فقط افراد این کشورها',
 
   'otp.change': 'تغییر شماره',
   'otp.title': 'کد را وارد کنید',
@@ -529,7 +520,6 @@ const fa: Dict = {
   // me & profiles
   'me.edit': 'ویرایش پروفایل',
   'me.newPost': 'پست جدید',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'اولین پستتان را بگذارید',
   'me.editDesc': 'جنسیت و تاریخ تولد قابل تغییر نیستند.',
   'me.updated': 'پروفایل به‌روز شد',
@@ -561,9 +551,6 @@ const fa: Dict = {
   'settings.account': 'حساب',
   'settings.phone': 'شماره تلفن',
   'settings.verified': 'تأییدشده',
-  'settings.plan': 'طرح',
-  'settings.planPass': 'پاس جنسیت ۲۴ ساعته',
-  'settings.planFree': 'رایگان',
   'settings.language': 'زبان',
   'settings.roomSounds': 'صداهای اتاق صوتی',
   'settings.roomSoundsBody': 'وقتی کسی وارد اتاق صوتی می‌شود یا از آن بیرون می‌رود، صدای کوتاهی پخش می‌شود.',
@@ -617,20 +604,6 @@ const fa: Dict = {
   'tr.same': 'این پیام همین حالا به زبان شماست',
 
   // Yaari Plus
-  'plus.tagline': 'کنترل بیشتر روی هر گفتگو.',
-  'plus.b1Title': 'خودتان انتخاب کنید با چه کسی آشنا شوید',
-  'plus.b1Body': 'آشنایی‌های تصادفی را بر اساس زن یا مرد فیلتر کنید.',
-  'plus.b3Title': 'رد شدن در ۰٫۲ ثانیه',
-  'plus.b3Body': 'به‌جای ۵ ثانیه انتظار، فوری از چت خارج شوید.',
-  'plus.plans': 'طرح‌ها',
-  'plus.monthly': 'ماهانه',
-  'plus.monthlyNote': 'همهٔ امکانات Plus · تمدید ماهانه، هر وقت خواستید در Google Play لغو کنید',
-  'plus.pass': 'پاس جنسیت ۲۴ ساعته',
-  'plus.passNote': 'فیلتر جنسیت برای یک روز · خرید یک‌باره',
-  'plus.getApp': 'آن را در اپ اندروید بگیرید.',
-  'plus.getAppBody': 'خرید داخل اپ انجام می‌شود. بعد Plus اینجا هم، روی همان حساب، کار می‌کند.',
-  'plus.getItOn': 'دریافت از',
-  'plus.soon': 'اپ اندروید به‌زودی در Google Play می‌آید.',
 
   // time & errors
   'time.now': 'همین حالا',
@@ -670,8 +643,6 @@ const fa: Dict = {
   'error.not_owned': 'هنوز این ظاهر را ندارید',
   'error.chat_closed': 'این گفت‌وگو تمام شده است. برای ادامهٔ صحبت، او را دوست خود کنید',
   'error.generic': 'مشکلی پیش آمد. لطفاً دوباره امتحان کنید',
-  'chat.sticker': 'استیکر',
-  'error.sticker_not_owned': 'برای فرستادن این استیکر، بسته‌اش را بگیرید',
   'nav.explore': 'کاوش',
   'explore.search': 'جستجو با شناسه یا نام',
   'explore.feed': 'فید',
@@ -695,6 +666,8 @@ const fa: Dict = {
   'explore.country': 'کشور',
   'pf.photoRequired': 'برای شروع یک عکس پروفایل اضافه کن',
   'video.flip': 'تعویض دوربین',
+  'chat.seeAll': 'مشاهده همه',
+  'voice.cameraNude': 'دوربین شما خاموش شد چون تصویر شبیه برهنگی بود',
 }
 
 export default fa

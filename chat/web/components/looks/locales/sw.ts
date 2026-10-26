@@ -85,9 +85,8 @@ const sw: LooksDict = {
   'blocks.unblock': 'Ondoa kizuizi',
   'blocks.done': '{name} ameondolewa kizuizi',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Mandhari',
-  'looks.tab.sticker': 'Stika',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Zafarani',
   'item.wall_midnight': 'Usiku wa manane',
@@ -95,19 +94,11 @@ const sw: LooksDict = {
   'item.wall_mehndi': 'Hina',
   'item.wall_stars': 'Usiku wa nyota',
   'item.wall_waves': 'Mawimbi',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Wakati wa chai',
-  'item.sticker_cricket': 'Kriketi',
-  'item.sticker_love': 'Mapenzi',
   'item.vip_anon': 'VIP fiche',
   'wall.onlyYou': 'Mandhari ya gumzo zako. Ni wewe tu unayeiona',
   'wall.use': 'Tumia mandhari hii',
   'wall.inUse': 'Inatumika',
   'wall.remove': 'Ondoa mandhari',
-  'sticker.count': 'Stika 8',
-  'sticker.owned': 'Ni zako: zitume kutoka gumzo lolote',
-  'sticker.locked': 'Pata kifurushi hiki ili kutuma stika hizi',
-  'sticker.getPack': 'Pata kifurushi',
   'vip.strangers': 'Wageni wanaona',
   'vip.friends': 'Marafiki wanaona',
   'vip.what': 'Kwenye gumzo za nasibu, vyumba na utafutaji, wasio marafiki zako wanaona “VIP” tu: hakuna picha, ID, umri, nchi wala wasifu. Marafiki zako bado wanaona kila kitu, na maombi ya urafiki bado yanafanya kazi.',
@@ -126,6 +117,14 @@ const sw: LooksDict = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prizimu',
   'effect.what': 'Mwanga unasogea juu ya picha yako ya wasifu, popote inapoonekana',
+  'looks.tab.bubble': 'Viputo vya gumzo',
+  'item.bubble_peach': 'Pichi',
+  'item.bubble_ocean': 'Bahari',
+  'item.bubble_mint': 'Mnanaa',
+  'item.bubble_galaxy': 'Galaksi',
+  'item.bubble_gold': 'Dhahabu',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Kila mtu anaona ujumbe wako katika kiputo hiki',
 }
 
 export default sw

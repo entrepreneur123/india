@@ -5,7 +5,7 @@ import * as m from 'motion/react-m'
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
 import { useSWRConfig, type Key } from 'swr'
-import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom } from '@/lib/backend'
+import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom, type VoiceVideo } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
@@ -73,6 +73,8 @@ export interface VoiceSession {
   reactions: Reaction[]
   /** The live audio (null in the demo, or before it starts). */
   audio: VoiceAudioState | null
+  /** Cameras on now, by user id (24). */
+  videos: Record<string, VoiceVideo>
   /** My connection dropped (beats failing or realtime down): the room shows "Reconnecting…". */
   offline: boolean
   act: (a: VoiceAction) => Promise<boolean>
@@ -97,6 +99,11 @@ export interface VoiceSession {
 }
 
 const REACTION_MS = 2600
+const CAMERA_ERRORS: Partial<Record<string, 'video.camDenied' | 'video.noCamera' | 'video.deviceBusy'>> = {
+  camera_denied: 'video.camDenied',
+  camera_missing: 'video.noCamera',
+  camera_busy: 'video.deviceBusy',
+}
 
 function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefObject<boolean>): VoiceSession {
   const backend = useBackend()
@@ -107,6 +114,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   const [lines, setLines] = useState<VoiceLine[] | null>(null)
   const [reactions, setReactions] = useState<Reaction[]>([])
   const [audio, setAudio] = useState<VoiceAudioState | null>(null)
+  const [videos, setVideos] = useState<Record<string, VoiceVideo>>({})
   const [offline, setOffline] = useState(false)
   const [polls, dispatch] = useReducer(pollsReducer, {})
   const pollsRef = useRef(polls)
@@ -155,6 +163,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           break
         case 'audio':
           setAudio(e.audio)
+          break
+        case 'videos':
+          setVideos(e.videos)
           break
         case 'connection':
           setOffline(e.lost)
@@ -316,11 +327,13 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         await backend.voiceAction(roomId, a)
         return true
       } catch (err) {
-        toast.error(err)
+        const camera = CAMERA_ERRORS[errorCode(err)]
+        if (camera) toast.show(t(camera), 'error')
+        else toast.error(err)
         return false
       }
     },
-    [backend, roomId, toast],
+    [backend, roomId, toast, t],
   )
 
   const send = useCallback(
@@ -427,8 +440,34 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     return () => document.removeEventListener('pointerdown', startAudio)
   }, [needsTap, startAudio])
 
+  // My camera is checked on this device like a call's video (lib/nudity): looking nude, it turns off for everyone.
+  const myVideo = me ? videos[me.profile.id] : undefined
+  useEffect(() => {
+    if (!myVideo) return
+    let stopped = false
+    let watch: { stop(): void } | null = null
+    const el = document.createElement('video')
+    el.muted = true
+    el.playsInline = true
+    myVideo.attach(el)
+    void el.play().catch(() => undefined)
+    void retryImport(() => import('@/lib/nudity'))
+      .then(({ watchNudity }) => watchNudity(el, (hide) => {
+        if (!hide || stopped) return
+        void backend.voiceAction(roomId, { type: 'camera', on: false }).catch(() => undefined)
+        toast.show(t('voice.cameraNude'), 'error')
+      }))
+      .then((w) => (stopped ? w.stop() : (watch = w)))
+      .catch(() => undefined) // no model on this device: the camera stays as it is, like a call
+    return () => {
+      stopped = true
+      watch?.stop()
+      myVideo.detach(el)
+    }
+  }, [myVideo, backend, roomId, toast, t])
+
   return {
-    room, me, lines, levels, reactions, audio, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
+    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
     polls, createPoll, votePoll, closePoll, typing, notifyTyping,
   }
 }

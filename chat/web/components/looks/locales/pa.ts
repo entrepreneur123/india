@@ -85,9 +85,8 @@ const pa: LooksDict = {
   'blocks.unblock': 'ਅਨਬਲੌਕ ਕਰੋ',
   'blocks.done': '{name} ਨੂੰ ਅਨਬਲੌਕ ਕਰ ਦਿੱਤਾ',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'ਵਾਲਪੇਪਰ',
-  'looks.tab.sticker': 'ਸਟਿੱਕਰ',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'ਕੇਸਰੀ',
   'item.wall_midnight': 'ਅੱਧੀ ਰਾਤ',
@@ -95,19 +94,11 @@ const pa: LooksDict = {
   'item.wall_mehndi': 'ਮਹਿੰਦੀ',
   'item.wall_stars': 'ਤਾਰਿਆਂ ਭਰੀ ਰਾਤ',
   'item.wall_waves': 'ਲਹਿਰਾਂ',
-  'item.sticker_namaste': 'ਨਮਸਤੇ',
-  'item.sticker_chai': 'ਚਾਹ ਟਾਈਮ',
-  'item.sticker_cricket': 'ਕ੍ਰਿਕਟ',
-  'item.sticker_love': 'ਪਿਆਰ',
   'item.vip_anon': 'VIP ਇਨਕੌਗਨਿਟੋ',
   'wall.onlyYou': 'ਤੁਹਾਡੀ ਚੈਟ ਦਾ ਬੈਕਗ੍ਰਾਊਂਡ। ਇਹ ਸਿਰਫ਼ ਤੁਹਾਨੂੰ ਦਿਖਦਾ ਹੈ',
   'wall.use': 'ਇਹ ਵਾਲਪੇਪਰ ਲਗਾਓ',
   'wall.inUse': 'ਲੱਗਿਆ ਹੋਇਆ',
   'wall.remove': 'ਵਾਲਪੇਪਰ ਹਟਾਓ',
-  'sticker.count': '8 ਸਟਿੱਕਰ',
-  'sticker.owned': 'ਤੁਹਾਡੇ ਹਨ: ਕਿਸੇ ਵੀ ਚੈਟ ਤੋਂ ਭੇਜੋ',
-  'sticker.locked': 'ਇਹ ਸਟਿੱਕਰ ਭੇਜਣ ਲਈ ਇਹ ਪੈਕ ਲਓ',
-  'sticker.getPack': 'ਪੈਕ ਲਓ',
   'vip.strangers': 'ਅਣਜਾਣ ਲੋਕ ਦੇਖਦੇ ਹਨ',
   'vip.friends': 'ਦੋਸਤ ਦੇਖਦੇ ਹਨ',
   'vip.what': 'ਰੈਂਡਮ ਚੈਟ, ਰੂਮ ਅਤੇ ਸਰਚ ਵਿੱਚ ਜੋ ਤੁਹਾਡੇ ਦੋਸਤ ਨਹੀਂ, ਉਨ੍ਹਾਂ ਨੂੰ ਸਿਰਫ਼ “VIP” ਦਿਖਦਾ ਹੈ: ਨਾ ਫ਼ੋਟੋ, ਨਾ ID, ਨਾ ਉਮਰ, ਨਾ ਦੇਸ਼, ਨਾ ਬਾਇਓ। ਦੋਸਤਾਂ ਨੂੰ ਸਭ ਕੁਝ ਦਿਖਦਾ ਹੈ, ਅਤੇ ਫ਼੍ਰੈਂਡ ਰਿਕਵੈਸਟ ਵੀ ਪਹਿਲਾਂ ਵਾਂਗ ਚੱਲਦੀਆਂ ਹਨ।',
@@ -126,6 +117,14 @@ const pa: LooksDict = {
   'item.effect_aurora': 'ਔਰੋਰਾ',
   'item.effect_prism': 'ਪ੍ਰਿਜ਼ਮ',
   'effect.what': 'ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਫ਼ੋਟੋ ਉੱਤੇ ਰੋਸ਼ਨੀ ਚੱਲਦੀ ਹੈ, ਜਿੱਥੇ ਵੀ ਦਿਖੇ',
+  'looks.tab.bubble': 'ਚੈਟ ਬਬਲ',
+  'item.bubble_peach': 'ਪੀਚ',
+  'item.bubble_ocean': 'ਸਮੁੰਦਰ',
+  'item.bubble_mint': 'ਮਿੰਟ',
+  'item.bubble_galaxy': 'ਗਲੈਕਸੀ',
+  'item.bubble_gold': 'ਸੁਨਹਿਰੀ',
+  'item.bubble_neon': 'ਨਿਓਨ',
+  'bubble.what': 'ਸਭ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਇਸ ਬਬਲ ਵਿੱਚ ਵੇਖਣਗੇ',
 }
 
 export default pa

@@ -17,7 +17,6 @@ const nl: Dict = {
   'net.offline': 'Geen internet. Opnieuw verbinden…',
   'error.screenTitle': 'Dit scherm kon niet laden',
   'common.loading': 'yaari laden',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'yaari is nu niet bereikbaar',
   'boot.offlineBody': 'Controleer je internetverbinding en probeer het opnieuw.',
@@ -29,7 +28,6 @@ const nl: Dict = {
   'nav.me': 'Ik',
   'nav.settings': 'Instellingen',
   'nav.home': 'Home',
-  'nav.freePlan': 'Gratis abonnement',
   'panel.activity': 'Activiteit',
   'panel.friends': 'Je vrienden',
   'panel.rooms': 'Live rooms',
@@ -37,9 +35,6 @@ const nl: Dict = {
   'panel.friendCount.other': '{n} vrienden',
   'panel.noFriends': 'Vrienden die je vanuit chats toevoegt, verschijnen hier.',
   'panel.message': 'Bericht aan {name}',
-  'panel.plusTitle': 'Kies wie je ontmoet',
-  'panel.plusBody': 'Genderfilter en direct overslaan met Yaari Plus.',
-  'panel.plusCta': 'Bekijk Yaari Plus',
 
   'auth.badge': '18+ · telefoon geverifieerd',
   'auth.verifiedBadge': 'Krijg je verificatiebadge: ID + selfie',
@@ -75,10 +70,6 @@ const nl: Dict = {
   'country.none': 'Geen landen gevonden',
   'countries.label': 'Landen',
   'countries.anywhere': 'Overal',
-  'countries.title': 'Kies landen',
-  'countries.hint': 'Gratis · tot {n} landen',
-  'countries.done': 'Klaar',
-  'countries.only': 'Alleen mensen uit deze landen',
 
   'otp.change': 'Nummer wijzigen',
   'otp.title': 'Voer de code in',
@@ -520,7 +511,6 @@ const nl: Dict = {
 
   'me.edit': 'Profiel bewerken',
   'me.newPost': 'Nieuwe post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Deel je eerste post',
   'me.editDesc': 'Gender en geboortedatum kun je niet wijzigen.',
   'me.updated': 'Profiel bijgewerkt',
@@ -551,9 +541,6 @@ const nl: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Telefoonnummer',
   'settings.verified': 'Geverifieerd',
-  'settings.plan': 'Abonnement',
-  'settings.planPass': 'Genderpas voor 24 uur',
-  'settings.planFree': 'Gratis',
   'settings.language': 'Taal',
   'settings.roomSounds': 'Geluiden in spraakruimte',
   'settings.roomSoundsBody': 'Een kort geluid als iemand een spraakruimte binnenkomt of verlaat.',
@@ -605,20 +592,6 @@ const nl: Dict = {
   'tr.tooLong': 'Dit bericht is te lang om te vertalen',
   'tr.same': 'Dit bericht is al in jouw taal',
 
-  'plus.tagline': 'Meer controle over elk gesprek.',
-  'plus.b1Title': 'Kies wie je ontmoet',
-  'plus.b1Body': 'Filter random matches op vrouwen of mannen.',
-  'plus.b3Title': 'Overslaan in 0,2 s',
-  'plus.b3Body': 'Verlaat een chat meteen in plaats van 5 s te wachten.',
-  'plus.plans': 'Abonnementen',
-  'plus.monthly': 'Maandelijks',
-  'plus.monthlyNote': 'Alle Plus-functies · wordt maandelijks verlengd, altijd opzegbaar in Google Play',
-  'plus.pass': 'Genderpas voor 24 uur',
-  'plus.passNote': 'Genderfilter voor één dag · eenmalige aankoop',
-  'plus.getApp': 'Haal het in de Android-app.',
-  'plus.getAppBody': 'Aankopen doe je in de app. Daarna werkt Plus ook hier, met hetzelfde account.',
-  'plus.getItOn': 'Ontdek het op',
-  'plus.soon': 'De Android-app komt binnenkort naar Google Play.',
 
   'time.now': 'zojuist',
   'error.exit_locked': 'Wacht even voordat je weggaat',
@@ -657,8 +630,6 @@ const nl: Dict = {
   'error.not_owned': 'Deze look is nog niet van jou',
   'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',
   'error.generic': 'Er ging iets mis. Probeer het opnieuw',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Haal dit stickerpakket om hem te sturen',
   'nav.explore': 'Ontdekken',
   'explore.search': 'Zoek op ID of naam',
   'explore.feed': 'Feed',
@@ -682,6 +653,8 @@ const nl: Dict = {
   'explore.country': 'Land',
   'pf.photoRequired': 'Voeg een profielfoto toe om te beginnen',
   'video.flip': 'Wissel camera',
+  'chat.seeAll': 'Alles bekijken',
+  'voice.cameraNude': 'Je camera is uitgezet omdat het beeld op naaktheid leek',
 }
 
 export default nl

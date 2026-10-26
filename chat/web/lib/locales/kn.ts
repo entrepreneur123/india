@@ -17,7 +17,6 @@ const kn: Dict = {
   'net.offline': 'ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ. ಮತ್ತೆ ಸಂಪರ್ಕಿಸುತ್ತಿದೆ…',
   'error.screenTitle': 'ಈ ಸ್ಕ್ರೀನ್ ಲೋಡ್ ಆಗಲಿಲ್ಲ',
   'common.loading': 'yaari ತೆರೆಯುತ್ತಿದೆ',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'ಈಗ yaari ಗೆ ಸಂಪರ್ಕಿಸಲು ಆಗುತ್ತಿಲ್ಲ',
   'boot.offlineBody': 'ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
@@ -29,7 +28,6 @@ const kn: Dict = {
   'nav.me': 'ನಾನು',
   'nav.settings': 'ಸೆಟ್ಟಿಂಗ್ಸ್',
   'nav.home': 'ಹೋಮ್',
-  'nav.freePlan': 'ಉಚಿತ ಪ್ಲಾನ್',
   'panel.activity': 'ಚಟುವಟಿಕೆ',
   'panel.friends': 'ನಿಮ್ಮ ಸ್ನೇಹಿತರು',
   'panel.rooms': 'ಲೈವ್ ರೂಮ್‌ಗಳು',
@@ -37,9 +35,6 @@ const kn: Dict = {
   'panel.friendCount.other': '{n} ಸ್ನೇಹಿತರು',
   'panel.noFriends': 'ಚಾಟ್‌ಗಳಿಂದ ನೀವು ಸೇರಿಸುವ ಸ್ನೇಹಿತರು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತಾರೆ.',
   'panel.message': '{name} ಗೆ ಮೆಸೇಜ್ ಮಾಡಿ',
-  'panel.plusTitle': 'ಯಾರನ್ನು ಭೇಟಿಯಾಗಬೇಕು ಎಂದು ನೀವೇ ಆಯ್ಕೆಮಾಡಿ',
-  'panel.plusBody': 'Yaari Plus ಜೊತೆ ಜೆಂಡರ್ ಫಿಲ್ಟರ್ ಮತ್ತು ತಕ್ಷಣ ಸ್ಕಿಪ್.',
-  'panel.plusCta': 'Yaari Plus ನೋಡಿ',
 
   'auth.badge': '18+ · ಫೋನ್ ಪರಿಶೀಲಿತ',
   'auth.verifiedBadge': 'ವೆರಿಫೈಡ್ ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ: ID + ಸೆಲ್ಫಿ',
@@ -75,10 +70,6 @@ const kn: Dict = {
   'country.none': 'ಯಾವ ದೇಶವೂ ಸಿಗಲಿಲ್ಲ',
   'countries.label': 'ದೇಶಗಳು',
   'countries.anywhere': 'ಎಲ್ಲಿಯಾದರೂ',
-  'countries.title': 'ದೇಶಗಳನ್ನು ಆರಿಸಿ',
-  'countries.hint': 'ಉಚಿತ · ಗರಿಷ್ಠ {n} ದೇಶಗಳು',
-  'countries.done': 'ಮುಗಿದಿದೆ',
-  'countries.only': 'ಈ ದೇಶಗಳ ಜನರು ಮಾತ್ರ',
 
   'otp.change': 'ನಂಬರ್ ಬದಲಿಸಿ',
   'otp.title': 'ಕೋಡ್ ನಮೂದಿಸಿ',
@@ -520,7 +511,6 @@ const kn: Dict = {
 
   'me.edit': 'ಪ್ರೊಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ',
   'me.newPost': 'ಹೊಸ ಪೋಸ್ಟ್',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'ನಿಮ್ಮ ಮೊದಲ ಪೋಸ್ಟ್ ಹಂಚಿಕೊಳ್ಳಿ',
   'me.editDesc': 'ಜೆಂಡರ್ ಮತ್ತು ಹುಟ್ಟಿದ ದಿನಾಂಕ ಬದಲಿಸಲು ಆಗುವುದಿಲ್ಲ.',
   'me.updated': 'ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಯಿತು',
@@ -551,9 +541,6 @@ const kn: Dict = {
   'settings.account': 'ಖಾತೆ',
   'settings.phone': 'ಫೋನ್ ನಂಬರ್',
   'settings.verified': 'ಪರಿಶೀಲಿತ',
-  'settings.plan': 'ಪ್ಲಾನ್',
-  'settings.planPass': '24 ಗಂಟೆಯ ಜೆಂಡರ್ ಪಾಸ್',
-  'settings.planFree': 'ಉಚಿತ',
   'settings.language': 'ಭಾಷೆ',
   'settings.roomSounds': 'ವಾಯ್ಸ್ ರೂಮ್ ಶಬ್ದಗಳು',
   'settings.roomSoundsBody': 'ಯಾರಾದರೂ ವಾಯ್ಸ್ ರೂಮ್‌ಗೆ ಬಂದಾಗ ಅಥವಾ ಹೋದಾಗ ಚಿಕ್ಕ ಶಬ್ದ ಕೇಳುತ್ತದೆ.',
@@ -605,20 +592,6 @@ const kn: Dict = {
   'tr.tooLong': 'ಅನುವಾದಿಸಲು ಈ ಮೆಸೇಜ್ ತುಂಬಾ ಉದ್ದವಾಗಿದೆ',
   'tr.same': 'ಈ ಮೆಸೇಜ್ ಈಗಾಗಲೇ ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿದೆ',
 
-  'plus.tagline': 'ಪ್ರತಿ ಸಂಭಾಷಣೆಯ ಮೇಲೆ ಹೆಚ್ಚು ನಿಯಂತ್ರಣ.',
-  'plus.b1Title': 'ಯಾರನ್ನು ಭೇಟಿಯಾಗಬೇಕು ಎಂದು ನೀವೇ ಆಯ್ಕೆಮಾಡಿ',
-  'plus.b1Body': 'ರ‍್ಯಾಂಡಮ್ ಮ್ಯಾಚ್‌ಗಳನ್ನು ಮಹಿಳೆಯರು ಅಥವಾ ಪುರುಷರು ಎಂದು ಫಿಲ್ಟರ್ ಮಾಡಿ.',
-  'plus.b3Title': '0.2 ಸೆ. ಸ್ಕಿಪ್',
-  'plus.b3Body': '5 ಸೆ. ಕಾಯುವ ಬದಲು ತಕ್ಷಣ ಚಾಟ್‌ನಿಂದ ಹೊರಡಿ.',
-  'plus.plans': 'ಪ್ಲಾನ್‌ಗಳು',
-  'plus.monthly': 'ಮಾಸಿಕ',
-  'plus.monthlyNote': 'ಎಲ್ಲಾ Plus ಫೀಚರ್‌ಗಳು · ಪ್ರತಿ ತಿಂಗಳು ನವೀಕರಣ, Google Play ನಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ರದ್ದುಮಾಡಬಹುದು',
-  'plus.pass': '24 ಗಂಟೆಯ ಜೆಂಡರ್ ಪಾಸ್',
-  'plus.passNote': 'ಒಂದು ದಿನಕ್ಕೆ ಜೆಂಡರ್ ಫಿಲ್ಟರ್ · ಒಂದು ಬಾರಿಯ ಖರೀದಿ',
-  'plus.getApp': 'Android ಆ್ಯಪ್‌ನಲ್ಲಿ ಪಡೆಯಿರಿ.',
-  'plus.getAppBody': 'ಖರೀದಿಗಳು ಆ್ಯಪ್‌ನಲ್ಲಿ ನಡೆಯುತ್ತವೆ. ನಂತರ ಅದೇ ಖಾತೆಯಲ್ಲಿ ಇಲ್ಲಿಯೂ Plus ಕೆಲಸ ಮಾಡುತ್ತದೆ.',
-  'plus.getItOn': 'ಇಲ್ಲಿ ಪಡೆಯಿರಿ',
-  'plus.soon': 'Android ಆ್ಯಪ್ ಶೀಘ್ರದಲ್ಲೇ Google Play ಗೆ ಬರುತ್ತಿದೆ.',
 
   'time.now': 'ಈಗಷ್ಟೇ',
   'error.exit_locked': 'ಹೊರಡುವ ಮೊದಲು ಸ್ವಲ್ಪ ಕಾಯಿರಿ',
@@ -657,8 +630,6 @@ const kn: Dict = {
   'error.not_owned': 'ಈ ಲುಕ್ ಇನ್ನೂ ನಿಮ್ಮ ಬಳಿ ಇಲ್ಲ',
   'error.chat_closed': 'ಈ ಚಾಟ್ ಮುಗಿದಿದೆ. ಮಾತು ಮುಂದುವರಿಸಲು ಅವರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸಿ',
   'error.generic': 'ಏನೋ ತಪ್ಪಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
-  'chat.sticker': 'ಸ್ಟಿಕರ್',
-  'error.sticker_not_owned': 'ಇದನ್ನು ಕಳುಹಿಸಲು ಈ ಸ್ಟಿಕರ್ ಪ್ಯಾಕ್ ಪಡೆಯಿರಿ',
   'nav.explore': 'ಅನ್ವೇಷಿಸಿ',
   'explore.search': 'ID ಅಥವಾ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ',
   'explore.feed': 'ಫೀಡ್',
@@ -682,6 +653,8 @@ const kn: Dict = {
   'explore.country': 'ದೇಶ',
   'pf.photoRequired': 'ಪ್ರಾರಂಭಿಸಲು ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಸೇರಿಸಿ',
   'video.flip': 'ಕ್ಯಾಮೆರಾ ಬದಲಿಸಿ',
+  'chat.seeAll': 'ಎಲ್ಲವನ್ನೂ ನೋಡಿ',
+  'voice.cameraNude': 'ನಗ್ನತೆಯಂತೆ ಕಂಡಿದ್ದರಿಂದ ನಿಮ್ಮ ಕ್ಯಾಮೆರಾ ಆಫ್ ಮಾಡಲಾಗಿದೆ',
 }
 
 export default kn

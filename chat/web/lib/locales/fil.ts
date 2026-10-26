@@ -18,7 +18,6 @@ const fil: Dict = {
   'net.offline': 'Walang internet. Kumokonekta ulit…',
   'error.screenTitle': 'Hindi ma-load ang screen na ito',
   'common.loading': 'Nilo-load ang yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Hindi maabot ang yaari ngayon',
   'boot.offlineBody': 'Tingnan ang internet connection mo, tapos subukan ulit.',
@@ -31,7 +30,6 @@ const fil: Dict = {
   'nav.me': 'Ako',
   'nav.settings': 'Mga Setting',
   'nav.home': 'Home',
-  'nav.freePlan': 'Libreng plan',
   'panel.activity': 'Aktibidad',
   'panel.friends': 'Mga kaibigan mo',
   'panel.rooms': 'Mga live room',
@@ -39,9 +37,6 @@ const fil: Dict = {
   'panel.friendCount.other': '{n} kaibigan',
   'panel.noFriends': 'Lalabas dito ang mga kaibigang ina-add mo mula sa mga chat.',
   'panel.message': 'I-message si {name}',
-  'panel.plusTitle': 'Piliin kung sino ang makikilala mo',
-  'panel.plusBody': 'Gender filter at instant skip gamit ang Yaari Plus.',
-  'panel.plusCta': 'Tingnan ang Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · verified ang phone',
@@ -78,10 +73,6 @@ const fil: Dict = {
   'country.none': 'Walang nahanap na bansa',
   'countries.label': 'Mga bansa',
   'countries.anywhere': 'Kahit saan',
-  'countries.title': 'Pumili ng mga bansa',
-  'countries.hint': 'Libre · hanggang {n} bansa',
-  'countries.done': 'Tapos na',
-  'countries.only': 'Mga tao lang mula sa mga bansang ito',
 
   'otp.change': 'Palitan ang number',
   'otp.title': 'Ilagay ang code',
@@ -529,7 +520,6 @@ const fil: Dict = {
   // me & profiles
   'me.edit': 'I-edit ang profile',
   'me.newPost': 'Bagong post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'I-share ang una mong post',
   'me.editDesc': 'Hindi mapapalitan ang gender at petsa ng kapanganakan.',
   'me.updated': 'Na-update ang profile',
@@ -561,9 +551,6 @@ const fil: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Phone number',
   'settings.verified': 'Verified',
-  'settings.plan': 'Plan',
-  'settings.planPass': '24-oras na gender pass',
-  'settings.planFree': 'Libre',
   'settings.language': 'Wika',
   'settings.roomSounds': 'Mga tunog sa voice room',
   'settings.roomSoundsBody': 'Maikling tunog kapag may pumasok o umalis sa voice room.',
@@ -617,20 +604,6 @@ const fil: Dict = {
   'tr.same': 'Nasa wika mo na ang message na ito',
 
   // Yaari Plus
-  'plus.tagline': 'Mas maraming kontrol sa bawat usapan.',
-  'plus.b1Title': 'Piliin kung sino ang makikilala mo',
-  'plus.b1Body': 'I-filter ang mga random match ayon sa babae o lalaki.',
-  'plus.b3Title': '0.2 s na skip',
-  'plus.b3Body': 'Umalis agad sa chat sa halip na maghintay ng 5 s.',
-  'plus.plans': 'Mga plan',
-  'plus.monthly': 'Buwanan',
-  'plus.monthlyNote': 'Lahat ng Plus feature · nagre-renew buwan-buwan, i-cancel anumang oras sa Google Play',
-  'plus.pass': '24-oras na gender pass',
-  'plus.passNote': 'Gender filter sa loob ng isang araw · isang beses na bili',
-  'plus.getApp': 'Kunin ito sa Android app.',
-  'plus.getAppBody': 'Sa app ginagawa ang pagbili. Pagkatapos, gagana rin dito ang Plus, sa parehong account.',
-  'plus.getItOn': 'Kunin sa',
-  'plus.soon': 'Malapit nang dumating sa Google Play ang Android app.',
 
   // time & errors
   'time.now': 'ngayon lang',
@@ -670,8 +643,6 @@ const fil: Dict = {
   'error.not_owned': 'Wala ka pang look na ito',
   'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Kunin ang sticker pack na ito para maipadala ito',
   'nav.explore': 'Mag-explore',
   'explore.search': 'Maghanap gamit ang ID o pangalan',
   'explore.feed': 'Feed',
@@ -695,6 +666,8 @@ const fil: Dict = {
   'explore.country': 'Bansa',
   'pf.photoRequired': 'Magdagdag ng profile photo para makapagsimula',
   'video.flip': 'Palitan ang camera',
+  'chat.seeAll': 'Tingnan lahat',
+  'voice.cameraNude': 'Pinatay ang camera mo dahil mukhang may kahubaran',
 }
 
 export default fil

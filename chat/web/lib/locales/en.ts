@@ -17,7 +17,6 @@ const en = {
   'net.offline': 'No internet. Reconnecting…',
   'error.screenTitle': 'This screen couldn’t load',
   'common.loading': 'Loading Yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Can’t reach Yaari right now',
   'boot.offlineBody': 'Check your internet connection, then try again.',
@@ -30,7 +29,6 @@ const en = {
   'nav.me': 'Me',
   'nav.settings': 'Settings',
   'nav.home': 'Home',
-  'nav.freePlan': 'Free plan',
   'panel.activity': 'Activity',
   'panel.friends': 'Your friends',
   'panel.rooms': 'Live rooms',
@@ -38,9 +36,6 @@ const en = {
   'panel.friendCount.other': '{n} friends',
   'panel.noFriends': 'Friends you add from chats will show up here.',
   'panel.message': 'Message {name}',
-  'panel.plusTitle': 'Choose who you meet',
-  'panel.plusBody': 'Gender filter and instant skip with Yaari Plus.',
-  'panel.plusCta': 'See Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · phone-verified',
@@ -77,10 +72,6 @@ const en = {
   'country.none': 'No countries found',
   'countries.label': 'Countries',
   'countries.anywhere': 'Anywhere',
-  'countries.title': 'Choose countries',
-  'countries.hint': 'Free · up to {n} countries',
-  'countries.done': 'Done',
-  'countries.only': 'Only people from these countries',
 
   'otp.change': 'Change number',
   'otp.title': 'Enter the code',
@@ -152,7 +143,6 @@ const en = {
   'exit.lockedIn': 'Leave chat (available in {s} s)',
 
   'chat.left': 'Left the chat',
-  'chat.sticker': 'Sticker',
   'chat.typing': 'typing…',
   'chat.report': 'Report {name}',
   'chat.call': 'Call',
@@ -529,7 +519,6 @@ const en = {
   // me & profiles
   'me.edit': 'Edit profile',
   'me.newPost': 'New post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Share your first post',
   'me.editDesc': 'Gender and date of birth can’t be changed.',
   'me.updated': 'Profile updated',
@@ -561,9 +550,6 @@ const en = {
   'settings.account': 'Account',
   'settings.phone': 'Phone number',
   'settings.verified': 'Verified',
-  'settings.plan': 'Plan',
-  'settings.planPass': '24-hour gender pass',
-  'settings.planFree': 'Free',
   'settings.language': 'Language',
   'settings.roomSounds': 'Voice room sounds',
   'settings.roomSoundsBody': 'A short chime when someone joins or leaves a voice room.',
@@ -617,20 +603,6 @@ const en = {
   'tr.same': 'This message is already in your language',
 
   // Yaari Plus
-  'plus.tagline': 'More control over every conversation.',
-  'plus.b1Title': 'Choose who you meet',
-  'plus.b1Body': 'Filter random matches by women or men.',
-  'plus.b3Title': '0.2 s skip',
-  'plus.b3Body': 'Leave a chat instantly instead of waiting 5 s.',
-  'plus.plans': 'Plans',
-  'plus.monthly': 'Monthly',
-  'plus.monthlyNote': 'All Plus features · renews monthly, cancel anytime in Google Play',
-  'plus.pass': '24-hour gender pass',
-  'plus.passNote': 'Gender filter for one day · one-time purchase',
-  'plus.getApp': 'Get it in the Android app',
-  'plus.getAppBody': 'Purchases are made in the app. Plus then works here too, on the same account.',
-  'plus.getItOn': 'Get it on',
-  'plus.soon': 'The Android app is coming to Google Play soon.',
 
   // time & errors
   'time.now': 'just now',
@@ -669,7 +641,6 @@ const en = {
   'error.name_invalid': 'Use plain letters in your name. Fancy-font letters aren’t allowed (emoji are fine)',
   'error.not_owned': 'You don’t own this look yet',
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',
-  'error.sticker_not_owned': 'Get this sticker pack to send it',
   'error.generic': 'Something went wrong. Please try again',
   'nav.explore': 'Explore',
   'explore.search': 'Search by ID or name',
@@ -694,6 +665,8 @@ const en = {
   'explore.country': 'Country',
   'pf.photoRequired': 'Add a profile photo to start',
   'video.flip': 'Switch camera',
+  'chat.seeAll': 'See all',
+  'voice.cameraNude': 'Your camera was turned off because it looked like nudity',
 } as const
 
 export default en

@@ -85,9 +85,8 @@ const ro: LooksDict = {
   'blocks.unblock': 'Deblochează',
   'blocks.done': 'Ai deblocat persoana {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Fundaluri',
-  'looks.tab.sticker': 'Stickere',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Șofran',
   'item.wall_midnight': 'Miezul nopții',
@@ -95,19 +94,11 @@ const ro: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Noapte înstelată',
   'item.wall_waves': 'Valuri',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Ora de chai',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Iubire',
   'item.vip_anon': 'VIP incognito',
   'wall.onlyYou': 'Fundalul conversațiilor tale. Doar tu îl vezi',
   'wall.use': 'Folosește acest fundal',
   'wall.inUse': 'În uz',
   'wall.remove': 'Scoate fundalul',
-  'sticker.count': '8 stickere',
-  'sticker.owned': 'Ale tale: trimite-le din orice conversație',
-  'sticker.locked': 'Ia acest pachet ca să trimiți aceste stickere',
-  'sticker.getPack': 'Ia pachetul',
   'vip.strangers': 'Necunoscuții văd',
   'vip.friends': 'Prietenii văd',
   'vip.what': 'În chaturile aleatorii, camere și căutare, cei care nu îți sunt prieteni văd doar „VIP”: fără poză, ID, vârstă, țară sau bio. Prietenii tăi văd în continuare tot, iar cererile de prietenie merg ca de obicei.',
@@ -126,6 +117,14 @@ const ro: LooksDict = {
   'item.effect_aurora': 'Auroră',
   'item.effect_prism': 'Prismă',
   'effect.what': 'Lumina se mișcă peste poza ta de profil, oriunde apare',
+  'looks.tab.bubble': 'Bule de chat',
+  'item.bubble_peach': 'Piersică',
+  'item.bubble_ocean': 'Ocean',
+  'item.bubble_mint': 'Mentă',
+  'item.bubble_galaxy': 'Galaxie',
+  'item.bubble_gold': 'Auriu',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Toată lumea îți vede mesajele în această bulă',
 }
 
 export default ro

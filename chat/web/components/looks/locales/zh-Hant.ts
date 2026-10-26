@@ -85,9 +85,8 @@ const zhHant: LooksDict = {
   'blocks.unblock': '解除封鎖',
   'blocks.done': '已解除封鎖 {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': '聊天背景',
-  'looks.tab.sticker': '貼圖',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': '番紅花',
   'item.wall_midnight': '午夜',
@@ -95,19 +94,11 @@ const zhHant: LooksDict = {
   'item.wall_mehndi': '海娜',
   'item.wall_stars': '星空',
   'item.wall_waves': '波浪',
-  'item.sticker_namaste': '合十問好',
-  'item.sticker_chai': '奶茶時光',
-  'item.sticker_cricket': '板球',
-  'item.sticker_love': '愛心',
   'item.vip_anon': 'VIP 隱身',
   'wall.onlyYou': '你的聊天背景，只有你看得到',
   'wall.use': '使用這個背景',
   'wall.inUse': '使用中',
   'wall.remove': '移除背景',
-  'sticker.count': '8 張貼圖',
-  'sticker.owned': '已擁有：可在任何聊天中傳送',
-  'sticker.locked': '取得這組貼圖後即可傳送這些貼圖',
-  'sticker.getPack': '取得貼圖',
   'vip.strangers': '陌生人看到',
   'vip.friends': '好友看到',
   'vip.what': '在隨機聊天、房間和搜尋中，非好友只會看到「VIP」：看不到照片、ID、年齡、國家和簡介。好友仍能看到全部資訊，好友邀請也照常可用。',
@@ -126,6 +117,14 @@ const zhHant: LooksDict = {
   'item.effect_aurora': '極光',
   'item.effect_prism': '稜鏡',
   'effect.what': '頭像上會有流動的光芒，頭像出現的地方都會顯示',
+  'looks.tab.bubble': '聊天氣泡',
+  'item.bubble_peach': '蜜桃',
+  'item.bubble_ocean': '海洋',
+  'item.bubble_mint': '薄荷',
+  'item.bubble_galaxy': '星河',
+  'item.bubble_gold': '鎏金',
+  'item.bubble_neon': '霓虹',
+  'bubble.what': '所有人都會看到你的訊息顯示在這個氣泡裡',
 }
 
 export default zhHant

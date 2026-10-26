@@ -18,7 +18,6 @@ const ja: Dict = {
   'net.offline': 'インターネットに接続されていません。再接続しています…',
   'error.screenTitle': 'この画面を読み込めませんでした',
   'common.loading': 'yaariを読み込み中',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': '現在yaariに接続できません',
   'boot.offlineBody': 'インターネット接続を確認してから、もう一度お試しください。',
@@ -31,7 +30,6 @@ const ja: Dict = {
   'nav.me': 'マイページ',
   'nav.settings': '設定',
   'nav.home': 'ホーム',
-  'nav.freePlan': '無料プラン',
   'panel.activity': 'アクティビティ',
   'panel.friends': '友だち',
   'panel.rooms': 'ライブ中のルーム',
@@ -39,9 +37,6 @@ const ja: Dict = {
   'panel.friendCount.other': '友だち{n}人',
   'panel.noFriends': 'チャットから追加した友だちがここに表示されます。',
   'panel.message': '{name}さんにメッセージ',
-  'panel.plusTitle': '出会う相手を選べます',
-  'panel.plusBody': 'Yaari Plusなら、性別フィルターと即スキップが使えます。',
-  'panel.plusCta': 'Yaari Plusを見る',
 
   // sign-up
   'auth.badge': '18歳以上・電話番号認証済み',
@@ -78,10 +73,6 @@ const ja: Dict = {
   'country.none': '国が見つかりません',
   'countries.label': '国',
   'countries.anywhere': 'どこでも',
-  'countries.title': '国を選ぶ',
-  'countries.hint': '無料・最大{n}か国',
-  'countries.done': '完了',
-  'countries.only': '選んだ国の人だけを探しています',
 
   'otp.change': '電話番号を変更',
   'otp.title': 'コードを入力',
@@ -529,7 +520,6 @@ const ja: Dict = {
   // me & profiles
   'me.edit': 'プロフィールを編集',
   'me.newPost': '新規投稿',
-  'me.plusBadge': 'Plus',
   'me.firstPost': '最初の投稿をシェアしよう',
   'me.editDesc': '性別と生年月日は変更できません。',
   'me.updated': 'プロフィールを更新しました',
@@ -561,9 +551,6 @@ const ja: Dict = {
   'settings.account': 'アカウント',
   'settings.phone': '電話番号',
   'settings.verified': '認証済み',
-  'settings.plan': 'プラン',
-  'settings.planPass': '24時間性別パス',
-  'settings.planFree': '無料',
   'settings.language': '言語',
   'settings.roomSounds': 'ボイスルームの効果音',
   'settings.roomSoundsBody': 'ボイスルームに誰かが入ったり出たりすると短い音が鳴ります。',
@@ -617,20 +604,6 @@ const ja: Dict = {
   'tr.same': 'このメッセージはすでに翻訳先の言語です',
 
   // Yaari Plus
-  'plus.tagline': 'すべての会話を、もっと思いどおりに。',
-  'plus.b1Title': '出会う相手を選べる',
-  'plus.b1Body': 'ランダムチャットの相手を女性または男性で絞り込めます。',
-  'plus.b3Title': '0.2秒でスキップ',
-  'plus.b3Body': '5秒待たずに、すぐチャットを終了できます。',
-  'plus.plans': 'プラン',
-  'plus.monthly': '月額',
-  'plus.monthlyNote': 'Plusのすべての機能・毎月自動更新、Google Playでいつでも解約可能',
-  'plus.pass': '24時間性別パス',
-  'plus.passNote': '1日限定の性別フィルター・1回限りの購入',
-  'plus.getApp': 'Androidアプリで購入できます。',
-  'plus.getAppBody': '購入はアプリ内で行います。購入後は同じアカウントで、ここでもPlusが使えます。',
-  'plus.getItOn': 'ダウンロード',
-  'plus.soon': 'Androidアプリは近日Google Playで公開予定です。',
 
   // time & errors
   'time.now': 'たった今',
@@ -670,8 +643,6 @@ const ja: Dict = {
   'error.not_owned': 'この着せかえはまだ持っていません',
   'error.chat_closed': 'このチャットは終了しました。話を続けるには友だちに追加してください',
   'error.generic': '問題が発生しました。もう一度お試しください',
-  'chat.sticker': 'スタンプ',
-  'error.sticker_not_owned': 'このスタンプを送るにはパックの入手が必要です',
   'nav.explore': '探す',
   'explore.search': 'IDまたは名前で検索',
   'explore.feed': 'フィード',
@@ -695,6 +666,8 @@ const ja: Dict = {
   'explore.country': '国',
   'pf.photoRequired': '始めるにはプロフィール写真を設定してください',
   'video.flip': 'カメラを切り替え',
+  'chat.seeAll': '全文を表示',
+  'voice.cameraNude': '裸のように見えたため、カメラをオフにしました',
 }
 
 export default ja

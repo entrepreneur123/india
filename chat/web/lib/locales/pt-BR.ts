@@ -17,7 +17,6 @@ const ptBR: Dict = {
   'net.offline': 'Sem internet. Reconectando…',
   'error.screenTitle': 'Não foi possível carregar esta tela',
   'common.loading': 'Abrindo o yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Não foi possível conectar ao yaari',
   'boot.offlineBody': 'Confira sua conexão com a internet e tente de novo.',
@@ -29,7 +28,6 @@ const ptBR: Dict = {
   'nav.me': 'Eu',
   'nav.settings': 'Ajustes',
   'nav.home': 'Início',
-  'nav.freePlan': 'Plano grátis',
   'panel.activity': 'Atividade',
   'panel.friends': 'Seus amigos',
   'panel.rooms': 'Salas ao vivo',
@@ -37,9 +35,6 @@ const ptBR: Dict = {
   'panel.friendCount.other': '{n} amigos',
   'panel.noFriends': 'Os amigos que você adicionar nos chats aparecem aqui.',
   'panel.message': 'Mandar mensagem para {name}',
-  'panel.plusTitle': 'Escolha quem você conhece',
-  'panel.plusBody': 'Filtro de gênero e saída imediata com o Yaari Plus.',
-  'panel.plusCta': 'Ver o Yaari Plus',
 
   'auth.badge': '18+ · telefone verificado',
   'auth.verifiedBadge': 'Ganhe seu selo de verificado: documento + selfie',
@@ -75,10 +70,6 @@ const ptBR: Dict = {
   'country.none': 'Nenhum país encontrado',
   'countries.label': 'Países',
   'countries.anywhere': 'Qualquer lugar',
-  'countries.title': 'Escolha os países',
-  'countries.hint': 'Grátis · até {n} países',
-  'countries.done': 'Pronto',
-  'countries.only': 'Só pessoas destes países',
 
   'otp.change': 'Trocar número',
   'otp.title': 'Digite o código',
@@ -520,7 +511,6 @@ const ptBR: Dict = {
 
   'me.edit': 'Editar perfil',
   'me.newPost': 'Novo post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Compartilhe seu primeiro post',
   'me.editDesc': 'Gênero e data de nascimento não podem ser alterados.',
   'me.updated': 'Perfil atualizado',
@@ -551,9 +541,6 @@ const ptBR: Dict = {
   'settings.account': 'Conta',
   'settings.phone': 'Número de telefone',
   'settings.verified': 'Verificado',
-  'settings.plan': 'Plano',
-  'settings.planPass': 'Passe de gênero de 24 horas',
-  'settings.planFree': 'Grátis',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sons da sala de voz',
   'settings.roomSoundsBody': 'Um som curto quando alguém entra ou sai de uma sala de voz.',
@@ -604,20 +591,6 @@ const ptBR: Dict = {
   'tr.tooLong': 'Esta mensagem é longa demais para traduzir',
   'tr.same': 'Esta mensagem já está no seu idioma',
 
-  'plus.tagline': 'Mais controle em cada conversa.',
-  'plus.b1Title': 'Escolha quem você conhece',
-  'plus.b1Body': 'Filtre os matches aleatórios por mulheres ou homens.',
-  'plus.b3Title': 'Saída em 0,2 s',
-  'plus.b3Body': 'Saia de um chat na hora, sem esperar 5 s.',
-  'plus.plans': 'Planos',
-  'plus.monthly': 'Mensal',
-  'plus.monthlyNote': 'Tudo do Plus · renova todo mês, cancele quando quiser no Google Play',
-  'plus.pass': 'Passe de gênero de 24 horas',
-  'plus.passNote': 'Filtro de gênero por um dia · compra única',
-  'plus.getApp': 'Assine pelo app Android.',
-  'plus.getAppBody': 'As compras são feitas no app. Depois o Plus funciona aqui também, na mesma conta.',
-  'plus.getItOn': 'Disponível no',
-  'plus.soon': 'O app Android chega em breve ao Google Play.',
 
   'time.now': 'agora',
   'error.exit_locked': 'Espere um instante antes de sair',
@@ -656,8 +629,6 @@ const ptBR: Dict = {
   'error.not_owned': 'Você ainda não tem este visual',
   'error.chat_closed': 'Este chat terminou. Adicione a pessoa como amigo para continuar conversando',
   'error.generic': 'Algo deu errado. Tente de novo',
-  'chat.sticker': 'Figurinha',
-  'error.sticker_not_owned': 'Pegue este pacote de figurinhas para enviá-la',
   'nav.explore': 'Explorar',
   'explore.search': 'Busque por ID ou nome',
   'explore.feed': 'Feed',
@@ -681,6 +652,8 @@ const ptBR: Dict = {
   'explore.country': 'País',
   'pf.photoRequired': 'Adicione uma foto de perfil para começar',
   'video.flip': 'Trocar câmera',
+  'chat.seeAll': 'Ver tudo',
+  'voice.cameraNude': 'Sua câmera foi desligada porque parecia mostrar nudez',
 }
 
 export default ptBR

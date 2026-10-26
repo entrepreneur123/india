@@ -7,7 +7,7 @@ import { b64url } from "../_shared/jwt.ts";
 const PREMIUM = "yaari_premium_monthly"; // subscription: gender filter + video + 0.2 s skip
 const GENDER_PASS = "gender_pass_24h";    // one-time, consumable: gender filter for 24 h
 // Looks (040) and walls, sticker packs, incognito (046): one-time, non-consumable products named like their item, owned for good.
-const LOOK = /^(badge|color|font|frame|wall|sticker|vip|cycle|effect)_[a-z0-9]{2,20}$/;
+const LOOK = /^(badge|color|font|frame|wall|vip|cycle|effect|bubble)_[a-z0-9]{2,20}$/;
 const HANDLE_PASS = "handle_change";        // consumable (042): one ID change before the 30 days are up
 
 const json = (status: number, body: unknown) =>

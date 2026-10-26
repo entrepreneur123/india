@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/toast'
 import { useLooksT } from './looks-text'
 
 /**
- * My shop() (what I own, my wall, incognito), shared under one SWR key by the shop, the chats (wall, stickers) and
+ * My shop() (what I own, my wall, incognito), shared under one SWR key by the shop, the chats (wall) and
  * Settings. Outside the shop it is not asked again on every chat: `fresh` (the shop itself) always asks.
  */
 export function useShop(fresh = false) {

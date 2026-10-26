@@ -13,9 +13,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
-import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, StickerLine, TypingDots, useLineActions } from '@/components/screens/chat/message-bubble'
-import { StickerButton } from '@/components/screens/chat/stickers'
-import { previewText, stickerOf } from '@/lib/stickers'
+import { Bubble, HoverTranslate, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
 import { shownText, TranslateFooter, useFollowLines, useLineTranslation } from '@/components/translate'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
@@ -23,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { isMod, memberOf, roleLabel, systemText } from './voice-text'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
 
@@ -246,8 +244,8 @@ function SentLine({
   const { t, clock } = useI18n()
   const { rt } = useRoomT()
   const room = s.room
-  const sticker = line.kind === 'text' ? stickerOf(line.text) : null
-  const said = line.kind === 'text' && !sticker ? line.text : null
+  const said = line.kind === 'text' ? line.text : null
+  const skin = useLook(line.sender.id)?.bubble
   const tr = useLineTranslation('room', line.id, said, line.fromMe)
   const actions = useLineActions(tr, said)
   const [menu, setMenu] = useState(false)
@@ -308,22 +306,8 @@ function SentLine({
           <UserAvatar userId={line.sender.id} name={line.sender.name} src={line.sender.photoUrl} size={28} />
         </button>
       )}
-      {sticker && line.kind === 'text' ? (
-        <StickerLine
-          pack={sticker.pack}
-          art={sticker.art}
-          mine={line.fromMe}
-          meta={meta}
-          size={104}
-          head={name || line.reply ? (
-            <Bubble mine={line.fromMe} tail={false} className="max-w-full px-2.5 pt-1 pb-1.5">
-              {name}
-              {line.reply ? <Quote reply={line.reply} rt={rt} meId={room?.meId} onShow={() => onQuote(line.reply!.id)} /> : null}
-            </Bubble>
-          ) : null}
-        />
-      ) : line.kind === 'photo' ? (
-        <Bubble mine={line.fromMe} tail={!grouped} className="p-1">
+      {line.kind === 'photo' ? (
+        <Bubble mine={line.fromMe} tail={!grouped} skin={skin} className="p-1">
           {name}
           <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
             <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={meta} />
@@ -333,6 +317,7 @@ function SentLine({
         <Bubble
           mine={line.fromMe}
           tail={!grouped}
+          skin={skin}
           className={cn('px-2.5 pt-1 pb-1.5', toMe.length && 'ring-2 ring-primary-text/70 ring-offset-0')}
         >
           {name}
@@ -340,10 +325,11 @@ function SentLine({
           <LinkPreview text={line.text} className="mb-1 w-64 max-w-full" />
           <p dir="auto" lang={tr.showing ? tr.target : undefined} className="relative text-start text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
             {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
-            <LinkText text={text ?? ''} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
+            <LinkText text={fold(text ?? '')} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
             <MetaSpacer>{meta}</MetaSpacer>
             <span className="absolute inset-e-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
           </p>
+          <SeeAll text={text ?? ''} />
           <TranslateFooter tr={tr} />
         </Bubble>
       )}
@@ -582,11 +568,10 @@ function Quote({ reply, rt, meId, onShow }: { reply: VoiceReply; rt: RoomT; meId
 }
 
 function QuoteText({ reply, rt }: { reply: VoiceReply; rt: RoomT }) {
-  const { t } = useI18n()
   return (
     <span className="flex min-w-0 items-center gap-1 text-[12.5px] leading-4 text-bubble-meta">
       {reply.kind === 'photo' ? <ImagePlus className="size-3.5 shrink-0" aria-hidden /> : reply.kind === 'poll' ? <PollIcon size={14} /> : null}
-      <span className="line-clamp-2 break-words">{reply.kind === 'photo' ? rt('photo') : reply.kind === 'poll' ? `${rt('poll')}: ${reply.text ?? ''}` : previewText(reply.text ?? '', t('chat.sticker'))}</span>
+      <span className="line-clamp-2 break-words">{reply.kind === 'photo' ? rt('photo') : reply.kind === 'poll' ? `${rt('poll')}: ${reply.text ?? ''}` : reply.text ?? ''}</span>
     </span>
   )
 }
@@ -863,7 +848,7 @@ export function VoiceComposer({
                   {rt('replyingTo', { name: reply!.fromMe ? rt('you') : quoted.name })}
                 </span>
                 <span className="block truncate text-[13px] text-muted-foreground">
-                  {quoted.kind === 'photo' ? rt('photo') : quoted.kind === 'poll' ? `${rt('poll')}: ${quoted.text ?? ''}` : previewText(quoted.text ?? '', t('chat.sticker'))}
+                  {quoted.kind === 'photo' ? rt('photo') : quoted.kind === 'poll' ? `${rt('poll')}: ${quoted.text ?? ''}` : quoted.text ?? ''}
                 </span>
               </span>
               <button
@@ -1003,7 +988,6 @@ export function VoiceComposer({
             <IcebreakerIcon size={24} />
           </button>
         ) : null}
-        <StickerButton onSend={onSend} className="bg-muted text-foreground hover:bg-input/60" />
         <label htmlFor={id} className="sr-only">
           {t('voice.chatPlaceholder')}
         </label>
@@ -1031,7 +1015,7 @@ export function VoiceComposer({
               setDismissed(q!.at)
             }
           }}
-          maxLength={300}
+          maxLength={1000}
           autoComplete="off"
           enterKeyHint="send"
           role="combobox"

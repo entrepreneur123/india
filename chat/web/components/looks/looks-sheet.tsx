@@ -1,16 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import { useSWRConfig } from 'swr'
 import { Check, ExternalLink } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { CATALOGUE, ITEM_KINDS, kindOf, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type BadgeId, type FrameId, type ItemId, type PackId } from '@/lib/looks'
-import { STICKERS } from '@/lib/stickers'
+import { CATALOGUE, ITEM_KINDS, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, wearOf, wearWith, type BadgeId, type FrameId, type ItemId } from '@/lib/looks'
 import { wallVars } from '@/lib/walls'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { StickerCard } from '@/components/screens/chat/stickers'
+import { Bubble } from '@/components/screens/chat/message-bubble'
 import { Avatar } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -24,11 +23,11 @@ import { useLooksT, type LooksKey } from './looks-text'
 import { useAnonSwitch, useShop } from './use-shop'
 
 /**
- * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, a sticker pack, how strangers
- * see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom. Looks: a tap tries one on
- * ("None" first); what I own I wear (equip_look, one of each kind). Walls (046): set_wall, "None" is the plain one.
- * Sticker packs are used from a chat's sticker button; VIP incognito is a switch (set_anon). Everything is bought in
- * the Android app (Google Play); the demo sells at once.
+ * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my photo effect or chat
+ * bubble, how strangers see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom.
+ * Looks: a tap tries one on ("None" first); what I own I wear (equip_look, one of each kind). Walls (046): set_wall,
+ * "None" is the plain one. Photo effects and bubbles (062): set_worn. VIP incognito is a switch (set_anon). Everything
+ * is bought in the Android app (Google Play); the demo sells at once.
  */
 export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; onClose: () => void; tab?: ItemKind }) {
   const { lt } = useLooksT()
@@ -54,13 +53,12 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   /** What I wear now (the server's), and what I'm trying on over it. */
   const [worn, setWorn] = useState<LookWear | null>(null)
   const [trying, setTrying] = useState<LookWear>(NO_WEAR)
-  /** The wall and the sticker pack being looked at (undefined: my wall, the first pack). */
+  /** The wall being looked at (undefined: my wall). */
   const [wallTry, setWallTry] = useState<ItemId | null | undefined>(undefined)
-  const [packTry, setPackTry] = useState<PackId>(CATALOGUE.sticker[0] as PackId)
   const [busy, setBusy] = useState(false)
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
-  /** The photo effect being looked at (undefined: the one I wear). */
-  const [effectTry, setEffectTry] = useState<ItemId | null | undefined>(undefined)
+  /** The photo effect and bubble being looked at (missing: the one I wear). */
+  const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
 
   useEffect(() => {
     if (!shop || worn) return
@@ -98,11 +96,12 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
   const myWall = shop.wall as ItemId | null
   const shownWall = wallTry === undefined ? myWall : wallTry
-  const myEffect = (shop.look?.effect ?? null) as ItemId | null
-  const shownEffect = effectTry === undefined ? myEffect : effectTry
-  // Kinds where one item (or none) is in use, chosen here: walls and photo effects.
-  const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : kind === 'effect' ? { mine: myEffect, shown: shownEffect } : null
-  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : single ? single.shown : kind === 'sticker' ? packTry : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
+  const extra = kind === 'effect' || kind === 'bubble' ? kind : null
+  const myExtra = extra ? ((shop.look?.[extra] ?? null) as ItemId | null) : null
+  const shownExtra = extra && extra in extraTry ? (extraTry[extra] ?? null) : myExtra
+  // Kinds where one item (or none) is in use, chosen here: walls, photo effects and bubbles.
+  const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : extra ? { mine: myExtra, shown: shownExtra } : null
+  const tried: ItemId | null = look ? (trying[look] as ItemId | null) : single ? single.shown : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
   // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
   const myPhotos = [...(me.photoPath && me.photoUrl ? [{ id: me.photoPath, url: me.photoUrl }] : []), ...(me.photos ?? [])]
   const picked = cyclePick ?? myPhotos.filter((x) => shop.look?.cycle?.includes(x.url)).map((x) => x.id)
@@ -121,13 +120,14 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const sale = new Set(shop.items.map((i) => i.id))
   const list = CATALOGUE[kind].filter((id) => sale.has(id))
   const choose = (id: ItemId | null) =>
-    look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : kind === 'effect' ? setEffectTry(id) : id && setPackTry(id as PackId)
-  const saveEffect = async (id: ItemId | null) => {
+    look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : extra && setExtraTry((x) => ({ ...x, [extra]: id }))
+  const saveExtra = async (id: ItemId | null) => {
+    if (!extra) return
     setBusy(true)
     try {
-      await backend.setEffect(id)
+      await backend.setWorn(extra, id)
       await Promise.all([mutate(lookKey(me.id)), reload()])
-      setEffectTry(undefined)
+      setExtraTry(({ [extra]: _, ...rest }) => rest)
       toast.show(lt('looks.saved'), 'success')
     } catch (err) {
       toast.error(err)
@@ -136,7 +136,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     }
   }
   /** Takes off what is in use of this kind ("None"). */
-  const takeOff = () => (look ? wear(null) : kind === 'effect' ? saveEffect(null) : setWall(null))
+  const takeOff = () => (look ? wear(null) : extra ? saveExtra(null) : setWall(null))
   const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
   /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
@@ -214,11 +214,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       )
     } else if (kind === 'vip') {
       action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
-    } else if (kind === 'sticker') {
-      action = inUse(lt('sticker.owned'))
-    } else if (kind === 'effect') {
-      action = myEffect === tried ? inUse(lt('looks.wearing')) : (
-        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void saveEffect(tried)}>
+    } else if (extra) {
+      action = myExtra === tried ? inUse(lt('looks.wearing')) : (
+        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void saveExtra(tried)}>
           {lt('looks.wear')}
         </Button>
       )
@@ -258,18 +256,16 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     )
   }
 
-  /** What an item card shows: the look on my @ID (a framed photo for frames), a wall swatch, a pack's first stickers. */
+  /** What an item card shows: the look on my @ID (a framed photo for frames), a wall swatch, my photo or a bubble. */
   const sample = (id: ItemId | null) =>
     kind === 'frame' ? (
       <FrameAvatar frame={id as FrameId | null} name={me.name} src={me.photoUrl} size={36} />
     ) : kind === 'wall' ? (
       <span className="block h-12 w-full rounded-xl bg-chat-wall ring-1 ring-border" style={wallVars(id)} />
-    ) : kind === 'sticker' ? (
-      <span className="flex gap-1">
-        {STICKERS[id as PackId].slice(0, 2).map((a, i) => (
-          <StickerCard key={i} pack={id!} art={a} size={40} />
-        ))}
-      </span>
+    ) : kind === 'bubble' ? (
+      <Bubble mine tail={false} skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
+        {me.name}
+      </Bubble>
     ) : kind === 'effect' ? (
       <Avatar name={me.name} src={me.photoUrl} effect={id} size={40} />
     ) : kind === 'badge' && id ? (
@@ -282,19 +278,23 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   if (kind === 'effect') {
     preview = (
       <div className="flex w-full flex-col items-center gap-3 rounded-[28px] bg-linear-to-b from-muted to-card px-4 pt-7 pb-5 ring-1 ring-border">
-        <Avatar name={me.name} src={me.photoUrl} effect={shownEffect} size={104} />
+        <Avatar name={me.name} src={me.photoUrl} effect={shownExtra} size={104} />
         <p className="mt-2 text-lg font-bold">{me.name}</p>
         <p className="max-w-xs text-center text-sm leading-relaxed text-muted-foreground">{lt('effect.what')}</p>
       </div>
     )
   } else if (kind === 'wall') {
     preview = <WallPreview wall={shownWall} />
-  } else if (kind === 'sticker') {
+  } else if (kind === 'bubble') {
+    // A short chat on the plain wall: their plain bubble, then mine in the bubble being looked at.
     preview = (
-      <div className="grid w-full grid-cols-4 place-items-center gap-2.5 rounded-[28px] bg-muted p-4">
-        {STICKERS[packTry].map((a, i) => (
-          <StickerCard key={i} pack={packTry} art={a} size={68} />
-        ))}
+      <div className="flex w-full flex-col gap-1.5 rounded-[28px] bg-chat-wall px-4 py-5 ring-1 ring-border">
+        <Bubble mine={false} tail className="self-start px-3 py-2 text-[15px]">
+          👋
+        </Bubble>
+        <Bubble mine tail skin={shownExtra} className="max-w-[85%] self-end px-3 py-2 text-[15px] leading-snug">
+          {lt('bubble.what')}
+        </Bubble>
       </div>
     )
   } else if (kind === 'cycle') {
@@ -358,7 +358,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       </FrameCard>
     )
   }
-  const caption = look || kind === 'effect' ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : kind === 'sticker' ? lt('sticker.count') : null
+  const caption = look || extra ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : null
 
   return (
     <div className="flex flex-col">
@@ -388,22 +388,20 @@ function ShopBody({ tab }: { tab: ItemKind }) {
 
         {kind === 'vip' || kind === 'cycle' ? null : (
           <ul role="radiogroup" aria-label={lt(`looks.tab.${kind}`)} className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-            {kind === 'sticker' ? null : (
-              <li>
-                <ItemCard
-                  on={tried === null}
-                  label={lt('looks.none')}
-                  sub={(look ? worn[look] : single?.mine) === null ? usingLabel : ''}
-                  worn={(look ? worn[look] : single?.mine) === null}
-                  onClick={() => choose(null)}
-                >
-                  {kind === 'wall' || kind === 'frame' || kind === 'effect' ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
-                </ItemCard>
-              </li>
-            )}
+            <li>
+              <ItemCard
+                on={tried === null}
+                label={lt('looks.none')}
+                sub={(look ? worn[look] : single?.mine) === null ? usingLabel : ''}
+                worn={(look ? worn[look] : single?.mine) === null}
+                onClick={() => choose(null)}
+              >
+                {kind === 'wall' || kind === 'frame' || extra ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
+              </ItemCard>
+            </li>
             {list.map((id) => (
               <li key={id}>
-                <ItemCard on={tried === id} label={itemName(lt, id)} sub={status(id)} worn={look ? worn[look] === id : myWall === id} onClick={() => choose(id)}>
+                <ItemCard on={tried === id} label={itemName(lt, id)} sub={status(id)} worn={look ? worn[look] === id : single?.mine === id} onClick={() => choose(id)}>
                   {sample(id)}
                 </ItemCard>
               </li>

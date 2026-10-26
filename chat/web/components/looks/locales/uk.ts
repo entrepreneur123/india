@@ -85,9 +85,8 @@ const uk: LooksDict = {
   'blocks.unblock': 'Розблокувати',
   'blocks.done': '{name}: розблоковано',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Фони',
-  'looks.tab.sticker': 'Стікери',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Шафран',
   'item.wall_midnight': 'Північ',
@@ -95,19 +94,11 @@ const uk: LooksDict = {
   'item.wall_mehndi': 'Мехенді',
   'item.wall_stars': 'Зоряна ніч',
   'item.wall_waves': 'Хвилі',
-  'item.sticker_namaste': 'Намасте',
-  'item.sticker_chai': 'Час чаю',
-  'item.sticker_cricket': 'Крикет',
-  'item.sticker_love': 'Кохання',
   'item.vip_anon': 'VIP-інкогніто',
   'wall.onlyYou': 'Фон ваших чатів. Його бачите лише ви',
   'wall.use': 'Поставити цей фон',
   'wall.inUse': 'Використовується',
   'wall.remove': 'Прибрати фон',
-  'sticker.count': '8 стікерів',
-  'sticker.owned': 'Ваші: надсилайте з будь-якого чату',
-  'sticker.locked': 'Отримайте цей набір, щоб надсилати ці стікери',
-  'sticker.getPack': 'Отримати набір',
   'vip.strangers': 'Незнайомці бачать',
   'vip.friends': 'Друзі бачать',
   'vip.what': 'У випадкових чатах, кімнатах і пошуку ті, хто не у вас у друзях, бачать лише «VIP»: без фото, ID, віку, країни й опису. Друзі й надалі бачать усе, а запити в друзі працюють як зазвичай.',
@@ -126,6 +117,14 @@ const uk: LooksDict = {
   'item.effect_aurora': 'Сяйво',
   'item.effect_prism': 'Призма',
   'effect.what': 'По фото профілю ковзає світло — всюди, де воно показується',
+  'looks.tab.bubble': 'Хмаринки чату',
+  'item.bubble_peach': 'Персик',
+  'item.bubble_ocean': 'Океан',
+  'item.bubble_mint': "М'ята",
+  'item.bubble_galaxy': 'Галактика',
+  'item.bubble_gold': 'Золото',
+  'item.bubble_neon': 'Неон',
+  'bubble.what': 'Усі бачать ваші повідомлення в цій хмаринці',
 }
 
 export default uk

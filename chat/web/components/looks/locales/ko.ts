@@ -85,9 +85,8 @@ const ko: LooksDict = {
   'blocks.unblock': '차단 해제',
   'blocks.done': '{name}님을 차단 해제했어요',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': '채팅 배경',
-  'looks.tab.sticker': '스티커',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': '사프란',
   'item.wall_midnight': '미드나잇',
@@ -95,19 +94,11 @@ const ko: LooksDict = {
   'item.wall_mehndi': '헤나',
   'item.wall_stars': '별밤',
   'item.wall_waves': '물결',
-  'item.sticker_namaste': '나마스테',
-  'item.sticker_chai': '차이 타임',
-  'item.sticker_cricket': '크리켓',
-  'item.sticker_love': '러브',
   'item.vip_anon': 'VIP 시크릿 모드',
   'wall.onlyYou': '내 채팅 배경이에요. 나만 볼 수 있어요',
   'wall.use': '이 배경 쓰기',
   'wall.inUse': '사용 중',
   'wall.remove': '배경 해제',
-  'sticker.count': '스티커 8개',
-  'sticker.owned': '보유 중: 어느 채팅에서든 보낼 수 있어요',
-  'sticker.locked': '이 팩이 있으면 스티커를 보낼 수 있어요',
-  'sticker.getPack': '팩 받기',
   'vip.strangers': '모르는 사람에게',
   'vip.friends': '친구에게',
   'vip.what': '랜덤 채팅, 방, 검색에서 친구가 아닌 사람에게는 “VIP”로만 보여요. 사진, 아이디, 나이, 국가, 소개는 보이지 않아요. 친구에게는 모두 보이고, 친구 요청도 그대로 할 수 있어요.',
@@ -126,6 +117,14 @@ const ko: LooksDict = {
   'item.effect_aurora': '오로라',
   'item.effect_prism': '프리즘',
   'effect.what': '내 프로필 사진 위로 빛이 움직이며 빛나요. 사진이 보이는 모든 곳에 적용돼요',
+  'looks.tab.bubble': '말풍선',
+  'item.bubble_peach': '피치',
+  'item.bubble_ocean': '오션',
+  'item.bubble_mint': '민트',
+  'item.bubble_galaxy': '갤럭시',
+  'item.bubble_gold': '골드',
+  'item.bubble_neon': '네온',
+  'bubble.what': '모두가 내 메시지를 이 말풍선으로 봐요',
 }
 
 export default ko

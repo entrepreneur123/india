@@ -18,7 +18,6 @@ const ar: Dict = {
   'net.offline': 'لا يوجد اتصال بالإنترنت. جارٍ إعادة الاتصال…',
   'error.screenTitle': 'تعذّر تحميل هذه الشاشة',
   'common.loading': 'جارٍ تحميل yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'تعذّر الوصول إلى yaari الآن',
   'boot.offlineBody': 'تحقق من اتصالك بالإنترنت، ثم حاول مرة أخرى.',
@@ -31,7 +30,6 @@ const ar: Dict = {
   'nav.me': 'أنا',
   'nav.settings': 'الإعدادات',
   'nav.home': 'الرئيسية',
-  'nav.freePlan': 'الخطة المجانية',
   'panel.activity': 'النشاط',
   'panel.friends': 'أصدقاؤك',
   'panel.rooms': 'غرف مباشرة',
@@ -43,9 +41,6 @@ const ar: Dict = {
   'panel.friendCount.other': '{n} صديق',
   'panel.noFriends': 'سيظهر هنا الأصدقاء الذين تضيفهم من الدردشات.',
   'panel.message': 'مراسلة {name}',
-  'panel.plusTitle': 'اختر من تقابل',
-  'panel.plusBody': 'فلتر الجنس والتخطي الفوري مع Yaari Plus.',
-  'panel.plusCta': 'اكتشف Yaari Plus',
 
   // sign-up
   'auth.badge': '+18 · رقم هاتف موثّق',
@@ -82,10 +77,6 @@ const ar: Dict = {
   'country.none': 'لم يتم العثور على دول',
   'countries.label': 'الدول',
   'countries.anywhere': 'أي مكان',
-  'countries.title': 'اختر الدول',
-  'countries.hint': 'مجانًا · حتى {n} دول',
-  'countries.done': 'تم',
-  'countries.only': 'أشخاص من هذه الدول فقط',
 
   'otp.change': 'تغيير الرقم',
   'otp.title': 'أدخل الرمز',
@@ -537,7 +528,6 @@ const ar: Dict = {
   // me & profiles
   'me.edit': 'تعديل الملف الشخصي',
   'me.newPost': 'منشور جديد',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'شارك أول منشور لك',
   'me.editDesc': 'لا يمكن تغيير الجنس وتاريخ الميلاد.',
   'me.updated': 'تم تحديث الملف الشخصي',
@@ -573,9 +563,6 @@ const ar: Dict = {
   'settings.account': 'الحساب',
   'settings.phone': 'رقم الهاتف',
   'settings.verified': 'موثّق',
-  'settings.plan': 'الخطة',
-  'settings.planPass': 'تصريح الجنس لمدة 24 ساعة',
-  'settings.planFree': 'مجانية',
   'settings.language': 'اللغة',
   'settings.roomSounds': 'أصوات غرف الصوت',
   'settings.roomSoundsBody': 'نغمة قصيرة عندما ينضم أحد إلى غرفة الصوت أو يغادرها.',
@@ -629,20 +616,6 @@ const ar: Dict = {
   'tr.same': 'هذه الرسالة بلغتك بالفعل',
 
   // Yaari Plus
-  'plus.tagline': 'تحكّم أكبر في كل محادثة.',
-  'plus.b1Title': 'اختر من تقابل',
-  'plus.b1Body': 'فلترة التوافقات العشوائية حسب النساء أو الرجال.',
-  'plus.b3Title': 'تخطٍّ خلال 0.2 ث',
-  'plus.b3Body': 'غادر الدردشة فورًا بدلًا من الانتظار 5 ث.',
-  'plus.plans': 'الخطط',
-  'plus.monthly': 'شهري',
-  'plus.monthlyNote': 'كل ميزات Plus · يتجدد شهريًا، ويمكنك الإلغاء في أي وقت من Google Play',
-  'plus.pass': 'تصريح الجنس لمدة 24 ساعة',
-  'plus.passNote': 'فلتر الجنس ليوم واحد · شراء لمرة واحدة',
-  'plus.getApp': 'احصل عليه في تطبيق Android.',
-  'plus.getAppBody': 'تتم عمليات الشراء في التطبيق. بعدها يعمل Plus هنا أيضًا، على الحساب نفسه.',
-  'plus.getItOn': 'احصل عليه من',
-  'plus.soon': 'تطبيق Android قادم قريبًا إلى Google Play.',
 
   // time & errors
   'time.now': 'الآن',
@@ -682,8 +655,6 @@ const ar: Dict = {
   'error.not_owned': 'لا تملك هذا المظهر بعد',
   'error.chat_closed': 'انتهت هذه الدردشة. أضف هذا الشخص صديقًا لتواصلا الحديث',
   'error.generic': 'حدث خطأ ما. يُرجى المحاولة مرة أخرى',
-  'chat.sticker': 'ملصق',
-  'error.sticker_not_owned': 'احصل على حزمة الملصقات هذه لإرساله',
   'nav.explore': 'استكشاف',
   'explore.search': 'ابحث بالمعرّف أو الاسم',
   'explore.feed': 'الموجز',
@@ -707,6 +678,8 @@ const ar: Dict = {
   'explore.country': 'الدولة',
   'pf.photoRequired': 'أضف صورة للملف الشخصي لتبدأ',
   'video.flip': 'تبديل الكاميرا',
+  'chat.seeAll': 'عرض الكل',
+  'voice.cameraNude': 'تم إيقاف الكاميرا لأنها بدت كعُري',
 }
 
 export default ar

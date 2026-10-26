@@ -85,9 +85,8 @@ const fr: LooksDict = {
   'blocks.unblock': 'Débloquer',
   'blocks.done': '{name} est débloqué(e)',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Fonds',
-  'looks.tab.sticker': 'Stickers',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Safran',
   'item.wall_midnight': 'Minuit',
@@ -95,19 +94,11 @@ const fr: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Nuit étoilée',
   'item.wall_waves': 'Vagues',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'L’heure du chai',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Amour',
   'item.vip_anon': 'VIP incognito',
   'wall.onlyYou': 'Le fond de vos discussions. Vous seul le voyez',
   'wall.use': 'Utiliser ce fond',
   'wall.inUse': 'Utilisé',
   'wall.remove': 'Retirer le fond',
-  'sticker.count': '8 stickers',
-  'sticker.owned': 'À vous : envoyez-les depuis n’importe quelle discussion',
-  'sticker.locked': 'Obtenez ce pack pour envoyer ces stickers',
-  'sticker.getPack': 'Obtenir le pack',
   'vip.strangers': 'Les inconnus voient',
   'vip.friends': 'Vos amis voient',
   'vip.what': 'Dans les discussions aléatoires, les salons et la recherche, les personnes qui ne sont pas vos amis ne voient que « VIP » : ni photo, ni ID, ni âge, ni pays, ni bio. Vos amis voient toujours tout, et les demandes d’ami fonctionnent comme avant.',
@@ -126,6 +117,14 @@ const fr: LooksDict = {
   'item.effect_aurora': 'Aurore',
   'item.effect_prism': 'Prisme',
   'effect.what': 'La lumière glisse sur ta photo de profil, partout où elle apparaît',
+  'looks.tab.bubble': 'Bulles de chat',
+  'item.bubble_peach': 'Pêche',
+  'item.bubble_ocean': 'Océan',
+  'item.bubble_mint': 'Menthe',
+  'item.bubble_galaxy': 'Galaxie',
+  'item.bubble_gold': 'Or',
+  'item.bubble_neon': 'Néon',
+  'bubble.what': 'Tout le monde voit vos messages dans cette bulle',
 }
 
 export default fr

@@ -18,7 +18,6 @@ const th: Dict = {
   'net.offline': 'ไม่มีอินเทอร์เน็ต กำลังเชื่อมต่อใหม่…',
   'error.screenTitle': 'โหลดหน้านี้ไม่ได้',
   'common.loading': 'กำลังโหลด yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'ตอนนี้เข้าถึง yaari ไม่ได้',
   'boot.offlineBody': 'ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองอีกครั้ง',
@@ -31,7 +30,6 @@ const th: Dict = {
   'nav.me': 'ฉัน',
   'nav.settings': 'การตั้งค่า',
   'nav.home': 'หน้าแรก',
-  'nav.freePlan': 'แพ็กเกจฟรี',
   'panel.activity': 'กิจกรรม',
   'panel.friends': 'เพื่อนของคุณ',
   'panel.rooms': 'ห้องที่กำลังไลฟ์',
@@ -39,9 +37,6 @@ const th: Dict = {
   'panel.friendCount.other': 'เพื่อน {n} คน',
   'panel.noFriends': 'เพื่อนที่คุณเพิ่มจากแชทจะแสดงที่นี่',
   'panel.message': 'ส่งข้อความถึง {name}',
-  'panel.plusTitle': 'เลือกได้ว่าจะเจอใคร',
-  'panel.plusBody': 'ตัวกรองเพศ และข้ามได้ทันทีด้วย Yaari Plus',
-  'panel.plusCta': 'ดู Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · ยืนยันเบอร์โทรแล้ว',
@@ -78,10 +73,6 @@ const th: Dict = {
   'country.none': 'ไม่พบประเทศ',
   'countries.label': 'ประเทศ',
   'countries.anywhere': 'ที่ไหนก็ได้',
-  'countries.title': 'เลือกประเทศ',
-  'countries.hint': 'ฟรี · สูงสุด {n} ประเทศ',
-  'countries.done': 'เสร็จ',
-  'countries.only': 'เฉพาะคนจากประเทศเหล่านี้',
 
   'otp.change': 'เปลี่ยนเบอร์',
   'otp.title': 'ใส่รหัส',
@@ -529,7 +520,6 @@ const th: Dict = {
   // me & profiles
   'me.edit': 'แก้ไขโปรไฟล์',
   'me.newPost': 'โพสต์ใหม่',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'แชร์โพสต์แรกของคุณ',
   'me.editDesc': 'เปลี่ยนเพศและวันเกิดไม่ได้',
   'me.updated': 'อัปเดตโปรไฟล์แล้ว',
@@ -561,9 +551,6 @@ const th: Dict = {
   'settings.account': 'บัญชี',
   'settings.phone': 'เบอร์โทรศัพท์',
   'settings.verified': 'ยืนยันแล้ว',
-  'settings.plan': 'แพ็กเกจ',
-  'settings.planPass': 'พาสเลือกเพศ 24 ชั่วโมง',
-  'settings.planFree': 'ฟรี',
   'settings.language': 'ภาษา',
   'settings.roomSounds': 'เสียงในห้องเสียง',
   'settings.roomSoundsBody': 'มีเสียงสั้น ๆ เมื่อมีคนเข้าหรือออกจากห้องเสียง',
@@ -617,20 +604,6 @@ const th: Dict = {
   'tr.same': 'ข้อความนี้เป็นภาษาของคุณอยู่แล้ว',
 
   // Yaari Plus
-  'plus.tagline': 'ควบคุมทุกการสนทนาได้มากขึ้น',
-  'plus.b1Title': 'เลือกได้ว่าจะเจอใคร',
-  'plus.b1Body': 'กรองการจับคู่สุ่มเป็นผู้หญิงหรือผู้ชาย',
-  'plus.b3Title': 'ข้ามใน 0.2 วิ',
-  'plus.b3Body': 'ออกจากแชทได้ทันทีโดยไม่ต้องรอ 5 วิ',
-  'plus.plans': 'แพ็กเกจ',
-  'plus.monthly': 'รายเดือน',
-  'plus.monthlyNote': 'ฟีเจอร์ Plus ทั้งหมด · ต่ออายุรายเดือน ยกเลิกได้ทุกเมื่อใน Google Play',
-  'plus.pass': 'พาสเลือกเพศ 24 ชั่วโมง',
-  'plus.passNote': 'ตัวกรองเพศหนึ่งวัน · ซื้อครั้งเดียว',
-  'plus.getApp': 'ซื้อได้ในแอป Android',
-  'plus.getAppBody': 'การซื้อทำในแอป จากนั้น Plus ก็ใช้ได้ที่นี่ด้วย ในบัญชีเดียวกัน',
-  'plus.getItOn': 'ดาวน์โหลดได้ที่',
-  'plus.soon': 'แอป Android จะมาใน Google Play เร็วๆ นี้',
 
   // time & errors
   'time.now': 'เมื่อสักครู่',
@@ -670,8 +643,6 @@ const th: Dict = {
   'error.not_owned': 'คุณยังไม่มีลุคนี้',
   'error.chat_closed': 'แชทนี้จบแล้ว เพิ่มเขาเป็นเพื่อนเพื่อคุยต่อ',
   'error.generic': 'เกิดข้อผิดพลาด โปรดลองอีกครั้ง',
-  'chat.sticker': 'สติกเกอร์',
-  'error.sticker_not_owned': 'รับแพ็กสติกเกอร์นี้ก่อนจึงจะส่งได้',
   'nav.explore': 'สำรวจ',
   'explore.search': 'ค้นหาด้วยไอดีหรือชื่อ',
   'explore.feed': 'ฟีด',
@@ -695,6 +666,8 @@ const th: Dict = {
   'explore.country': 'ประเทศ',
   'pf.photoRequired': 'เพิ่มรูปโปรไฟล์เพื่อเริ่มใช้งาน',
   'video.flip': 'สลับกล้อง',
+  'chat.seeAll': 'ดูทั้งหมด',
+  'voice.cameraNude': 'กล้องของคุณถูกปิดเพราะภาพดูเหมือนภาพโป๊เปลือย',
 }
 
 export default th

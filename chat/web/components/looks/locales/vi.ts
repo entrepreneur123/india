@@ -85,9 +85,8 @@ const vi: LooksDict = {
   'blocks.unblock': 'Bỏ chặn',
   'blocks.done': 'Đã bỏ chặn {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Hình nền',
-  'looks.tab.sticker': 'Nhãn dán',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Nghệ tây',
   'item.wall_midnight': 'Nửa đêm',
@@ -95,19 +94,11 @@ const vi: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Đêm đầy sao',
   'item.wall_waves': 'Sóng',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Giờ trà chai',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Tình yêu',
   'item.vip_anon': 'VIP ẩn danh',
   'wall.onlyYou': 'Hình nền đoạn chat của bạn. Chỉ bạn nhìn thấy',
   'wall.use': 'Dùng hình nền này',
   'wall.inUse': 'Đang dùng',
   'wall.remove': 'Gỡ hình nền',
-  'sticker.count': '8 nhãn dán',
-  'sticker.owned': 'Của bạn: gửi từ bất kỳ đoạn chat nào',
-  'sticker.locked': 'Mua gói này để gửi những nhãn dán này',
-  'sticker.getPack': 'Mua gói',
   'vip.strangers': 'Người lạ thấy',
   'vip.friends': 'Bạn bè thấy',
   'vip.what': 'Trong chat ngẫu nhiên, phòng và tìm kiếm, người không phải bạn bè chỉ thấy “VIP”: không ảnh, ID, tuổi, quốc gia hay giới thiệu. Bạn bè vẫn thấy mọi thứ, và lời mời kết bạn vẫn hoạt động bình thường.',
@@ -126,6 +117,14 @@ const vi: LooksDict = {
   'item.effect_aurora': 'Cực quang',
   'item.effect_prism': 'Lăng kính',
   'effect.what': 'Ánh sáng lướt trên ảnh đại diện của bạn, ở mọi nơi nó hiện',
+  'looks.tab.bubble': 'Bong bóng chat',
+  'item.bubble_peach': 'Đào',
+  'item.bubble_ocean': 'Đại dương',
+  'item.bubble_mint': 'Bạc hà',
+  'item.bubble_galaxy': 'Thiên hà',
+  'item.bubble_gold': 'Vàng',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Mọi người thấy tin nhắn của bạn trong bong bóng này',
 }
 
 export default vi

@@ -85,9 +85,8 @@ const bn: LooksDict = {
   'blocks.unblock': 'আনব্লক',
   'blocks.done': '{name}-কে আনব্লক করা হয়েছে',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'ওয়ালপেপার',
-  'looks.tab.sticker': 'স্টিকার',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'জাফরানি',
   'item.wall_midnight': 'মাঝরাত',
@@ -95,19 +94,11 @@ const bn: LooksDict = {
   'item.wall_mehndi': 'মেহেন্দি',
   'item.wall_stars': 'তারাভরা রাত',
   'item.wall_waves': 'ঢেউ',
-  'item.sticker_namaste': 'নমস্তে',
-  'item.sticker_chai': 'চা টাইম',
-  'item.sticker_cricket': 'ক্রিকেট',
-  'item.sticker_love': 'ভালোবাসা',
   'item.vip_anon': 'VIP ইনকগনিটো',
   'wall.onlyYou': 'আপনার চ্যাটের ব্যাকগ্রাউন্ড। শুধু আপনিই দেখতে পান',
   'wall.use': 'এই ওয়ালপেপার দিন',
   'wall.inUse': 'চালু আছে',
   'wall.remove': 'ওয়ালপেপার সরান',
-  'sticker.count': '৮টি স্টিকার',
-  'sticker.owned': 'আপনার: যেকোনো চ্যাট থেকে পাঠান',
-  'sticker.locked': 'এই স্টিকারগুলো পাঠাতে প্যাকটি নিন',
-  'sticker.getPack': 'প্যাক নিন',
   'vip.strangers': 'অচেনারা দেখে',
   'vip.friends': 'বন্ধুরা দেখে',
   'vip.what': 'র‍্যান্ডম চ্যাট, রুম আর সার্চে যারা আপনার বন্ধু নয়, তারা শুধু “VIP” দেখে: ছবি, ID, বয়স, দেশ বা বায়ো কিছুই না। বন্ধুরা সবকিছু দেখতে পায়, আর ফ্রেন্ড রিকোয়েস্টও আগের মতোই কাজ করে।',
@@ -126,6 +117,14 @@ const bn: LooksDict = {
   'item.effect_aurora': 'অরোরা',
   'item.effect_prism': 'প্রিজম',
   'effect.what': 'আপনার প্রোফাইল ছবির ওপর আলো চলে, যেখানেই দেখা যাক',
+  'looks.tab.bubble': 'চ্যাট বাবল',
+  'item.bubble_peach': 'পিচ',
+  'item.bubble_ocean': 'সমুদ্র',
+  'item.bubble_mint': 'মিন্ট',
+  'item.bubble_galaxy': 'গ্যালাক্সি',
+  'item.bubble_gold': 'সোনালি',
+  'item.bubble_neon': 'নিয়ন',
+  'bubble.what': 'সবাই আপনার মেসেজ এই বাবলে দেখবে',
 }
 
 export default bn

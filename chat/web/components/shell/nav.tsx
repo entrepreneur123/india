@@ -38,7 +38,7 @@ const ITEMS: NavItem[] = [
 ]
 
 export function Sidebar({ className }: { className?: string }) {
-  const { tab, setTab, t, me, entitlements, openPaywall, badges, openInbox } = useApp()
+  const { tab, setTab, t, me, badges, openInbox } = useApp()
   const { st } = useSocialT()
   const inboxCount = badges?.inbox ?? 0
   return (
@@ -102,29 +102,13 @@ export function Sidebar({ className }: { className?: string }) {
       </nav>
 
       <div className="mt-auto flex flex-col gap-3">
-        {!entitlements.premium ? (
-          <button
-            type="button"
-            onClick={openPaywall}
-            onPointerEnter={() => preloadScreen('paywall')}
-            className="hidden rounded-2xl border border-border p-4 text-start transition-colors duration-150 hover:bg-muted lg:block"
-          >
-            <span className="block text-sm font-bold text-primary-text">{t('common.plus')}</span>
-            <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{t('panel.plusTitle')}</span>
-          </button>
-        ) : null}
         <button
           type="button"
           onClick={() => setTab('me')}
           className="flex items-center justify-center gap-3 rounded-full p-1.5 text-start transition-colors duration-150 hover:bg-muted lg:justify-start lg:p-2"
         >
           <UserAvatar userId={me.id} name={me.name} src={me.photoUrl} size={36} />
-          <span className="hidden min-w-0 lg:block">
-            <span className="block truncate text-sm font-semibold">{me.name}</span>
-            <span className="block truncate text-xs text-muted-foreground">
-              {entitlements.premium ? t('common.plus') : t('nav.freePlan')}
-            </span>
-          </span>
+          <span className="hidden min-w-0 truncate text-sm font-semibold lg:block">{me.name}</span>
         </button>
       </div>
     </aside>

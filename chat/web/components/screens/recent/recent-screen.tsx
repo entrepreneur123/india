@@ -24,7 +24,6 @@ import { LookName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FindSheet } from '@/components/social/people-find'
 import { nameAge } from '@/lib/looks'
-import { previewText } from '@/lib/stickers'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
 type Segment = 'friends' | 'matches' | 'sent'
@@ -354,7 +353,7 @@ function MatchesList({
                 detail={
                   <>
                     <span aria-hidden>{flagEmoji(r.partner.country)} </span>
-                    {r.lastText ? `${previewText(r.lastText, t('chat.sticker'))} · ` : ''}
+                    {r.lastText ? `${r.lastText} · ` : ''}
                     {timeAgo(r.metAt)}
                   </>
                 }

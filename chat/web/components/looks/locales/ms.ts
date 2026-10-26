@@ -85,9 +85,8 @@ const ms: LooksDict = {
   'blocks.unblock': 'Nyahsekat',
   'blocks.done': '{name} telah dinyahsekat',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Hiasan latar',
-  'looks.tab.sticker': 'Pelekat',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Kunyit',
   'item.wall_midnight': 'Tengah malam',
@@ -95,19 +94,11 @@ const ms: LooksDict = {
   'item.wall_mehndi': 'Inai',
   'item.wall_stars': 'Malam berbintang',
   'item.wall_waves': 'Ombak',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Masa chai',
-  'item.sticker_cricket': 'Kriket',
-  'item.sticker_love': 'Cinta',
   'item.vip_anon': 'VIP Inkognito',
   'wall.onlyYou': 'Latar sembang anda. Hanya anda yang nampak',
   'wall.use': 'Guna latar ini',
   'wall.inUse': 'Sedang diguna',
   'wall.remove': 'Buang latar',
-  'sticker.count': '8 pelekat',
-  'sticker.owned': 'Milik anda: hantar dari mana-mana sembang',
-  'sticker.locked': 'Dapatkan pek ini untuk menghantar pelekat ini',
-  'sticker.getPack': 'Dapatkan pek',
   'vip.strangers': 'Orang asing nampak',
   'vip.friends': 'Rakan nampak',
   'vip.what': 'Dalam sembang rawak, bilik dan carian, orang yang bukan rakan anda hanya nampak “VIP”: tiada foto, ID, umur, negara atau bio. Rakan anda masih nampak semuanya, dan permintaan rakan masih berfungsi.',
@@ -126,6 +117,14 @@ const ms: LooksDict = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',
   'effect.what': 'Cahaya bergerak di atas foto profil anda, di mana-mana ia dipaparkan',
+  'looks.tab.bubble': 'Gelembung sembang',
+  'item.bubble_peach': 'Pic',
+  'item.bubble_ocean': 'Lautan',
+  'item.bubble_mint': 'Pudina',
+  'item.bubble_galaxy': 'Galaksi',
+  'item.bubble_gold': 'Emas',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Semua orang melihat mesej anda dalam gelembung ini',
 }
 
 export default ms

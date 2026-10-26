@@ -85,9 +85,8 @@ const th: LooksDict = {
   'blocks.unblock': 'เลิกบล็อก',
   'blocks.done': 'เลิกบล็อก {name} แล้ว',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'วอลเปเปอร์',
-  'looks.tab.sticker': 'สติกเกอร์',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'หญ้าฝรั่น',
   'item.wall_midnight': 'เที่ยงคืน',
@@ -95,19 +94,11 @@ const th: LooksDict = {
   'item.wall_mehndi': 'เมเฮนดี',
   'item.wall_stars': 'คืนดาวพราว',
   'item.wall_waves': 'คลื่น',
-  'item.sticker_namaste': 'นมัสเต',
-  'item.sticker_chai': 'เวลาจิบชา',
-  'item.sticker_cricket': 'คริกเก็ต',
-  'item.sticker_love': 'ความรัก',
   'item.vip_anon': 'VIP โหมดไม่ระบุตัวตน',
   'wall.onlyYou': 'พื้นหลังแชตของคุณ เห็นได้แค่คุณคนเดียว',
   'wall.use': 'ใช้วอลเปเปอร์นี้',
   'wall.inUse': 'ใช้อยู่',
   'wall.remove': 'เอาวอลเปเปอร์ออก',
-  'sticker.count': 'สติกเกอร์ 8 ตัว',
-  'sticker.owned': 'เป็นของคุณแล้ว: ส่งได้จากทุกแชต',
-  'sticker.locked': 'รับแพ็กนี้ก่อนจึงจะส่งสติกเกอร์เหล่านี้ได้',
-  'sticker.getPack': 'รับแพ็ก',
   'vip.strangers': 'คนแปลกหน้าเห็น',
   'vip.friends': 'เพื่อนเห็น',
   'vip.what': 'ในแชตสุ่ม ห้อง และการค้นหา คนที่ไม่ใช่เพื่อนจะเห็นคุณแค่ “VIP”: ไม่มีรูป ID อายุ ประเทศ หรือไบโอ เพื่อนของคุณยังเห็นทุกอย่าง และคำขอเป็นเพื่อนยังใช้ได้ตามปกติ',
@@ -126,6 +117,14 @@ const th: LooksDict = {
   'item.effect_aurora': 'ออโรรา',
   'item.effect_prism': 'ปริซึม',
   'effect.what': 'แสงเคลื่อนไหวบนรูปโปรไฟล์ของคุณ ในทุกที่ที่แสดง',
+  'looks.tab.bubble': 'บับเบิลแชท',
+  'item.bubble_peach': 'พีช',
+  'item.bubble_ocean': 'มหาสมุทร',
+  'item.bubble_mint': 'มินต์',
+  'item.bubble_galaxy': 'กาแล็กซี',
+  'item.bubble_gold': 'ทอง',
+  'item.bubble_neon': 'นีออน',
+  'bubble.what': 'ทุกคนจะเห็นข้อความของคุณในบับเบิลนี้',
 }
 
 export default th

@@ -18,7 +18,6 @@ const sw: Dict = {
   'net.offline': 'Hakuna intaneti. Inaunganisha upya…',
   'error.screenTitle': 'Skrini hii haikufunguka',
   'common.loading': 'Inapakia yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Hatuwezi kufikia yaari kwa sasa',
   'boot.offlineBody': 'Angalia muunganisho wako wa intaneti, kisha ujaribu tena.',
@@ -31,7 +30,6 @@ const sw: Dict = {
   'nav.me': 'Mimi',
   'nav.settings': 'Mipangilio',
   'nav.home': 'Mwanzo',
-  'nav.freePlan': 'Mpango wa bure',
   'panel.activity': 'Shughuli',
   'panel.friends': 'Marafiki zako',
   'panel.rooms': 'Vyumba vilivyo hewani',
@@ -39,9 +37,6 @@ const sw: Dict = {
   'panel.friendCount.other': 'Marafiki {n}',
   'panel.noFriends': 'Marafiki unaowaongeza kutoka kwenye chat wataonekana hapa.',
   'panel.message': 'Mtumie {name} ujumbe',
-  'panel.plusTitle': 'Chagua unayekutana naye',
-  'panel.plusBody': 'Kichujio cha jinsia na kuruka papo hapo ukiwa na Yaari Plus.',
-  'panel.plusCta': 'Tazama Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · namba ya simu imethibitishwa',
@@ -78,10 +73,6 @@ const sw: Dict = {
   'country.none': 'Hakuna nchi iliyopatikana',
   'countries.label': 'Nchi',
   'countries.anywhere': 'Popote',
-  'countries.title': 'Chagua nchi',
-  'countries.hint': 'Bure · hadi nchi {n}',
-  'countries.done': 'Tayari',
-  'countries.only': 'Watu wa nchi hizi tu',
 
   'otp.change': 'Badilisha namba',
   'otp.title': 'Weka msimbo',
@@ -529,7 +520,6 @@ const sw: Dict = {
   // me & profiles
   'me.edit': 'Hariri wasifu',
   'me.newPost': 'Chapisho jipya',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Weka chapisho lako la kwanza',
   'me.editDesc': 'Jinsia na tarehe ya kuzaliwa haviwezi kubadilishwa.',
   'me.updated': 'Wasifu umesasishwa',
@@ -561,9 +551,6 @@ const sw: Dict = {
   'settings.account': 'Akaunti',
   'settings.phone': 'Namba ya simu',
   'settings.verified': 'Imethibitishwa',
-  'settings.plan': 'Mpango',
-  'settings.planPass': 'Pasi ya jinsia ya saa 24',
-  'settings.planFree': 'Bure',
   'settings.language': 'Lugha',
   'settings.roomSounds': 'Sauti za chumba cha sauti',
   'settings.roomSoundsBody': 'Mlio mfupi mtu anapoingia au kutoka kwenye chumba cha sauti.',
@@ -617,20 +604,6 @@ const sw: Dict = {
   'tr.same': 'Ujumbe huu tayari uko kwa lugha yako',
 
   // Yaari Plus
-  'plus.tagline': 'Udhibiti zaidi kwenye kila mazungumzo.',
-  'plus.b1Title': 'Chagua unayekutana naye',
-  'plus.b1Body': 'Chuja wanaolinganishwa nawe kwa wanawake au wanaume.',
-  'plus.b3Title': 'Ruka kwa sekunde 0.2',
-  'plus.b3Body': 'Ondoka kwenye chat papo hapo badala ya kusubiri sekunde 5.',
-  'plus.plans': 'Mipango',
-  'plus.monthly': 'Kila mwezi',
-  'plus.monthlyNote': 'Huduma zote za Plus · inajirudia kila mwezi, ghairi wakati wowote kwenye Google Play',
-  'plus.pass': 'Pasi ya jinsia ya saa 24',
-  'plus.passNote': 'Kichujio cha jinsia kwa siku moja · malipo ya mara moja',
-  'plus.getApp': 'Ipate kwenye programu ya Android.',
-  'plus.getAppBody': 'Ununuzi hufanyika ndani ya programu. Baada ya hapo Plus inafanya kazi hapa pia, kwenye akaunti hiyo hiyo.',
-  'plus.getItOn': 'Ipate kwenye',
-  'plus.soon': 'Programu ya Android inakuja kwenye Google Play hivi karibuni.',
 
   // time & errors
   'time.now': 'sasa hivi',
@@ -670,8 +643,6 @@ const sw: Dict = {
   'error.not_owned': 'Bado huna mtindo huu',
   'error.chat_closed': 'Gumzo hili limeisha. Mwongeze kama rafiki ili mendelee kuzungumza',
   'error.generic': 'Hitilafu imetokea. Tafadhali jaribu tena',
-  'chat.sticker': 'Stika',
-  'error.sticker_not_owned': 'Pata kifurushi hiki cha stika ili kuituma',
   'nav.explore': 'Gundua',
   'explore.search': 'Tafuta kwa ID au jina',
   'explore.feed': 'Mlisho',
@@ -695,6 +666,8 @@ const sw: Dict = {
   'explore.country': 'Nchi',
   'pf.photoRequired': 'Ongeza picha ya wasifu ili uanze',
   'video.flip': 'Badilisha kamera',
+  'chat.seeAll': 'Ona yote',
+  'voice.cameraNude': 'Kamera yako imezimwa kwa sababu ilionekana kuonyesha uchi',
 }
 
 export default sw

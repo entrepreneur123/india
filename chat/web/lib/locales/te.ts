@@ -17,7 +17,6 @@ const te: Dict = {
   'net.offline': 'ఇంటర్నెట్ లేదు. మళ్లీ కనెక్ట్ అవుతోంది…',
   'error.screenTitle': 'ఈ స్క్రీన్ లోడ్ కాలేదు',
   'common.loading': 'yaari తెరుచుకుంటోంది',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'ప్రస్తుతం yaariకి కనెక్ట్ కాలేకపోతున్నాం',
   'boot.offlineBody': 'మీ ఇంటర్నెట్ కనెక్షన్ చెక్ చేసి, మళ్లీ ప్రయత్నించండి.',
@@ -29,7 +28,6 @@ const te: Dict = {
   'nav.me': 'నేను',
   'nav.settings': 'సెట్టింగ్స్',
   'nav.home': 'హోమ్',
-  'nav.freePlan': 'ఉచిత ప్లాన్',
   'panel.activity': 'యాక్టివిటీ',
   'panel.friends': 'మీ ఫ్రెండ్స్',
   'panel.rooms': 'లైవ్ రూమ్‌లు',
@@ -37,9 +35,6 @@ const te: Dict = {
   'panel.friendCount.other': '{n} ఫ్రెండ్స్',
   'panel.noFriends': 'చాట్స్ నుంచి మీరు యాడ్ చేసే ఫ్రెండ్స్ ఇక్కడ కనిపిస్తారు.',
   'panel.message': '{name}కి మెసేజ్ చేయి',
-  'panel.plusTitle': 'ఎవరిని కలవాలో మీరే ఎంచుకోండి',
-  'panel.plusBody': 'Yaari Plusతో జెండర్ ఫిల్టర్, వెంటనే స్కిప్.',
-  'panel.plusCta': 'Yaari Plus చూడండి',
 
   'auth.badge': '18+ · ఫోన్ వెరిఫై అయింది',
   'auth.verifiedBadge': 'వెరిఫైడ్ బ్యాడ్జ్ పొందండి: ID + సెల్ఫీ',
@@ -75,10 +70,6 @@ const te: Dict = {
   'country.none': 'ఏ దేశమూ దొరకలేదు',
   'countries.label': 'దేశాలు',
   'countries.anywhere': 'ఎక్కడైనా',
-  'countries.title': 'దేశాలను ఎంచుకోండి',
-  'countries.hint': 'ఉచితం · గరిష్టంగా {n} దేశాలు',
-  'countries.done': 'పూర్తయింది',
-  'countries.only': 'ఈ దేశాల వారు మాత్రమే',
 
   'otp.change': 'నంబర్ మార్చు',
   'otp.title': 'కోడ్ ఎంటర్ చేయండి',
@@ -520,7 +511,6 @@ const te: Dict = {
 
   'me.edit': 'ప్రొఫైల్ ఎడిట్ చేయి',
   'me.newPost': 'కొత్త పోస్ట్',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'మీ మొదటి పోస్ట్ షేర్ చేయండి',
   'me.editDesc': 'జెండర్, పుట్టిన తేదీ మార్చలేరు.',
   'me.updated': 'ప్రొఫైల్ అప్‌డేట్ అయింది',
@@ -551,9 +541,6 @@ const te: Dict = {
   'settings.account': 'అకౌంట్',
   'settings.phone': 'ఫోన్ నంబర్',
   'settings.verified': 'వెరిఫై అయింది',
-  'settings.plan': 'ప్లాన్',
-  'settings.planPass': '24 గంటల జెండర్ పాస్',
-  'settings.planFree': 'ఉచితం',
   'settings.language': 'భాష',
   'settings.roomSounds': 'వాయిస్ రూమ్ శబ్దాలు',
   'settings.roomSoundsBody': 'ఎవరైనా వాయిస్ రూమ్‌లోకి వచ్చినా, వెళ్లినా చిన్న శబ్దం వస్తుంది.',
@@ -605,20 +592,6 @@ const te: Dict = {
   'tr.tooLong': 'అనువదించడానికి ఈ మెసేజ్ చాలా పొడవుగా ఉంది',
   'tr.same': 'ఈ మెసేజ్ ఇప్పటికే మీ భాషలోనే ఉంది',
 
-  'plus.tagline': 'ప్రతి సంభాషణపై మరింత కంట్రోల్.',
-  'plus.b1Title': 'ఎవరిని కలవాలో మీరే ఎంచుకోండి',
-  'plus.b1Body': 'రాండమ్ మ్యాచ్‌లను మహిళలు లేదా పురుషులుగా ఫిల్టర్ చేయండి.',
-  'plus.b3Title': '0.2 సె. స్కిప్',
-  'plus.b3Body': '5 సెకన్లు ఆగకుండా వెంటనే చాట్ నుంచి వెళ్లిపోండి.',
-  'plus.plans': 'ప్లాన్‌లు',
-  'plus.monthly': 'నెలవారీ',
-  'plus.monthlyNote': 'అన్ని Plus ఫీచర్లు · ప్రతి నెలా రెన్యూ అవుతుంది, Google Playలో ఎప్పుడైనా క్యాన్సిల్ చేయవచ్చు',
-  'plus.pass': '24 గంటల జెండర్ పాస్',
-  'plus.passNote': 'ఒక రోజుకు జెండర్ ఫిల్టర్ · ఒక్కసారి కొనుగోలు',
-  'plus.getApp': 'Android యాప్‌లో పొందండి.',
-  'plus.getAppBody': 'కొనుగోళ్లు యాప్‌లో జరుగుతాయి. తర్వాత అదే అకౌంట్‌తో ఇక్కడ కూడా Plus పనిచేస్తుంది.',
-  'plus.getItOn': 'ఇందులో పొందండి',
-  'plus.soon': 'Android యాప్ త్వరలో Google Playలోకి వస్తోంది.',
 
   'time.now': 'ఇప్పుడే',
   'error.exit_locked': 'వెళ్లిపోయే ముందు కాసేపు ఆగండి',
@@ -657,8 +630,6 @@ const te: Dict = {
   'error.not_owned': 'ఈ లుక్ ఇంకా మీ దగ్గర లేదు',
   'error.chat_closed': 'ఈ చాట్ ముగిసింది. మాట్లాడుతూ ఉండడానికి వారిని ఫ్రెండ్‌గా యాడ్ చేయండి',
   'error.generic': 'ఏదో పొరపాటు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి',
-  'chat.sticker': 'స్టిక్కర్',
-  'error.sticker_not_owned': 'దీన్ని పంపడానికి ఈ స్టిక్కర్ ప్యాక్ పొందండి',
   'nav.explore': 'ఎక్స్‌ప్లోర్',
   'explore.search': 'ID లేదా పేరుతో వెతకండి',
   'explore.feed': 'ఫీడ్',
@@ -682,6 +653,8 @@ const te: Dict = {
   'explore.country': 'దేశం',
   'pf.photoRequired': 'ప్రారంభించడానికి ప్రొఫైల్ ఫోటో జోడించండి',
   'video.flip': 'కెమెరా మార్చండి',
+  'chat.seeAll': 'అన్నీ చూడండి',
+  'voice.cameraNude': 'నగ్నత్వంలా కనిపించినందున మీ కెమెరా ఆఫ్ చేయబడింది',
 }
 
 export default te

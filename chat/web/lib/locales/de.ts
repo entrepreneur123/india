@@ -17,7 +17,6 @@ const de: Dict = {
   'net.offline': 'Kein Internet. Verbindung wird wiederhergestellt…',
   'error.screenTitle': 'Diese Seite konnte nicht geladen werden',
   'common.loading': 'yaari wird geladen',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'yaari ist gerade nicht erreichbar',
   'boot.offlineBody': 'Prüfe deine Internetverbindung und versuch es dann noch mal.',
@@ -29,7 +28,6 @@ const de: Dict = {
   'nav.me': 'Ich',
   'nav.settings': 'Einstellungen',
   'nav.home': 'Start',
-  'nav.freePlan': 'Kostenloser Plan',
   'panel.activity': 'Aktivität',
   'panel.friends': 'Deine Freunde',
   'panel.rooms': 'Live-Räume',
@@ -37,9 +35,6 @@ const de: Dict = {
   'panel.friendCount.other': '{n} Freunde',
   'panel.noFriends': 'Freunde, die du aus Chats hinzufügst, erscheinen hier.',
   'panel.message': 'Nachricht an {name}',
-  'panel.plusTitle': 'Entscheide, wen du triffst',
-  'panel.plusBody': 'Geschlechterfilter und sofortiges Überspringen mit Yaari Plus.',
-  'panel.plusCta': 'Yaari Plus ansehen',
 
   'auth.badge': '18+ · Telefon verifiziert',
   'auth.verifiedBadge': 'Hol dir dein Verifiziert-Abzeichen: Ausweis + Selfie',
@@ -75,10 +70,6 @@ const de: Dict = {
   'country.none': 'Keine Länder gefunden',
   'countries.label': 'Länder',
   'countries.anywhere': 'Überall',
-  'countries.title': 'Länder wählen',
-  'countries.hint': 'Kostenlos · bis zu {n} Länder',
-  'countries.done': 'Fertig',
-  'countries.only': 'Nur Leute aus diesen Ländern',
 
   'otp.change': 'Nummer ändern',
   'otp.title': 'Code eingeben',
@@ -520,7 +511,6 @@ const de: Dict = {
 
   'me.edit': 'Profil bearbeiten',
   'me.newPost': 'Neuer Beitrag',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Teile deinen ersten Beitrag',
   'me.editDesc': 'Geschlecht und Geburtsdatum können nicht geändert werden.',
   'me.updated': 'Profil aktualisiert',
@@ -551,9 +541,6 @@ const de: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Telefonnummer',
   'settings.verified': 'Verifiziert',
-  'settings.plan': 'Plan',
-  'settings.planPass': '24-Stunden-Geschlechterpass',
-  'settings.planFree': 'Kostenlos',
   'settings.language': 'Sprache',
   'settings.roomSounds': 'Töne im Sprachraum',
   'settings.roomSoundsBody': 'Ein kurzer Ton, wenn jemand einen Sprachraum betritt oder verlässt.',
@@ -605,20 +592,6 @@ const de: Dict = {
   'tr.tooLong': 'Diese Nachricht ist zu lang zum Übersetzen',
   'tr.same': 'Diese Nachricht ist schon in deiner Sprache',
 
-  'plus.tagline': 'Mehr Kontrolle über jede Unterhaltung.',
-  'plus.b1Title': 'Entscheide, wen du triffst',
-  'plus.b1Body': 'Filtere zufällige Matches nach Frauen oder Männern.',
-  'plus.b3Title': '0,2 s Überspringen',
-  'plus.b3Body': 'Verlass einen Chat sofort, statt 5 s zu warten.',
-  'plus.plans': 'Pläne',
-  'plus.monthly': 'Monatlich',
-  'plus.monthlyNote': 'Alle Plus-Funktionen · verlängert sich monatlich, jederzeit bei Google Play kündbar',
-  'plus.pass': '24-Stunden-Geschlechterpass',
-  'plus.passNote': 'Geschlechterfilter für einen Tag · Einmalkauf',
-  'plus.getApp': 'Hol es dir in der Android-App.',
-  'plus.getAppBody': 'Käufe laufen über die App. Danach funktioniert Plus auch hier, mit demselben Konto.',
-  'plus.getItOn': 'Jetzt bei',
-  'plus.soon': 'Die Android-App kommt bald zu Google Play.',
 
   'time.now': 'gerade eben',
   'error.exit_locked': 'Warte einen Moment, bevor du gehst',
@@ -657,8 +630,6 @@ const de: Dict = {
   'error.not_owned': 'Dieser Look gehört dir noch nicht',
   'error.chat_closed': 'Dieser Chat ist beendet. Füge die Person als Freund hinzu, um weiterzuschreiben',
   'error.generic': 'Etwas ist schiefgelaufen. Bitte versuch es noch mal',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Hol dir dieses Sticker-Paket, um ihn zu senden',
   'nav.explore': 'Entdecken',
   'explore.search': 'Nach ID oder Name suchen',
   'explore.feed': 'Feed',
@@ -682,6 +653,8 @@ const de: Dict = {
   'explore.country': 'Land',
   'pf.photoRequired': 'Füge ein Profilfoto hinzu, um zu starten',
   'video.flip': 'Kamera wechseln',
+  'chat.seeAll': 'Alles anzeigen',
+  'voice.cameraNude': 'Deine Kamera wurde ausgeschaltet, weil das Bild nach Nacktheit aussah',
 }
 
 export default de

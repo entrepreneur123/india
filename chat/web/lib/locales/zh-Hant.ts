@@ -18,7 +18,6 @@ const zhHant: Dict = {
   'net.offline': '沒有網路，正在重新連線…',
   'error.screenTitle': '此頁面無法載入',
   'common.loading': '正在載入 yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': '暫時連不上 yaari',
   'boot.offlineBody': '請檢查網路連線，然後重試。',
@@ -31,7 +30,6 @@ const zhHant: Dict = {
   'nav.me': '我',
   'nav.settings': '設定',
   'nav.home': '首頁',
-  'nav.freePlan': '免費版',
   'panel.activity': '動態',
   'panel.friends': '我的好友',
   'panel.rooms': '直播房間',
@@ -39,9 +37,6 @@ const zhHant: Dict = {
   'panel.friendCount.other': '{n} 位好友',
   'panel.noFriends': '你在聊天中新增的好友會顯示在這裡。',
   'panel.message': '給 {name} 發訊息',
-  'panel.plusTitle': '想見誰，你來選',
-  'panel.plusBody': '開通 Yaari Plus，享受性別篩選和秒速跳過。',
-  'panel.plusCta': '了解 Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · 手機號碼已驗證',
@@ -78,10 +73,6 @@ const zhHant: Dict = {
   'country.none': '未找到國家/地區',
   'countries.label': '國家',
   'countries.anywhere': '不限',
-  'countries.title': '選擇國家',
-  'countries.hint': '免費 · 最多 {n} 個國家',
-  'countries.done': '完成',
-  'countries.only': '只配對這些國家的人',
 
   'otp.change': '更換手機號碼',
   'otp.title': '輸入驗證碼',
@@ -529,7 +520,6 @@ const zhHant: Dict = {
   // me & profiles
   'me.edit': '編輯資料',
   'me.newPost': '發佈貼文',
-  'me.plusBadge': 'Plus',
   'me.firstPost': '發佈你的第一則貼文',
   'me.editDesc': '性別和出生日期無法修改。',
   'me.updated': '資料已更新',
@@ -561,9 +551,6 @@ const zhHant: Dict = {
   'settings.account': '帳號',
   'settings.phone': '手機號碼',
   'settings.verified': '已驗證',
-  'settings.plan': '方案',
-  'settings.planPass': '24 小時性別通行證',
-  'settings.planFree': '免費',
   'settings.language': '語言',
   'settings.roomSounds': '語音房提示音',
   'settings.roomSoundsBody': '有人進入或離開語音房時會響起短促的提示音。',
@@ -617,20 +604,6 @@ const zhHant: Dict = {
   'tr.same': '這則訊息已經是你的語言了',
 
   // Yaari Plus
-  'plus.tagline': '每一次聊天，都由你掌控。',
-  'plus.b1Title': '想見誰，你來選',
-  'plus.b1Body': '隨機配對時可篩選女生或男生。',
-  'plus.b3Title': '0.2 秒跳過',
-  'plus.b3Body': '無需等待 5 秒，立刻離開聊天。',
-  'plus.plans': '方案',
-  'plus.monthly': '每月',
-  'plus.monthlyNote': '全部 Plus 功能 · 按月自動續訂，可隨時在 Google Play 取消',
-  'plus.pass': '24 小時性別通行證',
-  'plus.passNote': '一天內可使用性別篩選 · 一次性購買',
-  'plus.getApp': '請在 Android App 中購買。',
-  'plus.getAppBody': '購買需在 App 內完成。之後使用同一帳號，在這裡也能享受 Plus。',
-  'plus.getItOn': '下載於',
-  'plus.soon': 'Android App 即將上架 Google Play。',
 
   // time & errors
   'time.now': '剛剛',
@@ -670,8 +643,6 @@ const zhHant: Dict = {
   'error.not_owned': '你還沒有這個裝扮',
   'error.chat_closed': '此聊天已結束。將對方加為好友就能繼續聊',
   'error.generic': '出了點問題，請重試',
-  'chat.sticker': '貼圖',
-  'error.sticker_not_owned': '取得這組貼圖後才能傳送',
   'nav.explore': '探索',
   'explore.search': '依 ID 或名字搜尋',
   'explore.feed': '動態',
@@ -695,6 +666,8 @@ const zhHant: Dict = {
   'explore.country': '國家',
   'pf.photoRequired': '請先設定大頭貼才能開始',
   'video.flip': '切換鏡頭',
+  'chat.seeAll': '查看全部',
+  'voice.cameraNude': '畫面疑似裸露，你的鏡頭已關閉',
 }
 
 export default zhHant

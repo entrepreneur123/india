@@ -18,7 +18,6 @@ const ms: Dict = {
   'net.offline': 'Tiada internet. Menyambung semula…',
   'error.screenTitle': 'Skrin ini tidak dapat dimuatkan',
   'common.loading': 'Memuatkan yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Tidak dapat menghubungi yaari sekarang',
   'boot.offlineBody': 'Semak sambungan internet anda, kemudian cuba lagi.',
@@ -31,7 +30,6 @@ const ms: Dict = {
   'nav.me': 'Saya',
   'nav.settings': 'Tetapan',
   'nav.home': 'Laman utama',
-  'nav.freePlan': 'Pelan percuma',
   'panel.activity': 'Aktiviti',
   'panel.friends': 'Rakan anda',
   'panel.rooms': 'Bilik langsung',
@@ -39,9 +37,6 @@ const ms: Dict = {
   'panel.friendCount.other': '{n} rakan',
   'panel.noFriends': 'Rakan yang anda tambah daripada sembang akan muncul di sini.',
   'panel.message': 'Mesej {name}',
-  'panel.plusTitle': 'Pilih siapa yang anda jumpa',
-  'panel.plusBody': 'Penapis jantina dan langkau segera dengan Yaari Plus.',
-  'panel.plusCta': 'Lihat Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · telefon disahkan',
@@ -78,10 +73,6 @@ const ms: Dict = {
   'country.none': 'Tiada negara ditemui',
   'countries.label': 'Negara',
   'countries.anywhere': 'Di mana-mana',
-  'countries.title': 'Pilih negara',
-  'countries.hint': 'Percuma · sehingga {n} negara',
-  'countries.done': 'Siap',
-  'countries.only': 'Hanya orang dari negara-negara ini',
 
   'otp.change': 'Tukar nombor',
   'otp.title': 'Masukkan kod',
@@ -529,7 +520,6 @@ const ms: Dict = {
   // me & profiles
   'me.edit': 'Edit profil',
   'me.newPost': 'Hantaran baharu',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Kongsi hantaran pertama anda',
   'me.editDesc': 'Jantina dan tarikh lahir tidak boleh ditukar.',
   'me.updated': 'Profil dikemas kini',
@@ -561,9 +551,6 @@ const ms: Dict = {
   'settings.account': 'Akaun',
   'settings.phone': 'Nombor telefon',
   'settings.verified': 'Disahkan',
-  'settings.plan': 'Pelan',
-  'settings.planPass': 'Pas jantina 24 jam',
-  'settings.planFree': 'Percuma',
   'settings.language': 'Bahasa',
   'settings.roomSounds': 'Bunyi bilik suara',
   'settings.roomSoundsBody': 'Bunyi pendek apabila seseorang masuk atau keluar dari bilik suara.',
@@ -617,20 +604,6 @@ const ms: Dict = {
   'tr.same': 'Mesej ini sudah dalam bahasa anda',
 
   // Yaari Plus
-  'plus.tagline': 'Lebih kawalan dalam setiap perbualan.',
-  'plus.b1Title': 'Pilih siapa yang anda jumpa',
-  'plus.b1Body': 'Tapis padanan rawak mengikut perempuan atau lelaki.',
-  'plus.b3Title': 'Langkau 0.2 saat',
-  'plus.b3Body': 'Keluar sembang serta-merta tanpa menunggu 5 saat.',
-  'plus.plans': 'Pelan',
-  'plus.monthly': 'Bulanan',
-  'plus.monthlyNote': 'Semua ciri Plus · diperbaharui setiap bulan, batalkan bila-bila masa di Google Play',
-  'plus.pass': 'Pas jantina 24 jam',
-  'plus.passNote': 'Penapis jantina untuk satu hari · pembelian sekali',
-  'plus.getApp': 'Dapatkannya dalam aplikasi Android.',
-  'plus.getAppBody': 'Pembelian dibuat dalam aplikasi. Plus kemudian berfungsi di sini juga, dengan akaun yang sama.',
-  'plus.getItOn': 'Dapatkannya di',
-  'plus.soon': 'Aplikasi Android akan tiba di Google Play tidak lama lagi.',
 
   // time & errors
   'time.now': 'baru sahaja',
@@ -670,8 +643,6 @@ const ms: Dict = {
   'error.not_owned': 'Anda belum memiliki gaya ini',
   'error.chat_closed': 'Sembang ini sudah tamat. Tambah dia sebagai rakan untuk terus berbual',
   'error.generic': 'Ada sesuatu yang tidak kena. Sila cuba lagi',
-  'chat.sticker': 'Pelekat',
-  'error.sticker_not_owned': 'Dapatkan pek pelekat ini untuk menghantarnya',
   'nav.explore': 'Teroka',
   'explore.search': 'Cari dengan ID atau nama',
   'explore.feed': 'Suapan',
@@ -695,6 +666,8 @@ const ms: Dict = {
   'explore.country': 'Negara',
   'pf.photoRequired': 'Tambah foto profil untuk bermula',
   'video.flip': 'Tukar kamera',
+  'chat.seeAll': 'Lihat semua',
+  'voice.cameraNude': 'Kamera anda dimatikan kerana kelihatan seperti bogel',
 }
 
 export default ms

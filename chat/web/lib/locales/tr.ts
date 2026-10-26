@@ -18,7 +18,6 @@ const tr: Dict = {
   'net.offline': 'İnternet yok. Yeniden bağlanılıyor…',
   'error.screenTitle': 'Bu ekran yüklenemedi',
   'common.loading': 'yaari yükleniyor',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Şu anda yaari’ye ulaşılamıyor',
   'boot.offlineBody': 'İnternet bağlantını kontrol et, sonra tekrar dene.',
@@ -31,7 +30,6 @@ const tr: Dict = {
   'nav.me': 'Ben',
   'nav.settings': 'Ayarlar',
   'nav.home': 'Ana sayfa',
-  'nav.freePlan': 'Ücretsiz plan',
   'panel.activity': 'Etkinlik',
   'panel.friends': 'Arkadaşların',
   'panel.rooms': 'Canlı odalar',
@@ -39,9 +37,6 @@ const tr: Dict = {
   'panel.friendCount.other': '{n} arkadaş',
   'panel.noFriends': 'Sohbetlerden eklediğin arkadaşlar burada görünür.',
   'panel.message': '{name} kişisine mesaj gönder',
-  'panel.plusTitle': 'Kiminle tanışacağını seç',
-  'panel.plusBody': 'Yaari Plus ile cinsiyet filtresi ve anında geçme.',
-  'panel.plusCta': 'Yaari Plus’a göz at',
 
   // sign-up
   'auth.badge': '18+ · telefonu doğrulanmış',
@@ -78,10 +73,6 @@ const tr: Dict = {
   'country.none': 'Ülke bulunamadı',
   'countries.label': 'Ülkeler',
   'countries.anywhere': 'Her yer',
-  'countries.title': 'Ülke seç',
-  'countries.hint': 'Ücretsiz · en fazla {n} ülke',
-  'countries.done': 'Tamam',
-  'countries.only': 'Yalnızca bu ülkelerden kişiler',
 
   'otp.change': 'Numarayı değiştir',
   'otp.title': 'Kodu gir',
@@ -529,7 +520,6 @@ const tr: Dict = {
   // me & profiles
   'me.edit': 'Profili düzenle',
   'me.newPost': 'Yeni gönderi',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'İlk gönderini paylaş',
   'me.editDesc': 'Cinsiyet ve doğum tarihi değiştirilemez.',
   'me.updated': 'Profil güncellendi',
@@ -561,9 +551,6 @@ const tr: Dict = {
   'settings.account': 'Hesap',
   'settings.phone': 'Telefon numarası',
   'settings.verified': 'Doğrulandı',
-  'settings.plan': 'Plan',
-  'settings.planPass': '24 saatlik cinsiyet geçişi',
-  'settings.planFree': 'Ücretsiz',
   'settings.language': 'Dil',
   'settings.roomSounds': 'Sesli oda sesleri',
   'settings.roomSoundsBody': 'Biri sesli odaya girdiğinde veya çıktığında kısa bir ses çalar.',
@@ -617,20 +604,6 @@ const tr: Dict = {
   'tr.same': 'Bu mesaj zaten senin dilinde',
 
   // Yaari Plus
-  'plus.tagline': 'Her sohbette daha fazla kontrol.',
-  'plus.b1Title': 'Kiminle tanışacağını seç',
-  'plus.b1Body': 'Rastgele eşleşmeleri kadın veya erkek olarak filtrele.',
-  'plus.b3Title': '0,2 sn’de geç',
-  'plus.b3Body': '5 sn beklemek yerine sohbetten anında ayrıl.',
-  'plus.plans': 'Planlar',
-  'plus.monthly': 'Aylık',
-  'plus.monthlyNote': 'Tüm Plus özellikleri · her ay yenilenir, Google Play’den istediğin zaman iptal et',
-  'plus.pass': '24 saatlik cinsiyet geçişi',
-  'plus.passNote': 'Bir günlük cinsiyet filtresi · tek seferlik satın alma',
-  'plus.getApp': 'Android uygulamasından al.',
-  'plus.getAppBody': 'Satın almalar uygulamada yapılır. Sonra Plus aynı hesapla burada da çalışır.',
-  'plus.getItOn': 'Şuradan indir:',
-  'plus.soon': 'Android uygulaması yakında Google Play’de.',
 
   // time & errors
   'time.now': 'şimdi',
@@ -670,8 +643,6 @@ const tr: Dict = {
   'error.not_owned': 'Bu görünüme henüz sahip değilsin',
   'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',
-  'chat.sticker': 'Çıkartma',
-  'error.sticker_not_owned': 'Bunu göndermek için bu çıkartma paketini al',
   'nav.explore': 'Keşfet',
   'explore.search': 'ID veya isimle ara',
   'explore.feed': 'Akış',
@@ -695,6 +666,8 @@ const tr: Dict = {
   'explore.country': 'Ülke',
   'pf.photoRequired': 'Başlamak için bir profil fotoğrafı ekle',
   'video.flip': 'Kamerayı değiştir',
+  'chat.seeAll': 'Tümünü gör',
+  'voice.cameraNude': 'Görüntü çıplaklık gibi göründüğü için kameran kapatıldı',
 }
 
 export default tr

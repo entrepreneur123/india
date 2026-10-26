@@ -17,7 +17,6 @@ const it: Dict = {
   'net.offline': 'Nessuna connessione. Riconnessione in corso…',
   'error.screenTitle': 'Impossibile caricare questa schermata',
   'common.loading': 'Caricamento di yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Al momento yaari non è raggiungibile',
   'boot.offlineBody': 'Controlla la connessione a internet, poi riprova.',
@@ -29,7 +28,6 @@ const it: Dict = {
   'nav.me': 'Io',
   'nav.settings': 'Impostazioni',
   'nav.home': 'Home',
-  'nav.freePlan': 'Piano gratuito',
   'panel.activity': 'Attività',
   'panel.friends': 'I tuoi amici',
   'panel.rooms': 'Stanze live',
@@ -37,9 +35,6 @@ const it: Dict = {
   'panel.friendCount.other': '{n} amici',
   'panel.noFriends': 'Gli amici che aggiungi dalle chat compariranno qui.',
   'panel.message': 'Scrivi a {name}',
-  'panel.plusTitle': 'Scegli chi incontrare',
-  'panel.plusBody': 'Filtro per genere e salto immediato con Yaari Plus.',
-  'panel.plusCta': 'Scopri Yaari Plus',
 
   'auth.badge': '18+ · telefono verificato',
   'auth.verifiedBadge': 'Ottieni il badge di verifica: documento + selfie',
@@ -75,10 +70,6 @@ const it: Dict = {
   'country.none': 'Nessun paese trovato',
   'countries.label': 'Paesi',
   'countries.anywhere': 'Ovunque',
-  'countries.title': 'Scegli i paesi',
-  'countries.hint': 'Gratis · fino a {n} paesi',
-  'countries.done': 'Fatto',
-  'countries.only': 'Solo persone di questi paesi',
 
   'otp.change': 'Cambia numero',
   'otp.title': 'Inserisci il codice',
@@ -520,7 +511,6 @@ const it: Dict = {
 
   'me.edit': 'Modifica profilo',
   'me.newPost': 'Nuovo post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Condividi il tuo primo post',
   'me.editDesc': 'Genere e data di nascita non si possono cambiare.',
   'me.updated': 'Profilo aggiornato',
@@ -551,9 +541,6 @@ const it: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Numero di telefono',
   'settings.verified': 'Verificato',
-  'settings.plan': 'Piano',
-  'settings.planPass': 'Pass genere 24 ore',
-  'settings.planFree': 'Gratuito',
   'settings.language': 'Lingua',
   'settings.roomSounds': 'Suoni della stanza vocale',
   'settings.roomSoundsBody': 'Un breve suono quando qualcuno entra o esce da una stanza vocale.',
@@ -605,20 +592,6 @@ const it: Dict = {
   'tr.tooLong': 'Questo messaggio è troppo lungo da tradurre',
   'tr.same': 'Questo messaggio è già nella tua lingua',
 
-  'plus.tagline': 'Più controllo su ogni conversazione.',
-  'plus.b1Title': 'Scegli chi incontrare',
-  'plus.b1Body': 'Filtra i match random per donne o uomini.',
-  'plus.b3Title': 'Salto in 0,2 s',
-  'plus.b3Body': 'Esci subito da una chat invece di aspettare 5 s.',
-  'plus.plans': 'Piani',
-  'plus.monthly': 'Mensile',
-  'plus.monthlyNote': 'Tutte le funzioni Plus · si rinnova ogni mese, disdici quando vuoi su Google Play',
-  'plus.pass': 'Pass genere 24 ore',
-  'plus.passNote': 'Filtro per genere per un giorno · acquisto singolo',
-  'plus.getApp': 'Acquistalo nell’app Android.',
-  'plus.getAppBody': 'Gli acquisti si fanno nell’app. Poi Plus funziona anche qui, con lo stesso account.',
-  'plus.getItOn': 'Disponibile su',
-  'plus.soon': 'L’app Android arriverà presto su Google Play.',
 
   'time.now': 'adesso',
   'error.exit_locked': 'Aspetta un attimo prima di uscire',
@@ -657,8 +630,6 @@ const it: Dict = {
   'error.not_owned': 'Non possiedi ancora questo look',
   'error.chat_closed': 'Questa chat è finita. Aggiungi la persona agli amici per continuare a parlare',
   'error.generic': 'Qualcosa è andato storto. Riprova',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Ottieni questo pacchetto di sticker per inviarlo',
   'nav.explore': 'Esplora',
   'explore.search': 'Cerca per ID o nome',
   'explore.feed': 'Feed',
@@ -682,6 +653,8 @@ const it: Dict = {
   'explore.country': 'Paese',
   'pf.photoRequired': 'Aggiungi una foto profilo per iniziare',
   'video.flip': 'Cambia fotocamera',
+  'chat.seeAll': 'Mostra tutto',
+  'voice.cameraNude': 'La tua fotocamera è stata spenta perché sembrava mostrare nudità',
 }
 
 export default it

@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Flag, MessageCircle, Shuffle, Undo2, Video } from 'lucide-react'
 import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
@@ -22,7 +22,9 @@ import { MANNERS, shouldAskRating } from '@/lib/trust'
 import { skippedRatings } from '@/components/trust/store'
 import type { RateTarget } from '@/components/trust/rating-sheet'
 import { TrustBadge } from '@/components/trust/badge'
-import { CountriesButton, flagsOf, saveCountries, savedCountries } from './country-picker'
+import { COUNTRIES } from '@/lib/countries'
+import { useCountryNames } from '@/components/screens/auth/country-select'
+import { saveGlobal, savedGlobal } from './scope'
 import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
 import { useLook } from '@/components/looks/look-name'
@@ -59,7 +61,7 @@ export function RandomScreen({ active }: { active: boolean }) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang } = useI18n()
-  const { me, canChooseGender, openPaywall, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom, trust } = useApp()
+  const { me, setImmersive, setTab, freeForRandom, registerRandom, setChatBar, minimiseRandom, trust } = useApp()
   // Only a bought frame goes round my photo (no default ring: frames are a look you buy).
   const myFrame = (useLook(me?.id)?.frame ?? null) as FrameId | null
   // Rating a chat that ended (035): who both wrote in, and the one being rated now.
@@ -83,7 +85,11 @@ export function RandomScreen({ active }: { active: boolean }) {
   }, [])
   const [phase, setPhase] = useState<Phase>('lobby')
   const [target, setTarget] = useState<Target>('any')
-  const [countries, setCountries] = useState(savedCountries)
+  const [global, setGlobal] = useState(savedGlobal)
+  // 055: my country only, or everyone (an empty list). The server never pairs a my-country search with a foreigner.
+  const nameOf = useCountryNames()
+  const myCountry = COUNTRIES.find((c) => c.iso === me.country)
+  const countries = useMemo(() => (global || !myCountry ? [] : [myCountry.iso]), [global, myCountry])
   const [match, setMatch] = useState<Live | null>(null)
   const [choiceOpen, setChoiceOpen] = useState(false)
   const [leaving, setLeaving] = useState(false)
@@ -102,9 +108,6 @@ export function RandomScreen({ active }: { active: boolean }) {
   visible.current = active
 
   useEffect(() => setImmersive(phase !== 'lobby'), [phase, setImmersive])
-  useEffect(() => {
-    if (!canChooseGender) setTarget('any') // the pass or subscription ran out
-  }, [canChooseGender])
 
   const endSignals = () => {
     stopSignals.current?.()
@@ -145,8 +148,7 @@ export function RandomScreen({ active }: { active: boolean }) {
         endSignals()
         setReconnecting(false)
         setPhase('lobby')
-        if (code === 'premium_required') openPaywall()
-        else toast.error(err)
+        toast.error(err)
         return
       }
       busy = false
@@ -178,7 +180,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     endSignals()
     stopSignals.current = backend.matchSignals(() => void tick())
     void tick()
-  }, [backend, target, lang, countries, openPaywall, toast, setTab, t])
+  }, [backend, target, lang, countries, toast, setTab, t])
 
   const cancelMatching = useCallback(() => {
     generation.current++
@@ -319,10 +321,10 @@ export function RandomScreen({ active }: { active: boolean }) {
   /** Start from the lobby: out of my room first (after a confirm), then the search. */
   const start = () => void freeForRandom().then((ok) => ok && startMatching())
 
-  const gender: { value: Target; label: string; locked?: boolean }[] = [
+  const gender: { value: Target; label: string }[] = [
     { value: 'any', label: t('lobby.everyone') },
-    { value: 'female', label: t('lobby.women'), locked: !canChooseGender },
-    { value: 'male', label: t('lobby.men'), locked: !canChooseGender },
+    { value: 'female', label: t('lobby.women') },
+    { value: 'male', label: t('lobby.men') },
   ]
 
   return (
@@ -351,21 +353,25 @@ export function RandomScreen({ active }: { active: boolean }) {
                 className="mt-8 w-full"
                 size="lg"
                 label={t('lobby.who')}
-                lockedLabel={t('common.plus')}
                 value={target}
                 options={gender}
-                onChange={(v) => {
-                  if (v !== 'any' && !canChooseGender) openPaywall()
-                  else setTarget(v)
-                }}
+                onChange={setTarget}
               />
-              <CountriesButton
-                value={countries}
-                onChange={(c) => {
-                  setCountries(c)
-                  saveCountries(c)
-                }}
-              />
+              {myCountry ? (
+                <Segmented
+                  className="mt-3 w-full"
+                  label={t('countries.label')}
+                  value={global ? 'global' : 'mine'}
+                  options={[
+                    { value: 'mine', label: `${flagEmoji(myCountry.iso)} ${nameOf(myCountry)}` },
+                    { value: 'global', label: `🌐 ${t('countries.anywhere')}` },
+                  ]}
+                  onChange={(v) => {
+                    setGlobal(v === 'global')
+                    saveGlobal(v === 'global')
+                  }}
+                />
+              ) : null}
 
               <m.button
                 type="button"
@@ -472,7 +478,7 @@ function Matching({
       aria-live="polite"
     >
       <span className="rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-        {countries.length ? `${who} · ${flagsOf(countries)}` : t('matching.scope', { who })}
+        {countries.length ? `${who} · ${flagEmoji(countries[0])}` : t('matching.scope', { who })}
       </span>
 
       <div className="relative mt-12 grid size-56 place-items-center">
@@ -484,7 +490,7 @@ function Matching({
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
       <p className="mt-2 h-5 text-sm text-muted-foreground">
-        {reconnecting ? t('matching.reconnecting') : countries.length ? t('countries.only') : null}
+        {reconnecting ? t('matching.reconnecting') : null}
       </p>
       {reconnecting ? null : <OnlineCount active={active} className="mt-1" />}
       <Button variant="outline" size="lg" className="mt-8 w-full max-w-xs" onClick={onCancel}>

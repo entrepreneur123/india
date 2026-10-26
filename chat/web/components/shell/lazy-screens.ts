@@ -17,7 +17,6 @@ const loaders = {
   settings: () => retryImport(() => import('@/components/screens/settings/settings-screen')),
   thread: () => retryImport(() => import('@/components/screens/random/thread-screen')),
   profile: () => retryImport(() => import('@/components/screens/profile/profile-sheet')),
-  paywall: () => retryImport(() => import('@/components/screens/paywall')),
   chat: () => retryImport(() => import('@/components/screens/chat/chat-view')),
   roomDialogs: () => retryImport(() => import('@/components/screens/rooms/room-dialogs')),
   voice: () => retryImport(() => import('@/components/screens/voice/voice-session')),
@@ -48,7 +47,6 @@ export const MeScreen = lazy(() => loaders.me().then((m) => ({ default: m.MeScre
 export const SettingsScreen = lazy(() => loaders.settings().then((m) => ({ default: m.SettingsScreen })))
 export const ThreadScreen = lazy(() => loaders.thread().then((m) => ({ default: m.ThreadScreen })))
 export const ProfileSheet = lazy(() => loaders.profile().then((m) => ({ default: m.ProfileSheet })))
-export const Paywall = lazy(() => loaders.paywall().then((m) => ({ default: m.Paywall })))
 export const VoiceHost = lazy(() => loaders.voice().then((m) => ({ default: m.VoiceHost })))
 /** The friends / rooms column exists only on wide screens, so phones never download it. */
 export const InboxSheet = lazy(() => loaders.inbox().then((m) => ({ default: m.InboxSheet })))
@@ -58,5 +56,5 @@ export const RightPanel = lazy(() => loaders.panel().then((m) => ({ default: m.R
 // Identity verification and the manner explanation (035): one chunk, opened from Me, a refusal or sign-up.
 export const VerifySheet = lazy(() => loaders.verify().then((m) => ({ default: m.VerifySheet })))
 export const MannerLowSheet = lazy(() => loaders.verify().then((m) => ({ default: m.MannerLowSheet })))
-/** The Looks shop: opened from Me, a chat's stickers and Settings. */
+/** The Looks shop: opened from Me and Settings. */
 export const LooksSheet = lazy(() => loaders.looks().then((m) => ({ default: m.LooksSheet })))

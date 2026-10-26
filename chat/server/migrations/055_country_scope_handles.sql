@@ -1,7 +1,7 @@
 -- The owner, 2026-10-25:
 -- 1. One country per person for random chat and rooms (profiles.country: the verified phone number's, or the identity
 --    document's). Explore, ID search, friend requests and messages reach every country (the owner, 2026-10-26). The "countries to meet" choice of
---    043 is gone (find_match3 ignores p_countries, queue.want dropped); bots too only match their own country. The
+--    043 is gone (queue.want dropped): random chat is my country or everyone (below); bots follow the same rule. The
 --    "N online" count is the count of my country. Friendships made before stay.
 -- 2. Age by country: adult_age() is the age of majority where Google Play's "block minors" (random chat apps, policy of
 --    2026-08-26) needs more than 18: South Korea 19 (Civil Act art. 4). Checked at sign-up, after the phone's country is
@@ -14,6 +14,11 @@
 --    patterns; handle_valid itself is the new rule.
 
 -- 1. Same country --------------------------------------------------------------------------------------------------
+-- Random chat (25, the owner): my country, or everyone. find_match3 keeps its signature: an empty or null p_countries
+-- means everyone (as 043's "anywhere"), any list means my country only (other entries are ignored). Two people meet
+-- when they share a country, or when both search everyone.
+
+alter table public.queue add column if not exists global boolean not null default false;
 
 create or replace function public.find_match3(p_target text, p_lang text, p_countries text[]) returns uuid
 language plpgsql security definer set search_path = '' as $$
@@ -25,6 +30,7 @@ declare
   banned timestamptz;
   my_lang text := public.app_lang(p_lang);
   my_since timestamptz;
+  want_global boolean := coalesce(cardinality(p_countries), 0) = 0;
   m public.matches;
   mid uuid;
   last_partner uuid;
@@ -59,11 +65,11 @@ begin
   select case when x.user_a = me then x.user_b else x.user_a end into last_partner
     from public.matches x where me in (x.user_a, x.user_b) order by x.created_at desc limit 1;
 
-  insert into public.queue as q (user_id, gender, target, lang, interests, country)
-  values (me, my_gender, p_target, my_lang, my_tags, my_country)
+  insert into public.queue as q (user_id, gender, target, lang, interests, country, global)
+  values (me, my_gender, p_target, my_lang, my_tags, my_country, want_global)
   on conflict (user_id) do update set
     gender = excluded.gender, target = excluded.target, lang = excluded.lang, interests = excluded.interests,
-    country = excluded.country,
+    country = excluded.country, global = excluded.global,
     joined_at = case when q.seen_at < now() - interval '20 seconds' then now() else q.joined_at end,
     seen_at = now()
   returning q.joined_at into my_since;
@@ -80,7 +86,7 @@ begin
     from public.queue q
    where q.seen_at > now() - interval '20 seconds'
      and q.user_id <> me
-     and q.country = my_country
+     and (q.country = my_country or (want_global and q.global))
      and (p_target = 'any' or q.gender = p_target)
      and (q.target = 'any' or q.target = my_gender)
      and not exists (select 1 from public.blocks b where b.blocker = me and b.blocked = q.user_id)
@@ -124,7 +130,7 @@ begin
     select case when x.user_a = q.user_id then x.user_b else x.user_a end into last_partner
       from public.matches x where q.user_id in (x.user_a, x.user_b) order by x.created_at desc limit 1;
     select y.id into b from public.bots y join public.profiles p on p.id = y.id
-     where y.active and p.country = q.country and (q.target = 'any' or p.gender = q.target)
+     where y.active and (q.global or p.country = q.country) and (q.target = 'any' or p.gender = q.target)
        and y.id is distinct from last_partner
        and not public.is_blocked(y.id, q.user_id)
        and not exists (select 1 from public.matches x where x.user_a = y.id and x.ended_at is null)

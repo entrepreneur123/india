@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, WifiOff, X } from 'lucide-react'
+import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
@@ -23,7 +23,7 @@ import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
 import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
-import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage } from './voice-stage'
+import { LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -585,6 +585,7 @@ function StageSection({
           )
         }
       />
+      <VideoGrid room={room} videos={s.videos} levels={s.levels} onPerson={onPerson} />
       <AnimatePresence initial={false} mode="wait">
         {open ? (
           <m.div
@@ -785,6 +786,7 @@ function ControlBar({
   const me = s.me!
   const room = s.room!
   const onStage = me.seat !== null
+  const camOn = !!s.videos[me.profile.id]
   const mod = isMod(me)
   const joins = me.role === 'host' || room.mode === 'open' || mod
 
@@ -805,6 +807,18 @@ function ControlBar({
           </Button>
         ) : null}
         <span className="flex-1" />
+        {onStage ? (
+          <Button
+            size="icon"
+            variant={camOn ? 'brand' : 'secondary'}
+            onClick={() => void s.act({ type: 'camera', on: !camOn })}
+            aria-label={t(camOn ? 'video.camOff' : 'video.camOn')}
+            aria-pressed={camOn}
+            title={t(camOn ? 'video.camOff' : 'video.camOn')}
+          >
+            {camOn ? <Video className="size-5" aria-hidden /> : <VideoOff className="size-5" aria-hidden />}
+          </Button>
+        ) : null}
         {onStage ? (
           <Button variant="secondary" onClick={() => void s.act({ type: 'unseat' })} className="h-12 min-w-0 shrink px-4" title={t('voice.leaveStage')}>
             <ArrowDownToLine className="size-5 shrink-0" aria-hidden /> <span className="truncate">{t('voice.leaveStage')}</span>

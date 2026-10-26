@@ -85,9 +85,8 @@ const te: LooksDict = {
   'blocks.unblock': 'అన్‌బ్లాక్',
   'blocks.done': '{name} అన్‌బ్లాక్ అయ్యారు',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'వాల్‌పేపర్',
-  'looks.tab.sticker': 'స్టిక్కర్లు',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'కాషాయం',
   'item.wall_midnight': 'అర్ధరాత్రి',
@@ -95,19 +94,11 @@ const te: LooksDict = {
   'item.wall_mehndi': 'మెహందీ',
   'item.wall_stars': 'నక్షత్రాల రాత్రి',
   'item.wall_waves': 'అలలు',
-  'item.sticker_namaste': 'నమస్తే',
-  'item.sticker_chai': 'చాయ్ టైమ్',
-  'item.sticker_cricket': 'క్రికెట్',
-  'item.sticker_love': 'ప్రేమ',
   'item.vip_anon': 'VIP ఇన్‌కాగ్నిటో',
   'wall.onlyYou': 'మీ చాట్ బ్యాక్‌గ్రౌండ్. మీకు మాత్రమే కనిపిస్తుంది',
   'wall.use': 'ఈ వాల్‌పేపర్ పెట్టండి',
   'wall.inUse': 'వాడుకలో ఉంది',
   'wall.remove': 'వాల్‌పేపర్ తీసేయండి',
-  'sticker.count': '8 స్టిక్కర్లు',
-  'sticker.owned': 'మీవే: ఏ చాట్ నుంచైనా పంపండి',
-  'sticker.locked': 'ఈ స్టిక్కర్లు పంపడానికి ఈ ప్యాక్ పొందండి',
-  'sticker.getPack': 'ప్యాక్ పొందండి',
   'vip.strangers': 'తెలియనివారికి కనిపించేది',
   'vip.friends': 'స్నేహితులకు కనిపించేది',
   'vip.what': 'రాండమ్ చాట్, రూమ్‌లు, సెర్చ్‌లో మీ స్నేహితులు కానివారికి “VIP” మాత్రమే కనిపిస్తుంది: ఫోటో, ID, వయసు, దేశం, బయో ఏవీ కనిపించవు. స్నేహితులకు అన్నీ కనిపిస్తాయి, ఫ్రెండ్ రిక్వెస్ట్‌లు కూడా ఎప్పటిలాగే పని చేస్తాయి.',
@@ -126,6 +117,14 @@ const te: LooksDict = {
   'item.effect_aurora': 'అరోరా',
   'item.effect_prism': 'ప్రిజం',
   'effect.what': 'మీ ప్రొఫైల్ ఫోటోపై వెలుగు కదులుతుంది, అది ఎక్కడ కనిపించినా',
+  'looks.tab.bubble': 'చాట్ బబుల్',
+  'item.bubble_peach': 'పీచ్',
+  'item.bubble_ocean': 'సముద్రం',
+  'item.bubble_mint': 'మింట్',
+  'item.bubble_galaxy': 'గెలాక్సీ',
+  'item.bubble_gold': 'బంగారం',
+  'item.bubble_neon': 'నియాన్',
+  'bubble.what': 'అందరూ మీ సందేశాలను ఈ బబుల్‌లో చూస్తారు',
 }
 
 export default te

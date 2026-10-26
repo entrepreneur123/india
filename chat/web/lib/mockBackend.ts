@@ -11,7 +11,6 @@ import {
   type ExploreKind,
   type FeedItem,
   type RoomQuery,
-  type Entitlements,
   type FeedPost,
   type PostVisibility,
   type ProfileStyleInput,
@@ -64,8 +63,7 @@ const uid = () => Math.random().toString(36).slice(2, 10)
 const HOUR = 3_600_000
 const DAY = 24 * HOUR
 
-const FREE_EXIT_LOCK_MS = 5000
-const PLUS_EXIT_LOCK_MS = 200
+const EXIT_LOCK_MS = 5000
 /** The demo friend's call (Arjun, voice) rings this long after the app opens. */
 const DEMO_FRIEND_CALL_MS = 20_000
 
@@ -288,7 +286,6 @@ export class MockBackend implements Backend {
   private signedIn = false
   private pendingPhone: string | null = null
   private me: Profile | null = null
-  private ent: Entitlements = { premium: false, genderPass: false }
   private searchPolls = 0
   private searchTarget: string | null = null
   private matches = new Map<string, MatchState>()
@@ -485,11 +482,6 @@ export class MockBackend implements Backend {
     return { ...this.me }
   }
 
-  async entitlements() {
-    await wait(200)
-    return { ...this.ent }
-  }
-
   async signOut() {
     await wait(400)
     this.signedIn = false
@@ -507,7 +499,6 @@ export class MockBackend implements Backend {
     this.requireMe()
     this.gate()
     if (MANNERS && (this.flags.manner ?? 50) < MANNER_FLOOR) throw new BackendError('manner_low')
-    if (target !== 'any' && !this.ent.premium && !this.ent.genderPass) throw new BackendError('premium_required')
     await wait(jitter(300, 700))
     const key = `${target}:${countries.join()}`
     if (this.searchTarget !== key) {
@@ -531,7 +522,7 @@ export class MockBackend implements Backend {
   }
 
   abandon(matchId: string) {
-    setTimeout(() => void this.leave(matchId).catch(() => undefined), FREE_EXIT_LOCK_MS + 500)
+    setTimeout(() => void this.leave(matchId).catch(() => undefined), EXIT_LOCK_MS + 500)
   }
 
   matchSignals() {
@@ -581,7 +572,6 @@ export class MockBackend implements Backend {
     if (!m) throw new BackendError('not_found')
     await wait(jitter(120, 260))
     if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('chat_closed')
-    if (text?.startsWith(':st:')) (await this.lookSim()).checkBody(text)
     const msg: Message = {
       id: this.msgSeq++,
       fromMe: true,
@@ -616,8 +606,7 @@ export class MockBackend implements Backend {
   async leave(matchId: string) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
-    const lock = this.ent.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
-    if (m.kind === 'random' && Date.now() - m.startedAt < lock) throw new BackendError('exit_locked')
+    if (m.kind === 'random' && Date.now() - m.startedAt < EXIT_LOCK_MS) throw new BackendError('exit_locked')
     await wait(200)
     for (const t of m.timers) clearTimeout(t)
     m.timers = []
@@ -1156,7 +1145,6 @@ export class MockBackend implements Backend {
   }
 
   async sendVoice(roomId: string, text: string, replyTo?: number | null) {
-    if (text.startsWith(':st:')) (await this.lookSim()).checkBody(text)
     return (await this.voice()).send(roomId, text, replyTo ?? null)
   }
 
@@ -1321,8 +1309,8 @@ export class MockBackend implements Backend {
     return (await this.lookSim()).setCycle(paths)
   }
 
-  async setEffect(itemId: string | null) {
-    return (await this.lookSim()).setEffect(itemId)
+  async setWorn(kind: 'effect' | 'bubble', itemId: string | null) {
+    return (await this.lookSim()).setWorn(kind, itemId)
   }
 
   async setAnon(on: boolean) {

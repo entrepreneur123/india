@@ -85,9 +85,8 @@ const ml: LooksDict = {
   'blocks.unblock': 'അൺബ്ലോക്ക്',
   'blocks.done': '{name}-നെ അൺബ്ലോക്ക് ചെയ്തു',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'വാൾപേപ്പർ',
-  'looks.tab.sticker': 'സ്റ്റിക്കർ',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'കുങ്കുമം',
   'item.wall_midnight': 'അർധരാത്രി',
@@ -95,19 +94,11 @@ const ml: LooksDict = {
   'item.wall_mehndi': 'മെഹന്ദി',
   'item.wall_stars': 'നക്ഷത്രരാവ്',
   'item.wall_waves': 'തിരമാലകൾ',
-  'item.sticker_namaste': 'നമസ്തേ',
-  'item.sticker_chai': 'ചായ ടൈം',
-  'item.sticker_cricket': 'ക്രിക്കറ്റ്',
-  'item.sticker_love': 'പ്രണയം',
   'item.vip_anon': 'VIP ഇൻകോഗ്നിറ്റോ',
   'wall.onlyYou': 'നിങ്ങളുടെ ചാറ്റിന്റെ പശ്ചാത്തലം. നിങ്ങൾക്ക് മാത്രമേ കാണൂ',
   'wall.use': 'ഈ വാൾപേപ്പർ വെക്കുക',
   'wall.inUse': 'ഉപയോഗത്തിൽ',
   'wall.remove': 'വാൾപേപ്പർ മാറ്റുക',
-  'sticker.count': '8 സ്റ്റിക്കറുകൾ',
-  'sticker.owned': 'നിങ്ങളുടേത്: ഏത് ചാറ്റിൽ നിന്നും അയയ്ക്കാം',
-  'sticker.locked': 'ഈ സ്റ്റിക്കറുകൾ അയയ്ക്കാൻ ഈ പാക്ക് നേടുക',
-  'sticker.getPack': 'പാക്ക് നേടുക',
   'vip.strangers': 'അപരിചിതർ കാണുന്നത്',
   'vip.friends': 'സുഹൃത്തുക്കൾ കാണുന്നത്',
   'vip.what': 'റാൻഡം ചാറ്റിലും റൂമുകളിലും സെർച്ചിലും നിങ്ങളുടെ സുഹൃത്തുക്കളല്ലാത്തവർക്ക് “VIP” എന്ന് മാത്രമേ കാണൂ: ഫോട്ടോ, ID, പ്രായം, രാജ്യം, ബയോ ഒന്നുമില്ല. സുഹൃത്തുക്കൾക്ക് എല്ലാം കാണാം, ഫ്രണ്ട് റിക്വസ്റ്റുകളും പഴയതുപോലെ പ്രവർത്തിക്കും.',
@@ -126,6 +117,14 @@ const ml: LooksDict = {
   'item.effect_aurora': 'അറോറ',
   'item.effect_prism': 'പ്രിസം',
   'effect.what': 'നിങ്ങളുടെ പ്രൊഫൈൽ ഫോട്ടോയ്ക്ക് മുകളിൽ വെളിച്ചം നീങ്ങും, അത് എവിടെ കാണിച്ചാലും',
+  'looks.tab.bubble': 'ചാറ്റ് ബബിൾ',
+  'item.bubble_peach': 'പീച്ച്',
+  'item.bubble_ocean': 'സമുദ്രം',
+  'item.bubble_mint': 'മിന്റ്',
+  'item.bubble_galaxy': 'ഗാലക്സി',
+  'item.bubble_gold': 'സ്വർണം',
+  'item.bubble_neon': 'നിയോൺ',
+  'bubble.what': 'എല്ലാവരും നിങ്ങളുടെ സന്ദേശങ്ങൾ ഈ ബബിളിൽ കാണും',
 }
 
 export default ml

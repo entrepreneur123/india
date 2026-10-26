@@ -18,7 +18,6 @@ const id: Dict = {
   'net.offline': 'Tidak ada internet. Menyambungkan ulang…',
   'error.screenTitle': 'Layar ini gagal dimuat',
   'common.loading': 'Memuat yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'yaari tidak bisa dijangkau sekarang',
   'boot.offlineBody': 'Cek koneksi internetmu, lalu coba lagi.',
@@ -31,7 +30,6 @@ const id: Dict = {
   'nav.me': 'Saya',
   'nav.settings': 'Pengaturan',
   'nav.home': 'Beranda',
-  'nav.freePlan': 'Paket gratis',
   'panel.activity': 'Aktivitas',
   'panel.friends': 'Teman kamu',
   'panel.rooms': 'Room live',
@@ -39,9 +37,6 @@ const id: Dict = {
   'panel.friendCount.other': '{n} teman',
   'panel.noFriends': 'Teman yang kamu tambahkan dari chat akan muncul di sini.',
   'panel.message': 'Kirim pesan ke {name}',
-  'panel.plusTitle': 'Pilih siapa yang kamu temui',
-  'panel.plusBody': 'Filter gender dan skip instan dengan Yaari Plus.',
-  'panel.plusCta': 'Lihat Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · nomor terverifikasi',
@@ -78,10 +73,6 @@ const id: Dict = {
   'country.none': 'Negara tidak ditemukan',
   'countries.label': 'Negara',
   'countries.anywhere': 'Di mana saja',
-  'countries.title': 'Pilih negara',
-  'countries.hint': 'Gratis · hingga {n} negara',
-  'countries.done': 'Selesai',
-  'countries.only': 'Hanya orang dari negara-negara ini',
 
   'otp.change': 'Ganti nomor',
   'otp.title': 'Masukkan kode',
@@ -529,7 +520,6 @@ const id: Dict = {
   // me & profiles
   'me.edit': 'Edit profil',
   'me.newPost': 'Postingan baru',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Bagikan postingan pertamamu',
   'me.editDesc': 'Gender dan tanggal lahir tidak bisa diubah.',
   'me.updated': 'Profil diperbarui',
@@ -561,9 +551,6 @@ const id: Dict = {
   'settings.account': 'Akun',
   'settings.phone': 'Nomor HP',
   'settings.verified': 'Terverifikasi',
-  'settings.plan': 'Paket',
-  'settings.planPass': 'Pass gender 24 jam',
-  'settings.planFree': 'Gratis',
   'settings.language': 'Bahasa',
   'settings.roomSounds': 'Suara ruang suara',
   'settings.roomSoundsBody': 'Bunyi singkat saat seseorang masuk atau keluar dari ruang suara.',
@@ -617,20 +604,6 @@ const id: Dict = {
   'tr.same': 'Pesan ini sudah dalam bahasamu',
 
   // Yaari Plus
-  'plus.tagline': 'Lebih banyak kendali di setiap obrolan.',
-  'plus.b1Title': 'Pilih siapa yang kamu temui',
-  'plus.b1Body': 'Filter kecocokan acak: perempuan atau laki-laki.',
-  'plus.b3Title': 'Skip 0,2 dtk',
-  'plus.b3Body': 'Keluar dari chat seketika, tanpa menunggu 5 dtk.',
-  'plus.plans': 'Paket',
-  'plus.monthly': 'Bulanan',
-  'plus.monthlyNote': 'Semua fitur Plus · diperpanjang tiap bulan, batalkan kapan saja di Google Play',
-  'plus.pass': 'Pass gender 24 jam',
-  'plus.passNote': 'Filter gender selama satu hari · sekali beli',
-  'plus.getApp': 'Dapatkan di aplikasi Android.',
-  'plus.getAppBody': 'Pembelian dilakukan di aplikasi. Setelah itu Plus juga berlaku di sini, dengan akun yang sama.',
-  'plus.getItOn': 'Dapatkan di',
-  'plus.soon': 'Aplikasi Android segera hadir di Google Play.',
 
   // time & errors
   'time.now': 'baru saja',
@@ -670,8 +643,6 @@ const id: Dict = {
   'error.not_owned': 'Kamu belum memiliki gaya ini',
   'error.chat_closed': 'Obrolan ini sudah berakhir. Tambahkan dia sebagai teman untuk lanjut ngobrol',
   'error.generic': 'Terjadi kesalahan. Coba lagi',
-  'chat.sticker': 'Stiker',
-  'error.sticker_not_owned': 'Dapatkan paket stiker ini untuk mengirimnya',
   'nav.explore': 'Jelajahi',
   'explore.search': 'Cari dengan ID atau nama',
   'explore.feed': 'Feed',
@@ -695,6 +666,8 @@ const id: Dict = {
   'explore.country': 'Negara',
   'pf.photoRequired': 'Tambahkan foto profil untuk mulai',
   'video.flip': 'Ganti kamera',
+  'chat.seeAll': 'Lihat semua',
+  'voice.cameraNude': 'Kameramu dimatikan karena terlihat seperti ketelanjangan',
 }
 
 export default id

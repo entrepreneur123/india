@@ -85,9 +85,8 @@ const ar: LooksDict = {
   'blocks.unblock': 'إلغاء الحظر',
   'blocks.done': 'تم إلغاء حظر {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'الخلفيات',
-  'looks.tab.sticker': 'الملصقات',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'زعفراني',
   'item.wall_midnight': 'منتصف الليل',
@@ -95,19 +94,11 @@ const ar: LooksDict = {
   'item.wall_mehndi': 'حنّاء',
   'item.wall_stars': 'ليلة مرصّعة بالنجوم',
   'item.wall_waves': 'أمواج',
-  'item.sticker_namaste': 'ناماستي',
-  'item.sticker_chai': 'وقت الشاي',
-  'item.sticker_cricket': 'كريكيت',
-  'item.sticker_love': 'حب',
   'item.vip_anon': 'VIP متخفٍّ',
   'wall.onlyYou': 'خلفية محادثاتك. لا يراها أحد غيرك',
   'wall.use': 'استخدام هذه الخلفية',
   'wall.inUse': 'قيد الاستخدام',
   'wall.remove': 'إزالة الخلفية',
-  'sticker.count': '8 ملصقات',
-  'sticker.owned': 'لك: أرسلها من أي محادثة',
-  'sticker.locked': 'احصل على هذه الحزمة لإرسال هذه الملصقات',
-  'sticker.getPack': 'احصل على الحزمة',
   'vip.strangers': 'يرى الغرباء',
   'vip.friends': 'يرى الأصدقاء',
   'vip.what': 'في الدردشات العشوائية والغرف والبحث، لا يرى من ليسوا أصدقاءك إلا «VIP»: بلا صورة أو ID أو عمر أو بلد أو نبذة. يرى أصدقاؤك كل شيء كالمعتاد، وتعمل طلبات الصداقة كما هي.',
@@ -126,6 +117,14 @@ const ar: LooksDict = {
   'item.effect_aurora': 'الشفق',
   'item.effect_prism': 'المنشور',
   'effect.what': 'يتحرك الضوء فوق صورة ملفك أينما ظهرت',
+  'looks.tab.bubble': 'فقاعات الدردشة',
+  'item.bubble_peach': 'خوخي',
+  'item.bubble_ocean': 'محيط',
+  'item.bubble_mint': 'نعناع',
+  'item.bubble_galaxy': 'مجرة',
+  'item.bubble_gold': 'ذهبي',
+  'item.bubble_neon': 'نيون',
+  'bubble.what': 'يرى الجميع رسائلك في هذه الفقاعة',
 }
 
 export default ar

@@ -17,7 +17,6 @@ const ta: Dict = {
   'net.offline': 'இணையம் இல்லை. மீண்டும் இணைக்கிறது…',
   'error.screenTitle': 'இந்தத் திரையை லோட் செய்ய முடியவில்லை',
   'common.loading': 'yaari திறக்கிறது',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'இப்போது yaari-ஐ அணுக முடியவில்லை',
   'boot.offlineBody': 'உங்கள் இணைய இணைப்பைச் சரிபார்த்து, மீண்டும் முயலுங்கள்.',
@@ -29,7 +28,6 @@ const ta: Dict = {
   'nav.me': 'நான்',
   'nav.settings': 'செட்டிங்ஸ்',
   'nav.home': 'முகப்பு',
-  'nav.freePlan': 'இலவச பிளான்',
   'panel.activity': 'செயல்பாடு',
   'panel.friends': 'உங்கள் நண்பர்கள்',
   'panel.rooms': 'லைவ் ரூம்கள்',
@@ -37,9 +35,6 @@ const ta: Dict = {
   'panel.friendCount.other': '{n} நண்பர்கள்',
   'panel.noFriends': 'சாட்டில் இருந்து நீங்கள் சேர்க்கும் நண்பர்கள் இங்கே தெரிவார்கள்.',
   'panel.message': '{name}-க்கு மெசேஜ் செய்',
-  'panel.plusTitle': 'யாரைச் சந்திப்பது என நீங்களே தேர்ந்தெடுங்கள்',
-  'panel.plusBody': 'Yaari Plus-இல் பாலின ஃபில்டர், உடனடி ஸ்கிப்.',
-  'panel.plusCta': 'Yaari Plus பாருங்கள்',
 
   'auth.badge': '18+ · போன் சரிபார்க்கப்பட்டது',
   'auth.verifiedBadge': 'வெரிஃபைடு பேட்ஜ் பெறுங்கள்: ID + செல்ஃபி',
@@ -75,10 +70,6 @@ const ta: Dict = {
   'country.none': 'எந்த நாடும் கிடைக்கவில்லை',
   'countries.label': 'நாடுகள்',
   'countries.anywhere': 'எங்கும்',
-  'countries.title': 'நாடுகளைத் தேர்ந்தெடுக்கவும்',
-  'countries.hint': 'இலவசம் · அதிகபட்சம் {n} நாடுகள்',
-  'countries.done': 'முடிந்தது',
-  'countries.only': 'இந்த நாடுகளைச் சேர்ந்தவர்கள் மட்டும்',
 
   'otp.change': 'நம்பரை மாற்று',
   'otp.title': 'கோடை உள்ளிடுங்கள்',
@@ -520,7 +511,6 @@ const ta: Dict = {
 
   'me.edit': 'ப்ரொஃபைலை எடிட் செய்',
   'me.newPost': 'புதிய போஸ்ட்',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'உங்கள் முதல் போஸ்டைப் பகிருங்கள்',
   'me.editDesc': 'பாலினத்தையும் பிறந்த தேதியையும் மாற்ற முடியாது.',
   'me.updated': 'ப்ரொஃபைல் அப்டேட் ஆனது',
@@ -551,9 +541,6 @@ const ta: Dict = {
   'settings.account': 'அக்கவுண்ட்',
   'settings.phone': 'போன் நம்பர்',
   'settings.verified': 'சரிபார்க்கப்பட்டது',
-  'settings.plan': 'பிளான்',
-  'settings.planPass': '24 மணி நேர பாலின பாஸ்',
-  'settings.planFree': 'இலவசம்',
   'settings.language': 'மொழி',
   'settings.roomSounds': 'வாய்ஸ் ரூம் ஒலிகள்',
   'settings.roomSoundsBody': 'யாராவது வாய்ஸ் ரூமுக்கு வரும்போது அல்லது போகும்போது ஒரு சிறிய ஒலி கேட்கும்.',
@@ -605,20 +592,6 @@ const ta: Dict = {
   'tr.tooLong': 'மொழிபெயர்க்க இந்த மெசேஜ் மிக நீளமாக உள்ளது',
   'tr.same': 'இந்த மெசேஜ் ஏற்கனவே உங்கள் மொழியில் உள்ளது',
 
-  'plus.tagline': 'ஒவ்வொரு உரையாடலிலும் கூடுதல் கட்டுப்பாடு.',
-  'plus.b1Title': 'யாரைச் சந்திப்பது என நீங்களே தேர்ந்தெடுங்கள்',
-  'plus.b1Body': 'ரேண்டம் மேட்ச்களைப் பெண்கள் அல்லது ஆண்கள் என ஃபில்டர் செய்யுங்கள்.',
-  'plus.b3Title': '0.2 வி ஸ்கிப்',
-  'plus.b3Body': '5 வினாடி காத்திருக்காமல் உடனே சாட்டை விட்டு வெளியேறுங்கள்.',
-  'plus.plans': 'பிளான்கள்',
-  'plus.monthly': 'மாதாந்திரம்',
-  'plus.monthlyNote': 'எல்லா Plus அம்சங்களும் · மாதந்தோறும் புதுப்பிக்கப்படும், Google Play-இல் எப்போது வேண்டுமானாலும் ரத்துசெய்யலாம்',
-  'plus.pass': '24 மணி நேர பாலின பாஸ்',
-  'plus.passNote': 'ஒரு நாளுக்கு பாலின ஃபில்டர் · ஒருமுறை வாங்குதல்',
-  'plus.getApp': 'Android ஆப்பில் பெறுங்கள்.',
-  'plus.getAppBody': 'வாங்குதல் ஆப்பில் நடக்கும். அதன் பிறகு அதே அக்கவுண்டில் இங்கேயும் Plus வேலை செய்யும்.',
-  'plus.getItOn': 'இதில் பெறுங்கள்',
-  'plus.soon': 'Android ஆப் விரைவில் Google Play-இல் வருகிறது.',
 
   'time.now': 'இப்போது',
   'error.exit_locked': 'வெளியேறுவதற்கு முன் சற்று காத்திருங்கள்',
@@ -657,8 +630,6 @@ const ta: Dict = {
   'error.not_owned': 'இந்த லுக் இன்னும் உங்களிடம் இல்லை',
   'error.chat_closed': 'இந்த சாட் முடிந்துவிட்டது. தொடர்ந்து பேச அவர்களை நண்பராகச் சேருங்கள்',
   'error.generic': 'ஏதோ தவறு நடந்தது. மீண்டும் முயலுங்கள்',
-  'chat.sticker': 'ஸ்டிக்கர்',
-  'error.sticker_not_owned': 'இதை அனுப்ப இந்த ஸ்டிக்கர் பேக்கைப் பெறுங்கள்',
   'nav.explore': 'ஆராய்',
   'explore.search': 'ID அல்லது பெயரால் தேடு',
   'explore.feed': 'ஃபீட்',
@@ -682,6 +653,8 @@ const ta: Dict = {
   'explore.country': 'நாடு',
   'pf.photoRequired': 'தொடங்க சுயவிவரப் படத்தைச் சேர்க்கவும்',
   'video.flip': 'கேமராவை மாற்று',
+  'chat.seeAll': 'அனைத்தையும் காண்க',
+  'voice.cameraNude': 'நிர்வாணம் போலத் தெரிந்ததால் உங்கள் கேமரா அணைக்கப்பட்டது',
 }
 
 export default ta

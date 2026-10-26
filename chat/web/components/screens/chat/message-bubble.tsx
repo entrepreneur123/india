@@ -1,17 +1,17 @@
 'use client'
 
 import * as m from 'motion/react-m'
-import { useState, type ReactNode } from 'react'
-import { Check, CheckCheck, Copy, Eye, Languages, Undo2 } from 'lucide-react'
+import { useState, type CSSProperties, type ReactNode } from 'react'
+import { Check, CheckCheck, ChevronRight, Copy, Eye, Languages, Undo2 } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { useI18n } from '@/components/i18n'
 import { shownText, TranslateFooter, useLineTranslation, type LineTranslation } from '@/components/translate'
+import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
-import { stickerOf, type StickerArt } from '@/lib/stickers'
+import { bubbleOf } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
 import { MessageMenu, useMenuGesture, type MenuAction } from './message-menu'
-import { StickerCard } from './stickers'
 
 /** A line's Translate / Show original / Copy actions (the menu of a chat bubble or a room line). */
 export function useLineActions(tr: LineTranslation, text: string | null | undefined): MenuAction[] {
@@ -62,13 +62,11 @@ export function HoverTranslate({ tr, className }: { tr: LineTranslation; classNa
  * first bubble of a run, and the time with read ticks tucked into the bubble's corner. Someone else's text can be
  * translated (by itself when it looks like another language, or from the long-press / right-click menu).
  */
-export function MessageBubble({ message, grouped, read }: { message: Message; grouped: boolean; read?: boolean }) {
+export function MessageBubble({ message, grouped, read, skin }: { message: Message; grouped: boolean; read?: boolean; skin?: string | null }) {
   const { t, clock } = useI18n()
   const mine = message.fromMe
-  const sticker = message.media ? null : stickerOf(message.text)
-  // A sticker is no text: nothing to translate or copy.
-  const tr = useLineTranslation('chat', message.id, sticker ? null : message.text, mine)
-  const actions = useLineActions(tr, sticker ? null : message.text)
+  const tr = useLineTranslation('chat', message.id, message.text, mine)
+  const actions = useLineActions(tr, message.text)
   const [menu, setMenu] = useState(false)
   const gesture = useMenuGesture(actions.length ? () => setMenu(true) : null)
   const text = message.text ? shownText(tr, message.text) : null
@@ -97,10 +95,7 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
       )}
       {...gesture}
     >
-      {sticker ? (
-        <StickerLine pack={sticker.pack} art={sticker.art} mine={mine} meta={meta} />
-      ) : (
-      <Bubble mine={mine} tail={!grouped} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
+      <Bubble mine={mine} tail={!grouped} skin={skin} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
         {message.media ? (
           <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
         ) : null}
@@ -113,45 +108,66 @@ export function MessageBubble({ message, grouped, read }: { message: Message; gr
               lang={tr.showing ? tr.target : undefined}
               className={cn('relative text-start text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}
             >
-              <LinkText text={text} />
+              <LinkText text={fold(text)} />
               <MetaSpacer>{meta}</MetaSpacer>
               <span className="absolute -bottom-0.5 inset-e-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
             </p>
+            <SeeAll text={text} className={cn(message.media && 'mx-1.5')} />
             <TranslateFooter tr={tr} className={cn(message.media && 'px-1.5')} />
           </>
         ) : null}
       </Bubble>
-      )}
       {mine ? null : <HoverTranslate tr={tr} />}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
   )
 }
 
-/**
- * A sticker message (046): the card itself, no bubble, with the time (and ticks) in a small pill under it. `head`: a
- * room line's sender and quote above it.
- */
-export function StickerLine({ pack, art, mine, meta, head, size }: { pack: string; art: StickerArt | null; mine: boolean; meta: ReactNode; head?: ReactNode; size?: number }) {
+/** Over 500 characters a line is folded (22): the bubble shows the start, "See all" opens the whole text. */
+const FOLD = 500
+export const fold = (text: string) => (text.length > FOLD ? `${Array.from(text).slice(0, FOLD).join('')}…` : text)
+
+/** The "See all" link under a folded line, and the sheet with the whole text (its links still work). */
+export function SeeAll({ text, className }: { text: string; className?: string }) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  if (text.length <= FOLD) return null
   return (
-    <div className={cn('flex min-w-0 flex-col gap-1', mine ? 'items-end' : 'items-start')}>
-      {head}
-      <StickerCard pack={pack} art={art} size={size} />
-      <span className="flex items-center gap-0.5 rounded-full bg-bubble-in/85 px-1.5 py-0.5 text-[11px] leading-none text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
-        {meta}
-      </span>
-    </div>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={cn('mt-1.5 flex w-full items-center justify-between gap-2 border-t border-current/15 pt-1.5 text-[13px] font-semibold', className)}
+      >
+        {t('chat.seeAll')}
+        <ChevronRight className="size-4 rtl:-scale-x-100" aria-hidden />
+      </button>
+      <Modal open={open} onClose={() => setOpen(false)} variant="sheet" title={t('chat.seeAll')} className="md:max-w-lg">
+        <p dir="auto" className="max-h-[65dvh] overflow-y-auto pb-2 text-start text-[15px] leading-relaxed break-words whitespace-pre-wrap select-text scrollbar-thin">
+          <LinkText text={text} />
+        </p>
+      </Modal>
+    </>
   )
 }
 
-/** Shared bubble shell (random chats and rooms). */
-export function Bubble({ mine, tail, className, children }: { mine: boolean; tail: boolean; className?: string; children: ReactNode }) {
+/**
+ * Shared bubble shell (random chats and rooms). `skin`: the sender's chat bubble (062), drawn over the plain colours;
+ * the tail takes its top colour and the text and time take its own.
+ */
+export function Bubble({ mine, tail, skin, className, children }: { mine: boolean; tail: boolean; skin?: string | null; className?: string; children: ReactNode }) {
+  const d = bubbleOf(skin)
+  const style = d
+    ? ({ backgroundImage: d.bg, boxShadow: d.shadow, '--bubble-out': d.top, '--bubble-in': d.top, '--bubble-text': d.text, '--bubble-meta': d.meta } as CSSProperties)
+    : undefined
   return (
     <div
+      style={style}
       className={cn(
         'relative min-w-0 rounded-lg text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]',
         mine ? 'bg-bubble-out' : 'bg-bubble-in',
         tail && (mine ? 'rounded-se-none' : 'rounded-ss-none'),
+        d?.motion,
         className,
       )}
     >

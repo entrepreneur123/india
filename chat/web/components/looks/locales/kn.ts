@@ -85,9 +85,8 @@ const kn: LooksDict = {
   'blocks.unblock': 'ಅನ್‌ಬ್ಲಾಕ್',
   'blocks.done': '{name} ಅವರನ್ನು ಅನ್‌ಬ್ಲಾಕ್ ಮಾಡಲಾಗಿದೆ',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'ವಾಲ್‌ಪೇಪರ್',
-  'looks.tab.sticker': 'ಸ್ಟಿಕರ್',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'ಕೇಸರಿ',
   'item.wall_midnight': 'ಮಧ್ಯರಾತ್ರಿ',
@@ -95,19 +94,11 @@ const kn: LooksDict = {
   'item.wall_mehndi': 'ಮೆಹಂದಿ',
   'item.wall_stars': 'ನಕ್ಷತ್ರದ ರಾತ್ರಿ',
   'item.wall_waves': 'ಅಲೆಗಳು',
-  'item.sticker_namaste': 'ನಮಸ್ತೆ',
-  'item.sticker_chai': 'ಚಹಾ ಟೈಮ್',
-  'item.sticker_cricket': 'ಕ್ರಿಕೆಟ್',
-  'item.sticker_love': 'ಪ್ರೀತಿ',
   'item.vip_anon': 'VIP ಇನ್‌ಕಾಗ್ನಿಟೋ',
   'wall.onlyYou': 'ನಿಮ್ಮ ಚಾಟ್‌ನ ಹಿನ್ನೆಲೆ. ನಿಮಗೆ ಮಾತ್ರ ಕಾಣುತ್ತದೆ',
   'wall.use': 'ಈ ವಾಲ್‌ಪೇಪರ್ ಬಳಸಿ',
   'wall.inUse': 'ಬಳಕೆಯಲ್ಲಿದೆ',
   'wall.remove': 'ವಾಲ್‌ಪೇಪರ್ ತೆಗೆಯಿರಿ',
-  'sticker.count': '8 ಸ್ಟಿಕರ್‌ಗಳು',
-  'sticker.owned': 'ನಿಮ್ಮದು: ಯಾವುದೇ ಚಾಟ್‌ನಿಂದ ಕಳುಹಿಸಿ',
-  'sticker.locked': 'ಈ ಸ್ಟಿಕರ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು ಈ ಪ್ಯಾಕ್ ಪಡೆಯಿರಿ',
-  'sticker.getPack': 'ಪ್ಯಾಕ್ ಪಡೆಯಿರಿ',
   'vip.strangers': 'ಅಪರಿಚಿತರಿಗೆ ಕಾಣುವುದು',
   'vip.friends': 'ಸ್ನೇಹಿತರಿಗೆ ಕಾಣುವುದು',
   'vip.what': 'ರ‍್ಯಾಂಡಮ್ ಚಾಟ್, ರೂಮ್ ಮತ್ತು ಸರ್ಚ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಸ್ನೇಹಿತರಲ್ಲದವರಿಗೆ “VIP” ಮಾತ್ರ ಕಾಣುತ್ತದೆ: ಫೋಟೋ, ID, ವಯಸ್ಸು, ದೇಶ ಅಥವಾ ಬಯೋ ಇಲ್ಲ. ಸ್ನೇಹಿತರಿಗೆ ಎಲ್ಲವೂ ಕಾಣುತ್ತದೆ, ಮತ್ತು ಫ್ರೆಂಡ್ ರಿಕ್ವೆಸ್ಟ್‌ಗಳೂ ಎಂದಿನಂತೆ ಕೆಲಸ ಮಾಡುತ್ತವೆ.',
@@ -126,6 +117,14 @@ const kn: LooksDict = {
   'item.effect_aurora': 'ಅರೋರಾ',
   'item.effect_prism': 'ಪ್ರಿಸಂ',
   'effect.what': 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಮೇಲೆ ಬೆಳಕು ಚಲಿಸುತ್ತದೆ, ಅದು ಎಲ್ಲಿ ಕಂಡರೂ',
+  'looks.tab.bubble': 'ಚಾಟ್ ಬಬಲ್',
+  'item.bubble_peach': 'ಪೀಚ್',
+  'item.bubble_ocean': 'ಸಾಗರ',
+  'item.bubble_mint': 'ಮಿಂಟ್',
+  'item.bubble_galaxy': 'ಗ್ಯಾಲಕ್ಸಿ',
+  'item.bubble_gold': 'ಚಿನ್ನ',
+  'item.bubble_neon': 'ನಿಯಾನ್',
+  'bubble.what': 'ಎಲ್ಲರೂ ನಿಮ್ಮ ಸಂದೇಶಗಳನ್ನು ಈ ಬಬಲ್‌ನಲ್ಲಿ ನೋಡುತ್ತಾರೆ',
 }
 
 export default kn

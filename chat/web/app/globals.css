@@ -305,6 +305,23 @@
   85%, 100% { transform: translateX(130%) skewX(-18deg); }
 }
 
+/* Chat bubbles (062): gold's band of light sweeps across (the first background layer), neon's outline breathes. */
+.bubble-sheen {
+  background-size: 250% 100%, 100% 100%;
+  animation: bubble-sheen 4s ease-in-out infinite;
+}
+@keyframes bubble-sheen {
+  0%, 45% { background-position: 100% 0, 0 0; }
+  85%, 100% { background-position: 0% 0, 0 0; }
+}
+.bubble-glow {
+  animation: bubble-glow 2.4s ease-in-out infinite alternate;
+}
+@keyframes bubble-glow {
+  from { box-shadow: 0 0 0 1px #22D3EE, 0 0 4px rgb(34 211 238 / 0.35); }
+  to { box-shadow: 0 0 0 1px #8BF3FF, 0 0 14px rgb(34 211 238 / 0.75), 0 0 2px rgb(255 79 216 / 0.6); }
+}
+
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--input) transparent;

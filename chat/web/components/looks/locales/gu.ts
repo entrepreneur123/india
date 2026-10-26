@@ -85,9 +85,8 @@ const gu: LooksDict = {
   'blocks.unblock': 'અનબ્લૉક કરો',
   'blocks.done': '{name}ને અનબ્લૉક કર્યા',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'વૉલપેપર',
-  'looks.tab.sticker': 'સ્ટિકર',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'કેસરી',
   'item.wall_midnight': 'મધરાત',
@@ -95,19 +94,11 @@ const gu: LooksDict = {
   'item.wall_mehndi': 'મહેંદી',
   'item.wall_stars': 'તારાભરી રાત',
   'item.wall_waves': 'મોજાં',
-  'item.sticker_namaste': 'નમસ્તે',
-  'item.sticker_chai': 'ચા ટાઇમ',
-  'item.sticker_cricket': 'ક્રિકેટ',
-  'item.sticker_love': 'પ્રેમ',
   'item.vip_anon': 'VIP ઇન્કોગ્નિટો',
   'wall.onlyYou': 'તમારી ચેટનું બેકગ્રાઉન્ડ. ફક્ત તમે જ જુઓ છો',
   'wall.use': 'આ વૉલપેપર લગાવો',
   'wall.inUse': 'ચાલુ છે',
   'wall.remove': 'વૉલપેપર હટાવો',
-  'sticker.count': '8 સ્ટિકર',
-  'sticker.owned': 'તમારા છે: કોઈ પણ ચેટમાંથી મોકલો',
-  'sticker.locked': 'આ સ્ટિકર મોકલવા માટે આ પેક લો',
-  'sticker.getPack': 'પેક લો',
   'vip.strangers': 'અજાણ્યા લોકો જુએ છે',
   'vip.friends': 'મિત્રો જુએ છે',
   'vip.what': 'રેન્ડમ ચેટ, રૂમ અને સર્ચમાં જે તમારા મિત્રો નથી તેમને ફક્ત “VIP” દેખાય છે: ફોટો, ID, ઉંમર, દેશ કે બાયો કંઈ નહીં. મિત્રોને બધું દેખાય છે, અને ફ્રેન્ડ રિક્વેસ્ટ પણ પહેલાંની જેમ ચાલે છે.',
@@ -126,6 +117,14 @@ const gu: LooksDict = {
   'item.effect_aurora': 'ઓરોરા',
   'item.effect_prism': 'પ્રિઝમ',
   'effect.what': 'તમારા પ્રોફાઇલ ફોટા પર પ્રકાશ ફરે છે, જ્યાં પણ દેખાય',
+  'looks.tab.bubble': 'ચેટ બબલ',
+  'item.bubble_peach': 'પીચ',
+  'item.bubble_ocean': 'સમુદ્ર',
+  'item.bubble_mint': 'મિન્ટ',
+  'item.bubble_galaxy': 'ગેલેક્સી',
+  'item.bubble_gold': 'સોનેરી',
+  'item.bubble_neon': 'નિયોન',
+  'bubble.what': 'બધા તમારા મેસેજ આ બબલમાં જોશે',
 }
 
 export default gu

@@ -17,7 +17,6 @@ const fr: Dict = {
   'net.offline': 'Pas d’internet. Reconnexion…',
   'error.screenTitle': 'Impossible de charger cet écran',
   'common.loading': 'Chargement de yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Impossible d’accéder à yaari pour le moment',
   'boot.offlineBody': 'Vérifiez votre connexion internet, puis réessayez.',
@@ -29,7 +28,6 @@ const fr: Dict = {
   'nav.me': 'Moi',
   'nav.settings': 'Paramètres',
   'nav.home': 'Accueil',
-  'nav.freePlan': 'Offre gratuite',
   'panel.activity': 'Activité',
   'panel.friends': 'Vos amis',
   'panel.rooms': 'Salons en direct',
@@ -38,9 +36,6 @@ const fr: Dict = {
   'panel.friendCount.other': '{n} amis',
   'panel.noFriends': 'Les amis que vous ajoutez depuis vos chats apparaîtront ici.',
   'panel.message': 'Envoyer un message à {name}',
-  'panel.plusTitle': 'Choisissez qui vous rencontrez',
-  'panel.plusBody': 'Filtre par genre et passage instantané avec Yaari Plus.',
-  'panel.plusCta': 'Découvrir Yaari Plus',
 
   'auth.badge': '18+ · téléphone vérifié',
   'auth.verifiedBadge': 'Obtenez votre badge vérifié : pièce d’identité + selfie',
@@ -76,10 +71,6 @@ const fr: Dict = {
   'country.none': 'Aucun pays trouvé',
   'countries.label': 'Pays',
   'countries.anywhere': 'Partout',
-  'countries.title': 'Choisir des pays',
-  'countries.hint': 'Gratuit · jusqu’à {n} pays',
-  'countries.done': 'OK',
-  'countries.only': 'Uniquement des personnes de ces pays',
 
   'otp.change': 'Changer de numéro',
   'otp.title': 'Saisissez le code',
@@ -522,7 +513,6 @@ const fr: Dict = {
 
   'me.edit': 'Modifier le profil',
   'me.newPost': 'Nouvelle publication',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Partagez votre première publication',
   'me.editDesc': 'Le genre et la date de naissance ne peuvent pas être modifiés.',
   'me.updated': 'Profil mis à jour',
@@ -554,9 +544,6 @@ const fr: Dict = {
   'settings.account': 'Compte',
   'settings.phone': 'Numéro de téléphone',
   'settings.verified': 'Vérifié',
-  'settings.plan': 'Offre',
-  'settings.planPass': 'Pass genre 24 h',
-  'settings.planFree': 'Gratuit',
   'settings.language': 'Langue',
   'settings.roomSounds': 'Sons du salon vocal',
   'settings.roomSoundsBody': 'Un petit son quand quelqu’un rejoint ou quitte un salon vocal.',
@@ -608,20 +595,6 @@ const fr: Dict = {
   'tr.tooLong': 'Ce message est trop long pour être traduit',
   'tr.same': 'Ce message est déjà dans votre langue',
 
-  'plus.tagline': 'Plus de contrôle sur chaque conversation.',
-  'plus.b1Title': 'Choisissez qui vous rencontrez',
-  'plus.b1Body': 'Filtrez les matchs aléatoires : femmes ou hommes.',
-  'plus.b3Title': 'Passer en 0,2 s',
-  'plus.b3Body': 'Quittez un chat instantanément au lieu d’attendre 5 s.',
-  'plus.plans': 'Offres',
-  'plus.monthly': 'Mensuel',
-  'plus.monthlyNote': 'Toutes les fonctionnalités Plus · renouvelé chaque mois, résiliable à tout moment sur Google Play',
-  'plus.pass': 'Pass genre 24 h',
-  'plus.passNote': 'Filtre par genre pendant une journée · achat unique',
-  'plus.getApp': 'Disponible dans l’app Android.',
-  'plus.getAppBody': 'Les achats se font dans l’app. Plus fonctionne ensuite ici aussi, avec le même compte.',
-  'plus.getItOn': 'Disponible sur',
-  'plus.soon': 'L’app Android arrive bientôt sur Google Play.',
 
   'time.now': 'à l’instant',
   'error.exit_locked': 'Patientez un instant avant de partir',
@@ -660,8 +633,6 @@ const fr: Dict = {
   'error.not_owned': 'Vous ne possédez pas encore ce look',
   'error.chat_closed': 'Ce chat est terminé. Ajoutez cette personne en ami pour continuer à discuter',
   'error.generic': 'Un problème est survenu. Veuillez réessayer',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Obtenez ce pack de stickers pour l’envoyer',
   'nav.explore': 'Explorer',
   'explore.search': 'Rechercher par ID ou nom',
   'explore.feed': 'Fil',
@@ -685,6 +656,8 @@ const fr: Dict = {
   'explore.country': 'Pays',
   'pf.photoRequired': 'Ajoute une photo de profil pour commencer',
   'video.flip': 'Changer de caméra',
+  'chat.seeAll': 'Tout afficher',
+  'voice.cameraNude': 'Votre caméra a été coupée car l’image ressemblait à de la nudité',
 }
 
 export default fr

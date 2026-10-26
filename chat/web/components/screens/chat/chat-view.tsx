@@ -10,7 +10,7 @@ import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
 import { nameAge } from '@/lib/looks'
 import { wallVars } from '@/lib/walls'
-import { FREE_EXIT_LOCK_MS, PLUS_EXIT_LOCK_MS } from '@/lib/config'
+import { EXIT_LOCK_MS as lockMs } from '@/lib/config'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useSocialT } from '@/components/social/social-text'
@@ -27,10 +27,9 @@ import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
 import { useFollowLines } from '@/components/translate'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, useLook } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useShop } from '@/components/looks/use-shop'
-import { StickerButton } from './stickers'
 import { useFriendship } from '@/components/social/friend-button'
 import { FriendContactsSheet } from '@/components/social/contacts'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -84,7 +83,10 @@ export function ChatView({
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { entitlements, openProfile, setTab } = useApp()
+  const { me, openProfile, setTab } = useApp()
+  // Each side's chat bubble (062), as both of us see it.
+  const mySkin = useLook(me.id)?.bubble
+  const theirSkin = useLook(partner.id)?.bubble
   const live = mode === 'random'
   const chat = useMatchChat(matchId, partner.name, live)
   const [reportOpen, setReportOpen] = useState(false)
@@ -92,7 +94,6 @@ export function ChatView({
   const [callBusy, setCallBusy] = useState(false)
   const listRef = useRef<HTMLUListElement>(null)
   const stickToBottom = useRef(true)
-  const lockMs = entitlements.premium ? PLUS_EXIT_LOCK_MS : FREE_EXIT_LOCK_MS
   // "/n" = next, "/r" = lobby (random chats): never sent as a message; inside the exit lock only the lock's notice.
   const send = async (text: string | null, media: File | null) => {
     const cmd = mode === 'random' && !media ? text?.trim().toLowerCase() : null
@@ -299,7 +300,13 @@ export function ChatView({
             </>
           ) : (
             chat.messages.map((msg, i) => (
-              <MessageBubble key={msg.id} message={msg} grouped={i > 0 && chat.messages![i - 1].fromMe === msg.fromMe} read={msg.fromMe && msg.id <= chat.partnerRead} />
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                grouped={i > 0 && chat.messages![i - 1].fromMe === msg.fromMe}
+                read={msg.fromMe && msg.id <= chat.partnerRead}
+                skin={msg.fromMe ? mySkin : theirSkin}
+              />
             ))
           )}
           <AnimatePresence>{chat.typing ? <TypingBubble key="typing" name={partner.name} /> : null}</AnimatePresence>
@@ -335,7 +342,6 @@ export function ChatView({
             onTyping={chat.notifyTyping}
             allowMedia={live}
             placeholder={live ? t('chat.placeholder') : t('chat.messageTo', { name: partner.name })}
-            extra={<StickerButton onSend={(body) => chat.send(body, null)} />}
             // Over a wall the box's row gets a light veil, so its icons stay clear on dark walls too.
             className={wall ? 'bg-background/80 backdrop-blur-sm' : undefined}
           />

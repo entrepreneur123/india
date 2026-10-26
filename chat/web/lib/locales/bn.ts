@@ -17,7 +17,6 @@ const bn: Dict = {
   'net.offline': 'ইন্টারনেট নেই। আবার যুক্ত হচ্ছে…',
   'error.screenTitle': 'এই স্ক্রিনটি লোড হয়নি',
   'common.loading': 'yaari খুলছে',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'এখন yaari-তে সংযোগ করা যাচ্ছে না',
   'boot.offlineBody': 'ইন্টারনেট সংযোগ দেখুন, তারপর আবার চেষ্টা করুন।',
@@ -29,7 +28,6 @@ const bn: Dict = {
   'nav.me': 'আমি',
   'nav.settings': 'সেটিংস',
   'nav.home': 'হোম',
-  'nav.freePlan': 'ফ্রি প্ল্যান',
   'panel.activity': 'কার্যকলাপ',
   'panel.friends': 'আপনার বন্ধুরা',
   'panel.rooms': 'লাইভ রুম',
@@ -37,9 +35,6 @@ const bn: Dict = {
   'panel.friendCount.other': '{n} জন বন্ধু',
   'panel.noFriends': 'চ্যাট থেকে যোগ করা বন্ধুরা এখানে দেখা যাবে।',
   'panel.message': '{name}-কে মেসেজ করুন',
-  'panel.plusTitle': 'কার সাথে দেখা হবে, আপনি বাছুন',
-  'panel.plusBody': 'Yaari Plus-এ জেন্ডার ফিল্টার আর সাথে সাথে স্কিপ।',
-  'panel.plusCta': 'Yaari Plus দেখুন',
 
   'auth.badge': '18+ · ফোন যাচাই করা',
   'auth.verifiedBadge': 'আপনার ভেরিফায়েড ব্যাজ নিন: আইডি + সেলফি',
@@ -75,10 +70,6 @@ const bn: Dict = {
   'country.none': 'কোনো দেশ পাওয়া যায়নি',
   'countries.label': 'দেশ',
   'countries.anywhere': 'যেকোনো জায়গা',
-  'countries.title': 'দেশ বাছুন',
-  'countries.hint': 'ফ্রি · সর্বোচ্চ {n}টি দেশ',
-  'countries.done': 'হয়ে গেছে',
-  'countries.only': 'শুধু এই দেশগুলোর মানুষ',
 
   'otp.change': 'নম্বর বদলান',
   'otp.title': 'কোডটি লিখুন',
@@ -520,7 +511,6 @@ const bn: Dict = {
 
   'me.edit': 'প্রোফাইল এডিট',
   'me.newPost': 'নতুন পোস্ট',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'প্রথম পোস্ট শেয়ার করুন',
   'me.editDesc': 'জেন্ডার ও জন্মতারিখ বদলানো যায় না।',
   'me.updated': 'প্রোফাইল আপডেট হয়েছে',
@@ -551,9 +541,6 @@ const bn: Dict = {
   'settings.account': 'অ্যাকাউন্ট',
   'settings.phone': 'ফোন নম্বর',
   'settings.verified': 'যাচাই করা',
-  'settings.plan': 'প্ল্যান',
-  'settings.planPass': '২৪ ঘণ্টার জেন্ডার পাস',
-  'settings.planFree': 'ফ্রি',
   'settings.language': 'ভাষা',
   'settings.roomSounds': 'ভয়েস রুমের সাউন্ড',
   'settings.roomSoundsBody': 'কেউ ভয়েস রুমে এলে বা চলে গেলে ছোট একটা শব্দ বাজবে।',
@@ -604,20 +591,6 @@ const bn: Dict = {
   'tr.tooLong': 'মেসেজটি অনুবাদের জন্য খুব বড়',
   'tr.same': 'মেসেজটি আগে থেকেই আপনার ভাষায়',
 
-  'plus.tagline': 'প্রতিটি কথোপকথনে আরও নিয়ন্ত্রণ।',
-  'plus.b1Title': 'কার সাথে দেখা হবে, আপনি বাছুন',
-  'plus.b1Body': 'র‍্যান্ডম ম্যাচ নারী বা পুরুষ দিয়ে ফিল্টার করুন।',
-  'plus.b3Title': '০.২ সেকেন্ডে স্কিপ',
-  'plus.b3Body': '৫ সেকেন্ড অপেক্ষা না করে সাথে সাথে চ্যাট ছাড়ুন।',
-  'plus.plans': 'প্ল্যান',
-  'plus.monthly': 'মাসিক',
-  'plus.monthlyNote': 'Plus-এর সব ফিচার · প্রতি মাসে রিনিউ, Google Play-তে যখন খুশি বাতিল',
-  'plus.pass': '২৪ ঘণ্টার জেন্ডার পাস',
-  'plus.passNote': 'এক দিনের জন্য জেন্ডার ফিল্টার · একবারের কেনা',
-  'plus.getApp': 'Android অ্যাপে নিন।',
-  'plus.getAppBody': 'কেনাকাটা অ্যাপে হয়। তারপর একই অ্যাকাউন্টে এখানেও Plus চলবে।',
-  'plus.getItOn': 'ডাউনলোড করুন',
-  'plus.soon': 'Android অ্যাপ শিগগিরই Google Play-তে আসছে।',
 
   'time.now': 'এইমাত্র',
   'error.exit_locked': 'বেরোনোর আগে একটু অপেক্ষা করুন',
@@ -656,8 +629,6 @@ const bn: Dict = {
   'error.not_owned': 'এই লুক এখনো আপনার নেই',
   'error.chat_closed': 'এই চ্যাট শেষ হয়ে গেছে। কথা চালিয়ে যেতে তাকে বন্ধু হিসেবে যোগ করুন',
   'error.generic': 'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন',
-  'chat.sticker': 'স্টিকার',
-  'error.sticker_not_owned': 'এটি পাঠাতে এই স্টিকার প্যাকটি নিন',
   'nav.explore': 'এক্সপ্লোর',
   'explore.search': 'আইডি বা নাম দিয়ে খুঁজুন',
   'explore.feed': 'ফিড',
@@ -681,6 +652,8 @@ const bn: Dict = {
   'explore.country': 'দেশ',
   'pf.photoRequired': 'শুরু করতে একটি প্রোফাইল ছবি যোগ করুন',
   'video.flip': 'ক্যামেরা বদলান',
+  'chat.seeAll': 'সব দেখুন',
+  'voice.cameraNude': 'নগ্নতার মতো দেখানোয় আপনার ক্যামেরা বন্ধ করা হয়েছে',
 }
 
 export default bn

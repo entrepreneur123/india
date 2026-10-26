@@ -85,9 +85,8 @@ const ne: LooksDict = {
   'blocks.unblock': 'अनब्लक गर्नुहोस्',
   'blocks.done': '{name} अनब्लक गरियो',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'वालपेपर',
-  'looks.tab.sticker': 'स्टिकर',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'केसरी',
   'item.wall_midnight': 'मध्यरात',
@@ -95,19 +94,11 @@ const ne: LooksDict = {
   'item.wall_mehndi': 'मेहेन्दी',
   'item.wall_stars': 'ताराले भरिएको रात',
   'item.wall_waves': 'छालहरू',
-  'item.sticker_namaste': 'नमस्ते',
-  'item.sticker_chai': 'चिया टाइम',
-  'item.sticker_cricket': 'क्रिकेट',
-  'item.sticker_love': 'माया',
   'item.vip_anon': 'VIP इन्कग्निटो',
   'wall.onlyYou': 'तपाईंको च्याटको ब्याकग्राउन्ड। यो तपाईंलाई मात्र देखिन्छ',
   'wall.use': 'यो वालपेपर लगाउनुहोस्',
   'wall.inUse': 'लगाइएको',
   'wall.remove': 'वालपेपर हटाउनुहोस्',
-  'sticker.count': '8 स्टिकर',
-  'sticker.owned': 'तपाईंका: जुनसुकै च्याटबाट पठाउनुहोस्',
-  'sticker.locked': 'यी स्टिकर पठाउन यो प्याक लिनुहोस्',
-  'sticker.getPack': 'प्याक लिनुहोस्',
   'vip.strangers': 'अपरिचितले देख्छन्',
   'vip.friends': 'साथीले देख्छन्',
   'vip.what': 'र्‍यान्डम च्याट, रुम र सर्चमा तपाईंका साथी नभएकाले “VIP” मात्र देख्छन्: फोटो, ID, उमेर, देश वा बायो केही पनि होइन। साथीहरूले सबै देख्छन्, र फ्रेन्ड रिक्वेस्ट पनि पहिलेजस्तै चल्छ।',
@@ -126,6 +117,14 @@ const ne: LooksDict = {
   'item.effect_aurora': 'अरोरा',
   'item.effect_prism': 'प्रिज्म',
   'effect.what': 'तपाईंको प्रोफाइल फोटोमाथि उज्यालो चल्छ, जहाँ देखिए पनि',
+  'looks.tab.bubble': 'च्याट बबल',
+  'item.bubble_peach': 'पिच',
+  'item.bubble_ocean': 'समुद्र',
+  'item.bubble_mint': 'मिन्ट',
+  'item.bubble_galaxy': 'ग्यालेक्सी',
+  'item.bubble_gold': 'सुनौलो',
+  'item.bubble_neon': 'नियोन',
+  'bubble.what': 'सबैले तपाईंका सन्देश यही बबलमा देख्छन्',
 }
 
 export default ne

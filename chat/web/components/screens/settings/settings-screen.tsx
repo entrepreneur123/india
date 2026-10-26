@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Sparkles, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
@@ -24,7 +24,7 @@ export function SettingsScreen() {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang, setLang } = useI18n()
-  const { entitlements, openPaywall, signedOut, phone, me, setMe } = useApp()
+  const { signedOut, phone, me, setMe } = useApp()
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
@@ -63,7 +63,6 @@ export function SettingsScreen() {
     }
   }
 
-  const plan = entitlements.premium ? t('common.plus') : entitlements.genderPass ? t('settings.planPass') : t('settings.planFree')
   const current = LANGS.find((l) => l.id === lang)
 
   return (
@@ -73,7 +72,6 @@ export function SettingsScreen() {
 
         <Group title={t('settings.account')}>
           <Item icon={Phone} label={t('settings.phone')} value={myPhone ?? phone ?? t('settings.verified')} ltrValue />
-          <Item icon={Sparkles} label={t('settings.plan')} value={plan} onClick={entitlements.premium ? undefined : openPaywall} accent={!entitlements.premium} />
           <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
           <Toggle icon={Volume2} label={t('settings.roomSounds')} body={t('settings.roomSoundsBody')} on={sounds} onChange={(on) => (setRoomSounds(on), setSounds(on))} />
         </Group>

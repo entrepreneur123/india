@@ -85,9 +85,8 @@ const id: LooksDict = {
   'blocks.unblock': 'Buka blokir',
   'blocks.done': 'Blokir {name} sudah dibuka',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Wallpaper',
-  'looks.tab.sticker': 'Stiker',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Saffron',
   'item.wall_midnight': 'Tengah malam',
@@ -95,19 +94,11 @@ const id: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Malam berbintang',
   'item.wall_waves': 'Ombak',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Waktunya chai',
-  'item.sticker_cricket': 'Kriket',
-  'item.sticker_love': 'Cinta',
   'item.vip_anon': 'VIP Incognito',
   'wall.onlyYou': 'Latar chat kamu. Cuma kamu yang bisa lihat',
   'wall.use': 'Pakai wallpaper ini',
   'wall.inUse': 'Dipakai',
   'wall.remove': 'Lepas wallpaper',
-  'sticker.count': '8 stiker',
-  'sticker.owned': 'Punyamu: kirim dari chat mana saja',
-  'sticker.locked': 'Dapatkan paket ini untuk mengirim stiker-stiker ini',
-  'sticker.getPack': 'Dapatkan paket',
   'vip.strangers': 'Orang asing melihat',
   'vip.friends': 'Teman melihat',
   'vip.what': 'Di chat acak, room, dan pencarian, orang yang bukan temanmu cuma melihat “VIP”: tanpa foto, ID, umur, negara, atau bio. Temanmu tetap melihat semuanya, dan permintaan pertemanan tetap berfungsi.',
@@ -126,6 +117,14 @@ const id: LooksDict = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',
   'effect.what': 'Cahaya bergerak di atas foto profilmu, di mana pun tampil',
+  'looks.tab.bubble': 'Gelembung chat',
+  'item.bubble_peach': 'Persik',
+  'item.bubble_ocean': 'Samudra',
+  'item.bubble_mint': 'Mint',
+  'item.bubble_galaxy': 'Galaksi',
+  'item.bubble_gold': 'Emas',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Semua orang melihat pesanmu dalam gelembung ini',
 }
 
 export default id

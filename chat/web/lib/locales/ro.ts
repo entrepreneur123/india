@@ -17,7 +17,6 @@ const ro: Dict = {
   'net.offline': 'Nu există internet. Se reconectează…',
   'error.screenTitle': 'Acest ecran nu s-a putut încărca',
   'common.loading': 'Se încarcă yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Nu ne putem conecta acum la yaari',
   'boot.offlineBody': 'Verifică-ți conexiunea la internet, apoi încearcă din nou.',
@@ -29,7 +28,6 @@ const ro: Dict = {
   'nav.me': 'Eu',
   'nav.settings': 'Setări',
   'nav.home': 'Acasă',
-  'nav.freePlan': 'Plan gratuit',
   'panel.activity': 'Activitate',
   'panel.friends': 'Prietenii tăi',
   'panel.rooms': 'Camere live',
@@ -38,9 +36,6 @@ const ro: Dict = {
   'panel.friendCount.other': '{n} de prieteni',
   'panel.noFriends': 'Prietenii pe care îi adaugi din chaturi vor apărea aici.',
   'panel.message': 'Scrie-i lui {name}',
-  'panel.plusTitle': 'Alege pe cine cunoști',
-  'panel.plusBody': 'Filtru după gen și trecere instantă cu Yaari Plus.',
-  'panel.plusCta': 'Vezi Yaari Plus',
 
   'auth.badge': '18+ · telefon verificat',
   'auth.verifiedBadge': 'Obține insigna de verificare: act + selfie',
@@ -76,10 +71,6 @@ const ro: Dict = {
   'country.none': 'Nu am găsit nicio țară',
   'countries.label': 'Țări',
   'countries.anywhere': 'Oriunde',
-  'countries.title': 'Alege țările',
-  'countries.hint': 'Gratuit · până la {n} țări',
-  'countries.done': 'Gata',
-  'countries.only': 'Doar oameni din aceste țări',
 
   'otp.change': 'Schimbă numărul',
   'otp.title': 'Introdu codul',
@@ -522,7 +513,6 @@ const ro: Dict = {
 
   'me.edit': 'Editează profilul',
   'me.newPost': 'Postare nouă',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Publică prima ta postare',
   'me.editDesc': 'Genul și data nașterii nu se pot schimba.',
   'me.updated': 'Profil actualizat',
@@ -554,9 +544,6 @@ const ro: Dict = {
   'settings.account': 'Cont',
   'settings.phone': 'Număr de telefon',
   'settings.verified': 'Verificat',
-  'settings.plan': 'Plan',
-  'settings.planPass': 'Permis de gen pentru 24 de ore',
-  'settings.planFree': 'Gratuit',
   'settings.language': 'Limbă',
   'settings.roomSounds': 'Sunete în camera vocală',
   'settings.roomSoundsBody': 'Un sunet scurt când cineva intră sau iese dintr-o cameră vocală.',
@@ -608,20 +595,6 @@ const ro: Dict = {
   'tr.tooLong': 'Mesajul e prea lung pentru traducere',
   'tr.same': 'Mesajul e deja în limba ta',
 
-  'plus.tagline': 'Mai mult control asupra fiecărei conversații.',
-  'plus.b1Title': 'Alege pe cine cunoști',
-  'plus.b1Body': 'Filtrează potrivirile aleatorii: femei sau bărbați.',
-  'plus.b3Title': 'Treci mai departe în 0,2 s',
-  'plus.b3Body': 'Ieși imediat dintr-un chat în loc să aștepți 5 s.',
-  'plus.plans': 'Planuri',
-  'plus.monthly': 'Lunar',
-  'plus.monthlyNote': 'Toate funcțiile Plus · se reînnoiește lunar, îl anulezi oricând în Google Play',
-  'plus.pass': 'Permis de gen pentru 24 de ore',
-  'plus.passNote': 'Filtru după gen pentru o zi · plată unică',
-  'plus.getApp': 'Ia-l din aplicația pentru Android.',
-  'plus.getAppBody': 'Achizițiile se fac în aplicație. Apoi Plus merge și aici, pe același cont.',
-  'plus.getItOn': 'Descarcă din',
-  'plus.soon': 'Aplicația pentru Android vine curând pe Google Play.',
 
   'time.now': 'chiar acum',
   'error.exit_locked': 'Mai așteaptă puțin înainte să ieși',
@@ -660,8 +633,6 @@ const ro: Dict = {
   'error.not_owned': 'Încă nu ai acest stil',
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Ia acest pachet de stickere ca să-l trimiți',
   'nav.explore': 'Explorează',
   'explore.search': 'Caută după ID sau nume',
   'explore.feed': 'Feed',
@@ -685,6 +656,8 @@ const ro: Dict = {
   'explore.country': 'Țară',
   'pf.photoRequired': 'Adaugă o poză de profil ca să începi',
   'video.flip': 'Schimbă camera',
+  'chat.seeAll': 'Vezi tot',
+  'voice.cameraNude': 'Camera ta a fost oprită pentru că imaginea părea să arate nuditate',
 }
 
 export default ro

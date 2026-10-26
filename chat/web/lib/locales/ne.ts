@@ -17,7 +17,6 @@ const ne: Dict = {
   'net.offline': 'इन्टरनेट छैन। फेरि जोडिँदै…',
   'error.screenTitle': 'यो स्क्रिन लोड हुन सकेन',
   'common.loading': 'yaari लोड हुँदै',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'अहिले yaari मा पुग्न सकिएन',
   'boot.offlineBody': 'आफ्नो इन्टरनेट कनेक्सन जाँच गर्नुहोस्, अनि फेरि प्रयास गर्नुहोस्।',
@@ -29,7 +28,6 @@ const ne: Dict = {
   'nav.me': 'म',
   'nav.settings': 'सेटिङ',
   'nav.home': 'होम',
-  'nav.freePlan': 'नि:शुल्क प्लान',
   'panel.activity': 'गतिविधि',
   'panel.friends': 'तपाईंका साथीहरू',
   'panel.rooms': 'लाइभ रूम',
@@ -37,9 +35,6 @@ const ne: Dict = {
   'panel.friendCount.other': '{n} साथीहरू',
   'panel.noFriends': 'च्याटबाट थपेका साथीहरू यहाँ देखिनेछन्।',
   'panel.message': '{name} लाई मेसेज गर्नुहोस्',
-  'panel.plusTitle': 'कसलाई भेट्ने, आफैं छान्नुहोस्',
-  'panel.plusBody': 'Yaari Plus मा जेन्डर फिल्टर र तुरुन्त स्किप।',
-  'panel.plusCta': 'Yaari Plus हेर्नुहोस्',
 
   'auth.badge': '18+ · फोन प्रमाणित',
   'auth.verifiedBadge': 'आफ्नो भेरिफाइड ब्याज पाउनुहोस्: परिचयपत्र + सेल्फी',
@@ -75,10 +70,6 @@ const ne: Dict = {
   'country.none': 'कुनै देश भेटिएन',
   'countries.label': 'देशहरू',
   'countries.anywhere': 'जहाँसुकै',
-  'countries.title': 'देशहरू छान्नुहोस्',
-  'countries.hint': 'निःशुल्क · बढीमा {n} देश',
-  'countries.done': 'भयो',
-  'countries.only': 'यी देशका मानिसहरू मात्र',
 
   'otp.change': 'नम्बर बदल्नुहोस्',
   'otp.title': 'कोड हाल्नुहोस्',
@@ -520,7 +511,6 @@ const ne: Dict = {
 
   'me.edit': 'प्रोफाइल सम्पादन गर्नुहोस्',
   'me.newPost': 'नयाँ पोस्ट',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'आफ्नो पहिलो पोस्ट सेयर गर्नुहोस्',
   'me.editDesc': 'लिङ्ग र जन्म मिति बदल्न मिल्दैन।',
   'me.updated': 'प्रोफाइल अपडेट भयो',
@@ -551,9 +541,6 @@ const ne: Dict = {
   'settings.account': 'अकाउन्ट',
   'settings.phone': 'फोन नम्बर',
   'settings.verified': 'प्रमाणित',
-  'settings.plan': 'प्लान',
-  'settings.planPass': '२४ घण्टे जेन्डर पास',
-  'settings.planFree': 'नि:शुल्क',
   'settings.language': 'भाषा',
   'settings.roomSounds': 'भ्वाइस रुमका आवाज',
   'settings.roomSoundsBody': 'कोही भ्वाइस रुममा आउँदा वा जाँदा छोटो आवाज बज्छ।',
@@ -605,20 +592,6 @@ const ne: Dict = {
   'tr.tooLong': 'यो मेसेज अनुवाद गर्न धेरै लामो छ',
   'tr.same': 'यो मेसेज पहिले नै तपाईंको भाषामा छ',
 
-  'plus.tagline': 'हरेक कुराकानीमा बढी नियन्त्रण।',
-  'plus.b1Title': 'कसलाई भेट्ने, आफैं छान्नुहोस्',
-  'plus.b1Body': 'र्‍यान्डम म्याचलाई महिला वा पुरुष अनुसार फिल्टर गर्नुहोस्।',
-  'plus.b3Title': '0.2 सेकेन्डमा स्किप',
-  'plus.b3Body': '5 सेकेन्ड पर्खनुको सट्टा तुरुन्तै च्याट छोड्नुहोस्।',
-  'plus.plans': 'प्लानहरू',
-  'plus.monthly': 'मासिक',
-  'plus.monthlyNote': 'Plus का सबै सुविधा · हरेक महिना नवीकरण हुन्छ, Google Play मा जहिले पनि रद्द गर्न सकिन्छ',
-  'plus.pass': '२४ घण्टे जेन्डर पास',
-  'plus.passNote': 'एक दिनका लागि जेन्डर फिल्टर · एक पटकको खरिद',
-  'plus.getApp': 'Android एपमा पाउनुहोस्।',
-  'plus.getAppBody': 'खरिद एपमै हुन्छ। त्यसपछि Plus यहाँ पनि उही अकाउन्टमा चल्छ।',
-  'plus.getItOn': 'यहाँबाट लिनुहोस्',
-  'plus.soon': 'Android एप चाँडै Google Play मा आउँदैछ।',
 
   'time.now': 'भर्खरै',
   'error.exit_locked': 'निस्कनुअघि एकछिन पर्खनुहोस्',
@@ -657,8 +630,6 @@ const ne: Dict = {
   'error.not_owned': 'यो लुक अझै तपाईंसँग छैन',
   'error.chat_closed': 'यो च्याट सकिइसक्यो। कुरा जारी राख्न उहाँलाई साथी बनाउनुहोस्',
   'error.generic': 'केही गडबड भयो। कृपया फेरि प्रयास गर्नुहोस्',
-  'chat.sticker': 'स्टिकर',
-  'error.sticker_not_owned': 'यो पठाउन यो स्टिकर प्याक लिनुहोस्',
   'nav.explore': 'अन्वेषण',
   'explore.search': 'ID वा नामबाट खोज्नुहोस्',
   'explore.feed': 'फिड',
@@ -682,6 +653,8 @@ const ne: Dict = {
   'explore.country': 'देश',
   'pf.photoRequired': 'सुरु गर्न प्रोफाइल फोटो थप्नुहोस्',
   'video.flip': 'क्यामेरा बदल्नुहोस्',
+  'chat.seeAll': 'सबै हेर्नुहोस्',
+  'voice.cameraNude': 'नग्नता जस्तो देखिएकाले तपाईंको क्यामेरा बन्द गरियो',
 }
 
 export default ne

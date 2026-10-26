@@ -18,7 +18,7 @@ import { UserAvatar } from '@/components/looks/user-avatar'
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, openProfile, openThread, entitlements, openPaywall, openVoice, badges } = useApp()
+  const { t, openProfile, openThread, openVoice, badges } = useApp()
   const { plural, num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   // The same list as the Rooms tab (one request serves both).
@@ -137,17 +137,6 @@ export function RightPanel({ className }: { className?: string }) {
                 ))}
         </ul>
       </section>
-
-      {!entitlements.premium ? (
-        <div className="mt-auto rounded-2xl border border-border bg-card p-5">
-          <p className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('common.plus')}</p>
-          <p className="mt-2 text-base font-semibold text-balance">{t('panel.plusTitle')}</p>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('panel.plusBody')}</p>
-          <Button variant="brand" size="sm" className="mt-4" onClick={openPaywall}>
-            {t('panel.plusCta')}
-          </Button>
-        </div>
-      ) : null}
     </aside>
   )
 }

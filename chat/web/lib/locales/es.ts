@@ -17,7 +17,6 @@ const es: Dict = {
   'net.offline': 'Sin internet. Reconectando…',
   'error.screenTitle': 'No se pudo cargar esta pantalla',
   'common.loading': 'Cargando yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'No podemos conectar con yaari ahora',
   'boot.offlineBody': 'Revisa tu conexión a internet e inténtalo de nuevo.',
@@ -29,7 +28,6 @@ const es: Dict = {
   'nav.me': 'Yo',
   'nav.settings': 'Ajustes',
   'nav.home': 'Inicio',
-  'nav.freePlan': 'Plan gratuito',
   'panel.activity': 'Actividad',
   'panel.friends': 'Tus amigos',
   'panel.rooms': 'Salas en vivo',
@@ -38,9 +36,6 @@ const es: Dict = {
   'panel.friendCount.other': '{n} amigos',
   'panel.noFriends': 'Los amigos que agregues desde los chats aparecerán aquí.',
   'panel.message': 'Enviar mensaje a {name}',
-  'panel.plusTitle': 'Elige a quién conoces',
-  'panel.plusBody': 'Filtro por género y salto instantáneo con Yaari Plus.',
-  'panel.plusCta': 'Ver Yaari Plus',
 
   'auth.badge': '18+ · teléfono verificado',
   'auth.verifiedBadge': 'Consigue tu insignia de verificación: documento + selfie',
@@ -76,10 +71,6 @@ const es: Dict = {
   'country.none': 'No se encontraron países',
   'countries.label': 'Países',
   'countries.anywhere': 'Cualquier lugar',
-  'countries.title': 'Elige países',
-  'countries.hint': 'Gratis · hasta {n} países',
-  'countries.done': 'Listo',
-  'countries.only': 'Solo personas de estos países',
 
   'otp.change': 'Cambiar número',
   'otp.title': 'Escribe el código',
@@ -522,7 +513,6 @@ const es: Dict = {
 
   'me.edit': 'Editar perfil',
   'me.newPost': 'Nueva publicación',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Comparte tu primera publicación',
   'me.editDesc': 'El género y la fecha de nacimiento no se pueden cambiar.',
   'me.updated': 'Perfil actualizado',
@@ -554,9 +544,6 @@ const es: Dict = {
   'settings.account': 'Cuenta',
   'settings.phone': 'Número de teléfono',
   'settings.verified': 'Verificado',
-  'settings.plan': 'Plan',
-  'settings.planPass': 'Pase de género de 24 horas',
-  'settings.planFree': 'Gratis',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sonidos de la sala de voz',
   'settings.roomSoundsBody': 'Un breve sonido cuando alguien entra o sale de una sala de voz.',
@@ -608,20 +595,6 @@ const es: Dict = {
   'tr.tooLong': 'Este mensaje es demasiado largo para traducirlo',
   'tr.same': 'Este mensaje ya está en tu idioma',
 
-  'plus.tagline': 'Más control en cada conversación.',
-  'plus.b1Title': 'Elige a quién conoces',
-  'plus.b1Body': 'Filtra los matches aleatorios por mujeres u hombres.',
-  'plus.b3Title': 'Salto en 0,2 s',
-  'plus.b3Body': 'Sal de un chat al instante en lugar de esperar 5 s.',
-  'plus.plans': 'Planes',
-  'plus.monthly': 'Mensual',
-  'plus.monthlyNote': 'Todas las funciones Plus · se renueva cada mes, cancela cuando quieras en Google Play',
-  'plus.pass': 'Pase de género de 24 horas',
-  'plus.passNote': 'Filtro por género durante un día · pago único',
-  'plus.getApp': 'Consíguelo en la app de Android.',
-  'plus.getAppBody': 'Las compras se hacen en la app. Después Plus también funciona aquí, con la misma cuenta.',
-  'plus.getItOn': 'Disponible en',
-  'plus.soon': 'La app de Android llegará pronto a Google Play.',
 
   'time.now': 'ahora mismo',
   'error.exit_locked': 'Espera un momento antes de salir',
@@ -660,8 +633,6 @@ const es: Dict = {
   'error.not_owned': 'Todavía no tienes este estilo',
   'error.chat_closed': 'Este chat terminó. Agrégale como amigo para seguir hablando',
   'error.generic': 'Algo salió mal. Inténtalo de nuevo',
-  'chat.sticker': 'Sticker',
-  'error.sticker_not_owned': 'Consigue este pack de stickers para enviarlo',
   'nav.explore': 'Explorar',
   'explore.search': 'Busca por ID o nombre',
   'explore.feed': 'Feed',
@@ -685,6 +656,8 @@ const es: Dict = {
   'explore.country': 'País',
   'pf.photoRequired': 'Añade una foto de perfil para empezar',
   'video.flip': 'Cambiar cámara',
+  'chat.seeAll': 'Ver todo',
+  'voice.cameraNude': 'Tu cámara se apagó porque parecía mostrar desnudos',
 }
 
 export default es

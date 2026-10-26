@@ -1,5 +1,5 @@
 // Issues a LiveKit token for a voice room: room "voice-<id>", identity = user id. Only someone present in the
-// room (not removed, not banned) gets one; only people on a seat may publish, and only their microphone.
+// room (not removed, not banned) gets one; only people on a seat may publish, and only their microphone and camera.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { json, preflight } from "../_shared/cors.ts";
 import { livekitVoiceToken } from "../_shared/jwt.ts";

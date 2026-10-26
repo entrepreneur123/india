@@ -17,7 +17,6 @@ const ml: Dict = {
   'net.offline': 'ഇന്റർനെറ്റ് ഇല്ല. വീണ്ടും കണക്റ്റ് ചെയ്യുന്നു…',
   'error.screenTitle': 'ഈ സ്ക്രീൻ ലോഡ് ആയില്ല',
   'common.loading': 'yaari തുറക്കുന്നു',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'ഇപ്പോൾ yaari-യിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല',
   'boot.offlineBody': 'നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച്, വീണ്ടും ശ്രമിക്കുക.',
@@ -29,7 +28,6 @@ const ml: Dict = {
   'nav.me': 'ഞാൻ',
   'nav.settings': 'സെറ്റിംഗ്സ്',
   'nav.home': 'ഹോം',
-  'nav.freePlan': 'സൗജന്യ പ്ലാൻ',
   'panel.activity': 'ആക്റ്റിവിറ്റി',
   'panel.friends': 'നിങ്ങളുടെ സുഹൃത്തുക്കൾ',
   'panel.rooms': 'ലൈവ് റൂമുകൾ',
@@ -37,9 +35,6 @@ const ml: Dict = {
   'panel.friendCount.other': '{n} സുഹൃത്തുക്കൾ',
   'panel.noFriends': 'ചാറ്റുകളിൽ നിന്ന് നിങ്ങൾ ചേർക്കുന്ന സുഹൃത്തുക്കൾ ഇവിടെ കാണാം.',
   'panel.message': '{name}-ന് മെസേജ് അയയ്ക്കുക',
-  'panel.plusTitle': 'ആരെ കാണണമെന്ന് നിങ്ങൾ തീരുമാനിക്കൂ',
-  'panel.plusBody': 'Yaari Plus-ൽ ജെൻഡർ ഫിൽട്ടറും ഉടനടി സ്കിപ്പും.',
-  'panel.plusCta': 'Yaari Plus കാണുക',
 
   'auth.badge': '18+ · ഫോൺ വെരിഫൈ ചെയ്തത്',
   'auth.verifiedBadge': 'വെരിഫൈഡ് ബാഡ്ജ് നേടൂ: ID + സെൽഫി',
@@ -75,10 +70,6 @@ const ml: Dict = {
   'country.none': 'രാജ്യങ്ങളൊന്നും കണ്ടെത്തിയില്ല',
   'countries.label': 'രാജ്യങ്ങൾ',
   'countries.anywhere': 'എവിടെയും',
-  'countries.title': 'രാജ്യങ്ങൾ തിരഞ്ഞെടുക്കുക',
-  'countries.hint': 'സൗജന്യം · പരമാവധി {n} രാജ്യങ്ങൾ',
-  'countries.done': 'കഴിഞ്ഞു',
-  'countries.only': 'ഈ രാജ്യങ്ങളിലെ ആളുകൾ മാത്രം',
 
   'otp.change': 'നമ്പർ മാറ്റുക',
   'otp.title': 'കോഡ് നൽകുക',
@@ -520,7 +511,6 @@ const ml: Dict = {
 
   'me.edit': 'പ്രൊഫൈൽ എഡിറ്റ് ചെയ്യുക',
   'me.newPost': 'പുതിയ പോസ്റ്റ്',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'നിങ്ങളുടെ ആദ്യ പോസ്റ്റ് ഷെയർ ചെയ്യൂ',
   'me.editDesc': 'ജെൻഡറും ജനനത്തീയതിയും മാറ്റാനാകില്ല.',
   'me.updated': 'പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്തു',
@@ -551,9 +541,6 @@ const ml: Dict = {
   'settings.account': 'അക്കൗണ്ട്',
   'settings.phone': 'ഫോൺ നമ്പർ',
   'settings.verified': 'വെരിഫൈ ചെയ്തു',
-  'settings.plan': 'പ്ലാൻ',
-  'settings.planPass': '24 മണിക്കൂർ ജെൻഡർ പാസ്',
-  'settings.planFree': 'സൗജന്യം',
   'settings.language': 'ഭാഷ',
   'settings.roomSounds': 'വോയ്സ് റൂം ശബ്ദങ്ങൾ',
   'settings.roomSoundsBody': 'ആരെങ്കിലും വോയ്സ് റൂമിൽ വരുമ്പോഴോ പോകുമ്പോഴോ ഒരു ചെറിയ ശബ്ദം കേൾക്കും.',
@@ -605,20 +592,6 @@ const ml: Dict = {
   'tr.tooLong': 'വിവർത്തനം ചെയ്യാൻ ഈ മെസേജ് വളരെ നീളമുള്ളതാണ്',
   'tr.same': 'ഈ മെസേജ് ഇതിനകം നിങ്ങളുടെ ഭാഷയിലാണ്',
 
-  'plus.tagline': 'ഓരോ സംഭാഷണത്തിലും കൂടുതൽ നിയന്ത്രണം.',
-  'plus.b1Title': 'ആരെ കാണണമെന്ന് നിങ്ങൾ തീരുമാനിക്കൂ',
-  'plus.b1Body': 'റാൻഡം മാച്ചുകൾ സ്ത്രീകൾ അല്ലെങ്കിൽ പുരുഷന്മാർ എന്ന് ഫിൽട്ടർ ചെയ്യൂ.',
-  'plus.b3Title': '0.2 സെ. സ്കിപ്പ്',
-  'plus.b3Body': '5 സെ. കാത്തിരിക്കാതെ ഉടനടി ചാറ്റിൽ നിന്ന് പോകൂ.',
-  'plus.plans': 'പ്ലാനുകൾ',
-  'plus.monthly': 'പ്രതിമാസം',
-  'plus.monthlyNote': 'എല്ലാ Plus ഫീച്ചറുകളും · എല്ലാ മാസവും പുതുക്കും, Google Play-ൽ എപ്പോൾ വേണമെങ്കിലും റദ്ദാക്കാം',
-  'plus.pass': '24 മണിക്കൂർ ജെൻഡർ പാസ്',
-  'plus.passNote': 'ഒരു ദിവസത്തേക്ക് ജെൻഡർ ഫിൽട്ടർ · ഒറ്റത്തവണ വാങ്ങൽ',
-  'plus.getApp': 'Android ആപ്പിൽ നേടൂ.',
-  'plus.getAppBody': 'വാങ്ങലുകൾ ആപ്പിലാണ് നടക്കുന്നത്. അതിനുശേഷം അതേ അക്കൗണ്ടിൽ ഇവിടെയും Plus പ്രവർത്തിക്കും.',
-  'plus.getItOn': 'ഇവിടെ നേടൂ',
-  'plus.soon': 'Android ആപ്പ് ഉടൻ Google Play-ൽ വരുന്നു.',
 
   'time.now': 'ഇപ്പോൾ',
   'error.exit_locked': 'പോകുന്നതിന് മുമ്പ് അൽപ്പം കാത്തിരിക്കുക',
@@ -657,8 +630,6 @@ const ml: Dict = {
   'error.not_owned': 'ഈ ലുക്ക് ഇതുവരെ നിങ്ങളുടെ കൈയിലില്ല',
   'error.chat_closed': 'ഈ ചാറ്റ് അവസാനിച്ചു. സംസാരം തുടരാൻ അവരെ സുഹൃത്തായി ചേർക്കുക',
   'error.generic': 'എന്തോ തകരാറ് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കുക',
-  'chat.sticker': 'സ്റ്റിക്കർ',
-  'error.sticker_not_owned': 'ഇത് അയയ്ക്കാൻ ഈ സ്റ്റിക്കർ പാക്ക് നേടുക',
   'nav.explore': 'എക്സ്പ്ലോർ',
   'explore.search': 'ID അല്ലെങ്കിൽ പേര് ഉപയോഗിച്ച് തിരയുക',
   'explore.feed': 'ഫീഡ്',
@@ -682,6 +653,8 @@ const ml: Dict = {
   'explore.country': 'രാജ്യം',
   'pf.photoRequired': 'തുടങ്ങാൻ ഒരു പ്രൊഫൈൽ ഫോട്ടോ ചേർക്കുക',
   'video.flip': 'ക്യാമറ മാറ്റുക',
+  'chat.seeAll': 'എല്ലാം കാണുക',
+  'voice.cameraNude': 'നഗ്നതപോലെ തോന്നിയതിനാൽ നിങ്ങളുടെ ക്യാമറ ഓഫാക്കി',
 }
 
 export default ml

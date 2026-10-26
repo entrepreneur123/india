@@ -85,9 +85,8 @@ const he: LooksDict = {
   'blocks.unblock': 'ביטול חסימה',
   'blocks.done': 'החסימה של {name} בוטלה',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'רקעים',
-  'looks.tab.sticker': 'מדבקות',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'זעפרן',
   'item.wall_midnight': 'חצות',
@@ -95,19 +94,11 @@ const he: LooksDict = {
   'item.wall_mehndi': 'חינה',
   'item.wall_stars': 'ליל כוכבים',
   'item.wall_waves': 'גלים',
-  'item.sticker_namaste': 'נמסטה',
-  'item.sticker_chai': 'זמן צ׳אי',
-  'item.sticker_cricket': 'קריקט',
-  'item.sticker_love': 'אהבה',
   'item.vip_anon': 'VIP אנונימי',
   'wall.onlyYou': 'הרקע של הצ׳אטים שלך. רק לך הוא מוצג',
   'wall.use': 'להשתמש ברקע הזה',
   'wall.inUse': 'בשימוש',
   'wall.remove': 'להסיר את הרקע',
-  'sticker.count': '8 מדבקות',
-  'sticker.owned': 'שלך: אפשר לשלוח מכל צ׳אט',
-  'sticker.locked': 'כדי לשלוח את המדבקות האלה צריך את החבילה',
-  'sticker.getPack': 'להשיג את החבילה',
   'vip.strangers': 'זרים רואים',
   'vip.friends': 'חברים רואים',
   'vip.what': 'בצ׳אט אקראי, בחדרים ובחיפוש, מי שלא בחברים שלך רואה רק „VIP“: בלי תמונה, ID, גיל, מדינה או ביו. החברים שלך עדיין רואים הכול, ובקשות חברות ממשיכות לעבוד.',
@@ -126,6 +117,14 @@ const he: LooksDict = {
   'item.effect_aurora': 'זוהר',
   'item.effect_prism': 'פריזמה',
   'effect.what': 'אור נע על תמונת הפרופיל שלך, בכל מקום שהיא מופיעה',
+  'looks.tab.bubble': 'בועות צ׳אט',
+  'item.bubble_peach': 'אפרסק',
+  'item.bubble_ocean': 'אוקיינוס',
+  'item.bubble_mint': 'מנטה',
+  'item.bubble_galaxy': 'גלקסיה',
+  'item.bubble_gold': 'זהב',
+  'item.bubble_neon': 'ניאון',
+  'bubble.what': 'כולם רואים את ההודעות שלך בבועה הזו',
 }
 
 export default he

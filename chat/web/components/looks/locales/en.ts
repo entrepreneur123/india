@@ -48,9 +48,8 @@ const en = {
   'item.frame_neon': 'Neon',
   'item.frame_sakura': 'Sakura',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Walls',
-  'looks.tab.sticker': 'Stickers',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Saffron',
   'item.wall_midnight': 'Midnight',
@@ -58,19 +57,11 @@ const en = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Starry night',
   'item.wall_waves': 'Waves',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Chai time',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Love',
   'item.vip_anon': 'VIP incognito',
   'wall.onlyYou': 'Your chat background. Only you see it',
   'wall.use': 'Use this wall',
   'wall.inUse': 'In use',
   'wall.remove': 'Remove wall',
-  'sticker.count': '8 stickers',
-  'sticker.owned': 'Yours: send them from any chat',
-  'sticker.locked': 'Get this pack to send these stickers',
-  'sticker.getPack': 'Get pack',
   'vip.strangers': 'Strangers see',
   'vip.friends': 'Friends see',
   'vip.what': 'In random chats, rooms and search, people who aren’t your friends see only “VIP”: no photo, ID, age, country or bio. Your friends still see everything, and friend requests still work.',
@@ -132,6 +123,14 @@ const en = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prism',
   'effect.what': 'Light moves over your profile photo, wherever it shows',
+  'looks.tab.bubble': 'Chat bubbles',
+  'item.bubble_peach': 'Peach',
+  'item.bubble_ocean': 'Ocean',
+  'item.bubble_mint': 'Mint',
+  'item.bubble_galaxy': 'Galaxy',
+  'item.bubble_gold': 'Gold',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Everyone sees your messages in this bubble',
 }
 
 export default en

@@ -17,7 +17,6 @@ const pl: Dict = {
   'net.offline': 'Brak internetu. Łączenie ponownie…',
   'error.screenTitle': 'Nie udało się wczytać tego ekranu',
   'common.loading': 'Wczytywanie yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Nie można teraz połączyć się z yaari',
   'boot.offlineBody': 'Sprawdź połączenie z internetem i spróbuj ponownie.',
@@ -29,7 +28,6 @@ const pl: Dict = {
   'nav.me': 'Ja',
   'nav.settings': 'Ustawienia',
   'nav.home': 'Start',
-  'nav.freePlan': 'Plan darmowy',
   'panel.activity': 'Aktywność',
   'panel.friends': 'Twoi znajomi',
   'panel.rooms': 'Pokoje na żywo',
@@ -39,9 +37,6 @@ const pl: Dict = {
   'panel.friendCount.other': '{n} znajomych',
   'panel.noFriends': 'Tutaj pojawią się znajomi, których dodasz z czatów.',
   'panel.message': 'Napisz do: {name}',
-  'panel.plusTitle': 'Wybierz, kogo poznajesz',
-  'panel.plusBody': 'Filtr płci i natychmiastowe pomijanie z Yaari Plus.',
-  'panel.plusCta': 'Zobacz Yaari Plus',
 
   'auth.badge': '18+ · zweryfikowany telefon',
   'auth.verifiedBadge': 'Zdobądź odznakę weryfikacji: dokument + selfie',
@@ -77,10 +72,6 @@ const pl: Dict = {
   'country.none': 'Nie znaleziono krajów',
   'countries.label': 'Kraje',
   'countries.anywhere': 'Gdziekolwiek',
-  'countries.title': 'Wybierz kraje',
-  'countries.hint': 'Za darmo · do {n} krajów',
-  'countries.done': 'Gotowe',
-  'countries.only': 'Tylko osoby z tych krajów',
 
   'otp.change': 'Zmień numer',
   'otp.title': 'Wpisz kod',
@@ -524,7 +515,6 @@ const pl: Dict = {
 
   'me.edit': 'Edytuj profil',
   'me.newPost': 'Nowy post',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Udostępnij pierwszy post',
   'me.editDesc': 'Płci i daty urodzenia nie można zmienić.',
   'me.updated': 'Profil zaktualizowany',
@@ -557,9 +547,6 @@ const pl: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Numer telefonu',
   'settings.verified': 'Zweryfikowany',
-  'settings.plan': 'Plan',
-  'settings.planPass': 'Karnet płci na 24 godziny',
-  'settings.planFree': 'Darmowy',
   'settings.language': 'Język',
   'settings.roomSounds': 'Dźwięki pokoju głosowego',
   'settings.roomSoundsBody': 'Krótki dźwięk, gdy ktoś wchodzi do pokoju głosowego lub z niego wychodzi.',
@@ -611,20 +598,6 @@ const pl: Dict = {
   'tr.tooLong': 'Ta wiadomość jest za długa do przetłumaczenia',
   'tr.same': 'Ta wiadomość jest już w Twoim języku',
 
-  'plus.tagline': 'Więcej kontroli nad każdą rozmową.',
-  'plus.b1Title': 'Wybierz, kogo poznajesz',
-  'plus.b1Body': 'Filtruj losowe matche: kobiety lub mężczyźni.',
-  'plus.b3Title': 'Pomijanie w 0,2 s',
-  'plus.b3Body': 'Wyjdź z czatu od razu, zamiast czekać 5 s.',
-  'plus.plans': 'Plany',
-  'plus.monthly': 'Miesięczny',
-  'plus.monthlyNote': 'Wszystkie funkcje Plus · odnawia się co miesiąc, anulujesz w dowolnej chwili w Google Play',
-  'plus.pass': 'Karnet płci na 24 godziny',
-  'plus.passNote': 'Filtr płci na jeden dzień · jednorazowy zakup',
-  'plus.getApp': 'Kup w aplikacji na Androida.',
-  'plus.getAppBody': 'Zakupów dokonuje się w aplikacji. Potem Plus działa też tutaj, na tym samym koncie.',
-  'plus.getItOn': 'Pobierz z',
-  'plus.soon': 'Aplikacja na Androida już wkrótce w Google Play.',
 
   'time.now': 'przed chwilą',
   'error.exit_locked': 'Zaczekaj chwilę, zanim wyjdziesz',
@@ -663,8 +636,6 @@ const pl: Dict = {
   'error.not_owned': 'Nie masz jeszcze tego dodatku',
   'error.chat_closed': 'Ten czat się zakończył. Dodaj tę osobę do znajomych, aby dalej rozmawiać',
   'error.generic': 'Coś poszło nie tak. Spróbuj ponownie',
-  'chat.sticker': 'Naklejka',
-  'error.sticker_not_owned': 'Zdobądź ten pakiet naklejek, aby ją wysłać',
   'nav.explore': 'Odkrywaj',
   'explore.search': 'Szukaj po ID lub imieniu',
   'explore.feed': 'Feed',
@@ -688,6 +659,8 @@ const pl: Dict = {
   'explore.country': 'Kraj',
   'pf.photoRequired': 'Dodaj zdjęcie profilowe, aby zacząć',
   'video.flip': 'Przełącz aparat',
+  'chat.seeAll': 'Pokaż wszystko',
+  'voice.cameraNude': 'Twoja kamera została wyłączona, bo obraz wyglądał na nagość',
 }
 
 export default pl

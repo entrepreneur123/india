@@ -85,9 +85,8 @@ const tr: LooksDict = {
   'blocks.unblock': 'Engeli kaldır',
   'blocks.done': '{name} adlı kişinin engeli kaldırıldı',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Arka planlar',
-  'looks.tab.sticker': 'Çıkartmalar',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Safran',
   'item.wall_midnight': 'Gece yarısı',
@@ -95,19 +94,11 @@ const tr: LooksDict = {
   'item.wall_mehndi': 'Kına',
   'item.wall_stars': 'Yıldızlı gece',
   'item.wall_waves': 'Dalgalar',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Çay saati',
-  'item.sticker_cricket': 'Kriket',
-  'item.sticker_love': 'Aşk',
   'item.vip_anon': 'VIP gizli mod',
   'wall.onlyYou': 'Sohbetlerinin arka planı. Sadece sen görürsün',
   'wall.use': 'Bu arka planı kullan',
   'wall.inUse': 'Kullanılıyor',
   'wall.remove': 'Arka planı kaldır',
-  'sticker.count': '8 çıkartma',
-  'sticker.owned': 'Senin: her sohbetten gönder',
-  'sticker.locked': 'Bu çıkartmaları göndermek için bu paketi al',
-  'sticker.getPack': 'Paketi al',
   'vip.strangers': 'Yabancılar görür',
   'vip.friends': 'Arkadaşlar görür',
   'vip.what': 'Rastgele sohbetlerde, odalarda ve aramada arkadaşın olmayanlar yalnızca “VIP” görür: fotoğraf, ID, yaş, ülke ya da biyografi yok. Arkadaşların her şeyi görmeye devam eder, arkadaşlık istekleri de her zamanki gibi çalışır.',
@@ -126,6 +117,14 @@ const tr: LooksDict = {
   'item.effect_aurora': 'Kutup ışığı',
   'item.effect_prism': 'Prizma',
   'effect.what': 'Profil fotoğrafının üzerinde ışık dolaşır, göründüğü her yerde',
+  'looks.tab.bubble': 'Sohbet balonları',
+  'item.bubble_peach': 'Şeftali',
+  'item.bubble_ocean': 'Okyanus',
+  'item.bubble_mint': 'Nane',
+  'item.bubble_galaxy': 'Galaksi',
+  'item.bubble_gold': 'Altın',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Herkes mesajlarını bu balonda görür',
 }
 
 export default tr

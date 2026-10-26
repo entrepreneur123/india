@@ -4,7 +4,6 @@ import { createClient, type RealtimeChannel, type SupabaseClient } from '@supaba
 import {
   BackendError,
   type Backend,
-  type Entitlements,
   type Badges,
   type FeedPost,
   type PostComment,
@@ -92,8 +91,7 @@ const CODES = [
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
-  // sticker_not_owned before not_owned: the first code the message contains wins.
-  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'sticker_not_owned', 'not_owned',
+  'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
   'contact_invalid', 'not_friends', 'too_many_posts',
 ]
 
@@ -199,6 +197,7 @@ type VoiceLive = {
   /** After my own action: its change arrives over realtime; fetch only while that connection is down. */
   acted: () => void
   mic: (on: boolean) => Promise<void>
+  camera: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
   /** Tells the room I'm writing (public vtyping-<room> channel). */
@@ -422,16 +421,6 @@ export class SupabaseBackend implements Backend {
     if (!me) throw new BackendError('network')
     track('signup_done')
     return me
-  }
-
-  async entitlements(): Promise<Entitlements> {
-    const rows = await this.rpc<{ premium_until: string | null; gender_until: string | null }[]>('my_entitlements')
-    const row = rows?.[0]
-    const now = Date.now()
-    return {
-      premium: !!row?.premium_until && time(row.premium_until) > now,
-      genderPass: !!row?.gender_until && time(row.gender_until) > now,
-    }
   }
 
   async signOut() {
@@ -1312,8 +1301,8 @@ export class SupabaseBackend implements Backend {
     return { ...l, cycle: cycle.length >= 2 ? cycle : undefined }
   }
 
-  async setEffect(itemId: string | null) {
-    await this.rpc('set_effect', { p_item: itemId })
+  async setWorn(kind: 'effect' | 'bubble', itemId: string | null) {
+    await this.rpc('set_worn', { p_kind: kind, p_item: itemId })
   }
 
   async setCycle(paths: string[] | null) {
@@ -1334,6 +1323,10 @@ export class SupabaseBackend implements Backend {
       case 'mic':
         if (!live) throw new BackendError('network')
         await live.mic(a.on)
+        break
+      case 'camera':
+        if (!live) throw new BackendError('network')
+        await live.camera(a.on)
         break
       case 'seat':
         // An open room seats me; a hand-raise room raises my hand instead. Either way LiveKit hears about it.
@@ -1500,6 +1493,7 @@ export class SupabaseBackend implements Backend {
         // the microphone goes off here too.
         if (before.seat === null && mine.seat !== null) this.voiceSync(roomId, me)
         if ((mine.seat === null && before.seat !== null) || (mine.muted && !before.muted)) void audio?.setMic(false).catch(() => undefined)
+        if (mine.seat === null && before.seat !== null) void audio?.setCamera(false).catch(() => undefined)
       }
       // Audio only while someone is on the stage: a room nobody talks in is a chat room and costs no LiveKit minutes.
       stage = room.members.some((x) => x.seat !== null)
@@ -1659,11 +1653,13 @@ export class SupabaseBackend implements Backend {
           levels: (levels) => emit({ type: 'levels', levels }),
           permissions: () => permissionWaiters.splice(0).forEach((f) => f()),
           micMutedByServer: () => refresh(),
+          videos: (videos) => emit({ type: 'videos', videos }),
           gone: (removed) => {
             if (audioCtl !== ctl) return
             audio = null
             audioCtl = null
             emit({ type: 'levels', levels: {} })
+            emit({ type: 'videos', videos: {} })
             if (removed) void fetchState() // removed or ended: the state says which
             retryAudio()
           },
@@ -1698,6 +1694,7 @@ export class SupabaseBackend implements Backend {
         audioState = { status: 'connecting', needsTap: false }
         emit({ type: 'audio', audio: null })
         emit({ type: 'levels', levels: {} })
+        emit({ type: 'videos', videos: {} })
       }
     }
     const audioWaiters: ((a: VoiceAudio | null) => void)[] = []
@@ -1740,6 +1737,30 @@ export class SupabaseBackend implements Backend {
       } catch (e) {
         await a.setMic(false).catch(() => undefined)
         throw e
+      }
+    }
+
+    // My camera (24): only on a seat; nothing is stored, the others see the LiveKit track.
+    const camera = async (on: boolean) => {
+      if (!on) return void (await audio?.setCamera(false).catch(() => undefined))
+      if (mine?.seat == null) throw new BackendError('not_allowed')
+      const a = await waitAudio(8_000)
+      if (!a) throw new BackendError('network')
+      const enable = async () => {
+        try {
+          await a.setCamera(true)
+          return true
+        } catch (e) {
+          const p = e instanceof Error ? e.message : ''
+          if (p === 'denied' || p === 'missing' || p === 'busy') throw new BackendError(`camera_${p}`)
+          return false
+        }
+      }
+      if (!(await enable())) {
+        // LiveKit hasn't heard I'm on a seat yet: ask for it and try once more.
+        this.voiceSync(roomId, me)
+        await waitPermission(4_000)
+        if (!(await enable())) throw new BackendError('not_allowed')
       }
     }
 
@@ -1809,6 +1830,7 @@ export class SupabaseBackend implements Backend {
         if (!healthy) refresh()
       },
       mic,
+      camera,
       startAudio: async () => {
         await audio?.startAudio()
         setAudio({ needsTap: false })

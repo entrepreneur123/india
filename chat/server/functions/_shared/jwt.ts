@@ -23,7 +23,7 @@ export function livekitToken(apiKey: string, apiSecret: string, room: string, id
 
 /**
  * Voice room token: room = "voice-<id>", identity = user id. Everyone listens; only people on a seat may send
- * audio, and only from the microphone (no camera, no screen, no data). LiveKit keeps it fresh while connected,
+ * from the microphone and the camera (24; no screen, no data). LiveKit keeps it fresh while connected,
  * carrying any permission voice-sync set since.
  */
 export function livekitVoiceToken(
@@ -33,7 +33,7 @@ export function livekitVoiceToken(
     iss: apiKey, sub: identity, nbf: nowSec, exp: nowSec + 5 * 60,
     video: {
       room, roomJoin: true, canSubscribe: true, canPublish, canPublishData: false,
-      canPublishSources: canPublish ? ["microphone"] : [],
+      canPublishSources: canPublish ? ["microphone", "camera"] : [],
     },
   }, apiSecret);
 }

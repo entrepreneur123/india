@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
         room, identity: p.identity,
         permission: {
           can_subscribe: true, can_publish: w.publish, can_publish_data: false,
-          can_publish_sources: w.publish ? ["MICROPHONE"] : [],
+          can_publish_sources: w.publish ? ["MICROPHONE", "CAMERA"] : [],
         },
       });
       actions.push({ op: "UpdateParticipant", identity: p.identity, status: r.status });

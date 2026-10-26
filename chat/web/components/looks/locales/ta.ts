@@ -85,9 +85,8 @@ const ta: LooksDict = {
   'blocks.unblock': 'அன்பிளாக்',
   'blocks.done': '{name} அன்பிளாக் செய்யப்பட்டார்',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'வால்பேப்பர்',
-  'looks.tab.sticker': 'ஸ்டிக்கர்',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'காவி',
   'item.wall_midnight': 'நள்ளிரவு',
@@ -95,19 +94,11 @@ const ta: LooksDict = {
   'item.wall_mehndi': 'மெஹந்தி',
   'item.wall_stars': 'நட்சத்திர இரவு',
   'item.wall_waves': 'அலைகள்',
-  'item.sticker_namaste': 'நமஸ்தே',
-  'item.sticker_chai': 'டீ டைம்',
-  'item.sticker_cricket': 'கிரிக்கெட்',
-  'item.sticker_love': 'காதல்',
   'item.vip_anon': 'VIP இன்காக்னிட்டோ',
   'wall.onlyYou': 'உங்கள் சாட்டின் பின்னணி. உங்களுக்கு மட்டுமே தெரியும்',
   'wall.use': 'இந்த வால்பேப்பரை வையுங்கள்',
   'wall.inUse': 'பயன்பாட்டில்',
   'wall.remove': 'வால்பேப்பரை நீக்குங்கள்',
-  'sticker.count': '8 ஸ்டிக்கர்கள்',
-  'sticker.owned': 'உங்களுடையவை: எந்த சாட்டிலிருந்தும் அனுப்பலாம்',
-  'sticker.locked': 'இந்த ஸ்டிக்கர்களை அனுப்ப இந்த பேக்கைப் பெறுங்கள்',
-  'sticker.getPack': 'பேக்கைப் பெறுங்கள்',
   'vip.strangers': 'அறிமுகமில்லாதவர்கள் பார்ப்பது',
   'vip.friends': 'நண்பர்கள் பார்ப்பது',
   'vip.what': 'ரேண்டம் சாட், ரூம்கள், தேடலில் உங்கள் நண்பர்கள் அல்லாதவர்களுக்கு “VIP” மட்டுமே தெரியும்: புகைப்படம், ID, வயது, நாடு, பயோ எதுவும் இல்லை. நண்பர்களுக்கு எல்லாம் தெரியும், ஃப்ரெண்ட் ரிக்வெஸ்ட்களும் வழக்கம்போல் வேலை செய்யும்.',
@@ -126,6 +117,14 @@ const ta: LooksDict = {
   'item.effect_aurora': 'அரோரா',
   'item.effect_prism': 'ப்ரிஸம்',
   'effect.what': 'உங்கள் சுயவிவரப் படத்தின் மேல் ஒளி நகரும், அது எங்கு தெரிந்தாலும்',
+  'looks.tab.bubble': 'சாட் பபிள்',
+  'item.bubble_peach': 'பீச்',
+  'item.bubble_ocean': 'கடல்',
+  'item.bubble_mint': 'மின்ட்',
+  'item.bubble_galaxy': 'கேலக்ஸி',
+  'item.bubble_gold': 'தங்கம்',
+  'item.bubble_neon': 'நியான்',
+  'bubble.what': 'அனைவரும் உங்கள் செய்திகளை இந்த பபிளில் காண்பார்கள்',
 }
 
 export default ta

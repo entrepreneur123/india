@@ -85,9 +85,8 @@ const pl: LooksDict = {
   'blocks.unblock': 'Odblokuj',
   'blocks.done': 'Odblokowano: {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Tła',
-  'looks.tab.sticker': 'Naklejki',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Szafran',
   'item.wall_midnight': 'Północ',
@@ -95,19 +94,11 @@ const pl: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Gwiaździsta noc',
   'item.wall_waves': 'Fale',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Pora na chai',
-  'item.sticker_cricket': 'Krykiet',
-  'item.sticker_love': 'Miłość',
   'item.vip_anon': 'VIP incognito',
   'wall.onlyYou': 'Tło Twoich czatów. Widzisz je tylko Ty',
   'wall.use': 'Użyj tego tła',
   'wall.inUse': 'W użyciu',
   'wall.remove': 'Usuń tło',
-  'sticker.count': '8 naklejek',
-  'sticker.owned': 'Twoje: wysyłaj je z każdego czatu',
-  'sticker.locked': 'Zdobądź ten pakiet, aby wysyłać te naklejki',
-  'sticker.getPack': 'Zdobądź pakiet',
   'vip.strangers': 'Nieznajomi widzą',
   'vip.friends': 'Znajomi widzą',
   'vip.what': 'W losowych czatach, pokojach i wyszukiwaniu osoby spoza znajomych widzą tylko „VIP”: bez zdjęcia, ID, wieku, kraju i bio. Znajomi nadal widzą wszystko, a zaproszenia do znajomych działają jak dotąd.',
@@ -126,6 +117,14 @@ const pl: LooksDict = {
   'item.effect_aurora': 'Zorza',
   'item.effect_prism': 'Pryzmat',
   'effect.what': 'Światło przesuwa się po twoim zdjęciu profilowym, wszędzie gdzie się pojawia',
+  'looks.tab.bubble': 'Dymki czatu',
+  'item.bubble_peach': 'Brzoskwinia',
+  'item.bubble_ocean': 'Ocean',
+  'item.bubble_mint': 'Mięta',
+  'item.bubble_galaxy': 'Galaktyka',
+  'item.bubble_gold': 'Złoto',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Wszyscy widzą twoje wiadomości w tym dymku',
 }
 
 export default pl

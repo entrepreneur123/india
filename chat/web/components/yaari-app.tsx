@@ -3,7 +3,7 @@
 import { LazyMotion, MotionConfig } from 'motion/react'
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { BackendProvider, preloadBackend, useBackend } from '@/lib/backend-context'
-import type { Entitlements, Profile } from '@/lib/backend'
+import type { Profile } from '@/lib/backend'
 import { DEMO_MODE } from '@/lib/config'
 import { I18nProvider, useI18n } from '@/components/i18n'
 import { ToastProvider, useToast } from '@/components/ui/toast'
@@ -59,7 +59,7 @@ type Boot =
   | { stage: 'loading' }
   | { stage: 'auth'; step: 'phone' | 'profile' }
   | { stage: 'offline' }
-  | { stage: 'app'; me: Profile; entitlements: Entitlements }
+  | { stage: 'app'; me: Profile }
 
 export function YaariApp() {
   return (
@@ -100,12 +100,12 @@ function Root() {
   const enterApp = useCallback(
     async (known?: Profile | null) => {
       try {
-        const [me, entitlements] = await Promise.all([known ?? backend.myProfile(), backend.entitlements()])
+        const me = await (known ?? backend.myProfile())
         if (!me) {
           setBoot({ stage: 'auth', step: 'profile' })
           return
         }
-        setBoot({ stage: 'app', me, entitlements })
+        setBoot({ stage: 'app', me })
       } catch (err) {
         // Signed in but the server couldn't be reached: keep the session and offer a retry (no new SMS code).
         toast.error(err)
@@ -169,7 +169,6 @@ function Root() {
         <div key="app" className={fade}>
           <AppShell
             initialMe={boot.me}
-            entitlements={boot.entitlements}
             phone={phone}
             onSignedOut={() => {
               setPhone(null)

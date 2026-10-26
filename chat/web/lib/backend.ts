@@ -139,8 +139,8 @@ export interface MyTrust extends Trust {
 // ---- IDs and looks (040_handles_looks.sql; the catalogue and parsing in lib/looks.ts, the ID rules in lib/handle.ts) ----
 
 export type LookKind = 'badge' | 'color' | 'font' | 'frame'
-/** Everything the shop sells: the looks, and (046) chat walls, sticker packs and VIP incognito. */
-export type ItemKind = LookKind | 'wall' | 'sticker' | 'vip' | 'cycle' | 'effect'
+/** Everything the shop sells: the looks, and (046) chat walls and VIP incognito, (062) photo effects and bubbles. */
+export type ItemKind = LookKind | 'wall' | 'vip' | 'cycle' | 'effect' | 'bubble'
 
 /** Someone's ID and what they wear (null: none of that kind). Item ids are the catalogue's (lib/looks.ts). */
 export interface Look {
@@ -154,6 +154,8 @@ export interface Look {
   cycle?: string[]
   /** 062: light moving over the photo wherever it shows ('effect_aurora', 'effect_prism'), or none. */
   effect?: string | null
+  /** 062: the look of their chat bubbles ('bubble_…'), or none. */
+  bubble?: string | null
 }
 
 /** What I wear: one item of each kind at most. */
@@ -522,8 +524,17 @@ export interface VoiceAudioState {
   needsTap: boolean
 }
 
+/** A camera on in a voice room (24): shown by attaching it to a <video>; `mine` is drawn mirrored. */
+export interface VoiceVideo {
+  mine: boolean
+  attach(el: HTMLVideoElement): void
+  detach(el: HTMLVideoElement): void
+}
+
 export type VoiceEvent =
   | { type: 'room'; room: VoiceRoom }
+  /** The cameras on now, by user id (people on a seat only). */
+  | { type: 'videos'; videos: Record<string, VoiceVideo> }
   /** Null: no audio connection (nobody is on the stage, so the room is a chat room for now). */
   | { type: 'audio'; audio: VoiceAudioState | null }
   /** Audio level 0..1 per user id, several times a second (absent = silent). */
@@ -552,6 +563,8 @@ export type VoiceEvent =
 export type VoiceAction =
   | { type: 'hand'; up: boolean }
   | { type: 'mic'; on: boolean }
+  /** My camera, on a seat only (24). Throws 'camera_denied', 'camera_missing' or 'camera_busy'. */
+  | { type: 'camera'; on: boolean }
   /** Take this free seat (open rooms, host and co-hosts); in a hand-raise room it raises my hand. */
   | { type: 'seat'; seat: number }
   | { type: 'unseat' }
@@ -600,11 +613,6 @@ export type MatchEvent =
   /** The chat has ended (either side). 040: after that only friends write on (threads show the friends bar). */
   | { type: 'ended' }
 
-export interface Entitlements {
-  premium: boolean
-  genderPass: boolean
-}
-
 export interface NewProfile {
   name: string
   gender: Gender
@@ -636,6 +644,9 @@ export type BackendErrorCode =
   | 'room_size'
   | 'voice_removed'
   | 'mic_denied'
+  | 'camera_denied'
+  | 'camera_missing'
+  | 'camera_busy'
   | 'queue_full'
   /** A vote on a poll that has closed. */
   | 'poll_closed'
@@ -672,8 +683,6 @@ export type BackendErrorCode =
   | 'too_many_posts'
   /** 040: wearing a look I don't own (046: also a wall or incognito). */
   | 'not_owned'
-  /** 046: a sticker from a pack I don't own. */
-  | 'sticker_not_owned'
   /** 040: a new line in a random chat that ended, between two people who aren't friends. */
   | 'chat_closed'
   /** 044: a contact the server won't keep (the error's detail names the app); sharing with someone who isn't a friend. */
@@ -694,7 +703,6 @@ export interface Backend {
   isSignedIn(): Promise<boolean>
   myProfile(): Promise<Profile | null>
   createProfile(p: NewProfile): Promise<Profile>
-  entitlements(): Promise<Entitlements>
   signOut(): Promise<void>
   deleteAccount(): Promise<void>
   /** Phone number of the signed-in account, shown in Settings. */
@@ -756,8 +764,8 @@ export interface Backend {
   setDmEveryone(on: boolean): Promise<Profile>
   /** 062: the photos (file ids: photoPath or photos[].id) of my photo gradient, 2–4; null turns it off. */
   setCycle(paths: string[] | null): Promise<void>
-  /** 062: the photo effect I wear (an owned 'effect_…'), or none. */
-  setEffect(itemId: string | null): Promise<void>
+  /** 062: the photo effect or chat bubble I wear (an owned item of that kind), or none. */
+  setWorn(kind: 'effect' | 'bubble', itemId: string | null): Promise<void>
   /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
   blocks(): Promise<PersonRow[]>
   unblock(userId: string): Promise<void>

@@ -3,7 +3,6 @@
 import { BackendError, type Look, type LookWear, type Profile, type Shop, type ShopItem } from './backend'
 import { handleProblem, handleSpelling, type HandleCheck } from './handle'
 import { isItem, kindOf, NO_WEAR, wearOf, type ItemId } from './looks'
-import { stickerOf } from './stickers'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const COOLDOWN_MS = 30 * 24 * 3_600_000
@@ -16,12 +15,15 @@ const PRICES: [ItemId, number][] = [
   ['font_script', 69], ['font_retro', 69], ['font_bold', 69], ['font_pixel', 69], ['font_round', 69], ['font_future', 69],
   ['frame_frost', 199], ['frame_fire', 199], ['frame_jewel', 249], ['frame_sand', 199], ['frame_neon', 149], ['frame_sakura', 149],
   ['wall_saffron', 79], ['wall_midnight', 79], ['wall_paisley', 79], ['wall_mehndi', 79], ['wall_stars', 79], ['wall_waves', 79],
-  ['sticker_namaste', 49], ['sticker_chai', 49], ['sticker_cricket', 49], ['sticker_love', 49],
   ['vip_anon', 299],
   ['cycle_photos', 199],
   ['effect_aurora', 249],
   ['effect_prism', 249],
+  ['bubble_peach', 99], ['bubble_ocean', 99], ['bubble_mint', 99], ['bubble_galaxy', 149], ['bubble_gold', 149], ['bubble_neon', 149],
 ]
+
+/** The demo people's chat bubbles (062). */
+const BUBBLED: Record<string, ItemId> = { u_sofia: 'bubble_peach', u_arjun: 'bubble_neon', u_yuki: 'bubble_galaxy' }
 
 /** The demo people who wear something (everyone else shows a plain @ID). */
 const WORN: Record<string, Partial<LookWear>> = {
@@ -65,7 +67,7 @@ export class LookSim {
   private anon = false
   /** The photo gradient's photos (urls). */
   private cycle: string[] = []
-  private effect: ItemId | null = null
+  private worn: { effect: ItemId | null; bubble: ItemId | null } = { effect: null, bubble: null }
   /** When I last chose an ID myself (null: the free one the app gave). */
   private handleSetAt: number | null = null
 
@@ -87,7 +89,7 @@ export class LookSim {
 
   private myLook(): Look | null {
     const me = this.host.me()
-    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}), effect: this.effect } : null
+    return me?.handle ? { id: me.id, handle: me.handle, ...this.wear, ...(this.cycle.length >= 2 ? { cycle: this.cycle } : {}), ...this.worn } : null
   }
 
   async handleCheck(raw: string): Promise<HandleCheck> {
@@ -137,11 +139,11 @@ export class LookSim {
     this.anon = on
   }
 
-  /** Like set_effect: an owned photo effect, or none. */
-  async setEffect(id: string | null) {
+  /** Like set_worn: an owned photo effect or bubble, or none. */
+  async setWorn(kind: 'effect' | 'bubble', id: string | null) {
     await wait(250)
-    if (id !== null && (!isItem(id) || kindOf(id) !== 'effect' || !this.owned.has(id))) throw new BackendError('not_owned')
-    this.effect = id as ItemId | null
+    if (id !== null && (!isItem(id) || kindOf(id) !== kind || !this.owned.has(id))) throw new BackendError('not_owned')
+    this.worn = { ...this.worn, [kind]: id }
   }
 
   /** Like set_cycle: 2–4 of my photos (photoPath or a gallery photo's id), or none. */
@@ -155,12 +157,6 @@ export class LookSim {
     const urls = [...new Set(paths)].map(url)
     if (urls.length < 2 || urls.length > 4 || urls.some((u) => !u)) throw new BackendError('bad_request')
     this.cycle = urls as string[]
-  }
-
-  /** Like chat_body_check: a sticker needs its pack. */
-  checkBody(text: string | null) {
-    const st = stickerOf(text)
-    if (st && !this.owned.has(st.pack as ItemId)) throw new BackendError('sticker_not_owned')
   }
 
   async equipLook(next: LookWear): Promise<Look> {
@@ -185,7 +181,7 @@ export class LookSim {
     this.owned.add(id)
     const kind = kindOf(id)
     if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
-    if (kind === 'effect' && !this.effect) this.effect = id
+    if ((kind === 'effect' || kind === 'bubble') && !this.worn[kind]) this.worn = { ...this.worn, [kind]: id }
   }
 
   async looks(ids: string[]): Promise<Look[]> {
@@ -196,7 +192,8 @@ export class LookSim {
       const handle = this.handleOf(id)
       if (!handle) return []
       const wear = id.startsWith('v_') ? roomWear(id) : { ...NO_WEAR, ...WORN[id] }
-      return [{ id, handle, ...wear }]
+      const look: Look = { id, handle, ...wear, bubble: BUBBLED[id] ?? null }
+      return [look]
     })
   }
 }

@@ -85,9 +85,8 @@ const ur: LooksDict = {
   'blocks.unblock': 'ان بلاک کریں',
   'blocks.done': '{name} کو ان بلاک کر دیا گیا',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'وال پیپر',
-  'looks.tab.sticker': 'اسٹیکر',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'زعفرانی',
   'item.wall_midnight': 'آدھی رات',
@@ -95,19 +94,11 @@ const ur: LooksDict = {
   'item.wall_mehndi': 'مہندی',
   'item.wall_stars': 'تاروں بھری رات',
   'item.wall_waves': 'لہریں',
-  'item.sticker_namaste': 'نمستے',
-  'item.sticker_chai': 'چائے ٹائم',
-  'item.sticker_cricket': 'کرکٹ',
-  'item.sticker_love': 'پیار',
   'item.vip_anon': 'VIP اِنکوگنیٹو',
   'wall.onlyYou': 'آپ کی چیٹ کا بیک گراؤنڈ۔ یہ صرف آپ کو نظر آتا ہے',
   'wall.use': 'یہ وال پیپر لگائیں',
   'wall.inUse': 'لگا ہوا',
   'wall.remove': 'وال پیپر ہٹائیں',
-  'sticker.count': '8 اسٹیکر',
-  'sticker.owned': 'آپ کے ہیں: کسی بھی چیٹ سے بھیجیں',
-  'sticker.locked': 'یہ اسٹیکر بھیجنے کے لیے یہ پیک لیں',
-  'sticker.getPack': 'پیک لیں',
   'vip.strangers': 'اجنبی دیکھتے ہیں',
   'vip.friends': 'دوست دیکھتے ہیں',
   'vip.what': 'رینڈم چیٹ، رومز اور سرچ میں جو آپ کے دوست نہیں، انہیں صرف “VIP” نظر آتا ہے: نہ فوٹو، نہ ID، نہ عمر، نہ ملک، نہ بائیو۔ دوستوں کو سب کچھ نظر آتا ہے، اور فرینڈ ریکویسٹ بھی پہلے کی طرح چلتی ہیں۔',
@@ -126,6 +117,14 @@ const ur: LooksDict = {
   'item.effect_aurora': 'اورورا',
   'item.effect_prism': 'پرزم',
   'effect.what': 'آپ کی پروفائل تصویر پر روشنی چلتی ہے، جہاں بھی دکھے',
+  'looks.tab.bubble': 'چیٹ ببل',
+  'item.bubble_peach': 'پیچ',
+  'item.bubble_ocean': 'سمندر',
+  'item.bubble_mint': 'منٹ',
+  'item.bubble_galaxy': 'کہکشاں',
+  'item.bubble_gold': 'سنہرا',
+  'item.bubble_neon': 'نیون',
+  'bubble.what': 'سب آپ کے پیغامات اسی ببل میں دیکھیں گے',
 }
 
 export default ur

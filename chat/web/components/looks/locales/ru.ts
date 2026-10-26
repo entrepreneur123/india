@@ -85,9 +85,8 @@ const ru: LooksDict = {
   'blocks.unblock': 'Разблокировать',
   'blocks.done': '{name}: разблокирован(а)',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Фоны',
-  'looks.tab.sticker': 'Стикеры',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Шафран',
   'item.wall_midnight': 'Полночь',
@@ -95,19 +94,11 @@ const ru: LooksDict = {
   'item.wall_mehndi': 'Мехенди',
   'item.wall_stars': 'Звёздная ночь',
   'item.wall_waves': 'Волны',
-  'item.sticker_namaste': 'Намасте',
-  'item.sticker_chai': 'Время чая',
-  'item.sticker_cricket': 'Крикет',
-  'item.sticker_love': 'Любовь',
   'item.vip_anon': 'VIP-инкогнито',
   'wall.onlyYou': 'Фон ваших чатов. Его видите только вы',
   'wall.use': 'Поставить этот фон',
   'wall.inUse': 'Используется',
   'wall.remove': 'Убрать фон',
-  'sticker.count': '8 стикеров',
-  'sticker.owned': 'Ваши: отправляйте из любого чата',
-  'sticker.locked': 'Получите этот набор, чтобы отправлять эти стикеры',
-  'sticker.getPack': 'Получить набор',
   'vip.strangers': 'Незнакомцы видят',
   'vip.friends': 'Друзья видят',
   'vip.what': 'В случайных чатах, комнатах и поиске те, кто не у вас в друзьях, видят только «VIP»: без фото, ID, возраста, страны и описания. Друзья по-прежнему видят всё, а заявки в друзья работают как обычно.',
@@ -126,6 +117,14 @@ const ru: LooksDict = {
   'item.effect_aurora': 'Сияние',
   'item.effect_prism': 'Призма',
   'effect.what': 'По фото профиля скользит свет — везде, где оно показывается',
+  'looks.tab.bubble': 'Облачка чата',
+  'item.bubble_peach': 'Персик',
+  'item.bubble_ocean': 'Океан',
+  'item.bubble_mint': 'Мята',
+  'item.bubble_galaxy': 'Галактика',
+  'item.bubble_gold': 'Золото',
+  'item.bubble_neon': 'Неон',
+  'bubble.what': 'Все видят ваши сообщения в этом облачке',
 }
 
 export default ru

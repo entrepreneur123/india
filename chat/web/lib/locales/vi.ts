@@ -17,7 +17,6 @@ const vi: Dict = {
   'net.offline': 'Không có mạng. Đang kết nối lại…',
   'error.screenTitle': 'Không tải được màn hình này',
   'common.loading': 'Đang mở yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Chưa kết nối được với yaari',
   'boot.offlineBody': 'Kiểm tra kết nối Internet rồi thử lại.',
@@ -29,7 +28,6 @@ const vi: Dict = {
   'nav.me': 'Tôi',
   'nav.settings': 'Cài đặt',
   'nav.home': 'Trang chủ',
-  'nav.freePlan': 'Gói miễn phí',
   'panel.activity': 'Hoạt động',
   'panel.friends': 'Bạn bè của bạn',
   'panel.rooms': 'Phòng đang hoạt động',
@@ -37,9 +35,6 @@ const vi: Dict = {
   'panel.friendCount.other': '{n} người bạn',
   'panel.noFriends': 'Bạn bè bạn thêm từ các cuộc trò chuyện sẽ hiện ở đây.',
   'panel.message': 'Nhắn tin cho {name}',
-  'panel.plusTitle': 'Chọn người bạn muốn gặp',
-  'panel.plusBody': 'Lọc theo giới tính và thoát ngay với Yaari Plus.',
-  'panel.plusCta': 'Xem Yaari Plus',
 
   'auth.badge': '18+ · đã xác minh số điện thoại',
   'auth.verifiedBadge': 'Nhận huy hiệu đã xác minh: giấy tờ + ảnh selfie',
@@ -75,10 +70,6 @@ const vi: Dict = {
   'country.none': 'Không tìm thấy quốc gia',
   'countries.label': 'Quốc gia',
   'countries.anywhere': 'Bất kỳ đâu',
-  'countries.title': 'Chọn quốc gia',
-  'countries.hint': 'Miễn phí · tối đa {n} quốc gia',
-  'countries.done': 'Xong',
-  'countries.only': 'Chỉ người từ các quốc gia này',
 
   'otp.change': 'Đổi số',
   'otp.title': 'Nhập mã',
@@ -520,7 +511,6 @@ const vi: Dict = {
 
   'me.edit': 'Sửa hồ sơ',
   'me.newPost': 'Bài đăng mới',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Chia sẻ bài đăng đầu tiên',
   'me.editDesc': 'Không thể đổi giới tính và ngày sinh.',
   'me.updated': 'Đã cập nhật hồ sơ',
@@ -551,9 +541,6 @@ const vi: Dict = {
   'settings.account': 'Tài khoản',
   'settings.phone': 'Số điện thoại',
   'settings.verified': 'Đã xác minh',
-  'settings.plan': 'Gói',
-  'settings.planPass': 'Vé lọc giới tính 24 giờ',
-  'settings.planFree': 'Miễn phí',
   'settings.language': 'Ngôn ngữ',
   'settings.roomSounds': 'Âm thanh phòng thoại',
   'settings.roomSoundsBody': 'Một tiếng chuông ngắn khi có người vào hoặc rời phòng thoại.',
@@ -604,20 +591,6 @@ const vi: Dict = {
   'tr.tooLong': 'Tin nhắn quá dài để dịch',
   'tr.same': 'Tin nhắn này đã ở ngôn ngữ của bạn',
 
-  'plus.tagline': 'Chủ động hơn trong mọi cuộc trò chuyện.',
-  'plus.b1Title': 'Chọn người bạn muốn gặp',
-  'plus.b1Body': 'Lọc ghép đôi ngẫu nhiên theo nữ hoặc nam.',
-  'plus.b3Title': 'Thoát trong 0,2 giây',
-  'plus.b3Body': 'Rời cuộc trò chuyện ngay, không phải chờ 5 giây.',
-  'plus.plans': 'Các gói',
-  'plus.monthly': 'Hằng tháng',
-  'plus.monthlyNote': 'Mọi tính năng Plus · gia hạn hằng tháng, hủy bất cứ lúc nào trên Google Play',
-  'plus.pass': 'Vé lọc giới tính 24 giờ',
-  'plus.passNote': 'Lọc giới tính trong một ngày · mua một lần',
-  'plus.getApp': 'Mua trong ứng dụng Android.',
-  'plus.getAppBody': 'Việc mua được thực hiện trong ứng dụng. Sau đó Plus cũng dùng được ở đây, trên cùng tài khoản.',
-  'plus.getItOn': 'Tải trên',
-  'plus.soon': 'Ứng dụng Android sắp có trên Google Play.',
 
   'time.now': 'vừa xong',
   'error.exit_locked': 'Chờ một chút rồi hãy rời đi',
@@ -656,8 +629,6 @@ const vi: Dict = {
   'error.not_owned': 'Bạn chưa có phong cách này',
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',
-  'chat.sticker': 'Nhãn dán',
-  'error.sticker_not_owned': 'Mua gói nhãn dán này để gửi',
   'nav.explore': 'Khám phá',
   'explore.search': 'Tìm theo ID hoặc tên',
   'explore.feed': 'Bảng tin',
@@ -681,6 +652,8 @@ const vi: Dict = {
   'explore.country': 'Quốc gia',
   'pf.photoRequired': 'Hãy thêm ảnh đại diện để bắt đầu',
   'video.flip': 'Đổi camera',
+  'chat.seeAll': 'Xem tất cả',
+  'voice.cameraNude': 'Camera của bạn đã bị tắt vì hình ảnh trông như khỏa thân',
 }
 
 export default vi

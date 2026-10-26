@@ -85,9 +85,8 @@ const de: LooksDict = {
   'blocks.unblock': 'Blockierung aufheben',
   'blocks.done': '{name} ist nicht mehr blockiert',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Hintergründe',
-  'looks.tab.sticker': 'Sticker',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Safran',
   'item.wall_midnight': 'Mitternacht',
@@ -95,19 +94,11 @@ const de: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Sternennacht',
   'item.wall_waves': 'Wellen',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Chai-Zeit',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Liebe',
   'item.vip_anon': 'VIP-Inkognito',
   'wall.onlyYou': 'Dein Chat-Hintergrund. Nur du siehst ihn',
   'wall.use': 'Diesen Hintergrund nutzen',
   'wall.inUse': 'Aktiv',
   'wall.remove': 'Hintergrund entfernen',
-  'sticker.count': '8 Sticker',
-  'sticker.owned': 'Gehört dir: in jedem Chat verschickbar',
-  'sticker.locked': 'Hol dir dieses Paket, um diese Sticker zu senden',
-  'sticker.getPack': 'Paket holen',
   'vip.strangers': 'Fremde sehen',
   'vip.friends': 'Freunde sehen',
   'vip.what': 'In Zufallschats, Räumen und der Suche sehen alle, die nicht mit dir befreundet sind, nur „VIP“: kein Foto, keine ID, kein Alter, kein Land, keine Bio. Deine Freunde sehen weiterhin alles, und Freundschaftsanfragen funktionieren wie gewohnt.',
@@ -126,6 +117,14 @@ const de: LooksDict = {
   'item.effect_aurora': 'Polarlicht',
   'item.effect_prism': 'Prisma',
   'effect.what': 'Licht wandert über dein Profilbild, überall wo es erscheint',
+  'looks.tab.bubble': 'Chatblasen',
+  'item.bubble_peach': 'Pfirsich',
+  'item.bubble_ocean': 'Ozean',
+  'item.bubble_mint': 'Minze',
+  'item.bubble_galaxy': 'Galaxie',
+  'item.bubble_gold': 'Gold',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Alle sehen deine Nachrichten in dieser Blase',
 }
 
 export default de

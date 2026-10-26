@@ -85,9 +85,8 @@ const nl: LooksDict = {
   'blocks.unblock': 'Deblokkeren',
   'blocks.done': '{name} is gedeblokkeerd',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Achtergronden',
-  'looks.tab.sticker': 'Stickers',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Saffraan',
   'item.wall_midnight': 'Middernacht',
@@ -95,19 +94,11 @@ const nl: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Sterrennacht',
   'item.wall_waves': 'Golven',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Chai-tijd',
-  'item.sticker_cricket': 'Cricket',
-  'item.sticker_love': 'Liefde',
   'item.vip_anon': 'VIP-incognito',
   'wall.onlyYou': 'De achtergrond van je chats. Alleen jij ziet hem',
   'wall.use': 'Deze achtergrond gebruiken',
   'wall.inUse': 'In gebruik',
   'wall.remove': 'Achtergrond weghalen',
-  'sticker.count': '8 stickers',
-  'sticker.owned': 'Van jou: stuur ze vanuit elke chat',
-  'sticker.locked': 'Haal dit pakket om deze stickers te sturen',
-  'sticker.getPack': 'Pakket halen',
   'vip.strangers': 'Onbekenden zien',
   'vip.friends': 'Vrienden zien',
   'vip.what': 'In willekeurige chats, rooms en zoeken zien mensen die niet je vriend zijn alleen ‘VIP’: geen foto, ID, leeftijd, land of bio. Je vrienden zien nog steeds alles en vriendschapsverzoeken werken gewoon.',
@@ -126,6 +117,14 @@ const nl: LooksDict = {
   'item.effect_aurora': 'Noorderlicht',
   'item.effect_prism': 'Prisma',
   'effect.what': 'Licht beweegt over je profielfoto, overal waar hij te zien is',
+  'looks.tab.bubble': 'Chatballonnen',
+  'item.bubble_peach': 'Perzik',
+  'item.bubble_ocean': 'Oceaan',
+  'item.bubble_mint': 'Munt',
+  'item.bubble_galaxy': 'Melkweg',
+  'item.bubble_gold': 'Goud',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Iedereen ziet je berichten in deze ballon',
 }
 
 export default nl

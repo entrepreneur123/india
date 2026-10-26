@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { ImagePlus, SendHorizontal, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
@@ -15,7 +15,6 @@ export function Composer({
   placeholder,
   maxLength = 1000,
   disabledPlaceholder,
-  extra,
   className,
 }: {
   onSend: (text: string | null, media: File | null) => Promise<boolean>
@@ -25,8 +24,6 @@ export function Composer({
   placeholder?: string
   maxLength?: number
   disabledPlaceholder?: string
-  /** A button before the text box (the stickers, 046). */
-  extra?: ReactNode
   className?: string
 }) {
   const { t } = useI18n()
@@ -128,7 +125,6 @@ export function Composer({
             />
           </label>
         ) : null}
-        {extra}
         <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-bubble-in px-4 text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)] ring-1 ring-transparent transition-shadow duration-150 focus-within:ring-primary">
           <label htmlFor={`${fileId}-text`} className="sr-only">
             {t('composer.message')}

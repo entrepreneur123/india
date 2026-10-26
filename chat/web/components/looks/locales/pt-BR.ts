@@ -85,9 +85,8 @@ const ptBR: LooksDict = {
   'blocks.unblock': 'Desbloquear',
   'blocks.done': 'Você desbloqueou {name}',
 
-  // chat walls, sticker packs and VIP incognito (046)
+  // chat walls and VIP incognito (046)
   'looks.tab.wall': 'Fundos',
-  'looks.tab.sticker': 'Figurinhas',
   'looks.tab.vip': 'VIP',
   'item.wall_saffron': 'Açafrão',
   'item.wall_midnight': 'Meia-noite',
@@ -95,19 +94,11 @@ const ptBR: LooksDict = {
   'item.wall_mehndi': 'Mehndi',
   'item.wall_stars': 'Noite estrelada',
   'item.wall_waves': 'Ondas',
-  'item.sticker_namaste': 'Namaste',
-  'item.sticker_chai': 'Hora do chai',
-  'item.sticker_cricket': 'Críquete',
-  'item.sticker_love': 'Amor',
   'item.vip_anon': 'VIP anônimo',
   'wall.onlyYou': 'O fundo das suas conversas. Só você vê',
   'wall.use': 'Usar este fundo',
   'wall.inUse': 'Em uso',
   'wall.remove': 'Remover fundo',
-  'sticker.count': '8 figurinhas',
-  'sticker.owned': 'Suas: envie de qualquer conversa',
-  'sticker.locked': 'Pegue este pacote para enviar estas figurinhas',
-  'sticker.getPack': 'Pegar pacote',
   'vip.strangers': 'Desconhecidos veem',
   'vip.friends': 'Amigos veem',
   'vip.what': 'Em chats aleatórios, salas e na busca, quem não é seu amigo vê só “VIP”: sem foto, ID, idade, país ou bio. Seus amigos continuam vendo tudo, e os pedidos de amizade funcionam normalmente.',
@@ -126,6 +117,14 @@ const ptBR: LooksDict = {
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',
   'effect.what': 'A luz se move sobre sua foto de perfil, onde quer que apareça',
+  'looks.tab.bubble': 'Balões de chat',
+  'item.bubble_peach': 'Pêssego',
+  'item.bubble_ocean': 'Oceano',
+  'item.bubble_mint': 'Menta',
+  'item.bubble_galaxy': 'Galáxia',
+  'item.bubble_gold': 'Ouro',
+  'item.bubble_neon': 'Neon',
+  'bubble.what': 'Todos veem suas mensagens neste balão',
 }
 
 export default ptBR

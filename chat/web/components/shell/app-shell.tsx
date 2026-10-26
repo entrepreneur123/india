@@ -5,7 +5,7 @@ import * as m from 'motion/react-m'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import type { Badges, Entitlements, ItemKind, Profile } from '@/lib/backend'
+import type { Badges, ItemKind, Profile } from '@/lib/backend'
 import { planLive } from '@/lib/live-session'
 import { AppContext, type AppState, type ChatBar, type KycInfo, type RandomControl, type Tab, type Thread, type VerifyWhy } from '@/components/app-state'
 import { onGate } from '@/lib/gate'
@@ -25,7 +25,6 @@ import type { PostTarget } from '@/components/social/posts/post-sheet'
 import {
   PostSheet,
   MeScreen,
-  Paywall,
   prefetchScreens,
   ProfileSheet,
   RecentScreen,
@@ -65,7 +64,6 @@ function useMediaQuery(query: string) {
 
 interface Props {
   initialMe: Profile
-  entitlements: Entitlements
   phone: string | null
   onSignedOut: () => void
 }
@@ -80,7 +78,7 @@ export function AppShell(props: Props) {
   )
 }
 
-function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOut }: Props) {
+function Shell({ initialMe, phone, onSignedOut }: Props) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang, setLang, rtl } = useI18n()
@@ -88,9 +86,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [tab, setTabState] = useState<Tab>('random')
   const [thread, setThread] = useState<Thread | null>(null)
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
-  const [paywallOpen, setPaywallOpen] = useState(false)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
-  const [paywallUsed, setPaywallUsed] = useState(false)
   const [shop, setShop] = useState<{ open: boolean; tab: ItemKind } | null>(null)
   const [profileUsed, setProfileUsed] = useState(false)
   const [postTarget, setPostTarget] = useState<PostTarget | null>(null)
@@ -98,7 +94,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
   const [immersive, setImmersive] = useState(false)
   // The voice room I'm in: full screen, or minimised to a pill while I use the rest of the app.
   const [voice, setVoice] = useState<{ id: string; expanded: boolean } | null>(null)
-  const [entitlements, setEntitlements] = useState(initialEntitlements)
   const [reportListeners] = useState(() => new Set<(id: string) => void>())
   // The friends/rooms panel exists only on wide screens; phones never load its data.
   const wide = useMediaQuery('(min-width: 1280px)')
@@ -229,19 +224,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
     openVerify('signup')
   }, [onboarding, trust, kyc, openVerify])
 
-  // Plus is bought in the Android app and can expire: re-read it when the tab comes back and every few minutes
-  // (only while the tab is visible).
-  useEffect(() => {
-    const refresh = () => backend.entitlements().then(setEntitlements, () => undefined)
-    const onVisible = () => document.visibilityState === 'visible' && void refresh()
-    document.addEventListener('visibilitychange', onVisible)
-    const timer = setInterval(() => document.visibilityState === 'visible' && void refresh(), 5 * 60_000)
-    return () => {
-      document.removeEventListener('visibilitychange', onVisible)
-      clearInterval(timer)
-    }
-  }, [backend])
-
   // A shared room link opens that room: /r/<id> for a public room, /r/<code> for a private one (the code lets the
   // person in; yaari-app.tsx keeps it in sessionStorage, also through sign-up), and the older /?voice=<id>.
   useEffect(() => {
@@ -302,8 +284,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       me,
       setMe,
       phone,
-      entitlements,
-      canChooseGender: entitlements.premium || entitlements.genderPass,
       tab,
       setTab,
       lang,
@@ -316,10 +296,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       openPost: (postId, opts) => {
         setPostUsed(true)
         setPostTarget({ postId, initial: opts?.initial ?? null, focus: opts?.focus })
-      },
-      openPaywall: () => {
-        setPaywallUsed(true)
-        setPaywallOpen(true)
       },
       openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
@@ -356,7 +332,7 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
       setKyc,
       openVerify,
     }),
-    [me, phone, entitlements, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
+    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, reportListeners, voice?.id, badges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
   const randomVisible = tab === 'random' && !thread
@@ -495,13 +471,6 @@ function Shell({ initialMe, entitlements: initialEntitlements, phone, onSignedOu
           <ScreenBoundary>
             <Suspense fallback={null}>
               <MannerLowSheet open={mannerLow} onClose={() => setMannerLow(false)} />
-            </Suspense>
-          </ScreenBoundary>
-        ) : null}
-        {paywallUsed ? (
-          <ScreenBoundary>
-            <Suspense fallback={null}>
-              <Paywall open={paywallOpen} onClose={() => setPaywallOpen(false)} />
             </Suspense>
           </ScreenBoundary>
         ) : null}

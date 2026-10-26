@@ -18,7 +18,6 @@ const ru: Dict = {
   'net.offline': 'Нет интернета. Переподключаемся…',
   'error.screenTitle': 'Не удалось загрузить экран',
   'common.loading': 'Загрузка yaari',
-  'common.plus': 'Yaari Plus',
 
   'boot.offlineTitle': 'Сейчас не удаётся подключиться к yaari',
   'boot.offlineBody': 'Проверьте подключение к интернету и попробуйте снова.',
@@ -31,7 +30,6 @@ const ru: Dict = {
   'nav.me': 'Я',
   'nav.settings': 'Настройки',
   'nav.home': 'Главная',
-  'nav.freePlan': 'Бесплатный тариф',
   'panel.activity': 'Активность',
   'panel.friends': 'Ваши друзья',
   'panel.rooms': 'Комнаты в эфире',
@@ -41,9 +39,6 @@ const ru: Dict = {
   'panel.friendCount.other': '{n} друга',
   'panel.noFriends': 'Здесь появятся друзья, которых вы добавите из чатов.',
   'panel.message': 'Написать: {name}',
-  'panel.plusTitle': 'Выбирайте, с кем знакомиться',
-  'panel.plusBody': 'Фильтр по полу и мгновенный пропуск с Yaari Plus.',
-  'panel.plusCta': 'Узнать о Yaari Plus',
 
   // sign-up
   'auth.badge': '18+ · телефон подтверждён',
@@ -80,10 +75,6 @@ const ru: Dict = {
   'country.none': 'Страны не найдены',
   'countries.label': 'Страны',
   'countries.anywhere': 'Где угодно',
-  'countries.title': 'Выберите страны',
-  'countries.hint': 'Бесплатно · до {n} стран',
-  'countries.done': 'Готово',
-  'countries.only': 'Только люди из этих стран',
 
   'otp.change': 'Изменить номер',
   'otp.title': 'Введите код',
@@ -533,7 +524,6 @@ const ru: Dict = {
   // me & profiles
   'me.edit': 'Редактировать профиль',
   'me.newPost': 'Новый пост',
-  'me.plusBadge': 'Plus',
   'me.firstPost': 'Опубликуйте первый пост',
   'me.editDesc': 'Пол и дату рождения изменить нельзя.',
   'me.updated': 'Профиль обновлён',
@@ -567,9 +557,6 @@ const ru: Dict = {
   'settings.account': 'Аккаунт',
   'settings.phone': 'Номер телефона',
   'settings.verified': 'Подтверждён',
-  'settings.plan': 'Тариф',
-  'settings.planPass': 'Пропуск по полу на 24 часа',
-  'settings.planFree': 'Бесплатный',
   'settings.language': 'Язык',
   'settings.roomSounds': 'Звуки голосовой комнаты',
   'settings.roomSoundsBody': 'Короткий звук, когда кто-то входит в голосовую комнату или выходит из неё.',
@@ -623,20 +610,6 @@ const ru: Dict = {
   'tr.same': 'Это сообщение уже на вашем языке',
 
   // Yaari Plus
-  'plus.tagline': 'Больше контроля в каждом разговоре.',
-  'plus.b1Title': 'Выбирайте, с кем знакомиться',
-  'plus.b1Body': 'Фильтруйте случайных собеседников: женщины или мужчины.',
-  'plus.b3Title': 'Пропуск за 0,2 с',
-  'plus.b3Body': 'Выходите из чата сразу, без ожидания 5 с.',
-  'plus.plans': 'Тарифы',
-  'plus.monthly': 'На месяц',
-  'plus.monthlyNote': 'Все функции Plus · продлевается каждый месяц, отменить можно в любой момент в Google Play',
-  'plus.pass': 'Пропуск по полу на 24 часа',
-  'plus.passNote': 'Фильтр по полу на один день · разовая покупка',
-  'plus.getApp': 'Оформите в приложении для Android.',
-  'plus.getAppBody': 'Покупки делаются в приложении. Потом Plus работает и здесь, в том же аккаунте.',
-  'plus.getItOn': 'Доступно в',
-  'plus.soon': 'Приложение для Android скоро появится в Google Play.',
 
   // time & errors
   'time.now': 'только что',
@@ -676,8 +649,6 @@ const ru: Dict = {
   'error.not_owned': 'У вас ещё нет этого образа',
   'error.chat_closed': 'Этот чат завершён. Добавьте собеседника в друзья, чтобы продолжить общение',
   'error.generic': 'Что-то пошло не так. Попробуйте снова',
-  'chat.sticker': 'Стикер',
-  'error.sticker_not_owned': 'Получите этот набор стикеров, чтобы отправить его',
   'nav.explore': 'Обзор',
   'explore.search': 'Поиск по ID или имени',
   'explore.feed': 'Лента',
@@ -701,6 +672,8 @@ const ru: Dict = {
   'explore.country': 'Страна',
   'pf.photoRequired': 'Добавьте фото профиля, чтобы начать',
   'video.flip': 'Сменить камеру',
+  'chat.seeAll': 'Показать полностью',
+  'voice.cameraNude': 'Ваша камера выключена: изображение похоже на обнажённое тело',
 }
 
 export default ru
