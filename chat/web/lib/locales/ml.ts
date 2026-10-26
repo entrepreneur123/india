@@ -680,6 +680,9 @@ const ml: Dict = {
   'photo.zoomOut': "ചെറുതാക്കുക",
   'photo.count': "{n} / {total}",
   'photo.next': "അടുത്തത്",
+  'voice.soundOn': "റൂമിന്റെ ശബ്ദം ഓണാക്കുക",
+  'voice.soundOff': "റൂമിന്റെ ശബ്ദം ഓഫാക്കുക",
+  'voice.soundIsOff': "ശബ്ദം ഓഫ്",
 }
 
 export default ml

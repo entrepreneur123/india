@@ -658,6 +658,9 @@ const mr: Dict = {
   'photo.zoomOut': "झूम आउट",
   'photo.count': "{n} / {total}",
   'photo.next': "पुढे",
+  'voice.soundOn': "रूमचा आवाज सुरू करा",
+  'voice.soundOff': "रूमचा आवाज बंद करा",
+  'voice.soundIsOff': "आवाज बंद",
 }
 
 export default mr

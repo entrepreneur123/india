@@ -86,6 +86,9 @@ export interface VoiceSession {
   icebreaker: () => void
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
+  /** 46: whether I hear the room (off when I come in; on when I take a seat). */
+  sound: boolean
+  setSound: (on: boolean) => void
   /** The polls of the poll lines on screen, by poll id (absent: still being read). */
   polls: PollMap
   createPoll: (question: string, options: string[]) => Promise<boolean>
@@ -436,9 +439,22 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   )
 
   const startAudio = useCallback(() => void backend.voiceStartAudio(roomId).catch(() => undefined), [backend, roomId])
+  const [sound, setSoundState] = useState(false)
+  const setSound = useCallback(
+    (on: boolean) => {
+      setSoundState(on)
+      void backend.voiceSound(roomId, on).catch(() => undefined)
+    },
+    [backend, roomId],
+  )
+  // On a seat I need to hear the people I talk with.
+  const seated = me?.seat != null
+  useEffect(() => {
+    if (seated) setSound(true)
+  }, [seated, setSound])
 
-  // Browsers keep audio off until the page is touched: any tap anywhere turns it on.
-  const needsTap = !!audio?.needsTap
+  // Browsers keep audio off until the page is touched: any tap anywhere turns it on (once I want to hear the room).
+  const needsTap = !!audio?.needsTap && sound
   useEffect(() => {
     if (!needsTap) return
     document.addEventListener('pointerdown', startAudio, { once: true })
@@ -472,7 +488,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [myVideo, backend, roomId, toast, t])
 
   return {
-    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio,
+    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio, sound, setSound,
     polls, createPoll, votePoll, closePoll, typing, notifyTyping,
   }
 }

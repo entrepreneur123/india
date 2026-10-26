@@ -684,6 +684,9 @@ const pl: Dict = {
   'photo.zoomOut': "Pomniejsz",
   'photo.count': "{n} / {total}",
   'photo.next': "Dalej",
+  'voice.soundOn': "Włącz dźwięk pokoju",
+  'voice.soundOff': "Wyłącz dźwięk pokoju",
+  'voice.soundIsOff': "Dźwięk wył.",
 }
 
 export default pl

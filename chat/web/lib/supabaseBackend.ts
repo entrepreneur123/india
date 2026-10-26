@@ -204,6 +204,8 @@ type VoiceLive = {
   mic: (on: boolean) => Promise<void>
   camera: (on: boolean) => Promise<void>
   startAudio: () => Promise<void>
+  /** 46: the room's voices on or off for me. */
+  sound: (on: boolean) => Promise<void>
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
   /** Tells the room I'm writing (public vtyping-<room> channel). */
   typing: (name: string) => void
@@ -1369,6 +1371,10 @@ export class SupabaseBackend implements Backend {
     await this.voice.get(roomId)?.startAudio()
   }
 
+  async voiceSound(roomId: string, on: boolean) {
+    await this.voice.get(roomId)?.sound(on)
+  }
+
   async voiceAction(roomId: string, a: VoiceAction) {
     const room = { p_room: roomId }
     const live = this.voice.get(roomId)
@@ -1675,6 +1681,8 @@ export class SupabaseBackend implements Backend {
     let audio: VoiceAudio | null = null
     let audioCtl: AbortController | null = null
     let audioState: VoiceAudioState = { status: 'connecting', needsTap: false }
+    // 46: the room's voices start silent for me; kept across a reconnect.
+    let sound = false
     let audioTries = 0
     let audioRetry: ReturnType<typeof setTimeout> | undefined
     const setAudio = (patch: Partial<VoiceAudioState>) => {
@@ -1713,7 +1721,7 @@ export class SupabaseBackend implements Backend {
             if (removed) void fetchState() // removed or ended: the state says which
             retryAudio()
           },
-        }, ctl.signal)
+        }, ctl.signal, sound)
         if (ctl.signal.aborted) return void a.disconnect()
         audio = a
         audioTries = 0
@@ -1889,6 +1897,15 @@ export class SupabaseBackend implements Backend {
       startAudio: async () => {
         await audio?.startAudio()
         setAudio({ needsTap: false })
+      },
+      sound: async (on) => {
+        sound = on
+        audio?.setSound(on)
+        // Turning it on is a tap: the moment the browser allows the room's audio to play.
+        if (on) {
+          await audio?.startAudio()
+          setAudio({ needsTap: false })
+        }
       },
       joined: async (state, sent) => {
         joined = true

@@ -680,6 +680,9 @@ const te: Dict = {
   'photo.zoomOut': "జూమ్ అవుట్",
   'photo.count': "{n} / {total}",
   'photo.next': "తదుపరి",
+  'voice.soundOn': "రూమ్ సౌండ్ ఆన్ చేయండి",
+  'voice.soundOff': "రూమ్ సౌండ్ ఆఫ్ చేయండి",
+  'voice.soundIsOff': "సౌండ్ ఆఫ్",
 }
 
 export default te

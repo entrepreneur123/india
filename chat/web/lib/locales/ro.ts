@@ -682,6 +682,9 @@ const ro: Dict = {
   'photo.zoomOut': "Micșorează",
   'photo.count': "{n} / {total}",
   'photo.next': "Următoarea",
+  'voice.soundOn': "Pornește sunetul camerei",
+  'voice.soundOff': "Oprește sunetul camerei",
+  'voice.soundIsOff': "Sunet oprit",
 }
 
 export default ro

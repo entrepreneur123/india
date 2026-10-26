@@ -693,6 +693,9 @@ const sw: Dict = {
   'photo.zoomOut': "Punguza",
   'photo.count': "{n} / {total}",
   'photo.next': "Inayofuata",
+  'voice.soundOn': "Washa sauti ya chumba",
+  'voice.soundOff': "Zima sauti ya chumba",
+  'voice.soundIsOff': "Sauti imezimwa",
 }
 
 export default sw

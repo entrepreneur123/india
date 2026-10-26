@@ -45,12 +45,14 @@ export interface VoiceAudio {
   /** Throws a DeviceProblem ('denied', 'missing', 'busy', 'other') or 'not_allowed' (not on a seat). */
   setCamera(on: boolean): Promise<void>
   startAudio(): Promise<void>
+  /** 46: the room's voices on or off for me (they still arrive; only my speakers are silent). */
+  setSound(on: boolean): void
   disconnect(): Promise<void>
 }
 
 const LEVEL_MS = 100
 
-export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioEvents, signal: AbortSignal): Promise<VoiceAudio> {
+export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioEvents, signal: AbortSignal, sound: boolean): Promise<VoiceAudio> {
   if (signal.aborted) throw new DOMException('left', 'AbortError')
   const room = new Room({
     // Video only: each tile gets the layer its size needs, and nobody encodes a layer nobody watches.
@@ -76,6 +78,10 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   const box = document.createElement('div')
   box.hidden = true
   document.body.appendChild(box)
+  const play = (el: HTMLMediaElement) => {
+    el.muted = !sound
+    box.appendChild(el)
+  }
   const meters = new Map<string, { identity: string; volume: () => number; cleanup: () => Promise<void> }>()
   // The cameras on now: everyone's unmuted camera track (mine mirrored, like a mirror).
   const emitVideos = () => {
@@ -126,7 +132,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       if (track.kind === Track.Kind.Video) return emitVideos()
       // Once per track: a second <audio> for the same voice (the catch-up below can see it too) doubles it.
       if (track.kind !== Track.Kind.Audio || track.attachedElements.length) return
-      box.appendChild(track.attach())
+      play(track.attach())
       meter(pub.trackSid, p.identity, track as RemoteAudioTrack)
     })
     .on(RoomEvent.TrackUnsubscribed, (track: RemoteTrack, pub) => {
@@ -193,7 +199,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   room.remoteParticipants.forEach((p) =>
     p.audioTrackPublications.forEach((pub) => {
       if (!pub.track || pub.track.attachedElements.length) return
-      box.appendChild(pub.track.attach())
+      play(pub.track.attach())
       meter(pub.trackSid, p.identity, pub.track as RemoteAudioTrack)
     }),
   )
@@ -229,6 +235,10 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       } finally {
         emitVideos()
       }
+    },
+    setSound: (on) => {
+      sound = on
+      box.querySelectorAll('audio').forEach((el) => (el.muted = !on))
     },
     startAudio: () => room.startAudio(),
     disconnect: async () => {

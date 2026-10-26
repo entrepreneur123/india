@@ -680,6 +680,9 @@ const nl: Dict = {
   'photo.zoomOut': "Uitzoomen",
   'photo.count': "{n} / {total}",
   'photo.next': "Volgende",
+  'voice.soundOn': "Geluid van de ruimte aanzetten",
+  'voice.soundOff': "Geluid van de ruimte uitzetten",
+  'voice.soundIsOff': "Geluid uit",
 }
 
 export default nl

@@ -679,6 +679,9 @@ const ptBR: Dict = {
   'photo.zoomOut': "Reduzir",
   'photo.count': "{n} / {total}",
   'photo.next': "Próxima",
+  'voice.soundOn': "Ativar o som da sala",
+  'voice.soundOff': "Desativar o som da sala",
+  'voice.soundIsOff': "Som desligado",
 }
 
 export default ptBR

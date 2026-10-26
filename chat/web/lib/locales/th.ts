@@ -693,6 +693,9 @@ const th: Dict = {
   'photo.zoomOut': "ซูมออก",
   'photo.count': "{n} / {total}",
   'photo.next': "ถัดไป",
+  'voice.soundOn': "เปิดเสียงห้อง",
+  'voice.soundOff': "ปิดเสียงห้อง",
+  'voice.soundIsOff': "ปิดเสียงอยู่",
 }
 
 export default th

@@ -1260,6 +1260,8 @@ export class MockBackend implements Backend {
   /** The demo has no real audio, so nothing is ever blocked. */
   async voiceStartAudio(_roomId: string) {}
 
+  async voiceSound(_roomId: string, _on: boolean) {}
+
   // ---- identity and manners (simulated in their own chunk, lib/mockTrust.ts) ----
 
   private trustSim() {

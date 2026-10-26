@@ -682,6 +682,9 @@ const fr: Dict = {
   'photo.zoomOut': "Zoom arrière",
   'photo.count': "{n} / {total}",
   'photo.next': "Suivant",
+  'voice.soundOn': "Activer le son du salon",
+  'voice.soundOff': "Couper le son du salon",
+  'voice.soundIsOff': "Son coupé",
 }
 
 export default fr

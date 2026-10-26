@@ -680,6 +680,9 @@ const ne: Dict = {
   'photo.zoomOut': "जुम आउट",
   'photo.count': "{n} / {total}",
   'photo.next': "अर्को",
+  'voice.soundOn': "कोठाको आवाज खोल्नुहोस्",
+  'voice.soundOff': "कोठाको आवाज बन्द गर्नुहोस्",
+  'voice.soundIsOff': "आवाज बन्द",
 }
 
 export default ne

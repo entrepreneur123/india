@@ -697,6 +697,9 @@ const uk: Dict = {
   'photo.zoomOut': "Зменшити",
   'photo.count': "{n} / {total}",
   'photo.next': "Далі",
+  'voice.soundOn': "Увімкнути звук кімнати",
+  'voice.soundOff': "Вимкнути звук кімнати",
+  'voice.soundIsOff': "Звук вимк.",
 }
 
 export default uk

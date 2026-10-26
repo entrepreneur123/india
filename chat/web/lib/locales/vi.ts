@@ -679,6 +679,9 @@ const vi: Dict = {
   'photo.zoomOut': "Thu nhỏ",
   'photo.count': "{n} / {total}",
   'photo.next': "Tiếp",
+  'voice.soundOn': "Bật âm thanh phòng",
+  'voice.soundOff': "Tắt âm thanh phòng",
+  'voice.soundIsOff': "Đã tắt tiếng",
 }
 
 export default vi

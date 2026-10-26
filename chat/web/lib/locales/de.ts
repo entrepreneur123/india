@@ -680,6 +680,9 @@ const de: Dict = {
   'photo.zoomOut': "Verkleinern",
   'photo.count': "{n} / {total}",
   'photo.next': "Weiter",
+  'voice.soundOn': "Ton im Raum einschalten",
+  'voice.soundOff': "Ton im Raum ausschalten",
+  'voice.soundIsOff': "Ton aus",
 }
 
 export default de

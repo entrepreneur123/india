@@ -693,6 +693,9 @@ const fa: Dict = {
   'photo.zoomOut': "کوچک‌نمایی",
   'photo.count': "{n} / {total}",
   'photo.next': "بعدی",
+  'voice.soundOn': "روشن کردن صدای اتاق",
+  'voice.soundOff': "خاموش کردن صدای اتاق",
+  'voice.soundIsOff': "صدا خاموش",
 }
 
 export default fa

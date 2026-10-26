@@ -693,6 +693,9 @@ const ja: Dict = {
   'photo.zoomOut': "縮小",
   'photo.count': "{n} / {total}",
   'photo.next': "次へ",
+  'voice.soundOn': "ルームの音をオン",
+  'voice.soundOff': "ルームの音をオフ",
+  'voice.soundIsOff': "音オフ",
 }
 
 export default ja

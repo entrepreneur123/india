@@ -693,6 +693,9 @@ const id: Dict = {
   'photo.zoomOut': "Perkecil",
   'photo.count': "{n} / {total}",
   'photo.next': "Berikutnya",
+  'voice.soundOn': "Nyalakan suara room",
+  'voice.soundOff': "Matikan suara room",
+  'voice.soundIsOff': "Suara mati",
 }
 
 export default id

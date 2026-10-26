@@ -679,6 +679,9 @@ const hi: Dict = {
   'photo.zoomOut': "ज़ूम आउट",
   'photo.count': "{n} / {total}",
   'photo.next': "अगला",
+  'voice.soundOn': "रूम की आवाज़ चालू करें",
+  'voice.soundOff': "रूम की आवाज़ बंद करें",
+  'voice.soundIsOff': "आवाज़ बंद",
 }
 
 export default hi

@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, WifiOff, X } from 'lucide-react'
+import { AppWindow, ArrowDownToLine, ChevronDown, ChevronRight, EllipsisVertical, ExternalLink, EyeOff, Headphones, LogOut, Mic, MicOff, Pencil, Pin, SmilePlus, UserPlus, Users, Video, VideoOff, Volume2, VolumeX, WifiOff, X } from 'lucide-react'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
@@ -780,7 +780,8 @@ function AudioNotice({ s }: { s: VoiceSession }) {
   const { t } = useI18n()
   const a = s.audio
   if (!a) return null
-  if (a.needsTap)
+  // With the room's sound off (46) nothing needs to play yet: the sound button is the tap.
+  if (a.needsTap && s.sound)
     return (
       <div className="flex justify-center px-4 pb-2">
         <Button size="sm" variant="brand" onClick={s.startAudio}>
@@ -843,6 +844,18 @@ function ControlBar({
           </Button>
         ) : null}
         <span className="flex-1" />
+        {/* 46: I come in hearing nothing; this turns the room's voices on (and off again). */}
+        <Button
+          variant={s.sound ? 'secondary' : 'outline'}
+          onClick={() => s.setSound(!s.sound)}
+          aria-pressed={s.sound}
+          aria-label={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
+          title={t(s.sound ? 'voice.soundOff' : 'voice.soundOn')}
+          className={cn('h-12 shrink-0 gap-1.5 px-3.5', !s.sound && 'text-muted-foreground')}
+        >
+          {s.sound ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
+          {s.sound ? null : <span className="max-sm:sr-only">{t('voice.soundIsOff')}</span>}
+        </Button>
         {onStage ? (
           <Button
             size="icon"

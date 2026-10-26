@@ -693,6 +693,9 @@ const tr: Dict = {
   'photo.zoomOut': "Uzaklaştır",
   'photo.count': "{n} / {total}",
   'photo.next': "Sonraki",
+  'voice.soundOn': "Oda sesini aç",
+  'voice.soundOff': "Oda sesini kapat",
+  'voice.soundIsOff': "Ses kapalı",
 }
 
 export default tr

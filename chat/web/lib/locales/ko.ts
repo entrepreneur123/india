@@ -693,6 +693,9 @@ const ko: Dict = {
   'photo.zoomOut': "축소",
   'photo.count': "{n} / {total}",
   'photo.next': "다음",
+  'voice.soundOn': "소리 켜기",
+  'voice.soundOff': "소리 끄기",
+  'voice.soundIsOff': "소리 꺼짐",
 }
 
 export default ko

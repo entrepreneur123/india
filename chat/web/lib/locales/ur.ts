@@ -658,6 +658,9 @@ const ur: Dict = {
   'photo.zoomOut': "زوم آؤٹ",
   'photo.count': "{n} / {total}",
   'photo.next': "اگلا",
+  'voice.soundOn': "روم کی آواز چالو کریں",
+  'voice.soundOff': "روم کی آواز بند کریں",
+  'voice.soundIsOff': "آواز بند",
 }
 
 export default ur

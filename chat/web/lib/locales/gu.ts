@@ -658,6 +658,9 @@ const gu: Dict = {
   'photo.zoomOut': "ઝૂમ આઉટ",
   'photo.count': "{n} / {total}",
   'photo.next': "આગળ",
+  'voice.soundOn': "રૂમનો અવાજ ચાલુ કરો",
+  'voice.soundOff': "રૂમનો અવાજ બંધ કરો",
+  'voice.soundIsOff': "અવાજ બંધ",
 }
 
 export default gu

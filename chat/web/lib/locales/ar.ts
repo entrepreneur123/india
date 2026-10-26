@@ -701,6 +701,9 @@ const ar: Dict = {
   'photo.zoomOut': "تصغير",
   'photo.count': "{n} / {total}",
   'photo.next': "التالي",
+  'voice.soundOn': "تشغيل صوت الغرفة",
+  'voice.soundOff': "إيقاف صوت الغرفة",
+  'voice.soundIsOff': "الصوت متوقف",
 }
 
 export default ar

@@ -682,6 +682,9 @@ const es: Dict = {
   'photo.zoomOut': "Alejar",
   'photo.count': "{n} / {total}",
   'photo.next': "Siguiente",
+  'voice.soundOn': "Activar el sonido de la sala",
+  'voice.soundOff': "Silenciar la sala",
+  'voice.soundIsOff': "Sin sonido",
 }
 
 export default es

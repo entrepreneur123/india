@@ -680,6 +680,9 @@ const ta: Dict = {
   'photo.zoomOut': "சிறிதாக்கு",
   'photo.count': "{n} / {total}",
   'photo.next': "அடுத்து",
+  'voice.soundOn': "அறை ஒலியை இயக்கு",
+  'voice.soundOff': "அறை ஒலியை அணை",
+  'voice.soundIsOff': "ஒலி அணைப்பு",
 }
 
 export default ta

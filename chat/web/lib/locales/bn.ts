@@ -679,6 +679,9 @@ const bn: Dict = {
   'photo.zoomOut': "জুম আউট",
   'photo.count': "{n} / {total}",
   'photo.next': "পরবর্তী",
+  'voice.soundOn': "রুমের শব্দ চালু করুন",
+  'voice.soundOff': "রুমের শব্দ বন্ধ করুন",
+  'voice.soundIsOff': "শব্দ বন্ধ",
 }
 
 export default bn

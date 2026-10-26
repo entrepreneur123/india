@@ -697,6 +697,9 @@ const ru: Dict = {
   'photo.zoomOut': "Уменьшить",
   'photo.count': "{n} / {total}",
   'photo.next': "Далее",
+  'voice.soundOn': "Включить звук комнаты",
+  'voice.soundOff': "Выключить звук комнаты",
+  'voice.soundIsOff': "Звук выкл.",
 }
 
 export default ru

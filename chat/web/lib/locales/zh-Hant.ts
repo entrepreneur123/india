@@ -693,6 +693,9 @@ const zhHant: Dict = {
   'photo.zoomOut': "縮小",
   'photo.count': "{n} / {total}",
   'photo.next': "下一張",
+  'voice.soundOn': "開啟房間聲音",
+  'voice.soundOff': "關閉房間聲音",
+  'voice.soundIsOff': "聲音已關",
 }
 
 export default zhHant

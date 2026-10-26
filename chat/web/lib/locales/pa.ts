@@ -658,6 +658,9 @@ const pa: Dict = {
   'photo.zoomOut': "ਜ਼ੂਮ ਆਊਟ",
   'photo.count': "{n} / {total}",
   'photo.next': "ਅਗਲਾ",
+  'voice.soundOn': "ਰੂਮ ਦੀ ਆਵਾਜ਼ ਚਾਲੂ ਕਰੋ",
+  'voice.soundOff': "ਰੂਮ ਦੀ ਆਵਾਜ਼ ਬੰਦ ਕਰੋ",
+  'voice.soundIsOff': "ਆਵਾਜ਼ ਬੰਦ",
 }
 
 export default pa

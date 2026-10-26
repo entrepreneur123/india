@@ -695,6 +695,9 @@ const he: Dict = {
   'photo.zoomOut': "הקטנה",
   'photo.count': "{n} / {total}",
   'photo.next': "הבא",
+  'voice.soundOn': "להפעיל את קול החדר",
+  'voice.soundOff': "להשתיק את החדר",
+  'voice.soundIsOff': "הקול כבוי",
 }
 
 export default he

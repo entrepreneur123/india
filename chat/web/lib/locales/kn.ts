@@ -680,6 +680,9 @@ const kn: Dict = {
   'photo.zoomOut': "ಚಿಕ್ಕದಾಗಿಸಿ",
   'photo.count': "{n} / {total}",
   'photo.next': "ಮುಂದೆ",
+  'voice.soundOn': "ರೂಮ್ ಧ್ವನಿ ಆನ್ ಮಾಡಿ",
+  'voice.soundOff': "ರೂಮ್ ಧ್ವನಿ ಆಫ್ ಮಾಡಿ",
+  'voice.soundIsOff': "ಧ್ವನಿ ಆಫ್",
 }
 
 export default kn

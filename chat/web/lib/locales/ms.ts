@@ -693,6 +693,9 @@ const ms: Dict = {
   'photo.zoomOut': "Zum keluar",
   'photo.count': "{n} / {total}",
   'photo.next': "Seterusnya",
+  'voice.soundOn': "Hidupkan bunyi bilik",
+  'voice.soundOff': "Matikan bunyi bilik",
+  'voice.soundIsOff': "Bunyi dimatikan",
 }
 
 export default ms

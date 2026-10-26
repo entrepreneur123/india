@@ -692,6 +692,9 @@ const en = {
   'photo.zoomOut': "Zoom out",
   'photo.count': "{n} / {total}",
   'photo.next': "Next",
+  'voice.soundOn': "Turn the room’s sound on",
+  'voice.soundOff': "Turn the room’s sound off",
+  'voice.soundIsOff': "Sound off",
 } as const
 
 export default en

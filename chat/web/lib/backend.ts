@@ -880,6 +880,8 @@ export interface Backend {
   linkMeta(url: string): Promise<LinkMeta>
   /** Starts the room's audio after a tap, when the browser blocked it (VoiceAudioState.needsTap). */
   voiceStartAudio(roomId: string): Promise<void>
+  /** 46: the room's voices on or off for me (a room is entered with them off). */
+  voiceSound(roomId: string, on: boolean): Promise<void>
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
   // ---- identity and manners (035) ----
   myTrust(): Promise<MyTrust>

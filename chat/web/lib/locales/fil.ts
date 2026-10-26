@@ -693,6 +693,9 @@ const fil: Dict = {
   'photo.zoomOut': "Mag-zoom out",
   'photo.count': "{n} / {total}",
   'photo.next': "Susunod",
+  'voice.soundOn': "I-on ang tunog ng room",
+  'voice.soundOff': "I-off ang tunog ng room",
+  'voice.soundIsOff': "Naka-off ang tunog",
 }
 
 export default fil
