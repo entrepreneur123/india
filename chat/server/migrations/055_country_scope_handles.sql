@@ -183,9 +183,10 @@ begin
     select * from jsonb_to_recordset((select y.rooms from public.voice_list_cache y where y.id = 1)) as x(
       id text, title text, category text, host uuid, created_at timestamptz, max_members int, gender_rule text, min_age int,
       max_age int, is_private boolean, announcement text, lang text, now_playing text, game text, host_card jsonb, speakers jsonb,
-      members int, listeners int, fresh int)
+      members int, listeners int, fresh int, locked boolean)
   ), v as (
-    select c.*, coalesce(k.present and (k.fresh or c.host = me), false) as here, k.seat as my_seat, coalesce(k.fresh, false) as my_fresh
+    select c.*, coalesce(k.present and (k.fresh or c.host = me), false) as here, k.seat as my_seat, coalesce(k.fresh, false) as my_fresh,
+           coalesce(k.present, false) as inside
       from c join public.voice_rooms r on r.id = c.id and r.ended_at is null
       join public.profiles h on h.id = c.host and h.country = (select p.country from p)
       left join k on k.room_id = c.id
@@ -206,6 +207,7 @@ begin
            when v.gender_rule <> 'any' and (select p.gender from p) is distinct from v.gender_rule then 'room_gender'
            when (select p.age from p) < v.min_age or (select p.age from p) > v.max_age then 'room_age'
            when not v.here and v.fresh - v.my_fresh::int >= v.max_members then 'room_full'
+           when coalesce(v.locked, false) and not v.inside then 'room_password'
          end,
          v.lang
     from v
