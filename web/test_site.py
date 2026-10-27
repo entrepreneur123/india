@@ -329,3 +329,59 @@ def test_share_kit_has_ready_posts_and_stays_out_of_search(tmp_path, monkeypatch
     assert "https://example.in/result/18-10-2026/1pm/" in kit and "https://wa.me/?text=" in kit
     first = kit.index("<section>")
     assert "1 PM" not in kit[first:kit.index("</section>")]                # newest draw of the day first
+
+
+MH_DRAW = {"id": "2026-10-18_MH_GAJLAXMI-RAVI", "slot": "MH", "lottery": "maharashtra", "date": "2026-10-18", "time": "16:45",
+           "state": "Maharashtra", "name": "Maharashtra Gajlaxmi Ravi", "kind": "weekly", "nameLocal": "महाराष्ट्र गजलक्ष्मी रवि साप्ताहिक सोडत",
+           "format": "MH4", "ocr": True, "status": "OK", "drawNo": 43,
+           "tiers": [{"rank": "1", "prize": 10000, "match": "EXACT", "numbers": ["GL-00 2142"]},
+                     {"rank": "2", "prize": 5000, "match": "LAST4", "numbers": ["2273"]},
+                     {"rank": "4", "prize": 1000, "match": "LAST4", "numbers": ["2013", "4179"]}],
+           "sources": [{"kind": "officialPdf", "url": "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf"},
+                       {"kind": "officialSite", "url": "https://lottery.maharashtra.gov.in/mhlotteryresults.aspx"}]}
+
+
+def test_maharashtra_has_its_own_section_and_pages(tmp_path, monkeypatch):
+    import shutil
+    import subprocess
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    pending = dict(MH_DRAW, id="2026-10-18_MH_PADMINI", name="Maharashtra Padmini", status="PDF", time="", tiers=[], drawNo=None)
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [MH_DRAW, pending]}))
+    out = build(tmp_path, monkeypatch)
+    home = (out / "index.html").read_text()
+    assert '<h2 class="sub">Other state lotteries</h2>' in home and 'href="/maharashtra/"' in home
+    assert "MH_GAJLAXMI" not in home and "Gajlaxmi" not in home   # Sambad's day cards stay Sambad's
+    hub = (out / "maharashtra/index.html").read_text()
+    assert "<title>Maharashtra Lottery Result Today 18.10.2026 – Gajlaxmi Ravi Weekly and All Draws</title>" in hub
+    assert "GL-00 2142" in hub and "Padmini" in hub and "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
+    page = (out / "result/18-10-2026/maharashtra-gajlaxmi-ravi/index.html").read_text()
+    assert "<title>Maharashtra Gajlaxmi Ravi Weekly Lottery Result 18.10.2026 (Draw 43)</title>" in page
+    assert 'lang="mr">महाराष्ट्र गजलक्ष्मी रवि साप्ताहिक सोडत' in page
+    assert not (out / "result/18-10-2026/maharashtra-padmini").exists()   # no numbers, no page
+    assert (out / "hi/maharashtra/index.html").exists() and (out / "bn/maharashtra/index.html").exists()
+    sm = (out / "sitemap.xml").read_text()
+    assert "https://example.in/maharashtra/" in sm and "https://example.in/result/18-10-2026/maharashtra-gajlaxmi-ravi/" in sm
+    node = shutil.which("node")
+    if not node:
+        return
+    # The page's own checker: series + number for the 1st prize, any series for the others.
+    js = (out / "assets/site.js").read_text()
+    m = re.search(r'<script type="application/json" id="draws">(.*?)</script>', page, re.S)
+    harness = ("var res=[];var els={};function E(id){return els[id]||(els[id]={value:'',textContent:'',appendChild:function(c){res.push(c)},"
+               "addEventListener:function(ev,f){this.f=f},scrollIntoView:function(){},dataset:{}})}"
+               "var document={getElementById:function(id){if(id==='draws')return{textContent:" + json.dumps(m[1]) + "};"
+               "if(id==='i18n')return{textContent:'{}'};return E(id)},querySelector:function(){return null},"
+               "querySelectorAll:function(){return[]},createElement:function(t){return{appendChild:function(c){(this.k=this.k||[]).push(c)},"
+               "classList:{toggle:function(){}},set textContent(v){this.t=v},get textContent(){return this.t||''}}},body:{dataset:{}}};"
+               "var window={},navigator={},location={hash:''};")
+    out_js = []
+    for ticket in ("GL-00 2142", "GL-05 2142", "gl00 2273", "2142", "9999"):
+        run = (harness + js + f";E('ticket').value={json.dumps(ticket)};E('checkForm').f({{preventDefault:function(){{}}}});"
+               "console.log(JSON.stringify(res.map(function(b){return b.className+':'+b.k[0].t})))")
+        out_js.append(json.loads(subprocess.run([node, "-e", run], capture_output=True, text=True, check=True).stdout))
+    assert out_js[0][0].startswith("res:") and "no" not in out_js[0][0].split(":")[0]
+    assert out_js[1][0].startswith("res no:")             # 1st prize is for series GL-00 only
+    assert not out_js[2][0].startswith("res no:")         # 2nd prize: any series
+    assert not out_js[3][0].startswith("res no:")         # 4 digits alone: "same digits as a top prize"
+    assert out_js[4][0].startswith("res no:")

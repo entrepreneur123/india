@@ -41,6 +41,43 @@ HUB = {"NL1PM": "/morning-1pm/", "SK6PM": "/day-6pm/", "NL8PM": "/night-8pm/"}
 CONTACT = "yechan750745@gmail.com"
 
 # Page-level texts. {d} = 19.10.2026, {t} = 1 PM, {g} = game name, {s} = state, {n} = 1st prize.
+# Maharashtra State Lottery (other state lotteries, kept apart from Lottery Sambad and Kerala).
+MH = {
+    "en": {"tab": "Maharashtra", "h1": "Maharashtra Lottery Result Today", "other": "Other state lotteries",
+           "title": "Maharashtra Lottery Result Today {d} – {g} and All Draws",
+           "desc": "Maharashtra State Lottery result {d}: {list}. Full prize list of every draw, ticket checker and the official result sheet.",
+           "schedule": "The Government of Maharashtra holds weekly draws every afternoon (around 4–5 PM), plus monthly draws and festival bumpers. Each draw has its own name and series, e.g. GL-00 to GL-09.",
+           "ocr_note": "These numbers are read by computer from the official result sheet and published only when several independent readings agree. Always check your ticket against the official sheet before claiming.",
+           "recent": "Maharashtra lottery result chart – recent draws",
+           "draw_title": "Maharashtra {g} Lottery Result {d}{n}",
+           "draw_desc": "Maharashtra {g} lottery result {d}: 1st prize {f}. All prizes, ticket checker and the official result sheet.",
+           "draw_no": " (Draw {n})", "check_hint": "Type your full ticket number (e.g. GL-00 2142) or just the 4 digits.",
+           "open_pdf": "Official result sheet (PDF)", "open_site": "Maharashtra State Lottery website",
+           "weekly": "Weekly", "monthly": "Monthly", "bumper": "Bumper", "all": "All Maharashtra results"},
+    "bn": {"tab": "মহারাষ্ট্র", "h1": "মহারাষ্ট্র লটারি আজকের রেজাল্ট", "other": "অন্য রাজ্যের লটারি",
+           "title": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g} ও সব ড্র",
+           "desc": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list}। প্রতিটি ড্রয়ের পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
+           "schedule": "মহারাষ্ট্র সরকার রোজ বিকেলে (প্রায় 4–5টা) সাপ্তাহিক ড্র করে, এছাড়া মাসিক ড্র আর উৎসবের বাম্পার। প্রতিটি ড্রয়ের নিজস্ব নাম আর সিরিজ থাকে, যেমন GL-00 থেকে GL-09।",
+           "ocr_note": "এই নম্বরগুলো সরকারি রেজাল্ট শিট থেকে কম্পিউটারে পড়া, আর কয়েকটি আলাদা পড়া মিললে তবেই প্রকাশ করা হয়। পুরস্কার দাবির আগে সবসময় সরকারি শিটের সঙ্গে টিকিট মিলিয়ে নিন।",
+           "recent": "মহারাষ্ট্র লটারির সাম্প্রতিক রেজাল্ট",
+           "draw_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}{n}",
+           "draw_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}: প্রথম পুরস্কার {f}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
+           "draw_no": " (ড্র {n})", "check_hint": "পুরো টিকিট নম্বর লিখুন (যেমন GL-00 2142) বা শুধু 4টি সংখ্যা।",
+           "open_pdf": "সরকারি রেজাল্ট শিট (PDF)", "open_site": "মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইট",
+           "weekly": "সাপ্তাহিক", "monthly": "মাসিক", "bumper": "বাম্পার", "all": "মহারাষ্ট্রের সব রেজাল্ট"},
+    "hi": {"tab": "महाराष्ट्र", "h1": "महाराष्ट्र लॉटरी रिज़ल्ट आज", "other": "दूसरे राज्यों की लॉटरी",
+           "title": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g} और सभी ड्रॉ",
+           "desc": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list}। हर ड्रॉ के सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
+           "schedule": "महाराष्ट्र सरकार हर दोपहर (लगभग 4–5 बजे) साप्ताहिक ड्रॉ करती है, साथ में मासिक ड्रॉ और त्योहारों के बंपर। हर ड्रॉ का अपना नाम और सीरीज़ होती है, जैसे GL-00 से GL-09।",
+           "ocr_note": "ये नंबर सरकारी रिज़ल्ट शीट से कंप्यूटर द्वारा पढ़े गए हैं और कई अलग-अलग रीडिंग मिलने पर ही प्रकाशित होते हैं। इनाम का दावा करने से पहले हमेशा सरकारी शीट से टिकट मिलाएँ।",
+           "recent": "महाराष्ट्र लॉटरी रिज़ल्ट चार्ट – हाल के ड्रॉ",
+           "draw_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}{n}",
+           "draw_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}: पहला इनाम {f}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
+           "draw_no": " (ड्रॉ {n})", "check_hint": "पूरा टिकट नंबर लिखें (जैसे GL-00 2142) या सिर्फ़ 4 अंक।",
+           "open_pdf": "सरकारी रिज़ल्ट शीट (PDF)", "open_site": "महाराष्ट्र राज्य लॉटरी की वेबसाइट",
+           "weekly": "साप्ताहिक", "monthly": "मासिक", "bumper": "बंपर", "all": "महाराष्ट्र के सभी रिज़ल्ट"},
+}
+
 WEB = {
     "en": {
         "home_title": "Lottery Sambad Result Today {d} – Dear Nagaland State Lottery 1 PM, 6 PM, 8 PM",
@@ -266,6 +303,8 @@ def beacon_token(value: str) -> str:
 
 
 def draw_slug(d: dict) -> str:
+    if d.get("lottery") == "maharashtra":  # several draws a day: one page each, by name
+        return "maharashtra-" + re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")
     return SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
 
 
@@ -298,6 +337,11 @@ class Site:
         self.stamp = self.updated.isoformat(timespec="minutes")   # sitemap lastmod of pages that change today
         self.index = json.loads((data / "v2/index.json").read_text()) if (data / "v2/index.json").exists() else {}
         self.dates = sorted(self.days, reverse=True)
+        self.mh: dict[str, list[dict]] = {}   # Maharashtra (v2/mh/, a feed of its own)
+        for f in sorted((data / "v2/mh/days").glob("*.json")):
+            day = json.loads(f.read_text())
+            self.mh[day["date"]] = sorted(day["draws"], key=lambda d: (d.get("time") or "99", d["name"]))
+        self.mh_dates = sorted((x for x in self.mh if self.mh[x]), reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
         self.play_url = os.environ.get("PLAY_URL", "").strip()
         # A manual unit needs its slot id (AdSense → Ads → By ad unit); without one, Auto ads alone place ads.
@@ -394,7 +438,7 @@ class Site:
         live_attr = f' data-live="{esc(data[0]["date"])}"' if live and data else (f' data-live="{self.today}"' if live else "")
         live_attr += f' data-wait="{esc(wait)}"' if wait else ""
         self._ads = 0  # the body is built: the next page starts its own ad count
-        i18n = dict(self.s[lang], copied=w["copied"])
+        i18n = dict(self.s[lang], copied=w["copied"], need_full_mh=MH[lang]["check_hint"])
         gl = guides.G[nav_lang]
         foot = (f'<p class="links">' + "".join(f'<a href="{self.url(nav_lang, p)}">{esc(gl["names"][k])}</a>' for k, p in guides.PATHS.items())
                 + '</p>'
@@ -546,9 +590,10 @@ class Site:
                 f'<div class="row">{a}<button type="button" class="cp" data-url="{esc(url)}">{esc(WEB[lang]["copy"])}</button>'
                 f'<button type="button" class="more" hidden data-url="{esc(url)}" data-text="{esc(text)}">{esc(s["share_more"])}</button></div></section>')
 
-    def checker(self, lang: str, title: str | None = None, kerala: bool = False) -> str:
+    def checker(self, lang: str, title: str | None = None, kerala: bool = False, hint: str = "", example: str = "") -> str:
         s, w = self.s[lang], WEB[lang]
-        hint, example = (w["check_hint_kl"], "MM 289707") if kerala else (w["check_hint"], "39C 06366")
+        if not hint:
+            hint, example = (w["check_hint_kl"], "MM 289707") if kerala else (w["check_hint"], "39C 06366")
         return (f'<section class="check" id="check"><h2>{esc(title or s["check_title"])}</h2><p class="hint">{esc(hint)}</p>'
                 f'<form id="checkForm" class="row"><input id="ticket" aria-label="{esc(s["ticket_number"])}" placeholder="{example}" '
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"><button>{esc(s["check_button"])}</button></form>'
@@ -675,7 +720,8 @@ class Site:
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
                     + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
-                    + self.day_cards(lang, latest) + self.ad() + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
+                    + self.day_cards(lang, latest) + self.ad() + self.other_states(lang) + self.history(lang) + self.app_promo(lang)
+                    + self.guide_links(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, s=ddmmyy(latest), list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
                                                  crumbs=[(w["home"], "/")], tab="results", modified=self.updated,
@@ -724,6 +770,7 @@ class Site:
                                          tab="kerala" if kl else "results", image=image),
                                key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date)
             self.kerala_hub(out, lang)
+            self.mh_pages(out, lang)
             self.guide_pages(out, lang)
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
@@ -821,6 +868,104 @@ class Site:
         f = out / "share" / "index.html"
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(page, encoding="utf-8")
+
+    # ---- Maharashtra (other state lotteries) ----
+    def mh_game(self, lang: str, d: dict) -> str:
+        """'Maharashtra Gajlaxmi Ravi' + weekly -> 'Gajlaxmi Ravi Weekly' (English names, as printed)."""
+        name = d["name"].removeprefix("Maharashtra ")
+        return f'{name} {MH[lang].get(d.get("kind", ""), "")}'.strip()
+
+    def mh_title(self, lang: str, d: dict) -> str:
+        m = MH[lang]
+        return m["draw_title"].format(g=self.mh_game(lang, d), d=ddmmyyyy(d["date"]),
+                                      n=m["draw_no"].format(n=d["drawNo"]) if d.get("drawNo") else "")
+
+    def mh_buttons(self, lang: str, d: dict) -> str:
+        src = {x["kind"]: x["url"] for x in d.get("sources", [])}
+        b = [f'<a class="btn" rel="nofollow" href="{esc(src[k])}">{esc(MH[lang][t])}</a>'
+             for k, t in (("officialPdf", "open_pdf"), ("officialSite", "open_site")) if k in src]
+        return f'<p class="btns">{"".join(b)}</p>'
+
+    def mh_card(self, lang: str, d: dict) -> str:
+        s, m = self.s[lang], MH[lang]
+        stub = f'<div class="stub"><b>{esc(short_time(d["time"]) if d.get("time") else "MH")}</b><span>{esc(m["tab"])}</span></div>'
+        ok = d.get("status") == "OK" and d.get("tiers")
+        page = self.url(lang, self.draw_path(d))
+        name = f'<a href="{page}">{esc(self.mh_game(lang, d))}</a>' if ok else esc(self.mh_game(lang, d))
+        head = (f'{stub}<div class="sb"><h2>{name}</h2><p class="meta">{esc(fmt(s["state_lottery"], m["tab"]))}'
+                + (f' · <span lang="mr">{esc(d["nameLocal"])}</span>' if d.get("nameLocal") else "") + '</p>')
+        if not ok:
+            return f'<section class="slip">{head}<p>{esc(s["pdf_only"])}</p>{self.mh_buttons(lang, d)}</div></section>'
+        first = d["tiers"][0]
+        return (f'<section class="slip" id="{esc(draw_slug(d))}">{head}'
+                f'<p class="eyebrow">{esc(s["first_prize"])} · {esc(self.prize_short(lang, first["prize"]))}</p>'
+                f'<p class="first">{esc(first["numbers"][0])}</p></div>'
+                f'<details class="all"><summary>{esc(s["tap_full_result"])}</summary><div class="in">{self.tiers(lang, d)}'
+                f'{self.mh_buttons(lang, d)}<p><a class="go" href="{page}">{esc(WEB[lang]["open_page"])} →</a></p></div></details>'
+                f'</section>')
+
+    def other_states(self, lang: str) -> str:
+        """Lotteries of other states, in a row of their own below the Sambad/Kerala results."""
+        if not self.mh_dates:
+            return ""
+        m = MH[lang]
+        return (f'<h2 class="sub">{esc(m["other"])}</h2><nav class="chips wrapchips" aria-label="{esc(m["other"])}">'
+                f'<a class="chip" href="{self.url(lang, "/maharashtra/")}"><b>4 PM</b>{esc(m["tab"])}</a></nav>')
+
+    def mh_pages(self, out: pathlib.Path, lang: str) -> None:
+        """/maharashtra/ (the newest day's draws and a 30-draw chart) and one page per draw."""
+        if not self.mh_dates:
+            return
+        s, w, m = self.s[lang], WEB[lang], MH[lang]
+        latest = self.mh_dates[0]
+        draws = self.mh[latest]
+        done = [d for x in self.mh_dates for d in self.mh[x] if d.get("status") == "OK" and d.get("tiers")]
+        d0 = ddmmyyyy(latest)
+        listing = ", ".join(f'{self.mh_game("en" if lang == "en" else lang, d)} {d["tiers"][0]["numbers"][0]}'
+                            for d in draws if d.get("status") == "OK" and d.get("tiers"))
+        rows = "".join(
+            f'<tr><th scope="row"><a href="{self.url(lang, self.draw_path(d))}">{d["date"][8:]}.{d["date"][5:7]}</a>'
+            f'<small>{esc(w["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(self.mh_game(lang, d))}</td><td><a href="{self.url(lang, self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a></td></tr>'
+            for d in done[:30])
+        table = (f'<h2 class="sub">{esc(m["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(w["date"])}</th>'
+                 f'<th>{esc(w["game"])}</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
+        first_ok = next((d for d in draws if d.get("status") == "OK" and d.get("tiers")), None)
+        body = (f'<div class="intro"><h1>{esc(m["h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(m["schedule"])}</p></div>' + self.checker(lang, hint=m["check_hint"], example="GL-00 2142")
+                + "".join(self.mh_card(lang, d) for d in draws) + self.ad() + table
+                + f'<p class="hint">{esc(m["ocr_note"])}</p>' + self.hub_links(lang))
+        title = m["title"].format(d=d0, g=self.mh_game(lang, first_ok) if first_ok else m["tab"])
+        desc = m["desc"].format(d=d0, list=listing or s["pdf_only"])
+        self.write(out, lang, "/maharashtra/", self.page(
+            lang, "/maharashtra/", title, desc, body, data=[d for d in draws if d.get("tiers")],
+            image=self.og_images.get(first_ok["id"], "") if first_ok else "",
+            crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/")], modified=self.updated if latest == self.today else None),
+            key="maharashtra", lastmod=self.stamp)
+        for d in done:
+            if d["id"] not in self.og_images and d.get("time"):
+                self.og_images[d["id"]] = self.og_image(out, d)
+            dd = ddmmyyyy(d["date"])
+            sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
+                           f'<b>{esc(short_time(x["time"]) if x.get("time") else "MH")}</b>{esc(self.mh_game(lang, x))}</a>'
+                           for x in self.mh[d["date"]] if x.get("status") == "OK" and x.get("tiers"))
+            when = f'{w["wd"][dt.date.fromisoformat(d["date"]).weekday()]}, {dd}' + (f' · {time12(d["time"])}' if d.get("time") else "")
+            first = d["tiers"][0]
+            sheet = (f'<article class="sheet"><div class="band"><h2>{esc(d["name"])} {esc(m.get(d.get("kind", ""), ""))}</h2>'
+                     f'<p>{esc(fmt(s["state_lottery"], m["tab"]))}' + (f' · <span lang="mr">{esc(d["nameLocal"])}</span>' if d.get("nameLocal") else "")
+                     + f'</p></div><div class="hero"><p class="eyebrow">{esc(s["first_prize"])} · {esc(rupees(first["prize"]))}</p>'
+                     f'<p class="first">{esc(first["numbers"][0])}</p><p class="meta">{esc(when)}</p></div></article>')
+            title = self.mh_title(lang, d)
+            body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + sheet
+                    + self.checker(lang, hint=m["check_hint"], example=first["numbers"][0]) + self.tiers(lang, d, ads=True)
+                    + self.mh_buttons(lang, d) + f'<p class="hint">{esc(m["ocr_note"])}</p>'
+                    + f'<nav class="chips wrapchips">{sibs}</nav>'
+                    + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
+            self.write(out, lang, self.draw_path(d), self.page(
+                lang, self.draw_path(d), title, m["draw_desc"].format(g=self.mh_game(lang, d), d=dd, f=first["numbers"][0]), body,
+                data=[d], image=self.og_images.get(d["id"], ""),
+                crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
+                key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"])
 
     def kerala_hub(self, out: pathlib.Path, lang: str) -> None:
         """/kerala/: today's Kerala result (or the countdown to it) and the recent draws."""
@@ -1080,16 +1225,17 @@ function rup(n){var s=String(n);if(s.length<=3)return"₹"+s;return"₹"+s.slice
 function tier(r){var k={"1":"tier_1",CONS:"tier_cons","2":"tier_2","3":"tier_3","4":"tier_4","5":"tier_5"}[r];return k?t(k):t("tier_n",r)}
 function parse(raw){var s=raw.replace(/[०-९]/g,function(d){return d.charCodeAt(0)-0x966}).replace(/[০-৯]/g,function(d){return d.charCodeAt(0)-0x9e6});
 s=s.trim().toUpperCase().replace(/[-_./,]/g," ").replace(/\s+/g," ");
-function p(x){var m=/^(\d{2})\s*([A-Z])\s*(\d{5})$/.exec(x);if(m)return(+m[1]>=34&&"ABCDEGHJKL".indexOf(m[2])>=0)?{pre:m[1]+m[2],dg:m[3],f:"D5"}:false;
+function p(x){var m=/^([A-Z]{2})\s*-\s*(\d{2})\s*(\d{4})$/.exec(x)||/^([A-Z]{2})\s?(\d{2})\s+(\d{4})$/.exec(x);if(m)return{pre:m[1]+"-"+m[2],dg:m[3],f:"MH4"};
+m=/^(\d{2})\s*([A-Z])\s*(\d{5})$/.exec(x);if(m)return(+m[1]>=34&&"ABCDEGHJKL".indexOf(m[2])>=0)?{pre:m[1]+m[2],dg:m[3],f:"D5"}:false;
 if((m=/^(\d{2})\s+(\d{4})$/.exec(x)))return{pre:m[1],dg:m[2],f:"D4"};if((m=/^([A-Z]{1,2})\s*(\d{6})$/.exec(x)))return{pre:m[1],dg:m[2],f:"B6"};return null}
 var r=p(s);if(r)return r;if(r===false)return null;var c=s.replace(/ /g,"");if(c!==s){r=p(c);if(r)return r;if(r===false)return null}
 return/^\d{4,6}$/.test(c)?{pre:null,dg:c,f:"DIGITS"}:null}
 function show(k){return k.pre?k.pre+" "+k.dg:k.dg}
-function compat(k,d){if(d.format==="D5")return k.f==="D5"||(k.f==="DIGITS"&&k.dg.length<=5);if(d.format==="D4")return k.f==="D4"||(k.f==="DIGITS"&&k.dg.length===4);if(d.format==="B6")return k.f==="B6"||k.f==="DIGITS";return false}
+function compat(k,d){if(d.format==="D5")return k.f==="D5"||(k.f==="DIGITS"&&k.dg.length<=5);if(d.format==="D4")return k.f==="D4"||(k.f==="DIGITS"&&k.dg.length===4);if(d.format==="B6")return k.f==="B6"||k.f==="DIGITS";if(d.format==="MH4")return k.f==="MH4"||(k.f==="DIGITS"&&k.dg.length===4);return false}
 function check(k,d){if(!d.tiers||!d.tiers.length||!compat(k,d))return null;var w=[],n=k.dg.length,full=k.f!=="DIGITS",sh=show(k);
 d.tiers.forEach(function(T){var N=T.numbers||[];if(T.match==="FULL"){var f=N[0];if(!f)return;if(full){if(sh===f)w.push({T:T})}else if(n===5&&k.dg===f.slice(-5))w.push({T:T,nf:1})}
 else if(T.match==="CONS"){if(n<5)return;var first=full&&(d.tiers[0].numbers||[])[0]===sh;if(!first&&N.indexOf(k.dg)>=0)w.push({T:T})}
-else if(T.match==="EXACT"){if(full){if(N.indexOf(sh)>=0)w.push({T:T})}else if(n===6&&N.some(function(x){return x.slice(-6)===k.dg}))w.push({T:T,nf:1})}
+else if(T.match==="EXACT"){if(full){if(N.indexOf(sh)>=0)w.push({T:T})}else if(n===(d.format==="MH4"?4:6)&&N.some(function(x){return x.slice(-n)===k.dg}))w.push({T:T,nf:1})}
 else if(T.match==="LAST5"){if(n>=5&&N.indexOf(k.dg.slice(-5))>=0)w.push({T:T})}else if(T.match==="LAST4"){if(N.indexOf(k.dg.slice(-4))>=0)w.push({T:T})}});
 w.sort(function(a,b){return b.T.prize-a.T.prize});return{d:d,w:w}}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
@@ -1101,7 +1247,7 @@ var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v)
 var cs=D.map(function(d){return check(k,d)}).filter(Boolean),won=cs.filter(function(c){return c.w.length});
 won.forEach(function(c){var x=c.w[0],e=box(x.nf?t("maybe_first"):t("you_won"));e[1].appendChild(el("strong",null,tier(x.T.rank)+" · "+rup(x.T.prize)));
 e[1].appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)));
-if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
+if(x.nf)e[1].appendChild(el("div","hint",t(c.d.format==="MH4"?"need_full_mh":"need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
 if(!won.length){var e=box(t("no_win_title",show(k)),"no");e[1].appendChild(el("div","hint",t(cs.length===1&&S.no_win_body_one?"no_win_body_one":"no_win_body",cs.length)));out.appendChild(e[0])}
 var dg=k.dg;document.querySelectorAll(".nums li").forEach(function(s){var x=s.textContent,hit=dg.length>=x.length&&dg.slice(-x.length)===x;
 s.classList.toggle("hit",hit);if(hit){var dt=s.closest("details");if(dt)dt.open=true}});
