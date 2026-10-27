@@ -7,6 +7,9 @@
 # 28 minutes after the draw). So each draw's run is scheduled ~1 h 45 min early, waits in the job
 # until 5 minutes after the draw, then polls the source every 60 s until the sheet is out.
 # A backup run is scheduled 15 minutes before the draw. Times are UTC; IST = UTC+5:30.
+# On busy days GitHub starts them hours late (27-10-2026: the 07:17 run began at 13:15). So every run
+# ends by starting relay.yml, which starts the next draw's run itself 15 minutes before it (a
+# workflow_dispatch begins within seconds), and a late cron run does what is due when it starts.
 #   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35
 #   09:17                 Kerala 3 PM IST draw = 09:30 UTC; copies appear ~10:40 UTC, polling from 10:35
 #   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
@@ -43,9 +46,14 @@ on:
         description: "Deploy the site to Cloudflare even if no result changed"
         type: boolean
         default: false
+      target:
+        description: "Set by relay.yml: the draw to wait for (NL1PM, KL, SK6PM, NL8PM); empty = by hand"
+        type: string
+        default: ""
 
 permissions:
   contents: write
+  actions: write    # start relay.yml at the end of each run
 
 concurrency:
   group: results
@@ -73,6 +81,7 @@ jobs:
       IN_DEPLOY: ${{ inputs.deploy }}
       IN_OCR: ${{ inputs.ocr }}
       IN_BACKFILL: ${{ inputs.backfill_days }}
+      IN_TARGET: ${{ inputs.target }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v4
@@ -91,21 +100,15 @@ jobs:
         id: mode
         run: |
           # require: slots this run waits for; from: UTC time polling starts; watch: minutes to keep polling.
-          require=""; from=""; watch=0; deep=false; ocr=false; backfill=1; mh=false
-          case "${{ github.event.schedule }}" in
-            "47 5 * * *"|"17 7 * * *")    require=NL1PM; from=07:35; watch=90 ;;
-            "17 9 * * *")                 require=KL; from=10:35; watch=90 ;;
-            "47 10 * * *"|"17 12 * * *")  require=SK6PM; from=12:35; watch=90 ;;
-            "47 12 * * *")                require=NL8PM; from=14:35; watch=90; mh=true ;;   # Maharashtra while waiting
-            "17 14 * * *")                require=NL8PM; from=14:35; watch=90 ;;
-            "10 15 * * *") deep=true; ocr=true; mh=true ;;
-            "40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
-            "0 3 * * *") deep=true; ocr=true; backfill=2; mh=true ;;
-          esac
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            deep=true; ocr="$IN_OCR"; backfill=$(( IN_BACKFILL + 0 )); mh=true
+          # On-time scheduled runs do what they were scheduled for; late ones (GitHub can start them hours
+          # late) do what is due now; relay-started runs wait for their draw. See pipeline/lottery_pipeline/schedule.py.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "$IN_TARGET" ]; then
+            { echo "require="; echo "from="; echo "watch=0"; echo "deep=true"; echo "ocr=$IN_OCR"
+              echo "backfill=$(( IN_BACKFILL + 0 ))"; echo "mh=true"; } >> "$GITHUB_OUTPUT"
+          else
+            (cd pipeline && python3 -m lottery_pipeline.schedule mode --event "${{ github.event_name }}" \
+               --cron "${{ github.event.schedule }}" --target "$IN_TARGET" --today-feed ../public/v2/today.json) | tee -a "$GITHUB_OUTPUT"
           fi
-          { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; echo "mh=$mh"; } >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
@@ -214,3 +217,9 @@ jobs:
             if [ -n "$from" ] && [ "$require" != "KL" ] && [ "$(date +%s)" -lt $(( start + 1500 )) ]; then sleep 20; else sleep 60; fi
             args="${args/ --deep/}"   # catalog refresh only on the first pass (be gentle to the sources)
           done
+
+      - name: Hand over to the relay (it starts the run for the next draw on time)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run relay.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}" || echo "::warning::relay not started"
