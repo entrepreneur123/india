@@ -31,6 +31,7 @@ import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
 import { useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { useBack } from '@/lib/back-stack'
 
 // The chat (composer, bubbles, report sheet, video) downloads when a search starts, not with the lobby.
 const loadChat = () => retryImport(() => import('@/components/screens/chat/chat-view'))
@@ -295,6 +296,8 @@ export function RandomScreen({ active }: { active: boolean }) {
   }
 
   // One live session at a time: the shell asks here before a room opens (lib/live-session.ts).
+  // Back does what the screen's own back does: stops the search, or asks "next or lobby?" in a chat.
+  useBack(active && phase !== 'lobby', () => (phase === 'matching' ? cancelMatching() : setChoiceOpen(true)))
   const now = useRef({ phase, match, cancelMatching, closeChat, askRating })
   now.current = { phase, match, cancelMatching, closeChat, askRating }
   useEffect(() => {

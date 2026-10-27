@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useBack } from '@/lib/back-stack'
 import { useI18n } from '@/components/i18n'
 
 interface ModalProps {
@@ -44,6 +45,7 @@ export function Modal({
   const panelRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+  useBack(open && dismissible, onClose)
 
   useEffect(() => {
     if (!open) return

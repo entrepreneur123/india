@@ -7,6 +7,7 @@ import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useBackend } from '@/lib/backend-context'
 import type { Badges, ItemKind, Profile } from '@/lib/backend'
 import { planLive } from '@/lib/live-session'
+import { useBack } from '@/lib/back-stack'
 import { AppContext, type AppState, type ChatBar, type KycInfo, type RandomControl, type Tab, type Thread, type VerifyWhy } from '@/components/app-state'
 import { onGate } from '@/lib/gate'
 import { errorCode } from '@/lib/format'
@@ -269,8 +270,14 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const minimiseVoice = useCallback(() => setVoice((v) => (v?.expanded ? { ...v, expanded: false } : v)), [])
   /** The last tab other than Random: where minimising a random chat goes back to. */
   const lastTab = useRef<Tab>('rooms')
-  const setTab = useCallback(
-    (next: Tab) => {
+  // Back goes through the tabs visited before, each once (Instagram's way); Random, the home, starts over.
+  const tabRef = useRef(tab)
+  tabRef.current = tab
+  const trail = useRef<Tab[]>([])
+  const goTab = useCallback(
+    (next: Tab, back: boolean) => {
+      const cur = tabRef.current
+      if (!back && next !== cur) trail.current = next === 'random' ? [] : [...trail.current.filter((x) => x !== next && x !== cur), cur]
       setThread(null)
       setGroup(null)
       setTabState(next)
@@ -279,7 +286,16 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     },
     [minimiseVoice],
   )
+  const setTab = useCallback((next: Tab) => goTab(next, false), [goTab])
   const minimiseRandom = useCallback(() => setTab(lastTab.current), [setTab])
+  const closeThread = useCallback(() => {
+    setThread(null)
+    refreshBadges() // what was read there
+  }, [refreshBadges])
+  useBack(tab !== 'random', () => goTab(trail.current.pop() ?? 'random', true))
+  useBack(!!thread, closeThread)
+  useBack(!!group, () => setGroup(null))
+  useBack(!!voice?.expanded, minimiseVoice)
 
   const openThread = useCallback(
     async (partner: Profile, matchId?: string) => {
@@ -419,10 +435,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                       <Suspense fallback={<ScreenLoading />}>
                         <ThreadScreen
                           thread={thread}
-                          onClose={() => {
-                            setThread(null)
-                            refreshBadges() // what was read there
-                          }}
+                          onClose={closeThread}
                         />
                       </Suspense>
                     </ScreenBoundary>

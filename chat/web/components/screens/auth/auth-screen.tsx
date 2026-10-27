@@ -15,6 +15,7 @@ import { OtpStep } from './otp-step'
 import { VerifiedMark } from '@/components/trust/mark'
 import { requiredCached } from '@/components/trust/required'
 import { retryImport } from '@/lib/retry-import'
+import { useBack } from '@/lib/back-stack'
 
 // The profile form (with the ID's rules and strings) is its own chunk: fetched while the code is being typed, so
 // the first screen stays small.
@@ -46,6 +47,7 @@ export function AuthScreen({
 }) {
   const { t, rtl } = useI18n()
   const [step, setStep] = useState<Step>(initialStep)
+  useBack(step === 'otp', () => setStep('phone'))
   const [phone, setPhone] = useState<{ digits: string; display: string } | null>(null)
   // "Everyone here is ID-verified" only once the server has said verification is required (seen on this browser).
   const [required] = useState(requiredCached)
