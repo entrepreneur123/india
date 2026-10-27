@@ -289,14 +289,17 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             below = [nxt for nxt in lines[li + 1:li + 4] if abs(nxt[0][1] - x0) < W * 0.08]
             region = text[m.start():] + " " + " ".join(" ".join(w[0] for w in nxt) for nxt in below)
         top = min(cell[1], min(w[2] for w in ws)) if cell else min(w[2] for w in ws)
+        line_top = min(w[2] for w in ws)
         if not cell or cell[3] < dpi * 0.4:  # no box, or one around this line only: start at its first line
             for prev in reversed(lines[:li]):
                 if _lead(prev) > W * 0.5 or not any(re.search(r"\w\w", w[0]) for w in prev):
                     continue  # the series/number boxes beside the heading, or specks read as a line
                 prev_text = " ".join(w[0] for w in prev if w[1] < W * 0.5)  # the heading side, not its number boxes
                 if re.search(r"(?i)\brank\b|series|[A-Z]{2}\s?[-.]\s?\d{2}", prev_text) or _TIER.search(prev_text) \
-                        or _AMOUNT.search(prev_text):
-                    break  # the series labels, or the end of the heading above (its "Rs. ..." line)
+                        or _AMOUNT.search(prev_text) or len(re.findall(r"\b\d{4}\b", prev_text)) >= 2:
+                    break  # the series labels, the heading above ("Rs. ..."), or a row of prize numbers
+                if line_top - min(w[2] for w in prev) > dpi * 0.8:
+                    break  # a heading is at most four lines tall
                 if top - max(w[2] + w[4] for w in prev) > dpi * 0.3 or abs(_lead(prev) - _lead(ws)) > W * 0.03:
                     break
                 top = min(w[2] for w in prev)
