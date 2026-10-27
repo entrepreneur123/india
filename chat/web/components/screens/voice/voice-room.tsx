@@ -209,15 +209,18 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       }} />
     ) : null
 
-  // 46: a chat-only room has no stage; the people here and the music stay.
-  const top: ReactNode = (
+  // 46: a chat-only room has no stage, and its people are one tap away (the count in the header): its side holds only
+  // what is shared (music, a page), and with nothing open the chat fills the room (KakaoTalk open chat, Discord).
+  const shared = musicBar || stageCard ? <>{musicBar}{stageCard}</> : null
+  const top: ReactNode = room.voice ? (
     <>
-      {room.voice ? stageSection : null}
+      {stageSection}
       {musicBar}
       {listeners}
       {stageCard}
     </>
-  )
+  ) : shared
+  const chatMain = wide && !room.voice && !panelUrl
 
   const chat = (
     <VoiceChat
@@ -329,7 +332,14 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           ) : null}
           <AudioNotice s={s} />
 
-          {wide ? (
+          {chatMain ? (
+            <div className="relative isolate flex min-h-0 flex-1 flex-col">
+              <Wall id={room.theme} />
+              {shared ? <div className="mx-auto flex w-full max-w-3xl shrink-0 flex-col gap-2 pb-2">{shared}</div> : null}
+              <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">{chat}</div>
+              <ReactionLayer reactions={s.reactions} />
+            </div>
+          ) : wide ? (
             // Reactions float over the whole middle (and the page beside it), not inside the stage that may be scrolled away.
             <div className="relative isolate flex min-h-0 flex-1">
               {/* 45: the room's wall, if the host or a co-host chose one, behind the stage. */}
@@ -352,12 +362,19 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <ReactionLayer reactions={s.reactions} />
             </div>
           ) : (
-            <PhoneSplit top={big ?? (room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top)} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+            top ? (
+              <PhoneSplit top={big ?? (room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top)} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
+            ) : (
+              <div className="relative isolate flex min-h-0 flex-1 flex-col">
+                <Wall id={room.theme} />
+                {chat}
+              </div>
+            )
           )}
 
           <ControlBar
             s={s}
-            composer={wide ? null : composer}
+            composer={wide && !chatMain ? null : composer}
             wide={wide}
             hands={hands}
             onRequests={() => setSheet({ kind: 'requests' })}
@@ -370,8 +387,8 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           />
         </div>
 
-        {wide ? <WideSplitter split={split} box={rootRef} rtl={rtl} /> : null}
-        {wide ? (
+        {wide && !chatMain ? <WideSplitter split={split} box={rootRef} rtl={rtl} /> : null}
+        {wide && !chatMain ? (
           <aside
             className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-muted/50"
             style={split.width ? { width: split.width } : undefined}

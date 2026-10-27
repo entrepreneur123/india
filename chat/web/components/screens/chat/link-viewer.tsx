@@ -66,10 +66,13 @@ const OpenContext = createContext<((url: string) => void) | null>(null)
 export const LinkOpenProvider = OpenContext.Provider
 
 const LINK_REL = 'noopener noreferrer nofollow'
+/** Wide screens (useWideScreen): the viewer is a column beside the chat. */
+const WIDE = '(min-width: 1024px)'
 
 /**
- * A plain click on a page that can be framed opens the viewer; any other link, a middle click or a modifier key keeps
- * the browser's own new tab (no viewer that could only say "open it in your browser").
+ * A plain click opens the viewer: the page itself if it can be framed, else (wide screens) its card with "Open in
+ * browser", so the link stays beside the chat instead of leaving the app. Phones open such a page in a new tab
+ * directly (a sheet would only cover the chat), and so does a middle click or a modifier key everywhere.
  */
 const plain = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey
 
@@ -88,7 +91,7 @@ function useOpener() {
       e.preventDefault()
       return player.querySelector('button')?.click()
     }
-    if (!open || !canFrame.has(url) || video || !plain(e)) return besideClick(url)(e)
+    if (!open || video || !plain(e) || (!canFrame.has(url) && !matchMedia(WIDE).matches)) return besideClick(url)(e)
     e.preventDefault()
     open(url)
   }
@@ -343,7 +346,7 @@ export function LinkSheet({ open, onClose, children }: { open: boolean; onClose:
 }
 
 /** Wide screens (1024 px and up): the viewer is a column beside the chat; phones get the sheet. */
-export function useWideScreen(query = '(min-width: 1024px)') {
+export function useWideScreen(query = WIDE) {
   const [wide, setWide] = useState(false)
   useEffect(() => {
     const mq = window.matchMedia(query)
