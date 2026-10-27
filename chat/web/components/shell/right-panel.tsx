@@ -165,7 +165,7 @@ export function RightPanel({ className }: { className?: string }) {
                         </span>
                       )}
                       <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
-                        <span className="w-full truncate text-sm font-semibold">{r.title}</span>
+                        <span className="line-clamp-2 w-full text-sm leading-snug font-semibold break-words">{r.title}</span>
                         <RoomCountry iso={r.host.country} className="h-auto bg-transparent p-0 text-[11px] font-medium text-muted-foreground ring-0" />
                       </span>
                       <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">

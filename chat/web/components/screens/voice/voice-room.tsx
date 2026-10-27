@@ -283,13 +283,13 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
     <LinkOpenProvider value={openLink}>
       <div ref={rootRef} className="relative flex min-h-0 flex-1 overflow-hidden bg-background text-foreground">
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-          <header className="flex items-center gap-1 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 sm:px-4">
+          <header className="@container flex items-center gap-1 px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-1 sm:px-4">
             <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={t('voice.minimise')}>
               <ChevronDown className="size-6" aria-hidden />
             </Button>
             <div className="min-w-0 flex-1 px-1">
-              <h1 className="truncate text-base leading-tight font-bold">{room.title}</h1>
-              <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <h1 title={room.title} className="line-clamp-2 text-base leading-tight font-bold break-words">{room.title}</h1>
+              <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                 <RoomCountry iso={host?.profile.country} className="h-6 text-[11px]" />
                 <button
                   type="button"
@@ -312,9 +312,10 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               variant="secondary"
               onClick={() => setSheet({ kind: 'invite' })}
               aria-label={sst('invite.title')}
-              className="size-10 shrink-0 px-0 sm:w-auto sm:px-4"
+              className="size-10 shrink-0 px-0 @lg:w-auto @lg:px-4"
             >
-              <UserPlus className="size-5 sm:size-4.5" aria-hidden /> <span className="max-sm:hidden">{sst('invite.button')}</span>
+              {/* The word only when the room's column has room for it, so the title keeps the space. */}
+              <UserPlus className="size-5 @lg:size-4.5" aria-hidden /> <span className="@max-lg:hidden">{sst('invite.button')}</span>
             </Button>
             <Button size="icon" variant="ghost" onClick={() => setSheet({ kind: 'options' })} aria-label={t('voice.more')}>
               <EllipsisVertical className="size-5" aria-hidden />
@@ -865,9 +866,10 @@ function ControlBar({
   const joins = me.role === 'host' || room.mode === 'open' || mod
 
   return (
-    <div className="relative z-10 border-t border-border bg-background px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4">
+    <div className="@container relative z-10 border-t border-border bg-background px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-4">
       {composer ? <div className={cn('mb-2', wide && 'mx-auto max-w-3xl')}>{composer}</div> : null}
-      <div className={cn('flex items-center gap-1.5 sm:gap-2', wide && 'mx-auto max-w-3xl')}>
+      {/* A narrow room column (a wide screen shared with the chat): the main button goes to its own line rather than spill. */}
+      <div className={cn('flex flex-wrap items-center justify-end gap-1.5 sm:gap-2', wide && 'mx-auto max-w-3xl')}>
         <ReactionTray onReact={(kind) => void s.act({ type: 'react', kind })} />
         <Button size="icon" variant="secondary" onClick={onMusic} aria-label={t('voice.music')} title={t('voice.music')}>
           <TopicIcon topic="music" size={22} />
@@ -893,7 +895,7 @@ function ControlBar({
               className={cn('h-12 shrink-0 gap-1.5 px-3.5', !s.sound && 'text-muted-foreground')}
             >
               {s.sound ? <Volume2 className="size-5" aria-hidden /> : <VolumeX className="size-5" aria-hidden />}
-              {s.sound ? null : <span className="max-sm:sr-only">{t('voice.soundIsOff')}</span>}
+              {s.sound ? null : <span className="@max-lg:sr-only">{t('voice.soundIsOff')}</span>}
             </Button>
             {onStage ? (
               <Button

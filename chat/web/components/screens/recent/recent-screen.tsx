@@ -237,7 +237,7 @@ function FriendsList({
           {incoming.map((f) => (
             <Row key={f.profile.id} className="flex-wrap bg-muted sm:flex-nowrap">
               <Who p={f.profile} detail={t('recent.wants')} />
-              <div className="ms-auto flex gap-2">
+              <div className="ms-auto flex w-full justify-end gap-2 sm:w-auto">
                 <Button
                   size="sm"
                   variant="outline"
