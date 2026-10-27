@@ -6,7 +6,7 @@ import { AtSign, Search } from 'lucide-react'
 import type { PersonRow } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, NameText } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { Skeleton, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
@@ -22,7 +22,7 @@ function PersonLine({ p, children, onOpen }: { p: PersonRow; children?: React.Re
       <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
       <span className="flex min-w-0 flex-1 flex-col">
         <LookName userId={p.id} handle={p.handle} className="truncate text-[15px] font-semibold" />
-        <span className="truncate text-sm text-muted-foreground">{p.name}</span>
+        <NameText userId={p.id} className="truncate text-sm text-muted-foreground">{p.name}</NameText>
       </span>
     </>
   )

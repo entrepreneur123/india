@@ -27,9 +27,9 @@ import { useCountryNames } from '@/components/screens/auth/country-select'
 import { saveFlag, savedFlag } from '@/lib/flags'
 import { showRecentSegment } from '@/components/screens/recent/segment'
 import { GenderPassSheet, useGenderPass } from './gender-pass'
-import { nameAge, type FrameId } from '@/lib/looks'
+import type { FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
-import { useLook } from '@/components/looks/look-name'
+import { PersonName, useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { useBack } from '@/lib/back-stack'
 
@@ -559,7 +559,7 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
             <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
             <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
             <span className="flex items-center gap-1.5 text-xl font-bold">
-              {nameAge(partner.name, partner.age)}
+              <PersonName p={partner} />
               <TrustBadge userId={partner.id} size={20} />
             </span>
             {partner.interests?.length ? (

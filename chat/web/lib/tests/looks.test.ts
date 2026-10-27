@@ -40,7 +40,7 @@ test('looks(): items this app can’t draw, or of the wrong kind, are left off; 
   const look = parseLook({ id: 'u1', handle: 'lisa_4821', badge: 'badge_crown', color: 'badge_star', font: 'font_comic', frame: 'frame_fire' })
   assert.deepEqual(look, { id: 'u1', handle: 'lisa_4821', badge: 'badge_crown', color: null, font: null, frame: 'frame_fire' })
   // 062: a photo gradient needs 2–4 photos; anything else is no gradient.
-  assert.deepEqual(parseLook({ id: 'u1', handle: 'a1', cycle: ['p1', 'p2', 'p3', 'p4', 'p5'] })?.cycle, ['p1', 'p2', 'p3', 'p4'])
+  assert.deepEqual(parseLook({ id: 'u1', handle: 'a1', cycle: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'] })?.cycle, ['p1', 'p2', 'p3', 'p4', 'p5'])
   assert.equal(parseLook({ id: 'u1', handle: 'a1', cycle: ['p1'] })?.cycle, undefined)
   assert.equal(parseLook({ id: 'u2', handle: '' }), null)
   assert.deepEqual(parseLooks([{ id: 'u3', handle: 'x_1' }, null, 'nope']).map((l) => l.id), ['u3'])

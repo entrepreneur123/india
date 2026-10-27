@@ -1,12 +1,12 @@
 'use client'
 
+import { PersonName } from '@/components/looks/look-name'
 import { useState } from 'react'
 import useSWR from 'swr'
 import { MessageCircle, Megaphone, Trash2 } from 'lucide-react'
 import { LOOKING_MAX, type LookingPost } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { flagEmoji } from '@/lib/format'
-import { nameAge } from '@/lib/looks'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton, TextInput } from '@/components/ui/bits'
@@ -93,7 +93,7 @@ function Line({ p, onGone }: { p: LookingPost; onGone: () => void }) {
       <div className="min-w-0 flex-1">
         <p className="flex items-baseline gap-2 text-sm">
           <span className="truncate font-semibold">
-            {nameAge(p.author.name, p.author.age)} <span aria-hidden>{flagEmoji(p.author.country)}</span>
+            <PersonName p={p.author} /> <span aria-hidden>{flagEmoji(p.author.country)}</span>
           </span>
           <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(p.at)}</span>
         </p>

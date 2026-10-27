@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, NameText } from '@/components/looks/look-name'
 import { useSocialT } from './social-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
@@ -83,7 +83,7 @@ export function InviteSheet({ room, open, onClose }: { room: VoiceRoom; open: bo
                 <li key={f.profile.id} className="flex items-center gap-3 px-6 py-2">
                   <UserAvatar userId={f.profile.id} name={f.profile.name} src={f.profile.photoUrl} size={40} />
                   <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-[15px] font-semibold">{f.profile.name}</span>
+                    <NameText userId={f.profile.id} className="truncate text-[15px] font-semibold">{f.profile.name}</NameText>
                     <LookName userId={f.profile.id} handle={f.profile.handle} className="text-xs font-semibold" />
                   </span>
                   <Button

@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 import { localPrice } from '@/lib/currency'
 import { LookBadge } from './badges'
 import { FrameAvatar, FrameCard } from './frames'
-import { lookKey, LookText } from './look-name'
+import { lookKey, LookText, NameText } from './look-name'
 import { useLooksT, type LooksKey } from './looks-text'
 import { GiftSheet } from './gift-sheet'
 import { Wall } from './wall'
@@ -399,7 +399,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       <FrameCard frame={trying.frame as FrameId | null} className="w-full">
         <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
           <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
-          <p className="mt-1 text-lg font-bold">{me.name}</p>
+          <p className="mt-1 text-lg font-bold">
+            <NameText wear={trying}>{me.name}</NameText>
+          </p>
           {handle ? <LookText handle={handle} wear={trying} className="text-[17px] font-semibold" /> : null}
         </div>
       </FrameCard>

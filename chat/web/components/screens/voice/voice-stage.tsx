@@ -1,5 +1,6 @@
 'use client'
 
+import { NameText } from '@/components/looks/look-name'
 import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useRef } from 'react'
@@ -267,7 +268,7 @@ export function SeatPerson({
       </span>
       <span className="flex max-w-full min-w-0 flex-col items-center">
         <span className={cn('flex max-w-full min-w-0 items-center gap-0.5 font-semibold leading-tight', wide ? 'text-sm' : 'text-xs')}>
-          <span className="truncate">{member.profile.name}</span>
+          <NameText userId={member.profile.id} className="truncate">{member.profile.name}</NameText>
           <TrustBadge userId={member.profile.id} size={wide ? 14 : 12} />
           {member.role === 'host' && member.profile.country ? <span aria-hidden className="ms-0.5">{flagEmoji(member.profile.country)}</span> : null}
         </span>

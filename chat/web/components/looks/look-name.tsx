@@ -68,19 +68,26 @@ function colorStyle(id: ColorId): { className?: string; style: CSSProperties } {
   }
 }
 
-/** The @ID drawn with a look (null items: plain). Used by LookName and by the shop's previews. */
-export function LookText({ handle, wear, className }: { handle: string; wear: LookWear; className?: string }) {
+/** A look's colour and font as CSS (null items: none). */
+function lookStyle(wear: LookWear) {
   const color = isItem(wear.color) ? colorStyle(wear.color as ColorId) : null
   const font = isItem(wear.font) ? FONT_DESIGNS[wear.font as FontId] : null
+  return {
+    color,
+    font,
+    style: { ...color?.style, ...(font ? { fontFamily: `'${font.family}', var(--font-stack)`, fontSize: font.scale === 1 ? undefined : `${font.scale}em` } : null) },
+  }
+}
+
+/** The @ID drawn with a look (null items: plain). Used by LookName and by the shop's previews. */
+export function LookText({ handle, wear, className }: { handle: string; wear: LookWear; className?: string }) {
+  const { color, font, style } = lookStyle(wear)
   return (
     <span className={cn('inline-flex max-w-full min-w-0 items-center gap-[2px] align-bottom', className)}>
       <bdi
         // The padding keeps script descenders and swashes inside the clipped (truncating) box.
         className={cn('-my-[0.15em] min-w-0 truncate py-[0.15em]', color ? color.className : 'text-muted-foreground')}
-        style={{
-          ...color?.style,
-          ...(font ? { fontFamily: `'${font.family}', var(--font-stack)`, fontSize: font.scale === 1 ? undefined : `${font.scale}em` } : null),
-        }}
+        style={style}
       >
         {/* The @ is how IDs are shown, not part of the ID: it keeps the app's font (some ID fonts draw it as a blob). */}
         <span style={font ? { fontFamily: 'var(--font-stack)' } : undefined}>@</span>
@@ -100,4 +107,28 @@ export function LookName({ userId, handle, fallback = null, className }: { userI
   const shown = look?.handle ?? handle
   if (!shown) return <>{fallback}</>
   return <LookText handle={shown} wear={look ?? NO_WEAR} className={className} />
+}
+
+/**
+ * Someone's name in their look's colour and font (the owner, 2026-10-27: others see the name first, so the look is on
+ * the name as well as the @ID; the badge stays with the @ID). Plain until the look loads, and for everyone without one.
+ */
+export function NameText({ userId, wear, children, className }: { userId?: string; wear?: LookWear; children: ReactNode; className?: string }) {
+  const look = useLook(wear ? null : userId) // `wear`: a look being tried on (the shop's preview)
+  const { color, style } = lookStyle(wear ?? look ?? NO_WEAR)
+  return (
+    <bdi className={cn('-my-[0.15em] py-[0.15em]', color?.className, className)} style={style}>
+      {children}
+    </bdi>
+  )
+}
+
+/** "Name, age" with the name in the person's look (the age is plain; none when it is hidden). */
+export function PersonName({ p, className }: { p: { id: string; name: string; age: number }; className?: string }) {
+  return (
+    <span className={className}>
+      <NameText userId={p.id}>{p.name}</NameText>
+      {p.age > 0 ? `, ${p.age}` : null}
+    </span>
+  )
 }

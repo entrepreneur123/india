@@ -9,7 +9,7 @@ import { COUNTRIES } from '@/lib/countries'
 import { flagEmoji } from '@/lib/format'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { LookName, useLook } from '@/components/looks/look-name'
+import { LookName, NameText, useLook } from '@/components/looks/look-name'
 import { Avatar, useCycle } from '@/components/ui/avatar'
 import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
@@ -185,7 +185,7 @@ function PersonLine({ p, onOpen }: { p: PersonRow; onOpen: () => void }) {
         <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
         <span className="flex min-w-0 flex-col">
           <LookName userId={p.id} handle={p.handle} className="truncate text-[15px] font-semibold" />
-          <span className="truncate text-sm text-muted-foreground">{p.name}</span>
+          <NameText userId={p.id} className="truncate text-sm text-muted-foreground">{p.name}</NameText>
         </span>
       </button>
     </li>
@@ -217,7 +217,7 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
             </span>
             <span className="flex flex-col gap-0.5 p-2.5">
               <span className="truncate text-sm font-semibold">
-                {p.name}, {num(p.age)} <span aria-hidden>{flagEmoji(p.country)}</span>
+                <NameText userId={p.id}>{p.name}</NameText>, {num(p.age)} <span aria-hidden>{flagEmoji(p.country)}</span>
               </span>
               <LookName userId={p.id} handle={p.handle} className="truncate text-xs text-muted-foreground" />
               {ranked && p.count !== null ? (

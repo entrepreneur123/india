@@ -28,7 +28,7 @@ import { LinkOpenProvider, LinkPanel, LinkSheet, useWideScreen } from './link-vi
 import { ReportSheet } from './report-sheet'
 import { useMatchChat } from './use-match-chat'
 import { TrustBadge } from '@/components/trust/badge'
-import { LookName, useLook } from '@/components/looks/look-name'
+import { LookName, PersonName, useLook } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { useShop } from '@/components/looks/use-shop'
 import { VipReveal } from '@/components/looks/vip-reveal'
@@ -243,7 +243,7 @@ export function ChatView({
             <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                <span className={cn(isVip(partner) && 'vip-gold italic')}>{nameAge(partner.name, partner.age)}</span> <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+                {isVip(partner) ? <span className="vip-gold italic">{nameAge(partner.name, partner.age)}</span> : <PersonName p={{ ...partner, id: lookId }} />} <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (

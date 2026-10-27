@@ -1,5 +1,6 @@
 'use client'
 
+import { NameText } from '@/components/looks/look-name'
 import { useEffect, useRef, useState } from 'react'
 import { Ellipsis, Flag, Trash2, UserRound } from 'lucide-react'
 import type { FeedPost, Profile } from '@/lib/backend'
@@ -86,7 +87,7 @@ export function PostCard({ post: initial, onComments, onLikes }: { post: FeedPos
           <AccentAvatar userId={a.id} name={a.name} src={a.photoUrl} size={40} accent={a.accent} />
           <span className="min-w-0">
             <span className="flex items-center gap-1.5 text-[15px] leading-tight font-bold">
-              <span className="truncate">{a.name}</span>
+              <NameText userId={a.id} className="truncate">{a.name}</NameText>
               {a.verified ? <VerifiedMark size={16} /> : null}
               {a.age > 0 ? <span className="shrink-0 font-semibold text-muted-foreground">{a.age}</span> : null}
               <span className="shrink-0" aria-hidden>

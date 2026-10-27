@@ -1,5 +1,6 @@
 'use client'
 
+import { NameText } from '@/components/looks/look-name'
 import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ArrowUp, X } from 'lucide-react'
@@ -127,7 +128,7 @@ function LikerList({ post, people: data }: { post: FeedPost; people: PersonRow[]
               <li key={p.id} className="shrink-0">
                 <button type="button" onClick={() => openProfile(p.id)} className="flex w-14 flex-col items-center gap-1 rounded-xl p-0.5 text-center">
                   <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
-                  <span className="w-full truncate text-[11px] font-medium">{p.name}</span>
+                  <NameText userId={p.id} className="w-full truncate text-[11px] font-medium">{p.name}</NameText>
                 </button>
               </li>
             ))
@@ -359,7 +360,7 @@ function CommentRow({
         <div className="rounded-2xl rounded-ss-md bg-muted px-3.5 py-2">
           <p className="flex items-baseline gap-2 text-[13px]">
             <button type="button" onClick={() => openProfile(c.author.id)} className="inline-flex min-w-0 items-center gap-1 font-bold hover:underline">
-              <span className="truncate">{c.author.name}</span>
+              <NameText userId={c.author.id} className="truncate">{c.author.name}</NameText>
               {c.author.verified ? <VerifiedMark size={13} /> : null}
             </button>
             <time className="shrink-0 text-xs text-muted-foreground" dateTime={new Date(c.at).toISOString()}>

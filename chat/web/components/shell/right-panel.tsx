@@ -1,5 +1,6 @@
 'use client'
 
+import { NameText } from '@/components/looks/look-name'
 import useSWR from 'swr'
 import { useState, type ReactNode } from 'react'
 import { ChevronRight, MessageCircle } from 'lucide-react'
@@ -57,7 +58,7 @@ export function RightPanel({ className }: { className?: string }) {
         </PresenceAvatar>
         <span className={cn('min-w-0', f.presence === 'offline' && 'opacity-60')}>
           <span className="flex items-center gap-1 truncate text-sm font-semibold">
-            <span className="truncate">{f.profile.name}</span>
+            <NameText userId={f.profile.id} className="truncate">{f.profile.name}</NameText>
             <TrustBadge userId={f.profile.id} size={14} />
             <span aria-hidden>{flagEmoji(f.profile.country)}</span>
           </span>

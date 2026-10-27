@@ -23,7 +23,7 @@ import { canManage, isMod, memberOf, roleLabel } from './voice-text'
 import { useRoomT } from './room-t'
 import { LOST_FACE, LostBadge } from './voice-stage'
 import { TrustBadge } from '@/components/trust/badge'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, NameText } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FriendButton, useFriendship } from '@/components/social/friend-button'
 import { ageText, WALLS, type ItemId } from '@/lib/looks'
@@ -84,7 +84,7 @@ function PersonLine({ m, trailing, onClick }: { m: VoiceMember; trailing?: React
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
-          <span className="truncate text-[15px] font-semibold">{m.profile.name}</span>
+          <NameText userId={m.profile.id} className="truncate text-[15px] font-semibold">{m.profile.name}</NameText>
           <TrustBadge userId={m.profile.id} size={15} />
           {role ? <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-[10px] font-bold text-primary-text">{role}</span> : null}
           {m.hand ? <ReactionIcon kind="hand" size={16} /> : null}
@@ -163,7 +163,10 @@ export function PersonSheet({
       <Modal open={!!userId && !reportOpen && !confirm} onClose={onClose} variant="sheet" hideHeader>
         <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-3 text-center">
           <UserAvatar userId={target.profile.id} name={target.profile.name} src={target.profile.photoUrl} size={72} />
-          <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
+          <h2 className="mt-1 text-lg font-bold">
+            <NameText userId={target.profile.id}>{target.profile.name}</NameText>
+            {self ? ` (${t('voice.you')})` : null}
+          </h2>
           <LookName userId={target.profile.id} handle={target.profile.handle} className="-mt-1.5 text-sm font-semibold" />
           <p className="text-sm text-muted-foreground">
             {ageText(target.profile)} <span aria-hidden>{flagEmoji(target.profile.country)}</span>

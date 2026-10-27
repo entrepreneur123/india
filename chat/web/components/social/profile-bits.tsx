@@ -9,7 +9,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { VerifiedMark } from '@/components/trust/badge'
 import { FrameAvatar, FrameCard } from '@/components/looks/frames'
-import { LookName, useLook } from '@/components/looks/look-name'
+import { LookName, PersonName, useLook } from '@/components/looks/look-name'
 import { useFeedT } from './feed-text'
 import { useLooksT } from '@/components/looks/looks-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -104,7 +104,7 @@ export function ProfileHero({
         <PhotoViewer photos={photos} index={shown} onIndex={setShown} label={profile.name} />
         <h2 className="mt-3 flex flex-wrap items-center justify-center gap-x-2 px-4 text-2xl font-bold tracking-tight">
           <span className="inline-flex items-center gap-1.5">
-            <span className={cn(isVip(profile) && 'vip-gold text-3xl italic')}>{nameAge(profile.name, profile.age)}</span>
+            {isVip(profile) ? <span className="vip-gold text-3xl italic">{nameAge(profile.name, profile.age)}</span> : <PersonName p={profile} />}
             {verified ? <VerifiedMark size={24} /> : null}
           </span>
           <span aria-hidden>{flagEmoji(profile.country)}</span>

@@ -1,5 +1,6 @@
 'use client'
 
+import { NameText } from '@/components/looks/look-name'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
@@ -769,7 +770,7 @@ function ListenerFace({ m: x, reaction, onClick }: { m: VoiceMember; reaction?: 
         {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -inset-e-1 -bottom-1" /> : null}
         <ReactionBadge reaction={reaction} size={18} />
       </span>
-      <span className="max-w-full truncate text-[11px] leading-tight font-medium">{x.profile.name.split(' ')[0]}</span>
+      <NameText userId={x.profile.id} className="max-w-full truncate text-[11px] leading-tight font-medium">{x.profile.name.split(' ')[0]}</NameText>
       {x.lost ? <span className="-mt-0.5 max-w-full truncate text-[9.5px] leading-tight font-bold text-destructive">{rt('lost')}</span> : role ? <span className="-mt-0.5 rounded-full bg-primary-soft px-1.5 text-[9.5px] leading-tight font-bold text-primary-text">{role}</span> : null}
     </button>
   )

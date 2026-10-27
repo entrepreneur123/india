@@ -20,10 +20,9 @@ import { BellButton, CountBadge } from '@/components/social/bits'
 import { useSocialT } from '@/components/social/social-text'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
-import { LookName } from '@/components/looks/look-name'
+import { LookName, PersonName } from '@/components/looks/look-name'
 import { useLooksT } from '@/components/looks/looks-text'
 import { FindSheet } from '@/components/social/people-find'
-import { nameAge } from '@/lib/looks'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { GroupList, useGroups } from './groups'
 import { lastRecentSegment, showRecentSegment, type RecentSegment } from './segment'
@@ -166,7 +165,7 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
       <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
-          <span className="truncate">{nameAge(p.name, p.age)}</span>
+          <PersonName p={p} className="truncate" />
           <TrustBadge userId={p.id} size={15} />
         </span>
         <LookName userId={p.id} handle={p.handle} className="text-[13px] font-semibold" />
