@@ -73,7 +73,7 @@ export function Composer({
   }
 
   return (
-    <div className={cn('bg-chat-wall px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-[max(1.25rem,calc((100%-48rem)/2))]', className)}>
+    <div className={cn('bg-chat-wall px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-[max(1.25rem,calc((100%-48rem)/2))]', className)}>
       <AnimatePresence>
         {preview && file ? (
           <m.div
@@ -101,12 +101,13 @@ export function Composer({
           </m.div>
         ) : null}
       </AnimatePresence>
-      <div className="flex items-end gap-2">
+      {/* One rounded field (Instagram, iMessage): the photo button, the text and the send button inside it. */}
+      <div className="flex min-h-11 items-end gap-1 rounded-[22px] bg-muted p-1 ring-1 ring-transparent transition-[box-shadow,background-color] duration-150 focus-within:bg-background focus-within:ring-border">
         {allowMedia ? (
           <label
             htmlFor={fileId}
             className={cn(
-              'grid size-11 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-muted hover:text-foreground',
+              'grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-background hover:text-foreground',
               disabled && 'pointer-events-none opacity-40',
             )}
           >
@@ -125,36 +126,34 @@ export function Composer({
             />
           </label>
         ) : null}
-        <div className="flex min-h-11 flex-1 items-center rounded-3xl bg-bubble-in px-4 text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)] ring-1 ring-transparent transition-shadow duration-150 focus-within:ring-primary">
-          <label htmlFor={`${fileId}-text`} className="sr-only">
-            {t('composer.message')}
-          </label>
-          <textarea
-            id={`${fileId}-text`}
-            ref={inputRef}
-            rows={1}
-            value={text}
-            disabled={disabled}
-            maxLength={maxLength}
-            placeholder={disabled ? (disabledPlaceholder ?? t('composer.ended')) : (placeholder ?? t('chat.placeholder'))}
-            onChange={(e) => {
-              setText(e.target.value)
-              onTyping?.()
-            }}
-            onKeyDown={onKeyDown}
-            className="max-h-33 w-full resize-none bg-transparent py-2.5 text-[15px] leading-relaxed outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
-          />
-        </div>
+        <label htmlFor={`${fileId}-text`} className="sr-only">
+          {t('composer.message')}
+        </label>
+        <textarea
+          id={`${fileId}-text`}
+          ref={inputRef}
+          rows={1}
+          value={text}
+          disabled={disabled}
+          maxLength={maxLength}
+          placeholder={disabled ? (disabledPlaceholder ?? t('composer.ended')) : (placeholder ?? t('chat.placeholder'))}
+          onChange={(e) => {
+            setText(e.target.value)
+            onTyping?.()
+          }}
+          onKeyDown={onKeyDown}
+          className={cn('max-h-33 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed', !allowMedia && 'ps-3')}
+        />
         <m.button
           type="button"
           onClick={() => void submit()}
           disabled={!canSend}
-          whileTap={canSend ? { scale: 0.94 } : undefined}
+          whileTap={canSend ? { scale: 0.92 } : undefined}
           transition={{ duration: 0.1 }}
-          className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,background-color] duration-150 hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,background-color] duration-150 hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-transparent disabled:text-muted-foreground disabled:opacity-60"
           aria-label={t('composer.send')}
         >
-          <SendHorizontal className="size-5 rtl:rotate-180" aria-hidden />
+          <SendHorizontal className="size-[18px] rtl:rotate-180" aria-hidden />
         </m.button>
       </div>
     </div>

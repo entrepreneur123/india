@@ -117,8 +117,6 @@ export interface Profile {
   verified?: boolean
   /** 040: the ID, shown as @handle (absent: not on this card; components/looks/look-name.tsx asks looks()). */
   handle?: string
-  /** 070: a stranger in an anonymous random chat: no name, photo, looks or profile (the id still reports and blocks). */
-  anon?: boolean
 }
 
 // ---- real identities and manners (035_identity_manners.sql; parsing and levels in lib/trust.ts) ----
@@ -800,7 +798,7 @@ export interface Backend {
    * `countries` (043, free): only people from these (ISO alpha-2, at most 10; empty = anywhere) whose own choice fits me.
    */
   /** `anon` (070): meet only people who chose anonymous chat too; the partner comes back as `anon`. */
-  findMatch(target: Target, lang?: string, countries?: readonly string[], anon?: boolean): Promise<Match | null>
+  findMatch(target: Target, lang?: string, countries?: readonly string[]): Promise<Match | null>
   cancelSearch(): Promise<void>
   /** While searching: called when the server pairs us, so the UI can ask again at once. Returns the stop function. */
   matchSignals(on: () => void): () => void

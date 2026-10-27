@@ -83,9 +83,9 @@ const fr: Dict = {
 
   'pf.title': 'Créez votre profil',
   'pf.body': 'C’est ce que les gens voient quand vous êtes mis en relation.',
-  'pf.name': 'Prénom',
+  'pf.name': "Prénom ou surnom",
   'pf.nameError': 'Ajoutez votre prénom',
-  'pf.namePlaceholder': 'Votre prénom',
+  'pf.namePlaceholder': "ex. Riya, Bébé Dino",
   'pf.iam': 'Je suis',
   'pf.gender': 'Genre',
   'pf.woman': 'Femme',
@@ -688,12 +688,6 @@ const fr: Dict = {
   'room.theme': "Décorer le salon",
   'room.themeHint': "Tout le salon le voit. Utilise un fond acheté ou prends-en un dans Looks.",
   'room.themeSaved': "Salon mis à jour",
-  'anon.label': "Comment se rencontrer",
-  'anon.profile': "Avec mon profil",
-  'anon.anon': "Anonyme",
-  'anon.name': "Inconnu",
-  'anon.profileHint': "Vous voyez le nom, la photo et le profil l'un de l'autre.",
-  'anon.anonHint': "Ni nom, ni photo, ni profil. Vous ne rencontrez que ceux qui ont choisi l'anonymat.",
   'voice.sys.cleared': "{name} a vidé le chat",
   'looking.tab': "Je cherche",
   'looking.placeholder': "Quelqu'un partant pour… ?",
@@ -706,6 +700,9 @@ const fr: Dict = {
   'lobby.party': "Entre amis ? Chat aléatoire en groupe",
   'settings.blurMedia': "Flouter les photos des autres",
   'settings.blurMediaBody': "Les photos et vidéos des chats et salons restent floues jusqu'à ce que tu les touches.",
+  'unfriend.blockTitle': "Bloquer aussi {name} ?",
+  'unfriend.keep': "Non merci",
+  'error.block_limit': "Tu ne peux plus bloquer personne aujourd’hui. Si quelqu’un te dérange, signale-le.",
 }
 
 export default fr

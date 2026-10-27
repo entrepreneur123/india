@@ -86,9 +86,9 @@ const ja: Dict = {
 
   'pf.title': 'プロフィールを作成',
   'pf.body': 'マッチしたときに相手に表示される情報です。',
-  'pf.name': '名前',
+  'pf.name': "名前またはニックネーム",
   'pf.nameError': '名前を入力してください',
-  'pf.namePlaceholder': '名前（下の名前）',
+  'pf.namePlaceholder': "例：リヤ、きょうりゅうくん",
   'pf.iam': '性別',
   'pf.gender': '性別',
   'pf.woman': '女性',
@@ -699,12 +699,6 @@ const ja: Dict = {
   'room.theme': "ルームを飾る",
   'room.themeHint': "ルームの全員に表示されます。購入した背景を使うか、ルックスで手に入れましょう。",
   'room.themeSaved': "ルームを更新しました",
-  'anon.label': "会い方",
-  'anon.profile': "プロフィールあり",
-  'anon.anon': "匿名",
-  'anon.name': "匿名さん",
-  'anon.profileHint': "お互いの名前・写真・プロフィールが見えます。",
-  'anon.anonHint': "名前・写真・プロフィールなしで話します。匿名を選んだ人同士だけが出会います。",
   'voice.sys.cleared': "{name}さんがチャットを消去しました",
   'looking.tab': "募集",
   'looking.placeholder': "〜する人いますか？",
@@ -717,6 +711,9 @@ const ja: Dict = {
   'lobby.party': "友達と一緒に？グループでランダムチャット",
   'settings.blurMedia': "他の人の写真をぼかす",
   'settings.blurMediaBody': "チャットやルームの写真・動画は、タップするまでぼかして表示されます。",
+  'unfriend.blockTitle': "{name}さんをブロックもしますか？",
+  'unfriend.keep': "いいえ",
+  'error.block_limit': "今日はこれ以上ブロックできません。困っている相手は通報してください。",
 }
 
 export default ja

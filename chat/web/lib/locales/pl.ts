@@ -83,9 +83,9 @@ const pl: Dict = {
 
   'pf.title': 'Utwórz profil',
   'pf.body': 'To zobaczą inni, gdy się z Tobą połączą.',
-  'pf.name': 'Imię',
+  'pf.name': "Imię lub pseudonim",
   'pf.nameError': 'Dodaj swoje imię',
-  'pf.namePlaceholder': 'Twoje imię',
+  'pf.namePlaceholder': "np. Riya, Mały Dino",
   'pf.iam': 'Jestem',
   'pf.gender': 'Płeć',
   'pf.woman': 'Kobieta',
@@ -690,12 +690,6 @@ const pl: Dict = {
   'room.theme': "Udekoruj pokój",
   'room.themeHint': "Widzą to wszyscy w pokoju. Użyj kupionego tła albo zdobądź je w Looks.",
   'room.themeSaved': "Pokój zaktualizowany",
-  'anon.label': "Jak się poznać",
-  'anon.profile': "Z profilem",
-  'anon.anon': "Anonimowo",
-  'anon.name': "Nieznajomy",
-  'anon.profileHint': "Widzicie nawzajem imię, zdjęcie i profil.",
-  'anon.anonHint': "Bez imion, zdjęć i profili. Poznajesz tylko osoby, które wybrały anonimowość.",
   'voice.sys.cleared': "{name} wyczyścił(a) czat",
   'looking.tab': "Szukam",
   'looking.placeholder': "Ktoś chętny na…?",
@@ -708,6 +702,9 @@ const pl: Dict = {
   'lobby.party': "Ze znajomymi? Losowy czat ekip",
   'settings.blurMedia': "Rozmywaj zdjęcia innych",
   'settings.blurMediaBody': "Zdjęcia i filmy w czatach i pokojach są rozmyte, dopóki ich nie dotkniesz.",
+  'unfriend.blockTitle': "Zablokować też {name}?",
+  'unfriend.keep': "Nie, dziękuję",
+  'error.block_limit': "Dziś nie możesz zablokować więcej osób. Jeśli ktoś ci przeszkadza, zgłoś go.",
 }
 
 export default pl

@@ -465,11 +465,11 @@ export class SupabaseBackend implements Backend {
 
   // ---- matching & chat ----
 
-  async findMatch(target: Target, lang?: string, countries: readonly string[] = [], anon = false): Promise<Match | null> {
+  async findMatch(target: Target, lang?: string, countries: readonly string[] = []): Promise<Match | null> {
     let id: string | null
     try {
       // The server prefers someone using the app in the same language for the first few seconds.
-      id = await this.rpc<string | null>('find_match4', { p_target: target, p_lang: lang ?? null, p_countries: countries.length ? countries : null, p_anon: anon })
+      id = await this.rpc<string | null>('find_match4', { p_target: target, p_lang: lang ?? null, p_countries: countries.length ? countries : null })
     } catch (e) {
       // A chat we just left (or abandoned) still holds the exit lock for a moment: keep waiting.
       if (e instanceof BackendError && e.code === 'exit_locked') return null
@@ -478,13 +478,10 @@ export class SupabaseBackend implements Backend {
     if (!id) return null
     try {
       // One request for the partner's card; their posts load only if the profile is opened (it fetches its own).
-      const rows = await this.rpc<(CardRow & { anon: boolean })[]>('match_card2', { p_match: id })
+      const rows = await this.rpc<CardRow[]>('match_card2', { p_match: id })
       const c = rows?.[0]
       if (!c) throw new BackendError('not_found')
-      // 070: a stranger's card comes back without name or photo, and nothing more is asked about them.
-      const [partner, extras] = c.anon
-        ? [{ id: c.id, name: '', gender: gender(c.gender), age: 0, city: '', bio: '', photoUrl: null, country: c.country, posts: [], anon: true }, []]
-        : await Promise.all([this.toProfile(c, []), this.extras([c.id]).catch(() => [])])
+      const [partner, extras] = await Promise.all([this.toProfile(c, []), this.extras([c.id]).catch(() => [])])
       if (extras[0]) partner.interests = interestsOf(extras[0].interests)
       this.abandoned.delete(id)
       track('match_found')
@@ -639,8 +636,8 @@ export class SupabaseBackend implements Backend {
       presence: onPresence,
       // 35: they turned VIP off or on; what I may see of them is asked again (the server decides).
       profile: async () => {
-        const rows = await this.rpc<(CardRow & { anon: boolean })[]>('match_card2', { p_match: matchId }).catch(() => [])
-        if (rows[0] && !rows[0].anon && !closed) emit({ type: 'partner', partner: await this.toProfile(rows[0], []) })
+        const rows = await this.rpc<CardRow[]>('match_card2', { p_match: matchId }).catch(() => [])
+        if (rows[0] && !closed) emit({ type: 'partner', partner: await this.toProfile(rows[0], []) })
       },
     }
     const hub = this.typingHub(matchId)

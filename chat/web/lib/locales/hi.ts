@@ -83,9 +83,9 @@ const hi: Dict = {
 
   'pf.title': 'अपनी प्रोफ़ाइल बनाएँ',
   'pf.body': 'मैच होने पर लोग यही देखेंगे।',
-  'pf.name': 'नाम',
+  'pf.name': "नाम या उपनाम",
   'pf.nameError': 'अपना पहला नाम लिखें',
-  'pf.namePlaceholder': 'आपका पहला नाम',
+  'pf.namePlaceholder': "जैसे रिया, बेबी डिनो",
   'pf.iam': 'मैं हूँ',
   'pf.gender': 'जेंडर',
   'pf.woman': 'महिला',
@@ -685,12 +685,6 @@ const hi: Dict = {
   'room.theme': "रूम सजाएँ",
   'room.themeHint': "रूम में सब इसे देखते हैं। खरीदा हुआ बैकग्राउंड लगाएँ या Looks से लें।",
   'room.themeSaved': "रूम अपडेट हो गया",
-  'anon.label': "कैसे मिलें",
-  'anon.profile': "प्रोफ़ाइल के साथ",
-  'anon.anon': "गुमनाम",
-  'anon.name': "अजनबी",
-  'anon.profileHint': "आप दोनों एक-दूसरे का नाम, फ़ोटो और प्रोफ़ाइल देखते हैं।",
-  'anon.anonHint': "न नाम, न फ़ोटो, न प्रोफ़ाइल। आप सिर्फ़ गुमनाम चुनने वालों से मिलेंगे।",
   'voice.sys.cleared': "{name} ने चैट साफ़ की",
   'looking.tab': "तलाश",
   'looking.placeholder': "कोई… करना चाहेगा?",
@@ -703,6 +697,9 @@ const hi: Dict = {
   'lobby.party': "दोस्तों के साथ? ग्रुप रैंडम चैट",
   'settings.blurMedia': "दूसरों की फ़ोटो धुंधली करें",
   'settings.blurMediaBody': "चैट और रूम की फ़ोटो और वीडियो टैप करने तक धुंधले रहेंगे।",
+  'unfriend.blockTitle': "{name} को ब्लॉक भी करें?",
+  'unfriend.keep': "नहीं",
+  'error.block_limit': "आज आप और लोगों को ब्लॉक नहीं कर सकते। कोई परेशान करे तो रिपोर्ट करें।",
 }
 
 export default hi

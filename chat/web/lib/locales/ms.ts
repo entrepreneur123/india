@@ -86,9 +86,9 @@ const ms: Dict = {
 
   'pf.title': 'Buat profil anda',
   'pf.body': 'Inilah yang orang lihat apabila anda dipadankan.',
-  'pf.name': 'Nama',
+  'pf.name': "Nama atau nama panggilan",
   'pf.nameError': 'Tambah nama pertama anda',
-  'pf.namePlaceholder': 'Nama pertama anda',
+  'pf.namePlaceholder': "cth. Riya, Dino Kecil",
   'pf.iam': 'Saya',
   'pf.gender': 'Jantina',
   'pf.woman': 'Perempuan',
@@ -699,12 +699,6 @@ const ms: Dict = {
   'room.theme': "Hias bilik",
   'room.themeHint': "Semua dalam bilik nampak. Guna latar yang dibeli, atau dapatkan di Looks.",
   'room.themeSaved': "Bilik dikemas kini",
-  'anon.label': "Cara berjumpa",
-  'anon.profile': "Dengan profil",
-  'anon.anon': "Tanpa nama",
-  'anon.name': "Orang asing",
-  'anon.profileHint': "Anda berdua melihat nama, foto dan profil masing-masing.",
-  'anon.anonHint': "Tiada nama, foto atau profil. Anda hanya berjumpa mereka yang memilih tanpa nama.",
   'voice.sys.cleared': "{name} mengosongkan sembang",
   'looking.tab': "Mencari",
   'looking.placeholder': "Siapa nak…?",
@@ -717,6 +711,9 @@ const ms: Dict = {
   'lobby.party': "Dengan kawan? Sembang rawak kumpulan",
   'settings.blurMedia': "Kaburkan foto daripada orang lain",
   'settings.blurMediaBody': "Foto dan video dalam sembang dan bilik kekal kabur sehingga anda ketik.",
+  'unfriend.blockTitle': "Sekat {name} juga?",
+  'unfriend.keep': "Tidak",
+  'error.block_limit': "Anda tidak boleh menyekat lagi hari ini. Jika ada yang mengganggu, laporkan.",
 }
 
 export default ms

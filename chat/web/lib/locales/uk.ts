@@ -86,9 +86,9 @@ const uk: Dict = {
 
   'pf.title': 'Створіть профіль',
   'pf.body': 'Це побачать люди, коли ви з’єднаєтеся.',
-  'pf.name': 'Ім’я',
+  'pf.name': "Ім'я або нікнейм",
   'pf.nameError': 'Вкажіть ім’я',
-  'pf.namePlaceholder': 'Ваше ім’я',
+  'pf.namePlaceholder': "напр. Рія, Динозаврик",
   'pf.iam': 'Я',
   'pf.gender': 'Стать',
   'pf.woman': 'Жінка',
@@ -703,12 +703,6 @@ const uk: Dict = {
   'room.theme': "Оформити кімнату",
   'room.themeHint': "Це бачать усі в кімнаті. Виберіть куплений фон або отримайте його в Looks.",
   'room.themeSaved': "Кімнату оновлено",
-  'anon.label': "Як знайомитися",
-  'anon.profile': "З профілем",
-  'anon.anon': "Анонімно",
-  'anon.name': "Незнайомець",
-  'anon.profileHint': "Ви обоє бачите ім’я, фото й профіль одне одного.",
-  'anon.anonHint': "Без імен, фото й профілів. Ви зустрічаєте лише тих, хто теж обрав анонімно.",
   'voice.sys.cleared': "{name} очистив(ла) чат",
   'looking.tab': "Шукаю",
   'looking.placeholder': "Хто хоче…?",
@@ -721,6 +715,9 @@ const uk: Dict = {
   'lobby.party': "З друзями? Випадковий чат компаній",
   'settings.blurMedia': "Розмивати фото інших",
   'settings.blurMediaBody': "Фото й відео в чатах і кімнатах розмиті, доки ви їх не торкнетеся.",
+  'unfriend.blockTitle': "Заблокувати й {name}?",
+  'unfriend.keep': "Ні, дякую",
+  'error.block_limit': "Сьогодні більше не можна блокувати. Якщо хтось заважає, поскаржтеся.",
 }
 
 export default uk

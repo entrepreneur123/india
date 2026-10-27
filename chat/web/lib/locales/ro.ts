@@ -83,9 +83,9 @@ const ro: Dict = {
 
   'pf.title': 'Creează-ți profilul',
   'pf.body': 'Asta văd oamenii când vă potriviți.',
-  'pf.name': 'Nume',
+  'pf.name': "Nume sau poreclă",
   'pf.nameError': 'Adaugă-ți prenumele',
-  'pf.namePlaceholder': 'Prenumele tău',
+  'pf.namePlaceholder': "ex. Riya, Dino",
   'pf.iam': 'Sunt',
   'pf.gender': 'Gen',
   'pf.woman': 'Femeie',
@@ -688,12 +688,6 @@ const ro: Dict = {
   'room.theme': "Decorează camera",
   'room.themeHint': "Toți din cameră îl văd. Folosește un fundal cumpărat sau ia unul din Looks.",
   'room.themeSaved': "Cameră actualizată",
-  'anon.label': "Cum vă cunoașteți",
-  'anon.profile': "Cu profilul meu",
-  'anon.anon': "Anonim",
-  'anon.name': "Necunoscut",
-  'anon.profileHint': "Vă vedeți reciproc numele, poza și profilul.",
-  'anon.anonHint': "Fără nume, poze sau profiluri. Întâlnești doar pe cei care au ales anonim.",
   'voice.sys.cleared': "{name} a golit chatul",
   'looking.tab': "Caut",
   'looking.placeholder': "Cineva pentru…?",
@@ -706,6 +700,9 @@ const ro: Dict = {
   'lobby.party': "Cu prietenii? Chat aleatoriu de grup",
   'settings.blurMedia': "Estompează fotografiile altora",
   'settings.blurMediaBody': "Fotografiile și videoclipurile din chaturi și camere rămân estompate până le atingi.",
+  'unfriend.blockTitle': "Îl blochezi și pe {name}?",
+  'unfriend.keep': "Nu, mulțumesc",
+  'error.block_limit': "Azi nu mai poți bloca pe nimeni. Dacă te deranjează cineva, raportează-l.",
 }
 
 export default ro

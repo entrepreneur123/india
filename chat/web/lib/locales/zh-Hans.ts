@@ -86,9 +86,9 @@ const zhHans: Dict = {
 
   'pf.title': '创建个人资料',
   'pf.body': '匹配成功后，对方会看到这些信息。',
-  'pf.name': '名字',
+  'pf.name': "名字或昵称",
   'pf.nameError': '请填写你的名字',
-  'pf.namePlaceholder': '你的名字',
+  'pf.namePlaceholder': "例如：Riya、小恐龙",
   'pf.iam': '我是',
   'pf.gender': '性别',
   'pf.woman': '女',
@@ -699,12 +699,6 @@ const zhHans: Dict = {
   'room.theme': "装饰房间",
   'room.themeHint': "房间里的所有人都能看到。使用已购买的背景，或去造型商店获取。",
   'room.themeSaved': "房间已更新",
-  'anon.label': "见面方式",
-  'anon.profile': "公开资料",
-  'anon.anon': "匿名",
-  'anon.name': "陌生人",
-  'anon.profileHint': "双方都能看到彼此的名字、照片和资料。",
-  'anon.anonHint': "不显示名字、照片和资料。只会遇到同样选择匿名的人。",
   'voice.sys.cleared': "{name} 清空了聊天",
   'looking.tab': "找人",
   'looking.placeholder': "有人一起……吗？",
@@ -717,6 +711,9 @@ const zhHans: Dict = {
   'lobby.party': "和朋友一起？多人随机聊天",
   'settings.blurMedia': "模糊他人发送的照片",
   'settings.blurMediaBody': "聊天和房间里的照片和视频在你点开前保持模糊。",
+  'unfriend.blockTitle': "也屏蔽 {name} 吗？",
+  'unfriend.keep': "不用了",
+  'error.block_limit': "今天不能再屏蔽更多人了。如有人骚扰，请举报。",
 }
 
 export default zhHans

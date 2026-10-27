@@ -3,7 +3,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, Check, EllipsisVertical, LogOut, Pencil, Shuffle, UserPlus } from 'lucide-react'
 import type { GroupChat, GroupLine, PartyState } from '@/lib/backend'
-import { mutate } from 'swr'
+import { useSWRConfig } from 'swr'
 import { savedFlag } from '@/lib/flags'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -117,7 +117,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
           lines.map((l, i) => {
             if (l.kind !== 'text') {
               return (
-                <li key={l.id} className="mx-auto my-1 max-w-xs rounded-lg bg-bubble-in px-3 py-1.5 text-center text-xs leading-relaxed text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
+                <li key={l.id} className="mx-auto my-2 max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
                   {note({ kind: l.kind, body: l.body, senderId: l.senderId }, members)}
                 </li>
               )
@@ -136,7 +136,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
                     <span className="w-7 shrink-0" aria-hidden />
                   )
                 ) : null}
-                <Bubble mine={mine} tail={first} className="px-2.5 pt-1 pb-1.5">
+                <Bubble mine={mine} first={first} className="px-2.5 pt-1 pb-1.5">
                   {!mine && first ? <p className="text-xs font-semibold text-primary-text">{p?.name ?? '…'}</p> : null}
                   <p dir="auto" className="text-[15px] leading-snug break-words whitespace-pre-wrap">
                     <LinkText text={l.body} />
@@ -190,6 +190,7 @@ function PartySheet({ groupId, members, onClose }: { groupId: string; members: G
   const toast = useToast()
   const { st } = useSocialT()
   const { me, openGroup } = useApp()
+  const { mutate } = useSWRConfig() // the shell's cache, where 'groups' lives
   const [ready, setReady] = useState(true)
   const [state, setState] = useState<PartyState | null>(null)
   const [searching, setSearching] = useState(false)

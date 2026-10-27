@@ -86,9 +86,9 @@ const ar: Dict = {
 
   'pf.title': 'أنشئ ملفك الشخصي',
   'pf.body': 'هذا ما سيراه الناس عند التوافق معك.',
-  'pf.name': 'الاسم',
+  'pf.name': "الاسم أو اللقب",
   'pf.nameError': 'أضف اسمك الأول',
-  'pf.namePlaceholder': 'اسمك الأول',
+  'pf.namePlaceholder': "مثال: ريا، ديناصور صغير",
   'pf.iam': 'أنا',
   'pf.gender': 'الجنس',
   'pf.woman': 'امرأة',
@@ -707,12 +707,6 @@ const ar: Dict = {
   'room.theme': "تزيين الغرفة",
   'room.themeHint': "يراها الجميع في الغرفة. استخدم خلفية اشتريتها أو احصل على واحدة من Looks.",
   'room.themeSaved': "تم تحديث الغرفة",
-  'anon.label': "طريقة اللقاء",
-  'anon.profile': "بملفي الشخصي",
-  'anon.anon': "مجهول",
-  'anon.name': "غريب",
-  'anon.profileHint': "يرى كلٌّ منكما اسم الآخر وصورته وملفه.",
-  'anon.anonHint': "بلا أسماء أو صور أو ملفات. تلتقي فقط بمن اختار المجهول.",
   'voice.sys.cleared': "مسح {name} الدردشة",
   'looking.tab': "أبحث عن",
   'looking.placeholder': "من يريد…؟",
@@ -725,6 +719,9 @@ const ar: Dict = {
   'lobby.party': "مع أصدقائك؟ دردشة عشوائية جماعية",
   'settings.blurMedia': "تمويه صور الآخرين",
   'settings.blurMediaBody': "تبقى الصور والفيديوهات في الدردشات والغرف مموّهة حتى تنقر عليها.",
+  'unfriend.blockTitle': "هل تحظر {name} أيضًا؟",
+  'unfriend.keep': "لا، شكرًا",
+  'error.block_limit': "لا يمكنك حظر المزيد اليوم. إن أزعجك أحد فأبلغ عنه.",
 }
 
 export default ar

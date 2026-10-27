@@ -83,9 +83,9 @@ const nl: Dict = {
 
   'pf.title': 'Maak je profiel',
   'pf.body': 'Dit zien mensen als jullie een match hebben.',
-  'pf.name': 'Naam',
+  'pf.name': "Naam of bijnaam",
   'pf.nameError': 'Vul je voornaam in',
-  'pf.namePlaceholder': 'Je voornaam',
+  'pf.namePlaceholder': "bijv. Riya, Babydino",
   'pf.iam': 'Ik ben',
   'pf.gender': 'Gender',
   'pf.woman': 'Vrouw',
@@ -686,12 +686,6 @@ const nl: Dict = {
   'room.theme': "Ruimte aankleden",
   'room.themeHint': "Iedereen in de ruimte ziet het. Gebruik een gekochte achtergrond of haal er een in Looks.",
   'room.themeSaved': "Ruimte bijgewerkt",
-  'anon.label': "Hoe ontmoeten",
-  'anon.profile': "Met mijn profiel",
-  'anon.anon': "Anoniem",
-  'anon.name': "Onbekende",
-  'anon.profileHint': "Jullie zien elkaars naam, foto en profiel.",
-  'anon.anonHint': "Geen namen, foto's of profielen. Je ontmoet alleen anderen die anoniem kozen.",
   'voice.sys.cleared': "{name} heeft de chat gewist",
   'looking.tab': "Gezocht",
   'looking.placeholder': "Iemand zin in…?",
@@ -704,6 +698,9 @@ const nl: Dict = {
   'lobby.party': "Met vrienden? Willekeurige groepschat",
   'settings.blurMedia': "Foto's van anderen vervagen",
   'settings.blurMediaBody': "Foto's en video's in chats en kamers blijven vaag tot je erop tikt.",
+  'unfriend.blockTitle': "{name} ook blokkeren?",
+  'unfriend.keep': "Nee, bedankt",
+  'error.block_limit': "Je kunt vandaag niemand meer blokkeren. Valt iemand je lastig, meld diegene dan.",
 }
 
 export default nl

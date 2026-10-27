@@ -236,7 +236,8 @@ function Row({ item, highlight, onDone }: { item: InboxItem; highlight?: boolean
         variant="secondary"
         onClick={() => {
           onDone()
-          openThread(item.actor, item.matchId ?? undefined)
+          // A new friend: our own thread (083), not the random chat where we met.
+          openThread(item.actor, item.kind === 'friend_accept' ? undefined : item.matchId ?? undefined)
         }}
       >
         <MessageCircle className="size-4" aria-hidden /> {item.kind === 'message' ? st('inbox.reply') : t('profile.message')}

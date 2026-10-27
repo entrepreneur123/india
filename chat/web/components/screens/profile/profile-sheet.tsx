@@ -1,8 +1,9 @@
 'use client'
 
+import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Ban, Check, Flag, Heart, MessageCircle, UserPlus, X } from 'lucide-react'
+import { Ban, Check, Flag, Heart, MessageCircle, UserMinus, UserPlus, X } from 'lucide-react'
 import type { FriendState, Interest, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -54,6 +55,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const { data: friends, mutate: refreshFriends } = useSWR('friends', () => backend.friends())
   const [busy, setBusy] = useState(false)
   const [reportOpen, setReportOpen] = useState<'report' | 'block' | null>(null)
+  const [unfriendOpen, setUnfriendOpen] = useState(false)
   const social = useSWR(isMe ? null : socialKey(userId), () => backend.profileSocial(userId))
   const like = async () => {
     const was = social.data
@@ -183,9 +185,16 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                   >
                     <Heart className={cn('size-4.5', social.data?.liked && 'fill-current')} aria-hidden />
                   </Button>
-                  <Button variant="outline" size="icon" onClick={() => setReportOpen('block')} aria-label={t('block.only')} title={t('block.only')}>
-                    <Ban className="size-4.5" aria-hidden />
-                  </Button>
+                  {/* 8: a friend is removed first (then asked about blocking); anyone else can be blocked. */}
+                  {state === 'friends' ? (
+                    <Button variant="outline" size="icon" onClick={() => setUnfriendOpen(true)} aria-label={t('recent.remove')} title={t('recent.remove')}>
+                      <UserMinus className="size-4.5" aria-hidden />
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="icon" onClick={() => setReportOpen('block')} aria-label={t('block.only')} title={t('block.only')}>
+                      <Ban className="size-4.5" aria-hidden />
+                    </Button>
+                  )}
                   <Button variant="outline" size="icon" onClick={() => setReportOpen('report')} aria-label={t('chat.report', { name: shown.name })} title={t('chat.report', { name: shown.name })}>
                     <Flag className="size-4.5" aria-hidden />
                   </Button>
@@ -195,6 +204,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
           >
             {state === 'friends' ? <FriendContacts userId={userId} name={shown.name} className="mx-4 mt-6" /> : null}
           </ProfileContent>
+          {isMe ? null : <UnfriendSheet person={unfriendOpen ? shown : null} onClose={() => setUnfriendOpen(false)} />}
           {isMe ? null : (
             <ReportSheet
               open={reportOpen !== null}

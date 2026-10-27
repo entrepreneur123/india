@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video, Wallpaper, X } from 'lucide-react'
 import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
@@ -92,10 +92,9 @@ export function ChatView({
   const { me, openProfile } = useApp()
   const live = mode === 'random'
   const chat = useMatchChat(matchId, opened.name, live)
-  // Their card as I may see it now (35: they may turn VIP off or on during the chat); a stranger (070) stays as opened.
-  const partner = opened.anon ? opened : chat.partner ?? opened
-  // A stranger's looks, badge and profile stay hidden (an empty id asks nothing).
-  const lookId = partner.anon ? '' : partner.id
+  // Their card as I may see it now (35: they may turn VIP off or on during the chat).
+  const partner = chat.partner ?? opened
+  const lookId = partner.id
   // Each side's chat bubble (062), as both of us see it.
   const mySkin = useLook(me.id)?.bubble
   const theirLook = useLook(lookId)
@@ -127,6 +126,8 @@ export function ChatView({
   const [theirsOn, setTheirsOn] = useState(false)
   useEffect(() => setTheirsOn(false), [matchId])
   const wall = theirsOn && theirWall ? theirWall : myWall
+  // "Read" / "Sent" under my latest line only.
+  const latestMine = chat.messages?.reduce<number | null>((id, x) => (x.fromMe ? x.id : id), null)
   // A link opened from the chat: a column beside it on wide screens, a tall sheet on phones.
   const wide = useWideScreen()
   const [viewUrl, setViewUrl] = useState<string | null>(null)
@@ -236,14 +237,13 @@ export function ChatView({
           )}
           <button
             type="button"
-            disabled={partner.anon}
             onClick={() => openProfile(partner.id, { matchId })}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted disabled:hover:bg-transparent"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted"
           >
             <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                <span className={cn(isVip(partner) && 'vip-gold italic')}>{partner.anon ? partner.name : nameAge(partner.name, partner.age)}</span> <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+                <span className={cn(isVip(partner) && 'vip-gold italic')}>{nameAge(partner.name, partner.age)}</span> <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (
@@ -323,7 +323,7 @@ export function ChatView({
           aria-label={t('chat.conversation', { name: partner.name })}
         >
           {live ? (
-            <li className="mx-auto mb-2 max-w-xs rounded-lg bg-bubble-in px-3 py-1.5 text-center text-xs leading-relaxed text-bubble-meta shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]">
+            <li className="mx-auto mt-2 mb-1 max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
               {t('chat.intro', { name: partner.name })}
             </li>
           ) : null}
@@ -334,15 +334,29 @@ export function ChatView({
               <Skeleton className="mt-3 h-10 w-56 self-start rounded-lg" />
             </>
           ) : (
-            chat.messages.map((msg, i) => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                grouped={i > 0 && chat.messages![i - 1].fromMe === msg.fromMe}
-                read={msg.fromMe && msg.id <= chat.partnerRead}
-                skin={msg.fromMe ? mySkin : theirSkin}
-              />
-            ))
+            chat.messages.map((msg, i, all) => {
+              // A run: one sender's lines minutes apart; a new day starts with its date.
+              const prev = all[i - 1]
+              const next = all[i + 1]
+              const newDay = !prev || !sameDay(prev.at, msg.at)
+              const first = newDay || prev.fromMe !== msg.fromMe || msg.at - prev.at > RUN_GAP
+              const pause = !next || next.at - msg.at > RUN_GAP || !sameDay(msg.at, next.at)
+              const last = pause || next.fromMe !== msg.fromMe
+              return (
+                <Fragment key={msg.id}>
+                  {newDay ? <DayLine at={msg.at} /> : null}
+                  <MessageBubble
+                    message={msg}
+                    first={first}
+                    last={last}
+                    time={pause}
+                    status={msg.id === latestMine ? (msg.id <= chat.partnerRead ? 'read' : 'sent') : null}
+                    skin={msg.fromMe ? mySkin : theirSkin}
+                    avatar={msg.fromMe ? null : <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={28} />}
+                  />
+                </Fragment>
+              )
+            })
           )}
           <AnimatePresence>{chat.typing ? <TypingBubble key="typing" name={partner.name} /> : null}</AnimatePresence>
           {ended ? (
@@ -499,3 +513,23 @@ function CallButton({ busy, disabled, offline, onCall }: { busy: boolean; disabl
     </div>
   )
 }
+
+/** Lines further apart than this start a new run (their own time under them). */
+const RUN_GAP = 5 * 60_000
+const sameDay = (a: number, b: number) => new Date(a).toDateString() === new Date(b).toDateString()
+
+/** "Today", "Yesterday", or the date, between days of a conversation. */
+function DayLine({ at }: { at: number }) {
+  const { locale } = useI18n()
+  const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(at).setHours(0, 0, 0, 0)) / 86_400_000)
+  const label =
+    days < 2
+      ? capitalise(new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(-days, 'day'), locale)
+      : new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'long', day: 'numeric', ...(days > 300 && { year: 'numeric' }) }).format(at)
+  return (
+    <li className="mt-5 mb-1 text-center text-[11px] font-semibold tracking-wide text-muted-foreground" role="separator">
+      {label}
+    </li>
+  )
+}
+const capitalise = (s: string, locale: string) => s.charAt(0).toLocaleUpperCase(locale) + s.slice(1)

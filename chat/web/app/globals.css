@@ -123,10 +123,10 @@
   --destructive: #c5221f;
   --online: #1e8e3e;
   --busy: #2563eb;
-  /* Chats: a plain grey wall, orange-soft sent / white received bubbles. */
-  --chat-wall: #f5f5f4;
-  --bubble-out: #ffe8cc;
-  --bubble-in: #ffffff;
+  /* Chats (9): the plain page, a soft orange fill for mine and a soft grey for theirs (no tails or shadows). */
+  --chat-wall: #ffffff;
+  --bubble-out: #ffecd6;
+  --bubble-in: #f2f1ef;
   --bubble-text: #1c1917;
   --bubble-meta: #57534e;
   --tick-read: #b45309;

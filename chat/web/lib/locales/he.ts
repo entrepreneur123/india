@@ -86,9 +86,9 @@ const he: Dict = {
 
   'pf.title': 'יוצרים פרופיל',
   'pf.body': 'זה מה שאנשים רואים כשיש התאמה.',
-  'pf.name': 'שם',
+  'pf.name': "שם או כינוי",
   'pf.nameError': 'צריך להוסיף שם פרטי',
-  'pf.namePlaceholder': 'השם הפרטי שלך',
+  'pf.namePlaceholder': "למשל ריה, דינו קטן",
   'pf.iam': 'אני',
   'pf.gender': 'מגדר',
   'pf.woman': 'אישה',
@@ -701,12 +701,6 @@ const he: Dict = {
   'room.theme': "עיצוב החדר",
   'room.themeHint': "כולם בחדר רואים. השתמשו ברקע שקניתם או קבלו אחד ב־Looks.",
   'room.themeSaved': "החדר עודכן",
-  'anon.label': "איך להיפגש",
-  'anon.profile': "עם הפרופיל שלי",
-  'anon.anon': "אנונימי",
-  'anon.name': "זר",
-  'anon.profileHint': "שניכם רואים את השם, התמונה והפרופיל זה של זה.",
-  'anon.anonHint': "בלי שמות, תמונות או פרופילים. תפגשו רק מי שבחר אנונימי.",
   'voice.sys.cleared': "{name} ניקה/תה את הצ׳אט",
   'looking.tab': "מחפש/ת",
   'looking.placeholder': "מישהו בא ל…?",
@@ -719,6 +713,9 @@ const he: Dict = {
   'lobby.party': "עם חברים? צ׳אט אקראי קבוצתי",
   'settings.blurMedia': "טשטוש תמונות של אחרים",
   'settings.blurMediaBody': "תמונות וסרטונים בצ'אטים ובחדרים יישארו מטושטשים עד שתקישו עליהם.",
+  'unfriend.blockTitle': "לחסום גם את {name}?",
+  'unfriend.keep': "לא תודה",
+  'error.block_limit': "אי אפשר לחסום עוד אנשים היום. אם מישהו מטריד, דווחו עליו.",
 }
 
 export default he

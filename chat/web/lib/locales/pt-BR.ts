@@ -83,9 +83,9 @@ const ptBR: Dict = {
 
   'pf.title': 'Crie seu perfil',
   'pf.body': 'É isso que as pessoas veem quando dá match.',
-  'pf.name': 'Nome',
+  'pf.name': "Nome ou apelido",
   'pf.nameError': 'Coloque seu primeiro nome',
-  'pf.namePlaceholder': 'Seu primeiro nome',
+  'pf.namePlaceholder': "ex.: Riya, Dino Bebê",
   'pf.iam': 'Eu sou',
   'pf.gender': 'Gênero',
   'pf.woman': 'Mulher',
@@ -685,12 +685,6 @@ const ptBR: Dict = {
   'room.theme': "Decorar a sala",
   'room.themeHint': "Todos na sala veem. Use um fundo que você comprou ou pegue um em Looks.",
   'room.themeSaved': "Sala atualizada",
-  'anon.label': "Como conhecer",
-  'anon.profile': "Com meu perfil",
-  'anon.anon': "Anônimo",
-  'anon.name': "Desconhecido",
-  'anon.profileHint': "Vocês veem o nome, a foto e o perfil um do outro.",
-  'anon.anonHint': "Sem nomes, fotos ou perfis. Você só conhece quem também escolheu anônimo.",
   'voice.sys.cleared': "{name} limpou o chat",
   'looking.tab': "Procuro",
   'looking.placeholder': "Alguém topa…?",
@@ -703,6 +697,9 @@ const ptBR: Dict = {
   'lobby.party': "Com amigos? Chat aleatório em grupo",
   'settings.blurMedia': "Desfocar fotos de outras pessoas",
   'settings.blurMediaBody': "Fotos e vídeos em chats e salas ficam desfocados até você tocar neles.",
+  'unfriend.blockTitle': "Bloquear {name} também?",
+  'unfriend.keep': "Não, obrigado",
+  'error.block_limit': "Você não pode bloquear mais pessoas hoje. Se alguém estiver incomodando, denuncie.",
 }
 
 export default ptBR

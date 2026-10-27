@@ -86,9 +86,9 @@ const th: Dict = {
 
   'pf.title': 'สร้างโปรไฟล์',
   'pf.body': 'นี่คือสิ่งที่คนอื่นเห็นเมื่อจับคู่กับคุณ',
-  'pf.name': 'ชื่อ',
+  'pf.name': "ชื่อหรือชื่อเล่น",
   'pf.nameError': 'ใส่ชื่อจริงของคุณ',
-  'pf.namePlaceholder': 'ชื่อจริงของคุณ',
+  'pf.namePlaceholder': "เช่น ริยา, ไดโนน้อย",
   'pf.iam': 'ฉันเป็น',
   'pf.gender': 'เพศ',
   'pf.woman': 'ผู้หญิง',
@@ -699,12 +699,6 @@ const th: Dict = {
   'room.theme': "ตกแต่งห้อง",
   'room.themeHint': "ทุกคนในห้องจะเห็น ใช้พื้นหลังที่ซื้อไว้ หรือซื้อใหม่ใน Looks",
   'room.themeSaved': "อัปเดตห้องแล้ว",
-  'anon.label': "วิธีพบกัน",
-  'anon.profile': "แสดงโปรไฟล์",
-  'anon.anon': "ไม่ระบุตัวตน",
-  'anon.name': "คนแปลกหน้า",
-  'anon.profileHint': "ทั้งคู่จะเห็นชื่อ รูป และโปรไฟล์ของกันและกัน",
-  'anon.anonHint': "ไม่มีชื่อ รูป หรือโปรไฟล์ จะพบเฉพาะคนที่เลือกไม่ระบุตัวตนเหมือนกัน",
   'voice.sys.cleared': "{name} ล้างแชทแล้ว",
   'looking.tab': "หาเพื่อน",
   'looking.placeholder': "มีใครอยาก… ไหม",
@@ -717,6 +711,9 @@ const th: Dict = {
   'lobby.party': "มากับเพื่อน? แชทสุ่มแบบกลุ่ม",
   'settings.blurMedia': "เบลอรูปจากคนอื่น",
   'settings.blurMediaBody': "รูปและวิดีโอในแชตและห้องจะเบลอจนกว่าคุณจะแตะ",
+  'unfriend.blockTitle': "บล็อก {name} ด้วยไหม",
+  'unfriend.keep': "ไม่ล่ะ",
+  'error.block_limit': "วันนี้บล็อกเพิ่มไม่ได้แล้ว ถ้ามีคนก่อกวนให้รายงาน",
 }
 
 export default th

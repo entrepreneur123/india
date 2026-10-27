@@ -75,7 +75,7 @@ function RateBody({ target, onClose }: { target: RateTarget; onClose: (rated: bo
 
   return (
     <div className="flex flex-col items-center px-6 pt-7 pb-6 text-center" aria-label={tt('rate.label')}>
-      <UserAvatar userId={target.partner.anon ? '' : target.partner.id} name={target.partner.name} src={target.partner.photoUrl} size={64} />
+      <UserAvatar userId={target.partner.id} name={target.partner.name} src={target.partner.photoUrl} size={64} />
       <h2 className="mt-3 text-[22px] leading-tight font-extrabold tracking-tight text-balance">{tt('rate.title', { name: target.partner.name })}</h2>
       <p className="mt-1.5 text-sm text-muted-foreground">{tt('rate.body')}</p>
 

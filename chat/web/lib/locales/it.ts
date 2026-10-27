@@ -83,9 +83,9 @@ const it: Dict = {
 
   'pf.title': 'Crea il tuo profilo',
   'pf.body': 'È quello che vedono le persone quando vi abbinate.',
-  'pf.name': 'Nome',
+  'pf.name': "Nome o soprannome",
   'pf.nameError': 'Aggiungi il tuo nome',
-  'pf.namePlaceholder': 'Il tuo nome',
+  'pf.namePlaceholder': "es. Riya, Dino",
   'pf.iam': 'Sono',
   'pf.gender': 'Genere',
   'pf.woman': 'Donna',
@@ -686,12 +686,6 @@ const it: Dict = {
   'room.theme': "Decora la stanza",
   'room.themeHint': "Lo vedono tutti nella stanza. Usa uno sfondo che hai comprato o prendine uno in Looks.",
   'room.themeSaved': "Stanza aggiornata",
-  'anon.label': "Come incontrarsi",
-  'anon.profile': "Con il profilo",
-  'anon.anon': "Anonimo",
-  'anon.name': "Sconosciuto",
-  'anon.profileHint': "Vi vedete a vicenda nome, foto e profilo.",
-  'anon.anonHint': "Niente nomi, foto o profili. Incontri solo chi ha scelto l'anonimato.",
   'voice.sys.cleared': "{name} ha svuotato la chat",
   'looking.tab': "Cerco",
   'looking.placeholder': "Qualcuno per…?",
@@ -704,6 +698,9 @@ const it: Dict = {
   'lobby.party': "Con gli amici? Chat casuale di gruppo",
   'settings.blurMedia': "Sfoca le foto degli altri",
   'settings.blurMediaBody': "Foto e video in chat e stanze restano sfocati finché non li tocchi.",
+  'unfriend.blockTitle': "Bloccare anche {name}?",
+  'unfriend.keep': "No, grazie",
+  'error.block_limit': "Oggi non puoi bloccare altre persone. Se qualcuno ti infastidisce, segnalalo.",
 }
 
 export default it

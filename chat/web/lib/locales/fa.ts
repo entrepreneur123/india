@@ -86,9 +86,9 @@ const fa: Dict = {
 
   'pf.title': 'پروفایلتان را بسازید',
   'pf.body': 'این همان چیزی است که دیگران موقع آشنایی می‌بینند.',
-  'pf.name': 'نام',
+  'pf.name': "نام یا نام مستعار",
   'pf.nameError': 'نام کوچکتان را وارد کنید',
-  'pf.namePlaceholder': 'نام کوچک شما',
+  'pf.namePlaceholder': "مثلاً ریا، دایناسور کوچولو",
   'pf.iam': 'من',
   'pf.gender': 'جنسیت',
   'pf.woman': 'زن',
@@ -699,12 +699,6 @@ const fa: Dict = {
   'room.theme': "تزئین اتاق",
   'room.themeHint': "همه در اتاق آن را می‌بینند. از پس‌زمینه‌ای که خریده‌اید استفاده کنید یا از Looks بگیرید.",
   'room.themeSaved': "اتاق به‌روز شد",
-  'anon.label': "نحوه آشنایی",
-  'anon.profile': "با پروفایلم",
-  'anon.anon': "ناشناس",
-  'anon.name': "ناشناس",
-  'anon.profileHint': "هر دو نام، عکس و پروفایل یکدیگر را می‌بینید.",
-  'anon.anonHint': "بدون نام، عکس یا پروفایل. فقط با کسانی آشنا می‌شوید که ناشناس را انتخاب کرده‌اند.",
   'voice.sys.cleared': "{name} گفتگو را پاک کرد",
   'looking.tab': "دنبال",
   'looking.placeholder': "کسی پایه‌ی… هست؟",
@@ -717,6 +711,9 @@ const fa: Dict = {
   'lobby.party': "با دوستان؟ چت تصادفی گروهی",
   'settings.blurMedia': "تار کردن عکس‌های دیگران",
   'settings.blurMediaBody': "عکس‌ها و ویدیوهای گفتگوها و اتاق‌ها تا وقتی رویشان نزنید تار می‌مانند.",
+  'unfriend.blockTitle': "{name} را مسدود هم کنید؟",
+  'unfriend.keep': "نه، ممنون",
+  'error.block_limit': "امروز نمی‌توانید افراد بیشتری را مسدود کنید. اگر کسی آزارتان می‌دهد گزارشش کنید.",
 }
 
 export default fa

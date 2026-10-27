@@ -86,9 +86,9 @@ const sw: Dict = {
 
   'pf.title': 'Tengeneza wasifu wako',
   'pf.body': 'Hiki ndicho watu wanachokiona mnapolinganishwa.',
-  'pf.name': 'Jina',
+  'pf.name': "Jina au jina la utani",
   'pf.nameError': 'Weka jina lako la kwanza',
-  'pf.namePlaceholder': 'Jina lako la kwanza',
+  'pf.namePlaceholder': "mf. Riya, Dino Mdogo",
   'pf.iam': 'Mimi ni',
   'pf.gender': 'Jinsia',
   'pf.woman': 'Mwanamke',
@@ -699,12 +699,6 @@ const sw: Dict = {
   'room.theme': "Pamba chumba",
   'room.themeHint': "Kila mtu chumbani anaiona. Tumia mandhari uliyonunua, au pata moja kwenye Looks.",
   'room.themeSaved': "Chumba kimesasishwa",
-  'anon.label': "Jinsi ya kukutana",
-  'anon.profile': "Na wasifu wangu",
-  'anon.anon': "Bila jina",
-  'anon.name': "Mgeni",
-  'anon.profileHint': "Mnaona jina, picha na wasifu wa kila mmoja.",
-  'anon.anonHint': "Bila majina, picha wala wasifu. Unakutana tu na waliochagua bila jina.",
   'voice.sys.cleared': "{name} amefuta gumzo",
   'looking.tab': "Natafuta",
   'looking.placeholder': "Kuna anayetaka…?",
@@ -717,6 +711,9 @@ const sw: Dict = {
   'lobby.party': "Na marafiki? Gumzo la nasibu la vikundi",
   'settings.blurMedia': "Fifisha picha za wengine",
   'settings.blurMediaBody': "Picha na video kwenye gumzo na vyumba zitabaki zimefifia hadi uziguse.",
+  'unfriend.blockTitle': "Mzuie {name} pia?",
+  'unfriend.keep': "Hapana, asante",
+  'error.block_limit': "Huwezi kuzuia watu zaidi leo. Mtu akikusumbua, ripoti.",
 }
 
 export default sw

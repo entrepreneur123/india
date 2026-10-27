@@ -86,9 +86,9 @@ const tr: Dict = {
 
   'pf.title': 'Profilini oluştur',
   'pf.body': 'Eşleştiğinde insanlar bunu görür.',
-  'pf.name': 'Ad',
+  'pf.name': "Ad veya takma ad",
   'pf.nameError': 'Adını ekle',
-  'pf.namePlaceholder': 'Adın',
+  'pf.namePlaceholder': "ör. Riya, Minik Dino",
   'pf.iam': 'Ben bir',
   'pf.gender': 'Cinsiyet',
   'pf.woman': 'Kadın',
@@ -699,12 +699,6 @@ const tr: Dict = {
   'room.theme': "Odayı süsle",
   'room.themeHint': "Odadaki herkes görür. Aldığın bir arka planı kullan ya da Looks'tan al.",
   'room.themeSaved': "Oda güncellendi",
-  'anon.label': "Nasıl tanışılır",
-  'anon.profile': "Profilimle",
-  'anon.anon': "Anonim",
-  'anon.name': "Yabancı",
-  'anon.profileHint': "İkiniz de birbirinizin adını, fotoğrafını ve profilini görürsünüz.",
-  'anon.anonHint': "İsim, fotoğraf ya da profil yok. Yalnızca anonimi seçenlerle tanışırsın.",
   'voice.sys.cleared': "{name} sohbeti temizledi",
   'looking.tab': "Arıyorum",
   'looking.placeholder': "… yapmak isteyen var mı?",
@@ -717,6 +711,9 @@ const tr: Dict = {
   'lobby.party': "Arkadaşlarla mı? Grup rastgele sohbet",
   'settings.blurMedia': "Başkalarının fotoğraflarını bulanıklaştır",
   'settings.blurMediaBody': "Sohbet ve odalardaki fotoğraf ve videolar dokunana kadar bulanık kalır.",
+  'unfriend.blockTitle': "{name} engellensin mi?",
+  'unfriend.keep': "Hayır, teşekkürler",
+  'error.block_limit': "Bugün daha fazla kişiyi engelleyemezsin. Rahatsız eden biri varsa şikayet et.",
 }
 
 export default tr

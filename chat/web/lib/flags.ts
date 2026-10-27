@@ -1,7 +1,6 @@
-// Choices remembered in this browser: everyone or my country only (055), anonymous or with my profile (070), photos
-// and videos from others blurred until tapped (off unless chosen, the owner 2026-10-27). Storage can be blocked,
-// then the choice lasts for the visit.
-export type Flag = 'yaari_meet_global' | 'yaari_meet_anon' | 'yaari_blur_media'
+// Choices remembered in this browser: everyone or my country only (055), photos and videos from others blurred until
+// tapped (off unless chosen, the owner 2026-10-27). Storage can be blocked, then the choice lasts for the visit.
+export type Flag = 'yaari_meet_global' | 'yaari_blur_media'
 
 export function savedFlag(key: Flag): boolean {
   try {

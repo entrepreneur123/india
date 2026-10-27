@@ -86,9 +86,9 @@ const fil: Dict = {
 
   'pf.title': 'Gawin ang profile mo',
   'pf.body': 'Ito ang makikita ng mga tao kapag nag-match kayo.',
-  'pf.name': 'Pangalan',
+  'pf.name': "Pangalan o palayaw",
   'pf.nameError': 'Ilagay ang first name mo',
-  'pf.namePlaceholder': 'Ang first name mo',
+  'pf.namePlaceholder': "hal. Riya, Baby Dino",
   'pf.iam': 'Ako ay',
   'pf.gender': 'Gender',
   'pf.woman': 'Babae',
@@ -699,12 +699,6 @@ const fil: Dict = {
   'room.theme': "Palamutian ang room",
   'room.themeHint': "Makikita ng lahat sa room. Gamitin ang background na binili mo, o kumuha sa Looks.",
   'room.themeSaved': "Na-update ang room",
-  'anon.label': "Paano makikilala",
-  'anon.profile': "May profile",
-  'anon.anon': "Anonymous",
-  'anon.name': "Estranghero",
-  'anon.profileHint': "Makikita ninyo ang pangalan, larawan at profile ng isa't isa.",
-  'anon.anonHint': "Walang pangalan, larawan o profile. Makikilala mo lang ang mga pumili ng anonymous.",
   'voice.sys.cleared': "Nilinis ni {name} ang chat",
   'looking.tab': "Hanap",
   'looking.placeholder': "May gustong…?",
@@ -717,6 +711,9 @@ const fil: Dict = {
   'lobby.party': "Kasama ang barkada? Group random chat",
   'settings.blurMedia': "I-blur ang mga larawan ng iba",
   'settings.blurMediaBody': "Naka-blur ang mga larawan at video sa chat at room hanggang i-tap mo.",
+  'unfriend.blockTitle': "I-block din si {name}?",
+  'unfriend.keep': "Hindi na",
+  'error.block_limit': "Hindi ka na makakapag-block ngayong araw. Kung may nang-iistorbo, i-report.",
 }
 
 export default fil

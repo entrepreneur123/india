@@ -86,9 +86,9 @@ const id: Dict = {
 
   'pf.title': 'Buat profilmu',
   'pf.body': 'Ini yang dilihat orang saat kalian cocok.',
-  'pf.name': 'Nama',
+  'pf.name': "Nama atau nama panggilan",
   'pf.nameError': 'Isi nama depanmu',
-  'pf.namePlaceholder': 'Nama depanmu',
+  'pf.namePlaceholder': "mis. Riya, Dino Kecil",
   'pf.iam': 'Saya',
   'pf.gender': 'Gender',
   'pf.woman': 'Perempuan',
@@ -699,12 +699,6 @@ const id: Dict = {
   'room.theme': "Hias room",
   'room.themeHint': "Semua orang di room melihatnya. Pakai latar yang kamu beli, atau dapatkan di Looks.",
   'room.themeSaved': "Room diperbarui",
-  'anon.label': "Cara bertemu",
-  'anon.profile': "Dengan profil",
-  'anon.anon': "Anonim",
-  'anon.name': "Orang asing",
-  'anon.profileHint': "Kalian saling melihat nama, foto, dan profil.",
-  'anon.anonHint': "Tanpa nama, foto, atau profil. Kamu hanya bertemu yang juga memilih anonim.",
   'voice.sys.cleared': "{name} membersihkan obrolan",
   'looking.tab': "Cari teman",
   'looking.placeholder': "Ada yang mau…?",
@@ -717,6 +711,9 @@ const id: Dict = {
   'lobby.party': "Bareng teman? Obrolan acak grup",
   'settings.blurMedia': "Buramkan foto dari orang lain",
   'settings.blurMediaBody': "Foto dan video di chat dan ruang tetap buram sampai kamu ketuk.",
+  'unfriend.blockTitle': "Blokir {name} juga?",
+  'unfriend.keep': "Tidak",
+  'error.block_limit': "Hari ini kamu tidak bisa memblokir lagi. Jika ada yang mengganggu, laporkan.",
 }
 
 export default id

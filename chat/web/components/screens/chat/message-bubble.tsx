@@ -2,7 +2,7 @@
 
 import * as m from 'motion/react-m'
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import { Check, CheckCheck, ChevronRight, Copy, Eye } from 'lucide-react'
+import { ChevronRight, Copy, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { savedFlag } from '@/lib/flags'
 import { useI18n } from '@/components/i18n'
@@ -29,60 +29,64 @@ export function useLineActions(text: string | null | undefined): MenuAction[] {
 }
 
 /**
- * Chat bubbles in the familiar messenger style: green (mine) / white (theirs) on a warm wallpaper, a tail on the
- * first bubble of a run, and the time with read ticks tucked into the bubble's corner; long press / right click
- * opens the line's menu.
+ * 9 (the owner: "chats look like a cheap chat app"): bubbles as in today's messengers (Instagram, iMessage,
+ * Telegram) — soft fills on a plain page, no tails or shadows; a run of lines from one person sits close together with
+ * tighter inner corners and their photo beside its last line; the time only where the talk pauses (each line's time
+ * on hover), "Read" / "Sent" under my latest line only. Long press / right click opens the line's menu.
  */
-export function MessageBubble({ message, grouped, read, skin }: { message: Message; grouped: boolean; read?: boolean; skin?: string | null }) {
+export function MessageBubble({ message, first, last, time, status, skin, avatar }: {
+  message: Message
+  /** First / last line of a run (one sender, minutes apart). */
+  first: boolean
+  last: boolean
+  /** The time under this line (the talk pauses after it). */
+  time: boolean
+  /** Under my latest line. */
+  status?: 'read' | 'sent' | null
+  skin?: string | null
+  /** Theirs: the face beside the run's last line (a gap keeps the others in line). */
+  avatar?: ReactNode
+}) {
   const { t, clock } = useI18n()
   const mine = message.fromMe
   const actions = useLineActions(message.text)
   const [menu, setMenu] = useState(false)
   const gesture = useMenuGesture(actions.length ? () => setMenu(true) : null)
-  const meta = (
-    <>
-      {clock(message.at)}
-      {mine ? (
-        read ? (
-          <CheckCheck className="size-4 text-tick-read" aria-label={t('bubble.read')} />
-        ) : (
-          <Check className="size-4" aria-label={t('bubble.sent')} />
-        )
-      ) : null}
-    </>
-  )
   return (
     <m.li
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
       className={cn(
-        'relative flex max-w-[82%] gap-1 md:max-w-[65%] pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]',
-        mine ? 'self-end' : 'self-start',
-        grouped ? 'mt-0.5' : 'mt-2',
+        'relative flex flex-col pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]',
+        mine ? 'items-end' : 'items-start',
+        first ? 'mt-3' : 'mt-0.5',
       )}
       {...gesture}
     >
-      <Bubble mine={mine} tail={!grouped} skin={skin} className={message.media ? 'p-1' : 'px-2.5 pb-1.5 pt-1.5'}>
-        {message.media ? (
-          <MediaBubble media={message.media} mine={mine} meta={message.text ? null : meta} />
-        ) : null}
-        {message.text ? (
-          // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
-          <>
-            <LinkPreview text={message.text} className={cn('mb-1 w-72 max-w-full', message.media && 'mx-1')} />
-            <p
-              dir="auto"
-              className={cn('relative text-start text-[15px] leading-[1.35] break-words whitespace-pre-wrap', message.media && 'px-1.5 pb-0.5 pt-1')}
-            >
-              <LinkText text={fold(message.text)} />
-              <MetaSpacer>{meta}</MetaSpacer>
-              <span className="absolute -bottom-0.5 inset-e-0 flex items-center gap-0.5 text-[11px] leading-none text-bubble-meta">{meta}</span>
-            </p>
-            <SeeAll text={message.text} className={cn(message.media && 'mx-1.5')} />
-          </>
-        ) : null}
-      </Bubble>
+      <div className={cn('flex max-w-[82%] items-end gap-2 md:max-w-[68%]', mine && 'flex-row-reverse')}>
+        {mine ? null : <span className="w-7 shrink-0">{last ? avatar : null}</span>}
+        <Bubble mine={mine} first={first} last={last} skin={skin} title={clock(message.at)} className={message.media ? 'overflow-hidden' : 'px-3.5 py-2'}>
+          {message.media ? <MediaBubble media={message.media} mine={mine} meta={null} /> : null}
+          {message.text ? (
+            // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
+            <>
+              <LinkPreview text={message.text} className={cn('mb-1.5 w-72 max-w-full', message.media && 'mx-1.5 mt-1.5')} />
+              <p dir="auto" className={cn('text-start text-[15px] leading-[1.4] break-words whitespace-pre-wrap', message.media && 'px-3.5 py-2')}>
+                <LinkText text={fold(message.text)} />
+              </p>
+              <SeeAll text={message.text} className={cn(message.media && 'mx-3.5 mb-2 w-auto')} />
+            </>
+          ) : null}
+        </Bubble>
+      </div>
+      {time || status ? (
+        <span className={cn('mt-1 flex items-center gap-1 px-1 text-[11px] leading-none text-muted-foreground tabular-nums', !mine && 'ps-10')}>
+          {time ? clock(message.at) : null}
+          {time && status ? <span aria-hidden>·</span> : null}
+          {status ? <span className={cn(status === 'read' && 'font-semibold text-primary-text')}>{t(status === 'read' ? 'bubble.read' : 'bubble.sent')}</span> : null}
+        </span>
+      ) : null}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
   )
@@ -117,10 +121,19 @@ export function SeeAll({ text, className }: { text: string; className?: string }
 }
 
 /**
- * Shared bubble shell (random chats and rooms). `skin`: the sender's chat bubble (062), drawn over the plain colours;
- * the tail takes its top colour and the text and time take its own.
+ * Shared bubble shell (chats, group chats, rooms, the Looks preview): a soft rounded fill; a run of lines keeps its
+ * outer corners round and tightens the inner ones (`first` / `last` of the run). `skin`: the sender's chat bubble
+ * (062), drawn over the plain colours, its text and time in its own colours.
  */
-export function Bubble({ mine, tail, skin, className, children }: { mine: boolean; tail: boolean; skin?: string | null; className?: string; children: ReactNode }) {
+export function Bubble({ mine, first = true, last = true, skin, title, className, children }: {
+  mine: boolean
+  first?: boolean
+  last?: boolean
+  skin?: string | null
+  title?: string
+  className?: string
+  children: ReactNode
+}) {
   const d = bubbleOf(skin)
   const style = d
     ? ({ backgroundImage: d.bg, boxShadow: d.shadow, '--bubble-out': d.top, '--bubble-in': d.top, '--bubble-text': d.text, '--bubble-meta': d.meta } as CSSProperties)
@@ -128,27 +141,16 @@ export function Bubble({ mine, tail, skin, className, children }: { mine: boolea
   return (
     <div
       style={style}
+      title={title}
       className={cn(
-        'relative min-w-0 rounded-lg text-bubble-text shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]',
+        'relative min-w-0 rounded-[20px] text-bubble-text',
         mine ? 'bg-bubble-out' : 'bg-bubble-in',
-        tail && (mine ? 'rounded-se-none' : 'rounded-ss-none'),
+        !first && (mine ? 'rounded-se-md' : 'rounded-ss-md'),
+        !last && (mine ? 'rounded-ee-md' : 'rounded-es-md'),
         d?.motion,
         className,
       )}
     >
-      {tail ? (
-        <svg
-          viewBox="0 0 8 13"
-          aria-hidden
-          // The tail sits on the bubble's outer top corner and mirrors with the layout (right to left).
-          className={cn('absolute top-0 h-[13px] w-2 rtl:-scale-x-100', mine ? '-inset-e-2 text-bubble-out' : '-inset-s-2 text-bubble-in')}
-        >
-          <path
-            fill="currentColor"
-            d={mine ? 'M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z' : 'M2.812 0H8v11.193L1.533 2.568C.474 1.156 1.042 0 2.812 0z'}
-          />
-        </svg>
-      ) : null}
       {children}
     </div>
   )
@@ -169,7 +171,7 @@ export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message[
   const [revealed, setRevealed] = useState(() => mine || !savedFlag('yaari_blur_media'))
   const [large, setLarge] = useState<number | null>(null)
   return (
-    <div className="relative overflow-hidden rounded-md bg-black/5">
+    <div className="relative overflow-hidden rounded-[16px] bg-black/5">
       {media.kind === 'video' ? (
         <video
           src={media.url}
@@ -237,10 +239,10 @@ export function TypingBubble({ name }: { name: string }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
-      className="mt-2 origin-bottom-left self-start rtl:origin-bottom-right"
+      className="ms-9 mt-3 origin-bottom-left self-start rtl:origin-bottom-right"
       aria-live="polite"
     >
-      <Bubble mine={false} tail className="flex h-9 items-center px-3.5">
+      <Bubble mine={false} className="flex h-9 items-center px-3.5">
         <span className="sr-only">{t('bubble.typing', { name })}</span>
         <TypingDots />
       </Bubble>

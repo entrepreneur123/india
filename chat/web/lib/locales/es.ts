@@ -83,9 +83,9 @@ const es: Dict = {
 
   'pf.title': 'Crea tu perfil',
   'pf.body': 'Esto es lo que ve la gente cuando hacen match contigo.',
-  'pf.name': 'Nombre',
+  'pf.name': "Nombre o apodo",
   'pf.nameError': 'Escribe tu nombre',
-  'pf.namePlaceholder': 'Tu nombre',
+  'pf.namePlaceholder': "p. ej. Riya, Dinosaurio",
   'pf.iam': 'Soy',
   'pf.gender': 'Género',
   'pf.woman': 'Mujer',
@@ -688,12 +688,6 @@ const es: Dict = {
   'room.theme': "Decorar la sala",
   'room.themeHint': "Todos en la sala lo ven. Usa un fondo que compraste o consigue uno en Looks.",
   'room.themeSaved': "Sala actualizada",
-  'anon.label': "Cómo conocer",
-  'anon.profile': "Con mi perfil",
-  'anon.anon': "Anónimo",
-  'anon.name': "Desconocido",
-  'anon.profileHint': "Ambos ven el nombre, la foto y el perfil del otro.",
-  'anon.anonHint': "Sin nombres, fotos ni perfiles. Solo conoces a quien también eligió anónimo.",
   'voice.sys.cleared': "{name} vació el chat",
   'looking.tab': "Busco",
   'looking.placeholder': "¿Alguien se apunta a…?",
@@ -706,6 +700,9 @@ const es: Dict = {
   'lobby.party': "¿Con amigos? Chat aleatorio en grupo",
   'settings.blurMedia': "Difuminar fotos de otros",
   'settings.blurMediaBody': "Las fotos y videos de chats y salas se ven borrosos hasta que los tocas.",
+  'unfriend.blockTitle': "¿Bloquear también a {name}?",
+  'unfriend.keep': "No, gracias",
+  'error.block_limit': "Hoy no puedes bloquear a más personas. Si alguien te molesta, denúncialo.",
 }
 
 export default es

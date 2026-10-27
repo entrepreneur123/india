@@ -83,9 +83,9 @@ const vi: Dict = {
 
   'pf.title': 'Tạo hồ sơ của bạn',
   'pf.body': 'Đây là những gì mọi người thấy khi ghép đôi với bạn.',
-  'pf.name': 'Tên',
+  'pf.name': "Tên hoặc biệt danh",
   'pf.nameError': 'Nhập tên của bạn',
-  'pf.namePlaceholder': 'Tên của bạn',
+  'pf.namePlaceholder': "vd: Riya, Khủng Long Con",
   'pf.iam': 'Tôi là',
   'pf.gender': 'Giới tính',
   'pf.woman': 'Nữ',
@@ -685,12 +685,6 @@ const vi: Dict = {
   'room.theme': "Trang trí phòng",
   'room.themeHint': "Mọi người trong phòng đều thấy. Dùng nền bạn đã mua, hoặc mua trong Looks.",
   'room.themeSaved': "Đã cập nhật phòng",
-  'anon.label': "Cách gặp gỡ",
-  'anon.profile': "Có hồ sơ",
-  'anon.anon': "Ẩn danh",
-  'anon.name': "Người lạ",
-  'anon.profileHint': "Hai bạn thấy tên, ảnh và hồ sơ của nhau.",
-  'anon.anonHint': "Không tên, ảnh hay hồ sơ. Bạn chỉ gặp những người cũng chọn ẩn danh.",
   'voice.sys.cleared': "{name} đã xóa trò chuyện",
   'looking.tab': "Tìm bạn",
   'looking.placeholder': "Ai muốn… không?",
@@ -703,6 +697,9 @@ const vi: Dict = {
   'lobby.party': "Cùng bạn bè? Trò chuyện ngẫu nhiên theo nhóm",
   'settings.blurMedia': "Làm mờ ảnh của người khác",
   'settings.blurMediaBody': "Ảnh và video trong cuộc trò chuyện và phòng sẽ bị mờ cho đến khi bạn chạm vào.",
+  'unfriend.blockTitle': "Chặn luôn {name}?",
+  'unfriend.keep': "Không, cảm ơn",
+  'error.block_limit': "Hôm nay bạn không thể chặn thêm. Nếu ai làm phiền, hãy báo cáo.",
 }
 
 export default vi

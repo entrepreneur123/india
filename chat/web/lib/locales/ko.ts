@@ -86,9 +86,9 @@ const ko: Dict = {
 
   'pf.title': '프로필 만들기',
   'pf.body': '매칭되면 상대방에게 이렇게 보여요.',
-  'pf.name': '이름',
+  'pf.name': "이름 또는 닉네임",
   'pf.nameError': '이름을 입력해 주세요',
-  'pf.namePlaceholder': '이름',
+  'pf.namePlaceholder': "예: 지민, 아기공룡",
   'pf.iam': '나는',
   'pf.gender': '성별',
   'pf.woman': '여성',
@@ -699,12 +699,6 @@ const ko: Dict = {
   'room.theme': "방 꾸미기",
   'room.themeHint': "방에 있는 모두에게 보여요. 산 배경을 쓰거나 꾸미기 상점에서 구매하세요.",
   'room.themeSaved': "방을 꾸몄어요",
-  'anon.label': "만나는 방식",
-  'anon.profile': "프로필 공개",
-  'anon.anon': "익명",
-  'anon.name': "익명",
-  'anon.profileHint': "서로의 이름, 사진, 프로필이 보여요.",
-  'anon.anonHint': "이름, 사진, 프로필 없이 대화해요. 익명을 고른 사람끼리만 만나요.",
   'voice.sys.cleared': "{name}님이 채팅을 청소했어요",
   'looking.tab': "구해요",
   'looking.placeholder': "~하실 분?",
@@ -717,6 +711,9 @@ const ko: Dict = {
   'lobby.party': "친구랑 같이? 다수 대 다수 랜챗",
   'settings.blurMedia': "다른 사람 사진 흐리게",
   'settings.blurMediaBody': "채팅과 방의 사진·동영상을 탭하기 전까지 흐리게 보여요.",
+  'unfriend.blockTitle': "{name}님을 차단도 할까요?",
+  'unfriend.keep': "아니요",
+  'error.block_limit': "오늘은 더 차단할 수 없어요. 불쾌한 사람이 있으면 신고해 주세요.",
 }
 
 export default ko

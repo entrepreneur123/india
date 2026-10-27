@@ -83,9 +83,9 @@ const bn: Dict = {
 
   'pf.title': 'আপনার প্রোফাইল বানান',
   'pf.body': 'ম্যাচ হলে মানুষ এটাই দেখবে।',
-  'pf.name': 'নাম',
+  'pf.name': "নাম বা ডাকনাম",
   'pf.nameError': 'আপনার প্রথম নাম লিখুন',
-  'pf.namePlaceholder': 'আপনার প্রথম নাম',
+  'pf.namePlaceholder': "যেমন রিয়া, বেবি ডাইনো",
   'pf.iam': 'আমি',
   'pf.gender': 'জেন্ডার',
   'pf.woman': 'নারী',
@@ -685,12 +685,6 @@ const bn: Dict = {
   'room.theme': "রুম সাজান",
   'room.themeHint': "রুমের সবাই দেখবে। কেনা ব্যাকগ্রাউন্ড ব্যবহার করুন, বা Looks থেকে নিন।",
   'room.themeSaved': "রুম আপডেট হয়েছে",
-  'anon.label': "কীভাবে দেখা করবেন",
-  'anon.profile': "প্রোফাইল সহ",
-  'anon.anon': "বেনামী",
-  'anon.name': "অপরিচিত",
-  'anon.profileHint': "দুজনেই একে অপরের নাম, ছবি ও প্রোফাইল দেখতে পাবেন।",
-  'anon.anonHint': "নাম, ছবি বা প্রোফাইল নেই। শুধু যারা বেনামী বেছেছে তাদের সঙ্গে দেখা হবে।",
   'voice.sys.cleared': "{name} চ্যাট মুছেছেন",
   'looking.tab': "খুঁজছি",
   'looking.placeholder': "কেউ… করবে?",
@@ -703,6 +697,9 @@ const bn: Dict = {
   'lobby.party': "বন্ধুদের সাথে? দলগত র‍্যান্ডম চ্যাট",
   'settings.blurMedia': "অন্যদের ছবি ঝাপসা করুন",
   'settings.blurMediaBody': "চ্যাট ও রুমের ছবি ও ভিডিও ট্যাপ না করা পর্যন্ত ঝাপসা থাকবে।",
+  'unfriend.blockTitle': "{name}-কে ব্লকও করবেন?",
+  'unfriend.keep': "না",
+  'error.block_limit': "আজ আর কাউকে ব্লক করতে পারবেন না। কেউ বিরক্ত করলে রিপোর্ট করুন।",
 }
 
 export default bn

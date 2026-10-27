@@ -381,11 +381,16 @@ function Detail({ client, id, changed }: { client: SupabaseClient; id: number; c
   )
 }
 
+/** 084: who blocks mostly one gender of the people met in random chat (a free gender filter?), to read with the reports. */
+interface Skew { user_id: string; name: string; blocks: number; gender: string; share: number }
+
 function DashboardView({ client }: { client: SupabaseClient }) {
   const [d, setD] = useState<Dashboard | null>(null)
+  const [skew, setSkew] = useState<Skew[]>([])
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     void client.rpc('admin_dashboard').then(({ data, error: err }) => (err ? setError(errorOf(err)) : setD(data as Dashboard)))
+    void client.rpc('admin_block_skew').then(({ data }) => setSkew((data as Skew[] | null) ?? []))
   }, [client])
   if (error) return <p className="text-sm text-destructive" role="alert">{error}</p>
   if (!d) return <p className="text-sm text-muted-foreground">불러오는 중…</p>
@@ -434,6 +439,18 @@ function DashboardView({ client }: { client: SupabaseClient }) {
               <span className="flex gap-2"><span className="font-medium">{e.name}</span>
                 <span className="ms-auto shrink-0 text-xs text-muted-foreground">{e.n}회 · {e.users}명 · {e.platform ?? ''} {e.version ?? ''} · {when(e.last)}</span></span>
               <span className="block break-words text-muted-foreground">{e.message}</span>
+            </li>
+          ))}
+        </ul>
+      </Panel>
+      <Panel title="한쪽 성별만 차단·신고 (30일, 랜챗 상대 10명 이상 · 85% 이상)">
+        <ul className="text-sm">
+          {skew.length === 0 && <li className="text-muted-foreground">없음</li>}
+          {skew.map((s) => (
+            <li key={s.user_id} className="flex gap-2 border-t border-border py-1.5 first:border-0">
+              <span className="font-medium">{s.name}</span>
+              <span className="text-muted-foreground">{s.gender === 'female' ? '여성' : s.gender === 'male' ? '남성' : s.gender} {Math.round(s.share * 100)}%</span>
+              <span className="ms-auto tabular-nums">{s.blocks}명</span>
             </li>
           ))}
         </ul>

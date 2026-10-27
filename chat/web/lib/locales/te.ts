@@ -83,9 +83,9 @@ const te: Dict = {
 
   'pf.title': 'మీ ప్రొఫైల్ తయారు చేయండి',
   'pf.body': 'మ్యాచ్ అయినప్పుడు ఇతరులు చూసేది ఇదే.',
-  'pf.name': 'పేరు',
+  'pf.name': "పేరు లేదా ముద్దుపేరు",
   'pf.nameError': 'మీ మొదటి పేరు ఇవ్వండి',
-  'pf.namePlaceholder': 'మీ మొదటి పేరు',
+  'pf.namePlaceholder': "ఉదా. రియా, బేబీ డైనో",
   'pf.iam': 'నేను',
   'pf.gender': 'జెండర్',
   'pf.woman': 'మహిళ',
@@ -686,12 +686,6 @@ const te: Dict = {
   'room.theme': "రూమ్‌ను అలంకరించండి",
   'room.themeHint': "రూమ్‌లోని అందరికీ కనిపిస్తుంది. కొన్న నేపథ్యం వాడండి లేదా Looks‌లో పొందండి.",
   'room.themeSaved': "రూమ్ అప్‌డేట్ అయింది",
-  'anon.label': "ఎలా కలవాలి",
-  'anon.profile': "నా ప్రొఫైల్‌తో",
-  'anon.anon': "అనామకం",
-  'anon.name': "అపరిచితుడు",
-  'anon.profileHint': "ఇద్దరూ ఒకరి పేరు, ఫోటో, ప్రొఫైల్ చూస్తారు.",
-  'anon.anonHint': "పేరు, ఫోటో, ప్రొఫైల్ ఉండవు. అనామకం ఎంచుకున్నవారినే కలుస్తారు.",
   'voice.sys.cleared': "{name} చాట్ క్లియర్ చేశారు",
   'looking.tab': "వెతుకుతున్నా",
   'looking.placeholder': "ఎవరైనా… వస్తారా?",
@@ -704,6 +698,9 @@ const te: Dict = {
   'lobby.party': "స్నేహితులతోనా? గుంపు రాండమ్ చాట్",
   'settings.blurMedia': "ఇతరుల ఫోటోలను మసకబార్చు",
   'settings.blurMediaBody': "చాట్‌లు, రూమ్‌లలోని ఫోటోలు, వీడియోలు మీరు ట్యాప్ చేసే వరకు మసకగా ఉంటాయి.",
+  'unfriend.blockTitle': "{name}ని బ్లాక్ కూడా చేయాలా?",
+  'unfriend.keep': "వద్దు",
+  'error.block_limit': "ఈరోజు మరికొందరిని బ్లాక్ చేయలేరు. ఎవరైనా ఇబ్బంది పెడితే రిపోర్ట్ చేయండి.",
 }
 
 export default te

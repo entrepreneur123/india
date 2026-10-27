@@ -306,7 +306,7 @@ function SentLine({
         </button>
       )}
       {line.kind === 'photo' ? (
-        <Bubble mine={line.fromMe} tail={!grouped} skin={skin} className="p-1">
+        <Bubble mine={line.fromMe} first={!grouped} skin={skin} className="p-1">
           {name}
           <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
             <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={meta} />
@@ -315,9 +315,9 @@ function SentLine({
       ) : (
         <Bubble
           mine={line.fromMe}
-          tail={!grouped}
+          first={!grouped}
           skin={skin}
-          className={cn('px-2.5 pt-1 pb-1.5', toMe.length && 'ring-2 ring-primary-text/70 ring-offset-0')}
+          className={cn('px-3 pt-1.5 pb-2', toMe.length && 'ring-2 ring-primary-text/70 ring-offset-0')}
         >
           {name}
           {line.reply ? <Quote reply={line.reply} rt={rt} meId={room?.meId} onShow={() => onQuote(line.reply!.id)} /> : null}
@@ -386,7 +386,7 @@ function TypingRow({ ids, s }: { ids: string[]; s: VoiceSession }) {
                 <UserAvatar key={p.profile.id} userId={p.profile.id} name={p.profile.name} src={p.profile.photoUrl} size={20} className="rounded-full ring-2 ring-background" />
               ))}
             </span>
-            <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-es-sm bg-bubble-in px-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]" aria-hidden>
+            <span className="grid h-6 shrink-0 place-items-center rounded-full rounded-es-sm bg-bubble-in px-2.5" aria-hidden>
               <TypingDots />
             </span>
             <span className="min-w-0 truncate text-xs text-muted-foreground">{text}</span>

@@ -280,7 +280,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <Wall id={id} />
       </span>
     ) : kind === 'bubble' ? (
-      <Bubble mine tail={false} skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
+      <Bubble mine skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
         {me.name}
       </Bubble>
     ) : kind === 'effect' ? (
@@ -306,10 +306,10 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     // A short chat on the plain wall: their plain bubble, then mine in the bubble being looked at.
     preview = (
       <div className="flex w-full flex-col gap-1.5 rounded-[28px] bg-chat-wall px-4 py-5 ring-1 ring-border">
-        <Bubble mine={false} tail className="self-start px-3 py-2 text-[15px]">
+        <Bubble mine={false} className="self-start px-3 py-2 text-[15px]">
           👋
         </Bubble>
-        <Bubble mine tail skin={shownExtra} className="max-w-[85%] self-end px-3 py-2 text-[15px] leading-snug">
+        <Bubble mine skin={shownExtra} className="max-w-[85%] self-end px-3 py-2 text-[15px] leading-snug">
           {lt('bubble.what')}
         </Bubble>
       </div>

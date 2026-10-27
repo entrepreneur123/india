@@ -83,9 +83,9 @@ const ne: Dict = {
 
   'pf.title': 'आफ्नो प्रोफाइल बनाउनुहोस्',
   'pf.body': 'म्याच हुँदा मानिसहरूले यही देख्छन्।',
-  'pf.name': 'नाम',
+  'pf.name': "नाम वा उपनाम",
   'pf.nameError': 'आफ्नो पहिलो नाम हाल्नुहोस्',
-  'pf.namePlaceholder': 'तपाईंको पहिलो नाम',
+  'pf.namePlaceholder': "जस्तै रिया, बेबी डिनो",
   'pf.iam': 'म',
   'pf.gender': 'लिङ्ग',
   'pf.woman': 'महिला',
@@ -686,12 +686,6 @@ const ne: Dict = {
   'room.theme': "कोठा सजाउनुहोस्",
   'room.themeHint': "कोठामा सबैले देख्छन्। किनेको पृष्ठभूमि प्रयोग गर्नुहोस् वा Looks बाट लिनुहोस्।",
   'room.themeSaved': "कोठा अद्यावधिक भयो",
-  'anon.label': "कसरी भेट्ने",
-  'anon.profile': "प्रोफाइलसहित",
-  'anon.anon': "गुमनाम",
-  'anon.name': "अपरिचित",
-  'anon.profileHint': "दुवैले एकअर्काको नाम, फोटो र प्रोफाइल देख्नुहुन्छ।",
-  'anon.anonHint': "नाम, फोटो वा प्रोफाइल छैन। गुमनाम रोज्नेहरूसँग मात्र भेट हुन्छ।",
   'voice.sys.cleared': "{name} ले च्याट सफा गर्नुभयो",
   'looking.tab': "खोज्दैछु",
   'looking.placeholder': "कोही… गर्ने?",
@@ -704,6 +698,9 @@ const ne: Dict = {
   'lobby.party': "साथीसँग? समूह र्‍यान्डम च्याट",
   'settings.blurMedia': "अरूका फोटो धमिलो बनाउनुहोस्",
   'settings.blurMediaBody': "च्याट र रुमका फोटो र भिडियो ट्याप नगरेसम्म धमिलो रहन्छन्।",
+  'unfriend.blockTitle': "{name}लाई ब्लक पनि गर्ने?",
+  'unfriend.keep': "पर्दैन",
+  'error.block_limit': "आज थप मानिसलाई ब्लक गर्न सकिँदैन। कसैले दुःख दिए रिपोर्ट गर्नुहोस्।",
 }
 
 export default ne

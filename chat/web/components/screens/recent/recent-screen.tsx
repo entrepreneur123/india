@@ -1,5 +1,6 @@
 'use client'
 
+import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useState } from 'react'
@@ -12,7 +13,6 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Segmented, Skeleton } from '@/components/ui/bits'
-import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
@@ -114,6 +114,7 @@ export function RecentScreen() {
             ) : (
               <MatchesList
                 list={recents.data}
+                friendIds={new Set(friends.data?.filter((f) => f.state === 'friends').map((f) => f.profile.id))}
                 failed={!!recents.error}
                 retry={() => void recents.mutate()}
                 onReported={(id) => {
@@ -302,42 +303,21 @@ function FriendsList({
         </Section>
       ) : null}
 
-      <Modal
-        open={unfriend !== null}
-        onClose={() => setUnfriend(null)}
-        title={unfriend ? t('recent.removeTitle', { name: unfriend.name }) : ''}
-        description={t('recent.removeBody')}
-      >
-        <div className="flex gap-3 p-6 pt-5">
-          <Button variant="outline" className="flex-1" onClick={() => setUnfriend(null)}>
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="danger"
-            className="flex-1"
-            loading={unfriend !== null && busy === unfriend.id}
-            onClick={() => {
-              const p = unfriend
-              if (!p) return
-              void run(p.id, () => backend.removeFriend(p.id)).then(() => setUnfriend(null))
-            }}
-          >
-            {t('recent.remove')}
-          </Button>
-        </div>
-      </Modal>
+      <UnfriendSheet person={unfriend} onClose={() => setUnfriend(null)} onDone={refresh} />
     </div>
   )
 }
 
 function MatchesList({
   list,
+  friendIds,
   failed,
   retry,
   onReported,
   onFind,
 }: {
   list: RecentMatch[] | undefined
+  friendIds: Set<string>
   failed: boolean
   retry: () => void
   onReported: (partnerId: string) => void
@@ -376,9 +356,18 @@ function MatchesList({
                 }
               />
               <Unread n={badges?.chats[r.matchId] ?? 0} />
-              <Button size="icon" variant="ghost" onClick={() => openThread(r.partner, r.matchId)} aria-label={t('panel.message', { name: r.partner.name })}>
-                <MessageCircle className="size-5" aria-hidden />
-              </Button>
+              {/* 083: a friend's own thread; a message thread with someone else; a past random chat has none to open
+                  (its lines are gone) — their profile offers a message when they take one. */}
+              {friendIds.has(r.partner.id) || r.lastText != null ? (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => (friendIds.has(r.partner.id) ? openThread(r.partner) : openThread(r.partner, r.matchId))}
+                  aria-label={t('panel.message', { name: r.partner.name })}
+                >
+                  <MessageCircle className="size-5" aria-hidden />
+                </Button>
+              ) : null}
               <Button
                 size="icon"
                 variant="ghost"

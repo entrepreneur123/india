@@ -86,9 +86,9 @@ const zhHant: Dict = {
 
   'pf.title': '建立個人資料',
   'pf.body': '配對成功後，對方會看到這些資訊。',
-  'pf.name': '名字',
+  'pf.name': "名字或暱稱",
   'pf.nameError': '請填寫你的名字',
-  'pf.namePlaceholder': '你的名字',
+  'pf.namePlaceholder': "例如：Riya、小恐龍",
   'pf.iam': '我是',
   'pf.gender': '性別',
   'pf.woman': '女',
@@ -699,12 +699,6 @@ const zhHant: Dict = {
   'room.theme': "裝飾房間",
   'room.themeHint': "房間裡的所有人都看得到。使用已購買的背景，或到造型商店取得。",
   'room.themeSaved': "房間已更新",
-  'anon.label': "見面方式",
-  'anon.profile': "公開資料",
-  'anon.anon': "匿名",
-  'anon.name': "陌生人",
-  'anon.profileHint': "雙方都能看到彼此的名字、照片和資料。",
-  'anon.anonHint': "不顯示名字、照片和資料。只會遇到同樣選擇匿名的人。",
   'voice.sys.cleared': "{name} 清空了聊天",
   'looking.tab': "找人",
   'looking.placeholder': "有人一起……嗎？",
@@ -717,6 +711,9 @@ const zhHant: Dict = {
   'lobby.party': "和朋友一起？多人隨機聊天",
   'settings.blurMedia': "模糊他人傳送的照片",
   'settings.blurMediaBody': "聊天和房間裡的照片和影片在你點開前保持模糊。",
+  'unfriend.blockTitle': "也封鎖 {name} 嗎？",
+  'unfriend.keep': "不用了",
+  'error.block_limit': "今天不能再封鎖更多人了。如有人騷擾，請檢舉。",
 }
 
 export default zhHant

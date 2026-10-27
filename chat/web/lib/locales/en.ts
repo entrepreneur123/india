@@ -85,9 +85,9 @@ const en = {
 
   'pf.title': 'Make your profile',
   'pf.body': 'This is what people see when you match.',
-  'pf.name': 'Name',
+  'pf.name': "Name or nickname",
   'pf.nameError': 'Add your first name',
-  'pf.namePlaceholder': 'Your first name',
+  'pf.namePlaceholder': "e.g. Riya, Baby Dino",
   'pf.iam': 'I am',
   'pf.gender': 'Gender',
   'pf.woman': 'Woman',
@@ -698,12 +698,6 @@ const en = {
   'room.theme': "Decorate the room",
   'room.themeHint': "Everyone in the room sees it. Use a background you bought, or get one in Looks.",
   'room.themeSaved': "Room updated",
-  'anon.label': "How to meet",
-  'anon.profile': "With my profile",
-  'anon.anon': "Anonymous",
-  'anon.name': "Stranger",
-  'anon.profileHint': "You both see each other's name, photo and profile.",
-  'anon.anonHint': "No names, photos or profiles. You only meet others who chose anonymous.",
   'voice.sys.cleared': "{name} cleared the chat",
   'looking.tab': "Looking for",
   'looking.placeholder': "Anyone up for…?",
@@ -716,6 +710,9 @@ const en = {
   'lobby.party': "With friends? Party random chat",
   'settings.blurMedia': "Blur photos from others",
   'settings.blurMediaBody': "Photos and videos in chats and rooms stay blurred until you tap them.",
+  'unfriend.blockTitle': "Block {name} too?",
+  'unfriend.keep': "No thanks",
+  'error.block_limit': "You can’t block more people today. If someone is bothering you, report them.",
 } as const
 
 export default en

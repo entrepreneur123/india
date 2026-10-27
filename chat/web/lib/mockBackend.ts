@@ -306,14 +306,16 @@ export class MockBackend implements Backend {
       const partner = this.person(pid)!
       const id = `m_${uid()}`
       const at = Date.now() - ago
-      this.matches.set(id, this.newMatchState(id, partner, 'thread', at, [
+      // Past random chats (083): over, their lines gone for both of us (kept here as the server keeps them).
+      const m = this.newMatchState(id, partner, 'random', at, [
         { id: this.msgSeq++, fromMe: false, text: pick(GREETINGS), at: at },
         { id: this.msgSeq++, fromMe: true, text: 'hey! nice to meet you', at: at + 20_000 },
         { id: this.msgSeq++, fromMe: false, text: last, at: at + 60_000 },
-      ]))
+      ])
+      m.ended = true
+      this.matches.set(id, m)
       this.recentList.push({ matchId: id, partner, metAt: at, lastText: last })
     }
-    this.unread.set(this.recentList[0].matchId, 1) // Leila's last message is unread
 
     // A friend's thread with two unread messages, and an inbox to show (023).
     const sofia = this.person('u_sofia')!
@@ -396,8 +398,7 @@ export class MockBackend implements Backend {
   private touchRecent(m: MatchState, lastText: string | null) {
     const existing = this.recentList.find((r) => r.matchId === m.id)
     if (existing) existing.lastText = lastText ?? existing.lastText
-    // An anonymous chat leaves no trace in Recent (070's recent_list).
-    else if (m.kind === 'random' && !m.partner.anon) this.recentList.unshift({ matchId: m.id, partner: m.partner, metAt: m.startedAt, lastText })
+    else if (m.kind === 'random') this.recentList.unshift({ matchId: m.id, partner: m.partner, metAt: m.startedAt, lastText })
   }
 
   private replyFor(text: string, partner: Profile) {
@@ -475,7 +476,7 @@ export class MockBackend implements Backend {
 
   /* ---------- random matching ---------- */
 
-  async findMatch(target: Target, _lang?: string, countries: readonly string[] = [], anon = false) {
+  async findMatch(target: Target, _lang?: string, countries: readonly string[] = []) {
     this.requireMe()
     this.gate()
     if (MANNERS && (this.flags.manner ?? 50) < MANNER_FLOOR) throw new BackendError('manner_low')
@@ -494,7 +495,7 @@ export class MockBackend implements Backend {
     if (!pool.length) return null // nobody from those countries in the demo: keep searching
     const found = pick(pool)
     // Like 070's match_card: a stranger's card keeps only the gender and the country.
-    const partner: Profile = anon ? { id: found.id, name: '', gender: found.gender, age: 0, city: '', bio: '', photoUrl: null, country: found.country, posts: [], anon } : found
+    const partner: Profile = found
     const id = `m_${uid()}`
     this.matches.set(id, this.newMatchState(id, partner, 'random'))
     return { id, partner } satisfies Match
@@ -537,7 +538,8 @@ export class MockBackend implements Backend {
     await wait(350)
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
-    return [...m.messages]
+    // A random chat is gone for both once it ends (083: kept on the server for reports only).
+    return m.kind === 'random' && m.ended ? [] : [...m.messages]
   }
 
   sendTyping() {}
@@ -595,6 +597,9 @@ export class MockBackend implements Backend {
 
   async block(userId: string) {
     await wait(300)
+    // As block_user (084): 10 a day of people who aren't friends.
+    const day = [...this.blocked.values()].filter((at) => at > Date.now() - 86_400_000).length
+    if (this.friendMap.get(userId) !== 'friends' && !this.blocked.has(userId) && day >= 10) throw new BackendError('block_limit')
     this.blocked.set(userId, Date.now())
     this.unfriend(userId)
   }
@@ -741,7 +746,12 @@ export class MockBackend implements Backend {
 
   async recents() {
     await wait(600)
-    return this.recentList.filter((r) => (this.recentHidden.get(r.partner.id) ?? 0) <= r.metAt).sort((a, b) => b.metAt - a.metAt).slice(0, 50)
+    // The person only: no last line from a random chat (083).
+    return this.recentList
+      .filter((r) => (this.recentHidden.get(r.partner.id) ?? 0) <= r.metAt)
+      .map((r) => (this.matches.get(r.matchId)?.kind === 'thread' ? r : { ...r, lastText: null }))
+      .sort((a, b) => b.metAt - a.metAt)
+      .slice(0, 50)
   }
 
   async hideRecents(userIds: string[]) {
@@ -1032,15 +1042,9 @@ export class MockBackend implements Backend {
 
   async friendThread(userId: string) {
     await wait(300)
+    // As friend_thread (083): the pair's own thread, never a random chat they had.
     const existing = this.threadByUser.get(userId)
     if (existing) return existing
-    const fromRecent = this.recentList.find((r) => r.partner.id === userId)
-    if (fromRecent) {
-      const m = this.matches.get(fromRecent.matchId)
-      if (m) m.kind = 'thread'
-      this.threadByUser.set(userId, fromRecent.matchId)
-      return fromRecent.matchId
-    }
     const partner = this.person(userId)
     if (!partner) throw new BackendError('not_found')
     const id = `t_${uid()}`
@@ -1129,7 +1133,8 @@ export class MockBackend implements Backend {
     return {
       inbox: this.inboxItems.filter((i) => !i.read).length,
       friends: [...this.friendMap.values()].filter((s) => s === 'incoming').length,
-      chats: Object.fromEntries(this.unread),
+      // As my_badges (083): no unread count from a past random chat.
+      chats: Object.fromEntries([...this.unread].filter(([id]) => this.matches.get(id)?.kind === 'thread' || !this.recentList.some((r) => r.matchId === id))),
     }
   }
 
