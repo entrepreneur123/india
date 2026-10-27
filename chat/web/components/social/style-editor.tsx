@@ -2,9 +2,9 @@
 
 import { useId, useMemo, useState } from 'react'
 import { Check, Plus, X } from 'lucide-react'
-import type { ProfilePrompt, PromptQ, SpokenLang } from '@/lib/backend'
+import type { Mbti, ProfilePrompt, PromptQ, SpokenLang } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { ANSWER_MAX, EMPTY_STYLE, LANGUAGES_MAX, nextPrompt, PROMPT_QS, PROMPTS_MAX, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
+import { ANSWER_MAX, EMPTY_STYLE, LANGUAGES_MAX, MBTI_TYPES, nextPrompt, PROMPT_QS, PROMPTS_MAX, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { TextArea, TextInput } from '@/components/ui/bits'
@@ -17,7 +17,7 @@ import { useFeedT } from './feed-text'
 import { ACCENT_TEXT, accentStyle } from './profile-bits'
 
 /**
- * My profile details: status, languages and up to 3 prompts. Saves them all at once (set_profile_style). The cover
+ * My profile details: status, MBTI (071), languages and up to 3 prompts. Saves them all at once (set_profile_style). The cover
  * photo and colour that were here are gone (040): frames, bought in the Looks shop, decorate profiles now.
  */
 export function StyleEditor({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -40,13 +40,14 @@ function EditorBody({ onClose }: { onClose: () => void }) {
   const [status, setStatus] = useState(start.status ?? '')
   const [languages, setLanguages] = useState<SpokenLang[]>(start.languages)
   const [prompts, setPrompts] = useState<ProfilePrompt[]>(start.prompts.length ? start.prompts : [])
+  const [mbti, setMbti] = useState<Mbti | null>(start.mbti)
   const [busy, setBusy] = useState(false)
 
   const used = useMemo(() => prompts.map((p) => p.q), [prompts])
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { input, problem } = styleInput({ status, languages, prompts })
+    const { input, problem } = styleInput({ status, languages, prompts, mbti })
     if (problem === 'status') return toast.show(ft('style.problem.status'), 'error')
     if (problem === 'answer') return toast.show(ft('style.problem.answer'), 'error')
     if (problem === 'languages') return toast.show(ft('style.languagesMax'), 'error')
@@ -76,6 +77,31 @@ function EditorBody({ onClose }: { onClose: () => void }) {
             <Count n={[...status].length} max={STATUS_MAX} />
           </div>
           <TextInput id={`${id}-status`} value={status} maxLength={STATUS_MAX} placeholder={ft('style.statusPlaceholder')} onChange={(e) => setStatus(e.target.value)} />
+        </section>
+
+        <section className={section}>
+          <h3 className={heading} id={`${id}-mbti`}>
+            MBTI
+          </h3>
+          {/* The 4×4 table everyone knows; tapping the chosen one again clears it. */}
+          <ul className="grid grid-cols-4 gap-2" aria-labelledby={`${id}-mbti`}>
+            {MBTI_TYPES.map((m) => (
+              <li key={m}>
+                <button
+                  type="button"
+                  aria-pressed={mbti === m}
+                  onClick={() => setMbti((now) => (now === m ? null : m))}
+                  className={cn(
+                    'h-10 w-full rounded-full border text-sm font-bold tracking-wide transition-colors duration-150',
+                    mbti === m ? cn('border-transparent bg-primary-soft', ACCENT_TEXT) : 'border-input text-foreground hover:bg-muted',
+                  )}
+                >
+                  {m}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted-foreground">{ft('style.mbtiHint')}</p>
         </section>
 
         <section className={section}>

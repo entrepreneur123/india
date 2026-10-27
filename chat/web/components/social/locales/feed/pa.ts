@@ -71,6 +71,7 @@ const pa: FeedDict = {
   'prompt.goal': 'ਇਸ ਸਾਲ ਮੈਂ ਚਾਹੁੰਦਾ/ਚਾਹੁੰਦੀ ਹਾਂ…',
   'prompt.secret': 'ਇੱਕ ਗੱਲ ਜੋ ਘੱਟ ਲੋਕ ਜਾਣਦੇ ਹਨ…',
   'profile.speaks': 'ਬੋਲਦੇ ਹਨ',
+  'style.mbtiHint': "ਵਿਕਲਪਿਕ। ਹਟਾਉਣ ਲਈ ਮੁੜ ਟੈਪ ਕਰੋ।",
 }
 
 export default pa

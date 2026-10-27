@@ -82,6 +82,7 @@ const tr: FeedDict = {
 
   // a profile
   'profile.speaks': 'Konuştuğu diller',
+  'style.mbtiHint': "İsteğe bağlı. Temizlemek için tekrar dokun.",
 }
 
 export default tr

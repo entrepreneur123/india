@@ -60,7 +60,7 @@ const it: LooksDict = {
   'id.keptFree': 'Quell’ID è appena stato preso, quindi per ora il tuo è @{handle}. Puoi cambiarlo in Modifica profilo.',
 
   'details.title': 'Dettagli del profilo',
-  'details.desc': 'Il tuo stato, le lingue che parli e qualche domanda.',
+  'details.desc': 'Il tuo stato, MBTI, le lingue che parli e qualche domanda.',
 
   'friend.requested': 'Richiesta inviata',
   'friend.withdraw': 'Ritira la richiesta a {name}',

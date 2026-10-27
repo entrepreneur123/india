@@ -82,6 +82,7 @@ const sw: FeedDict = {
 
   // a profile
   'profile.speaks': 'Anaongea',
+  'style.mbtiHint': "Si lazima. Gusa tena kufuta.",
 }
 
 export default sw

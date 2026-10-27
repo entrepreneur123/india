@@ -25,9 +25,9 @@ function hash(seed: string) {
 }
 
 /** The demo people's status, languages and prompts (040: no colours any more; frames decorate, lib/mockLooks.ts). */
-const STYLES: Record<string, Omit<ProfileStyle, 'accent'>> = {
+const STYLES: Record<string, Omit<ProfileStyle, 'accent' | 'mbti'> & { mbti?: ProfileStyle['mbti'] }> = {
   u_ananya: {
-    status: 'Chai, K-dramas and long walks by the sea', languages: ['hi', 'mr', 'en'],
+    status: 'Chai, K-dramas and long walks by the sea', languages: ['hi', 'mr', 'en'], mbti: 'ENFP',
     prompts: [{ q: 'weekend', a: 'Marine Drive at sunset, then vada pav with my cousins' }, { q: 'song', a: 'Kesariya, still, after all this time' }],
   },
   u_kabir: {
@@ -35,7 +35,7 @@ const STYLES: Record<string, Omit<ProfileStyle, 'accent'>> = {
     prompts: [{ q: 'talk', a: 'you have opinions about fonts' }, { q: 'goal', a: 'Finally learn to bowl a proper leg spin' }],
   },
   u_sofia: {
-    status: 'Somewhere between the sea and the kitchen', languages: ['pt', 'en'],
+    status: 'Somewhere between the sea and the kitchen', languages: ['pt', 'en'], mbti: 'ISFJ',
     prompts: [{ q: 'food', a: 'My grandmother’s bacalhau. Nothing comes close.' }, { q: 'travel', a: 'Kerala backwaters, this winter' }, { q: 'laugh', a: 'Me, trying to surf' }],
   },
   u_yuki: {
@@ -43,7 +43,7 @@ const STYLES: Record<string, Omit<ProfileStyle, 'accent'>> = {
     prompts: [{ q: 'secret', a: 'I have never once finished a bowl of ramen' }],
   },
   u_arjun: {
-    status: 'Debugging by day, open mics by night', languages: ['kn', 'ta', 'en', 'hi'],
+    status: 'Debugging by day, open mics by night', languages: ['kn', 'ta', 'en', 'hi'], mbti: 'INTP',
     prompts: [{ q: 'song', a: 'Anything by Prateek Kuhad on loop' }, { q: 'weekend', a: 'Sunrise ride to Nandi Hills' }],
   },
   u_amara: { status: 'Building something big in Lagos', languages: ['en'], prompts: [{ q: 'goal', a: 'Ship our app to a million people' }] },
@@ -93,7 +93,7 @@ export class FeedSim {
   private timers: ReturnType<typeof setTimeout>[] = []
 
   constructor(private host: FeedHost) {
-    for (const [id, s] of Object.entries(STYLES)) this.styles.set(id, { ...s, accent: null })
+    for (const [id, s] of Object.entries(STYLES)) this.styles.set(id, { mbti: null, ...s, accent: null })
     const ids = host.people.map((p) => p.id)
     for (const person of host.people) {
       for (const p of person.posts) {
@@ -192,7 +192,7 @@ export class FeedSim {
     await wait(500)
     const { input: clean, problem } = styleInput(input)
     if (problem) throw new BackendError('bad_request')
-    return { accent: null, status: clean.status, languages: clean.languages, prompts: clean.prompts }
+    return { accent: null, ...clean }
   }
 
   /** A person's posts I may see (sync: the demo's profiles carry them). */

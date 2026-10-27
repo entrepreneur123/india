@@ -76,6 +76,7 @@ const kn: FeedDict = {
   'prompt.secret': 'ಕೆಲವರಿಗೆ ಮಾತ್ರ ತಿಳಿದಿರುವ ವಿಷಯ…',
 
   'profile.speaks': 'ಮಾತನಾಡುವ ಭಾಷೆಗಳು',
+  'style.mbtiHint': "ಐಚ್ಛಿಕ. ತೆಗೆಯಲು ಮತ್ತೆ ಒತ್ತಿ.",
 }
 
 export default kn

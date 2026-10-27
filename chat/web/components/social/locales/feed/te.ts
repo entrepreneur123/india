@@ -76,6 +76,7 @@ const te: FeedDict = {
   'prompt.secret': 'కొద్దిమందికే తెలిసిన విషయం…',
 
   'profile.speaks': 'మాట్లాడే భాషలు',
+  'style.mbtiHint': "ఐచ్ఛికం. తీసివేయడానికి మళ్లీ నొక్కండి.",
 }
 
 export default te

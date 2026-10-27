@@ -76,6 +76,7 @@ const ml: FeedDict = {
   'prompt.secret': 'കുറച്ചുപേർക്ക് മാത്രം അറിയുന്ന കാര്യം…',
 
   'profile.speaks': 'സംസാരിക്കുന്ന ഭാഷകൾ',
+  'style.mbtiHint': "ഐച്ഛികം. മായ്ക്കാൻ വീണ്ടും ടാപ്പ് ചെയ്യുക.",
 }
 
 export default ml

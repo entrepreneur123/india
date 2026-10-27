@@ -71,6 +71,7 @@ const ur: FeedDict = {
   'prompt.goal': 'اس سال میں چاہتا/چاہتی ہوں…',
   'prompt.secret': 'ایک بات جو کم لوگ جانتے ہیں…',
   'profile.speaks': 'بولتے ہیں',
+  'style.mbtiHint': "اختیاری۔ ہٹانے کے لیے دوبارہ ٹیپ کریں۔",
 }
 
 export default ur

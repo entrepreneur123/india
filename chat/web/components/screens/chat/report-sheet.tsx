@@ -28,6 +28,7 @@ export function ReportSheet({
   matchId,
   onReported,
   about,
+  blockOnly = false,
 }: {
   open: boolean
   onClose: () => void
@@ -39,6 +40,8 @@ export function ReportSheet({
    * post doesn't block). `title` and `thanks` are the sheet's title and the word after.
    */
   about?: { post: string; title: string; thanks: string } | { comment: number; title: string; thanks: string }
+  /** Only the block confirmation (the profile's own Block button): no report reasons. */
+  blockOnly?: boolean
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -101,7 +104,24 @@ export function ReportSheet({
   }
 
   return (
-    <Modal open={open} onClose={close} variant="sheet" title={about?.title ?? t('report.title', { name: partner.name })} description={t('report.desc')}>
+    <Modal
+      open={open}
+      onClose={close}
+      variant="sheet"
+      title={blockOnly ? t('block.title', { name: partner.name }) : about?.title ?? t('report.title', { name: partner.name })}
+      description={blockOnly ? t('block.text') : t('report.desc')}
+    >
+      {blockOnly ? (
+        <div className="flex justify-end gap-2 px-6 pt-2 pb-6">
+          <Button variant="ghost" disabled={busy !== null} onClick={close}>
+            {t('common.cancel')}
+          </Button>
+          <Button variant="danger" loading={busy === 'block'} onClick={() => void block()} autoFocus>
+            {t('block.action')}
+          </Button>
+        </div>
+      ) : (
+      <>
       <ul className="flex flex-col p-3 pb-5">
         {REASONS.map((r) => (
           <li key={r.value}>
@@ -152,6 +172,8 @@ export function ReportSheet({
           </button>
         )}
       </div>
+      </>
+      )}
     </Modal>
   )
 }

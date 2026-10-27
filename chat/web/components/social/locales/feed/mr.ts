@@ -71,6 +71,7 @@ const mr: FeedDict = {
   'prompt.goal': 'या वर्षी मला हवे आहे…',
   'prompt.secret': 'फार कमी लोकांना माहीत असलेली गोष्ट…',
   'profile.speaks': 'बोलतात',
+  'style.mbtiHint': "ऐच्छिक. काढण्यासाठी पुन्हा टॅप करा.",
 }
 
 export default mr

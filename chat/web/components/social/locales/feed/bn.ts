@@ -76,6 +76,7 @@ const bn: FeedDict = {
   'prompt.secret': 'যা খুব কম লোক জানে…',
 
   'profile.speaks': 'ভাষা',
+  'style.mbtiHint': "ঐচ্ছিক। মুছতে আবার ট্যাপ করুন।",
 }
 
 export default bn

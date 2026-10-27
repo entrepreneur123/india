@@ -82,6 +82,7 @@ const fil: FeedDict = {
 
   // a profile
   'profile.speaks': 'Nagsasalita ng',
+  'style.mbtiHint': "Opsyonal. I-tap ulit para alisin.",
 }
 
 export default fil

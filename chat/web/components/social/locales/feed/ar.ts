@@ -90,6 +90,7 @@ const ar: FeedDict = {
 
   // a profile
   'profile.speaks': 'يتحدث',
+  'style.mbtiHint': "اختياري. اضغط مرة أخرى للمسح.",
 }
 
 export default ar

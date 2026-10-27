@@ -80,6 +80,7 @@ const en = {
 
   // a profile
   'profile.speaks': 'Speaks',
+  'style.mbtiHint': "Optional. Tap it again to clear.",
 }
 
 export default en

@@ -76,6 +76,7 @@ const hi: FeedDict = {
   'prompt.secret': 'जो बहुत कम लोग जानते हैं…',
 
   'profile.speaks': 'भाषाएँ',
+  'style.mbtiHint': "वैकल्पिक। हटाने के लिए फिर से टैप करें।",
 }
 
 export default hi

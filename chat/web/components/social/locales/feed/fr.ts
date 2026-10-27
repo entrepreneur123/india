@@ -78,6 +78,7 @@ const fr: FeedDict = {
   'prompt.secret': 'Ce que peu de gens savent…',
 
   'profile.speaks': 'Parle',
+  'style.mbtiHint': "Facultatif. Touchez à nouveau pour effacer.",
 }
 
 export default fr

@@ -1,7 +1,7 @@
 // Profile style (033_profiles_feed.sql): the lists and limits the server checks, the accent palette, and the
 // clean-up of what the editor sends and what the server returns. No imports but types, so the unit tests run it
 // directly (node --test).
-import type { Accent, ProfilePrompt, ProfileStyle, ProfileStyleInput, PromptQ, SpokenLang } from './backend'
+import type { Accent, Mbti, ProfilePrompt, ProfileStyle, ProfileStyleInput, PromptQ, SpokenLang } from './backend'
 
 export const STATUS_MAX = 60
 export const LANGUAGES_MAX = 6
@@ -56,10 +56,14 @@ export const nativeName = (id: SpokenLang) => SPOKEN_LANGS.find((l) => l.id === 
 export const PROMPT_QS: PromptQ[] = ['weekend', 'food', 'song', 'travel', 'talk', 'laugh', 'goal', 'secret']
 const Q_IDS = new Set<string>(PROMPT_QS)
 
+/** 071: the 16 MBTI types, in the usual 4×4 table order. */
+export const MBTI_TYPES: Mbti[] = ['ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP', 'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ']
+const isMbti = (v: unknown): v is Mbti => typeof v === 'string' && (MBTI_TYPES as string[]).includes(v)
+
 export const isAccent = (v: unknown): v is Accent => typeof v === 'string' && (ACCENTS as string[]).includes(v)
 
 /** profile_style's row (or the profiles columns) as the app keeps it; anything the app doesn't know is dropped. */
-export function parseStyle(row: { accent?: unknown; status?: unknown; languages?: unknown; prompts?: unknown } | null | undefined): ProfileStyle {
+export function parseStyle(row: { accent?: unknown; status?: unknown; languages?: unknown; prompts?: unknown; mbti?: unknown } | null | undefined): ProfileStyle {
   const langs = Array.isArray(row?.languages) ? row!.languages : []
   const prompts = Array.isArray(row?.prompts) ? row!.prompts : []
   const status = typeof row?.status === 'string' && row.status.trim() ? row.status.trim() : null
@@ -71,10 +75,11 @@ export function parseStyle(row: { accent?: unknown; status?: unknown; languages?
       .filter((p): p is ProfilePrompt => !!p && typeof p === 'object' && Q_IDS.has((p as ProfilePrompt).q) && typeof (p as ProfilePrompt).a === 'string' && !!(p as ProfilePrompt).a.trim())
       .map((p) => ({ q: p.q, a: p.a.trim() }))
       .slice(0, PROMPTS_MAX),
+    mbti: isMbti(row?.mbti) ? row.mbti : null,
   }
 }
 
-export const EMPTY_STYLE: ProfileStyle = { accent: null, status: null, languages: [], prompts: [] }
+export const EMPTY_STYLE: ProfileStyle = { accent: null, status: null, languages: [], prompts: [], mbti: null }
 
 export type StyleProblem = 'status' | 'answer' | 'languages' | 'prompts' | null
 
@@ -98,7 +103,7 @@ export function styleInput(draft: ProfileStyleInput): { input: ProfileStyleInput
   else if (languages.length > LANGUAGES_MAX) problem = 'languages'
   else if (prompts.length > PROMPTS_MAX) problem = 'prompts'
   else if (prompts.some((p) => [...p.a].length > ANSWER_MAX)) problem = 'answer'
-  return { input: { status, languages, prompts }, problem }
+  return { input: { status, languages, prompts, mbti: isMbti(draft.mbti) ? draft.mbti : null }, problem }
 }
 
 /** The next question not answered yet (for "Add a prompt"), null when all are used or 3 are answered. */

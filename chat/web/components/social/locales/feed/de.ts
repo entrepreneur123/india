@@ -76,6 +76,7 @@ const de: FeedDict = {
   'prompt.secret': 'Was nur wenige über mich wissen…',
 
   'profile.speaks': 'Spricht',
+  'style.mbtiHint': "Optional. Zum Entfernen noch einmal tippen.",
 }
 
 export default de

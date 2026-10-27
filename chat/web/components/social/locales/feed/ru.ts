@@ -86,6 +86,7 @@ const ru: FeedDict = {
 
   // a profile
   'profile.speaks': 'Языки',
+  'style.mbtiHint': "Необязательно. Нажмите ещё раз, чтобы убрать.",
 }
 
 export default ru

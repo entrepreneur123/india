@@ -80,6 +80,7 @@ const pl: FeedDict = {
   'prompt.secret': 'Coś, o czym mało kto wie…',
 
   'profile.speaks': 'Mówi w językach',
+  'style.mbtiHint': "Opcjonalnie. Stuknij ponownie, aby wyczyścić.",
 }
 
 export default pl

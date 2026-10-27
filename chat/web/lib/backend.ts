@@ -24,6 +24,8 @@ export type Accent = 'rose' | 'violet' | 'ocean' | 'mint' | 'sunset' | 'gold' | 
 export type SpokenLang = 'en' | 'hi' | 'bn' | 'ta' | 'te' | 'mr' | 'gu' | 'kn' | 'ml' | 'pa' | 'ur' | 'or' | 'as' | 'pt' | 'vi'
 /** The questions a profile can answer (the apps write the question text). */
 export type PromptQ = 'weekend' | 'food' | 'song' | 'travel' | 'talk' | 'laugh' | 'goal' | 'secret'
+/** 071: the 16 MBTI types (lib/profile-style.ts MBTI_TYPES, the server's check). */
+export type Mbti = `${'E' | 'I'}${'S' | 'N'}${'T' | 'F'}${'J' | 'P'}`
 
 export interface ProfilePrompt {
   q: PromptQ
@@ -37,13 +39,15 @@ export interface ProfileStyle {
   status: string | null
   languages: SpokenLang[]
   prompts: ProfilePrompt[]
+  mbti: Mbti | null
 }
 
-/** What set_profile_style takes: the whole style every time (040: the cover and colour are gone). */
+/** What set_profile_style2 takes: the whole style every time (040: the cover and colour are gone). */
 export interface ProfileStyleInput {
   status: string | null
   languages: SpokenLang[]
   prompts: ProfilePrompt[]
+  mbti: Mbti | null
 }
 
 /** 'friends': friends and people I chatted with (the default); 'public': anyone who opens the profile. */

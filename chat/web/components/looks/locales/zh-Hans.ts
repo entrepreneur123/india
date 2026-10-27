@@ -60,7 +60,7 @@ const zhHans: LooksDict = {
   'id.keptFree': '这个 ID 刚刚被别人用了，所以你暂时的 ID 是 @{handle}。可以在「编辑资料」中更改。',
 
   'details.title': '资料详情',
-  'details.desc': '你的状态、你会说的语言和几个问题。',
+  'details.desc': '你的状态、MBTI、你会说的语言和几个问题。',
 
   'friend.requested': '已申请',
   'friend.withdraw': '撤回发给 {name} 的申请',

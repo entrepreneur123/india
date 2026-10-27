@@ -76,6 +76,7 @@ const ne: FeedDict = {
   'prompt.secret': 'थोरैलाई मात्र थाहा भएको कुरा…',
 
   'profile.speaks': 'बोल्ने भाषा',
+  'style.mbtiHint': "ऐच्छिक। हटाउन फेरि थिच्नुहोस्।",
 }
 
 export default ne

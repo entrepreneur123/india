@@ -60,7 +60,7 @@ const tr: LooksDict = {
   'id.keptFree': 'O kimlik az önce alındı, bu yüzden şimdilik seninki @{handle}. Profili düzenle bölümünden değiştirebilirsin.',
 
   'details.title': 'Profil ayrıntıları',
-  'details.desc': 'Durumun, konuştuğun diller ve birkaç soru.',
+  'details.desc': 'Durumun, MBTI, konuştuğun diller ve birkaç soru.',
 
   'friend.requested': 'İstek gönderildi',
   'friend.withdraw': '{name} kişisine gönderdiğin isteği geri çek',

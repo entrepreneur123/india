@@ -78,6 +78,7 @@ const es: FeedDict = {
   'prompt.secret': 'Algo que poca gente sabe…',
 
   'profile.speaks': 'Habla',
+  'style.mbtiHint': "Opcional. Tócalo otra vez para quitarlo.",
 }
 
 export default es

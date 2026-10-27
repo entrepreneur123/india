@@ -60,7 +60,7 @@ const ptBR: LooksDict = {
   'id.keptFree': 'Esse ID acabou de ser pego, então por enquanto o seu é @{handle}. Você pode mudar em Editar perfil.',
 
   'details.title': 'Detalhes do perfil',
-  'details.desc': 'Seu status, os idiomas que você fala e algumas perguntas respondidas.',
+  'details.desc': 'Seu status, MBTI, os idiomas que você fala e algumas perguntas respondidas.',
 
   'friend.requested': 'Solicitado',
   'friend.withdraw': 'Cancelar sua solicitação para {name}',

@@ -105,7 +105,7 @@ type CardRow = {
   photo_path: string | null; country: string | null
 }
 /** 033: colour, status, languages, prompts (profiles columns, or profile_style rows); 040 keeps the colour null. */
-type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown }
+type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown; mbti: string | null }
 type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string; dm_from: string; hide_online: boolean } & StyleRow
 type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
 /** inbox2 (033): inbox's lines plus the post a like or comment is about. */
@@ -416,7 +416,7 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, handle, dm_from, hide_online')
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, mbti, handle, dm_from, hide_online')
         .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
@@ -801,7 +801,7 @@ export class SupabaseBackend implements Backend {
     if (!c) return null
     const [posts, extras, styles] = await Promise.all([
       this.posts(userId), this.extras([userId]).catch(() => []),
-      this.rpc<(StyleRow & { id: string })[] | null>('profile_style', { p_users: [userId] }).catch(() => null),
+      this.rpc<(StyleRow & { id: string })[] | null>('profile_style2', { p_users: [userId] }).catch(() => null),
     ])
     const p = await this.toProfile(c, posts)
     const withX = extras[0] ? await this.withExtras(p, extras[0]) : p
@@ -1256,10 +1256,7 @@ export class SupabaseBackend implements Backend {
   }
 
   async setProfileStyle(style: ProfileStyleInput) {
-    // The cover and colour are ignored since 040 (the function still takes them).
-    await this.rpc('set_profile_style', {
-      p_cover_path: null, p_accent: null, p_status: style.status, p_languages: style.languages, p_prompts: style.prompts,
-    })
+    await this.rpc('set_profile_style2', { p_status: style.status, p_languages: style.languages, p_prompts: style.prompts, p_mbti: style.mbti })
     return this.mine()
   }
 

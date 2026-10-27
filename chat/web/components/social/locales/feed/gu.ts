@@ -71,6 +71,7 @@ const gu: FeedDict = {
   'prompt.goal': 'આ વર્ષે હું ઇચ્છું છું…',
   'prompt.secret': 'એવી વાત જે ઓછા લોકો જાણે છે…',
   'profile.speaks': 'બોલે છે',
+  'style.mbtiHint': "વૈકલ્પિક. દૂર કરવા ફરી ટૅપ કરો.",
 }
 
 export default gu

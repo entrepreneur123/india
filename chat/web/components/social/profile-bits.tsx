@@ -116,6 +116,7 @@ export function ProfileHero({
         ) : null}
         {facts ? <div className="mt-2 flex max-w-full justify-center px-3">{facts}</div> : null}
         {style.status ? <p className="mt-3 max-w-sm px-4 text-[15px] text-balance text-muted-foreground italic">“{style.status}”</p> : null}
+        {style.mbti ? <span className={cn('mt-2.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-bold tracking-wider', ACCENT_TEXT)}>{style.mbti}</span> : null}
         {profile.bio ? <p className="mt-3 max-w-md px-4 text-[15px] leading-relaxed text-pretty">{profile.bio}</p> : null}
         <LanguageChips languages={style.languages} className="mt-3 justify-center px-4" />
       </section>

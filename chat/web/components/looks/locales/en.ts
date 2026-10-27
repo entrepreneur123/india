@@ -79,7 +79,7 @@ const en = {
 
   // profile details (the style editor without the old cover and colour)
   'details.title': 'Profile details',
-  'details.desc': 'Your status, the languages you speak and a few prompts.',
+  'details.desc': 'Your status, MBTI, the languages you speak and a few prompts.',
 
   // friends
   'friend.requested': 'Requested',

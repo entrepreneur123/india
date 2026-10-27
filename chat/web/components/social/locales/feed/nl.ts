@@ -76,6 +76,7 @@ const nl: FeedDict = {
   'prompt.secret': 'Iets wat weinig mensen weten…',
 
   'profile.speaks': 'Spreekt',
+  'style.mbtiHint': "Optioneel. Tik nogmaals om te wissen.",
 }
 
 export default nl

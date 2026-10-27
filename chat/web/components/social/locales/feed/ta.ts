@@ -76,6 +76,7 @@ const ta: FeedDict = {
   'prompt.secret': 'சிலருக்கு மட்டுமே தெரிந்த விஷயம்…',
 
   'profile.speaks': 'பேசும் மொழிகள்',
+  'style.mbtiHint': "விருப்பத்தேர்வு. அழிக்க மீண்டும் தட்டவும்.",
 }
 
 export default ta

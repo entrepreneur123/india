@@ -76,6 +76,7 @@ const ptBR: FeedDict = {
   'prompt.secret': 'Algo que pouca gente sabe…',
 
   'profile.speaks': 'Fala',
+  'style.mbtiHint': "Opcional. Toque de novo para limpar.",
 }
 
 export default ptBR

@@ -76,6 +76,7 @@ const vi: FeedDict = {
   'prompt.secret': 'Điều ít người biết về tôi…',
 
   'profile.speaks': 'Nói',
+  'style.mbtiHint': "Không bắt buộc. Chạm lần nữa để xóa.",
 }
 
 export default vi

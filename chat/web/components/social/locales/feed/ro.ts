@@ -78,6 +78,7 @@ const ro: FeedDict = {
   'prompt.secret': 'Ceva ce știu puțini…',
 
   'profile.speaks': 'Vorbește',
+  'style.mbtiHint': "Opțional. Atinge din nou pentru a șterge.",
 }
 
 export default ro
