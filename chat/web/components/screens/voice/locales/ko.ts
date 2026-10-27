@@ -76,6 +76,9 @@ const ko: RoomDict = {
   lostLeft: '연결이 끊겨 방에서 나왔어요',
   videoBig: '{name}님 화면 크게 보기',
   videoSmall: '방 화면으로 돌아가기',
+  'volumeOf': "나에게 들리는 {name}님 음량",
+  'volumeMute': "나에게만 음소거",
+  'volumeUnmute': "음소거 해제",
 }
 
 export default ko

@@ -76,6 +76,9 @@ const ro: RoomDict = {
   lostLeft: 'Ai pierdut conexiunea și ai ieșit din cameră',
   videoBig: 'Mărește-l pe {name}',
   videoSmall: 'Înapoi la cameră',
+  'volumeOf': "Volumul lui {name} pentru mine",
+  'volumeMute': "Dezactivează sunetul pentru mine",
+  'volumeUnmute': "Activează sunetul",
 }
 
 export default ro

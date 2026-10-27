@@ -75,6 +75,9 @@ const ms: RoomDict = {
   lostLeft: 'Sambungan anda terputus dan anda telah keluar dari bilik',
   videoBig: 'Besarkan {name}',
   videoSmall: 'Kembali ke bilik',
+  'volumeOf': "Kelantangan {name} untuk saya",
+  'volumeMute': "Senyapkan untuk saya",
+  'volumeUnmute': "Nyahsenyap",
 }
 
 export default ms

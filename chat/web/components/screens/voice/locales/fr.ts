@@ -76,6 +76,9 @@ const fr: RoomDict = {
   lostLeft: 'Connexion perdue : vous avez quitté le salon',
   videoBig: 'Afficher {name} en grand',
   videoSmall: 'Revenir au salon',
+  'volumeOf': "Volume de {name} pour moi",
+  'volumeMute': "Couper pour moi",
+  'volumeUnmute': "Remettre le son",
 }
 
 export default fr

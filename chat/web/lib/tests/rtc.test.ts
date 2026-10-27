@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { deviceNotice, deviceProblem, isAppleWebKit, partnerNotice, signalBars, videoCodecFor } from '../rtc.ts'
+import { deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, signalBars, videoCodecFor } from '../rtc.ts'
 
 const IPAD_SAFARI_DESKTOP = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15'
 const IPAD_KAKAO = 'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 KAKAOTALK 25.8.0'
@@ -50,4 +50,11 @@ test('partner notice: dropped beats paused beats weak', () => {
 
 test('signal bars', () => {
   assert.deepEqual(['excellent', 'good', 'poor', 'lost', 'unknown'].map(signalBars), [3, 2, 1, 0, null])
+})
+
+test('fixedVolume: iPhone and iPad only (Safari on a Mac can set a volume)', () => {
+  assert.equal(fixedVolume('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148'), true)
+  assert.equal(fixedVolume('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15', 5), true)
+  assert.equal(fixedVolume('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15', 0), false)
+  assert.equal(fixedVolume('Mozilla/5.0 (Linux; Android 14) Chrome/120 Mobile Safari/537.36'), false)
 })

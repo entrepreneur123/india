@@ -15,6 +15,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
+import { localPrice } from '@/lib/currency'
 import { LookBadge } from './badges'
 import { FrameAvatar, FrameCard } from './frames'
 import { lookKey, LookText } from './look-name'
@@ -104,7 +105,8 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const inrOf = (id: ItemId) => shop.items.find((i) => i.id === id)?.priceInr
   const price = (id: ItemId) => {
     const inr = inrOf(id)
-    return inr === undefined ? '' : new Intl.NumberFormat(locale, { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(inr)
+    // 53: in my country's money (rupees exactly, elsewhere a rough "≈" conversion).
+    return inr === undefined ? '' : localPrice(inr, me.country, locale)
   }
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
   const myWall = shop.wall as ItemId | null

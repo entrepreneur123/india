@@ -76,6 +76,9 @@ const tr: RoomDict = {
   lostLeft: 'Bağlantın koptuğu için odadan çıktın',
   videoBig: '{name} kişisini büyüt',
   videoSmall: 'Odaya dön',
+  'volumeOf': "Benim için {name} sesi",
+  'volumeMute': "Benim için sessize al",
+  'volumeUnmute': "Sesi aç",
 }
 
 export default tr

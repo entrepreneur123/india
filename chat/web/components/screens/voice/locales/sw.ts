@@ -75,6 +75,9 @@ const sw: RoomDict = {
   lostLeft: 'Muunganisho wako ulikatika, ukatoka chumbani',
   videoBig: 'Mkuze {name}',
   videoSmall: 'Rudi kwenye chumba',
+  'volumeOf': "Sauti ya {name} kwangu",
+  'volumeMute': "Nyamazisha kwangu",
+  'volumeUnmute': "Rudisha sauti",
 }
 
 export default sw

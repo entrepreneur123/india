@@ -75,6 +75,9 @@ const ta: RoomDict = {
   lostLeft: 'இணைப்பு துண்டிக்கப்பட்டதால் ரூமிலிருந்து வெளியேறினீர்கள்',
   videoBig: '{name} ஐப் பெரிதாகக் காட்டு',
   videoSmall: 'அறைக்குத் திரும்பு',
+  'volumeOf': "எனக்கு {name} ஒலியளவு",
+  'volumeMute': "எனக்கு மட்டும் ஒலியடக்கு",
+  'volumeUnmute': "ஒலியை இயக்கு",
 }
 
 export default ta

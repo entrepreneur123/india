@@ -45,7 +45,6 @@ const mr: RoomDict = {
   'pauseHere': 'माझ्या स्क्रीनवर थांबवा',
   'playHere': 'पुन्हा वाजवा, रूमसोबत',
   'pausedHere': 'तुमच्या स्क्रीनवर थांबले',
-  'volume': 'आवाज',
   'mute': 'संगीत म्यूट करा',
   'unmute': 'संगीत अनम्यूट करा',
   'quality': 'व्हिडिओ क्वालिटी: व्हिडिओमधील गिअरचे चिन्ह.',
@@ -75,6 +74,10 @@ const mr: RoomDict = {
   'lostLeft': 'कनेक्शन तुटल्याने तुम्ही रूममधून बाहेर पडलात',
   videoBig: '{name} ला मोठे करा',
   videoSmall: 'रूमवर परत',
+  volume: 'आवाज',
+  'volumeOf': "माझ्यासाठी {name} चा आवाज",
+  'volumeMute': "फक्त माझ्यासाठी म्यूट",
+  'volumeUnmute': "अनम्यूट",
 }
 
 export default mr

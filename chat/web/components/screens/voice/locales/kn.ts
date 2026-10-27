@@ -75,6 +75,9 @@ const kn: RoomDict = {
   lostLeft: 'ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡು ನೀವು ರೂಮ್‌ನಿಂದ ಹೊರಬಂದಿದ್ದೀರಿ',
   videoBig: '{name} ಅವರನ್ನು ದೊಡ್ಡದಾಗಿ ನೋಡಿ',
   videoSmall: 'ರೂಮ್‌ಗೆ ಹಿಂತಿರುಗಿ',
+  'volumeOf': "ನನಗೆ {name} ಧ್ವನಿ",
+  'volumeMute': "ನನಗೆ ಮಾತ್ರ ಮ್ಯೂಟ್",
+  'volumeUnmute': "ಅನ್‌ಮ್ಯೂಟ್",
 }
 
 export default kn

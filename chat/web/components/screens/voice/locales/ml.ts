@@ -75,6 +75,9 @@ const ml: RoomDict = {
   lostLeft: 'കണക്ഷൻ നഷ്ടമായതിനാൽ നിങ്ങൾ റൂമിൽ നിന്ന് പുറത്തായി',
   videoBig: '{name}-നെ വലുതാക്കുക',
   videoSmall: 'റൂമിലേക്ക് മടങ്ങുക',
+  'volumeOf': "എനിക്ക് {name} ശബ്ദം",
+  'volumeMute': "എനിക്ക് മാത്രം മ്യൂട്ട്",
+  'volumeUnmute': "അൺമ്യൂട്ട്",
 }
 
 export default ml

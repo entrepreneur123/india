@@ -45,7 +45,6 @@ const pa: RoomDict = {
   'pauseHere': 'ਮੇਰੀ ਸਕ੍ਰੀਨ ’ਤੇ ਰੋਕੋ',
   'playHere': 'ਦੁਬਾਰਾ ਚਲਾਓ, ਰੂਮ ਦੇ ਨਾਲ-ਨਾਲ',
   'pausedHere': 'ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ’ਤੇ ਰੁਕਿਆ',
-  'volume': 'ਆਵਾਜ਼',
   'mute': 'ਸੰਗੀਤ ਮਿਊਟ ਕਰੋ',
   'unmute': 'ਸੰਗੀਤ ਅਨਮਿਊਟ ਕਰੋ',
   'quality': 'ਵੀਡੀਓ ਕੁਆਲਿਟੀ: ਵੀਡੀਓ ਵਿੱਚ ਗੀਅਰ ਦਾ ਨਿਸ਼ਾਨ।',
@@ -75,6 +74,10 @@ const pa: RoomDict = {
   'lostLeft': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟਣ ਕਾਰਨ ਤੁਸੀਂ ਰੂਮ ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ',
   videoBig: '{name} ਨੂੰ ਵੱਡਾ ਕਰੋ',
   videoSmall: 'ਰੂਮ ਤੇ ਵਾਪਸ',
+  volume: 'ਆਵਾਜ਼',
+  'volumeOf': "ਮੇਰੇ ਲਈ {name} ਦੀ ਆਵਾਜ਼",
+  'volumeMute': "ਸਿਰਫ਼ ਮੇਰੇ ਲਈ ਮਿਊਟ",
+  'volumeUnmute': "ਅਨਮਿਊਟ",
 }
 
 export default pa

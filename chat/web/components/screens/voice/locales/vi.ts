@@ -75,6 +75,9 @@ const vi: RoomDict = {
   lostLeft: 'Bạn bị mất kết nối và đã rời phòng',
   videoBig: 'Phóng to {name}',
   videoSmall: 'Quay lại phòng',
+  'volumeOf': "Âm lượng của {name} với tôi",
+  'volumeMute': "Tắt tiếng với tôi",
+  'volumeUnmute': "Bật tiếng",
 }
 
 export default vi

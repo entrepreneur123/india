@@ -80,6 +80,9 @@ const ar: RoomDict = {
   lostLeft: 'انقطع اتصالك فخرجت من الغرفة',
   videoBig: 'تكبير {name}',
   videoSmall: 'العودة إلى الغرفة',
+  'volumeOf': "مستوى صوت {name} عندي",
+  'volumeMute': "كتم عندي فقط",
+  'volumeUnmute': "إلغاء الكتم",
 }
 
 export default ar

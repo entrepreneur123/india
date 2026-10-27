@@ -73,6 +73,7 @@ import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
 import { droppedOut, nextHost, VOICE_BEAT_MS } from './voice-lost'
+import { saveVolume } from './voice-volumes'
 
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
@@ -216,6 +217,7 @@ type VoiceLive = {
   startAudio: () => Promise<void>
   /** 46: the room's voices on or off for me. */
   sound: (on: boolean) => Promise<void>
+  volume: (userId: string, volume: number) => void
   joined: (state: VoiceStateRow, sent: number) => Promise<VoiceRoom>
   /** Tells the room I'm writing (public vtyping-<room> channel). */
   typing: (name: string) => void
@@ -1465,6 +1467,11 @@ export class SupabaseBackend implements Backend {
     await this.voice.get(roomId)?.sound(on)
   }
 
+  voiceVolume(roomId: string, userId: string, volume: number) {
+    saveVolume(userId, volume)
+    this.voice.get(roomId)?.volume(userId, volume)
+  }
+
   async voiceAction(roomId: string, a: VoiceAction) {
     const room = { p_room: roomId }
     const live = this.voice.get(roomId)
@@ -1988,6 +1995,7 @@ export class SupabaseBackend implements Backend {
         await audio?.startAudio()
         setAudio({ needsTap: false })
       },
+      volume: (id, v) => audio?.setVolume(id, v),
       sound: async (on) => {
         sound = on
         audio?.setSound(on)

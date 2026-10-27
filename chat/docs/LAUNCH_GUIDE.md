@@ -99,7 +99,7 @@
 참고: 웹사이트에는 결제가 없습니다(안드로이드 앱 안의 디지털 상품은 Play 결제를 써야 하는 정책). 웹 결제(Razorpay·UPI 등)는 원하시면 따로 붙일 수 있으나 별도 사업자·PG 계약이 필요합니다.
 
 ### 4-0. 꾸미기 상품 44개 등록 (040·046·062·067) — Play Console → 수익 창출 → 인앱 상품
-서버(마이그레이션 040·041, verify-purchase v11)는 준비 완료. **상품 ID가 아래와 정확히 같아야** 앱이 찾습니다. 종류는 "인앱 상품"(구독 아님), 한 번 사면 계속 보유(앱이 소비하지 않음). 가격은 아래가 제안가(₹)이며 Play에서 정한 가격이 앱에 그대로 표시됩니다.
+서버(마이그레이션 040·041, verify-purchase v11)는 준비 완료. **상품 ID가 아래와 정확히 같아야** 앱이 찾습니다. 종류는 "인앱 상품"(구독 아님), 한 번 사면 계속 보유(앱이 소비하지 않음). 가격은 아래가 제안가(₹)이며 Play에서 정한 가격이 앱에 그대로 표시됩니다. **나라별 가격(53):** Play Console → 상품 → 가격 설정에서 "다른 국가 가격을 환율로 자동 설정"을 켜고, 한국(₩)·미국($)·일본(¥) 등 주요국은 끝자리를 직접 다듬으세요(예: ₩1,200). 웹은 결제가 없어 `lib/currency.ts`의 대략 환율로 "≈ ₩1,300"처럼만 보여줍니다.
 - 배지: `badge_crown` 99, `badge_diamond` 149, `badge_flame` 79, `badge_star` 79, `badge_heart` 79, `badge_bolt` 79
 - 아이디 색: `color_gold` `color_rose` `color_ocean` `color_emerald` `color_violet` 각 49, `color_sunset` 99, `color_aurora` 99, `color_rainbow` 129
 - 아이디 글꼴: `font_script` `font_retro` `font_bold` `font_pixel` `font_round` `font_future` 각 69

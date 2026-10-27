@@ -75,6 +75,9 @@ const te: RoomDict = {
   lostLeft: 'కనెక్షన్ పోవడంతో మీరు రూమ్ నుండి బయటకు వచ్చారు',
   videoBig: '{name}ను పెద్దగా చూపించు',
   videoSmall: 'రూమ్‌కి తిరిగి',
+  'volumeOf': "నాకు {name} శబ్దం",
+  'volumeMute': "నాకు మాత్రమే మ్యూట్",
+  'volumeUnmute': "అన్‌మ్యూట్",
 }
 
 export default te

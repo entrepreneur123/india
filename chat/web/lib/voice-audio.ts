@@ -9,6 +9,7 @@ import {
   type LocalAudioTrack,
   type Participant,
   type RemoteAudioTrack,
+  type RemoteParticipant,
   type RemoteTrackPublication,
   type RemoteTrack,
   Room,
@@ -20,6 +21,7 @@ import {
 import type { VoiceVideo } from './backend'
 import { deviceProblem, isAppleWebKit, videoCodecFor } from './rtc'
 import { cleanMicrophone } from './voice-gate'
+import { savedVolumes } from './voice-volumes'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
 
@@ -48,6 +50,8 @@ export interface VoiceAudio {
   startAudio(): Promise<void>
   /** 46: the room's voices on or off for me. Off, they aren't even downloaded (R4: no bandwidth for a muted room). */
   setSound(on: boolean): void
+  /** 51: one person's volume for me, 0-1 (0: not downloaded at all). Kept if they leave and come back. */
+  setVolume(identity: string, volume: number): void
   disconnect(): Promise<void>
 }
 
@@ -128,11 +132,14 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   }
   signal.addEventListener('abort', abort)
 
-  // Cameras always; voices only while my sound is on (the speaking rings then use the server's levels).
-  const want = (pub: RemoteTrackPublication) => pub.setSubscribed(pub.kind !== Track.Kind.Audio || sound)
+  // Cameras always; voices only while my sound is on and that person isn't at 0 (the rings then use the server's levels).
+  const volumes = new Map(savedVolumes())
+  const want = (pub: RemoteTrackPublication, p: RemoteParticipant) =>
+    pub.setSubscribed(pub.kind !== Track.Kind.Audio || (sound && (volumes.get(p.identity) ?? 1) > 0))
 
   room
     .on(RoomEvent.TrackPublished, want)
+    .on(RoomEvent.ParticipantConnected, (p: RemoteParticipant) => p.setVolume(volumes.get(p.identity) ?? 1))
     .on(RoomEvent.TrackSubscribed, (track: RemoteTrack, pub, p) => {
       if (track.kind === Track.Kind.Video) return emitVideos()
       // Once per track: a second <audio> for the same voice (the catch-up below can see it too) doubles it.
@@ -201,7 +208,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   }
   if (signal.aborted) throw new DOMException('left', 'AbortError')
   // Tracks published before I joined (TrackSubscribed attaches them).
-  room.remoteParticipants.forEach((p) => p.trackPublications.forEach(want))
+  room.remoteParticipants.forEach((p) => p.trackPublications.forEach((pub) => want(pub, p)))
   ev.status('connected')
   ev.blocked(!room.canPlaybackAudio)
   emitVideos()
@@ -238,7 +245,14 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     setSound: (on) => {
       sound = on
       box.querySelectorAll('audio').forEach((el) => (el.muted = !on))
-      room.remoteParticipants.forEach((p) => p.audioTrackPublications.forEach(want))
+      room.remoteParticipants.forEach((p) => p.audioTrackPublications.forEach((pub) => want(pub, p)))
+    },
+    setVolume: (identity, volume) => {
+      volumes.set(identity, volume)
+      const p = room.remoteParticipants.get(identity)
+      if (!p) return
+      if (volume > 0) p.setVolume(volume)
+      p.audioTrackPublications.forEach((pub) => want(pub, p))
     },
     startAudio: () => room.startAudio(),
     disconnect: async () => {

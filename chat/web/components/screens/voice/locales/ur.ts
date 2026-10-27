@@ -45,7 +45,6 @@ const ur: RoomDict = {
   'pauseHere': 'میری اسکرین پر روکیں',
   'playHere': 'دوبارہ چلائیں، روم کے ساتھ ساتھ',
   'pausedHere': 'آپ کی اسکرین پر رکا ہوا',
-  'volume': 'آواز',
   'mute': 'میوزک میوٹ کریں',
   'unmute': 'میوزک ان میوٹ کریں',
   'quality': 'ویڈیو کوالٹی: ویڈیو میں گیئر کا نشان۔',
@@ -75,6 +74,10 @@ const ur: RoomDict = {
   'lostLeft': 'کنکشن ٹوٹنے کی وجہ سے آپ روم سے باہر ہو گئے',
   videoBig: '{name} کو بڑا کریں',
   videoSmall: 'روم پر واپس',
+  volume: 'آواز',
+  'volumeOf': "میرے لیے {name} کی آواز",
+  'volumeMute': "صرف میرے لیے میوٹ",
+  'volumeUnmute': "ان میوٹ",
 }
 
 export default ur

@@ -78,6 +78,9 @@ const ru: RoomDict = {
   lostLeft: 'Связь прервалась, и вы вышли из комнаты',
   videoBig: 'Показать {name} крупно',
   videoSmall: 'Вернуться в комнату',
+  'volumeOf': "Громкость {name} для меня",
+  'volumeMute': "Заглушить для меня",
+  'volumeUnmute': "Включить звук",
 }
 
 export default ru

@@ -11,6 +11,9 @@ export function isAppleWebKit(ua: string, maxTouchPoints = 0): boolean {
   return /^((?!chrome|chromium|crios|fxios|edg|android).)*safari/i.test(ua)
 }
 
+/** iPhone and iPad (any browser): a page can't set a sound's volume there (HTMLMediaElement.volume is read-only). */
+export const fixedVolume = (ua: string, maxTouchPoints = 0) => /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && maxTouchPoints > 1)
+
 /**
  * Apple encodes H.264 in hardware but VP8 in software, which looks soft and blocky (and heats the iPad); everyone
  * else, and the Android app, sends VP8. Both are decoded everywhere, so the two sides need not match.

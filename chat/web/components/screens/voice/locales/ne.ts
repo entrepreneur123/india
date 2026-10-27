@@ -75,6 +75,9 @@ const ne: RoomDict = {
   lostLeft: 'जडान टुटेकाले तपाईं रूमबाट बाहिरिनुभयो',
   videoBig: '{name} लाई ठूलो गर्नुहोस्',
   videoSmall: 'कोठामा फर्कनुहोस्',
+  'volumeOf': "मेरा लागि {name} को आवाज",
+  'volumeMute': "मेरा लागि मात्र म्युट",
+  'volumeUnmute': "अनम्युट",
 }
 
 export default ne

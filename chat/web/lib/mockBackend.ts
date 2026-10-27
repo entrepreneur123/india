@@ -50,6 +50,7 @@ import type { FeedSim } from './mockFeed'
 import { droppedOut } from './voice-lost'
 import { art } from './mock-art'
 import { hashtagsOf } from './hashtags'
+import { saveVolume } from './voice-volumes'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 function countryOfPhone(digits: string | null | undefined): string | null {
@@ -1387,6 +1388,10 @@ export class MockBackend implements Backend {
   async voiceStartAudio(_roomId: string) {}
 
   async voiceSound(_roomId: string, _on: boolean) {}
+
+  voiceVolume(_roomId: string, userId: string, volume: number) {
+    saveVolume(userId, volume)
+  }
 
   // ---- identity and manners (simulated in their own chunk, lib/mockTrust.ts) ----
 

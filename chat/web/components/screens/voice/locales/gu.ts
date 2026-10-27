@@ -45,7 +45,6 @@ const gu: RoomDict = {
   'pauseHere': 'મારી સ્ક્રીન પર અટકાવો',
   'playHere': 'ફરી વગાડો, રૂમની સાથે',
   'pausedHere': 'તમારી સ્ક્રીન પર અટક્યું',
-  'volume': 'અવાજ',
   'mute': 'મ્યુઝિક મ્યૂટ કરો',
   'unmute': 'મ્યુઝિક અનમ્યૂટ કરો',
   'quality': 'વીડિયો ક્વૉલિટી: વીડિયોમાં ગિયરનું ચિહ્ન.',
@@ -75,6 +74,10 @@ const gu: RoomDict = {
   'lostLeft': 'કનેક્શન તૂટવાથી તમે રૂમમાંથી બહાર થઈ ગયા',
   videoBig: '{name}ને મોટું કરો',
   videoSmall: 'રૂમ પર પાછા',
+  volume: 'અવાજ',
+  'volumeOf': "મારા માટે {name}નો અવાજ",
+  'volumeMute': "ફક્ત મારા માટે મ્યૂટ",
+  'volumeUnmute': "અનમ્યૂટ",
 }
 
 export default gu

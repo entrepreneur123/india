@@ -75,6 +75,9 @@ const fil: RoomDict = {
   lostLeft: 'Nawala ang koneksyon mo kaya umalis ka sa room',
   videoBig: 'Palakihin si {name}',
   videoSmall: 'Bumalik sa room',
+  'volumeOf': "Lakas ni {name} para sa akin",
+  'volumeMute': "I-mute para sa akin",
+  'volumeUnmute': "I-unmute",
 }
 
 export default fil

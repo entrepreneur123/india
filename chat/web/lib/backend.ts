@@ -953,6 +953,8 @@ export interface Backend {
   voiceStartAudio(roomId: string): Promise<void>
   /** 46: the room's voices on or off for me (a room is entered with them off). */
   voiceSound(roomId: string, on: boolean): Promise<void>
+  /** 51: one person's volume for me (0-1), remembered for every room (lib/voice-volumes.ts); 0 stops their voice. */
+  voiceVolume(roomId: string, userId: string, volume: number): void
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>
   // ---- identity and manners (035) ----
   myTrust(): Promise<MyTrust>

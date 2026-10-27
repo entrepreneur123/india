@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
+import { fixedVolume } from '@/lib/rtc'
+import { volumeOf } from '@/lib/voice-volumes'
 import { flagEmoji } from '@/lib/format'
 import type { TKey } from '@/lib/i18n'
 import { useApp } from '@/components/app-state'
@@ -185,6 +187,7 @@ export function PersonSheet({
             />
           )}
           {self ? null : <FriendRow userId={target.profile.id} name={target.profile.name} />}
+          {!self && room.voice && target.seat !== null ? <VolumeRow roomId={room.id} userId={target.profile.id} name={target.profile.name} /> : null}
           {self && target.seat !== null ? (
             <Row icon={<ArrowDownToLine />} label={t('voice.leaveStage')} onClick={() => void run({ type: 'unseat' })} />
           ) : null}
@@ -248,6 +251,41 @@ export function PersonSheet({
         matchId={null}
       />
     </>
+  )
+}
+
+/**
+ * 51: how loud this person is for me (remembered for every room). iPhone and iPad can't set a volume, so there it is
+ * "mute for me" (and 0 anywhere stops their voice from downloading at all).
+ */
+function VolumeRow({ roomId, userId, name }: { roomId: string; userId: string; name: string }) {
+  const backend = useBackend()
+  const { rt } = useRoomT()
+  const [v, setV] = useState(() => volumeOf(userId))
+  const set = (x: number) => {
+    setV(x)
+    backend.voiceVolume(roomId, userId, x)
+  }
+  if (fixedVolume(navigator.userAgent, navigator.maxTouchPoints))
+    return <Row icon={v === 0 ? <Volume2 /> : <VolumeX />} label={rt(v === 0 ? 'volumeUnmute' : 'volumeMute')} onClick={() => set(v === 0 ? 1 : 0)} />
+  return (
+    <label className="flex h-13 w-full items-center gap-4 px-6 text-[15px] font-medium">
+      <span className="shrink-0 text-muted-foreground [&>svg]:size-5" aria-hidden>
+        {v === 0 ? <VolumeX /> : <Volume2 />}
+      </span>
+      <span className="shrink-0">{rt('volume')}</span>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        step={5}
+        value={Math.round(v * 100)}
+        onChange={(e) => set(Number(e.target.value) / 100)}
+        aria-label={rt('volumeOf', { name })}
+        className="min-w-0 flex-1 accent-primary"
+      />
+      <span className="w-10 shrink-0 text-end text-sm tabular-nums text-muted-foreground">{Math.round(v * 100)}%</span>
+    </label>
   )
 }
 

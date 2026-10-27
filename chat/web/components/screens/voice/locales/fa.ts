@@ -75,6 +75,9 @@ const fa: RoomDict = {
   lostLeft: 'اتصالتان قطع شد و از روم خارج شدید',
   videoBig: 'بزرگ کردن {name}',
   videoSmall: 'بازگشت به اتاق',
+  'volumeOf': "صدای {name} برای من",
+  'volumeMute': "بی‌صدا فقط برای من",
+  'volumeUnmute': "لغو بی‌صدا",
 }
 
 export default fa

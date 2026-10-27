@@ -76,6 +76,9 @@ const zhHans: RoomDict = {
   lostLeft: '连接已断开，你已离开房间',
   videoBig: '放大 {name}',
   videoSmall: '返回房间',
+  'volumeOf': "我听到的 {name} 的音量",
+  'volumeMute': "仅对我静音",
+  'volumeUnmute': "取消静音",
 }
 
 export default zhHans

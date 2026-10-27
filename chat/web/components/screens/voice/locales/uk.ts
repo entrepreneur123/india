@@ -78,6 +78,9 @@ const uk: RoomDict = {
   lostLeft: 'Зв’язок обірвався, і ви вийшли з кімнати',
   videoBig: 'Показати {name} великим',
   videoSmall: 'Повернутися до кімнати',
+  'volumeOf': "Гучність {name} для мене",
+  'volumeMute': "Вимкнути звук для мене",
+  'volumeUnmute': "Увімкнути звук",
 }
 
 export default uk

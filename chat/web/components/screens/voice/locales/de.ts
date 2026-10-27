@@ -75,6 +75,9 @@ const de: RoomDict = {
   lostLeft: 'Deine Verbindung ist abgebrochen, du hast den Raum verlassen',
   videoBig: '{name} groß anzeigen',
   videoSmall: 'Zurück zum Raum',
+  'volumeOf': "Lautstärke von {name} für mich",
+  'volumeMute': "Für mich stummschalten",
+  'volumeUnmute': "Stummschaltung aufheben",
 }
 
 export default de
