@@ -130,10 +130,14 @@ jobs:
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
-            # GitHub Pages serves this copy under /india/ even once SITE_URL is our own domain (canonical links point there).
+            # Built for GitHub Pages (/india/ links); turned into redirect stubs below once lottodost.com answers.
             nosecret python ../web/sitegen.py --data ../public --out ../public --link-prefix /india  # result pages (en/bn/hi)
             nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
+            # One copy of each page for Google: the github.io pages become instant redirects to lottodost.com.
+            if [ "$SITE_URL" = "https://lottodost.com" ]; then
+              nosecret python ../web/redirect_stubs.py --dir ../public --to "$SITE_URL" --prefix /india
+            fi
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
@@ -162,7 +166,9 @@ jobs:
             if [ "$HAS_CF" = "true" ]; then
               # Cloudflare serves the site at the host root, GitHub under /india/: rebuild the pages with root links.
               rm -rf ../cf && cp -a ../public ../cf && rm -rf ../cf/.git
+              cp ../docs/privacy.html ../cf/privacy.html   # the copied one is a redirect stub
               nosecret python ../web/sitegen.py --data ../cf --out ../cf --link-prefix ""
+              nosecret python ../web/redirect_stubs.py --dir ../cf --purge   # no stub may point lottodost.com at itself
               printf '/india /  301\n/india/* /:splat 301\n' > ../cf/_redirects   # old /india/ links from before this fix
               deploy() { env -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
               # First deploy: create the project (free plan) if it does not exist yet.

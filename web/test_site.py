@@ -291,3 +291,26 @@ def test_guides_are_built_with_sources_and_the_calculator_matches_the_law(tmp_pa
           + f";console.log(JSON.stringify({amounts}.map(function(p){{return window.lotteryTax(p)}})))")
     got = json.loads(subprocess.run([node, "-e", js], capture_output=True, text=True, check=True).stdout)
     assert got == [ref_tax(p) for p in amounts]
+
+
+def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch):
+    import redirect_stubs  # web/redirect_stubs.py
+    out = build(tmp_path, monkeypatch, base="https://lottodost.com", link_prefix="/india")
+    (out / "privacy.html").write_text("<html>policy</html>")
+    (out / "v2").mkdir()
+    (out / "v2/today.json").write_text("{}")
+    pages = sorted(out.rglob("*.html"))
+    assert redirect_stubs.stub_tree(out, "https://lottodost.com/", "/india") == len(pages)
+    home = (out / "index.html").read_text()
+    assert '<meta http-equiv="refresh" content="0; url=https://lottodost.com/">' in home
+    assert '<link rel="canonical" href="https://lottodost.com/">' in home
+    draw = (out / "hi/result/18-10-2026/1pm/index.html").read_text()
+    assert 'url=https://lottodost.com/hi/result/18-10-2026/1pm/"' in draw and "Lottery Sambad" not in draw
+    assert 'url=https://lottodost.com/privacy.html"' in (out / "privacy.html").read_text()
+    nf = (out / "404.html").read_text()
+    assert 'content="noindex"' in nf and 'p.indexOf("/india/")===0' in nf and "http-equiv" not in nf
+    assert (out / "v2/today.json").read_text() == "{}"          # the app's JSON mirror is untouched
+    # The Cloudflare copy starts from this tree: whatever the site build does not rewrite is removed, never served.
+    (out / "result/18-10-2026/1pm/index.html").write_text("<html>real page</html>")
+    assert redirect_stubs.purge(out) == len(pages) - 1
+    assert sorted(out.rglob("*.html")) == [out / "result/18-10-2026/1pm/index.html"]
