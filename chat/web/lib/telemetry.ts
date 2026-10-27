@@ -18,6 +18,7 @@ let posthog: Promise<PostHog> | null = null
 const seen = new Set<string>()
 let errorsSent = 0
 let identified: string | null = null
+let viewed = false
 
 const afterLoad = () =>
   new Promise<void>((resolve) => {
@@ -45,13 +46,16 @@ export function reportError(err: unknown, where?: string) {
 
 /** The signed-in account (null: signed out). Its id is random; country and language help compare countries. */
 export function identify(me: { id: string; country?: string | null } | null, lang: string) {
-  if ((me?.id ?? null) === identified) return
+  const id = me?.id ?? null
   const was = identified
-  identified = me?.id ?? null
-  void sentry?.then((s) => s.setUser(me ? { id: me.id } : null))
+  identified = id
+  if (id !== was) void sentry?.then((s) => s.setUser(id ? { id } : null))
   void posthog?.then((p) => {
-    if (me) p.identify(me.id, { country: me.country ?? null, lang })
-    else if (was) p.reset()
+    if (id && id !== was) p.identify(id, { country: me?.country ?? null })
+    else if (!id && was) p.reset()
+    p.register({ lang }) // sent with every event; after reset() (which clears it) and on a language change
+    if (!viewed) p.capture('$pageview') // one per visit, here so it carries the language
+    viewed = true
   })
 }
 
@@ -84,7 +88,7 @@ export function installErrorReporting() {
         persistence: 'memory',
         person_profiles: 'identified_only',
         autocapture: false,
-        capture_pageview: true, // one per visit: country, device, where people came from
+        capture_pageview: false, // sent by identify() (country, device, where people came from, language)
         capture_pageleave: true,
         capture_exceptions: false, // Sentry has them
         capture_performance: false,

@@ -63,8 +63,8 @@
 2. Supabase 대시보드 → Authentication → Sign In / Providers → **Phone** → Provider: **Twilio Verify** → Account SID / Auth Token / Verify Service SID 입력.
 3. 같은 화면의 **Test phone numbers(919000000001/2, 코드 123456) 삭제** — 그대로 두면 누구나 그 계정으로 로그인됩니다 (보안 감사 '치명' 항목).
 4. Authentication → Providers → **Email 끄기** (지금은 테스트 봇용으로 켜져 있음. 켜 두면 전화번호 없이 계정을 무한히 만들 수 있음). 테스트 봇(`server/tools/partner_bot.ts`)도 종료.
-5. Authentication → Attack Protection → **CAPTCHA(hCaptcha/Turnstile) 켜기**, SMS 발송 국가를 4개국으로 제한 (SMS 요금 폭탄 공격 방지).
-6. 인도: 비용이 가장 싼 **WhatsApp 인증**으로 시작하고, SMS가 필요하면 TRAI **DLT 등록**(사업자 PAN 필요, 약 10영업일) 후 국내 경로 사용. 해외 법인의 DLT 직접 등록 가능 여부는 미확인.
+5. Twilio 콘솔 → Verify → Settings → **Geo permissions**에서 출시 국가만 허용하고, 같은 곳의 **Fraud Guard**를 켭니다 (SMS 요금 폭탄 공격 방지). **CAPTCHA는 아직 켜지 마세요**: 켜면 Supabase가 인증번호 요청마다 CAPTCHA 토큰을 요구하는데, 지금 웹·앱은 토큰을 보내지 않아 **모든 로그인이 막힙니다** (웹 `lib/supabaseBackend.ts` `sendOtp`, 2026-10-27 확인). 앱에 Turnstile을 붙인 뒤에 켭니다.
+6. 인도: 비용이 가장 싼 **WhatsApp 인증**으로 시작하고(Supabase는 Twilio·Twilio Verify에서만 WhatsApp 지원. Twilio에 **WhatsApp 발신자**를 먼저 등록해야 하고, 웹·앱이 `channel: 'whatsapp'`으로 요청하도록 바꿔야 함 — 지금 코드는 SMS로만 보냄), SMS가 필요하면 TRAI **DLT 등록**(사업자 PAN 필요, 약 10영업일) 후 국내 경로 사용. 해외 법인의 DLT 직접 등록 가능 여부는 미확인.
 7. 베트남·방글라데시 SMS: 발신자 ID 사전등록 필수(베트남 약 5주·사업자등록증, 방글라데시 약 3주).
 
 ---
