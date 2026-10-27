@@ -91,19 +91,21 @@ jobs:
         id: mode
         run: |
           # require: slots this run waits for; from: UTC time polling starts; watch: minutes to keep polling.
-          require=""; from=""; watch=0; deep=false; ocr=false; backfill=1
+          require=""; from=""; watch=0; deep=false; ocr=false; backfill=1; mh=false
           case "${{ github.event.schedule }}" in
             "47 5 * * *"|"17 7 * * *")    require=NL1PM; from=07:35; watch=90 ;;
             "17 9 * * *")                 require=KL; from=10:35; watch=90 ;;
             "47 10 * * *"|"17 12 * * *")  require=SK6PM; from=12:35; watch=90 ;;
-            "47 12 * * *"|"17 14 * * *")  require=NL8PM; from=14:35; watch=90 ;;
-            "10 15 * * *"|"40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
-            "0 3 * * *") deep=true; ocr=true; backfill=2 ;;
+            "47 12 * * *")                require=NL8PM; from=14:35; watch=90; mh=true ;;   # Maharashtra while waiting
+            "17 14 * * *")                require=NL8PM; from=14:35; watch=90 ;;
+            "10 15 * * *") deep=true; ocr=true; mh=true ;;
+            "40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
+            "0 3 * * *") deep=true; ocr=true; backfill=2; mh=true ;;
           esac
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            deep=true; ocr="$IN_OCR"; backfill=$(( IN_BACKFILL + 0 ))
+            deep=true; ocr="$IN_OCR"; backfill=$(( IN_BACKFILL + 0 )); mh=true
           fi
-          { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
+          { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; echo "mh=$mh"; } >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
@@ -192,6 +194,13 @@ jobs:
             now=$(date +%s)
             # Started early (the normal case): wait here instead of asking the source every minute.
             if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
+          fi
+          if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then
+            # Maharashtra State Lottery (draws ~4-5 PM IST): each draw with its official result sheet (PDF).
+            # Numbers are not published yet: the OCR of the scanned sheets (lottery_pipeline.maharashtra --ocr)
+            # did not yet pass its accuracy check. The 8 PM run does this in its idle wait.
+            nosecret timeout 10m python -m lottery_pipeline.maharashtra --out ../public || echo "::warning::Maharashtra update failed"
+            publish
           fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do

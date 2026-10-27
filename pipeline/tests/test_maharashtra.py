@@ -130,3 +130,16 @@ def test_real_sheet_reads_exactly():
     pdf, gold = os.environ["MH_OCR_TEST"].split(":")
     got = mh.read(pathlib.Path(pdf).read_bytes(), warn=print)
     assert {t["rank"]: t["numbers"] for t in got["tiers"]} == json.loads(pathlib.Path(gold).read_text())
+
+
+def test_without_ocr_every_draw_is_listed_with_its_official_pdf(tmp_path):
+    page = (F / "mh_results_list.html").read_text()
+    n = mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page,
+                  fetch_pdf=lambda u: pytest.fail("no download without OCR"), ocr=False)
+    assert n == 10
+    draws = json.loads((tmp_path / "v2/mh/days/2026-10-27.json").read_text())["draws"]
+    assert sorted(d["name"] for d in draws) == ["Maharashtra Gajlaxmi Mangal", "Maharashtra Ganeshlaxmi Shubh",
+                                                "Maharashtra Padmini", "Maharashtra Sahyadri Mahalaxmi", "Maharashtra Tejaswini"]
+    assert {d["status"] for d in draws} == {"PDF"} and all(d["sources"][0]["url"].endswith(".pdf") for d in draws)
+    assert next(d for d in draws if d["name"] == "Maharashtra Tejaswini")["kind"] == "monthly"
+    assert mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page, ocr=False) == 0

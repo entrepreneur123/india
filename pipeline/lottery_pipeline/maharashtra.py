@@ -693,9 +693,9 @@ def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -
     return d | {"status": "OK", "time": h.get("time", ""), "drawNo": h.get("drawNo"), "series": h["series"], "tiers": tiers}
 
 
-def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None) -> int:
+def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr: bool = True) -> int:
     """Read every sheet listed for the last few days that is not published yet. Returns how many
-    draws changed."""
+    draws changed. ocr=False only lists the draws with their official PDF (no download, no OCR)."""
     import json
     import pathlib
     out = pathlib.Path(out)
@@ -708,6 +708,15 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None) -> 
         day = json.loads(f.read_text()) if f.exists() else {"schema": 2, "date": date.isoformat(), "draws": []}
         known = {x["sources"][0]["url"]: x for x in day["draws"]}
         if known.get(url, {}).get("status") == "OK":
+            continue
+        if not ocr:
+            got = entry(date, url, None, local)
+            if known.get(url) != got:
+                day["draws"] = [x for x in day["draws"] if x["sources"][0]["url"] != url] + [got]
+                day["draws"].sort(key=lambda x: (x.get("time") or "99", x["name"]))
+                f.parent.mkdir(parents=True, exist_ok=True)
+                f.write_text(json.dumps(day, ensure_ascii=False, separators=(",", ":")))
+                changed += 1
             continue
         try:
             pdf = (fetch_pdf or download)(url)
@@ -736,9 +745,11 @@ def main(argv=None) -> int:
     import argparse
     ap = argparse.ArgumentParser(description="Maharashtra State Lottery: read the official sheets into v2/mh/")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--ocr", action="store_true", help="read the numbers (needs tesseract, poppler, OpenCV); "
+                    "without it each draw is listed with its official PDF only")
     a = ap.parse_args(argv)
     ist = dt.timezone(dt.timedelta(hours=5, minutes=30))
-    n = update(a.out, dt.datetime.now(ist).date())
+    n = update(a.out, dt.datetime.now(ist).date(), ocr=a.ocr)
     print(f"maharashtra: {n} draws changed")
     return 0
 

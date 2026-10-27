@@ -53,7 +53,10 @@ MH = {
            "draw_desc": "Maharashtra {g} lottery result {d}: 1st prize {f}. All prizes, ticket checker and the official result sheet.",
            "draw_no": " (Draw {n})", "check_hint": "Type your full ticket number (e.g. GL-00 2142) or just the 4 digits.",
            "open_pdf": "Official result sheet (PDF)", "open_site": "Maharashtra State Lottery website",
-           "weekly": "Weekly", "monthly": "Monthly", "bumper": "Bumper", "all": "All Maharashtra results"},
+           "weekly": "Weekly", "monthly": "Monthly", "bumper": "Bumper", "all": "All Maharashtra results",
+           "title_pdf": "Maharashtra Lottery Result Today {d} – {g}, Official Result Sheets",
+           "desc_pdf": "Maharashtra State Lottery result {d}: {list} – the official result sheet (PDF) of every draw, straight from the Government of Maharashtra.",
+           "pdf_note": "Each draw links its official result sheet (PDF) on the Maharashtra State Lottery website. Check your ticket against that sheet."},
     "bn": {"tab": "মহারাষ্ট্র", "h1": "মহারাষ্ট্র লটারি আজকের রেজাল্ট", "other": "অন্য রাজ্যের লটারি",
            "title": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g} ও সব ড্র",
            "desc": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list}। প্রতিটি ড্রয়ের পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
@@ -64,7 +67,10 @@ MH = {
            "draw_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}: প্রথম পুরস্কার {f}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
            "draw_no": " (ড্র {n})", "check_hint": "পুরো টিকিট নম্বর লিখুন (যেমন GL-00 2142) বা শুধু 4টি সংখ্যা।",
            "open_pdf": "সরকারি রেজাল্ট শিট (PDF)", "open_site": "মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইট",
-           "weekly": "সাপ্তাহিক", "monthly": "মাসিক", "bumper": "বাম্পার", "all": "মহারাষ্ট্রের সব রেজাল্ট"},
+           "weekly": "সাপ্তাহিক", "monthly": "মাসিক", "bumper": "বাম্পার", "all": "মহারাষ্ট্রের সব রেজাল্ট",
+           "title_pdf": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g}, সরকারি রেজাল্ট শিট",
+           "desc_pdf": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list} – প্রতিটি ড্রয়ের সরকারি রেজাল্ট শিট (PDF), সরাসরি মহারাষ্ট্র সরকারের কাছ থেকে।",
+           "pdf_note": "প্রতিটি ড্রয়ের সঙ্গে মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইটের সরকারি রেজাল্ট শিটের (PDF) লিংক আছে। ওই শিটের সঙ্গে টিকিট মিলিয়ে নিন।"},
     "hi": {"tab": "महाराष्ट्र", "h1": "महाराष्ट्र लॉटरी रिज़ल्ट आज", "other": "दूसरे राज्यों की लॉटरी",
            "title": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g} और सभी ड्रॉ",
            "desc": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list}। हर ड्रॉ के सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
@@ -75,7 +81,10 @@ MH = {
            "draw_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}: पहला इनाम {f}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
            "draw_no": " (ड्रॉ {n})", "check_hint": "पूरा टिकट नंबर लिखें (जैसे GL-00 2142) या सिर्फ़ 4 अंक।",
            "open_pdf": "सरकारी रिज़ल्ट शीट (PDF)", "open_site": "महाराष्ट्र राज्य लॉटरी की वेबसाइट",
-           "weekly": "साप्ताहिक", "monthly": "मासिक", "bumper": "बंपर", "all": "महाराष्ट्र के सभी रिज़ल्ट"},
+           "weekly": "साप्ताहिक", "monthly": "मासिक", "bumper": "बंपर", "all": "महाराष्ट्र के सभी रिज़ल्ट",
+           "title_pdf": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g}, सरकारी रिज़ल्ट शीट",
+           "desc_pdf": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list} – हर ड्रॉ की सरकारी रिज़ल्ट शीट (PDF), सीधे महाराष्ट्र सरकार से।",
+           "pdf_note": "हर ड्रॉ के साथ महाराष्ट्र राज्य लॉटरी की वेबसाइट पर उसकी सरकारी रिज़ल्ट शीट (PDF) का लिंक है। टिकट उसी शीट से मिलाएँ।"},
 }
 
 WEB = {
@@ -931,12 +940,21 @@ class Site:
         table = (f'<h2 class="sub">{esc(m["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(w["date"])}</th>'
                  f'<th>{esc(w["game"])}</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
         first_ok = next((d for d in draws if d.get("status") == "OK" and d.get("tiers")), None)
+        # Without numbers the page says only what it has: the official sheets (no checker, no prize list).
+        earlier = "".join(f'<h2 class="sub">{esc(ddmmyyyy(x))}</h2>' + "".join(self.mh_card(lang, d) for d in self.mh[x])
+                          for x in self.mh_dates[1:3])
         body = (f'<div class="intro"><h1>{esc(m["h1"])} <span class="d">{esc(d0)}</span></h1>'
-                f'<p class="hint">{esc(m["schedule"])}</p></div>' + self.checker(lang, hint=m["check_hint"], example="GL-00 2142")
-                + "".join(self.mh_card(lang, d) for d in draws) + self.ad() + table
-                + f'<p class="hint">{esc(m["ocr_note"])}</p>' + self.hub_links(lang))
-        title = m["title"].format(d=d0, g=self.mh_game(lang, first_ok) if first_ok else m["tab"])
-        desc = m["desc"].format(d=d0, list=listing or s["pdf_only"])
+                f'<p class="hint">{esc(m["schedule"])}</p></div>'
+                + (self.checker(lang, hint=m["check_hint"], example="GL-00 2142") if done else "")
+                + "".join(self.mh_card(lang, d) for d in draws) + self.ad() + table + earlier
+                + f'<p class="hint">{esc(m["ocr_note"] if done else m["pdf_note"])}</p>' + self.hub_links(lang))
+        names = ", ".join(self.mh_game(lang, d) for d in draws)
+        if first_ok:
+            title = m["title"].format(d=d0, g=self.mh_game(lang, first_ok))
+            desc = m["desc"].format(d=d0, list=listing)
+        else:
+            title = m["title_pdf"].format(d=d0, g=self.mh_game(lang, draws[0]))
+            desc = m["desc_pdf"].format(d=d0, list=names)
         self.write(out, lang, "/maharashtra/", self.page(
             lang, "/maharashtra/", title, desc, body, data=[d for d in draws if d.get("tiers")],
             image=self.og_images.get(first_ok["id"], "") if first_ok else "",

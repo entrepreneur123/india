@@ -385,3 +385,16 @@ def test_maharashtra_has_its_own_section_and_pages(tmp_path, monkeypatch):
     assert not out_js[2][0].startswith("res no:")         # 2nd prize: any series
     assert not out_js[3][0].startswith("res no:")         # 4 digits alone: "same digits as a top prize"
     assert out_js[4][0].startswith("res no:")
+
+
+def test_maharashtra_without_numbers_promises_only_the_official_sheets(tmp_path, monkeypatch):
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    pdf = dict(MH_DRAW, status="PDF", time="", tiers=[], drawNo=None)
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [pdf]}))
+    out = build(tmp_path, monkeypatch)
+    hub = (out / "maharashtra/index.html").read_text()
+    assert "<title>Maharashtra Lottery Result Today 18.10.2026 – Gajlaxmi Ravi Weekly, Official Result Sheets</title>" in hub
+    assert 'id="checkForm"' not in hub and "Full prize list" not in hub and "read by computer" not in hub
+    assert "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
+    assert "https://example.in/maharashtra/" in (out / "sitemap.xml").read_text()
