@@ -413,7 +413,7 @@ class Site:
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
-<link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml"><link rel="icon" href="{self.path_prefix}/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png"><link rel="manifest" href="{self.path_prefix}/manifest.webmanifest">
 <meta name="robots" content="max-image-preview:large">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
@@ -668,6 +668,9 @@ class Site:
             summary = ", ".join(f'{short_time(t)} {got[sl]["tiers"][0]["numbers"][0] if sl in got else w["awaited"]}'
                                 for sl, t, _ in WEEKLY)
             up = next((u for u in self.index.get("upcoming", []) if u["date"] >= self.today), None)
+            last = ([d for d in self.ordered(self.days.get(latest, [])) if d.get("tiers")] or [None])[-1]
+            if last and last["id"] not in self.og_images:  # the home page's share picture: the newest result
+                self.og_images[last["id"]] = self.og_image(out, last)
             body = (f'<div class="intro"><h1>{esc(w["home_h1"])} <span class="d">{esc(d0)}</span></h1>'
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
                     + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
@@ -675,7 +678,8 @@ class Site:
                     + self.day_cards(lang, latest) + self.ad() + self.history(lang) + self.app_promo(lang) + self.guide_links(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, s=ddmmyy(latest), list=summary),
                                                  body, data=list(got.values()), live=latest == self.today,
-                                                 crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home", lastmod=self.stamp)
+                                                 crumbs=[(w["home"], "/")], tab="results", modified=self.updated,
+                                                 image=self.og_images.get(last["id"], "") if last else ""), key="home", lastmod=self.stamp)
             # one page per day and per draw
             for i, date in enumerate(self.dates):
                 dd = ddmmyyyy(date)

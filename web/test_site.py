@@ -173,6 +173,10 @@ def test_share_image_and_freshness(tmp_path, monkeypatch):
     assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n" and png.stat().st_size < 40_000
     home = (out / "index.html").read_text()
     assert '"dateModified": "2026-10-18T21:00+05:30"' in home
+    shared = re.search(r'<meta property="og:image" content="https://example.in/(og/2026-10-18_\w+\.png)">', home)
+    assert shared and (out / shared[1]).exists()             # WhatsApp/Discover preview of the most shared page
+    assert shared[1] != "og/2026-10-18_NL1PM.png"            # the newest result of the day, not the first
+    assert 'href="/icon-192.png" type="image/png" sizes="192x192"' in home
 
 
 def test_number_history_and_date_search_are_on_the_page(tmp_path, monkeypatch):
