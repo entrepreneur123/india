@@ -41,6 +41,26 @@ HUB = {"NL1PM": "/morning-1pm/", "SK6PM": "/day-6pm/", "NL8PM": "/night-8pm/"}
 CONTACT = "yechan750745@gmail.com"
 
 # Page-level texts. {d} = 19.10.2026, {t} = 1 PM, {g} = game name, {s} = state, {n} = 1st prize.
+# Kerala in Malayalam (one page: /ml/kerala/). Draw names as printed on Malayalam tickets.
+ML = {
+    "h1": "കേരള ലോട്ടറി ഫലം ഇന്ന്",
+    "title": "കേരള ലോട്ടറി ഫലം ഇന്ന് {d} – {g} | Kerala Lottery Result",
+    "desc": "കേരള ലോട്ടറി ഫലം {d}: {g}, ഒന്നാം സമ്മാനം {n}. എല്ലാ സമ്മാനങ്ങളും കഴിഞ്ഞ നറുക്കെടുപ്പുകളുടെ ഫലങ്ങളും.",
+    "schedule": "എല്ലാ ദിവസവും ഉച്ചയ്ക്ക് 3 മണിക്ക് നറുക്കെടുപ്പ്: തിങ്കൾ ഭാഗ്യതാര, ചൊവ്വ സ്ത്രീ ശക്തി, ബുധൻ ധനലക്ഷ്മി, വ്യാഴം കാരുണ്യ പ്ലസ്, വെള്ളി സുവർണ്ണ കേരളം, ശനി കാരുണ്യ, ഞായർ സമൃദ്ധി. ഫലം സാധാരണയായി നറുക്കെടുപ്പിന് ഏകദേശം ഒരു മണിക്കൂറിന് ശേഷം ലഭ്യമാകും.",
+    "waiting": "ഇന്നത്തെ ഫലം നറുക്കെടുപ്പിന് ശേഷം ഇവിടെ വരും (ഏകദേശം വൈകുന്നേരം 4 മണിയോടെ). ഈ പേജ് പുതുക്കി നോക്കുക.",
+    "recent": "കേരള ലോട്ടറി ഫലങ്ങൾ – സമീപകാല നറുക്കെടുപ്പുകൾ", "date": "തീയതി", "game": "ലോട്ടറി",
+    "first": "ഒന്നാം സമ്മാനം", "last4": "അവസാനത്തെ 4 അക്കങ്ങൾ ഒത്തുവന്നാൽ",
+    "unconfirmed": "ഈ നമ്പറുകൾ ഇനിയും സ്ഥിരീകരിച്ചിട്ടില്ല.",
+    "note": "ഫലങ്ങൾ മൂന്ന് പൊതു സ്രോതസ്സുകളിൽ നിന്ന് ഒത്തുനോക്കി പ്രസിദ്ധീകരിക്കുന്നവയാണ്. സമ്മാനം അവകാശപ്പെടുന്നതിന് മുമ്പ് ഔദ്യോഗിക ഗസറ്റുമായി ഒത്തുനോക്കുക.",
+    "official": "ഔദ്യോഗിക വെബ്സൈറ്റ്", "check": "ടിക്കറ്റ് നമ്പർ പരിശോധിക്കുക (English) →",
+    "wd": ["തിങ്കൾ", "ചൊവ്വ", "ബുധൻ", "വ്യാഴം", "വെള്ളി", "ശനി", "ഞായർ"],
+    "tiers": {"1": "ഒന്നാം സമ്മാനം", "CONS": "സമാശ്വാസ സമ്മാനം", "2": "രണ്ടാം സമ്മാനം", "3": "മൂന്നാം സമ്മാനം",
+              "4": "നാലാം സമ്മാനം", "5": "അഞ്ചാം സമ്മാനം", "6": "ആറാം സമ്മാനം", "7": "ഏഴാം സമ്മാനം",
+              "8": "എട്ടാം സമ്മാനം", "9": "ഒമ്പതാം സമ്മാനം", "10": "പത്താം സമ്മാനം"},
+    "games": {"BT": "ഭാഗ്യതാര", "SS": "സ്ത്രീ ശക്തി", "DL": "ധനലക്ഷ്മി", "KN": "കാരുണ്യ പ്ലസ്",
+              "SK": "സുവർണ്ണ കേരളം", "KR": "കാരുണ്യ", "SM": "സമൃദ്ധി"},
+}
+
 # Maharashtra State Lottery (other state lotteries, kept apart from Lottery Sambad and Kerala).
 MH = {
     "en": {"tab": "Maharashtra", "h1": "Maharashtra Lottery Result Today", "other": "Other state lotteries",
@@ -412,6 +432,8 @@ class Site:
         if alternates:
             alt = "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, path))}">' for l in LANGS)
             alt += f'<link rel="alternate" hreflang="x-default" href="{esc(self.abs("en", path))}">'
+            if path == "/kerala/" and self.kerala_ml_ok:
+                alt += f'<link rel="alternate" hreflang="ml-IN" href="{esc(self.abs("en", "/ml/kerala/"))}">'
         ads_head = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={esc(self.adsense)}" '
                     f'crossorigin="anonymous"></script>') if self.adsense else ""
         beacon = (f'<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
@@ -819,6 +841,7 @@ class Site:
                                                f'<div class="intro"><h1>{esc(w["notfound"])}</h1></div>'
                                                f'<p class="pn"><a class="btn" href="{self.url("en", "/")}">{esc(self.s["en"]["tab_results"])} →</a></p>',
                                                alternates=False))
+        self.kerala_ml(out)
         self.share_kit(out)
         self.assets(out)
         return len(self.pages)
@@ -985,6 +1008,63 @@ class Site:
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
                 key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"])
 
+    @property
+    def kerala_ml_ok(self) -> bool:
+        return any(d["slot"] == "KL" and d.get("tiers") for x in self.dates for d in self.days[x])
+
+    def ml_game(self, d: dict) -> str:
+        """'STHREE SAKTHI SS-543' -> 'സ്ത്രീ ശക്തി SS-543' (bumpers keep their English name)."""
+        m = re.search(r"\b([A-Z]{2})-(\d+)\b", d["name"])
+        return f'{ML["games"][m.group(1)]} {m.group(0)}' if m and m.group(1) in ML["games"] else game(d["name"])
+
+    def kerala_ml(self, out: pathlib.Path) -> None:
+        """/ml/kerala/: the Kerala result in Malayalam, as Kerala searches for it (കേരള ലോട്ടറി ഫലം)."""
+        if not self.kerala_ml_ok:
+            return
+        kl = [d for x in self.dates for d in self.days[x] if d["slot"] == "KL" and d.get("tiers")]
+        latest = kl[0]
+        d0 = ddmmyyyy(latest["date"])
+        wait = "" if latest["date"] == self.today else f'<p class="banner">{esc(ML["waiting"])}</p>'
+        tiers = []
+        for t in latest["tiers"]:
+            nums = "".join(f"<li>{esc(n)}</li>" for n in t["numbers"])
+            width = max((len(n) for n in t["numbers"]), default=4)
+            hint = f'<p class="hint">{esc(ML["last4"])}</p>' if t.get("match") == "LAST4" else ""
+            warn = "" if t.get("confirmed", True) else f'<p class="warn">{esc(ML["unconfirmed"])}</p>'
+            tiers.append(f'<div class="tier"><div class="th"><h3>{esc(ML["tiers"].get(t["rank"], t["rank"]))}</h3>'
+                         f'<b>{esc(rupees(t["prize"]))}</b></div>{hint}{warn}'
+                         f'<ul class="nums {"n4" if width <= 4 else "n5" if width <= 5 else "n6"}">{nums}</ul></div>')
+        wd = ML["wd"][dt.date.fromisoformat(latest["date"]).weekday()]
+        first = latest["tiers"][0]
+        sheet = (f'<article class="sheet"><div class="band"><h2>{esc(self.ml_game(latest))}</h2><p>കേരള സംസ്ഥാന ലോട്ടറി</p></div>'
+                 f'<div class="hero"><p class="eyebrow">{esc(ML["first"])} · {esc(rupees(first["prize"]))}</p>'
+                 f'<p class="first">{esc(first["numbers"][0])}</p><p class="meta">{esc(wd)}, {esc(d0)} · 3:00 PM</p></div></article>')
+        rows = "".join(
+            f'<tr><th scope="row"><a href="{self.url("en", self.draw_path(d))}">{d["date"][8:]}.{d["date"][5:7]}</a>'
+            f'<small>{esc(ML["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(self.ml_game(d))}</td><td><a href="{self.url("en", self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a></td></tr>'
+            for d in kl[:30])
+        table = (f'<h2 class="sub">{esc(ML["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(ML["date"])}</th>'
+                 f'<th>{esc(ML["game"])}</th><th>{esc(ML["first"])}</th></tr></thead><tbody>{rows}</tbody></table></div>')
+        src = {x["kind"]: x["url"] for x in latest.get("sources", [])}
+        body = (f'<div class="intro" lang="ml"><h1>{esc(ML["h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(ML["schedule"])}</p></div>{wait}<div lang="ml">{sheet}'
+                f'<p class="pn"><a class="btn" href="{self.url("en", "/kerala/")}#check">{esc(ML["check"])}</a></p>'
+                + "".join(tiers) + self.ad() + table + f'<p class="hint">{esc(ML["note"])}</p>'
+                + (f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(src["officialSite"])}">{esc(ML["official"])}</a></p>'
+                   if "officialSite" in src else "") + '</div>')
+        g = self.ml_game(latest)
+        html_ = self.page("en", "/ml/kerala/", ML["title"].format(d=d0, g=g), ML["desc"].format(d=d0, g=g, n=first["numbers"][0]),
+                          body, alternates=False, data=kl[:7], image=self.og_images.get(latest["id"], ""),
+                          crumbs=[("LottoDost", "/"), ("Kerala", "/kerala/"), ("മലയാളം", "/ml/kerala/")],
+                          modified=self.updated if latest["date"] == self.today else None)
+        alts = (f'<link rel="alternate" hreflang="ml-IN" href="{esc(self.abs("en", "/ml/kerala/"))}">'
+                + "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, "/kerala/"))}">' for l in LANGS))
+        html_ = (html_.replace('<html lang="en-IN">', '<html lang="ml-IN">', 1)
+                 .replace('<meta property="og:locale" content="en_IN">', '<meta property="og:locale" content="ml_IN">', 1)
+                 .replace('<link rel="canonical"', alts + '<link rel="canonical"', 1))
+        self.write(out, "en", "/ml/kerala/", html_, key="page:kerala-ml", lastmod=self.stamp)
+
     def kerala_hub(self, out: pathlib.Path, lang: str) -> None:
         """/kerala/: today's Kerala result (or the countdown to it) and the recent draws."""
         w, s = WEB[lang], self.s[lang]
@@ -996,7 +1076,9 @@ class Site:
         d0 = ddmmyyyy(latest["date"]) if latest else ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["kl_h1"])} <span class="d">{esc(d0)}</span></h1>'
                 f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + self.checker(lang, kerala=True) + cards + self.ad() + table
-                + f'<p class="hint">{esc(s["kerala_source_note"])}</p>' + self.history(lang))
+                + f'<p class="hint">{esc(s["kerala_source_note"])}</p>'
+                + (f'<p class="pn"><a class="btn" lang="ml" href="{self.url("en", "/ml/kerala/")}">മലയാളത്തിൽ വായിക്കുക →</a></p>'
+                   if self.kerala_ml_ok else "") + self.history(lang))
         title = w["kl_title"].format(d=d0, g=game(latest["name"])) if latest else w["kl_h1"]
         desc = w["kl_desc"].format(d=d0, g=game(latest["name"]), n=latest["tiers"][0]["numbers"][0]) if latest else w["kl_schedule"]
         self.write(out, lang, "/kerala/", self.page(lang, "/kerala/", title, desc, body, data=kl[:7],

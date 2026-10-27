@@ -398,3 +398,30 @@ def test_maharashtra_without_numbers_promises_only_the_official_sheets(tmp_path,
     assert 'id="checkForm"' not in hub and "Full prize list" not in hub and "read by computer" not in hub
     assert "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
     assert "https://example.in/maharashtra/" in (out / "sitemap.xml").read_text()
+
+
+def test_kerala_in_malayalam(tmp_path, monkeypatch):
+    kl = {"id": "2026-10-18_KL", "slot": "KL", "lottery": "kerala", "date": "2026-10-18", "time": "15:00", "state": "Kerala",
+          "name": "SAMRUDHI SM-77", "drawNo": 77, "format": "B6", "price": 0, "special": False, "status": "OK",
+          "tiers": [{"rank": "1", "prize": 10000000, "match": "EXACT", "numbers": ["MM 289707"]},
+                    {"rank": "9", "prize": 100, "match": "LAST4", "numbers": ["9865"], "confirmed": False}],
+          "sources": [{"kind": "officialSite", "url": "https://statelottery.kerala.gov.in/"}]}
+    orig = sitegen.Site.__init__
+
+    def init(self, *a, **k):
+        orig(self, *a, **k)
+        self.days.setdefault("2026-10-18", []).append(kl)
+        self.dates = sorted(self.days, reverse=True)
+    monkeypatch.setattr(sitegen.Site, "__init__", init)
+    out = build(tmp_path, monkeypatch)
+    page = (out / "ml/kerala/index.html").read_text()
+    assert '<html lang="ml-IN">' in page and '<meta property="og:locale" content="ml_IN">' in page
+    assert re.search(r"<title>കേരള ലോട്ടറി ഫലം ഇന്ന് \d\d\.\d\d\.2026 – .+ \| Kerala Lottery Result</title>", page)
+    assert '<link rel="canonical" href="https://example.in/ml/kerala/">' in page
+    assert 'hreflang="en-IN" href="https://example.in/kerala/"' in page and 'hreflang="ml-IN" href="https://example.in/ml/kerala/"' in page
+    assert "ഒന്നാം സമ്മാനം" in page and "MM 289707" in page and "സമൃദ്ധി SM-77" in page
+    assert "ഒമ്പതാം സമ്മാനം" in page and "ഈ നമ്പറുകൾ ഇനിയും സ്ഥിരീകരിച്ചിട്ടില്ല." in page
+    hub = (out / "kerala/index.html").read_text()
+    assert 'hreflang="ml-IN" href="https://example.in/ml/kerala/"' in hub and 'href="/ml/kerala/"' in hub
+    sm = (out / "sitemap.xml").read_text()
+    assert "<loc>https://example.in/ml/kerala/</loc>" in sm and "/bn/ml/" not in sm
