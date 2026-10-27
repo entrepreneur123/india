@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Eraser, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { fixedVolume } from '@/lib/rtc'
@@ -43,6 +43,7 @@ export type SheetState =
   | { kind: 'settings' }
   | { kind: 'notice' }
   | { kind: 'theme' }
+  | { kind: 'clear' }
   | { kind: 'invite' }
   | { kind: 'people' }
   | null
@@ -518,6 +519,7 @@ export function OptionsSheet({
   onSettings,
   onNotice,
   onTheme,
+  onClearChat,
   onReport,
   onLeave,
 }: {
@@ -536,11 +538,14 @@ export function OptionsSheet({
   onNotice?: () => void
   /** The host or a co-host: the room's wall (45). */
   onTheme?: () => void
+  /** The host or a co-host: empty the chat for everyone (50). */
+  onClearChat?: () => void
   onReport: () => void
   onLeave: () => void
 }) {
   const { t } = useI18n()
   const { st } = useSocialT()
+  const { rt } = useRoomT()
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={t('voice.options')}>
       <div className="flex flex-col pt-2 pb-4">
@@ -549,6 +554,7 @@ export function OptionsSheet({
         {code ? <Row icon={<Copy />} label={t('room.copy', { code })} onClick={onCopyCode} /> : null}
         {onNotice ? <Row icon={<Pin />} label={t('room.announcement')} onClick={onNotice} /> : null}
         {onTheme ? <Row icon={<Paintbrush />} label={t('room.theme')} onClick={onTheme} /> : null}
+        {onClearChat ? <Row icon={<Eraser />} label={rt('clearChat')} onClick={onClearChat} /> : null}
         {isHost ? <Row icon={<Settings2 />} label={t('room.settings')} onClick={onSettings} /> : null}
         {isHost ? null : <Row icon={<Flag />} label={t('voice.reportRoom')} onClick={onReport} />}
         <Row icon={<LogOut />} label={isHost ? t('voice.endConfirm') : t('voice.leaveQuietly')} danger onClick={onLeave} />
@@ -563,6 +569,42 @@ const ROOM_REASONS: { value: ReportReason; label: TKey; detail: TKey }[] = [
   { value: 'minor', label: 'report.minor', detail: 'report.minorDetail' },
   { value: 'other', label: 'report.other', detail: 'report.otherDetail' },
 ]
+
+/** 50: the host or a co-host empties the chat for everyone (the lines stay on the server for reports). */
+export function ClearChatSheet({ roomId, open, onClose }: { roomId: string; open: boolean; onClose: () => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { t } = useI18n()
+  const { rt } = useRoomT()
+  const [busy, setBusy] = useState(false)
+  return (
+    <Modal open={open} onClose={onClose} variant="sheet" title={rt('clearChatTitle')} description={rt('clearChatBody')}>
+      <div className="flex justify-end gap-2 px-6 pt-2 pb-6">
+        <Button variant="ghost" disabled={busy} onClick={onClose}>
+          {t('common.cancel')}
+        </Button>
+        <Button
+          variant="danger"
+          loading={busy}
+          autoFocus
+          onClick={async () => {
+            setBusy(true)
+            try {
+              await backend.clearVoiceChat(roomId)
+              onClose()
+            } catch (err) {
+              toast.error(err)
+            } finally {
+              setBusy(false)
+            }
+          }}
+        >
+          {rt('clearChat')}
+        </Button>
+      </div>
+    </Modal>
+  )
+}
 
 /** Host: the room's title, language and password (the notice has its own sheet). */
 export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {

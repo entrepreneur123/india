@@ -714,6 +714,7 @@ const ar: Dict = {
   'anon.name': "غريب",
   'anon.profileHint': "يرى كلٌّ منكما اسم الآخر وصورته وملفه.",
   'anon.anonHint': "بلا أسماء أو صور أو ملفات. تلتقي فقط بمن اختار المجهول.",
+  'voice.sys.cleared': "مسح {name} الدردشة",
 }
 
 export default ar

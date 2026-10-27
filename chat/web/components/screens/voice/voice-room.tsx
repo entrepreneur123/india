@@ -22,7 +22,7 @@ import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicPanel, QueueSheet } from './voice-music'
 import { useRoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
-import { AudienceSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, ThemeSheet, type SheetState } from './voice-sheets'
+import { AudienceSheet, ClearChatSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, ThemeSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
 import { FocusVideo, LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
@@ -425,6 +425,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           onSettings={() => setSheet({ kind: 'settings' })}
           onNotice={mod ? () => setSheet({ kind: 'notice' }) : undefined}
           onTheme={mod ? () => setSheet({ kind: 'theme' }) : undefined}
+          onClearChat={mod ? () => setSheet({ kind: 'clear' }) : undefined}
           onReport={() => setSheet({ kind: 'reportRoom' })}
           onLeave={() => {
             close()
@@ -434,6 +435,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
         {mod ? <NoticeSheet room={room} open={sheet?.kind === 'notice'} onClose={close} /> : null}
         {mod ? <ThemeSheet room={room} open={sheet?.kind === 'theme'} onClose={close} /> : null}
+        {mod ? <ClearChatSheet roomId={room.id} open={sheet?.kind === 'clear'} onClose={close} /> : null}
         <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
         <PeopleSheet room={room} open={sheet?.kind === 'people'} onClose={close} onPerson={person} />
         <ReportRoomSheet roomId={room.id} open={sheet?.kind === 'reportRoom'} onClose={close} />

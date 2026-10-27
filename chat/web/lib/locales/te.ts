@@ -693,6 +693,7 @@ const te: Dict = {
   'anon.name': "అపరిచితుడు",
   'anon.profileHint': "ఇద్దరూ ఒకరి పేరు, ఫోటో, ప్రొఫైల్ చూస్తారు.",
   'anon.anonHint': "పేరు, ఫోటో, ప్రొఫైల్ ఉండవు. అనామకం ఎంచుకున్నవారినే కలుస్తారు.",
+  'voice.sys.cleared': "{name} చాట్ క్లియర్ చేశారు",
 }
 
 export default te

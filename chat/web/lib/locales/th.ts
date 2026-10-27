@@ -706,6 +706,7 @@ const th: Dict = {
   'anon.name': "คนแปลกหน้า",
   'anon.profileHint': "ทั้งคู่จะเห็นชื่อ รูป และโปรไฟล์ของกันและกัน",
   'anon.anonHint': "ไม่มีชื่อ รูป หรือโปรไฟล์ จะพบเฉพาะคนที่เลือกไม่ระบุตัวตนเหมือนกัน",
+  'voice.sys.cleared': "{name} ล้างแชทแล้ว",
 }
 
 export default th

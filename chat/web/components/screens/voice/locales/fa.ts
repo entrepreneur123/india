@@ -78,6 +78,10 @@ const fa: RoomDict = {
   'volumeOf': "صدای {name} برای من",
   'volumeMute': "بی‌صدا فقط برای من",
   'volumeUnmute': "لغو بی‌صدا",
+  'hideLine': "پنهان برای همه",
+  'clearChat': "پاک کردن گفتگو",
+  'clearChatTitle': "گفتگو برای همه پاک شود؟",
+  'clearChatBody': "هر چه تا حالا نوشته شده از اتاق پاک می‌شود. برگشت‌پذیر نیست.",
 }
 
 export default fa

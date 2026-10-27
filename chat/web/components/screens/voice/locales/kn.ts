@@ -78,6 +78,10 @@ const kn: RoomDict = {
   'volumeOf': "ನನಗೆ {name} ಧ್ವನಿ",
   'volumeMute': "ನನಗೆ ಮಾತ್ರ ಮ್ಯೂಟ್",
   'volumeUnmute': "ಅನ್‌ಮ್ಯೂಟ್",
+  'hideLine': "ಎಲ್ಲರಿಗೂ ಮರೆಮಾಡಿ",
+  'clearChat': "ಚಾಟ್ ತೆರವುಗೊಳಿಸಿ",
+  'clearChatTitle': "ಎಲ್ಲರಿಗೂ ಚಾಟ್ ತೆರವುಗೊಳಿಸುವುದೇ?",
+  'clearChatBody': "ಇಲ್ಲಿಯವರೆಗೆ ಬರೆದದ್ದೆಲ್ಲ ಕೋಣೆಯಿಂದ ಮಾಯವಾಗುತ್ತದೆ. ಹಿಂಪಡೆಯಲಾಗದು.",
 }
 
 export default kn

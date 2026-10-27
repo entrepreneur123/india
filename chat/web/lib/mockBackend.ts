@@ -1389,6 +1389,14 @@ export class MockBackend implements Backend {
 
   async voiceSound(_roomId: string, _on: boolean) {}
 
+  async hideVoiceLine(roomId: string, lineId: number) {
+    return (await this.voice()).hideLine(roomId, lineId)
+  }
+
+  async clearVoiceChat(roomId: string) {
+    return (await this.voice()).clearChat(roomId)
+  }
+
   voiceVolume(_roomId: string, userId: string, volume: number) {
     saveVolume(userId, volume)
   }

@@ -78,6 +78,10 @@ const bn: RoomDict = {
   'volumeOf': "আমার জন্য {name}-এর ভলিউম",
   'volumeMute': "শুধু আমার জন্য মিউট",
   'volumeUnmute': "আনমিউট",
+  'hideLine': "সবার জন্য লুকান",
+  'clearChat': "চ্যাট মুছুন",
+  'clearChatTitle': "সবার জন্য চ্যাট মুছবেন?",
+  'clearChatBody': "এখন পর্যন্ত লেখা সব রুম থেকে চলে যাবে। ফেরানো যাবে না।",
 }
 
 export default bn

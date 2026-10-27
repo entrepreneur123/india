@@ -706,6 +706,7 @@ const fil: Dict = {
   'anon.name': "Estranghero",
   'anon.profileHint': "Makikita ninyo ang pangalan, larawan at profile ng isa't isa.",
   'anon.anonHint': "Walang pangalan, larawan o profile. Makikilala mo lang ang mga pumili ng anonymous.",
+  'voice.sys.cleared': "Nilinis ni {name} ang chat",
 }
 
 export default fil

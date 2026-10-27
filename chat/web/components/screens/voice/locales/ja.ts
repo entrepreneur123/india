@@ -78,6 +78,10 @@ const ja: RoomDict = {
   'volumeOf': "自分に聞こえる{name}さんの音量",
   'volumeMute': "自分だけミュート",
   'volumeUnmute': "ミュート解除",
+  'hideLine': "全員に非表示",
+  'clearChat': "チャットを消去",
+  'clearChatTitle': "全員のチャットを消去しますか？",
+  'clearChatBody': "これまでのチャットがルームからすべて消えます。元に戻せません。",
 }
 
 export default ja

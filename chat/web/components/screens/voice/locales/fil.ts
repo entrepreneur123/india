@@ -78,6 +78,10 @@ const fil: RoomDict = {
   'volumeOf': "Lakas ni {name} para sa akin",
   'volumeMute': "I-mute para sa akin",
   'volumeUnmute': "I-unmute",
+  'hideLine': "Itago sa lahat",
+  'clearChat': "Linisin ang chat",
+  'clearChatTitle': "Linisin ang chat para sa lahat?",
+  'clearChatBody': "Mawawala sa room ang lahat ng naisulat. Hindi na maibabalik.",
 }
 
 export default fil

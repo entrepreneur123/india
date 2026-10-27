@@ -78,6 +78,10 @@ const ur: RoomDict = {
   'volumeOf': "میرے لیے {name} کی آواز",
   'volumeMute': "صرف میرے لیے میوٹ",
   'volumeUnmute': "ان میوٹ",
+  'hideLine': "سب کے لیے چھپائیں",
+  'clearChat': "چیٹ صاف کریں",
+  'clearChatTitle': "سب کے لیے چیٹ صاف کریں؟",
+  'clearChatBody': "اب تک لکھا سب کچھ روم سے ہٹ جائے گا۔ واپس نہیں ہو سکتا۔",
 }
 
 export default ur

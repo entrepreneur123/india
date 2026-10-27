@@ -78,6 +78,10 @@ const sw: RoomDict = {
   'volumeOf': "Sauti ya {name} kwangu",
   'volumeMute': "Nyamazisha kwangu",
   'volumeUnmute': "Rudisha sauti",
+  'hideLine': "Ficha kwa wote",
+  'clearChat': "Futa gumzo",
+  'clearChatTitle': "Futa gumzo kwa wote?",
+  'clearChatBody': "Kila kilichoandikwa kitatoweka chumbani. Haiwezi kutenduliwa.",
 }
 
 export default sw

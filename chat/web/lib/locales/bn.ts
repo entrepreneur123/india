@@ -692,6 +692,7 @@ const bn: Dict = {
   'anon.name': "অপরিচিত",
   'anon.profileHint': "দুজনেই একে অপরের নাম, ছবি ও প্রোফাইল দেখতে পাবেন।",
   'anon.anonHint': "নাম, ছবি বা প্রোফাইল নেই। শুধু যারা বেনামী বেছেছে তাদের সঙ্গে দেখা হবে।",
+  'voice.sys.cleared': "{name} চ্যাট মুছেছেন",
 }
 
 export default bn

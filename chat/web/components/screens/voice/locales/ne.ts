@@ -78,6 +78,10 @@ const ne: RoomDict = {
   'volumeOf': "मेरा लागि {name} को आवाज",
   'volumeMute': "मेरा लागि मात्र म्युट",
   'volumeUnmute': "अनम्युट",
+  'hideLine': "सबैका लागि लुकाउनुहोस्",
+  'clearChat': "च्याट सफा गर्नुहोस्",
+  'clearChatTitle': "सबैका लागि च्याट सफा गर्ने?",
+  'clearChatBody': "अहिलेसम्म लेखिएका सबै कोठाबाट हराउँछन्। फिर्ता हुँदैन।",
 }
 
 export default ne

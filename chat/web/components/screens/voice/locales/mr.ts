@@ -78,6 +78,10 @@ const mr: RoomDict = {
   'volumeOf': "माझ्यासाठी {name} चा आवाज",
   'volumeMute': "फक्त माझ्यासाठी म्यूट",
   'volumeUnmute': "अनम्यूट",
+  'hideLine': "सर्वांसाठी लपवा",
+  'clearChat': "चॅट साफ करा",
+  'clearChatTitle': "सर्वांसाठी चॅट साफ करायचा?",
+  'clearChatBody': "आतापर्यंत लिहिलेले सर्व रूममधून जाईल. परत आणता येणार नाही.",
 }
 
 export default mr

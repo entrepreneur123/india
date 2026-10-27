@@ -671,6 +671,7 @@ const ur: Dict = {
   'anon.name': "اجنبی",
   'anon.profileHint': "آپ دونوں ایک دوسرے کا نام، تصویر اور پروفائل دیکھتے ہیں۔",
   'anon.anonHint': "نام، تصویر یا پروفائل کے بغیر۔ آپ صرف گمنام چننے والوں سے ملیں گے۔",
+  'voice.sys.cleared': "{name} نے چیٹ صاف کی",
 }
 
 export default ur

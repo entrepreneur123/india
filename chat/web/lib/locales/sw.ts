@@ -706,6 +706,7 @@ const sw: Dict = {
   'anon.name': "Mgeni",
   'anon.profileHint': "Mnaona jina, picha na wasifu wa kila mmoja.",
   'anon.anonHint': "Bila majina, picha wala wasifu. Unakutana tu na waliochagua bila jina.",
+  'voice.sys.cleared': "{name} amefuta gumzo",
 }
 
 export default sw

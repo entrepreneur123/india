@@ -79,6 +79,10 @@ const he: RoomDict = {
   'volumeOf': "העוצמה של {name} אצלי",
   'volumeMute': "השתקה אצלי",
   'volumeUnmute': "ביטול השתקה",
+  'hideLine': "הסתרה לכולם",
+  'clearChat': "ניקוי הצ׳אט",
+  'clearChatTitle': "לנקות את הצ׳אט לכולם?",
+  'clearChatBody': "כל מה שנכתב עד עכשיו ייעלם מהחדר. אי אפשר לבטל.",
 }
 
 export default he

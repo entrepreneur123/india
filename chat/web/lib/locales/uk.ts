@@ -710,6 +710,7 @@ const uk: Dict = {
   'anon.name': "Незнайомець",
   'anon.profileHint': "Ви обоє бачите ім’я, фото й профіль одне одного.",
   'anon.anonHint': "Без імен, фото й профілів. Ви зустрічаєте лише тих, хто теж обрав анонімно.",
+  'voice.sys.cleared': "{name} очистив(ла) чат",
 }
 
 export default uk

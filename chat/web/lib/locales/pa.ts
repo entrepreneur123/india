@@ -671,6 +671,7 @@ const pa: Dict = {
   'anon.name': "ਅਜਨਬੀ",
   'anon.profileHint': "ਤੁਸੀਂ ਦੋਵੇਂ ਇੱਕ-ਦੂਜੇ ਦਾ ਨਾਮ, ਫ਼ੋਟੋ ਅਤੇ ਪ੍ਰੋਫ਼ਾਈਲ ਦੇਖਦੇ ਹੋ।",
   'anon.anonHint': "ਨਾਮ, ਫ਼ੋਟੋ ਜਾਂ ਪ੍ਰੋਫ਼ਾਈਲ ਨਹੀਂ। ਤੁਸੀਂ ਸਿਰਫ਼ ਗੁਮਨਾਮ ਚੁਣਨ ਵਾਲਿਆਂ ਨੂੰ ਮਿਲੋਗੇ।",
+  'voice.sys.cleared': "{name} ਨੇ ਚੈਟ ਸਾਫ਼ ਕੀਤੀ",
 }
 
 export default pa

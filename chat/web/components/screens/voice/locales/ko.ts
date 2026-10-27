@@ -79,6 +79,10 @@ const ko: RoomDict = {
   'volumeOf': "나에게 들리는 {name}님 음량",
   'volumeMute': "나에게만 음소거",
   'volumeUnmute': "음소거 해제",
+  'hideLine': "모두에게 숨기기",
+  'clearChat': "채팅 청소",
+  'clearChatTitle': "모두의 채팅을 청소할까요?",
+  'clearChatBody': "지금까지 쓴 채팅이 방에서 모두 사라져요. 되돌릴 수 없어요.",
 }
 
 export default ko

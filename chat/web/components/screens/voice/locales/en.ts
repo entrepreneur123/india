@@ -79,6 +79,10 @@ const en = {
   'volumeOf': "{name}'s volume for me",
   'volumeMute': "Mute for me",
   'volumeUnmute': "Unmute for me",
+  'hideLine': "Hide for everyone",
+  'clearChat': "Clear the chat",
+  'clearChatTitle': "Clear the chat for everyone?",
+  'clearChatBody': "Everything written so far disappears from the room. It can't be undone.",
 }
 
 export default en

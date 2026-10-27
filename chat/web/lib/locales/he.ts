@@ -708,6 +708,7 @@ const he: Dict = {
   'anon.name': "זר",
   'anon.profileHint': "שניכם רואים את השם, התמונה והפרופיל זה של זה.",
   'anon.anonHint': "בלי שמות, תמונות או פרופילים. תפגשו רק מי שבחר אנונימי.",
+  'voice.sys.cleared': "{name} ניקה/תה את הצ׳אט",
 }
 
 export default he

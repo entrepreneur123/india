@@ -706,6 +706,7 @@ const zhHans: Dict = {
   'anon.name': "陌生人",
   'anon.profileHint': "双方都能看到彼此的名字、照片和资料。",
   'anon.anonHint': "不显示名字、照片和资料。只会遇到同样选择匿名的人。",
+  'voice.sys.cleared': "{name} 清空了聊天",
 }
 
 export default zhHans

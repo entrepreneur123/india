@@ -671,6 +671,7 @@ const mr: Dict = {
   'anon.name': "अनोळखी",
   'anon.profileHint': "दोघेही एकमेकांचे नाव, फोटो आणि प्रोफाइल पाहता.",
   'anon.anonHint': "नाव, फोटो किंवा प्रोफाइल नाही. निनावी निवडलेल्यांनाच भेटाल.",
+  'voice.sys.cleared': "{name} यांनी चॅट साफ केला",
 }
 
 export default mr

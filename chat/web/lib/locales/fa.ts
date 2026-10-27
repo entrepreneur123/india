@@ -706,6 +706,7 @@ const fa: Dict = {
   'anon.name': "ناشناس",
   'anon.profileHint': "هر دو نام، عکس و پروفایل یکدیگر را می‌بینید.",
   'anon.anonHint': "بدون نام، عکس یا پروفایل. فقط با کسانی آشنا می‌شوید که ناشناس را انتخاب کرده‌اند.",
+  'voice.sys.cleared': "{name} گفتگو را پاک کرد",
 }
 
 export default fa

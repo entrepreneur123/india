@@ -693,6 +693,7 @@ const nl: Dict = {
   'anon.name': "Onbekende",
   'anon.profileHint': "Jullie zien elkaars naam, foto en profiel.",
   'anon.anonHint': "Geen namen, foto's of profielen. Je ontmoet alleen anderen die anoniem kozen.",
+  'voice.sys.cleared': "{name} heeft de chat gewist",
 }
 
 export default nl

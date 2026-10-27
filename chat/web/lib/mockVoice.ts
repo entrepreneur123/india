@@ -472,6 +472,28 @@ export class VoiceSim {
   }
 
   /** 45: like voice_set_theme (ownership is checked by the caller, which knows the shop). */
+  /** Like voice_hide_line / voice_clear_chat (074): host or co-host; the lines stop being read. */
+  async hideLine(roomId: string, lineId: number) {
+    const r = this.mod(roomId)
+    await wait(200)
+    r.lines = r.lines.filter((l) => l.id !== lineId)
+    this.emit(r, { type: 'hidden', ids: [lineId] })
+  }
+
+  async clearChat(roomId: string) {
+    const r = this.mod(roomId)
+    await wait(250)
+    r.lines = []
+    this.emit(r, { type: 'cleared', by: this.me()?.name ?? '' })
+  }
+
+  private mod(roomId: string) {
+    const r = this.get(roomId)
+    const me = this.meMember(r)
+    if (!me || (me.role !== 'host' && me.role !== 'cohost')) throw new BackendError('not_allowed')
+    return r
+  }
+
   /** Like voice_set_extras (072): host or co-host; undefined keeps the cover. */
   async extras(roomId: string, extras: { cover?: File | null; tags: string[] }) {
     const r = this.get(roomId)

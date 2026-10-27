@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, Check, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
+import { ArrowDown, Check, EyeOff, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
 import type { TKey } from '@/lib/i18n'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
@@ -12,6 +12,7 @@ import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { useBackend } from '@/lib/backend-context'
 import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
 import { Bubble, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
@@ -240,7 +241,15 @@ function SentLine({
   const room = s.room
   const text = line.kind === 'text' ? line.text : null
   const skin = useLook(line.sender.id)?.bubble
-  const actions = useLineActions(text)
+  const backend = useBackend()
+  const toast = useToast()
+  // 50: the host or a co-host can hide any line for everyone.
+  const actions = [
+    ...useLineActions(text),
+    ...(room && isMod(s.me)
+      ? [{ icon: <EyeOff className="size-4.5" aria-hidden />, label: rt('hideLine'), onClick: () => void backend.hideVoiceLine(room.id, line.id).catch(toast.error) }]
+      : []),
+  ]
   const [menu, setMenu] = useState(false)
   const meta = clock(line.at)
   const toMe = text !== null && !line.fromMe ? mentionRanges(text, meName) : []

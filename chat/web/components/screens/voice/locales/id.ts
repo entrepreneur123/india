@@ -78,6 +78,10 @@ const id: RoomDict = {
   'volumeOf': "Volume {name} untukku",
   'volumeMute': "Bisukan untukku",
   'volumeUnmute': "Bunyikan",
+  'hideLine': "Sembunyikan untuk semua",
+  'clearChat': "Bersihkan obrolan",
+  'clearChatTitle': "Bersihkan obrolan untuk semua?",
+  'clearChatBody': "Semua yang ditulis sejauh ini hilang dari room. Tidak bisa dibatalkan.",
 }
 
 export default id

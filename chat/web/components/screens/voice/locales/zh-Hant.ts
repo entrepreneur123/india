@@ -79,6 +79,10 @@ const zhHant: RoomDict = {
   'volumeOf': "我聽到的 {name} 的音量",
   'volumeMute': "僅對我靜音",
   'volumeUnmute': "取消靜音",
+  'hideLine': "對所有人隱藏",
+  'clearChat': "清空聊天",
+  'clearChatTitle': "為所有人清空聊天？",
+  'clearChatBody': "目前為止的聊天將從房間中全部消失，無法復原。",
 }
 
 export default zhHant

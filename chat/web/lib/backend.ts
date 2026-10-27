@@ -538,7 +538,8 @@ export interface NewVoiceRoom extends RoomRules {
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
 export type VoiceReaction = 'heart' | 'laugh' | 'fire' | 'clap' | 'wow'
 
-export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed' | 'notice'
+/** 'cleared' (074): shown only on screen, where the chat was emptied by the host or a co-host. */
+export type VoiceSystemEvent = 'joined' | 'left' | 'seat' | 'audience' | 'cohost' | 'host' | 'track' | 'removed' | 'notice' | 'cleared'
 
 /**
  * The line a reply answers, as the server copied it into the reply (029): shown without looking it up, also when the
@@ -604,6 +605,9 @@ export type VoiceEvent =
   /** Audio level 0..1 per user id, several times a second (absent = silent). */
   | { type: 'levels'; levels: Record<string, number> }
   | { type: 'line'; line: VoiceLine }
+  /** 50 (074): lines the host or a co-host hid, and the whole chat cleared (by whom). */
+  | { type: 'hidden'; ids: number[] }
+  | { type: 'cleared'; by: string }
   | { type: 'reaction'; userId: string; kind: VoiceReaction }
   /** A poll changed (a vote, closed): counts and totals; `mine` is null (keep my own). */
   | { type: 'poll'; poll: VoicePoll }
@@ -953,6 +957,9 @@ export interface Backend {
   voiceStartAudio(roomId: string): Promise<void>
   /** 46: the room's voices on or off for me (a room is entered with them off). */
   voiceSound(roomId: string, on: boolean): Promise<void>
+  /** 50 (074): host or co-host — hide one line for everyone, or clear the whole chat. Error: not_allowed. */
+  hideVoiceLine(roomId: string, lineId: number): Promise<void>
+  clearVoiceChat(roomId: string): Promise<void>
   /** 51: one person's volume for me (0-1), remembered for every room (lib/voice-volumes.ts); 0 stops their voice. */
   voiceVolume(roomId: string, userId: string, volume: number): void
   reportVoiceRoom(roomId: string, reason: ReportReason): Promise<void>

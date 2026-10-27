@@ -692,6 +692,7 @@ const ptBR: Dict = {
   'anon.name': "Desconhecido",
   'anon.profileHint': "Vocês veem o nome, a foto e o perfil um do outro.",
   'anon.anonHint': "Sem nomes, fotos ou perfis. Você só conhece quem também escolheu anônimo.",
+  'voice.sys.cleared': "{name} limpou o chat",
 }
 
 export default ptBR

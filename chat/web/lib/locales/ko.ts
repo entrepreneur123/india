@@ -706,6 +706,7 @@ const ko: Dict = {
   'anon.name': "익명",
   'anon.profileHint': "서로의 이름, 사진, 프로필이 보여요.",
   'anon.anonHint': "이름, 사진, 프로필 없이 대화해요. 익명을 고른 사람끼리만 만나요.",
+  'voice.sys.cleared': "{name}님이 채팅을 청소했어요",
 }
 
 export default ko

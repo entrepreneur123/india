@@ -181,6 +181,13 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
           // Their line is here: they're not typing it any more.
           if ((e.line.kind === 'text' || e.line.kind === 'photo') && typingSeen.current.delete(e.line.sender.id)) setTypingTick((n) => n + 1)
           break
+        // 50: the host or a co-host hid lines, or emptied the chat (a note at the top says who).
+        case 'hidden':
+          setLines((list) => list?.filter((l) => !e.ids.includes(l.id)) ?? list)
+          break
+        case 'cleared':
+          setLines([{ id: 0, kind: 'system', event: 'cleared', name: e.by, at: Date.now() }])
+          break
         case 'typing':
           typingSeen.current.set(e.userId, { name: e.name, at: Date.now() })
           setTypingTick((n) => n + 1)

@@ -695,6 +695,7 @@ const ro: Dict = {
   'anon.name': "Necunoscut",
   'anon.profileHint': "Vă vedeți reciproc numele, poza și profilul.",
   'anon.anonHint': "Fără nume, poze sau profiluri. Întâlnești doar pe cei care au ales anonim.",
+  'voice.sys.cleared': "{name} a golit chatul",
 }
 
 export default ro

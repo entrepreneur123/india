@@ -78,6 +78,10 @@ const pa: RoomDict = {
   'volumeOf': "ਮੇਰੇ ਲਈ {name} ਦੀ ਆਵਾਜ਼",
   'volumeMute': "ਸਿਰਫ਼ ਮੇਰੇ ਲਈ ਮਿਊਟ",
   'volumeUnmute': "ਅਨਮਿਊਟ",
+  'hideLine': "ਸਭ ਲਈ ਲੁਕਾਓ",
+  'clearChat': "ਚੈਟ ਸਾਫ਼ ਕਰੋ",
+  'clearChatTitle': "ਸਭ ਲਈ ਚੈਟ ਸਾਫ਼ ਕਰਨੀ ਹੈ?",
+  'clearChatBody': "ਹੁਣ ਤੱਕ ਲਿਖਿਆ ਸਭ ਰੂਮ ਵਿੱਚੋਂ ਹਟ ਜਾਵੇਗਾ। ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦਾ।",
 }
 
 export default pa

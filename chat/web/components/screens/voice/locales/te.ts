@@ -78,6 +78,10 @@ const te: RoomDict = {
   'volumeOf': "నాకు {name} శబ్దం",
   'volumeMute': "నాకు మాత్రమే మ్యూట్",
   'volumeUnmute': "అన్‌మ్యూట్",
+  'hideLine': "అందరికీ దాచు",
+  'clearChat': "చాట్ క్లియర్ చేయి",
+  'clearChatTitle': "అందరికీ చాట్ క్లియర్ చేయాలా?",
+  'clearChatBody': "ఇప్పటివరకు రాసినవన్నీ రూమ్ నుండి పోతాయి. వెనక్కి తేలేరు.",
 }
 
 export default te

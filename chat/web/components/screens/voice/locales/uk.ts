@@ -81,6 +81,10 @@ const uk: RoomDict = {
   'volumeOf': "Гучність {name} для мене",
   'volumeMute': "Вимкнути звук для мене",
   'volumeUnmute': "Увімкнути звук",
+  'hideLine': "Приховати для всіх",
+  'clearChat': "Очистити чат",
+  'clearChatTitle': "Очистити чат для всіх?",
+  'clearChatBody': "Усе написане зникне з кімнати. Скасувати не можна.",
 }
 
 export default uk

@@ -78,6 +78,10 @@ const ml: RoomDict = {
   'volumeOf': "എനിക്ക് {name} ശബ്ദം",
   'volumeMute': "എനിക്ക് മാത്രം മ്യൂട്ട്",
   'volumeUnmute': "അൺമ്യൂട്ട്",
+  'hideLine': "എല്ലാവർക്കും മറയ്ക്കുക",
+  'clearChat': "ചാറ്റ് മായ്ക്കുക",
+  'clearChatTitle': "എല്ലാവർക്കും ചാറ്റ് മായ്ക്കണോ?",
+  'clearChatBody': "ഇതുവരെ എഴുതിയതെല്ലാം റൂമിൽ നിന്ന് മാഞ്ഞുപോകും. തിരിച്ചെടുക്കാനാവില്ല.",
 }
 
 export default ml

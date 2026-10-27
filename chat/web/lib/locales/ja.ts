@@ -706,6 +706,7 @@ const ja: Dict = {
   'anon.name': "匿名さん",
   'anon.profileHint': "お互いの名前・写真・プロフィールが見えます。",
   'anon.anonHint': "名前・写真・プロフィールなしで話します。匿名を選んだ人同士だけが出会います。",
+  'voice.sys.cleared': "{name}さんがチャットを消去しました",
 }
 
 export default ja

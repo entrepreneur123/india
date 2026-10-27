@@ -693,6 +693,7 @@ const de: Dict = {
   'anon.name': "Fremde Person",
   'anon.profileHint': "Ihr seht gegenseitig Name, Foto und Profil.",
   'anon.anonHint': "Keine Namen, Fotos oder Profile. Du triffst nur andere, die anonym gewählt haben.",
+  'voice.sys.cleared': "{name} hat den Chat geleert",
 }
 
 export default de

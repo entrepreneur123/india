@@ -78,6 +78,10 @@ const ta: RoomDict = {
   'volumeOf': "எனக்கு {name} ஒலியளவு",
   'volumeMute': "எனக்கு மட்டும் ஒலியடக்கு",
   'volumeUnmute': "ஒலியை இயக்கு",
+  'hideLine': "அனைவருக்கும் மறை",
+  'clearChat': "அரட்டையை அழி",
+  'clearChatTitle': "அனைவருக்கும் அரட்டையை அழிக்கவா?",
+  'clearChatBody': "இதுவரை எழுதிய அனைத்தும் அறையிலிருந்து மறையும். திரும்பப் பெற முடியாது.",
 }
 
 export default ta

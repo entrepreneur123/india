@@ -78,6 +78,10 @@ const de: RoomDict = {
   'volumeOf': "Lautstärke von {name} für mich",
   'volumeMute': "Für mich stummschalten",
   'volumeUnmute': "Stummschaltung aufheben",
+  'hideLine': "Für alle ausblenden",
+  'clearChat': "Chat leeren",
+  'clearChatTitle': "Chat für alle leeren?",
+  'clearChatBody': "Alles bisher Geschriebene verschwindet aus dem Raum. Das lässt sich nicht rückgängig machen.",
 }
 
 export default de

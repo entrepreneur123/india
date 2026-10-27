@@ -79,6 +79,10 @@ const tr: RoomDict = {
   'volumeOf': "Benim için {name} sesi",
   'volumeMute': "Benim için sessize al",
   'volumeUnmute': "Sesi aç",
+  'hideLine': "Herkesten gizle",
+  'clearChat': "Sohbeti temizle",
+  'clearChatTitle': "Sohbet herkes için temizlensin mi?",
+  'clearChatBody': "Şimdiye kadar yazılan her şey odadan kalkar. Geri alınamaz.",
 }
 
 export default tr

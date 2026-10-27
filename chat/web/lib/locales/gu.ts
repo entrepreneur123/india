@@ -671,6 +671,7 @@ const gu: Dict = {
   'anon.name': "અજાણ્યું",
   'anon.profileHint': "બંને એકબીજાનું નામ, ફોટો અને પ્રોફાઇલ જુઓ છો.",
   'anon.anonHint': "નામ, ફોટો કે પ્રોફાઇલ નહીં. ફક્ત અનામી પસંદ કરનારાને મળશો.",
+  'voice.sys.cleared': "{name}એ ચેટ સાફ કરી",
 }
 
 export default gu

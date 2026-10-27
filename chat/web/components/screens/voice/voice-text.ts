@@ -26,6 +26,8 @@ export function systemText(line: Extract<VoiceLine, { kind: 'system' }>, t: T) {
       return t('voice.sys.removed', { name: line.name })
     case 'notice':
       return t('voice.sys.notice', { name: line.name })
+    case 'cleared':
+      return t('voice.sys.cleared', { name: line.name })
     default:
       return '' // an event this app doesn't know yet: not shown
   }

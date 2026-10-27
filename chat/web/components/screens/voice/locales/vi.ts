@@ -78,6 +78,10 @@ const vi: RoomDict = {
   'volumeOf': "Âm lượng của {name} với tôi",
   'volumeMute': "Tắt tiếng với tôi",
   'volumeUnmute': "Bật tiếng",
+  'hideLine': "Ẩn với mọi người",
+  'clearChat': "Xóa trò chuyện",
+  'clearChatTitle': "Xóa trò chuyện với mọi người?",
+  'clearChatBody': "Mọi tin nhắn đến giờ sẽ biến mất khỏi phòng. Không thể hoàn tác.",
 }
 
 export default vi

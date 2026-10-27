@@ -78,6 +78,10 @@ const ms: RoomDict = {
   'volumeOf': "Kelantangan {name} untuk saya",
   'volumeMute': "Senyapkan untuk saya",
   'volumeUnmute': "Nyahsenyap",
+  'hideLine': "Sembunyikan untuk semua",
+  'clearChat': "Kosongkan sembang",
+  'clearChatTitle': "Kosongkan sembang untuk semua?",
+  'clearChatBody': "Semua yang ditulis setakat ini hilang dari bilik. Tidak boleh dibatalkan.",
 }
 
 export default ms

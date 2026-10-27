@@ -693,6 +693,7 @@ const kn: Dict = {
   'anon.name': "ಅಪರಿಚಿತ",
   'anon.profileHint': "ಇಬ್ಬರೂ ಪರಸ್ಪರರ ಹೆಸರು, ಫೋಟೋ, ಪ್ರೊಫೈಲ್ ನೋಡುತ್ತೀರಿ.",
   'anon.anonHint': "ಹೆಸರು, ಫೋಟೋ, ಪ್ರೊಫೈಲ್ ಇಲ್ಲ. ಅನಾಮಧೇಯ ಆಯ್ದವರನ್ನು ಮಾತ್ರ ಭೇಟಿಯಾಗುತ್ತೀರಿ.",
+  'voice.sys.cleared': "{name} ಚಾಟ್ ತೆರವುಗೊಳಿಸಿದರು",
 }
 
 export default kn

@@ -706,6 +706,7 @@ const tr: Dict = {
   'anon.name': "Yabancı",
   'anon.profileHint': "İkiniz de birbirinizin adını, fotoğrafını ve profilini görürsünüz.",
   'anon.anonHint': "İsim, fotoğraf ya da profil yok. Yalnızca anonimi seçenlerle tanışırsın.",
+  'voice.sys.cleared': "{name} sohbeti temizledi",
 }
 
 export default tr

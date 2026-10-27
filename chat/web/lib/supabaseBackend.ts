@@ -165,6 +165,9 @@ type VoiceChange = { seq?: number | null } & (
   | { t: 'v'; item: string; user: string; on: boolean; votes: number }
   /** 029: a poll changed (a vote, closed); `mine` is null. Numbered like the rest, nothing in the state. */
   | { t: 'p'; poll: unknown }
+  /** 074: lines hidden, or the chat cleared (by whom). Numbered like the rest, nothing in the state. */
+  | { t: 'h'; ids: number[] }
+  | { t: 'x'; by: string }
 )
 
 /** voice_state's member order: the stage by seat, then raised hands (oldest first), then by arrival. */
@@ -1467,6 +1470,14 @@ export class SupabaseBackend implements Backend {
     await this.voice.get(roomId)?.sound(on)
   }
 
+  async hideVoiceLine(roomId: string, lineId: number) {
+    await this.rpc('voice_hide_line', { p_room: roomId, p_id: lineId })
+  }
+
+  async clearVoiceChat(roomId: string) {
+    await this.rpc('voice_clear_chat', { p_room: roomId })
+  }
+
   voiceVolume(roomId: string, userId: string, volume: number) {
     saveVolume(userId, volume)
     this.voice.get(roomId)?.volume(userId, volume)
@@ -1675,8 +1686,13 @@ export class SupabaseBackend implements Backend {
         seq = c.seq
         applyChange(state, c, me)
         pollChanged(c)
+        linesChanged(c)
       }
       return show(state)
+    }
+    const linesChanged = (c: VoiceChange) => {
+      if (c.t === 'h') emit({ type: 'hidden', ids: c.ids })
+      else if (c.t === 'x') emit({ type: 'cleared', by: c.by })
     }
     /** A poll's change goes to the screen as it is: counts and totals for everyone, my own vote stays mine. */
     const pollChanged = (c: VoiceChange) => {
@@ -1695,6 +1711,7 @@ export class SupabaseBackend implements Backend {
         // Sent without a number (a rare collision between two rooms): apply it, then check against the server.
         applyChange(base, c, me)
         pollChanged(c)
+        linesChanged(c)
         showSoon()
         refresh()
         return
@@ -1703,6 +1720,7 @@ export class SupabaseBackend implements Backend {
       if (c.seq !== seq + 1) return refresh() // missed one
       seq = c.seq
       if (c.t === 'p') return pollChanged(c) // the room itself is unchanged
+      if (c.t === 'h' || c.t === 'x') return linesChanged(c)
       // Handed the room: the code is the host's only, the full state has it.
       if (c.t === 'r' && c.host === me && base.host !== me) refresh()
       // Taken out of the room myself (removed, or dropped while away): a heartbeat brings me back in, or says

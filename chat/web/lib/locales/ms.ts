@@ -706,6 +706,7 @@ const ms: Dict = {
   'anon.name': "Orang asing",
   'anon.profileHint': "Anda berdua melihat nama, foto dan profil masing-masing.",
   'anon.anonHint': "Tiada nama, foto atau profil. Anda hanya berjumpa mereka yang memilih tanpa nama.",
+  'voice.sys.cleared': "{name} mengosongkan sembang",
 }
 
 export default ms

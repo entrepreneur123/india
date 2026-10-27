@@ -78,6 +78,10 @@ const nl: RoomDict = {
   'volumeOf': "Volume van {name} voor mij",
   'volumeMute': "Dempen voor mij",
   'volumeUnmute': "Dempen opheffen",
+  'hideLine': "Voor iedereen verbergen",
+  'clearChat': "Chat wissen",
+  'clearChatTitle': "Chat voor iedereen wissen?",
+  'clearChatBody': "Alles wat tot nu toe is geschreven verdwijnt uit de ruimte. Dit kan niet ongedaan.",
 }
 
 export default nl

@@ -78,6 +78,10 @@ const th: RoomDict = {
   'volumeOf': "ระดับเสียงของ {name} สำหรับฉัน",
   'volumeMute': "ปิดเสียงสำหรับฉัน",
   'volumeUnmute': "เปิดเสียง",
+  'hideLine': "ซ่อนจากทุกคน",
+  'clearChat': "ล้างแชท",
+  'clearChatTitle': "ล้างแชทของทุกคนไหม",
+  'clearChatBody': "ข้อความทั้งหมดที่ผ่านมาจะหายไปจากห้อง ย้อนกลับไม่ได้",
 }
 
 export default th

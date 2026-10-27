@@ -692,6 +692,7 @@ const hi: Dict = {
   'anon.name': "अजनबी",
   'anon.profileHint': "आप दोनों एक-दूसरे का नाम, फ़ोटो और प्रोफ़ाइल देखते हैं।",
   'anon.anonHint': "न नाम, न फ़ोटो, न प्रोफ़ाइल। आप सिर्फ़ गुमनाम चुनने वालों से मिलेंगे।",
+  'voice.sys.cleared': "{name} ने चैट साफ़ की",
 }
 
 export default hi

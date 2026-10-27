@@ -705,6 +705,7 @@ const en = {
   'anon.name': "Stranger",
   'anon.profileHint': "You both see each other's name, photo and profile.",
   'anon.anonHint': "No names, photos or profiles. You only meet others who chose anonymous.",
+  'voice.sys.cleared': "{name} cleared the chat",
 } as const
 
 export default en

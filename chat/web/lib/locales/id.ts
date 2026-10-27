@@ -706,6 +706,7 @@ const id: Dict = {
   'anon.name': "Orang asing",
   'anon.profileHint': "Kalian saling melihat nama, foto, dan profil.",
   'anon.anonHint': "Tanpa nama, foto, atau profil. Kamu hanya bertemu yang juga memilih anonim.",
+  'voice.sys.cleared': "{name} membersihkan obrolan",
 }
 
 export default id

@@ -78,6 +78,10 @@ const gu: RoomDict = {
   'volumeOf': "મારા માટે {name}નો અવાજ",
   'volumeMute': "ફક્ત મારા માટે મ્યૂટ",
   'volumeUnmute': "અનમ્યૂટ",
+  'hideLine': "બધા માટે છુપાવો",
+  'clearChat': "ચેટ સાફ કરો",
+  'clearChatTitle': "બધા માટે ચેટ સાફ કરવી છે?",
+  'clearChatBody': "અત્યાર સુધી લખેલું બધું રૂમમાંથી જશે. પાછું નહીં આવે.",
 }
 
 export default gu

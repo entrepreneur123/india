@@ -78,6 +78,10 @@ const ptBR: RoomDict = {
   'volumeOf': "Volume de {name} para mim",
   'volumeMute': "Silenciar para mim",
   'volumeUnmute': "Ativar som",
+  'hideLine': "Ocultar para todos",
+  'clearChat': "Limpar o chat",
+  'clearChatTitle': "Limpar o chat para todos?",
+  'clearChatBody': "Tudo o que foi escrito some da sala. Não dá para desfazer.",
 }
 
 export default ptBR

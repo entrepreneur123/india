@@ -692,6 +692,7 @@ const vi: Dict = {
   'anon.name': "Người lạ",
   'anon.profileHint': "Hai bạn thấy tên, ảnh và hồ sơ của nhau.",
   'anon.anonHint': "Không tên, ảnh hay hồ sơ. Bạn chỉ gặp những người cũng chọn ẩn danh.",
+  'voice.sys.cleared': "{name} đã xóa trò chuyện",
 }
 
 export default vi

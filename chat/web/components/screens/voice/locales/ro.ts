@@ -79,6 +79,10 @@ const ro: RoomDict = {
   'volumeOf': "Volumul lui {name} pentru mine",
   'volumeMute': "Dezactivează sunetul pentru mine",
   'volumeUnmute': "Activează sunetul",
+  'hideLine': "Ascunde pentru toți",
+  'clearChat': "Golește chatul",
+  'clearChatTitle': "Golești chatul pentru toți?",
+  'clearChatBody': "Tot ce s-a scris dispare din cameră. Nu se poate anula.",
 }
 
 export default ro

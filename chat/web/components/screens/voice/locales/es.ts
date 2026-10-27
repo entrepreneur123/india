@@ -79,6 +79,10 @@ const es: RoomDict = {
   'volumeOf': "Volumen de {name} para mí",
   'volumeMute': "Silenciar para mí",
   'volumeUnmute': "Activar sonido",
+  'hideLine': "Ocultar para todos",
+  'clearChat': "Vaciar el chat",
+  'clearChatTitle': "¿Vaciar el chat para todos?",
+  'clearChatBody': "Todo lo escrito hasta ahora desaparece de la sala. No se puede deshacer.",
 }
 
 export default es

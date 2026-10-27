@@ -81,6 +81,10 @@ const ru: RoomDict = {
   'volumeOf': "Громкость {name} для меня",
   'volumeMute': "Заглушить для меня",
   'volumeUnmute': "Включить звук",
+  'hideLine': "Скрыть для всех",
+  'clearChat': "Очистить чат",
+  'clearChatTitle': "Очистить чат для всех?",
+  'clearChatBody': "Всё написанное исчезнет из комнаты. Отменить нельзя.",
 }
 
 export default ru

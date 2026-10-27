@@ -693,6 +693,7 @@ const ne: Dict = {
   'anon.name': "अपरिचित",
   'anon.profileHint': "दुवैले एकअर्काको नाम, फोटो र प्रोफाइल देख्नुहुन्छ।",
   'anon.anonHint': "नाम, फोटो वा प्रोफाइल छैन। गुमनाम रोज्नेहरूसँग मात्र भेट हुन्छ।",
+  'voice.sys.cleared': "{name} ले च्याट सफा गर्नुभयो",
 }
 
 export default ne

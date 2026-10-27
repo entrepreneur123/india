@@ -83,6 +83,10 @@ const ar: RoomDict = {
   'volumeOf': "مستوى صوت {name} عندي",
   'volumeMute': "كتم عندي فقط",
   'volumeUnmute': "إلغاء الكتم",
+  'hideLine': "إخفاء للجميع",
+  'clearChat': "مسح الدردشة",
+  'clearChatTitle': "مسح الدردشة للجميع؟",
+  'clearChatBody': "سيختفي كل ما كُتب حتى الآن من الغرفة. لا يمكن التراجع.",
 }
 
 export default ar

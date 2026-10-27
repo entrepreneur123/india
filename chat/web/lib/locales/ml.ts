@@ -693,6 +693,7 @@ const ml: Dict = {
   'anon.name': "അപരിചിതൻ",
   'anon.profileHint': "ഇരുവരും പരസ്പരം പേര്, ഫോട്ടോ, പ്രൊഫൈൽ കാണും.",
   'anon.anonHint': "പേര്, ഫോട്ടോ, പ്രൊഫൈൽ ഇല്ല. അജ്ഞാതം തിരഞ്ഞെടുത്തവരെ മാത്രം കണ്ടുമുട്ടും.",
+  'voice.sys.cleared': "{name} ചാറ്റ് മായ്ച്ചു",
 }
 
 export default ml
