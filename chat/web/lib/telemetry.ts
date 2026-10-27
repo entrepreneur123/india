@@ -1,91 +1,104 @@
-// Crash reports and a few funnel events, sent to our own server (021: log_events) — no third-party service.
-// Errors carry their message and stack; events only a fixed name. No chat text, no phone numbers, no ids beyond
-// the signed-in account the server already knows. Batched, sent when the page is hidden or closed (keepalive).
-import { DEMO_MODE, SUPABASE_ANON_KEY, SUPABASE_URL } from './config'
+// Crash reports go to Sentry, the main steps to PostHog (EU). Both libraries download after the page has loaded, so
+// the first screen never waits for them; anything reported before then waits in their promise.
+// Errors carry their message, stack and screen; events a fixed name plus the app language. No chat text, no phone
+// numbers: the signed-in account is its random id with its country. Nothing is kept in the browser (PostHog keeps
+// its ids in memory), no session replays, no click tracking.
+import { DEMO_MODE, POSTHOG_HOST, POSTHOG_KEY, SENTRY_DSN } from './config'
 
 export type FunnelEvent =
   | 'signup_done' | 'match_found' | 'chat_message_sent' | 'room_created' | 'room_joined' | 'call_started'
   | 'plus_purchased'
 
-type Item = { kind: 'error' | 'event'; name: string; message?: string; stack?: string; version: string; platform: 'web'; route: string }
+const VERSION = 'web-0.9.0'
+type Sentry = typeof import('./sentry')
+type PostHog = (typeof import('posthog-js'))['default']
 
-const VERSION = 'web-0.8.0'
-/** A keepalive request may carry 64 KB at most. */
-const MAX_BATCH_BYTES = 48_000
-const queue: Item[] = []
+let sentry: Promise<Sentry> | null = null
+let posthog: Promise<PostHog> | null = null
 const seen = new Set<string>()
 let errorsSent = 0
-let timer: ReturnType<typeof setTimeout> | undefined
+let identified: string | null = null
 
-const enabled = () => !DEMO_MODE && typeof window !== 'undefined'
+const afterLoad = () =>
+  new Promise<void>((resolve) => {
+    if (document.readyState === 'complete') resolve()
+    else window.addEventListener('load', () => resolve(), { once: true })
+  })
 
 /** A step people reach (once per page for chat_message_sent: it's the first message that counts). */
 export function track(name: FunnelEvent) {
   if (name === 'chat_message_sent' && seen.has(name)) return
   seen.add(name)
-  push({ kind: 'event', name })
+  void posthog?.then((p) => p.capture(name))
 }
 
 export function reportError(err: unknown, where?: string) {
   const e = err instanceof Error ? err : null
-  const name = (where ? `${where}:` : '') + (e?.name || typeof err)
-  const message = (e?.message ?? String(err)).slice(0, 2000)
-  const stack = e?.stack?.slice(0, 4000)
-  if (/ResizeObserver loop|chrome-extension:|moz-extension:/.test(`${message} ${stack ?? ''}`)) return
-  const key = `${name}|${message.slice(0, 200)}`
+  const message = e?.message ?? String(err)
+  if (/ResizeObserver loop|chrome-extension:|moz-extension:/.test(`${message} ${e?.stack ?? ''}`)) return
+  const key = `${where}|${e?.name}|${message.slice(0, 200)}`
   if (seen.has(key) || errorsSent >= 30) return // the same error once per page; a broken page doesn't flood
   seen.add(key)
   errorsSent++
-  push({ kind: 'error', name: name.slice(0, 100), message, stack })
+  void sentry?.then((s) => s.captureException(err, { tags: { where: where ?? 'app' } }))
 }
 
-function push(item: Omit<Item, 'version' | 'platform' | 'route'>) {
-  if (!enabled()) return
-  queue.push({ ...item, version: VERSION, platform: 'web', route: location.pathname.slice(0, 200) })
-  if (queue.length >= 20) flush()
-  else if (!timer) timer = setTimeout(() => flush(), 60_000)
-}
-
-/** The signed-in session (supabase-js keeps it under this key, see lib/supabaseBackend.ts), if still valid. */
-function accessToken(): string | null {
-  try {
-    const s = JSON.parse(localStorage.getItem('yaari_auth') ?? 'null') as { access_token?: string; expires_at?: number } | null
-    return s?.access_token && (s.expires_at ?? 0) * 1000 > Date.now() + 10_000 ? s.access_token : null
-  } catch {
-    return null
-  }
-}
-
-export function flush(keepalive = false) {
-  clearTimeout(timer)
-  timer = undefined
-  while (queue.length) {
-    const batch: Item[] = []
-    let bytes = 0
-    while (queue.length && batch.length < 20 && bytes + JSON.stringify(queue[0]).length < MAX_BATCH_BYTES) {
-      bytes += JSON.stringify(queue[0]).length
-      batch.push(queue.shift()!)
-    }
-    if (!batch.length) batch.push(queue.shift()!) // one item alone is under the limit (stack is cut to 4k)
-    const token = accessToken()
-    void fetch(`${SUPABASE_URL}/rest/v1/rpc/${token ? 'log_events' : 'log_events_anon'}`, {
-      method: 'POST',
-      keepalive,
-      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token ?? SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_events: batch }),
-    }).catch(() => undefined)
-  }
+/** The signed-in account (null: signed out). Its id is random; country and language help compare countries. */
+export function identify(me: { id: string; country?: string | null } | null, lang: string) {
+  if ((me?.id ?? null) === identified) return
+  const was = identified
+  identified = me?.id ?? null
+  void sentry?.then((s) => s.setUser(me ? { id: me.id } : null))
+  void posthog?.then((p) => {
+    if (me) p.identify(me.id, { country: me.country ?? null, lang })
+    else if (was) p.reset()
+  })
 }
 
 let installed = false
-/** Uncaught errors and rejected promises anywhere on the page; sent as the page goes away. */
+/** Uncaught errors and rejected promises anywhere on the page, from the first line on. */
 export function installErrorReporting() {
-  if (installed || !enabled()) return
+  if (installed || DEMO_MODE || typeof window === 'undefined') return
   installed = true
   window.addEventListener('error', (e) => reportError(e.error ?? e.message, 'window'))
   window.addEventListener('unhandledrejection', (e) => reportError(e.reason, 'promise'))
-  window.addEventListener('pagehide', () => flush(true))
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') flush(true)
-  })
+  if (SENTRY_DSN)
+    sentry = afterLoad().then(async () => {
+      const s = await import('./sentry')
+      s.init({
+        dsn: SENTRY_DSN,
+        release: VERSION,
+        environment: location.hostname,
+        // The listeners above already report (they're there before Sentry downloads).
+        integrations: (all) => all.filter((i) => i.name !== 'GlobalHandlers'),
+        // Requests and page changes only: clicks and console lines can hold names or message text.
+        beforeBreadcrumb: (b) => (b.category === 'fetch' || b.category === 'xhr' || b.category === 'navigation' ? b : null),
+      })
+      return s
+    })
+  if (POSTHOG_KEY)
+    posthog = afterLoad().then(async () => {
+      const p = (await import('posthog-js')).default
+      p.init(POSTHOG_KEY, {
+        api_host: POSTHOG_HOST,
+        persistence: 'memory',
+        person_profiles: 'identified_only',
+        autocapture: false,
+        capture_pageview: true, // one per visit: country, device, where people came from
+        capture_pageleave: true,
+        capture_exceptions: false, // Sentry has them
+        capture_performance: false,
+        capture_heatmaps: false,
+        capture_dead_clicks: false,
+        disable_session_recording: true,
+        disable_surveys: true,
+        disable_product_tours: true,
+        disable_conversations: true,
+        disable_web_experiments: true,
+        advanced_disable_flags: true,
+        disable_external_dependency_loading: true,
+      })
+      p.register({ app_version: VERSION })
+      return p
+    })
 }

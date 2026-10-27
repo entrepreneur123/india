@@ -13,7 +13,7 @@ import { Splash } from '@/components/splash'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { retryImport } from '@/lib/retry-import'
 import { InAppBanner } from '@/components/shell/in-app-banner'
-import { installErrorReporting } from '@/lib/telemetry'
+import { identify, installErrorReporting } from '@/lib/telemetry'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
 const loadAuth = () => retryImport(() => import('@/components/screens/auth/auth-screen'))
@@ -93,7 +93,7 @@ function Localized() {
 function Root() {
   const backend = useBackend()
   const toast = useToast()
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [boot, setBoot] = useState<Boot>({ stage: 'loading' })
   const [phone, setPhone] = useState<string | null>(null)
 
@@ -136,6 +136,9 @@ function Root() {
       alive = false
     }
   }, [backend, enterApp])
+
+  const me = boot.stage === 'app' ? boot.me : null
+  useEffect(() => identify(me, lang), [me, lang])
 
   // Stage changes fade in with CSS, so the first screen never waits for Motion's animation code to download.
   const fade = 'animate-in fade-in duration-150 motion-reduce:animate-none'

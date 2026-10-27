@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@livekit/krisp-noise-filter": "0.4.5",
+    "@sentry/browser": "^11.9.0",
     "@supabase/supabase-js": "^2.118.0",
     "@tensorflow/tfjs": "4.22.0",
     "buffer": "6.0.3",
@@ -21,6 +22,7 @@
     "motion": "^14.3.0",
     "next": "16.4.2",
     "nsfwjs": "4.4.0",
+    "posthog-js": "^1.438.23",
     "react": "^19",
     "react-dom": "^19",
     "swr": "^2.5.1",

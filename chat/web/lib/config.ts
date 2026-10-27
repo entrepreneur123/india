@@ -15,6 +15,11 @@ export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 /** Without server keys the site runs on the in-browser demo backend (any 6-digit code works). */
 export const DEMO_MODE = !SUPABASE_URL || !SUPABASE_ANON_KEY
 
+/** Crash reports (Sentry) and product analytics (PostHog, EU region): set on Vercel only, so no other build sends any. */
+export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN ?? ''
+export const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY ?? ''
+export const POSTHOG_HOST = 'https://eu.i.posthog.com'
+
 /** A random chat can be left 5 s after it starts (the server's exit_lock()). */
 export const EXIT_LOCK_MS = 5000
 
