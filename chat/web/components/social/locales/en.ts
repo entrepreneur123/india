@@ -175,6 +175,18 @@ const en = {
   'rooms.sortMembers': "Most people",
   'rooms.sortRelevant': "For you",
   'rooms.sortPopular': "Popular",
+  'party.button': "Party match",
+  'party.title': "Party random chat",
+  'party.desc': "Everyone here who taps \"I'm in\" searches together and meets another party in a new group chat.",
+  'party.in': "In",
+  'party.notYet': "Not yet",
+  'party.join': "I'm in",
+  'party.leave': "I'm out",
+  'party.find': "Find a party",
+  'party.cancel': "Stop",
+  'party.searching': "Looking for another party…",
+  'party.needTwo': "At least 2 of you need to be in — friends open Party match here too.",
+  'party.ready': "{n} in — ready to go",
 }
 
 export default en

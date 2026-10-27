@@ -701,6 +701,8 @@ const kn: Dict = {
   'looking.empty': "ಈಗ ಯಾರೂ ಇಲ್ಲ. ಮೊದಲು ನೀವೇ ಪೋಸ್ಟ್ ಮಾಡಿ!",
   'looking.remove': "ತೆಗೆದುಹಾಕಿ",
   'looking.reply': "ಮೆಸೇಜ್",
+  'error.party_small': "ಕನಿಷ್ಠ 2 ಜನ ಸೇರಬೇಕು",
+  'lobby.party': "ಸ್ನೇಹಿತರ ಜೊತೆ? ಗುಂಪು ರ‍್ಯಾಂಡಮ್ ಚಾಟ್",
 }
 
 export default kn

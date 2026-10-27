@@ -714,6 +714,8 @@ const tr: Dict = {
   'looking.empty': "Şu an kimse yok. İlk sen ol!",
   'looking.remove': "Kaldır",
   'looking.reply': "Mesaj",
+  'error.party_small': "En az 2 kişinin katılması gerekiyor",
+  'lobby.party': "Arkadaşlarla mı? Grup rastgele sohbet",
 }
 
 export default tr

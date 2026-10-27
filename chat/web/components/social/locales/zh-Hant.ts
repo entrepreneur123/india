@@ -176,6 +176,18 @@ const zhHant: SocialDict = {
   'rooms.sortMembers': "人數",
   'rooms.sortRelevant': "相關",
   'rooms.sortPopular': "熱門",
+  'party.button': "組隊配對",
+  'party.title': "多人對多人隨機聊天",
+  'party.desc': "在這裡點「我加入」的人一起搜尋，在新群組裡遇見另一隊。",
+  'party.in': "已加入",
+  'party.notYet': "未加入",
+  'party.join': "我加入",
+  'party.leave': "我退出",
+  'party.find': "找對手隊",
+  'party.cancel': "停止",
+  'party.searching': "正在尋找另一隊…",
+  'party.needTwo': "至少需要 2 人加入——朋友也要在這裡打開「組隊配對」。",
+  'party.ready': "{n} 人已加入——準備好了",
 }
 
 export default zhHant

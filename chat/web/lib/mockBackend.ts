@@ -1303,6 +1303,50 @@ export class MockBackend implements Backend {
       .sort((a, b) => b.lastAt - a.lastAt)
   }
 
+  // 49: a party search in the demo — the others are "in" a moment after the sheet opens, and a few polls of a search
+  // later another party of demo people turns up.
+  private parties = new Map<string, { opened: number; polls: number; matched: string | null; searching: boolean }>()
+  private party(groupId: string) {
+    let p = this.parties.get(groupId)
+    if (!p || (p.matched && !this.demoGroups().some((g) => g.id === p!.matched))) this.parties.set(groupId, (p = { opened: Date.now(), polls: 0, matched: null, searching: false }))
+    return p
+  }
+
+  async partyState(groupId: string, ready: boolean) {
+    await wait(150)
+    const g = this.groupOf(groupId)
+    const p = this.party(groupId)
+    const me = this.me?.id ?? 'me'
+    const others = Date.now() - p.opened > 1500 ? g.members.filter((id) => id !== me).slice(0, 2) : []
+    return { ready: [...(ready ? [me] : []), ...others], searching: p.searching && !p.matched, matched: p.matched }
+  }
+
+  async partySearch(groupId: string, _everywhere: boolean) {
+    await wait(300)
+    const g = this.groupOf(groupId)
+    const p = this.party(groupId)
+    if (p.matched) return p.matched
+    if ((await this.partyState(groupId, true)).ready.length < 2) throw new BackendError('party_small')
+    p.searching = true
+    if (++p.polls < 3) return null
+    const me = this.me?.id ?? 'me'
+    const mine = [me, ...g.members.filter((id) => id !== me).slice(0, 2)]
+    const theirs = PEOPLE.filter((x) => !mine.includes(x.id)).slice(0, 3).map((x) => x.id)
+    const party = { id: `g_${++this.groupSeq}`, title: `Night owls × ${g.title}`.slice(0, 40), members: [...mine, ...theirs], lines: [] as GroupLine[], read: 0 }
+    this.demoGroups().unshift(party)
+    this.groupPost(party, { senderId: me, kind: 'created', body: [...mine, ...theirs].filter((id) => id !== me).map((id) => this.person(id)?.name ?? '').join(', ') })
+    setTimeout(() => this.demoGroups().includes(party) && this.groupPost(party, { senderId: theirs[0], kind: 'text', body: 'hiii everyone 👋 where are you all from?' }), 2500)
+    p.matched = party.id
+    p.searching = false
+    return party.id
+  }
+
+  async partyCancel(groupId: string) {
+    await wait(150)
+    this.party(groupId).searching = false
+    this.party(groupId).polls = 0
+  }
+
   async createGroup(title: string, memberIds: string[]) {
     await wait(300)
     const me = this.me?.id ?? 'me'

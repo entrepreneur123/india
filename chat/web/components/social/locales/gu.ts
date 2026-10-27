@@ -164,6 +164,18 @@ const gu: SocialDict = {
   'rooms.sortMembers': "વધુ લોકો",
   'rooms.sortRelevant': "તમારા માટે",
   'rooms.sortPopular': "લોકપ્રિય",
+  'party.button': "પાર્ટી મેચ",
+  'party.title': "ગ્રુપ vs ગ્રુપ રેન્ડમ ચેટ",
+  'party.desc': "\"હું છું\" દબાવનારા સાથે શોધે છે અને નવા ગ્રુપ ચેટમાં બીજા ગ્રુપને મળે છે.",
+  'party.in': "જોડાયા",
+  'party.notYet': "હજી નહીં",
+  'party.join': "હું છું",
+  'party.leave': "હું નથી",
+  'party.find': "ગ્રુપ શોધો",
+  'party.cancel': "રોકો",
+  'party.searching': "બીજું ગ્રુપ શોધીએ છીએ…",
+  'party.needTwo': "ઓછામાં ઓછા 2 જણ જોઈએ — મિત્રો પણ અહીં પાર્ટી મેચ ખોલે.",
+  'party.ready': "{n} જણ — તૈયાર",
 }
 
 export default gu

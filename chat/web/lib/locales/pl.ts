@@ -705,6 +705,8 @@ const pl: Dict = {
   'looking.empty': "Na razie nikt. Bądź pierwszy!",
   'looking.remove': "Usuń",
   'looking.reply': "Wiadomość",
+  'error.party_small': "Muszą dołączyć co najmniej 2 osoby",
+  'lobby.party': "Ze znajomymi? Losowy czat ekip",
 }
 
 export default pl

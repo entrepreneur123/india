@@ -169,6 +169,18 @@ const ne: SocialDict = {
   'rooms.sortMembers': "धेरै मान्छे",
   'rooms.sortRelevant': "तपाईंका लागि",
   'rooms.sortPopular': "लोकप्रिय",
+  'party.button': "पार्टी म्याच",
+  'party.title': "समूह बनाम समूह र्‍यान्डम च्याट",
+  'party.desc': "\"म छु\" थिच्नेहरू सँगै खोज्छन् र नयाँ समूह च्याटमा अर्को समूहलाई भेट्छन्।",
+  'party.in': "सामेल",
+  'party.notYet': "अझै होइन",
+  'party.join': "म छु",
+  'party.leave': "म छैन",
+  'party.find': "समूह खोज्नुहोस्",
+  'party.cancel': "रोक्नुहोस्",
+  'party.searching': "अर्को समूह खोज्दैछौं…",
+  'party.needTwo': "कम्तीमा २ जना चाहिन्छ — साथीहरूले पनि यहाँ पार्टी म्याच खोल्नुपर्छ।",
+  'party.ready': "{n} जना — तयार",
 }
 
 export default ne

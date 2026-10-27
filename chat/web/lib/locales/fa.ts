@@ -714,6 +714,8 @@ const fa: Dict = {
   'looking.empty': "فعلاً کسی نیست. اولین نفر باشید!",
   'looking.remove': "برداشتن",
   'looking.reply': "پیام",
+  'error.party_small': "دست‌کم ۲ نفر باید پایه باشند",
+  'lobby.party': "با دوستان؟ چت تصادفی گروهی",
 }
 
 export default fa

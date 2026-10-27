@@ -701,6 +701,8 @@ const ta: Dict = {
   'looking.empty': "இப்போது யாரும் இல்லை. முதலில் நீங்கள் பதிவிடுங்கள்!",
   'looking.remove': "நீக்கு",
   'looking.reply': "மெசேஜ்",
+  'error.party_small': "குறைந்தது 2 பேர் சேர வேண்டும்",
+  'lobby.party': "நண்பர்களுடனா? குழு ரேண்டம் அரட்டை",
 }
 
 export default ta

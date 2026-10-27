@@ -701,6 +701,8 @@ const it: Dict = {
   'looking.empty': "Nessuno al momento. Sii il primo!",
   'looking.remove': "Ritira",
   'looking.reply': "Messaggio",
+  'error.party_small': "Servono almeno 2 persone",
+  'lobby.party': "Con gli amici? Chat casuale di gruppo",
 }
 
 export default it

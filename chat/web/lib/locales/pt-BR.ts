@@ -700,6 +700,8 @@ const ptBR: Dict = {
   'looking.empty': "Ninguém procurando agora. Seja o primeiro!",
   'looking.remove': "Retirar",
   'looking.reply': "Mensagem",
+  'error.party_small': "Pelo menos 2 precisam entrar",
+  'lobby.party': "Com amigos? Chat aleatório em grupo",
 }
 
 export default ptBR

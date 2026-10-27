@@ -700,6 +700,8 @@ const bn: Dict = {
   'looking.empty': "এখন কেউ নেই। প্রথমে আপনিই পোস্ট করুন!",
   'looking.remove': "সরিয়ে নিন",
   'looking.reply': "মেসেজ",
+  'error.party_small': "অন্তত ২ জনকে যোগ দিতে হবে",
+  'lobby.party': "বন্ধুদের সাথে? দলগত র‍্যান্ডম চ্যাট",
 }
 
 export default bn

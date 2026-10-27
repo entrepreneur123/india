@@ -175,6 +175,18 @@ const id: SocialDict = {
   'rooms.sortMembers': "Terbanyak",
   'rooms.sortRelevant': "Untukmu",
   'rooms.sortPopular': "Populer",
+  'party.button': "Cocokkan grup",
+  'party.title': "Obrolan acak grup lawan grup",
+  'party.desc': "Semua yang menekan \"Aku ikut\" mencari bersama dan bertemu grup lain di obrolan grup baru.",
+  'party.in': "Ikut",
+  'party.notYet': "Belum",
+  'party.join': "Aku ikut",
+  'party.leave': "Aku keluar",
+  'party.find': "Cari grup",
+  'party.cancel': "Berhenti",
+  'party.searching': "Mencari grup lain…",
+  'party.needTwo': "Minimal 2 orang — teman juga buka Cocokkan grup di sini.",
+  'party.ready': "{n} ikut — siap",
 }
 
 export default id

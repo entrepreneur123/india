@@ -679,6 +679,8 @@ const mr: Dict = {
   'looking.empty': "आत्ता कोणी नाही. तुम्हीच पहिले पोस्ट करा!",
   'looking.remove': "काढा",
   'looking.reply': "मेसेज",
+  'error.party_small': "किमान 2 जण सहभागी हवेत",
+  'lobby.party': "मित्रांसोबत? ग्रुप रँडम चॅट",
 }
 
 export default mr

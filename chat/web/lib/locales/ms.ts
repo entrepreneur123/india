@@ -714,6 +714,8 @@ const ms: Dict = {
   'looking.empty': "Belum ada sesiapa. Jadilah yang pertama!",
   'looking.remove': "Turunkan",
   'looking.reply': "Mesej",
+  'error.party_small': "Sekurang-kurangnya 2 orang perlu sertai",
+  'lobby.party': "Dengan kawan? Sembang rawak kumpulan",
 }
 
 export default ms

@@ -175,6 +175,18 @@ const ja: SocialDict = {
   'rooms.sortMembers': "人数順",
   'rooms.sortRelevant': "おすすめ順",
   'rooms.sortPopular': "人気順",
+  'party.button': "パーティーマッチ",
+  'party.title': "グループでランダムチャット",
+  'party.desc': "ここで「参加」を押した人が一緒に探し、別のパーティーと新しいグループで出会います。",
+  'party.in': "参加",
+  'party.notYet': "まだ",
+  'party.join': "参加する",
+  'party.leave': "抜ける",
+  'party.find': "相手を探す",
+  'party.cancel': "やめる",
+  'party.searching': "相手のパーティーを探しています…",
+  'party.needTwo': "2人以上の参加が必要です。友達もここで「パーティーマッチ」を開いてください。",
+  'party.ready': "{n}人参加 — 準備OK",
 }
 
 export default ja

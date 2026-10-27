@@ -171,6 +171,18 @@ const es: SocialDict = {
   'rooms.sortMembers': "Más gente",
   'rooms.sortRelevant': "Para ti",
   'rooms.sortPopular': "Popular",
+  'party.button': "Partida en grupo",
+  'party.title': "Chat aleatorio de grupo a grupo",
+  'party.desc': "Quienes toquen \"Me apunto\" buscan juntos y conocen a otro grupo en un chat nuevo.",
+  'party.in': "Dentro",
+  'party.notYet': "Aún no",
+  'party.join': "Me apunto",
+  'party.leave': "Me salgo",
+  'party.find': "Buscar grupo",
+  'party.cancel': "Parar",
+  'party.searching': "Buscando otro grupo…",
+  'party.needTwo': "Hacen falta al menos 2: tus amigos también abren Partida en grupo aquí.",
+  'party.ready': "{n} dentro — listos",
 }
 
 export default es

@@ -679,6 +679,8 @@ const gu: Dict = {
   'looking.empty': "હમણાં કોઈ નથી. પહેલા તમે પોસ્ટ કરો!",
   'looking.remove': "હટાવો",
   'looking.reply': "મેસેજ",
+  'error.party_small': "ઓછામાં ઓછા 2 જણ જોડાવા જોઈએ",
+  'lobby.party': "મિત્રો સાથે? ગ્રુપ રેન્ડમ ચેટ",
 }
 
 export default gu

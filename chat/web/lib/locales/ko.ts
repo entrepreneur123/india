@@ -714,6 +714,8 @@ const ko: Dict = {
   'looking.empty': "아직 아무도 없어요. 먼저 올려 보세요!",
   'looking.remove': "내리기",
   'looking.reply': "메시지",
+  'error.party_small': "최소 2명이 참여해야 해요",
+  'lobby.party': "친구랑 같이? 다수 대 다수 랜챗",
 }
 
 export default ko

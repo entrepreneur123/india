@@ -170,6 +170,18 @@ const vi: SocialDict = {
   'rooms.sortMembers': "Đông nhất",
   'rooms.sortRelevant': "Phù hợp",
   'rooms.sortPopular': "Phổ biến",
+  'party.button': "Ghép nhóm",
+  'party.title': "Trò chuyện ngẫu nhiên nhóm với nhóm",
+  'party.desc': "Ai bấm \"Tôi tham gia\" sẽ cùng tìm và gặp một nhóm khác trong nhóm chat mới.",
+  'party.in': "Tham gia",
+  'party.notYet': "Chưa",
+  'party.join': "Tôi tham gia",
+  'party.leave': "Tôi rút",
+  'party.find': "Tìm nhóm",
+  'party.cancel': "Dừng",
+  'party.searching': "Đang tìm nhóm khác…",
+  'party.needTwo': "Cần ít nhất 2 người — bạn bè cũng mở Ghép nhóm ở đây.",
+  'party.ready': "{n} người — sẵn sàng",
 }
 
 export default vi

@@ -718,6 +718,8 @@ const ru: Dict = {
   'looking.empty': "Пока никого. Будьте первым!",
   'looking.remove': "Убрать",
   'looking.reply': "Написать",
+  'error.party_small': "Нужно хотя бы 2 участника",
+  'lobby.party': "С друзьями? Случайный чат компаний",
 }
 
 export default ru

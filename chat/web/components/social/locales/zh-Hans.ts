@@ -176,6 +176,18 @@ const zhHans: SocialDict = {
   'rooms.sortMembers': "人数",
   'rooms.sortRelevant': "相关",
   'rooms.sortPopular': "热门",
+  'party.button': "组队匹配",
+  'party.title': "多人对多人随机聊天",
+  'party.desc': "在这里点“我加入”的人一起搜索，在新群聊里遇见另一队。",
+  'party.in': "已加入",
+  'party.notYet': "未加入",
+  'party.join': "我加入",
+  'party.leave': "我退出",
+  'party.find': "找对手队",
+  'party.cancel': "停止",
+  'party.searching': "正在寻找另一队…",
+  'party.needTwo': "至少需要 2 人加入——朋友也要在这里打开“组队匹配”。",
+  'party.ready': "{n} 人已加入——准备好了",
 }
 
 export default zhHans

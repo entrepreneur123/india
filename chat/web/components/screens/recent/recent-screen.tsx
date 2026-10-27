@@ -26,16 +26,15 @@ import { FindSheet } from '@/components/social/people-find'
 import { nameAge } from '@/lib/looks'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { GroupList, useGroups } from './groups'
+import { lastRecentSegment, showRecentSegment, type RecentSegment } from './segment'
 
-type Segment = 'friends' | 'matches' | 'groups' | 'sent'
-/** The segment shown last: back from a thread or a group, the list is where I left it. */
-let lastSegment: Segment = 'friends'
+type Segment = RecentSegment
 
 export function RecentScreen() {
   const backend = useBackend()
   const { t, setTab } = useApp()
-  const [segment, setSegmentState] = useState<Segment>(lastSegment)
-  const setSegment = (s: Segment) => setSegmentState((lastSegment = s))
+  const [segment, setSegmentState] = useState<Segment>(lastRecentSegment)
+  const setSegment = (s: Segment) => (showRecentSegment(s), setSegmentState(s))
   const [findOpen, setFindOpen] = useState(false)
   const { lt } = useLooksT()
   const friends = useSWR('friends', () => backend.friends())

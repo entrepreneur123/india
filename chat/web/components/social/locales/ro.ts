@@ -170,6 +170,18 @@ const ro: SocialDict = {
   'rooms.sortMembers': "Cei mai mulți",
   'rooms.sortRelevant': "Pentru tine",
   'rooms.sortPopular': "Populare",
+  'party.button': "Potrivire de grup",
+  'party.title': "Chat aleatoriu grup cu grup",
+  'party.desc': "Cine apasă „Sunt în” caută împreună și cunoaște alt grup într-un chat nou.",
+  'party.in': "În",
+  'party.notYet': "Încă nu",
+  'party.join': "Sunt în",
+  'party.leave': "Ies",
+  'party.find': "Găsește un grup",
+  'party.cancel': "Oprește",
+  'party.searching': "Căutăm alt grup…",
+  'party.needTwo': "Trebuie cel puțin 2 — prietenii deschid și ei Potrivire de grup aici.",
+  'party.ready': "{n} în — gata",
 }
 
 export default ro

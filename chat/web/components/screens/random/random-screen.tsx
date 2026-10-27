@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Flag, MessageCircle, Shuffle, Undo2, VenetianMask } from 'lucide-react'
+import { Flag, MessageCircle, Shuffle, Undo2, Users, VenetianMask } from 'lucide-react'
 import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode, flagEmoji } from '@/lib/format'
@@ -25,6 +25,7 @@ import { TrustBadge } from '@/components/trust/badge'
 import { COUNTRIES } from '@/lib/countries'
 import { useCountryNames } from '@/components/screens/auth/country-select'
 import { saveFlag, savedFlag } from './scope'
+import { showRecentSegment } from '@/components/screens/recent/segment'
 import { GenderPassSheet, useGenderPass } from './gender-pass'
 import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
@@ -420,6 +421,15 @@ export function RandomScreen({ active }: { active: boolean }) {
                 <Shuffle className="size-5.5" aria-hidden />
                 <span>{t('lobby.start')}</span>
               </m.button>
+
+              {/* 49: many-to-many random chat starts from a friends' group (Recent → Groups → Party match). */}
+              <button
+                type="button"
+                onClick={() => (showRecentSegment('groups'), setTab('recent'))}
+                className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-primary-text hover:underline"
+              >
+                <Users className="size-4" aria-hidden /> {t('lobby.party')}
+              </button>
 
               <ul className="mt-8 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
                 <Pill icon={<MessageCircle className="size-3.5" aria-hidden />}>{t('lobby.textFirst')}</Pill>

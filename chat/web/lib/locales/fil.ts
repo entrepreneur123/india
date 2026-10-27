@@ -714,6 +714,8 @@ const fil: Dict = {
   'looking.empty': "Wala pang naghahanap. Mauna ka!",
   'looking.remove': "Alisin",
   'looking.reply': "Mensahe",
+  'error.party_small': "Kailangang may 2 man lang na kasali",
+  'lobby.party': "Kasama ang barkada? Group random chat",
 }
 
 export default fil

@@ -178,6 +178,18 @@ const ru: SocialDict = {
   'rooms.sortMembers': "Больше людей",
   'rooms.sortRelevant': "Для вас",
   'rooms.sortPopular': "Популярные",
+  'party.button': "Матч компаний",
+  'party.title': "Случайный чат компания на компанию",
+  'party.desc': "Все, кто нажмёт «Я в деле», ищут вместе и встречают другую компанию в новом групповом чате.",
+  'party.in': "В деле",
+  'party.notYet': "Пока нет",
+  'party.join': "Я в деле",
+  'party.leave': "Я пас",
+  'party.find': "Найти компанию",
+  'party.cancel': "Стоп",
+  'party.searching': "Ищем другую компанию…",
+  'party.needTwo': "Нужно хотя бы 2 — друзья тоже открывают здесь «Матч компаний».",
+  'party.ready': "{n} в деле — готовы",
 }
 
 export default ru

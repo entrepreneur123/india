@@ -171,6 +171,18 @@ const fr: SocialDict = {
   'rooms.sortMembers': "Plus de monde",
   'rooms.sortRelevant': "Pour vous",
   'rooms.sortPopular': "Populaire",
+  'party.button': "Match de groupe",
+  'party.title': "Chat aléatoire groupe contre groupe",
+  'party.desc': "Ceux qui touchent « Je suis là » cherchent ensemble et rencontrent un autre groupe dans un nouveau chat.",
+  'party.in': "Partant",
+  'party.notYet': "Pas encore",
+  'party.join': "Je suis là",
+  'party.leave': "Je passe",
+  'party.find': "Trouver un groupe",
+  'party.cancel': "Arrêter",
+  'party.searching': "Recherche d'un autre groupe…",
+  'party.needTwo': "Il faut être au moins 2 — vos amis ouvrent aussi Match de groupe ici.",
+  'party.ready': "{n} partants — prêts",
 }
 
 export default fr

@@ -703,6 +703,8 @@ const es: Dict = {
   'looking.empty': "Nadie busca ahora mismo. ¡Sé el primero!",
   'looking.remove': "Retirar",
   'looking.reply': "Mensaje",
+  'error.party_small': "Tienen que apuntarse al menos 2",
+  'lobby.party': "¿Con amigos? Chat aleatorio en grupo",
 }
 
 export default es

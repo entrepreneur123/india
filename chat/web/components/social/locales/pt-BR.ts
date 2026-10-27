@@ -170,6 +170,18 @@ const ptBR: SocialDict = {
   'rooms.sortMembers': "Mais pessoas",
   'rooms.sortRelevant': "Para você",
   'rooms.sortPopular': "Popular",
+  'party.button': "Partida em grupo",
+  'party.title': "Chat aleatório de grupo com grupo",
+  'party.desc': "Quem tocar em \"Tô dentro\" procura junto e conhece outro grupo num chat novo.",
+  'party.in': "Dentro",
+  'party.notYet': "Ainda não",
+  'party.join': "Tô dentro",
+  'party.leave': "Tô fora",
+  'party.find': "Achar um grupo",
+  'party.cancel': "Parar",
+  'party.searching': "Procurando outro grupo…",
+  'party.needTwo': "Precisa de pelo menos 2 — seus amigos também abrem Partida em grupo aqui.",
+  'party.ready': "{n} dentro — prontos",
 }
 
 export default ptBR

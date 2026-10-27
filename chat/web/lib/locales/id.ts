@@ -714,6 +714,8 @@ const id: Dict = {
   'looking.empty': "Belum ada yang mencari. Jadilah yang pertama!",
   'looking.remove': "Turunkan",
   'looking.reply': "Pesan",
+  'error.party_small': "Minimal 2 orang harus ikut",
+  'lobby.party': "Bareng teman? Obrolan acak grup",
 }
 
 export default id

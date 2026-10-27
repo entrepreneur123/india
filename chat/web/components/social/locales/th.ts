@@ -175,6 +175,18 @@ const th: SocialDict = {
   'rooms.sortMembers': "คนเยอะสุด",
   'rooms.sortRelevant': "สำหรับคุณ",
   'rooms.sortPopular': "ยอดนิยม",
+  'party.button': "จับคู่ปาร์ตี้",
+  'party.title': "แชทสุ่มแบบกลุ่มต่อกลุ่ม",
+  'party.desc': "ทุกคนที่กด \"ฉันเข้าร่วม\" จะหาด้วยกันและเจออีกกลุ่มในแชทกลุ่มใหม่",
+  'party.in': "เข้าร่วม",
+  'party.notYet': "ยังไม่",
+  'party.join': "ฉันเข้าร่วม",
+  'party.leave': "ฉันขอออก",
+  'party.find': "หาปาร์ตี้",
+  'party.cancel': "หยุด",
+  'party.searching': "กำลังหาอีกปาร์ตี้…",
+  'party.needTwo': "ต้องมีอย่างน้อย 2 คน — เพื่อนก็ต้องเปิดจับคู่ปาร์ตี้ที่นี่ด้วย",
+  'party.ready': "{n} คนเข้าร่วม — พร้อมแล้ว",
 }
 
 export default th

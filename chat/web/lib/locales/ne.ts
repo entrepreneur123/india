@@ -701,6 +701,8 @@ const ne: Dict = {
   'looking.empty': "अहिले कोही छैन। पहिले तपाईं पोस्ट गर्नुहोस्!",
   'looking.remove': "हटाउनुहोस्",
   'looking.reply': "सन्देश",
+  'error.party_small': "कम्तीमा २ जना सामेल हुनुपर्छ",
+  'lobby.party': "साथीसँग? समूह र्‍यान्डम च्याट",
 }
 
 export default ne

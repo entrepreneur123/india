@@ -701,6 +701,8 @@ const ml: Dict = {
   'looking.empty': "ഇപ്പോൾ ആരുമില്ല. ആദ്യം നിങ്ങൾ പോസ്റ്റ് ചെയ്യൂ!",
   'looking.remove': "നീക്കുക",
   'looking.reply': "മെസേജ്",
+  'error.party_small': "കുറഞ്ഞത് 2 പേർ ചേരണം",
+  'lobby.party': "സുഹൃത്തുക്കളോടൊപ്പം? ഗ്രൂപ്പ് റാൻഡം ചാറ്റ്",
 }
 
 export default ml

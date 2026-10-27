@@ -703,6 +703,8 @@ const fr: Dict = {
   'looking.empty': "Personne pour l'instant. Soyez le premier !",
   'looking.remove': "Retirer",
   'looking.reply': "Message",
+  'error.party_small': "Il faut être au moins 2",
+  'lobby.party': "Entre amis ? Chat aléatoire en groupe",
 }
 
 export default fr

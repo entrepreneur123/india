@@ -718,6 +718,8 @@ const uk: Dict = {
   'looking.empty': "Поки нікого. Будьте першими!",
   'looking.remove': "Прибрати",
   'looking.reply': "Написати",
+  'error.party_small': "Потрібно щонайменше 2 учасники",
+  'lobby.party': "З друзями? Випадковий чат компаній",
 }
 
 export default uk

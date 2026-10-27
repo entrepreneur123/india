@@ -714,6 +714,8 @@ const ja: Dict = {
   'looking.empty': "まだ誰もいません。最初に投稿してみましょう！",
   'looking.remove': "取り下げる",
   'looking.reply': "メッセージ",
+  'error.party_small': "2人以上の参加が必要です",
+  'lobby.party': "友達と一緒に？グループでランダムチャット",
 }
 
 export default ja

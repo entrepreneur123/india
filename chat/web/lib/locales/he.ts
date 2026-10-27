@@ -716,6 +716,8 @@ const he: Dict = {
   'looking.empty': "אין כרגע אף אחד. היו הראשונים!",
   'looking.remove': "הסרה",
   'looking.reply': "הודעה",
+  'error.party_small': "צריך לפחות 2 משתתפים",
+  'lobby.party': "עם חברים? צ׳אט אקראי קבוצתי",
 }
 
 export default he

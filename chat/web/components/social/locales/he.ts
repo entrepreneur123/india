@@ -177,6 +177,18 @@ const he: SocialDict = {
   'rooms.sortMembers': "הכי מלא",
   'rooms.sortRelevant': "בשבילך",
   'rooms.sortPopular': "פופולרי",
+  'party.button': "התאמת קבוצות",
+  'party.title': "צ׳אט אקראי קבוצה מול קבוצה",
+  'party.desc': "מי שלוחץ \"אני בפנים\" מחפש יחד ופוגש קבוצה אחרת בצ׳אט קבוצתי חדש.",
+  'party.in': "בפנים",
+  'party.notYet': "עדיין לא",
+  'party.join': "אני בפנים",
+  'party.leave': "אני בחוץ",
+  'party.find': "מצא קבוצה",
+  'party.cancel': "עצירה",
+  'party.searching': "מחפשים קבוצה אחרת…",
+  'party.needTwo': "צריך לפחות 2 — גם החברים צריכים לפתוח כאן התאמת קבוצות.",
+  'party.ready': "{n} בפנים — מוכנים",
 }
 
 export default he

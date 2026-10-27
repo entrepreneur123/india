@@ -176,6 +176,18 @@ const tr: SocialDict = {
   'rooms.sortMembers': "En kalabalık",
   'rooms.sortRelevant': "Sana göre",
   'rooms.sortPopular': "Popüler",
+  'party.button': "Grup eşleşmesi",
+  'party.title': "Gruba karşı grup rastgele sohbet",
+  'party.desc': "Burada \"Ben varım\" diyenler birlikte arar ve yeni bir grup sohbetinde başka bir grupla tanışır.",
+  'party.in': "Var",
+  'party.notYet': "Henüz değil",
+  'party.join': "Ben varım",
+  'party.leave': "Ben yokum",
+  'party.find': "Grup bul",
+  'party.cancel': "Durdur",
+  'party.searching': "Başka bir grup aranıyor…",
+  'party.needTwo': "En az 2 kişi gerekiyor — arkadaşların da burada Grup eşleşmesini açsın.",
+  'party.ready': "{n} kişi var — hazır",
 }
 
 export default tr

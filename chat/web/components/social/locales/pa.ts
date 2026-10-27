@@ -164,6 +164,18 @@ const pa: SocialDict = {
   'rooms.sortMembers': "ਵੱਧ ਲੋਕ",
   'rooms.sortRelevant': "ਤੁਹਾਡੇ ਲਈ",
   'rooms.sortPopular': "ਮਸ਼ਹੂਰ",
+  'party.button': "ਪਾਰਟੀ ਮੈਚ",
+  'party.title': "ਗਰੁੱਪ vs ਗਰੁੱਪ ਰੈਂਡਮ ਚੈਟ",
+  'party.desc': "\"ਮੈਂ ਸ਼ਾਮਲ\" ਦਬਾਉਣ ਵਾਲੇ ਇਕੱਠੇ ਲੱਭਦੇ ਹਨ ਅਤੇ ਨਵੇਂ ਗਰੁੱਪ ਚੈਟ ਵਿੱਚ ਦੂਜੀ ਪਾਰਟੀ ਨੂੰ ਮਿਲਦੇ ਹਨ।",
+  'party.in': "ਸ਼ਾਮਲ",
+  'party.notYet': "ਹਾਲੇ ਨਹੀਂ",
+  'party.join': "ਮੈਂ ਸ਼ਾਮਲ",
+  'party.leave': "ਮੈਂ ਬਾਹਰ",
+  'party.find': "ਪਾਰਟੀ ਲੱਭੋ",
+  'party.cancel': "ਰੋਕੋ",
+  'party.searching': "ਦੂਜੀ ਪਾਰਟੀ ਲੱਭ ਰਹੇ ਹਾਂ…",
+  'party.needTwo': "ਘੱਟੋ-ਘੱਟ 2 ਜਣੇ ਚਾਹੀਦੇ — ਦੋਸਤ ਵੀ ਇੱਥੇ ਪਾਰਟੀ ਮੈਚ ਖੋਲ੍ਹਣ।",
+  'party.ready': "{n} ਸ਼ਾਮਲ — ਤਿਆਰ",
 }
 
 export default pa

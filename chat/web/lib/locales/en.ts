@@ -713,6 +713,8 @@ const en = {
   'looking.empty': "Nobody's looking right now. Be the first!",
   'looking.remove': "Take down",
   'looking.reply': "Message",
+  'error.party_small': "At least 2 of you need to be in",
+  'lobby.party': "With friends? Party random chat",
 } as const
 
 export default en

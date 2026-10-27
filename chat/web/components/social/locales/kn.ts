@@ -169,6 +169,18 @@ const kn: SocialDict = {
   'rooms.sortMembers': "ಹೆಚ್ಚು ಜನ",
   'rooms.sortRelevant': "ನಿಮಗಾಗಿ",
   'rooms.sortPopular': "ಜನಪ್ರಿಯ",
+  'party.button': "ಪಾರ್ಟಿ ಮ್ಯಾಚ್",
+  'party.title': "ಗುಂಪು vs ಗುಂಪು ರ‍್ಯಾಂಡಮ್ ಚಾಟ್",
+  'party.desc': "\"ನಾನು ಸೇರುವೆ\" ಒತ್ತಿದವರು ಒಟ್ಟಾಗಿ ಹುಡುಕಿ, ಹೊಸ ಗುಂಪು ಚಾಟ್‌ನಲ್ಲಿ ಇನ್ನೊಂದು ಗುಂಪನ್ನು ಭೇಟಿಯಾಗುತ್ತಾರೆ.",
+  'party.in': "ಸೇರಿದ್ದಾರೆ",
+  'party.notYet': "ಇನ್ನೂ ಇಲ್ಲ",
+  'party.join': "ನಾನು ಸೇರುವೆ",
+  'party.leave': "ನಾನು ಇಲ್ಲ",
+  'party.find': "ಗುಂಪು ಹುಡುಕಿ",
+  'party.cancel': "ನಿಲ್ಲಿಸಿ",
+  'party.searching': "ಇನ್ನೊಂದು ಗುಂಪು ಹುಡುಕುತ್ತಿದ್ದೇವೆ…",
+  'party.needTwo': "ಕನಿಷ್ಠ 2 ಜನ ಬೇಕು — ಸ್ನೇಹಿತರೂ ಇಲ್ಲಿ ಪಾರ್ಟಿ ಮ್ಯಾಚ್ ತೆರೆಯಬೇಕು.",
+  'party.ready': "{n} ಜನ — ಸಿದ್ಧ",
 }
 
 export default kn

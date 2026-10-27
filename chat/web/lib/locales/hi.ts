@@ -700,6 +700,8 @@ const hi: Dict = {
   'looking.empty': "अभी कोई नहीं। पहले आप पोस्ट करें!",
   'looking.remove': "हटाएँ",
   'looking.reply': "मैसेज",
+  'error.party_small': "कम से कम 2 लोगों का शामिल होना ज़रूरी है",
+  'lobby.party': "दोस्तों के साथ? ग्रुप रैंडम चैट",
 }
 
 export default hi

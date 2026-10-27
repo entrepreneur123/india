@@ -169,6 +169,18 @@ const de: SocialDict = {
   'rooms.sortMembers': "Meiste Leute",
   'rooms.sortRelevant': "Für dich",
   'rooms.sortPopular': "Beliebt",
+  'party.button': "Gruppen-Match",
+  'party.title': "Zufallschat Gruppe gegen Gruppe",
+  'party.desc': "Alle, die hier \"Bin dabei\" tippen, suchen zusammen und treffen eine andere Gruppe in einem neuen Gruppenchat.",
+  'party.in': "Dabei",
+  'party.notYet': "Noch nicht",
+  'party.join': "Bin dabei",
+  'party.leave': "Bin raus",
+  'party.find': "Gruppe finden",
+  'party.cancel': "Stopp",
+  'party.searching': "Suche eine andere Gruppe…",
+  'party.needTwo': "Mindestens 2 müssen dabei sein – Freunde öffnen hier auch Gruppen-Match.",
+  'party.ready': "{n} dabei – startklar",
 }
 
 export default de

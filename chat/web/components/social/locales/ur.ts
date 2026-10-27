@@ -164,6 +164,18 @@ const ur: SocialDict = {
   'rooms.sortMembers': "زیادہ لوگ",
   'rooms.sortRelevant': "آپ کے لیے",
   'rooms.sortPopular': "مقبول",
+  'party.button': "پارٹی میچ",
+  'party.title': "گروپ بمقابلہ گروپ رینڈم چیٹ",
+  'party.desc': "یہاں \"میں شامل\" دبانے والے ساتھ تلاش کرتے ہیں اور نئے گروپ چیٹ میں دوسری پارٹی سے ملتے ہیں۔",
+  'party.in': "شامل",
+  'party.notYet': "ابھی نہیں",
+  'party.join': "میں شامل",
+  'party.leave': "میں باہر",
+  'party.find': "پارٹی تلاش کریں",
+  'party.cancel': "روکیں",
+  'party.searching': "دوسری پارٹی تلاش کر رہے ہیں…",
+  'party.needTwo': "کم از کم 2 لوگ چاہییں — دوست بھی یہاں پارٹی میچ کھولیں۔",
+  'party.ready': "{n} شامل — تیار",
 }
 
 export default ur

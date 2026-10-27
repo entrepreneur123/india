@@ -176,6 +176,18 @@ const ko: SocialDict = {
   'rooms.sortMembers': "인원순",
   'rooms.sortRelevant': "관련도순",
   'rooms.sortPopular': "인기순",
+  'party.button': "파티 매칭",
+  'party.title': "다수 대 다수 랜덤채팅",
+  'party.desc': "여기서 '참여'를 누른 사람들이 한 팀이 되어, 다른 팀과 새 단톡방에서 만나요.",
+  'party.in': "참여",
+  'party.notYet': "아직",
+  'party.join': "참여하기",
+  'party.leave': "빠지기",
+  'party.find': "상대 팀 찾기",
+  'party.cancel': "그만 찾기",
+  'party.searching': "상대 팀을 찾는 중…",
+  'party.needTwo': "최소 2명이 참여해야 해요. 친구도 이 단톡방에서 '파티 매칭'을 열어야 해요.",
+  'party.ready': "{n}명 참여 — 출발 준비 완료",
 }
 
 export default ko

@@ -703,6 +703,8 @@ const ro: Dict = {
   'looking.empty': "Nimeni deocamdată. Fii primul!",
   'looking.remove': "Retrage",
   'looking.reply': "Mesaj",
+  'error.party_small': "Trebuie să fiți cel puțin 2",
+  'lobby.party': "Cu prietenii? Chat aleatoriu de grup",
 }
 
 export default ro

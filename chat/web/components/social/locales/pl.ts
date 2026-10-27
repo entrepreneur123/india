@@ -171,6 +171,18 @@ const pl: SocialDict = {
   'rooms.sortMembers': "Najwięcej osób",
   'rooms.sortRelevant': "Dla ciebie",
   'rooms.sortPopular': "Popularne",
+  'party.button': "Dopasowanie ekip",
+  'party.title': "Losowy czat ekipa na ekipę",
+  'party.desc': "Każdy, kto kliknie \"Wchodzę\", szuka razem i poznaje inną ekipę w nowym czacie.",
+  'party.in': "Wchodzi",
+  'party.notYet': "Jeszcze nie",
+  'party.join': "Wchodzę",
+  'party.leave': "Wychodzę",
+  'party.find': "Znajdź ekipę",
+  'party.cancel': "Zatrzymaj",
+  'party.searching': "Szukam innej ekipy…",
+  'party.needTwo': "Potrzeba co najmniej 2 osób — znajomi też otwierają tu Dopasowanie ekip.",
+  'party.ready': "{n} w środku — gotowi",
 }
 
 export default pl

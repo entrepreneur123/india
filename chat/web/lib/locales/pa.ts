@@ -679,6 +679,8 @@ const pa: Dict = {
   'looking.empty': "ਹੁਣ ਕੋਈ ਨਹੀਂ। ਪਹਿਲਾਂ ਤੁਸੀਂ ਪੋਸਟ ਕਰੋ!",
   'looking.remove': "ਹਟਾਓ",
   'looking.reply': "ਸੁਨੇਹਾ",
+  'error.party_small': "ਘੱਟੋ-ਘੱਟ 2 ਜਣਿਆਂ ਦਾ ਸ਼ਾਮਲ ਹੋਣਾ ਜ਼ਰੂਰੀ ਹੈ",
+  'lobby.party': "ਦੋਸਤਾਂ ਨਾਲ? ਗਰੁੱਪ ਰੈਂਡਮ ਚੈਟ",
 }
 
 export default pa

@@ -701,6 +701,8 @@ const de: Dict = {
   'looking.empty': "Gerade sucht niemand. Sei die erste Person!",
   'looking.remove': "Entfernen",
   'looking.reply': "Nachricht",
+  'error.party_small': "Mindestens 2 von euch müssen dabei sein",
+  'lobby.party': "Mit Freunden? Gruppen-Zufallschat",
 }
 
 export default de

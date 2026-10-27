@@ -169,6 +169,18 @@ const ta: SocialDict = {
   'rooms.sortMembers': "அதிக நபர்கள்",
   'rooms.sortRelevant': "உங்களுக்காக",
   'rooms.sortPopular': "பிரபலம்",
+  'party.button': "குழு பொருத்தம்",
+  'party.title': "குழு vs குழு ரேண்டம் அரட்டை",
+  'party.desc': "\"நான் சேர்கிறேன்\" அழுத்தியவர்கள் சேர்ந்து தேடி, புதிய குழு அரட்டையில் இன்னொரு குழுவைச் சந்திப்பார்கள்.",
+  'party.in': "சேர்ந்தார்",
+  'party.notYet': "இன்னும் இல்லை",
+  'party.join': "நான் சேர்கிறேன்",
+  'party.leave': "நான் விலகுகிறேன்",
+  'party.find': "குழுவைத் தேடு",
+  'party.cancel': "நிறுத்து",
+  'party.searching': "இன்னொரு குழுவைத் தேடுகிறோம்…",
+  'party.needTwo': "குறைந்தது 2 பேர் தேவை — நண்பர்களும் இங்கே குழு பொருத்தத்தைத் திறக்க வேண்டும்.",
+  'party.ready': "{n} பேர் — தயார்",
 }
 
 export default ta

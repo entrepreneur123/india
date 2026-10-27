@@ -169,6 +169,18 @@ const te: SocialDict = {
   'rooms.sortMembers': "ఎక్కువ మంది",
   'rooms.sortRelevant': "మీ కోసం",
   'rooms.sortPopular': "ప్రజాదరణ",
+  'party.button': "పార్టీ మ్యాచ్",
+  'party.title': "గుంపు vs గుంపు రాండమ్ చాట్",
+  'party.desc': "\"నేను ఉన్నా\" నొక్కినవారు కలిసి వెతికి, కొత్త గ్రూప్ చాట్‌లో మరో గుంపును కలుస్తారు.",
+  'party.in': "ఉన్నారు",
+  'party.notYet': "ఇంకా లేదు",
+  'party.join': "నేను ఉన్నా",
+  'party.leave': "నేను లేను",
+  'party.find': "గుంపును వెతుకు",
+  'party.cancel': "ఆపు",
+  'party.searching': "మరో గుంపు కోసం వెతుకుతున్నాం…",
+  'party.needTwo': "కనీసం 2 మంది కావాలి — స్నేహితులు కూడా ఇక్కడ పార్టీ మ్యాచ్ తెరవాలి.",
+  'party.ready': "{n} మంది — సిద్ధం",
 }
 
 export default te

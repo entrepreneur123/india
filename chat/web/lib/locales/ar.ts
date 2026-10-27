@@ -722,6 +722,8 @@ const ar: Dict = {
   'looking.empty': "لا أحد يبحث الآن. كن الأول!",
   'looking.remove': "إزالة",
   'looking.reply': "رسالة",
+  'error.party_small': "يجب أن ينضم شخصان على الأقل",
+  'lobby.party': "مع أصدقائك؟ دردشة عشوائية جماعية",
 }
 
 export default ar

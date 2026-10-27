@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, EllipsisVertical, LogOut, Pencil, UserPlus } from 'lucide-react'
-import type { GroupLine } from '@/lib/backend'
+import { ArrowLeft, Check, EllipsisVertical, LogOut, Pencil, Shuffle, UserPlus } from 'lucide-react'
+import type { GroupChat, GroupLine, PartyState } from '@/lib/backend'
+import { mutate } from 'swr'
+import { savedFlag } from '@/components/screens/random/scope'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -32,7 +34,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
   const { data: groups, mutate } = useGroups()
   const g = groups?.find((x) => x.id === groupId)
   const [lines, setLines] = useState<GroupLine[] | null>(null)
-  const [sheet, setSheet] = useState<'menu' | 'add' | 'rename' | null>(null)
+  const [sheet, setSheet] = useState<'menu' | 'add' | 'rename' | 'party' | null>(null)
   const listRef = useRef<HTMLUListElement>(null)
   const note = useGroupLineText()
 
@@ -97,6 +99,9 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
           <h1 className="truncate text-base font-bold">{g?.title ?? ''}</h1>
           <p className="truncate text-xs text-muted-foreground">{members.map((x) => (x.id === me.id ? st('group.you') : x.name)).join(', ')}</p>
         </div>
+        <Button variant="secondary" size="sm" onClick={() => setSheet('party')} aria-label={st('party.button')} title={st('party.button')}>
+          <Shuffle className="size-4" aria-hidden /> <span className="hidden sm:inline">{st('party.button')}</span>
+        </Button>
         <Button size="icon" variant="ghost" onClick={() => setSheet('menu')} aria-label={t('voice.more')}>
           <EllipsisVertical className="size-5" aria-hidden />
         </Button>
@@ -168,9 +173,101 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
           ))}
         </div>
       </Modal>
+      {sheet === 'party' && g ? <PartySheet groupId={groupId} members={members} onClose={() => setSheet(null)} /> : null}
       <AddSheet open={sheet === 'add'} onClose={() => setSheet(null)} groupId={groupId} exclude={members.map((x) => x.id)} onDone={() => void mutate()} />
       <RenameSheet open={sheet === 'rename'} onClose={() => setSheet(null)} groupId={groupId} title={g?.title ?? ''} onDone={() => void mutate()} />
     </div>
+  )
+}
+
+/**
+ * 49: many-to-many random chat. Everyone in this group who has the sheet open and says "I'm in" is the party; one
+ * search pairs it with another party (any size) and everybody lands in a new group chat. The sheet is my heartbeat:
+ * closing it takes me out (and stops my search).
+ */
+function PartySheet({ groupId, members, onClose }: { groupId: string; members: GroupChat['members']; onClose: () => void }) {
+  const backend = useBackend()
+  const toast = useToast()
+  const { st } = useSocialT()
+  const { me, openGroup } = useApp()
+  const [ready, setReady] = useState(true)
+  const [state, setState] = useState<PartyState | null>(null)
+  const [searching, setSearching] = useState(false)
+  const live = useRef({ ready, searching })
+  live.current = { ready, searching }
+  const [everywhere] = useState(() => savedFlag('yaari_meet_global'))
+
+  // Every 2 s: my "I'm in" (or out), the party's state, and — while I search — one more search request.
+  useEffect(() => {
+    let alive = true
+    const tick = async () => {
+      try {
+        const s = await backend.partyState(groupId, live.current.ready)
+        if (!alive) return
+        setState(s)
+        const found = s.matched ?? (live.current.searching ? await backend.partySearch(groupId, everywhere) : null)
+        if (alive && found) {
+          alive = false
+          void mutate('groups')
+          onClose()
+          openGroup(found)
+        }
+      } catch (err) {
+        if (!alive) return
+        setSearching(false)
+        toast.error(err)
+      }
+    }
+    void tick()
+    const id = setInterval(() => void tick(), 2000)
+    return () => {
+      alive = false
+      clearInterval(id)
+      void backend.partyState(groupId, false).catch(() => undefined)
+      if (live.current.searching) void backend.partyCancel(groupId).catch(() => undefined)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backend, groupId])
+
+  const inCount = state?.ready.length ?? 0
+  const busy = searching || !!state?.searching
+  return (
+    <Modal open onClose={onClose} variant="sheet" title={st('party.title')} description={st('party.desc')}>
+      <div className="flex flex-col gap-4 p-6 pt-3">
+        <ul className="flex flex-col gap-1">
+          {members.map((m) => {
+            const on = state?.ready.includes(m.id) ?? false
+            return (
+              <li key={m.id} className="flex items-center gap-3 rounded-xl p-1.5">
+                <UserAvatar userId={m.id} name={m.name} src={m.photoUrl} size={36} />
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{m.id === me.id ? st('group.you') : m.name}</span>
+                <span className={cn('flex items-center gap-1 text-xs font-semibold', on ? 'text-primary-text' : 'text-muted-foreground')}>
+                  {on ? <Check className="size-3.5" strokeWidth={3} aria-hidden /> : null}
+                  {on ? st('party.in') : st('party.notYet')}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+        <div className="flex gap-2">
+          <Button variant="secondary" size="lg" className="flex-1" disabled={busy} onClick={() => setReady((r) => !r)}>
+            {ready ? st('party.leave') : st('party.join')}
+          </Button>
+          {busy ? (
+            <Button variant="outline" size="lg" className="flex-1" onClick={() => (setSearching(false), void backend.partyCancel(groupId).catch(() => undefined))}>
+              {st('party.cancel')}
+            </Button>
+          ) : (
+            <Button variant="brand" size="lg" className="flex-1" disabled={!ready || inCount < 2} onClick={() => setSearching(true)}>
+              <Shuffle className="size-4.5" aria-hidden /> {st('party.find')}
+            </Button>
+          )}
+        </div>
+        <p className="text-center text-xs text-muted-foreground" aria-live="polite">
+          {busy ? st('party.searching') : inCount < 2 ? st('party.needTwo') : st('party.ready', { n: inCount })}
+        </p>
+      </div>
+    </Modal>
   )
 }
 

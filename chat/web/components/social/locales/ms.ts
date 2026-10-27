@@ -175,6 +175,18 @@ const ms: SocialDict = {
   'rooms.sortMembers': "Paling ramai",
   'rooms.sortRelevant': "Untuk anda",
   'rooms.sortPopular': "Popular",
+  'party.button': "Padanan kumpulan",
+  'party.title': "Sembang rawak kumpulan dengan kumpulan",
+  'party.desc': "Sesiapa yang tekan \"Saya ikut\" mencari bersama dan berjumpa kumpulan lain dalam sembang baharu.",
+  'party.in': "Ikut",
+  'party.notYet': "Belum",
+  'party.join': "Saya ikut",
+  'party.leave': "Saya tak ikut",
+  'party.find': "Cari kumpulan",
+  'party.cancel': "Berhenti",
+  'party.searching': "Mencari kumpulan lain…",
+  'party.needTwo': "Sekurang-kurangnya 2 orang — rakan juga buka Padanan kumpulan di sini.",
+  'party.ready': "{n} ikut — sedia",
 }
 
 export default ms

@@ -175,6 +175,18 @@ const fil: SocialDict = {
   'rooms.sortMembers': "Pinakamarami",
   'rooms.sortRelevant': "Para sa iyo",
   'rooms.sortPopular': "Sikat",
+  'party.button': "Party match",
+  'party.title': "Random chat ng grupo sa grupo",
+  'party.desc': "Ang mga pipindot ng \"Sali ako\" ay sabay maghahanap at makikilala ang ibang grupo sa bagong group chat.",
+  'party.in': "Sali",
+  'party.notYet': "Hindi pa",
+  'party.join': "Sali ako",
+  'party.leave': "Labas ako",
+  'party.find': "Maghanap ng grupo",
+  'party.cancel': "Ihinto",
+  'party.searching': "Naghahanap ng ibang grupo…",
+  'party.needTwo': "Kailangan ng 2 man lang — buksan din ng mga kaibigan ang Party match dito.",
+  'party.ready': "{n} kasali — handa na",
 }
 
 export default fil

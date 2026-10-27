@@ -679,6 +679,8 @@ const ur: Dict = {
   'looking.empty': "ابھی کوئی نہیں۔ پہلے آپ پوسٹ کریں!",
   'looking.remove': "ہٹائیں",
   'looking.reply': "پیغام",
+  'error.party_small': "کم از کم 2 لوگوں کا شامل ہونا ضروری ہے",
+  'lobby.party': "دوستوں کے ساتھ؟ گروپ رینڈم چیٹ",
 }
 
 export default ur

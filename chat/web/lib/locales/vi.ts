@@ -700,6 +700,8 @@ const vi: Dict = {
   'looking.empty': "Chưa có ai. Hãy là người đầu tiên!",
   'looking.remove': "Gỡ xuống",
   'looking.reply': "Nhắn tin",
+  'error.party_small': "Cần ít nhất 2 người tham gia",
+  'lobby.party': "Cùng bạn bè? Trò chuyện ngẫu nhiên theo nhóm",
 }
 
 export default vi

@@ -61,6 +61,7 @@ import {
   type VoiceSystemEvent,
   type LinkMeta,
   type LookingPost,
+  type PartyState,
 } from './backend'
 import { safeUrl, shareable } from './links'
 import { retryImport } from './retry-import'
@@ -98,7 +99,7 @@ const CODES = [
   'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
-  'contact_invalid', 'not_friends', 'too_many_posts', 'offline',
+  'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small',
 ]
 
 type PersonRowRaw = { id: string; handle: string; name: string; photo_path: string | null }
@@ -877,6 +878,19 @@ export class SupabaseBackend implements Backend {
 
   async postsOf(userId: string, before?: string): Promise<FeedPost[]> {
     return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
+  }
+
+  async partyState(groupId: string, ready: boolean): Promise<PartyState> {
+    const s = await this.rpc<{ ready: string[]; searching: boolean; matched: string | null }>('party_state', { p_group: groupId, p_ready: ready })
+    return { ready: s.ready ?? [], searching: !!s.searching, matched: s.matched ?? null }
+  }
+
+  async partySearch(groupId: string, everywhere: boolean) {
+    return this.rpc<string | null>('party_search', { p_group: groupId, p_global: everywhere })
+  }
+
+  async partyCancel(groupId: string) {
+    await this.rpc('party_cancel', { p_group: groupId })
   }
 
   async lookingFor(country?: string | null): Promise<LookingPost[]> {

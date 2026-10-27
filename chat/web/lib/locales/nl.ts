@@ -701,6 +701,8 @@ const nl: Dict = {
   'looking.empty': "Er zoekt nu niemand. Wees de eerste!",
   'looking.remove': "Weghalen",
   'looking.reply': "Bericht",
+  'error.party_small': "Minstens 2 van jullie moeten meedoen",
+  'lobby.party': "Met vrienden? Willekeurige groepschat",
 }
 
 export default nl

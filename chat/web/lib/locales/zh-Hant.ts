@@ -714,6 +714,8 @@ const zhHant: Dict = {
   'looking.empty': "現在還沒有人發布，來當第一個吧！",
   'looking.remove': "撤下",
   'looking.reply': "私訊",
+  'error.party_small': "至少需要 2 人參加",
+  'lobby.party': "和朋友一起？多人隨機聊天",
 }
 
 export default zhHant

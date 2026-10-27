@@ -170,6 +170,18 @@ const bn: SocialDict = {
   'rooms.sortMembers': "বেশি লোক",
   'rooms.sortRelevant': "আপনার জন্য",
   'rooms.sortPopular': "জনপ্রিয়",
+  'party.button': "পার্টি ম্যাচ",
+  'party.title': "দল বনাম দল র‍্যান্ডম চ্যাট",
+  'party.desc': "এখানে \"আমি আছি\" চাপা সবাই একসাথে খুঁজবে, নতুন গ্রুপ চ্যাটে আরেক দলের সাথে দেখা হবে।",
+  'party.in': "আছে",
+  'party.notYet': "এখনো না",
+  'party.join': "আমি আছি",
+  'party.leave': "আমি নেই",
+  'party.find': "দল খুঁজুন",
+  'party.cancel': "থামান",
+  'party.searching': "আরেকটি দল খোঁজা হচ্ছে…",
+  'party.needTwo': "অন্তত ২ জন দরকার — বন্ধুরাও এখানে পার্টি ম্যাচ খুলুক।",
+  'party.ready': "{n} জন আছে — প্রস্তুত",
 }
 
 export default bn

@@ -701,6 +701,8 @@ const te: Dict = {
   'looking.empty': "ఇప్పుడు ఎవరూ లేరు. మొదట మీరే పోస్ట్ చేయండి!",
   'looking.remove': "తీసేయి",
   'looking.reply': "మెసేజ్",
+  'error.party_small': "కనీసం 2 మంది చేరాలి",
+  'lobby.party': "స్నేహితులతోనా? గుంపు రాండమ్ చాట్",
 }
 
 export default te

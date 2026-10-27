@@ -714,6 +714,8 @@ const sw: Dict = {
   'looking.empty': "Hakuna anayetafuta sasa. Kuwa wa kwanza!",
   'looking.remove': "Ondoa",
   'looking.reply': "Ujumbe",
+  'error.party_small': "Angalau 2 wanahitaji kujiunga",
+  'lobby.party': "Na marafiki? Gumzo la nasibu la vikundi",
 }
 
 export default sw

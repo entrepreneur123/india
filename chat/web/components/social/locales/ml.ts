@@ -169,6 +169,18 @@ const ml: SocialDict = {
   'rooms.sortMembers': "കൂടുതൽ ആളുകൾ",
   'rooms.sortRelevant': "നിങ്ങൾക്കായി",
   'rooms.sortPopular': "ജനപ്രിയം",
+  'party.button': "പാർട്ടി മാച്ച്",
+  'party.title': "ഗ്രൂപ്പ് vs ഗ്രൂപ്പ് റാൻഡം ചാറ്റ്",
+  'party.desc': "\"ഞാനുണ്ട്\" അമർത്തിയവർ ഒരുമിച്ച് തിരഞ്ഞ് പുതിയ ഗ്രൂപ്പ് ചാറ്റിൽ മറ്റൊരു ഗ്രൂപ്പിനെ കാണും.",
+  'party.in': "ഉണ്ട്",
+  'party.notYet': "ഇതുവരെ ഇല്ല",
+  'party.join': "ഞാനുണ്ട്",
+  'party.leave': "ഞാനില്ല",
+  'party.find': "ഗ്രൂപ്പിനെ തിരയുക",
+  'party.cancel': "നിർത്തുക",
+  'party.searching': "മറ്റൊരു ഗ്രൂപ്പിനെ തിരയുന്നു…",
+  'party.needTwo': "കുറഞ്ഞത് 2 പേർ വേണം — സുഹൃത്തുക്കളും ഇവിടെ പാർട്ടി മാച്ച് തുറക്കണം.",
+  'party.ready': "{n} പേർ — തയ്യാർ",
 }
 
 export default ml

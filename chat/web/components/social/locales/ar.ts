@@ -179,6 +179,18 @@ const ar: SocialDict = {
   'rooms.sortMembers': "الأكثر عددًا",
   'rooms.sortRelevant': "لك",
   'rooms.sortPopular': "الأشهر",
+  'party.button': "مطابقة الفرق",
+  'party.title': "دردشة عشوائية بين الفرق",
+  'party.desc': "من يضغط \"أنا معكم\" هنا يبحث معًا ويلتقي فريقًا آخر في دردشة جماعية جديدة.",
+  'party.in': "منضم",
+  'party.notYet': "ليس بعد",
+  'party.join': "أنا معكم",
+  'party.leave': "لست معكم",
+  'party.find': "ابحث عن فريق",
+  'party.cancel': "إيقاف",
+  'party.searching': "نبحث عن فريق آخر…",
+  'party.needTwo': "يلزم اثنان على الأقل — ليفتح أصدقاؤك مطابقة الفرق هنا أيضًا.",
+  'party.ready': "{n} منضمون — جاهزون",
 }
 
 export default ar

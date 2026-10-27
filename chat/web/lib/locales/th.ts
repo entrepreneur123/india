@@ -714,6 +714,8 @@ const th: Dict = {
   'looking.empty': "ยังไม่มีใคร โพสต์เป็นคนแรกเลย!",
   'looking.remove': "เอาลง",
   'looking.reply': "ส่งข้อความ",
+  'error.party_small': "ต้องเข้าร่วมอย่างน้อย 2 คน",
+  'lobby.party': "มากับเพื่อน? แชทสุ่มแบบกลุ่ม",
 }
 
 export default th

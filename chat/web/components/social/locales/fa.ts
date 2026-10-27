@@ -175,6 +175,18 @@ const fa: SocialDict = {
   'rooms.sortMembers': "پرجمعیت‌ترین",
   'rooms.sortRelevant': "برای شما",
   'rooms.sortPopular': "محبوب",
+  'party.button': "تطبیق گروهی",
+  'party.title': "چت تصادفی گروه با گروه",
+  'party.desc': "هر کس اینجا «پایه‌ام» را بزند با هم جستجو می‌کنید و با گروه دیگری در یک چت گروهی تازه آشنا می‌شوید.",
+  'party.in': "پایه",
+  'party.notYet': "هنوز نه",
+  'party.join': "پایه‌ام",
+  'party.leave': "نیستم",
+  'party.find': "پیدا کردن گروه",
+  'party.cancel': "توقف",
+  'party.searching': "در حال یافتن گروه دیگر…",
+  'party.needTwo': "دست‌کم ۲ نفر لازم است — دوستان هم اینجا تطبیق گروهی را باز کنند.",
+  'party.ready': "{n} نفر پایه — آماده",
 }
 
 export default fa

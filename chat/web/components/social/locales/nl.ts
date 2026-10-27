@@ -169,6 +169,18 @@ const nl: SocialDict = {
   'rooms.sortMembers': "Meeste mensen",
   'rooms.sortRelevant': "Voor jou",
   'rooms.sortPopular': "Populair",
+  'party.button': "Groepsmatch",
+  'party.title': "Willekeurige groepschat",
+  'party.desc': "Wie hier op \"Ik doe mee\" tikt, zoekt samen en ontmoet een andere groep in een nieuwe groepschat.",
+  'party.in': "Doet mee",
+  'party.notYet': "Nog niet",
+  'party.join': "Ik doe mee",
+  'party.leave': "Ik doe niet mee",
+  'party.find': "Groep zoeken",
+  'party.cancel': "Stoppen",
+  'party.searching': "Zoeken naar een andere groep…",
+  'party.needTwo': "Minstens 2 nodig — vrienden openen hier ook Groepsmatch.",
+  'party.ready': "{n} doen mee — klaar",
 }
 
 export default nl

@@ -328,6 +328,13 @@ export interface PersonRow {
   photoUrl: string | null
 }
 
+/** 49 (076): a group's party search — who said "I'm in", whether it is searching, and the chat it was paired into. */
+export interface PartyState {
+  ready: string[]
+  searching: boolean
+  matched: string | null
+}
+
 /** 52 (075): a "looking for…" line in Explore, open for 24 hours to people of its country. */
 export interface LookingPost {
   id: number
@@ -926,6 +933,14 @@ export interface Backend {
   postsOf(userId: string, before?: string): Promise<FeedPost[]>
   /** 072: posts I may see with this hashtag (with or without "#"), newest first, 30 at a time. */
   postsByTag(tag: string, before?: string): Promise<FeedPost[]>
+  /**
+   * 49 (076): a friends' group as a party. partyState is also my heartbeat ("I'm in" while `ready`, every few
+   * seconds); partySearch searches with everyone in (2 or more, else party_small) and returns the new chat with the
+   * other party once paired; partyCancel stops.
+   */
+  partyState(groupId: string, ready: boolean): Promise<PartyState>
+  partySearch(groupId: string, everywhere: boolean): Promise<string | null>
+  partyCancel(groupId: string): Promise<void>
   /** 52: open "looking for" lines of a country (null: mine), newest first. */
   lookingFor(country?: string | null): Promise<LookingPost[]>
   /** Errors: bad_request, slow_down (3 open or 10 a day), verify_required, banned. */
