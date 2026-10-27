@@ -559,11 +559,17 @@ class Glyphs:
         cx, cy = x * self.W, y * self.H
         own = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
                     and c[3] < self.H * 0.1), None)
-        if own is None or len(self.templates) < 10:
+        if len(self.templates) < 10:
             return None
-        left = [c for c in self.cells if c[1] <= cy <= c[1] + c[3] and c[0] + c[2] <= own[0] + 2 and c[3] < self.H * 0.1]
-        box = max(left, key=lambda c: c[0]) if left else (own[0] - own[2], own[1], own[2] - 6, own[3])
-        crop = self.img[box[1]:box[1] + box[3], max(0, box[0]):box[0] + box[2]]
+        if own is not None:
+            left = [c for c in self.cells if c[1] <= cy <= c[1] + c[3] and c[0] + c[2] <= own[0] + 2 and c[3] < self.H * 0.1]
+            box = max(left, key=lambda c: c[0]) if left else (own[0] - own[2], own[1], own[2] - 6, own[3])
+        else:  # no box found around the number: the strip left of it, as wide as a "Series" column
+            half = w * self.W * 0.6
+            box = (int(cx - self.W * 0.3), int(cy - half * 0.6), int(self.W * 0.3 - half), int(half * 1.2))
+        crop = self.img[max(0, box[1]):box[1] + box[3], max(0, box[0]):box[0] + box[2]]
+        if crop.size == 0:
+            return None
         import cv2
         _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
