@@ -59,16 +59,32 @@ def reading(first=("2142", "GL-00"), fourth=("2013", "4179"), heads=None):
 
 
 def test_readings_must_agree_number_by_number():
-    got = mh._agree([reading(), reading(), reading(first=("9142", "GL-00"))])   # one misread 1st prize: outvoted
+    got = mh._agree([reading()] * 3 + [reading(first=("9142", "GL-00"))])   # one misread 1st prize: outvoted 3:1
     assert got["tiers"] == [{"rank": "1", "prize": 10000, "numbers": ["GL-00 2142"]},
                             {"rank": "2", "prize": 5000, "numbers": ["2273"]},
                             {"rank": "3", "prize": 2000, "numbers": ["2013", "4179"]}]
-    with pytest.raises(mh.MaharashtraError):  # two against two: not published
-        mh._agree([reading(), reading(), reading(first=("9142", "GL-00")), reading(first=("9142", "GL-00"))])
+    with pytest.raises(mh.MaharashtraError):  # 2:1 is too close for a number with no printed order to check
+        mh._agree([reading(), reading(), reading(first=("9142", "GL-00"))])
+    with pytest.raises(mh.MaharashtraError):  # 4:2 as well
+        mh._agree([reading()] * 4 + [reading(first=("9142", "GL-00"))] * 2)
     with pytest.raises(mh.MaharashtraError):  # a number the readings missed: the printed count does not match
         mh._agree([reading(fourth=("2013",))] * 3)
     with pytest.raises(mh.MaharashtraError):  # the 1st prize must name a series printed on the sheet
         mh._agree([reading(first=("2142", "XX-00"))] * 3)
+
+
+def test_a_split_place_in_a_random_tier_is_settled_by_the_printed_order():
+    vals = list(range(1050, 1150))
+    def run(misread):
+        r = reading(heads=[{"rank": "1", "top": 0.23, "prize": 10000, "count": None},
+                           {"rank": "2", "top": 0.55, "prize": 250, "count": 100}])
+        r["numbers"] = [r["numbers"][0]] + [
+            (("4" + n[1:]) if misread and n == "1063" else n, x, y, w, None, False) for n, x, y, w in grid(vals, 5)]
+        return r
+    got = mh._agree([run(True)] * 3 + [run(False)] * 2)    # 4063 x3, 1063 x2: only 1063 fits the order
+    assert got["tiers"][1]["numbers"] == [str(v) for v in vals]
+    with pytest.raises(mh.MaharashtraError):              # read once: not enough
+        mh._agree([run(True)] * 3 + [run(False)])
 
 
 def test_update_links_the_pdf_when_a_sheet_does_not_read(tmp_path, monkeypatch):

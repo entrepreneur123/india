@@ -440,19 +440,19 @@ def _agree(runs: list[dict]) -> dict:
     for c in clusters:
         if len(c["votes"]) < 2:
             continue  # seen once: noise, or a number the count check below will miss
-        v = _vote([n for n, _ in c["votes"].values() if n])
-        cand = {n for n, k in Counter(n for n, _ in c["votes"].values() if n).items() if k >= 2}
-        if v is None and not cand:
-            raise MaharashtraError(f"readings disagree on a number near {c['x']:.2f},{c['y']:.2f}")
-        ser = _vote([s for n, s in c["votes"].values() if n == v and s]) if v else None
-        numbers.append((v, c["x"], c["y"], c["w"], ser, cand))
+        counts = Counter(n for n, _ in c["votes"].values() if n)
+        # Unanimous places are settled here; the others are settled per tier below.
+        v = next(iter(counts)) if len(counts) == 1 else None
+        numbers.append((v, c["x"], c["y"], c["w"], c["votes"], counts))
 
     tiers = []
     for j, h in enumerate(headings):
         end = headings[j + 1]["top"] if j + 1 < len(headings) else 2
         mine = [x for x in numbers if h["top"] <= x[2] < end]
-        if any(x[0] is None for x in mine):
+        if len(mine) >= 20:
             mine = _settle_by_order(mine, h["rank"])
+        else:
+            mine = [_settle_small(x, h["rank"]) for x in mine]
         if not h["prize"]:
             raise MaharashtraError(f"{h['rank']} prize: amount unreadable")
         if h["rank"] == "1":
@@ -478,12 +478,27 @@ def _agree(runs: list[dict]) -> dict:
     return {"head": head, "tiers": tiers}
 
 
+def _with_series(x: tuple, v: str) -> tuple:
+    """(value, x, y, w, series): the series most readings of `v` gave, for the 1st/consolation."""
+    ser = _vote([s for n, s in x[4].values() if n == v and s])
+    return (v, x[1], x[2], x[3], ser)
+
+
+def _settle_small(x: tuple, rank: str) -> tuple:
+    """A tier with no printed order to check (1st, consolation, 10-number tiers): a value needs at
+    least three readings and three times the readings of any other value (3:1 passes, 4:2 does not).
+    The same engine can repeat a misread, so a close vote is never trusted here."""
+    c = x[5].most_common()
+    if not c or c[0][1] < 3 or (len(c) > 1 and c[0][1] < 3 * c[1][1]):
+        raise MaharashtraError(f"{rank} prize: readings disagree on a number ({dict(x[5])})")
+    return _with_series(x, c[0][0])
+
+
 def _settle_by_order(mine: list, rank: str) -> list:
-    """A place the readings split on (4139 x3, 1139 x2, 1189 x1) is settled only in a random tier,
-    whose numbers are printed in ascending order: the one value read at least twice that fits
-    between its settled neighbours wins. If none or more than one fits, the sheet is not published."""
-    if len(mine) < 20:
-        raise MaharashtraError(f"{rank} prize: readings disagree on a number")
+    """A random tier is printed in ascending order, column after column. Places every reading read
+    the same way are taken; a place the readings split on (4139 x3, 1139 x2) takes the one value,
+    read at least twice, that fits between its unanimous neighbours. A majority is not enough here:
+    the same misread can repeat. If none or more than one value fits, the sheet is not published."""
     pts = sorted(mine, key=lambda n: n[2])
     rows, cur = [], [pts[0]]
     for p in pts[1:]:
@@ -494,19 +509,18 @@ def _settle_by_order(mine: list, rank: str) -> list:
     rows.append(cur)
     rows = [sorted(r, key=lambda n: n[1]) for r in rows]
     seq = [r[c] for c in range(max(len(r) for r in rows)) for r in rows if c < len(r)]
-    vals = [int(x[0]) if x[0] else None for x in seq]
+    sure = [int(x[0]) if x[0] else None for x in seq]
     out = []
     for k, x in enumerate(seq):
         if x[0] is not None:
-            out.append(x)
+            out.append(_with_series(x, x[0]))
             continue
-        lo = next((v for v in reversed(vals[:k]) if v is not None), -1)
-        hi = next((v for v in vals[k + 1:] if v is not None), 10_000)
-        fit = [n for n in x[5] if lo < int(n) < hi]
+        lo = next((v for v in reversed(sure[:k]) if v is not None), -1)
+        hi = next((v for v in sure[k + 1:] if v is not None), 10_000)
+        fit = [n for n, c in x[5].items() if c >= 2 and lo < int(n) < hi]
         if len(fit) != 1:
-            raise MaharashtraError(f"{rank} prize: readings disagree on a number ({sorted(x[5])} between {lo} and {hi})")
-        vals[k] = int(fit[0])
-        out.append((fit[0],) + tuple(x[1:]))
+            raise MaharashtraError(f"{rank} prize: readings disagree on a number ({dict(x[5])} between {lo} and {hi})")
+        out.append(_with_series(x, fit[0]))
     return out
 
 
