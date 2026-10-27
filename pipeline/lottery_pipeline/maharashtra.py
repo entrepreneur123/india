@@ -28,7 +28,7 @@ LIST_URL = SITE + "mhlotteryresults.aspx"
 
 ORD = {"1": "1st", "2": "2nd", "3": "3rd"}
 # "5th" is sometimes read "Sth", "4th" "Ath", "1st" "ist"/"lst": the ordinal is normalised below.
-_TIER = re.compile(r"\b([0-9SAIil]{1,2})\s*(?:st|nd|rd|th)\b[^|]{0,14}?[Pp]rize|\b([Cc]onsolation)\s*[Pp]rize")
+_TIER = re.compile(r"\b([0-9SAIil]{1,2})\s*(st|nd|rd|th)\b[^|]{0,14}?[Pp]rize|\b([Cc]onsolation)\s*[Pp]rize")
 _ORD_FIX = str.maketrans({"S": "5", "A": "4", "I": "1", "i": "1", "l": "1"})
 _AMOUNT = re.compile(r"(?i)rs\.?\s*([\d,]{3,})")
 _COUNT = re.compile(r"(?i)\b(\d{1,3})\s*(?:random\s*)?numbers?\b")
@@ -182,6 +182,15 @@ def _numbers_in(word) -> list[tuple[str, float, float]]:
     return [(g, x + w * (2 * i + 1) / (2 * k), y + h / 2) for i, g in enumerate(groups)]
 
 
+def _ordinal(digits: str, suffix: str) -> str:
+    """'5th' -> '5'; OCR slips: 'Sth' -> '5', 'ist' -> '1', '4st' -> '1' (only 1 ends in -st)."""
+    n = int(digits.translate(_ORD_FIX))
+    want = {1: "st", 2: "nd", 3: "rd"}.get(n % 10 if n % 100 not in (11, 12, 13) else 0, "th")
+    if want != suffix and suffix in ("st", "nd", "rd") and n < 10:
+        n = {"st": 1, "nd": 2, "rd": 3}[suffix]
+    return str(n)
+
+
 def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     """One reading of a sheet. Raises MaharashtraError if the sheet does not make sense."""
     with tempfile.TemporaryDirectory() as work:
@@ -218,7 +227,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         m = _TIER.search(text)
         if not m:
             continue
-        rank = "CONS" if m.group(2) else str(int(m.group(1).translate(_ORD_FIX)))
+        rank = "CONS" if m.group(3) else _ordinal(m.group(1), m.group(2))
         first = next(w for w in ws if m.group(0).split()[0] in w[0]) if m.group(0).split() else ws[0]
         cell = next((c for c in cells if _inside(first, c) and c[3] < H * 0.4), None)
         region = " ".join(w[0] for w in words if cell and _inside(w, cell)) if cell else text[m.start():]
@@ -249,7 +258,8 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     for w in words:
         if m := re.fullmatch(r"[^\w]*([A-Z]{2})\s?-\s?(\d{2})[^\w]*", w[0]):
             series.append((f"{m.group(1)}-{m.group(2)}", w[1] + w[3] / 2, w[2] + w[4] / 2, w[3]))
-    head["series"] = sorted({s for s, *_ in series})
+    cols = _series_columns(series, H)
+    head["series"] = cols["all"] if cols else sorted({s for s, *_ in series})
 
     found = [(n, cx, cy, ww, False) for n, cx, cy, ww in cell_nums]
     for wd in num_words:  # numbers outside single cells: merged cells of the big random tiers
@@ -277,18 +287,46 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             continue  # on the heading's own line, left of its end: part of the heading text
         owner["numbers"].append((n, cx, cy, ww, approx))
 
-    numbers = [(n, cx / W, cy / H, ww / W, _series_of(cx, cy, series) if t["rank"] in ("1", "CONS") else None, approx)
+    numbers = [(n, cx / W, cy / H, ww / W, _series_of(cx, cy, series, cols, dpi) if t["rank"] in ("1", "CONS") else None, approx)
                for t in order for n, cx, cy, ww, approx in t["numbers"]]
     headings = [{"rank": t["rank"], "top": t["top"] / H, "prize": t["prize"], "count": t["count"]} for t in order]
     return {"head": head, "headings": headings, "numbers": numbers}
 
 
-def _series_of(x: float, y: float, series) -> str | None:
+def _series_columns(series, H: int) -> dict | None:
+    """The row of series labels over the table (GL-00 ... GL-09) is evenly spaced: fit column = a + b*k
+    to the labels that were read, so a number can be placed under its series even where a label
+    was misread ("TJ.gQ" for TJ-00). None unless at least 6 labels of one prefix fit closely."""
+    if len(series) < 6:
+        return None
+    ys = sorted(s[2] for s in series)
+    top = ys[0]
+    row = [s for s in series if abs(s[2] - top) < H * 0.012]
+    prefixes = Counter(s[0][:2] for s in row)
+    prefix, n = prefixes.most_common(1)[0]
+    pts = sorted({int(s[0][3:]): s[1] for s in row if s[0][:2] == prefix}.items())
+    if n < 6 or len(pts) < 6 or any(k > 9 for k, _ in pts):
+        return None
+    ks, xs = [k for k, _ in pts], [x for _, x in pts]
+    mk, mx = sum(ks) / len(ks), sum(xs) / len(xs)
+    b = sum((k - mk) * (x - mx) for k, x in pts) / sum((k - mk) ** 2 for k in ks)
+    a = mx - b * mk
+    if b <= 0 or any(abs(x - (a + b * k)) > b * 0.2 for k, x in pts):
+        return None
+    return {"prefix": prefix, "a": a, "b": b, "y": top, "all": [f"{prefix}-{k:02d}" for k in range(10)]}
+
+
+def _series_of(x: float, y: float, series, cols: dict | None, dpi: int) -> str | None:
     """The series a 1st-prize/consolation number belongs to: a series label in the same row to its
-    left (GL-00 | 2142), else the series column header above it (TJ-01 over 6840)."""
-    row = [s for s in series if abs(s[2] - y) < 60 and s[1] < x]
+    left (GL-00 | 2142), else the series column it stands under (TJ-01 over 6840)."""
+    row = [s for s in series if abs(s[2] - y) < dpi * 0.2 and s[1] < x and (not cols or s[2] > cols["y"] + dpi * 0.2)]
     if row:
         return max(row, key=lambda s: s[1])[0]
+    if cols and y > cols["y"]:
+        k = round((x - cols["a"]) / cols["b"])
+        if 0 <= k <= 9 and abs(x - (cols["a"] + cols["b"] * k)) < cols["b"] * 0.3:
+            return f"{cols['prefix']}-{k:02d}"
+        return None
     col = [s for s in series if abs(s[1] - x) < s[3] and s[2] < y]
     if col:
         return max(col, key=lambda s: s[2])[0]
