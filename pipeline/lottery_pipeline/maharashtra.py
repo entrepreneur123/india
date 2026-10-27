@@ -170,7 +170,45 @@ def _cell_numbers(gray, cells, dpi: int, work: str) -> tuple[list, list]:
             x, y, w, h = small[i]
             nums.append((t, x + w / 2, y + h / 2, w))
             done.append(small[i])
+    # Big boxes (the 1st prize and its consolation, 0.45-1 inch tall; on "Series | Number" sheets
+    # the number box is also wide): each read alone, scaled so its digits are ~40 px tall, which
+    # read all six test boxes right (the strip misread bold "2142" as "9142").
+    for c in cells:
+        x, y, w, h = c
+        if not (dpi * 0.45 < h < dpi * 1.0 and dpi * 0.25 < w < W / 3):
+            continue
+        t = _read_box(gray[y + 3:y + h - 3, x + 3:x + w - 3], work)
+        if t:
+            nums = [n for n in nums if (n[1], n[2]) != (x + w / 2, y + h / 2)] + [(t, x + w / 2, y + h / 2, w)]
+            done.append(c)
     return nums, done
+
+
+def _read_box(crop, work: str, label: bool = False) -> str | None:
+    """One box read alone, its ink scaled to ~40 px: a 4-digit number, or (label=True) a series "SM-06"."""
+    import cv2
+    import numpy as np
+    ys, xs = np.nonzero(crop < 128)
+    if len(ys) < 50:
+        return None
+    for ink in (40, 52):
+        sc = ink / (ys.max() - ys.min() + 1)
+        r = cv2.resize(crop, (max(1, int(crop.shape[1] * sc)), max(1, int(crop.shape[0] * sc))), interpolation=cv2.INTER_AREA)
+        pad = np.full((r.shape[0] + 60, r.shape[1] + 60), 255, np.uint8)
+        pad[30:30 + r.shape[0], 30:30 + r.shape[1]] = r
+        p = os.path.join(work, "box.png")
+        cv2.imwrite(p, pad)
+        chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789" if label else "0123456789"
+        raw = subprocess.run(["tesseract", p, "-", "--psm", "7", "-c", f"tessedit_char_whitelist={chars}"],
+                             capture_output=True, text=True, timeout=60).stdout
+        if label:
+            if m := re.fullmatch(r"\s*([A-Z]{2})-?(\d{2})\s*", raw):
+                return f"{m.group(1)}-{m.group(2)}"
+            continue
+        t = re.sub(r"\D", "", raw)
+        if re.fullmatch(r"\d{4}", t):
+            return t
+    return None
 
 
 _NUMWORD = re.compile(r"[^\w]*\d{4}(?:[^\w]+\d{4})*[^\w]*")
@@ -250,11 +288,15 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             x0 = first[1]
             below = [nxt for nxt in lines[li + 1:li + 4] if abs(nxt[0][1] - x0) < W * 0.08]
             region = text[m.start():] + " " + " ".join(" ".join(w[0] for w in nxt) for nxt in below)
-        top = cell[1] if cell else min(w[2] for w in ws)
-        if not cell:  # its box was not found: the heading starts at its first line (Marathi above English)
+        top = min(cell[1], min(w[2] for w in ws)) if cell else min(w[2] for w in ws)
+        if not cell or cell[3] < dpi * 0.4:  # no box, or one around this line only: start at its first line
             for prev in reversed(lines[:li]):
-                if re.search(r"(?i)\brank\b|series|[A-Z]{2}\s?[-.]\s?\d{2}", " ".join(w[0] for w in prev)):
-                    break  # the series labels over the table are not part of a heading
+                if _lead(prev) > W * 0.5 or not any(re.search(r"\w\w", w[0]) for w in prev):
+                    continue  # the series/number boxes beside the heading, or specks read as a line
+                prev_text = " ".join(w[0] for w in prev if w[1] < W * 0.5)  # the heading side, not its number boxes
+                if re.search(r"(?i)\brank\b|series|[A-Z]{2}\s?[-.]\s?\d{2}", prev_text) or _TIER.search(prev_text) \
+                        or _AMOUNT.search(prev_text):
+                    break  # the series labels, or the end of the heading above (its "Rs. ..." line)
                 if top - max(w[2] + w[4] for w in prev) > dpi * 0.3 or abs(_lead(prev) - _lead(ws)) > W * 0.03:
                     break
                 top = min(w[2] for w in prev)
@@ -317,7 +359,22 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
                 continue  # on the heading's own line, left of its end: part of the heading text
         owner["numbers"].append((n, cx, cy, ww, approx))
 
-    numbers = [(n, cx / W, cy / H, ww / W, _series_of(cx, cy, loose, prefix, None if boxed_series else cols, dpi) if t["rank"] in ("1", "CONS") else None, approx)
+    def series_for(cx, cy):
+        got = _series_of(cx, cy, loose, prefix, None if boxed_series else cols, dpi)
+        if boxed_series:  # its own box, left of the number in the same row, read alone like the number
+            left = [c for c in cells if c[1] <= cy <= c[1] + c[3] and c[0] + c[2] <= cx and c[3] > dpi * 0.3]
+            own = next((c for c in cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]), None)
+            if not left and own:  # its rules too faint to make a box: the same-sized space left of the number
+                left = [(max(0, own[0] - own[2]), own[1], own[2] - 6, own[3])]
+            if left:
+                x, y, w, h = max(left, key=lambda c: c[0])
+                with tempfile.TemporaryDirectory() as work2:
+                    box = _read_box(cleaned[y + 3:y + h - 3, x + 3:x + w - 3], work2, label=True)
+                if box and (not prefix or box[:2] == prefix):
+                    return box
+        return got
+
+    numbers = [(n, cx / W, cy / H, ww / W, series_for(cx, cy) if t["rank"] in ("1", "CONS") else None, approx)
                for t in order for n, cx, cy, ww, approx in t["numbers"]]
     headings = [{"rank": t["rank"], "top": t["top"] / H, "prize": t["prize"], "count": t["count"]} for t in order]
     return {"head": head, "headings": headings, "numbers": numbers}
@@ -429,8 +486,10 @@ def _agree(runs: list[dict]) -> dict:
     """Combine the readings. Every heading and every printed number position must be read the same
     way by at least two readings, with no tie; then the sheet's own counts and order must hold."""
     head = {}
+    # Readings that fitted the whole label row give the ten series; partial lists do not vote.
+    full = [r for r in runs if len(r["head"].get("series", [])) == 10]
     for k in ("name", "kind", "date", "drawNo", "time", "series"):
-        v = _vote([repr(r["head"][k]) for r in runs if r["head"].get(k)])
+        v = _vote([repr(r["head"][k]) for r in (full if k == "series" else runs) if r["head"].get(k)])
         if v is not None:
             head[k] = eval(v)  # noqa: S307 - our own repr() of str/int/list
     for k in ("name", "date", "series"):
