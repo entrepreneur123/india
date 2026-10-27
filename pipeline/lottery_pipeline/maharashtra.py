@@ -213,7 +213,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     # Prize headings. A heading in its own cell (e.g. the 7th prize, left of its 300 numbers)
     # starts at the cell's top; numbers inside a heading cell count only right of its words.
     tiers: dict[str, dict] = {}
-    for ws in lines:
+    for li, ws in enumerate(lines):
         text = " ".join(w[0] for w in ws)
         m = _TIER.search(text)
         if not m:
@@ -222,6 +222,12 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         first = next(w for w in ws if m.group(0).split()[0] in w[0]) if m.group(0).split() else ws[0]
         cell = next((c for c in cells if _inside(first, c) and c[3] < H * 0.4), None)
         region = " ".join(w[0] for w in words if cell and _inside(w, cell)) if cell else text[m.start():]
+        if not cell or not _AMOUNT.search(region):
+            # A heading whose box was not found (faint rule): the amount and count are on its next lines,
+            # which start where it starts ("1st (Common) Prize" / "Rs.27,00,000/- (Full Digit)").
+            x0 = first[1]
+            below = [nxt for nxt in lines[li + 1:li + 4] if abs(nxt[0][1] - x0) < W * 0.08]
+            region = text[m.start():] + " " + " ".join(" ".join(w[0] for w in nxt) for nxt in below)
         top = cell[1] if cell else min(w[2] for w in ws)
         amt = _AMOUNT.findall(region)
         cnt = _COUNT.search(region)
