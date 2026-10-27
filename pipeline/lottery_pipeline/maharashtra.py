@@ -316,7 +316,8 @@ def _column_order_ok(nums) -> bool:
 
 # ---------------------------------------------------------------- agreement between readings
 
-READINGS = ((300, False), (400, True), (500, False), (350, True), (450, False), (400, False))
+# Line-free images read the numbers best (grey ones missed whole rows of the 27-10-2026 Tejaswini sheet).
+READINGS = ((400, True), (300, True), (500, True), (350, True), (450, True), (550, True))
 
 
 def read(pdf: bytes, warn=print) -> dict:
