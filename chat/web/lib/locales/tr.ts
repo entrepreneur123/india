@@ -126,7 +126,6 @@ const tr: Dict = {
   'lobby.men': 'Erkekler',
   'lobby.start': 'Başla',
   'lobby.textFirst': 'Önce yazışma',
-  'lobby.videoAgree': 'Görüntü sadece ikiniz de isterse',
   'lobby.reportLeave': 'İstediğin an şikâyet et ve ayrıl',
   'matching.title': 'Biri aranıyor…',
   'matching.reconnecting': 'Bağlantı zayıf. Hâlâ deniyoruz…',
@@ -701,6 +700,12 @@ const tr: Dict = {
   'room.theme': "Odayı süsle",
   'room.themeHint': "Odadaki herkes görür. Aldığın bir arka planı kullan ya da Looks'tan al.",
   'room.themeSaved': "Oda güncellendi",
+  'anon.label': "Nasıl tanışılır",
+  'anon.profile': "Profilimle",
+  'anon.anon': "Anonim",
+  'anon.name': "Yabancı",
+  'anon.profileHint': "İkiniz de birbirinizin adını, fotoğrafını ve profilini görürsünüz.",
+  'anon.anonHint': "İsim, fotoğraf ya da profil yok. Yalnızca anonimi seçenlerle tanışırsın.",
 }
 
 export default tr

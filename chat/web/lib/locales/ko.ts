@@ -126,7 +126,6 @@ const ko: Dict = {
   'lobby.men': '남성',
   'lobby.start': '시작',
   'lobby.textFirst': '텍스트 먼저',
-  'lobby.videoAgree': '둘 다 동의할 때만 영상',
   'lobby.reportLeave': '언제든 신고하고 나가기',
   'matching.title': '상대를 찾는 중…',
   'matching.reconnecting': '연결이 약해요. 계속 시도하는 중…',
@@ -701,6 +700,12 @@ const ko: Dict = {
   'room.theme': "방 꾸미기",
   'room.themeHint': "방에 있는 모두에게 보여요. 산 배경을 쓰거나 꾸미기 상점에서 구매하세요.",
   'room.themeSaved': "방을 꾸몄어요",
+  'anon.label': "만나는 방식",
+  'anon.profile': "프로필 공개",
+  'anon.anon': "익명",
+  'anon.name': "익명",
+  'anon.profileHint': "서로의 이름, 사진, 프로필이 보여요.",
+  'anon.anonHint': "이름, 사진, 프로필 없이 대화해요. 익명을 고른 사람끼리만 만나요.",
 }
 
 export default ko

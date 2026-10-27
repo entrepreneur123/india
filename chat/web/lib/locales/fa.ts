@@ -126,7 +126,6 @@ const fa: Dict = {
   'lobby.men': 'مردها',
   'lobby.start': 'شروع',
   'lobby.textFirst': 'اول پیام',
-  'lobby.videoAgree': 'تصویر فقط با رضایت هر دو',
   'lobby.reportLeave': 'هر وقت خواستید گزارش دهید و بروید',
   'matching.title': 'در حال پیدا کردن یک نفر…',
   'matching.reconnecting': 'اتصال ضعیف است. هنوز در تلاشیم…',
@@ -701,6 +700,12 @@ const fa: Dict = {
   'room.theme': "تزئین اتاق",
   'room.themeHint': "همه در اتاق آن را می‌بینند. از پس‌زمینه‌ای که خریده‌اید استفاده کنید یا از Looks بگیرید.",
   'room.themeSaved': "اتاق به‌روز شد",
+  'anon.label': "نحوه آشنایی",
+  'anon.profile': "با پروفایلم",
+  'anon.anon': "ناشناس",
+  'anon.name': "ناشناس",
+  'anon.profileHint': "هر دو نام، عکس و پروفایل یکدیگر را می‌بینید.",
+  'anon.anonHint': "بدون نام، عکس یا پروفایل. فقط با کسانی آشنا می‌شوید که ناشناس را انتخاب کرده‌اند.",
 }
 
 export default fa

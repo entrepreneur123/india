@@ -1,6 +1,6 @@
 -- 48 Group chats among friends (the owner, 2026-10-26): outside rooms, a chat of up to 50 people that stays. Made
--- from my friends; anyone in it can add their own friends, rename it, or leave (the last one out deletes it).
--- Text only. Reads and writes go through the functions below; the app hears new messages over Realtime (Postgres
+-- from my friends; anyone in it can add their own friends, rename it, or leave. Leaving keeps the row (left_at) and
+-- every message stays, so a report can still show what was written (14, the owner). Text only. Reads and writes go through the functions below; the app hears new messages over Realtime (Postgres
 -- Changes on group_messages, readable by members only).
 
 create table if not exists public.group_chats (
@@ -17,6 +17,7 @@ create table if not exists public.group_members (
   joined_at timestamptz not null default now(),
   -- The last message I've seen (unread = newer messages from others).
   read_id bigint not null default 0,
+  left_at timestamptz,
   primary key (group_id, user_id)
 );
 create index if not exists group_members_user on public.group_members (user_id);
@@ -39,14 +40,22 @@ revoke all on public.group_chats, public.group_members, public.group_messages fr
 
 create or replace function public.group_member(p_group uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.group_members m where m.group_id = p_group and m.user_id = auth.uid())
+  select exists (select 1 from public.group_members m where m.group_id = p_group and m.user_id = auth.uid() and m.left_at is null)
+$$;
+
+-- What a member may read: lines written since they (last) joined.
+create or replace function public.group_reads(p_group uuid, p_at timestamptz) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.group_members m
+                  where m.group_id = p_group and m.user_id = auth.uid() and m.left_at is null and m.joined_at <= p_at)
 $$;
 
 -- Realtime only: members may read the group's messages (everything else goes through the functions).
 grant select on public.group_messages to authenticated;
-drop policy if exists group_messages_members on public.group_messages;
-create policy group_messages_members on public.group_messages for select to authenticated using (public.group_member(group_id));
 do $$ begin
+  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'group_messages' and policyname = 'group_messages_members') then
+    create policy group_messages_members on public.group_messages for select to authenticated using (public.group_reads(group_id, created_at));
+  end if;
   if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'group_messages') then
     alter publication supabase_realtime add table public.group_messages;
   end if;
@@ -67,7 +76,7 @@ create or replace function public.group_addable(me uuid, p_group uuid, p_users u
 language sql stable security definer set search_path = '' as $$
   select p.id, p.name from public.profiles p
    where p.id = any (p_users) and p.id <> me and public.are_friends(me, p.id) and not public.is_blocked(me, p.id)
-     and not exists (select 1 from public.group_members m where m.group_id = p_group and m.user_id = p.id)
+     and not exists (select 1 from public.group_members m where m.group_id = p_group and m.user_id = p.id and m.left_at is null)
 $$;
 
 create or replace function public.group_create(p_title text, p_members uuid[]) returns uuid
@@ -94,8 +103,14 @@ begin
   if not public.group_member(p_group) then raise exception 'not_allowed' using errcode = 'P0001'; end if;
   select string_agg(a.name, ', '), count(*) into names, n from public.group_addable(me, p_group, p_members) a;
   if names is null then return; end if;
-  if (select count(*) from public.group_members m where m.group_id = p_group) + n > 50 then raise exception 'room_full' using errcode = 'P0001'; end if;
-  insert into public.group_members (group_id, user_id) select p_group, a.id from public.group_addable(me, p_group, p_members) a;
+  if (select count(*) from public.group_members m where m.group_id = p_group and m.left_at is null) + n > 50 then
+    raise exception 'room_full' using errcode = 'P0001';
+  end if;
+  -- Someone who left comes back as new: unread starts from now.
+  insert into public.group_members (group_id, user_id, read_id)
+  select p_group, a.id, coalesce((select max(x.id) from public.group_messages x where x.group_id = p_group), 0)
+    from public.group_addable(me, p_group, p_members) a
+  on conflict (group_id, user_id) do update set left_at = null, joined_at = now(), read_id = excluded.read_id;
   perform public.group_line(p_group, me, 'added', names);
 end $$;
 
@@ -113,13 +128,8 @@ create or replace function public.group_leave(p_group uuid) returns void
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := public.voice_me();
 begin
-  delete from public.group_members where group_id = p_group and user_id = me;
-  if not found then return; end if;
-  if not exists (select 1 from public.group_members m where m.group_id = p_group) then
-    delete from public.group_chats where id = p_group;
-  else
-    perform public.group_line(p_group, me, 'left', coalesce((select p.name from public.profiles p where p.id = me), ''));
-  end if;
+  update public.group_members set left_at = now() where group_id = p_group and user_id = me and left_at is null;
+  if found then perform public.group_line(p_group, me, 'left', coalesce((select p.name from public.profiles p where p.id = me), '')); end if;
 end $$;
 
 -- 10 messages in 10 seconds at most (like 1:1 chats); a banned person can't write.
@@ -137,14 +147,15 @@ begin
   return public.group_line(p_group, me, 'text', b);
 end $$;
 
--- Newest first, 50 at a time (p_before: older than this id).
+-- Newest first, 50 at a time (p_before: older than this id); only what was written since I (last) joined.
 create or replace function public.group_history(p_group uuid, p_before bigint default null)
 returns table (id bigint, sender uuid, kind text, body text, created_at timestamptz)
 language plpgsql stable security definer set search_path = '' as $$
 begin
   if not public.group_member(p_group) then raise exception 'not_allowed' using errcode = 'P0001'; end if;
   return query select m.id, m.sender, m.kind, m.body, m.created_at from public.group_messages m
-    where m.group_id = p_group and (p_before is null or m.id < p_before) order by m.id desc limit 50;
+    where m.group_id = p_group and (p_before is null or m.id < p_before) and public.group_reads(p_group, m.created_at)
+    order by m.id desc limit 50;
 end $$;
 
 create or replace function public.group_read(p_group uuid, p_upto bigint) returns void
@@ -160,21 +171,21 @@ language sql stable security definer set search_path = '' as $$
          (select jsonb_agg(jsonb_build_object('id', p.id, 'name', p.name, 'gender', p.gender,
                    'age', extract(year from age(p.birth_date))::int, 'city', p.city, 'bio', p.bio, 'photo_path', p.photo_path,
                    'country', p.country) order by o.joined_at)
-            from public.group_members o join public.profiles_seen p on p.id = o.user_id where o.group_id = g.id),
+            from public.group_members o join public.profiles_seen p on p.id = o.user_id where o.group_id = g.id and o.left_at is null),
          l.kind, l.body, l.sender, g.last_at,
          (select count(*)::int from public.group_messages x where x.group_id = g.id and x.id > me.read_id and x.sender is distinct from auth.uid())
     from public.group_members me
     join public.group_chats g on g.id = me.group_id
     left join lateral (select x.kind, x.body, x.sender from public.group_messages x where x.group_id = g.id order by x.id desc limit 1) l on true
-   where me.user_id = auth.uid()
+   where me.user_id = auth.uid() and me.left_at is null
    order by g.last_at desc
    limit 100
 $$;
 
-revoke execute on function public.group_member(uuid), public.group_line(uuid, uuid, text, text), public.group_addable(uuid, uuid, uuid[])
+revoke execute on function public.group_member(uuid), public.group_reads(uuid, timestamptz), public.group_line(uuid, uuid, text, text), public.group_addable(uuid, uuid, uuid[])
   from public, anon;
 revoke execute on function public.group_line(uuid, uuid, text, text), public.group_addable(uuid, uuid, uuid[]) from authenticated;
-grant execute on function public.group_member(uuid) to authenticated;
+grant execute on function public.group_member(uuid), public.group_reads(uuid, timestamptz) to authenticated;
 revoke execute on function public.group_create(text, uuid[]), public.group_add(uuid, uuid[]), public.group_rename(uuid, text),
   public.group_leave(uuid), public.group_send(uuid, text), public.group_history(uuid, bigint), public.group_read(uuid, bigint),
   public.group_list() from public, anon;

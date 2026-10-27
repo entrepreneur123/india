@@ -125,7 +125,6 @@ const en = {
   'lobby.men': 'Men',
   'lobby.start': 'Start',
   'lobby.textFirst': 'Text first',
-  'lobby.videoAgree': 'Video only if both agree',
   'lobby.reportLeave': 'Report & leave anytime',
   'matching.title': 'Finding someone…',
   'matching.reconnecting': 'Weak connection. Still trying…',
@@ -700,6 +699,12 @@ const en = {
   'room.theme': "Decorate the room",
   'room.themeHint': "Everyone in the room sees it. Use a background you bought, or get one in Looks.",
   'room.themeSaved': "Room updated",
+  'anon.label': "How to meet",
+  'anon.profile': "With my profile",
+  'anon.anon': "Anonymous",
+  'anon.name': "Stranger",
+  'anon.profileHint': "You both see each other's name, photo and profile.",
+  'anon.anonHint': "No names, photos or profiles. You only meet others who chose anonymous.",
 } as const
 
 export default en

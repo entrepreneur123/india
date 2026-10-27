@@ -122,7 +122,6 @@ const te: Dict = {
   'lobby.men': 'పురుషులు',
   'lobby.start': 'మొదలుపెట్టు',
   'lobby.textFirst': 'ముందు టెక్స్ట్',
-  'lobby.videoAgree': 'ఇద్దరూ ఓకే అంటేనే వీడియో',
   'lobby.reportLeave': 'ఎప్పుడైనా రిపోర్ట్ చేసి వెళ్లిపోవచ్చు',
   'matching.title': 'ఎవరినో వెతుకుతున్నాం…',
   'matching.reconnecting': 'కనెక్షన్ బలహీనంగా ఉంది. ఇంకా ప్రయత్నిస్తున్నాం…',
@@ -688,6 +687,12 @@ const te: Dict = {
   'room.theme': "రూమ్‌ను అలంకరించండి",
   'room.themeHint': "రూమ్‌లోని అందరికీ కనిపిస్తుంది. కొన్న నేపథ్యం వాడండి లేదా Looks‌లో పొందండి.",
   'room.themeSaved': "రూమ్ అప్‌డేట్ అయింది",
+  'anon.label': "ఎలా కలవాలి",
+  'anon.profile': "నా ప్రొఫైల్‌తో",
+  'anon.anon': "అనామకం",
+  'anon.name': "అపరిచితుడు",
+  'anon.profileHint': "ఇద్దరూ ఒకరి పేరు, ఫోటో, ప్రొఫైల్ చూస్తారు.",
+  'anon.anonHint': "పేరు, ఫోటో, ప్రొఫైల్ ఉండవు. అనామకం ఎంచుకున్నవారినే కలుస్తారు.",
 }
 
 export default te

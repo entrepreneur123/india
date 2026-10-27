@@ -265,7 +265,6 @@ interface MatchState {
   myCount: number
   greeted: boolean
   sentMedia: boolean
-  askedVideo: boolean
   timers: ReturnType<typeof setTimeout>[]
 }
 
@@ -368,7 +367,7 @@ export class MockBackend implements Backend {
     return {
       id, partner, startedAt, messages, kind, ended: kind === 'thread',
       listeners: new Set(), video: 'none', callVideo: true, myCount: 0,
-      greeted: kind === 'thread', sentMedia: kind === 'thread', askedVideo: kind === 'thread', timers: [],
+      greeted: kind === 'thread', sentMedia: kind === 'thread', timers: [],
     }
   }
 
@@ -407,7 +406,8 @@ export class MockBackend implements Backend {
   private touchRecent(m: MatchState, lastText: string | null) {
     const existing = this.recentList.find((r) => r.matchId === m.id)
     if (existing) existing.lastText = lastText ?? existing.lastText
-    else if (m.kind === 'random') this.recentList.unshift({ matchId: m.id, partner: m.partner, metAt: m.startedAt, lastText })
+    // An anonymous chat leaves no trace in Recent (070's recent_list).
+    else if (m.kind === 'random' && !m.partner.anon) this.recentList.unshift({ matchId: m.id, partner: m.partner, metAt: m.startedAt, lastText })
   }
 
   private replyFor(text: string, partner: Profile) {
@@ -485,7 +485,7 @@ export class MockBackend implements Backend {
 
   /* ---------- random matching ---------- */
 
-  async findMatch(target: Target, _lang?: string, countries: readonly string[] = []) {
+  async findMatch(target: Target, _lang?: string, countries: readonly string[] = [], anon = false) {
     this.requireMe()
     this.gate()
     if (MANNERS && (this.flags.manner ?? 50) < MANNER_FLOOR) throw new BackendError('manner_low')
@@ -502,7 +502,9 @@ export class MockBackend implements Backend {
     this.searchTarget = null
     const pool = PEOPLE.filter((p) => (target === 'any' || p.gender === target) && (!countries.length || countries.includes(p.country ?? '')))
     if (!pool.length) return null // nobody from those countries in the demo: keep searching
-    const partner = pick(pool)
+    const found = pick(pool)
+    // Like 070's match_card: a stranger's card keeps only the gender and the country.
+    const partner: Profile = anon ? { id: found.id, name: '', gender: found.gender, age: 0, city: '', bio: '', photoUrl: null, country: found.country, posts: [], anon } : found
     const id = `m_${uid()}`
     this.matches.set(id, this.newMatchState(id, partner, 'random'))
     return { id, partner } satisfies Match
@@ -579,14 +581,6 @@ export class MockBackend implements Backend {
       this.partnerSays(m, 'this is the view from my window rn', {
         url: art(`view-${m.partner.id}`, 800, 1000),
         kind: 'image',
-      })
-    } else if (m.myCount === 3 && !m.askedVideo && m.video === 'none') {
-      m.askedVideo = true
-      this.partnerSays(m, 'can I call you? voice is fine')
-      this.schedule(m, 3200, () => {
-        if (m.video !== 'none') return
-        m.callVideo = false
-        this.setCall(m, 'requested_by_partner')
       })
     } else {
       this.partnerSays(m, this.replyFor(msg.text ?? '', m.partner))
@@ -720,7 +714,8 @@ export class MockBackend implements Backend {
   private callable(matchId: string) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
-    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('not_allowed')
+    // 070: calls only between friends, in their thread (never in a random chat).
+    if (m.kind === 'random' || this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('not_allowed')
     return m
   }
 

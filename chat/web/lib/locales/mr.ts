@@ -114,7 +114,6 @@ const mr: Dict = {
   'lobby.men': 'पुरुष',
   'lobby.start': 'सुरू करा',
   'lobby.textFirst': 'आधी टेक्स्ट',
-  'lobby.videoAgree': 'व्हिडिओ फक्त दोघांच्या संमतीने',
   'lobby.reportLeave': 'कधीही रिपोर्ट करा आणि बाहेर पडा',
   'matching.title': 'कोणाला तरी शोधत आहोत…',
   'matching.reconnecting': 'कनेक्शन कमकुवत आहे. प्रयत्न सुरू आहे…',
@@ -666,6 +665,12 @@ const mr: Dict = {
   'room.theme': "रूम सजवा",
   'room.themeHint': "रूममधील सर्वांना दिसते. विकत घेतलेली पार्श्वभूमी वापरा किंवा Looks मधून घ्या.",
   'room.themeSaved': "रूम अपडेट झाली",
+  'anon.label': "कसे भेटायचे",
+  'anon.profile': "प्रोफाइलसह",
+  'anon.anon': "निनावी",
+  'anon.name': "अनोळखी",
+  'anon.profileHint': "दोघेही एकमेकांचे नाव, फोटो आणि प्रोफाइल पाहता.",
+  'anon.anonHint': "नाव, फोटो किंवा प्रोफाइल नाही. निनावी निवडलेल्यांनाच भेटाल.",
 }
 
 export default mr

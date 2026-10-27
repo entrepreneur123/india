@@ -126,7 +126,6 @@ const he: Dict = {
   'lobby.men': 'גברים',
   'lobby.start': 'התחלה',
   'lobby.textFirst': 'קודם טקסט',
-  'lobby.videoAgree': 'וידאו רק בהסכמת שניכם',
   'lobby.reportLeave': 'אפשר לדווח ולצאת בכל רגע',
   'matching.title': 'מחפשים מישהו…',
   'matching.reconnecting': 'חיבור חלש. ממשיכים לנסות…',
@@ -703,6 +702,12 @@ const he: Dict = {
   'room.theme': "עיצוב החדר",
   'room.themeHint': "כולם בחדר רואים. השתמשו ברקע שקניתם או קבלו אחד ב־Looks.",
   'room.themeSaved': "החדר עודכן",
+  'anon.label': "איך להיפגש",
+  'anon.profile': "עם הפרופיל שלי",
+  'anon.anon': "אנונימי",
+  'anon.name': "זר",
+  'anon.profileHint': "שניכם רואים את השם, התמונה והפרופיל זה של זה.",
+  'anon.anonHint': "בלי שמות, תמונות או פרופילים. תפגשו רק מי שבחר אנונימי.",
 }
 
 export default he

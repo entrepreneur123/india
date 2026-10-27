@@ -122,7 +122,6 @@ const it: Dict = {
   'lobby.men': 'Uomini',
   'lobby.start': 'Inizia',
   'lobby.textFirst': 'Prima si scrive',
-  'lobby.videoAgree': 'Video solo se siete d’accordo entrambi',
   'lobby.reportLeave': 'Segnala ed esci quando vuoi',
   'matching.title': 'Cerchiamo qualcuno…',
   'matching.reconnecting': 'Connessione debole. Ci stiamo ancora provando…',
@@ -688,6 +687,12 @@ const it: Dict = {
   'room.theme': "Decora la stanza",
   'room.themeHint': "Lo vedono tutti nella stanza. Usa uno sfondo che hai comprato o prendine uno in Looks.",
   'room.themeSaved': "Stanza aggiornata",
+  'anon.label': "Come incontrarsi",
+  'anon.profile': "Con il profilo",
+  'anon.anon': "Anonimo",
+  'anon.name': "Sconosciuto",
+  'anon.profileHint': "Vi vedete a vicenda nome, foto e profilo.",
+  'anon.anonHint': "Niente nomi, foto o profili. Incontri solo chi ha scelto l'anonimato.",
 }
 
 export default it

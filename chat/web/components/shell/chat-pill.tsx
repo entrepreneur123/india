@@ -30,7 +30,7 @@ export function ChatPill({ bar, onOpen, onEnd }: { bar: ChatBar; onOpen: () => v
         {/* The brand colour, washed in from the left. */}
         <button type="button" onClick={onOpen} className="relative flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-1 text-start" aria-label={st('chatbar.open', { name: partner.name })}>
           <span className="relative shrink-0">
-            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={42} />
+            <UserAvatar userId={partner.anon ? '' : partner.id} name={partner.name} src={partner.photoUrl} size={42} />
             {unread > 0 ? <span aria-hidden className="absolute -top-0.5 -inset-e-0.5 size-3.5 rounded-full bg-primary ring-2 ring-card" /> : null}
           </span>
           <span className="min-w-0">

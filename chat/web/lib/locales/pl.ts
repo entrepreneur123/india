@@ -122,7 +122,6 @@ const pl: Dict = {
   'lobby.men': 'Mężczyzn',
   'lobby.start': 'Start',
   'lobby.textFirst': 'Najpierw tekst',
-  'lobby.videoAgree': 'Wideo tylko za zgodą obu stron',
   'lobby.reportLeave': 'Zgłoś i wyjdź w każdej chwili',
   'matching.title': 'Szukamy kogoś…',
   'matching.reconnecting': 'Słabe połączenie. Wciąż próbujemy…',
@@ -692,6 +691,12 @@ const pl: Dict = {
   'room.theme': "Udekoruj pokój",
   'room.themeHint': "Widzą to wszyscy w pokoju. Użyj kupionego tła albo zdobądź je w Looks.",
   'room.themeSaved': "Pokój zaktualizowany",
+  'anon.label': "Jak się poznać",
+  'anon.profile': "Z profilem",
+  'anon.anon': "Anonimowo",
+  'anon.name': "Nieznajomy",
+  'anon.profileHint': "Widzicie nawzajem imię, zdjęcie i profil.",
+  'anon.anonHint': "Bez imion, zdjęć i profili. Poznajesz tylko osoby, które wybrały anonimowość.",
 }
 
 export default pl

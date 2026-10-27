@@ -126,7 +126,6 @@ const ru: Dict = {
   'lobby.men': 'Мужчины',
   'lobby.start': 'Начать',
   'lobby.textFirst': 'Сначала переписка',
-  'lobby.videoAgree': 'Видео — только по согласию обоих',
   'lobby.reportLeave': 'Пожаловаться и уйти можно в любой момент',
   'matching.title': 'Ищем собеседника…',
   'matching.reconnecting': 'Слабое соединение. Продолжаем поиск…',
@@ -705,6 +704,12 @@ const ru: Dict = {
   'room.theme': "Оформить комнату",
   'room.themeHint': "Это видят все в комнате. Выберите купленный фон или получите его в Looks.",
   'room.themeSaved': "Комната обновлена",
+  'anon.label': "Как знакомиться",
+  'anon.profile': "С профилем",
+  'anon.anon': "Анонимно",
+  'anon.name': "Незнакомец",
+  'anon.profileHint': "Вы оба видите имя, фото и профиль друг друга.",
+  'anon.anonHint': "Без имён, фото и профилей. Вы встречаете только тех, кто тоже выбрал анонимно.",
 }
 
 export default ru

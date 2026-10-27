@@ -122,7 +122,6 @@ const hi: Dict = {
   'lobby.men': 'पुरुष',
   'lobby.start': 'शुरू करें',
   'lobby.textFirst': 'पहले टेक्स्ट',
-  'lobby.videoAgree': 'वीडियो सिर्फ़ दोनों की हाँ पर',
   'lobby.reportLeave': 'कभी भी रिपोर्ट करें और निकलें',
   'matching.title': 'किसी को ढूँढ रहे हैं…',
   'matching.reconnecting': 'नेटवर्क कमज़ोर है। कोशिश जारी है…',
@@ -687,6 +686,12 @@ const hi: Dict = {
   'room.theme': "रूम सजाएँ",
   'room.themeHint': "रूम में सब इसे देखते हैं। खरीदा हुआ बैकग्राउंड लगाएँ या Looks से लें।",
   'room.themeSaved': "रूम अपडेट हो गया",
+  'anon.label': "कैसे मिलें",
+  'anon.profile': "प्रोफ़ाइल के साथ",
+  'anon.anon': "गुमनाम",
+  'anon.name': "अजनबी",
+  'anon.profileHint': "आप दोनों एक-दूसरे का नाम, फ़ोटो और प्रोफ़ाइल देखते हैं।",
+  'anon.anonHint': "न नाम, न फ़ोटो, न प्रोफ़ाइल। आप सिर्फ़ गुमनाम चुनने वालों से मिलेंगे।",
 }
 
 export default hi

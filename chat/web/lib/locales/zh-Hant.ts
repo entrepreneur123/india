@@ -126,7 +126,6 @@ const zhHant: Dict = {
   'lobby.men': '男生',
   'lobby.start': '開始',
   'lobby.textFirst': '先文字聊天',
-  'lobby.videoAgree': '雙方同意才開影片',
   'lobby.reportLeave': '隨時檢舉並離開',
   'matching.title': '正在尋找…',
   'matching.reconnecting': '網路不穩定，仍在嘗試…',
@@ -701,6 +700,12 @@ const zhHant: Dict = {
   'room.theme': "裝飾房間",
   'room.themeHint': "房間裡的所有人都看得到。使用已購買的背景，或到造型商店取得。",
   'room.themeSaved': "房間已更新",
+  'anon.label': "見面方式",
+  'anon.profile': "公開資料",
+  'anon.anon': "匿名",
+  'anon.name': "陌生人",
+  'anon.profileHint': "雙方都能看到彼此的名字、照片和資料。",
+  'anon.anonHint': "不顯示名字、照片和資料。只會遇到同樣選擇匿名的人。",
 }
 
 export default zhHant

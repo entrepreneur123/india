@@ -126,7 +126,6 @@ const zhHans: Dict = {
   'lobby.men': '男生',
   'lobby.start': '开始',
   'lobby.textFirst': '先文字聊天',
-  'lobby.videoAgree': '双方同意才开视频',
   'lobby.reportLeave': '随时举报并离开',
   'matching.title': '正在寻找…',
   'matching.reconnecting': '网络不稳定，仍在尝试…',
@@ -701,6 +700,12 @@ const zhHans: Dict = {
   'room.theme': "装饰房间",
   'room.themeHint': "房间里的所有人都能看到。使用已购买的背景，或去造型商店获取。",
   'room.themeSaved': "房间已更新",
+  'anon.label': "见面方式",
+  'anon.profile': "公开资料",
+  'anon.anon': "匿名",
+  'anon.name': "陌生人",
+  'anon.profileHint': "双方都能看到彼此的名字、照片和资料。",
+  'anon.anonHint': "不显示名字、照片和资料。只会遇到同样选择匿名的人。",
 }
 
 export default zhHans

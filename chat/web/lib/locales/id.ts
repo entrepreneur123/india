@@ -126,7 +126,6 @@ const id: Dict = {
   'lobby.men': 'Laki-laki',
   'lobby.start': 'Mulai',
   'lobby.textFirst': 'Teks dulu',
-  'lobby.videoAgree': 'Video hanya kalau sama-sama setuju',
   'lobby.reportLeave': 'Lapor & keluar kapan saja',
   'matching.title': 'Mencari seseorang…',
   'matching.reconnecting': 'Koneksi lemah. Masih mencoba…',
@@ -701,6 +700,12 @@ const id: Dict = {
   'room.theme': "Hias room",
   'room.themeHint': "Semua orang di room melihatnya. Pakai latar yang kamu beli, atau dapatkan di Looks.",
   'room.themeSaved': "Room diperbarui",
+  'anon.label': "Cara bertemu",
+  'anon.profile': "Dengan profil",
+  'anon.anon': "Anonim",
+  'anon.name': "Orang asing",
+  'anon.profileHint': "Kalian saling melihat nama, foto, dan profil.",
+  'anon.anonHint': "Tanpa nama, foto, atau profil. Kamu hanya bertemu yang juga memilih anonim.",
 }
 
 export default id

@@ -126,7 +126,6 @@ const th: Dict = {
   'lobby.men': 'ผู้ชาย',
   'lobby.start': 'เริ่ม',
   'lobby.textFirst': 'พิมพ์คุยก่อน',
-  'lobby.videoAgree': 'วิดีโอเมื่อทั้งคู่ตกลง',
   'lobby.reportLeave': 'รายงานและออกได้ทุกเมื่อ',
   'matching.title': 'กำลังหาคนคุยให้…',
   'matching.reconnecting': 'สัญญาณอ่อน ยังพยายามอยู่…',
@@ -701,6 +700,12 @@ const th: Dict = {
   'room.theme': "ตกแต่งห้อง",
   'room.themeHint': "ทุกคนในห้องจะเห็น ใช้พื้นหลังที่ซื้อไว้ หรือซื้อใหม่ใน Looks",
   'room.themeSaved': "อัปเดตห้องแล้ว",
+  'anon.label': "วิธีพบกัน",
+  'anon.profile': "แสดงโปรไฟล์",
+  'anon.anon': "ไม่ระบุตัวตน",
+  'anon.name': "คนแปลกหน้า",
+  'anon.profileHint': "ทั้งคู่จะเห็นชื่อ รูป และโปรไฟล์ของกันและกัน",
+  'anon.anonHint': "ไม่มีชื่อ รูป หรือโปรไฟล์ จะพบเฉพาะคนที่เลือกไม่ระบุตัวตนเหมือนกัน",
 }
 
 export default th

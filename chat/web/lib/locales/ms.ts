@@ -126,7 +126,6 @@ const ms: Dict = {
   'lobby.men': 'Lelaki',
   'lobby.start': 'Mula',
   'lobby.textFirst': 'Teks dahulu',
-  'lobby.videoAgree': 'Video hanya jika kedua-duanya setuju',
   'lobby.reportLeave': 'Lapor & keluar bila-bila masa',
   'matching.title': 'Mencari seseorang…',
   'matching.reconnecting': 'Sambungan lemah. Masih mencuba…',
@@ -701,6 +700,12 @@ const ms: Dict = {
   'room.theme': "Hias bilik",
   'room.themeHint': "Semua dalam bilik nampak. Guna latar yang dibeli, atau dapatkan di Looks.",
   'room.themeSaved': "Bilik dikemas kini",
+  'anon.label': "Cara berjumpa",
+  'anon.profile': "Dengan profil",
+  'anon.anon': "Tanpa nama",
+  'anon.name': "Orang asing",
+  'anon.profileHint': "Anda berdua melihat nama, foto dan profil masing-masing.",
+  'anon.anonHint': "Tiada nama, foto atau profil. Anda hanya berjumpa mereka yang memilih tanpa nama.",
 }
 
 export default ms

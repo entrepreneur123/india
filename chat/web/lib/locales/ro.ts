@@ -122,7 +122,6 @@ const ro: Dict = {
   'lobby.men': 'Bărbați',
   'lobby.start': 'Start',
   'lobby.textFirst': 'Mai întâi text',
-  'lobby.videoAgree': 'Video doar dacă amândoi vreți',
   'lobby.reportLeave': 'Raportează și pleacă oricând',
   'matching.title': 'Căutăm pe cineva…',
   'matching.reconnecting': 'Conexiune slabă. Încă încercăm…',
@@ -690,6 +689,12 @@ const ro: Dict = {
   'room.theme': "Decorează camera",
   'room.themeHint': "Toți din cameră îl văd. Folosește un fundal cumpărat sau ia unul din Looks.",
   'room.themeSaved': "Cameră actualizată",
+  'anon.label': "Cum vă cunoașteți",
+  'anon.profile': "Cu profilul meu",
+  'anon.anon': "Anonim",
+  'anon.name': "Necunoscut",
+  'anon.profileHint': "Vă vedeți reciproc numele, poza și profilul.",
+  'anon.anonHint': "Fără nume, poze sau profiluri. Întâlnești doar pe cei care au ales anonim.",
 }
 
 export default ro

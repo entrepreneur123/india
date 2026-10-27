@@ -114,7 +114,6 @@ const gu: Dict = {
   'lobby.men': 'પુરુષો',
   'lobby.start': 'શરૂ કરો',
   'lobby.textFirst': 'પહેલાં ટેક્સ્ટ',
-  'lobby.videoAgree': 'વીડિયો ફક્ત બંનેની સંમતિથી',
   'lobby.reportLeave': 'ગમે ત્યારે રિપોર્ટ કરો અને નીકળો',
   'matching.title': 'કોઈને શોધી રહ્યા છીએ…',
   'matching.reconnecting': 'કનેક્શન નબળું છે. પ્રયાસ ચાલુ છે…',
@@ -666,6 +665,12 @@ const gu: Dict = {
   'room.theme': "રૂમ સજાવો",
   'room.themeHint': "રૂમમાં બધા જુએ છે. ખરીદેલું બેકગ્રાઉન્ડ વાપરો અથવા Looks માંથી લો.",
   'room.themeSaved': "રૂમ અપડેટ થયો",
+  'anon.label': "કેવી રીતે મળવું",
+  'anon.profile': "પ્રોફાઇલ સાથે",
+  'anon.anon': "અનામી",
+  'anon.name': "અજાણ્યું",
+  'anon.profileHint': "બંને એકબીજાનું નામ, ફોટો અને પ્રોફાઇલ જુઓ છો.",
+  'anon.anonHint': "નામ, ફોટો કે પ્રોફાઇલ નહીં. ફક્ત અનામી પસંદ કરનારાને મળશો.",
 }
 
 export default gu

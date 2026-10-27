@@ -126,7 +126,6 @@ const ja: Dict = {
   'lobby.men': '男性',
   'lobby.start': 'スタート',
   'lobby.textFirst': 'まずはテキストで',
-  'lobby.videoAgree': 'ビデオはお互いOKのときだけ',
   'lobby.reportLeave': 'いつでも通報・退出できます',
   'matching.title': '相手を探しています…',
   'matching.reconnecting': '接続が不安定です。引き続き試しています…',
@@ -701,6 +700,12 @@ const ja: Dict = {
   'room.theme': "ルームを飾る",
   'room.themeHint': "ルームの全員に表示されます。購入した背景を使うか、ルックスで手に入れましょう。",
   'room.themeSaved': "ルームを更新しました",
+  'anon.label': "会い方",
+  'anon.profile': "プロフィールあり",
+  'anon.anon': "匿名",
+  'anon.name': "匿名さん",
+  'anon.profileHint': "お互いの名前・写真・プロフィールが見えます。",
+  'anon.anonHint': "名前・写真・プロフィールなしで話します。匿名を選んだ人同士だけが出会います。",
 }
 
 export default ja

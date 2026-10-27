@@ -1,7 +1,8 @@
 -- 45 Room decoration (the owner, 2026-10-26): the host or a co-host dresses the room in one of the walls they bought
 --    (067's moving scenes); everyone in the room sees it. voice_set_theme(room, wall or null).
--- 46 Chat-only rooms: chosen when the room is made (create_voice_room3's p_voice false). Nobody takes a seat or raises
---    a hand there: a trigger keeps seat and hand empty, so every path (a seat taken, an invite answered, the host
+-- 46 Chat-only rooms: chosen when the room is made (create_voice_room4 = create_voice_room3 + p_voice; 3 stays until a
+--    cleanup migration drops it, as a drop needs the owner's confirmation in the database tool). Nobody takes a seat or
+--    raises a hand there: a trigger keeps seat and hand empty, so every path (a seat taken, an invite answered, the host
 --    handed over) leaves people in the chat; with nobody on a seat the app never opens the room's audio.
 
 alter table public.voice_rooms
@@ -21,8 +22,7 @@ end $$;
 create or replace trigger voice_members_chat_only before insert or update of seat, hand_at on public.voice_members
   for each row when (new.seat is not null or new.hand_at is not null) execute function public.voice_chat_only_guard();
 
-drop function if exists public.create_voice_room3(text, text, integer, text, integer, integer, boolean, text, text);
-create function public.create_voice_room3(p_title text, p_category text, p_max integer, p_gender text, p_min_age integer,
+create or replace function public.create_voice_room4(p_title text, p_category text, p_max integer, p_gender text, p_min_age integer,
   p_max_age integer, p_private boolean, p_announcement text, p_lang text, p_voice boolean default true)
 returns jsonb language plpgsql security definer set search_path = '' as $$
 declare j jsonb;
@@ -89,8 +89,7 @@ begin
   return null;
 end $$;
 
-drop trigger if exists voice_rooms_event on public.voice_rooms;
-create trigger voice_rooms_event after update on public.voice_rooms for each row
+create or replace trigger voice_rooms_event after update on public.voice_rooms for each row
   when (old.title is distinct from new.title or old.category is distinct from new.category
         or old.speak_mode is distinct from new.speak_mode or old.host is distinct from new.host
         or old.locked_seats is distinct from new.locked_seats or old.music is distinct from new.music
@@ -102,7 +101,7 @@ create trigger voice_rooms_event after update on public.voice_rooms for each row
   execute function public.voice_room_event();
 
 revoke execute on function public.voice_chat_only_guard() from public, anon, authenticated;
-revoke execute on function public.create_voice_room3(text, text, integer, text, integer, integer, boolean, text, text, boolean),
+revoke execute on function public.create_voice_room4(text, text, integer, text, integer, integer, boolean, text, text, boolean),
   public.voice_set_theme(text, text) from public, anon;
-grant execute on function public.create_voice_room3(text, text, integer, text, integer, integer, boolean, text, text, boolean),
+grant execute on function public.create_voice_room4(text, text, integer, text, integer, integer, boolean, text, text, boolean),
   public.voice_set_theme(text, text) to authenticated;

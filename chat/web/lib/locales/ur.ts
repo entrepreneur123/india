@@ -114,7 +114,6 @@ const ur: Dict = {
   'lobby.men': 'مرد',
   'lobby.start': 'شروع کریں',
   'lobby.textFirst': 'پہلے ٹیکسٹ',
-  'lobby.videoAgree': 'ویڈیو صرف دونوں کی رضامندی سے',
   'lobby.reportLeave': 'جب چاہیں رپورٹ کریں اور نکلیں',
   'matching.title': 'کسی کو ڈھونڈ رہے ہیں…',
   'matching.reconnecting': 'کمزور کنکشن۔ کوشش جاری ہے…',
@@ -666,6 +665,12 @@ const ur: Dict = {
   'room.theme': "روم سجائیں",
   'room.themeHint': "روم میں سب دیکھتے ہیں۔ خریدا ہوا بیک گراؤنڈ لگائیں یا Looks سے لیں۔",
   'room.themeSaved': "روم اپ ڈیٹ ہو گیا",
+  'anon.label': "کیسے ملیں",
+  'anon.profile': "اپنی پروفائل کے ساتھ",
+  'anon.anon': "گمنام",
+  'anon.name': "اجنبی",
+  'anon.profileHint': "آپ دونوں ایک دوسرے کا نام، تصویر اور پروفائل دیکھتے ہیں۔",
+  'anon.anonHint': "نام، تصویر یا پروفائل کے بغیر۔ آپ صرف گمنام چننے والوں سے ملیں گے۔",
 }
 
 export default ur

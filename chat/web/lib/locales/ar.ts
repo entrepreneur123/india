@@ -126,7 +126,6 @@ const ar: Dict = {
   'lobby.men': 'الرجال',
   'lobby.start': 'ابدأ',
   'lobby.textFirst': 'الكتابة أولًا',
-  'lobby.videoAgree': 'الفيديو فقط إذا وافق الطرفان',
   'lobby.reportLeave': 'أبلغ وغادر في أي وقت',
   'matching.title': 'جارٍ البحث عن شخص…',
   'matching.reconnecting': 'الاتصال ضعيف. ما زلنا نحاول…',
@@ -709,6 +708,12 @@ const ar: Dict = {
   'room.theme': "تزيين الغرفة",
   'room.themeHint': "يراها الجميع في الغرفة. استخدم خلفية اشتريتها أو احصل على واحدة من Looks.",
   'room.themeSaved': "تم تحديث الغرفة",
+  'anon.label': "طريقة اللقاء",
+  'anon.profile': "بملفي الشخصي",
+  'anon.anon': "مجهول",
+  'anon.name': "غريب",
+  'anon.profileHint': "يرى كلٌّ منكما اسم الآخر وصورته وملفه.",
+  'anon.anonHint': "بلا أسماء أو صور أو ملفات. تلتقي فقط بمن اختار المجهول.",
 }
 
 export default ar

@@ -126,7 +126,6 @@ const fil: Dict = {
   'lobby.men': 'Lalaki',
   'lobby.start': 'Simulan',
   'lobby.textFirst': 'Text muna',
-  'lobby.videoAgree': 'Video lang kung pareho kayong pumayag',
   'lobby.reportLeave': 'Mag-report at umalis anumang oras',
   'matching.title': 'Naghahanap ng makakausap…',
   'matching.reconnecting': 'Mahina ang koneksyon. Sinusubukan pa rin…',
@@ -701,6 +700,12 @@ const fil: Dict = {
   'room.theme': "Palamutian ang room",
   'room.themeHint': "Makikita ng lahat sa room. Gamitin ang background na binili mo, o kumuha sa Looks.",
   'room.themeSaved': "Na-update ang room",
+  'anon.label': "Paano makikilala",
+  'anon.profile': "May profile",
+  'anon.anon': "Anonymous",
+  'anon.name': "Estranghero",
+  'anon.profileHint': "Makikita ninyo ang pangalan, larawan at profile ng isa't isa.",
+  'anon.anonHint': "Walang pangalan, larawan o profile. Makikilala mo lang ang mga pumili ng anonymous.",
 }
 
 export default fil

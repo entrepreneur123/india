@@ -122,7 +122,6 @@ const vi: Dict = {
   'lobby.men': 'Nam',
   'lobby.start': 'Bắt đầu',
   'lobby.textFirst': 'Nhắn tin trước',
-  'lobby.videoAgree': 'Video chỉ khi cả hai đồng ý',
   'lobby.reportLeave': 'Báo cáo và rời đi bất cứ lúc nào',
   'matching.title': 'Đang tìm người…',
   'matching.reconnecting': 'Kết nối yếu. Vẫn đang thử…',
@@ -687,6 +686,12 @@ const vi: Dict = {
   'room.theme': "Trang trí phòng",
   'room.themeHint': "Mọi người trong phòng đều thấy. Dùng nền bạn đã mua, hoặc mua trong Looks.",
   'room.themeSaved': "Đã cập nhật phòng",
+  'anon.label': "Cách gặp gỡ",
+  'anon.profile': "Có hồ sơ",
+  'anon.anon': "Ẩn danh",
+  'anon.name': "Người lạ",
+  'anon.profileHint': "Hai bạn thấy tên, ảnh và hồ sơ của nhau.",
+  'anon.anonHint': "Không tên, ảnh hay hồ sơ. Bạn chỉ gặp những người cũng chọn ẩn danh.",
 }
 
 export default vi

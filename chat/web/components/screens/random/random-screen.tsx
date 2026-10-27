@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Flag, MessageCircle, Shuffle, Undo2, Video } from 'lucide-react'
+import { Flag, MessageCircle, Shuffle, Undo2, VenetianMask } from 'lucide-react'
 import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode, flagEmoji } from '@/lib/format'
@@ -24,7 +24,7 @@ import type { RateTarget } from '@/components/trust/rating-sheet'
 import { TrustBadge } from '@/components/trust/badge'
 import { COUNTRIES } from '@/lib/countries'
 import { useCountryNames } from '@/components/screens/auth/country-select'
-import { saveGlobal, savedGlobal } from './scope'
+import { saveFlag, savedFlag } from './scope'
 import { GenderPassSheet, useGenderPass } from './gender-pass'
 import { nameAge, type FrameId } from '@/lib/looks'
 import { FrameAvatar } from '@/components/looks/frames'
@@ -92,7 +92,9 @@ export function RandomScreen({ active }: { active: boolean }) {
   useEffect(() => {
     if (!pass.until) setTarget('any')
   }, [pass.until])
-  const [global, setGlobal] = useState(savedGlobal)
+  const [global, setGlobal] = useState(() => savedFlag('yaari_meet_global'))
+  // 070: meet as a stranger (no name, photo or profile either way) or with my profile; each meets its own kind.
+  const [anon, setAnon] = useState(() => savedFlag('yaari_meet_anon'))
   // 055: my country only, or everyone (an empty list). The server never pairs a my-country search with a foreigner.
   const nameOf = useCountryNames()
   const myCountry = COUNTRIES.find((c) => c.iso === me.country)
@@ -138,7 +140,7 @@ export function RandomScreen({ active }: { active: boolean }) {
       clearTimeout(timer.current)
       let m: Match | null
       try {
-        m = await backend.findMatch(target, lang, countries)
+        m = await backend.findMatch(target, lang, countries, anon)
       } catch (err) {
         busy = false
         if (g !== generation.current) return
@@ -175,7 +177,9 @@ export function RandomScreen({ active }: { active: boolean }) {
         searching.current = false
         tickRef.current = null
         endSignals()
-        setMatch({ ...m, startedAt: Date.now() })
+        // A stranger is shown under one name in every screen (the chat, its bar, the rating sheet).
+        const partner = m.partner.anon ? { ...m.partner, name: t('anon.name') } : m.partner
+        setMatch({ ...m, partner, startedAt: Date.now() })
         setPhase('chat')
         if (!visible.current) {
           setTab('random') // matched while looking at another tab: bring the chat to the front
@@ -190,7 +194,7 @@ export function RandomScreen({ active }: { active: boolean }) {
     endSignals()
     stopSignals.current = backend.matchSignals(() => void tick())
     void tick()
-  }, [backend, target, lang, countries, toast, setTab, t, pass.mutate])
+  }, [backend, target, lang, countries, anon, toast, setTab, t, pass.mutate])
 
   const cancelMatching = useCallback(() => {
     generation.current++
@@ -349,9 +353,15 @@ export function RandomScreen({ active }: { active: boolean }) {
           >
             <BellButton className="absolute top-3 inset-e-3 md:hidden" />
             <div className="flex w-full max-w-md flex-col items-center text-center">
-              <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={128} />
+              {anon ? (
+                <span className="grid size-32 place-items-center rounded-full bg-muted text-muted-foreground" aria-hidden>
+                  <VenetianMask className="size-16" strokeWidth={1.5} />
+                </span>
+              ) : (
+                <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={128} />
+              )}
               <p className="mt-5 text-lg font-semibold">
-                {me.name}, {me.age} <span aria-hidden>{flagEmoji(me.country)}</span>
+                {anon ? t('anon.name') : `${me.name}, ${me.age}`} <span aria-hidden>{flagEmoji(me.country)}</span>
               </p>
               <h1 id="lobby-title" className="mt-8 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
                 {t('lobby.title')}
@@ -362,6 +372,20 @@ export function RandomScreen({ active }: { active: boolean }) {
               <Segmented
                 className="mt-8 w-full"
                 size="lg"
+                label={t('anon.label')}
+                value={anon ? 'anon' : 'profile'}
+                options={[
+                  { value: 'profile', label: t('anon.profile') },
+                  { value: 'anon', label: t('anon.anon') },
+                ]}
+                onChange={(v) => {
+                  setAnon(v === 'anon')
+                  saveFlag('yaari_meet_anon', v === 'anon')
+                }}
+              />
+              <p className="mt-2 text-xs text-muted-foreground">{t(anon ? 'anon.anonHint' : 'anon.profileHint')}</p>
+              <Segmented
+                className="mt-3 w-full"
                 label={t('lobby.who')}
                 lockedLabel={t('pass.title')}
                 value={target}
@@ -380,7 +404,7 @@ export function RandomScreen({ active }: { active: boolean }) {
                   ]}
                   onChange={(v) => {
                     setGlobal(v === 'global')
-                    saveGlobal(v === 'global')
+                    saveFlag('yaari_meet_global', v === 'global')
                   }}
                 />
               ) : null}
@@ -399,17 +423,16 @@ export function RandomScreen({ active }: { active: boolean }) {
 
               <ul className="mt-8 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
                 <Pill icon={<MessageCircle className="size-3.5" aria-hidden />}>{t('lobby.textFirst')}</Pill>
-                <Pill icon={<Video className="size-3.5" aria-hidden />}>{t('lobby.videoAgree')}</Pill>
                 <Pill icon={<Flag className="size-3.5" aria-hidden />}>{t('lobby.reportLeave')}</Pill>
               </ul>
             </div>
           </m.section>
         ) : phase === 'matching' ? (
-          <Matching key="matching" target={target} countries={countries} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
+          <Matching key="matching" anon={anon} target={target} countries={countries} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
         ) : match ? (
           <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
             <ScreenBoundary>
-              <Suspense fallback={<Matching target={target} countries={countries} onCancel={() => undefined} />}>
+              <Suspense fallback={<Matching anon={anon} target={target} countries={countries} onCancel={() => undefined} />}>
                 <ChatView
                   matchId={match.id}
                   partner={match.partner}
@@ -469,12 +492,14 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
 }
 
 function Matching({
+  anon,
   target,
   countries,
   reconnecting = false,
   onCancel,
   active = false,
 }: {
+  anon: boolean
   target: Target
   countries: string[]
   reconnecting?: boolean
@@ -499,7 +524,13 @@ function Matching({
         {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50" aria-hidden />
         <span className="absolute inset-6 animate-ping-soft rounded-full border-2 border-primary-text/50 [animation-delay:1.2s]" aria-hidden />
-        <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={112} className="relative" />
+        {anon ? (
+          <span className="relative grid size-28 place-items-center rounded-full bg-muted text-muted-foreground" aria-hidden>
+            <VenetianMask className="size-14" strokeWidth={1.5} />
+          </span>
+        ) : (
+          <FrameAvatar frame={myFrame} userId={me.id} name={me.name} src={me.photoUrl} size={112} className="relative" />
+        )}
       </div>
 
       <h2 className="mt-12 text-2xl font-bold tracking-tight">{t('matching.title')}</h2>
@@ -543,10 +574,16 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
             transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
           >
             <span className="text-xs font-semibold tracking-wide text-primary-text uppercase">{t('match.its')}</span>
-            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
+            {partner.anon ? (
+              <span className="grid size-28 place-items-center rounded-full bg-muted text-muted-foreground" aria-hidden>
+                <VenetianMask className="size-14" strokeWidth={1.5} />
+              </span>
+            ) : (
+              <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={112} country={partner.country} />
+            )}
             <span className="flex items-center gap-1.5 text-xl font-bold">
-              {nameAge(partner.name, partner.age)}
-              <TrustBadge userId={partner.id} size={20} />
+              {partner.anon ? partner.name : nameAge(partner.name, partner.age)}
+              {partner.anon ? null : <TrustBadge userId={partner.id} size={20} />}
             </span>
             {partner.interests?.length ? (
               <InterestChips tags={partner.interests.slice(0, 3)} className="justify-center" />

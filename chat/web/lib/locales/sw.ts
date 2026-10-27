@@ -126,7 +126,6 @@ const sw: Dict = {
   'lobby.men': 'Wanaume',
   'lobby.start': 'Anza',
   'lobby.textFirst': 'Maandishi kwanza',
-  'lobby.videoAgree': 'Video tu mkikubaliana wote',
   'lobby.reportLeave': 'Ripoti na uondoke wakati wowote',
   'matching.title': 'Tunakutafutia mtu…',
   'matching.reconnecting': 'Muunganisho ni dhaifu. Bado tunajaribu…',
@@ -701,6 +700,12 @@ const sw: Dict = {
   'room.theme': "Pamba chumba",
   'room.themeHint': "Kila mtu chumbani anaiona. Tumia mandhari uliyonunua, au pata moja kwenye Looks.",
   'room.themeSaved': "Chumba kimesasishwa",
+  'anon.label': "Jinsi ya kukutana",
+  'anon.profile': "Na wasifu wangu",
+  'anon.anon': "Bila jina",
+  'anon.name': "Mgeni",
+  'anon.profileHint': "Mnaona jina, picha na wasifu wa kila mmoja.",
+  'anon.anonHint': "Bila majina, picha wala wasifu. Unakutana tu na waliochagua bila jina.",
 }
 
 export default sw

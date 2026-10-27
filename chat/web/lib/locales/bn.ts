@@ -122,7 +122,6 @@ const bn: Dict = {
   'lobby.men': 'পুরুষ',
   'lobby.start': 'শুরু করুন',
   'lobby.textFirst': 'আগে টেক্সট',
-  'lobby.videoAgree': 'ভিডিও শুধু দুজনে রাজি হলে',
   'lobby.reportLeave': 'যখন খুশি রিপোর্ট করে বেরিয়ে যান',
   'matching.title': 'কাউকে খুঁজছি…',
   'matching.reconnecting': 'নেটওয়ার্ক দুর্বল। চেষ্টা চলছে…',
@@ -687,6 +686,12 @@ const bn: Dict = {
   'room.theme': "রুম সাজান",
   'room.themeHint': "রুমের সবাই দেখবে। কেনা ব্যাকগ্রাউন্ড ব্যবহার করুন, বা Looks থেকে নিন।",
   'room.themeSaved': "রুম আপডেট হয়েছে",
+  'anon.label': "কীভাবে দেখা করবেন",
+  'anon.profile': "প্রোফাইল সহ",
+  'anon.anon': "বেনামী",
+  'anon.name': "অপরিচিত",
+  'anon.profileHint': "দুজনেই একে অপরের নাম, ছবি ও প্রোফাইল দেখতে পাবেন।",
+  'anon.anonHint': "নাম, ছবি বা প্রোফাইল নেই। শুধু যারা বেনামী বেছেছে তাদের সঙ্গে দেখা হবে।",
 }
 
 export default bn

@@ -122,7 +122,6 @@ const ptBR: Dict = {
   'lobby.men': 'Homens',
   'lobby.start': 'Começar',
   'lobby.textFirst': 'Primeiro texto',
-  'lobby.videoAgree': 'Vídeo só se os dois aceitarem',
   'lobby.reportLeave': 'Denuncie e saia quando quiser',
   'matching.title': 'Procurando alguém…',
   'matching.reconnecting': 'Conexão fraca. Ainda tentando…',
@@ -687,6 +686,12 @@ const ptBR: Dict = {
   'room.theme': "Decorar a sala",
   'room.themeHint': "Todos na sala veem. Use um fundo que você comprou ou pegue um em Looks.",
   'room.themeSaved': "Sala atualizada",
+  'anon.label': "Como conhecer",
+  'anon.profile': "Com meu perfil",
+  'anon.anon': "Anônimo",
+  'anon.name': "Desconhecido",
+  'anon.profileHint': "Vocês veem o nome, a foto e o perfil um do outro.",
+  'anon.anonHint': "Sem nomes, fotos ou perfis. Você só conhece quem também escolheu anônimo.",
 }
 
 export default ptBR

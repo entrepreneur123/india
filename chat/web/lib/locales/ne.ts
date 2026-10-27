@@ -122,7 +122,6 @@ const ne: Dict = {
   'lobby.men': 'पुरुष',
   'lobby.start': 'सुरु',
   'lobby.textFirst': 'पहिले टेक्स्ट',
-  'lobby.videoAgree': 'दुवैजना सहमत भए मात्र भिडियो',
   'lobby.reportLeave': 'जहिले पनि रिपोर्ट गरेर निस्कन सकिन्छ',
   'matching.title': 'कसैलाई खोज्दै…',
   'matching.reconnecting': 'कमजोर कनेक्सन। अझै प्रयास गर्दै…',
@@ -688,6 +687,12 @@ const ne: Dict = {
   'room.theme': "कोठा सजाउनुहोस्",
   'room.themeHint': "कोठामा सबैले देख्छन्। किनेको पृष्ठभूमि प्रयोग गर्नुहोस् वा Looks बाट लिनुहोस्।",
   'room.themeSaved': "कोठा अद्यावधिक भयो",
+  'anon.label': "कसरी भेट्ने",
+  'anon.profile': "प्रोफाइलसहित",
+  'anon.anon': "गुमनाम",
+  'anon.name': "अपरिचित",
+  'anon.profileHint': "दुवैले एकअर्काको नाम, फोटो र प्रोफाइल देख्नुहुन्छ।",
+  'anon.anonHint': "नाम, फोटो वा प्रोफाइल छैन। गुमनाम रोज्नेहरूसँग मात्र भेट हुन्छ।",
 }
 
 export default ne

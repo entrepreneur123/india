@@ -114,7 +114,6 @@ const pa: Dict = {
   'lobby.men': 'ਮਰਦ',
   'lobby.start': 'ਸ਼ੁਰੂ ਕਰੋ',
   'lobby.textFirst': 'ਪਹਿਲਾਂ ਟੈਕਸਟ',
-  'lobby.videoAgree': 'ਵੀਡੀਓ ਸਿਰਫ਼ ਦੋਵਾਂ ਦੀ ਮਰਜ਼ੀ ਨਾਲ',
   'lobby.reportLeave': 'ਜਦੋਂ ਮਰਜ਼ੀ ਰਿਪੋਰਟ ਕਰੋ ਤੇ ਨਿਕਲੋ',
   'matching.title': 'ਕਿਸੇ ਨੂੰ ਲੱਭ ਰਹੇ ਹਾਂ…',
   'matching.reconnecting': 'ਕਮਜ਼ੋਰ ਕਨੈਕਸ਼ਨ। ਕੋਸ਼ਿਸ਼ ਜਾਰੀ ਹੈ…',
@@ -666,6 +665,12 @@ const pa: Dict = {
   'room.theme': "ਰੂਮ ਸਜਾਓ",
   'room.themeHint': "ਰੂਮ ਵਿੱਚ ਸਭ ਦੇਖਦੇ ਹਨ। ਖਰੀਦਿਆ ਬੈਕਗ੍ਰਾਊਂਡ ਵਰਤੋ ਜਾਂ Looks ਤੋਂ ਲਓ।",
   'room.themeSaved': "ਰੂਮ ਅੱਪਡੇਟ ਹੋ ਗਿਆ",
+  'anon.label': "ਕਿਵੇਂ ਮਿਲਣਾ",
+  'anon.profile': "ਪ੍ਰੋਫ਼ਾਈਲ ਨਾਲ",
+  'anon.anon': "ਗੁਮਨਾਮ",
+  'anon.name': "ਅਜਨਬੀ",
+  'anon.profileHint': "ਤੁਸੀਂ ਦੋਵੇਂ ਇੱਕ-ਦੂਜੇ ਦਾ ਨਾਮ, ਫ਼ੋਟੋ ਅਤੇ ਪ੍ਰੋਫ਼ਾਈਲ ਦੇਖਦੇ ਹੋ।",
+  'anon.anonHint': "ਨਾਮ, ਫ਼ੋਟੋ ਜਾਂ ਪ੍ਰੋਫ਼ਾਈਲ ਨਹੀਂ। ਤੁਸੀਂ ਸਿਰਫ਼ ਗੁਮਨਾਮ ਚੁਣਨ ਵਾਲਿਆਂ ਨੂੰ ਮਿਲੋਗੇ।",
 }
 
 export default pa

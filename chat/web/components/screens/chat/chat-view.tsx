@@ -42,7 +42,7 @@ const VideoCall = lazy(() => retryImport(() => import('@/components/video/video-
 
 /**
  * One conversation. `random` is a live random match (exit lock, partner-left); `thread` is a message thread with a
- * friend or someone met before. Both can call (free, 051): voice or video, in a random chat and between friends.
+ * friend or someone met before. Calls (free, 051) only between friends, in their thread (070: random chats are text).
  */
 export function ChatView({
   matchId,
@@ -86,14 +86,16 @@ export function ChatView({
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
-  const { me, openProfile, setTab } = useApp()
+  const { me, openProfile } = useApp()
   const live = mode === 'random'
   const chat = useMatchChat(matchId, opened.name, live)
-  // Their card as I may see it now (35: they may turn VIP off or on during the chat).
-  const partner = chat.partner ?? opened
+  // Their card as I may see it now (35: they may turn VIP off or on during the chat); a stranger (070) stays as opened.
+  const partner = opened.anon ? opened : chat.partner ?? opened
+  // A stranger's looks, badge and profile stay hidden (an empty id asks nothing).
+  const lookId = partner.anon ? '' : partner.id
   // Each side's chat bubble (062), as both of us see it.
   const mySkin = useLook(me.id)?.bubble
-  const theirLook = useLook(partner.id)
+  const theirLook = useLook(lookId)
   const theirSkin = theirLook?.bubble
   const [reportOpen, setReportOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
@@ -189,11 +191,11 @@ export function ChatView({
   // 040: a thread whose chat ended goes on only between friends; until then a friends bar replaces the composer.
   const friendship = useFriendship(partner.id, partner.name)
   const gated = !live && chat.ended && friendship.state !== null && friendship.state !== 'friends'
-  // Calls: a random chat until it ends; a thread between friends (the server's call_open, 052).
-  const callable = live ? !ended : friendship.state === 'friends'
+  // Calls: only a thread between friends (the server's call_open, 070).
+  const callable = !live && friendship.state === 'friends'
   // 40: a friend is called only while online (the panel's presence, same request); the server refuses it too.
-  const { data: activity } = useSWR(callable && !live ? 'friend-activity' : null, () => backend.friendActivity(), { refreshInterval: 20_000, refreshWhenHidden: false })
-  const offline = callable && !live && !!activity && !activity.some((a) => a.id === partner.id && a.presence !== 'offline')
+  const { data: activity } = useSWR(callable ? 'friend-activity' : null, () => backend.friendActivity(), { refreshInterval: 20_000, refreshWhenHidden: false })
+  const offline = callable && !!activity && !activity.some((a) => a.id === partner.id && a.presence !== 'offline')
 
   // Closing the chat (a thread) ends its call or my request, so neither is left standing on the server.
   const callNow = useRef(chat.video)
@@ -205,14 +207,6 @@ export function ChatView({
     [backend, matchId],
   )
 
-  // A call never runs off screen (camera and mic would stay live with no controls), and an incoming
-  // request brings the chat back to the front so it can be answered.
-  useEffect(() => {
-    if (!live || visible) return
-    if (chat.video === 'accepted') endVideo()
-    else if (chat.video === 'requested_by_partner') setTab('random')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [live, visible, chat.video])
 
   return (
     <div className="relative flex min-h-0 flex-1 bg-background">
@@ -239,13 +233,14 @@ export function ChatView({
           )}
           <button
             type="button"
+            disabled={partner.anon}
             onClick={() => openProfile(partner.id, { matchId })}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted disabled:hover:bg-transparent"
           >
-            <UserAvatar userId={partner.id} name={partner.name} src={partner.photoUrl} size={40} />
+            <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={40} />
             <span className="min-w-0">
               <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                <span className={cn(isVip(partner) && 'vip-gold italic')}>{nameAge(partner.name, partner.age)}</span> <TrustBadge userId={partner.id} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+                <span className={cn(isVip(partner) && 'vip-gold italic')}>{partner.anon ? partner.name : nameAge(partner.name, partner.age)}</span> <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (
@@ -253,7 +248,7 @@ export function ChatView({
                 ) : chat.typing ? (
                   <span className="text-primary-text">{t('chat.typing')}</span>
                 ) : (
-                  <LookName userId={partner.id} handle={partner.handle} className="font-semibold" />
+                  <LookName userId={lookId} handle={partner.handle} className="font-semibold" />
                 )}
               </span>
             </span>

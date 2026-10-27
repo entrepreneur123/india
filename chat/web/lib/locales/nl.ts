@@ -122,7 +122,6 @@ const nl: Dict = {
   'lobby.men': 'Mannen',
   'lobby.start': 'Start',
   'lobby.textFirst': 'Eerst tekst',
-  'lobby.videoAgree': 'Video alleen als jullie allebei willen',
   'lobby.reportLeave': 'Altijd melden en weggaan',
   'matching.title': 'Iemand zoeken…',
   'matching.reconnecting': 'Zwakke verbinding. We blijven proberen…',
@@ -688,6 +687,12 @@ const nl: Dict = {
   'room.theme': "Ruimte aankleden",
   'room.themeHint': "Iedereen in de ruimte ziet het. Gebruik een gekochte achtergrond of haal er een in Looks.",
   'room.themeSaved': "Ruimte bijgewerkt",
+  'anon.label': "Hoe ontmoeten",
+  'anon.profile': "Met mijn profiel",
+  'anon.anon': "Anoniem",
+  'anon.name': "Onbekende",
+  'anon.profileHint': "Jullie zien elkaars naam, foto en profiel.",
+  'anon.anonHint': "Geen namen, foto's of profielen. Je ontmoet alleen anderen die anoniem kozen.",
 }
 
 export default nl
