@@ -11,6 +11,7 @@ import argparse
 import datetime as dt
 import json
 import pathlib
+import re
 import urllib.request
 
 KEY = "02718a8e3becab6dcf865cf1b74d00dd"
@@ -37,6 +38,22 @@ def fresh_urls(site_url: str, today_feed: dict, today: dt.date) -> list[str]:
     return [f"{base}{lang}{p}" for p in paths for lang in ("", "/bn", "/hi")]
 
 
+def mh_urls(site_url: str, mh_days: list[dict], today: dt.date) -> list[str]:
+    """Maharashtra (its own feed, v2/mh/): /maharashtra/ and the draw pages of today and yesterday."""
+    base = site_url.rstrip("/")
+    paths = []
+    for day in mh_days:
+        for d in day.get("draws", []):
+            if d["date"] < (today - dt.timedelta(days=1)).isoformat() or d.get("status") != "OK":
+                continue
+            y, m, dd = d["date"].split("-")
+            slug = re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")  # as web/sitegen.py
+            paths.append(f"/result/{dd}-{m}-{y}/maharashtra-{slug}/")
+    if paths:
+        paths.insert(0, "/maharashtra/")
+    return [f"{base}{lang}{p}" for p in paths for lang in ("", "/bn", "/hi")]
+
+
 def body(site_url: str, urls: list[str]) -> dict:
     host = site_url.split("/")[2]
     return {"host": host, "key": KEY, "keyLocation": f"{site_url.rstrip('/')}/{KEY}.txt", "urlList": urls}
@@ -53,7 +70,11 @@ def main(argv=None) -> int:
     if a.key_only:
         return 0
     feed = json.loads((out / "v2/today.json").read_text())
-    urls = fresh_urls(a.site_url, feed, dt.datetime.now(IST).date())
+    today = dt.datetime.now(IST).date()
+    urls = fresh_urls(a.site_url, feed, today)
+    mh = [json.loads((out / f"v2/mh/days/{d.isoformat()}.json").read_text())
+          for d in (today, today - dt.timedelta(days=1)) if (out / f"v2/mh/days/{d.isoformat()}.json").exists()]
+    urls += mh_urls(a.site_url, mh, today)
     req = urllib.request.Request("https://api.indexnow.org/indexnow", data=json.dumps(body(a.site_url, urls)).encode(),
                                  headers={"Content-Type": "application/json; charset=utf-8"})
     try:
