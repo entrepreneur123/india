@@ -125,39 +125,47 @@ def _cell_numbers(gray, cells, dpi: int, work: str) -> tuple[list, list]:
     import cv2
     import numpy as np
     H, W = gray.shape
-    small = [c for c in cells if dpi * 0.25 < c[2] < W / 5 and dpi * 0.12 < c[3] < dpi * 0.7]
+    # Number boxes: 0.3 inch (random tiers) to 0.75 inch tall (the 1st prize in its series column).
+    small = [c for c in cells if dpi * 0.25 < c[2] < W / 5 and dpi * 0.12 < c[3] < dpi * 1.0]
     if not small:
         return [], []
-    hh, gap = 90, 40
-    crops = []
-    for x, y, w, h in small:
-        ix, iy = max(2, int(w * 0.06)), max(2, int(h * 0.12))
-        c = gray[y + iy:y + h - iy, x + ix:x + w - ix]
-        if c.size == 0:
-            crops.append(np.full((hh, hh), 255, np.uint8))
-            continue
-        crops.append(cv2.resize(c, (max(1, int(c.shape[1] * hh / c.shape[0])), hh)))
-    found: dict[int, list[str]] = {}
-    chunk = 60  # crops per Tesseract run: one strip of all 300+ cells is taller than it reads (~39,000 px)
-    for start in range(0, len(crops), chunk):
-        part = crops[start:start + chunk]
-        width = max(c.shape[1] for c in part) + 2 * gap
-        strip = np.full((len(part) * (hh + gap) + gap, width), 255, np.uint8)
-        for i, c in enumerate(part):
-            strip[gap + i * (hh + gap):gap + i * (hh + gap) + hh, gap:gap + c.shape[1]] = c
-        p = os.path.join(work, "strip.png")
-        cv2.imwrite(p, strip)
-        out = subprocess.run(["tesseract", p, "-", "--psm", "6", "-c", "tessedit_char_whitelist=0123456789-", "tsv"],
-                             capture_output=True, text=True, timeout=180).stdout
-        for line in out.splitlines()[1:]:
-            f = line.split("\t")
-            if len(f) == 12 and f[11].strip():
-                i = (int(f[7]) + int(f[9]) // 2 - gap // 2) // (hh + gap)
-                if 0 <= i < len(part):
-                    found.setdefault(start + i, []).append(f[11].strip())
+    def strip_pass(idx: list[int], hh: int, gap: int, psm: str) -> dict[int, str]:
+        crops = []
+        for i in idx:
+            x, y, w, h = small[i]
+            # Barely trimmed: big 1st-prize digits fill their box edge to edge (a 6% trim cut "6840" to "84").
+            iy = max(3, int(h * 0.06))
+            c = gray[y + iy:y + h - iy, x + 3:x + w - 3]
+            crops.append(cv2.resize(c, (max(1, int(c.shape[1] * hh / c.shape[0])), hh)) if c.size
+                         else np.full((hh, hh), 255, np.uint8))
+        found: dict[int, list[str]] = {}
+        chunk = 60  # crops per Tesseract run: one strip of all 300+ cells is taller than it reads (~39,000 px)
+        for start in range(0, len(crops), chunk):
+            part = crops[start:start + chunk]
+            width = max(c.shape[1] for c in part) + 2 * gap
+            strip = np.full((len(part) * (hh + gap) + gap, width), 255, np.uint8)
+            for i, c in enumerate(part):
+                strip[gap + i * (hh + gap):gap + i * (hh + gap) + hh, gap:gap + c.shape[1]] = c
+            p = os.path.join(work, "strip.png")
+            cv2.imwrite(p, strip)
+            out = subprocess.run(["tesseract", p, "-", "--psm", psm, "-c", "tessedit_char_whitelist=0123456789-", "tsv"],
+                                 capture_output=True, text=True, timeout=180).stdout
+            for line in out.splitlines()[1:]:
+                f = line.split("\t")
+                if len(f) == 12 and f[11].strip():
+                    i = (int(f[7]) + int(f[9]) // 2 - gap // 2) // (hh + gap)
+                    if 0 <= i < len(part):
+                        found.setdefault(idx[start + i], []).append(f[11].strip())
+        return {i: re.sub(r"\D", "", "".join(ws)) for i, ws in found.items()}  # "6840-": a dash from the box edge
+
+    # A block of lines first; the boxes it skipped (it drops a line whose size differs, e.g. the big
+    # 1st prize) are read again as sparse text.
+    got = strip_pass(list(range(len(small))), 90, 40, "6")
+    todo = [i for i in range(len(small)) if not re.fullmatch(r"\d{4}", got.get(i, ""))]
+    if todo:
+        got.update({i: t for i, t in strip_pass(todo, 70, 60, "11").items() if re.fullmatch(r"\d{4}", t)})
     nums, done = [], []
-    for i, ws in found.items():
-        t = "".join(ws)
+    for i, t in got.items():
         if re.fullmatch(r"\d{4}", t):
             x, y, w, h = small[i]
             nums.append((t, x + w / 2, y + h / 2, w))
@@ -180,6 +188,11 @@ def _numbers_in(word) -> list[tuple[str, float, float]]:
         return []
     k = len(groups)
     return [(g, x + w * (2 * i + 1) / (2 * k), y + h / 2) for i, g in enumerate(groups)]
+
+
+def _lead(ws) -> int:
+    """Where a line's text starts (specks of the table's left rule are read as '_' or ',')."""
+    return next((w[1] for w in ws if re.search(r"\w\w", w[0])), ws[0][1])
 
 
 def _ordinal(digits: str, suffix: str) -> str:
@@ -238,6 +251,13 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             below = [nxt for nxt in lines[li + 1:li + 4] if abs(nxt[0][1] - x0) < W * 0.08]
             region = text[m.start():] + " " + " ".join(" ".join(w[0] for w in nxt) for nxt in below)
         top = cell[1] if cell else min(w[2] for w in ws)
+        if not cell:  # its box was not found: the heading starts at its first line (Marathi above English)
+            for prev in reversed(lines[:li]):
+                if re.search(r"(?i)\brank\b|series|[A-Z]{2}\s?[-.]\s?\d{2}", " ".join(w[0] for w in prev)):
+                    break  # the series labels over the table are not part of a heading
+                if top - max(w[2] + w[4] for w in prev) > dpi * 0.3 or abs(_lead(prev) - _lead(ws)) > W * 0.03:
+                    break
+                top = min(w[2] for w in prev)
         amt = _AMOUNT.findall(region)
         cnt = _COUNT.search(region)
         num_word = next((w for w in ws if re.match(r"(?i)numbers?\b", w[0])), None)
@@ -258,18 +278,28 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     for w in words:
         if m := re.fullmatch(r"[^\w]*([A-Z]{2})\s?-\s?(\d{2})[^\w]*", w[0]):
             series.append((f"{m.group(1)}-{m.group(2)}", w[1] + w[3] / 2, w[2] + w[4] / 2, w[3]))
-    cols = _series_columns(series, H)
+    # The label row is often misread ("PWLO1", "PM-O3"): its digits still give each column.
+    loose = []
+    for w in words:
+        if m := re.fullmatch(r"[^\w]*([A-Z]{2,3})[^0-9OoQ]{0,2}([0-9OoQ]{2})[^\w]*", w[0]):
+            loose.append((int(m.group(2).translate(str.maketrans("OoQ", "000"))), w[1] + w[3] / 2, w[2] + w[4] / 2))
+    cols = _series_columns(series, loose, H)
+    # Two layouts: a "Series | Number" box for the 1st prize (GL-00 | 2142), or the 1st prize under its
+    # series column (TJ-01 over 6840). In the first, the series is only ever read from its own box:
+    # the number box happens to stand under some series column too.
+    boxed_series = any(re.search(r"(?i)series\W.{0,40}\bnumber\b", " ".join(w[0] for w in ws)) for ws in lines)
+    prefix = cols["prefix"] if cols else (Counter(x[0][:2] for x in series).most_common(1) or [("", 0)])[0][0]
     head["series"] = cols["all"] if cols else sorted({s for s, *_ in series})
 
-    found = [(n, cx, cy, ww, False) for n, cx, cy, ww in cell_nums]
+    found = [(n, cx, cy, ww, False, True) for n, cx, cy, ww in cell_nums]
     for wd in num_words:  # numbers outside single cells: merged cells of the big random tiers
         for n, cx, cy in _numbers_in(wd):
             if not any(c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3] for c in read_cells):
                 k = len(_numbers_in(wd))  # k > 1: positions inside the word are estimates
-                found.append((n, cx, cy, wd[3] / k, k > 1))
+                found.append((n, cx, cy, wd[3] / k, k > 1, False))
     widths = sorted(f[3] for f in found)
     typical = widths[len(widths) // 2] if widths else 0
-    for n, cx, cy, ww, approx in found:
+    for n, cx, cy, ww, approx, boxed in found:
         approx = approx or ww > typical * 1.6  # from a box wider than one number: its centre is not the number's
         if cy >= panel:
             continue
@@ -279,57 +309,61 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
                 owner = t
         if owner is None:
             continue
-        c = owner["cell"]
-        if c and c[2] < W / 2 and c[1] <= cy <= c[1] + c[3] and c[0] <= cx <= c[0] + c[2]:
-            continue  # inside a heading cell beside its numbers (e.g. a misread amount)
-        lo, hi = owner["band"]
-        if lo - dpi * 0.05 <= cy <= hi + dpi * 0.05 and cx < owner["after"]:
-            continue  # on the heading's own line, left of its end: part of the heading text
+        c, (lo, hi) = owner["cell"], owner["band"]
+        if not boxed:  # a number alone in its own box is never part of a heading's text
+            if c and c[2] < W / 2 and c[1] <= cy <= c[1] + c[3] and c[0] <= cx <= c[0] + c[2]:
+                continue  # inside a heading cell beside its numbers (e.g. a misread amount)
+            if lo - dpi * 0.05 <= cy <= hi + dpi * 0.05 and cx < owner["after"]:
+                continue  # on the heading's own line, left of its end: part of the heading text
         owner["numbers"].append((n, cx, cy, ww, approx))
 
-    numbers = [(n, cx / W, cy / H, ww / W, _series_of(cx, cy, series, cols, dpi) if t["rank"] in ("1", "CONS") else None, approx)
+    numbers = [(n, cx / W, cy / H, ww / W, _series_of(cx, cy, loose, prefix, None if boxed_series else cols, dpi) if t["rank"] in ("1", "CONS") else None, approx)
                for t in order for n, cx, cy, ww, approx in t["numbers"]]
     headings = [{"rank": t["rank"], "top": t["top"] / H, "prize": t["prize"], "count": t["count"]} for t in order]
     return {"head": head, "headings": headings, "numbers": numbers}
 
 
-def _series_columns(series, H: int) -> dict | None:
+def _series_columns(series, loose, H: int) -> dict | None:
     """The row of series labels over the table (GL-00 ... GL-09) is evenly spaced: fit column = a + b*k
     to the labels that were read, so a number can be placed under its series even where a label
-    was misread ("TJ.gQ" for TJ-00). None unless at least 6 labels of one prefix fit closely."""
-    if len(series) < 6:
+    was misread ("TJ.gQ" for TJ-00). The prefix comes only from labels read exactly; the column
+    positions also from loosely read ones ("PWLO1" is column 1). None unless 6 columns fit closely."""
+    if not series or len(loose) < 6:
         return None
-    ys = sorted(s[2] for s in series)
-    top = ys[0]
-    row = [s for s in series if abs(s[2] - top) < H * 0.012]
-    prefixes = Counter(s[0][:2] for s in row)
-    prefix, n = prefixes.most_common(1)[0]
-    pts = sorted({int(s[0][3:]): s[1] for s in row if s[0][:2] == prefix}.items())
-    if n < 6 or len(pts) < 6 or any(k > 9 for k, _ in pts):
+    # The label row: the height at which most labels were read (a stray match elsewhere is ignored).
+    top = max((s[2] for s in loose), key=lambda y: sum(abs(t[2] - y) < H * 0.012 for t in loose))
+    row = [s for s in loose if abs(s[2] - top) < H * 0.012 and s[0] <= 9]
+    exact = [s[0][:2] for s in series if abs(s[2] - top) < H * 0.012]
+    if not exact:
+        return None
+    prefix, n = Counter(exact).most_common(1)[0]
+    if n < len(exact) / 2:
+        return None
+    pts = sorted({k: x for k, x, _ in row}.items())
+    if len(pts) < 6:
         return None
     ks, xs = [k for k, _ in pts], [x for _, x in pts]
     mk, mx = sum(ks) / len(ks), sum(xs) / len(xs)
     b = sum((k - mk) * (x - mx) for k, x in pts) / sum((k - mk) ** 2 for k in ks)
     a = mx - b * mk
-    if b <= 0 or any(abs(x - (a + b * k)) > b * 0.2 for k, x in pts):
+    if b <= 0 or any(abs(x - (a + b * k)) > b * 0.25 for k, x in pts):
         return None
     return {"prefix": prefix, "a": a, "b": b, "y": top, "all": [f"{prefix}-{k:02d}" for k in range(10)]}
 
 
-def _series_of(x: float, y: float, series, cols: dict | None, dpi: int) -> str | None:
-    """The series a 1st-prize/consolation number belongs to: a series label in the same row to its
-    left (GL-00 | 2142), else the series column it stands under (TJ-01 over 6840)."""
-    row = [s for s in series if abs(s[2] - y) < dpi * 0.2 and s[1] < x and (not cols or s[2] > cols["y"] + dpi * 0.2)]
-    if row:
-        return max(row, key=lambda s: s[1])[0]
+def _series_of(x: float, y: float, loose, prefix: str, cols: dict | None, dpi: int) -> str | None:
+    """The series a 1st-prize/consolation number belongs to: the series box in its own row, left of
+    it (GL-00 | 2142); else, where the sheet prints it so (`cols` given), the series column it
+    stands under (TJ-01 over 6840)."""
+    label_row = cols["y"] if cols else None
+    row = [s for s in loose if abs(s[2] - y) < dpi * 0.2 and s[1] < x and s[0] <= 9
+           and (label_row is None or s[2] > label_row + dpi * 0.2)]
+    if row and prefix:
+        return f"{prefix}-{max(row, key=lambda s: s[1])[0]:02d}"
     if cols and y > cols["y"]:
         k = round((x - cols["a"]) / cols["b"])
         if 0 <= k <= 9 and abs(x - (cols["a"] + cols["b"] * k)) < cols["b"] * 0.3:
             return f"{cols['prefix']}-{k:02d}"
-        return None
-    col = [s for s in series if abs(s[1] - x) < s[3] and s[2] < y]
-    if col:
-        return max(col, key=lambda s: s[2])[0]
     return None
 
 
@@ -479,8 +513,10 @@ def _agree(runs: list[dict]) -> dict:
 
 
 def _with_series(x: tuple, v: str) -> tuple:
-    """(value, x, y, w, series): the series most readings of `v` gave, for the 1st/consolation."""
-    ser = _vote([s for n, s in x[4].values() if n == v and s])
+    """(value, x, y, w, series) for the 1st prize/consolation: the series needs the same margin as a
+    number with no order to check (3 readings, 3x any other series)."""
+    c = Counter(s for n, s in x[4].values() if n == v and s).most_common()
+    ser = c[0][0] if c and c[0][1] >= 3 and (len(c) == 1 or c[0][1] >= 3 * c[1][1]) else None
     return (v, x[1], x[2], x[3], ser)
 
 
