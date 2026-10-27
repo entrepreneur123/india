@@ -122,7 +122,6 @@ const nl: SocialDict = {
   'contacts.stoppedToast': 'Je deelt niet meer met {name}',
   'contacts.copied': 'Gekopieerd',
   'hl.title': 'Hoogtepunten',
-  'hl.new': 'Nieuw',
   'hl.name': 'Titel',
   'hl.add': 'Foto’s toevoegen',
   'hl.save': 'Opslaan',
@@ -181,6 +180,7 @@ const nl: SocialDict = {
   'party.searching': "Zoeken naar een andere groep…",
   'party.needTwo': "Minstens 2 nodig — vrienden openen hier ook Groepsmatch.",
   'party.ready': "{n} doen mee — klaar",
+  'hl.create': "Nieuw hoogtepunt",
 }
 
 export default nl

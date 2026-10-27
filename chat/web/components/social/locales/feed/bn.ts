@@ -77,6 +77,7 @@ const bn: FeedDict = {
 
   'profile.speaks': 'ভাষা',
   'style.mbtiHint': "ঐচ্ছিক। মুছতে আবার ট্যাপ করুন।",
+  'post.likers': "যাঁরা পছন্দ করেছেন",
 }
 
 export default bn

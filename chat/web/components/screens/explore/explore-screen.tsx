@@ -20,6 +20,7 @@ import { FriendNotes } from './friend-notes'
 import { LookingFor } from './looking'
 import { TagPosts } from '@/components/social/hashtags'
 import { hashtagsOf } from '@/lib/hashtags'
+import { PostCard } from '@/components/social/posts/post-card'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
@@ -191,7 +192,7 @@ function PersonLine({ p, onOpen }: { p: PersonRow; onOpen: () => void }) {
 }
 
 function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ranked: boolean; rank: 'likes' | 'friends' }) {
-  const { openProfile } = useApp()
+  const { openProfile, me } = useApp()
   const { t, num } = useI18n()
   if (!list) return <Skeleton className="h-60 w-full rounded-2xl" />
   if (!list.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t('explore.empty')}</p>
@@ -199,7 +200,7 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
     <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
       {list.map((p, i) => (
         <li key={p.id}>
-          <button type="button" onClick={() => openProfile(p.id)} className="group flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-start transition-shadow hover:shadow-e2">
+          <button type="button" onClick={() => openProfile(p.id)} className={cn('group flex w-full flex-col overflow-hidden rounded-2xl border bg-card text-start transition-shadow hover:shadow-e2', p.id === me.id ? 'border-primary ring-1 ring-primary' : 'border-border')}>
             <span className="relative block aspect-square bg-muted">
               {p.photoUrl ? (
                 <CardPhoto userId={p.id} src={p.photoUrl} />
@@ -208,7 +209,8 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
                   <Avatar name={p.name} size={72} />
                 </span>
               )}
-              {ranked ? (
+              {/* My own card after the top 50 (078) has no number: my place isn't known. */}
+              {ranked && i < 50 ? (
                 <span className="absolute top-2 start-2 grid size-7 place-items-center rounded-full bg-black/60 text-xs font-bold text-white">{num(i + 1)}</span>
               ) : null}
             </span>
@@ -262,25 +264,37 @@ function FeedPhotos({ photos, label }: { photos: string[]; label: string }) {
 }
 
 function Feed({ items }: { items: FeedItem[] | undefined }) {
-  const { openProfile } = useApp()
+  const { openProfile, openPost } = useApp()
   const { t, timeAgo } = useI18n()
   if (!items) return <Skeleton className="h-80 w-full rounded-2xl" />
   if (!items.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t('explore.feedEmpty')}</p>
   return (
     <ul className="mx-auto flex w-full max-w-lg flex-col gap-4">
-      {items.map((it) => (
-        <li key={`${it.kind}:${it.id}`} className="overflow-hidden rounded-2xl border border-border bg-card">
-          <button type="button" onClick={() => openProfile(it.user.id)} className="flex w-full items-center gap-3 p-3 text-start">
-            <UserAvatar userId={it.user.id} name={it.user.name} src={it.user.photoUrl} size={36} />
-            <span className="flex min-w-0 flex-col">
-              <span className="truncate text-sm font-semibold">{it.user.name}</span>
-              <span className="text-xs text-muted-foreground">{timeAgo(Date.parse(it.at))}</span>
-            </span>
-          </button>
-          {it.photos.length ? <FeedPhotos photos={it.photos} label={it.user.name} /> : null}
-          {it.text ? <p className={cn('px-3 py-3 text-sm', it.kind === 'highlight' && 'font-semibold')}>{it.text}</p> : null}
-        </li>
-      ))}
+      {items.map((it) => {
+        // A post in full (081): liked here; its count or comment button opens its likers and comments together.
+        const post = it.post
+        if (post) {
+          const open = () => openPost(post.id, { initial: post, reactions: true })
+          return (
+            <li key={`${it.kind}:${it.id}`} className="overflow-hidden rounded-2xl border border-border bg-card">
+              <PostCard post={post} onComments={open} onLikes={open} />
+            </li>
+          )
+        }
+        return (
+          <li key={`${it.kind}:${it.id}`} className="overflow-hidden rounded-2xl border border-border bg-card">
+            <button type="button" onClick={() => openProfile(it.user.id)} className="flex w-full items-center gap-3 p-3 text-start">
+              <UserAvatar userId={it.user.id} name={it.user.name} src={it.user.photoUrl} size={36} />
+              <span className="flex min-w-0 flex-col">
+                <span className="truncate text-sm font-semibold">{it.user.name}</span>
+                <span className="text-xs text-muted-foreground">{timeAgo(Date.parse(it.at))}</span>
+              </span>
+            </button>
+            {it.photos.length ? <FeedPhotos photos={it.photos} label={it.user.name} /> : null}
+            {it.text ? <p className={cn('px-3 py-3 text-sm', it.kind === 'highlight' && 'font-semibold')}>{it.text}</p> : null}
+          </li>
+        )
+      })}
     </ul>
   )
 }

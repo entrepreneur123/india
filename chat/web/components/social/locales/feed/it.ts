@@ -77,6 +77,7 @@ const it: FeedDict = {
 
   'profile.speaks': 'Parla',
   'style.mbtiHint': "Facoltativo. Tocca di nuovo per togliere.",
+  'post.likers': "Mi piace",
 }
 
 export default it

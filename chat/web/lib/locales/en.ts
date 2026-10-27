@@ -509,7 +509,6 @@ const en = {
   // me & profiles
   'me.edit': 'Edit profile',
   'me.newPost': 'New post',
-  'me.firstPost': 'Share your first post',
   'me.editDesc': 'Gender and date of birth can’t be changed.',
   'me.updated': 'Profile updated',
   'me.postDesc': 'People you’ve chatted with, your friends and people in the same room can see your posts.',
@@ -715,6 +714,8 @@ const en = {
   'looking.reply': "Message",
   'error.party_small': "At least 2 of you need to be in",
   'lobby.party': "With friends? Party random chat",
+  'settings.blurMedia': "Blur photos from others",
+  'settings.blurMediaBody': "Photos and videos in chats and rooms stay blurred until you tap them.",
 } as const
 
 export default en

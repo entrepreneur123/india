@@ -83,6 +83,9 @@ const ko: RoomDict = {
   'clearChat': "채팅 청소",
   'clearChatTitle': "모두의 채팅을 청소할까요?",
   'clearChatBody': "지금까지 쓴 채팅이 방에서 모두 사라져요. 되돌릴 수 없어요.",
+  'makeHost': "방장 넘기기",
+  'makeHostTitle': "{name}님에게 방장을 넘길까요?",
+  'makeHostBody': "이제 {name}님이 방을 이끌고, 나는 부방장으로 남아요.",
 }
 
 export default ko

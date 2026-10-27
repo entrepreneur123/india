@@ -124,7 +124,6 @@ const es: SocialDict = {
   'contacts.stoppedToast': 'Dejaste de compartir con {name}',
   'contacts.copied': 'Copiado',
   'hl.title': 'Destacadas',
-  'hl.new': 'Nueva',
   'hl.name': 'Título',
   'hl.add': 'Añadir fotos',
   'hl.save': 'Guardar',
@@ -183,6 +182,7 @@ const es: SocialDict = {
   'party.searching': "Buscando otro grupo…",
   'party.needTwo': "Hacen falta al menos 2: tus amigos también abren Partida en grupo aquí.",
   'party.ready': "{n} dentro — listos",
+  'hl.create': "Nuevo destacado",
 }
 
 export default es

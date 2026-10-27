@@ -77,6 +77,7 @@ const ta: FeedDict = {
 
   'profile.speaks': 'பேசும் மொழிகள்',
   'style.mbtiHint': "விருப்பத்தேர்வு. அழிக்க மீண்டும் தட்டவும்.",
+  'post.likers': "விரும்பியவர்கள்",
 }
 
 export default ta

@@ -510,7 +510,6 @@ const fa: Dict = {
   // me & profiles
   'me.edit': 'ویرایش پروفایل',
   'me.newPost': 'پست جدید',
-  'me.firstPost': 'اولین پستتان را بگذارید',
   'me.editDesc': 'جنسیت و تاریخ تولد قابل تغییر نیستند.',
   'me.updated': 'پروفایل به‌روز شد',
   'me.postDesc': 'کسانی که با آن‌ها چت کرده‌اید، دوستانتان و افراد همان روم پست‌های شما را می‌بینند.',
@@ -716,6 +715,8 @@ const fa: Dict = {
   'looking.reply': "پیام",
   'error.party_small': "دست‌کم ۲ نفر باید پایه باشند",
   'lobby.party': "با دوستان؟ چت تصادفی گروهی",
+  'settings.blurMedia': "تار کردن عکس‌های دیگران",
+  'settings.blurMediaBody': "عکس‌ها و ویدیوهای گفتگوها و اتاق‌ها تا وقتی رویشان نزنید تار می‌مانند.",
 }
 
 export default fa

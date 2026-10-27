@@ -122,7 +122,6 @@ const te: SocialDict = {
   'contacts.stoppedToast': '{name}తో షేర్ చేయడం ఆపేశారు',
   'contacts.copied': 'కాపీ అయింది',
   'hl.title': 'హైలైట్స్',
-  'hl.new': 'కొత్తది',
   'hl.name': 'శీర్షిక',
   'hl.add': 'ఫోటోలు జోడించండి',
   'hl.save': 'సేవ్ చేయండి',
@@ -181,6 +180,7 @@ const te: SocialDict = {
   'party.searching': "మరో గుంపు కోసం వెతుకుతున్నాం…",
   'party.needTwo': "కనీసం 2 మంది కావాలి — స్నేహితులు కూడా ఇక్కడ పార్టీ మ్యాచ్ తెరవాలి.",
   'party.ready': "{n} మంది — సిద్ధం",
+  'hl.create': "కొత్త హైలైట్",
 }
 
 export default te

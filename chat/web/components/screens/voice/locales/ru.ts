@@ -85,6 +85,9 @@ const ru: RoomDict = {
   'clearChat': "Очистить чат",
   'clearChatTitle': "Очистить чат для всех?",
   'clearChatBody': "Всё написанное исчезнет из комнаты. Отменить нельзя.",
+  'makeHost': "Сделать хостом",
+  'makeHostTitle': "Сделать {name} хостом?",
+  'makeHostBody': "Теперь комнату ведёт {name}. Вы остаётесь со-хостом.",
 }
 
 export default ru

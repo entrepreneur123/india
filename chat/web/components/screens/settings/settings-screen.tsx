@@ -2,11 +2,12 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, ImageOff, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
 import { roomSoundsOn, setRoomSounds } from '@/lib/room-sounds'
+import { saveFlag, savedFlag } from '@/lib/flags'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useLooksT } from '@/components/looks/looks-text'
@@ -30,6 +31,7 @@ export function SettingsScreen() {
   const [blocksOpen, setBlocksOpen] = useState(false)
   const [recentsOpen, setRecentsOpen] = useState(false)
   const [sounds, setSounds] = useState(roomSoundsOn)
+  const [blur, setBlur] = useState(() => savedFlag('yaari_blur_media'))
   const { lt } = useLooksT()
   const { data: shop } = useShop()
   const anon = useAnonSwitch()
@@ -80,6 +82,7 @@ export function SettingsScreen() {
             on={!!me?.dmEveryone}
             onChange={(on) => void backend.setDmEveryone(on).then(setMe, toast.error)}
           />
+          <Toggle icon={ImageOff} label={t('settings.blurMedia')} body={t('settings.blurMediaBody')} on={blur} onChange={(on) => (saveFlag('yaari_blur_media', on), setBlur(on))} />
           <Toggle
             icon={EyeOff}
             label={t('settings.hideOnline')}

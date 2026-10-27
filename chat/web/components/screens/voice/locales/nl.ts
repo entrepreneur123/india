@@ -82,6 +82,9 @@ const nl: RoomDict = {
   'clearChat': "Chat wissen",
   'clearChatTitle': "Chat voor iedereen wissen?",
   'clearChatBody': "Alles wat tot nu toe is geschreven verdwijnt uit de ruimte. Dit kan niet ongedaan.",
+  'makeHost': "Host maken",
+  'makeHostTitle': "{name} host maken?",
+  'makeHostBody': "{name} leidt de kamer vanaf nu. Jij blijft co-host.",
 }
 
 export default nl

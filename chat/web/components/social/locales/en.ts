@@ -128,7 +128,6 @@ const en = {
   'contacts.stoppedToast': 'Stopped sharing with {name}',
   'contacts.copied': 'Copied',
   'hl.title': 'Highlights',
-  'hl.new': 'New',
   'hl.name': 'Title',
   'hl.add': 'Add photos',
   'hl.save': 'Save',
@@ -187,6 +186,7 @@ const en = {
   'party.searching': "Looking for another party…",
   'party.needTwo': "At least 2 of you need to be in — friends open Party match here too.",
   'party.ready': "{n} in — ready to go",
+  'hl.create': "New highlight",
 }
 
 export default en

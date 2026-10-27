@@ -502,7 +502,6 @@ const es: Dict = {
 
   'me.edit': 'Editar perfil',
   'me.newPost': 'Nueva publicación',
-  'me.firstPost': 'Comparte tu primera publicación',
   'me.editDesc': 'El género y la fecha de nacimiento no se pueden cambiar.',
   'me.updated': 'Perfil actualizado',
   'me.postDesc': 'Las personas con las que chateaste, tus amigos y quienes estén en la misma sala pueden ver tus publicaciones.',
@@ -705,6 +704,8 @@ const es: Dict = {
   'looking.reply': "Mensaje",
   'error.party_small': "Tienen que apuntarse al menos 2",
   'lobby.party': "¿Con amigos? Chat aleatorio en grupo",
+  'settings.blurMedia': "Difuminar fotos de otros",
+  'settings.blurMediaBody': "Las fotos y videos de chats y salas se ven borrosos hasta que los tocas.",
 }
 
 export default es

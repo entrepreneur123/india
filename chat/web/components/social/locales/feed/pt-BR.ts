@@ -77,6 +77,7 @@ const ptBR: FeedDict = {
 
   'profile.speaks': 'Fala',
   'style.mbtiHint': "Opcional. Toque de novo para limpar.",
+  'post.likers': "Curtidas",
 }
 
 export default ptBR

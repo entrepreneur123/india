@@ -502,7 +502,6 @@ const ro: Dict = {
 
   'me.edit': 'Editează profilul',
   'me.newPost': 'Postare nouă',
-  'me.firstPost': 'Publică prima ta postare',
   'me.editDesc': 'Genul și data nașterii nu se pot schimba.',
   'me.updated': 'Profil actualizat',
   'me.postDesc': 'Postările tale le văd oamenii cu care ai vorbit, prietenii tăi și cei din aceeași cameră cu tine.',
@@ -705,6 +704,8 @@ const ro: Dict = {
   'looking.reply': "Mesaj",
   'error.party_small': "Trebuie să fiți cel puțin 2",
   'lobby.party': "Cu prietenii? Chat aleatoriu de grup",
+  'settings.blurMedia': "Estompează fotografiile altora",
+  'settings.blurMediaBody': "Fotografiile și videoclipurile din chaturi și camere rămân estompate până le atingi.",
 }
 
 export default ro

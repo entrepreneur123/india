@@ -122,7 +122,6 @@ const de: SocialDict = {
   'contacts.stoppedToast': 'Du teilst nicht mehr mit {name}',
   'contacts.copied': 'Kopiert',
   'hl.title': 'Highlights',
-  'hl.new': 'Neu',
   'hl.name': 'Titel',
   'hl.add': 'Fotos hinzufügen',
   'hl.save': 'Speichern',
@@ -181,6 +180,7 @@ const de: SocialDict = {
   'party.searching': "Suche eine andere Gruppe…",
   'party.needTwo': "Mindestens 2 müssen dabei sein – Freunde öffnen hier auch Gruppen-Match.",
   'party.ready': "{n} dabei – startklar",
+  'hl.create': "Neues Highlight",
 }
 
 export default de

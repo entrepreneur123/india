@@ -87,6 +87,7 @@ const uk: FeedDict = {
   // a profile
   'profile.speaks': 'Мови',
   'style.mbtiHint': "Необов’язково. Натисніть ще раз, щоб прибрати.",
+  'post.likers': "Вподобання",
 }
 
 export default uk

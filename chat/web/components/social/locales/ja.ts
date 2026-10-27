@@ -128,7 +128,6 @@ const ja: SocialDict = {
   'contacts.stoppedToast': '{name}さんへの共有をやめました',
   'contacts.copied': 'コピーしました',
   'hl.title': 'ハイライト',
-  'hl.new': '新規',
   'hl.name': 'タイトル',
   'hl.add': '写真を追加',
   'hl.save': '保存',
@@ -187,6 +186,7 @@ const ja: SocialDict = {
   'party.searching': "相手のパーティーを探しています…",
   'party.needTwo': "2人以上の参加が必要です。友達もここで「パーティーマッチ」を開いてください。",
   'party.ready': "{n}人参加 — 準備OK",
+  'hl.create': "新しいハイライト",
 }
 
 export default ja

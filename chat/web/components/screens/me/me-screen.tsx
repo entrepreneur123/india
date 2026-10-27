@@ -2,8 +2,9 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { BookUser, ChevronRight, Plus, Settings, Sparkles, Tags, UserPen } from 'lucide-react'
+import { BookUser, ChevronRight, GalleryHorizontalEnd, Settings, Sparkles, SquarePen, Tags, UserPen } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
+import { MAX_HIGHLIGHTS } from '@/lib/backend'
 import { errorCode } from '@/lib/format'
 import { handleSpelling, namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
@@ -18,6 +19,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
+import { HighlightEditor } from '@/components/social/highlights'
 import { InterestsSheet } from '@/components/social/interests-sheet'
 import { useSocialT } from '@/components/social/social-text'
 import { VerifyCard } from '@/components/trust/trust-cards'
@@ -33,7 +35,10 @@ const PostComposer = lazy(() => loadComposer().then((m) => ({ default: m.PostCom
 const loadStyle = () => retryImport(() => import('@/components/social/style-editor'))
 const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor })))
 
-/** My profile exactly as others see it (ProfileContent), with my buttons; every change happens in Edit profile. */
+/**
+ * My profile exactly as others see it (ProfileContent): only Edit profile (and Settings on phones) on it. Everything
+ * else — a new post, a new highlight, the Looks shop, details, interests, contacts — is in Edit profile (the owner).
+ */
 export function MeScreen() {
   const { me, t, setTab, trust, openShop } = useApp()
   const [editOpen, setEditOpen] = useState(false)
@@ -42,7 +47,7 @@ export function MeScreen() {
   const [used, setUsed] = useState({ post: false, style: false })
   const [interestsOpen, setInterestsOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
-  const { lt } = useLooksT()
+  const [highlightOpen, setHighlightOpen] = useState(false)
   const openPost = () => {
     setUsed((u) => ({ ...u, post: true }))
     setPostOpen(true)
@@ -64,10 +69,7 @@ export function MeScreen() {
           trust={trust}
           slot={
             <div className="absolute top-3 inset-e-3 z-10 flex items-center gap-2">
-              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => openShop()}>
-                <Sparkles className="size-4 text-primary-text" aria-hidden /> {lt('looks.title')}
-              </Button>
-              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => setEditOpen(true)}>
+              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => setEditOpen(true)} onPointerEnter={() => void loadComposer()}>
                 <UserPen className="size-4" aria-hidden /> {t('me.edit')}
               </Button>
               <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
@@ -75,12 +77,6 @@ export function MeScreen() {
               </Button>
             </div>
           }
-          actions={
-            <Button variant="brand" className="flex-1" onClick={openPost} onPointerEnter={() => void loadComposer()}>
-              <Plus className="size-4.5" aria-hidden /> {t('me.newPost')}
-            </Button>
-          }
-          emptyPosts={<Button variant="brand" onClick={openPost}>{t('me.firstPost')}</Button>}
         >
           <VerifyCard className="mx-4 mt-6 w-[calc(100%-2rem)]" />
         </ProfileContent>
@@ -88,12 +84,15 @@ export function MeScreen() {
       <EditProfile
         open={editOpen}
         onClose={() => setEditOpen(false)}
+        onPost={from(openPost)}
+        onHighlight={from(() => setHighlightOpen(true))}
         onLooks={from(openShop)}
         onDetails={from(openStyle)}
         onInterests={from(() => setInterestsOpen(true))}
         onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
+      {highlightOpen ? <HighlightEditor userId={me.id} highlight={null} onClose={() => setHighlightOpen(false)} /> : null}
       {used.post ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
@@ -110,8 +109,9 @@ export function MeScreen() {
 }
 
 /** Everything about my profile: the photo, name, @ID and bio here; photos too; the rest one tap on. */
-function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContacts }: {
-  open: boolean; onClose: () => void; onLooks: () => void; onDetails: () => void; onInterests: () => void; onContacts: () => void
+function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, onInterests, onContacts }: {
+  open: boolean; onClose: () => void; onPost: () => void; onHighlight: () => void; onLooks: () => void; onDetails: () => void
+  onInterests: () => void; onContacts: () => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -129,6 +129,8 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
   const handleState = useHandleCheck(handle, me.handle)
   // When the ID can change to another one again (the app's free one can change at once).
   const { data: shop } = useSWR(open ? 'shop' : null, () => backend.shop())
+  // The same list as my profile's highlights (one request serves both): a new one only below the limit.
+  const { data: highlights } = useSWR(['highlights', me.id], () => backend.highlights(me.id))
   const next = shop?.handleNext && shop.handleNext > Date.now() ? shop.handleNext : null
 
   // Filled in when the sheet opens only: adding a photo below changes `me` and must not undo typing.
@@ -196,6 +198,8 @@ function EditProfile({ open, onClose, onLooks, onDetails, onInterests, onContact
         </Field>
         <Gallery photos={me.photos ?? []} owner={me.name} editable />
         <div className="-mx-2 flex flex-col">
+          <MoreRow icon={<SquarePen />} label={t('me.newPost')} onClick={onPost} />
+          {(highlights?.length ?? 0) < MAX_HIGHLIGHTS ? <MoreRow icon={<GalleryHorizontalEnd />} label={st('hl.create')} onClick={onHighlight} /> : null}
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
           <MoreRow icon={<UserPen />} label={lt('details.title')} note={lt('details.desc')} onClick={onDetails} />
           <MoreRow icon={<Tags />} label={st('interests.edit')} note={me.interests?.map(tag).join(', ') || undefined} onClick={onInterests} />

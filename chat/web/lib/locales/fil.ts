@@ -510,7 +510,6 @@ const fil: Dict = {
   // me & profiles
   'me.edit': 'I-edit ang profile',
   'me.newPost': 'Bagong post',
-  'me.firstPost': 'I-share ang una mong post',
   'me.editDesc': 'Hindi mapapalitan ang gender at petsa ng kapanganakan.',
   'me.updated': 'Na-update ang profile',
   'me.postDesc': 'Makikita ang mga post mo ng mga naka-chat mo, ng mga kaibigan mo at ng mga tao sa parehong room.',
@@ -716,6 +715,8 @@ const fil: Dict = {
   'looking.reply': "Mensahe",
   'error.party_small': "Kailangang may 2 man lang na kasali",
   'lobby.party': "Kasama ang barkada? Group random chat",
+  'settings.blurMedia': "I-blur ang mga larawan ng iba",
+  'settings.blurMediaBody': "Naka-blur ang mga larawan at video sa chat at room hanggang i-tap mo.",
 }
 
 export default fil

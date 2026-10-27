@@ -510,7 +510,6 @@ const ko: Dict = {
   // me & profiles
   'me.edit': '프로필 편집',
   'me.newPost': '새 게시물',
-  'me.firstPost': '첫 게시물을 공유해 보세요',
   'me.editDesc': '성별과 생년월일은 바꿀 수 없어요.',
   'me.updated': '프로필을 업데이트했어요',
   'me.postDesc': '나와 채팅한 사람, 친구, 같은 방에 있는 사람이 내 게시물을 볼 수 있어요.',
@@ -716,6 +715,8 @@ const ko: Dict = {
   'looking.reply': "메시지",
   'error.party_small': "최소 2명이 참여해야 해요",
   'lobby.party': "친구랑 같이? 다수 대 다수 랜챗",
+  'settings.blurMedia': "다른 사람 사진 흐리게",
+  'settings.blurMediaBody': "채팅과 방의 사진·동영상을 탭하기 전까지 흐리게 보여요.",
 }
 
 export default ko

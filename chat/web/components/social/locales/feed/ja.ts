@@ -83,6 +83,7 @@ const ja: FeedDict = {
   // a profile
   'profile.speaks': '話せる言語',
   'style.mbtiHint': "任意です。もう一度タップすると消えます。",
+  'post.likers': "いいね",
 }
 
 export default ja

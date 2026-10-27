@@ -822,6 +822,14 @@ export class MockBackend implements Backend {
     return (await this.feedChunk()).like(postId, on)
   }
 
+  async postLikers(postId: string) {
+    await wait(200)
+    return (await this.feedChunk()).likerIds(postId).flatMap((id) => {
+      const p = id === this.me?.id ? this.me : this.person(id)
+      return p && !this.blocked.has(id) ? [this.personRow(p)] : []
+    })
+  }
+
   async comments(postId: string, after?: number) {
     return (await this.feedChunk()).comments(postId, after)
   }
@@ -866,6 +874,8 @@ export class MockBackend implements Backend {
     let list = PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p) && (kind === 'liked' ? this.likedIds.has(p.id) : !c || p.country === c))
     if (kind === 'recommend') list = [...list].sort(() => Math.random() - 0.5)
     if (kind === 'online') list = list.filter((_, i) => i % 2 === 0)
+    // Rankings show me too (078).
+    if ((kind === 'likes' || kind === 'friends') && this.me && (!c || this.me.country === c)) list = [...list, this.me]
     // Rankings: a steady made-up count per person, highest first.
     const count = (id: string) => (kind === 'likes' || kind === 'friends' ? [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 97 : null)
     return list
@@ -876,10 +886,14 @@ export class MockBackend implements Backend {
 
   async exploreFeed(): Promise<FeedItem[]> {
     await wait(300)
+    const feed = await this.feedChunk()
     return [...this.friendMap]
       .filter(([, s]) => s === 'friends')
       .flatMap(([id], i) => {
         const p = this.person(id)
+        // A friend's latest post in full (081); a friend without one shows their photo, as before.
+        const post = feed.postsOfNow(id)[0]
+        if (p && post) return [{ kind: 'post' as const, id: post.id, user: this.personRow(p), text: post.text, photos: post.imageUrl ? [post.imageUrl] : [], at: new Date(post.createdAt).toISOString(), post }]
         return p?.photoUrl ? [{ kind: 'post' as const, id: `f_${id}`, user: this.personRow(p), text: p.bio, photos: [p.photoUrl], at: new Date(Date.now() - i * 3_600_000).toISOString() }] : []
       })
   }

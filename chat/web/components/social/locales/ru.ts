@@ -131,7 +131,6 @@ const ru: SocialDict = {
   'contacts.stoppedToast': 'Вы больше не делитесь: {name}',
   'contacts.copied': 'Скопировано',
   'hl.title': 'Актуальное',
-  'hl.new': 'Новое',
   'hl.name': 'Название',
   'hl.add': 'Добавить фото',
   'hl.save': 'Сохранить',
@@ -190,6 +189,7 @@ const ru: SocialDict = {
   'party.searching': "Ищем другую компанию…",
   'party.needTwo': "Нужно хотя бы 2 — друзья тоже открывают здесь «Матч компаний».",
   'party.ready': "{n} в деле — готовы",
+  'hl.create': "Новое актуальное",
 }
 
 export default ru

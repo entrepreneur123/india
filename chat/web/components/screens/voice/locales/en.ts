@@ -83,6 +83,9 @@ const en = {
   'clearChat': "Clear the chat",
   'clearChatTitle': "Clear the chat for everyone?",
   'clearChatBody': "Everything written so far disappears from the room. It can't be undone.",
+  'makeHost': "Make host",
+  'makeHostTitle': "Make {name} the host?",
+  'makeHostBody': "{name} runs the room from now on. You stay as a co-host.",
 }
 
 export default en

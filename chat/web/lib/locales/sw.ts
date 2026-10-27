@@ -510,7 +510,6 @@ const sw: Dict = {
   // me & profiles
   'me.edit': 'Hariri wasifu',
   'me.newPost': 'Chapisho jipya',
-  'me.firstPost': 'Weka chapisho lako la kwanza',
   'me.editDesc': 'Jinsia na tarehe ya kuzaliwa haviwezi kubadilishwa.',
   'me.updated': 'Wasifu umesasishwa',
   'me.postDesc': 'Watu uliochat nao, marafiki zako na watu walio kwenye chumba kimoja nawe wanaweza kuona machapisho yako.',
@@ -716,6 +715,8 @@ const sw: Dict = {
   'looking.reply': "Ujumbe",
   'error.party_small': "Angalau 2 wanahitaji kujiunga",
   'lobby.party': "Na marafiki? Gumzo la nasibu la vikundi",
+  'settings.blurMedia': "Fifisha picha za wengine",
+  'settings.blurMediaBody': "Picha na video kwenye gumzo na vyumba zitabaki zimefifia hadi uziguse.",
 }
 
 export default sw

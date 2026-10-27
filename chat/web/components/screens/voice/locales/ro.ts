@@ -83,6 +83,9 @@ const ro: RoomDict = {
   'clearChat': "Golește chatul",
   'clearChatTitle': "Golești chatul pentru toți?",
   'clearChatBody': "Tot ce s-a scris dispare din cameră. Nu se poate anula.",
+  'makeHost': "Fă-l gazdă",
+  'makeHostTitle': "Îl faci pe {name} gazdă?",
+  'makeHostBody': "De acum {name} conduce camera. Tu rămâi co-gazdă.",
 }
 
 export default ro

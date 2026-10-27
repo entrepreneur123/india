@@ -83,6 +83,7 @@ const zhHant: FeedDict = {
   // a profile
   'profile.speaks': '會說',
   'style.mbtiHint': "可選。再點一次即可清除。",
+  'post.likers': "按讚",
 }
 
 export default zhHant

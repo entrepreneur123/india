@@ -72,6 +72,7 @@ const ur: FeedDict = {
   'prompt.secret': 'ایک بات جو کم لوگ جانتے ہیں…',
   'profile.speaks': 'بولتے ہیں',
   'style.mbtiHint': "اختیاری۔ ہٹانے کے لیے دوبارہ ٹیپ کریں۔",
+  'post.likers': "پسند کرنے والے",
 }
 
 export default ur

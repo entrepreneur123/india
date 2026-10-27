@@ -82,6 +82,9 @@ const vi: RoomDict = {
   'clearChat': "Xóa trò chuyện",
   'clearChatTitle': "Xóa trò chuyện với mọi người?",
   'clearChatBody': "Mọi tin nhắn đến giờ sẽ biến mất khỏi phòng. Không thể hoàn tác.",
+  'makeHost': "Chuyển chủ phòng",
+  'makeHostTitle': "Chuyển chủ phòng cho {name}?",
+  'makeHostBody': "Từ giờ {name} điều hành phòng. Bạn vẫn là đồng chủ phòng.",
 }
 
 export default vi

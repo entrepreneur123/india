@@ -117,7 +117,6 @@ const pa: SocialDict = {
   'contacts.stoppedToast': '{name} ਨਾਲ ਸ਼ੇਅਰ ਕਰਨਾ ਬੰਦ ਕੀਤਾ',
   'contacts.copied': 'ਕਾਪੀ ਹੋ ਗਿਆ',
   'hl.title': 'ਹਾਈਲਾਈਟਸ',
-  'hl.new': 'ਨਵਾਂ',
   'hl.name': 'ਸਿਰਲੇਖ',
   'hl.add': 'ਫ਼ੋਟੋਆਂ ਜੋੜੋ',
   'hl.save': 'ਸੇਵ ਕਰੋ',
@@ -176,6 +175,7 @@ const pa: SocialDict = {
   'party.searching': "ਦੂਜੀ ਪਾਰਟੀ ਲੱਭ ਰਹੇ ਹਾਂ…",
   'party.needTwo': "ਘੱਟੋ-ਘੱਟ 2 ਜਣੇ ਚਾਹੀਦੇ — ਦੋਸਤ ਵੀ ਇੱਥੇ ਪਾਰਟੀ ਮੈਚ ਖੋਲ੍ਹਣ।",
   'party.ready': "{n} ਸ਼ਾਮਲ — ਤਿਆਰ",
+  'hl.create': "ਨਵੀਂ ਹਾਈਲਾਈਟ",
 }
 
 export default pa

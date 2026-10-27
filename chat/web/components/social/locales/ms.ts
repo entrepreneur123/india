@@ -128,7 +128,6 @@ const ms: SocialDict = {
   'contacts.stoppedToast': 'Berhenti berkongsi dengan {name}',
   'contacts.copied': 'Disalin',
   'hl.title': 'Sorotan',
-  'hl.new': 'Baharu',
   'hl.name': 'Tajuk',
   'hl.add': 'Tambah foto',
   'hl.save': 'Simpan',
@@ -187,6 +186,7 @@ const ms: SocialDict = {
   'party.searching': "Mencari kumpulan lain…",
   'party.needTwo': "Sekurang-kurangnya 2 orang — rakan juga buka Padanan kumpulan di sini.",
   'party.ready': "{n} ikut — sedia",
+  'hl.create': "Sorotan baharu",
 }
 
 export default ms

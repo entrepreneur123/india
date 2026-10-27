@@ -82,6 +82,9 @@ const th: RoomDict = {
   'clearChat': "ล้างแชท",
   'clearChatTitle': "ล้างแชทของทุกคนไหม",
   'clearChatBody': "ข้อความทั้งหมดที่ผ่านมาจะหายไปจากห้อง ย้อนกลับไม่ได้",
+  'makeHost': "ให้เป็นโฮสต์",
+  'makeHostTitle': "ให้ {name} เป็นโฮสต์ไหม",
+  'makeHostBody': "จากนี้ {name} จะดูแลห้อง คุณยังเป็นโฮสต์ร่วม",
 }
 
 export default th

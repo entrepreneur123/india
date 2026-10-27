@@ -82,6 +82,9 @@ const it: RoomDict = {
   'clearChat': "Svuota la chat",
   'clearChatTitle': "Svuotare la chat per tutti?",
   'clearChatBody': "Tutto ciò che è stato scritto sparisce dalla stanza. Non si può annullare.",
+  'makeHost': "Rendi host",
+  'makeHostTitle': "Rendere {name} host?",
+  'makeHostBody': "Da ora {name} gestisce la stanza. Tu resti co-host.",
 }
 
 export default it

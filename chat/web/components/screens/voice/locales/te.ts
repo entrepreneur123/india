@@ -82,6 +82,9 @@ const te: RoomDict = {
   'clearChat': "చాట్ క్లియర్ చేయి",
   'clearChatTitle': "అందరికీ చాట్ క్లియర్ చేయాలా?",
   'clearChatBody': "ఇప్పటివరకు రాసినవన్నీ రూమ్ నుండి పోతాయి. వెనక్కి తేలేరు.",
+  'makeHost': "హోస్ట్‌ని చేయి",
+  'makeHostTitle': "{name}ని హోస్ట్ చేయాలా?",
+  'makeHostBody': "ఇకపై {name} రూమ్‌ను నడుపుతారు. మీరు కో-హోస్ట్‌గా ఉంటారు.",
 }
 
 export default te

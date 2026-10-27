@@ -87,6 +87,9 @@ const ar: RoomDict = {
   'clearChat': "مسح الدردشة",
   'clearChatTitle': "مسح الدردشة للجميع؟",
   'clearChatBody': "سيختفي كل ما كُتب حتى الآن من الغرفة. لا يمكن التراجع.",
+  'makeHost': "اجعله المضيف",
+  'makeHostTitle': "هل تجعل {name} المضيف؟",
+  'makeHostBody': "سيدير {name} الغرفة من الآن. ستبقى مضيفًا مشاركًا.",
 }
 
 export default ar

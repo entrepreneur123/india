@@ -83,6 +83,9 @@ const he: RoomDict = {
   'clearChat': "ניקוי הצ׳אט",
   'clearChatTitle': "לנקות את הצ׳אט לכולם?",
   'clearChatBody': "כל מה שנכתב עד עכשיו ייעלם מהחדר. אי אפשר לבטל.",
+  'makeHost': "הפוך למארח",
+  'makeHostTitle': "להפוך את {name} למארח?",
+  'makeHostBody': "מעכשיו {name} מנהל את החדר. את/ה נשאר/ת מארח/ת משנה.",
 }
 
 export default he

@@ -132,7 +132,6 @@ const ar: SocialDict = {
   'contacts.stoppedToast': 'أوقفت المشاركة مع {name}',
   'contacts.copied': 'تم النسخ',
   'hl.title': 'اللقطات المميزة',
-  'hl.new': 'جديد',
   'hl.name': 'العنوان',
   'hl.add': 'إضافة صور',
   'hl.save': 'حفظ',
@@ -191,6 +190,7 @@ const ar: SocialDict = {
   'party.searching': "نبحث عن فريق آخر…",
   'party.needTwo': "يلزم اثنان على الأقل — ليفتح أصدقاؤك مطابقة الفرق هنا أيضًا.",
   'party.ready': "{n} منضمون — جاهزون",
+  'hl.create': "قصة مميزة جديدة",
 }
 
 export default ar

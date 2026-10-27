@@ -123,7 +123,6 @@ const ptBR: SocialDict = {
   'contacts.stoppedToast': 'Você parou de compartilhar com {name}',
   'contacts.copied': 'Copiado',
   'hl.title': 'Destaques',
-  'hl.new': 'Novo',
   'hl.name': 'Título',
   'hl.add': 'Adicionar fotos',
   'hl.save': 'Salvar',
@@ -182,6 +181,7 @@ const ptBR: SocialDict = {
   'party.searching': "Procurando outro grupo…",
   'party.needTwo': "Precisa de pelo menos 2 — seus amigos também abrem Partida em grupo aqui.",
   'party.ready': "{n} dentro — prontos",
+  'hl.create': "Novo destaque",
 }
 
 export default ptBR

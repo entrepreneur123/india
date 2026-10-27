@@ -246,6 +246,11 @@ export class FeedSim {
     this.posts.splice(i, 1)
   }
 
+  /** Who liked a post, newest last as the demo keeps them (the caller turns ids into people). */
+  likerIds(postId: string): string[] {
+    return [...this.find(postId).likers].reverse()
+  }
+
   async like(postId: string, on: boolean) {
     await wait(220)
     const s = this.find(postId)

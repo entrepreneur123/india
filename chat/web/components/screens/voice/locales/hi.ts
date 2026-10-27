@@ -82,6 +82,9 @@ const hi: RoomDict = {
   'clearChat': "चैट साफ़ करें",
   'clearChatTitle': "सबके लिए चैट साफ़ करें?",
   'clearChatBody': "अब तक लिखा सब कुछ रूम से हट जाएगा। इसे वापस नहीं लाया जा सकता।",
+  'makeHost': "होस्ट बनाएँ",
+  'makeHostTitle': "{name} को होस्ट बनाएँ?",
+  'makeHostBody': "अब से {name} रूम चलाएँगे। आप को-होस्ट बने रहेंगे।",
 }
 
 export default hi

@@ -122,7 +122,6 @@ const it: SocialDict = {
   'contacts.stoppedToast': 'Non condividi più con {name}',
   'contacts.copied': 'Copiato',
   'hl.title': 'In evidenza',
-  'hl.new': 'Nuovo',
   'hl.name': 'Titolo',
   'hl.add': 'Aggiungi foto',
   'hl.save': 'Salva',
@@ -181,6 +180,7 @@ const it: SocialDict = {
   'party.searching': "Cerco un altro gruppo…",
   'party.needTwo': "Servono almeno 2 persone: anche gli amici aprono Match di gruppo qui.",
   'party.ready': "{n} dentro — pronti",
+  'hl.create': "Nuovo in evidenza",
 }
 
 export default it

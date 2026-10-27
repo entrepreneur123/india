@@ -77,6 +77,7 @@ const ml: FeedDict = {
 
   'profile.speaks': 'സംസാരിക്കുന്ന ഭാഷകൾ',
   'style.mbtiHint': "ഐച്ഛികം. മായ്ക്കാൻ വീണ്ടും ടാപ്പ് ചെയ്യുക.",
+  'post.likers': "ഇഷ്ടപ്പെട്ടവർ",
 }
 
 export default ml

@@ -484,7 +484,6 @@ const ur: Dict = {
   'recent.startRandom': 'رینڈم چیٹ شروع کریں',
   'me.edit': 'پروفائل ایڈٹ کریں',
   'me.newPost': 'نئی پوسٹ',
-  'me.firstPost': 'اپنی پہلی پوسٹ شیئر کریں',
   'me.editDesc': 'جنس اور تاریخِ پیدائش نہیں بدلی جا سکتیں۔',
   'me.updated': 'پروفائل اپ ڈیٹ ہو گئی',
   'me.postDesc': 'جن سے آپ نے چیٹ کی، آپ کے دوست اور ایک ہی روم کے لوگ آپ کی پوسٹس دیکھ سکتے ہیں۔',
@@ -681,6 +680,8 @@ const ur: Dict = {
   'looking.reply': "پیغام",
   'error.party_small': "کم از کم 2 لوگوں کا شامل ہونا ضروری ہے",
   'lobby.party': "دوستوں کے ساتھ؟ گروپ رینڈم چیٹ",
+  'settings.blurMedia': "دوسروں کی تصاویر دھندلی کریں",
+  'settings.blurMediaBody': "چیٹ اور روم کی تصاویر اور ویڈیوز ٹیپ کرنے تک دھندلی رہیں گی۔",
 }
 
 export default ur

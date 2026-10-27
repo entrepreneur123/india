@@ -82,6 +82,9 @@ const mr: RoomDict = {
   'clearChat': "चॅट साफ करा",
   'clearChatTitle': "सर्वांसाठी चॅट साफ करायचा?",
   'clearChatBody': "आतापर्यंत लिहिलेले सर्व रूममधून जाईल. परत आणता येणार नाही.",
+  'makeHost': "होस्ट बनवा",
+  'makeHostTitle': "{name} यांना होस्ट बनवायचे?",
+  'makeHostBody': "आतापासून {name} रूम चालवतील. तुम्ही को-होस्ट राहाल.",
 }
 
 export default mr

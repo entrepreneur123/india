@@ -82,6 +82,9 @@ const ja: RoomDict = {
   'clearChat': "チャットを消去",
   'clearChatTitle': "全員のチャットを消去しますか？",
   'clearChatBody': "これまでのチャットがルームからすべて消えます。元に戻せません。",
+  'makeHost': "ホストを譲る",
+  'makeHostTitle': "{name}さんにホストを譲りますか？",
+  'makeHostBody': "これからは{name}さんがルームを進行します。あなたは共同ホストとして残ります。",
 }
 
 export default ja

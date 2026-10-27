@@ -510,7 +510,6 @@ const th: Dict = {
   // me & profiles
   'me.edit': 'แก้ไขโปรไฟล์',
   'me.newPost': 'โพสต์ใหม่',
-  'me.firstPost': 'แชร์โพสต์แรกของคุณ',
   'me.editDesc': 'เปลี่ยนเพศและวันเกิดไม่ได้',
   'me.updated': 'อัปเดตโปรไฟล์แล้ว',
   'me.postDesc': 'คนที่คุณเคยแชทด้วย เพื่อน และคนที่อยู่ห้องเดียวกันจะเห็นโพสต์ของคุณ',
@@ -716,6 +715,8 @@ const th: Dict = {
   'looking.reply': "ส่งข้อความ",
   'error.party_small': "ต้องเข้าร่วมอย่างน้อย 2 คน",
   'lobby.party': "มากับเพื่อน? แชทสุ่มแบบกลุ่ม",
+  'settings.blurMedia': "เบลอรูปจากคนอื่น",
+  'settings.blurMediaBody': "รูปและวิดีโอในแชตและห้องจะเบลอจนกว่าคุณจะแตะ",
 }
 
 export default th

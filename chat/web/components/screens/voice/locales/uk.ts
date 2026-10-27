@@ -85,6 +85,9 @@ const uk: RoomDict = {
   'clearChat': "Очистити чат",
   'clearChatTitle': "Очистити чат для всіх?",
   'clearChatBody': "Усе написане зникне з кімнати. Скасувати не можна.",
+  'makeHost': "Зробити хостом",
+  'makeHostTitle': "Зробити {name} хостом?",
+  'makeHostBody': "Тепер кімнату веде {name}. Ви залишаєтеся співхостом.",
 }
 
 export default uk

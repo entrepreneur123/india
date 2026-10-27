@@ -77,6 +77,7 @@ const te: FeedDict = {
 
   'profile.speaks': 'మాట్లాడే భాషలు',
   'style.mbtiHint': "ఐచ్ఛికం. తీసివేయడానికి మళ్లీ నొక్కండి.",
+  'post.likers': "ఇష్టపడినవారు",
 }
 
 export default te

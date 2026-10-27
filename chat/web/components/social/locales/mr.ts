@@ -117,7 +117,6 @@ const mr: SocialDict = {
   'contacts.stoppedToast': '{name} सोबत शेअर करणे थांबवले',
   'contacts.copied': 'कॉपी झाले',
   'hl.title': 'हायलाइट्स',
-  'hl.new': 'नवीन',
   'hl.name': 'शीर्षक',
   'hl.add': 'फोटो जोडा',
   'hl.save': 'सेव्ह करा',
@@ -176,6 +175,7 @@ const mr: SocialDict = {
   'party.searching': "दुसरा ग्रुप शोधत आहोत…",
   'party.needTwo': "किमान 2 जण हवेत — मित्रांनीही इथे पार्टी मॅच उघडावे.",
   'party.ready': "{n} जण — तयार",
+  'hl.create': "नवीन हायलाइट",
 }
 
 export default mr

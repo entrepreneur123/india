@@ -83,6 +83,7 @@ const th: FeedDict = {
   // a profile
   'profile.speaks': 'พูดภาษา',
   'style.mbtiHint': "ไม่บังคับ แตะอีกครั้งเพื่อล้าง",
+  'post.likers': "คนที่ถูกใจ",
 }
 
 export default th

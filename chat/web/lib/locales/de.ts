@@ -501,7 +501,6 @@ const de: Dict = {
 
   'me.edit': 'Profil bearbeiten',
   'me.newPost': 'Neuer Beitrag',
-  'me.firstPost': 'Teile deinen ersten Beitrag',
   'me.editDesc': 'Geschlecht und Geburtsdatum können nicht geändert werden.',
   'me.updated': 'Profil aktualisiert',
   'me.postDesc': 'Leute, mit denen du gechattet hast, deine Freunde und Leute im selben Raum können deine Beiträge sehen.',
@@ -703,6 +702,8 @@ const de: Dict = {
   'looking.reply': "Nachricht",
   'error.party_small': "Mindestens 2 von euch müssen dabei sein",
   'lobby.party': "Mit Freunden? Gruppen-Zufallschat",
+  'settings.blurMedia': "Fotos anderer unscharf zeigen",
+  'settings.blurMediaBody': "Fotos und Videos in Chats und Räumen bleiben unscharf, bis du sie antippst.",
 }
 
 export default de

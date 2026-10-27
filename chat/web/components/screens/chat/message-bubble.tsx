@@ -4,6 +4,7 @@ import * as m from 'motion/react-m'
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { Check, CheckCheck, ChevronRight, Copy, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
+import { savedFlag } from '@/lib/flags'
 import { useI18n } from '@/components/i18n'
 import { Modal } from '@/components/ui/modal'
 import { useToast } from '@/components/ui/toast'
@@ -162,10 +163,10 @@ export function MetaSpacer({ children }: { children: ReactNode }) {
   )
 }
 
-/** A photo or video, blurred until tapped when it's someone else's (random chats and rooms). */
+/** A photo or video; someone else's is blurred until tapped only when I chose that in Settings (off by default). */
 export function MediaBubble({ media, mine, meta }: { media: NonNullable<Message['media']>; mine: boolean; meta: ReactNode | null }) {
   const { t } = useI18n()
-  const [revealed, setRevealed] = useState(mine)
+  const [revealed, setRevealed] = useState(() => mine || !savedFlag('yaari_blur_media'))
   const [large, setLarge] = useState<number | null>(null)
   return (
     <div className="relative overflow-hidden rounded-md bg-black/5">

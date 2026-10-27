@@ -82,6 +82,9 @@ const pa: RoomDict = {
   'clearChat': "ਚੈਟ ਸਾਫ਼ ਕਰੋ",
   'clearChatTitle': "ਸਭ ਲਈ ਚੈਟ ਸਾਫ਼ ਕਰਨੀ ਹੈ?",
   'clearChatBody': "ਹੁਣ ਤੱਕ ਲਿਖਿਆ ਸਭ ਰੂਮ ਵਿੱਚੋਂ ਹਟ ਜਾਵੇਗਾ। ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦਾ।",
+  'makeHost': "ਹੋਸਟ ਬਣਾਓ",
+  'makeHostTitle': "ਕੀ {name} ਨੂੰ ਹੋਸਟ ਬਣਾਈਏ?",
+  'makeHostBody': "ਹੁਣ ਤੋਂ {name} ਰੂਮ ਚਲਾਉਣਗੇ। ਤੁਸੀਂ ਕੋ-ਹੋਸਟ ਰਹੋਗੇ।",
 }
 
 export default pa

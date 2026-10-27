@@ -128,7 +128,6 @@ const fa: SocialDict = {
   'contacts.stoppedToast': 'اشتراک با {name} متوقف شد',
   'contacts.copied': 'کپی شد',
   'hl.title': 'هایلایت‌ها',
-  'hl.new': 'جدید',
   'hl.name': 'عنوان',
   'hl.add': 'افزودن عکس',
   'hl.save': 'ذخیره',
@@ -187,6 +186,7 @@ const fa: SocialDict = {
   'party.searching': "در حال یافتن گروه دیگر…",
   'party.needTwo': "دست‌کم ۲ نفر لازم است — دوستان هم اینجا تطبیق گروهی را باز کنند.",
   'party.ready': "{n} نفر پایه — آماده",
+  'hl.create': "هایلایت جدید",
 }
 
 export default fa

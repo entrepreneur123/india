@@ -83,6 +83,9 @@ const tr: RoomDict = {
   'clearChat': "Sohbeti temizle",
   'clearChatTitle': "Sohbet herkes için temizlensin mi?",
   'clearChatBody': "Şimdiye kadar yazılan her şey odadan kalkar. Geri alınamaz.",
+  'makeHost': "Ev sahibi yap",
+  'makeHostTitle': "{name} ev sahibi yapılsın mı?",
+  'makeHostBody': "Bundan sonra odayı {name} yönetir. Sen yardımcı ev sahibi olarak kalırsın.",
 }
 
 export default tr

@@ -83,6 +83,9 @@ const zhHans: RoomDict = {
   'clearChat': "清空聊天",
   'clearChatTitle': "为所有人清空聊天？",
   'clearChatBody': "目前为止的聊天将从房间中全部消失，无法撤销。",
+  'makeHost': "转让房主",
+  'makeHostTitle': "把房主转让给 {name}？",
+  'makeHostBody': "从现在起由 {name} 主持房间，你仍是副房主。",
 }
 
 export default zhHans

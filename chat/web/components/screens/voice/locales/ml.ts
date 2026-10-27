@@ -82,6 +82,9 @@ const ml: RoomDict = {
   'clearChat': "ചാറ്റ് മായ്ക്കുക",
   'clearChatTitle': "എല്ലാവർക്കും ചാറ്റ് മായ്ക്കണോ?",
   'clearChatBody': "ഇതുവരെ എഴുതിയതെല്ലാം റൂമിൽ നിന്ന് മാഞ്ഞുപോകും. തിരിച്ചെടുക്കാനാവില്ല.",
+  'makeHost': "ഹോസ്റ്റ് ആക്കുക",
+  'makeHostTitle': "{name}-നെ ഹോസ്റ്റ് ആക്കണോ?",
+  'makeHostBody': "ഇനി {name} റൂം നയിക്കും. നിങ്ങൾ കോ-ഹോസ്റ്റായി തുടരും.",
 }
 
 export default ml

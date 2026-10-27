@@ -501,7 +501,6 @@ const it: Dict = {
 
   'me.edit': 'Modifica profilo',
   'me.newPost': 'Nuovo post',
-  'me.firstPost': 'Condividi il tuo primo post',
   'me.editDesc': 'Genere e data di nascita non si possono cambiare.',
   'me.updated': 'Profilo aggiornato',
   'me.postDesc': 'I tuoi post li vedono le persone con cui hai chattato, i tuoi amici e chi è nella tua stessa stanza.',
@@ -703,6 +702,8 @@ const it: Dict = {
   'looking.reply': "Messaggio",
   'error.party_small': "Servono almeno 2 persone",
   'lobby.party': "Con gli amici? Chat casuale di gruppo",
+  'settings.blurMedia': "Sfoca le foto degli altri",
+  'settings.blurMediaBody': "Foto e video in chat e stanze restano sfocati finché non li tocchi.",
 }
 
 export default it

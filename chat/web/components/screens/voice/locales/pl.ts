@@ -84,6 +84,9 @@ const pl: RoomDict = {
   'clearChat': "Wyczyść czat",
   'clearChatTitle': "Wyczyścić czat dla wszystkich?",
   'clearChatBody': "Wszystko, co napisano, zniknie z pokoju. Nie można cofnąć.",
+  'makeHost': "Przekaż hosta",
+  'makeHostTitle': "Przekazać hosta {name}?",
+  'makeHostBody': "Od teraz {name} prowadzi pokój. Ty zostajesz współhostem.",
 }
 
 export default pl

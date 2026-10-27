@@ -129,7 +129,6 @@ const ko: SocialDict = {
   'contacts.stoppedToast': '{name}님에게 공유를 중지했어요',
   'contacts.copied': '복사했어요',
   'hl.title': '하이라이트',
-  'hl.new': '새로 만들기',
   'hl.name': '제목',
   'hl.add': '사진 추가',
   'hl.save': '저장',
@@ -188,6 +187,7 @@ const ko: SocialDict = {
   'party.searching': "상대 팀을 찾는 중…",
   'party.needTwo': "최소 2명이 참여해야 해요. 친구도 이 단톡방에서 '파티 매칭'을 열어야 해요.",
   'party.ready': "{n}명 참여 — 출발 준비 완료",
+  'hl.create': "하이라이트 만들기",
 }
 
 export default ko

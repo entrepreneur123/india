@@ -83,6 +83,7 @@ const id: FeedDict = {
   // a profile
   'profile.speaks': 'Berbicara',
   'style.mbtiHint': "Opsional. Ketuk lagi untuk menghapus.",
+  'post.likers': "Suka",
 }
 
 export default id

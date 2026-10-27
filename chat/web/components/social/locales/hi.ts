@@ -123,7 +123,6 @@ const hi: SocialDict = {
   'contacts.stoppedToast': '{name} के साथ शेयर करना बंद किया',
   'contacts.copied': 'कॉपी हो गया',
   'hl.title': 'हाइलाइट्स',
-  'hl.new': 'नया',
   'hl.name': 'शीर्षक',
   'hl.add': 'फ़ोटो जोड़ें',
   'hl.save': 'सेव करें',
@@ -182,6 +181,7 @@ const hi: SocialDict = {
   'party.searching': "दूसरी पार्टी ढूँढ रहे हैं…",
   'party.needTwo': "कम से कम 2 लोग चाहिए — दोस्त भी यहाँ पार्टी मैच खोलें।",
   'party.ready': "{n} शामिल — तैयार",
+  'hl.create': "नई हाइलाइट",
 }
 
 export default hi

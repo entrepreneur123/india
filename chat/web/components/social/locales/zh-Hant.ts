@@ -129,7 +129,6 @@ const zhHant: SocialDict = {
   'contacts.stoppedToast': '已停止向 {name} 分享',
   'contacts.copied': '已複製',
   'hl.title': '精選',
-  'hl.new': '新增',
   'hl.name': '標題',
   'hl.add': '新增照片',
   'hl.save': '儲存',
@@ -188,6 +187,7 @@ const zhHant: SocialDict = {
   'party.searching': "正在尋找另一隊…",
   'party.needTwo': "至少需要 2 人加入——朋友也要在這裡打開「組隊配對」。",
   'party.ready': "{n} 人已加入——準備好了",
+  'hl.create': "新增精選",
 }
 
 export default zhHant

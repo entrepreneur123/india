@@ -124,7 +124,6 @@ const pl: SocialDict = {
   'contacts.stoppedToast': 'Już nie udostępniasz: {name}',
   'contacts.copied': 'Skopiowano',
   'hl.title': 'Wyróżnione',
-  'hl.new': 'Nowe',
   'hl.name': 'Tytuł',
   'hl.add': 'Dodaj zdjęcia',
   'hl.save': 'Zapisz',
@@ -183,6 +182,7 @@ const pl: SocialDict = {
   'party.searching': "Szukam innej ekipy…",
   'party.needTwo': "Potrzeba co najmniej 2 osób — znajomi też otwierają tu Dopasowanie ekip.",
   'party.ready': "{n} w środku — gotowi",
+  'hl.create': "Nowe wyróżnienie",
 }
 
 export default pl

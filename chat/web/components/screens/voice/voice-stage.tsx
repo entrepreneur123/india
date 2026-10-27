@@ -195,8 +195,7 @@ export function Stage({
 }) {
   const { t } = useI18n()
   const bySeat = new Map(room.members.filter((x) => x.seat !== null).map((x) => [x.seat!, x]))
-  // The newest reaction of each person, shown on their seat while it floats.
-  const latest = new Map(reactions.map((r) => [r.userId, r]))
+  const latest = latestReactions(reactions)
   const host = bySeat.get(0) ?? null
 
   return (
@@ -264,21 +263,7 @@ export function SeatPerson({
             <MicOff style={{ width: badge * 0.56, height: badge * 0.56 }} aria-hidden />
           </span>
         ) : null}
-        <AnimatePresence>
-          {reaction ? (
-            <m.span
-              key={reaction.key}
-              className="absolute -top-1 -inset-e-1.5 grid place-items-center rounded-full bg-card shadow-e2 ring-2 ring-background"
-              style={{ width: badge + 4, height: badge + 4 }}
-              initial={{ opacity: 0, scale: 0.4 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.6 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 26 }}
-            >
-              <ReactionIcon kind={reaction.kind} size={Math.round(badge * 0.78)} />
-            </m.span>
-          ) : null}
-        </AnimatePresence>
+        <ReactionBadge reaction={reaction} size={badge} />
       </span>
       <span className="flex max-w-full min-w-0 flex-col items-center">
         <span className={cn('flex max-w-full min-w-0 items-center gap-0.5 font-semibold leading-tight', wide ? 'text-sm' : 'text-xs')}>
@@ -322,6 +307,30 @@ function EmptySeat({ seat, px, locked, canManage, onClick }: { seat: number; px:
 }
 
 /** Reactions float up over the stage (X Spaces); under reduced motion they only fade in and out in place. */
+/** A person's newest reaction on their face while it floats: seats and listeners alike. */
+export function ReactionBadge({ reaction, size }: { reaction?: Reaction; size: number }) {
+  return (
+    <AnimatePresence>
+      {reaction ? (
+        <m.span
+          key={reaction.key}
+          className="absolute -top-1 -inset-e-1.5 grid place-items-center rounded-full bg-card shadow-e2 ring-2 ring-background"
+          style={{ width: size + 4, height: size + 4 }}
+          initial={{ opacity: 0, scale: 0.4 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.6 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+        >
+          <ReactionIcon kind={reaction.kind} size={Math.round(size * 0.78)} />
+        </m.span>
+      ) : null}
+    </AnimatePresence>
+  )
+}
+
+/** The newest reaction of each person (it floats a few seconds, then leaves the list). */
+export const latestReactions = (reactions: Reaction[]) => new Map(reactions.map((r) => [r.userId, r]))
+
 export function ReactionLayer({ reactions }: { reactions: Reaction[] }) {
   const reduce = useReducedMotion()
   return (

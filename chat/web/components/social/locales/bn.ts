@@ -123,7 +123,6 @@ const bn: SocialDict = {
   'contacts.stoppedToast': '{name}-এর সাথে শেয়ার বন্ধ করা হয়েছে',
   'contacts.copied': 'কপি হয়েছে',
   'hl.title': 'হাইলাইটস',
-  'hl.new': 'নতুন',
   'hl.name': 'শিরোনাম',
   'hl.add': 'ছবি যোগ করুন',
   'hl.save': 'সেভ করুন',
@@ -182,6 +181,7 @@ const bn: SocialDict = {
   'party.searching': "আরেকটি দল খোঁজা হচ্ছে…",
   'party.needTwo': "অন্তত ২ জন দরকার — বন্ধুরাও এখানে পার্টি ম্যাচ খুলুক।",
   'party.ready': "{n} জন আছে — প্রস্তুত",
+  'hl.create': "নতুন হাইলাইট",
 }
 
 export default bn

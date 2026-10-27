@@ -82,6 +82,9 @@ const id: RoomDict = {
   'clearChat': "Bersihkan obrolan",
   'clearChatTitle': "Bersihkan obrolan untuk semua?",
   'clearChatBody': "Semua yang ditulis sejauh ini hilang dari room. Tidak bisa dibatalkan.",
+  'makeHost': "Jadikan host",
+  'makeHostTitle': "Jadikan {name} host?",
+  'makeHostBody': "Mulai sekarang {name} memimpin ruang. Kamu tetap jadi co-host.",
 }
 
 export default id

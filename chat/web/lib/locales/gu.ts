@@ -484,7 +484,6 @@ const gu: Dict = {
   'recent.startRandom': 'રેન્ડમ ચેટ શરૂ કરો',
   'me.edit': 'પ્રોફાઇલ એડિટ કરો',
   'me.newPost': 'નવી પોસ્ટ',
-  'me.firstPost': 'તમારી પહેલી પોસ્ટ શેર કરો',
   'me.editDesc': 'જાતિ અને જન્મતારીખ બદલી શકાતી નથી.',
   'me.updated': 'પ્રોફાઇલ અપડેટ થઈ',
   'me.postDesc': 'જેમની સાથે તમે ચેટ કરી છે, તમારા મિત્રો અને એક જ રૂમના લોકો તમારી પોસ્ટ જોઈ શકે છે.',
@@ -681,6 +680,8 @@ const gu: Dict = {
   'looking.reply': "મેસેજ",
   'error.party_small': "ઓછામાં ઓછા 2 જણ જોડાવા જોઈએ",
   'lobby.party': "મિત્રો સાથે? ગ્રુપ રેન્ડમ ચેટ",
+  'settings.blurMedia': "બીજાના ફોટા ઝાંખા કરો",
+  'settings.blurMediaBody': "ચેટ અને રૂમના ફોટા અને વીડિયો ટૅપ કરો ત્યાં સુધી ઝાંખા રહેશે.",
 }
 
 export default gu

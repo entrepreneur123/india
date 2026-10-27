@@ -510,7 +510,6 @@ const id: Dict = {
   // me & profiles
   'me.edit': 'Edit profil',
   'me.newPost': 'Postingan baru',
-  'me.firstPost': 'Bagikan postingan pertamamu',
   'me.editDesc': 'Gender dan tanggal lahir tidak bisa diubah.',
   'me.updated': 'Profil diperbarui',
   'me.postDesc': 'Orang yang pernah chat denganmu, temanmu, dan orang di room yang sama bisa melihat postinganmu.',
@@ -716,6 +715,8 @@ const id: Dict = {
   'looking.reply': "Pesan",
   'error.party_small': "Minimal 2 orang harus ikut",
   'lobby.party': "Bareng teman? Obrolan acak grup",
+  'settings.blurMedia': "Buramkan foto dari orang lain",
+  'settings.blurMediaBody': "Foto dan video di chat dan ruang tetap buram sampai kamu ketuk.",
 }
 
 export default id

@@ -83,6 +83,9 @@ const fr: RoomDict = {
   'clearChat': "Vider le chat",
   'clearChatTitle': "Vider le chat pour tous ?",
   'clearChatBody': "Tout ce qui a été écrit disparaît du salon. C'est définitif.",
+  'makeHost': "Nommer hôte",
+  'makeHostTitle': "Nommer {name} hôte ?",
+  'makeHostBody': "{name} anime désormais le salon. Tu restes co-hôte.",
 }
 
 export default fr

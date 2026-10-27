@@ -311,6 +311,8 @@ export interface FeedItem {
   text: string
   photos: string[]
   at: string
+  /** A post in full (081): it shows as a post, liked and opened there. */
+  post?: FeedPost | null
 }
 /** A profile's likes and friends, whether I like it and whether I may message it. */
 export interface ProfileSocial {
@@ -667,6 +669,8 @@ export type VoiceAction =
   | { type: 'shareLink'; url: string | null; title?: string | null }
   // host only
   | { type: 'cohost'; userId: string; on: boolean }
+  /** 079: the host hands the room to a co-host; they swap places. */
+  | { type: 'makeHost'; userId: string }
   // music: anyone adds a song request and votes; the host and co-hosts (036) play, remove, seek and control
   /** `title`: the video's real title (lib/youtube.ts videoTitle), empty when it couldn't be looked up. */
   | { type: 'addTrack'; videoId: string; title?: string }
@@ -951,6 +955,8 @@ export interface Backend {
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>
+  /** 080: who liked it, newest first (100 at most). */
+  postLikers(postId: string): Promise<PersonRow[]>
   /** Oldest first; `after`: the last comment's id, for more. */
   comments(postId: string, after?: number): Promise<PostComment[]>
   /** 1-300 characters, 10 a minute ('slow_down'). */

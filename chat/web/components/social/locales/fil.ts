@@ -128,7 +128,6 @@ const fil: SocialDict = {
   'contacts.stoppedToast': 'Itinigil ang pagbabahagi kay {name}',
   'contacts.copied': 'Nakopya',
   'hl.title': 'Highlights',
-  'hl.new': 'Bago',
   'hl.name': 'Pamagat',
   'hl.add': 'Magdagdag ng mga larawan',
   'hl.save': 'I-save',
@@ -187,6 +186,7 @@ const fil: SocialDict = {
   'party.searching': "Naghahanap ng ibang grupo…",
   'party.needTwo': "Kailangan ng 2 man lang — buksan din ng mga kaibigan ang Party match dito.",
   'party.ready': "{n} kasali — handa na",
+  'hl.create': "Bagong highlight",
 }
 
 export default fil

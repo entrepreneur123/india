@@ -501,7 +501,6 @@ const vi: Dict = {
 
   'me.edit': 'Sửa hồ sơ',
   'me.newPost': 'Bài đăng mới',
-  'me.firstPost': 'Chia sẻ bài đăng đầu tiên',
   'me.editDesc': 'Không thể đổi giới tính và ngày sinh.',
   'me.updated': 'Đã cập nhật hồ sơ',
   'me.postDesc': 'Người đã trò chuyện với bạn, bạn bè và người cùng phòng có thể xem bài đăng của bạn.',
@@ -702,6 +701,8 @@ const vi: Dict = {
   'looking.reply': "Nhắn tin",
   'error.party_small': "Cần ít nhất 2 người tham gia",
   'lobby.party': "Cùng bạn bè? Trò chuyện ngẫu nhiên theo nhóm",
+  'settings.blurMedia': "Làm mờ ảnh của người khác",
+  'settings.blurMediaBody': "Ảnh và video trong cuộc trò chuyện và phòng sẽ bị mờ cho đến khi bạn chạm vào.",
 }
 
 export default vi

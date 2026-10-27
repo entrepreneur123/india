@@ -502,7 +502,6 @@ const fr: Dict = {
 
   'me.edit': 'Modifier le profil',
   'me.newPost': 'Nouvelle publication',
-  'me.firstPost': 'Partagez votre première publication',
   'me.editDesc': 'Le genre et la date de naissance ne peuvent pas être modifiés.',
   'me.updated': 'Profil mis à jour',
   'me.postDesc': 'Les personnes avec qui vous avez discuté, vos amis et les personnes du même salon peuvent voir vos publications.',
@@ -705,6 +704,8 @@ const fr: Dict = {
   'looking.reply': "Message",
   'error.party_small': "Il faut être au moins 2",
   'lobby.party': "Entre amis ? Chat aléatoire en groupe",
+  'settings.blurMedia': "Flouter les photos des autres",
+  'settings.blurMediaBody': "Les photos et vidéos des chats et salons restent floues jusqu'à ce que tu les touches.",
 }
 
 export default fr

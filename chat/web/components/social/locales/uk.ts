@@ -131,7 +131,6 @@ const uk: SocialDict = {
   'contacts.stoppedToast': 'Ви більше не ділитеся: {name}',
   'contacts.copied': 'Скопійовано',
   'hl.title': 'Актуальне',
-  'hl.new': 'Нове',
   'hl.name': 'Назва',
   'hl.add': 'Додати фото',
   'hl.save': 'Зберегти',
@@ -190,6 +189,7 @@ const uk: SocialDict = {
   'party.searching': "Шукаємо іншу компанію…",
   'party.needTwo': "Потрібно щонайменше 2 — друзі теж відкривають тут «Матч компаній».",
   'party.ready': "{n} у ділі — готові",
+  'hl.create': "Нове актуальне",
 }
 
 export default uk

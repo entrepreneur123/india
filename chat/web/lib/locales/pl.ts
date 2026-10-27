@@ -503,7 +503,6 @@ const pl: Dict = {
 
   'me.edit': 'Edytuj profil',
   'me.newPost': 'Nowy post',
-  'me.firstPost': 'Udostępnij pierwszy post',
   'me.editDesc': 'Płci i daty urodzenia nie można zmienić.',
   'me.updated': 'Profil zaktualizowany',
   'me.postDesc': 'Twoje posty widzą osoby, z którymi czatujesz, Twoi znajomi i osoby w tym samym pokoju.',
@@ -707,6 +706,8 @@ const pl: Dict = {
   'looking.reply': "Wiadomość",
   'error.party_small': "Muszą dołączyć co najmniej 2 osoby",
   'lobby.party': "Ze znajomymi? Losowy czat ekip",
+  'settings.blurMedia': "Rozmywaj zdjęcia innych",
+  'settings.blurMediaBody': "Zdjęcia i filmy w czatach i pokojach są rozmyte, dopóki ich nie dotkniesz.",
 }
 
 export default pl

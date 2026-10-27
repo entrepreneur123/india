@@ -81,6 +81,7 @@ const en = {
   // a profile
   'profile.speaks': 'Speaks',
   'style.mbtiHint': "Optional. Tap it again to clear.",
+  'post.likers': "Likes",
 }
 
 export default en

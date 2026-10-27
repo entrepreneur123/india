@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Eraser, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
+import { Check, ChevronRight, Copy, Crown, Eraser, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
 import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { fixedVolume } from '@/lib/rtc'
@@ -135,7 +135,8 @@ export function PersonSheet({
   const toast = useToast()
   const { openProfile } = useApp()
   const [reportOpen, setReportOpen] = useState(false)
-  const [kickOpen, setKickOpen] = useState(false)
+  // A step that asks first: removing them, or handing them the room (079).
+  const [confirm, setConfirm] = useState<'kick' | 'host' | null>(null)
   const [busy, setBusy] = useState(false)
   // Keep showing the last person while the sheet animates out.
   const [shownId, setShownId] = useState(userId)
@@ -159,7 +160,7 @@ export function PersonSheet({
 
   return (
     <>
-      <Modal open={!!userId && !reportOpen && !kickOpen} onClose={onClose} variant="sheet" hideHeader>
+      <Modal open={!!userId && !reportOpen && !confirm} onClose={onClose} variant="sheet" hideHeader>
         <div className="flex flex-col items-center gap-2 px-6 pt-6 pb-3 text-center">
           <UserAvatar userId={target.profile.id} name={target.profile.name} src={target.profile.photoUrl} size={72} />
           <h2 className="mt-1 text-lg font-bold">{self ? `${target.profile.name} (${t('voice.you')})` : target.profile.name}</h2>
@@ -213,32 +214,33 @@ export function PersonSheet({
               onClick={() => void run({ type: 'cohost', userId: target.profile.id, on: target.role !== 'cohost' })}
             />
           ) : null}
-          {manage ? <Row icon={<UserX />} label={t('voice.kick')} danger onClick={() => setKickOpen(true)} /> : null}
+          {host && target.role === 'cohost' && !target.lost ? <Row icon={<Crown />} label={rt('makeHost')} onClick={() => setConfirm('host')} /> : null}
+          {manage ? <Row icon={<UserX />} label={t('voice.kick')} danger onClick={() => setConfirm('kick')} /> : null}
           {self ? null : <Row icon={<Flag />} label={t('voice.report')} danger onClick={() => setReportOpen(true)} />}
         </div>
       </Modal>
       <Modal
-        open={kickOpen}
-        onClose={() => setKickOpen(false)}
-        title={t('voice.kickTitle', { name: target.profile.name })}
-        description={t('voice.kickBody')}
+        open={confirm !== null}
+        onClose={() => setConfirm(null)}
+        title={confirm === 'host' ? rt('makeHostTitle', { name: target.profile.name }) : t('voice.kickTitle', { name: target.profile.name })}
+        description={confirm === 'host' ? rt('makeHostBody', { name: target.profile.name }) : t('voice.kickBody')}
       >
         <div className="flex gap-3 p-6 pt-5">
-          <Button variant="outline" className="flex-1" onClick={() => setKickOpen(false)}>
+          <Button variant="outline" className="flex-1" onClick={() => setConfirm(null)}>
             {t('common.cancel')}
           </Button>
           <Button
-            variant="danger"
+            variant={confirm === 'host' ? 'brand' : 'danger'}
             className="flex-1"
             loading={busy}
             onClick={async () => {
               setBusy(true)
-              await run({ type: 'kick', userId: target.profile.id })
+              await run(confirm === 'host' ? { type: 'makeHost', userId: target.profile.id } : { type: 'kick', userId: target.profile.id })
               setBusy(false)
-              setKickOpen(false)
+              setConfirm(null)
             }}
           >
-            {t('voice.kickConfirm')}
+            {confirm === 'host' ? rt('makeHost') : t('voice.kickConfirm')}
           </Button>
         </div>
       </Modal>

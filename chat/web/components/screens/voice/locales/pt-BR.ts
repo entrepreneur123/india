@@ -82,6 +82,9 @@ const ptBR: RoomDict = {
   'clearChat': "Limpar o chat",
   'clearChatTitle': "Limpar o chat para todos?",
   'clearChatBody': "Tudo o que foi escrito some da sala. Não dá para desfazer.",
+  'makeHost': "Tornar anfitrião",
+  'makeHostTitle': "Tornar {name} anfitrião?",
+  'makeHostBody': "A partir de agora {name} comanda a sala. Você continua como coanfitrião.",
 }
 
 export default ptBR

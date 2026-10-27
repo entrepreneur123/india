@@ -83,6 +83,7 @@ const zhHans: FeedDict = {
   // a profile
   'profile.speaks': '会说',
   'style.mbtiHint': "可选。再点一次即可清除。",
+  'post.likers': "点赞",
 }
 
 export default zhHans

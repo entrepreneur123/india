@@ -122,7 +122,6 @@ const ml: SocialDict = {
   'contacts.stoppedToast': '{name}-മായുള്ള പങ്കിടൽ നിർത്തി',
   'contacts.copied': 'പകർത്തി',
   'hl.title': 'ഹൈലൈറ്റുകൾ',
-  'hl.new': 'പുതിയത്',
   'hl.name': 'തലക്കെട്ട്',
   'hl.add': 'ഫോട്ടോകൾ ചേർക്കുക',
   'hl.save': 'സേവ് ചെയ്യുക',
@@ -181,6 +180,7 @@ const ml: SocialDict = {
   'party.searching': "മറ്റൊരു ഗ്രൂപ്പിനെ തിരയുന്നു…",
   'party.needTwo': "കുറഞ്ഞത് 2 പേർ വേണം — സുഹൃത്തുക്കളും ഇവിടെ പാർട്ടി മാച്ച് തുറക്കണം.",
   'party.ready': "{n} പേർ — തയ്യാർ",
+  'hl.create': "പുതിയ ഹൈലൈറ്റ്",
 }
 
 export default ml

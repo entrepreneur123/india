@@ -510,7 +510,6 @@ const zhHans: Dict = {
   // me & profiles
   'me.edit': '编辑资料',
   'me.newPost': '发布动态',
-  'me.firstPost': '发布你的第一条动态',
   'me.editDesc': '性别和出生日期无法修改。',
   'me.updated': '资料已更新',
   'me.postDesc': '和你聊过天的人、你的好友以及同一房间的人可以看到你的动态。',
@@ -716,6 +715,8 @@ const zhHans: Dict = {
   'looking.reply': "私信",
   'error.party_small': "至少需要 2 人参加",
   'lobby.party': "和朋友一起？多人随机聊天",
+  'settings.blurMedia': "模糊他人发送的照片",
+  'settings.blurMediaBody': "聊天和房间里的照片和视频在你点开前保持模糊。",
 }
 
 export default zhHans

@@ -511,7 +511,6 @@ const he: Dict = {
   // me & profiles
   'me.edit': 'עריכת פרופיל',
   'me.newPost': 'פוסט חדש',
-  'me.firstPost': 'משתפים את הפוסט הראשון',
   'me.editDesc': 'אי אפשר לשנות מגדר ותאריך לידה.',
   'me.updated': 'הפרופיל עודכן',
   'me.postDesc': 'אנשים שצ׳וטטת איתם, החברים שלך ואנשים באותו חדר יכולים לראות את הפוסטים שלך.',
@@ -718,6 +717,8 @@ const he: Dict = {
   'looking.reply': "הודעה",
   'error.party_small': "צריך לפחות 2 משתתפים",
   'lobby.party': "עם חברים? צ׳אט אקראי קבוצתי",
+  'settings.blurMedia': "טשטוש תמונות של אחרים",
+  'settings.blurMediaBody': "תמונות וסרטונים בצ'אטים ובחדרים יישארו מטושטשים עד שתקישו עליהם.",
 }
 
 export default he

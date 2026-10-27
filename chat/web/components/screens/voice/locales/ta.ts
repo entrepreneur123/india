@@ -82,6 +82,9 @@ const ta: RoomDict = {
   'clearChat': "அரட்டையை அழி",
   'clearChatTitle': "அனைவருக்கும் அரட்டையை அழிக்கவா?",
   'clearChatBody': "இதுவரை எழுதிய அனைத்தும் அறையிலிருந்து மறையும். திரும்பப் பெற முடியாது.",
+  'makeHost': "ஹோஸ்ட் ஆக்கு",
+  'makeHostTitle': "{name}-ஐ ஹோஸ்ட் ஆக்கவா?",
+  'makeHostBody': "இனி {name} அறையை நடத்துவார். நீங்கள் இணை ஹோஸ்டாக இருப்பீர்கள்.",
 }
 
 export default ta

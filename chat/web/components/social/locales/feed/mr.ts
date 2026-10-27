@@ -72,6 +72,7 @@ const mr: FeedDict = {
   'prompt.secret': 'फार कमी लोकांना माहीत असलेली गोष्ट…',
   'profile.speaks': 'बोलतात',
   'style.mbtiHint': "ऐच्छिक. काढण्यासाठी पुन्हा टॅप करा.",
+  'post.likers': "आवडलेले लोक",
 }
 
 export default mr

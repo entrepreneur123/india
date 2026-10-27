@@ -15,6 +15,7 @@ import { CountBadge } from '@/components/social/bits'
 import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { RoomCountry } from '@/components/screens/rooms/room-country'
 
 /** 31: green idle, blue busy (searching, in a random chat or a room), black offline. */
 const DOT: Record<Presence, string> = {
@@ -28,7 +29,7 @@ const RANK: Record<Presence, number> = { online: 0, matching: 1, chat: 1, room: 
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, me, myPresence, openProfile, openThread, openVoice, badges } = useApp()
+  const { t, me, myPresence, openProfile, openChat, openVoice, badges } = useApp()
   const { num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   // What friends are doing: asked every 20 s while the window is shown (the server answers from its presence stamps).
@@ -64,7 +65,7 @@ export function RightPanel({ className }: { className?: string }) {
         </span>
       </button>
       <CountBadge n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />
-      <Button size="icon-sm" variant="ghost" onClick={() => openThread(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
+      <Button size="icon-sm" variant="ghost" onClick={() => openChat(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
         <MessageCircle className="size-4.5" aria-hidden />
       </Button>
     </li>
@@ -155,10 +156,18 @@ export function RightPanel({ className }: { className?: string }) {
                       onClick={() => openVoice(r.id)}
                       className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors duration-150 hover:bg-muted"
                     >
-                      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-xl" aria-hidden>
-                        {flagEmoji(r.host.country) || '🌐'}
+                      {/* The room's cover photo (072) when it has one; its country small under the title. */}
+                      {r.coverUrl ? (
+                        <img src={r.coverUrl} alt="" className="size-11 shrink-0 rounded-xl object-cover" loading="lazy" decoding="async" />
+                      ) : (
+                        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted text-xl" aria-hidden>
+                          {flagEmoji(r.host.country) || '🌐'}
+                        </span>
+                      )}
+                      <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                        <span className="w-full truncate text-sm font-semibold">{r.title}</span>
+                        <RoomCountry iso={r.host.country} className="h-auto bg-transparent p-0 text-[11px] font-medium text-muted-foreground ring-0" />
                       </span>
-                      <span className="min-w-0 flex-1 truncate text-sm font-semibold">{r.title}</span>
                       <span className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                         <PresenceDot />
                         {num(r.members)}

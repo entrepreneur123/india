@@ -128,7 +128,6 @@ const id: SocialDict = {
   'contacts.stoppedToast': 'Berhenti membagikan ke {name}',
   'contacts.copied': 'Disalin',
   'hl.title': 'Sorotan',
-  'hl.new': 'Baru',
   'hl.name': 'Judul',
   'hl.add': 'Tambah foto',
   'hl.save': 'Simpan',
@@ -187,6 +186,7 @@ const id: SocialDict = {
   'party.searching': "Mencari grup lain…",
   'party.needTwo': "Minimal 2 orang — teman juga buka Cocokkan grup di sini.",
   'party.ready': "{n} ikut — siap",
+  'hl.create': "Sorotan baru",
 }
 
 export default id

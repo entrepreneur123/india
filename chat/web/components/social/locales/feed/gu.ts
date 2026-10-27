@@ -72,6 +72,7 @@ const gu: FeedDict = {
   'prompt.secret': 'એવી વાત જે ઓછા લોકો જાણે છે…',
   'profile.speaks': 'બોલે છે',
   'style.mbtiHint': "વૈકલ્પિક. દૂર કરવા ફરી ટૅપ કરો.",
+  'post.likers': "પસંદ કરનારા",
 }
 
 export default gu

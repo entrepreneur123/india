@@ -82,6 +82,9 @@ const ms: RoomDict = {
   'clearChat': "Kosongkan sembang",
   'clearChatTitle': "Kosongkan sembang untuk semua?",
   'clearChatBody': "Semua yang ditulis setakat ini hilang dari bilik. Tidak boleh dibatalkan.",
+  'makeHost': "Jadikan hos",
+  'makeHostTitle': "Jadikan {name} hos?",
+  'makeHostBody': "Mulai sekarang {name} mengendalikan bilik. Anda kekal sebagai hos bersama.",
 }
 
 export default ms

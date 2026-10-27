@@ -85,6 +85,7 @@ const he: FeedDict = {
   // a profile
   'profile.speaks': 'מדבר/ת',
   'style.mbtiHint': "לא חובה. הקישו שוב כדי לנקות.",
+  'post.likers': "לייקים",
 }
 
 export default he

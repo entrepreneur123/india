@@ -1005,6 +1005,17 @@ export class VoiceSim {
         target!.role = a.on ? 'cohost' : target!.seat === null ? 'listener' : 'speaker'
         if (a.on) this.system(r, 'cohost', target!.profile.name)
         break
+      case 'makeHost': {
+        // As the server (079): only to a co-host; they swap seats, I stay a co-host (in the audience if they had none).
+        need(isHost && !!target && target.role === 'cohost' && !target.lost)
+        const seat = target!.seat
+        Object.assign(target!, { role: 'host', seat: 0, hand: false })
+        Object.assign(me, { role: 'cohost', seat, muted: seat === null ? true : me.muted })
+        r.room.hostId = target!.profile.id
+        r.mine = false
+        this.system(r, 'host', target!.profile.name)
+        break
+      }
       case 'kick':
         need(isMod && !!target && target.role !== 'host' && (isHost || target.role !== 'cohost'))
         r.room.members = r.room.members.filter((m) => m !== target)

@@ -510,7 +510,6 @@ const ja: Dict = {
   // me & profiles
   'me.edit': 'プロフィールを編集',
   'me.newPost': '新規投稿',
-  'me.firstPost': '最初の投稿をシェアしよう',
   'me.editDesc': '性別と生年月日は変更できません。',
   'me.updated': 'プロフィールを更新しました',
   'me.postDesc': '投稿は、チャットした人・友だち・同じルームにいる人に表示されます。',
@@ -716,6 +715,8 @@ const ja: Dict = {
   'looking.reply': "メッセージ",
   'error.party_small': "2人以上の参加が必要です",
   'lobby.party': "友達と一緒に？グループでランダムチャット",
+  'settings.blurMedia': "他の人の写真をぼかす",
+  'settings.blurMediaBody': "チャットやルームの写真・動画は、タップするまでぼかして表示されます。",
 }
 
 export default ja

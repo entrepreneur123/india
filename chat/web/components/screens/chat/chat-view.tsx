@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video, Wallpaper } from 'lucide-react'
+import { ArrowLeft, BookUser, Check, ChevronDown, Clock, Flag, Phone, Shuffle, Undo2, UserPlus, Video, Wallpaper, X } from 'lucide-react'
 import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
 import useSWR from 'swr'
@@ -58,6 +58,7 @@ export function ChatView({
   onMinimise,
   onStatus,
   onTalked,
+  docked,
 }: {
   matchId: string
   partner: Profile
@@ -82,6 +83,8 @@ export function ChatView({
   onStatus?: (s: { typing: boolean; unread: number }) => void
   /** Random only: whether both of us have written at least one line (then the chat can be rated when it ends). */
   onTalked?: (both: boolean) => void
+  /** Thread only: in the small window beside the friends panel (11): an X closes it. */
+  docked?: boolean
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -227,8 +230,8 @@ export function ChatView({
               onLocked={() => toast.show(t('error.exit_locked'))}
             />
           ) : (
-            <Button size="icon" variant="ghost" onClick={onClose} aria-label={t('common.back')}>
-              <ArrowLeft className="size-5 rtl:rotate-180" aria-hidden />
+            <Button size="icon" variant="ghost" onClick={onClose} aria-label={t(docked ? 'common.close' : 'common.back')}>
+              {docked ? <X className="size-5" aria-hidden /> : <ArrowLeft className="size-5 rtl:rotate-180" aria-hidden />}
             </Button>
           )}
           <button

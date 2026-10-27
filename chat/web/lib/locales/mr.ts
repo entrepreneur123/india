@@ -484,7 +484,6 @@ const mr: Dict = {
   'recent.startRandom': 'रँडम चॅट सुरू करा',
   'me.edit': 'प्रोफाइल एडिट करा',
   'me.newPost': 'नवीन पोस्ट',
-  'me.firstPost': 'तुमची पहिली पोस्ट शेअर करा',
   'me.editDesc': 'लिंग आणि जन्मतारीख बदलता येत नाही.',
   'me.updated': 'प्रोफाइल अपडेट झाले',
   'me.postDesc': 'ज्यांच्याशी तुम्ही चॅट केले, तुमचे मित्र आणि त्याच रूममधील लोक तुमच्या पोस्ट पाहू शकतात.',
@@ -681,6 +680,8 @@ const mr: Dict = {
   'looking.reply': "मेसेज",
   'error.party_small': "किमान 2 जण सहभागी हवेत",
   'lobby.party': "मित्रांसोबत? ग्रुप रँडम चॅट",
+  'settings.blurMedia': "इतरांचे फोटो धूसर करा",
+  'settings.blurMediaBody': "चॅट आणि रूममधील फोटो व व्हिडिओ टॅप करेपर्यंत धूसर राहतील.",
 }
 
 export default mr

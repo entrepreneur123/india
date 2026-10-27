@@ -91,6 +91,7 @@ const ar: FeedDict = {
   // a profile
   'profile.speaks': 'يتحدث',
   'style.mbtiHint': "اختياري. اضغط مرة أخرى للمسح.",
+  'post.likers': "الإعجابات",
 }
 
 export default ar

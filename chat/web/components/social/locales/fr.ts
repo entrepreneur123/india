@@ -124,7 +124,6 @@ const fr: SocialDict = {
   'contacts.stoppedToast': 'Partage arrêté avec {name}',
   'contacts.copied': 'Copié',
   'hl.title': 'À la une',
-  'hl.new': 'Nouveau',
   'hl.name': 'Titre',
   'hl.add': 'Ajouter des photos',
   'hl.save': 'Enregistrer',
@@ -183,6 +182,7 @@ const fr: SocialDict = {
   'party.searching': "Recherche d'un autre groupe…",
   'party.needTwo': "Il faut être au moins 2 — vos amis ouvrent aussi Match de groupe ici.",
   'party.ready': "{n} partants — prêts",
+  'hl.create': "Nouveau moment fort",
 }
 
 export default fr

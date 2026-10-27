@@ -514,7 +514,6 @@ const ar: Dict = {
   // me & profiles
   'me.edit': 'تعديل الملف الشخصي',
   'me.newPost': 'منشور جديد',
-  'me.firstPost': 'شارك أول منشور لك',
   'me.editDesc': 'لا يمكن تغيير الجنس وتاريخ الميلاد.',
   'me.updated': 'تم تحديث الملف الشخصي',
   'me.postDesc': 'يمكن لمن دردشت معهم وأصدقائك ومن في الغرفة نفسها رؤية منشوراتك.',
@@ -724,6 +723,8 @@ const ar: Dict = {
   'looking.reply': "رسالة",
   'error.party_small': "يجب أن ينضم شخصان على الأقل",
   'lobby.party': "مع أصدقائك؟ دردشة عشوائية جماعية",
+  'settings.blurMedia': "تمويه صور الآخرين",
+  'settings.blurMediaBody': "تبقى الصور والفيديوهات في الدردشات والغرف مموّهة حتى تنقر عليها.",
 }
 
 export default ar

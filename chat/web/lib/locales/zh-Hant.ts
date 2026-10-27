@@ -510,7 +510,6 @@ const zhHant: Dict = {
   // me & profiles
   'me.edit': '編輯資料',
   'me.newPost': '發佈貼文',
-  'me.firstPost': '發佈你的第一則貼文',
   'me.editDesc': '性別和出生日期無法修改。',
   'me.updated': '資料已更新',
   'me.postDesc': '和你聊過天的人、你的好友以及同一房間的人可以看到你的貼文。',
@@ -716,6 +715,8 @@ const zhHant: Dict = {
   'looking.reply': "私訊",
   'error.party_small': "至少需要 2 人參加",
   'lobby.party': "和朋友一起？多人隨機聊天",
+  'settings.blurMedia': "模糊他人傳送的照片",
+  'settings.blurMediaBody': "聊天和房間裡的照片和影片在你點開前保持模糊。",
 }
 
 export default zhHant

@@ -510,7 +510,6 @@ const ms: Dict = {
   // me & profiles
   'me.edit': 'Edit profil',
   'me.newPost': 'Hantaran baharu',
-  'me.firstPost': 'Kongsi hantaran pertama anda',
   'me.editDesc': 'Jantina dan tarikh lahir tidak boleh ditukar.',
   'me.updated': 'Profil dikemas kini',
   'me.postDesc': 'Orang yang pernah bersembang dengan anda, rakan anda dan orang dalam bilik yang sama boleh melihat hantaran anda.',
@@ -716,6 +715,8 @@ const ms: Dict = {
   'looking.reply': "Mesej",
   'error.party_small': "Sekurang-kurangnya 2 orang perlu sertai",
   'lobby.party': "Dengan kawan? Sembang rawak kumpulan",
+  'settings.blurMedia': "Kaburkan foto daripada orang lain",
+  'settings.blurMediaBody': "Foto dan video dalam sembang dan bilik kekal kabur sehingga anda ketik.",
 }
 
 export default ms

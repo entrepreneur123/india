@@ -79,6 +79,7 @@ const ro: FeedDict = {
 
   'profile.speaks': 'Vorbește',
   'style.mbtiHint': "Opțional. Atinge din nou pentru a șterge.",
+  'post.likers': "Aprecieri",
 }
 
 export default ro

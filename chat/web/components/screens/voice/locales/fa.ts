@@ -82,6 +82,9 @@ const fa: RoomDict = {
   'clearChat': "پاک کردن گفتگو",
   'clearChatTitle': "گفتگو برای همه پاک شود؟",
   'clearChatBody': "هر چه تا حالا نوشته شده از اتاق پاک می‌شود. برگشت‌پذیر نیست.",
+  'makeHost': "میزبان کن",
+  'makeHostTitle': "{name} میزبان شود؟",
+  'makeHostBody': "از این به بعد {name} اتاق را می‌گرداند. شما میزبان همکار می‌مانید.",
 }
 
 export default fa

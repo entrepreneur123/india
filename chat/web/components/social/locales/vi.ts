@@ -123,7 +123,6 @@ const vi: SocialDict = {
   'contacts.stoppedToast': 'Đã ngừng chia sẻ với {name}',
   'contacts.copied': 'Đã sao chép',
   'hl.title': 'Tin nổi bật',
-  'hl.new': 'Mới',
   'hl.name': 'Tiêu đề',
   'hl.add': 'Thêm ảnh',
   'hl.save': 'Lưu',
@@ -182,6 +181,7 @@ const vi: SocialDict = {
   'party.searching': "Đang tìm nhóm khác…",
   'party.needTwo': "Cần ít nhất 2 người — bạn bè cũng mở Ghép nhóm ở đây.",
   'party.ready': "{n} người — sẵn sàng",
+  'hl.create': "Tin nổi bật mới",
 }
 
 export default vi

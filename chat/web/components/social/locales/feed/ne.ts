@@ -77,6 +77,7 @@ const ne: FeedDict = {
 
   'profile.speaks': 'बोल्ने भाषा',
   'style.mbtiHint': "ऐच्छिक। हटाउन फेरि थिच्नुहोस्।",
+  'post.likers': "मन पराउनेहरू",
 }
 
 export default ne

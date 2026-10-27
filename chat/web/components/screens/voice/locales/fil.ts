@@ -82,6 +82,9 @@ const fil: RoomDict = {
   'clearChat': "Linisin ang chat",
   'clearChatTitle': "Linisin ang chat para sa lahat?",
   'clearChatBody': "Mawawala sa room ang lahat ng naisulat. Hindi na maibabalik.",
+  'makeHost': "Gawing host",
+  'makeHostTitle': "Gawing host si {name}?",
+  'makeHostBody': "Si {name} na ang hahawak ng room. Mananatili kang co-host.",
 }
 
 export default fil

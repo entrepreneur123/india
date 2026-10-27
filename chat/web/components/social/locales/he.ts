@@ -130,7 +130,6 @@ const he: SocialDict = {
   'contacts.stoppedToast': 'השיתוף עם {name} הופסק',
   'contacts.copied': 'הועתק',
   'hl.title': 'הדגשות',
-  'hl.new': 'חדש',
   'hl.name': 'כותרת',
   'hl.add': 'הוספת תמונות',
   'hl.save': 'שמירה',
@@ -189,6 +188,7 @@ const he: SocialDict = {
   'party.searching': "מחפשים קבוצה אחרת…",
   'party.needTwo': "צריך לפחות 2 — גם החברים צריכים לפתוח כאן התאמת קבוצות.",
   'party.ready': "{n} בפנים — מוכנים",
+  'hl.create': "הדגשה חדשה",
 }
 
 export default he

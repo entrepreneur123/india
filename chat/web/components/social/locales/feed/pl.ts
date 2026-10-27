@@ -81,6 +81,7 @@ const pl: FeedDict = {
 
   'profile.speaks': 'Mówi w językach',
   'style.mbtiHint': "Opcjonalnie. Stuknij ponownie, aby wyczyścić.",
+  'post.likers': "Polubienia",
 }
 
 export default pl

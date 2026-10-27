@@ -77,6 +77,7 @@ const de: FeedDict = {
 
   'profile.speaks': 'Spricht',
   'style.mbtiHint': "Optional. Zum Entfernen noch einmal tippen.",
+  'post.likers': "Gefällt",
 }
 
 export default de

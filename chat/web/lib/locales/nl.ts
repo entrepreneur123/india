@@ -501,7 +501,6 @@ const nl: Dict = {
 
   'me.edit': 'Profiel bewerken',
   'me.newPost': 'Nieuwe post',
-  'me.firstPost': 'Deel je eerste post',
   'me.editDesc': 'Gender en geboortedatum kun je niet wijzigen.',
   'me.updated': 'Profiel bijgewerkt',
   'me.postDesc': 'Mensen met wie je hebt gechat, je vrienden en mensen in dezelfde room kunnen je posts zien.',
@@ -703,6 +702,8 @@ const nl: Dict = {
   'looking.reply': "Bericht",
   'error.party_small': "Minstens 2 van jullie moeten meedoen",
   'lobby.party': "Met vrienden? Willekeurige groepschat",
+  'settings.blurMedia': "Foto's van anderen vervagen",
+  'settings.blurMediaBody': "Foto's en video's in chats en kamers blijven vaag tot je erop tikt.",
 }
 
 export default nl

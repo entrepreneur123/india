@@ -52,9 +52,14 @@ export interface AppState {
   openProfile: (userId: string, opts?: { matchId?: string | null }) => void
   /** The Looks shop (walls and VIP too, 046; effects and bubbles, 062), on this tab. */
   openShop: (tab?: ItemKind) => void
-  /** A post with its comments, over whatever is on screen. `initial`: shown while it is read again; `focus`: the comment box. */
-  openPost: (postId: string, opts?: { initial?: FeedPost | null; focus?: boolean }) => void
+  /**
+   * A post with its comments, over whatever is on screen. `initial`: shown while it is read again; `focus`: the comment
+   * box; `reactions`: scrolled down to its likers and comments (the feed's counts, 6).
+   */
+  openPost: (postId: string, opts?: { initial?: FeedPost | null; focus?: boolean; reactions?: boolean }) => void
   openThread: (partner: Profile, matchId?: string) => void
+  /** 11: from the friends panel — a small window beside it on wide screens (the room or chat stays), else openThread. */
+  openChat: (partner: Profile) => void
   /** 48: a group chat, full screen like a thread. */
   openGroup: (groupId: string) => void
   /**

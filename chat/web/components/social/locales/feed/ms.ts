@@ -83,6 +83,7 @@ const ms: FeedDict = {
   // a profile
   'profile.speaks': 'Bertutur',
   'style.mbtiHint': "Pilihan. Ketik sekali lagi untuk padam.",
+  'post.likers': "Suka",
 }
 
 export default ms

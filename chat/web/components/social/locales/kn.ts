@@ -122,7 +122,6 @@ const kn: SocialDict = {
   'contacts.stoppedToast': '{name} ಅವರೊಂದಿಗೆ ಹಂಚಿಕೆ ನಿಲ್ಲಿಸಲಾಗಿದೆ',
   'contacts.copied': 'ನಕಲಿಸಲಾಗಿದೆ',
   'hl.title': 'ಹೈಲೈಟ್ಸ್',
-  'hl.new': 'ಹೊಸದು',
   'hl.name': 'ಶೀರ್ಷಿಕೆ',
   'hl.add': 'ಫೋಟೋ ಸೇರಿಸಿ',
   'hl.save': 'ಉಳಿಸಿ',
@@ -181,6 +180,7 @@ const kn: SocialDict = {
   'party.searching': "ಇನ್ನೊಂದು ಗುಂಪು ಹುಡುಕುತ್ತಿದ್ದೇವೆ…",
   'party.needTwo': "ಕನಿಷ್ಠ 2 ಜನ ಬೇಕು — ಸ್ನೇಹಿತರೂ ಇಲ್ಲಿ ಪಾರ್ಟಿ ಮ್ಯಾಚ್ ತೆರೆಯಬೇಕು.",
   'party.ready': "{n} ಜನ — ಸಿದ್ಧ",
+  'hl.create': "ಹೊಸ ಹೈಲೈಟ್",
 }
 
 export default kn

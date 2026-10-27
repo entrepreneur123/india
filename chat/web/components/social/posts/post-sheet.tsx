@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import { ArrowUp, X } from 'lucide-react'
-import type { FeedPost, PostComment } from '@/lib/backend'
+import type { FeedPost, PersonRow, PostComment } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COMMENT_MAX, COMMENTS_PAGE, threadComments } from '@/lib/feed'
 import { useApp } from '@/components/app-state'
@@ -20,6 +20,7 @@ import { AccentAvatar } from '../profile-bits'
 import { authorProfile, PostCard } from './post-card'
 import { VerifiedMark } from '@/components/trust/badge'
 import { postStore, useLivePost } from './post-store'
+import { UserAvatar } from '@/components/looks/user-avatar'
 
 export interface PostTarget {
   postId: string
@@ -27,6 +28,8 @@ export interface PostTarget {
   initial?: FeedPost | null
   /** Put the cursor in the comment box. */
   focus?: boolean
+  /** Scroll down to the likers and comments (opened from a count in the feed). */
+  reactions?: boolean
 }
 
 /** A post with its comments: from a profile's grid or a like / comment notification. */
@@ -66,6 +69,7 @@ function PostBody({ target, onClose }: { target: PostTarget; onClose: () => void
       {post ? (
         <>
           <PostCard post={post} onComments={() => inputRef.current?.focus()} />
+          <Likers post={post} scrollTo={!!target.reactions} />
           <div className="border-t border-border" />
           <Comments post={post} inputRef={inputRef} autoFocus={!!target.focus} />
         </>
@@ -88,6 +92,47 @@ function PostBody({ target, onClose }: { target: PostTarget; onClose: () => void
         </div>
       )}
     </div>
+  )
+}
+
+/** 080: who liked it, newest first, above the comments in the same sheet; read again when the count changes. */
+function Likers({ post, scrollTo }: { post: FeedPost; scrollTo: boolean }) {
+  const backend = useBackend()
+  const { data } = useSWR(post.likes > 0 ? ['likers', post.id, post.likes] : null, () => backend.postLikers(post.id), { keepPreviousData: true })
+  // Opened from a count: the likers (and the comments under them) come into view, the post scrolled up past.
+  const ref = useRef<HTMLDivElement>(null)
+  const scrolled = useRef(false)
+  useEffect(() => {
+    if (!scrollTo || scrolled.current || (post.likes > 0 && !data)) return
+    scrolled.current = true
+    ref.current?.scrollIntoView({ block: 'start' })
+  }, [scrollTo, data, post.likes])
+  return (
+    <div ref={ref} className="scroll-mt-2">
+      {post.likes > 0 ? <LikerList post={post} people={data} /> : null}
+    </div>
+  )
+}
+
+function LikerList({ post, people: data }: { post: FeedPost; people: PersonRow[] | undefined }) {
+  const { openProfile } = useApp()
+  const { ft, plural } = useFeedT()
+  return (
+    <section aria-label={ft('post.likers')} className="flex flex-col gap-2 px-4 pb-3">
+      <h3 className="px-1 text-sm font-semibold">{plural(post.likes, 'post.likes.one', 'post.likes.other')}</h3>
+      <ul className="flex gap-2 overflow-x-auto no-scrollbar">
+        {data
+          ? data.map((p) => (
+              <li key={p.id} className="shrink-0">
+                <button type="button" onClick={() => openProfile(p.id)} className="flex w-14 flex-col items-center gap-1 rounded-xl p-0.5 text-center">
+                  <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={44} />
+                  <span className="w-full truncate text-[11px] font-medium">{p.name}</span>
+                </button>
+              </li>
+            ))
+          : Array.from({ length: Math.min(post.likes, 5) }, (_, i) => <Skeleton key={i} className="size-11 shrink-0 rounded-full" />)}
+      </ul>
+    </section>
   )
 }
 

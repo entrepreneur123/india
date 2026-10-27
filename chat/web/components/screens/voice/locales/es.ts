@@ -83,6 +83,9 @@ const es: RoomDict = {
   'clearChat': "Vaciar el chat",
   'clearChatTitle': "¿Vaciar el chat para todos?",
   'clearChatBody': "Todo lo escrito hasta ahora desaparece de la sala. No se puede deshacer.",
+  'makeHost': "Hacer anfitrión",
+  'makeHostTitle': "¿Hacer a {name} anfitrión?",
+  'makeHostBody': "Desde ahora {name} dirige la sala. Tú sigues como coanfitrión.",
 }
 
 export default es

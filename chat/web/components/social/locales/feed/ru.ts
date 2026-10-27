@@ -87,6 +87,7 @@ const ru: FeedDict = {
   // a profile
   'profile.speaks': 'Языки',
   'style.mbtiHint': "Необязательно. Нажмите ещё раз, чтобы убрать.",
+  'post.likers': "Отметки «Нравится»",
 }
 
 export default ru

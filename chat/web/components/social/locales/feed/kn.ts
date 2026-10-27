@@ -77,6 +77,7 @@ const kn: FeedDict = {
 
   'profile.speaks': 'ಮಾತನಾಡುವ ಭಾಷೆಗಳು',
   'style.mbtiHint': "ಐಚ್ಛಿಕ. ತೆಗೆಯಲು ಮತ್ತೆ ಒತ್ತಿ.",
+  'post.likers': "ಇಷ್ಟಪಟ್ಟವರು",
 }
 
 export default kn

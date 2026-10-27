@@ -82,6 +82,9 @@ const sw: RoomDict = {
   'clearChat': "Futa gumzo",
   'clearChatTitle': "Futa gumzo kwa wote?",
   'clearChatBody': "Kila kilichoandikwa kitatoweka chumbani. Haiwezi kutenduliwa.",
+  'makeHost': "Mfanye mwenyeji",
+  'makeHostTitle': "Mfanye {name} mwenyeji?",
+  'makeHostBody': "Kuanzia sasa {name} ataendesha chumba. Wewe utabaki mwenyeji msaidizi.",
 }
 
 export default sw

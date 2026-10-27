@@ -83,6 +83,7 @@ const fa: FeedDict = {
   // a profile
   'profile.speaks': 'زبان‌ها',
   'style.mbtiHint': "اختیاری. برای پاک کردن دوباره بزنید.",
+  'post.likers': "پسندها",
 }
 
 export default fa

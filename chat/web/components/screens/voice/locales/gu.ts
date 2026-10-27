@@ -82,6 +82,9 @@ const gu: RoomDict = {
   'clearChat': "ચેટ સાફ કરો",
   'clearChatTitle': "બધા માટે ચેટ સાફ કરવી છે?",
   'clearChatBody': "અત્યાર સુધી લખેલું બધું રૂમમાંથી જશે. પાછું નહીં આવે.",
+  'makeHost': "હોસ્ટ બનાવો",
+  'makeHostTitle': "{name}ને હોસ્ટ બનાવીએ?",
+  'makeHostBody': "હવેથી {name} રૂમ ચલાવશે. તમે કો-હોસ્ટ રહેશો.",
 }
 
 export default gu

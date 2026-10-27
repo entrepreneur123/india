@@ -129,7 +129,6 @@ const zhHans: SocialDict = {
   'contacts.stoppedToast': '已停止向 {name} 分享',
   'contacts.copied': '已复制',
   'hl.title': '精选',
-  'hl.new': '新建',
   'hl.name': '标题',
   'hl.add': '添加照片',
   'hl.save': '保存',
@@ -188,6 +187,7 @@ const zhHans: SocialDict = {
   'party.searching': "正在寻找另一队…",
   'party.needTwo': "至少需要 2 人加入——朋友也要在这里打开“组队匹配”。",
   'party.ready': "{n} 人已加入——准备好了",
+  'hl.create': "新建精选",
 }
 
 export default zhHans

@@ -128,7 +128,6 @@ const th: SocialDict = {
   'contacts.stoppedToast': 'หยุดแชร์กับ {name} แล้ว',
   'contacts.copied': 'คัดลอกแล้ว',
   'hl.title': 'ไฮไลต์',
-  'hl.new': 'สร้างใหม่',
   'hl.name': 'ชื่อ',
   'hl.add': 'เพิ่มรูปภาพ',
   'hl.save': 'บันทึก',
@@ -187,6 +186,7 @@ const th: SocialDict = {
   'party.searching': "กำลังหาอีกปาร์ตี้…",
   'party.needTwo': "ต้องมีอย่างน้อย 2 คน — เพื่อนก็ต้องเปิดจับคู่ปาร์ตี้ที่นี่ด้วย",
   'party.ready': "{n} คนเข้าร่วม — พร้อมแล้ว",
+  'hl.create': "ไฮไลต์ใหม่",
 }
 
 export default th

@@ -33,7 +33,8 @@ export const authorProfile = (a: FeedPost['author']): Profile => ({
  * One post: the author (tap: their profile), the text, the photo (double tap: like), the heart and comment counts
  * and a "..." menu (report, or delete my own), at the top of the post sheet. `onComments`: goes to the comment box.
  */
-export function PostCard({ post: initial, onComments }: { post: FeedPost; onComments: () => void }) {
+/** `onLikes`: the like count is its own button (the feed opens the post's likers and comments with it). */
+export function PostCard({ post: initial, onComments, onLikes }: { post: FeedPost; onComments: () => void; onLikes?: () => void }) {
   const post = useLivePost(initial)
   const { me, openProfile } = useApp()
   const { timeAgo, num } = useI18n()
@@ -161,8 +162,18 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
           <span key={pop} className={cn('grid', pop > 0 && 'animate-heart-pop')}>
             <LikeIcon on={post.liked} size={26} />
           </span>
-          {post.likes > 0 ? <span aria-hidden>{num(post.likes)}</span> : null}
+          {post.likes > 0 && !onLikes ? <span aria-hidden>{num(post.likes)}</span> : null}
         </button>
+        {post.likes > 0 && onLikes ? (
+          <button
+            type="button"
+            onClick={onLikes}
+            aria-label={`${ft('post.likers')}: ${plural(post.likes, 'post.likes.one', 'post.likes.other')}`}
+            className="-ms-2 flex h-11 items-center rounded-full px-1.5 text-sm font-bold text-foreground tabular-nums transition-colors duration-150 hover:bg-muted"
+          >
+            {num(post.likes)}
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={onComments}

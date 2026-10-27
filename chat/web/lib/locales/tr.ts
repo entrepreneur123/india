@@ -510,7 +510,6 @@ const tr: Dict = {
   // me & profiles
   'me.edit': 'Profili düzenle',
   'me.newPost': 'Yeni gönderi',
-  'me.firstPost': 'İlk gönderini paylaş',
   'me.editDesc': 'Cinsiyet ve doğum tarihi değiştirilemez.',
   'me.updated': 'Profil güncellendi',
   'me.postDesc': 'Sohbet ettiğin kişiler, arkadaşların ve aynı odadaki kişiler gönderilerini görebilir.',
@@ -716,6 +715,8 @@ const tr: Dict = {
   'looking.reply': "Mesaj",
   'error.party_small': "En az 2 kişinin katılması gerekiyor",
   'lobby.party': "Arkadaşlarla mı? Grup rastgele sohbet",
+  'settings.blurMedia': "Başkalarının fotoğraflarını bulanıklaştır",
+  'settings.blurMediaBody': "Sohbet ve odalardaki fotoğraf ve videolar dokunana kadar bulanık kalır.",
 }
 
 export default tr

@@ -122,7 +122,6 @@ const ne: SocialDict = {
   'contacts.stoppedToast': '{name} सँग सेयर गर्न रोकियो',
   'contacts.copied': 'कपी भयो',
   'hl.title': 'हाइलाइटहरू',
-  'hl.new': 'नयाँ',
   'hl.name': 'शीर्षक',
   'hl.add': 'फोटो थप्नुहोस्',
   'hl.save': 'सेभ गर्नुहोस्',
@@ -181,6 +180,7 @@ const ne: SocialDict = {
   'party.searching': "अर्को समूह खोज्दैछौं…",
   'party.needTwo': "कम्तीमा २ जना चाहिन्छ — साथीहरूले पनि यहाँ पार्टी म्याच खोल्नुपर्छ।",
   'party.ready': "{n} जना — तयार",
+  'hl.create': "नयाँ हाइलाइट",
 }
 
 export default ne

@@ -129,7 +129,6 @@ const tr: SocialDict = {
   'contacts.stoppedToast': 'Paylaşım durduruldu: {name}',
   'contacts.copied': 'Kopyalandı',
   'hl.title': 'Öne Çıkanlar',
-  'hl.new': 'Yeni',
   'hl.name': 'Başlık',
   'hl.add': 'Fotoğraf ekle',
   'hl.save': 'Kaydet',
@@ -188,6 +187,7 @@ const tr: SocialDict = {
   'party.searching': "Başka bir grup aranıyor…",
   'party.needTwo': "En az 2 kişi gerekiyor — arkadaşların da burada Grup eşleşmesini açsın.",
   'party.ready': "{n} kişi var — hazır",
+  'hl.create': "Yeni öne çıkan",
 }
 
 export default tr

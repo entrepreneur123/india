@@ -82,6 +82,9 @@ const kn: RoomDict = {
   'clearChat': "ಚಾಟ್ ತೆರವುಗೊಳಿಸಿ",
   'clearChatTitle': "ಎಲ್ಲರಿಗೂ ಚಾಟ್ ತೆರವುಗೊಳಿಸುವುದೇ?",
   'clearChatBody': "ಇಲ್ಲಿಯವರೆಗೆ ಬರೆದದ್ದೆಲ್ಲ ಕೋಣೆಯಿಂದ ಮಾಯವಾಗುತ್ತದೆ. ಹಿಂಪಡೆಯಲಾಗದು.",
+  'makeHost': "ಹೋಸ್ಟ್ ಮಾಡಿ",
+  'makeHostTitle': "{name} ಅವರನ್ನು ಹೋಸ್ಟ್ ಮಾಡಬೇಕೇ?",
+  'makeHostBody': "ಇನ್ನು ಮುಂದೆ {name} ರೂಮ್ ನಡೆಸುತ್ತಾರೆ. ನೀವು ಸಹ-ಹೋಸ್ಟ್ ಆಗಿರುತ್ತೀರಿ.",
 }
 
 export default kn

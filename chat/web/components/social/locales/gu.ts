@@ -117,7 +117,6 @@ const gu: SocialDict = {
   'contacts.stoppedToast': '{name} સાથે શેર કરવાનું બંધ કર્યું',
   'contacts.copied': 'કૉપિ થયું',
   'hl.title': 'હાઇલાઇટ્સ',
-  'hl.new': 'નવું',
   'hl.name': 'શીર્ષક',
   'hl.add': 'ફોટા ઉમેરો',
   'hl.save': 'સેવ કરો',
@@ -176,6 +175,7 @@ const gu: SocialDict = {
   'party.searching': "બીજું ગ્રુપ શોધીએ છીએ…",
   'party.needTwo': "ઓછામાં ઓછા 2 જણ જોઈએ — મિત્રો પણ અહીં પાર્ટી મેચ ખોલે.",
   'party.ready': "{n} જણ — તૈયાર",
+  'hl.create': "નવી હાઇલાઇટ",
 }
 
 export default gu

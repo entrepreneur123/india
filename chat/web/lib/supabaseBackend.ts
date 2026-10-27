@@ -928,6 +928,10 @@ export class SupabaseBackend implements Backend {
     return this.rpc<{ likes: number; liked: boolean }>('post_like', { p_post: postId, p_on: on })
   }
 
+  async postLikers(postId: string): Promise<PersonRow[]> {
+    return this.personRows(await this.rpc<PersonRowRaw[] | null>('post_likers', { p_post: postId }))
+  }
+
   async comments(postId: string, after?: number): Promise<PostComment[]> {
     const { COMMENTS_PAGE, mediaPaths, parseComment } = await this.social()
     const rows = await this.rpc<unknown>('comments_list', { p_post: postId, p_after: after ?? null, p_limit: COMMENTS_PAGE })
@@ -1053,13 +1057,18 @@ export class SupabaseBackend implements Backend {
   }
 
   async exploreFeed(): Promise<FeedItem[]> {
-    type Row = { kind: 'post' | 'highlight'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string }
-    const rows = (await this.rpc<Row[] | null>('explore_feed')) ?? []
+    type Row = { kind: 'post' | 'highlight'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string; post: unknown }
+    const rows = (await this.rpc<Row[] | null>('explore_feed2')) ?? []
     await this.signMany(rows.flatMap((r) => r.photos))
-    const users = await this.personRows(rows.map((r) => ({ id: r.user_id, handle: r.handle, name: r.name, photo_path: r.photo_path })))
+    const [users, posts] = await Promise.all([
+      this.personRows(rows.map((r) => ({ id: r.user_id, handle: r.handle, name: r.name, photo_path: r.photo_path }))),
+      this.toPosts(rows.flatMap((r) => r.post ?? [])),
+    ])
+    const byId = new Map(posts.map((p) => [p.id, p]))
     return rows.map((r, i) => ({
       kind: r.kind, id: r.item, user: users[i], text: r.body ?? '', at: r.at,
       photos: r.photos.flatMap((x) => this.signedUrls.get(x)?.url ?? []),
+      post: r.kind === 'post' ? byId.get(r.item) ?? null : null,
     }))
   }
 
@@ -1568,6 +1577,11 @@ export class SupabaseBackend implements Backend {
         break
       case 'cohost':
         await this.rpc('voice_set_cohost', { ...room, p_user: a.userId, p_on: a.on })
+        break
+      case 'makeHost':
+        await this.rpc('voice_make_host', { ...room, p_user: a.userId })
+        this.voiceSync(roomId, a.userId) // both moved seats: their LiveKit rights follow
+        this.voiceSync(roomId, this.uid)
         break
       case 'kick':
         await this.rpc('voice_kick', { ...room, p_user: a.userId })

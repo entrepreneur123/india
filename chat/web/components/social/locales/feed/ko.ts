@@ -83,6 +83,7 @@ const ko: FeedDict = {
   // a profile
   'profile.speaks': '쓰는 언어',
   'style.mbtiHint': "선택 사항이에요. 한 번 더 누르면 지워져요.",
+  'post.likers': "좋아요한 사람",
 }
 
 export default ko

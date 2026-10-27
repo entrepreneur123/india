@@ -77,6 +77,7 @@ const hi: FeedDict = {
 
   'profile.speaks': 'भाषाएँ',
   'style.mbtiHint': "वैकल्पिक। हटाने के लिए फिर से टैप करें।",
+  'post.likers': "पसंद करने वाले",
 }
 
 export default hi

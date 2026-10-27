@@ -79,6 +79,7 @@ const fr: FeedDict = {
 
   'profile.speaks': 'Parle',
   'style.mbtiHint': "Facultatif. Touchez à nouveau pour effacer.",
+  'post.likers': "J'aime",
 }
 
 export default fr

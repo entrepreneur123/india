@@ -128,7 +128,6 @@ const sw: SocialDict = {
   'contacts.stoppedToast': 'Umeacha kushiriki na {name}',
   'contacts.copied': 'Imenakiliwa',
   'hl.title': 'Vivutio',
-  'hl.new': 'Mpya',
   'hl.name': 'Kichwa',
   'hl.add': 'Ongeza picha',
   'hl.save': 'Hifadhi',
@@ -187,6 +186,7 @@ const sw: SocialDict = {
   'party.searching': "Tunatafuta kikundi kingine…",
   'party.needTwo': "Angalau 2 wanahitajika — marafiki pia wafungue Linganisha vikundi hapa.",
   'party.ready': "{n} wamo — tayari",
+  'hl.create': "Kivutio kipya",
 }
 
 export default sw

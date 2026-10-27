@@ -21,10 +21,10 @@ import type { Quotable } from '@/lib/voice-chat'
 import { VoiceChat, VoiceComposer } from './voice-chat'
 import { MusicPanel, QueueSheet } from './voice-music'
 import { useRoomT } from './room-t'
-import type { VoiceSession } from './voice-session'
+import type { Reaction, VoiceSession } from './voice-session'
 import { AudienceSheet, ClearChatSheet, OptionsSheet, PeopleSheet, PersonSheet, NoticeSheet, ReportRoomSheet, RequestsSheet, SeatSheet, SettingsSheet, ThemeSheet, type SheetState } from './voice-sheets'
 import { PhoneSplit, useWideSplit, WideSplitter } from './room-split'
-import { FocusVideo, LOST_FACE, LostBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
+import { FocusVideo, latestReactions, LOST_FACE, LostBadge, ReactionBadge, ReactionLayer, SeatPerson, Stage, VideoGrid } from './voice-stage'
 import { isMod, memberOf, REACTIONS, roleLabel } from './voice-text'
 import { canShareLink, InviteSheet, roomLink } from '@/components/social/invite-sheet'
 import { useSocialT } from '@/components/social/social-text'
@@ -193,7 +193,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const big = focused && s.videos[focused.profile.id] ? (
     <FocusVideo member={focused} video={s.videos[focused.profile.id]} levels={s.levels} onClose={unfocus} className={wide ? 'min-h-0 flex-1' : 'aspect-video w-full'} />
   ) : null
-  const listeners = <Listeners room={room} wide={wide} hands={hands} onAll={() => setSheet({ kind: 'audience' })} onPerson={person} />
+  const listeners = <Listeners room={room} me={me.profile.id} reactions={s.reactions} wide={wide} hands={hands} onAll={() => setSheet({ kind: 'audience' })} onPerson={person} />
 
   // Music: the slim "listen" bar (the player opens on a tap).
   const musicBar =
@@ -654,13 +654,23 @@ function StageSection({
  * Everyone listening (off the stage): their faces with names on wide screens, a row of faces on phones; raised hands
  * show to the host and co-hosts. "See all" opens the list with search.
  */
-function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wide: boolean; hands: number; onAll: () => void; onPerson: (userId: string) => void }) {
+function Listeners({ room, me, reactions, wide, hands, onAll, onPerson }: {
+  room: VoiceRoom
+  me: string
+  reactions: Reaction[]
+  wide: boolean
+  hands: number
+  onAll: () => void
+  onPerson: (userId: string) => void
+}) {
   const { t, num } = useI18n()
   const { rt } = useRoomT()
+  const latest = latestReactions(reactions)
   const list = room.members
     .filter((x) => x.seat === null)
-    // raised hands first (they're waiting), then the hosts, then everyone in order of arrival
-    .sort((a, b) => Number(b.hand) - Number(a.hand) || Number(isMod(b)) - Number(isMod(a)))
+    // raised hands first (they're waiting), then the hosts, then me (my reactions show on my face), then the rest in
+    // order of arrival
+    .sort((a, b) => Number(b.hand) - Number(a.hand) || Number(isMod(b)) - Number(isMod(a)) || Number(b.profile.id === me) - Number(a.profile.id === me))
   const id = `listening-${room.id}`
   const max = wide ? 24 : 9
   const shown = list.slice(0, max)
@@ -697,7 +707,7 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
         <ul className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-x-1 gap-y-2 pt-1">
           {shown.map((x) => (
             <li key={x.profile.id}>
-              <ListenerFace m={x} onClick={() => onPerson(x.profile.id)} />
+              <ListenerFace m={x} reaction={latest.get(x.profile.id)} onClick={() => onPerson(x.profile.id)} />
             </li>
           ))}
           {more > 0 ? (
@@ -711,12 +721,13 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
         </ul>
       ) : (
         <button type="button" onClick={onAll} className="flex w-full items-center gap-2 py-1 text-start" aria-label={`${rt('listening')}: ${num(list.length)}. ${rt('seeAll')}`}>
-          <span className="flex min-w-0 -space-x-2 overflow-hidden" aria-hidden>
+          <span className="flex min-w-0 -space-x-2 overflow-hidden -my-1.5 py-1.5 pe-2" aria-hidden>
             {shown.map((x) => (
-              <span key={x.profile.id} className="relative shrink-0">
+              <span key={x.profile.id} className={cn('relative shrink-0', latest.has(x.profile.id) && 'z-10')}>
                 <UserAvatar userId={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={30} className={cn('rounded-full ring-2 ring-background', x.lost && LOST_FACE)} />
                 {x.lost ? <LostBadge size={14} className="-top-1 -inset-e-1" /> : null}
                 {x.hand ? <ReactionIcon kind="hand" size={14} className="absolute -inset-e-1 -bottom-1" /> : null}
+                <ReactionBadge reaction={latest.get(x.profile.id)} size={16} />
               </span>
             ))}
           </span>
@@ -728,7 +739,7 @@ function Listeners({ room, wide, hands, onAll, onPerson }: { room: VoiceRoom; wi
 }
 
 /** One listener on wide screens: the face, the first name, a hand or the host / co-host badge. */
-function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }) {
+function ListenerFace({ m: x, reaction, onClick }: { m: VoiceMember; reaction?: Reaction; onClick: () => void }) {
   const { t } = useI18n()
   const { rt } = useRoomT()
   const role = roleLabel(x, t)
@@ -738,6 +749,7 @@ function ListenerFace({ m: x, onClick }: { m: VoiceMember; onClick: () => void }
         <UserAvatar userId={x.profile.id} name={x.profile.name} src={x.profile.photoUrl} size={44} className={cn('transition-transform duration-150 group-active:scale-95', x.lost && LOST_FACE)} />
         {x.lost ? <LostBadge size={18} /> : null}
         {x.hand ? <ReactionIcon kind="hand" size={18} className="absolute -inset-e-1 -bottom-1" /> : null}
+        <ReactionBadge reaction={reaction} size={18} />
       </span>
       <span className="max-w-full truncate text-[11px] leading-tight font-medium">{x.profile.name.split(' ')[0]}</span>
       {x.lost ? <span className="-mt-0.5 max-w-full truncate text-[9.5px] leading-tight font-bold text-destructive">{rt('lost')}</span> : role ? <span className="-mt-0.5 rounded-full bg-primary-soft px-1.5 text-[9.5px] leading-tight font-bold text-primary-text">{role}</span> : null}

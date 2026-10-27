@@ -77,6 +77,7 @@ const vi: FeedDict = {
 
   'profile.speaks': 'Nói',
   'style.mbtiHint': "Không bắt buộc. Chạm lần nữa để xóa.",
+  'post.likers': "Lượt thích",
 }
 
 export default vi

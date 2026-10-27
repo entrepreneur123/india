@@ -82,6 +82,9 @@ const ne: RoomDict = {
   'clearChat': "च्याट सफा गर्नुहोस्",
   'clearChatTitle': "सबैका लागि च्याट सफा गर्ने?",
   'clearChatBody': "अहिलेसम्म लेखिएका सबै कोठाबाट हराउँछन्। फिर्ता हुँदैन।",
+  'makeHost': "होस्ट बनाउनुहोस्",
+  'makeHostTitle': "{name}लाई होस्ट बनाउने?",
+  'makeHostBody': "अबदेखि {name}ले रुम चलाउनुहुन्छ। तपाईं को-होस्ट रहनुहुन्छ।",
 }
 
 export default ne

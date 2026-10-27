@@ -2,8 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { ChevronLeft, ChevronRight, ImagePlus, Plus, X } from 'lucide-react'
-import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, MAX_HIGHLIGHTS, type Highlight } from '@/lib/backend'
+import { ChevronLeft, ChevronRight, ImagePlus, X } from 'lucide-react'
+import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, type Highlight } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
@@ -37,16 +37,15 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
   const { data } = useSWR(key(userId), () => backend.highlights(userId))
   const [active, setActive] = useState(0)
   const [viewing, setViewing] = useState<Highlight | null>(null)
-  const [editing, setEditing] = useState<Highlight | 'new' | null>(null)
+  const [editing, setEditing] = useState<Highlight | null>(null)
   const drag = useRef<number | null>(null)
   const moved = useRef(false)
   const list = data ?? []
-  const cards: (Highlight | 'new')[] = mine && list.length < MAX_HIGHLIGHTS ? [...list, 'new'] : list
-  const n = cards.length
+  // A new one is made from Edit profile (the owner: the profile itself stays as others see it).
+  const n = list.length
   if (!n) return null
   const at = Math.min(active, n - 1)
   const turn = (by: number) => setActive((a) => (n >= 3 ? (Math.min(a, n - 1) + by + n) % n : Math.max(0, Math.min(n - 1, Math.min(a, n - 1) + by))))
-  const open = (c: Highlight | 'new') => (c === 'new' ? setEditing('new') : setViewing(c))
   const onUp = (e: ReactPointerEvent) => {
     const dx = drag.current === null ? 0 : e.clientX - drag.current
     drag.current = null
@@ -72,19 +71,18 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') turn(e.key === 'ArrowRight' ? 1 : -1)
         }}
       >
-        {cards.map((c, i) => {
+        {list.map((c, i) => {
           const d = offsetOf(i, at, n)
           const far = Math.abs(d) > 2
           return (
             <button
-              key={c === 'new' ? 'new' : c.id}
+              key={c.id}
               type="button"
               tabIndex={d === 0 ? 0 : -1}
               aria-hidden={far}
-              onClick={() => (d === 0 ? open(c) : setActive(i))}
+              onClick={() => (d === 0 ? setViewing(c) : setActive(i))}
               className={cn(
                 'absolute top-2 left-1/2 -ml-14 flex aspect-[3/4] w-28 flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none',
-                c === 'new' && 'items-center justify-center gap-1 border border-dashed border-input bg-card text-xs font-semibold text-muted-foreground',
                 far && 'pointer-events-none opacity-0',
               )}
               style={{
@@ -93,19 +91,10 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
                 opacity: far ? 0 : 1 - Math.abs(d) * 0.18,
               }}
             >
-              {c === 'new' ? (
-                <>
-                  <Plus className="size-6" aria-hidden />
-                  {st('hl.new')}
-                </>
-              ) : (
-                <>
-                  <img src={c.photos[0]?.url} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" draggable={false} />
-                  <span className="relative mt-auto bg-linear-to-t from-black/70 to-transparent px-2 pt-6 pb-2 text-sm font-semibold text-white">
-                    <span className="line-clamp-2">{c.title}</span>
-                  </span>
-                </>
-              )}
+              <img src={c.photos[0]?.url} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" draggable={false} />
+              <span className="relative mt-auto bg-linear-to-t from-black/70 to-transparent px-2 pt-6 pb-2 text-sm font-semibold text-white">
+                <span className="line-clamp-2">{c.title}</span>
+              </span>
             </button>
           )
         })}
@@ -126,7 +115,7 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
         onClose={() => setViewing(null)}
         onEdit={mine && viewing ? () => (setEditing(viewing), setViewing(null)) : undefined}
       />
-      {mine && editing ? <Editor userId={userId} highlight={editing === 'new' ? null : editing} onClose={() => setEditing(null)} /> : null}
+      {mine && editing ? <HighlightEditor userId={userId} highlight={editing} onClose={() => setEditing(null)} /> : null}
     </section>
   )
 }
@@ -191,7 +180,8 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
 
 type Draft = { id: string; url: string; file?: File }
 
-function Editor({ userId, highlight, onClose }: { userId: string; highlight: Highlight | null; onClose: () => void }) {
+/** Makes a highlight (null) or changes one; Edit profile opens it for a new one. */
+export function HighlightEditor({ userId, highlight, onClose }: { userId: string; highlight: Highlight | null; onClose: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
@@ -249,7 +239,7 @@ function Editor({ userId, highlight, onClose }: { userId: string; highlight: Hig
   }
 
   return (
-    <Modal open onClose={onClose} title={highlight ? st('hl.edit') : st('hl.new')} className="md:max-w-lg">
+    <Modal open onClose={onClose} title={highlight ? st('hl.edit') : st('hl.create')} className="md:max-w-lg">
       <div className="flex flex-col gap-4 px-4 pb-4">
         <Field label={st('hl.name')} htmlFor={`${inputId}-t`} error={plain ? null : st('hl.plain')}>
           <TextInput id={`${inputId}-t`} value={title} maxLength={HIGHLIGHT_TITLE_MAX} onChange={(e) => setTitle(e.target.value)} />

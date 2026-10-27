@@ -122,7 +122,6 @@ const ta: SocialDict = {
   'contacts.stoppedToast': '{name} உடன் பகிர்வது நிறுத்தப்பட்டது',
   'contacts.copied': 'நகலெடுக்கப்பட்டது',
   'hl.title': 'ஹைலைட்ஸ்',
-  'hl.new': 'புதியது',
   'hl.name': 'தலைப்பு',
   'hl.add': 'படங்களைச் சேர்',
   'hl.save': 'சேமி',
@@ -181,6 +180,7 @@ const ta: SocialDict = {
   'party.searching': "இன்னொரு குழுவைத் தேடுகிறோம்…",
   'party.needTwo': "குறைந்தது 2 பேர் தேவை — நண்பர்களும் இங்கே குழு பொருத்தத்தைத் திறக்க வேண்டும்.",
   'party.ready': "{n} பேர் — தயார்",
+  'hl.create': "புதிய ஹைலைட்",
 }
 
 export default ta

@@ -77,6 +77,7 @@ const nl: FeedDict = {
 
   'profile.speaks': 'Spreekt',
   'style.mbtiHint': "Optioneel. Tik nogmaals om te wissen.",
+  'post.likers': "Vind-ik-leuks",
 }
 
 export default nl

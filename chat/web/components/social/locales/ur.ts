@@ -117,7 +117,6 @@ const ur: SocialDict = {
   'contacts.stoppedToast': '{name} کے ساتھ شیئر کرنا بند کر دیا',
   'contacts.copied': 'کاپی ہو گیا',
   'hl.title': 'ہائی لائٹس',
-  'hl.new': 'نیا',
   'hl.name': 'عنوان',
   'hl.add': 'تصاویر شامل کریں',
   'hl.save': 'محفوظ کریں',
@@ -176,6 +175,7 @@ const ur: SocialDict = {
   'party.searching': "دوسری پارٹی تلاش کر رہے ہیں…",
   'party.needTwo': "کم از کم 2 لوگ چاہییں — دوست بھی یہاں پارٹی میچ کھولیں۔",
   'party.ready': "{n} شامل — تیار",
+  'hl.create': "نئی ہائی لائٹ",
 }
 
 export default ur

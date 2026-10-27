@@ -88,6 +88,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const [me, setMe] = useState(initialMe)
   const [tab, setTabState] = useState<Tab>('random')
   const [thread, setThread] = useState<Thread | null>(null)
+  // 11: a friend's thread in a small window beside the friends panel (wide screens), over whatever is open.
+  const [mini, setMini] = useState<Thread | null>(null)
   const [group, setGroup] = useState<string | null>(null)
   const [profileTarget, setProfileTarget] = useState<{ userId: string; matchId: string | null } | null>(null)
   // Overlays are downloaded the first time they open, then stay mounted so they can animate out.
@@ -294,6 +296,14 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   }, [refreshBadges])
   useBack(tab !== 'random', () => goTab(trail.current.pop() ?? 'random', true))
   useBack(!!thread, closeThread)
+  const closeMini = useCallback(() => {
+    setMini(null)
+    refreshBadges()
+  }, [refreshBadges])
+  useBack(!!mini, closeMini)
+  useEffect(() => {
+    if (!wide) setMini(null) // the window lives beside the panel only
+  }, [wide])
   useBack(!!group, () => setGroup(null))
   useBack(!!voice?.expanded, minimiseVoice)
 
@@ -303,6 +313,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       try {
         const id = matchId ?? (await backend.friendThread(partner.id))
         setThread({ matchId: id, partner })
+        setMini((m) => (m?.matchId === id ? null : m)) // one view of a thread at a time
         minimiseVoice()
       } catch (err) {
         toast.error(err)
@@ -329,10 +340,15 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       },
       openPost: (postId, opts) => {
         setPostUsed(true)
-        setPostTarget({ postId, initial: opts?.initial ?? null, focus: opts?.focus })
+        setPostTarget({ postId, initial: opts?.initial ?? null, focus: opts?.focus, reactions: opts?.reactions })
       },
       openShop: (tab = 'badge') => setShop({ open: true, tab }),
       openThread: (partner, matchId) => void openThread(partner, matchId),
+      openChat: (partner) => {
+        if (!wide) return void openThread(partner)
+        if (thread?.partner.id === partner.id) return
+        backend.friendThread(partner.id).then((matchId) => setMini({ matchId, partner }), (err) => toast.error(err))
+      },
       openGroup: (groupId) => {
         setProfileTarget(null)
         setThread(null)
@@ -352,6 +368,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       randomVisible: tab === 'random' && thread === null && group === null,
       reported: (id) => {
         setThread((th) => (th?.partner.id === id ? null : th))
+        setMini((th) => (th?.partner.id === id ? null : th))
         setProfileTarget(null)
         reportListeners.forEach((l) => l(id))
       },
@@ -374,7 +391,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       setKyc,
       openVerify,
     }),
-    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, group, minimiseVoice, reportListeners, voice?.id, myPresence, allBadges, refreshBadges, trust, refreshTrust, kyc, openVerify],
+    [me, phone, tab, setTab, lang, setLang, t, mutate, openThread, wide, backend, toast, openVoice, freeForRoom, freeForRandom, registerRandom, minimiseRandom, onSignedOut, thread, group, minimiseVoice, reportListeners, voice?.id, myPresence, allBadges, refreshBadges, trust, refreshTrust, kyc, openVerify],
   )
 
   const randomVisible = tab === 'random' && !thread && !group
@@ -479,10 +496,21 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                 {chatPill ? <ChatPill key="chat" bar={chatBar!} onOpen={() => setTab('random')} onEnd={() => void randomCtl.current?.endChat(false)} /> : null}
               </AnimatePresence>
             </main>
-            {wide && !voiceOpen ? (
+            {/* 11: the friends panel stays beside a room or a random chat too. */}
+            {wide ? (
               <Suspense fallback={null}>
                 <RightPanel className="flex" />
               </Suspense>
+            ) : null}
+            {wide && mini ? (
+              // Docked at the bottom, just left of the panel (the page is centred in at most 1520px).
+              <div className="fixed bottom-0 end-[max(21rem,calc((100vw-95rem)/2+21rem))] z-40 flex h-[min(560px,80dvh)] w-[360px] flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-background shadow-e3">
+                <ScreenBoundary key={mini.matchId}>
+                  <Suspense fallback={<ScreenLoading />}>
+                    <ThreadScreen thread={mini} onClose={closeMini} docked />
+                  </Suspense>
+                </ScreenBoundary>
+              </div>
             ) : null}
           </div>
           <BottomTabs hidden={hideTabs} />
@@ -534,7 +562,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
           // Their thread, or the random chat with them, on screen asks itself.
           hidden={(id) => {
             const r = randomCtl.current?.live()
-            return thread?.matchId === id || (r?.phase === 'chat' && r.matchId === id)
+            return thread?.matchId === id || mini?.matchId === id || (r?.phase === 'chat' && r.matchId === id)
           }}
           onAccepted={(caller, matchId) => void openThread(caller, matchId)}
         />

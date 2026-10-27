@@ -501,7 +501,6 @@ const ptBR: Dict = {
 
   'me.edit': 'Editar perfil',
   'me.newPost': 'Novo post',
-  'me.firstPost': 'Compartilhe seu primeiro post',
   'me.editDesc': 'Gênero e data de nascimento não podem ser alterados.',
   'me.updated': 'Perfil atualizado',
   'me.postDesc': 'Quem conversou com você, seus amigos e quem está na mesma sala podem ver seus posts.',
@@ -702,6 +701,8 @@ const ptBR: Dict = {
   'looking.reply': "Mensagem",
   'error.party_small': "Pelo menos 2 precisam entrar",
   'lobby.party': "Com amigos? Chat aleatório em grupo",
+  'settings.blurMedia': "Desfocar fotos de outras pessoas",
+  'settings.blurMediaBody': "Fotos e vídeos em chats e salas ficam desfocados até você tocar neles.",
 }
 
 export default ptBR

@@ -123,7 +123,6 @@ const ro: SocialDict = {
   'contacts.stoppedToast': 'Nu mai împărtășești cu {name}',
   'contacts.copied': 'Copiat',
   'hl.title': 'Evidențieri',
-  'hl.new': 'Nou',
   'hl.name': 'Titlu',
   'hl.add': 'Adaugă fotografii',
   'hl.save': 'Salvează',
@@ -182,6 +181,7 @@ const ro: SocialDict = {
   'party.searching': "Căutăm alt grup…",
   'party.needTwo': "Trebuie cel puțin 2 — prietenii deschid și ei Potrivire de grup aici.",
   'party.ready': "{n} în — gata",
+  'hl.create': "Moment nou",
 }
 
 export default ro

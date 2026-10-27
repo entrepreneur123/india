@@ -82,6 +82,9 @@ const bn: RoomDict = {
   'clearChat': "চ্যাট মুছুন",
   'clearChatTitle': "সবার জন্য চ্যাট মুছবেন?",
   'clearChatBody': "এখন পর্যন্ত লেখা সব রুম থেকে চলে যাবে। ফেরানো যাবে না।",
+  'makeHost': "হোস্ট বানান",
+  'makeHostTitle': "{name}-কে হোস্ট বানাবেন?",
+  'makeHostBody': "এখন থেকে {name} রুম চালাবেন। আপনি কো-হোস্ট থাকবেন।",
 }
 
 export default bn
