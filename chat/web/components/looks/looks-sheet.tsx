@@ -26,10 +26,10 @@ import { useAnonSwitch, useShop } from './use-shop'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
 /**
- * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my photo effect or chat
+ * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my name effect or chat
  * bubble, how strangers see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom.
  * Looks: a tap tries one on ("None" first); what I own I wear (equip_look, one of each kind). Walls (046): set_wall,
- * "None" is the plain one. Photo effects and bubbles (062): set_worn. VIP incognito is a switch (set_anon). Everything
+ * "None" is the plain one. Name effects and bubbles (062): set_worn. VIP incognito is a switch (set_anon). Everything
  * is bought in the Android app (Google Play); the demo sells at once.
  */
 export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; onClose: () => void; tab?: ItemKind }) {
@@ -71,7 +71,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [busy, setBusy] = useState(false)
   const [gift, setGift] = useState<ItemId | null>(null)
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
-  /** The photo effect and bubble being looked at (missing: the one I wear). */
+  /** The name effect and bubble being looked at (missing: the one I wear). */
   const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
   /** Taps that wear something, one after another (quick taps: the last one wins), and how many are still to run. */
   const saves = useRef(Promise.resolve())
@@ -118,7 +118,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const extra = kind === 'effect' || kind === 'bubble' ? kind : null
   const myExtra = extra ? ((shop.look?.[extra] ?? null) as ItemId | null) : null
   const shownExtra = extra && extra in extraTry ? (extraTry[extra] ?? null) : myExtra
-  // Kinds where one item (or none) is in use, chosen here: walls, photo effects and bubbles.
+  // Kinds where one item (or none) is in use, chosen here: walls, name effects and bubbles.
   const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : extra ? { mine: myExtra, shown: shownExtra } : null
   const tried: ItemId | null = look ? (trying[look] as ItemId | null) : single ? single.shown : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
   // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
@@ -300,8 +300,8 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       <Bubble mine skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
         {me.name}
       </Bubble>
-    ) : kind === 'effect' ? (
-      <Avatar name={me.name} src={me.photoUrl} effect={id} size={40} />
+    ) : kind === 'effect' && handle ? (
+      <LookText handle={handle} wear={{ ...NO_WEAR, effect: id }} className="text-sm font-semibold" />
     ) : kind === 'badge' && id ? (
       <LookBadge id={id as BadgeId} className="size-10" />
     ) : handle && look ? (
@@ -312,8 +312,10 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   if (kind === 'effect') {
     preview = (
       <div className="flex w-full flex-col items-center gap-3 px-4 pt-5 pb-1 text-white">
-        <Avatar name={me.name} src={me.photoUrl} effect={shownExtra} size={104} />
-        <p className="mt-2 text-lg font-bold">{me.name}</p>
+        <p className="text-2xl font-bold">
+          <NameText wear={{ ...trying, effect: shownExtra }}>{me.name}</NameText>
+        </p>
+        {handle ? <LookText handle={handle} wear={{ ...trying, effect: shownExtra }} className="text-[17px] font-semibold" /> : null}
         <p className="max-w-xs text-center text-sm leading-relaxed text-white/70">{lt('effect.what')}</p>
       </div>
     )
@@ -400,9 +402,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
           <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
           <p className="mt-1 text-lg font-bold">
-            <NameText wear={trying}>{me.name}</NameText>
+            <NameText wear={{ ...trying, effect: shop.look?.effect }}>{me.name}</NameText>
           </p>
-          {handle ? <LookText handle={handle} wear={trying} className="text-[17px] font-semibold" /> : null}
+          {handle ? <LookText handle={handle} wear={{ ...trying, effect: shop.look?.effect }} className="text-[17px] font-semibold" /> : null}
         </div>
       </FrameCard>
     )

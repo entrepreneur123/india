@@ -68,9 +68,22 @@ function colorStyle(id: ColorId): { className?: string; style: CSSProperties } {
   }
 }
 
-/** A look's colour and font as CSS (null items: none). */
-function lookStyle(wear: LookWear) {
-  const color = isItem(wear.color) ? colorStyle(wear.color as ColorId) : null
+/**
+ * Name effects on the name and @ID (the owner, 2026-10-27: the effect is seen on the text, not over the photo):
+ * aurora drifts through greens, blues and violets, prism turns through the rainbow. Mid tones, readable on the white
+ * card and on the shop's dark preview.
+ */
+const EFFECT_TEXT: Record<string, { stops: string; glow: string; motion: string }> = {
+  effect_aurora: { stops: '#00A67E, #0A8FD6, #7A5CFF, #D63AB8, #0A8FD6, #00A67E', glow: 'rgb(10 143 214 / 0.45)', motion: 'look-aurora' },
+  effect_prism: { stops: '#E53935, #EA7A00, #16A34A, #0284C7, #7C3AED, #DB2777, #E53935', glow: 'rgb(124 58 237 / 0.4)', motion: 'look-prism' },
+}
+
+/** A look's colour and font as CSS (null items: none). A name effect takes the colour's place. */
+function lookStyle(wear: LookWear & { effect?: string | null }) {
+  const fx = wear.effect ? EFFECT_TEXT[wear.effect] : undefined
+  const color = fx
+    ? { className: cn('bg-clip-text text-transparent [-webkit-background-clip:text]', fx.motion), style: { backgroundImage: `linear-gradient(90deg, ${fx.stops})`, filter: `drop-shadow(0 0 0.18em ${fx.glow})` } as CSSProperties }
+    : isItem(wear.color) ? colorStyle(wear.color as ColorId) : null
   const font = isItem(wear.font) ? FONT_DESIGNS[wear.font as FontId] : null
   return {
     color,
@@ -80,7 +93,7 @@ function lookStyle(wear: LookWear) {
 }
 
 /** The @ID drawn with a look (null items: plain). Used by LookName and by the shop's previews. */
-export function LookText({ handle, wear, className }: { handle: string; wear: LookWear; className?: string }) {
+export function LookText({ handle, wear, className }: { handle: string; wear: LookWear & { effect?: string | null }; className?: string }) {
   const { color, font, style } = lookStyle(wear)
   return (
     <span className={cn('inline-flex max-w-full min-w-0 items-center gap-[2px] align-bottom', className)}>
@@ -113,7 +126,7 @@ export function LookName({ userId, handle, fallback = null, className }: { userI
  * Someone's name in their look's colour and font (the owner, 2026-10-27: others see the name first, so the look is on
  * the name as well as the @ID; the badge stays with the @ID). Plain until the look loads, and for everyone without one.
  */
-export function NameText({ userId, wear, children, className }: { userId?: string; wear?: LookWear; children: ReactNode; className?: string }) {
+export function NameText({ userId, wear, children, className }: { userId?: string; wear?: LookWear & { effect?: string | null }; children: ReactNode; className?: string }) {
   const look = useLook(wear ? null : userId) // `wear`: a look being tried on (the shop's preview)
   const { color, style } = lookStyle(wear ?? look ?? NO_WEAR)
   return (

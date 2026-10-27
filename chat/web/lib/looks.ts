@@ -14,7 +14,7 @@ export const WALLS = ['wall_aurora', 'wall_neon', 'wall_sakura', 'wall_galaxy', 
 export const VIP_ITEMS = ['vip_anon'] as const
 /** 062: the profile photo gradient. */
 export const CYCLE_ITEMS = ['cycle_photos'] as const
-/** 062: light moving over the profile photo. */
+/** 062: colours flowing through the name and @ID (components/looks/look-name.tsx). */
 export const EFFECTS = ['effect_aurora', 'effect_prism'] as const
 export type EffectId = (typeof EFFECTS)[number]
 /** 062: my chat bubbles, as everyone sees them. */
