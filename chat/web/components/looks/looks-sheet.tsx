@@ -335,7 +335,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     const urls = myPhotos.filter((x) => picked.includes(x.id)).map((x) => x.url)
     preview = (
       <div className="flex w-full flex-col items-center gap-3 pt-2 text-white">
-        <Avatar name={me.name} src={me.photoUrl} srcs={urls.length >= 2 ? urls : myPhotos.slice(0, 4).map((x) => x.url)} size={96} />
+        <Avatar name={me.name} src={me.photoUrl} srcs={urls.length >= 2 ? urls : myPhotos.slice(0, 5).map((x) => x.url)} size={96} />
         <p className="text-center text-sm leading-relaxed text-white/70">{lt('cycle.what')}</p>
         {owned.has('cycle_photos') ? (
           myPhotos.length < 2 ? (
@@ -351,7 +351,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                       <button
                         type="button"
                         aria-pressed={on}
-                        disabled={!on && picked.length >= 4}
+                        disabled={!on && picked.length >= 5}
                         onClick={() => setCyclePick(on ? picked.filter((y) => y !== x.id) : [...picked, x.id])}
                         className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-white/15')}
                       >

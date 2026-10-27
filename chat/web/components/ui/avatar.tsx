@@ -74,7 +74,8 @@ export function Avatar({ name, src, srcs, effect, size = 40, country, online, cl
               width={size}
               height={size}
               className={cn(
-                'absolute inset-0 size-full bg-muted object-cover transition-opacity duration-700 ease-in-out motion-reduce:transition-none',
+                // A long cross-fade (1.5 s of every 2 s): the photos melt into each other, a gradient that never stops.
+                'absolute inset-0 size-full bg-muted object-cover transition-opacity duration-1500 ease-in-out motion-reduce:transition-none',
                 i === at ? 'opacity-100' : 'opacity-0',
               )}
               decoding="async"

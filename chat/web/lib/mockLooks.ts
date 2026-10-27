@@ -161,7 +161,7 @@ export class LookSim {
     if (!this.owned.has('cycle_photos')) throw new BackendError('not_owned')
     const url = (p: string) => (p === me.photoPath ? me.photoUrl : me.photos?.find((x) => x.id === p)?.url)
     const urls = [...new Set(paths)].map(url)
-    if (urls.length < 2 || urls.length > 4 || urls.some((u) => !u)) throw new BackendError('bad_request')
+    if (urls.length < 2 || urls.length > 5 || urls.some((u) => !u)) throw new BackendError('bad_request')
     this.cycle = urls as string[]
   }
 

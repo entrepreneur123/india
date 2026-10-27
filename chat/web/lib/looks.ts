@@ -117,7 +117,7 @@ export function parseLook(raw: unknown): Look | null {
   if (!raw || typeof raw !== 'object') return null
   const r = raw as Record<string, unknown>
   if (typeof r.id !== 'string' || typeof r.handle !== 'string' || !r.handle) return null
-  const cycle = Array.isArray(r.cycle) ? r.cycle.filter((x): x is string => typeof x === 'string').slice(0, 4) : []
+  const cycle = Array.isArray(r.cycle) ? r.cycle.filter((x): x is string => typeof x === 'string').slice(0, 5) : []
   return {
     id: r.id, handle: r.handle, badge: item(r.badge, 'badge'), color: item(r.color, 'color'), font: item(r.font, 'font'), frame: item(r.frame, 'frame'),
     ...(cycle.length >= 2 ? { cycle } : {}),

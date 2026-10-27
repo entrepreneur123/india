@@ -244,7 +244,7 @@ function CardPhoto({ userId, src }: { userId: string; src: string }) {
       src={u}
       alt=""
       loading="lazy"
-      className={cn('absolute inset-0 size-full object-cover transition-opacity duration-700 motion-reduce:transition-none', i === at ? 'opacity-100' : 'opacity-0')}
+      className={cn('absolute inset-0 size-full object-cover transition-opacity duration-1500 ease-in-out motion-reduce:transition-none', i === at ? 'opacity-100' : 'opacity-0')}
     />
   ))
 }
