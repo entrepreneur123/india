@@ -693,6 +693,13 @@ const vi: Dict = {
   'anon.profileHint': "Hai bạn thấy tên, ảnh và hồ sơ của nhau.",
   'anon.anonHint': "Không tên, ảnh hay hồ sơ. Bạn chỉ gặp những người cũng chọn ẩn danh.",
   'voice.sys.cleared': "{name} đã xóa trò chuyện",
+  'looking.tab': "Tìm bạn",
+  'looking.placeholder': "Ai muốn… không?",
+  'looking.post': "Đăng",
+  'looking.hint': "Người cùng nước thấy trong 24 giờ. Ai cũng có thể nhắn tin trả lời.",
+  'looking.empty': "Chưa có ai. Hãy là người đầu tiên!",
+  'looking.remove': "Gỡ xuống",
+  'looking.reply': "Nhắn tin",
 }
 
 export default vi

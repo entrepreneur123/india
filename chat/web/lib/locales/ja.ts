@@ -707,6 +707,13 @@ const ja: Dict = {
   'anon.profileHint': "お互いの名前・写真・プロフィールが見えます。",
   'anon.anonHint': "名前・写真・プロフィールなしで話します。匿名を選んだ人同士だけが出会います。",
   'voice.sys.cleared': "{name}さんがチャットを消去しました",
+  'looking.tab': "募集",
+  'looking.placeholder': "〜する人いますか？",
+  'looking.post': "投稿",
+  'looking.hint': "同じ国の人に24時間表示されます。誰でもメッセージで返信できます。",
+  'looking.empty': "まだ誰もいません。最初に投稿してみましょう！",
+  'looking.remove': "取り下げる",
+  'looking.reply': "メッセージ",
 }
 
 export default ja

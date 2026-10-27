@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { Heart, RefreshCw, Search, Users } from 'lucide-react'
+import { Heart, Megaphone, RefreshCw, Search, Users } from 'lucide-react'
 import type { ExploreKind, ExplorePerson, FeedItem, PersonRow } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COUNTRIES } from '@/lib/countries'
@@ -17,13 +17,14 @@ import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
+import { LookingFor } from './looking'
 import { TagPosts } from '@/components/social/hashtags'
 import { hashtagsOf } from '@/lib/hashtags'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
 
-type Section = 'feed' | 'recommend' | 'ranking' | 'online' | 'liked'
+type Section = 'feed' | 'recommend' | 'ranking' | 'online' | 'liked' | 'looking'
 
 export function ExploreScreen() {
   const backend = useBackend()
@@ -45,7 +46,7 @@ export function ExploreScreen() {
     return COUNTRIES.map((c) => ({ iso: c.iso, name: dn.of(c.iso) ?? c.name })).sort((a, b) => a.name.localeCompare(b.name, locale))
   }, [locale])
 
-  const kind: ExploreKind | null = section === 'feed' ? null : section === 'ranking' ? rank : section
+  const kind: ExploreKind | null = section === 'feed' || section === 'looking' ? null : section === 'ranking' ? rank : section
   // 072: "#word" looks for posts with that hashtag instead of people.
   const tag = asked.startsWith('#') ? hashtagsOf(asked)[0] ?? null : null
   const found = useSWR(asked && !tag ? ['explore-find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
@@ -72,6 +73,17 @@ export function ExploreScreen() {
               className="ps-9"
             />
           </label>
+          {/* 52: "Looking for…" lines, a toggle like Liked (the segments are full on a phone). */}
+          <Button
+            size="icon"
+            variant={section === 'looking' ? 'brand' : 'secondary'}
+            onClick={() => (setQ(''), setSection(section === 'looking' ? 'recommend' : 'looking'))}
+            aria-label={t('looking.tab')}
+            title={t('looking.tab')}
+            aria-pressed={section === 'looking'}
+          >
+            <Megaphone className="size-5" aria-hidden />
+          </Button>
           <Button
             size="icon"
             variant={section === 'liked' ? 'brand' : 'secondary'}
@@ -99,8 +111,8 @@ export function ExploreScreen() {
           )
         ) : (
           <>
-            {section === 'liked' ? (
-              <h1 className="text-lg font-semibold">{t('explore.liked')}</h1>
+            {section === 'liked' || section === 'looking' ? (
+              <h1 className="text-lg font-semibold">{t(section === 'liked' ? 'explore.liked' : 'looking.tab')}</h1>
             ) : (
               <Segmented
                 label={t('nav.explore')}
@@ -152,6 +164,8 @@ export function ExploreScreen() {
                 <FriendNotes />
                 <Feed items={feed.data} />
               </>
+            ) : section === 'looking' ? (
+              <LookingFor country={country} />
             ) : (
               <People list={people.data} ranked={section === 'ranking'} rank={rank} />
             )}

@@ -694,6 +694,13 @@ const nl: Dict = {
   'anon.profileHint': "Jullie zien elkaars naam, foto en profiel.",
   'anon.anonHint': "Geen namen, foto's of profielen. Je ontmoet alleen anderen die anoniem kozen.",
   'voice.sys.cleared': "{name} heeft de chat gewist",
+  'looking.tab': "Gezocht",
+  'looking.placeholder': "Iemand zin in…?",
+  'looking.post': "Plaatsen",
+  'looking.hint': "24 uur zichtbaar voor mensen in je land. Iedereen kan met een bericht reageren.",
+  'looking.empty': "Er zoekt nu niemand. Wees de eerste!",
+  'looking.remove': "Weghalen",
+  'looking.reply': "Bericht",
 }
 
 export default nl

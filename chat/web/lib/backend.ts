@@ -328,6 +328,17 @@ export interface PersonRow {
   photoUrl: string | null
 }
 
+/** 52 (075): a "looking for…" line in Explore, open for 24 hours to people of its country. */
+export interface LookingPost {
+  id: number
+  text: string
+  at: number
+  expiresAt: number
+  mine: boolean
+  author: Profile
+}
+export const LOOKING_MAX = 120
+
 /** 069: a group chat's lines: messages, and the server's notes ('created' / 'added': names, 'renamed': the title). */
 export type GroupLineKind = 'text' | 'created' | 'added' | 'left' | 'renamed'
 export interface GroupLine {
@@ -915,6 +926,13 @@ export interface Backend {
   postsOf(userId: string, before?: string): Promise<FeedPost[]>
   /** 072: posts I may see with this hashtag (with or without "#"), newest first, 30 at a time. */
   postsByTag(tag: string, before?: string): Promise<FeedPost[]>
+  /** 52: open "looking for" lines of a country (null: mine), newest first. */
+  lookingFor(country?: string | null): Promise<LookingPost[]>
+  /** Errors: bad_request, slow_down (3 open or 10 a day), verify_required, banned. */
+  postLooking(text: string): Promise<void>
+  hideLooking(id: number): Promise<void>
+  /** A message thread with the line's poster (open even if neither takes messages from everyone). Error: not_found. */
+  replyLooking(id: number): Promise<string>
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>

@@ -707,6 +707,13 @@ const th: Dict = {
   'anon.profileHint': "ทั้งคู่จะเห็นชื่อ รูป และโปรไฟล์ของกันและกัน",
   'anon.anonHint': "ไม่มีชื่อ รูป หรือโปรไฟล์ จะพบเฉพาะคนที่เลือกไม่ระบุตัวตนเหมือนกัน",
   'voice.sys.cleared': "{name} ล้างแชทแล้ว",
+  'looking.tab': "หาเพื่อน",
+  'looking.placeholder': "มีใครอยาก… ไหม",
+  'looking.post': "โพสต์",
+  'looking.hint': "คนในประเทศเดียวกันจะเห็น 24 ชั่วโมง ใครก็ตอบกลับทางข้อความได้",
+  'looking.empty': "ยังไม่มีใคร โพสต์เป็นคนแรกเลย!",
+  'looking.remove': "เอาลง",
+  'looking.reply': "ส่งข้อความ",
 }
 
 export default th

@@ -711,6 +711,13 @@ const ru: Dict = {
   'anon.profileHint': "Вы оба видите имя, фото и профиль друг друга.",
   'anon.anonHint': "Без имён, фото и профилей. Вы встречаете только тех, кто тоже выбрал анонимно.",
   'voice.sys.cleared': "{name} очистил(а) чат",
+  'looking.tab': "Ищу",
+  'looking.placeholder': "Кто хочет…?",
+  'looking.post': "Опубликовать",
+  'looking.hint': "Видно людям из вашей страны 24 часа. Ответить сообщением может любой.",
+  'looking.empty': "Пока никого. Будьте первым!",
+  'looking.remove': "Убрать",
+  'looking.reply': "Написать",
 }
 
 export default ru

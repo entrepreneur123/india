@@ -707,6 +707,13 @@ const fa: Dict = {
   'anon.profileHint': "هر دو نام، عکس و پروفایل یکدیگر را می‌بینید.",
   'anon.anonHint': "بدون نام، عکس یا پروفایل. فقط با کسانی آشنا می‌شوید که ناشناس را انتخاب کرده‌اند.",
   'voice.sys.cleared': "{name} گفتگو را پاک کرد",
+  'looking.tab': "دنبال",
+  'looking.placeholder': "کسی پایه‌ی… هست؟",
+  'looking.post': "ارسال",
+  'looking.hint': "مردم کشورتان ۲۴ ساعت آن را می‌بینند. هر کسی می‌تواند با پیام جواب دهد.",
+  'looking.empty': "فعلاً کسی نیست. اولین نفر باشید!",
+  'looking.remove': "برداشتن",
+  'looking.reply': "پیام",
 }
 
 export default fa

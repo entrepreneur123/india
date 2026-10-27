@@ -715,6 +715,13 @@ const ar: Dict = {
   'anon.profileHint': "يرى كلٌّ منكما اسم الآخر وصورته وملفه.",
   'anon.anonHint': "بلا أسماء أو صور أو ملفات. تلتقي فقط بمن اختار المجهول.",
   'voice.sys.cleared': "مسح {name} الدردشة",
+  'looking.tab': "أبحث عن",
+  'looking.placeholder': "من يريد…؟",
+  'looking.post': "نشر",
+  'looking.hint': "يراه الناس في بلدك لمدة 24 ساعة. يمكن لأي شخص الرد برسالة.",
+  'looking.empty': "لا أحد يبحث الآن. كن الأول!",
+  'looking.remove': "إزالة",
+  'looking.reply': "رسالة",
 }
 
 export default ar

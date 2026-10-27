@@ -672,6 +672,13 @@ const ur: Dict = {
   'anon.profileHint': "آپ دونوں ایک دوسرے کا نام، تصویر اور پروفائل دیکھتے ہیں۔",
   'anon.anonHint': "نام، تصویر یا پروفائل کے بغیر۔ آپ صرف گمنام چننے والوں سے ملیں گے۔",
   'voice.sys.cleared': "{name} نے چیٹ صاف کی",
+  'looking.tab': "تلاش",
+  'looking.placeholder': "کوئی… کرنا چاہے گا؟",
+  'looking.post': "پوسٹ",
+  'looking.hint': "آپ کے ملک کے لوگ اسے 24 گھنٹے دیکھیں گے۔ کوئی بھی پیغام سے جواب دے سکتا ہے۔",
+  'looking.empty': "ابھی کوئی نہیں۔ پہلے آپ پوسٹ کریں!",
+  'looking.remove': "ہٹائیں",
+  'looking.reply': "پیغام",
 }
 
 export default ur

@@ -693,6 +693,13 @@ const hi: Dict = {
   'anon.profileHint': "आप दोनों एक-दूसरे का नाम, फ़ोटो और प्रोफ़ाइल देखते हैं।",
   'anon.anonHint': "न नाम, न फ़ोटो, न प्रोफ़ाइल। आप सिर्फ़ गुमनाम चुनने वालों से मिलेंगे।",
   'voice.sys.cleared': "{name} ने चैट साफ़ की",
+  'looking.tab': "तलाश",
+  'looking.placeholder': "कोई… करना चाहेगा?",
+  'looking.post': "पोस्ट",
+  'looking.hint': "आपके देश के लोग इसे 24 घंटे देखेंगे। कोई भी मैसेज से जवाब दे सकता है।",
+  'looking.empty': "अभी कोई नहीं। पहले आप पोस्ट करें!",
+  'looking.remove': "हटाएँ",
+  'looking.reply': "मैसेज",
 }
 
 export default hi

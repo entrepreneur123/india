@@ -707,6 +707,13 @@ const sw: Dict = {
   'anon.profileHint': "Mnaona jina, picha na wasifu wa kila mmoja.",
   'anon.anonHint': "Bila majina, picha wala wasifu. Unakutana tu na waliochagua bila jina.",
   'voice.sys.cleared': "{name} amefuta gumzo",
+  'looking.tab': "Natafuta",
+  'looking.placeholder': "Kuna anayetaka…?",
+  'looking.post': "Chapisha",
+  'looking.hint': "Watu wa nchi yako wataona kwa saa 24. Yeyote anaweza kujibu kwa ujumbe.",
+  'looking.empty': "Hakuna anayetafuta sasa. Kuwa wa kwanza!",
+  'looking.remove': "Ondoa",
+  'looking.reply': "Ujumbe",
 }
 
 export default sw

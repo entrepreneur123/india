@@ -693,6 +693,13 @@ const bn: Dict = {
   'anon.profileHint': "দুজনেই একে অপরের নাম, ছবি ও প্রোফাইল দেখতে পাবেন।",
   'anon.anonHint': "নাম, ছবি বা প্রোফাইল নেই। শুধু যারা বেনামী বেছেছে তাদের সঙ্গে দেখা হবে।",
   'voice.sys.cleared': "{name} চ্যাট মুছেছেন",
+  'looking.tab': "খুঁজছি",
+  'looking.placeholder': "কেউ… করবে?",
+  'looking.post': "পোস্ট",
+  'looking.hint': "আপনার দেশের লোকেরা ২৪ ঘণ্টা দেখবে। যে কেউ মেসেজে উত্তর দিতে পারে।",
+  'looking.empty': "এখন কেউ নেই। প্রথমে আপনিই পোস্ট করুন!",
+  'looking.remove': "সরিয়ে নিন",
+  'looking.reply': "মেসেজ",
 }
 
 export default bn

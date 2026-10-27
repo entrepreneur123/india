@@ -1,5 +1,7 @@
 import {
   type GroupChat,
+  type LookingPost,
+  LOOKING_MAX,
   type GroupLine,
   type Backend,
   BackendError,
@@ -261,6 +263,9 @@ export class MockBackend implements Backend {
   private searchTarget: string | null = null
   private matches = new Map<string, MatchState>()
   private recentList: RecentMatch[] = []
+  /** 52: "looking for" lines, and the threads they opened (those stay open, friends or not). */
+  private looking: LookingPost[] | null = null
+  private lookingThreads = new Set<string>()
   /** People taken off my recents, and when (048): a later meeting brings them back. */
   private recentHidden = new Map<string, number>()
   private friendMap = new Map<string, FriendState>()
@@ -549,7 +554,7 @@ export class MockBackend implements Backend {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
     await wait(jitter(120, 260))
-    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends') throw new BackendError('chat_closed')
+    if (m.ended && this.friendMap.get(m.partner.id) !== 'friends' && !this.lookingThreads.has(m.id)) throw new BackendError('chat_closed')
     const msg: Message = {
       id: this.msgSeq++,
       fromMe: true,
@@ -969,6 +974,46 @@ export class MockBackend implements Backend {
   async removeFriend(userId: string) {
     await wait(400)
     this.unfriend(userId)
+  }
+
+  private lookingNow() {
+    const at = Date.now()
+    this.looking ??= [
+      ['u_arjun', 'Anyone up for BGMI tonight? Need 2 more for a squad', 20],
+      ['u_riya', 'Looking for someone to practise Spanish with 🇪🇸', 75],
+      ['u_ananya', 'Who wants to watch the match in the cricket room at 7?', 140],
+    ].flatMap(([id, text, min]) => {
+      const author = this.person(id as string)
+      return author ? [{ id: Math.round(at / 1000) - (min as number), text: text as string, at: at - (min as number) * 60_000, expiresAt: at + 86_400_000, mine: false, author }] : []
+    })
+    return this.looking.filter((p) => p.expiresAt > at)
+  }
+
+  async lookingFor(country?: string | null) {
+    await wait(300)
+    const c = country || this.me?.country
+    return this.lookingNow().filter((p) => p.author.country === c).sort((a, b) => b.id - a.id)
+  }
+
+  async postLooking(text: string) {
+    await wait(300)
+    const body = text.trim()
+    if (!this.me || body.length < 2 || body.length > LOOKING_MAX) throw new BackendError('bad_request')
+    if (this.lookingNow().filter((p) => p.mine).length >= 3) throw new BackendError('slow_down')
+    this.looking!.push({ id: Math.round(Date.now() / 1000), text: body, at: Date.now(), expiresAt: Date.now() + 86_400_000, mine: true, author: this.me })
+  }
+
+  async hideLooking(id: number) {
+    await wait(200)
+    this.looking = this.lookingNow().filter((p) => !(p.id === id && p.mine))
+  }
+
+  async replyLooking(id: number) {
+    const p = this.lookingNow().find((x) => x.id === id)
+    if (!p) throw new BackendError('not_found')
+    const thread = await this.friendThread(p.author.id)
+    this.lookingThreads.add(thread)
+    return thread
   }
 
   async friendThread(userId: string) {

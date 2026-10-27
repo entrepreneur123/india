@@ -707,6 +707,13 @@ const zhHans: Dict = {
   'anon.profileHint': "双方都能看到彼此的名字、照片和资料。",
   'anon.anonHint': "不显示名字、照片和资料。只会遇到同样选择匿名的人。",
   'voice.sys.cleared': "{name} 清空了聊天",
+  'looking.tab': "找人",
+  'looking.placeholder': "有人一起……吗？",
+  'looking.post': "发布",
+  'looking.hint': "同一国家的人在 24 小时内可见，任何人都能私信回复。",
+  'looking.empty': "现在还没有人发布，来当第一个吧！",
+  'looking.remove': "撤下",
+  'looking.reply': "私信",
 }
 
 export default zhHans

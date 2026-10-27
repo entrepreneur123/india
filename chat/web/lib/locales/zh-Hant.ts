@@ -707,6 +707,13 @@ const zhHant: Dict = {
   'anon.profileHint': "雙方都能看到彼此的名字、照片和資料。",
   'anon.anonHint': "不顯示名字、照片和資料。只會遇到同樣選擇匿名的人。",
   'voice.sys.cleared': "{name} 清空了聊天",
+  'looking.tab': "找人",
+  'looking.placeholder': "有人一起……嗎？",
+  'looking.post': "發布",
+  'looking.hint': "同一國家的人在 24 小時內可見，任何人都能私訊回覆。",
+  'looking.empty': "現在還沒有人發布，來當第一個吧！",
+  'looking.remove': "撤下",
+  'looking.reply': "私訊",
 }
 
 export default zhHant

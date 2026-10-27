@@ -707,6 +707,13 @@ const ko: Dict = {
   'anon.profileHint': "서로의 이름, 사진, 프로필이 보여요.",
   'anon.anonHint': "이름, 사진, 프로필 없이 대화해요. 익명을 고른 사람끼리만 만나요.",
   'voice.sys.cleared': "{name}님이 채팅을 청소했어요",
+  'looking.tab': "구해요",
+  'looking.placeholder': "~하실 분?",
+  'looking.post': "올리기",
+  'looking.hint': "같은 나라 사람들에게 24시간 동안 보여요. 누구나 메시지로 답할 수 있어요.",
+  'looking.empty': "아직 아무도 없어요. 먼저 올려 보세요!",
+  'looking.remove': "내리기",
+  'looking.reply': "메시지",
 }
 
 export default ko

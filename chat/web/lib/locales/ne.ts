@@ -694,6 +694,13 @@ const ne: Dict = {
   'anon.profileHint': "दुवैले एकअर्काको नाम, फोटो र प्रोफाइल देख्नुहुन्छ।",
   'anon.anonHint': "नाम, फोटो वा प्रोफाइल छैन। गुमनाम रोज्नेहरूसँग मात्र भेट हुन्छ।",
   'voice.sys.cleared': "{name} ले च्याट सफा गर्नुभयो",
+  'looking.tab': "खोज्दैछु",
+  'looking.placeholder': "कोही… गर्ने?",
+  'looking.post': "पोस्ट",
+  'looking.hint': "तपाईंको देशका मानिसले २४ घण्टा देख्छन्। जो कोहीले सन्देशमार्फत जवाफ दिन सक्छ।",
+  'looking.empty': "अहिले कोही छैन। पहिले तपाईं पोस्ट गर्नुहोस्!",
+  'looking.remove': "हटाउनुहोस्",
+  'looking.reply': "सन्देश",
 }
 
 export default ne

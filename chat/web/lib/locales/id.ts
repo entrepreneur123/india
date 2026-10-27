@@ -707,6 +707,13 @@ const id: Dict = {
   'anon.profileHint': "Kalian saling melihat nama, foto, dan profil.",
   'anon.anonHint': "Tanpa nama, foto, atau profil. Kamu hanya bertemu yang juga memilih anonim.",
   'voice.sys.cleared': "{name} membersihkan obrolan",
+  'looking.tab': "Cari teman",
+  'looking.placeholder': "Ada yang mau…?",
+  'looking.post': "Kirim",
+  'looking.hint': "Terlihat oleh orang di negaramu selama 24 jam. Siapa pun bisa membalas lewat pesan.",
+  'looking.empty': "Belum ada yang mencari. Jadilah yang pertama!",
+  'looking.remove': "Turunkan",
+  'looking.reply': "Pesan",
 }
 
 export default id

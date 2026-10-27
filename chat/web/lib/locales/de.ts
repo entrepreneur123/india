@@ -694,6 +694,13 @@ const de: Dict = {
   'anon.profileHint': "Ihr seht gegenseitig Name, Foto und Profil.",
   'anon.anonHint': "Keine Namen, Fotos oder Profile. Du triffst nur andere, die anonym gewählt haben.",
   'voice.sys.cleared': "{name} hat den Chat geleert",
+  'looking.tab': "Suche",
+  'looking.placeholder': "Hat jemand Lust auf…?",
+  'looking.post': "Posten",
+  'looking.hint': "24 Stunden lang für Leute in deinem Land sichtbar. Jeder kann per Nachricht antworten.",
+  'looking.empty': "Gerade sucht niemand. Sei die erste Person!",
+  'looking.remove': "Entfernen",
+  'looking.reply': "Nachricht",
 }
 
 export default de

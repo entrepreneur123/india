@@ -707,6 +707,13 @@ const ms: Dict = {
   'anon.profileHint': "Anda berdua melihat nama, foto dan profil masing-masing.",
   'anon.anonHint': "Tiada nama, foto atau profil. Anda hanya berjumpa mereka yang memilih tanpa nama.",
   'voice.sys.cleared': "{name} mengosongkan sembang",
+  'looking.tab': "Mencari",
+  'looking.placeholder': "Siapa nak…?",
+  'looking.post': "Siar",
+  'looking.hint': "Dilihat oleh orang di negara anda selama 24 jam. Sesiapa boleh membalas dengan mesej.",
+  'looking.empty': "Belum ada sesiapa. Jadilah yang pertama!",
+  'looking.remove': "Turunkan",
+  'looking.reply': "Mesej",
 }
 
 export default ms

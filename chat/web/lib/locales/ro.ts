@@ -696,6 +696,13 @@ const ro: Dict = {
   'anon.profileHint': "Vă vedeți reciproc numele, poza și profilul.",
   'anon.anonHint': "Fără nume, poze sau profiluri. Întâlnești doar pe cei care au ales anonim.",
   'voice.sys.cleared': "{name} a golit chatul",
+  'looking.tab': "Caut",
+  'looking.placeholder': "Cineva pentru…?",
+  'looking.post': "Publică",
+  'looking.hint': "Văzut de oamenii din țara ta timp de 24 de ore. Oricine poate răspunde cu un mesaj.",
+  'looking.empty': "Nimeni deocamdată. Fii primul!",
+  'looking.remove': "Retrage",
+  'looking.reply': "Mesaj",
 }
 
 export default ro

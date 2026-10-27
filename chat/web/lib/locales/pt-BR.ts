@@ -693,6 +693,13 @@ const ptBR: Dict = {
   'anon.profileHint': "Vocês veem o nome, a foto e o perfil um do outro.",
   'anon.anonHint': "Sem nomes, fotos ou perfis. Você só conhece quem também escolheu anônimo.",
   'voice.sys.cleared': "{name} limpou o chat",
+  'looking.tab': "Procuro",
+  'looking.placeholder': "Alguém topa…?",
+  'looking.post': "Postar",
+  'looking.hint': "Quem é do seu país vê por 24 horas. Qualquer um pode responder com uma mensagem.",
+  'looking.empty': "Ninguém procurando agora. Seja o primeiro!",
+  'looking.remove': "Retirar",
+  'looking.reply': "Mensagem",
 }
 
 export default ptBR

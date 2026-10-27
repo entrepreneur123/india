@@ -696,6 +696,13 @@ const es: Dict = {
   'anon.profileHint': "Ambos ven el nombre, la foto y el perfil del otro.",
   'anon.anonHint': "Sin nombres, fotos ni perfiles. Solo conoces a quien también eligió anónimo.",
   'voice.sys.cleared': "{name} vació el chat",
+  'looking.tab': "Busco",
+  'looking.placeholder': "¿Alguien se apunta a…?",
+  'looking.post': "Publicar",
+  'looking.hint': "Lo ve gente de tu país durante 24 horas. Cualquiera puede responder con un mensaje.",
+  'looking.empty': "Nadie busca ahora mismo. ¡Sé el primero!",
+  'looking.remove': "Retirar",
+  'looking.reply': "Mensaje",
 }
 
 export default es

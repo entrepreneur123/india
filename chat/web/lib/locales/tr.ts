@@ -707,6 +707,13 @@ const tr: Dict = {
   'anon.profileHint': "İkiniz de birbirinizin adını, fotoğrafını ve profilini görürsünüz.",
   'anon.anonHint': "İsim, fotoğraf ya da profil yok. Yalnızca anonimi seçenlerle tanışırsın.",
   'voice.sys.cleared': "{name} sohbeti temizledi",
+  'looking.tab': "Arıyorum",
+  'looking.placeholder': "… yapmak isteyen var mı?",
+  'looking.post': "Paylaş",
+  'looking.hint': "Ülkendeki kişiler 24 saat görür. Herkes mesajla yanıt verebilir.",
+  'looking.empty': "Şu an kimse yok. İlk sen ol!",
+  'looking.remove': "Kaldır",
+  'looking.reply': "Mesaj",
 }
 
 export default tr

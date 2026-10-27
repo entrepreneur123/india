@@ -672,6 +672,13 @@ const mr: Dict = {
   'anon.profileHint': "दोघेही एकमेकांचे नाव, फोटो आणि प्रोफाइल पाहता.",
   'anon.anonHint': "नाव, फोटो किंवा प्रोफाइल नाही. निनावी निवडलेल्यांनाच भेटाल.",
   'voice.sys.cleared': "{name} यांनी चॅट साफ केला",
+  'looking.tab': "शोधतोय",
+  'looking.placeholder': "कोणी… करायला?",
+  'looking.post': "पोस्ट",
+  'looking.hint': "तुमच्या देशातील लोकांना 24 तास दिसेल. कोणीही मेसेजने उत्तर देऊ शकतो.",
+  'looking.empty': "आत्ता कोणी नाही. तुम्हीच पहिले पोस्ट करा!",
+  'looking.remove': "काढा",
+  'looking.reply': "मेसेज",
 }
 
 export default mr

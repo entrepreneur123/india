@@ -694,6 +694,13 @@ const te: Dict = {
   'anon.profileHint': "ఇద్దరూ ఒకరి పేరు, ఫోటో, ప్రొఫైల్ చూస్తారు.",
   'anon.anonHint': "పేరు, ఫోటో, ప్రొఫైల్ ఉండవు. అనామకం ఎంచుకున్నవారినే కలుస్తారు.",
   'voice.sys.cleared': "{name} చాట్ క్లియర్ చేశారు",
+  'looking.tab': "వెతుకుతున్నా",
+  'looking.placeholder': "ఎవరైనా… వస్తారా?",
+  'looking.post': "పోస్ట్",
+  'looking.hint': "మీ దేశం వారికి 24 గంటలు కనిపిస్తుంది. ఎవరైనా మెసేజ్‌తో జవాబు ఇవ్వొచ్చు.",
+  'looking.empty': "ఇప్పుడు ఎవరూ లేరు. మొదట మీరే పోస్ట్ చేయండి!",
+  'looking.remove': "తీసేయి",
+  'looking.reply': "మెసేజ్",
 }
 
 export default te

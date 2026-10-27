@@ -711,6 +711,13 @@ const uk: Dict = {
   'anon.profileHint': "Ви обоє бачите ім’я, фото й профіль одне одного.",
   'anon.anonHint': "Без імен, фото й профілів. Ви зустрічаєте лише тих, хто теж обрав анонімно.",
   'voice.sys.cleared': "{name} очистив(ла) чат",
+  'looking.tab': "Шукаю",
+  'looking.placeholder': "Хто хоче…?",
+  'looking.post': "Опублікувати",
+  'looking.hint': "Видно людям з вашої країни 24 години. Відповісти повідомленням може будь-хто.",
+  'looking.empty': "Поки нікого. Будьте першими!",
+  'looking.remove': "Прибрати",
+  'looking.reply': "Написати",
 }
 
 export default uk

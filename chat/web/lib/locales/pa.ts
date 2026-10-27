@@ -672,6 +672,13 @@ const pa: Dict = {
   'anon.profileHint': "ਤੁਸੀਂ ਦੋਵੇਂ ਇੱਕ-ਦੂਜੇ ਦਾ ਨਾਮ, ਫ਼ੋਟੋ ਅਤੇ ਪ੍ਰੋਫ਼ਾਈਲ ਦੇਖਦੇ ਹੋ।",
   'anon.anonHint': "ਨਾਮ, ਫ਼ੋਟੋ ਜਾਂ ਪ੍ਰੋਫ਼ਾਈਲ ਨਹੀਂ। ਤੁਸੀਂ ਸਿਰਫ਼ ਗੁਮਨਾਮ ਚੁਣਨ ਵਾਲਿਆਂ ਨੂੰ ਮਿਲੋਗੇ।",
   'voice.sys.cleared': "{name} ਨੇ ਚੈਟ ਸਾਫ਼ ਕੀਤੀ",
+  'looking.tab': "ਤਲਾਸ਼",
+  'looking.placeholder': "ਕੋਈ… ਕਰਨਾ ਚਾਹੇਗਾ?",
+  'looking.post': "ਪੋਸਟ",
+  'looking.hint': "ਤੁਹਾਡੇ ਦੇਸ਼ ਦੇ ਲੋਕ 24 ਘੰਟੇ ਦੇਖਣਗੇ। ਕੋਈ ਵੀ ਸੁਨੇਹੇ ਨਾਲ ਜਵਾਬ ਦੇ ਸਕਦਾ ਹੈ।",
+  'looking.empty': "ਹੁਣ ਕੋਈ ਨਹੀਂ। ਪਹਿਲਾਂ ਤੁਸੀਂ ਪੋਸਟ ਕਰੋ!",
+  'looking.remove': "ਹਟਾਓ",
+  'looking.reply': "ਸੁਨੇਹਾ",
 }
 
 export default pa

@@ -698,6 +698,13 @@ const pl: Dict = {
   'anon.profileHint': "Widzicie nawzajem imię, zdjęcie i profil.",
   'anon.anonHint': "Bez imion, zdjęć i profili. Poznajesz tylko osoby, które wybrały anonimowość.",
   'voice.sys.cleared': "{name} wyczyścił(a) czat",
+  'looking.tab': "Szukam",
+  'looking.placeholder': "Ktoś chętny na…?",
+  'looking.post': "Opublikuj",
+  'looking.hint': "Widoczne dla osób z twojego kraju przez 24 godziny. Każdy może odpisać wiadomością.",
+  'looking.empty': "Na razie nikt. Bądź pierwszy!",
+  'looking.remove': "Usuń",
+  'looking.reply': "Wiadomość",
 }
 
 export default pl

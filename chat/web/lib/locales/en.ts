@@ -706,6 +706,13 @@ const en = {
   'anon.profileHint': "You both see each other's name, photo and profile.",
   'anon.anonHint': "No names, photos or profiles. You only meet others who chose anonymous.",
   'voice.sys.cleared': "{name} cleared the chat",
+  'looking.tab': "Looking for",
+  'looking.placeholder': "Anyone up for…?",
+  'looking.post': "Post",
+  'looking.hint': "Seen by people in your country for 24 hours. Anyone can answer with a message.",
+  'looking.empty': "Nobody's looking right now. Be the first!",
+  'looking.remove': "Take down",
+  'looking.reply': "Message",
 } as const
 
 export default en

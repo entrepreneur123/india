@@ -60,6 +60,7 @@ import {
   type VoiceRoomSummary,
   type VoiceSystemEvent,
   type LinkMeta,
+  type LookingPost,
 } from './backend'
 import { safeUrl, shareable } from './links'
 import { retryImport } from './retry-import'
@@ -876,6 +877,28 @@ export class SupabaseBackend implements Backend {
 
   async postsOf(userId: string, before?: string): Promise<FeedPost[]> {
     return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
+  }
+
+  async lookingFor(country?: string | null): Promise<LookingPost[]> {
+    type Row = { id: number; body: string; created_at: string; expires_at: string; mine: boolean; author_id: string } & Omit<CardRow, 'id' | 'city' | 'bio'>
+    const rows = (await this.rpc<Row[] | null>('lfg_list', { p_country: country || null })) ?? []
+    await this.signMany(rows.map((r) => r.photo_path))
+    return rows.map((r) => ({
+      id: r.id, text: r.body, at: time(r.created_at), expiresAt: time(r.expires_at), mine: r.mine,
+      author: this.cardProfile({ ...r, id: r.author_id, city: '', bio: '' }),
+    }))
+  }
+
+  async postLooking(text: string) {
+    await this.rpc('lfg_create', { p_body: text })
+  }
+
+  async hideLooking(id: number) {
+    await this.rpc('lfg_hide', { p_id: id })
+  }
+
+  async replyLooking(id: number) {
+    return this.rpc<string>('lfg_reply', { p_id: id })
   }
 
   async postsByTag(tag: string, before?: string): Promise<FeedPost[]> {
