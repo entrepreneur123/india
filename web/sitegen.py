@@ -705,12 +705,7 @@ class Site:
                     image = self.og_images[d["id"]]
                     t, g, first = short_time(d["time"]), game(d["name"]), d["tiers"][0]["numbers"][0]
                     kl = d["slot"] == "KL"
-                    if kl:
-                        title = w["kl_draw_title"].format(d=dd, g=g)
-                    elif d["slot"] in TAG:
-                        title = w["draw_title"].format(w=s[TAG[d["slot"]]], t=t, d=dd, g=g)
-                    else:
-                        title = w["draw_title_special"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
+                    title = self.draw_title(lang, d)
                     desc = w["kl_desc"].format(d=dd, g=g, n=first) if kl else w["draw_desc"].format(g=g, d=dd, t=t, n=first)
                     sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
                                    f'<b>{esc(short_time(x["time"]))}</b>{esc(game(x["name"]).replace("Dear ", ""))}</a>' for x in draws)
@@ -768,8 +763,64 @@ class Site:
                                                f'<div class="intro"><h1>{esc(w["notfound"])}</h1></div>'
                                                f'<p class="pn"><a class="btn" href="{self.url("en", "/")}">{esc(self.s["en"]["tab_results"])} →</a></p>',
                                                alternates=False))
+        self.share_kit(out)
         self.assets(out)
         return len(self.pages)
+
+    def draw_title(self, lang: str, d: dict) -> str:
+        w, s = WEB[lang], self.s[lang]
+        dd, t, g = ddmmyyyy(d["date"]), short_time(d["time"]), game(d["name"])
+        if d["slot"] == "KL":
+            return w["kl_draw_title"].format(d=dd, g=g)
+        if d["slot"] in TAG:
+            return w["draw_title"].format(w=s[TAG[d["slot"]]], t=t, d=dd, g=g)
+        return w["draw_title_special"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
+
+    def share_kit(self, out: pathlib.Path) -> None:
+        """/share/: the newest results as ready-made posts for a WhatsApp channel, Facebook page or
+        YouTube community tab: picture + caption + link, shared from the phone in one tap.
+        Not for search: noindex, not in the sitemap, linked from nowhere."""
+        recent = [x for x in self.dates[:2]]
+        draws = [d for x in recent for d in reversed(self.ordered(self.days[x])) if d.get("tiers")]
+        cards = []
+        for i, d in enumerate(draws):
+            first = d["tiers"][0]
+            link = self.abs("en", self.draw_path(d))
+            tags = "#KeralaLottery #KeralaLotteryResult" if d["slot"] == "KL" else \
+                "#LotterySambad #DearLottery #NagalandStateLottery"
+            text = (f"🎟️ {self.draw_title('en', d)}\n"
+                    f"🏆 1st Prize {self.prize_short('en', first['prize'])}: {first['numbers'][0]}\n"
+                    f"✅ Full result + ticket checker / पूरा रिजल्ट और टिकट चेक 👇\n{link}\n\n{tags}")
+            img = self.og_images.get(d["id"], "")
+            pic = (f'<img src="{esc(img)}" alt="" width="600" height="315">'
+                   f'<a class="b" href="{esc(img)}" download>⬇ Image</a>') if img else ""
+            cards.append(f'<section><h2>{esc(self.draw_title("en", d))}</h2>{pic}'
+                         f'<textarea id="t{i}" rows="7" readonly>{esc(text)}</textarea>'
+                         f'<p><button data-i="{i}" data-img="{esc(img)}" class="sh">📤 Share (image + text)</button>'
+                         f'<button data-i="{i}" class="cp">📋 Copy text</button>'
+                         f'<a class="b" href="https://wa.me/?text={urllib.parse.quote(text)}">WhatsApp</a></p></section>')
+        js = ("function T(i){return document.getElementById('t'+i).value}"
+              "function C(i,b){navigator.clipboard.writeText(T(i)).then(function(){b.textContent='✔ Copied'})}"
+              "document.querySelectorAll('.cp').forEach(function(b){b.onclick=function(){C(b.dataset.i,b)}});"
+              "document.querySelectorAll('.sh').forEach(function(b){b.onclick=function(){var t=T(b.dataset.i);"
+              "if(!navigator.share){C(b.dataset.i,b);return}"
+              "(b.dataset.img?fetch(b.dataset.img).then(function(r){return r.blob()}).then(function(x){"
+              "var f=new File([x],'result.png',{type:'image/png'});"
+              "return navigator.canShare&&navigator.canShare({files:[f]})?navigator.share({files:[f],text:t}):navigator.share({text:t})})"
+              ":navigator.share({text:t})).catch(function(){})}});")
+        page = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
+                '<title>LottoDost – share kit</title><style>body{font:16px/1.4 system-ui,sans-serif;margin:0 auto;max-width:640px;'
+                'padding:12px 16px;background:#f7f2f0;color:#1d1b1a}section{background:#fff;border-radius:12px;padding:12px;margin:12px 0}'
+                'h2{font-size:17px;margin:0 0 8px}img{width:100%;height:auto;border-radius:8px}textarea{width:100%;box-sizing:border-box;'
+                'font:14px/1.4 system-ui,sans-serif;margin:8px 0}button,.b{display:inline-block;margin:4px 6px 0 0;padding:10px 14px;'
+                'border-radius:8px;border:0;background:#b3261e;color:#fff;font-size:15px;text-decoration:none}.cp,.b{background:#5c4d4a}</style>'
+                '</head><body><h1>Share kit</h1><p>Newest results first. On a phone, <b>Share</b> sends the picture with '
+                'the text to WhatsApp (channel or group), Facebook or YouTube. Updated after every draw.</p>'
+                + "".join(cards) + f'<script>{js}</script></body></html>')
+        f = out / "share" / "index.html"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(page, encoding="utf-8")
 
     def kerala_hub(self, out: pathlib.Path, lang: str) -> None:
         """/kerala/: today's Kerala result (or the countdown to it) and the recent draws."""

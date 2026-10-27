@@ -318,3 +318,14 @@ def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch
     (out / "result/18-10-2026/1pm/index.html").write_text("<html>real page</html>")
     assert redirect_stubs.purge(out) == len(pages) - 1
     assert sorted(out.rglob("*.html")) == [out / "result/18-10-2026/1pm/index.html"]
+
+
+def test_share_kit_has_ready_posts_and_stays_out_of_search(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    kit = (out / "share/index.html").read_text()
+    assert '<meta name="robots" content="noindex,nofollow">' in kit
+    assert "https://example.in/share/" not in (out / "sitemap.xml").read_text()
+    assert "🏆 1st Prize ₹1 Crore: 74D 70698" in kit                     # the 18-10-2026 1 PM result
+    assert "https://example.in/result/18-10-2026/1pm/" in kit and "https://wa.me/?text=" in kit
+    first = kit.index("<section>")
+    assert "1 PM" not in kit[first:kit.index("</section>")]                # newest draw of the day first
