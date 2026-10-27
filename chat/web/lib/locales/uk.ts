@@ -621,7 +621,7 @@ const uk: Dict = {
   'error.chat_closed': 'Цей чат завершено. Додайте співрозмовника в друзі, щоб і далі спілкуватися',
   'error.generic': 'Щось пішло не так. Спробуйте ще раз',
   'nav.explore': 'Огляд',
-  'explore.search': 'Пошук за ID або ім’ям',
+  'explore.search': "Пошук за ID, ім’ям або #тегом",
   'explore.feed': 'Стрічка',
   'explore.recommend': 'Для вас',
   'explore.ranking': 'Рейтинг',

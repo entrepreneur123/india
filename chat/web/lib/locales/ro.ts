@@ -606,7 +606,7 @@ const ro: Dict = {
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',
   'nav.explore': 'Explorează',
-  'explore.search': 'Caută după ID sau nume',
+  'explore.search': "Caută după ID, nume sau #etichetă",
   'explore.feed': 'Feed',
   'explore.recommend': 'Pentru tine',
   'explore.ranking': 'Clasament',

@@ -28,6 +28,7 @@ import { ageText, WALLS, type ItemId } from '@/lib/looks'
 import { useShop } from '@/components/looks/use-shop'
 import { Wall } from '@/components/looks/wall'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { RoomExtrasFields, typedTags } from '@/components/screens/rooms/room-extras'
 
 export type SheetState =
   | { kind: 'person'; userId: string }
@@ -534,6 +535,9 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
   const [title, setTitle] = useState(room.title)
   const [lang, setLang] = useState(room.lang ?? '')
   const [pw, setPw] = useState(room.password ?? '')
+  const shownTags = room.tags.map((x) => `#${x}`).join(' ')
+  const [cover, setCover] = useState<File | null | undefined>(undefined)
+  const [tags, setTags] = useState(shownTags)
   const { st } = useSocialT()
   const [busy, setBusy] = useState(false)
   useEffect(() => {
@@ -541,6 +545,8 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
     setTitle(room.title)
     setLang(room.lang ?? '')
     setPw(room.password ?? '')
+    setCover(undefined)
+    setTags(shownTags)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
   const newPw = pw.trim()
@@ -552,6 +558,7 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
     try {
       await backend.updateVoiceRoom(room.id, { title: title.trim(), lang: lang || undefined })
       if (newPw !== (room.password ?? '')) await backend.setRoomPassword(room.id, newPw || null)
+      if (cover !== undefined || typedTags(tags).join() !== room.tags.join()) await backend.setRoomExtras(room.id, { cover, tags: typedTags(tags) })
       toast.show(t('room.saved'), 'success')
       onClose()
     } catch (err) {
@@ -570,6 +577,7 @@ export function SettingsSheet({ room, open, onClose }: { room: VoiceRoom; open: 
           <span className="text-sm font-semibold">{st('rooms.lang')}</span>
           <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={lang ? undefined : '—'} className="w-48" />
         </div>
+        <RoomExtrasFields cover={cover} coverUrl={room.coverUrl} onCover={setCover} tags={tags} onTags={setTags} />
         <Field label={t('room.password')} htmlFor={`${id}-p`} hint={t('room.passwordHint')}>
           <TextInput id={`${id}-p`} value={pw} maxLength={12} autoComplete="off" placeholder="••••" onChange={(e) => setPw(e.target.value)} />
         </Field>

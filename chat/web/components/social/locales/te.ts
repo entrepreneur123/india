@@ -31,7 +31,7 @@ const te: SocialDict = {
   'inbox.viewPost': 'పోస్ట్ చూడు',
 
   'rooms.search': 'రూమ్‌లు వెతుకు',
-  'rooms.searchPlaceholder': 'రూమ్ పేరుతో వెతకండి',
+  'rooms.searchPlaceholder': "రూమ్ పేరు లేదా #ట్యాగ్‌తో వెతకండి",
   'rooms.clear': 'సెర్చ్ క్లియర్ చేయి',
   'rooms.lang': 'భాష',
   'rooms.anyLang': 'అన్ని భాషలు',
@@ -159,6 +159,16 @@ const te: SocialDict = {
   'group.left': "{name} వెళ్లిపోయారు",
   'group.renamed': "{name} గ్రూప్‌కు “{title}” అని పేరు పెట్టారు",
   'group.retry': "మళ్లీ ప్రయత్నించండి",
+  'rooms.cover': "కవర్ ఫోటో",
+  'rooms.coverAdd': "ఫోటో జోడించండి",
+  'rooms.coverChange': "ఫోటో మార్చండి",
+  'rooms.coverRemove': "తొలగించు",
+  'rooms.tags': "హ్యాష్‌ట్యాగ్‌లు",
+  'rooms.tagsHint': "ఖాళీలతో వేరు చేసి {n} వరకు. వీటితో రూమ్‌ను కనుగొంటారు.",
+  'rooms.sort': "క్రమం",
+  'rooms.sortMembers': "ఎక్కువ మంది",
+  'rooms.sortRelevant': "మీ కోసం",
+  'rooms.sortPopular': "ప్రజాదరణ",
 }
 
 export default te

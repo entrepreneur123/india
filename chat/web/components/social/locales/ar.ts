@@ -36,7 +36,7 @@ const ar: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'البحث في الغرف',
-  'rooms.searchPlaceholder': 'البحث باسم الغرفة',
+  'rooms.searchPlaceholder': "ابحث باسم الغرفة أو #وسم",
   'rooms.clear': 'مسح البحث',
   'rooms.lang': 'اللغة',
   'rooms.anyLang': 'كل اللغات',
@@ -169,6 +169,16 @@ const ar: SocialDict = {
   'group.left': "غادر {name}",
   'group.renamed': "سمّى {name} المجموعة “{title}”",
   'group.retry': "حاول مرة أخرى",
+  'rooms.cover': "صورة الغلاف",
+  'rooms.coverAdd': "أضف صورة",
+  'rooms.coverChange': "تغيير الصورة",
+  'rooms.coverRemove': "إزالة",
+  'rooms.tags': "الوسوم",
+  'rooms.tagsHint': "حتى {n}، تفصل بينها مسافات. يجد الناس الغرفة من خلالها.",
+  'rooms.sort': "الترتيب",
+  'rooms.sortMembers': "الأكثر عددًا",
+  'rooms.sortRelevant': "لك",
+  'rooms.sortPopular': "الأشهر",
 }
 
 export default ar

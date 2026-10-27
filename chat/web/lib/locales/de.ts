@@ -604,7 +604,7 @@ const de: Dict = {
   'error.chat_closed': 'Dieser Chat ist beendet. Füge die Person als Freund hinzu, um weiterzuschreiben',
   'error.generic': 'Etwas ist schiefgelaufen. Bitte versuch es noch mal',
   'nav.explore': 'Entdecken',
-  'explore.search': 'Nach ID oder Name suchen',
+  'explore.search': "Nach ID, Name oder #Tag suchen",
   'explore.feed': 'Feed',
   'explore.recommend': 'Für dich',
   'explore.ranking': 'Ranking',

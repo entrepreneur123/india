@@ -617,7 +617,7 @@ const zhHans: Dict = {
   'error.chat_closed': '此聊天已结束。添加对方为好友即可继续聊',
   'error.generic': '出了点问题，请重试',
   'nav.explore': '探索',
-  'explore.search': '按 ID 或名字搜索',
+  'explore.search': "按 ID、名字或 #标签 搜索",
   'explore.feed': '动态',
   'explore.recommend': '推荐',
   'explore.ranking': '排行榜',

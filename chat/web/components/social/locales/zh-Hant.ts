@@ -33,7 +33,7 @@ const zhHant: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': '搜尋房間',
-  'rooms.searchPlaceholder': '按房間名稱搜尋',
+  'rooms.searchPlaceholder': "以房間名稱或 #標籤 搜尋",
   'rooms.clear': '清除搜尋',
   'rooms.lang': '語言',
   'rooms.anyLang': '所有語言',
@@ -166,6 +166,16 @@ const zhHant: SocialDict = {
   'group.left': "{name} 退出了群組",
   'group.renamed': "{name} 將群組名稱改為「{title}」",
   'group.retry': "重試",
+  'rooms.cover': "封面照片",
+  'rooms.coverAdd': "新增照片",
+  'rooms.coverChange': "更換照片",
+  'rooms.coverRemove': "移除",
+  'rooms.tags': "主題標籤",
+  'rooms.tagsHint': "最多 {n} 個，以空格分隔。別人可以透過標籤找到房間。",
+  'rooms.sort': "排序",
+  'rooms.sortMembers': "人數",
+  'rooms.sortRelevant': "相關",
+  'rooms.sortPopular': "熱門",
 }
 
 export default zhHant

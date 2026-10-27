@@ -617,7 +617,7 @@ const ja: Dict = {
   'error.chat_closed': 'このチャットは終了しました。話を続けるには友だちに追加してください',
   'error.generic': '問題が発生しました。もう一度お試しください',
   'nav.explore': '探す',
-  'explore.search': 'IDまたは名前で検索',
+  'explore.search': "ID・名前・#タグ で検索",
   'explore.feed': 'フィード',
   'explore.recommend': 'おすすめ',
   'explore.ranking': 'ランキング',

@@ -604,7 +604,7 @@ const te: Dict = {
   'error.chat_closed': 'ఈ చాట్ ముగిసింది. మాట్లాడుతూ ఉండడానికి వారిని ఫ్రెండ్‌గా యాడ్ చేయండి',
   'error.generic': 'ఏదో పొరపాటు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి',
   'nav.explore': 'ఎక్స్‌ప్లోర్',
-  'explore.search': 'ID లేదా పేరుతో వెతకండి',
+  'explore.search': "ID, పేరు లేదా #ట్యాగ్‌తో వెతకండి",
   'explore.feed': 'ఫీడ్',
   'explore.recommend': 'మీ కోసం',
   'explore.ranking': 'ర్యాంకింగ్',

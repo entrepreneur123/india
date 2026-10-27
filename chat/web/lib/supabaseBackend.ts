@@ -130,7 +130,7 @@ type VoiceListRow = {
   id: string; title: string; category: string; mine: boolean; host: CardRow; speakers: CardRow[]; listeners: number
   members: number; now_playing: string | null; max_members: number; gender_rule: string
   min_age: number; max_age: number; is_private: boolean; announcement: string | null; code: string | null; refusal: string | null
-  lang: string | null
+  lang: string | null; cover_path: string | null; tags: string[] | null
 }
 /** voice_state(): the room, the people present with their cards, and the server clock (ms). */
 type VoiceStateRow = {
@@ -149,6 +149,9 @@ type VoiceStateRow = {
   /** 068: chat-only (false) and the room's wall. */
   voice?: boolean
   theme?: string | null
+  /** 072: the cover photo's file and the hashtags. */
+  cover?: string | null
+  tags?: string[]
 }
 /** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
 type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number; lost?: boolean }
@@ -870,6 +873,10 @@ export class SupabaseBackend implements Backend {
     return this.toPosts(await this.rpc('posts_of', { p_user: userId, p_before: before ?? null, p_limit: 50 }))
   }
 
+  async postsByTag(tag: string, before?: string): Promise<FeedPost[]> {
+    return this.toPosts(await this.rpc('posts_by_tag', { p_tag: tag, p_before: before ?? null }))
+  }
+
   async post(postId: string): Promise<FeedPost | null> {
     const row = await this.rpc<unknown>('post_get', { p_post: postId })
     return row ? (await this.toPosts([row]))[0] ?? null : null
@@ -1043,17 +1050,18 @@ export class SupabaseBackend implements Backend {
   // ---- rooms (017_voice_rooms.sql, 019_unified_rooms.sql; audio through LiveKit, lib/voice-audio.ts) ----
 
   async voiceRooms(query: RoomQuery = {}): Promise<VoiceRoomSummary[]> {
-    const rows = await this.rpc<VoiceListRow[]>('voice_list4', {
+    const rows = await this.rpc<VoiceListRow[]>('voice_list5', {
       p_query: query.text?.trim() || null, p_lang: query.lang ?? null, p_countries: query.countries?.length ? query.countries : null, p_locked: query.locked ?? true,
+      p_sort: query.sort ?? 'members',
     })
-    await this.signMany(rows.flatMap((r) => [r.host?.photo_path, ...r.speakers.map((c) => c.photo_path)]))
+    await this.signMany(rows.flatMap((r) => [r.host?.photo_path, r.cover_path, ...r.speakers.map((c) => c.photo_path)]))
     return rows.filter((r) => r.host).map((r) => ({
       id: r.id, title: r.title, host: this.cardProfile(r.host),
       speakers: r.speakers.map((c) => this.cardProfile(c)), listeners: r.listeners, members: r.members,
       nowPlaying: r.now_playing || null,
       announcement: r.announcement, mine: r.mine, code: r.code, refusal: (r.refusal as RoomRefusal | null) ?? null,
       maxMembers: r.max_members, genderRule: r.gender_rule as Target, minAge: r.min_age, maxAge: r.max_age, isPrivate: r.is_private,
-      lang: appLang(r.lang),
+      lang: appLang(r.lang), coverUrl: this.signedNow(r.cover_path), tags: r.tags ?? [],
     }))
   }
 
@@ -1063,7 +1071,16 @@ export class SupabaseBackend implements Backend {
       p_max_age: r.maxAge, p_private: r.isPrivate, p_announcement: r.announcement, p_lang: r.lang || null, p_voice: r.voice,
     })
     track('room_created')
+    if (r.cover || r.tags?.length) await this.setRoomExtras(room.id, { cover: r.cover, tags: r.tags ?? [] }).catch(() => undefined)
     return room
+  }
+
+  async setRoomExtras(roomId: string, extras: { cover?: File | null; tags: string[] }) {
+    const live = this.voice.get(roomId)
+    const cover = extras.cover === undefined ? live?.room?.coverPath ?? null : extras.cover && (await this.upload(extras.cover, 'cover'))
+    await this.rpc('voice_set_extras', { p_room: roomId, p_cover: cover, p_tags: extras.tags })
+    // The cover and tags are not part of the room's change events: the open room asks again.
+    live?.refresh()
   }
 
   async joinVoiceCode(code: string): Promise<string> {
@@ -2096,13 +2113,14 @@ export class SupabaseBackend implements Backend {
   }
 
   private async toVoiceRoom(s: VoiceStateRow): Promise<VoiceRoom> {
-    await this.signMany(s.members.map((m) => m.photo_path))
+    await this.signMany([...s.members.map((m) => m.photo_path), s.cover])
     const local = (ms: number) => ms - this.clockOffset // server time → this device's clock
     return {
       id: s.id, title: s.title, mode: s.mode === 'open' ? 'open' : 'approval',
       hostId: s.host, meId: this.uid, announcement: s.announcement ?? null, code: s.code ?? null, password: s.password ?? null,
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
       isPrivate: !!s.private, lang: appLang(s.lang), voice: s.voice !== false, theme: s.theme ?? null,
+      coverPath: s.cover ?? null, coverUrl: this.signedNow(s.cover ?? null), tags: s.tags ?? [],
       members: s.members.map((m) => ({
         profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true, joinedAt: m.j,
       })),
@@ -2216,7 +2234,7 @@ export class SupabaseBackend implements Backend {
   }
 
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
-  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms'): Promise<string> {
+  private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms' | 'cover'): Promise<string> {
     const isVideo = file.type.startsWith('video/')
     let body: Blob = file
     let type = file.type

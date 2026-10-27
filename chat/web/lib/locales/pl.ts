@@ -608,7 +608,7 @@ const pl: Dict = {
   'error.chat_closed': 'Ten czat się zakończył. Dodaj tę osobę do znajomych, aby dalej rozmawiać',
   'error.generic': 'Coś poszło nie tak. Spróbuj ponownie',
   'nav.explore': 'Odkrywaj',
-  'explore.search': 'Szukaj po ID lub imieniu',
+  'explore.search': "Szukaj po ID, imieniu lub #tagu",
   'explore.feed': 'Feed',
   'explore.recommend': 'Dla ciebie',
   'explore.ranking': 'Ranking',

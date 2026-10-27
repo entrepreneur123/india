@@ -621,7 +621,7 @@ const ru: Dict = {
   'error.chat_closed': 'Этот чат завершён. Добавьте собеседника в друзья, чтобы продолжить общение',
   'error.generic': 'Что-то пошло не так. Попробуйте снова',
   'nav.explore': 'Обзор',
-  'explore.search': 'Поиск по ID или имени',
+  'explore.search': "Поиск по ID, имени или #тегу",
   'explore.feed': 'Лента',
   'explore.recommend': 'Для вас',
   'explore.ranking': 'Рейтинг',

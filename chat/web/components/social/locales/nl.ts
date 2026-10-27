@@ -31,7 +31,7 @@ const nl: SocialDict = {
   'inbox.viewPost': 'Post bekijken',
 
   'rooms.search': 'Rooms zoeken',
-  'rooms.searchPlaceholder': 'Zoek op naam van de room',
+  'rooms.searchPlaceholder': "Zoek op ruimtenaam of #tag",
   'rooms.clear': 'Zoekopdracht wissen',
   'rooms.lang': 'Taal',
   'rooms.anyLang': 'Alle talen',
@@ -159,6 +159,16 @@ const nl: SocialDict = {
   'group.left': "{name} heeft de groep verlaten",
   'group.renamed': "{name} noemde de groep ‘{title}’",
   'group.retry': "Opnieuw",
+  'rooms.cover': "Omslagfoto",
+  'rooms.coverAdd': "Foto toevoegen",
+  'rooms.coverChange': "Foto wijzigen",
+  'rooms.coverRemove': "Verwijderen",
+  'rooms.tags': "Hashtags",
+  'rooms.tagsHint': "Tot {n}, gescheiden door spaties. Zo vinden mensen de ruimte.",
+  'rooms.sort': "Sorteren",
+  'rooms.sortMembers': "Meeste mensen",
+  'rooms.sortRelevant': "Voor jou",
+  'rooms.sortPopular': "Populair",
 }
 
 export default nl

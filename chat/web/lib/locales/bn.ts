@@ -603,7 +603,7 @@ const bn: Dict = {
   'error.chat_closed': 'এই চ্যাট শেষ হয়ে গেছে। কথা চালিয়ে যেতে তাকে বন্ধু হিসেবে যোগ করুন',
   'error.generic': 'কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন',
   'nav.explore': 'এক্সপ্লোর',
-  'explore.search': 'আইডি বা নাম দিয়ে খুঁজুন',
+  'explore.search': "আইডি, নাম বা #ট্যাগ দিয়ে খুঁজুন",
   'explore.feed': 'ফিড',
   'explore.recommend': 'আপনার জন্য',
   'explore.ranking': 'র‍্যাঙ্কিং',

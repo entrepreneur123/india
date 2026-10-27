@@ -617,7 +617,7 @@ const ko: Dict = {
   'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어 가려면 친구로 추가해 주세요',
   'error.generic': '문제가 생겼어요. 다시 시도해 주세요',
   'nav.explore': '탐색',
-  'explore.search': '아이디나 이름으로 검색',
+  'explore.search': "아이디, 이름, #태그로 검색",
   'explore.feed': '피드',
   'explore.recommend': '추천',
   'explore.ranking': '랭킹',

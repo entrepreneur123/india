@@ -32,7 +32,7 @@ const ro: SocialDict = {
   'inbox.viewPost': 'Vezi postarea',
 
   'rooms.search': 'Caută camere',
-  'rooms.searchPlaceholder': 'Caută după numele camerei',
+  'rooms.searchPlaceholder': "Caută după numele camerei sau #etichetă",
   'rooms.clear': 'Șterge căutarea',
   'rooms.lang': 'Limbă',
   'rooms.anyLang': 'Toate limbile',
@@ -160,6 +160,16 @@ const ro: SocialDict = {
   'group.left': "{name} a ieșit",
   'group.renamed': "{name} a numit grupul „{title}”",
   'group.retry': "Încearcă din nou",
+  'rooms.cover': "Fotografie de copertă",
+  'rooms.coverAdd': "Adaugă o fotografie",
+  'rooms.coverChange': "Schimbă fotografia",
+  'rooms.coverRemove': "Elimină",
+  'rooms.tags': "Hashtaguri",
+  'rooms.tagsHint': "Până la {n}, separate prin spații. Oamenii găsesc camera după ele.",
+  'rooms.sort': "Sortează",
+  'rooms.sortMembers': "Cei mai mulți",
+  'rooms.sortRelevant': "Pentru tine",
+  'rooms.sortPopular': "Populare",
 }
 
 export default ro

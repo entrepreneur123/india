@@ -35,7 +35,7 @@ const uk: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Пошук кімнат',
-  'rooms.searchPlaceholder': 'Пошук за назвою кімнати',
+  'rooms.searchPlaceholder': "Пошук за назвою кімнати або #тегом",
   'rooms.clear': 'Очистити пошук',
   'rooms.lang': 'Мова',
   'rooms.anyLang': 'Усі мови',
@@ -168,6 +168,16 @@ const uk: SocialDict = {
   'group.left': "{name} вийшов(ла)",
   'group.renamed': "{name} назвав(ла) групу «{title}»",
   'group.retry': "Спробувати ще",
+  'rooms.cover': "Обкладинка",
+  'rooms.coverAdd': "Додати фото",
+  'rooms.coverChange': "Змінити фото",
+  'rooms.coverRemove': "Прибрати",
+  'rooms.tags': "Хештеги",
+  'rooms.tagsHint': "До {n}, через пробіл. За ними кімнату знаходять інші.",
+  'rooms.sort': "Сортування",
+  'rooms.sortMembers': "Більше людей",
+  'rooms.sortRelevant': "Для вас",
+  'rooms.sortPopular': "Популярні",
 }
 
 export default uk

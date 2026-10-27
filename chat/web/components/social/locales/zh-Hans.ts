@@ -33,7 +33,7 @@ const zhHans: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': '搜索房间',
-  'rooms.searchPlaceholder': '按房间名称搜索',
+  'rooms.searchPlaceholder': "按房间名或 #标签 搜索",
   'rooms.clear': '清除搜索',
   'rooms.lang': '语言',
   'rooms.anyLang': '所有语言',
@@ -166,6 +166,16 @@ const zhHans: SocialDict = {
   'group.left': "{name} 退出了群聊",
   'group.renamed': "{name} 将群名改为“{title}”",
   'group.retry': "重试",
+  'rooms.cover': "封面照片",
+  'rooms.coverAdd': "添加照片",
+  'rooms.coverChange': "更换照片",
+  'rooms.coverRemove': "移除",
+  'rooms.tags': "话题标签",
+  'rooms.tagsHint': "最多 {n} 个，用空格分隔。别人可以通过标签找到房间。",
+  'rooms.sort': "排序",
+  'rooms.sortMembers': "人数",
+  'rooms.sortRelevant': "相关",
+  'rooms.sortPopular': "热门",
 }
 
 export default zhHans

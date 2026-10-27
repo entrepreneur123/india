@@ -33,7 +33,7 @@ const fil: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Maghanap ng room',
-  'rooms.searchPlaceholder': 'Maghanap ayon sa pangalan ng room',
+  'rooms.searchPlaceholder': "Hanapin sa pangalan ng room o #tag",
   'rooms.clear': 'I-clear ang paghahanap',
   'rooms.lang': 'Wika',
   'rooms.anyLang': 'Lahat ng wika',
@@ -165,6 +165,16 @@ const fil: SocialDict = {
   'group.left': "Umalis si {name}",
   'group.renamed': "Pinangalanan ni {name} ang grupo na “{title}”",
   'group.retry': "Subukan ulit",
+  'rooms.cover': "Cover photo",
+  'rooms.coverAdd': "Magdagdag ng larawan",
+  'rooms.coverChange': "Palitan ang larawan",
+  'rooms.coverRemove': "Alisin",
+  'rooms.tags': "Mga hashtag",
+  'rooms.tagsHint': "Hanggang {n}, hiwalay sa espasyo. Dito nahahanap ang room.",
+  'rooms.sort': "Ayusin",
+  'rooms.sortMembers': "Pinakamarami",
+  'rooms.sortRelevant': "Para sa iyo",
+  'rooms.sortPopular': "Sikat",
 }
 
 export default fil

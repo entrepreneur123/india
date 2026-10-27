@@ -617,7 +617,7 @@ const fa: Dict = {
   'error.chat_closed': 'این گفت‌وگو تمام شده است. برای ادامهٔ صحبت، او را دوست خود کنید',
   'error.generic': 'مشکلی پیش آمد. لطفاً دوباره امتحان کنید',
   'nav.explore': 'کاوش',
-  'explore.search': 'جستجو با شناسه یا نام',
+  'explore.search': "جستجو با شناسه، نام یا #هشتگ",
   'explore.feed': 'فید',
   'explore.recommend': 'برای شما',
   'explore.ranking': 'رتبه‌بندی',

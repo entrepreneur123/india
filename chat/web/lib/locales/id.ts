@@ -617,7 +617,7 @@ const id: Dict = {
   'error.chat_closed': 'Obrolan ini sudah berakhir. Tambahkan dia sebagai teman untuk lanjut ngobrol',
   'error.generic': 'Terjadi kesalahan. Coba lagi',
   'nav.explore': 'Jelajahi',
-  'explore.search': 'Cari dengan ID atau nama',
+  'explore.search': "Cari ID, nama, atau #tagar",
   'explore.feed': 'Feed',
   'explore.recommend': 'Untukmu',
   'explore.ranking': 'Peringkat',

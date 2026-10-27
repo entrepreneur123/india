@@ -603,7 +603,7 @@ const ptBR: Dict = {
   'error.chat_closed': 'Este chat terminou. Adicione a pessoa como amigo para continuar conversando',
   'error.generic': 'Algo deu errado. Tente de novo',
   'nav.explore': 'Explorar',
-  'explore.search': 'Busque por ID ou nome',
+  'explore.search': "Busque por ID, nome ou #tag",
   'explore.feed': 'Feed',
   'explore.recommend': 'Para você',
   'explore.ranking': 'Ranking',

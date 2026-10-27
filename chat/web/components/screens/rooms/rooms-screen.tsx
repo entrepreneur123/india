@@ -2,8 +2,10 @@
 
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { KeyRound, Plus, Search, X } from 'lucide-react'
+import type { RoomSort } from '@/lib/backend'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
+import { Segmented } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { VoiceRooms } from '@/components/screens/voice/voice-list'
@@ -20,6 +22,7 @@ const JoinCodeDialog = lazy(() => loadDialogs().then((mod) => ({ default: mod.Jo
 /** The last search, for coming back to the tab in this visit. */
 let lastSearch = { text: '', lang: '' }
 let lastFilters: RoomFilters = { countries: [], locked: true }
+let lastSort: RoomSort = 'members'
 
 /** One kind of room (chat, voice and music); the search narrows by title, language, countries and passwords. */
 export function RoomsScreen() {
@@ -30,6 +33,7 @@ export function RoomsScreen() {
   const [codeOpen, setCodeOpen] = useState(false)
   const [dialogsUsed, setDialogsUsed] = useState(false)
   const [filters, setFiltersState] = useState(lastFilters)
+  const [sort, setSortState] = useState(lastSort)
   const { st } = useSocialT()
   const [text, setText] = useState(lastSearch.text)
   const [lang, setLang] = useState(lastSearch.lang)
@@ -102,9 +106,22 @@ export function RoomsScreen() {
           <RoomLangSelect value={lang} onChange={setLang} label={st('rooms.lang')} anyLabel={st('rooms.anyLang')} className="w-36 shrink-0 sm:w-56" />
         </div>
 
-        <RoomFiltersButton value={filters} onChange={setFilters} />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <RoomFiltersButton value={filters} onChange={setFilters} />
+          {/* 072: most people, best for me, or busiest. */}
+          <Segmented
+            label={st('rooms.sort')}
+            value={sort}
+            onChange={(v) => setSortState((lastSort = v))}
+            options={[
+              { value: 'members', label: st('rooms.sortMembers') },
+              { value: 'relevant', label: st('rooms.sortRelevant') },
+              { value: 'popular', label: st('rooms.sortPopular') },
+            ]}
+          />
+        </div>
 
-        <VoiceRooms query={{ ...query, ...filters }} onCreate={openCreate} />
+        <VoiceRooms query={{ ...query, ...filters, sort }} onCreate={openCreate} onTag={(tag) => setText(`#${tag}`)} />
       </div>
       {dialogsUsed ? (
         <Suspense fallback={null}>

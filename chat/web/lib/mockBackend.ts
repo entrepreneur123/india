@@ -48,6 +48,8 @@ import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
 import { droppedOut } from './voice-lost'
+import { art } from './mock-art'
+import { hashtagsOf } from './hashtags'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 function countryOfPhone(digits: string | null | undefined): string | null {
@@ -73,24 +75,6 @@ const EXIT_LOCK_MS = 5000
 const DEMO_FRIEND_CALL_MS = 20_000
 
 
-// Demo pictures are drawn here as small SVGs (no third-party image hosts; works offline and under the CSP).
-const ART_COLORS = [
-  ['#fde2e4', '#c8174a'], ['#e3f0ff', '#1a73e8'], ['#e6f4ea', '#188038'], ['#f3e8fd', '#8430ce'],
-  ['#fef7e0', '#b06000'], ['#e4f7f8', '#007b83'],
-]
-function art(seed: string, w = 720, h = 720) {
-  let n = 0
-  for (const ch of seed) n = (n * 31 + ch.charCodeAt(0)) | 0
-  const [bg, fg] = ART_COLORS[Math.abs(n) % ART_COLORS.length]
-  const sun = 20 + (Math.abs(n >> 3) % 60)
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="${bg}"/>` +
-    `<circle cx="${(sun / 100) * w}" cy="${h * 0.3}" r="${w * 0.09}" fill="${fg}" opacity=".35"/>` +
-    `<path d="M0 ${h * 0.75} L${w * 0.3} ${h * 0.5} L${w * 0.55} ${h * 0.7} L${w * 0.75} ${h * 0.55} L${w} ${h * 0.72} V${h} H0Z" fill="${fg}" opacity=".55"/>` +
-    `<path d="M0 ${h * 0.88} L${w * 0.4} ${h * 0.68} L${w} ${h * 0.9} V${h} H0Z" fill="${fg}"/></svg>`
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`
-}
-
 function post(seed: string, text: string, ageMs: number, withImage = true): Post {
   return {
     id: `p_${seed}`,
@@ -106,7 +90,7 @@ const PEOPLE: Profile[] = [
     bio: 'Chai over coffee, always. Learning Korean one drama at a time.',
     photoUrl: null,
     posts: [
-      post('ananya1', 'Marine Drive at 6pm hits different', 2 * DAY),
+      post('ananya1', 'Marine Drive at 6pm hits different #sunset #mumbai', 2 * DAY),
       post('ananya2', 'Finally finished my first pottery class', 6 * DAY),
       post('ananya3', 'Sunday market haul', 11 * DAY),
     ],
@@ -125,7 +109,7 @@ const PEOPLE: Profile[] = [
       post('sofia1', 'Ericeira mornings', 1 * DAY),
       post('sofia2', 'Tram 28, tourist mode on', 5 * DAY),
       post('sofia3', 'Grandma’s recipe, my kitchen', 14 * DAY),
-      post('sofia4', 'Golden hour from Miradouro', 20 * DAY),
+      post('sofia4', 'Golden hour from Miradouro #sunset #lisbon', 20 * DAY),
     ],
   },
   {
@@ -148,7 +132,7 @@ const PEOPLE: Profile[] = [
     id: 'u_amara', name: 'Amara', gender: 'female', age: 26, city: 'Lagos', country: 'NG',
     bio: 'Afrobeats playlist curator. Building a fintech startup.',
     photoUrl: null,
-    posts: [post('amara1', 'Demo day nerves', 1 * DAY), post('amara2', 'Lekki sunset', 7 * DAY)],
+    posts: [post('amara1', 'Demo day nerves', 1 * DAY), post('amara2', 'Lekki sunset #sunset', 7 * DAY)],
   },
   {
     id: 'u_lucas', name: 'Lucas', gender: 'male', age: 24, city: 'São Paulo', country: 'BR',
@@ -166,7 +150,7 @@ const PEOPLE: Profile[] = [
     id: 'u_arjun', name: 'Arjun', gender: 'male', age: 28, city: 'Bengaluru', country: 'IN',
     bio: 'Backend engineer by day, guitarist by night.',
     photoUrl: null,
-    posts: [post('arjun1', 'Nandi Hills sunrise ride', 5 * DAY), post('arjun2', 'Open mic tonight', 12 * DAY)],
+    posts: [post('arjun1', 'Nandi Hills sunrise ride #travel', 5 * DAY), post('arjun2', 'Open mic tonight', 12 * DAY)],
   },
   {
     id: 'u_chloe', name: 'Chloé', gender: 'female', age: 23, city: 'Lyon', country: 'FR',
@@ -184,7 +168,7 @@ const PEOPLE: Profile[] = [
     id: 'u_riya', name: 'Riya', gender: 'other', age: 21, city: 'Pune', country: 'IN',
     bio: 'Illustrator. Cats > people (you might change my mind).',
     photoUrl: null,
-    posts: [post('riya1', 'Sketchbook page 42', 1 * DAY), post('riya2', 'Monsoon in the ghats', 9 * DAY)],
+    posts: [post('riya1', 'Sketchbook page 42', 1 * DAY), post('riya2', 'Monsoon in the ghats #travel #monsoon', 9 * DAY)],
   },
   // 046: someone in VIP incognito, as the server shows them to a stranger.
   { id: 'u_vip', name: 'VIP', gender: 'female', age: 0, city: '', country: null, bio: '', photoUrl: null, posts: [] },
@@ -820,6 +804,10 @@ export class MockBackend implements Backend {
     return (await this.feedChunk()).postsOf(userId, before)
   }
 
+  async postsByTag(tag: string, before?: string) {
+    return (await this.feedChunk()).postsByTag(tag, before)
+  }
+
   async post(postId: string) {
     return (await this.feedChunk()).post(postId)
   }
@@ -1010,18 +998,30 @@ export class MockBackend implements Backend {
 
   async voiceRooms(query: RoomQuery = {}) {
     const text = query.text?.trim().toLocaleLowerCase() ?? ''
+    const tag = text.startsWith('#') ? hashtagsOf(text)[0] ?? '' : null
     const countries = query.countries ?? []
     const mine = (r: VoiceRoomSummary) => Number(r.host.country === this.me?.country)
-    // As voice_list4: mine first, then my country's rooms (a stable sort keeps the rest in order).
+    // As voice_list5 (072): mine first, then the chosen order, then my country's rooms (a stable sort keeps the rest).
+    // The demo has no chat counts: people on the stage stand in for "busy".
+    const score = (r: VoiceRoomSummary) =>
+      query.sort === 'popular' ? r.members + 3 * r.speakers.length
+      : query.sort === 'relevant'
+        ? 3 * r.tags.filter((t) => (this.me?.interests as string[] | undefined)?.includes(t)).length + 2 * mine(r)
+          + 3 * Number(!!text && r.title.toLocaleLowerCase().includes(text))
+        : 0
     return (await (await this.voice()).list())
       .filter(
         (r) =>
-          (!text || r.title.toLocaleLowerCase().includes(text)) &&
+          (!text || (tag !== null ? r.tags.includes(tag) : r.title.toLocaleLowerCase().includes(text) || r.tags.includes(text))) &&
           (!query.lang || r.lang === query.lang) &&
           (!countries.length || countries.includes(r.host.country ?? '')) &&
           (query.locked !== false || (r.refusal !== 'room_password' && r.refusal !== 'room_private')),
       )
-      .sort((a, b) => Number(b.mine) - Number(a.mine) || mine(b) - mine(a))
+      .sort((a, b) => Number(b.mine) - Number(a.mine) || score(b) - score(a) || mine(b) - mine(a))
+  }
+
+  async setRoomExtras(roomId: string, extras: { cover?: File | null; tags: string[] }) {
+    return (await this.voice()).extras(roomId, extras)
   }
 
   async inviteToRoom(roomId: string, userId: string) {

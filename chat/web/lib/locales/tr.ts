@@ -617,7 +617,7 @@ const tr: Dict = {
   'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',
   'nav.explore': 'Keşfet',
-  'explore.search': 'ID veya isimle ara',
+  'explore.search': "Kimlik, ad veya #etiket ile ara",
   'explore.feed': 'Akış',
   'explore.recommend': 'Senin için',
   'explore.ranking': 'Sıralama',

@@ -33,7 +33,7 @@ const tr: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Oda ara',
-  'rooms.searchPlaceholder': 'Oda adına göre ara',
+  'rooms.searchPlaceholder': "Oda adı veya #etiket ile ara",
   'rooms.clear': 'Aramayı temizle',
   'rooms.lang': 'Dil',
   'rooms.anyLang': 'Tüm diller',
@@ -166,6 +166,16 @@ const tr: SocialDict = {
   'group.left': "{name} ayrıldı",
   'group.renamed': "{name} grubun adını “{title}” yaptı",
   'group.retry': "Tekrar dene",
+  'rooms.cover': "Kapak fotoğrafı",
+  'rooms.coverAdd': "Fotoğraf ekle",
+  'rooms.coverChange': "Fotoğrafı değiştir",
+  'rooms.coverRemove': "Kaldır",
+  'rooms.tags': "Etiketler",
+  'rooms.tagsHint': "Boşlukla ayırarak en fazla {n}. Oda bunlarla bulunur.",
+  'rooms.sort': "Sırala",
+  'rooms.sortMembers': "En kalabalık",
+  'rooms.sortRelevant': "Sana göre",
+  'rooms.sortPopular': "Popüler",
 }
 
 export default tr

@@ -33,7 +33,7 @@ const sw: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Tafuta vyumba',
-  'rooms.searchPlaceholder': 'Tafuta kwa jina la chumba',
+  'rooms.searchPlaceholder': "Tafuta kwa jina la chumba au #tagi",
   'rooms.clear': 'Futa utafutaji',
   'rooms.lang': 'Lugha',
   'rooms.anyLang': 'Lugha zote',
@@ -165,6 +165,16 @@ const sw: SocialDict = {
   'group.left': "{name} ameondoka",
   'group.renamed': "{name} ameita kikundi “{title}”",
   'group.retry': "Jaribu tena",
+  'rooms.cover': "Picha ya jalada",
+  'rooms.coverAdd': "Ongeza picha",
+  'rooms.coverChange': "Badilisha picha",
+  'rooms.coverRemove': "Ondoa",
+  'rooms.tags': "Hashtag",
+  'rooms.tagsHint': "Hadi {n}, zikitenganishwa kwa nafasi. Watu hupata chumba kwazo.",
+  'rooms.sort': "Panga",
+  'rooms.sortMembers': "Watu wengi",
+  'rooms.sortRelevant': "Kwa ajili yako",
+  'rooms.sortPopular': "Maarufu",
 }
 
 export default sw

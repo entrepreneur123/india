@@ -617,7 +617,7 @@ const sw: Dict = {
   'error.chat_closed': 'Gumzo hili limeisha. Mwongeze kama rafiki ili mendelee kuzungumza',
   'error.generic': 'Hitilafu imetokea. Tafadhali jaribu tena',
   'nav.explore': 'Gundua',
-  'explore.search': 'Tafuta kwa ID au jina',
+  'explore.search': "Tafuta kwa ID, jina au #tagi",
   'explore.feed': 'Mlisho',
   'explore.recommend': 'Kwa ajili yako',
   'explore.ranking': 'Viwango',

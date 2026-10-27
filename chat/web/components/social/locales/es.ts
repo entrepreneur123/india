@@ -33,7 +33,7 @@ const es: SocialDict = {
   'inbox.viewPost': 'Ver publicación',
 
   'rooms.search': 'Buscar salas',
-  'rooms.searchPlaceholder': 'Buscar por nombre de sala',
+  'rooms.searchPlaceholder': "Busca por nombre de sala o #etiqueta",
   'rooms.clear': 'Borrar búsqueda',
   'rooms.lang': 'Idioma',
   'rooms.anyLang': 'Todos los idiomas',
@@ -161,6 +161,16 @@ const es: SocialDict = {
   'group.left': "{name} salió",
   'group.renamed': "{name} llamó al grupo “{title}”",
   'group.retry': "Reintentar",
+  'rooms.cover': "Foto de portada",
+  'rooms.coverAdd': "Añadir foto",
+  'rooms.coverChange': "Cambiar foto",
+  'rooms.coverRemove': "Quitar",
+  'rooms.tags': "Hashtags",
+  'rooms.tagsHint': "Hasta {n}, separados por espacios. Así encuentran la sala.",
+  'rooms.sort': "Ordenar",
+  'rooms.sortMembers': "Más gente",
+  'rooms.sortRelevant': "Para ti",
+  'rooms.sortPopular': "Popular",
 }
 
 export default es

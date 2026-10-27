@@ -582,7 +582,7 @@ const pa: Dict = {
   'error.chat_closed': 'ਇਹ ਚੈਟ ਖ਼ਤਮ ਹੋ ਚੁੱਕੀ ਹੈ। ਗੱਲ ਜਾਰੀ ਰੱਖਣ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਦੋਸਤ ਬਣਾਓ',
   'error.generic': 'ਕੁਝ ਗ਼ਲਤ ਹੋ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ',
   'nav.explore': 'ਖੋਜੋ',
-  'explore.search': 'ID ਜਾਂ ਨਾਮ ਨਾਲ ਖੋਜੋ',
+  'explore.search': "ID, ਨਾਮ ਜਾਂ #ਟੈਗ ਨਾਲ ਖੋਜੋ",
   'explore.feed': 'ਫ਼ੀਡ',
   'explore.recommend': 'ਤੁਹਾਡੇ ਲਈ',
   'explore.ranking': 'ਰੈਂਕਿੰਗ',

@@ -30,7 +30,7 @@ const gu: SocialDict = {
   'inbox.comment.other': '{name} અને બીજા {n}એ તમારી પોસ્ટ પર કમેન્ટ કરી',
   'inbox.viewPost': 'પોસ્ટ જુઓ',
   'rooms.search': 'રૂમ શોધો',
-  'rooms.searchPlaceholder': 'રૂમના નામથી શોધો',
+  'rooms.searchPlaceholder': "રૂમના નામ અથવા #ટૅગથી શોધો",
   'rooms.clear': 'શોધ સાફ કરો',
   'rooms.lang': 'ભાષા',
   'rooms.anyLang': 'બધી ભાષાઓ',
@@ -154,6 +154,16 @@ const gu: SocialDict = {
   'group.left': "{name} ગ્રુપ છોડી ગયા",
   'group.renamed': "{name} એ ગ્રુપનું નામ “{title}” રાખ્યું",
   'group.retry': "ફરી પ્રયાસ કરો",
+  'rooms.cover': "કવર ફોટો",
+  'rooms.coverAdd': "ફોટો ઉમેરો",
+  'rooms.coverChange': "ફોટો બદલો",
+  'rooms.coverRemove': "દૂર કરો",
+  'rooms.tags': "હૅશટૅગ",
+  'rooms.tagsHint': "સ્પેસથી અલગ કરીને {n} સુધી. આનાથી લોકો રૂમ શોધે છે.",
+  'rooms.sort': "ક્રમ",
+  'rooms.sortMembers': "વધુ લોકો",
+  'rooms.sortRelevant': "તમારા માટે",
+  'rooms.sortPopular': "લોકપ્રિય",
 }
 
 export default gu

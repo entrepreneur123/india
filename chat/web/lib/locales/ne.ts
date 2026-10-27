@@ -604,7 +604,7 @@ const ne: Dict = {
   'error.chat_closed': 'यो च्याट सकिइसक्यो। कुरा जारी राख्न उहाँलाई साथी बनाउनुहोस्',
   'error.generic': 'केही गडबड भयो। कृपया फेरि प्रयास गर्नुहोस्',
   'nav.explore': 'अन्वेषण',
-  'explore.search': 'ID वा नामबाट खोज्नुहोस्',
+  'explore.search': "आईडी, नाम वा #ट्यागले खोज्नुहोस्",
   'explore.feed': 'फिड',
   'explore.recommend': 'तपाईंका लागि',
   'explore.ranking': 'र्‍याङ्किङ',

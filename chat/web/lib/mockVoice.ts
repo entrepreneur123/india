@@ -25,6 +25,8 @@ import { deviceProblem } from './rtc'
 import { quotable, replyOf } from './voice-chat'
 import { checkPoll, POLLS_PER_READ } from './voice-polls'
 import { nextHost } from './voice-lost'
+import { art } from './mock-art'
+import { roomTags } from './hashtags'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
 const jitter = (min: number, max: number) => min + Math.random() * (max - min)
@@ -106,6 +108,12 @@ const SNAP = `data:image/svg+xml,${encodeURIComponent(
   "<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ff9a62'/><stop offset='.55' stop-color='#ffd39a'/><stop offset='1' stop-color='#8cc3cf'/></linearGradient></defs><rect width='640' height='480' fill='url(#s)'/><circle cx='430' cy='250' r='70' fill='#fff2c9'/><path d='M0 330 Q160 270 320 320 T640 300 V480 H0Z' fill='#3f6f7a'/><path d='M0 385 Q200 345 400 385 T640 372 V480 H0Z' fill='#2c4f58'/></svg>",
 )}`
 /** The language each demo room speaks. */
+// 072: the demo rooms' hashtags and covers.
+const SEED_TAGS: Record<string, string[]> = {
+  'v-bolly': ['bollywood', 'music'], 'v-chai': ['chai', 'talk'], 'v-cricket': ['cricket', 'ipl'], 'v-adda': ['kolkata', 'bangla'],
+  'v-lofi': ['study', 'lofi', 'music'], 'v-gym': ['fitness'],
+}
+const SEED_COVER = new Set(['v-bolly', 'v-cricket', 'v-adda'])
 const SEED_LANG: Record<string, string> = { 'v-bolly': 'hi', 'v-chai': 'hi', 'v-cricket': 'en', 'v-adda': 'bn', 'v-lofi': 'en', 'v-gym': 'hi' }
 /** A room with a password in the demo (058): 1234. */
 const SEED_PASSWORD: Record<string, string> = { 'v-chai': '1234' }
@@ -207,6 +215,9 @@ export class VoiceSim {
       stage: null,
       voice: true,
       theme: null,
+      coverPath: SEED_COVER.has(id) ? art(id, 960, 540) : null,
+      coverUrl: SEED_COVER.has(id) ? art(id, 960, 540) : null,
+      tags: SEED_TAGS[id] ?? [],
     }
     if (music) {
       room.track = this.track(music.playing, host.name, Date.now() - music.ago)
@@ -349,6 +360,8 @@ export class VoiceSim {
           maxAge: room.maxAge,
           isPrivate: room.isPrivate,
           lang: room.lang,
+          coverUrl: room.coverUrl,
+          tags: room.tags,
         }
       })
   }
@@ -380,7 +393,11 @@ export class VoiceSim {
       stage: null,
       voice: n.voice,
       theme: null,
+      coverPath: n.cover ? URL.createObjectURL(n.cover) : null,
+      coverUrl: null,
+      tags: roomTags(n.tags ?? []),
     }
+    room.coverUrl = room.coverPath
     const r = this.sim(room, [], true)
     this.rooms.set(id, r)
     return { id, code: r.code }
@@ -455,6 +472,17 @@ export class VoiceSim {
   }
 
   /** 45: like voice_set_theme (ownership is checked by the caller, which knows the shop). */
+  /** Like voice_set_extras (072): host or co-host; undefined keeps the cover. */
+  async extras(roomId: string, extras: { cover?: File | null; tags: string[] }) {
+    const r = this.get(roomId)
+    const me = this.meMember(r)
+    if (!me || (me.role !== 'host' && me.role !== 'cohost')) throw new BackendError('not_allowed')
+    await wait(300)
+    if (extras.cover !== undefined) r.room.coverPath = r.room.coverUrl = extras.cover ? URL.createObjectURL(extras.cover) : null
+    r.room.tags = roomTags(extras.tags)
+    this.changed(r)
+  }
+
   async theme(roomId: string, itemId: string | null) {
     const r = this.get(roomId)
     const me = this.meMember(r)

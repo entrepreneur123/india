@@ -604,7 +604,7 @@ const ta: Dict = {
   'error.chat_closed': 'இந்த சாட் முடிந்துவிட்டது. தொடர்ந்து பேச அவர்களை நண்பராகச் சேருங்கள்',
   'error.generic': 'ஏதோ தவறு நடந்தது. மீண்டும் முயலுங்கள்',
   'nav.explore': 'ஆராய்',
-  'explore.search': 'ID அல்லது பெயரால் தேடு',
+  'explore.search': "ஐடி, பெயர் அல்லது #டேக் மூலம் தேடு",
   'explore.feed': 'ஃபீட்',
   'explore.recommend': 'உங்களுக்காக',
   'explore.ranking': 'தரவரிசை',

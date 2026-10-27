@@ -582,7 +582,7 @@ const ur: Dict = {
   'error.chat_closed': 'یہ چیٹ ختم ہو چکی ہے۔ بات جاری رکھنے کے لیے انہیں دوست بنائیں',
   'error.generic': 'کچھ غلط ہو گیا۔ براہِ کرم دوبارہ کوشش کریں',
   'nav.explore': 'دریافت کریں',
-  'explore.search': 'آئی ڈی یا نام سے تلاش کریں',
+  'explore.search': "آئی ڈی، نام یا #ٹیگ سے تلاش کریں",
   'explore.feed': 'فیڈ',
   'explore.recommend': 'آپ کے لیے',
   'explore.ranking': 'درجہ بندی',

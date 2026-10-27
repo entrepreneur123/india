@@ -31,7 +31,7 @@ const bn: SocialDict = {
   'inbox.viewPost': 'পোস্ট দেখুন',
 
   'rooms.search': 'রুম খুঁজুন',
-  'rooms.searchPlaceholder': 'রুমের নাম দিয়ে খুঁজুন',
+  'rooms.searchPlaceholder': "রুমের নাম বা #ট্যাগ দিয়ে খুঁজুন",
   'rooms.clear': 'খোঁজা মুছুন',
   'rooms.lang': 'ভাষা',
   'rooms.anyLang': 'সব ভাষা',
@@ -160,6 +160,16 @@ const bn: SocialDict = {
   'group.left': "{name} চলে গেছেন",
   'group.renamed': "{name} গ্রুপের নাম রাখলেন “{title}”",
   'group.retry': "আবার চেষ্টা করুন",
+  'rooms.cover': "কভার ছবি",
+  'rooms.coverAdd': "ছবি যোগ করুন",
+  'rooms.coverChange': "ছবি বদলান",
+  'rooms.coverRemove': "সরান",
+  'rooms.tags': "হ্যাশট্যাগ",
+  'rooms.tagsHint': "স্পেস দিয়ে আলাদা করে {n}টি পর্যন্ত। এগুলো দিয়ে লোকে রুম খুঁজে পায়।",
+  'rooms.sort': "সাজান",
+  'rooms.sortMembers': "বেশি লোক",
+  'rooms.sortRelevant': "আপনার জন্য",
+  'rooms.sortPopular': "জনপ্রিয়",
 }
 
 export default bn

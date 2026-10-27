@@ -606,7 +606,7 @@ const es: Dict = {
   'error.chat_closed': 'Este chat terminó. Agrégale como amigo para seguir hablando',
   'error.generic': 'Algo salió mal. Inténtalo de nuevo',
   'nav.explore': 'Explorar',
-  'explore.search': 'Busca por ID o nombre',
+  'explore.search': "Busca por ID, nombre o #etiqueta",
   'explore.feed': 'Feed',
   'explore.recommend': 'Para ti',
   'explore.ranking': 'Ranking',

@@ -582,7 +582,7 @@ const gu: Dict = {
   'error.chat_closed': 'આ ચેટ પૂરી થઈ ગઈ છે. વાત ચાલુ રાખવા તેમને મિત્ર બનાવો',
   'error.generic': 'કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો',
   'nav.explore': 'શોધો',
-  'explore.search': 'ID અથવા નામથી શોધો',
+  'explore.search': "ID, નામ અથવા #ટૅગથી શોધો",
   'explore.feed': 'ફીડ',
   'explore.recommend': 'તમારા માટે',
   'explore.ranking': 'રેન્કિંગ',

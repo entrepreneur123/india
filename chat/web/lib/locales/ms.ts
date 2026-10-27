@@ -617,7 +617,7 @@ const ms: Dict = {
   'error.chat_closed': 'Sembang ini sudah tamat. Tambah dia sebagai rakan untuk terus berbual',
   'error.generic': 'Ada sesuatu yang tidak kena. Sila cuba lagi',
   'nav.explore': 'Teroka',
-  'explore.search': 'Cari dengan ID atau nama',
+  'explore.search': "Cari ID, nama atau #tag",
   'explore.feed': 'Suapan',
   'explore.recommend': 'Untuk anda',
   'explore.ranking': 'Kedudukan',

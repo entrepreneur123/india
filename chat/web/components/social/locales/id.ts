@@ -33,7 +33,7 @@ const id: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Cari room',
-  'rooms.searchPlaceholder': 'Cari berdasarkan nama room',
+  'rooms.searchPlaceholder': "Cari nama room atau #tagar",
   'rooms.clear': 'Hapus pencarian',
   'rooms.lang': 'Bahasa',
   'rooms.anyLang': 'Semua bahasa',
@@ -165,6 +165,16 @@ const id: SocialDict = {
   'group.left': "{name} keluar",
   'group.renamed': "{name} mengganti nama grup menjadi “{title}”",
   'group.retry': "Coba lagi",
+  'rooms.cover': "Foto sampul",
+  'rooms.coverAdd': "Tambah foto",
+  'rooms.coverChange': "Ganti foto",
+  'rooms.coverRemove': "Hapus",
+  'rooms.tags': "Tagar",
+  'rooms.tagsHint': "Hingga {n}, dipisah spasi. Orang menemukan room lewat tagar.",
+  'rooms.sort': "Urutkan",
+  'rooms.sortMembers': "Terbanyak",
+  'rooms.sortRelevant': "Untukmu",
+  'rooms.sortPopular': "Populer",
 }
 
 export default id

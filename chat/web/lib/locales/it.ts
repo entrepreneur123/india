@@ -604,7 +604,7 @@ const it: Dict = {
   'error.chat_closed': 'Questa chat è finita. Aggiungi la persona agli amici per continuare a parlare',
   'error.generic': 'Qualcosa è andato storto. Riprova',
   'nav.explore': 'Esplora',
-  'explore.search': 'Cerca per ID o nome',
+  'explore.search': "Cerca per ID, nome o #tag",
   'explore.feed': 'Feed',
   'explore.recommend': 'Per te',
   'explore.ranking': 'Classifica',

@@ -603,7 +603,7 @@ const hi: Dict = {
   'error.chat_closed': 'यह चैट ख़त्म हो चुकी है। बात जारी रखने के लिए उन्हें दोस्त बनाएँ',
   'error.generic': 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें',
   'nav.explore': 'खोजें',
-  'explore.search': 'ID या नाम से खोजें',
+  'explore.search': "ID, नाम या #टैग से खोजें",
   'explore.feed': 'फ़ीड',
   'explore.recommend': 'आपके लिए',
   'explore.ranking': 'रैंकिंग',

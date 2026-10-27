@@ -31,7 +31,7 @@ const ml: SocialDict = {
   'inbox.viewPost': 'പോസ്റ്റ് കാണുക',
 
   'rooms.search': 'റൂമുകൾ തിരയുക',
-  'rooms.searchPlaceholder': 'റൂമിന്റെ പേര് കൊണ്ട് തിരയുക',
+  'rooms.searchPlaceholder': "റൂമിന്റെ പേരോ #ടാഗോ ഉപയോഗിച്ച് തിരയുക",
   'rooms.clear': 'തിരയൽ മായ്ക്കുക',
   'rooms.lang': 'ഭാഷ',
   'rooms.anyLang': 'എല്ലാ ഭാഷകളും',
@@ -159,6 +159,16 @@ const ml: SocialDict = {
   'group.left': "{name} ഗ്രൂപ്പ് വിട്ടു",
   'group.renamed': "{name} ഗ്രൂപ്പിന് “{title}” എന്ന് പേരിട്ടു",
   'group.retry': "വീണ്ടും ശ്രമിക്കുക",
+  'rooms.cover': "കവർ ഫോട്ടോ",
+  'rooms.coverAdd': "ഫോട്ടോ ചേർക്കുക",
+  'rooms.coverChange': "ഫോട്ടോ മാറ്റുക",
+  'rooms.coverRemove': "നീക്കം ചെയ്യുക",
+  'rooms.tags': "ഹാഷ്‌ടാഗുകൾ",
+  'rooms.tagsHint': "സ്പേസ് ഇട്ട് {n} വരെ. ഇവ വഴി ആളുകൾ റൂം കണ്ടെത്തും.",
+  'rooms.sort': "ക്രമം",
+  'rooms.sortMembers': "കൂടുതൽ ആളുകൾ",
+  'rooms.sortRelevant': "നിങ്ങൾക്കായി",
+  'rooms.sortPopular': "ജനപ്രിയം",
 }
 
 export default ml

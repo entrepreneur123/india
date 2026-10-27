@@ -604,7 +604,7 @@ const kn: Dict = {
   'error.chat_closed': 'ಈ ಚಾಟ್ ಮುಗಿದಿದೆ. ಮಾತು ಮುಂದುವರಿಸಲು ಅವರನ್ನು ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸಿ',
   'error.generic': 'ಏನೋ ತಪ್ಪಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
   'nav.explore': 'ಅನ್ವೇಷಿಸಿ',
-  'explore.search': 'ID ಅಥವಾ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ',
+  'explore.search': "ಐಡಿ, ಹೆಸರು ಅಥವಾ #ಟ್ಯಾಗ್‌ನಿಂದ ಹುಡುಕಿ",
   'explore.feed': 'ಫೀಡ್',
   'explore.recommend': 'ನಿಮಗಾಗಿ',
   'explore.ranking': 'ಶ್ರೇಯಾಂಕ',

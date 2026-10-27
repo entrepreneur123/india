@@ -33,7 +33,7 @@ const ja: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'ルームを検索',
-  'rooms.searchPlaceholder': 'ルーム名で検索',
+  'rooms.searchPlaceholder': "ルーム名か #タグ で検索",
   'rooms.clear': '検索をクリア',
   'rooms.lang': '言語',
   'rooms.anyLang': 'すべての言語',
@@ -165,6 +165,16 @@ const ja: SocialDict = {
   'group.left': "{name}さんが退出しました",
   'group.renamed': "{name}さんがグループ名を「{title}」に変更しました",
   'group.retry': "再試行",
+  'rooms.cover': "カバー写真",
+  'rooms.coverAdd': "写真を追加",
+  'rooms.coverChange': "写真を変更",
+  'rooms.coverRemove': "削除",
+  'rooms.tags': "ハッシュタグ",
+  'rooms.tagsHint': "スペース区切りで最大{n}個。タグからルームを見つけてもらえます。",
+  'rooms.sort': "並べ替え",
+  'rooms.sortMembers': "人数順",
+  'rooms.sortRelevant': "おすすめ順",
+  'rooms.sortPopular': "人気順",
 }
 
 export default ja

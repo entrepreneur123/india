@@ -31,7 +31,7 @@ const ta: SocialDict = {
   'inbox.viewPost': 'போஸ்டைப் பார்',
 
   'rooms.search': 'ரூம்களைத் தேடு',
-  'rooms.searchPlaceholder': 'ரூம் பெயரால் தேடுங்கள்',
+  'rooms.searchPlaceholder': "அறைப் பெயர் அல்லது #டேக் மூலம் தேடு",
   'rooms.clear': 'தேடலை அழி',
   'rooms.lang': 'மொழி',
   'rooms.anyLang': 'எல்லா மொழிகளும்',
@@ -159,6 +159,16 @@ const ta: SocialDict = {
   'group.left': "{name} வெளியேறினார்",
   'group.renamed': "{name} குழுவுக்கு “{title}” எனப் பெயரிட்டார்",
   'group.retry': "மீண்டும் முயற்சி",
+  'rooms.cover': "அட்டைப் படம்",
+  'rooms.coverAdd': "படம் சேர்",
+  'rooms.coverChange': "படத்தை மாற்று",
+  'rooms.coverRemove': "நீக்கு",
+  'rooms.tags': "ஹேஷ்டேக்குகள்",
+  'rooms.tagsHint': "இடைவெளியால் பிரித்து {n} வரை. இவற்றால் அறையைக் கண்டுபிடிப்பார்கள்.",
+  'rooms.sort': "வரிசை",
+  'rooms.sortMembers': "அதிக நபர்கள்",
+  'rooms.sortRelevant': "உங்களுக்காக",
+  'rooms.sortPopular': "பிரபலம்",
 }
 
 export default ta

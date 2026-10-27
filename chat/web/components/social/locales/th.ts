@@ -33,7 +33,7 @@ const th: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'ค้นหาห้อง',
-  'rooms.searchPlaceholder': 'ค้นหาด้วยชื่อห้อง',
+  'rooms.searchPlaceholder': "ค้นหาด้วยชื่อห้องหรือ #แท็ก",
   'rooms.clear': 'ล้างการค้นหา',
   'rooms.lang': 'ภาษา',
   'rooms.anyLang': 'ทุกภาษา',
@@ -165,6 +165,16 @@ const th: SocialDict = {
   'group.left': "{name} ออกจากกลุ่ม",
   'group.renamed': "{name} ตั้งชื่อกลุ่มว่า “{title}”",
   'group.retry': "ลองอีกครั้ง",
+  'rooms.cover': "รูปหน้าปก",
+  'rooms.coverAdd': "เพิ่มรูป",
+  'rooms.coverChange': "เปลี่ยนรูป",
+  'rooms.coverRemove': "ลบ",
+  'rooms.tags': "แฮชแท็ก",
+  'rooms.tagsHint': "สูงสุด {n} แท็ก คั่นด้วยเว้นวรรค คนอื่นจะหาห้องจากแท็กนี้",
+  'rooms.sort': "เรียงตาม",
+  'rooms.sortMembers': "คนเยอะสุด",
+  'rooms.sortRelevant': "สำหรับคุณ",
+  'rooms.sortPopular': "ยอดนิยม",
 }
 
 export default th

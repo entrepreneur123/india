@@ -31,7 +31,7 @@ const ptBR: SocialDict = {
   'inbox.viewPost': 'Ver post',
 
   'rooms.search': 'Buscar salas',
-  'rooms.searchPlaceholder': 'Buscar pelo nome da sala',
+  'rooms.searchPlaceholder': "Busque pelo nome da sala ou #tag",
   'rooms.clear': 'Limpar busca',
   'rooms.lang': 'Idioma',
   'rooms.anyLang': 'Todos os idiomas',
@@ -160,6 +160,16 @@ const ptBR: SocialDict = {
   'group.left': "{name} saiu",
   'group.renamed': "{name} mudou o nome do grupo para “{title}”",
   'group.retry': "Tentar de novo",
+  'rooms.cover': "Foto de capa",
+  'rooms.coverAdd': "Adicionar foto",
+  'rooms.coverChange': "Trocar foto",
+  'rooms.coverRemove': "Remover",
+  'rooms.tags': "Hashtags",
+  'rooms.tagsHint': "Até {n}, separados por espaço. As pessoas acham a sala por eles.",
+  'rooms.sort': "Ordenar",
+  'rooms.sortMembers': "Mais pessoas",
+  'rooms.sortRelevant': "Para você",
+  'rooms.sortPopular': "Popular",
 }
 
 export default ptBR

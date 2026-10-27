@@ -30,7 +30,7 @@ const ur: SocialDict = {
   'inbox.comment.other': '{name} اور {n} دوسروں نے آپ کی پوسٹ پر کمنٹ کیا',
   'inbox.viewPost': 'پوسٹ دیکھیں',
   'rooms.search': 'رومز تلاش کریں',
-  'rooms.searchPlaceholder': 'روم کے نام سے تلاش کریں',
+  'rooms.searchPlaceholder': "روم کے نام یا #ٹیگ سے تلاش کریں",
   'rooms.clear': 'تلاش صاف کریں',
   'rooms.lang': 'زبان',
   'rooms.anyLang': 'تمام زبانیں',
@@ -154,6 +154,16 @@ const ur: SocialDict = {
   'group.left': "{name} چلے گئے",
   'group.renamed': "{name} نے گروپ کا نام “{title}” رکھا",
   'group.retry': "دوبارہ کوشش کریں",
+  'rooms.cover': "کور فوٹو",
+  'rooms.coverAdd': "تصویر شامل کریں",
+  'rooms.coverChange': "تصویر بدلیں",
+  'rooms.coverRemove': "ہٹائیں",
+  'rooms.tags': "ہیش ٹیگ",
+  'rooms.tagsHint': "اسپیس سے الگ کر کے {n} تک۔ لوگ انہی سے روم ڈھونڈتے ہیں۔",
+  'rooms.sort': "ترتیب",
+  'rooms.sortMembers': "زیادہ لوگ",
+  'rooms.sortRelevant': "آپ کے لیے",
+  'rooms.sortPopular': "مقبول",
 }
 
 export default ur

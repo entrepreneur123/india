@@ -603,7 +603,7 @@ const vi: Dict = {
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',
   'nav.explore': 'Khám phá',
-  'explore.search': 'Tìm theo ID hoặc tên',
+  'explore.search': "Tìm theo ID, tên hoặc #thẻ",
   'explore.feed': 'Bảng tin',
   'explore.recommend': 'Dành cho bạn',
   'explore.ranking': 'Xếp hạng',

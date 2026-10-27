@@ -33,7 +33,7 @@ const ms: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Cari bilik',
-  'rooms.searchPlaceholder': 'Cari mengikut nama bilik',
+  'rooms.searchPlaceholder': "Cari nama bilik atau #tag",
   'rooms.clear': 'Kosongkan carian',
   'rooms.lang': 'Bahasa',
   'rooms.anyLang': 'Semua bahasa',
@@ -165,6 +165,16 @@ const ms: SocialDict = {
   'group.left': "{name} keluar",
   'group.renamed': "{name} menamakan kumpulan “{title}”",
   'group.retry': "Cuba lagi",
+  'rooms.cover': "Foto muka depan",
+  'rooms.coverAdd': "Tambah foto",
+  'rooms.coverChange': "Tukar foto",
+  'rooms.coverRemove': "Buang",
+  'rooms.tags': "Tanda pagar",
+  'rooms.tagsHint': "Sehingga {n}, dipisahkan dengan ruang. Orang mencari bilik melaluinya.",
+  'rooms.sort': "Isih",
+  'rooms.sortMembers': "Paling ramai",
+  'rooms.sortRelevant': "Untuk anda",
+  'rooms.sortPopular': "Popular",
 }
 
 export default ms

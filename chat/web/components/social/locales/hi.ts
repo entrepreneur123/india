@@ -31,7 +31,7 @@ const hi: SocialDict = {
   'inbox.viewPost': 'पोस्ट देखें',
 
   'rooms.search': 'रूम खोजें',
-  'rooms.searchPlaceholder': 'रूम के नाम से खोजें',
+  'rooms.searchPlaceholder': "रूम के नाम या #टैग से खोजें",
   'rooms.clear': 'खोज साफ़ करें',
   'rooms.lang': 'भाषा',
   'rooms.anyLang': 'सभी भाषाएँ',
@@ -160,6 +160,16 @@ const hi: SocialDict = {
   'group.left': "{name} ग्रुप से चले गए",
   'group.renamed': "{name} ने ग्रुप का नाम “{title}” रखा",
   'group.retry': "फिर कोशिश करें",
+  'rooms.cover': "कवर फ़ोटो",
+  'rooms.coverAdd': "फ़ोटो जोड़ें",
+  'rooms.coverChange': "फ़ोटो बदलें",
+  'rooms.coverRemove': "हटाएँ",
+  'rooms.tags': "हैशटैग",
+  'rooms.tagsHint': "स्पेस से अलग करके {n} तक। लोग इनसे रूम ढूँढते हैं।",
+  'rooms.sort': "क्रम",
+  'rooms.sortMembers': "ज़्यादा लोग",
+  'rooms.sortRelevant': "आपके लिए",
+  'rooms.sortPopular': "लोकप्रिय",
 }
 
 export default hi

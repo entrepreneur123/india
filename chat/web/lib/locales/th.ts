@@ -617,7 +617,7 @@ const th: Dict = {
   'error.chat_closed': 'แชทนี้จบแล้ว เพิ่มเขาเป็นเพื่อนเพื่อคุยต่อ',
   'error.generic': 'เกิดข้อผิดพลาด โปรดลองอีกครั้ง',
   'nav.explore': 'สำรวจ',
-  'explore.search': 'ค้นหาด้วยไอดีหรือชื่อ',
+  'explore.search': "ค้นหาด้วยไอดี ชื่อ หรือ #แท็ก",
   'explore.feed': 'ฟีด',
   'explore.recommend': 'สำหรับคุณ',
   'explore.ranking': 'อันดับ',

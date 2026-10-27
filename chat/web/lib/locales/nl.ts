@@ -604,7 +604,7 @@ const nl: Dict = {
   'error.chat_closed': 'Deze chat is afgelopen. Voeg de persoon toe als vriend om verder te praten',
   'error.generic': 'Er ging iets mis. Probeer het opnieuw',
   'nav.explore': 'Ontdekken',
-  'explore.search': 'Zoek op ID of naam',
+  'explore.search': "Zoek op ID, naam of #tag",
   'explore.feed': 'Feed',
   'explore.recommend': 'Voor jou',
   'explore.ranking': 'Ranglijst',

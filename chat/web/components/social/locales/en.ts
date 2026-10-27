@@ -32,7 +32,7 @@ const en = {
 
   // rooms: search, language, people online
   'rooms.search': 'Search rooms',
-  'rooms.searchPlaceholder': 'Search by room name',
+  'rooms.searchPlaceholder': "Search by room name or #tag",
   'rooms.clear': 'Clear search',
   'rooms.lang': 'Language',
   'rooms.anyLang': 'All languages',
@@ -165,6 +165,16 @@ const en = {
   'group.left': "{name} left",
   'group.renamed': "{name} named the group “{title}”",
   'group.retry': "Try again",
+  'rooms.cover': "Cover photo",
+  'rooms.coverAdd': "Add a photo",
+  'rooms.coverChange': "Change photo",
+  'rooms.coverRemove': "Remove",
+  'rooms.tags': "Hashtags",
+  'rooms.tagsHint': "Up to {n}, separated by spaces. People find the room by them.",
+  'rooms.sort': "Sort",
+  'rooms.sortMembers': "Most people",
+  'rooms.sortRelevant': "For you",
+  'rooms.sortPopular': "Popular",
 }
 
 export default en

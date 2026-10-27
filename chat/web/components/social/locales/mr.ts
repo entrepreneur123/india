@@ -30,7 +30,7 @@ const mr: SocialDict = {
   'inbox.comment.other': '{name} आणि आणखी {n} जणांनी तुमच्या पोस्टवर कमेंट केली',
   'inbox.viewPost': 'पोस्ट पाहा',
   'rooms.search': 'रूम्स शोधा',
-  'rooms.searchPlaceholder': 'रूमच्या नावाने शोधा',
+  'rooms.searchPlaceholder': "रूमच्या नावाने किंवा #टॅगने शोधा",
   'rooms.clear': 'शोध साफ करा',
   'rooms.lang': 'भाषा',
   'rooms.anyLang': 'सर्व भाषा',
@@ -154,6 +154,16 @@ const mr: SocialDict = {
   'group.left': "{name} बाहेर पडले",
   'group.renamed': "{name} यांनी ग्रुपचे नाव “{title}” ठेवले",
   'group.retry': "पुन्हा प्रयत्न करा",
+  'rooms.cover': "कव्हर फोटो",
+  'rooms.coverAdd': "फोटो जोडा",
+  'rooms.coverChange': "फोटो बदला",
+  'rooms.coverRemove': "काढा",
+  'rooms.tags': "हॅशटॅग",
+  'rooms.tagsHint': "स्पेसने वेगळे करून {n} पर्यंत. यावरून लोक रूम शोधतात.",
+  'rooms.sort': "क्रम",
+  'rooms.sortMembers': "जास्त लोक",
+  'rooms.sortRelevant': "तुमच्यासाठी",
+  'rooms.sortPopular': "लोकप्रिय",
 }
 
 export default mr

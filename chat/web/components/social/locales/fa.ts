@@ -33,7 +33,7 @@ const fa: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'جستجوی روم‌ها',
-  'rooms.searchPlaceholder': 'جستجو با نام روم',
+  'rooms.searchPlaceholder': "جستجو با نام اتاق یا #هشتگ",
   'rooms.clear': 'پاک کردن جستجو',
   'rooms.lang': 'زبان',
   'rooms.anyLang': 'همهٔ زبان‌ها',
@@ -165,6 +165,16 @@ const fa: SocialDict = {
   'group.left': "{name} گروه را ترک کرد",
   'group.renamed': "{name} نام گروه را «{title}» گذاشت",
   'group.retry': "تلاش دوباره",
+  'rooms.cover': "عکس کاور",
+  'rooms.coverAdd': "افزودن عکس",
+  'rooms.coverChange': "تغییر عکس",
+  'rooms.coverRemove': "حذف",
+  'rooms.tags': "هشتگ‌ها",
+  'rooms.tagsHint': "حداکثر {n} مورد، با فاصله جدا کنید. دیگران اتاق را با آن‌ها پیدا می‌کنند.",
+  'rooms.sort': "مرتب‌سازی",
+  'rooms.sortMembers': "پرجمعیت‌ترین",
+  'rooms.sortRelevant': "برای شما",
+  'rooms.sortPopular': "محبوب",
 }
 
 export default fa

@@ -617,7 +617,7 @@ const fil: Dict = {
   'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',
   'nav.explore': 'Mag-explore',
-  'explore.search': 'Maghanap gamit ang ID o pangalan',
+  'explore.search': "Hanapin sa ID, pangalan o #tag",
   'explore.feed': 'Feed',
   'explore.recommend': 'Para sa iyo',
   'explore.ranking': 'Ranking',

@@ -21,15 +21,15 @@ import { LiveBars } from './voice-stage'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
 /** The live rooms on the Rooms tab, narrowed by its search. */
-export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCreate: () => void }) {
+export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery; onCreate: () => void; onTag?: (tag: string) => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
   const { openVoice, voiceRoomId, askRoomKey } = useApp()
   const { st } = useSocialT()
-  const searching = !!(query.text || query.lang || query.countries?.length || query.locked === false)
+  const searching = !!(query.text || query.lang || query.countries?.length || query.locked === false || (query.sort && query.sort !== 'members'))
   // Without a search this is the same list (and request) as the right panel's.
-  const key = searching ? ['voiceRooms', query.text ?? '', query.lang ?? '', query.countries?.join() ?? '', query.locked ?? true] : 'voiceRooms'
+  const key = searching ? ['voiceRooms', query.text ?? '', query.lang ?? '', query.countries?.join() ?? '', query.locked ?? true, query.sort ?? 'members'] : 'voiceRooms'
   const { data: rooms, error, mutate } = useSWR(key, () => backend.voiceRooms(searching ? query : undefined), {
     keepPreviousData: true,
     // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.
@@ -94,7 +94,7 @@ export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCrea
         <ul className="grid gap-3 sm:grid-cols-2">
           {rooms.map((r) => (
             <li key={r.id}>
-              <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => open(r)} />
+              <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => open(r)} onTag={onTag} />
             </li>
           ))}
         </ul>
@@ -103,7 +103,7 @@ export function VoiceRooms({ query = {}, onCreate }: { query?: RoomQuery; onCrea
   )
 }
 
-function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolean; onOpen: () => void }) {
+function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here: boolean; onOpen: () => void; onTag?: (tag: string) => void }) {
   const { t, num } = useI18n()
   const live = room.speakers.length > 0
   // A password or a private room's code isn't a no: the card opens the prompt (058, 065).
@@ -111,17 +111,19 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
   const blocked = !!room.refusal && !locked && !here
   // The rule that keeps me out is shown once, in red, not again among the others.
   const conditions = roomConditions(room, t, false).filter((c) => !blocked || c !== refusalLabel(room, t))
+  // The whole card opens the room (a button stretched under it); the hashtags on top search for themselves (072).
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-disabled={blocked}
+    <div
       className={cn(
         'relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-start transition-[box-shadow,background-color] duration-150',
-        blocked ? 'opacity-60' : 'hover:shadow-e2 active:bg-muted',
+        blocked ? 'opacity-60' : 'hover:shadow-e2 has-[>button:active]:bg-muted',
         here || room.mine ? 'border-primary' : 'border-border',
       )}
     >
+      <button type="button" onClick={onOpen} aria-disabled={blocked} aria-label={room.title} className="absolute inset-0 rounded-2xl" />
+      {room.coverUrl ? (
+        <img src={room.coverUrl} alt="" className="pointer-events-none -mx-4 -mt-4 aspect-[16/7] w-[calc(100%+2rem)] max-w-none object-cover" loading="lazy" decoding="async" />
+      ) : null}
       <span className="flex w-full items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-1.5">
           <RoomCountry iso={room.host.country} />
@@ -139,6 +141,21 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
         ) : null}
       </span>
       <span className="line-clamp-2 text-[17px] leading-snug font-bold tracking-tight">{room.title}</span>
+      {room.tags.length ? (
+        <span className="-mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5">
+          {room.tags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              disabled={!onTag}
+              onClick={() => onTag?.(tag)}
+              className="relative z-10 text-[13px] font-semibold text-primary-text enabled:hover:underline disabled:pointer-events-none"
+            >
+              #{tag}
+            </button>
+          ))}
+        </span>
+      ) : null}
       {live ? (
         <span className="flex min-w-0 items-center gap-2.5">
           <span className="flex shrink-0 -space-x-2" aria-hidden>
@@ -184,6 +201,6 @@ function RoomCard({ room, here, onOpen }: { room: VoiceRoomSummary; here: boolea
           <Users className="size-3.5" aria-hidden /> {t('rooms.here', { n: num(room.members), max: num(room.maxMembers) })}
         </span>
       </span>
-    </button>
+    </div>
   )
 }

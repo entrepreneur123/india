@@ -13,6 +13,7 @@ import {
   type ProfileStyleInput,
 } from './backend'
 import { COMMENTS_PAGE } from './feed'
+import { hashtagsOf } from './hashtags'
 import { EMPTY_STYLE, styleInput } from './profile-style'
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
@@ -203,6 +204,12 @@ export class FeedSim {
   async postsOf(userId: string, before?: string) {
     await wait(350)
     return this.page(this.posts.filter((s) => s.authorId === userId && this.visible(s)), before, 50)
+  }
+
+  async postsByTag(tag: string, before?: string) {
+    await wait(350)
+    const t = hashtagsOf(`#${tag.replace(/^#+/, '')}`)[0]
+    return this.page(this.posts.filter((s) => !!t && hashtagsOf(s.post.text).includes(t) && this.visible(s)), before, 30)
   }
 
   async post(postId: string) {

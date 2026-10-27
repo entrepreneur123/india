@@ -616,7 +616,7 @@ const en = {
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',
   'error.generic': 'Something went wrong. Please try again',
   'nav.explore': 'Explore',
-  'explore.search': 'Search by ID or name',
+  'explore.search': "Search by ID, name or #tag",
   'explore.feed': 'Feed',
   'explore.recommend': 'For you',
   'explore.ranking': 'Ranking',

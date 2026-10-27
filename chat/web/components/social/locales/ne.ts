@@ -31,7 +31,7 @@ const ne: SocialDict = {
   'inbox.viewPost': 'पोस्ट हेर्नुहोस्',
 
   'rooms.search': 'रूम खोज्नुहोस्',
-  'rooms.searchPlaceholder': 'रूमको नामले खोज्नुहोस्',
+  'rooms.searchPlaceholder': "कोठाको नाम वा #ट्यागले खोज्नुहोस्",
   'rooms.clear': 'खोजी हटाउनुहोस्',
   'rooms.lang': 'भाषा',
   'rooms.anyLang': 'सबै भाषा',
@@ -159,6 +159,16 @@ const ne: SocialDict = {
   'group.left': "{name} जानुभयो",
   'group.renamed': "{name} ले समूहको नाम “{title}” राख्नुभयो",
   'group.retry': "फेरि प्रयास गर्नुहोस्",
+  'rooms.cover': "कभर फोटो",
+  'rooms.coverAdd': "फोटो थप्नुहोस्",
+  'rooms.coverChange': "फोटो बदल्नुहोस्",
+  'rooms.coverRemove': "हटाउनुहोस्",
+  'rooms.tags': "ह्यासट्याग",
+  'rooms.tagsHint': "स्पेसले छुट्याएर {n} सम्म। यिनैबाट मानिसले कोठा भेट्छन्।",
+  'rooms.sort': "क्रम",
+  'rooms.sortMembers': "धेरै मान्छे",
+  'rooms.sortRelevant': "तपाईंका लागि",
+  'rooms.sortPopular': "लोकप्रिय",
 }
 
 export default ne

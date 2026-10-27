@@ -15,6 +15,7 @@ import { AudienceIcon, BigHeart, CommentIcon, LikeIcon } from '@/components/ui/t
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { cn } from '@/lib/utils'
 import { useFeedT } from '../feed-text'
+import { TagText } from '../hashtags'
 import { AccentAvatar, accentStyle } from '../profile-bits'
 import { postStore, useLike, useLivePost } from './post-store'
 import { VerifiedMark } from '@/components/trust/badge'
@@ -116,13 +117,13 @@ export function PostCard({ post: initial, onComments }: { post: FeedPost; onComm
           onPointerUp={onMediaTap}
         >
           <p className="relative text-[22px] leading-snug font-bold tracking-tight text-balance whitespace-pre-wrap text-white">
-            {post.text}
+            <TagText text={post.text} tagClass="underline" />
           </p>
           <Burst n={burst} />
         </div>
       ) : post.text ? (
         <div className="px-4 pt-3">
-          <p className={cn('text-[15px] leading-relaxed whitespace-pre-wrap text-pretty', long && 'line-clamp-5')}>{post.text}</p>
+          <p className={cn('text-[15px] leading-relaxed whitespace-pre-wrap text-pretty', long && 'line-clamp-5')}><TagText text={post.text} /></p>
           {long ? (
             <button type="button" onClick={() => setExpanded(true)} className="mt-0.5 text-sm font-semibold text-muted-foreground hover:text-foreground">
               {ft('post.readMore')}

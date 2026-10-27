@@ -35,7 +35,7 @@ const he: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'חיפוש חדרים',
-  'rooms.searchPlaceholder': 'חיפוש לפי שם החדר',
+  'rooms.searchPlaceholder': "חיפוש לפי שם חדר או #תג",
   'rooms.clear': 'ניקוי החיפוש',
   'rooms.lang': 'שפה',
   'rooms.anyLang': 'כל השפות',
@@ -167,6 +167,16 @@ const he: SocialDict = {
   'group.left': "{name} יצא/ה",
   'group.renamed': "{name} קרא/ה לקבוצה „{title}”",
   'group.retry': "נסו שוב",
+  'rooms.cover': "תמונת שער",
+  'rooms.coverAdd': "הוספת תמונה",
+  'rooms.coverChange': "החלפת תמונה",
+  'rooms.coverRemove': "הסרה",
+  'rooms.tags': "האשטגים",
+  'rooms.tagsHint': "עד {n}, מופרדים ברווחים. כך אנשים מוצאים את החדר.",
+  'rooms.sort': "מיון",
+  'rooms.sortMembers': "הכי מלא",
+  'rooms.sortRelevant': "בשבילך",
+  'rooms.sortPopular': "פופולרי",
 }
 
 export default he

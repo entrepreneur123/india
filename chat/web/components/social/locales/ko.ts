@@ -33,7 +33,7 @@ const ko: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': '방 검색',
-  'rooms.searchPlaceholder': '방 이름으로 검색',
+  'rooms.searchPlaceholder': "방 이름이나 #태그로 검색",
   'rooms.clear': '검색어 지우기',
   'rooms.lang': '언어',
   'rooms.anyLang': '모든 언어',
@@ -166,6 +166,16 @@ const ko: SocialDict = {
   'group.left': "{name}님이 나갔어요",
   'group.renamed': "{name}님이 단톡방 이름을 “{title}”(으)로 바꿨어요",
   'group.retry': "다시 시도",
+  'rooms.cover': "대표 사진",
+  'rooms.coverAdd': "사진 추가",
+  'rooms.coverChange': "사진 바꾸기",
+  'rooms.coverRemove': "삭제",
+  'rooms.tags': "해시태그",
+  'rooms.tagsHint': "띄어쓰기로 구분해 최대 {n}개까지. 사람들이 태그로 방을 찾아요.",
+  'rooms.sort': "정렬",
+  'rooms.sortMembers': "인원순",
+  'rooms.sortRelevant': "관련도순",
+  'rooms.sortPopular': "인기순",
 }
 
 export default ko

@@ -31,7 +31,7 @@ const vi: SocialDict = {
   'inbox.viewPost': 'Xem bài viết',
 
   'rooms.search': 'Tìm phòng',
-  'rooms.searchPlaceholder': 'Tìm theo tên phòng',
+  'rooms.searchPlaceholder': "Tìm theo tên phòng hoặc #thẻ",
   'rooms.clear': 'Xóa tìm kiếm',
   'rooms.lang': 'Ngôn ngữ',
   'rooms.anyLang': 'Mọi ngôn ngữ',
@@ -160,6 +160,16 @@ const vi: SocialDict = {
   'group.left': "{name} đã rời nhóm",
   'group.renamed': "{name} đã đặt tên nhóm là “{title}”",
   'group.retry': "Thử lại",
+  'rooms.cover': "Ảnh bìa",
+  'rooms.coverAdd': "Thêm ảnh",
+  'rooms.coverChange': "Đổi ảnh",
+  'rooms.coverRemove': "Xóa",
+  'rooms.tags': "Hashtag",
+  'rooms.tagsHint': "Tối đa {n}, cách nhau bằng dấu cách. Mọi người tìm phòng qua đó.",
+  'rooms.sort': "Sắp xếp",
+  'rooms.sortMembers': "Đông nhất",
+  'rooms.sortRelevant': "Phù hợp",
+  'rooms.sortPopular': "Phổ biến",
 }
 
 export default vi

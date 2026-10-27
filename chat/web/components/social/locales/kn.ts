@@ -31,7 +31,7 @@ const kn: SocialDict = {
   'inbox.viewPost': 'ಪೋಸ್ಟ್ ನೋಡಿ',
 
   'rooms.search': 'ರೂಮ್‌ಗಳನ್ನು ಹುಡುಕಿ',
-  'rooms.searchPlaceholder': 'ರೂಮ್ ಹೆಸರಿನಿಂದ ಹುಡುಕಿ',
+  'rooms.searchPlaceholder': "ಕೋಣೆ ಹೆಸರು ಅಥವಾ #ಟ್ಯಾಗ್‌ನಿಂದ ಹುಡುಕಿ",
   'rooms.clear': 'ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ',
   'rooms.lang': 'ಭಾಷೆ',
   'rooms.anyLang': 'ಎಲ್ಲಾ ಭಾಷೆಗಳು',
@@ -159,6 +159,16 @@ const kn: SocialDict = {
   'group.left': "{name} ತೊರೆದರು",
   'group.renamed': "{name} ಅವರು ಗುಂಪಿಗೆ “{title}” ಎಂದು ಹೆಸರಿಟ್ಟರು",
   'group.retry': "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+  'rooms.cover': "ಕವರ್ ಫೋಟೋ",
+  'rooms.coverAdd': "ಫೋಟೋ ಸೇರಿಸಿ",
+  'rooms.coverChange': "ಫೋಟೋ ಬದಲಿಸಿ",
+  'rooms.coverRemove': "ತೆಗೆದುಹಾಕಿ",
+  'rooms.tags': "ಹ್ಯಾಷ್‌ಟ್ಯಾಗ್‌ಗಳು",
+  'rooms.tagsHint': "ಖಾಲಿ ಜಾಗದಿಂದ ಬೇರ್ಪಡಿಸಿ {n} ವರೆಗೆ. ಇವುಗಳಿಂದ ಕೋಣೆಯನ್ನು ಹುಡುಕುತ್ತಾರೆ.",
+  'rooms.sort': "ವಿಂಗಡಣೆ",
+  'rooms.sortMembers': "ಹೆಚ್ಚು ಜನ",
+  'rooms.sortRelevant': "ನಿಮಗಾಗಿ",
+  'rooms.sortPopular': "ಜನಪ್ರಿಯ",
 }
 
 export default kn

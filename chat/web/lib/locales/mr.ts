@@ -582,7 +582,7 @@ const mr: Dict = {
   'error.chat_closed': 'ही चॅट संपली आहे. बोलणे सुरू ठेवण्यासाठी त्यांना मित्र बनवा',
   'error.generic': 'काहीतरी चुकले. कृपया पुन्हा प्रयत्न करा',
   'nav.explore': 'शोधा',
-  'explore.search': 'ID किंवा नावाने शोधा',
+  'explore.search': "आयडी, नाव किंवा #टॅगने शोधा",
   'explore.feed': 'फीड',
   'explore.recommend': 'तुमच्यासाठी',
   'explore.ranking': 'रँकिंग',

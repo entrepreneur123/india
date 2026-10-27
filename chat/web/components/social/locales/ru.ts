@@ -35,7 +35,7 @@ const ru: SocialDict = {
 
   // rooms: search, language, people online
   'rooms.search': 'Поиск комнат',
-  'rooms.searchPlaceholder': 'Поиск по названию комнаты',
+  'rooms.searchPlaceholder': "Поиск по названию комнаты или #тегу",
   'rooms.clear': 'Очистить поиск',
   'rooms.lang': 'Язык',
   'rooms.anyLang': 'Все языки',
@@ -168,6 +168,16 @@ const ru: SocialDict = {
   'group.left': "{name} вышел(ла)",
   'group.renamed': "{name} назвал(а) группу «{title}»",
   'group.retry': "Повторить",
+  'rooms.cover': "Обложка",
+  'rooms.coverAdd': "Добавить фото",
+  'rooms.coverChange': "Сменить фото",
+  'rooms.coverRemove': "Убрать",
+  'rooms.tags': "Хештеги",
+  'rooms.tagsHint': "До {n}, через пробел. По ним комнату находят другие.",
+  'rooms.sort': "Сортировка",
+  'rooms.sortMembers': "Больше людей",
+  'rooms.sortRelevant': "Для вас",
+  'rooms.sortPopular': "Популярные",
 }
 
 export default ru

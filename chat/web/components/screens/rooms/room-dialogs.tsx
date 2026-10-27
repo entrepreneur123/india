@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/toast'
 import { isRoomLang, RoomLangSelect } from '@/components/social/room-lang'
 import { useSocialT } from '@/components/social/social-text'
 import { RoomCountry } from './room-country'
+import { RoomExtrasFields, typedTags } from './room-extras'
 
 const AGES = Array.from({ length: 83 }, (_, i) => 18 + i) // 18..100
 const MAX_TITLE = 40
@@ -52,6 +53,8 @@ export function CreateRoomDialog({
   const [isPrivate, setPrivate] = useState(false)
   const [chatOnly, setChatOnly] = useState(false)
   const [note, setNote] = useState('')
+  const [cover, setCover] = useState<File | null>(null)
+  const [tags, setTags] = useState('')
   const [busy, setBusy] = useState(false)
   const valid = title.trim().length >= 2 && title.trim().length <= MAX_TITLE && minAge <= maxAge
 
@@ -65,6 +68,8 @@ export function CreateRoomDialog({
     setPrivate(false)
     setChatOnly(false)
     setNote('')
+    setCover(null)
+    setTags('')
     setLang(isRoomLang(appLang) ? appLang : '')
   }, [open, appLang])
 
@@ -76,6 +81,7 @@ export function CreateRoomDialog({
     setBusy(true)
     const room: NewVoiceRoom = {
       title: title.trim(), maxMembers: max, genderRule: gender, minAge, maxAge, isPrivate, announcement: note.trim(), lang, voice: !chatOnly,
+      cover, tags: typedTags(tags),
     }
     try {
       const made = await backend.createVoiceRoom(room)
@@ -176,6 +182,8 @@ export function CreateRoomDialog({
             className="min-h-20"
           />
         </Field>
+
+        <RoomExtrasFields cover={cover} onCover={setCover} tags={tags} onTags={setTags} />
 
         {/* 46: a room for typing only — no stage, no voice or video. */}
         <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border p-4">

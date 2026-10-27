@@ -30,7 +30,7 @@ const pa: SocialDict = {
   'inbox.comment.other': '{name} ਅਤੇ {n} ਹੋਰਾਂ ਨੇ ਤੁਹਾਡੀ ਪੋਸਟ ’ਤੇ ਕਮੈਂਟ ਕੀਤਾ',
   'inbox.viewPost': 'ਪੋਸਟ ਦੇਖੋ',
   'rooms.search': 'ਰੂਮ ਖੋਜੋ',
-  'rooms.searchPlaceholder': 'ਰੂਮ ਦੇ ਨਾਮ ਨਾਲ ਖੋਜੋ',
+  'rooms.searchPlaceholder': "ਰੂਮ ਦੇ ਨਾਮ ਜਾਂ #ਟੈਗ ਨਾਲ ਖੋਜੋ",
   'rooms.clear': 'ਖੋਜ ਸਾਫ਼ ਕਰੋ',
   'rooms.lang': 'ਭਾਸ਼ਾ',
   'rooms.anyLang': 'ਸਾਰੀਆਂ ਭਾਸ਼ਾਵਾਂ',
@@ -154,6 +154,16 @@ const pa: SocialDict = {
   'group.left': "{name} ਚਲੇ ਗਏ",
   'group.renamed': "{name} ਨੇ ਗਰੁੱਪ ਦਾ ਨਾਮ “{title}” ਰੱਖਿਆ",
   'group.retry': "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+  'rooms.cover': "ਕਵਰ ਫ਼ੋਟੋ",
+  'rooms.coverAdd': "ਫ਼ੋਟੋ ਜੋੜੋ",
+  'rooms.coverChange': "ਫ਼ੋਟੋ ਬਦਲੋ",
+  'rooms.coverRemove': "ਹਟਾਓ",
+  'rooms.tags': "ਹੈਸ਼ਟੈਗ",
+  'rooms.tagsHint': "ਸਪੇਸ ਨਾਲ ਵੱਖ ਕਰਕੇ {n} ਤੱਕ। ਲੋਕ ਇਨ੍ਹਾਂ ਨਾਲ ਰੂਮ ਲੱਭਦੇ ਹਨ।",
+  'rooms.sort': "ਤਰਤੀਬ",
+  'rooms.sortMembers': "ਵੱਧ ਲੋਕ",
+  'rooms.sortRelevant': "ਤੁਹਾਡੇ ਲਈ",
+  'rooms.sortPopular': "ਮਸ਼ਹੂਰ",
 }
 
 export default pa

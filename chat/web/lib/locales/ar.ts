@@ -625,7 +625,7 @@ const ar: Dict = {
   'error.chat_closed': 'انتهت هذه الدردشة. أضف هذا الشخص صديقًا لتواصلا الحديث',
   'error.generic': 'حدث خطأ ما. يُرجى المحاولة مرة أخرى',
   'nav.explore': 'استكشاف',
-  'explore.search': 'ابحث بالمعرّف أو الاسم',
+  'explore.search': "ابحث بالمعرّف أو الاسم أو #وسم",
   'explore.feed': 'الموجز',
   'explore.recommend': 'مقترحات لك',
   'explore.ranking': 'الترتيب',

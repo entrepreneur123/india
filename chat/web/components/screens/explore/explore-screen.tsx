@@ -17,6 +17,8 @@ import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { cn } from '@/lib/utils'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
+import { TagPosts } from '@/components/social/hashtags'
+import { hashtagsOf } from '@/lib/hashtags'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
@@ -44,7 +46,9 @@ export function ExploreScreen() {
   }, [locale])
 
   const kind: ExploreKind | null = section === 'feed' ? null : section === 'ranking' ? rank : section
-  const found = useSWR(asked ? ['explore-find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
+  // 072: "#word" looks for posts with that hashtag instead of people.
+  const tag = asked.startsWith('#') ? hashtagsOf(asked)[0] ?? null : null
+  const found = useSWR(asked && !tag ? ['explore-find', asked] : null, () => backend.searchHandles(asked), { keepPreviousData: true })
   const people = useSWR(!asked && kind ? ['explore', kind, country, kind === 'recommend' ? round : 0] : null, () => backend.explorePeople(kind!, country || null), {
     revalidateOnFocus: false,
   })
@@ -79,7 +83,9 @@ export function ExploreScreen() {
           </Button>
         </div>
 
-        {asked ? (
+        {tag ? (
+          <TagPosts tag={tag} />
+        ) : asked ? (
           !found.data ? (
             <Skeleton className="h-14 w-full rounded-xl" />
           ) : found.data.length ? (

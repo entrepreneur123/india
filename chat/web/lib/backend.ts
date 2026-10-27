@@ -265,11 +265,16 @@ export interface Badges {
  * Room search (28): title words, the room's language (an app language), the hosts' countries (empty = every country)
  * and whether rooms with a password show; empty = everything.
  */
+/** 072: the room list's order — most people, best for me (my interests, language, country, the search), or busiest. */
+export type RoomSort = 'members' | 'relevant' | 'popular'
+
 export interface RoomQuery {
+  /** A title, or "#tag" for rooms with that hashtag. */
   text?: string
   lang?: string | null
   countries?: string[]
   locked?: boolean
+  sort?: RoomSort
 }
 
 export interface Message {
@@ -463,6 +468,9 @@ export interface VoiceRoomSummary extends RoomRules {
   refusal: RoomRefusal | null
   /** The language the room speaks (en, hi, bn, pt-BR, vi), null when unknown. */
   lang: string | null
+  /** 072: the room's cover photo (null: none) and its hashtags (up to 5, without "#"). */
+  coverUrl: string | null
+  tags: string[]
 }
 
 export interface VoiceRoom extends RoomRules {
@@ -488,6 +496,10 @@ export interface VoiceRoom extends RoomRules {
   voice: boolean
   /** 068 (45): the wall the host or a co-host dressed the room in (one they own), or null. */
   theme: string | null
+  /** 072: the cover photo (the stored file, and a link to show it) and the hashtags; the host or a co-host sets them. */
+  coverPath: string | null
+  coverUrl: string | null
+  tags: string[]
 }
 
 /** A page pinned for the whole room (voice_share_link). The same page for everyone; scrolling is not shared. */
@@ -518,6 +530,9 @@ export interface NewVoiceRoom extends RoomRules {
   announcement: string
   /** The language the room speaks (the app language by default). */
   lang: string
+  /** 072: a cover photo and hashtags, set right after the room is made. */
+  cover?: File | null
+  tags?: string[]
 }
 
 /** Reactions are drawn glyphs (components/ui/topic-icons.tsx), never emoji. */
@@ -830,6 +845,11 @@ export interface Backend {
   contactsOf(userId: string): Promise<FriendContacts | null>
   /** Live rooms, most people first; `query` narrows them on the server. */
   voiceRooms(query?: RoomQuery): Promise<VoiceRoomSummary[]>
+  /**
+   * 072: the cover and hashtags of a room (host or co-host). `cover`: a new photo, null to remove it, undefined to keep
+   * it. Errors: not_allowed, bad_request.
+   */
+  setRoomExtras(roomId: string, extras: { cover?: File | null; tags: string[] }): Promise<void>
   /** Opens a room with me as host, not on the stage yet (ending my previous one). */
   createVoiceRoom(r: NewVoiceRoom): Promise<{ id: string; code: string }>
   /** Enters the room with this code (private rooms are only reachable this way); returns its id. */
@@ -889,6 +909,8 @@ export interface Backend {
   // ---- posts, likes, comments (033) ----
   /** Newest first; `before`: the last post's cursor, for the next page. */
   postsOf(userId: string, before?: string): Promise<FeedPost[]>
+  /** 072: posts I may see with this hashtag (with or without "#"), newest first, 30 at a time. */
+  postsByTag(tag: string, before?: string): Promise<FeedPost[]>
   /** Null: gone, or not mine to see. */
   post(postId: string): Promise<FeedPost | null>
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>

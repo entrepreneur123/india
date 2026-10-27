@@ -619,7 +619,7 @@ const he: Dict = {
   'error.chat_closed': 'הצ׳אט הזה הסתיים. כדי להמשיך לדבר, מוסיפים כחבר',
   'error.generic': 'משהו השתבש. אפשר לנסות שוב',
   'nav.explore': 'גלו',
-  'explore.search': 'חיפוש לפי מזהה או שם',
+  'explore.search': "חיפוש לפי מזהה, שם או #תג",
   'explore.feed': 'פיד',
   'explore.recommend': 'בשבילך',
   'explore.ranking': 'דירוג',
