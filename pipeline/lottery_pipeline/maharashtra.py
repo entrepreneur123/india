@@ -295,8 +295,9 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
                 if _lead(prev) > W * 0.5 or not any(re.search(r"\w\w", w[0]) for w in prev):
                     continue  # the series/number boxes beside the heading, or specks read as a line
                 prev_text = " ".join(w[0] for w in prev if w[1] < W * 0.5)  # the heading side, not its number boxes
+                left_text = " ".join(w[0] for w in prev if w[1] < W * 0.25)  # where a row of prizes would start
                 if re.search(r"(?i)\brank\b|series|[A-Z]{2}\s?[-.]\s?\d{2}", prev_text) or _TIER.search(prev_text) \
-                        or _AMOUNT.search(prev_text) or len(re.findall(r"\b\d{4}\b", prev_text)) >= 2:
+                        or _AMOUNT.search(prev_text) or len(re.findall(r"\b\d{4}\b", left_text)) >= 2:
                     break  # the series labels, the heading above ("Rs. ..."), or a row of prize numbers
                 if line_top - min(w[2] for w in prev) > dpi * 0.8:
                     break  # a heading is at most four lines tall
@@ -459,8 +460,9 @@ READINGS = ((400, True), (300, True), (500, True), (350, True), (450, True), (55
 
 
 def read(pdf: bytes, warn=print) -> dict:
-    """Read the sheet several ways; publish only what the readings agree on (see _agree)."""
-    runs, last = [], None
+    """Read the sheet several ways; publish only what the readings agree on and what a second,
+    different reader (the sheet's own digit shapes, see Glyphs) confirms (see _agree)."""
+    runs = []
     for dpi, clean in READINGS:
         try:
             runs.append(read_once(pdf, dpi, clean))
@@ -468,12 +470,144 @@ def read(pdf: bytes, warn=print) -> dict:
             warn(f"Maharashtra OCR {dpi} dpi{' clean' if clean else ''}: {e}")
         except Exception as e:  # OCR tool errors and image decoder limits
             warn(f"Maharashtra OCR {dpi} dpi failed: {type(e).__name__}: {e}")
-        if len(runs) >= 3:
-            try:
-                return _agree(runs)
-            except MaharashtraError as e:
-                last = e
-    raise last or MaharashtraError("fewer than three usable readings")
+    if len(runs) < 3:
+        raise MaharashtraError("fewer than three usable readings")
+    return _agree(runs, Glyphs.from_pdf(pdf))
+
+
+class Glyphs:
+    """A second reader that does not share Tesseract's mistakes: the sheet's own digit shapes.
+
+    Tesseract reads this font's 1 (it has a long flag) as 4 again and again (1542 -> 4542, 1021 ->
+    4021, 2142 -> 9142 on the 27-10-2026 sheets), so more readings do not outvote it. Every sheet
+    prints a few hundred numbers in one font; the ones all readings read the same way teach this
+    reader what 0-9 look like *on this sheet*, and it then reads a number by comparing its four
+    digit shapes with those. A number is published only where both readers agree."""
+
+    SIZE = (14, 20)
+
+    def __init__(self, img, cells):
+        self.img, self.cells = img, cells
+        self.H, self.W = img.shape
+        self.templates: dict[str, object] = {}
+
+    @classmethod
+    def from_pdf(cls, pdf: bytes, dpi: int = 400) -> "Glyphs | None":
+        try:
+            with tempfile.TemporaryDirectory() as work:
+                gray = _render(pdf, dpi, work)
+                cells, _ = _grid(gray, dpi)
+            return cls(gray, cells)  # the grey scan: removing ruling lines also breaks digit strokes
+        except Exception:  # noqa: BLE001 - without it, numbers just need the stricter Tesseract vote
+            return None
+
+    def _box(self, x: float, y: float, w: float):
+        cx, cy, half = x * self.W, y * self.H, w * self.W * 0.6
+        cell = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
+                     and c[3] < self.H * 0.1), None)
+        if cell is None:  # no box found around it: a window the size of a number
+            x0, x1, y0, y1 = int(cx - half), int(cx + half), int(cy - half * 0.45), int(cy + half * 0.45)
+        else:
+            y0, y1 = cell[1], cell[1] + cell[3]
+            x0, x1 = (cell[0], cell[0] + cell[2]) if cell[2] < w * self.W * 2.2 else (int(cx - half), int(cx + half))
+        return self.img[max(0, y0):max(0, y1), max(0, x0):max(0, x1)]
+
+    def _split(self, crop):
+        """The four digits of a box, left to right, each scaled to SIZE; None unless exactly four."""
+        import cv2
+        import numpy as np
+        if crop is None or crop.size == 0:
+            return None
+        _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+        ch, cw = crop.shape
+        # Digits: not touching the box edge (rules, neighbours cut by a window), and as tall as the tallest.
+        comps = [i for i in range(1, n) if st[i][0] > 0 and st[i][1] > 0 and st[i][0] + st[i][2] < cw
+                 and st[i][1] + st[i][3] < ch and st[i][4] > 15]
+        top = max((st[i][3] for i in comps), default=0)
+        comps = [i for i in comps if st[i][3] >= top * 0.7]
+        if len(comps) != 4:
+            return None
+        hs = [st[i][3] for i in comps]
+        if max(hs) > 1.3 * min(hs):  # not four digits of one number
+            return None
+        out = []
+        for i in sorted(comps, key=lambda i: st[i][0]):
+            x, y, w, h = st[i][:4]
+            g = (lab[y:y + h, x:x + w] == i).astype(np.float32)
+            side = max(h, int(w * 1.5))
+            pad = np.zeros((side, int(side / 1.5) + 1), np.float32)
+            pad[(side - h) // 2:(side - h) // 2 + h, (pad.shape[1] - w) // 2:(pad.shape[1] - w) // 2 + w] = g
+            v = cv2.resize(pad, self.SIZE, interpolation=cv2.INTER_AREA).ravel()
+            out.append(v / (np.linalg.norm(v) or 1))
+        return out
+
+    def train(self, labelled) -> None:
+        """labelled: [(value, x, y, w)] read the same way by every reading."""
+        import numpy as np
+        samples: dict[str, list] = {}
+        for value, x, y, w in labelled:
+            parts = self._split(self._box(x, y, w))
+            if parts:
+                for ch, v in zip(value, parts):
+                    samples.setdefault(ch, []).append(v)
+        self.templates = {ch: np.mean(vs, axis=0) for ch, vs in samples.items() if len(vs) >= 3}
+
+    def read_series(self, x: float, y: float, w: float) -> str | None:
+        """The two digits of the series box left of the number at (x, y) ("GL-08" -> "08")."""
+        import numpy as np
+        cx, cy = x * self.W, y * self.H
+        own = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
+                    and c[3] < self.H * 0.1), None)
+        if own is None or len(self.templates) < 10:
+            return None
+        left = [c for c in self.cells if c[1] <= cy <= c[1] + c[3] and c[0] + c[2] <= own[0] + 2 and c[3] < self.H * 0.1]
+        box = max(left, key=lambda c: c[0]) if left else (own[0] - own[2], own[1], own[2] - 6, own[3])
+        crop = self.img[box[1]:box[1] + box[3], max(0, box[0]):box[0] + box[2]]
+        import cv2
+        _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+        ch, cw = crop.shape
+        comps = [i for i in range(1, n) if st[i][0] > 0 and st[i][1] > 0 and st[i][0] + st[i][2] < cw
+                 and st[i][1] + st[i][3] < ch and st[i][4] > 15]
+        top = max((st[i][3] for i in comps), default=0)
+        comps = sorted((i for i in comps if st[i][3] >= top * 0.7), key=lambda i: st[i][0])
+        if len(comps) < 4:  # two letters and two digits at least
+            return None
+        out = ""
+        for i in comps[-2:]:
+            x0, y0, w0, h0 = st[i][:4]
+            g = (lab[y0:y0 + h0, x0:x0 + w0] == i).astype(np.float32)
+            side = max(h0, int(w0 * 1.5))
+            pad = np.zeros((side, int(side / 1.5) + 1), np.float32)
+            pad[(side - h0) // 2:(side - h0) // 2 + h0, (pad.shape[1] - w0) // 2:(pad.shape[1] - w0) // 2 + w0] = g
+            v = cv2.resize(pad, self.SIZE, interpolation=cv2.INTER_AREA).ravel()
+            ch_ = self._classify(v / (np.linalg.norm(v) or 1))
+            if ch_ is None:
+                return None
+            out += ch_
+        return out
+
+    def _classify(self, v) -> str | None:
+        import numpy as np
+        scores = sorted(((float(np.dot(v, t / (np.linalg.norm(t) or 1))), ch) for ch, t in self.templates.items()),
+                        reverse=True)
+        (best, ch), (second, _) = scores[0], scores[1]
+        return ch if best >= 0.8 and best - second >= 0.04 else None
+
+    def read(self, x: float, y: float, w: float) -> str | None:
+        """The number at (x, y), or None if a digit is unsure or this sheet taught no template for it."""
+        import numpy as np
+        parts = self._split(self._box(x, y, w))
+        if not parts or len(self.templates) < 10:
+            return None
+        out = ""
+        for v in parts:
+            ch = self._classify(v)
+            if ch is None:
+                return None
+            out += ch
+        return out
 
 
 def _vote(values: list, need: int = 2):
@@ -485,9 +619,10 @@ def _vote(values: list, need: int = 2):
     return c[0][0]
 
 
-def _agree(runs: list[dict]) -> dict:
+def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
     """Combine the readings. Every heading and every printed number position must be read the same
-    way by at least two readings, with no tie; then the sheet's own counts and order must hold."""
+    way by enough readings (or settled by the second reader `glyphs`); then the sheet's own counts
+    and order must hold."""
     head = {}
     # Readings that fitted the whole label row give the ten series; partial lists do not vote.
     full = [r for r in runs if len(r["head"].get("series", [])) == 10]
@@ -541,14 +676,18 @@ def _agree(runs: list[dict]) -> dict:
         v = next(iter(counts)) if len(counts) == 1 else None
         numbers.append((v, c["x"], c["y"], c["w"], c["votes"], counts))
 
+    if glyphs is not None:  # teach the second reader this sheet's digits: places every reading agrees on
+        glyphs.train([(x[0], x[1], x[2], x[3]) for x in numbers if x[0] and sum(x[5].values()) >= 4])
+    check = glyphs.read if glyphs is not None and glyphs.templates else None
+
     tiers = []
     for j, h in enumerate(headings):
         end = headings[j + 1]["top"] if j + 1 < len(headings) else 2
         mine = [x for x in numbers if h["top"] <= x[2] < end]
         if len(mine) >= 20:
-            mine = _settle_by_order(mine, h["rank"])
+            mine = _settle_by_order(mine, h["rank"], check)
         else:
-            mine = [_settle_small(x, h["rank"]) for x in mine]
+            mine = [_settle_small(x, h["rank"], check) for x in mine]
         if not h["prize"]:
             raise MaharashtraError(f"{h['rank']} prize: amount unreadable")
         if h["rank"] == "1":
@@ -574,25 +713,36 @@ def _agree(runs: list[dict]) -> dict:
     return {"head": head, "tiers": tiers}
 
 
-def _with_series(x: tuple, v: str) -> tuple:
+def _with_series(x: tuple, v: str, series_check=None) -> tuple:
     """(value, x, y, w, series) for the 1st prize/consolation: the series needs the same margin as a
-    number with no order to check (3 readings, 3x any other series)."""
+    number with no order to check (3 readings, 3x any other series), or 2 readings and 2x when the
+    second reader reads the same two series digits in the series box."""
     c = Counter(s for n, s in x[4].values() if n == v and s).most_common()
     ser = c[0][0] if c and c[0][1] >= 3 and (len(c) == 1 or c[0][1] >= 3 * c[1][1]) else None
+    if ser is None and c and c[0][1] >= 2 and (len(c) == 1 or c[0][1] >= 2 * c[1][1]) and series_check:
+        if series_check(x[1], x[2], x[3]) == c[0][0][-2:]:
+            ser = c[0][0]
     return (v, x[1], x[2], x[3], ser)
 
 
-def _settle_small(x: tuple, rank: str) -> tuple:
-    """A tier with no printed order to check (1st, consolation, 10-number tiers): a value needs at
-    least three readings and three times the readings of any other value (3:1 passes, 4:2 does not).
-    The same engine can repeat a misread, so a close vote is never trusted here."""
+def _settle_small(x: tuple, rank: str, check=None) -> tuple:
+    """A tier with no printed order to check (1st, consolation, 10-number tiers). With the second
+    reader: the value it reads, if at least two Tesseract readings gave it too. Without it (the
+    digits could not be cut apart): at least three readings and three times any other value
+    (3:1 passes, 4:2 does not) - the same engine can repeat a misread, so a close vote is never
+    trusted. Where the second reader reads something else, nothing is published."""
     c = x[5].most_common()
+    second = check(x[1], x[2], x[3]) if check else None
+    if second is not None:
+        if x[5].get(second, 0) >= 2:
+            return _with_series(x, second, getattr(check, "__self__", None) and check.__self__.read_series)
+        raise MaharashtraError(f"{rank} prize: the two readers disagree ({dict(x[5])}, shapes say {second})")
     if not c or c[0][1] < 3 or (len(c) > 1 and c[0][1] < 3 * c[1][1]):
         raise MaharashtraError(f"{rank} prize: readings disagree on a number ({dict(x[5])})")
     return _with_series(x, c[0][0])
 
 
-def _settle_by_order(mine: list, rank: str) -> list:
+def _settle_by_order(mine: list, rank: str, check=None) -> list:
     """A random tier is printed in ascending order, column after column. Places every reading read
     the same way are taken; a place the readings split on (4139 x3, 1139 x2) takes the one value,
     read at least twice, that fits between its unanimous neighbours. A majority is not enough here:
@@ -613,9 +763,15 @@ def _settle_by_order(mine: list, rank: str) -> list:
         if x[0] is not None:
             out.append(_with_series(x, x[0]))
             continue
+        second = check(x[1], x[2], x[3]) if check else None
+        if second is not None and x[5].get(second, 0) >= 2:  # both readers: taken (the order is checked after)
+            out.append(_with_series(x, second))
+            continue
         lo = next((v for v in reversed(sure[:k]) if v is not None), -1)
         hi = next((v for v in sure[k + 1:] if v is not None), 10_000)
         fit = [n for n, c in x[5].items() if c >= 2 and lo < int(n) < hi]
+        if len(fit) > 1 and second is not None:  # the second reader picks between values that both fit
+            fit = [n for n in fit if n == second]
         if len(fit) != 1:
             raise MaharashtraError(f"{rank} prize: readings disagree on a number ({dict(x[5])} between {lo} and {hi})")
         out.append(_with_series(x, fit[0]))
