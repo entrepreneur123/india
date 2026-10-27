@@ -1,31 +1,19 @@
-# Manual check: which result sources answer from GitHub's runners (outside India).
-name: probe-sources
-
-on:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
+# Temporary: checks which result sources answer from GitHub's runners. Deleted after one run.
+name: probe
+on: workflow_dispatch
 jobs:
   probe:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    runs-on: ubuntu-latest
     steps:
-      - name: Fetch each source once
-        run: |
-          for u in \
-            https://statelottery.kerala.gov.in/ \
-            https://statelottery.kerala.gov.in/index.php/lottery-result-view \
-            https://www.punjabstatelotteries.gov.in/ \
-            https://finance.wb.gov.in/new_fin/Pages/Dir_State_Lotteries.aspx \
-            https://statelotteries.goa.gov.in/ \
-            https://lottery.maharashtra.gov.in/mhlotteryresults.aspx \
-            https://www.sikkimlotteries.com/ \
-            https://www.nagalandlotteries.com/results.php \
-            https://www.lotterysambad.com/ \
-            https://keralalotteries.net/ \
-            https://www.keralalotteryresult.net/ ; do
-            printf '%s ' "$u"
-            curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} %{content_type} %{size_download}B %{time_total}s %{remote_ip}\n' "$u" || echo "FAILED ($?)"
+      - run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+          for u in https://lottery.maharashtra.gov.in/mhlotteryresults.aspx \
+                   "https://lottery.maharashtra.gov.in/UploadFiles/1025202617244962025_10_2026%20N_94%20Mah_%20Gajlaxmi%20Ravi%20Weekly%20Draw%20Result.pdf" \
+                   https://www.punjabstatelotteries.gov.in/ http://www.punjabstatelotteries.gov.in/ \
+                   "https://www.goodreturns.in/punjab-weekly-lottery-results.html?id=1393" \
+                   https://statelotteries.goa.gov.in/ ; do
+            for i in 1 2 3; do
+              r=$(curl -sS -A "$UA" -o /tmp/o -m 40 -w "%{http_code} %{size_download} %{content_type}" "$u" 2>&1) && break; sleep 5
+            done
+            echo "PROBE $r | $u"
           done
