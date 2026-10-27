@@ -138,7 +138,7 @@ export function PostCard({ post: initial, onComments, onLikes }: { post: FeedPos
           <img
             src={post.imageUrl}
             alt={ft('post.photo', { name: a.name })}
-            className="max-h-[min(72dvh,640px)] w-full object-cover"
+            className="max-h-[min(60dvh,587px)] w-full object-cover"
             loading="lazy"
             decoding="async"
             draggable={false}

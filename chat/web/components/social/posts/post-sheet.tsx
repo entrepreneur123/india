@@ -21,6 +21,7 @@ import { authorProfile, PostCard } from './post-card'
 import { VerifiedMark } from '@/components/trust/badge'
 import { postStore, useLivePost } from './post-store'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { ScrollRow } from '@/components/ui/scroll-row'
 
 export interface PostTarget {
   postId: string
@@ -120,7 +121,7 @@ function LikerList({ post, people: data }: { post: FeedPost; people: PersonRow[]
   return (
     <section aria-label={ft('post.likers')} className="flex flex-col gap-2 px-4 pb-3">
       <h3 className="px-1 text-sm font-semibold">{plural(post.likes, 'post.likes.one', 'post.likes.other')}</h3>
-      <ul className="flex gap-2 overflow-x-auto no-scrollbar">
+      <ScrollRow as="ul" className="flex gap-2 overflow-x-auto no-scrollbar">
         {data
           ? data.map((p) => (
               <li key={p.id} className="shrink-0">
@@ -131,7 +132,7 @@ function LikerList({ post, people: data }: { post: FeedPost; people: PersonRow[]
               </li>
             ))
           : Array.from({ length: Math.min(post.likes, 5) }, (_, i) => <Skeleton key={i} className="size-11 shrink-0 rounded-full" />)}
-      </ul>
+      </ScrollRow>
     </section>
   )
 }

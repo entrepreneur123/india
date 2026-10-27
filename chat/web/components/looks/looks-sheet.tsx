@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { Award, Check, CircleDashed, Crown, ExternalLink, Gift, Images, MessageCircle, Palette, Sparkles, Type, Wallpaper, type LucideIcon } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
@@ -23,6 +23,7 @@ import { useLooksT, type LooksKey } from './looks-text'
 import { GiftSheet } from './gift-sheet'
 import { Wall } from './wall'
 import { useAnonSwitch, useShop } from './use-shop'
+import { ScrollRow } from '@/components/ui/scroll-row'
 
 /**
  * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my photo effect or chat
@@ -72,6 +73,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
   /** The photo effect and bubble being looked at (missing: the one I wear). */
   const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
+  /** Taps that wear something, one after another (quick taps: the last one wins), and how many are still to run. */
+  const saves = useRef(Promise.resolve())
+  const queued = useRef(0)
 
   useEffect(() => {
     if (!shop || worn) return
@@ -152,6 +156,19 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   }
   /** Takes off what is in use of this kind ("None"). */
   const takeOff = () => (look ? wear(null) : extra ? saveExtra(null) : setWall(null))
+  /**
+   * A tap on an item I own (or "None") wears it at once, as in game wardrobes (Zepeto, League of Legends); one I don't
+   * own is only tried on, for its price.
+   */
+  const pick = (id: ItemId | null) => {
+    choose(id)
+    // Already worn, and nothing else on its way (a tap back to it after other taps still saves).
+    if ((!queued.current && id === (look ? worn[look] : single?.mine)) || (id !== null && !owned.has(id))) return
+    queued.current++
+    saves.current = saves.current
+      .then(() => (id === null ? takeOff() : look ? wear(id) : extra ? saveExtra(id) : setWall(id)))
+      .finally(() => queued.current--)
+  }
   const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
   /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
@@ -402,7 +419,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
           {caption ? <p className="text-center text-xs font-medium text-white/70">{caption}</p> : null}
         </section>
 
-        <div role="radiogroup" aria-label={lt('looks.tabs')} className="-mx-6 flex gap-2 overflow-x-auto px-6 no-scrollbar">
+        <ScrollRow role="radiogroup" aria-label={lt('looks.tabs')} outer="-mx-6" className="flex gap-2 overflow-x-auto px-6 no-scrollbar">
           {ITEM_KINDS.filter((k) => CATALOGUE[k].some((id) => sale.has(id))).map((k) => {
             const Icon = TAB_ICON[k]
             return (
@@ -423,7 +440,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
               </button>
             )
           })}
-        </div>
+        </ScrollRow>
 
         {kind === 'vip' || kind === 'cycle' ? null : (
           <ul role="radiogroup" aria-label={lt(`looks.tab.${kind}`)} className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
@@ -433,7 +450,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                 label={lt('looks.none')}
                 sub={(look ? worn[look] : single?.mine) === null ? usingLabel : ''}
                 worn={(look ? worn[look] : single?.mine) === null}
-                onClick={() => choose(null)}
+                onClick={() => pick(null)}
               >
                 {kind === 'wall' || kind === 'frame' || extra ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
               </ItemCard>
@@ -446,7 +463,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                   sub={status(id)}
                   worn={look ? worn[look] === id : single?.mine === id}
                   rarity={rarityOf(inrOf(id) ?? 0)}
-                  onClick={() => choose(id)}
+                  onClick={() => pick(id)}
                 >
                   {sample(id)}
                 </ItemCard>

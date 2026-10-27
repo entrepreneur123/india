@@ -19,6 +19,7 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
+import { ScrollRow } from '@/components/ui/scroll-row'
 
 /** The sheet's sections (the owner, 2026-10-26): invites, friends' messages, friend requests, likes and comments. */
 type Section = 'all' | 'invites' | 'messages' | 'friends' | 'reactions'
@@ -84,7 +85,7 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
 
   return (
     <Modal open={open} onClose={onClose} variant="sheet" title={st('inbox.title')} className="md:max-w-lg">
-      <div role="tablist" aria-label={st('inbox.title')} className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-2">
+      <ScrollRow role="tablist" aria-label={st('inbox.title')} className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-2">
         {(['all', 'invites', 'messages', 'friends', 'reactions'] as const).map((x) => (
           <button
             key={x}
@@ -100,7 +101,7 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
             {label(x, st(`inbox.${x}`))}
           </button>
         ))}
-      </div>
+      </ScrollRow>
       <div className="max-h-[70dvh] overflow-y-auto pb-4 scrollbar-thin">
         {!data ? (
           error ? (

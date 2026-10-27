@@ -21,6 +21,7 @@ import { LookingFor } from './looking'
 import { TagPosts } from '@/components/social/hashtags'
 import { hashtagsOf } from '@/lib/hashtags'
 import { PostCard } from '@/components/social/posts/post-card'
+import { ScrollRow } from '@/components/ui/scroll-row'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
 // of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
@@ -252,14 +253,16 @@ function CardPhoto({ userId, src }: { userId: string; src: string }) {
 function FeedPhotos({ photos, label }: { photos: string[]; label: string }) {
   const [large, setLarge] = useState<number | null>(null)
   return (
-    <div className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', photos.length > 1 && 'gap-1')}>
-      {photos.map((u, i) => (
-        <button key={u} type="button" onClick={() => setLarge(i)} className="w-full shrink-0 cursor-zoom-in snap-center">
-          <img src={u} alt="" className="aspect-square w-full bg-muted object-cover" loading="lazy" />
-        </button>
-      ))}
+    <>
+      <ScrollRow className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', photos.length > 1 && 'gap-1')}>
+        {photos.map((u, i) => (
+          <button key={u} type="button" onClick={() => setLarge(i)} className="w-full shrink-0 cursor-zoom-in snap-center">
+            <img src={u} alt="" className="aspect-square max-h-[60dvh] w-full bg-muted object-cover" loading="lazy" />
+          </button>
+        ))}
+      </ScrollRow>
       <PhotoViewer photos={photos} index={large} onIndex={setLarge} label={label} />
-    </div>
+    </>
   )
 }
 
@@ -269,7 +272,7 @@ function Feed({ items }: { items: FeedItem[] | undefined }) {
   if (!items) return <Skeleton className="h-80 w-full rounded-2xl" />
   if (!items.length) return <p className="py-10 text-center text-sm text-muted-foreground">{t('explore.feedEmpty')}</p>
   return (
-    <ul className="mx-auto flex w-full max-w-lg flex-col gap-4">
+    <ul className="mx-auto flex w-full max-w-[470px] flex-col gap-4">
       {items.map((it) => {
         // A post in full (081): liked here; its count or comment button opens its likers and comments together.
         const post = it.post

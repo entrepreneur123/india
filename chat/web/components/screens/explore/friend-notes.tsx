@@ -7,6 +7,7 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { cn } from '@/lib/utils'
+import { ScrollRow } from '@/components/ui/scroll-row'
 
 /**
  * 32: friends' status messages over the feed, newest change first, like Instagram's notes over the DMs: a bubble over
@@ -26,7 +27,7 @@ export function FriendNotes() {
   if (!activity) return null
   return (
     <section aria-label={t('notes.title')} className="-mx-4 sm:mx-0">
-      <ul className="flex gap-3 overflow-x-auto px-4 pt-1 pb-2 no-scrollbar sm:px-0">
+      <ScrollRow as="ul" className="flex gap-3 overflow-x-auto px-4 pt-1 pb-2 no-scrollbar sm:px-0">
         <Note
           key="me"
           name={t('notes.mine')}
@@ -53,7 +54,7 @@ export function FriendNotes() {
             face={<UserAvatar userId={n.id} name={n.profile.name} src={n.profile.photoUrl} size={64} />}
           />
         ))}
-      </ul>
+      </ScrollRow>
     </section>
   )
 }
