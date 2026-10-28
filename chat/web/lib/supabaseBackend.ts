@@ -360,6 +360,12 @@ export class SupabaseBackend implements Backend {
   private typing = new Map<string, TypingHub>()
   /** Newest message id from the last complete fetch of a chat or room; re-syncs ask only for newer ones. */
   private newest = new Map<string, number>()
+  /**
+   * Zulip's check (web/src/transmit.ts): a line the server stored should come back over Realtime within 5 s; if it
+   * doesn't, the socket is quietly dead (subscribed, yet nothing arrives), so that chat polls every 10 s again.
+   */
+  private echoed = new Set<number>()
+  private lostEcho = new Map<string, () => void>()
   /** A line's file once uploaded: sending the line again doesn't upload it again. */
   private uploaded = new WeakMap<File, string>()
   /** Matches the user never saw, waiting to be ended; opening one again (the server can hand it back) keeps it. */
@@ -607,6 +613,7 @@ export class SupabaseBackend implements Backend {
     const channel = this.client.channel(`match-${matchId}-${crypto.randomUUID()}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${matchId}` },
         (p) => void this.toMessage(p.new as MessageRow, me).then((message) => {
+          if (message.fromMe && this.echoed.size < 500) this.echoed.add(message.id)
           if (!message.fromMe) partnerAlive()
           emit({ type: 'message', message })
         }, () => undefined))
@@ -675,11 +682,16 @@ export class SupabaseBackend implements Backend {
 
     let ticks = 0
     const timer = setInterval(() => (!healthy || ++ticks % 6 === 0) && void resync(), 10_000)
+    this.lostEcho.set(matchId, () => {
+      healthy = false
+      void resync()
+    })
     const stopWatching = onPageVisibility((visible) => visible && void resync())
 
     return () => {
       closed = true
       clearInterval(timer)
+      this.lostEcho.delete(matchId)
       stopWatching()
       clearTimeout(typingOff)
       clearTimeout(joinTimer)
@@ -789,6 +801,8 @@ export class SupabaseBackend implements Backend {
       fail(error)
     }
     track('chat_message_sent')
+    const id = data!.id
+    setTimeout(() => this.echoed.delete(id) || this.lostEcho.get(matchId)?.(), 5_000)
     return this.toMessage(data!, this.uid)
   }
 
