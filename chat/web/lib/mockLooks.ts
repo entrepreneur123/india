@@ -18,8 +18,6 @@ const PRICES: [ItemId, number][] = [
   ['wall_aurora', 79], ['wall_neon', 79], ['wall_sakura', 79], ['wall_galaxy', 79], ['wall_ocean', 79], ['wall_lava', 79], ['wall_rain', 79], ['wall_diya', 79],
   ['vip_anon', 299],
   ['cycle_photos', 199],
-  ['effect_aurora', 249],
-  ['effect_prism', 249],
   ['bubble_peach', 99], ['bubble_ocean', 99], ['bubble_mint', 99], ['bubble_galaxy', 149], ['bubble_gold', 149], ['bubble_neon', 149],
 ]
 
@@ -74,7 +72,7 @@ export class LookSim {
   private anon = false
   /** The photo gradient's photos (urls). */
   private cycle: string[] = []
-  private worn: { effect: ItemId | null; bubble: ItemId | null } = { effect: null, bubble: null }
+  private worn: { bubble: ItemId | null } = { bubble: null }
   /** When I last chose an ID myself (null: the free one the app gave). */
   private handleSetAt: number | null = null
 
@@ -146,12 +144,11 @@ export class LookSim {
     this.anon = on
   }
 
-  /** Like set_worn: an owned name effect or bubble, or none. */
-  async setWorn(kind: 'effect' | 'bubble', id: string | null) {
+  /** Like set_worn: an owned bubble, or none. */
+  async setWorn(kind: 'bubble', id: string | null) {
     await wait(250)
     if (id !== null && (!isItem(id) || kindOf(id) !== kind || !this.owned.has(id))) throw new BackendError('not_owned')
     this.worn = { ...this.worn, [kind]: id }
-    if (kind === 'effect' && id) this.wear = { ...this.wear, color: null } // 086: a name effect takes the colour off
   }
 
   /** Like set_cycle: 2–5 of my photos (photoPath or a gallery photo's id), or none. */
@@ -175,7 +172,6 @@ export class LookSim {
       if (!this.owned.has(id)) throw new BackendError('not_owned')
     }
     if ((Object.entries(next) as [keyof LookWear, string | null][]).some(([kind, id]) => id && kindOf(id as ItemId) !== kind)) throw new BackendError('bad_request')
-    if (next.color && next.color !== this.wear.color) this.worn = { ...this.worn, effect: null } // 086: a new colour takes the effect off
     this.wear = wearOf(next)
     const look = this.myLook()
     if (!look) throw new BackendError('not_found')
@@ -189,9 +185,8 @@ export class LookSim {
     if (this.owned.has(id)) return
     this.owned.add(id)
     const kind = kindOf(id)
-    // 089: a first colour isn't put on under a name effect (it wouldn't show).
-    if (kind in this.wear && !this.wear[kind as keyof LookWear] && !(kind === 'color' && this.worn.effect)) this.wear = { ...this.wear, [kind]: id }
-    if ((kind === 'effect' || kind === 'bubble') && !this.worn[kind] && !(kind === 'effect' && this.wear.color)) this.worn = { ...this.worn, [kind]: id }
+    if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
+    if (kind === 'bubble' && !this.worn.bubble) this.worn = { ...this.worn, bubble: id }
   }
 
   /** Whether a demo person wears this look (they own it). */

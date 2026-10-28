@@ -1582,7 +1582,7 @@ export class MockBackend implements Backend {
     return (await this.lookSim()).setCycle(paths)
   }
 
-  async setWorn(kind: 'effect' | 'bubble', itemId: string | null) {
+  async setWorn(kind: 'bubble', itemId: string | null) {
     return (await this.lookSim()).setWorn(kind, itemId)
   }
 

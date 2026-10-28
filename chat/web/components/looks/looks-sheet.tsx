@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Award, Check, CircleDashed, Crown, ExternalLink, Gift, Images, MessageCircle, Palette, Sparkles, Type, Wallpaper, type LucideIcon } from 'lucide-react'
+import { Award, Check, CircleDashed, Crown, ExternalLink, Gift, Images, MessageCircle, Palette, Type, Wallpaper, type LucideIcon } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
 import { MAX_PHOTOS } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
@@ -28,10 +28,10 @@ import { useAnonSwitch, useShop } from './use-shop'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
 /**
- * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my name effect or chat
- * bubble, how strangers see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom.
+ * The Looks shop: a preview on top (my card with what I'm trying on, a chat on the wall, my chat bubble, how
+ * strangers see me in VIP mode), tabs of item cards, and the action for the chosen one at the bottom.
  * Looks: a tap tries one on ("None" first); what I own I wear (equip_look, one of each kind). Walls (046): set_wall,
- * "None" is the plain one. Name effects and bubbles (062): set_worn. VIP incognito is a switch (set_anon). Everything
+ * "None" is the plain one. Bubbles (062): set_worn. VIP incognito is a switch (set_anon). Everything
  * is bought in the Android app (Google Play); the demo sells at once.
  */
 export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; onClose: () => void; tab?: ItemKind }) {
@@ -46,7 +46,7 @@ export function LooksSheet({ open, onClose, tab = 'badge' }: { open: boolean; on
 const itemName = (lt: (k: LooksKey) => string, id: ItemId) => lt(`item.${id}` as LooksKey)
 
 const TAB_ICON: Record<ItemKind, LucideIcon> = {
-  badge: Award, color: Palette, font: Type, frame: CircleDashed, effect: Sparkles, bubble: MessageCircle, cycle: Images, wall: Wallpaper, vip: Crown,
+  badge: Award, color: Palette, font: Type, frame: CircleDashed, bubble: MessageCircle, cycle: Images, wall: Wallpaper, vip: Crown,
 }
 /** 42: each rarity's tile and its chip (legendary also gets the gold beam round the border). */
 const RARITY: Record<Rarity, { tile: string; chip: string }> = {
@@ -73,8 +73,8 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [busy, setBusy] = useState(false)
   const [gift, setGift] = useState<ItemId | null>(null)
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
-  /** The name effect and bubble being looked at (missing: the one I wear). */
-  const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
+  /** The bubble being looked at (undefined: the one I wear). */
+  const [bubbleTry, setBubbleTry] = useState<ItemId | null | undefined>(undefined)
 
   useEffect(() => {
     if (!shop || worn) return
@@ -114,11 +114,11 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const look = (LOOK_KINDS as ItemKind[]).includes(kind) ? (kind as LookKind) : null
   const myWall = shop.wall as ItemId | null
   const shownWall = wallTry === undefined ? myWall : wallTry
-  const extra = kind === 'effect' || kind === 'bubble' ? kind : null
-  const myExtra = extra ? ((shop.look?.[extra] ?? null) as ItemId | null) : null
-  const shownExtra = extra && extra in extraTry ? (extraTry[extra] ?? null) : myExtra
-  // Kinds where one item (or none) is in use, chosen here: walls, name effects and bubbles.
-  const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : extra ? { mine: myExtra, shown: shownExtra } : null
+  const extra = kind === 'bubble'
+  const myBubble = (shop.look?.bubble ?? null) as ItemId | null
+  const shownBubble = bubbleTry === undefined ? myBubble : bubbleTry
+  // Kinds where one item (or none) is in use, chosen here: walls and bubbles.
+  const single = kind === 'wall' ? { mine: myWall, shown: shownWall } : extra ? { mine: myBubble, shown: shownBubble } : null
   const tried: ItemId | null = look ? (trying[look] as ItemId | null) : single ? single.shown : kind === 'cycle' ? 'cycle_photos' : 'vip_anon'
   // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
   const myPhotos = [...(me.photoPath && me.photoUrl ? [{ id: me.photoPath, url: me.photoUrl }] : []), ...(me.photos ?? [])]
@@ -141,46 +141,37 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const list = CATALOGUE[kind].filter((id) => sale.has(id))
   /**
    * A tap tries an item on, in every tab, and what is tried stays while I look at the other tabs; one button below puts
-   * all of it on at once (the owner, 2026-10-28: "design the whole look, then wear it"). The ID colour and a name
-   * effect are one at a time (086), so trying one on takes the other off.
+   * all of it on at once (the owner, 2026-10-28: "design the whole look, then wear it").
    */
   const choose = (id: ItemId | null) => {
     if (look) setTrying((w) => wearWith(w, look, id))
     else if (kind === 'wall') setWallTry(id)
-    else if (extra) setExtraTry((x) => ({ ...x, [extra]: id }))
-    if (id && kind === 'color') setExtraTry((x) => ({ ...x, effect: null }))
-    if (id && kind === 'effect') setTrying((w) => wearWith(w, 'color', null))
+    else if (extra) setBubbleTry(id)
   }
   // What the button puts on: everything tried that I own (an item not bought stays as worn).
   const mine = (id: string | null | undefined) => id == null || owned.has(id)
   const wantLook = Object.fromEntries(LOOK_KINDS.map((k) => [k, mine(trying[k]) ? trying[k] : worn[k]])) as LookWear
-  const wantExtra = (k: 'effect' | 'bubble') => {
-    const id = k in extraTry ? (extraTry[k] ?? null) : ((shop.look?.[k] ?? null) as ItemId | null)
-    return mine(id) ? id : ((shop.look?.[k] ?? null) as ItemId | null)
-  }
+  const wantBubble = mine(shownBubble) ? shownBubble : myBubble
   const wantWall = wallTry !== undefined && mine(wallTry) ? wallTry : myWall
   const changes = [
     ...LOOK_KINDS.filter((k) => wantLook[k] !== worn[k]),
-    ...(['effect', 'bubble'] as const).filter((k) => wantExtra(k) !== (shop.look?.[k] ?? null)),
+    ...(wantBubble !== myBubble ? ['bubble'] : []),
     ...(wantWall !== myWall ? ['wall'] : []),
   ]
-  // The name effect on the preview: the one tried on, else the one worn.
-  const fxShown = 'effect' in extraTry ? extraTry.effect : shop.look?.effect
   const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
   const wearAll = async () => {
     setBusy(true)
     try {
-      // The look first: a new colour takes the effect off (086), then the effect, so the end state is what was shown.
       if (LOOK_KINDS.some((k) => wantLook[k] !== worn[k])) await backend.equipLook(wantLook)
-      for (const k of ['effect', 'bubble'] as const) if (wantExtra(k) !== (shop.look?.[k] ?? null)) await backend.setWorn(k, wantExtra(k))
+      if (wantBubble !== myBubble) await backend.setWorn('bubble', wantBubble)
       if (wantWall !== myWall) await backend.setWall(wantWall)
       const [, fresh] = await Promise.all([mutate(lookKey(me.id)), reload()])
       if (fresh?.look) {
         setWorn(wearOf(fresh.look))
         setTrying(wearOf(fresh.look))
       }
-      setExtraTry({})
+      setBubbleTry(undefined)
       setWallTry(undefined)
       toast.show(lt('looks.saved'), 'success')
     } catch (err) {
@@ -274,8 +265,6 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       <Bubble mine skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
         {me.name}
       </Bubble>
-    ) : kind === 'effect' ? (
-      <NameText wear={{ ...NO_WEAR, effect: id }} className="max-w-full truncate text-sm font-semibold">{me.name}</NameText>
     ) : kind === 'badge' && id ? (
       <LookBadge id={id as BadgeId} className="size-10" />
     ) : look ? (
@@ -283,17 +272,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     ) : null
 
   let preview: React.ReactNode
-  if (kind === 'effect') {
-    preview = (
-      <div className="flex w-full flex-col items-center gap-3 px-4 pt-5 pb-1 text-white">
-        <p className="text-2xl font-bold">
-          <NameText wear={{ ...trying, effect: shownExtra }}>{me.name}</NameText>
-        </p>
-        {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
-        <p className="max-w-xs text-center text-sm leading-relaxed text-white/70">{lt('effect.what')}</p>
-      </div>
-    )
-  } else if (kind === 'wall') {
+  if (kind === 'wall') {
     preview = <WallPreview wall={shownWall} />
   } else if (kind === 'bubble') {
     // A short chat on the plain wall: their plain bubble, then mine in the bubble being looked at.
@@ -302,7 +281,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <Bubble mine={false} className="self-start px-3 py-2 text-[15px]">
           👋
         </Bubble>
-        <Bubble mine skin={shownExtra} className="max-w-[85%] self-end px-3 py-2 text-[15px] leading-snug">
+        <Bubble mine skin={shownBubble} className="max-w-[85%] self-end px-3 py-2 text-[15px] leading-snug">
           {lt('bubble.what')}
         </Bubble>
       </div>
@@ -383,7 +362,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
           <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
           <p className="mt-1 text-lg font-bold">
-            <NameText wear={{ ...trying, effect: fxShown }}>{me.name}</NameText>
+            <NameText wear={trying}>{me.name}</NameText>
           </p>
           {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
         </div>

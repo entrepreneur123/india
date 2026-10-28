@@ -17,12 +17,16 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
-// Profile highlights (057): titled albums as a fan of cards turning round a wheel (the owner's sketch, 2026-10-28): the
-// front card at the bottom, the others fanned up and round behind it, all at full size. It turns only when the person
-// drags, taps a card behind or an arrow, never by itself; the viewer too goes to the next photo only when asked.
+// Profile highlights (057): titled albums as cards standing round a ring (the owner's sketch, 2026-10-28): seen from a
+// little above, the front card is at the bottom at full size and the others stand upright round the circle behind it,
+// smaller and dimmer the further back. It turns only when the person drags, taps a card behind or an arrow, never by
+// itself; the viewer too goes to the next photo only when asked.
 
 const key = (userId: string) => ['highlights', userId]
-/** A card's place from the front one: -3..3 on screen, the rest hidden behind. Wraps round with 3 or more cards. */
+/** The ring's half width and half depth on screen (px): the back card stands 2 × RING_Y above the front one. */
+const RING_X = 128
+const RING_Y = 64
+/** A card's place from the front one, the shorter way round the ring. */
 const offsetOf = (i: number, active: number, n: number) => {
   if (n < 3) return i - active
   const m = (((i - active) % n) + n) % n
@@ -58,7 +62,7 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
     <section className={cn('flex flex-col gap-2', className)} aria-label={st('hl.title')}>
       <h2 className="px-4 text-sm font-semibold">{st('hl.title')}</h2>
       <div
-        className="relative h-[19.5rem] touch-pan-y overflow-hidden select-none"
+        className="relative isolate h-[15.5rem] touch-pan-y overflow-hidden select-none"
         onPointerDown={(e) => (drag.current = e.clientX)}
         onPointerUp={onUp}
         onPointerCancel={() => (drag.current = null)}
@@ -74,26 +78,20 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
       >
         {list.map((c, i) => {
           const d = offsetOf(i, at, n)
-          const far = Math.abs(d) > 3
-          // On a wheel of radius R round a point above the front card: each step turns 26° and climbs up and back.
-          const a = (d * 26 * Math.PI) / 180
-          const R = 140
+          // Evenly round the ring; cos 1 = the front, -1 = the back.
+          const a = (2 * Math.PI * d) / n
+          const near = (1 + Math.cos(a)) / 2
           return (
             <button
               key={c.id}
               type="button"
               tabIndex={d === 0 ? 0 : -1}
-              aria-hidden={far}
               onClick={() => (d === 0 ? setViewing(c) : setActive(i))}
-              className={cn(
-                'absolute bottom-2 left-1/2 -ml-16 flex aspect-[3/4] w-32 flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 ring-2 ring-card transition-[transform,opacity,filter] duration-300 ease-out motion-reduce:transition-none',
-                far && 'pointer-events-none opacity-0',
-              )}
+              className="absolute bottom-2 left-1/2 -ml-16 flex aspect-[3/4] w-32 origin-bottom flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 ring-2 ring-card transition-[transform,filter] duration-500 ease-out motion-reduce:transition-none"
               style={{
-                transform: `translate(${R * Math.sin(a)}px, ${-R * (1 - Math.cos(a))}px) rotate(${d * 14}deg)`,
-                zIndex: 10 - Math.abs(d),
-                opacity: far ? 0 : 1,
-                filter: d ? `brightness(${1 - Math.abs(d) * 0.12})` : undefined,
+                transform: `translate(${RING_X * Math.sin(a)}px, ${-RING_Y * (1 - Math.cos(a))}px) scale(${0.45 + 0.55 * near * near})`,
+                zIndex: Math.round(near * 100),
+                filter: d ? `brightness(${0.7 + 0.3 * near})` : undefined,
               }}
             >
               <img src={c.photos[0]?.url} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" draggable={false} />
@@ -105,10 +103,10 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
         })}
         {n > 1 ? (
           <>
-            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 left-2 z-20 -translate-y-1/2" onClick={() => turn(-1)} aria-label={t('common.back')}>
+            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 left-2 z-[110] -translate-y-1/2" onClick={() => turn(-1)} aria-label={t('common.back')}>
               <ChevronLeft className="size-5" aria-hidden />
             </Button>
-            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 right-2 z-20 -translate-y-1/2" onClick={() => turn(1)} aria-label={st('tour.next')}>
+            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 right-2 z-[110] -translate-y-1/2" onClick={() => turn(1)} aria-label={st('tour.next')}>
               <ChevronRight className="size-5" aria-hidden />
             </Button>
           </>

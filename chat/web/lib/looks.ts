@@ -14,9 +14,6 @@ export const WALLS = ['wall_aurora', 'wall_neon', 'wall_sakura', 'wall_galaxy', 
 export const VIP_ITEMS = ['vip_anon'] as const
 /** 062: the profile photo gradient. */
 export const CYCLE_ITEMS = ['cycle_photos'] as const
-/** 062: colours flowing through the name and @ID (components/looks/look-name.tsx). */
-export const EFFECTS = ['effect_aurora', 'effect_prism'] as const
-export type EffectId = (typeof EFFECTS)[number]
 /** 062: my chat bubbles, as everyone sees them. */
 export const BUBBLES = ['bubble_peach', 'bubble_ocean', 'bubble_mint', 'bubble_galaxy', 'bubble_gold', 'bubble_neon'] as const
 export type BubbleId = (typeof BUBBLES)[number]
@@ -26,13 +23,13 @@ export type ColorId = (typeof COLORS)[number]
 export type FontId = (typeof FONTS)[number]
 export type FrameId = (typeof FRAMES)[number]
 export type WallId = (typeof WALLS)[number]
-export type ItemId = BadgeId | ColorId | FontId | FrameId | WallId | (typeof VIP_ITEMS)[number] | (typeof CYCLE_ITEMS)[number] | EffectId | BubbleId
+export type ItemId = BadgeId | ColorId | FontId | FrameId | WallId | (typeof VIP_ITEMS)[number] | (typeof CYCLE_ITEMS)[number] | BubbleId
 
 export const LOOK_KINDS: LookKind[] = ['badge', 'color', 'font', 'frame']
 /** The shop's tabs, in order. */
-export const ITEM_KINDS: ItemKind[] = [...LOOK_KINDS, 'effect', 'bubble', 'cycle', 'wall', 'vip']
+export const ITEM_KINDS: ItemKind[] = [...LOOK_KINDS, 'bubble', 'cycle', 'wall', 'vip']
 export const CATALOGUE: Record<ItemKind, readonly ItemId[]> = {
-  badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES, wall: WALLS, vip: VIP_ITEMS, cycle: CYCLE_ITEMS, effect: EFFECTS, bubble: BUBBLES,
+  badge: BADGES, color: COLORS, font: FONTS, frame: FRAMES, wall: WALLS, vip: VIP_ITEMS, cycle: CYCLE_ITEMS, bubble: BUBBLES,
 }
 const ORDER: string[] = Object.values(CATALOGUE).flat()
 const KNOWN = new Set(ORDER)
@@ -130,7 +127,6 @@ export function parseLook(raw: unknown): Look | null {
   return {
     id: r.id, handle: r.handle, badge: item(r.badge, 'badge'), color: item(r.color, 'color'), font: item(r.font, 'font'), frame: item(r.frame, 'frame'),
     ...(cycle.length >= 2 ? { cycle } : {}),
-    ...(isItem(r.effect) && kindOf(r.effect) === 'effect' ? { effect: r.effect } : {}),
     ...(isItem(r.bubble) && kindOf(r.bubble) === 'bubble' ? { bubble: r.bubble } : {}),
     ...(isItem(r.wall) && kindOf(r.wall) === 'wall' ? { wall: r.wall } : {}),
   }

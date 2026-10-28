@@ -143,8 +143,8 @@ export interface MyTrust extends Trust {
 // ---- IDs and looks (040_handles_looks.sql; the catalogue and parsing in lib/looks.ts, the ID rules in lib/handle.ts) ----
 
 export type LookKind = 'badge' | 'color' | 'font' | 'frame'
-/** Everything the shop sells: the looks, and (046) chat walls and VIP incognito, (062) photo effects and bubbles. */
-export type ItemKind = LookKind | 'wall' | 'vip' | 'cycle' | 'effect' | 'bubble'
+/** Everything the shop sells: the looks, and (046) chat walls and VIP incognito, (062) the photo gradient and bubbles (name effects removed 2026-10-28). */
+export type ItemKind = LookKind | 'wall' | 'vip' | 'cycle' | 'bubble'
 
 /** Someone's ID and what they wear (null: none of that kind). Item ids are the catalogue's (lib/looks.ts). */
 export interface Look {
@@ -156,8 +156,6 @@ export interface Look {
   frame: string | null
   /** 062: 2–4 photos that fade one into the next wherever this person's photo shows (a look bought once). */
   cycle?: string[]
-  /** 062: light moving over the photo wherever it shows ('effect_aurora', 'effect_prism'), or none. */
-  effect?: string | null
   /** 062: the look of their chat bubbles ('bubble_…'), or none. */
   bubble?: string | null
   /** 067: their chat wall, which their partner in a random chat may use for that chat (36). */
@@ -190,8 +188,8 @@ export interface Shop {
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
 export type KycDemoOutcome = Exclude<KycResult, 'none'>
 
-/** Profile photos besides the main one (093; the owner, 2026-10-28: up to 50). */
-export const MAX_PHOTOS = 50
+/** Profile photos besides the main one (094; the owner, 2026-10-28: up to 10). */
+export const MAX_PHOTOS = 10
 
 export interface ProfilePhoto {
   id: string
@@ -852,8 +850,8 @@ export interface Backend {
   setHideOnline(on: boolean): Promise<Profile>
   /** 062: the photos (file ids: photoPath or photos[].id) of my photo gradient, 2–4; null turns it off. */
   setCycle(paths: string[] | null): Promise<void>
-  /** 062: the photo effect or chat bubble I wear (an owned item of that kind), or none. */
-  setWorn(kind: 'effect' | 'bubble', itemId: string | null): Promise<void>
+  /** 062: the chat bubble I wear (an owned one), or none. */
+  setWorn(kind: 'bubble', itemId: string | null): Promise<void>
   /** 042: people I blocked, newest first; unblocking does not bring back the friendship or old chats. */
   blocks(): Promise<PersonRow[]>
   unblock(userId: string): Promise<void>

@@ -105,7 +105,7 @@
 - 아이디 글꼴: `font_script` `font_retro` `font_bold` `font_pixel` `font_round` `font_future` 각 69
 - 프로필 테두리: `frame_frost` 199, `frame_fire` 199, `frame_jewel` 249, `frame_sand` 199, `frame_neon` 149, `frame_sakura` 149
 - 채팅 배경(067, 움직이는 배경): `wall_aurora` `wall_neon` `wall_sakura` `wall_galaxy` `wall_ocean` `wall_lava` `wall_rain` `wall_diya` 각 79
-- VIP 모드 `vip_anon` 299, 사진 그라데이션 `cycle_photos` 199, 사진 효과 `effect_aurora` `effect_prism` 각 249
+- VIP 모드 `vip_anon` 299, 사진 그라데이션 `cycle_photos` 199, ~~사진 효과 `effect_aurora` `effect_prism`~~ (2026-10-28 삭제: Play 콘솔에 등록하지 마세요)
 - 말풍선: `bubble_peach` `bubble_ocean` `bubble_mint` 각 99, `bubble_galaxy` `bubble_gold` `bubble_neon` 각 149
 - 테스트로 직접 주기(결제 없이): SQL Editor에서 운영자 계정으로 `select public.admin_grant_cosmetic('<사용자 uuid>', 'frame_fire');` (조치 기록에 남음). 웹은 결제가 없어 "앱에서 구매" 링크만 보이고, 산 꾸미기는 웹에서도 착용됩니다.
 

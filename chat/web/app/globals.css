@@ -267,7 +267,7 @@
 
 /* Looks, redone (the owner, 2026-10-26): a turning conic ring (the angle is animated through a registered property, so
    the same rule turns round photos and the rectangular profile card), a light glint travelling the other way, and the
-   frames' own decorations. The name effects (aurora, prism) move through the letters of the name and @ID. */
+   frames' own decorations. */
 @property --look-a {
   syntax: '<angle>';
   inherits: false;
@@ -312,17 +312,6 @@
 @keyframes look-sway {
   from { transform: rotate(-14deg) translateY(-1px); }
   to { transform: rotate(14deg) translateY(1px); }
-}
-.look-aurora {
-  background-size: 300% 100%;
-  animation: look-aurora 5s ease-in-out infinite alternate;
-}
-@keyframes look-aurora {
-  to { background-position: 100% 0; }
-}
-.look-prism {
-  background-size: 200% 100%;
-  animation: look-slide 2.5s linear infinite;
 }
 .look-sheen {
   animation: look-sheen 3.4s ease-in-out infinite;

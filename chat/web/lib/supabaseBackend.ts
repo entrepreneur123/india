@@ -1561,7 +1561,7 @@ export class SupabaseBackend implements Backend {
     return { ...l, cycle: cycle.length >= 2 ? cycle : undefined }
   }
 
-  async setWorn(kind: 'effect' | 'bubble', itemId: string | null) {
+  async setWorn(kind: 'bubble', itemId: string | null) {
     await this.rpc('set_worn', { p_kind: kind, p_item: itemId })
   }
 
