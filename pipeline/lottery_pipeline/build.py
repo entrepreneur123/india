@@ -26,6 +26,7 @@ import datetime as dt
 import json
 import os
 import sys
+import time
 
 from . import http, kerala, official, sambad
 from .model import SLOTS, SPECIALS, WEEKLY, Draw, ValidationError
@@ -137,6 +138,10 @@ def _is_complete(entry: dict | None) -> bool:
     return entry is not None and entry.get("status") == "OK" and not entry.get("ocr")
 
 
+# Seconds between requests for dates older than 3 days (a long backfill); 0 in tests.
+PACE = float(os.environ.get("PIPELINE_PACE", "0"))
+
+
 def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: bool,
         now_ist: dt.datetime | None = None, ocr: bool = True, use_kerala: bool = False) -> int:
     warnings: list[str] = []
@@ -194,6 +199,8 @@ def run(out: str, today: dt.date, backfill_days: int, use_official: bool, deep: 
                     warn(f"{key}: Sambad file rejected: {e}")
                 except Exception as e:  # network, pdftotext, a corrupt file…: skip this slot, keep publishing
                     warn(f"{key}: Sambad unavailable: {type(e).__name__}: {e}")
+                if (today - date).days > 3:
+                    time.sleep(PACE)   # filling in old dates: be gentle with the source
             gazette, gazette_url, gazette_texts = None, None, []
             already_checked = existing is not None and _official_pdf(existing) is not None
             # The official calendar lists the day's files before they are uploaded: never before the draw.

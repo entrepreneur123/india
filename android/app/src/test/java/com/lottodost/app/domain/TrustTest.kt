@@ -25,9 +25,9 @@ class TrustTest {
     }
 
     @Test fun shippedConfigSurvivesUnchanged() {
-        // pipeline/app_config.json as published on 19-10-2026
+        // pipeline/app_config.json as published on 25-10-2026 (own domain added)
         val cfg = RemoteConfig(
-            mirrors = listOf("https://entrepreneur123.github.io/india/v2/", "https://lottodost.pages.dev/v2/",
+            mirrors = listOf("https://entrepreneur123.github.io/india/v2/", "https://lottodost.com/v2/",
                 "https://cdn.jsdelivr.net/gh/entrepreneur123/india@data/v2/", "https://raw.githubusercontent.com/entrepreneur123/india/data/v2/"),
             liveDrawUrl = "https://www.nagalandlotteries.com/livedraw/index.php",
             officialResultsUrl = "https://www.nagalandlotteries.com/results.php",

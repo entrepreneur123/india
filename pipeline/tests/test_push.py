@@ -9,7 +9,8 @@ from lottery_pipeline import push
 
 
 def _feed(*ids):
-    return {"draws": [{"id": i, "date": i[:10], "tiers": [{"rank": "1"}]} for i in ids]
+    return {"draws": [{"id": i, "date": i[:10], "slot": i[11:], "name": "DEAR TEST", "tiers": [{"rank": "1", "numbers": ["74D 70698"]}]}
+                      for i in ids]
             + [{"id": "2026-10-18_NLLAXMI", "date": "2026-10-18", "status": "PDF_ONLY"}]}
 
 
@@ -23,11 +24,15 @@ def test_ping_is_ignored_type():
     assert push.ping()["message"]["data"] == {"type": "ping"}
 
 
-def test_message_is_data_only_high_priority():
-    m = push.message(["a", "b"])["message"]
+def test_message_goes_to_the_draws_topic_with_its_first_prize():
+    d = {"id": "2026-10-18_NL1PM", "slot": "NL1PM", "name": "DEAR WISH SUNDAY WEEKLY LOTTERY",
+         "tiers": [{"rank": "1", "numbers": ["74D 70698"]}]}
+    m = push.message(d)["message"]
     assert "notification" not in m  # the app writes the text in the reader's language
-    assert m["topic"] == "results" and m["data"] == {"type": "result", "ids": "a,b"}
-    assert m["android"]["priority"] == "high"
+    assert m["topic"] == "r_NL1PM" and m["android"]["priority"] == "high"
+    assert m["data"] == {"type": "result", "id": "2026-10-18_NL1PM", "key": "NL1PM", "name": "DEAR WISH SUNDAY WEEKLY LOTTERY", "first": "74D 70698"}
+    assert push.message(dict(d, lottery="kerala"))["message"]["topic"] == "r_KL"
+    assert push.message(dict(d, special=True))["message"]["topic"] == "r_SPECIAL"
 
 
 def test_jwt_signature_verifies(tmp_path):
@@ -74,7 +79,7 @@ def test_sends_new_result_once_and_keeps_failed_ones(tmp_path, monkeypatch):
     monkeypatch.setattr(push, "send", lambda acct, ids: (_ for _ in ()).throw(OSError("down")))
     push.main(["--out", str(tmp_path)])
     assert json.loads((tmp_path / "push-state.json").read_text())["ids"] == [today + "_NL1PM"]  # retried next run
-    monkeypatch.setattr(push, "send", lambda acct, ids: sent.append(ids) or "name")
+    monkeypatch.setattr(push, "send", lambda acct, d: sent.append(d["id"]) or "name")
     push.main(["--out", str(tmp_path)])
     push.main(["--out", str(tmp_path)])
-    assert sent == [[today + "_SK6PM"]]
+    assert sent == [today + "_SK6PM"]

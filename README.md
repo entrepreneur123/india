@@ -45,7 +45,7 @@ nagalandlotteries.com 공식 스캔 PDF (~20:30 IST)          ─┤ pipeline/ (
 | [docs/RESEARCH.md](docs/RESEARCH.md) | 추첨 사실관계(원본 확인), 상금 구조, Play 정책, 경쟁 앱 |
 | [docs/PLAY_LAUNCH.md](docs/PLAY_LAUNCH.md) | 스토어 제목·설명(글자 수 검증), Data safety, 콘솔 체크리스트, 수익화 주의 |
 | [docs/OPERATIONS.md](docs/OPERATIONS.md) | 처음 설정, 범퍼 당일 절차, 호스팅 이전 |
-| [docs/SETUP_FREE.md](docs/SETUP_FREE.md) | 무료로 먼저 켜는 것들 (Search Console, 통계, Telegram, Cloudflare) |
+| [docs/SETUP_FREE.md](docs/SETUP_FREE.md) | 무료로 먼저 켜는 것들 (Search Console, 통계, Cloudflare, 도메인 구입·연결) |
 | [docs/ECONOMICS.md](docs/ECONOMICS.md) | 수입·비용 모델 |
 | [docs/privacy.html](docs/privacy.html) | 개인정보처리방침 (Pages로 배포됨) |
 | [web/](web/) | 결과 웹페이지 (Pages 루트 `index.html`). 문구는 앱 번역을 그대로 사용 |

@@ -36,8 +36,8 @@
     <string name="lottery_dear">ਡੀਅਰ</string>
     <string name="lottery_kerala">ਕੇਰਲ</string>
     <string name="tier_unconfirmed">ਦੋ ਸਰੋਤਾਂ ਤੋਂ ਅਜੇ ਪੱਕਾ ਨਹੀਂ ਹੋਇਆ — ਸਰਕਾਰੀ ਨਤੀਜਾ ਵੇਖੋ।</string>
-    <string name="kerala_source_note">ਕੇਰਲ ਦੇ ਨਤੀਜੇ ਸਰਕਾਰੀ ਨਤੀਜੇ ਦੀਆਂ ਜਨਤਕ ਕਾਪੀਆਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ ਅਤੇ ਦੋ ਕਾਪੀਆਂ ਮਿਲਣ \'ਤੇ ਹੀ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ। ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜਾ ਜ਼ਰੂਰ ਵੇਖੋ।</string>
-    <string name="open_kerala_official">ਕੇਰਲ ਰਾਜ ਲਾਟਰੀ (ਸਰਕਾਰੀ)</string>
+    <string name="kerala_source_note">ਕੇਰਲ ਦੇ ਨਤੀਜੇ ਸਰਕਾਰੀ ਨਤੀਜੇ ਦੀਆਂ ਜਨਤਕ ਕਾਪੀਆਂ ਤੋਂ ਲਏ ਜਾਂਦੇ ਹਨ ਅਤੇ ਦੋ ਕਾਪੀਆਂ ਮਿਲਣ ’ਤੇ ਹੀ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ। ਇਨਾਮ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਸਰਕਾਰੀ ਨਤੀਜਾ ਜ਼ਰੂਰ ਵੇਖੋ।</string>
+    <string name="open_kerala_official">ਕੇਰਲ ਸਟੇਟ ਲਾਟਰੀ (ਸਰਕਾਰੀ)</string>
     <string name="tag_morning">ਮਾਰਨਿੰਗ</string>
     <string name="tag_day">ਡੇ</string>
     <string name="tag_night">ਨਾਈਟ</string>
@@ -50,7 +50,7 @@
     <string name="open_sheet">ਨਤੀਜਾ ਸ਼ੀਟ ਖੋਲ੍ਹੋ (Lottery Sambad)</string>
     <string name="sheet_only">ਨਤੀਜਾ ਸ਼ੀਟ ਵਿੱਚ ਮਿਲਦਾ ਹੈ।</string>
     <string name="special_tag">ਸਪੈਸ਼ਲ ਡਰਾਅ</string>
-    <string name="draw_in">ਡਰਾਅ ਵਿੱਚ %1$d ਘੰਟੇ %2$d ਮਿੰਟ ਬਾਕੀ</string>
+    <string name="draw_in">ਡਰਾਅ ਹੋਣ ਵਿੱਚ %1$d ਘੰਟੇ %2$d ਮਿੰਟ ਬਾਕੀ</string>
     <string name="live">ਲਾਈਵ</string>
     <string name="watch_live">ਲਾਈਵ ਡਰਾਅ ਦੇਖੋ</string>
     <string name="result_coming">ਨਤੀਜਾ ਬੱਸ ਆਉਣ ਹੀ ਵਾਲਾ ਹੈ…</string>
@@ -113,6 +113,8 @@
     <string name="scan_need_camera">ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੀਦੀ ਹੈ। ਚਾਹੋ ਤਾਂ ਗੈਲਰੀ ਤੋਂ ਫ਼ੋਟੋ ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ।</string>
     <string name="cancel">ਰੱਦ ਕਰੋ</string>
     <string name="pick_photo">ਫ਼ੋਟੋ ਚੁਣੋ</string>
+    <string name="torch_on">ਟਾਰਚ ਜਗਾਓ</string>
+    <string name="torch_off">ਟਾਰਚ ਬੰਦ ਕਰੋ</string>
 
     <string name="tickets_title">ਮੇਰੀਆਂ ਟਿਕਟਾਂ</string>
     <string name="tickets_hint">ਸੇਵ ਕੀਤੀਆਂ ਟਿਕਟਾਂ ਨਤੀਜਾ ਆਉਂਦੇ ਹੀ ਆਪਣੇ-ਆਪ ਚੈੱਕ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</string>
@@ -148,7 +150,7 @@
     <string name="need_full_short">ਪੂਰਾ ਨੰਬਰ ਚੈੱਕ ਕਰੋ: ਇਸ ਤੋਂ ਵੱਡਾ ਇਨਾਮ ਵੀ ਹੋ ਸਕਦਾ ਹੈ</string>
     <string name="history_title">ਨੰਬਰ ਹਿਸਟਰੀ</string>
     <string name="history_open">ਨੰਬਰ ਹਿਸਟਰੀ: ਮੇਰਾ ਨੰਬਰ ਕਦੋਂ-ਕਦੋਂ ਨਿਕਲਿਆ?</string>
-    <string name="history_hint">ਪਿਛਲੇ %1$d ਦਿਨਾਂ ਵਿੱਚ ਜਿਸ ਵੀ ਨਤੀਜੇ ਵਿੱਚ ਇਹ ਨੰਬਰ ਨਿਕਲਿਆ, ਸਭ ਇੱਥੇ ਦਿਖੇਗਾ। ਆਖ਼ਰੀ 4 ਜਾਂ 5 ਅੰਕ ਲਿਖੋ, ਜਾਂ ਪੂਰਾ ਟਿਕਟ ਨੰਬਰ।</string>
+    <string name="history_hint">ਪਿਛਲੇ %1$d ਦਿਨਾਂ ਦੇ ਉਹ ਸਾਰੇ ਨਤੀਜੇ ਇੱਥੇ ਦਿਖਣਗੇ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਇਹ ਨੰਬਰ ਨਿਕਲਿਆ। ਆਖ਼ਰੀ 4 ਜਾਂ 5 ਅੰਕ ਲਿਖੋ, ਜਾਂ ਪੂਰਾ ਟਿਕਟ ਨੰਬਰ।</string>
     <string name="history_search">ਲੱਭੋ</string>
     <string name="history_none">%1$s ਪਿਛਲੇ %2$d ਦਿਨਾਂ ਵਿੱਚ ਨਹੀਂ ਨਿਕਲਿਆ।</string>
     <string name="history_unavailable">ਪੁਰਾਣੇ ਨਤੀਜੇ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੇ। ਇੰਟਰਨੈੱਟ ਚੈੱਕ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>

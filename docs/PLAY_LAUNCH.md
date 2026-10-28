@@ -63,7 +63,7 @@ Sources of information:
 
 ## 5. 콘솔 설정 체크리스트
 
-- [ ] 개인정보처리방침 URL: `https://entrepreneur123.github.io/india/privacy.html` (Pages 활성화 후). 연락처 이메일을 채워 넣을 것
+- [ ] 개인정보처리방침 URL: `https://lottodost.com/privacy.html`. 연락처 이메일을 채워 넣을 것
 - [ ] 타깃 연령: **18세 이상만** 선택. 이렇게 하면 Restrict Minor Access가 적용됨
 - [ ] 콘텐츠 등급(IARC) 질문지: 실제 돈 도박 "아니요", 시뮬레이션 도박 "아니요". 복권 결과 정보 제공은 사실대로 서술
 - [ ] 광고 포함: **예** (AdMob). AdMob 콘솔 → 차단 관리 → 민감한 카테고리에서 도박·베팅은 기본 차단 상태 유지

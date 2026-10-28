@@ -1,5 +1,7 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Gold ticket with a red star: generic "lucky ticket", no government emblem. -->
+    <!-- Gold ticket with a tick: "check your ticket". Same drawing as the website icon (web/static/favicon.svg).
+         No star (red + gold star reads as a flag) and no government emblem. -->
     <path android:fillColor="#F2B705" android:pathData="M30,38h48a4,4 0 0 1 4,4v6a6,6 0 0 0 0,12v6a4,4 0 0 1 -4,4H30a4,4 0 0 1 -4,-4v-6a6,6 0 0 0 0,-12v-6a4,4 0 0 1 4,-4z"/>
-    <path android:fillColor="#B3261E" android:pathData="M54,43l3.1,6.9 7.5,0.8 -5.6,5 1.6,7.4L54,59.3l-6.6,3.8 1.6,-7.4 -5.6,-5 7.5,-0.8z"/>
+    <path android:strokeColor="#B3261E" android:strokeWidth="1.8" android:pathData="M70,41.5V44.5M70,47.5V50.5M70,53.5V56.5M70,59.5V62.5M70,65.5V67"/>
+    <path android:strokeColor="#B3261E" android:strokeWidth="5.5" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M37,54.5l7,7 14,-16"/>
 </vector>

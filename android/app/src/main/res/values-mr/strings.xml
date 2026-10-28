@@ -13,7 +13,7 @@
     <string name="safety_title">फसवणुकीपासून सावध</string>
     <string name="safety_body">कोणतेही ॲप, एजंट किंवा WhatsApp ग्रुप लॉटरीचा नंबर आधीच सांगू शकत नाही किंवा फिक्सही करू शकत नाही. LottoDost तिकिटे विकत नाही आणि कधीही पैसे, बँक किंवा UPI तपशील मागत नाही. “पक्का नंबर” किंवा “फिक्स नंबर” देणारी प्रत्येक ऑफर म्हणजे फसवणूक.</string>
 
-    <string name="results_subtitle">डिअर 1 PM · 6 PM · 8 PM आणि केरळ 3 PM चे निकाल</string>
+    <string name="results_subtitle">डियर 1 PM · 6 PM · 8 PM आणि केरळ 3 PM चे निकाल</string>
     <string name="offline_banner">इंटरनेट नाही. आधी सेव्ह केलेले निकाल दाखवत आहोत.</string>
     <string name="checking">नवीन निकाल पाहत आहोत…</string>
     <string name="updated_just_now">आत्ताच अपडेट झाले</string>
@@ -33,7 +33,7 @@
     <string name="state_sikkim">सिक्कीम</string>
     <string name="state_punjab">पंजाब</string>
     <string name="state_kerala">केरळ</string>
-    <string name="lottery_dear">डिअर</string>
+    <string name="lottery_dear">डियर</string>
     <string name="lottery_kerala">केरळ</string>
     <string name="tier_unconfirmed">दोन स्रोतांतून अजून खात्री झालेली नाही — सरकारी निकाल पाहा.</string>
     <string name="kerala_source_note">केरळचे निकाल सरकारी निकालाच्या सार्वजनिक प्रतींमधून घेतले जातात आणि दोन प्रती जुळल्यावरच दाखवले जातात. बक्षीस घेण्यापूर्वी सरकारी निकाल नक्की पाहा.</string>
@@ -113,6 +113,8 @@
     <string name="scan_need_camera">स्कॅन करण्यासाठी कॅमेऱ्याची परवानगी हवी. हवे तर गॅलरीतून फोटोही निवडू शकता.</string>
     <string name="cancel">रद्द करा</string>
     <string name="pick_photo">फोटो निवडा</string>
+    <string name="torch_on">टॉर्च सुरू करा</string>
+    <string name="torch_off">टॉर्च बंद करा</string>
 
     <string name="tickets_title">माझी तिकिटे</string>
     <string name="tickets_hint">सेव्ह केलेली तिकिटे निकाल येताच आपोआप तपासली जातात.</string>
@@ -147,7 +149,7 @@
     <string name="save_pdf">PDF सेव्ह करा (इंटरनेटशिवाय पाहण्यासाठी)</string>
     <string name="need_full_short">पूर्ण नंबर तपासा: यापेक्षा मोठे बक्षीसही असू शकते</string>
     <string name="history_title">नंबरचा इतिहास</string>
-    <string name="history_open">नंबरचा इतिहास: माझा नंबर कधी कधी लागला?</string>
+    <string name="history_open">नंबरचा इतिहास: माझा नंबर कधी लागला?</string>
     <string name="history_hint">मागील %1$d दिवसांत ज्या निकालात हा नंबर लागला, ते सगळे इथे दिसतील. शेवटचे 4 किंवा 5 अंक, किंवा पूर्ण तिकीट नंबर लिहा.</string>
     <string name="history_search">शोधा</string>
     <string name="history_none">मागील %2$d दिवसांत %1$s लागला नाही.</string>
@@ -174,9 +176,9 @@
         <item quantity="other">मागील %2$d दिवसांत %1$d वेळा लागला</item>
     </plurals>
     <string name="open_in_browser">ब्राउझर</string>
-    <string name="sheet_loading">निकाल पत्रक उघडत आहे…</string>
-    <string name="sheet_not_ready">हे पत्रक अजून प्रसिद्ध झालेले नाही. काही मिनिटांनी पुन्हा प्रयत्न करा.</string>
-    <string name="sheet_failed">पत्रक उघडता आले नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="sheet_loading">निकाल शीट उघडत आहे…</string>
+    <string name="sheet_not_ready">ही शीट अजून आलेली नाही. काही मिनिटांनी पुन्हा प्रयत्न करा.</string>
+    <string name="sheet_failed">शीट उघडता आली नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.</string>
     <string name="sheet_source">%1$s ने जसे प्रसिद्ध केले, तसेच. झूम करण्यासाठी दोन बोटांनी पसरवा.</string>
     <string name="qr_link_title">हा कोड वेब लिंक आहे, तिकीट नंबर नाही</string>
     <string name="qr_link_body">या वेबसाइटवर विश्वास असेल तरच उघडा. LottoDost कधीही पैसे, बँक किंवा UPI तपशील मागत नाही, आणि बक्षीस मिळवून देण्याच्या नावाखाली कोणी तुमच्याकडून पैसे घेऊ शकत नाही.</string>

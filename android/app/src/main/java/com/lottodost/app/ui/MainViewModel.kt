@@ -7,6 +7,7 @@ import com.lottodost.app.data.ResultRepository
 import com.lottodost.app.data.SavedTicket
 import com.lottodost.app.data.TicketStore
 import com.lottodost.app.domain.DrawSchedule
+import com.lottodost.app.push.Push
 import com.lottodost.app.widget.ResultsWidget
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -55,6 +56,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun loadHistory() { viewModelScope.launch { repo.loadHistory() } }
 
-    fun save(t: SavedTicket) = store.add(t)
+    fun save(t: SavedTicket) {
+        store.add(t)
+        Push.sync(getApplication())   // wake this phone for that draw's result even if its alert is off
+    }
     fun remove(t: SavedTicket) = store.remove(t)
 }

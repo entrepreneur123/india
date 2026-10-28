@@ -7,7 +7,10 @@
 # 28 minutes after the draw). So each draw's run is scheduled ~1 h 45 min early, waits in the job
 # until 5 minutes after the draw, then polls the source every 60 s until the sheet is out.
 # A backup run is scheduled 15 minutes before the draw. Times are UTC; IST = UTC+5:30.
-#   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35
+# On busy days GitHub starts them hours late (27-10-2026: the 07:17 run began at 13:15). So every run
+# ends by starting relay.yml, which starts the next draw's run itself 15 minutes before it (a
+# workflow_dispatch begins within seconds), and a late cron run does what is due when it starts.
+#   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35; at 07:00 (12:30 IST) the site turns to today
 #   09:17                 Kerala 3 PM IST draw = 09:30 UTC; copies appear ~10:40 UTC, polling from 10:35
 #   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
 #   12:47 (backup 14:17)  8 PM IST draw = 14:30 UTC, polling from 14:35
@@ -43,9 +46,14 @@ on:
         description: "Deploy the site to Cloudflare even if no result changed"
         type: boolean
         default: false
+      target:
+        description: "Set by relay.yml: the draw to wait for (NL1PM, KL, SK6PM, NL8PM); empty = by hand"
+        type: string
+        default: ""
 
 permissions:
   contents: write
+  actions: write    # start relay.yml at the end of each run
 
 concurrency:
   group: results
@@ -58,20 +66,22 @@ jobs:
     env:
       # Secrets cannot be tested in `if:` or shell directly; expose whether one is set.
       HAS_CF: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CF_PAGES_PROJECT != '' }}
+      # Seconds between source requests for dates older than 3 days (manual backfills only).
+      PIPELINE_PACE: "1"
       # Website: public address, ad and analytics ids (repository Variables; all optional).
-      SITE_URL: ${{ vars.SITE_URL || 'https://entrepreneur123.github.io/india' }}
-      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT }}
+      SITE_URL: ${{ vars.SITE_URL || 'https://lottodost.com' }}
+      ADSENSE_CLIENT: ${{ vars.ADSENSE_CLIENT || 'ca-pub-6960795569881478' }}   # AdSense publisher id (public)
       ADSENSE_SLOT: ${{ vars.ADSENSE_SLOT }}
       PLAY_URL: ${{ vars.PLAY_URL }}
       CF_BEACON_TOKEN: ${{ vars.CF_BEACON_TOKEN }}
       GOOGLE_SITE_VERIFICATION: ${{ vars.GOOGLE_SITE_VERIFICATION }}
       BING_SITE_VERIFICATION: ${{ vars.BING_SITE_VERIFICATION }}
-      TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID }}
       HAS_FCM: ${{ secrets.FCM_SERVICE_ACCOUNT != '' }}
       # Typed inputs reach the shell through env, never pasted into the script.
       IN_DEPLOY: ${{ inputs.deploy }}
       IN_OCR: ${{ inputs.ocr }}
       IN_BACKFILL: ${{ inputs.backfill_days }}
+      IN_TARGET: ${{ inputs.target }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
     steps:
       - uses: actions/checkout@v4
@@ -90,19 +100,15 @@ jobs:
         id: mode
         run: |
           # require: slots this run waits for; from: UTC time polling starts; watch: minutes to keep polling.
-          require=""; from=""; watch=0; deep=false; ocr=false; backfill=1
-          case "${{ github.event.schedule }}" in
-            "47 5 * * *"|"17 7 * * *")    require=NL1PM; from=07:35; watch=90 ;;
-            "17 9 * * *")                 require=KL; from=10:35; watch=90 ;;
-            "47 10 * * *"|"17 12 * * *")  require=SK6PM; from=12:35; watch=90 ;;
-            "47 12 * * *"|"17 14 * * *")  require=NL8PM; from=14:35; watch=90 ;;
-            "10 15 * * *"|"40 15 * * *"|"10 16 * * *") deep=true; ocr=true ;;
-            "0 3 * * *") deep=true; ocr=true; backfill=2 ;;
-          esac
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            deep=true; ocr="$IN_OCR"; backfill=$(( IN_BACKFILL + 0 ))
+          # On-time scheduled runs do what they were scheduled for; late ones (GitHub can start them hours
+          # late) do what is due now; relay-started runs wait for their draw. See pipeline/lottery_pipeline/schedule.py.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "$IN_TARGET" ]; then
+            { echo "require="; echo "from="; echo "watch=0"; echo "deep=true"; echo "ocr=$IN_OCR"
+              echo "backfill=$(( IN_BACKFILL + 0 ))"; echo "mh=true"; echo "flip="; } >> "$GITHUB_OUTPUT"
+          else
+            (cd pipeline && python3 -m lottery_pipeline.schedule mode --event "${{ github.event_name }}" \
+               --cron "${{ github.event.schedule }}" --target "$IN_TARGET" --today-feed ../public/v2/today.json) | tee -a "$GITHUB_OUTPUT"
           fi
-          { echo "require=$require"; echo "from=$from"; echo "watch=$watch"; echo "deep=$deep"; echo "ocr=$ocr"; echo "backfill=$backfill"; } >> "$GITHUB_OUTPUT"
 
       - name: Install tools
         run: |
@@ -120,19 +126,23 @@ jobs:
         # Secrets live only in this step, and each tool below sees only the one it needs:
         # the scrapers (pdftotext, OCR on third-party PDFs) and the site build see none.
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          nosecret() { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "$@"; }
+          nosecret() { env -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "$@"; }
           publish() {
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
             cp ../docs/privacy.html ../public/privacy.html
-            nosecret python ../web/sitegen.py --data ../public --out ../public  # search-friendly result pages (en/bn/hi)
+            # Built for GitHub Pages (/india/ links); turned into redirect stubs below once lottodost.com answers.
+            nosecret python ../web/sitegen.py --data ../public --out ../public --link-prefix /india  # result pages (en/bn/hi)
             nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public --key-only
             cp ../docs/_headers ../public/_headers       # Cloudflare Pages cache rules (ignored by GitHub)
+            # One copy of each page for Google: the github.io pages become instant redirects to lottodost.com.
+            if [ "$SITE_URL" = "https://lottodost.com" ]; then
+              nosecret python ../web/redirect_stubs.py --dir ../public --to "$SITE_URL" --prefix /india
+            fi
             git -C ../public add -A
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
@@ -145,30 +155,37 @@ jobs:
             if [ "$HAS_FCM" = "true" ]; then
               # Runs every pass (cheap when nothing is new), so a failed send is retried a minute later.
               # Wake phones only once the new feed is live on the mirror they read first.
-              env -u TELEGRAM_BOT_TOKEN -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID \
+              env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID \
                 python -m lottery_pipeline.push --out ../public --wait-url https://entrepreneur123.github.io/india/v2/today.json
             fi
-            env -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID \
-              python -m lottery_pipeline.telegram --out ../public --site-url "$SITE_URL"   # no-op without a bot token
-            for f in push-state.json telegram-state.json; do if [ -f "../public/$f" ]; then git -C ../public add "$f"; fi; done
+            rm -f ../public/telegram-state.json            # the Telegram channel was dropped (25-10-2026)
+            if [ -f ../public/push-state.json ]; then git -C ../public add push-state.json; fi
+            git -C ../public add -u
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
                 commit -q -m "announce state" && git -C ../public push -q origin data
             fi
-            [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || return 0
+            [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || [ "${flip_now:-0}" = 1 ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
             nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
               # Cloudflare serves the site at the host root, GitHub under /india/: rebuild the pages with root links.
               rm -rf ../cf && cp -a ../public ../cf && rm -rf ../cf/.git
+              cp ../docs/privacy.html ../cf/privacy.html   # the copied one is a redirect stub
               nosecret python ../web/sitegen.py --data ../cf --out ../cf --link-prefix ""
+              nosecret python ../web/redirect_stubs.py --dir ../cf --purge   # no stub may point lottodost.com at itself
               printf '/india /  301\n/india/* /:splat 301\n' > ../cf/_redirects   # old /india/ links from before this fix
-              deploy() { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
+              deploy() { env -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages deploy ../cf --project-name "$CF_PAGES_PROJECT" --branch main --commit-dirty=true; }
               # First deploy: create the project (free plan) if it does not exist yet.
-              deploy || { env -u TELEGRAM_BOT_TOKEN -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
+              deploy || { env -u FCM_SERVICE_ACCOUNT npx --yes wrangler@4.147.0 pages project create "$CF_PAGES_PROJECT" --production-branch main && deploy; } \
                 || echo "::warning::Cloudflare deploy failed"
             fi
           }
+          # Until the custom domain answers, keep pointing search engines at the address that works.
+          if [ "$SITE_URL" = "https://lottodost.com" ] && ! curl -fsS -o /dev/null --max-time 15 https://lottodost.com/v2/config.json; then
+            echo "::warning::lottodost.com does not answer yet; site keeps github.io as its address"
+            SITE_URL=https://entrepreneur123.github.io/india
+          fi
           args="--out ../public --backfill-days ${{ steps.mode.outputs.backfill }}"
           if [ "${{ steps.mode.outputs.deep }}" = "true" ]; then args="$args --deep"; fi
           if [ "${{ steps.mode.outputs.ocr }}" != "true" ]; then args="$args --no-ocr"; fi
@@ -178,8 +195,24 @@ jobs:
           if [ -n "$from" ]; then
             start=$(date -u -d "today $from" +%s)
             now=$(date +%s)
+            flip="${{ steps.mode.outputs.flip }}"
+            if [ -n "$flip" ] && [ "$now" -lt "$start" ]; then
+              # 12:30 IST: the home page turns from yesterday's results to today's date and the draws to come
+              # (only the stubbed GitHub copy is unchanged then, so the Cloudflare deploy is forced).
+              t=$(date -u -d "today $flip" +%s)
+              if [ "$now" -lt "$t" ]; then echo "waiting until $flip UTC (12:30 IST) to show today's date"; sleep $(( t - now + 5 )); fi
+              flip_now=1 publish; flip_now=0
+              now=$(date +%s)
+            fi
             # Started early (the normal case): wait here instead of asking the source every minute.
             if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
+          fi
+          if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then
+            # Maharashtra State Lottery (draws ~4-5 PM IST): each draw with its official result sheet (PDF).
+            # Numbers are not published yet: the OCR of the scanned sheets (lottery_pipeline.maharashtra --ocr)
+            # did not yet pass its accuracy check. The 8 PM run does this in its idle wait.
+            nosecret timeout 10m python -m lottery_pipeline.maharashtra --out ../public || echo "::warning::Maharashtra update failed"
+            publish
           fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do
@@ -193,3 +226,9 @@ jobs:
             if [ -n "$from" ] && [ "$require" != "KL" ] && [ "$(date +%s)" -lt $(( start + 1500 )) ]; then sleep 20; else sleep 60; fi
             args="${args/ --deep/}"   # catalog refresh only on the first pass (be gentle to the sources)
           done
+
+      - name: Hand over to the relay (it starts the run for the next draw on time)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run relay.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}" || echo "::warning::relay not started"

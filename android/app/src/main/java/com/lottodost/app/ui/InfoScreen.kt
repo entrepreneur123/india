@@ -36,14 +36,15 @@ import com.lottodost.app.data.Draw
 import com.lottodost.app.data.Prefs
 import com.lottodost.app.data.ResultRepository
 import com.lottodost.app.domain.DrawSchedule
+import com.lottodost.app.push.Push
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
-const val PRIVACY_URL = "https://entrepreneur123.github.io/india/privacy.html"
+const val PRIVACY_URL = "https://lottodost.com/privacy.html"
 /** Public results page: the link people can open without the app (SMS, forwards). */
-const val WEB_URL = "https://entrepreneur123.github.io/india/"
+const val WEB_URL = "https://lottodost.com/"
 // Official page with the current form (the PDF file name changes when the form is revised).
 const val CLAIM_FORM_URL = "https://www.nagalandlotteries.com/prize-claim-form.php"
 
@@ -154,7 +155,7 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, onOpenHistory:
             var notify by remember { mutableStateOf(Prefs.notificationsEnabled(ctx)) }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.notify_results), Modifier.weight(1f))
-                Switch(checked = notify, onCheckedChange = { notify = it; Prefs.setNotificationsEnabled(ctx, it) })
+                Switch(checked = notify, onCheckedChange = { notify = it; Prefs.setNotificationsEnabled(ctx, it); Push.sync(ctx) })
             }
             if (notify) {
                 Text(stringResource(R.string.alerts_for), style = MaterialTheme.typography.bodySmall)
@@ -163,7 +164,7 @@ fun InfoScreen(state: ResultRepository.State, now: ZonedDateTime, onOpenHistory:
                         ("SPECIAL" to stringResource(R.string.alerts_specials))
                     keys.forEach { (key, label) ->
                         var on by remember(key) { mutableStateOf(Prefs.drawAlert(ctx, key)) }
-                        FilterChip(selected = on, onClick = { on = !on; Prefs.setDrawAlert(ctx, key, on) }, label = { Text(label) })
+                        FilterChip(selected = on, onClick = { on = !on; Prefs.setDrawAlert(ctx, key, on); Push.sync(ctx) }, label = { Text(label) })
                     }
                 }
             }

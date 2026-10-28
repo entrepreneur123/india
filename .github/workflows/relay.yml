@@ -1,0 +1,38 @@
+# Starts the results run 15 minutes before each draw (the 1 PM one at 06:45 UTC, before the site turns to today at 12:30 IST). GitHub starts cron runs late, sometimes hours
+# late (27-10-2026: the 07:17 UTC run began at 13:15); a run started with workflow_dispatch begins
+# within seconds. Every results run starts this relay when it ends; a newer relay replaces an older
+# one, so one chain runs. results.yml keeps its cron schedules as a backup.
+name: relay
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "13 4 * * *"   # backup: restarts the chain if it ever breaks
+
+permissions:
+  actions: write
+
+concurrency:
+  group: relay
+  cancel-in-progress: true
+
+jobs:
+  relay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: pipeline/lottery_pipeline
+      - name: Wait for the next draw, then start its run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          eval "$(cd pipeline && python3 -m lottery_pipeline.schedule relay)"   # sets sleep, next, target
+          echo "sleeping ${sleep}s, then starting: $next $target"
+          sleep "$sleep"
+          if [ "$next" = "results" ]; then
+            gh workflow run results.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}" -f target="$target"
+          else
+            gh workflow run relay.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}"
+          fi

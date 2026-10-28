@@ -37,7 +37,7 @@
     <string name="lottery_kerala">केरल</string>
     <string name="tier_unconfirmed">दो स्रोतों से अभी पक्का नहीं हुआ — सरकारी रिज़ल्ट से मिलाएँ।</string>
     <string name="kerala_source_note">केरल के रिज़ल्ट सरकारी रिज़ल्ट की सार्वजनिक कॉपियों से लिए जाते हैं और दो कॉपियाँ मिलने पर ही दिखाए जाते हैं। इनाम लेने से पहले सरकारी रिज़ल्ट ज़रूर देखें।</string>
-    <string name="open_kerala_official">केरल राज्य लॉटरी (सरकारी)</string>
+    <string name="open_kerala_official">केरल स्टेट लॉटरी (सरकारी)</string>
     <string name="tag_morning">मॉर्निंग</string>
     <string name="tag_day">डे</string>
     <string name="tag_night">नाइट</string>
@@ -50,7 +50,7 @@
     <string name="open_sheet">रिज़ल्ट शीट खोलें (Lottery Sambad)</string>
     <string name="sheet_only">रिज़ल्ट शीट में उपलब्ध है।</string>
     <string name="special_tag">स्पेशल ड्रॉ</string>
-    <string name="draw_in">ड्रॉ में %1$d घंटे %2$d मिनट बाकी</string>
+    <string name="draw_in">ड्रॉ में %1$d घंटे %2$d मिनट बाक़ी</string>
     <string name="live">लाइव</string>
     <string name="watch_live">लाइव ड्रॉ देखें</string>
     <string name="result_coming">रिज़ल्ट बस आने वाला है…</string>
@@ -83,9 +83,9 @@
     <string name="ocr_caution">ये नंबर सरकारी स्कैन PDF से अपने-आप पढ़े गए हैं। इनाम लेने से पहले PDF में एक बार ख़ुद देख लें।</string>
     <string name="find_in_result">इस रिज़ल्ट में अपना नंबर ढूँढें</string>
     <string name="claim_title">इनाम कैसे लें</string>
-    <string name="claim_info">नागालैंड लॉटरी में ₹10,000 से ज़्यादा के इनाम का क्लेम ड्रॉ के 30 दिन के अंदर करना होता है: असली टिकट और 3 अटेस्टेड पासपोर्ट साइज़ फ़ोटो कोहिमा के नागालैंड स्टेट लॉटरी निदेशालय या उसके नोडल ऑफ़िस में जमा करें (जैसा सरकारी रिज़ल्ट पर छपा है)। छोटे इनाम के लिए अपने टिकट विक्रेता से पूछें। बड़े इनाम पर टैक्स कटता है।</string>
+    <string name="claim_info">नागालैंड लॉटरी में ₹10,000 से ज़्यादा के इनाम का क्लेम ड्रॉ के 30 दिन के अंदर करना होता है: असली टिकट और 3 अटेस्टेड पासपोर्ट साइज़ फ़ोटो कोहिमा के नागालैंड स्टेट लॉटरी निदेशालय या उसके नोडल ऑफ़िस में जमा करें (जैसा सरकारी रिज़ल्ट पर छपा है)। छोटे इनाम के लिए जिससे टिकट ख़रीदा था, उसी से पूछें। बड़े इनाम पर टैक्स कटता है।</string>
     <string name="claim_small">₹10,000 तक का इनाम: जिस दुकान या स्टॉकिस्ट से टिकट लिया था, उन्हीं से पूछें। पहले सरकारी रिज़ल्ट से मिला लें।</string>
-    <string name="claim_other_state">सिक्किम और पंजाब के ड्रॉ में इनाम लेने का तरीका टिकट और सरकारी रिज़ल्ट पर छपा होता है। पहले अपने विक्रेता से पूछें।</string>
+    <string name="claim_other_state">सिक्किम और पंजाब के ड्रॉ में इनाम लेने का तरीक़ा टिकट और सरकारी रिज़ल्ट पर छपा होता है। पहले टिकट बेचने वाले से पूछें।</string>
 
     <string name="check_title">अपना टिकट चेक करें</string>
     <string name="check_hint">पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक — या टिकट या उसका QR कोड स्कैन करें।</string>
@@ -113,6 +113,8 @@
     <string name="scan_need_camera">स्कैन करने के लिए कैमरे की परमिशन चाहिए। चाहें तो गैलरी से फ़ोटो भी चुन सकते हैं।</string>
     <string name="cancel">रद्द करें</string>
     <string name="pick_photo">फ़ोटो चुनें</string>
+    <string name="torch_on">टॉर्च जलाएँ</string>
+    <string name="torch_off">टॉर्च बंद करें</string>
 
     <string name="tickets_title">मेरे टिकट</string>
     <string name="tickets_hint">सेव किए टिकट रिज़ल्ट आते ही अपने-आप चेक हो जाते हैं।</string>
@@ -138,7 +140,7 @@
     <string name="language">भाषा</string>
     <string name="notify_results">रिज़ल्ट आने पर नोटिफ़िकेशन भेजें</string>
     <string name="sources_title">रिज़ल्ट कहाँ से आते हैं</string>
-    <string name="sources_body">हर ड्रॉ के कुछ मिनट बाद Lottery Sambad की रिज़ल्ट शीट से तेज़ रिज़ल्ट आता है। सरकारी गज़ट आने पर हम दोनों को मिलाते हैं, और पहले व दूसरे इनाम के नंबर मिलने पर रिज़ल्ट पर “वेरिफ़ाइड” लगा देते हैं।</string>
+    <string name="sources_body">हर ड्रॉ के कुछ मिनट बाद ही Lottery Sambad की रिज़ल्ट शीट से रिज़ल्ट मिल जाता है। सरकारी गज़ट आने पर हम दोनों को मिलाते हैं, और पहले व दूसरे इनाम के नंबर मिलने पर रिज़ल्ट पर “वेरिफ़ाइड” लगा देते हैं।</string>
     <string name="privacy_title">प्राइवेसी</string>
     <string name="privacy_body">कोई अकाउंट नहीं चाहिए। सेव किए टिकट सिर्फ़ आपके फ़ोन में रहते हैं। टिकट की फ़ोटो फ़ोन पर ही पढ़ी जाती है, यह ऐप उसे कहीं अपलोड नहीं करता। फ़ोन पर टेक्स्ट पढ़ने वाले टूल के लिए Google Play सर्विसेज़ कुछ बेसिक डायग्नोस्टिक जानकारी ले सकती हैं।</string>
     <string name="privacy_policy">प्राइवेसी पॉलिसी</string>
@@ -177,7 +179,7 @@
     <string name="sheet_loading">रिज़ल्ट शीट खुल रही है…</string>
     <string name="sheet_not_ready">यह शीट अभी आई नहीं है। कुछ मिनट बाद फिर कोशिश करें।</string>
     <string name="sheet_failed">शीट नहीं खुल पाई। इंटरनेट चेक करके दोबारा कोशिश करें।</string>
-    <string name="sheet_source">%1$s ने जैसी छापी, वैसी ही। ज़ूम करने के लिए दो उँगलियों से फैलाएँ।</string>
+    <string name="sheet_source">%1$s ने जैसी छापी है, वैसी ही दिखाई गई है। ज़ूम करने के लिए दो उँगलियों से फैलाएँ।</string>
     <string name="qr_link_title">यह कोड वेब लिंक है, टिकट नंबर नहीं</string>
     <string name="qr_link_body">इसे तभी खोलें जब आपको इस वेबसाइट पर भरोसा हो। LottoDost कभी पैसे, बैंक या UPI डिटेल नहीं माँगता, और इनाम दिलाने के नाम पर कोई आपसे पैसे नहीं ले सकता।</string>
     <string name="qr_open">लिंक खोलें</string>

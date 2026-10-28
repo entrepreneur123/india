@@ -116,6 +116,8 @@
     <string name="scan_need_camera">Camera permission is needed to scan. You can also pick a photo.</string>
     <string name="cancel">Cancel</string>
     <string name="pick_photo">Pick photo</string>
+    <string name="torch_on">Flash on</string>
+    <string name="torch_off">Flash off</string>
 
     <string name="tickets_title">My tickets</string>
     <string name="tickets_hint">Saved tickets are checked automatically when the result is published.</string>

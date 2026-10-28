@@ -1,7 +1,8 @@
 """Sends a Firebase Cloud Messaging (HTTP v1) data message when new results are published.
 
-The message carries no text: the app fetches the feed itself and writes the notification in the
-reader's language, and checks saved tickets at the same time. Run after the feed is live on the
+One message per draw, to that draw's topic (r_NL1PM, r_KL, r_SPECIAL...), so a phone only wakes for the
+results its owner asked for. The message carries the draw's name and 1st prize: the app can show the
+notification even when the feed download fails, then fetches the feed to check saved tickets. Run after the feed is live on the
 mirror the app reads first, otherwise phones would wake up and download the old feed.
 
 Credentials: a Google service-account JSON with the "Firebase Cloud Messaging API" role, passed in
@@ -25,7 +26,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-TOPIC = "results"
+TOPIC = "results"   # credential check only; result messages go to per-draw topics
 SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
 STATE = "push-state.json"   # ids already announced; lives next to the feed on the data branch
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
@@ -65,17 +66,25 @@ def ping() -> dict:
     return {"message": {"topic": TOPIC, "data": {"type": "ping"}, "android": {"priority": "normal", "ttl": "60s"}}}
 
 
-def message(ids: list[str]) -> dict:
-    # High priority wakes the phone from Doze; the app always shows a notification for it, which
-    # Android requires to keep high priority. TTL: a result older than an hour is not news.
-    return {"message": {"topic": TOPIC, "data": {"type": "result", "ids": ",".join(ids)},
+def alert_key(d: dict) -> str:
+    """Same as the app's Prefs.alertKey: the per-draw alert switch, and the topic a phone subscribes to."""
+    return "KL" if d.get("lottery") == "kerala" else "SPECIAL" if d.get("special") else d["slot"]
+
+
+def message(d: dict) -> dict:
+    # High priority wakes the phone from Doze; only phones that want this draw get it, and the app shows
+    # a notification for every one (Android lowers the priority of apps that don't). TTL: after an hour
+    # a result is not news.
+    return {"message": {"topic": "r_" + alert_key(d),
+                        "data": {"type": "result", "id": d["id"], "key": alert_key(d), "name": d["name"][:80],
+                                 "first": d["tiers"][0]["numbers"][0]},
                         "android": {"priority": "high", "ttl": "3600s"}}}
 
 
-def send(account: dict, ids: list[str] | None) -> str:
-    """Sends a result message (or a ping when ids is None); returns FCM's message name."""
+def send(account: dict, draw: dict | None) -> str:
+    """Sends a result message (or a ping when draw is None); returns FCM's message name."""
     url = f"https://fcm.googleapis.com/v1/projects/{account['project_id']}/messages:send"
-    body = ping() if ids is None else message(ids)
+    body = ping() if draw is None else message(draw)
     req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={
         "Authorization": "Bearer " + access_token(account), "Content-Type": "application/json"})
     try:
@@ -85,11 +94,15 @@ def send(account: dict, ids: list[str] | None) -> str:
         raise RuntimeError(f"HTTP {e.code}: {e.read()[:300].decode('utf-8', 'replace')}") from None
 
 
-def new_ids(today_feed: dict, announced: set[str], today: dt.date) -> list[str]:
-    """Results with numbers from today or yesterday that were not announced yet."""
+def new_draws(today_feed: dict, announced: set[str], today: dt.date) -> list[dict]:
+    """Results with numbers from today or yesterday that were not announced yet, oldest first."""
     since = (today - dt.timedelta(days=1)).isoformat()
-    return sorted(d["id"] for d in today_feed.get("draws", [])
-                  if d.get("tiers") and d["date"] >= since and d["id"] not in announced)
+    return sorted((d for d in today_feed.get("draws", [])
+                   if d.get("tiers") and d["date"] >= since and d["id"] not in announced), key=lambda d: d["id"])
+
+
+def new_ids(today_feed: dict, announced: set[str], today: dt.date) -> list[str]:
+    return [d["id"] for d in new_draws(today_feed, announced, today)]
 
 
 def wait_live(url: str, ids: list[str], timeout_s: int = 300) -> bool:
@@ -121,7 +134,8 @@ def main(argv: list[str] | None = None) -> int:
     first_run = not os.path.exists(state_path)
     announced = set() if first_run else set(json.load(open(state_path)).get("ids", []))
     today = dt.datetime.now(IST).date()
-    ids = new_ids(feed, announced, today)
+    draws = new_draws(feed, announced, today)
+    ids = [d["id"] for d in draws]
     if not ids:
         return 0
     raw = os.environ.get("FCM_SERVICE_ACCOUNT", "")
@@ -133,18 +147,22 @@ def main(argv: list[str] | None = None) -> int:
             except Exception as e:  # noqa: BLE001
                 print(f"::warning::push credential check failed: {e}")
     elif a.dry_run:
-        print("push (dry run):", json.dumps(message(ids)))
+        for d in draws:
+            print("push (dry run):", json.dumps(message(d), ensure_ascii=False))
     else:
         if not raw:
             print("push: FCM_SERVICE_ACCOUNT not set; skipping")
             return 0
         if a.wait_url and not wait_live(a.wait_url, ids):
             print(f"::warning::push: {a.wait_url} did not show {ids} in time; sending anyway")
-        try:
-            print("push: sent", ids, send(json.loads(raw), ids))
-        except Exception as e:  # noqa: BLE001 - a failed push must not fail publishing
-            print(f"::warning::push failed: {e}")
-            return 0  # not recorded: the next run retries
+        account, sent = json.loads(raw), []
+        for d in draws:
+            try:
+                print("push: sent", d["id"], send(account, d))
+                sent.append(d["id"])
+            except Exception as e:  # noqa: BLE001 - a failed push must not fail publishing
+                print(f"::warning::push failed for {d['id']}: {e}")   # not recorded: the next run retries it
+        ids = sent
     keep = sorted((announced | set(ids)) & {d["id"] for d in feed.get("draws", [])} | set(ids))
     with open(state_path, "w") as f:
         json.dump({"ids": keep}, f)

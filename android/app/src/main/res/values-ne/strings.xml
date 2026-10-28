@@ -103,7 +103,7 @@
     </plurals>
     <string name="need_full_number">पहिलो, सान्त्वना र दोस्रो पुरस्कार पनि जाँच्न पूरा टिकट नम्बर (सिरियल र अक्षरसहित) लेख्नुहोस्।</string>
     <string name="you_won">बधाई छ! तपाईंले जित्नुभयो</string>
-    <string name="maybe_first">ठूलो पुरस्कारका अंक मिल्दै छन्!</string>
+    <string name="maybe_first">ठूलो पुरस्कारका अंक मिले!</string>
     <string name="also_matches">यससँग पनि मिल्यो: %1$s</string>
     <string name="save_title">नतिजा आउनेबित्तिकै अलर्ट पाउन यो टिकट सेभ गर्नुहोस्</string>
     <string name="save_button">%1$s का लागि सेभ गर्नुहोस्</string>
@@ -113,6 +113,8 @@
     <string name="scan_need_camera">स्क्यान गर्न क्यामेराको अनुमति चाहिन्छ। चाहनुहुन्छ भने ग्यालरीबाट फोटो पनि छान्न सक्नुहुन्छ।</string>
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="pick_photo">फोटो छान्नुहोस्</string>
+    <string name="torch_on">टर्च बाल्नुहोस्</string>
+    <string name="torch_off">टर्च निभाउनुहोस्</string>
 
     <string name="tickets_title">मेरा टिकट</string>
     <string name="tickets_hint">सेभ गरिएका टिकट नतिजा आउनेबित्तिकै आफैं जाँचिन्छन्।</string>
@@ -147,7 +149,7 @@
     <string name="save_pdf">PDF सेभ गर्नुहोस् (इन्टरनेट बिना हेर्न)</string>
     <string name="need_full_short">पूरा नम्बर जाँच्नुहोस्: योभन्दा ठूलो पुरस्कार पनि हुन सक्छ</string>
     <string name="history_title">नम्बरको इतिहास</string>
-    <string name="history_open">नम्बरको इतिहास: मेरो नम्बर कहिले-कहिले पर्‍यो?</string>
+    <string name="history_open">नम्बरको इतिहास: मेरो नम्बर कहिले पर्‍यो?</string>
     <string name="history_hint">पछिल्लो %1$d दिनमा यो नम्बर परेका सबै नतिजा यहाँ देखिन्छन्। अन्तिम 4 वा 5 अंक, वा पूरा टिकट नम्बर लेख्नुहोस्।</string>
     <string name="history_search">खोज्नुहोस्</string>
     <string name="history_none">पछिल्लो %2$d दिनमा %1$s परेन।</string>
@@ -166,7 +168,7 @@
     <string name="alerts_specials">बम्पर</string>
     <string name="claim_form">सरकारी दाबी फारम (नागाल्याण्ड)</string>
     <string name="claim_docs_title">सरकारी फारमसँग यी संलग्न गर्नुहोस्</string>
-    <string name="claim_docs_body">• सक्कली टिकट, पछाडि सही गरेर\n• स्वघोषणा (फारमसँगै छ)\n• एफिडेभिट\n• PAN कार्ड र एउटा परिचयपत्र\n• 3 वटा पासपोर्ट फोटो, 3 महिनाभन्दा पुरानो नभएको\n• आफ्नो बैंक खाताको एउटा रद्द गरिएको चेक\nफारम आफैं गएर बुझाउनुपर्छ: कोहिमामा, वा कोलकाता, मुम्बई, लुधियाना र गान्तोकका क्याम्पमा।</string>
+    <string name="claim_docs_body">• सक्कली टिकट, पछाडि सही गरेर\n• स्वघोषणा (फारमसँगै छ)\n• एफिडेभिट\n• PAN कार्ड र एउटा परिचयपत्र\n• 3 वटा पासपोर्ट फोटो, 3 महिनाभन्दा पुराना नभएका\n• आफ्नो बैंक खाताको एउटा रद्द गरिएको चेक\nफारम आफैं गएर बुझाउनुपर्छ: कोहिमामा, वा कोलकाता, मुम्बई, लुधियाना र गान्तोकका क्याम्पमा।</string>
     <string name="widget_title">LottoDost · %1$s</string>
     <string name="widget_desc">आजका पहिलो पुरस्कार</string>
     <plurals name="history_count">

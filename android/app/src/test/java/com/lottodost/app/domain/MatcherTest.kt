@@ -159,6 +159,32 @@ class MatcherTest {
         assertTrue("WISH" in r.words)
     }
 
+    @Test fun ocrReadsKeralaTicketsOnlyOnKeralaTickets() {
+        // Layout of a Kerala ticket as a phone camera reads it: header, game and draw code, number, date.
+        val text = "KERALA STATE LOTTERIES\nKARUNYA\nKR 773\nKG 7O9965\nDraw on 24/10/2026\nRs.50"
+        val r = TicketParser.fromOcr(text)
+        assertEquals("KG 709965", r.tickets.first().display())
+        assertEquals("2026-10-24", r.date)
+        assertTrue("KARUNYA" in r.words)
+        assertTrue(TicketParser.fromOcr("SOME TEXT KG 709965").tickets.isEmpty())
+    }
+
+    @Test fun ocrReadsLaxmiTicketsWithoutTakingTheDate() {
+        val text = "NAGALAND STATE LOTTERIES\nDEAR LAXMI WEEKLY\nDraw on 22 10 2026 at 8 PM\n12 3456"
+        assertEquals(listOf("12 3456"), TicketParser.fromOcr(text).tickets.map { it.display() })
+        assertTrue(TicketParser.fromOcr("NOTICE 12 3456").tickets.isEmpty())
+    }
+
+    @Test fun ocrFindsTheNumberInANoisyDearTicket() {
+        // Typical camera text: wrapped lines, logo letters, prize text full of other numbers.
+        val text = "NAGALAND STATE LOTTERIES\nDEAR\nPARROT\nWEDNESDAY WEEKLY LOTTERY\n1st Prize Rs 1 Crore\n" +
+            "Draw No. 52 Date 22-10-2026 at 1 PM\nMRP Rs 6\n55 E 1O783\nSr. 0001234"
+        val r = TicketParser.fromOcr(text)
+        assertEquals("55E 10783", r.tickets.first().display())
+        assertEquals("2026-10-22", r.date)
+        assertTrue("PARROT" in r.words)
+    }
+
     @Test fun ocrIgnoresUnusedSeriesLetters() {
         assertTrue(TicketParser.fromOcr("40F 12345").tickets.isEmpty())
         assertNotNull(TicketParser.fromOcr("40 B 12345").tickets.firstOrNull())

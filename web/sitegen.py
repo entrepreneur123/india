@@ -23,10 +23,18 @@ import re
 import urllib.parse
 import xml.etree.ElementTree as ET
 
+import guides  # web/guides.py: tax, claim and scam guides
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RES = ROOT / "android/app/src/main/res"
+STATIC = ROOT / "web/static"
 LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "/hi")}
+# Every page is for readers in India: language + region in hreflang, lang and og:locale.
+REGION = {"en": "en-IN", "bn": "bn-IN", "hi": "hi-IN"}
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
+# Until 12:30 IST the home page shows yesterday's results; then today's date and the draws to come
+# (the 1 PM result run publishes it then: FLIP in pipeline/lottery_pipeline/schedule.py).
+DAY_FLIP = dt.time(12, 30)
 WEEKLY = [("NL1PM", "13:00", "1pm"), ("SK6PM", "18:00", "6pm"), ("NL8PM", "20:00", "8pm")]
 SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}
 TAG = {"NL1PM": "tag_morning", "SK6PM": "tag_day", "NL8PM": "tag_night"}
@@ -36,22 +44,96 @@ HUB = {"NL1PM": "/morning-1pm/", "SK6PM": "/day-6pm/", "NL8PM": "/night-8pm/"}
 CONTACT = "yechan750745@gmail.com"
 
 # Page-level texts. {d} = 19.10.2026, {t} = 1 PM, {g} = game name, {s} = state, {n} = 1st prize.
+# Kerala in Malayalam (one page: /ml/kerala/). Draw names as printed on Malayalam tickets.
+ML = {
+    "h1": "കേരള ലോട്ടറി ഫലം ഇന്ന്",
+    "title": "കേരള ലോട്ടറി ഫലം ഇന്ന് {d} – {g} | Kerala Lottery Result",
+    "desc": "കേരള ലോട്ടറി ഫലം {d}: {g}, ഒന്നാം സമ്മാനം {n}. എല്ലാ സമ്മാനങ്ങളും കഴിഞ്ഞ നറുക്കെടുപ്പുകളുടെ ഫലങ്ങളും.",
+    "schedule": "എല്ലാ ദിവസവും ഉച്ചയ്ക്ക് 3 മണിക്ക് നറുക്കെടുപ്പ്: തിങ്കൾ ഭാഗ്യതാര, ചൊവ്വ സ്ത്രീ ശക്തി, ബുധൻ ധനലക്ഷ്മി, വ്യാഴം കാരുണ്യ പ്ലസ്, വെള്ളി സുവർണ്ണ കേരളം, ശനി കാരുണ്യ, ഞായർ സമൃദ്ധി. ഫലം സാധാരണയായി നറുക്കെടുപ്പിന് ഏകദേശം ഒരു മണിക്കൂറിന് ശേഷം ലഭ്യമാകും.",
+    "waiting": "ഇന്നത്തെ ഫലം നറുക്കെടുപ്പിന് ശേഷം ഇവിടെ വരും (ഏകദേശം വൈകുന്നേരം 4 മണിയോടെ). ഈ പേജ് പുതുക്കി നോക്കുക.",
+    "recent": "കേരള ലോട്ടറി ഫലങ്ങൾ – സമീപകാല നറുക്കെടുപ്പുകൾ", "date": "തീയതി", "game": "ലോട്ടറി",
+    "first": "ഒന്നാം സമ്മാനം", "last4": "അവസാനത്തെ 4 അക്കങ്ങൾ ഒത്തുവന്നാൽ",
+    "unconfirmed": "ഈ നമ്പറുകൾ ഇനിയും സ്ഥിരീകരിച്ചിട്ടില്ല.",
+    "note": "ഫലങ്ങൾ മൂന്ന് പൊതു സ്രോതസ്സുകളിൽ നിന്ന് ഒത്തുനോക്കി പ്രസിദ്ധീകരിക്കുന്നവയാണ്. സമ്മാനം അവകാശപ്പെടുന്നതിന് മുമ്പ് ഔദ്യോഗിക ഗസറ്റുമായി ഒത്തുനോക്കുക.",
+    "official": "ഔദ്യോഗിക വെബ്സൈറ്റ്", "check": "ടിക്കറ്റ് നമ്പർ പരിശോധിക്കുക (English) →",
+    "wd": ["തിങ്കൾ", "ചൊവ്വ", "ബുധൻ", "വ്യാഴം", "വെള്ളി", "ശനി", "ഞായർ"],
+    "tiers": {"1": "ഒന്നാം സമ്മാനം", "CONS": "സമാശ്വാസ സമ്മാനം", "2": "രണ്ടാം സമ്മാനം", "3": "മൂന്നാം സമ്മാനം",
+              "4": "നാലാം സമ്മാനം", "5": "അഞ്ചാം സമ്മാനം", "6": "ആറാം സമ്മാനം", "7": "ഏഴാം സമ്മാനം",
+              "8": "എട്ടാം സമ്മാനം", "9": "ഒമ്പതാം സമ്മാനം", "10": "പത്താം സമ്മാനം"},
+    "games": {"BT": "ഭാഗ്യതാര", "SS": "സ്ത്രീ ശക്തി", "DL": "ധനലക്ഷ്മി", "KN": "കാരുണ്യ പ്ലസ്",
+              "SK": "സുവർണ്ണ കേരളം", "KR": "കാരുണ്യ", "SM": "സമൃദ്ധി"},
+}
+
+# Maharashtra State Lottery (other state lotteries, kept apart from Lottery Sambad and Kerala).
+MH = {
+    "en": {"tab": "Maharashtra", "h1": "Maharashtra Lottery Result Today", "other": "Other state lotteries",
+           "title": "Maharashtra Lottery Result Today {d} – {g} and All Draws",
+           "desc": "Maharashtra State Lottery result {d}: {list}. Full prize list of every draw, ticket checker and the official result sheet.",
+           "schedule": "The Government of Maharashtra holds weekly draws every afternoon (around 4–5 PM), plus monthly draws and festival bumpers. Each draw has its own name and series, e.g. GL-00 to GL-09.",
+           "ocr_note": "These numbers are read by computer from the official result sheet and published only when several independent readings agree. Always check your ticket against the official sheet before claiming.",
+           "recent": "Maharashtra lottery result chart – recent draws",
+           "draw_title": "Maharashtra {g} Lottery Result {d}{n}",
+           "draw_desc": "Maharashtra {g} lottery result {d}: 1st prize {f}. All prizes, ticket checker and the official result sheet.",
+           "draw_no": " (Draw {n})", "check_hint": "Type your full ticket number (e.g. GL-00 2142) or just the 4 digits.",
+           "open_pdf": "Official result sheet (PDF)", "open_site": "Maharashtra State Lottery website",
+           "weekly": "Weekly", "monthly": "Monthly", "bumper": "Bumper", "all": "All Maharashtra results",
+           "title_pdf": "Maharashtra Lottery Result Today {d} – {g}, Official Result Sheets",
+           "desc_pdf": "Maharashtra State Lottery result {d}: {list} – the official result sheet (PDF) of every draw, straight from the Government of Maharashtra.",
+           "pdf_note": "Each draw links its official result sheet (PDF) on the Maharashtra State Lottery website. Check your ticket against that sheet."},
+    "bn": {"tab": "মহারাষ্ট্র", "h1": "মহারাষ্ট্র লটারি আজকের রেজাল্ট", "other": "অন্য রাজ্যের লটারি",
+           "title": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g} ও সব ড্র",
+           "desc": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list}। প্রতিটি ড্রয়ের পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
+           "schedule": "মহারাষ্ট্র সরকার রোজ বিকেলে (প্রায় 4–5টা) সাপ্তাহিক ড্র করে, এছাড়া মাসিক ড্র আর উৎসবের বাম্পার। প্রতিটি ড্রয়ের নিজস্ব নাম আর সিরিজ থাকে, যেমন GL-00 থেকে GL-09।",
+           "ocr_note": "এই নম্বরগুলো সরকারি রেজাল্ট শিট থেকে কম্পিউটারে পড়া, আর কয়েকটি আলাদা পড়া মিললে তবেই প্রকাশ করা হয়। পুরস্কার দাবির আগে সবসময় সরকারি শিটের সঙ্গে টিকিট মিলিয়ে নিন।",
+           "recent": "মহারাষ্ট্র লটারির সাম্প্রতিক রেজাল্ট",
+           "draw_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}{n}",
+           "draw_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}: প্রথম পুরস্কার {f}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
+           "draw_no": " (ড্র {n})", "check_hint": "পুরো টিকিট নম্বর লিখুন (যেমন GL-00 2142) বা শুধু 4টি সংখ্যা।",
+           "open_pdf": "সরকারি রেজাল্ট শিট (PDF)", "open_site": "মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইট",
+           "weekly": "সাপ্তাহিক", "monthly": "মাসিক", "bumper": "বাম্পার", "all": "মহারাষ্ট্রের সব রেজাল্ট",
+           "title_pdf": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g}, সরকারি রেজাল্ট শিট",
+           "desc_pdf": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list} – প্রতিটি ড্রয়ের সরকারি রেজাল্ট শিট (PDF), সরাসরি মহারাষ্ট্র সরকারের কাছ থেকে।",
+           "pdf_note": "প্রতিটি ড্রয়ের সঙ্গে মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইটের সরকারি রেজাল্ট শিটের (PDF) লিংক আছে। ওই শিটের সঙ্গে টিকিট মিলিয়ে নিন।"},
+    "hi": {"tab": "महाराष्ट्र", "h1": "महाराष्ट्र लॉटरी रिज़ल्ट आज", "other": "दूसरे राज्यों की लॉटरी",
+           "title": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g} और सभी ड्रॉ",
+           "desc": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list}। हर ड्रॉ के सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
+           "schedule": "महाराष्ट्र सरकार हर दोपहर (लगभग 4–5 बजे) साप्ताहिक ड्रॉ करती है, साथ में मासिक ड्रॉ और त्योहारों के बंपर। हर ड्रॉ का अपना नाम और सीरीज़ होती है, जैसे GL-00 से GL-09।",
+           "ocr_note": "ये नंबर सरकारी रिज़ल्ट शीट से कंप्यूटर द्वारा पढ़े गए हैं और कई अलग-अलग रीडिंग मिलने पर ही प्रकाशित होते हैं। इनाम का दावा करने से पहले हमेशा सरकारी शीट से टिकट मिलाएँ।",
+           "recent": "महाराष्ट्र लॉटरी रिज़ल्ट चार्ट – हाल के ड्रॉ",
+           "draw_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}{n}",
+           "draw_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}: पहला इनाम {f}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
+           "draw_no": " (ड्रॉ {n})", "check_hint": "पूरा टिकट नंबर लिखें (जैसे GL-00 2142) या सिर्फ़ 4 अंक।",
+           "open_pdf": "सरकारी रिज़ल्ट शीट (PDF)", "open_site": "महाराष्ट्र राज्य लॉटरी की वेबसाइट",
+           "weekly": "साप्ताहिक", "monthly": "मासिक", "bumper": "बंपर", "all": "महाराष्ट्र के सभी रिज़ल्ट",
+           "title_pdf": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g}, सरकारी रिज़ल्ट शीट",
+           "desc_pdf": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list} – हर ड्रॉ की सरकारी रिज़ल्ट शीट (PDF), सीधे महाराष्ट्र सरकार से।",
+           "pdf_note": "हर ड्रॉ के साथ महाराष्ट्र राज्य लॉटरी की वेबसाइट पर उसकी सरकारी रिज़ल्ट शीट (PDF) का लिंक है। टिकट उसी शीट से मिलाएँ।"},
+}
+
 WEB = {
     "en": {
-        "home_title": "Lottery Sambad Result Today {d} – Dear Lottery 1 PM, 6 PM, 8 PM",
+        "home_title": "Lottery Sambad Result Today {d} – Dear Nagaland State Lottery 1 PM, 6 PM, 8 PM",
         "home_h1": "Lottery Sambad Result Today",
-        "home_desc": "Dear lottery result {d}: {list}. Full prize list, ticket checker and official result links.",
+        "home_desc": "Lottery Sambad (লটারি সংবাদ) today result {d} ({s}): {list}. Nagaland State Lottery Dear morning 1 PM, day 6 PM, night 8 PM – all prizes, ticket checker and live draw.",
+        "day_desc": "Lottery Sambad result {d} ({s}): {list}. All prizes of the Dear 1 PM, 6 PM and 8 PM Nagaland State Lottery draws, with a ticket checker.",
+        "yday": "Yesterday", "yday_h1": "Lottery Sambad Yesterday Result",
+        "yday_title": "Lottery Sambad Yesterday Result {d} – Dear 1 PM, 6 PM, 8 PM and Kerala",
+        "yday_desc": "Yesterday's lottery result {d} ({s}): {list}. Dear Nagaland State Lottery 1 PM, 6 PM, 8 PM and Kerala lottery – all prizes and a ticket checker.",
+        "yday_week": "1st prizes – last 7 days",
         "day_title": "Lottery Sambad Result {d} – Dear Lottery 1 PM, 6 PM, 8 PM",
         "day_h1": "Lottery Sambad Result {d}",
         "draw_title": "Lottery Sambad {w} {t} Result {d} – {g}",
         "draw_title_special": "Dear Lottery Result {d} {t} – {g} | {s} State Lottery",
         "slot_title": "Lottery Sambad {w} Result Today {d} – Dear {t}", "slot_h1": "Lottery Sambad {w} {t} Result",
-        "slot_desc": "Dear {t} ({w}) result {d}: 1st prize {n}. Full prize list, ticket checker and every {w} result of the last 30 days.",
+        "slot_desc": "Nagaland State Lottery Dear {t} ({w}) result {d}: 1st prize {n}. Full prize list, ticket checker and every {w} result of the last 30 days.",
         "slot_desc_wait": "Dear {t} ({w}) result {d} comes about 10 minutes after the draw and this page updates by itself. {w} results of the last 30 days.",
-        "slot_recent": "{w} results – last 30 days", "slot_all": "All {w} {t} results",
+        "slot_recent": "{t} result chart – last 30 days", "slot_all": "All {w} {t} results",
         "draw_desc": "{g} result {d} {t}: 1st prize {n}. All prize numbers and a ticket checker.",
         "awaited": "awaited", "result_of": "Result of {d}", "all_of_day": "All results of {d}",
         "old_title": "Lottery Sambad Old Result – Dear Lottery 1 PM, 6 PM, 8 PM, All Dates", "old_h1": "Old results",
+        "month_title": "Lottery Sambad Old Result {m} – Dear Lottery 1 PM, 6 PM, 8 PM", "month_h1": "Old results – {m}",
+        "months": "By month", "recent_days": "Last 31 days",
+        "mon": "January February March April May June July August September October November December".split(),
         "prev": "Previous day", "next": "Next day", "older": "Older results",
         "app": "Get the result the moment it is out: free LottoDost app (alerts, ticket scan, number history).",
         "faq": "Common questions", "q_time": "When are the results declared?",
@@ -62,57 +144,68 @@ WEB = {
         "about": "About", "contact": "Contact", "disclaimer": "Disclaimer", "privacy": "Privacy policy",
         "about_body": "LottoDost publishes Dear lottery results within minutes of each draw. Numbers are read from the published result sheet, checked for completeness and compared with the official Nagaland gazette when it is released. We are not a government website, we are not affiliated with Lottery Sambad or any lottery department, and we do not sell tickets.",
         "contact_body": "Questions, corrections or removal requests: {e}. We usually reply within two working days.",
-        "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland Lottery Sambad.",
+        "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland State Lottery, Dhankesari and লটারি সংবাদ.",
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
-        "telegram": "Get every result the moment it is out on our Telegram channel",
         "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
-        "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM",
+        "kl_title": "Kerala Lottery Result Today {d} – {g} 3 PM, Result Chart",
         "kl_desc": "Kerala lottery result {d}: {g}, 1st prize {n}. All prizes, ticket checker and the official result link.",
         "kl_draw_title": "Kerala Lottery Result {d} – {g}",
         "kl_schedule": "Draw every day at 3 PM: Monday Bhagyathara, Tuesday Sthree Sakthi, Wednesday Dhanalekshmi, Thursday Karunya Plus, Friday Suvarna Keralam, Saturday Karunya, Sunday Samrudhi. The result usually appears about an hour after the draw.",
-        "kl_recent": "Recent Kerala results", "game": "Lottery",
+        "kl_recent": "Kerala lottery result chart – recent draws", "game": "Lottery",
     },
     "bn": {
-        "home_title": "লটারি সংবাদ রেজাল্ট আজ {d} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",
+        "home_title": "লটারি সংবাদ আজকের রেজাল্ট {d} – নাগাল্যান্ড স্টেট ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",
         "home_h1": "লটারি সংবাদ আজকের রেজাল্ট",
-        "home_desc": "ডিয়ার লটারি রেজাল্ট {d}: {list}। পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্টের লিংক।",
+        "home_desc": "লটারি সংবাদ আজকের রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা – সব পুরস্কার, টিকিট চেক আর লাইভ ড্র।",
+        "day_desc": "লটারি সংবাদ রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার 1টা, 6টা, 8টার সব পুরস্কার আর টিকিট চেক।",
+        "yday": "গতকাল", "yday_h1": "লটারি সংবাদ গতকালের রেজাল্ট",
+        "yday_title": "লটারি সংবাদ গতকালের রেজাল্ট {d} – ডিয়ার 1টা, 6টা, 8টা আর কেরালা",
+        "yday_desc": "গতকালের লটারি রেজাল্ট {d} ({s}): {list}। নাগাল্যান্ড স্টেট লটারি ডিয়ার 1টা, 6টা, 8টা আর কেরালা লটারি – সব পুরস্কার আর টিকিট চেক।",
+        "yday_week": "প্রথম পুরস্কার – গত 7 দিন",
         "day_title": "লটারি সংবাদ রেজাল্ট {d} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা",
         "day_h1": "লটারি সংবাদ রেজাল্ট {d}",
         "draw_title": "লটারি সংবাদ {w} {t} রেজাল্ট {d} – {g}",
         "draw_title_special": "ডিয়ার লটারি রেজাল্ট {d} {t} – {g} | {s} স্টেট লটারি",
-        "slot_title": "লটারি সংবাদ {w} রেজাল্ট আজ {d} – ডিয়ার {t}", "slot_h1": "লটারি সংবাদ {w} {t} রেজাল্ট",
+        "slot_title": "লটারি সংবাদ আজকের {w} রেজাল্ট {d} – ডিয়ার {t}", "slot_h1": "লটারি সংবাদ {w} {t} রেজাল্ট",
         "slot_desc": "ডিয়ার {t} ({w}) রেজাল্ট {d}: প্রথম পুরস্কার {n}। পুরো পুরস্কারের তালিকা, টিকিট চেক আর গত 30 দিনের সব {w} রেজাল্ট।",
         "slot_desc_wait": "ডিয়ার {t} ({w}) রেজাল্ট {d} ড্রয়ের প্রায় 10 মিনিট পরে আসে, পেজটি নিজে থেকেই আপডেট হয়। গত 30 দিনের {w} রেজাল্ট।",
-        "slot_recent": "{w} রেজাল্ট – গত 30 দিন", "slot_all": "সব {w} {t} রেজাল্ট",
+        "slot_recent": "{t} রেজাল্ট চার্ট – গত 30 দিন", "slot_all": "সব {w} {t} রেজাল্ট",
         "draw_desc": "{g} রেজাল্ট {d} {t}: প্রথম পুরস্কার {n}। সব পুরস্কারের নম্বর আর টিকিট চেক।",
-        "awaited": "রেজাল্টের অপেক্ষা", "result_of": "{d}-এর রেজাল্ট", "all_of_day": "{d}-এর সব রেজাল্ট",
+        "awaited": "রেজাল্টের অপেক্ষায়", "result_of": "{d}-এর রেজাল্ট", "all_of_day": "{d}-এর সব রেজাল্ট",
         "old_title": "লটারি সংবাদ পুরোনো রেজাল্ট – ডিয়ার লটারি সব তারিখ", "old_h1": "পুরোনো রেজাল্ট",
+        "month_title": "লটারি সংবাদ পুরোনো রেজাল্ট {m} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা", "month_h1": "পুরোনো রেজাল্ট – {m}",
+        "months": "মাস অনুযায়ী", "recent_days": "গত 31 দিন",
+        "mon": "জানুয়ারি ফেব্রুয়ারি মার্চ এপ্রিল মে জুন জুলাই আগস্ট সেপ্টেম্বর অক্টোবর নভেম্বর ডিসেম্বর".split(),
         "prev": "আগের দিন", "next": "পরের দিন", "older": "পুরোনো রেজাল্ট",
         "app": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে জানতে ফ্রি LottoDost অ্যাপ নিন (অ্যালার্ট, টিকিট স্ক্যান, নম্বরের ইতিহাস)।",
         "faq": "সাধারণ প্রশ্ন", "q_time": "রেজাল্ট কখন বেরোয়?",
-        "a_time": "ডিয়ার লটারির ড্র রোজ দুপুর 1টা (নাগাল্যান্ড), সন্ধ্যা 6টা (সিকিম) আর রাত 8টায় (নাগাল্যান্ড) হয়। প্রতিটি ড্রয়ের সাধারণত 7–10 মিনিট পরে রেজাল্ট শিট বেরোয়, আর এই পেজ নিজে থেকেই আপডেট হয়।",
+        "a_time": "ডিয়ার লটারির ড্র রোজ দুপুর 1টায় (নাগাল্যান্ড), সন্ধ্যা 6টায় (সিকিম) আর রাত 8টায় (নাগাল্যান্ড) হয়। প্রতিটি ড্রয়ের সাধারণত 7–10 মিনিট পরে রেজাল্ট শিট বেরোয়, আর এই পেজ নিজে থেকেই আপডেট হয়।",
         "check_hint": "পুরো নম্বর লিখুন (যেমন 39C 06366, বাম্পার A 801021) বা শুধু শেষ 4–6টি সংখ্যা।",
-        "q_check": "টিকিট কীভাবে মেলাব?", "q_claim": "পুরস্কার কীভাবে নেব?",
+        "q_check": "টিকিট কীভাবে মেলাব?", "q_claim": "পুরস্কার কীভাবে তুলব?",
         "updated": "আপডেট {t} IST", "home": "আজ", "lang": "ভাষা",
         "about": "আমাদের কথা", "contact": "যোগাযোগ", "disclaimer": "দায়মুক্তি", "privacy": "প্রাইভেসি পলিসি",
-        "about_body": "LottoDost প্রতিটি ড্রয়ের কয়েক মিনিটের মধ্যে ডিয়ার লটারির রেজাল্ট দেয়। নম্বরগুলো প্রকাশিত রেজাল্ট শিট থেকে পড়া হয়, সব ঠিক আছে কি না দেখা হয়, আর নাগাল্যান্ডের সরকারি গেজেট বেরোলে তার সঙ্গে মেলানো হয়। এটি সরকারি ওয়েবসাইট নয়, লটারি সংবাদ বা কোনো লটারি দপ্তরের সঙ্গে আমাদের সম্পর্ক নেই, আর আমরা টিকিট বিক্রি করি না।",
-        "contact_body": "প্রশ্ন, সংশোধন বা কিছু সরানোর অনুরোধ: {e}। সাধারণত দুই কাজের দিনের মধ্যে উত্তর দিই।",
-        "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড লটারি সংবাদ নামেও খোঁজা হয়।",
-        "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
+        "about_body": "LottoDost প্রতিটি ড্রয়ের কয়েক মিনিটের মধ্যে ডিয়ার লটারির রেজাল্ট দেয়। নম্বরগুলো প্রকাশিত রেজাল্ট শিট থেকে পড়া হয়, সব নম্বর আছে কি না দেখা হয়, আর নাগাল্যান্ডের সরকারি গেজেট বেরোলে তার সঙ্গে মেলানো হয়। এটি সরকারি ওয়েবসাইট নয়, লটারি সংবাদ বা কোনো লটারি দপ্তরের সঙ্গে আমাদের সম্পর্ক নেই, আর আমরা টিকিট বিক্রি করি না।",
+        "contact_body": "প্রশ্ন, সংশোধন বা কিছু সরানোর অনুরোধ: {e}। সাধারণত দুই কর্মদিবসের মধ্যে উত্তর দিই।",
+        "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড স্টেট লটারি, ধনকেশরী নামেও খোঁজা হয়।",
+        "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি করুন", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
         "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
-        "telegram": "রেজাল্ট বেরোনোর সঙ্গে সঙ্গে পেতে আমাদের Telegram চ্যানেলে যোগ দিন",
         "check_hint_kl": "পুরো নম্বর লিখুন (যেমন MM 289707) বা শুধু শেষ 4টি সংখ্যা।", "kl_tab": "কেরালা", "kl_h1": "কেরালা লটারি আজকের রেজাল্ট",
-        "kl_title": "কেরালা লটারি রেজাল্ট আজ {d} – {g} দুপুর 3টা",
+        "kl_title": "কেরালা লটারি আজকের রেজাল্ট {d} – {g} দুপুর 3টা",
         "kl_desc": "কেরালা লটারি রেজাল্ট {d}: {g}, প্রথম পুরস্কার {n}। সব পুরস্কার, টিকিট চেক আর সরকারি রেজাল্টের লিংক।",
         "kl_draw_title": "কেরালা লটারি রেজাল্ট {d} – {g}",
-        "kl_schedule": "রোজ দুপুর 3টায় ড্র: সোমবার ভাগ্যতারা, মঙ্গলবার স্ত্রী শক্তি, বুধবার ধনলক্ষ্মী, বৃহস্পতিবার করুণ্যা প্লাস, শুক্রবার সুবর্ণ কেরালাম, শনিবার করুণ্যা, রবিবার সমৃদ্ধি। রেজাল্ট সাধারণত ড্রয়ের প্রায় এক ঘণ্টা পরে আসে।",
+        "kl_schedule": "রোজ দুপুর 3টায় ড্র: সোমবার ভাগ্যতারা, মঙ্গলবার স্ত্রী শক্তি, বুধবার ধনলক্ষ্মী, বৃহস্পতিবার কারুণ্য প্লাস, শুক্রবার সুবর্ণ কেরালাম, শনিবার কারুণ্য, রবিবার সমৃদ্ধি। রেজাল্ট সাধারণত ড্রয়ের প্রায় এক ঘণ্টা পরে আসে।",
         "kl_recent": "কেরালার সাম্প্রতিক রেজাল্ট", "game": "লটারি",
     },
     "hi": {
-        "home_title": "लॉटरी संबाद रिज़ल्ट आज {d} – डियर लॉटरी 1 PM, 6 PM, 8 PM",
+        "home_title": "लॉटरी संबाद आज का रिज़ल्ट {d} – नागालैंड स्टेट डियर लॉटरी 1 PM, 6 PM, 8 PM",
         "home_h1": "लॉटरी संबाद आज का रिज़ल्ट",
-        "home_desc": "डियर लॉटरी रिज़ल्ट {d}: {list}। पूरी इनाम लिस्ट, टिकट चेक और सरकारी रिज़ल्ट के लिंक।",
+        "home_desc": "लॉटरी संबाद आज का रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM – सारे इनाम, टिकट चेक और लाइव ड्रॉ।",
+        "day_desc": "लॉटरी संबाद रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM के सारे इनाम और टिकट चेक।",
+        "yday": "कल", "yday_h1": "लॉटरी संबाद कल का रिज़ल्ट",
+        "yday_title": "लॉटरी संबाद कल का रिज़ल्ट {d} – डियर 1 PM, 6 PM, 8 PM और केरल",
+        "yday_desc": "कल का लॉटरी रिज़ल्ट {d} ({s}): {list}। नागालैंड स्टेट लॉटरी डियर 1 PM, 6 PM, 8 PM और केरल लॉटरी – सारे इनाम और टिकट चेक।",
+        "yday_week": "पहला इनाम – पिछले 7 दिन",
         "day_title": "लॉटरी संबाद रिज़ल्ट {d} – डियर लॉटरी 1 PM, 6 PM, 8 PM",
         "day_h1": "लॉटरी संबाद रिज़ल्ट {d}",
         "draw_title": "लॉटरी संबाद {w} {t} रिज़ल्ट {d} – {g}",
@@ -120,10 +213,13 @@ WEB = {
         "slot_title": "लॉटरी संबाद {w} रिज़ल्ट आज {d} – डियर {t}", "slot_h1": "लॉटरी संबाद {w} {t} रिज़ल्ट",
         "slot_desc": "डियर {t} ({w}) रिज़ल्ट {d}: पहला इनाम {n}। पूरी इनाम लिस्ट, टिकट चेक और पिछले 30 दिनों के सभी {w} रिज़ल्ट।",
         "slot_desc_wait": "डियर {t} ({w}) रिज़ल्ट {d} ड्रॉ के लगभग 10 मिनट बाद आता है और यह पेज अपने-आप अपडेट होता है। पिछले 30 दिनों के {w} रिज़ल्ट।",
-        "slot_recent": "{w} रिज़ल्ट – पिछले 30 दिन", "slot_all": "सभी {w} {t} रिज़ल्ट",
-        "draw_desc": "{g} रिज़ल्ट {d} {t}: पहला इनाम {n}। सारे इनाम के नंबर और टिकट चेक।",
+        "slot_recent": "{t} रिज़ल्ट चार्ट – पिछले 30 दिन", "slot_all": "सभी {w} {t} रिज़ल्ट",
+        "draw_desc": "{g} रिज़ल्ट {d} {t}: पहला इनाम {n}। सारे इनामों के नंबर और टिकट चेक।",
         "awaited": "रिज़ल्ट का इंतज़ार", "result_of": "{d} का रिज़ल्ट", "all_of_day": "{d} के सारे रिज़ल्ट",
         "old_title": "लॉटरी संबाद पुराने रिज़ल्ट – डियर लॉटरी सभी तारीख़ें", "old_h1": "पुराने रिज़ल्ट",
+        "month_title": "लॉटरी संबाद पुराने रिज़ल्ट {m} – डियर लॉटरी 1 PM, 6 PM, 8 PM", "month_h1": "पुराने रिज़ल्ट – {m}",
+        "months": "महीने के हिसाब से", "recent_days": "पिछले 31 दिन",
+        "mon": "जनवरी फ़रवरी मार्च अप्रैल मई जून जुलाई अगस्त सितंबर अक्टूबर नवंबर दिसंबर".split(),
         "prev": "पिछला दिन", "next": "अगला दिन", "older": "पुराने रिज़ल्ट",
         "app": "रिज़ल्ट आते ही जानने के लिए फ़्री LottoDost ऐप लें (अलर्ट, टिकट स्कैन, नंबर हिस्ट्री)।",
         "faq": "आम सवाल", "q_time": "रिज़ल्ट कब आता है?",
@@ -131,19 +227,18 @@ WEB = {
         "check_hint": "पूरा नंबर लिखें (जैसे 39C 06366, बंपर A 801021) या सिर्फ़ आख़िरी 4–6 अंक।",
         "q_check": "अपना टिकट कैसे चेक करें?", "q_claim": "इनाम कैसे लें?",
         "updated": "अपडेट {t} IST", "home": "आज", "lang": "भाषा",
-        "about": "हमारे बारे में", "contact": "संपर्क", "disclaimer": "अस्वीकरण", "privacy": "प्राइवेसी पॉलिसी",
+        "about": "हमारे बारे में", "contact": "संपर्क", "disclaimer": "डिस्क्लेमर", "privacy": "प्राइवेसी पॉलिसी",
         "about_body": "LottoDost हर ड्रॉ के कुछ ही मिनट में डियर लॉटरी का रिज़ल्ट देता है। नंबर प्रकाशित रिज़ल्ट शीट से पढ़े जाते हैं, पूरे हैं या नहीं यह जाँचा जाता है, और नागालैंड का सरकारी गज़ट आने पर उससे मिलाया जाता है। यह सरकारी वेबसाइट नहीं है, लॉटरी संबाद या किसी लॉटरी विभाग से हमारा कोई संबंध नहीं है, और हम टिकट नहीं बेचते।",
-        "contact_body": "सवाल, सुधार या कुछ हटवाने के लिए: {e}। आमतौर पर दो कामकाजी दिनों में जवाब देते हैं।",
-        "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड लॉटरी संबाद नाम से भी खोजा जाता है।",
+        "contact_body": "सवाल, सुधार या कुछ हटवाने के लिए: {e}। हम आमतौर पर दो कामकाजी दिनों में जवाब दे देते हैं।",
+        "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड स्टेट लॉटरी, धनकेसरी नाम से भी खोजा जाता है।",
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
         "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
-        "telegram": "रिज़ल्ट आते ही पाने के लिए हमारे Telegram चैनल से जुड़ें",
         "check_hint_kl": "पूरा नंबर लिखें (जैसे MM 289707) या सिर्फ़ आख़िरी 4 अंक।", "kl_tab": "केरल", "kl_h1": "केरल लॉटरी आज का रिज़ल्ट",
         "kl_title": "केरल लॉटरी रिज़ल्ट आज {d} – {g} 3 PM",
         "kl_desc": "केरल लॉटरी रिज़ल्ट {d}: {g}, पहला इनाम {n}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट का लिंक।",
         "kl_draw_title": "केरल लॉटरी रिज़ल्ट {d} – {g}",
         "kl_schedule": "रोज़ दोपहर 3 बजे ड्रॉ: सोमवार भाग्यतारा, मंगलवार स्त्री शक्ति, बुधवार धनलक्ष्मी, गुरुवार करुण्या प्लस, शुक्रवार सुवर्ण केरलम, शनिवार करुण्या, रविवार समृद्धि। रिज़ल्ट आमतौर पर ड्रॉ के लगभग एक घंटे बाद आता है।",
-        "kl_recent": "केरल के हाल के रिज़ल्ट", "game": "लॉटरी",
+        "kl_recent": "केरल लॉटरी रिज़ल्ट चार्ट – हाल के ड्रॉ", "game": "लॉटरी",
     },
 }
 
@@ -206,6 +301,11 @@ def time12(hhmm: str) -> str:
     return f"{h % 12 or 12}:{m:02d} {'PM' if h >= 12 else 'AM'}"
 
 
+def ddmmyy(iso: str) -> str:  # "25/10/26", as people type dates into search
+    y, m, d = iso.split("-")
+    return f"{d}/{m}/{y[2:]}"
+
+
 def short_time(hhmm: str) -> str:  # "1 PM" as people search it
     h, m = (int(x) for x in hhmm.split(":"))
     return f"{h % 12 or 12}{'' if m == 0 else f':{m:02d}'} {'PM' if h >= 12 else 'AM'}"
@@ -235,6 +335,8 @@ def beacon_token(value: str) -> str:
 
 
 def draw_slug(d: dict) -> str:
+    if d.get("lottery") == "maharashtra":  # several draws a day: one page each, by name
+        return "maharashtra-" + re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")
     return SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
 
 
@@ -267,14 +369,17 @@ class Site:
         self.stamp = self.updated.isoformat(timespec="minutes")   # sitemap lastmod of pages that change today
         self.index = json.loads((data / "v2/index.json").read_text()) if (data / "v2/index.json").exists() else {}
         self.dates = sorted(self.days, reverse=True)
+        self.mh: dict[str, list[dict]] = {}   # Maharashtra (v2/mh/, a feed of its own)
+        for f in sorted((data / "v2/mh/days").glob("*.json")):
+            day = json.loads(f.read_text())
+            self.mh[day["date"]] = sorted(day["draws"], key=lambda d: (d.get("time") or "99", d["name"]))
+        self.mh_dates = sorted((x for x in self.mh if self.mh[x]), reverse=True)
         self.adsense = os.environ.get("ADSENSE_CLIENT", "").strip()
         self.play_url = os.environ.get("PLAY_URL", "").strip()
         # A manual unit needs its slot id (AdSense → Ads → By ad unit); without one, Auto ads alone place ads.
         self.ad_slot = os.environ.get("ADSENSE_SLOT", "").strip()
         cfg = json.loads((data / "v2/config.json").read_text()) if (data / "v2/config.json").exists() else {}
         self.live_url = cfg.get("liveDrawUrl") or "https://www.nagalandlotteries.com/livedraw/index.php"
-        chat = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
-        self.telegram = f"https://t.me/{chat[1:]}" if re.fullmatch(r"@[A-Za-z0-9_]{5,32}", chat) else ""
         self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
@@ -323,13 +428,15 @@ class Site:
 
     # ---- page shell ----
     def page(self, lang: str, path: str, title: str, desc: str, body: str, alternates: bool = True,
-             data: list[dict] | None = None, live: bool = False, crumbs: list[tuple[str, str]] | None = None,
+             data: list[dict] | None = None, live: bool | str = False, crumbs: list[tuple[str, str]] | None = None,
              tab: str = "", image: str = "", modified: dt.datetime | None = None, wait: str = "") -> str:
         w, s = WEB[lang], self.s[lang]
         alt = ""
         if alternates:
-            alt = "".join(f'<link rel="alternate" hreflang="{l}" href="{esc(self.abs(l, path))}">' for l in LANGS)
+            alt = "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, path))}">' for l in LANGS)
             alt += f'<link rel="alternate" hreflang="x-default" href="{esc(self.abs("en", path))}">'
+            if path == "/kerala/" and self.kerala_ml_ok:
+                alt += f'<link rel="alternate" hreflang="ml-IN" href="{esc(self.abs("en", "/ml/kerala/"))}">'
         ads_head = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={esc(self.adsense)}" '
                     f'crossorigin="anonymous"></script>') if self.adsense else ""
         beacon = (f'<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
@@ -338,6 +445,12 @@ class Site:
         if crumbs:
             ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
                 {"@type": "ListItem", "position": i + 1, "name": n, "item": self.abs(lang, p)} for i, (n, p) in enumerate(crumbs)]})
+        if path == "/":  # the name Google shows for the site, and who publishes it
+            ld.append({"@context": "https://schema.org", "@type": "WebSite", "name": "LottoDost",
+                       "alternateName": ["Lotto Dost", "LottoDost Lottery Result"], "url": self.abs(lang, "/"),
+                       "inLanguage": REGION[lang], "publisher": {"@type": "Organization", "name": "LottoDost",
+                                                                 "url": self.abs("en", "/"), "email": CONTACT,
+                                                                 "logo": self.abs("en", "/icon-512.png")}})
         if modified:  # a real freshness signal: when these numbers last changed
             ld.append({"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path),
                        "dateModified": modified.isoformat(timespec="minutes")})
@@ -348,7 +461,7 @@ class Site:
                   if image else "")
         nav_lang = lang if alternates else "en"
         langs_nav = "".join(
-            f'<a href="{esc(self.url(l, path))}" hreflang="{l}" lang="{l}"{" aria-current=\"true\"" if l == lang else ""}>'
+            f'<a href="{esc(self.url(l, path))}" hreflang="{REGION[l]}" lang="{REGION[l]}"{" aria-current=\"true\"" if l == lang else ""}>'
             f'{ {"en": "EN", "bn": "বাংলা", "hi": "हिन्दी"}[l] }</a>' for l in LANGS) if alternates else ""
         check_href = "#check" if 'id="check"' in body else self.url(nav_lang, "/") + "#check"
         tabs = [("results", s["tab_results"], self.url(nav_lang, "/")), ("kerala", w["kl_tab"], self.url(nav_lang, "/kerala/")),
@@ -357,14 +470,18 @@ class Site:
         data_json = json.dumps([{k: d[k] for k in ("id", "date", "time", "name", "format", "tiers") if k in d} for d in data or []],
                                ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
         live_attr = f' data-live="{esc(data[0]["date"])}"' if live and data else (f' data-live="{self.today}"' if live else "")
+        live_attr = f' data-live="{esc(live)}"' if isinstance(live, str) and live else live_attr   # this day's draws
         live_attr += f' data-wait="{esc(wait)}"' if wait else ""
         self._ads = 0  # the body is built: the next page starts its own ad count
-        i18n = dict(self.s[lang], copied=w["copied"])
-        foot = (f'<p class="links"><a href="{self.url("en", "/about/")}">{esc(w["about"])}</a><a href="{self.url("en", "/contact/")}">{esc(w["contact"])}</a>'
+        i18n = dict(self.s[lang], copied=w["copied"], need_full_mh=MH[lang]["check_hint"])
+        gl = guides.G[nav_lang]
+        foot = (f'<p class="links">' + "".join(f'<a href="{self.url(nav_lang, p)}">{esc(gl["names"][k])}</a>' for k, p in guides.PATHS.items())
+                + '</p>'
+                f'<p class="links"><a href="{self.url("en", "/about/")}">{esc(w["about"])}</a><a href="{self.url("en", "/contact/")}">{esc(w["contact"])}</a>'
                 f'<a href="{self.url("en", "/disclaimer/")}">{esc(w["disclaimer"])}</a><a href="{self.path_prefix}/privacy.html">{esc(w["privacy"])}</a></p>'
                 f'<p>{esc(s["disclaimer_body"])}</p><p>{esc(s["source_note"])}</p>')
         return f"""<!doctype html>
-<html lang="{lang}">
+<html lang="{REGION[lang]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -373,8 +490,11 @@ class Site:
 <link rel="canonical" href="{esc(self.abs(lang, path))}">
 {alt}
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
-<meta property="og:type" content="website"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
+<meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
 <meta name="theme-color" content="#b3261e">
+<link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml"><link rel="icon" href="{self.path_prefix}/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png"><link rel="manifest" href="{self.path_prefix}/manifest.webmanifest">
+<meta name="robots" content="max-image-preview:large">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
 {ads_head}{ld_html}
@@ -505,9 +625,10 @@ class Site:
                 f'<div class="row">{a}<button type="button" class="cp" data-url="{esc(url)}">{esc(WEB[lang]["copy"])}</button>'
                 f'<button type="button" class="more" hidden data-url="{esc(url)}" data-text="{esc(text)}">{esc(s["share_more"])}</button></div></section>')
 
-    def checker(self, lang: str, title: str | None = None, kerala: bool = False) -> str:
+    def checker(self, lang: str, title: str | None = None, kerala: bool = False, hint: str = "", example: str = "") -> str:
         s, w = self.s[lang], WEB[lang]
-        hint, example = (w["check_hint_kl"], "MM 289707") if kerala else (w["check_hint"], "39C 06366")
+        if not hint:
+            hint, example = (w["check_hint_kl"], "MM 289707") if kerala else (w["check_hint"], "39C 06366")
         return (f'<section class="check" id="check"><h2>{esc(title or s["check_title"])}</h2><p class="hint">{esc(hint)}</p>'
                 f'<form id="checkForm" class="row"><input id="ticket" aria-label="{esc(s["ticket_number"])}" placeholder="{example}" '
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"><button>{esc(s["check_button"])}</button></form>'
@@ -521,11 +642,6 @@ class Site:
                 f'<form id="histForm" class="row"><input id="histNum" aria-label="{esc(s["ticket_number"])}" placeholder="0889" '
                 f'autocomplete="off" autocapitalize="characters" spellcheck="false"><button>{esc(s["history_search"])}</button></form>'
                 f'<div id="histRes" aria-live="polite"></div></section>')
-
-    def telegram_cta(self, lang: str) -> str:
-        if not self.telegram:
-            return ""
-        return f'<p class="btns"><a class="btn tgc" rel="noopener" href="{esc(self.telegram)}">{esc(WEB[lang]["telegram"])} →</a></p>'
 
     def og_image(self, out: pathlib.Path, d: dict) -> str:
         """A 1200x630 card with the 1st prize for WhatsApp/Telegram/Facebook previews. Our own rendering of
@@ -542,6 +658,8 @@ class Site:
             return ""
         rel = f"og/{d['id']}.png"
         f = out / rel
+        if d["date"] < (self.now.date() - dt.timedelta(days=30)).isoformat():
+            return f"{self.base}/{rel}" if f.exists() else ""   # old draws (archive backfill) get no new image
         if f.exists() and d["date"] < (self.now.date() - dt.timedelta(days=2)).isoformat():
             return f"{self.base}/{rel}"  # numbers of older draws no longer change
         cache: dict = self.__dict__.setdefault("_fonts", {})
@@ -585,7 +703,12 @@ class Site:
         """Recent dates as one row of chips, like the app's date picker."""
         s, w = self.s[lang], WEB[lang]
         out = []
-        for x in self.dates[:7]:
+        if current == self.today and current not in self.dates:   # today, before its first result
+            out.append(f'<a class="chip" aria-current="page" href="{self.url(lang, "/")}"><b>{esc(s["today"])}</b>{current[8:]}.{current[5:7]}</a>')
+        # The dates around this one (a page of an old date stays unchanged as new days come in).
+        i = self.dates.index(current) if current in self.dates else 0
+        lo = max(0, min(i - 3, len(self.dates) - 7))
+        for x in self.dates[lo:lo + 7 - len(out)]:
             y, m, d = x.split("-")
             label = s["today"] if x == self.today else w["wd"][dt.date(int(y), int(m), int(d)).weekday()]
             cur = ' aria-current="page"' if x == current else ""
@@ -618,7 +741,8 @@ class Site:
 
     # ---- pages ----
     def build(self, out: pathlib.Path) -> int:
-        latest = self.today if self.today in self.days or not self.dates else self.dates[0]
+        flipped = self.today in self.days or self.now.time() >= DAY_FLIP or not self.dates
+        latest = self.today if flipped else self.dates[0]
         for lang in LANGS:
             w, s = WEB[lang], self.s[lang]
             # home: today's results, refreshed by the page itself while a draw is due
@@ -627,15 +751,26 @@ class Site:
             summary = ", ".join(f'{short_time(t)} {got[sl]["tiers"][0]["numbers"][0] if sl in got else w["awaited"]}'
                                 for sl, t, _ in WEEKLY)
             up = next((u for u in self.index.get("upcoming", []) if u["date"] >= self.today), None)
+            last = ([d for d in self.ordered(self.days.get(latest, [])) if d.get("tiers")] or [None])[-1]
+            yd = self.yesterday()
+            # Turned to today before its first result: yesterday's results stay below the draws to come.
+            before = ("" if got or not yd else f'<h2 class="sub">{esc(w["result_of"].format(d=ddmmyyyy(yd)))}</h2>'
+                      + "".join(self.slip(lang, d) for d in self.ordered(self.days[yd]) if d.get("tiers")))
+            if not last and yd:   # the share picture stays yesterday's newest result until today's first one
+                last = ([d for d in self.ordered(self.days[yd]) if d.get("tiers")] or [None])[-1]
+            if last and last["id"] not in self.og_images:  # the home page's share picture: the newest result
+                self.og_images[last["id"]] = self.og_image(out, last)
             body = (f'<div class="intro"><h1>{esc(w["home_h1"])} <span class="d">{esc(d0)}</span></h1>'
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
-                    + self.chips(lang, latest) + self.hub_links(lang)
+                    + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
-                    + self.day_cards(lang, latest) + self.telegram_cta(lang) + self.ad() + self.checker(lang)
-                    + self.history(lang) + self.app_promo(lang) + self.faq(lang))
-            self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, list=summary),
-                                                 body, data=list(got.values()), live=latest == self.today,
-                                                 crumbs=[(w["home"], "/")], tab="results", modified=self.updated), key="home", lastmod=self.stamp)
+                    + self.day_cards(lang, latest) + before + self.ad() + self.other_states(lang) + self.history(lang) + self.app_promo(lang)
+                    + self.guide_links(lang) + self.faq(lang))
+            self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, s=ddmmyy(latest), list=summary),
+                                                 body, data=list(got.values()) or ([d for d in self.days[yd] if d.get("tiers")] if before else []),
+                                                 live=self.today,   # the checker reads yesterday's until today's 1st result, then reloads
+                                                 crumbs=[(w["home"], "/")], tab="results", modified=self.updated,
+                                                 image=self.og_images.get(last["id"], "") if last else ""), key="home", lastmod=self.stamp)
             # one page per day and per draw
             for i, date in enumerate(self.dates):
                 dd = ddmmyyyy(date)
@@ -645,11 +780,11 @@ class Site:
                 if i > 0:
                     nav.append(f'<a class="btn" href="{self.url(lang, self.day_path(self.dates[i - 1]))}">{esc(w["next"])} →</a>')
                 draws = [d for d in self.ordered(self.days[date]) if d.get("tiers")]
-                body = (f'<div class="intro"><h1>{esc(w["day_h1"].format(d=dd))}</h1></div>' + self.chips(lang, date)
-                        + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>' + self.checker(lang))
+                body = (f'<div class="intro"><h1>{esc(w["day_h1"].format(d=dd))}</h1></div>' + self.checker(lang) + self.chips(lang, date)
+                        + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>')
                 self.write(out, lang, self.day_path(date),
                            self.page(lang, self.day_path(date), w["day_title"].format(d=dd),
-                                     w["home_desc"].format(d=dd, list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
+                                     w["day_desc"].format(d=dd, s=ddmmyy(date), list=", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}'
                                                                                   for d in draws)) if draws else w["day_title"].format(d=dd),
                                      body, data=draws, live=date == self.today,
                                      crumbs=[(w["home"], "/"), (dd, self.day_path(date))], tab="results",
@@ -661,37 +796,53 @@ class Site:
                     image = self.og_images[d["id"]]
                     t, g, first = short_time(d["time"]), game(d["name"]), d["tiers"][0]["numbers"][0]
                     kl = d["slot"] == "KL"
-                    if kl:
-                        title = w["kl_draw_title"].format(d=dd, g=g)
-                    elif d["slot"] in TAG:
-                        title = w["draw_title"].format(w=s[TAG[d["slot"]]], t=t, d=dd, g=g)
-                    else:
-                        title = w["draw_title_special"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
+                    title = self.draw_title(lang, d)
                     desc = w["kl_desc"].format(d=dd, g=g, n=first) if kl else w["draw_desc"].format(g=g, d=dd, t=t, n=first)
                     sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
                                    f'<b>{esc(short_time(x["time"]))}</b>{esc(game(x["name"]).replace("Dear ", ""))}</a>' for x in draws)
-                    body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d) + self.share(lang, d)
-                            + self.checker(lang, s["find_in_result"], kerala=kl)
+                    body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d)
+                            + self.checker(lang, s["find_in_result"], kerala=kl) + self.share(lang, d)
                             + (f'<p class="hint">{esc(s["kerala_source_note"])}</p>' if kl else "")
                             + f'<section class="card">{self.tiers(lang, d, ads=True)}</section>' + self.source_buttons(lang, d)
                             + f'<nav class="chips" aria-label="{esc(w["all_of_day"].format(d=dd))}">{sibs}</nav>'
                             + f'<p class="pn"><a class="btn" href="{self.url(lang, self.day_path(date))}">{esc(w["all_of_day"].format(d=dd))}</a>'
                             + (f'<a class="btn" href="{self.url(lang, HUB[d["slot"]])}">{esc(w["slot_all"].format(w=s[TAG[d["slot"]]], t=t))}</a>'
                                if d["slot"] in HUB else "") + '</p>'
-                            + self.app_promo(lang))
+                            + self.app_promo(lang) + self.guide_links(lang))
                     self.write(out, lang, self.draw_path(d),
                                self.page(lang, self.draw_path(d), title, desc, body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
                                          tab="kerala" if kl else "results", image=image),
                                key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date)
             self.kerala_hub(out, lang)
+            self.mh_pages(out, lang)
+            self.guide_pages(out, lang)
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
+            self.yesterday_hub(out, lang)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
+            months = sorted({x[:7] for x in self.dates}, reverse=True)
             self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
-                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}{self.archive(lang)}{self.history(lang)}',
+                                                             f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}'
+                                                             f'{self.month_links(lang, months)}<h2 class="sub">{esc(w["recent_days"])}</h2>'
+                                                             f'{self.archive(lang, self.dates[:31])}{self.history(lang)}',
                                                              crumbs=[(w["home"], "/"), (w["old_h1"], "/old-results/")], tab="old"),
                        key="old", lastmod=self.stamp)
+            # one page per month, so every old date is two clicks from anywhere and searchable by month
+            for i, ym in enumerate(months):
+                path, m = f"/old-results/{ym}/", self.month_name(lang, ym)
+                nav = []
+                if i + 1 < len(months):
+                    nav.append(f'<a class="btn" href="{self.url(lang, f"/old-results/{months[i + 1]}/")}">← {esc(self.month_name(lang, months[i + 1]))}</a>')
+                if i > 0:
+                    nav.append(f'<a class="btn" href="{self.url(lang, f"/old-results/{months[i - 1]}/")}">{esc(self.month_name(lang, months[i - 1]))} →</a>')
+                body = (f'<div class="intro"><h1>{esc(w["month_h1"].format(m=m))}</h1></div>'
+                        + self.archive(lang, [x for x in self.dates if x.startswith(ym)]) + f'<p class="pn">{"".join(nav)}</p>'
+                        + self.month_links(lang, months, ym))
+                last = max(x for x in self.dates if x.startswith(ym))
+                self.write(out, lang, path, self.page(lang, path, w["month_title"].format(m=m), w["month_title"].format(m=m), body,
+                                                      crumbs=[(w["home"], "/"), (w["old_h1"], "/old-results/"), (m, path)], tab="old"),
+                           key=f"month:{ym}", lastmod=self.stamp if last == self.dates[0] else last)
         # English-only trust pages (required by ad networks; also what visitors look for)
         w = WEB["en"]
         for path, title, text in (("/about/", w["about"], w["about_body"]),
@@ -704,8 +855,229 @@ class Site:
                                                f'<div class="intro"><h1>{esc(w["notfound"])}</h1></div>'
                                                f'<p class="pn"><a class="btn" href="{self.url("en", "/")}">{esc(self.s["en"]["tab_results"])} →</a></p>',
                                                alternates=False))
+        self.kerala_ml(out)
+        self.share_kit(out)
         self.assets(out)
         return len(self.pages)
+
+    def draw_title(self, lang: str, d: dict) -> str:
+        w, s = WEB[lang], self.s[lang]
+        dd, t, g = ddmmyyyy(d["date"]), short_time(d["time"]), game(d["name"])
+        if d["slot"] == "KL":
+            return w["kl_draw_title"].format(d=dd, g=g)
+        if d["slot"] in TAG:
+            return w["draw_title"].format(w=s[TAG[d["slot"]]], t=t, d=dd, g=g)
+        return w["draw_title_special"].format(s=self.state(lang, d.get("state", "")), d=dd, t=t, g=g)
+
+    def share_kit(self, out: pathlib.Path) -> None:
+        """/share/: the newest results as ready-made posts for a WhatsApp channel, Facebook page or
+        YouTube community tab: picture + caption + link, shared from the phone in one tap.
+        Not for search: noindex, not in the sitemap, linked from nowhere."""
+        recent = [x for x in self.dates[:2]]
+        draws = [d for x in recent for d in reversed(self.ordered(self.days[x])) if d.get("tiers")]
+        cards = []
+        for i, d in enumerate(draws):
+            first = d["tiers"][0]
+            link = self.abs("en", self.draw_path(d))
+            tags = "#KeralaLottery #KeralaLotteryResult" if d["slot"] == "KL" else \
+                "#LotterySambad #DearLottery #NagalandStateLottery"
+            text = (f"🎟️ {self.draw_title('en', d)}\n"
+                    f"🏆 1st Prize {self.prize_short('en', first['prize'])}: {first['numbers'][0]}\n"
+                    f"✅ Full result + ticket checker / पूरा रिजल्ट और टिकट चेक 👇\n{link}\n\n{tags}")
+            img = self.og_images.get(d["id"], "")
+            pic = (f'<img src="{esc(img)}" alt="" width="600" height="315">'
+                   f'<a class="b" href="{esc(img)}" download>⬇ Image</a>') if img else ""
+            cards.append(f'<section><h2>{esc(self.draw_title("en", d))}</h2>{pic}'
+                         f'<textarea id="t{i}" rows="7" readonly>{esc(text)}</textarea>'
+                         f'<p><button data-i="{i}" data-img="{esc(img)}" class="sh">📤 Share (image + text)</button>'
+                         f'<button data-i="{i}" class="cp">📋 Copy text</button>'
+                         f'<a class="b" href="https://wa.me/?text={urllib.parse.quote(text)}">WhatsApp</a></p></section>')
+        js = ("function T(i){return document.getElementById('t'+i).value}"
+              "function C(i,b){navigator.clipboard.writeText(T(i)).then(function(){b.textContent='✔ Copied'})}"
+              "document.querySelectorAll('.cp').forEach(function(b){b.onclick=function(){C(b.dataset.i,b)}});"
+              "document.querySelectorAll('.sh').forEach(function(b){b.onclick=function(){var t=T(b.dataset.i);"
+              "if(!navigator.share){C(b.dataset.i,b);return}"
+              "(b.dataset.img?fetch(b.dataset.img).then(function(r){return r.blob()}).then(function(x){"
+              "var f=new File([x],'result.png',{type:'image/png'});"
+              "return navigator.canShare&&navigator.canShare({files:[f]})?navigator.share({files:[f],text:t}):navigator.share({text:t})})"
+              ":navigator.share({text:t})).catch(function(){})}});")
+        page = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">'
+                '<title>LottoDost – share kit</title><style>body{font:16px/1.4 system-ui,sans-serif;margin:0 auto;max-width:640px;'
+                'padding:12px 16px;background:#f7f2f0;color:#1d1b1a}section{background:#fff;border-radius:12px;padding:12px;margin:12px 0}'
+                'h2{font-size:17px;margin:0 0 8px}img{width:100%;height:auto;border-radius:8px}textarea{width:100%;box-sizing:border-box;'
+                'font:14px/1.4 system-ui,sans-serif;margin:8px 0}button,.b{display:inline-block;margin:4px 6px 0 0;padding:10px 14px;'
+                'border-radius:8px;border:0;background:#b3261e;color:#fff;font-size:15px;text-decoration:none}.cp,.b{background:#5c4d4a}</style>'
+                '</head><body><h1>Share kit</h1><p>Newest results first. On a phone, <b>Share</b> sends the picture with '
+                'the text to WhatsApp (channel or group), Facebook or YouTube. Updated after every draw.</p>'
+                + "".join(cards) + f'<script>{js}</script></body></html>')
+        f = out / "share" / "index.html"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(page, encoding="utf-8")
+
+    # ---- Maharashtra (other state lotteries) ----
+    def mh_game(self, lang: str, d: dict) -> str:
+        """'Maharashtra Gajlaxmi Ravi' + weekly -> 'Gajlaxmi Ravi Weekly' (English names, as printed)."""
+        name = d["name"].removeprefix("Maharashtra ")
+        return f'{name} {MH[lang].get(d.get("kind", ""), "")}'.strip()
+
+    def mh_title(self, lang: str, d: dict) -> str:
+        m = MH[lang]
+        return m["draw_title"].format(g=self.mh_game(lang, d), d=ddmmyyyy(d["date"]),
+                                      n=m["draw_no"].format(n=d["drawNo"]) if d.get("drawNo") else "")
+
+    def mh_buttons(self, lang: str, d: dict) -> str:
+        src = {x["kind"]: x["url"] for x in d.get("sources", [])}
+        b = [f'<a class="btn" rel="nofollow" href="{esc(src[k])}">{esc(MH[lang][t])}</a>'
+             for k, t in (("officialPdf", "open_pdf"), ("officialSite", "open_site")) if k in src]
+        return f'<p class="btns">{"".join(b)}</p>'
+
+    def mh_card(self, lang: str, d: dict) -> str:
+        s, m = self.s[lang], MH[lang]
+        stub = f'<div class="stub"><b>{esc(short_time(d["time"]) if d.get("time") else "MH")}</b><span>{esc(m["tab"])}</span></div>'
+        ok = d.get("status") == "OK" and d.get("tiers")
+        page = self.url(lang, self.draw_path(d))
+        name = f'<a href="{page}">{esc(self.mh_game(lang, d))}</a>' if ok else esc(self.mh_game(lang, d))
+        head = (f'{stub}<div class="sb"><h2>{name}</h2><p class="meta">{esc(fmt(s["state_lottery"], m["tab"]))}'
+                + (f' · <span lang="mr">{esc(d["nameLocal"])}</span>' if d.get("nameLocal") else "") + '</p>')
+        if not ok:
+            return f'<section class="slip">{head}<p>{esc(s["pdf_only"])}</p>{self.mh_buttons(lang, d)}</div></section>'
+        first = d["tiers"][0]
+        return (f'<section class="slip" id="{esc(draw_slug(d))}">{head}'
+                f'<p class="eyebrow">{esc(s["first_prize"])} · {esc(self.prize_short(lang, first["prize"]))}</p>'
+                f'<p class="first">{esc(first["numbers"][0])}</p></div>'
+                f'<details class="all"><summary>{esc(s["tap_full_result"])}</summary><div class="in">{self.tiers(lang, d)}'
+                f'{self.mh_buttons(lang, d)}<p><a class="go" href="{page}">{esc(WEB[lang]["open_page"])} →</a></p></div></details>'
+                f'</section>')
+
+    def other_states(self, lang: str) -> str:
+        """Lotteries of other states, in a row of their own below the Sambad/Kerala results."""
+        if not self.mh_dates:
+            return ""
+        m = MH[lang]
+        return (f'<h2 class="sub">{esc(m["other"])}</h2><nav class="chips wrapchips" aria-label="{esc(m["other"])}">'
+                f'<a class="chip" href="{self.url(lang, "/maharashtra/")}"><b>4 PM</b>{esc(m["tab"])}</a></nav>')
+
+    def mh_pages(self, out: pathlib.Path, lang: str) -> None:
+        """/maharashtra/ (the newest day's draws and a 30-draw chart) and one page per draw."""
+        if not self.mh_dates:
+            return
+        s, w, m = self.s[lang], WEB[lang], MH[lang]
+        latest = self.mh_dates[0]
+        draws = self.mh[latest]
+        done = [d for x in self.mh_dates for d in self.mh[x] if d.get("status") == "OK" and d.get("tiers")]
+        d0 = ddmmyyyy(latest)
+        listing = ", ".join(f'{self.mh_game("en" if lang == "en" else lang, d)} {d["tiers"][0]["numbers"][0]}'
+                            for d in draws if d.get("status") == "OK" and d.get("tiers"))
+        rows = "".join(
+            f'<tr><th scope="row"><a href="{self.url(lang, self.draw_path(d))}">{d["date"][8:]}.{d["date"][5:7]}</a>'
+            f'<small>{esc(w["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(self.mh_game(lang, d))}</td><td><a href="{self.url(lang, self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a></td></tr>'
+            for d in done[:30])
+        table = (f'<h2 class="sub">{esc(m["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(w["date"])}</th>'
+                 f'<th>{esc(w["game"])}</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
+        first_ok = next((d for d in draws if d.get("status") == "OK" and d.get("tiers")), None)
+        # Without numbers the page says only what it has: the official sheets (no checker, no prize list).
+        earlier = "".join(f'<h2 class="sub">{esc(ddmmyyyy(x))}</h2>' + "".join(self.mh_card(lang, d) for d in self.mh[x])
+                          for x in self.mh_dates[1:3])
+        body = (f'<div class="intro"><h1>{esc(m["h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(m["schedule"])}</p></div>'
+                + (self.checker(lang, hint=m["check_hint"], example="GL-00 2142") if done else "")
+                + "".join(self.mh_card(lang, d) for d in draws) + self.ad() + table + earlier
+                + f'<p class="hint">{esc(m["ocr_note"] if done else m["pdf_note"])}</p>' + self.hub_links(lang))
+        names = ", ".join(self.mh_game(lang, d) for d in draws)
+        if first_ok:
+            title = m["title"].format(d=d0, g=self.mh_game(lang, first_ok))
+            desc = m["desc"].format(d=d0, list=listing)
+        else:
+            title = m["title_pdf"].format(d=d0, g=self.mh_game(lang, draws[0]))
+            desc = m["desc_pdf"].format(d=d0, list=names)
+        self.write(out, lang, "/maharashtra/", self.page(
+            lang, "/maharashtra/", title, desc, body, data=[d for d in draws if d.get("tiers")],
+            image=self.og_images.get(first_ok["id"], "") if first_ok else "",
+            crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/")], modified=self.updated if latest == self.today else None),
+            key="maharashtra", lastmod=self.stamp)
+        for d in done:
+            if d["id"] not in self.og_images and d.get("time"):
+                self.og_images[d["id"]] = self.og_image(out, d)
+            dd = ddmmyyyy(d["date"])
+            sibs = "".join(f'<a class="chip"{" aria-current=\"page\"" if x is d else ""} href="{self.url(lang, self.draw_path(x))}">'
+                           f'<b>{esc(short_time(x["time"]) if x.get("time") else "MH")}</b>{esc(self.mh_game(lang, x))}</a>'
+                           for x in self.mh[d["date"]] if x.get("status") == "OK" and x.get("tiers"))
+            when = f'{w["wd"][dt.date.fromisoformat(d["date"]).weekday()]}, {dd}' + (f' · {time12(d["time"])}' if d.get("time") else "")
+            first = d["tiers"][0]
+            sheet = (f'<article class="sheet"><div class="band"><h2>{esc(d["name"])} {esc(m.get(d.get("kind", ""), ""))}</h2>'
+                     f'<p>{esc(fmt(s["state_lottery"], m["tab"]))}' + (f' · <span lang="mr">{esc(d["nameLocal"])}</span>' if d.get("nameLocal") else "")
+                     + f'</p></div><div class="hero"><p class="eyebrow">{esc(s["first_prize"])} · {esc(rupees(first["prize"]))}</p>'
+                     f'<p class="first">{esc(first["numbers"][0])}</p><p class="meta">{esc(when)}</p></div></article>')
+            title = self.mh_title(lang, d)
+            body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + sheet
+                    + self.checker(lang, hint=m["check_hint"], example=first["numbers"][0]) + self.tiers(lang, d, ads=True)
+                    + self.mh_buttons(lang, d) + f'<p class="hint">{esc(m["ocr_note"])}</p>'
+                    + f'<nav class="chips wrapchips">{sibs}</nav>'
+                    + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
+            self.write(out, lang, self.draw_path(d), self.page(
+                lang, self.draw_path(d), title, m["draw_desc"].format(g=self.mh_game(lang, d), d=dd, f=first["numbers"][0]), body,
+                data=[d], image=self.og_images.get(d["id"], ""),
+                crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
+                key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"])
+
+    @property
+    def kerala_ml_ok(self) -> bool:
+        return any(d["slot"] == "KL" and d.get("tiers") for x in self.dates for d in self.days[x])
+
+    def ml_game(self, d: dict) -> str:
+        """'STHREE SAKTHI SS-543' -> 'സ്ത്രീ ശക്തി SS-543' (bumpers keep their English name)."""
+        m = re.search(r"\b([A-Z]{2})-(\d+)\b", d["name"])
+        return f'{ML["games"][m.group(1)]} {m.group(0)}' if m and m.group(1) in ML["games"] else game(d["name"])
+
+    def kerala_ml(self, out: pathlib.Path) -> None:
+        """/ml/kerala/: the Kerala result in Malayalam, as Kerala searches for it (കേരള ലോട്ടറി ഫലം)."""
+        if not self.kerala_ml_ok:
+            return
+        kl = [d for x in self.dates for d in self.days[x] if d["slot"] == "KL" and d.get("tiers")]
+        latest = kl[0]
+        d0 = ddmmyyyy(latest["date"])
+        wait = "" if latest["date"] == self.today else f'<p class="banner">{esc(ML["waiting"])}</p>'
+        tiers = []
+        for t in latest["tiers"]:
+            nums = "".join(f"<li>{esc(n)}</li>" for n in t["numbers"])
+            width = max((len(n) for n in t["numbers"]), default=4)
+            hint = f'<p class="hint">{esc(ML["last4"])}</p>' if t.get("match") == "LAST4" else ""
+            warn = "" if t.get("confirmed", True) else f'<p class="warn">{esc(ML["unconfirmed"])}</p>'
+            tiers.append(f'<div class="tier"><div class="th"><h3>{esc(ML["tiers"].get(t["rank"], t["rank"]))}</h3>'
+                         f'<b>{esc(rupees(t["prize"]))}</b></div>{hint}{warn}'
+                         f'<ul class="nums {"n4" if width <= 4 else "n5" if width <= 5 else "n6"}">{nums}</ul></div>')
+        wd = ML["wd"][dt.date.fromisoformat(latest["date"]).weekday()]
+        first = latest["tiers"][0]
+        sheet = (f'<article class="sheet"><div class="band"><h2>{esc(self.ml_game(latest))}</h2><p>കേരള സംസ്ഥാന ലോട്ടറി</p></div>'
+                 f'<div class="hero"><p class="eyebrow">{esc(ML["first"])} · {esc(rupees(first["prize"]))}</p>'
+                 f'<p class="first">{esc(first["numbers"][0])}</p><p class="meta">{esc(wd)}, {esc(d0)} · 3:00 PM</p></div></article>')
+        rows = "".join(
+            f'<tr><th scope="row"><a href="{self.url("en", self.draw_path(d))}">{d["date"][8:]}.{d["date"][5:7]}</a>'
+            f'<small>{esc(ML["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(self.ml_game(d))}</td><td><a href="{self.url("en", self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a></td></tr>'
+            for d in kl[:30])
+        table = (f'<h2 class="sub">{esc(ML["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(ML["date"])}</th>'
+                 f'<th>{esc(ML["game"])}</th><th>{esc(ML["first"])}</th></tr></thead><tbody>{rows}</tbody></table></div>')
+        src = {x["kind"]: x["url"] for x in latest.get("sources", [])}
+        body = (f'<div class="intro" lang="ml"><h1>{esc(ML["h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(ML["schedule"])}</p></div>{wait}<div lang="ml">{sheet}'
+                f'<p class="pn"><a class="btn" href="{self.url("en", "/kerala/")}#check">{esc(ML["check"])}</a></p>'
+                + "".join(tiers) + self.ad() + table + f'<p class="hint">{esc(ML["note"])}</p>'
+                + (f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(src["officialSite"])}">{esc(ML["official"])}</a></p>'
+                   if "officialSite" in src else "") + '</div>')
+        g = self.ml_game(latest)
+        html_ = self.page("en", "/ml/kerala/", ML["title"].format(d=d0, g=g), ML["desc"].format(d=d0, g=g, n=first["numbers"][0]),
+                          body, alternates=False, data=kl[:7], image=self.og_images.get(latest["id"], ""),
+                          crumbs=[("LottoDost", "/"), ("Kerala", "/kerala/"), ("മലയാളം", "/ml/kerala/")],
+                          modified=self.updated if latest["date"] == self.today else None)
+        alts = (f'<link rel="alternate" hreflang="ml-IN" href="{esc(self.abs("en", "/ml/kerala/"))}">'
+                + "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, "/kerala/"))}">' for l in LANGS))
+        html_ = (html_.replace('<html lang="en-IN">', '<html lang="ml-IN">', 1)
+                 .replace('<meta property="og:locale" content="en_IN">', '<meta property="og:locale" content="ml_IN">', 1)
+                 .replace('<link rel="canonical"', alts + '<link rel="canonical"', 1))
+        self.write(out, "en", "/ml/kerala/", html_, key="page:kerala-ml", lastmod=self.stamp)
 
     def kerala_hub(self, out: pathlib.Path, lang: str) -> None:
         """/kerala/: today's Kerala result (or the countdown to it) and the recent draws."""
@@ -717,14 +1089,46 @@ class Site:
         table = self.recent_table(lang, kl[:30], w["kl_recent"])
         d0 = ddmmyyyy(latest["date"]) if latest else ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["kl_h1"])} <span class="d">{esc(d0)}</span></h1>'
-                f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + cards + self.ad() + self.checker(lang, kerala=True) + table
-                + f'<p class="hint">{esc(s["kerala_source_note"])}</p>' + self.history(lang))
+                f'<p class="hint">{esc(w["kl_schedule"])}</p></div>' + self.checker(lang, kerala=True) + cards + self.ad() + table
+                + f'<p class="hint">{esc(s["kerala_source_note"])}</p>'
+                + (f'<p class="pn"><a class="btn" lang="ml" href="{self.url("en", "/ml/kerala/")}">മലയാളത്തിൽ വായിക്കുക →</a></p>'
+                   if self.kerala_ml_ok else "") + self.history(lang))
         title = w["kl_title"].format(d=d0, g=game(latest["name"])) if latest else w["kl_h1"]
         desc = w["kl_desc"].format(d=d0, g=game(latest["name"]), n=latest["tiers"][0]["numbers"][0]) if latest else w["kl_schedule"]
         self.write(out, lang, "/kerala/", self.page(lang, "/kerala/", title, desc, body, data=kl[:7],
+                                                    image=self.og_images.get(latest["id"], "") if latest else "",
                                                     crumbs=[(w["home"], "/"), (w["kl_tab"], "/kerala/")], tab="kerala",
                                                     wait=f"{self.today}_KL" if not today_done else "",
                                                     modified=self.updated if today_done else None), key="kerala", lastmod=self.stamp)
+
+    def guide_links(self, lang: str, current: str = "") -> str:
+        gl = guides.G[lang]
+        a = "".join(f'<a class="chip"{" aria-current=\"page\"" if k == current else ""} href="{self.url(lang, p)}"><b>→</b>{esc(gl["names"][k])}</a>'
+                    for k, p in guides.PATHS.items())
+        return f'<h2 class="sub">{esc(gl["nav"])}</h2><nav class="chips wrapchips" aria-label="{esc(gl["nav"])}">{a}</nav>'
+
+    def tax_calc(self, lang: str) -> str:
+        c = guides.G[lang]["tax"]["calc"]
+        return (f'<section class="check" id="tax"><form id="taxForm" class="row" data-l="{esc(json.dumps(c, ensure_ascii=False))}">'
+                f'<input id="taxAmt" aria-label="{esc(c["amount"])}" placeholder="{esc(c["amount"])}" inputmode="numeric" autocomplete="off">'
+                f'<button>{esc(c["go"])}</button></form><div id="taxRes" aria-live="polite"></div>'
+                f'<p class="hint">{esc(c["note"])}</p></section>')
+
+    def guide_pages(self, out: pathlib.Path, lang: str) -> None:
+        """Our own explainers, written from the official texts (sources listed on each page)."""
+        w, gl = WEB[lang], guides.G[lang]
+        for key, path in guides.PATHS.items():
+            g = gl[key]
+            secs = "".join(f'<h2>{esc(h)}</h2>' + "".join(f"<p>{esc(x)}</p>" for x in ps) for h, ps in g["sections"])
+            src = "".join(f'<li><a rel="noopener" href="{esc(u)}">{esc(n)}</a></li>' for n, u in g["src"])
+            body = (f'<div class="intro"><h1>{esc(g["h1"])}</h1><p class="hint">{esc(g["intro"])}</p></div>'
+                    + (self.tax_calc(lang) if key == "tax" else "") + self.ad()
+                    + f'<section class="card prose guide">{secs}</section>'
+                    + f'<section class="card prose"><h2>{esc(gl["sources"])}</h2><ul class="src">{src}</ul><p class="hint">{esc(gl["checked"])}</p></section>'
+                    + self.guide_links(lang, key))
+            self.write(out, lang, path, self.page(lang, path, g["title"], g["desc"], body,
+                                                  crumbs=[(w["home"], "/"), (gl["names"][key], path)]),
+                       key=f"guide:{key}", lastmod="2026-10-20")
 
     def recent_table(self, lang: str, draws: list[dict], heading: str) -> str:
         w, s = WEB[lang], self.s[lang]
@@ -740,9 +1144,33 @@ class Site:
         """The four daily results by the names people search them by (Morning, Day, Night, Kerala)."""
         s, w = self.s[lang], WEB[lang]
         items = [(HUB[sl], s[TAG[sl]], short_time(t)) for sl, t, _ in WEEKLY] + [("/kerala/", w["kl_tab"], "3 PM")]
+        yd = self.yesterday()
+        if yd:
+            items.append(("/yesterday/", w["yday"], f"{yd[8:]}.{yd[5:7]}"))
         a = "".join(f'<a class="chip"{" aria-current=\"page\"" if p == current else ""} href="{self.url(lang, p)}"><b>{esc(t)}</b>{esc(n)}</a>'
                     for p, n, t in items)
         return f'<nav class="chips hubs" aria-label="{esc(s["tab_results"])}">{a}</nav>'
+
+    def yesterday(self) -> str:
+        """The last day before today with results ("lottery sambad yesterday" is searched every day)."""
+        return next((x for x in self.dates if x < self.today), "")
+
+    def yesterday_hub(self, out: pathlib.Path, lang: str) -> None:
+        """/yesterday/: a fixed address for yesterday's results, with the 1st prizes of the week before."""
+        yd = self.yesterday()
+        if not yd:
+            return
+        w, path, dd = WEB[lang], "/yesterday/", ddmmyyyy(yd)
+        draws = [d for d in self.ordered(self.days[yd]) if d.get("tiers")]
+        week = [x for x in self.dates if x < self.today][:7]
+        body = (f'<div class="intro"><h1>{esc(w["yday_h1"])} <span class="d">{esc(dd)}</span></h1></div>'
+                + self.checker(lang) + self.hub_links(lang, path) + self.day_cards(lang, yd)
+                + f'<p class="pn"><a class="btn" href="{self.url(lang, self.day_path(yd))}">{esc(w["all_of_day"].format(d=dd))}</a></p>'
+                + self.ad() + f'<h2 class="sub">{esc(w["yday_week"])}</h2>' + self.archive(lang, week) + self.faq(lang))
+        summary = ", ".join(f'{short_time(d["time"])} {d["tiers"][0]["numbers"][0]}' for d in draws)
+        self.write(out, lang, path, self.page(lang, path, w["yday_title"].format(d=dd), w["yday_desc"].format(d=dd, s=ddmmyy(yd), list=summary),
+                                              body, data=draws, tab="results", crumbs=[(w["home"], "/"), (w["yday"], path)]),
+                   key="yesterday", lastmod=self.stamp)
 
     def slot_hub(self, out: pathlib.Path, lang: str, slot: str, time: str) -> None:
         """/morning-1pm/ etc.: today's result of one daily draw (or the countdown to it) and its last 30 days."""
@@ -758,14 +1186,15 @@ class Site:
             cards += self.slip(lang, mine[0]) if mine else ""   # the last result, for those checking yesterday's ticket
         d0 = ddmmyyyy(self.today)
         body = (f'<div class="intro"><h1>{esc(w["slot_h1"].format(w=word, t=t))} <span class="d">{esc(d0)}</span></h1>'
-                f'<p class="hint">{esc(w["a_time"])}</p></div>' + self.hub_links(lang, path) + cards + self.telegram_cta(lang)
-                + self.ad() + self.checker(lang) + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word))
+                f'<p class="hint">{esc(w["a_time"])}</p></div>' + self.checker(lang) + self.hub_links(lang, path) + cards
+                + self.ad() + self.recent_table(lang, mine[:30], w["slot_recent"].format(w=word, t=t))
                 + self.history(lang) + self.app_promo(lang) + self.faq(lang))
         desc = (w["slot_desc"].format(t=t, w=word, d=d0, n=today_d["tiers"][0]["numbers"][0]) if today_d
                 else w["slot_desc_wait"].format(t=t, w=word, d=d0))
         latest = today_d or (mine[0] if mine else None)
         self.write(out, lang, path, self.page(lang, path, w["slot_title"].format(w=word, d=d0, t=t), desc, body,
                                               data=[latest] if latest else [], tab="results",
+                                              image=self.og_images.get(latest["id"], "") if latest else "",
                                               crumbs=[(w["home"], "/"), (f"{word} {t}", path)],
                                               wait=f"{self.today}_{slot}" if not today_d and not no_dear else "",
                                               modified=self.updated if today_d else None), key=f"slot:{slot}",
@@ -780,15 +1209,24 @@ class Site:
     def date_form(self, lang: str) -> str:
         w, s = WEB[lang], self.s[lang]
         lo, hi = (self.dates[-1], self.dates[0]) if self.dates else ("", "")
-        return (f'<form id="dateForm" class="check row" data-none="{esc(s["no_result"])}"><input type="date" id="dateIn" '
+        return (f'<form id="dateForm" class="check row" data-none="{esc(s["no_result"])}" data-base="{self.url(lang, "/result/")}" '
+                f'data-days="{" ".join(x.replace("-", "") for x in self.dates)}"><input type="date" id="dateIn" '
                 f'aria-label="{esc(w["pick_date"])}" min="{lo}" max="{hi}" value="{hi}"><button>{esc(w["go"])}</button></form>'
                 f'<p id="dateRes" class="hint" aria-live="polite"></p>')
 
-    def archive(self, lang: str) -> str:
+    def month_name(self, lang: str, ym: str) -> str:
+        return f'{WEB[lang]["mon"][int(ym[5:]) - 1]} {ym[:4]}'
+
+    def month_links(self, lang: str, months: list[str], current: str = "") -> str:
+        a = "".join(f'<a class="chip"{" aria-current=\"page\"" if ym == current else ""} href="{self.url(lang, f"/old-results/{ym}/")}">'
+                    f'<b>{ym[:4]}</b>{esc(WEB[lang]["mon"][int(ym[5:]) - 1])}</a>' for ym in months)
+        return f'<h2 class="sub">{esc(WEB[lang]["months"])}</h2><nav class="chips wrapchips" aria-label="{esc(WEB[lang]["months"])}">{a}</nav>'
+
+    def archive(self, lang: str, dates: list[str]) -> str:
         s, w = self.s[lang], WEB[lang]
         head = "".join(f"<th>{esc(short_time(t))}</th>" for _, t, _ in WEEKLY)
         rows = []
-        for x in self.dates:
+        for x in dates:
             y, m, d = x.split("-")
             by_slot = {dr["slot"]: dr for dr in self.days[x] if dr.get("tiers")}
             cells = "".join(f'<td><a href="{self.url(lang, self.draw_path(by_slot[sl]))}">{esc(by_slot[sl]["tiers"][0]["numbers"][0])}</a></td>'
@@ -801,13 +1239,16 @@ class Site:
     def assets(self, out: pathlib.Path):
         (out / "assets").mkdir(parents=True, exist_ok=True)
         (out / "assets/site.js").write_text(JS, encoding="utf-8")
+        for f in STATIC.iterdir():  # site icons (web/static: favicon.svg is the source of the PNGs)
+            if not (out / f.name).exists() or (out / f.name).read_bytes() != f.read_bytes():
+                (out / f.name).write_bytes(f.read_bytes())
         urls = []
         for key, alts, lastmod in self.pages:
             for lang, loc in alts.items():
                 if key.startswith("page:") and lang != "en":
                     continue
                 links = "" if key.startswith("page:") else "".join(
-                    f'<xhtml:link rel="alternate" hreflang="{l}" href="{esc(u)}"/>' for l, u in alts.items())
+                    f'<xhtml:link rel="alternate" hreflang="{REGION[l]}" href="{esc(u)}"/>' for l, u in alts.items())
                 mod = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""   # when the numbers last changed
                 urls.append(f"<url><loc>{esc(loc)}</loc>{mod}{links}</url>")
         (out / "sitemap.xml").write_text(
@@ -834,7 +1275,7 @@ CSS = """:root{--bg:#f7f2f0;--fg:#221a19;--mut:#6b5552;--card:#fff;--line:#eaddd
 .tabs a[aria-current]{color:#fff;border-color:var(--gold)}
 .intro{margin:20px 0 4px}h1{font-size:1.45rem;font-weight:800;letter-spacing:-.01em}h1 .d{white-space:nowrap;color:var(--red)}h1.sm{font-size:1.15rem}
 .hint{color:var(--mut);font-size:.88rem;margin-top:4px}.eyebrow{color:var(--mut);font-size:.85rem;font-weight:600}
-.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:14px -16px 4px;padding:2px 16px 6px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.wrapchips{flex-wrap:wrap;overflow:visible;margin:10px 0}.guide h2{font-size:1.05rem;margin:18px 0 6px}.guide h2:first-child{margin-top:4px}.guide p{margin:0 0 10px}.src{padding-left:18px}.src li{margin:6px 0}.tax{width:100%;border-collapse:collapse;margin:10px 0}.tax td{padding:8px 0;border-bottom:1px solid var(--line)}.tax td:last-child{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.tax tr.keep td{font-size:1.1rem;color:var(--brand);border-bottom:0}
 .chip{flex:none;min-width:64px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px;color:var(--fg);text-decoration:none;font-weight:600;font-size:.9rem;line-height:1.25}
 .chip b{display:block;font-size:.72rem;color:var(--mut);font-weight:600}.chip[aria-current]{background:var(--gold);border-color:var(--gold);color:var(--ongold)}.chip[aria-current] b{color:var(--ongold)}
 .banner{background:var(--pink);color:var(--onpink);border-radius:14px;padding:12px 16px;margin:12px 0;font-weight:600}
@@ -882,7 +1323,7 @@ h2.sub{font-size:1.1rem;margin:22px 0 4px}.faq{margin:24px 0 8px}.faq h2{font-si
 th,td{padding:10px 6px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}th:first-child{padding-left:14px}td:last-child{padding-right:12px}thead th{border-top:0;background:var(--soft);color:var(--mut);font-size:.8rem}
 tbody th a{color:var(--fg);font-weight:700;text-decoration:none}tbody th small{display:block;color:var(--mut);font-weight:400}
 td a{color:var(--red);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums;font-size:.86rem}tbody th small{font-size:.75rem}
-.hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}.tgc{background:#2481cc;color:#fff;border:0}
+.hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}
 #dateForm{display:flex;align-items:center;gap:8px;padding:12px}#dateForm input{flex:1 1 10rem;font-size:1.05rem;letter-spacing:0;text-transform:none}
 .foot{color:var(--mut);font-size:.8rem;padding:28px 0 36px;margin-top:24px;border-top:1px solid var(--line)}.foot p{margin:0 0 8px}
 .foot .links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.88rem}.ad{margin:16px 0;min-height:100px}
@@ -898,16 +1339,17 @@ function rup(n){var s=String(n);if(s.length<=3)return"₹"+s;return"₹"+s.slice
 function tier(r){var k={"1":"tier_1",CONS:"tier_cons","2":"tier_2","3":"tier_3","4":"tier_4","5":"tier_5"}[r];return k?t(k):t("tier_n",r)}
 function parse(raw){var s=raw.replace(/[०-९]/g,function(d){return d.charCodeAt(0)-0x966}).replace(/[০-৯]/g,function(d){return d.charCodeAt(0)-0x9e6});
 s=s.trim().toUpperCase().replace(/[-_./,]/g," ").replace(/\s+/g," ");
-function p(x){var m=/^(\d{2})\s*([A-Z])\s*(\d{5})$/.exec(x);if(m)return(+m[1]>=34&&"ABCDEGHJKL".indexOf(m[2])>=0)?{pre:m[1]+m[2],dg:m[3],f:"D5"}:false;
+function p(x){var m=/^([A-Z]{2})\s*-\s*(\d{2})\s*(\d{4})$/.exec(x)||/^([A-Z]{2})\s?(\d{2})\s+(\d{4})$/.exec(x);if(m)return{pre:m[1]+"-"+m[2],dg:m[3],f:"MH4"};
+m=/^(\d{2})\s*([A-Z])\s*(\d{5})$/.exec(x);if(m)return(+m[1]>=34&&"ABCDEGHJKL".indexOf(m[2])>=0)?{pre:m[1]+m[2],dg:m[3],f:"D5"}:false;
 if((m=/^(\d{2})\s+(\d{4})$/.exec(x)))return{pre:m[1],dg:m[2],f:"D4"};if((m=/^([A-Z]{1,2})\s*(\d{6})$/.exec(x)))return{pre:m[1],dg:m[2],f:"B6"};return null}
 var r=p(s);if(r)return r;if(r===false)return null;var c=s.replace(/ /g,"");if(c!==s){r=p(c);if(r)return r;if(r===false)return null}
 return/^\d{4,6}$/.test(c)?{pre:null,dg:c,f:"DIGITS"}:null}
 function show(k){return k.pre?k.pre+" "+k.dg:k.dg}
-function compat(k,d){if(d.format==="D5")return k.f==="D5"||(k.f==="DIGITS"&&k.dg.length<=5);if(d.format==="D4")return k.f==="D4"||(k.f==="DIGITS"&&k.dg.length===4);if(d.format==="B6")return k.f==="B6"||k.f==="DIGITS";return false}
+function compat(k,d){if(d.format==="D5")return k.f==="D5"||(k.f==="DIGITS"&&k.dg.length<=5);if(d.format==="D4")return k.f==="D4"||(k.f==="DIGITS"&&k.dg.length===4);if(d.format==="B6")return k.f==="B6"||k.f==="DIGITS";if(d.format==="MH4")return k.f==="MH4"||(k.f==="DIGITS"&&k.dg.length===4);return false}
 function check(k,d){if(!d.tiers||!d.tiers.length||!compat(k,d))return null;var w=[],n=k.dg.length,full=k.f!=="DIGITS",sh=show(k);
 d.tiers.forEach(function(T){var N=T.numbers||[];if(T.match==="FULL"){var f=N[0];if(!f)return;if(full){if(sh===f)w.push({T:T})}else if(n===5&&k.dg===f.slice(-5))w.push({T:T,nf:1})}
 else if(T.match==="CONS"){if(n<5)return;var first=full&&(d.tiers[0].numbers||[])[0]===sh;if(!first&&N.indexOf(k.dg)>=0)w.push({T:T})}
-else if(T.match==="EXACT"){if(full){if(N.indexOf(sh)>=0)w.push({T:T})}else if(n===6&&N.some(function(x){return x.slice(-6)===k.dg}))w.push({T:T,nf:1})}
+else if(T.match==="EXACT"){if(full){if(N.indexOf(sh)>=0)w.push({T:T})}else if(n===(d.format==="MH4"?4:6)&&N.some(function(x){return x.slice(-n)===k.dg}))w.push({T:T,nf:1})}
 else if(T.match==="LAST5"){if(n>=5&&N.indexOf(k.dg.slice(-5))>=0)w.push({T:T})}else if(T.match==="LAST4"){if(N.indexOf(k.dg.slice(-4))>=0)w.push({T:T})}});
 w.sort(function(a,b){return b.T.prize-a.T.prize});return{d:d,w:w}}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
@@ -919,7 +1361,7 @@ var v=document.getElementById("ticket").value;if(!v.trim())return;var k=parse(v)
 var cs=D.map(function(d){return check(k,d)}).filter(Boolean),won=cs.filter(function(c){return c.w.length});
 won.forEach(function(c){var x=c.w[0],e=box(x.nf?t("maybe_first"):t("you_won"));e[1].appendChild(el("strong",null,tier(x.T.rank)+" · "+rup(x.T.prize)));
 e[1].appendChild(el("div","hint",c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)));
-if(x.nf)e[1].appendChild(el("div","hint",t("need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
+if(x.nf)e[1].appendChild(el("div","hint",t(c.d.format==="MH4"?"need_full_mh":"need_full_number")));if(x.T.confirmed===false)e[1].appendChild(el("div","warn",t("tier_unconfirmed")));out.appendChild(e[0])});
 if(!won.length){var e=box(t("no_win_title",show(k)),"no");e[1].appendChild(el("div","hint",t(cs.length===1&&S.no_win_body_one?"no_win_body_one":"no_win_body",cs.length)));out.appendChild(e[0])}
 var dg=k.dg;document.querySelectorAll(".nums li").forEach(function(s){var x=s.textContent,hit=dg.length>=x.length&&dg.slice(-x.length)===x;
 s.classList.toggle("hit",hit);if(hit){var dt=s.closest("details");if(dt)dt.open=true}});
@@ -946,14 +1388,27 @@ var e=box(t(hits.length===1&&S.history_count_one?"history_count_one":"history_co
 hits.forEach(function(c){var x=c.w[0];ul.appendChild(el("li",null,c.d.date.split("-").reverse().join(".")+" "+hm(c.d.time)+" · "+
 c.d.name.replace(/ WEEKLY LOTTERY$/,"")+" · "+tier(x.T.rank)+" "+rup(x.T.prize)+(x.nf?" *":"")))});e[1].appendChild(ul);out.appendChild(e[0])
 }).catch(function(){out.appendChild(box(t("history_unavailable"),"no")[0])})});
+// Lottery tax: 30% cut above Rs 10,000 (s.393(3)); at filing 30% + surcharge (new regime, marginal relief) + 4% cess.
+var tf=document.getElementById("taxForm");
+function lotteryTax(p){var tds=p>10000?Math.round(p*0.3):0,t=p*0.3,r=0,T=0,rp=0;
+if(p>20000000){r=0.25;T=20000000;rp=0.15}else if(p>10000000){r=0.15;T=10000000;rp=0.10}else if(p>5000000){r=0.10;T=5000000;rp=0}
+var ts=t*(1+r);if(r){var cap=T*0.3*(1+rp)+(p-T);if(ts>cap)ts=cap}var total=Math.round(ts*1.04);
+return{tds:tds,paid:p-tds,more:total-tds,total:total,keep:p-total}}
+window.lotteryTax=lotteryTax;
+if(tf)tf.addEventListener("submit",function(ev){ev.preventDefault();var L=JSON.parse(tf.dataset.l),out=document.getElementById("taxRes");
+var p=parseInt(document.getElementById("taxAmt").value.replace(/[^0-9]/g,""),10);out.textContent="";if(!(p>0))return;
+var x=lotteryTax(p),inr=function(n){return"₹"+n.toLocaleString("en-IN")},tb=el("table","tax");
+[["prize",p],["tds",x.tds],["paid",x.paid],["more",x.more],["total",x.total],["keep",x.keep]].forEach(function(r){var tr=el("tr",r[0]==="keep"?"keep":"");
+tr.appendChild(el("td","",L[r[0]]));tr.appendChild(el("td","",inr(r[1])));tb.appendChild(tr)});out.appendChild(tb);
+if(p<=10000)out.appendChild(el("p","hint",L.small))});
 // Old results: jump to a date we have a page for.
 var df=document.getElementById("dateForm");
 if(df)df.addEventListener("submit",function(ev){ev.preventDefault();var v=document.getElementById("dateIn").value,p=v.split("-");if(p.length!==3)return;
-var a=document.querySelector('a[href$="/result/'+p[2]+"-"+p[1]+"-"+p[0]+'/"]');if(a)location.href=a.getAttribute("href");
+if((" "+df.dataset.days+" ").indexOf(" "+p.join("")+" ")>=0)location.href=df.dataset.base+p[2]+"-"+p[1]+"-"+p[0]+"/";
 else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
-if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
+if(day){var shown=D.filter(function(d){return d.date===day}).length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
 setInterval(function(){if(document.hidden)return;fetch(url,{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
 var n=j.draws.filter(function(d){return d.date===day&&d.tiers&&d.tiers.length}).length;if(n>shown)location.reload()}).catch(function(){})},30000)}
 // A page waiting for one draw (Kerala before 4 PM, Morning/Day/Night before their result) reloads once it is in the feed.
@@ -968,7 +1423,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", type=pathlib.Path, required=True, help="folder containing v2/")
     ap.add_argument("--out", type=pathlib.Path, required=True)
-    ap.add_argument("--base-url", default=os.environ.get("SITE_URL", "https://entrepreneur123.github.io/india"))
+    ap.add_argument("--base-url", default=os.environ.get("SITE_URL", "https://lottodost.com"))
     ap.add_argument("--link-prefix", default=None,
                     help='path the copy is served under, if not base-url\'s ("" for a mirror at a host root)')
     a = ap.parse_args(argv)

@@ -33,16 +33,55 @@ def test_draw_page_is_readable_without_javascript(tmp_path, monkeypatch):
     assert "<title>Lottery Sambad Morning 1 PM Result 18.10.2026 – Dear Wish Sunday</title>" in page
     assert "74D 70698" in page and "15172" in page          # 1st prize and a 2nd-prize number in the HTML itself
     assert '<link rel="canonical" href="https://example.in/result/18-10-2026/1pm/">' in page
-    assert 'hreflang="bn" href="https://example.in/bn/result/18-10-2026/1pm/"' in page
+    assert 'hreflang="bn-IN" href="https://example.in/bn/result/18-10-2026/1pm/"' in page   # for readers in India
+    assert '<meta property="og:locale" content="en_IN">' in page
     assert "adsbygoogle" not in page                        # no ad code until an AdSense id is configured
 
 
 def test_languages_and_home(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     bn = (out / "bn/index.html").read_text()
-    assert '<html lang="bn">' in bn and "নাগাল্যান্ড" in bn and "37K 90889" in bn
+    assert '<html lang="bn-IN">' in bn and "নাগাল্যান্ড" in bn and "37K 90889" in bn
     hi = (out / "hi/result/18-10-2026/index.html").read_text()
-    assert "डियर लॉटरी रिज़ल्ट 18.10.2026" in hi
+    assert "लॉटरी संबाद रिज़ल्ट 18.10.2026 (18/10/26)" in hi   # dates as people type them too
+
+
+def test_ticket_checker_comes_before_the_results(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    for f in ("index.html", "result/18-10-2026/index.html", "morning-1pm/index.html", "kerala/index.html"):
+        page = (out / f).read_text()
+        assert 0 < page.index('id="check"') < page.index('class="slip'), f
+    draw = (out / "result/18-10-2026/1pm/index.html").read_text()
+    assert draw.index('class="sheet"') < draw.index('id="check"') < draw.index('class="share"') < draw.index('class="card"')
+    assert "t.me/" not in (out / "index.html").read_text()   # no Telegram channel link (sharing a result stays)
+
+
+def test_home_names_the_site_for_google(tmp_path, monkeypatch):
+    home = (build(tmp_path, monkeypatch) / "index.html").read_text()
+    site = next(json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>', home)
+                if '"WebSite"' in x)
+    assert site["name"] == "LottoDost" and site["url"] == "https://example.in/" and site["inLanguage"] == "en-IN"
+
+
+def test_yesterday_page_has_a_fixed_address(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    page = (out / "yesterday/index.html").read_text()
+    assert "<title>Lottery Sambad Yesterday Result 17.10.2026 – Dear 1 PM, 6 PM, 8 PM and Kerala</title>" in page
+    assert 'class="slip' in page and 'id="check"' in page and "/result/17-10-2026/" in page
+    assert 'href="/yesterday/"' in (out / "index.html").read_text()        # linked from the home page
+    assert "https://example.in/hi/yesterday/" in (out / "sitemap.xml").read_text()
+
+
+def test_site_icon_for_search_results(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch, link_prefix="/india")
+    home = (out / "index.html").read_text()
+    assert '<link rel="icon" href="/india/favicon.ico" sizes="48x48">' in home and 'href="/india/apple-touch-icon.png"' in home
+    for f in ("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"):
+        assert (out / f).stat().st_size > 0, f
+    assert '"logo": "https://example.in/icon-512.png"' in home
+    assert 'href="/india/manifest.webmanifest"' in home and 'content="max-image-preview:large"' in home
+    m = json.loads((out / "manifest.webmanifest").read_text())   # "Add to Home screen" in Chrome / Samsung Internet
+    assert m["start_url"] == "./" and {i["sizes"] for i in m["icons"]} == {"192x192", "512x512"}
 
 
 def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
@@ -50,6 +89,7 @@ def test_sitemap_lists_every_page_once(tmp_path, monkeypatch):
     locs = re.findall(r"<loc>([^<]+)</loc>", (out / "sitemap.xml").read_text())
     assert len(locs) == len(set(locs))
     assert "https://example.in/bn/result/18-10-2026/8pm/" in locs
+    assert 'hreflang="hi-IN" href="https://example.in/hi/"' in (out / "sitemap.xml").read_text()
     assert (out / "robots.txt").read_text().endswith("Sitemap: https://example.in/sitemap.xml\n")
     assert not (out / "ads.txt").exists()
 
@@ -133,6 +173,10 @@ def test_share_image_and_freshness(tmp_path, monkeypatch):
     assert png.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n" and png.stat().st_size < 40_000
     home = (out / "index.html").read_text()
     assert '"dateModified": "2026-10-18T21:00+05:30"' in home
+    shared = re.search(r'<meta property="og:image" content="https://example.in/(og/2026-10-18_\w+\.png)">', home)
+    assert shared and (out / shared[1]).exists()             # WhatsApp/Discover preview of the most shared page
+    assert shared[1] != "og/2026-10-18_NL1PM.png"            # the newest result of the day, not the first
+    assert 'href="/icon-192.png" type="image/png" sizes="192x192"' in home
 
 
 def test_number_history_and_date_search_are_on_the_page(tmp_path, monkeypatch):
@@ -158,7 +202,7 @@ def test_kerala_hub_and_draw_page(tmp_path, monkeypatch):
     monkeypatch.setattr(sitegen.Site, "__init__", init)
     out = build(tmp_path, monkeypatch)
     hub = (out / "kerala/index.html").read_text()
-    assert "<title>Kerala Lottery Result Today 17.10.2026 – Karunya KR-772 3 PM</title>" in hub
+    assert "<title>Kerala Lottery Result Today 17.10.2026 – Karunya KR-772 3 PM, Result Chart</title>" in hub
     assert "KG 709965" in hub and 'placeholder="MM 289707"' in hub
     page = (out / "result/17-10-2026/kerala/index.html").read_text()
     assert "<title>Kerala Lottery Result 17.10.2026 – Karunya KR-772</title>" in page
@@ -175,7 +219,7 @@ def test_draw_time_pages_rank_before_the_result_exists(tmp_path, monkeypatch):
     assert '<link rel="canonical" href="https://example.in/night-8pm/">' in night
     assert "data-wait" not in night and night.count("<tr>") >= 2   # the result and its last days
     bn = (out / "bn/morning-1pm/index.html").read_text()
-    assert "লটারি সংবাদ মর্নিং রেজাল্ট আজ 18.10.2026" in bn
+    assert "লটারি সংবাদ আজকের মর্নিং রেজাল্ট 18.10.2026" in bn
     home = (out / "index.html").read_text()
     for p in ("/morning-1pm/", "/day-6pm/", "/night-8pm/", "/kerala/"):
         assert f'href="{p}"' in home
@@ -201,3 +245,206 @@ def test_draw_time_page_waits_for_todays_result(tmp_path, monkeypatch):
     assert "Lottery Sambad Morning Result Today 19.10.2026" in page
     assert 'data-at="2026-10-19T13:00:00+05:30"' in page    # the countdown
     assert "74D 70698" in page                              # and yesterday's result below it
+
+
+def test_month_archive_and_date_search_reach_every_date(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    month = (out / "old-results/2026-10/index.html").read_text()
+    assert "<title>Lottery Sambad Old Result October 2026 – Dear Lottery 1 PM, 6 PM, 8 PM</title>" in month
+    assert 'href="/result/17-10-2026/"' in month and "74D 70698" in month
+    assert (out / "bn/old-results/2026-10/index.html").exists()
+    old = (out / "old-results/index.html").read_text()
+    assert 'href="/old-results/2026-10/"' in old
+    assert re.search(r'data-days="[0-9 ]*20261017[0-9 ]*"', old) and 'data-base="/result/"' in old
+    assert "https://example.in/old-results/2026-10/" in (out / "sitemap.xml").read_text()
+
+
+def ref_tax(p):
+    """Income-tax Act 2025 s.194/s.393(3) and Finance Bill 2026 (new regime), prize as the only income."""
+    tds = round(p * 0.3) if p > 10000 else 0
+    t = p * 0.3
+    for lim, r, rp in ((20_000_000, 0.25, 0.15), (10_000_000, 0.15, 0.10), (5_000_000, 0.10, 0.0)):
+        if p > lim:
+            t = min(t * (1 + r), lim * 0.3 * (1 + rp) + (p - lim))   # marginal relief
+            break
+    total = round(t * 1.04)
+    return {"tds": tds, "paid": p - tds, "more": total - tds, "total": total, "keep": p - total}
+
+
+def test_guides_are_built_with_sources_and_the_calculator_matches_the_law(tmp_path, monkeypatch):
+    import shutil
+    import subprocess
+    out = build(tmp_path, monkeypatch)
+    for lang in ("", "bn/", "hi/"):
+        for p in ("lottery-tax", "claim-prize", "lottery-scams"):
+            page = (out / f"{lang}{p}/index.html").read_text()
+            assert '<ul class="src"><li><a rel="noopener" href="https://' in page
+    tax = (out / "lottery-tax/index.html").read_text()
+    assert "<title>Lottery Tax in India 2026 – Tax on Lottery Prize Calculator</title>" in tax and 'id="taxForm"' in tax
+    assert 'href="/claim-prize/"' in (out / "index.html").read_text()
+    assert 'href="/hi/lottery-tax/"' in (out / "hi/result/18-10-2026/1pm/index.html").read_text()
+    assert ref_tax(10_000_000) == {"tds": 3_000_000, "paid": 7_000_000, "more": 432_000, "total": 3_432_000, "keep": 6_568_000}
+    node = shutil.which("node")
+    if not node:
+        return
+    amounts = [5000, 10000, 10001, 500000, 5_000_000, 5_000_001, 5_200_000, 10_000_000, 10_100_000, 20_000_000, 20_500_000, 120_000_000]
+    js = ("var window={},navigator={},stub={textContent:'[]',dataset:{},addEventListener:function(){}};"
+          "var document={getElementById:function(){return stub},querySelector:function(){return null},"
+          "querySelectorAll:function(){return[]},body:{dataset:{}}};"
+          + (out / "assets/site.js").read_text()
+          + f";console.log(JSON.stringify({amounts}.map(function(p){{return window.lotteryTax(p)}})))")
+    got = json.loads(subprocess.run([node, "-e", js], capture_output=True, text=True, check=True).stdout)
+    assert got == [ref_tax(p) for p in amounts]
+
+
+def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch):
+    import redirect_stubs  # web/redirect_stubs.py
+    out = build(tmp_path, monkeypatch, base="https://lottodost.com", link_prefix="/india")
+    (out / "privacy.html").write_text("<html>policy</html>")
+    (out / "v2").mkdir()
+    (out / "v2/today.json").write_text("{}")
+    pages = sorted(out.rglob("*.html"))
+    assert redirect_stubs.stub_tree(out, "https://lottodost.com/", "/india") == len(pages)
+    home = (out / "index.html").read_text()
+    assert '<meta http-equiv="refresh" content="0; url=https://lottodost.com/">' in home
+    assert '<link rel="canonical" href="https://lottodost.com/">' in home
+    draw = (out / "hi/result/18-10-2026/1pm/index.html").read_text()
+    assert 'url=https://lottodost.com/hi/result/18-10-2026/1pm/"' in draw and "Lottery Sambad" not in draw
+    assert 'url=https://lottodost.com/privacy.html"' in (out / "privacy.html").read_text()
+    nf = (out / "404.html").read_text()
+    assert 'content="noindex"' in nf and 'p.indexOf("/india/")===0' in nf and "http-equiv" not in nf
+    assert (out / "v2/today.json").read_text() == "{}"          # the app's JSON mirror is untouched
+    # The Cloudflare copy starts from this tree: whatever the site build does not rewrite is removed, never served.
+    (out / "result/18-10-2026/1pm/index.html").write_text("<html>real page</html>")
+    assert redirect_stubs.purge(out) == len(pages) - 1
+    assert sorted(out.rglob("*.html")) == [out / "result/18-10-2026/1pm/index.html"]
+
+
+def test_share_kit_has_ready_posts_and_stays_out_of_search(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    kit = (out / "share/index.html").read_text()
+    assert '<meta name="robots" content="noindex,nofollow">' in kit
+    assert "https://example.in/share/" not in (out / "sitemap.xml").read_text()
+    assert "🏆 1st Prize ₹1 Crore: 74D 70698" in kit                     # the 18-10-2026 1 PM result
+    assert "https://example.in/result/18-10-2026/1pm/" in kit and "https://wa.me/?text=" in kit
+    first = kit.index("<section>")
+    assert "1 PM" not in kit[first:kit.index("</section>")]                # newest draw of the day first
+
+
+MH_DRAW = {"id": "2026-10-18_MH_GAJLAXMI-RAVI", "slot": "MH", "lottery": "maharashtra", "date": "2026-10-18", "time": "16:45",
+           "state": "Maharashtra", "name": "Maharashtra Gajlaxmi Ravi", "kind": "weekly", "nameLocal": "महाराष्ट्र गजलक्ष्मी रवि साप्ताहिक सोडत",
+           "format": "MH4", "ocr": True, "status": "OK", "drawNo": 43,
+           "tiers": [{"rank": "1", "prize": 10000, "match": "EXACT", "numbers": ["GL-00 2142"]},
+                     {"rank": "2", "prize": 5000, "match": "LAST4", "numbers": ["2273"]},
+                     {"rank": "4", "prize": 1000, "match": "LAST4", "numbers": ["2013", "4179"]}],
+           "sources": [{"kind": "officialPdf", "url": "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf"},
+                       {"kind": "officialSite", "url": "https://lottery.maharashtra.gov.in/mhlotteryresults.aspx"}]}
+
+
+def test_maharashtra_has_its_own_section_and_pages(tmp_path, monkeypatch):
+    import shutil
+    import subprocess
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    pending = dict(MH_DRAW, id="2026-10-18_MH_PADMINI", name="Maharashtra Padmini", status="PDF", time="", tiers=[], drawNo=None)
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [MH_DRAW, pending]}))
+    out = build(tmp_path, monkeypatch)
+    home = (out / "index.html").read_text()
+    assert '<h2 class="sub">Other state lotteries</h2>' in home and 'href="/maharashtra/"' in home
+    assert "MH_GAJLAXMI" not in home and "Gajlaxmi" not in home   # Sambad's day cards stay Sambad's
+    hub = (out / "maharashtra/index.html").read_text()
+    assert "<title>Maharashtra Lottery Result Today 18.10.2026 – Gajlaxmi Ravi Weekly and All Draws</title>" in hub
+    assert "GL-00 2142" in hub and "Padmini" in hub and "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
+    page = (out / "result/18-10-2026/maharashtra-gajlaxmi-ravi/index.html").read_text()
+    assert "<title>Maharashtra Gajlaxmi Ravi Weekly Lottery Result 18.10.2026 (Draw 43)</title>" in page
+    assert 'lang="mr">महाराष्ट्र गजलक्ष्मी रवि साप्ताहिक सोडत' in page
+    assert not (out / "result/18-10-2026/maharashtra-padmini").exists()   # no numbers, no page
+    assert (out / "hi/maharashtra/index.html").exists() and (out / "bn/maharashtra/index.html").exists()
+    sm = (out / "sitemap.xml").read_text()
+    assert "https://example.in/maharashtra/" in sm and "https://example.in/result/18-10-2026/maharashtra-gajlaxmi-ravi/" in sm
+    node = shutil.which("node")
+    if not node:
+        return
+    # The page's own checker: series + number for the 1st prize, any series for the others.
+    js = (out / "assets/site.js").read_text()
+    m = re.search(r'<script type="application/json" id="draws">(.*?)</script>', page, re.S)
+    harness = ("var res=[];var els={};function E(id){return els[id]||(els[id]={value:'',textContent:'',appendChild:function(c){res.push(c)},"
+               "addEventListener:function(ev,f){this.f=f},scrollIntoView:function(){},dataset:{}})}"
+               "var document={getElementById:function(id){if(id==='draws')return{textContent:" + json.dumps(m[1]) + "};"
+               "if(id==='i18n')return{textContent:'{}'};return E(id)},querySelector:function(){return null},"
+               "querySelectorAll:function(){return[]},createElement:function(t){return{appendChild:function(c){(this.k=this.k||[]).push(c)},"
+               "classList:{toggle:function(){}},set textContent(v){this.t=v},get textContent(){return this.t||''}}},body:{dataset:{}}};"
+               "var window={},navigator={},location={hash:''};")
+    out_js = []
+    for ticket in ("GL-00 2142", "GL-05 2142", "gl00 2273", "2142", "9999"):
+        run = (harness + js + f";E('ticket').value={json.dumps(ticket)};E('checkForm').f({{preventDefault:function(){{}}}});"
+               "console.log(JSON.stringify(res.map(function(b){return b.className+':'+b.k[0].t})))")
+        out_js.append(json.loads(subprocess.run([node, "-e", run], capture_output=True, text=True, check=True).stdout))
+    assert out_js[0][0].startswith("res:") and "no" not in out_js[0][0].split(":")[0]
+    assert out_js[1][0].startswith("res no:")             # 1st prize is for series GL-00 only
+    assert not out_js[2][0].startswith("res no:")         # 2nd prize: any series
+    assert not out_js[3][0].startswith("res no:")         # 4 digits alone: "same digits as a top prize"
+    assert out_js[4][0].startswith("res no:")
+
+
+def test_maharashtra_without_numbers_promises_only_the_official_sheets(tmp_path, monkeypatch):
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    pdf = dict(MH_DRAW, status="PDF", time="", tiers=[], drawNo=None)
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [pdf]}))
+    out = build(tmp_path, monkeypatch)
+    hub = (out / "maharashtra/index.html").read_text()
+    assert "<title>Maharashtra Lottery Result Today 18.10.2026 – Gajlaxmi Ravi Weekly, Official Result Sheets</title>" in hub
+    assert 'id="checkForm"' not in hub and "Full prize list" not in hub and "read by computer" not in hub
+    assert "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
+    assert "https://example.in/maharashtra/" in (out / "sitemap.xml").read_text()
+
+
+def test_kerala_in_malayalam(tmp_path, monkeypatch):
+    kl = {"id": "2026-10-18_KL", "slot": "KL", "lottery": "kerala", "date": "2026-10-18", "time": "15:00", "state": "Kerala",
+          "name": "SAMRUDHI SM-77", "drawNo": 77, "format": "B6", "price": 0, "special": False, "status": "OK",
+          "tiers": [{"rank": "1", "prize": 10000000, "match": "EXACT", "numbers": ["MM 289707"]},
+                    {"rank": "9", "prize": 100, "match": "LAST4", "numbers": ["9865"], "confirmed": False}],
+          "sources": [{"kind": "officialSite", "url": "https://statelottery.kerala.gov.in/"}]}
+    orig = sitegen.Site.__init__
+
+    def init(self, *a, **k):
+        orig(self, *a, **k)
+        self.days.setdefault("2026-10-18", []).append(kl)
+        self.dates = sorted(self.days, reverse=True)
+    monkeypatch.setattr(sitegen.Site, "__init__", init)
+    out = build(tmp_path, monkeypatch)
+    page = (out / "ml/kerala/index.html").read_text()
+    assert '<html lang="ml-IN">' in page and '<meta property="og:locale" content="ml_IN">' in page
+    assert re.search(r"<title>കേരള ലോട്ടറി ഫലം ഇന്ന് \d\d\.\d\d\.2026 – .+ \| Kerala Lottery Result</title>", page)
+    assert '<link rel="canonical" href="https://example.in/ml/kerala/">' in page
+    assert 'hreflang="en-IN" href="https://example.in/kerala/"' in page and 'hreflang="ml-IN" href="https://example.in/ml/kerala/"' in page
+    assert "ഒന്നാം സമ്മാനം" in page and "MM 289707" in page and "സമൃദ്ധി SM-77" in page
+    assert "ഒമ്പതാം സമ്മാനം" in page and "ഈ നമ്പറുകൾ ഇനിയും സ്ഥിരീകരിച്ചിട്ടില്ല." in page
+    hub = (out / "kerala/index.html").read_text()
+    assert 'hreflang="ml-IN" href="https://example.in/ml/kerala/"' in hub and 'href="/ml/kerala/"' in hub
+    sm = (out / "sitemap.xml").read_text()
+    assert "<loc>https://example.in/ml/kerala/</loc>" in sm and "/bn/ml/" not in sm
+
+
+def test_home_turns_to_today_30_minutes_before_the_first_draw(tmp_path, monkeypatch):
+    monkeypatch.setenv("SITE_OG", "0")
+    data = tmp_path / "data"
+    (data / "v2/days").mkdir(parents=True)
+    feed = json.loads(FEED.read_text())
+    (data / "v2/days/2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18",
+                                                              "draws": [d for d in feed["draws"] if d["date"] == "2026-10-18"]}))
+    def home(h, m):
+        out = tmp_path / f"out{h}{m}"
+        sitegen.Site(data, "https://example.in", now=dt.datetime(2026, 10, 19, h, m, tzinfo=sitegen.IST)).build(out)
+        return (out / "index.html").read_text()
+    early = home(12, 29)   # still yesterday's results under yesterday's date
+    assert "Lottery Sambad Result Today <span class=\"d\">18.10.2026</span>" in early and 'data-at="2026-10-19T13:00' not in early
+    flip = home(12, 30)
+    assert "Lottery Sambad Result Today <span class=\"d\">19.10.2026</span>" in flip
+    assert "Lottery Sambad Result Today 19.10.2026" in flip.split("</title>")[0]
+    assert 'data-at="2026-10-19T13:00:00+05:30"' in flip and 'data-at="2026-10-19T20:00:00+05:30"' in flip
+    assert 'data-live="2026-10-19"' in flip                          # reloads when the 1 PM result is in
+    assert flip.index('data-at="2026-10-19T20:00') < flip.index("Result of 18.10.2026") < flip.index("74D 70698")
+    assert '"date":"2026-10-18"' in flip                             # the checker still knows yesterday's numbers
+    assert '<b>Today</b>19.10' in flip
