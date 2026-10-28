@@ -56,7 +56,7 @@ const fil: SocialDict = {
   'photos.title': 'Mga Photo',
   'photos.add': 'Magdagdag ng photo',
   'photos.remove': 'Alisin ang photo na ito',
-  'photos.hint': 'Hanggang 4 pang photo. Sinusuri ang bawat isa sa device mo bago idagdag.',
+  'photos.hint': 'Hanggang {n} pang photo. Sinusuri ang bawat isa sa device mo bago idagdag.',
   'photos.nude': 'Mukhang may nudity ang photo na ito, kaya hindi ito naidagdag',
   'photos.checking': 'Sinusuri ang photo…',
   'photos.view': 'Photo {n} ng {total}',

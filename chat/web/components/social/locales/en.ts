@@ -55,7 +55,7 @@ const en = {
   'photos.title': 'Photos',
   'photos.add': 'Add photo',
   'photos.remove': 'Remove this photo',
-  'photos.hint': 'Up to 4 more photos. Each one is checked on your device before it’s added.',
+  'photos.hint': 'Up to {n} more photos. Each one is checked on your device before it’s added.',
   'photos.nude': 'This photo looks like nudity, so it wasn’t added',
   'photos.checking': 'Checking the photo…',
   'photos.view': 'Photo {n} of {total}',

@@ -56,7 +56,7 @@ const ja: SocialDict = {
   'photos.title': '写真',
   'photos.add': '写真を追加',
   'photos.remove': 'この写真を削除',
-  'photos.hint': 'あと4枚まで追加できます。写真は追加する前に端末上でチェックされます。',
+  'photos.hint': 'あと{n}枚まで追加できます。写真は追加する前に端末上でチェックされます。',
   'photos.nude': 'この写真はヌードのように見えるため、追加されませんでした',
   'photos.checking': '写真を確認しています…',
   'photos.view': '写真 {n}/{total}',

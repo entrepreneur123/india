@@ -41,7 +41,7 @@ export function Gallery({ photos, owner }: { photos: ProfilePhoto[]; owner: stri
           </li>
         ) : null}
       </ul>
-      <p className="text-xs leading-relaxed text-muted-foreground">{st('photos.hint')}</p>
+      {photos.length < MAX_PHOTOS ? <p className="text-xs leading-relaxed text-muted-foreground">{st('photos.hint', { n: MAX_PHOTOS - photos.length })}</p> : null}
       <PhotoViewer photos={photos.map((p) => p.url)} index={shown} onIndex={setShown} label={owner} />
     </section>
   )

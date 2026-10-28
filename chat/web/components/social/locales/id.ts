@@ -56,7 +56,7 @@ const id: SocialDict = {
   'photos.title': 'Foto',
   'photos.add': 'Tambah foto',
   'photos.remove': 'Hapus foto ini',
-  'photos.hint': 'Hingga 4 foto lagi. Setiap foto diperiksa di perangkatmu sebelum ditambahkan.',
+  'photos.hint': 'Hingga {n} foto lagi. Setiap foto diperiksa di perangkatmu sebelum ditambahkan.',
   'photos.nude': 'Foto ini terlihat mengandung ketelanjangan, jadi tidak ditambahkan',
   'photos.checking': 'Memeriksa foto…',
   'photos.view': 'Foto {n} dari {total}',

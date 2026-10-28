@@ -52,7 +52,7 @@ const nl: SocialDict = {
   'photos.title': 'Foto’s',
   'photos.add': 'Foto toevoegen',
   'photos.remove': 'Deze foto verwijderen',
-  'photos.hint': 'Nog maximaal 4 foto’s. Elke foto wordt op je apparaat gecontroleerd voordat hij wordt toegevoegd.',
+  'photos.hint': 'Nog maximaal {n} foto’s. Elke foto wordt op je apparaat gecontroleerd voordat hij wordt toegevoegd.',
   'photos.nude': 'Deze foto lijkt naakt te bevatten, dus hij is niet toegevoegd',
   'photos.checking': 'Foto controleren…',
   'photos.view': 'Foto {n} van {total}',

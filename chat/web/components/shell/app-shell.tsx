@@ -344,6 +344,18 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     const timer = setTimeout(() => void backend.backfillThumbs?.().catch(() => undefined), 5_000)
     return () => clearTimeout(timer)
   }, [backend])
+  // Friends' feed fetched ahead, its first photos too, so Explore → Feed opens filled (Instagram loads the next posts
+  // before they are asked for). Not on a data-saving connection.
+  useEffect(() => {
+    if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return
+    const timer = setTimeout(() => {
+      void mutate('explore-feed', backend.exploreFeed().then((items) => {
+        for (const url of items.flatMap((it) => it.photos.length ? it.photos : it.post?.imageUrl ? [it.post.imageUrl] : []).slice(0, 6)) new Image().src = url
+        return items
+      }), { revalidate: false }).catch(() => undefined)
+    }, 3_000)
+    return () => clearTimeout(timer)
+  }, [backend, mutate])
   // ...and their changes reach me the same way.
   useEffect(() => backend.friendSignals(() => void mutate('friend-activity')), [backend, mutate])
   const state = useMemo<AppState>(

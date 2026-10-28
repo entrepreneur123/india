@@ -52,7 +52,7 @@ const ptBR: SocialDict = {
   'photos.title': 'Fotos',
   'photos.add': 'Adicionar foto',
   'photos.remove': 'Remover esta foto',
-  'photos.hint': 'Até 4 fotos a mais. Cada uma é verificada no seu aparelho antes de entrar.',
+  'photos.hint': 'Até {n} fotos a mais. Cada uma é verificada no seu aparelho antes de entrar.',
   'photos.nude': 'Esta foto parece conter nudez, então não foi adicionada',
   'photos.checking': 'Verificando a foto…',
   'photos.view': 'Foto {n} de {total}',

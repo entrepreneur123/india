@@ -69,7 +69,7 @@ function colorStyle(id: ColorId): { className?: string; style: CSSProperties } {
 }
 
 /**
- * Name effects on the name and @ID (the owner, 2026-10-27: the effect is seen on the text, not over the photo):
+ * Name effects on the name (the owner, 2026-10-27: the effect is seen on the text, not over the photo):
  * aurora drifts through greens, blues and violets, prism turns through the rainbow. Mid tones, readable on the white
  * card and on the shop's dark preview.
  */
@@ -92,39 +92,33 @@ function lookStyle(wear: LookWear & { effect?: string | null }) {
   }
 }
 
-/** The @ID drawn with a look (null items: plain). Used by LookName and by the shop's previews. */
-export function LookText({ handle, wear, className }: { handle: string; wear: LookWear & { effect?: string | null }; className?: string }) {
-  const { color, font, style } = lookStyle(wear)
+/**
+ * The @ID: always plain, in the app's font and colour (the owner, 2026-10-28: the name carries the colour, font and
+ * effect everywhere; the ID stays easy to read and recognise). Only the worn badge sits beside it.
+ */
+export function LookText({ handle, badge, className }: { handle: string; badge?: string | null; className?: string }) {
   return (
     <span className={cn('inline-flex max-w-full min-w-0 items-center gap-[2px] align-bottom', className)}>
-      <bdi
-        // The padding keeps script descenders and swashes inside the clipped (truncating) box.
-        className={cn('-my-[0.15em] min-w-0 truncate py-[0.15em]', color ? color.className : 'text-muted-foreground')}
-        style={style}
-      >
-        {/* The @ is how IDs are shown, not part of the ID: it keeps the app's font (some ID fonts draw it as a blob). */}
-        <span style={font ? { fontFamily: 'var(--font-stack)' } : undefined}>@</span>
-        {handle}
-      </bdi>
-      {isItem(wear.badge) ? <LookBadge id={wear.badge as BadgeId} className="h-[1em] w-auto shrink-0" /> : null}
+      <bdi className="min-w-0 truncate text-muted-foreground">@{handle}</bdi>
+      {isItem(badge) ? <LookBadge id={badge as BadgeId} className="h-[1em] w-auto shrink-0" /> : null}
     </span>
   )
 }
 
 /**
- * Someone's @ID with their look. `handle`: already known (my own, a profile that carries it), shown while the look
+ * Someone's @ID with their badge. `handle`: already known (my own, a profile that carries it), shown while the look
  * loads; `fallback`: what to show while nothing is known yet (e.g. the plain name), nothing by default.
  */
 export function LookName({ userId, handle, fallback = null, className }: { userId: string; handle?: string; fallback?: ReactNode; className?: string }) {
   const look = useLook(userId)
   const shown = look?.handle ?? handle
   if (!shown) return <>{fallback}</>
-  return <LookText handle={shown} wear={look ?? NO_WEAR} className={className} />
+  return <LookText handle={shown} badge={look?.badge} className={className} />
 }
 
 /**
- * Someone's name in their look's colour and font (the owner, 2026-10-27: others see the name first, so the look is on
- * the name as well as the @ID; the badge stays with the @ID). Plain until the look loads, and for everyone without one.
+ * Someone's name in their look's colour, font or name effect (the owner, 2026-10-28: only the name; the @ID stays
+ * plain, the badge beside it). Plain until the look loads, and for everyone without one.
  */
 export function NameText({ userId, wear, children, className }: { userId?: string; wear?: LookWear & { effect?: string | null }; children: ReactNode; className?: string }) {
   const look = useLook(wear ? null : userId) // `wear`: a look being tried on (the shop's preview)

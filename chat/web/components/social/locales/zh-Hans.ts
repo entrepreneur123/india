@@ -56,7 +56,7 @@ const zhHans: SocialDict = {
   'photos.title': '照片',
   'photos.add': '添加照片',
   'photos.remove': '移除这张照片',
-  'photos.hint': '最多还可添加 4 张照片。每张照片添加前都会在你的设备上检查。',
+  'photos.hint': '最多还可添加 {n} 张照片。每张照片添加前都会在你的设备上检查。',
   'photos.nude': '这张照片疑似裸露内容，未添加',
   'photos.checking': '正在检查照片…',
   'photos.view': '第 {n} 张，共 {total} 张',

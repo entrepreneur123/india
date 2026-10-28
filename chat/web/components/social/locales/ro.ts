@@ -53,7 +53,7 @@ const ro: SocialDict = {
   'photos.title': 'Poze',
   'photos.add': 'Adaugă o poză',
   'photos.remove': 'Elimină această poză',
-  'photos.hint': 'Încă cel mult 4 poze. Fiecare e verificată pe dispozitivul tău înainte să fie adăugată.',
+  'photos.hint': 'Încă cel mult {n} poze. Fiecare e verificată pe dispozitivul tău înainte să fie adăugată.',
   'photos.nude': 'Poza pare să conțină nuditate, așa că nu a fost adăugată',
   'photos.checking': 'Se verifică poza…',
   'photos.view': 'Poza {n} din {total}',

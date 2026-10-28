@@ -52,7 +52,7 @@ const it: SocialDict = {
   'photos.title': 'Foto',
   'photos.add': 'Aggiungi foto',
   'photos.remove': 'Rimuovi questa foto',
-  'photos.hint': 'Fino a 4 foto in più. Ognuna viene controllata sul tuo dispositivo prima di essere aggiunta.',
+  'photos.hint': 'Fino a {n} foto in più. Ognuna viene controllata sul tuo dispositivo prima di essere aggiunta.',
   'photos.nude': 'Questa foto sembra contenere nudità, quindi non è stata aggiunta',
   'photos.checking': 'Controllo della foto…',
   'photos.view': 'Foto {n} di {total}',

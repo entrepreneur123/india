@@ -56,7 +56,7 @@ const zhHant: SocialDict = {
   'photos.title': '照片',
   'photos.add': '新增照片',
   'photos.remove': '移除這張照片',
-  'photos.hint': '最多還可新增 4 張照片。每張照片新增前都會在你的裝置上檢查。',
+  'photos.hint': '最多還可新增 {n} 張照片。每張照片新增前都會在你的裝置上檢查。',
   'photos.nude': '這張照片疑似裸露內容，未新增',
   'photos.checking': '正在檢查照片…',
   'photos.view': '第 {n} 張，共 {total} 張',

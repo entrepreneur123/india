@@ -56,7 +56,7 @@ const ko: SocialDict = {
   'photos.title': '사진',
   'photos.add': '사진 추가',
   'photos.remove': '이 사진 삭제',
-  'photos.hint': '사진을 4장 더 추가할 수 있어요. 추가하기 전에 기기에서 한 장씩 확인해요.',
+  'photos.hint': '사진을 {n}장 더 추가할 수 있어요. 추가하기 전에 기기에서 한 장씩 확인해요.',
   'photos.nude': '노출 사진으로 보여서 추가하지 않았어요',
   'photos.checking': '사진 확인 중…',
   'photos.view': '사진 {n}/{total}',

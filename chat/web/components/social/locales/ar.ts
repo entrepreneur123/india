@@ -59,7 +59,7 @@ const ar: SocialDict = {
   'photos.title': 'الصور',
   'photos.add': 'إضافة صورة',
   'photos.remove': 'إزالة هذه الصورة',
-  'photos.hint': 'حتى 4 صور إضافية. تُفحص كل صورة على جهازك قبل إضافتها.',
+  'photos.hint': 'حتى {n} صور إضافية. تُفحص كل صورة على جهازك قبل إضافتها.',
   'photos.nude': 'يبدو أن هذه الصورة تحتوي على عري، لذلك لم تُضف',
   'photos.checking': 'جارٍ فحص الصورة…',
   'photos.view': 'الصورة {n} من {total}',

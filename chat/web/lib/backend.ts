@@ -190,7 +190,8 @@ export interface Shop {
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
 export type KycDemoOutcome = Exclude<KycResult, 'none'>
 
-export const MAX_PHOTOS = 4
+/** Profile photos besides the main one (093; the owner, 2026-10-28: up to 50). */
+export const MAX_PHOTOS = 50
 
 export interface ProfilePhoto {
   id: string

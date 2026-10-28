@@ -52,7 +52,7 @@ const vi: SocialDict = {
   'photos.title': 'Ảnh',
   'photos.add': 'Thêm ảnh',
   'photos.remove': 'Xóa ảnh này',
-  'photos.hint': 'Thêm tối đa 4 ảnh. Mỗi ảnh được kiểm tra trên thiết bị của bạn trước khi thêm.',
+  'photos.hint': 'Thêm tối đa {n} ảnh. Mỗi ảnh được kiểm tra trên thiết bị của bạn trước khi thêm.',
   'photos.nude': 'Ảnh này có vẻ khỏa thân nên chưa được thêm',
   'photos.checking': 'Đang kiểm tra ảnh…',
   'photos.view': 'Ảnh {n}/{total}',

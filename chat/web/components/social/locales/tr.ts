@@ -56,7 +56,7 @@ const tr: SocialDict = {
   'photos.title': 'Fotoğraflar',
   'photos.add': 'Fotoğraf ekle',
   'photos.remove': 'Bu fotoğrafı kaldır',
-  'photos.hint': 'En fazla 4 fotoğraf daha. Her biri eklenmeden önce cihazında kontrol edilir.',
+  'photos.hint': 'En fazla {n} fotoğraf daha. Her biri eklenmeden önce cihazında kontrol edilir.',
   'photos.nude': 'Bu fotoğraf çıplaklık içeriyor gibi görünüyor, bu yüzden eklenmedi',
   'photos.checking': 'Fotoğraf kontrol ediliyor…',
   'photos.view': 'Fotoğraf {n} / {total}',

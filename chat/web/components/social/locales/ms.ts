@@ -56,7 +56,7 @@ const ms: SocialDict = {
   'photos.title': 'Foto',
   'photos.add': 'Tambah foto',
   'photos.remove': 'Buang foto ini',
-  'photos.hint': 'Sehingga 4 foto lagi. Setiap satu disemak pada peranti anda sebelum ditambah.',
+  'photos.hint': 'Sehingga {n} foto lagi. Setiap satu disemak pada peranti anda sebelum ditambah.',
   'photos.nude': 'Foto ini kelihatan seperti kebogelan, jadi ia tidak ditambah',
   'photos.checking': 'Menyemak foto…',
   'photos.view': 'Foto {n} daripada {total}',

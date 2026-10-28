@@ -1105,8 +1105,10 @@ export class SupabaseBackend implements Backend {
 
   async exploreFeed(): Promise<FeedItem[]> {
     type Row = { kind: 'post' | 'highlight'; item: string; user_id: string; handle: string; name: string; photo_path: string | null; body: string | null; photos: string[]; at: string; post: unknown }
-    const rows = (await this.rpc<Row[] | null>('explore_feed2')) ?? []
-    await this.signMany(rows.flatMap((r) => r.photos))
+    const [rows0, { mediaPaths }] = await Promise.all([this.rpc<Row[] | null>('explore_feed2'), this.social()])
+    const rows = rows0 ?? []
+    // Every file of the feed (photos, faces, posts' media) signed in one request: one round trip instead of three.
+    await this.signMany([...rows.flatMap((r) => r.photos), ...rows.map((r) => r.photo_path), ...mediaPaths(rows.flatMap((r) => r.post ?? []))])
     const [users, posts] = await Promise.all([
       this.personRows(rows.map((r) => ({ id: r.user_id, handle: r.handle, name: r.name, photo_path: r.photo_path }))),
       this.toPosts(rows.flatMap((r) => r.post ?? [])),

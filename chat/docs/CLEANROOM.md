@@ -1,57 +1,81 @@
-# Clean-room record (2026-10-28)
+# 클린룸 작업 기록 (2026-10-28)
 
-The owner asked for the app's weak spots to be rebuilt after studying how large apps solve them, "clean-room" and
-nothing illegal. What that meant here:
+사장님 지시: "리버스엔지니어링 후 클린룸 방식으로(불법 X) 앱의 부족한 구조·기능을 대거 수정하고, 어떤 앱·사이트를 참고했고
+어떻게 클린룸했는지 밝혀라."
 
-- **Studied only public material**: engineering blogs, official docs and specs, open-source code under its licence,
-  and behaviour anyone can see in the apps. No app was decompiled, no private API was called, no binary was unpacked.
-- **Wrote our own spec** from what was learned (the "rule" column below), then wrote the code from that spec in our own
-  words. No source code, UI strings or assets were copied. AGPL projects (Element, Signal) were read for ideas only.
-- Anything a source didn't clearly say is marked *ours* or *unverified*.
+## 0. 먼저 정직하게: 실제로 한 것과 안 한 것
 
-## What was studied, and what we built from it
+- **앱 분해(디컴파일)는 하지 않았습니다.** 카카오톡·디스코드·아자르 앱을 뜯어보지 않았습니다(불법 소지). 공개된 기술
+  블로그·공식 문서·공개 소스코드(GitHub)·앱의 겉으로 보이는 동작만 봤습니다.
+- **코드·문구·이미지는 복사하지 않았습니다.** 공개 소스에서 "규칙"만 뽑아 우리 말로 정리한 뒤 우리 코드로 새로 썼습니다.
+  AGPL 라이선스(Element, Signal)는 아이디어만 참고했습니다.
+- **누가 읽었는지 구분합니다** (표의 "확인 방식"):
+  - **직접 읽음** = 제가 원문(소스 파일)을 받아 직접 읽은 것.
+  - **조사 에이전트** = 제가 띄운 조사용 AI가 읽고 보고한 것. 저는 보고만 봤으므로 원문과 100% 같다고 보증하지 못합니다.
+  - **우리 설계** = 출처 없이 우리가 정한 것.
+- **디자인(Figma)은 다른 앱 디자인을 분석한 게 아닙니다.** 우리 색상 변수로 우리 화면 상태(전송 중·실패·재접속)를
+  그렸습니다. "타 앱 디자인 리버스엔지니어링"은 이번에 하지 않았습니다.
+- 실기기·실서버에서 못 해본 것은 6장에 따로 적었습니다.
 
-| Problem in Yaari | Studied (public) | Rule we took | Where it lives |
-|---|---|---|---|
-| A retry after a lost reply stored a message twice; a line appeared only after the server answered | Matrix client-server spec, "Transaction identifiers" and "Local echo" (spec.matrix.org); matrix-js-sdk `event-status.ts`, `scheduler.ts` (Apache-2.0); Slack engineering, "Real-time messaging" | The client names each line; the same name is stored once. The line shows at once while sending and is matched with the stored copy by that name. Lines go out one after another per chat. | `server/migrations/091_message_client_id.sql`; `use-match-chat.ts` (`merge`, `deliver`, outbox) |
-| A failed send only showed a toast (the text stayed in the box) and the box was blocked while sending | Mattermost webapp (Apache-2.0): pending post id, "Retry"/"Cancel"; Element's string file (`en_EN.json`): sending / failed / resend wording | A failed line stays where it was with "Not sent · Retry · Delete"; going back online sends it again by itself | `message-bubble.tsx` (status row), `use-match-chat.ts` (`online` listener) |
-| Status could go back (read → sent) when events arrive out of order | Signal Desktop `MessageSendState` (AGPL, read only): states only move forward | The stored line replaces its local echo; ticks come from the read mark, which only grows | `use-match-chat.ts` (`partnerRead` = max) |
-| One photo that couldn't be signed emptied the whole chat history | — (our audit) | Sign all files in one request; a line whose file can't be signed still shows ("Shared photo") | `supabaseBackend.ts` `toMessages` |
-| A Realtime socket can stay "subscribed" yet deliver nothing | Zulip `web/src/transmit.ts` (Apache-2.0, source read on GitHub): if the server acked a sent message but its event doesn't arrive within 5 s, restart the event stream | A stored 1:1 line that doesn't come back live within 5 s puts that chat back on the 10 s poll and re-syncs | `supabaseBackend.ts` (`echoed`, `lostEcho`) |
-| Group chat sent only after the server answered, and could store a retry twice | Zulip `web/src/echo.ts` (Apache-2.0, source read): `local_id`, reify on the server's id, inline retry/cancel, abort | Same rules as the 1:1 chat, shared in one hook; the server stores each `(sender, client_id)` once | `server/migrations/092_group_client_id.sql`; `use-outbox.ts` (shared by 1:1 and group) |
-| Group chat lost lines while the socket was down | Discord gateway docs (resume and replay); Supabase Realtime docs (Postgres Changes promise no replay) | Treat Realtime as a fast hint, the database as the truth: read the newest page again when the tab returns or the network comes back, and merge | `group-screen.tsx` |
-| Group chat showed only the last 50 lines | Element `ScrollPanel.tsx` (AGPL, read only): fill on scroll, keep the reader's place | Scroll to the top loads 50 older lines (`group_history` `p_before`); the view stays on the line that was first; new lines pull down only when at the bottom or mine | `group-screen.tsx` |
-| Group lines marked read while the tab was hidden | Matrix "fully read" marker; Discord read states blog | Read only while visible; mark again when shown | `group-screen.tsx` |
-| 1:1 chat polled the database every 10 s per open chat | Slack "Making Slack faster by being lazy"; Supabase Realtime limits page | Poll every 10 s only while the socket is down, every 60 s while it is up | `supabaseBackend.ts` `subscribe` |
-| A dropped call ended for good | LiveKit docs "Connecting" (resume vs full reconnect, disconnect reasons); livekit client-sdk-js (Apache-2.0) | LiveKit resumes short drops; when it gives up for a fixable reason, join again with a fresh token, up to 3 times, after the network is back; mic/camera as I left them. Not after leave/kick/duplicate/room closed | `lib/livekit.ts` (`FINAL`), `video-call.tsx` (`rejoin`) |
-| Link viewer could host a phishing form | OWASP Content Security Policy cheat sheet (framing and form risks) | No `allow-forms` in the framed page; sign-in and payment go to "Open in browser" | `link-viewer.tsx` |
-| link-meta could be scripted into a page fetcher | *ours* (no public source used); Element's "Retry after" wording shows the idea | 30 previews a minute per person, then 429 (*ours*: in-memory per instance) | `server/functions/link-meta/index.ts` |
+## 1. 채팅 (참고: Zulip, Matrix, Mattermost, Signal, Element, Slack, Discord)
 
-## Checked and left as they were (with the reason)
+| 바꾼 것 | 참고한 곳 | 확인 방식 | 가져온 규칙 | 우리 코드 |
+|---|---|---|---|---|
+| 1:1·그룹 메시지를 보내자마자 표시, 다시 보내도 서버에 한 번만 저장 | Zulip `web/src/echo.ts`, `transmit.ts` (Apache-2.0) | **직접 읽음** | 메시지마다 앱이 임시 번호를 붙이고, 서버 답이나 실시간 이벤트가 오면 그 번호로 짝을 맞춰 교체. 재전송 연타 막기, 취소 | `use-outbox.ts`(1:1·그룹 공용), DB 091·092 |
+| 같은 내용 | Matrix 공개 표준 "Transaction identifiers", matrix-js-sdk `scheduler.ts` (Apache-2.0) | 조사 에이전트 | 같은 번호로 재시도하면 서버는 처음 결과를 돌려줌. 대화방마다 순서대로 보내는 큐 | 위와 같음 |
+| 실패하면 "전송 실패 · 다시 보내기 · 삭제" | Mattermost webapp (Apache-2.0), Element 문구 파일 | 조사 에이전트 | 실패한 메시지엔 버튼 두 개만(다시 시도/취소) | `message-bubble.tsx` `NotSent` |
+| 실시간 연결이 겉으로만 살아 있고 죽은 경우 감지 | Zulip `transmit.ts` | **직접 읽음** | 서버는 저장했다는데 실시간 이벤트가 5초 안에 안 오면 연결이 죽은 것 | `supabaseBackend.ts` (`echoed`, `lostEcho`) |
+| 1:1 서버 조회 10초 → 연결이 살아 있으면 60초 | Slack 기술 블로그, Supabase 실시간 제한 문서 | 조사 에이전트 | 필요할 때만 서버에 묻기 | `supabaseBackend.ts` `subscribe` |
+| 그룹: 탭 복귀·인터넷 복구 때 놓친 메시지 다시 불러오기 | Discord 게이트웨이 문서, Supabase 실시간 문서 | 조사 에이전트 | 실시간은 "빨리 오는 알림", 진짜 기록은 DB | `group-screen.tsx` |
+| 그룹: 위로 스크롤하면 이전 대화 50개씩, 읽던 위치 고정 | Element `ScrollPanel.tsx` (AGPL, 아이디어만) | 조사 에이전트 | 위에 붙일 때 기준 줄을 잡아 화면이 튀지 않게 | `group-screen.tsx` |
+| 그룹: 보고 있을 때만 읽음 처리 | Matrix "fully read", Discord 읽음 상태 블로그 | 조사 에이전트 | 보이는 것만 읽음 | `group-screen.tsx` |
+| 읽음 표시가 뒤로 가지 않게 | Signal Desktop `MessageSendState` (AGPL, 아이디어만) | 조사 에이전트 | 상태는 앞으로만 | `use-match-chat.ts` (`partnerRead`는 큰 값만) |
+| 사진 하나 깨지면 대화 전체가 비던 문제 | 우리 점검 | 우리 설계 | 그 줄만 "공유된 사진" | `supabaseBackend.ts` `toMessages` |
 
-- **Room chat rate limit race** (`voice_send2` counts recent lines without a lock): every room action first locks the
-  room row in `voice_actor` (`select … for update`), so two sends to one room are already serialised.
-- **DNS rebinding in link-meta**: only `https` on port 443 is fetched, so a host re-pointed at an internal address
-  would also need a valid certificate for the attacker's name there.
-- **Analytics loading up front**: Sentry and PostHog already load after the page's `load` event (`lib/telemetry.ts`).
+## 2. 음성·통화 (참고: LiveKit, Discord)
 
-## Not done yet (recorded for later)
+| 바꾼 것 | 참고한 곳 | 확인 방식 | 가져온 규칙 | 우리 코드 |
+|---|---|---|---|---|
+| 1:1 통화가 완전히 끊기면 새로 최대 3번 다시 접속 | LiveKit 공식 문서 "Connecting", livekit-client SDK | 문서는 조사 에이전트, **끊긴 이유 목록(DisconnectReason)은 설치된 SDK 파일을 직접 읽음** | 짧은 끊김은 SDK가 알아서 복구. 강퇴·중복 접속·방 종료면 다시 안 들어감 | `lib/livekit.ts` `FINAL`, `video-call.tsx` `rejoin` |
+| 음성방 3초 신호(서버 부하) | Discord 음성 구조 블로그 | 조사 에이전트 | 안 고침(6장) | — |
 
-- Voice-room chat still sends without a local echo (1:1 and group chats have it).
-- Voice rooms beat every 3 s per member through the database (shared with Android and the server's lost-member
-  rule). Moving presence to LiveKit or Realtime presence needs the Android app and the server changed together.
-- Typing/presence channels are public by name (the match id is a random UUID). Making them private needs the
-  Android app to join private channels too.
-- Signed media links in a chat left open over an hour are not re-signed when they expire.
+## 3. 보안
 
-## Not verified
+| 바꾼 것 | 참고한 곳 | 확인 방식 | 내용 | 우리 코드 |
+|---|---|---|---|---|
+| 앱 안 링크 미리보기에서 입력 양식 막기 | OWASP CSP 치트시트 | 조사 에이전트 | 미리보기 안 페이지가 다른 사이트로 넘어가도 위엔 원래 사이트 이름이 남아 가짜 로그인창(피싱)이 가능했음. 로그인·결제는 "브라우저로 열기" | `link-viewer.tsx` |
+| 링크 미리보기 서버 기능 1분 30회 제한 | — | 우리 설계 | 우리 서버를 웹페이지 긁어오는 도구로 못 쓰게 | `server/functions/link-meta` |
+| 음성방 채팅 도배 제한이 동시 요청에 뚫리는지 | 우리 점검 | **실서버 함수 직접 읽음** | 안 뚫림(같은 방 요청은 이미 한 줄로 처리). 수정 안 함 | — |
 
-- KakaoTalk's unread "1": no public engineering write-up was found; nothing here is based on it.
-- Azar/Hyperconnect safety features: only release notes and press, no technical source.
-- The call rejoin was checked by reading the LiveKit SDK types and docs; it was not tried on two real devices.
+## 4. 속도·화면
 
-## Design (Figma)
+| 바꾼 것 | 확인 방식 | 내용 |
+|---|---|---|
+| 탐색 → 피드 미리 받기 | 인스타그램의 겉으로 보이는 동작(다음 게시물을 미리 받아 둠) | 앱을 연 지 3초 뒤 피드와 첫 사진 6장을 미리 받아 둠(데이터 절약 모드면 안 함) |
+| 피드 서명 요청 3번 → 1번 | **실서버 직접 측정**: 피드 조회 44ms, 게시물 사진 평균 76KB → 느린 원인은 크기가 아니라 서버 왕복 횟수와 "누른 뒤에야 받기 시작" | `supabaseBackend.ts` `exploreFeed` |
+| 아이디(@ID)는 항상 기본 글꼴·색, 꾸미기는 이름에만(배지는 아이디 옆 유지) | 사장님 지시 | `look-name.tsx` `LookText` |
+| 추가 사진 4장 → 50장 | 사장님 지시 (기존 코드·서버는 처음부터 4장이었음) | DB 093, `MAX_PHOTOS` |
+| 프로필 사진 작은 사본·서명 주소 저장(이전 작업) | 우리 설계 | 작은 얼굴에 큰 원본 받던 것 해결 |
 
-File `EbnxbHHvre8tPF9EJX6MEO`, page "Chat · clean-room states": the 1:1 send states (read, sent, sending, not sent),
-the group chat loading older lines, and the call reconnecting, built from the Yaari colour variables and local
-bubble components.
+## 5. 디자인 (Figma)
+
+파일 `EbnxbHHvre8tPF9EJX6MEO`, 페이지 "Chat · clean-room states": 1:1 전송 상태, 그룹 이전 대화 불러오기, 통화 재접속 중.
+우리 색상 변수와 말풍선 컴포넌트로 그렸습니다.
+
+## 6. 아직 못 한 것 / 확인 못 한 것
+
+- 음성방 채팅은 아직 "보내자마자 표시"가 없습니다.
+- 음성방 참가자마다 3초 신호 → 사용자가 많으면 서버 부담. 안드로이드와 같이 바꿔야 합니다.
+- 입력 중 표시 채널은 이름만 알면 들을 수 있는 공개 채널입니다(이름은 추측 불가능한 무작위 ID). 비공개 전환도 안드로이드와 함께.
+- 1시간 넘게 열어 둔 채팅의 사진 주소 만료 시 다시 받기 없음.
+- **통화 재접속은 휴대폰 두 대가 필요해 실기기로 시험하지 못했습니다.**
+- **피드 미리 받기의 실제 체감 속도는 라이브에 로그인할 수 없어 측정하지 못했습니다.** 데모에선 탭 후 0.36초에 첫 사진.
+- 카카오톡 "1" 방식과 아자르 안전 기능은 공개 기술 자료가 없어 근거로 쓰지 않았습니다.
+- 추가 사진 50장과 저장공간: Supabase 무료 저장공간은 1GB. 지금 올라온 프로필 사진은 평균 37KB(최대 112KB)라
+  원본+작은 사본을 약 0.15MB로 잡으면 50장을 꽉 채운 사람 1명당 약 7.5MB, 그런 사람 약 130명이면 1GB입니다
+  (실제 휴대폰 사진은 더 클 수 있음 — 추정값).
+
+## 라이선스
+
+Zulip·matrix-js-sdk·Mattermost webapp·LiveKit client(모두 Apache-2.0)는 규칙만 참고했고 코드를 옮기지 않았습니다.
+Element·Signal(AGPL)은 아이디어만 참고했습니다.

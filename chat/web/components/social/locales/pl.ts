@@ -54,7 +54,7 @@ const pl: SocialDict = {
   'photos.title': 'Zdjęcia',
   'photos.add': 'Dodaj zdjęcie',
   'photos.remove': 'Usuń to zdjęcie',
-  'photos.hint': 'Do 4 dodatkowych zdjęć. Każde jest sprawdzane na Twoim urządzeniu przed dodaniem.',
+  'photos.hint': 'Do {n} dodatkowych zdjęć. Każde jest sprawdzane na Twoim urządzeniu przed dodaniem.',
   'photos.nude': 'To zdjęcie wygląda na zawierające nagość, więc nie zostało dodane',
   'photos.checking': 'Sprawdzanie zdjęcia…',
   'photos.view': 'Zdjęcie {n} z {total}',

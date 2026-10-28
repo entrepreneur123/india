@@ -56,7 +56,7 @@ const sw: SocialDict = {
   'photos.title': 'Picha',
   'photos.add': 'Ongeza picha',
   'photos.remove': 'Ondoa picha hii',
-  'photos.hint': 'Hadi picha 4 zaidi. Kila moja inakaguliwa kwenye kifaa chako kabla ya kuongezwa.',
+  'photos.hint': 'Hadi picha {n} zaidi. Kila moja inakaguliwa kwenye kifaa chako kabla ya kuongezwa.',
   'photos.nude': 'Picha hii inaonekana kuwa ya uchi, kwa hiyo haikuongezwa',
   'photos.checking': 'Inakagua picha…',
   'photos.view': 'Picha {n} kati ya {total}',

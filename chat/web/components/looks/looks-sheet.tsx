@@ -262,7 +262,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     )
   }
 
-  /** What an item card shows: the look on my @ID (a framed photo for frames), a wall swatch, my photo or a bubble. */
+  /** What an item card shows: the look on my name (a framed photo for frames), a wall swatch, a badge or a bubble. */
   const sample = (id: ItemId | null) =>
     kind === 'frame' ? (
       <FrameAvatar frame={id as FrameId | null} name={me.name} src={me.photoUrl} size={36} />
@@ -274,12 +274,12 @@ function ShopBody({ tab }: { tab: ItemKind }) {
       <Bubble mine skin={id} className="max-w-full truncate px-3 py-1.5 text-[13px] font-semibold">
         {me.name}
       </Bubble>
-    ) : kind === 'effect' && handle ? (
-      <LookText handle={handle} wear={{ ...NO_WEAR, effect: id }} className="text-sm font-semibold" />
+    ) : kind === 'effect' ? (
+      <NameText wear={{ ...NO_WEAR, effect: id }} className="max-w-full truncate text-sm font-semibold">{me.name}</NameText>
     ) : kind === 'badge' && id ? (
       <LookBadge id={id as BadgeId} className="size-10" />
-    ) : handle && look ? (
-      <LookText handle={handle} wear={wearWith(NO_WEAR, look, id)} className="text-sm font-semibold" />
+    ) : look ? (
+      <NameText wear={wearWith(NO_WEAR, look, id)} className="max-w-full truncate text-sm font-semibold">{me.name}</NameText>
     ) : null
 
   let preview: React.ReactNode
@@ -289,7 +289,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <p className="text-2xl font-bold">
           <NameText wear={{ ...trying, effect: shownExtra }}>{me.name}</NameText>
         </p>
-        {handle ? <LookText handle={handle} wear={{ ...trying, effect: shownExtra }} className="text-[17px] font-semibold" /> : null}
+        {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
         <p className="max-w-xs text-center text-sm leading-relaxed text-white/70">{lt('effect.what')}</p>
       </div>
     )
@@ -385,7 +385,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
           <p className="mt-1 text-lg font-bold">
             <NameText wear={{ ...trying, effect: fxShown }}>{me.name}</NameText>
           </p>
-          {handle ? <LookText handle={handle} wear={{ ...trying, effect: fxShown }} className="text-[17px] font-semibold" /> : null}
+          {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
         </div>
       </FrameCard>
     )
@@ -437,7 +437,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                 worn={(look ? worn[look] : single?.mine) === null}
                 onClick={() => choose(null)}
               >
-                {kind === 'wall' || kind === 'frame' || extra ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
+                {kind === 'wall' || kind === 'frame' || extra ? sample(null) : <NameText wear={NO_WEAR} className="max-w-full truncate text-sm font-semibold">{me.name}</NameText>}
               </ItemCard>
             </li>
             {list.map((id) => (
