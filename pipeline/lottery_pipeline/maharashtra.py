@@ -255,6 +255,16 @@ def _ordinal(digits: str, suffix: str) -> str:
     return str(n)
 
 
+def _text_alone(crop) -> str:
+    """Tesseract on one region of the page alone (a heading beside its grid of numbers reads clean
+    alone: "(350 Random Numbers)" where the full page gave "P20: Reman Runt")."""
+    import cv2
+    with tempfile.TemporaryDirectory() as work:
+        p = os.path.join(work, "h.png")
+        cv2.imwrite(p, crop)
+        return subprocess.run(["tesseract", p, "-", "--psm", "4"], capture_output=True, text=True, timeout=60).stdout
+
+
 def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     """One reading of a sheet. Raises MaharashtraError if the sheet does not make sense."""
     with tempfile.TemporaryDirectory() as work:
@@ -323,7 +333,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         num_word = next((w for w in ws if re.match(r"(?i)numbers?\b", w[0])), None)
         band = (min(w[2] for w in ws), max(w[2] + w[4] for w in ws))
         t = {"rank": rank, "top": top, "cell": cell, "band": band, "line_top": line_top,
-             "rule": rule if rule is not None and line_top - rule < dpi * 0.8 else None,
+             "rule": rule if rule is not None and line_top - rule < dpi * 1.3 else None,  # "7th Prize" is its 5th line
              "after": (num_word[1] + num_word[3]) if num_word else
              max(w[1] + w[3] for w in ws if re.search(r"[A-Za-z]", w[0])),
              "prize": int(amt[0].replace(",", "")) if amt else None, "count": int(cnt.group(1)) if cnt else None,
@@ -332,6 +342,31 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             tiers[rank] = t
     if not tiers:
         raise MaharashtraError("no prize headings")
+    for t in list(tiers.values()):
+        if t["rank"] != "?" and t["prize"] is not None and (t["count"] is not None or t["rank"] in ("1", "CONS")):
+            continue
+        # Read its heading again alone: the cell it is in (left of a random tier's grid), else the
+        # left third of the page from its line down.
+        c = t["cell"]
+        if c and c[2] < W / 2 and c[3] > dpi * 0.5:
+            x0, y0, x1, y1 = c[0], c[1], c[0] + c[2], c[1] + c[3]
+        else:
+            x0, y0, x1, y1 = 0, int(t["line_top"] - dpi * 0.05), int(W * 0.35), int(t["line_top"] + dpi * 0.6)
+        text = _text_alone(gray[max(0, y0):y1, x0:x1])
+        m = _TIER.search(text)
+        if not m:
+            continue
+        rest = text[m.start():]
+        if t["rank"] == "?" and m.group(1):
+            rank = _ordinal(m.group(1), m.group(2))
+            if rank not in tiers:
+                tiers[rank] = dict(t, rank=rank)
+                del tiers["?"]
+                t = tiers[rank]
+        if t["prize"] is None and (amt := _AMOUNT.findall(rest)):
+            t["prize"] = int(amt[0].replace(",", ""))
+        if t["count"] is None and (cnt := _COUNT.search(rest)):
+            t["count"] = int(cnt.group(1))
     for t in tiers.values():
         # The rule across the table above a heading: its prize's rows start there, whatever lines of
         # the heading OCR missed (the Marathi first line above "Consolation Prize" on the 27-10-2026
@@ -512,6 +547,26 @@ def _printed_order(nums, count: int | None = None) -> list | None:
         if set(cells) - want:
             return None
     return [cells.get(k) or ("", cx[k[0]], cy[k[1]], width) for k in sorted(want)]
+
+
+def _grid_size(nums) -> int | None:
+    """Rows x columns of the grid the numbers stand in, found as in _printed_order (a column of one
+    or two numbers is a position estimated wrong, not a column)."""
+    if not nums:
+        return None
+    width = sorted(n[3] for n in nums)[len(nums) // 2]
+
+    def bands(values, gap):
+        out, prev = [], None
+        for v in sorted(values):
+            if prev is None or v - prev > gap:
+                out.append(0)
+            out[-1] += 1
+            prev = v
+        return out
+    cols = bands([n[1] for n in nums], width * 0.5)
+    big = sorted(cols)[len(cols) // 2]
+    return len(bands([n[2] for n in nums], 0.008)) * sum(c * 4 >= big for c in cols)
 
 
 def _column_order_ok(nums, count: int | None = None) -> bool:
@@ -710,12 +765,30 @@ class Glyphs:
         return None
 
     def tesseract(self, x: float, y: float, w: float) -> str | None:
-        """Tesseract on the box at (x, y) alone (see _read_box): a second, independent reading of a place."""
-        crop, _ = self._box(x, y, w)
+        """Tesseract on the number at (x, y) alone (see _read_box): a second, independent reading of a
+        place. Only its four characters' box is read (rules and the next number's edge cut it)."""
+        import cv2
+        crop, cy = self._box(x, y, w)
         if crop.size == 0:
             return None
+        _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
+        if self._digits(lab, st, n, crop.shape, cy) is None:
+            return None
+        ch, cw = crop.shape
+        comps = [i for i in range(1, n) if st[i][4] > 15 and st[i][0] > 0 and st[i][0] + st[i][2] < cw
+                 and st[i][2] < cw * 0.5 and st[i][3] < ch * 0.85 and st[i][2] > st[i][3] * 0.2]
+        mid = [i for i in comps if st[i][1] <= cy <= st[i][1] + st[i][3]]
+        if not mid:
+            return None
+        x0, x1 = min(st[i][0] for i in mid), max(st[i][0] + st[i][2] for i in mid)
+        y0, y1 = min(st[i][1] for i in mid), max(st[i][1] + st[i][3] for i in mid)
+        pad = (y1 - y0) // 3
+        tight = crop[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad].copy()
+        keep = (lab[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad])
+        tight[~sum((keep == i) for i in mid).astype(bool)] = 255  # only those characters, on white
         with tempfile.TemporaryDirectory() as work:
-            return _read_box(crop, work)
+            return _read_box(tight, work)
 
     def _classify(self, v) -> str | None:
         import numpy as np
@@ -807,9 +880,11 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
     pooled = sorted(((approx, i, n, x, y, w, ser) for i, r in enumerate(runs) for n, x, y, w, ser, approx in r["numbers"]),
                     key=lambda t: t[0])  # exact positions first, from every reading
     for approx, i, n, x, y, w, ser in pooled:
-        near = [c for c in clusters if abs(c["y"] - y) < 0.006 and abs(c["x"] - x) < max(w, c["w"]) * 0.45]
+        # Within 2% of the page width at most: one number moves up to ~1.3% between readings, the next
+        # column is >= 3.5% away (a wide box's width alone let two consolation numbers merge).
+        near = [c for c in clusters if abs(c["y"] - y) < 0.006 and abs(c["x"] - x) < min(max(w, c["w"]) * 0.45, 0.02)]
         if approx:
-            same = [c for c in clusters if abs(c["y"] - y) < 0.006 and abs(c["x"] - x) < max(w, c["w"]) * 1.5
+            same = [c for c in clusters if abs(c["y"] - y) < 0.006 and abs(c["x"] - x) < min(max(w, c["w"]) * 1.5, 0.03)  # consolation: one value in every column
                     and any(v[0] == n for v in c["votes"].values())]
             near = same or near
         c = min(near, key=lambda c: abs(c["x"] - x), default=None)
@@ -829,7 +904,7 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
         merged = False
         for a in clusters:
             b = next((b for b in clusters if b is not a and not (a["votes"].keys() & b["votes"].keys())
-                      and abs(a["y"] - b["y"]) < 0.012 and abs(a["x"] - b["x"]) < min(a["w"], b["w"]) * 0.5), None)
+                      and abs(a["y"] - b["y"]) < 0.012 and abs(a["x"] - b["x"]) < min(a["w"] * 0.5, b["w"] * 0.5, 0.02)), None)
             if b is not None:
                 a["votes"].update(b["votes"])
                 clusters.remove(b)
@@ -857,6 +932,10 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
                 # The count is misread now and then ("(200 Randorn Numbers" for 300): a count some
                 # reading gave that the printed grid of numbers fits, if only one does.
                 fit = [c for c in h["counts"] if _printed_order(mine, c) is not None]
+                if not fit:  # "300" read as "200" by every reading that read it: the full grid, one digit away
+                    full = _grid_size(mine)
+                    fit = [full] if full and any(_one_digit_apart(str(c), str(full)) for c in h["counts"]) \
+                        and _printed_order(mine, full) is not None else []
                 h["count"] = fit[0] if len(fit) == 1 else None
             mine = _settle_by_order(mine, h["rank"], check, h["count"])
         else:
