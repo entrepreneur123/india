@@ -112,6 +112,7 @@ const pa: LooksDict = {
   'cycle.what': 'ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਫ਼ੋਟੋ ਹਰ 2 ਸਕਿੰਟ ਤੁਹਾਡੀਆਂ 2–5 ਫ਼ੋਟੋਆਂ ਵਿੱਚ ਹੌਲੀ-ਹੌਲੀ ਬਦਲਦੀ ਹੈ, ਜਿੱਥੇ ਵੀ ਦਿਖੇ',
   'cycle.pick': '2 ਤੋਂ 5 ਫ਼ੋਟੋਆਂ ਚੁਣੋ',
   'cycle.save': 'ਸੇਵ ਕਰੋ',
+  'cycle.off': 'ਬੰਦ ਕਰੋ',
   'looks.tab.effect': 'ਨਾਮ ਇਫ਼ੈਕਟ',
   'item.effect_aurora': 'ਔਰੋਰਾ',
   'item.effect_prism': 'ਪ੍ਰਿਜ਼ਮ',

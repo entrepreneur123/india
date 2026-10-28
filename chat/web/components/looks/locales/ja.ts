@@ -112,6 +112,7 @@ const ja: LooksDict = {
   'cycle.what': 'プロフィール写真が表示されるすべての場所で、2〜5枚の写真が2秒ごとにふわっと切り替わります',
   'cycle.pick': '写真を2〜5枚選んでください',
   'cycle.save': '保存',
+  'cycle.off': 'オフにする',
   'looks.tab.effect': 'ネームエフェクト',
   'item.effect_aurora': 'オーロラ',
   'item.effect_prism': 'プリズム',

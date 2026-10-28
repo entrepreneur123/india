@@ -112,6 +112,7 @@ const ur: LooksDict = {
   'cycle.what': 'آپ کی پروفائل تصویر ہر 2 سیکنڈ میں آپ کی 2–5 تصاویر میں آہستہ بدلتی ہے، جہاں بھی دکھے',
   'cycle.pick': '2 سے 5 تصاویر منتخب کریں',
   'cycle.save': 'محفوظ کریں',
+  'cycle.off': 'بند کریں',
   'looks.tab.effect': 'نام ایفیکٹس',
   'item.effect_aurora': 'اورورا',
   'item.effect_prism': 'پرزم',

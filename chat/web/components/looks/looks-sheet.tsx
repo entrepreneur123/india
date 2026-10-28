@@ -123,11 +123,13 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   // The photo gradient (062): my photos to pick from (the main one and the extra ones), and what is picked.
   const myPhotos = [...(me.photoPath && me.photoUrl ? [{ id: me.photoPath, url: me.photoUrl }] : []), ...(me.photos ?? [])]
   const picked = cyclePick ?? myPhotos.filter((x) => shop.look?.cycle?.includes(x.url)).map((x) => x.id)
-  const saveCycle = async () => {
+  /** Saves the picked photos, or (null) turns the gradient off: the profile photo stays still. */
+  const saveCycle = async (paths: string[] | null) => {
     setBusy(true)
     try {
-      await backend.setCycle(picked.length ? picked : null)
+      await backend.setCycle(paths?.length ? paths : null)
       await Promise.all([mutate(lookKey(me.id)), reload()])
+      if (!paths) setCyclePick(undefined)
       toast.show(lt('looks.saved'), 'success')
     } catch (err) {
       toast.error(err)
@@ -216,9 +218,16 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   let action: React.ReactNode
   if (kind === 'cycle' && owned.has('cycle_photos')) {
     action = (
-      <Button variant="brand" size="lg" className="w-full" loading={busy} disabled={picked.length === 1} onClick={() => void saveCycle()}>
-        {lt('cycle.save')}
-      </Button>
+      <div className="flex gap-2">
+        {shop.look?.cycle?.length ? (
+          <Button variant="outline" size="lg" className="flex-1" disabled={busy} onClick={() => void saveCycle(null)}>
+            {lt('cycle.off')}
+          </Button>
+        ) : null}
+        <Button variant="brand" size="lg" className="flex-1" loading={busy} disabled={picked.length === 1} onClick={() => void saveCycle(picked)}>
+          {lt('cycle.save')}
+        </Button>
+      </div>
     )
   } else if (kind === 'vip' && owned.has('vip_anon')) {
     action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />

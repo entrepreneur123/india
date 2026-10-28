@@ -18,6 +18,9 @@ import { LinkText } from '@/components/screens/chat/link-viewer'
 import { useSocialT } from '@/components/social/social-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { cn } from '@/lib/utils'
+import { Wall } from '@/components/looks/wall'
+import { useShop } from '@/components/looks/use-shop'
+import { WALL_DESIGNS, wallOf } from '@/lib/walls'
 import { FriendPicker, GroupFaces, useGroupLineText, useGroups } from './groups'
 
 /**
@@ -31,6 +34,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
   const { t, locale } = useI18n()
   const clock = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' })
   const { me, openProfile } = useApp()
+  const wall = wallOf(useShop().data?.wall)
   const { data: groups, mutate } = useGroups()
   const g = groups?.find((x) => x.id === groupId)
   const [lines, setLines] = useState<GroupLine[] | null>(null)
@@ -107,47 +111,51 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
         </Button>
       </header>
 
-      <ul ref={listRef} className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto bg-chat-wall px-3 py-4 scrollbar-thin sm:px-6" aria-live="polite">
-        {!lines ? (
-          <li className="flex flex-col gap-2">
-            <Skeleton className="h-10 w-48 rounded-lg" />
-            <Skeleton className="h-10 w-40 self-end rounded-lg" />
-          </li>
-        ) : (
-          lines.map((l, i) => {
-            if (l.kind !== 'text') {
+      {/* My chat wall here too, as in my other chats (the owner, 2026-10-28); only I see it. */}
+      <div className="relative isolate flex min-h-0 flex-1 flex-col bg-chat-wall">
+        <Wall id={wall} />
+        <ul ref={listRef} className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 scrollbar-thin sm:px-6" aria-live="polite">
+          {!lines ? (
+            <li className="flex flex-col gap-2">
+              <Skeleton className="h-10 w-48 rounded-lg" />
+              <Skeleton className="h-10 w-40 self-end rounded-lg" />
+            </li>
+          ) : (
+            lines.map((l, i) => {
+              if (l.kind !== 'text') {
+                return (
+                  <li key={l.id} className={cn('mx-auto my-2 max-w-xs text-center text-xs leading-relaxed', wall && WALL_DESIGNS[wall].dark ? 'text-white/75' : 'text-muted-foreground')}>
+                    {note({ kind: l.kind, body: l.body, senderId: l.senderId }, members)}
+                  </li>
+                )
+              }
+              const mine = l.senderId === me.id
+              const first = lines[i - 1]?.senderId !== l.senderId || lines[i - 1]?.kind !== 'text'
+              const p = who(l.senderId)
               return (
-                <li key={l.id} className="mx-auto my-2 max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
-                  {note({ kind: l.kind, body: l.body, senderId: l.senderId }, members)}
+                <li key={l.id} className={cn('flex max-w-[85%] items-end gap-2', mine ? 'self-end' : 'self-start', first && 'mt-2')}>
+                  {!mine ? (
+                    first && p ? (
+                      <button type="button" onClick={() => openProfile(p.id)} className="shrink-0 self-start rounded-full" aria-label={p.name}>
+                        <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={28} />
+                      </button>
+                    ) : (
+                      <span className="w-7 shrink-0" aria-hidden />
+                    )
+                  ) : null}
+                  <Bubble mine={mine} first={first} className="px-2.5 pt-1 pb-1.5">
+                    {!mine && first ? <p className="text-xs font-semibold text-primary-text">{p?.name ?? '…'}</p> : null}
+                    <p dir="auto" className="text-[15px] leading-snug break-words whitespace-pre-wrap">
+                      <LinkText text={l.body} />
+                      <span className="ms-2 inline-block align-bottom text-[10.5px] text-bubble-meta">{clock.format(l.at)}</span>
+                    </p>
+                  </Bubble>
                 </li>
               )
-            }
-            const mine = l.senderId === me.id
-            const first = lines[i - 1]?.senderId !== l.senderId || lines[i - 1]?.kind !== 'text'
-            const p = who(l.senderId)
-            return (
-              <li key={l.id} className={cn('flex max-w-[85%] items-end gap-2', mine ? 'self-end' : 'self-start', first && 'mt-2')}>
-                {!mine ? (
-                  first && p ? (
-                    <button type="button" onClick={() => openProfile(p.id)} className="shrink-0 self-start rounded-full" aria-label={p.name}>
-                      <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={28} />
-                    </button>
-                  ) : (
-                    <span className="w-7 shrink-0" aria-hidden />
-                  )
-                ) : null}
-                <Bubble mine={mine} first={first} className="px-2.5 pt-1 pb-1.5">
-                  {!mine && first ? <p className="text-xs font-semibold text-primary-text">{p?.name ?? '…'}</p> : null}
-                  <p dir="auto" className="text-[15px] leading-snug break-words whitespace-pre-wrap">
-                    <LinkText text={l.body} />
-                    <span className="ms-2 inline-block align-bottom text-[10.5px] text-bubble-meta">{clock.format(l.at)}</span>
-                  </p>
-                </Bubble>
-              </li>
-            )
-          })
-        )}
-      </ul>
+            })
+          )}
+        </ul>
+      </div>
 
       <div className="border-t border-border bg-background p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         <Composer onSend={(text) => send(text)} allowMedia={false} placeholder={st('group.placeholder')} />

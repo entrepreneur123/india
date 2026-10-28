@@ -112,6 +112,7 @@ const ne: LooksDict = {
   'cycle.what': 'तपाईंको प्रोफाइल फोटो हरेक २ सेकेन्डमा तपाईंका २–५ फोटोमा बिस्तारै फेरिन्छ, जहाँ देखिए पनि',
   'cycle.pick': '२ देखि ५ फोटो छान्नुहोस्',
   'cycle.save': 'सेभ गर्नुहोस्',
+  'cycle.off': 'बन्द गर्नुहोस्',
   'looks.tab.effect': 'नाम इफेक्ट',
   'item.effect_aurora': 'अरोरा',
   'item.effect_prism': 'प्रिज्म',

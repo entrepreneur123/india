@@ -112,6 +112,7 @@ const de: LooksDict = {
   'cycle.what': 'Dein Profilbild blendet alle 2 Sekunden durch 2–5 deiner Fotos, überall wo es erscheint',
   'cycle.pick': 'Wähle 2 bis 5 Fotos',
   'cycle.save': 'Speichern',
+  'cycle.off': 'Ausschalten',
   'looks.tab.effect': 'Namenseffekte',
   'item.effect_aurora': 'Polarlicht',
   'item.effect_prism': 'Prisma',

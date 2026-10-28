@@ -112,6 +112,7 @@ const pl: LooksDict = {
   'cycle.what': 'Twoje zdjęcie profilowe co 2 sekundy płynnie przechodzi przez 2–5 twoje zdjęcia, wszędzie gdzie się pojawia',
   'cycle.pick': 'Wybierz od 2 do 5 zdjęć',
   'cycle.save': 'Zapisz',
+  'cycle.off': 'Wyłącz',
   'looks.tab.effect': 'Efekty nazwy',
   'item.effect_aurora': 'Zorza',
   'item.effect_prism': 'Pryzmat',

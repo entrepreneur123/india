@@ -112,6 +112,7 @@ const ru: LooksDict = {
   'cycle.what': 'Фото профиля каждые 2 секунды плавно сменяется 2–5 вашими фото, везде, где оно показывается',
   'cycle.pick': 'Выберите от 2 до 5 фото',
   'cycle.save': 'Сохранить',
+  'cycle.off': 'Выключить',
   'looks.tab.effect': 'Эффекты имени',
   'item.effect_aurora': 'Сияние',
   'item.effect_prism': 'Призма',

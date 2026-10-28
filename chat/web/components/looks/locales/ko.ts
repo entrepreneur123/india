@@ -112,6 +112,7 @@ const ko: LooksDict = {
   'cycle.what': '내 사진 2~5장이 2초마다 스르륵 바뀌며, 내 프로필 사진이 보이는 모든 곳에 적용돼요',
   'cycle.pick': '사진을 2~5장 골라 주세요',
   'cycle.save': '저장',
+  'cycle.off': '끄기',
   'looks.tab.effect': '이름 효과',
   'item.effect_aurora': '오로라',
   'item.effect_prism': '프리즘',

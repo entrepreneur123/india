@@ -112,6 +112,7 @@ const nl: LooksDict = {
   'cycle.what': 'Je profielfoto vloeit elke 2 seconden over in 2–5 van je foto’s, overal waar hij te zien is',
   'cycle.pick': 'Kies 2 tot 5 foto’s',
   'cycle.save': 'Opslaan',
+  'cycle.off': 'Uitzetten',
   'looks.tab.effect': 'Naameffecten',
   'item.effect_aurora': 'Noorderlicht',
   'item.effect_prism': 'Prisma',

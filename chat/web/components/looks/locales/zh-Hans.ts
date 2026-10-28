@@ -112,6 +112,7 @@ const zhHans: LooksDict = {
   'cycle.what': '头像出现的所有地方，都会每2秒在你的2–5张照片之间渐变切换',
   'cycle.pick': '请选择2到5张照片',
   'cycle.save': '保存',
+  'cycle.off': '关闭',
   'looks.tab.effect': '名字特效',
   'item.effect_aurora': '极光',
   'item.effect_prism': '棱镜',

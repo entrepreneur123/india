@@ -112,6 +112,7 @@ const te: LooksDict = {
   'cycle.what': 'మీ ప్రొఫైల్ ఫోటో ప్రతి 2 సెకన్లకు మీ 2–5 ఫోటోల్లోకి నెమ్మదిగా మారుతుంది, అది ఎక్కడ కనిపించినా',
   'cycle.pick': '2 నుంచి 5 ఫోటోలు ఎంచుకోండి',
   'cycle.save': 'సేవ్ చేయండి',
+  'cycle.off': 'ఆఫ్ చేయండి',
   'looks.tab.effect': 'పేరు ఎఫెక్ట్స్',
   'item.effect_aurora': 'అరోరా',
   'item.effect_prism': 'ప్రిజం',

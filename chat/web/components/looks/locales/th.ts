@@ -112,6 +112,7 @@ const th: LooksDict = {
   'cycle.what': 'รูปโปรไฟล์ของคุณจะค่อยๆ เปลี่ยนไปมาระหว่างรูป 2–5 รูปทุก 2 วินาที ในทุกที่ที่แสดง',
   'cycle.pick': 'เลือก 2 ถึง 5 รูป',
   'cycle.save': 'บันทึก',
+  'cycle.off': 'ปิด',
   'looks.tab.effect': 'เอฟเฟกต์ชื่อ',
   'item.effect_aurora': 'ออโรรา',
   'item.effect_prism': 'ปริซึม',

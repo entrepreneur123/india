@@ -32,6 +32,8 @@ import { useSocialT } from '@/components/social/social-text'
 import { useLooksT } from '@/components/looks/looks-text'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { Wall } from '@/components/looks/wall'
+import { useShop } from '@/components/looks/use-shop'
+import { WALL_DESIGNS, wallOf } from '@/lib/walls'
 
 // The poll form is its own chunk, fetched when a host or co-host first opens the composer's menu.
 const loadPollSheet = () => retryImport(() => import('./poll-sheet'))
@@ -86,6 +88,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   const split = useWideSplit(rootRef, wide && !!room)
   // A shared page that can't be framed is only a card that opens in a new tab (older apps could share any page).
   const stageFrames = useLinkMeta(room?.stage?.url ?? null).frames
+  const myWall = wallOf(useShop().data?.wall)
 
   if (!room || !me)
     return (
@@ -223,6 +226,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
   ) : shared
   const chatMain = wide && !room.voice && !panelUrl
 
+  // The chat's wall: the room's (45: chosen by the host or a co-host, everyone sees it), else my own chat wall, as in
+  // my other chats (the owner, 2026-10-28).
+  const chatWall = wallOf(room.theme) ?? myWall
   const chat = (
     <VoiceChat
       s={s}
@@ -334,7 +340,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
 
           {chatMain ? (
             <div className="relative isolate flex min-h-0 flex-1 flex-col">
-              <Wall id={room.theme} />
+              <Wall id={chatWall} />
               {shared ? <div className="mx-auto flex w-full max-w-3xl shrink-0 flex-col gap-2 pb-2">{shared}</div> : null}
               <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">{chat}</div>
               <ReactionLayer reactions={s.reactions} />
@@ -366,7 +372,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
               <PhoneSplit top={big ?? (room.theme ? <div className="relative isolate min-h-full py-1"><Wall id={room.theme} />{top}</div> : top)} strip={(expand) => <FoldedRoom room={room} onExpand={expand} />} chat={chat} />
             ) : (
               <div className="relative isolate flex min-h-0 flex-1 flex-col">
-                <Wall id={room.theme} />
+                <Wall id={chatWall} />
                 {chat}
               </div>
             )
@@ -390,11 +396,12 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         {wide && !chatMain ? <WideSplitter split={split} box={rootRef} rtl={rtl} /> : null}
         {wide && !chatMain ? (
           <aside
-            className="relative flex w-[380px] shrink-0 flex-col border-s border-border bg-muted/50"
+            className="relative isolate flex w-[380px] shrink-0 flex-col border-s border-border bg-muted/50"
             style={split.width ? { width: split.width } : undefined}
             aria-label={t('voice.chat')}
           >
-            <h2 className="px-4 pt-4 pb-1 text-sm font-semibold">{t('voice.chat')}</h2>
+            <Wall id={chatWall} />
+            <h2 className={cn('px-4 pt-4 pb-1 text-sm font-semibold', chatWall && WALL_DESIGNS[chatWall].dark && 'text-white')}>{t('voice.chat')}</h2>
             {chat}
             <div className="border-t border-border p-3 pt-2">{composer}</div>
           </aside>

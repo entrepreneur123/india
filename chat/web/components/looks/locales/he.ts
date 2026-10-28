@@ -112,6 +112,7 @@ const he: LooksDict = {
   'cycle.what': 'תמונת הפרופיל שלך מתחלפת בעדינות בין 2–5 מהתמונות שלך כל 2 שניות, בכל מקום שהיא מופיעה',
   'cycle.pick': 'בחרו 2 עד 5 תמונות',
   'cycle.save': 'שמירה',
+  'cycle.off': 'כיבוי',
   'looks.tab.effect': 'אפקטים לשם',
   'item.effect_aurora': 'זוהר',
   'item.effect_prism': 'פריזמה',

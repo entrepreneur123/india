@@ -112,6 +112,7 @@ const ro: LooksDict = {
   'cycle.what': 'Poza ta de profil trece lin prin 2–5 dintre pozele tale la fiecare 2 secunde, oriunde apare',
   'cycle.pick': 'Alege între 2 și 5 poze',
   'cycle.save': 'Salvează',
+  'cycle.off': 'Dezactivează',
   'looks.tab.effect': 'Efecte nume',
   'item.effect_aurora': 'Auroră',
   'item.effect_prism': 'Prismă',

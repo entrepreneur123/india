@@ -112,6 +112,7 @@ const fa: LooksDict = {
   'cycle.what': 'عکس پروفایلت هر ۲ ثانیه آرام بین ۲ تا ۵ عکست عوض می‌شود، هر جا که نشان داده شود',
   'cycle.pick': '۲ تا ۵ عکس انتخاب کن',
   'cycle.save': 'ذخیره',
+  'cycle.off': 'خاموش کردن',
   'looks.tab.effect': 'افکت نام',
   'item.effect_aurora': 'شفق',
   'item.effect_prism': 'منشور',

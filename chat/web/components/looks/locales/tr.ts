@@ -112,6 +112,7 @@ const tr: LooksDict = {
   'cycle.what': 'Profil fotoğrafın göründüğü her yerde 2 saniyede bir 2–5 fotoğrafın arasında yumuşakça geçer',
   'cycle.pick': '2 ila 5 fotoğraf seç',
   'cycle.save': 'Kaydet',
+  'cycle.off': 'Kapat',
   'looks.tab.effect': 'İsim efektleri',
   'item.effect_aurora': 'Kutup ışığı',
   'item.effect_prism': 'Prizma',

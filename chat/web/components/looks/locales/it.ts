@@ -112,6 +112,7 @@ const it: LooksDict = {
   'cycle.what': 'La tua foto profilo sfuma tra 2–5 delle tue foto ogni 2 secondi, ovunque appaia',
   'cycle.pick': 'Scegli da 2 a 5 foto',
   'cycle.save': 'Salva',
+  'cycle.off': 'Disattiva',
   'looks.tab.effect': 'Effetti nome',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',

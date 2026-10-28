@@ -112,6 +112,7 @@ const zhHant: LooksDict = {
   'cycle.what': '頭像出現的所有地方，都會每2秒在你的2–5張照片之間漸變切換',
   'cycle.pick': '請選擇2到5張照片',
   'cycle.save': '儲存',
+  'cycle.off': '關閉',
   'looks.tab.effect': '名字特效',
   'item.effect_aurora': '極光',
   'item.effect_prism': '稜鏡',

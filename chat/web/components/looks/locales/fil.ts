@@ -112,6 +112,7 @@ const fil: LooksDict = {
   'cycle.what': 'Dahan-dahang nagpapalit ang profile photo mo sa 2–5 mong litrato kada 2 segundo, saanman ito lumabas',
   'cycle.pick': 'Pumili ng 2 hanggang 5 na litrato',
   'cycle.save': 'I-save',
+  'cycle.off': 'I-off',
   'looks.tab.effect': 'Mga name effect',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prism',

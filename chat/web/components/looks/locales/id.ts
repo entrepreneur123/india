@@ -112,6 +112,7 @@ const id: LooksDict = {
   'cycle.what': 'Foto profilmu berganti perlahan di antara 2–5 fotomu setiap 2 detik, di mana pun tampil',
   'cycle.pick': 'Pilih 2 sampai 5 foto',
   'cycle.save': 'Simpan',
+  'cycle.off': 'Matikan',
   'looks.tab.effect': 'Efek nama',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',

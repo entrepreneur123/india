@@ -112,6 +112,7 @@ const sw: LooksDict = {
   'cycle.what': 'Picha yako ya wasifu hubadilika polepole kati ya picha zako 2–5 kila sekunde 2, popote inapoonekana',
   'cycle.pick': 'Chagua picha 2 hadi 5',
   'cycle.save': 'Hifadhi',
+  'cycle.off': 'Zima',
   'looks.tab.effect': 'Athari za jina',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prizimu',

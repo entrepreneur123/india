@@ -112,6 +112,7 @@ const es: LooksDict = {
   'cycle.what': 'Tu foto de perfil se funde entre 2–5 de tus fotos cada 2 segundos, donde sea que aparezca',
   'cycle.pick': 'Elige de 2 a 5 fotos',
   'cycle.save': 'Guardar',
+  'cycle.off': 'Desactivar',
   'looks.tab.effect': 'Efectos de nombre',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prisma',

@@ -112,6 +112,7 @@ const kn: LooksDict = {
   'cycle.what': 'ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಪ್ರತಿ 2 ಸೆಕೆಂಡಿಗೆ ನಿಮ್ಮ 2–5 ಫೋಟೋಗಳಿಗೆ ನಿಧಾನವಾಗಿ ಬದಲಾಗುತ್ತದೆ, ಅದು ಎಲ್ಲಿ ಕಂಡರೂ',
   'cycle.pick': '2 ರಿಂದ 5 ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ',
   'cycle.save': 'ಉಳಿಸಿ',
+  'cycle.off': 'ಆಫ್ ಮಾಡಿ',
   'looks.tab.effect': 'ಹೆಸರು ಎಫೆಕ್ಟ್',
   'item.effect_aurora': 'ಅರೋರಾ',
   'item.effect_prism': 'ಪ್ರಿಸಂ',

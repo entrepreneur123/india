@@ -118,6 +118,7 @@ const en = {
   'cycle.what': 'Your profile photo fades through 2–5 of your photos, every 2 seconds, wherever it shows',
   'cycle.pick': 'Pick 2 to 5 photos',
   'cycle.save': 'Save',
+  'cycle.off': 'Turn off',
   'looks.tab.effect': 'Name effects',
   'item.effect_aurora': 'Aurora',
   'item.effect_prism': 'Prism',

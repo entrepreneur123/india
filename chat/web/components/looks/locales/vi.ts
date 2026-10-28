@@ -112,6 +112,7 @@ const vi: LooksDict = {
   'cycle.what': 'Ảnh đại diện của bạn chuyển dần giữa 2–5 ảnh mỗi 2 giây, ở mọi nơi nó hiện',
   'cycle.pick': 'Chọn từ 2 đến 5 ảnh',
   'cycle.save': 'Lưu',
+  'cycle.off': 'Tắt',
   'looks.tab.effect': 'Hiệu ứng tên',
   'item.effect_aurora': 'Cực quang',
   'item.effect_prism': 'Lăng kính',
