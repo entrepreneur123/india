@@ -427,6 +427,8 @@ const ne: Dict = {
   'voice.tapToListen': 'सुन्न ट्याप गर्नुहोस्',
   'voice.audioReconnecting': 'अडियो फेरि जोडिँदै…',
   'voice.audioFailed': 'अहिले अडियो जोडिन सकेन। च्याट भने चलिरहेको छ।',
+  'voice.talkingMuted': 'तपाईंको माइक म्युट छ',
+  'voice.micSilent': 'तपाईंको माइक्रोफोनबाट आवाज आइरहेको छैन। हेडसेट वा डिभाइसमा म्युट छ कि हेर्नुहोस्।',
 
   'recent.title': 'हालैका',
   'recent.show': 'देखाउनुहोस्',

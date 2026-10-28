@@ -833,6 +833,22 @@ function AudioNotice({ s }: { s: VoiceSession }) {
         </Button>
       </div>
     )
+  // Jitsi's two microphone hints: "you're muted" with the way to unmute, and a mic that sends only silence.
+  if (a.micHint === 'talkingMuted' && s.me?.muted)
+    return (
+      <div className="flex items-center justify-center gap-2 px-4 pb-2" role="status">
+        <span className="text-xs font-semibold">{t('voice.talkingMuted')}</span>
+        <Button size="sm" variant="brand" onClick={() => void s.act({ type: 'mic', on: true })}>
+          <Mic className="size-4" aria-hidden /> {t('voice.unmute')}
+        </Button>
+      </div>
+    )
+  if (a.micHint === 'silent' && s.me && !s.me.muted)
+    return (
+      <p className="px-4 pb-2 text-center text-xs font-semibold text-destructive" role="alert">
+        {t('voice.micSilent')}
+      </p>
+    )
   if (a.status !== 'reconnecting' && a.status !== 'failed') return null
   return (
     <p className="px-4 pb-2 text-center text-xs text-muted-foreground" role="status">

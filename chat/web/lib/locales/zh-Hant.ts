@@ -434,6 +434,8 @@ const zhHant: Dict = {
   'voice.tapToListen': '輕觸收聽',
   'voice.audioReconnecting': '正在重新連線音訊…',
   'voice.audioFailed': '暫時無法連線音訊，聊天仍可正常使用。',
+  'voice.talkingMuted': '你已靜音',
+  'voice.micSilent': '麥克風沒有聲音。請檢查耳機或裝置上是否已靜音。',
 
   // recent
   'recent.title': '最近',

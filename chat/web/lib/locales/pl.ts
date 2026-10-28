@@ -429,6 +429,8 @@ const pl: Dict = {
   'voice.tapToListen': 'Dotknij, aby słuchać',
   'voice.audioReconnecting': 'Ponowne łączenie dźwięku…',
   'voice.audioFailed': 'Nie można teraz połączyć dźwięku. Czat nadal działa.',
+  'voice.talkingMuted': 'Masz wyciszony mikrofon',
+  'voice.micSilent': 'Z mikrofonu nie dochodzi żaden dźwięk. Sprawdź, czy nie jest wyciszony na słuchawkach lub urządzeniu.',
 
   'recent.title': 'Ostatnie',
   'recent.show': 'Pokaż',

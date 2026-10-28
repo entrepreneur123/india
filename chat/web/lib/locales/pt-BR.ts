@@ -427,6 +427,8 @@ const ptBR: Dict = {
   'voice.tapToListen': 'Toque para ouvir',
   'voice.audioReconnecting': 'Reconectando o áudio…',
   'voice.audioFailed': 'Não foi possível conectar o áudio agora. O chat continua funcionando.',
+  'voice.talkingMuted': 'Seu microfone está mudo',
+  'voice.micSilent': 'Nenhum som está saindo do seu microfone. Veja se ele não está mudo no fone ou no aparelho.',
 
   'recent.title': 'Recentes',
   'recent.show': 'Mostrar',

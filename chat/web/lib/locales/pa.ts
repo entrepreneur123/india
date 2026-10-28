@@ -412,6 +412,8 @@ const pa: Dict = {
   'voice.tapToListen': 'ਸੁਣਨ ਲਈ ਟੈਪ ਕਰੋ',
   'voice.audioReconnecting': 'ਆਡੀਓ ਦੁਬਾਰਾ ਜੁੜ ਰਹੀ ਹੈ…',
   'voice.audioFailed': 'ਹਾਲੇ ਆਡੀਓ ਨਹੀਂ ਜੁੜ ਰਹੀ। ਚੈਟ ਫਿਰ ਵੀ ਚੱਲਦੀ ਹੈ।',
+  'voice.talkingMuted': 'ਤੁਹਾਡਾ ਮਾਈਕ ਮਿਊਟ ਹੈ',
+  'voice.micSilent': 'ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੋਂ ਕੋਈ ਆਵਾਜ਼ ਨਹੀਂ ਆ ਰਹੀ। ਹੈੱਡਸੈੱਟ ਜਾਂ ਡਿਵਾਈਸ ’ਤੇ ਮਿਊਟ ਤਾਂ ਨਹੀਂ, ਦੇਖੋ।',
   'recent.title': 'ਹਾਲੀਆ',
   'recent.show': 'ਦਿਖਾਓ',
   'recent.friends': 'ਦੋਸਤ',

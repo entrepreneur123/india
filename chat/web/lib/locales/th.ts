@@ -434,6 +434,8 @@ const th: Dict = {
   'voice.tapToListen': 'แตะเพื่อฟัง',
   'voice.audioReconnecting': 'กำลังเชื่อมต่อเสียงใหม่…',
   'voice.audioFailed': 'ตอนนี้เชื่อมต่อเสียงไม่ได้ แต่ยังแชทได้',
+  'voice.talkingMuted': 'คุณปิดไมค์อยู่',
+  'voice.micSilent': 'ไม่มีเสียงจากไมโครโฟนของคุณ ตรวจดูว่าไม่ได้ปิดเสียงที่หูฟังหรืออุปกรณ์',
 
   // recent
   'recent.title': 'ล่าสุด',

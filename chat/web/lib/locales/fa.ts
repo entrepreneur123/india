@@ -434,6 +434,8 @@ const fa: Dict = {
   'voice.tapToListen': 'برای گوش دادن بزنید',
   'voice.audioReconnecting': 'در حال اتصال دوبارهٔ صدا…',
   'voice.audioFailed': 'فعلاً صدا وصل نمی‌شود. چت هنوز کار می‌کند.',
+  'voice.talkingMuted': 'میکروفون شما بی‌صداست',
+  'voice.micSilent': 'صدایی از میکروفون شما نمی‌آید. بررسی کنید روی هدست یا دستگاه بی‌صدا نباشد.',
 
   // recent
   'recent.title': 'اخیر',

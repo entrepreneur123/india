@@ -438,6 +438,8 @@ const ar: Dict = {
   'voice.tapToListen': 'اضغط للاستماع',
   'voice.audioReconnecting': 'جارٍ إعادة توصيل الصوت…',
   'voice.audioFailed': 'تعذّر توصيل الصوت الآن. الدردشة ما زالت تعمل.',
+  'voice.talkingMuted': 'الميكروفون مكتوم',
+  'voice.micSilent': 'لا يصل أي صوت من الميكروفون. تأكد أنه غير مكتوم في السماعة أو الجهاز.',
 
   // recent
   'recent.title': 'الأخيرة',

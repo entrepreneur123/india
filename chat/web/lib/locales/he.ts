@@ -435,6 +435,8 @@ const he: Dict = {
   'voice.tapToListen': 'הקשה להאזנה',
   'voice.audioReconnecting': 'השמע מתחבר מחדש…',
   'voice.audioFailed': 'אי אפשר לחבר שמע כרגע. הצ׳אט עדיין עובד.',
+  'voice.talkingMuted': 'המיקרופון שלך מושתק',
+  'voice.micSilent': 'לא מגיע קול מהמיקרופון. בדקו שהוא לא מושתק באוזניות או במכשיר.',
 
   // recent
   'recent.title': 'אחרונים',

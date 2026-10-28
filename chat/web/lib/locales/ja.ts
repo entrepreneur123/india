@@ -434,6 +434,8 @@ const ja: Dict = {
   'voice.tapToListen': 'タップして聴く',
   'voice.audioReconnecting': '音声を再接続中…',
   'voice.audioFailed': '現在音声に接続できません。チャットは引き続き使えます。',
+  'voice.talkingMuted': 'ミュート中です',
+  'voice.micSilent': 'マイクから音が届いていません。ヘッドセットや端末でミュートになっていないか確認してください。',
 
   // recent
   'recent.title': '最近',

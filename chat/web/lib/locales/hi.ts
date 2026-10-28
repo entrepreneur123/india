@@ -427,6 +427,8 @@ const hi: Dict = {
   'voice.tapToListen': 'सुनने के लिए टैप करें',
   'voice.audioReconnecting': 'ऑडियो फिर से जुड़ रहा है…',
   'voice.audioFailed': 'अभी ऑडियो नहीं जुड़ पा रहा। चैट चालू है।',
+  'voice.talkingMuted': 'आपका माइक म्यूट है',
+  'voice.micSilent': 'आपके माइक्रोफ़ोन से कोई आवाज़ नहीं आ रही। देखें कि हेडसेट या डिवाइस पर म्यूट तो नहीं है।',
 
   'recent.title': 'हाल के',
   'recent.show': 'दिखाएँ',

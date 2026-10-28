@@ -434,6 +434,8 @@ const tr: Dict = {
   'voice.tapToListen': 'Dinlemek için dokun',
   'voice.audioReconnecting': 'Ses yeniden bağlanıyor…',
   'voice.audioFailed': 'Şu anda ses bağlanamıyor. Sohbet çalışmaya devam ediyor.',
+  'voice.talkingMuted': 'Mikrofonun kapalı',
+  'voice.micSilent': 'Mikrofonundan ses gelmiyor. Kulaklıkta veya cihazda sessize alınmadığını kontrol et.',
 
   // recent
   'recent.title': 'Son',

@@ -428,6 +428,8 @@ const ro: Dict = {
   'voice.tapToListen': 'Atinge ca să asculți',
   'voice.audioReconnecting': 'Se reconectează sunetul…',
   'voice.audioFailed': 'Sunetul nu se poate conecta acum. Chatul merge în continuare.',
+  'voice.talkingMuted': 'Microfonul tău e oprit',
+  'voice.micSilent': 'Nu vine niciun sunet din microfon. Verifică să nu fie oprit pe căști sau pe dispozitiv.',
 
   'recent.title': 'Recente',
   'recent.show': 'Arată',

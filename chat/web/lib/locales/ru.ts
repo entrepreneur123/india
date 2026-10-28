@@ -436,6 +436,8 @@ const ru: Dict = {
   'voice.tapToListen': 'Нажмите, чтобы слушать',
   'voice.audioReconnecting': 'Переподключаем звук…',
   'voice.audioFailed': 'Не удаётся подключить звук. Чат работает.',
+  'voice.talkingMuted': 'Ваш микрофон выключен',
+  'voice.micSilent': 'С микрофона не идёт звук. Проверьте, не выключен ли он на гарнитуре или устройстве.',
 
   // recent
   'recent.title': 'Недавние',

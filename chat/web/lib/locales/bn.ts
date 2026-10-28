@@ -427,6 +427,8 @@ const bn: Dict = {
   'voice.tapToListen': 'শুনতে ট্যাপ করুন',
   'voice.audioReconnecting': 'অডিও আবার যুক্ত হচ্ছে…',
   'voice.audioFailed': 'এখন অডিও যুক্ত করা যাচ্ছে না। চ্যাট চালু আছে।',
+  'voice.talkingMuted': 'আপনার মাইক বন্ধ',
+  'voice.micSilent': 'মাইক্রোফোন থেকে কোনো শব্দ আসছে না। হেডসেট বা ডিভাইসে মিউট আছে কিনা দেখুন।',
 
   'recent.title': 'সাম্প্রতিক',
   'recent.show': 'দেখান',

@@ -436,6 +436,8 @@ const uk: Dict = {
   'voice.tapToListen': 'Натисніть, щоб слухати',
   'voice.audioReconnecting': 'Перепідключаємо звук…',
   'voice.audioFailed': 'Не вдається підключити звук. Чат працює.',
+  'voice.talkingMuted': 'Ваш мікрофон вимкнено',
+  'voice.micSilent': 'З мікрофона не йде звук. Перевірте, чи не вимкнено його на гарнітурі або пристрої.',
 
   // recent
   'recent.title': 'Нещодавні',

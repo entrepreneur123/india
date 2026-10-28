@@ -434,6 +434,8 @@ const fil: Dict = {
   'voice.tapToListen': 'I-tap para makinig',
   'voice.audioReconnecting': 'Kumokonekta ulit ang audio…',
   'voice.audioFailed': 'Hindi makakonekta ang audio ngayon. Gumagana pa rin ang chat.',
+  'voice.talkingMuted': 'Naka-mute ka',
+  'voice.micSilent': 'Walang tunog mula sa mikropono mo. Tingnan kung naka-mute ito sa headset o device mo.',
 
   // recent
   'recent.title': 'Kamakailan',

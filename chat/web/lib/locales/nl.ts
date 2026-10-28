@@ -427,6 +427,8 @@ const nl: Dict = {
   'voice.tapToListen': 'Tik om te luisteren',
   'voice.audioReconnecting': 'Audio opnieuw verbinden…',
   'voice.audioFailed': 'Audio kan nu niet verbinden. De chat werkt nog wel.',
+  'voice.talkingMuted': 'Je microfoon staat uit',
+  'voice.micSilent': 'Er komt geen geluid uit je microfoon. Controleer of hij niet gedempt is op je headset of apparaat.',
 
   'recent.title': 'Recent',
   'recent.show': 'Tonen',

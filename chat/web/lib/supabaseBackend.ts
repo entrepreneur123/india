@@ -1938,6 +1938,7 @@ export class SupabaseBackend implements Backend {
           levels: (levels) => emit({ type: 'levels', levels }),
           permissions: () => permissionWaiters.splice(0).forEach((f) => f()),
           micMutedByServer: () => refresh(),
+          micHint: (micHint) => setAudio({ micHint }),
           videos: (videos) => emit({ type: 'videos', videos }),
           gone: (removed) => {
             if (audioCtl !== ctl) return

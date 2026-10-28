@@ -434,6 +434,8 @@ const id: Dict = {
   'voice.tapToListen': 'Ketuk untuk mendengarkan',
   'voice.audioReconnecting': 'Menyambungkan ulang audio…',
   'voice.audioFailed': 'Audio belum bisa tersambung. Chat tetap jalan.',
+  'voice.talkingMuted': 'Mikmu dibisukan',
+  'voice.micSilent': 'Tidak ada suara dari mikrofonmu. Pastikan tidak dibisukan di headset atau perangkatmu.',
 
   // recent
   'recent.title': 'Terbaru',

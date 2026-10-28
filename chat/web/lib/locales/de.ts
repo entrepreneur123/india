@@ -427,6 +427,8 @@ const de: Dict = {
   'voice.tapToListen': 'Zum Zuhören tippen',
   'voice.audioReconnecting': 'Audio wird neu verbunden…',
   'voice.audioFailed': 'Audio kann gerade nicht verbunden werden. Der Chat funktioniert weiter.',
+  'voice.talkingMuted': 'Du bist stummgeschaltet',
+  'voice.micSilent': 'Von deinem Mikrofon kommt kein Ton. Prüfe, ob es am Headset oder Gerät stumm ist.',
 
   'recent.title': 'Verlauf',
   'recent.show': 'Anzeigen',

@@ -38,6 +38,9 @@
 |---|---|---|---|---|
 | 1:1 통화가 완전히 끊기면 새로 최대 3번 다시 접속 | LiveKit 공식 문서 "Connecting", livekit-client SDK | 문서는 조사 에이전트, **끊긴 이유 목록(DisconnectReason)은 설치된 SDK 파일을 직접 읽음** | 짧은 끊김은 SDK가 알아서 복구. 강퇴·중복 접속·방 종료면 다시 안 들어감 | `lib/livekit.ts` `FINAL`, `video-call.tsx` `rejoin` |
 | 음성방 3초 신호(서버 부하) | Discord 음성 구조 블로그 | 조사 에이전트 | 안 고침(6장) | — |
+| **음소거 중에 말하면 "음소거 상태예요 · 음소거 해제"** | Jitsi Meet `lib-jitsi-meet/modules/detection/VADTalkMutedDetection.ts`, `jitsi-meet/react/features/talk-while-muted/middleware.ts` (Apache-2.0) | **직접 읽음** | 크게 시작하면 0.7초 창을 열고, 창 평균도 크면 말한 것 → 음소거 한 번당 한 번만 알림. 해제하면 알림 지움. (Jitsi는 RNNoise 음성 점수, 우리는 소리 크기라 기준값이 다름) | `lib/mic-hints.ts` `talkDetector`, `voice-audio.ts` |
+| **마이크에서 소리가 전혀 안 들어오면 알림** | `lib-jitsi-meet/modules/detection/NoAudioSignalDetection.ts`, `jitsi-meet/react/features/no-audio-signal/middleware.tsx` | **직접 읽음** | 마이크 소리값이 정확히 0인 채 4초 → 이어폰·기기 음소거 확인 안내(한 번), 소리 들어오면 지움 | `lib/mic-hints.ts` `silenceDetector`, `voice-audio.ts` |
+| **말하는 중 이어폰·블루투스가 빠지면 기본 마이크로 다시 잡기** | LiveKit client 2.23.0 설치 소스 `livekit-client.esm.mjs` (`handleEnded`, `unmute`의 재획득, `handleDeviceChange`) | **직접 읽음** | SDK는 기기 변경 때 기본 장치로 바꾸지만(아이폰 제외), 말하는 중 마이크가 끝나면 다음 음소거 해제 때까지 다시 잡지 않음 → 끝나는 즉시 다시 잡게 함 | `voice-audio.ts` (`TrackEvent.Ended` → `restartTrack`) |
 
 ## 3. 보안
 
@@ -65,6 +68,9 @@
 ## 6. 아직 못 한 것 / 확인 못 한 것
 
 - 음성방 채팅은 아직 "보내자마자 표시"가 없습니다.
+- 음소거 중 말하기·무음 알림의 기준값(소리 크기 0.06/0.03)은 브라우저 가짜 마이크로만 시험했습니다(가짜 마이크 소리
+  0.063, 무음 0, 음소거된 마이크 복사본으로 측정 가능 확인). 실제 사람 목소리로는 못 해봤습니다. 휴대폰(아이폰·안드로이드)은
+  음소거 중 말하기 알림이 꺼져 있습니다(오디오 분석기를 하나 더 열면 소리가 깨지는 문제가 있어서). 무음 알림은 모든 기기에서 동작합니다.
 - 음성방 참가자마다 3초 신호 → 사용자가 많으면 서버 부담. 안드로이드와 같이 바꿔야 합니다.
 - 입력 중 표시 채널은 이름만 알면 들을 수 있는 공개 채널입니다(이름은 추측 불가능한 무작위 ID). 비공개 전환도 안드로이드와 함께.
 - 1시간 넘게 열어 둔 채팅의 사진 주소 만료 시 다시 받기 없음.

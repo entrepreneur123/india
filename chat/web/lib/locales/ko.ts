@@ -434,6 +434,8 @@ const ko: Dict = {
   'voice.tapToListen': '탭해서 듣기',
   'voice.audioReconnecting': '오디오 다시 연결하는 중…',
   'voice.audioFailed': '지금 오디오에 연결할 수 없어요. 채팅은 계속 쓸 수 있어요.',
+  'voice.talkingMuted': '음소거 상태예요',
+  'voice.micSilent': '마이크에서 소리가 들어오지 않아요. 이어폰이나 기기에서 음소거되어 있지 않은지 확인해 주세요.',
 
   // recent
   'recent.title': '최근',

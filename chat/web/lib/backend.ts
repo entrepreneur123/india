@@ -600,6 +600,8 @@ export type VoiceLine =
 export interface VoiceAudioState {
   status: 'connecting' | 'connected' | 'reconnecting' | 'failed'
   needsTap: boolean
+  /** A hint about my microphone: talking while muted, or it sends only silence (lib/voice-audio.ts). */
+  micHint?: 'talkingMuted' | 'silent' | null
 }
 
 /** A camera on in a voice room (24): shown by attaching it to a <video>; `mine` is drawn mirrored. */

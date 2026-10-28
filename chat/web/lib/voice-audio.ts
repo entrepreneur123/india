@@ -15,12 +15,14 @@ import {
   Room,
   RoomEvent,
   Track,
+  TrackEvent,
   VideoPresets,
   type VideoTrack,
 } from 'livekit-client'
 import type { VoiceVideo } from './backend'
 import { deviceProblem, isAppleWebKit, videoCodecFor } from './rtc'
 import { cleanMicrophone } from './voice-gate'
+import { rms, silenceDetector, talkDetector } from './mic-hints'
 import { savedVolumes } from './voice-volumes'
 
 export type AudioStatus = 'connecting' | 'connected' | 'reconnecting' | 'failed'
@@ -39,7 +41,11 @@ export interface VoiceAudioEvents {
   videos(videos: Record<string, VoiceVideo>): void
   /** Disconnected for good: removed from the room, the room ended, or the connection was lost. */
   gone(removed: boolean): void
+  /** A hint about my microphone (null: none): I'm talking while muted, or it sends nothing but silence. */
+  micHint(hint: MicHint): void
 }
+
+export type MicHint = 'talkingMuted' | 'silent' | null
 
 export interface VoiceAudio {
   readonly canPublish: boolean
@@ -56,6 +62,7 @@ export interface VoiceAudio {
 }
 
 const LEVEL_MS = 100
+
 
 export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioEvents, signal: AbortSignal, sound: boolean): Promise<VoiceAudio> {
   if (signal.aborted) throw new DOMException('left', 'AbortError')
@@ -107,6 +114,52 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   let micWanted = false
   let timer: ReturnType<typeof setInterval> | undefined
 
+  let hint: MicHint = null
+  const setHint = (h: MicHint) => void (h !== hint && ev.micHint((hint = h)))
+  const micTrack = () => room.localParticipant.getTrackPublication(Track.Source.Microphone)?.track as LocalAudioTrack | undefined
+  // Microphone hints (lib/mic-hints.ts, after Jitsi). Talking while muted: a copy of the mic, switched on, measured
+  // while LiveKit sends nothing; only where a second audio graph is safe (see `analysers`).
+  let stopProbe = () => {}
+  const startProbe = () => {
+    const raw = micTrack()?.mediaStreamTrack
+    if (!analysers || !raw || raw.readyState === 'ended') return
+    stopProbe()
+    const copy = raw.clone()
+    copy.enabled = true
+    const ctx = new AudioContext()
+    const an = ctx.createAnalyser()
+    an.fftSize = 1024
+    ctx.createMediaStreamSource(new MediaStream([copy])).connect(an)
+    const buf = new Float32Array(an.fftSize)
+    const talking = talkDetector()
+    const tick = setInterval(() => {
+      an.getFloatTimeDomainData(buf)
+      if (!talking(rms(buf), performance.now())) return
+      setHint('talkingMuted')
+      stopProbe()
+    }, 50)
+    stopProbe = () => {
+      clearInterval(tick)
+      copy.stop()
+      void ctx.close().catch(() => undefined)
+      stopProbe = () => {}
+    }
+  }
+  // No signal: the browser's own level of what the mic hands over (getStats media-source), every second while I talk.
+  let silent = silenceDetector()
+  const silence = setInterval(async () => {
+    const sender = micTrack()?.sender
+    if (!micWanted || !sender) return
+    let level: number | undefined
+    ;(await sender.getStats().catch(() => null))?.forEach((r) => {
+      if (r.type === 'media-source' && r.kind === 'audio' && typeof r.audioLevel === 'number') level = r.audioLevel
+    })
+    if (level === undefined) return // a browser without the level: no hint rather than a wrong one
+    const heard = silent(level, performance.now())
+    if (heard === 'silent') setHint('silent')
+    else if (heard === 'sound' && hint === 'silent') setHint(null)
+  }, 1_000)
+
   const meter = (sid: string, identity: string, track: RemoteAudioTrack | LocalAudioTrack) => {
     if (!analysers || meters.has(sid)) return
     try {
@@ -122,6 +175,8 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   }
   const teardown = () => {
     clearInterval(timer)
+    clearInterval(silence)
+    stopProbe()
     for (const sid of [...meters.keys()]) unmeter(sid)
     box.remove()
   }
@@ -153,7 +208,15 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       unmeter(pub.trackSid)
     })
     .on(RoomEvent.LocalTrackPublished, (pub) => {
-      if (pub.track && pub.kind === Track.Kind.Audio) meter(pub.trackSid, room.localParticipant.identity, pub.track as LocalAudioTrack)
+      if (pub.track && pub.kind === Track.Kind.Audio) {
+        meter(pub.trackSid, room.localParticipant.identity, pub.track as LocalAudioTrack)
+        silent = silenceDetector()
+        // The mic went away while I talk (headset unplugged, Bluetooth gone): LiveKit takes it up again only on the
+        // next unmute (LocalAudioTrack.unmute), so ask for the default one now; failing that, say it is silent.
+        pub.track.on(TrackEvent.Ended, () => {
+          if (micWanted) void (pub.track as LocalAudioTrack).restartTrack().catch(() => setHint('silent'))
+        })
+      }
       if (pub.kind === Track.Kind.Video) emitVideos()
     })
     .on(RoomEvent.LocalTrackUnpublished, (pub) => {
@@ -171,6 +234,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       // My own mute arrives here too; only a mute while I wanted to talk (the server's) is news.
       if (p !== room.localParticipant || pub.source !== Track.Source.Microphone || !micWanted) return
       micWanted = false
+      startProbe()
       ev.micMutedByServer()
     })
     .on(RoomEvent.Reconnecting, () => ev.status('reconnecting'))
@@ -222,6 +286,14 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       if (on && !room.localParticipant.permissions?.canPublish) throw new Error('not_allowed')
       try {
         await room.localParticipant.setMicrophoneEnabled(on)
+        if (on) {
+          stopProbe()
+          silent = silenceDetector() // the 4 s count starts at the unmute, not before it
+          if (hint === 'talkingMuted') setHint(null)
+        } else {
+          startProbe()
+          if (hint === 'silent') setHint(null) // muted on purpose now: the other hint, if any, is the news
+        }
       } catch (e) {
         micWanted = false
         const name = (e as { name?: string })?.name ?? ''

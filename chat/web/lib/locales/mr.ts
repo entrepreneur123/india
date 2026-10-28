@@ -412,6 +412,8 @@ const mr: Dict = {
   'voice.tapToListen': 'ऐकण्यासाठी टॅप करा',
   'voice.audioReconnecting': 'ऑडिओ पुन्हा कनेक्ट होत आहे…',
   'voice.audioFailed': 'आत्ता ऑडिओ कनेक्ट होत नाही. चॅट तरीही चालू आहे.',
+  'voice.talkingMuted': 'तुमचा माइक म्यूट आहे',
+  'voice.micSilent': 'तुमच्या मायक्रोफोनमधून आवाज येत नाही. हेडसेट किंवा डिव्हाइसवर म्यूट नाही ना ते तपासा.',
   'recent.title': 'अलीकडील',
   'recent.show': 'दाखवा',
   'recent.friends': 'मित्र',

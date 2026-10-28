@@ -412,6 +412,8 @@ const gu: Dict = {
   'voice.tapToListen': 'સાંભળવા ટૅપ કરો',
   'voice.audioReconnecting': 'ઑડિયો ફરી કનેક્ટ થઈ રહ્યો છે…',
   'voice.audioFailed': 'અત્યારે ઑડિયો કનેક્ટ થતો નથી. ચેટ તો પણ ચાલે છે.',
+  'voice.talkingMuted': 'તમારો માઇક બંધ છે',
+  'voice.micSilent': 'તમારા માઇક્રોફોનમાંથી કોઈ અવાજ આવતો નથી. હેડસેટ કે ડિવાઇસ પર મ્યૂટ નથી ને તે તપાસો.',
   'recent.title': 'તાજેતરના',
   'recent.show': 'બતાવો',
   'recent.friends': 'મિત્રો',

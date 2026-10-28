@@ -434,6 +434,8 @@ const sw: Dict = {
   'voice.tapToListen': 'Gusa ili usikilize',
   'voice.audioReconnecting': 'Inaunganisha sauti upya…',
   'voice.audioFailed': 'Sauti haiwezi kuunganishwa kwa sasa. Chat bado inafanya kazi.',
+  'voice.talkingMuted': 'Maikrofoni yako imenyamazishwa',
+  'voice.micSilent': 'Hakuna sauti inayotoka kwenye maikrofoni yako. Hakikisha haijanyamazishwa kwenye kifaa au vipokea sauti.',
 
   // recent
   'recent.title': 'Za karibuni',

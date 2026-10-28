@@ -427,6 +427,8 @@ const vi: Dict = {
   'voice.tapToListen': 'Chạm để nghe',
   'voice.audioReconnecting': 'Đang kết nối lại âm thanh…',
   'voice.audioFailed': 'Chưa kết nối được âm thanh. Bạn vẫn có thể trò chuyện.',
+  'voice.talkingMuted': 'Bạn đang tắt mic',
+  'voice.micSilent': 'Không có âm thanh từ micro của bạn. Kiểm tra xem micro có bị tắt trên tai nghe hoặc thiết bị không.',
 
   'recent.title': 'Gần đây',
   'recent.show': 'Hiển thị',

@@ -428,6 +428,8 @@ const fr: Dict = {
   'voice.tapToListen': 'Appuyez pour écouter',
   'voice.audioReconnecting': 'Reconnexion de l’audio…',
   'voice.audioFailed': 'Impossible de connecter l’audio pour le moment. Le chat fonctionne toujours.',
+  'voice.talkingMuted': 'Votre micro est coupé',
+  'voice.micSilent': 'Aucun son ne sort de votre micro. Vérifiez qu’il n’est pas coupé sur votre casque ou appareil.',
 
   'recent.title': 'Récents',
   'recent.show': 'Afficher',

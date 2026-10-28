@@ -434,6 +434,8 @@ const ms: Dict = {
   'voice.tapToListen': 'Ketik untuk mendengar',
   'voice.audioReconnecting': 'Menyambung semula audio…',
   'voice.audioFailed': 'Tidak dapat menyambung audio sekarang. Sembang masih berfungsi.',
+  'voice.talkingMuted': 'Mikrofon anda dibisukan',
+  'voice.micSilent': 'Tiada bunyi dari mikrofon anda. Pastikan ia tidak dibisukan pada set kepala atau peranti.',
 
   // recent
   'recent.title': 'Terkini',

@@ -412,6 +412,8 @@ const ur: Dict = {
   'voice.tapToListen': 'سننے کے لیے ٹیپ کریں',
   'voice.audioReconnecting': 'آڈیو دوبارہ جڑ رہی ہے…',
   'voice.audioFailed': 'ابھی آڈیو نہیں جڑ پا رہی۔ چیٹ پھر بھی چل رہی ہے۔',
+  'voice.talkingMuted': 'آپ کا مائیک بند ہے',
+  'voice.micSilent': 'آپ کے مائیکروفون سے کوئی آواز نہیں آ رہی۔ دیکھیں کہ ہیڈسیٹ یا ڈیوائس پر میوٹ تو نہیں۔',
   'recent.title': 'حالیہ',
   'recent.show': 'دکھائیں',
   'recent.friends': 'دوست',

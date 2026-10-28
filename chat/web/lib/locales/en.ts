@@ -433,6 +433,8 @@ const en = {
   'voice.tapToListen': 'Tap to listen',
   'voice.audioReconnecting': 'Reconnecting audio…',
   'voice.audioFailed': 'Can’t connect audio right now. Chat still works.',
+  'voice.talkingMuted': 'You’re muted',
+  'voice.micSilent': 'No sound is coming from your microphone. Check it isn’t muted on your headset or device.',
 
   // recent
   'recent.title': 'Recent',
