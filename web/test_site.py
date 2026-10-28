@@ -400,6 +400,30 @@ def test_maharashtra_without_numbers_promises_only_the_official_sheets(tmp_path,
     assert "https://example.in/maharashtra/" in (out / "sitemap.xml").read_text()
 
 
+def test_maharashtra_game_pages_and_marathi(tmp_path, monkeypatch):
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    week_before = dict(MH_DRAW, id="2026-10-11_MH_GAJLAXMI-RAVI", date="2026-10-11", status="PDF", time="", tiers=[], drawNo=42)
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [MH_DRAW]}))
+    (data / "2026-10-11.json").write_text(json.dumps({"schema": 2, "date": "2026-10-11", "draws": [week_before]}))
+    out = build(tmp_path, monkeypatch)
+    game = (out / "maharashtra/gajlaxmi-ravi/index.html").read_text()
+    assert "<title>Maharashtra Gajlaxmi Ravi Lottery Result 18.10.2026 – Weekly Draw, Official Sheet</title>" in game
+    assert "Weekly draw every Sunday at 4:45 PM." in game and "GL-00 2142" in game
+    assert "Earlier Gajlaxmi Ravi draws" in game and "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in game  # 11.10: its sheet
+    assert (out / "hi/maharashtra/gajlaxmi-ravi/index.html").exists()
+    draw = (out / "result/18-10-2026/maharashtra-gajlaxmi-ravi/index.html").read_text()
+    assert 'href="/maharashtra/gajlaxmi-ravi/"' in draw and 'href="/maharashtra/gajlaxmi-ravi/"' in (out / "maharashtra/index.html").read_text()
+    mr = (out / "mr/maharashtra/index.html").read_text()
+    assert '<html lang="mr-IN">' in mr and '<meta property="og:locale" content="mr_IN">' in mr
+    assert "<title>महाराष्ट्र राज्य लॉटरी निकाल आज 18.10.2026 – गजलक्ष्मी रवि साप्ताहिक सोडत | Maharashtra Lottery Result</title>" in mr
+    assert "पहिले बक्षिस" in mr and "GL-00 2142" in mr and "रविवार" in mr
+    assert '<link rel="alternate" hreflang="hi-IN" href="https://example.in/hi/maharashtra/">' in mr
+    assert '<link rel="alternate" hreflang="mr-IN" href="https://example.in/mr/maharashtra/">' in (out / "maharashtra/index.html").read_text()
+    sm = (out / "sitemap.xml").read_text()
+    assert "https://example.in/maharashtra/gajlaxmi-ravi/" in sm and "https://example.in/mr/maharashtra/" in sm
+
+
 def test_kerala_in_malayalam(tmp_path, monkeypatch):
     kl = {"id": "2026-10-18_KL", "slot": "KL", "lottery": "kerala", "date": "2026-10-18", "time": "15:00", "state": "Kerala",
           "name": "SAMRUDHI SM-77", "drawNo": 77, "format": "B6", "price": 0, "special": False, "status": "OK",

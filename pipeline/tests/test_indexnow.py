@@ -29,12 +29,15 @@ def test_body_points_to_key_file_on_the_same_host():
     assert b["keyLocation"] == f"https://entrepreneur123.github.io/india/{indexnow.KEY}.txt"
 
 
-def test_maharashtra_pages_are_announced_once_they_have_numbers():
+def test_maharashtra_pages_are_announced():
     days = [{"draws": [{"date": "2026-10-27", "name": "Maharashtra Gajlaxmi Ravi", "status": "OK"},
                        {"date": "2026-10-27", "name": "Maharashtra Padmini", "status": "PDF"},
                        {"date": "2026-10-20", "name": "Maharashtra Sagarlaxmi", "status": "OK"}]}]
     urls = indexnow.mh_urls("https://lottodost.com", days, dt.date(2026, 10, 27))
     assert urls[:3] == ["https://lottodost.com/maharashtra/", "https://lottodost.com/bn/maharashtra/",
                         "https://lottodost.com/hi/maharashtra/"]
-    assert "https://lottodost.com/result/27-10-2026/maharashtra-gajlaxmi-ravi/" in urls and len(urls) == 6
-    assert indexnow.mh_urls("https://lottodost.com", [{"draws": days[0]["draws"][1:2]}], dt.date(2026, 10, 27)) == []
+    assert "https://lottodost.com/result/27-10-2026/maharashtra-gajlaxmi-ravi/" in urls      # numbers: its own page
+    assert "https://lottodost.com/hi/maharashtra/padmini/" in urls                            # the game page, sheet only
+    assert not any("sagarlaxmi" in u for u in urls)                                            # a week old
+    assert urls[-1] == "https://lottodost.com/mr/maharashtra/" and len(urls) == 3 * 4 + 1
+    assert indexnow.mh_urls("https://lottodost.com", [{"draws": days[0]["draws"][2:]}], dt.date(2026, 10, 27)) == []

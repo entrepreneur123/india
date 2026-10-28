@@ -39,19 +39,24 @@ def fresh_urls(site_url: str, today_feed: dict, today: dt.date) -> list[str]:
 
 
 def mh_urls(site_url: str, mh_days: list[dict], today: dt.date) -> list[str]:
-    """Maharashtra (its own feed, v2/mh/): /maharashtra/ and the draw pages of today and yesterday."""
+    """Maharashtra (its own feed, v2/mh/), for the draws of today and yesterday: /maharashtra/, each
+    draw's game page (/maharashtra/gajlaxmi-ravi/, it changes when the game draws), the draw pages
+    that have numbers, and the Marathi page (one language)."""
     base = site_url.rstrip("/")
-    paths = []
+    paths, games = [], []
     for day in mh_days:
         for d in day.get("draws", []):
-            if d["date"] < (today - dt.timedelta(days=1)).isoformat() or d.get("status") != "OK":
+            if d["date"] < (today - dt.timedelta(days=1)).isoformat():
                 continue
             y, m, dd = d["date"].split("-")
             slug = re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")  # as web/sitegen.py
-            paths.append(f"/result/{dd}-{m}-{y}/maharashtra-{slug}/")
-    if paths:
-        paths.insert(0, "/maharashtra/")
-    return [f"{base}{lang}{p}" for p in paths for lang in ("", "/bn", "/hi")]
+            games.append(f"/maharashtra/{slug}/")
+            if d.get("status") == "OK":
+                paths.append(f"/result/{dd}-{m}-{y}/maharashtra-{slug}/")
+    if not games:
+        return []
+    paths = ["/maharashtra/"] + sorted(set(games)) + paths
+    return [f"{base}{lang}{p}" for p in paths for lang in ("", "/bn", "/hi")] + [f"{base}/mr/maharashtra/"]
 
 
 def body(site_url: str, urls: list[str]) -> dict:

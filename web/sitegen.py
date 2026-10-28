@@ -67,6 +67,10 @@ ML = {
 # Maharashtra State Lottery (other state lotteries, kept apart from Lottery Sambad and Kerala).
 MH = {
     "en": {"tab": "Maharashtra", "h1": "Maharashtra Lottery Result Today", "other": "Other state lotteries",
+           "game_h1": "Maharashtra {g} Lottery Result", "game_title": "Maharashtra {g} Lottery Result {d} – {k} Draw, Official Sheet",
+           "game_desc": "Maharashtra {g} lottery result {d}{f}. Every {g} draw with its official result sheet (PDF) from the Government of Maharashtra.",
+           "game_when": "{k} draw every {wd}{t}.", "game_when_any": "{k} draw.", "game_past": "Earlier {g} draws", "games": "All Maharashtra lotteries",
+           "first_is": ": 1st prize {n}", "sheet_only": "Official sheet", "marathi": "मराठीत वाचा →",
            "title": "Maharashtra Lottery Result Today {d} – {g} and All Draws",
            "desc": "Maharashtra State Lottery result {d}: {list}. Full prize list of every draw, ticket checker and the official result sheet.",
            "schedule": "The Government of Maharashtra holds weekly draws every afternoon (around 4–5 PM), plus monthly draws and festival bumpers. Each draw has its own name and series, e.g. GL-00 to GL-09.",
@@ -81,6 +85,10 @@ MH = {
            "desc_pdf": "Maharashtra State Lottery result {d}: {list} – the official result sheet (PDF) of every draw, straight from the Government of Maharashtra.",
            "pdf_note": "Each draw links its official result sheet (PDF) on the Maharashtra State Lottery website. Check your ticket against that sheet."},
     "bn": {"tab": "মহারাষ্ট্র", "h1": "মহারাষ্ট্র লটারি আজকের রেজাল্ট", "other": "অন্য রাজ্যের লটারি",
+           "game_h1": "মহারাষ্ট্র {g} লটারি রেজাল্ট", "game_title": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d} – {k} ড্র, সরকারি শিট",
+           "game_desc": "মহারাষ্ট্র {g} লটারি রেজাল্ট {d}{f}। মহারাষ্ট্র সরকারের সরকারি রেজাল্ট শিট (PDF) সহ {g}-এর প্রতিটি ড্র।",
+           "game_when": "প্রতি {wd} {k} ড্র{t}।", "game_when_any": "{k} ড্র।", "game_past": "{g}-এর আগের ড্র", "games": "মহারাষ্ট্রের সব লটারি",
+           "first_is": ": প্রথম পুরস্কার {n}", "sheet_only": "সরকারি শিট", "marathi": "মারাঠিতে পড়ুন →",
            "title": "মহারাষ্ট্র লটারি আজকের রেজাল্ট {d} – {g} ও সব ড্র",
            "desc": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list}। প্রতিটি ড্রয়ের পুরো পুরস্কারের তালিকা, টিকিট চেক আর সরকারি রেজাল্ট শিট।",
            "schedule": "মহারাষ্ট্র সরকার রোজ বিকেলে (প্রায় 4–5টা) সাপ্তাহিক ড্র করে, এছাড়া মাসিক ড্র আর উৎসবের বাম্পার। প্রতিটি ড্রয়ের নিজস্ব নাম আর সিরিজ থাকে, যেমন GL-00 থেকে GL-09।",
@@ -95,6 +103,10 @@ MH = {
            "desc_pdf": "মহারাষ্ট্র রাজ্য লটারি রেজাল্ট {d}: {list} – প্রতিটি ড্রয়ের সরকারি রেজাল্ট শিট (PDF), সরাসরি মহারাষ্ট্র সরকারের কাছ থেকে।",
            "pdf_note": "প্রতিটি ড্রয়ের সঙ্গে মহারাষ্ট্র রাজ্য লটারির ওয়েবসাইটের সরকারি রেজাল্ট শিটের (PDF) লিংক আছে। ওই শিটের সঙ্গে টিকিট মিলিয়ে নিন।"},
     "hi": {"tab": "महाराष्ट्र", "h1": "महाराष्ट्र लॉटरी रिज़ल्ट आज", "other": "दूसरे राज्यों की लॉटरी",
+           "game_h1": "महाराष्ट्र {g} लॉटरी रिज़ल्ट", "game_title": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d} – {k} ड्रॉ, सरकारी शीट",
+           "game_desc": "महाराष्ट्र {g} लॉटरी रिज़ल्ट {d}{f}। महाराष्ट्र सरकार की सरकारी रिज़ल्ट शीट (PDF) के साथ {g} का हर ड्रॉ।",
+           "game_when": "हर {wd} {k} ड्रॉ{t}।", "game_when_any": "{k} ड्रॉ।", "game_past": "{g} के पिछले ड्रॉ", "games": "महाराष्ट्र की सभी लॉटरी",
+           "first_is": ": पहला इनाम {n}", "sheet_only": "सरकारी शीट", "marathi": "मराठी में पढ़ें →",
            "title": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g} और सभी ड्रॉ",
            "desc": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list}। हर ड्रॉ के सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट शीट।",
            "schedule": "महाराष्ट्र सरकार हर दोपहर (लगभग 4–5 बजे) साप्ताहिक ड्रॉ करती है, साथ में मासिक ड्रॉ और त्योहारों के बंपर। हर ड्रॉ का अपना नाम और सीरीज़ होती है, जैसे GL-00 से GL-09।",
@@ -108,6 +120,26 @@ MH = {
            "title_pdf": "महाराष्ट्र लॉटरी रिज़ल्ट आज {d} – {g}, सरकारी रिज़ल्ट शीट",
            "desc_pdf": "महाराष्ट्र राज्य लॉटरी रिज़ल्ट {d}: {list} – हर ड्रॉ की सरकारी रिज़ल्ट शीट (PDF), सीधे महाराष्ट्र सरकार से।",
            "pdf_note": "हर ड्रॉ के साथ महाराष्ट्र राज्य लॉटरी की वेबसाइट पर उसकी सरकारी रिज़ल्ट शीट (PDF) का लिंक है। टिकट उसी शीट से मिलाएँ।"},
+}
+WD_FULL = {"en": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+           "bn": ["সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার", "রবিবার"],
+           "hi": ["सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"]}
+
+# Maharashtra in Marathi (one page: /mr/maharashtra/). Prize names as printed on the result sheets.
+MR = {
+    "h1": "महाराष्ट्र राज्य लॉटरी निकाल आज",
+    "title": "महाराष्ट्र राज्य लॉटरी निकाल आज {d} – {g} | Maharashtra Lottery Result",
+    "desc": "महाराष्ट्र राज्य लॉटरी निकाल {d}: {list}. प्रत्येक सोडतीचे अधिकृत निकाल पत्रक (PDF).",
+    "schedule": "महाराष्ट्र शासन दररोज दुपारी (सुमारे ४ ते ५ वाजता) साप्ताहिक सोडती काढते, तसेच मासिक सोडती आणि सणांच्या बंपर सोडती.",
+    "pdf": "अधिकृत निकाल पत्रक (PDF)", "site": "महाराष्ट्र राज्य लॉटरीची वेबसाइट",
+    "note_pdf": "प्रत्येक सोडतीसोबत महाराष्ट्र राज्य लॉटरीच्या वेबसाइटवरील अधिकृत निकाल पत्रकाची (PDF) लिंक दिली आहे. आपले तिकीट त्या पत्रकाशी जुळवून पहा.",
+    "note_ocr": "हे क्रमांक अधिकृत निकाल पत्रकातून संगणकाद्वारे वाचलेले आहेत आणि अनेक स्वतंत्र वाचने जुळल्यावरच प्रसिद्ध केले जातात. बक्षिसाचा दावा करण्यापूर्वी अधिकृत पत्रकाशी तिकीट जुळवून पहा.",
+    "recent": "महाराष्ट्र लॉटरी निकाल – अलीकडील सोडती", "date": "दिनांक", "game": "सोडत", "first": "पहिले बक्षिस",
+    "check": "तिकीट क्रमांक तपासा (English) →",
+    "wd": ["सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+    "tiers": {"1": "पहिले बक्षिस", "CONS": "प्रोत्साहनपर बक्षिस", "2": "दुसरे बक्षिस", "3": "तिसरे बक्षिस", "4": "चौथे बक्षिस",
+              "5": "पाचवे बक्षिस", "6": "सहावे बक्षिस", "7": "सातवे बक्षिस", "8": "आठवे बक्षिस", "9": "नववे बक्षिस",
+              "10": "दहावे बक्षिस"},
 }
 
 WEB = {
@@ -437,6 +469,8 @@ class Site:
             alt += f'<link rel="alternate" hreflang="x-default" href="{esc(self.abs("en", path))}">'
             if path == "/kerala/" and self.kerala_ml_ok:
                 alt += f'<link rel="alternate" hreflang="ml-IN" href="{esc(self.abs("en", "/ml/kerala/"))}">'
+            if path == "/maharashtra/" and self.mh_dates:
+                alt += f'<link rel="alternate" hreflang="mr-IN" href="{esc(self.abs("en", "/mr/maharashtra/"))}">'
         ads_head = (f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={esc(self.adsense)}" '
                     f'crossorigin="anonymous"></script>') if self.adsense else ""
         beacon = (f'<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
@@ -816,6 +850,7 @@ class Site:
                                key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date)
             self.kerala_hub(out, lang)
             self.mh_pages(out, lang)
+            self.mh_game_hubs(out, lang)
             self.guide_pages(out, lang)
             for slot, time, _ in WEEKLY:
                 self.slot_hub(out, lang, slot, time)
@@ -856,6 +891,7 @@ class Site:
                                                f'<p class="pn"><a class="btn" href="{self.url("en", "/")}">{esc(self.s["en"]["tab_results"])} →</a></p>',
                                                alternates=False))
         self.kerala_ml(out)
+        self.maharashtra_mr(out)
         self.share_kit(out)
         self.assets(out)
         return len(self.pages)
@@ -984,7 +1020,9 @@ class Site:
                 f'<p class="hint">{esc(m["schedule"])}</p></div>'
                 + (self.checker(lang, hint=m["check_hint"], example="GL-00 2142") if done else "")
                 + "".join(self.mh_card(lang, d) for d in draws) + self.ad() + table + earlier
-                + f'<p class="hint">{esc(m["ocr_note"] if done else m["pdf_note"])}</p>' + self.hub_links(lang))
+                + f'<p class="hint">{esc(m["ocr_note"] if done else m["pdf_note"])}</p>'
+                + f'<p><a class="go" href="{self.url("en", "/mr/maharashtra/")}" lang="mr" hreflang="mr-IN">{esc(m["marathi"])}</a></p>'
+                + self.mh_game_links(lang) + self.hub_links(lang))
         names = ", ".join(self.mh_game(lang, d) for d in draws)
         if first_ok:
             title = m["title"].format(d=d0, g=self.mh_game(lang, first_ok))
@@ -1015,12 +1053,133 @@ class Site:
                     + self.checker(lang, hint=m["check_hint"], example=first["numbers"][0]) + self.tiers(lang, d, ads=True)
                     + self.mh_buttons(lang, d) + f'<p class="hint">{esc(m["ocr_note"])}</p>'
                     + f'<nav class="chips wrapchips">{sibs}</nav>'
-                    + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
+                    + f'<p class="pn"><a class="btn" href="{self.url(lang, self.mh_game_path(d))}">{esc(m["game_past"].format(g=d["name"].removeprefix("Maharashtra ")))}</a>'
+                    + f'<a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
             self.write(out, lang, self.draw_path(d), self.page(
                 lang, self.draw_path(d), title, m["draw_desc"].format(g=self.mh_game(lang, d), d=dd, f=first["numbers"][0]), body,
                 data=[d], image=self.og_images.get(d["id"], ""),
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
                 key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"])
+
+    @staticmethod
+    def mh_game_path(d: dict) -> str:
+        return "/maharashtra/" + draw_slug(d).removeprefix("maharashtra-") + "/"
+
+    def mh_games(self) -> dict[str, list[dict]]:
+        """Every Maharashtra draw by its game page, newest first (a weekly game draws once a week)."""
+        out: dict[str, list[dict]] = {}
+        for x in self.mh_dates:
+            for d in self.mh[x]:
+                out.setdefault(self.mh_game_path(d), []).append(d)
+        return out
+
+    def mh_game_links(self, lang: str, current: str = "") -> str:
+        games = self.mh_games()
+        if not games:
+            return ""
+        m = MH[lang]
+        a = "".join(f'<a class="chip"{" aria-current=\"page\"" if p == current else ""} href="{self.url(lang, p)}">'
+                    f'<b>{esc(MH[lang].get(ds[0].get("kind", ""), "MH"))}</b>{esc(ds[0]["name"].removeprefix("Maharashtra "))}</a>'
+                    for p, ds in sorted(games.items(), key=lambda kv: kv[1][0]["name"]))
+        return f'<h2 class="sub">{esc(m["games"])}</h2><nav class="chips wrapchips" aria-label="{esc(m["games"])}">{a}</nav>'
+
+    def mh_game_hubs(self, out: pathlib.Path, lang: str) -> None:
+        """/maharashtra/<game>/: one page per draw name ("gajlaxmi ravi lottery result" is searched by
+        name), with its newest draw and every earlier one; it updates in place each week."""
+        s, w, m = self.s[lang], WEB[lang], MH[lang]
+        for path, draws in self.mh_games().items():
+            latest = draws[0]
+            name = latest["name"].removeprefix("Maharashtra ")
+            kind = m.get(latest.get("kind", ""), "")
+            d0 = ddmmyyyy(latest["date"])
+            days = {dt.date.fromisoformat(d["date"]).weekday() for d in draws}
+            at = {"en": " at {t}", "bn": " · {t}", "hi": " · {t}"}[lang].format(t=time12(latest["time"])) if latest.get("time") else ""
+            when = (m["game_when"].format(k=kind, wd=WD_FULL[lang][days.pop()], t=at)
+                    if latest.get("kind") == "weekly" and len(days) == 1 else m["game_when_any"].format(k=kind or m["tab"]))
+            ok = [d for d in draws if d.get("status") == "OK" and d.get("tiers")]
+            rows = "".join(
+                f'<tr><th scope="row">{d["date"][8:]}.{d["date"][5:7]}<small>{esc(w["wd"][dt.date.fromisoformat(d["date"]).weekday()])} '
+                f'{d["date"][:4]}</small></th><td>{esc(str(d.get("drawNo") or ""))}</td><td>'
+                + (f'<a href="{self.url(lang, self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a>' if d in ok else
+                   f'<a rel="nofollow" href="{esc(next((x["url"] for x in d.get("sources", []) if x["kind"] == "officialPdf"), ""))}">'
+                   f'{esc(m["sheet_only"])} (PDF)</a>') + '</td></tr>'
+                for d in draws[1:])
+            past = (f'<h2 class="sub">{esc(m["game_past"].format(g=name))}</h2><div class="tbl"><table><thead><tr>'
+                    f'<th>{esc(w["date"])}</th><th>#</th><th>{esc(s["first_prize"])}</th></tr></thead><tbody>{rows}</tbody></table></div>'
+                    if rows else "")
+            body = (f'<div class="intro"><h1>{esc(m["game_h1"].format(g=name))} <span class="d">{esc(d0)}</span></h1>'
+                    f'<p class="hint">{esc(when)}</p></div>'
+                    + (self.checker(lang, hint=m["check_hint"], example=ok[0]["tiers"][0]["numbers"][0]) if ok else "")
+                    + self.mh_card(lang, latest) + self.ad() + past
+                    + f'<p class="hint">{esc(m["ocr_note"] if ok else m["pdf_note"])}</p>'
+                    + self.mh_game_links(lang, path)
+                    + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
+            first = m["first_is"].format(n=latest["tiers"][0]["numbers"][0]) if latest in ok else ""
+            self.write(out, lang, path, self.page(
+                lang, path, m["game_title"].format(g=name, d=d0, k=kind or m["tab"]),
+                m["game_desc"].format(g=name, d=d0, f=first),
+                body, data=ok[:5], image=self.og_images.get(latest["id"], ""),
+                crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (name, path)],
+                modified=self.updated if latest["date"] == self.today else None),
+                key=f"mh-game:{path}", lastmod=self.stamp if latest["date"] == self.today else latest["date"])
+
+    def maharashtra_mr(self, out: pathlib.Path) -> None:
+        """/mr/maharashtra/: the Maharashtra results in Marathi, as Maharashtra searches for them
+        (महाराष्ट्र राज्य लॉटरी निकाल), with the draw names as the lottery prints them."""
+        if not self.mh_dates:
+            return
+        latest = self.mh_dates[0]
+        d0 = ddmmyyyy(latest)
+        def pdf(d):
+            return next((x["url"] for x in d.get("sources", []) if x["kind"] == "officialPdf"), "")
+        def mr_name(d):
+            return d.get("nameLocal") or d["name"]
+        cards = []
+        for d in self.mh[latest]:
+            ok = d.get("status") == "OK" and d.get("tiers")
+            tiers = ""
+            if ok:
+                for t in d["tiers"]:
+                    nums = "".join(f"<li>{esc(n)}</li>" for n in t["numbers"])
+                    width = max((len(n) for n in t["numbers"]), default=4)
+                    tiers += (f'<div class="tier"><div class="th"><h3>{esc(MR["tiers"].get(t["rank"], t["rank"]))}</h3>'
+                              f'<b>{esc(rupees(t["prize"]))}</b></div><ul class="nums {"n4" if width <= 4 else "n5" if width <= 5 else "n6"}">{nums}</ul></div>')
+            head = (f'<h2>{esc(mr_name(d))}</h2><p class="meta">{esc(MR["wd"][dt.date.fromisoformat(d["date"]).weekday()])}, {esc(ddmmyyyy(d["date"]))}'
+                    + (f' · {esc(time12(d["time"]))}' if d.get("time") else "") + (f' · सोडत क्रमांक {d["drawNo"]}' if d.get("drawNo") else "") + '</p>')
+            first = (f'<p class="eyebrow">{esc(MR["first"])} · {esc(rupees(d["tiers"][0]["prize"]))}</p><p class="first">{esc(d["tiers"][0]["numbers"][0])}</p>'
+                     if ok else "")
+            btn = f'<p class="btns"><a class="btn" rel="nofollow" href="{esc(pdf(d))}">{esc(MR["pdf"])}</a></p>' if pdf(d) else ""
+            cards.append(f'<section class="slip"><div class="stub"><b>MH</b><span>महाराष्ट्र</span></div><div class="sb">{head}{first}{btn}'
+                         + (f'<details class="all"><summary>सर्व बक्षिसे</summary><div class="in">{tiers}</div></details>' if tiers else "")
+                         + '</div></section>')
+        rows = "".join(
+            f'<tr><th scope="row">{d["date"][8:]}.{d["date"][5:7]}<small>{esc(MR["wd"][dt.date.fromisoformat(d["date"]).weekday()])} {d["date"][:4]}</small></th>'
+            f'<td>{esc(mr_name(d).removeprefix("महाराष्ट्र "))}</td><td>'
+            + (f'<a href="{self.url("en", self.draw_path(d))}">{esc(d["tiers"][0]["numbers"][0])}</a>' if d.get("status") == "OK" and d.get("tiers")
+               else f'<a rel="nofollow" href="{esc(pdf(d))}">PDF</a>') + '</td></tr>'
+            for x in self.mh_dates[1:8] for d in self.mh[x])
+        table = (f'<h2 class="sub">{esc(MR["recent"])}</h2><div class="tbl"><table><thead><tr><th>{esc(MR["date"])}</th>'
+                 f'<th>{esc(MR["game"])}</th><th>{esc(MR["first"])}</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else ""
+        done = any(d.get("status") == "OK" and d.get("tiers") for x in self.mh_dates for d in self.mh[x])
+        body = (f'<div class="intro" lang="mr"><h1>{esc(MR["h1"])} <span class="d">{esc(d0)}</span></h1>'
+                f'<p class="hint">{esc(MR["schedule"])}</p></div><div lang="mr">'
+                + (f'<p class="pn"><a class="btn" href="{self.url("en", "/maharashtra/")}#check">{esc(MR["check"])}</a></p>' if done else "")
+                + "".join(cards) + self.ad() + table + f'<p class="hint">{esc(MR["note_ocr"] if done else MR["note_pdf"])}</p></div>'
+                + self.mh_game_links("en"))
+        draws = self.mh[latest]
+        listing = ", ".join(mr_name(d).removeprefix("महाराष्ट्र ") + (f' {d["tiers"][0]["numbers"][0]}' if d.get("status") == "OK" and d.get("tiers") else "")
+                            for d in draws)
+        g = mr_name(draws[0]).removeprefix("महाराष्ट्र ")
+        html_ = self.page("en", "/mr/maharashtra/", MR["title"].format(d=d0, g=g), MR["desc"].format(d=d0, list=listing), body,
+                          alternates=False, data=[d for d in draws if d.get("tiers")],
+                          crumbs=[("LottoDost", "/"), ("Maharashtra", "/maharashtra/"), ("मराठी", "/mr/maharashtra/")],
+                          modified=self.updated if latest == self.today else None)
+        alts = (f'<link rel="alternate" hreflang="mr-IN" href="{esc(self.abs("en", "/mr/maharashtra/"))}">'
+                + "".join(f'<link rel="alternate" hreflang="{REGION[l]}" href="{esc(self.abs(l, "/maharashtra/"))}">' for l in LANGS))
+        html_ = (html_.replace('<html lang="en-IN">', '<html lang="mr-IN">', 1)
+                 .replace('<meta property="og:locale" content="en_IN">', '<meta property="og:locale" content="mr_IN">', 1)
+                 .replace('<link rel="canonical"', alts + '<link rel="canonical"', 1))
+        self.write(out, "en", "/mr/maharashtra/", html_, key="page:maharashtra-mr", lastmod=self.stamp)
 
     @property
     def kerala_ml_ok(self) -> bool:
