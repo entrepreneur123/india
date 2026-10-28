@@ -60,7 +60,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const toast = useToast()
   const { mutate } = useSWRConfig()
   const { me } = useApp()
-  const { t, locale } = useI18n()
+  const { t, locale, num } = useI18n()
   const { lt } = useLooksT()
   const { data: shop, error, mutate: reload } = useShop(true)
   const anon = useAnonSwitch()
@@ -137,52 +137,49 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   }
   const sale = new Set(shop.items.map((i) => i.id))
   const list = CATALOGUE[kind].filter((id) => sale.has(id))
-  const choose = (id: ItemId | null) =>
-    look ? setTrying((w) => wearWith(w, look, id)) : kind === 'wall' ? setWallTry(id) : extra && setExtraTry((x) => ({ ...x, [extra]: id }))
-  const saveExtra = async (id: ItemId | null) => {
-    if (!extra) return
-    setBusy(true)
-    try {
-      await backend.setWorn(extra, id)
-      // A name effect takes the ID colour off (086): what I wear is read again.
-      const [, fresh] = await Promise.all([mutate(lookKey(me.id)), reload()])
-      if (fresh?.look) setWorn(wearOf(fresh.look))
-      setExtraTry(({ [extra]: _, ...rest }) => rest)
-      toast.show(lt('looks.saved'), 'success')
-    } catch (err) {
-      toast.error(err)
-    } finally {
-      setBusy(false)
-    }
+  /**
+   * A tap tries an item on, in every tab, and what is tried stays while I look at the other tabs; one button below puts
+   * all of it on at once (the owner, 2026-10-28: "design the whole look, then wear it"). The ID colour and a name
+   * effect are one at a time (086), so trying one on takes the other off.
+   */
+  const choose = (id: ItemId | null) => {
+    if (look) setTrying((w) => wearWith(w, look, id))
+    else if (kind === 'wall') setWallTry(id)
+    else if (extra) setExtraTry((x) => ({ ...x, [extra]: id }))
+    if (id && kind === 'color') setExtraTry((x) => ({ ...x, effect: null }))
+    if (id && kind === 'effect') setTrying((w) => wearWith(w, 'color', null))
   }
-  /** Takes off what is in use of this kind ("None"). */
-  const takeOff = () => (look ? wear(null) : extra ? saveExtra(null) : setWall(null))
-  // A new colour being tried on would take the name effect off (086), so the preview shows it without.
-  const fxShown = trying.color && trying.color !== worn.color ? null : shop.look?.effect
+  // What the button puts on: everything tried that I own (an item not bought stays as worn).
+  const mine = (id: string | null | undefined) => id == null || owned.has(id)
+  const wantLook = Object.fromEntries(LOOK_KINDS.map((k) => [k, mine(trying[k]) ? trying[k] : worn[k]])) as LookWear
+  const wantExtra = (k: 'effect' | 'bubble') => {
+    const id = k in extraTry ? (extraTry[k] ?? null) : ((shop.look?.[k] ?? null) as ItemId | null)
+    return mine(id) ? id : ((shop.look?.[k] ?? null) as ItemId | null)
+  }
+  const wantWall = wallTry !== undefined && mine(wallTry) ? wallTry : myWall
+  const changes = [
+    ...LOOK_KINDS.filter((k) => wantLook[k] !== worn[k]),
+    ...(['effect', 'bubble'] as const).filter((k) => wantExtra(k) !== (shop.look?.[k] ?? null)),
+    ...(wantWall !== myWall ? ['wall'] : []),
+  ]
+  // The name effect on the preview: the one tried on, else the one worn.
+  const fxShown = 'effect' in extraTry ? extraTry.effect : shop.look?.effect
   const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
-  /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
-  const wear = async (id: ItemId | null) => {
-    if (!look) return
+  const wearAll = async () => {
     setBusy(true)
     try {
-      const saved = await backend.equipLook(wearWith(worn, look, id))
-      setWorn(wearOf(saved))
-      setTrying((w) => ({ ...wearOf(saved), [look]: w[look] }))
-      await Promise.all([mutate(lookKey(me.id), saved, { revalidate: false }), mutate('shop', { ...shop, look: saved } satisfies Shop, { revalidate: false })])
-      toast.show(lt('looks.saved'), 'success')
-    } catch (err) {
-      toast.error(err)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const setWall = async (id: ItemId | null) => {
-    setBusy(true)
-    try {
-      await backend.setWall(id)
-      await mutate('shop', { ...shop, wall: id } satisfies Shop, { revalidate: false })
+      // The look first: a new colour takes the effect off (086), then the effect, so the end state is what was shown.
+      if (LOOK_KINDS.some((k) => wantLook[k] !== worn[k])) await backend.equipLook(wantLook)
+      for (const k of ['effect', 'bubble'] as const) if (wantExtra(k) !== (shop.look?.[k] ?? null)) await backend.setWorn(k, wantExtra(k))
+      if (wantWall !== myWall) await backend.setWall(wantWall)
+      const [, fresh] = await Promise.all([mutate(lookKey(me.id)), reload()])
+      if (fresh?.look) {
+        setWorn(wearOf(fresh.look))
+        setTrying(wearOf(fresh.look))
+      }
+      setExtraTry({})
+      setWallTry(undefined)
       toast.show(lt('looks.saved'), 'success')
     } catch (err) {
       toast.error(err)
@@ -217,44 +214,22 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   )
 
   let action: React.ReactNode
-  if (tried === null) {
-    // "None": takes off what I wear of this kind (or my wall).
-    const on = look ? worn[look] : single?.mine
-    action = on ? (
-      <Button variant="outline" size="lg" className="w-full" loading={busy} onClick={() => void takeOff()}>
-        {lt(kind === 'wall' ? 'wall.remove' : 'looks.takeOff')}
+  if (kind === 'cycle' && owned.has('cycle_photos')) {
+    action = (
+      <Button variant="brand" size="lg" className="w-full" loading={busy} disabled={picked.length === 1} onClick={() => void saveCycle()}>
+        {lt('cycle.save')}
+      </Button>
+    )
+  } else if (kind === 'vip' && owned.has('vip_anon')) {
+    action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
+  } else if (tried === null || owned.has(tried)) {
+    action = changes.length ? (
+      <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void wearAll()}>
+        {lt('looks.wear')} ({num(changes.length)})
       </Button>
     ) : (
       inUse(usingLabel)
     )
-  } else if (owned.has(tried)) {
-    if (kind === 'cycle') {
-      action = (
-        <Button variant="brand" size="lg" className="w-full" loading={busy} disabled={picked.length === 1} onClick={() => void saveCycle()}>
-          {lt('cycle.save')}
-        </Button>
-      )
-    } else if (kind === 'vip') {
-      action = <AnonSwitch on={shop.anon} busy={anon.busy} onChange={(on) => void anon.set(on)} />
-    } else if (extra) {
-      action = myExtra === tried ? inUse(lt('looks.wearing')) : (
-        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void saveExtra(tried)}>
-          {lt('looks.wear')}
-        </Button>
-      )
-    } else if (kind === 'wall') {
-      action = myWall === tried ? inUse(lt('wall.inUse')) : (
-        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void setWall(tried)}>
-          {lt('wall.use')}
-        </Button>
-      )
-    } else {
-      action = worn[look!] === tried ? inUse(lt('looks.wearing')) : (
-        <Button variant="brand" size="lg" className="w-full" loading={busy} onClick={() => void wear(tried)}>
-          {lt('looks.wear')}
-        </Button>
-      )
-    }
   } else if (backend.buyLook) {
     action = (
       <Button variant="premium" size="lg" className="w-full" loading={busy} onClick={() => void buy(tried)}>
