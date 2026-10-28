@@ -28,7 +28,8 @@ LIST_URL = SITE + "mhlotteryresults.aspx"
 
 ORD = {"1": "1st", "2": "2nd", "3": "3rd"}
 # "5th" is sometimes read "Sth", "4th" "Ath", "1st" "ist"/"lst": the ordinal is normalised below.
-_TIER = re.compile(r"\b([0-9SAIil]{1,2})\s*(st|nd|rd|th)\b[^|]{0,14}?[Pp]rize|\b([Cc]onsolation)\s*[Pp]rize")
+_TIER = re.compile(r"\b([0-9SAIil]{1,2})\s*(st|nd|rd|th)\b[^|]{0,14}?[Pp]rize|\b([Cc]onsolation)\s*[Pp]rize"
+                   r"|(?<![A-Za-z])\S{0,3}\s?(th)\s+[Pp]rize\s+[Rr]s")  # "qm th Prize Rs.110/-": the 7 lost
 _ORD_FIX = str.maketrans({"S": "5", "A": "4", "I": "1", "i": "1", "l": "1"})
 _AMOUNT = re.compile(r"(?i)rs\.?\s*([\d,]{3,})")
 _COUNT = re.compile(r"(?i)\b(\d{1,3})\s*(?:r[a-z]{3,6}\.?\s*)?n[a-z]{4,7}\b")  # "300 Randorn Numbers", "10 Nurnbers"
@@ -289,7 +290,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         m = _TIER.search(text)
         if not m:
             continue
-        rank = "CONS" if m.group(3) else _ordinal(m.group(1), m.group(2))
+        rank = "CONS" if m.group(3) else "?" if m.group(4) else _ordinal(m.group(1), m.group(2))
         first = next(w for w in ws if m.group(0).split()[0] in w[0]) if m.group(0).split() else ws[0]
         cell = next((c for c in cells if _inside(first, c) and c[3] < H * 0.4), None)
         region = " ".join(w[0] for w in words if cell and _inside(w, cell)) if cell else text[m.start():]
@@ -760,19 +761,34 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
         if k not in head:
             raise MaharashtraError(f"readings disagree on the sheet's {k}")
 
-    by_rank: dict[str, list] = {}
-    for r in runs:
+    # A heading is the same heading in every reading where it starts at the same height (all start
+    # at the rule above them); its rank is what the readings that read one say, by a clear majority.
+    # A heading seen in two readings whose ordinal none could read ("qm th Prize Rs.110/-") follows
+    # the one above it; _check then holds the ranks to 1, 2, 3, ... with falling amounts.
+    groups: list[list] = []
+    for i, r in enumerate(runs):
         for h in r["headings"]:
-            by_rank.setdefault(h["rank"], []).append(h)
+            g = next((g for g in groups if abs(g[0][1]["top"] - h["top"]) < 0.012), None)
+            (g.append((i, h)) if g is not None else groups.append([(i, h)]))
     headings = []
-    for rank, hs in by_rank.items():
-        if len(hs) < 2:
-            continue  # a misread ordinal in one reading
+    for g in sorted(groups, key=lambda g: sorted(h["top"] for _, h in g)[len(g) // 2]):
+        hs = [h for _, h in g]
+        if len({i for i, _ in g}) < 2:
+            continue  # seen by one reading only
+        rank = _vote([h["rank"] for h in hs if h["rank"] != "?"], need=1)
+        if rank is None and any(h["rank"] != "?" for h in hs):
+            raise MaharashtraError(f"readings disagree on a prize rank ({[h['rank'] for h in hs]})")
+        if rank is None:
+            prev = headings[-1]["rank"] if headings else None
+            if prev is None or not (prev.isdigit() or prev == "CONS"):
+                continue
+            rank = "2" if prev == "CONS" else str(int(prev) + 1)
         tops = sorted(h["top"] for h in hs)
         headings.append({"rank": rank, "top": tops[len(tops) // 2], "prize": _vote([h["prize"] for h in hs if h["prize"]]),
                          "count": _vote([h["count"] for h in hs if h["count"]]),
                          "counts": [c for c, _ in Counter(h["count"] for h in hs if h["count"]).most_common()]})
-    headings.sort(key=lambda h: h["top"])
+    if len({h["rank"] for h in headings}) != len(headings):
+        raise MaharashtraError(f"two headings with one rank: {[h['rank'] for h in headings]}")
 
     # Same printed number = same place on the page in every reading.
     # A number split out of a merged OCR word ("3181/3444") has an estimated position: it only
