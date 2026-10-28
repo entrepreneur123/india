@@ -48,27 +48,66 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
       for (const l of more) byId.set(l.id, l)
       return [...byId.values()].sort((a, b) => a.id - b.id)
     })
+  // Realtime may drop lines while the socket is down (Supabase promises no replay): the latest page is read again
+  // when the tab comes back or the network returns, and merged (Discord's resume, Matrix's gap fill).
   useEffect(() => {
     let live = true
-    void backend.groupHistory(groupId).then((h) => live && merge(h), (err) => live && (toast.error(err), setLines([])))
+    let loaded = false
+    const load = () => backend.groupHistory(groupId).then(
+      (h) => live && ((loaded = true), merge(h)),
+      // Only the first load says so; a failed re-read leaves what's on screen.
+      (err) => live && !loaded && ((loaded = true), toast.error(err), setLines([])),
+    )
+    void load()
     const stop = backend.watchGroups([groupId], (_, line) => merge([line]))
+    const again = () => document.visibilityState === 'visible' && void load()
+    document.addEventListener('visibilitychange', again)
+    window.addEventListener('online', again)
     return () => {
       live = false
       stop()
+      document.removeEventListener('visibilitychange', again)
+      window.removeEventListener('online', again)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [backend, groupId])
 
-  // What's on screen is read (the list's count goes down with it).
+  // What's on screen while the tab is visible is read (the list's count goes down with it).
   const last = lines?.[lines.length - 1]?.id
   useEffect(() => {
     if (!last) return
-    void backend.readGroup(groupId, last).then(() => mutate(), () => undefined)
+    const mark = () => document.visibilityState === 'visible' && void backend.readGroup(groupId, last).then(() => mutate(), () => undefined)
+    mark()
+    document.addEventListener('visibilitychange', mark)
+    return () => document.removeEventListener('visibilitychange', mark)
   }, [backend, groupId, last, mutate])
+
+  // Older lines 50 at a time when scrolled to the top, the view held on the line that was first (Element's
+  // ScrollPanel); new lines scroll down only when I was at the bottom or wrote them.
+  const [older, setOlder] = useState<'more' | 'loading' | 'end'>('more')
+  const pinned = useRef(true)
+  const shape = useRef({ first: 0, last: 0, height: 0 })
   useLayoutEffect(() => {
     const el = listRef.current
-    if (el) el.scrollTop = el.scrollHeight
-  }, [lines?.length])
+    if (!el || !lines?.length) return
+    const was = shape.current
+    const newest = lines[lines.length - 1]
+    if (lines[0].id < was.first) el.scrollTop += el.scrollHeight - was.height
+    else if (newest.id !== was.last && (pinned.current || newest.senderId === me.id)) el.scrollTop = el.scrollHeight
+    shape.current = { first: lines[0].id, last: newest.id, height: el.scrollHeight }
+  }, [lines, me.id])
+  const onScroll = () => {
+    const el = listRef.current
+    if (!el) return
+    pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80
+    const first = lines?.[0]?.id
+    if (el.scrollTop > 40 || older !== 'more' || !first) return
+    setOlder('loading')
+    void backend.groupHistory(groupId, first).then(
+      (h) => (merge(h), setOlder(h.length < 50 ? 'end' : 'more')),
+      () => setOlder('more'),
+    )
+  }
 
   const send = async (text: string | null) => {
     if (!text?.trim()) return false
@@ -114,7 +153,8 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
       {/* My chat wall here too, as in my other chats (the owner, 2026-10-28); only I see it. */}
       <div className="relative isolate flex min-h-0 flex-1 flex-col bg-chat-wall">
         <Wall id={wall} />
-        <ul ref={listRef} className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 scrollbar-thin sm:px-6" aria-live="polite">
+        <ul ref={listRef} onScroll={onScroll} className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 scrollbar-thin sm:px-6" aria-live="polite">
+          {older === 'loading' ? <li className="mx-auto"><Skeleton className="h-4 w-24 rounded-full" /></li> : null}
           {!lines ? (
             <li className="flex flex-col gap-2">
               <Skeleton className="h-10 w-48 rounded-lg" />

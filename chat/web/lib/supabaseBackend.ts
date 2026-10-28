@@ -590,7 +590,9 @@ export class SupabaseBackend implements Backend {
     }
 
     // Catch up: the match row (left? video?) and messages newer than the last complete fetch. Runs when the
-    // socket (re)connects, every 10 s as a safety net, and when the tab is shown again; paused while hidden.
+    // socket (re)connects, when the tab is shown again, and as a safety net every 10 s while the socket is down but
+    // only every 60 s while it is up (one query per open chat every 10 s adds up at scale); paused while hidden.
+    let healthy = false
     const resync = async () => {
       if (pageHidden() || closed) return
       try {
@@ -611,7 +613,8 @@ export class SupabaseBackend implements Backend {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` },
         (p) => onMatch(p.new as MatchRow))
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') void resync()
+        healthy = status === 'SUBSCRIBED'
+        if (healthy) void resync()
       })
 
     // Random chats end by themselves when the partner's app never connects (closed before the match reached it)
@@ -670,7 +673,8 @@ export class SupabaseBackend implements Backend {
     hub.listeners.add(listener)
     if (hub.connected) onPresence(true, hub.partnerHere)
 
-    const timer = setInterval(() => void resync(), 10_000)
+    let ticks = 0
+    const timer = setInterval(() => (!healthy || ++ticks % 6 === 0) && void resync(), 10_000)
     const stopWatching = onPageVisibility((visible) => visible && void resync())
 
     return () => {
