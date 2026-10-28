@@ -35,6 +35,8 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
   const [state, setState] = useState<CallState | 'demo'>('connecting')
   const [mic, setMic] = useState(true)
   const [camera, setCamera] = useState(video)
+  const want = useRef({ mic, camera })
+  want.current = { mic, camera }
   // Front or back camera; the flip button shows only on devices with more than one camera.
   const [facing, setFacing] = useState<'user' | 'environment'>('user')
   const [cameras, setCameras] = useState(0)
@@ -78,7 +80,21 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
         if (!cancelled) setShield('clear')
       }
     }
-    ;(async () => {
+    // LiveKit resumes a dropped connection by itself ('reconnecting'); when it gives up for a reason a new join can
+    // fix (server restart, signal lost, network gone too long), the call joins again with a fresh token, up to 3
+    // times, waiting for the network first (LiveKit docs: a full reconnect = leave and join). My mic and camera
+    // stay as I left them.
+    let tries = 0
+    const rejoin = () => {
+      void callRef.current?.disconnect()
+      callRef.current = null
+      if (++tries > 3) return setState('failed')
+      setState('reconnecting')
+      const go = () => setTimeout(() => !cancelled && void join(), 1500 * tries)
+      if (navigator.onLine) go()
+      else window.addEventListener('online', go, { once: true })
+    }
+    const join = async () => {
       try {
         const token = await backend.videoToken(matchId)
         if (cancelled) return
@@ -87,7 +103,7 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
           setShield('clear')
           return
         }
-        void startShield() // the model downloads while the call connects
+        if (!tries) void startShield() // the model downloads while the call connects
         const { joinCall } = await retryImport(() => import('@/lib/livekit')) // the video SDK loads only when a call starts
         if (cancelled) return // the call ended while the SDK was loading
         const call = await joinCall(
@@ -95,30 +111,34 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
           token.token,
           { remote: remoteRef.current!, local: localRef.current!, audio: audioRef.current! },
           {
-            state: (s) => !cancelled && setState(s),
+            state: (s) => !cancelled && (s === 'lost' ? rejoin() : setState(s)),
             quality: (q) => !cancelled && setQuality(q),
             partner: (n) => !cancelled && setPartnerState(n),
             partnerCamera: (on) => !cancelled && setPartnerCam(on),
             blocked: (b) => !cancelled && setNeedsTap(b),
           },
           abort.signal,
-          video,
+          tries ? want.current.camera : video,
         )
         if (cancelled) {
           void call.disconnect()
           return
         }
         callRef.current = call
+        if (tries && !want.current.mic) await call.setMic(false).catch(() => undefined)
+        tries = 0
         if (call.camera) setCamera(false)
         if (call.mic) setMic(false)
         const problem = deviceNotice(call.camera, call.mic)
         if (problem) toast.show(t(`video.${problem}` as const), 'error')
       } catch (err) {
         if (cancelled) return
+        if (tries) return rejoin()
         toast.error(err)
         setState('failed')
       }
-    })()
+    }
+    void join()
     return () => {
       cancelled = true
       watch?.stop()

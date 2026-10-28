@@ -7,6 +7,7 @@
 // on 443 stays available for networks that block UDP.
 import {
   AudioPresets,
+  DisconnectReason,
   type LocalVideoTrack,
   type Participant,
   type RemoteParticipant,
@@ -20,7 +21,11 @@ import {
 import { cleanMicrophone } from './voice-gate'
 import { type DeviceProblem, deviceProblem, partnerNotice, type Quality, videoCodecFor } from './rtc'
 
-export type CallState = 'connecting' | 'connected' | 'reconnecting' | 'failed'
+/** 'lost': LiveKit gave up for a reason a fresh join can fix (the call screen joins again); 'failed': it can't. */
+export type CallState = 'connecting' | 'connected' | 'reconnecting' | 'lost' | 'failed'
+/** Ended on purpose (I left, kicked, same account elsewhere, room closed): joining again would be wrong. */
+const FINAL = new Set([DisconnectReason.CLIENT_INITIATED, DisconnectReason.DUPLICATE_IDENTITY, DisconnectReason.PARTICIPANT_REMOVED,
+  DisconnectReason.ROOM_DELETED, DisconnectReason.ROOM_CLOSED, DisconnectReason.USER_UNAVAILABLE, DisconnectReason.USER_REJECTED])
 export type PartnerNotice = ReturnType<typeof partnerNotice>
 
 export interface CallEvents {
@@ -140,7 +145,7 @@ export async function joinCall(
     .on(RoomEvent.AudioPlaybackStatusChanged, () => ev.blocked(!room.canPlaybackAudio))
     .on(RoomEvent.Reconnecting, () => ev.state('reconnecting'))
     .on(RoomEvent.Reconnected, () => ev.state('connected'))
-    .on(RoomEvent.Disconnected, () => { if (!leaving) ev.state('failed') })
+    .on(RoomEvent.Disconnected, (reason) => { if (!leaving) ev.state(reason !== undefined && FINAL.has(reason) ? 'failed' : 'lost') })
 
   ev.state('connecting')
   try {
