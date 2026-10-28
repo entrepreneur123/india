@@ -824,7 +824,7 @@ function AudioNotice({ s }: { s: VoiceSession }) {
   const { t } = useI18n()
   const a = s.audio
   if (!a) return null
-  // With the room's sound off (46) nothing needs to play yet: the sound button is the tap.
+  // With the room's sound turned off nothing needs to play yet: the sound button is the tap.
   if (a.needsTap && s.sound)
     return (
       <div className="flex justify-center px-4 pb-2">
