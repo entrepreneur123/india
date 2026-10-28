@@ -208,20 +208,6 @@ export function ReactionIcon({ kind, size = 24, color, className }: { kind: Voic
   )
 }
 
-/** The icebreaker card's glyph: a speech bubble with a question mark, in orange. */
-export function IcebreakerIcon({ size = 20, className }: { size?: number; className?: string }) {
-  return (
-    <Glyph color="var(--brand)" size={size} className={className}>
-      <path
-        d="M2.5 6.5A3.5 3.5 0 0 1 6 3h12a3.5 3.5 0 0 1 3.5 3.5v7A3.5 3.5 0 0 1 18 17h-6.2l-4.3 3.4c-.66.52-1.62.05-1.62-.79V17H6a3.5 3.5 0 0 1-3.5-3.5z"
-        fill={M}
-      />
-      <path d="M9.7 7.9a2.35 2.35 0 1 1 3.2 2.2c-.55.25-.9.75-.9 1.35v.35" fill="none" stroke={L} strokeWidth="1.9" strokeLinecap="round" />
-      <circle cx="12" cy="14.3" r="1.15" fill={L} />
-    </Glyph>
-  )
-}
-
 /** A room poll's glyph: a card with three result bars, in orange. */
 export function PollIcon({ size = 20, className }: { size?: number; className?: string }) {
   return (

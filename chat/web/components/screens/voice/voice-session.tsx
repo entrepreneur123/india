@@ -83,7 +83,6 @@ export interface VoiceSession {
   /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude). */
   sendPhoto: (photo: File) => Promise<boolean>
   /** Posts a conversation starter card. */
-  icebreaker: () => void
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
   /** 46: whether I hear the room (off when I come in; on when I take a seat). */
@@ -392,14 +391,6 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     [backend, roomId, addLines, toast],
   )
 
-  const icebreaker = useCallback(async () => {
-    try {
-      addLines([await backend.voiceIcebreaker(roomId)])
-    } catch (err) {
-      if (errorCode(err) === 'slow_down') toast.show(tRef.current('ib.wait'), 'info')
-      else toast.error(err)
-    }
-  }, [backend, roomId, addLines, toast])
 
   const createPoll = useCallback(
     async (question: string, options: string[]) => {
@@ -495,7 +486,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [myVideo, backend, roomId, toast, t])
 
   return {
-    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, icebreaker: () => void icebreaker(), startAudio, sound, setSound,
+    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, startAudio, sound, setSound,
     polls, createPoll, votePoll, closePoll, typing, notifyTyping,
   }
 }

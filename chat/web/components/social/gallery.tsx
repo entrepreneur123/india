@@ -11,14 +11,16 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
-/** Someone's extra photos in a row; a tap opens them large. `editable`: my own, with add and remove. */
-export function Gallery({ photos, owner, editable, className }: { photos: ProfilePhoto[]; owner: string; editable?: boolean; className?: string }) {
+/**
+ * My extra photos in Edit profile, with add and remove; a tap opens them large. Others see them by tapping the profile
+ * photo (they open after it), not as a row of their own (the owner, 2026-10-28).
+ */
+export function Gallery({ photos, owner }: { photos: ProfilePhoto[]; owner: string }) {
   const [shown, setShown] = useState<number | null>(null)
   const { st } = useSocialT()
-  if (!photos.length && !editable) return null
   return (
-    <section className={cn('flex flex-col gap-2', className)} aria-label={st('photos.title')}>
-      {editable ? <h2 className="text-sm font-semibold">{st('photos.title')}</h2> : null}
+    <section className="flex flex-col gap-2" aria-label={st('photos.title')}>
+      <h2 className="text-sm font-semibold">{st('photos.title')}</h2>
       <ul className="grid grid-cols-4 gap-2">
         {photos.map((p, i) => (
           <li key={p.id} className="relative aspect-square">
@@ -30,16 +32,16 @@ export function Gallery({ photos, owner, editable, className }: { photos: Profil
             >
               <img src={p.url} alt="" className="size-full object-cover" loading="lazy" />
             </button>
-            {editable ? <RemoveButton id={p.id} /> : null}
+            <RemoveButton id={p.id} />
           </li>
         ))}
-        {editable && photos.length < MAX_PHOTOS ? (
+        {photos.length < MAX_PHOTOS ? (
           <li className="aspect-square">
             <AddTile />
           </li>
         ) : null}
       </ul>
-      {editable ? <p className="text-xs leading-relaxed text-muted-foreground">{st('photos.hint')}</p> : null}
+      <p className="text-xs leading-relaxed text-muted-foreground">{st('photos.hint')}</p>
       <PhotoViewer photos={photos.map((p) => p.url)} index={shown} onIndex={setShown} label={owner} />
     </section>
   )

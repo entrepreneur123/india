@@ -107,8 +107,6 @@ export interface Profile {
   photoUrl?: string | null
   country?: string | null /* ISO-2, show flag emoji */
   posts: Post[]
-  /** 3-5 of INTERESTS (absent: not loaded for this card). */
-  interests?: Interest[]
   /** Up to 4 more photos (id = the stored file). */
   photos?: ProfilePhoto[]
   /** Cover, colour, status, languages and prompts (absent: not loaded for this card). */
@@ -192,14 +190,6 @@ export interface Shop {
 /** The demo's identity check ends as chosen here (the live server's is Didit's hosted page). */
 export type KycDemoOutcome = Exclude<KycResult, 'none'>
 
-/** Interest tags (024_discovery_profiles.sql has the same list); the apps translate them. */
-export const INTERESTS = [
-  'music', 'movies', 'cricket', 'football', 'gaming', 'travel', 'food', 'fitness', 'books', 'tech',
-  'art', 'dance', 'fashion', 'photography', 'anime', 'pets', 'study', 'business', 'spirituality', 'comedy',
-] as const
-export type Interest = (typeof INTERESTS)[number]
-export const MIN_INTERESTS = 3
-export const MAX_INTERESTS = 5
 export const MAX_PHOTOS = 4
 
 export interface ProfilePhoto {
@@ -402,7 +392,7 @@ export type RoomCategory = 'chat' | 'friends' | 'language' | 'music' | 'movies' 
 /** Why I can't enter a room (null/absent = I can). */
 export type RoomRefusal = 'room_closed' | 'room_gender' | 'room_age' | 'room_full' | 'not_allowed' | 'room_password' | 'room_private'
 
-// ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, icebreakers, photos, polls), a
+// ---- rooms (019_unified_rooms.sql): one kind of room. Every room has the chat (text, photos, polls), a
 // stage of seats with an audience and shared music. No categories (28): a room is its host's country. ----
 
 /**
@@ -592,7 +582,6 @@ export type VoiceLine =
   | { id: number; kind: 'text'; sender: Profile; fromMe: boolean; text: string; at: number; reply?: VoiceReply | null }
   | { id: number; kind: 'system'; event: VoiceSystemEvent; name: string; seat?: number; title?: string; at: number }
   /** A conversation starter: prompt 1-40 (the text is in each app's own language). */
-  | { id: number; kind: 'icebreaker'; prompt: number; name: string; fromMe: boolean; at: number }
   /** A photo (checked on the sender's device; shown blurred until tapped). */
   | { id: number; kind: 'photo'; sender: Profile; fromMe: boolean; url: string; at: number }
   /** A poll's place in the chat; its votes are a VoicePoll (Backend.voicePolls, VoiceEvent 'poll'). */
@@ -924,7 +913,6 @@ export interface Backend {
   /** A friend's call ringing for me now (an unread 'call' line whose thread still asks), else null. */
   incomingCall(): Promise<IncomingCall | null>
   // ---- profile extras ----
-  setInterests(tags: Interest[]): Promise<Profile>
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
   addProfilePhoto(photo: File): Promise<Profile>
   removeProfilePhoto(id: string): Promise<Profile>
@@ -979,7 +967,6 @@ export interface Backend {
   /** Shrinks the photo to 1280 px JPEG and sends it (the screen has run classifyImage() on it first). */
   sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine>
   /** Posts a conversation starter (one per room every 20 s: 'slow_down'). */
-  voiceIcebreaker(roomId: string): Promise<VoiceLine>
   /** Host or co-host: asks the room (2-4 distinct options); closes the room's open poll. Returns the poll's line. */
   voicePollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine>
   /** My vote (0-based), or a new one in place of it; refused with 'poll_closed' once it has closed. */

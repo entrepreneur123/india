@@ -15,7 +15,7 @@ import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ScreenBoundary } from '@/components/ui/screen-boundary'
-import { BellButton, InterestChips } from '@/components/social/bits'
+import { BellButton } from '@/components/social/bits'
 import { OnlineCount } from '@/components/social/online'
 import { retryImport } from '@/lib/retry-import'
 import { MANNERS, shouldAskRating } from '@/lib/trust'
@@ -562,9 +562,6 @@ function MatchReveal({ partner }: { partner: Match['partner'] }) {
               <PersonName p={partner} />
               <TrustBadge userId={partner.id} size={20} />
             </span>
-            {partner.interests?.length ? (
-              <InterestChips tags={partner.interests.slice(0, 3)} className="justify-center" />
-            ) : null}
           </m.span>
         </m.button>
       ) : null}

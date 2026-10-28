@@ -5,15 +5,13 @@ import * as m from 'motion/react-m'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { ArrowDown, Check, EyeOff, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
-import type { TKey } from '@/lib/i18n'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
 import { pollPercents } from '@/lib/voice-polls'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
-import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { useBackend } from '@/lib/backend-context'
-import { IcebreakerIcon, PollIcon } from '@/components/ui/topic-icons'
+import { PollIcon } from '@/components/ui/topic-icons'
 import { Bubble, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
@@ -34,22 +32,20 @@ const FLASH_MS = 1400
 
 /**
  * The room's chat: compact WhatsApp-style bubbles with replies (a quote inside the bubble; tap it to see the line it
- * answers) and @mentions of me highlighted, photos (blurred until tapped), poll and icebreaker cards and centred
+ * answers) and @mentions of me highlighted, photos (blurred until tapped), poll cards and centred
  * system lines. It follows new lines while the reader is at the bottom; scrolled up, it stays put and offers a "new
- * messages" pill instead. `onIcebreaker`: the room offers question cards (an empty talk room invites to post the first).
+ * messages" pill instead.
  */
 export function VoiceChat({
   s,
   onPerson,
   onReply,
-  onIcebreaker,
   className,
 }: {
   s: VoiceSession
   onPerson: (userId: string) => void
   /** Answer this line (hover button, swipe right, long press). */
   onReply: (line: Quotable) => void
-  onIcebreaker?: () => void
   className?: string
 }) {
   const { t } = useI18n()
@@ -64,8 +60,6 @@ export function VoiceChat({
   const [flash, setFlash] = useState<number | null>(null)
   const count = lines?.length ?? 0
   const lastSystem = [...(lines ?? [])].reverse().find((l) => l.kind === 'system')
-  const lastIcebreaker = [...(lines ?? [])].reverse().find((l) => l.kind === 'icebreaker')?.id
-  const quiet = !!lines && !lines.some((l) => l.kind !== 'system')
 
   // The list gets shorter (the typing row, the phone's keyboard, the stage opening): the newest line stays in view.
   useEffect(() => {
@@ -151,8 +145,6 @@ export function VoiceChat({
                     </li>
                   ) : null
                 }
-                case 'icebreaker':
-                  return <IcebreakerCard key={line.id} line={line} onAnother={line.id === lastIcebreaker ? onIcebreaker : undefined} />
                 case 'poll':
                   return (
                     <SwipeRow key={line.id} line={line} grouped={false} flash={flash === line.id} center onReply={() => onReply(line)} label={rt('replyTo', { name: line.sender.name })}>
@@ -186,11 +178,6 @@ export function VoiceChat({
                   return null // a kind this app doesn't know yet
               }
             })}
-        {quiet && onIcebreaker ? (
-          <li className="m-auto w-full max-w-sm py-4">
-            <IcebreakerInvite onPost={onIcebreaker} />
-          </li>
-        ) : null}
       </ol>
       <TypingRow ids={s.typing} s={s} />
       <AnimatePresence>
@@ -679,62 +666,13 @@ function PollCard({
 }
 
 
-/** A conversation starter, shown as a card in the talk colour (not a bubble): the question in my language. */
-function IcebreakerCard({ line, onAnother }: { line: Extract<VoiceLine, { kind: 'icebreaker' }>; onAnother?: () => void }) {
-  const { t } = useI18n()
-  return (
-    <m.li
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-      className="my-2.5 w-full max-w-sm self-center"
-    >
-      <article
-        aria-label={t('ib.button')}
-        className="relative overflow-hidden rounded-2xl bg-card px-4 pt-3 pb-3.5 shadow-[0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-border"
-      >
-        <h3 className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-primary-text uppercase">
-          <IcebreakerIcon size={16} /> {t('ib.button')}
-        </h3>
-        <p className="relative mt-1.5 text-[16.5px] leading-snug font-semibold text-foreground">{t(`ib.${line.prompt}` as TKey)}</p>
-        <div className="relative mt-2.5 flex items-center justify-between gap-3">
-          <span className="min-w-0 truncate text-xs text-muted-foreground">{line.fromMe ? t('ib.byYou') : t('ib.by', { name: line.name })}</span>
-          {onAnother ? (
-            <button type="button" onClick={onAnother} className="shrink-0 rounded-full px-2 py-1 text-xs font-semibold text-primary-text transition-colors duration-150 hover:bg-primary-soft">
-              {t('ib.another')}
-            </button>
-          ) : null}
-        </div>
-      </article>
-    </m.li>
-  )
-}
-
-/** An empty talk room: one tap posts the first question card. */
-function IcebreakerInvite({ onPost }: { onPost: () => void }) {
-  const { t } = useI18n()
-  return (
-    <div className="flex flex-col items-center gap-3 rounded-3xl bg-primary-soft px-6 py-6 text-center">
-      <IcebreakerIcon size={44} />
-      <div>
-        <p className="text-base font-bold">{t('ib.emptyTitle')}</p>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('ib.emptyBody')}</p>
-      </div>
-      <Button variant="brand" onClick={onPost}>
-        {t('ib.post')}
-      </Button>
-    </div>
-  )
-}
-
 /**
- * The room's composer: text (with "@" to mention someone here), a photo, a question card; hosts and co-hosts get a
+ * The room's composer: text (with "@" to mention someone here), a photo; hosts and co-hosts get a
  * "+" menu with the photo and a poll. While answering a line, its quote sits above the box.
  */
 export function VoiceComposer({
   onSend,
   onPhoto,
-  onIcebreaker,
   onPoll,
   onMenu,
   onTyping,
@@ -748,8 +686,6 @@ export function VoiceComposer({
   onTyping?: () => void
   /** Checks the photo on this device, then sends it; false when it wasn't sent. */
   onPhoto?: (photo: File) => Promise<boolean>
-  /** Posts a question card. */
-  onIcebreaker?: () => void
   /** Hosts and co-hosts: opens the poll form (the "+" menu then holds the photo and the poll). */
   onPoll?: () => void
   /** The "+" menu is about to open (its poll form can start downloading). */
@@ -966,17 +902,6 @@ export function VoiceComposer({
             className="grid size-11 shrink-0 place-items-center rounded-full bg-muted text-foreground transition-colors duration-150 hover:bg-input/60 disabled:opacity-70"
           >
             {photoBusy ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <ImagePlus className="size-5" aria-hidden />}
-          </button>
-        ) : null}
-        {onIcebreaker ? (
-          <button
-            type="button"
-            onClick={onIcebreaker}
-            aria-label={t('ib.post')}
-            title={t('ib.button')}
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-muted transition-colors duration-150 hover:bg-input/60"
-          >
-            <IcebreakerIcon size={24} />
           </button>
         ) : null}
         <label htmlFor={id} className="sr-only">

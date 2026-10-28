@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { BookUser, ChevronRight, GalleryHorizontalEnd, Settings, Sparkles, SquarePen, Tags, UserPen } from 'lucide-react'
+import { BookUser, ChevronRight, GalleryHorizontalEnd, Settings, Sparkles, SquarePen, UserPen } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { MAX_HIGHLIGHTS } from '@/lib/backend'
 import { errorCode } from '@/lib/format'
@@ -20,7 +20,6 @@ import { useToast } from '@/components/ui/toast'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
 import { HighlightEditor } from '@/components/social/highlights'
-import { InterestsSheet } from '@/components/social/interests-sheet'
 import { useSocialT } from '@/components/social/social-text'
 import { VerifyCard } from '@/components/trust/trust-cards'
 import { ProfileContent } from '@/components/screens/profile/profile-sheet'
@@ -37,7 +36,7 @@ const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor
 
 /**
  * My profile exactly as others see it (ProfileContent): only Edit profile (and Settings on phones) on it. Everything
- * else — a new post, a new highlight, the Looks shop, details, interests, contacts — is in Edit profile (the owner).
+ * else — a new post, a new highlight, the Looks shop, details, contacts — is in Edit profile (the owner).
  */
 export function MeScreen() {
   const { me, t, setTab, trust, openShop } = useApp()
@@ -45,7 +44,6 @@ export function MeScreen() {
   const [postOpen, setPostOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
   const [used, setUsed] = useState({ post: false, style: false })
-  const [interestsOpen, setInterestsOpen] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
   const [highlightOpen, setHighlightOpen] = useState(false)
   const openPost = () => {
@@ -88,7 +86,6 @@ export function MeScreen() {
         onHighlight={from(() => setHighlightOpen(true))}
         onLooks={from(openShop)}
         onDetails={from(openStyle)}
-        onInterests={from(() => setInterestsOpen(true))}
         onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
@@ -103,15 +100,14 @@ export function MeScreen() {
           <StyleEditor open={styleOpen} onClose={() => setStyleOpen(false)} />
         </Suspense>
       ) : null}
-      <InterestsSheet open={interestsOpen} onClose={() => setInterestsOpen(false)} />
     </div>
   )
 }
 
 /** Everything about my profile: the photo, name, @ID and bio here; photos too; the rest one tap on. */
-function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, onInterests, onContacts }: {
+function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, onContacts }: {
   open: boolean; onClose: () => void; onPost: () => void; onHighlight: () => void; onLooks: () => void; onDetails: () => void
-  onInterests: () => void; onContacts: () => void
+  onContacts: () => void
 }) {
   const backend = useBackend()
   const toast = useToast()
@@ -119,7 +115,7 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
   const { me, setMe } = useApp()
   const { t, locale } = useI18n()
   const { lt } = useLooksT()
-  const { st, tag } = useSocialT()
+  const { st } = useSocialT()
   const id = useId()
   const [name, setName] = useState(me.name)
   const [handle, setHandle] = useState(me.handle ?? '')
@@ -196,13 +192,12 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
         <Field label={t('pf.bio')} htmlFor={`${id}-bio`} trailing={<Count n={bio.length} max={MAX_BIO} />}>
           <TextArea id={`${id}-bio`} value={bio} maxLength={MAX_BIO} onChange={(e) => setBio(e.target.value)} />
         </Field>
-        <Gallery photos={me.photos ?? []} owner={me.name} editable />
+        <Gallery photos={me.photos ?? []} owner={me.name} />
         <div className="-mx-2 flex flex-col">
           <MoreRow icon={<SquarePen />} label={t('me.newPost')} onClick={onPost} />
           {(highlights?.length ?? 0) < MAX_HIGHLIGHTS ? <MoreRow icon={<GalleryHorizontalEnd />} label={st('hl.create')} onClick={onHighlight} /> : null}
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
           <MoreRow icon={<UserPen />} label={lt('details.title')} note={lt('details.desc')} onClick={onDetails} />
-          <MoreRow icon={<Tags />} label={st('interests.edit')} note={me.interests?.map(tag).join(', ') || undefined} onClick={onInterests} />
           <MoreRow icon={<BookUser />} label={st('contacts.title')} note={st('contacts.note')} onClick={onContacts} />
         </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>

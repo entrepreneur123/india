@@ -106,12 +106,6 @@ export function styleInput(draft: ProfileStyleInput): { input: ProfileStyleInput
   return { input: { status, languages, prompts, mbti: isMbti(draft.mbti) ? draft.mbti : null }, problem }
 }
 
-/** The next question not answered yet (for "Add a prompt"), null when all are used or 3 are answered. */
-export function nextPrompt(used: PromptQ[]): PromptQ | null {
-  if (used.length >= PROMPTS_MAX) return null
-  return PROMPT_QS.find((q) => !used.includes(q)) ?? null
-}
-
 /** Adds or removes a language, keeping at most 6 (a 7th is refused: false). */
 export function toggleLanguage(list: SpokenLang[], id: SpokenLang): SpokenLang[] | false {
   if (list.includes(id)) return list.filter((l) => l !== id)

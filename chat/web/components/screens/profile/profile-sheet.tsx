@@ -4,7 +4,7 @@ import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { Ban, Check, Flag, Heart, MessageCircle, UserMinus, UserPlus, X } from 'lucide-react'
-import type { FriendState, Interest, Profile, Trust } from '@/lib/backend'
+import type { FriendState, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -14,10 +14,8 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { PostGrid } from '@/components/screens/me/post-grid'
-import { InterestChips } from '@/components/social/bits'
 import { FriendContacts } from '@/components/social/contacts'
-import { Gallery } from '@/components/social/gallery'
-import { ProfileHero, PromptCards } from '@/components/social/profile-bits'
+import { ProfileHero } from '@/components/social/profile-bits'
 import { Highlights } from '@/components/social/highlights'
 import { useTrust } from '@/components/trust/badge'
 import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
@@ -27,7 +25,7 @@ import { cn } from '@/lib/utils'
 const socialKey = (userId: string) => ['social', userId]
 
 /**
- * Someone's profile: the card in their frame with their @ID, status, languages, prompts, photos and posts. The server shows people I have
+ * Someone's profile: the card in their frame with their @ID, status, languages, photos and posts. The server shows people I have
  * met, and anyone who posts publicly (033), never someone blocked.
  */
 export function ProfileSheet({
@@ -124,7 +122,6 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
           <ProfileContent
             profile={shown}
             trust={trust}
-            shared={isMe ? undefined : shown.interests?.filter((i) => me.interests?.includes(i))}
             slot={
               <button
                 type="button"
@@ -226,8 +223,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
 }
 
 /**
- * A profile as everyone sees it, mine included (the Me tab adds its own buttons): the card in its frame, interests,
- * the posts count, `actions` (a row under it), `children` (after the row), the manners card, prompts, photos and
+ * A profile as everyone sees it, mine included (the Me tab adds its own buttons): the card in its frame,
+ * the posts count, `actions` (a row under it), `children` (after the row), the manners card and the
  * posts. Empty parts are left out.
  */
 export function ProfileContent({
@@ -235,7 +232,6 @@ export function ProfileContent({
   trust,
   slot,
   badge,
-  shared,
   actions,
   emptyPosts,
   children,
@@ -244,8 +240,6 @@ export function ProfileContent({
   trust: Trust | null
   slot: ReactNode
   badge?: ReactNode
-  /** Interests we both have (marked). */
-  shared?: Interest[]
   actions?: ReactNode
   /** The empty posts grid's button (mine: "Share your first post"). */
   emptyPosts?: ReactNode
@@ -266,7 +260,6 @@ export function ProfileContent({
           badge={badge}
           slot={slot}
         />
-        {profile.interests?.length ? <InterestChips tags={profile.interests} shared={shared} className="mt-3 justify-center px-3" /> : null}
         <p className="mt-3 text-sm text-muted-foreground">
           {plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}
           {social ? ` · ${t('profile.likes')} ${num(social.likes)} · ${t('profile.friends')} ${num(social.friends)}` : null}
@@ -276,8 +269,6 @@ export function ProfileContent({
       <Highlights userId={profile.id} owner={profile.name} className="mt-6" />
       {children}
       <MannerCard trust={trust} className="mx-4 mt-6" />
-      {profile.style?.prompts.length ? <PromptCards prompts={profile.style.prompts} accent={profile.style.accent} className="mt-6 px-4" /> : null}
-      {profile.photos?.length ? <Gallery photos={profile.photos} owner={profile.name} className="mt-6 px-4" /> : null}
       <div className="mt-6 border-t border-border px-1 pt-1 pb-4">
         <PostGrid posts={profile.posts} owner={profile.name} accent={profile.style?.accent} emptyAction={emptyPosts} />
       </div>

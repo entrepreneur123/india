@@ -69,7 +69,7 @@ const th: LooksDict = {
   'id.keptFree': 'ไอดีนั้นเพิ่งมีคนใช้ไป ตอนนี้ไอดีของคุณจึงเป็น @{handle} ไปก่อน เปลี่ยนได้ที่แก้ไขโปรไฟล์',
 
   'details.title': 'รายละเอียดโปรไฟล์',
-  'details.desc': 'สถานะ MBTI ภาษาที่คุณพูด และคำถามอีกเล็กน้อย',
+  'details.desc': 'สถานะ MBTI และภาษาที่คุณพูด',
 
   'friend.requested': 'ส่งคำขอแล้ว',
   'friend.withdraw': 'ยกเลิกคำขอที่ส่งถึง {name}',

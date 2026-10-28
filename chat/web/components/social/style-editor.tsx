@@ -1,13 +1,13 @@
 'use client'
 
-import { useId, useMemo, useState } from 'react'
-import { Check, Plus, X } from 'lucide-react'
-import type { Mbti, ProfilePrompt, PromptQ, SpokenLang } from '@/lib/backend'
+import { useId, useState } from 'react'
+import { Check } from 'lucide-react'
+import type { Mbti, SpokenLang } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import { ANSWER_MAX, EMPTY_STYLE, LANGUAGES_MAX, MBTI_TYPES, nextPrompt, PROMPT_QS, PROMPTS_MAX, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
+import { EMPTY_STYLE, LANGUAGES_MAX, MBTI_TYPES, SPOKEN_LANGS, STATUS_MAX, styleInput, toggleLanguage } from '@/lib/profile-style'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { TextArea, TextInput } from '@/components/ui/bits'
+import { TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
@@ -17,7 +17,7 @@ import { useFeedT } from './feed-text'
 import { ACCENT_TEXT, accentStyle } from './profile-bits'
 
 /**
- * My profile details: status, MBTI (071), languages and up to 3 prompts. Saves them all at once (set_profile_style). The cover
+ * My profile details: status, MBTI (071) and languages. Saves them all at once (set_profile_style). The cover
  * photo and colour that were here are gone (040): frames, bought in the Looks shop, decorate profiles now.
  */
 export function StyleEditor({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -39,15 +39,13 @@ function EditorBody({ onClose }: { onClose: () => void }) {
   const start = me.style ?? EMPTY_STYLE
   const [status, setStatus] = useState(start.status ?? '')
   const [languages, setLanguages] = useState<SpokenLang[]>(start.languages)
-  const [prompts, setPrompts] = useState<ProfilePrompt[]>(start.prompts.length ? start.prompts : [])
   const [mbti, setMbti] = useState<Mbti | null>(start.mbti)
   const [busy, setBusy] = useState(false)
 
-  const used = useMemo(() => prompts.map((p) => p.q), [prompts])
-
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { input, problem } = styleInput({ status, languages, prompts, mbti })
+    // Prompts are no longer edited here (the owner, 2026-10-28); ones written before are kept as they are.
+    const { input, problem } = styleInput({ status, languages, prompts: start.prompts, mbti })
     if (problem === 'status') return toast.show(ft('style.problem.status'), 'error')
     if (problem === 'answer') return toast.show(ft('style.problem.answer'), 'error')
     if (problem === 'languages') return toast.show(ft('style.languagesMax'), 'error')
@@ -142,71 +140,6 @@ function EditorBody({ onClose }: { onClose: () => void }) {
           <p className="text-xs text-muted-foreground">{ft('style.languagesHint')}</p>
         </section>
 
-        <section className={section}>
-          <div className="flex items-center justify-between gap-2">
-            <h3 className={heading}>{ft('style.prompts')}</h3>
-            <Count n={prompts.length} max={PROMPTS_MAX} />
-          </div>
-          <p className="-mt-1 text-xs leading-relaxed text-muted-foreground">{ft('style.promptsHint')}</p>
-          <ul className="flex flex-col gap-3">
-            {prompts.map((p, i) => (
-              <li
-                key={i}
-                className="relative flex flex-col gap-2 rounded-3xl bg-card p-4 ring-1 ring-border"
-              >
-                <div className="flex items-center gap-2">
-                  <label className="sr-only" htmlFor={`${id}-q${i}`}>
-                    {ft('style.promptQuestion')}
-                  </label>
-                  <select
-                    id={`${id}-q${i}`}
-                    value={p.q}
-                    onChange={(e) => setPrompts((list) => list.map((x, j) => (j === i ? { ...x, q: e.target.value as PromptQ } : x)))}
-                    className={cn('h-10 min-w-0 flex-1 rounded-full border border-input bg-card px-3 text-sm font-bold focus:border-primary focus:outline-none', ACCENT_TEXT)}
-                  >
-                    {PROMPT_QS.filter((q) => q === p.q || !used.includes(q)).map((q) => (
-                      <option key={q} value={q}>
-                        {ft(`prompt.${q}`)}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => setPrompts((list) => list.filter((_, j) => j !== i))}
-                    className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-                    aria-label={ft('style.promptRemove')}
-                  >
-                    <X className="size-4.5" aria-hidden />
-                  </button>
-                </div>
-                <label className="sr-only" htmlFor={`${id}-a${i}`}>
-                  {ft('style.promptAnswer')}
-                </label>
-                <TextArea
-                  id={`${id}-a${i}`}
-                  value={p.a}
-                  maxLength={ANSWER_MAX}
-                  placeholder={ft('style.promptAnswer')}
-                  className="min-h-20 rounded-2xl text-base font-semibold"
-                  onChange={(e) => setPrompts((list) => list.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)))}
-                />
-                <Count n={[...p.a].length} max={ANSWER_MAX} className="self-end" />
-              </li>
-            ))}
-          </ul>
-          {nextPrompt(used) ? (
-            <button
-              type="button"
-              onClick={() => {
-                const q = nextPrompt(used)
-                if (q) setPrompts((list) => [...list, { q, a: '' }])
-              }}
-              className="flex h-14 items-center justify-center gap-2 rounded-3xl border border-dashed border-input text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground"
-            >
-              <Plus className="size-4.5" aria-hidden /> {ft('style.promptAdd')}
-            </button>
-          ) : null}
-        </section>
       </div>
       <div className="sticky bottom-0 border-t border-border bg-card px-6 py-4">
         <Button type="submit" variant="brand" size="lg" className="w-full" loading={busy}>

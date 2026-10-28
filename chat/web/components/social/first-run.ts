@@ -1,6 +1,5 @@
-// First-run steps (interests, then the tour), each shown once per browser.
+// The first-run tour, shown once per browser.
 export const TOUR_KEY = 'yaari_tour'
-export const INTERESTS_KEY = 'yaari_interests_asked'
 
 export const read = (k: string) => {
   try {
@@ -18,7 +17,5 @@ export const write = (k: string) => {
   }
 }
 
-/** Whether the first-run steps still have something to show (the shell loads them only then). */
-export function onboardingDue(hasInterests: boolean) {
-  return read(TOUR_KEY) === null || (!hasInterests && read(INTERESTS_KEY) === null)
-}
+/** Whether the tour is still to be shown (the shell loads it only then). */
+export const onboardingDue = () => read(TOUR_KEY) === null

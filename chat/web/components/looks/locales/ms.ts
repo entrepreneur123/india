@@ -69,7 +69,7 @@ const ms: LooksDict = {
   'id.keptFree': 'ID itu baru sahaja diambil orang, jadi buat masa ini ID anda @{handle}. Anda boleh menukarnya dalam Edit profil.',
 
   'details.title': 'Butiran profil',
-  'details.desc': 'Status anda, MBTI, bahasa yang anda tuturkan dan beberapa soalan.',
+  'details.desc': 'Status anda, MBTI dan bahasa yang anda tuturkan.',
 
   'friend.requested': 'Diminta',
   'friend.withdraw': 'Tarik balik permintaan anda kepada {name}',

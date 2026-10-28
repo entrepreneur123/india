@@ -69,7 +69,7 @@ const nl: LooksDict = {
   'id.keptFree': 'Die ID werd net bezet, dus de jouwe is voorlopig @{handle}. Je kunt hem wijzigen bij Profiel bewerken.',
 
   'details.title': 'Profieldetails',
-  'details.desc': 'Je status, MBTI, de talen die je spreekt en een paar vragen.',
+  'details.desc': 'Je status, MBTI en de talen die je spreekt.',
 
   'friend.requested': 'Aangevraagd',
   'friend.withdraw': 'Je verzoek aan {name} intrekken',

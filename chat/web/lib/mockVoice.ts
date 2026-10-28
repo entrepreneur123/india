@@ -1,4 +1,4 @@
-// Demo rooms: a few live rooms with people talking (audio levels), chat with replies and @mentions, icebreakers,
+// Demo rooms: a few live rooms with people talking (audio levels), chat with replies and @mentions,
 // polls, reactions, raised hands and song requests with votes. Same rules as the server (019, 029): who may come in,
 // private codes, rate limits, who may ask a poll. Loaded by the demo backend the first time a room is listed or opened.
 import {
@@ -97,12 +97,9 @@ const LINES = {
 }
 
 const REACTIONS: VoiceReaction[] = ['heart', 'laugh', 'fire', 'clap', 'wow']
-/** Replies after an icebreaker, so the card starts a conversation in the demo too. */
-const ANSWERS = ['ooh good one', 'mine is easy: Goa 🌊', 'haha let me think', 'chai, always chai', 'my nani’s kitchen', 'this is fun']
 /** Answers to someone's line (a reply), and what people say to me by name (an @mention). */
 const REPLIES = ['haha true', 'agreed 💯', 'no way, really?', 'same here', 'exactly what I was thinking', 'lol']
 const TO_ME = ['@{me} what do you think?', 'welcome @{me}! 👋', '@{me} which city are you from?', '@{me} join the stage na']
-const PROMPTS = 40
 /** A holiday snap someone shared in the demo (drawn, so it needs no network). */
 const SNAP = `data:image/svg+xml,${encodeURIComponent(
   "<svg xmlns='http://www.w3.org/2000/svg' width='640' height='480' viewBox='0 0 640 480'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#ff9a62'/><stop offset='.55' stop-color='#ffd39a'/><stop offset='1' stop-color='#8cc3cf'/></linearGradient></defs><rect width='640' height='480' fill='url(#s)'/><circle cx='430' cy='250' r='70' fill='#fff2c9'/><path d='M0 330 Q160 270 320 320 T640 300 V480 H0Z' fill='#3f6f7a'/><path d='M0 385 Q200 345 400 385 T640 372 V480 H0Z' fill='#2c4f58'/></svg>",
@@ -130,7 +127,6 @@ interface SimRoom {
   admitted: boolean
   /** I gave the room's password (058). */
   unlocked: boolean
-  lastIcebreaker: number
   /** When polls were asked here (5 in 10 minutes, as on the server). */
   pollTimes: number[]
   lines: VoiceLine[]
@@ -231,7 +227,6 @@ export class VoiceSim {
       const sender = pick(people)
       const at = now - (7 - i) * 45_000
       if (i === 2) lines.push({ id: this.lineSeq++, kind: 'system', event: 'joined', name: pick(people).name, at })
-      if (i === 3) lines.push({ id: this.lineSeq++, kind: 'icebreaker', prompt: 7, name: pick(people).name, fromMe: false, at })
       if (i === 5 && id === 'v-chai') lines.push({ id: this.lineSeq++, kind: 'photo', sender: people[1], fromMe: false, url: SNAP, at })
       lines.push({ id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: this.chatLine(sender), at })
     }
@@ -240,7 +235,7 @@ export class VoiceSim {
 
   private sim(room: SimRoom['room'], lines: VoiceLine[], mine: boolean): SimRoom {
     return {
-      room, lines, mine, code: code(), admitted: false, unlocked: false, lastIcebreaker: 0, pollTimes: [],
+      room, lines, mine, code: code(), admitted: false, unlocked: false, pollTimes: [],
       subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, handsRaised: 0,
     }
   }
@@ -520,23 +515,6 @@ export class VoiceSim {
     return line
   }
 
-  async icebreaker(roomId: string): Promise<VoiceLine> {
-    const r = this.get(roomId)
-    const me = this.me()
-    if (!me || !this.meMember(r)) throw new BackendError('not_allowed')
-    if (Date.now() - r.lastIcebreaker < 20_000) throw new BackendError('slow_down')
-    await wait(150)
-    r.lastIcebreaker = Date.now()
-    const used = new Set(r.lines.slice(-60).flatMap((l) => (l.kind === 'icebreaker' ? [l.prompt] : [])))
-    const free = Array.from({ length: PROMPTS }, (_, i) => i + 1).filter((q) => !used.has(q))
-    const line = this.post(r, { id: this.lineSeq++, kind: 'icebreaker', prompt: pick(free.length ? free : [1]), name: me.name, fromMe: true, at: Date.now() })
-    // Someone answers a moment later.
-    this.later(r, jitter(2500, 4000), () => {
-      const sender = pick(this.others(r)).profile
-      this.post(r, { id: this.lineSeq++, kind: 'text', sender, fromMe: false, text: pick(ANSWERS), at: Date.now() })
-    })
-    return line
-  }
 
   async photo(roomId: string, url: string): Promise<VoiceLine> {
     const r = this.get(roomId)

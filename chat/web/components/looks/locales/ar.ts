@@ -69,7 +69,7 @@ const ar: LooksDict = {
   'id.keptFree': 'أخذ أحدهم هذا المعرّف للتو، لذا معرّفك حاليًا @{handle}. يمكنك تغييره من تعديل الملف الشخصي.',
 
   'details.title': 'تفاصيل الملف الشخصي',
-  'details.desc': 'حالتك، MBTI، واللغات التي تتحدثها، وبعض الأسئلة.',
+  'details.desc': 'حالتك وMBTI واللغات التي تتحدثها.',
 
   'friend.requested': 'تم الإرسال',
   'friend.withdraw': 'سحب طلبك إلى {name}',

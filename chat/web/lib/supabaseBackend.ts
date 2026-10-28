@@ -20,8 +20,6 @@ import {
   type FriendState,
   type InboxItem,
   type IncomingCall,
-  type Interest,
-  INTERESTS,
   type KycResult,
   type Look,
   type LookWear,
@@ -109,8 +107,8 @@ type CardRow = {
 }
 /** 033: colour, status, languages, prompts (profiles columns, or profile_style rows); 040 keeps the colour null. */
 type StyleRow = { accent: string | null; status: string | null; languages: string[] | null; prompts: unknown; mbti: string | null }
-type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; interests: string[] | null; photos: string[] | null; handle: string; dm_from: string; hide_online: boolean } & StyleRow
-type ExtrasRow = { id: string; interests: string[] | null; photos: string[] | null }
+type ProfileRow = Omit<CardRow, 'age'> & { birth_date: string; photos: string[] | null; handle: string; dm_from: string; hide_online: boolean } & StyleRow
+type ExtrasRow = { id: string; photos: string[] | null }
 /** inbox2 (033): inbox's lines plus the post a like or comment is about. */
 type InboxRow = {
   id: number; kind: string; n: number; created_at: string; read_at: string | null; match_id: string | null; room_id: string | null
@@ -266,13 +264,10 @@ const groupKind = (k: string): GroupLineKind => (GROUP_KINDS.includes(k as Group
 const toGroupLine = (r: GroupRow): GroupLine => ({ id: Number(r.id), senderId: r.sender, kind: groupKind(r.kind), body: r.body, at: time(r.created_at) })
 
 /** The chat's lines (reactions come over realtime only). */
-const LINE_KINDS = ['text', 'system', 'icebreaker', 'photo', 'poll']
+const LINE_KINDS = ['text', 'system', 'photo', 'poll']
 
 /** The server writes app languages in lower case (pt-br). */
 const appLang = (l: string | null | undefined) => (l === 'pt-br' ? 'pt-BR' : l ?? null)
-const interestsOf = (tags: string[] | null | undefined): Interest[] =>
-  (tags ?? []).filter((x): x is Interest => (INTERESTS as readonly string[]).includes(x))
-
 
 function gender(g: string): Gender {
   return g === 'male' || g === 'female' ? g : 'other'
@@ -426,7 +421,7 @@ export class SupabaseBackend implements Backend {
     // Profile and posts together: one round trip instead of two on every app start.
     const [{ data, error }, posts] = await Promise.all([
       this.client.from('profiles')
-        .select('id, name, gender, birth_date, city, bio, photo_path, country, interests, photos, accent, status, languages, prompts, mbti, handle, dm_from, hide_online')
+        .select('id, name, gender, birth_date, city, bio, photo_path, country, photos, accent, status, languages, prompts, mbti, handle, dm_from, hide_online')
         .eq('id', me).maybeSingle<ProfileRow>(),
       this.posts(me),
     ])
@@ -481,8 +476,7 @@ export class SupabaseBackend implements Backend {
       const rows = await this.rpc<CardRow[]>('match_card2', { p_match: id })
       const c = rows?.[0]
       if (!c) throw new BackendError('not_found')
-      const [partner, extras] = await Promise.all([this.toProfile(c, []), this.extras([c.id]).catch(() => [])])
-      if (extras[0]) partner.interests = interestsOf(extras[0].interests)
+      const partner = await this.toProfile(c, [])
       this.abandoned.delete(id)
       track('match_found')
       return { id, partner }
@@ -819,16 +813,16 @@ export class SupabaseBackend implements Backend {
     return (await this.social()).parseStyle(row)
   }
 
-  /** Interests and gallery of people I may see (024). */
+  /** The extra photos of people I may see (024). */
   private async extras(ids: string[]): Promise<ExtrasRow[]> {
     return (await this.rpc<ExtrasRow[] | null>('profile_extras', { p_users: ids })) ?? []
   }
 
-  private async withExtras(p: Profile, x: { interests: string[] | null; photos: string[] | null }): Promise<Profile> {
+  private async withExtras(p: Profile, x: { photos: string[] | null }): Promise<Profile> {
     const paths = (x.photos ?? []).slice(0, MAX_PHOTOS)
     await this.signMany(paths)
     return {
-      ...p, interests: interestsOf(x.interests),
+      ...p,
       photos: paths.flatMap((id) => {
         const url = this.signedUrls.get(id)?.url
         return url ? [{ id, url }] : []
@@ -1301,11 +1295,6 @@ export class SupabaseBackend implements Backend {
 
   // ---- profile extras (024) ----
 
-  async setInterests(tags: Interest[]) {
-    await this.rpc('set_interests', { p_tags: tags })
-    return this.mine()
-  }
-
   async addProfilePhoto(photo: File) {
     const now = await this.mine()
     const ids = (now.photos ?? []).map((p) => p.id)
@@ -1391,11 +1380,6 @@ export class SupabaseBackend implements Backend {
     if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
     const path = await this.upload(photo, 'rooms')
     const row = await this.rpc<VoiceMessageRow>('voice_photo', { p_room: roomId, p_path: path })
-    return (await this.toVoiceLines([row]))[0]
-  }
-
-  async voiceIcebreaker(roomId: string): Promise<VoiceLine> {
-    const row = await this.rpc<VoiceMessageRow>('voice_icebreaker', { p_room: roomId })
     return (await this.toVoiceLines([row]))[0]
   }
 
@@ -2249,10 +2233,6 @@ export class SupabaseBackend implements Backend {
       if (r.kind === 'photo') {
         const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
         return url ? [{ id: r.id, kind: 'photo', fromMe: r.sender === me, url, at, sender: sender() }] : [] // no longer readable
-      }
-      if (r.kind === 'icebreaker') {
-        const prompt = Number(r.payload?.q)
-        return prompt >= 1 ? [{ id: r.id, kind: 'icebreaker', prompt, name: r.sender_name, fromMe: r.sender === me, at }] : []
       }
       if (r.kind === 'poll') {
         const p = r.payload ?? {}

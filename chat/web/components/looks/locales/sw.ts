@@ -69,7 +69,7 @@ const sw: LooksDict = {
   'id.keptFree': 'Kitambulisho hicho kimechukuliwa sasa hivi, kwa hiyo kwa sasa chako ni @{handle}. Unaweza kukibadilisha kwenye Hariri wasifu.',
 
   'details.title': 'Maelezo ya wasifu',
-  'details.desc': 'Hali yako, MBTI, lugha unazozungumza na maswali machache.',
+  'details.desc': 'Hali yako, MBTI na lugha unazozungumza.',
 
   'friend.requested': 'Ombi limetumwa',
   'friend.withdraw': 'Futa ombi lako kwa {name}',

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import type { Accent, Profile, ProfilePrompt, SpokenLang } from '@/lib/backend'
+import type { Accent, Profile, SpokenLang } from '@/lib/backend'
 import { flagEmoji } from '@/lib/format'
 import { accentVars, EMPTY_STYLE, nativeName } from '@/lib/profile-style'
 import { isVip, nameAge, type FrameId } from '@/lib/looks'
@@ -142,21 +142,5 @@ export function LanguageChips({ languages, className }: { languages: SpokenLang[
         ))}
       </ul>
     </div>
-  )
-}
-
-/** Answered prompts as plain cards, the question in the accent (Hinge-like). */
-export function PromptCards({ prompts, accent, className }: { prompts: ProfilePrompt[]; accent: Accent | null | undefined; className?: string }) {
-  const { ft } = useFeedT()
-  if (!prompts.length) return null
-  return (
-    <ul className={cn('grid gap-3', className)} style={accentStyle(accent)}>
-      {prompts.map((p) => (
-        <li key={p.q} className="rounded-3xl bg-card px-5 pt-4 pb-5 ring-1 ring-border">
-          <p className={cn('text-[13px] font-bold', ACCENT_TEXT)}>{ft(`prompt.${p.q}`)}</p>
-          <p className="mt-1.5 text-lg leading-snug font-bold tracking-tight text-pretty">{p.a}</p>
-        </li>
-      ))}
-    </ul>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { Bell } from 'lucide-react'
-import type { Interest } from '@/lib/backend'
 import { useApp } from '@/components/app-state'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
@@ -43,26 +42,3 @@ export function BellButton({ className }: { className?: string }) {
   )
 }
 
-/** Interest tags; the ones in `shared` stand out (both people like them). */
-export function InterestChips({ tags, shared, className }: { tags: Interest[]; shared?: Interest[]; className?: string }) {
-  const { tag } = useSocialT()
-  if (!tags.length) return null
-  return (
-    <ul className={cn('flex flex-wrap gap-1.5', className)}>
-      {tags.map((i) => {
-        const both = shared?.includes(i)
-        return (
-          <li
-            key={i}
-            className={cn(
-              'rounded-full px-3 py-1 text-xs font-semibold',
-              both ? 'bg-primary-soft text-primary-text' : 'bg-muted text-muted-foreground',
-            )}
-          >
-            {tag(i)}
-          </li>
-        )
-      })}
-    </ul>
-  )
-}

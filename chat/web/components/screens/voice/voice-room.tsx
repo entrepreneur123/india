@@ -48,7 +48,7 @@ const closedStage = new Map<string, string>()
 const stageKey = (st: VoiceStage) => `${st.url}#${st.at}`
 
 /**
- * A room, full screen. Every room has the chat (text with replies, @mentions and links, icebreakers,
+ * A room, full screen. Every room has the chat (text with replies, @mentions and links,
  * photos, polls), the stage and shared music (room-split.tsx: people choose how the screen is shared).
  * The stage (seats, who's on it) and the listeners are two separate sections.
  *  - Phones: the music and the stage on top (it scrolls), a handle, the chat under it, the composer and the controls
@@ -228,7 +228,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       s={s}
       onPerson={person}
       onReply={setReplyTo}
-      onIcebreaker={s.icebreaker}
       className={cn('flex-1', !wide && 'pt-1')}
     />
   )
@@ -240,7 +239,6 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         return ok
       }}
       onPhoto={s.sendPhoto}
-      onIcebreaker={s.icebreaker}
       onPoll={
         mod
           ? () => {
@@ -837,7 +835,7 @@ function AudioNotice({ s }: { s: VoiceSession }) {
 }
 
 /**
- * The same controls in every room: the composer (text, photo, icebreaker, polls), reactions, the music, the hands
+ * The same controls in every room: the composer (text, photo, polls), reactions, the music, the hands
  * raised (hosts), and the main button: the microphone on the stage, else "Join voice" or "Raise hand".
  */
 function ControlBar({

@@ -8,7 +8,6 @@ import {
   type Badges,
   type InboxItem,
   type IncomingCall,
-  type Interest,
   MAX_PHOTOS,
   MAX_HIGHLIGHTS,
   type Highlight,
@@ -177,24 +176,11 @@ const PEOPLE: Profile[] = [
   { id: 'u_vip', name: 'VIP', gender: 'female', age: 0, city: '', country: null, bio: '', photoUrl: null, posts: [] },
 ]
 
-// Interests and a second photo for some demo people (024).
-const EXTRAS: Record<string, { interests: Interest[]; photos?: number }> = {
-  u_ananya: { interests: ['movies', 'food', 'travel'], photos: 2 },
-  u_kabir: { interests: ['cricket', 'tech', 'art'] },
-  u_sofia: { interests: ['travel', 'food', 'fitness', 'music'], photos: 3 },
-  u_mateo: { interests: ['football', 'dance', 'music'] },
-  u_yuki: { interests: ['photography', 'anime', 'food'], photos: 2 },
-  u_amara: { interests: ['music', 'business', 'tech'] },
-  u_lucas: { interests: ['tech', 'fitness', 'music'] },
-  u_leila: { interests: ['books', 'travel', 'photography'] },
-  u_arjun: { interests: ['music', 'tech', 'cricket'], photos: 1 },
-  u_chloe: { interests: ['art', 'travel', 'fashion'] },
-}
+// More photos for some demo people (024).
+const EXTRA_PHOTOS: Record<string, number> = { u_ananya: 2, u_sofia: 3, u_yuki: 2, u_arjun: 1 }
 for (const p of PEOPLE) {
-  const x = EXTRAS[p.id]
-  if (!x) continue
-  p.interests = x.interests
-  p.photos = Array.from({ length: x.photos ?? 0 }, (_, i) => ({ id: `${p.id}_g${i}`, url: art(`${p.id}-gallery-${i}`) }))
+  const n = EXTRA_PHOTOS[p.id]
+  if (n) p.photos = Array.from({ length: n }, (_, i) => ({ id: `${p.id}_g${i}`, url: art(`${p.id}-gallery-${i}`) }))
 }
 
 // Verified demo people (035); their manners are in lib/mockTrust.ts.
@@ -456,7 +442,6 @@ export class MockBackend implements Backend {
       // The country of the number's calling code (the longest that matches; +1 numbers stay without a flag).
       country: countryOfPhone(this.pendingPhone),
       posts: [],
-      interests: [],
       photos: [],
       handle: freeHandle(p.name, 'u_me'),
     }
@@ -1071,8 +1056,7 @@ export class MockBackend implements Backend {
     const score = (r: VoiceRoomSummary) =>
       query.sort === 'popular' ? r.members + 3 * r.speakers.length
       : query.sort === 'relevant'
-        ? 3 * r.tags.filter((t) => (this.me?.interests as string[] | undefined)?.includes(t)).length + 2 * mine(r)
-          + 3 * Number(!!text && r.title.toLocaleLowerCase().includes(text))
+        ? 2 * mine(r) + 3 * Number(!!text && r.title.toLocaleLowerCase().includes(text))
         : 0
     return (await (await this.voice()).list())
       .filter(
@@ -1155,13 +1139,6 @@ export class MockBackend implements Backend {
   }
 
   // ---- profile extras ----
-
-  async setInterests(tags: Interest[]) {
-    if (!this.me) throw new BackendError('not_found')
-    await wait(400)
-    this.me = { ...this.me, interests: [...new Set(tags)] }
-    return { ...this.me }
-  }
 
   async addProfilePhoto(photo: File) {
     if (!this.me) throw new BackendError('not_found')
@@ -1453,10 +1430,6 @@ export class MockBackend implements Backend {
   async sendVoicePhoto(roomId: string, photo: File) {
     if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
     return (await this.voice()).photo(roomId, URL.createObjectURL(photo))
-  }
-
-  async voiceIcebreaker(roomId: string) {
-    return (await this.voice()).icebreaker(roomId)
   }
 
   async voicePollCreate(roomId: string, question: string, options: string[]) {

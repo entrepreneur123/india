@@ -106,7 +106,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   const wide = useMediaQuery('(min-width: 1280px)')
   const [inboxOpen, setInboxOpen] = useState(false)
   const [inboxUsed, setInboxUsed] = useState(false)
-  const [onboarding, setOnboarding] = useState(() => onboardingDue(!!initialMe.interests?.length))
+  const [onboarding, setOnboarding] = useState(() => onboardingDue())
   const { mutate } = useSWRConfig()
   // Identity and manners (035): my badge and score, whether checks are open, and the sheets they open.
   const { data: trust } = useSWR('my_trust', () => backend.myTrust(), { revalidateOnFocus: false, dedupingInterval: 5_000 })

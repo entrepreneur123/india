@@ -69,7 +69,7 @@ const zhHant: LooksDict = {
   'id.keptFree': '這個 ID 剛剛被別人用了，所以你暫時的 ID 是 @{handle}。可以在「編輯資料」中變更。',
 
   'details.title': '個人資料詳情',
-  'details.desc': '你的狀態、MBTI、你會說的語言和幾個問題。',
+  'details.desc': '你的狀態、MBTI 和你會說的語言。',
 
   'friend.requested': '已送出邀請',
   'friend.withdraw': '收回傳給 {name} 的邀請',

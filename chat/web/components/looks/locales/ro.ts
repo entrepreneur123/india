@@ -69,7 +69,7 @@ const ro: LooksDict = {
   'id.keptFree': 'ID-ul acela tocmai a fost luat, așa că deocamdată al tău e @{handle}. Îl poți schimba din Editează profilul.',
 
   'details.title': 'Detalii profil',
-  'details.desc': 'Statusul tău, MBTI, limbile pe care le vorbești și câteva întrebări.',
+  'details.desc': 'Statusul tău, MBTI și limbile pe care le vorbești.',
 
   'friend.requested': 'Cerere trimisă',
   'friend.withdraw': 'Retrage cererea către {name}',
