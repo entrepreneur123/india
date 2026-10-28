@@ -104,7 +104,6 @@ const nl: LooksDict = {
   'item.cycle_photos': 'Fotoverloop',
   'cycle.what': 'Je profielfoto vloeit elke 2 seconden over in 2–5 van je foto’s, overal waar hij te zien is',
   'cycle.pick': 'Kies 2 tot 5 foto’s',
-  'cycle.needPhotos': 'Voeg eerst minstens 2 foto’s aan je profiel toe',
   'cycle.save': 'Opslaan',
   'looks.tab.effect': 'Naameffecten',
   'item.effect_aurora': 'Noorderlicht',

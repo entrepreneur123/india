@@ -104,7 +104,6 @@ const fr: LooksDict = {
   'item.cycle_photos': 'Dégradé de photos',
   'cycle.what': 'Ta photo de profil passe en fondu entre 2 à 5 de tes photos toutes les 2 secondes, partout où elle apparaît',
   'cycle.pick': 'Choisis de 2 à 5 photos',
-  'cycle.needPhotos': 'Ajoute d’abord au moins 2 photos à ton profil',
   'cycle.save': 'Enregistrer',
   'looks.tab.effect': 'Effets de nom',
   'item.effect_aurora': 'Aurore',

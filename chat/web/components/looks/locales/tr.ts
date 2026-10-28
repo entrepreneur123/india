@@ -104,7 +104,6 @@ const tr: LooksDict = {
   'item.cycle_photos': 'Fotoğraf geçişi',
   'cycle.what': 'Profil fotoğrafın göründüğü her yerde 2 saniyede bir 2–5 fotoğrafın arasında yumuşakça geçer',
   'cycle.pick': '2 ila 5 fotoğraf seç',
-  'cycle.needPhotos': 'Önce profiline en az 2 fotoğraf ekle',
   'cycle.save': 'Kaydet',
   'looks.tab.effect': 'İsim efektleri',
   'item.effect_aurora': 'Kutup ışığı',

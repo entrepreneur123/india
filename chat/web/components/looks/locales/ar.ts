@@ -104,7 +104,6 @@ const ar: LooksDict = {
   'item.cycle_photos': 'تدرّج الصور',
   'cycle.what': 'تتبدّل صورة ملفك تدريجيًا بين 2 إلى 5 من صورك كل ثانيتين، أينما ظهرت',
   'cycle.pick': 'اختر من 2 إلى 5 صور',
-  'cycle.needPhotos': 'أضف صورتين على الأقل إلى ملفك أولًا',
   'cycle.save': 'حفظ',
   'looks.tab.effect': 'تأثيرات الاسم',
   'item.effect_aurora': 'الشفق',

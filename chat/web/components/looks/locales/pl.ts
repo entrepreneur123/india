@@ -104,7 +104,6 @@ const pl: LooksDict = {
   'item.cycle_photos': 'Przenikanie zdjęć',
   'cycle.what': 'Twoje zdjęcie profilowe co 2 sekundy płynnie przechodzi przez 2–5 twoje zdjęcia, wszędzie gdzie się pojawia',
   'cycle.pick': 'Wybierz od 2 do 5 zdjęć',
-  'cycle.needPhotos': 'Najpierw dodaj do profilu co najmniej 2 zdjęcia',
   'cycle.save': 'Zapisz',
   'looks.tab.effect': 'Efekty nazwy',
   'item.effect_aurora': 'Zorza',

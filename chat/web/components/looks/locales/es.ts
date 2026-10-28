@@ -104,7 +104,6 @@ const es: LooksDict = {
   'item.cycle_photos': 'Degradado de fotos',
   'cycle.what': 'Tu foto de perfil se funde entre 2–5 de tus fotos cada 2 segundos, donde sea que aparezca',
   'cycle.pick': 'Elige de 2 a 5 fotos',
-  'cycle.needPhotos': 'Primero añade al menos 2 fotos a tu perfil',
   'cycle.save': 'Guardar',
   'looks.tab.effect': 'Efectos de nombre',
   'item.effect_aurora': 'Aurora',

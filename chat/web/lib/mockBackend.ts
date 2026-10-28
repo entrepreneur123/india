@@ -882,7 +882,8 @@ export class MockBackend implements Backend {
     await wait(300)
     const c = country ?? this.me?.country ?? null
     let list = PEOPLE.filter((p) => !this.blocked.has(p.id) && !isVip(p) && (kind === 'liked' ? this.likedIds.has(p.id) : !c || p.country === c))
-    if (kind === 'recommend') list = [...list].sort(() => Math.random() - 0.5)
+    // 087: no friends or pending requests among the recommendations.
+    if (kind === 'recommend') list = list.filter((p) => (this.friendMap.get(p.id) ?? 'none') === 'none').sort(() => Math.random() - 0.5)
     if (kind === 'online') list = list.filter((_, i) => i % 2 === 0)
     // Rankings show me too (078).
     if ((kind === 'likes' || kind === 'friends') && this.me && (!c || this.me.country === c)) list = [...list, this.me]
@@ -1136,6 +1137,11 @@ export class MockBackend implements Backend {
       // As my_badges (083): no unread count from a past random chat.
       chats: Object.fromEntries([...this.unread].filter(([id]) => this.matches.get(id)?.kind === 'thread' || !this.recentList.some((r) => r.matchId === id))),
     }
+  }
+
+  presencePing() {}
+  friendSignals() {
+    return () => undefined
   }
 
   private friendCallArmed = false

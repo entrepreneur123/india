@@ -145,14 +145,15 @@ export class LookSim {
     this.anon = on
   }
 
-  /** Like set_worn: an owned photo effect or bubble, or none. */
+  /** Like set_worn: an owned name effect or bubble, or none. */
   async setWorn(kind: 'effect' | 'bubble', id: string | null) {
     await wait(250)
     if (id !== null && (!isItem(id) || kindOf(id) !== kind || !this.owned.has(id))) throw new BackendError('not_owned')
     this.worn = { ...this.worn, [kind]: id }
+    if (kind === 'effect' && id) this.wear = { ...this.wear, color: null } // 086: a name effect takes the colour off
   }
 
-  /** Like set_cycle: 2–4 of my photos (photoPath or a gallery photo's id), or none. */
+  /** Like set_cycle: 2–5 of my photos (photoPath or a gallery photo's id), or none. */
   async setCycle(paths: string[] | null) {
     await wait(250)
     const me = this.host.me()
@@ -173,6 +174,7 @@ export class LookSim {
       if (!this.owned.has(id)) throw new BackendError('not_owned')
     }
     if ((Object.entries(next) as [keyof LookWear, string | null][]).some(([kind, id]) => id && kindOf(id as ItemId) !== kind)) throw new BackendError('bad_request')
+    if (next.color && next.color !== this.wear.color) this.worn = { ...this.worn, effect: null } // 086: a new colour takes the effect off
     this.wear = wearOf(next)
     const look = this.myLook()
     if (!look) throw new BackendError('not_found')
@@ -186,8 +188,9 @@ export class LookSim {
     if (this.owned.has(id)) return
     this.owned.add(id)
     const kind = kindOf(id)
-    if (kind in this.wear && !this.wear[kind as keyof LookWear]) this.wear = { ...this.wear, [kind]: id }
-    if ((kind === 'effect' || kind === 'bubble') && !this.worn[kind]) this.worn = { ...this.worn, [kind]: id }
+    // 089: a first colour isn't put on under a name effect (it wouldn't show).
+    if (kind in this.wear && !this.wear[kind as keyof LookWear] && !(kind === 'color' && this.worn.effect)) this.wear = { ...this.wear, [kind]: id }
+    if ((kind === 'effect' || kind === 'bubble') && !this.worn[kind] && !(kind === 'effect' && this.wear.color)) this.worn = { ...this.worn, [kind]: id }
   }
 
   /** Whether a demo person wears this look (they own it). */

@@ -104,7 +104,6 @@ const id: LooksDict = {
   'item.cycle_photos': 'Gradien foto',
   'cycle.what': 'Foto profilmu berganti perlahan di antara 2–5 fotomu setiap 2 detik, di mana pun tampil',
   'cycle.pick': 'Pilih 2 sampai 5 foto',
-  'cycle.needPhotos': 'Tambahkan dulu minimal 2 foto ke profilmu',
   'cycle.save': 'Simpan',
   'looks.tab.effect': 'Efek nama',
   'item.effect_aurora': 'Aurora',

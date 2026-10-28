@@ -104,7 +104,6 @@ const gu: LooksDict = {
   'item.cycle_photos': 'ફોટો ગ્રેડિયન્ટ',
   'cycle.what': 'તમારો પ્રોફાઇલ ફોટો દર 2 સેકન્ડે તમારા 2–5 ફોટામાં ધીમેથી બદલાય છે, જ્યાં પણ દેખાય',
   'cycle.pick': '2 થી 5 ફોટા પસંદ કરો',
-  'cycle.needPhotos': 'પહેલાં પ્રોફાઇલમાં ઓછામાં ઓછા 2 ફોટા ઉમેરો',
   'cycle.save': 'સેવ કરો',
   'looks.tab.effect': 'નામ ઇફેક્ટ',
   'item.effect_aurora': 'ઓરોરા',

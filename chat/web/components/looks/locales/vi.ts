@@ -104,7 +104,6 @@ const vi: LooksDict = {
   'item.cycle_photos': 'Ảnh chuyển màu',
   'cycle.what': 'Ảnh đại diện của bạn chuyển dần giữa 2–5 ảnh mỗi 2 giây, ở mọi nơi nó hiện',
   'cycle.pick': 'Chọn từ 2 đến 5 ảnh',
-  'cycle.needPhotos': 'Hãy thêm ít nhất 2 ảnh vào hồ sơ trước',
   'cycle.save': 'Lưu',
   'looks.tab.effect': 'Hiệu ứng tên',
   'item.effect_aurora': 'Cực quang',

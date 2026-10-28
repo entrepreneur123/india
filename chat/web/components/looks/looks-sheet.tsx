@@ -1,15 +1,17 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSWRConfig } from 'swr'
 import { Award, Check, CircleDashed, Crown, ExternalLink, Gift, Images, MessageCircle, Palette, Sparkles, Type, Wallpaper, type LucideIcon } from 'lucide-react'
 import type { ItemKind, Look, LookKind, LookWear, Shop } from '@/lib/backend'
+import { MAX_PHOTOS } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { CATALOGUE, ITEM_KINDS, LOOK_KINDS, nameAge, NO_WEAR, PLAY_URL, rarityOf, wearOf, wearWith, type BadgeId, type FrameId, type ItemId, type Rarity } from '@/lib/looks'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Bubble } from '@/components/screens/chat/message-bubble'
 import { Avatar } from '@/components/ui/avatar'
+import { AddTile } from '@/components/social/gallery'
 import { Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -73,9 +75,6 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   const [cyclePick, setCyclePick] = useState<string[] | undefined>(undefined)
   /** The name effect and bubble being looked at (missing: the one I wear). */
   const [extraTry, setExtraTry] = useState<Partial<Record<'effect' | 'bubble', ItemId | null>>>({})
-  /** Taps that wear something, one after another (quick taps: the last one wins), and how many are still to run. */
-  const saves = useRef(Promise.resolve())
-  const queued = useRef(0)
 
   useEffect(() => {
     if (!shop || worn) return
@@ -145,7 +144,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     setBusy(true)
     try {
       await backend.setWorn(extra, id)
-      await Promise.all([mutate(lookKey(me.id)), reload()])
+      // A name effect takes the ID colour off (086): what I wear is read again.
+      const [, fresh] = await Promise.all([mutate(lookKey(me.id)), reload()])
+      if (fresh?.look) setWorn(wearOf(fresh.look))
       setExtraTry(({ [extra]: _, ...rest }) => rest)
       toast.show(lt('looks.saved'), 'success')
     } catch (err) {
@@ -156,19 +157,8 @@ function ShopBody({ tab }: { tab: ItemKind }) {
   }
   /** Takes off what is in use of this kind ("None"). */
   const takeOff = () => (look ? wear(null) : extra ? saveExtra(null) : setWall(null))
-  /**
-   * A tap on an item I own (or "None") wears it at once, as in game wardrobes (Zepeto, League of Legends); one I don't
-   * own is only tried on, for its price.
-   */
-  const pick = (id: ItemId | null) => {
-    choose(id)
-    // Already worn, and nothing else on its way (a tap back to it after other taps still saves).
-    if ((!queued.current && id === (look ? worn[look] : single?.mine)) || (id !== null && !owned.has(id))) return
-    queued.current++
-    saves.current = saves.current
-      .then(() => (id === null ? takeOff() : look ? wear(id) : extra ? saveExtra(id) : setWall(id)))
-      .finally(() => queued.current--)
-  }
+  // A new colour being tried on would take the name effect off (086), so the preview shows it without.
+  const fxShown = trying.color && trying.color !== worn.color ? null : shop.look?.effect
   const usingLabel = lt(kind === 'wall' ? 'wall.inUse' : 'looks.wearing')
 
   /** Saves what I wear with this kind changed; the rest stays as worn (never an item only tried on). */
@@ -340,36 +330,43 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <Avatar name={me.name} src={me.photoUrl} srcs={urls.length >= 2 ? urls : myPhotos.slice(0, 5).map((x) => x.url)} size={96} />
         <p className="text-center text-sm leading-relaxed text-white/70">{lt('cycle.what')}</p>
         {owned.has('cycle_photos') ? (
-          myPhotos.length < 2 ? (
-            <p className="text-sm font-medium text-red-300">{lt('cycle.needPhotos')}</p>
-          ) : (
-            <>
-              <p className="text-sm font-semibold">{lt('cycle.pick')}</p>
-              <ul className="flex flex-wrap justify-center gap-2">
-                {myPhotos.map((x) => {
-                  const on = picked.includes(x.id)
-                  return (
-                    <li key={x.id}>
-                      <button
-                        type="button"
-                        aria-pressed={on}
-                        disabled={!on && picked.length >= 5}
-                        onClick={() => setCyclePick(on ? picked.filter((y) => y !== x.id) : [...picked, x.id])}
-                        className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-white/15')}
-                      >
-                        <img src={x.url} alt="" className="size-full object-cover" />
-                        {on ? (
-                          <span className="absolute top-1 inset-e-1 grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
-                            {picked.indexOf(x.id) + 1}
-                          </span>
-                        ) : null}
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            </>
-          )
+          <>
+            <p className="text-sm font-semibold">{lt('cycle.pick')}</p>
+            <ul className="flex flex-wrap justify-center gap-2">
+              {myPhotos.map((x) => {
+                const on = picked.includes(x.id)
+                return (
+                  <li key={x.id}>
+                    <button
+                      type="button"
+                      aria-pressed={on}
+                      disabled={!on && picked.length >= 5}
+                      onClick={() => setCyclePick(on ? picked.filter((y) => y !== x.id) : [...picked, x.id])}
+                      className={cn('relative block size-16 overflow-hidden rounded-xl ring-2 transition disabled:opacity-40', on ? 'ring-primary' : 'ring-white/15')}
+                    >
+                      <img src={x.url} alt="" className="size-full object-cover" />
+                      {on ? (
+                        <span className="absolute top-1 inset-e-1 grid size-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                          {picked.indexOf(x.id) + 1}
+                        </span>
+                      ) : null}
+                    </button>
+                  </li>
+                )
+              })}
+              {/* New photos are added right here (they join my profile photos) and picked at once. */}
+              {(me.photos?.length ?? 0) < MAX_PHOTOS ? (
+                <li className="size-16 text-white [&_label]:rounded-xl [&_label]:border-white/30 [&_label]:text-white/70">
+                  <AddTile
+                    onAdded={(fresh) => {
+                      const added = fresh.photos?.at(-1)?.id
+                      if (added && picked.length < 5) setCyclePick([...picked, added])
+                    }}
+                  />
+                </li>
+              ) : null}
+            </ul>
+          </>
         ) : null}
       </div>
     )
@@ -402,9 +399,9 @@ function ShopBody({ tab }: { tab: ItemKind }) {
         <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
           <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
           <p className="mt-1 text-lg font-bold">
-            <NameText wear={{ ...trying, effect: shop.look?.effect }}>{me.name}</NameText>
+            <NameText wear={{ ...trying, effect: fxShown }}>{me.name}</NameText>
           </p>
-          {handle ? <LookText handle={handle} wear={{ ...trying, effect: shop.look?.effect }} className="text-[17px] font-semibold" /> : null}
+          {handle ? <LookText handle={handle} wear={{ ...trying, effect: fxShown }} className="text-[17px] font-semibold" /> : null}
         </div>
       </FrameCard>
     )
@@ -454,7 +451,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                 label={lt('looks.none')}
                 sub={(look ? worn[look] : single?.mine) === null ? usingLabel : ''}
                 worn={(look ? worn[look] : single?.mine) === null}
-                onClick={() => pick(null)}
+                onClick={() => choose(null)}
               >
                 {kind === 'wall' || kind === 'frame' || extra ? sample(null) : handle ? <LookText handle={handle} wear={NO_WEAR} className="text-sm font-semibold" /> : null}
               </ItemCard>
@@ -467,7 +464,7 @@ function ShopBody({ tab }: { tab: ItemKind }) {
                   sub={status(id)}
                   worn={look ? worn[look] === id : single?.mine === id}
                   rarity={rarityOf(inrOf(id) ?? 0)}
-                  onClick={() => pick(id)}
+                  onClick={() => choose(id)}
                 >
                   {sample(id)}
                 </ItemCard>

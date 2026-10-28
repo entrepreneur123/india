@@ -917,6 +917,10 @@ export interface Backend {
   badges(): Promise<Badges>
   /** Called whenever an inbox item of mine arrives or changes. Returns the stop function. */
   inboxSignals(on: () => void): () => void
+  /** 088: tells my online friends at once that I came online, changed what I'm doing, or (false) closed the app. */
+  presencePing(online: boolean): void
+  /** 088: called whenever a friend's presence may have changed. Returns the stop function. */
+  friendSignals(on: () => void): () => void
   /** A friend's call ringing for me now (an unread 'call' line whose thread still asks), else null. */
   incomingCall(): Promise<IncomingCall | null>
   // ---- profile extras ----

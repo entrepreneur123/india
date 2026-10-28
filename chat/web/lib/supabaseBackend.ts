@@ -1277,6 +1277,28 @@ export class SupabaseBackend implements Backend {
     return () => void this.client.removeChannel(channel)
   }
 
+  presencePing(online: boolean) {
+    if (online) return void this.rpc('presence_ping', { p_online: true }).catch(() => undefined)
+    // Closing the app: a request that outlives the page (as leave_voice).
+    if (this.accessToken)
+      void fetch(`${this.url}/rest/v1/rpc/presence_ping`, {
+        method: 'POST',
+        keepalive: true,
+        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_online: false }),
+      }).catch(() => undefined)
+  }
+
+  friendSignals(on: () => void): () => void {
+    // Private (RLS on realtime.messages): only I can listen on my topic.
+    const channel = this.client.channel(`friends:${this.uid}`, { config: { private: true } })
+      .on('broadcast', { event: 'p' }, () => on())
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') on() // anything missed while the connection was down
+      })
+    return () => void this.client.removeChannel(channel)
+  }
+
   // ---- profile extras (024) ----
 
   async setInterests(tags: Interest[]) {

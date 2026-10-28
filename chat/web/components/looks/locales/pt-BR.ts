@@ -104,7 +104,6 @@ const ptBR: LooksDict = {
   'item.cycle_photos': 'Degradê de fotos',
   'cycle.what': 'Sua foto de perfil passa suavemente por 2–5 das suas fotos a cada 2 segundos, onde quer que apareça',
   'cycle.pick': 'Escolha de 2 a 5 fotos',
-  'cycle.needPhotos': 'Primeiro adicione pelo menos 2 fotos ao seu perfil',
   'cycle.save': 'Salvar',
   'looks.tab.effect': 'Efeitos de nome',
   'item.effect_aurora': 'Aurora',

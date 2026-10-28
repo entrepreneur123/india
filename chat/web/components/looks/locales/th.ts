@@ -104,7 +104,6 @@ const th: LooksDict = {
   'item.cycle_photos': 'รูปไล่เฉด',
   'cycle.what': 'รูปโปรไฟล์ของคุณจะค่อยๆ เปลี่ยนไปมาระหว่างรูป 2–5 รูปทุก 2 วินาที ในทุกที่ที่แสดง',
   'cycle.pick': 'เลือก 2 ถึง 5 รูป',
-  'cycle.needPhotos': 'เพิ่มรูปในโปรไฟล์อย่างน้อย 2 รูปก่อน',
   'cycle.save': 'บันทึก',
   'looks.tab.effect': 'เอฟเฟกต์ชื่อ',
   'item.effect_aurora': 'ออโรรา',

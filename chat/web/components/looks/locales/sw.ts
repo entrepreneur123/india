@@ -104,7 +104,6 @@ const sw: LooksDict = {
   'item.cycle_photos': 'Mchanganyiko wa picha',
   'cycle.what': 'Picha yako ya wasifu hubadilika polepole kati ya picha zako 2–5 kila sekunde 2, popote inapoonekana',
   'cycle.pick': 'Chagua picha 2 hadi 5',
-  'cycle.needPhotos': 'Kwanza ongeza angalau picha 2 kwenye wasifu wako',
   'cycle.save': 'Hifadhi',
   'looks.tab.effect': 'Athari za jina',
   'item.effect_aurora': 'Aurora',

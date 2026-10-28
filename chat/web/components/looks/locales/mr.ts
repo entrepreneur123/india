@@ -104,7 +104,6 @@ const mr: LooksDict = {
   'item.cycle_photos': 'फोटो ग्रेडियंट',
   'cycle.what': 'तुमचा प्रोफाइल फोटो दर 2 सेकंदांनी तुमच्या 2–5 फोटोंमध्ये हळूच बदलतो, तो जिथे दिसेल तिथे',
   'cycle.pick': '2 ते 5 फोटो निवडा',
-  'cycle.needPhotos': 'आधी प्रोफाइलमध्ये किमान 2 फोटो जोडा',
   'cycle.save': 'सेव्ह करा',
   'looks.tab.effect': 'नाव इफेक्ट',
   'item.effect_aurora': 'ऑरोरा',

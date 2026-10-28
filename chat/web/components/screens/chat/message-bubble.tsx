@@ -2,7 +2,7 @@
 
 import * as m from 'motion/react-m'
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import { ChevronRight, Copy, Eye } from 'lucide-react'
+import { Check, CheckCheck, ChevronRight, Copy, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { savedFlag } from '@/lib/flags'
 import { useI18n } from '@/components/i18n'
@@ -32,7 +32,7 @@ export function useLineActions(text: string | null | undefined): MenuAction[] {
  * 9 (the owner: "chats look like a cheap chat app"): bubbles as in today's messengers (Instagram, iMessage,
  * Telegram) — soft fills on a plain page, no tails or shadows; a run of lines from one person sits close together with
  * tighter inner corners and their photo beside its last line; the time only where the talk pauses (each line's time
- * on hover), "Read" / "Sent" under my latest line only. Long press / right click opens the line's menu.
+ * on hover), ticks under my lines where the talk pauses and my latest. Long press / right click opens the line's menu.
  */
 export function MessageBubble({ message, first, last, time, status, skin, avatar }: {
   message: Message
@@ -41,7 +41,7 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
   last: boolean
   /** The time under this line (the talk pauses after it). */
   time: boolean
-  /** Under my latest line. */
+  /** Under my latest line and my lines where the talk pauses: one tick sent, two read. */
   status?: 'read' | 'sent' | null
   skin?: string | null
   /** Theirs: the face beside the run's last line (a gap keeps the others in line). */
@@ -83,8 +83,12 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
       {time || status ? (
         <span className={cn('mt-1 flex items-center gap-1 px-1 text-[11px] leading-none text-muted-foreground tabular-nums', !mine && 'ps-10')}>
           {time ? clock(message.at) : null}
-          {time && status ? <span aria-hidden>·</span> : null}
-          {status ? <span className={cn(status === 'read' && 'font-semibold text-primary-text')}>{t(status === 'read' ? 'bubble.read' : 'bubble.sent')}</span> : null}
+          {/* The owner: two ticks once read, one while only sent (as before). */}
+          {status === 'read' ? (
+            <CheckCheck className="size-3.5 text-tick-read" aria-label={t('bubble.read')} />
+          ) : status ? (
+            <Check className="size-3.5" aria-label={t('bubble.sent')} />
+          ) : null}
         </span>
       ) : null}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}

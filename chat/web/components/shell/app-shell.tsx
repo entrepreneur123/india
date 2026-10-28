@@ -324,6 +324,23 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
 
   // Only what changes the panel's line (not the chat bar's typing and unread counts).
   const myPresence: AppState['myPresence'] = voice ? 'room' : chatBar ? 'chat' : immersive ? 'matching' : 'online'
+  // 088: friends see me come online, change what I'm doing and leave at once (no waiting for their next poll).
+  // Shortly after a change, so the server already has the room, chat or queue the change came from.
+  useEffect(() => {
+    const ping = () => backend.presencePing(true)
+    const timer = setTimeout(ping, 1_500)
+    const onShow = () => document.visibilityState === 'visible' && ping()
+    const onHide = () => backend.presencePing(false)
+    document.addEventListener('visibilitychange', onShow)
+    window.addEventListener('pagehide', onHide)
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', onShow)
+      window.removeEventListener('pagehide', onHide)
+    }
+  }, [backend, myPresence, me.hideOnline])
+  // ...and their changes reach me the same way.
+  useEffect(() => backend.friendSignals(() => void mutate('friend-activity')), [backend, mutate])
   const state = useMemo<AppState>(
     () => ({
       me,

@@ -110,7 +110,6 @@ const en = {
   'item.cycle_photos': 'Photo gradient',
   'cycle.what': 'Your profile photo fades through 2–5 of your photos, every 2 seconds, wherever it shows',
   'cycle.pick': 'Pick 2 to 5 photos',
-  'cycle.needPhotos': 'Add at least 2 photos to your profile first',
   'cycle.save': 'Save',
   'looks.tab.effect': 'Name effects',
   'item.effect_aurora': 'Aurora',

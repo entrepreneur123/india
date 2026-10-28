@@ -350,7 +350,7 @@ export function ChatView({
                     first={first}
                     last={last}
                     time={pause}
-                    status={msg.id === latestMine ? (msg.id <= chat.partnerRead ? 'read' : 'sent') : null}
+                    status={msg.fromMe && (pause || msg.id === latestMine) ? (msg.id <= chat.partnerRead ? 'read' : 'sent') : null}
                     skin={msg.fromMe ? mySkin : theirSkin}
                     avatar={msg.fromMe ? null : <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={28} />}
                   />

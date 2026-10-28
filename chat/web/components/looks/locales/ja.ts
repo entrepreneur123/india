@@ -104,7 +104,6 @@ const ja: LooksDict = {
   'item.cycle_photos': 'フォトグラデーション',
   'cycle.what': 'プロフィール写真が表示されるすべての場所で、2〜5枚の写真が2秒ごとにふわっと切り替わります',
   'cycle.pick': '写真を2〜5枚選んでください',
-  'cycle.needPhotos': '先にプロフィールに写真を2枚以上追加してください',
   'cycle.save': '保存',
   'looks.tab.effect': 'ネームエフェクト',
   'item.effect_aurora': 'オーロラ',

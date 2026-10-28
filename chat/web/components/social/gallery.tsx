@@ -2,7 +2,7 @@
 
 import { useId, useState } from 'react'
 import { ImagePlus, X } from 'lucide-react'
-import { BackendError, MAX_PHOTOS, type ProfilePhoto } from '@/lib/backend'
+import { BackendError, MAX_PHOTOS, type Profile, type ProfilePhoto } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { retryImport } from '@/lib/retry-import'
 import { useApp } from '@/components/app-state'
@@ -45,7 +45,8 @@ export function Gallery({ photos, owner, editable, className }: { photos: Profil
   )
 }
 
-function AddTile() {
+/** Adds a profile photo (also used by the photo gradient's picker, which picks the new photo at once). */
+export function AddTile({ onAdded }: { onAdded?: (me: Profile) => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { setMe } = useApp()
@@ -62,7 +63,9 @@ function AddTile() {
         toast.show(st('photos.nude'), 'error')
         return
       }
-      setMe(await backend.addProfilePhoto(file))
+      const fresh = await backend.addProfilePhoto(file)
+      setMe(fresh)
+      onAdded?.(fresh)
     } catch (err) {
       toast.error(err instanceof BackendError ? err : new BackendError('bad_media'))
     } finally {

@@ -104,7 +104,6 @@ const bn: LooksDict = {
   'item.cycle_photos': 'ফটো গ্রেডিয়েন্ট',
   'cycle.what': 'আপনার প্রোফাইল ছবি প্রতি ২ সেকেন্ডে আপনার ২–৫টি ছবির মধ্যে ধীরে বদলায়, যেখানেই দেখা যাক',
   'cycle.pick': '২ থেকে ৫টি ছবি বেছে নিন',
-  'cycle.needPhotos': 'আগে প্রোফাইলে অন্তত ২টি ছবি যোগ করুন',
   'cycle.save': 'সেভ করুন',
   'looks.tab.effect': 'নাম ইফেক্ট',
   'item.effect_aurora': 'অরোরা',

@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useEffect, useId, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -46,6 +46,7 @@ export function Modal({
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
   useBack(open && dismissible, onClose)
+  const drag = useSheetDrag(open, onClose, dismissible)
 
   useEffect(() => {
     if (!open) return
@@ -125,8 +126,12 @@ export function Modal({
             animate={isSheet ? { y: 0, opacity: 1 } : { opacity: 1, scale: 1 }}
             exit={isSheet ? { y: 32, opacity: 0 } : { opacity: 0, scale: 0.98 }}
             transition={{ type: 'tween', duration: 0.2, ease: [0.2, 0, 0, 1] }}
+            // `translate` (not `transform`, which the animation drives) follows the finger on the handle.
+            style={drag.dy ? { translate: `0 ${drag.dy}px` } : undefined}
             className={cn(
-              'relative z-10 flex max-h-[92dvh] w-full flex-col overflow-hidden bg-card text-card-foreground shadow-e3 outline-none',
+              'relative z-10 flex w-full flex-col overflow-hidden bg-card text-card-foreground shadow-e3 outline-none',
+              drag.tall ? 'max-h-dvh' : 'max-h-[92dvh]',
+              !drag.dy && 'transition-[translate,max-height] duration-200 ease-out',
               isSheet
                 ? 'rounded-t-[28px] pb-[env(safe-area-inset-bottom)] md:max-w-lg md:rounded-[28px]'
                 : variant === 'full'
@@ -136,7 +141,9 @@ export function Modal({
             )}
           >
             {isSheet ? (
-              <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-input md:hidden" aria-hidden />
+              <div className="flex h-5 w-full shrink-0 cursor-grab touch-none justify-center pt-2.5 active:cursor-grabbing md:hidden" aria-hidden {...drag.handle}>
+                <span className="h-1 w-10 rounded-full bg-input" />
+              </div>
             ) : null}
             {hideHeader ? null : (
               <div className="flex items-start justify-between gap-4 px-6 pt-5">
@@ -171,4 +178,41 @@ export function Modal({
     </AnimatePresence>,
     document.body,
   )
+}
+
+/**
+ * A phone sheet's top bar is a handle, as in Instagram's and Google Maps' sheets: pull it down to close the sheet (far
+ * enough, or a quick flick), up to make it as tall as the screen; let go short of that and it springs back.
+ */
+function useSheetDrag(open: boolean, onClose: () => void, dismissible: boolean) {
+  const [dy, setDy] = useState(0)
+  const [tall, setTall] = useState(false)
+  const start = useRef<{ y: number; t: number } | null>(null)
+  useEffect(() => {
+    if (!open) setTall(false)
+  }, [open])
+  const up = (e: PointerEvent<HTMLDivElement>) => {
+    const s = start.current
+    start.current = null
+    if (!s) return
+    const d = e.clientY - s.y
+    setDy(0)
+    if (d > 0 && dismissible && (d > 120 || (d > 30 && d / Math.max(1, e.timeStamp - s.t) > 0.6))) onClose()
+    else if (d < -40) setTall(true)
+    else if (d > 40) setTall(false)
+  }
+  return {
+    dy,
+    tall,
+    handle: {
+      onPointerDown: (e: PointerEvent<HTMLDivElement>) => {
+        e.currentTarget.setPointerCapture(e.pointerId)
+        start.current = { y: e.clientY, t: e.timeStamp }
+      },
+      // Downwards the sheet follows the finger; upwards it gives only a little (it grows when let go).
+      onPointerMove: (e: PointerEvent<HTMLDivElement>) => start.current && setDy(Math.max(e.clientY - start.current.y, (e.clientY - start.current.y) / 3)),
+      onPointerUp: up,
+      onPointerCancel: up,
+    },
+  }
 }
