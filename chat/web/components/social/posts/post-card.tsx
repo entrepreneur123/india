@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/toast'
 import { AudienceIcon, BigHeart, CommentIcon, LikeIcon } from '@/components/ui/topic-icons'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { cn } from '@/lib/utils'
+import { FadeImg } from '@/components/ui/fade-img'
 import { useFeedT } from '../feed-text'
 import { TagText } from '../hashtags'
 import { AccentAvatar, accentStyle } from '../profile-bits'
@@ -136,7 +137,7 @@ export function PostCard({ post: initial, onComments, onLikes }: { post: FeedPos
 
       {post.imageUrl ? (
         <div className="relative mt-3 cursor-zoom-in touch-manipulation overflow-hidden bg-muted select-none sm:mx-3 sm:rounded-3xl" onPointerUp={(e) => onMediaTap(e, true)}>
-          <img
+          <FadeImg
             src={post.imageUrl}
             alt={ft('post.photo', { name: a.name })}
             className="max-h-[min(60dvh,587px)] w-full object-cover"

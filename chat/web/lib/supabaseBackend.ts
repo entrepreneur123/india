@@ -74,11 +74,34 @@ import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
 import { droppedOut, nextHost, VOICE_BEAT_MS } from './voice-lost'
 import { saveVolume } from './voice-volumes'
+import { hasThumb, registerThumb, thumbPath, THUMB_PX } from './thumbs'
 
 const BUCKET = 'media'
 const MAX_PHOTO_PX = 1280
 const MAX_VIDEO_BYTES = 25 * 1024 * 1024
 const SIGNED_URL_SECONDS = 3600
+const SIGNED_KEY = 'yaari_media_urls'
+/** One year: stored files never change. */
+const CACHE_FOREVER = '31536000'
+
+/** The signed URLs kept from the last visit (see signedUrls). */
+function loadSigned() {
+  const map = new Map<string, { url: string; reuseUntil: number }>()
+  try {
+    const now = Date.now()
+    for (const [k, v] of JSON.parse(localStorage.getItem(SIGNED_KEY) ?? '[]') as [string, { url: string; reuseUntil: number }][]) {
+      if (typeof k === 'string' && v && typeof v.url === 'string' && v.reuseUntil > now) map.set(k, v)
+    }
+  } catch {
+    /* none kept */
+  }
+  for (const k of map.keys()) {
+    const full = map.get(k)?.url
+    const small = hasThumb(k) ? map.get(thumbPath(k))?.url : undefined
+    if (full && small) registerThumb(full, small)
+  }
+  return map
+}
 /** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
 const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
 /** A request that hangs on a weak network fails after this long, so the screen can retry (uploads get longer). */
@@ -292,12 +315,12 @@ export const time = (ts: string) =>
       .replace(/([+-]\d{2})$/, '$1:00'),
   )
 
-/** Shrinks a photo to 1280 px JPEG to save mobile data (same as the app). */
-async function compressImage(file: File): Promise<Blob> {
+/** Shrinks a photo to `max` px JPEG (1280 by default, as the app) to save mobile data. */
+async function compressImage(file: Blob, max = MAX_PHOTO_PX): Promise<Blob> {
   const bitmap = await createImageBitmap(file).catch(() => {
     throw new BackendError('bad_media')
   })
-  const scale = Math.min(1, MAX_PHOTO_PX / Math.max(bitmap.width, bitmap.height))
+  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height))
   const canvas = document.createElement('canvas')
   canvas.width = Math.round(bitmap.width * scale)
   canvas.height = Math.round(bitmap.height * scale)
@@ -322,8 +345,12 @@ type TypingHub = {
 
 export class SupabaseBackend implements Backend {
   private client: SupabaseClient
-  /** Signed media URL and when to stop reusing it (they are valid for 12 h). */
-  private signedUrls = new Map<string, { url: string; reuseUntil: number }>()
+  /**
+   * Signed media URLs and when to stop reusing them (valid for an hour, reused for 50 minutes). Kept in the browser,
+   * so a reload asks for the same URLs and the browser shows the photos from its cache at once.
+   */
+  private signedUrls = loadSigned()
+  private saveTimer: ReturnType<typeof setTimeout> | null = null
   private readSent = new Map<string, number>()
   /**
    * One channel per match for typing signals and presence ("my app is in this chat"), shared by every view of it
@@ -449,6 +476,7 @@ export class SupabaseBackend implements Backend {
     const { error } = await this.client.auth.signOut()
     if (error) fail(error)
     this.userId = null
+    this.forgetSigned()
   }
 
   async deleteAccount() {
@@ -456,6 +484,7 @@ export class SupabaseBackend implements Backend {
     // The server already removed the user; only the local session is left.
     await this.client.auth.signOut({ scope: 'local' })
     this.userId = null
+    this.forgetSigned()
   }
 
   // ---- matching & chat ----
@@ -2269,14 +2298,80 @@ export class SupabaseBackend implements Backend {
     }
   }
 
-  /** Signs every photo not signed yet in one request (a voice room shows dozens of faces at once). */
+  /**
+   * Signs every photo not signed yet in one request (a voice room shows dozens of faces at once), profile photos with
+   * their small copies (lib/thumbs.ts). A photo without one (older ones, until their owner's app adds it) is
+   * remembered as such for the same 50 minutes, so it isn't asked for again.
+   */
   private async signMany(paths: (string | null | undefined)[]) {
     const now = Date.now()
-    const need = [...new Set(paths.filter((p): p is string => !!p && !((this.signedUrls.get(p)?.reuseUntil ?? 0) > now)))]
-    if (!need.length) return
-    const { data } = await this.client.storage.from(BUCKET).createSignedUrls(need, SIGNED_URL_SECONDS).catch(() => ({ data: null }))
-    for (const d of data ?? []) {
-      if (d.path && d.signedUrl) this.signedUrls.set(d.path, { url: d.signedUrl, reuseUntil: now + 50 * 60_000 })
+    const wanted = [...new Set(paths.filter((p): p is string => !!p))]
+    const need = [...wanted, ...wanted.filter(hasThumb).map(thumbPath)].filter((p) => !((this.signedUrls.get(p)?.reuseUntil ?? 0) > now))
+    if (need.length) {
+      const { data } = await this.client.storage.from(BUCKET).createSignedUrls(need, SIGNED_URL_SECONDS).catch(() => ({ data: null }))
+      for (const d of data ?? []) {
+        if (d.path && (d.signedUrl || d.path.endsWith('_s.jpg'))) this.signedUrls.set(d.path, { url: d.signedUrl ?? '', reuseUntil: now + 50 * 60_000 })
+      }
+      this.saveSigned()
+    }
+    for (const p of wanted) if (hasThumb(p)) this.linkThumb(p)
+  }
+
+  private linkThumb(path: string) {
+    const full = this.signedUrls.get(path)?.url
+    const small = this.signedUrls.get(thumbPath(path))?.url
+    if (full && small) registerThumb(full, small)
+  }
+
+  private saveSigned() {
+    this.saveTimer ??= setTimeout(() => {
+      this.saveTimer = null
+      const now = Date.now()
+      // The newest 800 still in use.
+      const keep = [...this.signedUrls].filter(([, v]) => v.reuseUntil > now).slice(-800)
+      try {
+        localStorage.setItem(SIGNED_KEY, JSON.stringify(keep))
+      } catch {
+        /* storage full or blocked: they are signed again next time */
+      }
+    }, 1_000)
+  }
+
+  private forgetSigned() {
+    this.signedUrls.clear()
+    try {
+      localStorage.removeItem(SIGNED_KEY)
+    } catch {
+      /* nothing kept */
+    }
+  }
+
+  /**
+   * My profile photos from before small copies existed get theirs here, once per browser: the photo is read, shrunk
+   * on this device and uploaded beside it (only I may write in my folder).
+   */
+  async backfillThumbs() {
+    const flag = `yaari_thumbs_${this.uid}`
+    try {
+      if (localStorage.getItem(flag)) return
+    } catch {
+      return
+    }
+    const me = await this.mine()
+    const paths = [me.photoPath, ...(me.photos ?? []).map((p) => p.id)].filter((p): p is string => !!p && hasThumb(p))
+    await this.signMany(paths)
+    for (const p of paths) {
+      const full = this.signedUrls.get(p)?.url
+      if (!full || this.signedUrls.get(thumbPath(p))?.url) continue
+      const small = await compressImage(await (await fetch(full)).blob(), THUMB_PX)
+      const { error } = await this.client.storage.from(BUCKET).upload(thumbPath(p), small, { contentType: 'image/jpeg', cacheControl: CACHE_FOREVER })
+      if (error && !/exists/i.test(error.message)) throw error
+      this.signedUrls.delete(thumbPath(p))
+    }
+    try {
+      localStorage.setItem(flag, '1')
+    } catch {
+      /* asked again next time */
     }
   }
 
@@ -2300,14 +2395,12 @@ export class SupabaseBackend implements Backend {
   }
 
   private async signed(path: string): Promise<string> {
-    const now = Date.now()
-    const hit = this.signedUrls.get(path)
-    if (hit && now < hit.reuseUntil) return hit.url
-    const { data, error } = await this.client.storage.from(BUCKET).createSignedUrl(path, SIGNED_URL_SECONDS)
-    if (error || !data) fail(error)
-    this.signedUrls.set(path, { url: data.signedUrl, reuseUntil: now + 50 * 60_000 })
-    return data.signedUrl
+    await this.signMany([path])
+    const url = this.signedUrls.get(path)?.url
+    if (!url) throw new BackendError('not_found')
+    return url
   }
+
 
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
   private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms' | 'cover'): Promise<string> {
@@ -2325,7 +2418,14 @@ export class SupabaseBackend implements Backend {
       ext = 'jpg'
     }
     const path = `${this.uid}/${folder}/${crypto.randomUUID()}.${ext}`
-    const { error } = await this.client.storage.from(BUCKET).upload(path, body, { contentType: type })
+    // A file never changes under its name (a new photo gets a new one), so it may be cached for good.
+    const opts = { contentType: type, cacheControl: CACHE_FOREVER }
+    const small = !isVideo && hasThumb(path) ? await compressImage(file, THUMB_PX) : null
+    const [{ error }] = await Promise.all([
+      this.client.storage.from(BUCKET).upload(path, body, opts),
+      // Without its small copy a photo still shows (the whole photo); its owner's app adds the copy later.
+      small ? this.client.storage.from(BUCKET).upload(thumbPath(path), small, opts).catch(() => null) : null,
+    ])
     if (error) throw new BackendError(codeOf(error.message))
     return path
   }

@@ -916,6 +916,8 @@ export interface Backend {
   /** Adds a photo to my gallery (the screen has run classifyImage() on it first). */
   addProfilePhoto(photo: File): Promise<Profile>
   removeProfilePhoto(id: string): Promise<Profile>
+  /** Adds the small copies my older profile photos lack (lib/thumbs.ts), once per browser; live server only. */
+  backfillThumbs?(): Promise<void>
   highlights(userId: string): Promise<Highlight[]>
   /** `id` null: a new one. `keep`: photo ids already in it, in order; `add`: new photos (checked for nudity before). */
   saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }): Promise<void>

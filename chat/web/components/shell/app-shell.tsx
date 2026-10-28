@@ -339,6 +339,11 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
       window.removeEventListener('pagehide', onHide)
     }
   }, [backend, myPresence, me.hideOnline])
+  // My older profile photos get their small copies (lib/thumbs.ts), once, after the first screen is up.
+  useEffect(() => {
+    const timer = setTimeout(() => void backend.backfillThumbs?.().catch(() => undefined), 5_000)
+    return () => clearTimeout(timer)
+  }, [backend])
   // ...and their changes reach me the same way.
   useEffect(() => backend.friendSignals(() => void mutate('friend-activity')), [backend, mutate])
   const state = useMemo<AppState>(

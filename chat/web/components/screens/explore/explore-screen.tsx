@@ -15,6 +15,7 @@ import { Segmented, Skeleton, TextInput } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
 import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { cn } from '@/lib/utils'
+import { FadeImg } from '@/components/ui/fade-img'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { FriendNotes } from './friend-notes'
 import { LookingFor } from './looking'
@@ -257,7 +258,7 @@ function FeedPhotos({ photos, label }: { photos: string[]; label: string }) {
       <ScrollRow className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', photos.length > 1 && 'gap-1')}>
         {photos.map((u, i) => (
           <button key={u} type="button" onClick={() => setLarge(i)} className="w-full shrink-0 cursor-zoom-in snap-center">
-            <img src={u} alt="" className="aspect-square max-h-[60dvh] w-full bg-muted object-cover" loading="lazy" />
+            <FadeImg src={u} alt="" className="aspect-square max-h-[60dvh] w-full bg-muted object-cover" loading="lazy" />
           </button>
         ))}
       </ScrollRow>

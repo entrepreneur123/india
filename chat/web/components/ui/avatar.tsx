@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from 'react'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
 import { isVip } from '@/lib/looks'
+import { thumbOf } from '@/lib/thumbs'
 
 // One 2-second clock for every photo gradient on screen (062): they change together and only one timer runs, only
 // while one is shown.
@@ -45,7 +46,12 @@ export function Avatar({ name, src, srcs, size = 40, country, online, className 
     .slice(0, 1)
     .join('')
     .toUpperCase()
-  const showImage = src && failed !== src
+  // A face up to 128 px shows the photo's small copy (lib/thumbs.ts) when it has one.
+  const small = (u: string) => (size <= 128 ? thumbOf(u) ?? u : u)
+  const shown = src ? small(src) : null
+  const showImage = shown && failed !== shown
+  // A photo appears whole once it has arrived (a soft fade), never drawn top to bottom as it downloads.
+  const [loaded, setLoaded] = useState<string | null>(null)
   const badge = Math.max(14, Math.round(size * 0.36))
   const cycling = !!srcs && srcs.length >= 2
   const at = useCycle(cycling ? srcs.length : 0)
@@ -57,7 +63,7 @@ export function Avatar({ name, src, srcs, size = 40, country, online, className 
           srcs.map((u, i) => (
             <img
               key={u}
-              src={u}
+              src={small(u)}
               alt=""
               width={size}
               height={size}
@@ -72,15 +78,16 @@ export function Avatar({ name, src, srcs, size = 40, country, online, className 
           ))
         ) : showImage ? (
           <img
-            src={src}
+            src={shown}
             alt=""
             width={size}
             height={size}
-            className="size-full bg-muted object-cover"
+            className={cn('size-full bg-muted object-cover transition-opacity duration-200', loaded === shown ? 'opacity-100' : 'opacity-0')}
             loading="lazy"
             decoding="async"
             draggable={false}
-            onError={() => setFailed(src)}
+            onLoad={() => setLoaded(shown)}
+            onError={() => setFailed(shown)}
           />
         ) : isVip({ name, photoUrl: src }) ? (
           // 046 + 35: someone in VIP incognito (no photo for strangers): black, a gold serif mark, light passing over.
