@@ -1,0 +1,88 @@
+# Check: does ssc.gov.in answer GitHub's runners (outside India), and does a full
+# job-alert build work from there? Publishes nothing; the output is kept as a run artifact.
+# Runs by hand (Actions > jobs-probe > Run workflow, once this file is on the default branch)
+# and on pull requests that change the pipeline (manual runs need the default branch; this doesn't).
+name: jobs-probe
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "jobs/pipeline/**"
+      - ".github/workflows/jobs-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reachability
+        run: |
+          for u in https://ssc.gov.in/ https://ssc.gov.in/api/general-website/portal/lastUpdates; do
+            printf '%s ' "$u"
+            curl -s -o /dev/null -m 25 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} %{content_type} %{size_download}B %{time_total}s %{remote_ip}\n' "$u" || echo "FAILED ($?)"
+          done
+      - name: Other recruiters (which official sites answer GitHub's runners)
+        run: |
+          {
+            echo "### Other recruiters from GitHub runners"
+            echo "| site | HTTP | bytes |"
+            echo "|---|---|---|"
+            for u in \
+              https://www.rrbcdg.gov.in/ https://indianrailways.gov.in/ https://www.rrbapply.gov.in/ \
+              https://www.ibps.in/ https://upsc.gov.in/ https://uppbpb.gov.in/ https://upsssc.gov.in/ \
+              https://bpsc.bihar.gov.in/ https://rpsc.rajasthan.gov.in/ https://rssb.rajasthan.gov.in/ \
+              https://mppsc.mp.gov.in/ https://esb.mp.gov.in/ https://hpsc.gov.in/ https://hssc.gov.in/ \
+              https://dsssb.delhi.gov.in/ https://ppsc.gov.in/ https://sssb.punjab.gov.in/ https://www.mpsc.gov.in/ \
+              https://www.tnpsc.gov.in/ https://keralapsc.gov.in/ https://wbpsc.gov.in/ https://opsc.gov.in/ \
+              https://jssc.jharkhand.gov.in/ https://ukpsc.net.in/ https://joinindianarmy.nic.in/ \
+              https://indiapostgdsonline.gov.in/ https://opportunities.rbi.org.in/ https://ctet.nic.in/ \
+              https://csbc.bihar.gov.in/ https://bpssc.bihar.gov.in/ https://www.isro.gov.in/Careers.html \
+              https://ongcindia.com/web/eng/career/recruitment-notice https://sbi.bank.in/web/careers/current-openings \
+              https://www.canarabank.bank.in/pages/Recruitment https://iocl.com/latest-job-opening ; do
+              r=$(curl -s -o /dev/null -m 20 -A "Mozilla/5.0 (Linux; Android 14)" -w '%{http_code} | %{size_download}' "$u" || true)
+              echo "| $u | $r |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat "$GITHUB_STEP_SUMMARY"
+      - name: Links on recruiters' pages that answer only GitHub's runners (to write collectors from)
+        continue-on-error: true
+        working-directory: jobs/pipeline
+        run: |
+          python - <<'PY'
+          from sarkari import capture, http
+          for url in ("https://keralapsc.gov.in/", "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx",
+                      "https://indiapostgdsonline.gov.in/", "https://indianrailways.gov.in/"):
+              try:
+                  body = http.get_bytes(url, retries=1, timeout=25, max_bytes=5_000_000).decode("utf-8", "replace")
+              except Exception as e:  # noqa: BLE001
+                  print(f"== {url}: {e}"); continue
+              print(f"== {url}: {len(body)} chars")
+              for link in capture.links(body, url)[:250]:
+                  print(f"  {link['text'][:140]} | {link['href'][:200]}")
+          PY
+      - name: Full build into a scratch folder
+        id: build
+        # The answer (reachable or not) is the point of this job, so a blocked runner is
+        # reported in the run summary instead of turning the pull request red.
+        continue-on-error: true
+        working-directory: jobs/pipeline
+        run: python -m sarkari.build --out "$RUNNER_TEMP/out" --force
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.build.outcome }}" = success ]; then
+            echo "ssc.gov.in reachable from GitHub runners: full build OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::ssc.gov.in build FAILED from GitHub runners (see the build step log)"
+            echo "ssc.gov.in build FAILED from GitHub runners" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jobs-probe-output
+          path: ${{ runner.temp }}/out/

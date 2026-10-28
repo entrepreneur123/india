@@ -1,0 +1,610 @@
+{
+  "_comment": "Shared by tests/test_eligibility.py and web/eligibility.test.mjs: both implementations must give these answers. Dates of birth sit on the exact boundaries printed in the Notices (CHSL 2026 para 5.1; CGL 2026 para 5.1).",
+  "cases": [
+    {
+      "name": "CHSL youngest allowed: exactly 18 on 01-08-2026",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "2008-08-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "application": "open",
+        "fee": 100,
+        "relaxationYears": 0,
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL one day too young",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "2008-08-02",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ],
+        "reasons0": [
+          "age_below_min:18"
+        ]
+      }
+    },
+    {
+      "name": "CHSL oldest allowed (UR): born 02-08-1999",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1999-08-02",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL turned 27 on the crucial date: out (SSC convention)",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1999-08-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ],
+        "reasons0": [
+          "age_above_max:27"
+        ]
+      }
+    },
+    {
+      "name": "CHSL EWS gets no age relaxation",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1999-08-01",
+        "category": "EWS",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "relaxationYears": 0,
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL OBC +3: born 02-08-1996 is in",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1996-08-02",
+        "category": "OBC",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "relaxationYears": 3,
+        "fee": 100,
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL OBC +3: born 01-08-1996 is out",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1996-08-01",
+        "category": "OBC",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ],
+        "reasons0": [
+          "age_above_max:30"
+        ]
+      }
+    },
+    {
+      "name": "CHSL SC woman: +5 years and no fee",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1994-08-02",
+        "category": "SC",
+        "pwbd": false,
+        "education": "12",
+        "gender": "female"
+      },
+      "expect": {
+        "relaxationYears": 5,
+        "fee": 0,
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL PwBD (SC) +15",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1984-08-02",
+        "category": "SC",
+        "pwbd": true,
+        "education": "12"
+      },
+      "expect": {
+        "relaxationYears": 15,
+        "fee": 0,
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL PwBD (UR) +10, one day past",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1989-08-01",
+        "category": "UR",
+        "pwbd": true,
+        "education": "12"
+      },
+      "expect": {
+        "relaxationYears": 10,
+        "fee": 0,
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL Class 10 only: education too low",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "2005-01-15",
+        "category": "UR",
+        "pwbd": false,
+        "education": "10"
+      },
+      "expect": {
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ],
+        "reasons0": [
+          "education_needs:12"
+        ]
+      }
+    },
+    {
+      "name": "CHSL appearing in 12th while applications are open: must have the result by 07-10-2026",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "2008-03-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12",
+        "appearing": true
+      },
+      "expect": {
+        "posts": [
+          "check",
+          "check",
+          "check"
+        ],
+        "reasons0": [
+          "result_needed_by:2026-10-07"
+        ]
+      }
+    },
+    {
+      "name": "CHSL appearing in 12th after the cut-off has passed",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-10-20",
+      "profile": {
+        "dob": "2008-03-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12",
+        "appearing": true
+      },
+      "expect": {
+        "application": "closed",
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL graduate still appearing (final year) is fine for 12th-level posts",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "2004-05-05",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate",
+        "appearing": true
+      },
+      "expect": {
+        "posts": [
+          "eligible",
+          "eligible",
+          "eligible"
+        ]
+      }
+    },
+    {
+      "name": "CHSL over age but claims another relaxation (ESM etc.): check, never a guess",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-10",
+      "profile": {
+        "dob": "1990-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12",
+        "otherCategory": true
+      },
+      "expect": {
+        "posts": [
+          "check",
+          "check",
+          "check"
+        ],
+        "reasons0": [
+          "age_other_relaxation"
+        ]
+      }
+    },
+    {
+      "name": "CHSL before / on first day / on last day / after the window",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-06",
+      "profile": {
+        "dob": "2004-05-05",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "application": "upcoming"
+      }
+    },
+    {
+      "name": "CHSL application window first day",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-09-07",
+      "profile": {
+        "dob": "2004-05-05",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "application": "open"
+      }
+    },
+    {
+      "name": "CHSL application window last day",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-10-07",
+      "profile": {
+        "dob": "2004-05-05",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "application": "open"
+      }
+    },
+    {
+      "name": "CHSL day after the window",
+      "rules": "ssc-chsl-2026",
+      "today": "2026-10-08",
+      "profile": {
+        "dob": "2004-05-05",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "application": "closed"
+      }
+    },
+    {
+      "name": "CGL born 02-08-1996, UR graduate: 18-30 and 20-30 posts yes, 18-27 posts no, JSO needs a check",
+      "rules": "ssc-cgl-2026",
+      "today": "2026-06-01",
+      "profile": {
+        "dob": "1996-08-02",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate"
+      },
+      "expect": {
+        "application": "open",
+        "byName": {
+          "Assistant Audit Officer (Central Cadre)": "eligible",
+          "Assistant Audit Officer (State Cadre)": "check",
+          "Assistant Section Officer|Central Secretariat Service": "eligible",
+          "Junior Statistical Officer": "check",
+          "Tax Assistant|CBDT": "ineligible",
+          "Postal Assistant / Sorting Assistant": "ineligible"
+        }
+      }
+    },
+    {
+      "name": "CGL 19 years old: 20-30 posts no, 18-x posts yes",
+      "rules": "ssc-cgl-2026",
+      "today": "2026-06-01",
+      "profile": {
+        "dob": "2006-08-02",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate"
+      },
+      "expect": {
+        "byName": {
+          "Assistant Section Officer|Central Secretariat Service": "ineligible",
+          "Assistant Section Officer|Intelligence Bureau": "eligible",
+          "Sub Inspector|Central Bureau of Investigation": "ineligible",
+          "Tax Assistant|CBIC": "eligible"
+        }
+      }
+    },
+    {
+      "name": "CGL 12th pass only: no CGL post",
+      "rules": "ssc-cgl-2026",
+      "today": "2026-06-01",
+      "profile": {
+        "dob": "2003-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12"
+      },
+      "expect": {
+        "counts": {
+          "eligible": 0,
+          "check": 0,
+          "ineligible": 40
+        }
+      }
+    },
+    {
+      "name": "CGL JSO band 18-32 with OBC +3: born 02-08-1991 still in (check: subject rule)",
+      "rules": "ssc-cgl-2026",
+      "today": "2026-06-01",
+      "profile": {
+        "dob": "1991-08-02",
+        "category": "OBC",
+        "pwbd": false,
+        "education": "graduate"
+      },
+      "expect": {
+        "byName": {
+          "Junior Statistical Officer": "check",
+          "Assistant Audit Officer (Central Cadre)": "ineligible"
+        }
+      }
+    },
+    {
+      "name": "SI male graduate, 23: Delhi Police male needs a driving licence check, female post out, CAPF yes, Fire needs a qualification check",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "2003-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate",
+        "gender": "male"
+      },
+      "expect": {
+        "application": "open",
+        "fee": 100,
+        "posts": [
+          "check",
+          "ineligible",
+          "eligible",
+          "check"
+        ]
+      }
+    },
+    {
+      "name": "SI female graduate: no fee, male-only posts out",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "2003-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate",
+        "gender": "female"
+      },
+      "expect": {
+        "fee": 0,
+        "posts": [
+          "ineligible",
+          "eligible",
+          "eligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "SI gender not given: gender-specific posts are a check, never a guess",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "2003-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate"
+      },
+      "expect": {
+        "posts": [
+          "check",
+          "check",
+          "check",
+          "check"
+        ]
+      }
+    },
+    {
+      "name": "SI turned 25 on 01-08-2026: out of 20-25 posts, still in for SI (Fire) 18-30",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "2001-08-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "graduate",
+        "gender": "male"
+      },
+      "expect": {
+        "posts": [
+          "ineligible",
+          "ineligible",
+          "ineligible",
+          "check"
+        ]
+      }
+    },
+    {
+      "name": "SI OBC +3 on the 20-25 band: born 02-08-1998 is in",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "1998-08-02",
+        "category": "OBC",
+        "pwbd": false,
+        "education": "graduate",
+        "gender": "female"
+      },
+      "expect": {
+        "relaxationYears": 3,
+        "posts": [
+          "ineligible",
+          "eligible",
+          "eligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "SI PwBD: the Notice lists no PwBD relaxation, so nothing is assumed",
+      "rules": "ssc-si-2026",
+      "today": "2026-09-15",
+      "profile": {
+        "dob": "2003-01-01",
+        "category": "SC",
+        "pwbd": true,
+        "education": "graduate",
+        "gender": "male"
+      },
+      "expect": {
+        "relaxationYears": 5,
+        "fee": 0,
+        "posts": [
+          "check",
+          "ineligible",
+          "check",
+          "check"
+        ]
+      }
+    },
+    {
+      "name": "Steno 2026 Grade C 18-30 vs Grade D 18-27, 28-year-old",
+      "rules": "ssc-steno-2026",
+      "today": "2026-05-01",
+      "profile": {
+        "dob": "1998-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12",
+        "gender": "male"
+      },
+      "expect": {
+        "application": "open",
+        "posts": [
+          "eligible",
+          "ineligible"
+        ]
+      }
+    },
+    {
+      "name": "Steno appearing in 12th: the Notice does not say appearing candidates may apply",
+      "rules": "ssc-steno-2026",
+      "today": "2026-05-01",
+      "profile": {
+        "dob": "2007-01-01",
+        "category": "UR",
+        "pwbd": false,
+        "education": "12",
+        "appearing": true,
+        "gender": "female"
+      },
+      "expect": {
+        "fee": 0,
+        "posts": [
+          "check",
+          "check"
+        ],
+        "reasons0": [
+          "appearing_not_stated:2026-08-01"
+        ]
+      }
+    }
+  ]
+}

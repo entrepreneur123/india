@@ -1,0 +1,177 @@
+{
+"statusCode": "200",
+"statusMessage": "Document Found!",
+"isCache": true,
+"data": [
+{
+"id": "79emomlpem47k0rh757ut",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026 - List of Female candidates provisionally shortlisted for appearing in PET/PST (List-I)",
+"createdAt": "2026-10-12T13:16:30.573Z",
+"attachments": [
+{
+"id": "dukm0s19ou5wist3cgrjp",
+"attIdtyfrId": "79emomlpem47k0rh757ut",
+"fileName": "LIST1_12102026.pdf",
+"type": "application/pdf",
+"size": 2355427,
+"path": "uploads\\masterData\\Results\\LIST1_12102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "4vrh6x8j68cr3by0uj641",
+"attIdtyfrId": "79emomlpem47k0rh757ut",
+"fileName": "writeup_12102026.pdf",
+"type": "application/pdf",
+"size": 1262226,
+"path": "uploads\\masterData\\Results\\writeup_12102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+},
+{
+"id": "s2a2b6j0aakagscylc4m5",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026 -  List of Male candidates provisionally shortlisted for appearing in PET/PST other than SSF (List-II)",
+"createdAt": "2026-10-12T13:15:58.276Z",
+"attachments": [
+{
+"id": "evr00nwgpkdoogagsfocs",
+"attIdtyfrId": "s2a2b6j0aakagscylc4m5",
+"fileName": "LIST2_12102026.pdf",
+"type": "application/pdf",
+"size": 26377908,
+"path": "uploads\\masterData\\Results\\LIST2_12102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "gn5g4adqeufal3sikywbu",
+"attIdtyfrId": "s2a2b6j0aakagscylc4m5",
+"fileName": "writeup_12102026.pdf",
+"type": "application/pdf",
+"size": 1262226,
+"path": "uploads\\masterData\\Results\\writeup_12102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+},
+{
+"id": "migwdry2mnyge01uitb5x",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026 - List of Withheld candidates (List-III)",
+"createdAt": "2026-10-12T13:15:18.695Z",
+"attachments": [
+{
+"id": "g7jeug3acjo4pxvrqhsgl",
+"attIdtyfrId": "migwdry2mnyge01uitb5x",
+"fileName": "LIST3_12102026.pdf",
+"type": "application/pdf",
+"size": 53121,
+"path": "uploads\\masterData\\Results\\LIST3_12102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "krb5itocuixe7mjo2mcty",
+"attIdtyfrId": "migwdry2mnyge01uitb5x",
+"fileName": "writeup_12102026.pdf",
+"type": "application/pdf",
+"size": 1262226,
+"path": "uploads\\masterData\\Results\\writeup_12102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+},
+{
+"id": "vt1vk8i9p8i3to8b9n2ve",
+"headline": "Constable (GD) in Central Armed Police Forces (CAPFs) and SSF, and Rifleman (GD) in Assam Rifles Examination, 2026  - List of Debarred candidates (List-IV)",
+"createdAt": "2026-10-12T13:14:26.742Z",
+"attachments": [
+{
+"id": "qqgm3vo3sdaqlwmrh2iv5",
+"attIdtyfrId": "vt1vk8i9p8i3to8b9n2ve",
+"fileName": "LIST4_12102026.pdf",
+"type": "application/pdf",
+"size": 49728,
+"path": "uploads\\masterData\\Results\\LIST4_12102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "ctdt6ob3gr580caruihv3",
+"attIdtyfrId": "vt1vk8i9p8i3to8b9n2ve",
+"fileName": "writeup_12102026.pdf",
+"type": "application/pdf",
+"size": 1262226,
+"path": "uploads\\masterData\\Results\\writeup_12102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+},
+{
+"id": "cmq4ynazyy8kqzcnq3gn5",
+"headline": "मल्‍टी टास्किंग (गैर-तकनीकी) स्‍टॉफ, और हवलदार (सीबीआईसी एवं सीबीएन) 2025 : पीईटी/पीएसटी हेतु शॉर्टलिस्‍ट किए गए अभ्‍यर्थी की सूची (Withheld)",
+"createdAt": "2026-10-08T11:00:10.684Z",
+"attachments": [
+{
+"id": "ebafbw6pp484h8aahacgt",
+"attIdtyfrId": "cmq4ynazyy8kqzcnq3gn5",
+"fileName": "ROL_ADDI_08102026.pdf",
+"type": "application/pdf",
+"size": 131932,
+"path": "uploads\\masterData\\Results\\ROL_ADDI_08102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "x05p5f23a14yewh38jem7",
+"attIdtyfrId": "cmq4ynazyy8kqzcnq3gn5",
+"fileName": "Hindi_writeup_08102026.pdf",
+"type": "application/pdf",
+"size": 148241,
+"path": "uploads\\masterData\\Results\\Hindi_writeup_08102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+},
+{
+"id": "u24bddx3swn9avs9ibz0t",
+"headline": "Combined Higher Secondary (10+2) Level Examination, 2025 (Final Result): List of Candidates in Roll Number Order provisionally shortlisted for Document Verification and Subsequent Appointment",
+"createdAt": "2026-10-07T13:40:15.224Z",
+"attachments": [
+{
+"id": "yp0l8vibw18364w7v68m9",
+"attIdtyfrId": "u24bddx3swn9avs9ibz0t",
+"fileName": "List_07102026.pdf",
+"type": "application/pdf",
+"size": 659466,
+"path": "uploads\\masterData\\Results\\List_07102026.pdf",
+"documentType": null,
+"comment": null
+},
+{
+"id": "3jxs641jrz8p7hghmr1ht",
+"attIdtyfrId": "u24bddx3swn9avs9ibz0t",
+"fileName": "writeup_final_chsl_2025_07102026.pdf",
+"type": "application/pdf",
+"size": 663249,
+"path": "uploads\\masterData\\Results\\writeup_final_chsl_2025_07102026.pdf",
+"documentType": "writeup",
+"comment": null
+}
+]
+}
+],
+"paginate": {
+"totalRecords": 382,
+"totalPerpage": "6",
+"totalPage": 64,
+"currentPage": 1,
+"nextPage": 2,
+"previousPage": 0
+}
+}
