@@ -7,19 +7,13 @@ import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
+import { echoId, mergeLines, useOutbox } from './use-outbox'
 
 const TYPING_THROTTLE_MS = 2000
 const TYPING_TIMEOUT_MS = 6000
 
-/** Lines not stored yet sort after every stored one (ids are a database sequence, far below this). */
-let echoSeq = 2 ** 52
-/** Adds lines in id order; a stored line takes its local echo's place (matched by clientId, 091). */
-function merge(list: Message[], add: Message[]) {
-  const ids = new Set(add.map((m) => m.id))
-  const names = new Set(add.map((m) => m.clientId))
-  return [...list.filter((m) => !ids.has(m.id) && !(m.state && names.has(m.clientId))), ...add].sort((a, b) => a.id - b.id)
-}
-type Outgoing = { matchId: string; text: string | null; media: File | null; preview: string | null; sending: boolean }
+/** A line of mine on its way: its text, file, and the file's preview shown meanwhile. */
+type Outgoing = { text: string | null; media: File | null; preview: string | null }
 
 /** `live` = an open random match; threads (friends, past matches) carry messages, typing and calls. */
 export function useMatchChat(matchId: string, partnerName: string, live: boolean) {
@@ -48,12 +42,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
   const lastTypingSent = useRef(0)
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const append = useCallback((m: Message) => setMessages((prev) => merge(prev ?? [], [m])), [])
-  /** My lines not stored yet, by clientId; sent one after another in the order written (Matrix's send queue). */
-  const outbox = useRef(new Map<string, Outgoing>())
-  const queue = useRef(Promise.resolve())
-  const matchRef = useRef(matchId)
-  matchRef.current = matchId
+  const append = useCallback((m: Message) => setMessages((prev) => mergeLines(prev ?? [], [m])), [])
 
   useEffect(() => {
     let alive = true
@@ -68,7 +57,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
       .history(matchId)
       .then((h) => {
         if (!alive) return
-        setMessages((prev) => merge(prev ?? [], h))
+        setMessages((prev) => mergeLines(prev ?? [], h))
       })
       .catch((err) => {
         if (!alive) return
@@ -145,69 +134,32 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
     backend.sendTyping(matchId)
   }, [backend, matchId])
 
-  const mark = (clientId: string, state: Message['state']) =>
-    setMessages((prev) => prev?.map((m) => (m.state && m.clientId === clientId ? { ...m, state } : m)) ?? prev)
-
-  const deliver = useCallback(
-    (clientId: string) => {
-      const line = outbox.current.get(clientId)
-      if (!line || line.sending) return
-      line.sending = true
-      mark(clientId, 'sending')
-      queue.current = queue.current.then(async () => {
-        // A line from the chat before this one (a new random match in the same view) is still sent, not shown here.
-        const here = () => line.matchId === matchRef.current
-        try {
-          const stored = await backend.send(line.matchId, line.text, line.media, clientId)
-          outbox.current.delete(clientId)
-          if (here()) append(stored)
-          if (line.preview) URL.revokeObjectURL(line.preview)
-        } catch (err) {
-          line.sending = false
-          if (!here()) {
-            outbox.current.delete(clientId)
-            return
-          }
-          // The server refused a line in a chat that ended between non-friends: the friends bar takes the composer's place.
-          if (!live && errorCode(err) === 'chat_closed') setEnded(true)
-          mark(clientId, 'failed')
-          // Offline is already said by the connection bar and the line's own "Not sent"; anything else is explained.
-          if (errorCode(err) !== 'network') toast.error(err)
-        }
-      })
+  const outbox = useOutbox<Message, Outgoing>(
+    matchId,
+    setMessages,
+    (id, line, clientId) => backend.send(id, line.text, line.media, clientId),
+    (err) => {
+      // The server refused a line in a chat that ended between non-friends: the friends bar takes the composer's place.
+      if (!live && errorCode(err) === 'chat_closed') setEnded(true)
+      // Offline is already said by the connection bar and the line's own "Not sent"; anything else is explained.
+      if (errorCode(err) !== 'network') toast.error(err)
     },
-    [backend, append, toast, live],
+    (line) => line.preview && URL.revokeObjectURL(line.preview),
   )
 
-  /** The line shows at once (Slack, KakaoTalk); a line that fails stays with "Retry" and "Delete" (Mattermost). */
+  /** The line shows at once (Slack, KakaoTalk); one that fails stays with "Retry" and "Delete". */
+  const { send: post } = outbox
   const send = useCallback(
     async (text: string | null, media: File | null) => {
-      const clientId = crypto.randomUUID()
       const preview = media ? URL.createObjectURL(media) : null
-      outbox.current.set(clientId, { matchId, text, media, preview, sending: false })
-      append({
-        id: ++echoSeq, fromMe: true, text, at: Date.now(), clientId, state: 'sending',
+      post({ text, media, preview }, (clientId) => ({
+        id: echoId(), fromMe: true, text, at: Date.now(), clientId, state: 'sending',
         media: preview && media ? { url: preview, kind: media.type.startsWith('video') ? 'video' : 'image' } : null,
-      })
-      deliver(clientId)
+      }))
       return true
     },
-    [matchId, append, deliver],
+    [post],
   )
 
-  const discard = useCallback((clientId: string) => {
-    const line = outbox.current.get(clientId)
-    if (line?.preview) URL.revokeObjectURL(line.preview)
-    outbox.current.delete(clientId)
-    setMessages((prev) => prev?.filter((m) => !(m.state && m.clientId === clientId)) ?? prev)
-  }, [])
-
-  // Back online: what failed goes again by itself (each still only once, 091).
-  useEffect(() => {
-    const again = () => outbox.current.forEach((line, clientId) => line.matchId === matchRef.current && deliver(clientId))
-    window.addEventListener('online', again)
-    return () => window.removeEventListener('online', again)
-  }, [deliver])
-
-  return { messages, typing, video, setVideo, camera, setCamera, partnerLeft, ended, partnerRead, partner, send, retry: deliver, discard, notifyTyping }
+  return { messages, typing, video, setVideo, camera, setCamera, partnerLeft, ended, partnerRead, partner, send, retry: outbox.retry, discard: outbox.discard, notifyTyping }
 }

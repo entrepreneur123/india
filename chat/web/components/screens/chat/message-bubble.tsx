@@ -87,15 +87,7 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
         </Bubble>
       </div>
       {status === 'failed' ? (
-        <span role="alert" className="mt-1 flex items-center gap-2 px-1 text-xs font-semibold text-destructive">
-          {t('bubble.failed')}
-          <button type="button" onClick={onRetry} className="rounded-full px-1.5 py-0.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring">
-            {t('bubble.retry')}
-          </button>
-          <button type="button" onClick={onDiscard} className="rounded-full px-1.5 py-0.5 text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring">
-            {t('bubble.discard')}
-          </button>
-        </span>
+        <NotSent onRetry={onRetry} onDiscard={onDiscard} />
       ) : time || status ? (
         <span className={cn('mt-1 flex items-center gap-1 px-1 text-[11px] leading-none text-muted-foreground tabular-nums', !mine && 'ps-10')}>
           {time ? clock(message.at) : null}
@@ -111,6 +103,23 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
       ) : null}
       {menu ? <MessageMenu actions={actions} label={t('tr.actions')} side={mine ? 'end' : 'start'} onClose={() => setMenu(false)} /> : null}
     </m.li>
+  )
+}
+
+/** Under a line of mine that didn't go (1:1 and group chats): "Not sent · Retry · Delete" (Mattermost's two actions). */
+export function NotSent({ onRetry, onDiscard }: { onRetry?: () => void; onDiscard?: () => void }) {
+  const { t } = useI18n()
+  const link = 'rounded-full px-1.5 py-0.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring'
+  return (
+    <span role="alert" className="mt-1 flex items-center gap-2 px-1 text-xs font-semibold text-destructive">
+      {t('bubble.failed')}
+      <button type="button" onClick={onRetry} className={link}>
+        {t('bubble.retry')}
+      </button>
+      <button type="button" onClick={onDiscard} className={cn(link, 'text-muted-foreground')}>
+        {t('bubble.discard')}
+      </button>
+    </span>
   )
 }
 

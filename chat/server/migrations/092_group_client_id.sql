@@ -1,4 +1,3 @@
--- PENDING: not applied to the live database yet (waiting for the owner's OK, 2026-10-28); remove this line when applied.
 -- Group lines stored once however often they are sent (as 091 for 1:1 chats; Matrix transaction ids, Zulip's
 -- local_id in web/src/echo.ts). The web app now shows a group line at once and sends it again after a dropped
 -- connection; the name it gives the line comes back on the stored row, so its "sending…" copy is matched with it.

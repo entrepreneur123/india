@@ -282,10 +282,10 @@ function fail(error: { message?: string; details?: string | null; hint?: string 
   throw new BackendError(codeOf(text), error?.details ?? undefined)
 }
 
-type GroupRow = { id: number; sender: string | null; kind: string; body: string; created_at: string }
+type GroupRow = { id: number; sender: string | null; kind: string; body: string; created_at: string; client_id?: string | null }
 const GROUP_KINDS: GroupLineKind[] = ['text', 'created', 'added', 'left', 'renamed']
 const groupKind = (k: string): GroupLineKind => (GROUP_KINDS.includes(k as GroupLineKind) ? (k as GroupLineKind) : 'text')
-const toGroupLine = (r: GroupRow): GroupLine => ({ id: Number(r.id), senderId: r.sender, kind: groupKind(r.kind), body: r.body, at: time(r.created_at) })
+const toGroupLine = (r: GroupRow): GroupLine => ({ id: Number(r.id), senderId: r.sender, kind: groupKind(r.kind), body: r.body, at: time(r.created_at), clientId: r.client_id ?? null })
 
 /** The chat's lines (reactions come over realtime only). */
 const LINE_KINDS = ['text', 'system', 'photo', 'poll']
@@ -1237,9 +1237,9 @@ export class SupabaseBackend implements Backend {
     return rows.map(toGroupLine).reverse()
   }
 
-  async sendGroup(groupId: string, text: string): Promise<GroupLine> {
-    const id = await this.rpc<number>('group_send', { p_group: groupId, p_body: text })
-    return { id: id!, senderId: this.uid, kind: 'text', body: text.trim(), at: Date.now() }
+  async sendGroup(groupId: string, text: string, clientId: string): Promise<GroupLine> {
+    const id = await this.rpc<number>('group_send', { p_group: groupId, p_body: text, p_client: clientId })
+    return { id: id!, senderId: this.uid, kind: 'text', body: text.trim(), at: Date.now(), clientId }
   }
 
   async readGroup(groupId: string, upto: number) {

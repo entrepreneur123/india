@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, Check, EllipsisVertical, LogOut, Pencil, Shuffle, UserPlus } from 'lucide-react'
+import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowLeft, Check, Clock3, EllipsisVertical, LogOut, Pencil, Shuffle, UserPlus } from 'lucide-react'
 import type { GroupChat, GroupLine, PartyState } from '@/lib/backend'
 import { useSWRConfig } from 'swr'
 import { savedFlag } from '@/lib/flags'
@@ -12,7 +12,9 @@ import { Field, Skeleton, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
-import { Bubble } from '@/components/screens/chat/message-bubble'
+import { Bubble, NotSent } from '@/components/screens/chat/message-bubble'
+import { echoId, mergeLines, useOutbox } from '@/components/screens/chat/use-outbox'
+import { errorCode } from '@/lib/format'
 import { Composer } from '@/components/screens/chat/composer'
 import { LinkText } from '@/components/screens/chat/link-viewer'
 import { useSocialT } from '@/components/social/social-text'
@@ -42,12 +44,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
   const listRef = useRef<HTMLUListElement>(null)
   const note = useGroupLineText()
 
-  const merge = (more: GroupLine[]) =>
-    setLines((now) => {
-      const byId = new Map((now ?? []).map((l) => [l.id, l]))
-      for (const l of more) byId.set(l.id, l)
-      return [...byId.values()].sort((a, b) => a.id - b.id)
-    })
+  const merge = (more: GroupLine[]) => setLines((now) => mergeLines(now ?? [], more))
   // Realtime may drop lines while the socket is down (Supabase promises no replay): the latest page is read again
   // when the tab comes back or the network returns, and merged (Discord's resume, Matrix's gap fill).
   useEffect(() => {
@@ -73,7 +70,7 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
   }, [backend, groupId])
 
   // What's on screen while the tab is visible is read (the list's count goes down with it).
-  const last = lines?.[lines.length - 1]?.id
+  const last = lines?.findLast((l) => !l.state)?.id // a line still sending has no real id yet
   useEffect(() => {
     if (!last) return
     const mark = () => document.visibilityState === 'visible' && void backend.readGroup(groupId, last).then(() => mutate(), () => undefined)
@@ -109,15 +106,14 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
     )
   }
 
+  // As the 1:1 chat: the line shows at once, fails with Retry / Delete, and goes again when back online (092).
+  const outbox = useOutbox<GroupLine, string>(groupId, setLines, (id, text, clientId) => backend.sendGroup(id, text, clientId),
+    (err) => errorCode(err) !== 'network' && toast.error(err))
   const send = async (text: string | null) => {
-    if (!text?.trim()) return false
-    try {
-      merge([await backend.sendGroup(groupId, text)])
-      return true
-    } catch (err) {
-      toast.error(err)
-      return false
-    }
+    const body = text?.trim()
+    if (!body) return false
+    outbox.send(body, (clientId) => ({ id: echoId(), senderId: me.id, kind: 'text', body, at: Date.now(), clientId, state: 'sending' }))
+    return true
   }
   const leave = async () => {
     try {
@@ -173,24 +169,33 @@ export function GroupScreen({ groupId, onClose }: { groupId: string; onClose: ()
               const first = lines[i - 1]?.senderId !== l.senderId || lines[i - 1]?.kind !== 'text'
               const p = who(l.senderId)
               return (
-                <li key={l.id} className={cn('flex max-w-[85%] items-end gap-2', mine ? 'self-end' : 'self-start', first && 'mt-2')}>
-                  {!mine ? (
-                    first && p ? (
-                      <button type="button" onClick={() => openProfile(p.id)} className="shrink-0 self-start rounded-full" aria-label={p.name}>
-                        <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={28} />
-                      </button>
-                    ) : (
-                      <span className="w-7 shrink-0" aria-hidden />
-                    )
+                <Fragment key={l.clientId ?? l.id}>
+                  <li className={cn('flex max-w-[85%] items-end gap-2', mine ? 'self-end' : 'self-start', first && 'mt-2')}>
+                    {!mine ? (
+                      first && p ? (
+                        <button type="button" onClick={() => openProfile(p.id)} className="shrink-0 self-start rounded-full" aria-label={p.name}>
+                          <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={28} />
+                        </button>
+                      ) : (
+                        <span className="w-7 shrink-0" aria-hidden />
+                      )
+                    ) : null}
+                    <Bubble mine={mine} first={first} className="px-2.5 pt-1 pb-1.5">
+                      {!mine && first ? <p className="text-xs font-semibold text-primary-text">{p?.name ?? '…'}</p> : null}
+                      <p dir="auto" className="text-[15px] leading-snug break-words whitespace-pre-wrap">
+                        <LinkText text={l.body} />
+                        <span className="ms-2 inline-block align-bottom text-[10.5px] text-bubble-meta">
+                          {l.state === 'sending' ? <Clock3 className="inline size-3" aria-label={t('bubble.sending')} /> : clock.format(l.at)}
+                        </span>
+                      </p>
+                    </Bubble>
+                  </li>
+                  {l.state === 'failed' && l.clientId ? (
+                    <li className="self-end">
+                      <NotSent onRetry={() => outbox.retry(l.clientId!)} onDiscard={() => outbox.discard(l.clientId!)} />
+                    </li>
                   ) : null}
-                  <Bubble mine={mine} first={first} className="px-2.5 pt-1 pb-1.5">
-                    {!mine && first ? <p className="text-xs font-semibold text-primary-text">{p?.name ?? '…'}</p> : null}
-                    <p dir="auto" className="text-[15px] leading-snug break-words whitespace-pre-wrap">
-                      <LinkText text={l.body} />
-                      <span className="ms-2 inline-block align-bottom text-[10.5px] text-bubble-meta">{clock.format(l.at)}</span>
-                    </p>
-                  </Bubble>
-                </li>
+                </Fragment>
               )
             })
           )}

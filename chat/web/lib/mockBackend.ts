@@ -1373,12 +1373,16 @@ export class MockBackend implements Backend {
     return lines.slice(-50)
   }
 
-  async sendGroup(groupId: string, text: string) {
+  async sendGroup(groupId: string, text: string, clientId: string) {
     const g = this.groupOf(groupId)
     const body = text.trim()
     if (!body || body.length > 2000) throw new BackendError('bad_request')
     await wait(150)
-    const line = this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'text', body })
+    // As the server: offline it can't arrive; sent again under the same name it is stored once (092).
+    if (!navigator.onLine) throw new BackendError('network')
+    const sent = g.lines.find((l) => l.clientId === clientId)
+    if (sent) return sent
+    const line = this.groupPost(g, { senderId: this.me?.id ?? 'me', kind: 'text', body, clientId })
     const others = g.members.filter((id) => id !== this.me?.id)
     if (others.length) {
       setTimeout(() => {

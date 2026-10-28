@@ -348,6 +348,9 @@ export interface GroupLine {
   kind: GroupLineKind
   body: string
   at: number
+  /** As Message's (092): the name my app gave the line, and its state while not stored yet. */
+  clientId?: string | null
+  state?: 'sending' | 'failed'
 }
 /** 48: a group chat among friends (069). */
 export interface GroupChat {
@@ -890,7 +893,8 @@ export interface Backend {
   createGroup(title: string, memberIds: string[]): Promise<string>
   /** 50 lines at a time, oldest first; `before`: older than this line. */
   groupHistory(groupId: string, before?: number): Promise<GroupLine[]>
-  sendGroup(groupId: string, text: string): Promise<GroupLine>
+  /** Sending again with the same clientId never stores the line twice (092). */
+  sendGroup(groupId: string, text: string, clientId: string): Promise<GroupLine>
   readGroup(groupId: string, upto: number): Promise<void>
   addToGroup(groupId: string, memberIds: string[]): Promise<void>
   renameGroup(groupId: string, title: string): Promise<void>
