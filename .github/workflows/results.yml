@@ -10,7 +10,7 @@
 # On busy days GitHub starts them hours late (27-10-2026: the 07:17 run began at 13:15). So every run
 # ends by starting relay.yml, which starts the next draw's run itself 15 minutes before it (a
 # workflow_dispatch begins within seconds), and a late cron run does what is due when it starts.
-#   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35
+#   05:47 (backup 07:17)  1 PM IST draw = 07:30 UTC, polling from 07:35; at 07:00 (12:30 IST) the site turns to today
 #   09:17                 Kerala 3 PM IST draw = 09:30 UTC; copies appear ~10:40 UTC, polling from 10:35
 #   10:47 (backup 12:17)  6 PM IST draw = 12:30 UTC, polling from 12:35
 #   12:47 (backup 14:17)  8 PM IST draw = 14:30 UTC, polling from 14:35
@@ -104,7 +104,7 @@ jobs:
           # late) do what is due now; relay-started runs wait for their draw. See pipeline/lottery_pipeline/schedule.py.
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -z "$IN_TARGET" ]; then
             { echo "require="; echo "from="; echo "watch=0"; echo "deep=true"; echo "ocr=$IN_OCR"
-              echo "backfill=$(( IN_BACKFILL + 0 ))"; echo "mh=true"; } >> "$GITHUB_OUTPUT"
+              echo "backfill=$(( IN_BACKFILL + 0 ))"; echo "mh=true"; echo "flip="; } >> "$GITHUB_OUTPUT"
           else
             (cd pipeline && python3 -m lottery_pipeline.schedule mode --event "${{ github.event_name }}" \
                --cron "${{ github.event.schedule }}" --target "$IN_TARGET" --today-feed ../public/v2/today.json) | tee -a "$GITHUB_OUTPUT"
@@ -165,7 +165,7 @@ jobs:
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
                 commit -q -m "announce state" && git -C ../public push -q origin data
             fi
-            [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || return 0
+            [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || [ "${flip_now:-0}" = 1 ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
             nosecret python -m lottery_pipeline.indexnow --site-url "$SITE_URL" --out ../public
             if [ "$HAS_CF" = "true" ]; then
@@ -195,6 +195,15 @@ jobs:
           if [ -n "$from" ]; then
             start=$(date -u -d "today $from" +%s)
             now=$(date +%s)
+            flip="${{ steps.mode.outputs.flip }}"
+            if [ -n "$flip" ] && [ "$now" -lt "$start" ]; then
+              # 12:30 IST: the home page turns from yesterday's results to today's date and the draws to come
+              # (only the stubbed GitHub copy is unchanged then, so the Cloudflare deploy is forced).
+              t=$(date -u -d "today $flip" +%s)
+              if [ "$now" -lt "$t" ]; then echo "waiting until $flip UTC (12:30 IST) to show today's date"; sleep $(( t - now + 5 )); fi
+              flip_now=1 publish; flip_now=0
+              now=$(date +%s)
+            fi
             # Started early (the normal case): wait here instead of asking the source every minute.
             if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
           fi

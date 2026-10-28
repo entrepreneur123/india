@@ -425,3 +425,26 @@ def test_kerala_in_malayalam(tmp_path, monkeypatch):
     assert 'hreflang="ml-IN" href="https://example.in/ml/kerala/"' in hub and 'href="/ml/kerala/"' in hub
     sm = (out / "sitemap.xml").read_text()
     assert "<loc>https://example.in/ml/kerala/</loc>" in sm and "/bn/ml/" not in sm
+
+
+def test_home_turns_to_today_30_minutes_before_the_first_draw(tmp_path, monkeypatch):
+    monkeypatch.setenv("SITE_OG", "0")
+    data = tmp_path / "data"
+    (data / "v2/days").mkdir(parents=True)
+    feed = json.loads(FEED.read_text())
+    (data / "v2/days/2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18",
+                                                              "draws": [d for d in feed["draws"] if d["date"] == "2026-10-18"]}))
+    def home(h, m):
+        out = tmp_path / f"out{h}{m}"
+        sitegen.Site(data, "https://example.in", now=dt.datetime(2026, 10, 19, h, m, tzinfo=sitegen.IST)).build(out)
+        return (out / "index.html").read_text()
+    early = home(12, 29)   # still yesterday's results under yesterday's date
+    assert "Lottery Sambad Result Today <span class=\"d\">18.10.2026</span>" in early and 'data-at="2026-10-19T13:00' not in early
+    flip = home(12, 30)
+    assert "Lottery Sambad Result Today <span class=\"d\">19.10.2026</span>" in flip
+    assert "Lottery Sambad Result Today 19.10.2026" in flip.split("</title>")[0]
+    assert 'data-at="2026-10-19T13:00:00+05:30"' in flip and 'data-at="2026-10-19T20:00:00+05:30"' in flip
+    assert 'data-live="2026-10-19"' in flip                          # reloads when the 1 PM result is in
+    assert flip.index('data-at="2026-10-19T20:00') < flip.index("Result of 18.10.2026") < flip.index("74D 70698")
+    assert '"date":"2026-10-18"' in flip                             # the checker still knows yesterday's numbers
+    assert '<b>Today</b>19.10' in flip

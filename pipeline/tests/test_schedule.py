@@ -41,5 +41,12 @@ def test_relay_wakes_15_minutes_before_each_draw_and_splits_long_waits():
     assert sc.relay(at("12:14"))["target"] == "NL8PM"                 # too close to 12:15: the next one
     night = sc.relay(at("15:00"))                                      # tomorrow 07:15 is 16 h away
     assert night == {"sleep": int(sc.MAX_SLEEP.total_seconds()), "next": "relay", "target": ""}
-    last = sc.relay(at("03:00", 28))
-    assert last["next"] == "results" and last["target"] == "NL1PM" and last["sleep"] == 4 * 3600 + 15 * 60
+    last = sc.relay(at("03:00", 28))   # the 1 PM run starts before 12:30 IST, when the site turns to today's date
+    assert last["next"] == "results" and last["target"] == "NL1PM" and last["sleep"] == 3 * 3600 + 45 * 60
+    assert sc.relay(at("06:50"))["target"] == "KL"
+
+
+def test_only_the_1_pm_run_turns_the_site_to_today():
+    assert sc.mode(at("06:46"), "workflow_dispatch", target="NL1PM")["flip"] == "07:00"
+    assert sc.mode(at("10:16"), "workflow_dispatch", target="KL")["flip"] == ""
+    assert sc.mode(at("15:12"), "schedule", "10 15 * * *")["flip"] == ""

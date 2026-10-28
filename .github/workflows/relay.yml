@@ -1,4 +1,4 @@
-# Starts the results run 15 minutes before each draw. GitHub starts cron runs late, sometimes hours
+# Starts the results run 15 minutes before each draw (the 1 PM one at 06:45 UTC, before the site turns to today at 12:30 IST). GitHub starts cron runs late, sometimes hours
 # late (27-10-2026: the 07:17 UTC run began at 13:15); a run started with workflow_dispatch begins
 # within seconds. Every results run starts this relay when it ends; a newer relay replaces an older
 # one, so one chain runs. results.yml keeps its cron schedules as a backup.

@@ -32,6 +32,9 @@ LANGS = {"en": ("values", ""), "bn": ("values-bn", "/bn"), "hi": ("values-hi", "
 # Every page is for readers in India: language + region in hreflang, lang and og:locale.
 REGION = {"en": "en-IN", "bn": "bn-IN", "hi": "hi-IN"}
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
+# Until 12:30 IST the home page shows yesterday's results; then today's date and the draws to come
+# (the 1 PM result run publishes it then: FLIP in pipeline/lottery_pipeline/schedule.py).
+DAY_FLIP = dt.time(12, 30)
 WEEKLY = [("NL1PM", "13:00", "1pm"), ("SK6PM", "18:00", "6pm"), ("NL8PM", "20:00", "8pm")]
 SLUG = {"NL1PM": "1pm", "SK6PM": "6pm", "NL8PM": "8pm", "NLLAXMI": "laxmi-8pm", "KL": "kerala"}
 TAG = {"NL1PM": "tag_morning", "SK6PM": "tag_day", "NL8PM": "tag_night"}
@@ -425,7 +428,7 @@ class Site:
 
     # ---- page shell ----
     def page(self, lang: str, path: str, title: str, desc: str, body: str, alternates: bool = True,
-             data: list[dict] | None = None, live: bool = False, crumbs: list[tuple[str, str]] | None = None,
+             data: list[dict] | None = None, live: bool | str = False, crumbs: list[tuple[str, str]] | None = None,
              tab: str = "", image: str = "", modified: dt.datetime | None = None, wait: str = "") -> str:
         w, s = WEB[lang], self.s[lang]
         alt = ""
@@ -467,6 +470,7 @@ class Site:
         data_json = json.dumps([{k: d[k] for k in ("id", "date", "time", "name", "format", "tiers") if k in d} for d in data or []],
                                ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
         live_attr = f' data-live="{esc(data[0]["date"])}"' if live and data else (f' data-live="{self.today}"' if live else "")
+        live_attr = f' data-live="{esc(live)}"' if isinstance(live, str) and live else live_attr   # this day's draws
         live_attr += f' data-wait="{esc(wait)}"' if wait else ""
         self._ads = 0  # the body is built: the next page starts its own ad count
         i18n = dict(self.s[lang], copied=w["copied"], need_full_mh=MH[lang]["check_hint"])
@@ -699,10 +703,12 @@ class Site:
         """Recent dates as one row of chips, like the app's date picker."""
         s, w = self.s[lang], WEB[lang]
         out = []
+        if current == self.today and current not in self.dates:   # today, before its first result
+            out.append(f'<a class="chip" aria-current="page" href="{self.url(lang, "/")}"><b>{esc(s["today"])}</b>{current[8:]}.{current[5:7]}</a>')
         # The dates around this one (a page of an old date stays unchanged as new days come in).
         i = self.dates.index(current) if current in self.dates else 0
         lo = max(0, min(i - 3, len(self.dates) - 7))
-        for x in self.dates[lo:lo + 7]:
+        for x in self.dates[lo:lo + 7 - len(out)]:
             y, m, d = x.split("-")
             label = s["today"] if x == self.today else w["wd"][dt.date(int(y), int(m), int(d)).weekday()]
             cur = ' aria-current="page"' if x == current else ""
@@ -735,7 +741,8 @@ class Site:
 
     # ---- pages ----
     def build(self, out: pathlib.Path) -> int:
-        latest = self.today if self.today in self.days or not self.dates else self.dates[0]
+        flipped = self.today in self.days or self.now.time() >= DAY_FLIP or not self.dates
+        latest = self.today if flipped else self.dates[0]
         for lang in LANGS:
             w, s = WEB[lang], self.s[lang]
             # home: today's results, refreshed by the page itself while a draw is due
@@ -745,16 +752,23 @@ class Site:
                                 for sl, t, _ in WEEKLY)
             up = next((u for u in self.index.get("upcoming", []) if u["date"] >= self.today), None)
             last = ([d for d in self.ordered(self.days.get(latest, [])) if d.get("tiers")] or [None])[-1]
+            yd = self.yesterday()
+            # Turned to today before its first result: yesterday's results stay below the draws to come.
+            before = ("" if got or not yd else f'<h2 class="sub">{esc(w["result_of"].format(d=ddmmyyyy(yd)))}</h2>'
+                      + "".join(self.slip(lang, d) for d in self.ordered(self.days[yd]) if d.get("tiers")))
+            if not last and yd:   # the share picture stays yesterday's newest result until today's first one
+                last = ([d for d in self.ordered(self.days[yd]) if d.get("tiers")] or [None])[-1]
             if last and last["id"] not in self.og_images:  # the home page's share picture: the newest result
                 self.og_images[last["id"]] = self.og_image(out, last)
             body = (f'<div class="intro"><h1>{esc(w["home_h1"])} <span class="d">{esc(d0)}</span></h1>'
                     f'<p class="hint">{esc(s["results_subtitle"])} · {esc(w["updated"].format(t=self.updated.strftime("%d.%m %H:%M")))}</p></div>'
                     + self.checker(lang) + self.chips(lang, latest) + self.hub_links(lang)
                     + (f'<p class="banner">{esc(fmt(s["upcoming_special"], up["name"], ddmmyyyy(up["date"])))}</p>' if up else "")
-                    + self.day_cards(lang, latest) + self.ad() + self.other_states(lang) + self.history(lang) + self.app_promo(lang)
+                    + self.day_cards(lang, latest) + before + self.ad() + self.other_states(lang) + self.history(lang) + self.app_promo(lang)
                     + self.guide_links(lang) + self.faq(lang))
             self.write(out, lang, "/", self.page(lang, "/", w["home_title"].format(d=d0), w["home_desc"].format(d=d0, s=ddmmyy(latest), list=summary),
-                                                 body, data=list(got.values()), live=latest == self.today,
+                                                 body, data=list(got.values()) or ([d for d in self.days[yd] if d.get("tiers")] if before else []),
+                                                 live=self.today,   # the checker reads yesterday's until today's 1st result, then reloads
                                                  crumbs=[(w["home"], "/")], tab="results", modified=self.updated,
                                                  image=self.og_images.get(last["id"], "") if last else ""), key="home", lastmod=self.stamp)
             # one page per day and per draw
@@ -1394,7 +1408,7 @@ if((" "+df.dataset.days+" ").indexOf(" "+p.join("")+" ")>=0)location.href=df.dat
 else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
-if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
+if(day){var shown=D.filter(function(d){return d.date===day}).length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
 setInterval(function(){if(document.hidden)return;fetch(url,{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
 var n=j.draws.filter(function(d){return d.date===day&&d.tiers&&d.tiers.length}).length;if(n>shown)location.reload()}).catch(function(){})},30000)}
 // A page waiting for one draw (Kerala before 4 PM, Morning/Day/Night before their result) reloads once it is in the feed.

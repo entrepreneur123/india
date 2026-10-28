@@ -29,6 +29,10 @@ CRON_SLOT = {"47 5 * * *": "NL1PM", "17 7 * * *": "NL1PM", "17 9 * * *": "KL", "
              "17 12 * * *": "SK6PM", "47 12 * * *": "NL8PM", "17 14 * * *": "NL8PM"}
 DEEP = {"10 15 * * *", "40 15 * * *", "10 16 * * *", "0 3 * * *"}   # gazette OCR / overnight re-check
 WAKE_BEFORE = dt.timedelta(minutes=15)
+# The site shows yesterday's results until 12:30 IST, then today's date with the draws to come
+# (web/sitegen.py DAY_FLIP). The 1 PM run publishes that page at FLIP, so the relay starts it earlier.
+FLIP = "07:00"
+WAKE = {"NL1PM": "06:45"}
 MAX_SLEEP = dt.timedelta(hours=5, minutes=40)                         # a job may run 6 h
 LATE = dt.timedelta(minutes=45)                                       # a cron run later than this is "late"
 
@@ -41,11 +45,12 @@ def _at(day: dt.date, hhmm: str) -> dt.datetime:
 def _draw(slot: str) -> dict:
     s, start, watch = next(d for d in DRAWS if d[0] == slot)
     return {"require": s, "from": start, "watch": watch, "deep": False, "ocr": False, "backfill": 1,
-            "mh": s == "NL8PM"}   # Maharashtra in the 8 PM run's idle wait
+            "mh": s == "NL8PM",   # Maharashtra in the 8 PM run's idle wait
+            "flip": FLIP if s == "NL1PM" else ""}
 
 
 def _deep(backfill: int = 1) -> dict:
-    return {"require": "", "from": "", "watch": 0, "deep": True, "ocr": True, "backfill": backfill, "mh": True}
+    return {"require": "", "from": "", "watch": 0, "deep": True, "ocr": True, "backfill": backfill, "mh": True, "flip": ""}
 
 
 def due(now: dt.datetime, done: set[str] = frozenset()) -> dict:
@@ -82,7 +87,7 @@ def relay(now: dt.datetime) -> dict:
     day = now.date()
     for d in (day, day + dt.timedelta(days=1)):
         for slot, start, _ in DRAWS:
-            wake = _at(d, start) - dt.timedelta(minutes=5) - WAKE_BEFORE
+            wake = _at(d, WAKE[slot]) if slot in WAKE else _at(d, start) - dt.timedelta(minutes=5) - WAKE_BEFORE
             if wake > now + dt.timedelta(minutes=2):
                 if wake - now > MAX_SLEEP:
                     return {"sleep": int(MAX_SLEEP.total_seconds()), "next": "relay", "target": ""}
