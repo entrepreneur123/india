@@ -83,7 +83,9 @@ jobs:
       IN_BACKFILL: ${{ inputs.backfill_days }}
       IN_TARGET: ${{ inputs.target }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
-      MH_OCR: "false"   # Maharashtra numbers by OCR (see the Maharashtra step); "false": official PDFs only
+      # Maharashtra numbers by OCR (see the Maharashtra step); "false": official PDFs only. On 28-10-2026 the
+      # reader published all 11 test sheets of 25-27.10 and every number, amount and series matched the sheets.
+      MH_OCR: "false"   # turned on once the live check of 28-10-2026 matches the sheets
     steps:
       - uses: actions/checkout@v4
 
@@ -118,7 +120,10 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq $pkgs
           pip install -q pillow==12.3.0 pytest==9.1.1
           # Maharashtra's scanned sheets: table lines and digit shapes (lottery_pipeline/maharashtra.py)
-          if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then pip install -q opencv-python-headless==4.12.0.88 numpy==2.2.6; fi
+          # (the versions the reader was checked with; without them a sheet is linked as its PDF, nothing else breaks)
+          if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then
+            pip install -q opencv-python-headless==5.0.0.93 numpy==2.5.3 || echo "::warning::OpenCV not installed: Maharashtra sheets linked as PDF only"
+          fi
 
       - name: Unit tests
         working-directory: pipeline
@@ -214,7 +219,7 @@ jobs:
             # has before its draw is due (the 8 PM run's wait), so the Dear result is never held up.
             # (publish below takes up to ~4 min: site build and Cloudflare deploy)
             if [ -n "$from" ]; then budget=$(( start - $(date +%s) - 300 )); else budget=1500; fi
-            # MH_OCR stays off until every test sheet that reads matches the printed sheet (pipeline/tests/test_maharashtra.py).
+            # A sheet is published as numbers only when its readings agree and its printed counts and order hold.
             if [ "$MH_OCR" = "true" ] && [ "$budget" -ge 300 ]; then mh_args="--ocr --seconds $budget"; else mh_args=""; budget=120; fi
             nosecret timeout $(( budget + 60 )) python -m lottery_pipeline.maharashtra --out ../public $mh_args \
               || echo "::warning::Maharashtra update failed or ran out of time"

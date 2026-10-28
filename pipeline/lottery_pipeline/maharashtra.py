@@ -514,7 +514,14 @@ def _printed_order(nums, count: int | None = None) -> list | None:
         if size[key[0]] * 4 < big:  # a column of one or two: a position estimated from a merged OCR word
             stray.append(n)
         elif key in cells:
-            return None
+            # Two in one place: one read by few readings (positions estimated from merged words, values
+            # split) beside one read by twice as many is not a number of its own. If it was one, its
+            # place shows up as a hole (count) and is read again there.
+            votes = lambda x: sum(x[5].values()) if len(x) > 5 else 0  # noqa: E731
+            a, b = sorted((cells[key], n), key=votes)
+            if votes(b) < 2 * votes(a):
+                return None
+            cells[key] = b
         else:
             cells[key] = n
     cx = {k: sum(n[1] for kk, n in cells.items() if kk[0] == k) / sum(kk[0] == k for kk in cells) for k in {kk[0] for kk in cells}}
@@ -523,13 +530,21 @@ def _printed_order(nums, count: int | None = None) -> list | None:
         r = row[n[2]]
         if any(kk[1] == r and m[0] == n[0] for kk, m in cells.items()):
             continue  # the same number again, its position estimated wrong: already in its place
-        free = sorted((k for k in cx if (k, r) not in cells), key=lambda k: abs(cx[k] - n[1]))
+        order = sorted(cx)  # with the count: only places the printed grid has (the last column is short)
+        free = sorted((k for k in cx if (k, r) not in cells
+                       and (count is None or order.index(k) * len(cy) + sorted(cy).index(r) < count)),
+                      key=lambda k: abs(cx[k] - n[1]))
         if not free or (len(free) > 1 and abs(cx[free[1]] - n[1]) < abs(cx[free[0]] - n[1]) + width):
             return None
         cells[(free[0], r)] = n
+    # Number the columns and rows that hold numbers 0, 1, 2, ... (a band of strays leaves a gap). Without
+    # the count a whole column missing could not be told from one never printed, so then none may be.
+    if count is None and (sorted(cx) != list(range(len(cx))) or sorted(cy) != list(range(len(cy)))):
+        return None
+    ck, rk = {c: i for i, c in enumerate(sorted(cx))}, {r: i for i, r in enumerate(sorted(cy))}
+    cells = {(ck[c], rk[r]): n for (c, r), n in cells.items()}
+    cx, cy = {ck[c]: v for c, v in cx.items()}, {rk[r]: v for r, v in cy.items()}
     cols, rows = sorted(cx), sorted(cy)
-    if cols != list(range(len(cols))) or rows != list(range(len(rows))):
-        return None  # a whole column or row missing: not a grid to fill
     if count is None:
         want = set(cells)
         for c in cols:  # without the count: every column a run of rows from the top, none longer than the one before
@@ -546,7 +561,10 @@ def _printed_order(nums, count: int | None = None) -> list | None:
         want = {(c, r) for c in cols for r in rows if c * R + r < count}
         if set(cells) - want:
             return None
-    return [cells.get(k) or ("", cx[k[0]], cy[k[1]], width) for k in sorted(want)]
+    # Every place at its column's and row's centre, one number wide (a position estimated from a
+    # merged word can sit between two numbers: re-reading it there reads neither).
+    return [(cells[k][0], cx[k[0]], cy[k[1]], width) + tuple(cells[k][4:]) if k in cells else ("", cx[k[0]], cy[k[1]], width)
+            for k in sorted(want)]
 
 
 def _grid_size(nums) -> int | None:
@@ -1028,6 +1046,10 @@ def _settle_by_order(mine: list, rank: str, check=None, count: int | None = None
             raise MaharashtraError(f"{rank} prize: a printed place no reading found (shapes say {g}, between {lo} and {hi})")
         if g is not None:
             if fits(g) and (x[5].get(g, 0) >= 1 or any(c >= 2 and _one_digit_apart(n, g) for n, c in x[5].items())):
+                out.append(_with_series(x, g))
+                continue
+            box = getattr(getattr(check, "__self__", None), "tesseract", None)
+            if fits(g) and box is not None and box(x[1], x[2], x[3]) == g:  # as for a hole: that box read alone
                 out.append(_with_series(x, g))
                 continue
             raise MaharashtraError(f"{rank} prize: the two readers disagree ({dict(x[5])}, shapes say {g}, between {lo} and {hi})")
