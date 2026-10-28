@@ -9,10 +9,11 @@ const COOLDOWN_MS = 30 * 24 * 3_600_000
 
 /** cosmetic_items as the migration fills it. */
 const PRICES: [ItemId, number][] = [
-  ['badge_crown', 99], ['badge_diamond', 149], ['badge_flame', 79], ['badge_star', 79], ['badge_heart', 79], ['badge_bolt', 79],
+  ['badge_crown', 99], ['badge_diamond', 149], ['badge_flame', 79], ['badge_star', 79], ['badge_heart', 79], ['badge_bolt', 79], ['badge_moon', 99], ['badge_lotus', 149],
   ['color_gold', 49], ['color_rose', 49], ['color_ocean', 49], ['color_emerald', 49], ['color_violet', 49],
-  ['color_sunset', 99], ['color_aurora', 99], ['color_rainbow', 129],
+  ['color_sunset', 99], ['color_aurora', 99], ['color_rainbow', 129], ['color_platinum', 99], ['color_cyber', 99],
   ['font_script', 69], ['font_retro', 69], ['font_bold', 69], ['font_pixel', 69], ['font_round', 69], ['font_future', 69],
+  ['font_elegant', 69], ['font_classic', 69], ['font_hand', 69], ['font_mono', 69], ['font_neon', 69], ['font_sport', 69],
   ['frame_frost', 199], ['frame_fire', 199], ['frame_jewel', 249], ['frame_sand', 199], ['frame_neon', 149], ['frame_sakura', 149],
   ['wall_aurora', 79], ['wall_neon', 79], ['wall_sakura', 79], ['wall_galaxy', 79], ['wall_ocean', 79], ['wall_lava', 79], ['wall_rain', 79], ['wall_diya', 79],
   ['vip_anon', 299],

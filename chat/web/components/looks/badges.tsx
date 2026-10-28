@@ -4,119 +4,131 @@ import { useId } from 'react'
 import type { BadgeId } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 
-// The badges worn beside an @ID (040), drawn here like the Android app's (docs/LOOKS_SPEC.md): the same shapes and
-// colours, no image files. 24 × 24 units, drawn at the ID's font size; strokes stay 1 px at any size.
+// The badges worn beside an @ID (040), redrawn 2026-10-28 (the owner: "childish, AI-looking"): one family of insignia
+// instead of emoji-like pictures, as rank emblems and Discord's profile badges are. Each is a hexagonal pin: a metal
+// rim, a dark enamel face and a clean symbol, with a band of light sweeping across now and then. 24 × 24 units, drawn
+// at the ID's font size; no image files.
 
-/** A five-point star around (12, 13): outer radius 10, inner 4.2, the first point up. */
-const STAR = Array.from({ length: 10 }, (_, i) => {
-  const r = i % 2 ? 4.2 : 10
-  const a = (Math.PI / 5) * i - Math.PI / 2
-  return `${(12 + r * Math.cos(a)).toFixed(2)},${(13 + r * Math.sin(a)).toFixed(2)}`
-}).join(' ')
+const hex = (r: number) =>
+  Array.from({ length: 6 }, (_, i) => {
+    const a = (Math.PI / 3) * i - Math.PI / 2
+    return `${(12 + r * Math.cos(a)).toFixed(2)},${(12 + r * Math.sin(a)).toFixed(2)}`
+  }).join(' ')
+const star = (cx: number, cy: number, R: number, r: number) =>
+  Array.from({ length: 10 }, (_, i) => {
+    const d = i % 2 ? r : R
+    const a = (Math.PI / 5) * i - Math.PI / 2
+    return `${(cx + d * Math.cos(a)).toFixed(2)},${(cy + d * Math.sin(a)).toFixed(2)}`
+  }).join(' ')
+const RIM = hex(10.6)
+const FACE = hex(8.7)
 
-/** A four-point sparkle (glints on the diamond and the star). */
-const sparkle = (x: number, y: number, r: number) =>
-  `M${x} ${y - r}Q${x + r * 0.18} ${y - r * 0.18} ${x + r} ${y}Q${x + r * 0.18} ${y + r * 0.18} ${x} ${y + r}Q${x - r * 0.18} ${y + r * 0.18} ${x - r} ${y}Q${x - r * 0.18} ${y - r * 0.18} ${x} ${y - r}Z`
+/** Rim metals, top → bottom. */
+const METAL = {
+  gold: ['#FFF4C2', '#E8B84A', '#9A6B12'],
+  silver: ['#FFFFFF', '#C3CAD5', '#6E7787'],
+  copper: ['#FFD9BF', '#D9824F', '#7E3A17'],
+  rose: ['#FFE6E1', '#E7A59A', '#9E5A50'],
+  graphite: ['#C9CED6', '#6B7280', '#252A33'],
+} as const
 
-const HEART = 'M12 21.2C6.2 16.9 2.6 13.4 2.6 9.1 2.6 6.2 4.9 4 7.7 4c1.8 0 3.3.9 4.3 2.3C13 4.9 14.5 4 16.3 4c2.8 0 5.1 2.2 5.1 5.1 0 4.3-3.6 7.8-9.4 12.1z'
-
-/** A vertical gradient (top → bottom) under its own id; a middle stop makes it read as polished metal or a gem (42). */
-function Vertical({ id, from, mid, to }: { id: string; from: string; mid: string; to: string }) {
-  return (
-    <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stopColor={from} />
-      <stop offset="0.55" stopColor={mid} />
-      <stop offset="1" stopColor={to} />
-    </linearGradient>
-  )
+interface Design {
+  rim: keyof typeof METAL
+  /** The enamel face and the symbol, top → bottom. */
+  face: [string, string]
+  glyph: [string, string]
+  symbol: React.ReactNode
 }
 
-/** Each badge's outline: the gloss band that sweeps across it stays inside. */
-const OUTLINE: Record<BadgeId, string> = {
-  badge_crown: 'M3 8.5l4.6 4.8L12 4.6l4.4 8.7L21 8.5l-1.6 8.4H4.6zM4.4 16.6h15.2v3.6H4.4z',
-  badge_diamond: 'M7 4h10l4.5 5.2L12 21.2 2.5 9.2z',
-  badge_flame: 'M12 1.8c.6 3.4 3.1 5.2 4.7 7.6 1.3 1.9 2 3.6 2 5.6 0 4-3 7.2-6.7 7.2S5.3 19 5.3 15c0-2.6 1.2-4.8 3-6.4.1 1.6.7 2.8 1.8 3.5-.2-3.6.6-7.2 1.9-10.3z',
-  badge_star: `M${STAR.replace(/ /g, 'L')}Z`,
-  badge_heart: HEART,
-  badge_bolt: 'M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z',
+const DESIGNS: Record<BadgeId, Design> = {
+  badge_crown: {
+    rim: 'gold', face: ['#3B2606', '#140C02'], glyph: ['#FFF1B8', '#F2C14E'],
+    symbol: (
+      <>
+        <path d="M6.6 15.6 7.3 9.3l2.9 2.6L12 7.4l1.8 4.5 2.9-2.6.7 6.3z" />
+        <rect x="6.6" y="16.4" width="10.8" height="1.6" rx=".5" />
+      </>
+    ),
+  },
+  badge_diamond: {
+    rim: 'silver', face: ['#0E3160', '#05142B'], glyph: ['#FFFFFF', '#9FE3FF'],
+    symbol: (
+      <>
+        <path d="M8.6 7.6h6.8l2.6 3.2L12 18.4 6 10.8z" />
+        {/* The facets: table, crown and pavilion lines. */}
+        <path d="M6 10.8h12M8.6 7.6l1.7 3.2L12 7.6l1.7 3.2 1.7-3.2M10.3 10.8 12 18.4l1.7-7.6" fill="none" stroke="#0E3160" strokeOpacity=".45" strokeWidth=".6" strokeLinejoin="round" />
+      </>
+    ),
+  },
+  badge_flame: {
+    rim: 'copper', face: ['#45100A', '#1C0503'], glyph: ['#FFE08A', '#FF6A1A'],
+    symbol: <path d="M12 6.2c.4 2.2 2 3.4 3 5 .8 1.2 1.2 2.3 1.2 3.6 0 2.5-1.9 4.4-4.2 4.4s-4.2-1.9-4.2-4.4c0-1.7.8-3.1 1.9-4.1.1 1 .5 1.8 1.2 2.2-.1-2.3.3-4.6 1.1-6.7z" />,
+  },
+  badge_star: {
+    rim: 'silver', face: ['#25215E', '#0E0B2B'], glyph: ['#FFF4C2', '#F2C14E'],
+    symbol: <polygon points={star(12, 12.6, 6, 2.6)} />,
+  },
+  badge_heart: {
+    rim: 'rose', face: ['#4F0A25', '#220410'], glyph: ['#FFC2D6', '#FF4D8D'],
+    symbol: <path d="M12 18.2c-3.6-2.7-5.6-4.7-5.6-7.2 0-1.7 1.3-3 3-3 1.1 0 2 .6 2.6 1.4.6-.8 1.5-1.4 2.6-1.4 1.7 0 3 1.3 3 3 0 2.5-2 4.5-5.6 7.2z" />,
+  },
+  badge_bolt: {
+    rim: 'graphite', face: ['#1A1F2B', '#07090D'], glyph: ['#FFF7A8', '#FACC15'],
+    symbol: <path d="M13.4 5.8 7.8 13h3.6l-1 5.2 5.8-7.4h-3.7z" />,
+  },
+  badge_moon: {
+    rim: 'silver', face: ['#152042', '#060B1C'], glyph: ['#FFFFFF', '#C9D4FF'],
+    symbol: (
+      <>
+        <path d="M14.6 17.6A6 6 0 1 1 13.1 6.3a4.7 4.7 0 0 0 1.5 11.3z" />
+        <polygon points={star(16.2, 8.6, 1.7, 0.7)} />
+      </>
+    ),
+  },
+  badge_lotus: {
+    rim: 'gold', face: ['#3E0A4F', '#190322'], glyph: ['#FFD6EC', '#F062A8'],
+    symbol: (
+      <>
+        <path d="M12 6.6c1.3 1.4 2 3.2 2 5.1s-.7 3.7-2 5.1c-1.3-1.4-2-3.2-2-5.1s.7-3.7 2-5.1z" />
+        <path d="M6.4 10.4c2.2.2 4 1.4 5 3.2.5 1 .6 2.1.6 3.2-2.3-.1-4.1-1.3-5-3.2-.5-1-.7-2.1-.6-3.2zM17.6 10.4c-2.2.2-4 1.4-5 3.2-.5 1-.6 2.1-.6 3.2 2.3-.1 4.1-1.3 5-3.2.5-1 .7-2.1.6-3.2z" fillOpacity=".85" />
+      </>
+    ),
+  },
 }
+
+const Vertical = ({ id, stops }: { id: string; stops: readonly string[] }) => (
+  <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+    {stops.map((c, i) => (
+      <stop key={i} offset={i / (stops.length - 1)} stopColor={c} />
+    ))}
+  </linearGradient>
+)
 
 export function LookBadge({ id, className }: { id: BadgeId; className?: string }) {
   const g = useId().replace(/:/g, '')
+  const d = DESIGNS[id]
   return (
-    <svg viewBox="0 0 24 24" className={cn('overflow-visible drop-shadow-[0_1px_1px_rgb(0_0_0/0.22)]', className)} aria-hidden focusable="false">
+    <svg viewBox="0 0 24 24" className={cn('overflow-visible drop-shadow-[0_1px_1px_rgb(0_0_0/0.25)]', className)} aria-hidden focusable="false">
       <defs>
+        <Vertical id={`${g}r`} stops={METAL[d.rim]} />
+        <Vertical id={`${g}f`} stops={d.face} />
+        <Vertical id={`${g}g`} stops={d.glyph} />
         <clipPath id={`${g}c`}>
-          <path d={OUTLINE[id]} />
+          <polygon points={RIM} />
         </clipPath>
         <linearGradient id={`${g}s`} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.5" stopColor="#fff" stopOpacity="0.85" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="0.5" />
           <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {id === 'badge_crown' ? (
-        <>
-          <defs>
-            <Vertical id={g} from="#FFF3B0" mid="#F5C542" to="#B7791F" />
-          </defs>
-          <path d="M3 8.5l4.6 4.8L12 4.6l4.4 8.7L21 8.5l-1.6 8.4H4.6z" fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <rect x="4.4" y="16.6" width="15.2" height="3.6" rx="1" fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          {/* Pearls on the points, one ruby on the band. */}
-          <circle cx="3" cy="8.2" r="1.5" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <circle cx="12" cy="4.2" r="1.7" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <circle cx="21" cy="8.2" r="1.5" fill="#FFF8E6" stroke="#C9A24A" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <path d="M12 16.9l1.3 1.5-1.3 1.5-1.3-1.5z" fill="#E11D48" />
-        </>
-      ) : id === 'badge_diamond' ? (
-        <>
-          <defs>
-            <Vertical id={g} from="#E6FAFF" mid="#7DD3FC" to="#2563EB" />
-          </defs>
-          {/* Table (the flat top), crown (down to the girdle) and pavilion (down to the point). */}
-          <path d="M7 4h10l4.5 5.2L12 21.2 2.5 9.2z" fill={`url(#${g})`} />
-          <path d="M2.5 9.2h19M7 4l2.6 5.2L12 4l2.4 5.2L17 4M9.6 9.2L12 21.2l2.4-12" fill="none" stroke="#fff" strokeOpacity=".55" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          <path d={sparkle(6.6, 6.4, 2.3)} fill="#fff" />
-        </>
-      ) : id === 'badge_flame' ? (
-        <>
-          <defs>
-            {/* Bottom → top. */}
-            <linearGradient id={g} x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0" stopColor="#C62828" />
-              <stop offset="0.5" stopColor="#FF6D00" />
-              <stop offset="1" stopColor="#FFD54F" />
-            </linearGradient>
-          </defs>
-          <path d="M12 1.8c.6 3.4 3.1 5.2 4.7 7.6 1.3 1.9 2 3.6 2 5.6 0 4-3 7.2-6.7 7.2S5.3 19 5.3 15c0-2.6 1.2-4.8 3-6.4.1 1.6.7 2.8 1.8 3.5-.2-3.6.6-7.2 1.9-10.3z" fill={`url(#${g})`} />
-          <path d="M12 11.2c.9 1.6 2.9 2.9 2.9 5.4 0 1.8-1.3 3.3-2.9 3.3s-2.9-1.5-2.9-3.3c0-2.3 2-3.6 2.9-5.4z" fill="#FFE57F" />
-        </>
-      ) : id === 'badge_star' ? (
-        <>
-          <defs>
-            <Vertical id={g} from="#FFF3B0" mid="#F5C542" to="#B7791F" />
-          </defs>
-          <polygon points={STAR} fill={`url(#${g})`} stroke="#8A5A00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          {/* A bevel: the inner star lighter. */}
-          <polygon points={STAR} fill="#FFF8D6" fillOpacity=".45" transform="translate(12 13) scale(.48) translate(-12 -13)" />
-          <path d={sparkle(20.2, 3.6, 2.6)} fill="#fff" />
-        </>
-      ) : id === 'badge_heart' ? (
-        <>
-          <defs>
-            <Vertical id={g} from="#FF8FB1" mid="#E11D48" to="#9F1239" />
-          </defs>
-          <path d={HEART} fill={`url(#${g})`} stroke="#7F1234" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <path d="M5.2 10.4c-.3-2.1 1-3.9 2.9-4.1" fill="none" stroke="#fff" strokeOpacity=".4" strokeWidth="1.8" strokeLinecap="round" />
-        </>
-      ) : (
-        <>
-          <defs>
-            <Vertical id={g} from="#FFF59D" mid="#FFC107" to="#E65100" />
-          </defs>
-          <path d="M14 1.8L4.8 13.6h6.1L9.6 22.2l9.6-12.3h-6.2z" fill={`url(#${g})`} stroke="#8A4B00" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-        </>
-      )}
+      {/* The rounded corners are the strokes' round joins. */}
+      <polygon points={RIM} fill={`url(#${g}r)`} stroke={`url(#${g}r)`} strokeWidth="1.6" strokeLinejoin="round" />
+      <polygon points={FACE} fill={`url(#${g}f)`} stroke={`url(#${g}f)`} strokeWidth="1" strokeLinejoin="round" />
+      <polygon points={FACE} fill="none" stroke="#000" strokeOpacity=".35" strokeWidth=".5" strokeLinejoin="round" />
+      {/* The enamel's top catches a little light. */}
+      <path d="M4.6 7.6 12 3.3l7.4 4.3V11C15 9.6 9 9.6 4.6 11z" fill="#fff" fillOpacity=".07" />
+      <g fill={`url(#${g}g)`}>{d.symbol}</g>
       <g clipPath={`url(#${g}c)`}>
         <rect className="look-sheen" x="2" y="-2" width="8" height="28" fill={`url(#${g}s)`} />
       </g>

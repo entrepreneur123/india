@@ -88,7 +88,7 @@ export function FrameAvatar({ frame, userId, name, src, size, className }: { fra
       <span className="relative grid place-items-center rounded-full bg-card" style={{ padding: gap, margin: ring }}>
         {userId ? <UserAvatar userId={userId} name={name} src={src} size={size} /> : <Avatar name={name} src={src} size={size} />}
       </span>
-      {frame ? <Decor frame={frame} ring={ring} outer={outer} /> : null}
+      {frame === 'frame_fire' ? <FireRing size={size} outer={outer} /> : frame === 'frame_jewel' ? <DiamondHalo size={size} outer={outer} /> : frame ? <Decor frame={frame} ring={ring} outer={outer} /> : null}
     </span>
   )
 }
@@ -113,11 +113,6 @@ function Decor({ frame, ring, outer }: { frame: FrameId; ring: number; outer: nu
   return (
     <svg aria-hidden viewBox="0 0 100 100" className="pointer-events-none absolute overflow-visible" style={{ inset: -spill }}>
       <defs>
-        <linearGradient id={`${g}f`} x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0" stopColor="#FF3D00" />
-          <stop offset="0.6" stopColor="#FF9A1F" />
-          <stop offset="1" stopColor="#FFE66D" />
-        </linearGradient>
         <radialGradient id={`${g}p`} cx="0.4" cy="0.35" r="0.8">
           <stop offset="0" stopColor="#FFF5F8" />
           <stop offset="1" stopColor="#FF8DB5" />
@@ -137,27 +132,7 @@ function Decor({ frame, ring, outer }: { frame: FrameId; ring: number; outer: nu
               </g>
             </g>
           ))
-        : frame === 'frame_fire'
-          ? around(12, r + s * 0.15).map(({ x, y, deg, i }) => (
-              <g key={i} transform={`translate(${x} ${y}) rotate(${deg + 90})`}>
-                <path className="look-flame" style={delay(i, 0.17)} fill={`url(#${g}f)`}
-                  d={`M0 0 C${-s * 0.55} ${-s * 0.5} ${-s * 0.35} ${-s * 1.2} 0 ${-s * 1.7} C${s * 0.35} ${-s * 1.2} ${s * 0.55} ${-s * 0.5} 0 0Z`} />
-              </g>
-            ))
-          : frame === 'frame_jewel'
-            ? around(8, r).map(({ x, y, i }) => {
-                const c = ['#E0115F', '#0F52BA', '#1FA463', '#9B30FF'][i % 4]
-                const k = s * 0.75
-                return (
-                  <g key={i} transform={`translate(${x} ${y})`}>
-                    <polygon points={`0,${-k} ${k * 0.8},${-k * 0.25} ${k * 0.5},${k * 0.85} ${-k * 0.5},${k * 0.85} ${-k * 0.8},${-k * 0.25}`} fill={c} stroke="#B8860B" strokeWidth={k * 0.14} strokeLinejoin="round" />
-                    <polygon points={`0,${-k} ${k * 0.8},${-k * 0.25} 0,${-k * 0.05} ${-k * 0.8},${-k * 0.25}`} fill="#fff" opacity="0.45" />
-                    <path className="look-twinkle" style={{ ...delay(i, 0.3), transformBox: 'fill-box', transformOrigin: 'center' }} fill="#fff"
-                      d={`M${k * 0.55} ${-k * 0.95} l${k * 0.12} ${k * 0.28} l${k * 0.28} ${k * 0.12} l${-k * 0.28} ${k * 0.12} l${-k * 0.12} ${k * 0.28} l${-k * 0.12} ${-k * 0.28} l${-k * 0.28} ${-k * 0.12} l${k * 0.28} ${-k * 0.12}z`} />
-                  </g>
-                )
-              })
-            : frame === 'frame_sand'
+        : frame === 'frame_sand'
               ? (
                   <g className="look-spin" style={{ transformBox: 'view-box', transformOrigin: '50% 50%' }}>
                     {around(18, r, -90).map(({ i, deg }) => {
@@ -180,6 +155,104 @@ function Decor({ frame, ring, outer }: { frame: FrameId; ring: number; outer: nu
                         d={`M0 ${s * 0.6} C${-s * 0.75} ${s * 0.1} ${-s * 0.55} ${-s * 0.75} ${-s * 0.1} ${-s * 0.7} L0 ${-s * 0.45} L${s * 0.1} ${-s * 0.7} C${s * 0.55} ${-s * 0.75} ${s * 0.75} ${s * 0.1} 0 ${s * 0.6}Z`} />
                     </g>
                   ))}
+    </svg>
+  )
+}
+
+/**
+ * Blaze (redrawn 2026-10-28, the owner: "the fire is low quality"): real-looking fire instead of cartoon tongues. A
+ * glow from white-hot at the photo's edge to dark red is torn into flames by moving noise (an SVG turbulence that
+ * rises through a displacement map), so the flames flicker upwards like a fire's.
+ */
+function FireRing({ size, outer }: { size: number; outer: number }) {
+  const g = useId().replace(/:/g, '')
+  const pad = size * 0.22
+  const box = size + 2 * pad
+  const c = box / 2
+  const r = size / 2 + size * 0.04
+  const at = (d: number) => (r + size * d) / c
+  return (
+    <svg aria-hidden width={box} height={box} viewBox={`0 0 ${box} ${box}`} className="pointer-events-none absolute overflow-visible" style={{ inset: (outer - box) / 2 }}>
+      <defs>
+        <radialGradient id={`${g}g`}>
+          {/* Clear over the photo; white-hot at its edge. */}
+          <stop offset={at(-0.05)} stopColor="#FFF3B0" stopOpacity="0" />
+          <stop offset={at(-0.02)} stopColor="#FFF3B0" />
+          <stop offset={at(0.03)} stopColor="#FFB020" />
+          <stop offset={at(0.08)} stopColor="#FF5A00" stopOpacity=".95" />
+          <stop offset={at(0.14)} stopColor="#D42000" stopOpacity=".55" />
+          <stop offset={at(0.19)} stopColor="#8A0E00" stopOpacity="0" />
+        </radialGradient>
+        {/* One tile of noise the size of the box, repeated downwards and moved up by exactly one tile per loop: no seam. */}
+        <filter id={`${g}f`} x="-10%" y="-10%" width="120%" height="220%">
+          <feTurbulence x="0" y="0" width={box} height={box} type="fractalNoise" baseFrequency={`${(18 / size).toFixed(3)} ${(10 / size).toFixed(3)}`} numOctaves={2} seed={3} stitchTiles="stitch" />
+          <feTile result="t" />
+          <feOffset in="t" dy="0" result="n">
+            <animate attributeName="dy" from="0" to={-box} dur="2.4s" repeatCount="indefinite" />
+          </feOffset>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale={size * 0.16} xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </defs>
+      <circle cx={c} cy={c} r={c} fill={`url(#${g}g)`} filter={`url(#${g}f)`} />
+      <circle cx={c} cy={c} r={r} fill="none" stroke="#FFD27A" strokeWidth={size * 0.02} opacity=".9" />
+    </svg>
+  )
+}
+
+/**
+ * Jewels (redrawn 2026-10-28): a halo of round brilliants on a gold band, as in a halo ring; each stone has its cut
+ * lines and a highlight, and a glint flashes on a few of them in turn.
+ */
+function DiamondHalo({ size, outer }: { size: number; outer: number }) {
+  const g = useId().replace(/:/g, '')
+  const pad = size * 0.12
+  const box = size + 2 * pad
+  const c = box / 2
+  const r = size / 2 + size * 0.055
+  const n = size > 60 ? 30 : 18
+  const gs = ((2 * Math.PI * r) / n) * 0.4
+  const at = (i: number) => {
+    const a = (2 * Math.PI * i) / n - Math.PI / 2
+    return { x: c + r * Math.cos(a), y: c + r * Math.sin(a) }
+  }
+  const k = gs * 2.2
+  return (
+    <svg aria-hidden width={box} height={box} viewBox={`0 0 ${box} ${box}`} className="pointer-events-none absolute overflow-visible" style={{ inset: (outer - box) / 2 }}>
+      <defs>
+        <linearGradient id={`${g}b`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#FFF1C1" />
+          <stop offset=".45" stopColor="#D4A93F" />
+          <stop offset=".7" stopColor="#8F6A16" />
+          <stop offset="1" stopColor="#F2D27E" />
+        </linearGradient>
+        <radialGradient id={`${g}d`} cx="40%" cy="35%" r="75%">
+          <stop offset="0" stopColor="#FFFFFF" />
+          <stop offset=".35" stopColor="#DDEBFA" />
+          <stop offset=".7" stopColor="#8FA9C6" />
+          <stop offset="1" stopColor="#F4F8FF" />
+        </radialGradient>
+      </defs>
+      <circle cx={c} cy={c} r={r} fill="none" stroke={`url(#${g}b)`} strokeWidth={gs * 2.7} />
+      <circle cx={c} cy={c} r={r - gs * 1.45} fill="none" stroke="#7A5A10" strokeOpacity=".5" strokeWidth={Math.max(0.6, size * 0.006)} />
+      {Array.from({ length: n }, (_, i) => {
+        const { x, y } = at(i)
+        return (
+          <g key={i} transform={`translate(${x} ${y})`}>
+            <circle r={gs} fill={`url(#${g}d)`} stroke="#B8902E" strokeWidth={gs * 0.28} />
+            <path d={`M${-gs * 0.55} 0H${gs * 0.55}M0 ${-gs * 0.55}V${gs * 0.55}M${-gs * 0.38} ${-gs * 0.38}L${gs * 0.38} ${gs * 0.38}M${-gs * 0.38} ${gs * 0.38}L${gs * 0.38} ${-gs * 0.38}`} stroke="#fff" strokeOpacity=".55" strokeWidth={gs * 0.12} />
+            <circle cx={-gs * 0.3} cy={-gs * 0.3} r={gs * 0.22} fill="#fff" />
+          </g>
+        )
+      })}
+      {[3, 11, 19, 26].filter((i) => i < n).map((i, j) => {
+        const { x, y } = at(i)
+        return (
+          <g key={i} transform={`translate(${x - gs * 0.4} ${y - gs * 0.4})`}>
+            <path className="look-twinkle" style={{ ...delay(j, 0.6), transformBox: 'fill-box', transformOrigin: 'center' }} fill="#fff"
+              d={`M0 ${-k}Q${k * 0.15} ${-k * 0.15} ${k} 0Q${k * 0.15} ${k * 0.15} 0 ${k}Q${-k * 0.15} ${k * 0.15} ${-k} 0Q${-k * 0.15} ${-k * 0.15} 0 ${-k}Z`} />
+          </g>
+        )
+      })}
     </svg>
   )
 }

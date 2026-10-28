@@ -84,14 +84,19 @@ Catalogue (ids, names to show, design). Every design is drawn in code (SVG on we
 Android) — no image files — the same shapes and colours on both.
 
 ### Badges (beside the @ID, height = 1.0× the ID's font size, 2 px gap)
-| id | name | design |
-|---|---|---|
-| `badge_crown` | Crown | 3-point crown, gold vertical gradient `#FFE27A → #F2A900`, darker gold stroke `#B8860B` 1 px, base band, three round jewels on the tips (`#E53935` middle, `#1E88E5` sides) |
-| `badge_diamond` | Diamond | brilliant-cut gem outline (table + crown + pavilion), gradient `#B9F3FF → #2BA8E0`, facet lines white 55 %, one white glint at top-left |
-| `badge_flame` | Flame | teardrop flame, outer `#FF3D00 → #FFB300` (bottom→top), inner core `#FFE57F` |
-| `badge_star` | Star | 5-point star, `#FFE082 → #FFB300`, white 4-point sparkle at top-right |
-| `badge_heart` | Heart | heart `#FF8AB3 → #E91E63`, white shine arc at top-left (40 %) |
-| `badge_bolt` | Bolt | lightning bolt `#FFF176 → #FBC02D`, stroke `#8D6E00` 1 px |
+Redrawn 2026-10-28 as one family of insignia (source of truth: `web/components/looks/badges.tsx`): a pointy-top hexagon
+pin, 24 units, rim r 10.6 (metal gradient, 1.6-unit round-join stroke for the rounded corners), enamel face r 8.7 with a
+0.5-unit dark inner line and a faint light band at its top, the symbol in a vertical gradient, a light band sweeping across.
+| id | name | rim metal | face | symbol |
+|---|---|---|---|---|
+| `badge_crown` | Crown | gold `#FFF4C2 #E8B84A #9A6B12` | `#3B2606 → #140C02` | crown + band, `#FFF1B8 → #F2C14E` |
+| `badge_diamond` | Diamond | silver `#FFFFFF #C3CAD5 #6E7787` | `#0E3160 → #05142B` | brilliant with facet lines, `#FFFFFF → #9FE3FF` |
+| `badge_flame` | Flame | copper `#FFD9BF #D9824F #7E3A17` | `#45100A → #1C0503` | flame, `#FFE08A → #FF6A1A` |
+| `badge_star` | Star | silver | `#25215E → #0E0B2B` | 5-point star, `#FFF4C2 → #F2C14E` |
+| `badge_heart` | Heart | rose `#FFE6E1 #E7A59A #9E5A50` | `#4F0A25 → #220410` | heart, `#FFC2D6 → #FF4D8D` |
+| `badge_bolt` | Bolt | graphite `#C9CED6 #6B7280 #252A33` | `#1A1F2B → #07090D` | bolt, `#FFF7A8 → #FACC15` |
+| `badge_moon` | Moon | silver | `#152042 → #060B1C` | crescent + small star, `#FFFFFF → #C9D4FF` |
+| `badge_lotus` | Lotus | gold | `#3E0A4F → #190322` | three petals, `#FFD6EC → #F062A8` |
 
 ### ID colours (the @ID text)
 | id | name | light theme | dark theme |
@@ -104,6 +109,8 @@ Android) — no image files — the same shapes and colours on both.
 | `color_sunset` | Sunset | gradient `#FF6A3D → #FF2E8B → #A63DFF` (both themes) | same |
 | `color_aurora` | Aurora | gradient `#00C9A7 → #3D8BFF → #B44DFF` | same |
 | `color_rainbow` | Rainbow | gradient `#FF4D4D #FFA53D #F5D300 #34C759 #3DB8FF #9B5CFF`, sliding slowly (6 s loop; static with reduced motion) | same |
+| `color_platinum` | Platinum | gradient `#2E3746 #7D8899 #2E3746 #4A5566`, sliding like the rainbow | same |
+| `color_cyber` | Cyber | gradient `#0096C7 → #7C3AED → #DB2777` | same |
 Gradients are horizontal across the text (web: `background-clip: text`; Compose: `TextStyle(brush = …)`).
 
 ### ID fonts (bundled; Latin letters only, other scripts fall back to the app font automatically)
@@ -115,6 +122,12 @@ Gradients are horizontal across the text (web: `background-clip: text`; Compose:
 | `font_pixel` | Pixel | `look_pixel` (draw at 0.8× size: it is wide) | Yaari Look Pixel |
 | `font_round` | Round | `look_round` | Yaari Look Round |
 | `font_future` | Future | `look_future` | Yaari Look Future |
+| `font_elegant` | Elegant | `look_elegant` (Playfair Display Bold Italic) | Yaari Look Elegant |
+| `font_classic` | Classic | `look_classic` (Cinzel Bold, 0.95×) | Yaari Look Classic |
+| `font_hand` | Handwritten | `look_hand` (Caveat Bold, 1.15×) | Yaari Look Hand |
+| `font_mono` | Mono | `look_mono` (Space Mono Bold, 0.92×) | Yaari Look Mono |
+| `font_neon` | Neon | `look_neon` (Monoton, 0.9×) | Yaari Look Neon |
+| `font_sport` | Sport | `look_sport` (Bebas Neue, 1.15×) | Yaari Look Sport |
 Web: one `@font-face` per font with `font-display: swap`; the browser downloads a file only when a name in that font
 is on screen (no preload). Licences: `docs/font-licenses/` (OFL 1.1; the subsets are renamed as the OFL requires).
 People can't bring their own font: names and IDs refuse the fancy-font Unicode letters (server), and nothing else in

@@ -539,7 +539,7 @@ function ItemCard({
 function WallPreview({ wall }: { wall: ItemId | null }) {
   const bar = 'h-8 rounded-lg shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]'
   return (
-    <div aria-hidden className="relative isolate flex h-44 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border">
+    <div aria-hidden className="relative isolate flex h-52 w-full flex-col justify-end gap-1.5 overflow-hidden rounded-[28px] bg-chat-wall p-4 ring-1 ring-border">
       <Wall id={wall} />
       <span className={cn(bar, 'w-1/2 self-start rounded-ss-none bg-bubble-in')} />
       <span className={cn(bar, 'w-2/5 self-end rounded-se-none bg-bubble-out')} />

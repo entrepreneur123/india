@@ -5,9 +5,9 @@
 import type { ItemKind, Look, LookKind, LookWear, Shop, ShopItem } from './backend'
 
 /** In the shop's order (cosmetic_items.sort). */
-export const BADGES = ['badge_crown', 'badge_diamond', 'badge_flame', 'badge_star', 'badge_heart', 'badge_bolt'] as const
-export const COLORS = ['color_gold', 'color_rose', 'color_ocean', 'color_emerald', 'color_violet', 'color_sunset', 'color_aurora', 'color_rainbow'] as const
-export const FONTS = ['font_script', 'font_retro', 'font_bold', 'font_pixel', 'font_round', 'font_future'] as const
+export const BADGES = ['badge_crown', 'badge_diamond', 'badge_flame', 'badge_star', 'badge_heart', 'badge_bolt', 'badge_moon', 'badge_lotus'] as const
+export const COLORS = ['color_gold', 'color_rose', 'color_ocean', 'color_emerald', 'color_violet', 'color_sunset', 'color_aurora', 'color_rainbow', 'color_platinum', 'color_cyber'] as const
+export const FONTS = ['font_script', 'font_retro', 'font_bold', 'font_pixel', 'font_round', 'font_future', 'font_elegant', 'font_classic', 'font_hand', 'font_mono', 'font_neon', 'font_sport'] as const
 export const FRAMES = ['frame_frost', 'frame_fire', 'frame_jewel', 'frame_sand', 'frame_neon', 'frame_sakura'] as const
 /** 046: my chat background (only I see it), the incognito mode. */
 export const WALLS = ['wall_aurora', 'wall_neon', 'wall_sakura', 'wall_galaxy', 'wall_ocean', 'wall_lava', 'wall_rain', 'wall_diya'] as const
@@ -79,6 +79,9 @@ export const COLOR_DESIGNS: Record<ColorId, ColorDesign> = {
   color_sunset: { stops: ['#FF6A3D', '#FF2E8B', '#A63DFF'] },
   color_aurora: { stops: ['#00C9A7', '#3D8BFF', '#B44DFF'] },
   color_rainbow: { stops: ['#FF4D4D', '#FFA53D', '#F5D300', '#34C759', '#3DB8FF', '#9B5CFF'], slide: true },
+  // 2026-10-28: polished metal (a light band slides along it) and a cyan-violet-magenta.
+  color_platinum: { stops: ['#2E3746', '#7D8899', '#2E3746', '#4A5566'], slide: true },
+  color_cyber: { stops: ['#0096C7', '#7C3AED', '#DB2777'] },
 }
 
 /**
@@ -92,6 +95,12 @@ export const FONT_DESIGNS: Record<FontId, { family: string; scale: number }> = {
   font_pixel: { family: 'Yaari Look Pixel', scale: 0.8 },
   font_round: { family: 'Yaari Look Round', scale: 1 },
   font_future: { family: 'Yaari Look Future', scale: 1 },
+  font_elegant: { family: 'Yaari Look Elegant', scale: 1 },
+  font_classic: { family: 'Yaari Look Classic', scale: 0.95 },
+  font_hand: { family: 'Yaari Look Hand', scale: 1.15 },
+  font_mono: { family: 'Yaari Look Mono', scale: 0.92 },
+  font_neon: { family: 'Yaari Look Neon', scale: 0.9 },
+  font_sport: { family: 'Yaari Look Sport', scale: 1.15 },
 }
 
 /** Where looks are bought (the web has no payments). */

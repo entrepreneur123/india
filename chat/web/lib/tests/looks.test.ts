@@ -4,7 +4,7 @@ import { ageText, BUBBLE_DESIGNS, bubbleOf, CATALOGUE, COLOR_DESIGNS, FONT_DESIG
 
 test('the catalogue: 26 looks (040), walls (046, redrawn 067) and VIP (046), the photo gradient, effects and bubbles (062), each id starting with its kind', () => {
   const all = Object.values(CATALOGUE).flat()
-  assert.equal(all.length, 44)
+  assert.equal(all.length, 54)
   assert.deepEqual([CATALOGUE.wall.length, CATALOGUE.vip.length, CATALOGUE.cycle.length, CATALOGUE.effect.length, CATALOGUE.bubble.length], [8, 1, 1, 2, 6])
   for (const [kind, ids] of Object.entries(CATALOGUE)) for (const id of ids) assert.equal(kindOf(id), kind)
   for (const id of CATALOGUE.color) assert.ok(id in COLOR_DESIGNS, id)
