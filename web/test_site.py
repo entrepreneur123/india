@@ -351,7 +351,8 @@ def test_maharashtra_has_its_own_section_and_pages(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     home = (out / "index.html").read_text()
     assert '<h2 class="sub">Other state lotteries</h2>' in home and 'href="/maharashtra/"' in home
-    assert "MH_GAJLAXMI" not in home and "Gajlaxmi" not in home   # Sambad's day cards stay Sambad's
+    assert "MH_GAJLAXMI" not in home and 'href="/maharashtra/gajlaxmi-ravi/"' in home   # a link, not a card among Sambad's
+    assert home.index("Other state lotteries") > home.index('class="slip')
     hub = (out / "maharashtra/index.html").read_text()
     assert "<title>Maharashtra Lottery Result Today 18.10.2026 – Gajlaxmi Ravi Weekly and All Draws</title>" in hub
     assert "GL-00 2142" in hub and "Padmini" in hub and "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in hub
@@ -408,7 +409,7 @@ def test_maharashtra_game_pages_and_marathi(tmp_path, monkeypatch):
     (data / "2026-10-11.json").write_text(json.dumps({"schema": 2, "date": "2026-10-11", "draws": [week_before]}))
     out = build(tmp_path, monkeypatch)
     game = (out / "maharashtra/gajlaxmi-ravi/index.html").read_text()
-    assert "<title>Maharashtra Gajlaxmi Ravi Lottery Result 18.10.2026 – Weekly Draw, Official Sheet</title>" in game
+    assert "<title>Maharashtra Gajlaxmi Ravi Lottery Result Today 18.10.2026 – Weekly Draw, Official Sheet</title>" in game
     assert "Weekly draw every Sunday at 4:45 PM." in game and "GL-00 2142" in game
     assert "Earlier Gajlaxmi Ravi draws" in game and "https://lottery.maharashtra.gov.in/UploadFiles/x.pdf" in game  # 11.10: its sheet
     assert (out / "hi/maharashtra/gajlaxmi-ravi/index.html").exists()

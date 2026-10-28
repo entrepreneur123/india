@@ -991,8 +991,10 @@ class Site:
         if not self.mh_dates:
             return ""
         m = MH[lang]
+        games = "".join(f'<a class="chip" href="{self.url(lang, self.mh_game_path(d))}"><b>{esc(m["tab"])}</b>'
+                        f'{esc(d["name"].removeprefix("Maharashtra "))}</a>' for d in self.mh[self.mh_dates[0]])
         return (f'<h2 class="sub">{esc(m["other"])}</h2><nav class="chips wrapchips" aria-label="{esc(m["other"])}">'
-                f'<a class="chip" href="{self.url(lang, "/maharashtra/")}"><b>4 PM</b>{esc(m["tab"])}</a></nav>')
+                f'<a class="chip" href="{self.url(lang, "/maharashtra/")}"><b>4 PM</b>{esc(m["tab"])}</a>{games}</nav>')
 
     def mh_pages(self, out: pathlib.Path, lang: str) -> None:
         """/maharashtra/ (the newest day's draws and a 30-draw chart) and one page per draw."""
@@ -1116,7 +1118,8 @@ class Site:
                     + f'<p class="pn"><a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
             first = m["first_is"].format(n=latest["tiers"][0]["numbers"][0]) if latest in ok else ""
             self.write(out, lang, path, self.page(
-                lang, path, m["game_title"].format(g=name, d=d0, k=kind or m["tab"]),
+                lang, path, m["game_title"].format(g=name, k=kind or m["tab"],   # "... Result Today 25.10.2026" on its day
+                                                   d=({"en": "Today ", "bn": "আজ ", "hi": "आज "}[lang] if latest["date"] == self.today else "") + d0),
                 m["game_desc"].format(g=name, d=d0, f=first),
                 body, data=ok[:5], image=self.og_images.get(latest["id"], ""),
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (name, path)],
