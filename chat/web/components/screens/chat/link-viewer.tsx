@@ -295,7 +295,9 @@ export function LinkPanel({
             key={`${src}#${reload}`}
             src={src}
             title={title}
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+            // No forms: the page can wander to another site while the header still names the shared one, so a
+            // password box in here could pass for that site (phishing). Signing in or paying is done in "Open in browser".
+            sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
             referrerPolicy="no-referrer"
             loading="lazy"
             className="absolute inset-0 size-full border-0 bg-white"
