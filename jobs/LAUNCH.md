@@ -13,9 +13,9 @@
 
 ## 1. 웹 공개 (무료, 서버 없이도 가능)
 1. ⚙️ PR을 병합합니다.
-2. ⚙️ Settings → Secrets and variables → Actions → Variables에 `JOBS_PUBLISH` = `true`를 추가합니다.
-3. ⚙️ 첫 실행이 끝나면 Settings → Pages에서 브랜치를 `data`로 지정합니다.
-   - 주소: `https://<계정>.github.io/<저장소>/jobs/`
+2. 게시는 기본으로 켜져 있습니다(끄려면 `JOBS_PUBLISH` = `false`). 병합 후 30분 안에 첫 게시가 됩니다.
+3. GitHub Pages는 이미 `data` 브랜치를 서비스하고 있습니다(복권 사이트와 같은 저장소).
+   - 주소: `https://entrepreneur123.github.io/india/jobs/`
 4. ⚙️ **문의 이메일** 변수 `JOBS_CONTACT_EMAIL`을 추가합니다(예: 새로 만든 Gmail).
    - 넣으면 문의 페이지와 앱 하단의 "문의" 링크가 생깁니다.
    - Google Play와 AdSense 심사에 문의처가 필요합니다.

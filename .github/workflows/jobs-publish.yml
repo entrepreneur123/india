@@ -1,6 +1,6 @@
 # Publishes the SSC job-alert data and website to the `data` branch under jobs/
-# (served by GitHub Pages at <site>/jobs/). Off until the repository Variable
-# JOBS_PUBLISH is set to "true" (Settings > Secrets and variables > Actions > Variables).
+# (served by GitHub Pages at <site>/jobs/). On by default (the owner asked for it to go live, 28-10-2026);
+# the repository Variable JOBS_PUBLISH = "false" turns it off (Settings > Secrets and variables > Actions > Variables).
 #
 # Every 30 minutes. A run with no change at SSC costs one small request (lastUpdates) and
 # no commit; a full check runs at least every 3 hours (sarkari/build.py FULL_CHECK_HOURS).
@@ -33,7 +33,7 @@ concurrency:
 jobs:
   publish:
     # JOBS_RUNNER=india: the India server (jobs/deploy/india) publishes instead; one writer only.
-    if: vars.JOBS_PUBLISH == 'true' && vars.JOBS_RUNNER != 'india'
+    if: vars.JOBS_PUBLISH != 'false' && vars.JOBS_RUNNER != 'india'
     runs-on: ubuntu-24.04
     timeout-minutes: 25   # a new 26 MB result list takes ~1-2 min; up to 4 per run
     env:

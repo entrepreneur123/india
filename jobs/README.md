@@ -2,7 +2,7 @@
 
 SSC(Staff Selection Commission) 공식 사이트 **ssc.gov.in에서만** 공고·결과·입장권·정답지를 가져오고, 지원자가 생년월일·카테고리·학력을 넣으면 **직무별로 지원 가능 여부**를 알려주는 웹(이후 앱)입니다. LottoDost와 같은 원칙으로 만들었습니다: **틀린 날짜보다 늦은 날짜가 낫다.**
 
-- 게시 워크플로(`jobs-publish`)는 준비돼 있지만 `JOBS_PUBLISH` 변수를 켜기 전에는 아무것도 공개하지 않습니다(아래 "운영").
+- 게시 워크플로(`jobs-publish`)는 기본으로 켜져 있습니다. 끄려면 `JOBS_PUBLISH` 변수를 `false`로 둡니다(아래 "운영").
 - 정부 사이트가 아님을 화면 맨 위에 고지하고, 모든 항목은 공식 PDF로 연결합니다(Google Play 정부 정보 정책 대응).
 
 ## 구조
@@ -146,7 +146,7 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 - 응답 없음(20초 초과): RRB, IBPS, UPSC, UPSSSC, BPSC, RPSC/RSSB, MPPSC/ESB, HPSC, DSSSB, PPSC, MPSC, TNPSC, WBPSC, JSSC, 육군, CTET 등. 해외 IP 차단으로 보이며, 이런 곳은 인도 내 서버가 있어야 수집할 수 있습니다.
 
 **게시 켜기**
-1. Settings → Secrets and variables → Actions → **Variables**에 `JOBS_PUBLISH` = `true`
+1. 기본으로 켜져 있습니다. 끄려면 Settings → Secrets and variables → Actions → **Variables**에 `JOBS_PUBLISH` = `false`
 2. (선택) 텔레그램: Secret `JOBS_TELEGRAM_BOT_TOKEN`, Variable `JOBS_TELEGRAM_CHAT_ID`
 3. 30분마다 `data` 브랜치의 `jobs/`에 게시되고, 주소는 `<사이트>/jobs/` 입니다. 변화가 없으면 커밋하지 않습니다.
 
