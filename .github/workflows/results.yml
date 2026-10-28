@@ -85,7 +85,10 @@ jobs:
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
       # Maharashtra numbers by OCR (see the Maharashtra step); "false": official PDFs only. On 28-10-2026 the
       # reader published all 11 test sheets of 25-27.10 and every number, amount and series matched the sheets.
-      MH_OCR: "false"   # turned on once the live check of 28-10-2026 matches the sheets
+      # Maharashtra numbers by OCR (see the Maharashtra step); "false": official PDFs only. Checked 28-10-2026:
+      # 11 sheets of 25-27.10 and 2 unseen ones of 28.10 read end to end, every number, amount and series as
+      # printed; the 2 others of 28.10 were linked as PDFs (readings did not agree).
+      MH_OCR: "true"
     steps:
       - uses: actions/checkout@v4
 
