@@ -176,6 +176,10 @@ const ar: Dict = {
   'bubble.typing': '{name} يكتب',
   'bubble.sent': 'تم الإرسال',
   'bubble.read': 'تمت القراءة',
+  'bubble.sending': 'جارٍ الإرسال',
+  'bubble.failed': 'لم تُرسل',
+  'bubble.retry': 'إعادة المحاولة',
+  'bubble.discard': 'حذف',
   // links in chat (the viewer beside the chat)
   'link.preview': 'رابط: {title}، {site}',
   'link.viewer': 'صفحة ويب',

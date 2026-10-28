@@ -176,6 +176,10 @@ const ko: Dict = {
   'bubble.typing': '{name}님이 입력 중',
   'bubble.sent': '보냄',
   'bubble.read': '읽음',
+  'bubble.sending': '보내는 중',
+  'bubble.failed': '전송 실패',
+  'bubble.retry': '다시 보내기',
+  'bubble.discard': '삭제',
   // links in chat (the viewer beside the chat)
   'link.preview': '링크: {title}, {site}',
   'link.viewer': '웹페이지',

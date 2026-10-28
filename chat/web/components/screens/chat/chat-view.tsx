@@ -343,14 +343,17 @@ export function ChatView({
               const pause = !next || next.at - msg.at > RUN_GAP || !sameDay(msg.at, next.at)
               const last = pause || next.fromMe !== msg.fromMe
               return (
-                <Fragment key={msg.id}>
+                // By the name the sender's app gave it: the line keeps its place (no replay) when its local echo is stored.
+                <Fragment key={msg.clientId ?? msg.id}>
                   {newDay ? <DayLine at={msg.at} /> : null}
                   <MessageBubble
                     message={msg}
                     first={first}
                     last={last}
                     time={pause}
-                    status={msg.fromMe && (pause || msg.id === latestMine) ? (msg.id <= chat.partnerRead ? 'read' : 'sent') : null}
+                    status={msg.state ?? (msg.fromMe && (pause || msg.id === latestMine) ? (msg.id <= chat.partnerRead ? 'read' : 'sent') : null)}
+                    onRetry={msg.clientId ? () => chat.retry(msg.clientId!) : undefined}
+                    onDiscard={msg.clientId ? () => chat.discard(msg.clientId!) : undefined}
                     skin={msg.fromMe ? mySkin : theirSkin}
                     avatar={msg.fromMe ? null : <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={28} />}
                   />

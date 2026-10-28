@@ -176,6 +176,10 @@ const tr: Dict = {
   'bubble.typing': '{name} yazıyor',
   'bubble.sent': 'Gönderildi',
   'bubble.read': 'Okundu',
+  'bubble.sending': 'Gönderiliyor',
+  'bubble.failed': 'Gönderilmedi',
+  'bubble.retry': 'Tekrar dene',
+  'bubble.discard': 'Sil',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Bağlantı: {title}, {site}',
   'link.viewer': 'Web sayfası',

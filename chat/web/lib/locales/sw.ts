@@ -176,6 +176,10 @@ const sw: Dict = {
   'bubble.typing': '{name} anaandika',
   'bubble.sent': 'Imetumwa',
   'bubble.read': 'Imesomwa',
+  'bubble.sending': 'Inatuma',
+  'bubble.failed': 'Haijatumwa',
+  'bubble.retry': 'Jaribu tena',
+  'bubble.discard': 'Futa',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Kiungo: {title}, {site}',
   'link.viewer': 'Ukurasa wa wavuti',

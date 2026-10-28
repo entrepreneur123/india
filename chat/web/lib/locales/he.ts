@@ -176,6 +176,10 @@ const he: Dict = {
   'bubble.typing': '{name} מקליד/ה',
   'bubble.sent': 'נשלחה',
   'bubble.read': 'נקראה',
+  'bubble.sending': 'שולח',
+  'bubble.failed': 'לא נשלח',
+  'bubble.retry': 'לנסות שוב',
+  'bubble.discard': 'מחיקה',
   // links in chat (the viewer beside the chat)
   'link.preview': 'קישור: {title}, {site}',
   'link.viewer': 'דף אינטרנט',

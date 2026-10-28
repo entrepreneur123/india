@@ -176,6 +176,10 @@ const th: Dict = {
   'bubble.typing': '{name} กำลังพิมพ์',
   'bubble.sent': 'ส่งแล้ว',
   'bubble.read': 'อ่านแล้ว',
+  'bubble.sending': 'กำลังส่ง',
+  'bubble.failed': 'ส่งไม่สำเร็จ',
+  'bubble.retry': 'ลองอีกครั้ง',
+  'bubble.discard': 'ลบ',
   // links in chat (the viewer beside the chat)
   'link.preview': 'ลิงก์: {title}, {site}',
   'link.viewer': 'หน้าเว็บ',

@@ -81,6 +81,7 @@ const MAX_PHOTO_PX = 1280
 const MAX_VIDEO_BYTES = 25 * 1024 * 1024
 const SIGNED_URL_SECONDS = 3600
 const SIGNED_KEY = 'yaari_media_urls'
+const MESSAGE_COLUMNS = 'id, match_id, sender, body, media_path, media_kind, created_at, client_id'
 /** One year: stored files never change. */
 const CACHE_FOREVER = '31536000'
 
@@ -147,7 +148,7 @@ type MatchRow = {
 }
 type MessageRow = {
   id: number; match_id: string; sender: string; body: string | null
-  media_path: string | null; media_kind: string | null; created_at: string
+  media_path: string | null; media_kind: string | null; created_at: string; client_id: string | null
 }
 type PostRow = { id: string; user_id: string; body: string; image_path: string | null; created_at: string }
 type VoiceListRow = {
@@ -359,6 +360,8 @@ export class SupabaseBackend implements Backend {
   private typing = new Map<string, TypingHub>()
   /** Newest message id from the last complete fetch of a chat or room; re-syncs ask only for newer ones. */
   private newest = new Map<string, number>()
+  /** A line's file once uploaded: sending the line again doesn't upload it again. */
+  private uploaded = new WeakMap<File, string>()
   /** Matches the user never saw, waiting to be ended; opening one again (the server can hand it back) keeps it. */
   private abandoned = new Set<string>()
   private userId: string | null = null
@@ -735,24 +738,24 @@ export class SupabaseBackend implements Backend {
   async history(matchId: string): Promise<Message[]> {
     const me = this.uid
     const { data, error } = await this.client.from('messages')
-      .select('id, match_id, sender, body, media_path, media_kind, created_at')
+      .select(MESSAGE_COLUMNS)
       .eq('match_id', matchId).order('id', { ascending: false }).limit(200) // the newest 200, shown oldest first
     if (error) fail(error)
     const rows = (data as MessageRow[]).reverse()
     this.noteNewest(matchId, rows)
-    return Promise.all(rows.map((r) => this.toMessage(r, me)))
+    return this.toMessages(rows, me)
   }
 
   /** Messages after `afterId`, oldest first (a re-sync after a dropped connection). */
   private async newerMessages(matchId: string, afterId: number): Promise<Message[]> {
     const me = this.uid
     const { data, error } = await this.client.from('messages')
-      .select('id, match_id, sender, body, media_path, media_kind, created_at')
+      .select(MESSAGE_COLUMNS)
       .eq('match_id', matchId).gt('id', afterId).order('id', { ascending: true }).limit(200)
     if (error) fail(error)
     const rows = data as MessageRow[]
     this.noteNewest(matchId, rows)
-    return Promise.all(rows.map((r) => this.toMessage(r, me)))
+    return this.toMessages(rows, me)
   }
 
   /**
@@ -764,19 +767,25 @@ export class SupabaseBackend implements Backend {
     if (last !== undefined && last > (this.newest.get(key) ?? -1)) this.newest.set(key, last)
   }
 
-  async send(matchId: string, text: string | null, media: File | null): Promise<Message> {
+  async send(matchId: string, text: string | null, media: File | null, clientId: string): Promise<Message> {
     const kind = media ? (media.type.startsWith('video/') ? 'video' : 'image') : null
-    const path = media ? await this.upload(media, 'chat') : null
-    const { data, error } = await this.client.from('messages')
-      .insert({ match_id: matchId, body: text, media_path: path, media_kind: kind })
-      .select('id, match_id, sender, body, media_path, media_kind, created_at').single<MessageRow>()
+    let path = media ? this.uploaded.get(media) : null
+    if (media && !path) this.uploaded.set(media, (path = await this.upload(media, 'chat')))
+    let { data, error } = await this.client.from('messages')
+      .insert({ match_id: matchId, body: text, media_path: path ?? null, media_kind: kind, client_id: clientId })
+      .select(MESSAGE_COLUMNS).single<MessageRow>()
+    // 23505: an earlier try was stored but its reply was lost; that stored line is the answer.
+    if (error?.code === '23505') {
+      ;({ data, error } = await this.client.from('messages').select(MESSAGE_COLUMNS)
+        .eq('sender', this.uid).eq('client_id', clientId).single<MessageRow>())
+    }
     if (error) {
       // 040: an ended random chat goes on only between friends; the policy refuses the rest (as a row-level violation).
       if (codeOf(error.message ?? '') === 'blocked' && (await this.matchRow(matchId).catch(() => null))?.ended_at) throw new BackendError('chat_closed')
       fail(error)
     }
     track('chat_message_sent')
-    return this.toMessage(data, this.uid)
+    return this.toMessage(data!, this.uid)
   }
 
   async leave(matchId: string) {
@@ -2387,11 +2396,23 @@ export class SupabaseBackend implements Backend {
   }
 
   private async toMessage(r: MessageRow, me: string): Promise<Message> {
-    return {
-      id: r.id, fromMe: r.sender === me, text: r.body,
-      media: r.media_path ? { url: await this.signed(r.media_path), kind: r.media_kind === 'video' ? 'video' : 'image' } : null,
-      at: time(r.created_at),
-    }
+    return (await this.toMessages([r], me))[0]
+  }
+
+  /**
+   * Messages with their media signed in one request. A file that can't be signed (gone, or the request failed) leaves
+   * its line without the picture instead of failing the whole history (it used to empty the chat).
+   */
+  private async toMessages(rows: MessageRow[], me: string): Promise<Message[]> {
+    await this.signMany(rows.map((r) => r.media_path))
+    return rows.map((r) => {
+      const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
+      return {
+        id: r.id, fromMe: r.sender === me, text: r.body,
+        media: url ? { url, kind: r.media_kind === 'video' ? 'video' : 'image' } : null,
+        at: time(r.created_at), clientId: r.client_id,
+      }
+    })
   }
 
   private async signed(path: string): Promise<string> {

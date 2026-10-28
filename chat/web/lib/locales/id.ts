@@ -176,6 +176,10 @@ const id: Dict = {
   'bubble.typing': '{name} sedang mengetik',
   'bubble.sent': 'Terkirim',
   'bubble.read': 'Dibaca',
+  'bubble.sending': 'Mengirim',
+  'bubble.failed': 'Tidak terkirim',
+  'bubble.retry': 'Coba lagi',
+  'bubble.discard': 'Hapus',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Link: {title}, {site}',
   'link.viewer': 'Halaman web',

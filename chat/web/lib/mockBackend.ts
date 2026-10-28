@@ -537,10 +537,14 @@ export class MockBackend implements Backend {
 
   async flagNudity() {}
 
-  async send(matchId: string, text: string | null, media: File | null) {
+  async send(matchId: string, text: string | null, media: File | null, clientId: string) {
     const m = this.matches.get(matchId)
     if (!m) throw new BackendError('not_found')
     await wait(jitter(120, 260))
+    // As the server: offline it can't arrive; sent again under the same name it is stored once (091).
+    if (!navigator.onLine) throw new BackendError('network')
+    const sent = m.messages.find((x) => x.clientId === clientId)
+    if (sent) return sent
     if (m.ended && this.friendMap.get(m.partner.id) !== 'friends' && !this.lookingThreads.has(m.id)) throw new BackendError('chat_closed')
     const msg: Message = {
       id: this.msgSeq++,
@@ -548,6 +552,7 @@ export class MockBackend implements Backend {
       text: text?.trim() || null,
       media: media ? { url: URL.createObjectURL(media), kind: media.type.startsWith('video') ? 'video' : 'image' } : null,
       at: Date.now(),
+      clientId,
     }
     m.messages.push(msg)
     m.myCount++

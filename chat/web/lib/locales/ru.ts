@@ -176,6 +176,10 @@ const ru: Dict = {
   'bubble.typing': '{name} печатает',
   'bubble.sent': 'Отправлено',
   'bubble.read': 'Прочитано',
+  'bubble.sending': 'Отправка',
+  'bubble.failed': 'Не отправлено',
+  'bubble.retry': 'Повторить',
+  'bubble.discard': 'Удалить',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Ссылка: {title}, {site}',
   'link.viewer': 'Веб-страница',

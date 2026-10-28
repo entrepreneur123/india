@@ -176,6 +176,10 @@ const fil: Dict = {
   'bubble.typing': 'Nagta-type si {name}',
   'bubble.sent': 'Naipadala',
   'bubble.read': 'Nabasa',
+  'bubble.sending': 'Ipinapadala',
+  'bubble.failed': 'Hindi naipadala',
+  'bubble.retry': 'Subukan ulit',
+  'bubble.discard': 'Burahin',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Link: {title}, {site}',
   'link.viewer': 'Web page',

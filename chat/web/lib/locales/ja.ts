@@ -176,6 +176,10 @@ const ja: Dict = {
   'bubble.typing': '{name}さんが入力中',
   'bubble.sent': '送信済み',
   'bubble.read': '既読',
+  'bubble.sending': '送信中',
+  'bubble.failed': '未送信',
+  'bubble.retry': '再送信',
+  'bubble.discard': '削除',
   // links in chat (the viewer beside the chat)
   'link.preview': 'リンク：{title}、{site}',
   'link.viewer': 'ウェブページ',

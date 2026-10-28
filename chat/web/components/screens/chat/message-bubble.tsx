@@ -2,7 +2,7 @@
 
 import * as m from 'motion/react-m'
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import { Check, CheckCheck, ChevronRight, Copy, Eye } from 'lucide-react'
+import { Check, CheckCheck, ChevronRight, Clock3, Copy, Eye } from 'lucide-react'
 import type { Message } from '@/lib/backend'
 import { savedFlag } from '@/lib/flags'
 import { useI18n } from '@/components/i18n'
@@ -34,15 +34,18 @@ export function useLineActions(text: string | null | undefined): MenuAction[] {
  * tighter inner corners and their photo beside its last line; the time only where the talk pauses (each line's time
  * on hover), ticks under my lines where the talk pauses and my latest. Long press / right click opens the line's menu.
  */
-export function MessageBubble({ message, first, last, time, status, skin, avatar }: {
+export function MessageBubble({ message, first, last, time, status, skin, avatar, onRetry, onDiscard }: {
   message: Message
   /** First / last line of a run (one sender, minutes apart). */
   first: boolean
   last: boolean
   /** The time under this line (the talk pauses after it). */
   time: boolean
-  /** Under my latest line and my lines where the talk pauses: one tick sent, two read. */
-  status?: 'read' | 'sent' | null
+  /** Under my latest line and my lines where the talk pauses: one tick sent, two read; a clock while sending. */
+  status?: 'read' | 'sent' | 'sending' | 'failed' | null
+  /** A line that failed: send it again, or drop it. */
+  onRetry?: () => void
+  onDiscard?: () => void
   skin?: string | null
   /** Theirs: the face beside the run's last line (a gap keeps the others in line). */
   avatar?: ReactNode
@@ -77,15 +80,30 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
               </p>
               <SeeAll text={message.text} className={cn(message.media && 'mx-3.5 mb-2 w-auto')} />
             </>
-          ) : null}
+          ) : message.media ? null : (
+            // A photo whose file is gone (or couldn't be signed) leaves its line, not an empty bubble.
+            <p className="text-[15px] leading-[1.4] italic opacity-70">{t('bubble.photo')}</p>
+          )}
         </Bubble>
       </div>
-      {time || status ? (
+      {status === 'failed' ? (
+        <span role="alert" className="mt-1 flex items-center gap-2 px-1 text-xs font-semibold text-destructive">
+          {t('bubble.failed')}
+          <button type="button" onClick={onRetry} className="rounded-full px-1.5 py-0.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring">
+            {t('bubble.retry')}
+          </button>
+          <button type="button" onClick={onDiscard} className="rounded-full px-1.5 py-0.5 text-muted-foreground underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ring">
+            {t('bubble.discard')}
+          </button>
+        </span>
+      ) : time || status ? (
         <span className={cn('mt-1 flex items-center gap-1 px-1 text-[11px] leading-none text-muted-foreground tabular-nums', !mine && 'ps-10')}>
           {time ? clock(message.at) : null}
           {/* The owner: two ticks once read, one while only sent (as before). */}
           {status === 'read' ? (
             <CheckCheck className="size-3.5 text-tick-read" aria-label={t('bubble.read')} />
+          ) : status === 'sending' ? (
+            <Clock3 className="size-3.5" aria-label={t('bubble.sending')} />
           ) : status ? (
             <Check className="size-3.5" aria-label={t('bubble.sent')} />
           ) : null}

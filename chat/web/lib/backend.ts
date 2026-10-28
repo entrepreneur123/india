@@ -271,6 +271,10 @@ export interface Message {
   text?: string | null
   media?: { url: string; kind: 'image' | 'video' } | null
   at: number
+  /** The name the sending app gave the line (091): its "sending…" copy and the stored one are matched by it. */
+  clientId?: string | null
+  /** Mine, not stored yet: shown at once (local echo), then replaced by the stored line or left to be sent again. */
+  state?: 'sending' | 'failed'
 }
 
 export interface RecentMatch {
@@ -804,7 +808,8 @@ export interface Backend {
   markRead(matchId: string, upto: number): Promise<void>
   /** The call's nudity check hid the partner's video: files an automatic report for review. Never throws. */
   flagNudity(matchId: string): Promise<void>
-  send(matchId: string, text: string | null, media: File | null): Promise<Message>
+  /** Sending again with the same clientId never stores the line twice (091): the stored one comes back. */
+  send(matchId: string, text: string | null, media: File | null, clientId: string): Promise<Message>
   leave(matchId: string): Promise<void> // throws BackendError('exit_locked') inside the lock window
   report(partnerId: string, reason: ReportReason, matchId: string | null): Promise<void>
   /** Blocks without reporting: open chats with them end and neither side sees the other again. */

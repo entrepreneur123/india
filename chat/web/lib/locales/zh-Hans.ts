@@ -176,6 +176,10 @@ const zhHans: Dict = {
   'bubble.typing': '{name} 正在输入',
   'bubble.sent': '已发送',
   'bubble.read': '已读',
+  'bubble.sending': '发送中',
+  'bubble.failed': '未发送',
+  'bubble.retry': '重新发送',
+  'bubble.discard': '删除',
   // links in chat (the viewer beside the chat)
   'link.preview': '链接：{title}，{site}',
   'link.viewer': '网页',

@@ -176,6 +176,10 @@ const zhHant: Dict = {
   'bubble.typing': '{name} 正在輸入',
   'bubble.sent': '已傳送',
   'bubble.read': '已讀',
+  'bubble.sending': '傳送中',
+  'bubble.failed': '未傳送',
+  'bubble.retry': '重新傳送',
+  'bubble.discard': '刪除',
   // links in chat (the viewer beside the chat)
   'link.preview': '連結：{title}，{site}',
   'link.viewer': '網頁',

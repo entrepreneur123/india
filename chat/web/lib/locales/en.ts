@@ -175,6 +175,10 @@ const en = {
   'bubble.typing': '{name} is typing',
   'bubble.sent': 'Sent',
   'bubble.read': 'Read',
+  'bubble.sending': 'Sending',
+  'bubble.failed': 'Not sent',
+  'bubble.retry': 'Retry',
+  'bubble.discard': 'Delete',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Link: {title}, {site}',
   'link.viewer': 'Web page',

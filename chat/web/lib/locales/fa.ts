@@ -176,6 +176,10 @@ const fa: Dict = {
   'bubble.typing': '{name} در حال نوشتن است',
   'bubble.sent': 'ارسال شد',
   'bubble.read': 'خوانده شد',
+  'bubble.sending': 'در حال ارسال',
+  'bubble.failed': 'ارسال نشد',
+  'bubble.retry': 'تلاش دوباره',
+  'bubble.discard': 'حذف',
   // links in chat (the viewer beside the chat)
   'link.preview': 'لینک: {title}، {site}',
   'link.viewer': 'صفحهٔ وب',

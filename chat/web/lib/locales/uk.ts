@@ -176,6 +176,10 @@ const uk: Dict = {
   'bubble.typing': '{name} друкує',
   'bubble.sent': 'Надіслано',
   'bubble.read': 'Прочитано',
+  'bubble.sending': 'Надсилання',
+  'bubble.failed': 'Не надіслано',
+  'bubble.retry': 'Повторити',
+  'bubble.discard': 'Видалити',
   // links in chat (the viewer beside the chat)
   'link.preview': 'Посилання: {title}, {site}',
   'link.viewer': 'Вебсторінка',
