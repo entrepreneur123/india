@@ -32,7 +32,9 @@ WAKE_BEFORE = dt.timedelta(minutes=15)
 # The site shows yesterday's results until 12:30 IST, then today's date with the draws to come
 # (web/sitegen.py DAY_FLIP). The 1 PM run publishes that page at FLIP, so the relay starts it earlier.
 FLIP = "07:00"
-WAKE = {"NL1PM": "06:45"}
+# The 8 PM run also reads the day's Maharashtra sheets (draws ~4-5 PM IST, ~2 min a sheet) before its
+# draw is due, so it starts at 19:10 IST.
+WAKE = {"NL1PM": "06:45", "NL8PM": "13:40"}
 MAX_SLEEP = dt.timedelta(hours=5, minutes=40)                         # a job may run 6 h
 LATE = dt.timedelta(minutes=45)                                       # a cron run later than this is "late"
 

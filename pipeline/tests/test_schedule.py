@@ -39,6 +39,7 @@ def test_relay_wakes_15_minutes_before_each_draw_and_splits_long_waits():
                                      "target": "KL"}
     assert sc.relay(at("12:00"))["target"] == "SK6PM" and sc.relay(at("12:00"))["sleep"] == 15 * 60
     assert sc.relay(at("12:14"))["target"] == "NL8PM"                 # too close to 12:15: the next one
+    assert sc.relay(at("12:50")) == {"sleep": 50 * 60, "next": "results", "target": "NL8PM"}  # 13:40: Maharashtra first
     night = sc.relay(at("15:00"))                                      # tomorrow 07:15 is 16 h away
     assert night == {"sleep": int(sc.MAX_SLEEP.total_seconds()), "next": "relay", "target": ""}
     last = sc.relay(at("03:00", 28))   # the 1 PM run starts before 12:30 IST, when the site turns to today's date

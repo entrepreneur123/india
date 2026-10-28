@@ -143,3 +143,20 @@ def test_without_ocr_every_draw_is_listed_with_its_official_pdf(tmp_path):
     assert {d["status"] for d in draws} == {"PDF"} and all(d["sources"][0]["url"].endswith(".pdf") for d in draws)
     assert next(d for d in draws if d["name"] == "Maharashtra Tejaswini")["kind"] == "monthly"
     assert mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page, ocr=False) == 0
+
+
+def test_a_sheet_that_does_not_read_is_tried_twice_and_time_is_respected(tmp_path, monkeypatch):
+    page = (F / "mh_results_list.html").read_text()
+    monkeypatch.setattr(mh, "read", lambda pdf, warn=print: (_ for _ in ()).throw(mh.MaharashtraError("no")))
+    asked = []
+    for _ in range(3):
+        mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page,
+                  fetch_pdf=lambda u: asked.append(u) or b"x")
+    assert len(asked) == 20                                   # 10 sheets, twice each, then no more
+    draws = json.loads((tmp_path / "v2/mh/days/2026-10-27.json").read_text())["draws"]
+    assert {d["status"] for d in draws} == {"PDF"} and {d["ocrTries"] for d in draws} == {2}
+    other = tmp_path / "again"
+    asked.clear()
+    mh.update(other, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page,
+              fetch_pdf=lambda u: asked.append(u) or b"x", deadline=0)   # no time: listed, not read
+    assert asked == [] and len(json.loads((other / "v2/mh/days/2026-10-27.json").read_text())["draws"]) == 5

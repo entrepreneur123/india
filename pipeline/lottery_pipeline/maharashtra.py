@@ -31,7 +31,7 @@ ORD = {"1": "1st", "2": "2nd", "3": "3rd"}
 _TIER = re.compile(r"\b([0-9SAIil]{1,2})\s*(st|nd|rd|th)\b[^|]{0,14}?[Pp]rize|\b([Cc]onsolation)\s*[Pp]rize")
 _ORD_FIX = str.maketrans({"S": "5", "A": "4", "I": "1", "i": "1", "l": "1"})
 _AMOUNT = re.compile(r"(?i)rs\.?\s*([\d,]{3,})")
-_COUNT = re.compile(r"(?i)\b(\d{1,3})\s*(?:random\s*)?numbers?\b")
+_COUNT = re.compile(r"(?i)\b(\d{1,3})\s*(?:r[a-z]{3,6}\.?\s*)?n[a-z]{4,7}\b")  # "300 Randorn Numbers", "10 Nurnbers"
 _SERIES = re.compile(r"\b([A-Z]{2})\s?[-.]\s?(\d{2})\b")
 _TITLE = re.compile(r"(?i)maharashtra\W+([a-z][a-z .\-]+?)\W+(weekly|monthly|bumper)\W+lottery")
 _DATE = re.compile(r"(?i)date\s*of\s*draw\s*[:.]?\s*(\d{1,2})\s*[.\-/]\s*(\d{1,2})\s*[.\-/]\s*(\d{4})")
@@ -75,7 +75,8 @@ def _render(pdf: bytes, dpi: int, work: str):
 
 
 def _grid(gray, dpi: int):
-    """The table's ruling lines, and the cells they enclose as (x, y, w, h)."""
+    """The cells the table's ruling lines enclose as (x, y, w, h), the page without those lines, and
+    the heights of the rules that cross the whole table (they separate one prize from the next)."""
     import cv2
     import numpy as np
     b = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 31, 15)
@@ -94,7 +95,17 @@ def _grid(gray, dpi: int):
     lh = cv2.morphologyEx(b, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (dpi // 5, 1)))
     lv = cv2.morphologyEx(b, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (1, dpi // 5)))
     clean = 255 - (b & ~cv2.dilate(lh | lv, np.ones((3, 3), np.uint8)))
-    return cells, clean
+    rules = []
+    if len(xs):
+        across = (cv2.dilate(h, np.ones((7, 1), np.uint8)) > 0).sum(axis=1)  # a slightly skewed rule still counts
+        full = np.nonzero(across >= (xs.max() - xs.min()) * 0.85)[0]
+        for y in full:
+            if rules and y - rules[-1][-1] <= 2:
+                rules[-1].append(int(y))
+            else:
+                rules.append([int(y)])
+        rules = [sum(r) / len(r) for r in rules]
+    return cells, clean, rules
 
 
 def _words(img, work: str) -> list[tuple]:
@@ -175,7 +186,7 @@ def _cell_numbers(gray, cells, dpi: int, work: str) -> tuple[list, list]:
     # read all six test boxes right (the strip misread bold "2142" as "9142").
     for c in cells:
         x, y, w, h = c
-        if not (dpi * 0.45 < h < dpi * 1.0 and dpi * 0.25 < w < W / 3):
+        if not (dpi * 0.38 < h < dpi * 1.0 and dpi * 0.25 < w < W / 3):
             continue
         t = _read_box(gray[y + 3:y + h - 3, x + 3:x + w - 3], work)
         if t:
@@ -246,7 +257,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     """One reading of a sheet. Raises MaharashtraError if the sheet does not make sense."""
     with tempfile.TemporaryDirectory() as work:
         gray = _render(pdf, dpi, work)
-        cells, cleaned = _grid(gray, dpi)
+        cells, cleaned, rules = _grid(gray, dpi)
         words = _words(gray, work)                                # headings, series, date
         num_words = _words(cleaned, work) if clean else words     # the numbers
         cell_nums, read_cells = _cell_numbers(cleaned if clean else gray, cells, dpi, work)
@@ -290,6 +301,7 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             region = text[m.start():] + " " + " ".join(" ".join(w[0] for w in nxt) for nxt in below)
         top = min(cell[1], min(w[2] for w in ws)) if cell else min(w[2] for w in ws)
         line_top = min(w[2] for w in ws)
+        rule = max((r for r in rules if r <= line_top), default=None)
         if not cell or cell[3] < dpi * 0.4:  # no box, or one around this line only: start at its first line
             for prev in reversed(lines[:li]):
                 if _lead(prev) > W * 0.5 or not any(re.search(r"\w\w", w[0]) for w in prev):
@@ -308,7 +320,8 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         cnt = _COUNT.search(region)
         num_word = next((w for w in ws if re.match(r"(?i)numbers?\b", w[0])), None)
         band = (min(w[2] for w in ws), max(w[2] + w[4] for w in ws))
-        t = {"rank": rank, "top": top, "cell": cell, "band": band,
+        t = {"rank": rank, "top": top, "cell": cell, "band": band, "line_top": line_top,
+             "rule": rule if rule is not None and line_top - rule < dpi * 0.8 else None,
              "after": (num_word[1] + num_word[3]) if num_word else
              max(w[1] + w[3] for w in ws if re.search(r"[A-Za-z]", w[0])),
              "prize": int(amt[0].replace(",", "")) if amt else None, "count": int(cnt.group(1)) if cnt else None,
@@ -317,6 +330,13 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
             tiers[rank] = t
     if not tiers:
         raise MaharashtraError("no prize headings")
+    for t in tiers.values():
+        # The rule across the table above a heading: its prize's rows start there, whatever lines of
+        # the heading OCR missed (the Marathi first line above "Consolation Prize" on the 27-10-2026
+        # Padmini sheet: its row of numbers sat above the line that was read). Not when another
+        # heading lies between them: that rule was too faint to find.
+        if t["rule"] is not None and not any(t["rule"] < o["line_top"] < t["line_top"] for o in tiers.values()):
+            t["top"] = t["rule"]
     order = sorted(tiers.values(), key=lambda t: t["top"])
     panel = next((w[2] for w in words if re.fullmatch(r"(?i)panel", w[0])), H)
 
@@ -428,29 +448,76 @@ def _series_of(x: float, y: float, loose, prefix: str, cols: dict | None, dpi: i
     return None
 
 
-def _column_order_ok(nums) -> bool:
-    """Random tiers are printed in ascending order down each column, column after column: so every
-    printed row is ascending, and row r, column c < row r+1, column c < row 1, column c+1.
-    Rows are found by height on the page (y as a fraction of it); within a row the values are sorted (word positions are
-    unreliable where two cells were read as one word), which this check still holds to."""
+def _printed_order(nums, count: int | None = None) -> list | None:
+    """The numbers of a random tier in printed order: down each column, column after column.
+    Columns and rows are found from the positions (x, y, w as page fractions) of all numbers at
+    once, so a number missing from one row cannot shift the rest of that row into the wrong column.
+    With the printed `count`, a place no reading found is returned as ("", x, y, w) where the grid
+    has it (columns of equal length, the last one shorter: 350 = 19 columns of 18 and one of 8).
+    None if the numbers do not form that grid (two in one place, one outside it)."""
+    if not nums:
+        return []
+    width = sorted(n[3] for n in nums)[len(nums) // 2]
+
+    def bands(values, gap):
+        idx, k, prev = {}, -1, None
+        for v in sorted(set(values)):
+            if prev is None or v - prev > gap:
+                k += 1
+            idx[v], prev = k, v
+        return idx
+    col = bands([n[1] for n in nums], width * 0.5)
+    row = bands([n[2] for n in nums], 0.008)  # page fractions: printed rows are >= 0.016 apart
+    size = {k: sum(col[n[1]] == k for n in nums) for k in set(col.values())}
+    big = sorted(size.values())[len(size) // 2]
+    cells: dict = {}
+    stray = []
+    for n in nums:
+        key = (col[n[1]], row[n[2]])
+        if size[key[0]] * 4 < big:  # a column of one or two: a position estimated from a merged OCR word
+            stray.append(n)
+        elif key in cells:
+            return None
+        else:
+            cells[key] = n
+    cx = {k: sum(n[1] for kk, n in cells.items() if kk[0] == k) / sum(kk[0] == k for kk in cells) for k in {kk[0] for kk in cells}}
+    cy = {r: sum(n[2] for kk, n in cells.items() if kk[1] == r) / sum(kk[1] == r for kk in cells) for r in {kk[1] for kk in cells}}
+    for n in stray:
+        r = row[n[2]]
+        if any(kk[1] == r and m[0] == n[0] for kk, m in cells.items()):
+            continue  # the same number again, its position estimated wrong: already in its place
+        free = sorted((k for k in cx if (k, r) not in cells), key=lambda k: abs(cx[k] - n[1]))
+        if not free or (len(free) > 1 and abs(cx[free[1]] - n[1]) < abs(cx[free[0]] - n[1]) + width):
+            return None
+        cells[(free[0], r)] = n
+    cols, rows = sorted(cx), sorted(cy)
+    if cols != list(range(len(cols))) or rows != list(range(len(rows))):
+        return None  # a whole column or row missing: not a grid to fill
+    if count is None:
+        want = set(cells)
+        for c in cols:  # without the count: every column a run of rows from the top, none longer than the one before
+            rs = sorted(r for k, r in cells if k == c)
+            if rs != list(range(len(rs))):
+                return None
+        lens = [sum(k == c for k, _ in cells) for c in cols]
+        if lens != sorted(lens, reverse=True) or len(set(lens)) > 2:
+            return None
+    else:
+        R = len(rows)
+        if not 0 < count <= R * len(cols) or count <= R * (len(cols) - 1):
+            return None
+        want = {(c, r) for c in cols for r in rows if c * R + r < count}
+        if set(cells) - want:
+            return None
+    return [cells.get(k) or ("", cx[k[0]], cy[k[1]], width) for k in sorted(want)]
+
+
+def _column_order_ok(nums, count: int | None = None) -> bool:
+    """Random tiers are printed in ascending order down each column, column after column."""
     if len(nums) < 20:
         return True
-    pts = sorted(nums, key=lambda n: n[2])
-    rows, cur = [], [pts[0]]
-    for p in pts[1:]:
-        if p[2] - cur[-1][2] > 0.008:  # page fractions: printed rows are >= 0.016 apart
-            rows.append(cur)
-            cur = []
-        cur.append(p)
-    rows.append(cur)
-    lens = [len(r) for r in rows]
-    # Full rows first; when the count does not fill the grid the last column is shorter
-    # (350 numbers = 8 rows of 20 + 10 rows of 19).
-    if lens != sorted(lens, reverse=True) or lens[0] - lens[-1] > 1:
-        return False
-    grid = [sorted(int(n[0]) for n in r) for r in rows]
-    seq = [row[c] for c in range(lens[0]) for row in grid if c < len(row)]
-    return all(a < b for a, b in zip(seq, seq[1:]))
+    seq = _printed_order(nums, count)
+    return seq is not None and all(x[0] for x in seq) and all(int(a[0]) < int(b[0]) for a, b in zip(seq, seq[1:]))
 
 
 # ---------------------------------------------------------------- agreement between readings
@@ -496,51 +563,106 @@ class Glyphs:
         try:
             with tempfile.TemporaryDirectory() as work:
                 gray = _render(pdf, dpi, work)
-                cells, _ = _grid(gray, dpi)
+                cells, _, _ = _grid(gray, dpi)
             return cls(gray, cells)  # the grey scan: removing ruling lines also breaks digit strokes
         except Exception:  # noqa: BLE001 - without it, numbers just need the stricter Tesseract vote
             return None
 
     def _box(self, x: float, y: float, w: float):
+        """The crop around the number at (x, y), and the height of its centre in the crop."""
         cx, cy, half = x * self.W, y * self.H, w * self.W * 0.6
         cell = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
                      and c[3] < self.H * 0.1), None)
         if cell is None:  # no box found around it: a window the size of a number
-            x0, x1, y0, y1 = int(cx - half), int(cx + half), int(cy - half * 0.45), int(cy + half * 0.45)
-        else:
-            y0, y1 = cell[1], cell[1] + cell[3]
-            x0, x1 = (cell[0], cell[0] + cell[2]) if cell[2] < w * self.W * 2.2 else (int(cx - half), int(cx + half))
-        return self.img[max(0, y0):max(0, y1), max(0, x0):max(0, x1)]
+            x0, x1, y0, y1 = int(cx - half), int(cx + half), int(cy - half * 0.7), int(cy + half * 0.7)
+        else:  # a little more than the box: a faint rule can make it shorter than its digits (2802 cut at the foot)
+            y0, y1 = cell[1] - cell[3] // 4, cell[1] + cell[3] + cell[3] // 4
+            x0, x1 = ((cell[0] - cell[2] // 10, cell[0] + cell[2] + cell[2] // 10) if cell[2] < w * self.W * 2.2
+                      else (int(cx - half), int(cx + half)))  # and wider: "2802" ended past its box's right rule
+        y0, x0 = max(0, y0), max(0, x0)
+        return self.img[y0:max(0, y1), x0:max(0, x1)], cy - y0
 
-    def _split(self, crop):
-        """The four digits of a box, left to right, each scaled to SIZE; None unless exactly four."""
+    @staticmethod
+    def _digits(lab, st, n: int, shape, cy: float, k: int = 4, groups: bool = True) -> list | None:
+        """The k characters of the number, left to right, as masks: one line of characters of one
+        height (a box whose rule is too faint also holds the heading text above it), the group of k
+        nearest the number's centre (a window may hold part of the next number). Two digits printed
+        touching ("44") are cut where they have the least ink. Not characters: ruling lines (as long
+        as the crop is wide or tall), shapes cut by the crop's left or right side, specks."""
+        import numpy as np
+        ch, cw = shape
+        comps = [i for i in range(1, n) if st[i][0] > 0 and st[i][0] + st[i][2] < cw and st[i][4] > 15
+                 and st[i][2] < cw * 0.5 and st[i][3] < ch * 0.85 and st[i][3] > ch * 0.08
+                 and st[i][2] > st[i][3] * 0.2]  # a dotted rule's dash: a 1 is twice as wide
+        lines: list[list[int]] = []
+        for i in sorted(comps, key=lambda i: st[i][1] + st[i][3] / 2):
+            mid = st[i][1] + st[i][3] / 2
+            ln = next((ln for ln in lines if abs(mid - (st[ln[0]][1] + st[ln[0]][3] / 2)) < st[ln[0]][3] * 0.4), None)
+            if ln is None:
+                lines.append([i])
+            else:
+                ln.append(i)
+        best = None
+        for ln in lines:
+            top = max(st[i][3] for i in ln)
+            ln = sorted((i for i in ln if st[i][3] >= top * 0.7), key=lambda i: st[i][0])
+            if top > 1.3 * min(st[i][3] for i in ln):
+                continue
+            groups, cur = [], [ln[0]]
+            for i in ln[1:]:
+                if groups and st[i][0] - (st[cur[-1]][0] + st[cur[-1]][2]) > top * 0.5:  # the gap between two numbers
+                    groups.append(cur)
+                    cur = []
+                cur.append(i)
+            groups.append(cur)
+            for grp in groups:
+                chars = []
+                narrow = sorted(st[i][2] for i in grp)[len(grp) // 2]
+                for i in grp:
+                    x, y, w, h = st[i][:4]
+                    mask = lab[y:y + h, x:x + w] == i
+                    parts = round(w / narrow) if len(grp) < k and w > narrow * 1.6 else 1
+                    while parts > 1:  # cut off one digit where the ink is thinnest near its expected edge
+                        cut_at = mask.shape[1] // parts
+                        lo, hi = max(1, int(cut_at * 0.7)), min(mask.shape[1] - 1, int(cut_at * 1.3) + 1)
+                        cut = lo + int(np.argmin(mask[:, lo:hi].sum(axis=0)))
+                        chars.append(mask[:, :cut])
+                        mask, parts = mask[:, cut:], parts - 1
+                    chars.append(mask)
+                if len(chars) != k:
+                    continue
+                d = abs(sum(st[i][1] + st[i][3] / 2 for i in grp) / len(grp) - cy)
+                d += abs((st[grp[0]][0] + st[grp[-1]][0] + st[grp[-1]][2]) / 2 - cw / 2) * 0.5
+                if best is None or d < best[0]:
+                    best = (d, chars)
+        return best[1] if best else None
+
+    def _vec(self, mask):
+        """One character as a unit vector: trimmed, centred in a 2:3 box, scaled to SIZE, lightly blurred."""
         import cv2
         import numpy as np
+        ys, xs = np.nonzero(mask)
+        if not len(ys):
+            return np.zeros(self.SIZE[0] * self.SIZE[1], np.float32)
+        g = mask[ys.min():ys.max() + 1, xs.min():xs.max() + 1].astype(np.float32)
+        h, w = g.shape
+        side = max(h, int(w * 1.5))
+        pad = np.zeros((side, int(side / 1.5) + 1), np.float32)
+        pad[(side - h) // 2:(side - h) // 2 + h, (pad.shape[1] - w) // 2:(pad.shape[1] - w) // 2 + w] = g
+        v = cv2.GaussianBlur(cv2.resize(pad, self.SIZE, interpolation=cv2.INTER_AREA), (3, 3), 0).ravel()
+        v = v - v.mean()
+        return v / (np.linalg.norm(v) or 1)
+
+    def _split(self, box, k: int = 4):
+        """The k characters of a box, left to right, as vectors; None unless exactly k were found."""
+        import cv2
+        crop, cy = box
         if crop is None or crop.size == 0:
             return None
         _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
-        ch, cw = crop.shape
-        # Digits: not touching the box edge (rules, neighbours cut by a window), and as tall as the tallest.
-        comps = [i for i in range(1, n) if st[i][0] > 0 and st[i][1] > 0 and st[i][0] + st[i][2] < cw
-                 and st[i][1] + st[i][3] < ch and st[i][4] > 15]
-        top = max((st[i][3] for i in comps), default=0)
-        comps = [i for i in comps if st[i][3] >= top * 0.7]
-        if len(comps) != 4:
-            return None
-        hs = [st[i][3] for i in comps]
-        if max(hs) > 1.3 * min(hs):  # not four digits of one number
-            return None
-        out = []
-        for i in sorted(comps, key=lambda i: st[i][0]):
-            x, y, w, h = st[i][:4]
-            g = (lab[y:y + h, x:x + w] == i).astype(np.float32)
-            side = max(h, int(w * 1.5))
-            pad = np.zeros((side, int(side / 1.5) + 1), np.float32)
-            pad[(side - h) // 2:(side - h) // 2 + h, (pad.shape[1] - w) // 2:(pad.shape[1] - w) // 2 + w] = g
-            v = cv2.resize(pad, self.SIZE, interpolation=cv2.INTER_AREA).ravel()
-            out.append(v / (np.linalg.norm(v) or 1))
-        return out
+        chars = self._digits(lab, st, n, crop.shape, cy, k)
+        return [self._vec(c) for c in chars] if chars else None
 
     def train(self, labelled) -> None:
         """labelled: [(value, x, y, w)] read the same way by every reading."""
@@ -555,7 +677,6 @@ class Glyphs:
 
     def read_series(self, x: float, y: float, w: float) -> str | None:
         """The two digits of the series box left of the number at (x, y) ("GL-08" -> "08")."""
-        import numpy as np
         cx, cy = x * self.W, y * self.H
         own = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
                     and c[3] < self.H * 0.1), None)
@@ -566,33 +687,33 @@ class Glyphs:
             box = max(left, key=lambda c: c[0]) if left else (own[0] - own[2], own[1], own[2] - 6, own[3])
         else:  # no box found around the number: the strip left of it, as wide as a "Series" column
             half = w * self.W * 0.6
-            box = (int(cx - self.W * 0.3), int(cy - half * 0.6), int(self.W * 0.3 - half), int(half * 1.2))
-        crop = self.img[max(0, box[1]):box[1] + box[3], max(0, box[0]):box[0] + box[2]]
+            box = (int(cx - self.W * 0.3), int(cy - half * 0.9), int(self.W * 0.3 - half), int(half * 1.8))
+        y0 = max(0, box[1])
+        crop = self.img[y0:box[1] + box[3], max(0, box[0]):box[0] + box[2]]
         if crop.size == 0:
             return None
         import cv2
         _, b = cv2.threshold(crop, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
         n, lab, st, _ = cv2.connectedComponentsWithStats(b, 8)
-        ch, cw = crop.shape
-        comps = [i for i in range(1, n) if st[i][0] > 0 and st[i][1] > 0 and st[i][0] + st[i][2] < cw
-                 and st[i][1] + st[i][3] < ch and st[i][4] > 15]
-        top = max((st[i][3] for i in comps), default=0)
-        comps = sorted((i for i in comps if st[i][3] >= top * 0.7), key=lambda i: st[i][0])
-        if len(comps) < 4:  # two letters and two digits at least
+        for k in (5, 4):  # "GL-08" (the dash is too small to count) or "GL08"
+            chars = self._digits(lab, st, n, crop.shape, cy - y0, k, groups=False)  # the dash leaves a gap
+            if chars:
+                out = ""
+                for c in chars[-2:]:
+                    ch_ = self._classify(self._vec(c))
+                    if ch_ is None:
+                        return None
+                    out += ch_
+                return out
+        return None
+
+    def tesseract(self, x: float, y: float, w: float) -> str | None:
+        """Tesseract on the box at (x, y) alone (see _read_box): a second, independent reading of a place."""
+        crop, _ = self._box(x, y, w)
+        if crop.size == 0:
             return None
-        out = ""
-        for i in comps[-2:]:
-            x0, y0, w0, h0 = st[i][:4]
-            g = (lab[y0:y0 + h0, x0:x0 + w0] == i).astype(np.float32)
-            side = max(h0, int(w0 * 1.5))
-            pad = np.zeros((side, int(side / 1.5) + 1), np.float32)
-            pad[(side - h0) // 2:(side - h0) // 2 + h0, (pad.shape[1] - w0) // 2:(pad.shape[1] - w0) // 2 + w0] = g
-            v = cv2.resize(pad, self.SIZE, interpolation=cv2.INTER_AREA).ravel()
-            ch_ = self._classify(v / (np.linalg.norm(v) or 1))
-            if ch_ is None:
-                return None
-            out += ch_
-        return out
+        with tempfile.TemporaryDirectory() as work:
+            return _read_box(crop, work)
 
     def _classify(self, v) -> str | None:
         import numpy as np
@@ -603,7 +724,6 @@ class Glyphs:
 
     def read(self, x: float, y: float, w: float) -> str | None:
         """The number at (x, y), or None if a digit is unsure or this sheet taught no template for it."""
-        import numpy as np
         parts = self._split(self._box(x, y, w))
         if not parts or len(self.templates) < 10:
             return None
@@ -650,7 +770,8 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
             continue  # a misread ordinal in one reading
         tops = sorted(h["top"] for h in hs)
         headings.append({"rank": rank, "top": tops[len(tops) // 2], "prize": _vote([h["prize"] for h in hs if h["prize"]]),
-                         "count": _vote([h["count"] for h in hs if h["count"]])})
+                         "count": _vote([h["count"] for h in hs if h["count"]]),
+                         "counts": [c for c, _ in Counter(h["count"] for h in hs if h["count"]).most_common()]})
     headings.sort(key=lambda h: h["top"])
 
     # Same printed number = same place on the page in every reading.
@@ -673,6 +794,21 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
             c["votes"][i] = (None, None)  # this reading put two numbers in one place: no vote
         else:
             c["votes"].setdefault(i, (n, ser))
+    # One printed number split in two places (a cell box centre in some readings, a word centre a
+    # little higher in others: 1160 at y 0.752..0.759 on the 27-10-2026 Sahyadri sheet). Two places
+    # that no reading read both of, closer than half a number, are one place; two printed numbers
+    # are always both read by some reading.
+    merged = True
+    while merged:
+        merged = False
+        for a in clusters:
+            b = next((b for b in clusters if b is not a and not (a["votes"].keys() & b["votes"].keys())
+                      and abs(a["y"] - b["y"]) < 0.012 and abs(a["x"] - b["x"]) < min(a["w"], b["w"]) * 0.5), None)
+            if b is not None:
+                a["votes"].update(b["votes"])
+                clusters.remove(b)
+                merged = True
+                break
     numbers = []
     for c in clusters:
         if len(c["votes"]) < 2:
@@ -691,7 +827,12 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
         end = headings[j + 1]["top"] if j + 1 < len(headings) else 2
         mine = [x for x in numbers if h["top"] <= x[2] < end]
         if len(mine) >= 20:
-            mine = _settle_by_order(mine, h["rank"], check)
+            if h["count"] is None or _printed_order(mine, h["count"]) is None:
+                # The count is misread now and then ("(200 Randorn Numbers" for 300): a count some
+                # reading gave that the printed grid of numbers fits, if only one does.
+                fit = [c for c in h["counts"] if _printed_order(mine, c) is not None]
+                h["count"] = fit[0] if len(fit) == 1 else None
+            mine = _settle_by_order(mine, h["rank"], check, h["count"])
         else:
             mine = [_settle_small(x, h["rank"], check) for x in mine]
         if not h["prize"]:
@@ -709,7 +850,7 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
                 raise MaharashtraError(f"{h['rank']} prize: the printed count is unreadable")
             if len(mine) != h["count"]:
                 raise MaharashtraError(f"{h['rank']} prize: sheet says {h['count']} numbers, read {len(mine)}")
-            if not _column_order_ok([(n, x, y, w) for n, x, y, w, *_ in mine]):
+            if not _column_order_ok([(n, x, y, w) for n, x, y, w, *_ in mine], h["count"]):
                 raise MaharashtraError(f"{h['rank']} prize: numbers out of the printed order")
             nums = sorted(n for n, *_ in mine)
             if len(set(nums)) != len(nums):
@@ -748,40 +889,52 @@ def _settle_small(x: tuple, rank: str, check=None) -> tuple:
     return _with_series(x, c[0][0])
 
 
-def _settle_by_order(mine: list, rank: str, check=None) -> list:
-    """A random tier is printed in ascending order, column after column. Places every reading read
-    the same way are taken; a place the readings split on (4139 x3, 1139 x2) takes the one value,
-    read at least twice, that fits between its unanimous neighbours. A majority is not enough here:
-    the same misread can repeat. If none or more than one value fits, the sheet is not published."""
-    pts = sorted(mine, key=lambda n: n[2])
-    rows, cur = [], [pts[0]]
-    for p in pts[1:]:
-        if p[2] - cur[-1][2] > 0.008:
-            rows.append(cur)
-            cur = []
-        cur.append(p)
-    rows.append(cur)
-    rows = [sorted(r, key=lambda n: n[1]) for r in rows]
-    seq = [r[c] for c in range(max(len(r) for r in rows)) for r in rows if c < len(r)]
-    sure = [int(x[0]) if x[0] else None for x in seq]
+def _settle_by_order(mine: list, rank: str, check=None, count: int | None = None) -> list:
+    """A random tier is printed in ascending order, column after column, which settles each place:
+    * every Tesseract reading the same and the second reader (`check`) the same or unsure: taken;
+    * the second reader sure of a value that fits between the settled neighbours: taken when some
+      Tesseract reading gave it too, or one digit away from a value read at least twice (Tesseract
+      repeats its misreads on these scans: 4165 x4 between 1148 and 1299, the shapes say 1165;
+      7207 x4 and 7907 between 7278 and 7483, the shapes say 7307 - both right on the sheet);
+    * no second reading: the one value read at least twice that fits between the neighbours;
+    * a place of the printed grid no reading found (`count` given): the value the second reader and
+      Tesseract on that box alone both read, if it fits between the neighbours.
+    Anything else (two values that fit, none, the two readers against each other) and the sheet is
+    not published; the whole order is checked again afterwards."""
+    seq = _printed_order(mine, count)
+    if seq is None:
+        raise MaharashtraError(f"{rank} prize: the numbers do not form the printed columns")
+    seq = [x if x[0] != "" else (None, x[1], x[2], x[3], {}, Counter()) for x in seq]  # a hole in the grid
+    shapes = [check(x[1], x[2], x[3]) if check else None for x in seq]
+    sure = [int(x[0]) if x[0] and g in (None, x[0]) else None for x, g in zip(seq, shapes)]
     out = []
-    for k, x in enumerate(seq):
-        if x[0] is not None:
+    for k, (x, g) in enumerate(zip(seq, shapes)):
+        if sure[k] is not None:
             out.append(_with_series(x, x[0]))
-            continue
-        second = check(x[1], x[2], x[3]) if check else None
-        if second is not None and x[5].get(second, 0) >= 2:  # both readers: taken (the order is checked after)
-            out.append(_with_series(x, second))
             continue
         lo = next((v for v in reversed(sure[:k]) if v is not None), -1)
         hi = next((v for v in sure[k + 1:] if v is not None), 10_000)
-        fit = [n for n, c in x[5].items() if c >= 2 and lo < int(n) < hi]
-        if len(fit) > 1 and second is not None:  # the second reader picks between values that both fit
-            fit = [n for n in fit if n == second]
+        fits = lambda n: lo < int(n) < hi  # noqa: E731
+        if not x[5]:  # no reading found this place
+            box = getattr(getattr(check, "__self__", None), "tesseract", None)
+            if g is not None and fits(g) and box is not None and box(x[1], x[2], x[3]) == g:
+                out.append(_with_series(x, g))
+                continue
+            raise MaharashtraError(f"{rank} prize: a printed place no reading found (shapes say {g}, between {lo} and {hi})")
+        if g is not None:
+            if fits(g) and (x[5].get(g, 0) >= 1 or any(c >= 2 and _one_digit_apart(n, g) for n, c in x[5].items())):
+                out.append(_with_series(x, g))
+                continue
+            raise MaharashtraError(f"{rank} prize: the two readers disagree ({dict(x[5])}, shapes say {g}, between {lo} and {hi})")
+        fit = [n for n, c in x[5].items() if c >= 2 and fits(n)]
         if len(fit) != 1:
             raise MaharashtraError(f"{rank} prize: readings disagree on a number ({dict(x[5])} between {lo} and {hi})")
         out.append(_with_series(x, fit[0]))
     return out
+
+
+def _one_digit_apart(a: str, b: str) -> bool:
+    return len(a) == len(b) and sum(x != y for x, y in zip(a, b)) == 1
 
 
 def _check(head: dict, tiers: list[dict]) -> None:
@@ -858,52 +1011,68 @@ def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -
     return d | {"status": "OK", "time": h.get("time", ""), "drawNo": h.get("drawNo"), "series": h["series"], "tiers": tiers}
 
 
-def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr: bool = True) -> int:
-    """Read every sheet listed for the last few days that is not published yet. Returns how many
-    draws changed. ocr=False only lists the draws with their official PDF (no download, no OCR)."""
+OCR_TRIES = 2           # a sheet reads the same way every time: two tries cover a failed download or a timeout
+SHEET_SECONDS = 240     # what one sheet may take (six readings, ~2 min on a GitHub runner)
+
+
+def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr: bool = True,
+           deadline: float | None = None) -> int:
+    """List every draw of the last few days with its official PDF, then (ocr=True) read the sheets
+    not published as numbers yet, newest first, until `deadline` (time.monotonic()) leaves no room
+    for another. Returns how many draws changed."""
     import json
     import pathlib
+    import time
     out = pathlib.Path(out)
     page = (fetch_list or (lambda: get_bytes(LIST_URL, timeout=90).decode("utf-8", "replace")))()
-    changed = 0
-    for date, local, url in list_sheets(page):
-        if (today - date).days > KEEP_TRYING_DAYS or date > today:
-            continue
+    sheets = [(date, local, url) for date, local, url in list_sheets(page) if 0 <= (today - date).days <= KEEP_TRYING_DAYS]
+    changed: set[str] = set()
+
+    def load(date):
         f = out / FEED / "days" / f"{date.isoformat()}.json"
-        day = json.loads(f.read_text()) if f.exists() else {"schema": 2, "date": date.isoformat(), "draws": []}
-        known = {x["sources"][0]["url"]: x for x in day["draws"]}
-        if known.get(url, {}).get("status") == "OK":
+        return f, (json.loads(f.read_text()) if f.exists() else {"schema": 2, "date": date.isoformat(), "draws": []})
+
+    def save(date, url, got):
+        f, day = load(date)
+        if next((x for x in day["draws"] if x["sources"][0]["url"] == url), None) == got:
+            return
+        day["draws"] = [x for x in day["draws"] if x["sources"][0]["url"] != url] + [got]
+        day["draws"].sort(key=lambda x: (x.get("time") or "99", x["name"]))
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps(day, ensure_ascii=False, separators=(",", ":")))
+        changed.add(url)
+
+    def known(date, url):
+        return next((x for x in load(date)[1]["draws"] if x["sources"][0]["url"] == url), None)
+
+    for date, local, url in sheets:  # every draw is on the site at once, as its official sheet
+        k = known(date, url)
+        if k is None or k.get("status") != "OK":
+            save(date, url, entry(date, url, None, local) | ({"ocrTries": k["ocrTries"]} if k and "ocrTries" in k else {}))
+    for date, local, url in sorted(sheets, key=lambda x: x[0], reverse=True) if ocr else []:
+        k = known(date, url)
+        if k.get("status") == "OK" or k.get("ocrTries", 0) >= OCR_TRIES:
             continue
-        if not ocr:
-            got = entry(date, url, None, local)
-            if known.get(url) != got:
-                day["draws"] = [x for x in day["draws"] if x["sources"][0]["url"] != url] + [got]
-                day["draws"].sort(key=lambda x: (x.get("time") or "99", x["name"]))
-                f.parent.mkdir(parents=True, exist_ok=True)
-                f.write_text(json.dumps(day, ensure_ascii=False, separators=(",", ":")))
-                changed += 1
-            continue
+        if deadline is not None and time.monotonic() + SHEET_SECONDS > deadline:
+            warn("Maharashtra: no time left to read more sheets this run")
+            break
+        tries = {"ocrTries": k.get("ocrTries", 0) + 1}
         try:
             pdf = (fetch_pdf or download)(url)
         except Exception as e:
             warn(f"Maharashtra {date} {local}: download failed: {e}")
+            save(date, url, k | tries)
             continue
         try:
             got = entry(date, url, read(pdf, warn), local)
         except MaharashtraError as e:
             warn(f"Maharashtra {date} {english_name(url) or local}: not published as numbers ({e}); linking the PDF")
-            got = entry(date, url, None, local)
-        if known.get(url) == got:
-            continue
-        day["draws"] = [x for x in day["draws"] if x["sources"][0]["url"] != url] + [got]
-        day["draws"].sort(key=lambda x: (x.get("time") or "99", x["name"]))
-        f.parent.mkdir(parents=True, exist_ok=True)
-        f.write_text(json.dumps(day, ensure_ascii=False, separators=(",", ":")))
-        changed += 1
+            got = entry(date, url, None, local) | tries
+        save(date, url, got)
     days = sorted((p.stem for p in (out / FEED / "days").glob("*.json")), reverse=True) if (out / FEED / "days").exists() else []
     (out / FEED).mkdir(parents=True, exist_ok=True)
     (out / FEED / "index.json").write_text(json.dumps({"schema": 2, "dates": days}, separators=(",", ":")))
-    return changed
+    return len(changed)
 
 
 def main(argv=None) -> int:
@@ -912,9 +1081,11 @@ def main(argv=None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--ocr", action="store_true", help="read the numbers (needs tesseract, poppler, OpenCV); "
                     "without it each draw is listed with its official PDF only")
+    ap.add_argument("--seconds", type=int, default=0, help="with --ocr: stop starting new sheets after this long")
     a = ap.parse_args(argv)
+    import time
     ist = dt.timezone(dt.timedelta(hours=5, minutes=30))
-    n = update(a.out, dt.datetime.now(ist).date(), ocr=a.ocr)
+    n = update(a.out, dt.datetime.now(ist).date(), ocr=a.ocr, deadline=time.monotonic() + a.seconds if a.seconds else None)
     print(f"maharashtra: {n} draws changed")
     return 0
 

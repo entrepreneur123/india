@@ -83,6 +83,7 @@ jobs:
       IN_BACKFILL: ${{ inputs.backfill_days }}
       IN_TARGET: ${{ inputs.target }}
       CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+      MH_OCR: "false"   # Maharashtra numbers by OCR (see the Maharashtra step); "false": official PDFs only
     steps:
       - uses: actions/checkout@v4
 
@@ -113,9 +114,11 @@ jobs:
       - name: Install tools
         run: |
           pkgs="poppler-utils"
-          if [ "${{ steps.mode.outputs.ocr }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
+          if [ "${{ steps.mode.outputs.ocr }}" = "true" ] || [ "${{ steps.mode.outputs.mh }}" = "true" ]; then pkgs="$pkgs tesseract-ocr"; fi
           sudo apt-get update -qq && sudo apt-get install -y -qq $pkgs
           pip install -q pillow==12.3.0 pytest==9.1.1
+          # Maharashtra's scanned sheets: table lines and digit shapes (lottery_pipeline/maharashtra.py)
+          if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then pip install -q opencv-python-headless==4.12.0.88 numpy==2.2.6; fi
 
       - name: Unit tests
         working-directory: pipeline
@@ -204,15 +207,23 @@ jobs:
               flip_now=1 publish; flip_now=0
               now=$(date +%s)
             fi
-            # Started early (the normal case): wait here instead of asking the source every minute.
-            if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
           fi
           if [ "${{ steps.mode.outputs.mh }}" = "true" ]; then
-            # Maharashtra State Lottery (draws ~4-5 PM IST): each draw with its official result sheet (PDF).
-            # Numbers are not published yet: the OCR of the scanned sheets (lottery_pipeline.maharashtra --ocr)
-            # did not yet pass its accuracy check. The 8 PM run does this in its idle wait.
-            nosecret timeout 10m python -m lottery_pipeline.maharashtra --out ../public || echo "::warning::Maharashtra update failed"
+            # Maharashtra State Lottery (draws ~4-5 PM IST): every draw with its official result sheet (PDF) at
+            # once, then its numbers read from that scanned sheet (~2 min a sheet), only in the time this run
+            # has before its draw is due (the 8 PM run's wait), so the Dear result is never held up.
+            # (publish below takes up to ~4 min: site build and Cloudflare deploy)
+            if [ -n "$from" ]; then budget=$(( start - $(date +%s) - 300 )); else budget=1500; fi
+            # MH_OCR stays off until every test sheet that reads matches the printed sheet (pipeline/tests/test_maharashtra.py).
+            if [ "$MH_OCR" = "true" ] && [ "$budget" -ge 300 ]; then mh_args="--ocr --seconds $budget"; else mh_args=""; budget=120; fi
+            nosecret timeout $(( budget + 60 )) python -m lottery_pipeline.maharashtra --out ../public $mh_args \
+              || echo "::warning::Maharashtra update failed or ran out of time"
             publish
+          fi
+          if [ -n "$from" ]; then
+            now=$(date +%s)
+            # Started early (the normal case): wait here instead of asking the source every minute.
+            if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
           fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do
