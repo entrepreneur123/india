@@ -476,8 +476,6 @@ const nl: Dict = {
   'profile.loadFailed': 'Dit profiel kon niet laden',
   'profile.unavailable': 'Profiel niet beschikbaar',
   'profile.unavailableBody': 'Je kunt alleen mensen zien die je hebt ontmoet, en niet iemand die je hebt geblokkeerd.',
-  'profile.posts.one': '{n} post',
-  'profile.posts.other': '{n} posts',
   'profile.message': 'Bericht',
   'profile.acceptRequest': 'Verzoek accepteren',
   'profile.withdraw': 'Verzoek verstuurd · Intrekken',

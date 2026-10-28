@@ -485,8 +485,6 @@ const fil: Dict = {
   'profile.loadFailed': 'Hindi ma-load ang profile na ito',
   'profile.unavailable': 'Hindi available ang profile',
   'profile.unavailableBody': 'Makikita mo lang ang mga taong nakilala mo na, at hindi ang mga na-block mo.',
-  'profile.posts.one': '{n} post',
-  'profile.posts.other': '{n} post',
   'profile.message': 'Mag-message',
   'profile.acceptRequest': 'Tanggapin ang request',
   'profile.withdraw': 'Naipadala ang request · Bawiin',

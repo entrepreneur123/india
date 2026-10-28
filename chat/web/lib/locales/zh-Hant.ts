@@ -485,8 +485,6 @@ const zhHant: Dict = {
   'profile.loadFailed': '無法載入此個人頁面',
   'profile.unavailable': '個人頁面不可用',
   'profile.unavailableBody': '你只能看到你遇到過的人，且看不到你已封鎖的人。',
-  'profile.posts.one': '{n} 則貼文',
-  'profile.posts.other': '{n} 則貼文',
   'profile.message': '發訊息',
   'profile.acceptRequest': '接受申請',
   'profile.withdraw': '已傳送申請 · 撤回',

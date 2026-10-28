@@ -485,8 +485,6 @@ const th: Dict = {
   'profile.loadFailed': 'โหลดโปรไฟล์นี้ไม่ได้',
   'profile.unavailable': 'ดูโปรไฟล์นี้ไม่ได้',
   'profile.unavailableBody': 'คุณดูได้เฉพาะคนที่เคยเจอ และดูคนที่คุณบล็อกไม่ได้',
-  'profile.posts.one': '{n} โพสต์',
-  'profile.posts.other': '{n} โพสต์',
   'profile.message': 'ข้อความ',
   'profile.acceptRequest': 'รับคำขอ',
   'profile.withdraw': 'ส่งคำขอแล้ว · ถอน',

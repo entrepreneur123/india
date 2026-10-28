@@ -485,8 +485,6 @@ const ko: Dict = {
   'profile.loadFailed': '프로필을 불러오지 못했어요',
   'profile.unavailable': '볼 수 없는 프로필이에요',
   'profile.unavailableBody': '만난 적 있는 사람만 볼 수 있고, 차단한 사람은 볼 수 없어요.',
-  'profile.posts.one': '게시물 {n}개',
-  'profile.posts.other': '게시물 {n}개',
   'profile.message': '메시지',
   'profile.acceptRequest': '신청 수락',
   'profile.withdraw': '신청함 · 취소',

@@ -485,8 +485,6 @@ const fa: Dict = {
   'profile.loadFailed': 'این پروفایل بارگذاری نشد',
   'profile.unavailable': 'پروفایل در دسترس نیست',
   'profile.unavailableBody': 'فقط پروفایل کسانی را می‌بینید که با آن‌ها آشنا شده‌اید، نه کسانی که مسدودشان کرده‌اید.',
-  'profile.posts.one': '{n} پست',
-  'profile.posts.other': '{n} پست',
   'profile.message': 'پیام',
   'profile.acceptRequest': 'پذیرفتن درخواست',
   'profile.withdraw': 'درخواست ارسال شد · پس گرفتن',

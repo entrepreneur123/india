@@ -459,8 +459,6 @@ const mr: Dict = {
   'profile.loadFailed': 'हे प्रोफाइल लोड होऊ शकले नाही',
   'profile.unavailable': 'प्रोफाइल उपलब्ध नाही',
   'profile.unavailableBody': 'तुम्ही फक्त भेटलेल्या लोकांनाच पाहू शकता, आणि ब्लॉक केलेले कोणीही दिसत नाही.',
-  'profile.posts.one': '{n} पोस्ट',
-  'profile.posts.other': '{n} पोस्ट',
   'profile.message': 'मेसेज',
   'profile.acceptRequest': 'विनंती स्वीकारा',
   'profile.withdraw': 'विनंती पाठवली · मागे घ्या',

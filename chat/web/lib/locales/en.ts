@@ -484,8 +484,6 @@ const en = {
   'profile.loadFailed': 'Couldn’t load this profile',
   'profile.unavailable': 'Profile not available',
   'profile.unavailableBody': 'You can only see people you’ve met and haven’t blocked.',
-  'profile.posts.one': '{n} post',
-  'profile.posts.other': '{n} posts',
   'profile.message': 'Message',
   'profile.acceptRequest': 'Accept request',
   'profile.withdraw': 'Request sent · Withdraw',

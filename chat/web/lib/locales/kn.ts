@@ -476,8 +476,6 @@ const kn: Dict = {
   'profile.loadFailed': 'ಈ ಪ್ರೊಫೈಲ್ ಲೋಡ್ ಆಗಲಿಲ್ಲ',
   'profile.unavailable': 'ಪ್ರೊಫೈಲ್ ಲಭ್ಯವಿಲ್ಲ',
   'profile.unavailableBody': 'ನೀವು ಭೇಟಿಯಾದವರನ್ನು ಮಾತ್ರ ನೋಡಬಹುದು, ನೀವು ಬ್ಲಾಕ್ ಮಾಡಿದವರನ್ನು ನೋಡಲು ಆಗುವುದಿಲ್ಲ.',
-  'profile.posts.one': '{n} ಪೋಸ್ಟ್',
-  'profile.posts.other': '{n} ಪೋಸ್ಟ್‌ಗಳು',
   'profile.message': 'ಮೆಸೇಜ್',
   'profile.acceptRequest': 'ರಿಕ್ವೆಸ್ಟ್ ಸ್ವೀಕರಿಸಿ',
   'profile.withdraw': 'ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಲಾಗಿದೆ · ಹಿಂಪಡೆಯಿರಿ',

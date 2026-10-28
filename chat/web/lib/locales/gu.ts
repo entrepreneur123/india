@@ -459,8 +459,6 @@ const gu: Dict = {
   'profile.loadFailed': 'આ પ્રોફાઇલ લોડ થઈ શકી નહીં',
   'profile.unavailable': 'પ્રોફાઇલ ઉપલબ્ધ નથી',
   'profile.unavailableBody': 'તમે ફક્ત એવા લોકોને જોઈ શકો છો જેમને તમે મળ્યા છો, અને તમે બ્લૉક કરેલા કોઈને નહીં.',
-  'profile.posts.one': '{n} પોસ્ટ',
-  'profile.posts.other': '{n} પોસ્ટ',
   'profile.message': 'મેસેજ',
   'profile.acceptRequest': 'રિક્વેસ્ટ સ્વીકારો',
   'profile.withdraw': 'રિક્વેસ્ટ મોકલી · પાછી ખેંચો',

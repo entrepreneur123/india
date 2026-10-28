@@ -476,8 +476,6 @@ const ne: Dict = {
   'profile.loadFailed': 'यो प्रोफाइल लोड हुन सकेन',
   'profile.unavailable': 'प्रोफाइल उपलब्ध छैन',
   'profile.unavailableBody': 'तपाईंले भेटेका मान्छे मात्र हेर्न सक्नुहुन्छ, ब्लक गरेकालाई होइन।',
-  'profile.posts.one': '{n} पोस्ट',
-  'profile.posts.other': '{n} पोस्ट',
   'profile.message': 'मेसेज',
   'profile.acceptRequest': 'अनुरोध स्वीकार गर्नुहोस्',
   'profile.withdraw': 'अनुरोध पठाइयो · फिर्ता लिनुहोस्',

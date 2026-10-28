@@ -485,8 +485,6 @@ const zhHans: Dict = {
   'profile.loadFailed': '无法加载此主页',
   'profile.unavailable': '主页不可用',
   'profile.unavailableBody': '你只能看到你遇到过的人，且看不到你已拉黑的人。',
-  'profile.posts.one': '{n} 条动态',
-  'profile.posts.other': '{n} 条动态',
   'profile.message': '发消息',
   'profile.acceptRequest': '接受申请',
   'profile.withdraw': '已发送申请 · 撤回',

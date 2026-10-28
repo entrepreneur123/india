@@ -476,8 +476,6 @@ const it: Dict = {
   'profile.loadFailed': 'Impossibile caricare questo profilo',
   'profile.unavailable': 'Profilo non disponibile',
   'profile.unavailableBody': 'Puoi vedere solo le persone che hai incontrato, e non chi hai bloccato.',
-  'profile.posts.one': '{n} post',
-  'profile.posts.other': '{n} post',
   'profile.message': 'Messaggio',
   'profile.acceptRequest': 'Accetta richiesta',
   'profile.withdraw': 'Richiesta inviata · Ritira',

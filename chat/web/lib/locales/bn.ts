@@ -476,8 +476,6 @@ const bn: Dict = {
   'profile.loadFailed': 'প্রোফাইলটি লোড করা যায়নি',
   'profile.unavailable': 'প্রোফাইল পাওয়া যাচ্ছে না',
   'profile.unavailableBody': 'শুধু যাদের সাথে দেখা হয়েছে আর যাদের ব্লক করেননি, তাদেরই দেখতে পারবেন।',
-  'profile.posts.one': '{n}টি পোস্ট',
-  'profile.posts.other': '{n}টি পোস্ট',
   'profile.message': 'মেসেজ',
   'profile.acceptRequest': 'অনুরোধ গ্রহণ করুন',
   'profile.withdraw': 'অনুরোধ পাঠানো · ফিরিয়ে নিন',

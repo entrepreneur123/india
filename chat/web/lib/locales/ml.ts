@@ -476,8 +476,6 @@ const ml: Dict = {
   'profile.loadFailed': 'ഈ പ്രൊഫൈൽ ലോഡ് ആയില്ല',
   'profile.unavailable': 'പ്രൊഫൈൽ ലഭ്യമല്ല',
   'profile.unavailableBody': 'നിങ്ങൾ കണ്ടുമുട്ടിയവരെ മാത്രമേ കാണാനാകൂ, നിങ്ങൾ ബ്ലോക്ക് ചെയ്തവരെ കാണാനാകില്ല.',
-  'profile.posts.one': '{n} പോസ്റ്റ്',
-  'profile.posts.other': '{n} പോസ്റ്റുകൾ',
   'profile.message': 'മെസേജ്',
   'profile.acceptRequest': 'റിക്വസ്റ്റ് സ്വീകരിക്കുക',
   'profile.withdraw': 'റിക്വസ്റ്റ് അയച്ചു · പിൻവലിക്കുക',

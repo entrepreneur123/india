@@ -476,8 +476,6 @@ const ptBR: Dict = {
   'profile.loadFailed': 'Não foi possível carregar este perfil',
   'profile.unavailable': 'Perfil indisponível',
   'profile.unavailableBody': 'Você só vê pessoas que já conheceu, e ninguém que você bloqueou.',
-  'profile.posts.one': '{n} post',
-  'profile.posts.other': '{n} posts',
   'profile.message': 'Mensagem',
   'profile.acceptRequest': 'Aceitar pedido',
   'profile.withdraw': 'Pedido enviado · Cancelar',

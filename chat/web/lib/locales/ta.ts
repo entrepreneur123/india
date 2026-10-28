@@ -476,8 +476,6 @@ const ta: Dict = {
   'profile.loadFailed': 'இந்த ப்ரொஃபைலை லோட் செய்ய முடியவில்லை',
   'profile.unavailable': 'ப்ரொஃபைல் கிடைக்கவில்லை',
   'profile.unavailableBody': 'நீங்கள் சந்தித்தவர்களை மட்டுமே பார்க்க முடியும், நீங்கள் பிளாக் செய்தவர்களைப் பார்க்க முடியாது.',
-  'profile.posts.one': '{n} போஸ்ட்',
-  'profile.posts.other': '{n} போஸ்ட்கள்',
   'profile.message': 'மெசேஜ்',
   'profile.acceptRequest': 'கோரிக்கையை ஏற்கவும்',
   'profile.withdraw': 'கோரிக்கை அனுப்பப்பட்டது · திரும்பப் பெறு',

@@ -476,8 +476,6 @@ const de: Dict = {
   'profile.loadFailed': 'Profil konnte nicht geladen werden',
   'profile.unavailable': 'Profil nicht verfügbar',
   'profile.unavailableBody': 'Du siehst nur Leute, die du getroffen hast, und niemanden, den du blockiert hast.',
-  'profile.posts.one': '{n} Beitrag',
-  'profile.posts.other': '{n} Beiträge',
   'profile.message': 'Nachricht',
   'profile.acceptRequest': 'Anfrage annehmen',
   'profile.withdraw': 'Anfrage gesendet · Zurückziehen',

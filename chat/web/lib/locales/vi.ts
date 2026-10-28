@@ -476,8 +476,6 @@ const vi: Dict = {
   'profile.loadFailed': 'Không tải được hồ sơ này',
   'profile.unavailable': 'Hồ sơ không khả dụng',
   'profile.unavailableBody': 'Bạn chỉ xem được những người đã gặp, và không xem được người bạn đã chặn.',
-  'profile.posts.one': '{n} bài đăng',
-  'profile.posts.other': '{n} bài đăng',
   'profile.message': 'Nhắn tin',
   'profile.acceptRequest': 'Đồng ý kết bạn',
   'profile.withdraw': 'Đã gửi lời mời · Thu hồi',

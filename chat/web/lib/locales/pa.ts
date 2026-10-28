@@ -459,8 +459,6 @@ const pa: Dict = {
   'profile.loadFailed': 'ਇਹ ਪ੍ਰੋਫ਼ਾਈਲ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੀ',
   'profile.unavailable': 'ਪ੍ਰੋਫ਼ਾਈਲ ਉਪਲਬਧ ਨਹੀਂ',
   'profile.unavailableBody': 'ਤੁਸੀਂ ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਲੋਕਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਮਿਲੇ ਹੋ, ਅਤੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਬਲੌਕ ਕੀਤਾ ਉਹ ਨਹੀਂ ਦਿਸਦੇ।',
-  'profile.posts.one': '{n} ਪੋਸਟ',
-  'profile.posts.other': '{n} ਪੋਸਟਾਂ',
   'profile.message': 'ਮੈਸੇਜ',
   'profile.acceptRequest': 'ਬੇਨਤੀ ਮੰਨੋ',
   'profile.withdraw': 'ਬੇਨਤੀ ਭੇਜੀ · ਵਾਪਸ ਲਓ',

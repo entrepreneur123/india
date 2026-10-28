@@ -485,8 +485,6 @@ const sw: Dict = {
   'profile.loadFailed': 'Wasifu huu haukupakia',
   'profile.unavailable': 'Wasifu haupatikani',
   'profile.unavailableBody': 'Unaweza kuona tu watu uliokutana nao, na si mtu uliyemzuia.',
-  'profile.posts.one': 'Chapisho {n}',
-  'profile.posts.other': 'Machapisho {n}',
   'profile.message': 'Ujumbe',
   'profile.acceptRequest': 'Kubali ombi',
   'profile.withdraw': 'Ombi limetumwa · Futa',

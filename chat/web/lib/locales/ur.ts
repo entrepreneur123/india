@@ -459,8 +459,6 @@ const ur: Dict = {
   'profile.loadFailed': 'یہ پروفائل لوڈ نہیں ہو سکی',
   'profile.unavailable': 'پروفائل دستیاب نہیں',
   'profile.unavailableBody': 'آپ صرف ان لوگوں کو دیکھ سکتے ہیں جن سے آپ ملے ہیں، اور جنہیں آپ نے بلاک کیا وہ نظر نہیں آتے۔',
-  'profile.posts.one': '{n} پوسٹ',
-  'profile.posts.other': '{n} پوسٹس',
   'profile.message': 'میسج',
   'profile.acceptRequest': 'درخواست قبول کریں',
   'profile.withdraw': 'درخواست بھیج دی · واپس لیں',

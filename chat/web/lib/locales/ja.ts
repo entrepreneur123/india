@@ -485,8 +485,6 @@ const ja: Dict = {
   'profile.loadFailed': 'このプロフィールを読み込めませんでした',
   'profile.unavailable': 'プロフィールを表示できません',
   'profile.unavailableBody': '表示できるのは出会ったことのある人だけです。ブロックした人は表示されません。',
-  'profile.posts.one': '投稿{n}件',
-  'profile.posts.other': '投稿{n}件',
   'profile.message': 'メッセージ',
   'profile.acceptRequest': 'リクエストを承認',
   'profile.withdraw': 'リクエスト送信済み・取り消す',

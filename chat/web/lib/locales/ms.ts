@@ -485,8 +485,6 @@ const ms: Dict = {
   'profile.loadFailed': 'Tidak dapat memuatkan profil ini',
   'profile.unavailable': 'Profil tidak tersedia',
   'profile.unavailableBody': 'Anda hanya boleh melihat orang yang pernah anda jumpa, dan bukan sesiapa yang anda sekat.',
-  'profile.posts.one': '{n} hantaran',
-  'profile.posts.other': '{n} hantaran',
   'profile.message': 'Mesej',
   'profile.acceptRequest': 'Terima permintaan',
   'profile.withdraw': 'Permintaan dihantar · Tarik balik',

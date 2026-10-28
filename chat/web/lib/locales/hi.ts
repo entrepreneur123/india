@@ -476,8 +476,6 @@ const hi: Dict = {
   'profile.loadFailed': 'यह प्रोफ़ाइल लोड नहीं हो सकी',
   'profile.unavailable': 'प्रोफ़ाइल उपलब्ध नहीं',
   'profile.unavailableBody': 'आप सिर्फ़ उन्हीं को देख सकते हैं जिनसे मिले हैं, और जिन्हें ब्लॉक नहीं किया।',
-  'profile.posts.one': '{n} पोस्ट',
-  'profile.posts.other': '{n} पोस्ट',
   'profile.message': 'मैसेज',
   'profile.acceptRequest': 'रिक्वेस्ट स्वीकार करें',
   'profile.withdraw': 'रिक्वेस्ट भेजी · वापस लें',

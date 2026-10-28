@@ -3,7 +3,7 @@
 import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Ban, Check, Flag, Heart, MessageCircle, UserMinus, UserPlus, X } from 'lucide-react'
+import { Ban, Check, Flag, Heart, MessageCircle, UserMinus, UserPlus, Users, X } from 'lucide-react'
 import type { FriendState, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -224,7 +224,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
 
 /**
  * A profile as everyone sees it, mine included (the Me tab adds its own buttons): the card in its frame,
- * the posts count, `actions` (a row under it), `children` (after the row), the manners card and the
+ * likes and friends as icons, `actions` (a row under it), `children` (after the row), the manners card and the
  * posts. Empty parts are left out.
  */
 export function ProfileContent({
@@ -245,7 +245,7 @@ export function ProfileContent({
   emptyPosts?: ReactNode
   children?: ReactNode
 }) {
-  const { plural, t, num } = useI18n()
+  const { t, num } = useI18n()
   const backend = useBackend()
   const { data: social } = useSWR(socialKey(profile.id), () => backend.profileSocial(profile.id))
   return (
@@ -260,9 +260,17 @@ export function ProfileContent({
           badge={badge}
           slot={slot}
         />
-        <p className="mt-3 text-sm text-muted-foreground">
-          {plural(profile.posts.length, 'profile.posts.one', 'profile.posts.other')}
-          {social ? ` · ${t('profile.likes')} ${num(social.likes)} · ${t('profile.friends')} ${num(social.friends)}` : null}
+        <p className="mt-3 flex h-5 items-center gap-4 text-sm font-semibold tabular-nums text-muted-foreground">
+          {social ? (
+            <>
+              <span className="flex items-center gap-1" title={t('profile.likes')}>
+                <Heart className="size-4" aria-hidden /> <span className="sr-only">{t('profile.likes')}</span>{num(social.likes)}
+              </span>
+              <span className="flex items-center gap-1" title={t('profile.friends')}>
+                <Users className="size-4" aria-hidden /> <span className="sr-only">{t('profile.friends')}</span>{num(social.friends)}
+              </span>
+            </>
+          ) : null}
         </p>
         {actions ? <div className="mt-5 flex w-full max-w-sm gap-2">{actions}</div> : null}
       </div>

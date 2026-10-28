@@ -485,8 +485,6 @@ const tr: Dict = {
   'profile.loadFailed': 'Bu profil yüklenemedi',
   'profile.unavailable': 'Profil kullanılamıyor',
   'profile.unavailableBody': 'Sadece tanıştığın kişileri görebilirsin; engellediklerini göremezsin.',
-  'profile.posts.one': '{n} gönderi',
-  'profile.posts.other': '{n} gönderi',
   'profile.message': 'Mesaj',
   'profile.acceptRequest': 'İsteği kabul et',
   'profile.withdraw': 'İstek gönderildi · Geri çek',

@@ -485,8 +485,6 @@ const id: Dict = {
   'profile.loadFailed': 'Gagal memuat profil ini',
   'profile.unavailable': 'Profil tidak tersedia',
   'profile.unavailableBody': 'Kamu hanya bisa melihat orang yang pernah kamu temui, dan tidak bisa melihat orang yang kamu blokir.',
-  'profile.posts.one': '{n} postingan',
-  'profile.posts.other': '{n} postingan',
   'profile.message': 'Kirim pesan',
   'profile.acceptRequest': 'Terima permintaan',
   'profile.withdraw': 'Permintaan terkirim · Tarik',

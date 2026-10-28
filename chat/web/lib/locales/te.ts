@@ -476,8 +476,6 @@ const te: Dict = {
   'profile.loadFailed': 'ఈ ప్రొఫైల్ లోడ్ కాలేదు',
   'profile.unavailable': 'ప్రొఫైల్ అందుబాటులో లేదు',
   'profile.unavailableBody': 'మీరు కలిసినవాళ్లను మాత్రమే చూడగలరు, మీరు బ్లాక్ చేసినవాళ్లను చూడలేరు.',
-  'profile.posts.one': '{n} పోస్ట్',
-  'profile.posts.other': '{n} పోస్ట్‌లు',
   'profile.message': 'మెసేజ్',
   'profile.acceptRequest': 'రిక్వెస్ట్ యాక్సెప్ట్ చేయి',
   'profile.withdraw': 'రిక్వెస్ట్ పంపాం · వెనక్కి తీసుకో',
