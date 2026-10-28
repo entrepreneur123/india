@@ -23,7 +23,7 @@ def _files(out):
 def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
-    assert _files(out) == {"feed.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "site.json",
+    assert _files(out) == {"feed.json", "latest.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "site.json",
                            "whatsapp.txt", "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
                            "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
@@ -31,6 +31,7 @@ def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     assert len({i["id"] for i in feed["items"]}) == len(feed["items"])
     assert all(i["publishedAt"] >= "2026-06-22" for i in feed["items"])  # 120-day window
     assert _read(out, "new.json")["items"] == []
+    assert _read(out, "latest.json")["items"] == feed["items"][:build.LATEST]  # the home page's slice, same order
     idx = _read(out, "rules/index.json")["exams"]
     assert {e["id"]: e["application"] for e in idx} == {
         "ssc-cgl-2026": "closed", "ssc-chsl-2026": "closed", "ssc-steno-2026": "closed", "ssc-si-2026": "closed"}
@@ -225,6 +226,15 @@ def test_rules_needed_lists_new_ssc_recruitments_without_a_rules_file():
 ])
 def test_only_a_whatsapp_channel_link_is_shown(link, ok):
     assert ("whatsapp" in build.site_info(None, whatsapp=link)) is ok
+
+
+@pytest.mark.parametrize("value,shown", [
+    ("help@example.in", "help@example.in"), (" jobs.team+in@mail.example.co.in ", "jobs.team+in@mail.example.co.in"),
+    ("not an address", None), ("a@b", None), ('x@example.in"><script>', None), ("", None), (None, None),
+])
+def test_only_a_plain_contact_address_is_shown(value, shown):
+    assert build.contact_email(value) == shown
+    assert build.site_info(None, contact=value).get("contact") == shown
 
 
 def test_whatsapp_post_lists_the_last_day_with_official_links():

@@ -7,6 +7,11 @@
 <meta name="description" content="Latest government job notices in India from official websites: SSC, UP Police, Bihar Police, Haryana SSC, ISRO, ONGC. Results by roll number, admit cards, answer keys, exam dates and an eligibility check. In 13 languages. Unofficial.">
 <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Sarkari Job Alerts">
+<meta property="og:title" content="Sarkari Job Alerts: latest govt jobs, results, admit cards">
+<meta property="og:description" content="Latest government job notices from official websites, result by roll number, eligibility check. Free, in 13 languages.">
+<meta name="twitter:card" content="summary">
+<!-- share: copy_web.sh -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -21,6 +26,9 @@
       document.documentElement.lang = l; if (l === 'ur') document.documentElement.dir = 'rtl';
     }
   } catch {}
+  // Home's data starts downloading now, alongside app.js, not after it has run (app.js getJSON picks these up).
+  window.early = {};
+  for (const p of ['latest.json', 'exams.json', 'rules/index.json']) window.early[p] = fetch(`v1/${p}`, { cache: 'no-cache' }).catch(() => null);
 </script>
 <style>
 /* Design: bright, clean, linear (tokens from the v0 concept, 21-10-2026), scaled up for low-end phones:
@@ -100,6 +108,8 @@ nav#tabs a[aria-current="page"] { color: var(--brand); font-weight: 750; }
 
 main { max-width: 760px; margin: 0 auto; padding: 16px 16px 24px; }
 footer { max-width: 760px; margin: 0 auto; padding: 0 16px 24px; font-size: 12.5px; color: var(--muted); }
+.footer-links { display: flex; flex-wrap: wrap; gap: 0 16px; }
+.footer-links a { color: var(--muted); display: inline-flex; align-items: center; min-height: 44px; }
 h1.page { margin: 4px 0 2px; font-size: 22px; letter-spacing: -.02em; }
 h2 { font-size: 16.5px; margin: 26px 0 10px; letter-spacing: -.01em; }
 h3 { font-size: 15px; margin: 18px 0 8px; }
@@ -305,13 +315,15 @@ dialog.sheet::backdrop { background: rgba(15, 23, 42, .45); }
   <p class="offline" id="offline" role="status" hidden></p>
   <div id="view"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
 </main>
-<footer><p id="footer-disclaimer"></p></footer>
+<footer><nav id="footer-links" class="footer-links" aria-label="Site"></nav><p id="footer-disclaimer"></p></footer>
 <nav id="tabs" aria-label="Sections"></nav>
 <dialog id="lang-sheet" class="sheet" aria-labelledby="lang-title"></dialog>
-<noscript><p style="padding:16px">This site needs JavaScript. Official notices: <a href="https://ssc.gov.in">ssc.gov.in</a></p></noscript>
+<noscript><p style="padding:16px">This app needs JavaScript. The same updates as plain pages:
+  <a href="topic/latest-govt-jobs/">Latest govt jobs</a> · <a href="topic/sarkari-result/">Results</a> ·
+  <a href="topic/admit-card/">Admit cards</a> · <a href="topic/answer-key/">Answer keys</a> · <a href="about/">About</a></p></noscript>
 <!-- app.js imports these; listing them lets the browser fetch all at once instead of after app.js -->
 <link rel="modulepreload" href="i18n.js"><link rel="modulepreload" href="eligibility.js"><link rel="modulepreload" href="tools.js">
-<link rel="modulepreload" href="tracker.js"><link rel="modulepreload" href="passages.js">
+<link rel="modulepreload" href="tracker.js">
 <script type="module" src="app.js"></script>
 </body>
 </html>

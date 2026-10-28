@@ -17,7 +17,7 @@ ssc.gov.in 공개 JSON API (사이트의 main.js에서 확인, 2026-10-20)
         ▼  jobs/pipeline/sarkari (Python 표준 라이브러리만 사용)
   수집 → 레코드 검증 → 분류(채용/정정/결과/정답지/입장권…) → 중복 제거 → IST 변환
         │
-        ▼  jobs/v1/feed.json · calendar.json · new.json · rules/*.json · status.json
+        ▼  jobs/v1/feed.json · latest.json · calendar.json · new.json · rules/*.json · status.json
   jobs/web (정적 HTML + JS 모듈, 프레임워크 없음)
 ```
 

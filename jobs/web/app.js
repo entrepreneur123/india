@@ -3,7 +3,6 @@
 // Every string from SSC goes into the page through textContent, never innerHTML.
 import { evaluate, todayIST } from './eligibility.js';
 import { EN, LANGS, getLang, guessLang, locale, setLang, t } from './i18n.js';
-import { practiceText } from './passages.js';
 import { ageOn, buildIcs, examEvents, makeSignature, typingScore } from './tools.js';
 import { timeline } from './tracker.js';
 
@@ -62,15 +61,22 @@ function payText(rules, level) {
 }
 const daysBetween = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
 
+// One request per file, shared by everyone asking at once; a failed one is tried again next time.
 const cache = {};
-async function getJSON(path) {
-  if (cache[path]) return cache[path];
-  const res = await fetch(new URL(path, DATA), { cache: 'no-cache' });
+const early = window.early ?? {}; // started in index.html before this file loaded
+async function load(path) {
+  const pre = early[path];
+  delete early[path];
+  const res = (pre && await pre) || await fetch(new URL(path, DATA), { cache: 'no-cache' });
   if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
-  cache[path] = await res.json();
+  const data = await res.json();
   if (path === 'exams.json') {
-    for (const src of Object.values(cache[path].sources ?? {})) { try { officialHosts.add(new URL(src.site).hostname); } catch { /* skip */ } }
+    for (const src of Object.values(data.sources ?? {})) { try { officialHosts.add(new URL(src.site).hostname); } catch { /* skip */ } }
   }
+  return data;
+}
+function getJSON(path) {
+  cache[path] ??= load(path).catch((e) => { delete cache[path]; throw e; });
   return cache[path];
 }
 const errorBox = (e) => { console.error(e); return el('p', { class: 'error' }, t('loadError')); };
@@ -755,8 +761,10 @@ function typingTool(g) {
       t('typingResult', { kdph: sc.kdph.toLocaleString('en-IN'), wpm: sc.wpm, accuracy: sc.accuracy, correct: sc.correct, typed: sc.typed }), el('br'),
       t(sc.kdph >= tt.kdph ? 'typingMeets' : 'typingBelow', { name: tt.name, kdph: tt.kdph.toLocaleString('en-IN') })));
   };
-  const reset = () => {
+  const reset = async () => {
     clearInterval(timer); timer = null; started = 0;
+    let practiceText; // passages.js: only this tool needs it
+    try { ({ practiceText } = await import('./passages.js')); } catch { toast(t('offline')); return; }
     passage = practiceText(n++);
     text.textContent = passage;
     box.value = ''; box.readOnly = false;
@@ -950,8 +958,9 @@ function installCard() {
 // ---------- Home: search, shortcuts, sectors and states, what closes soon, exam dates, latest ----------
 async function viewHome(root) {
   let index; let families; let sources;
-  // The feed is the biggest file: start it now, draw everything else without waiting for it.
-  const feedP = getJSON('feed.json');
+  // Only the newest notices (latest.json, a tenth of feed.json); started now, drawn last. A site published
+  // before latest.json existed still has feed.json.
+  const feedP = getJSON('latest.json').catch(() => getJSON('feed.json'));
   feedP.catch(() => { /* shown by the latest box */ });
   try {
     [{ exams: index }, { families, sources = {} }] = await Promise.all([getJSON('rules/index.json'), getJSON('exams.json')]);
@@ -1134,6 +1143,11 @@ function paintShell() {
   $('app-name').textContent = t('appName');
   fill($('logo'), icon(ICON.landmark));
   $('footer-disclaimer').textContent = t('disclaimer');
+  // Plain pages written by the build (pipeline sarkari/sitegen.py); contact only when an address is set.
+  const footLinks = (contact) => fill($('footer-links'), ...[['about/', 'aboutTitle'], ['privacy/', 'privacyPolicy'], ['terms/', 'termsOfUse']]
+    .concat(contact ? [['contact/', 'contactUs']] : []).map(([href, key]) => el('a', { href }, t(key))));
+  footLinks(false);
+  siteInfo().then((site) => { if (typeof site.contact === 'string') footLinks(true); });
   fill($('lang'), icon(ICON.globe), el('span', {}, getLang().toUpperCase()));
   $('lang').setAttribute('aria-label', `${t('language')}: ${LANGS.find((l) => l.code === getLang()).name}`);
   $('offline').textContent = t('offline');

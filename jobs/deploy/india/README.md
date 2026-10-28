@@ -42,6 +42,7 @@ journalctl -u sarkari -n 50              # 최근 실행 기록 ("published" / "
 `sudo nano /etc/sarkari.env`에서 설정합니다.
 - 텔레그램: `JOBS_TELEGRAM_BOT_TOKEN`, `JOBS_TELEGRAM_CHAT_ID=@채널이름`
 - WhatsApp 채널: `JOBS_WHATSAPP_CHANNEL=https://whatsapp.com/channel/...`
+- 문의 이메일: `JOBS_CONTACT_EMAIL=...` (문의 페이지와 앱 하단 링크)
   - 앱의 홈과 알림 화면에 "WhatsApp" 참여 버튼으로 나옵니다.
   - WhatsApp 채널은 자동 게시 기능이 없어(공개된 게시 API를 찾지 못함), 수집할 때마다 올릴 글을 만들어 둡니다.
   - 그 글은 `사이트주소/jobs/v1/whatsapp.txt`(지난 24시간 공고와 공식 링크)에 있습니다. 복사해서 WhatsApp 앱에서 채널에 붙여 넣으면 됩니다.

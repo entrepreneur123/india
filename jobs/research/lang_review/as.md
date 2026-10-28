@@ -54,6 +54,9 @@
 | `faqVacancy` | How many vacancies are there? | কিমানটা খালী পদ আছে? | |
 | `faqQual` | What qualification is needed? | কি যোগ্যতা লাগে? | |
 | `aboutTitle` | About this app | এই এপৰ বিষয়ে | |
+| `privacyPolicy` | Privacy policy | গোপনীয়তা নীতি | |
+| `termsOfUse` | Terms of use | চৰ্তাৱলী | |
+| `contactUs` | Contact us | যোগাযোগ কৰক | |
 | `aboutText` | A free, unofficial helper for people preparing for government jobs in India. Notices, dates and rules are taken from the recruiters' official websites and notices, with references. No sign-up, no personal data collected: your details and roll number stay on this phone. | ভাৰতত চৰকাৰী চাকৰিৰ বাবে প্ৰস্তুতি চলোৱাসকলৰ বাবে এটা বিনামূলীয়া, আনঅফিচিয়েল সহায়ক। জাননী, তাৰিখ আৰু নিয়মসমূহ নিযুক্তিকৰ্তা সংস্থাৰ অফিচিয়েল ৱেবছাইট আৰু জাননীৰ পৰা লোৱা হৈছে, ৰেফাৰেন্সসহ। ছাইন-আপ নালাগে, কোনো ব্যক্তিগত তথ্য সংগ্ৰহ কৰা নহয়: আপোনাৰ তথ্য আৰু ৰোল নম্বৰ এই ফোনতে থাকে। | |
 | `sourceRef` | Source: {ref} | উৎস: {ref} | |
 | `toastSaved` | Saved | ছেভ কৰা হ'ল | |

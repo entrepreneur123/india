@@ -54,6 +54,9 @@
 | `faqVacancy` | How many vacancies are there? | किती जागा आहेत? | |
 | `faqQual` | What qualification is needed? | कोणती पात्रता लागते? | |
 | `aboutTitle` | About this app | या ॲपबद्दल | |
+| `privacyPolicy` | Privacy policy | गोपनीयता धोरण | |
+| `termsOfUse` | Terms of use | अटी व शर्ती | |
+| `contactUs` | Contact us | संपर्क साधा | |
 | `aboutText` | A free, unofficial helper for people preparing for government jobs in India. Notices, dates and rules are taken from the recruiters' official websites and notices, with references. No sign-up, no personal data collected: your details and roll number stay on this phone. | भारतात सरकारी नोकरीची तयारी करणाऱ्यांसाठी एक मोफत, अनधिकृत मदतनीस. नोटिसा, तारखा आणि नियम भरती संस्थांच्या अधिकृत वेबसाइट्स आणि नोटिसांमधून, संदर्भांसह घेतले आहेत. साइन-अप नाही, कोणताही वैयक्तिक डेटा गोळा केला जात नाही: तुमची माहिती आणि रोल नंबर याच फोनवर राहतात. | |
 | `sourceRef` | Source: {ref} | स्रोत: {ref} | |
 | `toastSaved` | Saved | सेव्ह केले | |

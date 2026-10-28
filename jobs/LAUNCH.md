@@ -16,10 +16,15 @@
 2. ⚙️ Settings → Secrets and variables → Actions → Variables에 `JOBS_PUBLISH` = `true`를 추가합니다.
 3. ⚙️ 첫 실행이 끝나면 Settings → Pages에서 브랜치를 `data`로 지정합니다.
    - 주소: `https://<계정>.github.io/<저장소>/jobs/`
-4. ⚙️ (선택) 채널 변수를 추가합니다.
+4. ⚙️ **문의 이메일** 변수 `JOBS_CONTACT_EMAIL`을 추가합니다(예: 새로 만든 Gmail).
+   - 넣으면 문의 페이지와 앱 하단의 "문의" 링크가 생깁니다.
+   - Google Play와 AdSense 심사에 문의처가 필요합니다.
+   - 개인 메일 대신 이 사이트 전용 주소를 권합니다. 페이지에 공개됩니다.
+5. ⚙️ (선택) 채널 변수를 추가합니다.
    - WhatsApp 채널: `JOBS_WHATSAPP_CHANNEL`
    - 텔레그램: `JOBS_TELEGRAM_CHAT_ID` 변수와 `JOBS_TELEGRAM_BOT_TOKEN` 시크릿
-5. Google Search Console에 사이트를 등록하고 `jobs/sitemap.xml`을 제출합니다.
+6. Google Search Console에 사이트를 등록하고 `jobs/sitemap.xml`을 제출합니다.
+   - 소개·개인정보처리방침·이용약관·404 페이지는 빌드가 자동으로 만듭니다(`jobs/about/`, `jobs/privacy/`, `jobs/terms/`).
 
 ## 2. 인도 서버 (권장: 철도·은행·UPSC 수집, 즉시 알림, 인도 내 빠른 응답)
 1. 🖥️ 인도 리전에 Ubuntu 24.04 서버를 만듭니다.

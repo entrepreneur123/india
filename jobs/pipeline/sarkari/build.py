@@ -10,6 +10,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/guide.json            how to apply, documents, helplines, skill-test standards (ssc_guide.json)
   jobs/v1/rules/index.json      exams with an eligibility checker
   jobs/v1/rules/<id>.json       copied from rules/ after validation
+  jobs/v1/latest.json           the newest LATEST items of feed.json, for the home page
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
   jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
   jobs/v1/results/cutoffs.json  pages of the result write-ups that give the cut-off marks (cutoffs.py)
@@ -194,16 +195,26 @@ _PUSH_KEY = re.compile(r"^[A-Za-z0-9_-]{87}$")  # 65-byte P-256 public key, base
 
 
 _WHATSAPP = re.compile(r"^https://(www\.)?whatsapp\.com/channel/[A-Za-z0-9]{10,40}$")  # a WhatsApp Channel's invite link
+LATEST = 40
+_EMAIL = re.compile(r"^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,24}$")
+
+
+def contact_email(value: str | None) -> str | None:
+    """JOBS_CONTACT_EMAIL, shown on the contact page and in the app; anything else is left out."""
+    v = (value or "").strip()
+    return v if _EMAIL.match(v) else None
 
 
 def site_info(channel: str | None, push_url: str | None = None, push_key: str | None = None,
-              whatsapp: str | None = None) -> dict:
+              whatsapp: str | None = None, contact: str | None = None) -> dict:
     """Only a public @channel becomes a link; a numeric chat id (a private chat) is never shown.
     The push server (India server, sarkari.push) is announced only when both address and key look right."""
     m = _CHANNEL.match((channel or "").strip())
     out = {"schema": SCHEMA, **({"telegram": f"https://t.me/{m.group(1)}"} if m else {})}
     if whatsapp and _WHATSAPP.match(whatsapp.strip()):
         out["whatsapp"] = whatsapp.strip()
+    if contact_email(contact):
+        out["contact"] = contact_email(contact)
     if push_url and push_key and _PUSH_URL.match(push_url.strip()) and _PUSH_KEY.match(push_key.strip()):
         out["push"] = {"url": push_url.strip(), "key": push_key.strip()}
     return out
@@ -233,7 +244,7 @@ def rules_needed(feed: list[dict], all_rules: list[dict]) -> list[dict]:
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
         force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
         channel: str | None = None, push: tuple[str | None, str | None] = (None, None),
-        whatsapp: str | None = None) -> int:
+        whatsapp: str | None = None, contact: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -261,17 +272,19 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
                                                   "sources": {"ssc": ssc.NOTICE_BOARD_PAGE,
                                                               **{x.SOURCE: x.NOTICE_PAGE for x in BOARDS}},
                                                   "items": feed})
+    # The home page shows the newest 8 after dropping duplicates; 40 leave room. A tenth of feed.json on a slow line.
+    _write_json(_v1(out, "latest.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": feed[:LATEST]})
     _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                             "entries": calendar})
     _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})
     _write_json(_v1(out, "resources.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                              "sections": resources})
     _write_json(_v1(out, "exams.json"), {"schema": SCHEMA, "families": families["families"], "sources": sources.SOURCES})
-    _write_json(_v1(out, "site.json"), site_info(channel, *push, whatsapp=whatsapp))
+    _write_json(_v1(out, "site.json"), site_info(channel, *push, whatsapp=whatsapp, contact=contact))
     _write_text(_v1(out, "whatsapp.txt"), whatsapp_post.digest(feed, families["families"], now, site_url))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
     publish_rules(out, all_rules, now.date())
-    sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url)
+    sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url, contact_email(contact))
     if get_bytes is not None and not shutil.which("pdftotext"):
         print("::warning::pdftotext (poppler-utils) is not installed: result lists and cut-offs skipped")
     elif get_bytes is not None:
@@ -312,7 +325,7 @@ def main(argv: list[str] | None = None) -> int:
                    get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"),
                    channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"),
                    push=(os.environ.get("JOBS_PUSH_URL"), os.environ.get("JOBS_PUSH_KEY")),
-                   whatsapp=os.environ.get("JOBS_WHATSAPP_CHANNEL"))
+                   whatsapp=os.environ.get("JOBS_WHATSAPP_CHANNEL"), contact=os.environ.get("JOBS_CONTACT_EMAIL"))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

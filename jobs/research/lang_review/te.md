@@ -54,6 +54,9 @@
 | `faqVacancy` | How many vacancies are there? | ఎన్ని ఖాళీలు ఉన్నాయి? | |
 | `faqQual` | What qualification is needed? | ఏ అర్హత కావాలి? | |
 | `aboutTitle` | About this app | ఈ యాప్ గురించి | |
+| `privacyPolicy` | Privacy policy | గోప్యతా విధానం | |
+| `termsOfUse` | Terms of use | నిబంధనలు | |
+| `contactUs` | Contact us | సంప్రదించండి | |
 | `aboutText` | A free, unofficial helper for people preparing for government jobs in India. Notices, dates and rules are taken from the recruiters' official websites and notices, with references. No sign-up, no personal data collected: your details and roll number stay on this phone. | భారతదేశంలో ప్రభుత్వ ఉద్యోగాలకు సిద్ధమయ్యే వారి కోసం ఉచిత, అనధికారిక సహాయ యాప్. నోటీసులు, తేదీలు, నియమాలు అన్నీ రిక్రూట్‌మెంట్ సంస్థల అధికారిక వెబ్‌సైట్లు, నోటిఫికేషన్ల నుంచి రిఫరెన్స్‌లతో తీసుకున్నవి. సైన్-అప్ అవసరం లేదు, ఎలాంటి వ్యక్తిగత డేటా సేకరించం: మీ వివరాలు, రోల్ నంబర్ ఈ ఫోన్‌లోనే ఉంటాయి. | |
 | `sourceRef` | Source: {ref} | మూలం: {ref} | |
 | `toastSaved` | Saved | సేవ్ అయింది | |

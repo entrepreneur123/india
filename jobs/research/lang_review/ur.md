@@ -54,6 +54,9 @@
 | `faqVacancy` | How many vacancies are there? | کتنی ویکینسی ہیں؟ | |
 | `faqQual` | What qualification is needed? | کون سی تعلیمی قابلیت چاہیے؟ | |
 | `aboutTitle` | About this app | اس ایپ کے بارے میں | |
+| `privacyPolicy` | Privacy policy | رازداری کی پالیسی | |
+| `termsOfUse` | Terms of use | شرائط و ضوابط | |
+| `contactUs` | Contact us | رابطہ کریں | |
 | `aboutText` | A free, unofficial helper for people preparing for government jobs in India. Notices, dates and rules are taken from the recruiters' official websites and notices, with references. No sign-up, no personal data collected: your details and roll number stay on this phone. | بھارت میں سرکاری نوکری کی تیاری کرنے والوں کے لیے ایک مفت، غیر سرکاری مددگار۔ نوٹس، تاریخیں اور اصول بھرتی کرنے والے اداروں کی آفیشل ویب سائٹس اور نوٹسز سے لیے گئے ہیں، حوالوں کے ساتھ۔ کوئی سائن اپ نہیں، کوئی ذاتی ڈیٹا جمع نہیں کیا جاتا: آپ کی تفصیلات اور رول نمبر اسی فون میں رہتے ہیں۔ | |
 | `sourceRef` | Source: {ref} | ماخذ: {ref} | |
 | `toastSaved` | Saved | محفوظ ہو گیا | |

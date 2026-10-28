@@ -36,6 +36,8 @@ JOBS_TELEGRAM_BOT_TOKEN=
 JOBS_TELEGRAM_CHAT_ID=
 # Optional: WhatsApp Channel invite link (https://whatsapp.com/channel/...), shown in the app
 JOBS_WHATSAPP_CHANNEL=
+# Contact e-mail shown on the contact page and in the app (Google Play and AdSense ask for one)
+JOBS_CONTACT_EMAIL=
 # Optional: instant push. PUSH_HOST is a hostname that points at this server (see README).
 PUSH_HOST=
 PUSH_CONTACT=mailto:you@example.com

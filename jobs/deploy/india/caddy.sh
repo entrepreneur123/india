@@ -61,6 +61,15 @@ $( [ -n "$push" ] && [ "$push" = "$site" ] && echo "$proxy_push" )
 		root * $home/public
 		file_server
 	}
+	# Missing pages get the site's own page with links back (sitegen.py writes 404.html).
+	handle_errors {
+		@missing expression {http.error.status_code} == 404
+		handle @missing {
+			root * $home/public
+			rewrite * /404.html
+			file_server
+		}
+	}
 }
 CADDY
   fi

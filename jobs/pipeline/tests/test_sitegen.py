@@ -21,7 +21,7 @@ ITEMS = [
 def test_pages_for_exams_with_rules_or_notices_and_a_sitemap(tmp_path):
     paths = sitegen.build(str(tmp_path), FAMILIES, RULES, ITEMS, TODAY, "https://example.in/india")
     assert set(paths) == {"jobs/exam/cgl/", "jobs/exam/chsl/", "jobs/exam/steno/", "jobs/exam/capf/", "jobs/exam/ctgd/",
-                          *(f"jobs/topic/{h[0]}/" for h in sitegen.HUBS)}
+                          *(f"jobs/topic/{h[0]}/" for h in sitegen.HUBS), "jobs/about/", "jobs/privacy/", "jobs/terms/"}
     sitemap = open(os.path.join(str(tmp_path), "jobs", "sitemap.xml")).read()
     assert "<loc>https://example.in/india/jobs/exam/cgl/</loc>" in sitemap and "<loc>https://example.in/india/jobs/</loc>" in sitemap
 
@@ -50,7 +50,8 @@ def test_untrusted_text_is_escaped_and_only_ssc_links_are_kept(tmp_path):
     ctgd = open(os.path.join(str(tmp_path), "jobs", "exam", "ctgd", "index.html"), encoding="utf-8").read()
     assert "evil.example" not in ctgd and "SSC GD Constable 2026" in ctgd
     hrefs = re.findall(r'href="([^"]+)"', cgl + ctgd)
-    assert all(h.startswith(("https://ssc.gov.in", "../../#")) for h in hrefs), hrefs
+    # Outside links only to ssc.gov.in; the rest stay on this site (frame: home, about, privacy, terms).
+    assert all(h.startswith("https://ssc.gov.in") or (h.startswith("../../") and "//" not in h[6:]) for h in hrefs), hrefs
     assert not os.path.exists(os.path.join(str(tmp_path), "jobs", "sitemap.xml"))  # no address, no sitemap
 
 
@@ -98,3 +99,35 @@ def test_topic_pages_list_only_matching_notices_with_official_links(tmp_path):
     assert '<link rel="canonical" href="https://example.in/india/jobs/topic/psu-jobs/">' in psu
     sitemap = open(os.path.join(str(tmp_path), "jobs", "sitemap.xml")).read()
     assert "<loc>https://example.in/india/jobs/topic/police-jobs/</loc>" in sitemap
+
+
+def test_every_page_has_the_basic_site_pages_and_a_link_preview(tmp_path):
+    sitegen.build(str(tmp_path), FAMILIES, RULES, ITEMS, TODAY, "https://example.in/india", "help@example.in")
+    read = lambda p: open(os.path.join(str(tmp_path), p), encoding="utf-8").read()  # noqa: E731
+    cgl = read("jobs/exam/cgl/index.html")
+    for slug in ("about", "privacy", "terms", "contact"):
+        assert f'href="../../{slug}/"' in cgl
+    assert '<meta property="og:image" content="https://example.in/india/jobs/icon-512.png">' in cgl
+    ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', cgl).group(1))
+    assert [x["name"] for x in ld["itemListElement"]] == ["Home", "Exams", "SSC CGL"]
+    assert ld["itemListElement"][0]["item"] == "https://example.in/india/jobs/"
+    contact, privacy = read("jobs/contact/index.html"), read("jobs/privacy/index.html")
+    assert 'href="mailto:help@example.in"' in contact and '<link rel="canonical" href="https://example.in/india/jobs/contact/">' in contact
+    assert "No account" in privacy and "last two digits" in privacy and 'href="../"' in privacy
+    about = read("jobs/about/index.html")
+    assert "uppbpb.gov.in" in about and "isro.gov.in" in about  # every recruiter we read, from sources.py
+    missing = read("404.html")
+    assert '<meta name="robots" content="noindex">' in missing and "canonical" not in missing
+    assert 'href="https://example.in/india/jobs/topic/latest-govt-jobs/"' in missing  # full links: shown at any address
+    sitemap = read("jobs/sitemap.xml")
+    assert "<loc>https://example.in/india/jobs/privacy/</loc>" in sitemap and "404" not in sitemap
+
+
+def test_no_contact_address_means_no_contact_page_or_link(tmp_path):
+    sitegen.build(str(tmp_path), FAMILIES, RULES, ITEMS, TODAY, None, "help@example.in")
+    assert os.path.exists(os.path.join(str(tmp_path), "jobs", "contact", "index.html"))
+    sitegen.build(str(tmp_path), FAMILIES, RULES, ITEMS, TODAY, None)
+    assert not os.path.exists(os.path.join(str(tmp_path), "jobs", "contact", "index.html"))  # taken away again
+    terms = open(os.path.join(str(tmp_path), "jobs", "terms", "index.html"), encoding="utf-8").read()
+    assert "contact/" not in terms and "mailto:" not in terms and "cybercrime.gov.in" in terms
+    assert 'href="/jobs/topic/' in open(os.path.join(str(tmp_path), "404.html"), encoding="utf-8").read()
