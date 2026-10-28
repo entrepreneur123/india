@@ -1139,7 +1139,7 @@ def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -
 
 
 OCR_TRIES = 2           # a sheet reads the same way every time: two tries cover a failed download or a timeout
-SHEET_SECONDS = 240     # what one sheet may take (six readings, ~2 min on a GitHub runner)
+SHEET_SECONDS = 480     # what one sheet may take: its download (~2-3 min from the lottery site) and six readings (~2 min)
 
 
 def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr: bool = True,
