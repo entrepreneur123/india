@@ -98,7 +98,8 @@ def _grid(gray, dpi: int):
     clean = 255 - (b & ~cv2.dilate(lh | lv, np.ones((3, 3), np.uint8)))
     rules = []
     if len(xs):
-        across = (cv2.dilate(h, np.ones((7, 1), np.uint8)) > 0).sum(axis=1)  # a slightly skewed rule still counts
+        # a skewed scan's rule spans a few pixel rows (the 27-10-2026 Padmini sheet: ~15 at 400 dpi)
+        across = (cv2.dilate(h, np.ones((max(7, dpi // 25), 1), np.uint8)) > 0).sum(axis=1)
         full = np.nonzero(across >= (xs.max() - xs.min()) * 0.85)[0]
         for y in full:
             if rules and y - rules[-1][-1] <= 2:
@@ -571,7 +572,7 @@ class Glyphs:
 
     def _box(self, x: float, y: float, w: float):
         """The crop around the number at (x, y), and the height of its centre in the crop."""
-        cx, cy, half = x * self.W, y * self.H, w * self.W * 0.6
+        cx, cy, half = x * self.W, y * self.H, w * self.W * 0.75  # a word box can end at the last digit
         cell = next((c for c in self.cells if c[0] <= cx <= c[0] + c[2] and c[1] <= cy <= c[1] + c[3]
                      and c[3] < self.H * 0.1), None)
         if cell is None:  # no box found around it: a window the size of a number
@@ -757,6 +758,12 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
         v = _vote([repr(r["head"][k]) for r in (full if k == "series" else runs) if r["head"].get(k)])
         if v is not None:
             head[k] = eval(v)  # noqa: S307 - our own repr() of str/int/list
+    if "series" not in head and full:
+        # One reading fitted the whole label row; the others read parts of it. The ten series are one
+        # prefix, 00-09: taken when every reading that read labels read that prefix (2 or more).
+        prefixes = [Counter(x[:2] for x in r["head"]["series"]).most_common(1)[0][0] for r in runs if r["head"].get("series")]
+        if len(prefixes) >= 2 and len(set(prefixes)) == 1 and all(r["head"]["series"][0][:2] == prefixes[0] for r in full):
+            head["series"] = [f"{prefixes[0]}-{k:02d}" for k in range(10)]
     for k in ("name", "date", "series"):
         if k not in head:
             raise MaharashtraError(f"readings disagree on the sheet's {k}")
@@ -765,10 +772,13 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
     # at the rule above them); its rank is what the readings that read one say, by a clear majority.
     # A heading seen in two readings whose ordinal none could read ("qm th Prize Rs.110/-") follows
     # the one above it; _check then holds the ranks to 1, 2, 3, ... with falling amounts.
+    # (A heading whose rank was read joins the others of that rank wherever it starts: the 2nd prize
+    # of the 27-10-2026 Sahyadri sheet starts at the rule above or below "Common To All Series".)
     groups: list[list] = []
     for i, r in enumerate(runs):
-        for h in r["headings"]:
-            g = next((g for g in groups if abs(g[0][1]["top"] - h["top"]) < 0.012), None)
+        for h in sorted(r["headings"], key=lambda h: h["rank"] == "?"):
+            g = next((g for g in groups if h["rank"] != "?" and any(x["rank"] == h["rank"] for _, x in g)), None)
+            g = g or next((g for g in groups if any(abs(x["top"] - h["top"]) < 0.012 for _, x in g)), None)
             (g.append((i, h)) if g is not None else groups.append([(i, h)]))
     headings = []
     for g in sorted(groups, key=lambda g: sorted(h["top"] for _, h in g)[len(g) // 2]):
