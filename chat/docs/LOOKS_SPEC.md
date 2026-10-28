@@ -98,7 +98,7 @@ pin, 24 units, rim r 10.6 (metal gradient, 1.6-unit round-join stroke for the ro
 | `badge_moon` | Moon | silver | `#152042 → #060B1C` | crescent + small star, `#FFFFFF → #C9D4FF` |
 | `badge_lotus` | Lotus | gold | `#3E0A4F → #190322` | three petals, `#FFD6EC → #F062A8` |
 
-### ID colours (the @ID text)
+### Name colours (the name; the @ID itself stays plain — the owner, 2026-10-28)
 | id | name | light theme | dark theme |
 |---|---|---|---|
 | `color_gold` | Gold | `#A87400` | `#FFD54A` |
@@ -113,7 +113,7 @@ pin, 24 units, rim r 10.6 (metal gradient, 1.6-unit round-join stroke for the ro
 | `color_cyber` | Cyber | gradient `#0096C7 → #7C3AED → #DB2777` | same |
 Gradients are horizontal across the text (web: `background-clip: text`; Compose: `TextStyle(brush = …)`).
 
-### ID fonts (bundled; Latin letters only, other scripts fall back to the app font automatically)
+### Name fonts (on the name only, the @ID stays in the app font; bundled; Latin letters only, other scripts fall back to the app font automatically)
 | id | name | file (web `public/fonts/looks/*.woff2`, Android `res/font/*.ttf`) | family name inside the file |
 |---|---|---|---|
 | `font_script` | Script | `look_script` | Yaari Look Script |
