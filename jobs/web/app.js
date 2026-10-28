@@ -762,9 +762,11 @@ function typingTool(g) {
       t(sc.kdph >= tt.kdph ? 'typingMeets' : 'typingBelow', { name: tt.name, kdph: tt.kdph.toLocaleString('en-IN') })));
   };
   const reset = async () => {
-    clearInterval(timer); timer = null; started = 0;
+    clearInterval(timer); timer = null;
+    box.readOnly = true; // nothing to type against until the passage is here
     let practiceText; // passages.js: only this tool needs it
     try { ({ practiceText } = await import('./passages.js')); } catch { toast(t('offline')); return; }
+    started = 0;
     passage = practiceText(n++);
     text.textContent = passage;
     box.value = ''; box.readOnly = false;

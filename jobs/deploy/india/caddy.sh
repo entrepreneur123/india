@@ -26,8 +26,7 @@ proxy_push='	handle /push/* {
 {
   if [ -n "$site" ]; then
     cat <<CADDY
-$site {
-	encode zstd gzip
+(security) {
 	header {
 		Strict-Transport-Security "max-age=31536000"
 		X-Content-Type-Options "nosniff"
@@ -36,6 +35,10 @@ $site {
 		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' $push_src; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 		-Server
 	}
+}
+$site {
+	encode zstd gzip
+	import security
 	# Short caches: new notices must show within minutes; stale copies still serve on a bad network.
 	@data path *.json *.txt *.xml
 	header @data Cache-Control "public, max-age=120, stale-while-revalidate=86400"
@@ -61,12 +64,15 @@ $( [ -n "$push" ] && [ "$push" = "$site" ] && echo "$proxy_push" )
 		root * $home/public
 		file_server
 	}
-	# Missing pages get the site's own page with links back (sitegen.py writes 404.html).
+	# Missing pages get the site's own page with links back (sitegen.py writes jobs/404.html). Error
+	# responses skip the headers above, so they are set again; a 404 is cached briefly, a page may appear soon.
 	handle_errors {
+		import security
+		header Cache-Control "public, max-age=60"
 		@missing expression {http.error.status_code} == 404
 		handle @missing {
 			root * $home/public
-			rewrite * /404.html
+			rewrite * /jobs/404.html
 			file_server
 		}
 	}

@@ -100,9 +100,9 @@ def _frame(title: str, desc: str, body: list[str], today: dt.date, site_url: str
     privacy and terms pages, and a link preview (WhatsApp shows og:image only from a full address).
     path is the page's place on the site, "jobs/exam/cgl/"; links go up from there to jobs/."""
     base = site_url.rstrip("/") if site_url else None
-    if path.startswith("jobs/"):
+    if path.startswith("jobs/") and path.endswith("/"):
         root = "../" * (path.count("/") - 1)
-    else:  # 404.html: shown at any address, so only full links work
+    else:  # jobs/404.html: shown at any address, so only full links work
         root = f"{base}/jobs/" if base else "/jobs/"
     head = ['<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',
             f"<title>{E(title)}</title>", f'<meta name="description" content="{E(desc)}">',
@@ -188,7 +188,7 @@ def page(code: str, fam: dict, rules: dict | None, items: list[dict], today: dt.
                      + (f'<a href="{E(link)}" rel="noopener" lang="{E(i["lang"])}">{t}</a>' if link else t) + "</li>")
         b.append("</ul>")
     b.append(f'<p><a class="cta" href="../../#exam/{E(code)}">Open {E(short)} in the app: alerts, result check by roll number →</a></p>')
-    return _frame(title, desc, b, today, site_url, f"jobs/exam/{code.lower()}/", (("Exams", None), (short, None)), contact)
+    return _frame(title, desc, b, today, site_url, f"jobs/exam/{code.lower()}/", ((short, None),), contact)
 
 
 # Topic pages for what people search on Google India (research/google_suggest_IN_2026-10-2*.json:
@@ -287,8 +287,9 @@ def info_pages(today: dt.date, site_url: str | None, contact: str | None) -> dic
                      "<h2>Result check by roll number</h2><p>The app downloads the part of the published result list that could contain "
                      "your number (picked by its last two digits) and looks for the full number on your phone. The full number is not sent.</p>",
                      "<h2>Alerts</h2><p>Only if you turn on alerts: your browser's push service gives an address for your browser. We keep "
-                     "that address, its keys, the exam codes you follow and your language on our server to send the alerts, and nothing else. "
-                     "Turning alerts off deletes them.</p>",
+                     "that address, its keys, the exam codes you follow, your language and when you last changed them on our server to send "
+                     "the alerts, and nothing else. Turning alerts off deletes them; if you are offline at that moment, they are deleted "
+                     "the next time an alert cannot be delivered.</p>",
                      "<h2>Channels and links</h2><p>Our WhatsApp and Telegram channels are run inside those apps, under their own privacy "
                      "policies. Links to recruiters' websites take you to sites with their own policies.</p>",
                      "<h2>Server logs, cookies, ads</h2><p>Like any website, the servers that deliver these pages may keep technical logs "
@@ -315,12 +316,13 @@ def info_pages(today: dt.date, site_url: str | None, contact: str | None) -> dic
     out = {f"jobs/{slug}/": _frame(h1, desc, [f"<h1>{E(h1)}</h1>", f'<p class="hi" lang="hi">{E(hi)}</p>', *body],
                                    today, site_url, f"jobs/{slug}/", ((crumb, None),), contact)
            for slug, (crumb, h1, hi, desc, body) in pages.items()}
-    out["404.html"] = _frame(f"Page not found: {NAME}", "This page does not exist.",
+    # Under jobs/: the data branch's root (and its 404.html) belongs to the lottery site. Caddy serves this one.
+    out["jobs/404.html"] = _frame(f"Page not found: {NAME}", "This page does not exist.",
                              ["<h1>Page not found</h1>", '<p class="hi" lang="hi">यह पेज नहीं मिला</p>',
                               "<p>The page may have moved. Start again from the latest updates:</p><ul>"
                               + "".join(f'<li><a href="{E((site_url.rstrip("/") if site_url else "") + "/jobs/topic/" + s)}/">{E(t.format(y=today.year))}</a></li>'
                                         for s, t, _, _ in HUBS[:4]) + "</ul>"],
-                             today, site_url, "404.html", contact=contact, noindex=True)
+                             today, site_url, "jobs/404.html", contact=contact, noindex=True)
     return out
 
 

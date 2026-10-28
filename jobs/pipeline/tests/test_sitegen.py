@@ -109,18 +109,19 @@ def test_every_page_has_the_basic_site_pages_and_a_link_preview(tmp_path):
         assert f'href="../../{slug}/"' in cgl
     assert '<meta property="og:image" content="https://example.in/india/jobs/icon-512.png">' in cgl
     ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', cgl).group(1))
-    assert [x["name"] for x in ld["itemListElement"]] == ["Home", "Exams", "SSC CGL"]
+    assert [x["name"] for x in ld["itemListElement"]] == ["Home", "SSC CGL"]
     assert ld["itemListElement"][0]["item"] == "https://example.in/india/jobs/"
     contact, privacy = read("jobs/contact/index.html"), read("jobs/privacy/index.html")
     assert 'href="mailto:help@example.in"' in contact and '<link rel="canonical" href="https://example.in/india/jobs/contact/">' in contact
     assert "No account" in privacy and "last two digits" in privacy and 'href="../"' in privacy
     about = read("jobs/about/index.html")
     assert "uppbpb.gov.in" in about and "isro.gov.in" in about  # every recruiter we read, from sources.py
-    missing = read("404.html")
+    missing = read("jobs/404.html")
     assert '<meta name="robots" content="noindex">' in missing and "canonical" not in missing
     assert 'href="https://example.in/india/jobs/topic/latest-govt-jobs/"' in missing  # full links: shown at any address
     sitemap = read("jobs/sitemap.xml")
     assert "<loc>https://example.in/india/jobs/privacy/</loc>" in sitemap and "404" not in sitemap
+    assert not os.path.exists(os.path.join(str(tmp_path), "404.html"))  # the site root is the lottery site's
 
 
 def test_no_contact_address_means_no_contact_page_or_link(tmp_path):
@@ -130,4 +131,4 @@ def test_no_contact_address_means_no_contact_page_or_link(tmp_path):
     assert not os.path.exists(os.path.join(str(tmp_path), "jobs", "contact", "index.html"))  # taken away again
     terms = open(os.path.join(str(tmp_path), "jobs", "terms", "index.html"), encoding="utf-8").read()
     assert "contact/" not in terms and "mailto:" not in terms and "cybercrime.gov.in" in terms
-    assert 'href="/jobs/topic/' in open(os.path.join(str(tmp_path), "404.html"), encoding="utf-8").read()
+    assert 'href="/jobs/topic/' in open(os.path.join(str(tmp_path), "jobs", "404.html"), encoding="utf-8").read()

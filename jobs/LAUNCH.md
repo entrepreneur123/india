@@ -24,7 +24,8 @@
    - WhatsApp 채널: `JOBS_WHATSAPP_CHANNEL`
    - 텔레그램: `JOBS_TELEGRAM_CHAT_ID` 변수와 `JOBS_TELEGRAM_BOT_TOKEN` 시크릿
 6. Google Search Console에 사이트를 등록하고 `jobs/sitemap.xml`을 제출합니다.
-   - 소개·개인정보처리방침·이용약관·404 페이지는 빌드가 자동으로 만듭니다(`jobs/about/`, `jobs/privacy/`, `jobs/terms/`).
+   - 소개·개인정보처리방침·이용약관 페이지는 빌드가 자동으로 만듭니다(`jobs/about/`, `jobs/privacy/`, `jobs/terms/`).
+   - 404 페이지(`jobs/404.html`)는 인도 서버에서만 쓰입니다. GitHub Pages에서는 저장소 최상위의 복권 사이트 404가 나옵니다.
 
 ## 2. 인도 서버 (권장: 철도·은행·UPSC 수집, 즉시 알림, 인도 내 빠른 응답)
 1. 🖥️ 인도 리전에 Ubuntu 24.04 서버를 만듭니다.
