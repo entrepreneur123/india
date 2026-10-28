@@ -24,9 +24,9 @@ data 브랜치에는 서버 한 곳만 씁니다. `JOBS_RUNNER=india`를 설정�
 
 ## 2. 설치 (서버에서 한 번)
 ```bash
-# <브랜치>: jobs/ 코드가 있는 브랜치 (PR 병합 후에는 기본 브랜치)
-curl -fsSLO https://raw.githubusercontent.com/entrepreneur123/india/<브랜치>/jobs/deploy/india/setup.sh
-sudo bash setup.sh entrepreneur123/india <브랜치>
+# 기본 브랜치(claude/gallant-lovelace-ynoa63)에 jobs/ 코드가 있습니다(PR #3 병합 후).
+curl -fsSLO https://raw.githubusercontent.com/entrepreneur123/india/claude/gallant-lovelace-ynoa63/jobs/deploy/india/setup.sh
+sudo bash setup.sh entrepreneur123/india claude/gallant-lovelace-ynoa63
 ```
 중간에 **배포 키**(ssh-ed25519로 시작하는 한 줄)가 출력되면 이렇게 등록하세요.
 - 저장소 → **Settings → Deploy keys → Add deploy key**
