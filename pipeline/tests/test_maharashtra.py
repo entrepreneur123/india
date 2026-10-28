@@ -160,3 +160,21 @@ def test_a_sheet_that_does_not_read_is_tried_twice_and_time_is_respected(tmp_pat
     mh.update(other, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page,
               fetch_pdf=lambda u: asked.append(u) or b"x", deadline=0)   # no time: listed, not read
     assert asked == [] and len(json.loads((other / "v2/mh/days/2026-10-27.json").read_text())["draws"]) == 5
+
+
+def test_sheets_not_tried_yet_are_read_first(tmp_path, monkeypatch):
+    page = (F / "mh_results_list.html").read_text()
+    order = []
+    def fail(pdf, warn=print):
+        order.append(pdf.decode())
+        raise mh.MaharashtraError("no")
+    monkeypatch.setattr(mh, "read", fail)
+    fetch = lambda u: u.encode()   # noqa: E731
+    mh.update(tmp_path, dt.date(2026, 10, 25), warn=lambda s: None, fetch_list=lambda: page, fetch_pdf=fetch)
+    first = order[:]                        # 25.10 only: the one sheet of that day
+    assert len(first) == 1
+    order.clear()
+    mh.update(tmp_path, dt.date(2026, 10, 27), warn=lambda s: None, fetch_list=lambda: page, fetch_pdf=fetch)
+    assert order[-1] == first[0] and len(order) == 10   # tried once before: read last
+    dates = [mh.list_sheets(page)[[u for _, _, u in mh.list_sheets(page)].index(x)][0] for x in order[:-1]]
+    assert dates == sorted(dates, reverse=True)          # the others newest first

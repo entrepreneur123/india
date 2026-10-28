@@ -1139,7 +1139,8 @@ def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -
 
 
 OCR_TRIES = 2           # a sheet reads the same way every time: two tries cover a failed download or a timeout
-SHEET_SECONDS = 480     # what one sheet may take: its download (~2-3 min from the lottery site) and six readings (~2 min)
+SHEET_SECONDS = 200     # six readings of one sheet (~2 min on a GitHub runner); downloads run alongside
+DOWNLOADS = 6           # sheets fetched at once: the lottery site sends each slowly (7-12 min a sheet, 28-10-2026)
 
 
 def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr: bool = True,
@@ -1176,18 +1177,44 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
         k = known(date, url)
         if k is None or k.get("status") != "OK":
             save(date, url, entry(date, url, None, local) | ({"ocrTries": k["ocrTries"]} if k and "ocrTries" in k else {}))
-    for date, local, url in sorted(sheets, key=lambda x: x[0], reverse=True) if ocr else []:
+    # Sheets not read yet first (one that did not read reads the same way again), newest first.
+    todo = sorted(((date, local, url) for date, local, url in sheets
+                   if (k := known(date, url)).get("status") != "OK" and k.get("ocrTries", 0) < OCR_TRIES),
+                  key=lambda x: (known(x[0], x[2]).get("ocrTries", 0), -x[0].toordinal())) if ocr else []
+    if deadline is not None and time.monotonic() + SHEET_SECONDS > deadline:
+        todo = []
+    fetched: dict[str, tuple] = {}
+
+    def fetch(url, done):
+        try:
+            fetched[url] = (True, (fetch_pdf or download)(url))
+        except Exception as e:  # noqa: BLE001 - reported where the sheet is read
+            fetched[url] = (False, e)
+        done.set()
+    import threading
+    waits = {}
+    for i, (_, _, url) in enumerate(todo):
+        waits[url] = threading.Event()
+        if i < DOWNLOADS:
+            threading.Thread(target=fetch, args=(url, waits[url]), daemon=True).start()
+    started = min(len(todo), DOWNLOADS)
+    for date, local, url in todo:
         k = known(date, url)
-        if k.get("status") == "OK" or k.get("ocrTries", 0) >= OCR_TRIES:
-            continue
         if deadline is not None and time.monotonic() + SHEET_SECONDS > deadline:
             warn("Maharashtra: no time left to read more sheets this run")
             break
+        left = None if deadline is None else deadline - SHEET_SECONDS - time.monotonic()
+        if not waits[url].wait(timeout=left):
+            warn(f"Maharashtra {date} {local}: still downloading; next run")
+            continue
+        if started < len(todo):  # one more download in the place of this one
+            nxt = todo[started][2]
+            threading.Thread(target=fetch, args=(nxt, waits[nxt]), daemon=True).start()
+            started += 1
         tries = {"ocrTries": k.get("ocrTries", 0) + 1}
-        try:
-            pdf = (fetch_pdf or download)(url)
-        except Exception as e:
-            warn(f"Maharashtra {date} {local}: download failed: {e}")
+        ok, pdf = fetched[url]
+        if not ok:
+            warn(f"Maharashtra {date} {local}: download failed: {pdf}")
             save(date, url, k | tries)
             continue
         try:
