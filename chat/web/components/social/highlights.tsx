@@ -17,11 +17,12 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
-// Profile highlights (057): titled albums shown as a turning 3D carousel. It moves only when the person drags, taps a
-// side card or an arrow — never by itself; the viewer too goes to the next photo only when asked.
+// Profile highlights (057): titled albums as a fan of cards turning round a wheel (the owner's sketch, 2026-10-28): the
+// front card at the bottom, the others fanned up and round behind it, all at full size. It turns only when the person
+// drags, taps a card behind or an arrow, never by itself; the viewer too goes to the next photo only when asked.
 
 const key = (userId: string) => ['highlights', userId]
-/** A card's place from the front one: -2..2 on screen, the rest hidden behind. Wraps round with 3 or more cards. */
+/** A card's place from the front one: -3..3 on screen, the rest hidden behind. Wraps round with 3 or more cards. */
 const offsetOf = (i: number, active: number, n: number) => {
   if (n < 3) return i - active
   const m = (((i - active) % n) + n) % n
@@ -57,7 +58,7 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
     <section className={cn('flex flex-col gap-2', className)} aria-label={st('hl.title')}>
       <h2 className="px-4 text-sm font-semibold">{st('hl.title')}</h2>
       <div
-        className="relative h-48 touch-pan-y overflow-hidden select-none [perspective:900px]"
+        className="relative h-[19.5rem] touch-pan-y overflow-hidden select-none"
         onPointerDown={(e) => (drag.current = e.clientX)}
         onPointerUp={onUp}
         onPointerCancel={() => (drag.current = null)}
@@ -73,7 +74,10 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
       >
         {list.map((c, i) => {
           const d = offsetOf(i, at, n)
-          const far = Math.abs(d) > 2
+          const far = Math.abs(d) > 3
+          // On a wheel of radius R round a point above the front card: each step turns 26° and climbs up and back.
+          const a = (d * 26 * Math.PI) / 180
+          const R = 140
           return (
             <button
               key={c.id}
@@ -82,13 +86,14 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
               aria-hidden={far}
               onClick={() => (d === 0 ? setViewing(c) : setActive(i))}
               className={cn(
-                'absolute top-2 left-1/2 -ml-14 flex aspect-[3/4] w-28 flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none',
+                'absolute bottom-2 left-1/2 -ml-16 flex aspect-[3/4] w-32 flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 ring-2 ring-card transition-[transform,opacity,filter] duration-300 ease-out motion-reduce:transition-none',
                 far && 'pointer-events-none opacity-0',
               )}
               style={{
-                transform: `translateX(${d * 80}%) translateZ(${-Math.abs(d) * 90}px) rotateY(${-d * 38}deg)`,
+                transform: `translate(${R * Math.sin(a)}px, ${-R * (1 - Math.cos(a))}px) rotate(${d * 14}deg)`,
                 zIndex: 10 - Math.abs(d),
-                opacity: far ? 0 : 1 - Math.abs(d) * 0.18,
+                opacity: far ? 0 : 1,
+                filter: d ? `brightness(${1 - Math.abs(d) * 0.12})` : undefined,
               }}
             >
               <img src={c.photos[0]?.url} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" draggable={false} />
