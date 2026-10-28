@@ -74,7 +74,7 @@ if((" "+df.dataset.days+" ").indexOf(" "+p.join("")+" ")>=0)location.href=df.dat
 else document.getElementById("dateRes").textContent=df.dataset.none});
 // Today's pages refresh themselves while a result is due (static pages, so a reload is cheap).
 var day=document.body.dataset.live;
-if(day){var shown=D.length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
+if(day){var shown=D.filter(function(d){return d.date===day}).length,url=document.querySelector('script[src$="/assets/site.js"]').getAttribute("src").replace(/assets\/site\.js$/,"v2/today.json");
 setInterval(function(){if(document.hidden)return;fetch(url,{cache:"no-cache"}).then(function(r){return r.json()}).then(function(j){
 var n=j.draws.filter(function(d){return d.date===day&&d.tiers&&d.tiers.length}).length;if(n>shown)location.reload()}).catch(function(){})},30000)}
 // A page waiting for one draw (Kerala before 4 PM, Morning/Day/Night before their result) reloads once it is in the feed.
