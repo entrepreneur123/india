@@ -22,6 +22,14 @@ data 브랜치에는 서버 한 곳만 씁니다. `JOBS_RUNNER=india`를 설정�
 - **업체:** Oracle Cloud, AWS Lightsail, Google Cloud, DigitalOcean 모두 인도 리전이 있습니다. 무료 등급이 인도 리전에서 되는지와 가격은 가입할 때 각 업체에서 직접 확인하세요. 여기서는 확인하지 못했습니다.
 - **방화벽:** 즉시 알림을 쓰려면 들어오는 **80, 443 포트**를 열어 두세요. 업체 콘솔의 방화벽(보안 목록)에서 엽니다.
 
+### Oracle Cloud(무료 등급)를 쓸 때
+- 가입 시 홈 리전을 **India West (Mumbai)** 또는 **India South (Hyderabad)**로 고릅니다. 나중에 바꿀 수 없습니다.
+- 서버 모양(Shape)은 Always Free 표시가 있는 **VM.Standard.A1.Flex(1 OCPU, 6 GB)** 또는 **VM.Standard.E2.1.Micro**를 씁니다. 이미지는 Ubuntu 24.04입니다.
+- 80·443 포트는 두 곳에서 열어야 합니다.
+  - 클라우드 방화벽: 서브넷의 Security List에서 엽니다.
+  - 서버 안의 iptables: `setup.sh`가 엽니다.
+- 활동이 적은 무료 서버는 회수될 수 있습니다. 계정을 Pay As You Go로 바꾸면 회수를 막을 수 있습니다(무료 한도 안에서는 요금 없음). 가입 당시 Oracle 문서를 확인하세요.
+
 ## 2. 설치 (서버에서 한 번)
 ```bash
 # 기본 브랜치(claude/gallant-lovelace-ynoa63)에 jobs/ 코드가 있습니다(PR #3 병합 후).
