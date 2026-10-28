@@ -13,6 +13,16 @@ grep -q 'VERSION_ID="24.04"' /etc/os-release || { echo "needs Ubuntu 24.04"; exi
 apt-get install -y -qq git python3 python3-venv poppler-utils caddy curl
 systemctl disable --now caddy  # only used once push is switched on (enable-push.sh)
 
+# Oracle Cloud's Ubuntu images reject all but SSH in iptables (on top of the cloud firewall). Open 80/443
+# for Caddy's HTTPS (push, site) just before that REJECT rule, and keep it across reboots.
+n=$(iptables -n -L INPUT --line-numbers 2>/dev/null | awk '$2 == "REJECT" {print $1; exit}' || true)
+if [ -n "$n" ]; then
+  for port in 443 80; do
+    iptables -C INPUT -p tcp --dport "$port" -j ACCEPT 2>/dev/null || iptables -I INPUT "$n" -p tcp --dport "$port" -j ACCEPT
+  done
+  command -v netfilter-persistent >/dev/null && netfilter-persistent save >/dev/null
+fi
+
 id sarkari >/dev/null 2>&1 || useradd --system --home "$home" --shell /usr/sbin/nologin sarkari
 mkdir -p "$home/push" "$home/.ssh"
 python3 -m venv "$home/venv"
