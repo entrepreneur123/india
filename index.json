@@ -1,0 +1,134 @@
+{
+ "army": {
+  "bytes": 11148,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://joinindianarmy.nic.in/"
+ },
+ "bpsc": {
+  "date": "2026-10-29",
+  "error": "GET https://bpsc.bihar.gov.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://bpsc.bihar.gov.in/"
+ },
+ "ctet": {
+  "bytes": 92515,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://ctet.nic.in/"
+ },
+ "dsssb": {
+  "bytes": 78564,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://dsssb.delhi.gov.in/"
+ },
+ "hpsc": {
+  "bytes": 48787,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://hpsc.gov.in/"
+ },
+ "ibps": {
+  "date": "2026-10-29",
+  "error": "GET https://www.ibps.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://www.ibps.in/"
+ },
+ "india-post-gds": {
+  "bytes": 83684,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://indiapostgdsonline.gov.in/"
+ },
+ "jssc": {
+  "date": "2026-10-29",
+  "error": "GET https://jssc.jharkhand.gov.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://jssc.jharkhand.gov.in/"
+ },
+ "kerala-psc": {
+  "date": "2026-10-29",
+  "error": "GET https://keralapsc.gov.in/ failed after 1 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://keralapsc.gov.in/"
+ },
+ "mp-esb": {
+  "date": "2026-10-29",
+  "error": "GET https://esb.mp.gov.in/ failed after 1 attempts: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://esb.mp.gov.in/"
+ },
+ "mppsc": {
+  "bytes": 52431,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://mppsc.mp.gov.in/"
+ },
+ "mpsc": {
+  "date": "2026-10-29",
+  "error": "GET https://www.mpsc.gov.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.mpsc.gov.in'. (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://www.mpsc.gov.in/"
+ },
+ "ppsc": {
+  "date": "2026-10-29",
+  "error": "GET https://ppsc.gov.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://ppsc.gov.in/"
+ },
+ "punjab-sssb": {
+  "date": "2026-10-29",
+  "error": "GET https://sssb.punjab.gov.in/ failed after 1 attempts: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://sssb.punjab.gov.in/"
+ },
+ "rpsc": {
+  "bytes": 280686,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://rpsc.rajasthan.gov.in/"
+ },
+ "rrb-apply": {
+  "date": "2026-10-29",
+  "error": "GET https://www.rrbapply.gov.in/ failed after 1 attempts: HTTP Error 404: Not Found",
+  "ok": false,
+  "url": "https://www.rrbapply.gov.in/"
+ },
+ "rrb-cdg": {
+  "date": "2026-10-29",
+  "error": "GET https://www.rrbcdg.gov.in/ failed after 1 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.rrbcdg.gov.in'. (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://www.rrbcdg.gov.in/"
+ },
+ "rssb": {
+  "date": "2026-10-29",
+  "error": "GET https://rssb.rajasthan.gov.in/ failed after 1 attempts: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://rssb.rajasthan.gov.in/"
+ },
+ "tnpsc": {
+  "date": "2026-10-29",
+  "error": "GET https://www.tnpsc.gov.in/ failed after 1 attempts: The read operation timed out",
+  "ok": false,
+  "url": "https://www.tnpsc.gov.in/"
+ },
+ "upsc": {
+  "date": "2026-10-29",
+  "error": "GET https://upsc.gov.in/ failed after 1 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://upsc.gov.in/"
+ },
+ "upsssc": {
+  "date": "2026-10-29",
+  "error": "GET https://upsssc.gov.in/ failed after 1 attempts: <urlopen error [SSL: UNSAFE_LEGACY_RENEGOTIATION_DISABLED] unsafe legacy renegotiation disabled (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://upsssc.gov.in/"
+ },
+ "wbpsc": {
+  "date": "2026-10-29",
+  "error": "GET https://wbpsc.gov.in/ failed after 1 attempts: <urlopen error timed out>",
+  "ok": false,
+  "url": "https://wbpsc.gov.in/"
+ }
+}

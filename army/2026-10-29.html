@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>
+	Join Indian Army
+</title>
+
+    <style type="text/css">
+
+       *,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    width: 100%;
+}
+
+.wrapper {
+    width: 400px;
+    margin: auto;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0,0,0,.30);
+}
+
+.header {
+    background: linear-gradient(135deg,#0f5b34,#1d7748);
+    border-bottom: 4px solid #d8a728;
+    padding: 12px 20px;
+}
+
+.header img {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    margin: auto;
+}
+
+.page-body {
+    padding: 5px 5px;
+}
+
+.bottom-strip {
+    padding: 25px 35px 35px;
+}
+
+.captcha-box {
+    width: 100%;
+    border: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.welcome-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #222;
+    margin-bottom: 20px;
+}
+
+.captcha-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+}
+
+.astric {
+    color: red;
+}
+
+.captcha-box img {
+    border: 1px solid #b5d7b5;
+    border-radius: 4px;
+}
+
+.refresh-btn {
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.login_field,
+input[type=text] {
+    width: 200px !important;
+    height: 42px !important;
+    border: 1px solid #cfcfcf !important;
+    border-radius: 4px !important;
+    padding: 0 12px !important;
+    font-size: 16px !important;
+    margin-top: 10px !important;
+    outline: none !important;
+}
+
+.login_field:focus,
+input[type=text]:focus {
+    border-color: #1d7748 !important;
+    box-shadow: 0 0 5px rgba(29,119,72,.30) !important;
+}
+
+.buttonGo,
+input[type=submit] {
+    width: 200px !important;
+    height: 44px !important;
+    margin-top: 12px !important;
+    background: #c85d32 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    cursor: pointer !important;
+    transition: .3s;
+}
+
+.buttonGo:hover,
+input[type=submit]:hover {
+    background: #0f5b34 !important;
+}
+
+.section-title,
+.exam-table,
+.left-info {
+    display: none !important;
+}
+
+@media (max-width:600px) {
+
+    .wrapper {
+        width: 95%;
+    }
+
+    .page-body,
+    .bottom-strip {
+        padding: 20px;
+    }
+
+    .login_field,
+    .buttonGo,
+    input[type=text],
+    input[type=submit] {
+        width: 100% !important;
+    }
+}
+
+    </style>
+
+    <script type="text/javascript">
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener('keydown', function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById('btnSubmit').click();
+                }
+            });
+        });
+
+        function ValidateForm_new(frm) {
+            var captchaInput = document.getElementById('txtCaptchaCode');
+            if (!captchaInput || captchaInput.value.trim() === "") {
+                alert("Please Enter Verification Code");
+                return false;
+            }
+            return true;
+        }
+
+        // Fix for MSCaptcha control - Define the DrawCaptcha function
+        function DrawCaptcha() {
+            // The captcha is already rendered by the server control
+            // This function is called by the control but doesn't need to do anything
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <form method="post" action="/Authentication.aspx" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="tYmI7/Odv9KEOAO/XbvA1OxsLzuP/DQHIb2kFju2IhjfIYg2jdp6J/9WZaBN0+bxlYYLaGYja4/CY3LxnY423kKmrxKZUhPD36/QlDJH+/9YMPVXnnlLI0ikZOIgbOCEpnIcM2guPeeM3JZHcW3/azAQAjZ30hpXcysOf6FkWZls01nATx9/XyTarGKgO2nnaCDaFWRlc0PdDqAxxatRceVPDGt3ms5P01NoImYpeW8WWVvgdmj03rmJoqVRgS2Jum+vCD7eDBBOClyt2WHSwJ/0qJU=" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script><noscript class="displayNone"> This website uses Javascript </noscript>
+
+
+<script src="/WebResource.axd?d=H-mltBQmvrEUSMWXluJppMVJWwJ2L6HbfYw7ucoGsKuaYsLctLEM6RiljuH4CeqVWDKhjrBKo0b3vdytB2wQoR_XESo1&amp;t=639191031332169432" type="text/javascript"></script><noscript class="displayNone"> This website uses Javascript </noscript>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="8E9ED107" />
+</div>
+
+        <div class="wrapper">
+
+            <!-- ── HEADER ── -->
+            <div class="header">
+                <a href="index.htm">
+                    <img src="writereaddata/Portal/Images/logo.png"
+                        alt="Join Indian Army"
+                        title="Join Indian Army"
+                        border="0" />
+                </a>
+            </div>
+
+            <!-- ── PAGE BODY ── -->
+            <div class="page-body">
+
+              
+
+                <!-- Section heading -->
+                <div class="section-title" style="display:none;">
+                    ISSUE OF ADMIT CARD &amp; SCH OF EXAM FOR ONLINE COMMON ENTRANCE EXAM 2026
+                </div>
+
+                <!-- Exam schedule table -->
+                <table class="exam-table" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Post / Category Name</th>
+                            <th>Exam Date</th>
+                            <th>Admit Card Live Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="r1">
+                            <td>JCO RT;&nbsp; SEPOY (PHARMA);&nbsp; Havildar Education</td>
+                            <td class="date-col">11-Jun-2026</td>
+                            <td class="live-col">15-May-2026 (Evening)</td>
+                        </tr>
+                        <tr class="r2">
+                            <td>Agniveer (General Duty);&nbsp; Agniveer Tradesmen (10TH)</td>
+                            <td class="date-col">01 &amp; 02-Jun-2026</td>
+                            <td class="live-col">18-May-2026 (Evening)</td>
+                        </tr>
+                        <tr class="r3">
+                            <td>Agniveer (General Duty);&nbsp; Agniveer Tradesmen (10TH);&nbsp; Agniveer Tech</td>
+                            <td class="date-col">03 &amp; 04-Jun-2026</td>
+                            <td class="live-col">19-May-2026 (Evening)</td>
+                        </tr>
+                        <tr class="r4">
+                            <td>Agniveer (General Duty);&nbsp; Agniveer Tradesmen (10TH);&nbsp; Agniveer Tech</td>
+                            <td class="date-col">05 &amp; 08-Jun-2026</td>
+                            <td class="live-col">20-May-2026 (Evening)</td>
+                        </tr>
+                        <tr class="r5">
+                            <td>
+                                <b>Remaining category:</b><br />
+                                Agniveer (General Duty);&nbsp; Agniveer Tradesmen (8TH);&nbsp; SOL TECH (NA);<br />
+                                Agniveer GD (Women Military Police);&nbsp; Agniveer (Clerk and SKT)
+                            </td>
+                            <td class="date-col">09, 10, 12-Jun-2026</td>
+                            <td class="live-col">21-May-2026 (Evening)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- ── BOTTOM STRIP ── -->
+            <div class="bottom-strip">
+
+                <!-- Left: download + helpline -->
+                <div class="left-info" style="display:none;">
+                    <a class="download-btn"
+                        href="https://cdn.digialm.com/EForms/configuredHtml/1258/2000519/login.html"
+                        target="_blank">
+                        &#8659;&nbsp; Download CEE Admit Card
+                    </a>
+                    <div class="contact-box">
+                        <strong>Helpline For Queries &mdash; Online CEE-2026</strong>
+                        &#128222;&nbsp; Phone No: +91 9513252885<br />
+                        &#9993;&nbsp; Email: Indianarmycee2026[at]gmail[dot]com
+                    </div>
+                </div>
+
+                <!-- Right: captcha + submit -->
+                <div class="captcha-box">
+                      <!-- Welcome message -->
+                <div class="welcome-text">
+                    <span id="Label1">Welcome to Join Indian Army website. Please write text as shown in following image to enter into the website.</span>
+                </div>
+                    <div class="captcha-label">
+                        <span id="Label2">Captcha</span>
+                        <span class="astric">*</span>
+                    </div>
+
+                    <div style='background-color:White;' ><img src="CaptchaImage.axd?guid=e4b8187e-1699-4497-9604-8c71927ea2eb" border="0" alt="Captcha" width="160" height="44" /></div>
+
+                    <input type="image" name="imgRefresh" id="imgRefresh" class="refresh-btn" src="Images/verification-code-refresh.gif" alt="Refresh" />
+
+                    <input name="txtCaptchaCode" type="text" id="txtCaptchaCode" class="login_field BDC_TextUppercase" autocomplete="off" />
+
+                    <input type="submit" name="btnSubmit" value="ENTER WEBSITE" onclick="javascript:return ValidateForm_new(this.form);WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;btnSubmit&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" id="btnSubmit" class="buttonGo" name="btnSubmit" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+    
+
+<script type="text/javascript">
+//<![CDATA[
+DrawCaptcha()//]]>
+</script>
+</form>
+
+</body>
+</html>
