@@ -2,8 +2,9 @@
 
 Each board below was written against its page of 29-10-2026 (tests/fixtures/<source>.html):
 
-  ibps   Institute of Banking Personnel Selection       www.ibps.in    home page cards: heading, "Posted on 29 Oct, 2026", link
-                                                                       (read from the India server; ibps.in doesn't answer GitHub)
+  ibps   Institute of Banking Personnel Selection       www.ibps.in    "CRP updates" (View All) list: a link around "29 Oct 26"
+                                                                       and the headline (read from the India server; ibps.in
+                                                                       doesn't answer GitHub)
   aai    Airports Authority of India (recruitment)      www.aai.aero   exam table: one row per exam, cells "Updated On 28-09-2026"
                                                                        for advertisement, press note, syllabus and result
   iocl   Indian Oil Corporation (latest job openings)   iocl.com       cards: heading, then file links, some ending "[14/08/2026]";
@@ -11,7 +12,8 @@ Each board below was written against its page of 29-10-2026 (tests/fixtures/<sou
   becil  Broadcast Engineering Consultants India        www.becil.com  cards: "Advt No. 563: ...", "Upload Date : 19-Oct-2026", PDF
 
 Not collectable from what these sites serve (29-10-2026):
-  rbi    opportunities.rbi.org.in answers every page with a JavaScript bot challenge (no list in the HTML).
+  rbi    opportunities.rbi.org.in answers GitHub with a JavaScript bot challenge; the India server gets the
+         real lists: boards_more_a.py.
   lic    www.licindia.in/careers lists 7 openings with no dates, most behind script-only links.
 
 The rules of listboards.py apply: a day, no time; links leaving the board's own host (registration
@@ -33,13 +35,15 @@ def _text(fragment: str) -> str:
     return _WS.sub(" ", html.unescape(_TAG.sub(" ", fragment))).strip()
 
 
-# IBPS home page ("Latest updates" cards):
-#   <div class="heading"><a href="URL" ><h3 class="heading-details" ...>CRP-SPL-XVI</h3></a>
-#   <img ...><span class="crpdate" ...>Posted on 22 Oct, 2026</span></div>
-#   <a href="URL" ><p class="sub-heading" ...>Scores of Online Preliminary Examination for CRP-SPL-XVI</p></a>
-_IBPS = re.compile(r"""<div class="heading">\s*<a href="([^"]+)"\s*>\s*<h3 class="heading-details"[^>]*>(.*?)</h3>\s*</a>\s*(?:<img[^>]*>\s*)?"""
-                   r"""<span class="crpdate"[^>]*>\s*Posted on\s+([^<]+?)\s*</span>\s*</div>\s*"""
-                   r"""<a href="([^"]+)"\s*>\s*<p class="sub-heading"[^>]*>(.*?)</p>\s*</a>""", re.S | re.I)
+# IBPS "CRP updates" (www.ibps.in/index.php/crp-updates/, the home page's "View All": every update, newest first):
+#   <a href="https://www.ibps.in/wp-content/uploads/....pdf" target="_blank"> <div class="detail-section">
+#   <div class="detail-list"> <div class="detail-first-heading">29 Oct 26</div>
+#   <div class="detail-second-heading">Advertisement for Direct Recruitment of ...</div> </div> </div> </a>
+# (The table's own header row is "detail-first-heading fh": not matched.)
+_IBPS = re.compile(r"""<a href="([^"]*)"[^>]*>\s*<div class="detail-section">\s*<div class="detail-list">\s*"""
+                   r"""<div class="detail-first-heading">\s*([^<]*?)\s*</div>\s*<div class="detail-second-heading">(.*?)</div>""", re.S)
+# IBPS's own notices about the institute, not about any exam or post
+_IBPS_SKIP = re.compile(r"\btrade ?mark\b|\bproprietary rights\b|\bISO \d{4,5}\b", re.I)
 
 
 def _ibps_kind(title: str) -> str:
@@ -48,13 +52,21 @@ def _ibps_kind(title: str) -> str:
 
 
 def _ibps_entries(page: str) -> Iterator[tuple[str, str, str]]:
-    for _href, heading, day, sub_href, sub in _IBPS.findall(page):
-        # the heading and the line under it link the same place (29-10-2026); the line says what it is
-        yield day, sub_href, f"{_text(heading)}: {sub}"
+    for href, day, headline in _IBPS.findall(page):
+        if not _IBPS_SKIP.search(_text(headline)):
+            yield day, href, headline
+
+
+def _ibps_date(raw: str, _title: str = "") -> dt.date:
+    """'29 Oct 26' (two-digit year)."""
+    m = re.fullmatch(r"(\d{1,2}) ([A-Za-z]{3}) (\d{2})", raw.strip())
+    if not m:
+        raise ValueError(raw)
+    return dt.datetime.strptime(f"{m.group(1)} {m.group(2).title()} 20{m.group(3)}", "%d %b %Y").date()
 
 
 def _day_mon_year(raw: str, _title: str = "") -> dt.date:
-    """'22 Oct, 2026' (IBPS) or '19-Oct-2026' (BECIL)."""
+    """'19-Oct-2026' (BECIL)."""
     m = re.fullmatch(r"\s*(\d{1,2})[ -]([A-Za-z]{3}),?[ -](\d{4})\s*", raw)
     if not m:
         raise ValueError(raw)
@@ -155,8 +167,8 @@ def _becil_entries(page: str) -> Iterator[tuple[str, str, str]]:
             yield "", "", card  # a card without its date or file: counted as malformed
 
 
-IBPS = Board("ibps", "https://www.ibps.in", "https://www.ibps.in/", "IBPS", _ibps_entries, _day_mon_year,
-             min_items=3, kind=_ibps_kind)
+IBPS = Board("ibps", "https://www.ibps.in", "https://www.ibps.in/index.php/crp-updates/", "IBPS", _ibps_entries, _ibps_date,
+             kind=_ibps_kind)
 AAI = Board("aai", "https://www.aai.aero", "https://www.aai.aero/en/careers/recruitment", "AAI", _aai_entries, _dmy,
             kind=_aai_kind, dated_ids=True)
 IOCL = Board("iocl", "https://iocl.com", "https://iocl.com/latest-job-opening", "IOCL", _iocl_entries, _dmy,
