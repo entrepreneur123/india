@@ -3,6 +3,7 @@ from __future__ import annotations
 import http.client
 import json
 import re
+import socket
 import ssl
 import time
 import urllib.error
@@ -48,6 +49,27 @@ def aia_issuer_urls(der: bytes) -> list[str]:
     return out
 
 
+def _as_pem(body: bytes) -> str | None:
+    """The certificate(s) in an AIA download (PEM, DER or a PKCS#7 bundle), as PEM that loads."""
+    candidates = []
+    if body.startswith(b"-----BEGIN CERTIFICATE-----"):
+        candidates.append(body.decode("ascii", "replace"))
+    elif body[:1] == b"\x30":
+        candidates.append(ssl.DER_cert_to_PEM_cert(body))
+        try:  # .p7c bundles (bpsc.bihar.gov.in, ppsc.gov.in): needs `cryptography`, there with pywebpush
+            from cryptography.hazmat.primitives.serialization import Encoding, pkcs7
+            candidates.append("".join(c.public_bytes(Encoding.PEM).decode() for c in pkcs7.load_der_pkcs7_certificates(body)))
+        except Exception:  # noqa: BLE001 - not PKCS#7, or no cryptography: the DER try above stands
+            pass
+    for pem in candidates:
+        try:
+            ssl.create_default_context().load_verify_locations(cadata=pem)
+            return pem
+        except (ssl.SSLError, ValueError):
+            continue
+    return None
+
+
 def _issuer_pem(der: bytes, timeout: int) -> str | None:
     for url in aia_issuer_urls(der):
         try:
@@ -55,11 +77,21 @@ def _issuer_pem(der: bytes, timeout: int) -> str | None:
                 body = resp.read(100_000)
         except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError):
             continue
-        if body.startswith(b"-----BEGIN CERTIFICATE-----"):
-            return body.decode("ascii", "replace")
-        if body[:1] == b"\x30":  # DER
-            return ssl.DER_cert_to_PEM_cert(body)
+        pem = _as_pem(body)
+        if pem:
+            return pem
     return None
+
+
+def _peer_certificate(host: str, port: int, timeout: int) -> bytes:
+    """The server's own certificate, unverified: only to read which issuer it names. Allows legacy
+    renegotiation like _context, which ssl.get_server_certificate does not (esb.mp.gov.in, upsssc.gov.in)."""
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+    with socket.create_connection((host, port), timeout=timeout) as sock, ctx.wrap_socket(sock, server_hostname=host) as tls:
+        return tls.getpeercert(binary_form=True)
 
 
 def _learn_intermediates(url: str, timeout: int) -> bool:
@@ -69,7 +101,7 @@ def _learn_intermediates(url: str, timeout: int) -> bool:
     try:
         # Unverified on purpose: only to read which issuer the server names. The page itself is then
         # fetched with full verification against the system roots plus what was found here.
-        der = ssl.PEM_cert_to_DER_cert(ssl.get_server_certificate((host, port), timeout=timeout))
+        der = _peer_certificate(host, port, timeout)
     except (OSError, ValueError):
         return False
     found = []
