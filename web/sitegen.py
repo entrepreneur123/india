@@ -415,7 +415,7 @@ class Site:
         self.beacon = beacon_token(os.environ.get("CF_BEACON_TOKEN", ""))
         self.verify = {"google-site-verification": verification(os.environ.get("GOOGLE_SITE_VERIFICATION", "")),
                        "msvalidate.01": verification(os.environ.get("BING_SITE_VERIFICATION", ""))}
-        self.pages: list[tuple[str, dict[str, str], str]] = []  # (key, {lang: path}, lastmod) for the sitemap
+        self.pages: list[tuple[str, dict[str, str], str, str]] = []  # (key, {lang: path}, lastmod, image) for the sitemap
         self._ads = 0
         self._keys: set[str] = set()
         self.og_images: dict[str, str] = {}
@@ -485,9 +485,14 @@ class Site:
                        "inLanguage": REGION[lang], "publisher": {"@type": "Organization", "name": "LottoDost",
                                                                  "url": self.abs("en", "/"), "email": CONTACT,
                                                                  "logo": self.abs("en", "/icon-512.png")}})
-        if modified:  # a real freshness signal: when these numbers last changed
-            ld.append({"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path),
-                       "dateModified": modified.isoformat(timespec="minutes")})
+        if modified or image:
+            wp = {"@context": "https://schema.org", "@type": "WebPage", "url": self.abs(lang, path), "name": title,
+                  "inLanguage": REGION[lang]}
+            if modified:  # a real freshness signal: when these numbers last changed
+                wp["dateModified"] = modified.isoformat(timespec="minutes")
+            if image:  # the result card: eligible for Google Images and the large preview in Discover
+                wp["primaryImageOfPage"] = {"@type": "ImageObject", "url": image, "width": 1200, "height": 630}
+            ld.append(wp)
         ld_html = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False).replace("</", "<\\/")}</script>'
                           for x in ld)
         og_img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
@@ -765,13 +770,14 @@ class Site:
         banner = f'<p class="banner">{esc(self.s[lang]["no_draw_day"])}</p>' if no_dear else ""
         return banner + "".join(h for _, h in sorted(parts, key=lambda p: p[0]))
 
-    def write(self, out: pathlib.Path, lang: str, path: str, content: str, key: str | None = None, lastmod: str = ""):
+    def write(self, out: pathlib.Path, lang: str, path: str, content: str, key: str | None = None, lastmod: str = "",
+              image: str = ""):
         f = out / (LANGS[lang][1].lstrip("/")) / path.strip("/") / "index.html" if path != "/404" else out / "404.html"
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(content, encoding="utf-8")
         if key and key not in self._keys:  # one sitemap entry per page, listing all its languages
             self._keys.add(key)
-            self.pages.append((key, {l: self.abs(l, path) for l in LANGS}, lastmod))
+            self.pages.append((key, {l: self.abs(l, path) for l in LANGS}, lastmod, image))
 
     # ---- pages ----
     def build(self, out: pathlib.Path) -> int:
@@ -836,6 +842,8 @@ class Site:
                                    f'<b>{esc(short_time(x["time"]))}</b>{esc(game(x["name"]).replace("Dear ", ""))}</a>' for x in draws)
                     body = (f'<div class="intro"><h1 class="sm">{esc(title)}</h1></div>' + self.sheet(lang, d)
                             + self.checker(lang, s["find_in_result"], kerala=kl) + self.share(lang, d)
+                            + (f'<figure class="shot"><img src="{esc(image)}" width="1200" height="630" loading="lazy" '
+                               f'decoding="async" alt="{esc(title)}: {esc(first)}"></figure>' if image else "")
                             + (f'<p class="hint">{esc(s["kerala_source_note"])}</p>' if kl else "")
                             + f'<section class="card">{self.tiers(lang, d, ads=True)}</section>' + self.source_buttons(lang, d)
                             + f'<nav class="chips" aria-label="{esc(w["all_of_day"].format(d=dd))}">{sibs}</nav>'
@@ -847,7 +855,7 @@ class Site:
                                self.page(lang, self.draw_path(d), title, desc, body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
                                          tab="kerala" if kl else "results", image=image),
-                               key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date)
+                               key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date, image=image)
             self.kerala_hub(out, lang)
             self.mh_pages(out, lang)
             self.mh_game_hubs(out, lang)
@@ -1061,7 +1069,8 @@ class Site:
                 lang, self.draw_path(d), title, m["draw_desc"].format(g=self.mh_game(lang, d), d=dd, f=first["numbers"][0]), body,
                 data=[d], image=self.og_images.get(d["id"], ""),
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
-                key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"])
+                key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"],
+                image=self.og_images.get(d["id"], ""))
 
     @staticmethod
     def mh_game_path(d: dict) -> str:
@@ -1405,17 +1414,18 @@ class Site:
             if not (out / f.name).exists() or (out / f.name).read_bytes() != f.read_bytes():
                 (out / f.name).write_bytes(f.read_bytes())
         urls = []
-        for key, alts, lastmod in self.pages:
+        for key, alts, lastmod, image in self.pages:
             for lang, loc in alts.items():
                 if key.startswith("page:") and lang != "en":
                     continue
                 links = "" if key.startswith("page:") else "".join(
                     f'<xhtml:link rel="alternate" hreflang="{REGION[l]}" href="{esc(u)}"/>' for l, u in alts.items())
                 mod = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""   # when the numbers last changed
-                urls.append(f"<url><loc>{esc(loc)}</loc>{mod}{links}</url>")
+                img = f"<image:image><image:loc>{esc(image)}</image:loc></image:image>" if image else ""  # Google Images
+                urls.append(f"<url><loc>{esc(loc)}</loc>{mod}{links}{img}</url>")
         (out / "sitemap.xml").write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
-            'xmlns:xhtml="http://www.w3.org/1999/xhtml">' + "".join(urls) + "</urlset>\n", encoding="utf-8")
+            'xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' + "".join(urls) + "</urlset>\n", encoding="utf-8")
         (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {self.abs('en', '/sitemap.xml').replace(LANGS['en'][1], '')}\n")
         ads = out / "ads.txt"
         if self.adsense:
@@ -1465,6 +1475,7 @@ background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px)
 .nums li.hit{background:var(--gold);color:var(--ongold);box-shadow:inset 0 0 0 2px #d9a400}
 .sheet{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:14px 0}.band{background:var(--brand);color:#fff;padding:14px 16px}
 .band h2{font-size:1.02rem;text-transform:uppercase;letter-spacing:.01em}.band p{opacity:.9;font-size:.88rem;margin-top:2px}.hero{padding:14px 16px 16px}.hero .meta{margin:4px 0 0}
+.shot{margin:12px 0}.shot img{display:block;width:100%;height:auto;border-radius:18px;border:1px solid var(--line)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:2px 16px;margin:12px 0}.prose{padding:16px}
 .share{margin:14px 0}.share .row{margin-top:8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(6.5rem,1fr))}.share a,.share button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 14px;border-radius:999px;border:0;font:inherit;font-weight:700;font-size:.9rem;color:#fff;text-decoration:none;cursor:pointer}
 .wa{background:#1b9e4f}.tg{background:#2481cc}.fb{background:#1877f2}.x{background:#14171a}.share .cp,.share .more{background:var(--card);color:var(--fg);box-shadow:inset 0 0 0 1px var(--line)}
