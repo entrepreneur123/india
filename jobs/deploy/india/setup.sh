@@ -11,6 +11,13 @@ home=/opt/sarkari
 apt-get update -qq
 grep -q 'VERSION_ID="24.04"' /etc/os-release || { echo "needs Ubuntu 24.04"; exit 1; }
 apt-get install -y -qq git python3 python3-venv poppler-utils caddy curl
+
+# A 1 GB VM (Oracle's Always Free E2.1.Micro) can run out of memory while a large result PDF is read;
+# 2 GB of swap keeps the run alive. Skipped when the machine has 2 GB or more, or swap already exists.
+if [ "$(awk '/MemTotal/ {print $2}' /proc/meminfo)" -lt 2000000 ] && [ "$(awk 'NR > 1' /proc/swaps | wc -l)" -eq 0 ]; then
+  fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap -q /swapfile && swapon /swapfile
+  grep -q '^/swapfile ' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
 systemctl disable --now caddy  # only used once push is switched on (enable-push.sh)
 
 # Oracle Cloud's Ubuntu images reject all but SSH in iptables (on top of the cloud firewall). Open 80/443

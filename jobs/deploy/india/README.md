@@ -24,7 +24,8 @@ data 브랜치에는 서버 한 곳만 씁니다. `JOBS_RUNNER=india`를 설정�
 
 ### Oracle Cloud(무료 등급)를 쓸 때
 - 가입 시 홈 리전을 **India West (Mumbai)** 또는 **India South (Hyderabad)**로 고릅니다. 나중에 바꿀 수 없습니다.
-- 서버 모양(Shape)은 Always Free 표시가 있는 **VM.Standard.A1.Flex(1 OCPU, 6 GB)** 또는 **VM.Standard.E2.1.Micro**를 씁니다. 이미지는 Ubuntu 24.04입니다.
+- 서버 모양(Shape)은 Always Free 표시가 있는 **VM.Standard.A1.Flex(1 OCPU, 6 GB)** 또는 **VM.Standard.E2.1.Micro(1 GB)**를 씁니다. 이미지는 Ubuntu 24.04입니다.
+  - 뭄바이는 A1이 자주 "Out of capacity"입니다. 그러면 E2.1.Micro로 만드세요. 메모리가 2 GB 미만이면 `setup.sh`가 2 GB 스왑을 만듭니다.
 - 80·443 포트는 두 곳에서 열어야 합니다.
   - 클라우드 방화벽: 서브넷의 Security List에서 엽니다.
   - 서버 안의 iptables: `setup.sh`가 엽니다.
