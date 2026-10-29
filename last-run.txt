@@ -1,0 +1,61 @@
+exit 0 at 2026-10-31T15:45:03Z, code 8fb998cf1
+2026-10-31T15:43:30Z run start, code 8fb998cf1
+/opt/sarkari/code/jobs/pipeline/sarkari/http.py:62: UserWarning: PKCS#7 certificates could not be parsed as DER, falling back to parsing as BER. In the future, this may become an exception. Error details: ValueError: error parsing asn1 value: ParseError { kind: InvalidSetOrdering, location: ["ContentInfo::content", "SignedData::certificates", 1] }
+  candidates.append("".join(c.public_bytes(Encoding.PEM).decode() for c in pkcs7.load_der_pkcs7_certificates(body)))
+mppsc: 31 entries, 0 outside portals or archived entries left out
+ctet: 13 entries, 0 outside portals or archived entries left out
+rrb: 187 entries, 0 outside portals or archived entries left out
+sbi: 85 entries, 78 outside portals or archived entries left out
+bpsc: 17 entries, 0 outside portals or archived entries left out
+hpsc: 25 entries, 0 outside portals or archived entries left out
+ppsc: 603 entries, 0 outside portals or archived entries left out
+psssb: 50 entries, 50 outside portals or archived entries left out
+rpsc: 229 entries, 0 outside portals or archived entries left out
+rssb: 10 entries, 0 outside portals or archived entries left out
+dsssb: 30 entries, 0 outside portals or archived entries left out
+keralapsc: 20 entries, 0 outside portals or archived entries left out
+ibps: 20 entries, 3 outside portals or archived entries left out
+aai: 86 entries, 0 outside portals or archived entries left out
+::warning::iocl: FetchError: GET https://iocl.com/latest-job-opening failed after 3 attempts: HTTP Error 307: Temporary Redirect; keeping its previous items
+becil: 10 entries, 0 outside portals or archived entries left out
+uppsc: 18 entries, 15 outside portals or archived entries left out
+rbi: 36 entries, 1 outside portals or archived entries left out
+gpsc: 74 entries, 0 outside portals or archived entries left out
+ukpsc: 22 entries, 1 outside portals or archived entries left out
+uksssc: 20 entries, 1 outside portals or archived entries left out
+osssc: 10 entries, 0 outside portals or archived entries left out
+kpsc: 62 entries, 58 outside portals or archived entries left out
+::warning::tntrb: FetchError: GET https://www.trb.tn.gov.in/ failed after 3 attempts: HTTP Error 500: Internal Server Error; keeping its previous items
+crpf: 52 entries, 0 outside portals or archived entries left out
+nta: 179 entries, 1 outside portals or archived entries left out
+::warning::indiapost: FormatChanged: indiapost: 0 entries, 0 malformed; keeping its previous items
+tgpsc: 15 entries, 0 outside portals or archived entries left out
+pnb: 61 entries, 0 outside portals or archived entries left out
+bob: 96 entries, 0 outside portals or archived entries left out
+nhpc: 9 entries, 0 outside portals or archived entries left out
+::warning::bpcl: FetchError: GET https://www.bharatpetroleum.in/careers/job-openings failed after 3 attempts: HTTP Error 403: Forbidden; keeping its previous items
+pgcil: 335 entries, 191 outside portals or archived entries left out
+canara: 35 entries, 35 outside portals or archived entries left out
+iob: 165 entries, 165 outside portals or archived entries left out
+bssc: 778 entries, 72 outside portals or archived entries left out
+cgpsc: 516 entries, 59 outside portals or archived entries left out
+hppsc: 10 entries, 8 outside portals or archived entries left out
+appsc: 391 entries, 12 outside portals or archived entries left out
+tnpsc: 91 entries, 0 outside portals or archived entries left out
+itbp: 125 entries, 0 outside portals or archived entries left out
+esic: 11 entries, 0 outside portals or archived entries left out
+nabard: 214 entries, 214 outside portals or archived entries left out
+::warning::ntpc: skipped entry: https://careers.ntpc.co.in/recruitment/: headline empty or too long
+ntpc: 393 entries, 0 outside portals or archived entries left out
+niacl: 237 entries, 237 outside portals or archived entries left out
+aiims: 13 entries, 0 outside portals or archived entries left out
+ossc: 10 entries, 0 outside portals or archived entries left out
+opsc: 10 entries, 0 outside portals or archived entries left out
+tgprb: 36 entries, 0 outside portals or archived entries left out
+cisf: 8 entries, 8 outside portals or archived entries left out
+wbprb: 5 entries, 3 outside portals or archived entries left out
+wbpsc: 151 entries, 3 outside portals or archived entries left out
+upessc: 3 entries, 0 outside portals or archived entries left out
+apslprb: 61 entries, 38 outside portals or archived entries left out
+india: 1246 items
+2026-10-31T15:45:02Z published india.json
