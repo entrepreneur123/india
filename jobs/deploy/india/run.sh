@@ -55,3 +55,10 @@ if [ -f "$SARKARI_HOME/push/vapid.pem" ]; then
   (cd "$code/jobs/pipeline" && "$py" -m sarkari.pushsend --out "$public" --db "$SARKARI_HOME/push/subscriptions.db" \
     --vapid "$SARKARI_HOME/push/vapid.pem" --contact "${PUSH_CONTACT:-mailto:admin@example.invalid}") || log "push failed"
 fi
+
+# Page copies again as soon as their code changes (new sites, connection fixes), not only on
+# Mondays, so a fix reaches the captures branch within 30 minutes with nobody logging in here.
+sum=$(cat "$code/jobs/pipeline/sarkari/capture.py" "$code/jobs/pipeline/sarkari/http.py" | sha256sum | cut -d" " -f1)
+if [ "$sum" != "$(cat "$SARKARI_HOME/capture.sum" 2>/dev/null)" ]; then
+  if "$code/jobs/deploy/india/capture.sh"; then echo "$sum" > "$SARKARI_HOME/capture.sum"; log "captures refreshed"; else log "capture failed"; fi
+fi
