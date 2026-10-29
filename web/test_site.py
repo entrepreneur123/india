@@ -464,10 +464,10 @@ def test_home_turns_to_today_30_minutes_before_the_first_draw(tmp_path, monkeypa
         sitegen.Site(data, "https://example.in", now=dt.datetime(2026, 10, 19, h, m, tzinfo=sitegen.IST)).build(out)
         return (out / "index.html").read_text()
     early = home(12, 29)   # still yesterday's results under yesterday's date
-    assert "Lottery Sambad Result Today <span class=\"d\">18.10.2026</span>" in early and 'data-at="2026-10-19T13:00' not in early
+    assert "Lottery Result Today <span class=\"d\">18.10.2026</span>" in early and 'data-at="2026-10-19T13:00' not in early
     flip = home(12, 30)
-    assert "Lottery Sambad Result Today <span class=\"d\">19.10.2026</span>" in flip
-    assert "Lottery Sambad Result Today 19.10.2026" in flip.split("</title>")[0]
+    assert "Lottery Result Today <span class=\"d\">19.10.2026</span>" in flip
+    assert "Lottery Result Today 19.10.2026" in flip.split("</title>")[0]
     assert 'data-at="2026-10-19T13:00:00+05:30"' in flip and 'data-at="2026-10-19T20:00:00+05:30"' in flip
     assert 'data-live="2026-10-19"' in flip                          # reloads when the 1 PM result is in
     assert flip.index('data-at="2026-10-19T20:00') < flip.index("Result of 18.10.2026") < flip.index("74D 70698")
