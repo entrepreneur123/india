@@ -24,13 +24,19 @@ from . import http
 SITES = {  # name -> home page (found with jobs-probe: none of these answer GitHub's US runners)
     # Railways: every regional RRB posts the same CEN notices. www.rrbcdg.gov.in's certificate does
     # not name the www host and rrbapply.gov.in is the application portal (404 on /), 29-10-2026.
-    "rrb-cdg": "https://rrbcdg.gov.in/",
     "rrb-chennai": "https://www.rrbchennai.gov.in/",
-    "rrb-mumbai": "https://www.rrbmumbai.gov.in/",
+    "rrb-mumbai": "https://rrbmumbai.gov.in/",
     "rrb-secunderabad": "https://rrbsecunderabad.gov.in/",
     "rrb-indianrailways": "https://rrb.indianrailways.gov.in/",
+    # The lists behind those home pages (29-10-2026 captures): written collectors read these.
+    "rrb-news": "https://rrb.indianrailways.gov.in/offrings/vacancy/news-updates",
+    "rrb-cen-list": "https://rrb.indianrailways.gov.in/cencall/cen-list",
+    "rrb-secunderabad-notices": "https://rrbsecunderabad.gov.in/notices",
+    "rrb-secunderabad-cen": "https://rrbsecunderabad.gov.in/employment-notice",
+    "ibps-recruitment": "https://www.ibps.in/index.php/recruitment",
+    "rpsc-ads": "https://rpsc.rajasthan.gov.in/viewcommon?Slice=RA",
+    "dsssb-vacancies": "https://dsssb.delhi.gov.in/dsssb-vacancies",
     "ibps": "https://www.ibps.in/",
-    "upsc": "https://upsc.gov.in/",
     "upsssc": "https://upsssc.gov.in/",
     "bpsc": "https://bpsc.bihar.gov.in/",
     "rpsc": "https://rpsc.rajasthan.gov.in/",
@@ -84,8 +90,8 @@ def capture(out: str, get_bytes: Callable[[str], bytes], today: dt.date, sites: 
             try:
                 body = get_bytes(url)
             except Exception as e:  # noqa: BLE001
-                # A certificate made for the other spelling of the name (with or without www.).
-                if "Hostname mismatch" not in str(e):
+                # A certificate (or DNS name) for the other spelling of the name, with or without www.
+                if "Hostname mismatch" not in str(e) and "Name or service not known" not in str(e):
                     raise
                 url = _other_spelling(url)
                 entry["url"] = url
@@ -100,6 +106,7 @@ def capture(out: str, get_bytes: Callable[[str], bytes], today: dt.date, sites: 
         except Exception as e:  # noqa: BLE001 - one site down must not stop the others
             entry.update(ok=False, error=str(e)[:300])
         index[name] = entry
+    index = {k: v for k, v in index.items() if k in sites}  # sites dropped from SITES leave the index
     with open(index_path, "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=1, sort_keys=True)
     return index
@@ -109,8 +116,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s: 26 sites stay under 18 minutes even if every one hangs (run.sh also calls
-    # this, inside the 25-minute limit of sarkari.service).
+    # Two tries of 20 s: 31 sites stay under 21 minutes even if every one hangs (run.sh also calls
+    # this, inside the 25-minute limit of sarkari.service); in practice a run takes about 2 minutes.
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())
     ok = sum(1 for e in index.values() if e.get("ok"))

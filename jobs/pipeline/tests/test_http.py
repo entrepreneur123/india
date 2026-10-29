@@ -55,3 +55,23 @@ def test_other_certificate_errors_are_not_retried(monkeypatch):
     monkeypatch.setattr(http, "_learn_intermediates", lambda url, timeout: pytest.fail("must not fetch issuers"))
     with pytest.raises(urllib.error.URLError):
         http._open(http.urllib.request.Request("https://www.mpsc.gov.in/"), 10)
+
+
+CERTS = __import__("os").path.join(__import__("os").path.dirname(__file__), "fixtures", "certs")
+
+
+def _cert(name):
+    return open(__import__("os").path.join(CERTS, name), "rb").read()
+
+
+def test_issuer_downloads_in_pem_or_der_become_loadable_pem():
+    pem = _cert("c.pem")
+    assert http._as_pem(pem).startswith("-----BEGIN CERTIFICATE-----")
+    assert http._as_pem(_cert("c.der")) == ssl.DER_cert_to_PEM_cert(_cert("c.der"))
+    assert http._as_pem(b"<html>not found</html>") is None and http._as_pem(b"\x30\x03junk") is None
+
+
+def test_a_pkcs7_bundle_of_issuers_is_unpacked():
+    pytest.importorskip("cryptography")  # installed with pywebpush, as on the India server
+    got = http._as_pem(_cert("c.p7c"))
+    assert got and ssl.PEM_cert_to_DER_cert(got.strip()) == _cert("c.der")
