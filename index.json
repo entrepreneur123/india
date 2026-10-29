@@ -6,9 +6,9 @@
   "url": "https://joinindianarmy.nic.in/"
  },
  "bpsc": {
+  "bytes": 296742,
   "date": "2026-10-29",
-  "error": "[PEM] ASN1 lib (_ssl.c:3977)",
-  "ok": false,
+  "ok": true,
   "url": "https://bpsc.bihar.gov.in/"
  },
  "ctet": {
@@ -23,6 +23,12 @@
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/"
  },
+ "dsssb-vacancies": {
+  "bytes": 69716,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://dsssb.delhi.gov.in/dsssb-vacancies"
+ },
  "hpsc": {
   "bytes": 48787,
   "date": "2026-10-29",
@@ -34,6 +40,12 @@
   "date": "2026-10-29",
   "ok": true,
   "url": "https://www.ibps.in/"
+ },
+ "ibps-recruitment": {
+  "date": "2026-10-29",
+  "error": "GET https://www.ibps.in/index.php/recruitment failed after 2 attempts: <urlopen error [SSL: UNEXPECTED_MESSAGE] unexpected message (_ssl.c:1000)>",
+  "ok": false,
+  "url": "https://www.ibps.in/index.php/recruitment"
  },
  "india-post-gds": {
   "bytes": 83684,
@@ -54,9 +66,9 @@
   "url": "https://keralapsc.gov.in/"
  },
  "mp-esb": {
+  "bytes": 14515,
   "date": "2026-10-29",
-  "error": "GET https://esb.mp.gov.in/ failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
-  "ok": false,
+  "ok": true,
   "url": "https://esb.mp.gov.in/"
  },
  "mppsc": {
@@ -72,9 +84,9 @@
   "url": "https://mpsc.gov.in/"
  },
  "ppsc": {
+  "bytes": 1073147,
   "date": "2026-10-29",
-  "error": "[PEM] ASN1 lib (_ssl.c:3977)",
-  "ok": false,
+  "ok": true,
   "url": "https://ppsc.gov.in/"
  },
  "punjab-sssb": {
@@ -89,20 +101,20 @@
   "ok": true,
   "url": "https://rpsc.rajasthan.gov.in/"
  },
- "rrb-apply": {
+ "rpsc-ads": {
+  "bytes": 997006,
   "date": "2026-10-29",
-  "error": "GET https://www.rrbapply.gov.in/ failed after 1 attempts: HTTP Error 404: Not Found",
-  "ok": false,
-  "url": "https://www.rrbapply.gov.in/"
+  "ok": true,
+  "url": "https://rpsc.rajasthan.gov.in/viewcommon?Slice=RA"
  },
- "rrb-cdg": {
+ "rrb-cen-list": {
+  "bytes": 79675,
   "date": "2026-10-29",
-  "error": "GET https://www.rrbcdg.gov.in/ failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.rrbcdg.gov.in'. (_ssl.c:1000)>",
-  "ok": false,
-  "url": "https://www.rrbcdg.gov.in/"
+  "ok": true,
+  "url": "https://rrb.indianrailways.gov.in/cencall/cen-list"
  },
  "rrb-chennai": {
-  "bytes": 160945,
+  "bytes": 160915,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://rrbchennai.gov.in/"
@@ -119,14 +131,32 @@
   "ok": false,
   "url": "https://www.rrbmumbai.gov.in/"
  },
+ "rrb-news": {
+  "bytes": 247,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://rrb.indianrailways.gov.in/offrings/vacancy/news-updates"
+ },
  "rrb-secunderabad": {
   "bytes": 692203,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://rrbsecunderabad.gov.in/"
  },
+ "rrb-secunderabad-cen": {
+  "bytes": 105084,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://rrbsecunderabad.gov.in/employment-notice"
+ },
+ "rrb-secunderabad-notices": {
+  "bytes": 802906,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://rrbsecunderabad.gov.in/notices"
+ },
  "rssb": {
-  "bytes": 22973,
+  "bytes": 22556,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://rssb.rajasthan.gov.in/"
@@ -137,16 +167,10 @@
   "ok": true,
   "url": "https://www.tnpsc.gov.in/"
  },
- "upsc": {
-  "date": "2026-10-29",
-  "error": "GET https://upsc.gov.in/ failed after 2 attempts: HTTP Error 403: Forbidden",
-  "ok": false,
-  "url": "https://upsc.gov.in/"
- },
  "upsssc": {
+  "bytes": 17620,
   "date": "2026-10-29",
-  "error": "GET https://upsssc.gov.in/ failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
-  "ok": false,
+  "ok": true,
   "url": "https://upsssc.gov.in/"
  },
  "wbpsc": {

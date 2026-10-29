@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPSSSC - Uttar Pradesh Subordinate Services Selection Commission</title>
+    <link href="assets/css/base.css" rel="stylesheet" media="all">
+    <link href="assets/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <link href="theme/css/site.css" rel="stylesheet" media="all">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial;
+        }
+
+        body {
+            background: #ffffff /*#f4f4f4*/;
+        }
+
+        /* MAIN 50-50 LAYOUT */
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        /* LEFT SIDE (PORTAL AREA 50%) */
+        .portal-box {
+            /* width: 50%;*/
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 10px;
+        }
+
+            .header h3 {
+                display: inline-block;
+                background: #123f7a;
+                color: #fff;
+                padding: 8px 35px;
+                border-radius: 4px;
+            }
+
+        /* TOP MENU BAR (was LEFT) */
+        .top-bar {
+            display: flex;
+            background: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .top-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #123f7a;
+            border-right: 1px solid #ddd;
+        }
+
+            .top-item.active {
+                background: #123f7a;
+                color: #fff;
+            }
+
+        /* CENTER */
+        .center-panel {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .option {
+            background: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 6px;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #123f7a;
+            cursor: pointer;
+        }
+
+            .option:hover {
+                background: #dce8ff;
+            }
+
+        /* BOTTOM MENU BAR (was RIGHT) */
+        .bottom-bar {
+            display: flex;
+            background: #f8f8f8;
+            border-top: 1px solid #ddd;
+        }
+
+        .bottom-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #123f7a;
+            border-right: 1px solid #ddd;
+        }
+
+            .bottom-item.active {
+                background: #123f7a;
+                color: #fff;
+            }
+
+        /* BANNER (RIGHT SIDE 50%) */
+        .banner-box {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f5f5f5;
+            vertical-align: top;
+        }
+
+        .banner {
+            width: 75%;
+            max-height: 90vh;
+            object-fit: contain;
+            cursor: pointer;
+            
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:900px) {
+
+            .main-wrapper {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .portal-box,
+            .banner-box {
+                width: 100%;
+            }
+
+            .top-bar,
+            .bottom-bar {
+                flex-wrap: wrap;
+            }
+
+            .top-item,
+            .bottom-item {
+                flex: 1 0 50%;
+            }
+        }
+
+        .official-link {
+            text-align: center;
+            padding: 10px;
+            background: #fff;
+            border-top: 20px solid #ddd;
+        }
+
+            .official-link a {
+                color: #123f7a;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+
+                .official-link a:hover {
+                    color: #0a2c55;
+                }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+
+                <section class="wrapper header-wrapper">
+                    <div class="container header-container">
+                        <h1 class="logo">
+                            <a href="Default.aspx" id="TH_logo" style="text-decoration: none;">
+                                <strong data-key="HD_text-3">उत्तर प्रदेश अधीनस्थ सेवा चयन आयोग </strong>
+                                <lang data-key="HD_text-4"> Uttar Pradesh </lang>
+                                <span data-key="HD_text-5">Subordinate  Services Selection Commission </span>
+                            </a>
+                        </h1>
+
+                        <a class="toggle-nav-bar" href="javascript:void(0);">
+                            <span class="menu-icon"></span>
+                            <span class="menu-text">Menu</span>
+                        </a>
+                        <div class="header-right clearfix">
+                            <div class="right-content clearfix">
+                                <div class="float-element">
+                                    <img id="Image6" src="theme/images/swachh.png" alt="Govt. Of Uttar Pradesh" />
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+                        <div class="header-right clearfix">
+                            <div class="right-content clearfix">
+                                <div class="float-element">
+                                    <img src="Images/UPSSSCMobileAppQR.jpeg" height="100" width="100" />
+
+                                    <a href="https://play.google.com/store/apps/details?id=com.upsssc2025.kotlintesting1" target="_blank" rel="noopener">
+                                        <img src="Images/Google_Play_Store_badge_EN.svg"
+                                             alt="Get it on Google Play" class="google-play-img" />
+                                    </a>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!--<div class="header">
+                <img src="upssscheader.PNG" alt="UPSSSC Header">
+            </div>-->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <hr style="border: 5px solid #123f7a;">
+            </div>
+        </div>
+
+<div class="row my-3">
+    <div class="col-12">
+        <div class="p-3 mb-2 bg-light border border-success rounded shadow-sm d-flex align-items-center" style="padding-left: 100px !important;">
+            <div>
+                <a href="https://upsssc.gov.in/upssscadmitcard/AdmitCard.aspx?ID=P"  class="btn btn-success btn-sm fw-bold text-white text-decoration-none px-3 py-2">
+                    <img src="Images/new.gif" /> Download Admit Card for Preliminary Eligibility Test (PET)-2026 
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <!-- PORTAL SIDE -->
+                <div class="portal-box">
+
+
+                    <div class="header">
+                        <h3 id="pageTitle">Online Form Submission</h3>
+                    </div>
+
+                    <!-- TOP BAR -->
+                    <div class="top-bar">
+
+                        <div class="top-item active"
+                             onclick="showSection('submission',this,'top')">
+                            <div class="icon">🪪</div>
+                            Online Form Submission
+                        </div>
+
+                        <div class="top-item"
+                             onclick="showSection('status',this,'top')">
+                            <div class="icon">✅</div>
+                            Know Your Status
+                        </div>
+
+                        <div class="top-item"
+                             onclick="showSection('exam',this,'top')">
+                            <div class="icon">📄</div>
+                            Examination
+                        </div>
+
+                    </div>
+
+                    <!-- CENTER -->
+                    <div class="center-panel" id="centerOptions"></div>
+
+                    <!-- BOTTOM BAR -->
+                    <div class="bottom-bar">
+
+                        <div class="bottom-item"
+                             onclick="showSection('results',this,'bottom')">
+                            <div class="icon">🔔</div>
+                            Results
+                        </div>
+
+                        <div class="bottom-item"
+                             onclick="showSection('documents',this,'bottom')">
+                            <!--<div class="icon">❓</div>-->
+                            <div class="icon">⬆️</div>
+                            Upload Documents
+                        </div>
+
+                        <div class="bottom-item"
+                             onclick="showSection('downloads',this,'bottom')">
+                            <div class="icon">⬇️</div>
+                            Important GO/ Downloads
+                        </div>
+
+                    </div>
+
+                    <div class="official-link">
+                        <h3>
+                            <a href="default.aspx" target="_blank">
+                                Go to Home
+                            </a>
+                        </h3>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+
+
+                <!-- BANNER SIDE -->
+                <div style="margin-top:20px; text-align:center; ">
+
+                    <a href="https://play.google.com/store/apps/details?id=com.upsssc2025.kotlintesting1"
+                       target="_blank">
+
+                        <img src="App_Banner.jpg"
+                             class="banner"
+                             alt="Banner">
+
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <hr style="border: 5px solid #123f7a;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const sections = {
+
+            submission: {
+                title: "Online Form Submission",
+                items: [
+                    { text: "One Time Registration(OTR)", url: "https://upsssc.gov.in/OTR/" },
+                    {text: "Modify OTR Form Details", url: "https://upsssc.gov.in/OTR/otr/OTRModifyLogin.aspx" },
+{ text: "Print One Time Registration(OTR) Form", url: "https://upsssc.gov.in/OTR/otr/OTRLogin.aspx" },
+                    { text: "Candidate Registration", url: "AllNotifications.aspx" },
+                    { text: "Modify Submitted Application", url: "Modify/ModificationPage.aspx?DtquIJn5M+N4EujAnaUoYnPo7sEX1zeQ" },
+                    { text: "Remaining Details Submission", url: "Online_App/Can_login_app.aspx" },
+                    { text: "Application Fee Deposition", url: "https://upsssc.gov.in/Online_App/Can_login_app.aspx" },
+                    { text: "Main Examination Fee Deposition", url: "https://upsssc.gov.in/Interface/Authentication.aspx?NO/WElvPxNJJ/MszfbTUoiya6+j+60nloRK/wJ+Hma/peo+LypGARxykN88mZ0GWnpIBcPHGPx6XKnMmy76dwCXeE3KYnOjOH3riGr1fN9P9B2Efupj9zX0CKJSMG6ToGn9MH0ABA3Sd9Ni7A20mRA==" },
+                    { text: "Print Detailed Application Form", url: "Online_App/Can_login_app.aspx" },
+                    { text: "Update Your Transaction ID By Double Verification Mode", url: "https://upsssc.gov.in/Online_App/UpdateTransaction_DV.aspx" },
+                    { text: "Applicant's Dashboard (Login Thru PET Reg.No.)", url: "https://upsssc.gov.in/Interface/Pet_Applicant_Login.aspx?XypFBQE4iV1c253zIzQf/1bfpwtafzhKkoX7oscb7lw=" },
+                    { text: "File request for change in reg. Mobile No./Email Id.", url: "OuterPages/FeedBack.aspx" }
+                    
+                ]
+            },
+
+            status: {
+                title: "Know Your Status",
+                items: [
+                    { text: "Applicant's Dashboard (Login Thru PET Reg.No.)", url: "Interface/Pet_Applicant_Login.aspx?XypFBQE4iV1c253zIzQf/1bfpwtafzhKkoX7oscb7lw=" },
+                    { text: "Know Your Registration Number", url: "Online_App/SearchRefNo.aspx" },
+                    { text: "Know Your Roll Number", url: "Online_App/SearchRollNo.aspx" },
+                    { text: "View Application Status", url: "Online_App/ViewStatus.aspx" },
+                    { text: "Print Duplicate Registration Slip", url: "Online_App/Can_login_app.aspx" },
+                    { text: "Print Detailed Application Form", url: "Online_App/Can_login_app.aspx" },
+                    { text: "List of Applications Having Photo Related Objections", url: "Online_App/Objected_Candidate_List.aspx" },
+
+                ]
+            },
+
+            exam: {
+                title: "Examination",
+                items: [
+                    { text: "Applicant's Dashboard (Login Thru PET Reg.No.)", url: "Interface/Pet_Applicant_Login.aspx?XypFBQE4iV1c253zIzQf/1bfpwtafzhKkoX7oscb7lw=" },
+                    { text: "Download MAIN Exam Advance Intimation of Exam District", url: "https://upsssc.gov.in/upssscadvdistinti/AdmitCard_wc.aspx?ID=MAIN&L=ac" },
+                    { text: "Download MAIN Exam Admit Card", url: "https://upsssc.gov.in/upssscadmitcard/admitCard.aspx?ID=MAIN" },
+                    { text: "Download PET Exam Advance Intimation of Exam District", url: "https://upsssc.gov.in/upssscadvdistinti/AdmitCard_wc.aspx?ID=P&L=ac" },
+                    { text: "Download PET Exam Admit Card", url: "https://upsssc.gov.in/upssscadmitcard/AdmitCard.aspx?ID=P" },
+                    { text: "Download Admit Card for Intrim Examination", url: "https://upsssc.gov.in/upssscadmitcard/admitCard.aspx?ID=INTRIM" },
+                    { text: "Download Document Verification Letter", url: "Online_App/Download_InterviewLetter_Exam.aspx?ID=DV" },
+                    { text: "Download Form For Eligibility Checking: Direct Recruitment", url: "Online_App/Post_Wise_ID_ECF.aspx?ID=ECF" },
+                    { text: "Download Interview Letters: Direct Recruitment", url: "Online_App/Post_Wise_ID_ECF.aspx?ID=IDF" }
+
+                ]
+            },
+
+            results: {
+                title: "Results",
+                items: [
+                    { text: "Applicant's Dashboard (Login Thru PET Reg.No.)", url: "Interface/Pet_Applicant_Login.aspx?XypFBQE4iV1c253zIzQf/1bfpwtafzhKkoX7oscb7lw=" },
+                    { text: "Click Here To View Result", url: "ResultsDire.aspx" },
+{ text: "Know Your Allotted Department & Post", url: "online_app/Applicant_Login_knowallotmentDepartment.aspx" }
+                ]
+            },
+
+            documents: {
+                title: "Upload Documents",
+                items: [
+                    { text: "Upload Your Documents", url: "Modify/Applicant_Login_DocUploadForDV.aspx?ID=DV" }
+
+                ]
+            },
+
+            downloads: {
+                title: "Important GO/ Downloads",
+                items: [
+                    { text: "Important GO", url: "GroupNews.aspx?id=5" },
+                    { text: "Upcoming Examinations", url: "GroupNews.aspx?id=6" },
+                    { text: "Court Cases", url: "GroupNews.aspx?id=7" },
+                    { text: "Current Status of Published Advertisements", url: "News.aspx?id=9" },
+                    { text: "Syllabus", url: "Online_App/Syllabus_PostWise.aspx?ID=901" },
+                    { text: "Download Answer Key", url: "Online_App/Syllabus_PostWise.aspx?ID=902" }
+
+                ]
+            }
+
+        };
+
+        function showSection(key, el, type) {
+
+            document.querySelectorAll('.top-item,.bottom-item')
+                .forEach(x => x.classList.remove('active'));
+
+            el.classList.add('active');
+
+            document.getElementById('pageTitle').innerText =
+                sections[key].title;
+
+            let html = "";
+
+            sections[key].items.forEach(i => {
+
+                if (i.url) {
+                    html += `
+                                <a href="${i.url}" style="text-decoration:none;">
+                                    <div class="option">${i.text}</div>
+                                </a>`;
+                } else {
+                    html += `<div class="option">${i.text}</div>`;
+                }
+
+            });
+
+            document.getElementById('centerOptions').innerHTML = html;
+        }
+
+        /* default */
+        showSection('submission',
+            document.querySelector('.top-item'));
+
+    </script>
+
+</body>
+</html>

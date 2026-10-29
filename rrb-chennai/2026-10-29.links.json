@@ -1284,6 +1284,10 @@
 "text": "(01/2026) Mock Test Link (29-10-2026)"
 },
 {
+"href": "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=01/2025&category=Exam Schedule",
+"text": "(01/2025) Exam Schedule (29-10-2026)"
+},
+{
 "href": "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=04/2026&category=Exam Schedule",
 "text": "(04/2026) Exam Schedule (28-10-2026)"
 },
@@ -1366,10 +1370,6 @@
 {
 "href": "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=03/2026&category=City Intimation (Exam)",
 "text": "(03/2026) City Intimation (Exam) (02-10-2026)"
-},
-{
-"href": "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=01/2025&category=Exam Schedule",
-"text": "(01/2025) Exam Schedule (01-10-2026)"
 },
 {
 "href": "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=04/2024&category=Special Notice on Examination",
