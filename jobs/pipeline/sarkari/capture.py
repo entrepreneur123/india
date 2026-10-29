@@ -174,7 +174,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 8 sites at a time: 70 sites stay under 6 minutes even if every one hangs
+    # Two tries of 20 s, 8 sites at a time: 75 sites stay under 7 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())
