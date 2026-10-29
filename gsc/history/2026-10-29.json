@@ -1,0 +1,2040 @@
+{
+ "generated": "2026-10-29T11:45+00:00",
+ "site": "sc-domain:lottodost.com",
+ "start": "2026-10-01",
+ "end": "2026-10-29",
+ "countries": [
+  {
+   "country": "ind",
+   "clicks": 18,
+   "impressions": 321,
+   "ctr": 0.0561,
+   "position": 10.8
+  },
+  {
+   "country": "kor",
+   "clicks": 5,
+   "impressions": 7,
+   "ctr": 0.7143,
+   "position": 1.1
+  },
+  {
+   "country": "are",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 37
+  },
+  {
+   "country": "arg",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "country": "aus",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "country": "bgd",
+   "clicks": 0,
+   "impressions": 25,
+   "ctr": 0,
+   "position": 24.2
+  },
+  {
+   "country": "bgr",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "country": "blr",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 39
+  },
+  {
+   "country": "bra",
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 42.3
+  },
+  {
+   "country": "can",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 42
+  },
+  {
+   "country": "cod",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "country": "col",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 44
+  },
+  {
+   "country": "esp",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "country": "fra",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 61.5
+  },
+  {
+   "country": "gtm",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 25
+  },
+  {
+   "country": "idn",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 52
+  },
+  {
+   "country": "lka",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "country": "mkd",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 16
+  },
+  {
+   "country": "pak",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 12
+  },
+  {
+   "country": "phl",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 30
+  },
+  {
+   "country": "rou",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 42
+  },
+  {
+   "country": "rus",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 24.5
+  },
+  {
+   "country": "tun",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 93
+  },
+  {
+   "country": "ukr",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 19
+  },
+  {
+   "country": "usa",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 29.6
+  },
+  {
+   "country": "vnm",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 100
+  },
+  {
+   "country": "zzz",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  }
+ ],
+ "days": [
+  {
+   "date": "2026-10-24",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "date": "2026-10-25",
+   "clicks": 4,
+   "impressions": 26,
+   "ctr": 0.1538,
+   "position": 9.1
+  },
+  {
+   "date": "2026-10-26",
+   "clicks": 5,
+   "impressions": 103,
+   "ctr": 0.0485,
+   "position": 13.1
+  },
+  {
+   "date": "2026-10-27",
+   "clicks": 9,
+   "impressions": 120,
+   "ctr": 0.075,
+   "position": 10.6
+  },
+  {
+   "date": "2026-10-28",
+   "clicks": 5,
+   "impressions": 145,
+   "ctr": 0.0345,
+   "position": 18.2
+  },
+  {
+   "date": "2026-10-29",
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  }
+ ],
+ "queries_india": [
+  {
+   "query": "25.10 21 lottery result",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 16
+  },
+  {
+   "query": "lottery sambad 25 10 26",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 28
+  },
+  {
+   "query": "10 10 26 dear lottery result",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "22 10",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "dear6pm",
+   "clicks": 0,
+   "impressions": 15,
+   "ctr": 0,
+   "position": 6.3
+  },
+  {
+   "query": "dear8pm",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8.7
+  },
+  {
+   "query": "income tax calculator lottery winnings",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "kerala lottery result 24 10 2026",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 48
+  },
+  {
+   "query": "kerala lottery result 25.10.2026",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 35
+  },
+  {
+   "query": "kerala lotterysm78",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "query": "lottery",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 159
+  },
+  {
+   "query": "lottery charges",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "query": "lottery fake",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "query": "lottery payout calculator",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "query": "lottery result 19.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 25
+  },
+  {
+   "query": "lottery result 25.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "lottery sambad 18.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 58
+  },
+  {
+   "query": "lottery sambad 19.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 47
+  },
+  {
+   "query": "lottery sambad 25.10/26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "query": "lottery sambad 26.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 49
+  },
+  {
+   "query": "lottery sambad17.10.26",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "lottery tax calculator",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 28.5
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "maharashtra padmini lottery nikal today",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "nagaland state lottery 25.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 22
+  },
+  {
+   "query": "nagaland state lottery 27.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 79
+  },
+  {
+   "query": "nagaland state lottery result 24 10 26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 89
+  },
+  {
+   "query": "sun lotto kerala result today",
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 8.6
+  },
+  {
+   "query": "tax on prize money",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 13
+  },
+  {
+   "query": "taxes on lottery winnings calculator",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9.5
+  },
+  {
+   "query": "কেরালা লটারি গেজেট",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  }
+ ],
+ "pages": [
+  {
+   "page": "https://lottodost.com/",
+   "clicks": 6,
+   "impressions": 17,
+   "ctr": 0.3529,
+   "position": 14.8
+  },
+  {
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 4,
+   "impressions": 22,
+   "ctr": 0.1818,
+   "position": 9.3
+  },
+  {
+   "page": "https://lottodost.com/kerala/",
+   "clicks": 2,
+   "impressions": 26,
+   "ctr": 0.0769,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/akshay/",
+   "clicks": 2,
+   "impressions": 17,
+   "ctr": 0.1176,
+   "position": 4.2
+  },
+  {
+   "page": "https://lottodost.com/morning-1pm/",
+   "clicks": 2,
+   "impressions": 23,
+   "ctr": 0.087,
+   "position": 16.7
+  },
+  {
+   "page": "https://lottodost.com/day-6pm/",
+   "clicks": 1,
+   "impressions": 36,
+   "ctr": 0.0278,
+   "position": 16.7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/14-10-2026/8pm/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 2
+  },
+  {
+   "page": "https://lottodost.com/hi/result/17-10-2026/8pm/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 1
+  },
+  {
+   "page": "https://lottodost.com/night-8pm/",
+   "clicks": 1,
+   "impressions": 26,
+   "ctr": 0.0385,
+   "position": 7.3
+  },
+  {
+   "page": "https://lottodost.com/privacy",
+   "clicks": 1,
+   "impressions": 4,
+   "ctr": 0.25,
+   "position": 5.5
+  },
+  {
+   "page": "https://lottodost.com/result/19-01-2026/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 1
+  },
+  {
+   "page": "https://lottodost.com/result/22-10-2026/",
+   "clicks": 1,
+   "impressions": 8,
+   "ctr": 0.125,
+   "position": 10.8
+  },
+  {
+   "page": "https://lottodost.com/yesterday/",
+   "clicks": 1,
+   "impressions": 5,
+   "ctr": 0.2,
+   "position": 21.6
+  },
+  {
+   "page": "http://lottodost.com/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "page": "https://lottodost.com/about/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/bn/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 4.5
+  },
+  {
+   "page": "https://lottodost.com/bn/claim-prize/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/lottery-scams/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/bn/lottery-tax/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/bn/morning-1pm/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 7.4
+  },
+  {
+   "page": "https://lottodost.com/bn/night-8pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 54.7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/01-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "page": "https://lottodost.com/bn/result/02-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 19
+  },
+  {
+   "page": "https://lottodost.com/bn/result/02-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 16
+  },
+  {
+   "page": "https://lottodost.com/bn/result/05-02-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 20
+  },
+  {
+   "page": "https://lottodost.com/bn/result/05-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/06-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/06-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/06-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/06-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/bn/result/07-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 37
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-04-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 28
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-08-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 49.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/10-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 66
+  },
+  {
+   "page": "https://lottodost.com/bn/result/11-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 93
+  },
+  {
+   "page": "https://lottodost.com/bn/result/11-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 91
+  },
+  {
+   "page": "https://lottodost.com/bn/result/11-07-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/bn/result/13-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 14
+  },
+  {
+   "page": "https://lottodost.com/bn/result/13-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 23
+  },
+  {
+   "page": "https://lottodost.com/bn/result/14-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 74
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/16-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-02-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 77
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-02-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 78
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-09-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/bn/result/18-02-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/bn/result/18-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 67
+  },
+  {
+   "page": "https://lottodost.com/bn/result/18-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 70.3
+  },
+  {
+   "page": "https://lottodost.com/bn/result/18-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 65
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-06-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-07-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/bn/result/20-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/20-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/20-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/22-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/bn/result/22-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 20
+  },
+  {
+   "page": "https://lottodost.com/bn/result/22-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 7.3
+  },
+  {
+   "page": "https://lottodost.com/bn/result/23-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/23-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/bn/result/25-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/25-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/bn/result/25-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 35
+  },
+  {
+   "page": "https://lottodost.com/bn/result/26-02-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/bn/result/26-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 64
+  },
+  {
+   "page": "https://lottodost.com/bn/result/26-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 65
+  },
+  {
+   "page": "https://lottodost.com/bn/result/27-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 30
+  },
+  {
+   "page": "https://lottodost.com/bn/result/27-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 57
+  },
+  {
+   "page": "https://lottodost.com/bn/result/27-06-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 58
+  },
+  {
+   "page": "https://lottodost.com/bn/result/27-09-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/27-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/28-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-04-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-06-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 24
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-07-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 41
+  },
+  {
+   "page": "https://lottodost.com/bn/result/30-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/bn/result/31-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 38.7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/31-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 37.7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/31-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 39.7
+  },
+  {
+   "page": "https://lottodost.com/claim-prize/",
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 7.3
+  },
+  {
+   "page": "https://lottodost.com/contact/",
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/disclaimer/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/hi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/hi/claim-prize/",
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 5.7
+  },
+  {
+   "page": "https://lottodost.com/hi/day-6pm/",
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 8.7
+  },
+  {
+   "page": "https://lottodost.com/hi/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/hi/lottery-tax/",
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 7.9
+  },
+  {
+   "page": "https://lottodost.com/hi/morning-1pm/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/hi/night-8pm/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 8.6
+  },
+  {
+   "page": "https://lottodost.com/hi/result/02-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "page": "https://lottodost.com/hi/result/03-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 23
+  },
+  {
+   "page": "https://lottodost.com/hi/result/03-07-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 60
+  },
+  {
+   "page": "https://lottodost.com/hi/result/05-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/hi/result/06-01-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/hi/result/06-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 22
+  },
+  {
+   "page": "https://lottodost.com/hi/result/06-04-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/hi/result/06-09-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 43
+  },
+  {
+   "page": "https://lottodost.com/hi/result/09-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 41
+  },
+  {
+   "page": "https://lottodost.com/hi/result/10-05-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/12-06-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 58
+  },
+  {
+   "page": "https://lottodost.com/hi/result/12-07-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 41
+  },
+  {
+   "page": "https://lottodost.com/hi/result/13-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "page": "https://lottodost.com/hi/result/15-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/hi/result/15-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/16-01-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 2
+  },
+  {
+   "page": "https://lottodost.com/hi/result/16-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/16-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 90
+  },
+  {
+   "page": "https://lottodost.com/hi/result/18-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 64
+  },
+  {
+   "page": "https://lottodost.com/hi/result/18-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 66
+  },
+  {
+   "page": "https://lottodost.com/hi/result/18-07-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/21-07-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/hi/result/22-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "page": "https://lottodost.com/hi/result/22-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 21.5
+  },
+  {
+   "page": "https://lottodost.com/hi/result/24-09-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 5.5
+  },
+  {
+   "page": "https://lottodost.com/hi/result/24-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 48
+  },
+  {
+   "page": "https://lottodost.com/hi/result/25-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 67
+  },
+  {
+   "page": "https://lottodost.com/hi/result/26-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 66
+  },
+  {
+   "page": "https://lottodost.com/hi/result/26-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7.5
+  },
+  {
+   "page": "https://lottodost.com/hi/result/27-03-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 25
+  },
+  {
+   "page": "https://lottodost.com/hi/result/27-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "page": "https://lottodost.com/hi/result/27-06-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 55
+  },
+  {
+   "page": "https://lottodost.com/hi/result/27-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 56
+  },
+  {
+   "page": "https://lottodost.com/hi/result/29-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 25
+  },
+  {
+   "page": "https://lottodost.com/hi/result/31-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 40.7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/31-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/lottery-scams/",
+   "clicks": 0,
+   "impressions": 7,
+   "ctr": 0,
+   "position": 7.4
+  },
+  {
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 32,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/old-results/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/result/01-02-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 20
+  },
+  {
+   "page": "https://lottodost.com/result/01-04-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/result/09-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/result/09-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/result/10-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/result/10-08-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 34
+  },
+  {
+   "page": "https://lottodost.com/result/10-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7.5
+  },
+  {
+   "page": "https://lottodost.com/result/11-03-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 92
+  },
+  {
+   "page": "https://lottodost.com/result/11-04-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 100
+  },
+  {
+   "page": "https://lottodost.com/result/12-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 22
+  },
+  {
+   "page": "https://lottodost.com/result/13-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 12
+  },
+  {
+   "page": "https://lottodost.com/result/15-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 13.5
+  },
+  {
+   "page": "https://lottodost.com/result/16-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/result/17-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/result/18-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 32
+  },
+  {
+   "page": "https://lottodost.com/result/19-10-2026/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 21.6
+  },
+  {
+   "page": "https://lottodost.com/result/20-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 87
+  },
+  {
+   "page": "https://lottodost.com/result/21-05-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "page": "https://lottodost.com/result/22-06-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 17
+  },
+  {
+   "page": "https://lottodost.com/result/22-06-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "page": "https://lottodost.com/result/23-03-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "page": "https://lottodost.com/result/23-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 10.3
+  },
+  {
+   "page": "https://lottodost.com/result/24-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/result/24-08-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/result/24-10-2026/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 28.6
+  },
+  {
+   "page": "https://lottodost.com/result/24-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 21
+  },
+  {
+   "page": "https://lottodost.com/result/25-02-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "page": "https://lottodost.com/result/25-05-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 52
+  },
+  {
+   "page": "https://lottodost.com/result/26-09-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 12.3
+  },
+  {
+   "page": "https://lottodost.com/result/26-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 9.3
+  },
+  {
+   "page": "https://lottodost.com/result/26-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
+   "page": "https://lottodost.com/result/26-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/result/27-05-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/result/27-07-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "page": "https://lottodost.com/result/27-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/result/28-04-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/result/28-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/result/28-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "page": "https://lottodost.com/result/29-05-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 5.5
+  },
+  {
+   "page": "https://lottodost.com/result/29-09-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 14
+  }
+ ],
+ "query_pages_india": [
+  {
+   "query": "25.10 21 lottery result",
+   "page": "https://lottodost.com/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 16
+  },
+  {
+   "query": "lottery sambad 25 10 26",
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 28
+  },
+  {
+   "query": "10 10 26 dear lottery result",
+   "page": "https://lottodost.com/result/10-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "22 10",
+   "page": "https://lottodost.com/result/22-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "dear6pm",
+   "page": "https://lottodost.com/day-6pm/",
+   "clicks": 0,
+   "impressions": 15,
+   "ctr": 0,
+   "position": 6.3
+  },
+  {
+   "query": "dear8pm",
+   "page": "https://lottodost.com/night-8pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8.7
+  },
+  {
+   "query": "income tax calculator lottery winnings",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "kerala lottery result 24 10 2026",
+   "page": "https://lottodost.com/hi/result/24-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 48
+  },
+  {
+   "query": "kerala lottery result 25.10.2026",
+   "page": "https://lottodost.com/bn/result/25-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 35
+  },
+  {
+   "query": "kerala lottery result 25.10.2026",
+   "page": "https://lottodost.com/hi/result/25-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 67
+  },
+  {
+   "query": "kerala lotterysm78",
+   "page": "https://lottodost.com/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "query": "lottery",
+   "page": "https://lottodost.com/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 130
+  },
+  {
+   "query": "lottery",
+   "page": "https://lottodost.com/day-6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 196.5
+  },
+  {
+   "query": "lottery",
+   "page": "https://lottodost.com/morning-1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 188
+  },
+  {
+   "query": "lottery charges",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "query": "lottery fake",
+   "page": "https://lottodost.com/lottery-scams/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "query": "lottery payout calculator",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "query": "lottery result 19.10.26",
+   "page": "https://lottodost.com/result/19-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 25
+  },
+  {
+   "query": "lottery result 25.10.26",
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "lottery sambad 18.10.26",
+   "page": "https://lottodost.com/result/18-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 58
+  },
+  {
+   "query": "lottery sambad 19.10.26",
+   "page": "https://lottodost.com/result/19-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 47
+  },
+  {
+   "query": "lottery sambad 25.10/26",
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 18
+  },
+  {
+   "query": "lottery sambad 26.10.26",
+   "page": "https://lottodost.com/morning-1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 49
+  },
+  {
+   "query": "lottery sambad17.10.26",
+   "page": "https://lottodost.com/result/17-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "lottery tax calculator",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 28.5
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "maharashtra padmini lottery nikal today",
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "nagaland state lottery 25.10.26",
+   "page": "https://lottodost.com/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 22
+  },
+  {
+   "query": "nagaland state lottery 27.10.26",
+   "page": "https://lottodost.com/yesterday/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 79
+  },
+  {
+   "query": "nagaland state lottery result 24 10 26",
+   "page": "https://lottodost.com/result/24-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 89
+  },
+  {
+   "query": "sun lotto kerala result today",
+   "page": "https://lottodost.com/kerala/",
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 8.6
+  },
+  {
+   "query": "tax on prize money",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 13
+  },
+  {
+   "query": "taxes on lottery winnings calculator",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9.5
+  },
+  {
+   "query": "কেরালা লটারি গেজেট",
+   "page": "https://lottodost.com/bn/result/27-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  }
+ ],
+ "inspections": [
+  {
+   "url": "https://lottodost.com/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-29T10:56:55Z",
+   "canonical": "https://lottodost.com/"
+  },
+  {
+   "url": "https://lottodost.com/bn/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-25T23:49:40Z",
+   "canonical": "https://lottodost.com/bn/"
+  },
+  {
+   "url": "https://lottodost.com/hi/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-28T10:07:13Z",
+   "canonical": "https://lottodost.com/hi/"
+  },
+  {
+   "url": "https://lottodost.com/kerala/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-29T00:29:38Z",
+   "canonical": "https://lottodost.com/kerala/"
+  },
+  {
+   "url": "https://lottodost.com/maharashtra/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-28T13:32:36Z",
+   "canonical": "https://lottodost.com/maharashtra/"
+  },
+  {
+   "url": "https://lottodost.com/night-8pm/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-29T10:11:29Z",
+   "canonical": "https://lottodost.com/night-8pm/"
+  },
+  {
+   "url": "https://lottodost.com/day-6pm/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-28T22:51:00Z",
+   "canonical": "https://lottodost.com/day-6pm/"
+  },
+  {
+   "url": "https://lottodost.com/morning-1pm/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-28T15:35:13Z",
+   "canonical": "https://lottodost.com/morning-1pm/"
+  },
+  {
+   "url": "https://lottodost.com/yesterday/",
+   "verdict": "PASS",
+   "coverage": "Submitted and indexed",
+   "lastCrawl": "2026-10-29T07:50:11Z",
+   "canonical": "https://lottodost.com/yesterday/"
+  }
+ ]
+}
