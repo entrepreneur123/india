@@ -227,9 +227,11 @@ def site_info(channel: str | None, push_url: str | None = None, push_key: str | 
     return out
 
 
-def needs_full_check(status: dict, stamp: str, now: dt.datetime, force: bool = False) -> bool:
+def needs_full_check(status: dict, stamp: str, now: dt.datetime, force: bool = False, india_at: str | None = None) -> bool:
+    """india_at: generatedAt of the India server's india.json, which changes only with its content,
+    so new notices from India reach the site on the next run, not at the next 3-hour check."""
     last_full = status.get("fullCheckAt")
-    return force or stamp != status.get("sourceUpdatedAt") or not last_full or \
+    return force or stamp != status.get("sourceUpdatedAt") or not last_full or india_at != status.get("indiaAt") or \
         now - dt.datetime.fromisoformat(last_full) >= dt.timedelta(hours=FULL_CHECK_HOURS)
 
 
@@ -255,7 +257,9 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
-    if not needs_full_check(status, stamp, now, force):
+    india = _read_json(_v1(out, "india.json"), None)
+    india_at = india.get("generatedAt") if india else None
+    if not needs_full_check(status, stamp, now, force, india_at):
         # Nothing is written: a file changed on every run would mean a commit and a Pages build
         # every 30 minutes for no news.
         print(f"ssc: unchanged since {stamp}; last full check {status.get('fullCheckAt')}")
@@ -268,8 +272,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     if not families or set(families["families"]) != set(classify.EXAM_FAMILIES):
         raise ssc.FormatChanged("exam_families.json does not list exactly classify.EXAM_FAMILIES")
     items, calendar, counts, resources = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
-    others, kept, failed = other_boards(get_text, now, window_days, old_feed["items"],
-                                        india=_read_json(_v1(out, "india.json"), None))
+    others, kept, failed = other_boards(get_text, now, window_days, old_feed["items"], india=india)
     items = sorted(items + others, key=lambda i: (i.published, i.id), reverse=True)
     feed = sorted([i.to_json() for i in items] + kept, key=lambda i: (i["publishedAt"], i["id"]), reverse=True)
     new = new_items(old_feed["items"], items, now)
@@ -300,7 +303,7 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
         print(f"results: {added} new roll-number lists")
         print(f"cut-offs: {cutoffs.update(out, feed, get_bytes)} write-ups read")
     _write_json(status_path, {"schema": SCHEMA, "fullCheckAt": stamp_now,
-                              "sourceUpdatedAt": stamp, "streamCounts": counts, "failedSources": failed,
+                              "sourceUpdatedAt": stamp, "indiaAt": india_at, "streamCounts": counts, "failedSources": failed,
                               "rulesNeeded": rules_needed(feed, all_rules)}, volatile=())
     print(f"feed: {len(feed)} items ({len(new)} new, {len(others) + len(kept)} from other boards), {len(calendar)} calendar entries"
           f"{'' if changed else ', feed unchanged'}")
@@ -325,7 +328,8 @@ def main(argv: list[str] | None = None) -> int:
             print("true")  # the build will report the error properly
             return 0
         status = _read_json(_v1(args.out, "status.json"), {})
-        print("true" if needs_full_check(status, stamp, dt.datetime.now(ssc.IST), args.force) else "false")
+        india_at = (_read_json(_v1(args.out, "india.json"), None) or {}).get("generatedAt")
+        print("true" if needs_full_check(status, stamp, dt.datetime.now(ssc.IST), args.force, india_at) else "false")
         return 0
     try:
         return run(args.out, http.get_json, dt.datetime.now(ssc.IST), args.window_days, args.max_pages, args.force,

@@ -11,6 +11,7 @@ Read from the India server only (29-10-2026; tests/fixtures/<source>.html from i
 
   mppsc  Madhya Pradesh Public Service Commission        mppsc.mp.gov.in     home page links, "..._Dated_28_10_2026.pdf"
   ctet   Central Teacher Eligibility Test (CBSE)         ctet.nic.in         public notices, files on the NIC CDN
+  rrb    Railway Recruitment Boards (unified site)       rrbchennai.gov.in   "(CEN 08/2025) Exam Results (08-10-2026)"
 
 Rules shared with upprpb.py: the board gives a day, no time (dateOnly); links that leave the
 board's own site (exam agencies' portals such as apply-csbc.com) are left out, because such
@@ -62,6 +63,8 @@ class Board:
     entries: Callable[[str], Iterator[tuple[str, str, str]]]  # page -> (raw date, href, headline html)
     parse_date: Callable[[str, str], dt.date]  # (raw date, headline text) -> day
     min_items: int = 5
+    kind: Callable[[str], str] | None = None  # headline -> kind, when the board's own words say it better than kind_of
+    dated_ids: bool = False  # the same headline comes back on new days (RRB): each day is a new update
 
     def url(self, href: str) -> str:
         href = html.unescape(href.strip())
@@ -89,9 +92,10 @@ class Board:
             return None  # ONGC's page goes back to 2013: archive, not news
         name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
         m = re.search(r"\b(?:advt\.?|advertisement)\s*no\.?[^0-9]{0,20}\d+\s*/\s*(20\d{2})\b", title, re.I)
+        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
         return Item(
-            id=f"{self.SOURCE}-" + hashlib.sha1((url + "\n" + title).encode()).hexdigest()[:12],
-            kind=kind_of(title), lang="hi" if classify.is_hindi(title) else "en", title=title,
+            id=f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12],
+            kind=(self.kind or kind_of)(title), lang="hi" if classify.is_hindi(title) else "en", title=title,
             exam=self.family, exam_year=int(m.group(1)) if m else None,
             published=dt.datetime.combine(day, dt.time(), IST),
             files=((name, url, None),) if re.search(r"\.(pdf|jpe?g|png)$", url, re.I) else (),
@@ -217,6 +221,31 @@ def _ctet_entries(page: str) -> Iterator[tuple[str, str, str]]:
         yield (f"{day[6:]}-{day[4:6]}-{day[:4]}" if same_folder else ""), href, headline
 
 
+# RRB: the unified site (since 08-2026 every Railway Recruitment Board's site is a page of it) lists
+# each update as CEN number, category and day, linking that category's page for the CEN:
+#   <li><a href="/getdata?loc=chennai&cenum=08/2025&category=Exam Results"><Strong>(08/2025) &nbsp;&nbsp;
+#   </Strong>Exam Results <span class="pub_date">(08-10-2026)</span></a></li>
+# CENs (Centralised Employment Notices) are common to all RRBs, so one board's page has them all.
+_RRB = re.compile(r"""<li>\s*<a\s+href="(/getdata\?[^"]+)">\s*<Strong>\s*\((\d{2}/\d{4})\)\s*(?:&nbsp;\s*)*</Strong>\s*([^<]+?)\s*"""
+                  r"""<span class="pub_date">\s*\((\d{2}-\d{2}-\d{4})\)\s*</span>\s*</a>\s*</li>""", re.S | re.I)
+RRB_KINDS = {"Notification": "notice", "Indicative Notice": "notice", "Application (Special Notice)": "notice",
+             "Special Notice on Examination": "notice", "Medical Examination": "notice",
+             "Exam Results": "result", "Selection List": "result", "Document Verification": "result",
+             "E-Call Letters": "admit_card", "City Intimation (Exam)": "admit_card",
+             "Exam Schedule": "schedule", "Objection Tracker": "answer_key"}
+
+
+def _rrb_entries(page: str) -> Iterator[tuple[str, str, str]]:
+    for href, cen, category, day in _RRB.findall(page):
+        if category.strip() == "Mock Test Link":
+            continue  # practice links, not news
+        yield day, html.unescape(href).replace(" ", "%20"), f"RRB CEN {cen}: {category.strip()}"
+
+
+def _rrb_kind(title: str) -> str:
+    return RRB_KINDS.get(title.split(": ", 1)[-1], "notice")
+
+
 CSBC = Board("csbc", "https://csbc.bihar.gov.in", "https://csbc.bihar.gov.in/", "CSBC", _table_rows, _dmy)
 BPSSC = Board("bpssc", "https://bpssc.bihar.gov.in", "https://bpssc.bihar.gov.in/", "BPSSC", _table_rows, _dmy)
 ISRO = Board("isro", "https://www.isro.gov.in", "https://www.isro.gov.in/Careers.html", "ISRO", _isro_entries, _isro_date)
@@ -224,5 +253,7 @@ ONGC = Board("ongc", "https://ongcindia.com", "https://ongcindia.com/web/eng/car
              _ongc_entries, _ongc_date)
 MPPSC = Board("mppsc", "https://mppsc.mp.gov.in", "https://mppsc.mp.gov.in/", "MPPSC", _mppsc_entries, _dmy)
 CTET = Board("ctet", "https://cdnbbsr.s3waas.gov.in", "https://ctet.nic.in/", "CTET", _ctet_entries, _dmy, min_items=3)
-ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET)
-INDIA_ONLY = {"mppsc", "ctet"}  # don't answer GitHub's US runners: only the India server reads them
+RRB = Board("rrb", "https://rrbchennai.gov.in", "https://rrbchennai.gov.in/", "RRB", _rrb_entries, _dmy,
+            kind=_rrb_kind, dated_ids=True)
+ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET, RRB)
+INDIA_ONLY = {"mppsc", "ctet", "rrb"}  # don't answer GitHub's US runners: only the India server reads them

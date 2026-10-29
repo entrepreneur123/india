@@ -2,7 +2,8 @@
 # (served by GitHub Pages at <site>/jobs/). On by default (the owner asked for it to go live, 28-10-2026);
 # the repository Variable JOBS_PUBLISH = "false" turns it off (Settings > Secrets and variables > Actions > Variables).
 #
-# Every 30 minutes. A run with no change at SSC costs one small request (lastUpdates) and
+# Every 30 minutes, kept on time by jobs-relay.yml (the cron below is a backup: GitHub starts cron
+# runs hours late). A run with no change at SSC costs one small request (lastUpdates) and
 # no commit; a full check runs at least every 3 hours (sarkari/build.py FULL_CHECK_HOURS).
 # Odd minutes on purpose: runs scheduled on the hour are delayed most.
 #
@@ -23,6 +24,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # starts jobs-relay.yml, which starts the next run on time
 
 concurrency:
   # Its own group: sharing the lottery's "results" group would let a queued run here cancel
@@ -109,3 +111,9 @@ jobs:
             git -C ../../public -c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com" \
               commit -q -m "jobs telegram state" && git -C ../../public push -q origin data || true
           fi
+
+      - name: Start the relay to the next run
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run jobs-relay.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"

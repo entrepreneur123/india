@@ -258,6 +258,18 @@
       "sectors": [
         "teaching"
       ]
+    },
+    "RRB": {
+      "name": "RRB: railway jobs (NTPC, Group D, ALP, technicians, JE and more)",
+      "hi": "रेलवे भर्ती बोर्ड (RRB) भर्ती",
+      "short": "RRB",
+      "qualifications": null,
+      "ref": null,
+      "source": "rrb",
+      "noTimeline": true,
+      "sectors": [
+        "railway"
+      ]
     }
   }
 }

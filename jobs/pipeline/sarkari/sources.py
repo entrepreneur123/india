@@ -16,6 +16,9 @@ SOURCES: dict[str, dict] = {
     "isro": {"short": "ISRO", "name": "Indian Space Research Organisation", "site": "https://www.isro.gov.in", "state": None},
     "ongc": {"short": "ONGC", "name": "Oil and Natural Gas Corporation", "site": "https://ongcindia.com", "state": None},
     "mppsc": {"short": "MPPSC", "name": "Madhya Pradesh Public Service Commission", "site": "https://mppsc.mp.gov.in", "state": "MP"},
+    # The unified RRB site serves every board at its old address (rrbchennai.gov.in) and at rrb.indianrailways.gov.in.
+    "rrb": {"short": "RRB", "name": "Railway Recruitment Boards", "site": "https://rrbchennai.gov.in", "state": None,
+            "files": ["https://rrb.indianrailways.gov.in/"]},
     # CTET's files are on the NIC web CDN; "files" names its folder there, so only that folder counts.
     "ctet": {"short": "CTET", "name": "Central Teacher Eligibility Test (CBSE)", "site": "https://ctet.nic.in", "state": None,
              "files": ["https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/"]},

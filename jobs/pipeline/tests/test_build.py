@@ -206,6 +206,9 @@ def test_full_check_plan():
     assert build.needs_full_check(status, "B", NOW + dt.timedelta(minutes=30))  # SSC posted something
     assert build.needs_full_check(status, "A", NOW + dt.timedelta(hours=build.FULL_CHECK_HOURS))
     assert build.needs_full_check({}, "A", NOW) and build.needs_full_check(status, "A", NOW, force=True)
+    # The India server wrote new notices (india.json): the next run takes them, not 3 hours later.
+    assert build.needs_full_check(status, "A", NOW + dt.timedelta(minutes=30), india_at="2026-10-29T18:45:00+05:30")
+    assert not build.needs_full_check({**status, "indiaAt": "x"}, "A", NOW + dt.timedelta(minutes=30), india_at="x")
 
 
 def test_rules_needed_lists_new_ssc_recruitments_without_a_rules_file():
