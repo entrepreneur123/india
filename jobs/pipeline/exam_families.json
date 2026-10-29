@@ -427,6 +427,54 @@
       "sectors": [
         "state"
       ]
+    },
+    "UPPSC": {
+      "name": "UPPSC: Uttar Pradesh PCS, RO/ARO, lecturers, medical officers and other state posts",
+      "hi": "उत्तर प्रदेश लोक सेवा आयोग (UPPSC) भर्ती",
+      "short": "UPPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "uppsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "RBI": {
+      "name": "RBI: Reserve Bank of India Grade B officers, assistants and other posts",
+      "hi": "भारतीय रिज़र्व बैंक (RBI) भर्ती",
+      "short": "RBI",
+      "qualifications": null,
+      "ref": null,
+      "source": "rbi",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "CRPF": {
+      "name": "CRPF: Central Reserve Police Force recruitment",
+      "hi": "केन्द्रीय रिजर्व पुलिस बल (CRPF) भर्ती",
+      "short": "CRPF",
+      "qualifications": null,
+      "ref": null,
+      "source": "crpf",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "NTA": {
+      "name": "NTA: UGC-NET, CSIR NET, NTET and NTA's own posts",
+      "hi": "राष्ट्रीय परीक्षा एजेंसी (NTA): यूजीसी-नेट, सीएसआईआर नेट",
+      "short": "NTA",
+      "qualifications": null,
+      "ref": null,
+      "source": "nta",
+      "noTimeline": true,
+      "sectors": [
+        "teaching"
+      ]
     }
   }
 }

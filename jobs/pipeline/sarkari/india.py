@@ -83,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--window-days", type=int, default=120)
     a = ap.parse_args(argv)
-    changed = collect(a.out, prefetch(page_text, [b.NOTICE_PAGE for b in BOARDS]), dt.datetime.now(ssc.IST), a.window_days)
+    changed = collect(a.out, prefetch(page_text, [u for b in BOARDS for u in (b.NOTICE_PAGE, *getattr(b, "MORE_PAGES", ()))]), dt.datetime.now(ssc.IST), a.window_days)
     n = len(_read_json(_v1(a.out, "india.json"), {"items": []})["items"])
     print(f"india: {n} items{'' if changed else ', unchanged'}")
     return 0

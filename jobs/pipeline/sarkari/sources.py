@@ -34,6 +34,10 @@ SOURCES: dict[str, dict] = {
     "rpsc": {"short": "RPSC", "name": "Rajasthan Public Service Commission", "site": "https://rpsc.rajasthan.gov.in", "state": "RJ"},
     "rssb": {"short": "RSSB", "name": "Rajasthan Staff Selection Board", "site": "https://rssb.rajasthan.gov.in", "state": "RJ"},
     "dsssb": {"short": "DSSSB", "name": "Delhi Subordinate Services Selection Board", "site": "https://dsssb.delhi.gov.in", "state": "DL"},
+    "uppsc": {"short": "UPPSC", "name": "Uttar Pradesh Public Service Commission", "site": "https://uppsc.up.nic.in", "state": "UP"},
+    "rbi": {"short": "RBI", "name": "Reserve Bank of India", "site": "https://opportunities.rbi.org.in", "state": None},
+    "crpf": {"short": "CRPF", "name": "Central Reserve Police Force", "site": "https://rect.crpf.gov.in", "state": None},
+    "nta": {"short": "NTA", "name": "National Testing Agency", "site": "https://nta.ac.in", "state": None},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 
