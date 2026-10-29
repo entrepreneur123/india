@@ -43,6 +43,13 @@ export function signalBars(q: Quality): 0 | 1 | 2 | 3 | null {
   return q === 'excellent' ? 3 : q === 'good' ? 2 : q === 'poor' ? 1 : q === 'lost' ? 0 : null
 }
 
+/** A direct call's path (lib/p2p-call: round trip in s, share of packets lost) in LiveKit's words, for the same bars. */
+export function pathQuality(rtt: number, loss: number): 'excellent' | 'good' | 'poor' {
+  if (rtt < 0.15 && loss < 0.02) return 'excellent'
+  if (rtt < 0.4 && loss < 0.08) return 'good'
+  return 'poor'
+}
+
 /**
  * What to tell me about my partner, most serious first: their connection dropped ('lost': their picture would
  * otherwise freeze on the last frame), their video is paused because the network can't carry it ('paused'), or

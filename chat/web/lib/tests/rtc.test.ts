@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, signalBars, videoCodecFor } from '../rtc.ts'
+import { deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, pathQuality, signalBars, videoCodecFor } from '../rtc.ts'
 
 const IPAD_SAFARI_DESKTOP = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15'
 const IPAD_KAKAO = 'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 KAKAOTALK 25.8.0'
@@ -57,4 +57,12 @@ test('fixedVolume: iPhone and iPad only (Safari on a Mac can set a volume)', () 
   assert.equal(fixedVolume('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15', 5), true)
   assert.equal(fixedVolume('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15', 0), false)
   assert.equal(fixedVolume('Mozilla/5.0 (Linux; Android 14) Chrome/120 Mobile Safari/537.36'), false)
+})
+
+test('a direct call\'s bars from round trip and loss', () => {
+  assert.equal(pathQuality(0.05, 0), 'excellent')
+  assert.equal(pathQuality(0.2, 0.01), 'good')
+  assert.equal(pathQuality(0.05, 0.05), 'good')
+  assert.equal(pathQuality(0.5, 0), 'poor')
+  assert.equal(pathQuality(0.1, 0.1), 'poor')
 })

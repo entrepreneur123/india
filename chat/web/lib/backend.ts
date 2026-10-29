@@ -780,6 +780,21 @@ export class BackendError extends Error {
   }
 }
 
+/** What the two browsers of a 1:1 call tell each other while connecting straight (lib/p2p-call.ts). */
+export type CallMsg =
+  | { t: 'hi' }
+  | { t: 'sdp'; sdp: RTCSessionDescriptionInit }
+  | { t: 'ice'; c: RTCIceCandidateInit }
+  | { t: 'cam'; on: boolean }
+  /** Going through the server (LiveKit) instead: the other side follows. */
+  | { t: 'relay' }
+  | { t: 'bye' }
+export interface CallSignal {
+  me: string
+  send(m: CallMsg): void
+  close(): void
+}
+
 export interface Backend {
   sendOtp(phone: string): Promise<void> // digits incl. country code, e.g. "919876543210"
   verifyOtp(phone: string, code: string): Promise<boolean>
@@ -823,6 +838,8 @@ export interface Backend {
   answerVideo(matchId: string, accept: boolean): Promise<void>
   endVideo(matchId: string): Promise<void>
   videoToken(matchId: string): Promise<{ url: string; token: string } | null>
+  /** 095: the call's private topic for the two browsers to connect straight (lib/p2p-call); null: no server (demo). */
+  callSignal(matchId: string, on: (m: CallMsg) => void): Promise<CallSignal | null>
   /** The latest 50 people I met (random chats), newest first. */
   recents(): Promise<RecentMatch[]>
   /** 048: takes these people (at most 100) off my recents until we meet again. */

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { EyeOff, Mic, MicOff, Phone, PhoneOff, SwitchCamera, ShieldCheck, SignalHigh, SignalLow, SignalMedium, SignalZero, Video, VideoOff, Volume2 } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
-import type { Call, CallState, PartnerNotice } from '@/lib/livekit'
+import type { Call, CallEvents, CallState, PartnerNotice } from '@/lib/livekit'
 import { deviceNotice, keepScreenOn, signalBars } from '@/lib/rtc'
 import { flagEmoji } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
@@ -20,7 +20,8 @@ import { UserAvatar } from '@/components/looks/user-avatar'
 const loadDrag = () => import('@/lib/motion-drag').then((mod) => mod.default)
 
 /**
- * Full-screen call over the chat. Real video through LiveKit; the demo backend has no token and shows a preview.
+ * Full-screen call over the chat: straight between the two browsers (lib/p2p-call), LiveKit when that fails; the
+ * demo backend has neither and shows a preview.
  * `video` false: a voice call, both cameras start off (either can be turned on; the nudity check covers it then).
  */
 export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string; partner: Profile; video: boolean; onEnd: () => void }) {
@@ -84,6 +85,16 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
     // fix (server restart, signal lost, network gone too long), the call joins again with a fresh token, up to 3
     // times, waiting for the network first (LiveKit docs: a full reconnect = leave and join). My mic and camera
     // stay as I left them.
+    // First straight between the two browsers (lib/p2p-call: no server cost); when that fails, LiveKit for the rest
+    // of the call (Jitsi's rule: once on the server, it stays there).
+    let direct = true
+    const relay = () => {
+      direct = false
+      void callRef.current?.disconnect()
+      callRef.current = null
+      setState('reconnecting')
+      void join()
+    }
     let tries = 0
     const rejoin = () => {
       void callRef.current?.disconnect()
@@ -94,43 +105,57 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
       if (navigator.onLine) go()
       else window.addEventListener('online', go, { once: true })
     }
+    const events = (lost: () => void): CallEvents => ({
+      state: (s) => !cancelled && (s === 'lost' ? lost() : setState(s)),
+      quality: (q) => !cancelled && setQuality(q),
+      partner: (n) => !cancelled && setPartnerState(n),
+      partnerCamera: (on) => !cancelled && setPartnerCam(on),
+      blocked: (b) => !cancelled && setNeedsTap(b),
+    })
+    const els = () => ({ remote: remoteRef.current!, local: localRef.current!, audio: audioRef.current! })
+    let first = true
+    let shielded = false
+    // The model downloads while the call connects.
+    const shieldOnce = () => !shielded && ((shielded = true), void startShield())
+    // In the call: my mic and camera as I left them (after a switch or a rejoin), device problems told once.
+    const started = async (call: Call) => {
+      if (cancelled) return void call.disconnect()
+      callRef.current = call
+      if (!first && !want.current.mic) await call.setMic(false).catch(() => undefined)
+      if (call.camera) setCamera(false)
+      if (call.mic) setMic(false)
+      const problem = first && deviceNotice(call.camera, call.mic)
+      if (problem) toast.show(t(`video.${problem}` as const), 'error')
+      first = false
+    }
     const join = async () => {
+      if (direct) {
+        try {
+          const { joinP2P } = await retryImport(() => import('@/lib/p2p-call'))
+          const open = (on: Parameters<typeof backend.callSignal>[1]) =>
+            backend.callSignal(matchId, on).then((sig) => (sig && shieldOnce(), sig))
+          const call = await joinP2P(open, partner.id, els(), events(relay), abort.signal,
+            first ? video : want.current.camera)
+          return void (await started(call))
+        } catch (err) {
+          if (cancelled) return
+          direct = false // no direct path (or no server: the demo): LiveKit
+        }
+      }
       try {
         const token = await backend.videoToken(matchId)
         if (cancelled) return
-        if (!token) {
+        if (token) shieldOnce()
+        else {
           setState('demo')
           setShield('clear')
           return
         }
-        if (!tries) void startShield() // the model downloads while the call connects
         const { joinCall } = await retryImport(() => import('@/lib/livekit')) // the video SDK loads only when a call starts
         if (cancelled) return // the call ended while the SDK was loading
-        const call = await joinCall(
-          token.url,
-          token.token,
-          { remote: remoteRef.current!, local: localRef.current!, audio: audioRef.current! },
-          {
-            state: (s) => !cancelled && (s === 'lost' ? rejoin() : setState(s)),
-            quality: (q) => !cancelled && setQuality(q),
-            partner: (n) => !cancelled && setPartnerState(n),
-            partnerCamera: (on) => !cancelled && setPartnerCam(on),
-            blocked: (b) => !cancelled && setNeedsTap(b),
-          },
-          abort.signal,
-          tries ? want.current.camera : video,
-        )
-        if (cancelled) {
-          void call.disconnect()
-          return
-        }
-        callRef.current = call
-        if (tries && !want.current.mic) await call.setMic(false).catch(() => undefined)
+        const call = await joinCall(token.url, token.token, els(), events(rejoin), abort.signal, first ? video : want.current.camera)
         tries = 0
-        if (call.camera) setCamera(false)
-        if (call.mic) setMic(false)
-        const problem = deviceNotice(call.camera, call.mic)
-        if (problem) toast.show(t(`video.${problem}` as const), 'error')
+        await started(call)
       } catch (err) {
         if (cancelled) return
         if (tries) return rejoin()

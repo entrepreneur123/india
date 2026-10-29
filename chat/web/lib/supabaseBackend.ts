@@ -4,6 +4,8 @@ import { createClient, type RealtimeChannel, type SupabaseClient } from '@supaba
 import {
   BackendError,
   type Backend,
+  type CallMsg,
+  type CallSignal,
   type Badges,
   type FeedPost,
   type PostComment,
@@ -833,6 +835,26 @@ export class SupabaseBackend implements Backend {
   async videoToken(matchId: string) {
     track('call_started')
     return this.invoke<{ url: string; token: string }>('video-token', { match_id: matchId })
+  }
+
+  async callSignal(matchId: string, on: (m: CallMsg) => void): Promise<CallSignal> {
+    // Private (095): only the two people of this accepted call can listen or send.
+    const channel = this.client.channel(`call:${matchId}`, { config: { private: true } })
+      .on('broadcast', { event: 'm' }, ({ payload }) => on(payload as CallMsg))
+    await new Promise<void>((ok, fail) =>
+      channel.subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') ok()
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') fail(err ?? new Error(status))
+      }),
+    ).catch((e) => {
+      void this.client.removeChannel(channel)
+      throw e
+    })
+    return {
+      me: this.uid,
+      send: (m) => void channel.send({ type: 'broadcast', event: 'm', payload: m }),
+      close: () => void this.client.removeChannel(channel),
+    }
   }
 
   // ---- profiles ----

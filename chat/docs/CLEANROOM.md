@@ -40,6 +40,7 @@
 | 음성방 3초 신호(서버 부하) | Discord 음성 구조 블로그 | 조사 에이전트 | 안 고침(6장) | — |
 | **음소거 중에 말하면 "음소거 상태예요 · 음소거 해제"** | Jitsi Meet `lib-jitsi-meet/modules/detection/VADTalkMutedDetection.ts`, `jitsi-meet/react/features/talk-while-muted/middleware.ts` (Apache-2.0) | **직접 읽음** | 크게 시작하면 0.7초 창을 열고, 창 평균도 크면 말한 것 → 음소거 한 번당 한 번만 알림. 해제하면 알림 지움. (Jitsi는 RNNoise 음성 점수, 우리는 소리 크기라 기준값이 다름) | `lib/mic-hints.ts` `talkDetector`, `voice-audio.ts` |
 | **마이크에서 소리가 전혀 안 들어오면 알림** | `lib-jitsi-meet/modules/detection/NoAudioSignalDetection.ts`, `jitsi-meet/react/features/no-audio-signal/middleware.tsx` | **직접 읽음** | 마이크 소리값이 정확히 0인 채 4초 → 이어폰·기기 음소거 확인 안내(한 번), 소리 들어오면 지움 | `lib/mic-hints.ts` `silenceDetector`, `voice-audio.ts` |
+| **친구 1:1 통화를 서버 없이 직접 연결(P2P), 실패하면 LiveKit** | `lib-jitsi-meet/JitsiConference.ts` (`_shouldBeInP2PMode`, `_maybeStartOrStopP2P`, `_fallbackFromP2P`, Apache-2.0) | **직접 읽음** | 2명일 때만 P2P, ID가 작은 쪽이 먼저 연결 제안, 실패하면 서버로 넘어가고 그 통화는 끝까지 서버 | `lib/p2p-call.ts`, `video-call.tsx`, DB 095 |
 | **말하는 중 이어폰·블루투스가 빠지면 기본 마이크로 다시 잡기** | LiveKit client 2.23.0 설치 소스 `livekit-client.esm.mjs` (`handleEnded`, `unmute`의 재획득, `handleDeviceChange`) | **직접 읽음** | SDK는 기기 변경 때 기본 장치로 바꾸지만(아이폰 제외), 말하는 중 마이크가 끝나면 다음 음소거 해제 때까지 다시 잡지 않음 → 끝나는 즉시 다시 잡게 함 | `voice-audio.ts` (`TrackEvent.Ended` → `restartTrack`) |
 
 ## 3. 보안

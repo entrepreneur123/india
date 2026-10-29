@@ -732,6 +732,10 @@ export class MockBackend implements Backend {
     return null // the demo has no video server; the call screen shows a preview
   }
 
+  async callSignal() {
+    return null
+  }
+
   /* ---------- social ---------- */
 
   async recents() {
