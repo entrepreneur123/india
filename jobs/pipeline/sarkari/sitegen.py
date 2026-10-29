@@ -204,13 +204,18 @@ HUBS = [  # slug, title ({y}: year), Hindi line, what it lists, filter
     ("police-jobs", "Police Vacancy {y} (Police Bharti): UP, Bihar, Haryana, CAPF, Delhi Police", "पुलिस भर्ती {y}", ("sector", "police")),
     ("railway-jobs", "Railway Jobs {y} (RRB): CEN notices, results, admit cards", "रेलवे भर्ती {y}: आरआरबी", ("sector", "railway")),
     ("ssc-jobs", "SSC {y}: CGL, CHSL, MTS, GD, CPO notices and results", "एसएससी {y}", ("sector", "ssc")),
-    ("psu-jobs", "PSU Jobs {y}: ONGC recruitment notices", "सरकारी कंपनी (PSU) भर्ती {y}", ("sector", "psu")),
+    ("psu-jobs", "PSU Jobs {y}: ONGC, Indian Oil, AAI recruitment notices", "सरकारी कंपनी (PSU) भर्ती {y}", ("sector", "psu")),
     ("isro-recruitment", "ISRO Recruitment {y}: notifications and updates", "इसरो भर्ती {y}", ("sector", "science")),
     ("up-govt-jobs", "UP Govt Jobs {y} (Sarkari Naukri UP): UP Police and more", "यूपी सरकारी नौकरी {y}", ("state", "UP")),
-    ("bihar-govt-jobs", "Bihar Govt Jobs {y}: Bihar Police constable and SI vacancy", "बिहार सरकारी नौकरी {y}: बिहार पुलिस", ("state", "BR")),
-    ("haryana-govt-jobs", "Haryana Govt Jobs {y}: HSSC notices", "हरियाणा सरकारी नौकरी {y}", ("state", "HR")),
+    ("bihar-govt-jobs", "Bihar Govt Jobs {y}: BPSC, Bihar Police constable and SI vacancy", "बिहार सरकारी नौकरी {y}: बीपीएससी, बिहार पुलिस", ("state", "BR")),
+    ("haryana-govt-jobs", "Haryana Govt Jobs {y}: HSSC and HPSC notices", "हरियाणा सरकारी नौकरी {y}", ("state", "HR")),
     ("mp-govt-jobs", "MP Govt Jobs {y} (MPPSC): recruitment, results, answer keys", "एमपी सरकारी नौकरी {y}: एमपीपीएससी", ("state", "MP")),
-    ("teacher-jobs", "Teacher Jobs {y}: CTET notices, exam dates and results", "शिक्षक भर्ती {y}: सीटेट", ("sector", "teaching")),
+    ("rajasthan-govt-jobs", "Rajasthan Govt Jobs {y}: RPSC and RSSB notices, results, answer keys", "राजस्थान सरकारी नौकरी {y}: आरपीएससी, आरएसएसबी", ("state", "RJ")),
+    ("punjab-govt-jobs", "Punjab Govt Jobs {y}: PPSC and PSSSB notices", "पंजाब सरकारी नौकरी {y}", ("state", "PB")),
+    ("delhi-govt-jobs", "Delhi Govt Jobs {y}: DSSSB notices and results", "दिल्ली सरकारी नौकरी {y}: डीएसएसएसबी", ("state", "DL")),
+    ("kerala-govt-jobs", "Kerala Govt Jobs {y}: Kerala PSC notifications", "केरल सरकारी नौकरी {y}", ("state", "KL")),
+    ("bank-jobs", "Bank Jobs {y}: SBI and IBPS notices, results, admit cards", "बैंक भर्ती {y}: एसबीआई, आईबीपीएस", ("sector", "bank")),
+    ("teacher-jobs", "Teacher Jobs {y}: CTET and DSSSB teacher notices, exam dates and results", "शिक्षक भर्ती {y}: सीटेट", ("sector", "teaching")),
 ]
 
 

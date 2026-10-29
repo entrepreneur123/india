@@ -270,6 +270,163 @@
       "sectors": [
         "railway"
       ]
+    },
+    "SBI": {
+      "name": "SBI: State Bank of India officers, junior associates (clerks), POs and specialists",
+      "hi": "भारतीय स्टेट बैंक (SBI) भर्ती",
+      "short": "SBI",
+      "qualifications": null,
+      "ref": null,
+      "source": "sbi",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "IBPS": {
+      "name": "IBPS: common exams for public sector bank POs, clerks, specialists and RRB staff",
+      "hi": "आईबीपीएस (IBPS) बैंक भर्ती",
+      "short": "IBPS",
+      "qualifications": null,
+      "ref": null,
+      "source": "ibps",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "AAI": {
+      "name": "AAI: Airports Authority of India executives, juniors and apprentices",
+      "hi": "भारतीय विमानपत्तन प्राधिकरण (AAI) भर्ती",
+      "short": "AAI",
+      "qualifications": null,
+      "ref": null,
+      "source": "aai",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "IOCL": {
+      "name": "IOCL: Indian Oil engineers, officers, apprentices and other posts",
+      "hi": "इंडियन ऑयल (IOCL) भर्ती",
+      "short": "IOCL",
+      "qualifications": null,
+      "ref": null,
+      "source": "iocl",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "BECIL": {
+      "name": "BECIL: contract posts placed by Broadcast Engineering Consultants India",
+      "hi": "बेसिल (BECIL) भर्ती",
+      "short": "BECIL",
+      "qualifications": null,
+      "ref": null,
+      "source": "becil",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "BPSC": {
+      "name": "BPSC: Bihar combined competitive exam (CCE), assistant professors and other state posts",
+      "hi": "बिहार लोक सेवा आयोग (BPSC) भर्ती",
+      "short": "BPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "bpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "HPSC": {
+      "name": "HPSC: Haryana civil services (HCS), lecturers, assistant professors and other state posts",
+      "hi": "हरियाणा लोक सेवा आयोग (HPSC) भर्ती",
+      "short": "HPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "hpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "PPSC": {
+      "name": "PPSC: Punjab civil services (PCS) and Group A/B state posts",
+      "hi": "पंजाब लोक सेवा आयोग (PPSC) भर्ती",
+      "short": "PPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "ppsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "PSSSB": {
+      "name": "PSSSB: Punjab clerks, junior engineers and other Group B/C posts",
+      "hi": "पंजाब अधीनस्थ सेवा चयन बोर्ड (PSSSB) भर्ती",
+      "short": "PSSSB",
+      "qualifications": null,
+      "ref": null,
+      "source": "psssb",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "RPSC": {
+      "name": "RPSC: Rajasthan state services, school lecturers, assistant professors and other posts",
+      "hi": "राजस्थान लोक सेवा आयोग (RPSC) भर्ती",
+      "short": "RPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "rpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "RSSB": {
+      "name": "RSSB: Rajasthan staff selection (patwari, clerks, teachers, drivers and other posts)",
+      "hi": "राजस्थान कर्मचारी चयन बोर्ड (RSSB) भर्ती",
+      "short": "RSSB",
+      "qualifications": null,
+      "ref": null,
+      "source": "rssb",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "DSSSB": {
+      "name": "DSSSB: Delhi government teachers, clerks and other posts",
+      "hi": "दिल्ली अधीनस्थ सेवा चयन बोर्ड (DSSSB) भर्ती",
+      "short": "DSSSB",
+      "qualifications": null,
+      "ref": null,
+      "source": "dsssb",
+      "noTimeline": true,
+      "sectors": [
+        "state",
+        "teaching"
+      ]
+    },
+    "KERALAPSC": {
+      "name": "Kerala PSC: Kerala state government posts",
+      "hi": "केरल लोक सेवा आयोग (Kerala PSC) भर्ती",
+      "short": "Kerala PSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "keralapsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
     }
   }
 }

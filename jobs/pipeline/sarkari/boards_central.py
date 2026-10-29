@@ -164,4 +164,3 @@ IOCL = Board("iocl", "https://iocl.com", "https://iocl.com/latest-job-opening", 
 BECIL = Board("becil", "https://www.becil.com", "https://www.becil.com/vacancies", "BECIL", _becil_entries, _day_mon_year,
               kind=_becil_kind)
 ALL = (IBPS, AAI, IOCL, BECIL)
-INDIA_ONLY = {"ibps"}  # doesn't answer from outside India: only the India server reads it
