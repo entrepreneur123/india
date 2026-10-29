@@ -6,6 +6,7 @@ rbi-results.html  opportunities.rbi.org.in/Scripts/resultsnew.aspx (current list
 """
 import datetime as dt
 import os
+import re
 from collections import Counter
 
 import pytest
@@ -114,3 +115,15 @@ def test_rbi_broken_page_raises():
     assert more._rbi_date("Oct 06, 2026") == dt.date(2026, 10, 6)
     with pytest.raises(ValueError):
         more._rbi_date("06/10/2026")
+
+
+def test_uppsc_entries_are_known_by_headline_so_new_link_tokens_publish_nothing():
+    seen = {}
+    page = open(os.path.join(os.path.dirname(__file__), "fixtures", "uppsc.html"), encoding="utf-8").read()
+    more.UPPSC.parse(page, dt.date(2026, 10, 29), dt.date(2025, 10, 21), seen=None, record=seen)
+    assert seen and set(seen.values()) == {""}
+    relinked = re.sub(r"Open_PDF_DB\.aspx\?[^\s>'\"]+", lambda m: m.group(0) + "x", page)
+    assert relinked != page
+    again = {}
+    assert more.UPPSC.parse(relinked, dt.date(2026, 10, 30), dt.date(2025, 10, 21), seen=seen, record=again) == []
+    assert again == seen

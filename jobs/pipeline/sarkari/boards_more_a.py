@@ -127,7 +127,7 @@ class PagesBoard(Board):
 
 
 UPPSC = Board("uppsc", "https://uppsc.up.nic.in", "https://uppsc.up.nic.in/", "UPPSC", _uppsc_entries, _no_date,
-              kind=_uppsc_kind, undated=True)
+              kind=_uppsc_kind, undated=True, title_ids=True)  # its links are encrypted strings: maybe new each visit
 RBI = PagesBoard("rbi", "https://opportunities.rbi.org.in", "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx", "RBI",
                  _rbi_entries, _rbi_date, kind=_rbi_kind,
                  MORE_PAGES=("https://opportunities.rbi.org.in/Scripts/resultsnew.aspx",))

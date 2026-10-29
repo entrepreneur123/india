@@ -66,6 +66,7 @@ class Board:
     kind: Callable[[str], str] | None = None  # headline -> kind, when the board's own words say it better than kind_of
     dated_ids: bool = False  # the same headline comes back on new days (RRB): each day is a new update
     undated: bool = False  # entries may carry no date (SBI): such an entry is dated the day it is first seen
+    title_ids: bool = False  # links carry per-visit tokens (UPPSC's encrypted ones): an entry is known by its headline
 
 
     def url(self, href: str) -> str:
@@ -95,7 +96,7 @@ class Board:
                 raise RecordError(f"{url}: bad date {raw_date!r}") from None
             day = None
         name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
-        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
+        key = ("" if self.title_ids else url + "\n") + title + (f"\n{day}" if self.dated_ids else "")
         item_id = f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12]
         if day is None:
             # "" marks an entry that was already on the page when the record began: its day is unknown

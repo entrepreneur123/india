@@ -71,6 +71,8 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "rbi-announcements": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx",
     "rbi-vacancies": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx",
     "indiapost-vacancies": "https://www.indiapost.gov.in/vacancies",
+    "nabard-careers": "https://www.nabard.org/Hindi/ftrcontent.aspx?id=660",  # "कैरियर सूचनाएँ", linked from its home
+    "epfo-recruitments": "https://www.epfo.gov.in/recruitments/",
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
     "bssc": "https://bssc.bihar.gov.in/",
@@ -176,7 +178,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 8 sites at a time: 77 sites stay under 7 minutes even if every one hangs
+    # Two tries of 20 s, 8 sites at a time: 79 sites stay under 7 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())
