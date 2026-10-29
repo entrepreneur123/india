@@ -14,6 +14,10 @@ How we pursue it:
 - Never use black-hat methods (spam posts, fake reviews, link buying, cloaking, doorway pages, parasite pages): they risk a Google penalty and the AdSense account.
 - Numbers must be exactly right: publish only verified numbers; otherwise link the official sheet.
 
+## Search Console loop
+- `.github/workflows/gsc.yml` reads Search Console daily (secret `GSC_SERVICE_ACCOUNT_JSON`) into branch `seo`: read `gsc/latest.md` first, `gsc/history/` for trends.
+- Twice a week a scheduled session tunes the site from it: striking-distance queries (position 4–20) get their page's title/description/content matched to the exact wording people search; target queries are tracked over time. Never write pages for games or claims we cannot verify.
+
 ## Other standing rules
 - Report to the owner in Korean. Verify thoroughly, no hallucination; state what was not verified.
 - Develop and push only on branch `claude/gallant-lovelace-ynoa63`.
