@@ -79,8 +79,8 @@ class Board:
     def parse_entry(self, raw_date: str, href: str, headline: str, today: dt.date,
                     seen: dict[str, str] | None = None, record: dict[str, str] | None = None) -> Item | None:
         """seen/record (undated boards): {id: day} of the undated entries met on earlier runs (None:
-        no record yet), and the record to fill for this page. Without a record, an undated entry is
-        left out: its day would be a guess."""
+        no record yet), and the record to fill for this page. Entries on the page when the record
+        begins are kept as "" and never published: their day would be a guess."""
         try:
             url = self.url(href)
         except _Outside:
@@ -98,14 +98,13 @@ class Board:
         key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
         item_id = f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12]
         if day is None:
-            if item_id in (seen or {}):
-                day = dt.date.fromisoformat(seen[item_id])
-            elif seen is None:
-                return None
-            else:
-                day = today
+            # "" marks an entry that was already on the page when the record began: its day is unknown
+            first = "" if seen is None else seen.get(item_id, today.isoformat())
             if record is not None:
-                record[item_id] = day.isoformat()
+                record[item_id] = first
+            if not first:
+                return None
+            day = dt.date.fromisoformat(first)
         if day > today + dt.timedelta(days=1):
             raise RecordError(f"{url}: date {day} is in the future")
         if day < _FIRST_VALID:
