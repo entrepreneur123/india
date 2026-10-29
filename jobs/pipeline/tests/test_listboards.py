@@ -7,20 +7,22 @@ from sarkari import listboards, sources, ssc
 
 HERE = os.path.dirname(__file__)
 TODAY = dt.date(2026, 10, 21)
+CAPTURED = {"mppsc": dt.date(2026, 10, 29), "ctet": dt.date(2026, 10, 29)}  # from the India server's captures branch
 
 
 def page(source):
     return open(os.path.join(HERE, "fixtures", f"{source}.html"), encoding="utf-8").read()
 
 
-def parse(board, cutoff=dt.date(2025, 10, 21)):
+def parse(board, cutoff=dt.date(2025, 10, 21), today=TODAY):
     warnings = []
-    items = board.parse(page(board.SOURCE), TODAY, cutoff, warn=warnings.append)
+    items = board.parse(page(board.SOURCE), max(today, CAPTURED.get(board.SOURCE, today)), cutoff, warn=warnings.append)
     assert warnings == []
     return items
 
 
-@pytest.mark.parametrize("board,count", [(listboards.CSBC, 41), (listboards.BPSSC, 29), (listboards.ISRO, 23), (listboards.ONGC, 31)])
+@pytest.mark.parametrize("board,count", [(listboards.CSBC, 41), (listboards.BPSSC, 29), (listboards.ISRO, 23), (listboards.ONGC, 31),
+                                         (listboards.MPPSC, 30), (listboards.CTET, 10)])
 def test_real_pages_give_only_the_boards_own_links(board, count):
     items = parse(board)
     assert len(items) == count and len({i.id for i in items}) == count
@@ -81,3 +83,25 @@ def test_look_alike_and_plain_http_links_are_dropped():
 def test_a_changed_page_stops_instead_of_guessing():
     with pytest.raises(ssc.FormatChanged):
         listboards.ISRO.parse("<html>maintenance</html>", TODAY, dt.date(2026, 1, 1))
+
+
+def test_mppsc_reads_dates_from_file_names_and_leaves_out_its_own_tenders():
+    got = {i.files[0][0]: i for i in parse(listboards.MPPSC)}
+    first = got["Vigyapti_District_Public_Health_Nursing_Officer_2025_Dated_28_10_2026.pdf"]
+    assert first.published.date() == dt.date(2026, 10, 28) and first.lang == "hi"  # title from the link's title attribute
+    assert first.files[0][1].startswith("https://mppsc.mp.gov.in/uploads/advertisement/")
+    assert got["Advt_Law_Officer_Exam_2026_Dated_08_10_2026.pdf"].kind == "recruitment"
+    assert got["Final_Answer_Key_SFS_Main_Exam_2026_Dated_16_10_2026.pdf"].kind == "answer_key"
+    assert not any("Computer" in name for name in got)  # photocopier toner, interactive panels: purchases, not jobs
+    assert got["Vigyapti_Assistant_Professor_Yogik_Vigyan_Exam_2025_Dated_23_10_20261.pdf"].published.date() == dt.date(2026, 10, 23)
+
+
+def test_ctet_files_count_only_in_ctets_own_cdn_folder():
+    items = parse(listboards.CTET)
+    assert items[0].published.date() == dt.date(2026, 9, 14) and items[0].title == "PUBLIC NOTICE: Exam Dates for 22nd edition of CTET"
+    assert all(sources.official(i.files[0][1]) for i in items)
+    assert not sources.official("https://cdnbbsr.s3waas.gov.in/s0000000000000000000000000000000/uploads/2026/09/x.pdf")
+    other = '<a download href="https://cdnbbsr.s3waas.gov.in/s0000000000000000000000000000000/uploads/2026/09/20260914111.pdf">x</a>'
+    moved = '<a download href="' + listboards.CTET_FILES + 'uploads/2026/08/20260914111.pdf">y</a>'
+    assert list(listboards._ctet_entries(other)) == []  # another site on the same CDN
+    assert list(listboards._ctet_entries(moved))[0][0] == ""  # name and folder disagree: no date, counted as malformed

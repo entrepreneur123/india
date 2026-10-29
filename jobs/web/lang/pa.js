@@ -285,6 +285,7 @@ export default {
   state_UP: "ਉੱਤਰ ਪ੍ਰਦੇਸ਼",
   state_BR: "ਬਿਹਾਰ",
   state_HR: "ਹਰਿਆਣਾ",
+  state_MP: "ਮੱਧ ਪ੍ਰਦੇਸ਼",
   anySector: "ਸਾਰੇ ਸੈਕਟਰ",
   anyState: "ਸਾਰੇ ਰਾਜ",
   jobsSector: "{name} ਨੌਕਰੀਆਂ",

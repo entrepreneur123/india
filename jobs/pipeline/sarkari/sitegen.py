@@ -208,6 +208,8 @@ HUBS = [  # slug, title ({y}: year), Hindi line, what it lists, filter
     ("up-govt-jobs", "UP Govt Jobs {y} (Sarkari Naukri UP): UP Police and more", "यूपी सरकारी नौकरी {y}", ("state", "UP")),
     ("bihar-govt-jobs", "Bihar Govt Jobs {y}: Bihar Police constable and SI vacancy", "बिहार सरकारी नौकरी {y}: बिहार पुलिस", ("state", "BR")),
     ("haryana-govt-jobs", "Haryana Govt Jobs {y}: HSSC notices", "हरियाणा सरकारी नौकरी {y}", ("state", "HR")),
+    ("mp-govt-jobs", "MP Govt Jobs {y} (MPPSC): recruitment, results, answer keys", "एमपी सरकारी नौकरी {y}: एमपीपीएससी", ("state", "MP")),
+    ("teacher-jobs", "Teacher Jobs {y}: CTET notices, exam dates and results", "शिक्षक भर्ती {y}: सीटेट", ("sector", "teaching")),
 ]
 
 
