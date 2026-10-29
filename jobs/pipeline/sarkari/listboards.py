@@ -65,6 +65,8 @@ class Board:
     min_items: int = 5
     kind: Callable[[str], str] | None = None  # headline -> kind, when the board's own words say it better than kind_of
     dated_ids: bool = False  # the same headline comes back on new days (RRB): each day is a new update
+    undated: bool = False  # entries may carry no date (SBI): such an entry is dated the day it is first seen
+
 
     def url(self, href: str) -> str:
         href = html.unescape(href.strip())
@@ -74,7 +76,11 @@ class Board:
             raise _Outside(url)
         return urllib.parse.urlunsplit((p.scheme, p.netloc, urllib.parse.quote(urllib.parse.unquote(p.path), safe="/"), p.query, ""))
 
-    def parse_entry(self, raw_date: str, href: str, headline: str, today: dt.date) -> Item | None:
+    def parse_entry(self, raw_date: str, href: str, headline: str, today: dt.date,
+                    seen: dict[str, str] | None = None, record: dict[str, str] | None = None) -> Item | None:
+        """seen/record (undated boards): {id: day} of the undated entries met on earlier runs (None:
+        no record yet), and the record to fill for this page. Without a record, an undated entry is
+        left out: its day would be a guess."""
         try:
             url = self.url(href)
         except _Outside:
@@ -85,16 +91,28 @@ class Board:
         try:
             day = self.parse_date(raw_date, title)
         except ValueError:
-            raise RecordError(f"{url}: bad date {raw_date!r}") from None
+            if not (self.undated and not raw_date.strip()):
+                raise RecordError(f"{url}: bad date {raw_date!r}") from None
+            day = None
+        name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
+        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
+        item_id = f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12]
+        if day is None:
+            if item_id in (seen or {}):
+                day = dt.date.fromisoformat(seen[item_id])
+            elif seen is None:
+                return None
+            else:
+                day = today
+            if record is not None:
+                record[item_id] = day.isoformat()
         if day > today + dt.timedelta(days=1):
             raise RecordError(f"{url}: date {day} is in the future")
         if day < _FIRST_VALID:
             return None  # ONGC's page goes back to 2013: archive, not news
-        name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
         m = re.search(r"\b(?:advt\.?|advertisement)\s*no\.?[^0-9]{0,20}\d+\s*/\s*(20\d{2})\b", title, re.I)
-        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
         return Item(
-            id=f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12],
+            id=item_id,
             kind=(self.kind or kind_of)(title), lang="hi" if classify.is_hindi(title) else "en", title=title,
             exam=self.family, exam_year=int(m.group(1)) if m else None,
             published=dt.datetime.combine(day, dt.time(), IST),
@@ -103,13 +121,14 @@ class Board:
             source=self.SOURCE, date_only=True,
         )
 
-    def parse(self, page: str, today: dt.date, cutoff: dt.date, warn: Callable[[str], None] = print) -> list[Item]:
+    def parse(self, page: str, today: dt.date, cutoff: dt.date, warn: Callable[[str], None] = print,
+              seen: dict[str, str] | None = None, record: dict[str, str] | None = None) -> list[Item]:
         entries = list(self.entries(page))
         items: dict[str, Item] = {}
         rejected = outside = 0
         for raw_date, href, headline in entries:
             try:
-                item = self.parse_entry(raw_date, href, headline, today)
+                item = self.parse_entry(raw_date, href, headline, today, seen, record)
             except RecordError as e:
                 rejected += 1
                 warn(f"::warning::{self.SOURCE}: skipped entry: {e}")
@@ -124,8 +143,10 @@ class Board:
         return sorted(items.values(), key=lambda i: (i.published, i.id), reverse=True)
 
     def fetch(self, get_text: Callable[[str], str], now: dt.datetime, window_days: int,
-              warn: Callable[[str], None] = print) -> list[Item]:
-        return self.parse(get_text(self.NOTICE_PAGE), now.date(), (now - dt.timedelta(days=window_days)).date(), warn)
+              warn: Callable[[str], None] = print, seen: dict[str, str] | None = None,
+              record: dict[str, str] | None = None) -> list[Item]:
+        return self.parse(get_text(self.NOTICE_PAGE), now.date(), (now - dt.timedelta(days=window_days)).date(), warn,
+                          seen, record)
 
 
 class _Outside(Exception):

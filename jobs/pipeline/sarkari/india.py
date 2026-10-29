@@ -8,8 +8,12 @@ pushes to the data branch never conflict.
 
     python -m sarkari.india --out <data branch checkout>
 
-india.json: {"schema", "generatedAt", "boards": {source: {"ok": bool, "error"?: str}}, "items": [...]}
+india.json: {"schema", "generatedAt", "boards": {source: {"ok": bool, "error"?: str}}, "items": [...],
+             "seen": {source: {id: day}}}
 A board that fails keeps its previous items (inside the window), like build.other_boards.
+"seen" (boards whose entries carry no date, such as SBI's): the day each entry on the page was
+first seen. It covers every entry still on the page, older than the window too, so an unchanged
+entry is never dated again; a board's first run records the page and publishes none of them.
 """
 from __future__ import annotations
 
@@ -29,18 +33,24 @@ def collect(out: str, get_text, now: dt.datetime, window_days: int = 120, warn=p
     path = _v1(out, "india.json")
     old = _read_json(path, {"items": []})
     cutoff = (now - dt.timedelta(days=window_days)).isoformat(timespec="seconds")
-    items, boards = [], {}
+    items, boards, seen = [], {}, {}
+    old_seen = old.get("seen", {})
     for board in BOARDS:
+        record: dict[str, str] = {}
         try:
-            items += [i.to_json() for i in board.fetch(get_text, now, window_days, warn)]
+            items += [i.to_json() for i in board.fetch(get_text, now, window_days, warn, old_seen.get(board.SOURCE), record)]
             boards[board.SOURCE] = {"ok": True}
+            if board.undated:
+                seen[board.SOURCE] = record
         except Exception as e:  # noqa: BLE001 - one board failing never stops the others
             warn(f"::warning::{board.SOURCE}: {type(e).__name__}: {e}; keeping its previous items")
             items += [i for i in old["items"] if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff]
             boards[board.SOURCE] = {"ok": False, "error": f"{type(e).__name__}: {e}"[:300]}
+            if board.SOURCE in old_seen:
+                seen[board.SOURCE] = old_seen[board.SOURCE]
     items.sort(key=lambda i: (i["publishedAt"], i["id"]), reverse=True)
     return _write_json(path, {"schema": SCHEMA, "generatedAt": now.isoformat(timespec="seconds"),
-                              "boards": boards, "items": items})
+                              "boards": boards, "items": items, "seen": seen})
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -75,3 +75,29 @@ def test_a_pkcs7_bundle_of_issuers_is_unpacked():
     pytest.importorskip("cryptography")  # installed with pywebpush, as on the India server
     got = http._as_pem(_cert("c.p7c"))
     assert got and ssl.PEM_cert_to_DER_cert(got.strip()) == _cert("c.der")
+
+
+class _Resp:
+    def __init__(self, body, encoding=""):
+        self.body, self.headers = body, {"Content-Encoding": encoding} if encoding else {}
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+    def read(self, n):
+        return self.body[:n]
+
+
+def test_a_page_sent_gzipped_unasked_is_unpacked_and_still_size_checked(monkeypatch):
+    import gzip
+    page = b"<html>" + b"x" * 5000 + b"</html>"
+    monkeypatch.setattr(http, "POLITE_DELAY_S", 0)
+    monkeypatch.setattr(http, "_open", lambda req, timeout: _Resp(gzip.compress(page), "gzip"))
+    assert http.get_bytes("https://sbi.bank.in/web/careers/current-openings") == page
+    with pytest.raises(http.FetchError, match="unpacked"):
+        http.get_bytes("https://sbi.bank.in/x", max_bytes=1000)
+    monkeypatch.setattr(http, "_open", lambda req, timeout: _Resp(b"%PDF-1.7 plain"))
+    assert http.get_bytes("https://sbi.bank.in/a.pdf") == b"%PDF-1.7 plain"
