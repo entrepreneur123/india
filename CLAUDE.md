@@ -15,7 +15,7 @@ How we pursue it:
 - Numbers must be exactly right: publish only verified numbers; otherwise link the official sheet.
 
 ## Search Console loop
-- `.github/workflows/gsc.yml` reads Search Console daily (secret `GSC_SERVICE_ACCOUNT_JSON`) into branch `seo`: read `gsc/latest.md` first, `gsc/history/` for trends.
+- `.github/workflows/gsc.yml` reads Search Console daily into branch `seo`, signing in without a key (Workload Identity Federation; repo variables `GSC_WIF_PROVIDER`, `GSC_SERVICE_ACCOUNT`; service-account keys are forbidden by the org policy): read `gsc/latest.md` first, `gsc/history/` for trends.
 - Twice a week a scheduled session tunes the site from it: striking-distance queries (position 4–20) get their page's title/description/content matched to the exact wording people search; target queries are tracked over time. Never write pages for games or claims we cannot verify.
 
 ## Other standing rules

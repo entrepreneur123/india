@@ -1,7 +1,8 @@
 # Reads our Google Search Console numbers once a day and keeps them on the `seo` branch
 # (gsc/latest.md first), so the site can be tuned to what people in India really search.
-# Needs the GSC_SERVICE_ACCOUNT_JSON secret (a service account added to the Search Console
-# property as a user); without it the run only says so.
+# Signs in without a key (Workload Identity Federation; the organisation forbids service-account
+# keys): the repository variables GSC_WIF_PROVIDER and GSC_SERVICE_ACCOUNT name the pool provider
+# and the service account added to the Search Console property. Without them the run only says so.
 name: gsc
 
 on:
@@ -11,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # the GitHub token Google trusts instead of a key
 
 concurrency:
   group: gsc
@@ -20,19 +22,28 @@ jobs:
   read:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    env:
-      GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
     steps:
       - uses: actions/checkout@v4
-      - name: Key present?
+      - name: Set up?
         id: key
+        env:
+          PROVIDER: ${{ vars.GSC_WIF_PROVIDER }}
+          ACCOUNT: ${{ vars.GSC_SERVICE_ACCOUNT }}
         run: |
-          if [ -z "$GSC_SERVICE_ACCOUNT_JSON" ]; then
-            echo "GSC_SERVICE_ACCOUNT_JSON is not set: add it under Settings > Secrets and variables > Actions" >> "$GITHUB_STEP_SUMMARY"
+          if [ -z "$PROVIDER" ] || [ -z "$ACCOUNT" ]; then
+            echo "GSC_WIF_PROVIDER / GSC_SERVICE_ACCOUNT are not set (Settings > Secrets and variables > Actions > Variables)" >> "$GITHUB_STEP_SUMMARY"
             echo "ok=false" >> "$GITHUB_OUTPUT"
           else
             echo "ok=true" >> "$GITHUB_OUTPUT"
           fi
+      - uses: google-github-actions/auth@v3
+        id: auth
+        if: steps.key.outputs.ok == 'true'
+        with:
+          workload_identity_provider: ${{ vars.GSC_WIF_PROVIDER }}
+          service_account: ${{ vars.GSC_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/webmasters.readonly
       - uses: actions/setup-python@v5
         if: steps.key.outputs.ok == 'true'
         with:
@@ -40,6 +51,8 @@ jobs:
       - name: Read Search Console
         if: steps.key.outputs.ok == 'true'
         working-directory: pipeline
+        env:
+          GSC_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
           pip install -q google-auth==2.61.0 requests==2.33.1
           if git fetch -q origin seo; then

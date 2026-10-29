@@ -24,5 +24,11 @@ def test_summary_lists_striking_distance_and_target_queries():
 
 def test_without_the_key_it_does_nothing(tmp_path, monkeypatch, capsys):
     monkeypatch.delenv("GSC_SERVICE_ACCOUNT_JSON", raising=False)
+    monkeypatch.delenv("GSC_ACCESS_TOKEN", raising=False)
     monkeypatch.setattr("sys.argv", ["gsc", "--out", str(tmp_path / "gsc")])
     assert gsc.main() == 0 and not (tmp_path / "gsc").exists()
+
+
+def test_a_token_is_sent_as_bearer():
+    s = gsc.session(token="ya29.test")
+    assert s.headers["Authorization"] == "Bearer ya29.test"

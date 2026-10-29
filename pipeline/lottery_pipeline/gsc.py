@@ -1,7 +1,8 @@
 """Reads our Google Search Console numbers so the site can be tuned to what people really search.
 
 Uses a service account that the owner added to the Search Console property (read-only is enough).
-Its JSON key is the GSC_SERVICE_ACCOUNT_JSON secret; without it this does nothing. Writes
+The workflow signs in without a key (Workload Identity Federation) and passes a short-lived token
+as GSC_ACCESS_TOKEN; a JSON key in GSC_SERVICE_ACCOUNT_JSON also works. Without either this does nothing. Writes
 latest.json, latest.md and history/<date>.json into --out (the workflow commits them to the `seo` branch).
 
     python -m lottery_pipeline.gsc --site sc-domain:lottodost.com --out ../seo/gsc
@@ -23,7 +24,12 @@ TARGET = ("lottery result", "lottery sambad", "kerala lottery", "maharashtra lot
 INSPECT = ("/", "/bn/", "/hi/", "/kerala/", "/maharashtra/", "/night-8pm/", "/day-6pm/", "/morning-1pm/", "/yesterday/")
 
 
-def session(key_json: str):
+def session(key_json: str = "", token: str = ""):
+    if token:  # minted by google-github-actions/auth for this run, valid for an hour
+        import requests
+        s = requests.Session()
+        s.headers["Authorization"] = f"Bearer {token}"
+        return s
     from google.oauth2 import service_account
     from google.auth.transport.requests import AuthorizedSession
     creds = service_account.Credentials.from_service_account_info(json.loads(key_json), scopes=[SCOPE])
@@ -80,10 +86,11 @@ def main() -> int:
     ap.add_argument("--out", type=pathlib.Path, required=True)
     a = ap.parse_args()
     key = os.environ.get("GSC_SERVICE_ACCOUNT_JSON", "").strip()
-    if not key:
-        print("GSC_SERVICE_ACCOUNT_JSON is not set: nothing to read")
+    token = os.environ.get("GSC_ACCESS_TOKEN", "").strip()
+    if not key and not token:
+        print("No Search Console credentials (GSC_ACCESS_TOKEN or GSC_SERVICE_ACCOUNT_JSON): nothing to read")
         return 0
-    s = session(key)
+    s = session(key, token)
     end = dt.date.today()
     start = end - dt.timedelta(days=a.days)
     rep = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="minutes"), "site": a.site,
