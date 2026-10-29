@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # One run on the India server (started by sarkari.timer every 30 minutes):
-#   update the code, run the unit tests, build, publish to the data branch, then send alerts.
+#   update the code, run the unit tests, refresh page copies if their code changed, read the
+#   boards only India can reach into jobs/v1/india.json and publish it to the data branch.
 # Settings come from /etc/sarkari.env (see setup.sh). Exit 1 means nothing was published.
 set -euo pipefail
 : "${SARKARI_HOME:=/opt/sarkari}"
@@ -41,44 +42,44 @@ log "run start, code $(git -C "$code" rev-parse --short HEAD)"
 (cd "$code/jobs/pipeline" && "$py" -m pytest -q tests > "$SARKARI_HOME/pytest.log" 2>&1) \
   || { tail -n 40 "$SARKARI_HOME/pytest.log"; log "unit tests failed: not publishing"; exit 1; }
 
-# Start from what is published now, so this server never builds on a stale copy.
+# Page copies again as soon as their code changes (new sites, connection fixes), not only on
+# Mondays, so a fix reaches the captures branch within 30 minutes with nobody logging in here.
+# First, so that nothing failing below can hold it up.
+sum=$(cat "$code/jobs/pipeline/sarkari/capture.py" "$code/jobs/pipeline/sarkari/http.py" | sha256sum | cut -d" " -f1)
+if [ "$sum" != "$(cat "$SARKARI_HOME/capture.sum" 2>/dev/null)" ]; then
+  if "$code/jobs/deploy/india/capture.sh"; then echo "$sum" > "$SARKARI_HOME/capture.sum"; log "captures refreshed"; else log "capture failed"; fi
+fi
+
+# This server reads only the boards that answer from India (ssc.gov.in times out here) and writes
+# jobs/v1/india.json; GitHub's jobs-publish builds the site and takes those items from it.
+# Start from what is published now, so this server never works on a stale copy.
 git -C "$public" rebase --abort >/dev/null 2>&1 || true  # a rebase left over from a failed push
 if git -C "$public" ls-remote --exit-code --heads origin data >/dev/null 2>&1; then
   git -C "$public" fetch -q origin data
   git -C "$public" reset -q --hard origin/data
 fi  # else: the very first run starts the data branch
 
-(cd "$code/jobs/pipeline" && JOBS_IN_INDIA=1 "$py" -m sarkari.build --out "$public" --site-url "$SITE_URL" ${BUILD_ARGS:-})
-"$code/jobs/deploy/copy_web.sh" "$public" "$SITE_URL"
+(cd "$code/jobs/pipeline" && "$py" -m sarkari.india --out "$public")
 
-git -C "$public" add -A jobs .nojekyll
+git -C "$public" add jobs/v1/india.json
 if ! git -C "$public" diff --cached --quiet; then
   git -C "$public" -c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com" \
     commit -q -m "jobs $(date -u +%FT%TZ) (india)"
   pushed=""
   for i in 1 2 3 4 5; do
     if git -C "$public" push -q origin HEAD:data; then pushed=1; break; fi
-    # The lottery workflow writes to the same branch (never under jobs/), so a rebase is clean.
+    # GitHub's jobs-publish and the lottery write the same branch, never india.json: a rebase is clean.
     git -C "$public" fetch -q origin data && git -C "$public" rebase -q origin/data || git -C "$public" rebase --abort >/dev/null 2>&1 || true
     sleep $(( i * 5 ))
   done
   [ -n "$pushed" ] || { log "could not push to data"; exit 1; }
-  log "published"
+  log "published india.json"
 else
   log "no change"
 fi
 
-# Alerts after the push, so what a notification points to is already on its way to the site.
-(cd "$code/jobs/pipeline" && "$py" -m sarkari.telegram --out "$public" --site-url "$SITE_URL/jobs/" \
-  --state "$SARKARI_HOME/telegram-state.json") || log "telegram failed"
+# Instant alerts (only once enable-push.sh has run): from the feed GitHub publishes.
 if [ -f "$SARKARI_HOME/push/vapid.pem" ]; then
   (cd "$code/jobs/pipeline" && "$py" -m sarkari.pushsend --out "$public" --db "$SARKARI_HOME/push/subscriptions.db" \
     --vapid "$SARKARI_HOME/push/vapid.pem" --contact "${PUSH_CONTACT:-mailto:admin@example.invalid}") || log "push failed"
-fi
-
-# Page copies again as soon as their code changes (new sites, connection fixes), not only on
-# Mondays, so a fix reaches the captures branch within 30 minutes with nobody logging in here.
-sum=$(cat "$code/jobs/pipeline/sarkari/capture.py" "$code/jobs/pipeline/sarkari/http.py" | sha256sum | cut -d" " -f1)
-if [ "$sum" != "$(cat "$SARKARI_HOME/capture.sum" 2>/dev/null)" ]; then
-  if "$code/jobs/deploy/india/capture.sh"; then echo "$sum" > "$SARKARI_HOME/capture.sum"; log "captures refreshed"; else log "capture failed"; fi
 fi
