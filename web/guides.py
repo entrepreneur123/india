@@ -35,9 +35,9 @@ G = {
         "nav": "Guides", "sources": "Official sources", "checked": "Checked against these documents on 20.10.2026.",
         "names": {"tax": "Lottery tax calculator", "claim": "How to claim a prize", "scams": "Fake lottery scams"},
         "tax": {
-            "title": "Lottery Tax in India 2026 – Tax on Lottery Prize Calculator",
+            "title": "Lottery Tax Calculator India 2026 – Tax on Lottery Winnings and Payout",
             "desc": "How much tax is cut from a lottery prize in India: 30% above ₹10,000, then cess and surcharge when you file. Calculator for Dear and Kerala lottery prizes.",
-            "h1": "Lottery prize tax calculator",
+            "h1": "Lottery tax calculator: tax on lottery winnings",
             "intro": "Type the prize amount to see how much tax is cut before you are paid and how much you keep. Rules for prizes received from 1 April 2026 (Income-tax Act, 2025).",
             "calc": {"amount": "Prize amount (₹)", "go": "Calculate", "prize": "Prize", "tds": "Tax cut before payment (30%)",
                      "paid": "Paid to you", "more": "More tax when you file your return", "total": "Total tax",

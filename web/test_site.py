@@ -66,7 +66,7 @@ def test_home_names_the_site_for_google(tmp_path, monkeypatch):
 def test_yesterday_page_has_a_fixed_address(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     page = (out / "yesterday/index.html").read_text()
-    assert "<title>Lottery Sambad Yesterday Result 17.10.2026 – Dear 1 PM, 6 PM, 8 PM and Kerala</title>" in page
+    assert "<title>Yesterday Lottery Result 17.10.2026 – Lottery Sambad Dear 1 PM, 6 PM, 8 PM and Kerala</title>" in page
     assert 'class="slip' in page and 'id="check"' in page and "/result/17-10-2026/" in page
     assert 'href="/yesterday/"' in (out / "index.html").read_text()        # linked from the home page
     assert "https://example.in/hi/yesterday/" in (out / "sitemap.xml").read_text()
@@ -215,11 +215,11 @@ def test_kerala_hub_and_draw_page(tmp_path, monkeypatch):
 def test_draw_time_pages_rank_before_the_result_exists(tmp_path, monkeypatch):
     out = build(tmp_path, monkeypatch)
     night = (out / "night-8pm/index.html").read_text()   # 18-10 at 9 PM: the 8 PM result is in
-    assert "<title>Lottery Sambad Night Result Today 18.10.2026 – Dear 8 PM</title>" in night
+    assert "<title>Dear 8 PM Result Today 18.10.2026 – Lottery Sambad Night Result</title>" in night
     assert '<link rel="canonical" href="https://example.in/night-8pm/">' in night
     assert "data-wait" not in night and night.count("<tr>") >= 2   # the result and its last days
     bn = (out / "bn/morning-1pm/index.html").read_text()
-    assert "লটারি সংবাদ আজকের মর্নিং রেজাল্ট 18.10.2026" in bn
+    assert "ডিয়ার 1 PM রেজাল্ট আজকের 18.10.2026" in bn
     home = (out / "index.html").read_text()
     for p in ("/morning-1pm/", "/day-6pm/", "/night-8pm/", "/kerala/"):
         assert f'href="{p}"' in home
@@ -242,7 +242,7 @@ def test_draw_time_page_waits_for_todays_result(tmp_path, monkeypatch):
     sitegen.Site(data, "https://example.in", now=now).build(tmp_path / "out")
     page = (tmp_path / "out/morning-1pm/index.html").read_text()
     assert 'data-wait="2026-10-19_NL1PM"' in page
-    assert "Lottery Sambad Morning Result Today 19.10.2026" in page
+    assert "Dear 1 PM Result Today 19.10.2026 – Lottery Sambad Morning Result" in page
     assert 'data-at="2026-10-19T13:00:00+05:30"' in page    # the countdown
     assert "74D 70698" in page                              # and yesterday's result below it
 
@@ -280,7 +280,7 @@ def test_guides_are_built_with_sources_and_the_calculator_matches_the_law(tmp_pa
             page = (out / f"{lang}{p}/index.html").read_text()
             assert '<ul class="src"><li><a rel="noopener" href="https://' in page
     tax = (out / "lottery-tax/index.html").read_text()
-    assert "<title>Lottery Tax in India 2026 – Tax on Lottery Prize Calculator</title>" in tax and 'id="taxForm"' in tax
+    assert "<title>Lottery Tax Calculator India 2026 – Tax on Lottery Winnings and Payout</title>" in tax and 'id="taxForm"' in tax
     assert 'href="/claim-prize/"' in (out / "index.html").read_text()
     assert 'href="/hi/lottery-tax/"' in (out / "hi/result/18-10-2026/1pm/index.html").read_text()
     assert ref_tax(10_000_000) == {"tds": 3_000_000, "paid": 7_000_000, "more": 432_000, "total": 3_432_000, "keep": 6_568_000}
