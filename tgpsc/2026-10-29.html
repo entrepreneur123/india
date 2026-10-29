@@ -1,0 +1,882 @@
+ <!DOCTYPE html>
+ 
+
+
+
+
+
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="/img/favicon.png" sizes="16x16"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>TGPSC</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap CSS-->
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self';">
+   <meta name="referrer" content="no-referrer" />
+<meta name="referrer" content="unsafe-url" />
+<meta name="referrer" content="origin" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+<meta name="referrer" content="origin-when-cross-origin" />
+    
+    
+    <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <!-- Google fonts - Roboto-->
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700"> -->
+    <!-- Bootstrap Select-->
+    
+    <!-- owl carousel-->
+    
+ 
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="/css/style.default.css" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="/css/custom.css">
+ 
+ <!-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.0.13/css/all.css"/> -->
+ 	
+	<!-- <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script> -->
+	<script src="js/jquery.min.js"></script>
+	
+	
+	
+	<link type="text/css" rel="stylesheet" href="/ticker/css/cgg_ticker.css" />
+    
+   	<script src="/js/dw_event.js" type="text/javascript"></script>
+	<script src="/js/dw_cookies.js" type="text/javascript"></script>
+	<script src="/js/dw_sizerdx.js" type="text/javascript"></script>
+	<script src="js/common.js"></script>
+	<script src="/vendor/sweetalert/sweetalert2.all.min.js"></script>
+	<script type="text/javascript">
+		dw_Event.add( window, 'load', dw_fontSizerDX.init );
+	</script>
+	
+	<script src="/js/commonJSFunctions.js"></script>
+	<script type="text/javascript">
+		function swapStyleSheet(sheet){
+ 
+			document.getElementById('theme-stylesheet').setAttribute('href', sheet);
+
+		}
+ 
+	</script> 
+ 	<script type="text/javascript" src="/ticker/js/cgg_ticker.js"></script>
+	<script>
+	$(document).ready(function(){		
+		/* $("#ticker_scro").endlessRiver({  
+			speed: 50,
+			pause: true,
+			buttons: true
+			
+		}); */
+		
+		$(".locales").click(function () {
+            var selectedOption = $(this).attr('id');
+            //alert("change language"+selectedOption);
+            if (selectedOption != '') {
+                window.location.replace('?lang=' + selectedOption);
+            }
+        });
+		
+		  var serverName = 'www.tgpsc.gov.in';
+		  console.log("Server Name from scriptlet: " + serverName);
+		  var note ="";
+		  //serverName="www.tspsc.gov.in";
+		  if(serverName === "www.tspsc.gov.in"){
+			  /* note ='<b>Note:</b> TGPSC website domain is changed to <a  href="https://tgpsc.gov.in">https://tgpsc.gov.in</a>'; */
+			  note +='<b>Note:</b> Telangana Public Service Commission website name (URL: https://tspsc.gov.in)  will be deactivated from 03-11-2025.<br><br>';
+			  note +='<b>Note:</b> TGPSC website domain is changed to <a href="https://tgpsc.gov.in">https://tgpsc.gov.in</a>';
+		   }
+		  $("#note").html(note);
+	});
+ 
+    
+</script>
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+</script>
+<style>
+.scroll {
+    height: 670px;
+    overflow: scroll;
+}
+.note a{
+
+color: #007bff !important;
+
+}
+.note {
+
+text-transform: initial !important;
+ letter-spacing: 0.1em !important;  
+  font-size: 1.500rem !important;  
+   margin: 0 !important;
+}
+
+</style>
+  
+
+<style>
+
+.marquee-container {
+    width: 100%;
+    padding: 10px 0;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    width: 100%;
+}
+
+.content-text {
+    width: 100% !important;
+    max-width: none !important;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 20px !important;
+    font-weight: 500;
+    line-height: 1.6;
+    color: red !important;
+}
+
+.content-text .title {
+    font-size: 22px !important;
+    font-weight: 700;
+    text-decoration: underline;
+    color: red !important;
+    margin-bottom: 12px;
+}
+
+.content-text .description {
+    font-size: 26px !important;
+    font-weight: 600;
+    line-height: 1.6;
+    color: #a94949 !important;
+    margin-bottom: 15px;
+}
+
+.blink-image {
+    width: 60px !important;
+    height: 60px !important;
+    flex-shrink: 0;
+}
+.Highlighted a{
+   background-color : #b82601 !important;
+   background-image :none !important;
+   color:white !important;
+   font-weight:bold !important;
+   font-size: 10pt;
+   border: 1px solid #E0E0DA !important;
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.content-text {
+    color: #ff0000;
+}
+
+#myInput {
+  background-image: url('/css/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  width: 63%;
+  font-size: 16px;
+  padding: 10px 15px 10px 30px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+
+.header {
+ /*  background: url(../img/tspsc_heade-bg.jpg) center; */
+  background-size: cover;
+   background-repeat: no-repeat;
+}
+
+.top-bar ul.social-custom a {
+padding: 0px 3px;
+font-size: 0.9rem!important;
+font-weight: 400!important;
+}
+
+#candidate-services .btn {
+            clear:both;
+            white-space:nowrap;
+            font-size:23px;
+            display:inline-block;
+            border-radius:5px;
+            box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.35);
+            margin:2px;
+            -webkit-transition:all .5s;
+            -moz-transition:all .5s;
+            transition:all .5s;
+            overflow:hidden;
+           /*  width:100%;
+            min-height: 100px; */
+            width: 100%;
+    		min-height: 190px;
+          }
+          
+          #candidate-services .btn:hover {
+            box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.45);
+          }
+          
+          #candidate-services .btn:focus {
+            box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.4);
+          }
+          
+          #candidate-services .btn > span,.btn-icon > i {
+           /*  float:left; */
+            padding:13px;
+            -webkit-transition:all .5s;
+            -moz-transition:all .5s;
+            transition:all .5s;
+            line-height:1em;
+          
+          }
+          
+          #candidate-services .btn > span {
+            padding:21px 10px;
+              /*  white-space:nowrap; */
+          /*  satish */
+           white-space:initial;
+            color:#FFF;
+            background:#b8b8b8;
+            /* width:84%; */
+            height: 80px;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          #candidate-services .btn:focus > span {
+            background:#9a9a9a
+          }
+          
+          #candidate-services .btn-icon > i {
+            border-radius:5px 0 0 5px;
+            position:relative;
+            /* width:13px; */
+            text-align:center;
+            font-size:2em;
+            color:black;
+           /*  background:white; */
+           /*  width:16%; */
+          }
+          
+        .bg-light-green span{
+  background:#85bb3e !important;
+}
+
+ .bg-dark-green span{
+  background:#61a704 !important;
+}
+
+.bg-light-naviblue span{
+ 	background:#5672c7 !important;
+ }
+ .bg-light-black span{
+	background:#424949 !important;
+ }
+
+.bg-light-blue span{
+  background:#0288b6 !important;
+  }
+
+
+  .bg-light-orange span{
+    background:#cb894b !important;
+    }
+    
+    
+    .bg-dark-orange span{
+    background:#cb731f !important;
+    }
+ 
+ .bg-dark-purple span{
+    background:#B967C5 !important;
+    }
+ 
+
+
+    .bg-light-aqua span{
+      background:#14acb4 !important;
+      }
+      
+      .bg-dark-aqua span{
+      background:#14a9b1 !important;
+      }
+ 
+
+      .bg-light-pink span{
+        background:#b570ac !important;
+        }
+        
+          .bg-dark-pink span{
+        background:#2c937a !important;
+        }
+
+        .bg-light-brown span{
+          background:#9b5353 !important;
+          }
+          
+           .bg-dark-brown span{
+          background:#a94949 !important;
+          }
+          
+          
+          .bg-light-red span{
+          background:#bb1d1d !important;
+          }
+          #candidate-services .btn-icon > i:after {
+            content:"";
+           /*  border:8px solid; */
+            border-color:transparent transparent transparent #fff;
+            position:absolute;
+            top:22px;
+            right:-15px
+          }
+          
+          #candidate-services .btn-icon:hover > i,.btn-icon:focus > i {
+            color:#FFF
+          }
+          
+          #candidate-services .btn-icon > span {
+            border-radius:0 5px 5px 0
+          }
+
+	 @media screen and (max-width: 1800px) 
+{
+    .dummyTab 
+     {
+     background-color:red!important;
+       display: none!important;
+    }
+    
+  
+}
+ 
+
+</style>
+
+ <style type="text/css">
+ 
+ #candidate-services1 .btn {
+    clear: both;
+    white-space: nowrap;
+    font-size: 16px;
+    display: inline-block;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.35);
+    margin: 2px;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    transition: all .5s;
+    overflow: hidden;
+    width: 100%;
+    min-height: 100px;
+}
+
+#candidate-services1 .btn-icon > i:after {
+    content: "";
+    border: 8px solid;
+    border-color: transparent transparent transparent #fff;
+    position: absolute;
+    top: 22px;
+    right: -15px;
+}
+
+#candidate-services1 .fa-navicon:before, .fa-reorder:before, .fa-bars:before {
+    content: "\f0c9";
+}
+
+.backgrondBox{
+   
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.35);
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    transition: all .5s;
+    overflow: hidden;
+
+}
+
+.blink_me {
+ animation: blinker 1s linear infinite;
+}
+
+.blink_me1 {
+ animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.col-md-2, .col-md-6, .col-md-8{
+    float: left;
+}
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 22px !important;
+  animation:
+    both-side 12s linear infinite alternate;
+}
+
+@keyframes both-side {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(95vw - 100%));
+  }
+}
+
+/* @keyframes blink-colors {
+0% {color: rgb(235, 0, 0);}
+50% {color: rgb(235, 0, 0);}
+51% {color: rgb(0, 67, 111);}
+100% {color: rgb(0, 67, 111);}} */
+
+.marquee-text:hover {
+  animation-play-state: paused;
+}
+
+.blink-note {
+color: #1c529b !important;
+  /* animation: blink-colors 0.5s infinite; */
+}
+
+
+.blink-note1 {
+  animation: blink-colors 1s infinite;
+}
+
+@keyframes blink-colors {
+  0%   { color: #1c529b; }
+  50%  { color: #ff0000; }
+  100% { color: #1c529b; }
+}
+
+ </style>
+ 
+</head><!--/head-->
+
+
+
+<body id="sizer">
+    <div id="all">
+      <!-- Top bar-->
+     <div class="top-bar">
+        <div class="container-fluid">
+    </div> 
+      <!-- Top bar end-->
+      <!-- Login Modal-->
+      <header class="header">
+      <div class="container-fluid">
+		<div class="row" align="center">
+  <div class="col-sm-12">
+		  <div class="logo">
+
+		<a href="https://websitenew.tgpsc.gov.in/" class="home" style=" text-decoration: none;" target="_new"><img
+								src="/img/tspsc-logo-min.png">
+								<h3 style="display: inline-flex;">
+									TELANGANA PUBLIC SERVICE COMMISSION
+								</h3></a>
+
+		 
+            
+           </div>
+          
+          
+          </div>
+
+          </div>
+		   </div>
+		   </header>
+   
+</div>
+</div>
+ <!--/header-->
+ 
+ <section id="candidate-services" >	
+
+<div class="card">
+      <div class="card-header show" style="padding-left: 4px;padding-right: 4px;padding-top: 4px;padding-bottom: 4px;">
+      <div id="collapseOne" data-parent="#accordion" style="background:#fff">
+        <div class="card-body">
+<!-- <h3 align="center"  style="color:#1e64bf !important;font-size: 1.7rem;text-transform: none; letter-spacing: 0em;" >MAIN SERVICES</h3> -->
+<div  class="backgrondBox" >
+<br>
+
+<h2 id="note" class="text-danger note" align="center" style=""> </h2>
+<br> 
+
+<!-- <h2 class="text-danger blink_me1" style="font-size: 18px;" align="center">ONE TIME REGISTRATION (OTR) EDIT / UPDATION DATE EXTENDED TILL 25/02/2026</h2><br>
+ -->
+ 
+ 
+ 
+<div class="marquee-container">
+
+
+    <div class="marquee-content">
+
+       
+        <div class="content-text">
+
+            <div class="title">
+               <img src="./img/flashImage.gif"
+             class="blink-image"
+             alt="Flash">  Introducing Pratibha Varadhi
+            </div>
+
+            <div class="description">
+               A TGPSC initiative to connect high-performing candidates with meaningful employment opportunities across sectors in addition to PSC recruitment.
+            </div>
+
+            <div class="title second-title">
+                Now available through the One Time Registration (OTR) portal.
+            </div>
+
+            <div class="description">
+                Willing candidates can exercise their consent to participate through their OTR account.
+            </div>
+
+        </div>
+
+        
+
+    </div>
+</div>
+
+<br>
+
+<!-- <h3 id="note" class="blink-note"  align="left"  style="text-transform:none !important"><b>Note: </b>All the candidates are hereby informed to update the OTR and upload all the relevant 
+documents as directed in the web note date 17/01/2026 as the same data will be considered for upcoming notifications. Further, no updation provision
+ shall be given after the due date. The data provided will only be used in the applications of the ensuing notifications.
+				</h3><br>
+				
+	<h3 class="text-danger"  style="text-transform:none !important">
+     	<b>Note: </b>No more extention would be allowed and only the data filled-up in the OTR would be taken in the application form (OTR data is primary).
+  	</h3><br> -->
+  
+				<!-- <h2 id="note" class="text-danger note" align="center"  ><b>Note:</b>TGPSC main website domain is changed to 
+				<a href="https://websitenew.tgpsc.gov.in/">https://websitenew.tgpsc.gov.in/</a>
+				</h2>	<br> -->
+	
+	<div class="row" >
+				
+					<div class="col-md-2">
+					</div>
+					
+				<div class="col-md-1">
+					<!-- <a class="btn btn-icon bg-dark-green" style="background-color: #61a704 !important;"
+						href="https://hallticket.tspsc.gov.in/h022024bac31765-311a-4142-a99f-b96023c172b2" target="_blank"> 
+						<i class="fa fa-file-pdf-o"></i><span style="font-size: 18px;white-space: initial;" class="blink_me1"> GROUP-I SERVICES (02/2024)<br>DOWNLOAD <br>HALL-TICKET</span>
+					</a>
+					 -->
+				</div>
+				
+				<br>
+			<div class="col-md-2">
+					<a class="btn btn-icon bg-dark-orange" style="background-color: #cb731f !important;"
+						href="https://otr.tgpsc.gov.in/login?type=new" target="_blank"> 
+						<i class="fa fa-address-card-o"></i><span style="font-size: 18px;white-space: initial;"> OTR <br>NEW REGISTRATION</span>
+					</a>
+
+				</div>
+				
+				<div class="col-md-2">
+					<a class="btn btn-icon bg-dark-brown" style="background-color: #a94949 !important;"
+						href="https://otr.tgpsc.gov.in/login?type=edit"
+						target="_blank"> <i class="fa fa-edit"></i><span
+						style="font-size: 18px;"> EDIT OTR </span>
+					</a>
+				</div>
+				
+					<div class="col-md-2">
+					<a class="btn btn-icon bg-dark-pink" style="background-color: #2c937a !important;"
+						href="https://websitenew.tgpsc.gov.in/"
+						target="_blank"> <i class="fa fa-home"></i><span
+						style="font-size: 18px;"> WEBSITE</span>
+					</a>
+				</div>
+					
+			</div>
+			<br>
+		</div>	
+		
+		</div></div></div></div>
+
+<!-- <div>
+	<h3 align="center" class="" style="color: red">
+		<span style="white-space: initial;" class="blink_me1"> MLT Relinquishments link would be enabled from today 5 pm onwards</span>
+	</h3>	 			
+ </div> -->
+
+	<div id="candidate-services1">
+
+	<div class="card">
+      <div class="card-header show" style="padding-left: 4px;padding-right: 4px;padding-top: 4px;padding-bottom: 4px;">
+      <div id="collapseOne" data-parent="#accordion" style="background:#fff">
+        <div class="card-body">
+<h3 align="center"  style="color:#1e64bf !important;font-size: 1.4rem;  text-transform: none; letter-spacing: 0em;">OTHER SERVICES</h3>
+<div  class="backgrondBox" >
+	<br>
+	
+	
+<div class="row">
+ <div class="col-md-2"></div>
+ <div class="col-md-8">
+ 
+ 		
+ 		
+ 		 	
+		       
+		      		
+		      
+ 		
+ 		 
+		 
+		 
+		 	    <div class="col-md-6" onclick="return tspsc_home_page_hits('https://websitenew.tgpsc.gov.in/viewKeyObjections?accessId=TAT2uweFgyu3we01OG26');">
+						<a class="btn btn-icon bg-light-aqua"
+							href="https://websitenew.tgpsc.gov.in/viewKeyObjections?accessId=TAT2uweFgyu3we01OG26" target="_blank"><i style="float: left;" class="fa fa-bars"></i>
+							<span style="font-size: 16px;display: flow-root;"><span class="" >CANDIDATE'S OBJECTIONS ON THE KEY <BR/> ASSISTANT SCIENTIST (ANALYST GRADE -II) <BR/> IN PCB (01/OG/PC/2026)</span><span style="font-size: 12px;"></span>
+						</span>					
+ 						</a>
+				     </div>
+		 
+		 
+		          
+		        
+ 		
+		
+ 		
+ 		 	
+		       
+		      		
+		      
+ 		
+ 		 
+		 
+		 
+		 	    <div class="col-md-6" onclick="return tspsc_home_page_hits('https://websitenew.tgpsc.gov.in/downloadExamPaperKey?accessId=01OG26RivfnteuwoseCrS');">
+						<a class="btn btn-icon bg-light-aqua"
+							href="https://websitenew.tgpsc.gov.in/downloadExamPaperKey?accessId=01OG26RivfnteuwoseCrS" target="_blank"><i style="float: left;" class="fa fa-bars"></i>
+							<span style="font-size: 16px;display: flow-root;"><span class="" >MASTER QUESTION PAPER WITH KEY <BR/> ASSISTANT SCIENTIST (ANALYST GRADE -II) <BR/> IN PCB (01/OG/PC/2026)</span><span style="font-size: 12px;"></span>
+						</span>					
+ 						</a>
+				     </div>
+		 
+		 
+		          
+		        
+ 		
+		
+		</div>
+		 
+		</div>
+		 
+	
+			
+		
+		<div class="row">
+				<div class="col-md-2"></div>
+
+				<div class="col-md-4" >
+					<a class="btn btn-icon bg-light-red" 	href="https://igrs.tgpsc.gov.in"
+						target="_blank"> <i style="float: left;" class="fa fa-edit"></i><span
+						style="font-size: 20px;display: flow-root;">Raise a Grievance</span>
+					</a>
+				</div> 
+
+				<div class="col-md-4" >
+					<a class="btn btn-icon bg-light-brown" href="https://otr.tgpsc.gov.in/login?type=mobileDiv" 
+						target="_blank"> <i style="float: left;" class="fa fa-edit"></i><span
+						style="font-size: 20px;display: flow-root;">Update Mobile Number in OTR</span>
+					</a>
+				</div>
+		
+	</div>
+	<br>	
+</div>
+</div></div></div></div></div>
+
+</section>
+ 
+<!-- footer -->
+<div class="support-section">
+	<div class="container-fluid _no-padding">
+
+		<div class="row d-flex justify-content-center">
+		
+			<div class="col-sm-6 col-md-4 col-lg-2">
+				<div class="panel panel-default sidebar-menu with-icons ">
+					<div class="panel-heading">
+						<h3 class="h4 panel-title">TGPSC</h3>
+					</div>
+					<div class="panel-body">
+						<span style='color:#35d8ff;font-size: 16px;'><b>Smt. M. HARITHA, IAS.,</b></span> <br> Secretary <br>Telangana Public Service Commission<br> Prathibha Bhavan, M.J.Road, <br>Nampally, Hyderabad - 500001. <br>Telephone No:  040-24747577
+					</div>
+				</div>
+			</div> 
+			
+			<div class="col-sm-6 col-md-4 col-lg-2">
+				<div class="panel panel-default sidebar-menu with-icons">
+					<div class="panel-heading">
+						<h3 class="h4 panel-title">Call Center</h3>
+					</div>
+					<div class="panel-body">
+						For any queries / information / grievance contact Ph. No: 040-22445566 / 040-67445566 (Call Time :10.30 A.M to 5:00 P.M on working days) email to : helpdesk@tgpsc.gov.in
+					</div>
+				</div>
+			</div>
+			 <div class="col-sm-6 col-md-4 col-lg-2">
+				<div class="panel panel-default sidebar-menu with-icons">
+					<div class="panel-heading">
+						<h3 class="h4 panel-title">Technical Team</h3>
+					</div>
+					<div class="panel-body">
+						For any doubts in Online submission and download of hall-tickets Call Ph: 040-23120301 / 23120302 (Call Time :10:30 A.M to 5:00 P.M) 
+					</div>
+				</div>
+			</div> 
+			<div class="col-sm-6 col-md-4 col-lg-3" >
+				<div class="panel panel-default sidebar-menu with-icons"
+					style="background-color: #1c529b; border: none;">
+					<div class="panel-heading">
+						<h3 class="h4 panel-title">PAYMENTS RELATED</h3>
+					</div>
+
+					<div class="panel-body"
+						style="background-color: #1c529b; padding: 0;">
+						<ul >
+
+							<li><a
+								href="https://websitenew.tgpsc.gov.in/jsp/footerLinks/aboutUS.jsp" target="_blank"
+								style="display: block; padding: 3px 10px; color: white; font-size: 14px;">
+									 About Us </a></li>
+
+							<li><a
+								href="https://websitenew.tgpsc.gov.in/jsp/footerLinks/termsAndConditions.jsp" target="_blank"
+								style="display: block; padding: 3px 10px; color: white; font-size: 14px;">
+									 Terms & Conditions </a></li>
+
+							<li><a
+								href="https://websitenew.tgpsc.gov.in/jsp/footerLinks/refundAndCancellationPolicy.jsp" target="_blank"
+								style="display: block; padding: 3px 10px; color: white; font-size: 14px;">
+									 Refund Policy & Cancellation Policy </a></li>
+
+							<li><a
+								href="https://websitenew.tgpsc.gov.in/jsp/footerLinks/privacyPolicy.jsp" target="_blank"
+								style="display: block; padding: 3px 10px; color: white; font-size: 14px;">
+									Privacy Policy </a></li>
+							<li><p style="display: block; padding: 3px 10px; color: white; font-size: 14px;"> Email : Hydsupport@billdesk.com</p></li>
+
+						</ul>
+					</div>
+
+				</div>
+			</div>
+
+			
+			
+		</div>
+	</div>
+</div>
+
+
+	<footer class="main-footer ">
+		<div class="container ">
+			<div class="row">
+				<div class="col-sm-12 text-center">
+
+					<p style="color: #fff; padding: 35px 0; margin: 0; text-align: center; position: relative;">
+						<span
+							style="background: #020211; z-index: 9; padding: 3px 25px; position: relative; color: #adadad; text-transform: uppercase; font-size: 14px;">2018
+							© TGPSC., All rights reserved&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<br> Designed & Developed by
+						</span><img src="/img/cgg_logo.png"
+							alt="cgg logo " />
+					</p>
+					<span
+						style="width: 100%; height: 1px; background: #a9a9a9; position: absolute; left: 0; top: 47px;"></span>
+
+				</div>
+
+			</div>
+			<div align="center">
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-lg-12 col-md-12"
+						style="color: #7e7e7e; font-size: 12px !important;">Site
+						last updated on : 10-Sep-2026 05:44:17 PM</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-lg-12 col-md-12"
+						style="color: #7e7e7e; font-size: 12px !important;">This
+						site is best viewed in 1024 * 768 resolutioon with latest version
+						of Chrome, Firefox, Safari and Internet Explorer.</div>
+				</div>
+			</div>
+		</div>
+		<br> <br>
+	</footer>
+
+</body>
+</html>
