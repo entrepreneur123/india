@@ -11,15 +11,35 @@ public="$SARKARI_HOME/public"
 py="$SARKARI_HOME/venv/bin/python"
 log() { echo "$(date -u +%FT%TZ) $*"; }
 
+# Every run leaves its log on the "server-log" branch (one commit, replaced each run), so what
+# happens here can be read on GitHub without logging in to this machine.
+logfile="$SARKARI_HOME/last-run.log"
+exec > >(tee "$logfile") 2>&1
+report() {
+  local rc=$? dir="$SARKARI_HOME/server-log"
+  set +e
+  sleep 1  # let tee write the last lines
+  if [ ! -e "$dir/.git" ]; then git -C "$code" worktree add -q --orphan -b server-log "$dir" >/dev/null 2>&1 || return 0; fi
+  { echo "exit $rc at $(date -u +%FT%TZ), code $(git -C "$code" rev-parse --short HEAD 2>/dev/null)"; tail -n 150 "$logfile"; } > "$dir/last-run.txt"
+  git -C "$dir" add last-run.txt
+  local who=(-c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com")
+  git -C "$dir" "${who[@]}" commit -q --amend -m "server log" >/dev/null 2>&1 || git -C "$dir" "${who[@]}" commit -q -m "server log" >/dev/null 2>&1
+  git -C "$dir" push -q -f origin HEAD:server-log >/dev/null 2>&1
+  return 0
+}
+trap report EXIT
+
 # Never two runs at once (a slow PDF download can outlast the 30-minute timer).
 exec 9>"$SARKARI_HOME/run.lock"
 flock -n 9 || { log "previous run still going"; exit 0; }
 
 git -C "$code" fetch -q origin "$CODE_BRANCH"
 git -C "$code" reset -q --hard "origin/$CODE_BRANCH"
+log "run start, code $(git -C "$code" rev-parse --short HEAD)"
 
 # A broken commit on the code branch must not publish anything.
-(cd "$code/jobs/pipeline" && "$py" -m pytest -q tests >/dev/null) || { log "unit tests failed: not publishing"; exit 1; }
+(cd "$code/jobs/pipeline" && "$py" -m pytest -q tests > "$SARKARI_HOME/pytest.log" 2>&1) \
+  || { tail -n 40 "$SARKARI_HOME/pytest.log"; log "unit tests failed: not publishing"; exit 1; }
 
 # Start from what is published now, so this server never builds on a stale copy.
 git -C "$public" rebase --abort >/dev/null 2>&1 || true  # a rebase left over from a failed push
