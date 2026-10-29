@@ -52,17 +52,7 @@ const hi: FeedDict = {
   'compose.checking': 'फ़ोटो जाँची जा रही है…',
   'compose.nude': 'यह फ़ोटो नग्नता जैसी लगती है, इसलिए इसे पोस्ट नहीं किया जा सकता',
 
-  'style.status': 'स्टेटस',
-  'style.statusPlaceholder': 'आज आपका मूड क्या है?',
-  'style.languages': 'मैं ये भाषाएँ बोलता/बोलती हूँ',
-  'style.languagesHint': 'ज़्यादा से ज़्यादा 6 चुनें।',
-  'style.languagesMax': 'आप ज़्यादा से ज़्यादा 6 भाषाएँ चुन सकते हैं',
-  'style.saved': 'प्रोफ़ाइल अपडेट हो गई',
-  'style.problem.status': 'स्टेटस ज़्यादा से ज़्यादा 60 अक्षरों का हो सकता है',
-  'style.problem.answer': 'जवाब ज़्यादा से ज़्यादा 120 अक्षरों के हो सकते हैं',
 
-  'profile.speaks': 'भाषाएँ',
-  'style.mbtiHint': "वैकल्पिक। हटाने के लिए फिर से टैप करें।",
   'post.likers': "पसंद करने वाले",
 }
 

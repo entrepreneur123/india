@@ -56,7 +56,6 @@ const fa: TrustDict = {
   // the card on Me
   'card.title': 'نشان تأیید بگیرید',
   'card.body': 'کارت شناسایی + سلفی، حدود ۲ دقیقه. بقیه می‌بینند شما واقعی هستید و شما هم با آدم‌های واقعی آشنا می‌شوید.',
-  'card.cta': 'همین حالا تأیید کنید',
   'card.pending': 'کارت شما در حال بررسی است',
   'card.pendingBody': 'معمولاً یکی دو دقیقه.',
   'card.retry': 'بررسی قبلی‌تان انجام نشد',
@@ -67,7 +66,6 @@ const fa: TrustDict = {
   // facts from the ID
   'facts.verified': 'هویت تأییدشده',
   'facts.locked': 'از کارت شناسایی، قابل تغییر نیست',
-  'facts.notVerified': 'هویت هنوز تأیید نشده',
   'facts.age': '{n} سال',
 
   // manners

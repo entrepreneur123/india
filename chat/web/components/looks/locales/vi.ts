@@ -68,8 +68,6 @@ const vi: LooksDict = {
   'id.cooldownPass': 'Đổi ngay bây giờ sẽ dùng 1 trong {n} lượt đổi ID của bạn (miễn phí lại vào {date})',
   'id.keptFree': 'ID đó vừa có người lấy, nên tạm thời ID của bạn là @{handle}. Bạn có thể đổi trong Sửa hồ sơ.',
 
-  'details.title': 'Chi tiết hồ sơ',
-  'details.desc': 'Trạng thái, MBTI và các ngôn ngữ bạn nói.',
 
   'friend.requested': 'Đã gửi lời mời',
   'friend.withdraw': 'Rút lại lời mời kết bạn gửi {name}',

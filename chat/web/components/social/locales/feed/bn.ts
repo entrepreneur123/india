@@ -52,17 +52,7 @@ const bn: FeedDict = {
   'compose.checking': 'ছবিটি পরীক্ষা করা হচ্ছে…',
   'compose.nude': 'ছবিটি নগ্নতার মতো দেখাচ্ছে, তাই এটি পোস্ট করা যাবে না',
 
-  'style.status': 'স্ট্যাটাস',
-  'style.statusPlaceholder': 'আজ আপনার মুড কেমন?',
-  'style.languages': 'যে ভাষাগুলো বলি',
-  'style.languagesHint': 'সর্বোচ্চ ৬টি বাছুন।',
-  'style.languagesMax': 'আপনি সর্বোচ্চ ৬টি ভাষা বাছতে পারেন',
-  'style.saved': 'প্রোফাইল আপডেট হয়েছে',
-  'style.problem.status': 'স্ট্যাটাস সর্বোচ্চ ৬০ অক্ষরের হতে পারে',
-  'style.problem.answer': 'উত্তর সর্বোচ্চ ১২০ অক্ষরের হতে পারে',
 
-  'profile.speaks': 'ভাষা',
-  'style.mbtiHint': "ঐচ্ছিক। মুছতে আবার ট্যাপ করুন।",
   'post.likers': "যাঁরা পছন্দ করেছেন",
 }
 

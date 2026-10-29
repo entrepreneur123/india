@@ -492,6 +492,7 @@ const ar: Dict = {
   'profile.message': 'مراسلة',
   'profile.acceptRequest': 'قبول الطلب',
   'profile.withdraw': 'تم إرسال الطلب · سحب',
+  'profile.requested': 'تم إرسال الطلب',
   'profile.add': 'إضافة صديق',
   'profile.requestSent': 'تم إرسال طلب الصداقة',
 

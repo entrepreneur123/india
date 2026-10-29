@@ -68,8 +68,6 @@ const ptBR: LooksDict = {
   'id.cooldownPass': 'Mudar agora usa 1 das suas {n} trocas de ID (grátis de novo em {date})',
   'id.keptFree': 'Esse ID acabou de ser pego, então por enquanto o seu é @{handle}. Você pode mudar em Editar perfil.',
 
-  'details.title': 'Detalhes do perfil',
-  'details.desc': 'Seu status, MBTI e os idiomas que você fala.',
 
   'friend.requested': 'Solicitado',
   'friend.withdraw': 'Cancelar sua solicitação para {name}',

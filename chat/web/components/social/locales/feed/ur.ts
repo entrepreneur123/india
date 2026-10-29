@@ -48,16 +48,6 @@ const ur: FeedDict = {
   'compose.everyoneHint': 'yaari پر آپ کی پروفائل کھولنے والا کوئی بھی۔ وہ آپ کو ایڈ بھی کر سکتے ہیں۔',
   'compose.checking': 'تصویر چیک ہو رہی ہے…',
   'compose.nude': 'یہ تصویر عریاں لگتی ہے، اس لیے پوسٹ نہیں ہو سکتی',
-  'style.status': 'اسٹیٹس',
-  'style.statusPlaceholder': 'آج آپ کا موڈ کیسا ہے؟',
-  'style.languages': 'میں یہ زبانیں بولتا/بولتی ہوں',
-  'style.languagesHint': '6 تک چنیں۔',
-  'style.languagesMax': 'آپ زیادہ سے زیادہ 6 زبانیں چن سکتے ہیں',
-  'style.saved': 'پروفائل اپ ڈیٹ ہو گئی',
-  'style.problem.status': 'اسٹیٹس زیادہ سے زیادہ 60 حروف کا ہو سکتا ہے',
-  'style.problem.answer': 'جواب زیادہ سے زیادہ 120 حروف کے ہو سکتے ہیں',
-  'profile.speaks': 'بولتے ہیں',
-  'style.mbtiHint': "اختیاری۔ ہٹانے کے لیے دوبارہ ٹیپ کریں۔",
   'post.likers': "پسند کرنے والے",
 }
 

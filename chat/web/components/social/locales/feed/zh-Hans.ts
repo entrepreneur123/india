@@ -57,18 +57,8 @@ const zhHans: FeedDict = {
   'compose.nude': '这张照片疑似裸露内容，无法发布',
 
   // profile style
-  'style.status': '状态',
-  'style.statusPlaceholder': '今天心情怎么样？',
-  'style.languages': '我会说的语言',
-  'style.languagesHint': '最多选 6 种。',
-  'style.languagesMax': '最多只能选择 6 种语言',
-  'style.saved': '资料已更新',
-  'style.problem.status': '状态最多 60 个字符',
-  'style.problem.answer': '回答最多 120 个字符',
 
   // a profile
-  'profile.speaks': '会说',
-  'style.mbtiHint': "可选。再点一次即可清除。",
   'post.likers': "点赞",
 }
 

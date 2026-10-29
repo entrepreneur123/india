@@ -54,7 +54,6 @@ const bn: TrustDict = {
 
   'card.title': 'আপনার ভেরিফায়েড ব্যাজ নিন',
   'card.body': 'আইডি + সেলফি, মোটামুটি ২ মিনিট। সবাই দেখবে আপনি আসল, আর আপনিও আসল মানুষদের সাথে মিশবেন।',
-  'card.cta': 'এখনই যাচাই করুন',
   'card.pending': 'আপনার আইডি যাচাই হচ্ছে',
   'card.pendingBody': 'সাধারণত এক-দুই মিনিট।',
   'card.retry': 'আপনার আগের যাচাই হয়নি',
@@ -64,7 +63,6 @@ const bn: TrustDict = {
 
   'facts.verified': 'আইডি যাচাই করা',
   'facts.locked': 'আইডি থেকে, বদলানো যায় না',
-  'facts.notVerified': 'এখনও আইডি যাচাই হয়নি',
   'facts.age': '{n} বছর',
 
   'manner.title': 'ম্যানার',

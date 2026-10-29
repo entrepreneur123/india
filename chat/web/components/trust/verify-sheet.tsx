@@ -130,7 +130,7 @@ export function VerifySheet({ open, why, onClose }: { open: boolean; why: Verify
             </Screen>
           ) : state === 'verified' ? (
             <Screen hero={<VerifyHero tone="ok" />} title={tt('verify.doneTitle')} body={tt('verify.doneBody')}>
-              <IdentityFacts profile={me} verified className="mx-auto mt-1" />
+              <IdentityFacts profile={me} className="mx-auto mt-1" />
               <Button variant="brand" size="lg" className="mt-6 w-full" onClick={onClose} data-autofocus>
                 {tt('verify.done')}
               </Button>

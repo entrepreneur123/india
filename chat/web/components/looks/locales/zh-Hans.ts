@@ -68,8 +68,6 @@ const zhHans: LooksDict = {
   'id.cooldownPass': '现在更改将使用你 {n} 张 ID 更改券中的 1 张（{date} 起可再次免费更改）',
   'id.keptFree': '这个 ID 刚刚被别人用了，所以你暂时的 ID 是 @{handle}。可以在「编辑资料」中更改。',
 
-  'details.title': '资料详情',
-  'details.desc': '你的状态、MBTI 和你会说的语言。',
 
   'friend.requested': '已申请',
   'friend.withdraw': '撤回发给 {name} 的申请',

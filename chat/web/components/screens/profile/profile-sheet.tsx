@@ -3,7 +3,7 @@
 import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Ban, Check, Flag, Heart, MessageCircle, UserMinus, UserPlus, Users, X } from 'lucide-react'
+import { Ban, Check, Ellipsis, Flag, Heart, X } from 'lucide-react'
 import type { FriendState, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -15,14 +15,15 @@ import { useToast } from '@/components/ui/toast'
 import { ReportSheet } from '@/components/screens/chat/report-sheet'
 import { PostGrid } from '@/components/screens/me/post-grid'
 import { FriendContacts } from '@/components/social/contacts'
-import { ProfileHero } from '@/components/social/profile-bits'
+import { ProfileHero, ProfileStat } from '@/components/social/profile-bits'
 import { Highlights } from '@/components/social/highlights'
 import { useTrust } from '@/components/trust/badge'
-import { IdentityFacts, MannerCard } from '@/components/trust/trust-cards'
-import { isVip } from '@/lib/looks'
+import { MannerCard } from '@/components/trust/trust-cards'
 import { cn } from '@/lib/utils'
 
 const socialKey = (userId: string) => ['social', userId]
+/** Instagram's profile buttons: equal, grey, softly squared (the main one in the brand colour). */
+export const ACTION = 'h-9 min-w-0 flex-1 rounded-lg px-3 font-semibold'
 
 /**
  * Someone's profile: the card in their frame with their @ID, status, languages, photos and posts. The server shows people I have
@@ -54,6 +55,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const [busy, setBusy] = useState(false)
   const [reportOpen, setReportOpen] = useState<'report' | 'block' | null>(null)
   const [unfriendOpen, setUnfriendOpen] = useState(false)
+  const [moreOpen, setMoreOpen] = useState(false)
   const social = useSWR(isMe ? null : socialKey(userId), () => backend.profileSocial(userId))
   const like = async () => {
     const was = social.data
@@ -126,7 +128,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-3 inset-e-3 z-10 grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="-me-2 grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label={t('common.close')}
               >
                 <X className="size-5" aria-hidden />
@@ -135,32 +137,27 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
             actions={
               isMe ? null : (
                 <>
-                  {state !== 'friends' && social.data?.canMessage ? (
-                    <Button variant="outline" size="icon" onClick={() => openThread(shown)} aria-label={t('profile.message')}>
-                      <MessageCircle className="size-4.5" aria-hidden />
-                    </Button>
-                  ) : null}
                   {state === 'friends' ? (
-                    <Button variant="brand" className="flex-1" onClick={() => openThread(shown)}>
-                      <MessageCircle className="size-4.5" aria-hidden /> {t('profile.message')}
+                    <Button className={ACTION} onClick={() => setUnfriendOpen(true)}>
+                      <Check className="size-4" aria-hidden /> {t('profile.friends')}
                     </Button>
                   ) : state === 'incoming' ? (
                     <Button
                       variant="brand"
-                      className="flex-1"
+                      className={ACTION}
                       loading={busy}
                       onClick={() => void act(() => backend.answerFriend(userId, true), t('recent.nowFriends', { name: shown.name }))}
                     >
-                      <Check className="size-4.5" aria-hidden /> {t('profile.acceptRequest')}
+                      {t('profile.acceptRequest')}
                     </Button>
                   ) : state === 'requested' ? (
-                    <Button variant="outline" className="flex-1" loading={busy} onClick={() => void act(() => backend.removeFriend(userId))}>
-                      {t('profile.withdraw')}
+                    <Button className={ACTION} loading={busy} title={t('profile.withdraw')} onClick={() => void act(() => backend.removeFriend(userId))}>
+                      {t('profile.requested')}
                     </Button>
                   ) : (
                     <Button
                       variant="brand"
-                      className="flex-1"
+                      className={ACTION}
                       loading={busy}
                       onClick={() =>
                         void act(async () => {
@@ -169,12 +166,17 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                         })
                       }
                     >
-                      <UserPlus className="size-4.5" aria-hidden /> {t('profile.add')}
+                      {t('profile.add')}
                     </Button>
                   )}
+                  {state === 'friends' || social.data?.canMessage ? (
+                    <Button className={ACTION} onClick={() => openThread(shown)}>
+                      {t('profile.message')}
+                    </Button>
+                  ) : null}
                   <Button
-                    variant={social.data?.liked ? 'brand' : 'outline'}
-                    size="icon"
+                    size="icon-sm"
+                    className={cn('rounded-lg', social.data?.liked && 'text-[#ff3040]')}
                     disabled={!social.data}
                     onClick={() => void like()}
                     aria-label={social.data?.liked ? t('profile.liked') : t('profile.like')}
@@ -182,18 +184,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                   >
                     <Heart className={cn('size-4.5', social.data?.liked && 'fill-current')} aria-hidden />
                   </Button>
-                  {/* 8: a friend is removed first (then asked about blocking); anyone else can be blocked. */}
-                  {state === 'friends' ? (
-                    <Button variant="outline" size="icon" onClick={() => setUnfriendOpen(true)} aria-label={t('recent.remove')} title={t('recent.remove')}>
-                      <UserMinus className="size-4.5" aria-hidden />
-                    </Button>
-                  ) : (
-                    <Button variant="outline" size="icon" onClick={() => setReportOpen('block')} aria-label={t('block.only')} title={t('block.only')}>
-                      <Ban className="size-4.5" aria-hidden />
-                    </Button>
-                  )}
-                  <Button variant="outline" size="icon" onClick={() => setReportOpen('report')} aria-label={t('chat.report', { name: shown.name })} title={t('chat.report', { name: shown.name })}>
-                    <Flag className="size-4.5" aria-hidden />
+                  <Button size="icon-sm" className="rounded-lg" onClick={() => setMoreOpen(true)} aria-label={t('voice.more')} title={t('voice.more')}>
+                    <Ellipsis className="size-4.5" aria-hidden />
                   </Button>
                 </>
               )
@@ -202,6 +194,15 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
             {state === 'friends' ? <FriendContacts userId={userId} name={shown.name} className="mx-4 mt-6" /> : null}
           </ProfileContent>
           {isMe ? null : <UnfriendSheet person={unfriendOpen ? shown : null} onClose={() => setUnfriendOpen(false)} />}
+          {/* Instagram's ⋯: the rarer things. A friend is removed first (the Friends button), then asked about blocking (8). */}
+          <Modal open={moreOpen} onClose={() => setMoreOpen(false)} variant="sheet" title={shown.name} className="md:max-w-sm">
+            <div className="flex flex-col p-2 pb-4">
+              {state === 'friends' ? null : (
+                <MoreItem icon={<Ban />} label={t('block.only')} onClick={() => (setMoreOpen(false), setReportOpen('block'))} />
+              )}
+              <MoreItem icon={<Flag />} label={t('chat.report', { name: shown.name })} danger onClick={() => (setMoreOpen(false), setReportOpen('report'))} />
+            </div>
+          </Modal>
           {isMe ? null : (
             <ReportSheet
               open={reportOpen !== null}
@@ -223,9 +224,9 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
 }
 
 /**
- * A profile as everyone sees it, mine included (the Me tab adds its own buttons): the card in its frame,
- * likes and friends as icons, `actions` (a row under it), `children` (after the row), the manners card and the
- * posts. Empty parts are left out.
+ * A profile as everyone sees it, mine included (the Me tab adds its own buttons), laid out as Instagram's: the
+ * header with likes and friends counted beside the photo, `actions` (a row of buttons), the highlights, `children`,
+ * the manners card and the posts grid. Empty parts are left out.
  */
 export function ProfileContent({
   profile,
@@ -250,36 +251,41 @@ export function ProfileContent({
   const { data: social } = useSWR(socialKey(profile.id), () => backend.profileSocial(profile.id))
   return (
     <>
-      <div className="flex flex-col items-center px-3 pt-3 text-center">
-        <ProfileHero
-          profile={profile}
-          className="w-full"
-          verified={!!trust?.verified}
-          // Incognito (046) hides the ID check too: no "not verified" for someone who may well be.
-          facts={trust && !isVip(profile) ? <IdentityFacts profile={profile} verified={trust.verified} /> : null}
-          badge={badge}
-          slot={slot}
-        />
-        <p className="mt-3 flex h-5 items-center gap-4 text-sm font-semibold tabular-nums text-muted-foreground">
-          {social ? (
-            <>
-              <span className="flex items-center gap-1" title={t('profile.likes')}>
-                <Heart className="size-4" aria-hidden /> <span className="sr-only">{t('profile.likes')}</span>{num(social.likes)}
-              </span>
-              <span className="flex items-center gap-1" title={t('profile.friends')}>
-                <Users className="size-4" aria-hidden /> <span className="sr-only">{t('profile.friends')}</span>{num(social.friends)}
-              </span>
-            </>
-          ) : null}
-        </p>
-        {actions ? <div className="mt-5 flex w-full max-w-sm gap-2">{actions}</div> : null}
-      </div>
-      <Highlights userId={profile.id} owner={profile.name} className="mt-6" />
+      <ProfileHero
+        profile={profile}
+        verified={!!trust?.verified}
+        badge={badge}
+        slot={slot}
+        stats={
+          <>
+            <ProfileStat n={social ? num(social.likes) : '–'} label={t('profile.likes')} />
+            <ProfileStat n={social ? num(social.friends) : '–'} label={t('profile.friends')} />
+          </>
+        }
+      />
+      {actions ? <div className="mt-4 flex gap-2 px-4">{actions}</div> : null}
+      <Highlights userId={profile.id} owner={profile.name} className="mt-5" />
       {children}
       <MannerCard trust={trust} className="mx-4 mt-6" />
-      <div className="mt-6 border-t border-border px-1 pt-1 pb-4">
+      <div className="mt-5 border-t border-border pt-0.5 pb-4">
         <PostGrid posts={profile.posts} owner={profile.name} accent={profile.style?.accent} emptyAction={emptyPosts} />
       </div>
     </>
+  )
+}
+
+function MoreItem({ icon, label, danger, onClick }: { icon: ReactNode; label: string; danger?: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex min-h-12 items-center gap-3 rounded-xl px-4 text-start text-[15px] font-semibold transition-colors hover:bg-muted [&>svg]:size-5',
+        danger && 'text-destructive',
+      )}
+    >
+      {icon}
+      {label}
+    </button>
   )
 }

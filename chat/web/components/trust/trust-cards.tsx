@@ -9,7 +9,7 @@ import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Skeleton } from '@/components/ui/bits'
 import { cn } from '@/lib/utils'
-import { ClockIcon, LockIcon, VerifyHero } from './art'
+import { ClockIcon, LockIcon } from './art'
 import { VerifiedMark } from './badge'
 import { useTrustT, type TrustKey } from './trust-text'
 
@@ -31,17 +31,11 @@ function useCountryName() {
   }
 }
 
-/**
- * "ID verified · Woman · 24 · India" with a lock: these come from the identity document and can't be changed.
- * Someone not verified gets a quiet "Not ID-verified yet" (nothing on my own profile: the card there says it).
- */
-export function IdentityFacts({ profile, verified, className }: { profile: Profile; verified: boolean; className?: string }) {
+/** "ID verified · Woman · 24 · India" with a lock: these come from the identity document and can't be changed. */
+export function IdentityFacts({ profile, className }: { profile: Profile; className?: string }) {
   const { t } = useI18n()
   const { tt } = useTrustT()
   const country = useCountryName()
-  if (!verified) {
-    return <p className={cn('text-xs font-semibold text-muted-foreground', className)}>{tt('facts.notVerified')}</p>
-  }
   const gender = profile.gender === 'female' ? t('pf.woman') : profile.gender === 'male' ? t('pf.man') : t('pf.other')
   const parts = [gender, profile.age > 0 ? tt('facts.age', { n: profile.age }) : null, profile.country ? `${flagEmoji(profile.country)} ${country(profile.country)}` : null].filter(Boolean)
   return (
@@ -175,8 +169,8 @@ export function MannerCard({ trust, className }: { trust: Trust | null; classNam
 }
 
 /**
- * My verification on Me: a big card until I'm verified (the check, its pending or failed result), a quiet line
- * while checks aren't open yet, nothing once verified (the facts under my name say it).
+ * My verification on Me: one row until I'm verified (the check, its pending or failed result), a quiet line while
+ * checks aren't open yet, nothing once verified (the mark after my name says it).
  */
 export function VerifyCard({ className }: { className?: string }) {
   const { trust, kyc, openVerify } = useApp()
@@ -222,22 +216,14 @@ export function VerifyCard({ className }: { className?: string }) {
     <button
       type="button"
       onClick={() => openVerify('me')}
-      className={cn(
-        'group relative flex w-full items-center gap-4 overflow-hidden rounded-[28px] bg-primary-soft px-5 py-5 text-start',
-        className,
-      )}
+      className={cn('flex w-full items-center gap-3 rounded-2xl bg-card px-4 py-3 text-start ring-1 ring-border transition-colors hover:bg-muted', className)}
     >
-      <span className="relative min-w-0 flex-1">
-        <span className="block text-lg leading-tight font-extrabold tracking-tight">{tt(retry ? 'card.retry' : 'card.title')}</span>
-        <span className="mt-1 block text-sm leading-snug text-muted-foreground">{tt(retry ? 'card.retryBody' : 'card.body')}</span>
-        <span className="mt-3 inline-flex h-9 items-center gap-1 rounded-full bg-primary px-4 text-sm font-bold text-primary-foreground transition-transform duration-150 group-active:scale-95">
-          {tt(retry ? 'verify.tryAgain' : 'card.cta')}
-          <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
-        </span>
+      <VerifiedMark size={30} label={null} />
+      <span className="min-w-0 flex-1">
+        <span className="block text-[15px] font-bold">{tt(retry ? 'card.retry' : 'card.title')}</span>
+        <span className="block text-[13px] leading-snug text-muted-foreground">{tt(retry ? 'card.retryBody' : 'card.body')}</span>
       </span>
-      <span className="relative -my-2 -me-2 grid place-items-center rounded-[24px] bg-white p-1.5">
-        <VerifyHero size={104} />
-      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
     </button>
   )
 }

@@ -481,6 +481,7 @@ const pl: Dict = {
   'profile.message': 'Wiadomość',
   'profile.acceptRequest': 'Akceptuj zaproszenie',
   'profile.withdraw': 'Zaproszenie wysłane · Wycofaj',
+  'profile.requested': 'Zaproszenie wysłane',
   'profile.add': 'Dodaj do znajomych',
   'profile.requestSent': 'Zaproszenie do znajomych wysłane',
 

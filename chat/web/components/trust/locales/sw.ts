@@ -56,7 +56,6 @@ const sw: TrustDict = {
   // the card on Me
   'card.title': 'Pata beji yako ya uthibitisho',
   'card.body': 'Kitambulisho + selfie, takriban dakika 2. Watu wanaona wewe ni halisi, nawe unakutana na watu halisi pia.',
-  'card.cta': 'Thibitisha sasa',
   'card.pending': 'Kitambulisho chako kinakaguliwa',
   'card.pendingBody': 'Kwa kawaida dakika moja au mbili.',
   'card.retry': 'Ukaguzi wako wa mwisho haukufanikiwa',
@@ -67,7 +66,6 @@ const sw: TrustDict = {
   // facts from the ID
   'facts.verified': 'Kitambulisho kimethibitishwa',
   'facts.locked': 'Kutoka kwenye kitambulisho, hakiwezi kubadilishwa',
-  'facts.notVerified': 'Bado hakijathibitishwa kwa kitambulisho',
   'facts.age': 'Miaka {n}',
 
   // manners

@@ -54,7 +54,6 @@ const kn: TrustDict = {
 
   'card.title': 'ವೆರಿಫೈಡ್ ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ',
   'card.body': 'ID + ಸೆಲ್ಫಿ, ಸುಮಾರು 2 ನಿಮಿಷ. ನೀವು ನಿಜವಾದವರು ಎಂದು ಜನರು ನೋಡುತ್ತಾರೆ, ನೀವೂ ನಿಜವಾದವರನ್ನೇ ಭೇಟಿಯಾಗುತ್ತೀರಿ.',
-  'card.cta': 'ಈಗಲೇ ಪರಿಶೀಲಿಸಿ',
   'card.pending': 'ನಿಮ್ಮ ID ಪರಿಶೀಲನೆಯಲ್ಲಿದೆ',
   'card.pendingBody': 'ಸಾಮಾನ್ಯವಾಗಿ ಒಂದೆರಡು ನಿಮಿಷ.',
   'card.retry': 'ನಿಮ್ಮ ಕೊನೆಯ ಪರಿಶೀಲನೆ ಯಶಸ್ವಿಯಾಗಲಿಲ್ಲ',
@@ -64,7 +63,6 @@ const kn: TrustDict = {
 
   'facts.verified': 'ID ಪರಿಶೀಲಿತ',
   'facts.locked': 'ID ಯಿಂದ, ಬದಲಿಸಲು ಆಗುವುದಿಲ್ಲ',
-  'facts.notVerified': 'ಇನ್ನೂ ID ಪರಿಶೀಲಿತವಾಗಿಲ್ಲ',
   'facts.age': '{n} ವರ್ಷ',
 
   'manner.title': 'ಮ್ಯಾನರ್ಸ್',

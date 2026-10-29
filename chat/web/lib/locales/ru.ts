@@ -490,6 +490,7 @@ const ru: Dict = {
   'profile.message': 'Написать',
   'profile.acceptRequest': 'Принять заявку',
   'profile.withdraw': 'Заявка отправлена · Отозвать',
+  'profile.requested': 'Заявка отправлена',
   'profile.add': 'Добавить в друзья',
   'profile.requestSent': 'Заявка в друзья отправлена',
 

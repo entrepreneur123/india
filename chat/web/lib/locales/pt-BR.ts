@@ -479,6 +479,7 @@ const ptBR: Dict = {
   'profile.message': 'Mensagem',
   'profile.acceptRequest': 'Aceitar pedido',
   'profile.withdraw': 'Pedido enviado · Cancelar',
+  'profile.requested': 'Pedido enviado',
   'profile.add': 'Adicionar amigo',
   'profile.requestSent': 'Pedido de amizade enviado',
 

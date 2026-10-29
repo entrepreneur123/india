@@ -479,6 +479,7 @@ const it: Dict = {
   'profile.message': 'Messaggio',
   'profile.acceptRequest': 'Accetta richiesta',
   'profile.withdraw': 'Richiesta inviata · Ritira',
+  'profile.requested': 'Richiesta inviata',
   'profile.add': 'Aggiungi agli amici',
   'profile.requestSent': 'Richiesta di amicizia inviata',
 

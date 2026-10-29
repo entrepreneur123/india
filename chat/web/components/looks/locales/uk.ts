@@ -68,8 +68,6 @@ const uk: LooksDict = {
   'id.cooldownPass': 'Зараз буде використано 1 зміну ID з доступних: {n} (знову безкоштовно {date})',
   'id.keptFree': 'Цей ID щойно зайняли, тож поки що ваш ID — @{handle}. Його можна змінити в розділі «Редагувати профіль».',
 
-  'details.title': 'Про себе',
-  'details.desc': 'Ваш статус, MBTI і мови, якими ви розмовляєте.',
 
   'friend.requested': 'Запит надіслано',
   'friend.withdraw': 'Скасувати запит до {name}',

@@ -57,18 +57,8 @@ const th: FeedDict = {
   'compose.nude': 'รูปนี้ดูเหมือนภาพเปลือย จึงโพสต์ไม่ได้',
 
   // profile style
-  'style.status': 'สถานะ',
-  'style.statusPlaceholder': 'วันนี้ฟีลไหน',
-  'style.languages': 'ภาษาที่ฉันพูด',
-  'style.languagesHint': 'เลือกได้สูงสุด 6 ภาษา',
-  'style.languagesMax': 'เลือกได้สูงสุด 6 ภาษา',
-  'style.saved': 'อัปเดตโปรไฟล์แล้ว',
-  'style.problem.status': 'สถานะยาวได้ไม่เกิน 60 ตัวอักษร',
-  'style.problem.answer': 'คำตอบยาวได้ไม่เกิน 120 ตัวอักษร',
 
   // a profile
-  'profile.speaks': 'พูดภาษา',
-  'style.mbtiHint': "ไม่บังคับ แตะอีกครั้งเพื่อล้าง",
   'post.likers': "คนที่ถูกใจ",
 }
 

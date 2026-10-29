@@ -479,6 +479,7 @@ const nl: Dict = {
   'profile.message': 'Bericht',
   'profile.acceptRequest': 'Verzoek accepteren',
   'profile.withdraw': 'Verzoek verstuurd · Intrekken',
+  'profile.requested': 'Verzoek verstuurd',
   'profile.add': 'Vriend toevoegen',
   'profile.requestSent': 'Vriendschapsverzoek verstuurd',
 

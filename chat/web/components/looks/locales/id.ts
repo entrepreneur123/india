@@ -68,8 +68,6 @@ const id: LooksDict = {
   'id.cooldownPass': 'Kalau diganti sekarang, 1 dari {n} tiket ganti ID-mu akan terpakai (gratis lagi pada {date})',
   'id.keptFree': 'ID itu baru saja diambil orang, jadi untuk sementara ID-mu @{handle}. Kamu bisa menggantinya di Edit profil.',
 
-  'details.title': 'Detail profil',
-  'details.desc': 'Statusmu, MBTI, dan bahasa yang kamu kuasai.',
 
   'friend.requested': 'Diminta',
   'friend.withdraw': 'Batalkan permintaanmu ke {name}',

@@ -68,8 +68,6 @@ const ar: LooksDict = {
   'id.cooldownPass': 'التغيير الآن سيستخدم 1 من {n} تغييرات للمعرّف لديك (مجانًا مجددًا في {date})',
   'id.keptFree': 'أخذ أحدهم هذا المعرّف للتو، لذا معرّفك حاليًا @{handle}. يمكنك تغييره من تعديل الملف الشخصي.',
 
-  'details.title': 'تفاصيل الملف الشخصي',
-  'details.desc': 'حالتك وMBTI واللغات التي تتحدثها.',
 
   'friend.requested': 'تم الإرسال',
   'friend.withdraw': 'سحب طلبك إلى {name}',

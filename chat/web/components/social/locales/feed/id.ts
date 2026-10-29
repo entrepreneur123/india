@@ -57,18 +57,8 @@ const id: FeedDict = {
   'compose.nude': 'Foto ini terlihat mengandung ketelanjangan, jadi tidak bisa diposting',
 
   // profile style
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Lagi mood apa hari ini?',
-  'style.languages': 'Bahasa yang kukuasai',
-  'style.languagesHint': 'Pilih hingga 6.',
-  'style.languagesMax': 'Kamu bisa memilih hingga 6 bahasa',
-  'style.saved': 'Profil diperbarui',
-  'style.problem.status': 'Status maksimal 60 karakter',
-  'style.problem.answer': 'Jawaban maksimal 120 karakter',
 
   // a profile
-  'profile.speaks': 'Berbicara',
-  'style.mbtiHint': "Opsional. Ketuk lagi untuk menghapus.",
   'post.likers': "Suka",
 }
 

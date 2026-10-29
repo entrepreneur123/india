@@ -52,17 +52,7 @@ const te: FeedDict = {
   'compose.checking': 'ఫోటో చెక్ చేస్తోంది…',
   'compose.nude': 'ఈ ఫోటోలో నగ్నత్వం ఉన్నట్లు కనిపిస్తోంది, అందుకే పోస్ట్ చేయలేం',
 
-  'style.status': 'స్టేటస్',
-  'style.statusPlaceholder': 'ఈరోజు మీ వైబ్ ఏంటి?',
-  'style.languages': 'నేను మాట్లాడే భాషలు',
-  'style.languagesHint': '6 వరకు ఎంచుకోండి.',
-  'style.languagesMax': 'మీరు 6 భాషల వరకు ఎంచుకోవచ్చు',
-  'style.saved': 'ప్రొఫైల్ అప్‌డేట్ అయింది',
-  'style.problem.status': 'మీ స్టేటస్ గరిష్ఠంగా 60 అక్షరాలు ఉండవచ్చు',
-  'style.problem.answer': 'జవాబులు గరిష్ఠంగా 120 అక్షరాలు ఉండవచ్చు',
 
-  'profile.speaks': 'మాట్లాడే భాషలు',
-  'style.mbtiHint': "ఐచ్ఛికం. తీసివేయడానికి మళ్లీ నొక్కండి.",
   'post.likers': "ఇష్టపడినవారు",
 }
 

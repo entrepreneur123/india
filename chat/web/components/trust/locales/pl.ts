@@ -54,7 +54,6 @@ const pl: TrustDict = {
 
   'card.title': 'Zdobądź odznakę weryfikacji',
   'card.body': 'Dokument + selfie, około 2 minut. Inni widzą, że jesteś prawdziwą osobą, a Ty poznajesz takie same.',
-  'card.cta': 'Zweryfikuj teraz',
   'card.pending': 'Twój dokument jest sprawdzany',
   'card.pendingBody': 'Zwykle minuta lub dwie.',
   'card.retry': 'Ostatnia weryfikacja się nie powiodła',
@@ -64,7 +63,6 @@ const pl: TrustDict = {
 
   'facts.verified': 'Zweryfikowany dokument',
   'facts.locked': 'Z dokumentu, nie można zmienić',
-  'facts.notVerified': 'Dokument jeszcze niezweryfikowany',
   'facts.age': 'Wiek: {n}',
 
   'manner.title': 'Kultura rozmowy',

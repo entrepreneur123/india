@@ -61,18 +61,8 @@ const uk: FeedDict = {
   'compose.nude': 'Схоже, на фото оголеність, тому його не можна опублікувати',
 
   // profile style
-  'style.status': 'Статус',
-  'style.statusPlaceholder': 'Який у вас сьогодні настрій?',
-  'style.languages': 'Якими мовами я говорю',
-  'style.languagesHint': 'Виберіть до 6.',
-  'style.languagesMax': 'Можна вибрати не більше 6 мов',
-  'style.saved': 'Профіль оновлено',
-  'style.problem.status': 'Статус — не довше 60 символів',
-  'style.problem.answer': 'Відповіді — не довше 120 символів',
 
   // a profile
-  'profile.speaks': 'Мови',
-  'style.mbtiHint': "Необов’язково. Натисніть ще раз, щоб прибрати.",
   'post.likers': "Вподобання",
 }
 

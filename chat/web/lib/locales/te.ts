@@ -479,6 +479,7 @@ const te: Dict = {
   'profile.message': 'మెసేజ్',
   'profile.acceptRequest': 'రిక్వెస్ట్ యాక్సెప్ట్ చేయి',
   'profile.withdraw': 'రిక్వెస్ట్ పంపాం · వెనక్కి తీసుకో',
+  'profile.requested': 'రిక్వెస్ట్ పంపాం',
   'profile.add': 'ఫ్రెండ్‌గా యాడ్ చేయి',
   'profile.requestSent': 'ఫ్రెండ్ రిక్వెస్ట్ పంపాం',
 

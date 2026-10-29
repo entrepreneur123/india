@@ -56,7 +56,6 @@ const tr: TrustDict = {
   // the card on Me
   'card.title': 'Doğrulanmış rozetini al',
   'card.body': 'Kimlik + selfie, yaklaşık 2 dakika. İnsanlar gerçek olduğunu görür, sen de gerçek kişilerle tanışırsın.',
-  'card.cta': 'Şimdi doğrula',
   'card.pending': 'Kimliğin kontrol ediliyor',
   'card.pendingBody': 'Genelde bir iki dakika sürer.',
   'card.retry': 'Son kontrolün tamamlanamadı',
@@ -67,7 +66,6 @@ const tr: TrustDict = {
   // facts from the ID
   'facts.verified': 'Kimlik doğrulandı',
   'facts.locked': 'Kimlikten alındı, değiştirilemez',
-  'facts.notVerified': 'Kimlik henüz doğrulanmadı',
   'facts.age': '{n} yaş',
 
   // manners

@@ -61,18 +61,8 @@ const ru: FeedDict = {
   'compose.nude': 'Похоже, на фото нагота, поэтому его нельзя опубликовать',
 
   // profile style
-  'style.status': 'Статус',
-  'style.statusPlaceholder': 'Какое у вас сегодня настроение?',
-  'style.languages': 'На каких языках я говорю',
-  'style.languagesHint': 'Выберите до 6.',
-  'style.languagesMax': 'Можно выбрать не больше 6 языков',
-  'style.saved': 'Профиль обновлён',
-  'style.problem.status': 'Статус — не длиннее 60 символов',
-  'style.problem.answer': 'Ответы — не длиннее 120 символов',
 
   // a profile
-  'profile.speaks': 'Языки',
-  'style.mbtiHint': "Необязательно. Нажмите ещё раз, чтобы убрать.",
   'post.likers': "Отметки «Нравится»",
 }
 

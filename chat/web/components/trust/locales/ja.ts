@@ -56,7 +56,6 @@ const ja: TrustDict = {
   // the card on Me
   'card.title': '認証バッジを取得しよう',
   'card.body': '書類とセルフィーで約2分。本物であることが伝わり、本人確認済みの人と出会えます。',
-  'card.cta': '本人確認する',
   'card.pending': '書類を確認中です',
   'card.pendingBody': '通常1〜2分ほどです。',
   'card.retry': '前回の確認は完了しませんでした',
@@ -67,7 +66,6 @@ const ja: TrustDict = {
   // facts from the ID
   'facts.verified': '本人確認済み',
   'facts.locked': '書類から取得、変更不可',
-  'facts.notVerified': '本人確認未完了',
   'facts.age': '{n}歳',
 
   // manners

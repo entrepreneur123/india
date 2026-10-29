@@ -489,6 +489,7 @@ const he: Dict = {
   'profile.message': 'הודעה',
   'profile.acceptRequest': 'אישור הבקשה',
   'profile.withdraw': 'הבקשה נשלחה · ביטול',
+  'profile.requested': 'הבקשה נשלחה',
   'profile.add': 'הוספת חבר',
   'profile.requestSent': 'בקשת החברות נשלחה',
 

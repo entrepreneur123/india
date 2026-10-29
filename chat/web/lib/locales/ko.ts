@@ -488,6 +488,7 @@ const ko: Dict = {
   'profile.message': '메시지',
   'profile.acceptRequest': '신청 수락',
   'profile.withdraw': '신청함 · 취소',
+  'profile.requested': '신청함',
   'profile.add': '친구 추가',
   'profile.requestSent': '친구 신청을 보냈어요',
 

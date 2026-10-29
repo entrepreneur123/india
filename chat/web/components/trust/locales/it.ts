@@ -54,7 +54,6 @@ const it: TrustDict = {
 
   'card.title': 'Ottieni il badge di verifica',
   'card.body': 'Documento + selfie, circa 2 minuti. Le persone vedono che sei reale, e tu incontri persone reali.',
-  'card.cta': 'Verifica ora',
   'card.pending': 'Stiamo controllando il tuo documento',
   'card.pendingBody': 'Di solito un minuto o due.',
   'card.retry': 'L’ultimo controllo non è andato a buon fine',
@@ -64,7 +63,6 @@ const it: TrustDict = {
 
   'facts.verified': 'Documento verificato',
   'facts.locked': 'Dal documento, non modificabile',
-  'facts.notVerified': 'Documento non ancora verificato',
   'facts.age': '{n} anni',
 
   'manner.title': 'Comportamento',

@@ -57,18 +57,8 @@ const ms: FeedDict = {
   'compose.nude': 'Foto ini kelihatan seperti kebogelan, jadi ia tidak boleh dihantar',
 
   // profile style
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Apa vibe anda hari ini?',
-  'style.languages': 'Bahasa yang saya tuturkan',
-  'style.languagesHint': 'Pilih sehingga 6.',
-  'style.languagesMax': 'Anda boleh pilih sehingga 6 bahasa',
-  'style.saved': 'Profil dikemas kini',
-  'style.problem.status': 'Status anda boleh sehingga 60 aksara',
-  'style.problem.answer': 'Jawapan boleh sehingga 120 aksara',
 
   // a profile
-  'profile.speaks': 'Bertutur',
-  'style.mbtiHint': "Pilihan. Ketik sekali lagi untuk padam.",
   'post.likers': "Suka",
 }
 

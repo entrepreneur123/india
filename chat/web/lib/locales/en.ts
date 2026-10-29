@@ -487,6 +487,7 @@ const en = {
   'profile.message': 'Message',
   'profile.acceptRequest': 'Accept request',
   'profile.withdraw': 'Request sent · Withdraw',
+  'profile.requested': 'Request sent',
   'profile.add': 'Add friend',
   'profile.requestSent': 'Friend request sent',
 

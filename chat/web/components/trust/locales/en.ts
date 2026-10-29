@@ -55,7 +55,6 @@ const en = {
   // the card on Me
   'card.title': 'Get your verified badge',
   'card.body': 'ID + selfie, about 2 minutes. People see you’re real, and you meet people who are too.',
-  'card.cta': 'Verify now',
   'card.pending': 'Your ID is being checked',
   'card.pendingBody': 'Usually a minute or two.',
   'card.retry': 'Your last check didn’t go through',
@@ -66,7 +65,6 @@ const en = {
   // facts from the ID
   'facts.verified': 'ID verified',
   'facts.locked': 'From the ID, can’t be changed',
-  'facts.notVerified': 'Not ID-verified yet',
   'facts.age': '{n} yrs',
 
   // manners

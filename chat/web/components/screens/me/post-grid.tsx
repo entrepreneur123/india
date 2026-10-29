@@ -8,7 +8,10 @@ import { LikeIcon } from '@/components/ui/topic-icons'
 import { accentStyle } from '@/components/social/profile-bits'
 import { usePostStoreVersion, postStore } from '@/components/social/posts/post-store'
 
-/** 3-column grid; text-only posts become a tile in the owner's colour. A tap opens the post with its comments. */
+/**
+ * Instagram's grid: 3 square columns with hairline gaps, no corners; text-only posts become a tile in the owner's
+ * colour. Pointing at one (computers) shows its likes, as Instagram's web does. A tap opens the post.
+ */
 export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Post[]; owner: string; accent?: Accent | null; emptyAction?: React.ReactNode }) {
   const { t, num } = useI18n()
   const { openPost } = useApp()
@@ -25,13 +28,13 @@ export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Po
     )
   }
   return (
-    <ul className="grid grid-cols-3 gap-1 sm:gap-1.5" style={accentStyle(accent)}>
+    <ul className="grid grid-cols-3 gap-0.5" style={accentStyle(accent)}>
       {posts.map((p) => (
         <li key={p.id}>
           <button
             type="button"
             onClick={() => openPost(p.id, { initial: 'author' in p ? (p as FeedPost) : null })}
-            className="group relative block aspect-square w-full overflow-hidden rounded-xl bg-muted sm:rounded-2xl"
+            className="group relative block aspect-square w-full overflow-hidden bg-muted"
             aria-label={p.text ? t('posts.aria', { text: p.text }) : t('posts.photo')}
           >
             {p.imageUrl ? (
@@ -44,13 +47,13 @@ export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Po
                 <span className="line-clamp-4">{p.text}</span>
               </span>
             )}
-            <span className="absolute inset-0 bg-black/0 transition-colors duration-150 group-hover:bg-black/15" aria-hidden />
-            {p.likes ? (
-              <span className="absolute bottom-1.5 inset-s-1.5 flex items-center gap-1 rounded-full bg-black/45 py-0.5 pe-2 ps-1 text-[11px] font-bold text-white tabular-nums" aria-hidden>
-                <LikeIcon on size={14} className="text-[#ff4d6d]" />
-                {num(p.likes)}
-              </span>
-            ) : null}
+            <span
+              className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/30 text-[15px] font-bold text-white tabular-nums opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+              aria-hidden
+            >
+              <LikeIcon on size={18} className="text-white" />
+              {num(p.likes ?? 0)}
+            </span>
           </button>
         </li>
       ))}

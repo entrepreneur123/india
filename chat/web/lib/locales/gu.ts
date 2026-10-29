@@ -462,6 +462,7 @@ const gu: Dict = {
   'profile.message': 'મેસેજ',
   'profile.acceptRequest': 'રિક્વેસ્ટ સ્વીકારો',
   'profile.withdraw': 'રિક્વેસ્ટ મોકલી · પાછી ખેંચો',
+  'profile.requested': 'રિક્વેસ્ટ મોકલી',
   'profile.add': 'મિત્ર બનાવો',
   'profile.requestSent': 'ફ્રેન્ડ રિક્વેસ્ટ મોકલી',
   'settings.title': 'સેટિંગ',

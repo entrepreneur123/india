@@ -32,7 +32,7 @@ export function accentVars(accent: Accent | null | undefined): Record<string, st
   return { '--acc-via': c.via, '--acc-to': c.to, '--acc-ink': c.ink }
 }
 
-/** Spoken languages, written in their own script (shown as is in every app language). */
+/** 033's spoken languages, kept as stored (the app no longer shows or edits them, the owner 2026-10-29). */
 export const SPOKEN_LANGS: { id: SpokenLang; native: string }[] = [
   { id: 'en', native: 'English' },
   { id: 'hi', native: 'हिन्दी' },
@@ -51,14 +51,12 @@ export const SPOKEN_LANGS: { id: SpokenLang; native: string }[] = [
   { id: 'vi', native: 'Tiếng Việt' },
 ]
 const LANG_IDS = new Set<string>(SPOKEN_LANGS.map((l) => l.id))
-export const nativeName = (id: SpokenLang) => SPOKEN_LANGS.find((l) => l.id === id)?.native ?? id
 
 export const PROMPT_QS: PromptQ[] = ['weekend', 'food', 'song', 'travel', 'talk', 'laugh', 'goal', 'secret']
 const Q_IDS = new Set<string>(PROMPT_QS)
 
-/** 071: the 16 MBTI types, in the usual 4×4 table order. */
-export const MBTI_TYPES: Mbti[] = ['ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP', 'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ']
-const isMbti = (v: unknown): v is Mbti => typeof v === 'string' && (MBTI_TYPES as string[]).includes(v)
+/** 071's MBTI, kept as stored (the app no longer shows or edits it, the owner 2026-10-29). */
+const isMbti = (v: unknown): v is Mbti => typeof v === 'string' && /^[EI][SN][TF][JP]$/.test(v)
 
 export const isAccent = (v: unknown): v is Accent => typeof v === 'string' && (ACCENTS as string[]).includes(v)
 
@@ -104,11 +102,4 @@ export function styleInput(draft: ProfileStyleInput): { input: ProfileStyleInput
   else if (prompts.length > PROMPTS_MAX) problem = 'prompts'
   else if (prompts.some((p) => [...p.a].length > ANSWER_MAX)) problem = 'answer'
   return { input: { status, languages, prompts, mbti: isMbti(draft.mbti) ? draft.mbti : null }, problem }
-}
-
-/** Adds or removes a language, keeping at most 6 (a 7th is refused: false). */
-export function toggleLanguage(list: SpokenLang[], id: SpokenLang): SpokenLang[] | false {
-  if (list.includes(id)) return list.filter((l) => l !== id)
-  if (list.length >= LANGUAGES_MAX) return false
-  return [...list, id]
 }

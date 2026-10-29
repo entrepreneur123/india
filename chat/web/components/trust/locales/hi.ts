@@ -54,7 +54,6 @@ const hi: TrustDict = {
 
   'card.title': 'अपना वेरिफ़ाइड बैज पाएँ',
   'card.body': 'ID + सेल्फ़ी, लगभग 2 मिनट। लोग देखें कि आप असली हैं, और आप भी असली लोगों से मिलें।',
-  'card.cta': 'अभी वेरिफ़ाई करें',
   'card.pending': 'आपकी ID जाँची जा रही है',
   'card.pendingBody': 'आम तौर पर एक-दो मिनट।',
   'card.retry': 'आपकी पिछली जाँच पूरी नहीं हुई',
@@ -64,7 +63,6 @@ const hi: TrustDict = {
 
   'facts.verified': 'ID वेरिफ़ाइड',
   'facts.locked': 'ID से, बदला नहीं जा सकता',
-  'facts.notVerified': 'अभी ID वेरिफ़ाइड नहीं',
   'facts.age': '{n} साल',
 
   'manner.title': 'मैनर्स',

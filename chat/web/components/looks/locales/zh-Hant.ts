@@ -68,8 +68,6 @@ const zhHant: LooksDict = {
   'id.cooldownPass': '現在變更將使用你 {n} 張 ID 變更券中的 1 張（{date} 起可再次免費變更）',
   'id.keptFree': '這個 ID 剛剛被別人用了，所以你暫時的 ID 是 @{handle}。可以在「編輯資料」中變更。',
 
-  'details.title': '個人資料詳情',
-  'details.desc': '你的狀態、MBTI 和你會說的語言。',
 
   'friend.requested': '已送出邀請',
   'friend.withdraw': '收回傳給 {name} 的邀請',

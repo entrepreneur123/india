@@ -488,6 +488,7 @@ const th: Dict = {
   'profile.message': 'ข้อความ',
   'profile.acceptRequest': 'รับคำขอ',
   'profile.withdraw': 'ส่งคำขอแล้ว · ถอน',
+  'profile.requested': 'ส่งคำขอแล้ว',
   'profile.add': 'เพิ่มเพื่อน',
   'profile.requestSent': 'ส่งคำขอเป็นเพื่อนแล้ว',
 

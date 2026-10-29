@@ -54,7 +54,6 @@ const es: TrustDict = {
 
   'card.title': 'Consigue tu insignia de verificación',
   'card.body': 'Documento + selfie, unos 2 minutos. La gente ve que eres real, y tú conoces a personas que también lo son.',
-  'card.cta': 'Verificar ahora',
   'card.pending': 'Estamos revisando tu documento',
   'card.pendingBody': 'Suele tardar uno o dos minutos.',
   'card.retry': 'Tu última verificación no se completó',
@@ -64,7 +63,6 @@ const es: TrustDict = {
 
   'facts.verified': 'Identidad verificada',
   'facts.locked': 'Del documento, no se puede cambiar',
-  'facts.notVerified': 'Identidad aún no verificada',
   'facts.age': '{n} años',
 
   'manner.title': 'Modales',

@@ -2,9 +2,8 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { BookUser, ChevronRight, GalleryHorizontalEnd, Settings, Sparkles, SquarePen, UserPen } from 'lucide-react'
+import { BookUser, ChevronRight, Settings, Sparkles, SquarePlus } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
-import { MAX_HIGHLIGHTS } from '@/lib/backend'
 import { errorCode } from '@/lib/format'
 import { handleSpelling, namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
@@ -19,40 +18,33 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
-import { HighlightEditor } from '@/components/social/highlights'
 import { useSocialT } from '@/components/social/social-text'
 import { VerifyCard } from '@/components/trust/trust-cards'
-import { ProfileContent } from '@/components/screens/profile/profile-sheet'
+import { ACTION, ProfileContent } from '@/components/screens/profile/profile-sheet'
+import { STATUS_MAX, styleInput } from '@/lib/profile-style'
 import { PhotoPicker } from './photo-picker'
 
 const MAX_NAME = 30
 const MAX_BIO = 150
 
-// The composer and the profile details download when first opened (the Looks shop is the shell's, openShop).
+// The composer downloads when first opened (the Looks shop is the shell's, openShop).
 const loadComposer = () => retryImport(() => import('@/components/social/posts/post-composer'))
 const PostComposer = lazy(() => loadComposer().then((m) => ({ default: m.PostComposer })))
-const loadStyle = () => retryImport(() => import('@/components/social/style-editor'))
-const StyleEditor = lazy(() => loadStyle().then((m) => ({ default: m.StyleEditor })))
 
 /**
- * My profile exactly as others see it (ProfileContent): only Edit profile (and Settings on phones) on it. Everything
- * else — a new post, a new highlight, the Looks shop, details, contacts — is in Edit profile (the owner).
+ * My profile exactly as others see it (ProfileContent), with Instagram's own-profile buttons: + (new post) and
+ * Settings (phones) in the bar, Edit profile under the counts, a New circle at the end of the highlights. The Looks
+ * shop and my contacts are in Edit profile.
  */
 export function MeScreen() {
   const { me, t, setTab, trust, openShop } = useApp()
   const [editOpen, setEditOpen] = useState(false)
   const [postOpen, setPostOpen] = useState(false)
-  const [styleOpen, setStyleOpen] = useState(false)
-  const [used, setUsed] = useState({ post: false, style: false })
+  const [usedPost, setUsedPost] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
-  const [highlightOpen, setHighlightOpen] = useState(false)
   const openPost = () => {
-    setUsed((u) => ({ ...u, post: true }))
+    setUsedPost(true)
     setPostOpen(true)
-  }
-  const openStyle = () => {
-    setUsed((u) => ({ ...u, style: true }))
-    setStyleOpen(true)
   }
   const from = (open: () => void) => () => {
     setEditOpen(false)
@@ -66,14 +58,24 @@ export function MeScreen() {
           profile={me}
           trust={trust}
           slot={
-            <div className="absolute top-3 inset-e-3 z-10 flex items-center gap-2">
-              <Button size="sm" variant="outline" className="bg-card shadow-e1" onClick={() => setEditOpen(true)} onPointerEnter={() => void loadComposer()}>
-                <UserPen className="size-4" aria-hidden /> {t('me.edit')}
+            <>
+              <Button size="icon-sm" variant="ghost" onClick={openPost} onPointerEnter={() => void loadComposer()} aria-label={t('me.newPost')} title={t('me.newPost')}>
+                <SquarePlus className="size-5.5" aria-hidden />
               </Button>
-              <Button size="icon-sm" variant="ghost" className="md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
-                <Settings className="size-5" aria-hidden />
+              <Button size="icon-sm" variant="ghost" className="-me-2 md:hidden" onClick={() => setTab('settings')} aria-label={t('nav.settings')}>
+                <Settings className="size-5.5" aria-hidden />
               </Button>
-            </div>
+            </>
+          }
+          emptyPosts={
+            <Button variant="brand" onClick={openPost}>
+              {t('me.newPost')}
+            </Button>
+          }
+          actions={
+            <Button className={ACTION} onClick={() => setEditOpen(true)}>
+              {t('me.edit')}
+            </Button>
           }
         >
           <VerifyCard className="mx-4 mt-6 w-[calc(100%-2rem)]" />
@@ -82,33 +84,21 @@ export function MeScreen() {
       <EditProfile
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        onPost={from(openPost)}
-        onHighlight={from(() => setHighlightOpen(true))}
         onLooks={from(openShop)}
-        onDetails={from(openStyle)}
         onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
-      {highlightOpen ? <HighlightEditor userId={me.id} highlight={null} onClose={() => setHighlightOpen(false)} /> : null}
-      {used.post ? (
+      {usedPost ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
-        </Suspense>
-      ) : null}
-      {used.style ? (
-        <Suspense fallback={null}>
-          <StyleEditor open={styleOpen} onClose={() => setStyleOpen(false)} />
         </Suspense>
       ) : null}
     </div>
   )
 }
 
-/** Everything about my profile: the photo, name, @ID and bio here; photos too; the rest one tap on. */
-function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, onContacts }: {
-  open: boolean; onClose: () => void; onPost: () => void; onHighlight: () => void; onLooks: () => void; onDetails: () => void
-  onContacts: () => void
-}) {
+/** Everything about my profile: the photo, name, @ID, bio and note here; photos too; Looks and contacts one tap on. */
+function EditProfile({ open, onClose, onLooks, onContacts }: { open: boolean; onClose: () => void; onLooks: () => void; onContacts: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
@@ -120,13 +110,13 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
   const [name, setName] = useState(me.name)
   const [handle, setHandle] = useState(me.handle ?? '')
   const [bio, setBio] = useState(me.bio)
+  // The note friends see over my photo (32), Instagram's notes.
+  const [note, setNote] = useState(me.style?.status ?? '')
   const [photo, setPhoto] = useState<File | null>(null)
   const [busy, setBusy] = useState(false)
   const handleState = useHandleCheck(handle, me.handle)
   // When the ID can change to another one again (the app's free one can change at once).
   const { data: shop } = useSWR(open ? 'shop' : null, () => backend.shop())
-  // The same list as my profile's highlights (one request serves both): a new one only below the limit.
-  const { data: highlights } = useSWR(['highlights', me.id], () => backend.highlights(me.id))
   const next = shop?.handleNext && shop.handleNext > Date.now() ? shop.handleNext : null
 
   // Filled in when the sheet opens only: adding a photo below changes `me` and must not undo typing.
@@ -135,6 +125,7 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
     setName(me.name)
     setHandle(me.handle ?? '')
     setBio(me.bio)
+    setNote(me.style?.status ?? '')
     setPhoto(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
@@ -152,6 +143,13 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
     try {
       let p = await backend.updateProfile(name.trim(), '', bio.trim(), photo)
       setMe(p)
+      const style = p.style ?? me.style
+      if ((note.trim() || null) !== (style?.status ?? null)) {
+        // Only the note changes: what else the style holds is sent back as it is.
+        const { input } = styleInput({ status: note, languages: style?.languages ?? [], prompts: style?.prompts ?? [], mbti: style?.mbti ?? null })
+        p = await backend.setProfileStyle(input)
+        setMe(p)
+      }
       if (handleChanged) {
         p = { ...p, handle: await backend.setHandle(wanted) }
         setMe(p)
@@ -192,12 +190,12 @@ function EditProfile({ open, onClose, onPost, onHighlight, onLooks, onDetails, o
         <Field label={t('pf.bio')} htmlFor={`${id}-bio`} trailing={<Count n={bio.length} max={MAX_BIO} />}>
           <TextArea id={`${id}-bio`} value={bio} maxLength={MAX_BIO} onChange={(e) => setBio(e.target.value)} />
         </Field>
+        <Field label={t('notes.mine')} htmlFor={`${id}-note`} trailing={<Count n={[...note].length} max={STATUS_MAX} />}>
+          <TextInput id={`${id}-note`} value={note} maxLength={STATUS_MAX} placeholder={t('notes.add')} onChange={(e) => setNote(e.target.value)} />
+        </Field>
         <Gallery photos={me.photos ?? []} owner={me.name} />
         <div className="-mx-2 flex flex-col">
-          <MoreRow icon={<SquarePen />} label={t('me.newPost')} onClick={onPost} />
-          {(highlights?.length ?? 0) < MAX_HIGHLIGHTS ? <MoreRow icon={<GalleryHorizontalEnd />} label={st('hl.create')} onClick={onHighlight} /> : null}
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
-          <MoreRow icon={<UserPen />} label={lt('details.title')} note={lt('details.desc')} onClick={onDetails} />
           <MoreRow icon={<BookUser />} label={st('contacts.title')} note={st('contacts.note')} onClick={onContacts} />
         </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>

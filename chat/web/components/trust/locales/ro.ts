@@ -54,7 +54,6 @@ const ro: TrustDict = {
 
   'card.title': 'Obține insigna de verificare',
   'card.body': 'Act + selfie, cam 2 minute. Oamenii văd că profilul tău e real, iar tu cunoști oameni la fel de reali.',
-  'card.cta': 'Verifică-te acum',
   'card.pending': 'Actul tău e în verificare',
   'card.pendingBody': 'De obicei un minut-două.',
   'card.retry': 'Ultima verificare nu a reușit',
@@ -64,7 +63,6 @@ const ro: TrustDict = {
 
   'facts.verified': 'Act verificat',
   'facts.locked': 'Din act, nu se poate schimba',
-  'facts.notVerified': 'Actul nu e verificat încă',
   'facts.age': '{n} ani',
 
   'manner.title': 'Comportament',

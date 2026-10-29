@@ -52,17 +52,7 @@ const ptBR: FeedDict = {
   'compose.checking': 'Verificando a foto…',
   'compose.nude': 'Esta foto parece ter nudez, então não pode ser publicada',
 
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Qual é a sua vibe hoje?',
-  'style.languages': 'Idiomas que eu falo',
-  'style.languagesHint': 'Escolha até 6.',
-  'style.languagesMax': 'Você pode escolher até 6 idiomas',
-  'style.saved': 'Perfil atualizado',
-  'style.problem.status': 'O status pode ter até 60 caracteres',
-  'style.problem.answer': 'As respostas podem ter até 120 caracteres',
 
-  'profile.speaks': 'Fala',
-  'style.mbtiHint': "Opcional. Toque de novo para limpar.",
   'post.likers': "Curtidas",
 }
 

@@ -480,6 +480,7 @@ const es: Dict = {
   'profile.message': 'Mensaje',
   'profile.acceptRequest': 'Aceptar solicitud',
   'profile.withdraw': 'Solicitud enviada · Retirar',
+  'profile.requested': 'Solicitud enviada',
   'profile.add': 'Agregar amigo',
   'profile.requestSent': 'Solicitud de amistad enviada',
 

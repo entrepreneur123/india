@@ -57,18 +57,8 @@ const ja: FeedDict = {
   'compose.nude': 'この写真はヌードのように見えるため、投稿できません',
 
   // profile style
-  'style.status': 'ステータス',
-  'style.statusPlaceholder': '今日の気分は？',
-  'style.languages': '話せる言語',
-  'style.languagesHint': '6つまで選べます。',
-  'style.languagesMax': '言語は6つまで選べます',
-  'style.saved': 'プロフィールを更新しました',
-  'style.problem.status': 'ステータスは60文字までです',
-  'style.problem.answer': '回答は120文字までです',
 
   // a profile
-  'profile.speaks': '話せる言語',
-  'style.mbtiHint': "任意です。もう一度タップすると消えます。",
   'post.likers': "いいね",
 }
 

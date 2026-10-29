@@ -56,7 +56,6 @@ const th: TrustDict = {
   // the card on Me
   'card.title': 'รับเครื่องหมายยืนยันตัวตน',
   'card.body': 'บัตร + เซลฟี่ ประมาณ 2 นาที คนอื่นจะเห็นว่าคุณเป็นตัวจริง และคุณก็จะได้เจอตัวจริงเหมือนกัน',
-  'card.cta': 'ยืนยันเลย',
   'card.pending': 'กำลังตรวจบัตรของคุณ',
   'card.pendingBody': 'ปกติหนึ่งถึงสองนาที',
   'card.retry': 'การตรวจครั้งล่าสุดไม่ผ่าน',
@@ -67,7 +66,6 @@ const th: TrustDict = {
   // facts from the ID
   'facts.verified': 'ยืนยันบัตรแล้ว',
   'facts.locked': 'มาจากบัตร เปลี่ยนไม่ได้',
-  'facts.notVerified': 'ยังไม่ได้ยืนยันบัตร',
   'facts.age': '{n} ปี',
 
   // manners

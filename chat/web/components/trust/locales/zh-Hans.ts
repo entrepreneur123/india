@@ -56,7 +56,6 @@ const zhHans: TrustDict = {
   // the card on Me
   'card.title': '获取认证徽章',
   'card.body': '证件 + 自拍，约 2 分钟。让别人知道你是真实的，你也能遇到同样真实的人。',
-  'card.cta': '立即认证',
   'card.pending': '正在审核你的证件',
   'card.pendingBody': '通常需要一两分钟。',
   'card.retry': '上次认证未通过',
@@ -67,7 +66,6 @@ const zhHans: TrustDict = {
   // facts from the ID
   'facts.verified': '证件已认证',
   'facts.locked': '来自证件，无法修改',
-  'facts.notVerified': '尚未进行证件认证',
   'facts.age': '{n} 岁',
 
   // manners

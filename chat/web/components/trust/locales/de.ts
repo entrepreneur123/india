@@ -54,7 +54,6 @@ const de: TrustDict = {
 
   'card.title': 'Hol dir dein Verifiziert-Abzeichen',
   'card.body': 'Ausweis + Selfie, etwa 2 Minuten. Andere sehen, dass du echt bist – und du triffst Leute, die es auch sind.',
-  'card.cta': 'Jetzt verifizieren',
   'card.pending': 'Dein Ausweis wird geprüft',
   'card.pendingBody': 'Meist ein, zwei Minuten.',
   'card.retry': 'Deine letzte Prüfung hat nicht geklappt',
@@ -64,7 +63,6 @@ const de: TrustDict = {
 
   'facts.verified': 'Ausweis verifiziert',
   'facts.locked': 'Aus dem Ausweis, nicht änderbar',
-  'facts.notVerified': 'Noch nicht per Ausweis verifiziert',
   'facts.age': '{n} J.',
 
   'manner.title': 'Manieren',

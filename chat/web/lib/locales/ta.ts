@@ -479,6 +479,7 @@ const ta: Dict = {
   'profile.message': 'மெசேஜ்',
   'profile.acceptRequest': 'கோரிக்கையை ஏற்கவும்',
   'profile.withdraw': 'கோரிக்கை அனுப்பப்பட்டது · திரும்பப் பெறு',
+  'profile.requested': 'கோரிக்கை அனுப்பப்பட்டது',
   'profile.add': 'நண்பராகச் சேர்',
   'profile.requestSent': 'நட்புக் கோரிக்கை அனுப்பப்பட்டது',
 

@@ -56,7 +56,6 @@ const fil: TrustDict = {
   // the card on Me
   'card.title': 'Kunin ang verified badge mo',
   'card.body': 'ID + selfie, mga 2 minuto. Makikita ng mga tao na totoo ka, at makikilala mo rin ang mga totoong tao.',
-  'card.cta': 'I-verify ngayon',
   'card.pending': 'Sinusuri ang ID mo',
   'card.pendingBody': 'Karaniwang isa o dalawang minuto.',
   'card.retry': 'Hindi pumasa ang huli mong check',
@@ -67,7 +66,6 @@ const fil: TrustDict = {
   // facts from the ID
   'facts.verified': 'Verified ang ID',
   'facts.locked': 'Galing sa ID, hindi mapapalitan',
-  'facts.notVerified': 'Hindi pa ID-verified',
   'facts.age': '{n} taon',
 
   // manners

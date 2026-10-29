@@ -85,8 +85,6 @@ const en = {
   'id.keptFree': 'That ID was taken just now, so yours is @{handle} for now. You can change it in Edit profile.',
 
   // profile details (the style editor without the old cover and colour)
-  'details.title': 'Profile details',
-  'details.desc': 'Your status, MBTI and the languages you speak.',
 
   // friends
   'friend.requested': 'Requested',

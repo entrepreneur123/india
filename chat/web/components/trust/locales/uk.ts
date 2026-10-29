@@ -56,7 +56,6 @@ const uk: TrustDict = {
   // the card on Me
   'card.title': 'Отримайте значок підтвердження',
   'card.body': 'Документ + селфі, близько 2 хвилин. Люди бачать, що ви справжня людина, а ви знайомитеся з такими самими.',
-  'card.cta': 'Підтвердити',
   'card.pending': 'Ваш документ перевіряється',
   'card.pendingBody': 'Зазвичай хвилину-дві.',
   'card.retry': 'Остання перевірка не пройшла',
@@ -67,7 +66,6 @@ const uk: TrustDict = {
   // facts from the ID
   'facts.verified': 'Особу підтверджено',
   'facts.locked': 'З документа, змінити не можна',
-  'facts.notVerified': 'Особу ще не підтверджено',
   'facts.age': '{n} р.',
 
   // manners

@@ -48,16 +48,6 @@ const pa: FeedDict = {
   'compose.everyoneHint': 'yaari ’ਤੇ ਤੁਹਾਡੀ ਪ੍ਰੋਫ਼ਾਈਲ ਖੋਲ੍ਹਣ ਵਾਲਾ ਕੋਈ ਵੀ। ਉਹ ਤੁਹਾਨੂੰ ਐਡ ਵੀ ਕਰ ਸਕਦੇ ਹਨ।',
   'compose.checking': 'ਫ਼ੋਟੋ ਚੈੱਕ ਹੋ ਰਹੀ ਹੈ…',
   'compose.nude': 'ਇਹ ਫ਼ੋਟੋ ਨਗਨ ਲੱਗਦੀ ਹੈ, ਇਸ ਲਈ ਪੋਸਟ ਨਹੀਂ ਹੋ ਸਕਦੀ',
-  'style.status': 'ਸਟੇਟਸ',
-  'style.statusPlaceholder': 'ਅੱਜ ਤੁਹਾਡਾ ਮੂਡ ਕਿਹੋ ਜਿਹਾ ਹੈ?',
-  'style.languages': 'ਮੈਂ ਇਹ ਭਾਸ਼ਾਵਾਂ ਬੋਲਦਾ/ਬੋਲਦੀ ਹਾਂ',
-  'style.languagesHint': '6 ਤੱਕ ਚੁਣੋ।',
-  'style.languagesMax': 'ਤੁਸੀਂ ਵੱਧ ਤੋਂ ਵੱਧ 6 ਭਾਸ਼ਾਵਾਂ ਚੁਣ ਸਕਦੇ ਹੋ',
-  'style.saved': 'ਪ੍ਰੋਫ਼ਾਈਲ ਅੱਪਡੇਟ ਹੋ ਗਈ',
-  'style.problem.status': 'ਸਟੇਟਸ ਵੱਧ ਤੋਂ ਵੱਧ 60 ਅੱਖਰਾਂ ਦਾ ਹੋ ਸਕਦਾ ਹੈ',
-  'style.problem.answer': 'ਜਵਾਬ ਵੱਧ ਤੋਂ ਵੱਧ 120 ਅੱਖਰਾਂ ਦੇ ਹੋ ਸਕਦੇ ਹਨ',
-  'profile.speaks': 'ਬੋਲਦੇ ਹਨ',
-  'style.mbtiHint': "ਵਿਕਲਪਿਕ। ਹਟਾਉਣ ਲਈ ਮੁੜ ਟੈਪ ਕਰੋ।",
   'post.likers': "ਪਸੰਦ ਕਰਨ ਵਾਲੇ",
 }
 

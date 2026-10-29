@@ -68,8 +68,6 @@ const ko: LooksDict = {
   'id.cooldownPass': '지금 바꾸면 아이디 변경권 {n}개 중 1개를 써요 ({date}부터 다시 무료)',
   'id.keptFree': '방금 다른 사람이 그 아이디를 가져가서, 지금은 임시로 @{handle} 아이디를 쓰고 있어요. 프로필 편집에서 바꿀 수 있어요.',
 
-  'details.title': '프로필 세부 정보',
-  'details.desc': '상태 메시지, MBTI, 쓰는 언어',
 
   'friend.requested': '신청함',
   'friend.withdraw': '{name}님에게 보낸 친구 신청 취소',

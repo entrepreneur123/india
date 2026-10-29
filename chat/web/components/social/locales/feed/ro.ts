@@ -54,17 +54,7 @@ const ro: FeedDict = {
   'compose.checking': 'Se verifică poza…',
   'compose.nude': 'Poza pare să conțină nuditate, așa că nu poate fi publicată',
 
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Ce vibe ai azi?',
-  'style.languages': 'Limbi pe care le vorbesc',
-  'style.languagesHint': 'Alege cel mult 6.',
-  'style.languagesMax': 'Poți alege cel mult 6 limbi',
-  'style.saved': 'Profil actualizat',
-  'style.problem.status': 'Statusul poate avea cel mult 60 de caractere',
-  'style.problem.answer': 'Răspunsurile pot avea cel mult 120 de caractere',
 
-  'profile.speaks': 'Vorbește',
-  'style.mbtiHint': "Opțional. Atinge din nou pentru a șterge.",
   'post.likers': "Aprecieri",
 }
 

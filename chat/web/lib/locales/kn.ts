@@ -479,6 +479,7 @@ const kn: Dict = {
   'profile.message': 'ಮೆಸೇಜ್',
   'profile.acceptRequest': 'ರಿಕ್ವೆಸ್ಟ್ ಸ್ವೀಕರಿಸಿ',
   'profile.withdraw': 'ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಲಾಗಿದೆ · ಹಿಂಪಡೆಯಿರಿ',
+  'profile.requested': 'ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಲಾಗಿದೆ',
   'profile.add': 'ಸ್ನೇಹಿತರಾಗಿ ಸೇರಿಸಿ',
   'profile.requestSent': 'ಫ್ರೆಂಡ್ ರಿಕ್ವೆಸ್ಟ್ ಕಳುಹಿಸಲಾಗಿದೆ',
 

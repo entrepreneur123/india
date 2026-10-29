@@ -57,18 +57,8 @@ const ko: FeedDict = {
   'compose.nude': '노출 사진으로 보여서 게시할 수 없어요',
 
   // profile style
-  'style.status': '상태 메시지',
-  'style.statusPlaceholder': '오늘 기분은 어때요?',
-  'style.languages': '쓰는 언어',
-  'style.languagesHint': '최대 6개까지 고를 수 있어요.',
-  'style.languagesMax': '언어는 최대 6개까지 고를 수 있어요',
-  'style.saved': '프로필을 업데이트했어요',
-  'style.problem.status': '상태 메시지는 60자까지 쓸 수 있어요',
-  'style.problem.answer': '답변은 120자까지 쓸 수 있어요',
 
   // a profile
-  'profile.speaks': '쓰는 언어',
-  'style.mbtiHint': "선택 사항이에요. 한 번 더 누르면 지워져요.",
   'post.likers': "좋아요한 사람",
 }
 

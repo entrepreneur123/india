@@ -68,8 +68,6 @@ const fil: LooksDict = {
   'id.cooldownPass': 'Kapag pinalitan mo ngayon, magagamit ang 1 sa {n} ID change mo (libre ulit sa {date})',
   'id.keptFree': 'Kakakuha lang ng iba sa ID na iyon, kaya @{handle} muna ang ID mo. Puwede mo itong palitan sa I-edit ang profile.',
 
-  'details.title': 'Mga detalye ng profile',
-  'details.desc': 'Ang status mo, MBTI at ang mga wikang ginagamit mo.',
 
   'friend.requested': 'Naipadala na',
   'friend.withdraw': 'Bawiin ang request mo kay {name}',

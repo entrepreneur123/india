@@ -59,18 +59,8 @@ const he: FeedDict = {
   'compose.nude': 'התמונה נראית כמו עירום, ולכן אי אפשר לפרסם אותה',
 
   // profile style
-  'style.status': 'סטטוס',
-  'style.statusPlaceholder': 'מה הווייב שלך היום?',
-  'style.languages': 'שפות שאני מדבר/ת',
-  'style.languagesHint': 'עד 6.',
-  'style.languagesMax': 'אפשר לבחור עד 6 שפות',
-  'style.saved': 'הפרופיל עודכן',
-  'style.problem.status': 'הסטטוס יכול להיות עד 60 תווים',
-  'style.problem.answer': 'תשובות יכולות להיות עד 120 תווים',
 
   // a profile
-  'profile.speaks': 'מדבר/ת',
-  'style.mbtiHint': "לא חובה. הקישו שוב כדי לנקות.",
   'post.likers': "לייקים",
 }
 

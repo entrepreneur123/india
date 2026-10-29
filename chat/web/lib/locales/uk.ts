@@ -490,6 +490,7 @@ const uk: Dict = {
   'profile.message': 'Написати',
   'profile.acceptRequest': 'Прийняти запит',
   'profile.withdraw': 'Запит надіслано · Відкликати',
+  'profile.requested': 'Запит надіслано',
   'profile.add': 'Додати в друзі',
   'profile.requestSent': 'Запит у друзі надіслано',
 

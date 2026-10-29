@@ -57,18 +57,8 @@ const sw: FeedDict = {
   'compose.nude': 'Picha hii inaonekana kuwa ya uchi, kwa hiyo haiwezi kuchapishwa',
 
   // profile style
-  'style.status': 'Hali',
-  'style.statusPlaceholder': 'Uko na vibe gani leo?',
-  'style.languages': 'Lugha ninazoongea',
-  'style.languagesHint': 'Chagua hadi 6.',
-  'style.languagesMax': 'Unaweza kuchagua hadi lugha 6',
-  'style.saved': 'Wasifu umesasishwa',
-  'style.problem.status': 'Hali yako inaweza kuwa hadi herufi 60',
-  'style.problem.answer': 'Majibu yanaweza kuwa hadi herufi 120',
 
   // a profile
-  'profile.speaks': 'Anaongea',
-  'style.mbtiHint': "Si lazima. Gusa tena kufuta.",
   'post.likers': "Waliopenda",
 }
 

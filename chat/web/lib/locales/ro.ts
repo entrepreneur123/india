@@ -480,6 +480,7 @@ const ro: Dict = {
   'profile.message': 'Mesaj',
   'profile.acceptRequest': 'Acceptă cererea',
   'profile.withdraw': 'Cerere trimisă · Retrage',
+  'profile.requested': 'Cerere trimisă',
   'profile.add': 'Adaugă prieten',
   'profile.requestSent': 'Cerere de prietenie trimisă',
 

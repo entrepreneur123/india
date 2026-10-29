@@ -488,6 +488,7 @@ const zhHant: Dict = {
   'profile.message': '發訊息',
   'profile.acceptRequest': '接受申請',
   'profile.withdraw': '已傳送申請 · 撤回',
+  'profile.requested': '已傳送申請',
   'profile.add': '加好友',
   'profile.requestSent': '好友申請已傳送',
 

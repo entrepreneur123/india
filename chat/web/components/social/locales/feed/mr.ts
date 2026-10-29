@@ -48,16 +48,6 @@ const mr: FeedDict = {
   'compose.everyoneHint': 'तुमचे प्रोफाइल उघडणारे yaari वरील कोणीही. ते तुम्हाला ॲडही करू शकतात.',
   'compose.checking': 'फोटो तपासत आहोत…',
   'compose.nude': 'हा फोटो नग्नतेचा वाटतो, म्हणून पोस्ट करता येणार नाही',
-  'style.status': 'स्टेटस',
-  'style.statusPlaceholder': 'आज तुमचा मूड कसा आहे?',
-  'style.languages': 'मी बोलत असलेल्या भाषा',
-  'style.languagesHint': '6 पर्यंत निवडा.',
-  'style.languagesMax': 'तुम्ही जास्तीत जास्त 6 भाषा निवडू शकता',
-  'style.saved': 'प्रोफाइल अपडेट झाले',
-  'style.problem.status': 'तुमचे स्टेटस जास्तीत जास्त 60 अक्षरांचे असू शकते',
-  'style.problem.answer': 'उत्तरे जास्तीत जास्त 120 अक्षरांची असू शकतात',
-  'profile.speaks': 'बोलतात',
-  'style.mbtiHint': "ऐच्छिक. काढण्यासाठी पुन्हा टॅप करा.",
   'post.likers': "आवडलेले लोक",
 }
 

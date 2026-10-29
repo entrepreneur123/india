@@ -56,7 +56,6 @@ const ko: TrustDict = {
   // the card on Me
   'card.title': '인증 배지 받기',
   'card.body': '신분증과 셀카로 약 2분. 진짜 나를 보여 주고, 인증된 사람들을 만나요.',
-  'card.cta': '지금 인증하기',
   'card.pending': '신분증을 확인하고 있어요',
   'card.pendingBody': '보통 1~2분 걸려요.',
   'card.retry': '지난번 인증이 완료되지 않았어요',
@@ -67,7 +66,6 @@ const ko: TrustDict = {
   // facts from the ID
   'facts.verified': '본인 인증 완료',
   'facts.locked': '신분증 정보라서 바꿀 수 없어요',
-  'facts.notVerified': '아직 본인 인증 전',
   'facts.age': '{n}세',
 
   // manners

@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { ChevronLeft, ChevronRight, ImagePlus, X } from 'lucide-react'
-import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, type Highlight } from '@/lib/backend'
+import { ChevronLeft, ChevronRight, ImagePlus, Plus, X } from 'lucide-react'
+import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, MAX_HIGHLIGHTS, type Highlight } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
@@ -14,112 +14,67 @@ import { Modal } from '@/components/ui/modal'
 import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { ScrollRow } from '@/components/ui/scroll-row'
 import { cn } from '@/lib/utils'
 import { useSocialT } from './social-text'
 
-// Profile highlights (057): titled albums as cards standing round a ring (the owner's sketch, 2026-10-28): seen from a
-// little above, the front card is at the bottom at full size and the others stand upright round the circle behind it,
-// smaller and dimmer the further back. It turns only when the person drags, taps a card behind or an arrow, never by
-// itself; the viewer too goes to the next photo only when asked.
+// Profile highlights (057) as Instagram's: a row of circles with a title under each, sliding sideways; my own profile
+// ends with a "New" circle (until the limit). A tap opens the album; the viewer goes to the next photo only when asked.
 
 const key = (userId: string) => ['highlights', userId]
-/** The ring's half width and half depth on screen (px): the back card stands 2 × RING_Y above the front one. */
-const RING_X = 128
-const RING_Y = 64
-/** A card's place from the front one, the shorter way round the ring. */
-const offsetOf = (i: number, active: number, n: number) => {
-  if (n < 3) return i - active
-  const m = (((i - active) % n) + n) % n
-  return m > n / 2 ? m - n : m
-}
 
 export function Highlights({ userId, owner, className }: { userId: string; owner: string; className?: string }) {
   const backend = useBackend()
   const { me } = useApp()
-  const { t } = useI18n()
   const { st } = useSocialT()
   const mine = me?.id === userId
   const { data } = useSWR(key(userId), () => backend.highlights(userId))
-  const [active, setActive] = useState(0)
   const [viewing, setViewing] = useState<Highlight | null>(null)
-  const [editing, setEditing] = useState<Highlight | null>(null)
-  const drag = useRef<number | null>(null)
-  const moved = useRef(false)
+  const [editing, setEditing] = useState<Highlight | 'new' | null>(null)
   const list = data ?? []
-  // A new one is made from Edit profile (the owner: the profile itself stays as others see it).
-  const n = list.length
-  if (!n) return null
-  const at = Math.min(active, n - 1)
-  const turn = (by: number) => setActive((a) => (n >= 3 ? (Math.min(a, n - 1) + by + n) % n : Math.max(0, Math.min(n - 1, Math.min(a, n - 1) + by))))
-  const onUp = (e: ReactPointerEvent) => {
-    const dx = drag.current === null ? 0 : e.clientX - drag.current
-    drag.current = null
-    moved.current = Math.abs(dx) > 40
-    if (moved.current) turn(dx < 0 ? 1 : -1)
-  }
+  if (!list.length && !(mine && data)) return null
 
   return (
-    <section className={cn('flex flex-col gap-2', className)} aria-label={st('hl.title')}>
-      <h2 className="px-4 text-sm font-semibold">{st('hl.title')}</h2>
-      <div
-        className="relative isolate h-[15.5rem] touch-pan-y overflow-hidden select-none"
-        onPointerDown={(e) => (drag.current = e.clientX)}
-        onPointerUp={onUp}
-        onPointerCancel={() => (drag.current = null)}
-        // A drag is not a tap: the card it ends on stays as it is.
-        onClickCapture={(e) => {
-          if (moved.current) e.stopPropagation()
-          moved.current = false
-        }}
-        // The cards sit left to right on screen in every language, so the arrows are physical too.
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') turn(e.key === 'ArrowRight' ? 1 : -1)
-        }}
-      >
-        {list.map((c, i) => {
-          const d = offsetOf(i, at, n)
-          // Evenly round the ring; cos 1 = the front, -1 = the back.
-          const a = (2 * Math.PI * d) / n
-          const near = (1 + Math.cos(a)) / 2
-          return (
-            <button
-              key={c.id}
-              type="button"
-              tabIndex={d === 0 ? 0 : -1}
-              onClick={() => (d === 0 ? setViewing(c) : setActive(i))}
-              className="absolute bottom-2 left-1/2 -ml-16 flex aspect-[3/4] w-32 origin-bottom flex-col overflow-hidden rounded-2xl bg-muted text-start shadow-e2 ring-2 ring-card transition-[transform,filter] duration-500 ease-out motion-reduce:transition-none"
-              style={{
-                transform: `translate(${RING_X * Math.sin(a)}px, ${-RING_Y * (1 - Math.cos(a))}px) scale(${0.45 + 0.55 * near * near})`,
-                zIndex: Math.round(near * 100),
-                filter: d ? `brightness(${0.7 + 0.3 * near})` : undefined,
-              }}
-            >
-              <img src={c.photos[0]?.url} alt="" className="absolute inset-0 size-full object-cover" loading="lazy" draggable={false} />
-              <span className="relative mt-auto bg-linear-to-t from-black/70 to-transparent px-2 pt-6 pb-2 text-sm font-semibold text-white">
-                <span className="line-clamp-2">{c.title}</span>
-              </span>
-            </button>
-          )
-        })}
-        {n > 1 ? (
-          <>
-            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 left-2 z-[110] -translate-y-1/2" onClick={() => turn(-1)} aria-label={t('common.back')}>
-              <ChevronLeft className="size-5" aria-hidden />
-            </Button>
-            <Button size="icon-sm" variant="secondary" className="absolute top-1/2 right-2 z-[110] -translate-y-1/2" onClick={() => turn(1)} aria-label={st('tour.next')}>
-              <ChevronRight className="size-5" aria-hidden />
-            </Button>
-          </>
+    <section className={className} aria-label={st('hl.title')}>
+      <ScrollRow as="ul" className="flex gap-4 overflow-x-auto px-4 pt-1 pb-1 no-scrollbar">
+        {list.map((c) => (
+          <li key={c.id} className="shrink-0">
+            <Circle label={c.title} onClick={() => setViewing(c)}>
+              <img src={c.photos[0]?.url} alt="" className="size-full object-cover" loading="lazy" draggable={false} />
+            </Circle>
+          </li>
+        ))}
+        {mine && list.length < MAX_HIGHLIGHTS ? (
+          <li className="shrink-0">
+            <Circle label={st('hl.create')} onClick={() => setEditing('new')} empty>
+              <Plus className="size-7 text-foreground" strokeWidth={1.75} aria-hidden />
+            </Circle>
+          </li>
         ) : null}
-      </div>
+      </ScrollRow>
       <Viewer
         highlight={viewing}
         owner={owner}
         onClose={() => setViewing(null)}
         onEdit={mine && viewing ? () => (setEditing(viewing), setViewing(null)) : undefined}
       />
-      {mine && editing ? <HighlightEditor userId={userId} highlight={editing} onClose={() => setEditing(null)} /> : null}
+      {mine && editing ? <HighlightEditor userId={userId} highlight={editing === 'new' ? null : editing} onClose={() => setEditing(null)} /> : null}
     </section>
+  )
+}
+
+/** One highlight: its cover in a circle with a thin grey ring, its title below (New: a + in an empty circle). */
+function Circle({ label, onClick, empty, children }: { label: string; onClick: () => void; empty?: boolean; children: React.ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} className="group flex w-[4.5rem] flex-col items-center gap-1.5">
+      <span className="grid size-[4.5rem] place-items-center rounded-full ring-1 ring-border">
+        <span className={cn('grid size-16 place-items-center overflow-hidden rounded-full bg-muted transition-transform duration-150 group-active:scale-95', empty && 'bg-card ring-1 ring-border')}>
+          {children}
+        </span>
+      </span>
+      {/* Titles stay on one line; "New highlight" may take two. */}
+      <span className={cn('w-full text-center text-xs font-medium', empty ? 'line-clamp-2 leading-tight' : 'truncate')}>{label}</span>
+    </button>
   )
 }
 

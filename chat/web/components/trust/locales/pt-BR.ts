@@ -54,7 +54,6 @@ const ptBR: TrustDict = {
 
   'card.title': 'Ganhe seu selo de verificado',
   'card.body': 'Documento + selfie, uns 2 minutos. As pessoas veem que você é real, e você conhece gente real também.',
-  'card.cta': 'Verificar agora',
   'card.pending': 'Seu documento está sendo conferido',
   'card.pendingBody': 'Normalmente um ou dois minutos.',
   'card.retry': 'Sua última checagem não passou',
@@ -64,7 +63,6 @@ const ptBR: TrustDict = {
 
   'facts.verified': 'Identidade verificada',
   'facts.locked': 'Do documento, não pode ser alterado',
-  'facts.notVerified': 'Identidade ainda não verificada',
   'facts.age': '{n} anos',
 
   'manner.title': 'Educação',

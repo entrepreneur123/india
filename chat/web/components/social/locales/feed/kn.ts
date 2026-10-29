@@ -52,17 +52,7 @@ const kn: FeedDict = {
   'compose.checking': 'ಫೋಟೋ ಪರಿಶೀಲಿಸುತ್ತಿದೆ…',
   'compose.nude': 'ಈ ಫೋಟೋದಲ್ಲಿ ನಗ್ನತೆ ಇರುವಂತೆ ಕಾಣುತ್ತದೆ, ಹಾಗಾಗಿ ಪೋಸ್ಟ್ ಮಾಡಲು ಆಗುವುದಿಲ್ಲ',
 
-  'style.status': 'ಸ್ಟೇಟಸ್',
-  'style.statusPlaceholder': 'ಇವತ್ತು ನಿಮ್ಮ ವೈಬ್ ಏನು?',
-  'style.languages': 'ನಾನು ಮಾತನಾಡುವ ಭಾಷೆಗಳು',
-  'style.languagesHint': '6 ರವರೆಗೆ ಆಯ್ಕೆಮಾಡಿ.',
-  'style.languagesMax': 'ನೀವು 6 ಭಾಷೆಗಳವರೆಗೆ ಆಯ್ಕೆಮಾಡಬಹುದು',
-  'style.saved': 'ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಯಿತು',
-  'style.problem.status': 'ನಿಮ್ಮ ಸ್ಟೇಟಸ್ ಗರಿಷ್ಠ 60 ಅಕ್ಷರಗಳಿರಬಹುದು',
-  'style.problem.answer': 'ಉತ್ತರಗಳು ಗರಿಷ್ಠ 120 ಅಕ್ಷರಗಳಿರಬಹುದು',
 
-  'profile.speaks': 'ಮಾತನಾಡುವ ಭಾಷೆಗಳು',
-  'style.mbtiHint': "ಐಚ್ಛಿಕ. ತೆಗೆಯಲು ಮತ್ತೆ ಒತ್ತಿ.",
   'post.likers': "ಇಷ್ಟಪಟ್ಟವರು",
 }
 

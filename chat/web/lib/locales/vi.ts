@@ -479,6 +479,7 @@ const vi: Dict = {
   'profile.message': 'Nhắn tin',
   'profile.acceptRequest': 'Đồng ý kết bạn',
   'profile.withdraw': 'Đã gửi lời mời · Thu hồi',
+  'profile.requested': 'Đã gửi lời mời',
   'profile.add': 'Kết bạn',
   'profile.requestSent': 'Đã gửi lời mời kết bạn',
 

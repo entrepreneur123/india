@@ -57,18 +57,8 @@ const tr: FeedDict = {
   'compose.nude': 'Bu fotoğraf çıplaklık içeriyor gibi görünüyor, bu yüzden paylaşılamaz',
 
   // profile style
-  'style.status': 'Durum',
-  'style.statusPlaceholder': 'Bugün modun ne?',
-  'style.languages': 'Konuştuğum diller',
-  'style.languagesHint': 'En fazla 6 tane seç.',
-  'style.languagesMax': 'En fazla 6 dil seçebilirsin',
-  'style.saved': 'Profil güncellendi',
-  'style.problem.status': 'Durumun en fazla 60 karakter olabilir',
-  'style.problem.answer': 'Cevaplar en fazla 120 karakter olabilir',
 
   // a profile
-  'profile.speaks': 'Konuştuğu diller',
-  'style.mbtiHint': "İsteğe bağlı. Temizlemek için tekrar dokun.",
   'post.likers': "Beğeniler",
 }
 

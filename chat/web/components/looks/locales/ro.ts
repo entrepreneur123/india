@@ -68,8 +68,6 @@ const ro: LooksDict = {
   'id.cooldownPass': 'Dacă îl schimbi acum, folosești 1 din cele {n} schimbări de ID ale tale (din nou gratuit pe {date})',
   'id.keptFree': 'ID-ul acela tocmai a fost luat, așa că deocamdată al tău e @{handle}. Îl poți schimba din Editează profilul.',
 
-  'details.title': 'Detalii profil',
-  'details.desc': 'Statusul tău, MBTI și limbile pe care le vorbești.',
 
   'friend.requested': 'Cerere trimisă',
   'friend.withdraw': 'Retrage cererea către {name}',

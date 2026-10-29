@@ -57,18 +57,8 @@ const fil: FeedDict = {
   'compose.nude': 'Mukhang may nudity ang photo na ito, kaya hindi ito mapo-post',
 
   // profile style
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Ano ang vibe mo ngayon?',
-  'style.languages': 'Mga wikang sinasalita ko',
-  'style.languagesHint': 'Pumili ng hanggang 6.',
-  'style.languagesMax': 'Hanggang 6 na wika lang ang puwede mong piliin',
-  'style.saved': 'Na-update ang profile',
-  'style.problem.status': 'Hanggang 60 character ang status mo',
-  'style.problem.answer': 'Hanggang 120 character ang mga sagot',
 
   // a profile
-  'profile.speaks': 'Nagsasalita ng',
-  'style.mbtiHint': "Opsyonal. I-tap ulit para alisin.",
   'post.likers': "Mga like",
 }
 

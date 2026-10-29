@@ -56,7 +56,6 @@ const he: TrustDict = {
   // the card on Me
   'card.title': 'מקבלים תג אימות',
   'card.body': 'תעודה + סלפי, בערך 2 דקות. אנשים רואים שאת/ה אמיתי/ת, ופוגשים אנשים שגם הם כאלה.',
-  'card.cta': 'לאימות עכשיו',
   'card.pending': 'התעודה שלך בבדיקה',
   'card.pendingBody': 'בדרך כלל דקה-שתיים.',
   'card.retry': 'הבדיקה האחרונה לא עברה',
@@ -67,7 +66,6 @@ const he: TrustDict = {
   // facts from the ID
   'facts.verified': 'תעודה מאומתת',
   'facts.locked': 'מהתעודה, אי אפשר לשנות',
-  'facts.notVerified': 'עוד לא אומת בתעודה',
   'facts.age': 'בן/בת {n}',
 
   // manners

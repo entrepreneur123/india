@@ -54,7 +54,6 @@ const vi: TrustDict = {
 
   'card.title': 'Nhận huy hiệu đã xác minh',
   'card.body': 'Giấy tờ + selfie, khoảng 2 phút. Mọi người thấy bạn là người thật, và bạn cũng gặp người thật.',
-  'card.cta': 'Xác minh ngay',
   'card.pending': 'Giấy tờ của bạn đang được kiểm tra',
   'card.pendingBody': 'Thường mất một hai phút.',
   'card.retry': 'Lần kiểm tra trước chưa thành công',
@@ -64,7 +63,6 @@ const vi: TrustDict = {
 
   'facts.verified': 'Đã xác minh danh tính',
   'facts.locked': 'Lấy từ giấy tờ, không thể đổi',
-  'facts.notVerified': 'Chưa xác minh danh tính',
   'facts.age': '{n} tuổi',
 
   'manner.title': 'Lịch sự',

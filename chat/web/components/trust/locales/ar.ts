@@ -56,7 +56,6 @@ const ar: TrustDict = {
   // the card on Me
   'card.title': 'احصل على شارة التوثيق',
   'card.body': 'هوية + سيلفي، نحو دقيقتين. يرى الناس أنك حقيقي، وتقابل أشخاصًا حقيقيين أيضًا.',
-  'card.cta': 'وثّق الآن',
   'card.pending': 'جارٍ التحقق من هويتك',
   'card.pendingBody': 'عادةً دقيقة أو اثنتان.',
   'card.retry': 'لم يكتمل فحصك الأخير',
@@ -67,7 +66,6 @@ const ar: TrustDict = {
   // facts from the ID
   'facts.verified': 'هوية موثّقة',
   'facts.locked': 'من الهوية، لا يمكن تغييره',
-  'facts.notVerified': 'الهوية غير موثّقة بعد',
   'facts.age': '{n} سنة',
 
   // manners

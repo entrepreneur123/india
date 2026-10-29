@@ -68,8 +68,6 @@ const tr: LooksDict = {
   'id.cooldownPass': 'Şimdi değiştirirsen {n} kimlik değiştirme hakkından 1’i kullanılır ({date} tarihinde yeniden ücretsiz)',
   'id.keptFree': 'O kimlik az önce alındı, bu yüzden şimdilik seninki @{handle}. Profili düzenle bölümünden değiştirebilirsin.',
 
-  'details.title': 'Profil ayrıntıları',
-  'details.desc': 'Durumun, MBTI ve konuştuğun diller.',
 
   'friend.requested': 'İstek gönderildi',
   'friend.withdraw': '{name} kişisine gönderdiğin isteği geri çek',

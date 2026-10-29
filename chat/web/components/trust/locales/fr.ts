@@ -54,7 +54,6 @@ const fr: TrustDict = {
 
   'card.title': 'Obtenez votre badge vérifié',
   'card.body': 'Pièce d’identité + selfie, environ 2 minutes. Les gens voient que vous êtes réel, et vous rencontrez des personnes qui le sont aussi.',
-  'card.cta': 'Vérifier maintenant',
   'card.pending': 'Votre pièce d’identité est en cours de vérification',
   'card.pendingBody': 'En général une ou deux minutes.',
   'card.retry': 'Votre dernière vérification n’a pas abouti',
@@ -64,7 +63,6 @@ const fr: TrustDict = {
 
   'facts.verified': 'Identité vérifiée',
   'facts.locked': 'D’après la pièce d’identité, non modifiable',
-  'facts.notVerified': 'Identité pas encore vérifiée',
   'facts.age': '{n} ans',
 
   'manner.title': 'Savoir-vivre',

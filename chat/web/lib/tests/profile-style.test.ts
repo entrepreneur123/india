@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { accentVars, ACCENTS, ACCENT_COLORS, parseStyle, PROMPT_QS, SPOKEN_LANGS, styleInput, toggleLanguage } from '../profile-style.ts'
+import { accentVars, ACCENTS, ACCENT_COLORS, parseStyle, PROMPT_QS, SPOKEN_LANGS, styleInput } from '../profile-style.ts'
 
 test('the lists match the server (033)', () => {
   assert.deepEqual(ACCENTS, ['rose', 'violet', 'ocean', 'mint', 'sunset', 'gold', 'berry', 'slate'])
@@ -38,8 +38,3 @@ test('styleInput cleans the draft and says what is wrong', () => {
   assert.equal(styleInput({ status: null, languages: [], prompts: [{ q: 'goal', a: 'a' }, { q: 'food', a: 'b' }, { q: 'song', a: 'c' }, { q: 'talk', a: 'd' }], mbti: null }).problem, 'prompts')
 })
 
-test('toggleLanguage', () => {
-  assert.deepEqual(toggleLanguage(['en'], 'hi'), ['en', 'hi'])
-  assert.deepEqual(toggleLanguage(['en', 'hi'], 'en'), ['hi'])
-  assert.equal(toggleLanguage(['en', 'hi', 'bn', 'ta', 'te', 'mr'], 'gu'), false)
-})

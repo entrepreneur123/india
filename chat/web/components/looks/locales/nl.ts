@@ -68,8 +68,6 @@ const nl: LooksDict = {
   'id.cooldownPass': 'Als je hem nu wijzigt, gebruik je 1 van je {n} ID-wijzigingen (weer gratis op {date})',
   'id.keptFree': 'Die ID werd net bezet, dus de jouwe is voorlopig @{handle}. Je kunt hem wijzigen bij Profiel bewerken.',
 
-  'details.title': 'Profieldetails',
-  'details.desc': 'Je status, MBTI en de talen die je spreekt.',
 
   'friend.requested': 'Aangevraagd',
   'friend.withdraw': 'Je verzoek aan {name} intrekken',

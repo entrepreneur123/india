@@ -479,6 +479,7 @@ const hi: Dict = {
   'profile.message': 'मैसेज',
   'profile.acceptRequest': 'रिक्वेस्ट स्वीकार करें',
   'profile.withdraw': 'रिक्वेस्ट भेजी · वापस लें',
+  'profile.requested': 'रिक्वेस्ट भेजी',
   'profile.add': 'दोस्त बनाएँ',
   'profile.requestSent': 'फ़्रेंड रिक्वेस्ट भेज दी',
 

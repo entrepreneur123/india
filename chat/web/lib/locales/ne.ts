@@ -479,6 +479,7 @@ const ne: Dict = {
   'profile.message': 'मेसेज',
   'profile.acceptRequest': 'अनुरोध स्वीकार गर्नुहोस्',
   'profile.withdraw': 'अनुरोध पठाइयो · फिर्ता लिनुहोस्',
+  'profile.requested': 'अनुरोध पठाइयो',
   'profile.add': 'साथी थप्नुहोस्',
   'profile.requestSent': 'साथी अनुरोध पठाइयो',
 

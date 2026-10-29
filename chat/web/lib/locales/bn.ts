@@ -479,6 +479,7 @@ const bn: Dict = {
   'profile.message': 'মেসেজ',
   'profile.acceptRequest': 'অনুরোধ গ্রহণ করুন',
   'profile.withdraw': 'অনুরোধ পাঠানো · ফিরিয়ে নিন',
+  'profile.requested': 'অনুরোধ পাঠানো',
   'profile.add': 'বন্ধু যোগ করুন',
   'profile.requestSent': 'বন্ধুত্বের অনুরোধ পাঠানো হয়েছে',
 

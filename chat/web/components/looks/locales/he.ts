@@ -68,8 +68,6 @@ const he: LooksDict = {
   'id.cooldownPass': 'שינוי עכשיו ינצל 1 מתוך {n} שינויי המזהה שלך (שוב בחינם ב־{date})',
   'id.keptFree': 'המזהה הזה נתפס הרגע, אז בינתיים המזהה שלך הוא @{handle}. אפשר לשנות אותו בעריכת פרופיל.',
 
-  'details.title': 'פרטי פרופיל',
-  'details.desc': 'הסטטוס שלך, MBTI והשפות שאת/ה מדבר/ת.',
 
   'friend.requested': 'נשלחה בקשה',
   'friend.withdraw': 'ביטול הבקשה שלך ל־{name}',

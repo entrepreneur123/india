@@ -54,7 +54,6 @@ const te: TrustDict = {
 
   'card.title': 'వెరిఫైడ్ బ్యాడ్జ్ పొందండి',
   'card.body': 'ID + సెల్ఫీ, సుమారు 2 నిమిషాలు. మీరు నిజమైనవారని ఇతరులు చూస్తారు, మీరూ నిజమైనవాళ్లనే కలుస్తారు.',
-  'card.cta': 'ఇప్పుడే వెరిఫై చేయి',
   'card.pending': 'మీ ID చెక్ అవుతోంది',
   'card.pendingBody': 'సాధారణంగా ఒకటి రెండు నిమిషాలు.',
   'card.retry': 'మీ చివరి చెక్ పూర్తవ్వలేదు',
@@ -64,7 +63,6 @@ const te: TrustDict = {
 
   'facts.verified': 'ID వెరిఫై అయింది',
   'facts.locked': 'ID నుంచి, మార్చలేరు',
-  'facts.notVerified': 'ఇంకా ID వెరిఫై కాలేదు',
   'facts.age': '{n} ఏళ్లు',
 
   'manner.title': 'మ్యానర్స్',

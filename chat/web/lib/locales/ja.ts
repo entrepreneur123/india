@@ -488,6 +488,7 @@ const ja: Dict = {
   'profile.message': 'メッセージ',
   'profile.acceptRequest': 'リクエストを承認',
   'profile.withdraw': 'リクエスト送信済み・取り消す',
+  'profile.requested': 'リクエスト送信済み',
   'profile.add': '友だちに追加',
   'profile.requestSent': '友だちリクエストを送信しました',
 

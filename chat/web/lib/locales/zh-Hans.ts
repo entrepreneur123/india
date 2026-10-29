@@ -488,6 +488,7 @@ const zhHans: Dict = {
   'profile.message': '发消息',
   'profile.acceptRequest': '接受申请',
   'profile.withdraw': '已发送申请 · 撤回',
+  'profile.requested': '已发送申请',
   'profile.add': '加好友',
   'profile.requestSent': '好友申请已发送',
 

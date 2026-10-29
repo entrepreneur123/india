@@ -52,17 +52,7 @@ const de: FeedDict = {
   'compose.checking': 'Foto wird geprüft…',
   'compose.nude': 'Dieses Foto sieht nach Nacktheit aus und kann deshalb nicht gepostet werden',
 
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Wie ist deine Stimmung heute?',
-  'style.languages': 'Sprachen, die ich spreche',
-  'style.languagesHint': 'Wähle bis zu 6.',
-  'style.languagesMax': 'Du kannst bis zu 6 Sprachen wählen',
-  'style.saved': 'Profil aktualisiert',
-  'style.problem.status': 'Dein Status darf bis zu 60 Zeichen haben',
-  'style.problem.answer': 'Antworten dürfen bis zu 120 Zeichen haben',
 
-  'profile.speaks': 'Spricht',
-  'style.mbtiHint': "Optional. Zum Entfernen noch einmal tippen.",
   'post.likers': "Gefällt",
 }
 

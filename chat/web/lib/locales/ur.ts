@@ -462,6 +462,7 @@ const ur: Dict = {
   'profile.message': 'میسج',
   'profile.acceptRequest': 'درخواست قبول کریں',
   'profile.withdraw': 'درخواست بھیج دی · واپس لیں',
+  'profile.requested': 'درخواست بھیج دی',
   'profile.add': 'دوست بنائیں',
   'profile.requestSent': 'دوستی کی درخواست بھیج دی',
   'settings.title': 'سیٹنگز',

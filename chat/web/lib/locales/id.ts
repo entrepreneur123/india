@@ -488,6 +488,7 @@ const id: Dict = {
   'profile.message': 'Kirim pesan',
   'profile.acceptRequest': 'Terima permintaan',
   'profile.withdraw': 'Permintaan terkirim · Tarik',
+  'profile.requested': 'Permintaan terkirim',
   'profile.add': 'Tambah teman',
   'profile.requestSent': 'Permintaan pertemanan terkirim',
 

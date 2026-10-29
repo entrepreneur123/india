@@ -479,6 +479,7 @@ const ml: Dict = {
   'profile.message': 'മെസേജ്',
   'profile.acceptRequest': 'റിക്വസ്റ്റ് സ്വീകരിക്കുക',
   'profile.withdraw': 'റിക്വസ്റ്റ് അയച്ചു · പിൻവലിക്കുക',
+  'profile.requested': 'റിക്വസ്റ്റ് അയച്ചു',
   'profile.add': 'സുഹൃത്തായി ചേർക്കുക',
   'profile.requestSent': 'ഫ്രണ്ട് റിക്വസ്റ്റ് അയച്ചു',
 

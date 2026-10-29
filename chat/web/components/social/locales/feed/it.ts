@@ -52,17 +52,7 @@ const it: FeedDict = {
   'compose.checking': 'Controllo della foto…',
   'compose.nude': 'Questa foto sembra contenere nudità, quindi non si può pubblicare',
 
-  'style.status': 'Stato',
-  'style.statusPlaceholder': 'Che mood hai oggi?',
-  'style.languages': 'Lingue che parlo',
-  'style.languagesHint': 'Scegline fino a 6.',
-  'style.languagesMax': 'Puoi scegliere fino a 6 lingue',
-  'style.saved': 'Profilo aggiornato',
-  'style.problem.status': 'Lo stato può avere al massimo 60 caratteri',
-  'style.problem.answer': 'Le risposte possono avere al massimo 120 caratteri',
 
-  'profile.speaks': 'Parla',
-  'style.mbtiHint': "Facoltativo. Tocca di nuovo per togliere.",
   'post.likers': "Mi piace",
 }
 

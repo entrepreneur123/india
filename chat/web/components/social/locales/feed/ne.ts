@@ -52,17 +52,7 @@ const ne: FeedDict = {
   'compose.checking': 'फोटो जाँच हुँदै…',
   'compose.nude': 'यो फोटोमा नग्नता देखिएकाले पोस्ट गर्न मिल्दैन',
 
-  'style.status': 'स्टाटस',
-  'style.statusPlaceholder': 'आज तपाईंको मुड कस्तो छ?',
-  'style.languages': 'म बोल्ने भाषाहरू',
-  'style.languagesHint': 'बढीमा 6 वटा छान्नुहोस्।',
-  'style.languagesMax': 'तपाईं बढीमा 6 भाषा छान्न सक्नुहुन्छ',
-  'style.saved': 'प्रोफाइल अपडेट भयो',
-  'style.problem.status': 'तपाईंको स्टाटस बढीमा 60 अक्षरको हुन सक्छ',
-  'style.problem.answer': 'जवाफ बढीमा 120 अक्षरको हुन सक्छ',
 
-  'profile.speaks': 'बोल्ने भाषा',
-  'style.mbtiHint': "ऐच्छिक। हटाउन फेरि थिच्नुहोस्।",
   'post.likers': "मन पराउनेहरू",
 }
 

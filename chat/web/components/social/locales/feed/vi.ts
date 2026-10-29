@@ -52,17 +52,7 @@ const vi: FeedDict = {
   'compose.checking': 'Đang kiểm tra ảnh…',
   'compose.nude': 'Ảnh này có vẻ khỏa thân nên không thể đăng',
 
-  'style.status': 'Trạng thái',
-  'style.statusPlaceholder': 'Hôm nay bạn thấy thế nào?',
-  'style.languages': 'Ngôn ngữ tôi nói',
-  'style.languagesHint': 'Chọn tối đa 6.',
-  'style.languagesMax': 'Bạn có thể chọn tối đa 6 ngôn ngữ',
-  'style.saved': 'Đã cập nhật hồ sơ',
-  'style.problem.status': 'Trạng thái tối đa 60 ký tự',
-  'style.problem.answer': 'Câu trả lời tối đa 120 ký tự',
 
-  'profile.speaks': 'Nói',
-  'style.mbtiHint': "Không bắt buộc. Chạm lần nữa để xóa.",
   'post.likers': "Lượt thích",
 }
 

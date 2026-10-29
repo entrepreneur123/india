@@ -55,18 +55,8 @@ const en = {
   'compose.nude': 'This photo looks like nudity, so it can’t be posted',
 
   // profile details
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'What’s your vibe today?',
-  'style.languages': 'Languages I speak',
-  'style.languagesHint': 'Pick up to 6.',
-  'style.languagesMax': 'You can pick up to 6 languages',
-  'style.saved': 'Profile updated',
-  'style.problem.status': 'Your status can be up to 60 characters',
-  'style.problem.answer': 'Answers can be up to 120 characters',
 
   // a profile
-  'profile.speaks': 'Speaks',
-  'style.mbtiHint': "Optional. Tap it again to clear.",
   'post.likers': "Likes",
 }
 

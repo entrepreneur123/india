@@ -52,17 +52,7 @@ const nl: FeedDict = {
   'compose.checking': 'Foto controleren…',
   'compose.nude': 'Deze foto lijkt naakt te bevatten, dus je kunt hem niet plaatsen',
 
-  'style.status': 'Status',
-  'style.statusPlaceholder': 'Wat is je vibe vandaag?',
-  'style.languages': 'Talen die ik spreek',
-  'style.languagesHint': 'Kies er maximaal 6.',
-  'style.languagesMax': 'Je kunt maximaal 6 talen kiezen',
-  'style.saved': 'Profiel bijgewerkt',
-  'style.problem.status': 'Je status mag maximaal 60 tekens hebben',
-  'style.problem.answer': 'Antwoorden mogen maximaal 120 tekens hebben',
 
-  'profile.speaks': 'Spreekt',
-  'style.mbtiHint': "Optioneel. Tik nogmaals om te wissen.",
   'post.likers': "Vind-ik-leuks",
 }
 

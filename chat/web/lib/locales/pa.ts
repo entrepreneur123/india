@@ -462,6 +462,7 @@ const pa: Dict = {
   'profile.message': 'ਮੈਸੇਜ',
   'profile.acceptRequest': 'ਬੇਨਤੀ ਮੰਨੋ',
   'profile.withdraw': 'ਬੇਨਤੀ ਭੇਜੀ · ਵਾਪਸ ਲਓ',
+  'profile.requested': 'ਬੇਨਤੀ ਭੇਜੀ',
   'profile.add': 'ਦੋਸਤ ਬਣਾਓ',
   'profile.requestSent': 'ਦੋਸਤੀ ਦੀ ਬੇਨਤੀ ਭੇਜ ਦਿੱਤੀ',
   'settings.title': 'ਸੈਟਿੰਗਾਂ',

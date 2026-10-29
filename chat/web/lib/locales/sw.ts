@@ -488,6 +488,7 @@ const sw: Dict = {
   'profile.message': 'Ujumbe',
   'profile.acceptRequest': 'Kubali ombi',
   'profile.withdraw': 'Ombi limetumwa · Futa',
+  'profile.requested': 'Ombi limetumwa',
   'profile.add': 'Ongeza rafiki',
   'profile.requestSent': 'Ombi la urafiki limetumwa',
 

@@ -462,6 +462,7 @@ const mr: Dict = {
   'profile.message': 'मेसेज',
   'profile.acceptRequest': 'विनंती स्वीकारा',
   'profile.withdraw': 'विनंती पाठवली · मागे घ्या',
+  'profile.requested': 'विनंती पाठवली',
   'profile.add': 'मित्र बनवा',
   'profile.requestSent': 'मैत्रीची विनंती पाठवली',
   'settings.title': 'सेटिंग्ज',

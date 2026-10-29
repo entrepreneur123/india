@@ -54,17 +54,7 @@ const fr: FeedDict = {
   'compose.checking': 'Vérification de la photo…',
   'compose.nude': 'Cette photo semble montrer de la nudité, elle ne peut donc pas être publiée',
 
-  'style.status': 'Statut',
-  'style.statusPlaceholder': 'Quelle est votre humeur du jour ?',
-  'style.languages': 'Langues que je parle',
-  'style.languagesHint': 'Jusqu’à 6.',
-  'style.languagesMax': 'Vous pouvez choisir jusqu’à 6 langues',
-  'style.saved': 'Profil mis à jour',
-  'style.problem.status': 'Votre statut peut faire jusqu’à 60 caractères',
-  'style.problem.answer': 'Les réponses peuvent faire jusqu’à 120 caractères',
 
-  'profile.speaks': 'Parle',
-  'style.mbtiHint': "Facultatif. Touchez à nouveau pour effacer.",
   'post.likers': "J'aime",
 }
 

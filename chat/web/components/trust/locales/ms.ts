@@ -56,7 +56,6 @@ const ms: TrustDict = {
   // the card on Me
   'card.title': 'Dapatkan lencana disahkan',
   'card.body': 'ID + swafoto, kira-kira 2 minit. Orang nampak anda tulen, dan anda bertemu orang yang tulen juga.',
-  'card.cta': 'Sahkan sekarang',
   'card.pending': 'ID anda sedang disemak',
   'card.pendingBody': 'Biasanya seminit dua.',
   'card.retry': 'Semakan terakhir anda tidak berjaya',
@@ -67,7 +66,6 @@ const ms: TrustDict = {
   // facts from the ID
   'facts.verified': 'ID disahkan',
   'facts.locked': 'Daripada ID, tidak boleh ditukar',
-  'facts.notVerified': 'Belum disahkan ID',
   'facts.age': '{n} thn',
 
   // manners

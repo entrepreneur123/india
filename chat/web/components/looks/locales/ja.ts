@@ -68,8 +68,6 @@ const ja: LooksDict = {
   'id.cooldownPass': '今変更するとID変更チケットを1枚使います（所持：{n}枚、{date}以降は無料）',
   'id.keptFree': 'そのIDはたった今ほかの人に使われたため、現在のIDは @{handle} です。「プロフィールを編集」から変更できます。',
 
-  'details.title': 'プロフィールの詳細',
-  'details.desc': 'ステータス、MBTI、話せる言語',
 
   'friend.requested': 'リクエスト済み',
   'friend.withdraw': '{name}さんへのリクエストを取り消す',

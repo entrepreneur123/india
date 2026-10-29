@@ -488,6 +488,7 @@ const ms: Dict = {
   'profile.message': 'Mesej',
   'profile.acceptRequest': 'Terima permintaan',
   'profile.withdraw': 'Permintaan dihantar · Tarik balik',
+  'profile.requested': 'Permintaan dihantar',
   'profile.add': 'Tambah rakan',
   'profile.requestSent': 'Permintaan rakan dihantar',
 

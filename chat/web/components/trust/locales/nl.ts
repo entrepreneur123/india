@@ -54,7 +54,6 @@ const nl: TrustDict = {
 
   'card.title': 'Krijg je verificatiebadge',
   'card.body': 'ID + selfie, ongeveer 2 minuten. Mensen zien dat je echt bent, en jij ontmoet mensen die dat ook zijn.',
-  'card.cta': 'Nu verifiëren',
   'card.pending': 'Je ID wordt gecontroleerd',
   'card.pendingBody': 'Meestal een minuutje of twee.',
   'card.retry': 'Je laatste check is niet gelukt',
@@ -64,7 +63,6 @@ const nl: TrustDict = {
 
   'facts.verified': 'ID geverifieerd',
   'facts.locked': 'Van het ID, kan niet worden gewijzigd',
-  'facts.notVerified': 'Nog niet met ID geverifieerd',
   'facts.age': '{n} jaar',
 
   'manner.title': 'Gedrag',

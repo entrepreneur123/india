@@ -488,6 +488,7 @@ const fa: Dict = {
   'profile.message': 'پیام',
   'profile.acceptRequest': 'پذیرفتن درخواست',
   'profile.withdraw': 'درخواست ارسال شد · پس گرفتن',
+  'profile.requested': 'درخواست ارسال شد',
   'profile.add': 'افزودن دوست',
   'profile.requestSent': 'درخواست دوستی ارسال شد',
 

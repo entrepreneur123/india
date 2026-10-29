@@ -56,7 +56,6 @@ const id: TrustDict = {
   // the card on Me
   'card.title': 'Dapatkan lencana terverifikasi',
   'card.body': 'ID + selfie, sekitar 2 menit. Orang tahu kamu asli, dan kamu bertemu orang yang juga asli.',
-  'card.cta': 'Verifikasi sekarang',
   'card.pending': 'ID-mu sedang dicek',
   'card.pendingBody': 'Biasanya satu atau dua menit.',
   'card.retry': 'Pengecekan terakhirmu tidak berhasil',
@@ -67,7 +66,6 @@ const id: TrustDict = {
   // facts from the ID
   'facts.verified': 'ID terverifikasi',
   'facts.locked': 'Dari ID, tidak bisa diubah',
-  'facts.notVerified': 'Belum verifikasi ID',
   'facts.age': '{n} thn',
 
   // manners

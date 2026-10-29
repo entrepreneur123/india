@@ -52,17 +52,7 @@ const ml: FeedDict = {
   'compose.checking': 'ഫോട്ടോ പരിശോധിക്കുന്നു…',
   'compose.nude': 'ഈ ഫോട്ടോയിൽ നഗ്നത ഉള്ളതായി തോന്നുന്നു, അതിനാൽ പോസ്റ്റ് ചെയ്യാനാകില്ല',
 
-  'style.status': 'സ്റ്റാറ്റസ്',
-  'style.statusPlaceholder': 'ഇന്നത്തെ നിങ്ങളുടെ വൈബ് എന്താണ്?',
-  'style.languages': 'ഞാൻ സംസാരിക്കുന്ന ഭാഷകൾ',
-  'style.languagesHint': '6 വരെ തിരഞ്ഞെടുക്കൂ.',
-  'style.languagesMax': '6 ഭാഷകൾ വരെ തിരഞ്ഞെടുക്കാം',
-  'style.saved': 'പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്തു',
-  'style.problem.status': 'സ്റ്റാറ്റസ് പരമാവധി 60 അക്ഷരം ആകാം',
-  'style.problem.answer': 'ഉത്തരങ്ങൾ പരമാവധി 120 അക്ഷരം ആകാം',
 
-  'profile.speaks': 'സംസാരിക്കുന്ന ഭാഷകൾ',
-  'style.mbtiHint': "ഐച്ഛികം. മായ്ക്കാൻ വീണ്ടും ടാപ്പ് ചെയ്യുക.",
   'post.likers': "ഇഷ്ടപ്പെട്ടവർ",
 }
 

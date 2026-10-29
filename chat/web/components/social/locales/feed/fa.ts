@@ -57,18 +57,8 @@ const fa: FeedDict = {
   'compose.nude': 'این عکس به نظر برهنگی دارد، برای همین قابل انتشار نیست',
 
   // profile style
-  'style.status': 'وضعیت',
-  'style.statusPlaceholder': 'امروز حال‌وهوایت چطور است؟',
-  'style.languages': 'زبان‌هایی که صحبت می‌کنم',
-  'style.languagesHint': 'تا ۶ زبان انتخاب کنید.',
-  'style.languagesMax': 'حداکثر ۶ زبان می‌توانید انتخاب کنید',
-  'style.saved': 'پروفایل به‌روز شد',
-  'style.problem.status': 'وضعیت شما حداکثر ۶۰ کاراکتر می‌تواند باشد',
-  'style.problem.answer': 'جواب‌ها حداکثر ۱۲۰ کاراکتر می‌توانند باشند',
 
   // a profile
-  'profile.speaks': 'زبان‌ها',
-  'style.mbtiHint': "اختیاری. برای پاک کردن دوباره بزنید.",
   'post.likers': "پسندها",
 }
 

@@ -65,18 +65,8 @@ const ar: FeedDict = {
   'compose.nude': 'يبدو أن هذه الصورة تحتوي على عري، لذلك لا يمكن نشرها',
 
   // profile style
-  'style.status': 'الحالة',
-  'style.statusPlaceholder': 'ما مزاجك اليوم؟',
-  'style.languages': 'اللغات التي أتحدثها',
-  'style.languagesHint': 'اختر حتى 6.',
-  'style.languagesMax': 'يمكنك اختيار 6 لغات كحد أقصى',
-  'style.saved': 'تم تحديث الملف الشخصي',
-  'style.problem.status': 'يمكن أن تصل حالتك إلى 60 حرفًا',
-  'style.problem.answer': 'يمكن أن تصل الإجابات إلى 120 حرفًا',
 
   // a profile
-  'profile.speaks': 'يتحدث',
-  'style.mbtiHint': "اختياري. اضغط مرة أخرى للمسح.",
   'post.likers': "الإعجابات",
 }
 

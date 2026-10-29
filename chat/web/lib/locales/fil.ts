@@ -488,6 +488,7 @@ const fil: Dict = {
   'profile.message': 'Mag-message',
   'profile.acceptRequest': 'Tanggapin ang request',
   'profile.withdraw': 'Naipadala ang request · Bawiin',
+  'profile.requested': 'Naipadala ang request',
   'profile.add': 'I-add bilang kaibigan',
   'profile.requestSent': 'Naipadala ang friend request',
 

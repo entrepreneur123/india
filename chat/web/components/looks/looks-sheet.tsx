@@ -19,7 +19,7 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { localPrice } from '@/lib/currency'
 import { LookBadge } from './badges'
-import { FrameAvatar, FrameCard } from './frames'
+import { FrameAvatar } from './frames'
 import { lookKey, LookText, NameText } from './look-name'
 import { useLooksT, type LooksKey } from './looks-text'
 import { GiftSheet } from './gift-sheet'
@@ -358,15 +358,13 @@ function ShopBody({ tab }: { tab: ItemKind }) {
     )
   } else {
     preview = (
-      <FrameCard frame={trying.frame as FrameId | null} className="w-full">
-        <div className="flex flex-col items-center gap-1.5 px-4 pt-6 pb-5 text-center">
-          <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
-          <p className="mt-1 text-lg font-bold">
-            <NameText wear={trying}>{me.name}</NameText>
-          </p>
-          {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
-        </div>
-      </FrameCard>
+      <div className="flex w-full flex-col items-center gap-1.5 rounded-[28px] bg-card px-4 pt-6 pb-5 text-center ring-1 ring-border">
+        <FrameAvatar frame={trying.frame as FrameId | null} userId={me.id} name={me.name} src={me.photoUrl} size={72} />
+        <p className="mt-1 text-lg font-bold">
+          <NameText wear={trying}>{me.name}</NameText>
+        </p>
+        {handle ? <LookText handle={handle} badge={trying.badge} className="text-[17px] font-semibold" /> : null}
+      </div>
     )
   }
   const caption = look || extra ? lt('looks.everyone') : kind === 'wall' ? lt('wall.onlyYou') : null

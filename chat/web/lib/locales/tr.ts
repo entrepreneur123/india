@@ -488,6 +488,7 @@ const tr: Dict = {
   'profile.message': 'Mesaj',
   'profile.acceptRequest': 'İsteği kabul et',
   'profile.withdraw': 'İstek gönderildi · Geri çek',
+  'profile.requested': 'İstek gönderildi',
   'profile.add': 'Arkadaş ekle',
   'profile.requestSent': 'Arkadaşlık isteği gönderildi',
 
