@@ -1,6 +1,6 @@
 """Boards of boards_central.py against their real pages of 29-10-2026 (tests/fixtures/<source>.html).
 
-ibps.html  www.ibps.in home page, captured from the India server.
+ibps.html  www.ibps.in/index.php/crp-updates/ ("CRP updates", the home page's View All), captured from the India server.
 aai.html   www.aai.aero/en/careers/recruitment, page 1 of the exam table (sorted by last update).
 iocl.html  iocl.com/latest-job-opening is 1.2 MB: the fixture is its first 39 cards, an unchanged slice
            of the page's bytes from '<section class="content-section"' up to the 40th card.
@@ -34,7 +34,7 @@ def url(item):
     return item.files[0][1] if item.files else item.link
 
 
-@pytest.mark.parametrize("board,count,window", [(bc.IBPS, 2, 2), (bc.AAI, 69, 35), (bc.IOCL, 7, 7), (bc.BECIL, 10, 10)])
+@pytest.mark.parametrize("board,count,window", [(bc.IBPS, 16, 6), (bc.AAI, 69, 35), (bc.IOCL, 7, 7), (bc.BECIL, 10, 10)])
 def test_real_pages_give_only_the_boards_own_links(board, count, window):
     items = parse(board)
     assert len(items) == count and len({i.id for i in items}) == count
@@ -46,20 +46,31 @@ def test_real_pages_give_only_the_boards_own_links(board, count, window):
     assert all(i.published.date() <= TODAY for i in items)
 
 
-def test_ibps_home_page_cards():
+def test_ibps_crp_updates_list():
     items = parse(bc.IBPS)
-    ad, scores = items
-    assert ad.title == ("IBPS Advertisement: Advertisement for Direct Recruitment of Server Administrator, "
-                        "Assistant & Programming Assistant on Regular Basis")
+    ad = items[0]
+    assert ad.title == ("Advertisement for Direct Recruitment of Server Administrator, Assistant & Programming Assistant "
+                        "on Regular Basis")
     assert (ad.published.date(), ad.kind) == (dt.date(2026, 10, 29), "recruitment")
     assert url(ad) == ("https://www.ibps.in/wp-content/uploads/Advertisement-for-Server-Administrator-Programming-"
                        "Assistant-and-Assistant-Oct._Nov.-2026.pdf")
-    assert scores.title == "CRP-SPL-XVI: Scores of Online Preliminary Examination for CRP-SPL-XVI"
+    got = {i.title: i for i in items}
+    scores = got["Scores of Online Preliminary Examination for CRP-SPL-XVI"]
     assert (scores.published.date(), scores.kind) == (dt.date(2026, 10, 22), "result")
     assert scores.link == "https://www.ibps.in/index.php/specialist-officers-xvi/"
-    # the other two cards link the registration portal (ibpsreg.ibps.in): counted, left out
-    assert len(list(bc.IBPS.entries(page("ibps")))) == 4
-    assert not any("ibpsreg" in url(i) for i in items)
+    call = got["Online Main Exam Call Letter for CRP-SPL-XVI"]  # same page, its own update
+    assert (call.published.date(), call.kind, call.link) == (dt.date(2026, 10, 22), "admit_card", scores.link)
+    po = got["Notification for Common Recruitment Process for CRP- PO/MTs-XVI"]
+    assert (po.published.date(), po.kind) == (dt.date(2026, 7, 1), "recruitment")
+    assert url(po) == "https://www.ibps.in/wp-content/uploads/Detailed-Notification_CRP-PO-XVI_Final_V1_30.06.2026.pdf"
+    assert items[-1].published.date() == dt.date(2025, 10, 28)  # "Updated Vacancies as on 27.10.2025 ... CRP-CSA-XV"
+    assert "Corrigendum Regarding CRP-Clerks-XIV" in {i.title for i in parse(bc.IBPS, cutoff=dt.date(2024, 1, 1))}  # 04 Nov 24
+    # 24 rows: the trade mark, proprietary rights and ISO notices are about the institute, not an exam (not read);
+    # 4 link the registration portals (ibpsreg.ibps.in, scribe.ibps.in): counted, left out
+    assert len(list(bc.IBPS.entries(page("ibps")))) == 21
+    assert not any("ibpsreg" in url(i) or "scribe" in url(i) for i in items)
+    assert not any("Trade Mark" in i.title or "ISO" in i.title for i in parse(bc.IBPS, cutoff=dt.date(2024, 1, 1)))
+    assert bc._ibps_date("04 Nov 24") == dt.date(2024, 11, 4)
 
 
 def test_aai_one_update_per_filled_cell():
