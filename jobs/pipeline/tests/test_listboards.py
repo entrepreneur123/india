@@ -7,7 +7,7 @@ from sarkari import listboards, sources, ssc
 
 HERE = os.path.dirname(__file__)
 TODAY = dt.date(2026, 10, 21)
-CAPTURED = {"mppsc": dt.date(2026, 10, 29), "ctet": dt.date(2026, 10, 29)}  # from the India server's captures branch
+CAPTURED = {"mppsc": dt.date(2026, 10, 29), "ctet": dt.date(2026, 10, 29), "rrb": dt.date(2026, 10, 29)}  # from the India server's captures branch
 
 
 def page(source):
@@ -22,7 +22,7 @@ def parse(board, cutoff=dt.date(2025, 10, 21), today=TODAY):
 
 
 @pytest.mark.parametrize("board,count", [(listboards.CSBC, 41), (listboards.BPSSC, 29), (listboards.ISRO, 23), (listboards.ONGC, 31),
-                                         (listboards.MPPSC, 30), (listboards.CTET, 10)])
+                                         (listboards.MPPSC, 30), (listboards.CTET, 10), (listboards.RRB, 151)])
 def test_real_pages_give_only_the_boards_own_links(board, count):
     items = parse(board)
     assert len(items) == count and len({i.id for i in items}) == count
@@ -105,3 +105,17 @@ def test_ctet_files_count_only_in_ctets_own_cdn_folder():
     moved = '<a download href="' + listboards.CTET_FILES + 'uploads/2026/08/20260914111.pdf">y</a>'
     assert list(listboards._ctet_entries(other)) == []  # another site on the same CDN
     assert list(listboards._ctet_entries(moved))[0][0] == ""  # name and folder disagree: no date, counted as malformed
+
+
+def test_rrb_updates_are_one_per_cen_category_and_day():
+    items = parse(listboards.RRB)
+    first = items[0]
+    assert (first.title, first.published.date(), first.kind) == ("RRB CEN 01/2025: Exam Schedule", dt.date(2026, 10, 29), "schedule")
+    assert first.link == "https://rrbchennai.gov.in/getdata?loc=chennai&cenum=01/2025&category=Exam%20Schedule"
+    keys = [(i.title, i.published.date()) for i in items]
+    assert len(keys) == len(set(keys))  # repeated rows of one day collapse
+    days = {i.published.date() for i in items if i.title == "RRB CEN 08/2026: Notification"}
+    assert {dt.date(2026, 10, 26), dt.date(2026, 10, 27)} <= days  # a new day is a new update
+    assert {i.kind for i in items if i.title.endswith("E-Call Letters")} == {"admit_card"}
+    assert {i.kind for i in items if i.title.endswith("Objection Tracker")} == {"answer_key"}
+    assert not any("Mock Test" in i.title for i in items)

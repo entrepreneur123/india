@@ -20,11 +20,12 @@ def read(out):
 
 
 def test_reads_only_the_india_only_boards_into_its_own_file(tmp_path):
-    assert {b.SOURCE for b in india.BOARDS} == listboards.INDIA_ONLY == {"mppsc", "ctet"}
+    assert {b.SOURCE for b in india.BOARDS} == listboards.INDIA_ONLY == {"mppsc", "ctet", "rrb"}
     assert india.collect(str(tmp_path), page, NOW, warn=lambda _: None)
     doc = read(str(tmp_path))
-    assert doc["boards"] == {"mppsc": {"ok": True}, "ctet": {"ok": True}}
-    assert {i["source"] for i in doc["items"]} == {"mppsc", "ctet"} and len(doc["items"]) == 17  # 120 days back
+    assert doc["boards"] == {"mppsc": {"ok": True}, "ctet": {"ok": True}, "rrb": {"ok": True}}
+    assert {i["source"] for i in doc["items"]} == {"mppsc", "ctet", "rrb"}
+    assert sum(i["source"] != "rrb" for i in doc["items"]) == 17  # 120 days back
     assert min(i["publishedAt"] for i in doc["items"]) >= "2026-07-01"
     assert [i["publishedAt"] for i in doc["items"]] == sorted((i["publishedAt"] for i in doc["items"]), reverse=True)
     assert not india.collect(str(tmp_path), page, NOW + dt.timedelta(minutes=30), warn=lambda _: None)  # no news: no commit
@@ -42,4 +43,5 @@ def test_a_board_that_fails_keeps_its_items_and_says_why(tmp_path):
     assert india.collect(str(tmp_path), mppsc_down, NOW, warn=warnings.append)  # the board status changed
     doc = read(str(tmp_path))
     assert doc["boards"]["mppsc"] == {"ok": False, "error": "OSError: timed out"} and doc["boards"]["ctet"] == {"ok": True}
+    assert doc["boards"]["rrb"] == {"ok": True}
     assert sum(i["source"] == "mppsc" for i in doc["items"]) == before > 0 and warnings

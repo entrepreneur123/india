@@ -202,6 +202,7 @@ HUBS = [  # slug, title ({y}: year), Hindi line, what it lists, filter
     ("admit-card", "Admit Card {y}: latest admit card notices", "एडमिट कार्ड {y}", ("kind", "admit_card")),
     ("answer-key", "Answer Key {y}: latest answer keys", "आंसर की {y}", ("kind", "answer_key")),
     ("police-jobs", "Police Vacancy {y} (Police Bharti): UP, Bihar, Haryana, CAPF, Delhi Police", "पुलिस भर्ती {y}", ("sector", "police")),
+    ("railway-jobs", "Railway Jobs {y} (RRB): CEN notices, results, admit cards", "रेलवे भर्ती {y}: आरआरबी", ("sector", "railway")),
     ("ssc-jobs", "SSC {y}: CGL, CHSL, MTS, GD, CPO notices and results", "एसएससी {y}", ("sector", "ssc")),
     ("psu-jobs", "PSU Jobs {y}: ONGC recruitment notices", "सरकारी कंपनी (PSU) भर्ती {y}", ("sector", "psu")),
     ("isro-recruitment", "ISRO Recruitment {y}: notifications and updates", "इसरो भर्ती {y}", ("sector", "science")),
