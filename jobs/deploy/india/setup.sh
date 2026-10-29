@@ -8,9 +8,12 @@ repo="${1:?usage: setup.sh <owner>/<repo> [branch]}"
 branch="${2:-main}"
 home=/opt/sarkari
 
-apt-get update -qq
 grep -q 'VERSION_ID="24.04"' /etc/os-release || { echo "needs Ubuntu 24.04"; exit 1; }
-apt-get install -y -qq git python3 python3-venv poppler-utils caddy curl
+# A fresh VM runs its own updates for the first minutes after boot and holds apt's lock: wait for it.
+echo "1/5 installing packages (waits for the VM's own first updates; can take 10+ minutes on a small VM)"
+apt_wait=(-o DPkg::Lock::Timeout=1800)
+apt-get "${apt_wait[@]}" update -qq
+apt-get "${apt_wait[@]}" install -y -qq git python3 python3-venv poppler-utils caddy curl
 
 # A 1 GB VM (Oracle's Always Free E2.1.Micro) can run out of memory while a large result PDF is read;
 # 2 GB of swap keeps the run alive. Skipped when the machine has 2 GB or more, or swap already exists.
@@ -32,6 +35,7 @@ fi
 
 id sarkari >/dev/null 2>&1 || useradd --system --home "$home" --shell /usr/sbin/nologin sarkari
 mkdir -p "$home/push" "$home/.ssh"
+echo "2/5 Python tools"
 python3 -m venv "$home/venv"
 "$home/venv/bin/pip" install -q pytest==9.1.1 pywebpush==2.0.3
 
@@ -65,10 +69,12 @@ chmod 600 /etc/sarkari.env
 
 chown -R sarkari:sarkari "$home"
 chmod 700 "$home/push" "$home/.ssh"  # VAPID key, subscriptions, deploy key
+echo "3/5 GitHub access"
 echo "== Add this deploy key on GitHub (repo → Settings → Deploy keys → Add, tick 'Allow write access'):"
 cat "$home/.ssh/id_ed25519.pub"
 read -r -p "Press Enter once the key is added... " _
 
+echo "4/5 downloading the code"
 sudo -H -u sarkari git clone -q --branch "$branch" "git@github.com:$repo.git" "$home/code"
 if sudo -H -u sarkari git -C "$home/code" ls-remote --exit-code --heads origin data >/dev/null; then
   sudo -H -u sarkari git -C "$home/code" worktree add -q "$home/public" origin/data
@@ -83,6 +89,7 @@ install -m 644 "$home/code/jobs/deploy/india/sarkari-push.service" /etc/systemd/
 install -m 644 "$home/code/jobs/deploy/india/sarkari-capture.service" /etc/systemd/system/
 install -m 644 "$home/code/jobs/deploy/india/sarkari-capture.timer" /etc/systemd/system/
 systemctl daemon-reload
+echo "5/5 starting the 30-minute collection"
 systemctl enable --now sarkari.timer sarkari-capture.timer
 systemctl start --no-block sarkari-capture.service  # first copies now, not next Monday
 
