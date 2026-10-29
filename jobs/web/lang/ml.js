@@ -285,6 +285,7 @@ export default {
   state_UP: "ഉത്തർപ്രദേശ്",
   state_BR: "ബിഹാർ",
   state_HR: "ഹരിയാന",
+  state_MP: "മധ്യപ്രദേശ്",
   anySector: "എല്ലാ മേഖലകളും",
   anyState: "എല്ലാ സംസ്ഥാനങ്ങളും",
   jobsSector: "{name} ജോലികൾ",

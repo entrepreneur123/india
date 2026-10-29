@@ -285,6 +285,7 @@ export default {
   state_UP: "उत्तर प्रदेश",
   state_BR: "बिहार",
   state_HR: "हरियाणा",
+  state_MP: "मध्य प्रदेश",
   anySector: "सभी सेक्टर",
   anyState: "सभी राज्य",
   jobsSector: "{name} की नौकरियाँ",

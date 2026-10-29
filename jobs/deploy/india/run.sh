@@ -28,7 +28,7 @@ if git -C "$public" ls-remote --exit-code --heads origin data >/dev/null 2>&1; t
   git -C "$public" reset -q --hard origin/data
 fi  # else: the very first run starts the data branch
 
-(cd "$code/jobs/pipeline" && "$py" -m sarkari.build --out "$public" --site-url "$SITE_URL" ${BUILD_ARGS:-})
+(cd "$code/jobs/pipeline" && JOBS_IN_INDIA=1 "$py" -m sarkari.build --out "$public" --site-url "$SITE_URL" ${BUILD_ARGS:-})
 "$code/jobs/deploy/copy_web.sh" "$public" "$SITE_URL"
 
 git -C "$public" add -A jobs .nojekyll

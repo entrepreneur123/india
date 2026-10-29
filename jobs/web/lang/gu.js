@@ -285,6 +285,7 @@ export default {
   state_UP: "ઉત્તર પ્રદેશ",
   state_BR: "બિહાર",
   state_HR: "હરિયાણા",
+  state_MP: "મધ્ય પ્રદેશ",
   anySector: "બધા ક્ષેત્રો",
   anyState: "બધા રાજ્યો",
   jobsSector: "{name} નોકરીઓ",

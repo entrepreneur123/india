@@ -275,3 +275,18 @@ def test_an_unexpected_error_in_one_board_does_not_stop_the_others(monkeypatch):
     monkeypatch.setattr(build.listboards.ISRO.__class__, "fetch", lambda self, *a, **k: broken() if self.SOURCE == "isro" else [])
     fresh, kept, failed = build.other_boards(boards, NOW, 120, [], warn=lambda m: None)
     assert failed == ["isro"] and any(i.source == "upprpb" for i in fresh)
+
+
+def test_boards_that_answer_only_from_india_are_asked_only_on_the_india_server():
+    asked = []
+
+    def get_text(url):
+        asked.append(url)
+        raise OSError("offline in this test")
+    old = [{"id": "mppsc-1", "source": "mppsc", "publishedAt": "2026-10-28T00:00:00+05:30"}]
+    now = dt.datetime(2026, 10, 29, 12, tzinfo=ssc.IST)
+    _, kept, failed = build.other_boards(get_text, now, 120, old, warn=lambda _: None)
+    assert not any("mppsc" in u or "ctet" in u for u in asked) and kept == old and "mppsc" not in failed
+    asked.clear()
+    _, kept, failed = build.other_boards(get_text, now, 120, old, warn=lambda _: None, in_india=True)
+    assert any("mppsc" in u for u in asked) and any("ctet" in u for u in asked) and kept == old and "mppsc" in failed

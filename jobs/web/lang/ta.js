@@ -285,6 +285,7 @@ export default {
   state_UP: "உத்தரப் பிரதேசம்",
   state_BR: "பீகார்",
   state_HR: "ஹரியானா",
+  state_MP: "மத்தியப் பிரதேசம்",
   anySector: "அனைத்து துறைகள்",
   anyState: "அனைத்து மாநிலங்கள்",
   jobsSector: "{name} வேலைகள்",

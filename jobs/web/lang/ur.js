@@ -285,6 +285,7 @@ export default {
   state_UP: "اتر پردیش",
   state_BR: "بہار",
   state_HR: "ہریانہ",
+  state_MP: "مدھیہ پردیش",
   anySector: "تمام سیکٹر",
   anyState: "تمام ریاستیں",
   jobsSector: "{name} کی نوکریاں",

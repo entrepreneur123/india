@@ -234,6 +234,30 @@
       "sectors": [
         "psu"
       ]
+    },
+    "MPPSC": {
+      "name": "MPPSC: Madhya Pradesh state services, assistant professors and other posts",
+      "hi": "मध्य प्रदेश लोक सेवा आयोग (MPPSC) भर्ती",
+      "short": "MPPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "mppsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "CTET": {
+      "name": "CTET: Central Teacher Eligibility Test (CBSE)",
+      "hi": "सीटेट: केंद्रीय शिक्षक पात्रता परीक्षा",
+      "short": "CTET",
+      "qualifications": null,
+      "ref": null,
+      "source": "ctet",
+      "noTimeline": true,
+      "sectors": [
+        "teaching"
+      ]
     }
   }
 }

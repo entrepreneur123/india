@@ -7,6 +7,11 @@ Each board below was written against its live page (21-10-2026; tests/fixtures/<
   isro   Indian Space Research Organisation (careers)    www.isro.gov.in     "Advt. No. X dated DD.MM.YYYY - ..."
   ongc   Oil and Natural Gas Corporation (recruitment)   ongcindia.com       list items: link, then "16 Oct, 2026"
 
+Read from the India server only (29-10-2026; tests/fixtures/<source>.html from its captures branch):
+
+  mppsc  Madhya Pradesh Public Service Commission        mppsc.mp.gov.in     home page links, "..._Dated_28_10_2026.pdf"
+  ctet   Central Teacher Eligibility Test (CBSE)         ctet.nic.in         public notices, files on the NIC CDN
+
 Rules shared with upprpb.py: the board gives a day, no time (dateOnly); links that leave the
 board's own site (exam agencies' portals such as apply-csbc.com) are left out, because such
 domains can't be told apart from look-alikes; a page with too few or too many broken entries
@@ -36,7 +41,7 @@ _RULES: list[tuple[str, re.Pattern]] = [
     ("answer_key", re.compile(r"\banswer[- ]?keys?\b", re.I)),
     ("admit_card", re.compile(r"\b(e-?admit[- ]?cards?|admit[- ]?cards?|call letters?)\b", re.I)),
     ("result", re.compile(r"(^results?\b|\bresults? of\b|\bfinal selection|\bselection list|\bmerit list|\bshortlisted|\bscreened[- ]in|\bselected candidates|\blist of (successful|provisionally|qualified))", re.I)),
-    ("recruitment", re.compile(r"(^advt\.?\s*no\.?[^:]*:\s*for selection|\brecruitment (of|to)\b|\binviting (online )?applications|^notification for|^advertisement for|^engagement of|^hiring of|walk[- ]*in|call for applications)", re.I)),
+    ("recruitment", re.compile(r"(^advt\.?\s*no\.?[^:]*:\s*for selection|\brecruitment (of|to)\b|^recruitment advertisement\b|\binviting (online )?applications|^notification for|^advertisement for|^engagement of|^hiring of|walk[- ]*in|call for applications)", re.I)),
     ("schedule", re.compile(r"\b(schedule of|date of (conduct|conducting))", re.I)),
 ]
 
@@ -177,9 +182,47 @@ def _ongc_date(raw: str, _title: str) -> dt.date:
     return dt.datetime.strptime(re.sub(r"\s+", " ", raw.strip()), "%d %b, %Y").date()
 
 
+# MPPSC: its home page links each new file, the date in the name:
+#   <a title="..." target="_blank" href="[https://mppsc.mp.gov.in/]uploads/advertisement/..._Dated_08_10_2026.pdf">headline</a>
+# The office's own purchase notices (tenders) sit in the same list and are left out.
+_MPPSC = re.compile(r"""<a\b([^>]*?)href="((?:https://mppsc\.mp\.gov\.in/)?uploads/(?:advertisement|files)/[^"]+)"[^>]*>(.*?)</a>""", re.S | re.I)
+_TITLE_ATTR = re.compile(r'title="([^"]*)"', re.I)
+_MPPSC_DATE = re.compile(r"Dated_(\d{1,2})_(\d{1,2})_(\d{4})", re.I)
+_MPPSC_TEXT_DATE = re.compile(r"\bdated\s*:?\s*(\d{1,2}[-./]\d{1,2}[-./]\d{4})", re.I)
+_TENDER = re.compile(r"(_Computer_Dated_|\btender|\bquotation|निविदा|आवश\u094d?\u200d?यकता)", re.I)
+
+
+def _mppsc_entries(page: str) -> Iterator[tuple[str, str, str]]:
+    for attrs, href, headline in _MPPSC.findall(page):
+        if not _TAG.sub("", headline).strip():  # a link with only an icon: its title attribute says what it is
+            t = _TITLE_ATTR.search(attrs)
+            headline = t.group(1) if t else ""
+        text = html.unescape(_TAG.sub(" ", headline))
+        if _TENDER.search(href + " " + text):
+            continue
+        m = _MPPSC_DATE.search(href)
+        t = _MPPSC_TEXT_DATE.search(text)
+        yield (f"{m.group(1)}-{m.group(2)}-{m.group(3)}" if m else t.group(1) if t else ""), href, headline
+
+
+# CTET: <a download href="https://cdnbbsr.s3waas.gov.in/<ctet's folder>/uploads/2026/09/20260914325514446.pdf">headline</a>
+# The file name starts with the upload day (YYYYMMDD), inside that year/month folder.
+CTET_FILES = "https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/"
+_CTET = re.compile(r"""<a\b[^>]*?href="(""" + re.escape(CTET_FILES) + r"""uploads/(\d{4})/(\d{2})/(\d{8})\d*\.pdf)"[^>]*>(.*?)</a>""", re.S | re.I)
+
+
+def _ctet_entries(page: str) -> Iterator[tuple[str, str, str]]:
+    for href, year, month, day, headline in _CTET.findall(page):
+        same_folder = day[:6] == year + month
+        yield (f"{day[6:]}-{day[4:6]}-{day[:4]}" if same_folder else ""), href, headline
+
+
 CSBC = Board("csbc", "https://csbc.bihar.gov.in", "https://csbc.bihar.gov.in/", "CSBC", _table_rows, _dmy)
 BPSSC = Board("bpssc", "https://bpssc.bihar.gov.in", "https://bpssc.bihar.gov.in/", "BPSSC", _table_rows, _dmy)
 ISRO = Board("isro", "https://www.isro.gov.in", "https://www.isro.gov.in/Careers.html", "ISRO", _isro_entries, _isro_date)
 ONGC = Board("ongc", "https://ongcindia.com", "https://ongcindia.com/web/eng/career/recruitment-notice", "ONGC",
              _ongc_entries, _ongc_date)
-ALL = (CSBC, BPSSC, ISRO, ONGC)
+MPPSC = Board("mppsc", "https://mppsc.mp.gov.in", "https://mppsc.mp.gov.in/", "MPPSC", _mppsc_entries, _dmy)
+CTET = Board("ctet", "https://cdnbbsr.s3waas.gov.in", "https://ctet.nic.in/", "CTET", _ctet_entries, _dmy, min_items=3)
+ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET)
+INDIA_ONLY = {"mppsc", "ctet"}  # don't answer GitHub's US runners: only the India server reads them
