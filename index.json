@@ -84,9 +84,9 @@
   "url": "https://rect.crpf.gov.in/"
  },
  "ctet": {
+  "bytes": 92515,
   "date": "2026-10-29",
-  "error": "GET https://ctet.nic.in/ failed after 2 attempts: <urlopen error _ssl.c:983: The handshake operation timed out>",
-  "ok": false,
+  "ok": true,
   "url": "https://ctet.nic.in/"
  },
  "drdo": {
@@ -96,7 +96,7 @@
   "url": "https://www.drdo.gov.in/drdo/careers"
  },
  "dsssb": {
-  "bytes": 77908,
+  "bytes": 77907,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/"
@@ -112,6 +112,12 @@
   "date": "2026-10-29",
   "ok": true,
   "url": "https://www.epfindia.gov.in/"
+ },
+ "epfo-recruitments": {
+  "bytes": 210632,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://www.epfo.gov.in/recruitments/"
  },
  "gpsc": {
   "bytes": 436355,
@@ -138,9 +144,9 @@
   "url": "https://hpsc.gov.in/"
  },
  "ibps": {
-  "bytes": 214743,
   "date": "2026-10-29",
-  "ok": true,
+  "error": "GET https://www.ibps.in/ failed after 2 attempts: <urlopen error [SSL: UNEXPECTED_MESSAGE] unexpected message (_ssl.c:1000)>",
+  "ok": false,
   "url": "https://www.ibps.in/"
  },
  "ibps-crp-updates": {
@@ -150,9 +156,9 @@
   "url": "https://www.ibps.in/index.php/crp-updates/"
  },
  "ibps-recruitment": {
-  "bytes": 106876,
   "date": "2026-10-29",
-  "ok": true,
+  "error": "GET https://www.ibps.in/index.php/recruitment failed after 2 attempts: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)>",
+  "ok": false,
   "url": "https://www.ibps.in/index.php/recruitment"
  },
  "india-post": {
@@ -166,6 +172,12 @@
   "date": "2026-10-29",
   "ok": true,
   "url": "https://indiapostgdsonline.gov.in/"
+ },
+ "indiapost-vacancies": {
+  "bytes": 147087,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://www.indiapost.gov.in/vacancies"
  },
  "itbp": {
   "bytes": 96932,
@@ -215,6 +227,12 @@
   "ok": true,
   "url": "https://kvsangathan.nic.in/"
  },
+ "kvs-recruitment": {
+  "bytes": 145890,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/"
+ },
  "mp-esb": {
   "bytes": 14515,
   "date": "2026-10-29",
@@ -239,8 +257,14 @@
   "ok": true,
   "url": "https://www.nabard.org/"
  },
+ "nabard-careers": {
+  "bytes": 65639,
+  "date": "2026-10-29",
+  "ok": true,
+  "url": "https://www.nabard.org/Hindi/ftrcontent.aspx?id=660"
+ },
  "navy": {
-  "bytes": 91709,
+  "bytes": 91707,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://www.joinindiannavy.gov.in/"
@@ -282,13 +306,13 @@
   "url": "https://sssb.punjab.gov.in/"
  },
  "rbi-announcements": {
-  "bytes": 116399,
+  "bytes": 116397,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx"
  },
  "rbi-vacancies": {
-  "bytes": 116692,
+  "bytes": 116690,
   "date": "2026-10-29",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx"
