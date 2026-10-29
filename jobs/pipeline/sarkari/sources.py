@@ -38,6 +38,15 @@ SOURCES: dict[str, dict] = {
     "rbi": {"short": "RBI", "name": "Reserve Bank of India", "site": "https://opportunities.rbi.org.in", "state": None},
     "crpf": {"short": "CRPF", "name": "Central Reserve Police Force", "site": "https://rect.crpf.gov.in", "state": None},
     "nta": {"short": "NTA", "name": "National Testing Agency", "site": "https://nta.ac.in", "state": None},
+    "gpsc": {"short": "GPSC", "name": "Gujarat Public Service Commission", "site": "https://gpsc.gujarat.gov.in", "state": "GJ"},
+    "ukpsc": {"short": "UKPSC", "name": "Uttarakhand Public Service Commission", "site": "https://psc.uk.gov.in", "state": "UK"},
+    # UKSSSC's files are on the NIC web CDN; "files" names its folder there.
+    "uksssc": {"short": "UKSSSC", "name": "Uttarakhand Subordinate Service Selection Commission", "site": "https://sssc.uk.gov.in", "state": "UK",
+               "files": ["https://cdnbbsr.s3waas.gov.in/s34ffd0e19d2069412274bd3025b0e176c/"]},
+    "osssc": {"short": "OSSSC", "name": "Odisha Sub-ordinate Staff Selection Commission", "site": "https://www.osssc.gov.in", "state": "OD"},
+    "kpsc": {"short": "KPSC", "name": "Karnataka Public Service Commission", "site": "https://kpsc.karnataka.gov.in", "state": "KA"},
+    "tntrb": {"short": "TN TRB", "name": "Teachers Recruitment Board, Tamil Nadu", "site": "https://www.trb.tn.gov.in", "state": "TN",
+              "files": ["https://trb.tn.gov.in/"]},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

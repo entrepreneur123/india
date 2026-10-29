@@ -475,6 +475,79 @@
       "sectors": [
         "teaching"
       ]
+    },
+    "GPSC": {
+      "name": "GPSC: Gujarat class-1/2 officers, engineers, medical officers and other posts",
+      "hi": "गुजरात लोक सेवा आयोग (GPSC) भर्ती",
+      "short": "GPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "gpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "UKPSC": {
+      "name": "UKPSC: Uttarakhand PCS, lecturers, judicial and other posts",
+      "hi": "उत्तराखण्ड लोक सेवा आयोग (UKPSC) भर्ती",
+      "short": "UKPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "ukpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "UKSSSC": {
+      "name": "UKSSSC: Uttarakhand clerks, assistants, drivers and other posts",
+      "hi": "उत्तराखण्ड अधीनस्थ सेवा चयन आयोग (UKSSSC) भर्ती",
+      "short": "UKSSSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "uksssc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "OSSSC": {
+      "name": "OSSSC: Odisha subordinate staff selection (junior assistants, forest guards and other posts)",
+      "hi": "ओडिशा अधीनस्थ कर्मचारी चयन आयोग (OSSSC) भर्ती",
+      "short": "OSSSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "osssc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "KPSC": {
+      "name": "KPSC: Karnataka Public Service Commission",
+      "hi": "कर्नाटक लोक सेवा आयोग (KPSC) भर्ती",
+      "short": "KPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "kpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "TNTRB": {
+      "name": "TN TRB: Tamil Nadu teachers and lecturers (TNTET and other exams)",
+      "hi": "तमिलनाडु शिक्षक भर्ती बोर्ड (TN TRB) भर्ती",
+      "short": "TN TRB",
+      "qualifications": null,
+      "ref": null,
+      "source": "tntrb",
+      "noTimeline": true,
+      "sectors": [
+        "teaching",
+        "state"
+      ]
     }
   }
 }
