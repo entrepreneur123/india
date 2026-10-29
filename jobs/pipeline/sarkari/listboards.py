@@ -267,6 +267,35 @@ def _rrb_kind(title: str) -> str:
     return RRB_KINDS.get(title.split(": ", 1)[-1], "notice")
 
 
+# SBI: one card per advertisement; its headline carries the latest step in brackets and changes with it:
+#   <div class="accordion lateral ..." data-articleid="CRPD/SCO/2026-27/30" ...> ... <p>ENGAGEMENT OF ...
+#   <span class="text_blink" ...>(Apply Online from 19.10.2026 TO 09.11.2026)</span></p><p>ADVERTISEMENT NO: ...</p>
+#   ... <div class="accordion-content ..."> <ul> <li>DOWNLOAD ADVERTISEMENT <a href="/documents/...pdf/...?t=..">English</a>
+# The card gives no date for a step, so a headline is dated the day it is first seen; only an open
+# application ("Apply Online from DD.MM.YYYY") has its own date.
+_SBI_CARD = re.compile(r"""<div class="accordion lateral[^"]*"[^>]*>(.*?)<div class="accordion-content[^"]*"[^>]*>(.*?)(?=<div class="accordion lateral|$)""", re.S)
+_SBI_P = re.compile(r"<p>(.*?)</p>", re.S)
+_SBI_DOC = re.compile(r'<a\b[^>]*?href="(/documents/[^"]+)"')
+_SBI_OPEN = re.compile(r"\bapply online from\s+(\d{1,2}\.\d{1,2}\.\d{4})", re.I)
+_SBI_KINDS = [("admit_card", re.compile(r"call letter|admit card", re.I)),
+              ("result", re.compile(r"result|selected|marks secured|wait ?list|allotment|no candidate", re.I)),
+              ("schedule", re.compile(r"schedule|psychometric", re.I)),
+              ("amendment", re.compile(r"extend|extension|withdrawn|corrigendum|revised", re.I)),
+              ("recruitment", re.compile(r"apply online|registration", re.I))]
+
+
+def _sbi_entries(page: str) -> Iterator[tuple[str, str, str]]:
+    for head, body in _SBI_CARD.findall(page):
+        headline = " — ".join(re.sub(r"\s+", " ", html.unescape(_TAG.sub(" ", p))).strip() for p in _SBI_P.findall(head))
+        doc = _SBI_DOC.search(body)
+        opened = _SBI_OPEN.search(headline)
+        yield (opened.group(1) if opened else ""), doc.group(1) if doc else "", headline
+
+
+def _sbi_kind(title: str) -> str:
+    return next((kind for kind, pattern in _SBI_KINDS if pattern.search(title)), "notice")
+
+
 CSBC = Board("csbc", "https://csbc.bihar.gov.in", "https://csbc.bihar.gov.in/", "CSBC", _table_rows, _dmy)
 BPSSC = Board("bpssc", "https://bpssc.bihar.gov.in", "https://bpssc.bihar.gov.in/", "BPSSC", _table_rows, _dmy)
 ISRO = Board("isro", "https://www.isro.gov.in", "https://www.isro.gov.in/Careers.html", "ISRO", _isro_entries, _isro_date)
@@ -276,5 +305,7 @@ MPPSC = Board("mppsc", "https://mppsc.mp.gov.in", "https://mppsc.mp.gov.in/", "M
 CTET = Board("ctet", "https://cdnbbsr.s3waas.gov.in", "https://ctet.nic.in/", "CTET", _ctet_entries, _dmy, min_items=3)
 RRB = Board("rrb", "https://rrbchennai.gov.in", "https://rrbchennai.gov.in/", "RRB", _rrb_entries, _dmy,
             kind=_rrb_kind, dated_ids=True)
-ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET, RRB)
-INDIA_ONLY = {"mppsc", "ctet", "rrb"}  # don't answer GitHub's US runners: only the India server reads them
+SBI = Board("sbi", "https://sbi.bank.in", "https://sbi.bank.in/web/careers/current-openings", "SBI", _sbi_entries, _dmy,
+            kind=_sbi_kind, undated=True)
+ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET, RRB, SBI)
+INDIA_ONLY = {"mppsc", "ctet", "rrb", "sbi"}  # don't answer GitHub's US runners: only the India server reads them

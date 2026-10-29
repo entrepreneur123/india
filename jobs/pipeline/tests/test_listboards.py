@@ -7,7 +7,8 @@ from sarkari import listboards, sources, ssc
 
 HERE = os.path.dirname(__file__)
 TODAY = dt.date(2026, 10, 21)
-CAPTURED = {"mppsc": dt.date(2026, 10, 29), "ctet": dt.date(2026, 10, 29), "rrb": dt.date(2026, 10, 29)}  # from the India server's captures branch
+CAPTURED = {"mppsc": dt.date(2026, 10, 29), "ctet": dt.date(2026, 10, 29), "rrb": dt.date(2026, 10, 29),
+            "sbi": dt.date(2026, 10, 29)}  # from the India server's captures branch (sbi: fetched from here)
 
 
 def page(source):
@@ -22,7 +23,8 @@ def parse(board, cutoff=dt.date(2025, 10, 21), today=TODAY):
 
 
 @pytest.mark.parametrize("board,count", [(listboards.CSBC, 41), (listboards.BPSSC, 29), (listboards.ISRO, 23), (listboards.ONGC, 31),
-                                         (listboards.MPPSC, 30), (listboards.CTET, 10), (listboards.RRB, 151)])
+                                         (listboards.MPPSC, 30), (listboards.CTET, 10), (listboards.RRB, 151),
+                                         (listboards.SBI, 3)])
 def test_real_pages_give_only_the_boards_own_links(board, count):
     items = parse(board)
     assert len(items) == count and len({i.id for i in items}) == count
@@ -119,3 +121,28 @@ def test_rrb_updates_are_one_per_cen_category_and_day():
     assert {i.kind for i in items if i.title.endswith("E-Call Letters")} == {"admit_card"}
     assert {i.kind for i in items if i.title.endswith("Objection Tracker")} == {"answer_key"}
     assert not any("Mock Test" in i.title for i in items)
+
+
+def test_sbi_dates_a_step_the_day_it_is_first_seen():
+    today = CAPTURED["sbi"]
+    first = parse(listboards.SBI)  # no record yet: only open applications, which carry their own date
+    assert [(i.published.date(), i.kind) for i in first] == [(dt.date(2026, 10, 19), "recruitment")] + [(dt.date(2026, 8, 7), "recruitment")] * 2
+    assert first[0].title == ("ENGAGEMENT OF SPECIALIST CADRE OFFICERS ON FIXED TERM EMPLOYMENT BASIS "
+                              "(Apply Online from 19.10.2026 TO 09.11.2026) — ADVERTISEMENT NO: CRPD/SCO/2026-27/30")
+    assert first[0].link.startswith("https://sbi.bank.in/documents/77530/57941334/17102026_Detail_ADV_CRPD_SCO_2026-27_30.pdf/")
+    record = {}
+    listboards.SBI.parse(page("sbi"), today, dt.date(2025, 10, 21), seen=None, record=record)
+    assert record == {}  # the first run records nothing it could date
+    seen = {}
+    listboards.SBI.parse(page("sbi"), today, dt.date(2025, 10, 21), seen=seen, record=seen)
+    assert len(seen) == 82 and set(seen.values()) == {today.isoformat()}
+    # A card's headline changes with its next step: that headline is new, the rest keep their day.
+    later = today + dt.timedelta(days=3)
+    changed = page("sbi").replace("(PRELIMINARY EXAMINATION CALL LETTER IS AVAILABLE FOR DOWNLOAD)", "(PRELIMINARY EXAMINATION RESULT ANNOUNCED)")
+    record = {}
+    items = listboards.SBI.parse(changed, later, dt.date(2025, 10, 21), seen=dict(seen), record=record)
+    new = [i for i in items if i.published.date() == later]
+    assert [i.kind for i in new] == ["result"] and new[0].title.startswith("RECRUITMENT OF JUNIOR ASSOCIATES (CUSTOMER SUPPORT")
+    assert len(record) == 82 and sum(d == later.isoformat() for d in record.values()) == 1
+    kinds = {i.kind for i in items}
+    assert {"result", "admit_card", "schedule", "amendment", "recruitment"} <= kinds

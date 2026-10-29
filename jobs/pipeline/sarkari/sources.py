@@ -22,6 +22,7 @@ SOURCES: dict[str, dict] = {
     # CTET's files are on the NIC web CDN; "files" names its folder there, so only that folder counts.
     "ctet": {"short": "CTET", "name": "Central Teacher Eligibility Test (CBSE)", "site": "https://ctet.nic.in", "state": None,
              "files": ["https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/"]},
+    "sbi": {"short": "SBI", "name": "State Bank of India", "site": "https://sbi.bank.in", "state": None},
 }
 
 # What a family is, for "jobs by sector" (exam_families.json "sectors").
