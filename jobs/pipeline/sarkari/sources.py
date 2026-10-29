@@ -22,6 +22,19 @@ SOURCES: dict[str, dict] = {
     # CTET's files are on the NIC web CDN; "files" names its folder there, so only that folder counts.
     "ctet": {"short": "CTET", "name": "Central Teacher Eligibility Test (CBSE)", "site": "https://ctet.nic.in", "state": None,
              "files": ["https://cdnbbsr.s3waas.gov.in/s3443dec3062d0286986e21dc0631734c9/"]},
+    "sbi": {"short": "SBI", "name": "State Bank of India", "site": "https://sbi.bank.in", "state": None},
+    "ibps": {"short": "IBPS", "name": "Institute of Banking Personnel Selection", "site": "https://www.ibps.in", "state": None},
+    "aai": {"short": "AAI", "name": "Airports Authority of India", "site": "https://www.aai.aero", "state": None},
+    "iocl": {"short": "IOCL", "name": "Indian Oil Corporation Limited", "site": "https://iocl.com", "state": None},
+    "becil": {"short": "BECIL", "name": "Broadcast Engineering Consultants India Limited", "site": "https://www.becil.com", "state": None},
+    "bpsc": {"short": "BPSC", "name": "Bihar Public Service Commission", "site": "https://bpsc.bihar.gov.in", "state": "BR"},
+    "hpsc": {"short": "HPSC", "name": "Haryana Public Service Commission", "site": "https://hpsc.gov.in", "state": "HR"},
+    "ppsc": {"short": "PPSC", "name": "Punjab Public Service Commission", "site": "https://ppsc.gov.in", "state": "PB"},
+    "psssb": {"short": "PSSSB", "name": "Subordinate Services Selection Board, Punjab", "site": "https://sssb.punjab.gov.in", "state": "PB"},
+    "rpsc": {"short": "RPSC", "name": "Rajasthan Public Service Commission", "site": "https://rpsc.rajasthan.gov.in", "state": "RJ"},
+    "rssb": {"short": "RSSB", "name": "Rajasthan Staff Selection Board", "site": "https://rssb.rajasthan.gov.in", "state": "RJ"},
+    "dsssb": {"short": "DSSSB", "name": "Delhi Subordinate Services Selection Board", "site": "https://dsssb.delhi.gov.in", "state": "DL"},
+    "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 
 # What a family is, for "jobs by sector" (exam_families.json "sectors").

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <title>RSSB</title>
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="https://rssb.rajasthan.gov.in/fonts/helvetica.css">
+        <link rel="stylesheet" href="https://rssb.rajasthan.gov.in/fonts/lato.css">
+        <!--<link href="https://fonts.googleapis.com/css2?family=Helvetica%20Neue:wght@300;400;600;700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700" rel="stylesheet">-->
+   
+        <link rel="stylesheet" href="https://rssb.rajasthan.gov.in/bootstrap/css/bootstrap.css" id="bootstrap-css">
+        <link rel="stylesheet" href="https://rssb.rajasthan.gov.in/css/custom.css">
+        
+        
+         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+        
+        <script src="https://rssb.rajasthan.gov.in/js/jquery-3.6.0.min.js"></script>
+        <script src="https://rssb.rajasthan.gov.in/bootstrap/js/bootstrap.min.js"></script>
+        <script src="https://rssb.rajasthan.gov.in/js/custom.js"></script>
+        
+        <script type="text/javascript">
+            function formatDate(dateString) {
+                var d = new Date(Date.parse(dateString));
+                var day = (('' + d.getDate()).length < 2 ? '0' : '') + d.getDate();
+                var month = (('' + (d.getMonth() + 1)).length < 2 ? '0' : '') + (d.getMonth() + 1);
+                var year = d.getFullYear();
+                return day + "-" + month + "-" + year;
+            }
+
+            function renderPaginationHTML(response, onClickFunction) {
+                if (response.last_page <= 1) {
+                    return '';
+                }
+
+                var paginationHtml = '<nav><ul class="pagination">';
+
+                // Previous button
+                if (response.current_page > 1) {
+                    paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="' + onClickFunction + '(' +
+                        (response.current_page - 1) + '); return false;" aria-label="Previous">‹</a></li>';
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><span class="page-link">‹</span></li>';
+                }
+
+                // Page numbers
+                var startPage = Math.max(1, response.current_page - 2);
+                var endPage = Math.min(response.last_page, response.current_page + 2);
+
+                if (startPage > 1) {
+                    paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="' + onClickFunction + '(1); return false;">1</a></li>';
+                    if (startPage > 2) {
+                        paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                    }
+                }
+
+                for (var i = startPage; i <= endPage; i++) {
+                    if (i === response.current_page) {
+                        paginationHtml += '<li class="page-item active" aria-current="page"><span class="page-link">' + i + '</span></li>';
+                    } else {
+                        paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="' + onClickFunction + '(' + i + '); return false;">' + i + '</a></li>';
+                    }
+                }
+
+                if (endPage < response.last_page) {
+                    if (endPage < response.last_page - 1) {
+                        paginationHtml += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                    }
+                    paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="' + onClickFunction + '(' +
+                        response.last_page + '); return false;">' + response.last_page + '</a></li>';
+                }
+
+                // Next button
+                if (response.current_page < response.last_page) {
+                    paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="' + onClickFunction + '(' +
+                        (response.current_page + 1) + '); return false;" aria-label="Next">›</a></li>';
+                } else {
+                    paginationHtml += '<li class="page-item disabled"><span class="page-link">›</span></li>';
+                }
+
+                paginationHtml += '</ul></nav>';
+
+                return paginationHtml;
+            }
+
+            function scrollToElement(elementId, offset) {
+                offset = offset || 100;
+                $('html, body').animate({
+                    scrollTop: $(elementId).offset().top - offset
+                }, 300);
+            }
+        </script>
+        
+                        
+    </head>
+    <body>
+
+        <div class="maincontainer" style="background-color:white">
+       <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between pb-2">
+      <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+      <img src="https://rssb.rajasthan.gov.in/images/logo_img.png" class="rounded float-start board_logo" alt="Logo" height="150px" style="">
+      </a>
+
+      <div  class="col-12 col-md-auto mb-2 text-center justify-content-center mb-md-0">
+        <span class="headfont">Rajasthan Staff Selection Board</span>
+      <div class="d-flex justify-content-center headfont">राजस्थान कर्मचारी चयन बोर्ड</div>
+      </div>
+      
+
+      <div class="col-md-3 text-end">
+      <img src="https://rssb.rajasthan.gov.in/images/em.png" class="rounded float-end" alt="Logo" height="150px">
+     
+        </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navcolor" aria-label="Fifth navbar example">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample05">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item px-3">
+            <a class="nav-link active aria-current='page'" href="/"><i class="fa fa-home"></i></a>
+          </li>
+          <li class="nav-item dropdown px-3">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">Organization</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown05">
+            <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/about-us">About Us</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/board">Board</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/orgainisation-chart">Admin Structure</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/annual-reports">Annual Report</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/former-chairman">Former Chairmen</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/former-member">Former Members</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/former-secretary">Former Secretaries</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/media-gallery">Media Gallery</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/photo-gallery">Photo Gallery</a></li>
+             
+            </ul>
+          </li>
+         
+          <li class="nav-item dropdown px-3">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">Candidate Corner</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown05">
+            <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/advertisements">Advertisement</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/examscheme">Syllabus</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/admitcards">Admit Card</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/results">Results</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/oldpapers">Question Paper</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/answerkeys">Answer Key</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/key-objection">Online Question Objection</a></li>
+              <li><a class="dropdown-item" href="https://rssb.rajasthan.gov.in/candidates-guidelines">Exam Guidelines</a></li>
+            </ul>
+          </li>
+          <li class="nav-item px-3">
+            <a class="nav-link" href="https://rssb.rajasthan.gov.in/tenders">Tenders</a>
+          </li>
+          <li class="nav-item px-3">
+            <a class="nav-link" href="https://rssb.rajasthan.gov.in/press-notes">Press Notes</a>
+          </li>
+          <li class="nav-item px-3">
+            <a class="nav-link" href="https://rssb.rajasthan.gov.in/downloads">Downloads</a>
+        </li>
+          <li class="nav-item px-3">
+            <a class="nav-link" href="https://rssb.rajasthan.gov.in/candidates-guidelines">Exam Guidelines</a>
+          </li>
+          <li class="nav-item px-3">
+            <a class="nav-link" href="https://rssb.rajasthan.gov.in/contact-us">Contact Us</a>
+        </li>
+       
+        </ul>
+        
+      </div>
+    </div>
+  </nav>
+
+
+        <main>
+        
+        
+<div class="row">
+    <div class="col-sm-7" style="padding:10px">
+            <div id="carouselrssbSlides" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselrssbSlides" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselrssbSlides" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselrssbSlides" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#carouselrssbSlides" data-bs-slide-to="3" aria-label="Slide 4"></button>
+    <button type="button" data-bs-target="#carouselrssbSlides" data-bs-slide-to="4" aria-label="Slide 5"></button>
+ 
+  </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://rssb.rajasthan.gov.in/images/slide1.jpg"  height="400px">
+                 </div>
+                <div class="carousel-item">
+                <img src="https://rssb.rajasthan.gov.in/images/slide2.jpg" height="400px"> </div>
+                 <div class="carousel-item">
+                 <img src="https://rssb.rajasthan.gov.in/images/slide3.jpg" height="400px"></div>
+                 <div class="carousel-item">
+                 <img src="https://rssb.rajasthan.gov.in/images/slide4.jpg" height="400px"></div>
+                 <div class="carousel-item">
+                 <img src="https://rssb.rajasthan.gov.in/images/slide5.jpg" height="400px"></div>
+            </div>
+            </div>
+    </div>
+
+    <div class="col-sm-5" style="padding:10px">
+        <div class="news-notification position-relative">
+                <h2 class="pt-3 latest">Latest News</h2>
+            <div class="newsholder" style="color:#fff;padding:10px">
+                <div class="tickercontainer">
+                  <div class="mask">
+                     <ul id="ticker01" class="newsticker">
+                                                                                       <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">29-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1793273784.pdf" target="_blank">Driver 2024 : List of Provisionally Selected Candidate&#039;s for Document Verification after Trade Test </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">29-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1793273757.pdf" target="_blank">Driver 2024 : Information Regarding Online Scrutiny form of Provisionally Selected Candidates For Document Verification </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">29-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1793269096.pdf" target="_blank">Contractual Teaching Associate (Raj-CES) 2026 : Office Order for Compliance of Court Order Regarding Debarred Candidates </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">28-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1793188157.pdf" target="_blank">Basic and Senior Computer Instructor 2026 : Ammended Advertisement </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">27-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1793099273.pdf" target="_blank">Common Eligibility Test(Senior Secondary Level) 2026 : List of Withdrawal Candidates Application Numbers </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">23-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1792756589.pdf" target="_blank">Fourth Class Employee 2024 : Schedule For Document Verification of Provisionally Selected Candidates (Instructions regarding Scrutiny Form, Checklist and Formats) </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">22-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1792682309.pdf" target="_blank">LDC Grade II / Junior Assistant 2026 : Important Instructions regarding Online Phase-II Exam (Typing Speed and Efficiency Test) </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">21-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1792591103.pdf" target="_blank">Contractual Teaching Associate (Raj-CES) 2026 : Important Instructions and Schedule of Exam for the candidates </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">16-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1792147821.pdf" target="_blank">Forester 2026 : Office Order regarding Schedule For Physical Test </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                                                     <li><span style="padding-right:5px"><img src="https://rssb.rajasthan.gov.in/images/new.gif" height="20px" style="vertical-align: middle"></span><span style="font-weight:bold">15-10-2026</span> - <a href="https://rssb.rajasthan.gov.in/storage/news_item/1792066984.pdf" target="_blank">Conductor 2024 : Schedule For Document Verification of Provisionally Selected Candidates, (Instructions regarding Scrutiny Form, Checklist and Formats) </a></li>
+                        <!--<li><span style="font-weight:bold">10/10/2007</span> : <a href="#">Right when the page is loaded</a></li>-->
+                                              </ul>
+                    </div>
+                </div>
+                
+            </div>
+            <a href="https://rssb.rajasthan.gov.in/news"><button type="button" class="btn btn-transparent position-absolute bottom-0 end-0 btn-view">View all » </button></a>
+</div>
+            
+        
+    </div>
+    
+    </div>
+
+
+    <div style="width:100%; background-color:#333333;">
+   
+    <div class="ticker-wrap">
+    
+<div class="ticker">
+  <div class="ticker__item border-right">Informatics Assistant 2023: Order of Final Recommendation after DV(List no-05)</div>
+  <div class="ticker__item border-right">Fourth Class Employee 2024 : In Person Counselling Schedule(For Mines and Geology Department)</div>
+  <div class="ticker__item border-right">UPPER PRIMARY SCHOOL TEACHER 2025 : Postpone Order Of Document Verification</div>
+  <div class="ticker__item border-right">Librarian Grade III 2024 : Final Recommendation and Cut Off Marks with Selected Candidate&#039;s List in Result Section</div>
+  <div class="ticker__item border-right">Lab Assistant 2026 : Amended Advertisement</div>
+  <div class="ticker__item border-right">Platoon Commander Direct Recruitment 2025 : Important Instruction and Link regarding Interview letter</div>
+  <div class="ticker__item border-right">Fourth Class Employee 2024 : Meritwise Revised Result</div>
+  <div class="ticker__item border-right">Village Development Officer 2025 : Additional Considered Candidate for Document Verification (Cut-Off Marks)</div>
+  <div class="ticker__item border-right">Press Note Regarding Exam dates for CET (Sr. Sec and Graduation) - 2026</div>
+  <div class="ticker__item border-right">VDO 2025 - List of Finally Selected Candidates after Document Verification (NTSP)</div>
+</div>
+</div>
+    </div>
+
+
+
+
+    <div class="row text-center">
+        <div class="col-sm-3 exam-img">
+        <a href="https://sso.rajasthan.gov.in" class="" target="_blank" rel="noopener noreferrer">
+      <img src="https://rssb.rajasthan.gov.in/images/online.png" class="" alt="Logo">
+      </a>
+        </div>
+        <div class="col-sm-3 exam-img">
+        <a href="https://rssb.rajasthan.gov.in/advertisements" class="">
+      <img src="https://rssb.rajasthan.gov.in/images/adv.png" class="" alt="Logo">
+      </a>
+        </div>
+        <div class="col-sm-3 exam-img">
+        <a href="https://rssb.rajasthan.gov.in/admitcards" class="">
+      <img src="https://rssb.rajasthan.gov.in/images/admit card.png" class="" alt="Logo">
+      </a>
+        </div>
+        <div class="col-sm-3 exam-img">
+        <a href="https://rssb.rajasthan.gov.in/results" class="">
+      <img src="https://rssb.rajasthan.gov.in/images/result.png" class="" alt="Logo">
+      </a>
+        </div>
+    </div>
+
+   
+
+
+                </main>
+          <div style="width:100%; height:20px; background-color:#154979">
+    </div>
+<footer style="background-color:rgba(0,0,0,.8)">
+ 
+  <div class="row">
+    <div class="col-sm-4">
+        <div class="float-start footer">
+        <p style="font-weight:bold">Rajasthan Staff Selection Board</p>
+        <p >State Institute of Agriculture Management</p>
+        <p>Premises, Durgapura, Jaipur 302018</p>
+        <p>Helpline : 01412722520</p>
+        <p>Email : secyrsmssb[at]rajasthan[dot]gov[dot]in</p>
+       
+        </div>
+     
+    </div>
+
+    <div class="col-sm-4">
+        <div class="four justify-content-md-center">
+<div class="counter-box text-center"></i> <span class="counter"></span>
+    <p></p>
+    <p><a href="https://twitter.com/JaipurRssb" class="" target="_blank" rel="noopener noreferrer"  data-bs-toggle="tooltip" data-bs-placement="top" title="Follow on Twitter"><i class="fab fa-twitter"></i></a><a href="https://www.youtube.com/channel/UCeHAeW9hItRBaAmOPhPPPVg" style="padding-left:20px" target="_blank" rel="noopener noreferrer"  data-bs-toggle="tooltip" data-bs-placement="top" title="Guidelines on Youtube"><i class="fab fa-youtube"></i></a></p>
+</div>
+</div> 
+    </div>
+
+    <div class="col-sm-4 float-end">
+    <div class="float-end text-end footer">
+    
+        </div>
+    </div>
+  </div>
+
+  
+  <!-- Copyright -->
+</footer>
+
+  </div>
+        
+       
+
+
+</body>
+</html>
+
+
+        
+  

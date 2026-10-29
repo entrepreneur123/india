@@ -65,6 +65,8 @@ class Board:
     min_items: int = 5
     kind: Callable[[str], str] | None = None  # headline -> kind, when the board's own words say it better than kind_of
     dated_ids: bool = False  # the same headline comes back on new days (RRB): each day is a new update
+    undated: bool = False  # entries may carry no date (SBI): such an entry is dated the day it is first seen
+
 
     def url(self, href: str) -> str:
         href = html.unescape(href.strip())
@@ -74,7 +76,11 @@ class Board:
             raise _Outside(url)
         return urllib.parse.urlunsplit((p.scheme, p.netloc, urllib.parse.quote(urllib.parse.unquote(p.path), safe="/"), p.query, ""))
 
-    def parse_entry(self, raw_date: str, href: str, headline: str, today: dt.date) -> Item | None:
+    def parse_entry(self, raw_date: str, href: str, headline: str, today: dt.date,
+                    seen: dict[str, str] | None = None, record: dict[str, str] | None = None) -> Item | None:
+        """seen/record (undated boards): {id: day} of the undated entries met on earlier runs (None:
+        no record yet), and the record to fill for this page. Entries on the page when the record
+        begins are kept as "" and never published: their day would be a guess."""
         try:
             url = self.url(href)
         except _Outside:
@@ -85,16 +91,27 @@ class Board:
         try:
             day = self.parse_date(raw_date, title)
         except ValueError:
-            raise RecordError(f"{url}: bad date {raw_date!r}") from None
+            if not (self.undated and not raw_date.strip()):
+                raise RecordError(f"{url}: bad date {raw_date!r}") from None
+            day = None
+        name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
+        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
+        item_id = f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12]
+        if day is None:
+            # "" marks an entry that was already on the page when the record began: its day is unknown
+            first = "" if seen is None else seen.get(item_id, today.isoformat())
+            if record is not None:
+                record[item_id] = first
+            if not first:
+                return None
+            day = dt.date.fromisoformat(first)
         if day > today + dt.timedelta(days=1):
             raise RecordError(f"{url}: date {day} is in the future")
         if day < _FIRST_VALID:
             return None  # ONGC's page goes back to 2013: archive, not news
-        name = urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]) or url
         m = re.search(r"\b(?:advt\.?|advertisement)\s*no\.?[^0-9]{0,20}\d+\s*/\s*(20\d{2})\b", title, re.I)
-        key = url + "\n" + title + (f"\n{day}" if self.dated_ids else "")
         return Item(
-            id=f"{self.SOURCE}-" + hashlib.sha1(key.encode()).hexdigest()[:12],
+            id=item_id,
             kind=(self.kind or kind_of)(title), lang="hi" if classify.is_hindi(title) else "en", title=title,
             exam=self.family, exam_year=int(m.group(1)) if m else None,
             published=dt.datetime.combine(day, dt.time(), IST),
@@ -103,13 +120,14 @@ class Board:
             source=self.SOURCE, date_only=True,
         )
 
-    def parse(self, page: str, today: dt.date, cutoff: dt.date, warn: Callable[[str], None] = print) -> list[Item]:
+    def parse(self, page: str, today: dt.date, cutoff: dt.date, warn: Callable[[str], None] = print,
+              seen: dict[str, str] | None = None, record: dict[str, str] | None = None) -> list[Item]:
         entries = list(self.entries(page))
         items: dict[str, Item] = {}
         rejected = outside = 0
         for raw_date, href, headline in entries:
             try:
-                item = self.parse_entry(raw_date, href, headline, today)
+                item = self.parse_entry(raw_date, href, headline, today, seen, record)
             except RecordError as e:
                 rejected += 1
                 warn(f"::warning::{self.SOURCE}: skipped entry: {e}")
@@ -124,8 +142,10 @@ class Board:
         return sorted(items.values(), key=lambda i: (i.published, i.id), reverse=True)
 
     def fetch(self, get_text: Callable[[str], str], now: dt.datetime, window_days: int,
-              warn: Callable[[str], None] = print) -> list[Item]:
-        return self.parse(get_text(self.NOTICE_PAGE), now.date(), (now - dt.timedelta(days=window_days)).date(), warn)
+              warn: Callable[[str], None] = print, seen: dict[str, str] | None = None,
+              record: dict[str, str] | None = None) -> list[Item]:
+        return self.parse(get_text(self.NOTICE_PAGE), now.date(), (now - dt.timedelta(days=window_days)).date(), warn,
+                          seen, record)
 
 
 class _Outside(Exception):
@@ -246,6 +266,35 @@ def _rrb_kind(title: str) -> str:
     return RRB_KINDS.get(title.split(": ", 1)[-1], "notice")
 
 
+# SBI: one card per advertisement; its headline carries the latest step in brackets and changes with it:
+#   <div class="accordion lateral ..." data-articleid="CRPD/SCO/2026-27/30" ...> ... <p>ENGAGEMENT OF ...
+#   <span class="text_blink" ...>(Apply Online from 19.10.2026 TO 09.11.2026)</span></p><p>ADVERTISEMENT NO: ...</p>
+#   ... <div class="accordion-content ..."> <ul> <li>DOWNLOAD ADVERTISEMENT <a href="/documents/...pdf/...?t=..">English</a>
+# The card gives no date for a step, so a headline is dated the day it is first seen; only an open
+# application ("Apply Online from DD.MM.YYYY") has its own date.
+_SBI_CARD = re.compile(r"""<div class="accordion lateral[^"]*"[^>]*>(.*?)<div class="accordion-content[^"]*"[^>]*>(.*?)(?=<div class="accordion lateral|$)""", re.S)
+_SBI_P = re.compile(r"<p>(.*?)</p>", re.S)
+_SBI_DOC = re.compile(r'<a\b[^>]*?href="(/documents/[^"]+)"')
+_SBI_OPEN = re.compile(r"\bapply online from\s+(\d{1,2}\.\d{1,2}\.\d{4})", re.I)
+_SBI_KINDS = [("admit_card", re.compile(r"call letter|admit card", re.I)),
+              ("result", re.compile(r"result|selected|marks secured|wait ?list|allotment|no candidate", re.I)),
+              ("schedule", re.compile(r"schedule|psychometric", re.I)),
+              ("amendment", re.compile(r"extend|extension|withdrawn|corrigendum|revised", re.I)),
+              ("recruitment", re.compile(r"apply online|registration", re.I))]
+
+
+def _sbi_entries(page: str) -> Iterator[tuple[str, str, str]]:
+    for head, body in _SBI_CARD.findall(page):
+        headline = " — ".join(re.sub(r"\s+", " ", html.unescape(_TAG.sub(" ", p))).strip() for p in _SBI_P.findall(head))
+        doc = _SBI_DOC.search(body)
+        opened = _SBI_OPEN.search(headline)
+        yield (opened.group(1) if opened else ""), doc.group(1) if doc else "", headline
+
+
+def _sbi_kind(title: str) -> str:
+    return next((kind for kind, pattern in _SBI_KINDS if pattern.search(title)), "notice")
+
+
 CSBC = Board("csbc", "https://csbc.bihar.gov.in", "https://csbc.bihar.gov.in/", "CSBC", _table_rows, _dmy)
 BPSSC = Board("bpssc", "https://bpssc.bihar.gov.in", "https://bpssc.bihar.gov.in/", "BPSSC", _table_rows, _dmy)
 ISRO = Board("isro", "https://www.isro.gov.in", "https://www.isro.gov.in/Careers.html", "ISRO", _isro_entries, _isro_date)
@@ -255,5 +304,7 @@ MPPSC = Board("mppsc", "https://mppsc.mp.gov.in", "https://mppsc.mp.gov.in/", "M
 CTET = Board("ctet", "https://cdnbbsr.s3waas.gov.in", "https://ctet.nic.in/", "CTET", _ctet_entries, _dmy, min_items=3)
 RRB = Board("rrb", "https://rrbchennai.gov.in", "https://rrbchennai.gov.in/", "RRB", _rrb_entries, _dmy,
             kind=_rrb_kind, dated_ids=True)
-ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET, RRB)
-INDIA_ONLY = {"mppsc", "ctet", "rrb"}  # don't answer GitHub's US runners: only the India server reads them
+SBI = Board("sbi", "https://sbi.bank.in", "https://sbi.bank.in/web/careers/current-openings", "SBI", _sbi_entries, _dmy,
+            kind=_sbi_kind, undated=True)
+ALL = (CSBC, BPSSC, ISRO, ONGC, MPPSC, CTET, RRB, SBI)
+INDIA_ONLY = {"mppsc", "ctet", "rrb", "sbi"}  # don't answer GitHub's US runners: only the India server reads them

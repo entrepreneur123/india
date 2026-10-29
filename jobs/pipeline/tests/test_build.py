@@ -147,7 +147,7 @@ UP_PAGE = open(os.path.join(os.path.dirname(__file__), "fixtures", "upprpb_notic
 
 
 LIST_PAGES = {b.NOTICE_PAGE: os.path.join(os.path.dirname(__file__), "fixtures", f"{b.SOURCE}.html")
-              for b in build.listboards.ALL}
+              for b in build.boards.ALL}
 
 
 def boards(url):
@@ -275,7 +275,7 @@ def test_whatsapp_post_keeps_yesterdays_notice_from_a_board_that_gives_only_the_
 def test_an_unexpected_error_in_one_board_does_not_stop_the_others(monkeypatch):
     def broken(*a, **k):
         raise AttributeError("page changed in a way nobody planned for")
-    monkeypatch.setattr(build.listboards.ISRO.__class__, "fetch", lambda self, *a, **k: broken() if self.SOURCE == "isro" else [])
+    monkeypatch.setattr(build.boards.listboards.ISRO.__class__, "fetch", lambda self, *a, **k: broken() if self.SOURCE == "isro" else [])
     fresh, kept, failed = build.other_boards(boards, NOW, 120, [], warn=lambda m: None)
     assert failed == ["isro"] and any(i.source == "upprpb" for i in fresh)
 

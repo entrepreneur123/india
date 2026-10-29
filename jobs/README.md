@@ -143,6 +143,12 @@ sarkariresult.com의 실제 상세 페이지와 Adda247, FreeJobAlert, Naukri Al
 
 **GitHub 러너에서 접속되는 채용 사이트** (jobs-probe, 2026-10-20, 28곳 중)
 - 인도 서버에서 수집 중(2026-10-29~): mppsc.mp.gov.in(MP 공무원위원회), ctet.nic.in(교사 자격시험 CTET), 철도 RRB 통합 사이트(rrbchennai.gov.in: CEN별 공지·결과·입장권·일정). GitHub 서버에서는 열리지 않아 인도 서버가 `jobs/v1/india.json`에 써 두면 GitHub 빌드가 그것을 읽습니다(sarkari/india.py).
+- 2026-10-29 추가(인도 서버, `sarkari/boards.py`에 모두 등록):
+  - 은행: SBI(sbi.bank.in), IBPS
+  - 공기업: AAI(공항공사), IOCL(인디언오일), BECIL
+  - 주 공무원위원회·선발위원회: BPSC(비하르), HPSC(하리아나), PPSC·PSSSB(펀자브), RPSC·RSSB(라자스탄), DSSSB(델리), Kerala PSC
+  - 날짜를 적지 않는 게시판(SBI, PSSSB, IOCL)은 처음 본 날로 날짜를 매기고(`india.json`의 "seen"), 첫 실행 때 이미 있던 항목은 날짜를 알 수 없어 올리지 않습니다.
+  - 수집하지 못한 곳: UPSC(upsc.gov.in이 자동 접속 차단, 403. 원서 포털 upsconline.gov.in을 사본으로 받는 중), RBI(자바스크립트 봇 검사), LIC(목록에 날짜 없음), India Post GDS(날짜 없음), JSSC(목록 하위 페이지 사본 대기). `capture.py`에 37곳을 추가해 인도 서버가 사본을 받고, 그걸로 다음 수집기를 씁니다.
 - 응답함: uppbpb.gov.in(UP 경찰, 수집 중), hssc.gov.in(하리야나), keralapsc.gov.in(케랄라), indianrailways.gov.in, indiapostgdsonline.gov.in(우체국 GDS), opportunities.rbi.org.in(RBI), opsc.gov.in(302 이동)
 - 응답 없음(20초 초과): RRB, IBPS, UPSC, UPSSSC, BPSC, RPSC/RSSB, MPPSC/ESB, HPSC, DSSSB, PPSC, MPSC, TNPSC, WBPSC, JSSC, 육군, CTET 등. 해외 IP 차단으로 보이며, 이런 곳은 인도 내 서버가 있어야 수집할 수 있습니다.
 

@@ -11,6 +11,7 @@ Runs weekly on the India server (deploy/india/capture.sh) and keeps, per site:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import datetime as dt
 import html
 import json
@@ -55,7 +56,55 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "india-post-gds": "https://indiapostgdsonline.gov.in/",
     "army": "https://joinindianarmy.nic.in/",
     "ctet": "https://ctet.nic.in/",
+    # Next in demand (29-10-2026). upsc.gov.in refuses automated clients (403), so UPSC is read from
+    # its own application portal, which lists the exams with e-admit cards.
+    "upsc-online": "https://upsconline.gov.in/",
+    "upsc-eadmit": "https://upsconline.gov.in/eadmitcard/index.php",
+    "upsc-ora-admit": "https://upsconline.gov.in/oraadmitcard/",
+    "jssc-notices": "https://jssc.jharkhand.gov.in/notices",
+    "jssc-whats-new": "https://jssc.jharkhand.gov.in/whats-new",
+    "jssc-other-notices": "https://jssc.jharkhand.gov.in/notices/other-notices",
+    "ibps-crp-updates": "https://www.ibps.in/index.php/crp-updates/",
+    "bpsc-whats-new": "https://bpsc.bihar.gov.in/whats-new/",
+    "bpsc-advertisement": "https://bpsc.bihar.gov.in/advertisement/",
+    "ppsc-open-ads": "https://ppsc.gov.in/index.aspx?page=27&tabid=48&tablinkid=27&tablinkyes=1",
+    "rbi-announcements": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx",
+    "rbi-vacancies": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx",
+    "uppsc": "https://uppsc.up.nic.in/",
+    "bssc": "https://bssc.bihar.gov.in/",
+    "kpsc-karnataka": "https://kpsc.karnataka.gov.in/",
+    "appsc": "https://psc.ap.gov.in/",
+    "tgpsc": "https://www.tgpsc.gov.in/",
+    "gpsc": "https://gpsc.gujarat.gov.in/",
+    "gsssb": "https://gsssb.gujarat.gov.in/",
+    "hppsc": "https://hppsc.hp.gov.in/",
+    "ukpsc": "https://psc.uk.gov.in/",
+    "uksssc": "https://sssc.uk.gov.in/",
+    "cgpsc": "https://psc.cg.gov.in/",
+    "cg-vyapam": "https://vyapam.cgstate.gov.in/",
+    "osssc": "https://www.osssc.gov.in/",
+    "apsc-assam": "https://apsc.nic.in/",
+    "wbssc": "https://wbssc.gov.in/",
+    "wb-police": "https://prb.wb.gov.in/",
+    "tnusrb": "https://tnusrb.tn.gov.in/",
+    "tn-trb": "https://www.trb.tn.gov.in/",
+    "kvs": "https://kvsangathan.nic.in/",
+    "nvs": "https://navodaya.gov.in/",
+    "nta": "https://nta.ac.in/",
+    "navy": "https://www.joinindiannavy.gov.in/",
+    "airforce-agniveer": "https://agnipathvayu.cdac.in/",
+    "afcat": "https://afcat.cdac.in/",
+    "crpf": "https://rect.crpf.gov.in/",
+    "cisf": "https://cisfrectt.cisf.gov.in/",
+    "itbp": "https://recruitment.itbpolice.nic.in/",
+    "ssb": "https://ssbrectt.gov.in/",
+    "drdo": "https://www.drdo.gov.in/drdo/careers",
+    "bel": "https://bel-india.in/",
+    "nabard": "https://www.nabard.org/",
+    "epfo": "https://www.epfindia.gov.in/",
+    "india-post": "https://www.indiapost.gov.in/",
 }
+WORKERS = 8  # sites are fetched side by side (each from its own host): a slow one doesn't hold up the rest
 MAX_BYTES = 5_000_000
 _A = re.compile(r"""<a\b[^>]*?href\s*=\s*(["'])(.*?)\1[^>]*>(.*?)</a>""", re.S | re.I)
 
@@ -84,18 +133,27 @@ def capture(out: str, get_bytes: Callable[[str], bytes], today: dt.date, sites: 
             index = json.load(f)
     except FileNotFoundError:
         index = {}
-    for name, url in sites.items():
-        entry = {"url": url, "date": today.isoformat()}
+
+    def fetch(url: str) -> tuple[str, bytes | Exception]:
         try:
             try:
-                body = get_bytes(url)
+                return url, get_bytes(url)
             except Exception as e:  # noqa: BLE001
                 # A certificate (or DNS name) for the other spelling of the name, with or without www.
                 if "Hostname mismatch" not in str(e) and "Name or service not known" not in str(e):
                     raise
                 url = _other_spelling(url)
-                entry["url"] = url
-                body = get_bytes(url)
+                return url, get_bytes(url)
+        except Exception as e:  # noqa: BLE001 - one site down must not stop the others
+            return url, e
+
+    with concurrent.futures.ThreadPoolExecutor(WORKERS) as pool:
+        fetched = dict(zip(sites, pool.map(fetch, sites.values())))
+    for name, (url, body) in fetched.items():
+        entry = {"url": url, "date": today.isoformat()}
+        try:
+            if isinstance(body, Exception):
+                raise body
             page = body.decode("utf-8", errors="replace")
             os.makedirs(os.path.join(out, name), exist_ok=True)
             with open(os.path.join(out, name, f"{today}.html"), "wb") as f:
@@ -116,8 +174,8 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s: 31 sites stay under 21 minutes even if every one hangs (run.sh also calls
-    # this, inside the 25-minute limit of sarkari.service); in practice a run takes about 2 minutes.
+    # Two tries of 20 s, 8 sites at a time: 75 sites stay under 7 minutes even if every one hangs
+    # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())
     ok = sum(1 for e in index.values() if e.get("ok"))

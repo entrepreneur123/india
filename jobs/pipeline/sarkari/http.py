@@ -9,6 +9,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 
 UA = "Mozilla/5.0 (Linux; Android 14) SarkariAlertBot/0.1 (+notice mirror; contact via GitHub)"
 # ssc.gov.in is a government server shared with millions of candidates: one request at a time,
@@ -163,6 +164,17 @@ PAGE_HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,app
                 "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8"}
 
 
+def _gunzip(body: bytes, max_bytes: int) -> bytes:
+    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    try:
+        out = d.decompress(body, max_bytes + 1)
+    except zlib.error as e:
+        raise FetchError(f"bad gzip body: {e}") from None
+    if len(out) > max_bytes or d.unconsumed_tail:
+        raise FetchError(f"larger than {max_bytes} bytes once unpacked")
+    return out
+
+
 def get_bytes(url: str, retries: int = 3, timeout: int = 120, max_bytes: int = 60_000_000,
               headers: dict | None = None) -> bytes:
     """GET a file (a result PDF) or a page, refusing anything over max_bytes."""
@@ -174,6 +186,8 @@ def get_bytes(url: str, retries: int = 3, timeout: int = 120, max_bytes: int = 6
         try:
             with _open(req, timeout) as resp:
                 body = resp.read(max_bytes + 1)
+                if resp.headers.get("Content-Encoding", "").strip().lower() in ("gzip", "x-gzip"):
+                    body = _gunzip(body, max_bytes)  # sbi.bank.in compresses though we never ask
             if len(body) > max_bytes:
                 raise FetchError(f"{url}: larger than {max_bytes} bytes")
             time.sleep(POLITE_DELAY_S)

@@ -42,7 +42,7 @@ import re
 import shutil
 import sys
 
-from . import classify, cutoffs, eligibility, hssc, http, listboards, results_index, sitegen, sources, ssc, upprpb, whatsapp_post
+from . import boards, classify, cutoffs, eligibility, hssc, http, results_index, sitegen, sources, ssc, upprpb, whatsapp_post
 
 SCHEMA = 1
 FEED_MAX_ITEMS = 400
@@ -165,20 +165,20 @@ def new_items(old: list[dict], items: list[ssc.Item], now: dt.datetime) -> list[
     return out[:NEW_MAX_ITEMS]
 
 
-BOARDS = (upprpb, hssc, *listboards.ALL)  # besides SSC; each has SOURCE, NOTICE_PAGE and fetch(get_text, now, days, warn)
+BOARDS = (upprpb, hssc, *boards.ALL)  # besides SSC; each has SOURCE, NOTICE_PAGE and fetch(get_text, now, days, warn)
 
 
 def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[dict],
                  warn=print, india: dict | None = None) -> tuple[list[ssc.Item], list[dict], list[str]]:
     """(fresh items, previous items kept for a board that failed or wasn't asked, failed boards).
     One board failing never stops the others or SSC. Boards that answer only from India
-    (listboards.INDIA_ONLY) are read by the India server (sarkari/india.py): their items come
+    (boards.INDIA_ONLY) are read by the India server (sarkari/india.py): their items come
     from its india.json, or stay as they were while there is none."""
     cutoff = (now - dt.timedelta(days=window_days)).isoformat(timespec="seconds")
     fresh, kept, failed = [], [], []
     for board in BOARDS:
         previous = [i for i in old_feed if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff]
-        if board.SOURCE in listboards.INDIA_ONLY:
+        if board.SOURCE in boards.INDIA_ONLY:
             kept += [i for i in india["items"] if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff] \
                 if india else previous
             continue
