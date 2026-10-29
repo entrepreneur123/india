@@ -31,29 +31,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # One writer only. The India server (jobs/deploy/india/run.sh) ends its commits with "(india)" and
-  # commits at least at every full check (3 h, status.json). One in the last 4 hours: the server is
-  # publishing, so this workflow stands aside; if the server stops, publishing comes back here by itself.
-  runner:
-    runs-on: ubuntu-24.04
-    outputs:
-      india: ${{ steps.check.outputs.india }}
-    steps:
-      - id: check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          last=$(gh api "repos/$GITHUB_REPOSITORY/commits?sha=data&per_page=100" \
-            --jq '[.[] | select(.commit.message | endswith("(india)"))][0].commit.committer.date // empty' || true)
-          age=$(( $(date +%s) - $(date -d "${last:-1970-01-01T00:00:00Z}" +%s) ))
-          if [ -n "$last" ] && [ "$age" -lt 14400 ]; then india=1; else india=0; fi
-          echo "India server's last commit: ${last:-none} (${age}s ago) -> india=$india"
-          echo "india=$india" >> "$GITHUB_OUTPUT"
-
   publish:
-    needs: runner
-    # JOBS_RUNNER=india: always the India server, whatever its last commit says.
-    if: vars.JOBS_PUBLISH != 'false' && vars.JOBS_RUNNER != 'india' && needs.runner.outputs.india != '1'
+    # The India server (jobs/deploy/india) writes only jobs/v1/india.json, which this build reads:
+    # it can reach the boards GitHub can't, and not ssc.gov.in. Both always run.
+    if: vars.JOBS_PUBLISH != 'false'
     runs-on: ubuntu-24.04
     timeout-minutes: 25   # a new 26 MB result list takes ~1-2 min; up to 4 per run
     env:

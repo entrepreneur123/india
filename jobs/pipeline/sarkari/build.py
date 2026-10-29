@@ -10,6 +10,7 @@ Output (static files, served from any CDN), schema 1:
   jobs/v1/guide.json            how to apply, documents, helplines, skill-test standards (ssc_guide.json)
   jobs/v1/rules/index.json      exams with an eligibility checker
   jobs/v1/rules/<id>.json       copied from rules/ after validation
+  jobs/v1/india.json            written by the India server (sarkari/india.py), read here
   jobs/v1/latest.json           the newest LATEST items of feed.json, for the home page
   jobs/v1/new.json              items that were not in the previous feed (for push alerts)
   jobs/v1/results/              roll-number lookup for result lists (results_index.py; needs pdftotext)
@@ -168,16 +169,20 @@ BOARDS = (upprpb, hssc, *listboards.ALL)  # besides SSC; each has SOURCE, NOTICE
 
 
 def other_boards(get_text, now: dt.datetime, window_days: int, old_feed: list[dict],
-                 warn=print, in_india: bool = False) -> tuple[list[ssc.Item], list[dict], list[str]]:
+                 warn=print, india: dict | None = None) -> tuple[list[ssc.Item], list[dict], list[str]]:
     """(fresh items, previous items kept for a board that failed or wasn't asked, failed boards).
     One board failing never stops the others or SSC. Boards that answer only from India
-    (listboards.INDIA_ONLY) are asked only on the India server (JOBS_IN_INDIA=1, set by run.sh);
-    elsewhere their previous items are kept, so a GitHub run in between loses nothing."""
+    (listboards.INDIA_ONLY) are read by the India server (sarkari/india.py): their items come
+    from its india.json, or stay as they were while there is none."""
     cutoff = (now - dt.timedelta(days=window_days)).isoformat(timespec="seconds")
     fresh, kept, failed = [], [], []
     for board in BOARDS:
         previous = [i for i in old_feed if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff]
-        if get_text is None or (board.SOURCE in listboards.INDIA_ONLY and not in_india):
+        if board.SOURCE in listboards.INDIA_ONLY:
+            kept += [i for i in india["items"] if i.get("source") == board.SOURCE and i["publishedAt"] >= cutoff] \
+                if india else previous
+            continue
+        if get_text is None:
             kept += previous
             continue
         try:
@@ -246,7 +251,7 @@ def rules_needed(feed: list[dict], all_rules: list[dict]) -> list[dict]:
 def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max_pages: int = 4,
         force: bool = False, get_bytes=None, site_url: str | None = None, get_text=None,
         channel: str | None = None, push: tuple[str | None, str | None] = (None, None),
-        whatsapp: str | None = None, contact: str | None = None, in_india: bool = False) -> int:
+        whatsapp: str | None = None, contact: str | None = None) -> int:
     status_path = _v1(out, "status.json")
     status = _read_json(status_path, {})
     stamp = ssc.last_update(get(ssc.LAST_UPDATES))
@@ -263,7 +268,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     if not families or set(families["families"]) != set(classify.EXAM_FAMILIES):
         raise ssc.FormatChanged("exam_families.json does not list exactly classify.EXAM_FAMILIES")
     items, calendar, counts, resources = collect(get, now, window_days, max_pages, status.get("streamCounts", {}))
-    others, kept, failed = other_boards(get_text, now, window_days, old_feed["items"], in_india=in_india)
+    others, kept, failed = other_boards(get_text, now, window_days, old_feed["items"],
+                                        india=_read_json(_v1(out, "india.json"), None))
     items = sorted(items + others, key=lambda i: (i.published, i.id), reverse=True)
     feed = sorted([i.to_json() for i in items] + kept, key=lambda i: (i["publishedAt"], i["id"]), reverse=True)
     new = new_items(old_feed["items"], items, now)
@@ -327,8 +333,7 @@ def main(argv: list[str] | None = None) -> int:
                    get_text=lambda url: http.get_bytes(url, timeout=40, max_bytes=5_000_000).decode("utf-8"),
                    channel=os.environ.get("JOBS_TELEGRAM_CHAT_ID"),
                    push=(os.environ.get("JOBS_PUSH_URL"), os.environ.get("JOBS_PUSH_KEY")),
-                   whatsapp=os.environ.get("JOBS_WHATSAPP_CHANNEL"), contact=os.environ.get("JOBS_CONTACT_EMAIL"),
-                   in_india=os.environ.get("JOBS_IN_INDIA") == "1")
+                   whatsapp=os.environ.get("JOBS_WHATSAPP_CHANNEL"), contact=os.environ.get("JOBS_CONTACT_EMAIL"))
     except (http.FetchError, ssc.FormatChanged, eligibility.RulesError) as e:
         print(f"::error::{e}", file=sys.stderr)
         return 1

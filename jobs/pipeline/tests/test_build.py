@@ -277,16 +277,19 @@ def test_an_unexpected_error_in_one_board_does_not_stop_the_others(monkeypatch):
     assert failed == ["isro"] and any(i.source == "upprpb" for i in fresh)
 
 
-def test_boards_that_answer_only_from_india_are_asked_only_on_the_india_server():
+def test_boards_that_answer_only_from_india_come_from_the_india_servers_file():
     asked = []
 
     def get_text(url):
         asked.append(url)
         raise OSError("offline in this test")
-    old = [{"id": "mppsc-1", "source": "mppsc", "publishedAt": "2026-10-28T00:00:00+05:30"}]
+    old = [{"id": "mppsc-old", "source": "mppsc", "publishedAt": "2026-10-20T00:00:00+05:30"}]
+    india = {"items": [{"id": "mppsc-new", "source": "mppsc", "publishedAt": "2026-10-28T00:00:00+05:30"},
+                       {"id": "ctet-ancient", "source": "ctet", "publishedAt": "2025-01-01T00:00:00+05:30"}]}
     now = dt.datetime(2026, 10, 29, 12, tzinfo=ssc.IST)
-    _, kept, failed = build.other_boards(get_text, now, 120, old, warn=lambda _: None)
-    assert not any("mppsc" in u or "ctet" in u for u in asked) and kept == old and "mppsc" not in failed
-    asked.clear()
-    _, kept, failed = build.other_boards(get_text, now, 120, old, warn=lambda _: None, in_india=True)
-    assert any("mppsc" in u for u in asked) and any("ctet" in u for u in asked) and kept == old and "mppsc" in failed
+    _, kept, failed = build.other_boards(get_text, now, 120, old, warn=lambda _: None, india=india)
+    assert not any("mppsc" in u or "ctet" in u for u in asked)  # GitHub never asks them
+    assert [i["id"] for i in kept if i["source"] in ("mppsc", "ctet")] == ["mppsc-new"]  # out of window: dropped
+    assert "mppsc" not in failed
+    _, kept, _ = build.other_boards(get_text, now, 120, old, warn=lambda _: None)  # no india.json yet
+    assert [i["id"] for i in kept if i["source"] == "mppsc"] == ["mppsc-old"]
