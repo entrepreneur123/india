@@ -55,7 +55,7 @@ def collect(out: str, get_text, now: dt.datetime, window_days: int = 120, warn=p
 
 
 def page_text(url: str) -> str:
-    body = http.get_bytes(url, retries=2, timeout=30, max_bytes=5_000_000, headers=http.PAGE_HEADERS)
+    body = http.get_bytes(url, retries=3, timeout=30, max_bytes=5_000_000, headers=http.PAGE_HEADERS)  # IBPS drops some handshakes
     return body.decode("utf-8", errors="replace")
 
 
