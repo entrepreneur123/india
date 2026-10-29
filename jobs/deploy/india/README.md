@@ -15,7 +15,7 @@
 GitHub
   data 브랜치 → GitHub Pages (사이트), jobs-watchdog (6시간마다 신선도 확인)
 ```
-data 브랜치에는 서버 한 곳만 씁니다. `JOBS_RUNNER=india`를 설정하면 GitHub의 jobs-publish는 멈춥니다.
+data 브랜치에는 서버 한 곳만 씁니다. 인도 서버가 최근 4시간 안에 게시했으면 GitHub의 jobs-publish는 자동으로 쉬고, 서버가 멈추면 GitHub가 다시 게시합니다(설정 불필요). `JOBS_RUNNER=india` 변수를 넣으면 항상 서버만 씁니다.
 
 ## 1. 서버 만들기
 - **조건:** Ubuntu **24.04**, **인도 리전**(뭄바이·하이데라바드 등), 메모리 **1–2 GB**, 디스크 20 GB.
@@ -58,7 +58,7 @@ journalctl -u sarkari -n 50              # 최근 실행 기록 ("published" / "
 - 사이트 주소가 다르면 `SITE_URL`
 
 ## 4. GitHub를 이 서버로 전환
-1. 저장소 → **Settings → Secrets and variables → Actions → Variables**에 `JOBS_RUNNER` = `india`를 추가합니다.
+1. 할 일 없음: 서버가 첫 게시를 하면 GitHub의 jobs-publish가 자동으로 쉽니다(위 "구조"). 항상 서버만 쓰게 고정하려면 Variables에 `JOBS_RUNNER` = `india`를 추가합니다.
    - 이때부터 GitHub의 jobs-publish는 실행되지 않습니다(쓰는 곳은 한 곳만).
 2. **Settings → Pages**: 브랜치를 `data`로 설정합니다(이미 했다면 그대로 둡니다).
 3. **jobs-watchdog**이 6시간마다 사이트의 `status.json`을 확인합니다. 7시간 넘게 갱신이 없으면 실패하고 GitHub이 메일을 보냅니다. 규칙 파일이 아직 없는 새 SSC 공고도 경고로 알려 줍니다.
