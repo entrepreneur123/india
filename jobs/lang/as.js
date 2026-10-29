@@ -285,6 +285,7 @@ export default {
   state_UP: "উত্তৰ প্ৰদেশ",
   state_BR: "বিহাৰ",
   state_HR: "হাৰিয়ানা",
+  state_MP: "মধ্যপ্ৰদেশ",
   anySector: "সকলো ছেক্টৰ",
   anyState: "সকলো ৰাজ্য",
   jobsSector: "{name}ৰ চাকৰি",

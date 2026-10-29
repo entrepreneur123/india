@@ -306,6 +306,7 @@ export const EN = {
   state_UP: "Uttar Pradesh",
   state_BR: "Bihar",
   state_HR: "Haryana",
+  state_MP: "Madhya Pradesh",
   anySector: "All sectors",
   anyState: "All states",
   jobsSector: "{name} jobs",

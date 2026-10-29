@@ -285,6 +285,7 @@ export default {
   state_UP: "ఉత్తర ప్రదేశ్",
   state_BR: "బీహార్",
   state_HR: "హర్యానా",
+  state_MP: "మధ్యప్రదేశ్",
   anySector: "అన్ని రంగాలు",
   anyState: "అన్ని రాష్ట్రాలు",
   jobsSector: "{name} జాబ్స్",
