@@ -1,0 +1,29 @@
+# Keeps jobs-publish running every ~30 minutes. GitHub starts cron runs hours late (28/29-10-2026:
+# jobs-publish ran at 19:29, 23:29, 02:49 and 09:50 UTC instead of every 30 minutes); a run started
+# with workflow_dispatch begins within seconds. Every jobs-publish run starts this relay when it ends;
+# the relay waits, then starts jobs-publish again. A newer relay replaces an older one, so one chain
+# runs; jobs-publish keeps its cron as the backup that restarts the chain. Same idea as relay.yml.
+name: jobs-relay
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+concurrency:
+  group: jobs-relay
+  cancel-in-progress: true
+
+jobs:
+  relay:
+    if: vars.JOBS_PUBLISH != 'false'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Wait, then start the next jobs-publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 1560   # 26 min; a jobs-publish run takes 2-4, so one every ~30 minutes
+          gh workflow run jobs-publish.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
