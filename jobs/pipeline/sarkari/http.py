@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import http.client
 import json
+import re
+import ssl
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 UA = "Mozilla/5.0 (Linux; Android 14) SarkariAlertBot/0.1 (+notice mirror; contact via GitHub)"
@@ -14,6 +17,86 @@ POLITE_DELAY_S = 1.0
 
 class FetchError(RuntimeError):
     pass
+
+
+# Many Indian government servers are set up in ways browsers forgive and Python does not
+# (seen from the India server, 29-10-2026). Certificates are still verified in every case:
+#  * the intermediate certificate is missing ("unable to get local issuer certificate"): browsers
+#    download it from the address inside the server's certificate (AIA); _issuer_pem does the same;
+#  * renegotiation without RFC 5746 ("unsafe legacy renegotiation disabled"): allowed again, these
+#    are read-only requests for public notices.
+_AIA_CA_ISSUERS = re.compile(rb"\x06\x08\x2b\x06\x01\x05\x05\x07\x30\x02\x86([\x01-\x7f])", re.S)
+_extra_ca: dict[str, str] = {}  # host -> PEM of the intermediates found for it
+
+
+def _context(host: str = "") -> ssl.SSLContext:
+    ctx = ssl.create_default_context()
+    ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+    if _extra_ca.get(host):
+        ctx.load_verify_locations(cadata=_extra_ca[host])
+    return ctx
+
+
+def aia_issuer_urls(der: bytes) -> list[str]:
+    """The "CA Issuers" addresses in a DER certificate (id-ad-caIssuers, then a URI of that length)."""
+    out = []
+    for m in _AIA_CA_ISSUERS.finditer(der):
+        start = m.end()
+        url = der[start:start + m.group(1)[0]].decode("ascii", "replace")
+        if url.startswith(("http://", "https://")):
+            out.append(url)
+    return out
+
+
+def _issuer_pem(der: bytes, timeout: int) -> str | None:
+    for url in aia_issuer_urls(der):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=timeout) as resp:
+                body = resp.read(100_000)
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError):
+            continue
+        if body.startswith(b"-----BEGIN CERTIFICATE-----"):
+            return body.decode("ascii", "replace")
+        if body[:1] == b"\x30":  # DER
+            return ssl.DER_cert_to_PEM_cert(body)
+    return None
+
+
+def _learn_intermediates(url: str, timeout: int) -> bool:
+    """Fetch the missing intermediate(s) for url's host, up to two levels; True if any was found."""
+    host = urllib.parse.urlsplit(url).hostname or ""
+    port = urllib.parse.urlsplit(url).port or 443
+    try:
+        # Unverified on purpose: only to read which issuer the server names. The page itself is then
+        # fetched with full verification against the system roots plus what was found here.
+        der = ssl.PEM_cert_to_DER_cert(ssl.get_server_certificate((host, port), timeout=timeout))
+    except (OSError, ValueError):
+        return False
+    found = []
+    for _ in range(2):
+        pem = _issuer_pem(der, timeout)
+        if not pem:
+            break
+        found.append(pem)
+        der = ssl.PEM_cert_to_DER_cert(pem)
+    if found:
+        _extra_ca[host] = "".join(found)
+    return bool(found)
+
+
+def _missing_issuer(e: Exception) -> bool:
+    reason = getattr(e, "reason", e)
+    return isinstance(reason, ssl.SSLCertVerificationError) and "unable to get local issuer" in str(reason)
+
+
+def _open(req: urllib.request.Request, timeout: int):
+    host = urllib.parse.urlsplit(req.full_url).hostname or ""
+    try:
+        return urllib.request.urlopen(req, timeout=timeout, context=_context(host))
+    except urllib.error.URLError as e:
+        if host in _extra_ca or not _missing_issuer(e) or not _learn_intermediates(req.full_url, timeout):
+            raise
+        return urllib.request.urlopen(req, timeout=timeout, context=_context(host))
 
 
 def get_json(url: str, retries: int = 3, timeout: int = 40) -> dict:
@@ -29,7 +112,7 @@ def get_json(url: str, retries: int = 3, timeout: int = 40) -> dict:
             time.sleep(2 ** attempt)
         req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with _open(req, timeout) as resp:
                 body = resp.read()
             doc = json.loads(body)
             if not isinstance(doc, dict) or doc.get("statusCode") != "200":
@@ -42,15 +125,22 @@ def get_json(url: str, retries: int = 3, timeout: int = 40) -> dict:
     raise FetchError(f"GET {url} failed after {retries} attempts: {last}")
 
 
-def get_bytes(url: str, retries: int = 3, timeout: int = 120, max_bytes: int = 60_000_000) -> bytes:
-    """GET a file (a result PDF), refusing anything over max_bytes."""
+# Pages of recruiters other than SSC: the same honest User-Agent, plus the Accept headers a page
+# request normally carries. A site that refuses automated clients (HTTP 403) is left alone.
+PAGE_HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8"}
+
+
+def get_bytes(url: str, retries: int = 3, timeout: int = 120, max_bytes: int = 60_000_000,
+              headers: dict | None = None) -> bytes:
+    """GET a file (a result PDF) or a page, refusing anything over max_bytes."""
     last: Exception | None = None
     for attempt in range(retries):
         if attempt:
             time.sleep(2 ** attempt)
-        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        req = urllib.request.Request(url, headers=headers or {"User-Agent": UA})
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with _open(req, timeout) as resp:
                 body = resp.read(max_bytes + 1)
             if len(body) > max_bytes:
                 raise FetchError(f"{url}: larger than {max_bytes} bytes")

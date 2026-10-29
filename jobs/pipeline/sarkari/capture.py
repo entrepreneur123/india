@@ -22,8 +22,13 @@ from typing import Callable
 from . import http
 
 SITES = {  # name -> home page (found with jobs-probe: none of these answer GitHub's US runners)
-    "rrb-cdg": "https://www.rrbcdg.gov.in/",
-    "rrb-apply": "https://www.rrbapply.gov.in/",
+    # Railways: every regional RRB posts the same CEN notices. www.rrbcdg.gov.in's certificate does
+    # not name the www host and rrbapply.gov.in is the application portal (404 on /), 29-10-2026.
+    "rrb-cdg": "https://rrbcdg.gov.in/",
+    "rrb-chennai": "https://www.rrbchennai.gov.in/",
+    "rrb-mumbai": "https://www.rrbmumbai.gov.in/",
+    "rrb-secunderabad": "https://rrbsecunderabad.gov.in/",
+    "rrb-indianrailways": "https://rrb.indianrailways.gov.in/",
     "ibps": "https://www.ibps.in/",
     "upsc": "https://upsc.gov.in/",
     "upsssc": "https://upsssc.gov.in/",
@@ -36,7 +41,7 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "dsssb": "https://dsssb.delhi.gov.in/",
     "ppsc": "https://ppsc.gov.in/",
     "punjab-sssb": "https://sssb.punjab.gov.in/",
-    "mpsc": "https://www.mpsc.gov.in/",
+    "mpsc": "https://mpsc.gov.in/",  # the www name is not on its certificate
     "tnpsc": "https://www.tnpsc.gov.in/",
     "wbpsc": "https://wbpsc.gov.in/",
     "jssc": "https://jssc.jharkhand.gov.in/",
@@ -60,6 +65,12 @@ def links(page: str, base: str) -> list[dict]:
     return out
 
 
+def _other_spelling(url: str) -> str:
+    p = urllib.parse.urlsplit(url)
+    host = p.netloc[4:] if p.netloc.startswith("www.") else "www." + p.netloc
+    return urllib.parse.urlunsplit(p._replace(netloc=host))
+
+
 def capture(out: str, get_bytes: Callable[[str], bytes], today: dt.date, sites: dict = SITES) -> dict:
     index_path = os.path.join(out, "index.json")
     try:
@@ -70,7 +81,15 @@ def capture(out: str, get_bytes: Callable[[str], bytes], today: dt.date, sites: 
     for name, url in sites.items():
         entry = {"url": url, "date": today.isoformat()}
         try:
-            body = get_bytes(url)
+            try:
+                body = get_bytes(url)
+            except Exception as e:  # noqa: BLE001
+                # A certificate made for the other spelling of the name (with or without www.).
+                if "Hostname mismatch" not in str(e):
+                    raise
+                url = _other_spelling(url)
+                entry["url"] = url
+                body = get_bytes(url)
             page = body.decode("utf-8", errors="replace")
             os.makedirs(os.path.join(out, name), exist_ok=True)
             with open(os.path.join(out, name, f"{today}.html"), "wb") as f:
@@ -90,8 +109,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # One try each: 22 sites x 3 tries x 40 s could outlast the 30-minute service limit.
-    index = capture(a.out, lambda u: http.get_bytes(u, retries=1, timeout=30, max_bytes=MAX_BYTES), dt.date.today())
+    # Two tries of 20 s: 26 sites stay under 18 minutes even if every one hangs (run.sh also calls
+    # this, inside the 25-minute limit of sarkari.service).
+    index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
+                    dt.date.today())
     ok = sum(1 for e in index.values() if e.get("ok"))
     print(f"capture: {ok}/{len(index)} sites saved")
     return 0
