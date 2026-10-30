@@ -609,6 +609,16 @@ export type VoiceLine =
   | { id: number; kind: 'poll'; sender: Profile; fromMe: boolean; pollId: number; question: string; options: string[]; at: number }
 
 /**
+ * A room's read marks (104): the highest line read (`hi`) and by whom (`by`), and the highest read by anyone else
+ * (`hi2`). Both only grow (lib/voice-chat.ts reads them).
+ */
+export interface VoiceReads {
+  hi: number
+  by: string | null
+  hi2: number
+}
+
+/**
  * The room's live audio (live server only; the demo has none). `needsTap`: the browser blocked playback until
  * the user touches the page (autoplay rules).
  */
@@ -641,6 +651,8 @@ export type VoiceEvent =
   | { type: 'reaction'; userId: string; kind: VoiceReaction }
   /** A poll changed (a vote, closed): counts and totals; `mine` is null (keep my own). */
   | { type: 'poll'; poll: VoicePoll }
+  /** The room's read marks moved (104). */
+  | { type: 'read'; reads: VoiceReads }
   /** The room was read again after a gap: polls shown may have missed changes meanwhile. */
   | { type: 'resync' }
   | { type: 'ended' }
@@ -1030,6 +1042,8 @@ export interface Backend {
   voicePollClose(pollId: number): Promise<VoicePoll>
   /** Polls by id (at most 50), with my votes: for poll lines from the history. */
   voicePolls(ids: number[]): Promise<VoicePoll[]>
+  /** I have read the room's lines up to `upto` (0: only asking); returns the room's read marks. */
+  voiceRead(roomId: string, upto: number): Promise<VoiceReads>
   /** Throws BackendError('not_allowed') when my role may not do it. */
   voiceAction(roomId: string, action: VoiceAction): Promise<void>
   /** Tells the room I'm writing (fire and forget; the screen sends it at most every few seconds). */

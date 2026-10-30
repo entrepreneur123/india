@@ -1,6 +1,6 @@
 // Room chat replies and @mentions (029): the quote a reply carries, and finding "@Name" in what people type.
 // No imports but types, so the unit tests run it directly (node --test).
-import type { VoiceLine, VoiceReply } from './backend'
+import type { VoiceLine, VoiceReads, VoiceReply } from './backend'
 
 /** The server keeps this much of a text line in a reply's quote. */
 export const REPLY_TEXT_MAX = 120
@@ -106,3 +106,18 @@ export function reactionClock(maxMs = 15_000) {
     return reaction && newest - at < maxMs
   }
 }
+
+// ---- read marks (104) ----
+
+/** The furthest line someone other than me has read: my lines up to it show two ticks. */
+export const readByOthers = (r: VoiceReads | null, me: string) => (!r ? 0 : r.by === me ? r.hi2 : r.hi)
+
+/** Marks only grow, and answers can arrive out of order: keep the further one. */
+export const laterReads = (a: VoiceReads | null, b: VoiceReads) => (a && (a.hi > b.hi || (a.hi === b.hi && a.hi2 > b.hi2)) ? a : b)
+
+/** Whether my reading up to `upto` would move a mark (voice_read writes only then): otherwise it isn't sent. */
+export const movesReads = (r: VoiceReads | null, me: string, upto: number) => !r || upto > r.hi || (r.by !== me && upto > r.hi2)
+
+/** voice_read's rule for `who` having read up to line `v`: the room's new marks, or null when none moves. */
+export const nextReads = (k: VoiceReads, who: string, v: number): VoiceReads | null =>
+  !movesReads(k, who, v) ? null : v > k.hi ? { hi: v, by: who, hi2: k.by === who ? k.hi2 : k.hi } : { ...k, hi2: v }

@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, Check, EyeOff, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
+import { ArrowDown, Check, CheckCheck, EyeOff, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
 import { pollPercents } from '@/lib/voice-polls'
@@ -29,6 +29,11 @@ type Sent = Extract<VoiceLine, { kind: 'text' | 'photo' }>
 const SWIPE_PX = 56
 const PRESS_MS = 480
 const FLASH_MS = 1400
+/**
+ * What's on screen counts as read once it has stayed a moment (fewer calls while a room chats fast). Each app waits
+ * 1.5-3 s at random: the first readers move the room's marks, and everyone else hears it before asking (no call).
+ */
+const READ_MS = 1500
 
 /**
  * The room's chat: compact WhatsApp-style bubbles with replies (a quote inside the bubble; tap it to see the line it
@@ -60,6 +65,25 @@ export function VoiceChat({
   const [flash, setFlash] = useState<number | null>(null)
   const count = lines?.length ?? 0
   const lastSystem = [...(lines ?? [])].reverse().find((l) => l.kind === 'system')
+  let lastIncoming = 0
+  for (const l of lines ?? []) if (l.kind !== 'system' && !l.fromMe) lastIncoming = l.id // sorted by id
+
+  // 104: the chat on screen while the tab is visible is read (as a 1:1 chat's ticks).
+  const markRead = s.markRead
+  useEffect(() => {
+    if (!lastIncoming) return
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const mark = () => {
+      clearTimeout(timer)
+      if (document.visibilityState === 'visible') timer = setTimeout(() => markRead(lastIncoming), READ_MS * (1 + Math.random()))
+    }
+    mark()
+    document.addEventListener('visibilitychange', mark)
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', mark)
+    }
+  }, [lastIncoming, markRead])
 
   // The list gets shorter (the typing row, the phone's keyboard, the stage opening): the newest line stays in view.
   useEffect(() => {
@@ -238,7 +262,8 @@ function SentLine({
       : []),
   ]
   const [menu, setMenu] = useState(false)
-  const meta = clock(line.at)
+  // 104: my line's ticks follow the time (in the room's colour on a plain bubble; a photo's or a skin's own otherwise).
+  const metaOf = (tint: boolean) => (line.fromMe ? <>{clock(line.at)}<Ticks read={line.id <= s.readBy} tint={tint} /></> : clock(line.at))
   const toMe = text !== null && !line.fromMe ? mentionRanges(text, meName) : []
   const sender = room ? memberOf(room, line.sender.id) : null
   const role = sender ? roleLabel(sender, t) : null
@@ -296,7 +321,7 @@ function SentLine({
         <Bubble mine={line.fromMe} first={!grouped} skin={skin} className="p-1">
           {name}
           <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
-            <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={meta} />
+            <MediaBubble media={{ url: line.url, kind: 'image' }} mine={line.fromMe} meta={metaOf(false)} />
           </div>
         </Bubble>
       ) : (
@@ -312,13 +337,23 @@ function SentLine({
           <p dir="auto" className="relative text-start text-[14px] leading-[1.35] break-words whitespace-pre-wrap">
             {toMe.length ? <span className="sr-only">{rt('mentionsYou')}: </span> : null}
             <LinkText text={fold(text ?? '')} decorate={(part, offset) => withMentions(part, within(toMe, offset, part.length))} />
-            <MetaSpacer>{meta}</MetaSpacer>
-            <span className="absolute inset-e-0 -bottom-0.5 text-[10.5px] leading-none text-bubble-meta">{meta}</span>
+            <MetaSpacer>{metaOf(false)}</MetaSpacer>
+            <span className="absolute inset-e-0 -bottom-0.5 flex items-center gap-0.5 text-[10.5px] leading-none text-bubble-meta">{metaOf(!skin)}</span>
           </p>
           <SeeAll text={text ?? ''} />
         </Bubble>
       )}
     </SwipeRow>
+  )
+}
+
+/** One tick when sent, two once someone else in the room has read it (the 1:1 chat's ticks). */
+function Ticks({ read, tint }: { read: boolean; tint: boolean }) {
+  const { t } = useI18n()
+  return read ? (
+    <CheckCheck className={cn('size-3.5', tint && 'text-tick-read')} aria-label={t('bubble.read')} />
+  ) : (
+    <Check className="size-3.5" aria-label={t('bubble.sent')} />
   )
 }
 

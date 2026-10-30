@@ -58,6 +58,7 @@ import {
   type VoiceLine,
   type VoicePoll,
   type VoiceReaction,
+  type VoiceReads,
   type VoiceRole,
   type VoiceRoom,
   type VoiceRoomSummary,
@@ -203,6 +204,8 @@ type VoiceChange = { seq?: number | null } & (
   /** 074: lines hidden, or the chat cleared (by whom). Numbered like the rest, nothing in the state. */
   | { t: 'h'; ids: number[] }
   | { t: 'x'; by: string }
+  /** 104: the read marks moved. Numbered like the rest, nothing in the state. */
+  | ({ t: 'k' } & VoiceReads)
 )
 
 /** voice_state's member order: the stage by seat, then raised hands (oldest first), then by arrival. */
@@ -1520,6 +1523,10 @@ export class SupabaseBackend implements Backend {
     return (await this.toVoiceLines([row]))[0]
   }
 
+  voiceRead(roomId: string, upto: number) {
+    return this.rpc<VoiceReads>('voice_read', { p_room: roomId, p_upto: upto })
+  }
+
   // ---- polls (029) ----
 
   async voicePollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine> {
@@ -1884,6 +1891,7 @@ export class SupabaseBackend implements Backend {
     const linesChanged = (c: VoiceChange) => {
       if (c.t === 'h') emit({ type: 'hidden', ids: c.ids })
       else if (c.t === 'x') emit({ type: 'cleared', by: c.by })
+      else if (c.t === 'k') emit({ type: 'read', reads: { hi: c.hi, by: c.by, hi2: c.hi2 } })
     }
     /** A poll's change goes to the screen as it is: counts and totals for everyone, my own vote stays mine. */
     const pollChanged = (c: VoiceChange) => {
@@ -1911,7 +1919,7 @@ export class SupabaseBackend implements Backend {
       if (c.seq !== seq + 1) return refresh() // missed one
       seq = c.seq
       if (c.t === 'p') return pollChanged(c) // the room itself is unchanged
-      if (c.t === 'h' || c.t === 'x') return linesChanged(c)
+      if (c.t === 'h' || c.t === 'x' || c.t === 'k') return linesChanged(c)
       // Handed the room: the code is the host's only, the full state has it.
       if (c.t === 'r' && c.host === me && base.host !== me) refresh()
       // Taken out of the room myself (removed, or dropped while away): a heartbeat brings me back in, or says

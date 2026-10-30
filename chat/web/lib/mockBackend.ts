@@ -1535,6 +1535,10 @@ export class MockBackend implements Backend {
     return (await this.voice()).polls(ids)
   }
 
+  async voiceRead(roomId: string, upto: number) {
+    return (await this.voice()).read(roomId, upto)
+  }
+
   async voiceAction(roomId: string, action: VoiceAction) {
     return (await this.voice()).act(roomId, action)
   }

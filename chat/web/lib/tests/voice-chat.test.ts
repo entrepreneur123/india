@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import type { Profile } from '../backend'
-import { insertMention, mentionMatches, mentionQuery, mentionRanges, mentions, parseReply, reactionClock, replyOf, type Quotable } from '../voice-chat.ts'
+import type { Profile, VoiceReads } from '../backend'
+import { insertMention, laterReads, mentionMatches, mentionQuery, mentionRanges, mentions, movesReads, nextReads, parseReply, reactionClock, readByOthers, replyOf, type Quotable } from '../voice-chat.ts'
 
 const sender = { id: 'u2', name: 'Rohan B.' } as Profile
 
@@ -53,4 +53,48 @@ test('reactions are judged on the server clock: a device clock running fast does
   assert.equal(fresh(t0 + 1_000, false), false) // a chat line: not a reaction, only moves the clock
   assert.equal(fresh(t0 + 20_000, true), true)
   assert.equal(fresh(t0 + 2_000, true), false) // replayed: 18 s older than the newest row
+})
+
+test('104: my line shows two ticks once someone else has read it, every time (three rounds)', () => {
+  let k: VoiceReads = { hi: 0, by: null, hi2: 0 }
+  const read = (who: string, v: number) => {
+    const n = nextReads(k, who, v)
+    if (n) k = n
+    return n
+  }
+  let line = 0
+  for (let round = 0; round < 3; round++) {
+    const mine = ++line // I post
+    read('me', mine) // my own reading never counts for my line
+    assert.ok(mine > readByOthers(k, 'me'), `round ${round}: one tick`)
+    assert.equal(movesReads(k, 'me', mine), false, 'nothing to send again')
+    read('b', mine)
+    assert.ok(mine <= readByOthers(k, 'me'), `round ${round}: two ticks`)
+    assert.equal(readByOthers(k, 'b'), mine, 'b sees my reading of the line too')
+    assert.equal(read('b', mine), null, 'reading it again moves nothing')
+    const theirs = ++line // b answers, I read it
+    read('me', theirs)
+    assert.equal(readByOthers(k, 'b'), theirs)
+  }
+})
+
+test('104: the furthest reader still sees what the others read; answers out of order keep the later marks', () => {
+  let k: VoiceReads = { hi: 0, by: null, hi2: 0 }
+  k = nextReads(k, 'a', 5)!
+  k = nextReads(k, 'b', 3)! // behind a: only hi2 moves
+  assert.deepEqual(k, { hi: 5, by: 'a', hi2: 3 })
+  assert.equal(readByOthers(k, 'a'), 3)
+  assert.equal(readByOthers(k, 'b'), 5)
+  k = nextReads(k, 'a', 9)! // a further on alone: b's 3 stays what others read
+  assert.deepEqual(k, { hi: 9, by: 'a', hi2: 3 })
+  k = nextReads(k, 'b', 12)! // b passes a: a's 9 becomes the others' mark
+  assert.deepEqual(k, { hi: 12, by: 'b', hi2: 9 })
+  assert.equal(readByOthers(null, 'a'), 0)
+  assert.equal(movesReads(null, 'a', 1), true)
+  assert.equal(movesReads(k, 'b', 12), false)
+  assert.equal(movesReads(k, 'a', 10), true)
+  const old = { hi: 5, by: 'a', hi2: 3 }
+  assert.equal(laterReads(k, old), k)
+  assert.equal(laterReads(old, k), k)
+  assert.equal(laterReads(null, old), old)
 })

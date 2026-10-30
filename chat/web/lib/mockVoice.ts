@@ -16,13 +16,14 @@ import {
   type VoicePoll,
   type VoiceQueueItem,
   type VoiceReaction,
+  type VoiceReads,
   type VoiceRoom,
   type VoiceRoomSummary,
   type VoiceSystemEvent,
   type VoiceTrack,
 } from './backend'
 import { deviceProblem } from './rtc'
-import { quotable, replyOf } from './voice-chat'
+import { nextReads, quotable, replyOf } from './voice-chat'
 import { checkPoll, POLLS_PER_READ } from './voice-polls'
 import { nextHost } from './voice-lost'
 import { art } from './mock-art'
@@ -130,6 +131,8 @@ interface SimRoom {
   /** When polls were asked here (5 in 10 minutes, as on the server). */
   pollTimes: number[]
   lines: VoiceLine[]
+  /** The room's read marks (voice_read, 104). */
+  reads: VoiceReads
   subs: Set<(e: VoiceEvent) => void>
   timers: ReturnType<typeof setTimeout>[]
   talkers: Set<string>
@@ -235,7 +238,7 @@ export class VoiceSim {
 
   private sim(room: SimRoom['room'], lines: VoiceLine[], mine: boolean): SimRoom {
     return {
-      room, lines, mine, code: code(), admitted: false, unlocked: false, pollTimes: [],
+      room, lines, mine, reads: { hi: 0, by: null, hi2: 0 }, code: code(), admitted: false, unlocked: false, pollTimes: [],
       subs: new Set(), timers: [], talkers: new Set(), levels: {}, ended: false, handsRaised: 0,
     }
   }
@@ -512,7 +515,32 @@ export class VoiceSim {
   private post(r: SimRoom, line: VoiceLine) {
     r.lines.push(line)
     this.emit(r, { type: 'line', line: { ...line } })
+    // Someone in the room reads my line a moment later (its two ticks).
+    if (line.kind !== 'system' && line.fromMe) {
+      this.later(r, jitter(1500, 4000), () => {
+        const o = this.others(r)
+        if (o.length) this.markRead(r, pick(o).profile.id, line.id)
+      })
+    }
     return line
+  }
+
+  /** As voice_read (104): `who` has read up to `upto` (a line that exists); the room hears when a mark moves. */
+  private markRead(r: SimRoom, who: string, upto: number) {
+    const v = r.lines.reduce((n, l) => (l.id <= upto && l.id > n ? l.id : n), 0)
+    const next = nextReads(r.reads, who, v)
+    if (!next) return
+    r.reads = next
+    this.emit(r, { type: 'read', reads: { ...r.reads } })
+  }
+
+  async read(roomId: string, upto: number): Promise<VoiceReads> {
+    const r = this.get(roomId)
+    const me = this.me()
+    if (!me || !this.meMember(r)) throw new BackendError('not_allowed')
+    await wait(80)
+    this.markRead(r, me.id, upto)
+    return { ...r.reads }
   }
 
 

@@ -5,10 +5,11 @@ import * as m from 'motion/react-m'
 import { useCallback, useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react'
 import { ChevronUp, LogOut, Mic, MicOff } from 'lucide-react'
 import { useSWRConfig, type Key } from 'swr'
-import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceRoom, type VoiceVideo } from '@/lib/backend'
+import { BackendError, type VoiceAction, type VoiceRoomSummary, type VoiceAudioState, type VoiceLine, type VoiceMember, type VoiceReaction, type VoiceReads, type VoiceRoom, type VoiceVideo } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { retryImport } from '@/lib/retry-import'
+import { laterReads, movesReads, readByOthers } from '@/lib/voice-chat'
 import { pollsReducer, POLLS_PER_READ, type PollAction, type PollMap } from '@/lib/voice-polls'
 import { nextExpiry, TYPING_SEND_MS, typingIds, type TypingSeen } from '@/lib/typing'
 import { nextHost } from '@/lib/voice-lost'
@@ -98,6 +99,10 @@ export interface VoiceSession {
   typing: string[]
   /** The text in my box changed: tells the room, at most every few seconds. */
   notifyTyping: () => void
+  /** 104: my lines up to this id have been read by someone else (two ticks). */
+  readBy: number
+  /** I have seen the chat up to this line: sent only when it moves the room's marks. */
+  markRead: (upto: number) => void
 }
 
 const REACTION_MS = 2600
@@ -127,6 +132,10 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     if (a.type === 'mine') mineKnown.current.add(a.poll.id)
     dispatch(a)
   }, [])
+  const [reads, setReads] = useState<VoiceReads | null>(null)
+  const readsRef = useRef(reads)
+  readsRef.current = reads
+  const gotReads = useCallback((r: VoiceReads) => setReads((a) => laterReads(a, r)), [])
   const [levels] = useState(() => new LevelStore())
   const gone = useRef(onGone)
   gone.current = onGone
@@ -194,8 +203,12 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         case 'poll':
           dispatchPoll({ type: 'room', poll: e.poll })
           break
+        case 'read':
+          gotReads(e.reads)
+          break
         case 'resync':
           readPolls(true)
+          void backend.voiceRead(roomId, 0).then(gotReads, () => undefined) // the marks may have moved meanwhile
           break
         case 'reaction': {
           const r: Reaction = { key: ++seq, userId: e.userId, kind: e.kind, x: 0.12 + Math.random() * 0.76 }
@@ -238,7 +251,9 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         if (!alive) return
         setRoom(r)
         const history = await backend.voiceLines(roomId)
-        if (alive) addLines(history)
+        if (!alive) return
+        addLines(history)
+        void backend.voiceRead(roomId, 0).then(gotReads, () => undefined)
       } catch (err) {
         if (!alive) return
         const code = errorCode(err)
@@ -256,9 +271,16 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
       // The list shows it at once: my room gone after I end it, one person fewer after I leave.
       void backend.leaveVoice(roomId).catch(() => undefined).finally(() => void mutate(isRoomList))
     }
-  }, [backend, roomId, addLines, levels, toast, ending]) // not mutate: it is a new function on renders, and a re-run here leaves the room (a host's leave ends it)
+  }, [backend, roomId, addLines, gotReads, levels, toast, ending]) // not mutate: it is a new function on renders, and a re-run here leaves the room (a host's leave ends it)
 
   const me = room ? memberOf(room, room.meId) : null
+  const meId = room?.meId ?? ''
+  const markRead = useCallback(
+    (upto: number) => {
+      if (meId && movesReads(readsRef.current, meId, upto)) void backend.voiceRead(roomId, upto).then(gotReads, () => undefined)
+    },
+    [backend, roomId, meId, gotReads],
+  )
 
   // Who's typing: re-read when a signal arrives, the member list changes, or the oldest one goes stale.
   const memberKey = room?.members.map((x) => x.profile.id).join(',') ?? ''
@@ -487,7 +509,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
 
   return {
     room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, startAudio, sound, setSound,
-    polls, createPoll, votePoll, closePoll, typing, notifyTyping,
+    polls, createPoll, votePoll, closePoll, typing, notifyTyping, readBy: readByOthers(reads, meId), markRead,
   }
 }
 
