@@ -1,0 +1,96 @@
+{
+  "_about": "Ways to earn besides government jobs, shown in the app (#earn) and as static pages (jobs/earn/). Every fact is quoted from the company's or ministry's own Google Play listing or website on the date in 'checked'; 'downloads' is the Play count that day. Re-check before changing a fact. Do not list apps that ask for money to earn, APKs, phone numbers or WhatsApp groups.",
+  "checked": "2026-10-30",
+  "groups": [
+    {
+      "id": "delivery",
+      "key": "earnGig",
+      "slug": "delivery-boy-jobs",
+      "title": "Delivery Boy Jobs {y}: Blinkit, Zomato, Swiggy, Zepto, Flipkart — How to Join (Official Apps)",
+      "hindi": "डिलीवरी बॉय जॉब {y}: ब्लिंकिट, ज़ोमैटो, स्विगी, ज़ेप्टो — कैसे जॉइन करें",
+      "intro": "Food, grocery and parcel delivery is the most common way to start earning quickly in Indian cities. You join through each company's own partner app: it asks for your documents, checks them and shows the work near you. Earnings are paid per order or per delivery; the amounts below are what each company states on its official app page, not a fixed salary.",
+      "options": [
+        {"id": "blinkit", "name": "Blinkit", "role": "role_grocery", "url": "https://play.google.com/store/apps/details?id=app.blinkit.onboarding", "app": "Blinkit Delivery Partner", "developer": "Blinkit", "downloads": "1 crore+",
+         "says": ["Earn up to ₹30,000 per month", "Orders from a nearby store, within 3 km", "Daily or weekly payouts", "Joining bonus up to ₹6,000*", "₹10 lakh life insurance and ₹1 lakh health insurance", "EV bike on rent"]},
+        {"id": "zomato", "name": "Zomato", "role": "role_food", "url": "https://play.google.com/store/apps/details?id=com.zomato.delivery", "app": "Zomato Delivery Partner", "developer": "Zomato Logistics", "downloads": "1 crore+",
+         "says": ["Earn up to ₹30,000 per month, paid per delivery", "Join with Aadhaar and PAN, then online training", "Works in 500+ cities"]},
+        {"id": "swiggy", "name": "Swiggy", "role": "role_food", "url": "https://play.google.com/store/apps/details?id=in.swiggy.deliveryapp", "app": "Swiggy Delivery Partner App", "developer": "Swiggy", "downloads": "1 crore+",
+         "says": ["Earn up to ₹60,000 per month", "Joining bonus up to ₹10,000", "Works in 600+ cities"]},
+        {"id": "zepto", "name": "Zepto", "role": "role_grocery", "url": "https://play.google.com/store/apps/details?id=com.zepto.rider", "app": "Zepto Delivery Partner App", "developer": "Zepto Marketplace Private Limited", "downloads": "1 crore+",
+         "says": ["Paid per order, with a minimum business guarantee", "Deliveries within 3 km of the store"]},
+        {"id": "shadowfax", "name": "Shadowfax", "role": "role_parcel", "url": "https://play.google.com/store/apps/details?id=in.shadowfax.gandalf", "app": "Shadowfax Delivery Partner App", "developer": "Shadowfax Technologies", "downloads": "1 crore+",
+         "says": ["Earn up to ₹45,000+ per month, weekly payouts", "Anyone 18+ with valid Aadhaar, PAN and a bank account", "Bike, scooter, bicycle or EV (rent available) and an Android phone", "Insurance up to ₹7.5 lakh", "2,500+ cities"]},
+        {"id": "flipkart", "name": "Flipkart (Ekart)", "role": "role_parcel", "url": "https://play.google.com/store/apps/details?id=com.ekartkiranaonboarding", "app": "Flipkart Delivery Partner App", "developer": "Ekart", "downloads": "10 lakh+",
+         "says": ["Earn up to ₹40,000 per month, paid weekly or fortnightly", "No investment required: Aadhaar, PAN card and a bike", "Parcel, grocery and 10-minute delivery roles"]},
+        {"id": "delhivery", "name": "Delhivery", "role": "role_parcel", "url": "https://play.google.com/store/apps/details?id=com.delhivery.delhiverypartner", "app": "Delhivery Partner App", "developer": "Delhivery Limited", "downloads": "10 lakh+",
+         "says": ["Earn up to ₹40,000 per month, weekly payouts", "Needs Aadhaar, PAN, a bank account, an Android phone; age 18+", "EV on rent at ₹150 a day", "Eligible partners may move to on-roll employment"],
+         "steps": ["Install the app and create your profile", "Choose the nearest dispatch centre", "Upload Aadhaar and PAN", "An executive calls you to complete joining"]},
+        {"id": "bigbasket", "name": "BigBasket", "role": "role_grocery", "url": "https://play.google.com/store/apps/details?id=com.bigbasket.dapp.activity", "app": "Bigbasket Delivery Partner App", "developer": "Bigbasket.com", "downloads": "10 lakh+",
+         "says": []}
+      ]
+    },
+    {
+      "id": "driver",
+      "key": "earnDrive",
+      "slug": "driver-jobs",
+      "title": "Driver Jobs {y}: Rapido, Uber, Ola, Namma Yatri, Porter — Bike, Auto, Cab and Tempo (Official Apps)",
+      "hindi": "ड्राइवर जॉब {y}: रैपिडो, उबर, ओला, पोर्टर — बाइक, ऑटो, कैब",
+      "intro": "If you have a driving licence and a vehicle (bike, auto, cab or goods vehicle), you can earn by giving rides or moving goods through these apps. Each company checks your licence and vehicle papers in its own driver app. What you earn depends on the rides you take; the facts below are from each company's official app page.",
+      "options": [
+        {"id": "rapido", "name": "Rapido", "role": "role_ride", "url": "https://play.google.com/store/apps/details?id=com.rapido.rider", "app": "Rapido Captain", "developer": "Rapido Bike Taxi", "downloads": "1 crore+",
+         "says": ["Bike taxi, auto and cab rides", "₹5 lakh* insurance on every ride"]},
+        {"id": "uber", "name": "Uber", "role": "role_ride", "url": "https://play.google.com/store/apps/details?id=com.ubercab.driver", "app": "Uber Driver", "developer": "Uber Technologies, Inc.", "downloads": "10 crore+ (worldwide)",
+         "says": []},
+        {"id": "ola", "name": "Ola", "role": "role_ride", "url": "https://play.google.com/store/apps/details?id=com.olacabs.oladriver", "app": "Ola Driver App", "developer": "Ola (ANI Technologies Private Limited)", "downloads": "1 crore+",
+         "says": []},
+        {"id": "nammayatri", "name": "Namma Yatri", "role": "role_ride", "url": "https://play.google.com/store/apps/details?id=in.juspay.nammayatripartner", "app": "Namma Yatri Driver Partner", "developer": "Moving Tech", "downloads": "10 lakh+",
+         "says": ["Zero commission: you keep 100% of the fare", "Needs driving licence and vehicle registration (RC)", "Bengaluru, Delhi, Hyderabad, Chennai, Kochi, Mysuru and Tumakuru"]},
+        {"id": "porter", "name": "Porter", "role": "role_goods", "url": "https://play.google.com/store/apps/details?id=com.theporter.android.driverapp", "app": "Porter Driver Partner App", "developer": "SmartShift Logistics Solutions Private Limited", "downloads": "1 crore+",
+         "says": ["Bike, three-wheeler, tempo, Tata Ace, mini-truck and pickup", "Instant or daily payouts", "No forced login or shift commitments", "34+ cities"]}
+      ]
+    },
+    {
+      "id": "jobs",
+      "key": "earnJobsApps",
+      "slug": "part-time-jobs",
+      "title": "Part Time Jobs {y}: Genuine Job Apps With No Fees, and How to Spot Fake Work-From-Home Offers",
+      "hindi": "पार्ट टाइम जॉब {y}: बिना फ़ीस वाले असली जॉब ऐप, और फ़र्ज़ी 'घर बैठे जॉब' से कैसे बचें",
+      "intro": "For part-time, full-time, fresher and internship jobs in private companies, use the big job apps: you make a profile and apply or talk to the employer directly. They are free for job seekers. Fake 'work from home' and 'task' jobs that ask you to pay first are a common fraud in India; see the warning signs below.",
+      "options": [
+        {"id": "apna", "name": "apna", "role": "role_jobs", "url": "https://play.google.com/store/apps/details?id=com.apnatime", "app": "apna - Job Search App India", "developer": "apna", "downloads": "5 crore+", "says": []},
+        {"id": "workindia", "name": "WorkIndia", "role": "role_jobs", "url": "https://play.google.com/store/apps/details?id=in.workindia.nileshdungarwal.workindiaandroid", "app": "WorkIndia Job Search App", "developer": "WorkIndia", "downloads": "5 crore+",
+         "says": ["100% free job app: no consultancy or hidden charges", "Call the HR directly"]},
+        {"id": "naukri", "name": "Naukri", "role": "role_jobs", "url": "https://play.google.com/store/apps/details?id=naukriApp.appModules.login", "app": "Naukri", "developer": "infoedge.com", "downloads": "5 crore+", "says": []},
+        {"id": "indeed", "name": "Indeed", "role": "role_jobs", "url": "https://play.google.com/store/apps/details?id=com.indeed.android.jobsearch", "app": "Indeed Job Search", "developer": "Indeed Jobs", "downloads": "10 crore+ (worldwide)", "says": ["Free job search app"]},
+        {"id": "internshala", "name": "Internshala", "role": "role_intern", "url": "https://play.google.com/store/apps/details?id=com.internshala.app", "app": "Internshala", "developer": "Internshala", "downloads": "50 lakh+", "says": ["Free to register"]},
+        {"id": "urbancompany", "name": "Urban Company", "role": "role_home", "url": "https://play.google.com/store/apps/details?id=com.urbanclap.provider", "app": "Urban Company Partner", "developer": "Urban Company", "downloads": "10 lakh+",
+         "says": ["For beauty, cleaning, repair and other home-service professionals", "You pay only when you send quotes to customers"]},
+        {"id": "ncs", "name": "National Career Service (NCS)", "role": "role_ncs", "url": "https://www.ncs.gov.in/", "says": []}
+      ]
+    },
+    {
+      "id": "gov",
+      "key": "earnGov",
+      "slug": "government-schemes-for-income",
+      "title": "Government Schemes to Earn {y}: PM Internship, e-Shram, Skill India, Apprenticeship, Mudra Loan, PM SVANidhi",
+      "hindi": "कमाई के लिए सरकारी योजनाएँ {y}: पीएम इंटर्नशिप, ई-श्रम, स्किल इंडिया, अप्रेंटिसशिप, मुद्रा लोन, पीएम स्वनिधि",
+      "intro": "Free government help for people who want work or want to start their own: internships with a stipend, skill courses, apprenticeships, a card for unorganised and gig workers, and small loans without collateral. Apply only on the official sites below; nobody needs to be paid to get you in.",
+      "options": [
+        {"id": "pminternship", "name": "PM Internship Scheme", "role": "role_pmis", "url": "https://play.google.com/store/apps/details?id=com.mca.pm_internship", "app": "PM Internship", "developer": "Ministry of Corporate Affairs, Government of India", "downloads": "1 lakh+",
+         "says": ["For youth aged 18–25 who are not in full-time employment", "Family income below ₹12 lakh a year", "Apply for up to three internships with no fees"]},
+        {"id": "eshram", "name": "e-Shram", "role": "role_eshram", "url": "https://eshram.gov.in/", "says": []},
+        {"id": "skillindia", "name": "Skill India Digital", "role": "role_skill", "url": "https://www.skillindiadigital.gov.in/", "says": []},
+        {"id": "apprenticeship", "name": "Apprenticeship India", "role": "role_apprentice", "url": "https://www.apprenticeshipindia.gov.in/", "says": []},
+        {"id": "mudra", "name": "PM Mudra Yojana", "role": "role_mudra", "url": "https://www.udyamimitra.in/",
+         "says": ["Loans without collateral to start or grow a small business", "Shishu up to ₹50,000; Kishore ₹50,000–₹5 lakh; Tarun ₹5–10 lakh; Tarun Plus up to ₹20 lakh for those who repaid a Tarun loan", "Apply online on Udyam Mitra or at a bank"]},
+        {"id": "svanidhi", "name": "PM SVANidhi", "role": "role_svanidhi", "url": "https://pmsvanidhi.mohua.gov.in/",
+         "says": ["Loans for street vendors: ₹15,000, then ₹25,000, then ₹50,000", "Needs a Certificate of Vending or a Letter of Recommendation from the Urban Local Body"]}
+      ]
+    }
+  ],
+  "warning": {
+    "title": "How to spot a fake job or earning offer",
+    "signs": ["They ask you to pay a registration, joining, kit or 'security' fee to an agent or a person before you get work", "They pay a little for small 'tasks' (likes, reviews, typing) and then ask you to invest more", "Contact only through WhatsApp or Telegram, never through an official app or website", "Promises like ₹5,000–₹10,000 a day from home with no skills", "An APK file to install from a link instead of Google Play"],
+    "report": "If you were cheated, report it on cybercrime.gov.in or call the cybercrime helpline 1930."
+  }
+}

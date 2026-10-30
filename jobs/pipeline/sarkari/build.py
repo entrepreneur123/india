@@ -97,6 +97,18 @@ def _write_text(path: str, text: str) -> bool:
 
 FAMILIES = os.path.join(os.path.dirname(__file__), "..", "exam_families.json")
 GUIDE = os.path.join(os.path.dirname(__file__), "..", "ssc_guide.json")
+EARN = os.path.join(os.path.dirname(__file__), "..", "earn.json")
+
+
+def load_earn() -> dict:
+    """Ways to earn besides government jobs (earn.json); checked so a bad edit stops the run."""
+    e = _read_json(EARN, None)
+    ids = [o["id"] for g in (e or {}).get("groups", []) for o in g["options"]]
+    if (not e or not ids or len(ids) != len(set(ids)) or not e.get("warning", {}).get("signs")
+            or any(not o["url"].startswith("https://") or o["role"] not in sitegen.ROLE_EN
+                   for g in e["groups"] for o in g["options"])):
+        raise ssc.FormatChanged("earn.json is incomplete")
+    return e
 
 
 def load_guide() -> dict:
@@ -345,8 +357,10 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
     _write_json(_v1(out, "site.json"), site_info(channel, *push, whatsapp=whatsapp, contact=contact))
     _write_text(_v1(out, "whatsapp.txt"), whatsapp_post.digest(feed, families["families"], now, site_url))
     _write_json(_v1(out, "guide.json"), {"schema": SCHEMA, **{k: v for k, v in guide.items() if k != "_comment"}})
+    earn = load_earn()
+    _write_json(_v1(out, "earn.json"), {"schema": SCHEMA, **{k: v for k, v in earn.items() if k != "_about"}})
     publish_rules(out, all_rules, now.date())
-    sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url, contact_email(contact))
+    sitegen.build(out, families["families"], all_rules, feed, now.date(), site_url, contact_email(contact), earn)
     if get_bytes is not None and not shutil.which("pdftotext"):
         print("::warning::pdftotext (poppler-utils) is not installed: result lists and cut-offs skipped")
     elif get_bytes is not None:

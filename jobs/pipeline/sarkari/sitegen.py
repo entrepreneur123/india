@@ -13,6 +13,7 @@ import datetime as dt
 import html
 import json
 import os
+import re
 
 from . import eligibility, sources
 
@@ -260,9 +261,100 @@ def hub_page(slug: str, title: str, hindi: str, items: list[dict], families: dic
         b.append("</ul>")
     else:
         b.append("<p>No updates in the last 120 days from the recruiters we follow.</p>")
-    b.append("<h2>More</h2><ul>" + "".join(f'<li><a href="../{E(s)}/">{E(t.format(y=today.year))}</a></li>' for s, t, _, _ in HUBS if s != slug) + "</ul>")
+    b.append("<h2>More</h2><ul>" + "".join(f'<li><a href="../{E(s)}/">{E(t.format(y=today.year))}</a></li>' for s, t, _, _ in HUBS if s != slug)
+             + '<li><a href="../../earn/">Earn money: delivery boy, driver and part time jobs (official apps)</a></li></ul>')
     b.append('<p><a class="cta" href="../../#home">Open the app: alerts, eligibility check, result by roll number →</a></p>')
     return _frame(title, desc, b, today, site_url, f"jobs/topic/{slug}/", ((title.split(":")[0], None),), contact)
+
+
+# Earn-money pages (earn.json): searched as "delivery boy job", "blinkit delivery boy job joining process", "driver job",
+# "part time job", "work from home job genuine" (Google autocomplete, India, 30-10-2026). One page per kind of work and
+# one per app that states its own terms; every fact is quoted from the company's or ministry's official page.
+ROLE_EN = {"role_food": "Food delivery", "role_grocery": "Grocery delivery", "role_parcel": "Parcel delivery",
+           "role_ride": "Bike, auto and cab rides", "role_goods": "Goods transport (bike to mini-truck)",
+           "role_home": "Beauty, cleaning and repair work", "role_jobs": "Job search app", "role_intern": "Internships",
+           "role_ncs": "The government's free job portal", "role_eshram": "Free card for unorganised and gig workers",
+           "role_skill": "Skill courses and certificates", "role_apprentice": "Apprenticeships with a monthly stipend",
+           "role_pmis": "Paid internships in top companies", "role_mudra": "Loans to start your own work",
+           "role_svanidhi": "Loans for street vendors"}
+JOIN_STEPS = ["Install the official app from Google Play (link above). Do not install an APK sent by anyone.",
+              "Register with your mobile number.", "Upload the documents the app asks for and finish its verification.",
+              "Start work when the company activates your account."]
+
+
+def _earn_detailed(o: dict) -> bool:
+    return len(o.get("says") or []) >= 2  # an app page needs facts of its own, not just a link
+
+
+def _warning(w: dict) -> str:
+    return (f"<h2>{E(w['title'])}</h2><ul>" + "".join(f"<li>{E(x)}</li>" for x in w["signs"]) + "</ul>"
+            f"<p>{E(w['report'])}</p>")
+
+
+def _option_li(o: dict, href: str | None) -> str:
+    facts = "; ".join(o.get("says") or [])
+    name = f'<a href="{E(href)}">{E(o["name"])}</a>' if href else E(o["name"])
+    return (f"<li><strong>{name}</strong> — {E(ROLE_EN[o['role']])}" + (f". {E(facts)}." if facts else ".")
+            + (f' <span class="note">{E(o["downloads"])} downloads.</span>' if o.get("downloads") else "")
+            + f' <a href="{E(o["url"])}" rel="noopener">Official {"app" if "play.google" in o["url"] else "site"} ↗</a></li>')
+
+
+def earn_pages(earn: dict, today: dt.date, site_url: str | None, contact: str | None = None) -> dict[str, str]:
+    """{path: html} for jobs/earn/, one page per group and one per app with its own facts."""
+    y, checked = str(today.year), _day(earn["checked"])
+    out = {}
+    groups = earn["groups"]
+    hub_title = f"Earn Money {y}: Delivery, Driver and Part Time Jobs, Government Schemes — Official Apps Only"
+    b = [f"<h1>{E(hub_title)}</h1>", '<p class="hi" lang="hi">पैसे कमाने के असली तरीके: डिलीवरी, ड्राइवर, पार्ट टाइम जॉब और सरकारी योजनाएँ</p>',
+         "<p>Ways to earn besides a government job, each with its official app or website and what the company itself says. "
+         f"No fees, no agents. Facts checked on {checked}.</p>"]
+    for g in groups:
+        b.append(f'<h2><a href="{E(g["slug"])}/">{E(g["title"].format(y=y).split(":")[0])}</a></h2><ul>'
+                 + "".join(_option_li(o, f'{g["slug"]}/{o["id"]}/' if _earn_detailed(o) else None) for o in g["options"]) + "</ul>")
+    b.append(_warning(earn["warning"]))
+    b.append('<p><a class="cta" href="../#earn">Open in the app →</a></p>')
+    out["jobs/earn/"] = _frame(hub_title, "Delivery boy, driver and part time jobs through official apps (Blinkit, Zomato, Swiggy, Rapido, Uber, "
+                               "apna) and government schemes (PM Internship, e-Shram, Mudra). What each company says, how to join, how to avoid fake jobs.",
+                               b, today, site_url, "jobs/earn/", (("Earn money", None),), contact)
+    for g in groups:
+        title = g["title"].format(y=y)
+        others = [o for o in g["options"]]
+        b = [f"<h1>{E(title)}</h1>", f'<p class="hi" lang="hi">{E(g["hindi"].format(y=y))}</p>', f"<p>{E(g['intro'])}</p>",
+             "<ul>" + "".join(_option_li(o, f'{o["id"]}/' if _earn_detailed(o) else None) for o in others) + "</ul>",
+             f'<p class="note">From each company\'s or ministry\'s official page, checked on {checked}. "Up to" amounts are what the company says, not a promise.</p>',
+             "<h2>How to join</h2><ol>" + "".join(f"<li>{E(x)}</li>" for x in JOIN_STEPS) + "</ol>" if g["id"] in ("delivery", "driver") else "",
+             _warning(earn["warning"]),
+             "<h2>More ways to earn</h2><ul>" + "".join(f'<li><a href="../{E(o["slug"])}/">{E(o["title"].format(y=y).split(":")[0])}</a></li>'
+                                                       for o in groups if o is not g) + '<li><a href="../../topic/latest-govt-jobs/">Latest Govt Jobs</a></li></ul>',
+             '<p><a class="cta" href="../../#earn">Open in the app →</a></p>']
+        desc = f"{title.split(':')[0]}: " + ", ".join(o["name"] for o in g["options"]) + ". Official links, what each company says, how to join, and how to avoid fake job offers."
+        path = f"jobs/earn/{g['slug']}/"
+        out[path] = _frame(title, desc, [x for x in b if x], today, site_url, path,
+                           (("Earn money", "earn/"), (title.split(":")[0], None)), contact)
+        for o in g["options"]:
+            if not _earn_detailed(o):
+                continue
+            kind = "Delivery Partner" if g["id"] == "delivery" else "Driver Partner" if g["id"] == "driver" else ""
+            docs = any(re.search(r"\b(Aadhaar|PAN|licence|RC)\b", x) for x in o["says"])  # only promise what the page has
+            pay = any(re.search(r"\b(earn|paid|payouts?)\b", x, re.I) for x in o["says"])
+            t = (f"{o['name']} {kind} Job {y}: How to Join" + ", Documents" * docs + ", Earnings" * pay + " (Official App)" if kind
+                 else f"{o['name']} {y}: Eligibility and How to Apply (Official)" if g["id"] == "gov"
+                 else f"{o['name']} {y}: What It Offers and How to Join (Official App)")
+            b = [f"<h1>{E(t)}</h1>", f"<p>{E(ROLE_EN[o['role']])}. You join through "
+                 + (f"the official app <strong>{E(o['app'])}</strong> by {E(o['developer'])} on Google Play" if o.get("app") else "the official website")
+                 + (f" ({E(o['downloads'])} downloads)" if o.get("downloads") else "") + ".</p>",
+                 f'<p><a class="cta" href="{E(o["url"])}" rel="noopener">Open the official {"app" if "play.google" in o["url"] else "website"} ↗</a></p>',
+                 f"<h2>What {E(o['name'])} says</h2><ul>" + "".join(f"<li>{E(x)}</li>" for x in o["says"]) + "</ul>",
+                 f'<p class="note">Quoted from the official page on {checked}; "up to" amounts and bonuses are the company\'s own claims and can change.</p>',
+                 "<h2>How to join</h2><ol>" + "".join(f"<li>{E(x)}</li>" for x in (o.get("steps") or (JOIN_STEPS if kind else ["Open the official link above and follow its steps."]))) + "</ol>",
+                 _warning(earn["warning"]),
+                 f"<h2>Similar</h2><ul>" + "".join(f'<li><a href="../{E(x["id"])}/">{E(x["name"])}</a></li>' for x in g["options"] if x is not o and _earn_detailed(x))
+                 + f'<li><a href="../">{E(g["title"].format(y=y).split(":")[0])}</a></li></ul>']
+            desc = f"{o['name']}: " + "; ".join(o["says"][:3]) + ". Official app link and how to join."
+            path = f"jobs/earn/{g['slug']}/{o['id']}/"
+            out[path] = _frame(t, desc[:300], b, today, site_url, path,
+                               (("Earn money", "earn/"), (g["title"].format(y=y).split(":")[0], f"earn/{g['slug']}/"), (o["name"], None)), contact)
+    return out
 
 
 def _write_page(path: str, text: str) -> None:
@@ -345,8 +437,11 @@ def info_pages(today: dt.date, site_url: str | None, contact: str | None) -> dic
 
 
 def build(out: str, families: dict, all_rules: list[dict], items: list[dict], today: dt.date, site_url: str | None,
-          contact: str | None = None) -> list[str]:
+          contact: str | None = None, earn: dict | None = None) -> list[str]:
     paths = []
+    for path, text in (earn_pages(earn, today, site_url, contact) if earn else {}).items():
+        _write_page(os.path.join(out, path, "index.html"), text)
+        paths.append(path)
     for code, fam in families.items():
         if code == "LDCE":
             continue
