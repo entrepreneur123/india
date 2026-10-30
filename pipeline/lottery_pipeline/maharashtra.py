@@ -274,6 +274,12 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
         num_words = _words(cleaned, work) if clean else words     # the numbers
         cell_nums, read_cells = _cell_numbers(cleaned if clean else gray, cells, dpi, work)
     H, W = gray.shape
+    # A rule with rows of numbers right above and right below it is a line inside one prize's grid,
+    # not between two prizes (the 29-10-2026 Akarshak Pushkraj sheet: one across its 350 numbers
+    # moved their first four rows into the 6th prize).
+    mids = [w[2] + w[4] / 2 for w in num_words if re.fullmatch(r"\D?\d{4}\D?", w[0])]
+    rules = [r for r in rules if sum(r - dpi * 0.25 < y < r for y in mids) < 3
+             or sum(r < y < r + dpi * 0.25 for y in mids) < 3]
     lines: dict = {}
     for wd in words:
         lines.setdefault(wd[5], []).append(wd)
@@ -438,7 +444,35 @@ def read_once(pdf: bytes, dpi: int, clean: bool) -> dict:
     numbers = [(n, cx / W, cy / H, ww / W, series_for(cx, cy) if t["rank"] in ("1", "CONS") else None, approx)
                for t in order for n, cx, cy, ww, approx in t["numbers"]]
     headings = [{"rank": t["rank"], "top": t["top"] / H, "prize": t["prize"], "count": t["count"]} for t in order]
+    _consolation_row(headings, numbers, gray)
     return {"head": head, "headings": headings, "numbers": numbers}
+
+
+def _consolation_row(headings: list[dict], numbers: list[tuple], gray) -> None:
+    """The 1st prize's box holding two rows (one number, then the same number in the other series)
+    when the consolation heading beside the second row was not read: OCR ran it into that row's
+    numbers ("concen et coor. | 3870 | 5670| 5670" on the 28-10-2026 Akshay sheet). Its heading is
+    read again alone, and the consolation tier starts between the two rows only if it says so."""
+    ranks = [h["rank"] for h in headings]
+    if "1" not in ranks or "CONS" in ranks:
+        return
+    i = ranks.index("1")
+    end = headings[i + 1]["top"] if i + 1 < len(headings) else 1.0
+    rows: list[list[float]] = []
+    for y in sorted(y for _, _, y, *_ in numbers if headings[i]["top"] <= y < end):
+        if rows and y - rows[-1][-1] < 0.01:
+            rows[-1].append(y)
+        else:
+            rows.append([y])
+    if len(rows) != 2 or len(rows[0]) != 1 or len(rows[1]) < 5:
+        return
+    H, W = gray.shape
+    mid = (rows[0][-1] + rows[1][0]) / 2
+    text = _text_alone(gray[int((mid - 0.005) * H):int(min(end, rows[1][-1] + 0.04) * H), 0:int(W * 0.33)])
+    m = _TIER.search(text)
+    amt = _AMOUNT.findall(text[m.start():]) if m and m.group(3) else []
+    if amt:
+        headings.insert(i + 1, {"rank": "CONS", "top": mid, "prize": int(amt[0].replace(",", "")), "count": None})
 
 
 def _series_columns(series, loose, H: int) -> dict | None:
@@ -505,6 +539,23 @@ def _printed_order(nums, count: int | None = None) -> list | None:
         return idx
     col = bands([n[1] for n in nums], width * 0.5)
     row = bands([n[2] for n in nums], 0.008)  # page fractions: printed rows are >= 0.016 apart
+    # One position between two rows chains them into one band (the 28-10-2026 Akshay sheet's last
+    # two rows, 0.834 and 0.850): a band taller than one row is split at its widest gap.
+    groups: dict = {}
+    for v, k in row.items():
+        groups.setdefault(k, []).append(v)
+    parts = []
+    for k in sorted(groups):
+        todo = [sorted(groups[k])]
+        while todo:
+            g = todo.pop(0)
+            i = max(range(1, len(g)), key=lambda j: g[j] - g[j - 1]) if len(g) > 1 else 0
+            # (a skewed scan spreads one row evenly; only a clear gap inside a tall band splits it)
+            if g[-1] - g[0] > 0.011 and i and g[i] - g[i - 1] > 0.004:
+                todo[:0] = [g[:i], g[i:]]
+            else:
+                parts.append(g)
+    row = {v: i for i, g in enumerate(parts) for v in g}
     size = {k: sum(col[n[1]] == k for n in nums) for k in set(col.values())}
     big = sorted(size.values())[len(size) // 2]
     cells: dict = {}
@@ -958,6 +1009,10 @@ def _agree(runs: list[dict], glyphs: "Glyphs | None" = None) -> dict:
             mine = _settle_by_order(mine, h["rank"], check, h["count"])
         else:
             mine = [_settle_small(x, h["rank"], check) for x in mine]
+            if h["count"] != len(mine) and len(mine) in h["counts"] and all(x[0] for x in mine):
+                # "10 Numbers" read as "40" by most readings (29-10-2026): a count another reading gave
+                # that every number read fits; one number missing still fails below.
+                h["count"] = len(mine)
         if not h["prize"]:
             raise MaharashtraError(f"{h['rank']} prize: amount unreadable")
         if h["rank"] == "1":

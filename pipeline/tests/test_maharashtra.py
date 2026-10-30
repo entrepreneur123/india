@@ -193,3 +193,17 @@ def test_draws_with_marathi_only_names_keep_distinct_ids():
     a = mh.entry(day, "https://x/1029202616592174929_10_2026_N_109_x.pdf", None, "महाराष्ट्र आकर्षक पुष्कराज साप्ताहिक सोडत")
     b = mh.entry(day, "https://x/1029202617365231029_10_2026_N_112_x.pdf", None, "महाराष्ट्र गणेशलक्ष्मी गौरव साप्ताहिक सोडत")
     assert a["id"] != b["id"] and not a["id"].endswith("_MH_")
+
+
+def test_a_position_between_two_rows_does_not_join_them():
+    """28-10-2026 Akshay: rows 0.0155 apart; one estimated position between the last two made them one band."""
+    vals = iter(range(1000, 1350))
+    nums = [(str(next(vals)), 0.1 + c * 0.04, 0.6 + r * 0.0155, 0.035)
+            for c in range(20) for r in range(18) if c < 19 or r < 8]
+    seq = mh._printed_order(nums, 350)
+    assert seq is not None and [x[0] for x in seq] == [str(v) for v in range(1000, 1350)]
+    k = next(k for k, n in enumerate(nums) if n[0] == "1016")          # column 1, row 17 of 18
+    nums[k] = nums[k][:2] + (nums[k][2] + 0.0078,) + nums[k][3:]        # read 0.0078 lower: 0.0077 from row 18
+    seq = mh._printed_order(nums, 350)   # still 18 rows: the grid holds, the misplaced one at most leaves a hole
+    assert seq is not None and len(seq) == 350
+    assert [x[0] for x in seq if x[0] not in ("", "1016", "1017")] == [str(v) for v in range(1000, 1350) if v not in (1016, 1017)]
