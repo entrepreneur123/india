@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { TrustBadge } from '@/components/trust/badge'
 import { UserAvatar } from '@/components/looks/user-avatar'
 import { RoomCountry } from '@/components/screens/rooms/room-country'
+import { useRoomPreview } from '@/components/screens/rooms/room-preview'
 
 /** 31: green idle, blue busy (searching, in a random chat or a room), black offline. */
 const DOT: Record<Presence, string> = {
@@ -30,7 +31,8 @@ const RANK: Record<Presence, number> = { online: 0, matching: 1, chat: 1, room: 
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, me, myPresence, openProfile, openChat, openVoice, badges } = useApp()
+  const { t, me, myPresence, openProfile, openChat, badges } = useApp()
+  const preview = useRoomPreview()
   const { num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
   // What friends are doing: asked every 20 s while the window is shown (the server answers from its presence stamps).
@@ -154,7 +156,7 @@ export function RightPanel({ className }: { className?: string }) {
                   <li key={r.id}>
                     <button
                       type="button"
-                      onClick={() => openVoice(r.id)}
+                      onClick={() => preview.open(r)}
                       className="flex w-full items-center gap-3 rounded-xl p-2 text-start transition-colors duration-150 hover:bg-muted"
                     >
                       {/* The room's cover photo (072) when it has one; its country small under the title. */}
@@ -178,6 +180,7 @@ export function RightPanel({ className }: { className?: string }) {
                 ))}
         </ul>
       </section>
+      {preview.sheet}
     </aside>
   )
 }

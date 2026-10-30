@@ -9,10 +9,10 @@ import { useI18n } from '@/components/i18n'
 import { EmptyState } from '@/components/ui/ambient'
 import { Skeleton } from '@/components/ui/bits'
 import { Button } from '@/components/ui/pressable'
-import { useToast } from '@/components/ui/toast'
 import { TopicIcon } from '@/components/ui/topic-icons'
 import { refusalLabel, roomConditions } from '@/components/screens/rooms/room-text'
 import { RoomCountry } from '@/components/screens/rooms/room-country'
+import { useRoomPreview } from '@/components/screens/rooms/room-preview'
 import { cn } from '@/lib/utils'
 import { flagEmoji } from '@/lib/format'
 import { langName } from '@/components/social/room-lang'
@@ -23,9 +23,9 @@ import { UserAvatar } from '@/components/looks/user-avatar'
 /** The live rooms on the Rooms tab, narrowed by its search. */
 export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery; onCreate: () => void; onTag?: (tag: string) => void }) {
   const backend = useBackend()
-  const toast = useToast()
   const { t } = useI18n()
-  const { openVoice, voiceRoomId, askRoomKey } = useApp()
+  const { voiceRoomId } = useApp()
+  const preview = useRoomPreview()
   const { st } = useSocialT()
   const searching = !!(query.text || query.lang || query.countries?.length || query.locked === false || (query.sort && query.sort !== 'members'))
   // Without a search this is the same list (and request) as the right panel's.
@@ -45,14 +45,6 @@ export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery;
         action={<Button variant="outline" onClick={() => void mutate()}>{t('common.tryAgain')}</Button>}
       />
     )
-
-  // A room I can't enter says why instead of failing on the server.
-  const open = (r: VoiceRoomSummary) =>
-    r.id === voiceRoomId || !r.refusal
-      ? openVoice(r.id)
-      : r.refusal === 'room_password' || r.refusal === 'room_private'
-        ? askRoomKey(r.id, r.refusal === 'room_private' ? 'code' : 'password')
-        : toast.show(t(`error.${r.refusal}` as const), 'info')
 
   return (
     <section aria-labelledby="voice-live" className="flex flex-col gap-3">
@@ -94,11 +86,12 @@ export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery;
         <ul className="grid gap-3 sm:grid-cols-2">
           {rooms.map((r) => (
             <li key={r.id}>
-              <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => open(r)} onTag={onTag} />
+              <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => preview.open(r)} onTag={onTag} />
             </li>
           ))}
         </ul>
       )}
+      {preview.sheet}
     </section>
   )
 }
