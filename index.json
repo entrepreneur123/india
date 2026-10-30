@@ -23,6 +23,18 @@
   "ok": true,
   "url": "https://slprb.ap.gov.in/"
  },
+ "ap-slprb-press": {
+  "bytes": 12829,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://slprb.ap.gov.in/UI/pressRelease.aspx"
+ },
+ "ap-slprb-recruitments": {
+  "bytes": 10758,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://slprb.ap.gov.in/UI/Recruitments.aspx"
+ },
  "appsc": {
   "bytes": 6079,
   "date": "2026-10-30",
@@ -162,9 +174,9 @@
   "url": "https://rect.crpf.gov.in/"
  },
  "ctet": {
-  "bytes": 92515,
   "date": "2026-10-30",
-  "ok": true,
+  "error": "GET https://ctet.nic.in/ failed after 2 attempts: <urlopen error _ssl.c:983: The handshake operation timed out>",
+  "ok": false,
   "url": "https://ctet.nic.in/"
  },
  "drdo": {
@@ -174,7 +186,7 @@
   "url": "https://www.drdo.gov.in/drdo/careers"
  },
  "dsssb": {
-  "bytes": 77907,
+  "bytes": 77908,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/"
@@ -204,7 +216,7 @@
   "url": "https://www.epfo.gov.in/recruitments/"
  },
  "esic": {
-  "bytes": 84844,
+  "bytes": 84946,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.esic.gov.in/recruitments"
@@ -214,6 +226,18 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://fci.gov.in/recruitments.php"
+ },
+ "gprb-advts": {
+  "bytes": 2623,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://gprb.gujarat.gov.in/advertisement-list.htm"
+ },
+ "gprb-latest": {
+  "bytes": 60592,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://gprb.gujarat.gov.in/latestupdate-list.htm"
  },
  "gpsc": {
   "bytes": 445623,
@@ -389,6 +413,12 @@
   "ok": true,
   "url": "https://kpsc.karnataka.gov.in/"
  },
+ "ksp-recruitment": {
+  "bytes": 163153,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://ksp.karnataka.gov.in/info-3/%E0%B2%A8%E0%B3%87%E0%B2%AE%E0%B2%95%E0%B2%BE%E0%B2%A4%E0%B2%BF/kn"
+ },
  "kvs": {
   "bytes": 241961,
   "date": "2026-10-30",
@@ -407,6 +437,12 @@
   "ok": true,
   "url": "https://esb.mp.gov.in/"
  },
+ "mp-esb-calendar": {
+  "bytes": 483,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://esb.mp.gov.in/Exams_Schedule/exams_schedule.htm"
+ },
  "mp-esb-en": {
   "bytes": 1105,
   "date": "2026-10-30",
@@ -424,6 +460,12 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://esb.mp.gov.in/leftmenu.html"
+ },
+ "mp-esb-notices": {
+  "bytes": 13449,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://esb.mp.gov.in/advertisement/Important_message_candidate.htm"
  },
  "mppsc": {
   "bytes": 52990,
@@ -456,7 +498,7 @@
   "url": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26"
  },
  "navy": {
-  "bytes": 91710,
+  "bytes": 91709,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.joinindiannavy.gov.in/"
@@ -521,6 +563,12 @@
   "ok": true,
   "url": "https://www.punjabpolice.gov.in/"
  },
+ "punjab-police-recruitment": {
+  "bytes": 51096,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://www.punjabpolice.gov.in/en/recruitments/punjab-police-recruitment/"
+ },
  "punjab-sssb": {
   "bytes": 86151,
   "date": "2026-10-30",
@@ -540,13 +588,13 @@
   "url": "https://police.rajasthan.gov.in/"
  },
  "rbi-announcements": {
-  "bytes": 117845,
+  "bytes": 117843,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx"
  },
  "rbi-vacancies": {
-  "bytes": 116577,
+  "bytes": 118136,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx"
@@ -689,6 +737,18 @@
   "ok": true,
   "url": "https://upessc.up.gov.in/"
  },
+ "upessc-news": {
+  "bytes": 74552,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://upessc.up.gov.in/Home/news"
+ },
+ "upessc-press": {
+  "bytes": 73722,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://upessc.up.gov.in/Home/Press_Release"
+ },
  "uppsc": {
   "bytes": 158951,
   "date": "2026-10-30",
@@ -767,11 +827,23 @@
   "ok": false,
   "url": "https://wbpsc.gov.in/"
  },
+ "wbpsc-advertisement": {
+  "bytes": 88542,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://psc.wb.gov.in/advertisement.jsp"
+ },
  "wbpsc-new": {
   "bytes": 160184,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://psc.wb.gov.in/"
+ },
+ "wbpsc-whats-new": {
+  "bytes": 1490684,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://psc.wb.gov.in/whats_new.jsp"
  },
  "wbssc": {
   "date": "2026-10-30",
