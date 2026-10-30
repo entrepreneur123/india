@@ -437,7 +437,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   )
 
   const startAudio = useCallback(() => void backend.voiceStartAudio(roomId).catch(() => undefined), [backend, roomId])
-  const [sound, setSoundState] = useState(true)
+  const [sound, setSoundState] = useState(false)
   const setSound = useCallback(
     (on: boolean) => {
       setSoundState(on)

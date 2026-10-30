@@ -1930,8 +1930,8 @@ export class SupabaseBackend implements Backend {
     let audio: VoiceAudio | null = null
     let audioCtl: AbortController | null = null
     let audioState: VoiceAudioState = { status: 'connecting', needsTap: false }
-    // I hear the room as soon as I'm in (like X Spaces, Clubhouse, Discord); my choice is kept across a reconnect.
-    let sound = true
+    // 46: the room's voices start silent for me (the owner, 2026-10-30, again); kept across a reconnect.
+    let sound = false
     let audioTries = 0
     let audioRetry: ReturnType<typeof setTimeout> | undefined
     const setAudio = (patch: Partial<VoiceAudioState>) => {

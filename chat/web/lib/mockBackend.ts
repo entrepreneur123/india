@@ -443,6 +443,7 @@ export class MockBackend implements Backend {
       country: countryOfPhone(this.pendingPhone),
       posts: [],
       photos: [],
+      dmEveryone: true, // 097: anyone may message me unless I turn it off
       handle: freeHandle(p.name, 'u_me'),
     }
     return { ...this.me }
