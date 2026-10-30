@@ -295,6 +295,7 @@ export default {
   state_OD: "ਓਡੀਸ਼ਾ",
   state_KA: "ਕਰਨਾਟਕ",
   state_TN: "ਤਾਮਿਲ ਨਾਡੂ",
+  state_TG: "ਤੇਲੰਗਾਨਾ",
   anySector: "ਸਾਰੇ ਸੈਕਟਰ",
   anyState: "ਸਾਰੇ ਰਾਜ",
   jobsSector: "{name} ਨੌਕਰੀਆਂ",

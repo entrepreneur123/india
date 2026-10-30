@@ -86,13 +86,37 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "fci": "https://fci.gov.in/recruitments.php",
     "nielit": "https://www.nielit.gov.in/recruitment",
     "ntpc": "https://careers.ntpc.co.in/recruitment/",
+    # List pages behind home pages that show none (found in the saved pages' own links, 30-10-2026).
+    "upsssc-registration": "https://upsssc.gov.in/AllNotifications.aspx",
+    "upsssc-advt-status": "https://upsssc.gov.in/News.aspx?id=9",
+    "upsssc-upcoming": "https://upsssc.gov.in/GroupNews.aspx?id=6",
+    "upsssc-results": "https://upsssc.gov.in/ResultsDire.aspx",
+    "bssc-noticeboard": "https://bssc.bihar.gov.in/NoticeBoard.htm",
+    "mp-esb-en": "https://esb.mp.gov.in/e_default.html",
+    "cgpsc-home": "https://psc.cg.gov.in/Home_Welcome.php",
+    "cgpsc-notifications": "https://psc.cg.gov.in/Notifications.php",
+    "cgpsc-advertisement": "https://psc.cg.gov.in/Advertisement.php",
+    "cgpsc-result": "https://psc.cg.gov.in/Result.php",
+    "hppsc-whatsnew": "https://hppsc.hp.gov.in/HomeContent/WhatsNewPV",
+    "hppsc-notifications": "https://hppsc.hp.gov.in/HomeContent/NotificationsPV",
+    "appsc-portal": "https://portal-psc.ap.gov.in/Default.aspx",
+    "jssc-advertisements": "https://jssc.jharkhand.gov.in/notices/advertisements",
+    "jssc-result": "https://jssc.jharkhand.gov.in/result",
+    "itbp-news": "https://recruitment.itbpolice.nic.in/statics/news",
+    "itbp-results": "https://recruitment.itbpolice.nic.in/statics/results",
+    "wb-police-recruitments": "https://prb.wb.gov.in/recruitments",
+    "wb-police-exam-notifications": "https://prb.wb.gov.in/quick/examination-notifications",
+    "gsssb-news": "https://gsssb.gujarat.gov.in/News/Index",
+    "gsssb-notification": "https://gsssb.gujarat.gov.in/Notification",
+    "tnusrb-press": "https://tnusrb.tn.gov.in/pressreleases.php",
+    "tnpsc-home": "https://tnpsc.gov.in/home.aspx",
     "nabard-notices": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26",  # the list behind the careers page
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
     "bssc": "https://bssc.bihar.gov.in/",
     "kpsc-karnataka": "https://kpsc.karnataka.gov.in/",
     "appsc": "https://psc.ap.gov.in/",
-    "tgpsc": "https://www.tgpsc.gov.in/",
+    "tgpsc": "https://websitenew.tgpsc.gov.in/",  # www.tgpsc.gov.in says the site moved here (30-10-2026)
     "gpsc": "https://gpsc.gujarat.gov.in/",
     "gsssb": "https://gsssb.gujarat.gov.in/",
     "hppsc": "https://hppsc.hp.gov.in/",
@@ -192,7 +216,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 8 sites at a time: 92 sites stay under 8 minutes even if every one hangs
+    # Two tries of 20 s, 8 sites at a time: 115 sites stay under 10 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())

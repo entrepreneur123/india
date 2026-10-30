@@ -295,6 +295,7 @@ export default {
   state_OD: "ఒడిశా",
   state_KA: "కర్ణాటక",
   state_TN: "తమిళనాడు",
+  state_TG: "తెలంగాణ",
   anySector: "అన్ని రంగాలు",
   anyState: "అన్ని రాష్ట్రాలు",
   jobsSector: "{name} జాబ్స్",

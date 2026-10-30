@@ -13,10 +13,10 @@ EXTRA = {"https://opportunities.rbi.org.in/Scripts/resultsnew.aspx": "rbi-result
 
 def page(url):
     if url in EXTRA:
-        return open(os.path.join(HERE, "fixtures", f"{EXTRA[url]}.html"), encoding="utf-8").read()
+        return open(os.path.join(HERE, "fixtures", f"{EXTRA[url]}.html"), encoding="utf-8", errors="replace").read()  # as page_text decodes
     for board in india.BOARDS:
         if url == board.NOTICE_PAGE:
-            return open(os.path.join(HERE, "fixtures", f"{board.SOURCE}.html"), encoding="utf-8").read()
+            return open(os.path.join(HERE, "fixtures", f"{board.SOURCE}.html"), encoding="utf-8", errors="replace").read()  # as page_text decodes
     raise AssertionError(url)
 
 

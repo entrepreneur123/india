@@ -295,6 +295,7 @@ export default {
   state_OD: "ઓડિશા",
   state_KA: "કર્ણાટક",
   state_TN: "તમિલનાડુ",
+  state_TG: "તેલંગાણા",
   anySector: "બધા ક્ષેત્રો",
   anyState: "બધા રાજ્યો",
   jobsSector: "{name} નોકરીઓ",

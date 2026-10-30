@@ -316,6 +316,7 @@ export const EN = {
   state_OD: "Odisha",
   state_KA: "Karnataka",
   state_TN: "Tamil Nadu",
+  state_TG: "Telangana",
   anySector: "All sectors",
   anyState: "All states",
   jobsSector: "{name} jobs",

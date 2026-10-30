@@ -55,6 +55,7 @@ SOURCES: dict[str, dict] = {
     "nhpc": {"short": "NHPC", "name": "NHPC Limited", "site": "https://www.nhpcindia.com", "state": None},
     "bpcl": {"short": "BPCL", "name": "Bharat Petroleum Corporation Limited", "site": "https://www.bharatpetroleum.in", "state": None},
     "pgcil": {"short": "POWERGRID", "name": "Power Grid Corporation of India", "site": "https://www.powergrid.in", "state": None},
+    "tgpsc": {"short": "TGPSC", "name": "Telangana Public Service Commission", "site": "https://websitenew.tgpsc.gov.in", "state": "TG"},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

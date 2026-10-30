@@ -295,6 +295,7 @@ export default {
   state_OD: "ଓଡ଼ିଶା",
   state_KA: "କର୍ଣ୍ଣାଟକ",
   state_TN: "ତାମିଲନାଡୁ",
+  state_TG: "ତେଲଙ୍ଗାନା",
   anySector: "ସବୁ ସେକ୍ଟର",
   anyState: "ସବୁ ରାଜ୍ୟ",
   jobsSector: "{name} ଚାକିରି",

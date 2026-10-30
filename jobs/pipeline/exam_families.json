@@ -644,6 +644,18 @@
       "sectors": [
         "psu"
       ]
+    },
+    "TGPSC": {
+      "name": "TGPSC: Telangana group services, engineers, lecturers and other state posts",
+      "hi": "तेलंगाना लोक सेवा आयोग (TGPSC) भर्ती",
+      "short": "TGPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "tgpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
     }
   }
 }
