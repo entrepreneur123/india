@@ -986,6 +986,33 @@ function installCard() {
 }
 
 // ---------- Home: search, shortcuts, sectors and states, what closes soon, exam dates, latest ----------
+// Work people take up for money besides government jobs (gig and platform work: 77 lakh in 2020-21, NITI Aayog 2022),
+// each linked to its official partner app or page. Play Store ids and pages checked 30-10-2026.
+const play = (id) => `https://play.google.com/store/apps/details?id=${id}`;
+const EARN = [
+  ['earnGig', [['Swiggy', 'role_food', play('in.swiggy.deliveryapp')], ['Zomato', 'role_food', play('com.zomato.delivery')],
+    ['Zepto', 'role_grocery', play('com.zepto.rider')], ['Amazon Flex', 'role_parcel', 'https://flex.amazon.in/'],
+    ['Rapido', 'role_ride', play('com.rapido.rider')], ['Uber', 'role_ride', play('com.ubercab.driver')], ['Ola', 'role_ride', play('com.olacabs.oladriver')]]],
+  ['earnServices', [['Urban Company', 'role_home', 'https://partner.urbancompany.com/']]],
+  ['earnJobsApps', [['apna', 'role_jobs', play('com.apnatime')], ['Naukri', 'role_jobs', 'https://www.naukri.com/'],
+    ['National Career Service (NCS)', 'role_ncs', 'https://www.ncs.gov.in/']]],
+  ['earnGov', [['e-Shram', 'role_eshram', 'https://eshram.gov.in/'], ['Skill India Digital', 'role_skill', 'https://www.skillindiadigital.gov.in/'],
+    ['Apprenticeship India', 'role_apprentice', 'https://www.apprenticeshipindia.gov.in/']]],
+];
+function viewEarn(root) {
+  fill(root,
+    el('h1', { class: 'page' }, t('earnTitle')),
+    el('p', { class: 'small' }, t('earnIntro')),
+    el('p', { class: 'warnbox', role: 'note' }, icon(ICON.shieldCheck), t('earnWarn')),
+    ...EARN.flatMap(([group, rows]) => [
+      el('h2', {}, t(group)),
+      el('ul', { class: 'rowlist' }, ...rows.map(([name, role, href]) => el('li', {},
+        el('a', { class: 'drow', href, target: '_blank', rel: 'noopener' },
+          el('span', { class: 'grow' }, el('h3', {}, name), el('span', { class: 'small' }, t(role))),
+          icon(ICON.external, 'chev'))))),
+    ]));
+}
+
 async function viewHome(root) {
   let index; let families; let sources;
   // Only the newest notices (latest.json, a tenth of feed.json); started now, drawn last. A site published
@@ -1003,7 +1030,7 @@ async function viewHome(root) {
     if (e.key === 'Enter') { Object.assign(filters, { q: search.value, kind: 'all', sector: 'all', state: 'all', board: 'all', exam: 'all' }); location.hash = '#jobs'; }
   });
   const quick = [
-    ['#jobs/kind/recruitment', 'briefcase', 'qaLatest'], ['#jobs/kind/result', 'clipboardCheck', 'qaResults'],
+    ['#earn', 'wallet', 'qaEarn'], ['#jobs/kind/recruitment', 'briefcase', 'qaLatest'], ['#jobs/kind/result', 'clipboardCheck', 'qaResults'],
     ['#jobs/kind/admit_card', 'fileCheck', 'qaAdmit'], ['#jobs/kind/answer_key', 'key', 'qaAnswer'],
     ['#forme', 'shieldCheck', 'qaEligibility'], ['#result', 'search', 'qaRoll'],
   ];
@@ -1027,6 +1054,9 @@ async function viewHome(root) {
     el('nav', { class: 'pills quick-row', 'aria-label': t('homeLatest') }, ...quick.map(([href, ic, key]) => el('a', { class: 'pill', href }, icon(ICON[ic]), t(key)))),
     // What most people come for, first: the sectors with the most applicants, each with its newest main updates.
     el('h2', {}, t('homeTop')), topBox,
+    el('a', { class: 'tile earn-tile', href: '#earn' }, icon(ICON.wallet),
+      el('span', { class: 'grow' }, el('strong', {}, t('earnTitle')), el('span', { class: 'small' }, 'Swiggy · Zomato · Rapido · Uber · Urban Company')),
+      icon(ICON.chevron, 'chev')),
     closing.length ? el('h2', {}, t('homeClosing')) : null,
     closing.length ? el('div', { class: 'hscroll' }, ...closing.map((e) => {
       const left = daysBetween(today, e.applyTo);
@@ -1130,9 +1160,10 @@ const ICON = {
   file: 'M14 3H6v18h12V7zM14 3v4h4',
   external: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6',
   close: 'M6 6l12 12M18 6L6 18',
+  wallet: 'M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3zM3 7V5.5A1.5 1.5 0 0 1 4.5 4H17v3M16.5 13.5h.01',
 };
 const TABS = [['home', 'tabHome'], ['forme', 'tabForMe'], ['result', 'tabResult'], ['exams', 'tabExams'], ['more', 'tabMore']];
-const PARENT = { exam: 'exams', check: 'forme', saved: 'more', jobs: 'home', tools: 'more' };
+const PARENT = { exam: 'exams', check: 'forme', saved: 'more', jobs: 'home', tools: 'more', earn: 'home' };
 function icon(path, cls = '') {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
@@ -1212,6 +1243,7 @@ async function route() {
   else if (tab === 'exams') await viewExams(root);
   else if (view === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
   else if (view === 'saved') await viewSaved(root);
+  else if (view === 'earn') viewEarn(root);
   else if (tab === 'forme') await viewForMe(root);
   else if (tab === 'result') await viewResult(root);
   else if (tab === 'more') await viewMore(root);

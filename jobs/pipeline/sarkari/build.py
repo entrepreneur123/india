@@ -217,6 +217,15 @@ TOP_WORDS = {"teaching": re.compile(r"\b(teachers?|tgt|pgt|prt|lecturers?|profes
              "defence": re.compile(r"\b(agniveer|army|navy|air force|rifleman|capf|bsf|crpf|cisf|itbp|ssb)\b", re.I)}
 
 
+def _exam_head(title: str) -> str:
+    """The exam a headline is about, to show one update per exam: "SI in Delhi Police ...: list 1/2/3" and
+    "TAMIL NADU TET ... – Notification" / "TAMILNADU TET ... - Certificates" each give one key. A short part
+    before the colon ("Result notice: Staff Nurse", "RRB CEN 08/2025: E-Call Letters") is not an exam name."""
+    key = lambda text: re.sub(r"[^a-z0-9]", "", text.lower())
+    head = key(re.split(r"[:—–]|\s-\s", title, maxsplit=1)[0])
+    return (head if len(head) >= 20 else key(title))[:60]
+
+
 def top_groups(feed: list[dict], families: dict, now: dt.datetime) -> list[dict]:
     """[{"sector", "items"}] for the home page: per sector, its newest recruitment/admit card/result/answer key
     notices of the last TOP_DAYS days (others only if too few), each notice in one group only."""
@@ -235,7 +244,7 @@ def top_groups(feed: list[dict], families: dict, now: dt.datetime) -> list[dict]
                 and belongs(i)]
         pick = []
         for i in [i for i in pool if i["kind"] in TOP_KINDS] + [i for i in pool if i["kind"] not in TOP_KINDS]:
-            head = re.split(r"[:—]", i["title"], maxsplit=1)[0].strip().lower()[:60]  # one per exam: "SI in Delhi Police ...: list 1/2/3"
+            head = _exam_head(i["title"])
             if head not in seen_heads and len(pick) < TOP_PER_SECTOR:
                 seen_heads.add(head)
                 pick.append(i)
