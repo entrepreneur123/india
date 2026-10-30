@@ -299,6 +299,7 @@ export default {
   state_CG: "چھتیس گڑھ",
   state_HP: "ہماچل پردیش",
   state_AP: "آندھرا پردیش",
+  state_WB: "مغربی بنگال",
   anySector: "تمام سیکٹر",
   anyState: "تمام ریاستیں",
   jobsSector: "{name} کی نوکریاں",

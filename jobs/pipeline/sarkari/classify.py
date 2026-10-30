@@ -65,7 +65,8 @@ EXAM_FAMILIES = tuple(code for code, _ in _EXAM_RULES) + ("UPPC", "UPSI", "UPHG"
                                                               "GPSC", "UKPSC", "UKSSSC", "OSSSC", "KPSC", "TNTRB",
                                                               "INDIAPOST", "PNB", "BOB", "CANARA", "IOB", "NHPC", "BPCL", "POWERGRID", "TGPSC",
                                                               "TNPSC", "ITBP", "ESIC", "NABARD", "NTPC", "NIACL", "AIIMS",
-                                                              "BSSC", "CGPSC", "HPPSC", "APPSC")
+                                                              "BSSC", "CGPSC", "HPPSC", "APPSC",
+                                                              "OSSC", "OPSC", "TGPRB", "CISF", "WBPRB")
 
 
 def family_of(exam_code: str) -> str | None:

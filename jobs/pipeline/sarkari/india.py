@@ -59,7 +59,7 @@ def page_text(url: str) -> str:
     return body.decode("utf-8", errors="replace")
 
 
-def prefetch(get_text, urls: list[str], workers: int = 8):
+def prefetch(get_text, urls: list[str], workers: int = 12):
     """Fetches the boards' pages side by side (each from its own site), so a hanging site costs one
     timeout, not one per board: the run stays well inside sarkari.service's 25-minute limit."""
     def one(url):

@@ -68,6 +68,11 @@ SOURCES: dict[str, dict] = {
     "hppsc": {"short": "HPPSC", "name": "Himachal Pradesh Public Service Commission", "site": "https://hppsc.hp.gov.in", "state": "HP"},
     "appsc": {"short": "APPSC", "name": "Andhra Pradesh Public Service Commission", "site": "https://portal-psc.ap.gov.in", "state": "AP",
               "files": ["https://psc.ap.gov.in/"]},
+    "ossc": {"short": "OSSC", "name": "Odisha Staff Selection Commission", "site": "https://www.ossc.gov.in", "state": "OD"},
+    "opsc": {"short": "OPSC", "name": "Odisha Public Service Commission", "site": "https://www.opsc.gov.in", "state": "OD"},
+    "tgprb": {"short": "TGPRB", "name": "Telangana Police Recruitment Board", "site": "https://www.tgprb.in", "state": "TG"},
+    "cisf": {"short": "CISF", "name": "Central Industrial Security Force", "site": "https://cisfrectt.cisf.gov.in", "state": None},
+    "wbprb": {"short": "WBPRB", "name": "West Bengal Police Recruitment Board", "site": "https://prb.wb.gov.in", "state": "WB"},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

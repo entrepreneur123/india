@@ -299,6 +299,7 @@ export default {
   state_CG: "ছত্তিশগড়",
   state_HP: "হিমাচল প্রদেশ",
   state_AP: "অন্ধ্রপ্রদেশ",
+  state_WB: "পশ্চিমবঙ্গ",
   anySector: "সব সেক্টর",
   anyState: "সব রাজ্য",
   jobsSector: "{name} চাকরি",

@@ -299,6 +299,7 @@ export default {
   state_CG: "છત્તીસગઢ",
   state_HP: "હિમાચલ પ્રદેશ",
   state_AP: "આંધ્ર પ્રદેશ",
+  state_WB: "પશ્ચિમ બંગાળ",
   anySector: "બધા ક્ષેત્રો",
   anyState: "બધા રાજ્યો",
   jobsSector: "{name} નોકરીઓ",

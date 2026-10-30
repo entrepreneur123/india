@@ -299,6 +299,7 @@ export default {
   state_CG: "ছত্তীশগড়",
   state_HP: "হিমাচল প্ৰদেশ",
   state_AP: "অন্ধ্ৰ প্ৰদেশ",
+  state_WB: "পশ্চিমবংগ",
   anySector: "সকলো ছেক্টৰ",
   anyState: "সকলো ৰাজ্য",
   jobsSector: "{name}ৰ চাকৰি",
