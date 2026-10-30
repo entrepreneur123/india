@@ -164,6 +164,7 @@ const hi: Dict = {
   'composer.message': 'मैसेज',
   'composer.send': 'मैसेज भेजें',
   'composer.voice': 'वॉइस मैसेज',
+  'composer.more': 'और',
   'composer.ended': 'चैट ख़त्म हो गई',
   'bubble.photo': 'शेयर की गई फ़ोटो',
   'bubble.hidden': 'छिपी हुई फ़ोटो',

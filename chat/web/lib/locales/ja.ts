@@ -168,6 +168,7 @@ const ja: Dict = {
   'composer.message': 'メッセージ',
   'composer.send': 'メッセージを送信',
   'composer.voice': 'ボイスメッセージ',
+  'composer.more': 'その他',
   'composer.ended': 'チャットは終了しました',
   'bubble.photo': '共有された写真',
   'bubble.hidden': '非表示の写真',

@@ -168,6 +168,7 @@ const ms: Dict = {
   'composer.message': 'Mesej',
   'composer.send': 'Hantar mesej',
   'composer.voice': 'Mesej suara',
+  'composer.more': 'Lagi',
   'composer.ended': 'Sembang telah tamat',
   'bubble.photo': 'Foto dikongsi',
   'bubble.hidden': 'Foto disembunyikan',

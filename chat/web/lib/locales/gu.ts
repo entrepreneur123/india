@@ -155,6 +155,7 @@ const gu: Dict = {
   'composer.message': 'મેસેજ',
   'composer.send': 'મેસેજ મોકલો',
   'composer.voice': 'વૉઇસ મેસેજ',
+  'composer.more': 'વધુ',
   'composer.ended': 'ચેટ પૂરી થઈ',
   'bubble.photo': 'શેર કરેલો ફોટો',
   'bubble.hidden': 'છુપાવેલો ફોટો',

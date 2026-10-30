@@ -168,6 +168,7 @@ const fil: Dict = {
   'composer.message': 'Message',
   'composer.send': 'Ipadala ang message',
   'composer.voice': 'Voice message',
+  'composer.more': 'Iba pa',
   'composer.ended': 'Natapos na ang chat',
   'bubble.photo': 'Ibinahaging photo',
   'bubble.hidden': 'Nakatagong photo',

@@ -164,6 +164,7 @@ const de: Dict = {
   'composer.message': 'Nachricht',
   'composer.send': 'Nachricht senden',
   'composer.voice': 'Sprachnachricht',
+  'composer.more': 'Mehr',
   'composer.ended': 'Der Chat ist beendet',
   'bubble.photo': 'Geteiltes Foto',
   'bubble.hidden': 'Verborgenes Foto',

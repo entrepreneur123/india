@@ -168,6 +168,7 @@ const tr: Dict = {
   'composer.message': 'Mesaj',
   'composer.send': 'Mesaj gönder',
   'composer.voice': 'Sesli mesaj',
+  'composer.more': 'Daha fazla',
   'composer.ended': 'Sohbet sona erdi',
   'bubble.photo': 'Paylaşılan fotoğraf',
   'bubble.hidden': 'Gizli fotoğraf',

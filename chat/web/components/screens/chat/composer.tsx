@@ -3,10 +3,12 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
-import { ImagePlus, SendHorizontal, X } from 'lucide-react'
+import { ImagePlus, Mic, Plus, SendHorizontal, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
-import { canRecord, MicButton, VoiceRecorder } from './voice-note'
+import { canRecord, VoiceRecorder } from './voice-note'
+
+const ITEM = 'flex min-h-11 items-center gap-3 rounded-xl px-3 text-start text-sm font-semibold transition-colors duration-150 hover:bg-muted'
 
 export function Composer({
   onSend,
@@ -36,8 +38,21 @@ export function Composer({
   const [preview, setPreview] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
   const [recording, setRecording] = useState(false)
-  // Nothing typed or attached: the mic in Send's place (voice messages, 099), where the browser can record.
+  // Voice messages (099) where the browser can record; started from the "+" menu.
   const [mic, setMic] = useState(false)
+  const [menu, setMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!menu) return
+    const away = (e: PointerEvent) => !menuRef.current?.contains(e.target as Node) && setMenu(false)
+    const esc = (e: globalThis.KeyboardEvent) => e.key === 'Escape' && setMenu(false)
+    document.addEventListener('pointerdown', away)
+    document.addEventListener('keydown', esc)
+    return () => {
+      document.removeEventListener('pointerdown', away)
+      document.removeEventListener('keydown', esc)
+    }
+  }, [menu])
   useEffect(() => setMic(allowVoice && canRecord()), [allowVoice])
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileId = useId()
@@ -115,28 +130,60 @@ export function Composer({
           <VoiceRecorder onSend={(clip) => onSend(null, clip)} onDone={() => setRecording(false)} />
         ) : (
           <>
-            {allowMedia ? (
-              <label
-                htmlFor={fileId}
-                className={cn(
-                  'grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-background hover:text-foreground',
-                  disabled && 'pointer-events-none opacity-40',
-                )}
-              >
-                <ImagePlus className="size-5" aria-hidden />
-                <span className="sr-only">{t('composer.attach')}</span>
+            {allowMedia || mic ? (
+              // "+" holds the photo and the voice message (the owner, 2026-10-30, as KakaoTalk's "+").
+              <div ref={menuRef} className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setMenu((o) => !o)}
+                  disabled={disabled}
+                  aria-label={t('composer.more')}
+                  aria-expanded={menu}
+                  aria-haspopup="menu"
+                  className={cn(
+                    'grid size-9 place-items-center rounded-full transition-[background-color,transform,color] duration-150 disabled:opacity-40',
+                    menu ? 'rotate-45 bg-foreground text-background' : 'text-muted-foreground hover:bg-background hover:text-foreground',
+                  )}
+                >
+                  <Plus className="size-5" aria-hidden />
+                </button>
                 <input
                   id={fileId}
                   type="file"
                   accept="image/*,video/*"
                   className="sr-only"
+                  tabIndex={-1}
                   disabled={disabled}
                   onChange={(e) => {
                     setFile(e.target.files?.[0] ?? null)
                     e.target.value = ''
                   }}
                 />
-              </label>
+                <AnimatePresence>
+                  {menu ? (
+                    <m.div
+                      role="menu"
+                      aria-label={t('composer.more')}
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ type: 'tween', duration: 0.15, ease: [0.2, 0, 0, 1] }}
+                      className="absolute bottom-full start-0 z-20 mb-2 flex w-52 origin-bottom-left flex-col gap-0.5 rounded-2xl bg-card p-1.5 shadow-e3 ring-1 ring-border"
+                    >
+                      {allowMedia ? (
+                        <button type="button" role="menuitem" onClick={() => (setMenu(false), document.getElementById(fileId)?.click())} className={ITEM}>
+                          <ImagePlus className="size-5 text-muted-foreground" aria-hidden /> {t('composer.attach')}
+                        </button>
+                      ) : null}
+                      {mic ? (
+                        <button type="button" role="menuitem" onClick={() => (setMenu(false), setRecording(true))} className={ITEM}>
+                          <Mic className="size-5 text-muted-foreground" aria-hidden /> {t('composer.voice')}
+                        </button>
+                      ) : null}
+                    </m.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
             ) : null}
             <label htmlFor={`${fileId}-text`} className="sr-only">
               {t('composer.message')}
@@ -154,11 +201,8 @@ export function Composer({
                 onTyping?.()
               }}
               onKeyDown={onKeyDown}
-              className={cn('max-h-33 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed', !allowMedia && 'ps-3')}
+              className={cn('max-h-33 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed', !allowMedia && !mic && 'ps-3')}
             />
-            {mic && !text.trim() && !file ? (
-              <MicButton onClick={() => setRecording(true)} disabled={disabled} />
-            ) : (
               <m.button
                 type="button"
                 onClick={() => void submit()}
@@ -170,7 +214,6 @@ export function Composer({
               >
                 <SendHorizontal className="size-[18px] rtl:rotate-180" aria-hidden />
               </m.button>
-            )}
           </>
         )}
       </div>

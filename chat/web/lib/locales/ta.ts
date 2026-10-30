@@ -164,6 +164,7 @@ const ta: Dict = {
   'composer.message': 'மெசேஜ்',
   'composer.send': 'மெசேஜ் அனுப்பு',
   'composer.voice': 'குரல் செய்தி',
+  'composer.more': 'மேலும்',
   'composer.ended': 'சாட் முடிந்தது',
   'bubble.photo': 'பகிரப்பட்ட போட்டோ',
   'bubble.hidden': 'மறைக்கப்பட்ட போட்டோ',

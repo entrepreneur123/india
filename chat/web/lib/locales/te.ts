@@ -164,6 +164,7 @@ const te: Dict = {
   'composer.message': 'మెసేజ్',
   'composer.send': 'మెసేజ్ పంపు',
   'composer.voice': 'వాయిస్ మెసేజ్',
+  'composer.more': 'మరిన్ని',
   'composer.ended': 'చాట్ ముగిసింది',
   'bubble.photo': 'షేర్ చేసిన ఫోటో',
   'bubble.hidden': 'దాచిన ఫోటో',

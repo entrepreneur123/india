@@ -164,6 +164,7 @@ const vi: Dict = {
   'composer.message': 'Tin nhắn',
   'composer.send': 'Gửi tin nhắn',
   'composer.voice': 'Tin nhắn thoại',
+  'composer.more': 'Thêm',
   'composer.ended': 'Cuộc trò chuyện đã kết thúc',
   'bubble.photo': 'Ảnh được chia sẻ',
   'bubble.hidden': 'Ảnh bị ẩn',

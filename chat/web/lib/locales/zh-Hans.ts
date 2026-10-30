@@ -168,6 +168,7 @@ const zhHans: Dict = {
   'composer.message': '消息',
   'composer.send': '发送消息',
   'composer.voice': '语音消息',
+  'composer.more': '更多',
   'composer.ended': '聊天已结束',
   'bubble.photo': '分享的照片',
   'bubble.hidden': '已隐藏的照片',

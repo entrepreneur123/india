@@ -164,6 +164,7 @@ const ro: Dict = {
   'composer.message': 'Mesaj',
   'composer.send': 'Trimite mesajul',
   'composer.voice': 'Mesaj vocal',
+  'composer.more': 'Mai mult',
   'composer.ended': 'Chatul s-a încheiat',
   'bubble.photo': 'Poză trimisă',
   'bubble.hidden': 'Poză ascunsă',

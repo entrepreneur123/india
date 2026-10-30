@@ -164,6 +164,7 @@ const ml: Dict = {
   'composer.message': 'മെസേജ്',
   'composer.send': 'മെസേജ് അയയ്ക്കുക',
   'composer.voice': 'വോയ്‌സ് മെസേജ്',
+  'composer.more': 'കൂടുതൽ',
   'composer.ended': 'ചാറ്റ് അവസാനിച്ചു',
   'bubble.photo': 'ഷെയർ ചെയ്ത ഫോട്ടോ',
   'bubble.hidden': 'മറച്ച ഫോട്ടോ',

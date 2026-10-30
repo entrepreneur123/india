@@ -168,6 +168,7 @@ const th: Dict = {
   'composer.message': 'ข้อความ',
   'composer.send': 'ส่งข้อความ',
   'composer.voice': 'ข้อความเสียง',
+  'composer.more': 'เพิ่มเติม',
   'composer.ended': 'แชทจบแล้ว',
   'bubble.photo': 'รูปที่แชร์',
   'bubble.hidden': 'รูปที่ซ่อนไว้',

@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Mic, Pause, Play, SendHorizontal, Trash2 } from 'lucide-react'
+import { Pause, Play, SendHorizontal, Trash2 } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 
-// Voice messages (099), as Instagram's and WhatsApp's: the mic sits where Send is while nothing is typed; a tap records
+// Voice messages (099): the composer's "+" menu starts one (as KakaoTalk's); it records
 // (up to 60 s), the bar shows the time with Delete and Send; the clip goes out as chat media of kind 'audio'.
 
 const MAX_MS = 60_000
@@ -96,23 +96,6 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
         <SendHorizontal className="size-[18px] rtl:rotate-180" aria-hidden />
       </button>
     </div>
-  )
-}
-
-/** The mic button in Send's place. */
-export function MicButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
-  const { t } = useI18n()
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-background hover:text-foreground disabled:opacity-40"
-      aria-label={t('composer.voice')}
-      title={t('composer.voice')}
-    >
-      <Mic className="size-5" aria-hidden />
-    </button>
   )
 }
 

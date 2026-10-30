@@ -167,6 +167,7 @@ const en = {
   'composer.message': 'Message',
   'composer.send': 'Send message',
   'composer.voice': 'Voice message',
+  'composer.more': 'More',
   'composer.ended': 'Chat has ended',
   'bubble.photo': 'Shared photo',
   'bubble.hidden': 'Hidden photo',

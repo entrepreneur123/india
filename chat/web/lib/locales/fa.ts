@@ -168,6 +168,7 @@ const fa: Dict = {
   'composer.message': 'پیام',
   'composer.send': 'ارسال پیام',
   'composer.voice': 'پیام صوتی',
+  'composer.more': 'بیشتر',
   'composer.ended': 'چت تمام شده است',
   'bubble.photo': 'عکس ارسالی',
   'bubble.hidden': 'عکس پنهان',

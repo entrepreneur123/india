@@ -168,6 +168,7 @@ const ar: Dict = {
   'composer.message': 'رسالة',
   'composer.send': 'إرسال الرسالة',
   'composer.voice': 'رسالة صوتية',
+  'composer.more': 'المزيد',
   'composer.ended': 'انتهت الدردشة',
   'bubble.photo': 'صورة مشتركة',
   'bubble.hidden': 'صورة مخفية',

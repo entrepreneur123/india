@@ -168,6 +168,7 @@ const sw: Dict = {
   'composer.message': 'Ujumbe',
   'composer.send': 'Tuma ujumbe',
   'composer.voice': 'Ujumbe wa sauti',
+  'composer.more': 'Zaidi',
   'composer.ended': 'Chat imeisha',
   'bubble.photo': 'Picha iliyotumwa',
   'bubble.hidden': 'Picha iliyofichwa',

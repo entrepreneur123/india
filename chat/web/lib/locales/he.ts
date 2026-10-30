@@ -168,6 +168,7 @@ const he: Dict = {
   'composer.message': 'הודעה',
   'composer.send': 'שליחת הודעה',
   'composer.voice': 'הודעה קולית',
+  'composer.more': 'עוד',
   'composer.ended': 'הצ׳אט הסתיים',
   'bubble.photo': 'תמונה ששותפה',
   'bubble.hidden': 'תמונה מוסתרת',

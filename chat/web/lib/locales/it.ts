@@ -164,6 +164,7 @@ const it: Dict = {
   'composer.message': 'Messaggio',
   'composer.send': 'Invia messaggio',
   'composer.voice': 'Messaggio vocale',
+  'composer.more': 'Altro',
   'composer.ended': 'La chat è terminata',
   'bubble.photo': 'Foto condivisa',
   'bubble.hidden': 'Foto nascosta',

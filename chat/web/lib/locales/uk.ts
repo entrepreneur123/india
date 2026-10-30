@@ -168,6 +168,7 @@ const uk: Dict = {
   'composer.message': 'Повідомлення',
   'composer.send': 'Надіслати повідомлення',
   'composer.voice': 'Голосове повідомлення',
+  'composer.more': 'Більше',
   'composer.ended': 'Чат завершено',
   'bubble.photo': 'Фото',
   'bubble.hidden': 'Приховане фото',
