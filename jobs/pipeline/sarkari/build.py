@@ -203,6 +203,47 @@ _PUSH_KEY = re.compile(r"^[A-Za-z0-9_-]{87}$")  # 65-byte P-256 public key, base
 
 _WHATSAPP = re.compile(r"^https://(www\.)?whatsapp\.com/channel/[A-Za-z0-9]{10,40}$")  # a WhatsApp Channel's invite link
 LATEST = 40
+# Home's "most searched" groups, in the order of how many people apply (research/ROUTES_2026-10.md and the 30-10-2026
+# update: RRB NTPC 1.22 crore and Group D 1.08 crore applicants, then SSC GD/CGL/CHSL, state police, CTET and teacher
+# exams, bank clerk/PO, Agniveer and CAPF, state PSCs, India Post and PSUs). Each shows its newest important updates.
+TOP_SECTORS = ("railway", "ssc", "police", "teaching", "bank", "defence", "state", "psu")
+TOP_PER_SECTOR = 3
+TOP_DAYS = 60
+TOP_KINDS = ("recruitment", "admit_card", "result", "answer_key")  # what people come for; the rest only fills gaps
+# A board whose family is in several sectors (DSSSB: state and teaching) counts for a group other than its first
+# sector only when the headline says so ("TGT", "Assistant Teacher"), so the teacher group shows teacher notices.
+TOP_WORDS = {"teaching": re.compile(r"\b(teachers?|tgt|pgt|prt|lecturers?|professors?|[a-z]*tet|principal)\b", re.I),
+             "police": re.compile(r"\b(police|constable|sub[- ]inspector|si|warder|fireman)\b", re.I),
+             "defence": re.compile(r"\b(agniveer|army|navy|air force|rifleman|capf|bsf|crpf|cisf|itbp|ssb)\b", re.I)}
+
+
+def top_groups(feed: list[dict], families: dict, now: dt.datetime) -> list[dict]:
+    """[{"sector", "items"}] for the home page: per sector, its newest recruitment/admit card/result/answer key
+    notices of the last TOP_DAYS days (others only if too few), each notice in one group only."""
+    since = (now - dt.timedelta(days=TOP_DAYS)).isoformat(timespec="seconds")
+    taken: set[str] = set()
+    seen_heads: set[str] = set()  # across groups too: SSC's SI list is not shown again under police
+    out = []
+    for sector in TOP_SECTORS:
+        def belongs(i):
+            secs = families.get(i.get("exam") or "", {}).get("sectors") or (["ssc"] if (i.get("source") or "ssc") == "ssc" else [])
+            if sector not in secs:
+                return False
+            return secs[0] == sector or sector not in TOP_WORDS or bool(TOP_WORDS[sector].search(i["title"]))
+        pool = [i for i in feed if i["publishedAt"] >= since and i.get("exam") != "LDCE" and i["id"] not in taken
+                and ((i.get("source") or "ssc") != "ssc" or i.get("lang") == "en")  # SSC posts each notice twice (en/hi)
+                and belongs(i)]
+        pick = []
+        for i in [i for i in pool if i["kind"] in TOP_KINDS] + [i for i in pool if i["kind"] not in TOP_KINDS]:
+            head = re.split(r"[:—]", i["title"], maxsplit=1)[0].strip().lower()[:60]  # one per exam: "SI in Delhi Police ...: list 1/2/3"
+            if head not in seen_heads and len(pick) < TOP_PER_SECTOR:
+                seen_heads.add(head)
+                pick.append(i)
+        pick.sort(key=lambda i: (i["publishedAt"], i["id"]), reverse=True)
+        taken.update(i["id"] for i in pick)
+        if pick:
+            out.append({"sector": sector, "items": pick})
+    return out
 _EMAIL = re.compile(r"^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,24}$")
 
 
@@ -284,7 +325,8 @@ def run(out: str, get: ssc.Getter, now: dt.datetime, window_days: int = 120, max
                                                               **{x.SOURCE: x.NOTICE_PAGE for x in BOARDS}},
                                                   "items": feed})
     # The home page shows the newest 8 after dropping duplicates; 40 leave room. A tenth of feed.json on a slow line.
-    _write_json(_v1(out, "latest.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": feed[:LATEST]})
+    _write_json(_v1(out, "latest.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": feed[:LATEST],
+                                          "top": top_groups(feed, families["families"], now)})
     _write_json(_v1(out, "calendar.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "source": "ssc",
                                             "entries": calendar})
     _write_json(_v1(out, "new.json"), {"schema": SCHEMA, "generatedAt": stamp_now, "items": new})

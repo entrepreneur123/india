@@ -6,6 +6,8 @@ export default {
   loading: "ଲୋଡ୍ ହେଉଛି…",
   homeComing: "ଆସନ୍ତା 30 ଦିନର ପରୀକ୍ଷା ତାରିଖ",
   homeLatest: "ନୂଆ ଅପଡେଟ୍",
+  homeTop: "ସବୁଠୁ ଅଧିକ ଖୋଜାଯାଉଥିବା ଚାକିରି",
+  seeAll: "ସବୁ ଦେଖନ୍ତୁ",
   inDays: "{n} ଦିନରେ",
   onNow: "ଏବେ ଚାଲିଛି",
   today: "ଆଜି",

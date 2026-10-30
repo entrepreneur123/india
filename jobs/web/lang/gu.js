@@ -6,6 +6,8 @@ export default {
   loading: "લોડ થઈ રહ્યું છે…",
   homeComing: "આવતા 30 દિવસની પરીક્ષા તારીખો",
   homeLatest: "તાજા અપડેટ્સ",
+  homeTop: "સૌથી વધુ શોધાતી નોકરીઓ",
+  seeAll: "બધું જુઓ",
   inDays: "{n} દિવસમાં",
   onNow: "ચાલુ છે",
   today: "આજે",

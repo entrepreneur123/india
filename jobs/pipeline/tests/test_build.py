@@ -296,3 +296,38 @@ def test_boards_that_answer_only_from_india_come_from_the_india_servers_file():
     assert "mppsc" not in failed
     _, kept, _ = build.other_boards(get_text, now, 120, old, warn=lambda _: None)  # no india.json yet
     assert [i["id"] for i in kept if i["source"] == "mppsc"] == ["mppsc-old"]
+
+
+def test_top_groups_put_the_most_sought_sectors_first_with_their_main_updates():
+    now = dt.datetime(2026, 10, 30, 12, tzinfo=build.ssc.IST)
+    fam = {"RRB": {"sectors": ["railway"]}, "CGL": {"sectors": ["ssc"]}, "UPP": {"sectors": ["police", "state"]},
+           "SBI": {"sectors": ["bank"]}}
+
+    def item(i, exam, kind, day, source="x", lang="en"):
+        return {"id": i, "exam": exam, "kind": kind, "publishedAt": f"2026-10-{day:02d}T00:00:00+05:30", "source": source, "lang": lang,
+                "title": f"{exam} notice {i}"}
+    feed = sorted([item("r1", "RRB", "notice", 29), item("r2", "RRB", "result", 20), item("r3", "RRB", "admit_card", 25),
+                   item("r4", "RRB", "recruitment", 10), item("r5", "RRB", "result", 5),
+                   item("c1", "CGL", "result", 28, "ssc", "hi"), item("c2", "CGL", "result", 28, "ssc", "en"),
+                   item("p1", "UPP", "recruitment", 1),
+                   {**item("old", "SBI", "recruitment", 1), "publishedAt": "2026-08-01T00:00:00+05:30"}],
+                  key=lambda i: i["publishedAt"], reverse=True)
+    groups = build.top_groups(feed, fam, now)
+    assert [g["sector"] for g in groups] == ["railway", "ssc", "police", "state"][:3]  # bank: only a notice older than 60 days
+    assert [i["id"] for i in groups[0]["items"]] == ["r3", "r2", "r4"]  # main kinds first, newest first; the notice waits
+    assert [i["id"] for i in groups[1]["items"]] == ["c2"]  # SSC's Hindi copy is left out
+    assert [i["id"] for i in groups[2]["items"]] == ["p1"] and all(g["sector"] != "state" for g in groups)  # one group per notice
+
+
+def test_top_groups_show_one_update_per_exam_and_only_teacher_notices_from_mixed_boards():
+    now = dt.datetime(2026, 10, 30, 12, tzinfo=build.ssc.IST)
+    fam = {"SI": {"sectors": ["ssc", "police"]}, "DSSSB": {"sectors": ["state", "teaching"]}}
+    feed = [{"id": f"s{n}", "exam": "SI", "kind": "result", "publishedAt": "2026-10-29T00:00:00+05:30", "source": "ssc", "lang": "en",
+             "title": f"Sub-Inspector in Delhi Police Examination, 2025: list {n}"} for n in (1, 2, 3)] + [
+        {"id": "d1", "exam": "DSSSB", "kind": "result", "publishedAt": "2026-10-28T00:00:00+05:30", "source": "dsssb", "lang": "en",
+         "title": "Result notice: Staff Nurse"},
+        {"id": "d2", "exam": "DSSSB", "kind": "result", "publishedAt": "2026-10-27T00:00:00+05:30", "source": "dsssb", "lang": "en",
+         "title": "Result notice for TGT (Hindi)"}]
+    groups = {g["sector"]: [i["id"] for i in g["items"]] for g in build.top_groups(feed, fam, now)}
+    assert groups["ssc"] == ["s1"] and "police" not in groups  # one per exam, in one group only
+    assert groups["teaching"] == ["d2"] and groups["state"] == ["d1"]
