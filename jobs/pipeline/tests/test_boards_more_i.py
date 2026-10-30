@@ -69,7 +69,7 @@ def test_ntpc_notice_board():
     assert (first.published.date(), first.kind, url(first)) == (dt.date(2026, 10, 29), "recruitment", bi.NTPC_PAGE)  # no file
     gdmo = titles["Result for the post of GDMO against Advt. No- 04/26"]
     assert (gdmo.published.date(), gdmo.kind) == (dt.date(2026, 9, 22), "result")
-    assert url(gdmo).startswith("https://careers.ntpc.co.in/recruitment/pdf_viewer.php?token=Ri9rVTBPM3Bkc1FTS1A")
+    assert url(gdmo) == "https://careers.ntpc.co.in/recruitment/"  # its file tokens change per visit: the board page is linked
     # the admit card is on an exam agency's portal: the item links NTPC's own page
     admit = [i for i in items if i.published.date() == dt.date(2026, 10, 21)]
     assert [(i.kind, url(i)) for i in admit] == [("admit_card", bi.NTPC_PAGE)]

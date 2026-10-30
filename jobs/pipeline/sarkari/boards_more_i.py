@@ -48,8 +48,7 @@ def _kinds(rules: list[tuple[str, re.Pattern]], fallback: str | None = None):
 #   portal will remain open from 16.10.2026 to 30.10.2026. ...</h5> ... <a href="pdf_viewer.php?token=MjF4...%3D%3D" ...>Adv English</a>
 #   ... <a href="https://ibtexamination.com/secuAdmitcard/AdmitCard04_NTPC" ...>Download Admit Card</a> ...
 #   <span><b>Posting date : </b>2026-10-29</span>
-# A notice links its first file on NTPC's site (pdf_viewer.php?token=...); one with only outside links (admit card and score portals)
-# or none links this page. The tokens differ for the same file within one page (per-visit), so a notice is known by its headline.
+# Every notice links this page: its files (pdf_viewer.php?token=...) carry tokens that differ per visit and may expire. The tokens differ for the same file within one page (per-visit), so a notice is known by its headline.
 NTPC_PAGE = "https://careers.ntpc.co.in/recruitment/"
 _NTPC_BOARD = '<h2 class="m-b5">Notice Board</h2>'
 _NTPC = re.compile(r'<li>\s*<div class="d-flex m-b20">(.*?)<b>Posting date : </b>\s*([^<]*?)\s*</span>', re.S)
@@ -62,8 +61,8 @@ def _ntpc_entries(page: str) -> Iterator[tuple[str, str, str]]:
         return
     for body, day in _NTPC.findall(page, start):
         head = _NTPC_HEAD.search(body)
-        href = next((h for h, _t in _A.findall(body) if _on_host("https://careers.ntpc.co.in", NTPC_PAGE, h)), "")
-        yield day, href, head.group(1) if head else ""
+        # Every notice links the board: its file links carry per-visit tokens that may stop working later.
+        yield day, "", head.group(1) if head else ""
 
 
 def _ntpc_date(raw: str, _title: str = "") -> dt.date:
