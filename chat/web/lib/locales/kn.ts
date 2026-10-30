@@ -163,6 +163,7 @@ const kn: Dict = {
   'composer.remove': 'ಲಗತ್ತು ತೆಗೆದುಹಾಕಿ',
   'composer.message': 'ಮೆಸೇಜ್',
   'composer.send': 'ಮೆಸೇಜ್ ಕಳುಹಿಸಿ',
+  'composer.voice': 'ಧ್ವನಿ ಸಂದೇಶ',
   'composer.ended': 'ಚಾಟ್ ಮುಗಿದಿದೆ',
   'bubble.photo': 'ಹಂಚಿಕೊಂಡ ಫೋಟೋ',
   'bubble.hidden': 'ಮರೆಮಾಡಿದ ಫೋಟೋ',

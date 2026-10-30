@@ -163,6 +163,7 @@ const it: Dict = {
   'composer.remove': 'Rimuovi allegato',
   'composer.message': 'Messaggio',
   'composer.send': 'Invia messaggio',
+  'composer.voice': 'Messaggio vocale',
   'composer.ended': 'La chat è terminata',
   'bubble.photo': 'Foto condivisa',
   'bubble.hidden': 'Foto nascosta',

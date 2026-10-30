@@ -167,6 +167,7 @@ const ar: Dict = {
   'composer.remove': 'إزالة المرفق',
   'composer.message': 'رسالة',
   'composer.send': 'إرسال الرسالة',
+  'composer.voice': 'رسالة صوتية',
   'composer.ended': 'انتهت الدردشة',
   'bubble.photo': 'صورة مشتركة',
   'bubble.hidden': 'صورة مخفية',

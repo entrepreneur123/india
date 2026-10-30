@@ -39,6 +39,7 @@ import {
   type KycDemoOutcome,
   type LinkMeta,
   type LookWear,
+  mediaKindOf,
 } from './backend'
 import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
@@ -551,7 +552,7 @@ export class MockBackend implements Backend {
       id: this.msgSeq++,
       fromMe: true,
       text: text?.trim() || null,
-      media: media ? { url: URL.createObjectURL(media), kind: media.type.startsWith('video') ? 'video' : 'image' } : null,
+      media: media ? { url: URL.createObjectURL(media), kind: mediaKindOf(media.type) } : null,
       at: Date.now(),
       clientId,
     }

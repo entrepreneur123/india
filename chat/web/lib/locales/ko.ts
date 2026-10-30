@@ -167,6 +167,7 @@ const ko: Dict = {
   'composer.remove': '첨부 파일 삭제',
   'composer.message': '메시지',
   'composer.send': '메시지 보내기',
+  'composer.voice': '음성 메시지',
   'composer.ended': '채팅이 끝났어요',
   'bubble.photo': '공유된 사진',
   'bubble.hidden': '숨겨진 사진',

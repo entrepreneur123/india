@@ -163,6 +163,7 @@ const fr: Dict = {
   'composer.remove': 'Retirer la pièce jointe',
   'composer.message': 'Message',
   'composer.send': 'Envoyer le message',
+  'composer.voice': 'Message vocal',
   'composer.ended': 'Le chat est terminé',
   'bubble.photo': 'Photo partagée',
   'bubble.hidden': 'Photo masquée',

@@ -163,6 +163,7 @@ const ptBR: Dict = {
   'composer.remove': 'Remover anexo',
   'composer.message': 'Mensagem',
   'composer.send': 'Enviar mensagem',
+  'composer.voice': 'Mensagem de voz',
   'composer.ended': 'O chat terminou',
   'bubble.photo': 'Foto compartilhada',
   'bubble.hidden': 'Foto oculta',

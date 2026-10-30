@@ -163,6 +163,7 @@ const ml: Dict = {
   'composer.remove': 'അറ്റാച്ച്മെന്റ് നീക്കുക',
   'composer.message': 'മെസേജ്',
   'composer.send': 'മെസേജ് അയയ്ക്കുക',
+  'composer.voice': 'വോയ്‌സ് മെസേജ്',
   'composer.ended': 'ചാറ്റ് അവസാനിച്ചു',
   'bubble.photo': 'ഷെയർ ചെയ്ത ഫോട്ടോ',
   'bubble.hidden': 'മറച്ച ഫോട്ടോ',

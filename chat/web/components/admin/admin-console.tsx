@@ -314,7 +314,9 @@ function Detail({ client, id, changed }: { client: SupabaseClient; id: number; c
                 </span>
                 {l.body && <span className="whitespace-pre-wrap break-words">{l.body}</span>}
                 {l.media && (urls[l.media]
-                  ? <a href={urls[l.media]} target="_blank" rel="noreferrer"><img src={urls[l.media]} alt="첨부 사진" className="mt-1 max-h-48 rounded-md" /></a>
+                  ? /\.(webm|m4a|ogg)$/.test(l.media) // 음성 메시지(099)
+                    ? <audio src={urls[l.media]} controls className="mt-1 max-w-full" />
+                    : <a href={urls[l.media]} target="_blank" rel="noreferrer"><img src={urls[l.media]} alt="첨부 사진" className="mt-1 max-h-48 rounded-md" /></a>
                   : <span className="block text-xs text-muted-foreground">(사진: 더 이상 없음)</span>)}
               </li>
             ))}

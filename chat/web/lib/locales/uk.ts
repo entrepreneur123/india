@@ -167,6 +167,7 @@ const uk: Dict = {
   'composer.remove': 'Видалити вкладення',
   'composer.message': 'Повідомлення',
   'composer.send': 'Надіслати повідомлення',
+  'composer.voice': 'Голосове повідомлення',
   'composer.ended': 'Чат завершено',
   'bubble.photo': 'Фото',
   'bubble.hidden': 'Приховане фото',

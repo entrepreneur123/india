@@ -167,6 +167,7 @@ const id: Dict = {
   'composer.remove': 'Hapus lampiran',
   'composer.message': 'Pesan',
   'composer.send': 'Kirim pesan',
+  'composer.voice': 'Pesan suara',
   'composer.ended': 'Chat sudah berakhir',
   'bubble.photo': 'Foto yang dibagikan',
   'bubble.hidden': 'Foto disembunyikan',

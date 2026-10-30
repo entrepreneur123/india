@@ -393,6 +393,7 @@ export function ChatView({
             onSend={send}
             onTyping={chat.notifyTyping}
             allowMedia={live}
+            allowVoice
             placeholder={live ? t('chat.placeholder') : t('chat.messageTo', { name: partner.name })}
             // Over a wall the box's row gets a light veil, so its icons stay clear on dark walls too.
             className={wall ? 'bg-background/80 backdrop-blur-sm' : undefined}

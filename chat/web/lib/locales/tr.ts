@@ -167,6 +167,7 @@ const tr: Dict = {
   'composer.remove': 'Eki kaldır',
   'composer.message': 'Mesaj',
   'composer.send': 'Mesaj gönder',
+  'composer.voice': 'Sesli mesaj',
   'composer.ended': 'Sohbet sona erdi',
   'bubble.photo': 'Paylaşılan fotoğraf',
   'bubble.hidden': 'Gizli fotoğraf',

@@ -154,6 +154,7 @@ const pa: Dict = {
   'composer.remove': 'ਅਟੈਚਮੈਂਟ ਹਟਾਓ',
   'composer.message': 'ਮੈਸੇਜ',
   'composer.send': 'ਮੈਸੇਜ ਭੇਜੋ',
+  'composer.voice': 'ਵੌਇਸ ਮੈਸੇਜ',
   'composer.ended': 'ਚੈਟ ਖ਼ਤਮ ਹੋ ਗਈ',
   'bubble.photo': 'ਸ਼ੇਅਰ ਕੀਤੀ ਫ਼ੋਟੋ',
   'bubble.hidden': 'ਲੁਕਾਈ ਫ਼ੋਟੋ',

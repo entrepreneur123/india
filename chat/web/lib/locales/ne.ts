@@ -163,6 +163,7 @@ const ne: Dict = {
   'composer.remove': 'अट्याचमेन्ट हटाउनुहोस्',
   'composer.message': 'मेसेज',
   'composer.send': 'मेसेज पठाउनुहोस्',
+  'composer.voice': 'भ्वाइस म्यासेज',
   'composer.ended': 'च्याट सकियो',
   'bubble.photo': 'सेयर गरिएको फोटो',
   'bubble.hidden': 'लुकाइएको फोटो',

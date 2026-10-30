@@ -167,6 +167,7 @@ const he: Dict = {
   'composer.remove': 'הסרת הקובץ המצורף',
   'composer.message': 'הודעה',
   'composer.send': 'שליחת הודעה',
+  'composer.voice': 'הודעה קולית',
   'composer.ended': 'הצ׳אט הסתיים',
   'bubble.photo': 'תמונה ששותפה',
   'bubble.hidden': 'תמונה מוסתרת',

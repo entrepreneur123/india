@@ -167,6 +167,7 @@ const ru: Dict = {
   'composer.remove': 'Удалить вложение',
   'composer.message': 'Сообщение',
   'composer.send': 'Отправить сообщение',
+  'composer.voice': 'Голосовое сообщение',
   'composer.ended': 'Чат завершён',
   'bubble.photo': 'Фото',
   'bubble.hidden': 'Скрытое фото',

@@ -163,6 +163,7 @@ const bn: Dict = {
   'composer.remove': 'সংযুক্তি সরান',
   'composer.message': 'মেসেজ',
   'composer.send': 'মেসেজ পাঠান',
+  'composer.voice': 'ভয়েস মেসেজ',
   'composer.ended': 'চ্যাট শেষ হয়েছে',
   'bubble.photo': 'শেয়ার করা ছবি',
   'bubble.hidden': 'লুকানো ছবি',

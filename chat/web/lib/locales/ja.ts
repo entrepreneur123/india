@@ -167,6 +167,7 @@ const ja: Dict = {
   'composer.remove': '添付ファイルを削除',
   'composer.message': 'メッセージ',
   'composer.send': 'メッセージを送信',
+  'composer.voice': 'ボイスメッセージ',
   'composer.ended': 'チャットは終了しました',
   'bubble.photo': '共有された写真',
   'bubble.hidden': '非表示の写真',

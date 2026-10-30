@@ -163,6 +163,7 @@ const ro: Dict = {
   'composer.remove': 'Elimină atașamentul',
   'composer.message': 'Mesaj',
   'composer.send': 'Trimite mesajul',
+  'composer.voice': 'Mesaj vocal',
   'composer.ended': 'Chatul s-a încheiat',
   'bubble.photo': 'Poză trimisă',
   'bubble.hidden': 'Poză ascunsă',

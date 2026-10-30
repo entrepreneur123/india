@@ -167,6 +167,7 @@ const zhHant: Dict = {
   'composer.remove': '移除附件',
   'composer.message': '訊息',
   'composer.send': '傳送訊息',
+  'composer.voice': '語音訊息',
   'composer.ended': '聊天已結束',
   'bubble.photo': '分享的照片',
   'bubble.hidden': '已隱藏的照片',

@@ -154,6 +154,7 @@ const mr: Dict = {
   'composer.remove': 'अटॅचमेंट काढा',
   'composer.message': 'मेसेज',
   'composer.send': 'मेसेज पाठवा',
+  'composer.voice': 'व्हॉइस मेसेज',
   'composer.ended': 'चॅट संपला',
   'bubble.photo': 'शेअर केलेला फोटो',
   'bubble.hidden': 'लपवलेला फोटो',

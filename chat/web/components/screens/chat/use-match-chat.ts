@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSWRConfig } from 'swr'
-import type { Badges, Message, Profile, VideoStatus } from '@/lib/backend'
+import { mediaKindOf, type Badges, type Message, type Profile, type VideoStatus } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
@@ -154,7 +154,7 @@ export function useMatchChat(matchId: string, partnerName: string, live: boolean
       const preview = media ? URL.createObjectURL(media) : null
       post({ text, media, preview }, (clientId) => ({
         id: echoId(), fromMe: true, text, at: Date.now(), clientId, state: 'sending',
-        media: preview && media ? { url: preview, kind: media.type.startsWith('video') ? 'video' : 'image' } : null,
+        media: preview && media ? { url: preview, kind: mediaKindOf(media.type) } : null,
       }))
       return true
     },

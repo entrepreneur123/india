@@ -163,6 +163,7 @@ const nl: Dict = {
   'composer.remove': 'Bijlage verwijderen',
   'composer.message': 'Bericht',
   'composer.send': 'Bericht versturen',
+  'composer.voice': 'Spraakbericht',
   'composer.ended': 'De chat is afgelopen',
   'bubble.photo': 'Gedeelde foto',
   'bubble.hidden': 'Verborgen foto',

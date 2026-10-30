@@ -167,6 +167,7 @@ const th: Dict = {
   'composer.remove': 'ลบไฟล์แนบ',
   'composer.message': 'ข้อความ',
   'composer.send': 'ส่งข้อความ',
+  'composer.voice': 'ข้อความเสียง',
   'composer.ended': 'แชทจบแล้ว',
   'bubble.photo': 'รูปที่แชร์',
   'bubble.hidden': 'รูปที่ซ่อนไว้',

@@ -154,6 +154,7 @@ const ur: Dict = {
   'composer.remove': 'اٹیچمنٹ ہٹائیں',
   'composer.message': 'میسج',
   'composer.send': 'میسج بھیجیں',
+  'composer.voice': 'وائس میسج',
   'composer.ended': 'چیٹ ختم ہو گئی',
   'bubble.photo': 'شیئر کی گئی تصویر',
   'bubble.hidden': 'چھپی ہوئی تصویر',

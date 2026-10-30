@@ -166,6 +166,7 @@ const en = {
   'composer.remove': 'Remove attachment',
   'composer.message': 'Message',
   'composer.send': 'Send message',
+  'composer.voice': 'Voice message',
   'composer.ended': 'Chat has ended',
   'bubble.photo': 'Shared photo',
   'bubble.hidden': 'Hidden photo',

@@ -264,11 +264,15 @@ export interface RoomQuery {
   sort?: RoomSort
 }
 
+export type MediaKind = 'image' | 'video' | 'audio'
+/** A chat file's kind from its type (099: voice messages are 'audio'). */
+export const mediaKindOf = (type: string): MediaKind => (type.startsWith('video/') ? 'video' : type.startsWith('audio/') ? 'audio' : 'image')
+
 export interface Message {
   id: number
   fromMe: boolean
   text?: string | null
-  media?: { url: string; kind: 'image' | 'video' } | null
+  media?: { url: string; kind: MediaKind } | null
   at: number
   /** The name the sending app gave the line (091): its "sending…" copy and the stored one are matched by it. */
   clientId?: string | null

@@ -6,12 +6,14 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { ImagePlus, SendHorizontal, X } from 'lucide-react'
 import { useI18n } from '@/components/i18n'
 import { cn } from '@/lib/utils'
+import { canRecord, MicButton, VoiceRecorder } from './voice-note'
 
 export function Composer({
   onSend,
   onTyping,
   disabled,
   allowMedia = true,
+  allowVoice = allowMedia,
   placeholder,
   maxLength = 1000,
   disabledPlaceholder,
@@ -21,6 +23,8 @@ export function Composer({
   onTyping?: () => void
   disabled?: boolean
   allowMedia?: boolean
+  /** Voice messages (099); friends' threads have them without photos. */
+  allowVoice?: boolean
   placeholder?: string
   maxLength?: number
   disabledPlaceholder?: string
@@ -31,6 +35,10 @@ export function Composer({
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [sending, setSending] = useState(false)
+  const [recording, setRecording] = useState(false)
+  // Nothing typed or attached: the mic in Send's place (voice messages, 099), where the browser can record.
+  const [mic, setMic] = useState(false)
+  useEffect(() => setMic(allowVoice && canRecord()), [allowVoice])
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const fileId = useId()
   const canSend = !disabled && !sending && (text.trim().length > 0 || file !== null)
@@ -103,58 +111,68 @@ export function Composer({
       </AnimatePresence>
       {/* One rounded field (Instagram, iMessage): the photo button, the text and the send button inside it. */}
       <div className="flex min-h-11 items-end gap-1 rounded-[22px] bg-muted p-1 ring-1 ring-transparent transition-[box-shadow,background-color] duration-150 focus-within:bg-background focus-within:ring-border">
-        {allowMedia ? (
-          <label
-            htmlFor={fileId}
-            className={cn(
-              'grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-background hover:text-foreground',
-              disabled && 'pointer-events-none opacity-40',
-            )}
-          >
-            <ImagePlus className="size-5" aria-hidden />
-            <span className="sr-only">{t('composer.attach')}</span>
-            <input
-              id={fileId}
-              type="file"
-              accept="image/*,video/*"
-              className="sr-only"
+        {recording ? (
+          <VoiceRecorder onSend={(clip) => onSend(null, clip)} onDone={() => setRecording(false)} />
+        ) : (
+          <>
+            {allowMedia ? (
+              <label
+                htmlFor={fileId}
+                className={cn(
+                  'grid size-9 shrink-0 cursor-pointer place-items-center rounded-full text-muted-foreground transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-background hover:text-foreground',
+                  disabled && 'pointer-events-none opacity-40',
+                )}
+              >
+                <ImagePlus className="size-5" aria-hidden />
+                <span className="sr-only">{t('composer.attach')}</span>
+                <input
+                  id={fileId}
+                  type="file"
+                  accept="image/*,video/*"
+                  className="sr-only"
+                  disabled={disabled}
+                  onChange={(e) => {
+                    setFile(e.target.files?.[0] ?? null)
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            ) : null}
+            <label htmlFor={`${fileId}-text`} className="sr-only">
+              {t('composer.message')}
+            </label>
+            <textarea
+              id={`${fileId}-text`}
+              ref={inputRef}
+              rows={1}
+              value={text}
               disabled={disabled}
+              maxLength={maxLength}
+              placeholder={disabled ? (disabledPlaceholder ?? t('composer.ended')) : (placeholder ?? t('chat.placeholder'))}
               onChange={(e) => {
-                setFile(e.target.files?.[0] ?? null)
-                e.target.value = ''
+                setText(e.target.value)
+                onTyping?.()
               }}
+              onKeyDown={onKeyDown}
+              className={cn('max-h-33 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed', !allowMedia && 'ps-3')}
             />
-          </label>
-        ) : null}
-        <label htmlFor={`${fileId}-text`} className="sr-only">
-          {t('composer.message')}
-        </label>
-        <textarea
-          id={`${fileId}-text`}
-          ref={inputRef}
-          rows={1}
-          value={text}
-          disabled={disabled}
-          maxLength={maxLength}
-          placeholder={disabled ? (disabledPlaceholder ?? t('composer.ended')) : (placeholder ?? t('chat.placeholder'))}
-          onChange={(e) => {
-            setText(e.target.value)
-            onTyping?.()
-          }}
-          onKeyDown={onKeyDown}
-          className={cn('max-h-33 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed', !allowMedia && 'ps-3')}
-        />
-        <m.button
-          type="button"
-          onClick={() => void submit()}
-          disabled={!canSend}
-          whileTap={canSend ? { scale: 0.92 } : undefined}
-          transition={{ duration: 0.1 }}
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,background-color] duration-150 hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-transparent disabled:text-muted-foreground disabled:opacity-60"
-          aria-label={t('composer.send')}
-        >
-          <SendHorizontal className="size-[18px] rtl:rotate-180" aria-hidden />
-        </m.button>
+            {mic && !text.trim() && !file ? (
+              <MicButton onClick={() => setRecording(true)} disabled={disabled} />
+            ) : (
+              <m.button
+                type="button"
+                onClick={() => void submit()}
+                disabled={!canSend}
+                whileTap={canSend ? { scale: 0.92 } : undefined}
+                transition={{ duration: 0.1 }}
+                className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-[opacity,background-color] duration-150 hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-transparent disabled:text-muted-foreground disabled:opacity-60"
+                aria-label={t('composer.send')}
+              >
+                <SendHorizontal className="size-[18px] rtl:rotate-180" aria-hidden />
+              </m.button>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

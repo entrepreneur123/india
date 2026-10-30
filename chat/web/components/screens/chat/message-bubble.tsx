@@ -13,6 +13,7 @@ import { bubbleOf } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { LinkPreview, LinkText } from './link-viewer'
 import { MessageMenu, useMenuGesture, type MenuAction } from './message-menu'
+import { AudioBubble } from './voice-note'
 
 /** A line's Copy action (the menu of a chat bubble or a room line). */
 export function useLineActions(text: string | null | undefined): MenuAction[] {
@@ -70,7 +71,11 @@ export function MessageBubble({ message, first, last, time, status, skin, avatar
       <div className={cn('flex max-w-[82%] items-end gap-2 md:max-w-[68%]', mine && 'flex-row-reverse')}>
         {mine ? null : <span className="w-7 shrink-0">{last ? avatar : null}</span>}
         <Bubble mine={mine} first={first} last={last} skin={skin} title={clock(message.at)} className={message.media ? 'overflow-hidden' : 'px-3.5 py-2'}>
-          {message.media ? <MediaBubble media={message.media} mine={mine} meta={null} /> : null}
+          {message.media?.kind === 'audio' ? (
+            <AudioBubble url={message.media.url} mine={mine} />
+          ) : message.media ? (
+            <MediaBubble media={message.media} mine={mine} meta={null} />
+          ) : null}
           {message.text ? (
             // User text is always rendered as text (React escapes it), never as HTML; its links are plain <a> links.
             <>

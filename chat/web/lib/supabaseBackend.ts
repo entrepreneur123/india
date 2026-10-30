@@ -5,6 +5,7 @@ import {
   BackendError,
   type Backend,
   type CallMsg,
+  mediaKindOf,
   type CallSignal,
   type Badges,
   type FeedPost,
@@ -107,6 +108,10 @@ function loadSigned() {
 }
 /** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
 const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
+/** 099: what browsers record voice messages in, and the file ending each gets. */
+const AUDIO_TYPES: Record<string, string> = { 'audio/webm': 'webm', 'audio/mp4': 'm4a', 'audio/ogg': 'ogg' }
+/** 60 s of voice is well under 1 MB; anything near this is not a voice message. */
+const MAX_AUDIO_BYTES = 3 * 1024 * 1024
 /** A request that hangs on a weak network fails after this long, so the screen can retry (uploads get longer). */
 const REQUEST_TIMEOUT_MS = 15_000
 const UPLOAD_TIMEOUT_MS = 120_000
@@ -786,7 +791,7 @@ export class SupabaseBackend implements Backend {
   }
 
   async send(matchId: string, text: string | null, media: File | null, clientId: string): Promise<Message> {
-    const kind = media ? (media.type.startsWith('video/') ? 'video' : 'image') : null
+    const kind = media ? mediaKindOf(media.type) : null
     let path = media ? this.uploaded.get(media) : null
     if (media && !path) this.uploaded.set(media, (path = await this.upload(media, 'chat')))
     let { data, error } = await this.client.from('messages')
@@ -2456,7 +2461,7 @@ export class SupabaseBackend implements Backend {
       const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
       return {
         id: r.id, fromMe: r.sender === me, text: r.body,
-        media: url ? { url, kind: r.media_kind === 'video' ? 'video' : 'image' } : null,
+        media: url ? { url, kind: r.media_kind === 'video' || r.media_kind === 'audio' ? r.media_kind : 'image' } : null,
         at: time(r.created_at), clientId: r.client_id,
       }
     })
@@ -2473,10 +2478,18 @@ export class SupabaseBackend implements Backend {
   /** Uploads under "<uid>/<folder>/"; photos are shrunk to 1280 px JPEG, videos are capped at 25 MB. */
   private async upload(file: File, folder: 'avatar' | 'chat' | 'posts' | 'rooms' | 'cover'): Promise<string> {
     const isVideo = file.type.startsWith('video/')
+    // A voice message (099): the plain type the bucket allows, a small clip as it is.
+    const audio = AUDIO_TYPES[file.type.split(';')[0]]
     let body: Blob = file
     let type = file.type
     let ext: string
-    if (isVideo) {
+    if (audio) {
+      if (file.size > MAX_AUDIO_BYTES) throw new BackendError('too_large')
+      type = file.type.split(';')[0]
+      ext = audio
+    } else if (file.type.startsWith('audio/')) {
+      throw new BackendError('bad_media')
+    } else if (isVideo) {
       if (!VIDEO_TYPES.includes(file.type)) throw new BackendError('bad_media')
       if (file.size > MAX_VIDEO_BYTES) throw new BackendError('too_large')
       ext = type === 'video/mp4' ? 'mp4' : type.split('/')[1] || 'mp4'
@@ -2488,7 +2501,7 @@ export class SupabaseBackend implements Backend {
     const path = `${this.uid}/${folder}/${crypto.randomUUID()}.${ext}`
     // A file never changes under its name (a new photo gets a new one), so it may be cached for good.
     const opts = { contentType: type, cacheControl: CACHE_FOREVER }
-    const small = !isVideo && hasThumb(path) ? await compressImage(file, THUMB_PX) : null
+    const small = !isVideo && !audio && hasThumb(path) ? await compressImage(file, THUMB_PX) : null
     const [{ error }] = await Promise.all([
       this.client.storage.from(BUCKET).upload(path, body, opts),
       // Without its small copy a photo still shows (the whole photo); its owner's app adds the copy later.
