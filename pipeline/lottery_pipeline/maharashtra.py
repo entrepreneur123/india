@@ -1086,7 +1086,7 @@ def _check(head: dict, tiers: list[dict]) -> None:
 # ---------------------------------------------------------------- publishing
 
 FEED = "v2/mh"          # separate from the Dear/Kerala feed: the app does not read it (yet)
-KEEP_TRYING_DAYS = 3    # a sheet that does not read is retried by later runs for this long
+KEEP_TRYING_DAYS = 7    # a sheet not read yet is tried by later runs for this long (3 days lost 26.10 sheets)
 
 
 def english_name(url: str) -> str | None:
@@ -1154,7 +1154,8 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
     import pathlib
     import time
     out = pathlib.Path(out)
-    page = (fetch_list or (lambda: get_bytes(LIST_URL, timeout=90).decode("utf-8", "replace")))()
+    # The site's name sometimes does not resolve from the runners for a minute (29-10-2026): ask for ~2 min.
+    page = (fetch_list or (lambda: get_bytes(LIST_URL, retries=7, timeout=90).decode("utf-8", "replace")))()
     sheets = [(date, local, url) for date, local, url in list_sheets(page) if 0 <= (today - date).days <= KEEP_TRYING_DAYS]
     changed: set[str] = set()
 

@@ -231,7 +231,7 @@ jobs:
             # once, then its numbers read from that scanned sheet (~2 min a sheet), only in the time this run
             # has before its draw is due (the 8 PM run's wait), so the Dear result is never held up.
             # (publish below takes up to ~4 min: site build and Cloudflare deploy)
-            if [ -n "$from" ]; then budget=$(( start - $(date +%s) - 300 )); else budget=1500; fi
+            if [ -n "$from" ]; then budget=$(( start - $(date +%s) - 300 )); else budget=2700; fi   # deep runs: no draw waits on them
             # A sheet is published as numbers only when its readings agree and its printed counts and order hold.
             if [ "$MH_OCR" = "true" ] && [ "$budget" -ge 300 ]; then mh_args="--ocr --seconds $budget"; else mh_args=""; budget=120; fi
             nosecret timeout $(( budget + 60 )) python -m lottery_pipeline.maharashtra --out ../public $mh_args \
