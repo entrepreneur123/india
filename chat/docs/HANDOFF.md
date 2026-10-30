@@ -29,7 +29,7 @@
 - **배포(Vercel):** `mcp__Vercel__create_deployment`
   - teamId: `team_HKMkmzQNFo2UjOkkJWqlvD5Z`
   - requestBody: `{"deploymentId":"<직전 READY id>","withLatestCommit":true,"target":"production","name":"yaari-web"}` → 약 70초 뒤 `get_deployment`로 READY 확인
-  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: `dpl_x5ajDuFSswkXkmsJsEfgrEVbmtpc` (commit 108f9604)
+  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: `dpl_G1sLzw8uSEuspLFmdPMmS1BvF2gZ` (commit 092b54ea)
 - **Git:**
   - 브랜치: `claude/upbeat-cannon-3ddo4f`, PR: entrepreneur123/india#2 (draft, 구독 중, CI 매번 green)
   - 커밋 끝줄: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` + `Claude-Session: …`
