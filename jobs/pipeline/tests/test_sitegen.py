@@ -90,7 +90,7 @@ def test_topic_pages_list_only_matching_notices_with_official_links(tmp_path):
     sitegen.build(str(tmp_path), FAMILIES, RULES, items, TODAY, "https://example.in/india")
     read = lambda slug: open(os.path.join(str(tmp_path), "jobs", "topic", slug, "index.html"), encoding="utf-8").read()  # noqa: E731
     bihar, police, jobs, psu = read("bihar-govt-jobs"), read("police-jobs"), read("latest-govt-jobs"), read("psu-jobs")
-    assert "<title>Bihar Govt Jobs 2026: BPSC, Bihar Police constable and SI vacancy</title>" in bihar
+    assert "<title>Bihar Govt Jobs 2026: BSSC, BPSC, Bihar Police constable and SI vacancy</title>" in bihar
     assert 'href="https://bpssc.bihar.gov.in/Notices/a.pdf"' in bihar and "ONGC" not in bihar.split("<h2>More</h2>")[0]
     assert "Police Sub-Inspector" in police and "Constable (GD) 2026 - shortlisting" in police  # CTGD is SSC + police
     assert "evil.example" not in police
