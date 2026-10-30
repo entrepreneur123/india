@@ -73,6 +73,9 @@ SOURCES: dict[str, dict] = {
     "tgprb": {"short": "TGPRB", "name": "Telangana Police Recruitment Board", "site": "https://www.tgprb.in", "state": "TG"},
     "cisf": {"short": "CISF", "name": "Central Industrial Security Force", "site": "https://cisfrectt.cisf.gov.in", "state": None},
     "wbprb": {"short": "WBPRB", "name": "West Bengal Police Recruitment Board", "site": "https://prb.wb.gov.in", "state": "WB"},
+    "wbpsc": {"short": "WBPSC", "name": "West Bengal Public Service Commission", "site": "https://psc.wb.gov.in", "state": "WB"},
+    "upessc": {"short": "UPESSC", "name": "Uttar Pradesh Education Service Selection Commission", "site": "https://upessc.up.gov.in", "state": "UP"},
+    "apslprb": {"short": "AP SLPRB", "name": "Andhra Pradesh State Level Police Recruitment Board", "site": "https://slprb.ap.gov.in", "state": "AP"},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

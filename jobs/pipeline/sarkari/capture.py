@@ -126,6 +126,19 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "assam-police": "https://police.assam.gov.in/",
     "assam-rifles": "https://www.assamrifles.gov.in/",
     "territorial-army": "https://jointerritorialarmy.gov.in/",
+    # The list pages behind MP ESB, WBPSC, UPESSC, AP SLPRB, GPRB, Punjab and Karnataka police (found in their saved pages).
+    "mp-esb-notices": "https://esb.mp.gov.in/advertisement/Important_message_candidate.htm",
+    "mp-esb-calendar": "https://esb.mp.gov.in/Exams_Schedule/exams_schedule.htm",
+    "wbpsc-whats-new": "https://psc.wb.gov.in/whats_new.jsp",
+    "wbpsc-advertisement": "https://psc.wb.gov.in/advertisement.jsp",
+    "upessc-press": "https://upessc.up.gov.in/Home/Press_Release",
+    "upessc-news": "https://upessc.up.gov.in/Home/news",
+    "ap-slprb-press": "https://slprb.ap.gov.in/UI/pressRelease.aspx",
+    "ap-slprb-recruitments": "https://slprb.ap.gov.in/UI/Recruitments.aspx",
+    "gprb-latest": "https://gprb.gujarat.gov.in/latestupdate-list.htm",
+    "gprb-advts": "https://gprb.gujarat.gov.in/advertisement-list.htm",
+    "punjab-police-recruitment": "https://www.punjabpolice.gov.in/en/recruitments/punjab-police-recruitment/",
+    "ksp-recruitment": "https://ksp.karnataka.gov.in/info-3/%E0%B2%A8%E0%B3%87%E0%B2%AE%E0%B2%95%E0%B2%BE%E0%B2%A4%E0%B2%BF/kn",
     "nabard-notices": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26",  # the list behind the careers page
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
@@ -232,7 +245,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 12 sites at a time: 130 sites stay under 8 minutes even if every one hangs
+    # Two tries of 20 s, 12 sites at a time: 142 sites stay under 9 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())
