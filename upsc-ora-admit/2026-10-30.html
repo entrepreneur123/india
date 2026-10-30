@@ -1,0 +1,153 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title> ORA E-Admit Card </title>
+	<link rel="shortcut icon" href="Images/ora.ico" type="image/x-icon">
+	<link href="css/main.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="css/designlegand.css">
+	<style>
+		.th1 {
+			text-align: center;
+			font-weight: bold;
+			color: #FFFFFF;
+		}
+		.pn {
+			display: block;
+			margin-bottom: 5px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		function disableSelection(target) {
+			if (typeof target.onselectstart != "undefined") {
+				target.onselectstart = function() {
+					return false
+				}
+			} else if (typeof target.style.MozUserSelect != "undefined") {
+				target.style.MozUserSelect = "none"
+			} else {
+				target.onmousedown = function() {
+					return false
+				}
+			}
+			target.style.cursor = "default"
+		}
+
+		var message = "Function Disabled!";
+
+		function clickIE4() {
+			if (event.button == 2) {
+				alert(message);
+				return false;
+			}
+		}
+
+		function clickNS4(e) {
+			if (document.layers || document.getElementById && !document.all) {
+				if (e.which == 2 || e.which == 3) {
+					alert(message);
+					return false;
+				}
+			}
+		}
+
+		if (document.layers) {
+			document.captureEvents(Event.MOUSEDOWN);
+			document.onmousedown = clickNS4;
+		} else if (document.all && !document.getElementById) {
+			document.onmousedown = clickIE4;
+		}
+
+		document.oncontextmenu = new Function("alert(message);return false")
+
+		disableSelection(document.body)
+
+		var message = "";
+
+		function clickIE() {
+			if (document.all) {
+				(message);
+				return false;
+			}
+		}
+
+		function clickNS(e) {
+			if (document.layers || (document.getElementById && !document.all)) {
+				if (e.which == 2 || e.which == 3) {
+					(message);
+					return false;
+				}
+			}
+		}
+		if (document.layers) {
+			document.captureEvents(Event.MOUSEDOWN);
+			document.onmousedown = clickNS;
+		} else {
+			document.onmouseup = clickNS;
+			document.oncontextmenu = clickIE;
+		}
+
+		document.oncontextmenu = new Function("return false")
+	</script>
+</head>
+
+<body>
+	<div class="top_div"></div>
+	<div class="banner_bg">
+		<div class="banner">
+			<div class="logo"></div>
+			<div class="banner_text">
+				<h1>Union Public Service Commission<br><span>E-Admit Card </span></h1>
+				<h2>ONLINE RECRUITMENT APPLICATION (ORA)</h2>
+			</div>
+		</div>
+	</div>
+	<div align="center" style="margin:20px 0;">
+		<div class="grid" style="width:1024px;">
+			<div class="rounded">
+				<div class="top-outer">
+					<div class="top-inner">
+						<div class="top">
+							<table style="width:100%;">
+								<tr>
+									<td align="left">
+										<h2>E-Admit Card - ONLINE RECRUITMENT APPLICATION (ORA) - 05</h2>
+									</td>
+									<td align="right">
+										<h2>
+											Current Time & Date : Fri, 30 Oct 2026 09:44:35 +0530										</h2>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="mid-outer">
+					<div class="mid-inner">
+						<div class="mid"><br>
+															<div style="height:180px; padding-top:80px;" align="center"><strong>Presently, there are NO e-Admit Cards to download</strong></div>
+														<br>
+							<div align="center" style="border: thin solid  #000000; font-family:Verdana, Arial, Helvetica, sans-serif; "><br />
+								<p align="center" style="font-size:11px;font-family:Verdana, Arial, Helvetica, sans-serif;">Disclaimer: NIC will not be responsible for any inadvertent error that may have crept in the e-admit card being published on NET. <br />
+									In case of any error, please contact UNION PUBLIC SERVICE COMMISSION DHOLPUR HOUSE, SHAHJAHAN ROAD NEW DELHI- 110069.</p><br />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="bottom-outer">
+					<div class="bottom-inner">
+						<div class="bottom">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footer"></div>
+</body>
+
+</html>
