@@ -368,7 +368,9 @@ def beacon_token(value: str) -> str:
 
 def draw_slug(d: dict) -> str:
     if d.get("lottery") == "maharashtra":  # several draws a day: one page each, by name
-        return "maharashtra-" + re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")
+        name = re.sub(r"[^a-z0-9]+", "-", d["name"].lower().removeprefix("maharashtra ")).strip("-")
+        # A name the sheet's file did not give in English has no Latin letters: the upload's number instead.
+        return "maharashtra-" + (name or re.sub(r"\D", "", d["sources"][0]["url"].rsplit("/", 1)[-1])[:19])
     return SLUG.get(d["slot"], d["slot"].lower().replace("_", "-"))
 
 
@@ -1094,7 +1096,8 @@ class Site:
         out: dict[str, list[dict]] = {}
         for x in self.mh_dates:
             for d in self.mh[x]:
-                out.setdefault(self.mh_game_path(d), []).append(d)
+                if re.search(r"[a-z]", d["name"].lower().removeprefix("maharashtra ")):  # no page for a game we cannot name
+                    out.setdefault(self.mh_game_path(d), []).append(d)
         return out
 
     def mh_game_links(self, lang: str, current: str = "") -> str:

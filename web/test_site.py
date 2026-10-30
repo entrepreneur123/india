@@ -480,3 +480,10 @@ def test_home_turns_to_today_30_minutes_before_the_first_draw(tmp_path, monkeypa
     assert flip.index('data-at="2026-10-19T20:00') < flip.index("Result of 18.10.2026") < flip.index("74D 70698")
     assert '"date":"2026-10-18"' in flip                             # the checker still knows yesterday's numbers
     assert '<b>Today</b>19.10' in flip
+
+
+def test_a_maharashtra_draw_without_an_english_name_does_not_replace_the_hub(tmp_path):
+    d = {"id": "2026-10-29_MH_", "lottery": "maharashtra", "slot": "MH", "name": "Maharashtra महाराष्ट्र आकर्षक पुष्कराज साप्ताहिक सोडत",
+         "sources": [{"kind": "officialPdf", "url": "https://x/1029202616592174929_10_2026_N_109_x.pdf"}]}
+    assert sitegen.draw_slug(d) == "maharashtra-1029202616592174929"
+    assert sitegen.Site.mh_game_path(d) != "/maharashtra/"
