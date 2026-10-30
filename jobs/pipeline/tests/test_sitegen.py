@@ -3,7 +3,7 @@ import json
 import os
 import re
 
-from sarkari import eligibility, sitegen
+from sarkari import build, eligibility, sitegen
 
 HERE = os.path.dirname(__file__)
 FAMILIES = json.load(open(os.path.join(HERE, "..", "exam_families.json"), encoding="utf-8"))["families"]
@@ -132,3 +132,15 @@ def test_no_contact_address_means_no_contact_page_or_link(tmp_path):
     terms = open(os.path.join(str(tmp_path), "jobs", "terms", "index.html"), encoding="utf-8").read()
     assert "contact/" not in terms and "mailto:" not in terms and "cybercrime.gov.in" in terms
     assert 'href="/jobs/topic/' in open(os.path.join(str(tmp_path), "jobs", "404.html"), encoding="utf-8").read()
+
+
+def test_earn_pages_from_the_real_earn_json_quote_only_official_facts():
+    earn = build.load_earn()
+    pages = sitegen.earn_pages(earn, dt.date(2026, 10, 30), "https://example.github.io/india")
+    assert "jobs/earn/" in pages and "jobs/earn/delivery-boy-jobs/" in pages and "jobs/earn/driver-jobs/" in pages
+    assert "jobs/earn/delivery-boy-jobs/blinkit/" in pages  # states its own terms
+    assert "jobs/earn/driver-jobs/uber/" not in pages  # only a link: no page of its own
+    blinkit = pages["jobs/earn/delivery-boy-jobs/blinkit/"]
+    assert "Earn up to ₹30,000 per month" in blinkit and "play.google.com/store/apps/details?id=app.blinkit.onboarding" in blinkit
+    assert '<link rel="canonical" href="https://example.github.io/india/jobs/earn/delivery-boy-jobs/blinkit/">' in blinkit
+    assert all("cybercrime.gov.in" in html for html in pages.values())

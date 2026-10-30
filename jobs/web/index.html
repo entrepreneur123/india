@@ -231,9 +231,16 @@ h3 { font-size: 15px; margin: 18px 0 8px; }
 .trust svg { width: 15px; height: 15px; }
 .warnbox { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0; padding: 10px 12px; border-radius: var(--r); background: var(--warn-bg); color: var(--text); font-size: 13.5px; }
 .warnbox svg { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 1px; color: var(--warn); }
-.tile.earn-tile { display: flex; align-items: center; gap: 12px; margin: 14px 0 4px; }
-.tile.earn-tile > svg:first-child { flex: 0 0 22px; width: 22px; height: 22px; color: var(--brand); }
-.tile.earn-tile .small { display: block; margin-top: 2px; }
+.warnbox.col { flex-direction: column; gap: 6px; }
+.warnbox.col strong { display: flex; align-items: center; gap: 8px; }
+.warnbox ul { margin: 0; padding-inline-start: 20px; }
+.earn-card { flex-basis: 196px; }
+.earn-card h3 { margin-top: 0; }
+.earn-fact { margin-top: 8px; font-size: 13.5px; font-weight: 650; color: var(--ok); }
+.facts { padding-inline-start: 20px; }
+.facts li { margin: 6px 0; }
+.btn.wide { display: flex; margin: 12px 0; }
+.back { display: inline-flex; margin-bottom: 4px; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; align-items: center; }
 details.filter-box > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 700; color: var(--brand); }
 select, input[type="date"], input[type="search"], input[type="file"], input[type="text"], textarea {
@@ -342,7 +349,8 @@ dialog.sheet::backdrop { background: rgba(15, 23, 42, .45); }
 <dialog id="lang-sheet" class="sheet" aria-labelledby="lang-title"></dialog>
 <noscript><p style="padding:16px">This app needs JavaScript. The same updates as plain pages:
   <a href="topic/latest-govt-jobs/">Latest govt jobs</a> · <a href="topic/sarkari-result/">Results</a> ·
-  <a href="topic/admit-card/">Admit cards</a> · <a href="topic/answer-key/">Answer keys</a> · <a href="about/">About</a></p></noscript>
+  <a href="topic/admit-card/">Admit cards</a> · <a href="topic/answer-key/">Answer keys</a> ·
+  <a href="earn/">Earn money: delivery, driver, part time jobs</a> · <a href="about/">About</a></p></noscript>
 <!-- app.js imports these; listing them lets the browser fetch all at once instead of after app.js -->
 <link rel="modulepreload" href="i18n.js"><link rel="modulepreload" href="eligibility.js"><link rel="modulepreload" href="tools.js">
 <link rel="modulepreload" href="tracker.js">

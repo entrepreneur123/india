@@ -23,7 +23,7 @@ def _files(out):
 def test_first_run_publishes_everything_and_announces_nothing(tmp_path):
     out = str(tmp_path)
     assert build.run(out, FakeSSC(), NOW) == 0
-    assert _files(out) == {"feed.json", "latest.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "site.json",
+    assert _files(out) == {"feed.json", "latest.json", "calendar.json", "new.json", "status.json", "resources.json", "exams.json", "guide.json", "earn.json", "site.json",
                            "whatsapp.txt", "rules/index.json", "rules/ssc-cgl-2026.json", "rules/ssc-chsl-2026.json",
                            "rules/ssc-steno-2026.json", "rules/ssc-si-2026.json"}
     feed = _read(out, "feed.json")
