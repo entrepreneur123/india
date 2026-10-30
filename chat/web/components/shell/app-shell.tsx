@@ -45,6 +45,7 @@ import {
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 import { IncomingCall } from '@/components/video/incoming-call'
+import { MegaphoneBanner } from '@/components/social/megaphone'
 
 /** Tab change: a short fade (Material "fade through"). Going to Random (already drawn underneath) the tab goes at once. */
 const TAB_MOTION = {
@@ -440,6 +441,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   return (
     <AppContext.Provider value={state}>
         <div className="min-h-dvh bg-background text-foreground">
+          <MegaphoneBanner />
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
             <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">

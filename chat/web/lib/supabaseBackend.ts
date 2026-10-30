@@ -5,6 +5,7 @@ import {
   BackendError,
   type Backend,
   type CallMsg,
+  type MegaphoneLine,
   mediaKindOf,
   type CallSignal,
   type Badges,
@@ -125,7 +126,7 @@ const CODES = [
   'exit_locked', 'no_profile', 'not_signed_in', 'bad_target', 'premium_required', 'banned', 'under_18', 'slow_down', 'not_allowed', 'not_found',
   'video_not_configured', 'billing_not_configured', 'already_redeemed', 'wrong_account', 'too_large',
   'room_closed', 'room_gender', 'room_age', 'room_full', 'room_password', 'room_title', 'room_size', 'voice_removed', 'mic_denied', 'queue_full',
-  'poll_closed', 'bad_request', 'in_random_chat', 'bad_media',
+  'poll_closed', 'bad_request', 'in_random_chat', 'bad_media', 'no_megaphone',
   'verify_required', 'manner_low', 'kyc_unavailable', 'already_verified', 'kyc_failed', 'too_late', 'already_rated',
   'handle_invalid', 'handle_reserved', 'handle_taken', 'handle_cooldown', 'name_invalid', 'not_owned',
   'contact_invalid', 'not_friends', 'too_many_posts', 'offline', 'party_small',
@@ -1370,6 +1371,40 @@ export class SupabaseBackend implements Backend {
         headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ p_online: false }),
       }).catch(() => undefined)
+  }
+
+  // ---- megaphone (100) ----
+
+  async megaphoneCount() {
+    return (await this.rpc<number>('megaphone_count')) ?? 0
+  }
+
+  async sendMegaphone(text: string) {
+    await this.rpc('megaphone_send', { p_body: text })
+  }
+
+  megaphones(on: (m: MegaphoneLine) => void): () => void {
+    let channel: RealtimeChannel | null = null
+    let stopped = false
+    const line = async (r: { id: number; user: string; name: string; handle: string; photo: string | null; body: string; at: number }) => {
+      await this.signMany([r.photo])
+      on({ id: r.id, text: r.body, at: r.at, user: { id: r.user, name: r.name, handle: r.handle, photoUrl: r.photo ? this.signedUrls.get(r.photo)?.url ?? null : null } })
+    }
+    void (async () => {
+      // Private (100): only my country's people listen on its topic.
+      const country = (await this.mine()).country
+      if (stopped) return
+      channel = this.client.channel(`mega:${country || 'xx'}`, { config: { private: true } })
+        .on('broadcast', { event: 'm' }, ({ payload }) => void line(payload))
+        .subscribe()
+      // An app opened late still sees the last ones (past 2 minutes), oldest first.
+      const recent = (await this.rpc<{ id: number; user_id: string; name: string; handle: string; photo_path: string | null; body: string; at: number }[] | null>('megaphone_recent')) ?? []
+      for (const r of recent.reverse()) if (!stopped) await line({ ...r, user: r.user_id, photo: r.photo_path })
+    })().catch(() => undefined)
+    return () => {
+      stopped = true
+      if (channel) void this.client.removeChannel(channel)
+    }
   }
 
   friendSignals(on: () => void): () => void {

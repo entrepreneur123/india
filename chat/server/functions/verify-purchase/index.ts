@@ -9,6 +9,7 @@ const GENDER_PASS = "gender_pass_24h";    // one-time, consumable: gender filter
 // Looks (040) and walls, sticker packs, incognito (046): one-time, non-consumable products named like their item, owned for good.
 const LOOK = /^(badge|color|font|frame|wall|vip|cycle|effect|bubble)_[a-z0-9]{2,20}$/;
 const HANDLE_PASS = "handle_change";        // consumable (042): one ID change before the 30 days are up
+const MEGAPHONE = "megaphone";              // consumable (100): one line on top of everyone's screen in my country
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 const json = (status: number, body: unknown) =>
@@ -35,7 +36,7 @@ Deno.serve(async (req) => {
   if (gift !== (gift_to !== undefined && gift_to !== null) || (gift && (!look || typeof gift_to !== "string" || !UUID.test(gift_to)))) {
     return json(400, { error: "bad_request" });
   }
-  const pass = product_id === HANDLE_PASS;
+  const pass = product_id === HANDLE_PASS || product_id === MEGAPHONE;
   if ((![PREMIUM, GENDER_PASS].includes(product_id) && !look && !pass) || typeof purchase_token !== "string") return json(400, { error: "bad_request" });
 
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -88,7 +89,7 @@ Deno.serve(async (req) => {
     if (p.purchaseState !== 0) return json(402, { error: "not_purchased" });
     if (p.obfuscatedExternalAccountId !== user.id) return json(403, { error: "wrong_account" });
     const { data: result, error } = pass
-      ? await admin.rpc("redeem_handle_pass", { p_user: user.id, p_token: purchase_token })
+      ? await admin.rpc(product_id === MEGAPHONE ? "redeem_megaphone" : "redeem_handle_pass", { p_user: user.id, p_token: purchase_token })
       : gift_to
         ? await admin.rpc("redeem_gift", { p_from: user.id, p_to: gift_to, p_item: item, p_token: purchase_token })
         : await admin.rpc("redeem_cosmetic", { p_user: user.id, p_item: product_id, p_token: purchase_token });

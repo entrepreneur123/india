@@ -318,6 +318,14 @@ export interface ProfileSocial {
 }
 
 /** 042: someone found by ID, or on my block list. */
+/** 100: a megaphone line on top of everyone's screen in one country. */
+export interface MegaphoneLine {
+  id: number
+  user: PersonRow
+  text: string
+  at: number
+}
+
 export interface PersonRow {
   id: string
   handle: string
@@ -941,6 +949,13 @@ export interface Backend {
   presencePing(online: boolean): void
   /** 088: called whenever a friend's presence may have changed. Returns the stop function. */
   friendSignals(on: () => void): () => void
+  /** 100: how many megaphones I have; sending uses one (errors: no_megaphone, slow_down, bad_request). */
+  megaphoneCount(): Promise<number>
+  sendMegaphone(text: string): Promise<void>
+  /** 100: megaphone lines in my country, as they come (and the past 2 minutes' at the start); returns stop. */
+  megaphones(on: (m: MegaphoneLine) => void): () => void
+  /** Demo only: one megaphone at once (bought in the Android app). */
+  buyMegaphone?(): Promise<void>
   /** A friend's call ringing for me now (an unread 'call' line whose thread still asks), else null. */
   incomingCall(): Promise<IncomingCall | null>
   // ---- profile extras ----

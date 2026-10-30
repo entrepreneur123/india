@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useEffect, useId, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { BookUser, ChevronRight, Settings, Sparkles, SquarePlus } from 'lucide-react'
+import { BookUser, ChevronRight, Megaphone, Settings, Sparkles, SquarePlus } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
 import { handleSpelling, namePlain } from '@/lib/handle'
@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
+import { MegaphoneSheet } from '@/components/social/megaphone'
 import { useSocialT } from '@/components/social/social-text'
 import { VerifyCard } from '@/components/trust/trust-cards'
 import { ACTION, ProfileContent } from '@/components/screens/profile/profile-sheet'
@@ -42,6 +43,7 @@ export function MeScreen() {
   const [postOpen, setPostOpen] = useState(false)
   const [usedPost, setUsedPost] = useState(false)
   const [contactsOpen, setContactsOpen] = useState(false)
+  const [megaphoneOpen, setMegaphoneOpen] = useState(false)
   const openPost = () => {
     setUsedPost(true)
     setPostOpen(true)
@@ -85,9 +87,11 @@ export function MeScreen() {
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onLooks={from(openShop)}
+        onMegaphone={from(() => setMegaphoneOpen(true))}
         onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
+      <MegaphoneSheet open={megaphoneOpen} onClose={() => setMegaphoneOpen(false)} />
       {usedPost ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
@@ -98,7 +102,9 @@ export function MeScreen() {
 }
 
 /** Everything about my profile: the photo, name, @ID, bio and note here; photos too; Looks and contacts one tap on. */
-function EditProfile({ open, onClose, onLooks, onContacts }: { open: boolean; onClose: () => void; onLooks: () => void; onContacts: () => void }) {
+function EditProfile({ open, onClose, onLooks, onMegaphone, onContacts }: {
+  open: boolean; onClose: () => void; onLooks: () => void; onMegaphone: () => void; onContacts: () => void
+}) {
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
@@ -196,6 +202,7 @@ function EditProfile({ open, onClose, onLooks, onContacts }: { open: boolean; on
         <Gallery photos={me.photos ?? []} owner={me.name} />
         <div className="-mx-2 flex flex-col">
           <MoreRow icon={<Sparkles className="text-primary-text" />} label={lt('looks.title')} onClick={onLooks} />
+          <MoreRow icon={<Megaphone />} label={t('mega.title')} note={t('mega.desc')} onClick={onMegaphone} />
           <MoreRow icon={<BookUser />} label={st('contacts.title')} note={st('contacts.note')} onClick={onContacts} />
         </div>
         <Button type="submit" variant="brand" size="lg" loading={busy} disabled={!name.trim() || !plainName || waiting}>

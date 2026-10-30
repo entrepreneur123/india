@@ -40,6 +40,7 @@ import {
   type LinkMeta,
   type LookWear,
   mediaKindOf,
+  type MegaphoneLine,
 } from './backend'
 import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
@@ -1151,6 +1152,46 @@ export class MockBackend implements Backend {
   presencePing() {}
   friendSignals() {
     return () => undefined
+  }
+
+  // ---- megaphone (100): as the server, in memory; a demo person shouts once, 20 s after the app opens ----
+  private megaphoneN = 0
+  private megaphoneAt = 0
+  private megaphoneListeners = new Set<(m: MegaphoneLine) => void>()
+  private megaphoneDemo = false
+
+  async megaphoneCount() {
+    await wait(150)
+    return this.megaphoneN
+  }
+
+  async buyMegaphone() {
+    await wait(400)
+    this.megaphoneN++
+  }
+
+  async sendMegaphone(text: string) {
+    await wait(300)
+    const body = text.trim()
+    if (!body || [...body].length > 80 || !this.me) throw new BackendError('bad_request')
+    if (Date.now() - this.megaphoneAt < 30_000) throw new BackendError('slow_down')
+    if (this.megaphoneN < 1) throw new BackendError('no_megaphone')
+    this.megaphoneN--
+    this.megaphoneAt = Date.now()
+    const line: MegaphoneLine = { id: Date.now(), user: this.personRow(this.me), text: body, at: Date.now() }
+    this.megaphoneListeners.forEach((f) => f(line))
+  }
+
+  megaphones(on: (m: MegaphoneLine) => void) {
+    this.megaphoneListeners.add(on)
+    if (!this.megaphoneDemo) {
+      this.megaphoneDemo = true
+      const sofia = this.person('u_sofia')
+      setTimeout(() => {
+        if (sofia) this.megaphoneListeners.forEach((f) => f({ id: 1, user: this.personRow(sofia), text: 'Music room at 9 tonight, everyone come! 🎶', at: Date.now() }))
+      }, 20_000)
+    }
+    return () => void this.megaphoneListeners.delete(on)
   }
 
   private friendCallArmed = false
