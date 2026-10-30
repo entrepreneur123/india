@@ -174,6 +174,17 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "nabard": "https://www.nabard.org/",
     "epfo": "https://www.epfindia.gov.in/",
     "india-post": "https://www.indiapost.gov.in/",
+    # How the sites that refuse US clients answer an Indian address (30-10-2026), and official channels that
+    # carry their notices: PIB's UPSC releases, Employment News' job table, FCI's app bundle (for a public list URL).
+    "upsc": "https://www.upsc.gov.in/",
+    "upsc-whats-new": "https://www.upsc.gov.in/whats-new",
+    "pib-upsc-rss": "https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+    "bsf": "https://rectt.bsf.gov.in/",
+    "iocl": "https://iocl.com/latest-job-opening",
+    "bpcl": "https://www.bharatpetroleum.in/careers/job-openings",
+    "lic": "https://licindia.in/careers",
+    "employment-news": "https://employmentnews.gov.in/NewEmp/AllJobs.aspx?k=All",
+    "fci-app": "https://fci.gov.in/main.43358fbc0f97cc90.js",
 }
 WORKERS = 12  # sites are fetched side by side (each from its own host): a slow one doesn't hold up the rest
 MAX_BYTES = 5_000_000

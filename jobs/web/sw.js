@@ -2,7 +2,7 @@
 // (Cache-first for the page shell could pair a new app.js with an old i18n.js from the
 // cache right after an update; network-first never mixes versions while online.)
 importScripts('alerts.js');
-const VERSION = 'jobs-v16';
+const VERSION = 'jobs-v17';
 const ALERTS = 'jobs-alerts'; // alert settings and what was announced: kept across app updates
 const SHELL = ['./', 'index.html', 'app.js', 'eligibility.js', 'i18n.js', 'tools.js', 'tracker.js', 'passages.js', 'alerts.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png'];
 
