@@ -63,6 +63,11 @@ SOURCES: dict[str, dict] = {
     "ntpc": {"short": "NTPC", "name": "NTPC Limited", "site": "https://careers.ntpc.co.in", "state": None},
     "niacl": {"short": "NIACL", "name": "The New India Assurance Co. Ltd.", "site": "https://www.newindia.co.in", "state": None},
     "aiims": {"short": "AIIMS", "name": "All India Institute of Medical Sciences, New Delhi", "site": "https://www.aiims.edu", "state": None},
+    "bssc": {"short": "BSSC", "name": "Bihar Staff Selection Commission", "site": "https://bssc.bihar.gov.in", "state": "BR"},
+    "cgpsc": {"short": "CGPSC", "name": "Chhattisgarh Public Service Commission", "site": "https://psc.cg.gov.in", "state": "CG"},
+    "hppsc": {"short": "HPPSC", "name": "Himachal Pradesh Public Service Commission", "site": "https://hppsc.hp.gov.in", "state": "HP"},
+    "appsc": {"short": "APPSC", "name": "Andhra Pradesh Public Service Commission", "site": "https://portal-psc.ap.gov.in", "state": "AP",
+              "files": ["https://psc.ap.gov.in/"]},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

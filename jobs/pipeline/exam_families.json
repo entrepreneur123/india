@@ -740,6 +740,54 @@
       "sectors": [
         "science"
       ]
+    },
+    "BSSC": {
+      "name": "BSSC: Bihar graduate and inter level combined exams, stenographers and other state posts",
+      "hi": "बिहार कर्मचारी चयन आयोग (BSSC) भर्ती",
+      "short": "BSSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "bssc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "CGPSC": {
+      "name": "CGPSC: Chhattisgarh state service exam, engineers, assistant professors and other state posts",
+      "hi": "छत्तीसगढ़ लोक सेवा आयोग (CGPSC) भर्ती",
+      "short": "CGPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "cgpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "HPPSC": {
+      "name": "HPPSC: Himachal administrative service, assistant professors and other state posts",
+      "hi": "हिमाचल प्रदेश लोक सेवा आयोग (HPPSC) भर्ती",
+      "short": "HPPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "hppsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "APPSC": {
+      "name": "APPSC: Andhra Pradesh group services, forest, lecturers and other state posts",
+      "hi": "आंध्र प्रदेश लोक सेवा आयोग (APPSC) भर्ती",
+      "short": "APPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "appsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
     }
   }
 }
