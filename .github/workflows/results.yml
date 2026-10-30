@@ -222,7 +222,7 @@ jobs:
               # (only the stubbed GitHub copy is unchanged then, so the Cloudflare deploy is forced).
               t=$(date -u -d "today $flip" +%s)
               if [ "$now" -lt "$t" ]; then echo "waiting until $flip UTC (12:30 IST) to show today's date"; sleep $(( t - now + 5 )); fi
-              flip_now=1 publish; flip_now=0
+              flip_now=1 publish || echo "::warning::publish failed; the next pass tries again"; flip_now=0
               now=$(date +%s)
             fi
           fi
@@ -236,7 +236,7 @@ jobs:
             if [ "$MH_OCR" = "true" ] && [ "$budget" -ge 300 ]; then mh_args="--ocr --seconds $budget"; else mh_args=""; budget=120; fi
             nosecret timeout $(( budget + 60 )) python -m lottery_pipeline.maharashtra --out ../public $mh_args \
               || echo "::warning::Maharashtra update failed or ran out of time"
-            publish
+            publish || echo "::warning::publish failed; the next pass tries again"
           fi
           if [ -n "$from" ]; then
             now=$(date +%s)
@@ -247,7 +247,7 @@ jobs:
           while :; do
             set +e; nosecret python -m lottery_pipeline.build $args; code=$?; set -e
             if [ "$code" -ne 0 ] && [ "$code" -ne 3 ]; then exit "$code"; fi
-            publish
+            publish || echo "::warning::publish failed; the next pass tries again"
             [ "$code" -eq 0 ] && break
             if [ "$(date +%s)" -ge "$end" ]; then echo "::warning::still waiting for $require; giving up this run"; break; fi
             # A Dear sheet usually lands 7-13 min after the draw: ask every 20 s for the first 25 min, then every minute.
