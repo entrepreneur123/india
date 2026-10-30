@@ -98,12 +98,13 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
     <Modal open={!!highlight && !!photo} onClose={onClose} title={highlight?.title ?? ''} description={`${owner} · ${label}`} className="md:max-w-md">
       {photo ? (
         <div className="relative px-4 pb-4">
-          {/* One frame for every photo, as Instagram's stories: filled and cut to fit; a tap shows it whole (zoom). */}
+          {/* One frame for every photo, as Instagram's stories; the photo keeps its shape inside it (the owner: shrink, never
+              cut); a tap shows it large (zoom). */}
           <img
             src={photo.url}
             alt={label}
             draggable={false}
-            className="mx-auto aspect-[9/16] w-full max-w-[calc(70dvh*9/16)] cursor-zoom-in touch-pan-y rounded-2xl bg-muted object-cover select-none"
+            className="mx-auto aspect-[9/16] w-full max-w-[calc(70dvh*9/16)] cursor-zoom-in touch-pan-y rounded-2xl bg-black object-contain select-none"
             onPointerDown={(e) => (drag.current = e.clientX)}
             onPointerUp={(e) => {
               const dx = drag.current === null ? 0 : e.clientX - drag.current

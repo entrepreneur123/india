@@ -258,7 +258,7 @@ function FeedPhotos({ photos, label }: { photos: string[]; label: string }) {
       <ScrollRow className={cn('flex snap-x snap-mandatory overflow-x-auto no-scrollbar', photos.length > 1 && 'gap-1')}>
         {photos.map((u, i) => (
           <button key={u} type="button" onClick={() => setLarge(i)} className="w-full shrink-0 cursor-zoom-in snap-center">
-            <FadeImg src={u} alt="" className="aspect-[4/5] w-full bg-muted object-cover" loading="lazy" />
+            <FadeImg src={u} alt="" className="aspect-[4/5] w-full bg-muted object-contain" loading="lazy" />
           </button>
         ))}
       </ScrollRow>

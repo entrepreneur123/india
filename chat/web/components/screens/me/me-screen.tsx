@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ContactsEditor } from '@/components/social/contacts'
 import { Gallery } from '@/components/social/gallery'
-import { MegaphoneSheet } from '@/components/social/megaphone'
+import { MegaphoneChat } from '@/components/social/megaphone'
 import { useSocialT } from '@/components/social/social-text'
 import { VerifyCard } from '@/components/trust/trust-cards'
 import { ACTION, ProfileContent } from '@/components/screens/profile/profile-sheet'
@@ -91,7 +91,7 @@ export function MeScreen() {
         onContacts={from(() => setContactsOpen(true))}
       />
       <ContactsEditor open={contactsOpen} onClose={() => setContactsOpen(false)} />
-      <MegaphoneSheet open={megaphoneOpen} onClose={() => setMegaphoneOpen(false)} />
+      <MegaphoneChat open={megaphoneOpen} onClose={() => setMegaphoneOpen(false)} />
       {usedPost ? (
         <Suspense fallback={null}>
           <PostComposer open={postOpen} onClose={() => setPostOpen(false)} />
