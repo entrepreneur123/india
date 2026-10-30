@@ -547,6 +547,8 @@ const sw: Dict = {
   'mega.buy': 'Pata kipaza sauti',
   'mega.appNote': 'Vipaza sauti hununuliwa kwenye programu ya Android.',
   'mega.sent': 'Kipaza sauti chako kimetumwa!',
+  'mega.empty': 'Hakuna kipaza sauti katika siku iliyopita',
+  'mega.write': 'Tumia kipaza sauti',
   'error.no_megaphone': 'Huna vipaza sauti tena',
   'error.banned': 'Akaunti yako imesimamishwa',
   'error.premium_required': 'Unahitaji pasi ya jinsia kuchagua wanawake au wanaume',

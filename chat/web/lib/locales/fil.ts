@@ -547,6 +547,8 @@ const fil: Dict = {
   'mega.buy': 'Kumuha ng megaphone',
   'mega.appNote': 'Nabibili ang megaphone sa Android app.',
   'mega.sent': 'Naipadala na ang megaphone mo!',
+  'mega.empty': 'Walang megaphone sa nakaraang araw',
+  'mega.write': 'Gumamit ng megaphone',
   'error.no_megaphone': 'Wala ka nang megaphone',
   'error.banned': 'Naka-suspend ang account mo',
   'error.premium_required': 'Kailangan ng gender pass para pumili ng babae o lalaki',

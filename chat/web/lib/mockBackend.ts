@@ -1154,11 +1154,16 @@ export class MockBackend implements Backend {
     return () => undefined
   }
 
-  // ---- megaphone (100): as the server, in memory; a demo person shouts once, 20 s after the app opens ----
+  // ---- megaphone (100, 101): as the server, in memory; two lines from earlier today, and a demo person shouts 20 s in ----
   private megaphoneN = 0
   private megaphoneAt = 0
   private megaphoneListeners = new Set<(m: MegaphoneLine) => void>()
-  private megaphoneDemo = false
+  private megaphoneLog: MegaphoneLine[] | null = null
+
+  private megaphoneOut(line: MegaphoneLine) {
+    this.megaphoneLog?.unshift(line)
+    this.megaphoneListeners.forEach((f) => f(line))
+  }
 
   async megaphoneCount() {
     await wait(150)
@@ -1178,18 +1183,26 @@ export class MockBackend implements Backend {
     if (this.megaphoneN < 1) throw new BackendError('no_megaphone')
     this.megaphoneN--
     this.megaphoneAt = Date.now()
-    const line: MegaphoneLine = { id: Date.now(), user: this.personRow(this.me), text: body, at: Date.now() }
-    this.megaphoneListeners.forEach((f) => f(line))
+    this.megaphoneOut({ id: Date.now(), user: this.personRow(this.me), text: body, at: Date.now() })
+  }
+
+  async megaphoneHistory() {
+    await wait(200)
+    return (this.megaphoneLog ?? []).filter((l) => !this.blocked.has(l.user.id))
   }
 
   megaphones(on: (m: MegaphoneLine) => void) {
     this.megaphoneListeners.add(on)
-    if (!this.megaphoneDemo) {
-      this.megaphoneDemo = true
-      const sofia = this.person('u_sofia')
-      setTimeout(() => {
-        if (sofia) this.megaphoneListeners.forEach((f) => f({ id: 1, user: this.personRow(sofia), text: 'Music room at 9 tonight, everyone come! 🎶', at: Date.now() }))
-      }, 20_000)
+    if (!this.megaphoneLog) {
+      const line = (id: number, who: string, text: string, ago: number) => {
+        const p = this.person(who)
+        return p ? [{ id, user: this.personRow(p), text, at: Date.now() - ago }] : []
+      }
+      this.megaphoneLog = [
+        ...line(2, 'u_kabir', 'Anyone up for cricket talk? IPL fans, DM me 🏏', 25 * 60_000),
+        ...line(3, 'u_ananya', 'Looking for people who love old Bollywood songs ✨', 3 * 3600_000),
+      ]
+      setTimeout(() => line(1, 'u_sofia', 'Music room at 9 tonight, everyone come! 🎶', 0).forEach((l) => this.megaphoneOut(l)), 20_000)
     }
     return () => void this.megaphoneListeners.delete(on)
   }

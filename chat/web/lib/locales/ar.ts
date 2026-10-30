@@ -551,6 +551,8 @@ const ar: Dict = {
   'mega.buy': 'احصل على مكبّر صوت',
   'mega.appNote': 'تُشترى مكبّرات الصوت من تطبيق Android.',
   'mega.sent': 'انطلق مكبّر صوتك!',
+  'mega.empty': 'لا توجد مكبرات صوت خلال اليوم الماضي',
+  'mega.write': 'استخدم مكبر الصوت',
   'error.no_megaphone': 'لم يتبقَّ لديك أي مكبّر صوت',
   'error.banned': 'حسابك موقوف',
   'error.premium_required': 'تحتاج إلى تذكرة الجنس لاختيار النساء أو الرجال',

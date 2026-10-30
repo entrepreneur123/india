@@ -533,6 +533,8 @@ const ptBR: Dict = {
   'mega.buy': 'Pegar um megafone',
   'mega.appNote': 'Megafones são comprados no app Android.',
   'mega.sent': 'Seu megafone foi enviado!',
+  'mega.empty': 'Nenhum megafone no último dia',
+  'mega.write': 'Usar um megafone',
   'error.no_megaphone': 'Você não tem mais megafones',
   'error.banned': 'Sua conta está suspensa',
   'error.premium_required': 'Para escolher mulheres ou homens, você precisa de um passe de gênero',

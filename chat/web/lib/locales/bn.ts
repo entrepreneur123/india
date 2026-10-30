@@ -533,6 +533,8 @@ const bn: Dict = {
   'mega.buy': 'মেগাফোন নিন',
   'mega.appNote': 'মেগাফোন Android অ্যাপে কেনা যায়।',
   'mega.sent': 'আপনার মেগাফোন পৌঁছে গেছে!',
+  'mega.empty': 'গত এক দিনে কোনো মেগাফোন নেই',
+  'mega.write': 'মেগাফোন ব্যবহার করুন',
   'error.no_megaphone': 'আপনার কোনো মেগাফোন বাকি নেই',
   'error.banned': 'আপনার অ্যাকাউন্ট স্থগিত',
   'error.premium_required': 'নারী বা পুরুষ বেছে নিতে জেন্ডার পাস লাগবে',

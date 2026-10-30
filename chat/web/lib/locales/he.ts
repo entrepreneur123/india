@@ -548,6 +548,8 @@ const he: Dict = {
   'mega.buy': 'לקבל מגפון',
   'mega.appNote': 'מגפונים נקנים באפליקציית Android.',
   'mega.sent': 'המגפון שלך יצא!',
+  'mega.empty': 'אין מגאפונים ביום האחרון',
+  'mega.write': 'שימוש במגאפון',
   'error.no_megaphone': 'לא נשארו לך מגפונים',
   'error.banned': 'החשבון שלך הושעה',
   'error.premium_required': 'כדי לבחור נשים או גברים צריך כרטיס מגדר',

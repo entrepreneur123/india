@@ -547,6 +547,8 @@ const fa: Dict = {
   'mega.buy': 'بلندگو بگیرید',
   'mega.appNote': 'بلندگوها در اپ Android خریده می\u200cشوند.',
   'mega.sent': 'بلندگوی شما پخش شد!',
+  'mega.empty': 'در یک روز گذشته بلندگویی نبوده',
+  'mega.write': 'استفاده از بلندگو',
   'error.no_megaphone': 'بلندگویی برایتان نمانده',
   'error.banned': 'حساب شما تعلیق شده است',
   'error.premium_required': 'برای انتخاب زنان یا مردان به پاس جنسیت نیاز دارید',

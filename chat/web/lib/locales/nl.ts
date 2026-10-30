@@ -534,6 +534,8 @@ const nl: Dict = {
   'mega.buy': 'Megafoon kopen',
   'mega.appNote': 'Megafoons koop je in de Android-app.',
   'mega.sent': 'Je megafoon is verstuurd!',
+  'mega.empty': 'Geen megafoons in de afgelopen dag',
+  'mega.write': 'Megafoon gebruiken',
   'error.no_megaphone': 'Je hebt geen megafoons meer',
   'error.banned': 'Je account is geschorst',
   'error.premium_required': 'Om vrouwen of mannen te kiezen heb je een genderpas nodig',

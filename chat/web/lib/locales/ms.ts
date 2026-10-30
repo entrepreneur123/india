@@ -547,6 +547,8 @@ const ms: Dict = {
   'mega.buy': 'Dapatkan megafon',
   'mega.appNote': 'Megafon dibeli dalam aplikasi Android.',
   'mega.sent': 'Megafon anda sudah dihantar!',
+  'mega.empty': 'Tiada megafon dalam sehari lalu',
+  'mega.write': 'Guna megafon',
   'error.no_megaphone': 'Megafon anda sudah habis',
   'error.banned': 'Akaun anda digantung',
   'error.premium_required': 'Perlukan pas jantina untuk memilih wanita atau lelaki',

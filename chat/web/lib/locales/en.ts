@@ -546,6 +546,8 @@ const en = {
   'mega.buy': 'Get a megaphone',
   'mega.appNote': 'Megaphones are bought in the Android app.',
   'mega.sent': 'Your megaphone is out!',
+  'mega.empty': 'No megaphones in the last day',
+  'mega.write': 'Use a megaphone',
   'error.no_megaphone': 'You have no megaphones left',
   'error.banned': 'Your account is suspended',
   'error.premium_required': 'Choosing women or men needs a gender pass',

@@ -547,6 +547,8 @@ const tr: Dict = {
   'mega.buy': 'Megafon al',
   'mega.appNote': 'Megafonlar Android uygulamasından alınır.',
   'mega.sent': 'Megafonun yayında!',
+  'mega.empty': 'Son bir günde megafon yok',
+  'mega.write': 'Megafon kullan',
   'error.no_megaphone': 'Hiç megafonun kalmadı',
   'error.banned': 'Hesabın askıya alındı',
   'error.premium_required': 'Kadın veya erkek seçmek için cinsiyet kartı gerekir',

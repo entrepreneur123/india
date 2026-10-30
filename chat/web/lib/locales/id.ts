@@ -547,6 +547,8 @@ const id: Dict = {
   'mega.buy': 'Dapatkan megafon',
   'mega.appNote': 'Megafon dibeli di aplikasi Android.',
   'mega.sent': 'Megafonmu sudah terkirim!',
+  'mega.empty': 'Belum ada megafon dalam sehari terakhir',
+  'mega.write': 'Pakai megafon',
   'error.no_megaphone': 'Megafonmu sudah habis',
   'error.banned': 'Akunmu ditangguhkan',
   'error.premium_required': 'Perlu pass gender untuk memilih perempuan atau laki-laki',

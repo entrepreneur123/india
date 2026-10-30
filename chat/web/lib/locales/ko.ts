@@ -547,6 +547,8 @@ const ko: Dict = {
   'mega.buy': '확성기 받기',
   'mega.appNote': '확성기는 안드로이드 앱에서 살 수 있어요.',
   'mega.sent': '확성기를 외쳤어요!',
+  'mega.empty': '최근 하루 동안 확성기가 없어요',
+  'mega.write': '확성기 쓰기',
   'error.no_megaphone': '남은 확성기가 없어요',
   'error.banned': '계정이 정지됐어요',
   'error.premium_required': '여성·남성을 고르려면 성별 패스가 필요해요',

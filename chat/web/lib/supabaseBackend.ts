@@ -109,6 +109,8 @@ function loadSigned() {
 }
 /** The storage bucket's allowed_mime_types (001_core.sql); anything else is refused by the server. */
 const VIDEO_TYPES = ['video/mp4', 'video/3gpp', 'video/quicktime', 'video/webm']
+/** 100: a megaphone line as megaphone_recent returns it (the live broadcast is mapped to it). */
+type MegaphoneRow = { id: number; user_id: string; name: string; handle: string; photo_path: string | null; body: string; at: number }
 /** 099: what browsers record voice messages in, and the file ending each gets. */
 const AUDIO_TYPES: Record<string, string> = { 'audio/webm': 'webm', 'audio/mp4': 'm4a', 'audio/ogg': 'ogg' }
 /** 60 s of voice is well under 1 MB; anything near this is not a voice message. */
@@ -1386,25 +1388,32 @@ export class SupabaseBackend implements Backend {
   megaphones(on: (m: MegaphoneLine) => void): () => void {
     let channel: RealtimeChannel | null = null
     let stopped = false
-    const line = async (r: { id: number; user: string; name: string; handle: string; photo: string | null; body: string; at: number }) => {
-      await this.signMany([r.photo])
-      on({ id: r.id, text: r.body, at: r.at, user: { id: r.user, name: r.name, handle: r.handle, photoUrl: r.photo ? this.signedUrls.get(r.photo)?.url ?? null : null } })
-    }
     void (async () => {
       // Private (100): only my country's people listen on its topic.
       const country = (await this.mine()).country
       if (stopped) return
       channel = this.client.channel(`mega:${country || 'xx'}`, { config: { private: true } })
-        .on('broadcast', { event: 'm' }, ({ payload }) => void line(payload))
+        .on('broadcast', { event: 'm' }, ({ payload: r }) => void this.megaphoneLines([{ ...r, user_id: r.user, photo_path: r.photo }]).then(([l]) => on(l)))
         .subscribe()
-      // An app opened late still sees the last ones (past 2 minutes), oldest first.
-      const recent = (await this.rpc<{ id: number; user_id: string; name: string; handle: string; photo_path: string | null; body: string; at: number }[] | null>('megaphone_recent')) ?? []
-      for (const r of recent.reverse()) if (!stopped) await line({ ...r, user: r.user_id, photo: r.photo_path })
     })().catch(() => undefined)
     return () => {
       stopped = true
       if (channel) void this.client.removeChannel(channel)
     }
+  }
+
+  async megaphoneHistory() {
+    return this.megaphoneLines((await this.rpc<MegaphoneRow[] | null>('megaphone_recent')) ?? [])
+  }
+
+  private async megaphoneLines(rows: MegaphoneRow[]): Promise<MegaphoneLine[]> {
+    await this.signMany(rows.map((r) => r.photo_path))
+    return rows.map((r) => ({
+      id: r.id,
+      text: r.body,
+      at: r.at,
+      user: { id: r.user_id, name: r.name, handle: r.handle, photoUrl: r.photo_path ? this.signedUrls.get(r.photo_path)?.url ?? null : null },
+    }))
   }
 
   friendSignals(on: () => void): () => void {

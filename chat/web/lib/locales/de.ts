@@ -534,6 +534,8 @@ const de: Dict = {
   'mega.buy': 'Megafon holen',
   'mega.appNote': 'Megafone kaufst du in der Android-App.',
   'mega.sent': 'Dein Megafon ist raus!',
+  'mega.empty': 'Keine Megafone am letzten Tag',
+  'mega.write': 'Megafon benutzen',
   'error.no_megaphone': 'Du hast keine Megafone mehr',
   'error.banned': 'Dein Konto ist gesperrt',
   'error.premium_required': 'Um Frauen oder Männer zu wählen, brauchst du den Geschlechter-Pass',

@@ -547,6 +547,8 @@ const ja: Dict = {
   'mega.buy': 'メガホンを入手',
   'mega.appNote': 'メガホンはAndroidアプリで購入できます。',
   'mega.sent': 'メガホンを送りました！',
+  'mega.empty': 'この1日のメガホンはまだありません',
+  'mega.write': 'メガホンを使う',
   'error.no_megaphone': 'メガホンが残っていません',
   'error.banned': 'アカウントが停止されています',
   'error.premium_required': '女性・男性を選ぶには性別パスが必要です',

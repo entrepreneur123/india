@@ -547,6 +547,8 @@ const zhHans: Dict = {
   'mega.buy': '获取喇叭',
   'mega.appNote': '喇叭需在 Android 应用中购买。',
   'mega.sent': '你的喇叭已发出！',
+  'mega.empty': '过去一天没有喇叭消息',
+  'mega.write': '使用喇叭',
   'error.no_megaphone': '你没有喇叭了',
   'error.banned': '你的账号已被停用',
   'error.premium_required': '选择女生或男生需要性别通行证',

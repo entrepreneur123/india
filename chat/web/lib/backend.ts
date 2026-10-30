@@ -952,8 +952,10 @@ export interface Backend {
   /** 100: how many megaphones I have; sending uses one (errors: no_megaphone, slow_down, bad_request). */
   megaphoneCount(): Promise<number>
   sendMegaphone(text: string): Promise<void>
-  /** 100: megaphone lines in my country, as they come (and the past 2 minutes' at the start); returns stop. */
+  /** 100: megaphone lines in my country as they come; returns stop. */
   megaphones(on: (m: MegaphoneLine) => void): () => void
+  /** 101: my country's megaphone lines of the past day, newest first (50 at most; blocked people left out). */
+  megaphoneHistory(): Promise<MegaphoneLine[]>
   /** Demo only: one megaphone at once (bought in the Android app). */
   buyMegaphone?(): Promise<void>
   /** A friend's call ringing for me now (an unread 'call' line whose thread still asks), else null. */

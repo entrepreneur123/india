@@ -533,6 +533,8 @@ const vi: Dict = {
   'mega.buy': 'Lấy loa phát thanh',
   'mega.appNote': 'Loa phát thanh được mua trong ứng dụng Android.',
   'mega.sent': 'Loa của bạn đã phát!',
+  'mega.empty': 'Chưa có loa nào trong một ngày qua',
+  'mega.write': 'Dùng loa',
   'error.no_megaphone': 'Bạn đã hết loa phát thanh',
   'error.banned': 'Tài khoản của bạn đang bị tạm khóa',
   'error.premium_required': 'Cần vé giới tính để chọn nữ hoặc nam',

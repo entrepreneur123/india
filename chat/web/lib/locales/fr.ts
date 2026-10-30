@@ -535,6 +535,8 @@ const fr: Dict = {
   'mega.buy': 'Obtenir un mégaphone',
   'mega.appNote': 'Les mégaphones s’achètent dans l’app Android.',
   'mega.sent': 'Ton mégaphone est parti !',
+  'mega.empty': 'Aucun mégaphone ces dernières 24 h',
+  'mega.write': 'Utiliser un mégaphone',
   'error.no_megaphone': 'Tu n’as plus de mégaphone',
   'error.banned': 'Votre compte est suspendu',
   'error.premium_required': 'Il faut un pass genre pour choisir des femmes ou des hommes',

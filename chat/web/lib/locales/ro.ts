@@ -535,6 +535,8 @@ const ro: Dict = {
   'mega.buy': 'Ia un megafon',
   'mega.appNote': 'Megafoanele se cumpără din aplicația Android.',
   'mega.sent': 'Megafonul tău a plecat!',
+  'mega.empty': 'Niciun megafon în ultima zi',
+  'mega.write': 'Folosește un megafon',
   'error.no_megaphone': 'Nu mai ai megafoane',
   'error.banned': 'Contul tău este suspendat',
   'error.premium_required': 'Ca să alegi femei sau bărbați ai nevoie de permisul de gen',
