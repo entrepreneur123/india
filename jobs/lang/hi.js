@@ -295,6 +295,7 @@ export default {
   state_OD: "ओडिशा",
   state_KA: "कर्नाटक",
   state_TN: "तमिलनाडु",
+  state_TG: "तेलंगाना",
   anySector: "सभी सेक्टर",
   anyState: "सभी राज्य",
   jobsSector: "{name} की नौकरियाँ",

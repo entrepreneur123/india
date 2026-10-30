@@ -295,6 +295,7 @@ export default {
   state_OD: "ওড়িশা",
   state_KA: "কর্ণাটক",
   state_TN: "তামিলনাড়ু",
+  state_TG: "তেলেঙ্গানা",
   anySector: "সব সেক্টর",
   anyState: "সব রাজ্য",
   jobsSector: "{name} চাকরি",

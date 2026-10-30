@@ -295,6 +295,7 @@ export default {
   state_OD: "ஒடிசா",
   state_KA: "கர்நாடகா",
   state_TN: "தமிழ்நாடு",
+  state_TG: "தெலங்கானா",
   anySector: "அனைத்து துறைகள்",
   anyState: "அனைத்து மாநிலங்கள்",
   jobsSector: "{name} வேலைகள்",
