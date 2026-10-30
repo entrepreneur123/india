@@ -73,6 +73,8 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "indiapost-vacancies": "https://www.indiapost.gov.in/vacancies",
     "nabard-careers": "https://www.nabard.org/Hindi/ftrcontent.aspx?id=660",  # "कैरियर सूचनाएँ", linked from its home
     "epfo-recruitments": "https://www.epfo.gov.in/recruitments/",
+    "epfo-archive": "https://www.epfo.gov.in/archive-recruitments",  # "Archives" on the recruitments page (current list was empty)
+    "nabard-notices": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26",  # the list behind the careers page
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
     "bssc": "https://bssc.bihar.gov.in/",
