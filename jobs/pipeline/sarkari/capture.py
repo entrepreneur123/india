@@ -74,6 +74,18 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "nabard-careers": "https://www.nabard.org/Hindi/ftrcontent.aspx?id=660",  # "कैरियर सूचनाएँ", linked from its home
     "epfo-recruitments": "https://www.epfo.gov.in/recruitments/",
     "epfo-archive": "https://www.epfo.gov.in/archive-recruitments",  # "Archives" on the recruitments page (current list was empty)
+    # Recruiters that refused or failed from outside India (30-10-2026); the URLs are their careers pages.
+    "bank-of-india": "https://bankofindia.bank.in/career",
+    "indian-bank": "https://indianbank.bank.in/career/",
+    "uco-bank": "https://www.ucobank.bank.in/en/job-opportunities",
+    "niacl": "https://www.newindia.co.in/recruitment/list",
+    "esic": "https://www.esic.gov.in/recruitments",
+    "coast-guard": "https://joinindiancoastguard.cdac.in/",
+    "aiims-delhi": "https://www.aiims.edu/index.php/en/notices/recruitment/aiims-recruitment",
+    "bhel": "https://www.bhel.com/recruitments",
+    "fci": "https://fci.gov.in/recruitments.php",
+    "nielit": "https://www.nielit.gov.in/recruitment",
+    "ntpc": "https://careers.ntpc.co.in/recruitment/",
     "nabard-notices": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26",  # the list behind the careers page
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
@@ -180,7 +192,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 8 sites at a time: 79 sites stay under 7 minutes even if every one hangs
+    # Two tries of 20 s, 8 sites at a time: 92 sites stay under 8 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())

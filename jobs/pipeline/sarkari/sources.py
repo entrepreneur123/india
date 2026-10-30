@@ -47,6 +47,14 @@ SOURCES: dict[str, dict] = {
     "kpsc": {"short": "KPSC", "name": "Karnataka Public Service Commission", "site": "https://kpsc.karnataka.gov.in", "state": "KA"},
     "tntrb": {"short": "TN TRB", "name": "Teachers Recruitment Board, Tamil Nadu", "site": "https://www.trb.tn.gov.in", "state": "TN",
               "files": ["https://trb.tn.gov.in/"]},
+    "indiapost": {"short": "India Post", "name": "India Post (Department of Posts)", "site": "https://www.indiapost.gov.in", "state": None},
+    "pnb": {"short": "PNB", "name": "Punjab National Bank", "site": "https://www.pnb.bank.in", "state": None},
+    "bob": {"short": "BOB", "name": "Bank of Baroda", "site": "https://bankofbaroda.bank.in", "state": None},
+    "canara": {"short": "Canara Bank", "name": "Canara Bank", "site": "https://www.canarabank.bank.in", "state": None},
+    "iob": {"short": "IOB", "name": "Indian Overseas Bank", "site": "https://www.iob.bank.in", "state": None},
+    "nhpc": {"short": "NHPC", "name": "NHPC Limited", "site": "https://www.nhpcindia.com", "state": None},
+    "bpcl": {"short": "BPCL", "name": "Bharat Petroleum Corporation Limited", "site": "https://www.bharatpetroleum.in", "state": None},
+    "pgcil": {"short": "POWERGRID", "name": "Power Grid Corporation of India", "site": "https://www.powergrid.in", "state": None},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 

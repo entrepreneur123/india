@@ -548,6 +548,102 @@
         "teaching",
         "state"
       ]
+    },
+    "INDIAPOST": {
+      "name": "India Post: postal assistants, MTS, drivers, skilled artisans and other Department of Posts posts",
+      "hi": "भारतीय डाक (India Post) भर्ती",
+      "short": "India Post",
+      "qualifications": null,
+      "ref": null,
+      "source": "indiapost",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "PNB": {
+      "name": "PNB: Punjab National Bank officers, specialists and other posts",
+      "hi": "पंजाब नेशनल बैंक (PNB) भर्ती",
+      "short": "PNB",
+      "qualifications": null,
+      "ref": null,
+      "source": "pnb",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "BOB": {
+      "name": "BOB: Bank of Baroda officers, specialists and other posts",
+      "hi": "बैंक ऑफ़ बड़ौदा (BOB) भर्ती",
+      "short": "BOB",
+      "qualifications": null,
+      "ref": null,
+      "source": "bob",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "CANARA": {
+      "name": "Canara Bank: officers, specialists and apprentices",
+      "hi": "केनरा बैंक भर्ती",
+      "short": "Canara Bank",
+      "qualifications": null,
+      "ref": null,
+      "source": "canara",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "IOB": {
+      "name": "IOB: Indian Overseas Bank officers, specialists and apprentices",
+      "hi": "इंडियन ओवरसीज़ बैंक (IOB) भर्ती",
+      "short": "IOB",
+      "qualifications": null,
+      "ref": null,
+      "source": "iob",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "NHPC": {
+      "name": "NHPC: trainee engineers, officers and other posts",
+      "hi": "एनएचपीसी (NHPC) भर्ती",
+      "short": "NHPC",
+      "qualifications": null,
+      "ref": null,
+      "source": "nhpc",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "BPCL": {
+      "name": "BPCL: Bharat Petroleum engineers, officers and apprentices",
+      "hi": "भारत पेट्रोलियम (BPCL) भर्ती",
+      "short": "BPCL",
+      "qualifications": null,
+      "ref": null,
+      "source": "bpcl",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "POWERGRID": {
+      "name": "POWERGRID: engineer trainees, field engineers, apprentices and other posts",
+      "hi": "पावरग्रिड (POWERGRID) भर्ती",
+      "short": "POWERGRID",
+      "qualifications": null,
+      "ref": null,
+      "source": "pgcil",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
     }
   }
 }
