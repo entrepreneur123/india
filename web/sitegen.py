@@ -163,6 +163,7 @@ WEB = {
         "draw_desc": "{g} result {d} {t}: 1st prize {n}. All prize numbers and a ticket checker.",
         "awaited": "awaited", "result_of": "Result of {d}", "all_of_day": "All results of {d}",
         "old_title": "Lottery Sambad Old Result – Dear Lottery 1 PM, 6 PM, 8 PM, All Dates", "old_h1": "Old results",
+        "old_desc": "Old Lottery Sambad (Dear Nagaland State Lottery) results by date since {f}: 1 PM, 6 PM and 8 PM, every prize and a ticket checker. Pick a date or a month.",
         "month_title": "Lottery Sambad Old Result {m} – Dear Lottery 1 PM, 6 PM, 8 PM", "month_h1": "Old results – {m}",
         "months": "By month", "recent_days": "Last 31 days",
         "mon": "January February March April May June July August September October November December".split(),
@@ -206,6 +207,7 @@ WEB = {
         "draw_desc": "{g} রেজাল্ট {d} {t}: প্রথম পুরস্কার {n}। সব পুরস্কারের নম্বর আর টিকিট চেক।",
         "awaited": "রেজাল্টের অপেক্ষায়", "result_of": "{d}-এর রেজাল্ট", "all_of_day": "{d}-এর সব রেজাল্ট",
         "old_title": "লটারি সংবাদ পুরোনো রেজাল্ট – ডিয়ার লটারি সব তারিখ", "old_h1": "পুরোনো রেজাল্ট",
+        "old_desc": "{f} থেকে তারিখ অনুযায়ী লটারি সংবাদের পুরোনো রেজাল্ট: ডিয়ার দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টার সব পুরস্কার আর টিকিট চেক। তারিখ বা মাস বেছে নিন।",
         "month_title": "লটারি সংবাদ পুরোনো রেজাল্ট {m} – ডিয়ার লটারি দুপুর 1টা, সন্ধ্যা 6টা, রাত 8টা", "month_h1": "পুরোনো রেজাল্ট – {m}",
         "months": "মাস অনুযায়ী", "recent_days": "গত 31 দিন",
         "mon": "জানুয়ারি ফেব্রুয়ারি মার্চ এপ্রিল মে জুন জুলাই আগস্ট সেপ্টেম্বর অক্টোবর নভেম্বর ডিসেম্বর".split(),
@@ -249,6 +251,7 @@ WEB = {
         "draw_desc": "{g} रिज़ल्ट {d} {t}: पहला इनाम {n}। सारे इनामों के नंबर और टिकट चेक।",
         "awaited": "रिज़ल्ट का इंतज़ार", "result_of": "{d} का रिज़ल्ट", "all_of_day": "{d} के सारे रिज़ल्ट",
         "old_title": "लॉटरी संबाद पुराने रिज़ल्ट – डियर लॉटरी सभी तारीख़ें", "old_h1": "पुराने रिज़ल्ट",
+        "old_desc": "{f} से तारीख़ के हिसाब से लॉटरी संबाद के पुराने रिज़ल्ट: डियर 1 PM, 6 PM, 8 PM के सारे इनाम और टिकट चेक। तारीख़ या महीना चुनें।",
         "month_title": "लॉटरी संबाद पुराने रिज़ल्ट {m} – डियर लॉटरी 1 PM, 6 PM, 8 PM", "month_h1": "पुराने रिज़ल्ट – {m}",
         "months": "महीने के हिसाब से", "recent_days": "पिछले 31 दिन",
         "mon": "जनवरी फ़रवरी मार्च अप्रैल मई जून जुलाई अगस्त सितंबर अक्टूबर नवंबर दिसंबर".split(),
@@ -269,7 +272,7 @@ WEB = {
         "kl_title": "केरल लॉटरी रिज़ल्ट आज {d} – {g} 3 PM",
         "kl_desc": "केरल लॉटरी रिज़ल्ट {d}: {g}, पहला इनाम {n}। सारे इनाम, टिकट चेक और सरकारी रिज़ल्ट का लिंक।",
         "kl_draw_title": "केरल लॉटरी रिज़ल्ट {d} – {g}",
-        "kl_schedule": "रोज़ दोपहर 3 बजे ड्रॉ: सोमवार भाग्यतारा, मंगलवार स्त्री शक्ति, बुधवार धनलक्ष्मी, गुरुवार करुण्या प्लस, शुक्रवार सुवर्ण केरलम, शनिवार करुण्या, रविवार समृद्धि। रिज़ल्ट आमतौर पर ड्रॉ के लगभग एक घंटे बाद आता है।",
+        "kl_schedule": "रोज़ दोपहर 3 बजे ड्रॉ: सोमवार भाग्यतारा, मंगलवार स्त्री शक्ति, बुधवार धनलक्ष्मी, गुरुवार कारुण्य प्लस, शुक्रवार सुवर्ण केरलम, शनिवार कारुण्य, रविवार समृद्धि। रिज़ल्ट आमतौर पर ड्रॉ के लगभग एक घंटे बाद आता है।",
         "kl_recent": "केरल लॉटरी रिज़ल्ट चार्ट – हाल के ड्रॉ", "game": "लॉटरी",
     },
 }
@@ -867,7 +870,7 @@ class Site:
             self.yesterday_hub(out, lang)
             # archive: every date with its three 1st prizes, so the right day is easy to spot
             months = sorted({x[:7] for x in self.dates}, reverse=True)
-            self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_title"],
+            self.write(out, lang, "/old-results/", self.page(lang, "/old-results/", w["old_title"], w["old_desc"].format(f=ddmmyyyy(min(self.dates))),
                                                              f'<div class="intro"><h1>{esc(w["old_h1"])}</h1></div>{self.date_form(lang)}'
                                                              f'{self.month_links(lang, months)}<h2 class="sub">{esc(w["recent_days"])}</h2>'
                                                              f'{self.archive(lang, self.dates[:31])}{self.history(lang)}',
