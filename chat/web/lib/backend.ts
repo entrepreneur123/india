@@ -376,7 +376,10 @@ export interface GroupChat {
 export interface Friend {
   profile: Profile
   state: FriendState
+  /** The pair's message thread (083), once there is one. */
   threadId?: string | null
+  /** 103: the thread's last line (Recent shows it as a chat list does). */
+  last?: { text: string | null; kind: MediaKind | null; mine: boolean; at: number } | null
 }
 
 /** 066: what a friend is doing now (League of Legends' friend list): app closed, idle, searching, in a random chat or a room. */

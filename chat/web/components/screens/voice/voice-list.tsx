@@ -55,7 +55,7 @@ export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery;
         <span className="text-xs text-muted-foreground">{t('voice.liveHint')}</span>
       </div>
       {!rooms ? (
-        <div className="grid gap-3 sm:grid-cols-2" aria-busy>
+        <div className="grid grid-cols-2 gap-2 sm:gap-3" aria-busy>
           {Array.from({ length: 4 }, (_, i) => (
             <Skeleton key={i} className="h-52 rounded-2xl" />
           ))}
@@ -83,7 +83,7 @@ export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery;
           }
         />
       ) : (
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid grid-cols-2 gap-2 sm:gap-3">
           {rooms.map((r) => (
             <li key={r.id}>
               <RoomCard room={r} here={r.id === voiceRoomId} onOpen={() => preview.open(r)} onTag={onTag} />
@@ -96,6 +96,7 @@ export function VoiceRooms({ query = {}, onCreate, onTag }: { query?: RoomQuery;
   )
 }
 
+/** A room in the list; two to a row on phones too (the owner, 2026-10-30), smaller there. */
 function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here: boolean; onOpen: () => void; onTag?: (tag: string) => void }) {
   const { t, num } = useI18n()
   const live = room.speakers.length > 0
@@ -108,21 +109,21 @@ function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here:
   return (
     <div
       className={cn(
-        'relative flex h-full w-full flex-col gap-3 overflow-hidden rounded-2xl border bg-card p-4 text-start transition-[box-shadow,background-color] duration-150',
+        'relative flex h-full w-full flex-col gap-2 overflow-hidden rounded-2xl border bg-card p-3 text-start sm:gap-3 sm:p-4 transition-[box-shadow,background-color] duration-150',
         blocked ? 'opacity-60' : 'hover:shadow-e2 has-[>button:active]:bg-muted',
         here || room.mine ? 'border-primary' : 'border-border',
       )}
     >
       <button type="button" onClick={onOpen} aria-disabled={blocked} aria-label={room.title} className="absolute inset-0 rounded-2xl" />
       {room.coverUrl ? (
-        <img src={room.coverUrl} alt="" className="pointer-events-none -mx-4 -mt-4 aspect-[16/7] w-[calc(100%+2rem)] max-w-none object-cover" loading="lazy" decoding="async" />
+        <img src={room.coverUrl} alt="" className="pointer-events-none -mx-3 -mt-3 aspect-[16/9] w-[calc(100%+1.5rem)] max-w-none object-cover sm:-mx-4 sm:-mt-4 sm:aspect-[16/7] sm:w-[calc(100%+2rem)]" loading="lazy" decoding="async" />
       ) : null}
       <span className="flex w-full items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-1.5">
           <RoomCountry iso={room.host.country} />
           {room.isPrivate || locked ? <Lock className="size-3.5 shrink-0 text-muted-foreground" aria-label={t(room.isPrivate ? 'rooms.private' : 'rooms.locked')} /> : null}
           {langName(room.lang) ? (
-            <span lang={room.lang ?? undefined} className="truncate rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+            <span lang={room.lang ?? undefined} className="hidden truncate rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground sm:inline">
               {langName(room.lang)}
             </span>
           ) : null}
@@ -133,7 +134,7 @@ function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here:
           </span>
         ) : null}
       </span>
-      <span className="line-clamp-2 text-[17px] leading-snug font-bold tracking-tight">{room.title}</span>
+      <span className="line-clamp-2 text-[15px] leading-snug font-bold tracking-tight sm:text-[17px]">{room.title}</span>
       {room.tags.length ? (
         <span className="-mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5">
           {room.tags.map((tag) => (
@@ -153,10 +154,10 @@ function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here:
         <span className="flex min-w-0 items-center gap-2.5">
           <span className="flex shrink-0 -space-x-2" aria-hidden>
             {room.speakers.map((p) => (
-              <UserAvatar key={p.id} userId={p.id} name={p.name} src={p.photoUrl} size={30} className="rounded-full ring-2 ring-card" />
+              <UserAvatar key={p.id} userId={p.id} name={p.name} src={p.photoUrl} size={26} className="rounded-full ring-2 ring-card" />
             ))}
           </span>
-          <span className="min-w-0 truncate text-sm text-muted-foreground">{room.speakers.map((p) => p.name).join(', ')}</span>
+          <span className="hidden min-w-0 truncate text-sm text-muted-foreground sm:inline">{room.speakers.map((p) => p.name).join(', ')}</span>
         </span>
       ) : (
         <span className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
@@ -183,14 +184,14 @@ function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here:
           ))}
         </span>
       ) : null}
-      <span className="mt-auto flex w-full items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+      <span className="mt-auto flex w-full items-center gap-2 border-t border-border pt-2 text-xs text-muted-foreground sm:pt-3">
         <UserAvatar userId={room.host.id} name={room.host.name} src={room.host.photoUrl} size={20} />
-        <span className="min-w-0 flex-1 truncate">
+        <span className="hidden min-w-0 flex-1 truncate sm:inline">
           {room.mine ? t('voice.yourRoom') : t('voice.hostedBy', { name: room.host.name })}
           {room.mine ? null : <span aria-hidden>{` ${flagEmoji(room.host.country)}`}</span>}
           {room.mine && room.code ? <span className="font-mono font-semibold tracking-wider" dir="ltr">{` · ${room.code}`}</span> : null}
         </span>
-        <span className="flex shrink-0 items-center gap-1 tabular-nums">
+        <span className="ms-auto flex shrink-0 items-center gap-1 tabular-nums">
           <Users className="size-3.5" aria-hidden /> {t('rooms.here', { n: num(room.members), max: num(room.maxMembers) })}
         </span>
       </span>

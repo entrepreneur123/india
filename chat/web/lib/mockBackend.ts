@@ -952,9 +952,13 @@ export class MockBackend implements Backend {
     const list: Friend[] = []
     for (const [id, state] of this.friendMap) {
       const profile = this.person(id) ?? this.voiceSim?.person(id)
-      if (profile && state !== 'none') list.push({ profile, state, threadId: this.threadByUser.get(id) ?? null })
+      const threadId = this.threadByUser.get(id) ?? null
+      const l = threadId ? this.matches.get(threadId)?.messages.at(-1) : undefined
+      const last = l ? { text: l.text ?? null, kind: l.media?.kind ?? null, mine: l.fromMe, at: l.at } : null
+      if (profile && state !== 'none') list.push({ profile, state, threadId, last })
     }
-    return list
+    // As the server (103): the newest conversation first.
+    return list.sort((a, b) => (b.last?.at ?? 0) - (a.last?.at ?? 0))
   }
 
   /** What the demo friends are doing (the rest are offline). */

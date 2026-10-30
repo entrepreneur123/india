@@ -7,6 +7,7 @@ import {
   type CallMsg,
   type MegaphoneLine,
   mediaKindOf,
+  type MediaKind,
   type CallSignal,
   type Badges,
   type FeedPost,
@@ -151,7 +152,7 @@ type InboxRow = {
   item?: string | null
 }
 type RecentRow = CardRow & { match_id: string; met_at: string; last_body: string | null }
-type FriendRow = CardRow & { state: string; match_id: string | null }
+type FriendRow = CardRow & { state: string; match_id: string | null; last_body: string | null; last_kind: string | null; last_mine: boolean | null; last_at: string | null }
 type MatchRow = {
   id: string; user_a: string; user_b: string; ended_at: string | null; ended_by: string | null
   video_status: string; video_requested_by: string | null; call_video: boolean | null; read_a: number | null; read_b: number | null
@@ -1063,6 +1064,9 @@ export class SupabaseBackend implements Backend {
       profile: await this.toProfile(f, []),
       state: (f.state === 'friends' ? 'friends' : f.state === 'requested' ? 'requested' : 'incoming') as FriendState,
       threadId: f.match_id,
+      last: f.last_at
+        ? { text: f.last_body, kind: (f.last_kind === 'video' || f.last_kind === 'audio' ? f.last_kind : f.last_kind ? 'image' : null) as MediaKind | null, mine: !!f.last_mine, at: time(f.last_at) }
+        : null,
     })))
     this.friendCards = new Map(list.filter((f) => f.state === 'friends').map((f) => [f.profile.id, f.profile]))
     return list

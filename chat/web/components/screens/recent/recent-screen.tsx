@@ -3,7 +3,7 @@
 import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { AtSign, Flag, MessageCircle, UserMinus, X } from 'lucide-react'
 import type { Friend, Profile, RecentMatch } from '@/lib/backend'
@@ -44,6 +44,10 @@ export function RecentScreen() {
   const { badges } = useApp()
   const unreadMatches = recents.data?.filter((r) => (badges?.chats[r.matchId] ?? 0) > 0).length ?? 0
   const unreadFriends = friends.data?.filter((f) => f.threadId && (badges?.chats[f.threadId] ?? 0) > 0).length ?? 0
+  // A new message (the unread counts moved): the friends' last lines and their order follow.
+  const unreadSum = Object.values(badges?.chats ?? {}).reduce((a, n) => a + n, 0)
+  const { mutate: refreshFriends } = friends
+  useEffect(() => void refreshFriends(), [unreadSum, refreshFriends])
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
@@ -158,10 +162,11 @@ function Failed({ retry }: { retry: () => void }) {
   )
 }
 
-function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
+/** A person; a tap opens their profile, or `onOpen` (a friend with a conversation: the chat, as a chat list does). */
+function Who({ p, detail, onOpen }: { p: Profile; detail?: React.ReactNode; onOpen?: () => void }) {
   const { openProfile } = useApp()
   return (
-    <button type="button" onClick={() => openProfile(p.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start">
+    <button type="button" onClick={onOpen ?? (() => openProfile(p.id))} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-start">
       <UserAvatar userId={p.id} name={p.name} src={p.photoUrl} size={48} country={p.country} />
       <span className="min-w-0">
         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
@@ -173,6 +178,14 @@ function Who({ p, detail }: { p: Profile; detail?: React.ReactNode }) {
       </span>
     </button>
   )
+}
+
+/** A conversation's last line as one short text: "You: …", or what was sent (photo, video, voice message). */
+function LastLine({ last, unread }: { last: Friend['last']; unread: boolean }) {
+  const { st } = useSocialT()
+  if (!last) return null
+  const what = last.kind === 'audio' ? st('msg.voice') : last.kind === 'video' ? st('msg.video') : last.kind ? st('msg.photo') : last.text
+  return <span className={cn(unread && 'font-semibold text-foreground')}>{last.mine ? `${st('group.you')}: ${what}` : what}</span>
 }
 
 /** My friends and the requests waiting for me, or (`sent`) the requests I sent. */
@@ -193,7 +206,7 @@ function FriendsList({
 }) {
   const backend = useBackend()
   const toast = useToast()
-  const { t } = useI18n()
+  const { t, timeAgo } = useI18n()
   const { openThread, badges } = useApp()
   const [busy, setBusy] = useState<string | null>(null)
   const [unfriend, setUnfriend] = useState<Profile | null>(null)
@@ -263,10 +276,13 @@ function FriendsList({
 
       {friends.length ? (
         <Section title={t('recent.friends')} count={friends.length}>
-          {friends.map((f) => (
+          {friends.map((f) => {
+            const unread = f.threadId ? badges?.chats[f.threadId] ?? 0 : 0
+            return (
             <Row key={f.profile.id}>
-              <Who p={f.profile} />
-              <Unread n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />
+              <Who p={f.profile} detail={<LastLine last={f.last} unread={unread > 0} />} onOpen={() => openThread(f.profile)} />
+              {f.last ? <span className="shrink-0 self-start pt-1 text-xs text-muted-foreground">{timeAgo(f.last.at)}</span> : null}
+              <Unread n={unread} />
               <Button size="icon" variant="ghost" onClick={() => openThread(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>
@@ -280,7 +296,8 @@ function FriendsList({
                 <UserMinus className="size-5" aria-hidden />
               </Button>
             </Row>
-          ))}
+            )
+          })}
         </Section>
       ) : null}
 
