@@ -986,31 +986,53 @@ function installCard() {
 }
 
 // ---------- Home: search, shortcuts, sectors and states, what closes soon, exam dates, latest ----------
-// Work people take up for money besides government jobs (gig and platform work: 77 lakh in 2020-21, NITI Aayog 2022),
-// each linked to its official partner app or page. Play Store ids and pages checked 30-10-2026.
-const play = (id) => `https://play.google.com/store/apps/details?id=${id}`;
-const EARN = [
-  ['earnGig', [['Swiggy', 'role_food', play('in.swiggy.deliveryapp')], ['Zomato', 'role_food', play('com.zomato.delivery')],
-    ['Zepto', 'role_grocery', play('com.zepto.rider')], ['Amazon Flex', 'role_parcel', 'https://flex.amazon.in/'],
-    ['Rapido', 'role_ride', play('com.rapido.rider')], ['Uber', 'role_ride', play('com.ubercab.driver')], ['Ola', 'role_ride', play('com.olacabs.oladriver')]]],
-  ['earnServices', [['Urban Company', 'role_home', 'https://partner.urbancompany.com/']]],
-  ['earnJobsApps', [['apna', 'role_jobs', play('com.apnatime')], ['Naukri', 'role_jobs', 'https://www.naukri.com/'],
-    ['National Career Service (NCS)', 'role_ncs', 'https://www.ncs.gov.in/']]],
-  ['earnGov', [['e-Shram', 'role_eshram', 'https://eshram.gov.in/'], ['Skill India Digital', 'role_skill', 'https://www.skillindiadigital.gov.in/'],
-    ['Apprenticeship India', 'role_apprentice', 'https://www.apprenticeshipindia.gov.in/']]],
-];
-function viewEarn(root) {
+// Work people take up for money besides government jobs (gig and platform work: 77 lakh in 2020-21, NITI Aayog 2022):
+// earn.json, built from the pipeline's earn.json, quotes each company's or ministry's own page.
+const earnHead = (o) => o.says.find((x) => x.includes('₹')) ?? o.says[0] ?? '';
+const earnHref = (o) => (o.says.length ? `#earn/${o.id}` : o.url);
+function earnRow(o) {
+  const out = !o.says.length;
+  return el('li', {}, el('a', { class: 'drow', href: earnHref(o), ...(out ? { target: '_blank', rel: 'noopener' } : {}) },
+    el('span', { class: 'grow' }, el('h3', {}, o.name),
+      el('span', { class: 'small' }, [t(o.role), earnHead(o)].filter(Boolean).join(' · '))),
+    icon(out ? ICON.external : ICON.chevron, 'chev')));
+}
+function fakeBox() {
+  return el('div', { class: 'warnbox col', role: 'note' }, el('strong', {}, icon(ICON.shieldCheck), t('earnFakeTitle')),
+    el('ul', {}, ...[1, 2, 3, 4, 5].map((n) => el('li', {}, t(`earnFake${n}`)))), el('span', {}, t('earnReport')));
+}
+async function viewEarn(root, id) {
+  let earn;
+  try { earn = await getJSON('earn.json'); } catch (e) { fill(root, errorBox(e)); return; }
+  const group = earn.groups.find((g) => g.options.some((o) => o.id === id));
+  const o = group?.options.find((x) => x.id === id);
+  if (o) {
+    const app = o.url.startsWith('https://play.google.com/');
+    const steps = o.steps ?? (['delivery', 'driver'].includes(group.id) ? [1, 2, 3, 4].map((n) => t(`earnStep${n}`)) : []);
+    fill(root,
+      el('a', { class: 'more-link back', href: '#earn' }, t(group.key)),
+      el('h1', { class: 'page' }, o.name), el('p', { class: 'small' }, t(o.role)),
+      el('a', { class: 'btn primary wide', href: o.url, target: '_blank', rel: 'noopener' }, icon(ICON.external), t(app ? 'earnOpenApp' : 'earnOpenSite')),
+      o.downloads ? el('p', { class: 'small' }, `${o.app} · ${o.developer} · ${t('earnDownloads', { n: o.downloads })}`) : null,
+      el('h2', {}, t('earnSays')), el('ul', { class: 'facts' }, ...o.says.map((x) => el('li', {}, x))),
+      el('p', { class: 'small' }, t('earnChecked', { date: day(earn.checked) })),
+      steps.length ? el('h2', {}, t('earnHowJoin')) : null, steps.length ? el('ol', { class: 'facts' }, ...steps.map((x) => el('li', {}, x))) : null,
+      fakeBox());
+    return;
+  }
   fill(root,
     el('h1', { class: 'page' }, t('earnTitle')),
     el('p', { class: 'small' }, t('earnIntro')),
     el('p', { class: 'warnbox', role: 'note' }, icon(ICON.shieldCheck), t('earnWarn')),
-    ...EARN.flatMap(([group, rows]) => [
-      el('h2', {}, t(group)),
-      el('ul', { class: 'rowlist' }, ...rows.map(([name, role, href]) => el('li', {},
-        el('a', { class: 'drow', href, target: '_blank', rel: 'noopener' },
-          el('span', { class: 'grow' }, el('h3', {}, name), el('span', { class: 'small' }, t(role))),
-          icon(ICON.external, 'chev'))))),
-    ]));
+    ...earn.groups.flatMap((g) => [el('h2', {}, t(g.key)), el('ul', { class: 'rowlist' }, ...g.options.map(earnRow))]),
+    el('p', { class: 'small' }, t('earnChecked', { date: day(earn.checked) })),
+    fakeBox());
+}
+// Home: the best-known apps first (Play downloads 1 crore+ and their own pay figures), each opening its page here.
+function earnCards(earn) {
+  const pick = (id) => earn.groups.find((g) => g.id === id)?.options.filter((o) => o.says.length >= 2) ?? [];
+  return [...pick('delivery').slice(0, 5), ...pick('driver')].map((o) => el('a', { class: 'hcard earn-card', href: earnHref(o) },
+    el('h3', {}, o.name), el('div', { class: 'small' }, t(o.role)), el('div', { class: 'earn-fact' }, earnHead(o))));
 }
 
 async function viewHome(root) {
@@ -1048,15 +1070,16 @@ async function viewHome(root) {
   };
   const latestBox = el('div', {}, ...skeleton());
   const topBox = el('div', {}, ...skeleton());
+  const earnBox = el('div', { class: 'hscroll' });
+  getJSON('earn.json').then((earn) => fill(earnBox, ...earnCards(earn))).catch(() => earnBox.remove());
   const channels = el('div');
   fill(root,
     el('label', { class: 'searchbox' }, icon(ICON.search), search),
     el('nav', { class: 'pills quick-row', 'aria-label': t('homeLatest') }, ...quick.map(([href, ic, key]) => el('a', { class: 'pill', href }, icon(ICON[ic]), t(key)))),
-    // What most people come for, first: the sectors with the most applicants, each with its newest main updates.
+    // Ways to earn now (delivery, driving), then what most people come for: the sectors with the most applicants.
+    el('div', { class: 'sec-head' }, el('h2', {}, t('homeEarn')), el('a', { class: 'more-link', href: '#earn' }, t('seeAll'), icon(ICON.chevron))),
+    earnBox,
     el('h2', {}, t('homeTop')), topBox,
-    el('a', { class: 'tile earn-tile', href: '#earn' }, icon(ICON.wallet),
-      el('span', { class: 'grow' }, el('strong', {}, t('earnTitle')), el('span', { class: 'small' }, 'Swiggy · Zomato · Rapido · Uber · Urban Company')),
-      icon(ICON.chevron, 'chev')),
     closing.length ? el('h2', {}, t('homeClosing')) : null,
     closing.length ? el('div', { class: 'hscroll' }, ...closing.map((e) => {
       const left = daysBetween(today, e.applyTo);
@@ -1243,7 +1266,7 @@ async function route() {
   else if (tab === 'exams') await viewExams(root);
   else if (view === 'check') await viewCheck(root, arg && decodeURIComponent(arg));
   else if (view === 'saved') await viewSaved(root);
-  else if (view === 'earn') viewEarn(root);
+  else if (view === 'earn') await viewEarn(root, arg && decodeURIComponent(arg));
   else if (tab === 'forme') await viewForMe(root);
   else if (tab === 'result') await viewResult(root);
   else if (tab === 'more') await viewMore(root);
