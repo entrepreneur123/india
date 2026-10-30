@@ -960,10 +960,23 @@ class Site:
         f.write_text(page, encoding="utf-8")
 
     # ---- Maharashtra (other state lotteries) ----
+    @staticmethod
+    def mh_local(d: dict) -> str:
+        """The game's Marathi name from the official list ('महाराष्ट्र अक्षय साप्ताहिक सोडत' -> 'अक्षय'),
+        as Hindi and Marathi readers type it; known typos of the list fixed."""
+        local = re.sub(r"^महाराष्ट्र\s*|\s*(साप्ताहिक|मासिक|बंपर)?\s*(सोडत|सेाडत)\s*$", "", d.get("nameLocal", "").strip())
+        local = local.replace("सहृयाद्री", "सह्याद्री").strip()
+        return local if local and not re.search(r"[A-Za-z]", local) and not re.search(r"[\u0900-\u097F]", d["name"]) else ""
+
+    def mh_name(self, lang: str, d: dict) -> str:
+        """'Gajlaxmi Ravi'; in Hindi 'गजलक्ष्मी रवि (Gajlaxmi Ravi)'."""
+        name = d["name"].removeprefix("Maharashtra ")
+        local = self.mh_local(d) if lang == "hi" else ""
+        return f"{local} ({name})" if local else name
+
     def mh_game(self, lang: str, d: dict) -> str:
         """'Maharashtra Gajlaxmi Ravi' + weekly -> 'Gajlaxmi Ravi Weekly' (English names, as printed)."""
-        name = d["name"].removeprefix("Maharashtra ")
-        return f'{name} {MH[lang].get(d.get("kind", ""), "")}'.strip()
+        return f'{self.mh_name(lang, d)} {MH[lang].get(d.get("kind", ""), "")}'.strip()
 
     def mh_title(self, lang: str, d: dict) -> str:
         m = MH[lang]
@@ -1100,7 +1113,7 @@ class Site:
         s, w, m = self.s[lang], WEB[lang], MH[lang]
         for path, draws in self.mh_games().items():
             latest = draws[0]
-            name = latest["name"].removeprefix("Maharashtra ")
+            name = self.mh_name(lang, latest)
             kind = m.get(latest.get("kind", ""), "")
             d0 = ddmmyyyy(latest["date"])
             days = {dt.date.fromisoformat(d["date"]).weekday() for d in draws}

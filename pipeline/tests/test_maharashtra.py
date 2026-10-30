@@ -178,3 +178,18 @@ def test_sheets_not_tried_yet_are_read_first(tmp_path, monkeypatch):
     assert order[-1] == first[0] and len(order) == 10   # tried once before: read last
     dates = [mh.list_sheets(page)[[u for _, _, u in mh.list_sheets(page)].index(x)][0] for x in order[:-1]]
     assert dates == sorted(dates, reverse=True)          # the others newest first
+
+
+def test_english_name_when_the_file_name_stops_at_the_game():
+    base = "https://lottery.maharashtra.gov.in/UploadFiles/"
+    assert mh.english_name(base + "1029202616592174929_10_2026_N_109_Mah.%20Akarshak%20Pushkraj_0001.pdf") == "Akarshak Pushkraj"
+    assert mh.english_name(base + "1029202617251935929_10_2026_N_111_Mah.Gajlaxmi%20Guru%20___0001.pdf") == "Gajlaxmi Guru"
+    assert mh.english_name(base + "10292026179675429_10_2026_N_110_Mah_%20Sahyadri%20Deeplaxmi__0001.pdf") == "Sahyadri Deeplaxmi"
+
+
+def test_draws_with_marathi_only_names_keep_distinct_ids():
+    import datetime as dt
+    day = dt.date(2026, 10, 29)
+    a = mh.entry(day, "https://x/1029202616592174929_10_2026_N_109_x.pdf", None, "महाराष्ट्र आकर्षक पुष्कराज साप्ताहिक सोडत")
+    b = mh.entry(day, "https://x/1029202617365231029_10_2026_N_112_x.pdf", None, "महाराष्ट्र गणेशलक्ष्मी गौरव साप्ताहिक सोडत")
+    assert a["id"] != b["id"] and not a["id"].endswith("_MH_")

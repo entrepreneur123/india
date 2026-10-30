@@ -1092,7 +1092,8 @@ KEEP_TRYING_DAYS = 3    # a sheet that does not read is retried by later runs fo
 def english_name(url: str) -> str | None:
     """The sheet's file name carries the English name: '... N 100 Mah. Tejaswini Monthly, Draw Result._0001.pdf'."""
     f = urllib.parse.unquote(url.rsplit("/", 1)[-1])
-    m = re.search(r"(?i)mah\s*[._]\s*(.+?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery)", f)
+    # Some files stop at the name: '... N_109_Mah. Akarshak Pushkraj_0001.pdf'.
+    m = re.search(r"(?i)mah\s*[._]\s*(.+?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
     if not m:
         return None
     words = re.sub(r"[^A-Za-z ]", " ", m.group(1)).split()
@@ -1124,7 +1125,8 @@ def download(url: str, timeout_s: int = 900) -> bytes:
 def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -> dict:
     name = english_name(url) or (" ".join(w.capitalize() for w in read_result["head"]["name"]) if read_result else listed_name)
     kind = "monthly" if "monthly" in url.lower() else "bumper" if "bumper" in url.lower() else "weekly"
-    d = {"id": f"{date.isoformat()}_MH_{slug(name).upper()}", "slot": "MH", "lottery": "maharashtra",
+    key = slug(name) or re.sub(r"\D", "", url.rsplit("/", 1)[-1])[:19]   # a Marathi-only name has no Latin slug
+    d = {"id": f"{date.isoformat()}_MH_{key.upper()}", "slot": "MH", "lottery": "maharashtra",
          "date": date.isoformat(), "state": "Maharashtra", "name": f"Maharashtra {name}", "kind": kind,
          "nameLocal": listed_name, "format": "MH4", "ocr": True, "verified": False,
          "sources": [{"kind": "officialPdf", "url": url}, {"kind": "officialSite", "url": LIST_URL}]}
