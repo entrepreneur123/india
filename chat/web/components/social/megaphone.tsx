@@ -190,7 +190,8 @@ export function MegaphoneSheet({ open, onClose }: { open: boolean; onClose: () =
       setText('')
       onClose()
     })
-  const has = (count ?? 0) > 0
+  // -1: unlimited (102)
+  const has = count === -1 || (count ?? 0) > 0
   return (
     <Modal open={open} onClose={onClose} title={t('mega.title')} description={t('mega.desc')} className="md:max-w-md">
       <form
@@ -204,7 +205,7 @@ export function MegaphoneSheet({ open, onClose }: { open: boolean; onClose: () =
           <span className="grid size-8 place-items-center rounded-full bg-[#ffc23d] text-[#3b2600]">
             <Megaphone className="size-4" aria-hidden />
           </span>
-          {count === undefined ? '…' : t('mega.left', { n: num(count) })}
+          {count === undefined ? '…' : t('mega.left', { n: count === -1 ? '∞' : num(count) })}
         </p>
         <div className="flex flex-col gap-1">
           <TextInput value={text} maxLength={MAX} placeholder={t('mega.placeholder')} onChange={(e) => setText(e.target.value)} aria-label={t('mega.placeholder')} />

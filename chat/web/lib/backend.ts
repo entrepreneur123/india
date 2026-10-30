@@ -949,7 +949,7 @@ export interface Backend {
   presencePing(online: boolean): void
   /** 088: called whenever a friend's presence may have changed. Returns the stop function. */
   friendSignals(on: () => void): () => void
-  /** 100: how many megaphones I have; sending uses one (errors: no_megaphone, slow_down, bad_request). */
+  /** 100: how many megaphones I have (-1: unlimited, 102); sending uses one (errors: no_megaphone, slow_down, bad_request). */
   megaphoneCount(): Promise<number>
   sendMegaphone(text: string): Promise<void>
   /** 100: megaphone lines in my country as they come; returns stop. */
