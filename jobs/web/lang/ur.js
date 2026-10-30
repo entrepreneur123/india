@@ -295,6 +295,7 @@ export default {
   state_OD: "اوڈیشا",
   state_KA: "کرناٹک",
   state_TN: "تمل ناڈو",
+  state_TG: "تلنگانہ",
   anySector: "تمام سیکٹر",
   anyState: "تمام ریاستیں",
   jobsSector: "{name} کی نوکریاں",

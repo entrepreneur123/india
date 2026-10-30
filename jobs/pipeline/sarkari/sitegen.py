@@ -204,7 +204,7 @@ HUBS = [  # slug, title ({y}: year), Hindi line, what it lists, filter
     ("police-jobs", "Police Vacancy {y} (Police Bharti): UP, Bihar, Haryana, CRPF and other CAPF, Delhi Police", "पुलिस भर्ती {y}", ("sector", "police")),
     ("railway-jobs", "Railway Jobs {y} (RRB): CEN notices, results, admit cards", "रेलवे भर्ती {y}: आरआरबी", ("sector", "railway")),
     ("ssc-jobs", "SSC {y}: CGL, CHSL, MTS, GD, CPO notices and results", "एसएससी {y}", ("sector", "ssc")),
-    ("psu-jobs", "PSU Jobs {y}: ONGC, Indian Oil, AAI recruitment notices", "सरकारी कंपनी (PSU) भर्ती {y}", ("sector", "psu")),
+    ("psu-jobs", "PSU Jobs {y}: ONGC, AAI, BPCL, NHPC, POWERGRID recruitment notices", "सरकारी कंपनी (PSU) भर्ती {y}", ("sector", "psu")),
     ("isro-recruitment", "ISRO Recruitment {y}: notifications and updates", "इसरो भर्ती {y}", ("sector", "science")),
     ("up-govt-jobs", "UP Govt Jobs {y} (Sarkari Naukri UP): UPPSC, UP Police and more", "यूपी सरकारी नौकरी {y}", ("state", "UP")),
     ("bihar-govt-jobs", "Bihar Govt Jobs {y}: BPSC, Bihar Police constable and SI vacancy", "बिहार सरकारी नौकरी {y}: बीपीएससी, बिहार पुलिस", ("state", "BR")),
@@ -219,7 +219,8 @@ HUBS = [  # slug, title ({y}: year), Hindi line, what it lists, filter
     ("odisha-govt-jobs", "Odisha Govt Jobs {y}: OSSSC notices and results", "ओडिशा सरकारी नौकरी {y}", ("state", "OD")),
     ("karnataka-govt-jobs", "Karnataka Govt Jobs {y}: KPSC notices", "कर्नाटक सरकारी नौकरी {y}", ("state", "KA")),
     ("tamil-nadu-govt-jobs", "Tamil Nadu Govt Jobs {y}: TN TRB teacher recruitment", "तमिलनाडु सरकारी नौकरी {y}", ("state", "TN")),
-    ("bank-jobs", "Bank Jobs {y}: SBI, IBPS and RBI notices, results, admit cards", "बैंक भर्ती {y}: एसबीआई, आईबीपीएस, आरबीआई", ("sector", "bank")),
+    ("telangana-govt-jobs", "Telangana Govt Jobs {y}: TGPSC notifications and updates", "तेलंगाना सरकारी नौकरी {y}", ("state", "TG")),
+    ("bank-jobs", "Bank Jobs {y}: SBI, IBPS, RBI, PNB, Bank of Baroda notices and results", "बैंक भर्ती {y}: एसबीआई, आईबीपीएस, आरबीआई", ("sector", "bank")),
     ("teacher-jobs", "Teacher Jobs {y}: CTET, UGC-NET and DSSSB teacher notices, exam dates and results", "शिक्षक भर्ती {y}: सीटेट", ("sector", "teaching")),
 ]
 

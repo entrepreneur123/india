@@ -295,6 +295,7 @@ export default {
   state_OD: "ಒಡಿಶಾ",
   state_KA: "ಕರ್ನಾಟಕ",
   state_TN: "ತಮಿಳುನಾಡು",
+  state_TG: "ತೆಲಂಗಾಣ",
   anySector: "ಎಲ್ಲಾ ವಲಯಗಳು",
   anyState: "ಎಲ್ಲಾ ರಾಜ್ಯಗಳು",
   jobsSector: "{name} ಉದ್ಯೋಗಗಳು",

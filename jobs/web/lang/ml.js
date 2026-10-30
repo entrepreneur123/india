@@ -295,6 +295,7 @@ export default {
   state_OD: "ഒഡീഷ",
   state_KA: "കർണാടക",
   state_TN: "തമിഴ്നാട്",
+  state_TG: "തെലങ്കാന",
   anySector: "എല്ലാ മേഖലകളും",
   anyState: "എല്ലാ സംസ്ഥാനങ്ങളും",
   jobsSector: "{name} ജോലികൾ",

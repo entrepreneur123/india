@@ -13,10 +13,10 @@ EXTRA = {"https://opportunities.rbi.org.in/Scripts/resultsnew.aspx": "rbi-result
 
 def page(url):
     if url in EXTRA:
-        return open(os.path.join(HERE, "fixtures", f"{EXTRA[url]}.html"), encoding="utf-8").read()
+        return open(os.path.join(HERE, "fixtures", f"{EXTRA[url]}.html"), encoding="utf-8", errors="replace").read()  # as page_text decodes
     for board in india.BOARDS:
         if url == board.NOTICE_PAGE:
-            return open(os.path.join(HERE, "fixtures", f"{board.SOURCE}.html"), encoding="utf-8").read()
+            return open(os.path.join(HERE, "fixtures", f"{board.SOURCE}.html"), encoding="utf-8", errors="replace").read()  # as page_text decodes
     raise AssertionError(url)
 
 
@@ -35,7 +35,7 @@ def test_reads_only_the_india_only_boards_into_its_own_file(tmp_path):
     assert min(i["publishedAt"] for i in doc["items"]) >= "2026-07-01"
     assert [i["publishedAt"] for i in doc["items"]] == sorted((i["publishedAt"] for i in doc["items"]), reverse=True)
     # Undated boards record their page on the first run and publish none of its undated entries.
-    assert set(doc["seen"]) == {b.SOURCE for b in india.BOARDS if b.undated} == {"sbi", "psssb", "iocl", "uppsc", "kpsc"}
+    assert set(doc["seen"]) == {b.SOURCE for b in india.BOARDS if b.undated} == {"sbi", "psssb", "iocl", "uppsc", "kpsc", "pgcil", "canara", "iob"}
     assert all(day == "" for days in doc["seen"].values() for day in days.values()) and len(doc["seen"]["sbi"]) == 82
     assert not any(i["source"] == "psssb" for i in doc["items"])
     assert not india.collect(str(tmp_path), page, NOW + dt.timedelta(minutes=30), warn=lambda _: None)  # no news: no commit
