@@ -17,6 +17,9 @@ import json
 import pathlib
 
 MARK = "<!-- lottodost-redirect -->"
+# Other apps that share the data branch and stay on github.io (they are not part of lottodost.com):
+# the government-jobs site under jobs/ has its own pages, canonical links and sitemap.
+OTHER_APPS = {"jobs"}
 
 
 def target(rel: pathlib.PurePosixPath, to: str) -> str:
@@ -51,7 +54,7 @@ def stub_tree(root: pathlib.Path, to: str, prefix: str) -> int:
     n = 0
     for f in sorted(root.rglob("*.html")):
         rel = pathlib.PurePosixPath(f.relative_to(root).as_posix())
-        if rel.parts[0].startswith("."):
+        if rel.parts[0].startswith(".") or rel.parts[0] in OTHER_APPS:
             continue
         f.write_text(stub_404(to, prefix) if str(rel) == "404.html" else stub(target(rel, to)), encoding="utf-8")
         n += 1

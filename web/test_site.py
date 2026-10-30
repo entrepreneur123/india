@@ -304,7 +304,14 @@ def test_github_copy_redirects_every_page_to_the_real_site(tmp_path, monkeypatch
     (out / "v2").mkdir()
     (out / "v2/today.json").write_text("{}")
     pages = sorted(out.rglob("*.html"))
+    (out / "jobs/exam/x").mkdir(parents=True)
+    jobs_pages = {out / "jobs/index.html": "<html>jobs app</html>", out / "jobs/exam/x/index.html": "<html>exam</html>"}
+    for f, text in jobs_pages.items():
+        f.write_text(text)
     assert redirect_stubs.stub_tree(out, "https://lottodost.com/", "/india") == len(pages)
+    assert all(f.read_text() == text for f, text in jobs_pages.items())  # the jobs app on the same branch is left alone
+    for f in jobs_pages:
+        f.unlink()
     home = (out / "index.html").read_text()
     assert '<meta http-equiv="refresh" content="0; url=https://lottodost.com/">' in home
     assert '<link rel="canonical" href="https://lottodost.com/">' in home
