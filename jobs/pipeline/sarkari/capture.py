@@ -110,6 +110,22 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "gsssb-notification": "https://gsssb.gujarat.gov.in/Notification",
     "tnusrb-press": "https://tnusrb.tn.gov.in/pressreleases.php",
     "tnpsc-home": "https://tnpsc.gov.in/home.aspx",
+    # Police and teacher boards that did not answer from outside India (30-10-2026); home pages, lists to be found in them.
+    "mp-esb-home-frame": "https://esb.mp.gov.in/home_n.html",
+    "mp-esb-leftmenu": "https://esb.mp.gov.in/leftmenu.html",
+    "rajasthan-police": "https://police.rajasthan.gov.in/",
+    "punjab-police": "https://www.punjabpolice.gov.in/",
+    "odisha-police": "https://odishapolice.gov.in/",
+    "ap-slprb": "https://slprb.ap.gov.in/",
+    "gujarat-gprb": "https://gprb.gujarat.gov.in/",
+    "karnataka-police": "https://ksp.karnataka.gov.in/",
+    "upessc": "https://upessc.up.gov.in/",
+    "rajasthan-bser": "https://rajeduboard.rajasthan.gov.in/",
+    "kea": "https://kea.kar.nic.in/",
+    "wbpsc-new": "https://psc.wb.gov.in/",
+    "assam-police": "https://police.assam.gov.in/",
+    "assam-rifles": "https://www.assamrifles.gov.in/",
+    "territorial-army": "https://jointerritorialarmy.gov.in/",
     "nabard-notices": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26",  # the list behind the careers page
     "kvs-recruitment": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/",  # "भर्ती" (recruitment), linked from KVS's home
     "uppsc": "https://uppsc.up.nic.in/",
@@ -146,7 +162,7 @@ SITES = {  # name -> home page (found with jobs-probe: none of these answer GitH
     "epfo": "https://www.epfindia.gov.in/",
     "india-post": "https://www.indiapost.gov.in/",
 }
-WORKERS = 8  # sites are fetched side by side (each from its own host): a slow one doesn't hold up the rest
+WORKERS = 12  # sites are fetched side by side (each from its own host): a slow one doesn't hold up the rest
 MAX_BYTES = 5_000_000
 _A = re.compile(r"""<a\b[^>]*?href\s*=\s*(["'])(.*?)\1[^>]*>(.*?)</a>""", re.S | re.I)
 
@@ -216,7 +232,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
-    # Two tries of 20 s, 8 sites at a time: 115 sites stay under 10 minutes even if every one hangs
+    # Two tries of 20 s, 12 sites at a time: 130 sites stay under 8 minutes even if every one hangs
     # (run.sh also calls this, inside the 25-minute limit of sarkari.service).
     index = capture(a.out, lambda u: http.get_bytes(u, retries=2, timeout=20, max_bytes=MAX_BYTES, headers=http.PAGE_HEADERS),
                     dt.date.today())

@@ -11,10 +11,13 @@ NOW = dt.datetime(2026, 10, 29, 12, tzinfo=ssc.IST)
 EXTRA = {"https://opportunities.rbi.org.in/Scripts/resultsnew.aspx": "rbi-results",
          "https://recruitment.itbpolice.nic.in/statics/results": "itbp-results",
          "https://psc.cg.gov.in/Advertisement.php": "cgpsc-advertisement", "https://psc.cg.gov.in/Result.php": "cgpsc-result",
-         "https://psc.cg.gov.in/Home_Welcome.php": "cgpsc-home"}  # boards read from two pages
+         "https://psc.cg.gov.in/Home_Welcome.php": "cgpsc-home"}
+EXTRA_FILES = {"https://www.tgprb.in/assets/index-C1RGemmW.js": "tgprb.js"}  # TGPRB's list is in the script its home page loads  # boards read from two pages
 
 
 def page(url):
+    if url in EXTRA_FILES:
+        return open(os.path.join(HERE, "fixtures", EXTRA_FILES[url]), encoding="utf-8", errors="replace").read()
     if url in EXTRA:
         return open(os.path.join(HERE, "fixtures", f"{EXTRA[url]}.html"), encoding="utf-8", errors="replace").read()  # as page_text decodes
     for board in india.BOARDS:
@@ -38,7 +41,7 @@ def test_reads_only_the_india_only_boards_into_its_own_file(tmp_path):
     assert min(i["publishedAt"] for i in doc["items"]) >= "2026-07-01"
     assert [i["publishedAt"] for i in doc["items"]] == sorted((i["publishedAt"] for i in doc["items"]), reverse=True)
     # Undated boards record their page on the first run and publish none of its undated entries.
-    assert set(doc["seen"]) == {b.SOURCE for b in india.BOARDS if b.undated} == {"sbi", "psssb", "iocl", "uppsc", "kpsc", "pgcil", "canara", "iob", "niacl", "nabard", "cgpsc", "hppsc"}
+    assert set(doc["seen"]) == {b.SOURCE for b in india.BOARDS if b.undated} == {"sbi", "psssb", "iocl", "uppsc", "kpsc", "pgcil", "canara", "iob", "niacl", "nabard", "cgpsc", "hppsc", "cisf", "wbprb"}
     assert all(day == "" for days in doc["seen"].values() for day in days.values()) and len(doc["seen"]["sbi"]) == 82
     assert not any(i["source"] == "psssb" for i in doc["items"])
     assert not india.collect(str(tmp_path), page, NOW + dt.timedelta(minutes=30), warn=lambda _: None)  # no news: no commit

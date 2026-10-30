@@ -320,6 +320,7 @@ export const EN = {
   state_CG: "Chhattisgarh",
   state_HP: "Himachal Pradesh",
   state_AP: "Andhra Pradesh",
+  state_WB: "West Bengal",
   anySector: "All sectors",
   anyState: "All states",
   jobsSector: "{name} jobs",

@@ -299,6 +299,7 @@ export default {
   state_CG: "छत्तीसगढ़",
   state_HP: "हिमाचल प्रदेश",
   state_AP: "आंध्र प्रदेश",
+  state_WB: "पश्चिम बंगाल",
   anySector: "सभी सेक्टर",
   anyState: "सभी राज्य",
   jobsSector: "{name} की नौकरियाँ",

@@ -299,6 +299,7 @@ export default {
   state_CG: "ఛత్తీస్‌గఢ్",
   state_HP: "హిమాచల్ ప్రదేశ్",
   state_AP: "ఆంధ్రప్రదేశ్",
+  state_WB: "పశ్చిమ బెంగాల్",
   anySector: "అన్ని రంగాలు",
   anyState: "అన్ని రాష్ట్రాలు",
   jobsSector: "{name} జాబ్స్",

@@ -299,6 +299,7 @@ export default {
   state_CG: "ਛੱਤੀਸਗੜ੍ਹ",
   state_HP: "ਹਿਮਾਚਲ ਪ੍ਰਦੇਸ਼",
   state_AP: "ਆਂਧਰਾ ਪ੍ਰਦੇਸ਼",
+  state_WB: "ਪੱਛਮੀ ਬੰਗਾਲ",
   anySector: "ਸਾਰੇ ਸੈਕਟਰ",
   anyState: "ਸਾਰੇ ਰਾਜ",
   jobsSector: "{name} ਨੌਕਰੀਆਂ",

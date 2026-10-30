@@ -788,6 +788,66 @@
       "sectors": [
         "state"
       ]
+    },
+    "OSSC": {
+      "name": "OSSC: Odisha combined graduate, technical and other state posts",
+      "hi": "ओडिशा कर्मचारी चयन आयोग (OSSC) भर्ती",
+      "short": "OSSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "ossc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "OPSC": {
+      "name": "OPSC: Odisha civil services, medical officers, lecturers and other state posts",
+      "hi": "ओडिशा लोक सेवा आयोग (OPSC) भर्ती",
+      "short": "OPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "opsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "TGPRB": {
+      "name": "TGPRB: Telangana police constables, sub-inspectors and other posts",
+      "hi": "तेलंगाना पुलिस भर्ती बोर्ड (TGPRB) भर्ती",
+      "short": "TGPRB",
+      "qualifications": null,
+      "ref": null,
+      "source": "tgprb",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "CISF": {
+      "name": "CISF: constables, head constables, ASI and other posts",
+      "hi": "केंद्रीय औद्योगिक सुरक्षा बल (CISF) भर्ती",
+      "short": "CISF",
+      "qualifications": null,
+      "ref": null,
+      "source": "cisf",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "WBPRB": {
+      "name": "WBPRB: West Bengal police constables, sub-inspectors and other posts",
+      "hi": "पश्चिम बंगाल पुलिस भर्ती बोर्ड (WBPRB) भर्ती",
+      "short": "WBPRB",
+      "qualifications": null,
+      "ref": null,
+      "source": "wbprb",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
     }
   }
 }
