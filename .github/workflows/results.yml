@@ -142,6 +142,16 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           nosecret() { env -u FCM_SERVICE_ACCOUNT -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID "$@"; }
+          push_data() {
+            # jobs-publish.yml writes jobs/ on the same branch every ~15 min; it never touches our files, so
+            # a rebase is clean. Without this a rejected push stopped the run (30-10-2026: 1 PM result 3 h late).
+            for i in 1 2 3 4 5; do
+              git -C ../public push -q origin data && return 0
+              git -C ../public fetch -q origin data && git -C ../public rebase -q origin/data || git -C ../public rebase --abort || true
+              sleep $(( i * 3 ))
+            done
+            echo "::error::could not push to data after 5 tries"; return 1
+          }
           publish() {
             rm -rf ../public/v1                          # schema v1 was never shipped in an app
             touch ../public/.nojekyll                    # serve files as-is on GitHub Pages
@@ -158,7 +168,7 @@ jobs:
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
                 commit -q -m "results $(date -u +%FT%TZ)"
-              git -C ../public push -q origin data
+              push_data
               changed=1
             else
               changed=0
@@ -174,7 +184,7 @@ jobs:
             git -C ../public add -u
             if ! git -C ../public diff --cached --quiet; then
               git -C ../public -c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com" \
-                commit -q -m "announce state" && git -C ../public push -q origin data
+                commit -q -m "announce state" && push_data
             fi
             [ "$changed" = 1 ] || [ "$IN_DEPLOY" = "true" ] || [ "${flip_now:-0}" = 1 ] || return 0
             # Bing, Yandex and other IndexNow engines learn about the new pages at once (Google uses the sitemap).
