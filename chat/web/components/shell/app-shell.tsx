@@ -441,7 +441,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   return (
     <AppContext.Provider value={state}>
         <div className="min-h-dvh bg-background text-foreground">
-          <div className="mx-auto flex max-w-[1520px]">
+          {/* The whole width on wide screens (the owner, 2026-10-30): the middle column takes what is left over. */}
+          <div className="flex">
             <Sidebar className="hidden md:flex" />
             <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
               <MegaphoneBar shown={!hideTabs} />
@@ -539,8 +540,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
               </Suspense>
             ) : null}
             {wide && mini ? (
-              // Docked at the bottom, just left of the panel (the page is centred in at most 1520px).
-              <div className="fixed bottom-0 end-[max(21rem,calc((100vw-95rem)/2+21rem))] z-40 flex h-[min(560px,80dvh)] w-[360px] flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-background shadow-e3">
+              // Docked at the bottom, just left of the panel.
+              <div className="fixed bottom-0 end-[21rem] z-40 flex h-[min(560px,80dvh)] w-[360px] flex-col overflow-hidden rounded-t-2xl border border-b-0 border-border bg-background shadow-e3">
                 <ScreenBoundary key={mini.matchId}>
                   <Suspense fallback={<ScreenLoading />}>
                     <ThreadScreen thread={mini} onClose={closeMini} docked />
