@@ -98,7 +98,8 @@ function toggleSave(item, btn) {
   if (s[item.id]) delete s[item.id]; else s[item.id] = item;
   store.set('saved', s);
   toast(t(s[item.id] ? 'toastSaved' : 'toastRemoved'));
-  btn.querySelector('span').textContent = t(s[item.id] ? 'saved' : 'save');
+  const label = btn.querySelector('span'); // icon-only buttons have none
+  if (label) label.textContent = t(s[item.id] ? 'saved' : 'save');
   btn.setAttribute('aria-label', t(s[item.id] ? 'saved' : 'save'));
   btn.setAttribute('aria-pressed', String(Boolean(s[item.id])));
 }
@@ -134,33 +135,60 @@ const sourceName = (i, families, sources) => {
   if (fam) return `${fam.source ? fam.short : i.exam}${i.examYear ? ` ${i.examYear}` : ''}`;
   return sources?.[i.source ?? 'ssc']?.short ?? (i.source ?? 'SSC').toUpperCase();
 };
+// Some boards write every headline in capitals ("RECRUITMENT OF SPECIALIST CADRE OFFICERS ON CONTRACT BASIS"), which
+// reads as shouting on a phone. Only for display: short all-capital words stay as they are (SBI, CRPD, TGT, PO).
+const ACRONYMS = new Set(['ITI', 'AIIMS', 'IIT', 'NIT', 'UGC', 'NET', 'OBC', 'EWS', 'PET', 'PST', 'CBT', 'ESIC', 'IOCL', 'ONGC', 'NTPC', 'DRDO',
+  'ISRO', 'BECIL', 'UPPSC', 'TNPSC', 'APPSC', 'HPPSC', 'CGPSC', 'AAI', 'NIACL', 'ICAR', 'NEET', 'JEE', 'CUET', 'TNTET', 'CTET', 'TET', 'CAPF', 'ITBP',
+  'CISF', 'NABARD', 'EPFO', 'UPSSSC', 'OSSSC', 'TGPSC', 'UKPSC', 'MPPSC', 'NDRF', 'UPESSC', 'SLPRB', 'TGPRB', 'WBPSC', 'WBPRB', 'PSSSB', 'DSSSB', 'UKSSSC',
+  'OPSC', 'OSSC', 'KPSC', 'GPSC', 'PPSC', 'HPSC', 'HSSC', 'BPSC', 'BSSC', 'RPSC', 'RSSB', 'IBPS', 'POWERGRID', 'NHPC', 'BPCL', 'GDS', 'MTS', 'PDF', 'SBI', 'UPSC', 'SCO', 'SO', 'PO', 'BEL', 'HAL', 'SAIL', 'BHEL', 'GAIL', 'LIC', 'NIA',
+  'NCERT', 'CBSE', 'KVS', 'NVS', 'EMRS', 'IDBI', 'UCO', 'BOB', 'PNB', 'RBI', 'SEBI', 'SIDBI', 'EXIM', 'IREL', 'NALCO', 'MECON', 'RITES', 'IRCON', 'IRCTC',
+  'CEL', 'ECIL', 'BARC', 'NPCIL', 'JIPMER', 'PGIMER', 'NHM', 'ANM', 'GNM', 'ASI', 'SI', 'HC', 'TGT', 'PGT', 'PRT', 'DA', 'TA', 'UP', 'MP', 'HP',
+  'AP', 'TN', 'UK', 'II', 'III', 'IV', 'VI', 'VII', 'VIII', 'IX', 'XI', 'XII', 'OTR', 'DV', 'DME', 'AE', 'JE', 'AEE', 'NHAI', 'CAG', 'IAS', 'IPS', 'IFS']);
+const SMALL_WORDS = new Set(['of', 'the', 'for', 'and', 'in', 'on', 'to', 'at', 'by', 'from', 'with', 'as', 'a', 'an', 'or', 'under', 'into']);
+function tidyTitle(title, lang) {
+  const letters = title.replace(/[^A-Za-z]/g, '');
+  if (lang !== 'en' || title.length < 25 || letters.length < 15 || letters.replace(/[^A-Z]/g, '').length < letters.length * 0.7) return title;
+  let first = true;
+  return title.replace(/[A-Za-z][A-Za-z'’]*/g, (w) => {
+    const low = w.toLowerCase();
+    // Words already in mixed case ("Notification") are kept; only all-capital ones are softened. Acronyms stay:
+    // known ones (AIIMS, SBI, CTET) and words without a vowel (CRPD, SSC, RRB).
+    const keep = ACRONYMS.has(w) || !/[AEIOUY]/.test(w);
+    const out = w !== w.toUpperCase() ? w : !first && SMALL_WORDS.has(low) ? low : keep ? w : w[0] + w.slice(1).toLowerCase();
+    first = false;
+    return out;
+  });
+}
 function itemCard(i, { isNew = false, families = {}, sources = {} } = {}) {
-  const official = i.files.map((f) => safeUrl(f.url)).find(Boolean) ?? (i.link ? safeUrl(i.link) : null);
+  const files = i.files.map((f) => ({ ...f, href: safeUrl(f.url) })).filter((f) => f.href);
+  const page = i.link ? safeUrl(i.link) : null;
+  const official = files[0]?.href ?? page;
   const isSaved = Boolean(savedItems()[i.id]);
-  const saveBtn = el('button', { class: 'act', type: 'button', 'aria-pressed': String(isSaved), 'aria-label': t(isSaved ? 'saved' : 'save') },
-    icon(ICON.bookmark), el('span', {}, t(isSaved ? 'saved' : 'save')));
+  const saveBtn = el('button', { class: 'ibtn', type: 'button', 'aria-pressed': String(isSaved), 'aria-label': t(isSaved ? 'saved' : 'save') },
+    icon(ICON.bookmark));
   saveBtn.addEventListener('click', () => toggleSave(i, saveBtn));
   const text = () => t('shareText', { title: i.title, url: official, app: t('appName') });
+  const title = tidyTitle(i.title, i.lang);
+  const acts = el('div', { class: 'iacts' }, saveBtn,
+    official ? el('button', { class: 'ibtn wa', type: 'button', 'aria-label': t('shareWhatsapp'), onclick: () => shareWhatsApp(text()) }, icon(ICON.whatsapp)) : null);
   return el('li', { class: `item k-${i.kind}` },
-    el('span', { class: 'kicon', 'aria-hidden': 'true' }, icon(ICON[KIND_ICON[i.kind]] ?? ICON.bell)),
-    el('div', { class: 'grow' },
+    el('div', { class: 'ihead' },
       el('div', { class: 'meta' },
         isNew ? el('span', { class: 'badge-new' }, t('newBadge')) : null,
         el('span', { class: 'label' }, t(`kind_${i.kind}`)),
         i.exam && i.exam !== 'LDCE' ? el('a', { href: `#exam/${i.exam}`, title: families[i.exam]?.name ?? '' }, sourceName(i, families, sources))
           : el('span', {}, sourceName(i, families, sources)),
         // Some boards give only the day; showing midnight as a time would be invented.
-        el('time', { datetime: i.dateOnly ? i.publishedAt.slice(0, 10) : i.publishedAt }, i.dateOnly ? day(i.publishedAt.slice(0, 10)) : `${when(i.publishedAt)} ${t('ist')}`)),
-      el('h3', { lang: i.lang }, i.title),
-      el('div', { class: 'files' },
-        ...i.files.map((f) => {
-          const href = safeUrl(f.url);
-          return href ? el('a', { href, rel: 'noopener', target: '_blank' }, icon(ICON.file), `${t('pdf')}: ${f.name}${size(f.size)}`) : null;
-        }),
-        i.link && safeUrl(i.link) ? el('a', { href: safeUrl(i.link), rel: 'noopener', target: '_blank' }, icon(ICON.external), t('officialPage')) : null),
-      el('div', { class: 'acts' }, saveBtn,
-        official ? el('button', { class: 'act wa', type: 'button', onclick: () => shareWhatsApp(text()) }, icon(ICON.whatsapp), el('span', {}, t('shareWhatsapp'))) : null,
-        official && navigator.share ? el('button', { class: 'act', type: 'button', 'aria-label': t('share'), onclick: () => share(i.title, official) }, icon(ICON.share)) : null)));
+        el('time', { datetime: i.dateOnly ? i.publishedAt.slice(0, 10) : i.publishedAt }, i.dateOnly ? day(i.publishedAt.slice(0, 10)) : `${when(i.publishedAt)} ${t('ist')}`),
+        files.length === 1 && !page ? el('span', { class: 'ftype' }, `${t('pdf')}${size(files[0].size)}`) : null),
+      acts),
+    // The headline opens the official file (or page): one clear action instead of a row of buttons.
+    el('h3', { lang: i.lang, title: title !== i.title ? i.title : null },
+      official ? el('a', { href: official, rel: 'noopener', target: '_blank' }, title) : title),
+    files.length > 1 || (files.length && page) ? el('div', { class: 'files' },
+      ...files.map((f, n) => el('a', { href: f.href, rel: 'noopener', target: '_blank' }, icon(ICON.file),
+        `${t('pdf')}${files.length > 1 ? ` ${n + 1}` : ''}${size(f.size)}`)),
+      page ? el('a', { href: page, rel: 'noopener', target: '_blank' }, icon(ICON.external), t('officialPage')) : null) : null);
 }
 
 // ---------- All updates, filtered (#jobs, #jobs/kind/result, #jobs/sector/police, #jobs/state/BR) ----------
@@ -992,15 +1020,13 @@ async function viewHome(root) {
       new Intl.DateTimeFormat(locale(), { month: 'short', timeZone: 'UTC' }).format(d)];
   };
   const latestBox = el('div', {}, ...skeleton());
+  const topBox = el('div', {}, ...skeleton());
   const channels = el('div');
   fill(root,
     el('label', { class: 'searchbox' }, icon(ICON.search), search),
-    el('nav', { class: 'quick', 'aria-label': t('homeLatest') }, ...quick.map(([href, ic, key]) => el('a', { href }, icon(ICON[ic]), t(key)))),
-    sectors.length ? el('h2', {}, t('homeSectors')) : null,
-    sectors.length ? el('div', { class: 'pills' }, ...sectors.map((x) => el('a', { class: 'pill', href: `#jobs/sector/${x}` }, t(`sector_${x}`)))) : null,
-    el('h2', {}, t('homeStates')),
-    el('div', { class: 'pills' }, el('a', { class: 'pill', href: '#jobs/state/central' }, t('centralJobs')),
-      ...states.map((x) => el('a', { class: 'pill', href: `#jobs/state/${x}` }, stateName(x)))),
+    el('nav', { class: 'pills quick-row', 'aria-label': t('homeLatest') }, ...quick.map(([href, ic, key]) => el('a', { class: 'pill', href }, icon(ICON[ic]), t(key)))),
+    // What most people come for, first: the sectors with the most applicants, each with its newest main updates.
+    el('h2', {}, t('homeTop')), topBox,
     closing.length ? el('h2', {}, t('homeClosing')) : null,
     closing.length ? el('div', { class: 'hscroll' }, ...closing.map((e) => {
       const left = daysBetween(today, e.applyTo);
@@ -1019,6 +1045,11 @@ async function viewHome(root) {
             el('strong', {}, now ? t('onNow') : daysBetween(today, x.from) === 0 ? t('today') : t('inDays', { n: daysBetween(today, x.from) })))),
         icon(ICON.chevron, 'chev')));
     })) : null,
+    sectors.length ? el('h2', {}, t('homeSectors')) : null,
+    sectors.length ? el('div', { class: 'pills' }, ...sectors.map((x) => el('a', { class: 'pill', href: `#jobs/sector/${x}` }, t(`sector_${x}`)))) : null,
+    el('h2', {}, t('homeStates')),
+    el('div', { class: 'pills' }, el('a', { class: 'pill', href: '#jobs/state/central' }, t('centralJobs')),
+      ...states.map((x) => el('a', { class: 'pill', href: `#jobs/state/${x}` }, stateName(x)))),
     el('div', { class: 'sec-head' }, el('h2', {}, t('homeLatest')),
       el('a', { class: 'more-link', href: '#jobs/kind/all' }, t('moreUpdates'), icon(ICON.chevron))),
     latestBox,
@@ -1040,10 +1071,18 @@ async function viewHome(root) {
   try {
     const feed = await feedP;
     const lastSeen = store.get('lastSeen', null);
+    const isNew = (i) => lastSeen !== null && i.publishedAt > lastSeen;
+    // latest.json "top": [{sector, items}] in the order of how many people apply (build.TOP_SECTORS); an older site has none.
+    const groups = (feed.top ?? []).filter((g) => g.items?.length);
+    fill(topBox, ...(groups.length ? groups.map((g) => el('section', { class: 'topgrp' },
+      el('div', { class: 'sec-head small-head' }, el('h3', {}, t(`sector_${g.sector}`)),
+        el('a', { class: 'more-link', href: `#jobs/sector/${g.sector}` }, t('seeAll'), icon(ICON.chevron))),
+      el('ul', { class: 'rowlist' }, ...g.items.map((i) => itemCard(i, { isNew: isNew(i), families, sources })))))
+      : [el('p', { class: 'small' }, t('nothing'))]));
     const latest = feed.items.filter((i) => oneCopy(i) && i.exam !== 'LDCE').slice(0, 8);
     fill(latestBox, el('ul', { class: 'rowlist' },
-      ...latest.map((i) => itemCard(i, { isNew: lastSeen !== null && i.publishedAt > lastSeen, families, sources }))));
-  } catch (e) { fill(latestBox, errorBox(e)); }
+      ...latest.map((i) => itemCard(i, { isNew: isNew(i), families, sources }))));
+  } catch (e) { fill(latestBox, errorBox(e)); fill(topBox); }
 }
 
 // ---------- Saved ----------

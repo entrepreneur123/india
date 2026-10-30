@@ -27,6 +27,8 @@ export const EN = {
   loading: "Loading…",
   homeComing: "Exam dates in the next 30 days",
   homeLatest: "Latest updates",
+  homeTop: "Most searched jobs",
+  seeAll: "See all",
   inDays: "in {n} days",
   onNow: "on now",
   today: "today",

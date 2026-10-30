@@ -6,6 +6,8 @@ export default {
   loading: "লোড হৈ আছে…",
   homeComing: "অহা 30 দিনৰ পৰীক্ষাৰ তাৰিখ",
   homeLatest: "শেহতীয়া আপডেট",
+  homeTop: "আটাইতকৈ বেছি বিচৰা চাকৰি",
+  seeAll: "সকলো চাওক",
   inDays: "{n} দিনৰ পিছত",
   onNow: "চলি আছে",
   today: "আজি",
