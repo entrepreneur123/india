@@ -17,6 +17,7 @@ import { PostGrid } from '@/components/screens/me/post-grid'
 import { FriendContacts } from '@/components/social/contacts'
 import { ProfileHero, ProfileStat } from '@/components/social/profile-bits'
 import { Highlights } from '@/components/social/highlights'
+import { PeopleSheet, type PeopleKind } from '@/components/social/people-sheet'
 import { useTrust } from '@/components/trust/badge'
 import { MannerCard } from '@/components/trust/trust-cards'
 import { cn } from '@/lib/utils'
@@ -249,8 +250,10 @@ export function ProfileContent({
   const { t, num } = useI18n()
   const backend = useBackend()
   const { data: social } = useSWR(socialKey(profile.id), () => backend.profileSocial(profile.id))
+  const [people, setPeople] = useState<PeopleKind | null>(null)
   return (
     <>
+      <PeopleSheet userId={profile.id} owner={profile.name} kind={people} onKind={setPeople} onClose={() => setPeople(null)} />
       <ProfileHero
         profile={profile}
         verified={!!trust?.verified}
@@ -258,8 +261,8 @@ export function ProfileContent({
         slot={slot}
         stats={
           <>
-            <ProfileStat n={social ? num(social.likes) : '–'} label={t('profile.likes')} />
-            <ProfileStat n={social ? num(social.friends) : '–'} label={t('profile.friends')} />
+            <ProfileStat n={social ? num(social.likes) : '–'} label={t('profile.likes')} onClick={() => setPeople('likers')} />
+            <ProfileStat n={social ? num(social.friends) : '–'} label={t('profile.friends')} onClick={() => setPeople('friends')} />
           </>
         }
       />

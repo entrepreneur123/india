@@ -57,13 +57,13 @@ export function AccentAvatar({
   )
 }
 
-/** A count over its word, as Instagram's posts / followers / following. */
-export function ProfileStat({ n, label }: { n: string; label: string }) {
+/** A count over its word, as Instagram's posts / followers / following; a tap opens the people behind it. */
+export function ProfileStat({ n, label, onClick }: { n: string; label: string; onClick?: () => void }) {
   return (
-    <span className="flex min-w-16 flex-col items-center leading-tight">
+    <button type="button" onClick={onClick} disabled={!onClick} className="flex min-w-16 flex-col items-center rounded-lg px-1 leading-tight enabled:active:opacity-60">
       <span className="text-[17px] font-bold tabular-nums">{n}</span>
       <span className="text-[13px] text-muted-foreground">{label}</span>
-    </span>
+    </button>
   )
 }
 

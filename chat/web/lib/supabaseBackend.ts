@@ -1001,6 +1001,10 @@ export class SupabaseBackend implements Backend {
     return this.personRows(await this.rpc<PersonRowRaw[] | null>('post_likers', { p_post: postId }))
   }
 
+  async profilePeople(userId: string, kind: 'friends' | 'likers' | 'liked'): Promise<PersonRow[]> {
+    return this.personRows(await this.rpc<PersonRowRaw[] | null>('profile_people', { p_user: userId, p_kind: kind }))
+  }
+
   async comments(postId: string, after?: number): Promise<PostComment[]> {
     const { COMMENTS_PAGE, mediaPaths, parseComment } = await this.social()
     const rows = await this.rpc<unknown>('comments_list', { p_post: postId, p_after: after ?? null, p_limit: COMMENTS_PAGE })

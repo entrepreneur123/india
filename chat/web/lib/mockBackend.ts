@@ -908,7 +908,21 @@ export class MockBackend implements Backend {
     await wait(150)
     // As profile_social (066): someone in VIP takes messages from friends only.
     const vip = (p: Profile | null) => !!p && isVip(p) && this.friendMap.get(p.id) !== 'friends'
-    return { likes: (this.likedIds.has(userId) ? 1 : 0) + 12, friends: 8, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id && !vip(this.person(userId)) }
+    return { likes: this.peopleOf(userId, 'likers').length, friends: this.peopleOf(userId, 'friends').length, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id && !vip(this.person(userId)) }
+  }
+
+  /** As profile_people (098); profileSocial counts the same lists. */
+  private peopleOf(userId: string, kind: 'friends' | 'likers' | 'liked'): Profile[] {
+    const others = PEOPLE.filter((p) => p.id !== userId && !this.blocked.has(p.id) && !isVip(p)) // VIP stays out, as 098
+    const start = [...userId].reduce((h, c) => h + c.charCodeAt(0), 0) % others.length
+    const ring = [...others.slice(start), ...others.slice(0, start)]
+    const mine = kind === 'likers' && this.me && this.likedIds.has(userId) ? [this.me] : []
+    return [...mine, ...(kind === 'friends' ? ring.slice(0, 8) : kind === 'likers' ? ring.slice(2, 12) : ring.slice(6, 11))]
+  }
+
+  async profilePeople(userId: string, kind: 'friends' | 'likers' | 'liked') {
+    await wait(200)
+    return this.peopleOf(userId, kind).map((p) => this.personRow(p))
   }
 
   async likeProfile(userId: string, on: boolean) {

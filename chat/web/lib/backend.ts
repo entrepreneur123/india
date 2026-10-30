@@ -976,6 +976,8 @@ export interface Backend {
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>
   /** 080: who liked it, newest first (100 at most). */
   postLikers(postId: string): Promise<PersonRow[]>
+  /** 098: a profile's friends, who liked them, or whom they liked (newest first, 100 at most). */
+  profilePeople(userId: string, kind: 'friends' | 'likers' | 'liked'): Promise<PersonRow[]>
   /** Oldest first; `after`: the last comment's id, for more. */
   comments(postId: string, after?: number): Promise<PostComment[]>
   /** 1-300 characters, 10 a minute ('slow_down'). */
