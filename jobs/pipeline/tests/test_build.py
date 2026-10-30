@@ -331,3 +331,11 @@ def test_top_groups_show_one_update_per_exam_and_only_teacher_notices_from_mixed
     groups = {g["sector"]: [i["id"] for i in g["items"]] for g in build.top_groups(feed, fam, now)}
     assert groups["ssc"] == ["s1"] and "police" not in groups  # one per exam, in one group only
     assert groups["teaching"] == ["d2"] and groups["state"] == ["d1"]
+
+
+def test_exam_head_joins_spellings_of_one_exam_and_keeps_short_heads_apart():
+    tet = ("TAMIL NADU TEACHER ELIGIBILITY TEST FOR WORKING TEACHERS – OCTOBER-2026 - Notification",
+           "TAMILNADU TEACHER ELIGIBILITY TEST FOR WORKING TEACHERS - 01/2026 dated 13.02.2026 - CLICK HERE")
+    assert build._exam_head(tet[0]) == build._exam_head(tet[1])
+    assert build._exam_head("RRB CEN 08/2025: E-Call Letters") != build._exam_head("RRB CEN 01/2025: E-Call Letters")
+    assert build._exam_head("Result notice: Staff Nurse") != build._exam_head("Result notice: TGT (Hindi)")
