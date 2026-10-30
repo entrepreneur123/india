@@ -6,7 +6,7 @@
   "url": "https://afcat.cdac.in/"
  },
  "aiims-delhi": {
-  "bytes": 205516,
+  "bytes": 208472,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.aiims.edu/index.php/en/notices/recruitment/aiims-recruitment"
@@ -89,23 +89,35 @@
   "ok": false,
   "url": "https://www.bhel.com/recruitments"
  },
+ "bpcl": {
+  "date": "2026-10-30",
+  "error": "GET https://www.bharatpetroleum.in/careers/job-openings failed after 2 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://www.bharatpetroleum.in/careers/job-openings"
+ },
  "bpsc": {
-  "bytes": 296742,
+  "bytes": 296533,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/"
  },
  "bpsc-advertisement": {
-  "bytes": 232832,
+  "bytes": 232269,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/advertisement/"
  },
  "bpsc-whats-new": {
-  "bytes": 162918,
+  "bytes": 162340,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://bpsc.bihar.gov.in/whats-new/"
+ },
+ "bsf": {
+  "date": "2026-10-30",
+  "error": "GET https://rectt.bsf.gov.in/ failed after 2 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://rectt.bsf.gov.in/"
  },
  "bssc": {
   "bytes": 15098,
@@ -174,9 +186,9 @@
   "url": "https://rect.crpf.gov.in/"
  },
  "ctet": {
+  "bytes": 92515,
   "date": "2026-10-30",
-  "error": "GET https://ctet.nic.in/ failed after 2 attempts: <urlopen error _ssl.c:983: The handshake operation timed out>",
-  "ok": false,
+  "ok": true,
   "url": "https://ctet.nic.in/"
  },
  "drdo": {
@@ -186,7 +198,7 @@
   "url": "https://www.drdo.gov.in/drdo/careers"
  },
  "dsssb": {
-  "bytes": 77908,
+  "bytes": 77857,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/"
@@ -197,8 +209,14 @@
   "ok": true,
   "url": "https://dsssb.delhi.gov.in/dsssb-vacancies"
  },
+ "employment-news": {
+  "bytes": 64213,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://employmentnews.gov.in/NewEmp/AllJobs.aspx?k=All"
+ },
  "epfo": {
-  "bytes": 280622,
+  "bytes": 282750,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.epfindia.gov.in/"
@@ -216,16 +234,22 @@
   "url": "https://www.epfo.gov.in/recruitments/"
  },
  "esic": {
-  "bytes": 84946,
+  "bytes": 85099,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.esic.gov.in/recruitments"
  },
  "fci": {
-  "bytes": 292046,
+  "bytes": 292060,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://fci.gov.in/recruitments.php"
+ },
+ "fci-app": {
+  "bytes": 1794359,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://fci.gov.in/main.43358fbc0f97cc90.js"
  },
  "gprb-advts": {
   "bytes": 2623,
@@ -240,7 +264,7 @@
   "url": "https://gprb.gujarat.gov.in/latestupdate-list.htm"
  },
  "gpsc": {
-  "bytes": 445623,
+  "bytes": 455516,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://gpsc.gujarat.gov.in/"
@@ -282,13 +306,13 @@
   "url": "https://hppsc.hp.gov.in/HomeContent/NotificationsPV"
  },
  "hppsc-whatsnew": {
-  "bytes": 5787,
+  "bytes": 6888,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://hppsc.hp.gov.in/HomeContent/WhatsNewPV"
  },
  "hpsc": {
-  "bytes": 48787,
+  "bytes": 48627,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://hpsc.gov.in/"
@@ -312,7 +336,7 @@
   "url": "https://www.ibps.in/index.php/recruitment"
  },
  "india-post": {
-  "bytes": 403643,
+  "bytes": 402475,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.indiapost.gov.in/"
@@ -334,6 +358,12 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.indiapost.gov.in/vacancies"
+ },
+ "iocl": {
+  "date": "2026-10-30",
+  "error": "GET https://iocl.com/latest-job-opening failed after 2 attempts: HTTP Error 307: Temporary Redirect",
+  "ok": false,
+  "url": "https://iocl.com/latest-job-opening"
  },
  "itbp": {
   "bytes": 96932,
@@ -402,7 +432,7 @@
   "url": "https://kea.kar.nic.in/"
  },
  "kerala-psc": {
-  "bytes": 71396,
+  "bytes": 71003,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://keralapsc.gov.in/"
@@ -420,7 +450,7 @@
   "url": "https://ksp.karnataka.gov.in/info-3/%E0%B2%A8%E0%B3%87%E0%B2%AE%E0%B2%95%E0%B2%BE%E0%B2%A4%E0%B2%BF/kn"
  },
  "kvs": {
-  "bytes": 241961,
+  "bytes": 241973,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://kvsangathan.nic.in/"
@@ -430,6 +460,12 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://kvs.gov.in/%e0%a4%ad%e0%a4%b0%e0%a5%8d%e0%a4%a4%e0%a5%80/"
+ },
+ "lic": {
+  "bytes": 220831,
+  "date": "2026-10-30",
+  "ok": true,
+  "url": "https://licindia.in/careers"
  },
  "mp-esb": {
   "bytes": 14515,
@@ -498,7 +534,7 @@
   "url": "https://www.nabard.org/Hindi/careers-notices1.aspx?cid=693&id=26"
  },
  "navy": {
-  "bytes": 91709,
+  "bytes": 91356,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.joinindiannavy.gov.in/"
@@ -522,7 +558,7 @@
   "url": "https://nta.ac.in/"
  },
  "ntpc": {
-  "bytes": 1008687,
+  "bytes": 1017445,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://careers.ntpc.co.in/recruitment/"
@@ -544,6 +580,12 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://www.osssc.gov.in/"
+ },
+ "pib-upsc-rss": {
+  "date": "2026-10-30",
+  "error": "GET https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3 failed after 2 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3"
  },
  "ppsc": {
   "bytes": 1073147,
@@ -576,7 +618,7 @@
   "url": "https://sssb.punjab.gov.in/"
  },
  "rajasthan-bser": {
-  "bytes": 1893,
+  "bytes": 12354,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://rajeduboard.rajasthan.gov.in/"
@@ -588,25 +630,25 @@
   "url": "https://police.rajasthan.gov.in/"
  },
  "rbi-announcements": {
-  "bytes": 117843,
+  "bytes": 116817,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/resultsnew.aspx"
  },
  "rbi-vacancies": {
-  "bytes": 118136,
+  "bytes": 117110,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://opportunities.rbi.org.in/Scripts/Vacancies.aspx"
  },
  "rpsc": {
-  "bytes": 277122,
+  "bytes": 277941,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://rpsc.rajasthan.gov.in/"
  },
  "rpsc-ads": {
-  "bytes": 997006,
+  "bytes": 1007467,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://rpsc.rajasthan.gov.in/viewcommon?Slice=RA"
@@ -720,7 +762,7 @@
   "url": "https://ucobank.bank.in/en/job-opportunities"
  },
  "ukpsc": {
-  "bytes": 126357,
+  "bytes": 128389,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://psc.uk.gov.in/"
@@ -750,10 +792,16 @@
   "url": "https://upessc.up.gov.in/Home/Press_Release"
  },
  "uppsc": {
-  "bytes": 158951,
+  "bytes": 161046,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://uppsc.up.nic.in/"
+ },
+ "upsc": {
+  "date": "2026-10-30",
+  "error": "GET https://www.upsc.gov.in/ failed after 2 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://www.upsc.gov.in/"
  },
  "upsc-eadmit": {
   "bytes": 2787,
@@ -772,6 +820,12 @@
   "date": "2026-10-30",
   "ok": true,
   "url": "https://upsconline.gov.in/oraadmitcard/"
+ },
+ "upsc-whats-new": {
+  "date": "2026-10-30",
+  "error": "GET https://www.upsc.gov.in/whats-new failed after 2 attempts: HTTP Error 403: Forbidden",
+  "ok": false,
+  "url": "https://www.upsc.gov.in/whats-new"
  },
  "upsssc": {
   "bytes": 17618,
@@ -804,7 +858,7 @@
   "url": "https://upsssc.gov.in/GroupNews.aspx?id=6"
  },
  "wb-police": {
-  "bytes": 44671,
+  "bytes": 45489,
   "date": "2026-10-30",
   "ok": true,
   "url": "https://prb.wb.gov.in/"
