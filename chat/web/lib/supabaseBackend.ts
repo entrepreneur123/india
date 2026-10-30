@@ -240,7 +240,7 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
   }
 }
 type VoiceMessageRow = {
-  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo' | 'poll'; body: string | null
+  id: number; room_id: string; sender: string; kind: 'text' | 'system' | 'reaction' | 'icebreaker' | 'photo' | 'poll' | 'audio'; body: string | null
   media_path: string | null
   payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
   sender_photo: string | null; sender_country: string | null; created_at: string
@@ -302,7 +302,7 @@ const groupKind = (k: string): GroupLineKind => (GROUP_KINDS.includes(k as Group
 const toGroupLine = (r: GroupRow): GroupLine => ({ id: Number(r.id), senderId: r.sender, kind: groupKind(r.kind), body: r.body, at: time(r.created_at), clientId: r.client_id ?? null })
 
 /** The chat's lines (reactions come over realtime only). */
-const LINE_KINDS = ['text', 'system', 'photo', 'poll']
+const LINE_KINDS = ['text', 'system', 'photo', 'poll', 'audio']
 
 /** The server writes app languages in lower case (pt-br). */
 const appLang = (l: string | null | undefined) => (l === 'pt-br' ? 'pt-BR' : l ?? null)
@@ -1516,10 +1516,19 @@ export class SupabaseBackend implements Backend {
     return (await this.toVoiceLines([row]))[0]
   }
 
-  async sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine> {
-    if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
-    const path = await this.upload(photo, 'rooms')
-    const row = await this.rpc<VoiceMessageRow>('voice_photo', { p_room: roomId, p_path: path })
+  sendVoicePhoto(roomId: string, photo: File) {
+    return this.voiceMedia(roomId, photo, 'image/', 'voice_photo')
+  }
+
+  sendVoiceAudio(roomId: string, clip: File) {
+    return this.voiceMedia(roomId, clip, 'audio/', 'voice_audio')
+  }
+
+  /** A photo or a voice message: uploaded to the rooms folder, then posted by its function (which checks the file). */
+  private async voiceMedia(roomId: string, file: File, type: string, fn: 'voice_photo' | 'voice_audio'): Promise<VoiceLine> {
+    if (!file.type.startsWith(type)) throw new BackendError('bad_media')
+    const path = await this.upload(file, 'rooms')
+    const row = await this.rpc<VoiceMessageRow>(fn, { p_room: roomId, p_path: path })
     return (await this.toVoiceLines([row]))[0]
   }
 
@@ -2366,7 +2375,7 @@ export class SupabaseBackend implements Backend {
   private async toVoiceLines(rows: VoiceMessageRow[]): Promise<VoiceLine[]> {
     const me = this.uid
     // One request signs every face and photo in the batch.
-    await this.signMany(rows.flatMap((r) => (r.kind === 'text' || r.kind === 'photo' || r.kind === 'poll' ? [r.sender_photo, r.media_path] : [])))
+    await this.signMany(rows.flatMap((r) => (r.kind === 'text' || r.kind === 'photo' || r.kind === 'poll' || r.kind === 'audio' ? [r.sender_photo, r.media_path] : [])))
     return rows.flatMap((r): VoiceLine[] => {
       const at = time(r.created_at)
       const sender = () => this.cardProfile({
@@ -2376,9 +2385,9 @@ export class SupabaseBackend implements Backend {
       if (r.kind === 'text') {
         return [{ id: r.id, kind: 'text', fromMe: r.sender === me, text: r.body ?? '', at, sender: sender(), reply: parseReply(r.payload) }]
       }
-      if (r.kind === 'photo') {
+      if (r.kind === 'photo' || r.kind === 'audio') {
         const url = r.media_path ? this.signedUrls.get(r.media_path)?.url : undefined
-        return url ? [{ id: r.id, kind: 'photo', fromMe: r.sender === me, url, at, sender: sender() }] : [] // no longer readable
+        return url ? [{ id: r.id, kind: r.kind, fromMe: r.sender === me, url, at, sender: sender() }] : [] // no longer readable
       }
       if (r.kind === 'poll') {
         const p = r.payload ?? {}

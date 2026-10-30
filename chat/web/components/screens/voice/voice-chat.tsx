@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, Check, CheckCheck, EyeOff, ImagePlus, LoaderCircle, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
+import { ArrowDown, Check, CheckCheck, EyeOff, ImagePlus, LoaderCircle, Mic, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
 import { pollPercents } from '@/lib/voice-polls'
@@ -14,6 +14,7 @@ import { useBackend } from '@/lib/backend-context'
 import { PollIcon } from '@/components/ui/topic-icons'
 import { Bubble, MediaBubble, MetaSpacer, SeeAll, TypingDots, fold, useLineActions } from '@/components/screens/chat/message-bubble'
 import { MessageMenu } from '@/components/screens/chat/message-menu'
+import { AudioBubble, canRecord, VoiceRecorder } from '@/components/screens/chat/voice-note'
 import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
 import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
@@ -23,7 +24,7 @@ import { LookName, useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
 
 
-type Sent = Extract<VoiceLine, { kind: 'text' | 'photo' }>
+type Sent = Extract<VoiceLine, { kind: 'text' | 'photo' | 'audio' }>
 
 /** A swipe this far to the right answers the line (WhatsApp); a press this long does too. */
 const SWIPE_PX = 56
@@ -182,7 +183,8 @@ export function VoiceChat({
                     </SwipeRow>
                   )
                 case 'text':
-                case 'photo': {
+                case 'photo':
+                case 'audio': {
                   const grouped = line.kind === 'text' && prev?.kind === 'text' && prev.sender.id === line.sender.id && !line.reply
                   return (
                     <SentLine
@@ -227,7 +229,7 @@ export function VoiceChat({
   )
 }
 
-/** Someone's text or photo in the room; its menu (long press, right click) replies or copies. */
+/** Someone's text, photo or voice message in the room; its menu (long press, right click) replies or copies. */
 function SentLine({
   line,
   grouped,
@@ -268,9 +270,11 @@ function SentLine({
   const sender = room ? memberOf(room, line.sender.id) : null
   const role = sender ? roleLabel(sender, t) : null
   const replyLabel = rt('replyTo', { name: line.sender.name })
+  // voice_send2 quotes texts, photos and polls: a voice message isn't answered.
+  const reply = line.kind === 'audio' ? undefined : () => onReply(line)
   const name =
     line.fromMe || grouped ? null : (
-      <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind === 'photo' && 'px-1.5')}>
+      <span className={cn('flex max-w-full min-w-0 items-center gap-1.5', line.kind !== 'text' && 'px-1.5')}>
         {/* The sender's decorated @ID (040); their name in its steady colour until the ID is known. */}
         <button
           type="button"
@@ -296,13 +300,13 @@ function SentLine({
       line={line}
       grouped={grouped}
       flash={flash}
-      onReply={() => onReply(line)}
+      onReply={reply}
       label={replyLabel}
       onMenu={() => setMenu(true)}
       menu={
         menu ? (
           <MessageMenu
-            actions={[{ icon: <Reply className="size-4.5 rtl:-scale-x-100" aria-hidden />, label: rt('reply'), onClick: () => onReply(line) }, ...actions]}
+            actions={[...(reply ? [{ icon: <Reply className="size-4.5 rtl:-scale-x-100" aria-hidden />, label: rt('reply'), onClick: reply }] : []), ...actions]}
             label={t('tr.actions')}
             side={line.fromMe ? 'end' : 'start'}
             onClose={() => setMenu(false)}
@@ -317,7 +321,13 @@ function SentLine({
           <UserAvatar userId={line.sender.id} name={line.sender.name} src={line.sender.photoUrl} size={28} />
         </button>
       )}
-      {line.kind === 'photo' ? (
+      {line.kind === 'audio' ? (
+        <Bubble mine={line.fromMe} first={!grouped} skin={skin} className="p-1">
+          {name}
+          <AudioBubble url={line.url} mine={line.fromMe} />
+          <span className="flex items-center justify-end gap-0.5 px-2 pb-1 text-[10.5px] leading-none text-bubble-meta">{metaOf(!skin)}</span>
+        </Bubble>
+      ) : line.kind === 'photo' ? (
         <Bubble mine={line.fromMe} first={!grouped} skin={skin} className="p-1">
           {name}
           <div aria-label={t('photo.from', { name: line.sender.name })} role="group">
@@ -452,12 +462,13 @@ function SwipeRow({
   menu,
   children,
 }: {
-  line: Quotable
+  line: { id: number; fromMe: boolean }
   grouped: boolean
   flash: boolean
   /** A card in the middle of the chat (a poll), not a bubble on one side. */
   center?: boolean
-  onReply: () => void
+  /** Absent: the line can't be answered (no swipe, no button). */
+  onReply?: () => void
   label: string
   /** Long press / right click opens the line's menu (else a long press answers it). */
   onMenu?: () => void
@@ -494,7 +505,7 @@ function SwipeRow({
           start.current = null
           navigator.vibrate?.(12)
           if (onMenu) onMenu()
-          else onReply()
+          else onReply?.()
         }, PRESS_MS)
         start.current = { x: e.clientX, y: e.clientY, timer, rtl: getComputedStyle(e.currentTarget).direction === 'rtl' }
       }}
@@ -505,11 +516,11 @@ function SwipeRow({
         const x = (e.clientX - s.x) * (s.rtl ? -1 : 1)
         const y = e.clientY - s.y
         if (Math.abs(x) > 6 || Math.abs(y) > 6) clearTimeout(s.timer)
-        if (Math.abs(y) > Math.abs(x)) return
+        if (Math.abs(y) > Math.abs(x) || !onReply) return
         setDx(Math.max(0, Math.min(x, SWIPE_PX + 16)))
       }}
       onPointerUp={() => {
-        if (dx >= SWIPE_PX) onReply()
+        if (dx >= SWIPE_PX) onReply?.()
         end()
       }}
       onPointerCancel={end}
@@ -544,18 +555,20 @@ function SwipeRow({
         </span>
       ) : null}
       {children}
-      <button
-        type="button"
-        onClick={onReply}
-        aria-label={label}
-        title={label}
-        className={cn(
-          'grid shrink-0 place-items-center self-center rounded-full text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:hidden',
-          center ? 'absolute -top-3 inset-e-4 z-10 size-8 bg-card shadow-e2 ring-1 ring-border' : 'size-8 hover:bg-muted',
-        )}
-      >
-        <Reply className="size-4 rtl:-scale-x-100" aria-hidden />
-      </button>
+      {onReply ? (
+        <button
+          type="button"
+          onClick={onReply}
+          aria-label={label}
+          title={label}
+          className={cn(
+            'grid shrink-0 place-items-center self-center rounded-full text-muted-foreground opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:hidden',
+            center ? 'absolute -top-3 inset-e-4 z-10 size-8 bg-card shadow-e2 ring-1 ring-border' : 'size-8 hover:bg-muted',
+          )}
+        >
+          <Reply className="size-4 rtl:-scale-x-100" aria-hidden />
+        </button>
+      ) : null}
       {menu}
     </m.li>
   )
@@ -708,6 +721,7 @@ function PollCard({
 export function VoiceComposer({
   onSend,
   onPhoto,
+  onVoice,
   onPoll,
   onMenu,
   onTyping,
@@ -721,7 +735,9 @@ export function VoiceComposer({
   onTyping?: () => void
   /** Checks the photo on this device, then sends it; false when it wasn't sent. */
   onPhoto?: (photo: File) => Promise<boolean>
-  /** Hosts and co-hosts: opens the poll form (the "+" menu then holds the photo and the poll). */
+  /** Sends a recorded voice message (104); offered where the browser can record. */
+  onVoice?: (clip: File) => Promise<boolean>
+  /** Hosts and co-hosts: opens the poll form (a third item in the "+" menu). */
   onPoll?: () => void
   /** The "+" menu is about to open (its poll form can start downloading). */
   onMenu?: () => void
@@ -739,6 +755,10 @@ export function VoiceComposer({
   const [sending, setSending] = useState(false)
   const [photoBusy, setPhotoBusy] = useState(false)
   const [menu, setMenu] = useState(false)
+  const [recording, setRecording] = useState(false)
+  // Known after mounting (the server's page has no MediaRecorder): the "+" menu offers a voice message then.
+  const [mic, setMic] = useState(false)
+  useEffect(() => setMic(!!onVoice && canRecord()), [onVoice])
   const [pick, setPick] = useState(0)
   const [dismissed, setDismissed] = useState<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -883,7 +903,12 @@ export function VoiceComposer({
             }}
           />
         ) : null}
-        {onPoll ? (
+        {recording ? (
+          <div className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-muted pe-1">
+            <VoiceRecorder onSend={onVoice!} onDone={() => setRecording(false)} />
+          </div>
+        ) : onPhoto || mic || onPoll ? (
+          // "+" holds the photo, the voice message and (hosts) the poll, as in 1:1 chats (KakaoTalk's "+").
           <div ref={menuRef} className="relative shrink-0">
             <button
               type="button"
@@ -916,28 +941,30 @@ export function VoiceComposer({
                   {onPhoto ? (
                     <MenuItem icon={<ImagePlus className="size-5 text-muted-foreground" aria-hidden />} label={t('photo.send')} onClick={photo} />
                   ) : null}
-                  <MenuItem
-                    icon={<PollIcon size={22} />}
-                    label={rt('pollNew')}
-                    onClick={() => {
-                      setMenu(false)
-                      onPoll()
-                    }}
-                  />
+                  {mic ? (
+                    <MenuItem
+                      icon={<Mic className="size-5 text-muted-foreground" aria-hidden />}
+                      label={t('composer.voice')}
+                      onClick={() => {
+                        setMenu(false)
+                        setRecording(true)
+                      }}
+                    />
+                  ) : null}
+                  {onPoll ? (
+                    <MenuItem
+                      icon={<PollIcon size={22} />}
+                      label={rt('pollNew')}
+                      onClick={() => {
+                        setMenu(false)
+                        onPoll()
+                      }}
+                    />
+                  ) : null}
                 </m.div>
               ) : null}
             </AnimatePresence>
           </div>
-        ) : onPhoto ? (
-          <button
-            type="button"
-            onClick={photo}
-            disabled={photoBusy}
-            aria-label={photoBusy ? t('photo.checking') : t('photo.send')}
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-muted text-foreground transition-colors duration-150 hover:bg-input/60 disabled:opacity-70"
-          >
-            {photoBusy ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <ImagePlus className="size-5" aria-hidden />}
-          </button>
         ) : null}
         <label htmlFor={id} className="sr-only">
           {t('voice.chatPlaceholder')}
@@ -975,14 +1002,17 @@ export function VoiceComposer({
           aria-activedescendant={listOpen ? `${id}-p${pick}` : undefined}
           aria-autocomplete="list"
           placeholder={photoBusy ? t('photo.checking') : t('voice.chatPlaceholder')}
-          className="h-11 min-w-0 flex-1 rounded-full bg-muted px-4 text-[15px] text-foreground ring-1 ring-transparent transition-shadow duration-150 outline-none placeholder:text-muted-foreground focus:ring-primary"
+          className={cn(
+            'h-11 min-w-0 flex-1 rounded-full bg-muted px-4 text-[15px] text-foreground ring-1 ring-transparent transition-shadow duration-150 outline-none placeholder:text-muted-foreground focus:ring-primary',
+            recording && 'hidden', // the recording bar takes its place (the text stays)
+          )}
         />
         <m.button
           type="submit"
           disabled={!can}
           whileTap={can ? { scale: 0.94 } : undefined}
           aria-label={t('voice.send')}
-          className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity duration-150 disabled:opacity-40"
+          className={cn('grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground transition-opacity duration-150 disabled:opacity-40', recording && 'hidden')}
         >
           <SendHorizontal className="size-5 rtl:-scale-x-100" aria-hidden />
         </m.button>

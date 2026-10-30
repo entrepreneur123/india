@@ -1516,7 +1516,12 @@ export class MockBackend implements Backend {
 
   async sendVoicePhoto(roomId: string, photo: File) {
     if (!photo.type.startsWith('image/')) throw new BackendError('bad_media')
-    return (await this.voice()).photo(roomId, URL.createObjectURL(photo))
+    return (await this.voice()).media(roomId, 'photo', URL.createObjectURL(photo))
+  }
+
+  async sendVoiceAudio(roomId: string, clip: File) {
+    if (!clip.type.startsWith('audio/')) throw new BackendError('bad_media')
+    return (await this.voice()).media(roomId, 'audio', URL.createObjectURL(clip))
   }
 
   async voicePollCreate(roomId: string, question: string, options: string[]) {

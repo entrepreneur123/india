@@ -52,6 +52,7 @@
 ## 4. 이어서 할 일 (우선순위 순)
 1. **방 채팅 ✓/✓✓ 화면 연결 — 완료(2026-10-30)**: `lib/voice-chat.ts`의 readByOthers·movesReads·nextReads(서버 규칙과 같음, 단위 테스트), 세션 `readBy`·`markRead`, 화면은 1.5~3초 무작위 대기 후 읽음(동시 호출 방지). 아래는 당시 설계 메모.
    - RPC `voice_read(p_room, p_upto bigint)` → `{hi, by, hi2}`. 읽음 표시가 움직이면 방 스트림에 `voice_emit` `{t:'k', hi, by, hi2, seq}` 이 온다.
+   - (참고) 데모 Playwright 테스트는 약 20초 뒤 뜨는 가짜 Arjun 전화를 먼저 거절해야 한다(창이 화면을 덮어 클릭이 30초 지연됨).
    - 판정: 다른 사람이 읽은 최대 id = `by === me ? hi2 : hi`. 내 줄 id ≤ 그 값이면 ✓✓, 아니면 ✓.
    - 할 일:
      - `lib/backend.ts`: `VoiceEvent`에 `{type:'read'; hi; by; hi2}`, `Backend.voiceRead(roomId, upto)` 추가
@@ -60,7 +61,7 @@
      - 방 화면(`components/screens/voice/voice-room.tsx` / `voice-chat.tsx`): 입장 시 `voiceRead(room, 0)`으로 현재 값을 받는다. 화면이 보이고 남의 새 줄이 생기면 1~2초 디바운스로 `voiceRead(room, 남의 최신 id)` 호출. 단, 이미 `hi`와 `hi2`가 모두 그 id 이상이면 호출하지 않는다(서버 부하).
      - 내 텍스트·사진·음성 줄에 Check/CheckCheck 아이콘(1:1 채팅의 read receipt 스타일 재사용)
    - 테스트: 데모 2탭 또는 mock 시뮬레이션, 3회 반복.
-2. **방 음성메시지 화면 연결** (서버 완료: 104)
+2. **방 음성메시지 화면 연결 — 완료(2026-10-30)**: 방 입력칸 "+"를 모두에게(사진·음성메시지, 방장·부방장은 투표까지), 녹음 바·말풍선은 1:1의 `VoiceRecorder`·`AudioBubble` 재사용, ✓/✓✓도 붙음. 음성메시지에는 답장 없음(voice_send2가 text·photo·poll만 인용). 아래는 당시 설계 메모.
    - RPC `voice_audio(p_room, p_path)`. 경로: `<uid>/rooms/<uuid>.(webm|m4a|ogg)`(기존 `upload(file,'rooms')` 그대로), 1분에 6개 제한.
    - 할 일:
      - `LINE_KINDS`에 'audio' 추가, `toVoiceLines`에 audio 매핑(서명 URL)

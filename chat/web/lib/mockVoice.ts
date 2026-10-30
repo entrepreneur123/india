@@ -152,7 +152,8 @@ export class VoiceSim {
   private pollSeq = 1
   /** Every poll: its room, the votes by user id (the counts come from them). */
   private pollStore = new Map<number, { roomId: string; poll: Omit<VoicePoll, 'counts' | 'total' | 'mine'>; votes: Map<string, number> }>()
-  private photoTimes: number[] = []
+  /** When I sent photos and voice messages (a minute's worth: 5 and 6, as voice_photo and voice_audio). */
+  private mediaTimes = { photo: [] as number[], audio: [] as number[] }
 
   constructor(private me: () => Profile | null) {
     this.seed('v-bolly', 'Late night Bollywood songs', 'approval', 'Priya', 5, 34, {
@@ -544,16 +545,16 @@ export class VoiceSim {
   }
 
 
-  async photo(roomId: string, url: string): Promise<VoiceLine> {
+  async media(roomId: string, kind: 'photo' | 'audio', url: string): Promise<VoiceLine> {
     const r = this.get(roomId)
     const me = this.me()
     if (!me || !this.meMember(r)) throw new BackendError('not_allowed')
     const now = Date.now()
-    this.photoTimes = this.photoTimes.filter((t) => now - t < 60_000)
-    if (this.photoTimes.length >= 5) throw new BackendError('slow_down')
-    this.photoTimes.push(now)
+    const times = (this.mediaTimes[kind] = this.mediaTimes[kind].filter((t) => now - t < 60_000))
+    if (times.length >= (kind === 'photo' ? 5 : 6)) throw new BackendError('slow_down')
+    times.push(now)
     await wait(400)
-    return this.post(r, { id: this.lineSeq++, kind: 'photo', sender: me, fromMe: true, url, at: now })
+    return this.post(r, { id: this.lineSeq++, kind, sender: me, fromMe: true, url, at: now })
   }
 
   async join(roomId: string) {

@@ -245,6 +245,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
         return ok
       }}
       onPhoto={s.sendPhoto}
+      onVoice={s.sendAudio}
       onPoll={
         mod
           ? () => {

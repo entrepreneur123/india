@@ -605,6 +605,8 @@ export type VoiceLine =
   /** A conversation starter: prompt 1-40 (the text is in each app's own language). */
   /** A photo (checked on the sender's device; shown blurred until tapped). */
   | { id: number; kind: 'photo'; sender: Profile; fromMe: boolean; url: string; at: number }
+  /** A voice message (104), up to 60 s. */
+  | { id: number; kind: 'audio'; sender: Profile; fromMe: boolean; url: string; at: number }
   /** A poll's place in the chat; its votes are a VoicePoll (Backend.voicePolls, VoiceEvent 'poll'). */
   | { id: number; kind: 'poll'; sender: Profile; fromMe: boolean; pollId: number; question: string; options: string[]; at: number }
 
@@ -1033,6 +1035,8 @@ export interface Backend {
   sendVoice(roomId: string, text: string, replyTo?: number | null): Promise<VoiceLine>
   /** Shrinks the photo to 1280 px JPEG and sends it (the screen has run classifyImage() on it first). */
   sendVoicePhoto(roomId: string, photo: File): Promise<VoiceLine>
+  /** A recorded voice message (104): 6 a minute ('slow_down'), at most 3 MB ('too_large'). */
+  sendVoiceAudio(roomId: string, clip: File): Promise<VoiceLine>
   /** Posts a conversation starter (one per room every 20 s: 'slow_down'). */
   /** Host or co-host: asks the room (2-4 distinct options); closes the room's open poll. Returns the poll's line. */
   voicePollCreate(roomId: string, question: string, options: string[]): Promise<VoiceLine>

@@ -83,6 +83,8 @@ export interface VoiceSession {
   send: (text: string, replyTo?: number | null) => Promise<boolean>
   /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude). */
   sendPhoto: (photo: File) => Promise<boolean>
+  /** A recorded voice message (104). */
+  sendAudio: (clip: File) => Promise<boolean>
   /** Posts a conversation starter card. */
   /** After a tap, when the browser blocked the room's audio. */
   startAudio: () => void
@@ -187,7 +189,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         case 'line':
           addLines([e.line])
           // Their line is here: they're not typing it any more.
-          if ((e.line.kind === 'text' || e.line.kind === 'photo') && typingSeen.current.delete(e.line.sender.id)) setTypingTick((n) => n + 1)
+          if ('sender' in e.line && typingSeen.current.delete(e.line.sender.id)) setTypingTick((n) => n + 1)
           break
         // 50: the host or a co-host hid lines, or emptied the chat (a note at the top says who).
         case 'hidden':
@@ -355,7 +357,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [seat])
 
   // Someone reported from here is blocked: their lines go at once.
-  useReported((id) => setLines((list) => list?.filter((l) => l.kind !== 'text' || l.sender.id !== id) ?? list))
+  useReported((id) => setLines((list) => list?.filter((l) => !('sender' in l) || l.sender.id !== id) ?? list))
 
   const act = useCallback(
     async (a: VoiceAction) => {
@@ -372,19 +374,24 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     [backend, roomId, toast, t],
   )
 
-  const send = useCallback(
-    async (text: string, replyTo?: number | null) => {
+  /** Posts a line and shows it at once (its realtime copy is the same id); false with a message when it wasn't sent. */
+  const post = useCallback(
+    async (send: () => Promise<VoiceLine>) => {
       try {
-        addLines([await backend.sendVoice(roomId, text, replyTo ?? null)])
+        addLines([await send()])
         return true
       } catch (err) {
         toast.error(err)
         return false
       }
     },
-    [backend, roomId, addLines, toast],
+    [addLines, toast],
   )
-
+  const send = useCallback(
+    (text: string, replyTo?: number | null) => post(() => backend.sendVoice(roomId, text, replyTo ?? null)),
+    [backend, roomId, post],
+  )
+  const sendAudio = useCallback((clip: File) => post(() => backend.sendVoiceAudio(roomId, clip)), [backend, roomId, post])
   const sendPhoto = useCallback(
     async (photo: File) => {
       if (!photo.type.startsWith('image/')) {
@@ -402,29 +409,13 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
         toast.error(new BackendError('network'))
         return false
       }
-      try {
-        addLines([await backend.sendVoicePhoto(roomId, photo)])
-        return true
-      } catch (err) {
-        toast.error(err)
-        return false
-      }
+      return post(() => backend.sendVoicePhoto(roomId, photo))
     },
-    [backend, roomId, addLines, toast],
+    [backend, roomId, post, toast],
   )
-
-
   const createPoll = useCallback(
-    async (question: string, options: string[]) => {
-      try {
-        addLines([await backend.voicePollCreate(roomId, question, options)])
-        return true
-      } catch (err) {
-        toast.error(err)
-        return false
-      }
-    },
-    [backend, roomId, addLines, toast],
+    (question: string, options: string[]) => post(() => backend.voicePollCreate(roomId, question, options)),
+    [backend, roomId, post],
   )
 
   const votePoll = useCallback(
@@ -508,7 +499,7 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
   }, [myVideo, backend, roomId, toast, t])
 
   return {
-    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, startAudio, sound, setSound,
+    room, me, lines, levels, reactions, audio, videos, offline, act, send, sendPhoto, sendAudio, startAudio, sound, setSound,
     polls, createPoll, votePoll, closePoll, typing, notifyTyping, readBy: readByOthers(reads, meId), markRead,
   }
 }
