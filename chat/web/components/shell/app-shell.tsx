@@ -45,7 +45,7 @@ import {
 } from './lazy-screens'
 import { ScreenBoundary, ScreenLoading } from '@/components/ui/screen-boundary'
 import { IncomingCall } from '@/components/video/incoming-call'
-import { MegaphoneBanner } from '@/components/social/megaphone'
+import { MegaphoneBar } from '@/components/social/megaphone'
 
 /** Tab change: a short fade (Material "fade through"). Going to Random (already drawn underneath) the tab goes at once. */
 const TAB_MOTION = {
@@ -441,13 +441,13 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   return (
     <AppContext.Provider value={state}>
         <div className="min-h-dvh bg-background text-foreground">
-          <MegaphoneBanner />
           <div className="mx-auto flex max-w-[1520px]">
             <Sidebar className="hidden md:flex" />
             <main className="app-frame relative flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
+              <MegaphoneBar shown={!hideTabs} />
               {/* Screens are layered, never stacked: a tab fading out must not push the next one aside. */}
               {/* While a voice room is full screen, what's under it can't be reached by keyboard or screen reader. */}
-              <div className={cn('absolute inset-0 flex-col', randomVisible ? 'flex' : 'hidden', pillShown && 'pb-[5.5rem] md:pb-24')} inert={voiceOpen}>
+              <div className={cn('absolute inset-x-0 bottom-0 flex-col', hideTabs ? 'top-0' : 'top-12', randomVisible ? 'flex' : 'hidden', pillShown && 'pb-[5.5rem] md:pb-24')} inert={voiceOpen}>
                 <RandomScreen active={randomVisible} />
               </div>
               <AnimatePresence mode="wait" initial={false} custom={randomVisible}>
@@ -456,7 +456,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                     key={tab}
                     custom={randomVisible}
                     variants={TAB_MOTION}
-                    className={cn('absolute inset-0 flex flex-col', !hideTabs && (pillShown ? 'pb-[9.5rem] md:pb-24' : 'pb-16 md:pb-0'))}
+                    className={cn('absolute inset-x-0 bottom-0 flex flex-col', hideTabs ? 'top-0' : 'top-12', !hideTabs && (pillShown ? 'pb-[9.5rem] md:pb-24' : 'pb-16 md:pb-0'))}
                     inert={voiceOpen}
                     initial="enter"
                     animate="shown"

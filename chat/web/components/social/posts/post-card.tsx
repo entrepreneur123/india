@@ -140,7 +140,7 @@ export function PostCard({ post: initial, onComments, onLikes }: { post: FeedPos
           <FadeImg
             src={post.imageUrl}
             alt={ft('post.photo', { name: a.name })}
-            className="max-h-[min(60dvh,587px)] w-full object-cover"
+            className="aspect-[4/5] w-full object-cover"
             loading="lazy"
             decoding="async"
             draggable={false}

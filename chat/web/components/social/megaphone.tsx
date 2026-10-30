@@ -1,10 +1,10 @@
 'use client'
 
-import { AnimatePresence, useReducedMotion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { Megaphone } from 'lucide-react'
+import { ChevronRight, Megaphone } from 'lucide-react'
 import type { MegaphoneLine } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
@@ -15,112 +15,75 @@ import { TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
+import { cn } from '@/lib/utils'
 
-// The megaphone (100), after MapleStory's (the owner, 2026-10-30): a bought line passes across a thin bar at the top of
-// everyone's screen in my country, without getting in the way. A tap on the bar opens the past day's lines (101), where
-// a name opens that person's profile: someone who agrees with a line gets in touch from there.
+// The megaphone (100), after MapleStory's (the owner, 2026-10-30): a bar above every tab, like one line of a chat,
+// always showing the newest line with its time; a new one slides in from below. A tap opens the past day's lines (101),
+// where a name opens that person's profile: someone who agrees with a line gets in touch from there.
 
-/** The text moves at this many pixels a second, whatever its length. */
-const SPEED = 70
 const MAX = 80
-const REPLAY_MS = 120_000
 
-/** The bar on top of every screen, the line list it opens and the writing sheet. Lines from people I blocked are left out. */
-export function MegaphoneBanner() {
+/** The bar (hidden while a chat, a room or a random chat fills the screen), the list it opens and the writing sheet. */
+export function MegaphoneBar({ shown }: { shown: boolean }) {
   const backend = useBackend()
-  const [queue, setQueue] = useState<MegaphoneLine[]>([])
+  const { t, timeAgo } = useI18n()
   const [listOpen, setListOpen] = useState(false)
   const [composing, setComposing] = useState(false)
   const { data: history, mutate } = useSWR('megaphone-lines', () => backend.megaphoneHistory())
-  const { data: blocks } = useSWR(history?.length || queue.length ? 'blocks' : null, () => backend.blocks())
-  const add = (ls: MegaphoneLine[], q: MegaphoneLine[]) => [...q, ...ls.filter((l) => !q.some((x) => x.id === l.id))].slice(-10)
+  const { data: blocks } = useSWR(history?.length ? 'blocks' : null, () => backend.blocks())
   useEffect(
-    () =>
-      backend.megaphones((l) => {
-        void mutate((h) => (h?.some((x) => x.id === l.id) ? h : [l, ...(h ?? [])].slice(0, 50)), { revalidate: false })
-        setQueue((q) => add([l], q))
-      }),
+    () => backend.megaphones((l) => void mutate((h) => (h?.some((x) => x.id === l.id) ? h : [l, ...(h ?? [])].slice(0, 50)), { revalidate: false })),
     [backend, mutate],
   )
-  // An app opened late still sees the past 2 minutes' lines pass, oldest first.
-  const replayed = useRef(false)
+  // "3 min ago" moves on by itself.
+  const [, tick] = useState(0)
   useEffect(() => {
-    if (!history || replayed.current) return
-    replayed.current = true
-    setQueue((q) => add(history.filter((l) => l.at > Date.now() - REPLAY_MS).slice(0, 3).reverse(), q))
-  }, [history])
-  const ok = (l: MegaphoneLine) => !blocks?.some((b) => b.id === l.user.id)
-  const shown = queue.find(ok) ?? null
-  const done = (id: number) => setQueue((q) => q.filter((x) => x.id !== id))
+    const id = setInterval(() => tick((n) => n + 1), 30_000)
+    return () => clearInterval(id)
+  }, [])
+  const lines = (history ?? []).filter((l) => !blocks?.some((b) => b.id === l.user.id))
+  const l = lines[0]
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[60] flex justify-center" aria-live="polite">
-        {/* One at a time; narrow enough on a phone that the top bar's buttons at the edges stay free. */}
-        <AnimatePresence mode="wait">
-          {shown ? <Ticker key={shown.id} line={shown} onOpen={() => setListOpen(true)} onDone={() => done(shown.id)} /> : null}
-        </AnimatePresence>
+      <div className={cn('absolute inset-x-0 top-0 z-10 h-12 pt-2', !shown && 'hidden')}>
+        <button
+          type="button"
+          onClick={() => setListOpen(true)}
+          className="mx-auto flex h-9 w-[calc(100%-2rem)] max-w-[52rem] items-center gap-2 overflow-hidden rounded-full bg-[#ffc23d]/15 ps-1 pe-3 text-start ring-1 ring-[#ffc23d]/60 transition-colors hover:bg-[#ffc23d]/25 sm:w-[calc(100%-4rem)]"
+          aria-label={l ? `${t('mega.title')}: ${l.user.name} ${l.text}, ${timeAgo(l.at)}` : t('mega.title')}
+        >
+          <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#ffc23d] text-[#3b2600]">
+            <Megaphone className="size-4" aria-hidden />
+          </span>
+          <span className="relative h-full min-w-0 flex-1 overflow-hidden" aria-hidden>
+            <AnimatePresence initial={false}>
+              <m.span
+                key={l?.id ?? 'none'}
+                className="absolute inset-0 flex items-center gap-1.5 text-[13px]"
+                initial={{ y: '100%', opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: '-100%', opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+              >
+                {l ? (
+                  <>
+                    <UserAvatar userId={l.user.id} name={l.user.name} src={l.user.photoUrl} size={20} />
+                    <NameText userId={l.user.id} className="shrink-0 font-bold">{l.user.name}</NameText>
+                    <span className="min-w-0 truncate" dir="auto">{l.text}</span>
+                    <span className="ms-auto shrink-0 ps-2 text-xs text-muted-foreground">{timeAgo(l.at)}</span>
+                  </>
+                ) : (
+                  <span className="truncate text-muted-foreground">{t('mega.placeholder')}</span>
+                )}
+              </m.span>
+            </AnimatePresence>
+          </span>
+          <ChevronRight className="size-4 shrink-0 text-muted-foreground rtl:rotate-180" aria-hidden />
+        </button>
       </div>
-      <MegaphoneList
-        open={listOpen}
-        lines={(history ?? []).filter(ok)}
-        onClose={() => setListOpen(false)}
-        onWrite={() => setComposing(true)}
-      />
+      <MegaphoneList open={listOpen} lines={lines} onClose={() => setListOpen(false)} onWrite={() => setComposing(true)} />
       <MegaphoneSheet open={composing} onClose={() => setComposing(false)} />
     </>
-  )
-}
-
-/** The thin bar: the line moves across it once, then the bar goes. Reduced motion: it stands still for a few seconds. */
-function Ticker({ line, onOpen, onDone }: { line: MegaphoneLine; onOpen: () => void; onDone: () => void }) {
-  const { t } = useI18n()
-  const reduce = useReducedMotion()
-  const box = useRef<HTMLSpanElement>(null)
-  const text = useRef<HTMLSpanElement>(null)
-  const [run, setRun] = useState<{ from: number; to: number; s: number } | null>(null)
-  const finish = useRef(onDone)
-  finish.current = onDone
-  useLayoutEffect(() => {
-    const w = box.current!.clientWidth
-    const tw = text.current!.scrollWidth
-    // Physical pixels: right to left, or left to right in a right-to-left language.
-    const rtl = getComputedStyle(box.current!).direction === 'rtl'
-    setRun({ from: rtl ? -tw : w, to: rtl ? w : -tw, s: (w + tw) / SPEED })
-  }, [])
-  useEffect(() => {
-    if (!reduce) return
-    const id = setTimeout(() => finish.current(), 7000)
-    return () => clearTimeout(id)
-  }, [reduce])
-  return (
-    <m.button
-      type="button"
-      onClick={onOpen}
-      initial={{ y: -48, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      exit={{ y: -48, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-      className="pointer-events-auto flex h-8 w-[calc(100%-7rem)] max-w-md items-center gap-1.5 overflow-hidden rounded-full bg-[#ffc23d] ps-1 text-[#3b2600] shadow-e2"
-      aria-label={`${t('mega.title')}: ${line.user.name} ${line.text}`}
-    >
-      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[#3b2600]/12">
-        <Megaphone className="size-3.5" aria-hidden />
-      </span>
-      <span ref={box} className="relative h-full min-w-0 flex-1 overflow-hidden" aria-hidden>
-        <m.span
-          ref={text}
-          className="absolute top-0 left-0 flex h-full items-center gap-1.5 text-[13px] whitespace-nowrap"
-          initial={false}
-          animate={run && !reduce ? { x: [run.from, run.to] } : { x: 0 }}
-          transition={run && !reduce ? { duration: run.s, ease: 'linear' } : { duration: 0 }}
-          onAnimationComplete={() => run && !reduce && finish.current()}
-          style={{ visibility: run ? 'visible' : 'hidden' }}
-        >
-          <NameText userId={line.user.id} className="font-bold">{line.user.name}</NameText>
-          <span dir="auto">{line.text}</span>
-        </m.span>
-      </span>
-    </m.button>
   )
 }
 

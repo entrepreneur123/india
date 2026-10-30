@@ -7,6 +7,7 @@ import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, MAX_HIGHLIGHTS
 import { useBackend } from '@/lib/backend-context'
 import { namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
+import { thumbOf } from '@/lib/thumbs'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { Field, TextInput } from '@/components/ui/bits'
@@ -40,7 +41,7 @@ export function Highlights({ userId, owner, className }: { userId: string; owner
         {list.map((c) => (
           <li key={c.id} className="shrink-0">
             <Circle label={c.title} onClick={() => setViewing(c)}>
-              <img src={c.photos[0]?.url} alt="" className="size-full object-cover" loading="lazy" draggable={false} />
+              <img src={thumbOf(c.photos[0]?.url) ?? c.photos[0]?.url} alt="" className="size-full object-cover" loading="lazy" draggable={false} />
             </Circle>
           </li>
         ))}
@@ -84,20 +85,25 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
   const [i, setI] = useState(0)
   const [large, setLarge] = useState<number | null>(null)
   const drag = useRef<number | null>(null)
-  useEffect(() => setI(0), [highlight])
   const photos = highlight?.photos ?? []
+  // The album's photos start downloading as it opens, so the next one is there when asked for.
+  useEffect(() => {
+    setI(0)
+    for (const p of highlight?.photos ?? []) new Image().src = p.url
+  }, [highlight])
   const photo = photos[Math.min(i, photos.length - 1)]
   const go = (by: number) => setI((x) => Math.max(0, Math.min(photos.length - 1, x + by)))
   const label = st('photos.view', { n: i + 1, total: photos.length })
   return (
-    <Modal open={!!highlight && !!photo} onClose={onClose} title={highlight?.title ?? ''} description={`${owner} · ${label}`} className="md:max-w-2xl">
+    <Modal open={!!highlight && !!photo} onClose={onClose} title={highlight?.title ?? ''} description={`${owner} · ${label}`} className="md:max-w-md">
       {photo ? (
         <div className="relative px-4 pb-4">
+          {/* One frame for every photo, as Instagram's stories: filled and cut to fit; a tap shows it whole (zoom). */}
           <img
             src={photo.url}
             alt={label}
             draggable={false}
-            className="max-h-[70dvh] w-full cursor-zoom-in touch-pan-y rounded-2xl bg-muted object-contain select-none"
+            className="mx-auto aspect-[9/16] w-full max-w-[calc(70dvh*9/16)] cursor-zoom-in touch-pan-y rounded-2xl bg-muted object-cover select-none"
             onPointerDown={(e) => (drag.current = e.clientX)}
             onPointerUp={(e) => {
               const dx = drag.current === null ? 0 : e.clientX - drag.current
