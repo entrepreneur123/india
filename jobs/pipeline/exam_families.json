@@ -656,6 +656,90 @@
       "sectors": [
         "state"
       ]
+    },
+    "TNPSC": {
+      "name": "TNPSC: Tamil Nadu Group I, II, IV and other state services",
+      "hi": "तमिलनाडु लोक सेवा आयोग (TNPSC) भर्ती",
+      "short": "TNPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "tnpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "ITBP": {
+      "name": "ITBP: constables, head constables, sub-inspectors, medical officers and other posts",
+      "hi": "भारत-तिब्बत सीमा पुलिस (ITBP) भर्ती",
+      "short": "ITBP",
+      "qualifications": null,
+      "ref": null,
+      "source": "itbp",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
+    },
+    "ESIC": {
+      "name": "ESIC: doctors, teaching faculty and other posts at ESIC hospitals and medical colleges",
+      "hi": "कर्मचारी राज्य बीमा निगम (ESIC) भर्ती",
+      "short": "ESIC",
+      "qualifications": null,
+      "ref": null,
+      "source": "esic",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "NABARD": {
+      "name": "NABARD: Grade A/B officers, development assistants and specialists",
+      "hi": "नाबार्ड (NABARD) भर्ती",
+      "short": "NABARD",
+      "qualifications": null,
+      "ref": null,
+      "source": "nabard",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "NTPC": {
+      "name": "NTPC: executive trainees, engineers, officers and other posts",
+      "hi": "एनटीपीसी (NTPC) भर्ती",
+      "short": "NTPC",
+      "qualifications": null,
+      "ref": null,
+      "source": "ntpc",
+      "noTimeline": true,
+      "sectors": [
+        "psu"
+      ]
+    },
+    "NIACL": {
+      "name": "NIACL: New India Assurance administrative officers, assistants and other posts",
+      "hi": "न्यू इंडिया एश्योरेंस (NIACL) भर्ती",
+      "short": "NIACL",
+      "qualifications": null,
+      "ref": null,
+      "source": "niacl",
+      "noTimeline": true,
+      "sectors": [
+        "bank"
+      ]
+    },
+    "AIIMS": {
+      "name": "AIIMS New Delhi: faculty, research and project posts",
+      "hi": "एम्स नई दिल्ली (AIIMS) भर्ती",
+      "short": "AIIMS",
+      "qualifications": null,
+      "ref": null,
+      "source": "aiims",
+      "noTimeline": true,
+      "sectors": [
+        "science"
+      ]
     }
   }
 }

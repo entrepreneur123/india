@@ -5,9 +5,9 @@ answer only from India, and one reader for them keeps their first-seen records i
 """
 from __future__ import annotations
 
-from . import boards_central, boards_more_a, boards_more_b, boards_more_c, boards_more_d, boards_more_e, boards_more_f, boards_recruiters, boards_states, listboards
+from . import boards_central, boards_more_a, boards_more_b, boards_more_c, boards_more_d, boards_more_e, boards_more_f, boards_more_h, boards_more_i, boards_recruiters, boards_states, listboards
 
-NEW = boards_states.ALL + boards_recruiters.ALL + boards_central.ALL + boards_more_a.ALL + boards_more_b.ALL + boards_more_c.ALL + boards_more_d.ALL + boards_more_e.ALL + boards_more_f.ALL
+NEW = boards_states.ALL + boards_recruiters.ALL + boards_central.ALL + boards_more_a.ALL + boards_more_b.ALL + boards_more_c.ALL + boards_more_d.ALL + boards_more_e.ALL + boards_more_f.ALL + boards_more_h.ALL + boards_more_i.ALL
 ALL = listboards.ALL + NEW
 INDIA_ONLY = listboards.INDIA_ONLY | {b.SOURCE for b in NEW}
 assert len({b.SOURCE for b in ALL}) == len(ALL), "two boards share a source id"

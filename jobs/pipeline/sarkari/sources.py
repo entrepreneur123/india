@@ -56,6 +56,13 @@ SOURCES: dict[str, dict] = {
     "bpcl": {"short": "BPCL", "name": "Bharat Petroleum Corporation Limited", "site": "https://www.bharatpetroleum.in", "state": None},
     "pgcil": {"short": "POWERGRID", "name": "Power Grid Corporation of India", "site": "https://www.powergrid.in", "state": None},
     "tgpsc": {"short": "TGPSC", "name": "Telangana Public Service Commission", "site": "https://websitenew.tgpsc.gov.in", "state": "TG"},
+    "tnpsc": {"short": "TNPSC", "name": "Tamil Nadu Public Service Commission", "site": "https://tnpsc.gov.in", "state": "TN"},
+    "itbp": {"short": "ITBP", "name": "Indo-Tibetan Border Police", "site": "https://recruitment.itbpolice.nic.in", "state": None},
+    "esic": {"short": "ESIC", "name": "Employees' State Insurance Corporation", "site": "https://www.esic.gov.in", "state": None},
+    "nabard": {"short": "NABARD", "name": "National Bank for Agriculture and Rural Development", "site": "https://www.nabard.org", "state": None},
+    "ntpc": {"short": "NTPC", "name": "NTPC Limited", "site": "https://careers.ntpc.co.in", "state": None},
+    "niacl": {"short": "NIACL", "name": "The New India Assurance Co. Ltd.", "site": "https://www.newindia.co.in", "state": None},
+    "aiims": {"short": "AIIMS", "name": "All India Institute of Medical Sciences, New Delhi", "site": "https://www.aiims.edu", "state": None},
     "keralapsc": {"short": "Kerala PSC", "name": "Kerala Public Service Commission", "site": "https://www.keralapsc.gov.in", "state": "KL"},
 }
 
