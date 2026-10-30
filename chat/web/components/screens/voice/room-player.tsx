@@ -11,10 +11,12 @@ import { cn } from '@/lib/utils'
 /** Where the shared track is now, in seconds (the room stores when it started, not a position). */
 export const position = (tr: VoiceTrack) => Math.max(0, ((tr.pausedAt ?? Date.now()) - tr.startedAt) / 1000)
 const DRIFT_S = 2.5
-/** How often the player is checked against the room (a scrub in YouTube's own controls snaps back by then). */
-const SYNC_MS = 2000
-/** After my own seek for the room, the old position isn't forced back while the room's answer is on its way. */
+/** How often the player is checked against the room (a scrub in YouTube's own bar reaches the room by then). */
+const SYNC_MS = 1000
+/** After my own seek, pause or play for the room, the old state isn't forced back while the room's answer is on its way. */
 const SEEK_HOLD_MS = 3000
+/** A host's play or pause in YouTube's own controls counts once it has held this long (a drag on its bar may pause it). */
+const SETTLE_MS = 600
 /** A track that should play but hasn't started this long after the player is ready: the browser blocked it. */
 const BLOCKED_MS = 3000
 const VOLUME_KEY = 'yaari_room_volume'
@@ -47,6 +49,12 @@ export interface RoomPlayer {
 
 const PlayerContext = createContext<RoomPlayer | null>(null)
 
+/**
+ * A tap or a key in YouTube's own controls: the iframe has the focus. A pause by the phone or the browser (a call, the
+ * tab in the background) doesn't move it, so that one stays on this screen.
+ */
+const inPlayer = (p: YTPlayer) => document.activeElement === p.getIframe()
+
 export const useRoomPlayer = () => useContext(PlayerContext)
 
 function savedVolume(): { volume: number; muted: boolean } {
@@ -65,9 +73,10 @@ function savedVolume(): { volume: number; muted: boolean } {
  * on. The iframe sits in a box on <body> that follows the slot the room screen shows it in (moving an iframe in the
  * page would reload it); with no slot it stays rendered, out of sight, so the browser keeps it playing.
  *
- * The room's position is the host's and co-hosts' (`canControl`): their play, pause, seek and skip act for everyone.
- * Everyone may pause on their own screen (resuming goes back to where the room is now), set their own volume, and
- * pick a quality in YouTube's own settings menu in the video; a scrub in YouTube's own bar snaps back to the room.
+ * The room's position is the host's and co-hosts' (`canControl`): their play, pause, seek and skip act for everyone,
+ * from our bar or from YouTube's own controls in the video (the owner, 2026-10-30: both work alike). Everyone may pause
+ * on their own screen (resuming goes back to where the room is now), set their own volume (ours or YouTube's), and
+ * pick a quality in YouTube's own settings menu; anyone else's scrub in YouTube's bar snaps back to the room.
  */
 export function RoomPlayerProvider({
   track,
@@ -109,6 +118,8 @@ export function RoomPlayerProvider({
   const soundRef = useRef(sound)
   soundRef.current = sound
   const seekHold = useRef(0)
+  /** The player's time at the last check, to tell a jump (a scrub) from playing on. */
+  const lastAt = useRef<{ at: number; t: number; playing: boolean } | null>(null)
   const on = !!track
 
   /** Plays from where the room is now (or holds still there while the room is paused). */
@@ -117,6 +128,33 @@ export function RoomPlayerProvider({
     if (tr.pausedAt) p.pauseVideo()
     else p.playVideo()
   }, [])
+
+  /**
+   * A host's or co-host's play or pause in YouTube's own controls becomes the room's once it has settled (as our button);
+   * refused, the player goes back in step with the room.
+   */
+  const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  /** The latest such change while it is on its way (0: none): the player isn't put back in step with the room meanwhile. */
+  const settling = useRef(0)
+  const settled = useRef(0)
+  const fromPlayer = () => {
+    const n = (settling.current = ++settled.current)
+    // Only the latest change ends the wait, a moment after the room's answer (so the old state isn't forced back first).
+    const done = () => {
+      if (settling.current !== n) return
+      settling.current = 0
+      seekHold.current = Date.now() + SYNC_MS
+    }
+    clearTimeout(settle.current)
+    settle.current = setTimeout(() => {
+      const p = playerRef.current
+      const tr = trackRef.current
+      const state = p?.getPlayerState()
+      const a: VoiceAction | null = !tr ? null : state === YT_PAUSED && !tr.pausedAt ? { type: 'pause' } : state === YT_PLAYING && tr.pausedAt ? { type: 'resume' } : null
+      if (a) void actRef.current(a).finally(done)
+      else done()
+    }, SETTLE_MS)
+  }
 
   const applySound = (p: YTPlayer) => {
     try {
@@ -171,16 +209,22 @@ export function RoomPlayerProvider({
                 setBlocked(false)
                 tell(player)
                 if (now?.pausedAt) {
-                  // The room is paused: YouTube's own play button doesn't start it on one screen.
-                  player.pauseVideo()
+                  // The room is paused: a host's or co-host's play in YouTube resumes it for everyone; anyone else's
+                  // doesn't start it on one screen.
+                  if (canRef.current && inPlayer(player)) fromPlayer()
+                  else player.pauseVideo()
                 } else if (localRef.current && now) {
                   // My own pause ended from YouTube's own button: back to where the room is.
                   setLocalPaused(false)
                   player.seekTo(position(now), true)
                 }
               }
-              // Paused while the room plays: by YouTube's own button (or the phone), so on this screen only.
-              if (e.data === YT_PAUSED && now && !now.pausedAt) setLocalPaused(true)
+              // Paused while the room plays: a host's or co-host's pause in YouTube pauses the room (as our button);
+              // anyone else's, or the phone's, pauses this screen only.
+              if (e.data === YT_PAUSED && now && !now.pausedAt) {
+                if (canRef.current && inPlayer(player)) fromPlayer()
+                else setLocalPaused(true)
+              }
               // A host's or co-host's player moves the room on (the server ignores a skip of a track that already changed).
               if (e.data === YT_ENDED && canRef.current && now) void actRef.current({ type: 'skip', trackId: now.id })
             },
@@ -192,6 +236,7 @@ export function RoomPlayerProvider({
     )
     return () => {
       alive = false
+      clearTimeout(settle.current)
       playerRef.current = null
       loadedId.current = null
       setPlaying(false)
@@ -223,19 +268,32 @@ export function RoomPlayerProvider({
     else if (p.getPlayerState() === YT_PAUSED) p.playVideo()
   }, [status, track?.videoId, track?.startedAt, track?.pausedAt, track])
 
-  // Stay in step with everyone (a slow phone or a buffering pause drifts behind; a scrub in YouTube's own bar
-  // jumps away): back to the room's position. Not while paused here.
+  // Stay in step with everyone (a slow phone or a buffering pause drifts behind; a listener's scrub in YouTube's own
+  // bar jumps away): back to the room's position. A host's or co-host's scrub there moves the room instead. Not while
+  // paused here. YouTube's own volume, changed in the video, becomes mine (our slider shows it).
   useEffect(() => {
     if (status !== 'ready') return
     const id = setInterval(() => {
       const p = playerRef.current
       const tr = trackRef.current
-      if (!p || !tr || localRef.current || Date.now() < seekHold.current) return
+      if (!p || !tr) return
       const state = p.getPlayerState()
+      const at = p.getCurrentTime()
+      const last = lastAt.current
+      const now = Date.now()
+      lastAt.current = { at, t: now, playing: state === YT_PLAYING }
+      const mine = inPlayer(p)
+      if (mine && (p.getVolume() !== soundRef.current.volume || p.isMuted() !== soundRef.current.muted)) {
+        setSound({ volume: p.getVolume(), muted: p.isMuted() })
+      }
+      if (localRef.current) return
+      const jumped = !!last && Math.abs(at - (last.at + (last.playing ? (now - last.t) / 1000 : 0))) > DRIFT_S
+      if (jumped && mine && canRef.current && Math.abs(at - position(tr)) > DRIFT_S) return seek(at)
+      if (now < seekHold.current || settling.current) return
       if (tr.pausedAt) {
         if (state === YT_PLAYING) p.pauseVideo()
-        if (state === YT_PAUSED && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S) p.seekTo(position(tr), true)
-      } else if (state === YT_PLAYING && Math.abs(p.getCurrentTime() - position(tr)) > DRIFT_S) {
+        if (state === YT_PAUSED && Math.abs(at - position(tr)) > DRIFT_S) p.seekTo(position(tr), true)
+      } else if (state === YT_PLAYING && Math.abs(at - position(tr)) > DRIFT_S) {
         p.seekTo(position(tr), true)
       }
     }, SYNC_MS)

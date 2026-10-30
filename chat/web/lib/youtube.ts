@@ -57,6 +57,9 @@ export interface YTPlayer {
   setVolume(volume: number): void
   mute(): void
   unMute(): void
+  getVolume(): number
+  isMuted(): boolean
+  getIframe(): HTMLIFrameElement
   destroy(): void
 }
 
