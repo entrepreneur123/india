@@ -848,6 +848,43 @@
       "sectors": [
         "police"
       ]
+    },
+    "WBPSC": {
+      "name": "WBPSC: West Bengal civil services, clerkship, miscellaneous and other state posts",
+      "hi": "पश्चिम बंगाल लोक सेवा आयोग (WBPSC) भर्ती",
+      "short": "WBPSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "wbpsc",
+      "noTimeline": true,
+      "sectors": [
+        "state"
+      ]
+    },
+    "UPESSC": {
+      "name": "UPESSC: UP TGT, PGT, assistant teachers and assistant professors",
+      "hi": "उत्तर प्रदेश शिक्षा सेवा चयन आयोग (UPESSC) भर्ती",
+      "short": "UPESSC",
+      "qualifications": null,
+      "ref": null,
+      "source": "upessc",
+      "noTimeline": true,
+      "sectors": [
+        "teaching",
+        "state"
+      ]
+    },
+    "APSLPRB": {
+      "name": "AP SLPRB: Andhra Pradesh police constables, sub-inspectors and other posts",
+      "hi": "आंध्र प्रदेश पुलिस भर्ती बोर्ड (AP SLPRB) भर्ती",
+      "short": "AP SLPRB",
+      "qualifications": null,
+      "ref": null,
+      "source": "apslprb",
+      "noTimeline": true,
+      "sectors": [
+        "police"
+      ]
     }
   }
 }

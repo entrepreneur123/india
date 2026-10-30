@@ -220,4 +220,6 @@ APSLPRB = Board("apslprb", "https://slprb.ap.gov.in", APSLPRB_PAGE, "APSLPRB", _
                 undated=True)
 GPRB = _YearlessBoard("gprb", "https://gprb.gujarat.gov.in", "https://gprb.gujarat.gov.in/", "GPRB", _gprb_entries, _dmy,
                       kind=_gprb_kind, undated=True)
-ALL = (WBPSC, UPESSC, APSLPRB, GPRB)
+# GPRB is written but not run: its home page gives day and month only, so its years would be inferred from the
+# list's order. It waits for its "View All" list (captured as gprb-latest), which may state the year.
+ALL = (WBPSC, UPESSC, APSLPRB)
