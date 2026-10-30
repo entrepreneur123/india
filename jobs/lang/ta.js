@@ -299,6 +299,7 @@ export default {
   state_CG: "சத்தீஸ்கர்",
   state_HP: "இமாச்சலப் பிரதேசம்",
   state_AP: "ஆந்திரப் பிரதேசம்",
+  state_WB: "மேற்கு வங்காளம்",
   anySector: "அனைத்து துறைகள்",
   anyState: "அனைத்து மாநிலங்கள்",
   jobsSector: "{name} வேலைகள்",

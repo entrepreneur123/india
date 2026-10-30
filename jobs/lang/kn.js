@@ -299,6 +299,7 @@ export default {
   state_CG: "ಛತ್ತೀಸ್‌ಗಢ",
   state_HP: "ಹಿಮಾಚಲ ಪ್ರದೇಶ",
   state_AP: "ಆಂಧ್ರ ಪ್ರದೇಶ",
+  state_WB: "ಪಶ್ಚಿಮ ಬಂಗಾಳ",
   anySector: "ಎಲ್ಲಾ ವಲಯಗಳು",
   anyState: "ಎಲ್ಲಾ ರಾಜ್ಯಗಳು",
   jobsSector: "{name} ಉದ್ಯೋಗಗಳು",

@@ -299,6 +299,7 @@ export default {
   state_CG: "ഛത്തീസ്ഗഢ്",
   state_HP: "ഹിമാചൽ പ്രദേശ്",
   state_AP: "ആന്ധ്രാപ്രദേശ്",
+  state_WB: "പശ്ചിമ ബംഗാൾ",
   anySector: "എല്ലാ മേഖലകളും",
   anyState: "എല്ലാ സംസ്ഥാനങ്ങളും",
   jobsSector: "{name} ജോലികൾ",

@@ -299,6 +299,7 @@ export default {
   state_CG: "ଛତିଶଗଡ଼",
   state_HP: "ହିମାଚଳ ପ୍ରଦେଶ",
   state_AP: "ଆନ୍ଧ୍ରପ୍ରଦେଶ",
+  state_WB: "ପଶ୍ଚିମବଙ୍ଗ",
   anySector: "ସବୁ ସେକ୍ଟର",
   anyState: "ସବୁ ରାଜ୍ୟ",
   jobsSector: "{name} ଚାକିରି",
