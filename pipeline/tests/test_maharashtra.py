@@ -207,3 +207,9 @@ def test_a_position_between_two_rows_does_not_join_them():
     seq = mh._printed_order(nums, 350)   # still 18 rows: the grid holds, the misplaced one at most leaves a hole
     assert seq is not None and len(seq) == 350
     assert [x[0] for x in seq if x[0] not in ("", "1016", "1017")] == [str(v) for v in range(1000, 1350) if v not in (1016, 1017)]
+
+
+def test_a_better_reader_tries_failed_sheets_again():
+    assert mh._tries({"ocrTries": 2}) == 0                                   # failed with reader version 1
+    assert mh._tries({"ocrTries": 2, "ocrVersion": mh.OCR_VERSION}) == 2
+    assert mh._tries({}) == 0

@@ -1,0 +1,58 @@
+# Watches the live site for misses (late or missing results, stale feed, impossible numbers, wrong
+# home date, unread Maharashtra sheets, failed results runs) and keeps them as incidents on the
+# `ops` branch (ops/incidents.json, ops/log.jsonl). The incident loop in CLAUDE.md works from there.
+name: watch
+
+on:
+  workflow_run:
+    workflows: [results]
+    types: [completed]
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recent results runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow results.yml --limit 6 \
+            --json databaseId,conclusion,createdAt,status > runs.json || echo "[]" > runs.json
+      - name: Check the live site
+        working-directory: pipeline
+        run: |
+          if git fetch -q origin ops; then
+            git worktree add -q ../ops FETCH_HEAD
+          else   # first run: the branch holds only the incident record
+            git worktree add -q --detach ../ops
+            git -C ../ops checkout -q --orphan ops
+            git -C ../ops rm -rfq .
+          fi
+          python3 -m lottery_pipeline.watch --site https://lottodost.com --out ../ops/ops --runs ../runs.json
+          python3 -c "import json;s=json.load(open('../ops/ops/incidents.json'));[print(f'| {k} | {v[\"severity\"]} | {v[\"detail\"]} |') for k,v in s['open'].items()]" \
+            | sed '1i | open incident | severity | detail |\n|---|---|---|' >> "$GITHUB_STEP_SUMMARY"
+      - name: Keep the record
+        working-directory: ops
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ops
+          git diff --cached --quiet && exit 0
+          git commit -qm "watch $(date -u +%FT%TZ)"
+          for i in 1 2 3; do
+            git push -q origin HEAD:ops && exit 0
+            git fetch -q origin ops && git rebase -q FETCH_HEAD || { git rebase --abort; exit 1; }
+          done

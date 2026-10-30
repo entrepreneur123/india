@@ -1144,6 +1144,11 @@ FEED = "v2/mh"          # separate from the Dear/Kerala feed: the app does not r
 KEEP_TRYING_DAYS = 7    # a sheet not read yet is tried by later runs for this long (3 days lost 26.10 sheets)
 
 
+def _tries(k: dict) -> int:
+    """Tries of the current reader on a sheet (an older reader's failures do not count)."""
+    return k.get("ocrTries", 0) if k.get("ocrVersion", 1) == OCR_VERSION else 0
+
+
 def english_name(url: str) -> str | None:
     """The sheet's file name carries the English name: '... N 100 Mah. Tejaswini Monthly, Draw Result._0001.pdf'."""
     f = urllib.parse.unquote(url.rsplit("/", 1)[-1])
@@ -1196,6 +1201,9 @@ def entry(date: dt.date, url: str, read_result: dict | None, listed_name: str) -
 
 
 OCR_TRIES = 2           # a sheet reads the same way every time: two tries cover a failed download or a timeout
+# Raise when the reader learns a new sheet layout: sheets it failed on get their tries back (30-10-2026:
+# two 29.10 sheets the improved reader reads were never tried again).
+OCR_VERSION = 2
 SHEET_SECONDS = 200     # six readings of one sheet (~2 min on a GitHub runner); downloads run alongside
 DOWNLOADS = 6           # sheets fetched at once: the lottery site sends each slowly (7-12 min a sheet, 28-10-2026)
 
@@ -1234,11 +1242,12 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
     for date, local, url in sheets:  # every draw is on the site at once, as its official sheet
         k = known(date, url)
         if k is None or k.get("status") != "OK":
-            save(date, url, entry(date, url, None, local) | ({"ocrTries": k["ocrTries"]} if k and "ocrTries" in k else {}))
+            kept = {f: k[f] for f in ("ocrTries", "ocrVersion") if k and f in k}
+            save(date, url, entry(date, url, None, local) | kept)
     # Sheets not read yet first (one that did not read reads the same way again), newest first.
     todo = sorted(((date, local, url) for date, local, url in sheets
-                   if (k := known(date, url)).get("status") != "OK" and k.get("ocrTries", 0) < OCR_TRIES),
-                  key=lambda x: (known(x[0], x[2]).get("ocrTries", 0), -x[0].toordinal())) if ocr else []
+                   if (k := known(date, url)).get("status") != "OK" and _tries(k) < OCR_TRIES),
+                  key=lambda x: (_tries(known(x[0], x[2])), -x[0].toordinal())) if ocr else []
     if deadline is not None and time.monotonic() + SHEET_SECONDS > deadline:
         todo = []
     fetched: dict[str, tuple] = {}
@@ -1269,7 +1278,7 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
             nxt = todo[started][2]
             threading.Thread(target=fetch, args=(nxt, waits[nxt]), daemon=True).start()
             started += 1
-        tries = {"ocrTries": k.get("ocrTries", 0) + 1}
+        tries = {"ocrTries": _tries(k) + 1, "ocrVersion": OCR_VERSION}
         ok, pdf = fetched[url]
         if not ok:
             warn(f"Maharashtra {date} {local}: download failed: {pdf}")

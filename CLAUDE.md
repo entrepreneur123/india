@@ -18,6 +18,16 @@ How we pursue it:
 - `.github/workflows/gsc.yml` reads Search Console daily into branch `seo`, signing in without a key (Workload Identity Federation; repo variables `GSC_WIF_PROVIDER`, `GSC_SERVICE_ACCOUNT`; service-account keys are forbidden by the org policy): read `gsc/latest.md` first, `gsc/history/` for trends.
 - Twice a week a scheduled session tunes the site from it: striking-distance queries (position 4–20) get their page's title/description/content matched to the exact wording people search; target queries are tracked over time. Never write pages for games or claims we cannot verify.
 
+## Incident loop (owner's standing order, 30-10-2026)
+Any miss — a late, failed, blocked or wrong upload, a missing draw, a wrong page — is analysed to its root cause,
+fixed, and guarded so it cannot recur silently: a test that fails without the fix and, where the miss could come
+back another way, a check in `pipeline/lottery_pipeline/watch.py`.
+- `.github/workflows/watch.yml` checks the live site after every results run and every 30 min; open incidents are
+  in `ops/incidents.json` on branch `ops` (history in `ops/log.jsonl`).
+- A scheduled session works the open incidents; every handled one gets a row in `docs/INCIDENTS.md`.
+- Never make a miss disappear by loosening a check or publishing unverified numbers; a sheet the reader refuses
+  (readings disagree) stays a PDF link.
+
 ## Other standing rules
 - Report to the owner in Korean. Verify thoroughly, no hallucination; state what was not verified.
 - Develop and push only on branch `claude/gallant-lovelace-ynoa63`.
