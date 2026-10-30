@@ -38,7 +38,7 @@ RANKS = [("1", r"first|1st"), ("CONS", r"consolation"), ("2", r"second|2nd"), ("
 _HEAD = re.compile(r"(?i)\b(%s)\s*prize" % "|".join(p for _, p in RANKS))
 _TICKET = re.compile(r"\b([A-Z]{2}) ?(\d{6})\b")
 _SERIES_BLOCK = re.compile(r"\{\s*((?:[A-Z]{2}\s+)*[A-Z]{2})\s*\}\s*(\d{6})")
-_AMOUNT = re.compile(r"(\d{1,3}(?:,\d{2,3})+|\d{3,})")
+_AMOUNT = re.compile(r"(\d{1,3}(?: ?[,.]\d{2,3})+|\d{3,})")   # typos seen: "1.00,00,000" (29-10), "5 ,00,000" (28-10)
 _DRAWN = re.compile(r"(?i)drawn\s+(\d+)\s+times")
 
 
@@ -76,13 +76,15 @@ def parse(text: str) -> list[dict]:
         amount = _AMOUNT.search(body[:60])
         if not amount:
             continue
-        prize = int(amount.group(1).replace(",", ""))
+        prize = int(re.sub(r"[ ,.]", "", amount.group(1)))
         rest = body[amount.end():]
         if rank in ("1", "CONS", "2", "3"):
             nums = [f"{s} {n}" for s, n in _TICKET.findall(rest)]
             block = _SERIES_BLOCK.search(rest)   # govdotin: "{MA MB … ML } 289707"
             if block:
                 nums = [f"{s} {block.group(2)}" for s in block.group(1).split()]
+            if not nums:   # a sentence about the prize ("first prize winner got 1 Crore"), not its block
+                continue
             tiers[rank] = {"rank": rank, "prize": prize, "match": "EXACT", "numbers": nums}
         else:
             words = rest.split()
@@ -160,7 +162,12 @@ def from_govdotin(date: dt.date) -> tuple[str, str] | None:
 
 def from_blog(base: str, date: dt.date) -> tuple[str, str] | None:
     """Text of the blog post for that date, found in the blog's JSON feed (no guessing of slugs)."""
-    feed = get_bytes(f"{base}/feeds/posts/default?alt=json&max-results=8")
+    # Posts appear the evening before the draw and are filled in after it: ask for those days only, so
+    # an older date is found too (Blogger feeds filter by publication time).
+    lo = (date - dt.timedelta(days=2)).isoformat() + "T00:00:00+05:30"
+    hi = (date + dt.timedelta(days=1)).isoformat() + "T23:59:59+05:30"
+    feed = get_bytes(f"{base}/feeds/posts/default?alt=json&max-results=10&published-min="
+                     f"{urllib.parse.quote(lo)}&published-max={urllib.parse.quote(hi)}")
     if not feed:
         return None
     stamp = date.strftime("%d-%m-%Y")
@@ -237,3 +244,44 @@ def entry(date: dt.date, tiers: list[dict], head: tuple[str, int] | None, urls: 
             "format": "B6", "price": 0, "special": bumper, "verified": False, "status": "OK", "ocr": False,
             "tiers": tiers,
             "sources": [{"kind": "copy", "url": u} for u in urls] + [{"kind": "officialSite", "url": OFFICIAL_SITE}]}
+
+
+def backfill(out: str, today: dt.date, days: int, limit: int, warn=print) -> int:
+    """Older Kerala draws for dates whose day file has none yet, newest first, at most `limit` reads a
+    run. Same rule as a new draw (two copies agree on every top prize), and only when a copy names the
+    draw (code and number), so a date with another schedule or no draw is never guessed."""
+    from . import build
+    added = tried = 0
+    for back in range(3, days + 1):
+        date = today - dt.timedelta(days=back)
+        path = build._day_path(out, date)
+        day = build._read_json(path, None)
+        if day is None or any(d.get("slot") == "KL" for d in day["draws"]):
+            continue
+        if tried >= limit:
+            break
+        tried += 1
+        try:
+            got = fetch(date, warn)
+        except Exception as e:  # noqa: BLE001 - one date must not stop the others
+            warn(f"Kerala {date}: backfill failed: {type(e).__name__}: {e}")
+            continue
+        if got is None or not got.get("drawNo"):
+            continue
+        order = {s: i for i, s in enumerate(build.SLOTS)}
+        draws = sorted(day["draws"] + [got], key=lambda x: (x["time"], order.get(x["slot"], 99)))
+        build._write_json(path, {**day, "draws": draws})
+        added += 1
+    print(f"Kerala backfill: {added} of {tried} dates added")
+    return added
+
+
+if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser(description="Kerala State Lottery: add older draws to v2/days/")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--backfill-days", type=int, default=300)
+    ap.add_argument("--max", type=int, default=25)
+    a = ap.parse_args()
+    ist = dt.timezone(dt.timedelta(hours=5, minutes=30))
+    backfill(a.out, dt.datetime.now(ist).date(), a.backfill_days, a.max)

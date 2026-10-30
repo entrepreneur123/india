@@ -243,6 +243,11 @@ jobs:
             # Started early (the normal case): wait here instead of asking the source every minute.
             if [ "$now" -lt "$start" ]; then echo "waiting until $from UTC"; sleep $(( start - now )); fi
           fi
+          if [ "${{ steps.mode.outputs.deep }}" = "true" ]; then
+            # Older Kerala draws, 25 dates a run, by the same two-copies rule (pages for "kerala lottery result <date>").
+            nosecret timeout 900 python -m lottery_pipeline.kerala --out ../public --backfill-days 300 --max 25 \
+              || echo "::warning::Kerala backfill failed"
+          fi
           end=$(( $(date +%s) + ${{ steps.mode.outputs.watch }} * 60 ))
           while :; do
             set +e; nosecret python -m lottery_pipeline.build $args; code=$?; set -e

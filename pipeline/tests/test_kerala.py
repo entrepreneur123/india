@@ -90,3 +90,21 @@ def test_build_publishes_kerala_after_the_draw_only(tmp_path, monkeypatch):
     assert kl["lottery"] == "kerala" and kl["name"] == "SAMRUDHI SM-77" and kl["format"] == "B6"
     assert kl["tiers"][0]["numbers"] == ["MM 289707"]
     assert [s["kind"] for s in kl["sources"]] == ["copy", "copy", "officialSite"]
+
+
+def test_amount_typos_and_a_sentence_before_the_prize_block():
+    """Real lines of 28 and 29 Oct 2026 (Karunya Plus went unpublished every Thursday before this)."""
+    base = read("klnet_18-10-2026.html")
+    first = base.lower().find("1st")
+    typo = ("Last week the first prize winner got 1 Crore Rupees.\nKerala Lottery Result 2026\n"
+            + base[:first] + base[first:].replace("1,00,00,000", "1.00,00,000", 1).replace("5,00,000", "5 ,00,000", 1))
+    t = {x["rank"]: x for x in kerala.parse(typo)}
+    assert t["1"]["prize"] == 10000000 and t["1"]["numbers"] == tiers("klnet_18-10-2026.html")["1"]["numbers"]
+    assert [x["prize"] for x in kerala.parse(typo)] == [x["prize"] for x in kerala.parse(base)]
+
+
+def test_blog_feed_is_asked_for_the_days_around_the_draw(monkeypatch):
+    seen = []
+    monkeypatch.setattr(kerala, "get_bytes", lambda url, **k: seen.append(url) or json.dumps({"feed": {}}).encode())
+    kerala.from_blog("https://x.test", dt.date(2026, 10, 15))
+    assert "published-min=2026-10-13T00%3A00%3A00%2B05%3A30" in seen[0] and "published-max=2026-10-16T23" in seen[0]
