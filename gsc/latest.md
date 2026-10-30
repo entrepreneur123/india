@@ -1,16 +1,16 @@
-# Search Console 2026-10-02 – 2026-10-30 (generated 2026-10-30T05:25+00:00)
+# Search Console 2026-10-02 – 2026-10-30 (generated 2026-10-30T10:14+00:00)
 
 ## Countries
 | country | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| ind | 53 | 735 | 7.2% | 9.3 |
-| bgd | 0 | 35 | 0.0% | 21.7 |
-| bra | 0 | 14 | 0.0% | 44.8 |
+| ind | 56 | 769 | 7.3% | 9.3 |
+| bgd | 0 | 37 | 0.0% | 21.1 |
+| bra | 0 | 15 | 0.0% | 46.8 |
 | kor | 5 | 8 | 62.5% | 1.2 |
 | usa | 0 | 7 | 0.0% | 30.3 |
 | rus | 0 | 4 | 0.0% | 37 |
+| arg | 0 | 3 | 0.0% | 47 |
 | are | 0 | 2 | 0.0% | 37 |
-| arg | 0 | 2 | 0.0% | 44 |
 | can | 0 | 2 | 0.0% | 42 |
 | fra | 0 | 2 | 0.0% | 61.5 |
 
@@ -22,7 +22,8 @@
 | 2026-10-26 | 5 | 103 | 4.9% | 13.1 |
 | 2026-10-27 | 9 | 120 | 7.5% | 10.6 |
 | 2026-10-28 | 11 | 197 | 5.6% | 15.8 |
-| 2026-10-29 | 29 | 386 | 7.5% | 9.3 |
+| 2026-10-29 | 32 | 425 | 7.5% | 9.5 |
+| 2026-10-30 | 0 | 0 | 0.0% | 0 |
 
 ## India: top queries by impressions
 | query | clicks | impressions | CTR | position |
@@ -35,13 +36,13 @@
 | maharashtra sahyadri | 0 | 5 | 0.0% | 7.6 |
 | lottery fake | 0 | 4 | 0.0% | 9.5 |
 | maharashtra gajlaxmi lottery result today live | 0 | 4 | 0.0% | 7.5 |
+| 28.10 22 lottery result | 0 | 3 | 0.0% | 8 |
 | dear8pm | 0 | 3 | 0.0% | 8.7 |
 | lottery payout calculator | 0 | 3 | 0.0% | 30.7 |
 | maharashtra akshay weekly draw | 0 | 3 | 0.0% | 7.7 |
 | महाराष्ट्र अक्षय लॉटरी निकाल | 0 | 3 | 0.0% | 8.3 |
 | maharashtra akshay lottery | 1 | 2 | 50.0% | 2 |
 | 22 october result 2026 | 0 | 2 | 0.0% | 8 |
-| 28.10 22 lottery result | 0 | 2 | 0.0% | 7 |
 | gajlaxmi lottery | 0 | 2 | 0.0% | 6 |
 | lottery | 0 | 2 | 0.0% | 159 |
 | lottery sambad17.10.26 | 0 | 2 | 0.0% | 9 |
@@ -49,6 +50,7 @@
 | lottery tax calculator | 0 | 2 | 0.0% | 28.5 |
 | maharashtra akshay lottery result today | 0 | 2 | 0.0% | 6 |
 | maharashtra gajlaxmi budh weekly draw | 0 | 2 | 0.0% | 7.5 |
+| maharashtra tejaswini monthly draw | 0 | 2 | 0.0% | 8.5 |
 | nagaland state lottery 27.10.26 | 0 | 2 | 0.0% | 52 |
 | sahyadri lottery | 0 | 2 | 0.0% | 8 |
 | taxes on lottery winnings calculator | 0 | 2 | 0.0% | 9.5 |
@@ -66,6 +68,7 @@
 | 28 10 26 dear lottery result | 0 | 1 | 0.0% | 32 |
 | dl75 kerala lottery result | 0 | 1 | 0.0% | 38 |
 | fake lottery | 0 | 1 | 0.0% | 6 |
+| ganesh lottery | 0 | 1 | 0.0% | 9 |
 | income tax calculator lottery winnings | 0 | 1 | 0.0% | 7 |
 | kerala lottery result 24 10 2026 | 0 | 1 | 0.0% | 48 |
 | kerala lottery result 25.10.2026 | 0 | 1 | 0.0% | 35 |
@@ -83,10 +86,8 @@
 | lottery sambad 27 10 26 | 0 | 1 | 0.0% | 23 |
 | lottery sambad 28 10 26 | 0 | 1 | 0.0% | 31 |
 | lottery sambad 29.10.26 | 0 | 1 | 0.0% | 51 |
-| maharashtra akshay weekly draw result | 0 | 1 | 0.0% | 6 |
-| maharashtra padmini lottery nikal today | 0 | 1 | 0.0% | 9 |
-| maharashtra sahyadri mahalaxmi | 0 | 1 | 0.0% | 6 |
-| maharashtra tejaswini monthly draw | 0 | 1 | 0.0% | 8 |
+| lottery tax calculator india | 0 | 1 | 0.0% | 8 |
+| lotto result october 28 2026 | 0 | 1 | 0.0% | 9 |
 
 ## India: striking distance (position 4–20, ≥3 impressions)
 | query | clicks | impressions | CTR | position |
@@ -99,6 +100,7 @@
 | maharashtra sahyadri | 0 | 5 | 0.0% | 7.6 |
 | lottery fake | 0 | 4 | 0.0% | 9.5 |
 | maharashtra gajlaxmi lottery result today live | 0 | 4 | 0.0% | 7.5 |
+| 28.10 22 lottery result | 0 | 3 | 0.0% | 8 |
 | dear8pm | 0 | 3 | 0.0% | 8.7 |
 | maharashtra akshay weekly draw | 0 | 3 | 0.0% | 7.7 |
 | महाराष्ट्र अक्षय लॉटरी निकाल | 0 | 3 | 0.0% | 8.3 |
@@ -110,8 +112,8 @@
 | maharashtra gajlaxmi lottery result today | 0 | 7 | 0.0% | 9.9 |
 | 28 10 26 lottery result | 0 | 6 | 0.0% | 7 |
 | maharashtra gajlaxmi lottery result today live | 0 | 4 | 0.0% | 7.5 |
+| 28.10 22 lottery result | 0 | 3 | 0.0% | 8 |
 | dear8pm | 0 | 3 | 0.0% | 8.7 |
-| 28.10 22 lottery result | 0 | 2 | 0.0% | 7 |
 | lottery sambad17.10.26 | 0 | 2 | 0.0% | 9 |
 | maharashtra akshay lottery result today | 0 | 2 | 0.0% | 6 |
 | 25.10 21 lottery result | 1 | 1 | 100.0% | 16 |
@@ -140,24 +142,24 @@
 ## Pages (all countries)
 | page | clicks | impressions | CTR | position |
 |---|---|---|---|---|
-| https://lottodost.com/maharashtra/akshay/ | 16 | 128 | 12.5% | 4.3 |
-| https://lottodost.com/maharashtra/gajlaxmi-budh/ | 7 | 70 | 10.0% | 5.2 |
+| https://lottodost.com/maharashtra/akshay/ | 18 | 138 | 13.0% | 4.2 |
+| https://lottodost.com/maharashtra/gajlaxmi-budh/ | 7 | 73 | 9.6% | 5.3 |
 | https://lottodost.com/day-6pm/ | 1 | 46 | 2.2% | 15.5 |
-| https://lottodost.com/lottery-tax/ | 0 | 40 | 0.0% | 10.9 |
-| https://lottodost.com/result/28-10-2026/ | 2 | 39 | 5.1% | 16.7 |
+| https://lottodost.com/result/28-10-2026/ | 2 | 42 | 4.8% | 16.1 |
+| https://lottodost.com/lottery-tax/ | 0 | 42 | 0.0% | 10.7 |
 | https://lottodost.com/result/25-10-2026/ | 4 | 29 | 13.8% | 11.8 |
 | https://lottodost.com/night-8pm/ | 1 | 28 | 3.6% | 7.5 |
 | https://lottodost.com/kerala/ | 2 | 27 | 7.4% | 11.0 |
 | https://lottodost.com/morning-1pm/ | 2 | 25 | 8.0% | 17.3 |
+| https://lottodost.com/maharashtra/padmini/ | 1 | 23 | 4.3% | 4.7 |
 | https://lottodost.com/ | 6 | 22 | 27.3% | 14.5 |
-| https://lottodost.com/maharashtra/padmini/ | 1 | 21 | 4.8% | 4.9 |
-| https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/ | 5 | 20 | 25.0% | 5.4 |
+| https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/ | 5 | 21 | 23.8% | 5.6 |
 | https://lottodost.com/hi/lottery-tax/ | 0 | 19 | 0.0% | 8.1 |
-| https://lottodost.com/result/28-10-2026/kerala/ | 0 | 16 | 0.0% | 11.1 |
+| https://lottodost.com/maharashtra/tejaswini/ | 1 | 18 | 5.6% | 7.2 |
+| https://lottodost.com/result/28-10-2026/kerala/ | 0 | 17 | 0.0% | 10.9 |
 | https://lottodost.com/result/22-10-2026/ | 2 | 15 | 13.3% | 10.5 |
 | https://lottodost.com/lottery-scams/ | 0 | 13 | 0.0% | 11.5 |
-| https://lottodost.com/maharashtra/tejaswini/ | 0 | 13 | 0.0% | 7.2 |
-| https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/ | 3 | 9 | 33.3% | 3.6 |
+| https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/ | 3 | 10 | 30.0% | 4.1 |
 | https://lottodost.com/result/26-10-2026/ | 0 | 9 | 0.0% | 8.1 |
 | https://lottodost.com/claim-prize/ | 0 | 8 | 0.0% | 7.2 |
 | https://lottodost.com/result/27-10-2026/ | 0 | 8 | 0.0% | 16.2 |
@@ -165,11 +167,11 @@
 | https://lottodost.com/yesterday/ | 1 | 6 | 16.7% | 24 |
 | https://lottodost.com/bn/morning-1pm/ | 0 | 6 | 0.0% | 6.7 |
 | https://lottodost.com/hi/day-6pm/ | 0 | 6 | 0.0% | 8.7 |
+| https://lottodost.com/hi/night-8pm/ | 0 | 6 | 0.0% | 7.7 |
 | https://lottodost.com/privacy | 1 | 5 | 20.0% | 5.4 |
 | https://lottodost.com/bn/night-8pm/ | 0 | 5 | 0.0% | 35.2 |
 | https://lottodost.com/contact/ | 0 | 5 | 0.0% | 4 |
 | https://lottodost.com/hi/morning-1pm/ | 0 | 5 | 0.0% | 8 |
-| https://lottodost.com/hi/night-8pm/ | 0 | 5 | 0.0% | 8.6 |
 | https://lottodost.com/maharashtra/sahyadri-mahalaxmi/ | 0 | 5 | 0.0% | 5.2 |
 | https://lottodost.com/result/19-10-2026/ | 0 | 5 | 0.0% | 21.6 |
 | https://lottodost.com/result/24-10-2026/ | 0 | 5 | 0.0% | 28.6 |
@@ -177,9 +179,9 @@
 | https://lottodost.com/bn/result/18-03-2026/6pm/ | 0 | 4 | 0.0% | 55.5 |
 | https://lottodost.com/maharashtra/sagarlaxmi/ | 0 | 4 | 0.0% | 4.2 |
 | https://lottodost.com/result/17-10-2026/ | 0 | 4 | 0.0% | 17 |
+| https://lottodost.com/result/23-10-2026/ | 0 | 4 | 0.0% | 10 |
 | https://lottodost.com/result/26-09-2026/ | 0 | 4 | 0.0% | 10.8 |
 | http://lottodost.com/ | 0 | 3 | 0.0% | 1 |
-| https://lottodost.com/bn/ | 0 | 3 | 0.0% | 6.3 |
 
 ## Index state
 | url | verdict | coverage | last crawl |
