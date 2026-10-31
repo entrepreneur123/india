@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next'
 
+// A static site (output: export) must say so for this route to be written at build time.
+export const dynamic = 'force-static'
+
 // /manifest.webmanifest: the site as an installable app (home-screen icon, name, colours). Icons: public/icon-*.png.
 export default function manifest(): MetadataRoute.Manifest {
   return {
