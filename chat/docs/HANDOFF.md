@@ -52,6 +52,10 @@
 - 방 유튜브: 방장·부방장은 유튜브 창 자체의 재생·정지·막대바로도 방 전체를 조작(0.6초 안정 후 반영, iframe에 포커스가 있을 때만 = 사용자가 직접 누른 것). 휴대폰이 스스로 멈춘 건 내 화면만. 유튜브 창의 볼륨은 우리 슬라이더에도 반영. 이 환경에선 실제 유튜브가 "콘텐츠 사용 불가"로 막혀 가짜 IFrame API(스크래치패드 fakeyt.js)로 검증함.
 
 ## 4. 이어서 할 일 (우선순위 순)
+0. **[2026-10-31 미적용] 108·109 → 실서버 적용 후 웹 배포** (커밋 a7d5d345, 9abccab4, 이 커밋). 웹은 108을 전제로 하므로 **108 적용 전에 배포 금지**(방 채팅 줄이 안 옴).
+   - 순서: 108을 begin…rollback 시험(방 줄 'l' → voice:<방> 1건, 차단 있으면 user:<id>로 차단자 제외, DM 'c', presence 'p'가 user:로, "friend presence" 정책 삭제) → `apply_migration` → 109도 같은 식(시험: '968%' 번호 → OM, '1204' → CA, 기존 51개 접두사 그대로) → 적용 → 배포 → 두 계정 실시험(rt.mjs: 방 줄, DM 'c', 'p').
+   - 시험 SQL에 DROP 문이 있으면 Supabase MCP가 확인 질문을 띄우고, 응답이 없으면 230초 뒤 실패한다(이번 세션 1회). 시험에서는 DROP 줄을 빼고 돌릴 것.
+   - Android는 아직 3초 하트비트·방 줄 Postgres Changes(앱 출시 때 웹 규칙으로 옮김: `lib/voice-lost.ts` beatsFast, 108).
 1. **방 채팅 ✓/✓✓ 화면 연결 — 완료(2026-10-30)**: `lib/voice-chat.ts`의 readByOthers·movesReads·nextReads(서버 규칙과 같음, 단위 테스트), 세션 `readBy`·`markRead`, 화면은 1.5~3초 무작위 대기 후 읽음(동시 호출 방지). 아래는 당시 설계 메모.
    - RPC `voice_read(p_room, p_upto bigint)` → `{hi, by, hi2}`. 읽음 표시가 움직이면 방 스트림에 `voice_emit` `{t:'k', hi, by, hi2, seq}` 이 온다.
    - (참고) 데모 Playwright 테스트는 약 20초 뒤 뜨는 가짜 Arjun 전화를 먼저 거절해야 한다(창이 화면을 덮어 클릭이 30초 지연됨).
