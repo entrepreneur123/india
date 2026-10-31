@@ -136,14 +136,15 @@ function RoomCard({ room, here, onOpen, onTag }: { room: VoiceRoomSummary; here:
       </span>
       <span className="line-clamp-2 text-[15px] leading-snug font-bold tracking-tight sm:text-[17px]">{room.title}</span>
       {room.tags.length ? (
-        <span className="-mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5">
+        <span className="-mt-2 flex flex-wrap gap-x-2">
           {room.tags.map((tag) => (
             <button
               key={tag}
               type="button"
               disabled={!onTag}
               onClick={() => onTag?.(tag)}
-              className="relative z-10 text-[13px] font-semibold text-primary-text enabled:hover:underline disabled:pointer-events-none"
+              // 24 px tall (WCAG 2.5.8) without growing into the card's own tap area.
+              className="relative z-10 py-0.5 text-[13px] font-semibold text-primary-text enabled:hover:underline disabled:pointer-events-none"
             >
               #{tag}
             </button>

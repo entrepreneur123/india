@@ -8,7 +8,7 @@ import { playRoomSound } from '@/lib/room-sounds'
 import type { Profile } from '@/lib/backend'
 import useSWR from 'swr'
 import { useBackend } from '@/lib/backend-context'
-import { errorCode, flagEmoji } from '@/lib/format'
+import { errorCode } from '@/lib/format'
 import { isVip, nameAge } from '@/lib/looks'
 import { cn } from '@/lib/utils'
 import { wallOf } from '@/lib/walls'
@@ -240,10 +240,12 @@ export function ChatView({
             onClick={() => openProfile(partner.id, { matchId })}
             className="flex min-w-0 flex-1 items-center gap-3 rounded-full p-1 pe-3 text-start transition-colors duration-150 hover:bg-muted"
           >
-            <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={40} />
+            {/* The flag on the photo, as in Recent's rows: on a 360 px phone the name keeps the width. */}
+            <UserAvatar userId={lookId} name={partner.name} src={partner.photoUrl} size={40} country={partner.country} />
             <span className="min-w-0">
-              <span className="flex items-center gap-1.5 truncate text-[15px] font-semibold">
-                {isVip(partner) ? <span className="vip-gold italic">{nameAge(partner.name, partner.age)}</span> : <PersonName p={{ ...partner, id: lookId }} />} <TrustBadge userId={lookId} size={16} /> <span aria-hidden>{flagEmoji(partner.country)}</span>
+              <span className="flex min-w-0 items-center gap-1.5 text-[15px] font-semibold">
+                {isVip(partner) ? <span className="vip-gold truncate italic">{nameAge(partner.name, partner.age)}</span> : <PersonName p={{ ...partner, id: lookId }} className="truncate" />}
+                <TrustBadge userId={lookId} size={16} />
               </span>
               <span className="flex min-w-0 text-xs text-muted-foreground">
                 {ended ? (

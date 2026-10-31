@@ -27,16 +27,17 @@ export function RoomLangSelect({
   return (
     <label
       className={cn(
-        'relative inline-flex h-11 items-center gap-2 rounded-full border border-input bg-card pe-4 ps-3.5 text-sm font-medium transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-muted',
+        'relative inline-flex h-11 items-center rounded-full border border-input bg-card text-sm font-medium transition-colors duration-150 focus-within:ring-2 focus-within:ring-ring hover:bg-muted',
         className,
       )}
     >
-      <Languages className="size-4.5 shrink-0 text-muted-foreground" aria-hidden />
+      <Languages className="pointer-events-none absolute start-3.5 size-4.5 text-muted-foreground" aria-hidden />
       <span className="sr-only">{label}</span>
+      {/* The whole pill is the select (a tap on the icon or the padding opens it too); long names end in "…". */}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="min-w-0 flex-1 cursor-pointer appearance-none bg-transparent outline-none"
+        className="h-full min-w-0 flex-1 cursor-pointer appearance-none truncate rounded-full bg-transparent pe-4 ps-9.5 outline-none"
         style={{ fontFamily: 'system-ui, sans-serif' }}
       >
         {anyLabel !== undefined ? <option value="">{anyLabel}</option> : null}

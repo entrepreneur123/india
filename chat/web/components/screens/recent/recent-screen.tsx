@@ -281,8 +281,14 @@ function FriendsList({
             return (
             <Row key={f.profile.id}>
               <Who p={f.profile} detail={<LastLine last={f.last} unread={unread > 0} />} onOpen={() => openThread(f.profile)} />
-              {f.last ? <span className="shrink-0 self-start pt-1 text-xs text-muted-foreground">{timeAgo(f.last.at)}</span> : null}
-              <Unread n={unread} />
+              {/* The time with the unread count under it, as GroupRow (WhatsApp, KakaoTalk): the name and last line
+                  keep the width on a 360 px phone. */}
+              {f.last || unread > 0 ? (
+                <span className="flex shrink-0 flex-col items-end gap-1 self-start pt-1 text-xs text-muted-foreground">
+                  {f.last ? timeAgo(f.last.at) : null}
+                  <Unread n={unread} />
+                </span>
+              ) : null}
               <Button size="icon" variant="ghost" onClick={() => openThread(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
                 <MessageCircle className="size-5" aria-hidden />
               </Button>

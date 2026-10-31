@@ -407,12 +407,12 @@ export function RandomScreen({ active }: { active: boolean }) {
               <button
                 type="button"
                 onClick={() => (showRecentSegment('groups'), setTab('recent'))}
-                className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-primary-text hover:underline"
+                className="mt-1 flex min-h-11 items-center gap-1.5 px-3 text-sm font-semibold text-primary-text hover:underline"
               >
                 <Users className="size-4" aria-hidden /> {t('lobby.party')}
               </button>
 
-              <ul className="mt-8 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
+              <ul className="mt-6 flex flex-wrap justify-center gap-2 text-xs font-medium text-muted-foreground">
                 <Pill icon={<MessageCircle className="size-3.5" aria-hidden />}>{t('lobby.textFirst')}</Pill>
                 <Pill icon={<Flag className="size-3.5" aria-hidden />}>{t('lobby.reportLeave')}</Pill>
               </ul>
