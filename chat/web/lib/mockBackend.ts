@@ -1332,8 +1332,8 @@ export class MockBackend implements Backend {
     return (await this.voice()).setPassword(roomId, password)
   }
 
-  async setRoomNotice(roomId: string, text: string) {
-    return (await this.voice()).notice(roomId, text)
+  async setRoomNotice(roomId: string, text: string, line: number | null) {
+    return (await this.voice()).notice(roomId, text, line)
   }
 
   // ---- 48 group chats (069): one demo group to start with; someone answers a moment after I write ----

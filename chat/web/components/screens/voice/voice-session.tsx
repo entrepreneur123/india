@@ -81,8 +81,8 @@ export interface VoiceSession {
   act: (a: VoiceAction) => Promise<boolean>
   /** `replyTo`: the line this one answers. */
   send: (text: string, replyTo?: number | null) => Promise<boolean>
-  /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude). */
-  sendPhoto: (photo: File) => Promise<boolean>
+  /** Checks the photo for nudity on this device, then sends it (refused with a message when it looks nude): its line. */
+  sendPhoto: (photo: File) => Promise<VoiceLine | null>
   /** A recorded voice message (104). */
   sendAudio: (clip: File) => Promise<boolean>
   /** Posts a conversation starter card. */
@@ -374,47 +374,48 @@ function useVoiceSession(roomId: string, onGone: () => void, ending: React.RefOb
     [backend, roomId, toast, t],
   )
 
-  /** Posts a line and shows it at once (its realtime copy is the same id); false with a message when it wasn't sent. */
+  /** Posts a line and shows it at once (its realtime copy is the same id); null with a message when it wasn't sent. */
   const post = useCallback(
     async (send: () => Promise<VoiceLine>) => {
       try {
-        addLines([await send()])
-        return true
+        const line = await send()
+        addLines([line])
+        return line
       } catch (err) {
         toast.error(err)
-        return false
+        return null
       }
     },
     [addLines, toast],
   )
   const send = useCallback(
-    (text: string, replyTo?: number | null) => post(() => backend.sendVoice(roomId, text, replyTo ?? null)),
+    (text: string, replyTo?: number | null) => post(() => backend.sendVoice(roomId, text, replyTo ?? null)).then(Boolean),
     [backend, roomId, post],
   )
-  const sendAudio = useCallback((clip: File) => post(() => backend.sendVoiceAudio(roomId, clip)), [backend, roomId, post])
+  const sendAudio = useCallback((clip: File) => post(() => backend.sendVoiceAudio(roomId, clip)).then(Boolean), [backend, roomId, post])
   const sendPhoto = useCallback(
     async (photo: File) => {
       if (!photo.type.startsWith('image/')) {
         toast.error(new BackendError('bad_media'))
-        return false
+        return null
       }
       // The model runs here, before anything is uploaded; a photo that can't be checked isn't sent either.
       try {
         const { classifyImage } = await retryImport(() => import('@/lib/nudity'))
         if (await classifyImage(photo)) {
           toast.error(new BackendError('nude_photo'))
-          return false
+          return null
         }
       } catch {
         toast.error(new BackendError('network'))
-        return false
+        return null
       }
       return post(() => backend.sendVoicePhoto(roomId, photo))
     },
     [backend, roomId, post, toast],
   )
   const createPoll = useCallback(
-    (question: string, options: string[]) => post(() => backend.voicePollCreate(roomId, question, options)),
+    (question: string, options: string[]) => post(() => backend.voicePollCreate(roomId, question, options)).then(Boolean),
     [backend, roomId, post],
   )
 

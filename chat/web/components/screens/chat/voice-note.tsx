@@ -7,9 +7,9 @@ import { useToast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 
 // Voice messages (099): the composer's "+" menu starts one (as KakaoTalk's); it records
-// (up to 60 s), the bar shows the time with Delete and Send; the clip goes out as chat media of kind 'audio'.
+// (up to 30 s, the owner 2026-10-31), the bar shows the time with Delete and Send; the clip goes out as chat media of kind 'audio'.
 
-const MAX_MS = 60_000
+const MAX_MS = 30_000
 const MIN_MS = 800
 /** Opus in WebM where the browser has it (Chrome, Firefox, Android), else AAC in MP4 (Safari, iPhone). */
 const TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus']
@@ -46,7 +46,7 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
         timer = setInterval(() => {
           const now = Date.now() - started.current
           setMs(Math.min(now, MAX_MS))
-          if (now >= MAX_MS && r.state === 'recording') r.pause() // 60 s: it waits for Send or Delete
+          if (now >= MAX_MS && r.state === 'recording') r.pause() // the limit: it waits for Send or Delete
         }, 200)
       })
       .catch(() => {
@@ -86,7 +86,9 @@ export function VoiceRecorder({ onSend, onDone }: { onSend: (clip: File) => Prom
         <Trash2 className="size-5" aria-hidden />
       </button>
       <span className="size-2.5 shrink-0 animate-pulse rounded-full bg-destructive" aria-hidden />
-      <span className="flex-1 text-[15px] tabular-nums">{clock(ms)}</span>
+      <span className="flex-1 text-[15px] tabular-nums">
+        {clock(ms)} <span className="text-muted-foreground">/ {clock(MAX_MS)}</span>
+      </span>
       <button
         type="button"
         onClick={() => stop(true)}

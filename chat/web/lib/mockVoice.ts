@@ -208,7 +208,7 @@ export class VoiceSim {
     }))
     const host = people[0]
     const room: SimRoom['room'] = {
-      id, title, mode, hostId: host.id, members, ...rules, announcement, code: null, lang: SEED_LANG[id] ?? 'en', password: SEED_PASSWORD[id] ?? null,
+      id, title, mode, hostId: host.id, members, ...rules, announcement, noticeLine: null, noticePhoto: null, code: null, lang: SEED_LANG[id] ?? 'en', password: SEED_PASSWORD[id] ?? null,
       seats: Array.from({ length: VOICE_SEATS }, (_, index) => ({ index, locked: index === 8 && mode === 'approval' })),
       track: null,
       queue: [],
@@ -379,7 +379,7 @@ export class VoiceSim {
     const room: SimRoom['room'] = {
       id, title, mode: 'approval', hostId: me.id, code: null, password: null,
       maxMembers: n.maxMembers, genderRule: n.genderRule, minAge: n.minAge, maxAge: n.maxAge, isPrivate: n.isPrivate,
-      announcement: n.announcement.trim() || null,
+      announcement: n.announcement.trim() || null, noticeLine: null, noticePhoto: null,
       lang: n.lang,
       // The host comes in off the stage: the room is a chat room until someone joins the voice.
       members: [
@@ -457,16 +457,19 @@ export class VoiceSim {
   }
 
   /** Same rules as the server's voice_notice (064): the host or a co-host; a new notice says so in the chat. */
-  async notice(roomId: string, text: string) {
+  /** As voice_notice2 (106): the whole notice, text and/or a photo line of this room. */
+  async notice(roomId: string, text: string, line: number | null) {
     const r = this.get(roomId)
     const me = this.meMember(r)
     if (!me || (me.role !== 'host' && me.role !== 'cohost')) throw new BackendError('not_allowed')
     const notice = text.trim() || null
     if (notice && notice.length > 200) throw new BackendError('bad_request')
+    const photo = line === null ? null : r.lines.find((l) => l.id === line && l.kind === 'photo')
+    if (photo === undefined) throw new BackendError('bad_media')
     await wait(200)
-    if (notice === r.room.announcement) return
-    r.room.announcement = notice
-    if (notice) this.system(r, 'notice', me.profile.name)
+    if (notice === r.room.announcement && line === r.room.noticeLine) return
+    Object.assign(r.room, { announcement: notice, noticeLine: line, noticePhoto: photo?.kind === 'photo' ? photo.url : null })
+    if (notice || line !== null) this.system(r, 'notice', me.profile.name)
     this.changed(r)
   }
 

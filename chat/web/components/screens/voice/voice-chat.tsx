@@ -3,7 +3,7 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, Check, CheckCheck, EyeOff, ImagePlus, LoaderCircle, Mic, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
+import { ArrowDown, Check, CheckCheck, EyeOff, ImagePlus, LoaderCircle, Mic, Pin, Plus, Reply, SendHorizontal, ShieldCheck, X } from 'lucide-react'
 import type { Profile, VoiceLine, VoicePoll, VoiceReply } from '@/lib/backend'
 import { insertMention, mentionMatches, mentionQuery, mentionRanges, replyOf, type Quotable } from '@/lib/voice-chat'
 import { pollPercents } from '@/lib/voice-polls'
@@ -19,6 +19,7 @@ import { LinkPreview, LinkText } from '@/components/screens/chat/link-viewer'
 import { cn } from '@/lib/utils'
 import { useRoomT, type RoomT } from './room-t'
 import type { VoiceSession } from './voice-session'
+import type { NoticeDraft } from './voice-sheets'
 import { isMod, memberOf, roleLabel, systemText } from './voice-text'
 import { LookName, useLook } from '@/components/looks/look-name'
 import { UserAvatar } from '@/components/looks/user-avatar'
@@ -46,12 +47,15 @@ export function VoiceChat({
   s,
   onPerson,
   onReply,
+  onNotice,
   className,
 }: {
   s: VoiceSession
   onPerson: (userId: string) => void
   /** Answer this line (hover button, swipe right, long press). */
   onReply: (line: Quotable) => void
+  /** The host and co-hosts: a text or photo line becomes the room's notice (its menu, as KakaoTalk's). */
+  onNotice?: (draft: NoticeDraft) => void
   className?: string
 }) {
   const { t } = useI18n()
@@ -196,6 +200,7 @@ export function VoiceChat({
                       meName={meName}
                       onPerson={onPerson}
                       onReply={onReply}
+                      onNotice={onNotice}
                       onQuote={showOriginal}
                     />
                   )
@@ -238,6 +243,7 @@ function SentLine({
   meName,
   onPerson,
   onReply,
+  onNotice,
   onQuote,
 }: {
   line: Sent
@@ -247,6 +253,7 @@ function SentLine({
   meName: string
   onPerson: (userId: string) => void
   onReply: (line: Quotable) => void
+  onNotice?: (draft: NoticeDraft) => void
   onQuote: (id: number) => void
 }) {
   const { t, clock } = useI18n()
@@ -259,6 +266,13 @@ function SentLine({
   // 50: the host or a co-host can hide any line for everyone.
   const actions = [
     ...useLineActions(text),
+    ...(onNotice && line.kind !== 'audio'
+      ? [{
+          icon: <Pin className="size-4.5" aria-hidden />,
+          label: t('room.announcement'),
+          onClick: () => onNotice(line.kind === 'text' ? { text: line.text, photo: null } : { text: '', photo: { line: line.id, url: line.url } }),
+        }]
+      : []),
     ...(room && isMod(s.me)
       ? [{ icon: <EyeOff className="size-4.5" aria-hidden />, label: rt('hideLine'), onClick: () => void backend.hideVoiceLine(room.id, line.id).catch(toast.error) }]
       : []),
@@ -733,8 +747,8 @@ export function VoiceComposer({
   onSend: (text: string) => Promise<boolean>
   /** The text changed (tells the room I'm writing; the session sends it at most every few seconds). */
   onTyping?: () => void
-  /** Checks the photo on this device, then sends it; false when it wasn't sent. */
-  onPhoto?: (photo: File) => Promise<boolean>
+  /** Checks the photo on this device, then sends it. */
+  onPhoto?: (photo: File) => Promise<unknown>
   /** Sends a recorded voice message (104); offered where the browser can record. */
   onVoice?: (clip: File) => Promise<boolean>
   /** Hosts and co-hosts: opens the poll form (a third item in the "+" menu). */

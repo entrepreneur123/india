@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useId, useState, type ReactNode } from 'react'
-import { Check, ChevronRight, Copy, Crown, Eraser, Flag, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
-import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceMember, type VoiceRoom } from '@/lib/backend'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { Check, ChevronRight, Copy, Crown, Eraser, Flag, ImagePlus, Link2, Lock, LockOpen, LogOut, Mic, MicOff, Paintbrush, Pin, Search, Settings2, ShieldCheck, ShieldOff, UserPlus, UserRound, UserX, ArrowDownToLine, Volume2, VolumeX, X } from 'lucide-react'
+import { VOICE_SEATS, type ReportReason, type VoiceAction, type VoiceLine, type VoiceMember, type VoiceRoom } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { fixedVolume } from '@/lib/rtc'
 import { volumeOf } from '@/lib/voice-volumes'
@@ -41,7 +41,8 @@ export type SheetState =
   | { kind: 'options' }
   | { kind: 'reportRoom' }
   | { kind: 'settings' }
-  | { kind: 'notice' }
+  /** `draft`: a chat line pinned from its menu ("Announcement"), to check before saving. */
+  | { kind: 'notice'; draft?: NoticeDraft }
   | { kind: 'theme' }
   | { kind: 'clear' }
   | { kind: 'invite' }
@@ -740,22 +741,57 @@ export function ThemeSheet({ room, open, onClose }: { room: VoiceRoom; open: boo
   )
 }
 
-export function NoticeSheet({ room, open, onClose }: { room: VoiceRoom; open: boolean; onClose: () => void }) {
+/** A notice to save: its text, and its photo (a photo line of the chat, or one picked here and sent on saving). */
+export type NoticeDraft = { text: string; photo: { line: number; url: string } | null }
+type NoticePhoto = { line: number; url: string } | { file: File; url: string }
+
+/**
+ * The host or a co-host (27, 106): the notice pinned at the top of the room, text and a photo (KakaoTalk's notice). A
+ * photo picked here goes into the chat on saving, as any photo (checked on this device first), and the notice shows it.
+ */
+export function NoticeSheet({
+  room,
+  open,
+  draft,
+  onPhoto,
+  onClose,
+}: {
+  room: VoiceRoom
+  open: boolean
+  draft?: NoticeDraft
+  onPhoto: (photo: File) => Promise<VoiceLine | null>
+  onClose: () => void
+}) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
   const id = useId()
+  const fileRef = useRef<HTMLInputElement>(null)
   const [note, setNote] = useState('')
+  const [photo, setPhoto] = useState<NoticePhoto | null>(null)
   const [busy, setBusy] = useState<'save' | 'remove' | null>(null)
   useEffect(() => {
-    if (open) setNote(room.announcement ?? '')
+    if (!open) return
+    const d = draft ?? { text: room.announcement ?? '', photo: room.noticeLine !== null ? { line: room.noticeLine, url: room.noticePhoto ?? '' } : null }
+    setNote(d.text)
+    setPhoto(d.photo)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
-  const save = async (text: string) => {
-    setBusy(text ? 'save' : 'remove')
+  }, [open, draft])
+  // A picked file's preview link goes when it is replaced or the sheet closes.
+  useEffect(() => (photo && 'file' in photo ? () => URL.revokeObjectURL(photo.url) : undefined), [photo])
+  const text = note.trim()
+  const changed = text !== (room.announcement ?? '') || (photo === null ? null : 'line' in photo ? photo.line : -1) !== room.noticeLine
+  const save = async (remove: boolean) => {
+    setBusy(remove ? 'remove' : 'save')
     try {
-      await backend.setRoomNotice(room.id, text)
-      toast.show(t(text ? 'notice.saved' : 'notice.removed'), 'success')
+      let line = !remove && photo && 'line' in photo ? photo.line : null
+      if (!remove && photo && 'file' in photo) {
+        const sent = await onPhoto(photo.file) // says why itself when it isn't sent
+        if (!sent) return
+        line = sent.id
+      }
+      await backend.setRoomNotice(room.id, remove ? '' : text, line)
+      toast.show(t(remove ? 'notice.removed' : 'notice.saved'), 'success')
       onClose()
     } catch (err) {
       toast.error(err)
@@ -768,18 +804,47 @@ export function NoticeSheet({ room, open, onClose }: { room: VoiceRoom; open: bo
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          if (note.trim() && !busy) void save(note.trim())
+          if ((text || photo) && changed && text.length <= 200 && !busy) void save(false)
         }}
         className="flex flex-col gap-4 p-6 pt-4"
       >
-        <Field label={t('room.announcement')} htmlFor={`${id}-n`} trailing={<span className="text-xs tabular-nums text-muted-foreground">{note.length}/200</span>}>
-          <TextArea id={`${id}-n`} value={note} maxLength={200} rows={4} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} data-autofocus />
+        <Field label={t('room.announcement')} htmlFor={`${id}-n`} trailing={<span className={cn('text-xs tabular-nums', note.length > 200 ? 'text-destructive' : 'text-muted-foreground')}>{note.length}/200</span>}>
+          <TextArea id={`${id}-n`} value={note} maxLength={Math.max(200, note.length)} rows={4} placeholder={t('create.announcementPlaceholder')} onChange={(e) => setNote(e.target.value)} data-autofocus />
         </Field>
-        <Button type="submit" variant="brand" size="lg" loading={busy === 'save'} disabled={!note.trim() || note.trim() === room.announcement || !!busy}>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          tabIndex={-1}
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            e.target.value = ''
+            if (file) setPhoto({ file, url: URL.createObjectURL(file) })
+          }}
+        />
+        {photo ? (
+          <div className="relative w-fit">
+            <img src={photo.url} alt={t('bubble.photo')} className="h-28 max-w-full rounded-xl bg-muted object-contain" />
+            <button
+              type="button"
+              onClick={() => setPhoto(null)}
+              aria-label={t('me.removePhoto')}
+              className="absolute -top-2 -end-2 grid size-7 place-items-center rounded-full bg-foreground text-background shadow-e2"
+            >
+              <X className="size-4" aria-hidden />
+            </button>
+          </div>
+        ) : (
+          <Button type="button" variant="secondary" className="w-fit" onClick={() => fileRef.current?.click()}>
+            <ImagePlus className="size-4.5" aria-hidden /> {t('photo.add')}
+          </Button>
+        )}
+        <Button type="submit" variant="brand" size="lg" loading={busy === 'save'} disabled={!(text || photo) || !changed || text.length > 200 || !!busy}>
           {t('common.save')}
         </Button>
-        {room.announcement ? (
-          <Button variant="ghost" size="lg" className="text-destructive hover:text-destructive" loading={busy === 'remove'} disabled={!!busy} onClick={() => void save('')}>
+        {room.announcement || room.noticeLine !== null ? (
+          <Button variant="ghost" size="lg" className="text-destructive hover:text-destructive" loading={busy === 'remove'} disabled={!!busy} onClick={() => void save(true)}>
             {t('notice.remove')}
           </Button>
         ) : null}

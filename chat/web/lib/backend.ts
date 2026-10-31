@@ -514,6 +514,9 @@ export interface VoiceRoom extends RoomRules {
   queue: VoiceQueueItem[]
   /** The notice the host or a co-host pinned at the top (27). */
   announcement: string | null
+  /** 106: the notice's photo, a photo line of the room's chat (its id, and a link to show it); null: none. */
+  noticeLine: number | null
+  noticePhoto: string | null
   /** The room's 6-character code, for its host only. */
   code: string | null
   /** 058: the room's password, for its host only (null: none). */
@@ -605,7 +608,7 @@ export type VoiceLine =
   /** A conversation starter: prompt 1-40 (the text is in each app's own language). */
   /** A photo (checked on the sender's device; shown blurred until tapped). */
   | { id: number; kind: 'photo'; sender: Profile; fromMe: boolean; url: string; at: number }
-  /** A voice message (104), up to 60 s. */
+  /** A voice message (104), up to 30 s. */
   | { id: number; kind: 'audio'; sender: Profile; fromMe: boolean; url: string; at: number }
   /** A poll's place in the chat; its votes are a VoicePoll (Backend.voicePolls, VoiceEvent 'poll'). */
   | { id: number; kind: 'poll'; sender: Profile; fromMe: boolean; pollId: number; question: string; options: string[]; at: number }
@@ -929,7 +932,8 @@ export interface Backend {
   /** 058, host only: the room's password (4-12 characters; null removes it). A new one asks everyone outside again. */
   setRoomPassword(roomId: string, password: string | null): Promise<void>
   /** 064, the host or a co-host: the room's pinned notice (empty removes it); the chat says who pinned a new one. */
-  setRoomNotice(roomId: string, text: string): Promise<void>
+  /** 106: the whole notice, text and/or a photo line of the chat (`line`); both empty removes it. */
+  setRoomNotice(roomId: string, text: string, line: number | null): Promise<void>
   /** 45: the host or a co-host dresses the room in one of their walls (null: plain). Errors: not_owned, not_allowed. */
   setRoomTheme(roomId: string, itemId: string | null): Promise<void>
 

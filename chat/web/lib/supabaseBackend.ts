@@ -189,6 +189,9 @@ type VoiceStateRow = {
   /** 072: the cover photo's file and the hashtags. */
   cover?: string | null
   tags?: string[]
+  /** 106: the notice's photo line and its file. */
+  noticeLine?: number | null
+  noticePhoto?: string | null
 }
 /** `ha`, `j`: when the hand went up and when they came in (server ms), for the order voice_state uses. */
 type VoiceMemberRow = CardRow & { role: string; seat: number | null; muted: boolean; hand: boolean; ha?: number | null; j?: number; lost?: boolean }
@@ -197,7 +200,7 @@ type VoiceChange = { seq?: number | null } & (
   | ({ t: 'm'; present: true } & VoiceMemberRow)
   | { t: 'm'; id: string; present: false }
   | ({ t: 'r'; ended: boolean } & Pick<VoiceStateRow, 'title' | 'category' | 'mode' | 'host' | 'locked' | 'music' | 'announcement'
-      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private' | 'stage' | 'theme'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
+      | 'max' | 'gender' | 'minAge' | 'maxAge' | 'private' | 'stage' | 'theme' | 'noticeLine' | 'noticePhoto'> & { queue: Omit<VoiceStateRow['queue'][number], 'voted'>[] })
   | { t: 'v'; item: string; user: string; on: boolean; votes: number }
   /** 029: a poll changed (a vote, closed); `mine` is null. Numbered like the rest, nothing in the state. */
   | { t: 'p'; poll: unknown }
@@ -230,6 +233,7 @@ function applyChange(s: VoiceStateRow, c: VoiceChange, me: string) {
       // 037 sends the pinned page with every room change; an event without it leaves it as it was.
       ...('stage' in c ? { stage: c.stage ?? null } : {}),
       ...('theme' in c ? { theme: c.theme ?? null } : {}),
+      ...('noticeLine' in c ? { noticeLine: c.noticeLine ?? null, noticePhoto: c.noticePhoto ?? null } : {}),
     })
   } else if (c.t === 'v') {
     const q = s.queue.find((x) => x.id === c.item)
@@ -1249,8 +1253,8 @@ export class SupabaseBackend implements Backend {
     this.voice.get(roomId)?.keep({ password })
   }
 
-  async setRoomNotice(roomId: string, text: string) {
-    await this.rpc('voice_notice', { p_room: roomId, p_text: text })
+  async setRoomNotice(roomId: string, text: string, line: number | null) {
+    await this.rpc('voice_notice2', { p_room: roomId, p_text: text, p_line: line })
     this.voice.get(roomId)?.acted()
   }
 
@@ -2348,7 +2352,7 @@ export class SupabaseBackend implements Backend {
   }
 
   private async toVoiceRoom(s: VoiceStateRow): Promise<VoiceRoom> {
-    await this.signMany([...s.members.map((m) => m.photo_path), s.cover])
+    await this.signMany([...s.members.map((m) => m.photo_path), s.cover, s.noticePhoto])
     const local = (ms: number) => ms - this.clockOffset // server time → this device's clock
     return {
       id: s.id, title: s.title, mode: s.mode === 'open' ? 'open' : 'approval',
@@ -2356,6 +2360,7 @@ export class SupabaseBackend implements Backend {
       maxMembers: s.max ?? 50, genderRule: (s.gender as Target) ?? 'any', minAge: s.minAge ?? 18, maxAge: s.maxAge ?? 100,
       isPrivate: !!s.private, lang: appLang(s.lang), voice: s.voice !== false, theme: s.theme ?? null,
       coverPath: s.cover ?? null, coverUrl: this.signedNow(s.cover ?? null), tags: s.tags ?? [],
+      noticeLine: s.noticeLine ?? null, noticePhoto: this.signedNow(s.noticePhoto ?? null),
       members: s.members.map((m) => ({
         profile: this.cardProfile(m), role: m.role as VoiceRole, seat: m.seat, muted: m.muted, hand: m.hand, lost: m.lost === true, joinedAt: m.j,
       })),

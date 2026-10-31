@@ -13,7 +13,8 @@ import { ReactionIcon, TopicIcon } from '@/components/ui/topic-icons'
 import { useToast } from '@/components/ui/toast'
 import { RoomCountry } from '@/components/screens/rooms/room-country'
 import { VipReveal } from '@/components/looks/vip-reveal'
-import { besideClick, LinkOpenProvider, LinkPanel, LinkSheet, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
+import { besideClick, LinkOpenProvider, LinkPanel, LinkSheet, LinkText, useLinkMeta, useWideScreen } from '@/components/screens/chat/link-viewer'
+import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { hostOf, shareable } from '@/lib/links'
 import { retryImport } from '@/lib/retry-import'
 import { cn } from '@/lib/utils'
@@ -234,6 +235,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
       s={s}
       onPerson={person}
       onReply={setReplyTo}
+      onNotice={mod ? (draft) => setSheet({ kind: 'notice', draft }) : undefined}
       className={cn('flex-1', !wide && 'pt-1')}
     />
   )
@@ -331,7 +333,9 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
             </Button>
           </header>
           <VipReveal className="mx-3 mb-2 rounded-xl sm:mx-4" />
-          {room.announcement ? <Announcement key={room.announcement} text={room.announcement} onEdit={mod ? () => setSheet({ kind: 'notice' }) : undefined} /> : null}
+          {room.announcement || room.noticePhoto ? (
+            <Announcement key={room.announcement} text={room.announcement ?? ''} photo={room.noticePhoto} onEdit={mod ? () => setSheet({ kind: 'notice' }) : undefined} />
+          ) : null}
           {s.offline ? (
             <p role="status" className="mx-3 mb-2 flex items-center justify-center gap-1.5 rounded-xl bg-destructive/15 px-3 py-1.5 text-xs font-semibold text-destructive sm:mx-4">
               <WifiOff className="size-3.5 shrink-0" aria-hidden /> {rt('reconnecting')}
@@ -458,7 +462,7 @@ export function VoiceRoomScreen({ s, onMinimise, onLeave }: { s: VoiceSession; o
           }}
         />
         {isHost ? <SettingsSheet room={room} open={sheet?.kind === 'settings'} onClose={close} /> : null}
-        {mod ? <NoticeSheet room={room} open={sheet?.kind === 'notice'} onClose={close} /> : null}
+        {mod ? <NoticeSheet room={room} open={sheet?.kind === 'notice'} draft={sheet?.kind === 'notice' ? sheet.draft : undefined} onPhoto={s.sendPhoto} onClose={close} /> : null}
         {mod ? <ThemeSheet room={room} open={sheet?.kind === 'theme'} onClose={close} /> : null}
         {mod ? <ClearChatSheet roomId={room.id} open={sheet?.kind === 'clear'} onClose={close} /> : null}
         <InviteSheet room={room} open={sheet?.kind === 'invite'} onClose={close} />
@@ -783,14 +787,15 @@ function ListenerFace({ m: x, reaction, onClick }: { m: VoiceMember; reaction?: 
 }
 
 /**
- * The room's notice (27), pinned under the header: two lines, a tap opens the rest (KakaoTalk); the host and co-hosts
- * edit it from here.
+ * The room's notice (27), pinned under the header: two lines, a tap opens the rest (KakaoTalk); its photo (106) is a
+ * small square that opens large, its links open. The host and co-hosts edit it from here.
  */
-function Announcement({ text, onEdit }: { text: string; onEdit?: () => void }) {
+function Announcement({ text, photo, onEdit }: { text: string; photo: string | null; onEdit?: () => void }) {
   const { t } = useI18n()
   const ref = useRef<HTMLParagraphElement>(null)
   const [open, setOpen] = useState(false)
   const [long, setLong] = useState(false)
+  const [large, setLarge] = useState<number | null>(null)
   useLayoutEffect(() => {
     const el = ref.current
     if (el && !open) setLong(el.scrollHeight > el.clientHeight + 1)
@@ -798,19 +803,29 @@ function Announcement({ text, onEdit }: { text: string; onEdit?: () => void }) {
   return (
     <div className="mx-3 mb-2 flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2 ring-1 ring-border sm:mx-4">
       <Pin className="mt-0.5 size-3.5 shrink-0 text-primary-text" aria-hidden />
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        disabled={!long && !open}
-        aria-expanded={long || open ? open : undefined}
-        className="flex min-w-0 flex-1 items-start gap-1 text-start disabled:cursor-default"
+      {photo ? (
+        <>
+          <button type="button" onClick={() => setLarge(0)} className="shrink-0 overflow-hidden rounded-lg" aria-label={t('bubble.photo')}>
+            <img src={photo} alt="" className="size-10 object-cover" />
+          </button>
+          <PhotoViewer photos={[photo]} index={large} onIndex={setLarge} label={t('room.announcement')} />
+        </>
+      ) : null}
+      {/* The text is not in a button (its links open): a tap on it opens the rest, as the arrow does. */}
+      <p
+        ref={ref}
+        dir="auto"
+        onClick={(e) => (long || open) && !(e.target as HTMLElement).closest('a') && setOpen((o) => !o)}
+        className={cn('min-w-0 flex-1 text-[13px] leading-snug break-words whitespace-pre-wrap', !open && 'line-clamp-2', (long || open) && 'cursor-pointer')}
       >
-        <p ref={ref} dir="auto" className={cn('min-w-0 flex-1 text-[13px] leading-snug break-words whitespace-pre-wrap', !open && 'line-clamp-2')}>
-          <span className="sr-only">{t('room.announcement')}: </span>
-          {text}
-        </p>
-        {long || open ? <ChevronDown className={cn('mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-150', open && 'rotate-180')} aria-hidden /> : null}
-      </button>
+        <span className="sr-only">{t('room.announcement')}: </span>
+        <LinkText text={text} />
+      </p>
+      {long || open ? (
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t('room.announcement')} className="grid shrink-0 place-items-center">
+          <ChevronDown className={cn('mt-0.5 size-4 text-muted-foreground transition-transform duration-150', open && 'rotate-180')} aria-hidden />
+        </button>
+      ) : null}
       {onEdit ? (
         <button type="button" onClick={onEdit} aria-label={t('notice.edit')} className="-my-1 -me-1 grid size-7 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground">
           <Pencil className="size-3.5" aria-hidden />
