@@ -177,7 +177,7 @@ WEB = {
         "about": "About", "contact": "Contact", "disclaimer": "Disclaimer", "privacy": "Privacy policy",
         "about_body": "LottoDost publishes Dear lottery results within minutes of each draw. Numbers are read from the published result sheet, checked for completeness and compared with the official Nagaland gazette when it is released. We are not a government website, we are not affiliated with Lottery Sambad or any lottery department, and we do not sell tickets.",
         "contact_body": "Questions, corrections or removal requests: {e}. We usually reply within two working days.",
-        "notfound": "Page not found", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland State Lottery, Dhankesari and লটারি সংবাদ.",
+        "notfound": "Page not found", "skip": "Skip to the results", "search_as": "Also searched as Lottery Sambad, Dear Lottery Result, Nagaland State Lottery, Dhankesari and লটারি সংবাদ.",
         "wd": "Mon Tue Wed Thu Fri Sat Sun".split(), "copy": "Copy link", "copied": "Link copied", "date": "Date",
         "open_page": "Open the full result page", "pick_date": "Find a date", "go": "Show",
         "check_hint_kl": "Type the full number (e.g. MM 289707) or just the last 4 digits.", "kl_tab": "Kerala", "kl_h1": "Kerala Lottery Result Today",
@@ -221,7 +221,7 @@ WEB = {
         "about": "আমাদের কথা", "contact": "যোগাযোগ", "disclaimer": "দায়মুক্তি", "privacy": "প্রাইভেসি পলিসি",
         "about_body": "LottoDost প্রতিটি ড্রয়ের কয়েক মিনিটের মধ্যে ডিয়ার লটারির রেজাল্ট দেয়। নম্বরগুলো প্রকাশিত রেজাল্ট শিট থেকে পড়া হয়, সব নম্বর আছে কি না দেখা হয়, আর নাগাল্যান্ডের সরকারি গেজেট বেরোলে তার সঙ্গে মেলানো হয়। এটি সরকারি ওয়েবসাইট নয়, লটারি সংবাদ বা কোনো লটারি দপ্তরের সঙ্গে আমাদের সম্পর্ক নেই, আর আমরা টিকিট বিক্রি করি না।",
         "contact_body": "প্রশ্ন, সংশোধন বা কিছু সরানোর অনুরোধ: {e}। সাধারণত দুই কর্মদিবসের মধ্যে উত্তর দিই।",
-        "notfound": "পেজটি পাওয়া যায়নি", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড স্টেট লটারি, ধনকেশরী নামেও খোঁজা হয়।",
+        "notfound": "পেজটি পাওয়া যায়নি", "skip": "রেজাল্টে যান", "search_as": "লটারি সংবাদ, ডিয়ার লটারি রেজাল্ট, নাগাল্যান্ড স্টেট লটারি, ধনকেশরী নামেও খোঁজা হয়।",
         "wd": "সোম মঙ্গল বুধ বৃহস্পতি শুক্র শনি রবি".split(), "copy": "লিংক কপি করুন", "copied": "লিংক কপি হয়েছে", "date": "তারিখ",
         "open_page": "পুরো রেজাল্টের পেজ খুলুন", "pick_date": "তারিখ বেছে নিন", "go": "দেখুন",
         "check_hint_kl": "পুরো নম্বর লিখুন (যেমন MM 289707) বা শুধু শেষ 4টি সংখ্যা।", "kl_tab": "কেরালা", "kl_h1": "কেরালা লটারি আজকের রেজাল্ট",
@@ -265,7 +265,7 @@ WEB = {
         "about": "हमारे बारे में", "contact": "संपर्क", "disclaimer": "डिस्क्लेमर", "privacy": "प्राइवेसी पॉलिसी",
         "about_body": "LottoDost हर ड्रॉ के कुछ ही मिनट में डियर लॉटरी का रिज़ल्ट देता है। नंबर प्रकाशित रिज़ल्ट शीट से पढ़े जाते हैं, पूरे हैं या नहीं यह जाँचा जाता है, और नागालैंड का सरकारी गज़ट आने पर उससे मिलाया जाता है। यह सरकारी वेबसाइट नहीं है, लॉटरी संबाद या किसी लॉटरी विभाग से हमारा कोई संबंध नहीं है, और हम टिकट नहीं बेचते।",
         "contact_body": "सवाल, सुधार या कुछ हटवाने के लिए: {e}। हम आमतौर पर दो कामकाजी दिनों में जवाब दे देते हैं।",
-        "notfound": "पेज नहीं मिला", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड स्टेट लॉटरी, धनकेसरी नाम से भी खोजा जाता है।",
+        "notfound": "पेज नहीं मिला", "skip": "रिज़ल्ट पर जाएँ", "search_as": "लॉटरी संबाद, डियर लॉटरी रिज़ल्ट, नागालैंड स्टेट लॉटरी, धनकेसरी नाम से भी खोजा जाता है।",
         "wd": "सोम मंगल बुध गुरु शुक्र शनि रवि".split(), "copy": "लिंक कॉपी करें", "copied": "लिंक कॉपी हो गया", "date": "तारीख़",
         "open_page": "पूरे रिज़ल्ट का पेज खोलें", "pick_date": "तारीख़ चुनें", "go": "देखें",
         "check_hint_kl": "पूरा नंबर लिखें (जैसे MM 289707) या सिर्फ़ आख़िरी 4 अंक।", "kl_tab": "केरल", "kl_h1": "केरल लॉटरी आज का रिज़ल्ट",
@@ -434,6 +434,11 @@ class Site:
         return f"{self.base}{LANGS[lang][1]}{path}"
 
     @staticmethod
+    def drawn_at(d: dict) -> dt.datetime:
+        """When a past draw's numbers were published: its draw time (dateModified for pages that no longer change)."""
+        return dt.datetime.combine(dt.date.fromisoformat(d["date"]), dt.time.fromisoformat(d.get("time") or "20:00"), IST)
+
+    @staticmethod
     def day_path(date: str) -> str:
         return f"/result/{ddmmyyyy(date, '-')}/"
 
@@ -466,7 +471,7 @@ class Site:
     # ---- page shell ----
     def page(self, lang: str, path: str, title: str, desc: str, body: str, alternates: bool = True,
              data: list[dict] | None = None, live: bool | str = False, crumbs: list[tuple[str, str]] | None = None,
-             tab: str = "", image: str = "", modified: dt.datetime | None = None, wait: str = "") -> str:
+             tab: str = "", image: str = "", modified: dt.datetime | None = None, wait: str = "", index: bool = True) -> str:
         w, s = WEB[lang], self.s[lang]
         alt = ""
         if alternates:
@@ -531,23 +536,24 @@ class Site:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
-<link rel="canonical" href="{esc(self.abs(lang, path))}">
+{f'<link rel="canonical" href="{esc(self.abs(lang, path))}">' if index else ''}
 {alt}
 <meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(desc)}">
-<meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}"><meta property="og:url" content="{esc(self.abs(lang, path))}">{og_img}
+<meta property="og:type" content="website"><meta property="og:locale" content="{REGION[lang].replace('-', '_')}">{f'<meta property="og:url" content="{esc(self.abs(lang, path))}">' if index else ''}{og_img}
 <meta name="theme-color" content="#b3261e">
 <link rel="icon" href="{self.path_prefix}/favicon.ico" sizes="48x48"><link rel="icon" href="{self.path_prefix}/favicon.svg" type="image/svg+xml"><link rel="icon" href="{self.path_prefix}/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="{self.path_prefix}/apple-touch-icon.png"><link rel="manifest" href="{self.path_prefix}/manifest.webmanifest">
-<meta name="robots" content="max-image-preview:large">
+<meta name="robots" content="{"max-image-preview:large" if index else "noindex"}">
 {"".join(f'<meta name="{k}" content="{esc(v)}">' for k, v in self.verify.items() if v)}
 <style>{CSS}</style>
 {ads_head}{ld_html}
 </head>
 <body{live_attr}>
+<a class="skip" href="#main">{esc(w["skip"])}</a>
 <header class="top"><div class="wrap bar"><a class="brand" href="{self.url(nav_lang, '/')}">LottoDost</a>
 <nav class="langs" aria-label="{esc(w['lang'])}">{langs_nav}</nav></div>
 <nav class="wrap tabs">{tabs_html}</nav></header>
-<main class="wrap">
+<main class="wrap" id="main">
 {body}
 </main>
 <footer class="foot"><div class="wrap">{foot}</div></footer>
@@ -825,6 +831,10 @@ class Site:
                 if i > 0:
                     nav.append(f'<a class="btn" href="{self.url(lang, self.day_path(self.dates[i - 1]))}">{esc(w["next"])} →</a>')
                 draws = [d for d in self.ordered(self.days[date]) if d.get("tiers")]
+                for d in draws:
+                    if d["id"] not in self.og_images:  # one image per draw, shared by the three languages
+                        self.og_images[d["id"]] = self.og_image(out, d)
+                day_modified = self.updated if date == self.today else self.drawn_at(draws[-1]) if draws else None
                 body = (f'<div class="intro"><h1>{esc(w["day_h1"].format(d=dd))}</h1></div>' + self.checker(lang) + self.chips(lang, date)
                         + self.day_cards(lang, date) + self.ad() + f'<p class="pn">{"".join(nav)}</p>')
                 self.write(out, lang, self.day_path(date),
@@ -833,11 +843,9 @@ class Site:
                                                                                   for d in draws)) if draws else w["day_title"].format(d=dd, s=ddmmyy(date)),
                                      body, data=draws, live=date == self.today,
                                      crumbs=[(w["home"], "/"), (dd, self.day_path(date))], tab="results",
-                                     modified=self.updated if date == self.today else None), key=f"day:{date}",
+                                     modified=day_modified, image=self.og_images.get(draws[-1]["id"], "") if draws else ""), key=f"day:{date}",
                        lastmod=self.stamp if date == self.today else date)
                 for d in draws:  # PDF-only draws have nothing to read: the day page links the PDF
-                    if d["id"] not in self.og_images:  # one image per draw, shared by the three languages
-                        self.og_images[d["id"]] = self.og_image(out, d)
                     image = self.og_images[d["id"]]
                     t, g, first = short_time(d["time"]), game(d["name"]), d["tiers"][0]["numbers"][0]
                     kl = d["slot"] == "KL"
@@ -859,7 +867,8 @@ class Site:
                     self.write(out, lang, self.draw_path(d),
                                self.page(lang, self.draw_path(d), title, desc, body,
                                          data=[d], crumbs=[(w["home"], "/"), (dd, self.day_path(date)), (t, self.draw_path(d))],
-                                         tab="kerala" if kl else "results", image=image),
+                                         tab="kerala" if kl else "results", image=image,
+                                         modified=self.updated if date == self.today else self.drawn_at(d)),
                                key=f"draw:{d['id']}", lastmod=self.stamp if date == self.today else date, image=image)
             self.kerala_hub(out, lang)
             self.mh_pages(out, lang)
@@ -902,7 +911,7 @@ class Site:
         self.write(out, "en", "/404", self.page("en", "/404/", w["notfound"], w["notfound"],
                                                f'<div class="intro"><h1>{esc(w["notfound"])}</h1></div>'
                                                f'<p class="pn"><a class="btn" href="{self.url("en", "/")}">{esc(self.s["en"]["tab_results"])} →</a></p>',
-                                               alternates=False))
+                                               alternates=False, index=False))
         self.kerala_ml(out)
         self.maharashtra_mr(out)
         self.share_kit(out)
@@ -1480,7 +1489,7 @@ CSS = """:root{--bg:#f7f2f0;--fg:#221a19;--mut:#6b5552;--card:#fff;--line:#eaddd
 .stub{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2px;padding:14px 6px;color:#fff;
 background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px) right/8px 11px repeat-y,var(--brand)}
 .stub b{font-size:1.05rem;white-space:nowrap}.stub span{font-size:.78rem;opacity:.92}
-.sb{padding:14px 16px;min-width:0}.sb h2{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.01em}.sb h2 a{color:var(--fg);text-decoration:none}
+.sb{padding:14px 16px;min-width:0}.sb h2{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.01em}.sb h2 a{color:var(--fg);text-decoration:none;display:inline-block;min-height:24px;line-height:24px}
 .meta{color:var(--mut);font-size:.85rem;margin:2px 0 10px}.sb>p:not(.meta):not(.eyebrow):not(.first){margin-top:6px}
 .ok{color:var(--ok);font-style:normal;font-weight:700;white-space:nowrap}.warn{background:var(--pink);color:var(--onpink);border-radius:8px;padding:6px 10px;font-size:.85rem;margin-top:6px}
 .first{font-weight:800;font-size:clamp(1.7rem,9vw,2.7rem);line-height:1.1;color:var(--red);word-spacing:.28em;white-space:nowrap;font-variant-numeric:tabular-nums;margin-top:2px}
@@ -1490,7 +1499,7 @@ background:radial-gradient(circle at 100% 50%,var(--card) 2.5px,transparent 3px)
 .all>summary::-webkit-details-marker,.faq summary::-webkit-details-marker{display:none}
 .all>summary::after,.faq summary::after{content:"";width:8px;height:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .15s;flex:none;margin-right:4px}
 .all[open]>summary::after,.faq details[open] summary::after{transform:rotate(-135deg)}
-.all .in{padding:0 16px 14px}.go{font-weight:700;text-decoration:none}
+.all .in{padding:0 16px 14px}.go{font-weight:700;text-decoration:none}.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--brand);padding:8px 12px;border-radius:8px;z-index:9}.skip:focus{left:8px}
 .wait .when{color:var(--mut);font-weight:600}.live{display:inline-block;background:var(--red);color:var(--card);border-radius:6px;padding:0 6px;font-size:.72rem;font-weight:800;margin-right:6px;vertical-align:1px}
 .tier{padding:14px 0;border-top:1px solid var(--line)}.tier:first-child{border-top:0}.th{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .th h3{font-size:1rem}.th b{color:var(--red);white-space:nowrap}
@@ -1520,7 +1529,7 @@ h2.sub{font-size:1.1rem;margin:22px 0 4px}.faq{margin:24px 0 8px}.faq h2{font-si
 .tbl{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;margin:14px 0}table{width:100%;border-collapse:collapse;font-size:.92rem}
 th,td{padding:10px 6px;border-top:1px solid var(--line);text-align:left;white-space:nowrap}th:first-child{padding-left:14px}td:last-child{padding-right:12px}thead th{border-top:0;background:var(--soft);color:var(--mut);font-size:.8rem}
 tbody th a{color:var(--fg);font-weight:700;text-decoration:none}tbody th small{display:block;color:var(--mut);font-weight:400}
-td a{color:var(--red);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums;font-size:.86rem}tbody th small{font-size:.75rem}
+td a{color:var(--red);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums;font-size:.86rem}td a,tbody th a,.go,.links a{display:inline-block;min-height:24px;line-height:24px}tbody th small{font-size:.75rem}
 .hl{margin:6px 0 0;padding-left:18px}.hl li{margin:2px 0;font-variant-numeric:tabular-nums}
 #dateForm{display:flex;align-items:center;gap:8px;padding:12px}#dateForm input{flex:1 1 10rem;font-size:1.05rem;letter-spacing:0;text-transform:none}
 .foot{color:var(--mut);font-size:.8rem;padding:28px 0 36px;margin-top:24px;border-top:1px solid var(--line)}.foot p{margin:0 0 8px}

@@ -36,6 +36,8 @@ back another way, a check in `pipeline/lottery_pipeline/watch.py`.
   push other than to `claude/gallant-lovelace-ynoa63`; PostToolUse(Edit|Write) runs `harness quick` on the file; Stop
   blocks finishing with uncommitted/unpushed work, a failing `harness full` on changed code, or unhandled incidents.
 - A new kind of miss gets a check in the harness or the watcher, not only a fix.
+- `review:*` (low): the gazette OCR could not confirm a Dear 1st prize (bold digits). `python3 tools/eyecheck.py ID` cuts the
+  gazette header out; compare by eye and add a row to docs/INCIDENTS.md. Never loosen the check instead.
 
 ## Operations session (owner's order, 31-10-2026)
 A separate child session runs operations so this one stays free for app/site work. Every day it posts the

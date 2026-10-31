@@ -123,6 +123,14 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
             for t in d.get("tiers") or []:
                 if any(not pat.match(n) for n in t.get("numbers", [])) or len(set(t["numbers"])) != len(t["numbers"]):
                     add(f"bad:{d['id']}", "wrong", "high", f"{d['id']} tier {t.get('rank')}: odd or repeated number")
+    # Dear draws whose 1st prize the gazette OCR could not confirm (bold digits): a person compares by eye
+    # (tools/eyecheck.py ID) and notes it in docs/INCIDENTS.md; four such draws of 19-28.10 were all correct.
+    for d in feed.get("draws", []):
+        check = d.get("officialCheck") or {}
+        if check and not check.get("firstPrize"):
+            add(f"review:{d['id']}", "review", "low",
+                f"{d['id']}: gazette OCR did not confirm the 1st prize {d['tiers'][0]['numbers'][0] if d.get('tiers') else '?'}"
+                f" (lower prizes {check.get('ratio', 0):.0%} confirmed): compare by eye with tools/eyecheck.py")
     try:
         hub = fetch_text(f"{site}/maharashtra/")
         t = re.search(r"<title>(.*?)</title>", hub, re.S)

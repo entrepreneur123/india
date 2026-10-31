@@ -503,3 +503,56 @@ def test_a_maharashtra_game_without_an_english_name_is_never_linked_as_a_game_pa
     for page in out.rglob("*.html"):
         for link in set(re.findall(r'href="(/maharashtra/[^"]*)"', page.read_text())):
             assert (out / link.split("#")[0].lstrip("/") / "index.html").exists(), f"{page.relative_to(out)} -> {link}"
+def test_the_404_page_stays_out_of_search(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    page = (out / "404.html").read_text()
+    assert '<meta name="robots" content="noindex">' in page
+    assert 'rel="canonical"' not in page and 'property="og:url"' not in page   # nothing to canonicalise a 404 to
+    assert 'hreflang=' not in page
+    home = (out / "index.html").read_text()
+    assert '<meta name="robots" content="max-image-preview:large">' in home and 'noindex' not in home
+
+
+def test_pages_that_no_longer_change_say_when_their_numbers_were_published(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    old_draw = (out / "result/17-10-2026/1pm/index.html").read_text()
+    assert '"dateModified": "2026-10-17T13:00+05:30"' in old_draw     # the draw time, not the build time
+    old_day = (out / "result/17-10-2026/index.html").read_text()
+    assert '"dateModified": "2026-10-17T20:00+05:30"' in old_day      # the day's last draw
+    today_draw = (out / "result/18-10-2026/1pm/index.html").read_text()
+    assert '"dateModified": "2026-10-18T21:00+05:30"' in today_draw   # today's pages: the build (they still change)
+
+
+def test_day_page_carries_the_days_result_image(tmp_path, monkeypatch):
+    __import__("pytest").importorskip("PIL")
+    out = build(tmp_path, monkeypatch, og=True)
+    day = (out / "result/18-10-2026/index.html").read_text()
+    m = re.search(r'"primaryImageOfPage": \{"@type": "ImageObject", "url": "https://example.in/(og/2026-10-18_\w+\.png)"', day)
+    assert m and (out / m[1]).exists()
+
+
+def test_keyboard_users_can_skip_to_the_results(tmp_path, monkeypatch):
+    out = build(tmp_path, monkeypatch)
+    for f in ("index.html", "bn/index.html", "kerala/index.html"):
+        page = (out / f).read_text()
+        assert '<a class="skip" href="#main">' in page and '<main class="wrap" id="main">' in page
+    assert ".skip:focus{left:8px}" in (out / "index.html").read_text()
+
+
+def test_a_nameless_maharashtra_draw_links_no_game_page(tmp_path, monkeypatch):
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    nameless = dict(MH_DRAW, id="2026-10-18_MH_1018202616531165031", name="Maharashtra महाराष्ट्रलक्ष्मी साप्ताहिक सोडत",
+                    nameLocal="महाराष्ट्रलक्ष्मी साप्ताहिक सोडत",
+                    sources=[{"kind": "officialPdf", "url": "https://x/1018202616531165031_10_2026%20N_118%20Maharashtralaxmi.pdf"}])
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [MH_DRAW, nameless]}))
+    out = build(tmp_path, monkeypatch)
+    assert (out / "result/18-10-2026/maharashtra-1018202616531165031/index.html").exists()   # the draw itself has its page
+    assert not (out / "maharashtra/1018202616531165031").exists()
+    for f in ("index.html", "kerala/index.html", "result/18-10-2026/maharashtra-1018202616531165031/index.html"):
+        assert 'href="/maharashtra/1018202616531165031/"' not in (out / f).read_text()
+    assert 'href="/maharashtra/gajlaxmi-ravi/"' in (out / "index.html").read_text()
+    links = {h for f in out.rglob("index.html") for h in re.findall(r'href="(/[^"#?]*)"', f.read_text())}
+    missing = [h for h in links if not (out / h.lstrip("/") / "index.html").exists() and not (out / h.lstrip("/")).exists()
+               and not (out / (h.lstrip("/") + ".html")).exists() and h != "/privacy.html"]   # privacy.html is a static file
+    assert missing == []

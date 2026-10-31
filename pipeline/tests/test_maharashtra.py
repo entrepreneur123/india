@@ -185,6 +185,9 @@ def test_english_name_when_the_file_name_stops_at_the_game():
     assert mh.english_name(base + "1029202616592174929_10_2026_N_109_Mah.%20Akarshak%20Pushkraj_0001.pdf") == "Akarshak Pushkraj"
     assert mh.english_name(base + "1029202617251935929_10_2026_N_111_Mah.Gajlaxmi%20Guru%20___0001.pdf") == "Gajlaxmi Guru"
     assert mh.english_name(base + "10292026179675429_10_2026_N_110_Mah_%20Sahyadri%20Deeplaxmi__0001.pdf") == "Sahyadri Deeplaxmi"
+    # no "Mah." at all: the name follows the scheme number (31-10-2026, published nameless until then)
+    assert mh.english_name(base + "1031202616531165031_10_2026%20N_118%20Maharashtralaxmi.pdf") == "Maharashtralaxmi"
+    assert mh.english_name(base + "1031202616531165031_10_2026%20N_118.pdf") is None
 
 
 def test_draws_with_marathi_only_names_keep_distinct_ids():

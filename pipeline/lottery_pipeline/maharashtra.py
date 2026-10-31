@@ -1163,6 +1163,8 @@ def english_name(url: str) -> str | None:
     f = urllib.parse.unquote(url.rsplit("/", 1)[-1])
     # Some files stop at the name: '... N_109_Mah. Akarshak Pushkraj_0001.pdf'.
     m = re.search(r"(?i)mah\s*[._]\s*(.+?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
+    # Or the name follows the scheme number without "Mah.": '... N_118 Maharashtralaxmi.pdf' (31-10-2026).
+    m = m or re.search(r"(?i)\bN[ _]?\d{2,4}[ _]+([A-Za-z][A-Za-z .]*?)\s*,?\s*(?:weekly|monthly|bumper)?\s*,?\s*(?:draw|lottery|_*\d{4}\.pdf$|\.pdf$)", f)
     if not m:
         return None
     words = re.sub(r"[^A-Za-z ]", " ", m.group(1)).split()

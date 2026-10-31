@@ -92,3 +92,12 @@ def test_a_result_on_the_site_but_missing_from_the_app_feed_mirror():
     assert not any(k.startswith("mirror:") for k in watch.checks(
         "https://x.test", early, fetch=lambda u: feed([]) if u.startswith("https://m.test") else site[u.removeprefix("https://x.test")],
         fetch_text=lambda u: "<title>Lottery Result Today 31.10.2026</title>", mirror="https://m.test"))
+def test_a_first_prize_the_gazette_ocr_could_not_confirm_asks_for_an_eye_check():
+    now = dt.datetime(2026, 10, 30, 16, 0, tzinfo=UTC)
+    ok = ALL_29 + [draw("2026-10-30", "NL1PM")]
+    assert not [k for k in run(now, ok) if k.startswith("review:")]
+    checked = dict(ok[0], officialCheck={"top": True, "firstPrize": True, "ratio": 0.97, "unconfirmed": ["7274"]})
+    doubtful = dict(ok[1], officialCheck={"top": False, "firstPrize": False, "ratio": 0.992, "unconfirmed": ["7255"]})
+    got = run(now, [checked, doubtful] + ok[2:])
+    assert [k for k in got if k.startswith("review:")] == ["review:2026-10-29_SK6PM"]
+    assert got["review:2026-10-29_SK6PM"]["severity"] == "low" and "68C 85552" in got["review:2026-10-29_SK6PM"]["detail"]
