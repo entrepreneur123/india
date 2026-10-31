@@ -20,13 +20,13 @@ Supabase 익명(게스트) 로그인이며, 현재 꺼져 있다 [확인: `signI
 | 영역 | 항목 | 상태 | 근거 |
 |---|---|---|---|
 | 인증 | 회원가입/로그인/로그아웃 | ⚠ 코드 완성, **실사용 불가**(SMS 미설정) | OTP 실패 재현 [확인] |
-| 인증 | 게스트 | ✗ 없음 → **이번에 구현**(아래 §3) | Supabase 익명 로그인 꺼짐 [확인] |
+| 인증 | 게스트 | ✓ 구현(123, 스위치 off) — 사장님이 Supabase 토글을 켜면 스위치 on | 데모 6/6, SQL 행세 테스트 [확인] |
 | 인증 | 세션 유지/만료 | ✓ supabase-js 자동 갱신, 만료 시 로그인 화면 | 코드 [확인] |
 | 인증 | 차단·신고·탈퇴·개인정보 삭제 | ✓ `block_user`·`report_user`(사람 검토, 대화 기록 첨부)·`delete-account` 함수·`/delete-account` 안내 페이지 | 코드·페이지 [확인] |
 | 매칭 | 대기열·상태·중복 방지·취소·재매칭·타임아웃·이탈·복구·악용 방지 | ✓ (119·120으로 보강) | §1 |
 | 채팅 | 송수신·방 생성/종료·중복 방지·복구·상대 상태·권한·신고/차단/스팸 | ✓ | §1 |
 | 음성 | 시그널링·STUN·마이크 거부 처리·음소거/퇴장·재연결·방장 권한·다수 참가 | ✓ (마이크 거부: 통화 `video.micDenied` 안내, 방 `mic_denied` 오류→토스트) · TURN 없음 | 코드 [확인] |
-| 페이지 | 첫 화면·소개 | ⚠ `/hi` 등 35개 언어 랜딩은 정적 HTML에 내용 있음, **영어 `/`는 JS 전엔 "Loading"만** → 이번에 보완 | curl [확인] |
+| 페이지 | 첫 화면·소개 | ✓ 36개 언어 모두 정적 HTML에 소개 (영어 `/`도 서버 렌더링, 세션 있으면 Splash) | curl·Playwright [확인] |
 | 페이지 | 로딩·빈 화면·오류·오프라인·재접속 | ✓ Splash, OfflineBanner, boot 'offline' 재시도, 화면 오류 경계 | 코드 [확인] |
 | 페이지 | 모바일·반응형 | ✓ 360/390/412 감사(S2), 1280/1440/1920(N4) | 이전 세션 |
 | 페이지 | 뒤로가기·새로고침·탭 종료 | ✓ useBack, 세션 복구, pagehide 비콘(presence·leave_voice·cancel_search) | 119 [확인] |
@@ -34,8 +34,8 @@ Supabase 익명(게스트) 로그인이며, 현재 꺼져 있다 [확인: `signI
 | 법적 | 커뮤니티 가이드라인·신고/문의·운영자 연락처·연령 정책 | ✓ 약관 §Community rules, 앱 Settings의 규칙 시트·grievance/support 메일, 18+ 게이트 | 코드·페이지 [확인] |
 | 법적 | 고충처리인 실명·이메일 | ✗ `grievance@yaari.app` 자리표시(도메인 미보유) → **사장님**(YAA-7) | 페이지 [확인] |
 | 배포/SEO | HTTPS·보안 헤더 | ✓ HSTS preload, CSP, X-Frame DENY, nosniff, Referrer, Permissions-Policy, COOP | 헤더 [확인] |
-| 배포/SEO | 제목·설명·OG·twitter | ✓ (og:image 없음 → 이번에 추가) | HTML [확인] |
-| 배포/SEO | 파비콘·아이콘·매니페스트 | ✗ `/favicon.ico`·PNG·manifest 404(SVG만) → **이번에 추가** | curl [확인] |
+| 배포/SEO | 제목·설명·OG·twitter | ✓ og:image·summary_large_image 추가 | HTML [확인] |
+| 배포/SEO | 파비콘·아이콘·매니페스트 | ✓ favicon.ico(16/32/48)·icon.png·apple-icon.png·manifest.webmanifest 추가 | curl [확인] |
 | 배포/SEO | robots·sitemap·색인 | ✓ robots(/admin 차단)·sitemap 36개 언어·hreflang; 채팅·프로필은 URL이 없어 색인 불가 | curl [확인] |
 | 배포/SEO | 404 | ✓ 404 상태 코드 + 앱 404 화면 | curl [확인] |
 | 배포/SEO | 자체 도메인 | ⏸ 가능(Vercel Pro 첫해 무료 도메인; Hobby는 비상업 약관) → 결제 뒤(SCALE_UP §6) | 문서 |
