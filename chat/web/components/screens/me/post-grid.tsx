@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/ui/ambient'
 import { LikeIcon } from '@/components/ui/topic-icons'
 import { accentStyle } from '@/components/social/profile-bits'
 import { usePostStoreVersion, postStore } from '@/components/social/posts/post-store'
+import { thumbOf } from '@/lib/thumbs'
 
 /**
  * Instagram's grid: 3 square columns with hairline gaps, no corners; text-only posts become a tile in the owner's
@@ -38,7 +39,7 @@ export function PostGrid({ posts: all, owner, accent, emptyAction }: { posts: Po
             aria-label={p.text ? t('posts.aria', { text: p.text }) : t('posts.photo')}
           >
             {p.imageUrl ? (
-              <img src={p.imageUrl} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
+              <img src={thumbOf(p.imageUrl) ?? p.imageUrl} alt="" loading="lazy" decoding="async" className="size-full object-cover" />
             ) : (
               <span
                 className="grid size-full place-items-center p-3 text-center text-sm font-bold text-white"

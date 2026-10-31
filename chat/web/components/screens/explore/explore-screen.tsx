@@ -157,7 +157,7 @@ export function ExploreScreen() {
                   />
                 ) : section === 'recommend' ? (
                   <Button variant="secondary" onClick={() => setRound((r) => r + 1)} loading={people.isValidating}>
-                    <RefreshCw className="size-4" aria-hidden /> {t('explore.more')}
+                    {people.isValidating ? null : <RefreshCw className="size-4" aria-hidden />} {t('explore.more')}
                   </Button>
                 ) : null}
               </div>

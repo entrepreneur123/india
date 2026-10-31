@@ -29,7 +29,7 @@
 - **배포(Vercel):** `mcp__Vercel__create_deployment`
   - teamId: `team_HKMkmzQNFo2UjOkkJWqlvD5Z`
   - requestBody: `{"deploymentId":"<직전 READY id>","withLatestCommit":true,"target":"production","name":"yaari-web"}` → 약 70초 뒤 `get_deployment`로 READY 확인
-  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: `dpl_6jaMe3EsQuXDYNxWSahm6nx9vXy1` (commit 3fe35060)
+  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: 아래 0번 항목의 최신 커밋 배포(get_deployment로 확인)
 - **Git:**
   - 브랜치: `claude/upbeat-cannon-3ddo4f`, PR: entrepreneur123/india#2 (draft, 구독 중, CI 매번 green)
   - 커밋 끝줄: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` + `Claude-Session: …`
@@ -56,6 +56,10 @@
    - 108·109·110 적용 메모: apply_migration이 확인 질문(DROP 문)에 막혀 execute_sql로 적용하고 `supabase_migrations.schema_migrations`에 같은 이름으로 기록했다. 108은 088의 "friend presence" 정책을 남겼다(예전 페이지의 거절 재시도 방지) — 나중 마이그레이션에서 지운다.
    - Android는 이미 모두 3초 하트비트(포그라운드 서비스) — 웹의 화면 안 규칙과 같다. 방 줄은 아직 Postgres Changes(앱 출시 때 108 Broadcast로 옮김).
    - Supabase MCP는 DROP 문이 있으면 확인 질문을 띄우고 230초 뒤 실패한다. 시험·적용 SQL에서 DROP을 피할 것(`create or replace trigger` 사용).
+   - **2026-10-31 오후 점검(네트워크·음질·DB·화면)**: 113(profiles_seen·profiles_public의 security_barrier 해제 — 권한이 없는 뷰라 보안 효과는 없고 플래너만 막았음: inbox2 664→4ms, group_list 58→2ms, friend_list 31→2ms, recent_list 33→4ms; 사람 FK 인덱스 12개; realtime 정책 initplan; 트리거 함수 EXECUTE 회수), 114(게시물 사진 256px 사본 + stale_media가 `_s.jpg`를 원본 기준으로 판단 — 062 규칙대로면 프로필 사진 사본 4개가 하루 뒤 야간 정리에 지워질 참이었음). 웹: 앱 시작 요청 23→17(user 토픽 첫 join의 catch-up 제거, mine() 대신 lastMe), 방 링크로 들어오면 안내 투어는 방을 나간 뒤, 방 링크는 Rooms 탭 점등, 게시물 격자는 사본 사용, 탐색 더보기 로딩 아이콘 중복 제거.
+   - 지역: Supabase ap-south-1(뭄바이), Vercel CDN(전 세계 엣지), LiveKit Cloud `wss://yaari-sofpbngs.livekit.cloud`(글로벌 엣지 자동 라우팅). check-host.net 프로브(HTML 1회 요청): 인도 Rajpura 688ms·자카르타 582·이스탄불 533·상파울루 350·미국 63·호치민 1675 — 엣지 캐시가 비어 있을 때의 원점 왕복이라 실사용자 체감은 더 짧다. API(401 응답)는 Cloudflare 엣지가 답해 지역 측정에 못 씀.
+   - 음성 설정 확인(코드·협상 SDP): Opus 48kbps mono + DTX + RED(payload 63 협상됨) + in-band FEC, 방은 autoSubscribe false·소리 끔 기본(듣는 사람은 말하는 사람 트랙만 다운로드), 영상 720p 심캐스트(180/360)·adaptiveStream·dynacast, Krisp. 이 샌드박스는 UDP/TURN이 막혀 ICE가 'checking'에 머물러 실제 비트레이트·손실은 못 쟀다(실기기에서 chrome://webrtc-internals로 확인).
+   - 남은 것: 중복 인덱스 posts_user/posts_user_time와 미사용 인덱스 19개는 DROP이라 MCP로 못 지움(사장님 SQL 에디터에서 `drop index posts_user;` 등). 옛 게시물(114 전)은 사본이 없어 격자에서 원본을 내려받음(backfillThumbs는 프로필 사진만). looks(30명) 20ms는 can_view 7단계 EXISTS 비용 — 필요하면 다음에.
 1. **방 채팅 ✓/✓✓ 화면 연결 — 완료(2026-10-30)**: `lib/voice-chat.ts`의 readByOthers·movesReads·nextReads(서버 규칙과 같음, 단위 테스트), 세션 `readBy`·`markRead`, 화면은 1.5~3초 무작위 대기 후 읽음(동시 호출 방지). 아래는 당시 설계 메모.
    - RPC `voice_read(p_room, p_upto bigint)` → `{hi, by, hi2}`. 읽음 표시가 움직이면 방 스트림에 `voice_emit` `{t:'k', hi, by, hi2, seq}` 이 온다.
    - (참고) 데모 Playwright 테스트는 약 20초 뒤 뜨는 가짜 Arjun 전화를 먼저 거절해야 한다(창이 화면을 덮어 클릭이 30초 지연됨).

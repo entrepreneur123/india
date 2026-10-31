@@ -6,8 +6,8 @@
 /** The small copy's size, a 2x face of up to 128 px. */
 export const THUMB_PX = 256
 
-/** Profile photos (and only those) have a small copy. */
-export const hasThumb = (path: string) => /^[^/]+\/avatar\/[^/]+\.jpg$/.test(path) && !path.endsWith('_s.jpg')
+/** Profile photos and post photos (114: the profile grid's tiles) have a small copy. */
+export const hasThumb = (path: string) => /^[^/]+\/(avatar|posts)\/[^/]+\.jpg$/.test(path) && !path.endsWith('_s.jpg')
 export const thumbPath = (path: string) => path.replace(/\.jpg$/, '_s.jpg')
 
 const thumbs = new Map<string, string>()

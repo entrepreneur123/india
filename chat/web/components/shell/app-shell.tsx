@@ -243,24 +243,6 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     openVerify('signup')
   }, [onboarding, trust, kyc, openVerify])
 
-  // A shared room link opens that room: /r/<id> for a public room, /r/<code> for a private one (the code lets the
-  // person in; yaari-app.tsx keeps it in sessionStorage, also through sign-up), and the older /?voice=<id>.
-  useEffect(() => {
-    let link: string | null = null
-    try {
-      link = sessionStorage.getItem('yaari_link')
-      sessionStorage.removeItem('yaari_link')
-    } catch {
-      /* storage blocked */
-    }
-    const voiceParam = new URLSearchParams(location.search).get('voice')
-    if (voiceParam) history.replaceState(null, '', location.pathname)
-    link = voiceParam ?? link
-    if (!link) return
-    if (/^v-[0-9a-z]+$/i.test(link)) return openVoice(link)
-    if (!/^[A-Z0-9]{6}$/i.test(link)) return
-    backend.joinVoiceCode(link.toUpperCase()).then(openVoice, (err) => toast.error(err))
-  }, [backend, toast, openVoice])
 
   // Once the app has settled, fetch every other screen in the background: later tab switches are instant and
   // still work if the connection drops.
@@ -290,6 +272,26 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
     [minimiseVoice],
   )
   const setTab = useCallback((next: Tab) => goTab(next, false), [goTab])
+
+  // A shared room link opens that room: /r/<id> for a public room, /r/<code> for a private one (the code lets the
+  // person in; yaari-app.tsx keeps it in sessionStorage, also through sign-up), and the older /?voice=<id>.
+  useEffect(() => {
+    let link: string | null = null
+    try {
+      link = sessionStorage.getItem('yaari_link')
+      sessionStorage.removeItem('yaari_link')
+    } catch {
+      /* storage blocked */
+    }
+    const voiceParam = new URLSearchParams(location.search).get('voice')
+    if (voiceParam) history.replaceState(null, '', location.pathname)
+    link = voiceParam ?? link
+    if (!link) return
+    setTab('rooms') // the room's own tab stays lit under it, as when opened from the list
+    if (/^v-[0-9a-z]+$/i.test(link)) return openVoice(link)
+    if (!/^[A-Z0-9]{6}$/i.test(link)) return
+    backend.joinVoiceCode(link.toUpperCase()).then(openVoice, (err) => toast.error(err))
+  }, [backend, toast, openVoice, setTab])
   const minimiseRandom = useCallback(() => setTab(lastTab.current), [setTab])
   const closeThread = useCallback(() => {
     setThread(null)
@@ -577,7 +579,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
             </Suspense>
           </ScreenBoundary>
         ) : null}
-        {onboarding ? (
+        {onboarding && !voice ? ( // a room from a shared link comes first; the tour waits until they leave it
           <ScreenBoundary>
             <Suspense fallback={null}>
               <Onboarding onDone={() => setOnboarding(false)} />
