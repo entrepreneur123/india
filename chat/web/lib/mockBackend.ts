@@ -52,6 +52,7 @@ import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
 import { beatsFast, droppedOut } from './voice-lost'
+import { pageHidden } from './visibility'
 import { art } from './mock-art'
 import { hashtagsOf } from './hashtags'
 import { saveVolume } from './voice-volumes'
@@ -1295,16 +1296,18 @@ export class MockBackend implements Backend {
     void this.voice().then((sim) => {
       if (!closed) stop = sim.subscribe(roomId, (e) => (e.type === 'room' && (room = e.room), on(e)))
     })
-    // My own connection, as the real backend shows it: the browser going offline, and back (13 s on a seat, 85 s
-    // listening: lib/voice-lost).
+    // My own connection, as the real backend shows it: the browser going offline, and back (13 s, or 85 s listening
+    // with the room in the background: lib/voice-lost).
     let offAt = 0
+    let offFast = true
     const offline = () => {
       offAt = Date.now()
+      offFast = beatsFast(room, this.me?.id ?? '', !pageHidden())
       on({ type: 'connection', lost: true })
     }
     const online = () => {
       if (!offAt) return
-      const gone = droppedOut(offAt, Date.now(), beatsFast(room, this.me?.id ?? ''))
+      const gone = droppedOut(offAt, Date.now(), offFast)
       offAt = 0
       if (!gone) return on({ type: 'connection', lost: false })
       on({ type: 'dropped' }) // the room screen closes and leaves

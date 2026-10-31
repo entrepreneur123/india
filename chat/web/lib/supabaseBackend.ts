@@ -2285,11 +2285,12 @@ export class SupabaseBackend implements Backend {
     }
     this.voice.set(roomId, live)
 
-    // ---- my connection (045): on a seat, hosting or co-hosting a beat every 3 s (the server shows me lost after 6 s and
-    // takes me out 7 s later); a listener every 20 s (out after 90 s). A change of kind beats at the next tick: off the
-    // stage, the server must not wait 6 s for a fast beat. ----
+    // ---- my connection (045, lib/voice-lost): with the room in view, on a seat, hosting or co-hosting a beat every 3 s
+    // (the server shows me lost after 6 s and takes me out 7 s later); a listener with the room in the background every
+    // 20 s (out after 90 s). A change of kind beats at once. ----
     let lastBeat = Date.now()
-    let beatFast = true // the kind of my last beat: the rule the server holds me to
+    let beatFast = true // the rule the server holds me to: the slow one as soon as a slow beat may have reached it
+    let sentFast = true // the kind of the last beat sent
     let lastSent = 0
     const down = { beat: false, realtime: false }
     let shownLost = false
@@ -2309,13 +2310,15 @@ export class SupabaseBackend implements Backend {
         if (error || closed || over) return connection({ beat: true })
         return finish({ type: 'dropped' }) // the room screen closes and leaves, to be sure
       }
-      const fast = beatsFast(r, me)
-      if (!fast && !beatFast && Date.now() - lastSent < VOICE_LISTENER_BEAT_MS - 1_000) return
+      const fast = beatsFast(r, me, !pageHidden())
+      if (!fast && !sentFast && Date.now() - lastSent < VOICE_LISTENER_BEAT_MS - 1_000) return
       lastSent = Date.now()
+      sentFast = fast
+      if (!fast) beatFast = false // now: a page paused right after going to the background never reads the reply
       try {
         serverAt(await this.rpc<number>(fast ? 'voice_heartbeat3' : 'voice_heartbeat2', { p_room: roomId }))
         lastBeat = Date.now()
-        beatFast = fast
+        beatFast = fast && sentFast // a slow beat sent since keeps the slow rule
         connection({ beat: false })
         // The host re-checks LiveKit against the room every minute (anyone a sync missed).
         if (++beats % 20 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
@@ -2347,6 +2350,7 @@ export class SupabaseBackend implements Backend {
       } else {
         hiddenAt = Date.now()
         idleTimer = setTimeout(idleCheck, IDLE_LEAVE_MS + 1_000)
+        void heartbeat() // a listener moves to the slow rule before the page may be paused
       }
     })
     if (hiddenAt) idleTimer = setTimeout(idleCheck, IDLE_LEAVE_MS + 1_000)

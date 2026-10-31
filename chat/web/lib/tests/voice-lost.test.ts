@@ -14,20 +14,25 @@ test('a short gap resumes; past 6 s + 7 s the server has taken me out', () => {
   assert.equal(droppedOut(1_000, 1_000 + 13_001), true)
 })
 
-test('a listener beats every 20 s and is out only past the 90 s rule (85 s here, for the clocks)', () => {
+test('a listener with the room in the background beats every 20 s, out only past the 90 s rule (85 s here)', () => {
   assert.equal(VOICE_LISTENER_BEAT_MS, 20_000)
   for (let i = 1; i <= 3; i++) assert.equal(droppedOut(1_000, 1_000 + i * VOICE_LISTENER_BEAT_MS, false), false)
   assert.equal(droppedOut(1_000, 1_000 + 85_000, false), false)
   assert.equal(droppedOut(1_000, 1_000 + 85_001, false), true)
 })
 
-test('fast beats: a seat, the host, a co-host, or not in the room yet; a listener beats slowly', () => {
+test('fast beats with the room in view; in the background only a seat, the host, a co-host, or not in yet', () => {
   const r = { members: [m('h', 'host', 1, false, 0), m('s', 'speaker', 2, false, 3), m('c', 'cohost'), m('l', 'listener')] }
-  assert.deepEqual(['h', 's', 'c', 'l', 'x'].map((id) => beatsFast(r, id)), [true, true, true, false, true])
-  assert.equal(beatsFast(null, 'l'), true)
+  const ids = ['h', 's', 'c', 'l', 'x']
+  for (let i = 0; i < 3; i++) {
+    // In view, back and forth: a listener leaving is seen as fast as anyone (lost at 6 s, out at 13 s).
+    assert.deepEqual(ids.map((id) => beatsFast(r, id, true)), [true, true, true, true, true])
+    assert.deepEqual(ids.map((id) => beatsFast(r, id, false)), [true, true, true, false, true])
+  }
+  assert.equal(beatsFast(null, 'l', false), true)
   // Leaving the stage or taking a seat switches at once (the next beat).
-  assert.equal(beatsFast({ members: [m('l', 'listener', 1, false, 2)] }, 'l'), true)
-  assert.equal(beatsFast({ members: [m('s', 'listener')] }, 's'), false)
+  assert.equal(beatsFast({ members: [m('l', 'listener', 1, false, 2)] }, 'l', false), true)
+  assert.equal(beatsFast({ members: [m('s', 'listener')] }, 's', false), false)
 })
 
 test('the host’s heir: the first co-host to come in who is still connected; none ends the room', () => {

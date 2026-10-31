@@ -1,14 +1,17 @@
 import type { VoiceRoom } from './backend'
 
 /**
- * 045: on a seat, hosting or co-hosting I beat every 3 s (voice_heartbeat3); after 6 s without one the server shows
- * me as lost, 7 s later it takes me out. A listener beats every 20 s (voice_heartbeat2): out after 90 s.
+ * 045: with the room in view, or on a seat, hosting or co-hosting, I beat every 3 s (voice_heartbeat3); after 6 s
+ * without one the server shows me as lost, 7 s later it takes me out. A listener with the room in the background beats
+ * every 20 s (voice_heartbeat2): out after 90 s, as a phone pauses a page in the background (a short switch to another
+ * app mustn't drop them).
  */
 export const VOICE_BEAT_MS = 3_000
 export const VOICE_LISTENER_BEAT_MS = 20_000
 
-/** Whom the room hears or who may take it over beats fast; a listener slowly (6× fewer writes for most of a room). */
-export const beatsFast = (r: Pick<VoiceRoom, 'members'> | null, me: string) => {
+/** Fast: anyone with the room in view, and, in the background too, whom the room hears or who may take it over. */
+export const beatsFast = (r: Pick<VoiceRoom, 'members'> | null, me: string, visible: boolean) => {
+  if (visible) return true
   const m = r?.members.find((x) => x.profile.id === me)
   return !m || m.seat !== null || m.role === 'host' || m.role === 'cohost'
 }
