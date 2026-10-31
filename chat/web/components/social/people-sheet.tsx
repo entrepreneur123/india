@@ -1,6 +1,7 @@
 'use client'
 
 import useSWR from 'swr'
+import type { PeopleKind } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -9,11 +10,9 @@ import { UserAvatar } from '@/components/looks/user-avatar'
 import { Segmented, Skeleton } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 
-export type PeopleKind = 'friends' | 'likers' | 'liked'
-
 /**
- * A profile's people, as Instagram's followers / following (098): friends, who liked them, whom they liked, one tab
- * each. Anyone who may see the profile sees them; a tap opens that person's profile.
+ * A profile's people, as Instagram's followers / following (098, 117): friends, followers, following and mutual
+ * follows, one tab each. Anyone who may see the profile sees them; a tap opens that person's profile.
  */
 export function PeopleSheet({ userId, owner, kind, onKind, onClose }: {
   userId: string; owner: string; kind: PeopleKind | null; onKind: (k: PeopleKind) => void; onClose: () => void
@@ -28,12 +27,14 @@ export function PeopleSheet({ userId, owner, kind, onKind, onClose }: {
         <Segmented<PeopleKind>
           label={owner}
           className="w-full"
+          scroll
           value={kind ?? 'friends'}
           onChange={onKind}
           options={[
             { value: 'friends', label: t('profile.friends') },
-            { value: 'likers', label: t('profile.likes') },
-            { value: 'liked', label: t('profile.liked') },
+            { value: 'likers', label: t('profile.followers') },
+            { value: 'liked', label: t('profile.following') },
+            { value: 'mutual', label: t('profile.mutual') },
           ]}
         />
         {!data ? (

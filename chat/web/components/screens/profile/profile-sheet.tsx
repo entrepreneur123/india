@@ -3,8 +3,8 @@
 import { UnfriendSheet } from '@/components/social/unfriend-sheet'
 import { useState, type ReactNode } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
-import { Ban, Check, Ellipsis, Flag, Heart, X } from 'lucide-react'
-import type { FriendState, Profile, Trust } from '@/lib/backend'
+import { Ban, Check, Ellipsis, Flag, X } from 'lucide-react'
+import type { FriendState, PeopleKind, Profile, Trust } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -17,14 +17,14 @@ import { PostGrid } from '@/components/screens/me/post-grid'
 import { FriendContacts } from '@/components/social/contacts'
 import { ProfileHero, ProfileStat } from '@/components/social/profile-bits'
 import { Highlights } from '@/components/social/highlights'
-import { PeopleSheet, type PeopleKind } from '@/components/social/people-sheet'
+import { PeopleSheet } from '@/components/social/people-sheet'
 import { useTrust } from '@/components/trust/badge'
 import { MannerCard } from '@/components/trust/trust-cards'
 import { cn } from '@/lib/utils'
 
 const socialKey = (userId: string) => ['social', userId]
 /** Instagram's profile buttons: equal, grey, softly squared (the main one in the brand colour). */
-export const ACTION = 'h-9 min-w-0 flex-1 rounded-lg px-3 font-semibold'
+export const ACTION = 'h-9 min-w-0 flex-1 rounded-lg px-2 font-semibold'
 
 /**
  * Someone's profile: the card in their frame with their @ID, status, languages, photos and posts. The server shows people I have
@@ -61,7 +61,8 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   // The friends panel's reading (one cache); phones read it here when a friend's profile opens.
   const { data: activity } = useSWR(isMe ? null : 'friend-activity', () => backend.friendActivity(), { dedupingInterval: 30_000 })
   const friendRoom = activity?.find((a) => a.id === userId)?.roomId ?? null
-  const like = async () => {
+  // A profile like is a follow (117: the button says so).
+  const follow = async () => {
     const was = social.data
     if (!was) return
     // Shown at once, then as the server has it.
@@ -178,24 +179,23 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                       {t('profile.message')}
                     </Button>
                   ) : null}
-                  {friendRoom ? ( // 115: a friend in a room I may join (the panel offers the same)
-                    <Button className={ACTION} onClick={() => openVoice(friendRoom)}>
-                      {t('join.submit')}
-                    </Button>
-                  ) : null}
                   <Button
-                    size="icon-sm"
-                    className={cn('rounded-lg', social.data?.liked && 'text-[#ff3040]')}
+                    variant={social.data?.liked ? 'secondary' : 'outline'}
+                    className={ACTION}
                     disabled={!social.data}
-                    onClick={() => void like()}
-                    aria-label={social.data?.liked ? t('profile.liked') : t('profile.like')}
+                    onClick={() => void follow()}
                     aria-pressed={!!social.data?.liked}
                   >
-                    <Heart className={cn('size-4.5', social.data?.liked && 'fill-current')} aria-hidden />
+                    {t(social.data?.liked ? 'profile.followed' : 'profile.follow')}
                   </Button>
                   <Button size="icon-sm" className="rounded-lg" onClick={() => setMoreOpen(true)} aria-label={t('voice.more')} title={t('voice.more')}>
                     <Ellipsis className="size-4.5" aria-hidden />
                   </Button>
+                  {friendRoom ? ( // 115: a friend in a room I may join (the panel offers the same), on a line of its own
+                    <Button className={cn(ACTION, 'basis-full')} onClick={() => openVoice(friendRoom)}>
+                      {t('join.submit')}
+                    </Button>
+                  ) : null}
                 </>
               )
             }
@@ -234,7 +234,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
 
 /**
  * A profile as everyone sees it, mine included (the Me tab adds its own buttons), laid out as Instagram's: the
- * header with likes and friends counted beside the photo, `actions` (a row of buttons), the highlights, `children`,
+ * header with followers, following and friends counted beside the photo, `actions` (a row of buttons), the highlights, `children`,
  * the manners card and the posts grid. Empty parts are left out.
  */
 export function ProfileContent({
@@ -269,12 +269,13 @@ export function ProfileContent({
         slot={slot}
         stats={
           <>
-            <ProfileStat n={social ? num(social.likes) : '–'} label={t('profile.likes')} onClick={() => setPeople('likers')} />
+            <ProfileStat n={social ? num(social.likes) : '–'} label={t('profile.followers')} onClick={() => setPeople('likers')} />
+            <ProfileStat n={social ? num(social.following) : '–'} label={t('profile.following')} onClick={() => setPeople('liked')} />
             <ProfileStat n={social ? num(social.friends) : '–'} label={t('profile.friends')} onClick={() => setPeople('friends')} />
           </>
         }
       />
-      {actions ? <div className="mt-4 flex gap-2 px-4">{actions}</div> : null}
+      {actions ? <div className="mt-4 flex flex-wrap gap-2 px-4">{actions}</div> : null}
       <Highlights userId={profile.id} owner={profile.name} className="mt-5" />
       {children}
       <MannerCard trust={trust} className="mx-4 mt-6" />

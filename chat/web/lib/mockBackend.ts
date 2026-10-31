@@ -22,6 +22,7 @@ import {
   type Friend,
   type FriendActivity,
   type GiftCheck,
+  type PeopleKind,
   type PersonRow,
   type FriendState,
   type Match,
@@ -898,34 +899,39 @@ export class MockBackend implements Backend {
   async exploreFeed(): Promise<FeedItem[]> {
     await wait(300)
     const feed = await this.feedChunk()
-    return [...this.friendMap]
-      .filter(([, s]) => s === 'friends')
-      .flatMap(([id], i) => {
-        const p = this.person(id)
-        // A friend's latest post in full (081); a friend without one shows their photo, as before.
-        const post = feed.postsOfNow(id)[0]
-        if (p && post) return [{ kind: 'post' as const, id: post.id, user: this.personRow(p), text: post.text, photos: post.imageUrl ? [post.imageUrl] : [], at: new Date(post.createdAt).toISOString(), post }]
-        return p?.photoUrl ? [{ kind: 'post' as const, id: `f_${id}`, user: this.personRow(p), text: p.bio, photos: [p.photoUrl], at: new Date(Date.now() - i * 3_600_000).toISOString() }] : []
-      })
+    const friends = [...this.friendMap].filter(([, s]) => s === 'friends').map(([id]) => id)
+    // 117: friends and people I follow; a followed person's friends-only posts stay out (post_visible).
+    return [...new Set([...friends, ...this.likedIds])].flatMap((id, i) => {
+      const p = this.person(id)
+      const friend = friends.includes(id)
+      // A friend's latest post in full (081); a friend without one shows their photo, as before.
+      const post = feed.postsOfNow(id).find((x) => friend || x.visibility === 'public')
+      if (p && post) return [{ kind: 'post' as const, id: post.id, user: this.personRow(p), text: post.text, photos: post.imageUrl ? [post.imageUrl] : [], at: new Date(post.createdAt).toISOString(), post }]
+      return friend && p?.photoUrl ? [{ kind: 'post' as const, id: `f_${id}`, user: this.personRow(p), text: p.bio, photos: [p.photoUrl], at: new Date(Date.now() - i * 3_600_000).toISOString() }] : []
+    })
   }
 
   async profileSocial(userId: string) {
     await wait(150)
     // As profile_social (066): someone in VIP takes messages from friends only.
     const vip = (p: Profile | null) => !!p && isVip(p) && this.friendMap.get(p.id) !== 'friends'
-    return { likes: this.peopleOf(userId, 'likers').length, friends: this.peopleOf(userId, 'friends').length, liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id && !vip(this.person(userId)) }
+    return {
+      likes: this.peopleOf(userId, 'likers').length, following: this.peopleOf(userId, 'liked').length, friends: this.peopleOf(userId, 'friends').length,
+      liked: this.likedIds.has(userId), canMessage: userId !== this.me?.id && !vip(this.person(userId)),
+    }
   }
 
-  /** As profile_people (098); profileSocial counts the same lists. */
-  private peopleOf(userId: string, kind: 'friends' | 'likers' | 'liked'): Profile[] {
+  /** As profile_people (098, 117); profileSocial counts the same lists. */
+  private peopleOf(userId: string, kind: PeopleKind): Profile[] {
     const others = PEOPLE.filter((p) => p.id !== userId && !this.blocked.has(p.id) && !isVip(p)) // VIP stays out, as 098
     const start = [...userId].reduce((h, c) => h + c.charCodeAt(0), 0) % others.length
     const ring = [...others.slice(start), ...others.slice(0, start)]
-    const mine = kind === 'likers' && this.me && this.likedIds.has(userId) ? [this.me] : []
-    return [...mine, ...(kind === 'friends' ? ring.slice(0, 8) : kind === 'likers' ? ring.slice(2, 12) : ring.slice(6, 11))]
+    const likers = [...(this.me && this.likedIds.has(userId) ? [this.me] : []), ...ring.slice(2, 12)]
+    const liked = ring.slice(6, 11)
+    return kind === 'friends' ? ring.slice(0, 8) : kind === 'likers' ? likers : kind === 'liked' ? liked : liked.filter((p) => likers.includes(p))
   }
 
-  async profilePeople(userId: string, kind: 'friends' | 'likers' | 'liked') {
+  async profilePeople(userId: string, kind: PeopleKind) {
     await wait(200)
     return this.peopleOf(userId, kind).map((p) => this.personRow(p))
   }
@@ -1246,13 +1252,13 @@ export class MockBackend implements Backend {
     return userId === this.me?.id ? this.myHighlights.map((h) => ({ ...h })) : []
   }
 
-  async saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }) {
+  async saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[]; visibility: PostVisibility }) {
     await wait(500)
     const old = this.myHighlights.find((x) => x.id === h.id)
     if (h.id !== null && !old) throw new BackendError('not_found')
     if (h.id === null && this.myHighlights.length >= MAX_HIGHLIGHTS) throw new BackendError('not_allowed')
     const photos = [...(old?.photos ?? []).filter((p) => h.keep.includes(p.id)), ...h.add.map((f) => ({ id: `hl_${uid()}`, url: URL.createObjectURL(f) }))]
-    const next = { id: h.id ?? `hl_${uid()}`, title: h.title.trim(), photos }
+    const next = { id: h.id ?? `hl_${uid()}`, title: h.title.trim(), photos, visibility: h.visibility }
     this.myHighlights = old ? this.myHighlights.map((x) => (x === old ? next : x)) : [...this.myHighlights, next]
   }
 

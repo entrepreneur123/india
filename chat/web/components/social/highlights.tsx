@@ -3,24 +3,27 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { ChevronLeft, ChevronRight, ImagePlus, Plus, X } from 'lucide-react'
-import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, MAX_HIGHLIGHTS, type Highlight } from '@/lib/backend'
+import { BackendError, HIGHLIGHT_TITLE_MAX, MAX_HIGHLIGHT_PHOTOS, MAX_HIGHLIGHTS, type Highlight, type PostVisibility } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { namePlain } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
 import { thumbOf } from '@/lib/thumbs'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
-import { Field, TextInput } from '@/components/ui/bits'
+import { Field, Segmented, TextInput } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { PhotoViewer } from '@/components/ui/photo-viewer'
 import { Button } from '@/components/ui/pressable'
 import { useToast } from '@/components/ui/toast'
 import { ScrollRow } from '@/components/ui/scroll-row'
+import { AudienceIcon } from '@/components/ui/topic-icons'
 import { cn } from '@/lib/utils'
+import { useFeedT } from './feed-text'
 import { useSocialT } from './social-text'
 
 // Profile highlights (057) as Instagram's: a row of circles with a title under each, sliding sideways; my own profile
 // ends with a "New" circle (until the limit). A tap opens the album; the viewer goes to the next photo only when asked.
+// 117: each one is for friends (and people I chatted with) or for everyone, chosen as a post's audience is.
 
 const key = (userId: string) => ['highlights', userId]
 
@@ -82,6 +85,7 @@ function Circle({ label, onClick, empty, children }: { label: string; onClick: (
 function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | null; owner: string; onClose: () => void; onEdit?: () => void }) {
   const { t } = useI18n()
   const { st } = useSocialT()
+  const { ft } = useFeedT()
   const [i, setI] = useState(0)
   const [large, setLarge] = useState<number | null>(null)
   const drag = useRef<number | null>(null)
@@ -95,7 +99,13 @@ function Viewer({ highlight, owner, onClose, onEdit }: { highlight: Highlight | 
   const go = (by: number) => setI((x) => Math.max(0, Math.min(photos.length - 1, x + by)))
   const label = st('photos.view', { n: i + 1, total: photos.length })
   return (
-    <Modal open={!!highlight && !!photo} onClose={onClose} title={highlight?.title ?? ''} description={`${owner} · ${label}`} className="md:max-w-md">
+    <Modal
+      open={!!highlight && !!photo}
+      onClose={onClose}
+      title={highlight?.title ?? ''}
+      description={[owner, label, highlight?.visibility === 'friends' ? ft('post.friendsOnly') : null].filter(Boolean).join(' · ')}
+      className="md:max-w-md"
+    >
       {photo ? (
         <div className="relative px-4 pb-4">
           {/* One frame for every photo, as Instagram's stories; the photo keeps its shape inside it (the owner: shrink, never
@@ -151,9 +161,11 @@ export function HighlightEditor({ userId, highlight, onClose }: { userId: string
   const toast = useToast()
   const { mutate } = useSWRConfig()
   const { st } = useSocialT()
+  const { ft } = useFeedT()
   const inputId = useId()
   const [title, setTitle] = useState(highlight?.title ?? '')
   const [photos, setPhotos] = useState<Draft[]>(highlight?.photos ?? [])
+  const [audience, setAudience] = useState<PostVisibility>(highlight?.visibility ?? 'friends')
   const [busy, setBusy] = useState<'check' | 'save' | 'delete' | null>(null)
   const made = useRef<string[]>([])
   useEffect(() => () => made.current.forEach((u) => URL.revokeObjectURL(u)), [])
@@ -193,6 +205,7 @@ export function HighlightEditor({ userId, highlight, onClose }: { userId: string
           title: title.trim(),
           keep: photos.filter((p) => !p.file).map((p) => p.id),
           add: photos.flatMap((p) => (p.file ? [p.file] : [])),
+          visibility: audience,
         })
       await mutate(key(userId))
       onClose()
@@ -250,6 +263,21 @@ export function HighlightEditor({ userId, highlight, onClose }: { userId: string
             </li>
           ) : null}
         </ul>
+        {/* The post composer's audience control, word for word. */}
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-semibold">{ft('compose.audience')}</span>
+          <Segmented<PostVisibility>
+            label={ft('compose.audience')}
+            value={audience}
+            onChange={setAudience}
+            className="w-full"
+            options={[
+              { value: 'friends', label: <span className="inline-flex items-center gap-1.5"><AudienceIcon visibility="friends" size={16} />{ft('compose.friends')}</span> },
+              { value: 'public', label: <span className="inline-flex items-center gap-1.5"><AudienceIcon visibility="public" size={16} />{ft('compose.everyone')}</span> },
+            ]}
+          />
+          <p className="text-xs leading-relaxed text-muted-foreground">{audience === 'public' ? ft('compose.everyoneHint') : ft('compose.friendsHint')}</p>
+        </div>
         <div className="flex gap-2">
           {highlight ? (
             <Button variant="outline" className="text-destructive hover:text-destructive" loading={busy === 'delete'} disabled={!!busy} onClick={() => void run('delete')}>

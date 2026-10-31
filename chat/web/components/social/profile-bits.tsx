@@ -60,9 +60,11 @@ export function AccentAvatar({
 /** A count over its word, as Instagram's posts / followers / following; a tap opens the people behind it. */
 export function ProfileStat({ n, label, onClick }: { n: string; label: string; onClick?: () => void }) {
   return (
-    <button type="button" onClick={onClick} disabled={!onClick} className="flex min-w-16 flex-col items-center rounded-lg px-1 leading-tight enabled:active:opacity-60">
+    <button type="button" onClick={onClick} disabled={!onClick} className="flex min-w-0 flex-1 flex-col items-center rounded-lg px-1 leading-tight enabled:active:opacity-60">
       <span className="text-[17px] font-bold tabular-nums">{n}</span>
-      <span className="text-[13px] text-muted-foreground">{label}</span>
+      {/* Three columns share the row; a long label wraps (two words) or breaks (one long word: overflow-wrap anywhere, which
+          also lets the column shrink below the word) instead of overlapping its neighbour. */}
+      <span className="text-center text-[13px] text-muted-foreground [overflow-wrap:anywhere]">{label}</span>
     </button>
   )
 }
@@ -118,7 +120,7 @@ export function ProfileHero({
           ) : avatar}
         </span>
         <PhotoViewer photos={photos} index={shown} onIndex={setShown} label={profile.name} />
-        {stats ? <div className="flex flex-1 justify-around">{stats}</div> : null}
+        {stats ? <div className="flex min-w-0 flex-1 justify-around">{stats}</div> : null}
       </div>
       <h2 className="mt-3 flex flex-wrap items-center gap-x-1.5 text-[15px] font-semibold">
         {isVip(profile) ? <span className="vip-gold italic">{nameAge(profile.name, profile.age)}</span> : <PersonName p={profile} />}

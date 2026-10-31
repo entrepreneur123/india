@@ -201,6 +201,8 @@ export interface Highlight {
   id: string
   title: string
   photos: ProfilePhoto[]
+  /** 117: who sees it, as a post's ('friends': friends and people I chatted with). */
+  visibility: PostVisibility
 }
 export const MAX_HIGHLIGHTS = 10
 export const MAX_HIGHLIGHT_PHOTOS = 10
@@ -290,7 +292,7 @@ export interface RecentMatch {
 export type ReportReason = 'nudity' | 'minor' | 'harassment' | 'fake' | 'other'
 export type FriendState = 'none' | 'requested' | 'incoming' | 'friends'
 
-/** 059 Explore: 'recommend' 50 at random, 'online', 'likes' / 'friends' rankings (count), 'liked' (whom I liked). */
+/** 059 Explore: 'recommend' 50 at random, 'online', 'likes' / 'friends' rankings (count), 'liked' (whom I follow). */
 export type ExploreKind = 'recommend' | 'online' | 'likes' | 'friends' | 'liked'
 export interface ExplorePerson extends PersonRow {
   age: number
@@ -298,7 +300,7 @@ export interface ExplorePerson extends PersonRow {
   /** Rankings: the profile likes or friends. */
   count: number | null
 }
-/** A friend's post or highlight in the Explore feed. */
+/** A friend's or a followed person's post or highlight in the Explore feed (117). */
 export interface FeedItem {
   kind: 'post' | 'highlight'
   id: string
@@ -309,13 +311,19 @@ export interface FeedItem {
   /** A post in full (081): it shows as a post, liked and opened there. */
   post?: FeedPost | null
 }
-/** A profile's likes and friends, whether I like it and whether I may message it. */
+/**
+ * A profile's followers (`likes`: a profile like is a follow, the owner 2026-10-31), following and friends, whether I
+ * follow it (`liked`) and whether I may message it. The names keep the table's (profile_likes); the words on screen say follow.
+ */
 export interface ProfileSocial {
   likes: number
+  following: number
   friends: number
   liked: boolean
   canMessage: boolean
 }
+/** 098, 117: a profile's people — friends, followers ('likers'), following ('liked'), mutual follows. */
+export type PeopleKind = 'friends' | 'likers' | 'liked' | 'mutual'
 
 /** 042: someone found by ID, or on my block list. */
 /** 100: a megaphone line on top of everyone's screen in one country. */
@@ -993,7 +1001,7 @@ export interface Backend {
   backfillThumbs?(): Promise<void>
   highlights(userId: string): Promise<Highlight[]>
   /** `id` null: a new one. `keep`: photo ids already in it, in order; `add`: new photos (checked for nudity before). */
-  saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[] }): Promise<void>
+  saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[]; visibility: PostVisibility }): Promise<void>
   deleteHighlight(id: string): Promise<void>
   /** Sets the whole style: status, languages, prompts. */
   setProfileStyle(style: ProfileStyleInput): Promise<Profile>
@@ -1022,8 +1030,8 @@ export interface Backend {
   likePost(postId: string, on: boolean): Promise<{ likes: number; liked: boolean }>
   /** 080: who liked it, newest first (100 at most). */
   postLikers(postId: string): Promise<PersonRow[]>
-  /** 098: a profile's friends, who liked them, or whom they liked (newest first, 100 at most). */
-  profilePeople(userId: string, kind: 'friends' | 'likers' | 'liked'): Promise<PersonRow[]>
+  /** 098: a profile's friends, followers, following or mutual follows (newest first, 100 at most). */
+  profilePeople(userId: string, kind: PeopleKind): Promise<PersonRow[]>
   /** Oldest first; `after`: the last comment's id, for more. */
   comments(postId: string, after?: number): Promise<PostComment[]>
   /** 1-300 characters, 10 a minute ('slow_down'). */

@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import { forwardRef, useEffect, useRef, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { Lock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -47,6 +47,7 @@ export function Segmented<T extends string>({
   className,
   size = 'md',
   lockedLabel,
+  scroll,
 }: {
   options: SegmentOption<T>[]
   value: T
@@ -56,9 +57,15 @@ export function Segmented<T extends string>({
   size?: 'md' | 'lg'
   /** Accessible name of the lock icon on paid options. */
   lockedLabel?: string
+  /** Labels keep their width and the row slides sideways when they don't fit (four tabs in a long language). */
+  scroll?: boolean
 }) {
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (scroll) root.current?.querySelector('[aria-checked="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [scroll, value])
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-full bg-muted p-1', className)}>
+    <div ref={root} role="radiogroup" aria-label={label} className={cn('inline-flex rounded-full bg-muted p-1', scroll && 'overflow-x-auto no-scrollbar', className)}>
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -71,6 +78,7 @@ export function Segmented<T extends string>({
             className={cn(
               'relative flex min-w-0 flex-auto items-center justify-center gap-1.5 rounded-full px-2 font-semibold transition-colors duration-150 sm:px-3',
               size === 'lg' ? 'h-11 text-sm' : 'h-9 text-sm',
+              scroll && 'shrink-0',
               active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
             )}
           >

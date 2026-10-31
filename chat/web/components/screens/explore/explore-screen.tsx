@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { Heart, Megaphone, RefreshCw, Search, Users } from 'lucide-react'
+import { Megaphone, RefreshCw, Search, UserCheck, Users } from 'lucide-react'
 import type { ExploreKind, ExplorePerson, FeedItem, PersonRow } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { COUNTRIES } from '@/lib/countries'
@@ -25,7 +25,7 @@ import { PostCard } from '@/components/social/posts/post-card'
 import { ScrollRow } from '@/components/ui/scroll-row'
 
 // Explore (059): search by ID or name on top; under it Feed (friends' posts and highlights), For you (50 random people
-// of a country), Ranking (profile likes or friends) and Online. "Liked" (the heart) lists whom I liked.
+// of a country), Ranking (followers or friends) and Online. "Following" (the person with a check) lists whom I follow.
 
 type Section = 'feed' | 'recommend' | 'ranking' | 'online' | 'liked' | 'looking'
 
@@ -91,10 +91,10 @@ export function ExploreScreen() {
             size="icon"
             variant={section === 'liked' ? 'brand' : 'secondary'}
             onClick={() => (setQ(''), setSection(section === 'liked' ? 'recommend' : 'liked'))}
-            aria-label={t('explore.liked')}
+            aria-label={t('explore.following')}
             aria-pressed={section === 'liked'}
           >
-            <Heart className="size-5" aria-hidden />
+            <UserCheck className="size-5" aria-hidden />
           </Button>
         </div>
 
@@ -115,7 +115,7 @@ export function ExploreScreen() {
         ) : (
           <>
             {section === 'liked' || section === 'looking' ? (
-              <h1 className="text-lg font-semibold">{t(section === 'liked' ? 'explore.liked' : 'looking.tab')}</h1>
+              <h1 className="text-lg font-semibold">{t(section === 'liked' ? 'explore.following' : 'looking.tab')}</h1>
             ) : (
               <Segmented
                 label={t('nav.explore')}
@@ -151,7 +151,7 @@ export function ExploreScreen() {
                     value={rank}
                     onChange={setRank}
                     options={[
-                      { value: 'likes', label: t('explore.byLikes') },
+                      { value: 'likes', label: t('explore.byFollows') },
                       { value: 'friends', label: t('explore.byFriends') },
                     ]}
                   />
@@ -223,7 +223,7 @@ function People({ list, ranked, rank }: { list: ExplorePerson[] | undefined; ran
               <LookName userId={p.id} handle={p.handle} className="truncate text-xs text-muted-foreground" />
               {ranked && p.count !== null ? (
                 <span className="mt-0.5 flex items-center gap-1 text-xs font-semibold text-primary-text">
-                  {rank === 'likes' ? <Heart className="size-3.5" aria-hidden /> : <Users className="size-3.5" aria-hidden />}
+                  {rank === 'likes' ? <UserCheck className="size-3.5" aria-hidden /> : <Users className="size-3.5" aria-hidden />}
                   {num(p.count)}
                 </span>
               ) : null}
