@@ -38,6 +38,9 @@ const ar: Dict = {
 
   // sign-up
   'auth.badge': '+18 · رقم هاتف موثّق',
+  'auth.badgeOpen': '18+ · بلا رقم هاتف',
+  'auth.guest': 'المتابعة كضيف',
+  'auth.guestBody': 'لا حاجة لرقم هاتف. ملف الضيف يبقى في هذا المتصفح فقط.',
   'auth.verifiedBadge': 'احصل على شارة التوثيق: هوية + سيلفي',
   'auth.everyoneVerified': 'كل من هنا موثّق الهوية',
   'trust.verified': 'هوية موثّقة',
@@ -85,6 +88,8 @@ const ar: Dict = {
   'otp.digit': 'الرقم {n}',
 
   'pf.title': 'أنشئ ملفك الشخصي',
+
+  'pf.country': 'البلد',
   'pf.body': 'هذا ما سيراه الناس عند التوافق معك.',
   'pf.name': "الاسم أو اللقب",
   'pf.nameError': 'أضف اسمك الأول',
@@ -503,6 +508,7 @@ const ar: Dict = {
   'settings.account': 'الحساب',
   'settings.phone': 'رقم الهاتف',
   'settings.verified': 'موثّق',
+  'settings.guest': 'حساب ضيف (هذا المتصفح فقط)',
   'settings.language': 'اللغة',
   'settings.roomSounds': 'أصوات غرف الصوت',
   'settings.roomSoundsBody': 'نغمة قصيرة عندما ينضم أحد إلى غرفة الصوت أو يغادرها.',

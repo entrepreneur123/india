@@ -35,6 +35,12 @@ const pl: Dict = {
   'panel.message': 'Napisz do: {name}',
 
   'auth.badge': '18+ · zweryfikowany telefon',
+
+  'auth.badgeOpen': '18+ · bez numeru telefonu',
+
+  'auth.guest': 'Kontynuuj jako gość',
+
+  'auth.guestBody': 'Bez numeru telefonu. Profil gościa istnieje tylko w tej przeglądarce.',
   'auth.verifiedBadge': 'Zdobądź odznakę weryfikacji: dokument + selfie',
   'auth.everyoneVerified': 'Każdy tutaj ma zweryfikowany dokument',
   'trust.verified': 'Zweryfikowany dokument',
@@ -82,6 +88,8 @@ const pl: Dict = {
   'otp.digit': 'Cyfra {n}',
 
   'pf.title': 'Utwórz profil',
+
+  'pf.country': 'Kraj',
   'pf.body': 'To zobaczą inni, gdy się z Tobą połączą.',
   'pf.name': "Imię lub pseudonim",
   'pf.nameError': 'Dodaj swoje imię',
@@ -491,6 +499,7 @@ const pl: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Numer telefonu',
   'settings.verified': 'Zweryfikowany',
+  'settings.guest': 'Konto gościa (tylko ta przeglądarka)',
   'settings.language': 'Język',
   'settings.roomSounds': 'Dźwięki pokoju głosowego',
   'settings.roomSoundsBody': 'Krótki dźwięk, gdy ktoś wchodzi do pokoju głosowego lub z niego wychodzi.',

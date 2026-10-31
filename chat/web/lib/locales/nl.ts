@@ -35,6 +35,12 @@ const nl: Dict = {
   'panel.message': 'Bericht aan {name}',
 
   'auth.badge': '18+ · telefoon geverifieerd',
+
+  'auth.badgeOpen': '18+ · geen telefoonnummer nodig',
+
+  'auth.guest': 'Doorgaan als gast',
+
+  'auth.guestBody': 'Geen telefoonnummer nodig. Je gastprofiel blijft alleen in deze browser.',
   'auth.verifiedBadge': 'Krijg je verificatiebadge: ID + selfie',
   'auth.everyoneVerified': 'Iedereen hier is met ID geverifieerd',
   'trust.verified': 'ID geverifieerd',
@@ -82,6 +88,8 @@ const nl: Dict = {
   'otp.digit': 'Cijfer {n}',
 
   'pf.title': 'Maak je profiel',
+
+  'pf.country': 'Land',
   'pf.body': 'Dit zien mensen als jullie een match hebben.',
   'pf.name': "Naam of bijnaam",
   'pf.nameError': 'Vul je voornaam in',
@@ -489,6 +497,7 @@ const nl: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Telefoonnummer',
   'settings.verified': 'Geverifieerd',
+  'settings.guest': 'Gastaccount (alleen deze browser)',
   'settings.language': 'Taal',
   'settings.roomSounds': 'Geluiden in spraakruimte',
   'settings.roomSoundsBody': 'Een kort geluid als iemand een spraakruimte binnenkomt of verlaat.',

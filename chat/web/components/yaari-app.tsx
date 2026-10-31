@@ -1,7 +1,7 @@
 'use client'
 
 import { LazyMotion, MotionConfig } from 'motion/react'
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { BackendProvider, preloadBackend, useBackend } from '@/lib/backend-context'
 import type { Profile } from '@/lib/backend'
 import { DEMO_MODE } from '@/lib/config'
@@ -61,28 +61,41 @@ type Boot =
   | { stage: 'offline' }
   | { stage: 'app'; me: Profile }
 
-export function YaariApp() {
+const noSubscribe = () => () => {}
+const notOnServer = () => false
+
+/**
+ * Before the language file, the backend or the first screen is here: the server-rendered landing for someone without a
+ * session (it is what search engines and a slow first visit read), the splash for someone who has one. The server
+ * cannot know, so it renders the landing; a signed-in browser swaps it for the splash in its first frame.
+ */
+function FirstPaint({ landing, label }: { landing?: ReactNode; label?: string }) {
+  const signedIn = useSyncExternalStore(noSubscribe, probablySignedIn, notOnServer)
+  return landing && !signedIn ? <>{landing}</> : <Splash label={label} />
+}
+
+export function YaariApp({ landing }: { landing?: ReactNode }) {
   return (
     <MotionConfig reducedMotion="user">
       <LazyMotion features={loadMotionFeatures} strict>
-        <I18nProvider fallback={<Splash />}>
-          <Localized />
+        <I18nProvider fallback={<FirstPaint landing={landing} />}>
+          <Localized landing={landing} />
         </I18nProvider>
       </LazyMotion>
     </MotionConfig>
   )
 }
 
-function Localized() {
+function Localized({ landing }: { landing?: ReactNode }) {
   const { t } = useI18n()
-  const splash = <Splash label={t('common.loading')} />
+  const first = <FirstPaint landing={landing} label={t('common.loading')} />
   return (
-    <BackendProvider fallback={splash}>
+    <BackendProvider fallback={first}>
       <ToastProvider>
         <InAppBanner />
         <ScreenBoundary>
-          <Suspense fallback={splash}>
-            <Root />
+          <Suspense fallback={first}>
+            <Root landing={landing} />
           </Suspense>
         </ScreenBoundary>
       </ToastProvider>
@@ -90,7 +103,7 @@ function Localized() {
   )
 }
 
-function Root() {
+function Root({ landing }: { landing?: ReactNode }) {
   const backend = useBackend()
   const toast = useToast()
   const { t, lang } = useI18n()
@@ -145,7 +158,7 @@ function Root() {
   return (
     <>
       {boot.stage === 'loading' ? (
-        <Splash key="splash" label={t('common.loading')} />
+        <FirstPaint key="splash" landing={landing} label={t('common.loading')} />
       ) : boot.stage === 'offline' ? (
         <div key="offline" className={`grid min-h-dvh place-items-center bg-background px-6 text-center text-foreground ${fade}`}>
           <div className="flex flex-col items-center gap-4">

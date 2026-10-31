@@ -12,10 +12,12 @@ import { TextInput } from '@/components/ui/bits'
 import { useToast } from '@/components/ui/toast'
 import { CountrySelect } from './country-select'
 
-export function PhoneStep({ onSent }: { onSent: (digits: string, display: string) => void }) {
+/** `onGuest` (123): shown once the server allows guests; signs in without a number and goes to the profile step. */
+export function PhoneStep({ onSent, onGuest }: { onSent: (digits: string, display: string) => void; onGuest?: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
+  const [guestBusy, setGuestBusy] = useState(false)
   const [country, setCountry] = useState<Country>(() => {
     if (typeof navigator === 'undefined') return guessCountry([])
     let zone: string | undefined
@@ -75,6 +77,32 @@ export function PhoneStep({ onSent }: { onSent: (digits: string, display: string
         {t('phone.send')}
         <ArrowRight className="size-4.5 rtl:rotate-180" aria-hidden />
       </Button>
+      {onGuest ? (
+        <div className="flex flex-col gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            loading={guestBusy}
+            className="w-full"
+            onClick={async () => {
+              if (guestBusy) return
+              setGuestBusy(true)
+              try {
+                await backend.signInAsGuest()
+                onGuest()
+              } catch (err) {
+                toast.error(err)
+              } finally {
+                setGuestBusy(false)
+              }
+            }}
+          >
+            {t('auth.guest')}
+          </Button>
+          <p className="text-center text-xs leading-relaxed text-muted-foreground">{t('auth.guestBody')}</p>
+        </div>
+      ) : null}
       <p className="text-center text-xs leading-relaxed text-muted-foreground">
         <Rich
           text={t('phone.legal')}

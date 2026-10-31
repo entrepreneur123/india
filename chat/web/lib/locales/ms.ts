@@ -38,6 +38,9 @@ const ms: Dict = {
 
   // sign-up
   'auth.badge': '18+ · telefon disahkan',
+  'auth.badgeOpen': '18+ · tiada nombor telefon',
+  'auth.guest': 'Teruskan sebagai tetamu',
+  'auth.guestBody': 'Tiada nombor telefon diperlukan. Profil tetamu hanya ada dalam pelayar ini.',
   'auth.verifiedBadge': 'Dapatkan lencana disahkan: ID + swafoto',
   'auth.everyoneVerified': 'Semua orang di sini telah disahkan ID',
   'trust.verified': 'ID disahkan',
@@ -85,6 +88,8 @@ const ms: Dict = {
   'otp.digit': 'Digit {n}',
 
   'pf.title': 'Buat profil anda',
+
+  'pf.country': 'Negara',
   'pf.body': 'Inilah yang orang lihat apabila anda dipadankan.',
   'pf.name': "Nama atau nama panggilan",
   'pf.nameError': 'Tambah nama pertama anda',
@@ -499,6 +504,7 @@ const ms: Dict = {
   'settings.account': 'Akaun',
   'settings.phone': 'Nombor telefon',
   'settings.verified': 'Disahkan',
+  'settings.guest': 'Akaun tetamu (pelayar ini sahaja)',
   'settings.language': 'Bahasa',
   'settings.roomSounds': 'Bunyi bilik suara',
   'settings.roomSoundsBody': 'Bunyi pendek apabila seseorang masuk atau keluar dari bilik suara.',

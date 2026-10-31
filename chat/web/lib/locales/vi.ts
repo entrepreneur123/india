@@ -35,6 +35,12 @@ const vi: Dict = {
   'panel.message': 'Nhắn tin cho {name}',
 
   'auth.badge': '18+ · đã xác minh số điện thoại',
+
+  'auth.badgeOpen': '18+ · không cần số điện thoại',
+
+  'auth.guest': 'Tiếp tục với tư cách khách',
+
+  'auth.guestBody': 'Không cần số điện thoại. Hồ sơ khách chỉ tồn tại trên trình duyệt này.',
   'auth.verifiedBadge': 'Nhận huy hiệu đã xác minh: giấy tờ + ảnh selfie',
   'auth.everyoneVerified': 'Mọi người ở đây đều đã xác minh danh tính',
   'trust.verified': 'Đã xác minh danh tính',
@@ -82,6 +88,8 @@ const vi: Dict = {
   'otp.digit': 'Chữ số {n}',
 
   'pf.title': 'Tạo hồ sơ của bạn',
+
+  'pf.country': 'Quốc gia',
   'pf.body': 'Đây là những gì mọi người thấy khi ghép đôi với bạn.',
   'pf.name': "Tên hoặc biệt danh",
   'pf.nameError': 'Nhập tên của bạn',
@@ -489,6 +497,7 @@ const vi: Dict = {
   'settings.account': 'Tài khoản',
   'settings.phone': 'Số điện thoại',
   'settings.verified': 'Đã xác minh',
+  'settings.guest': 'Tài khoản khách (chỉ trình duyệt này)',
   'settings.language': 'Ngôn ngữ',
   'settings.roomSounds': 'Âm thanh phòng thoại',
   'settings.roomSoundsBody': 'Một tiếng chuông ngắn khi có người vào hoặc rời phòng thoại.',

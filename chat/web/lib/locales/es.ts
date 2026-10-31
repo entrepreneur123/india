@@ -35,6 +35,12 @@ const es: Dict = {
   'panel.message': 'Enviar mensaje a {name}',
 
   'auth.badge': '18+ · teléfono verificado',
+
+  'auth.badgeOpen': '18+ · sin número de teléfono',
+
+  'auth.guest': 'Continuar como invitado',
+
+  'auth.guestBody': 'Sin número de teléfono. Tu perfil de invitado vive solo en este navegador.',
   'auth.verifiedBadge': 'Consigue tu insignia de verificación: documento + selfie',
   'auth.everyoneVerified': 'Aquí todos verificaron su identidad',
   'trust.verified': 'Identidad verificada',
@@ -82,6 +88,8 @@ const es: Dict = {
   'otp.digit': 'Dígito {n}',
 
   'pf.title': 'Crea tu perfil',
+
+  'pf.country': 'País',
   'pf.body': 'Esto es lo que ve la gente cuando hacen match contigo.',
   'pf.name': "Nombre o apodo",
   'pf.nameError': 'Escribe tu nombre',
@@ -490,6 +498,7 @@ const es: Dict = {
   'settings.account': 'Cuenta',
   'settings.phone': 'Número de teléfono',
   'settings.verified': 'Verificado',
+  'settings.guest': 'Cuenta de invitado (solo este navegador)',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sonidos de la sala de voz',
   'settings.roomSoundsBody': 'Un breve sonido cuando alguien entra o sale de una sala de voz.',

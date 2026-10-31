@@ -25,6 +25,7 @@ export function SettingsScreen() {
   const { t, lang, setLang } = useI18n()
   const { signedOut, phone, me, setMe } = useApp()
   const { data: myPhone } = useSWR('my-phone', () => backend.myPhone())
+  const { data: guest } = useSWR('guest', () => backend.isGuest())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -69,7 +70,7 @@ export function SettingsScreen() {
         <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t('settings.title')}</h1>
 
         <Group title={t('settings.account')}>
-          <Item icon={Phone} label={t('settings.phone')} value={myPhone ?? phone ?? t('settings.verified')} ltrValue />
+          <Item icon={Phone} label={t('settings.phone')} value={myPhone ?? phone ?? t(guest ? 'settings.guest' : 'settings.verified')} ltrValue />
           <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
           <Toggle icon={Volume2} label={t('settings.roomSounds')} body={t('settings.roomSoundsBody')} on={sounds} onChange={(on) => (setRoomSounds(on), setSounds(on))} />
         </Group>

@@ -467,6 +467,22 @@ export class SupabaseBackend implements Backend {
     return this.userId !== null
   }
 
+  async signInAsGuest() {
+    const { data, error } = await this.client.auth.signInAnonymously()
+    if (error || !data.session) throw new BackendError((error as { code?: string } | null)?.code === 'anonymous_provider_disabled' ? 'not_allowed' : 'network')
+    this.userId = data.session.user.id
+  }
+
+  async isGuest() {
+    const { data } = await this.client.auth.getSession()
+    return data.session?.user.is_anonymous === true
+  }
+
+  private configOnce: Promise<{ guests: boolean }> | null = null
+  config() {
+    return (this.configOnce ??= this.rpc<{ guests?: boolean }>('app_config').then((c) => ({ guests: c?.guests === true }), () => ({ guests: false })))
+  }
+
   /** Phone number of the signed-in account, for Settings. */
   async myPhone(): Promise<string | null> {
     const { data } = await this.client.auth.getSession()
@@ -494,9 +510,9 @@ export class SupabaseBackend implements Backend {
 
   async createProfile(p: NewProfile) {
     const photo = p.photo ? await this.upload(p.photo, 'avatar') : null
-    // Country is set by the server from the verified phone number.
+    // Country: the server takes it from a phone account's number; a guest's own choice stays (123).
     const { error } = await this.client.from('profiles').insert({
-      id: this.uid, name: p.name, gender: p.gender, birth_date: p.birthDate, city: p.city, bio: p.bio, photo_path: photo,
+      id: this.uid, name: p.name, gender: p.gender, birth_date: p.birthDate, city: p.city, bio: p.bio, photo_path: photo, country: p.country ?? null,
     })
     // 23505: the row already exists — an earlier attempt was saved but its reply was lost. That is success.
     if (error && error.code !== '23505') fail(error)

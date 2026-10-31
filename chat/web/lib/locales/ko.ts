@@ -38,6 +38,9 @@ const ko: Dict = {
 
   // sign-up
   'auth.badge': '18+ · 전화번호 인증',
+  'auth.badgeOpen': '18+ · 전화번호 없이',
+  'auth.guest': '게스트로 계속',
+  'auth.guestBody': '전화번호가 필요 없어요. 게스트 프로필은 이 브라우저에만 남아요.',
   'auth.verifiedBadge': '인증 배지 받기: 신분증 + 셀카',
   'auth.everyoneVerified': '여기 있는 모두가 본인 인증을 마쳤어요',
   'trust.verified': '본인 인증 완료',
@@ -85,6 +88,8 @@ const ko: Dict = {
   'otp.digit': '{n}번째 숫자',
 
   'pf.title': '프로필 만들기',
+
+  'pf.country': '국가',
   'pf.body': '매칭되면 상대방에게 이렇게 보여요.',
   'pf.name': "이름 또는 닉네임",
   'pf.nameError': '이름을 입력해 주세요',
@@ -499,6 +504,7 @@ const ko: Dict = {
   'settings.account': '계정',
   'settings.phone': '전화번호',
   'settings.verified': '인증됨',
+  'settings.guest': '게스트 계정 (이 브라우저에서만)',
   'settings.language': '언어',
   'settings.roomSounds': '보이스룸 효과음',
   'settings.roomSoundsBody': '보이스룸에 누가 들어오거나 나가면 짧은 알림음이 울려요.',

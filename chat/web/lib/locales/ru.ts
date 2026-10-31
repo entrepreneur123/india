@@ -38,6 +38,9 @@ const ru: Dict = {
 
   // sign-up
   'auth.badge': '18+ · телефон подтверждён',
+  'auth.badgeOpen': '18+ · без номера телефона',
+  'auth.guest': 'Продолжить как гость',
+  'auth.guestBody': 'Номер телефона не нужен. Гостевой профиль живёт только в этом браузере.',
   'auth.verifiedBadge': 'Получите значок подтверждения: документ + селфи',
   'auth.everyoneVerified': 'Здесь у всех подтверждена личность',
   'trust.verified': 'Личность подтверждена',
@@ -85,6 +88,8 @@ const ru: Dict = {
   'otp.digit': 'Цифра {n}',
 
   'pf.title': 'Создайте профиль',
+
+  'pf.country': 'Страна',
   'pf.body': 'Это увидят люди, когда вы совпадёте.',
   'pf.name': "Имя или ник",
   'pf.nameError': 'Укажите имя',
@@ -501,6 +506,7 @@ const ru: Dict = {
   'settings.account': 'Аккаунт',
   'settings.phone': 'Номер телефона',
   'settings.verified': 'Подтверждён',
+  'settings.guest': 'Гостевой аккаунт (только этот браузер)',
   'settings.language': 'Язык',
   'settings.roomSounds': 'Звуки голосовой комнаты',
   'settings.roomSoundsBody': 'Короткий звук, когда кто-то входит в голосовую комнату или выходит из неё.',

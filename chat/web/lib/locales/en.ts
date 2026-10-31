@@ -37,6 +37,9 @@ const en = {
 
   // sign-up
   'auth.badge': '18+ · phone-verified',
+  'auth.badgeOpen': '18+ · no phone number needed',
+  'auth.guest': 'Continue as guest',
+  'auth.guestBody': 'No phone number needed. Your guest profile lives in this browser only.',
   'auth.verifiedBadge': 'Get your verified badge: ID + selfie',
   'auth.everyoneVerified': 'Everyone here is ID-verified',
   'trust.verified': 'ID verified',
@@ -84,6 +87,8 @@ const en = {
   'otp.digit': 'Digit {n}',
 
   'pf.title': 'Make your profile',
+
+  'pf.country': 'Country',
   'pf.body': 'This is what people see when you match.',
   'pf.name': "Name or nickname",
   'pf.nameError': 'Add your first name',
@@ -498,6 +503,7 @@ const en = {
   'settings.account': 'Account',
   'settings.phone': 'Phone number',
   'settings.verified': 'Verified',
+  'settings.guest': 'Guest account (this browser only)',
   'settings.language': 'Language',
   'settings.roomSounds': 'Voice room sounds',
   'settings.roomSoundsBody': 'A short chime when someone joins or leaves a voice room.',

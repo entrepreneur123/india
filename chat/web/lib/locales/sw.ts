@@ -38,6 +38,9 @@ const sw: Dict = {
 
   // sign-up
   'auth.badge': '18+ · namba ya simu imethibitishwa',
+  'auth.badgeOpen': '18+ · bila namba ya simu',
+  'auth.guest': 'Endelea kama mgeni',
+  'auth.guestBody': 'Hakuna haja ya namba ya simu. Wasifu wa mgeni unabaki kwenye kivinjari hiki tu.',
   'auth.verifiedBadge': 'Pata beji yako ya uthibitisho: kitambulisho + selfie',
   'auth.everyoneVerified': 'Kila mtu hapa amethibitishwa kwa kitambulisho',
   'trust.verified': 'Kitambulisho kimethibitishwa',
@@ -85,6 +88,8 @@ const sw: Dict = {
   'otp.digit': 'Tarakimu {n}',
 
   'pf.title': 'Tengeneza wasifu wako',
+
+  'pf.country': 'Nchi',
   'pf.body': 'Hiki ndicho watu wanachokiona mnapolinganishwa.',
   'pf.name': "Jina au jina la utani",
   'pf.nameError': 'Weka jina lako la kwanza',
@@ -499,6 +504,7 @@ const sw: Dict = {
   'settings.account': 'Akaunti',
   'settings.phone': 'Namba ya simu',
   'settings.verified': 'Imethibitishwa',
+  'settings.guest': 'Akaunti ya mgeni (kivinjari hiki tu)',
   'settings.language': 'Lugha',
   'settings.roomSounds': 'Sauti za chumba cha sauti',
   'settings.roomSoundsBody': 'Mlio mfupi mtu anapoingia au kutoka kwenye chumba cha sauti.',

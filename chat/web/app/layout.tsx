@@ -25,8 +25,9 @@ export const metadata: Metadata = {
     'talk to strangers', 'meet new people', 'social app', 'रैंडम वीडियो चैट', '랜덤 영상채팅', '해외 친구 만들기', 'ランダムビデオチャット'],
   // Each app language has its own page (app/[lang]); search engines are told about all of them.
   alternates: { canonical: '/', languages: LANGUAGES },
-  openGraph: { title: 'Yaari — Random Video Chat', description, siteName: 'Yaari', type: 'website' },
-  twitter: { card: 'summary', title: 'Yaari — Random Video Chat', description },
+  openGraph: { title: 'Yaari — Random Video Chat', description, siteName: 'Yaari', type: 'website', images: [{ url: '/og.png', width: 1200, height: 630 }] },
+  twitter: { card: 'summary_large_image', title: 'Yaari — Random Video Chat', description, images: ['/og.png'] },
+  // app/favicon.ico, app/icon.png and app/apple-icon.png are picked up by their file names; the SVG is the crisp one.
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
   },

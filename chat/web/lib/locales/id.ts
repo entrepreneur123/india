@@ -38,6 +38,9 @@ const id: Dict = {
 
   // sign-up
   'auth.badge': '18+ · nomor terverifikasi',
+  'auth.badgeOpen': '18+ · tanpa nomor telepon',
+  'auth.guest': 'Lanjutkan sebagai tamu',
+  'auth.guestBody': 'Tanpa nomor telepon. Profil tamu hanya ada di browser ini.',
   'auth.verifiedBadge': 'Dapatkan lencana terverifikasi: KTP/ID + selfie',
   'auth.everyoneVerified': 'Semua orang di sini sudah verifikasi ID',
   'trust.verified': 'ID terverifikasi',
@@ -85,6 +88,8 @@ const id: Dict = {
   'otp.digit': 'Digit {n}',
 
   'pf.title': 'Buat profilmu',
+
+  'pf.country': 'Negara',
   'pf.body': 'Ini yang dilihat orang saat kalian cocok.',
   'pf.name': "Nama atau nama panggilan",
   'pf.nameError': 'Isi nama depanmu',
@@ -499,6 +504,7 @@ const id: Dict = {
   'settings.account': 'Akun',
   'settings.phone': 'Nomor HP',
   'settings.verified': 'Terverifikasi',
+  'settings.guest': 'Akun tamu (hanya browser ini)',
   'settings.language': 'Bahasa',
   'settings.roomSounds': 'Suara ruang suara',
   'settings.roomSoundsBody': 'Bunyi singkat saat seseorang masuk atau keluar dari ruang suara.',

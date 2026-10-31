@@ -35,6 +35,12 @@ const te: Dict = {
   'panel.message': '{name}కి మెసేజ్ చేయి',
 
   'auth.badge': '18+ · ఫోన్ వెరిఫై అయింది',
+
+  'auth.badgeOpen': '18+ · ఫోన్ నంబర్ అవసరం లేదు',
+
+  'auth.guest': 'గెస్ట్‌గా కొనసాగండి',
+
+  'auth.guestBody': 'ఫోన్ నంబర్ అవసరం లేదు. గెస్ట్ ప్రొఫైల్ ఈ బ్రౌజర్‌లో మాత్రమే ఉంటుంది.',
   'auth.verifiedBadge': 'వెరిఫైడ్ బ్యాడ్జ్ పొందండి: ID + సెల్ఫీ',
   'auth.everyoneVerified': 'ఇక్కడ అందరూ ID తో వెరిఫై అయినవారే',
   'trust.verified': 'ID వెరిఫై అయింది',
@@ -82,6 +88,8 @@ const te: Dict = {
   'otp.digit': 'అంకె {n}',
 
   'pf.title': 'మీ ప్రొఫైల్ తయారు చేయండి',
+
+  'pf.country': 'దేశం',
   'pf.body': 'మ్యాచ్ అయినప్పుడు ఇతరులు చూసేది ఇదే.',
   'pf.name': "పేరు లేదా ముద్దుపేరు",
   'pf.nameError': 'మీ మొదటి పేరు ఇవ్వండి',
@@ -489,6 +497,7 @@ const te: Dict = {
   'settings.account': 'అకౌంట్',
   'settings.phone': 'ఫోన్ నంబర్',
   'settings.verified': 'వెరిఫై అయింది',
+  'settings.guest': 'గెస్ట్ ఖాతా (ఈ బ్రౌజర్ మాత్రమే)',
   'settings.language': 'భాష',
   'settings.roomSounds': 'వాయిస్ రూమ్ శబ్దాలు',
   'settings.roomSoundsBody': 'ఎవరైనా వాయిస్ రూమ్‌లోకి వచ్చినా, వెళ్లినా చిన్న శబ్దం వస్తుంది.',

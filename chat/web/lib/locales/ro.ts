@@ -35,6 +35,12 @@ const ro: Dict = {
   'panel.message': 'Scrie-i lui {name}',
 
   'auth.badge': '18+ · telefon verificat',
+
+  'auth.badgeOpen': '18+ · fără număr de telefon',
+
+  'auth.guest': 'Continuă ca oaspete',
+
+  'auth.guestBody': 'Fără număr de telefon. Profilul de oaspete rămâne doar în acest browser.',
   'auth.verifiedBadge': 'Obține insigna de verificare: act + selfie',
   'auth.everyoneVerified': 'Toată lumea de aici are actul verificat',
   'trust.verified': 'Act verificat',
@@ -82,6 +88,8 @@ const ro: Dict = {
   'otp.digit': 'Cifra {n}',
 
   'pf.title': 'Creează-ți profilul',
+
+  'pf.country': 'Țară',
   'pf.body': 'Asta văd oamenii când vă potriviți.',
   'pf.name': "Nume sau poreclă",
   'pf.nameError': 'Adaugă-ți prenumele',
@@ -490,6 +498,7 @@ const ro: Dict = {
   'settings.account': 'Cont',
   'settings.phone': 'Număr de telefon',
   'settings.verified': 'Verificat',
+  'settings.guest': 'Cont de oaspete (doar acest browser)',
   'settings.language': 'Limbă',
   'settings.roomSounds': 'Sunete în camera vocală',
   'settings.roomSoundsBody': 'Un sunet scurt când cineva intră sau iese dintr-o cameră vocală.',

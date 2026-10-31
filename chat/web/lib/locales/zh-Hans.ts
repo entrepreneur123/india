@@ -38,6 +38,9 @@ const zhHans: Dict = {
 
   // sign-up
   'auth.badge': '18+ · 手机号已验证',
+  'auth.badgeOpen': '18+ · 无需手机号',
+  'auth.guest': '以访客身份继续',
+  'auth.guestBody': '无需手机号。访客资料只保存在此浏览器中。',
   'auth.verifiedBadge': '获取认证徽章：证件 + 自拍',
   'auth.everyoneVerified': '这里的每个人都通过了证件认证',
   'trust.verified': '证件已认证',
@@ -85,6 +88,8 @@ const zhHans: Dict = {
   'otp.digit': '第 {n} 位',
 
   'pf.title': '创建个人资料',
+
+  'pf.country': '国家/地区',
   'pf.body': '匹配成功后，对方会看到这些信息。',
   'pf.name': "名字或昵称",
   'pf.nameError': '请填写你的名字',
@@ -499,6 +504,7 @@ const zhHans: Dict = {
   'settings.account': '账号',
   'settings.phone': '手机号',
   'settings.verified': '已验证',
+  'settings.guest': '访客账号（仅此浏览器）',
   'settings.language': '语言',
   'settings.roomSounds': '语音房提示音',
   'settings.roomSoundsBody': '有人进入或离开语音房时会响起短促的提示音。',

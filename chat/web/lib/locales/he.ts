@@ -38,6 +38,9 @@ const he: Dict = {
 
   // sign-up
   'auth.badge': '‎18+ · טלפון מאומת',
+  'auth.badgeOpen': '18+ · בלי מספר טלפון',
+  'auth.guest': 'המשך כאורח',
+  'auth.guestBody': 'לא צריך מספר טלפון. פרופיל האורח נשמר רק בדפדפן הזה.',
   'auth.verifiedBadge': 'מקבלים תג אימות: תעודה + סלפי',
   'auth.everyoneVerified': 'כל מי שכאן עבר אימות תעודה',
   'trust.verified': 'תעודה מאומתת',
@@ -85,6 +88,8 @@ const he: Dict = {
   'otp.digit': 'ספרה {n}',
 
   'pf.title': 'יוצרים פרופיל',
+
+  'pf.country': 'מדינה',
   'pf.body': 'זה מה שאנשים רואים כשיש התאמה.',
   'pf.name': "שם או כינוי",
   'pf.nameError': 'צריך להוסיף שם פרטי',
@@ -500,6 +505,7 @@ const he: Dict = {
   'settings.account': 'חשבון',
   'settings.phone': 'מספר טלפון',
   'settings.verified': 'מאומת',
+  'settings.guest': 'חשבון אורח (הדפדפן הזה בלבד)',
   'settings.language': 'שפה',
   'settings.roomSounds': 'צלילי חדר קולי',
   'settings.roomSoundsBody': 'צליל קצר כשמישהו מצטרף לחדר קולי או עוזב אותו.',

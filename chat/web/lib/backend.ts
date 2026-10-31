@@ -749,6 +749,8 @@ export interface NewProfile {
   city: string
   bio: string
   photo?: File | null
+  /** ISO code, for a guest (123): a phone account's country comes from its number. */
+  country?: string
 }
 
 export type BackendErrorCode =
@@ -841,6 +843,11 @@ export interface Backend {
   sendOtp(phone: string): Promise<void> // digits incl. country code, e.g. "919876543210"
   verifyOtp(phone: string, code: string): Promise<boolean>
   isSignedIn(): Promise<boolean>
+  /** 123: a guest account (no phone; lives in this browser's storage). Refused while the server's switch is off. */
+  signInAsGuest(): Promise<void>
+  isGuest(): Promise<boolean>
+  /** What the sign-in screen needs before anyone is signed in: whether guests may enter. */
+  config(): Promise<{ guests: boolean }>
   myProfile(): Promise<Profile | null>
   createProfile(p: NewProfile): Promise<Profile>
   signOut(): Promise<void>

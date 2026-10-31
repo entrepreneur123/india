@@ -14,10 +14,13 @@ import { Button } from '@/components/ui/pressable'
 import { Field, Segmented, TextArea, TextInput } from '@/components/ui/bits'
 import { useToast } from '@/components/ui/toast'
 import { PhotoPicker } from '@/components/screens/me/photo-picker'
+import { guessCountry, type Country } from '@/lib/countries'
+import { CountrySelect } from './country-select'
 
 const BIO_MAX = 150
 
-export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) {
+/** `guest` (123): no phone to take the country from, so the person picks it (the sign-up's own country list). */
+export function ProfileStep({ onCreated, guest = false }: { onCreated: (p: Profile) => void; guest?: boolean }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
@@ -32,6 +35,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
   const [gender, setGender] = useState<Gender | ''>('')
   const [birthDate, setBirthDate] = useState('')
   const [bio, setBio] = useState('')
+  const [country, setCountry] = useState<Country>(() => guessCountry(typeof navigator === 'undefined' ? [] : navigator.languages ?? [navigator.language]))
   const [busy, setBusy] = useState(false)
   const [touched, setTouched] = useState(false)
   const [agreed, setAgreed] = useState(false)
@@ -65,6 +69,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
         city: '', // country only (the owner, 2026-10-26)
         bio: bio.trim(),
         photo,
+        country: guest ? country.iso : undefined,
       })
       // The profile comes with a free ID (lisa_4821); then the chosen one. Taken meanwhile: the free one stays.
       const wanted = handleSpelling(handle)
@@ -156,6 +161,13 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
       >
         <TextInput id="pf-dob" type="date" value={birthDate} max={maxBirthDate()} min={minBirthDate()} onChange={(e) => setBirthDate(e.target.value)} />
       </Field>
+
+      {guest ? (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-semibold">{t('pf.country')}</span>
+          <CountrySelect value={country} onChange={setCountry} />
+        </div>
+      ) : null}
 
       <p className="flex gap-2.5 rounded-xl bg-primary-soft px-4 py-3 text-xs leading-relaxed text-foreground">
         <Info className="mt-px size-4 shrink-0 text-primary-text" aria-hidden />

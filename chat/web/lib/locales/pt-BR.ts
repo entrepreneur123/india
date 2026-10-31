@@ -35,6 +35,12 @@ const ptBR: Dict = {
   'panel.message': 'Mandar mensagem para {name}',
 
   'auth.badge': '18+ · telefone verificado',
+
+  'auth.badgeOpen': '18+ · sem número de telefone',
+
+  'auth.guest': 'Continuar como visitante',
+
+  'auth.guestBody': 'Sem número de telefone. Seu perfil de visitante fica só neste navegador.',
   'auth.verifiedBadge': 'Ganhe seu selo de verificado: documento + selfie',
   'auth.everyoneVerified': 'Todo mundo aqui tem identidade verificada',
   'trust.verified': 'Identidade verificada',
@@ -82,6 +88,8 @@ const ptBR: Dict = {
   'otp.digit': 'Dígito {n}',
 
   'pf.title': 'Crie seu perfil',
+
+  'pf.country': 'País',
   'pf.body': 'É isso que as pessoas veem quando dá match.',
   'pf.name': "Nome ou apelido",
   'pf.nameError': 'Coloque seu primeiro nome',
@@ -489,6 +497,7 @@ const ptBR: Dict = {
   'settings.account': 'Conta',
   'settings.phone': 'Número de telefone',
   'settings.verified': 'Verificado',
+  'settings.guest': 'Conta de visitante (só neste navegador)',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sons da sala de voz',
   'settings.roomSoundsBody': 'Um som curto quando alguém entra ou sai de uma sala de voz.',

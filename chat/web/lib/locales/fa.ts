@@ -38,6 +38,9 @@ const fa: Dict = {
 
   // sign-up
   'auth.badge': '۱۸+ · شماره تأییدشده',
+  'auth.badgeOpen': '18+ · بدون شماره تلفن',
+  'auth.guest': 'ادامه به‌عنوان مهمان',
+  'auth.guestBody': 'به شماره تلفن نیاز نیست. نمایهٔ مهمان فقط در همین مرورگر می‌ماند.',
   'auth.verifiedBadge': 'نشان تأیید بگیرید: کارت شناسایی + سلفی',
   'auth.everyoneVerified': 'هویت همه اینجا تأیید شده است',
   'trust.verified': 'هویت تأییدشده',
@@ -85,6 +88,8 @@ const fa: Dict = {
   'otp.digit': 'رقم {n}',
 
   'pf.title': 'پروفایلتان را بسازید',
+
+  'pf.country': 'کشور',
   'pf.body': 'این همان چیزی است که دیگران موقع آشنایی می‌بینند.',
   'pf.name': "نام یا نام مستعار",
   'pf.nameError': 'نام کوچکتان را وارد کنید',
@@ -499,6 +504,7 @@ const fa: Dict = {
   'settings.account': 'حساب',
   'settings.phone': 'شماره تلفن',
   'settings.verified': 'تأییدشده',
+  'settings.guest': 'حساب مهمان (فقط همین مرورگر)',
   'settings.language': 'زبان',
   'settings.roomSounds': 'صداهای اتاق صوتی',
   'settings.roomSoundsBody': 'وقتی کسی وارد اتاق صوتی می‌شود یا از آن بیرون می‌رود، صدای کوتاهی پخش می‌شود.',

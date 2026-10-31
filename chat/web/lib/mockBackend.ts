@@ -248,6 +248,7 @@ interface MatchState {
 
 export class MockBackend implements Backend {
   private signedIn = false
+  private guest = false
   private pendingPhone: string | null = null
   private me: Profile | null = null
   private searchPolls = 0
@@ -418,6 +419,20 @@ export class MockBackend implements Backend {
     return this.signedIn
   }
 
+  async signInAsGuest() {
+    await wait(500)
+    this.signedIn = true
+    this.guest = true
+  }
+
+  async isGuest() {
+    return this.guest
+  }
+
+  async config() {
+    return { guests: true }
+  }
+
   async myProfile() {
     await wait(300)
     if (!this.me) return null
@@ -445,7 +460,7 @@ export class MockBackend implements Backend {
       photoUrl: p.photo ? URL.createObjectURL(p.photo) : null,
       photoPath: p.photo ? 'me_main' : null,
       // The country of the number's calling code (the longest that matches; +1 numbers stay without a flag).
-      country: countryOfPhone(this.pendingPhone),
+      country: p.country ?? countryOfPhone(this.pendingPhone),
       posts: [],
       photos: [],
       dmEveryone: true, // 097: anyone may message me unless I turn it off
@@ -457,11 +472,13 @@ export class MockBackend implements Backend {
   async signOut() {
     await wait(400)
     this.signedIn = false
+    this.guest = false
   }
 
   async deleteAccount() {
     await wait(900)
     this.signedIn = false
+    this.guest = false
     this.me = null
   }
 

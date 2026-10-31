@@ -38,6 +38,9 @@ const fil: Dict = {
 
   // sign-up
   'auth.badge': '18+ · verified ang phone',
+  'auth.badgeOpen': '18+ · hindi kailangan ng phone number',
+  'auth.guest': 'Magpatuloy bilang guest',
+  'auth.guestBody': 'Hindi kailangan ng phone number. Nananatili lang sa browser na ito ang guest profile mo.',
   'auth.verifiedBadge': 'Kunin ang verified badge mo: ID + selfie',
   'auth.everyoneVerified': 'ID-verified ang lahat dito',
   'trust.verified': 'Verified ang ID',
@@ -85,6 +88,8 @@ const fil: Dict = {
   'otp.digit': 'Digit {n}',
 
   'pf.title': 'Gawin ang profile mo',
+
+  'pf.country': 'Bansa',
   'pf.body': 'Ito ang makikita ng mga tao kapag nag-match kayo.',
   'pf.name': "Pangalan o palayaw",
   'pf.nameError': 'Ilagay ang first name mo',
@@ -499,6 +504,7 @@ const fil: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Phone number',
   'settings.verified': 'Verified',
+  'settings.guest': 'Guest account (sa browser na ito lang)',
   'settings.language': 'Wika',
   'settings.roomSounds': 'Mga tunog sa voice room',
   'settings.roomSoundsBody': 'Maikling tunog kapag may pumasok o umalis sa voice room.',

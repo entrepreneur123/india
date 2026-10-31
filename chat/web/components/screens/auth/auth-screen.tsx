@@ -2,7 +2,7 @@
 
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { EyeOff, Flag, ShieldCheck } from 'lucide-react'
 import type { Profile } from '@/lib/backend'
 import type { TKey } from '@/lib/i18n'
@@ -14,6 +14,7 @@ import { PhoneStep } from './phone-step'
 import { OtpStep } from './otp-step'
 import { VerifiedMark } from '@/components/trust/mark'
 import { requiredCached } from '@/components/trust/required'
+import { useBackend } from '@/lib/backend-context'
 import { retryImport } from '@/lib/retry-import'
 import { useBack } from '@/lib/back-stack'
 
@@ -46,11 +47,22 @@ export function AuthScreen({
   onComplete: (p: Profile | null) => void
 }) {
   const { t, rtl } = useI18n()
+  const backend = useBackend()
   const [step, setStep] = useState<Step>(initialStep)
   useBack(step === 'otp', () => setStep('phone'))
   const [phone, setPhone] = useState<{ digits: string; display: string } | null>(null)
   // "Everyone here is ID-verified" only once the server has said verification is required (seen on this browser).
   const [required] = useState(requiredCached)
+  // 123: guests may enter once the server's switch is on (asked once per visit; the door stays hidden until then).
+  const [guests, setGuests] = useState(false)
+  const [guest, setGuest] = useState(false)
+  useEffect(() => {
+    let alive = true
+    backend.config().then((c) => alive && setGuests(c.guests), () => undefined)
+    return () => {
+      alive = false
+    }
+  }, [backend])
 
   return (
     <div className="min-h-dvh bg-background lg:grid lg:grid-cols-[1.1fr_1fr]">
@@ -65,7 +77,7 @@ export function AuthScreen({
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-2">
                 <span className="w-fit rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
-                  {t('auth.badge')}
+                  {t(guests ? 'auth.badgeOpen' : 'auth.badge')}
                 </span>
                 <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-background py-1 pe-3 ps-1.5 text-xs font-semibold text-foreground ring-1 ring-border">
                   <VerifiedMark size={16} label={null} />
@@ -124,6 +136,14 @@ export function AuthScreen({
                     setStep('otp')
                     void loadProfileStep().catch(() => undefined)
                   }}
+                  onGuest={
+                    guests
+                      ? () => {
+                          setGuest(true)
+                          setStep('profile')
+                        }
+                      : undefined
+                  }
                 />
               ) : step === 'otp' && phone ? (
                 <OtpStep
@@ -147,7 +167,7 @@ export function AuthScreen({
                     </div>
                   }
                 >
-                  <ProfileStep onCreated={onComplete} />
+                  <ProfileStep onCreated={onComplete} guest={guest} />
                 </Suspense>
               )}
             </m.div>

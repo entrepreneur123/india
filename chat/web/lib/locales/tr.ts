@@ -38,6 +38,9 @@ const tr: Dict = {
 
   // sign-up
   'auth.badge': '18+ · telefonu doğrulanmış',
+  'auth.badgeOpen': '18+ · telefon numarası gerekmez',
+  'auth.guest': 'Misafir olarak devam et',
+  'auth.guestBody': 'Telefon numarası gerekmez. Misafir profilin yalnızca bu tarayıcıda kalır.',
   'auth.verifiedBadge': 'Doğrulanmış rozetini al: kimlik + selfie',
   'auth.everyoneVerified': 'Buradaki herkesin kimliği doğrulanmış',
   'trust.verified': 'Kimlik doğrulandı',
@@ -85,6 +88,8 @@ const tr: Dict = {
   'otp.digit': '{n}. rakam',
 
   'pf.title': 'Profilini oluştur',
+
+  'pf.country': 'Ülke',
   'pf.body': 'Eşleştiğinde insanlar bunu görür.',
   'pf.name': "Ad veya takma ad",
   'pf.nameError': 'Adını ekle',
@@ -499,6 +504,7 @@ const tr: Dict = {
   'settings.account': 'Hesap',
   'settings.phone': 'Telefon numarası',
   'settings.verified': 'Doğrulandı',
+  'settings.guest': 'Misafir hesabı (yalnızca bu tarayıcı)',
   'settings.language': 'Dil',
   'settings.roomSounds': 'Sesli oda sesleri',
   'settings.roomSoundsBody': 'Biri sesli odaya girdiğinde veya çıktığında kısa bir ses çalar.',

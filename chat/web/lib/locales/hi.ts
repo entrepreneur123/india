@@ -35,6 +35,12 @@ const hi: Dict = {
   'panel.message': '{name} को मैसेज करें',
 
   'auth.badge': '18+ · फ़ोन से वेरिफ़ाइड',
+
+  'auth.badgeOpen': '18+ · फ़ोन नंबर ज़रूरी नहीं',
+
+  'auth.guest': 'गेस्ट के रूप में जारी रखें',
+
+  'auth.guestBody': 'फ़ोन नंबर की ज़रूरत नहीं। गेस्ट प्रोफ़ाइल सिर्फ़ इसी ब्राउज़र में रहती है।',
   'auth.verifiedBadge': 'अपना वेरिफ़ाइड बैज पाएँ: ID + सेल्फ़ी',
   'auth.everyoneVerified': 'यहाँ हर कोई ID से वेरिफ़ाइड है',
   'trust.verified': 'ID वेरिफ़ाइड',
@@ -82,6 +88,8 @@ const hi: Dict = {
   'otp.digit': 'अंक {n}',
 
   'pf.title': 'अपनी प्रोफ़ाइल बनाएँ',
+
+  'pf.country': 'देश',
   'pf.body': 'मैच होने पर लोग यही देखेंगे।',
   'pf.name': "नाम या उपनाम",
   'pf.nameError': 'अपना पहला नाम लिखें',
@@ -489,6 +497,7 @@ const hi: Dict = {
   'settings.account': 'अकाउंट',
   'settings.phone': 'फ़ोन नंबर',
   'settings.verified': 'वेरिफ़ाइड',
+  'settings.guest': 'गेस्ट खाता (सिर्फ़ यह ब्राउज़र)',
   'settings.language': 'भाषा',
   'settings.roomSounds': 'वॉइस रूम साउंड',
   'settings.roomSoundsBody': 'कोई वॉइस रूम में आए या जाए, तो एक छोटी-सी आवाज़ बजेगी।',

@@ -38,6 +38,9 @@ const th: Dict = {
 
   // sign-up
   'auth.badge': '18+ · ยืนยันเบอร์โทรแล้ว',
+  'auth.badgeOpen': '18+ · ไม่ต้องใช้หมายเลขโทรศัพท์',
+  'auth.guest': 'ดำเนินการต่อแบบผู้เยี่ยมชม',
+  'auth.guestBody': 'ไม่ต้องใช้หมายเลขโทรศัพท์ โปรไฟล์ผู้เยี่ยมชมอยู่ในเบราว์เซอร์นี้เท่านั้น',
   'auth.verifiedBadge': 'รับเครื่องหมายยืนยันตัวตน: บัตรประจำตัว + เซลฟี่',
   'auth.everyoneVerified': 'ทุกคนที่นี่ยืนยันตัวตนด้วยบัตรแล้ว',
   'trust.verified': 'ยืนยันบัตรแล้ว',
@@ -85,6 +88,8 @@ const th: Dict = {
   'otp.digit': 'หลักที่ {n}',
 
   'pf.title': 'สร้างโปรไฟล์',
+
+  'pf.country': 'ประเทศ',
   'pf.body': 'นี่คือสิ่งที่คนอื่นเห็นเมื่อจับคู่กับคุณ',
   'pf.name': "ชื่อหรือชื่อเล่น",
   'pf.nameError': 'ใส่ชื่อจริงของคุณ',
@@ -499,6 +504,7 @@ const th: Dict = {
   'settings.account': 'บัญชี',
   'settings.phone': 'เบอร์โทรศัพท์',
   'settings.verified': 'ยืนยันแล้ว',
+  'settings.guest': 'บัญชีผู้เยี่ยมชม (เบราว์เซอร์นี้เท่านั้น)',
   'settings.language': 'ภาษา',
   'settings.roomSounds': 'เสียงในห้องเสียง',
   'settings.roomSoundsBody': 'มีเสียงสั้น ๆ เมื่อมีคนเข้าหรือออกจากห้องเสียง',

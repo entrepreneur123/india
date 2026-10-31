@@ -35,6 +35,12 @@ const ml: Dict = {
   'panel.message': '{name}-ന് മെസേജ് അയയ്ക്കുക',
 
   'auth.badge': '18+ · ഫോൺ വെരിഫൈ ചെയ്തത്',
+
+  'auth.badgeOpen': '18+ · ഫോൺ നമ്പർ വേണ്ട',
+
+  'auth.guest': 'അതിഥിയായി തുടരുക',
+
+  'auth.guestBody': 'ഫോൺ നമ്പർ വേണ്ട. അതിഥി പ്രൊഫൈൽ ഈ ബ്രൗസറിൽ മാത്രമേ ഉണ്ടാകൂ.',
   'auth.verifiedBadge': 'വെരിഫൈഡ് ബാഡ്ജ് നേടൂ: ID + സെൽഫി',
   'auth.everyoneVerified': 'ഇവിടെ എല്ലാവരും ID വെരിഫൈ ചെയ്തവരാണ്',
   'trust.verified': 'ID വെരിഫൈ ചെയ്തു',
@@ -82,6 +88,8 @@ const ml: Dict = {
   'otp.digit': 'അക്കം {n}',
 
   'pf.title': 'നിങ്ങളുടെ പ്രൊഫൈൽ ഉണ്ടാക്കൂ',
+
+  'pf.country': 'രാജ്യം',
   'pf.body': 'മാച്ച് ആകുമ്പോൾ ആളുകൾ കാണുന്നത് ഇതാണ്.',
   'pf.name': "പേര് അല്ലെങ്കിൽ വിളിപ്പേര്",
   'pf.nameError': 'നിങ്ങളുടെ ആദ്യ പേര് ചേർക്കുക',
@@ -489,6 +497,7 @@ const ml: Dict = {
   'settings.account': 'അക്കൗണ്ട്',
   'settings.phone': 'ഫോൺ നമ്പർ',
   'settings.verified': 'വെരിഫൈ ചെയ്തു',
+  'settings.guest': 'അതിഥി അക്കൗണ്ട് (ഈ ബ്രൗസർ മാത്രം)',
   'settings.language': 'ഭാഷ',
   'settings.roomSounds': 'വോയ്സ് റൂം ശബ്ദങ്ങൾ',
   'settings.roomSoundsBody': 'ആരെങ്കിലും വോയ്സ് റൂമിൽ വരുമ്പോഴോ പോകുമ്പോഴോ ഒരു ചെറിയ ശബ്ദം കേൾക്കും.',

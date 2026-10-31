@@ -38,6 +38,9 @@ const uk: Dict = {
 
   // sign-up
   'auth.badge': '18+ · телефон підтверджено',
+  'auth.badgeOpen': '18+ · без номера телефону',
+  'auth.guest': 'Продовжити як гість',
+  'auth.guestBody': 'Номер телефону не потрібен. Гостьовий профіль живе лише в цьому браузері.',
   'auth.verifiedBadge': 'Отримайте значок підтвердження: документ + селфі',
   'auth.everyoneVerified': 'Тут у всіх підтверджена особа',
   'trust.verified': 'Особу підтверджено',
@@ -85,6 +88,8 @@ const uk: Dict = {
   'otp.digit': 'Цифра {n}',
 
   'pf.title': 'Створіть профіль',
+
+  'pf.country': 'Країна',
   'pf.body': 'Це побачать люди, коли ви з’єднаєтеся.',
   'pf.name': "Ім'я або нікнейм",
   'pf.nameError': 'Вкажіть ім’я',
@@ -501,6 +506,7 @@ const uk: Dict = {
   'settings.account': 'Акаунт',
   'settings.phone': 'Номер телефону',
   'settings.verified': 'Підтверджено',
+  'settings.guest': 'Гостьовий акаунт (лише цей браузер)',
   'settings.language': 'Мова',
   'settings.roomSounds': 'Звуки голосової кімнати',
   'settings.roomSoundsBody': 'Короткий звук, коли хтось заходить до голосової кімнати або виходить із неї.',

@@ -38,6 +38,9 @@ const zhHant: Dict = {
 
   // sign-up
   'auth.badge': '18+ · 手機號碼已驗證',
+  'auth.badgeOpen': '18+ · 不需要手機號碼',
+  'auth.guest': '以訪客身分繼續',
+  'auth.guestBody': '不需要手機號碼。訪客資料只保存在此瀏覽器中。',
   'auth.verifiedBadge': '取得認證徽章：證件 + 自拍',
   'auth.everyoneVerified': '這裡的每個人都通過了證件認證',
   'trust.verified': '證件已認證',
@@ -85,6 +88,8 @@ const zhHant: Dict = {
   'otp.digit': '第 {n} 位',
 
   'pf.title': '建立個人資料',
+
+  'pf.country': '國家/地區',
   'pf.body': '配對成功後，對方會看到這些資訊。',
   'pf.name': "名字或暱稱",
   'pf.nameError': '請填寫你的名字',
@@ -499,6 +504,7 @@ const zhHant: Dict = {
   'settings.account': '帳號',
   'settings.phone': '手機號碼',
   'settings.verified': '已驗證',
+  'settings.guest': '訪客帳號（僅此瀏覽器）',
   'settings.language': '語言',
   'settings.roomSounds': '語音房提示音',
   'settings.roomSoundsBody': '有人進入或離開語音房時會響起短促的提示音。',

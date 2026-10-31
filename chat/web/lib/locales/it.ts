@@ -35,6 +35,12 @@ const it: Dict = {
   'panel.message': 'Scrivi a {name}',
 
   'auth.badge': '18+ · telefono verificato',
+
+  'auth.badgeOpen': '18+ · senza numero di telefono',
+
+  'auth.guest': 'Continua come ospite',
+
+  'auth.guestBody': 'Senza numero di telefono. Il profilo ospite resta solo in questo browser.',
   'auth.verifiedBadge': 'Ottieni il badge di verifica: documento + selfie',
   'auth.everyoneVerified': 'Qui tutti hanno un documento verificato',
   'trust.verified': 'Documento verificato',
@@ -82,6 +88,8 @@ const it: Dict = {
   'otp.digit': 'Cifra {n}',
 
   'pf.title': 'Crea il tuo profilo',
+
+  'pf.country': 'Paese',
   'pf.body': 'È quello che vedono le persone quando vi abbinate.',
   'pf.name': "Nome o soprannome",
   'pf.nameError': 'Aggiungi il tuo nome',
@@ -489,6 +497,7 @@ const it: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Numero di telefono',
   'settings.verified': 'Verificato',
+  'settings.guest': 'Account ospite (solo questo browser)',
   'settings.language': 'Lingua',
   'settings.roomSounds': 'Suoni della stanza vocale',
   'settings.roomSoundsBody': 'Un breve suono quando qualcuno entra o esce da una stanza vocale.',

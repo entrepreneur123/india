@@ -38,6 +38,9 @@ const ja: Dict = {
 
   // sign-up
   'auth.badge': '18歳以上・電話番号認証済み',
+  'auth.badgeOpen': '18+ · 電話番号不要',
+  'auth.guest': 'ゲストとして続ける',
+  'auth.guestBody': '電話番号は不要です。ゲストのプロフィールはこのブラウザにだけ残ります。',
   'auth.verifiedBadge': '認証バッジを取得：本人確認書類＋セルフィー',
   'auth.everyoneVerified': 'ここにいる全員が本人確認済みです',
   'trust.verified': '本人確認済み',
@@ -85,6 +88,8 @@ const ja: Dict = {
   'otp.digit': '{n}桁目',
 
   'pf.title': 'プロフィールを作成',
+
+  'pf.country': '国',
   'pf.body': 'マッチしたときに相手に表示される情報です。',
   'pf.name': "名前またはニックネーム",
   'pf.nameError': '名前を入力してください',
@@ -499,6 +504,7 @@ const ja: Dict = {
   'settings.account': 'アカウント',
   'settings.phone': '電話番号',
   'settings.verified': '認証済み',
+  'settings.guest': 'ゲストアカウント（このブラウザのみ）',
   'settings.language': '言語',
   'settings.roomSounds': 'ボイスルームの効果音',
   'settings.roomSoundsBody': 'ボイスルームに誰かが入ったり出たりすると短い音が鳴ります。',

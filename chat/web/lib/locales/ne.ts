@@ -35,6 +35,12 @@ const ne: Dict = {
   'panel.message': '{name} लाई मेसेज गर्नुहोस्',
 
   'auth.badge': '18+ · फोन प्रमाणित',
+
+  'auth.badgeOpen': '18+ · फोन नम्बर चाहिँदैन',
+
+  'auth.guest': 'अतिथिको रूपमा जारी राख्नुहोस्',
+
+  'auth.guestBody': 'फोन नम्बर चाहिँदैन। अतिथि प्रोफाइल यही ब्राउजरमा मात्र रहन्छ।',
   'auth.verifiedBadge': 'आफ्नो भेरिफाइड ब्याज पाउनुहोस्: परिचयपत्र + सेल्फी',
   'auth.everyoneVerified': 'यहाँ सबैजना परिचयपत्रले प्रमाणित छन्',
   'trust.verified': 'परिचय प्रमाणित',
@@ -82,6 +88,8 @@ const ne: Dict = {
   'otp.digit': 'अङ्क {n}',
 
   'pf.title': 'आफ्नो प्रोफाइल बनाउनुहोस्',
+
+  'pf.country': 'देश',
   'pf.body': 'म्याच हुँदा मानिसहरूले यही देख्छन्।',
   'pf.name': "नाम वा उपनाम",
   'pf.nameError': 'आफ्नो पहिलो नाम हाल्नुहोस्',
@@ -489,6 +497,7 @@ const ne: Dict = {
   'settings.account': 'अकाउन्ट',
   'settings.phone': 'फोन नम्बर',
   'settings.verified': 'प्रमाणित',
+  'settings.guest': 'अतिथि खाता (यो ब्राउजर मात्र)',
   'settings.language': 'भाषा',
   'settings.roomSounds': 'भ्वाइस रुमका आवाज',
   'settings.roomSoundsBody': 'कोही भ्वाइस रुममा आउँदा वा जाँदा छोटो आवाज बज्छ।',

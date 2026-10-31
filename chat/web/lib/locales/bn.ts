@@ -35,6 +35,12 @@ const bn: Dict = {
   'panel.message': '{name}-কে মেসেজ করুন',
 
   'auth.badge': '18+ · ফোন যাচাই করা',
+
+  'auth.badgeOpen': '18+ · ফোন নম্বর লাগে না',
+
+  'auth.guest': 'গেস্ট হিসেবে চালিয়ে যান',
+
+  'auth.guestBody': 'ফোন নম্বর লাগবে না। গেস্ট প্রোফাইল শুধু এই ব্রাউজারেই থাকে।',
   'auth.verifiedBadge': 'আপনার ভেরিফায়েড ব্যাজ নিন: আইডি + সেলফি',
   'auth.everyoneVerified': 'এখানে সবাই আইডি দিয়ে যাচাই করা',
   'trust.verified': 'আইডি যাচাই করা',
@@ -82,6 +88,8 @@ const bn: Dict = {
   'otp.digit': 'সংখ্যা {n}',
 
   'pf.title': 'আপনার প্রোফাইল বানান',
+
+  'pf.country': 'দেশ',
   'pf.body': 'ম্যাচ হলে মানুষ এটাই দেখবে।',
   'pf.name': "নাম বা ডাকনাম",
   'pf.nameError': 'আপনার প্রথম নাম লিখুন',
@@ -489,6 +497,7 @@ const bn: Dict = {
   'settings.account': 'অ্যাকাউন্ট',
   'settings.phone': 'ফোন নম্বর',
   'settings.verified': 'যাচাই করা',
+  'settings.guest': 'গেস্ট অ্যাকাউন্ট (শুধু এই ব্রাউজার)',
   'settings.language': 'ভাষা',
   'settings.roomSounds': 'ভয়েস রুমের সাউন্ড',
   'settings.roomSoundsBody': 'কেউ ভয়েস রুমে এলে বা চলে গেলে ছোট একটা শব্দ বাজবে।',
