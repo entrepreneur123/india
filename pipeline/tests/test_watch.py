@@ -55,6 +55,10 @@ def test_maharashtra_unread_sheet_and_marathi_in_the_english_hub_title():
     got = run(now, ALL_29 + [draw("2026-10-30", "NL1PM"), draw("2026-10-30", "KL", KL_TIERS)], mh=mh,
               home="<title>Maharashtra महाराष्ट्र आकर्षक Lottery Result 30.10.2026</title>")
     assert "mh:2026-10-28:Maharashtra Akshay" in got and "mh:hub-title" in got
+    mh["/v2/mh/days/2026-10-28.json"]["draws"].append(
+        {"id": "y", "date": "2026-10-28", "name": "Maharashtra List of Authorized Lottery schemes Period Dt 02/011/2026", "status": "PDF"})
+    got = run(now, ALL_29 + [draw("2026-10-30", "NL1PM"), draw("2026-10-30", "KL", KL_TIERS)], mh=mh)
+    assert "mh-name:y" in got and "mh-name:x" not in got
 
 
 def test_incidents_stay_open_until_the_check_passes(tmp_path):

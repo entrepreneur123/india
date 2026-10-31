@@ -98,6 +98,9 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
         if local - dt.datetime.combine(day, dt.time(0), IST) < dt.timedelta(hours=MH_READ_HOURS):
             continue
         for d in mh.get("draws", []):
+            game = d["name"].removeprefix("Maharashtra ")
+            if not re.fullmatch(r"[A-Z][a-z]+( [A-Z][a-z]+){0,3}", game):   # a circular, or a sheet with no English name
+                add(f"mh-name:{d['id']}", "wrong", "medium", f"Maharashtra entry {d['date']} does not look like a game: {game[:60]!r}")
             if d.get("status") != "OK":
                 add(f"mh:{d['date']}:{d['name']}", "unread", "low",
                     f"{d['name']} {d['date']}: still a PDF link (OCR tries {d.get('ocrTries', 0)})")

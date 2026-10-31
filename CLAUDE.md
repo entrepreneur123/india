@@ -28,6 +28,15 @@ back another way, a check in `pipeline/lottery_pipeline/watch.py`.
 - Never make a miss disappear by loosening a check or publishing unverified numbers; a sheet the reader refuses
   (readings disagree) stays a PDF link.
 
+## Hooks and harness (.claude/settings.json, tools/harness.py)
+- `tools/harness.py quick FILE…` (compile + covering tests), `full` (all tests incl. tools/test_hooks.py, workflow YAML,
+  a site build from the live data branch with title/link checks), `live` (the watcher against lottodost.com),
+  `incidents` (open high/medium ones not yet in docs/INCIDENTS.md).
+- Hooks: SessionStart shows unhandled incidents; PreToolUse(Bash) denies self-killing kill-by-pattern commands and any
+  push other than to `claude/gallant-lovelace-ynoa63`; PostToolUse(Edit|Write) runs `harness quick` on the file; Stop
+  blocks finishing with uncommitted/unpushed work, a failing `harness full` on changed code, or unhandled incidents.
+- A new kind of miss gets a check in the harness or the watcher, not only a fix.
+
 ## Other standing rules
 - Report to the owner in Korean. Verify thoroughly, no hallucination; state what was not verified.
 - Develop and push only on branch `claude/gallant-lovelace-ynoa63`.

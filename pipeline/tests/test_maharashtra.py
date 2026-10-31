@@ -213,3 +213,12 @@ def test_a_better_reader_tries_failed_sheets_again():
     assert mh._tries({"ocrTries": 2}) == 0                                   # failed with reader version 1
     assert mh._tries({"ocrTries": 2, "ocrVersion": mh.OCR_VERSION}) == 2
     assert mh._tries({}) == 0
+
+
+def test_a_circular_on_the_results_page_is_not_a_draw():
+    """30-10-2026: "List of Authorized Lottery schemes …" (paripatrak….pdf) was published as a Maharashtra draw."""
+    base = "https://lottery.maharashtra.gov.in/UploadFiles/"
+    assert not mh.is_sheet("List of Authorized Lottery schemes Period Dt 02/011/2026 to 08/011/2026",
+                           base + "1030202610461054paripatrak%20dt.02.11.2026%20to%20dt.08.11.2026.pdf")
+    assert mh.is_sheet("महाराष्ट्र वैभवलक्ष्मी साप्ताहिक सोडत", base + "x_N_114%20Mah.%20Vaibhavlaxmi%20Weekly%20Draw%20Result.pdf")
+    assert mh.is_sheet("महाराष्ट्र आकर्षक पुष्कराज साप्ताहिक सोडत", base + "1029202616592174929_10_2026_N_109_Mah.%20Akarshak%20Pushkraj_0001.pdf")

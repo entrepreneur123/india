@@ -59,8 +59,17 @@ def list_sheets(page: str) -> list[tuple[dt.date, str, str]]:
         href = html.unescape(link.group(1))
         url = urllib.parse.urljoin(LIST_URL, urllib.parse.quote(href, safe="/:.%_-"))
         d, m, y = map(int, when.groups())
-        out.append((dt.date(y, m, d), cells[0] if cells else "", url))
+        name = cells[0] if cells else ""
+        if is_sheet(name, url):
+            out.append((dt.date(y, m, d), name, url))
     return out
+
+
+def is_sheet(name: str, url: str) -> bool:
+    """A draw's result sheet: its Marathi name says सोडत (draw) or its file says Draw/Result. The same page
+    lists circulars too ("List of Authorized Lottery schemes …", paripatrak….pdf, 30-10-2026), published as
+    a draw until this."""
+    return bool(re.search(r"सोडत|सेाडत", name) or re.search(r"(?i)draw|result", urllib.parse.unquote(url.rsplit("/", 1)[-1])))
 
 
 # ---------------------------------------------------------------- OCR
@@ -1221,6 +1230,14 @@ def update(out, today: dt.date, warn=print, fetch_list=None, fetch_pdf=None, ocr
     page = (fetch_list or (lambda: get_bytes(LIST_URL, retries=7, timeout=90).decode("utf-8", "replace")))()
     sheets = [(date, local, url) for date, local, url in list_sheets(page) if 0 <= (today - date).days <= KEEP_TRYING_DAYS]
     changed: set[str] = set()
+    for back in range(KEEP_TRYING_DAYS + 1):   # drop what an older version took for a draw (a circular)
+        f = out / FEED / "days" / f"{(today - dt.timedelta(days=back)).isoformat()}.json"
+        if f.exists():
+            day = json.loads(f.read_text())
+            keep = [x for x in day["draws"] if is_sheet(x.get("nameLocal", ""), x["sources"][0]["url"])]
+            if len(keep) != len(day["draws"]):
+                f.write_text(json.dumps(day | {"draws": keep}, ensure_ascii=False, separators=(",", ":")))
+                changed.add(f.name)
 
     def load(date):
         f = out / FEED / "days" / f"{date.isoformat()}.json"
