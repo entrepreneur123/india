@@ -1,11 +1,5 @@
 {
  "open": {
-  "mh:2026-10-29:Maharashtra Gajlaxmi Guru": {
-   "kind": "unread",
-   "severity": "low",
-   "detail": "Maharashtra Gajlaxmi Guru 2026-10-29: still a PDF link (OCR tries 2)",
-   "first_seen": "2026-10-30T16:25+00:00"
-  },
   "mh:2026-10-30:Maharashtra Gajraj": {
    "kind": "unread",
    "severity": "low",
@@ -67,6 +61,13 @@
    "detail": "Maharashtra entry 2026-10-30 does not look like a game: 'List of Authorized Lottery schemes Period Dt 02/011/2026 to '",
    "first_seen": "2026-10-31T06:54+00:00",
    "resolved": "2026-10-31T08:16+00:00"
+  },
+  "mh:2026-10-29:Maharashtra Gajlaxmi Guru": {
+   "kind": "unread",
+   "severity": "low",
+   "detail": "Maharashtra Gajlaxmi Guru 2026-10-29: still a PDF link (OCR tries 2)",
+   "first_seen": "2026-10-30T16:25+00:00",
+   "resolved": "2026-10-31T18:36+00:00"
   }
  }
 }
