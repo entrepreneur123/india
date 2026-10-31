@@ -1,15 +1,15 @@
 {
- "generated": "2026-10-30T10:14+00:00",
+ "generated": "2026-10-31T09:42+00:00",
  "site": "sc-domain:lottodost.com",
- "start": "2026-10-02",
- "end": "2026-10-30",
+ "start": "2026-10-03",
+ "end": "2026-10-31",
  "countries": [
   {
    "country": "ind",
-   "clicks": 56,
-   "impressions": 769,
-   "ctr": 0.0728,
-   "position": 9.3
+   "clicks": 120,
+   "impressions": 1602,
+   "ctr": 0.0749,
+   "position": 8.1
   },
   {
    "country": "kor",
@@ -21,16 +21,16 @@
   {
    "country": "are",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 6,
    "ctr": 0,
-   "position": 37
+   "position": 18.3
   },
   {
    "country": "arg",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 47
+   "position": 38.2
   },
   {
    "country": "aus",
@@ -40,11 +40,18 @@
    "position": 11
   },
   {
+   "country": "bel",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
    "country": "bgd",
    "clicks": 0,
-   "impressions": 37,
+   "impressions": 49,
    "ctr": 0,
-   "position": 21.1
+   "position": 24.7
   },
   {
    "country": "bgr",
@@ -63,9 +70,9 @@
   {
    "country": "bra",
    "clicks": 0,
-   "impressions": 15,
+   "impressions": 19,
    "ctr": 0,
-   "position": 46.8
+   "position": 48.7
   },
   {
    "country": "can",
@@ -84,9 +91,9 @@
   {
    "country": "col",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 44
+   "position": 34.5
   },
   {
    "country": "esp",
@@ -98,9 +105,9 @@
   {
    "country": "fra",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 61.5
+   "position": 48.7
   },
   {
    "country": "grc",
@@ -119,9 +126,16 @@
   {
    "country": "idn",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 34
+   "position": 36
+  },
+  {
+   "country": "ita",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
   },
   {
    "country": "lka",
@@ -147,16 +161,16 @@
   {
    "country": "pak",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 12
+   "position": 28.5
   },
   {
    "country": "phl",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 30
+   "position": 27
   },
   {
    "country": "rou",
@@ -168,9 +182,9 @@
   {
    "country": "rus",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 37
+   "position": 36.6
   },
   {
    "country": "sau",
@@ -196,9 +210,9 @@
   {
    "country": "usa",
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 8,
    "ctr": 0,
-   "position": 30.3
+   "position": 31.6
   },
   {
    "country": "vnm",
@@ -253,13 +267,20 @@
   },
   {
    "date": "2026-10-29",
-   "clicks": 32,
-   "impressions": 425,
-   "ctr": 0.0753,
-   "position": 9.5
+   "clicks": 49,
+   "impressions": 600,
+   "ctr": 0.0817,
+   "position": 8.5
   },
   {
    "date": "2026-10-30",
+   "clicks": 47,
+   "impressions": 688,
+   "ctr": 0.0683,
+   "position": 8.3
+  },
+  {
+   "date": "2026-10-31",
    "clicks": 0,
    "impressions": 0,
    "ctr": 0,
@@ -268,11 +289,25 @@
  ],
  "queries_india": [
   {
+   "query": "maharashtra akshay lottery",
+   "clicks": 5,
+   "impressions": 7,
+   "ctr": 0.7143,
+   "position": 1.7
+  },
+  {
    "query": "25.10 21 lottery result",
    "clicks": 1,
    "impressions": 1,
    "ctr": 1,
    "position": 16
+  },
+  {
+   "query": "kerala lottery result 28/10/26",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 48
   },
   {
    "query": "lottery sambad 25 10 26",
@@ -282,18 +317,32 @@
    "position": 28
   },
   {
-   "query": "maharashtra akshay lottery",
-   "clicks": 1,
-   "impressions": 2,
-   "ctr": 0.5,
-   "position": 2
-  },
-  {
-   "query": "maharashtra padmini weekly draw",
+   "query": "maharashtra akshay",
    "clicks": 1,
    "impressions": 1,
    "ctr": 1,
    "position": 6
+  },
+  {
+   "query": "maharashtra akshay weekly draw result",
+   "clicks": 1,
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 5.5
+  },
+  {
+   "query": "maharashtra ganesh laxmi bhagyashali weekly draw",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 5
+  },
+  {
+   "query": "maharashtra padmini weekly draw",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 7.3
   },
   {
    "query": "maharashtra sahyadri vijayalakshmi weekly draw",
@@ -303,11 +352,46 @@
    "position": 3
   },
   {
+   "query": "maharashtra tejasvini",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 5
+  },
+  {
+   "query": "नाइट रिज़ल्ट",
+   "clicks": 1,
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 2.5
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी",
+   "clicks": 1,
+   "impressions": 6,
+   "ctr": 0.1667,
+   "position": 6.3
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी बुध साप्ताहिक सोडत",
+   "clicks": 1,
+   "impressions": 4,
+   "ctr": 0.25,
+   "position": 6.2
+  },
+  {
    "query": "10 10 26 dear lottery result",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "12 10 26 lottery result",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9.5
   },
   {
    "query": "22 10",
@@ -322,6 +406,34 @@
    "impressions": 2,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "24.10 26 lottery result",
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "24.10.2026 lottery result",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "query": "240 crore lottery tax in india",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "25.10.2026 lottery result",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 10
   },
   {
    "query": "27 10 2026 kerala lottery result",
@@ -361,9 +473,9 @@
   {
    "query": "dear6pm",
    "clicks": 0,
-   "impressions": 21,
+   "impressions": 27,
    "ctr": 0,
-   "position": 6.3
+   "position": 6.7
   },
   {
    "query": "dear8pm",
@@ -382,9 +494,16 @@
   {
    "query": "fake lottery",
    "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6.5
+  },
+  {
+   "query": "gajalakshmi lottery result",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 6
+   "position": 7
   },
   {
    "query": "gajlaxmi lottery",
@@ -392,6 +511,27 @@
    "impressions": 2,
    "ctr": 0,
    "position": 6
+  },
+  {
+   "query": "gajlaxmi lottery result",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 6.2
+  },
+  {
+   "query": "gajlaxmi lottery result today",
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 8.9
+  },
+  {
+   "query": "ganesh laxmi lottery result today 5pm today",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
   },
   {
    "query": "ganesh lottery",
@@ -420,6 +560,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 35
+  },
+  {
+   "query": "kerala lottery result today 29.10.26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 90
   },
   {
    "query": "kerala lotterysm78",
@@ -452,9 +599,9 @@
   {
    "query": "lottery payout calculator",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 6,
    "ctr": 0,
-   "position": 30.7
+   "position": 28.5
   },
   {
    "query": "lottery result 19.10.26",
@@ -527,6 +674,13 @@
    "position": 23
   },
   {
+   "query": "lottery sambad 28 10 25",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
    "query": "lottery sambad 28 10 26",
    "clicks": 0,
    "impressions": 1,
@@ -536,9 +690,9 @@
   {
    "query": "lottery sambad 29.10.26",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 3,
    "ctr": 0,
-   "position": 51
+   "position": 43.3
   },
   {
    "query": "lottery sambad17.10.26",
@@ -564,9 +718,9 @@
   {
    "query": "lottery tax calculator india",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 9,
    "ctr": 0,
-   "position": 8
+   "position": 5.3
   },
   {
    "query": "lotto result october 28 2026",
@@ -590,39 +744,88 @@
    "position": 7.7
   },
   {
-   "query": "maharashtra akshay weekly draw result",
+   "query": "maharashtra gajalakshmi",
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 6.3
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery",
+   "clicks": 0,
+   "impressions": 17,
+   "ctr": 0,
+   "position": 9.1
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery result",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "query": "maharashtra gajlaxmi",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 6.7
+  },
+  {
+   "query": "maharashtra gajlaxmi budh weekly draw",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "clicks": 0,
+   "impressions": 45,
+   "ctr": 0,
+   "position": 9.2
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today live",
+   "clicks": 0,
+   "impressions": 17,
+   "ctr": 0,
+   "position": 8.3
+  },
+  {
+   "query": "maharashtra gajlaxmi mangal weekly draw",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
    "position": 6
   },
   {
-   "query": "maharashtra gajalakshmi",
+   "query": "maharashtra ganesh laxmi shubh weekly draw",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 1,
    "ctr": 0,
-   "position": 6.4
+   "position": 6
   },
   {
-   "query": "maharashtra gajlaxmi budh weekly draw",
+   "query": "maharashtra padmini lottery",
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 7.5
-  },
-  {
-   "query": "maharashtra gajlaxmi lottery result today",
-   "clicks": 0,
-   "impressions": 7,
-   "ctr": 0,
-   "position": 9.9
-  },
-  {
-   "query": "maharashtra gajlaxmi lottery result today live",
-   "clicks": 0,
-   "impressions": 4,
-   "ctr": 0,
-   "position": 7.5
+   "position": 5
   },
   {
    "query": "maharashtra padmini lottery nikal today",
@@ -632,11 +835,25 @@
    "position": 9
   },
   {
+   "query": "maharashtra padmini weekly draw result yesterday",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7
+  },
+  {
    "query": "maharashtra sahyadri",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 10,
    "ctr": 0,
-   "position": 7.6
+   "position": 8.5
+  },
+  {
+   "query": "maharashtra sahyadri deep lakshmi",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "query": "maharashtra sahyadri mahalaxmi",
@@ -646,11 +863,25 @@
    "position": 6
   },
   {
-   "query": "maharashtra tejaswini monthly draw",
+   "query": "maharashtra sahyadri mahalaxmi weekly draw",
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 8.5
+   "position": 5.5
+  },
+  {
+   "query": "maharashtra tejaswini",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "query": "maharashtra tejaswini monthly draw",
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 9
   },
   {
    "query": "maharashtra tejaswini monthly draw result",
@@ -697,9 +928,16 @@
   {
    "query": "sahyadri lottery",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 10,
    "ctr": 0,
-   "position": 8
+   "position": 6.7
+  },
+  {
+   "query": "sk 75 lottery result today",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 108
   },
   {
    "query": "sun lotto kerala result today",
@@ -723,13 +961,6 @@
    "position": 9.5
   },
   {
-   "query": "नाइट रिज़ल्ट",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
    "query": "महाराष्ट्र अक्षय",
    "clicks": 0,
    "impressions": 1,
@@ -739,37 +970,58 @@
   {
    "query": "महाराष्ट्र अक्षय लॉटरी",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 4,
    "ctr": 0,
-   "position": 9
+   "position": 8
   },
   {
    "query": "महाराष्ट्र अक्षय लॉटरी निकाल",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 8.3
+   "position": 8
   },
   {
    "query": "महाराष्ट्र अक्षय साप्ताहिक सोडत",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 5,
    "ctr": 0,
-   "position": 9
+   "position": 9.6
   },
   {
    "query": "महाराष्ट्र गजलक्ष्मी लॉटरी",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 12,
    "ctr": 0,
-   "position": 7.5
+   "position": 7.8
   },
   {
    "query": "महाराष्ट्र गजलक्ष्मी लॉटरी निकाल",
    "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 7.6
+  },
+  {
+   "query": "महाराष्ट्र तेजस्विनी मासिक सोडत",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 9.3
+  },
+  {
+   "query": "महाराष्ट्र तेजस्विनी लॉटरी निकाल",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 6
+   "position": 7
+  },
+  {
+   "query": "महाराष्ट्र पद्मिनी विकली ड्रॉ",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "query": "কেরালা লটারি গেজেট",
@@ -782,80 +1034,143 @@
  "pages": [
   {
    "page": "https://lottodost.com/maharashtra/akshay/",
-   "clicks": 18,
-   "impressions": 138,
-   "ctr": 0.1304,
-   "position": 4.2
+   "clicks": 41,
+   "impressions": 263,
+   "ctr": 0.1559,
+   "position": 4.1
   },
   {
    "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
-   "clicks": 7,
-   "impressions": 73,
-   "ctr": 0.0959,
-   "position": 5.3
+   "clicks": 14,
+   "impressions": 174,
+   "ctr": 0.0805,
+   "position": 6.0
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
+   "clicks": 10,
+   "impressions": 67,
+   "ctr": 0.1493,
+   "position": 5.7
   },
   {
    "page": "https://lottodost.com/",
    "clicks": 6,
-   "impressions": 22,
-   "ctr": 0.2727,
-   "position": 14.5
-  },
-  {
-   "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
-   "clicks": 5,
-   "impressions": 21,
-   "ctr": 0.2381,
-   "position": 5.6
-  },
-  {
-   "page": "https://lottodost.com/result/25-10-2026/",
-   "clicks": 4,
-   "impressions": 29,
-   "ctr": 0.1379,
-   "position": 11.8
+   "impressions": 24,
+   "ctr": 0.25,
+   "position": 14.4
   },
   {
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-vijayee/",
-   "clicks": 3,
-   "impressions": 10,
-   "ctr": 0.3,
+   "clicks": 6,
+   "impressions": 36,
+   "ctr": 0.1667,
    "position": 4.1
+  },
+  {
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 5,
+   "impressions": 35,
+   "ctr": 0.1429,
+   "position": 11.7
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 3,
+   "impressions": 95,
+   "ctr": 0.0316,
+   "position": 6.8
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 3,
+   "impressions": 77,
+   "ctr": 0.039,
+   "position": 5.4
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
+   "clicks": 3,
+   "impressions": 37,
+   "ctr": 0.0811,
+   "position": 6.4
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 3,
+   "impressions": 71,
+   "ctr": 0.0423,
+   "position": 6.9
   },
   {
    "page": "https://lottodost.com/kerala/",
    "clicks": 2,
-   "impressions": 27,
-   "ctr": 0.0741,
-   "position": 11.0
+   "impressions": 30,
+   "ctr": 0.0667,
+   "position": 13.9
+  },
+  {
+   "page": "https://lottodost.com/maharashtra//",
+   "clicks": 2,
+   "impressions": 11,
+   "ctr": 0.1818,
+   "position": 3.6
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/",
+   "clicks": 2,
+   "impressions": 16,
+   "ctr": 0.125,
+   "position": 5.8
   },
   {
    "page": "https://lottodost.com/morning-1pm/",
    "clicks": 2,
-   "impressions": 25,
-   "ctr": 0.08,
-   "position": 17.3
+   "impressions": 26,
+   "ctr": 0.0769,
+   "position": 19.3
   },
   {
    "page": "https://lottodost.com/result/22-10-2026/",
    "clicks": 2,
-   "impressions": 15,
-   "ctr": 0.1333,
-   "position": 10.5
+   "impressions": 17,
+   "ctr": 0.1176,
+   "position": 10.3
+  },
+  {
+   "page": "https://lottodost.com/result/27-10-2026/maharashtra-padmini/",
+   "clicks": 2,
+   "impressions": 11,
+   "ctr": 0.1818,
+   "position": 5.9
   },
   {
    "page": "https://lottodost.com/result/28-10-2026/",
    "clicks": 2,
-   "impressions": 42,
-   "ctr": 0.0476,
-   "position": 16.1
+   "impressions": 59,
+   "ctr": 0.0339,
+   "position": 14.0
+  },
+  {
+   "page": "https://lottodost.com/result/29-10-2026/",
+   "clicks": 2,
+   "impressions": 27,
+   "ctr": 0.0741,
+   "position": 15.0
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-10-2026/1pm/",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 8.3
   },
   {
    "page": "https://lottodost.com/day-6pm/",
    "clicks": 1,
-   "impressions": 46,
-   "ctr": 0.0217,
-   "position": 15.5
+   "impressions": 53,
+   "ctr": 0.0189,
+   "position": 14.5
   },
   {
    "page": "https://lottodost.com/hi/maharashtra/ganeshlaxmi-vijayee/",
@@ -863,6 +1178,13 @@
    "impressions": 1,
    "ctr": 1,
    "position": 2
+  },
+  {
+   "page": "https://lottodost.com/hi/night-8pm/",
+   "clicks": 1,
+   "impressions": 7,
+   "ctr": 0.1429,
+   "position": 6.9
   },
   {
    "page": "https://lottodost.com/hi/result/14-10-2026/8pm/",
@@ -886,25 +1208,39 @@
    "position": 10
   },
   {
-   "page": "https://lottodost.com/maharashtra/padmini/",
+   "page": "https://lottodost.com/hi/result/28-10-2026/8pm/",
    "clicks": 1,
-   "impressions": 23,
-   "ctr": 0.0435,
-   "position": 4.7
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 4
   },
   {
-   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "page": "https://lottodost.com/lottery-tax/",
    "clicks": 1,
-   "impressions": 18,
-   "ctr": 0.0556,
-   "position": 7.2
+   "impressions": 64,
+   "ctr": 0.0156,
+   "position": 9.9
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 1,
+   "impressions": 46,
+   "ctr": 0.0217,
+   "position": 7.6
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/",
+   "clicks": 1,
+   "impressions": 15,
+   "ctr": 0.0667,
+   "position": 6
   },
   {
    "page": "https://lottodost.com/night-8pm/",
    "clicks": 1,
-   "impressions": 28,
-   "ctr": 0.0357,
-   "position": 7.5
+   "impressions": 33,
+   "ctr": 0.0303,
+   "position": 7.2
   },
   {
    "page": "https://lottodost.com/privacy",
@@ -919,6 +1255,20 @@
    "impressions": 1,
    "ctr": 1,
    "position": 1
+  },
+  {
+   "page": "https://lottodost.com/result/27-10-2026/",
+   "clicks": 1,
+   "impressions": 10,
+   "ctr": 0.1,
+   "position": 15.6
+  },
+  {
+   "page": "https://lottodost.com/result/28-10-2026/kerala/",
+   "clicks": 1,
+   "impressions": 24,
+   "ctr": 0.0417,
+   "position": 13.1
   },
   {
    "page": "https://lottodost.com/yesterday/",
@@ -956,6 +1306,13 @@
    "position": 10
   },
   {
+   "page": "https://lottodost.com/bn/day-6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
    "page": "https://lottodost.com/bn/lottery-scams/",
    "clicks": 0,
    "impressions": 1,
@@ -970,18 +1327,39 @@
    "position": 3
   },
   {
+   "page": "https://lottodost.com/bn/maharashtra/sagarlaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/bn/maharashtra/sahyadri-dhanlaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/bn/maharashtra/sahyadri-vijayalaxmi/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6.5
+  },
+  {
    "page": "https://lottodost.com/bn/morning-1pm/",
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 8,
    "ctr": 0,
-   "position": 6.7
+   "position": 7.1
   },
   {
    "page": "https://lottodost.com/bn/night-8pm/",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 7,
    "ctr": 0,
-   "position": 35.2
+   "position": 27.3
   },
   {
    "page": "https://lottodost.com/bn/old-results/2026-02/",
@@ -991,11 +1369,39 @@
    "position": 11
   },
   {
-   "page": "https://lottodost.com/bn/result/01-03-2026/1pm/",
+   "page": "https://lottodost.com/bn/old-results/2026-09/",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 29
+   "position": 2
+  },
+  {
+   "page": "https://lottodost.com/bn/result/01-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 20.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/01-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 13
+  },
+  {
+   "page": "https://lottodost.com/bn/result/01-08-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 26
+  },
+  {
+   "page": "https://lottodost.com/bn/result/01-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 30
   },
   {
    "page": "https://lottodost.com/bn/result/02-05-2026/6pm/",
@@ -1010,6 +1416,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 16
+  },
+  {
+   "page": "https://lottodost.com/bn/result/03-10-2026/pb-dear200-monthly-2026-10/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 4.5
   },
   {
    "page": "https://lottodost.com/bn/result/05-02-2026/8pm/",
@@ -1082,6 +1495,20 @@
    "position": 37
   },
   {
+   "page": "https://lottodost.com/bn/result/08-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 43
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 42
+  },
+  {
    "page": "https://lottodost.com/bn/result/08-04-2026/1pm/",
    "clicks": 0,
    "impressions": 1,
@@ -1108,6 +1535,20 @@
    "impressions": 2,
    "ctr": 0,
    "position": 49.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/08-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/bn/result/09-02-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
   },
   {
    "page": "https://lottodost.com/bn/result/09-05-2026/",
@@ -1189,9 +1630,37 @@
   {
    "page": "https://lottodost.com/bn/result/14-03-2026/8pm/",
    "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 81
+  },
+  {
+   "page": "https://lottodost.com/bn/result/14-09-2026/",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 74
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-02-2026/1pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 40.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-02-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 39
+  },
+  {
+   "page": "https://lottodost.com/bn/result/15-02-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 42
   },
   {
    "page": "https://lottodost.com/bn/result/15-03-2026/1pm/",
@@ -1243,6 +1712,13 @@
    "position": 40
   },
   {
+   "page": "https://lottodost.com/bn/result/16-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
    "page": "https://lottodost.com/bn/result/16-10-2026/6pm/",
    "clicks": 0,
    "impressions": 1,
@@ -1252,16 +1728,23 @@
   {
    "page": "https://lottodost.com/bn/result/17-02-2026/",
    "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 50.7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-02-2026/1pm/",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 77
+   "position": 26
   },
   {
    "page": "https://lottodost.com/bn/result/17-02-2026/8pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 78
+   "position": 63
   },
   {
    "page": "https://lottodost.com/bn/result/17-05-2026/6pm/",
@@ -1269,6 +1752,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/17-07-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 61
   },
   {
    "page": "https://lottodost.com/bn/result/17-09-2026/6pm/",
@@ -1332,6 +1822,34 @@
    "impressions": 1,
    "ctr": 0,
    "position": 25
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-02-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-04-2026/1pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 21.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 22.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/19-04-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 26
   },
   {
    "page": "https://lottodost.com/bn/result/19-06-2026/1pm/",
@@ -1441,9 +1959,9 @@
   {
    "page": "https://lottodost.com/bn/result/25-10-2026/8pm/",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 3,
    "ctr": 0,
-   "position": 8.5
+   "position": 8.3
   },
   {
    "page": "https://lottodost.com/bn/result/25-10-2026/kerala/",
@@ -1462,16 +1980,16 @@
   {
    "page": "https://lottodost.com/bn/result/26-05-2026/1pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 64
+   "position": 42.5
   },
   {
    "page": "https://lottodost.com/bn/result/26-05-2026/8pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 65
+   "position": 43.5
   },
   {
    "page": "https://lottodost.com/bn/result/26-10-2026/8pm/",
@@ -1511,7 +2029,7 @@
   {
    "page": "https://lottodost.com/bn/result/27-10-2026/1pm/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
    "position": 9
   },
@@ -1532,9 +2050,23 @@
   {
    "page": "https://lottodost.com/bn/result/28-10-2026/8pm/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 13.7
+   "position": 11.2
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-01-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
   },
   {
    "page": "https://lottodost.com/bn/result/29-04-2026/1pm/",
@@ -1544,11 +2076,25 @@
    "position": 8
   },
   {
-   "page": "https://lottodost.com/bn/result/29-05-2026/1pm/",
+   "page": "https://lottodost.com/bn/result/29-04-2026/8pm/",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 6
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
   },
   {
    "page": "https://lottodost.com/bn/result/29-06-2026/8pm/",
@@ -1560,9 +2106,23 @@
   {
    "page": "https://lottodost.com/bn/result/29-07-2026/8pm/",
    "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 23.5
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-09-2026/6pm/",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 41
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/bn/result/29-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 86
   },
   {
    "page": "https://lottodost.com/bn/result/30-05-2026/6pm/",
@@ -1570,6 +2130,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 3
+  },
+  {
+   "page": "https://lottodost.com/bn/result/30-06-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
   },
   {
    "page": "https://lottodost.com/bn/result/31-03-2026/1pm/",
@@ -1588,16 +2155,16 @@
   {
    "page": "https://lottodost.com/bn/result/31-03-2026/8pm/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 39.7
+   "position": 32.2
   },
   {
    "page": "https://lottodost.com/claim-prize/",
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 10,
    "ctr": 0,
-   "position": 7.2
+   "position": 8
   },
   {
    "page": "https://lottodost.com/contact/",
@@ -1616,16 +2183,16 @@
   {
    "page": "https://lottodost.com/hi/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 3,
    "ctr": 0,
-   "position": 4
+   "position": 5.7
   },
   {
    "page": "https://lottodost.com/hi/claim-prize/",
    "clicks": 0,
-   "impressions": 7,
+   "impressions": 8,
    "ctr": 0,
-   "position": 6
+   "position": 5.8
   },
   {
    "page": "https://lottodost.com/hi/day-6pm/",
@@ -1644,9 +2211,58 @@
   {
    "page": "https://lottodost.com/hi/lottery-tax/",
    "clicks": 0,
-   "impressions": 19,
+   "impressions": 20,
    "ctr": 0,
    "position": 8.1
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 5.5
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
+   "impressions": 7,
+   "ctr": 0,
+   "position": 3.9
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/padmini/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/sahyadri-deeplaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/sahyadri-dhanlaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/sahyadri-vijayalaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "page": "https://lottodost.com/hi/maharashtra/tejaswini/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 6.2
   },
   {
    "page": "https://lottodost.com/hi/morning-1pm/",
@@ -1656,11 +2272,11 @@
    "position": 8
   },
   {
-   "page": "https://lottodost.com/hi/night-8pm/",
+   "page": "https://lottodost.com/hi/result/01-03-2026/8pm/",
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 1,
    "ctr": 0,
-   "position": 7.7
+   "position": 14
   },
   {
    "page": "https://lottodost.com/hi/result/02-05-2026/6pm/",
@@ -1682,6 +2298,13 @@
    "impressions": 3,
    "ctr": 0,
    "position": 62.7
+  },
+  {
+   "page": "https://lottodost.com/hi/result/03-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "page": "https://lottodost.com/hi/result/04-07-2026/8pm/",
@@ -1712,6 +2335,13 @@
    "position": 9
   },
   {
+   "page": "https://lottodost.com/hi/result/06-01-2026/8pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9
+  },
+  {
    "page": "https://lottodost.com/hi/result/06-03-2026/6pm/",
    "clicks": 0,
    "impressions": 1,
@@ -1731,6 +2361,20 @@
    "impressions": 1,
    "ctr": 0,
    "position": 43
+  },
+  {
+   "page": "https://lottodost.com/hi/result/08-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 44
+  },
+  {
+   "page": "https://lottodost.com/hi/result/08-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 41
   },
   {
    "page": "https://lottodost.com/hi/result/08-05-2026/1pm/",
@@ -1789,6 +2433,13 @@
    "position": 29
   },
   {
+   "page": "https://lottodost.com/hi/result/14-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
    "page": "https://lottodost.com/hi/result/15-03-2026/8pm/",
    "clicks": 0,
    "impressions": 1,
@@ -1824,6 +2475,20 @@
    "position": 90
   },
   {
+   "page": "https://lottodost.com/hi/result/17-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 2
+  },
+  {
+   "page": "https://lottodost.com/hi/result/17-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
    "page": "https://lottodost.com/hi/result/17-07-2026/",
    "clicks": 0,
    "impressions": 1,
@@ -1852,6 +2517,13 @@
    "position": 66
   },
   {
+   "page": "https://lottodost.com/hi/result/18-05-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
    "page": "https://lottodost.com/hi/result/18-07-2026/",
    "clicks": 0,
    "impressions": 1,
@@ -1871,6 +2543,27 @@
    "impressions": 1,
    "ctr": 0,
    "position": 32
+  },
+  {
+   "page": "https://lottodost.com/hi/result/19-04-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "page": "https://lottodost.com/hi/result/19-04-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 28
+  },
+  {
+   "page": "https://lottodost.com/hi/result/20-01-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "page": "https://lottodost.com/hi/result/20-05-2026/1pm/",
@@ -1929,6 +2622,20 @@
    "position": 21.5
   },
   {
+   "page": "https://lottodost.com/hi/result/22-06-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "page": "https://lottodost.com/hi/result/23-09-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 1
+  },
+  {
    "page": "https://lottodost.com/hi/result/24-03-2026/8pm/",
    "clicks": 0,
    "impressions": 1,
@@ -1973,9 +2680,9 @@
   {
    "page": "https://lottodost.com/hi/result/26-10-2026/8pm/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 6.3
+   "position": 8
   },
   {
    "page": "https://lottodost.com/hi/result/27-03-2026/",
@@ -1992,6 +2699,13 @@
    "position": 27
   },
   {
+   "page": "https://lottodost.com/hi/result/27-05-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
    "page": "https://lottodost.com/hi/result/27-06-2026/1pm/",
    "clicks": 0,
    "impressions": 1,
@@ -2006,11 +2720,25 @@
    "position": 56
   },
   {
+   "page": "https://lottodost.com/hi/result/27-07-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 40
+  },
+  {
    "page": "https://lottodost.com/hi/result/27-10-2026/kerala/",
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
    "position": 6
+  },
+  {
+   "page": "https://lottodost.com/hi/result/28-01-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 14
   },
   {
    "page": "https://lottodost.com/hi/result/28-07-2026/",
@@ -2025,6 +2753,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 25
+  },
+  {
+   "page": "https://lottodost.com/hi/result/29-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 6.7
   },
   {
    "page": "https://lottodost.com/hi/result/31-03-2026/1pm/",
@@ -2050,44 +2785,37 @@
   {
    "page": "https://lottodost.com/lottery-scams/",
    "clicks": 0,
-   "impressions": 13,
+   "impressions": 17,
    "ctr": 0,
-   "position": 11.5
+   "position": 10.5
   },
   {
-   "page": "https://lottodost.com/lottery-tax/",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-ravi/",
    "clicks": 0,
-   "impressions": 42,
+   "impressions": 7,
    "ctr": 0,
-   "position": 10.7
+   "position": 9
   },
   {
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 2,
    "ctr": 0,
-   "position": 4.3
+   "position": 6.5
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-shubh/",
+   "clicks": 0,
+   "impressions": 7,
+   "ctr": 0,
+   "position": 6.6
   },
   {
    "page": "https://lottodost.com/maharashtra/sagarlaxmi/",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 15,
    "ctr": 0,
-   "position": 4.2
-  },
-  {
-   "page": "https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 6
-  },
-  {
-   "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
-   "clicks": 0,
-   "impressions": 5,
-   "ctr": 0,
-   "position": 5.2
+   "position": 4.3
   },
   {
    "page": "https://lottodost.com/old-results/",
@@ -2118,6 +2846,20 @@
    "position": 4
   },
   {
+   "page": "https://lottodost.com/result/06-09-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 20
+  },
+  {
+   "page": "https://lottodost.com/result/08-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 16
+  },
+  {
    "page": "https://lottodost.com/result/09-05-2026/",
    "clicks": 0,
    "impressions": 2,
@@ -2127,9 +2869,9 @@
   {
    "page": "https://lottodost.com/result/09-08-2026/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 3,
    "ctr": 0,
-   "position": 7
+   "position": 50.3
   },
   {
    "page": "https://lottodost.com/result/09-10-2026/",
@@ -2137,6 +2879,13 @@
    "impressions": 2,
    "ctr": 0,
    "position": 9
+  },
+  {
+   "page": "https://lottodost.com/result/09-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 37
   },
   {
    "page": "https://lottodost.com/result/10-06-2026/",
@@ -2181,6 +2930,13 @@
    "position": 79
   },
   {
+   "page": "https://lottodost.com/result/11-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
    "page": "https://lottodost.com/result/12-01-2026/8pm/",
    "clicks": 0,
    "impressions": 1,
@@ -2197,9 +2953,9 @@
   {
    "page": "https://lottodost.com/result/12-10-2026/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 3,
    "ctr": 0,
-   "position": 22
+   "position": 13.7
   },
   {
    "page": "https://lottodost.com/result/13-09-2026/",
@@ -2225,9 +2981,9 @@
   {
    "page": "https://lottodost.com/result/14-09-2026/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 31
+   "position": 20.5
   },
   {
    "page": "https://lottodost.com/result/15-10-2026/",
@@ -2244,6 +3000,13 @@
    "position": 3
   },
   {
+   "page": "https://lottodost.com/result/16-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
    "page": "https://lottodost.com/result/16-10-2026/",
    "clicks": 0,
    "impressions": 3,
@@ -2253,9 +3016,9 @@
   {
    "page": "https://lottodost.com/result/17-10-2026/",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 17
+   "position": 15.4
   },
   {
    "page": "https://lottodost.com/result/18-10-2026/",
@@ -2265,11 +3028,25 @@
    "position": 24.7
   },
   {
+   "page": "https://lottodost.com/result/19-06-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 35
+  },
+  {
    "page": "https://lottodost.com/result/19-10-2026/",
    "clicks": 0,
    "impressions": 5,
    "ctr": 0,
    "position": 21.6
+  },
+  {
+   "page": "https://lottodost.com/result/20-03-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
   },
   {
    "page": "https://lottodost.com/result/20-06-2026/",
@@ -2298,6 +3075,13 @@
    "impressions": 2,
    "ctr": 0,
    "position": 32
+  },
+  {
+   "page": "https://lottodost.com/result/21-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
   },
   {
    "page": "https://lottodost.com/result/22-06-2026/",
@@ -2342,6 +3126,13 @@
    "position": 5
   },
   {
+   "page": "https://lottodost.com/result/23-07-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
    "page": "https://lottodost.com/result/23-08-2026/",
    "clicks": 0,
    "impressions": 1,
@@ -2358,9 +3149,16 @@
   {
    "page": "https://lottodost.com/result/23-10-2026/",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 7,
    "ctr": 0,
-   "position": 10
+   "position": 12.7
+  },
+  {
+   "page": "https://lottodost.com/result/23-10-2026/6pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
   },
   {
    "page": "https://lottodost.com/result/24-06-2026/",
@@ -2386,16 +3184,16 @@
   {
    "page": "https://lottodost.com/result/24-10-2026/",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 17,
    "ctr": 0,
-   "position": 28.6
+   "position": 13.9
   },
   {
    "page": "https://lottodost.com/result/24-10-2026/kerala/",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 8,
    "ctr": 0,
-   "position": 15.5
+   "position": 9.9
   },
   {
    "page": "https://lottodost.com/result/25-02-2026/",
@@ -2419,6 +3217,13 @@
    "position": 2
   },
   {
+   "page": "https://lottodost.com/result/25-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
    "page": "https://lottodost.com/result/26-09-2026/",
    "clicks": 0,
    "impressions": 4,
@@ -2428,9 +3233,9 @@
   {
    "page": "https://lottodost.com/result/26-10-2026/",
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 11,
    "ctr": 0,
-   "position": 8.1
+   "position": 8.9
   },
   {
    "page": "https://lottodost.com/result/26-10-2026/6pm/",
@@ -2447,11 +3252,25 @@
    "position": 7
   },
   {
-   "page": "https://lottodost.com/result/27-05-2026/",
+   "page": "https://lottodost.com/result/26-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 11.3
+  },
+  {
+   "page": "https://lottodost.com/result/27-03-2026/1pm/",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 8
+   "position": 23
+  },
+  {
+   "page": "https://lottodost.com/result/27-05-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6
   },
   {
    "page": "https://lottodost.com/result/27-07-2026/",
@@ -2461,18 +3280,18 @@
    "position": 6
   },
   {
-   "page": "https://lottodost.com/result/27-10-2026/",
-   "clicks": 0,
-   "impressions": 8,
-   "ctr": 0,
-   "position": 16.2
-  },
-  {
    "page": "https://lottodost.com/result/28-01-2026/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 4,
    "ctr": 0,
-   "position": 4.7
+   "position": 6.5
+  },
+  {
+   "page": "https://lottodost.com/result/28-01-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 13
   },
   {
    "page": "https://lottodost.com/result/28-04-2026/",
@@ -2496,6 +3315,13 @@
    "position": 9
   },
   {
+   "page": "https://lottodost.com/result/28-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
    "page": "https://lottodost.com/result/28-10-2026/1pm/",
    "clicks": 0,
    "impressions": 2,
@@ -2503,11 +3329,18 @@
    "position": 4
   },
   {
-   "page": "https://lottodost.com/result/28-10-2026/kerala/",
+   "page": "https://lottodost.com/result/28-10-2026/6pm/",
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 1,
    "ctr": 0,
-   "position": 10.9
+   "position": 7
+  },
+  {
+   "page": "https://lottodost.com/result/28-10-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
   },
   {
    "page": "https://lottodost.com/result/29-01-2026/6pm/",
@@ -2524,6 +3357,13 @@
    "position": 5.5
   },
   {
+   "page": "https://lottodost.com/result/29-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
    "page": "https://lottodost.com/result/29-09-2026/",
    "clicks": 0,
    "impressions": 1,
@@ -2538,14 +3378,36 @@
    "position": 7
   },
   {
-   "page": "https://lottodost.com/result/29-10-2026/",
+   "page": "https://lottodost.com/result/29-10-2026/1pm/",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 4,
    "ctr": 0,
-   "position": 10.5
+   "position": 31.2
+  },
+  {
+   "page": "https://lottodost.com/result/30-08-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "page": "https://lottodost.com/result/30-09-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
   }
  ],
  "query_pages_india": [
+  {
+   "query": "maharashtra akshay lottery",
+   "page": "https://lottodost.com/maharashtra/akshay/",
+   "clicks": 5,
+   "impressions": 7,
+   "ctr": 0.7143,
+   "position": 1.7
+  },
   {
    "query": "25.10 21 lottery result",
    "page": "https://lottodost.com/",
@@ -2553,6 +3415,14 @@
    "impressions": 1,
    "ctr": 1,
    "position": 16
+  },
+  {
+   "query": "kerala lottery result 28/10/26",
+   "page": "https://lottodost.com/result/28-10-2026/kerala/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 48
   },
   {
    "query": "lottery sambad 25 10 26",
@@ -2563,20 +3433,36 @@
    "position": 28
   },
   {
-   "query": "maharashtra akshay lottery",
+   "query": "maharashtra akshay",
+   "page": "https://lottodost.com/maharashtra/akshay/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 6
+  },
+  {
+   "query": "maharashtra akshay weekly draw result",
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 1,
    "impressions": 2,
    "ctr": 0.5,
-   "position": 2
+   "position": 5.5
+  },
+  {
+   "query": "maharashtra ganesh laxmi bhagyashali weekly draw",
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-bhagyashali/",
+   "clicks": 1,
+   "impressions": 1,
+   "ctr": 1,
+   "position": 5
   },
   {
    "query": "maharashtra padmini weekly draw",
    "page": "https://lottodost.com/maharashtra/padmini/",
    "clicks": 1,
-   "impressions": 1,
-   "ctr": 1,
-   "position": 6
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 7.3
   },
   {
    "query": "maharashtra sahyadri vijayalakshmi weekly draw",
@@ -2587,12 +3473,52 @@
    "position": 3
   },
   {
+   "query": "maharashtra tejasvini",
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 5
+  },
+  {
+   "query": "नाइट रिज़ल्ट",
+   "page": "https://lottodost.com/hi/night-8pm/",
+   "clicks": 1,
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 2.5
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 1,
+   "impressions": 4,
+   "ctr": 0.25,
+   "position": 6
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी बुध साप्ताहिक सोडत",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 1,
+   "impressions": 4,
+   "ctr": 0.25,
+   "position": 6.2
+  },
+  {
    "query": "10 10 26 dear lottery result",
    "page": "https://lottodost.com/result/10-10-2026/",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "12 10 26 lottery result",
+   "page": "https://lottodost.com/result/12-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 9.5
   },
   {
    "query": "22 10",
@@ -2609,6 +3535,38 @@
    "impressions": 2,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "24.10 26 lottery result",
+   "page": "https://lottodost.com/result/24-10-2026/",
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "24.10.2026 lottery result",
+   "page": "https://lottodost.com/result/24-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "query": "240 crore lottery tax in india",
+   "page": "https://lottodost.com/lottery-tax/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "query": "25.10.2026 lottery result",
+   "page": "https://lottodost.com/result/25-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 10
   },
   {
    "query": "27 10 2026 kerala lottery result",
@@ -2654,9 +3612,9 @@
    "query": "dear6pm",
    "page": "https://lottodost.com/day-6pm/",
    "clicks": 0,
-   "impressions": 21,
+   "impressions": 27,
    "ctr": 0,
-   "position": 6.3
+   "position": 6.7
   },
   {
    "query": "dear8pm",
@@ -2678,9 +3636,17 @@
    "query": "fake lottery",
    "page": "https://lottodost.com/lottery-scams/",
    "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6.5
+  },
+  {
+   "query": "gajalakshmi lottery result",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 6
+   "position": 7
   },
   {
    "query": "gajlaxmi lottery",
@@ -2689,6 +3655,38 @@
    "impressions": 2,
    "ctr": 0,
    "position": 6
+  },
+  {
+   "query": "gajlaxmi lottery result",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "query": "gajlaxmi lottery result",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6.5
+  },
+  {
+   "query": "gajlaxmi lottery result today",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 8.9
+  },
+  {
+   "query": "ganesh laxmi lottery result today 5pm today",
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-shubh/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
   },
   {
    "query": "ganesh lottery",
@@ -2729,6 +3727,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 67
+  },
+  {
+   "query": "kerala lottery result today 29.10.26",
+   "page": "https://lottodost.com/result/29-10-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 90
   },
   {
    "query": "kerala lotterysm78",
@@ -2782,9 +3788,9 @@
    "query": "lottery payout calculator",
    "page": "https://lottodost.com/lottery-tax/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 6,
    "ctr": 0,
-   "position": 30.7
+   "position": 28.5
   },
   {
    "query": "lottery result 19.10.26",
@@ -2867,6 +3873,14 @@
    "position": 23
   },
   {
+   "query": "lottery sambad 28 10 25",
+   "page": "https://lottodost.com/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
    "query": "lottery sambad 28 10 26",
    "page": "https://lottodost.com/result/28-10-2026/",
    "clicks": 0,
@@ -2881,6 +3895,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 51
+  },
+  {
+   "query": "lottery sambad 29.10.26",
+   "page": "https://lottodost.com/result/29-10-2026/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 39.5
   },
   {
    "query": "lottery sambad17.10.26",
@@ -2910,9 +3932,9 @@
    "query": "lottery tax calculator india",
    "page": "https://lottodost.com/lottery-tax/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 9,
    "ctr": 0,
-   "position": 8
+   "position": 5.3
   },
   {
    "query": "lotto result october 28 2026",
@@ -2939,44 +3961,148 @@
    "position": 7.7
   },
   {
-   "query": "maharashtra akshay weekly draw result",
-   "page": "https://lottodost.com/maharashtra/akshay/",
+   "query": "maharashtra gajalakshmi",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 13,
+   "ctr": 0,
+   "position": 6.4
+  },
+  {
+   "query": "maharashtra gajalakshmi",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-ravi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
+   "impressions": 15,
+   "ctr": 0,
+   "position": 9.2
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery result",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "query": "maharashtra gajlaxmi",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajlaxmi",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "query": "maharashtra gajlaxmi budh weekly draw",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 3
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 24,
+   "ctr": 0,
+   "position": 9.8
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 20,
+   "ctr": 0,
+   "position": 8.6
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "maharashtra gajlaxmi lottery result today live",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "clicks": 0,
+   "impressions": 17,
+   "ctr": 0,
+   "position": 8.3
+  },
+  {
+   "query": "maharashtra gajlaxmi mangal weekly draw",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
    "clicks": 0,
    "impressions": 1,
    "ctr": 0,
    "position": 6
   },
   {
-   "query": "maharashtra gajalakshmi",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "query": "maharashtra ganesh laxmi shubh weekly draw",
+   "page": "https://lottodost.com/maharashtra/ganeshlaxmi-shubh/",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 1,
    "ctr": 0,
-   "position": 6.4
+   "position": 6
   },
   {
-   "query": "maharashtra gajlaxmi budh weekly draw",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
+   "query": "maharashtra padmini lottery",
+   "page": "https://lottodost.com/maharashtra/padmini/",
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 7.5
-  },
-  {
-   "query": "maharashtra gajlaxmi lottery result today",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
-   "clicks": 0,
-   "impressions": 7,
-   "ctr": 0,
-   "position": 9.9
-  },
-  {
-   "query": "maharashtra gajlaxmi lottery result today live",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
-   "clicks": 0,
-   "impressions": 4,
-   "ctr": 0,
-   "position": 7.5
+   "position": 5
   },
   {
    "query": "maharashtra padmini lottery nikal today",
@@ -2987,12 +4113,28 @@
    "position": 9
   },
   {
+   "query": "maharashtra padmini weekly draw result yesterday",
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7
+  },
+  {
    "query": "maharashtra sahyadri",
    "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 10,
    "ctr": 0,
-   "position": 7.6
+   "position": 8.5
+  },
+  {
+   "query": "maharashtra sahyadri deep lakshmi",
+   "page": "https://lottodost.com/maharashtra/sahyadri-dhanlaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "query": "maharashtra sahyadri mahalaxmi",
@@ -3003,12 +4145,28 @@
    "position": 6
   },
   {
-   "query": "maharashtra tejaswini monthly draw",
-   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "query": "maharashtra sahyadri mahalaxmi weekly draw",
+   "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
    "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 8.5
+   "position": 5.5
+  },
+  {
+   "query": "maharashtra tejaswini",
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 5
+  },
+  {
+   "query": "maharashtra tejaswini monthly draw",
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 9
   },
   {
    "query": "maharashtra tejaswini monthly draw result",
@@ -3076,11 +4234,27 @@
   },
   {
    "query": "sahyadri lottery",
-   "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
+   "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "sahyadri lottery",
+   "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 6.6
+  },
+  {
+   "query": "sk 75 lottery result today",
+   "page": "https://lottodost.com/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 108
   },
   {
    "query": "sun lotto kerala result today",
@@ -3107,14 +4281,6 @@
    "position": 9.5
   },
   {
-   "query": "नाइट रिज़ल्ट",
-   "page": "https://lottodost.com/hi/night-8pm/",
-   "clicks": 0,
-   "impressions": 1,
-   "ctr": 0,
-   "position": 3
-  },
-  {
    "query": "महाराष्ट्र अक्षय",
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 0,
@@ -3126,25 +4292,33 @@
    "query": "महाराष्ट्र अक्षय लॉटरी",
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 0,
-   "impressions": 2,
+   "impressions": 4,
    "ctr": 0,
-   "position": 9
+   "position": 8
   },
   {
    "query": "महाराष्ट्र अक्षय लॉटरी निकाल",
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 0,
-   "impressions": 3,
+   "impressions": 5,
    "ctr": 0,
-   "position": 8.3
+   "position": 8
   },
   {
    "query": "महाराष्ट्र अक्षय साप्ताहिक सोडत",
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 9.6
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
    "impressions": 2,
    "ctr": 0,
-   "position": 9
+   "position": 7
   },
   {
    "query": "महाराष्ट्र गजलक्ष्मी लॉटरी",
@@ -3155,12 +4329,68 @@
    "position": 7.5
   },
   {
+   "query": "महाराष्ट्र गजलक्ष्मी लॉटरी",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
+   "impressions": 10,
+   "ctr": 0,
+   "position": 7.9
+  },
+  {
    "query": "महाराष्ट्र गजलक्ष्मी लॉटरी निकाल",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
    "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6.5
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी लॉटरी निकाल",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-mangal/",
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी लॉटरी निकाल",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-ravi/",
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "query": "महाराष्ट्र गजलक्ष्मी लॉटरी निकाल",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-som/",
+   "clicks": 0,
    "impressions": 1,
    "ctr": 0,
-   "position": 6
+   "position": 8
+  },
+  {
+   "query": "महाराष्ट्र तेजस्विनी मासिक सोडत",
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 9.3
+  },
+  {
+   "query": "महाराष्ट्र तेजस्विनी लॉटरी निकाल",
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
+  },
+  {
+   "query": "महाराष्ट्र पद्मिनी विकली ड्रॉ",
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 7
   },
   {
    "query": "কেরালা লটারি গেজেট",
@@ -3176,7 +4406,7 @@
    "url": "https://lottodost.com/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-30T05:12:25Z",
+   "lastCrawl": "2026-10-30T17:05:02Z",
    "canonical": "https://lottodost.com/"
   },
   {
@@ -3190,14 +4420,14 @@
    "url": "https://lottodost.com/hi/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-29T15:11:06Z",
+   "lastCrawl": "2026-10-31T08:42:26Z",
    "canonical": "https://lottodost.com/hi/"
   },
   {
    "url": "https://lottodost.com/kerala/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-29T00:29:38Z",
+   "lastCrawl": "2026-10-30T20:12:33Z",
    "canonical": "https://lottodost.com/kerala/"
   },
   {
@@ -3211,7 +4441,7 @@
    "url": "https://lottodost.com/night-8pm/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-29T10:11:29Z",
+   "lastCrawl": "2026-10-30T12:42:25Z",
    "canonical": "https://lottodost.com/night-8pm/"
   },
   {
