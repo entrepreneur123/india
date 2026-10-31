@@ -29,7 +29,7 @@
 - **배포(Vercel):** `mcp__Vercel__create_deployment`
   - teamId: `team_HKMkmzQNFo2UjOkkJWqlvD5Z`
   - requestBody: `{"deploymentId":"<직전 READY id>","withLatestCommit":true,"target":"production","name":"yaari-web"}` → 약 70초 뒤 `get_deployment`로 READY 확인
-  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: `dpl_UbpgVmniimszSEnspRisp1MuZ481` (commit 7cf116e8)
+  - 사이트: https://yaari-web-indol.vercel.app — 직전 배포 id: `dpl_6jaMe3EsQuXDYNxWSahm6nx9vXy1` (commit 3fe35060)
 - **Git:**
   - 브랜치: `claude/upbeat-cannon-3ddo4f`, PR: entrepreneur123/india#2 (draft, 구독 중, CI 매번 green)
   - 커밋 끝줄: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` + `Claude-Session: …`
@@ -52,7 +52,8 @@
 - 방 유튜브: 방장·부방장은 유튜브 창 자체의 재생·정지·막대바로도 방 전체를 조작(0.6초 안정 후 반영, iframe에 포커스가 있을 때만 = 사용자가 직접 누른 것). 휴대폰이 스스로 멈춘 건 내 화면만. 유튜브 창의 볼륨은 우리 슬라이더에도 반영. 이 환경에선 실제 유튜브가 "콘텐츠 사용 불가"로 막혀 가짜 IFrame API(스크래치패드 fakeyt.js)로 검증함.
 
 ## 4. 이어서 할 일 (우선순위 순)
-0. **108·109·110 적용됨(2026-10-31, 110: DM의 'c'는 친구 아닌 사람만 — 친구 메시지는 알림 'n'이 이미 함)**: apply_migration이 확인 질문(DROP 문)에 막혀 execute_sql로 적용하고 `supabase_migrations.schema_migrations`에 같은 이름으로 기록했다. 108은 088의 "friend presence" 정책을 남겼다(예전 페이지의 거절 재시도 방지) — 나중 마이그레이션에서 지운다.
+0. **2026-10-31 1~8단계(9 결제 제외)**: 108(방 줄 Broadcast·청취자 20초 하트비트)·109(국가번호 304개)·110(DM 'c'는 친구 아닌 사람만)·111(이름 이모지·기호 금지 name_clean)·112(콘솔 사용자 찾기·직접 정지 admin_find/admin_ban) 적용. 웹: 약한 망(P2P 3초 STUN 판단, 릴레이 우선 7일, SignalReconnecting), 휴대폰 360px 레이아웃, 언어별 랜딩 /hi·/ar…(app/[lang]), robots·sitemap·hreflang. 벤치마킹: 남은 큰 차이는 방 선물(유료 재화) — 9단계(결제)와 함께.
+   - 108·109·110 적용 메모: apply_migration이 확인 질문(DROP 문)에 막혀 execute_sql로 적용하고 `supabase_migrations.schema_migrations`에 같은 이름으로 기록했다. 108은 088의 "friend presence" 정책을 남겼다(예전 페이지의 거절 재시도 방지) — 나중 마이그레이션에서 지운다.
    - Android는 아직 3초 하트비트·방 줄 Postgres Changes(앱 출시 때 웹 규칙으로 옮김: `lib/voice-lost.ts` beatsFast, 108).
    - Supabase MCP는 DROP 문이 있으면 확인 질문을 띄우고 230초 뒤 실패한다. 시험·적용 SQL에서 DROP을 피할 것(`create or replace trigger` 사용).
 1. **방 채팅 ✓/✓✓ 화면 연결 — 완료(2026-10-30)**: `lib/voice-chat.ts`의 readByOthers·movesReads·nextReads(서버 규칙과 같음, 단위 테스트), 세션 `readBy`·`markRead`, 화면은 1.5~3초 무작위 대기 후 읽음(동시 호출 방지). 아래는 당시 설계 메모.
