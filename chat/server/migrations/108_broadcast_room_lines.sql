@@ -8,6 +8,8 @@
 -- Also, on my own topic (one channel less to join than 088's friends:<id>):
 --  * 'p': a friend's presence changed (088).
 --  * 'c': a new message in one of my DMs, so the unread counts move at once rather than at the next 30 s poll.
+-- 088's 'friend presence' policy (friends:<id>) stays for pages still open from before: nothing is sent there now, and
+-- removing it would make those pages retry a refused join every few seconds. A later migration drops it.
 -- The tables stay published for Postgres Changes (the Android app). Re-runnable.
 
 create or replace function public.voice_messages_rt() returns trigger
@@ -61,5 +63,3 @@ begin
             limit 500) f
     where public.user_online(f.id);
 end $$;
-
-drop policy if exists "friend presence" on realtime.messages;
