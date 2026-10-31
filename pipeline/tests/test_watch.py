@@ -71,3 +71,24 @@ def test_incidents_stay_open_until_the_check_passes(tmp_path):
     state = json.loads((tmp_path / "incidents.json").read_text())
     assert resolved == ["late:a"] and state["open"] == {} and state["resolved"]["late:a"]["first_seen"] == "2026-10-30T08:00+00:00"
     assert len((tmp_path / "log.jsonl").read_text().splitlines()) == 2
+
+
+def test_a_result_on_the_site_but_missing_from_the_app_feed_mirror():
+    """31-10-2026: the data push failed, so the site had the 1 PM result but the mirror phones read did not."""
+    now = dt.datetime(2026, 10, 31, 8, 15, tzinfo=UTC)          # 13:45 IST
+    site = {"/v2/today.json": feed([draw("2026-10-31", "NL1PM")], now.isoformat()), "/v2/index.json": {"noDraw": []}}
+
+    def checks(mirror_draws):
+        def fetch(url):
+            if url.startswith("https://m.test"):
+                return feed(mirror_draws)
+            return site[url.removeprefix("https://x.test")]
+        return watch.checks("https://x.test", now, fetch=fetch,
+                            fetch_text=lambda u: "<title>Lottery Result Today 31.10.2026</title>", mirror="https://m.test")
+    mirror_keys = lambda got: {k for k in got if k.startswith("mirror:")}
+    assert mirror_keys(checks([draw("2026-10-31", "NL1PM", tiers=[])])) == {"mirror:2026-10-31:NL1PM"}
+    assert mirror_keys(checks([draw("2026-10-31", "NL1PM")])) == set()
+    early = dt.datetime(2026, 10, 31, 7, 55, tzinfo=UTC)         # 13:25 IST: still within the draw's grace
+    assert not any(k.startswith("mirror:") for k in watch.checks(
+        "https://x.test", early, fetch=lambda u: feed([]) if u.startswith("https://m.test") else site[u.removeprefix("https://x.test")],
+        fetch_text=lambda u: "<title>Lottery Result Today 31.10.2026</title>", mirror="https://m.test"))

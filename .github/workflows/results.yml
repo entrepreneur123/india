@@ -145,9 +145,11 @@ jobs:
           push_data() {
             # jobs-publish.yml writes jobs/ on the same branch every ~15 min; it never touches our files, so
             # a rebase is clean. Without this a rejected push stopped the run (30-10-2026: 1 PM result 3 h late).
+            # A rebase writes commits, so it needs a name: without one every try failed (31-10-2026, 1 PM feed 29 min late).
+            local who=(-c user.name="results-bot" -c user.email="results-bot@users.noreply.github.com")
             for i in 1 2 3 4 5; do
               git -C ../public push -q origin data && return 0
-              git -C ../public fetch -q origin data && git -C ../public rebase -q origin/data || git -C ../public rebase --abort || true
+              git -C ../public fetch -q origin data && git -C ../public "${who[@]}" rebase -q origin/data || git -C ../public rebase --abort || true
               sleep $(( i * 3 ))
             done
             echo "::error::could not push to data after 5 tries"; return 1
@@ -260,6 +262,10 @@ jobs:
             if [ -n "$from" ] && [ "$require" != "KL" ] && [ "$(date +%s)" -lt $(( start + 1500 )) ]; then sleep 20; else sleep 60; fi
             args="${args/ --deep/}"   # catalog refresh only on the first pass (be gentle to the sources)
           done
+          # Results that never reached the data branch (the app feed and the mirror phones read) must not end
+          # the run green: one last try, else fail so the watcher opens a run:* incident.
+          git -C ../public fetch -q origin data || true
+          if [ -n "$(git -C ../public rev-list origin/data..HEAD 2>/dev/null)" ]; then push_data || exit 1; fi
 
       - name: Hand over to the relay (it starts the run for the next draw on time)
         if: always()

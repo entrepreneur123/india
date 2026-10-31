@@ -1018,7 +1018,7 @@ class Site:
             return ""
         m = MH[lang]
         games = "".join(f'<a class="chip" href="{self.url(lang, self.mh_game_path(d))}"><b>{esc(m["tab"])}</b>'
-                        f'{esc(d["name"].removeprefix("Maharashtra "))}</a>' for d in self.mh[self.mh_dates[0]])
+                        f'{esc(d["name"].removeprefix("Maharashtra "))}</a>' for d in self.mh[self.mh_dates[0]] if self.mh_named(d))
         return (f'<h2 class="sub">{esc(m["other"])}</h2><nav class="chips wrapchips" aria-label="{esc(m["other"])}">'
                 f'<a class="chip" href="{self.url(lang, "/maharashtra/")}"><b>4 PM</b>{esc(m["tab"])}</a>{games}</nav>')
 
@@ -1081,7 +1081,8 @@ class Site:
                     + self.checker(lang, hint=m["check_hint"], example=first["numbers"][0]) + self.tiers(lang, d, ads=True)
                     + self.mh_buttons(lang, d) + f'<p class="hint">{esc(m["ocr_note"])}</p>'
                     + f'<nav class="chips wrapchips">{sibs}</nav>'
-                    + f'<p class="pn"><a class="btn" href="{self.url(lang, self.mh_game_path(d))}">{esc(m["game_past"].format(g=d["name"].removeprefix("Maharashtra ")))}</a>'
+                    + '<p class="pn">' + (f'<a class="btn" href="{self.url(lang, self.mh_game_path(d))}">{esc(m["game_past"].format(g=d["name"].removeprefix("Maharashtra ")))}</a>'
+                                          if self.mh_named(d) else "")
                     + f'<a class="btn" href="{self.url(lang, "/maharashtra/")}">{esc(m["all"])}</a></p>')
             self.write(out, lang, self.draw_path(d), self.page(
                 lang, self.draw_path(d), title, m["draw_desc"].format(g=self.mh_game(lang, d), d=dd, f=first["numbers"][0]), body,
@@ -1089,6 +1090,11 @@ class Site:
                 crumbs=[(w["home"], "/"), (m["tab"], "/maharashtra/"), (dd, self.draw_path(d))]),
                 key=f"draw:{d['id']}", lastmod=self.stamp if d["date"] == self.today else d["date"],
                 image=self.og_images.get(d["id"], ""))
+
+    @staticmethod
+    def mh_named(d: dict) -> bool:
+        """A game with an English name gets a page of its own; one we cannot name (Marathi only) does not."""
+        return bool(re.search(r"[a-z]", d["name"].lower().removeprefix("maharashtra ")))
 
     @staticmethod
     def mh_game_path(d: dict) -> str:
@@ -1099,7 +1105,7 @@ class Site:
         out: dict[str, list[dict]] = {}
         for x in self.mh_dates:
             for d in self.mh[x]:
-                if re.search(r"[a-z]", d["name"].lower().removeprefix("maharashtra ")):  # no page for a game we cannot name
+                if self.mh_named(d):  # no page for a game we cannot name
                     out.setdefault(self.mh_game_path(d), []).append(d)
         return out
 

@@ -40,7 +40,7 @@ def get_json(url: str):
 
 
 def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get(u).decode("utf-8", "replace"),
-           runs: list[dict] | None = None) -> dict[str, dict]:
+           runs: list[dict] | None = None, mirror: str | None = None) -> dict[str, dict]:
     """Open problems right now: {incident id: {kind, severity, detail}}."""
     out: dict[str, dict] = {}
 
@@ -69,6 +69,21 @@ def checks(site: str, now: dt.datetime, fetch=get_json, fetch_text=lambda u: get
             if d is None or not d.get("tiers"):
                 late = int((local - due).total_seconds() // 60) + grace
                 add(f"late:{day}:{slot}", "late", "high", f"{slot} {day}: not on the site {late} min after its draw")
+    # The app reads the github.io mirror (the data branch) first and phones are woken only once it has the
+    # result: a result on the site but not there means the data push failed (31-10-2026: 29 min late).
+    if mirror:
+        try:
+            m = {(d["date"], d["slot"]) for d in fetch(f"{mirror}/v2/today.json").get("draws", []) if d.get("tiers")}
+        except Exception as e:  # noqa: BLE001
+            add("mirror:unreachable", "unreachable", "medium", f"mirror today.json: {type(e).__name__}: {e}")
+        else:
+            for (day, slot), d in have.items():
+                if slot not in DUE or not d.get("tiers") or (day, slot) in m:
+                    continue
+                at, grace = DUE[slot]
+                due = dt.datetime.combine(dt.date.fromisoformat(day), dt.time.fromisoformat(at), IST)
+                if local >= due + dt.timedelta(minutes=grace + 10):
+                    add(f"mirror:{day}:{slot}", "late", "high", f"{slot} {day}: on the site but not in the app feed ({mirror})")
     # numbers that cannot be right
     for d in feed.get("draws", []):
         pat = _NUM.get(d["slot"])
@@ -154,12 +169,13 @@ def update(out_dir: pathlib.Path, found: dict[str, dict], now: dt.datetime) -> t
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default="https://lottodost.com")
+    ap.add_argument("--mirror", default="https://entrepreneur123.github.io/india", help="the copy the app reads first")
     ap.add_argument("--out", type=pathlib.Path, required=True)
     ap.add_argument("--runs", type=pathlib.Path, help="gh run list --json databaseId,conclusion,createdAt output")
     a = ap.parse_args()
     runs = json.loads(a.runs.read_text()) if a.runs and a.runs.exists() else []
     now = dt.datetime.now(dt.timezone.utc)
-    found = checks(a.site.rstrip("/"), now, runs=runs)
+    found = checks(a.site.rstrip("/"), now, runs=runs, mirror=a.mirror.rstrip("/") or None)
     opened, resolved = update(a.out, found, now)
     for k in opened:
         print(f"::warning::incident opened: {k}: {found[k]['detail']}")

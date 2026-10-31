@@ -95,7 +95,7 @@ jobs:
           for i in 1 2 3 4 5; do
             git -C public push -q origin data && exit 0
             # The lottery workflow pushed in between; it never touches jobs/, so a rebase is clean.
-            git -C public fetch -q --depth 20 origin data && git -C public rebase -q origin/data || true
+            git -C public fetch -q --depth 20 origin data && git -C public -c user.name="jobs-bot" -c user.email="jobs-bot@users.noreply.github.com" rebase -q origin/data || git -C public rebase --abort || true
             sleep $(( i * 5 ))
           done
           echo "::error::could not push to data after 5 tries"; exit 1

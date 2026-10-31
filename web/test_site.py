@@ -487,3 +487,19 @@ def test_a_maharashtra_draw_without_an_english_name_does_not_replace_the_hub(tmp
          "sources": [{"kind": "officialPdf", "url": "https://x/1029202616592174929_10_2026_N_109_x.pdf"}]}
     assert sitegen.draw_slug(d) == "maharashtra-1029202616592174929"
     assert sitegen.Site.mh_game_path(d) != "/maharashtra/"
+
+
+def test_a_maharashtra_game_without_an_english_name_is_never_linked_as_a_game_page(tmp_path, monkeypatch):
+    """31-10-2026: "महाराष्ट्रलक्ष्मी साप्ताहिक सोडत" has no game page, but the home page chips linked
+    /maharashtra/1031202616531165031/ (a 404 on en, bn and hi)."""
+    data = tmp_path / "data" / "v2/mh/days"
+    data.mkdir(parents=True)
+    marathi = dict(MH_DRAW, id="2026-10-18_MH_X", name="Maharashtra महाराष्ट्रलक्ष्मी साप्ताहिक सोडत",
+                   sources=[{"kind": "officialPdf", "url": "https://lottery.maharashtra.gov.in/UploadFiles/1031202616531165031_x.pdf"}])
+    pending = dict(marathi, id="2026-10-18_MH_Y", status="PDF", tiers=[], drawNo=None,
+                   sources=[{"kind": "officialPdf", "url": "https://lottery.maharashtra.gov.in/UploadFiles/1031202616531165032_y.pdf"}])
+    (data / "2026-10-18.json").write_text(json.dumps({"schema": 2, "date": "2026-10-18", "draws": [MH_DRAW, marathi, pending]}))
+    out = build(tmp_path, monkeypatch, link_prefix="")
+    for page in out.rglob("*.html"):
+        for link in set(re.findall(r'href="(/maharashtra/[^"]*)"', page.read_text())):
+            assert (out / link.split("#")[0].lstrip("/") / "index.html").exists(), f"{page.relative_to(out)} -> {link}"

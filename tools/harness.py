@@ -142,7 +142,7 @@ def full() -> list[str]:
 def live() -> list[str]:
     sys.path.insert(0, str(PIPE))
     from lottery_pipeline import watch
-    found = watch.checks("https://lottodost.com", dt.datetime.now(dt.timezone.utc))
+    found = watch.checks("https://lottodost.com", dt.datetime.now(dt.timezone.utc), mirror="https://entrepreneur123.github.io/india")
     return [f"{k} [{v['severity']}] {v['detail']}" for k, v in found.items()]
 
 
