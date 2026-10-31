@@ -359,7 +359,8 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   }, [backend, mutate])
   // ...and their changes reach me the same way.
   useEffect(() => backend.friendSignals(() => void mutate('friend-activity')), [backend, mutate])
-  // 108: a new DM message moves the unread counts (and Recent's order) at once, not at the next 30 s poll.
+  // 108, 110: a DM from someone who isn't a friend moves the unread counts at once, not at the next 30 s poll (a friend's
+  // message updates a notification, which inboxSignals covers).
   useEffect(() => backend.chatSignals(() => void mutate('badges')), [backend, mutate])
   const state = useMemo<AppState>(
     () => ({

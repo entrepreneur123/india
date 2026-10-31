@@ -560,7 +560,7 @@ export class SupabaseBackend implements Backend {
 
   /**
    * 107, 108: my private topic user:<me>, sent by triggers: a new match ('wake'), my groups' lines ('g'), the
-   * notification count ('n'), a friend's presence ('p'), a new DM message ('c') and a room line that skipped the
+   * notification count ('n'), a friend's presence ('p'), a DM from a non-friend ('c', 110) and a room line that skipped the
    * room's topic for a block ('l'). One channel for all the screens listening; `up` runs each time it (re)connects.
    */
   private userTopic: { channel: RealtimeChannel; subs: Set<UserSub> } | null = null
