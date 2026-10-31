@@ -14,6 +14,7 @@ import {
   type ExploreKind,
   type FeedItem,
   type RoomQuery,
+  type VoiceRoom,
   type VoiceRoomSummary,
   type FeedPost,
   type PostVisibility,
@@ -50,7 +51,7 @@ import type { LookSim } from './mockLooks'
 import type { TrustSim } from './mockTrust'
 import type { VoiceSim } from './mockVoice'
 import type { FeedSim } from './mockFeed'
-import { droppedOut } from './voice-lost'
+import { beatsFast, droppedOut } from './voice-lost'
 import { art } from './mock-art'
 import { hashtagsOf } from './hashtags'
 import { saveVolume } from './voice-volumes'
@@ -1157,6 +1158,9 @@ export class MockBackend implements Backend {
   friendSignals() {
     return () => undefined
   }
+  chatSignals() {
+    return () => undefined
+  }
 
   // ---- megaphone (100, 101): as the server, in memory; two lines from earlier today, and a demo person shouts 20 s in ----
   private megaphoneN = 0
@@ -1286,10 +1290,12 @@ export class MockBackend implements Backend {
   subscribeVoice(roomId: string, on: (e: VoiceEvent) => void) {
     let stop: (() => void) | null = null
     let closed = false
+    let room: VoiceRoom | null = null
     void this.voice().then((sim) => {
-      if (!closed) stop = sim.subscribe(roomId, on)
+      if (!closed) stop = sim.subscribe(roomId, (e) => (e.type === 'room' && (room = e.room), on(e)))
     })
-    // My own connection, as the real backend shows it: the browser going offline, and back (the 13 s rule).
+    // My own connection, as the real backend shows it: the browser going offline, and back (13 s on a seat, 85 s
+    // listening: lib/voice-lost).
     let offAt = 0
     const offline = () => {
       offAt = Date.now()
@@ -1297,7 +1303,7 @@ export class MockBackend implements Backend {
     }
     const online = () => {
       if (!offAt) return
-      const gone = droppedOut(offAt, Date.now())
+      const gone = droppedOut(offAt, Date.now(), beatsFast(room, this.me?.id ?? ''))
       offAt = 0
       if (!gone) return on({ type: 'connection', lost: false })
       on({ type: 'dropped' }) // the room screen closes and leaves

@@ -35,8 +35,9 @@ export function RightPanel({ className }: { className?: string }) {
   const preview = useRoomPreview()
   const { num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
-  // What friends are doing: asked every 20 s while the window is shown (the server answers from its presence stamps).
-  const { data: activity } = useSWR('friend-activity', () => backend.friendActivity(), { refreshInterval: 20_000, refreshWhenHidden: false })
+  // What friends are doing: pushed when it changes (088); asked every 60 s while the window is shown for anyone who
+  // dropped without closing the app (the server's presence stamps run out after 60 s).
+  const { data: activity } = useSWR('friend-activity', () => backend.friendActivity(), { refreshInterval: 60_000, refreshWhenHidden: false })
   // The same list as the Rooms tab (one request serves both).
   const { data: rooms } = useSWR('voiceRooms', () => backend.voiceRooms(), {
     // The list is a server summary rebuilt every 5 s: every 30 s while the tab is shown is plenty, never hidden.

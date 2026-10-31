@@ -198,7 +198,7 @@ export function ChatView({
   // Calls: only a thread between friends (the server's call_open, 070).
   const callable = !live && friendship.state === 'friends'
   // 40: a friend is called only while online (the panel's presence, same request); the server refuses it too.
-  const { data: activity } = useSWR(callable ? 'friend-activity' : null, () => backend.friendActivity(), { refreshInterval: 20_000, refreshWhenHidden: false })
+  const { data: activity } = useSWR(callable ? 'friend-activity' : null, () => backend.friendActivity(), { refreshInterval: 60_000, refreshWhenHidden: false })
   const offline = callable && !!activity && !activity.some((a) => a.id === partner.id && a.presence !== 'offline')
 
   // Closing the chat (a thread) ends its call or my request, so neither is left standing on the server.

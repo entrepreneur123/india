@@ -78,7 +78,7 @@ import type { HandleCheck } from './handle'
 import type { VoiceAudio } from './voice-audio'
 import { track } from './telemetry'
 import { onPageVisibility, pageHidden } from './visibility'
-import { droppedOut, nextHost, VOICE_BEAT_MS } from './voice-lost'
+import { beatsFast, droppedOut, nextHost, VOICE_BEAT_MS, VOICE_LISTENER_BEAT_MS } from './voice-lost'
 import { saveVolume } from './voice-volumes'
 import { hasThumb, registerThumb, thumbPath, THUMB_PX } from './thumbs'
 
@@ -249,8 +249,9 @@ type VoiceMessageRow = {
   payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
   sender_photo: string | null; sender_country: string | null; created_at: string
 }
-/** A listener on my private topic (107): its event, and what runs on each (re)connect. */
-type UserSub = { event: 'wake' | 'g' | 'n'; on: (payload: Record<string, unknown>) => void; up?: () => void }
+/** A listener on my private topic (107, 108): its event, and what runs on each (re)connect. */
+type UserSub = { event: (typeof USER_EVENTS)[number]; on: (payload: Record<string, unknown>) => void; up?: () => void }
+const USER_EVENTS = ['wake', 'g', 'n', 'p', 'c', 'l'] as const
 /** What the voice methods need from an open subscription (subscribeVoice). */
 type VoiceLive = {
   room: VoiceRoom | null
@@ -558,15 +559,16 @@ export class SupabaseBackend implements Backend {
   }
 
   /**
-   * 107: my private topic user:<me> carries a new match ('wake'), my groups' lines ('g') and the notification count
-   * ('n'), sent by triggers. One channel for all the screens listening; `up` runs each time it (re)connects.
+   * 107, 108: my private topic user:<me>, sent by triggers: a new match ('wake'), my groups' lines ('g'), the
+   * notification count ('n'), a friend's presence ('p'), a new DM message ('c') and a room line that skipped the
+   * room's topic for a block ('l'). One channel for all the screens listening; `up` runs each time it (re)connects.
    */
   private userTopic: { channel: RealtimeChannel; subs: Set<UserSub> } | null = null
   private onUserTopic(event: UserSub['event'], on: UserSub['on'], up?: () => void): () => void {
     if (!this.userTopic) {
       const subs = new Set<UserSub>()
       let channel = this.client.channel(`user:${this.uid}`, { config: { private: true } })
-      for (const e of ['wake', 'g', 'n']) {
+      for (const e of USER_EVENTS) {
         channel = channel.on('broadcast', { event: e }, ({ payload }) => {
           for (const x of subs) if (x.event === e) x.on(payload as Record<string, unknown>)
         })
@@ -1452,13 +1454,18 @@ export class SupabaseBackend implements Backend {
   }
 
   friendSignals(on: () => void): () => void {
-    // Private (RLS on realtime.messages): only I can listen on my topic.
-    const channel = this.client.channel(`friends:${this.uid}`, { config: { private: true } })
-      .on('broadcast', { event: 'p' }, () => on())
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') on() // anything missed while the connection was down
-      })
-    return () => void this.client.removeChannel(channel)
+    // On (re)connecting too: anything missed while the connection was down.
+    return this.onUserTopic('p', () => on(), on)
+  }
+
+  chatSignals(on: () => void): () => void {
+    // A chat open here follows its own topic. A burst of messages asks once.
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const stop = this.onUserTopic('c', ({ m }) => {
+      if (timer || this.client.getChannels().some((c) => c.topic === `realtime:chat:${m}`)) return
+      timer = setTimeout(() => ((timer = undefined), on()), 1_000)
+    })
+    return () => (clearTimeout(timer), stop())
   }
 
   // ---- profile extras (024) ----
@@ -2191,6 +2198,7 @@ export class SupabaseBackend implements Backend {
 
     // ---- keeping up ----
     let channel: RealtimeChannel | null = null
+    let stopLines: (() => void) | undefined
     let healthy = false
     let syncTimer: ReturnType<typeof setTimeout> | undefined
     const nextResync = () => {
@@ -2208,16 +2216,17 @@ export class SupabaseBackend implements Backend {
         await resyncLines()
       })().catch(() => undefined)
     }
-    // The topic is private (RLS on realtime.messages: people who entered the room), so it opens once I'm in.
+    // The topic is private (RLS on realtime.messages: people who entered the room), so it opens once I'm in. Its
+    // lines ('l', 108) come there, or on my own topic when someone here has a block with the sender.
     const openChannel = () => {
       if (channel || closed) return
+      stopLines = this.onUserTopic('l', (row) => void (row.room_id === roomId && onMessage(row as VoiceMessageRow).catch(() => undefined)))
       const topic = `voice:${roomId}`
       for (const c of this.client.getChannels()) if (c.topic === `realtime:${topic}`) void this.client.removeChannel(c)
       let wasUp = false
       channel = this.client.channel(topic, { config: { private: true } })
         .on('broadcast', { event: 'v' }, ({ payload }) => onChange(payload as VoiceChange))
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'voice_messages', filter: `room_id=eq.${roomId}` },
-          (p) => void onMessage(p.new as VoiceMessageRow).catch(() => undefined))
+        .on('broadcast', { event: 'l' }, ({ payload }) => void onMessage(payload as VoiceMessageRow).catch(() => undefined))
         .subscribe((status) => {
           const up = status === 'SUBSCRIBED'
           if (up !== healthy) {
@@ -2276,8 +2285,12 @@ export class SupabaseBackend implements Backend {
     }
     this.voice.set(roomId, live)
 
-    // ---- my connection (045): beats every 3 s; the server shows me lost after 6 s and takes me out 7 s later ----
+    // ---- my connection (045): on a seat, hosting or co-hosting a beat every 3 s (the server shows me lost after 6 s and
+    // takes me out 7 s later); a listener every 20 s (out after 90 s). A change of kind beats at the next tick: off the
+    // stage, the server must not wait 6 s for a fast beat. ----
     let lastBeat = Date.now()
+    let beatFast = true // the kind of my last beat: the rule the server holds me to
+    let lastSent = 0
     const down = { beat: false, realtime: false }
     let shownLost = false
     const connection = (patch: Partial<typeof down>) => {
@@ -2291,19 +2304,24 @@ export class SupabaseBackend implements Backend {
       // room closes instead. A host with no co-host to take over keeps their place (the room waits 2 minutes).
       const r = live.room
       const keepsPlace = r?.hostId === me && !nextHost(r)
-      if (droppedOut(lastBeat, Date.now()) && !keepsPlace) {
+      if (droppedOut(lastBeat, Date.now(), beatFast) && !keepsPlace) {
         const { error } = await this.client.from('voice_seq').select('seq').eq('room_id', roomId).maybeSingle()
         if (error || closed || over) return connection({ beat: true })
         return finish({ type: 'dropped' }) // the room screen closes and leaves, to be sure
       }
+      const fast = beatsFast(r, me)
+      if (!fast && !beatFast && Date.now() - lastSent < VOICE_LISTENER_BEAT_MS - 1_000) return
+      lastSent = Date.now()
       try {
-        serverAt(await this.rpc<number>('voice_heartbeat3', { p_room: roomId }))
+        serverAt(await this.rpc<number>(fast ? 'voice_heartbeat3' : 'voice_heartbeat2', { p_room: roomId }))
         lastBeat = Date.now()
+        beatFast = fast
         connection({ beat: false })
         // The host re-checks LiveKit against the room every minute (anyone a sync missed).
         if (++beats % 20 === 0 && live.room?.hostId === me) this.voiceSync(roomId)
       } catch (err) {
         failed(err)
+        lastSent = 0 // try again at the next tick
         if (!over) connection({ beat: true })
       }
     }
@@ -2358,6 +2376,7 @@ export class SupabaseBackend implements Backend {
       window.removeEventListener('pagehide', onPageHide)
       stopAudio()
       if (this.voice.get(roomId) === live) this.voice.delete(roomId)
+      stopLines?.()
       if (channel) void this.client.removeChannel(channel)
       if (typingChannel) void this.client.removeChannel(typingChannel)
     }

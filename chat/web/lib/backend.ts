@@ -970,6 +970,8 @@ export interface Backend {
   presencePing(online: boolean): void
   /** 088: called whenever a friend's presence may have changed. Returns the stop function. */
   friendSignals(on: () => void): () => void
+  /** 108: called when a message arrives in one of my DMs that isn't open here (the unread counts moved). Returns stop. */
+  chatSignals(on: () => void): () => void
   /** 100: how many megaphones I have (-1: unlimited, 102); sending uses one (errors: no_megaphone, slow_down, bad_request). */
   megaphoneCount(): Promise<number>
   sendMegaphone(text: string): Promise<void>
