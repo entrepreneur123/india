@@ -485,8 +485,11 @@ export class SupabaseBackend implements Backend {
     if (error) fail(error)
     if (!data) return null
     const p = await this.withExtras(await this.toProfile({ ...data, age: ageOn(data.birth_date) }, posts), data)
-    return { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone', hideOnline: data.hide_online, photoPath: data.photo_path }
+    return (this.lastMe = { ...p, handle: data.handle, style: await this.toStyle(data), dmEveryone: data.dm_from === 'everyone', hideOnline: data.hide_online, photoPath: data.photo_path })
   }
+
+  /** My profile as last read: for what only needs a field of it (my country, my photos), not another read of it all. */
+  private lastMe: Profile | null = null
 
   async createProfile(p: NewProfile) {
     const photo = p.photo ? await this.upload(p.photo, 'avatar') : null
@@ -561,9 +564,12 @@ export class SupabaseBackend implements Backend {
   /**
    * 107, 108: my private topic user:<me>, sent by triggers: a new match ('wake'), my groups' lines ('g'), the
    * notification count ('n'), a friend's presence ('p'), a DM from a non-friend ('c', 110) and a room line that skipped the
-   * room's topic for a block ('l'). One channel for all the screens listening; `up` runs each time it (re)connects.
+   * room's topic for a block ('l'). One channel for all the screens listening; `up` runs each time it reconnects, for
+   * what was sent while it was down. Not on the first join: each screen reads its data as it opens, and a signal in
+   * the second before the join is covered by its poll (seen 2026-10-31: the join re-read badges, friends, looks and
+   * activity 1 s after the app had loaded them).
    */
-  private userTopic: { channel: RealtimeChannel; subs: Set<UserSub> } | null = null
+  private userTopic: { channel: RealtimeChannel; subs: Set<UserSub>; joined: boolean } | null = null
   private onUserTopic(event: UserSub['event'], on: UserSub['on'], up?: () => void): () => void {
     if (!this.userTopic) {
       const subs = new Set<UserSub>()
@@ -573,15 +579,17 @@ export class SupabaseBackend implements Backend {
           for (const x of subs) if (x.event === e) x.on(payload as Record<string, unknown>)
         })
       }
+      const topic = { channel, subs, joined: false }
       channel.subscribe((status) => {
-        if (status === 'SUBSCRIBED') for (const x of subs) x.up?.()
+        if (status !== 'SUBSCRIBED') return
+        if (topic.joined) for (const x of subs) x.up?.()
+        topic.joined = true
       })
-      this.userTopic = { channel, subs }
+      this.userTopic = topic
     }
     const topic = this.userTopic
     const sub: UserSub = { event, on, up }
     topic.subs.add(sub)
-    if (up && topic.channel.state === 'joined') queueMicrotask(up) // already connected: catch up as a new channel would
     return () => {
       topic.subs.delete(sub)
       if (topic.subs.size || this.userTopic !== topic) return
@@ -1427,7 +1435,7 @@ export class SupabaseBackend implements Backend {
     let stopped = false
     void (async () => {
       // Private (100): only my country's people listen on its topic.
-      const country = (await this.mine()).country
+      const country = (this.lastMe ?? (await this.mine())).country
       if (stopped) return
       channel = this.client.channel(`mega:${country || 'xx'}`, { config: { private: true } })
         .on('broadcast', { event: 'm' }, ({ payload: r }) => void this.megaphoneLines([{ ...r, user_id: r.user, photo_path: r.photo }]).then(([l]) => on(l)))
@@ -2535,7 +2543,7 @@ export class SupabaseBackend implements Backend {
     } catch {
       return
     }
-    const me = await this.mine()
+    const me = this.lastMe ?? (await this.mine())
     const paths = [me.photoPath, ...(me.photos ?? []).map((p) => p.id)].filter((p): p is string => !!p && hasThumb(p))
     await this.signMany(paths)
     for (const p of paths) {
