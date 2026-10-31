@@ -565,7 +565,7 @@ const ptBR: Dict = {
   'error.handle_reserved': 'Esse ID é reservado. Escolha outro',
   'error.handle_taken': 'Esse ID já está em uso. Escolha outro',
   'error.handle_cooldown': 'Você pode mudar seu ID uma vez a cada 30 dias',
-  'error.name_invalid': 'Escreva seu nome com letras normais: letras de fontes estilizadas não são aceitas (emoji pode)',
+  'error.name_invalid': 'Escreva seu nome com letras normais: letras de fontes estilizadas não são aceitas',
   'error.not_owned': 'Você ainda não tem este visual',
   'error.chat_closed': 'Este chat terminou. Adicione a pessoa como amigo para continuar conversando',
   'error.generic': 'Algo deu errado. Tente de novo',

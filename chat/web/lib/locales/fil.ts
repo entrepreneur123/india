@@ -579,7 +579,7 @@ const fil: Dict = {
   'error.handle_reserved': 'Nakareserba ang ID na iyan. Pumili ng iba',
   'error.handle_taken': 'May gumagamit na ng ID na iyan. Pumili ng iba',
   'error.handle_cooldown': 'Puwede mong palitan ang ID mo isang beses kada 30 araw',
-  'error.name_invalid': 'Isulat ang pangalan mo sa karaniwang letra: hindi puwede ang mga letra ng fancy font (puwede ang emoji)',
+  'error.name_invalid': 'Isulat ang pangalan mo sa karaniwang letra: hindi puwede ang mga letra ng fancy font',
   'error.not_owned': 'Wala ka pang look na ito',
   'error.chat_closed': 'Tapos na ang chat na ito. I-add siya bilang kaibigan para makapag-usap pa kayo',
   'error.generic': 'May nangyaring mali. Subukan ulit',

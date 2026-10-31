@@ -579,7 +579,7 @@ const tr: Dict = {
   'error.handle_reserved': 'Bu kimlik ayrılmış. Lütfen başka bir tane seç',
   'error.handle_taken': 'Bu kimlik zaten alınmış. Lütfen başka bir tane seç',
   'error.handle_cooldown': 'Kimliğini 30 günde bir değiştirebilirsin',
-  'error.name_invalid': 'Adını normal harflerle yaz: süslü yazı tipi harfleri kullanılamaz (emoji olur)',
+  'error.name_invalid': 'Adını normal harflerle yaz: süslü yazı tipi harfleri kullanılamaz',
   'error.not_owned': 'Bu görünüme henüz sahip değilsin',
   'error.chat_closed': 'Bu sohbet bitti. Konuşmaya devam etmek için onu arkadaş olarak ekle',
   'error.generic': 'Bir şeyler ters gitti. Lütfen tekrar dene',

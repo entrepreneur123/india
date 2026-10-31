@@ -432,7 +432,7 @@ export class MockBackend implements Backend {
     const m = now.getMonth() - born.getMonth()
     if (m < 0 || (m === 0 && now.getDate() < born.getDate())) age--
     if (Number.isNaN(age) || age < 18) throw new BackendError('under_18')
-    if (!(await import('./handle')).namePlain(p.name)) throw new BackendError('name_invalid')
+    if (!(await import('./handle')).nameClean(p.name)) throw new BackendError('name_invalid')
     this.me = {
       id: 'u_me',
       name: p.name.trim(),
@@ -862,7 +862,8 @@ export class MockBackend implements Backend {
   async updateProfile(name: string, city: string, bio: string, photo: File | null) {
     if (!this.me) throw new BackendError('not_found')
     await wait(700)
-    if (!(await import('./handle')).namePlain(name)) throw new BackendError('name_invalid')
+    // As the server (111): checked when changed, so an older name doesn't block saving the rest.
+    if (name !== this.me.name && !(await import('./handle')).nameClean(name)) throw new BackendError('name_invalid')
     this.me = {
       ...this.me,
       name: name.trim(),

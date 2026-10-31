@@ -5,7 +5,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { BookUser, ChevronRight, Megaphone, Settings, Sparkles, SquarePlus } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode } from '@/lib/format'
-import { handleSpelling, namePlain } from '@/lib/handle'
+import { handleSpelling, nameClean } from '@/lib/handle'
 import { retryImport } from '@/lib/retry-import'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
@@ -136,7 +136,8 @@ function EditProfile({ open, onClose, onLooks, onMegaphone, onContacts }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  const plainName = namePlain(name)
+  // Checked when changed, as the server (111): an older name with an emoji doesn't block saving the rest.
+  const plainName = name === me.name || nameClean(name)
   const wanted = handleSpelling(handle)
   const handleChanged = !!wanted && wanted !== me.handle
   // Another ID inside the 30 days needs a paid ID change (a new spelling of the same one is free).

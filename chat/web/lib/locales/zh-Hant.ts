@@ -579,7 +579,7 @@ const zhHant: Dict = {
   'error.handle_reserved': '此 ID 已被保留，請換一個',
   'error.handle_taken': '此 ID 已有人使用，請換一個',
   'error.handle_cooldown': 'ID 每 30 天只能變更一次',
-  'error.name_invalid': '請用一般文字填寫名字：不能使用花俏字型的字母（可以用表情符號）',
+  'error.name_invalid': '請用一般文字填寫名字：不能使用花俏字型的字母',
   'error.not_owned': '你還沒有這個裝扮',
   'error.chat_closed': '此聊天已結束。將對方加為好友就能繼續聊',
   'error.generic': '出了點問題，請重試',

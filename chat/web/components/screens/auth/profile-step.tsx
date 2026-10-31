@@ -5,7 +5,7 @@ import { Info } from 'lucide-react'
 import type { Gender, Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { ageFromBirthDate, errorCode, maxBirthDate, minBirthDate } from '@/lib/format'
-import { handleSpelling, namePlain, suggestHandle } from '@/lib/handle'
+import { handleSpelling, nameClean, suggestHandle } from '@/lib/handle'
 import { COMMUNITY_RULES } from '@/lib/config'
 import { useI18n } from '@/components/i18n'
 import { HandleField, handleUsable, useHandleCheck } from '@/components/looks/handle-field'
@@ -46,7 +46,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
 
   const age = birthDate ? ageFromBirthDate(birthDate) : null
   const ageError = birthDate && (age === null || age < 18) ? t('pf.under18') : null
-  const plainName = namePlain(name)
+  const plainName = nameClean(name)
   // An empty ID keeps the free one the server gives; one being checked is judged by set_handle.
   const handleOk = !handle.trim() || handleState === 'checking' || handleUsable(handleState)
   // A profile photo is required to start (the owner, 2026-10-26).

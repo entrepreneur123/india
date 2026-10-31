@@ -579,7 +579,7 @@ const zhHans: Dict = {
   'error.handle_reserved': '此 ID 已被保留，请换一个',
   'error.handle_taken': '此 ID 已被占用，请换一个',
   'error.handle_cooldown': 'ID 每 30 天只能更改一次',
-  'error.name_invalid': '请用普通文字填写名字：不能使用花式字体的字母（可以用表情）',
+  'error.name_invalid': '请用普通文字填写名字：不能使用花式字体的字母',
   'error.not_owned': '你还没有这个装扮',
   'error.chat_closed': '此聊天已结束。添加对方为好友即可继续聊',
   'error.generic': '出了点问题，请重试',

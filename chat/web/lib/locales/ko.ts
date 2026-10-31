@@ -579,7 +579,7 @@ const ko: Dict = {
   'error.handle_reserved': '예약된 아이디예요. 다른 아이디를 골라 주세요',
   'error.handle_taken': '이미 사용 중인 아이디예요. 다른 아이디를 골라 주세요',
   'error.handle_cooldown': '아이디는 30일에 한 번 바꿀 수 있어요',
-  'error.name_invalid': '이름에는 꾸밈 글자를 쓸 수 없어요. 일반 글자로 써 주세요(이모지는 괜찮아요)',
+  'error.name_invalid': '이름에는 꾸밈 글자를 쓸 수 없어요. 일반 글자로 써 주세요',
   'error.not_owned': '아직 갖고 있지 않은 꾸미기 아이템이에요',
   'error.chat_closed': '이 채팅은 끝났어요. 대화를 이어 가려면 친구로 추가해 주세요',
   'error.generic': '문제가 생겼어요. 다시 시도해 주세요',

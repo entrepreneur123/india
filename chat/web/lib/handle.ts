@@ -141,3 +141,14 @@ export function namePlain(name: string): boolean {
   }
   return true
 }
+
+/**
+ * name_clean() (111) for a name: letters of any language with their marks, digits, single spaces and . , _ - ' ’
+ * (O'Neil, Abd-Allah, D’Souza); no emoji, symbols (★ ꧁ ♥) or blank fillers (ㅤ), and namePlain's fancy fonts (the owner,
+ * 2026-10-31: no fancy fonts or special characters, as Instagram's IDs). Checked as saved: trimmed, spaces collapsed.
+ * The server, without Unicode classes in its regexes, blocks the symbol ranges instead; this is the stricter side.
+ */
+export function nameClean(name: string): boolean {
+  const n = name.normalize('NFC').trim().replace(/\s+/g, ' ')
+  return /^[\p{L}\p{M}\p{Nd}._,'’\- \u200C\u200D]*$/u.test(n) && !/[\u115F\u1160\u3164\uFFA0]/.test(n) && namePlain(n)
+}

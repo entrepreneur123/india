@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { handleProblem, handleReserved, handleSpelling, handleValid, namePlain, suggestHandle } from '../handle.ts'
+import { handleProblem, handleReserved, handleSpelling, handleValid, nameClean, namePlain, suggestHandle } from '../handle.ts'
 
 // The same examples as server/test_handles_looks.sql: the app and the server must agree on every one.
 
@@ -66,4 +66,12 @@ test('a suggested ID from a name: its words in lower case, joined by "_", always
   const long = suggestHandle('Maximiliano Alessandro Rodriguez', '4821')
   assert.equal(handleValid(long), true)
   assert.ok(long.endsWith('_4821') && [...long].length <= 24, long)
+})
+
+test('names: letters of any language, digits and . , _ - \' ’; no emoji, symbols, blank fillers or fancy fonts (111)', () => {
+  const ok = ['Riya', 'माँ', 'অমিত', 'ਪੰਜਾਬ', 'தமிழ்', 'ष्ट्र', 'مهدی‌زاده', 'محمد', 'José', 'Nguyễn Văn An', '王小明', '田中々', 'Ana_2',
+    "D'Souza", 'D’Souza', 'Abd-Allah', 'J. R.', 'Riya, K', '  Riya   Sen ', 'Ромео']
+  const bad = ['Riya😀', '★Riya★', '꧁Riya꧂', 'ㅤ', 'Riya♥', 'Riya!', '#riya', 'Riya@', '𝓡𝓲𝔂𝓪', 'Ｒｉｙａ', 'ʀɪʏᴀ', 'Riya🇮🇳', '⠀', '༺Riya༻', 'R‍iㅤ']
+  for (const n of ok) assert.equal(nameClean(n), true, n)
+  for (const n of bad) assert.equal(nameClean(n), false, n)
 })

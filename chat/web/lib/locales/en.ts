@@ -578,7 +578,7 @@ const en = {
   'error.handle_reserved': 'That ID is reserved. Try another one',
   'error.handle_taken': 'That ID is taken. Try another one',
   'error.handle_cooldown': 'You can change your ID once every 30 days',
-  'error.name_invalid': 'Use plain letters in your name. Fancy-font letters aren’t allowed (emoji are fine)',
+  'error.name_invalid': 'Use plain letters in your name. Fancy-font letters aren’t allowed',
   'error.not_owned': 'You don’t own this look yet',
   'error.chat_closed': 'This chat has ended. Add them as a friend to keep talking',
   'error.generic': 'Something went wrong. Please try again',

@@ -579,7 +579,7 @@ const sw: Dict = {
   'error.handle_reserved': 'Kitambulisho hiki kimehifadhiwa. Tafadhali chagua kingine',
   'error.handle_taken': 'Kitambulisho hiki kimeshachukuliwa. Tafadhali chagua kingine',
   'error.handle_cooldown': 'Unaweza kubadilisha kitambulisho chako mara moja kila siku 30',
-  'error.name_invalid': 'Andika jina lako kwa herufi za kawaida: herufi za fonti za mapambo haziruhusiwi (emoji zinaruhusiwa)',
+  'error.name_invalid': 'Andika jina lako kwa herufi za kawaida: herufi za fonti za mapambo haziruhusiwi',
   'error.not_owned': 'Bado huna mtindo huu',
   'error.chat_closed': 'Gumzo hili limeisha. Mwongeze kama rafiki ili mendelee kuzungumza',
   'error.generic': 'Hitilafu imetokea. Tafadhali jaribu tena',
