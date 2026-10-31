@@ -23,6 +23,12 @@
    "severity": "low",
    "detail": "Maharashtra Vaibhavlaxmi 2026-10-30: still a PDF link (OCR tries 2)",
    "first_seen": "2026-10-31T00:41+00:00"
+  },
+  "mh-name:2026-10-30_MH_LIST-OF-AUTHORIZED-LOTTERY-SCHEMES-PERIOD-DT-02-011-2026-TO-08-011-2026": {
+   "kind": "wrong",
+   "severity": "medium",
+   "detail": "Maharashtra entry 2026-10-30 does not look like a game: 'List of Authorized Lottery schemes Period Dt 02/011/2026 to '",
+   "first_seen": "2026-10-31T06:54+00:00"
   }
  },
  "resolved": {
