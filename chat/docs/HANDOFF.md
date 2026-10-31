@@ -23,7 +23,7 @@
 
 ## 2. 기술 / 운영 레시피
 - **웹:** `chat/web` — Next.js 16 static export, SWR, Tailwind v4, motion. 데모 백엔드(`lib/mockBackend.ts`)와 실서버(`lib/supabaseBackend.ts`)가 같은 `Backend` 인터페이스(`lib/backend.ts`)를 구현한다. 둘 다 고친다.
-- **Supabase:** project `dgynsckrqgnpyyvqekzi`. 마이그레이션은 `mcp__Supabase__apply_migration`(name = 파일명), 검증은 `execute_sql`.
+- **Supabase:** project `dgynsckrqgnpyyvqekzi` (무료 요금제 — 실시간 동시접속 약 200 상한). 107부터 1:1·랜덤 채팅·매칭·그룹·알림은 Broadcast(chat:<match>, user:<uid>), 방 채팅 줄만 Postgres Changes(차단 필터 때문). 마이그레이션은 `mcp__Supabase__apply_migration`(name = 파일명), 검증은 `execute_sql`.
   - SQL 테스트 패턴: `begin; create temp table r(k text, v text) on commit drop; do $$ … set_config('request.jwt.claims', json_build_object('sub',uid,'role','authenticated')::text, true) … $$; select * from r; rollback;`
   - 주의: savepoint를 롤백하면 결과 행도 같이 지워진다.
 - **배포(Vercel):** `mcp__Vercel__create_deployment`

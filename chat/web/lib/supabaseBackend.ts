@@ -249,6 +249,8 @@ type VoiceMessageRow = {
   payload: Record<string, unknown> | null; sender_name: string; sender_gender: string | null; sender_age: number | null
   sender_photo: string | null; sender_country: string | null; created_at: string
 }
+/** A listener on my private topic (107): its event, and what runs on each (re)connect. */
+type UserSub = { event: 'wake' | 'g' | 'n'; on: (payload: Record<string, unknown>) => void; up?: () => void }
 /** What the voice methods need from an open subscription (subscribeVoice). */
 type VoiceLive = {
   room: VoiceRoom | null
@@ -555,12 +557,40 @@ export class SupabaseBackend implements Backend {
     await this.rpc('cancel_search')
   }
 
+  /**
+   * 107: my private topic user:<me> carries a new match ('wake'), my groups' lines ('g') and the notification count
+   * ('n'), sent by triggers. One channel for all the screens listening; `up` runs each time it (re)connects.
+   */
+  private userTopic: { channel: RealtimeChannel; subs: Set<UserSub> } | null = null
+  private onUserTopic(event: UserSub['event'], on: UserSub['on'], up?: () => void): () => void {
+    if (!this.userTopic) {
+      const subs = new Set<UserSub>()
+      let channel = this.client.channel(`user:${this.uid}`, { config: { private: true } })
+      for (const e of ['wake', 'g', 'n']) {
+        channel = channel.on('broadcast', { event: e }, ({ payload }) => {
+          for (const x of subs) if (x.event === e) x.on(payload as Record<string, unknown>)
+        })
+      }
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') for (const x of subs) x.up?.()
+      })
+      this.userTopic = { channel, subs }
+    }
+    const topic = this.userTopic
+    const sub: UserSub = { event, on, up }
+    topic.subs.add(sub)
+    if (up && topic.channel.state === 'joined') queueMicrotask(up) // already connected: catch up as a new channel would
+    return () => {
+      topic.subs.delete(sub)
+      if (topic.subs.size || this.userTopic !== topic) return
+      this.userTopic = null
+      void this.client.removeChannel(topic.channel)
+    }
+  }
+
   /** The waiting side of a new match is user_a: its row appearing means "ask again now" (no 2 s wait). */
   matchSignals(on: () => void): () => void {
-    const channel = this.client.channel(`match-wake-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'matches', filter: `user_a=eq.${this.uid}` }, () => on())
-      .subscribe()
-    return () => void this.client.removeChannel(channel)
+    return this.onUserTopic('wake', () => on())
   }
 
   /** Null when the match is gone (the other person deleted their account). */
@@ -628,15 +658,16 @@ export class SupabaseBackend implements Backend {
     }
 
     // One bad record (or a failed media link) must not stop the chat: skip it, the re-sync retries.
-    const channel = this.client.channel(`match-${matchId}-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `match_id=eq.${matchId}` },
-        (p) => void this.toMessage(p.new as MessageRow, me).then((message) => {
+    // 107: the match's private topic (its two people), sent by triggers.
+    for (const c of this.client.getChannels()) if (c.topic === `realtime:chat:${matchId}`) void this.client.removeChannel(c)
+    const channel = this.client.channel(`chat:${matchId}`, { config: { private: true } })
+      .on('broadcast', { event: 'msg' },
+        ({ payload }) => void this.toMessage(payload as MessageRow, me).then((message) => {
           if (message.fromMe && this.echoed.size < 500) this.echoed.add(message.id)
           if (!message.fromMe) partnerAlive()
           emit({ type: 'message', message })
         }, () => undefined))
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` },
-        (p) => onMatch(p.new as MatchRow))
+      .on('broadcast', { event: 'match' }, ({ payload }) => onMatch(payload as MatchRow))
       .subscribe((status) => {
         healthy = status === 'SUBSCRIBED'
         if (healthy) void resync()
@@ -1307,15 +1338,12 @@ export class SupabaseBackend implements Backend {
 
   watchGroups(groupIds: string[], onLine: (groupId: string, line: GroupLine) => void) {
     if (!groupIds.length) return () => undefined
-    // One channel for all my groups (Postgres Changes, members-only by RLS); at most 100 ids in an `in` filter.
-    const channel = this.client.channel(`groups-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'group_messages', filter: `group_id=in.(${groupIds.slice(0, 100).join(',')})` },
-        (p) => {
-          const r = p.new as GroupRow & { group_id: string }
-          onLine(r.group_id, toGroupLine(r))
-        })
-      .subscribe()
-    return () => void this.client.removeChannel(channel)
+    // 107: every group line reaches each member on their own topic; these groups' are taken.
+    const ids = new Set(groupIds)
+    return this.onUserTopic('g', (p) => {
+      const r = p as GroupRow & { group_id: string }
+      if (ids.has(r.group_id)) onLine(r.group_id, toGroupLine(r))
+    })
   }
 
   async inviteToRoom(roomId: string, userId: string) {
@@ -1366,12 +1394,8 @@ export class SupabaseBackend implements Backend {
   }
 
   inboxSignals(on: () => void): () => void {
-    const channel = this.client.channel(`inbox-${crypto.randomUUID()}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${this.uid}` }, () => on())
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') on() // anything that arrived while the connection was down
-      })
-    return () => void this.client.removeChannel(channel)
+    // 107: a signal per change on my topic; on (re)connecting too, for anything that arrived while it was down.
+    return this.onUserTopic('n', () => on(), on)
   }
 
   presencePing(online: boolean) {
