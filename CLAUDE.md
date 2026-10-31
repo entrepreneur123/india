@@ -37,6 +37,13 @@ back another way, a check in `pipeline/lottery_pipeline/watch.py`.
   blocks finishing with uncommitted/unpushed work, a failing `harness full` on changed code, or unhandled incidents.
 - A new kind of miss gets a check in the harness or the watcher, not only a fix.
 
+## Operations session (owner's order, 31-10-2026)
+A separate child session runs operations so this one stays free for app/site work. Every day it posts the
+owner's report (`python3 tools/daily_report.py`: draws on time vs. watch.py DUE, Maharashtra read/PDF, Search
+Console, visitors from Cloudflare Web Analytics in `seo:cf/latest.md`, incidents, failed runs, live check;
+revenue is not readable: no AdSense API) and works the incident and Search Console loops above.
+Both sessions push to the same branch: always `git pull --rebase` before work.
+
 ## Other standing rules
 - Report to the owner in Korean. Verify thoroughly, no hallucination; state what was not verified.
 - Develop and push only on branch `claude/gallant-lovelace-ynoa63`.

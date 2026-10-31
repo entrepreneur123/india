@@ -38,6 +38,8 @@ def tests_for(path: pathlib.Path) -> list[tuple[pathlib.Path, list[str]]]:
         return [(PIPE, ["python3", "-m", "pytest", "-q", "-x", str(own) if own.exists() else "tests"])]
     if rel.startswith("pipeline/tests/"):
         return [(PIPE, ["python3", "-m", "pytest", "-q", "-x", str(path)])]
+    if rel.startswith(("tools/", ".claude/hooks/")):
+        return [(ROOT, ["python3", "-m", "pytest", "-q", "-x", "tools"])]
     if rel.startswith("web/"):
         return [(WEB, ["python3", "-m", "pytest", "-q", "-x", "test_site.py"])]
     return []
@@ -126,7 +128,7 @@ def build_smoke() -> list[str]:
 def full() -> list[str]:
     problems = []
     for cwd, cmd in ((PIPE, ["python3", "-m", "pytest", "-q"]), (WEB, ["python3", "-m", "pytest", "-q", "test_site.py"]),
-                     (ROOT, ["python3", "-m", "pytest", "-q", "tools/test_hooks.py"])):
+                     (ROOT, ["python3", "-m", "pytest", "-q", "tools"])):
         ok, out = run(cmd, cwd, timeout=900)
         if not ok:
             problems.append(f"{cwd.name} tests failed:\n{out}")
