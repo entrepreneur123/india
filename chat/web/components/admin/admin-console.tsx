@@ -1,7 +1,7 @@
 'use client'
 
 // The moderation console at /admin (migration 021): the reports queue with evidence, ban / unban, the auto
-// nudity flags, and a dashboard. Every action is checked and written down by the server (admin_* functions);
+// nudity flags, a person found by @ID, name or phone and banned without a report (112), and a dashboard. Every action is checked and written down by the server (admin_* functions);
 // this page only shows what they return. Labels are Korean with the English term where it helps.
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -139,19 +139,85 @@ function SignIn({ client, done }: { client: SupabaseClient; done: () => void }) 
 }
 
 function Console({ client }: { client: SupabaseClient }) {
-  const [tab, setTab] = useState<'reports' | 'dashboard'>('reports')
+  const [tab, setTab] = useState<'reports' | 'users' | 'dashboard'>('reports')
   return (
     <main className="mx-auto max-w-7xl p-4 sm:p-6">
       <nav className="mb-4 flex gap-1" aria-label="콘솔">
-        {([['reports', '신고 (Reports)'], ['dashboard', '대시보드 (Dashboard)']] as const).map(([k, label]) => (
+        {([['reports', '신고 (Reports)'], ['users', '사용자 (Users)'], ['dashboard', '대시보드 (Dashboard)']] as const).map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} aria-current={tab === k ? 'page' : undefined}
             className={`rounded-full px-4 py-1.5 text-sm font-medium ${tab === k ? 'bg-primary-soft text-primary-text' : 'text-muted-foreground hover:bg-muted'}`}>
             {label}
           </button>
         ))}
       </nav>
-      {tab === 'reports' ? <Reports client={client} /> : <DashboardView client={client} />}
+      {tab === 'reports' ? <Reports client={client} /> : tab === 'users' ? <Users client={client} /> : <DashboardView client={client} />}
     </main>
+  )
+}
+
+type Found = Card & { handle: string; phone_end: string | null }
+
+/** 112: find a person by @ID, name, phone number or id and ban them without a report (a photo seen in passing). */
+function Users({ client }: { client: SupabaseClient }) {
+  const [q, setQ] = useState('')
+  const [list, setList] = useState<Found[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [note, setNote] = useState('')
+  const [days, setDays] = useState('7')
+  const urls = useSigned(client, list?.map((c) => c.photo_path) ?? [])
+  const search = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    const { data, error: err } = await client.rpc('admin_find', { p_query: q })
+    if (err) return setError(errorOf(err))
+    setError(null)
+    setList(data as Found[])
+  }
+  const act = async (fn: string, args: Record<string, unknown>, confirmText: string) => {
+    if (!window.confirm(confirmText)) return
+    setBusy(true)
+    const { error: err } = await client.rpc(fn, { ...args, p_note: note.trim() || null })
+    setBusy(false)
+    if (err) return setError(errorOf(err))
+    setNote('')
+    await search()
+  }
+  return (
+    <section className="flex flex-col gap-3">
+      <form onSubmit={(e) => void search(e)} className="flex flex-wrap gap-2">
+        <input className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder="@아이디, 이름, 전화번호 또는 id"
+          value={q} onChange={(e) => setQ(e.target.value)} aria-label="사용자 찾기" />
+        <ActionButton type="submit" disabled={q.trim().length < 2}>찾기</ActionButton>
+      </form>
+      <div className="flex flex-wrap items-center gap-2">
+        <input className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm" placeholder="정지 사유 메모 (선택, 500자 이내)"
+          maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} aria-label="메모" />
+        <select className="rounded-md border border-border bg-background px-2 py-2 text-sm" value={days} onChange={(e) => setDays(e.target.value)} aria-label="정지 기간">
+          <option value="1">1일</option><option value="7">7일</option><option value="30">30일</option>
+          <option value="365">1년</option><option value="forever">영구</option>
+        </select>
+      </div>
+      {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
+      {list?.length === 0 && <p className="text-sm text-muted-foreground">찾은 사람이 없습니다.</p>}
+      <ul className="grid gap-3 sm:grid-cols-2">
+        {list?.map((c) => {
+          const ban = bannedText(c.banned_until)
+          const span = days === 'forever' ? '영구' : `${days}일`
+          return (
+            <li key={c.id} className="flex flex-col gap-2">
+              <Person title={`@${c.handle}${c.phone_end ? ` · 전화 …${c.phone_end}` : ''}`} c={c} url={c.photo_path ? urls[c.photo_path] : undefined} ban={ban} />
+              <div className="flex gap-2">
+                <ActionButton danger disabled={busy}
+                  onClick={() => void act('admin_ban', { p_user: c.id, p_days: days === 'forever' ? null : Number(days) }, `${c.name} 님을 ${span} 정지할까요? 전화번호도 기억됩니다.`)}>
+                  {span} 정지 (Ban)
+                </ActionButton>
+                {ban && <ActionButton disabled={busy} onClick={() => void act('admin_unban', { p_user: c.id }, '정지를 해제할까요?')}>정지 해제</ActionButton>}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
   )
 }
 
