@@ -1121,11 +1121,12 @@ export class SupabaseBackend implements Backend {
   }
 
   async friendActivity(): Promise<FriendActivity[]> {
-    const rows = await this.rpc<{ id: string; presence: string; status: string | null; status_at: string | null }[]>('friend_activity')
+    const rows = await this.rpc<{ id: string; presence: string; status: string | null; status_at: string | null; room_id: string | null; room_private: boolean | null }[]>('friend_activity2')
     const kinds: Presence[] = ['offline', 'online', 'matching', 'chat', 'room']
     return rows.map((r) => ({
       id: r.id, presence: kinds.includes(r.presence as Presence) ? (r.presence as Presence) : 'online',
       status: r.status, statusAt: r.status_at ? time(r.status_at) : null,
+      roomId: r.room_id && !r.room_private ? r.room_id : null,
     }))
   }
 

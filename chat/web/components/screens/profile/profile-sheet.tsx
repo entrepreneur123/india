@@ -48,7 +48,7 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const backend = useBackend()
   const toast = useToast()
   const { mutate } = useSWRConfig()
-  const { me, openThread, trust: myTrust } = useApp()
+  const { me, openThread, openVoice, trust: myTrust } = useApp()
   const { t } = useI18n()
   const isMe = userId === me.id
   const { data: profile, isLoading, error: loadError, mutate: reload } = useSWR(isMe ? null : ['profile', userId], () => backend.profile(userId))
@@ -58,6 +58,9 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
   const [unfriendOpen, setUnfriendOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
   const social = useSWR(isMe ? null : socialKey(userId), () => backend.profileSocial(userId))
+  // The friends panel's reading (one cache); phones read it here when a friend's profile opens.
+  const { data: activity } = useSWR(isMe ? null : 'friend-activity', () => backend.friendActivity(), { dedupingInterval: 30_000 })
+  const friendRoom = activity?.find((a) => a.id === userId)?.roomId ?? null
   const like = async () => {
     const was = social.data
     if (!was) return
@@ -173,6 +176,11 @@ function ProfileBody({ userId, matchId, onClose }: { userId: string; matchId: st
                   {state === 'friends' || social.data?.canMessage ? (
                     <Button className={ACTION} onClick={() => openThread(shown)}>
                       {t('profile.message')}
+                    </Button>
+                  ) : null}
+                  {friendRoom ? ( // 115: a friend in a room I may join (the panel offers the same)
+                    <Button className={ACTION} onClick={() => openVoice(friendRoom)}>
+                      {t('join.submit')}
                     </Button>
                   ) : null}
                   <Button

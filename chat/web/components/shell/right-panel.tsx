@@ -31,7 +31,7 @@ const RANK: Record<Presence, number> = { online: 0, matching: 1, chat: 1, room: 
 
 export function RightPanel({ className }: { className?: string }) {
   const backend = useBackend()
-  const { t, me, myPresence, openProfile, openChat, badges } = useApp()
+  const { t, me, myPresence, openProfile, openChat, openVoice, badges } = useApp()
   const preview = useRoomPreview()
   const { num } = useI18n()
   const { data: friends } = useSWR('friends', () => backend.friends())
@@ -45,13 +45,19 @@ export function RightPanel({ className }: { className?: string }) {
   })
   const [offlineOpen, setOfflineOpen] = useState(false)
 
-  const presenceOf = new Map(activity?.map((a) => [a.id, a.presence]))
+  const activityOf = new Map(activity?.map((a) => [a.id, a]))
   const friendList = friends
     ?.filter((f) => f.state === 'friends')
-    .map((f) => ({ ...f, presence: presenceOf.get(f.profile.id) ?? ('offline' as Presence) }))
+    .map((f) => ({ ...f, presence: activityOf.get(f.profile.id)?.presence ?? ('offline' as Presence), roomId: activityOf.get(f.profile.id)?.roomId ?? null }))
     .sort((a, b) => RANK[a.presence] - RANK[b.presence] || a.profile.name.localeCompare(b.profile.name)) ?? null
   const online = friendList?.filter((f) => f.presence !== 'offline') ?? []
   const offline = friendList?.filter((f) => f.presence === 'offline') ?? []
+
+  const joinFriendRoom = (id: string) => {
+    const r = rooms?.find((x) => x.id === id)
+    if (r) preview.open(r)
+    else openVoice(id)
+  }
 
   const row = (f: NonNullable<typeof friendList>[number]) => (
     <li key={f.profile.id} className="group flex items-center gap-3 rounded-xl p-2 transition-colors duration-150 hover:bg-muted">
@@ -69,6 +75,11 @@ export function RightPanel({ className }: { className?: string }) {
         </span>
       </button>
       <CountBadge n={f.threadId ? badges?.chats[f.threadId] ?? 0 : 0} />
+      {f.roomId ? ( // 115: into the room they are in, through the same preview as the list (a private one shows no button)
+        <Button size="sm" variant="secondary" className="h-8 px-2.5 text-xs" onClick={() => joinFriendRoom(f.roomId!)}>
+          {t('join.submit')}
+        </Button>
+      ) : null}
       <Button size="icon-sm" variant="ghost" onClick={() => openChat(f.profile)} aria-label={t('panel.message', { name: f.profile.name })}>
         <MessageCircle className="size-4.5" aria-hidden />
       </Button>

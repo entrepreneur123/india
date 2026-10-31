@@ -970,11 +970,12 @@ export class MockBackend implements Backend {
   async friendActivity(): Promise<FriendActivity[]> {
     const feed = await this.feedChunk()
     const presence = this.presence
+    const demoRoom = (await (await this.voice()).list())[0]?.id ?? null // the demo friend 'in a room' is in the first one
     const changed: Record<string, number> = { u_riya: 20 * 60_000, u_arjun: 2 * HOUR, u_sofia: 5 * HOUR, u_yuki: 2 * DAY }
     return [...this.friendMap].flatMap(([id, state]) => {
       if (state !== 'friends') return []
       const status = feed.style(id).status || null
-      return [{ id, presence: presence[id] ?? 'offline', status, statusAt: status && changed[id] ? Date.now() - changed[id] : null }]
+      return [{ id, presence: presence[id] ?? 'offline', status, statusAt: status && changed[id] ? Date.now() - changed[id] : null, roomId: presence[id] === 'room' ? demoRoom : null }]
     })
   }
 

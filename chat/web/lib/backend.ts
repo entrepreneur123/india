@@ -391,6 +391,8 @@ export interface FriendActivity {
   presence: Presence
   status: string | null
   statusAt: number | null
+  /** 115: the room they are in ('room' presence), to join it from the friends list; null when it is private. */
+  roomId: string | null
 }
 
 /** 066 gift_check: whether a friend can get this look ('owned': they have it; 'not_friends'; 'bad_item'). */

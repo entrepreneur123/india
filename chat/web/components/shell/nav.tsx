@@ -39,7 +39,7 @@ const ITEMS: NavItem[] = [
 ]
 
 export function Sidebar({ className }: { className?: string }) {
-  const { tab, setTab, t, me, badges, openInbox } = useApp()
+  const { tab, setTab, t, me, badges, openInbox, myPresence } = useApp()
   const { st } = useSocialT()
   const inboxCount = badges?.inbox ?? 0
   const { mutate } = useSWRConfig()
@@ -51,11 +51,14 @@ export function Sidebar({ className }: { className?: string }) {
       )}
       aria-label={t('nav.main')}
     >
-      {/* The mark goes home (Random), out of any open chat, and reads everything shown again (34), like the logo of any
-          app. Not a page reload: a room or a random chat in progress stays connected. */}
+      {/* The mark goes home (Random), out of any open chat, like the logo of any site: a reload when nothing is live,
+          else everything shown read again, so a room or a random chat in progress stays connected (34). */}
       <button
         type="button"
         onClick={() => {
+          // Nothing live: a real reload, as a site's logo does (fresh code and data). In a room, a random chat or a
+          // search: home with every list read again, so what is live stays connected.
+          if (myPresence === 'online') return location.assign('/')
           setTab('random')
           void mutate(() => true)
         }}
