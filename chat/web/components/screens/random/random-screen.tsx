@@ -210,9 +210,8 @@ export function RandomScreen({ active }: { active: boolean }) {
 
   // Searching only while someone is looking: a hidden browser tab pauses the polling, and after 60 s hidden the
   // search is cancelled (so nobody gets matched with a person who walked away).
-  useEffect(
-    () =>
-      onPageVisibility((shown) => {
+  useEffect(() => {
+    const off = onPageVisibility((shown) => {
         if (!shown) {
           if (!searching.current) return
           clearTimeout(timer.current)
@@ -241,9 +240,16 @@ export function RandomScreen({ active }: { active: boolean }) {
           clearTimeout(timer.current)
           tickRef.current?.()
         }
-      }),
-    [cancelMatching, toast, t],
-  )
+      })
+    // Closing the tab mid-search leaves the queue at once (119; a plain request may not survive the page). A page that
+    // only went to the background is put back by its next poll.
+    const onPageHide = () => searching.current && void backend.cancelSearch(true)
+    window.addEventListener('pagehide', onPageHide)
+    return () => {
+      off()
+      window.removeEventListener('pagehide', onPageHide)
+    }
+  }, [backend, cancelMatching, toast, t])
 
   // Leaving the page mid-search takes us out of the queue (only then: after sign-out there is no session to ask with).
   useEffect(

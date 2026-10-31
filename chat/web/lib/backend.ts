@@ -853,7 +853,8 @@ export interface Backend {
    */
   /** `anon` (070): meet only people who chose anonymous chat too; the partner comes back as `anon`. */
   findMatch(target: Target, lang?: string, countries?: readonly string[]): Promise<Match | null>
-  cancelSearch(): Promise<void>
+  /** `keepalive` (119): from pagehide, a request that outlives the page. */
+  cancelSearch(keepalive?: boolean): Promise<void>
   /** While searching: called when the server pairs us, so the UI can ask again at once. Returns the stop function. */
   matchSignals(on: () => void): () => void
   /** Ends a match the user never saw (search cancelled while it was being made), once the exit lock allows. */

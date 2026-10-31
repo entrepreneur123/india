@@ -49,9 +49,9 @@
 ## E. 작업 순서와 복잡도
 | 순서 | 작업 | 복잡도 | 검증 |
 |---|---|---|---|
-| 1 | 118: voice_rooms 컬럼 grant(비밀번호 숨김) | 낮음 | REST로 B가 못 읽는지(leak2.mjs) |
-| 2 | 음성: `dtx:false`(방·통화), P2P에 RED+48k+FEC, relay 플래그 조건 축소 | 낮음 | voice-lab 재측정 + 라이브 통화 e2e |
-| 3 | 119: 청소부 cron(벨·열린 매치·빈 방·멤버 행) + `end_video`→sync + pagehide cancel_search | 중간 | SQL 테스트(`test_*` 패턴) + 두 계정 e2e |
+| 1 | **완료** 118: 비밀번호를 `voice_room_passwords`로(함수만 읽음) | 낮음 | REST로 B가 못 읽음(leak2.mjs), verify118 12/12 |
+| 2 | **완료** 음성: `dtx:false`(방·통화), P2P에 RED+48k+FEC, relay 플래그 1일 | 낮음 | Chromium 루프백에서 RED 협상·86 kbps 확인(sdp-full.mjs), 프로덕션 통화 e2e |
+| 3 | **완료** 119: 청소부 cron 30초(벨 60초·양쪽 5분 부재 매치·방 settle·멤버 행) + pagehide cancel_search + match_card2 재시도. `end_video`→LiveKit 강제 퇴장은 미룸(P2P 기본, 상대 앱 60초 resync) | 중간 | 프로덕션 픽스처 3종 + 첫 실행이 유령 1·3·81 정리 |
 | 4 | 120: rate_ok + find_match4·heartbeat·friend 재요청·party 검증 | 중간 | SQL 테스트 + 봇 떼 재실행 |
 | 5 | 운영: CI 테스트, purge/cron 마이그레이션화, Sentry 알림, 업타임 체크 | 낮음 | CI green, 알림 테스트 |
 | 6 | 타이핑 채널 비공개화, log_events_anon 제한, link-meta 제한 DB화 | 중간 | e2e |

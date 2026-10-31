@@ -535,8 +535,10 @@ export class SupabaseBackend implements Backend {
     }
     if (!id) return null
     try {
-      // One request for the partner's card; their posts load only if the profile is opened (it fetches its own).
-      const rows = await this.rpc<CardRow[]>('match_card2', { p_match: id })
+      // One request for the partner's card (a second try before giving the match up: one failed read must not end a
+      // good chat); their posts load only if the profile is opened (it fetches its own).
+      const card = () => this.rpc<CardRow[]>('match_card2', { p_match: id })
+      const rows = await card().catch(card)
       const c = rows?.[0]
       if (!c) throw new BackendError('not_found')
       const partner = await this.toProfile(c, [])
@@ -558,8 +560,20 @@ export class SupabaseBackend implements Backend {
     }, 5_500)
   }
 
-  async cancelSearch() {
+  async cancelSearch(keepalive = false) {
+    if (keepalive) return this.beacon('cancel_search', {})
     await this.rpc('cancel_search')
+  }
+
+  /** A request that outlives the page (pagehide): out of the queue, a room or presence as the tab closes. */
+  private beacon(fn: string, body: Record<string, unknown>) {
+    if (!this.accessToken) return
+    void fetch(`${this.url}/rest/v1/rpc/${fn}`, {
+      method: 'POST',
+      keepalive: true,
+      headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch(() => undefined)
   }
 
   /**
@@ -1411,15 +1425,8 @@ export class SupabaseBackend implements Backend {
   }
 
   presencePing(online: boolean) {
-    if (online) return void this.rpc('presence_ping', { p_online: true }).catch(() => undefined)
-    // Closing the app: a request that outlives the page (as leave_voice).
-    if (this.accessToken)
-      void fetch(`${this.url}/rest/v1/rpc/presence_ping`, {
-        method: 'POST',
-        keepalive: true,
-        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_online: false }),
-      }).catch(() => undefined)
+    if (online) void this.rpc('presence_ping', { p_online: true }).catch(() => undefined)
+    else this.beacon('presence_ping', { p_online: false })
   }
 
   // ---- megaphone (100) ----
@@ -2368,13 +2375,7 @@ export class SupabaseBackend implements Backend {
     // Closing the tab leaves at once (a listener's seat and count free up); the host keeps their 2 minutes
     // to come back after a reload.
     const onPageHide = () => {
-      if (!joined || over || live.room?.hostId === me || !this.accessToken) return
-      void fetch(`${this.url}/rest/v1/rpc/leave_voice`, {
-        method: 'POST',
-        keepalive: true,
-        headers: { apikey: this.anonKey, Authorization: `Bearer ${this.accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_room: roomId }),
-      }).catch(() => undefined)
+      if (joined && !over && live.room?.hostId !== me) this.beacon('leave_voice', { p_room: roomId })
     }
     window.addEventListener('pagehide', onPageHide)
 
