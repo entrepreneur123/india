@@ -78,9 +78,10 @@ export async function joinCall(
       videoCodec: videoCodecFor(navigator.userAgent, navigator.maxTouchPoints),
       simulcast: true,
       videoEncoding: VideoPresets.h720.encoding,
-      // Opus mono, 48 kbps cap; DTX (silence costs nothing) and RED (redundant packets on lossy mobile networks).
+      // Opus mono, 48 kbps cap, RED (a redundant copy of each frame, for lossy mobile networks). No DTX: with RED on,
+      // DTX made the receiver cut 300 ms out of every 20 s on a clean path (PESQ 2.4 vs 3.9; docs/SCALE_UP.md §4).
       audioPreset: AudioPresets.music,
-      dtx: true,
+      dtx: false,
       red: true,
       forceStereo: false,
     },

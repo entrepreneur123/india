@@ -36,7 +36,8 @@ export function deviceProblem(err: unknown): DeviceProblem {
 }
 
 const RELAY_KEY = 'yaari_relay_until'
-const RELAY_MS = 7 * 86_400_000
+/** A day, not a week (2026-10-31): a flag set by one bad hour sent every friend call through the paid server path. */
+const RELAY_MS = 86_400_000
 /** Media paths broken this many times in one session: this network loses UDP (Gulf carriers throttle it). */
 export const RELAY_AFTER = 2
 
@@ -63,6 +64,35 @@ export function preferRelay(now = Date.now()) {
 
 /** For room.connect: relay only, still with the server's own TURN list (LiveKit fills iceServers when none are given). */
 export const connectOptions = () => (relayFirst() ? { rtcConfig: { iceTransportPolicy: 'relay' as const } } : undefined)
+
+/**
+ * Opus as the rooms publish it (lib/voice-audio.ts, lib/livekit.ts: AudioPresets.music, no DTX): 48 kbps mono with
+ * in-band FEC. Measured 2026-10-31 (docs/SCALE_UP.md §4): the browser's defaults (~29 kbps, no redundancy) scored
+ * PESQ 1.4 at 10 % packet loss, these settings with RED 3.4.
+ */
+export const OPUS_PARAMS = 'maxaveragebitrate=48000;useinbandfec=1;stereo=0;sprop-stereo=0'
+
+/** The SDP with OPUS_PARAMS on its Opus line (an existing value of the same name is replaced; usedtx is dropped). */
+export function withOpusParams(sdp: string): string {
+  const pt = sdp.match(/a=rtpmap:(\d+) opus\/48000\/2/)?.[1]
+  if (!pt) return sdp
+  const own = /^(maxaveragebitrate|useinbandfec|stereo|sprop-stereo|usedtx)=/
+  const fmtp = new RegExp(`^a=fmtp:${pt} ([^\\r\\n]*)`, 'm')
+  const m = sdp.match(fmtp)
+  const keep = (m?.[1] ?? '').split(';').map((x) => x.trim()).filter((x) => x && !own.test(x))
+  const line = `a=fmtp:${pt} ${[...keep, ...OPUS_PARAMS.split(';')].join(';')}`
+  if (m) return sdp.replace(fmtp, line)
+  const eol = sdp.includes('\r\n') ? '\r\n' : '\n'
+  return sdp.replace(new RegExp(`^a=rtpmap:${pt} opus/48000/2`, 'm'), (x) => `${x}${eol}${line}`)
+}
+
+/** Puts audio/red (Opus with a redundant copy of the previous frame) first in the codec list, as livekit-client's `red: true` does. */
+export function preferRed(transceiver: RTCRtpTransceiver) {
+  const codecs = globalThis.RTCRtpSender?.getCapabilities?.('audio')?.codecs
+  if (!codecs || typeof transceiver.setCodecPreferences !== 'function') return
+  const red = codecs.filter((c) => c.mimeType.toLowerCase() === 'audio/red')
+  if (red.length) transceiver.setCodecPreferences([...red, ...codecs.filter((c) => c.mimeType.toLowerCase() !== 'audio/red')])
+}
 
 /** LiveKit's ConnectionQuality values ('excellent' | 'good' | 'poor' | 'lost' | 'unknown'). */
 export type Quality = string

@@ -10,7 +10,7 @@
 // a network that blocks a direct path goes through LiveKit, whose TURN covers it.
 import type { CallMsg, CallSignal } from './backend'
 import type { Call, CallEvents } from './livekit'
-import { deviceProblem, type DeviceProblem, pathQuality } from './rtc'
+import { deviceProblem, type DeviceProblem, pathQuality, preferRed, withOpusParams } from './rtc'
 
 const ICE: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }]
 /** No direct path by then: the server carries the call. */
@@ -102,6 +102,7 @@ export async function joinP2P(
       const kind = tr.receiver.track.kind as 'audio' | 'video'
       if (senders[kind]) continue
       tr.direction = 'sendrecv'
+      if (kind === 'audio') preferRed(tr) // the rooms' loss protection, on this path too (lib/rtc OPUS_PARAMS)
       senders[kind] = tr.sender
       await tr.sender.replaceTrack(tracks[kind])
     }
@@ -171,7 +172,9 @@ export async function joinP2P(
   let offered = false
   let reflexive = false
   const describe = async () => {
-    await pc.setLocalDescription() // gathering starts here
+    // The offer (or answer) with the rooms' Opus settings; the other side reads them from this as its sender's.
+    const d = pc.signalingState === 'have-remote-offer' ? await pc.createAnswer() : await pc.createOffer()
+    await pc.setLocalDescription({ type: d.type, sdp: withOpusParams(d.sdp ?? '') }) // gathering starts here
     timers.push(setTimeout(() => !connected && !reflexive && giveUp(), STUN_MS))
     sig.send({ t: 'sdp', sdp: pc.localDescription!.toJSON() })
   }

@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { connectOptions, deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, pathQuality, preferRelay, RELAY_AFTER, relayFirst, signalBars, videoCodecFor } from '../rtc.ts'
+import { connectOptions, deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, OPUS_PARAMS, partnerNotice, pathQuality, preferRelay, RELAY_AFTER, relayFirst, signalBars, videoCodecFor, withOpusParams } from '../rtc.ts'
 
 const IPAD_SAFARI_DESKTOP = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15'
 const IPAD_KAKAO = 'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 KAKAOTALK 25.8.0'
@@ -74,8 +74,8 @@ test('relay first for a week after this browser’s media path broke; no storage
   try {
     assert.equal(relayFirst(1_000), false)
     preferRelay(1_000)
-    for (const days of [0, 1, 6.99]) assert.equal(relayFirst(1_000 + days * 86_400_000), true)
-    assert.equal(relayFirst(1_000 + 7 * 86_400_000), false)
+    for (const hours of [0, 1, 23.9]) assert.equal(relayFirst(1_000 + hours * 3_600_000), true)
+    assert.equal(relayFirst(1_000 + 24 * 3_600_000), false)
     assert.deepEqual(connectOptions(), undefined) // Date.now() is far past the week stored at 1 s
     preferRelay()
     assert.deepEqual(connectOptions(), { rtcConfig: { iceTransportPolicy: 'relay' } })
@@ -85,4 +85,16 @@ test('relay first for a week after this browser’s media path broke; no storage
   }
   assert.equal(relayFirst(), false) // private mode or a server render: no storage, no relay
   assert.doesNotThrow(() => preferRelay())
+})
+
+test('withOpusParams: the Opus fmtp line carries the rooms\' settings, keeps the rest, drops usedtx, leaves other SDP alone', () => {
+  const sdp = 'v=0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10;useinbandfec=1;usedtx=1\r\na=rtpmap:63 red/48000/2\r\na=fmtp:63 111/111\r\n'
+  const out = withOpusParams(sdp)
+  assert.equal(out, 'v=0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111 63\r\na=rtpmap:111 opus/48000/2\r\na=fmtp:111 minptime=10;' + OPUS_PARAMS + '\r\na=rtpmap:63 red/48000/2\r\na=fmtp:63 111/111\r\n')
+  // no fmtp line yet: one is added right under the rtpmap, with the SDP's own line ending
+  assert.equal(withOpusParams('a=rtpmap:96 opus/48000/2\nm=video 9\n'), 'a=rtpmap:96 opus/48000/2\na=fmtp:96 ' + OPUS_PARAMS + '\nm=video 9\n')
+  // a value of ours already there is replaced, not doubled
+  assert.equal((withOpusParams('a=rtpmap:111 opus/48000/2\r\na=fmtp:111 maxaveragebitrate=20000;minptime=10\r\n').match(/maxaveragebitrate/g) ?? []).length, 1)
+  // no Opus: untouched
+  assert.equal(withOpusParams('a=rtpmap:8 PCMA/8000\r\n'), 'a=rtpmap:8 PCMA/8000\r\n')
 })

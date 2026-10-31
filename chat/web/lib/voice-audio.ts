@@ -76,7 +76,8 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
     // Opus mono capped at 48 kbps, as in 1:1 calls (24 kbps sounded muffled next to Discord or X Spaces); DTX so
     // silence costs nothing (a listener downloads only the people talking), RED so a lost packet is covered by the next.
     publishDefaults: {
-      audioPreset: AudioPresets.music, dtx: true, red: true, forceStereo: false,
+      // No DTX next to RED: measured to warp the received audio (lib/livekit.ts, docs/SCALE_UP.md §4).
+      audioPreset: AudioPresets.music, dtx: false, red: true, forceStereo: false,
       videoCodec: videoCodecFor(navigator.userAgent, navigator.maxTouchPoints), simulcast: true,
       videoEncoding: VideoPresets.h360.encoding, videoSimulcastLayers: [VideoPresets.h180],
     },
