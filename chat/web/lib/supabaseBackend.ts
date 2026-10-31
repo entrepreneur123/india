@@ -1210,7 +1210,7 @@ export class SupabaseBackend implements Backend {
   }
 
   async profileSocial(userId: string): Promise<ProfileSocial> {
-    const r = (await this.rpc<{ likes: number; following: number; friends: number; liked: boolean; can_message: boolean }[] | null>('profile_social', { p_user: userId }))?.[0]
+    const r = (await this.rpc<{ likes: number; following: number; friends: number; liked: boolean; can_message: boolean }[] | null>('profile_social2', { p_user: userId }))?.[0]
     return { likes: r?.likes ?? 0, following: r?.following ?? 0, friends: r?.friends ?? 0, liked: !!r?.liked, canMessage: !!r?.can_message }
   }
 
@@ -1496,7 +1496,7 @@ export class SupabaseBackend implements Backend {
   }
 
   async highlights(userId: string): Promise<Highlight[]> {
-    const rows = (await this.rpc<{ id: number; title: string; photos: string[]; visibility: PostVisibility }[] | null>('highlights_of', { p_user: userId })) ?? []
+    const rows = (await this.rpc<{ id: number; title: string; photos: string[]; visibility: PostVisibility }[] | null>('highlights_of2', { p_user: userId })) ?? []
     await this.signMany(rows.flatMap((r) => r.photos))
     return rows.map((r) => ({
       id: String(r.id), title: r.title, visibility: r.visibility,
@@ -1509,7 +1509,7 @@ export class SupabaseBackend implements Backend {
 
   async saveHighlight(h: { id: string | null; title: string; keep: string[]; add: File[]; visibility: PostVisibility }) {
     const added = await Promise.all(h.add.map((f) => this.upload(f, 'avatar')))
-    await this.rpc('save_highlight', { p_id: h.id === null ? null : Number(h.id), p_title: h.title, p_photos: [...h.keep, ...added], p_visibility: h.visibility })
+    await this.rpc('save_highlight2', { p_id: h.id === null ? null : Number(h.id), p_title: h.title, p_photos: [...h.keep, ...added], p_visibility: h.visibility })
   }
 
   async deleteHighlight(id: string) {

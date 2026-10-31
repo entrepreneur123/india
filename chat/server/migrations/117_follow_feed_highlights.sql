@@ -30,9 +30,10 @@ language sql stable security definer set search_path = '' as $$
    limit 100
 $$;
 
--- The return type grows (following), so the function is made anew (grants with it).
-drop function if exists public.profile_social(uuid);
-create function public.profile_social(p_user uuid)
+-- The return type grows (following): a function can't change its return type in place and a DROP can't be applied
+-- through the MCP (its confirmation question goes unanswered), so profile_social2 is the web's; profile_social (066)
+-- stays for Android until the app switches, then both old ones are dropped by hand (HANDOFF).
+create or replace function public.profile_social2(p_user uuid)
 returns table (likes int, friends int, liked boolean, can_message boolean, following int)
 language sql stable security definer set search_path = '' as $$
   select (select count(*) from public.profile_likes l where l.liked = p_user)::int,
@@ -44,21 +45,17 @@ language sql stable security definer set search_path = '' as $$
          (select count(*) from public.profile_likes l where l.liker = p_user)::int
    where public.can_view(p_user)
 $$;
-revoke execute on function public.profile_social(uuid) from public, anon;
-grant execute on function public.profile_social(uuid) to authenticated;
+revoke execute on function public.profile_social2(uuid) from public, anon;
+grant execute on function public.profile_social2(uuid) to authenticated;
 
 -- ---- highlights' audience ------------------------------------------------------------------------------------------
 
-do $$ begin
-  if not exists (select 1 from information_schema.columns
-                  where table_schema = 'public' and table_name = 'highlights' and column_name = 'visibility') then
-    alter table public.highlights add column visibility text not null default 'friends' check (visibility in ('public', 'friends'));
-    update public.highlights set visibility = 'public'; -- made before there was a choice: anyone could see them
-  end if;
-end $$;
+-- Default 'public': the highlights made before there was a choice were visible to anyone who saw the profile, and an
+-- old client (Android) that doesn't send an audience keeps that. The web always sends one ('friends' preselected).
+alter table public.highlights add column if not exists visibility text not null default 'public' check (visibility in ('public', 'friends'));
 
-drop function if exists public.save_highlight(bigint, text, text[]);
-create function public.save_highlight(p_id bigint, p_title text, p_photos text[], p_visibility text default 'friends') returns bigint
+-- save_highlight (057) keeps its three arguments for Android; the web's save_highlight2 takes the audience.
+create or replace function public.save_highlight2(p_id bigint, p_title text, p_photos text[], p_visibility text default 'friends') returns bigint
 language plpgsql security definer set search_path = '' as $$
 declare me uuid := public.voice_me(); t text := normalize(btrim(coalesce(p_title, '')), NFC); p text[] := coalesce(p_photos, '{}'); hid bigint;
 begin
@@ -79,20 +76,26 @@ begin
   end if;
   return hid;
 end $$;
-revoke execute on function public.save_highlight(bigint, text, text[], text) from public, anon;
-grant execute on function public.save_highlight(bigint, text, text[], text) to authenticated;
+revoke execute on function public.save_highlight2(bigint, text, text[], text) from public, anon;
+grant execute on function public.save_highlight2(bigint, text, text[], text) to authenticated;
 
 -- Someone's highlights, oldest first: their photos readable (can_read_media's avatar rule) and each one's audience
--- met (post_visible: mine, public, or friends and people I chatted with).
-drop function if exists public.highlights_of(uuid);
-create function public.highlights_of(p_user uuid) returns table (id bigint, title text, photos text[], visibility text)
+-- met (post_visible: mine, public, or friends and people I chatted with). highlights_of (057) keeps its shape for
+-- Android but filters the same way, so a friends-only album never reaches the old app either.
+create or replace function public.highlights_of(p_user uuid) returns table (id bigint, title text, photos text[])
+language sql stable security definer set search_path = '' as $$
+  select h.id, h.title, h.photos from public.highlights h
+   where h.user_id = p_user and public.can_read_media(p_user::text || '/avatar/x') and public.post_visible(p_user, h.visibility)
+   order by h.id
+$$;
+create or replace function public.highlights_of2(p_user uuid) returns table (id bigint, title text, photos text[], visibility text)
 language sql stable security definer set search_path = '' as $$
   select h.id, h.title, h.photos, h.visibility from public.highlights h
    where h.user_id = p_user and public.can_read_media(p_user::text || '/avatar/x') and public.post_visible(p_user, h.visibility)
    order by h.id
 $$;
-revoke execute on function public.highlights_of(uuid) from public, anon;
-grant execute on function public.highlights_of(uuid) to authenticated;
+revoke execute on function public.highlights_of2(uuid) from public, anon;
+grant execute on function public.highlights_of2(uuid) to authenticated;
 
 -- ---- the feed ------------------------------------------------------------------------------------------------------
 
