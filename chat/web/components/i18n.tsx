@@ -7,6 +7,7 @@ import {
   fill,
   intlLocale,
   isRtl,
+  linkLang,
   loadDict,
   pluralText,
   saveLang,
@@ -51,7 +52,7 @@ export function I18nProvider({ children, fallback }: { children: ReactNode; fall
 
   useEffect(() => {
     let alive = true
-    const lang = savedLang() ?? browserLang()
+    const lang = linkLang() ?? savedLang() ?? browserLang()
     loadDict(lang).then(
       (dict) => alive && setState({ lang, dict }),
       () => alive && setState({ lang: 'en', dict: EN }), // offline while fetching the language file

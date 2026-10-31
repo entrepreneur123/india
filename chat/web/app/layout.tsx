@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
+import { LANGUAGES } from './[lang]/page'
 
 // One variable font file for every weight. Only the Latin file is preloaded; the Vietnamese (and Latin
 // extended) faces are in the same CSS with a unicode-range, so a browser fetches them only when Vietnamese
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
   description,
   keywords: ['random video chat', 'random chat', 'video chat', 'voice rooms', 'make friends', 'foreign friends',
     'talk to strangers', 'meet new people', 'social app', 'रैंडम वीडियो चैट', '랜덤 영상채팅', '해외 친구 만들기', 'ランダムビデオチャット'],
+  // Each app language has its own page (app/[lang]); search engines are told about all of them.
+  alternates: { canonical: '/', languages: LANGUAGES },
   openGraph: { title: 'Yaari — Random Video Chat', description, siteName: 'Yaari', type: 'website' },
   twitter: { card: 'summary', title: 'Yaari — Random Video Chat', description },
   icons: {

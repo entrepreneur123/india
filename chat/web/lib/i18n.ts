@@ -71,6 +71,18 @@ export function savedLang(): Lang | null {
   }
 }
 
+/** `?lang=hi` from a language landing page (app/[lang]): taken as the visitor's choice, and dropped from the address. */
+export function linkLang(): Lang | null {
+  const q = new URLSearchParams(location.search)
+  const v = q.get('lang')
+  if (v === null) return null
+  q.delete('lang')
+  history.replaceState(history.state, '', location.pathname + (q.size ? `?${q}` : '') + location.hash)
+  if (!isLang(v)) return null
+  saveLang(v)
+  return v
+}
+
 export function saveLang(lang: Lang) {
   try {
     localStorage.setItem(STORAGE_KEY, lang)
