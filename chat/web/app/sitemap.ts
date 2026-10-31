@@ -1,9 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { LANGUAGES } from './[lang]/page'
+import { SITE_URL as SITE } from '@/lib/site'
 
 export const dynamic = 'force-static'
-
-const SITE = 'https://yaari-web-indol.vercel.app'
 
 /** The home page and each language's page (app/[lang]), each listing the others (hreflang), and the legal pages. */
 export default function sitemap(): MetadataRoute.Sitemap {

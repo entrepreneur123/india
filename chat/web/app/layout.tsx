@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import { LANGUAGES } from './[lang]/page'
+import { SITE_URL } from '@/lib/site'
 
 // One variable font file for every weight. Only the Latin file is preloaded; the Vietnamese (and Latin
 // extended) faces are in the same CSS with a unicode-range, so a browser fetches them only when Vietnamese
@@ -17,7 +18,7 @@ const description =
   'Random video chat and random text chat with people around the world. Join live voice rooms, make foreign friends and share your moments. 18+.'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://yaari-web-indol.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: 'Yaari — Random Video Chat & Voice Rooms | Make Friends Worldwide',
   description,
   keywords: ['random video chat', 'random chat', 'video chat', 'voice rooms', 'make friends', 'foreign friends',
