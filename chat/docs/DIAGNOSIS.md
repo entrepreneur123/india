@@ -53,8 +53,8 @@
 | 2 | **완료** 음성: `dtx:false`(방·통화), P2P에 RED+48k+FEC, relay 플래그 1일 | 낮음 | Chromium 루프백에서 RED 협상·86 kbps 확인(sdp-full.mjs), 프로덕션 통화 e2e |
 | 3 | **완료** 119: 청소부 cron 30초(벨 60초·양쪽 5분 부재 매치·방 settle·멤버 행) + pagehide cancel_search + match_card2 재시도. `end_video`→LiveKit 강제 퇴장은 미룸(P2P 기본, 상대 앱 60초 resync) | 중간 | 프로덕션 픽스처 3종 + 첫 실행이 유령 1·3·81 정리 |
 | 4 | **완료** 120: find_match4·voice_beat 1초 제한(기존 seen_at으로, 새 테이블 없음), 친구 재요청 1시간, party 인증 게이트 + 늦은 멤버 upsert 버그 | 중간 | RPC 폭주 + SQL(행세) 테스트, 파티 픽스처 |
-| 5 | 운영: CI 테스트, purge/cron 마이그레이션화, Sentry 알림, 업타임 체크 | 낮음 | CI green, 알림 테스트 |
-| 6 | 타이핑 채널 비공개화, log_events_anon 제한, link-meta 제한 DB화 | 중간 | e2e |
+| 5 | **완료(일부 사장님)** CI에 웹 단위 테스트, 122로 purge/cron 기록, Sentry 알림 규칙은 이미 3개, 업타임 모니터는 만들었으나 무료 플랜 좌석 없음(사장님) | 낮음 | CI 실행 결과, Sentry 콘솔 |
+| 6 | **완료** 121: typing 채널 private + 정책, log_events_anon anon 회수, rate_ok로 link-meta 제한 DB화. 남은 것: KYC 웹훅 서명(공급자 비밀 — 사장님), 신고 알림(알림 kind 제약 변경에 DROP 필요 — 사장님 SQL) | 중간 | 두 계정 e2e 5/5, link-meta 31회 호출 |
 | 7 | 구조: `…2` 정리는 Android 전환 뒤 DROP(사장님), supabaseBackend 분할은 기능 안정 뒤 | 높음 | tsc·테스트 |
 
 ## F. 비용이 드는 항목 (공식 가격, SCALE_UP §3)
