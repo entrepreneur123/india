@@ -13,3 +13,4 @@
 {"at": "2026-10-31T06:54+00:00", "event": "open", "id": "mh-name:2026-10-30_MH_LIST-OF-AUTHORIZED-LOTTERY-SCHEMES-PERIOD-DT-02-011-2026-TO-08-011-2026", "kind": "wrong", "severity": "medium", "detail": "Maharashtra entry 2026-10-30 does not look like a game: 'List of Authorized Lottery schemes Period Dt 02/011/2026 to '"}
 {"at": "2026-10-31T08:16+00:00", "event": "resolved", "id": "mh:2026-10-30:Maharashtra List of Authorized Lottery schemes Period Dt 02/011/2026 to 08/011/2026"}
 {"at": "2026-10-31T08:16+00:00", "event": "resolved", "id": "mh-name:2026-10-30_MH_LIST-OF-AUTHORIZED-LOTTERY-SCHEMES-PERIOD-DT-02-011-2026-TO-08-011-2026"}
+{"at": "2026-10-31T15:24+00:00", "event": "open", "id": "review:2026-10-31_NL1PM", "kind": "review", "severity": "low", "detail": "2026-10-31_NL1PM: gazette OCR did not confirm the 1st prize 38G 03421 (lower prizes 95% confirmed): compare by eye with tools/eyecheck.py"}
