@@ -784,7 +784,7 @@ export class SupabaseBackend implements Backend {
     if (existing) return existing
     const me = this.uid
     const hub: TypingHub = {
-      channel: this.client.channel(`typing-${matchId}`, { config: { presence: { key: me } } }),
+      channel: this.client.channel(`typing-${matchId}`, { config: { private: true, presence: { key: me } } }), // 121: the match's two people only
       listeners: new Set(),
       connected: false,
       partnerHere: false,

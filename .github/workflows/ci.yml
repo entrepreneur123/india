@@ -80,8 +80,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Yaari web - typecheck and static build (demo backend)
+      - name: Yaari web - typecheck, unit tests, static build (demo backend)
         run: |
           pnpm install --frozen-lockfile
           pnpm exec tsc --noEmit
+          pnpm test
           pnpm build

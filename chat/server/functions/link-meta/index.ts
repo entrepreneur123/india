@@ -73,23 +73,6 @@ function frameable(h: Headers): boolean {
   return fa.split(/\s+/).some((s) => s === "*" || s === "https:");
 }
 
-/**
- * At most 30 previews a minute per person (this instance's memory; a person's requests mostly reach the same warm
- * instance): a chat shows a handful, so more is a script using us to fetch pages. Answered with 429.
- */
-const LIMIT = 30;
-const recent = new Map<string, number[]>();
-function overLimit(user: string): boolean {
-  const now = Date.now();
-  const hits = (recent.get(user) ?? []).filter((t) => t > now - 60_000);
-  if (hits.length >= LIMIT) return true;
-  hits.push(now);
-  recent.delete(user); // re-inserted last: the oldest-used person is dropped first when the map is full
-  recent.set(user, hits);
-  if (recent.size > 10_000) recent.delete(recent.keys().next().value!);
-  return false;
-}
-
 const clip = (s: string | null, n: number) => (s ? (s.length > n ? s.slice(0, n - 1) + "…" : s) : null);
 
 Deno.serve(async (req) => {
@@ -99,7 +82,10 @@ Deno.serve(async (req) => {
   const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: who } = await admin.auth.getUser((req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, ""));
   if (!who?.user) return json(401, { error: "not_signed_in" });
-  if (overLimit(who.user.id)) return json(429, { error: "slow_down" });
+  // At most 30 previews a minute per person (public.rate_ok, 121: counted in the database, not per instance): a chat
+  // shows a handful, so more is a script using us to fetch pages.
+  const { data: ok } = await admin.rpc("rate_ok", { p_key: "link-meta:" + who.user.id, p_limit: 30, p_window: "1 minute" });
+  if (ok === false) return json(429, { error: "slow_down" });
 
   const body = await req.json().catch(() => ({}));
   let url: URL;
