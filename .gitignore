@@ -9,8 +9,8 @@ android/.kotlin/
 # Python
 __pycache__/
 .pytest_cache/
-# pipeline output when run locally
-public/
+# pipeline output when run locally (the repository root only: chat/web/public is source)
+/public/
 chat/.gradle/
 chat/build/
 chat/app/build/

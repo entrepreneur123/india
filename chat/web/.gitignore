@@ -5,3 +5,9 @@ out/
 .vercel/
 .env*.local
 .DS_Store
+# written by the build (scripts/copy-legal.mjs, scripts/nsfw-model.mjs)
+public/privacy.html
+public/terms.html
+public/child-safety.html
+public/delete-account.html
+public/models/
