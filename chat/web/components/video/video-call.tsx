@@ -7,7 +7,7 @@ import { EyeOff, Mic, MicOff, Phone, PhoneOff, SwitchCamera, ShieldCheck, Signal
 import type { Profile } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import type { Call, CallEvents, CallState, PartnerNotice } from '@/lib/livekit'
-import { deviceNotice, keepScreenOn, signalBars } from '@/lib/rtc'
+import { deviceNotice, keepScreenOn, relayFirst, signalBars } from '@/lib/rtc'
 import { flagEmoji } from '@/lib/format'
 import { useToast } from '@/components/ui/toast'
 import { useI18n } from '@/components/i18n'
@@ -54,6 +54,14 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
 
   // The screen stays on for the whole call, as in a phone call app.
   useEffect(() => keepScreenOn(), [])
+  // Weak for 6 s with my camera on: one tap turns it off, so what the network still carries goes to the voice (as Zoom
+  // and Meet warn of an unstable connection). Gone when the camera is off or the connection recovers.
+  const [weak, setWeak] = useState(false)
+  useEffect(() => {
+    if (quality !== 'poor' || !camera || state !== 'connected') return
+    const id = setTimeout(() => setWeak(true), 6_000)
+    return () => (clearTimeout(id), setWeak(false))
+  }, [quality, camera, state])
 
   useEffect(() => {
     let cancelled = false
@@ -135,7 +143,7 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
           const open = (on: Parameters<typeof backend.callSignal>[1]) =>
             backend.callSignal(matchId, on).then((sig) => (sig && shieldOnce(), sig))
           const call = await joinP2P(open, partner.id, els(), events(relay), abort.signal,
-            first ? video : want.current.camera)
+            first ? video : want.current.camera, relayFirst())
           return void (await started(call))
         } catch (err) {
           if (cancelled) return
@@ -315,6 +323,16 @@ export function VideoCall({ matchId, partner, video, onEnd }: { matchId: string;
           className="absolute inset-x-0 bottom-32 mx-auto flex w-fit items-center gap-2 rounded-full bg-ink-foreground px-5 py-3 text-sm font-semibold text-ink"
         >
           <Volume2 className="size-5" aria-hidden /> {t('video.tapToHear', { name: partner.name })}
+        </button>
+      ) : null}
+
+      {weak ? (
+        <button
+          type="button"
+          onClick={() => void toggleCamera()}
+          className={cn('absolute inset-x-0 mx-auto flex w-fit items-center gap-2 rounded-full bg-black/70 px-4 py-2.5 text-sm font-semibold', needsTap ? 'bottom-48' : 'bottom-32')}
+        >
+          <VideoOff className="size-4" aria-hidden /> {t('video.netPoor')} · {t('video.camOff')}
         </button>
       ) : null}
 

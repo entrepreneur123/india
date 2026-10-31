@@ -35,6 +35,35 @@ export function deviceProblem(err: unknown): DeviceProblem {
   return 'other'
 }
 
+const RELAY_KEY = 'yaari_relay_until'
+const RELAY_MS = 7 * 86_400_000
+/** Media paths broken this many times in one session: this network loses UDP (Gulf carriers throttle it). */
+export const RELAY_AFTER = 2
+
+/**
+ * True for a week after this browser's media connection broke (LiveKit gave up, or had to rebuild its path twice in
+ * one session): calls and rooms then start on the server's relay (TURN, over TLS on 443 where UDP fails), and a
+ * friend call skips the direct attempt. LiveKit's advice for networks that throttle UDP: relay first, sticky per user.
+ */
+export function relayFirst(now = Date.now()): boolean {
+  try {
+    return Number(localStorage.getItem(RELAY_KEY)) > now
+  } catch {
+    return false
+  }
+}
+
+export function preferRelay(now = Date.now()) {
+  try {
+    localStorage.setItem(RELAY_KEY, String(now + RELAY_MS))
+  } catch {
+    /* private mode: this session only knows */
+  }
+}
+
+/** For room.connect: relay only, still with the server's own TURN list (LiveKit fills iceServers when none are given). */
+export const connectOptions = () => (relayFirst() ? { rtcConfig: { iceTransportPolicy: 'relay' as const } } : undefined)
+
 /** LiveKit's ConnectionQuality values ('excellent' | 'good' | 'poor' | 'lost' | 'unknown'). */
 export type Quality = string
 

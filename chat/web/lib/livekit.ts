@@ -19,12 +19,12 @@ import {
   VideoPresets,
 } from 'livekit-client'
 import { cleanMicrophone } from './voice-gate'
-import { type DeviceProblem, deviceProblem, partnerNotice, type Quality, videoCodecFor } from './rtc'
+import { connectOptions, type DeviceProblem, deviceProblem, partnerNotice, preferRelay, type Quality, RELAY_AFTER, videoCodecFor } from './rtc'
 
 /** 'lost': LiveKit gave up for a reason a fresh join can fix (the call screen joins again); 'failed': it can't. */
 export type CallState = 'connecting' | 'connected' | 'reconnecting' | 'lost' | 'failed'
 /** Ended on purpose (I left, kicked, same account elsewhere, room closed): joining again would be wrong. */
-const FINAL = new Set([DisconnectReason.CLIENT_INITIATED, DisconnectReason.DUPLICATE_IDENTITY, DisconnectReason.PARTICIPANT_REMOVED,
+export const FINAL = new Set([DisconnectReason.CLIENT_INITIATED, DisconnectReason.DUPLICATE_IDENTITY, DisconnectReason.PARTICIPANT_REMOVED,
   DisconnectReason.ROOM_DELETED, DisconnectReason.ROOM_CLOSED, DisconnectReason.USER_UNAVAILABLE, DisconnectReason.USER_REJECTED])
 export type PartnerNotice = ReturnType<typeof partnerNotice>
 
@@ -87,6 +87,7 @@ export async function joinCall(
   })
   cleanMicrophone(room)
   let leaving = false
+  let rebuilt = 0
   signal?.addEventListener('abort', () => {
     leaving = true
     void room.disconnect()
@@ -143,13 +144,23 @@ export async function joinCall(
       tellPartner()
     })
     .on(RoomEvent.AudioPlaybackStatusChanged, () => ev.blocked(!room.canPlaybackAudio))
-    .on(RoomEvent.Reconnecting, () => ev.state('reconnecting'))
+    // A network switch resumes the signal only (SignalReconnecting); a broken media path rebuilds it (Reconnecting).
+    .on(RoomEvent.SignalReconnecting, () => ev.state('reconnecting'))
+    .on(RoomEvent.Reconnecting, () => {
+      if (++rebuilt === RELAY_AFTER) preferRelay()
+      ev.state('reconnecting')
+    })
     .on(RoomEvent.Reconnected, () => ev.state('connected'))
-    .on(RoomEvent.Disconnected, (reason) => { if (!leaving) ev.state(reason !== undefined && FINAL.has(reason) ? 'failed' : 'lost') })
+    .on(RoomEvent.Disconnected, (reason) => {
+      if (leaving) return
+      const final = reason !== undefined && FINAL.has(reason)
+      if (!final) preferRelay()
+      ev.state(final ? 'failed' : 'lost')
+    })
 
   ev.state('connecting')
   try {
-    await room.connect(url, token)
+    await room.connect(url, token, connectOptions())
   } catch (e) {
     leaving = true
     await room.disconnect()

@@ -15,6 +15,12 @@ import { deviceProblem, type DeviceProblem, pathQuality } from './rtc'
 const ICE: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }]
 /** No direct path by then: the server carries the call. */
 const CONNECT_MS = 12_000
+/**
+ * STUN answers well within a second on a working network; nothing by then means UDP is blocked (offices, hotels,
+ * some carriers), where no direct path can come (Chromium, measured: only a host candidate, gathering still going
+ * at 45 s): the server, whose TURN runs over TLS on 443, carries the call at once instead of after CONNECT_MS.
+ */
+const STUN_MS = 3_000
 /** A dropped path gets this long to come back by itself before the server takes over. */
 const RECOVER_MS = 5_000
 const AUDIO = { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
@@ -31,12 +37,23 @@ export async function joinP2P(
   ev: CallEvents,
   signal: AbortSignal,
   video: boolean,
+  /** This browser's network broke a call before (lib/rtc relayFirst): the server from the start. */
+  relay = false,
 ): Promise<Call> {
   // Messages that come while my microphone is still being asked for wait here; then one at a time, in order.
   const inbox: CallMsg[] = []
   let onMsg: (m: CallMsg) => void = (m) => inbox.push(m)
   const sig = await open((m) => onMsg(m))
   if (!sig) throw new Error('no_signal')
+  if (relay) {
+    // The partner follows at once rather than waiting CONNECT_MS for me: told now, and again when they come.
+    onMsg = (m) => m.t === 'hi' && sig.send({ t: 'relay' })
+    inbox.splice(0).forEach(onMsg)
+    sig.send({ t: 'relay' })
+    const stop = setTimeout(() => sig.close(), CONNECT_MS)
+    signal.addEventListener('abort', () => (clearTimeout(stop), sig.close()), { once: true })
+    throw new Error('p2p_skipped')
+  }
   const ended = () => new DOMException('call ended', 'AbortError')
   if (signal.aborted) {
     sig.close()
@@ -152,13 +169,22 @@ export async function joinP2P(
   const early: RTCIceCandidateInit[] = []
   let seen = false
   let offered = false
+  let reflexive = false
+  const describe = async () => {
+    await pc.setLocalDescription() // gathering starts here
+    timers.push(setTimeout(() => !connected && !reflexive && giveUp(), STUN_MS))
+    sig.send({ t: 'sdp', sdp: pc.localDescription!.toJSON() })
+  }
   const offer = async () => {
     if (offered) return
     offered = true
-    await pc.setLocalDescription()
-    sig.send({ t: 'sdp', sdp: pc.localDescription!.toJSON() })
+    await describe()
   }
-  pc.onicecandidate = ({ candidate }) => candidate && sig.send({ t: 'ice', c: candidate.toJSON() })
+  pc.onicecandidate = ({ candidate }) => {
+    if (!candidate) return
+    if (candidate.type === 'srflx' || candidate.type === 'relay') reflexive = true
+    sig.send({ t: 'ice', c: candidate.toJSON() })
+  }
   const handle = async (m: CallMsg) => {
     if (closed) return
     try {
@@ -173,8 +199,7 @@ export async function joinP2P(
         for (const c of early.splice(0)) await pc.addIceCandidate(c)
         if (!offerer) {
           await fill()
-          await pc.setLocalDescription()
-          sig.send({ t: 'sdp', sdp: pc.localDescription!.toJSON() })
+          await describe()
         }
       } else if (m.t === 'ice') {
         if (pc.remoteDescription) await pc.addIceCandidate(m.c)

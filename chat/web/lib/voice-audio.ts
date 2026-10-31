@@ -20,7 +20,8 @@ import {
   type VideoTrack,
 } from 'livekit-client'
 import type { VoiceVideo } from './backend'
-import { deviceProblem, isAppleWebKit, videoCodecFor } from './rtc'
+import { FINAL } from './livekit'
+import { connectOptions, deviceProblem, isAppleWebKit, preferRelay, RELAY_AFTER, videoCodecFor } from './rtc'
 import { cleanMicrophone } from './voice-gate'
 import { rms, silenceDetector, talkDetector } from './mic-hints'
 import { savedVolumes } from './voice-volumes'
@@ -86,6 +87,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
   const analysers = !isAppleWebKit(navigator.userAgent, navigator.maxTouchPoints) && !/Android/i.test(navigator.userAgent)
   cleanMicrophone(room)
   let leaving = false
+  let rebuilt = 0
   // Hidden <audio> elements, one per remote track; and an analyser per track for the speaking rings.
   const box = document.createElement('div')
   box.hidden = true
@@ -237,11 +239,17 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
       startProbe()
       ev.micMutedByServer()
     })
-    .on(RoomEvent.Reconnecting, () => ev.status('reconnecting'))
+    // As in calls (lib/livekit): a network switch resumes the signal only; a broken media path rebuilds it.
+    .on(RoomEvent.SignalReconnecting, () => ev.status('reconnecting'))
+    .on(RoomEvent.Reconnecting, () => {
+      if (++rebuilt === RELAY_AFTER) preferRelay()
+      ev.status('reconnecting')
+    })
     .on(RoomEvent.Reconnected, () => ev.status('connected'))
     .on(RoomEvent.Disconnected, (reason?: DisconnectReason) => {
       if (leaving) return
       leaving = true
+      if (reason === undefined || !FINAL.has(reason)) preferRelay()
       teardown()
       ev.status('failed')
       ev.gone(reason === DisconnectReason.PARTICIPANT_REMOVED || reason === DisconnectReason.ROOM_DELETED)
@@ -261,7 +269,7 @@ export async function joinVoiceAudio(url: string, token: string, ev: VoiceAudioE
 
   ev.status('connecting')
   try {
-    await room.connect(url, token, { autoSubscribe: false })
+    await room.connect(url, token, { autoSubscribe: false, ...connectOptions() })
   } catch (e) {
     if (!leaving) {
       leaving = true

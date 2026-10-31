@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, pathQuality, signalBars, videoCodecFor } from '../rtc.ts'
+import { connectOptions, deviceNotice, deviceProblem, fixedVolume, isAppleWebKit, partnerNotice, pathQuality, preferRelay, RELAY_AFTER, relayFirst, signalBars, videoCodecFor } from '../rtc.ts'
 
 const IPAD_SAFARI_DESKTOP = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Safari/605.1.15'
 const IPAD_KAKAO = 'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 KAKAOTALK 25.8.0'
@@ -65,4 +65,24 @@ test('a direct call\'s bars from round trip and loss', () => {
   assert.equal(pathQuality(0.05, 0.05), 'good')
   assert.equal(pathQuality(0.5, 0), 'poor')
   assert.equal(pathQuality(0.1, 0.1), 'poor')
+})
+
+test('relay first for a week after this browser’s media path broke; no storage: never', () => {
+  const store = new Map<string, string>()
+  const g = globalThis as { localStorage?: unknown }
+  g.localStorage = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) }
+  try {
+    assert.equal(relayFirst(1_000), false)
+    preferRelay(1_000)
+    for (const days of [0, 1, 6.99]) assert.equal(relayFirst(1_000 + days * 86_400_000), true)
+    assert.equal(relayFirst(1_000 + 7 * 86_400_000), false)
+    assert.deepEqual(connectOptions(), undefined) // Date.now() is far past the week stored at 1 s
+    preferRelay()
+    assert.deepEqual(connectOptions(), { rtcConfig: { iceTransportPolicy: 'relay' } })
+    assert.equal(RELAY_AFTER, 2)
+  } finally {
+    delete g.localStorage
+  }
+  assert.equal(relayFirst(), false) // private mode or a server render: no storage, no relay
+  assert.doesNotThrow(() => preferRelay())
 })
