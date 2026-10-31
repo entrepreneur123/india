@@ -1,5 +1,5 @@
 # Reads our Google Search Console numbers once a day and keeps them on the `seo` branch
-# (gsc/latest.md first), so the site can be tuned to what people in India really search.
+# (gsc/latest.md first; visitors from Cloudflare Web Analytics in cf/latest.md), so the site can be tuned to what people in India really search.
 # Signs in without a key (Workload Identity Federation; the organisation forbids service-account
 # keys): the repository variables GSC_WIF_PROVIDER and GSC_SERVICE_ACCOUNT name the pool provider
 # and the service account added to the Search Console property. Without them the run only says so.
@@ -45,16 +45,11 @@ jobs:
           token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/webmasters.readonly
       - uses: actions/setup-python@v5
-        if: steps.key.outputs.ok == 'true'
         with:
           python-version: "3.12"
-      - name: Read Search Console
-        if: steps.key.outputs.ok == 'true'
+      - name: Check out the seo branch
         working-directory: pipeline
-        env:
-          GSC_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
         run: |
-          pip install -q google-auth==2.61.0 requests==2.33.1
           if git fetch -q origin seo; then
             git worktree add -q ../seo FETCH_HEAD
           else   # first run: the branch holds only the reports
@@ -62,15 +57,29 @@ jobs:
             git -C ../seo checkout -q --orphan seo
             git -C ../seo rm -rfq .
           fi
+      - name: Read Search Console
+        if: steps.key.outputs.ok == 'true'
+        working-directory: pipeline
+        env:
+          GSC_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          pip install -q google-auth==2.61.0 requests==2.33.1
           python -m lottery_pipeline.gsc --site sc-domain:lottodost.com --out ../seo/gsc
           cat ../seo/gsc/latest.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Read visitors (Cloudflare Web Analytics)
+        working-directory: pipeline
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          python -m lottery_pipeline.visitors --out ../seo/cf --days 14
+          cat ../seo/cf/latest.md >> "$GITHUB_STEP_SUMMARY"
       - name: Keep the report
-        if: steps.key.outputs.ok == 'true'
         working-directory: seo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add gsc
+          git add -A .
           git diff --cached --quiet && exit 0
-          git commit -qm "Search Console $(date -u +%F)"
+          git commit -qm "Search Console and visitors $(date -u +%F)"
           git push -q origin HEAD:seo
