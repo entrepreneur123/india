@@ -35,6 +35,11 @@
 | 페이지 | 뒤로가기·새로고침·탭 종료 | ✓ useBack, 세션 복구, pagehide 비콘(presence·leave_voice·cancel_search) | 119 [확인] |
 | 법적 | 개인정보처리방침·이용약관·아동안전·계정삭제 | ✓ `/privacy` `/terms` `/child-safety` `/delete-account` (200) | curl [확인] |
 | 법적 | 커뮤니티 가이드라인·신고/문의·운영자 연락처·연령 정책 | ✓ 약관 §Community rules, 앱 Settings의 규칙 시트·grievance/support 메일, 18+ 게이트 | 코드·페이지 [확인] |
+| 법적 | 문서 = 실제 기능 (부하6, 2026-11-01) | ✓ 게스트·소셜 로그인, 금칙어·스팸, 사람 검토, 기기 안 음성 감지·노출 감지, 번역(Anthropic, Android), 보관 기간(cron·purge 함수 실제 값), 정지 중 삭제 불가·24시간, 내 데이터 받기 반영. GDPR·DPDP "준수 보장" 문구는 넣지 않음 | 코드·프로덕션 SQL [확인] |
+| 법적 | 쿠키·분석 동의 | ✓ 쿠키 0개. 로그인·언어·테마 등 localStorage는 필수/사용자 설정(WP194 기준 A/B) → 동의 불필요. PostHog(1차 분석)는 WP194 §4.3상 면제 아님 → **유럽 시간대만 "허용/거절" 배너**(허용 전 로드 안 함), 그 밖은 켜짐 + 설정에서 끄기 | Playwright 3개 시간대 [확인] |
+| 법적 | 내 데이터 받기(열람권) | ✓ 설정 → Download my data(JSON, 본인 행만, 시간당 3회, `my_data` 128) | 계정 A 다운로드 23항목 [확인] |
+| 안전 | 신고 → 운영자 알림 | ✓ 신고 시 관리자 개인 토픽으로 방송(128) → /admin 배지·탭 제목·목록 즉시 갱신, 탭이 숨어 있으면 브라우저 알림(허용 시). /admin을 안 열어 두면 모름(휴대폰 푸시는 notifications.kind DROP 필요) | Playwright 방송 테스트 [확인] |
+| 안전 | 글 검열 남은 경로 | ✓ 방 제목·태그·그룹 이름·하이라이트 제목·@ID 거부, 방 공지·투표 가림(128 트리거) | 롤백 SQL 테스트 [확인] |
 | 법적 | 고충처리인 실명·이메일 | ✗ `grievance@yaari.app` 자리표시(도메인 미보유) → **사장님**(YAA-7) | 페이지 [확인] |
 | 배포/SEO | HTTPS·보안 헤더 | ✓ HSTS preload, CSP, X-Frame DENY, nosniff, Referrer, Permissions-Policy, COOP | 헤더 [확인] |
 | 배포/SEO | 제목·설명·OG·twitter | ✓ og:image·summary_large_image 추가 | HTML [확인] |
