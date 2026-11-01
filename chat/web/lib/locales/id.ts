@@ -528,6 +528,11 @@ const id: Dict = {
   'settings.signOut': 'Keluar',
   'settings.delete': 'Hapus akun',
   'settings.footer': 'yaari hanya untuk dewasa (18+). Laporkan siapa pun yang melanggar aturan — laporan bersifat anonim.',
+  'settings.myData': 'Unduh data saya',
+  'settings.stats': 'Statistik penggunaan',
+  'settings.statsBody': 'Kami menghitung kunjungan dan langkah di aplikasi untuk memperbaiki Yaari. Tidak pernah pesanmu, tanpa iklan, dan tidak ada yang disimpan di perangkatmu untuk ini.',
+  'stats.yes': 'Izinkan',
+  'stats.no': 'Tidak, terima kasih',
   'settings.deleted': 'Akunmu dan semua isinya sudah dihapus',
   'settings.deleteTitle': 'Hapus akunmu?',
   'settings.deleteBody':

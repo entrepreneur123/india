@@ -523,6 +523,11 @@ const fr: Dict = {
   'settings.signOut': 'Se déconnecter',
   'settings.delete': 'Supprimer le compte',
   'settings.footer': 'yaari est réservé aux adultes (18+). Signalez toute personne qui enfreint les règles — les signalements sont anonymes.',
+  'settings.myData': 'Télécharger mes données',
+  'settings.stats': 'Statistiques d’utilisation',
+  'settings.statsBody': 'Nous comptons les visites et les étapes dans l’app pour améliorer Yaari. Jamais vos messages, pas de publicité, rien n’est stocké sur votre appareil pour cela.',
+  'stats.yes': 'Autoriser',
+  'stats.no': 'Non merci',
   'settings.deleted': 'Votre compte et tout son contenu ont été supprimés',
   'settings.deleteTitle': 'Supprimer votre compte ?',
   'settings.deleteBody':

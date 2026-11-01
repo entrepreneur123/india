@@ -522,6 +522,11 @@ const vi: Dict = {
   'settings.signOut': 'Đăng xuất',
   'settings.delete': 'Xóa tài khoản',
   'settings.footer': 'yaari chỉ dành cho người từ 18 tuổi. Hãy báo cáo ai vi phạm quy tắc — báo cáo là ẩn danh.',
+  'settings.myData': 'Tải dữ liệu của tôi',
+  'settings.stats': 'Thống kê sử dụng',
+  'settings.statsBody': 'Chúng tôi đếm lượt truy cập và các bước trong ứng dụng để cải thiện Yaari. Không bao giờ là tin nhắn của bạn, không quảng cáo, không lưu gì trên thiết bị của bạn cho việc này.',
+  'stats.yes': 'Cho phép',
+  'stats.no': 'Không, cảm ơn',
   'settings.deleted': 'Tài khoản của bạn và mọi dữ liệu trong đó đã bị xóa',
   'settings.deleteTitle': 'Xóa tài khoản của bạn?',
   'settings.deleteBody':

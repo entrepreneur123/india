@@ -522,6 +522,11 @@ const bn: Dict = {
   'settings.signOut': 'সাইন আউট',
   'settings.delete': 'অ্যাকাউন্ট মুছুন',
   'settings.footer': 'yaari শুধু প্রাপ্তবয়স্কদের (18+) জন্য। নিয়ম ভাঙলে রিপোর্ট করুন — রিপোর্ট বেনামি।',
+  'settings.myData': 'আমার ডেটা ডাউনলোড করুন',
+  'settings.stats': 'ব্যবহারের পরিসংখ্যান',
+  'settings.statsBody': 'Yaari উন্নত করতে ভিজিট ও অ্যাপের ধাপ গোনা হয়। আপনার মেসেজ কখনো নয়, কোনো বিজ্ঞাপন নয়, এর জন্য আপনার ডিভাইসে কিছু রাখা হয় না।',
+  'stats.yes': 'অনুমতি দিন',
+  'stats.no': 'না, ধন্যবাদ',
   'settings.deleted': 'আপনার অ্যাকাউন্ট ও তার সবকিছু মুছে ফেলা হয়েছে',
   'settings.deleteTitle': 'অ্যাকাউন্ট মুছে ফেলবেন?',
   'settings.deleteBody':

@@ -522,6 +522,11 @@ const nl: Dict = {
   'settings.signOut': 'Uitloggen',
   'settings.delete': 'Account verwijderen',
   'settings.footer': 'yaari is alleen voor volwassenen (18+). Meld iedereen die de regels breekt — meldingen zijn anoniem.',
+  'settings.myData': 'Mijn gegevens downloaden',
+  'settings.stats': 'Gebruiksstatistieken',
+  'settings.statsBody': 'We tellen bezoeken en stappen in de app om Yaari te verbeteren. Nooit je berichten, geen advertenties, en daarvoor wordt niets op je apparaat opgeslagen.',
+  'stats.yes': 'Toestaan',
+  'stats.no': 'Nee, bedankt',
   'settings.deleted': 'Je account en alles daarin zijn verwijderd',
   'settings.deleteTitle': 'Je account verwijderen?',
   'settings.deleteBody':

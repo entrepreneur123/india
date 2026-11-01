@@ -140,18 +140,75 @@ function SignIn({ client, done }: { client: SupabaseClient; done: () => void }) 
 
 function Console({ client }: { client: SupabaseClient }) {
   const [tab, setTab] = useState<'reports' | 'users' | 'dashboard'>('reports')
+  const { open, fresh } = useOpenReports(client)
   return (
     <main className="mx-auto max-w-7xl p-4 sm:p-6">
-      <nav className="mb-4 flex gap-1" aria-label="콘솔">
+      <nav className="mb-4 flex flex-wrap items-center gap-1" aria-label="콘솔">
         {([['reports', '신고 (Reports)'], ['users', '사용자 (Users)'], ['dashboard', '대시보드 (Dashboard)']] as const).map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)} aria-current={tab === k ? 'page' : undefined}
             className={`rounded-full px-4 py-1.5 text-sm font-medium ${tab === k ? 'bg-primary-soft text-primary-text' : 'text-muted-foreground hover:bg-muted'}`}>
             {label}
+            {k === 'reports' && open ? <span className="ms-1.5 rounded-full bg-destructive px-1.5 text-xs text-white" data-open-reports>{open}</span> : null}
           </button>
         ))}
+        <AlertsButton />
       </nav>
-      {tab === 'reports' ? <Reports client={client} /> : tab === 'users' ? <Users client={client} /> : <DashboardView client={client} />}
+      {tab === 'reports' ? <Reports client={client} fresh={fresh} /> : tab === 'users' ? <Users client={client} /> : <DashboardView client={client} />}
     </main>
+  )
+}
+
+/**
+ * 128: unreviewed reports, live. The server broadcasts each new report to every admin's private user:<id> topic;
+ * the count (admin_dashboard) is read again then, when the tab comes back and every 5 minutes (a missed broadcast).
+ * The tab title carries the count, and a browser notification shows while the tab is hidden, if allowed.
+ */
+function useOpenReports(client: SupabaseClient) {
+  const [open, setOpen] = useState<number | null>(null)
+  const [fresh, setFresh] = useState(0)
+  useEffect(() => {
+    let alive = true
+    const count = () =>
+      void client.rpc('admin_dashboard').then(({ data }) => alive && data && setOpen((data as Dashboard).unreviewed))
+    count()
+    const onShow = () => document.visibilityState === 'visible' && count()
+    document.addEventListener('visibilitychange', onShow)
+    const timer = setInterval(count, 5 * 60_000)
+    let channel: ReturnType<SupabaseClient['channel']> | null = null
+    void client.auth.getSession().then(({ data }) => {
+      const me = data.session?.user.id
+      if (!alive || !me) return
+      channel = client.channel(`user:${me}`, { config: { private: true } }).on('broadcast', { event: 'report' }, ({ payload }) => {
+        count()
+        setFresh((n) => n + 1)
+        if (document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
+          const reason = String((payload as { reason?: string })?.reason ?? '')
+          new Notification('Yaari 새 신고', { body: REASONS[reason] ?? reason, tag: 'yaari-report' })
+        }
+      }).subscribe()
+    })
+    return () => {
+      alive = false
+      document.removeEventListener('visibilitychange', onShow)
+      clearInterval(timer)
+      if (channel) void client.removeChannel(channel)
+    }
+  }, [client])
+  useEffect(() => {
+    document.title = open ? `(${open}) Yaari 운영 콘솔` : 'Yaari 운영 콘솔'
+  }, [open])
+  return { open, fresh }
+}
+
+function AlertsButton() {
+  const [perm, setPerm] = useState<NotificationPermission | 'none'>('none')
+  useEffect(() => setPerm('Notification' in window ? Notification.permission : 'none'), [])
+  if (perm !== 'default') return null
+  return (
+    <button className="ms-auto rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+      onClick={() => void Notification.requestPermission().then(setPerm)}>
+      새 신고 알림 켜기
+    </button>
   )
 }
 
@@ -239,7 +296,7 @@ function useSigned(client: SupabaseClient, paths: (string | null | undefined)[])
   return urls
 }
 
-function Reports({ client }: { client: SupabaseClient }) {
+function Reports({ client, fresh }: { client: SupabaseClient; fresh: number }) {
   const [filter, setFilter] = useState('unreviewed')
   const [rows, setRows] = useState<ReportRow[] | null>(null)
   const [more, setMore] = useState(false)
@@ -258,6 +315,10 @@ function Reports({ client }: { client: SupabaseClient }) {
     setRows(null)
     void load()
   }, [load])
+  // A new report (useOpenReports): the list again, keeping the filter and the open report.
+  useEffect(() => {
+    if (fresh) void load()
+  }, [fresh]) // eslint-disable-line react-hooks/exhaustive-deps
   const photos = useSigned(client, rows?.map((r) => r.reported?.photo_path) ?? [])
 
   return (

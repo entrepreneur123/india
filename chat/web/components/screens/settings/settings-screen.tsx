@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, ImageOff, Languages, LogOut, Mail, MessageCircle, Palette, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, ChartColumn, Check, ChevronRight, Download, ExternalLink, EyeOff, FileText, History, ImageOff, Languages, LogOut, Mail, MessageCircle, Palette, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
-import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
+import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, POSTHOG_KEY, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
 import { roomSoundsOn, setRoomSounds } from '@/lib/room-sounds'
 import { saveFlag, savedFlag } from '@/lib/flags'
 import { applyTheme, savedTheme, THEMES } from '@/lib/theme'
+import { setStats, statsOn } from '@/lib/telemetry'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useLooksT } from '@/components/looks/looks-text'
@@ -40,7 +41,25 @@ export function SettingsScreen() {
   const { lt } = useLooksT()
   const { data: shop } = useShop()
   const anon = useAnonSwitch()
-  const [busy, setBusy] = useState<'out' | 'delete' | null>(null)
+  const [stats, setStatsOn] = useState(statsOn)
+  const [busy, setBusy] = useState<'out' | 'delete' | 'data' | null>(null)
+
+  // Download my data (128 my_data): one JSON file of my own rows, saved by the browser.
+  const myData = async () => {
+    setBusy('data')
+    try {
+      const data = await backend.myData()
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+      a.download = `yaari-my-data-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      setTimeout(() => URL.revokeObjectURL(a.href), 10_000)
+    } catch (err) {
+      toast.error(err)
+    } finally {
+      setBusy(null)
+    }
+  }
 
   const signOut = async () => {
     setBusy('out')
@@ -102,6 +121,10 @@ export function SettingsScreen() {
           <Item icon={Ban} label={lt('blocks.title')} onClick={() => setBlocksOpen(true)} />
           <Item icon={History} label={t('settings.recents')} onClick={() => setRecentsOpen(true)} />
           <Item icon={ScrollText} label={t('settings.rules')} onClick={() => setRulesOpen(true)} />
+          {POSTHOG_KEY ? (
+            <Toggle icon={ChartColumn} label={t('settings.stats')} body={t('settings.statsBody')} on={stats} onChange={(on) => (setStats(on), setStatsOn(on))} />
+          ) : null}
+          <Item icon={Download} label={t('settings.myData')} onClick={() => void myData()} busy={busy === 'data'} />
           <Item icon={ShieldCheck} label={t('settings.privacy')} href={PRIVACY_URL} />
           <Item icon={FileText} label={t('settings.terms')} href={TERMS_URL} />
           <Item icon={Baby} label={t('settings.childSafety')} href={CHILD_SAFETY_URL} />

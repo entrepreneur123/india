@@ -528,6 +528,11 @@ const fil: Dict = {
   'settings.signOut': 'Mag-sign out',
   'settings.delete': 'I-delete ang account',
   'settings.footer': 'Para lang sa adults (18+) ang yaari. I-report ang sinumang lumalabag sa mga patakaran — anonymous ang mga report.',
+  'settings.myData': 'I-download ang data ko',
+  'settings.stats': 'Istatistika ng paggamit',
+  'settings.statsBody': 'Binibilang namin ang mga pagbisita at hakbang sa app para mapaganda ang Yaari. Hindi kailanman ang mga mensahe mo, walang ads, at walang iniimbak sa device mo para rito.',
+  'stats.yes': 'Payagan',
+  'stats.no': 'Huwag na',
   'settings.deleted': 'Na-delete ang account mo at lahat ng laman nito',
   'settings.deleteTitle': 'I-delete ang account mo?',
   'settings.deleteBody':

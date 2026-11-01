@@ -522,6 +522,11 @@ const ptBR: Dict = {
   'settings.signOut': 'Sair',
   'settings.delete': 'Excluir conta',
   'settings.footer': 'O yaari é só para maiores de 18. Denuncie quem quebrar as regras — as denúncias são anônimas.',
+  'settings.myData': 'Baixar meus dados',
+  'settings.stats': 'Estatísticas de uso',
+  'settings.statsBody': 'Contamos visitas e etapas no app para melhorar o Yaari. Nunca suas mensagens, sem anúncios e nada salvo no seu aparelho para isso.',
+  'stats.yes': 'Permitir',
+  'stats.no': 'Não, obrigado',
   'settings.deleted': 'Sua conta e tudo nela foram excluídos',
   'settings.deleteTitle': 'Excluir sua conta?',
   'settings.deleteBody':

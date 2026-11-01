@@ -528,6 +528,11 @@ const tr: Dict = {
   'settings.signOut': 'Çıkış yap',
   'settings.delete': 'Hesabı sil',
   'settings.footer': 'yaari sadece yetişkinler (18+) içindir. Kuralları çiğneyen herkesi şikâyet et — şikâyetler anonimdir.',
+  'settings.myData': 'Verilerimi indir',
+  'settings.stats': 'Kullanım istatistikleri',
+  'settings.statsBody': 'Yaari\'yi geliştirmek için ziyaretleri ve uygulama adımlarını sayarız. Mesajların asla, reklam yok, bunun için cihazında hiçbir şey saklanmaz.',
+  'stats.yes': 'İzin ver',
+  'stats.no': 'Hayır, teşekkürler',
   'settings.deleted': 'Hesabın ve içindeki her şey silindi',
   'settings.deleteTitle': 'Hesabın silinsin mi?',
   'settings.deleteBody':

@@ -528,6 +528,11 @@ const sw: Dict = {
   'settings.signOut': 'Toka',
   'settings.delete': 'Futa akaunti',
   'settings.footer': 'yaari ni kwa watu wazima (18+) pekee. Ripoti yeyote anayevunja kanuni — ripoti hazitaji jina lako.',
+  'settings.myData': 'Pakua data yangu',
+  'settings.stats': 'Takwimu za matumizi',
+  'settings.statsBody': 'Tunahesabu ziara na hatua kwenye programu ili kuboresha Yaari. Kamwe si ujumbe wako, hakuna matangazo, na hakuna kinachohifadhiwa kwenye kifaa chako kwa hili.',
+  'stats.yes': 'Ruhusu',
+  'stats.no': 'Hapana, asante',
   'settings.deleted': 'Akaunti yako na kila kitu ndani yake vimefutwa',
   'settings.deleteTitle': 'Ufute akaunti yako?',
   'settings.deleteBody':

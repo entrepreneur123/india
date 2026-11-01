@@ -528,6 +528,11 @@ const zhHans: Dict = {
   'settings.signOut': '退出登录',
   'settings.delete': '注销账号',
   'settings.footer': 'yaari 仅供成年人（18+）使用。如有人违反规则，请举报他们，举报是匿名的。',
+  'settings.myData': '下载我的数据',
+  'settings.stats': '使用统计',
+  'settings.statsBody': '我们统计访问次数和应用内步骤以改进 Yaari。绝不包括你的消息，不用于广告，也不会为此在你的设备上存储任何内容。',
+  'stats.yes': '允许',
+  'stats.no': '不用了',
   'settings.deleted': '你的账号及所有内容已删除',
   'settings.deleteTitle': '要注销你的账号吗？',
   'settings.deleteBody':
