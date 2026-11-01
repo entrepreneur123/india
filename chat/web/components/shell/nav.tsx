@@ -63,7 +63,8 @@ export function Sidebar({ className }: { className?: string }) {
           setTab('random')
           void mutate(() => true)
         }}
-        aria-label={t('nav.home')}
+        // The name starts with the logo's visible word (WCAG 2.5.3, label in name), then what it does.
+        aria-label={`yaari, ${t('nav.home')}`}
         title={t('nav.home')}
         className="flex justify-center self-center rounded-xl p-1 transition-opacity duration-150 hover:opacity-80 lg:self-start"
       >

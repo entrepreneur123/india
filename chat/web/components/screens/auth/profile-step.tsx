@@ -183,7 +183,7 @@ export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) 
       {noPhone ? (
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-semibold">{t('pf.country')}</span>
-          <CountrySelect value={country} onChange={setCountry} />
+          <CountrySelect value={country} onChange={setCountry} named />
         </div>
       ) : null}
 
