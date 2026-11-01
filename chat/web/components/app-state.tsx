@@ -24,12 +24,13 @@ export interface RandomControl {
   endChat: (force: boolean) => Promise<boolean>
 }
 
-/** The random chat while another tab is open: its bar (like a room's) says who, typing, unread. */
-export interface ChatBar {
-  partner: Profile
-  typing: boolean
-  unread: number
-}
+/**
+ * The random tab while another tab is open: its bar (like a room's) says who, typing, unread — or, before a match,
+ * that the search goes on (what it looks for, and whether the network is retrying).
+ */
+export type ChatBar =
+  | { partner: Profile; typing: boolean; unread: number }
+  | { partner: null; scope: string; reconnecting: boolean }
 
 /** Why the verification sheet opened: from Me, a 'verify_required' refusal, right after sign-up, or back from the check. */
 export type VerifyWhy = 'me' | 'gate' | 'signup' | 'return'

@@ -77,6 +77,9 @@ const vi: SocialDict = {
   'chatbar.end': 'Kết thúc trò chuyện',
   'chatbar.live': 'Đang trò chuyện · chạm để mở',
   'chatbar.minimise': 'Thu nhỏ trò chuyện',
+  'chatbar.openSearch': 'Quay lại tìm kiếm',
+  'chatbar.stopSearch': 'Dừng tìm kiếm',
+  'chatbar.hideSearch': 'Xem xung quanh trong khi tìm',
   // messenger contacts
   'contacts.title': 'Liên hệ ứng dụng nhắn tin',
   'contacts.note': 'Chỉ những người bạn bạn chọn mới thấy được.',

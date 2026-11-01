@@ -3,13 +3,14 @@
 import { AnimatePresence } from 'motion/react'
 import * as m from 'motion/react-m'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Flag, MessageCircle, Shuffle, Undo2, Users } from 'lucide-react'
+import { ChevronDown, Flag, MessageCircle, Shuffle, Undo2, Users } from 'lucide-react'
 import type { Match, Target } from '@/lib/backend'
 import { useBackend } from '@/lib/backend-context'
 import { errorCode, flagEmoji } from '@/lib/format'
 import { onPageVisibility, pageHidden } from '@/lib/visibility'
 import { useApp, useReported } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
+import { useSocialT } from '@/components/social/social-text'
 import { Segmented } from '@/components/ui/bits'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/pressable'
@@ -335,10 +336,14 @@ export function RandomScreen({ active }: { active: boolean }) {
     return () => registerRandom(null)
   }, [registerRandom, backend, toast])
 
-  // The chat's bar for the other tabs: who, typing, unread (the chat view reports the last two).
+  // The bar for the other tabs: who, typing, unread (the chat view reports the last two), or the search going on.
   const [status, setStatus] = useState({ typing: false, unread: 0 })
   const barPartner = phase === 'chat' ? match?.partner ?? null : null
-  useEffect(() => setChatBar(barPartner ? { partner: barPartner, ...status } : null), [barPartner, status, setChatBar])
+  const scope = scopeText(t, target, countries)
+  useEffect(
+    () => setChatBar(barPartner ? { partner: barPartner, ...status } : phase === 'matching' ? { partner: null, scope, reconnecting } : null),
+    [barPartner, status, phase, scope, reconnecting, setChatBar],
+  )
   useEffect(() => () => setChatBar(null), [setChatBar])
 
   /** Start from the lobby: out of my room first (after a confirm), then the search. */
@@ -425,11 +430,11 @@ export function RandomScreen({ active }: { active: boolean }) {
             </div>
           </m.section>
         ) : phase === 'matching' ? (
-          <Matching key="matching" target={target} countries={countries} reconnecting={reconnecting} onCancel={cancelMatching} active={active} />
+          <Matching key="matching" scope={scope} reconnecting={reconnecting} onCancel={cancelMatching} onMinimise={minimiseRandom} active={active} />
         ) : match ? (
           <m.div key={match.id} className="relative flex min-h-0 flex-1 flex-col" {...fade}>
             <ScreenBoundary>
-              <Suspense fallback={<Matching target={target} countries={countries} onCancel={() => undefined} />}>
+              <Suspense fallback={<Matching scope={scope} onCancel={() => undefined} />}>
                 <ChatView
                   matchId={match.id}
                   partner={match.partner}
@@ -488,32 +493,42 @@ function Pill({ icon, children }: { icon: React.ReactNode; children: React.React
   )
 }
 
+/** Whom the search looks for: "Everyone · 🇮🇳", or "Women · Worldwide". */
+function scopeText(t: ReturnType<typeof useI18n>['t'], target: Target, countries: string[]) {
+  const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
+  return countries.length ? `${who} · ${flagEmoji(countries[0])}` : t('matching.scope', { who })
+}
+
 function Matching({
-  target,
-  countries,
+  scope,
   reconnecting = false,
   onCancel,
+  onMinimise,
   active = false,
 }: {
-  target: Target
-  countries: string[]
+  scope: string
   reconnecting?: boolean
   onCancel: () => void
+  /** Look around the other tabs while the search goes on (its bar brings me back), as v does in a chat. */
+  onMinimise?: () => void
   active?: boolean
 }) {
   const { me } = useApp()
   const myFrame = (useLook(me?.id)?.frame ?? null) as FrameId | null
   const { t } = useI18n()
-  const who = target === 'any' ? t('lobby.everyone') : target === 'female' ? t('lobby.women') : t('lobby.men')
+  const { st } = useSocialT()
   return (
     <m.section
       className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden px-6 py-10"
       {...fade}
       aria-live="polite"
     >
-      <span className="rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
-        {countries.length ? `${who} · ${flagEmoji(countries[0])}` : t('matching.scope', { who })}
-      </span>
+      {onMinimise ? (
+        <Button size="icon" variant="ghost" onClick={onMinimise} aria-label={st('chatbar.hideSearch')} title={st('chatbar.hideSearch')} className="absolute top-2 inset-s-3">
+          <ChevronDown className="size-6" aria-hidden />
+        </Button>
+      ) : null}
+      <span className="rounded-full border border-border px-3.5 py-1.5 text-xs font-medium text-muted-foreground">{scope}</span>
 
       <div className="relative mt-12 grid size-56 place-items-center">
         {/* Two soft rings growing out of the avatar: transform and opacity only, cheap on low-end phones. */}

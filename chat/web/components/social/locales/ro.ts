@@ -77,6 +77,9 @@ const ro: SocialDict = {
   'chatbar.end': 'Încheie chatul',
   'chatbar.live': 'Chat live · atinge ca să deschizi',
   'chatbar.minimise': 'Minimizează chatul',
+  'chatbar.openSearch': 'Înapoi la căutare',
+  'chatbar.stopSearch': 'Oprește căutarea',
+  'chatbar.hideSearch': 'Explorează în timpul căutării',
   // messenger contacts
   'contacts.title': 'Contacte de mesagerie',
   'contacts.note': 'Doar prietenii pe care îi alegi le pot vedea.',

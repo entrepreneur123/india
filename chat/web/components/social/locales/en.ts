@@ -81,6 +81,9 @@ const en = {
   'chatbar.end': 'End chat',
   'chatbar.live': 'Live chat · tap to open',
   'chatbar.minimise': 'Minimise chat',
+  'chatbar.openSearch': 'Back to the search',
+  'chatbar.stopSearch': 'Stop searching',
+  'chatbar.hideSearch': 'Look around while searching',
   // messenger contacts friends exchange (app names are brands, never translated)
   'contacts.title': 'Messenger contacts',
   'contacts.note': 'Only friends you choose can see these.',

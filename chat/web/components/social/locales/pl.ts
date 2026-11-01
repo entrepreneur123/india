@@ -78,6 +78,9 @@ const pl: SocialDict = {
   'chatbar.end': 'Zakończ czat',
   'chatbar.live': 'Czat na żywo · dotknij, aby otworzyć',
   'chatbar.minimise': 'Zminimalizuj czat',
+  'chatbar.openSearch': 'Wróć do wyszukiwania',
+  'chatbar.stopSearch': 'Przestań szukać',
+  'chatbar.hideSearch': 'Rozejrzyj się podczas szukania',
   // messenger contacts
   'contacts.title': 'Kontakty w komunikatorach',
   'contacts.note': 'Widzą je tylko wybrani przez ciebie znajomi.',

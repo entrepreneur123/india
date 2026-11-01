@@ -76,6 +76,9 @@ const kn: SocialDict = {
   'chatbar.end': 'ಚಾಟ್ ಮುಗಿಸಿ',
   'chatbar.live': 'ಲೈವ್ ಚಾಟ್ · ತೆರೆಯಲು ಟ್ಯಾಪ್ ಮಾಡಿ',
   'chatbar.minimise': 'ಚಾಟ್ ಚಿಕ್ಕದಾಗಿಸಿ',
+  'chatbar.openSearch': 'ಹುಡುಕಾಟಕ್ಕೆ ಹಿಂತಿರುಗಿ',
+  'chatbar.stopSearch': 'ಹುಡುಕಾಟ ನಿಲ್ಲಿಸಿ',
+  'chatbar.hideSearch': 'ಹುಡುಕುವಾಗ ಸುತ್ತಲೂ ನೋಡಿ',
   // messenger contacts
   'contacts.title': 'ಮೆಸೆಂಜರ್ ಸಂಪರ್ಕಗಳು',
   'contacts.note': 'ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಸ್ನೇಹಿತರು ಮಾತ್ರ ಇವನ್ನು ನೋಡಬಹುದು.',

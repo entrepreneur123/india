@@ -77,6 +77,9 @@ const bn: SocialDict = {
   'chatbar.end': 'চ্যাট শেষ করুন',
   'chatbar.live': 'লাইভ চ্যাট · খুলতে ট্যাপ করুন',
   'chatbar.minimise': 'চ্যাট ছোট করুন',
+  'chatbar.openSearch': 'খোঁজায় ফিরে যান',
+  'chatbar.stopSearch': 'খোঁজা বন্ধ করুন',
+  'chatbar.hideSearch': 'খোঁজার সময় ঘুরে দেখুন',
   // messenger contacts
   'contacts.title': 'মেসেঞ্জার যোগাযোগ',
   'contacts.note': 'শুধু আপনার বেছে নেওয়া বন্ধুরাই এগুলো দেখতে পাবে।',

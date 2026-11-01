@@ -84,6 +84,9 @@ const ru: SocialDict = {
   'chatbar.end': 'Завершить чат',
   'chatbar.live': 'Чат идёт · нажмите, чтобы открыть',
   'chatbar.minimise': 'Свернуть чат',
+  'chatbar.openSearch': 'Вернуться к поиску',
+  'chatbar.stopSearch': 'Остановить поиск',
+  'chatbar.hideSearch': 'Осмотреться во время поиска',
   // messenger contacts
   'contacts.title': 'Контакты в мессенджерах',
   'contacts.note': 'Их видят только друзья, которых вы выберете.',

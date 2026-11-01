@@ -326,7 +326,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
   )
 
   // Only what changes the panel's line (not the chat bar's typing and unread counts).
-  const myPresence: AppState['myPresence'] = voice ? 'room' : chatBar ? 'chat' : immersive ? 'matching' : 'online'
+  const myPresence: AppState['myPresence'] = voice ? 'room' : chatBar?.partner ? 'chat' : immersive ? 'matching' : 'online'
   // 088: friends see me come online, change what I'm doing and leave at once (no waiting for their next poll).
   // Shortly after a change, so the server already has the room, chat or queue the change came from.
   useEffect(() => {
@@ -535,7 +535,7 @@ function Shell({ initialMe, phone, onSignedOut }: Props) {
                 </ScreenBoundary>
               ) : null}
               <AnimatePresence>
-                {chatPill ? <ChatPill key="chat" bar={chatBar!} onOpen={() => setTab('random')} onEnd={() => void randomCtl.current?.endChat(false)} /> : null}
+                {chatPill ? <ChatPill key="chat" bar={chatBar!} onOpen={() => setTab('random')} onEnd={() => void (chatBar!.partner ? randomCtl.current?.endChat(false) : randomCtl.current?.cancelSearch())} /> : null}
               </AnimatePresence>
             </main>
             {/* 11: the friends panel stays beside a room or a random chat too. */}

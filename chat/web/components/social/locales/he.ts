@@ -83,6 +83,9 @@ const he: SocialDict = {
   'chatbar.end': 'סיום הצ׳אט',
   'chatbar.live': 'צ׳אט חי · הקשה לפתיחה',
   'chatbar.minimise': 'מזעור הצ׳אט',
+  'chatbar.openSearch': 'חזרה לחיפוש',
+  'chatbar.stopSearch': 'הפסקת החיפוש',
+  'chatbar.hideSearch': 'לגלוש בזמן החיפוש',
   // messenger contacts
   'contacts.title': 'אנשי קשר במסנג׳רים',
   'contacts.note': 'רק חברים שתבחרו יוכלו לראות אותם.',

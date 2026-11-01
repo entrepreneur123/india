@@ -78,6 +78,9 @@ const fr: SocialDict = {
   'chatbar.end': 'Terminer le chat',
   'chatbar.live': 'Chat en direct · appuyez pour ouvrir',
   'chatbar.minimise': 'Réduire le chat',
+  'chatbar.openSearch': 'Revenir à la recherche',
+  'chatbar.stopSearch': 'Arrêter la recherche',
+  'chatbar.hideSearch': 'Parcourir pendant la recherche',
   // messenger contacts
   'contacts.title': 'Contacts de messagerie',
   'contacts.note': 'Seuls les amis que vous choisissez peuvent les voir.',

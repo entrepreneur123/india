@@ -76,6 +76,9 @@ const ne: SocialDict = {
   'chatbar.end': 'च्याट सक्नुहोस्',
   'chatbar.live': 'लाइभ च्याट · खोल्न ट्याप गर्नुहोस्',
   'chatbar.minimise': 'च्याट सानो बनाउनुहोस्',
+  'chatbar.openSearch': 'खोजमा फर्कनुहोस्',
+  'chatbar.stopSearch': 'खोज रोक्नुहोस्',
+  'chatbar.hideSearch': 'खोज्दै गर्दा वरिपरि हेर्नुहोस्',
   // messenger contacts
   'contacts.title': 'मेसेन्जर सम्पर्कहरू',
   'contacts.note': 'यी तपाईंले छानेका साथीहरूले मात्र हेर्न सक्छन्।',

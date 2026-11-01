@@ -71,6 +71,9 @@ const mr: SocialDict = {
   'chatbar.end': 'चॅट संपवा',
   'chatbar.live': 'लाइव्ह चॅट · उघडण्यासाठी टॅप करा',
   'chatbar.minimise': 'चॅट लहान करा',
+  'chatbar.openSearch': 'शोधाकडे परत जा',
+  'chatbar.stopSearch': 'शोध थांबवा',
+  'chatbar.hideSearch': 'शोधताना इतरत्र पाहा',
   // messenger contacts
   'contacts.title': 'मेसेंजर संपर्क',
   'contacts.note': 'हे फक्त तुम्ही निवडलेले मित्रच पाहू शकतात.',

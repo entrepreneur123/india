@@ -81,6 +81,9 @@ const sw: SocialDict = {
   'chatbar.end': 'Maliza chat',
   'chatbar.live': 'Chat hai · gusa ili kufungua',
   'chatbar.minimise': 'Punguza chat',
+  'chatbar.openSearch': 'Rudi kwenye utafutaji',
+  'chatbar.stopSearch': 'Acha kutafuta',
+  'chatbar.hideSearch': 'Vinjari ukiendelea kutafuta',
   // messenger contacts
   'contacts.title': 'Mawasiliano ya programu za ujumbe',
   'contacts.note': 'Ni marafiki unaowachagua tu wanaoweza kuyaona.',

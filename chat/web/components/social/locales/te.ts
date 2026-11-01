@@ -76,6 +76,9 @@ const te: SocialDict = {
   'chatbar.end': 'చాట్ ముగించు',
   'chatbar.live': 'లైవ్ చాట్ · తెరవడానికి ట్యాప్ చేయండి',
   'chatbar.minimise': 'చాట్‌ని చిన్నది చేయి',
+  'chatbar.openSearch': 'శోధనకు తిరిగి వెళ్ళు',
+  'chatbar.stopSearch': 'శోధన ఆపు',
+  'chatbar.hideSearch': 'శోధిస్తూ చుట్టూ చూడు',
   // messenger contacts
   'contacts.title': 'మెసెంజర్ కాంటాక్ట్‌లు',
   'contacts.note': 'మీరు ఎంచుకున్న స్నేహితులు మాత్రమే వీటిని చూడగలరు.',

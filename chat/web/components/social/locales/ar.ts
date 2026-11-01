@@ -85,6 +85,9 @@ const ar: SocialDict = {
   'chatbar.end': 'إنهاء الدردشة',
   'chatbar.live': 'دردشة مباشرة · اضغط للفتح',
   'chatbar.minimise': 'تصغير الدردشة',
+  'chatbar.openSearch': 'العودة إلى البحث',
+  'chatbar.stopSearch': 'إيقاف البحث',
+  'chatbar.hideSearch': 'تصفّح أثناء البحث',
   // messenger contacts
   'contacts.title': 'جهات اتصال التطبيقات',
   'contacts.note': 'لا يراها إلا الأصدقاء الذين تختارهم.',

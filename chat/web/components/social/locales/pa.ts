@@ -71,6 +71,9 @@ const pa: SocialDict = {
   'chatbar.end': 'ਚੈਟ ਖ਼ਤਮ ਕਰੋ',
   'chatbar.live': 'ਲਾਈਵ ਚੈਟ · ਖੋਲ੍ਹਣ ਲਈ ਟੈਪ ਕਰੋ',
   'chatbar.minimise': 'ਚੈਟ ਛੋਟੀ ਕਰੋ',
+  'chatbar.openSearch': 'ਖੋਜ ਤੇ ਵਾਪਸ ਜਾਓ',
+  'chatbar.stopSearch': 'ਖੋਜ ਬੰਦ ਕਰੋ',
+  'chatbar.hideSearch': 'ਖੋਜਦੇ ਸਮੇਂ ਆਲੇ-ਦੁਆਲੇ ਦੇਖੋ',
   // messenger contacts
   'contacts.title': 'ਮੈਸੇਂਜਰ ਸੰਪਰਕ',
   'contacts.note': 'ਇਹਨਾਂ ਨੂੰ ਸਿਰਫ਼ ਉਹੀ ਦੋਸਤ ਦੇਖ ਸਕਦੇ ਹਨ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਚੁਣੋ।',

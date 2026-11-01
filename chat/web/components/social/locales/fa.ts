@@ -81,6 +81,9 @@ const fa: SocialDict = {
   'chatbar.end': 'پایان چت',
   'chatbar.live': 'چت زنده · برای باز کردن بزنید',
   'chatbar.minimise': 'کوچک کردن چت',
+  'chatbar.openSearch': 'بازگشت به جستجو',
+  'chatbar.stopSearch': 'توقف جستجو',
+  'chatbar.hideSearch': 'گشت‌وگذار هنگام جستجو',
   // messenger contacts
   'contacts.title': 'راه‌های ارتباطی در پیام‌رسان‌ها',
   'contacts.note': 'فقط دوستانی که انتخاب می‌کنید این‌ها را می‌بینند.',
