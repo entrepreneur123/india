@@ -1,15 +1,15 @@
 {
- "generated": "2026-11-01T02:57+00:00",
+ "generated": "2026-11-01T10:39+00:00",
  "site": "sc-domain:lottodost.com",
  "start": "2026-10-04",
  "end": "2026-11-01",
  "countries": [
   {
    "country": "ind",
-   "clicks": 165,
-   "impressions": 2234,
-   "ctr": 0.0739,
-   "position": 7.8
+   "clicks": 173,
+   "impressions": 2293,
+   "ctr": 0.0754,
+   "position": 7.7
   },
   {
    "country": "kor",
@@ -20,10 +20,10 @@
   },
   {
    "country": "bgd",
-   "clicks": 1,
-   "impressions": 60,
-   "ctr": 0.0167,
-   "position": 22.2
+   "clicks": 2,
+   "impressions": 62,
+   "ctr": 0.0323,
+   "position": 21.7
   },
   {
    "country": "are",
@@ -70,9 +70,9 @@
   {
    "country": "bra",
    "clicks": 0,
-   "impressions": 19,
+   "impressions": 21,
    "ctr": 0,
-   "position": 48.7
+   "position": 47.5
   },
   {
    "country": "btn",
@@ -224,9 +224,9 @@
   {
    "country": "usa",
    "clicks": 0,
-   "impressions": 8,
+   "impressions": 9,
    "ctr": 0,
-   "position": 31.6
+   "position": 29
   },
   {
    "country": "vnm",
@@ -295,10 +295,10 @@
   },
   {
    "date": "2026-10-31",
-   "clicks": 35,
-   "impressions": 531,
-   "ctr": 0.0659,
-   "position": 7.8
+   "clicks": 44,
+   "impressions": 595,
+   "ctr": 0.0739,
+   "position": 7.7
   }
  ],
  "queries_india": [
@@ -308,6 +308,13 @@
    "impressions": 14,
    "ctr": 0.4286,
    "position": 2.1
+  },
+  {
+   "query": "maharashtra gajlaxmi shukra weekly draw",
+   "clicks": 2,
+   "impressions": 5,
+   "ctr": 0.4,
+   "position": 4.8
   },
   {
    "query": "25.10 21 lottery result",
@@ -361,8 +368,8 @@
   {
    "query": "maharashtra gajalakshmi",
    "clicks": 1,
-   "impressions": 21,
-   "ctr": 0.0476,
+   "impressions": 22,
+   "ctr": 0.0455,
    "position": 6.1
   },
   {
@@ -380,18 +387,25 @@
    "position": 5
   },
   {
+   "query": "maharashtra padmini lottery",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 4
+  },
+  {
    "query": "maharashtra padmini weekly draw",
    "clicks": 1,
-   "impressions": 5,
-   "ctr": 0.2,
-   "position": 6.6
+   "impressions": 7,
+   "ctr": 0.1429,
+   "position": 6.4
   },
   {
    "query": "maharashtra sahyadri vijayalakshmi weekly draw",
    "clicks": 1,
-   "impressions": 1,
-   "ctr": 1,
-   "position": 3
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 4
   },
   {
    "query": "maharashtra tejasvini",
@@ -539,6 +553,13 @@
    "impressions": 3,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "29.10.26 dear lottery result",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 36
   },
   {
    "query": "dear lottery29 10.26",
@@ -716,6 +737,13 @@
    "position": 9.6
   },
   {
+   "query": "lottery notary",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
    "query": "lottery payout calculator",
    "clicks": 0,
    "impressions": 7,
@@ -749,6 +777,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "lottery result 28.10 2026",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 37
   },
   {
    "query": "lottery result 28.10.2026",
@@ -851,9 +886,9 @@
   {
    "query": "lottery tax calculator india",
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 19,
    "ctr": 0,
-   "position": 5.3
+   "position": 5.4
   },
   {
    "query": "lottery winning calculator",
@@ -900,7 +935,7 @@
   {
    "query": "maharashtra gajalakshmi lottery",
    "clicks": 0,
-   "impressions": 29,
+   "impressions": 30,
    "ctr": 0,
    "position": 9.2
   },
@@ -942,14 +977,14 @@
   {
    "query": "maharashtra gajlaxmi lottery result",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 5
+   "position": 5.2
   },
   {
    "query": "maharashtra gajlaxmi lottery result today",
    "clicks": 0,
-   "impressions": 66,
+   "impressions": 67,
    "ctr": 0,
    "position": 8.8
   },
@@ -968,13 +1003,6 @@
    "position": 6
   },
   {
-   "query": "maharashtra gajlaxmi shukra weekly draw",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 6
-  },
-  {
    "query": "maharashtra ganesh laxmi shubh weekly draw",
    "clicks": 0,
    "impressions": 1,
@@ -987,13 +1015,6 @@
    "impressions": 2,
    "ctr": 0,
    "position": 2.5
-  },
-  {
-   "query": "maharashtra padmini lottery",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 5
   },
   {
    "query": "maharashtra padmini lottery nikal today",
@@ -1029,6 +1050,13 @@
    "impressions": 3,
    "ctr": 0,
    "position": 6.3
+  },
+  {
+   "query": "maharashtra sagar lakshmi lottery",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
   },
   {
    "query": "maharashtra sahyadri",
@@ -1068,9 +1096,9 @@
   {
    "query": "maharashtra sahyadri mahalaxmi weekly draw",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 6.2
+   "position": 6.4
   },
   {
    "query": "maharashtra tejaswini",
@@ -1089,7 +1117,7 @@
   {
    "query": "maharashtra tejaswini monthly draw",
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 7,
    "ctr": 0,
    "position": 9
   },
@@ -1099,6 +1127,20 @@
    "impressions": 1,
    "ctr": 0,
    "position": 9
+  },
+  {
+   "query": "midnight result",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "query": "nagaland lottery result 29 10 26",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 32
   },
   {
    "query": "nagaland state lottery 25.10.26",
@@ -1287,30 +1329,37 @@
   {
    "page": "https://lottodost.com/maharashtra/akshay/",
    "clicks": 51,
-   "impressions": 325,
-   "ctr": 0.1569,
+   "impressions": 328,
+   "ctr": 0.1555,
    "position": 4.1
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
+   "clicks": 17,
+   "impressions": 163,
+   "ctr": 0.1043,
+   "position": 6
   },
   {
    "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
    "clicks": 16,
-   "impressions": 204,
-   "ctr": 0.0784,
-   "position": 6.2
-  },
-  {
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
-   "clicks": 13,
-   "impressions": 138,
-   "ctr": 0.0942,
+   "impressions": 205,
+   "ctr": 0.078,
    "position": 6.2
   },
   {
    "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
-   "clicks": 12,
-   "impressions": 85,
-   "ctr": 0.1412,
-   "position": 5.8
+   "clicks": 13,
+   "impressions": 88,
+   "ctr": 0.1477,
+   "position": 5.7
+  },
+  {
+   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "clicks": 7,
+   "impressions": 112,
+   "ctr": 0.0625,
+   "position": 6.7
   },
   {
    "page": "https://lottodost.com/",
@@ -1327,11 +1376,11 @@
    "position": 4.6
   },
   {
-   "page": "https://lottodost.com/maharashtra/tejaswini/",
+   "page": "https://lottodost.com/maharashtra/padmini/",
    "clicks": 5,
-   "impressions": 102,
-   "ctr": 0.049,
-   "position": 6.8
+   "impressions": 126,
+   "ctr": 0.0397,
+   "position": 5.4
   },
   {
    "page": "https://lottodost.com/result/25-10-2026/",
@@ -1355,25 +1404,18 @@
    "position": 6.7
   },
   {
-   "page": "https://lottodost.com/maharashtra/padmini/",
-   "clicks": 4,
-   "impressions": 121,
-   "ctr": 0.0331,
-   "position": 5.4
-  },
-  {
    "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
    "clicks": 4,
-   "impressions": 53,
-   "ctr": 0.0755,
-   "position": 6.2
+   "impressions": 55,
+   "ctr": 0.0727,
+   "position": 6.3
   },
   {
    "page": "https://lottodost.com/result/29-10-2026/",
    "clicks": 4,
-   "impressions": 40,
-   "ctr": 0.1,
-   "position": 13.0
+   "impressions": 41,
+   "ctr": 0.0976,
+   "position": 13.4
   },
   {
    "page": "https://lottodost.com/kerala/",
@@ -1392,9 +1434,9 @@
   {
    "page": "https://lottodost.com/result/27-10-2026/maharashtra-padmini/",
    "clicks": 3,
-   "impressions": 36,
-   "ctr": 0.0833,
-   "position": 5.4
+   "impressions": 37,
+   "ctr": 0.0811,
+   "position": 5.5
   },
   {
    "page": "https://lottodost.com/hi/maharashtra/sahyadri-deeplaxmi/",
@@ -1427,9 +1469,16 @@
   {
    "page": "https://lottodost.com/result/28-10-2026/",
    "clicks": 2,
-   "impressions": 67,
-   "ctr": 0.0299,
-   "position": 13.3
+   "impressions": 68,
+   "ctr": 0.0294,
+   "position": 13.2
+  },
+  {
+   "page": "https://lottodost.com/bn/night-8pm/",
+   "clicks": 1,
+   "impressions": 10,
+   "ctr": 0.1,
+   "position": 21.6
   },
   {
    "page": "https://lottodost.com/bn/result/08-06-2026/8pm/",
@@ -1511,8 +1560,8 @@
   {
    "page": "https://lottodost.com/lottery-tax/",
    "clicks": 1,
-   "impressions": 109,
-   "ctr": 0.0092,
+   "impressions": 110,
+   "ctr": 0.0091,
    "position": 8.5
   },
   {
@@ -1525,15 +1574,15 @@
   {
    "page": "https://lottodost.com/maharashtra/sagarlaxmi/",
    "clicks": 1,
-   "impressions": 36,
-   "ctr": 0.0278,
-   "position": 4.8
+   "impressions": 39,
+   "ctr": 0.0256,
+   "position": 4.9
   },
   {
    "page": "https://lottodost.com/night-8pm/",
    "clicks": 1,
-   "impressions": 33,
-   "ctr": 0.0303,
+   "impressions": 35,
+   "ctr": 0.0286,
    "position": 7.2
   },
   {
@@ -1649,13 +1698,6 @@
    "position": 7.1
   },
   {
-   "page": "https://lottodost.com/bn/night-8pm/",
-   "clicks": 0,
-   "impressions": 9,
-   "ctr": 0,
-   "position": 22.9
-  },
-  {
    "page": "https://lottodost.com/bn/old-results/2026-02/",
    "clicks": 0,
    "impressions": 1,
@@ -1756,9 +1798,9 @@
   {
    "page": "https://lottodost.com/bn/result/06-03-2026/1pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 10
+   "position": 8.5
   },
   {
    "page": "https://lottodost.com/bn/result/06-03-2026/6pm/",
@@ -1766,6 +1808,13 @@
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "page": "https://lottodost.com/bn/result/06-03-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
   },
   {
    "page": "https://lottodost.com/bn/result/06-05-2026/1pm/",
@@ -2202,6 +2251,13 @@
    "position": 4
   },
   {
+   "page": "https://lottodost.com/bn/result/20-01-2026/8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
    "page": "https://lottodost.com/bn/result/20-02-2026/6pm/",
    "clicks": 0,
    "impressions": 1,
@@ -2288,9 +2344,9 @@
   {
    "page": "https://lottodost.com/bn/result/24-05-2026/1pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 36
+   "position": 48.5
   },
   {
    "page": "https://lottodost.com/bn/result/24-05-2026/6pm/",
@@ -2575,7 +2631,7 @@
   {
    "page": "https://lottodost.com/hi/claim-prize/",
    "clicks": 0,
-   "impressions": 9,
+   "impressions": 10,
    "ctr": 0,
    "position": 6.3
   },
@@ -2732,6 +2788,13 @@
    "impressions": 2,
    "ctr": 0,
    "position": 9
+  },
+  {
+   "page": "https://lottodost.com/hi/result/06-03-2026/1pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
   },
   {
    "page": "https://lottodost.com/hi/result/06-03-2026/6pm/",
@@ -3282,7 +3345,7 @@
   {
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-shubh/",
    "clicks": 0,
-   "impressions": 11,
+   "impressions": 12,
    "ctr": 0,
    "position": 5.9
   },
@@ -3611,9 +3674,9 @@
   {
    "page": "https://lottodost.com/result/20-03-2026/6pm/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 5
+   "position": 6.5
   },
   {
    "page": "https://lottodost.com/result/20-06-2026/",
@@ -3653,9 +3716,9 @@
   {
    "page": "https://lottodost.com/result/21-10-2026/kerala/",
    "clicks": 0,
-   "impressions": 5,
+   "impressions": 6,
    "ctr": 0,
-   "position": 8.4
+   "position": 7.7
   },
   {
    "page": "https://lottodost.com/result/22-06-2026/",
@@ -4025,6 +4088,14 @@
    "position": 2.1
   },
   {
+   "query": "maharashtra gajlaxmi shukra weekly draw",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
+   "clicks": 2,
+   "impressions": 5,
+   "ctr": 0.4,
+   "position": 4.8
+  },
+  {
    "query": "25.10 21 lottery result",
    "page": "https://lottodost.com/",
    "clicks": 1,
@@ -4084,8 +4155,8 @@
    "query": "maharashtra gajalakshmi",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-budh/",
    "clicks": 1,
-   "impressions": 20,
-   "ctr": 0.05,
+   "impressions": 21,
+   "ctr": 0.0476,
    "position": 6.2
   },
   {
@@ -4105,20 +4176,28 @@
    "position": 5
   },
   {
+   "query": "maharashtra padmini lottery",
+   "page": "https://lottodost.com/maharashtra/padmini/",
+   "clicks": 1,
+   "impressions": 3,
+   "ctr": 0.3333,
+   "position": 4
+  },
+  {
    "query": "maharashtra padmini weekly draw",
    "page": "https://lottodost.com/maharashtra/padmini/",
    "clicks": 1,
-   "impressions": 5,
-   "ctr": 0.2,
-   "position": 6.6
+   "impressions": 7,
+   "ctr": 0.1429,
+   "position": 6.4
   },
   {
    "query": "maharashtra sahyadri vijayalakshmi weekly draw",
    "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
    "clicks": 1,
-   "impressions": 1,
-   "ctr": 1,
-   "position": 3
+   "impressions": 2,
+   "ctr": 0.5,
+   "position": 4
   },
   {
    "query": "maharashtra tejasvini",
@@ -4287,6 +4366,14 @@
    "impressions": 3,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "29.10.26 dear lottery result",
+   "page": "https://lottodost.com/result/29-10-2026/",
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 36
   },
   {
    "query": "dear lottery29 10.26",
@@ -4553,6 +4640,14 @@
    "position": 9.6
   },
   {
+   "query": "lottery notary",
+   "page": "https://lottodost.com/claim-prize/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
    "query": "lottery payout calculator",
    "page": "https://lottodost.com/lottery-tax/",
    "clicks": 0,
@@ -4591,6 +4686,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "lottery result 28.10 2026",
+   "page": "https://lottodost.com/result/28-10-2026/kerala/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 37
   },
   {
    "query": "lottery result 28.10.2026",
@@ -4716,9 +4819,9 @@
    "query": "lottery tax calculator india",
    "page": "https://lottodost.com/lottery-tax/",
    "clicks": 0,
-   "impressions": 18,
+   "impressions": 19,
    "ctr": 0,
-   "position": 5.3
+   "position": 5.4
   },
   {
    "query": "lottery winning calculator",
@@ -4791,6 +4894,14 @@
    "impressions": 1,
    "ctr": 0,
    "position": 8
+  },
+  {
+   "query": "maharashtra gajalakshmi lottery",
+   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
   },
   {
    "query": "maharashtra gajalakshmi lottery",
@@ -4884,9 +4995,9 @@
    "query": "maharashtra gajlaxmi lottery result",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
    "clicks": 0,
-   "impressions": 1,
+   "impressions": 2,
    "ctr": 0,
-   "position": 5
+   "position": 5.5
   },
   {
    "query": "maharashtra gajlaxmi lottery result today",
@@ -4908,7 +5019,7 @@
    "query": "maharashtra gajlaxmi lottery result today",
    "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
    "clicks": 0,
-   "impressions": 17,
+   "impressions": 18,
    "ctr": 0,
    "position": 7.4
   },
@@ -4945,14 +5056,6 @@
    "position": 6
   },
   {
-   "query": "maharashtra gajlaxmi shukra weekly draw",
-   "page": "https://lottodost.com/maharashtra/gajlaxmi-shukra/",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 6
-  },
-  {
    "query": "maharashtra ganesh laxmi shubh weekly draw",
    "page": "https://lottodost.com/maharashtra/ganeshlaxmi-shubh/",
    "clicks": 0,
@@ -4967,14 +5070,6 @@
    "impressions": 2,
    "ctr": 0,
    "position": 2.5
-  },
-  {
-   "query": "maharashtra padmini lottery",
-   "page": "https://lottodost.com/maharashtra/padmini/",
-   "clicks": 0,
-   "impressions": 2,
-   "ctr": 0,
-   "position": 5
   },
   {
    "query": "maharashtra padmini lottery nikal today",
@@ -5025,6 +5120,14 @@
    "position": 5
   },
   {
+   "query": "maharashtra sagar lakshmi lottery",
+   "page": "https://lottodost.com/maharashtra/sagarlaxmi/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
    "query": "maharashtra sahyadri",
    "page": "https://lottodost.com/maharashtra/sahyadri-vijayalaxmi/",
    "clicks": 0,
@@ -5068,9 +5171,9 @@
    "query": "maharashtra sahyadri mahalaxmi weekly draw",
    "page": "https://lottodost.com/maharashtra/sahyadri-mahalaxmi/",
    "clicks": 0,
-   "impressions": 4,
+   "impressions": 5,
    "ctr": 0,
-   "position": 6.2
+   "position": 6.4
   },
   {
    "query": "maharashtra tejaswini",
@@ -5092,7 +5195,7 @@
    "query": "maharashtra tejaswini monthly draw",
    "page": "https://lottodost.com/maharashtra/tejaswini/",
    "clicks": 0,
-   "impressions": 6,
+   "impressions": 7,
    "ctr": 0,
    "position": 9
   },
@@ -5103,6 +5206,22 @@
    "impressions": 1,
    "ctr": 0,
    "position": 9
+  },
+  {
+   "query": "midnight result",
+   "page": "https://lottodost.com/night-8pm/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 4
+  },
+  {
+   "query": "nagaland lottery result 29 10 26",
+   "page": "https://lottodost.com/result/29-10-2026/",
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 32
   },
   {
    "query": "nagaland state lottery 25.10.26",
@@ -5434,7 +5553,7 @@
    "url": "https://lottodost.com/maharashtra/",
    "verdict": "PASS",
    "coverage": "Submitted and indexed",
-   "lastCrawl": "2026-10-28T13:32:36Z",
+   "lastCrawl": "2026-11-01T04:42:25Z",
    "canonical": "https://lottodost.com/maharashtra/"
   },
   {
