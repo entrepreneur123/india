@@ -807,6 +807,10 @@ export type BackendErrorCode =
   | 'handle_cooldown'
   /** 040: a name with fancy-font letters (𝓛𝓲𝓼𝓪) or stacked accents. */
   | 'name_invalid'
+  /** 125: a name with a swear word or slur (chat lines and bios are masked instead). */
+  | 'name_rude'
+  /** 125: the same line again and again, the same line in many chats, or many links to people who aren't friends. */
+  | 'spam'
   | 'too_many_posts'
   /** 040: wearing a look I don't own (046: also a wall or incognito). */
   | 'not_owned'

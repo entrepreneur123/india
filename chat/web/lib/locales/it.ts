@@ -576,6 +576,8 @@ const it: Dict = {
   'error.handle_taken': 'Questo ID è già in uso. Scegline un altro',
   'error.handle_cooldown': 'Puoi cambiare il tuo ID una volta ogni 30 giorni',
   'error.name_invalid': 'Scrivi il tuo nome con lettere normali: le lettere di caratteri decorativi non sono ammesse',
+  'error.name_rude': 'Questo nome non è consentito. Scegline un altro',
+  'error.spam': 'Non inviato: lo stesso messaggio di nuovo o troppi link. Riprova tra qualche minuto',
   'error.not_owned': 'Non possiedi ancora questo look',
   'error.chat_closed': 'Questa chat è finita. Aggiungi la persona agli amici per continuare a parlare',
   'error.generic': 'Qualcosa è andato storto. Riprova',

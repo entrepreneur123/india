@@ -586,6 +586,8 @@ const id: Dict = {
   'error.handle_taken': 'ID itu sudah dipakai. Pilih yang lain',
   'error.handle_cooldown': 'Kamu bisa mengganti ID sekali tiap 30 hari',
   'error.name_invalid': 'Tulis namamu dengan huruf biasa: huruf dari font hias tidak bisa dipakai',
+  'error.name_rude': 'Nama ini tidak diizinkan. Pilih nama lain',
+  'error.spam': 'Tidak terkirim: pesan yang sama lagi atau terlalu banyak tautan. Coba lagi dalam beberapa menit',
   'error.not_owned': 'Kamu belum memiliki gaya ini',
   'error.chat_closed': 'Obrolan ini sudah berakhir. Tambahkan dia sebagai teman untuk lanjut ngobrol',
   'error.generic': 'Terjadi kesalahan. Coba lagi',

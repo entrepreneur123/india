@@ -586,6 +586,8 @@ const ms: Dict = {
   'error.handle_taken': 'ID itu sudah digunakan. Sila pilih yang lain',
   'error.handle_cooldown': 'Anda boleh menukar ID sekali setiap 30 hari',
   'error.name_invalid': 'Tulis nama anda dengan huruf biasa: huruf daripada fon hiasan tidak dibenarkan',
+  'error.name_rude': 'Nama ini tidak dibenarkan. Sila pilih nama lain',
+  'error.spam': 'Tidak dihantar: mesej yang sama lagi atau terlalu banyak pautan. Cuba lagi dalam beberapa minit',
   'error.not_owned': 'Anda belum memiliki gaya ini',
   'error.chat_closed': 'Sembang ini sudah tamat. Tambah dia sebagai rakan untuk terus berbual',
   'error.generic': 'Ada sesuatu yang tidak kena. Sila cuba lagi',

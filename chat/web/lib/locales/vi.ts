@@ -575,6 +575,8 @@ const vi: Dict = {
   'error.handle_taken': 'ID này đã có người dùng. Hãy chọn ID khác',
   'error.handle_cooldown': 'Bạn có thể đổi ID 30 ngày một lần',
   'error.name_invalid': 'Hãy viết tên bằng chữ cái thông thường: không dùng được chữ của phông cách điệu',
+  'error.name_rude': 'Tên này không được phép. Hãy chọn tên khác',
+  'error.spam': 'Chưa gửi: lặp lại cùng một tin nhắn hoặc quá nhiều liên kết. Hãy thử lại sau vài phút',
   'error.not_owned': 'Bạn chưa có phong cách này',
   'error.chat_closed': 'Cuộc trò chuyện này đã kết thúc. Kết bạn với người đó để tiếp tục nói chuyện',
   'error.generic': 'Đã xảy ra lỗi. Vui lòng thử lại',

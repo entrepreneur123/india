@@ -586,6 +586,8 @@ const zhHant: Dict = {
   'error.handle_taken': '此 ID 已有人使用，請換一個',
   'error.handle_cooldown': 'ID 每 30 天只能變更一次',
   'error.name_invalid': '請用一般文字填寫名字：不能使用花俏字型的字母',
+  'error.name_rude': '不能使用這個名字，請換一個',
+  'error.spam': '未傳送：重複傳送相同訊息或連結過多。請幾分鐘後再試',
   'error.not_owned': '你還沒有這個裝扮',
   'error.chat_closed': '此聊天已結束。將對方加為好友就能繼續聊',
   'error.generic': '出了點問題，請重試',

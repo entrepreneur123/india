@@ -577,6 +577,8 @@ const ro: Dict = {
   'error.handle_taken': 'Acest ID e deja luat. Alege altul',
   'error.handle_cooldown': 'Îți poți schimba ID-ul o dată la 30 zile',
   'error.name_invalid': 'Scrie-ți numele cu litere obișnuite: literele din fonturi decorative nu sunt permise',
+  'error.name_rude': 'Acest nume nu este permis. Alege altul',
+  'error.spam': 'Nu s-a trimis: același mesaj din nou sau prea multe linkuri. Încearcă din nou peste câteva minute',
   'error.not_owned': 'Încă nu ai acest stil',
   'error.chat_closed': 'Acest chat s-a încheiat. Adaugă persoana ca prieten ca să vorbiți în continuare',
   'error.generic': 'Ceva n-a mers. Încearcă din nou',
