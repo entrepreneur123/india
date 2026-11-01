@@ -53,12 +53,11 @@ export function InboxSheet({ open, onClose }: { open: boolean; onClose: () => vo
     }
     let alive = true
     // The bell has cleared already (the shell's openInbox); everything is marked read once the list, with what was
-    // new, has been read.
+    // new, has been read. Always, not only when this page shows something new: the bell counts every unread one, also
+    // those older than the first page (30) and kinds the list leaves out, which would otherwise keep it lit for good.
     reload()
       .then((list) => {
-        if (!list) return
-        // Closed before the list came, or nothing new: nothing is marked read.
-        if (!alive || list.every((i) => i.read)) return
+        if (!list || !alive) return // closed before the list came: nothing is marked read
         setFresh(new Set(list.filter((i) => !i.read).map((i) => i.id)))
         return backend.markInboxRead()
       })
