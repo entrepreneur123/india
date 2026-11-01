@@ -41,6 +41,8 @@ const ne: Dict = {
   'auth.guest': 'अतिथिको रूपमा जारी राख्नुहोस्',
 
   'auth.guestBody': 'फोन नम्बर चाहिँदैन। अतिथि प्रोफाइल यही ब्राउजरमा मात्र रहन्छ।',
+
+  'auth.with': '{name} बाट जारी राख्नुहोस्',
   'auth.verifiedBadge': 'आफ्नो भेरिफाइड ब्याज पाउनुहोस्: परिचयपत्र + सेल्फी',
   'auth.everyoneVerified': 'यहाँ सबैजना परिचयपत्रले प्रमाणित छन्',
   'trust.verified': 'परिचय प्रमाणित',
@@ -497,6 +499,7 @@ const ne: Dict = {
   'settings.account': 'अकाउन्ट',
   'settings.phone': 'फोन नम्बर',
   'settings.verified': 'प्रमाणित',
+  'settings.via': '{name} बाट साइन इन',
   'settings.guest': 'अतिथि खाता (यो ब्राउजर मात्र)',
   'settings.language': 'भाषा',
   'settings.roomSounds': 'भ्वाइस रुमका आवाज',

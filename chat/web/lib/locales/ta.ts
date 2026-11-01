@@ -41,6 +41,8 @@ const ta: Dict = {
   'auth.guest': 'விருந்தினராகத் தொடரவும்',
 
   'auth.guestBody': 'தொலைபேசி எண் தேவையில்லை. விருந்தினர் சுயவிவரம் இந்த உலாவியில் மட்டுமே இருக்கும்.',
+
+  'auth.with': '{name} மூலம் தொடரவும்',
   'auth.verifiedBadge': 'வெரிஃபைடு பேட்ஜ் பெறுங்கள்: ID + செல்ஃபி',
   'auth.everyoneVerified': 'இங்கே எல்லோரும் ID மூலம் சரிபார்க்கப்பட்டவர்கள்',
   'trust.verified': 'ID சரிபார்க்கப்பட்டது',
@@ -497,6 +499,7 @@ const ta: Dict = {
   'settings.account': 'அக்கவுண்ட்',
   'settings.phone': 'போன் நம்பர்',
   'settings.verified': 'சரிபார்க்கப்பட்டது',
+  'settings.via': '{name} மூலம் உள்நுழைந்துள்ளீர்கள்',
   'settings.guest': 'விருந்தினர் கணக்கு (இந்த உலாவி மட்டும்)',
   'settings.language': 'மொழி',
   'settings.roomSounds': 'வாய்ஸ் ரூம் ஒலிகள்',

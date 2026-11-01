@@ -10,10 +10,15 @@ import { Rich, useI18n } from '@/components/i18n'
 import { Button } from '@/components/ui/pressable'
 import { TextInput } from '@/components/ui/bits'
 import { useToast } from '@/components/ui/toast'
+import type { OAuthProvider } from '@/lib/backend'
 import { CountrySelect } from './country-select'
+import { ProviderButtons } from './provider-buttons'
 
-/** `onGuest` (123): shown once the server allows guests; signs in without a number and goes to the profile step. */
-export function PhoneStep({ onSent, onGuest }: { onSent: (digits: string, display: string) => void; onGuest?: () => void }) {
+/**
+ * `guests` (123): the guest door, once the server allows guests. `providers`: the sign-in providers turned on in Supabase. Both
+ * sign in without a number; `onSignedIn` then goes to the profile step.
+ */
+export function PhoneStep({ onSent, guests = false, providers = [], onSignedIn }: { onSent: (digits: string, display: string) => void; guests?: boolean; providers?: OAuthProvider[]; onSignedIn: () => void }) {
   const backend = useBackend()
   const toast = useToast()
   const { t } = useI18n()
@@ -77,7 +82,8 @@ export function PhoneStep({ onSent, onGuest }: { onSent: (digits: string, displa
         {t('phone.send')}
         <ArrowRight className="size-4.5 rtl:rotate-180" aria-hidden />
       </Button>
-      {onGuest ? (
+      <ProviderButtons providers={providers} onSignedIn={onSignedIn} />
+      {guests ? (
         <div className="flex flex-col gap-2">
           <Button
             type="button"
@@ -90,7 +96,7 @@ export function PhoneStep({ onSent, onGuest }: { onSent: (digits: string, displa
               setGuestBusy(true)
               try {
                 await backend.signInAsGuest()
-                onGuest()
+                onSignedIn()
               } catch (err) {
                 toast.error(err)
               } finally {

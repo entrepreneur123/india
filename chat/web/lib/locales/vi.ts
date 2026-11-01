@@ -41,6 +41,8 @@ const vi: Dict = {
   'auth.guest': 'Tiếp tục với tư cách khách',
 
   'auth.guestBody': 'Không cần số điện thoại. Hồ sơ khách chỉ tồn tại trên trình duyệt này.',
+
+  'auth.with': 'Tiếp tục với {name}',
   'auth.verifiedBadge': 'Nhận huy hiệu đã xác minh: giấy tờ + ảnh selfie',
   'auth.everyoneVerified': 'Mọi người ở đây đều đã xác minh danh tính',
   'trust.verified': 'Đã xác minh danh tính',
@@ -497,6 +499,7 @@ const vi: Dict = {
   'settings.account': 'Tài khoản',
   'settings.phone': 'Số điện thoại',
   'settings.verified': 'Đã xác minh',
+  'settings.via': 'Đã đăng nhập bằng {name}',
   'settings.guest': 'Tài khoản khách (chỉ trình duyệt này)',
   'settings.language': 'Ngôn ngữ',
   'settings.roomSounds': 'Âm thanh phòng thoại',

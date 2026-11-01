@@ -41,6 +41,8 @@ const de: Dict = {
   'auth.guest': 'Als Gast fortfahren',
 
   'auth.guestBody': 'Keine Telefonnummer nötig. Dein Gastprofil bleibt nur in diesem Browser.',
+
+  'auth.with': 'Weiter mit {name}',
   'auth.verifiedBadge': 'Hol dir dein Verifiziert-Abzeichen: Ausweis + Selfie',
   'auth.everyoneVerified': 'Hier sind alle per Ausweis verifiziert',
   'trust.verified': 'Ausweis verifiziert',
@@ -497,6 +499,7 @@ const de: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Telefonnummer',
   'settings.verified': 'Verifiziert',
+  'settings.via': 'Angemeldet mit {name}',
   'settings.guest': 'Gastkonto (nur dieser Browser)',
   'settings.language': 'Sprache',
   'settings.roomSounds': 'Töne im Sprachraum',

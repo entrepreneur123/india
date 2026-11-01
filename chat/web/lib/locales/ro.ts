@@ -41,6 +41,8 @@ const ro: Dict = {
   'auth.guest': 'Continuă ca oaspete',
 
   'auth.guestBody': 'Fără număr de telefon. Profilul de oaspete rămâne doar în acest browser.',
+
+  'auth.with': 'Continuă cu {name}',
   'auth.verifiedBadge': 'Obține insigna de verificare: act + selfie',
   'auth.everyoneVerified': 'Toată lumea de aici are actul verificat',
   'trust.verified': 'Act verificat',
@@ -498,6 +500,7 @@ const ro: Dict = {
   'settings.account': 'Cont',
   'settings.phone': 'Număr de telefon',
   'settings.verified': 'Verificat',
+  'settings.via': 'Conectat cu {name}',
   'settings.guest': 'Cont de oaspete (doar acest browser)',
   'settings.language': 'Limbă',
   'settings.roomSounds': 'Sunete în camera vocală',

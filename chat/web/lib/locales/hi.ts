@@ -41,6 +41,8 @@ const hi: Dict = {
   'auth.guest': 'गेस्ट के रूप में जारी रखें',
 
   'auth.guestBody': 'फ़ोन नंबर की ज़रूरत नहीं। गेस्ट प्रोफ़ाइल सिर्फ़ इसी ब्राउज़र में रहती है।',
+
+  'auth.with': '{name} से जारी रखें',
   'auth.verifiedBadge': 'अपना वेरिफ़ाइड बैज पाएँ: ID + सेल्फ़ी',
   'auth.everyoneVerified': 'यहाँ हर कोई ID से वेरिफ़ाइड है',
   'trust.verified': 'ID वेरिफ़ाइड',
@@ -497,6 +499,7 @@ const hi: Dict = {
   'settings.account': 'अकाउंट',
   'settings.phone': 'फ़ोन नंबर',
   'settings.verified': 'वेरिफ़ाइड',
+  'settings.via': '{name} से साइन इन',
   'settings.guest': 'गेस्ट खाता (सिर्फ़ यह ब्राउज़र)',
   'settings.language': 'भाषा',
   'settings.roomSounds': 'वॉइस रूम साउंड',

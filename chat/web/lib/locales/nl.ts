@@ -41,6 +41,8 @@ const nl: Dict = {
   'auth.guest': 'Doorgaan als gast',
 
   'auth.guestBody': 'Geen telefoonnummer nodig. Je gastprofiel blijft alleen in deze browser.',
+
+  'auth.with': 'Doorgaan met {name}',
   'auth.verifiedBadge': 'Krijg je verificatiebadge: ID + selfie',
   'auth.everyoneVerified': 'Iedereen hier is met ID geverifieerd',
   'trust.verified': 'ID geverifieerd',
@@ -497,6 +499,7 @@ const nl: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Telefoonnummer',
   'settings.verified': 'Geverifieerd',
+  'settings.via': 'Ingelogd met {name}',
   'settings.guest': 'Gastaccount (alleen deze browser)',
   'settings.language': 'Taal',
   'settings.roomSounds': 'Geluiden in spraakruimte',

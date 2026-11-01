@@ -1,5 +1,6 @@
 'use client'
 
+import useSWR from 'swr'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Info } from 'lucide-react'
 import type { Gender, Profile } from '@/lib/backend'
@@ -19,9 +20,14 @@ import { CountrySelect } from './country-select'
 
 const BIO_MAX = 150
 
-/** `guest` (123): no phone to take the country from, so the person picks it (the sign-up's own country list). */
-export function ProfileStep({ onCreated, guest = false }: { onCreated: (p: Profile) => void; guest?: boolean }) {
+/**
+ * An account without a phone (a guest, 123, or Google/Kakao/Facebook/Apple) has no number to take the country from, so
+ * the person picks it (the sign-up's own country list). Asked from the session, so it holds after a reload too.
+ */
+export function ProfileStep({ onCreated }: { onCreated: (p: Profile) => void }) {
   const backend = useBackend()
+  const { data: kind } = useSWR('sign-in-kind', () => backend.signInKind())
+  const noPhone = !!kind && kind !== 'phone'
   const toast = useToast()
   const { t } = useI18n()
   const { lt } = useLooksT()
@@ -69,7 +75,7 @@ export function ProfileStep({ onCreated, guest = false }: { onCreated: (p: Profi
         city: '', // country only (the owner, 2026-10-26)
         bio: bio.trim(),
         photo,
-        country: guest ? country.iso : undefined,
+        country: noPhone ? country.iso : undefined,
       })
       // The profile comes with a free ID (lisa_4821); then the chosen one. Taken meanwhile: the free one stays.
       const wanted = handleSpelling(handle)
@@ -162,7 +168,7 @@ export function ProfileStep({ onCreated, guest = false }: { onCreated: (p: Profi
         <TextInput id="pf-dob" type="date" value={birthDate} max={maxBirthDate()} min={minBirthDate()} onChange={(e) => setBirthDate(e.target.value)} />
       </Field>
 
-      {guest ? (
+      {noPhone ? (
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-semibold">{t('pf.country')}</span>
           <CountrySelect value={country} onChange={setCountry} />

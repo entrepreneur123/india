@@ -41,6 +41,8 @@ const te: Dict = {
   'auth.guest': 'గెస్ట్‌గా కొనసాగండి',
 
   'auth.guestBody': 'ఫోన్ నంబర్ అవసరం లేదు. గెస్ట్ ప్రొఫైల్ ఈ బ్రౌజర్‌లో మాత్రమే ఉంటుంది.',
+
+  'auth.with': '{name}తో కొనసాగండి',
   'auth.verifiedBadge': 'వెరిఫైడ్ బ్యాడ్జ్ పొందండి: ID + సెల్ఫీ',
   'auth.everyoneVerified': 'ఇక్కడ అందరూ ID తో వెరిఫై అయినవారే',
   'trust.verified': 'ID వెరిఫై అయింది',
@@ -497,6 +499,7 @@ const te: Dict = {
   'settings.account': 'అకౌంట్',
   'settings.phone': 'ఫోన్ నంబర్',
   'settings.verified': 'వెరిఫై అయింది',
+  'settings.via': '{name}తో సైన్ ఇన్',
   'settings.guest': 'గెస్ట్ ఖాతా (ఈ బ్రౌజర్ మాత్రమే)',
   'settings.language': 'భాష',
   'settings.roomSounds': 'వాయిస్ రూమ్ శబ్దాలు',

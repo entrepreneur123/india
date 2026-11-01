@@ -41,6 +41,8 @@ const es: Dict = {
   'auth.guest': 'Continuar como invitado',
 
   'auth.guestBody': 'Sin número de teléfono. Tu perfil de invitado vive solo en este navegador.',
+
+  'auth.with': 'Continuar con {name}',
   'auth.verifiedBadge': 'Consigue tu insignia de verificación: documento + selfie',
   'auth.everyoneVerified': 'Aquí todos verificaron su identidad',
   'trust.verified': 'Identidad verificada',
@@ -498,6 +500,7 @@ const es: Dict = {
   'settings.account': 'Cuenta',
   'settings.phone': 'Número de teléfono',
   'settings.verified': 'Verificado',
+  'settings.via': 'Sesión iniciada con {name}',
   'settings.guest': 'Cuenta de invitado (solo este navegador)',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sonidos de la sala de voz',

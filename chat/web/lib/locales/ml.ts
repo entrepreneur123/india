@@ -41,6 +41,8 @@ const ml: Dict = {
   'auth.guest': 'അതിഥിയായി തുടരുക',
 
   'auth.guestBody': 'ഫോൺ നമ്പർ വേണ്ട. അതിഥി പ്രൊഫൈൽ ഈ ബ്രൗസറിൽ മാത്രമേ ഉണ്ടാകൂ.',
+
+  'auth.with': '{name} ഉപയോഗിച്ച് തുടരുക',
   'auth.verifiedBadge': 'വെരിഫൈഡ് ബാഡ്ജ് നേടൂ: ID + സെൽഫി',
   'auth.everyoneVerified': 'ഇവിടെ എല്ലാവരും ID വെരിഫൈ ചെയ്തവരാണ്',
   'trust.verified': 'ID വെരിഫൈ ചെയ്തു',
@@ -497,6 +499,7 @@ const ml: Dict = {
   'settings.account': 'അക്കൗണ്ട്',
   'settings.phone': 'ഫോൺ നമ്പർ',
   'settings.verified': 'വെരിഫൈ ചെയ്തു',
+  'settings.via': '{name} ഉപയോഗിച്ച് സൈൻ ഇൻ',
   'settings.guest': 'അതിഥി അക്കൗണ്ട് (ഈ ബ്രൗസർ മാത്രം)',
   'settings.language': 'ഭാഷ',
   'settings.roomSounds': 'വോയ്സ് റൂം ശബ്ദങ്ങൾ',

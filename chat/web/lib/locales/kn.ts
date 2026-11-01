@@ -41,6 +41,8 @@ const kn: Dict = {
   'auth.guest': 'ಅತಿಥಿಯಾಗಿ ಮುಂದುವರಿಸಿ',
 
   'auth.guestBody': 'ಫೋನ್ ಸಂಖ್ಯೆ ಬೇಕಿಲ್ಲ. ಅತಿಥಿ ಪ್ರೊಫೈಲ್ ಈ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಮಾತ್ರ ಇರುತ್ತದೆ.',
+
+  'auth.with': '{name} ಮೂಲಕ ಮುಂದುವರಿಸಿ',
   'auth.verifiedBadge': 'ವೆರಿಫೈಡ್ ಬ್ಯಾಡ್ಜ್ ಪಡೆಯಿರಿ: ID + ಸೆಲ್ಫಿ',
   'auth.everyoneVerified': 'ಇಲ್ಲಿ ಎಲ್ಲರೂ ID ಮೂಲಕ ಪರಿಶೀಲಿತರು',
   'trust.verified': 'ID ಪರಿಶೀಲಿತ',
@@ -497,6 +499,7 @@ const kn: Dict = {
   'settings.account': 'ಖಾತೆ',
   'settings.phone': 'ಫೋನ್ ನಂಬರ್',
   'settings.verified': 'ಪರಿಶೀಲಿತ',
+  'settings.via': '{name} ಮೂಲಕ ಸೈನ್ ಇನ್',
   'settings.guest': 'ಅತಿಥಿ ಖಾತೆ (ಈ ಬ್ರೌಸರ್ ಮಾತ್ರ)',
   'settings.language': 'ಭಾಷೆ',
   'settings.roomSounds': 'ವಾಯ್ಸ್ ರೂಮ್ ಶಬ್ದಗಳು',

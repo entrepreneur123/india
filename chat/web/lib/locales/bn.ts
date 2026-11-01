@@ -41,6 +41,8 @@ const bn: Dict = {
   'auth.guest': 'গেস্ট হিসেবে চালিয়ে যান',
 
   'auth.guestBody': 'ফোন নম্বর লাগবে না। গেস্ট প্রোফাইল শুধু এই ব্রাউজারেই থাকে।',
+
+  'auth.with': '{name} দিয়ে চালিয়ে যান',
   'auth.verifiedBadge': 'আপনার ভেরিফায়েড ব্যাজ নিন: আইডি + সেলফি',
   'auth.everyoneVerified': 'এখানে সবাই আইডি দিয়ে যাচাই করা',
   'trust.verified': 'আইডি যাচাই করা',
@@ -497,6 +499,7 @@ const bn: Dict = {
   'settings.account': 'অ্যাকাউন্ট',
   'settings.phone': 'ফোন নম্বর',
   'settings.verified': 'যাচাই করা',
+  'settings.via': '{name} দিয়ে সাইন ইন করা',
   'settings.guest': 'গেস্ট অ্যাকাউন্ট (শুধু এই ব্রাউজার)',
   'settings.language': 'ভাষা',
   'settings.roomSounds': 'ভয়েস রুমের সাউন্ড',

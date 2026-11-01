@@ -41,6 +41,8 @@ const pl: Dict = {
   'auth.guest': 'Kontynuuj jako gość',
 
   'auth.guestBody': 'Bez numeru telefonu. Profil gościa istnieje tylko w tej przeglądarce.',
+
+  'auth.with': 'Kontynuuj z {name}',
   'auth.verifiedBadge': 'Zdobądź odznakę weryfikacji: dokument + selfie',
   'auth.everyoneVerified': 'Każdy tutaj ma zweryfikowany dokument',
   'trust.verified': 'Zweryfikowany dokument',
@@ -499,6 +501,7 @@ const pl: Dict = {
   'settings.account': 'Konto',
   'settings.phone': 'Numer telefonu',
   'settings.verified': 'Zweryfikowany',
+  'settings.via': 'Zalogowano przez {name}',
   'settings.guest': 'Konto gościa (tylko ta przeglądarka)',
   'settings.language': 'Język',
   'settings.roomSounds': 'Dźwięki pokoju głosowego',

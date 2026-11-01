@@ -41,6 +41,8 @@ const ptBR: Dict = {
   'auth.guest': 'Continuar como visitante',
 
   'auth.guestBody': 'Sem número de telefone. Seu perfil de visitante fica só neste navegador.',
+
+  'auth.with': 'Continuar com {name}',
   'auth.verifiedBadge': 'Ganhe seu selo de verificado: documento + selfie',
   'auth.everyoneVerified': 'Todo mundo aqui tem identidade verificada',
   'trust.verified': 'Identidade verificada',
@@ -497,6 +499,7 @@ const ptBR: Dict = {
   'settings.account': 'Conta',
   'settings.phone': 'Número de telefone',
   'settings.verified': 'Verificado',
+  'settings.via': 'Conectado com {name}',
   'settings.guest': 'Conta de visitante (só neste navegador)',
   'settings.language': 'Idioma',
   'settings.roomSounds': 'Sons da sala de voz',

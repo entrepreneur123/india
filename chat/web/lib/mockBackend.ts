@@ -43,6 +43,9 @@ import {
   type LookWear,
   mediaKindOf,
   type MegaphoneLine,
+  OAUTH_PROVIDERS,
+  type OAuthProvider,
+  type SignInKind,
 } from './backend'
 import { CONTACT_APPS, cleanContact, type ContactApp, type Contacts } from './contacts'
 import { COUNTRIES } from './countries'
@@ -425,12 +428,16 @@ export class MockBackend implements Backend {
     this.guest = true
   }
 
-  async isGuest() {
-    return this.guest
+  async signInWith(_provider: OAuthProvider) {
+    await this.signInAsGuest() // the demo has no providers to leave for: it signs in as a phone-less account
+  }
+
+  async signInKind(): Promise<SignInKind> {
+    return this.guest ? 'guest' : 'phone'
   }
 
   async config() {
-    return { guests: true }
+    return { guests: true, providers: [...OAUTH_PROVIDERS] }
   }
 
   async myProfile() {

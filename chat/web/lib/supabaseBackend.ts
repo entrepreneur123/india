@@ -67,6 +67,9 @@ import {
   type LinkMeta,
   type LookingPost,
   type PartyState,
+  OAUTH_PROVIDERS,
+  type OAuthProvider,
+  type SignInKind,
 } from './backend'
 import { safeUrl, shareable } from './links'
 import { retryImport } from './retry-import'
@@ -473,14 +476,28 @@ export class SupabaseBackend implements Backend {
     this.userId = data.session.user.id
   }
 
-  async isGuest() {
-    const { data } = await this.client.auth.getSession()
-    return data.session?.user.is_anonymous === true
+  async signInWith(provider: OAuthProvider) {
+    const { error } = await this.client.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin } })
+    if (error) throw new BackendError('network')
   }
 
-  private configOnce: Promise<{ guests: boolean }> | null = null
+  async signInKind(): Promise<SignInKind> {
+    const { data } = await this.client.auth.getSession()
+    const user = data.session?.user
+    if (!user || user.phone) return 'phone'
+    if (user.is_anonymous) return 'guest'
+    const p = user.app_metadata.provider
+    return (OAUTH_PROVIDERS as readonly string[]).includes(p ?? '') ? (p as OAuthProvider) : 'phone'
+  }
+
+  private configOnce: Promise<{ guests: boolean; providers: OAuthProvider[] }> | null = null
   config() {
-    return (this.configOnce ??= this.rpc<{ guests?: boolean }>('app_config').then((c) => ({ guests: c?.guests === true }), () => ({ guests: false })))
+    // The switch (123) and which providers Supabase has turned on (its public auth settings), asked once per visit.
+    const providers = fetch(`${this.url}/auth/v1/settings`, { headers: { apikey: this.anonKey } })
+      .then((r) => r.json() as Promise<{ external?: Record<string, boolean> }>)
+      .then((s) => OAUTH_PROVIDERS.filter((p) => s.external?.[p] === true), () => [])
+    const guests = this.rpc<{ guests?: boolean }>('app_config').then((c) => c?.guests === true, () => false)
+    return (this.configOnce ??= Promise.all([guests, providers]).then(([g, p]) => ({ guests: g, providers: p })))
   }
 
   /** Phone number of the signed-in account, for Settings. */

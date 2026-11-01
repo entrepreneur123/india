@@ -41,6 +41,8 @@ const it: Dict = {
   'auth.guest': 'Continua come ospite',
 
   'auth.guestBody': 'Senza numero di telefono. Il profilo ospite resta solo in questo browser.',
+
+  'auth.with': 'Continua con {name}',
   'auth.verifiedBadge': 'Ottieni il badge di verifica: documento + selfie',
   'auth.everyoneVerified': 'Qui tutti hanno un documento verificato',
   'trust.verified': 'Documento verificato',
@@ -497,6 +499,7 @@ const it: Dict = {
   'settings.account': 'Account',
   'settings.phone': 'Numero di telefono',
   'settings.verified': 'Verificato',
+  'settings.via': 'Accesso con {name}',
   'settings.guest': 'Account ospite (solo questo browser)',
   'settings.language': 'Lingua',
   'settings.roomSounds': 'Suoni della stanza vocale',
