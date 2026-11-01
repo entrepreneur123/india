@@ -14,6 +14,7 @@ import { ScreenBoundary } from '@/components/ui/screen-boundary'
 import { retryImport } from '@/lib/retry-import'
 import { InAppBanner } from '@/components/shell/in-app-banner'
 import { identify, installErrorReporting } from '@/lib/telemetry'
+import { applyTheme, followDevice, savedTheme } from '@/lib/theme'
 
 // The sign-up flow and the signed-in app are separate downloads; only one is needed to start.
 const loadAuth = () => retryImport(() => import('@/components/screens/auth/auth-screen'))
@@ -127,6 +128,12 @@ function Root({ landing }: { landing?: ReactNode }) {
     },
     [backend, toast],
   )
+
+  // Light or dark: the head script set it before the first paint; here the browser bar follows, and so does a device switch.
+  useEffect(() => {
+    applyTheme(savedTheme())
+    return followDevice()
+  }, [])
 
   // A room link's address goes back to "/" once kept (after Next's router has set up its history entry).
   useEffect(() => {

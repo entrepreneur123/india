@@ -74,8 +74,6 @@ const en = {
   lost: 'Connection lost',
   reconnecting: 'Connection lost · Reconnecting…',
   lostLeft: 'You lost connection and left the room',
-  videoBig: 'Make {name} big',
-  videoSmall: 'Back to the room',
   'volumeOf': "{name}'s volume for me",
   'volumeMute': "Mute for me",
   'volumeUnmute': "Unmute for me",

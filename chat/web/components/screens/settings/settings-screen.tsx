@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import useSWR from 'swr'
-import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, ImageOff, Languages, LogOut, Mail, MessageCircle, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
+import { Ban, Baby, Check, ChevronRight, ExternalLink, EyeOff, FileText, History, ImageOff, Languages, LogOut, Mail, MessageCircle, Palette, Phone, ScrollText, ShieldCheck, Trash2, VenetianMask, Volume2 } from 'lucide-react'
 import { useBackend } from '@/lib/backend-context'
 import { CHILD_SAFETY_URL, COMMUNITY_RULES, GRIEVANCE_OFFICER, PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '@/lib/config'
 import { LANGS } from '@/lib/i18n'
 import { roomSoundsOn, setRoomSounds } from '@/lib/room-sounds'
 import { saveFlag, savedFlag } from '@/lib/flags'
+import { applyTheme, savedTheme, THEMES } from '@/lib/theme'
 import { useApp } from '@/components/app-state'
 import { useI18n } from '@/components/i18n'
 import { useLooksT } from '@/components/looks/looks-text'
@@ -29,6 +30,8 @@ export function SettingsScreen() {
   const { data: kind } = useSWR('sign-in-kind', () => backend.signInKind())
   const [rulesOpen, setRulesOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
+  const [theme, setTheme] = useState(savedTheme)
+  const [themeOpen, setThemeOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [blocksOpen, setBlocksOpen] = useState(false)
   const [recentsOpen, setRecentsOpen] = useState(false)
@@ -73,6 +76,7 @@ export function SettingsScreen() {
         <Group title={t('settings.account')}>
           <Item icon={Phone} label={t('settings.phone')} value={myPhone ?? phone ?? (kind === 'guest' ? t('settings.guest') : kind && kind !== 'phone' ? t('settings.via', { name: providerName(kind) }) : t('settings.verified'))} ltrValue />
           <Item icon={Languages} label={t('settings.language')} value={current?.native} onClick={() => setLangOpen(true)} />
+          <Item icon={Palette} label={t('settings.theme')} value={t(`settings.theme.${theme}`)} onClick={() => setThemeOpen(true)} />
           <Toggle icon={Volume2} label={t('settings.roomSounds')} body={t('settings.roomSoundsBody')} on={sounds} onChange={(on) => (setRoomSounds(on), setSounds(on))} />
         </Group>
 
@@ -114,35 +118,17 @@ export function SettingsScreen() {
 
       <Modal open={langOpen} onClose={() => setLangOpen(false)} variant="sheet" title={t('settings.chooseLanguage')}>
         <ul className="flex flex-col p-3 pb-5" role="radiogroup" aria-label={t('settings.language')}>
-          {LANGS.map((l) => {
-            const on = l.id === lang
-            return (
-              <li key={l.id}>
-                <button
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  data-autofocus={on ? true : undefined}
-                  onClick={() => {
-                    setLang(l.id)
-                    setLangOpen(false)
-                  }}
-                  className={cn(
-                    'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-150 hover:bg-muted',
-                    on && 'bg-primary-soft hover:bg-primary-soft',
-                  )}
-                >
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span lang={l.id} className={cn('text-[15px] font-semibold', on && 'text-primary-text')}>
-                      {l.native}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{l.english}</span>
-                  </span>
-                  {on ? <Check className="size-5 shrink-0 text-primary-text" aria-hidden /> : null}
-                </button>
-              </li>
-            )
-          })}
+          {LANGS.map((l) => (
+            <Choice key={l.id} on={l.id === lang} lang={l.id} title={l.native} sub={l.english} onClick={() => (setLang(l.id), setLangOpen(false))} />
+          ))}
+        </ul>
+      </Modal>
+
+      <Modal open={themeOpen} onClose={() => setThemeOpen(false)} variant="sheet" title={t('settings.theme')}>
+        <ul className="flex flex-col p-3 pb-5" role="radiogroup" aria-label={t('settings.theme')}>
+          {THEMES.map((x) => (
+            <Choice key={x} on={x === theme} title={t(`settings.theme.${x}`)} onClick={() => (applyTheme(x), setTheme(x), setThemeOpen(false))} />
+          ))}
         </ul>
       </Modal>
 
@@ -278,4 +264,31 @@ function Item({
     )
   }
   return <div className={cn(cls, 'hover:bg-transparent')}>{body}</div>
+}
+
+/** One choice in a sheet's list (language, theme): ticked and tinted when it is the current one. */
+function Choice({ on, title, sub, lang, onClick }: { on: boolean; title: string; sub?: string; lang?: string; onClick: () => void }) {
+  return (
+    <li>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={on}
+        data-autofocus={on ? true : undefined}
+        onClick={onClick}
+        className={cn(
+          'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-start transition-colors duration-150 hover:bg-muted',
+          on && 'bg-primary-soft hover:bg-primary-soft',
+        )}
+      >
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span lang={lang} className={cn('text-[15px] font-semibold', on && 'text-primary-text')}>
+            {title}
+          </span>
+          {sub ? <span className="text-xs text-muted-foreground">{sub}</span> : null}
+        </span>
+        {on ? <Check className="size-5 shrink-0 text-primary-text" aria-hidden /> : null}
+      </button>
+    </li>
+  )
 }

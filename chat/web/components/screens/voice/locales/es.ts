@@ -74,8 +74,6 @@ const es: RoomDict = {
   lost: 'Sin conexión',
   reconnecting: 'Sin conexión · Reconectando…',
   lostLeft: 'Perdiste la conexión y saliste de la sala',
-  videoBig: 'Ver a {name} en grande',
-  videoSmall: 'Volver a la sala',
   'volumeOf': "Volumen de {name} para mí",
   'volumeMute': "Silenciar para mí",
   'volumeUnmute': "Activar sonido",

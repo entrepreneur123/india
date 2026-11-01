@@ -72,8 +72,6 @@ const ur: RoomDict = {
   'lost': 'کنکشن ٹوٹ گیا',
   'reconnecting': 'کنکشن ٹوٹ گیا · دوبارہ جڑ رہے ہیں…',
   'lostLeft': 'کنکشن ٹوٹنے کی وجہ سے آپ روم سے باہر ہو گئے',
-  videoBig: '{name} کو بڑا کریں',
-  videoSmall: 'روم پر واپس',
   volume: 'آواز',
   'volumeOf': "میرے لیے {name} کی آواز",
   'volumeMute': "صرف میرے لیے میوٹ",

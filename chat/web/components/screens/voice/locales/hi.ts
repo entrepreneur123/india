@@ -73,8 +73,6 @@ const hi: RoomDict = {
   lost: 'कनेक्शन टूटा',
   reconnecting: 'कनेक्शन टूट गया · फिर से जुड़ रहे हैं…',
   lostLeft: 'कनेक्शन टूटने से आप रूम से बाहर हो गए',
-  videoBig: '{name} को बड़ा करें',
-  videoSmall: 'रूम पर वापस',
   'volumeOf': "मेरे लिए {name} की आवाज़",
   'volumeMute': "सिर्फ़ मेरे लिए म्यूट",
   'volumeUnmute': "अनम्यूट करें",

@@ -72,8 +72,6 @@ const pa: RoomDict = {
   'lost': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟਿਆ',
   'reconnecting': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ · ਮੁੜ ਜੁੜ ਰਹੇ ਹਾਂ…',
   'lostLeft': 'ਕਨੈਕਸ਼ਨ ਟੁੱਟਣ ਕਾਰਨ ਤੁਸੀਂ ਰੂਮ ਤੋਂ ਬਾਹਰ ਹੋ ਗਏ',
-  videoBig: '{name} ਨੂੰ ਵੱਡਾ ਕਰੋ',
-  videoSmall: 'ਰੂਮ ਤੇ ਵਾਪਸ',
   volume: 'ਆਵਾਜ਼',
   'volumeOf': "ਮੇਰੇ ਲਈ {name} ਦੀ ਆਵਾਜ਼",
   'volumeMute': "ਸਿਰਫ਼ ਮੇਰੇ ਲਈ ਮਿਊਟ",

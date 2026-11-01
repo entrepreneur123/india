@@ -74,8 +74,6 @@ const zhHant: RoomDict = {
   lost: '連線已中斷',
   reconnecting: '連線已中斷 · 正在重新連線…',
   lostLeft: '連線已中斷，你已離開房間',
-  videoBig: '放大 {name}',
-  videoSmall: '返回房間',
   'volumeOf': "我聽到的 {name} 的音量",
   'volumeMute': "僅對我靜音",
   'volumeUnmute': "取消靜音",

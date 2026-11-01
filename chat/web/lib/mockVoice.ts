@@ -22,7 +22,6 @@ import {
   type VoiceSystemEvent,
   type VoiceTrack,
 } from './backend'
-import { deviceProblem } from './rtc'
 import { nextReads, quotable, replyOf } from './voice-chat'
 import { checkPoll, POLLS_PER_READ } from './voice-polls'
 import { nextHost } from './voice-lost'
@@ -279,26 +278,6 @@ export class VoiceSim {
 
   private snapshot(r: SimRoom): VoiceRoom {
     return structuredClone({ ...r.room, code: r.mine ? r.code : null, password: r.mine ? r.room.password : null, meId: this.me()?.id ?? '' })
-  }
-
-  /** The demo's camera (24): my own, shown on my seat's tile; the demo people never turn theirs on. */
-  private cam: MediaStream | null = null
-  private async setCam(r: SimRoom, id: string, on: boolean) {
-    this.cam?.getTracks().forEach((t) => t.stop())
-    this.cam = null
-    if (on) {
-      try {
-        this.cam = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 360 } })
-      } catch (e) {
-        const p = deviceProblem(e)
-        throw new BackendError(p === 'denied' || p === 'missing' || p === 'busy' ? `camera_${p}` : 'not_allowed')
-      }
-    }
-    const stream = this.cam
-    this.emit(r, {
-      type: 'videos',
-      videos: stream ? { [id]: { mine: true, attach: (el) => void (el.srcObject = stream), detach: (el) => void (el.srcObject = null) } } : {},
-    })
   }
 
   private emit(r: SimRoom, e: VoiceEvent) {
@@ -587,7 +566,6 @@ export class VoiceSim {
     const me = this.me()
     if (!r || !me || r.ended) return
     await wait(100)
-    if (this.cam) void this.setCam(r, me.id, false)
     r.room.members = r.room.members.filter((m) => m.profile.id !== me.id)
     if (r.room.hostId === me.id) {
       // As the server (voice_hand_over): the first co-host still here takes over; with none the room ends.
@@ -949,12 +927,8 @@ export class VoiceSim {
         }
         break
       }
-      case 'camera':
-        need(me.seat !== null || !a.on)
-        return this.setCam(r, me.profile.id, a.on)
       case 'unseat':
         need(me.seat !== null)
-        if (this.cam) void this.setCam(r, me.profile.id, false)
         me.seat = null
         me.muted = true
         if (me.role === 'speaker') me.role = 'listener'

@@ -73,8 +73,6 @@ const id: RoomDict = {
   lost: 'Koneksi terputus',
   reconnecting: 'Koneksi terputus · Menyambungkan ulang…',
   lostLeft: 'Koneksimu terputus dan kamu keluar dari room',
-  videoBig: 'Perbesar {name}',
-  videoSmall: 'Kembali ke room',
   'volumeOf': "Volume {name} untukku",
   'volumeMute': "Bisukan untukku",
   'volumeUnmute': "Bunyikan",
